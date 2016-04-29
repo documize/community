@@ -1,17 +1,73 @@
-# See http://help.github.com/ignore-files/ for more about ignoring files.
+# Compiled Object files, Static and Dynamic libs (Shared Objects)
+*.o
+*.a
+*.so
 
-# compiled output
-/dist
-/tmp
+# Folders
+_obj
+_test
+_uploads
+_diffs
+_convert
+.srclib-cache
+.DS_Store
+.idea
+.vscode
 
-# dependencies
-/node_modules
-/bower_components
+# Documize build artifacts
+bin/*
+dist/*
+/documize/web/bindata/*
+app/dist/*
+app/dist-prod/*
 
-# misc
-/.sass-cache
-/connect.lock
-/coverage/*
-/libpeerconnection.log
+# Architecture specific extensions/prefixes
+*.[568vq]
+[568vq].out
+
+# Go specific
+*.cgo1.go
+*.cgo2.c
+_cgo_defun.c
+_cgo_gotypes.go
+_cgo_export.*
+_testmain.go
+*.exe
+*.test
+/dickens/dickens
+/dickens/dickens-osx
+/asimov/asimov
+/asimov/asimov-osx
+/plugin-libreoffice/plugin-libreoffice
+/plugin-libreoffice/plugin-libreoffice-osx
+/plugin-markdown/plugin-markdown
+/plugin-markdown/plugin-markdown-osx
+/plugin-tolkien/plugin-tolkien
+/plugin-tolkien/plugin-tolkien-osx
+
+# Ember specific
+/app/dist
+/app/dist-prod
+/app/tmp
+/app/bower_components
+/app/node_modules
+/app/.sass-cache
+/app/connect.lock
+/app/coverage/*
+/app/libpeerconnection.log
+/app/npm-debug.log
+/app/testem.log
+
+# Misc.
+documize/web/bindata_assetfs.go
+build/documize
+build/plugin-markdown
+build/plugin-msword
+plugin-msword/plugin-msword
+plugin-msword/plugin-msword-osx
 npm-debug.log
-testem.log
+debug
+*.pem
+*.crt
+Dockerfile
+container.sh
