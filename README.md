@@ -1,6 +1,6 @@
 # To Document / Instructions
 
-the build process around go get github.com/elazarl/go-bindata-assetfs
+The build process around go get github.com/elazarl/go-bindata-assetfs
 
 ## GO
 
@@ -30,17 +30,3 @@ but browser restart is!
 - bower install
 - cd ..
 - ./build.sh
-
-# XSS
-https://www.google.com/about/appsecurity/learning/xss/#HowToTest
-
-https://www.owasp.org/index.php/XSS_(Cross_Site_Scripting)_Prevention_Cheat_Sheet_
-
-https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/unescape
-
-# Running the Go tests
-
-WARNING: DO NOT RUN THE AUTOMATED TESTS AGAINST A LIVE DATABASE.
-
-Before running the Go tests, please note that they will alter the database that they are run on.
-For detailed instructions see the SDK README.md and directory "exttest".
