@@ -1,0 +1,32 @@
+<div class="document-structure">
+
+    {{#if this.session.authenticated}}
+        <div id="tocToolbar" class="toc-controls {{if actionablePage 'current-page' ''}}">
+            <div id="toc-up-button" class="round-button-mono {{if upDisabled 'disabled'}}" data-tooltip="Move up" data-tooltip-position="top center" {{action 'pageUp'}}>
+                <i class="material-icons">arrow_upward</i>
+            </div>
+            <div class="button-gap" />
+            <div id="toc-down-button" class="round-button-mono {{if downDisabled 'disabled'}}" data-tooltip="Move down" data-tooltip-position="top center" {{action 'pageDown'}}>
+                <i class="material-icons">arrow_downward</i>
+            </div>
+            <div class="button-gap" />
+            <div id="toc-outdent-button" class="round-button-mono {{if outdentDisabled 'disabled'}}" data-tooltip="Outdent" data-tooltip-position="top center" {{action 'pageOutdent'}}>
+                <i class="material-icons">format_indent_decrease</i>
+            </div>
+            <div class="button-gap" />
+            <div id="toc-indent-button" class="round-button-mono {{if indentDisabled 'disabled'}}" data-tooltip="Indent" data-tooltip-position="top center" {{action 'pageIndent'}}>
+                <i class="material-icons">format_indent_increase</i>
+            </div>
+        </div>
+    {{/if}}
+
+    <ul class="entries">
+        {{#each pages key="id" as |node index|}}
+            <li class="item">
+                {{document/toc-entry page.id node.id node.level}}
+                <a id="index-{{node.id}}" class="link toc-index-item" {{action 'clickGotoPage' node.id}}>{{node.title}}</a>
+            </li>
+        {{/each}}
+    </ul>
+
+</div>

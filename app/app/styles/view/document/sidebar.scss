@@ -1,0 +1,73 @@
+.document-container {
+	> .sidebar {
+		padding: 40px;
+		font-size: 0.875rem;
+		@extend .no-select;
+
+		.stick {
+		    position: fixed;
+		    top: 50px;
+		}
+
+		.document-structure {
+			> .toc-controls {
+				text-align: center;
+				margin-bottom: 20px;
+
+				> .round-button-mono {
+					color: $color-off-black;
+					border-color: $color-off-black;
+
+					> .material-icons {
+						color: $color-off-black;
+					}
+				}
+
+				> .disabled {
+					@extend .cursor-not-allowed;
+					color: $color-stroke;
+					border-color: $color-stroke;
+
+					> .material-icons {
+						color: $color-stroke;
+					}
+				}
+			}
+
+			> .entries {
+				padding: 0;
+				list-style: none;
+				font-size: 13px;
+				overflow-x: hidden;
+
+				> .item {
+					padding: 2px 0;
+					text-overflow: ellipsis;
+					word-wrap: break-word;
+					white-space: nowrap;
+					overflow: hidden;
+
+					> .link {
+						color: $color-stroke;
+
+						&:hover {
+							color: $color-link;
+						}
+					}
+
+					> .selected {
+						color: $color-link;
+						font-weight: bold;
+					}
+				}
+			}
+
+			.toc-bullet {
+				vertical-align: middle;
+				color: $color-stroke;
+				font-size: 10px;
+				margin-right: 5px;
+			}
+		}
+	}
+}

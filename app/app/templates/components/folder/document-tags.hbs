@@ -1,0 +1,5 @@
+{{#each tagz as |tg|}}
+	{{#link-to "search" (query-params filter=tg) class="tag"}}
+		{{tg}}
+	{{/link-to}}
+{{/each}}

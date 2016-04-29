@@ -1,0 +1,162 @@
+.page-container {
+    padding-top: 60px;
+}
+
+.copyright {
+	margin-top: 50px;
+
+	> a {
+		font-size: 0.8rem;
+		color: $color-gray;
+	}
+}
+
+.header {
+    background-color: $color-primary;
+    color: $color-white;
+    height: 145px;
+    padding: 0;
+    margin: 0;
+    // z-index: 1;
+    // position: fixed;
+    width: 100%;
+    font-size: 1rem;
+
+    .content {
+        margin-top: 25px;
+
+        > .title {
+            padding-left: 10px;
+            font-size: 1.1rem;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        > .name {
+            padding-right: 10px;
+            font-size: 1.1rem;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+		> .login {
+			padding: 10px 0 0 0;
+            font-size: 1.1rem;
+            display: inline-block;
+
+			> a {
+				color: $color-white;
+				text-decoration: none;
+			}
+		}
+    }
+
+    .header-button {
+        display: inline-block;
+        position: relative;
+        overflow: hidden;
+        width: 35px;
+        height: 35px;
+        line-height: 35px;
+        padding: 0;
+        border-radius: 50%;
+        transition: .3s;
+        cursor: pointer;
+        vertical-align: middle;
+        background-color: $color-white;
+        text-align: center;
+
+        &:hover {
+            @extend .z-depth-1;
+        }
+
+        > .material-icons {
+            color: $color-primary;
+            // padding: 0 0 0 8px;
+            text-align: center;
+            font-size: 1.4em;
+        }
+
+        > .initials {
+            color: $color-primary;
+            text-align: center;
+            font-size: 1rem;
+            font-style: normal;
+            line-height: 2.6rem;
+            font-family: Tahoma, 'courier', 'arial';
+        }
+
+        &:before {
+            border-radius: 0;
+        }
+    }
+
+    .breadcrumb-menu {
+        margin: 0;
+        padding: 0;
+        color: $color-white;
+		padding: 20px 0 0 0;
+
+        > .option {
+			list-style: none;
+			list-style-type: none;
+			padding: 0 25px 22.5px 0;
+			float: left;
+
+			> a {
+	            font-size: 1rem;
+	            color: #AFB4BB;
+	            text-decoration: none;
+        	}
+		}
+
+        > .selected > a {
+            color: $color-white !important;
+        }
+    }
+
+    .dual-box {
+        background-color: $color-off-white;
+        color: $color-off-black;
+        height: 45px;
+        border: 1px solid $color-border2;
+        border-radius: 4px;
+        width: 100%;
+        padding: 0 10px;
+        cursor: pointer;
+		display: inline-block;
+
+        &:hover {
+            @extend .z-depth-tiny;
+        }
+
+        .info {
+            font-size: 0.9rem;
+            line-height: 3rem;
+            display: inline-block;
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			width: 90%;
+        }
+
+        .icon {
+            float: right;
+            display: inline-block;
+            font-size: 1.5rem;
+            line-height: 3rem;
+            color: $color-stroke;
+        }
+
+        .input {
+            font-size: 1rem;
+            line-height: 3rem;
+            display: inline-block;
+            transition: .3s;
+        }
+    }
+
+    .dual-box-white {
+        background-color: $color-white;
+    }
+}

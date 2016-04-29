@@ -1,0 +1,46 @@
+.chip {
+    display: inline-block;
+    background-color: $color-chip;
+    border-radius: 15px;
+    padding: 0;
+    height: 25px;
+    line-height: 0;
+	margin-right: 10px;
+
+    &:hover {
+        cursor: pointer;
+        @extend .z-depth-tiny;
+    }
+
+    > .chip-text {
+        display: inline-block;
+        font-weight: 400;
+        font-size: 12px;
+        color: $color-off-white;
+        padding: 12px 10px 0 10px;
+        letter-spacing: 0.7px;
+        line-height: 0;
+    }
+
+    > i.material-icons {
+        color: $color-off-white;
+        font-size: 13px;
+        margin: 13px 8px 0 0;
+        padding: 0;
+        line-height: 0;
+    }
+}
+
+.chip-action {
+	@extend .chip;
+	background-color: $color-off-white;
+
+	&:hover {
+        cursor: pointer;
+        @extend .z-depth-tiny;
+    }
+
+	> .chip-text {
+		color: $color-chip;
+	}
+}

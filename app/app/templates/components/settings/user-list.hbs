@@ -1,0 +1,133 @@
+<div class="user-list">
+    <div class="heading">{{users.length}} users</div>
+    <table class="basic-table no-table-border">
+        <thead>
+            <tr>
+                <th class="border-bottom border-top">Firstname</th>
+                <th class="border-bottom border-top">Lastname</th>
+                <th class="border-bottom border-top">Email</th>
+                <th class="border-bottom border-top no-width">Active</th>
+                <th class="border-bottom border-top no-width">Add Spaces</th>
+                <th class="border-bottom border-top no-width">Admin</th>
+                <th class="border-bottom border-top no-width">&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each users as |user|}}
+                <tr>
+                    <td class="border-bottom {{if user.active '' 'inactive'}}">{{ user.firstname }}</td>
+                    <td class="border-bottom {{if user.active '' 'inactive'}}">{{ user.lastname }}</td>
+                    <td class="border-bottom {{if user.active '' 'inactive'}}">{{ user.email }}</td>
+                    <td class="border-bottom no-width">
+                        {{#if user.me}}
+                            <i class="material-icons">check_box</i> {{else if user.active}}
+                            <i class="material-icons checkbox" {{action 'toggleActive' user.id}}>check_box</i>
+                        {{else}}
+                            <i class="material-icons checkbox" {{action 'toggleActive' user.id}}>check_box_outline_blank</i>
+                        {{/if}}
+                    </td>
+                    <td class="border-bottom no-width">
+                        {{#if user.me}}
+                            <i class="material-icons">check_box</i> {{else if user.editor}}
+                            <i class="material-icons checkbox" {{action 'toggleEditor' user.id}}>check_box</i>
+                        {{else}}
+                            <i class="material-icons checkbox" {{action 'toggleEditor' user.id}}>check_box_outline_blank</i>
+                        {{/if}}
+                    </td>
+                    <td class="border-bottom no-width">
+                        {{#if user.me}}
+                            <i class="material-icons">check_box</i> {{else if user.admin}}
+                            <i class="material-icons checkbox" {{action 'toggleAdmin' user.id}}>check_box</i>
+                        {{else}}
+                            <i class="material-icons checkbox" {{action 'toggleAdmin' user.id}}>check_box_outline_blank</i>
+                        {{/if}}
+                    </td>
+                    <td class="border-bottom no-width">
+                        {{#if user.me}}
+                            <div class="edit-button-{{user.id}} round-button-mono" title="Edit" {{action "edit" user.id}}>
+                                <i class="material-icons">edit</i>
+                            </div>
+                        {{else}}
+                            <div class="edit-button-{{user.id}} round-button-mono" title="Edit" {{action "edit" user.id}}>
+                                <i class="material-icons">edit</i>
+                            </div>
+                            <div class="button-gap"></div>
+                            <div class="delete-button-{{user.id}} round-button-mono" title="Delete" {{action "confirmDelete" user.id}}>
+                                <i class="material-icons">delete</i>
+                            </div>
+                        {{/if}}
+                    </td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+
+<div class="dropdown-dialog edit-user-dialog">
+    <div class="content">
+        <form>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="input-control">
+                        <label>Firstname</label>
+                        {{input id="edit-firstname" type="text" value=editUser.firstname}}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-control">
+                        <label>Lastname</label>
+                        {{input id="edit-lastname" type="text" value=editUser.lastname}}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="input-control">
+                        <label>Email</label>
+                        {{input id="edit-email" type="text" value=editUser.email}}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="input-control">
+                        <label>Password</label>
+                        <div class="tip">Optional new password</div>
+                        {{input id="edit-password" type="password" value=password.password}}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-control">
+                        <label>Confirm Password</label>
+                        <div class="tip">Confirm new password</div>
+                        {{input id="edit-confirmPassword" type="password" value=password.confirmation}}
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="actions">
+        <div class="flat-button" {{action 'cancel'}}>
+            cancel
+        </div>
+        <div class="flat-button flat-blue" {{action 'save'}}>
+            save
+        </div>
+    </div>
+    <div class="clearfix"></div>
+</div>
+
+<div class="dropdown-dialog delete-user-dialog">
+    <div class="content">
+        <p>Are you sure you want to delete user <span class="bold">{{deleteUser.fullname}}?</span></p>
+    </div>
+    <div class="actions">
+        <div class="flat-button" {{action 'cancel'}}>
+            cancel
+        </div>
+        <div class="flat-button flat-red" {{action 'delete'}}>
+            delete
+        </div>
+    </div>
+    <div class="clearfix"></div>
+</div>

@@ -1,0 +1,18 @@
+{{#header/page-navigation folder=model.folder folderMode=true}}
+    {{header/message-box message=session.appMeta.message}}
+{{/header/page-navigation}}
+
+{{#layout/page-container}}
+		{{#layout/page-sidebar}}
+			{{folder/folders-list folders=model.folders onFolderAdd=(action 'onFolderAdd')}}
+		{{/layout/page-sidebar}}
+		{{#layout/page-content}}
+			{{folder/folder-dashboard
+				documents=model.documents
+				folders=model.folders
+				folder=model.folder
+				refresh=(action 'refresh')
+				onMoveDocument=(action 'onMoveDocument')
+				showDocument=(action 'showDocument')}}
+		{{/layout/page-content}}
+{{/layout/page-container}}

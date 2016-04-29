@@ -1,0 +1,82 @@
+<div class="document-container">
+    <div class="content">
+        <div class="pages">
+            {{#each pages key="id" as |page index|}}
+                <div class="wysiwyg">
+                    <div id="page-{{ page.id }}" class="is-a-page" data-id="{{ page.id }}" data-type="{{ page.contentType }}">
+
+                        {{document/page-heading tagName=page.tagName document=document folder=folder page=page isEditor=isEditor onDeletePage=(action 'onDeletePage') }}
+
+                        {{#if page.firstPage }}
+                            {{#if document.template}}
+                                <div class="is-template">TEMPLATE</div>
+                            {{/if}}
+
+                            <div class="document-summary">
+
+                                {{document/tag-editor documentTags=document.tags isEditor=isEditor onChange=(action 'onTagChange')}}
+
+                                {{#if attachments}}
+                                    <div class="attachment-zone">
+                                        <ul class="list">
+                                            {{#each attachments key="id" as |a index|}}
+                                                <li class="item">
+                                                    <img class="icon" src="assets/img/attachments/{{ document/file-icon a.extension }}" />
+                                                    <a href="{{ session.appMeta.apiUrl }}api/public/attachments/{{ session.appMeta.orgId }}/{{ a.job }}/{{ a.fileId }}">
+                                                        <span class="file">{{ a.filename }}</span>
+                                                    </a>
+                                                    {{#if isEditor}}
+                                                        <div class="action round-button-mono">
+                                                            <i class="material-icons delete-attachment-{{a.id}}" title="Delete" {{action 'confirmDeleteAttachment' a.id a.filename}}>delete</i>
+                                                        </div>
+                                                    {{/if}}
+                                                </li>
+                                            {{/each}}
+                                        </ul>
+                                    </div>
+                                {{/if}}
+
+                            </div>
+                        {{/if}}
+						{{section/base-renderer page=page}}
+                    </div>
+                </div>
+            {{/each}}
+        </div>
+
+        <div class="dropdown-dialog delete-attachment-dialog">
+            <div class="content">
+                <p>Are you sure you want to delete <span class="bold">{{deleteAttachment.name}}?</span></p>
+            </div>
+            <div class="actions">
+                <div class="flat-button" {{action 'cancel'}}>
+                    cancel
+                </div>
+                <div class="flat-button flat-red" {{action 'deleteAttachment'}}>
+                    delete
+                </div>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+
+        <div class="dropdown-dialog delete-page-dialog">
+            <div class="content">
+                <p>Are you sure you want to delete <span class="bold">{{deletePage.title}}?</span></p>
+                <p>
+                    {{input type="checkbox" id="delete-child-pages" class="margin-left-20" checked=deletePage.children}}
+                    <label for="delete-child-pages">&nbsp;Delete child pages</label>
+                </p>
+            </div>
+            <div class="actions">
+                <div class="flat-button" {{action 'cancel'}}>
+                    cancel
+                </div>
+                <div class="flat-button flat-red" {{action 'deletePage'}}>
+                    delete
+                </div>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,7 @@
+{{#header/page-navigation searchMode=true}}
+    {{header/search-box filter=filter onFilter=(action 'onFilter')}}
+{{/header/page-navigation}}
+
+{{#layout/page-container}}
+    {{search/search-results results=results}}
+{{/layout/page-container}}

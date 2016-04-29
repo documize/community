@@ -1,0 +1,18 @@
+{{#header/page-navigation settingsMode=true}}
+	{{header/message-box message="Manage this Documize instance"}}
+{{/header/page-navigation}}
+
+{{#layout/page-container}}
+		{{#layout/page-sidebar}}
+			<div class="sidebar-menu">
+				<ul class="options">
+					{{#link-to 'customize.general' activeClass='selected' class="option" tagName="li"}}General{{/link-to}}
+					{{#link-to 'customize.folders' activeClass='selected' class="option" tagName="li"}}Spaces{{/link-to}}
+			        {{#link-to 'customize.users' activeClass='selected' class="option" tagName="li"}}Users{{/link-to}}
+				</ul>
+			</div>
+		{{/layout/page-sidebar}}
+		{{#layout/page-content}}
+			{{outlet}}
+		{{/layout/page-content}}
+{{/layout/page-container}}

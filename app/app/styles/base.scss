@@ -1,0 +1,95 @@
+.cursor-pointer { cursor: pointer; }
+.cursor-not-allowed { cursor: not-allowed !important; }
+.cursor-auto { cursor: auto; }
+.vertical-top { vertical-align: top; }
+.inline-block { display: inline-block; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+.text-center { text-align: center; }
+.bold { font-weight: bold; }
+.italic { font-style: italic; }
+.text-uppercase { text-transform: uppercase; }
+.truncate { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } // requires element to specify width
+.absolute-center { margin: auto; position: absolute; top: 0; left: 0; bottom: 0; right: 0; }
+.no-width { white-space: nowrap; width: 1%; }
+.no-float { float: none !important; }
+.no-overflow-x { overflow-x: visible !important; }
+input:-webkit-autofill { -webkit-box-shadow: 0 0 0px 1000px white inset; }
+img.responsive-img, video.responsive-video { max-width: 100%; height: auto; }
+.bordered { border: 1px solid $color-border2; }
+
+html {
+	overflow-y: scroll;
+	font-family: $base-font;
+	background-color: $color-background;
+	font-size: 14px;
+}
+
+body {
+	min-height: 100%;
+}
+
+a {
+	color: $color-link;
+	text-decoration: none;
+	cursor: pointer;
+
+	a:hover, a:focus {
+		color: $color-primary;
+		text-decoration: underline;
+	}
+}
+
+$i: 150;
+@while $i > 0 {
+	.margin-#{$i} { margin: #{$i}px; }
+	.margin-top-#{$i} { margin-top: #{$i}px; }
+	.margin-bottom-#{$i} { margin-bottom: #{$i}px; }
+	.margin-right-#{$i} { margin-right: #{$i}px; }
+	.margin-left-#{$i} { margin-left: #{$i}px; }
+	$i: $i - 5;
+}
+
+$i: 150;
+@while $i > 0 {
+	.padding-#{$i} { padding: #{$i}px; }
+	.padding-top-#{$i} { padding-top: #{$i}px; }
+	.padding-bottom-#{$i} { padding-bottom: #{$i}px; }
+	.padding-right-#{$i} { padding-right: #{$i}px; }
+	.padding-left-#{$i} { padding-left: #{$i}px; }
+	$i: $i - 5;
+}
+
+.no-outline
+{
+	outline:none !important;
+	border:none !important;
+	box-shadow:none !important;
+
+	&:focus, &:active
+	{
+		border:none !important;
+		box-shadow:none !important;
+	}
+}
+
+.no-select
+{
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+}
+
+ul {
+	margin: 0;
+	padding: 0;
+
+	li {
+		list-style: none;
+		list-style-type: none;
+	}
+}

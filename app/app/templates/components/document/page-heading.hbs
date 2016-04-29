@@ -1,0 +1,17 @@
+<div class="page-title">
+    <span id="page-title-{{ page.id }}">{{ page.title }}</span>
+    <div id="page-toolbar-{{ page.id }}" class="pull-right page-toolbar">
+        {{#if isEditor}}
+			{{#link-to 'document.edit' folder.id folder.slug document.id document.slug page.id}}
+	            <div class="round-button-mono page-edit-button" data-tooltip="Edit" data-tooltip-position="top center">
+	                <i class="material-icons">mode_edit</i>
+	            </div>
+			{{/link-to}}
+            {{#unless page.firstPage}}
+                <div class="round-button-mono page-delete-button" data-tooltip="Delete" data-tooltip-position="top center" {{action 'deletePage' page.id}}>
+                    <i class="material-icons">delete</i>
+                </div>
+            {{/unless}}
+        {{/if}}
+    </div>
+</div>

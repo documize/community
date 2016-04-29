@@ -1,0 +1,38 @@
+{{#header/page-navigation profileMode=true}}
+    {{header/message-box message="Manage your profile"}}
+{{/header/page-navigation}}
+
+{{#layout/page-container}}
+		{{#layout/page-sidebar}}
+			<div class="avatar-large">{{session.user.initials}}</div>
+		{{/layout/page-sidebar}}
+		{{#layout/page-content}}
+			<div class="input-form">
+				<form>
+					<div class="input-control">
+						<label>Firstname</label>
+						{{focus-input id="firstname" type="text" value=model.firstname}}
+					</div>
+					<div class="input-control">
+						<label>Lastname</label>
+						{{input id="lastname" type="text" value=model.lastname}}
+					</div>
+					<div class="input-control">
+						<label>Email</label>
+						{{input id="email" type="text" value=model.email}}
+					</div>
+					<div class="input-control">
+						<label>Password</label>
+						<div class="tip">Optional change your password</div>
+						{{input id="password" type="password" value=password.password}}
+					</div>
+					<div class="input-control">
+						<label>Confirm Password</label>
+						<div class="tip">Confirm your new password</div>
+						{{input id="confirmPassword" type="password" value=password.confirmation}}
+					</div>
+					<div class="regular-button button-blue" {{ action 'save' }}>save</div>
+				</form>
+			</div>
+		{{/layout/page-content}}
+{{/layout/page-container}}

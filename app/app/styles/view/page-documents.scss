@@ -1,0 +1,151 @@
+
+.folders-list {
+	margin: 30px 0;
+
+	> .section {
+		margin: 0 0 20px 0;
+
+		> .heading {
+			font-size: 0.9rem;
+			font-weight: bold;
+			color: $color-gray;
+			padding-bottom: 5px;
+		}
+
+		> .message {
+			font-size: 0.8rem;
+			color: $color-gray;
+			margin-top: 10px;
+		}
+
+		> .list {
+			padding: 0;
+			margin: 5px 0 0 15px;
+
+			> .link {
+				font-size: 1rem;
+				color: $color-off-black;
+				text-decoration: none;
+
+				&:hover {
+					color: $color-link;
+				}
+
+				> .item {
+					list-style-type: none;
+					list-style: none;
+					margin: 0 0 3px 0;
+					padding: 0;
+				}
+			}
+
+			> .selected {
+				color: $color-link;
+				font-weight: bold;
+			}
+		}
+	}
+}
+
+.documents-list {
+	@extend .cards-list;
+	margin-top: 35px;
+
+	> .document-card {
+		@extend .stacked-card;
+		margin: 0 0 12px 0;
+		width: 100%;
+
+		&:hover {
+			> .checkbox {
+				display: block;
+			}
+		}
+
+		> .checkbox {
+			position: absolute;
+			display: none;
+			top: 2px;
+			right: 12px;
+			cursor: pointer;
+
+			> .material-icons {
+				width: 10px;
+			    margin: 0;
+			    padding: 0;
+				color: $color-link;
+			}
+		}
+
+		.link {
+			text-decoration: none;
+			color: $color-off-black;
+			cursor: pointer;
+
+			&:hover {
+				text-decoration: none;
+				color: $color-off-black;
+			}
+
+			> .tags {
+				font-size: 0.8rem;
+				color: $color-gray;
+
+				.tag {
+					background-color: $color-off-white;
+					color: $color-stroke;
+					text-decoration: none;
+					display: inline-block;
+					margin: 5px 10px 5px 0;
+					padding: 5px 10px;
+					border: 1px solid $color-border;
+					border-radius: 15px;
+					transition: 0.2s all ease;
+
+					&:hover {
+						background-color: $color-white;
+					}
+				}
+			}
+		}
+	}
+
+	> .selected-card {
+		background-color: $color-card-active !important;
+		border: 1px solid $color-link !important;
+		transition: 0.2s all ease;
+
+		> .checkbox {
+			display: block;
+		}
+	}
+}
+
+.move-document-options, .start-document-options {
+	height: 150px;
+	overflow-y: auto;
+	margin: 0;
+	padding: 0;
+
+	> .option {
+		vertical-align: bottom;
+		cursor: pointer;
+		font-size: 0.9rem;
+		overflow: hidden;
+		white-space: nowrap;
+
+		> .material-icons {
+			font-size: 0.9rem;
+			vertical-align: top;
+		}
+	}
+
+	> .selected {
+		color: $color-link;
+	}
+}
+
+.upload-container {
+	text-align: center;
+	margin: 2rem 0;
+}

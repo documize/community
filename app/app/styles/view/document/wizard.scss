@@ -1,0 +1,78 @@
+.page-wizard {
+	> .toolbar {
+		@extend .z-depth-tiny;
+		background-color: $color-white;
+		width: 100%;
+		padding: 20px 40px;
+
+		> .title {
+			width: 50%;
+
+			> .input-control {
+				margin: 0;
+
+				> input {
+					margin: 0 0 5px 0;
+				}
+			}
+		}
+
+		> .buttons {
+			margin-top: 10px;
+		}
+	}
+
+	> .canvas {
+		padding: 40px 40px;
+
+		> .list {
+			margin: 0;
+			padding: 0;
+
+			> .item {
+				list-style: none;
+				float: left;
+				cursor: pointer;
+				width: 100px;
+				height: 100px;
+				background-color: $color-white;
+				border: 1px solid $color-border2;
+				border-radius: 3px;
+				margin: 0 30px 30px 0;
+				font-weight: bold;
+
+				&:hover {
+			        @extend .z-depth-half;
+			        background-color: $color-card-active;
+			        border-color: $color-card-active;
+			        transition: 0.2s all ease;
+			    }
+
+				> .material-icons {
+					text-align: center;
+					margin: 20px 0 0 31px;
+					font-size: 2.5rem;
+					color: $color-stroke;
+				}
+				
+				> .img {
+					height: 30px;
+					width: 30px;
+					text-align: center;
+					margin: 23px 0 6px 33px;
+				}
+
+				> .title {
+					font-size: 1rem;
+					color: $color-stroke;
+					text-align: center;
+					margin-top: 5px;
+				}
+			}
+
+			> .selected {
+				border-color: $color-link;
+			}
+		}
+	}
+}

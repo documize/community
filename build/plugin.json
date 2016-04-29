@@ -1,0 +1,19 @@
+[
+    {
+       "Comment": "Disable (or not) built-in html import (NOTE: no Plugin name)",
+       "Disabled": true,
+       "API": "Convert",
+       "Actions": [
+           "htm",
+           "html"
+       ]
+    },
+    {
+        "Comment": "Disable (or not) built-in Documize API import used from SDK (NOTE: no Plugin name)",
+        "Disabled": true,
+        "API": "Convert",
+        "Actions": [
+            "documizeapi"
+        ]
+    }
+]

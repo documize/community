@@ -1,0 +1,32 @@
+{{#header/page-navigation folder=model folderMode=true}}
+    {{header/message-box message=session.appMeta.message}}
+{{/header/page-navigation}}
+
+{{#layout/page-container}}
+	{{#layout/page-sidebar}}
+		<div class="sidebar-menu">
+			<ul class="options">
+				<li class="option {{if tabGeneral "selected"}}" {{action 'selectTab' 'tabGeneral'}}>General</li>
+				<li class="option {{if tabShare "selected"}}" {{action 'selectTab' 'tabShare'}}>Share</li>
+				<li class="option {{if tabPermissions "selected"}}" {{action 'selectTab' 'tabPermissions'}}>Permissions</li>
+				<li class="option {{if tabDelete "selected"}}" {{action 'selectTab' 'tabDelete'}}>Delete</li>
+			</ul>
+		</div>
+	{{/layout/page-sidebar}}
+	{{#layout/page-content}}
+		{{#folder/folder-settings
+			tabGeneral=tabGeneral
+			tabShare=tabShare
+			tabPermissions=tabPermissions
+			tabDelete=tabDelete
+			folder=model
+			folders=folders
+			permissions=permissions
+			users=users
+			onRemove="onRemove"
+			onRename="onRename"
+			onShare="onShare"
+			onPermission="onPermission" }}
+		{{/folder/folder-settings}}
+	{{/layout/page-content}}
+{{/layout/page-container}}

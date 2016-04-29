@@ -1,0 +1,154 @@
+.document-container {
+	> .toolbar {
+		width: 100%;
+		margin: 0;
+		padding: 40px 40px 20px 40px;
+		background-color: darken($color-off-white, 3%);
+		color: $color-gray;
+		border: 1px solid $color-border2;
+
+		> .meta-data {
+	        margin: 0;
+			padding: 0;
+
+	        >.items {
+	            padding: 0;
+	            margin: 0;
+
+				> .divider {
+					margin-right: 20px;
+					display: inline-block;
+				}
+
+	            > .item {
+					list-style-type: none;
+	                display: inline-block;
+	                margin: 0;
+	                padding: 0;
+					vertical-align: middle;
+
+					> .avatar {
+					}
+
+					> .date {
+					}
+
+	                > .metric {
+						@extend .cursor-pointer;
+						text-align: center;
+						color: $color-link;
+
+						.number {
+							font-size: 1.2rem;
+		                    font-weight: bold;
+						}
+
+						.label {
+		                    margin: 0;
+		                    padding: 0;
+		                    font-size: 0.8rem;
+		                }
+
+						&:hover {
+							color: $color-gray;
+						}
+	                }
+	            }
+	        }
+	    }
+	}
+}
+
+.meta-viewers {
+	overflow-y: auto;
+	overflow-x: hidden;
+
+	> .items {
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
+		overflow-y: auto;
+		overflow-x: hidden;
+		height: 300px;
+		min-width: 300px;
+		white-space: nowrap;
+
+		> .item {
+			margin: 15px 0;
+			overflow-x: hidden;
+		    white-space: nowrap;
+		    text-overflow: ellipsis;
+		    width: 90%;
+
+			> .avatar-box {
+				display: inline-block;
+				margin: 3px 10px 0 0;
+				vertical-align: top;
+			}
+
+			> .detail {
+				display: inline-block;
+
+				> .name {
+					font-size: 1rem;
+					color: $color-off-black;
+				}
+
+				> .date {
+					font-size: 0.8rem;
+				}
+			}
+		}
+	}
+}
+
+.meta-editors {
+	position: relative;
+
+	> .items {
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
+		overflow-y: auto;
+		overflow-x: hidden;
+		height: 300px;
+		min-width: 300px;
+		white-space: nowrap;
+
+		> .item {
+			margin: 15px 0;
+			overflow-x: hidden;
+		    white-space: nowrap;
+		    text-overflow: ellipsis;
+		    width: 90%;
+
+			.avatar-box {
+				display: inline-block;
+				margin: 3px 10px 0 0;
+				vertical-align: top;
+			}
+
+			.detail {
+				display: inline-block;
+
+				.name {
+					font-size: 1rem;
+					color: $color-off-black;
+				}
+
+				.changed {
+					font-size: 0.9rem;
+				}
+
+				.deleted {
+					font-size: 0.9rem;
+					color: $color-error;
+				}
+
+				.date {
+					font-size: 0.8rem;
+				}
+			}
+		}
+	}
+}

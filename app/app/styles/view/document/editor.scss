@@ -1,0 +1,32 @@
+.document-editor {
+	> .toolbar {
+		@extend .z-depth-tiny;
+		background-color: $color-white;
+		width: 100%;
+		padding: 20px 40px;
+
+		> .title {
+			width: 50%;
+
+			> .input-control {
+				margin: 0;
+
+				> input {
+					margin: 0 0 5px 0;
+				}
+			}
+		}
+
+		> .buttons {
+			margin-top: 10px;
+		}
+	}
+
+	> .canvas {
+		padding: 40px 40px;
+	}
+
+	.cancel-edits-dialog {
+		display: none;
+	}
+}

@@ -1,0 +1,19 @@
+{{#dropdown-dialog target="start-document-button" position="bottom right" button="Add" color="flat-green" onAction=(action 'startDocument') button2=canEditTemplate color2="flat-blue" onAction2=(action 'editTemplate') onOpenCallback=(action 'onOpenCallback')}}
+	<div class="upload-container">
+		<div id="upload-documents" class="regular-button button-green">Import Files</div>
+	</div>
+
+	<p class="heading">Or use a template:</p>
+	<ul class="start-document-options" style="min-width:185px;">
+		{{#each savedTemplates key="id" as |template|}}
+			<li class="option {{if template.selected "selected"}}" {{action 'setTemplate' template}}>
+				{{#if template.selected}}
+					<i class="material-icons">radio_button_checked</i>
+				{{else}}
+					<i class="material-icons">radio_button_unchecked</i>
+				{{/if}}
+				&nbsp;{{ template.title }}
+			</li>
+		{{/each}}
+	</ul>
+{{/dropdown-dialog}}

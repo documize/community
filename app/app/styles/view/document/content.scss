@@ -1,0 +1,94 @@
+.document-container {
+	> .content {
+		padding: 40px 40px 40px 20px;
+
+		.attachment-zone {
+			margin: 20px 0 30px 0;
+			padding: 10px;
+			background-color: $color-off-white;
+			border: 1px solid $color-border2;
+			border-radius: 2px;
+
+			> .list {
+				margin: 0;
+				padding: 7px;
+
+				> .item {
+					color: $color-off-black;
+					margin: 10px 5px;
+					padding: 0;
+					list-style-type: none;
+
+					> .icon {
+						vertical-align: text-top;
+						margin-right: 10px;
+					}
+
+					> a > .file {
+						font-size: 1rem;
+					}
+
+					> .action {
+						float: right;
+						vertical-align: text-top;
+						@extend .cursor-pointer;
+						display: none;
+						color: $color-stroke;
+					}
+
+
+					&:hover {
+						.file {
+							text-decoration: underline;
+						}
+
+						.action {
+							display: inline-block;
+						}
+					}
+				}
+			}
+		}
+
+		.delete-attachment-dialog,
+		.delete-page-dialog {
+			display: none;
+		}
+
+		.document-tags {
+			margin: 10px 0;
+		}
+
+		.is-template {
+			color: $color-green;
+			font-weight: bold;
+		}
+
+		> .pages {
+
+			> .wysiwyg {
+
+				> .is-a-page {
+
+					.page-title {
+
+						> .page-toolbar {
+							opacity: 0.3;
+							@extend .transition-all;
+
+							&:hover {
+								opacity: 1;
+							}
+						}
+
+						&:hover {
+							.page-toolbar {
+								opacity: 1;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

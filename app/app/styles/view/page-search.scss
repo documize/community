@@ -1,0 +1,44 @@
+
+.search-results {
+    .heading {
+        font-size: 1.5rem;
+        color: $color-primary;
+    }
+
+    > .search-list {
+        @extend .cards-list;
+        margin-top: 20px;
+
+        > .search-card {
+            @extend .content-card;
+            width: 220px;
+            height: 200px;
+            cursor: pointer;
+
+            .folder {
+                font-size: 0.9rem;
+                margin: 1.7rem 0 0 0;
+                height: 1.2rem;
+                overflow: hidden;
+                color: $color-gray;
+            }
+
+            .tags {
+                font-size: 0.9rem;
+                height: 1.2rem;
+                overflow: hidden;
+                color: $color-gray;
+
+                .tag {
+                    display: inline-block;
+                    margin-right: 5px;
+                }
+            }
+
+            a, a:hover {
+                text-decoration: none;
+                color: $color-off-black;
+            }
+        }
+    }
+}

@@ -1,0 +1,140 @@
+<div class="container-fluid">
+	<div class="row">
+		<div class="document-container">
+			<div class="toolbar">
+
+				{{#if session.authenticated}}
+					<div class="meta-data pull-left">
+					    <ul class="items">
+							<li class="item">
+								<div id="owner-avatar" class="avatar" data-tooltip="{{owner.fullname}}" data-tooltip-position="right middle">{{owner.initials}}</div>
+							</li>
+							<li class="divider" />
+							<li class="item">
+								<div class="date">{{formatted-date document.revised 'Do MMMM YYYY'}}</div>
+							</li>
+							<li class="divider" />
+					        <li class="item" id="meta-button-viewers">
+								<div class="metric">
+									<div class="number">{{meta.viewers.length}}</div>
+						            <div class="label">views</div>
+								</div>
+					        </li>
+							<li class="divider" />
+					        <li class="item" id="meta-button-history">
+								<div class="metric">
+									<div class="number">{{meta.editors.length}}</div>
+						            <div class="label">activity</div>
+								</div>
+					        </li>
+					    </ul>
+						{{#dropdown-dialog target="meta-button-viewers" position="bottom left" showCancel=false button="Close" onAction=(action 'close') color="flat-gray"}}
+							{{document/document-sidebar-viewers meta=meta}}
+						{{/dropdown-dialog}}
+						{{#dropdown-dialog target="meta-button-history" position="bottom left" showCancel=false button="Close" onAction=(action 'close') color="flat-gray"}}
+							{{document/document-sidebar-edits pages=pages meta=meta}}
+						{{/dropdown-dialog}}
+					</div>
+				{{/if}}
+
+				<div class="actions pull-right hidden-xs">
+	                {{#if isEditor}}
+						{{#link-to 'document.wizard' folder.id folder.slug document.id document.slug}}
+							<div class="square-button button-green" id="add-section-button" data-tooltip="Add section" data-tooltip-position="top center">
+								<i class="material-icons">add</i>
+							</div>
+						{{/link-to}}
+						<div class="button-gap"></div>
+						<div class="square-button button-gray" id="attachment-button" data-tooltip="Attach file" data-tooltip-position="top center">
+							<i class="material-icons">attach_file</i>
+						</div>
+						<div class="button-gap"></div>
+						<div class="square-button button-gray" id="save-template-button" data-tooltip="Save as template" data-tooltip-position="top center">
+							<i class="material-icons">content_copy</i>
+						</div>
+						<div class="button-gap"></div>
+						<div class="square-button button-gray" id="set-meta-button" data-tooltip="Set owner & excerpt" data-tooltip-position="top center">
+							<i class="material-icons">person</i>
+						</div>
+						<div class="button-gap"></div>
+	                {{/if}}
+
+					{{#if isEditor}}
+						{{#dropdown-dialog target="save-template-button" position="bottom right" button="Save" color="flat-green" onAction=(action 'saveTemplate') focusOn="new-template-name"}}
+							<div>
+								<div class="input-control">
+									<label>Template Name</label>
+									<div class="tip">Short title for this type of document</div>
+									{{input type='text' id="new-template-name" value=saveTemplate.name}}
+								</div>
+								<div class="input-control">
+									<label>Description</label>
+									<div class="tip">Explain use case for this template</div>
+									{{textarea value=saveTemplate.description rows="3" id="new-template-desc"}}
+								</div>
+							</div>
+						{{/dropdown-dialog}}
+						{{#dropdown-dialog target="set-meta-button" position="bottom right" button="Save" color="flat-blue" onAction=(action 'saveMeta') selectOn="meta-excerpt"}}
+							<div>
+								<div class="input-control">
+									<label>Owner</label>
+									<div class="tip">Set the document owner</div>
+									{{ui-select id="document-owner"
+										content=users
+										action=(action (mut owner))
+										optionValuePath="id"
+										optionLabelPath="fullname"
+										selection=owner}}
+								</div>
+								<div class="input-control">
+									<label>Excerpt</label>
+									<div class="tip">Provide short summary of the document (max. 250)</div>
+									{{textarea value=document.excerpt rows="5" id="meta-excerpt"}}
+								</div>
+							</div>
+						{{/dropdown-dialog}}
+					{{/if}}
+				</div>
+
+				<div class="clearfix"></div>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--
+{{#if normalMode}}
+	<div class="edit-toolbox in-edit-toolbar">
+		<ul>
+			{{#if isEditor}}
+				<li class="tooltipped in-edit-toolbar" data-tooltip="Edit section" {{action 'editPage' editModePageId }}>
+					<i class="material-icons in-edit-toolbar">create</i>
+				</li>
+				{{#if editModeHasHistory}}
+					<li class="tooltipped in-edit-toolbar" data-tooltip="View changes" {{action 'viewHistory' editModePageId }}>
+						<i class="material-icons in-edit-toolbar">history</i>
+					</li>
+				{{/if}}
+				{{#if editModeCanDelete}}
+					<li class="tooltipped in-edit-toolbar" data-tooltip="Delete section" {{action 'askDeletePage' editModePageId }}>
+						<i class="material-icons in-edit-toolbar">delete</i>
+					</li>
+				{{/if}}
+				<li class="tooltipped in-edit-toolbar dropdown-content-type-trigger" data-tooltip="Insert section" data-activates="dropdown-content-type" data-alignment="right">
+					<i class="material-icons in-edit-toolbar">add</i>
+				</li>
+			{{/if}}
+		</ul>
+	</div>
+	<ul id="dropdown-content-type" class="dropdown-content">
+		<li><a {{action 'addPage' editModePageId "wysiwyg"}}>Text</a></li>
+		<li><a {{action 'addPage' editModePageId "table"}}>Table</a></li>
+		<li><a {{action 'addPage' editModePageId "code"}}>Code</a></li>
+	</ul>
+{{/if}}
+
+<div id="modal-history" class="modal bottom-sheet bottom-dialog">
+    {{document/editor-history model=historyModel editorClose=(action 'onEditorHistoryClose') editorAction=(action 'onEditorHistoryAction') }}
+</div>
+-->

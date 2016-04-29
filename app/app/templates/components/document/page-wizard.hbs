@@ -1,0 +1,31 @@
+<div class="page-wizard">
+	<div class="toolbar">
+		<div class="title pull-left">
+			<div class="input-control">
+				<label>Title</label>
+				<div class="tip">Add new section to <span class="bold">{{document.name}}</span></div>
+				{{focus-input type='text' id="page-title" value=title class="mousetrap"}}
+			</div>
+		</div>
+		<div class="buttons pull-right">
+			<div class="flat-button flat-gray" {{action 'onCancel'}}>Cancel</div>
+			<div class="button-gap" />
+			<div class="regular-button button-green" {{action 'onAction'}}>Add</div>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+	<div class="canvas">
+		<ul class="list">
+			{{#each sections as |section|}}
+				<li title="{{section.description}}" class="item {{if section.selected "selected"}}" {{action 'setOption' section.id}}>
+					{{#if section.hasImage}}
+						<img class="img" src="{{section.iconFile}}" />
+					{{else}}
+						<i class="material-icons">{{section.iconFont}}</i>
+					{{/if}}
+					<div class='title'>{{section.title}}</div>
+				</li>
+			{{/each}}
+		</ul>
+	</div>
+</div>

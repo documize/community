@@ -1,0 +1,15 @@
+<div class="search-results">
+    <h2 class="heading">{{resultPhrase}}</h2>
+    <ul class="search-list">
+        {{#each results key="id" as |result index|}}
+            <li class="search-card">
+                <a href="s/{{result.folderId}}/{{result.folderSlug}}/d/{{ result.documentId }}/{{result.documentSlug}}?page={{ result.id }}">
+                    <div class="title">{{ result.documentTitle }}</div>
+                    <div class="snippet">{{ result.pageTitle }}</div>
+                    <div class="folder">{{ result.folderName }}</div>
+                    <div class="tags">{{search/tag-list documentTags=result.documentTags}}</div>
+                </a>
+            </li>
+        {{/each}}
+    </ul>
+</div>

@@ -1,0 +1,22 @@
+<div class="document-tags">
+    {{#each tagz as |tg|}}
+        <div class="chip">
+			<span class="chip-text">#{{tg}}</span>
+            {{#if isEditor}}
+                <i class="material-icons pull-right" {{action 'removeTag' tg}}>close</i>
+            {{/if}}
+        </div>
+    {{/each}}
+    {{#if canAdd}}
+		<div class="chip-action">
+			<span id="add-tag-button" class="chip-text">add tag</span>
+		</div>
+		{{#dropdown-dialog target="add-tag-button" position="bottom right" button="Add" color="flat-green" onAction=(action 'addTag') focusOn="add-tag-field" onOpenCallback=(action 'onTagEditor') targetOffset="20px 0"}}
+			<div class="input-control">
+				<label>Tag</label>
+				<div class="tip">Lowercase letters, numbers, dashes</div>
+                {{focus-input id="add-tag-field" value=newTag type="text"}}
+            </div>
+		{{/dropdown-dialog}}
+	{{/if}}
+</div>
