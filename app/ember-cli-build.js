@@ -13,7 +13,8 @@ module.exports = function(defaults) {
         },
 
         minifyJS: {
-            enabled: !isDevelopment
+            enabled: !isDevelopment,
+            exclude: ['tinymce', 'codemirror']
         },
 
         minifyCSS: {
