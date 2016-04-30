@@ -1,3 +1,4 @@
+/* global require, module */
 var EmberApp = require('ember-cli/lib/broccoli/ember-app');
 var isDevelopment = EmberApp.env() === 'development';
 
@@ -9,16 +10,21 @@ module.exports = function(defaults) {
         fingerprint: {
             enabled: true,
             extensions: ['js', 'css'],
-            exclude: ['tinymce', 'codemirror']
+            exclude: ['tinymce/**', 'codemirror/**']
         },
 
         minifyJS: {
             enabled: !isDevelopment,
-            exclude: ['tinymce', 'codemirror']
+            options: {
+                exclude: ['tinymce/**', 'codemirror/**']
+            }
         },
 
         minifyCSS: {
-            enabled: !isDevelopment
+            enabled: !isDevelopment,
+            options: {
+                exclude: ['tinymce/**', 'codemirror/**']
+            }
         },
 
         sourcemaps: {
