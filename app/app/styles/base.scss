@@ -93,3 +93,12 @@ ul {
 		list-style-type: none;
 	}
 }
+
+.clearfix:before,
+.clearfix:after {
+  content: " ";
+  display: table;
+}
+.clearfix:after {
+  clear: both;
+}

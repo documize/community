@@ -46,7 +46,6 @@ export default Ember.Controller.extend(NotifierMixin, {
                 dataType: "text",
                 success: function() {
                     var credentials = Encoding.Base64.encode(":" + self.model.email + ":" + self.model.password);
-                    debugger;
                     window.location.href = "/auth/sso/" + encodeURIComponent(credentials);
                 },
                 error: function(x) {
