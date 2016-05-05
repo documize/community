@@ -149,7 +149,7 @@ func (h *htmlToSplit) renderHeading(c *html.Node, level uint64) error {
 
 func (h *htmlToSplit) newSect(tstr string, level uint64) {
 	h.CFR.Pages = append(h.CFR.Pages, h.thisSect)
-	title := utility.EscapeHTMLcomplexChars(tstr)
+	title := tstr //was: utility.EscapeHTMLcomplexChars(tstr) -- removed to avoid double-escaping
 	body := ``
 	if len(title) > maxTitle {
 		body = title[maxTitle:]
