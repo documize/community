@@ -79,7 +79,11 @@ func AddDocumentPage(w http.ResponseWriter, r *http.Request) {
 
 	p.Context.Transaction = tx
 
-	output, _ := section.Render(model.Page.ContentType, model.Meta.Config, model.Meta.RawBody)
+	output, ok := section.Render(model.Page.ContentType, model.Meta.Config, model.Meta.RawBody)
+	if !ok {
+		log.ErrorString("section.Render could not find: " + model.Page.ContentType)
+	}
+
 	model.Page.Body = output
 
 	err = p.AddPage(*model)
@@ -418,7 +422,10 @@ func UpdateDocumentPage(w http.ResponseWriter, r *http.Request) {
 	model.Page.SetDefaults()
 	model.Meta.SetDefaults()
 
-	output, _ := section.Render(model.Page.ContentType, model.Meta.Config, model.Meta.RawBody)
+	output, ok := section.Render(model.Page.ContentType, model.Meta.Config, model.Meta.RawBody)
+	if !ok {
+		log.ErrorString("section.Render could not find: " + model.Page.ContentType)
+	}
 	model.Page.Body = output
 
 	p.Context.Transaction = tx

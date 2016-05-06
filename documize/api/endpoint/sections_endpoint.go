@@ -59,7 +59,10 @@ func RunSectionCommand(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	section.Command(sectionName, w, r)
+	if !section.Command(sectionName, w, r) {
+		log.ErrorString("Unable to run section.Command() for: " + sectionName)
+		writeNotFoundError(w, "RunSectionCommand", sectionName)
+	}
 }
 
 // RefreshSections updates document sections where the data
@@ -112,10 +115,16 @@ func RefreshSections(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Ask for data refresh
-		data, _ := section.Refresh(page.ContentType, pm.Config, pm.RawBody)
+		data, ok := section.Refresh(page.ContentType, pm.Config, pm.RawBody)
+		if !ok {
+			log.ErrorString("section.Refresh could not find: " + page.ContentType)
+		}
 
 		// Render again
-		body, _ := section.Render(page.ContentType, pm.Config, data)
+		body, ok := section.Render(page.ContentType, pm.Config, data)
+		if !ok {
+			log.ErrorString("section.Render could not find: " + page.ContentType)
+		}
 
 		// Compare to stored render
 		if body != page.Body {

@@ -48,7 +48,7 @@ func Command(section string, w http.ResponseWriter, r *http.Request) bool {
 	if ok {
 		s.Command(w, r)
 	}
-	return false
+	return ok
 }
 
 // Render runs that operation for the given section id, the returned bool indicates success.
