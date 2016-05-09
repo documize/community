@@ -8,6 +8,7 @@ import (
 
 	"github.com/codegangsta/negroni"
 	"github.com/documize/community/documize/api/plugins"
+	"github.com/documize/community/documize/api/request"
 	"github.com/documize/community/documize/database"
 	"github.com/documize/community/documize/web"
 	"github.com/documize/community/wordsmith/environment"
@@ -25,10 +26,10 @@ const (
 var port, certFile, keyFile, forcePort2SSL string
 
 func init() {
-	environment.GetString(&certFile, "cert", false, "the cert.pem file used for https", nil)
-	environment.GetString(&keyFile, "key", false, "the key.pem file used for https", nil)
-	environment.GetString(&port, "port", false, "http/https port number", nil)
-	environment.GetString(&forcePort2SSL, "forcesslport", false, "redirect given http port number to TLS", nil)
+	environment.GetString(&certFile, "cert", false, "the cert.pem file used for https", request.FlagFromDB)
+	environment.GetString(&keyFile, "key", false, "the key.pem file used for https", request.FlagFromDB)
+	environment.GetString(&port, "port", false, "http/https port number", request.FlagFromDB)
+	environment.GetString(&forcePort2SSL, "forcesslport", false, "redirect given http port number to TLS", request.FlagFromDB)
 }
 
 var testHost string // used during automated testing

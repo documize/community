@@ -8,6 +8,7 @@ import (
 	"html/template"
 	"net/smtp"
 
+	"github.com/documize/community/documize/api/request"
 	"github.com/documize/community/documize/web"
 	"github.com/documize/community/wordsmith/environment"
 	"github.com/documize/community/wordsmith/log"
@@ -215,7 +216,7 @@ func ShareFolderNewUser(recipient, inviter, url, folder, invitationMessage strin
 
 	emailTemplate := string(file)
 
-	// check inviter name 
+	// check inviter name
 	if inviter == "Hello You" || len(inviter) == 0 {
 		inviter = "Your colleague"
 	}
@@ -258,11 +259,11 @@ var creds struct{ SMTPuserid, SMTPpassword, SMTPhost, SMTPport, SMTPsender strin
 func init() {
 	creds.SMTPport = "587"                             // the default value for outgoing SMTP traffic
 	creds.SMTPsender = "Documize <hello@documize.com>" // TODO review as SAAS specific
-	environment.GetString(&creds.SMTPuserid, "smtpuserid", false, "SMTP username for outgoing email", nil)
-	environment.GetString(&creds.SMTPpassword, "smtppassword", false, "SMTP password for outgoing email", nil)
-	environment.GetString(&creds.SMTPhost, "smtphost", false, "SMTP host for outgoing email", nil)
-	environment.GetString(&creds.SMTPport, "smtpport", false, "SMTP port for outgoing email", nil)
-	environment.GetString(&creds.SMTPsender, "smtpsender", false, "SMTP sender's e-mail for outgoing email", nil)
+	environment.GetString(&creds.SMTPuserid, "smtpuserid", false, "SMTP username for outgoing email", request.FlagFromDB)
+	environment.GetString(&creds.SMTPpassword, "smtppassword", false, "SMTP password for outgoing email", request.FlagFromDB)
+	environment.GetString(&creds.SMTPhost, "smtphost", false, "SMTP host for outgoing email", request.FlagFromDB)
+	environment.GetString(&creds.SMTPport, "smtpport", false, "SMTP port for outgoing email", request.FlagFromDB)
+	environment.GetString(&creds.SMTPsender, "smtpsender", false, "SMTP sender's e-mail for outgoing email", request.FlagFromDB)
 }
 
 // Helper to return SMTP credentials

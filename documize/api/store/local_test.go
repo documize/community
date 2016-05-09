@@ -31,7 +31,7 @@ func TestUpload(t *testing.T) {
 }
 
 func TestConvert(t *testing.T) {
-  	_, _, err :=
+	_, _, err :=
 		lsp.Convert(api.ConversionJobRequest{})
 	if err == nil {
 		t.Error("there should have been a convert error")

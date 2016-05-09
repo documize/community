@@ -13,7 +13,7 @@ import (
 
 func TestConvert(t *testing.T) {
 
-    plugins.PluginFile = "" // no file as html is built-in
+	plugins.PluginFile = "" // no file as html is built-in
 	if lerr := plugins.LibSetup(); lerr == nil {
 		//t.Error("did not error on plugin.Libsetup() with no plugin.json file")
 		//return

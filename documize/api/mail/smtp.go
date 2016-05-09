@@ -31,10 +31,10 @@ package mail
 
 import (
 	"bytes"
-	"github.com/documize/community/wordsmith/log"
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"github.com/documize/community/wordsmith/log"
 	"io"
 	"mime"
 	"mime/multipart"

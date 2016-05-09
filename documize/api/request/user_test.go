@@ -18,7 +18,7 @@ func testAddUser(t *testing.T, p *Persister) entity.User {
 		//Password:   "testpassword",             // string    `json:"-"`
 		//Salt:       "testsalt",                 // string    `json:"-"`
 		//Reset:      "testreset",                // string    `json:"-"`
-		Accounts:   nil,                        // []Account `json:"accounts"`
+		Accounts: nil, // []Account `json:"accounts"`
 	}
 	user.Salt = generateSalt()
 	requestedPassword := generateRandomPassword()

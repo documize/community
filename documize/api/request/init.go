@@ -38,7 +38,7 @@ func init() {
 
 	environment.GetString(&connectionString, "db", true,
 		`"username:password@protocol(hostname:port)/databasename" for example "fred:bloggs@tcp(localhost:3306)/documize"`,
-		func() {
+		func(*string, string) bool {
 			Db, err = sqlx.Open("mysql", stdConn(connectionString))
 
 			if err != nil {
@@ -65,6 +65,7 @@ func init() {
 				log.Info("database.Check(Db) !OK, going into setup mode")
 			}
 
+			return false // value not changed
 		})
 }
 

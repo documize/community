@@ -10,6 +10,7 @@ import (
 	"github.com/documize/community/documize/api/convert/documizeapi"
 	"github.com/documize/community/documize/api/convert/html"
 	"github.com/documize/community/documize/api/convert/md"
+	"github.com/documize/community/documize/api/request"
 	"github.com/documize/community/wordsmith/api"
 	"github.com/documize/community/wordsmith/environment"
 	"github.com/documize/community/wordsmith/log"
@@ -22,9 +23,9 @@ var insecure = "false"
 
 func init() {
 	environment.GetString(&PluginFile, "plugin", false,
-		"the JSON file describing plugins, default 'plugin.json'", nil)
+		"the JSON file describing plugins, default 'plugin.json' set to 'PLUGIN' to configure from database settings", request.FlagFromDB)
 	environment.GetString(&insecure, "insecure", false,
-		"if 'true' allow https endpoints with invalid certificates (only for testing)", nil)
+		"if 'true' allow https endpoints with invalid certificates (only for testing)", request.FlagFromDB)
 }
 
 type infoLog struct{}
@@ -98,13 +99,17 @@ func LibSetup() error {
 		return err
 	}
 
-	json, err := ioutil.ReadFile(PluginFile)
-	if err != nil {
-		log.Info("Plugin file '" + PluginFile + "' not found, using no plugins")
-		json = []byte(" [ ] \n")
-		err = nil
+	var json = make([]byte, 0)
+	if PluginFile == "PLUGIN" {
+		json = []byte(request.ConfigString(PluginFile, ""))
+	} else {
+		json, err = ioutil.ReadFile(PluginFile)
+		if err != nil {
+			log.Info("Plugin file '" + PluginFile + "' not found, using no plugins")
+			json = []byte(" [ ] \n")
+			err = nil
+		}
 	}
-
 	err = Lib.Configure(json)
 	if err != nil {
 		return err

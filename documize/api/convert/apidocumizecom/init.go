@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/documize/community/documize/api/request"
 	"github.com/documize/community/wordsmith/environment"
 )
 
@@ -13,8 +14,8 @@ var endPoint = "https://api.documize.com"
 var token string
 
 func init() {
-	environment.GetString(&endPoint, "endpoint", false, "Documize end-point", nil)
-	environment.GetString(&token, "token", false, "Documize token", nil)
+	environment.GetString(&endPoint, "endpoint", false, "Documize end-point", request.FlagFromDB)
+	environment.GetString(&token, "token", false, "Documize token", request.FlagFromDB)
 }
 
 var transport = &http.Transport{

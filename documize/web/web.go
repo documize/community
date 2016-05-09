@@ -33,8 +33,8 @@ var SiteInfo struct {
 }
 
 func init() {
-	environment.GetString(&SiteMode, "offline", false, "set to '1' for OFFLINE mode", nil)
-	SiteInfo.DBhash = util.GenerateRandomPassword() // do this only once
+	environment.GetString(&SiteMode, "offline", false, "set to '1' for OFFLINE mode", nil) // no sense overriding this setting from the DB
+	SiteInfo.DBhash = util.GenerateRandomPassword()                                        // do this only once
 }
 
 // EmberHandler provides the webserver for pages developed using the Ember programming environment.
