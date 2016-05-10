@@ -1,6 +1,7 @@
 package request
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -35,6 +36,10 @@ func (dr *databaseRequest) MakeTx() (err error) {
 
 func init() {
 	var err error
+	var upgrade = "false"
+
+	environment.GetString(&upgrade, "upgrade", false,
+		"to upgrade the database set to 'true' (only this Documize binary must be running)", nil)
 
 	environment.GetString(&connectionString, "db", true,
 		`"username:password@protocol(hostname:port)/databasename" for example "fred:bloggs@tcp(localhost:3306)/documize"`,
@@ -63,6 +68,24 @@ func init() {
 				log.Info("database.Check(Db) OK")
 			} else {
 				log.Info("database.Check(Db) !OK, going into setup mode")
+			}
+
+			migrations, err := database.Migrations(ConfigString("DATABASE", "last_migration"))
+			if err != nil {
+				log.Error("Unable to find required database migrations: ", err)
+				os.Exit(2)
+			}
+			if len(migrations) > 0 {
+				if strings.ToLower(upgrade) != "true" {
+					log.Error("database migrations are required",
+						errors.New("the -upgrade flag is not 'true'"))
+					os.Exit(2)
+
+				}
+				if err := migrations.Migrate(); err != nil {
+					log.Error("Unable to run database migration: ", err)
+					os.Exit(2)
+				}
 			}
 
 			return false // value not changed
