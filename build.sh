@@ -26,6 +26,8 @@ mkdir -p documize/web/bindata/scripts
 cp -r documize/database/scripts documize/web/bindata
 
 echo "Generating in-memory static assets..."
+go get github.com/jteeuwen/go-bindata/...
+go get github.com/elazarl/go-bindata-assetfs/...
 cd documize/web
 go generate
 
