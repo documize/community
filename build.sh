@@ -5,6 +5,8 @@ echo "Build process started $NOW"
 
 echo "Building Ember assets..."
 cd app
+npm install
+bower install
 ember b -o dist-prod/ --environment=production
 
 echo "Copying Ember assets..."
