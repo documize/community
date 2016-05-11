@@ -143,8 +143,12 @@ export default Ember.Service.extend({
     // Application boot process
     boot() {
         let self = this;
+        let dbhash = "";
 
-        let dbhash = document.head.querySelector("[property=dbhash]").content;
+        if (is.not.null(document.head.querySelector("[property=dbhash]"))) {
+            dbhash = document.head.querySelector("[property=dbhash]").content;
+        }
+
         if (dbhash.length > 0 && dbhash !== "{{.DBhash}}") {
             self.get('appMeta').set('orgId', "response.orgId");
             self.get('appMeta').setSafe('title', "Documize Setup");
