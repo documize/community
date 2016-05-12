@@ -10,10 +10,12 @@ moduleForAcceptance('Acceptance | /');
 test('visiting /', function(assert) {
   visit('/');
 
+  return pauseTest();
+
   // setup mirage for /api/public/meta -> { allowAnonymousAccess: false}
 
 
   andThen(function() {
-    assert.equal(currentURL(), '/login');
+    assert.equal(currentURL(), '/auth/login');
   });
 });
