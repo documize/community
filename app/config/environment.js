@@ -25,6 +25,9 @@ module.exports = function(environment) {
         EmberENV: {
             FEATURES: {}
         },
+         "ember-cli-mirage": {
+            enabled: false
+        },
         APP: {}
     };
 
@@ -42,12 +45,13 @@ module.exports = function(environment) {
         ENV.APP.LOG_VIEW_LOOKUPS = false;
         // ENV.APP.LOG_TRANSITIONS = false;
         // ENV.APP.LOG_TRANSITIONS_INTERNAL = false;
-        ENV.APP.LOG_TRANSITIONS = true;
-        ENV.APP.LOG_TRANSITIONS_INTERNAL = true;
 
-        // ENV.baseURL = '/';
-        // ENV.locationType = 'none';
-        // ENV.APP.rootElement = '#ember-testing';
+        ENV.baseURL = '/';
+        ENV.locationType = 'none';
+        ENV.APP.rootElement = '#ember-testing';
+        ENV['ember-cli-mirage'] = {
+          enabled: true
+        };
 
         ENV.apiHost = "https://localhost:5001";
         // ENV.apiHost = "https://demo1.dev:5001";

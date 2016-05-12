@@ -94,9 +94,9 @@ export default Router.map(function() {
         path: 'widgets'
     });
 
-    this.route('not-found', {
-        path: '/*wildcard'
-    });
+    // this.route('not-found', {
+    //     path: '/*wildcard'
+    // });
 
     this.route('pods', function() {});
 });
