@@ -15,9 +15,6 @@ var isDevelopment = EmberApp.env() === 'development';
 
 module.exports = function(defaults) {
     var app = new EmberApp(defaults, {
-        tests: true,
-        storeConfigInMeta: false,
-
         fingerprint: {
             enabled: true,
             extensions: ['js', 'css'],
