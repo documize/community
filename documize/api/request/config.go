@@ -1,11 +1,9 @@
 package request
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/documize/community/wordsmith/environment"
-	"github.com/documize/community/wordsmith/log"
 	"github.com/documize/community/wordsmith/utility"
 )
 
@@ -29,12 +27,11 @@ func ConfigString(area, path string) (ret string) {
 	sql := `SELECT JSON_EXTRACT(details,'$` + path + `') AS item FROM config WHERE area = '` + area + `';`
 
 	stmt, err := Db.Preparex(sql)
-	defer utility.Close(stmt)
-
 	if err != nil {
-		log.Error(fmt.Sprintf("Unable to prepare select for ConfigString: %s", sql), err)
+		//log.Error(fmt.Sprintf("Unable to prepare select for ConfigString: %s", sql), err)
 		return ""
 	}
+	defer utility.Close(stmt)
 
 	var item = make([]uint8, 0)
 

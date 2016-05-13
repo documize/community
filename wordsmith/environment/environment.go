@@ -59,6 +59,8 @@ func GetString(target *string, name string, required bool, usage string, callbac
 	vars.vv = append(vars.vv, varT{target: target, name: name, required: required, callback: callback, value: value, setter: setter})
 }
 
+var showSettings = flag.Bool("showsettings", false, "if true, show settings in the log (WARNING: these settings may include passwords)")
+
 // Parse calls flag.Parse() then checks that the required environment variables are all set.
 // It should be the first thing called by any main() that uses this library.
 // If all the required variables are not present, it prints an error and calls os.Exit(2) like flag.Parse().
@@ -94,9 +96,11 @@ func Parse(doFirst string) {
 					}
 					typ = "Required"
 				}
-				if *(v.target) != "" && vars.vv[vi].setter != goInit {
-					fmt.Fprintf(os.Stdout, "%s setting from '%s' is: '%s'\n",
-						typ, vars.vv[vi].setter, *(v.target))
+				if *showSettings {
+					if *(v.target) != "" && vars.vv[vi].setter != goInit {
+						fmt.Fprintf(os.Stdout, "%s setting from '%s' is: '%s'\n",
+							typ, vars.vv[vi].setter, *(v.target))
+					}
 				}
 			}
 		}

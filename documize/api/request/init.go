@@ -66,26 +66,25 @@ func init() {
 			// go into setup mode if required
 			if database.Check(Db, connectionString) {
 				log.Info("database.Check(Db) OK")
+				migrations, err := database.Migrations(ConfigString("DATABASE", "last_migration"))
+				if err != nil {
+					log.Error("Unable to find required database migrations: ", err)
+					os.Exit(2)
+				}
+				if len(migrations) > 0 {
+					if strings.ToLower(upgrade) != "true" {
+						log.Error("database migrations are required",
+							errors.New("the -upgrade flag is not 'true'"))
+						os.Exit(2)
+
+					}
+					if err := migrations.Migrate(); err != nil {
+						log.Error("Unable to run database migration: ", err)
+						os.Exit(2)
+					}
+				}
 			} else {
 				log.Info("database.Check(Db) !OK, going into setup mode")
-			}
-
-			migrations, err := database.Migrations(ConfigString("DATABASE", "last_migration"))
-			if err != nil {
-				log.Error("Unable to find required database migrations: ", err)
-				os.Exit(2)
-			}
-			if len(migrations) > 0 {
-				if strings.ToLower(upgrade) != "true" {
-					log.Error("database migrations are required",
-						errors.New("the -upgrade flag is not 'true'"))
-					os.Exit(2)
-
-				}
-				if err := migrations.Migrate(); err != nil {
-					log.Error("Unable to run database migration: ", err)
-					os.Exit(2)
-				}
 			}
 
 			return false // value not changed
