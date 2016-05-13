@@ -22,7 +22,8 @@ export default BaseService.extend({
 
     // Add a new folder.
     add(folder) {
-        let url = this.get('sessionService').appMeta.getUrl(`folders`);
+        let appMeta = this.get('sessionService.appMeta');
+        let url = appMeta.getUrl(`folders`);
 
         return new Ember.RSVP.Promise(function(resolve, reject) {
             $.ajax({
@@ -43,7 +44,8 @@ export default BaseService.extend({
 
     // Returns folder model for specified folder id.
     getFolder(id) {
-        let url = this.get('sessionService').appMeta.getUrl(`folders/${id}`);
+        let appMeta = this.get('sessionService.appMeta')
+        let url = appMeta.getUrl(`folders/${id}`);
 
         return new Ember.RSVP.Promise(function(resolve, reject) {
             $.ajax({
@@ -157,7 +159,8 @@ export default BaseService.extend({
 
     // reloads and caches folders.
     reload() {
-        let url = this.get('sessionService').appMeta.getUrl(`folders`);
+        let appMeta = this.get('sessionService.appMeta')
+        let url = appMeta.getUrl(`folders`);
 
         return new Ember.RSVP.Promise(function(resolve, reject) {
             $.ajax({

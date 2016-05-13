@@ -36,7 +36,8 @@ export default Ember.Service.extend({
 
     // Returns all documents for specified folder.
     getAllByFolder(folderId) {
-        let url = this.get('sessionService').appMeta.getUrl(`documents?folder=${folderId}`);
+        let appMeta = this.get('sessionService.appMeta')
+        let url = appMeta.getUrl(`documents?folder=${folderId}`);
 
         return new Ember.RSVP.Promise(function(resolve, reject) {
             $.ajax({
