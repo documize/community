@@ -1,0 +1,109 @@
+<style>	
+.board {
+	width: 100%;
+	padding: 10px;
+}
+
+.board-title {
+	font-weight: bold;
+	color: #fff;
+	font-size: 16px;
+}
+
+.list {
+	background-color: #e2e4e6;
+	padding: 10px;
+	border-radius: 3px;
+	margin-top: 10px;
+	max-width: 300px;
+}
+
+.list-title {
+	font-weight: bold;
+	color: #4c4c4c;
+	font-size: 14px;
+	margin-bottom: 10px;
+}
+
+.card {
+	color: #4c4c4c;
+	border-bottom: 1px solid #CDD2D4;
+	background-color: #fff;
+	border-radius: 3px;
+	padding: 7px 7px;
+	margin: 5px 0;
+	font-size: 14px;
+    font-family: "Helvetica Neue",Arial,Helvetica,sans-serif;
+    line-height: 18px;	
+	overflow: hidden;
+    word-wrap: break-word;
+}
+
+</style>
+
+{{#section/base-editor document=document folder=folder page=page busy=waiting tip="Trello, yellow, mellow" isDirty=(action 'isDirty') onCancel=(action 'onCancel') onAction=(action 'onAction')}}
+
+<div class="pull-left width-45">
+	<div class="input-form">
+		<form>
+			<div class="heading">
+				<div class="title">Trello Authentication</div>
+				<div class="tip">Provide your Trello App Key</div>
+			</div>
+			<div class="input-control">
+				<div class="flat-button flat-blue" {{ action 'getAppKey' }}>Get App Key</div>
+				{{focus-input id="trello-appkey" type="text" value=config.appKey}}
+			</div>
+			<div class="regular-button button-blue" {{ action 'getAuthToken' }}>Authenticate</div>
+		</form>
+	</div>
+</div>
+
+{{#if authenticated}}
+<div class="pull-left margin-left-40 width-45">
+	<div class="input-form">
+		<form>
+			<div class="heading">
+				<div class="title">Trello Boards / Lists</div>
+				<div class="tip">Select board and list to display</div>
+			</div>
+			<div class="pull-left width-45">
+				<div class="input-control">
+					<label>Board</label>
+					<div class="tip">Select board for display</div>
+					{{ui-select id="boards-dropdown"
+						content=boards
+						action=(action 'onBoardChange')
+						optionValuePath="id"
+						optionLabelPath="name"
+						selection=config.board}}
+				</div>
+			</div>	
+			<div class="pull-right width-45">
+				<div class="input-control">
+					<label>List</label>
+					<div class="tip">Select list for display</div>
+					{{ui-select id="lists-dropdown"
+						content=lists
+						action=(action 'onListChange')
+						optionValuePath="id"
+						optionLabelPath="name"
+						selection=config.list}}
+				</div>
+			</div>	
+			<div class="clearfix" />
+			<div class="board margin-top-20" style="background-color:{{config.board.prefs.backgroundColor}};">
+				<div class="board-title">{{config.board.name}}</div>
+				<div class="list">
+					<div class="list-title">{{config.list.name}}</div>
+					{{#each config.cards as |card|}}
+						<div class="card">{{card.name}}</div>
+					{{/each}}
+				</div>
+			</div>
+		</form>
+	</div>
+</div>	
+{{/if}}	
+	
+{{/section/base-editor}}

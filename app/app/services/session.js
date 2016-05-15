@@ -117,8 +117,13 @@ export default Ember.Service.extend({
         this.storeSessionItem('token', token);
         this.storeSessionItem('user', JSON.stringify(user));
 
+        let self = this;
+
         $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
-            jqXHR.setRequestHeader('Authorization', 'Bearer ' + token);
+            // We only tack on auth header for Documize API calls
+            if (is.startWith(options.url, self.get('appMeta.url'))) {
+                jqXHR.setRequestHeader('Authorization', 'Bearer ' + token);
+            }
         });
     },
 

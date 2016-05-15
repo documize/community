@@ -60,6 +60,12 @@ $i: 150;
 	$i: $i - 5;
 }
 
+$i: 100;
+@while $i > 0 {
+	.width-#{$i} { width: #{$i}#{"%"}; }
+	$i: $i - 5;
+}
+
 .no-outline
 {
 	outline:none !important;

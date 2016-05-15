@@ -25,7 +25,7 @@ let AppMeta = BaseModel.extend({
     init() {
         this.set('host', config.apiHost);
         this.set('namespace', config.apiNamespace);
-        this.set('url', [config.host, config.namespace, ""].join('/'));
+        this.set('url', [config.apiHost, config.apiNamespace, ""].join('/'));
     },
 
     getUrl(endpoint) {

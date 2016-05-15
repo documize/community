@@ -2,6 +2,7 @@ export function initialize( /*application*/ ) {
     // address insecure jquery defaults (kudos: @nathanhammond)
     $.globalEval = function() {};
     $.ajaxSetup({
+        crossDomain: true,
         converters: {
             'text script': text => text
         }
