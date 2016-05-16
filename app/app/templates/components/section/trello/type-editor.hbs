@@ -2,6 +2,8 @@
 .board {
 	width: 100%;
 	padding: 10px;
+	white-space: nowrap;
+	overflow: auto
 }
 
 .board-title {
@@ -14,7 +16,7 @@
 	background-color: #e2e4e6;
 	padding: 10px;
 	border-radius: 3px;
-	margin-top: 10px;
+	margin: 10px 10px 0 0;
 	max-width: 300px;
 }
 
@@ -22,23 +24,12 @@
 	font-weight: bold;
 	color: #4c4c4c;
 	font-size: 14px;
-	margin-bottom: 10px;
+	margin: 5px;
 }
 
-.card {
-	color: #4c4c4c;
-	border-bottom: 1px solid #CDD2D4;
-	background-color: #fff;
-	border-radius: 3px;
-	padding: 7px 7px;
-	margin: 5px 0;
-	font-size: 14px;
-    font-family: "Helvetica Neue",Arial,Helvetica,sans-serif;
-    line-height: 18px;	
-	overflow: hidden;
-    word-wrap: break-word;
+.list-checkbox {
+	vertical-align: text-bottom;
 }
-
 </style>
 
 {{#section/base-editor document=document folder=folder page=page busy=waiting tip="Trello, yellow, mellow" isDirty=(action 'isDirty') onCancel=(action 'onCancel') onAction=(action 'onAction')}}
@@ -47,63 +38,60 @@
 	<div class="input-form">
 		<form>
 			<div class="heading">
-				<div class="title">Trello Authentication</div>
-				<div class="tip">Provide your Trello App Key</div>
+				<div class="title">Authentication</div>
+				<div class="tip">Provide Trello App Key and then authenticate</div>
 			</div>
 			<div class="input-control">
-				<div class="flat-button flat-blue" {{ action 'getAppKey' }}>Get App Key</div>
-				{{focus-input id="trello-appkey" type="text" value=config.appKey}}
+				<label>Trello App Key</label>
+				<div class="tip">Use plain old button below to grab the magic key -- you might need to log into Trello</div>
+				{{focus-input id="trello-appkey" type="password" value=config.appKey}}
 			</div>
-			<div class="regular-button button-blue" {{ action 'getAuthToken' }}>Authenticate</div>
+			<div class="regular-button button-gray" {{ action 'getAppKey' }}>Get App Key</div>
+			<div class="button-gap" />
+			<div class="regular-button button-blue" {{ action 'auth' }}>Authenticate</div>
 		</form>
 	</div>
 </div>
 
 {{#if authenticated}}
-<div class="pull-left margin-left-40 width-45">
+<div class="pull-right width-45">
 	<div class="input-form">
-		<form>
-			<div class="heading">
-				<div class="title">Trello Boards / Lists</div>
-				<div class="tip">Select board and list to display</div>
-			</div>
-			<div class="pull-left width-45">
-				<div class="input-control">
-					<label>Board</label>
-					<div class="tip">Select board for display</div>
-					{{ui-select id="boards-dropdown"
-						content=boards
-						action=(action 'onBoardChange')
-						optionValuePath="id"
-						optionLabelPath="name"
-						selection=config.board}}
-				</div>
-			</div>	
-			<div class="pull-right width-45">
-				<div class="input-control">
-					<label>List</label>
-					<div class="tip">Select list for display</div>
-					{{ui-select id="lists-dropdown"
-						content=lists
-						action=(action 'onListChange')
-						optionValuePath="id"
-						optionLabelPath="name"
-						selection=config.list}}
-				</div>
-			</div>	
-			<div class="clearfix" />
-			<div class="board margin-top-20" style="background-color:{{config.board.prefs.backgroundColor}};">
+		<div class="heading">
+			<div class="title">Select Board & Lists</div>
+			<div class="tip">Choose lists to include from board</div>
+		</div>
+		<div class="input-control">
+			<label>Board</label>
+			<div class="tip">Select board</div>
+			{{ui-select id="boards-dropdown"
+				content=boards
+				action=(action 'onBoardChange')
+				optionValuePath="id"
+				optionLabelPath="name"
+				selection=config.board}}
+		</div>
+		<div class="input-control">
+			<label>Lists</label>
+			<div class="tip">Select lists to include</div>
+			<div class="board" style="background-color:{{config.board.prefs.backgroundColor}};">
 				<div class="board-title">{{config.board.name}}</div>
-				<div class="list">
-					<div class="list-title">{{config.list.name}}</div>
-					{{#each config.cards as |card|}}
-						<div class="card">{{card.name}}</div>
-					{{/each}}
-				</div>
+				{{#each config.lists as |list|}}
+					<div class="list" {{action 'onListCheckbox' list.id}}>
+                        {{#if list.included}}
+                            <i class="material-icons widget-checkbox checkbox-gray list-checkbox" >check_box</i>
+                        {{else}}
+                            <i class="material-icons widget-checkbox checkbox-gray list-checkbox">check_box_outline_blank</i>
+                        {{/if}}
+						<span class="list-title">{{list.name}}</span>
+						{{!--<input type="checkbox" id="trello-list-{{list.id}}" checked={{list.included}} />--}}
+						{{!--<label class="list-title" for="trello-list-{{list.id}}">{{list.name}}</label>--}}
+					</div>
+				{{/each}}
+				<div class="clearfix" />
 			</div>
-		</form>
+		</div>
 	</div>
-</div>	
+</div>
 {{/if}}	
 	
 {{/section/base-editor}}
