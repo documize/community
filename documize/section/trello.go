@@ -8,6 +8,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+
+	"github.com/documize/community/wordsmith/log"
 )
 
 type trello struct {
@@ -72,7 +74,23 @@ func (*trello) Render(config, data string) string {
 
 // Refresh just sends back data as-is.
 func (*trello) Refresh(config, data string) string {
-	return data
+	var c = trelloConfig{}
+	json.Unmarshal([]byte(config), &c)
+
+	refreshed, err := getCards(c)
+
+	if err != nil {
+		return data
+	}
+
+	j, err := json.Marshal(refreshed)
+
+	if err != nil {
+		log.Error("unable to marshall trello cards", err)
+		return data
+	}
+
+	return string(j)
 }
 
 // Helpers
@@ -106,8 +124,18 @@ func cards(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	render := []trelloListCards{}
+	render, err := getCards(config)
 
+	if err != nil {
+		fmt.Println(err)
+		writeError(w, "trello", err)
+		return
+	}
+
+	writeJSON(w, render)
+}
+
+func getCards(config trelloConfig) (listCards []trelloListCards, err error) {
 	for _, list := range config.Lists {
 
 		if !list.Included {
@@ -119,14 +147,11 @@ func cards(w http.ResponseWriter, r *http.Request) {
 		res, err := client.Do(req)
 
 		if err != nil {
-			fmt.Println(err)
-			writeError(w, "trello", err)
-			return
+			return nil, err
 		}
 
 		if res.StatusCode != http.StatusOK {
-			writeForbidden(w)
-			return
+			return nil, fmt.Errorf("error: HTTP status code %d", res.StatusCode)
 		}
 
 		defer res.Body.Close()
@@ -136,19 +161,17 @@ func cards(w http.ResponseWriter, r *http.Request) {
 		err = dec.Decode(&cards)
 
 		if err != nil {
-			fmt.Println(err)
-			writeError(w, "trello", err)
-			return
+			return nil, err
 		}
 
 		data := trelloListCards{}
 		data.Cards = cards
 		data.List = list
 
-		render = append(render, data)
+		listCards = append(listCards, data)
 	}
 
-	writeJSON(w, render)
+	return listCards, nil
 }
 
 type trelloConfig struct {
@@ -206,9 +229,9 @@ type trelloBoard struct {
 }
 
 type trelloBoardBackground struct {
-	width  int    `json:"width"`
-	height int    `json:"height"`
-	url    string `json:"url"`
+	Width  int    `json:"width"`
+	Height int    `json:"height"`
+	URL    string `json:"url"`
 }
 
 type trelloList struct {
@@ -299,10 +322,8 @@ const trelloTemplate = `
 `
 
 /*
-
-refresh method
-
 does server side load up all data? YES!!??
+owner read-only control?
 
 we need method to use different trello accounts
     	- does this mean logout button?
