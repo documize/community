@@ -9,7 +9,6 @@
 //
 // https://documize.com
 
-// Copyright (c) 2015 Documize Inc.
 import Ember from 'ember';
 import constants from '../../utils/constants';
 import TooltipMixin from '../../mixins/tooltip';
