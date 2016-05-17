@@ -83,19 +83,14 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
                 self.set('config.lists', lists);
                 self.set('waiting', false);
+            },
+            function(error) {
+                self.set('waiting', false);
+                self.set('authenticated', false);
+                self.showNotification("Unable to fetch board lists");
+                console.log(error);
             });
     },
-
-    // getListCards() {
-    //     let self = this;
-    //     let list = this.get('config.list');
-
-    //     Trello.get(`lists/${list.id}/cards`,
-    //         function(cards) {
-    //             self.set('config.cards', cards);
-    //             console.log(cards);
-    //         });
-    // },
 
     actions: {
         isDirty() {
@@ -145,15 +140,25 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
                     success: function() {
                         self.set('authenticated', true);
                         self.set('config.token', Trello.token());
+                        self.set('waiting', true);
+
                         Trello.get("members/me/boards?fields=id,name,url,closed,prefs,idOrganization",
                             function(boards) {
                                 self.set('waiting', false);
                                 self.set('boards', boards.filterBy("closed", false));
                                 self.getBoardLists();
-                            });
+                            },
+                            function(error) {
+                                self.set('waiting', false);
+                                self.set('authenticated', false);
+                                self.showNotification("Unable to fetch boards");
+                                console.log(error);
+                            }
+                        );
                     },
                     error: function(error) {
                         self.set('waiting', false);
+                        self.set('authenticated', false);
                         self.showNotification("Unable to authenticate");
                         console.log(error);
                     }
@@ -185,7 +190,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
             this.get('sectionService').fetch(page, "cards", this.get('config'))
                 .then(function(response) {
-                    console.log(response);
                     meta.set('rawBody', JSON.stringify(response));
                     self.set('waiting', false);
                     self.attrs.onAction(page, meta);
