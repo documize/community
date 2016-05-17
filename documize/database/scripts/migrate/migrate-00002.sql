@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS `config`;
 
 CREATE TABLE IF NOT EXISTS  `config` (
-	`key` CHAR(16) NOT NULL,
+	`key` CHAR(255) NOT NULL,
 	`config` JSON,
 	UNIQUE INDEX `idx_config_area` (`key` ASC) ) ;
 

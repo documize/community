@@ -265,7 +265,7 @@ ALTER TABLE page CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;
 DROP TABLE IF EXISTS `config`;
 
 CREATE TABLE IF NOT EXISTS  `config` (
-	`key` CHAR(16) NOT NULL,
+	`key` CHAR(225) NOT NULL,
 	`config` JSON,
 	UNIQUE INDEX `idx_config_area` (`key` ASC) ) ;
 
