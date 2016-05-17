@@ -1,5 +1,4 @@
 -- SQL to set up the Documize database
-USE `documize`;
 
 DROP TABLE IF EXISTS `user`;
 
@@ -277,5 +276,4 @@ INSERT INTO `config` VALUES ('FILEPLUGINS',
 
 INSERT INTO `config` VALUES ('LICENSE','{\"token\": \"\",\"endpoint\": \"https://api.documize.com\"}');
 
-INSERT INTO `config` VALUES ('META','{\"database\": \"migrate-00002.sql\"}');
-/* NOTE the line above must be changed every time a new migration is incorporated into this file */
+INSERT INTO `config` VALUES ('META','{\"database\": \"db_00000.sql\"}');

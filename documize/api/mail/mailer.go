@@ -10,7 +10,6 @@ import (
 
 	"github.com/documize/community/documize/api/request"
 	"github.com/documize/community/documize/web"
-	"github.com/documize/community/wordsmith/environment"
 	"github.com/documize/community/wordsmith/log"
 )
 
@@ -35,7 +34,7 @@ func InviteNewUser(recipient, inviter, url, username, password string) {
 	subject := fmt.Sprintf("%s has invited you to Documize", inviter)
 
 	e := newEmail()
-	e.From = creds.SMTPsender
+	e.From = creds.SMTPsender()
 	e.To = []string{recipient}
 	e.Subject = subject
 
@@ -86,7 +85,7 @@ func InviteExistingUser(recipient, inviter, url string) {
 	subject := fmt.Sprintf("%s has invited you to their Documize account", inviter)
 
 	e := newEmail()
-	e.From = creds.SMTPsender
+	e.From = creds.SMTPsender()
 	e.To = []string{recipient}
 	e.Subject = subject
 
@@ -128,7 +127,7 @@ func PasswordReset(recipient, url string) {
 	subject := "Documize password reset request"
 
 	e := newEmail()
-	e.From = "Documize <hello@documize.com>"
+	e.From = creds.SMTPsender() //e.g. "Documize <hello@documize.com>"
 	e.To = []string{recipient}
 	e.Subject = subject
 
@@ -173,7 +172,7 @@ func ShareFolderExistingUser(recipient, inviter, url, folder, intro string) {
 	subject := fmt.Sprintf("%s has shared %s with you", inviter, folder)
 
 	e := newEmail()
-	e.From = creds.SMTPsender
+	e.From = creds.SMTPsender()
 	e.To = []string{recipient}
 	e.Subject = subject
 
@@ -224,7 +223,7 @@ func ShareFolderNewUser(recipient, inviter, url, folder, invitationMessage strin
 	subject := fmt.Sprintf("%s has shared %s with you on Documize", inviter, folder)
 
 	e := newEmail()
-	e.From = creds.SMTPsender
+	e.From = creds.SMTPsender()
 	e.To = []string{recipient}
 	e.Subject = subject
 
@@ -254,24 +253,30 @@ func ShareFolderNewUser(recipient, inviter, url, folder, invitationMessage strin
 	}
 }
 
-var creds struct{ SMTPuserid, SMTPpassword, SMTPhost, SMTPport, SMTPsender string }
-
-func init() {
-	creds.SMTPport = "587"                             // the default value for outgoing SMTP traffic
-	creds.SMTPsender = "Documize <hello@documize.com>" // TODO review as SAAS specific
-	environment.GetString(&creds.SMTPuserid, "smtpuserid", false, "SMTP username for outgoing email", request.FlagFromDB)
-	environment.GetString(&creds.SMTPpassword, "smtppassword", false, "SMTP password for outgoing email", request.FlagFromDB)
-	environment.GetString(&creds.SMTPhost, "smtphost", false, "SMTP host for outgoing email", request.FlagFromDB)
-	environment.GetString(&creds.SMTPport, "smtpport", false, "SMTP port for outgoing email", request.FlagFromDB)
-	environment.GetString(&creds.SMTPsender, "smtpsender", false, "SMTP sender's e-mail for outgoing email", request.FlagFromDB)
+var creds = struct{ SMTPuserid, SMTPpassword, SMTPhost, SMTPport, SMTPsender func() string }{
+	func() string { return request.ConfigString("SMTP", "userid") },
+	func() string { return request.ConfigString("SMTP", "password") },
+	func() string { return request.ConfigString("SMTP", "host") },
+	func() string {
+		r := request.ConfigString("SMTP", "port")
+		if r == "" {
+			return "587" // default port number
+		}
+		return r
+	},
+	func() string { return request.ConfigString("SMTP", "sender") },
 }
 
 // Helper to return SMTP credentials
 func getAuth() smtp.Auth {
-	return smtp.PlainAuth("", creds.SMTPuserid, creds.SMTPpassword, creds.SMTPhost)
+	a := smtp.PlainAuth("", creds.SMTPuserid(), creds.SMTPpassword(), creds.SMTPhost())
+	//fmt.Printf("DEBUG getAuth() = %#v\n", a)
+	return a
 }
 
 // Helper to return SMTP host details
 func getHost() string {
-	return creds.SMTPhost + ":" + creds.SMTPport
+	h := creds.SMTPhost() + ":" + creds.SMTPport()
+	//fmt.Printf("DEBUG getHost() = %#v\n", h)
+	return h
 }
