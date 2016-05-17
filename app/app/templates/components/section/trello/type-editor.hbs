@@ -1,18 +1,18 @@
 <style>	
-.board {
+.trello-board {
 	width: 100%;
 	padding: 10px;
 	white-space: nowrap;
 	overflow: auto
 }
 
-.board-title {
+.trello-board-title {
 	font-weight: bold;
 	color: #fff;
 	font-size: 16px;
 }
 
-.list {
+.trello-list {
 	background-color: #e2e4e6;
 	padding: 10px;
 	border-radius: 3px;
@@ -20,19 +20,19 @@
 	max-width: 300px;
 }
 
-.list-title {
+.trello-list-title {
 	font-weight: bold;
 	color: #4c4c4c;
 	font-size: 14px;
 	margin: 5px;
 }
 
-.list-checkbox {
+.trello-list-checkbox {
 	vertical-align: text-bottom;
 }
 </style>
 
-{{#section/base-editor document=document folder=folder page=page busy=waiting tip="Trello, yellow, mellow" isDirty=(action 'isDirty') onCancel=(action 'onCancel') onAction=(action 'onAction')}}
+{{#section/base-editor document=document folder=folder page=page busy=waiting tip="Trello is the visual way to manage your projects and organize anything (https://trello.com)" isDirty=(action 'isDirty') onCancel=(action 'onCancel') onAction=(action 'onAction')}}
 
 <div class="pull-left width-45">
 	<div class="input-form">
@@ -73,18 +73,16 @@
 		<div class="input-control">
 			<label>Lists</label>
 			<div class="tip">Select lists to include</div>
-			<div class="board" style="background-color:{{config.board.prefs.backgroundColor}};">
-				<div class="board-title">{{config.board.name}}</div>
+			<div class="trello-board" style="background-color:{{config.board.prefs.backgroundColor}};">
+				<div class="trello-board-title">{{config.board.name}}</div>
 				{{#each config.lists as |list|}}
-					<div class="list" {{action 'onListCheckbox' list.id}}>
+					<div class="trello-list" {{action 'onListCheckbox' list.id}}>
                         {{#if list.included}}
-                            <i class="material-icons widget-checkbox checkbox-gray list-checkbox" >check_box</i>
+                            <i class="material-icons widget-checkbox checkbox-gray trello-list-checkbox" >check_box</i>
                         {{else}}
-                            <i class="material-icons widget-checkbox checkbox-gray list-checkbox">check_box_outline_blank</i>
+                            <i class="material-icons widget-checkbox checkbox-gray trello-list-checkbox">check_box_outline_blank</i>
                         {{/if}}
-						<span class="list-title">{{list.name}}</span>
-						{{!--<input type="checkbox" id="trello-list-{{list.id}}" checked={{list.included}} />--}}
-						{{!--<label class="list-title" for="trello-list-{{list.id}}">{{list.name}}</label>--}}
+						<span class="trello-list-title">{{list.name}}</span>
 					</div>
 				{{/each}}
 				<div class="clearfix" />

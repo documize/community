@@ -10,7 +10,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
     authenticated: false,
     config: {},
     boards: null,
-    lists: null,
 
     didReceiveAttrs() {
         let config = {};
@@ -24,8 +23,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
                 appKey: "",
                 token: "",
                 board: null,
-                list: null,
-                cards: null
+                lists: []
             };
         }
 
@@ -47,7 +45,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
         let board = this.get('config.board');
         this.set('waiting', true);
 
-        if (board === null) {
+        if (is.null(board)) {
             if (boards.length) {
                 board = boards[0];
                 this.set('config.board', board);
@@ -56,7 +54,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
             this.set('config.board', boards.findBy('id', board.id));
         }
 
-        Trello.get(`boards/${board.id}/lists/open`,
+        Trello.get(`boards/${board.id}/lists/open?fields=id,name,url`,
             function(lists) {
                 let savedLists = self.get('config.lists');
                 if (savedLists === null) {
@@ -74,8 +72,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
                 self.set('config.lists', lists);
                 self.set('waiting', false);
-
-                // self.getListCards();
             });
     },
 
@@ -155,25 +151,31 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
             this.getBoardLists();
         },
 
-        // onListChange(list) {
-        //     this.set('config.list', list);
-        //     this.getListCards();
-        // },
-
         onCancel() {
             this.attrs.onCancel();
         },
 
         onAction(title) {
+            this.set('waiting', false);
+
+            let self = this;
             let page = this.get('page');
             let meta = this.get('meta');
             page.set('title', title);
-            // meta.set('rawBody', JSON.stringify(this.get("items")));
             meta.set('rawBody', '');
             meta.set('config', JSON.stringify(this.get('config')));
             meta.set('externalSource', true);
 
-            this.attrs.onAction(page, meta);
+            this.get('sectionService').fetch(page, "cards", this.get('config'))
+                .then(function(response) {
+                    console.log(response);
+                    meta.set('rawBody', JSON.stringify(response));
+                    self.set('waiting', false);
+                    self.attrs.onAction(page, meta);
+                }, function(reason) { //jshint ignore: line
+                    self.set('waiting', false);
+                    self.attrs.onAction(page, meta);
+                });
         }
     }
 });
