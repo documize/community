@@ -21,10 +21,10 @@ export function documentTocEntry(params) {
     html += "<span style='margin-left: " + indent + "px;'></span>";
 
     if (currentPage === nodeId) {
-        html += "<span class='selected'><i class='material-icons toc-bullet'>remove</i></span>";
+        html += "<span class='selected'></span>";
         html += "";
     } else {
-        html += "<span class=''><i class='material-icons toc-bullet'>remove</i></span>";
+        html += "<span class=''></span>";
         html += "";
     }
 
