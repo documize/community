@@ -1,3 +1,14 @@
+// Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
+//
+// This software (Documize Community Edition) is licensed under 
+// GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
+//
+// You can operate outside the AGPL restrictions by purchasing
+// Documize Enterprise Edition and obtaining a commercial license
+// by contacting <sales@documize.com>. 
+//
+// https://documize.com
+
 import Ember from 'ember';
 
 export default Ember.Component.extend({
@@ -27,8 +38,11 @@ export default Ember.Component.extend({
 
     didRender() {
         let self = this;
-        Ember.run.schedule('afterRender', function(){
-            Mousetrap.bind('esc', function() { self.send('cancelAction'); return false;});
+        Ember.run.schedule('afterRender', function() {
+            Mousetrap.bind('esc', function() {
+                self.send('cancelAction');
+                return false;
+            });
         });
     },
 
@@ -45,15 +59,17 @@ export default Ember.Component.extend({
                 Ember.set(revision, 'selected', false);
             });
 
-            let revision = _.findWhere(revisions, { id: revisionId});
+            let revision = _.findWhere(revisions, {
+                id: revisionId
+            });
             Ember.set(revision, 'selected', true);
 
             let self = this;
 
             this.get('documentService').getPageRevisionDiff(this.get('model.documentId'),
                 this.get('model.pageId'), revisionId).then(function(response) {
-                    self.set('busy', false);
-                    self.set('diffReport', Ember.String.htmlSafe(response));
+                self.set('busy', false);
+                self.set('diffReport', Ember.String.htmlSafe(response));
             });
         },
 

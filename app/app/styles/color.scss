@@ -1,3 +1,14 @@
+// Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
+//
+// This software (Documize Community Edition) is licensed under 
+// GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
+//
+// You can operate outside the AGPL restrictions by purchasing
+// Documize Enterprise Edition and obtaining a commercial license
+// by contacting <sales@documize.com>. 
+//
+// https://documize.com
+
 $color-off-white: #f5f5f5;
 $color-off-black: #4c4c4c;
 $color-black: #000000;
@@ -21,12 +32,8 @@ $color-card-active: #f7fcff;
 $color-border: #dbdbdb;
 $color-border2: #e2e2e2;
 
-// FIXME remove/replace below?
-// $color-primary: #1b75bb;
 $color-primary-light: lighten($color-primary, 30%);
 $color-primary-dark: darken($color-primary, 10%);
-// $color-green: #79ad30;
-// $color-gray: #a0a0a0;
 $color-gray2: #f0eeee;
 $color-active-state: #e2e2e2;
 $color-sidebar: #e7f1f6;

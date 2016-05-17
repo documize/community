@@ -46,9 +46,13 @@
 				<div class="tip">Use plain old button below to grab the magic key -- you might need to log into Trello</div>
 				{{focus-input id="trello-appkey" type="password" value=config.appKey}}
 			</div>
-			<div class="regular-button button-gray" {{ action 'getAppKey' }}>Get App Key</div>
-			<div class="button-gap" />
-			<div class="regular-button button-blue" {{ action 'auth' }}>Authenticate</div>
+			{{#if authenticated}}
+				<div class="regular-button button-gray" {{ action 'logout' }}>Logout</div>
+			{{else}}
+				<div class="regular-button button-gray" {{ action 'getAppKey' }}>Get App Key</div>
+				<div class="button-gap" />
+				<div class="regular-button button-blue" {{ action 'auth' }}>Authenticate</div>
+			{{/if}}
 		</form>
 	</div>
 </div>

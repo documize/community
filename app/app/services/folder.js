@@ -1,3 +1,14 @@
+// Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
+//
+// This software (Documize Community Edition) is licensed under 
+// GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
+//
+// You can operate outside the AGPL restrictions by purchasing
+// Documize Enterprise Edition and obtaining a commercial license
+// by contacting <sales@documize.com>. 
+//
+// https://documize.com
+
 import Ember from 'ember';
 import models from '../utils/model';
 import BaseService from '../services/base';
@@ -34,15 +45,15 @@ export default BaseService.extend({
     getFolder(id) {
         let url = this.get('sessionService').appMeta.getUrl(`folders/${id}`);
 
-        return new Ember.RSVP.Promise(function(resolve, reject){
+        return new Ember.RSVP.Promise(function(resolve, reject) {
             $.ajax({
                 url: url,
                 type: 'GET',
-                success: function(response){
+                success: function(response) {
                     let folder = models.FolderModel.create(response);
                     resolve(folder);
                 },
-                error: function(reason){
+                error: function(reason) {
                     reject(reason);
                 }
             });
@@ -54,7 +65,9 @@ export default BaseService.extend({
         let self = this;
 
         if (this.get('folders') != null) {
-            return new Ember.RSVP.Promise(function(resolve) { resolve(self.get('folders')); });
+            return new Ember.RSVP.Promise(function(resolve) {
+                resolve(self.get('folders'));
+            });
         } else {
             return this.reload();
         }
@@ -123,11 +136,11 @@ export default BaseService.extend({
     getProtectedFolderInfo: function() {
         var url = this.get('sessionService').appMeta.getUrl('folders?filter=viewers');
 
-        return new Ember.RSVP.Promise(function(resolve, reject){
+        return new Ember.RSVP.Promise(function(resolve, reject) {
             $.ajax({
                 url: url,
                 type: 'GET',
-                success: function(response){
+                success: function(response) {
                     let data = [];
                     _.each(response, function(obj) {
                         data.pushObject(models.ProtectedFolderParticipant.create(obj));
@@ -135,7 +148,7 @@ export default BaseService.extend({
 
                     resolve(data);
                 },
-                error: function(reason){
+                error: function(reason) {
                     reject(reason);
                 }
             });
@@ -146,7 +159,7 @@ export default BaseService.extend({
     reload() {
         let url = this.get('sessionService').appMeta.getUrl(`folders`);
 
-        return new Ember.RSVP.Promise(function(resolve, reject){
+        return new Ember.RSVP.Promise(function(resolve, reject) {
             $.ajax({
                 url: url,
                 type: 'GET',
@@ -157,7 +170,7 @@ export default BaseService.extend({
                     });
                     resolve(data);
                 },
-                error: function(reason){
+                error: function(reason) {
                     reject(reason);
                 }
             });
@@ -172,14 +185,14 @@ export default BaseService.extend({
             $.ajax({
                 url: self.get('sessionService').appMeta.getUrl(`folders/${folderId}/permissions`),
                 type: 'GET',
-                success: function(response){
+                success: function(response) {
                     let data = [];
                     _.each(response, function(obj) {
                         data.pushObject(models.FolderPermissionModel.create(obj));
                     });
                     resolve(data);
                 },
-                error: function(reason){
+                error: function(reason) {
                     reject(reason);
                 }
             });
@@ -196,10 +209,10 @@ export default BaseService.extend({
                 type: 'PUT',
                 contentType: 'json',
                 data: JSON.stringify(payload),
-                success: function(response){
+                success: function(response) {
                     resolve(response);
                 },
-                error: function(reason){
+                error: function(reason) {
                     reject(reason);
                 }
             });
@@ -216,10 +229,10 @@ export default BaseService.extend({
                 type: 'POST',
                 contentType: 'json',
                 data: JSON.stringify(invitation),
-                success: function(response){
+                success: function(response) {
                     resolve(response);
                 },
-                error: function(reason){
+                error: function(reason) {
                     reject(reason);
                 }
             });
