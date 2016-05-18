@@ -1,6 +1,6 @@
 # Documize Community Edition
 
-To discover how Documize aims to be helpful, please visit https://documize.com
+To discover Documize please visit https://documize.com
 
 Documize® is a registered trade mark of Documize Inc.
 
@@ -60,9 +60,9 @@ To run Documize using those certs (using the set-up above):
 ```
 If you navigate to https://localhost:5001 and you want to remove the Chrome warning messages about your invalid self-cert follow the instructions at: https://www.accuweaver.com/2014/09/19/make-chrome-accept-a-self-signed-certificate-on-osx/
 
-If you do not specify a port, Documize will default to port 443 if there are key/cert files, port 80 otherwise.
+If you do not specify a port, Documize will default to port ```443``` if there are key/cert files, port ```80``` otherwise.
 
-If you want non-SSL http:// traffic to redirect to the SSL port, use command line flag: -forcesslport=9999
+If you want non-SSL http:// traffic to redirect to the SSL port, say from port 9999, use command line flag: ```-forcesslport=9999``` 
 
 ## Ember 
 
@@ -92,3 +92,5 @@ In an empty database the result will be something like:
 ```{"host": "", "port": "", "sender": "", "userid": "", "password": ""}```
 
 To configure SMTP, you must set these values in the JSON as your systems require, using a MySQL tool. 
+
+The host is the DNS name of your SMTP server; the port defaults to 587; the sender Documize use is "Documize <hello@documize.com>"; userid and password are your SMTP server credentials.
