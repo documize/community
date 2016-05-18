@@ -40,7 +40,35 @@ Hopefully you will now have a working Documize instance.
 
 Once you have set-up the database as described above, you could go to the ./documize directory and use the command "go run documize.go" in place of the binary name.
 
-Run Documize with a flag of "-help" or similar to see the command line flags, those related to SSL/TLS are discussed below. 
+## Command line flags and environment variables 
+
+The command line flags are defined below:
+```
+Usage of ./bin/documize-darwin-amd64:
+    -cert string
+        the cert.pem file used for https
+    -db string
+        "username:password@protocol(hostname:port)/databasename" for example "fred:bloggs@tcp(localhost:3306)/documize"
+    -forcesslport string
+        redirect given http port number to TLS
+    -insecure string
+        if 'true' allow https endpoints with invalid certificates (only for testing)
+    -key string
+        the key.pem file used for https
+    -log string
+        system being logged e.g. 'PRODUCTION' (default "Non-production")
+    -offline string
+        set to '1' for OFFLINE mode
+    -plugin string
+        the JSON file describing plugins, default 'DB' uses the database config table 'FILEPLUGINS' entry (default "DB")
+    -port string
+        http/https port number
+    -showsettings
+        if true, show settings in the log (WARNING: these settings may include passwords)
+```
+Flags related to SSL/TLS are discussed in detail later. 
+
+For operational convenience, some of these flags can also be set through environment variables: DOCUMIZECERT => -cert ; DOCUMIZEDB => -db ; DOCUMIZEFORCESSLPORT => -forcesslport ; DOCUMIZEKEY => -key ; DOCUMIZEPORT => -port .
 
 ## Configuring the server to use HTTPS
 
