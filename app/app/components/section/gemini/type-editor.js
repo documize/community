@@ -12,8 +12,9 @@
 import Ember from 'ember';
 import NotifierMixin from '../../../mixins/notifier';
 import TooltipMixin from '../../../mixins/tooltip';
+import SectionMixin from '../../../mixins/section';
 
-export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
+export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin, {
     sectionService: Ember.inject.service('section'),
     isDirty: false,
     waiting: false,
@@ -21,14 +22,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
     user: {},
     workspaces: [],
     config: {},
-
-    fieldEditable: function() {
-        if (this.get('page.userId') !== this.session.user.id) {
-            return "readonly";
-        } else {
-            return undefined;
-        }
-    }.property('config'),
 
     didReceiveAttrs() {
         let config = {};

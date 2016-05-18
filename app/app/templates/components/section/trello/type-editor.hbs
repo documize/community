@@ -32,7 +32,7 @@
 }
 </style>
 
-{{#section/base-editor document=document folder=folder page=page busy=waiting tip="Trello is the visual way to manage your projects and organize anything (https://trello.com)" isDirty=(action 'isDirty') onCancel=(action 'onCancel') onAction=(action 'onAction')}}
+{{#section/base-editor document=document folder=folder page=page busy=busy tip="Trello is the visual way to manage your projects and organize anything (https://trello.com)" isDirty=(action 'isDirty') onCancel=(action 'onCancel') onAction=(action 'onAction')}}
 
 <div class="pull-left width-45">
 	<div class="input-form">
@@ -72,7 +72,8 @@
 				action=(action 'onBoardChange')
 				optionValuePath="id"
 				optionLabelPath="name"
-				selection=config.board}}
+				selection=config.board
+				readonly=isReadonly}}
 		</div>
 		<div class="input-control">
 			<label>Lists</label>

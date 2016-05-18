@@ -1,11 +1,11 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
@@ -13,11 +13,12 @@
 import Ember from 'ember';
 import NotifierMixin from '../../../mixins/notifier';
 import TooltipMixin from '../../../mixins/tooltip';
+import SectionMixin from '../../../mixins/section';
 
-export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
+export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin, {
     sectionService: Ember.inject.service('section'),
     isDirty: false,
-    waiting: false,
+    busy: false,
     authenticated: false,
     config: {},
     boards: null,
@@ -42,6 +43,8 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
         if (this.get('config.appKey') !== "" &&
             this.get('config.token') !== "") {
+            console.log(this.get('isReadonly'));
+            console.log(this.get('isMine'));
             this.send('auth');
         }
     },
@@ -51,12 +54,14 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
     },
 
     getBoardLists() {
+        this.set('busy', true);
+
         let self = this;
         let boards = this.get('boards');
         let board = this.get('config.board');
-        this.set('waiting', true);
+		let page = this.get('page');
 
-        if (is.null(board)) {
+        if (is.null(board) || is.undefined(board)) {
             if (boards.length) {
                 board = boards[0];
                 this.set('config.board', board);
@@ -65,9 +70,9 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
             this.set('config.board', boards.findBy('id', board.id));
         }
 
-        Trello.get(`boards/${board.id}/lists/open?fields=id,name,url`,
-            function(lists) {
-                let savedLists = self.get('config.lists');
+		this.get('sectionService').fetch(page, "lists", self.get('config'))
+			.then(function(lists) {
+				let savedLists = self.get('config.lists');
                 if (savedLists === null) {
                     savedLists = [];
                 }
@@ -82,14 +87,40 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
                 });
 
                 self.set('config.lists', lists);
-                self.set('waiting', false);
-            },
-            function(error) {
-                self.set('waiting', false);
+                self.set('busy', false);
+			}, function(error) { //jshint ignore: line
+				self.set('busy', false);
                 self.set('authenticated', false);
                 self.showNotification("Unable to fetch board lists");
                 console.log(error);
-            });
+			});
+
+
+        // Trello.get(`boards/${board.id}/lists/open?fields=id,name,url`,
+        //     function(lists) {
+        //         let savedLists = self.get('config.lists');
+        //         if (savedLists === null) {
+        //             savedLists = [];
+        //         }
+		//
+        //         lists.forEach(function(list) {
+        //             let saved = savedLists.findBy("id", list.id);
+        //             let included = true;
+        //             if (is.not.undefined(saved)) {
+        //                 included = saved.included;
+        //             }
+        //             list.included = included;
+        //         });
+		//
+        //         self.set('config.lists', lists);
+        //         self.set('busy', false);
+        //     },
+        //     function(error) {
+        //         self.set('busy', false);
+        //         self.set('authenticated', false);
+        //         self.showNotification("Unable to fetch board lists");
+        //         console.log(error);
+        //     });
     },
 
     actions: {
@@ -124,7 +155,9 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
             }
 
             let self = this;
-            self.set('waiting', true);
+			let page = this.get('page');
+
+            self.set('busy', true);
 
             Ember.$.getScript("https://api.trello.com/1/client.js?key=" + this.get('config.appKey'), function() {
                 Trello.authorize({
@@ -140,24 +173,36 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
                     success: function() {
                         self.set('authenticated', true);
                         self.set('config.token', Trello.token());
-                        self.set('waiting', true);
+                        self.set('busy', true);
 
-                        Trello.get("members/me/boards?fields=id,name,url,closed,prefs,idOrganization",
-                            function(boards) {
-                                self.set('waiting', false);
+						self.get('sectionService').fetch(page, "boards", self.get('config'))
+			                .then(function(boards) {
+								self.set('busy', false);
                                 self.set('boards', boards.filterBy("closed", false));
                                 self.getBoardLists();
-                            },
-                            function(error) {
-                                self.set('waiting', false);
+			                }, function(error) { //jshint ignore: line
+								self.set('busy', false);
                                 self.set('authenticated', false);
                                 self.showNotification("Unable to fetch boards");
                                 console.log(error);
-                            }
-                        );
+			                });
+
+                        // Trello.get("members/me/boards?fields=id,name,url,closed,prefs,idOrganization",
+                        //     function(boards) {
+                        //         self.set('busy', false);
+                        //         self.set('boards', boards.filterBy("closed", false));
+                        //         self.getBoardLists();
+                        //     },
+                        //     function(error) {
+                        //         self.set('busy', false);
+                        //         self.set('authenticated', false);
+                        //         self.showNotification("Unable to fetch boards");
+                        //         console.log(error);
+                        //     }
+                        // );
                     },
                     error: function(error) {
-                        self.set('waiting', false);
+                        self.set('busy', false);
                         self.set('authenticated', false);
                         self.showNotification("Unable to authenticate");
                         console.log(error);
@@ -178,7 +223,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
         },
 
         onAction(title) {
-            this.set('waiting', false);
+            this.set('busy', true);
 
             let self = this;
             let page = this.get('page');
@@ -191,12 +236,15 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
             this.get('sectionService').fetch(page, "cards", this.get('config'))
                 .then(function(response) {
                     meta.set('rawBody', JSON.stringify(response));
-                    self.set('waiting', false);
+                    self.set('busy', false);
                     self.attrs.onAction(page, meta);
                 }, function(reason) { //jshint ignore: line
-                    self.set('waiting', false);
+                    self.set('busy', false);
                     self.attrs.onAction(page, meta);
                 });
         }
     }
 });
+
+// show who owner is -- logout
+// key really required?

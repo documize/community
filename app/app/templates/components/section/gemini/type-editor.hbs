@@ -47,17 +47,17 @@
 			<div class="input-control">
 				<label>Gemini URL</label>
 				<div class="tip">e.g. http://helpdesk.countersoft.com</div>
-				{{focus-input id="gemini-url" type="text" value=config.url readonly=fieldEditable}}
+				{{focus-input id="gemini-url" type="text" value=config.url readonly=isReadonly}}
 			</div>
 			<div class="input-control">
 				<label>Username</label>
 				<div class="tip">Gemini username</div>
-				{{input id="gemini-username" type="text" value=config.username readonly=fieldEditable}}
+				{{input id="gemini-username" type="text" value=config.username readonly=isReadonly}}
 			</div>
 			<div class="input-control">
 				<label>API Key</label>
 				<div class="tip">Gemini user API key (from user profile)</div>
-				{{input id="gemini-apikey" type="password" value=config.APIKey readonly=fieldEditable}}
+				{{input id="gemini-apikey" type="password" value=config.APIKey readonly=isReadonly}}
 			</div>
 			<div class="regular-button button-blue" {{ action 'auth' }}>Authenticate</div>
 		</form>

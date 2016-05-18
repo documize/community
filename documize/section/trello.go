@@ -51,9 +51,67 @@ func (*trello) Command(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	defer r.Body.Close()
+	body, err := ioutil.ReadAll(r.Body)
+
+	if err != nil {
+		writeMessage(w, "trello", "Bad body")
+		return
+	}
+
+	var config = trelloConfig{}
+	err = json.Unmarshal(body, &config)
+
+	if err != nil {
+		writeError(w, "trello", err)
+		return
+	}
+
+	config.Clean()
+
+	if len(config.AppKey) == 0 {
+		writeMessage(w, "trello", "Missing appKey")
+		return
+	}
+
+	if len(config.Token) == 0 {
+		writeMessage(w, "trello", "Missing token")
+		return
+	}
+
 	switch method {
 	case "cards":
-		cards(w, r)
+		render, err := getCards(config)
+
+		if err != nil {
+			fmt.Println(err)
+			writeError(w, "trello", err)
+			return
+		}
+
+		writeJSON(w, render)
+
+	case "boards":
+		render, err := getBoards(config)
+
+		if err != nil {
+			fmt.Println(err)
+			writeError(w, "trello", err)
+			return
+		}
+
+		writeJSON(w, render)
+
+	case "lists":
+		render, err := getLists(config)
+
+		if err != nil {
+			fmt.Println(err)
+			writeError(w, "trello", err)
+			return
+		}
+
+		writeJSON(w, render)
 	}
 }
 
@@ -105,50 +163,102 @@ func (*trello) Refresh(config, data string) string {
 }
 
 // Helpers
-func cards(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	body, err := ioutil.ReadAll(r.Body)
+// func cards(w http.ResponseWriter, r *http.Request) {
+// 	defer r.Body.Close()
+// 	body, err := ioutil.ReadAll(r.Body)
+//
+// 	if err != nil {
+// 		writeMessage(w, "trello", "Bad body")
+// 		return
+// 	}
+//
+// 	var config = trelloConfig{}
+// 	err = json.Unmarshal(body, &config)
+//
+// 	if err != nil {
+// 		writeError(w, "trello", err)
+// 		return
+// 	}
+//
+// 	config.Clean()
+//
+// 	if len(config.AppKey) == 0 {
+// 		writeMessage(w, "trello", "Missing appKey")
+// 		return
+// 	}
+//
+// 	if len(config.Token) == 0 {
+// 		writeMessage(w, "trello", "Missing token")
+// 		return
+// 	}
+//
+// 	render, err := getCards(config)
+//
+// 	if err != nil {
+// 		fmt.Println(err)
+// 		writeError(w, "trello", err)
+// 		return
+// 	}
+//
+// 	writeJSON(w, render)
+// }
+
+func getBoards(config trelloConfig) (boards []trelloBoard, err error) {
+	req, err := http.NewRequest("GET", fmt.Sprintf("https://api.trello.com/1/members/me/boards?fields=id,name,url,closed,prefs,idOrganization&key=%s&token=%s", config.AppKey, config.Token), nil)
+	client := &http.Client{}
+	res, err := client.Do(req)
 
 	if err != nil {
-		writeMessage(w, "trello", "Bad body")
-		return
+		return nil, err
 	}
 
-	var config = trelloConfig{}
-	err = json.Unmarshal(body, &config)
-
-	if err != nil {
-		writeError(w, "trello", err)
-		// writeMessage(w, "trello", "Bad payload")
-		return
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("error: HTTP status code %d", res.StatusCode)
 	}
 
-	config.Clean()
+	defer res.Body.Close()
 
-	if len(config.AppKey) == 0 {
-		writeMessage(w, "trello", "Missing appKey")
-		return
-	}
-
-	if len(config.Token) == 0 {
-		writeMessage(w, "trello", "Missing token")
-		return
-	}
-
-	render, err := getCards(config)
+	dec := json.NewDecoder(res.Body)
+	err = dec.Decode(&boards)
 
 	if err != nil {
 		fmt.Println(err)
-		writeError(w, "trello", err)
-		return
+		return nil, err
 	}
 
-	writeJSON(w, render)
+	return boards, nil
+}
+
+func getLists(config trelloConfig) (lists []trelloList, err error) {
+	req, err := http.NewRequest("GET", fmt.Sprintf("https://api.trello.com/1/boards/%s/lists/open?key=%s&token=%s", config.Board.ID, config.AppKey, config.Token), nil)
+	client := &http.Client{}
+	res, err := client.Do(req)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("error: HTTP status code %d", res.StatusCode)
+	}
+
+	defer res.Body.Close()
+
+	dec := json.NewDecoder(res.Body)
+	err = dec.Decode(&lists)
+
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	return lists, nil
 }
 
 func getCards(config trelloConfig) (listCards []trelloListCards, err error) {
 	for _, list := range config.Lists {
 
+		// don't process lists that user excluded from rendering
 		if !list.Included {
 			continue
 		}
@@ -198,18 +308,18 @@ func (c *trelloConfig) Clean() {
 }
 
 type trelloBoard struct {
-	ID       string `json:"id"`
-	Name     string `json:"name"`
-	Desc     string `json:"desc"`
-	DescData struct {
-		Emoji struct{} `json:"emoji"`
-	} `json:"descData"`
+	ID             string `json:"id"`
+	Name           string `json:"name"`
 	Closed         bool   `json:"closed"`
 	OrganizationID string `json:"idOrganization"`
 	Pinned         bool   `json:"pinned"`
 	URL            string `json:"url"`
 	ShortURL       string `json:"shortUrl"`
-	Prefs          struct {
+	Desc           string `json:"desc"`
+	DescData       struct {
+		Emoji struct{} `json:"emoji"`
+	} `json:"descData"`
+	Prefs struct {
 		PermissionLevel       string                  `json:"permissionLevel"`
 		Voting                string                  `json:"voting"`
 		Comments              string                  `json:"comments"`
@@ -326,7 +436,7 @@ const trelloTemplate = `
 						{{ $card.Name }}
 					</div>
 				</a>
-			{{end}}	
+			{{end}}
 		</div>
 	{{end}}
 </div>
@@ -334,10 +444,4 @@ const trelloTemplate = `
 
 /*
 does server side load up all data? YES!!??
-owner read-only control?
-
-is appKey is global?
-		- where stored?
-		- how access?
-		- does section.go ask config to give us saved json
 */
