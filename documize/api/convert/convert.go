@@ -2,12 +2,12 @@
 package convert
 
 import (
+	"errors"
 	"github.com/documize/community/documize/api/convert/excerpt"
 	"github.com/documize/community/documize/api/convert/html"
 	"github.com/documize/community/documize/api/plugins"
 	"github.com/documize/community/wordsmith/api"
 	"github.com/documize/community/wordsmith/utility"
-	"errors"
 
 	"golang.org/x/net/context"
 )

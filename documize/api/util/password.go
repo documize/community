@@ -41,11 +41,11 @@ func GeneratePassword(password string, salt string) string {
 	return string(hashedPassword)
 }
 
-// MatchPassword copares a hashed password with a clear one. 
+// MatchPassword copares a hashed password with a clear one.
 func MatchPassword(hashedPassword string, password string, salt string) bool {
 	pwd := []byte(salt + password)
 
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), pwd)
 
-	return err == nil 
+	return err == nil
 }

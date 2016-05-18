@@ -26,7 +26,12 @@ func (file *Msword) Convert(r api.DocumentConversionRequest, reply *api.Document
 
 	client := &http.Client{Transport: transport}
 
-	resp, err := client.Post(endPoint+"/api/word?token="+token, "application/json", bytes.NewReader(byts))
+	tok,err:=token()
+	if err != nil {
+		return err
+	}
+	
+	resp, err := client.Post(endPoint()+"/api/word?token="+tok, "application/json", bytes.NewReader(byts))
 	if err != nil {
 		return err
 	}

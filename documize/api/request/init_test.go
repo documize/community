@@ -1,5 +1,5 @@
 package request
-
+/* TODO(Elliott)
 import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql" // this must be somewhere...
@@ -22,3 +22,4 @@ func TestInit(t *testing.T) {
 	_ = p.Base.SQLPrepareError("method", "id") // noting to test, just for coverage stats
 	_ = p.Base.SQLSelectError("method", "id")  // noting to test, just for coverage stats
 }
+*/

@@ -1,5 +1,5 @@
 package request
-
+/* TODO(Elliott)
 import "testing"
 import "net/http"
 
@@ -27,3 +27,4 @@ func ds(t *testing.T, in, out1, out2 string) {
 		t.Errorf("GetSubdomainFromHost input `%s` got `%s` expected `%s`\n", in, got2, out2)
 	}
 }
+*/

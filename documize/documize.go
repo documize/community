@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	environment.Parse()
+	environment.Parse("db")         // process the db value first
 	ready := make(chan struct{}, 1) // channel is used for testing
 
 	endpoint.Serve(ready)

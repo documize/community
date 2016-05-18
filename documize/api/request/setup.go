@@ -36,9 +36,9 @@ func (p *Persister) SetupOrganization(company, title, message, domain, email str
 		Title:      title,   // string `json:"title"`
 		Message:    message, // string `json:"message"`
 		//URL:                  "test.domain",           // string `json:"url"`
-		Domain:               domain,            // string `json:"domain"`
-		Email:                email, // string `json:"email"`
-		AllowAnonymousAccess: false, // bool   `json:"allowAnonymousAccess"`
+		Domain:               domain, // string `json:"domain"`
+		Email:                email,  // string `json:"email"`
+		AllowAnonymousAccess: false,  // bool   `json:"allowAnonymousAccess"`
 		//Serial:               "123",                   // string `json:"-"`
 		Active: true, // bool   `json:"-"`
 	}
@@ -50,6 +50,6 @@ func (p *Persister) SetupOrganization(company, title, message, domain, email str
 	if err != nil {
 		return org, err
 	}
-    p.Context.Transaction, err = Db.Beginx()
+	p.Context.Transaction, err = Db.Beginx()
 	return org, err
 }

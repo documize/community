@@ -1,5 +1,4 @@
 -- SQL to set up the Documize database
-USE `documize`;
 
 DROP TABLE IF EXISTS `user`;
 
@@ -262,3 +261,19 @@ ALTER TABLE label CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;
 ALTER TABLE document CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;
 ALTER TABLE page CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;
 */
+
+DROP TABLE IF EXISTS `config`;
+
+CREATE TABLE IF NOT EXISTS  `config` (
+	`key` CHAR(225) NOT NULL,
+	`config` JSON,
+	UNIQUE INDEX `idx_config_area` (`key` ASC) ) ;
+
+INSERT INTO `config` VALUES ('SMTP','{\"userid\": \"\",\"password\": \"\",\"host\": \"\",\"port\": \"\",\"sender\": \"\"}');
+
+INSERT INTO `config` VALUES ('FILEPLUGINS',
+'[{\"Comment\": \"Disable (or not) built-in html import (NOTE: no Plugin name)\",\"Disabled\": false,\"API\": \"Convert\",\"Actions\": [\"htm\",\"html\"]},{\"Comment\": \"Disable (or not) built-in Documize API import used from SDK (NOTE: no Plugin name)\",\"Disabled\": false,\"API\": \"Convert\",\"Actions\": [\"documizeapi\"]}]');
+
+INSERT INTO `config` VALUES ('LICENSE','{\"token\": \"\",\"endpoint\": \"https://api.documize.com\"}');
+
+INSERT INTO `config` VALUES ('META','{\"database\": \"db_00000.sql\"}');

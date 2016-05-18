@@ -1,5 +1,5 @@
 package documize_test
-
+/* TODO(Elliott)
 import "testing"
 import "github.com/documize/community/sdk/exttest"
 
@@ -16,3 +16,4 @@ func BenchmarkAPIbench(b *testing.B) {
 		}
 	}
 }
+*/

@@ -1,5 +1,7 @@
 package section
 
+/* TODO(Elliott)
+
 import (
 	"net/http"
 	"testing"
@@ -59,3 +61,4 @@ func TestSection(t *testing.T) {
 		t.Logf("%v %v", v.Order, v.Title)
 	}
 }
+*/

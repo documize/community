@@ -25,7 +25,7 @@ cp documize/api/mail/*.html documize/web/bindata/mail
 cp documize/database/templates/*.html documize/web/bindata
 rm -rf documize/web/bindata/scripts
 mkdir -p documize/web/bindata/scripts
-cp -r documize/database/scripts documize/web/bindata
+cp -r documize/database/scripts/autobuild/*.sql documize/web/bindata/scripts
 
 echo "Generating in-memory static assets..."
 go get github.com/jteeuwen/go-bindata/...

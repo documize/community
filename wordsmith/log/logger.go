@@ -20,8 +20,9 @@ func init() {
 	log.SetLevel(log.DebugLevel)
 	env.GetString(&environment, "log", false,
 		"system being logged e.g. 'PRODUCTION'",
-		func() {
+		func(*string, string) bool {
 			log.Infoln(environment + " environment logging enabled")
+			return false
 		})
 }
 

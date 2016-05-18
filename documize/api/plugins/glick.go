@@ -2,6 +2,7 @@
 package plugins
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"time"
@@ -10,6 +11,7 @@ import (
 	"github.com/documize/community/documize/api/convert/documizeapi"
 	"github.com/documize/community/documize/api/convert/html"
 	"github.com/documize/community/documize/api/convert/md"
+	"github.com/documize/community/documize/api/request"
 	"github.com/documize/community/wordsmith/api"
 	"github.com/documize/community/wordsmith/environment"
 	"github.com/documize/community/wordsmith/log"
@@ -17,12 +19,12 @@ import (
 )
 
 // PluginFile is the path to the file containing the configuration information for the plugin system in JSON format.
-var PluginFile = "plugin.json"
+var PluginFile = "DB" // this points to the database
 var insecure = "false"
 
 func init() {
 	environment.GetString(&PluginFile, "plugin", false,
-		"the JSON file describing plugins, default 'plugin.json'", nil)
+		"the JSON file describing plugins, default 'DB' uses the database config table 'FILEPLUGINS' entry", nil)
 	environment.GetString(&insecure, "insecure", false,
 		"if 'true' allow https endpoints with invalid certificates (only for testing)", nil)
 }
@@ -98,15 +100,23 @@ func LibSetup() error {
 		return err
 	}
 
-	json, err := ioutil.ReadFile(PluginFile)
-	if err != nil {
-		log.Info("Plugin file '" + PluginFile + "' not found, using no plugins")
-		json = []byte(" [ ] \n")
-		err = nil
+	var json = make([]byte, 0)
+	if PluginFile == "DB" {
+		json = []byte(request.ConfigString("FILEPLUGINS", ""))
+		if len(bytes.TrimSpace(json)) == 0 {
+			return nil // don't fail if the DB does not exist yet
+		}
+	} else {
+		json, err = ioutil.ReadFile(PluginFile)
+		if err != nil {
+			log.Info("Plugin file '" + PluginFile + "' not found, using no plugins")
+			json = []byte(" [ ] \n")
+			err = nil
+		}
 	}
-
 	err = Lib.Configure(json)
 	if err != nil {
+		//fmt.Println("DEBUG plugin: "+string(json))
 		return err
 	}
 	return Lib.StartLocalRPCservers(infoLog{}, errorLog{})
