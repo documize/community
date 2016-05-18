@@ -1,75 +1,94 @@
-# Instructions
+# Documize Community Edition
+
+To discover how Documize aims to be helpful, please visit https://documize.com
+
+Documize® is a registered trade mark of Documize Inc.
+
+This repository is copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
+
+This software (Documize Community Edition) is licensed under GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
+
+You can operate outside the AGPL restrictions by purchasing Documize Enterprise Edition and obtaining a commercial license by contacting <sales@documize.com>. 
+
+## Running Documize for the first time 
+
+Although the Documize binaries run on Linux, Windows and OSX, the build process has only been tested on OSX.
 
 Install the prerequisites:
-* Go from https://golang.org (be careful to set the $GOPATH environment variable correctly)
-* NPM from https://www.npmjs.com
-* Ember from http://emberjs.com/
-* MySQL (v10.7+) from http://dev.mysql.com/downloads/mysql/ 
+* Go from https://golang.org (be careful to set the $GOPATH environment variable correctly, you may find https://www.goinggo.net/2016/05/installing-go-and-your-workspace.html helpful)
+* NPM from https://www.npmjs.com 
+* Ember from http://emberjs.com/ 
+* MySQL (v10.7+) from http://dev.mysql.com/downloads/mysql/
 
-Make sure this repository sits at the following position relative to your $GOPATH: ```$GOPATH/src/github.com/documize/community```
+Make sure this repository sits at the following position relative to your $GOPATH: $GOPATH/src/github.com/documize/community
 
-After cloning the repository in the above location, go there and run: ```./build.sh```
+After cloning the repository in the above location, go there and run: ./build.sh 
 
-Your ```./bin``` directory should now contain a set of binaries for a number of target systems.
+The build script packages up the Ember JS/HTML/CSS code for production use, then generates Go code that creates a simple in-memory file system to contain it. That generated Go code is compiled with the rest to produce a single binary for each of the target systems. 
 
-Now create an empty database in MySql for Documize to use, making sure that the default collation setting is ```utf8_general_ci``` or some other utf8 variant.
+Your ./bin directory should now contain a set of binaries for a number of target systems. This binary can be executed on any system which also has access to a MySQL database with no further dependencies.
 
-Run Documize for the first time to set-up the database and your user information 
-(for example on OSX, using port 5001, MySQL user root/password and database 'documize'):
+Use a MySQL tool to create an empty database for Documize to use, making sure that the default collation setting is utf8_general_ci or some other utf8 variant.
+
+Run Documize for the first time to set-up the database and your user information (for example on OSX, using port 5001, MySQL user root/password and database ‘documize’):
 ```
 ./bin/documize-darwin-amd64 -port=5001 -db='root:password@tcp(localhost:3306)/documize'
 ```
-An error message will appear in the log to say your installation is in set-up mode.
-Now navigate to http://localhost:5001 and follow the instructions.
+An error message will appear in the log to say your installation is in set-up mode. Now navigate to http://localhost:5001 and follow the instructions.
 
 Hopefully you will now have a working Documize instance.
 
-# Ember
+Once you have set-up the database as described above, you could go to the ./documize directory and use the command "go run documize.go" in place of the binary name.
 
-To run the Ember code using ```ember s``` from the app directory, the Go binary needs to run an SSL server on port 5001. 
+Run Documize with a flag of "-help" or similar to see the command line flags, those related to SSL/TLS are discussed below. 
 
-If you don't have a valid certification key pair for your machine, you can generate them by doing the following:
+## Configuring the server to use HTTPS
+
+To configure SSL you will need valid certificate and key .pem files. 
+
+If you don’t have a valid certification key pair for your development machine, you can generate them by doing the following:
 ```
 cd selfcert
 go run generate_cert.go -host localhost
 cd ..
 ```
-...obviously you should never use a self generated certificate in a live environment.
-
+…obviously you should never use a self-generated certificate in a live environment.
 
 To run Documize using those certs (using the set-up above):
 ```
 ./bin/documize-darwin-amd64 -db='root:password@tcp(localhost:3306)/documize' -port=5001 -cert selfcert/cert.pem -key selfcert/key.pem 
 ```
-With this process running in the background, Ember should work.
+If you navigate to https://localhost:5001 and you want to remove the Chrome warning messages about your invalid self-cert follow the instructions at: https://www.accuweaver.com/2014/09/19/make-chrome-accept-a-self-signed-certificate-on-osx/
 
-If you navigate to https://localhost:5001 and you want to remove the Chrome warning messages about your invalid self-cert 
-follow the instructions at: https://www.accuweaver.com/2014/09/19/make-chrome-accept-a-self-signed-certificate-on-osx/
+If you do not specify a port, Documize will default to port 443 if there are key/cert files, port 80 otherwise.
 
-TODO - document SMTP and Token 
+If you want non-SSL http:// traffic to redirect to the SSL port, use command line flag: -forcesslport=9999
 
-# To Document
+## Ember 
 
-The build process around go get github.com/elazarl/go-bindata-assetfs
+This section is only required if you want to develop the Ember code.
 
-## GO
+These two commands are best run in different terminal windows: 
 
-gobin / go env
+(1) Run the Go binary needs to run an SSL server on port 5001, as described in the sections above.
 
-## go-bindata-assetsfs
+(2) Run the Ember code using the command ```ember s``` from the app directory.
 
-make sure you do install cmd from inside go-* folder where main.go lives
+Ember should be visible by navigating to: http://localhost:4200
+ 
 
-## SSL
+## Configuring SMTP 
 
-selfcert generation and avoiding red lock
+In order to send e-mail from your Documize instance, you must configure it.
 
-https://www.accuweaver.com/2014/09/19/make-chrome-accept-a-self-signed-certificate-on-osx/
+At present this configuration is not available from the web interface, it requires the use of a MySQL tool of your choice.
 
-chrome://restart
+In your database, the table `config` has two fields `key` holding CHAR(255) and `config` holding JSON.
 
-go run generate_cert.go -host demo1.dev
+The SQL to find you current SMTP configuration is: ``` `SELECT `config` FROM `config` WHERE `key` = 'SMTP'; ```
 
-port number not required
-but browser restart is!
+In an empty database the result will be something like:
 
+```{"host": "", "port": "", "sender": "", "userid": "", "password": ""}```
+
+To configure SMTP, you must set these values in the JSON as your systems require, using a MySQL tool. 
