@@ -1,5 +1,23 @@
 package endpoint
 
+// TestEndpoint is the entrypoint for all testing unit testing of this package.
+// The actual tests are in "github.com/documize/documize-sdk/exttest".
+/* The tests require an environment specified by two environment variables:
+   "DOCUMIZEAPI" e.g. "http://localhost:5002"
+   "DOCUMIZEAUTH" e.g. "demo1:jim@davidson.com:demo123"
+   - the user for testing must have admin privilidges and a folder called 'TEST'.
+*/
+/* NOTE currently excluded from SDK and testing are endpoints requiring e-mail interaction:
+	   InviteToFolder()
+	   inviteNewUserToSharedFolder()
+	   AcceptSharedFolder()
+	   ForgotUserPassword()
+	   ResetUserPassword()
+       ChangeUserPassword()
+*/
+
+/* TODO (Elliott) make tests work on an empty database
+
 import (
 	"os"
 	"strings"
@@ -14,7 +32,7 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	environment.Parse() // the database environment variables must be set
+	environment.Parse("db") // the database environment variables must be set
 	port = "5002"
 	testHost = "localhost"
 	testSetup()
@@ -64,21 +82,6 @@ func testTeardown() {
 	log.IfErr(plugins.Lib.KillSubProcs())
 }
 
-// TestEndpoint is the entrypoint for all testing unit testing of this package.
-// The actual tests are in "github.com/documize/documize-sdk/exttest".
-/* The tests require an environment specified by two environment variables:
-   "DOCUMIZEAPI" e.g. "http://localhost:5002"
-   "DOCUMIZEAUTH" e.g. "demo1:jim@davidson.com:demo123"
-   - the user for testing must have admin privilidges and a folder called 'TEST'.
-*/
-/* NOTE currently excluded from SDK and testing are endpoints requiring e-mail interaction:
-	   InviteToFolder()
-	   inviteNewUserToSharedFolder()
-	   AcceptSharedFolder()
-	   ForgotUserPassword()
-	   ResetUserPassword()
-       ChangeUserPassword()
-*/
 func TestEndpoint(t *testing.T) {
 	exttest.APItest(t)
 }
@@ -92,3 +95,5 @@ func BenchmarkEndpoint(b *testing.B) {
 		}
 	}
 }
+
+*/

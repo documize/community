@@ -22,6 +22,9 @@ func FlagFromDB(target *string, name string) bool {
 
 // ConfigString fetches a configuration JSON element from the config table.
 func ConfigString(area, path string) (ret string) {
+	if Db == nil {
+		return ""
+	}
 	if path != "" {
 		path = "." + path
 	}
