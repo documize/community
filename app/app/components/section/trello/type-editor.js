@@ -22,9 +22,16 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
     authenticated: false,
     config: {},
     boards: null,
+    noBoards: false,
 
     boardStyle: Ember.computed('config.board', function() {
-        var color = this.get('config.board').prefs.backgroundColor;
+        let board = this.get('config.board');
+
+        if (is.null(board) || is.undefined(board)) {
+            return "#4c4c4c";
+        }
+
+        let color = board.prefs.backgroundColor;
         return Ember.String.htmlSafe("background-color: " + color);
     }),
 
@@ -38,7 +45,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
         if (is.empty(config)) {
             config = {
-                appKey: "",
+                appKey: "8e00492ee9a8934cfb8604d3a51f8f70",
                 token: "",
                 user: null,
                 board: null,
@@ -50,6 +57,11 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
         if (this.get('config.appKey') !== "" && this.get('config.token') !== "") {
             this.send('auth');
+        }
+        else {
+            Ember.$.getScript("https://api.trello.com/1/client.js?key=" + this.get('config.appKey'), function() {
+                Trello.deauthorize();
+            });
         }
     },
 
@@ -64,6 +76,13 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
         let boards = this.get('boards');
         let board = this.get('config.board');
         let page = this.get('page');
+
+        if (is.null(boards) || is.undefined(boards) || boards.length === 0) {
+            this.set('noBoards', true);
+            return;
+        }
+
+        this.set('noBoards', false);
 
         if (is.null(board) || is.undefined(board)) {
             if (boards.length) {
@@ -106,10 +125,6 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
             return this.get('isDirty');
         },
 
-        getAppKey() {
-            window.open("https://trello.com/app-key", "Trello App Key", "");
-        },
-
         onListCheckbox(id) {
             let lists = this.get('config.lists');
             let list = lists.findBy('id', id);
@@ -117,12 +132,6 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
             if (list !== null) {
                 Ember.set(list, 'included', !list.included);
             }
-        },
-
-        logout() {
-            Trello.deauthorize();
-            this.set('authenticated', false);
-            this.set('token', '');
         },
 
         auth() {
@@ -215,6 +224,3 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
         }
     }
 });
-
-// app key per user
-// global section config

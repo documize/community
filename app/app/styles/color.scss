@@ -1,19 +1,17 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
-
 $color-off-white: #f5f5f5;
 $color-off-black: #4c4c4c;
 $color-black: #000000;
 $color-white: #ffffff;
-
 $color-primary: #2180cc;
 $color-link: #5680de;
 $color-red: #d9493c;
@@ -27,11 +25,8 @@ $color-chip: #98A2AB;
 $color-input: #98A2AB;
 $color-stroke: #98A2AB;
 $color-card-active: #f7fcff;
-
-
 $color-border: #dbdbdb;
 $color-border2: #e2e2e2;
-
 $color-primary-light: lighten($color-primary, 30%);
 $color-primary-dark: darken($color-primary, 10%);
 $color-gray2: #f0eeee;
@@ -41,16 +36,42 @@ $color-shadow: #dbdbdb;
 $color-error: #c23c56;
 $color-highlight: #fff8dc;
 $color-warning: #990012;
-
-.background-color-white { background-color: $color-white; }
-.color-white { color: $color-white; }
-.color-off-white { color: $color-off-white; }
-.color-black { color: $color-black; }
-.color-off-black { color: $color-off-black; }
-.background-color-primary { background-color: $color-primary; }
-.color-primary { color: $color-primary; }
-.color-link { color: $color-link; }
-.color-blue { color: $color-blue; }
-.color-red { color: $color-red; }
-.color-green { color: $color-green; }
-.color-gray { color: $color-gray; }
+.background-color-white {
+	background-color: $color-white;
+}
+.color-white {
+	color: $color-white;
+}
+.color-off-white {
+	color: $color-off-white;
+}
+.color-black {
+	color: $color-black;
+}
+.color-off-black {
+	color: $color-off-black;
+}
+.background-color-primary {
+	background-color: $color-primary;
+}
+.color-primary {
+	color: $color-primary;
+}
+.color-link {
+	color: $color-link;
+}
+.color-blue {
+	color: $color-blue;
+}
+.color-red {
+	color: $color-red;
+}
+.color-green {
+	color: $color-green;
+}
+.color-gray {
+	color: $color-gray;
+}
+.color-error {
+	color: $color-error;
+}

@@ -32,64 +32,64 @@
 	}
 </style>
 
-{{#section/base-editor document=document folder=folder page=page busy=busy tip="Trello is the visual way to manage your projects and organize anything (https://trello.com)" isDirty=(action 'isDirty') onCancel=(action 'onCancel') onAction=(action
-				'onAction')}}
-
-	<div class="pull-left width-45">
-		<div class="input-form">
-			<form>
-				<div class="heading">
-					<div class="title">Authentication</div>
-					<div class="tip">Provide Trello App Key and then authenticate</div>
-				</div>
-				<div class="input-control">
-					<label>Trello App Key</label>
-					<div class="tip">Use plain old button below to grab the magic key -- you might need to log into Trello</div>
-					{{focus-input id="trello-appkey" type="password" value=config.appKey readonly=isReadonly}}
-				</div>
-				{{#if authenticated}}
-					<div class="regular-button button-gray" {{ action 'logout' }}>Logout {{config.user.fullName}}</div>
-				{{else}}
-					<div class="regular-button button-gray" {{ action 'getAppKey' }}>Get App Key</div>
-					<div class="button-gap" />
-					<div class="regular-button button-blue" {{ action 'auth' }}>Authenticate</div>
-				{{/if}}
-			</form>
-		</div>
-	</div>
+{{#section/base-editor document=document folder=folder page=page busy=busy
+	tip="Trello is the visual way to manage your projects and organize anything (https://trello.com)"
+	isDirty=(action 'isDirty') onCancel=(action 'onCancel') onAction=(action 'onAction')}}
 
 	{{#if authenticated}}
-		<div class="pull-right width-45">
+
+		<div class="pull-left width-50">
 			<div class="input-form">
 				<div class="heading">
 					<div class="title">Select Board & Lists</div>
 					<div class="tip">Choose lists to include from board</div>
 				</div>
-				<div class="input-control">
-					<label>Board</label>
-					<div class="tip">Select board</div>
-					{{ui-select id="boards-dropdown" content=boards action=(action 'onBoardChange') optionValuePath="id" optionLabelPath="name" selection=config.board}}
-				</div>
-				<div class="input-control">
-					<label>Lists</label>
-					<div class="tip">Select lists to include</div>
-					<div class="trello-board" style= {{boardStyle}}>
-						<div class="trello-board-title">{{config.board.name}}</div>
-						{{#each config.lists as |list|}}
-							<div class="trello-list" {{action 'onListCheckbox' list.id}}>
-								{{#if list.included}}
-									<i class="material-icons widget-checkbox checkbox-gray trello-list-checkbox">check_box</i>
-								{{else}}
-									<i class="material-icons widget-checkbox checkbox-gray trello-list-checkbox">check_box_outline_blank</i>
-								{{/if}}
-								<span class="trello-list-title">{{list.name}}</span>
-							</div>
-						{{/each}}
-						<div class="clearfix" />
+				{{#if noBoards}}
+					<div class="input-control">
+						<div class="color-error">You have no team boards to share - personal boards are never shown.</div>
 					</div>
-				</div>
+				{{else}}
+					<div class="input-control">
+						<label>Board</label>
+						<div class="tip">Select board</div>
+						{{ui-select id="boards-dropdown" content=boards action=(action 'onBoardChange') optionValuePath="id" optionLabelPath="name" selection=config.board}}
+					</div>
+					<div class="input-control">
+						<label>Lists</label>
+						<div class="tip">Select lists to include</div>
+						<div class="trello-board" style= {{boardStyle}}>
+							<div class="trello-board-title">{{config.board.name}}</div>
+							{{#each config.lists as |list|}}
+								<div class="trello-list" {{action 'onListCheckbox' list.id}}>
+									{{#if list.included}}
+										<i class="material-icons widget-checkbox checkbox-gray trello-list-checkbox">check_box</i>
+									{{else}}
+										<i class="material-icons widget-checkbox checkbox-gray trello-list-checkbox">check_box_outline_blank</i>
+									{{/if}}
+									<span class="trello-list-title">{{list.name}}</span>
+								</div>
+							{{/each}}
+							<div class="clearfix" />
+						</div>
+					</div>
+				{{/if}}
 			</div>
 		</div>
+
+	{{else}}
+
+		<div class="pull-left width-50">
+			<div class="input-form">
+				<form>
+					<div class="heading">
+						<div class="title">Authentication</div>
+						<div class="tip">Click to authenticate with Trello</div>
+					</div>
+					<div class="regular-button button-blue" {{ action 'auth' }}>Authenticate</div>
+				</form>
+			</div>
+		</div>
+
 	{{/if}}
 
 {{/section/base-editor}}
