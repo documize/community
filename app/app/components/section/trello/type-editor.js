@@ -216,5 +216,5 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
     }
 });
 
-// app key really required?
-// pass/save global section config?
+// app key per user
+// global section config
