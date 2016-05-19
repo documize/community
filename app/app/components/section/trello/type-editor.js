@@ -28,12 +28,14 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
         try {
             config = JSON.parse(this.get('meta.config'));
-        } catch (e) {}
+        }
+        catch (e) {}
 
         if (is.empty(config)) {
             config = {
                 appKey: "",
                 token: "",
+                user: null,
                 board: null,
                 lists: []
             };
@@ -41,10 +43,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
         this.set('config', config);
 
-        if (this.get('config.appKey') !== "" &&
-            this.get('config.token') !== "") {
-            console.log(this.get('isReadonly'));
-            console.log(this.get('isMine'));
+        if (this.get('config.appKey') !== "" && this.get('config.token') !== "") {
             this.send('auth');
         }
     },
@@ -59,20 +58,21 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
         let self = this;
         let boards = this.get('boards');
         let board = this.get('config.board');
-		let page = this.get('page');
+        let page = this.get('page');
 
         if (is.null(board) || is.undefined(board)) {
             if (boards.length) {
                 board = boards[0];
                 this.set('config.board', board);
             }
-        } else {
+        }
+        else {
             this.set('config.board', boards.findBy('id', board.id));
         }
 
-		this.get('sectionService').fetch(page, "lists", self.get('config'))
-			.then(function(lists) {
-				let savedLists = self.get('config.lists');
+        this.get('sectionService').fetch(page, "lists", self.get('config'))
+            .then(function(lists) {
+                let savedLists = self.get('config.lists');
                 if (savedLists === null) {
                     savedLists = [];
                 }
@@ -88,39 +88,12 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
                 self.set('config.lists', lists);
                 self.set('busy', false);
-			}, function(error) { //jshint ignore: line
-				self.set('busy', false);
+            }, function(error) { //jshint ignore: line
+                self.set('busy', false);
                 self.set('authenticated', false);
                 self.showNotification("Unable to fetch board lists");
                 console.log(error);
-			});
-
-
-        // Trello.get(`boards/${board.id}/lists/open?fields=id,name,url`,
-        //     function(lists) {
-        //         let savedLists = self.get('config.lists');
-        //         if (savedLists === null) {
-        //             savedLists = [];
-        //         }
-		//
-        //         lists.forEach(function(list) {
-        //             let saved = savedLists.findBy("id", list.id);
-        //             let included = true;
-        //             if (is.not.undefined(saved)) {
-        //                 included = saved.included;
-        //             }
-        //             list.included = included;
-        //         });
-		//
-        //         self.set('config.lists', lists);
-        //         self.set('busy', false);
-        //     },
-        //     function(error) {
-        //         self.set('busy', false);
-        //         self.set('authenticated', false);
-        //         self.showNotification("Unable to fetch board lists");
-        //         console.log(error);
-        //     });
+            });
     },
 
     actions: {
@@ -155,7 +128,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
             }
 
             let self = this;
-			let page = this.get('page');
+            let page = this.get('page');
 
             self.set('busy', true);
 
@@ -175,31 +148,23 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
                         self.set('config.token', Trello.token());
                         self.set('busy', true);
 
-						self.get('sectionService').fetch(page, "boards", self.get('config'))
-			                .then(function(boards) {
-								self.set('busy', false);
-                                self.set('boards', boards.filterBy("closed", false));
+                        Trello.members.get("me", function(user) {
+                            self.set('config.user', user);
+                        }, function(error) {
+                            console.log(error);
+                        });
+
+                        self.get('sectionService').fetch(page, "boards", self.get('config'))
+                            .then(function(boards) {
+                                self.set('busy', false);
+                                self.set('boards', boards);
                                 self.getBoardLists();
-			                }, function(error) { //jshint ignore: line
-								self.set('busy', false);
+                            }, function(error) { //jshint ignore: line
+                                self.set('busy', false);
                                 self.set('authenticated', false);
                                 self.showNotification("Unable to fetch boards");
                                 console.log(error);
-			                });
-
-                        // Trello.get("members/me/boards?fields=id,name,url,closed,prefs,idOrganization",
-                        //     function(boards) {
-                        //         self.set('busy', false);
-                        //         self.set('boards', boards.filterBy("closed", false));
-                        //         self.getBoardLists();
-                        //     },
-                        //     function(error) {
-                        //         self.set('busy', false);
-                        //         self.set('authenticated', false);
-                        //         self.showNotification("Unable to fetch boards");
-                        //         console.log(error);
-                        //     }
-                        // );
+                            });
                     },
                     error: function(error) {
                         self.set('busy', false);
@@ -246,7 +211,5 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
     }
 });
 
-// no private boards?
-// show who owner is -- logout
 // app key really required?
 // pass/save global section config?

@@ -176,10 +176,18 @@ func getBoards(config trelloConfig) (boards []trelloBoard, err error) {
 		return nil, fmt.Errorf("error: HTTP status code %d", res.StatusCode)
 	}
 
-	defer res.Body.Close()
+	b := []trelloBoard{}
 
+	defer res.Body.Close()
 	dec := json.NewDecoder(res.Body)
-	err = dec.Decode(&boards)
+	err = dec.Decode(&b)
+
+	// we only show open, team boards (not personal)
+	for _, b := range b {
+		if !b.Closed && len(b.OrganizationID) > 0 {
+			boards = append(boards, b)
+		}
+	}
 
 	if err != nil {
 		fmt.Println(err)
@@ -265,6 +273,44 @@ type trelloConfig struct {
 func (c *trelloConfig) Clean() {
 	c.AppKey = strings.TrimSpace(c.AppKey)
 	c.Token = strings.TrimSpace(c.Token)
+}
+
+// Trello objects based upon https://github.com/VojtechVitek/go-trello
+type trelloMember struct {
+	ID         string `json:"id"`
+	AvatarHash string `json:"avatarHash"`
+	Bio        string `json:"bio"`
+	BioData    struct {
+		Emoji interface{} `json:"emoji,omitempty"`
+	} `json:"bioData"`
+	Confirmed                bool     `json:"confirmed"`
+	FullName                 string   `json:"fullName"`
+	PremOrgsAdminID          []string `json:"idPremOrgsAdmin"`
+	Initials                 string   `json:"initials"`
+	MemberType               string   `json:"memberType"`
+	Products                 []int    `json:"products"`
+	Status                   string   `json:"status"`
+	URL                      string   `json:"url"`
+	Username                 string   `json:"username"`
+	AvatarSource             string   `json:"avatarSource"`
+	Email                    string   `json:"email"`
+	GravatarHash             string   `json:"gravatarHash"`
+	BoardsID                 []string `json:"idBoards"`
+	BoardsPinnedID           []string `json:"idBoardsPinned"`
+	OrganizationsID          []string `json:"idOrganizations"`
+	LoginTypes               []string `json:"loginTypes"`
+	NewEmail                 string   `json:"newEmail"`
+	OneTimeMessagesDismissed []string `json:"oneTimeMessagesDismissed"`
+	Prefs                    struct {
+		SendSummaries                 bool   `json:"sendSummaries"`
+		MinutesBetweenSummaries       int    `json:"minutesBetweenSummaries"`
+		MinutesBeforeDeadlineToNotify int    `json:"minutesBeforeDeadlineToNotify"`
+		ColorBlind                    bool   `json:"colorBlind"`
+		Locale                        string `json:"locale"`
+	} `json:"prefs"`
+	Trophies           []string `json:"trophies"`
+	UploadedAvatarHash string   `json:"uploadedAvatarHash"`
+	PremiumFeatures    []string `json:"premiumFeatures"`
 }
 
 type trelloBoard struct {
