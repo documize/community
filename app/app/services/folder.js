@@ -291,8 +291,9 @@ export default BaseService.extend({
                         canEdit = permission.canEdit;
                     }
                 });
-
-                self.set('canEditCurrentFolder', canEdit && self.get('sessionService').authenticated);
+                Ember.run(() => {
+                    self.set('canEditCurrentFolder', canEdit && self.get('sessionService').authenticated);
+                });
             }
         });
     },
