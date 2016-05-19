@@ -1,21 +1,29 @@
-import { test } from 'qunit';
+import { test, skip } from 'qunit';
 import moduleForAcceptance from 'documize/tests/helpers/module-for-acceptance';
+// import stubSession from '../helpers/stub-session';
 
 moduleForAcceptance('Acceptance | /');
 
-// TODO: when accessing / with /api/public/meta -> { allowAnonymousAccess: false } then take user to login
-// TODO: when accessing / with /api/public/meta -> { allowAnonymousAccess: true } then take user to folers.index
-// TODO: when accessing / with /api/public/meta -> { allowAnonymousAccess: true } and user is authenticated -> show authenticated user information
+skip('visiting / when not authenticated and with { allowAnonymousAccess: false } takes user to login', function(assert) {
+    visit('/');
 
-test('visiting /', function(assert) {
-  visit('/');
+    andThen(function() {
+        assert.equal(currentURL(), '/auth/login');
+    });
+});
 
-  return pauseTest();
+skip('visiting / when not authenticated and with { allowAnonymousAccess: true } takes user to folder view', function(assert) {
+    visit('/');
 
-  // setup mirage for /api/public/meta -> { allowAnonymousAccess: false}
+    andThen(function() {
+        assert.equal(currentURL(), '/s/VzMuyEw_3WqiafcG/my-project');
+    });
+});
 
+skip('visiting / when authenticated and with { allowAnonymousAccess: true } takes user to dashboard', function(assert) {
+    userLogin();
 
-  andThen(function() {
-    assert.equal(currentURL(), '/auth/login');
-  });
+    andThen(function() {
+        assert.equal(currentURL(), '/s/VzMuyEw_3WqiafcG/my-project');
+    });
 });
