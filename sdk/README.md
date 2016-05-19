@@ -5,7 +5,7 @@
 The directory "documize" contains a command line utility to load files onto the Documize server. 
 Run the command with "--help" to see the available flags.
 
-## test suite
+## test suite (currently disabled)
 
 The directory "exttest" contains a set of tests that are used both to test this package and to test the main documize code.
 
@@ -15,4 +15,4 @@ In order to run these tests two environment variables must be set:
 which must be of the form ```:mick@jagger.com:demo123``` at present,
 with the Documize DB organistion record having the default (empty) subdomain.
 		
-There must also be a single folder named "Test" for code to find and use.
+There must also be a single folder named "Test" for code to find and use. TODO(Elliott) remove this restriction.

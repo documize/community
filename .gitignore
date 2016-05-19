@@ -34,16 +34,8 @@ _cgo_export.*
 _testmain.go
 *.exe
 *.test
-/dickens/dickens
-/dickens/dickens-osx
-/asimov/asimov
-/asimov/asimov-osx
 /plugin-libreoffice/plugin-libreoffice
 /plugin-libreoffice/plugin-libreoffice-osx
-/plugin-markdown/plugin-markdown
-/plugin-markdown/plugin-markdown-osx
-/plugin-tolkien/plugin-tolkien
-/plugin-tolkien/plugin-tolkien-osx
 
 # Ember specific
 /app/dist
