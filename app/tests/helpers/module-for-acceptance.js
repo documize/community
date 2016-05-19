@@ -6,6 +6,8 @@ export default function(name, options = {}) {
   module(name, {
     beforeEach() {
       this.application = startApp();
+      stubAudit(this);
+      stubSession(this);
 
       if (options.beforeEach) {
         options.beforeEach.apply(this, arguments);
