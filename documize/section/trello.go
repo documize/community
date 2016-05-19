@@ -34,9 +34,9 @@ func (*trello) Meta() TypeMeta {
 	section := TypeMeta{}
 	section.ID = "c455a552-202e-441c-ad79-397a8152920b"
 	section.Title = "Trello"
-	section.Description = "Trello boards"
+	section.Description = "Embed cards from boards and lists"
 	section.ContentType = "trello"
-	section.IconFontLigature = "dashboard"
+	section.IconFile = "sections/trello.png"
 
 	return section
 }
@@ -163,46 +163,6 @@ func (*trello) Refresh(config, data string) string {
 }
 
 // Helpers
-// func cards(w http.ResponseWriter, r *http.Request) {
-// 	defer r.Body.Close()
-// 	body, err := ioutil.ReadAll(r.Body)
-//
-// 	if err != nil {
-// 		writeMessage(w, "trello", "Bad body")
-// 		return
-// 	}
-//
-// 	var config = trelloConfig{}
-// 	err = json.Unmarshal(body, &config)
-//
-// 	if err != nil {
-// 		writeError(w, "trello", err)
-// 		return
-// 	}
-//
-// 	config.Clean()
-//
-// 	if len(config.AppKey) == 0 {
-// 		writeMessage(w, "trello", "Missing appKey")
-// 		return
-// 	}
-//
-// 	if len(config.Token) == 0 {
-// 		writeMessage(w, "trello", "Missing token")
-// 		return
-// 	}
-//
-// 	render, err := getCards(config)
-//
-// 	if err != nil {
-// 		fmt.Println(err)
-// 		writeError(w, "trello", err)
-// 		return
-// 	}
-//
-// 	writeJSON(w, render)
-// }
-
 func getBoards(config trelloConfig) (boards []trelloBoard, err error) {
 	req, err := http.NewRequest("GET", fmt.Sprintf("https://api.trello.com/1/members/me/boards?fields=id,name,url,closed,prefs,idOrganization&key=%s&token=%s", config.AppKey, config.Token), nil)
 	client := &http.Client{}
@@ -441,7 +401,3 @@ const trelloTemplate = `
 	{{end}}
 </div>
 `
-
-/*
-does server side load up all data? YES!!??
-*/

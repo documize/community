@@ -15,37 +15,37 @@ import (
 	"net/http"
 )
 
-type code struct {
+type stripe struct {
 }
 
 func init() {
-	sectionsMap["code"] = &code{}
+	sectionsMap["stripe"] = &stripe{}
 }
 
-func (*code) Meta() TypeMeta {
+func (*stripe) Meta() TypeMeta {
 	section := TypeMeta{}
 
-	section.ID = "4f6f2b02-8397-483d-9bb9-eea1fef13304"
-	section.Title = "Code"
-	section.Description = "Formatted code samples supporting 50+ languages"
-	section.ContentType = "code"
-	section.IconFile = "sections/code.png"
-	section.Order = 9997
+	section.ID = "cb597d8d-c724-4034-b272-e8d9e261444f"
+	section.Title = "Stripe"
+	section.Description = "Online and mobile payments, refunds and transfers"
+	section.ContentType = "stripe"
+	section.IconFile = "sections/stripe.png"
+	section.Preview = true
 
 	return section
 }
 
 // Command stub.
-func (*code) Command(w http.ResponseWriter, r *http.Request) {
+func (*stripe) Command(w http.ResponseWriter, r *http.Request) {
 	writeEmpty(w)
 }
 
 // Render just sends back HMTL as-is.
-func (*code) Render(config, data string) string {
+func (*stripe) Render(config, data string) string {
 	return data
 }
 
 // Refresh just sends back data as-is.
-func (*code) Refresh(config, data string) string {
+func (*stripe) Refresh(config, data string) string {
 	return data
 }

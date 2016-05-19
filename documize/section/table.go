@@ -16,9 +16,9 @@ func (*table) Meta() TypeMeta {
 
 	section.ID = "81a2ea93-2dfc-434d-841e-54b832492c92"
 	section.Title = "Table"
-	section.Description = "Your standard table"
+	section.Description = "Table with rows, columns and formatting"
 	section.ContentType = "table"
-	section.IconFontLigature = "border_all"
+	section.IconFile = "sections/table.png"
 	section.Order = 9996
 
 	return section

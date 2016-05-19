@@ -22,7 +22,7 @@ func (*wysiwyg) Meta() TypeMeta {
 	section.Title = "Rich Text"
 	section.Description = "WYSIWYG editing with cut-paste image support"
 	section.ContentType = "wysiwyg"
-	section.IconFontLigature = "format_bold"
+	section.IconFile = "sections/wysiwyg.png"
 	section.Order = 9999
 
 	return section

@@ -248,3 +248,5 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
 // show who owner is -- logout
 // key really required?
+// no private boards?
+// pass/save global section config?

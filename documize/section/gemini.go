@@ -53,10 +53,9 @@ func (*gemini) Meta() TypeMeta {
 	section := TypeMeta{}
 	section.ID = "23b133f9-4020-4616-9291-a98fb939735f"
 	section.Title = "Gemini"
-	section.Description = "Display work items and tickets from Gemini workspaces"
+	section.Description = "Display work items and tickets from workspaces"
 	section.ContentType = "gemini"
-	section.IconFontLigature = ""
-	section.IconFilePath = "sections/gemini.png"
+	section.IconFile = "sections/gemini.png"
 
 	return section
 }

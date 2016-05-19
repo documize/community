@@ -15,37 +15,37 @@ import (
 	"net/http"
 )
 
-type code struct {
+type github struct {
 }
 
 func init() {
-	sectionsMap["code"] = &code{}
+	sectionsMap["github"] = &github{}
 }
 
-func (*code) Meta() TypeMeta {
+func (*github) Meta() TypeMeta {
 	section := TypeMeta{}
 
-	section.ID = "4f6f2b02-8397-483d-9bb9-eea1fef13304"
-	section.Title = "Code"
-	section.Description = "Formatted code samples supporting 50+ languages"
-	section.ContentType = "code"
-	section.IconFile = "sections/code.png"
-	section.Order = 9997
+	section.ID = "38c0e4c5-291c-415e-8a4d-262ee80ba5df"
+	section.Title = "GitHub"
+	section.Description = "Code commits and branches"
+	section.ContentType = "github"
+	section.IconFile = "sections/github.png"
+	section.Preview = true
 
 	return section
 }
 
 // Command stub.
-func (*code) Command(w http.ResponseWriter, r *http.Request) {
+func (*github) Command(w http.ResponseWriter, r *http.Request) {
 	writeEmpty(w)
 }
 
 // Render just sends back HMTL as-is.
-func (*code) Render(config, data string) string {
+func (*github) Render(config, data string) string {
 	return data
 }
 
 // Refresh just sends back data as-is.
-func (*code) Refresh(config, data string) string {
+func (*github) Refresh(config, data string) string {
 	return data
 }

@@ -32,7 +32,6 @@ func (*testsection) Meta() TypeMeta {
 	section.Title = "TestSection"
 	section.Description = "A Test Section"
 	section.ContentType = "testsection"
-	section.IconFontLigature = "border_all"
 
 	return section
 }

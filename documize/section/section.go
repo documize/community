@@ -14,13 +14,13 @@ var sectionsMap = make(map[string]section)
 
 // TypeMeta details a "smart section" that represents a "page" in a document.
 type TypeMeta struct {
-	ID               string `json:"id"`
-	Order            int    `json:"order"`
-	ContentType      string `json:"contentType"`
-	Title            string `json:"title"`
-	Description      string `json:"description"`
-	IconFontLigature string `json:"iconFont"` // e.g. 'done_all' see https://design.google.com/icons/
-	IconFilePath     string `json:"iconFile"`
+	ID          string `json:"id"`
+	Order       int    `json:"order"`
+	ContentType string `json:"contentType"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	IconFile    string `json:"iconFile"`
+	Preview     bool   `json:"preview"` // coming soon!
 }
 
 // section represents a 'page' in a document.

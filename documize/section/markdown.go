@@ -18,9 +18,9 @@ func (*markdown) Meta() TypeMeta {
 
 	section.ID = "1470bb4a-36c6-4a98-a443-096f5658378b"
 	section.Title = "Markdown"
-	section.Description = "CommonMark based markdown editing"
+	section.Description = "CommonMark based markdown content with preview"
 	section.ContentType = "markdown"
-	section.IconFontLigature = "functions"
+	section.IconFile = "sections/markdown.png"
 	section.Order = 9998
 
 	return section
