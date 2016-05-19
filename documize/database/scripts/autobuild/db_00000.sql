@@ -233,7 +233,7 @@ CREATE TABLE IF NOT EXISTS `revision` (
 	`refid` CHAR(16) NOT NULL COLLATE utf8_bin,
 	`orgid` CHAR(16) NOT NULL COLLATE utf8_bin,
 	`documentid` CHAR(16) NOT NULL COLLATE utf8_bin,
-	`ownerid` CHAR(16) DEFAULT '' COLLATE utf8_bin,    
+	`ownerid` CHAR(16) DEFAULT '' COLLATE utf8_bin,
 	`pageid` CHAR(16) NOT NULL COLLATE utf8_bin,
 	`userid` CHAR(16) NOT NULL COLLATE utf8_bin,
 	`contenttype` CHAR(20) NOT NULL DEFAULT 'wysiwyg',
@@ -251,29 +251,16 @@ CREATE TABLE IF NOT EXISTS `revision` (
 DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci
 ENGINE = InnoDB;
 
-/*
-ALTER DATABASE documize CHARACTER SET utf8 COLLATE utf8_general_ci;
-ALTER TABLE organization CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;
-ALTER TABLE account CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;
-ALTER TABLE user CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;
-ALTER TABLE revision CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;
-ALTER TABLE label CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;
-ALTER TABLE document CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;
-ALTER TABLE page CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;
-*/
-
 DROP TABLE IF EXISTS `config`;
 
 CREATE TABLE IF NOT EXISTS  `config` (
 	`key` CHAR(225) NOT NULL,
 	`config` JSON,
-	UNIQUE INDEX `idx_config_area` (`key` ASC) ) ;
+	UNIQUE INDEX `idx_config_area` (`key` ASC) )
+DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 INSERT INTO `config` VALUES ('SMTP','{\"userid\": \"\",\"password\": \"\",\"host\": \"\",\"port\": \"\",\"sender\": \"\"}');
-
 INSERT INTO `config` VALUES ('FILEPLUGINS',
 '[{\"Comment\": \"Disable (or not) built-in html import (NOTE: no Plugin name)\",\"Disabled\": false,\"API\": \"Convert\",\"Actions\": [\"htm\",\"html\"]},{\"Comment\": \"Disable (or not) built-in Documize API import used from SDK (NOTE: no Plugin name)\",\"Disabled\": false,\"API\": \"Convert\",\"Actions\": [\"documizeapi\"]}]');
-
 INSERT INTO `config` VALUES ('LICENSE','{\"token\": \"\",\"endpoint\": \"https://api.documize.com\"}');
-
 INSERT INTO `config` VALUES ('META','{\"database\": \"db_00000.sql\"}');
