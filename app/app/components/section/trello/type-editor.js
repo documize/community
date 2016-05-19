@@ -246,7 +246,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
     }
 });
 
-// show who owner is -- logout
-// key really required?
 // no private boards?
+// show who owner is -- logout
+// app key really required?
 // pass/save global section config?
