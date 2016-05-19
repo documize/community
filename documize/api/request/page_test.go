@@ -1,9 +1,21 @@
-package request
+// Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
+//
+// This software (Documize Community Edition) is licensed under 
+// GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
+//
+// You can operate outside the AGPL restrictions by purchasing
+// Documize Enterprise Edition and obtaining a commercial license
+// by contacting <sales@documize.com>. 
+//
+// https://documize.com
 
+package request
+/* TODO(Elliott)
 import (
 	"strings"
 	"testing"
 
+	"github.com/documize/community/documize/api/endpoint/models"
 	"github.com/documize/community/documize/api/entity"
 )
 
@@ -84,7 +96,7 @@ Pro patria mori.
 	}
 
 	for _, page := range testPages {
-		err := p.AddPage(page)
+		err := p.AddPage(models.PageModel{Page: page})
 		if err != nil {
 			t.Error(err)
 			t.Fail()
@@ -97,12 +109,12 @@ Pro patria mori.
 func testDeletePages(t *testing.T, p *Persister, pages []entity.Page) {
 	p.testNewTx(t) // so that we can use it reliably in defer
 	for _, pg := range pages {
-		_ /*rows*/, err := p.DeletePage(testDocID, pg.RefID)
+		_, err := p.DeletePage(testDocID, pg.RefID)
 		if err != nil {
 			t.Error(err)
 			//t.Fail()
 		}
-		/* this code is belt-and-braces, as document delete should also delete any pages */
+		// this code is belt-and-braces, as document delete should also delete any pages 
 		//if rows != 1 {
 		//	t.Errorf("expected 1 page row deleted got %d", rows)
 		//	//t.Fail()
@@ -131,7 +143,7 @@ func TestPage(t *testing.T) {
 	_ = acc
 	_ = doc
 
-	err := p.AddPage(pages[0])
+	err := p.AddPage(models.PageModel{Page: pages[0]})
 	if err == nil {
 		t.Error("did not error on add of duplicate record")
 	}
@@ -262,3 +274,4 @@ func TestPage(t *testing.T) {
 	}
 	p.testRollback(t)
 }
+*/

@@ -1,3 +1,14 @@
+// Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
+//
+// This software (Documize Community Edition) is licensed under 
+// GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
+//
+// You can operate outside the AGPL restrictions by purchasing
+// Documize Enterprise Edition and obtaining a commercial license
+// by contacting <sales@documize.com>. 
+//
+// https://documize.com
+
 // Package web contains the Documize static web data.
 package web
 
@@ -33,8 +44,8 @@ var SiteInfo struct {
 }
 
 func init() {
-	environment.GetString(&SiteMode, "offline", false, "set to '1' for OFFLINE mode", nil)
-	SiteInfo.DBhash = util.GenerateRandomPassword() // do this only once
+	environment.GetString(&SiteMode, "offline", false, "set to '1' for OFFLINE mode", nil) // no sense overriding this setting from the DB
+	SiteInfo.DBhash = util.GenerateRandomPassword()                                        // do this only once
 }
 
 // EmberHandler provides the webserver for pages developed using the Ember programming environment.

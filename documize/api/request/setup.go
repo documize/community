@@ -1,3 +1,14 @@
+// Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
+//
+// This software (Documize Community Edition) is licensed under 
+// GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
+//
+// You can operate outside the AGPL restrictions by purchasing
+// Documize Enterprise Edition and obtaining a commercial license
+// by contacting <sales@documize.com>. 
+//
+// https://documize.com
+
 package request
 
 // This file contains the code for initial set-up of a database
@@ -36,9 +47,9 @@ func (p *Persister) SetupOrganization(company, title, message, domain, email str
 		Title:      title,   // string `json:"title"`
 		Message:    message, // string `json:"message"`
 		//URL:                  "test.domain",           // string `json:"url"`
-		Domain:               domain,            // string `json:"domain"`
-		Email:                email, // string `json:"email"`
-		AllowAnonymousAccess: false, // bool   `json:"allowAnonymousAccess"`
+		Domain:               domain, // string `json:"domain"`
+		Email:                email,  // string `json:"email"`
+		AllowAnonymousAccess: false,  // bool   `json:"allowAnonymousAccess"`
 		//Serial:               "123",                   // string `json:"-"`
 		Active: true, // bool   `json:"-"`
 	}
@@ -50,6 +61,6 @@ func (p *Persister) SetupOrganization(company, title, message, domain, email str
 	if err != nil {
 		return org, err
 	}
-    p.Context.Transaction, err = Db.Beginx()
+	p.Context.Transaction, err = Db.Beginx()
 	return org, err
 }

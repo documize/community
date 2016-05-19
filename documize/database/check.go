@@ -1,3 +1,14 @@
+// Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
+//
+// This software (Documize Community Edition) is licensed under 
+// GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
+//
+// You can operate outside the AGPL restrictions by purchasing
+// Documize Enterprise Edition and obtaining a commercial license
+// by contacting <sales@documize.com>. 
+//
+// https://documize.com
+
 package database
 
 import (
@@ -13,8 +24,22 @@ import (
 
 var dbCheckOK bool // default false
 
-// Check that the database is configured correctly and that all the required tables exist
-func Check(Db *sqlx.DB, connectionString string) bool {
+// dbPtr is a pointer to the central connection to the database, used by all database requests.
+var dbPtr **sqlx.DB
+
+// lockDB locks the database
+var lockDB func() (bool, error)
+
+// unlockDB unlocks the database
+var unlockDB func()
+
+// Check that the database is configured correctly and that all the required tables exist.
+// It must be the first function called in the 
+func Check(Db *sqlx.DB, connectionString string,lDB func() (bool, error),ulDB func()) bool {
+	dbPtr = &Db
+	lockDB=lDB
+	unlockDB=ulDB
+	
 	csBits := strings.Split(connectionString, "/")
 	if len(csBits) > 1 {
 		web.SiteInfo.DBname = strings.Split(csBits[len(csBits)-1], "?")[0]

@@ -1,4 +1,17 @@
+// Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
+//
+// This software (Documize Community Edition) is licensed under 
+// GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
+//
+// You can operate outside the AGPL restrictions by purchasing
+// Documize Enterprise Edition and obtaining a commercial license
+// by contacting <sales@documize.com>. 
+//
+// https://documize.com
+
 package request
+
+/* TODO(Elliott)
 
 import (
 	"database/sql"
@@ -9,26 +22,6 @@ import (
 )
 
 func testAddOrganization(t *testing.T, p *Persister) entity.Organization {
-	/*
-		org := entity.Organization{
-			BaseEntity:           entity.BaseEntity{RefID: p.Context.OrgID},
-			Company:              "testCompany",           // string `json:"-"`
-			Title:                "testTitle",             // string `json:"title"`
-			Message:              "testMessage",           // string `json:"message"`
-			URL:                  "test.domain",           // string `json:"url"`
-			Domain:               "testdomain",            // string `json:"domain"`
-			Email:                "mail@request.test.org", // string `json:"email"`
-			AllowAnonymousAccess: false,                   // bool   `json:"allowAnonymousAccess"`
-			Serial:               "123",                   // string `json:"-"`
-			Active:               true,                    // bool   `json:"-"`
-		}
-		err := p.AddOrganization(org)
-		if err != nil {
-			t.Error(err)
-			t.Fail()
-		}
-		p.testCommit(t)
-	*/
 	org, err := p.SetupOrganization("testCompany", "testTitle", "testMessage", "testdomain", "mail@request.test.org")
 	if err != nil {
 		t.Error(err)
@@ -125,3 +118,4 @@ func TestOrganization(t *testing.T) {
 	}
 	p.testRollback(t)
 }
+*/

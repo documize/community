@@ -1,3 +1,14 @@
+// Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
+//
+// This software (Documize Community Edition) is licensed under 
+// GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
+//
+// You can operate outside the AGPL restrictions by purchasing
+// Documize Enterprise Edition and obtaining a commercial license
+// by contacting <sales@documize.com>. 
+//
+// https://documize.com
+
 package database
 
 import (
@@ -8,20 +19,19 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jmoiron/sqlx"
-
 	"github.com/documize/community/documize/api/util"
 	"github.com/documize/community/documize/web"
 	"github.com/documize/community/wordsmith/log"
 	"github.com/documize/community/wordsmith/utility"
 )
 
-// DbPtr is a pointer to the central connection to the database, used by all database requests.
-var DbPtr **sqlx.DB
-
 func runSQL(sql string) (id uint64, err error) {
 
-	tx, err := (*DbPtr).Beginx()
+	if strings.TrimSpace(sql) == "" {
+		return 0, nil
+	}
+
+	tx, err := (*dbPtr).Beginx()
 
 	if err != nil {
 		log.Error("runSql - failed to get transaction", err)
@@ -50,6 +60,7 @@ func runSQL(sql string) (id uint64, err error) {
 // Create the tables in a blank database
 func Create(w http.ResponseWriter, r *http.Request) {
 	txt := "database.Create()"
+	//defer func(){fmt.Println("DEBUG"+txt)}()
 
 	if dbCheckOK {
 		txt += " Check OK"
@@ -119,13 +130,15 @@ func Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	buf, err := web.ReadFile("scripts/create.sql")
+	firstSQL := "db_00000.sql"
+
+	buf, err := web.ReadFile("scripts/" + firstSQL)
 	if err != nil {
 		log.Error("database.Create()'s web.ReadFile()", err)
 		return
 	}
 
-	tx, err := (*DbPtr).Beginx()
+	tx, err := (*dbPtr).Beginx()
 	if err != nil {
 		log.Error(" failed to get transaction", err)
 		return
@@ -145,6 +158,11 @@ func Create(w http.ResponseWriter, r *http.Request) {
 
 	err = tx.Commit()
 	if err != nil {
+		log.Error("database.Create()", err)
+		return
+	}
+
+	if err := Migrate(firstSQL); err != nil {
 		log.Error("database.Create()", err)
 		return
 	}
@@ -235,8 +253,8 @@ func setupAccount(completion onboardRequest, serial string) (err error) {
 
 // getStatement strips out the comments and returns all the individual SQL commands (apart from "USE") as a []string.
 func getStatements(bytes []byte) []string {
-	/* Strip comments of the form '-- comment', '// comment' or like this one */
-	stripped := regexp.MustCompile("(?s)--.*?\n|(?s)//.*?\n|/\\*.*?\\*/").ReplaceAll(bytes, []byte("\n"))
+	/* Strip comments of the form '-- comment' or like this one */
+	stripped := regexp.MustCompile("(?s)--.*?\n|/\\*.*?\\*/").ReplaceAll(bytes, []byte("\n"))
 	sqls := strings.Split(string(stripped), ";")
 	ret := make([]string, 0, len(sqls))
 	for _, v := range sqls {

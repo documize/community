@@ -1,9 +1,24 @@
+// Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
+//
+// This software (Documize Community Edition) is licensed under 
+// GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
+//
+// You can operate outside the AGPL restrictions by purchasing
+// Documize Enterprise Edition and obtaining a commercial license
+// by contacting <sales@documize.com>. 
+//
+// https://documize.com
+
 package request
+
+/* TODO(Elliott)
 
 import (
 	"database/sql"
-	"github.com/documize/community/documize/api/entity"
 	"testing"
+
+	"github.com/documize/community/documize/api/entity"
+	"github.com/documize/community/documize/api/util"
 )
 
 func testAddUser(t *testing.T, p *Persister) entity.User {
@@ -18,11 +33,11 @@ func testAddUser(t *testing.T, p *Persister) entity.User {
 		//Password:   "testpassword",             // string    `json:"-"`
 		//Salt:       "testsalt",                 // string    `json:"-"`
 		//Reset:      "testreset",                // string    `json:"-"`
-		Accounts:   nil,                        // []Account `json:"accounts"`
+		Accounts: nil, // []Account `json:"accounts"`
 	}
-	user.Salt = generateSalt()
-	requestedPassword := generateRandomPassword()
-	user.Password = generatePassword(requestedPassword, user.Salt)
+	user.Salt = util.GenerateSalt()
+	requestedPassword := util.GenerateRandomPassword()
+	user.Password = util.GeneratePassword(requestedPassword, user.Salt)
 
 	err := p.AddUser(user)
 	if err != nil {
@@ -56,7 +71,7 @@ func TestUser(t *testing.T) {
 	defer testDeleteOrganization(t, p)
 	user := testAddUser(t, p)
 	defer testDeleteUser(t, p)
-	/*acc :=*/ testAddAccount(t, p)
+	testAddAccount(t, p)
 	//defer testDeleteAccount(t, p) // done by p.DeactiveUser()
 
 	//t.Log(user)
@@ -200,3 +215,4 @@ func TestUser(t *testing.T) {
 	p.testRollback(t)
 
 }
+*/
