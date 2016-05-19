@@ -23,6 +23,11 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
     config: {},
     boards: null,
 
+    boardStyle: Ember.computed('config.board', function() {
+        var color = this.get('config.board').prefs.backgroundColor;
+        return Ember.String.htmlSafe("background-color: " + color);
+    }),
+
     didReceiveAttrs() {
         let config = {};
 

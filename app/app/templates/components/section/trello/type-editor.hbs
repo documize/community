@@ -73,7 +73,7 @@
 				<div class="input-control">
 					<label>Lists</label>
 					<div class="tip">Select lists to include</div>
-					<div class="trello-board" style="background-color:{{config.board.prefs.backgroundColor}};">
+					<div class="trello-board" style= {{boardStyle}}>
 						<div class="trello-board-title">{{config.board.name}}</div>
 						{{#each config.lists as |list|}}
 							<div class="trello-list" {{action 'onListCheckbox' list.id}}>
