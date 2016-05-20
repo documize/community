@@ -34,6 +34,10 @@ export default Ember.Component.extend(NotifierMixin, {
             });
 
             this.set("sections", sections);
+
+			if (this.session.get('popupBlocked')) {
+				this.showNotification("Hmm, looks like your browser is blocking popups...");
+			}
         },
 
         onCancel() {
@@ -54,6 +58,8 @@ export default Ember.Component.extend(NotifierMixin, {
                 $("#page-title").addClass("error").focus();
                 return;
             }
+
+			this.audit.record('added section' + section.contentType);
 
             this.attrs.onAction(title, contentType);
         }
