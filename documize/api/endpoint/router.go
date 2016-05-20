@@ -230,6 +230,11 @@ func cors(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 func metrics(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	w.Header().Add("X-Documize-Version", AppVersion)
 	w.Header().Add("Cache-Control", "no-cache")
+
+	// if certFile != "" && keyFile != "" {
+	// 	w.Header().Add("Strict-Transport-Security", "max-age=63072000; includeSubDomains")
+	// }
+
 	next(w, r)
 }
 
