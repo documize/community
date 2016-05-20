@@ -29,7 +29,6 @@ func (*asana) Meta() TypeMeta {
 	section.Title = "Asana"
 	section.Description = "Embed tasks and projects"
 	section.ContentType = "asana"
-	section.IconFile = "sections/asana.png"
 	section.Preview = true
 
 	return section

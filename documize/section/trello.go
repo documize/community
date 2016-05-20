@@ -36,7 +36,6 @@ func (*trello) Meta() TypeMeta {
 	section.Title = "Trello"
 	section.Description = "Embed cards from boards and lists"
 	section.ContentType = "trello"
-	section.IconFile = "sections/trello.png"
 
 	return section
 }

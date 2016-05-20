@@ -29,7 +29,6 @@ func (*salesforce) Meta() TypeMeta {
 	section.Title = "Salesforce"
 	section.Description = "Customers, contacts and leads"
 	section.ContentType = "salesforce"
-	section.IconFile = "sections/salesforce.png"
 	section.Preview = true
 
 	return section

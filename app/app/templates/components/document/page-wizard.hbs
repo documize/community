@@ -18,7 +18,7 @@
 		<ul class="list">
 			{{#each sections as |section|}}
 				<li class="item {{if section.selected "selected"}}" {{action 'setOption' section.id}}>
-					<img class="img" src="{{section.iconFile}}" />
+					<img class="img" src="/sections/{{section.contentType}}.png" srcset="/sections/{{section.contentType}}@2x.png" />
 					<div class="details">
 						<div class='title'>
 							{{section.title}}

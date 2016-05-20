@@ -29,7 +29,6 @@ func (*docusign) Meta() TypeMeta {
 	section.Title = "DocuSign"
 	section.Description = "Sign and approve documents"
 	section.ContentType = "docusign"
-	section.IconFile = "sections/docusign.png"
 	section.Preview = true
 
 	return section

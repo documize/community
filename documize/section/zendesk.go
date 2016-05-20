@@ -29,7 +29,6 @@ func (*zendesk) Meta() TypeMeta {
 	section.Title = "Zendesk"
 	section.Description = "Show customer support tickets"
 	section.ContentType = "zendesk"
-	section.IconFile = "sections/zendesk.png"
 	section.Preview = true
 
 	return section

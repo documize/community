@@ -29,7 +29,6 @@ func (*code) Meta() TypeMeta {
 	section.Title = "Code"
 	section.Description = "Formatted code samples supporting 50+ languages"
 	section.ContentType = "code"
-	section.IconFile = "sections/code.png"
 	section.Order = 9997
 
 	return section

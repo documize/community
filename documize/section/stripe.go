@@ -29,7 +29,6 @@ func (*stripe) Meta() TypeMeta {
 	section.Title = "Stripe"
 	section.Description = "Online and mobile payments, refunds and transfers"
 	section.ContentType = "stripe"
-	section.IconFile = "sections/stripe.png"
 	section.Preview = true
 
 	return section

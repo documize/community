@@ -29,7 +29,6 @@ func (*github) Meta() TypeMeta {
 	section.Title = "GitHub"
 	section.Description = "Code commits and branches"
 	section.ContentType = "github"
-	section.IconFile = "sections/github.png"
 	section.Preview = true
 
 	return section

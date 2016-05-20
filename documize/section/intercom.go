@@ -29,7 +29,6 @@ func (*intercom) Meta() TypeMeta {
 	section.Title = "Intercom"
 	section.Description = "Application events and metrics"
 	section.ContentType = "intercom"
-	section.IconFile = "sections/intercom.png"
 	section.Preview = true
 
 	return section

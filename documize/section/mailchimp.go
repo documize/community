@@ -29,7 +29,6 @@ func (*mailchimp) Meta() TypeMeta {
 	section.Title = "Mailchimp"
 	section.Description = "Email campaigns and results"
 	section.ContentType = "mailchimp"
-	section.IconFile = "sections/mailchimp.png"
 	section.Preview = true
 
 	return section
