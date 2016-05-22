@@ -13,7 +13,7 @@ import Ember from 'ember';
 import NotifierMixin from '../../mixins/notifier';
 
 export default Ember.Component.extend(NotifierMixin, {
-    title: "",
+    title: "New Section",
     contentType: "",
 
     didReceiveAttrs() {
