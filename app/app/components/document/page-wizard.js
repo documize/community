@@ -35,9 +35,9 @@ export default Ember.Component.extend(NotifierMixin, {
 
             this.set("sections", sections);
 
-			if (this.session.get('popupBlocked')) {
-				this.showNotification("Hmm, looks like your browser is blocking popups...");
-			}
+			// if (this.session.get('popupBlocked')) {
+			// 	this.showNotification("Hmm, looks like your browser is blocking popups...");
+			// }
         },
 
         onCancel() {

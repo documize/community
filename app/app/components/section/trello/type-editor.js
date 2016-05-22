@@ -55,6 +55,15 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
         this.set('config', config);
 
+		// On auth callback capture user token
+		let hashToken = window.location.hash;
+		if (is.not.undefined(hashToken) && is.not.null(hashToken)) {
+			let token = hashToken.replace("#token=", "");
+			if (is.not.empty(token)) {
+				this.set('config.token', token);
+			}
+		}
+
         if (this.get('config.appKey') !== "" && this.get('config.token') !== "") {
             this.send('auth');
         }
@@ -148,8 +157,8 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
             Ember.$.getScript("https://api.trello.com/1/client.js?key=" + this.get('config.appKey'), function() {
                 Trello.authorize({
-                    type: "popup",
-                    // interactive: false,
+                    type: "redirect",
+                    interactive: true,
                     name: "Documize",
                     scope: {
                         read: true,

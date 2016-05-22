@@ -183,14 +183,14 @@ export default Ember.Service.extend({
             });
         }
 
-		var blockedPopupTest = window.open("http://d27wjpa4h6c9yx.cloudfront.net/", "directories=no,height=1,width=1,menubar=no,resizable=no,scrollbars=no,status=no,titlebar=no,top=0,location=no");
-
-		if (!blockedPopupTest) {
-			this.set('popupBlocked', true);
-		} else {
-			blockedPopupTest.close();
-			this.set('popupBlocked', false);
-		}
+		// var blockedPopupTest = window.open("http://maintenance.documize.com", "directories=no,height=1,width=1,menubar=no,resizable=no,scrollbars=no,status=no,titlebar=no,top=0,location=no");
+		//
+		// if (!blockedPopupTest) {
+		// 	this.set('popupBlocked', true);
+		// } else {
+		// 	blockedPopupTest.close();
+		// 	this.set('popupBlocked', false);
+		// }
 
         return new Ember.RSVP.Promise(function(resolve) {
             $.ajax({
