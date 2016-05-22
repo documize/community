@@ -1,11 +1,11 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
@@ -24,10 +24,9 @@ import (
 	"github.com/documize/community/wordsmith/log"
 )
 
-const sectionName = "gemini"
-
 // the HTML that is rendered by this section.
 const renderTemplate = `
+{{if .Authenticated}}
 <p class="margin-left-20">The Gemini workspace <a href="{{.Config.URL}}/workspace/{{.Config.WorkspaceID}}/items">{{.Config.WorkspaceName}}</a> contains {{.Config.ItemCount}} items.</p>
 <table class="basic-table gemini-table">
 	<thead>
@@ -51,6 +50,9 @@ const renderTemplate = `
 		{{end}}
 	</tbody>
 </table>
+{{else}}
+<p>Authenticate with Gemini to see items.</p>
+{{end}}
 `
 
 type gemini struct {
@@ -58,19 +60,16 @@ type gemini struct {
 
 // Register ourselves.
 func init() {
-	sectionsMap[sectionName] = &gemini{}
+	sectionsMap["gemini"] = &gemini{}
 }
 
 // Meta describes this section type.
 func (*gemini) Meta() TypeMeta {
 	section := TypeMeta{}
-
 	section.ID = "23b133f9-4020-4616-9291-a98fb939735f"
 	section.Title = "Gemini"
-	section.Description = "Display work items and tickets from Gemini workspaces"
-	section.ContentType = sectionName
-	section.IconFontLigature = ""
-	section.IconFilePath = "sections/gemini.png"
+	section.Description = "Display work items and tickets from workspaces"
+	section.ContentType = "gemini"
 
 	return section
 }
@@ -88,6 +87,7 @@ func (*gemini) Render(config, data string) string {
 
 	payload.Items = items
 	payload.Config = c
+	payload.Authenticated = c.UserID > 0
 
 	t := template.New("items")
 	t, _ = t.Parse(renderTemplate)
@@ -104,7 +104,7 @@ func (*gemini) Command(w http.ResponseWriter, r *http.Request) {
 	method := query.Get("method")
 
 	if len(method) == 0 {
-		writeMessage(w, sectionName, "missing method name")
+		writeMessage(w, "gemini", "missing method name")
 		return
 	}
 
@@ -187,8 +187,9 @@ func (*gemini) Refresh(config, data string) (newData string) {
 
 // Gemini helpers
 type geminiRender struct {
-	Config geminiConfig
-	Items  []geminiItem
+	Config        geminiConfig
+	Items         []geminiItem
+	Authenticated bool
 }
 
 type geminiItem struct {
@@ -233,7 +234,7 @@ func auth(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
-		writeMessage(w, sectionName, "Bad payload")
+		writeMessage(w, "gemini", "Bad payload")
 		return
 	}
 
@@ -241,24 +242,24 @@ func auth(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &config)
 
 	if err != nil {
-		writeMessage(w, sectionName, "Bad payload")
+		writeMessage(w, "gemini", "Bad payload")
 		return
 	}
 
 	config.Clean()
 
 	if len(config.URL) == 0 {
-		writeMessage(w, sectionName, "Missing URL value")
+		writeMessage(w, "gemini", "Missing URL value")
 		return
 	}
 
 	if len(config.Username) == 0 {
-		writeMessage(w, sectionName, "Missing Username value")
+		writeMessage(w, "gemini", "Missing Username value")
 		return
 	}
 
 	if len(config.APIKey) == 0 {
-		writeMessage(w, sectionName, "Missing APIKey value")
+		writeMessage(w, "gemini", "Missing APIKey value")
 		return
 	}
 
@@ -272,7 +273,7 @@ func auth(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		fmt.Println(err)
-		writeError(w, sectionName, err)
+		writeError(w, "gemini", err)
 		return
 	}
 
@@ -289,7 +290,7 @@ func auth(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		fmt.Println(err)
-		writeError(w, sectionName, err)
+		writeError(w, "gemini", err)
 		return
 	}
 
@@ -301,7 +302,7 @@ func workspace(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
-		writeMessage(w, sectionName, "Bad payload")
+		writeMessage(w, "gemini", "Bad payload")
 		return
 	}
 
@@ -309,29 +310,29 @@ func workspace(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &config)
 
 	if err != nil {
-		writeMessage(w, sectionName, "Bad payload")
+		writeMessage(w, "gemini", "Bad payload")
 		return
 	}
 
 	config.Clean()
 
 	if len(config.URL) == 0 {
-		writeMessage(w, sectionName, "Missing URL value")
+		writeMessage(w, "gemini", "Missing URL value")
 		return
 	}
 
 	if len(config.Username) == 0 {
-		writeMessage(w, sectionName, "Missing Username value")
+		writeMessage(w, "gemini", "Missing Username value")
 		return
 	}
 
 	if len(config.APIKey) == 0 {
-		writeMessage(w, sectionName, "Missing APIKey value")
+		writeMessage(w, "gemini", "Missing APIKey value")
 		return
 	}
 
 	if config.UserID == 0 {
-		writeMessage(w, sectionName, "Missing UserId value")
+		writeMessage(w, "gemini", "Missing UserId value")
 		return
 	}
 
@@ -345,7 +346,7 @@ func workspace(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		fmt.Println(err)
-		writeError(w, sectionName, err)
+		writeError(w, "gemini", err)
 		return
 	}
 
@@ -374,7 +375,7 @@ func items(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
-		writeMessage(w, sectionName, "Bad payload")
+		writeMessage(w, "gemini", "Bad payload")
 		return
 	}
 
@@ -382,24 +383,24 @@ func items(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &config)
 
 	if err != nil {
-		writeMessage(w, sectionName, "Bad payload")
+		writeMessage(w, "gemini", "Bad payload")
 		return
 	}
 
 	config.Clean()
 
 	if len(config.URL) == 0 {
-		writeMessage(w, sectionName, "Missing URL value")
+		writeMessage(w, "gemini", "Missing URL value")
 		return
 	}
 
 	if len(config.Username) == 0 {
-		writeMessage(w, sectionName, "Missing Username value")
+		writeMessage(w, "gemini", "Missing Username value")
 		return
 	}
 
 	if len(config.APIKey) == 0 {
-		writeMessage(w, sectionName, "Missing APIKey value")
+		writeMessage(w, "gemini", "Missing APIKey value")
 		return
 	}
 
@@ -408,7 +409,7 @@ func items(w http.ResponseWriter, r *http.Request) {
 	filter, err := json.Marshal(config.Filter)
 	if err != nil {
 		fmt.Println(err)
-		writeError(w, sectionName, err)
+		writeError(w, "gemini", err)
 		return
 	}
 
@@ -422,7 +423,7 @@ func items(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		fmt.Println(err)
-		writeError(w, sectionName, err)
+		writeError(w, "gemini", err)
 		return
 	}
 
@@ -439,7 +440,7 @@ func items(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		fmt.Println(err)
-		writeError(w, sectionName, err)
+		writeError(w, "gemini", err)
 		return
 	}
 

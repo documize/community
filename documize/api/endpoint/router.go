@@ -1,11 +1,11 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
@@ -30,7 +30,7 @@ const (
 	// AppVersion does what it says
 	// Versioning scheme major.minor where "minor" is optional
 	// e.g. 1, 2, 3, 4.1, 4.2, 5, 6, 7, 7.1, 8, 9, 10, ..... 127, 127.1, 128
-	AppVersion = "11.2"
+	AppVersion = "12"
 )
 
 var port, certFile, keyFile, forcePort2SSL string
@@ -230,6 +230,11 @@ func cors(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 func metrics(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	w.Header().Add("X-Documize-Version", AppVersion)
 	w.Header().Add("Cache-Control", "no-cache")
+
+	// if certFile != "" && keyFile != "" {
+	// 	w.Header().Add("Strict-Transport-Security", "max-age=63072000; includeSubDomains")
+	// }
+
 	next(w, r)
 }
 

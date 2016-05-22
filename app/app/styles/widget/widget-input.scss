@@ -28,7 +28,7 @@
         width: 100%;
         border: none;
         border-bottom: 1px solid $color-input;
-        height: 2rem;
+        height: 2.3rem;
         outline: none;
 
         &:focus {
@@ -53,7 +53,7 @@
 	    padding: 5px;
 	    border: 1px solid $color-input;
 	    border-radius: 2px;
-	    height: 2rem;
+        height: 2.3rem;
 		font-size: 1rem;
 		display: inline-block;
 
@@ -185,4 +185,14 @@
 
 .form-divider {
 	margin-top: 30px;
+}
+
+
+.widget-checkbox {
+	color: $color-link;
+	cursor: pointer;
+}
+
+.checkbox-gray {
+	color: $color-gray !important;
 }

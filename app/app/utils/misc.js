@@ -1,13 +1,23 @@
-// http://thecodeship.com/web-development/alternative-to-javascript-evil-setinterval/
+// Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
+//
+// This software (Documize Community Edition) is licensed under 
+// GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
+//
+// You can operate outside the AGPL restrictions by purchasing
+// Documize Enterprise Edition and obtaining a commercial license
+// by contacting <sales@documize.com>. 
+//
+// https://documize.com
+
+// from http://thecodeship.com/web-development/alternative-to-javascript-evil-setinterval/
 function interval(func, wait, times) {
     var interv = function(w, t) {
         return function() {
-            if(typeof t === "undefined" || t-- > 0) {
+            if (typeof t === "undefined" || t-- > 0) {
                 setTimeout(interv, w);
                 try {
                     func.call(null);
-                }
-                catch(e) {
+                } catch (e) {
                     t = 0;
                     throw e.toString();
                 }

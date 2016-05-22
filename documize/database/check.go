@@ -1,11 +1,11 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
@@ -34,12 +34,12 @@ var lockDB func() (bool, error)
 var unlockDB func()
 
 // Check that the database is configured correctly and that all the required tables exist.
-// It must be the first function called in the 
-func Check(Db *sqlx.DB, connectionString string,lDB func() (bool, error),ulDB func()) bool {
+// It must be the first function called in the
+func Check(Db *sqlx.DB, connectionString string, lDB func() (bool, error), ulDB func()) bool {
 	dbPtr = &Db
-	lockDB=lDB
-	unlockDB=ulDB
-	
+	lockDB = lDB
+	unlockDB = ulDB
+
 	csBits := strings.Split(connectionString, "/")
 	if len(csBits) > 1 {
 		web.SiteInfo.DBname = strings.Split(csBits[len(csBits)-1], "?")[0]
@@ -66,6 +66,11 @@ func Check(Db *sqlx.DB, connectionString string,lDB func() (bool, error),ulDB fu
 		web.SiteMode = web.SiteModeBadDB
 		return false
 	}
+
+	// See http://dba.stackexchange.com/questions/63763/is-there-any-difference-between-these-two-version-of-mysql-5-1-73-community-lo
+	version = strings.Replace(version, "-log", "", 1)
+	version = strings.Replace(version, "-debug", "", 1)
+	version = strings.Replace(version, "-demo", "", 1)
 
 	{ // check minimum MySQL version as we need JSON column type. 5.7.10
 		vParts := strings.Split(version, ".")

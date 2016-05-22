@@ -1,5 +1,7 @@
 .wysiwyg {
-	font-size: 1rem;
+	// font-size: 1rem;
+	font-size: 15px;
+  line-height: 30px;	
 
 	table
 	{
@@ -16,7 +18,7 @@
 			p
 			{
 				margin: 0 !important;
-				padding: 0 !important;
+				padding: 0 !important; 
 			}
 		}
 	}

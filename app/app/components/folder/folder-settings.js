@@ -1,3 +1,14 @@
+// Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
+//
+// This software (Documize Community Edition) is licensed under 
+// GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
+//
+// You can operate outside the AGPL restrictions by purchasing
+// Documize Enterprise Edition and obtaining a commercial license
+// by contacting <sales@documize.com>. 
+//
+// https://documize.com
+
 import Ember from 'ember';
 
 export default Ember.Component.extend({
@@ -28,16 +39,16 @@ export default Ember.Component.extend({
     actions: {
         rename() {
             if (is.empty(this.folder.get('name'))) {
-				$("#folderName").addClass("error").focus();
+                $("#folderName").addClass("error").focus();
                 return;
             }
 
-			this.sendAction("onRename", this.folder);
+            this.sendAction("onRename", this.folder);
         },
 
         remove() {
             if (is.null(this.get('moveTarget'))) {
-				$("#delete-target > select").addClass("error").focus();
+                $("#delete-target > select").addClass("error").focus();
                 return;
             }
 
@@ -52,10 +63,10 @@ export default Ember.Component.extend({
                 message = this.getDefaultInvitationMessage();
             }
 
-			if (email.length === 0) {
-				$("#inviteEmail").addClass("error").focus();
-				return;
-			}
+            if (email.length === 0) {
+                $("#inviteEmail").addClass("error").focus();
+                return;
+            }
 
             var result = {
                 Message: message,
@@ -75,7 +86,7 @@ export default Ember.Component.extend({
                 result.Recipients.push(email);
             }
 
-			this.set('inviteEmail', "");
+            this.set('inviteEmail', "");
 
             this.sendAction("onShare", result);
         },

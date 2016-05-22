@@ -1,3 +1,14 @@
+// Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
+//
+// This software (Documize Community Edition) is licensed under
+// GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
+//
+// You can operate outside the AGPL restrictions by purchasing
+// Documize Enterprise Edition and obtaining a commercial license
+// by contacting <sales@documize.com>.
+//
+// https://documize.com
+
 import Ember from 'ember';
 import encodingUtil from '../utils/encoding';
 import netUtil from '../utils/net';
@@ -117,8 +128,13 @@ export default Ember.Service.extend({
         this.storeSessionItem('token', token);
         this.storeSessionItem('user', JSON.stringify(user));
 
+        let self = this;
+
         $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
-            jqXHR.setRequestHeader('Authorization', 'Bearer ' + token);
+            // We only tack on auth header for Documize API calls
+            if (is.startWith(options.url, self.get('appMeta.url'))) {
+                jqXHR.setRequestHeader('Authorization', 'Bearer ' + token);
+            }
         });
     },
 
@@ -166,6 +182,15 @@ export default Ember.Service.extend({
                 resolve();
             });
         }
+
+		var blockedPopupTest = window.open("http://d27wjpa4h6c9yx.cloudfront.net/", "directories=no,height=1,width=1,menubar=no,resizable=no,scrollbars=no,status=no,titlebar=no,top=0,location=no");
+
+		if (!blockedPopupTest) {
+			this.set('popupBlocked', true);
+		} else {
+			blockedPopupTest.close();
+			this.set('popupBlocked', false);
+		}
 
         return new Ember.RSVP.Promise(function(resolve) {
             $.ajax({

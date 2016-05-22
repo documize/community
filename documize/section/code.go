@@ -1,11 +1,11 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
@@ -27,9 +27,8 @@ func (*code) Meta() TypeMeta {
 
 	section.ID = "4f6f2b02-8397-483d-9bb9-eea1fef13304"
 	section.Title = "Code"
-	section.Description = "Code snippets supporting 50+ languages"
+	section.Description = "Formatted code samples supporting 50+ languages"
 	section.ContentType = "code"
-	section.IconFontLigature = "code"
 	section.Order = 9997
 
 	return section

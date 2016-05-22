@@ -1,3 +1,14 @@
+// Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
+//
+// This software (Documize Community Edition) is licensed under 
+// GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
+//
+// You can operate outside the AGPL restrictions by purchasing
+// Documize Enterprise Edition and obtaining a commercial license
+// by contacting <sales@documize.com>. 
+//
+// https://documize.com
+
 import Ember from 'ember';
 import NotifierMixin from '../../mixins/notifier';
 import TooltipMixin from '../../mixins/tooltip';
@@ -12,9 +23,9 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
     hasSelectedDocuments: false,
     selectedDocuments: [],
     importedDocuments: [],
-	savedTemplates: [],
+    savedTemplates: [],
     isFolderOwner: false,
-	moveFolderId: "",
+    moveFolderId: "",
 
     hasDocuments: function() {
         return this.documents.get('length') > 0;
@@ -26,38 +37,44 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
         this.set('importedDocuments', []);
         this.set('isFolderOwner', this.get('folder.userId') === this.session.user.id);
 
-		let self = this;
+        let self = this;
 
-		this.get('templateService').getSavedTemplates().then(function(saved) {
-			let emptyTemplate = { id: "0", title: "Empty document", selected: true };
-			saved.unshiftObject(emptyTemplate);
-			self.set('savedTemplates', saved);
-		});
+        this.get('templateService').getSavedTemplates().then(function(saved) {
+            let emptyTemplate = {
+                id: "0",
+                title: "Empty document",
+                selected: true
+            };
+            saved.unshiftObject(emptyTemplate);
+            self.set('savedTemplates', saved);
+        });
 
-		let targets = _.reject(this.get('folders'), { id: this.get('folder').get('id') });
-		this.set('movedFolderOptions', targets);
+        let targets = _.reject(this.get('folders'), {
+            id: this.get('folder').get('id')
+        });
+        this.set('movedFolderOptions', targets);
     },
 
-	didRender() {
-		if (this.get('hasSelectedDocuments')) {
-			this.addTooltip(document.getElementById("move-documents-button"));
-			this.addTooltip(document.getElementById("delete-documents-button"));
-		} else {
-			if (this.get('isFolderOwner')) {
-				this.addTooltip(document.getElementById("folder-share-button"));
-				this.addTooltip(document.getElementById("folder-settings-button"));
-			}
-			if (this.get('folderService').get('canEditCurrentFolder')) {
-				this.addTooltip(document.getElementById("start-document-button"));
-			}
-		}
-	},
+    didRender() {
+        if (this.get('hasSelectedDocuments')) {
+            this.addTooltip(document.getElementById("move-documents-button"));
+            this.addTooltip(document.getElementById("delete-documents-button"));
+        } else {
+            if (this.get('isFolderOwner')) {
+                this.addTooltip(document.getElementById("folder-share-button"));
+                this.addTooltip(document.getElementById("folder-settings-button"));
+            }
+            if (this.get('folderService').get('canEditCurrentFolder')) {
+                this.addTooltip(document.getElementById("start-document-button"));
+            }
+        }
+    },
 
-	willDestroyElement() {
-		this.destroyTooltips();
-	},
+    willDestroyElement() {
+        this.destroyTooltips();
+    },
 
-    navigateToDocument(document){
+    navigateToDocument(document) {
         this.attrs.showDocument(this.get('folder'), document);
     },
 
@@ -67,14 +84,14 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
             this.set('hasSelectedDocuments', documents.length > 0);
         },
 
-		onEditTemplate(template) {
-			this.navigateToDocument(template);
-		},
+        onEditTemplate(template) {
+            this.navigateToDocument(template);
+        },
 
-        onDocumentTemplate(id /*, title, type*/) {
+        onDocumentTemplate(id /*, title, type*/ ) {
             let self = this;
 
-			this.send("showNotification", "Creating");
+            this.send("showNotification", "Creating");
 
             this.get('templateService').importSavedTemplate(this.folder.get('id'), id).then(function(document) {
                 self.navigateToDocument(document);
@@ -82,21 +99,21 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
         },
 
         onDocumentImporting(filename) {
-			this.send("showNotification", `Importing ${filename}`);
+            this.send("showNotification", `Importing ${filename}`);
 
             let documents = this.get('importedDocuments');
             documents.push(filename);
             this.set('importedDocuments', documents);
         },
 
-        onDocumentImported(filename/*, document*/) {
-			this.send("showNotification", `${filename} ready`);
+        onDocumentImported(filename /*, document*/ ) {
+            this.send("showNotification", `${filename} ready`);
 
             let documents = this.get('importedDocuments');
             documents.pop(filename);
             this.set('importedDocuments', documents);
 
-			this.attrs.refresh();
+            this.attrs.refresh();
 
             if (documents.length === 0) {
                 // this.get('showDocument')(this.get('folder'), document);
@@ -115,31 +132,31 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
             this.set('selectedDocuments', []);
             this.set('hasSelectedDocuments', false);
-			this.send("showNotification", "Deleted");
+            this.send("showNotification", "Deleted");
 
-			return true;
+            return true;
         },
 
-		setMoveFolder(folderId) {
-			this.set('moveFolderId', folderId);
+        setMoveFolder(folderId) {
+            this.set('moveFolderId', folderId);
 
-			let folders = this.get('folders');
+            let folders = this.get('folders');
 
-			folders.forEach(folder => {
-				folder.set('selected', folder.id === folderId);
-			});
-		},
+            folders.forEach(folder => {
+                folder.set('selected', folder.id === folderId);
+            });
+        },
 
         moveDocuments() {
-			if (this.get("moveFolderId") === "") {
-				return false;
-			}
+            if (this.get("moveFolderId") === "") {
+                return false;
+            }
 
             this.get('onMoveDocument')(this.get('selectedDocuments'), this.get('moveFolderId'));
-			this.set("moveFolderId", "");
-			this.send("showNotification", "Moved");
+            this.set("moveFolderId", "");
+            this.send("showNotification", "Moved");
 
-			return true;
+            return true;
         }
     }
 });

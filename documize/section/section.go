@@ -1,11 +1,11 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
@@ -25,13 +25,12 @@ var sectionsMap = make(map[string]section)
 
 // TypeMeta details a "smart section" that represents a "page" in a document.
 type TypeMeta struct {
-	ID               string `json:"id"`
-	Order            int    `json:"order"`
-	ContentType      string `json:"contentType"`
-	Title            string `json:"title"`
-	Description      string `json:"description"`
-	IconFontLigature string `json:"iconFont"` // e.g. 'done_all' see https://design.google.com/icons/
-	IconFilePath     string `json:"iconFile"`
+	ID          string `json:"id"`
+	Order       int    `json:"order"`
+	ContentType string `json:"contentType"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Preview     bool   `json:"preview"` // coming soon!
 }
 
 // section represents a 'page' in a document.

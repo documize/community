@@ -1,3 +1,14 @@
+// Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
+//
+// This software (Documize Community Edition) is licensed under
+// GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
+//
+// You can operate outside the AGPL restrictions by purchasing
+// Documize Enterprise Edition and obtaining a commercial license
+// by contacting <sales@documize.com>.
+//
+// https://documize.com
+
 /* jshint node: true */
 
 module.exports = function(environment) {
@@ -9,6 +20,7 @@ module.exports = function(environment) {
         baseURL: '/',
         apiHost: '',
         apiNamespace: '',
+        contentSecurityPolicyHeader: 'Content-Security-Policy-Report-Only',
 
         EmberENV: {
             FEATURES: {}
@@ -21,7 +33,7 @@ module.exports = function(environment) {
         ENV.APP.LOG_TRANSITIONS_INTERNAL = true;
 
         ENV.apiHost = "https://localhost:5001";
-        // ENV.apiHost = "https://demo1.dev:5001";
+        ENV.apiHost = "https://demo1.dev:5001";
     }
 
     if (environment === 'test') {
@@ -37,7 +49,8 @@ module.exports = function(environment) {
         // ENV.locationType = 'none';
         // ENV.APP.rootElement = '#ember-testing';
 
-        ENV.apiHost = "https://demo1.dev:5001";
+        ENV.apiHost = "https://localhost:5001";
+        // ENV.apiHost = "https://demo1.dev:5001";
     }
 
     if (environment === 'production') {
@@ -51,6 +64,7 @@ module.exports = function(environment) {
     }
 
     ENV.apiNamespace = "api";
+    ENV.contentSecurityPolicy = null;
 
     // ENV.contentSecurityPolicy = {
     //     'img-src': "'self' data: self https://js.intercomcdn.com",
@@ -61,14 +75,14 @@ module.exports = function(environment) {
     //     'default-src': "none"
     // };
 
+    // ENV.contentSecurityPolicy = {
+    //     'img-src': "'self' data: self",
+    //     'font-src': "'self' *",
+    //     'style-src': "'self' *",
+    //     'script-src': "'self' *",
+    //     'connect-src': "'self' *",
+    //     'default-src': "*"
+    // };
+
     return ENV;
 };
-
-// contentSecurityPolicy: {
-//     'img-src': "'self' data: self",
-//     'font-src': "'self' data: fonts.gstatic.com",
-//     'style-src': "'self' 'unsafe-inline' fonts.googleapis.com",
-//     'script-src': "'self' 'unsafe-inline' 'unsafe-eval' *",
-//     'connect-src': "'self'",
-//     'default-src': "none"
-// },

@@ -1,11 +1,11 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
@@ -29,9 +29,8 @@ func (*markdown) Meta() TypeMeta {
 
 	section.ID = "1470bb4a-36c6-4a98-a443-096f5658378b"
 	section.Title = "Markdown"
-	section.Description = "CommonMark based markdown editing"
+	section.Description = "CommonMark based markdown content with preview"
 	section.ContentType = "markdown"
-	section.IconFontLigature = "functions"
 	section.Order = 9998
 
 	return section

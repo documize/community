@@ -1,8 +1,20 @@
+// Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
+//
+// This software (Documize Community Edition) is licensed under 
+// GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
+//
+// You can operate outside the AGPL restrictions by purchasing
+// Documize Enterprise Edition and obtaining a commercial license
+// by contacting <sales@documize.com>. 
+//
+// https://documize.com
+
 import Ember from 'ember';
 import NotifierMixin from '../../../mixins/notifier';
 import TooltipMixin from '../../../mixins/tooltip';
+import SectionMixin from '../../../mixins/section';
 
-export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
+export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin, {
     sectionService: Ember.inject.service('section'),
     isDirty: false,
     waiting: false,
@@ -10,14 +22,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
     user: {},
     workspaces: [],
     config: {},
-
-    fieldEditable: function() {
-        if (this.get('page.userId') !== this.session.user.id) {
-            return "readonly";
-        } else {
-            return undefined;
-        }
-    }.property('config'),
 
     didReceiveAttrs() {
         let config = {};
