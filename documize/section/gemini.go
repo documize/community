@@ -26,6 +26,7 @@ import (
 
 // the HTML that is rendered by this section.
 const renderTemplate = `
+{{if .Authenticated}}
 <p class="margin-left-20">The Gemini workspace <a href="{{.Config.URL}}/workspace/{{.Config.WorkspaceID}}/items">{{.Config.WorkspaceName}}</a> contains {{.Config.ItemCount}} items.</p>
 <table class="basic-table gemini-table">
 	<thead>
@@ -49,6 +50,9 @@ const renderTemplate = `
 		{{end}}
 	</tbody>
 </table>
+{{else}}
+<p>Authenticate with Gemini to see items.</p>
+{{end}}
 `
 
 type gemini struct {
@@ -83,6 +87,7 @@ func (*gemini) Render(config, data string) string {
 
 	payload.Items = items
 	payload.Config = c
+	payload.Authenticated = c.UserID > 0
 
 	t := template.New("items")
 	t, _ = t.Parse(renderTemplate)
@@ -182,8 +187,9 @@ func (*gemini) Refresh(config, data string) (newData string) {
 
 // Gemini helpers
 type geminiRender struct {
-	Config geminiConfig
-	Items  []geminiItem
+	Config        geminiConfig
+	Items         []geminiItem
+	Authenticated bool
 }
 
 type geminiItem struct {
