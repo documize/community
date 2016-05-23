@@ -11,7 +11,6 @@
 
 package section
 
-/* TODO(Elliott)
 
 import (
 	"net/http"
@@ -19,7 +18,7 @@ import (
 )
 
 type testsection struct {
-	didFetch bool
+	didRefresh bool
 }
 
 var ts testsection
@@ -28,9 +27,13 @@ func init() {
 	sectionsMap["testsection"] = &ts
 }
 
-// Fetch runs ...
-func (ts *testsection) Fetch(w http.ResponseWriter, r *http.Request) {
-	ts.didFetch = true
+// Command is an end-point...
+func (ts *testsection) Command(w http.ResponseWriter, r *http.Request) {}
+
+// Refresh existing data ...
+func (ts *testsection) Refresh(meta, data string) string {
+	ts.didRefresh = true
+	return ""
 }
 
 // Render converts ...
@@ -50,11 +53,11 @@ func (*testsection) Meta() TypeMeta {
 }
 
 func TestSection(t *testing.T) {
-	if ok := Fetch("testsection", nil, nil); !ok {
+	if _,ok := Refresh("testsection", "", ""); !ok {
 		t.Error("did not find 'testsection' smart section (1)")
 	}
-	if !ts.didFetch {
-		t.Error("did not run the test Fetch method")
+	if !ts.didRefresh {
+		t.Error("did not run the test Refresh method")
 	}
 	out, ok := Render("testsection", "meta", "dingbat")
 	if !ok {
@@ -63,12 +66,8 @@ func TestSection(t *testing.T) {
 	if out != "testsection dingbat" {
 		t.Error("wrong output from Render")
 	}
-	for k := range sectionsMap {
-		t.Log(k)
-	}
-	sects := GetRegisteredSections()
+	sects := GetSectionMeta()
 	for _, v := range sects {
 		t.Logf("%v %v", v.Order, v.Title)
 	}
 }
-*/
