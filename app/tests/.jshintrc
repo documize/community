@@ -26,7 +26,8 @@
     "stubSession",
     "stubAudit",
     "pauseTest",
-    "userLogin"
+    "userLogin",
+    "skip"
   ],
   "node": false,
   "browser": false,

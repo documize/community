@@ -1,9 +1,9 @@
-import { test } from 'qunit';
+import { test, skip } from 'qunit';
 import moduleForAcceptance from 'documize/tests/helpers/module-for-acceptance';
 
-moduleForAcceptance('Acceptance | authentication');
+moduleForAcceptance('Acceptance | Authentication');
 
-test('visiting /auth/login and logging in', function(assert) {
+skip('visiting /auth/login and logging in', function(assert) {
     visit('/auth/login');
 
     fillIn('#authEmail', 'brizdigital@gmail.com');
@@ -15,10 +15,11 @@ test('visiting /auth/login and logging in', function(assert) {
     });
 });
 
-test('logging out a user', function(assert) {
+skip('logging out a user', function(assert) {
     userLogin();
 
     visit('/auth/logout'); // logs a user out
+    return pauseTest();
 
     andThen(function() {
         assert.equal(currentURL(), '/');

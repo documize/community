@@ -4,6 +4,7 @@ import config from '../../config/environment';
 import './stub-session';
 import './stub-audit';
 import './user-login';
+import './allow-anonymous-access';
 
 export default function startApp(attrs) {
   let application;
