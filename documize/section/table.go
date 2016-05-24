@@ -26,8 +26,8 @@ func (*table) Meta() TypeMeta {
 	section := TypeMeta{}
 
 	section.ID = "81a2ea93-2dfc-434d-841e-54b832492c92"
-	section.Title = "Table"
-	section.Description = "Table with rows, columns and formatting"
+	section.Title = "Tabular"
+	section.Description = "Rows, columns and formatting for tabular data"
 	section.ContentType = "table"
 	section.Order = 9996
 
