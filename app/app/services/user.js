@@ -14,24 +14,18 @@ import models from '../utils/model';
 
 export default Ember.Service.extend({
     sessionService: Ember.inject.service('session'),
+    ajax: Ember.inject.service(),
 
     // Adds a new user.
     add(user) {
         let url = this.get('sessionService').appMeta.getUrl(`users`);
 
-        return new Ember.RSVP.Promise(function(resolve, reject) {
-            $.ajax({
-                url: url,
-                type: 'POST',
-                data: JSON.stringify(user),
-                contentType: 'json',
-                success: function(response) {
-                    resolve(models.UserModel.create(response));
-                },
-                error: function(reason) {
-                    reject(reason);
-                }
-            });
+        return this.get('ajax').request(url, {
+            type: 'POST',
+            data: JSON.stringify(user),
+            contentType: 'json'
+        }).then(function(response){
+            return models.UserModel.create(response);
         });
     },
 
@@ -57,21 +51,9 @@ export default Ember.Service.extend({
     getAll() {
         let url = this.get('sessionService').appMeta.getUrl(`users`);
 
-        return new Ember.RSVP.Promise(function(resolve, reject) {
-            $.ajax({
-                url: url,
-                type: 'GET',
-                success: function(response) {
-                    let data = [];
-                    _.each(response, function(obj) {
-                        data.pushObject(models.UserModel.create(obj));
-                    });
-
-                    resolve(data);
-                },
-                error: function(reason) {
-                    reject(reason);
-                }
+        return this.get('ajax').request(url).then((response) => {
+            return response.map(function(obj){
+                return models.UserModel.create(obj);
             });
         });
     },
@@ -104,19 +86,10 @@ export default Ember.Service.extend({
         let userId = user.get('id');
         let url = this.get('sessionService').appMeta.getUrl(`users/${userId}`);
 
-        return new Ember.RSVP.Promise(function(resolve, reject) {
-            $.ajax({
-                url: url,
-                type: 'PUT',
-                data: JSON.stringify(user),
-                contentType: 'json',
-                success: function(response) {
-                    resolve(response);
-                },
-                error: function(reason) {
-                    reject(reason);
-                }
-            });
+        return this.get('ajax').request(url, {
+            type: 'PUT',
+            data: JSON.stringify(user),
+            contentType: 'json'
         });
     },
 

@@ -20,23 +20,22 @@ export default Ember.Controller.extend(NotifierMixin, {
                 return;
             }
 
-            var self = this;
 			$("#newUserFirstname").removeClass("error");
 			$("#newUserLastname").removeClass("error");
 			$("#newUserEmail").removeClass("error");
 
-            this.get('userService').add(this.get('newUser')).then(function(/*user*/) {
-                self.showNotification('Added');
-                self.set('newUser', { firstname: "", lastname: "", email: "", active: true });
-                $("#newUserFirstname").focus();
-
-				self.get('userService').getAll().then(function(users) {
-                    self.set('model', users);
+            this.get('userService')
+                .add(this.get('newUser'))
+                .then((user) => {
+                    this.showNotification('Added');
+                    this.set('newUser', { firstname: "", lastname: "", email: "", active: true });
+                    $("#newUserFirstname").focus();
+                    this.get('model').pushObject(user);
+                })
+                .catch(function(){
+                    let msg = error.status === 409 ? 'Unable to add duplicate user' : 'Unable to add user';
+                    self.showNotification(msg);
                 });
-            }, function(error) {
-                let msg = error.status === 409 ? 'Unable to add duplicate user' : 'Unable to add user';
-                self.showNotification(msg);
-            });
         },
 
         onDelete(user) {
