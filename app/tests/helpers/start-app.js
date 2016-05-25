@@ -5,6 +5,7 @@ import './stub-session';
 import './stub-audit';
 import './user-login';
 import './allow-anonymous-access';
+import './wait-to-appear';
 
 export default function startApp(attrs) {
   let application;

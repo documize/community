@@ -115,6 +115,8 @@ export default function() {
                 "userId": "VzMuyEw_3WqiafcE",
                 "folderType": 1
             };
+        } else if (folder_id = 'V0Vy5Uw_3QeDAMW9'){
+            return null;
         }
     });
 
@@ -136,6 +138,45 @@ export default function() {
             "userId": "VzMuyEw_3WqiafcE",
             "folderType": 1
         }];
+        // return [
+        //     {
+        //         "id":"VzMuyEw_3WqiafcG",
+        //         "created":"2016-05-11T15:08:24Z",
+        //         "revised":"2016-05-11T15:08:24Z",
+        //         "name":"My Project",
+        //         "orgId":"VzMuyEw_3WqiafcD",
+        //         "userId":"VzMuyEw_3WqiafcE",
+        //         "folderType":2
+        //     },{
+        //         "id":"VzMygEw_3WrtFzto",
+        //         "created":"2016-05-11T13:24:17Z",
+        //         "revised":"2016-05-11T13:25:51Z",
+        //         "name":"Test",
+        //         "orgId":"VzMuyEw_3WqiafcD",
+        //         "userId":"VzMuyEw_3WqiafcE",
+        //         "folderType":1
+        //     },{
+        //         "id":"V0Vy5Uw_3QeDAMW9",
+        //         "created":"2016-05-25T09:39:49Z",
+        //         "revised":"2016-05-25T09:39:49Z",
+        //         "name":"Test Folder",
+        //         "orgId":"VzMuyEw_3WqiafcD",
+        //         "userId":"VzMuyEw_3WqiafcE",
+        //         "folderType":2
+        //     }
+        // ];
+    });
+
+    this.post('/folders', function() {
+        return {
+            "id":"V0Vy5Uw_3QeDAMW9",
+            "created":"2016-05-25T09:39:49Z",
+            "revised":"2016-05-25T09:39:49Z",
+            "name":"Test Folder",
+            "orgId":"VzMuyEw_3WqiafcD",
+            "userId":"VzMuyEw_3WqiafcE",
+            "folderType":2
+        };
     });
 
     this.post('/public/authenticate', () => {
@@ -170,22 +211,52 @@ export default function() {
     });
 
     this.get('/users/VzMuyEw_3WqiafcE/permissions', () => {
-        return [{
-            "folderId": "VzMuyEw_3WqiafcG",
-            "userId": "VzMuyEw_3WqiafcE",
-            "canView": true,
-            "canEdit": true
-        }, {
-            "folderId": "VzMygEw_3WrtFzto",
-            "userId": "VzMuyEw_3WqiafcE",
-            "canView": true,
-            "canEdit": true
-        }, {
-            "folderId": "VzMygEw_3WrtFzto",
-            "userId": "",
-            "canView": true,
-            "canEdit": false
-        }];
+        return [
+            {
+                "folderId":"V0Vy5Uw_3QeDAMW9",
+                "userId":"VzMuyEw_3WqiafcE",
+                "canView":true,
+                "canEdit":true
+            },{
+                "folderId":"VzMuyEw_3WqiafcG",
+                "userId":"VzMuyEw_3WqiafcE",
+                "canView":true,
+                "canEdit":true
+            },{
+                "folderId":"VzMygEw_3WrtFzto",
+                "userId":"VzMuyEw_3WqiafcE",
+                "canView":true,
+                "canEdit":true
+            },{
+                "folderId":"VzMygEw_3WrtFzto",
+                "userId":"",
+                "canView":true,
+                "canEdit":false
+            }
+        ];
+    });
+
+    this.get('/folders/VzMuyEw_3WqiafcG/permissions', () => {
+        return [
+            {
+                "folderId":"VzMuyEw_3WqiafcG",
+                "userId":"VzMuyEw_3WqiafcE",
+                "canView":true,
+                "canEdit":true
+            }
+        ];
+    });
+
+    this.put('/folders/VzMuyEw_3WqiafcG', () => {
+        return {
+            "id":"VzMuyEw_3WqiafcG",
+            "created":"2016-05-11T15:08:24Z",
+            "revised":"2016-05-11T15:08:24Z",
+            "name":"Test Space",
+            "orgId":"VzMuyEw_3WqiafcD",
+            "userId":"VzMuyEw_3WqiafcE",
+            "folderType":2
+        };
     });
 
     this.get('/folders/VzMygEw_3WrtFzto', () => {
@@ -197,6 +268,18 @@ export default function() {
             "orgId": "VzMuyEw_3WqiafcD",
             "userId": "VzMuyEw_3WqiafcE",
             "folderType": 1
+        };
+    });
+
+    this.get('/folders/V0Vy5Uw_3QeDAMW9', () => {
+        return {
+            "id":"V0Vy5Uw_3QeDAMW9",
+            "created":"2016-05-25T09:39:49Z",
+            "revised":"2016-05-25T09:39:49Z",
+            "name":"Test Folder",
+            "orgId":"VzMuyEw_3WqiafcD",
+            "userId":"VzMuyEw_3WqiafcE",
+            "folderType":2
         };
     });
 

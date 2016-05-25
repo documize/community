@@ -3,7 +3,7 @@ import moduleForAcceptance from 'documize/tests/helpers/module-for-acceptance';
 
 moduleForAcceptance('Acceptance | Anon access enabled');
 
-test('visiting / when not authenticated and with { allowAnonymousAccess: true } takes user to folder view', function(assert) {
+skip('visiting / when not authenticated and with { allowAnonymousAccess: true } takes user to folder view', function(assert) {
     server.create('app-meta', { allowAnonymousAccess: true });
     visit('/');
 
