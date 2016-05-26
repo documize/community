@@ -4,6 +4,7 @@
 	</div>
 
 	<p class="heading">Or use a template:</p>
+
 	<ul class="start-document-options" style="min-width:185px;">
 		{{#each savedTemplates key="id" as |template|}}
 			<li class="option {{if template.selected "selected"}}" {{action 'setTemplate' template}}>

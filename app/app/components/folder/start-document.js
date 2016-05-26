@@ -1,11 +1,11 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
@@ -13,16 +13,23 @@ import Ember from 'ember';
 import NotifierMixin from '../../mixins/notifier';
 
 export default Ember.Component.extend(NotifierMixin, {
-
     tagName: 'span',
     selectedTemplate: {
         id: "0"
     },
     canEditTemplate: "",
+	drop: null,
 
     didReceiveAttrs() {
         this.send('setTemplate', this.get('savedTemplates')[0]);
     },
+
+	willDestroyElement() {
+		if (is.not.null(this.get('drop'))) {
+            this.get('drop').destroy();
+            this.set('drop', null);
+        }
+	},
 
     actions: {
         setTemplate(chosen) {
@@ -58,9 +65,15 @@ export default Ember.Component.extend(NotifierMixin, {
         },
 
         onOpenCallback() {
-            let self = this;
+			if (is.not.null(this.get('drop'))) {
+				return;
+			}
+
+			let self = this;
             let folderId = this.get('folder.id');
             let importUrl = this.session.appMeta.getUrl('import/folder/' + folderId);
+
+			Dropzone.options.uploadDocuments = false;
 
             let dzone = new Dropzone("#upload-documents", {
                 headers: {
@@ -86,7 +99,8 @@ export default Ember.Component.extend(NotifierMixin, {
                         console.log("Conversion failed for ", x.name, " obj ", x); // TODO proper error handling
                     });
 
-                    this.on("queuecomplete", function() {});
+                    this.on("queuecomplete", function() {
+					});
 
                     this.on("addedfile", function(file) {
                         self.attrs.onDocumentImporting(file.name);
@@ -98,6 +112,8 @@ export default Ember.Component.extend(NotifierMixin, {
             dzone.on("complete", function(file) {
                 dzone.removeFile(file);
             });
+
+			this.set('drop', dzone);
         }
     }
 });
