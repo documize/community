@@ -3,7 +3,7 @@ import moduleForAcceptance from 'documize/tests/helpers/module-for-acceptance';
 
 moduleForAcceptance('Acceptance | Authentication');
 
-skip('visiting /auth/login and logging in', function(assert) {
+test('visiting /auth/login and logging in', function(assert) {
     visit('/auth/login');
 
     fillIn('#authEmail', 'brizdigital@gmail.com');
