@@ -27,7 +27,8 @@
     "stubAudit",
     "pauseTest",
     "userLogin",
-    "skip"
+    "skip",
+    "waitToAppear"
   ],
   "node": false,
   "browser": false,

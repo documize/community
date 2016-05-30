@@ -6,6 +6,7 @@ import './stub-audit';
 import './user-login';
 import './allow-anonymous-access';
 import './wait-to-appear';
+import './stub-user-notification';
 
 export default function startApp(attrs) {
   let application;
