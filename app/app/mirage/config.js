@@ -16,6 +16,12 @@ export default function() {
         };
     });
 
+    // this.get('/public/meta', function(db) {
+    //     return {
+    //         meta: db.meta;
+    //     };
+    // });
+
     this.get('/public/validate', function(db, request) {
         let serverToken = request.queryParams.token;
         let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkb21haW4iOiIiLCJleHAiOjE0NjQwMjM2NjcsImlzcyI6IkRvY3VtaXplIiwib3JnIjoiVnpNdXlFd18zV3FpYWZjRCIsInN1YiI6IndlYmFwcCIsInVzZXIiOiJWek11eUV3XzNXcWlhZmNFIn0.NXZ6bo8mtvdZF_b9HavbidVUJqhmBA1zr0fSAPvbah0";
@@ -482,6 +488,14 @@ export default function() {
                 "domain":""
             }
         ]};
+    });
+
+    this.post('/folders/VzMuyEw_3WqiafcG/invitation', () => {
+        return {};
+    });
+
+    this.put('/folders/VzMuyEw_3WqiafcG/permissions', () => {
+        return {};
     });
 
     /**
