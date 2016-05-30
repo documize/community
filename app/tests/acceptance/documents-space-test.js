@@ -3,19 +3,19 @@ import moduleForAcceptance from 'documize/tests/helpers/module-for-acceptance';
 
 moduleForAcceptance('Acceptance | documents space');
 
-skip('Adding a new folder space', function(assert) {
+test('Adding a new folder space', function(assert) {
     userLogin();
     visit('/s/VzMuyEw_3WqiafcG/my-project');
 
     andThen(function() {
-        let personalSpaces = find('.section div:contains(PERSONAL)').length
+        let personalSpaces = find('.section div:contains(PERSONAL)').length;
         assert.equal(currentURL(), '/s/VzMuyEw_3WqiafcG/my-project');
         assert.equal(personalSpaces, 1, '1 personal space is listed');
     });
 
     click('#add-folder-button');
     waitToAppear('#new-folder-name');
-    fillIn("#new-folder-name", 'Test Folder');
+    fillIn(".input-control input", 'Test Folder');
     click('.actions div:contains(add)');
 
     andThen(function() {
@@ -29,7 +29,7 @@ skip('Adding a document to a space', function(assert) {
 
     andThen(function() {
 
-        let numberOfDocuments = find('.documents-list li').length
+        let numberOfDocuments = find('.documents-list li').length;
         assert.equal(currentURL(), '/s/VzMuyEw_3WqiafcG/my-project');
         assert.equal(numberOfDocuments, 2, '2 documents listed');
     });
@@ -40,7 +40,6 @@ skip('Adding a document to a space', function(assert) {
     return pauseTest();
 
     andThen(function() {
-        return pauseTest();
         assert.equal(currentURL(), 's/V0Vy5Uw_3QeDAMW9/test-folder');
     });
 });
@@ -70,7 +69,90 @@ test('changing space name', function(assert) {
         checkForCommonAsserts();
         assert.equal(spaceName, 'Test Space', 'Space name has been changed');
         assert.equal(currentURL(), '/s/VzMuyEw_3WqiafcG/my-project/settings');
-        return pauseTest();
+        // return pauseTest();
+    });
+});
+
+test('sharing a space', function(assert) {
+    userLogin();
+    visit('/s/VzMuyEw_3WqiafcG/my-project/settings');
+
+    click(('.sidebar-menu .options li:contains(Share)'));
+    fillIn('#inviteEmail', 'share-test@gmail.com');
+    click('.button-blue');
+
+    andThen(function() {
+        checkForCommonAsserts();
+        assert.equal(currentURL(), '/s/VzMuyEw_3WqiafcG/my-project/settings');
+    });
+});
+
+
+// Test will pass after moving to factories
+test('changing space permissions', function(assert) {
+    userLogin();
+    return pauseTest();
+    andThen(function() {
+        let numberOfPublicFolders = find('.folders-list div:first .list a').length;
+        assert.equal(numberOfPublicFolders, 1, '1 folder listed as public');
+        assert.equal(currentURL(), '/s/VzMuyEw_3WqiafcG/my-project');
+    });
+
+    visit('/s/VzMuyEw_3WqiafcG/my-project/settings');
+    click(('.sidebar-menu .options li:contains(Permissions)'));
+
+    click('tr:contains(Everyone) #canView-');
+    click('tr:contains(Everyone) #canEdit-');
+    click('.button-blue');
+
+    visit('/s/VzMuyEw_3WqiafcG/my-project');
+
+    andThen(function() {
+        let numberOfPublicFolders = find('.folders-list div:first .list a').length;
+        assert.equal(numberOfPublicFolders, 2, '2 folder listed as public');
+        assert.equal(currentURL(), '/s/VzMuyEw_3WqiafcG/my-project');
+    });
+});
+
+test('deleting a space', function(assert) {
+    userLogin();
+    visit('/s/VzMuyEw_3WqiafcG/my-project/settings');
+
+    click('.sidebar-menu .options li:contains(Delete)');
+
+    andThen(function() {
+        checkForCommonAsserts();
+        assert.equal(currentURL(), '/s/VzMuyEw_3WqiafcG/my-project/settings');
+    });
+});
+
+test('deleting a document', function(assert) {
+    userLogin();
+    visit('/s/VzMuyEw_3WqiafcG/my-project');
+
+    andThen(function() {
+        let deleteButton = find('#delete-documents-button');
+        let numberOfDocuments = find('.documents-list li');
+        assert.equal(numberOfDocuments.length, 2, '2 documents are displayed');
+        assert.equal(deleteButton.length, 0, 'Delete button not displayed');
+    });
+
+    click('.documents-list li:first .checkbox');
+
+    andThen(function() {
+        let deleteButton = find('#delete-documents-button');
+        assert.equal(deleteButton.length, 1, 'Delete button displayed after selecting document');
+    });
+
+    click('#delete-documents-button');
+
+    waitToAppear('.drop-content');
+    click('.flat-red');
+    return pauseTest();
+
+    andThen(function() {
+        let deleteButton = find('#delete-documents-button');
+        assert.equal(deleteButton.length, 1, 'Delete button displayed');
     });
 });
 

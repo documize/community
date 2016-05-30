@@ -74,7 +74,7 @@ test('add a new user', function(assert) {
     fillIn('#newUserLastname', 'User');
     fillIn('#newUserEmail', 'test.user@domain.com');
     click('.button-blue');
-    return pauseTest();
+
     andThen(function() {
         let numberOfUsers = find('.user-list tr').length;
         assert.equal(numberOfUsers, 4, '3 Users listed');
