@@ -4,6 +4,7 @@ import moduleForAcceptance from 'documize/tests/helpers/module-for-acceptance';
 moduleForAcceptance('Acceptance | User Settings');
 
 test('visiting /settings/general', function(assert) {
+    server.create('meta', { allowAnonymousAccess: false });
     userLogin();
     visit('/settings/general');
 
@@ -15,7 +16,8 @@ test('visiting /settings/general', function(assert) {
     });
 });
 
-test('changing the Website title and descripttion', function(assert) {
+test('changing the Website title and description', function(assert) {
+    server.create('meta', { allowAnonymousAccess: false });
     userLogin();
     visit('/settings/general');
 
@@ -36,6 +38,7 @@ test('changing the Website title and descripttion', function(assert) {
 });
 
 test('visiting /settings/folders', function(assert) {
+    server.create('meta', { allowAnonymousAccess: false });
     userLogin();
     visit('/settings/folders');
 
@@ -46,6 +49,7 @@ test('visiting /settings/folders', function(assert) {
 });
 
 test('visiting /settings/users', function(assert) {
+    server.create('meta', { allowAnonymousAccess: false });
     userLogin();
     visit('/settings/users');
 
@@ -59,6 +63,7 @@ test('visiting /settings/users', function(assert) {
 });
 
 test('add a new user', function(assert) {
+    server.create('meta', { allowAnonymousAccess: false });
     userLogin();
     visit('/settings/users');
 

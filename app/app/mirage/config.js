@@ -5,22 +5,21 @@ export default function() {
     this.namespace = 'api'; // make this `api`, for example, if your API is namespaced
     // this.timing = 400;      // delay for each request, automatically set to 0 during testing
 
-    this.get('/public/meta', function() {
-        return {
-            "orgId": "VzMuyEw_3WqiafcD",
-            "title": "EmberSherpa",
-            "message": "This Documize instance contains all our team documentation",
-            "url": "",
-            "allowAnonymousAccess": false,
-            "version": "11.2"
-        };
-    });
-
-    // this.get('/public/meta', function(db) {
+    // this.get('/public/meta', function() {
     //     return {
-    //         meta: db.meta;
+    //         "orgId": "VzMuyEw_3WqiafcD",
+    //         "title": "EmberSherpa",
+    //         "message": "This Documize instance contains all our team documentation",
+    //         "url": "",
+    //         "allowAnonymousAccess": false,
+    //         "version": "11.2"
     //     };
     // });
+
+    this.get('/public/meta', function(db) {
+        console.log(db.meta[0]);
+        return db.meta[0];
+    });
 
     this.get('/public/validate', function(db, request) {
         let serverToken = request.queryParams.token;

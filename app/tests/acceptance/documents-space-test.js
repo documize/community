@@ -4,6 +4,7 @@ import moduleForAcceptance from 'documize/tests/helpers/module-for-acceptance';
 moduleForAcceptance('Acceptance | documents space');
 
 test('Adding a new folder space', function(assert) {
+    server.create('meta', { allowAnonymousAccess: false });
     userLogin();
     visit('/s/VzMuyEw_3WqiafcG/my-project');
 
@@ -24,6 +25,7 @@ test('Adding a new folder space', function(assert) {
 });
 
 skip('Adding a document to a space', function(assert) {
+    server.create('meta', { allowAnonymousAccess: false });
     userLogin();
     visit('/s/VzMuyEw_3WqiafcG/my-project');
 
@@ -37,7 +39,6 @@ skip('Adding a document to a space', function(assert) {
     click('#start-document-button');
     waitToAppear('.drop-content');
     click('.drop-content');
-    return pauseTest();
 
     andThen(function() {
         assert.equal(currentURL(), 's/V0Vy5Uw_3QeDAMW9/test-folder');
@@ -45,6 +46,7 @@ skip('Adding a document to a space', function(assert) {
 });
 
 test('visiting space settings page', function(assert) {
+    server.create('meta', { allowAnonymousAccess: false });
     userLogin();
     visit('/s/VzMuyEw_3WqiafcG/my-project');
 
@@ -58,6 +60,7 @@ test('visiting space settings page', function(assert) {
 });
 
 test('changing space name', function(assert) {
+    server.create('meta', { allowAnonymousAccess: false });
     userLogin();
     visit('/s/VzMuyEw_3WqiafcG/my-project/settings');
 
@@ -69,11 +72,11 @@ test('changing space name', function(assert) {
         checkForCommonAsserts();
         assert.equal(spaceName, 'Test Space', 'Space name has been changed');
         assert.equal(currentURL(), '/s/VzMuyEw_3WqiafcG/my-project/settings');
-        // return pauseTest();
     });
 });
 
 test('sharing a space', function(assert) {
+    server.create('meta', { allowAnonymousAccess: false });
     userLogin();
     visit('/s/VzMuyEw_3WqiafcG/my-project/settings');
 
@@ -90,8 +93,8 @@ test('sharing a space', function(assert) {
 
 // Test will pass after moving to factories
 test('changing space permissions', function(assert) {
+    server.create('meta', { allowAnonymousAccess: false });
     userLogin();
-    return pauseTest();
     andThen(function() {
         let numberOfPublicFolders = find('.folders-list div:first .list a').length;
         assert.equal(numberOfPublicFolders, 1, '1 folder listed as public');
@@ -115,6 +118,7 @@ test('changing space permissions', function(assert) {
 });
 
 test('deleting a space', function(assert) {
+    server.create('meta', { allowAnonymousAccess: false });
     userLogin();
     visit('/s/VzMuyEw_3WqiafcG/my-project/settings');
 
@@ -127,6 +131,7 @@ test('deleting a space', function(assert) {
 });
 
 test('deleting a document', function(assert) {
+    server.create('meta', { allowAnonymousAccess: false });
     userLogin();
     visit('/s/VzMuyEw_3WqiafcG/my-project');
 
@@ -148,7 +153,6 @@ test('deleting a document', function(assert) {
 
     waitToAppear('.drop-content');
     click('.flat-red');
-    return pauseTest();
 
     andThen(function() {
         let deleteButton = find('#delete-documents-button');
