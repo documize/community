@@ -13,11 +13,7 @@
 	}
 
 	.github-list {
-		background-color: #e2e4e6;
-		padding: 10px;
-		border-radius: 3px;
 		margin: 10px 10px 0 0;
-		max-width: 300px;
 	}
 
 	.github-list-title {
@@ -41,8 +37,8 @@
 		<div class="pull-left width-50">
 			<div class="input-form">
 				<div class="heading">
-					<div class="title">Select Repository Branch</div>
-					<div class="tip">Choose repository branch to watch</div>
+					<div class="title">Select Repository & Branch</div>
+					<div class="tip">Choose source of code commits to be displayed</div>
 				</div>
 				{{#if noRepos}}
 					<div class="input-control">
@@ -51,14 +47,13 @@
 				{{else}}
 					<div class="input-control">
 						<label>Repositories</label>
-						<div class="tip">Select Repository</div>
+						<div class="tip">Select repository</div>
 						{{ui-select id="boards-dropdown" content=repos action=(action 'onRepoChange') optionValuePath="id" optionLabelPath="name" selection=config.repo}}
 					</div>
 					<div class="input-control">
 						<label>Branches</label>
-						<div class="tip">Select branch to watch</div>
+						<div class="tip">Select branch</div>
 						<div class="github-board">
-							<div class="github-board-title">{{config.repo.name}}</div>
 							{{#each config.lists as |list|}}
 								<div class="github-list" {{action 'onListCheckbox' list.id}}>
 									{{#if list.included}}

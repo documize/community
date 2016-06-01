@@ -336,47 +336,29 @@ func (*GithubT) Render(config, data string) string {
 	var err error
 
 	t, err = t.Parse(`
-<p>There are {{ .CommitCount }} commits for branch <i>{{.Config.Branch}}</i> of repository <a href="{{ .Repo.URL }}">{{.Repo.Name}}.</a></p>
-
+<p>There are {{ .CommitCount }} commits for branch <span class="bold">{{.Config.Branch}}</span> of repository <a href="{{ .Repo.URL }}">{{.Repo.Name}}.</a></p>
 <div class="github-board">
-	
 	{{range $data := .Data}}
-	
     	<div class="github-group-title">
        		Commits on {{ $data.Day }}
       	</div>
-	  
 		<ul class="github-list">  
-	
 			{{range $commit := $data.Commits}}
-
       			<li class="github-commit-item"> 
-	  
-      				<div class="github-avatar">
-          				<img alt="@{{$commit.Name}}" src="{{$commit.Avatar}}" height="36" width="36">
-      				</div>
-
-      				<div class="github-commit-body">
-        			
-						<p class="github-commit-title">
-         					<a href="{{$commit.URL}}">
- 								{{$commit.Message}}
- 							</a>
-        				</p>
-
-        				<p class="github-commit-meta">
-         					{{$commit.Name}} committed on {{$commit.Date}}
-        				</p>
-      				</div>
-
+					<a href="{{$commit.URL}}">
+						<div class="github-avatar">
+							<img alt="@{{$commit.Name}}" src="{{$commit.Avatar}}" height="36" width="36">
+						</div>
+						<div class="github-commit-body">
+							<div class="github-commit-title">{{$commit.Message}}</div>
+							<div class="github-commit-meta">{{$commit.Name}} committed on {{$commit.Date}}</div>
+						</div>
+					</a>
+					<div class="clearfix" />
       			</li>
-				  
 	  		{{end}}
-			  
 	  	</ul>
-		  
 	  {{end}}
-	  
   </div>
 `)
 
