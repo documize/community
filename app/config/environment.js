@@ -33,7 +33,7 @@ module.exports = function(environment) {
         ENV.APP.LOG_TRANSITIONS_INTERNAL = true;
 
         ENV.apiHost = "https://localhost:5001";
-        ENV.apiHost = "https://demo1.dev:5001";
+        // ENV.apiHost = "https://demo1.dev:5001";
     }
 
     if (environment === 'test') {

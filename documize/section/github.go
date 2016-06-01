@@ -11,15 +11,10 @@
 
 package section
 
-import (
-	"net/http"
-)
+import gh "github.com/documize/community/documize/section/github"
 
 type github struct {
-}
-
-func init() {
-	sectionsMap["github"] = &github{}
+	gh.GithubT
 }
 
 func (*github) Meta() TypeMeta {
@@ -29,22 +24,18 @@ func (*github) Meta() TypeMeta {
 	section.Title = "GitHub"
 	section.Description = "Code commits and branches"
 	section.ContentType = "github"
-	section.Preview = true
+	//section.Preview = true
+
+	section.Callback = gh.Callback
 
 	return section
 }
 
-// Command stub.
-func (*github) Command(w http.ResponseWriter, r *http.Request) {
-	writeEmpty(w)
-}
+func init() {
+	sectionsMap["github"] = &github{}
 
-// Render just sends back HMTL as-is.
-func (*github) Render(config, data string) string {
-	return data
-}
+	// TODO make both soft and alterable at runtime
+	gh.ClientID = "8574d0c34142dcdc53f6"
+	gh.ClientSecret = "628e04d1575e234fbf477ff7b5f7dbfc95074c9e"
 
-// Refresh just sends back data as-is.
-func (*github) Refresh(config, data string) string {
-	return data
 }
