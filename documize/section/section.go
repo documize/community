@@ -13,6 +13,7 @@ package section
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"sort"
@@ -25,12 +26,13 @@ var sectionsMap = make(map[string]section)
 
 // TypeMeta details a "smart section" that represents a "page" in a document.
 type TypeMeta struct {
-	ID          string `json:"id"`
-	Order       int    `json:"order"`
-	ContentType string `json:"contentType"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Preview     bool   `json:"preview"` // coming soon!
+	ID          string                                         `json:"id"`
+	Order       int                                            `json:"order"`
+	ContentType string                                         `json:"contentType"`
+	Title       string                                         `json:"title"`
+	Description string                                         `json:"description"`
+	Preview     bool                                           `json:"preview"` // coming soon!
+	Callback    func(http.ResponseWriter, *http.Request) error `json:"-"`
 }
 
 // section represents a 'page' in a document.
@@ -59,6 +61,17 @@ func Command(section string, w http.ResponseWriter, r *http.Request) bool {
 		s.Command(w, r)
 	}
 	return ok
+}
+
+// Callback passes parameters to the given section callback, the returned error indicates success.
+func Callback(section string, w http.ResponseWriter, r *http.Request) error {
+	s, ok := sectionsMap[section]
+	if ok {
+		if cb := s.Meta().Callback; cb != nil {
+			return cb(w, r)
+		}
+	}
+	return errors.New("section not found")
 }
 
 // Render runs that operation for the given section id, the returned bool indicates success.

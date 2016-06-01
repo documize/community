@@ -1,17 +1,15 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
 package section
-
-/* TODO(Elliott)
 
 import (
 	"net/http"
@@ -19,7 +17,7 @@ import (
 )
 
 type testsection struct {
-	didFetch bool
+	didRefresh bool
 }
 
 var ts testsection
@@ -28,12 +26,16 @@ func init() {
 	sectionsMap["testsection"] = &ts
 }
 
-// Fetch runs ...
-func (ts *testsection) Fetch(w http.ResponseWriter, r *http.Request) {
-	ts.didFetch = true
+// Command is an end-point...
+func (ts *testsection) Command(w http.ResponseWriter, r *http.Request) {}
+
+// Refresh existing data, returning data in the format of the target system
+func (ts *testsection) Refresh(meta, data string) string {
+	ts.didRefresh = true
+	return ""
 }
 
-// Render converts ...
+// Render converts data in the target system format into HTML
 func (*testsection) Render(meta, data string) string {
 	return "testsection " + data
 }
@@ -50,11 +52,11 @@ func (*testsection) Meta() TypeMeta {
 }
 
 func TestSection(t *testing.T) {
-	if ok := Fetch("testsection", nil, nil); !ok {
+	if _, ok := Refresh("testsection", "", ""); !ok {
 		t.Error("did not find 'testsection' smart section (1)")
 	}
-	if !ts.didFetch {
-		t.Error("did not run the test Fetch method")
+	if !ts.didRefresh {
+		t.Error("did not run the test Refresh method")
 	}
 	out, ok := Render("testsection", "meta", "dingbat")
 	if !ok {
@@ -63,12 +65,14 @@ func TestSection(t *testing.T) {
 	if out != "testsection dingbat" {
 		t.Error("wrong output from Render")
 	}
-	for k := range sectionsMap {
-		t.Log(k)
-	}
-	sects := GetRegisteredSections()
+
+	sects := GetSectionMeta()
 	for _, v := range sects {
-		t.Logf("%v %v", v.Order, v.Title)
+		if v.Title == "TestSection" {
+			return
+		}
+		//t.Logf("%v %v", v.Order, v.Title)
 	}
+	t.Error("TestSection not in meta output")
+
 }
-*/

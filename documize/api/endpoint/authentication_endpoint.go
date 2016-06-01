@@ -1,11 +1,11 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
@@ -25,6 +25,7 @@ import (
 	"github.com/documize/community/documize/api/entity"
 	"github.com/documize/community/documize/api/request"
 	"github.com/documize/community/documize/api/util"
+	"github.com/documize/community/documize/section"
 	"github.com/documize/community/wordsmith/log"
 	"github.com/documize/community/wordsmith/utility"
 )
@@ -224,6 +225,16 @@ func Authorize(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 
 // ValidateAuthToken checks the auth token and returns the corresponding user.
 func ValidateAuthToken(w http.ResponseWriter, r *http.Request) {
+
+	// TODO should this go after token validation?
+	if s := r.URL.Query().Get("section"); s != "" {
+		if err:=section.Callback(s, w, r); err!=nil {
+			log.Error("section validation failure", err)
+			w.WriteHeader(http.StatusUnauthorized)
+		}
+		return
+	}
+
 	method := "ValidateAuthToken"
 
 	context, claims, err := decodeJWT(findJWT(r))
