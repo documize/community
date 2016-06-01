@@ -249,7 +249,8 @@ func (*GithubT) getCommits(client *gogithub.Client, config githubConfig) ([]gith
 		var a, d, l, m, u string
 		if v.Commit != nil {
 			if v.Commit.Committer.Date != nil {
-				d = fmt.Sprintf("%v", *v.Commit.Committer.Date)
+				// d = fmt.Sprintf("%v", *v.Commit.Committer.Date)
+				d = v.Commit.Committer.Date.Format("January 2 2006, 15:04 MST")
 			}
 			if v.Commit.Message != nil {
 				m = *v.Commit.Message
