@@ -10,7 +10,7 @@ export default Ember.Component.extend({
 
     didInsertElement() {
         let height = $(document).height() - $(".document-editor > .toolbar").height() - 130;
-        $("#markdown-editor, #markdown-preview").css("height", height);
+        $("#markdown-editor").css("height", height);
 
         this.renderPreview();
         let self = this;
