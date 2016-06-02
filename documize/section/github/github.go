@@ -22,8 +22,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/documize/community/wordsmith/log"
 	"github.com/documize/community/documize/api/request"
+	"github.com/documize/community/wordsmith/log"
 
 	gogithub "github.com/google/go-github/github"
 	"golang.org/x/oauth2"
@@ -31,14 +31,14 @@ import (
 
 const configKey = "SECTION-GITHUB"
 
-func clientID() string{
-	return request.ConfigString(configKey,"clientID")
-} 
-func clientSecret() string{
-	return request.ConfigString(configKey,"clientSecret")	
+func clientID() string {
+	return request.ConfigString(configKey, "clientID")
 }
-func authorizationCallbackURL() string{
-	return request.ConfigString(configKey,"authorizationCallbackURL")
+func clientSecret() string {
+	return request.ConfigString(configKey, "clientSecret")
+}
+func authorizationCallbackURL() string {
+	return request.ConfigString(configKey, "authorizationCallbackURL")
 }
 
 type GithubT struct {
@@ -151,7 +151,10 @@ func (t *GithubT) Command(w http.ResponseWriter, r *http.Request) {
 			if vo == *me.Login {
 				repos, _, err = client.Repositories.List(vo, nil)
 			} else {
-				repos, _, err = client.Repositories.ListByOrg(vo, nil)
+				opt := &gogithub.RepositoryListByOrgOptions{
+					ListOptions: gogithub.ListOptions{PerPage: 100},
+				}
+				repos, _, err = client.Repositories.ListByOrg(vo, opt)
 			}
 			if err != nil {
 				//fmt.Println(err)
