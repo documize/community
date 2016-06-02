@@ -23,13 +23,23 @@ import (
 	"strings"
 
 	"github.com/documize/community/wordsmith/log"
+	"github.com/documize/community/documize/api/request"
 
-	// vendored locally
 	gogithub "github.com/google/go-github/github"
 	"golang.org/x/oauth2"
 )
 
-var ClientID, ClientSecret string
+const configKey = "SECTION-GITHUB"
+
+func clientID() string{
+	return request.ConfigString(configKey,"clientID")
+} 
+func clientSecret() string{
+	return request.ConfigString(configKey,"clientSecret")	
+}
+func authorizationCallbackURL() string{
+	return request.ConfigString(configKey,"authorizationCallbackURL")
+}
 
 type GithubT struct {
 
@@ -458,8 +468,8 @@ func Callback(res http.ResponseWriter, req *http.Request) error {
 	state := req.URL.Query().Get("state")
 
 	ghurl := "https://github.com/login/oauth/access_token"
-	vals := "client_id=" + ClientID
-	vals += "&client_secret=" + ClientSecret
+	vals := "client_id=" + clientID()
+	vals += "&client_secret=" + clientSecret()
 	vals += "&code=" + code
 	vals += "&state=" + state
 
