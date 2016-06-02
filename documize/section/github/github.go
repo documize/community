@@ -246,7 +246,7 @@ func (*GithubT) getCommits(client *gogithub.Client, config githubConfig) ([]gith
 
 	var since time.Time
 
-	err := since.UnmarshalText([]byte(config.BranchSince))
+	err := since.UnmarshalText([]byte(config.BranchSince)) // TODO date Picker format
 	if err == nil {
 		opts.Since = since
 	}
@@ -266,6 +266,7 @@ func (*GithubT) getCommits(client *gogithub.Client, config githubConfig) ([]gith
 	ret := []githubBranchCommits{}
 
 	for k, v := range guff {
+
 		if guff[k].Commit != nil {
 			if guff[k].Commit.Committer.Date != nil {
 				y, m, d := (*guff[k].Commit.Committer.Date).Date()
