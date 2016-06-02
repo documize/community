@@ -79,7 +79,9 @@ func (t *GithubT) Command(w http.ResponseWriter, r *http.Request) {
 	method := query.Get("method")
 
 	if len(method) == 0 {
-		writeMessage(w, "gitub", "missing method name")
+		msg := "missing method name"
+		log.ErrorString("github: " + msg)
+		writeMessage(w, "gitub", msg)
 		return
 	}
 
@@ -87,7 +89,9 @@ func (t *GithubT) Command(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
-		writeMessage(w, "github", "Bad body")
+		msg := "Bad body"
+		log.ErrorString("github: " + msg)
+		writeMessage(w, "gitub", msg)
 		return
 	}
 
@@ -95,6 +99,7 @@ func (t *GithubT) Command(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &config)
 
 	if err != nil {
+		log.Error("github Command Unmarshal", err)
 		writeError(w, "github", err)
 		return
 	}
@@ -102,7 +107,9 @@ func (t *GithubT) Command(w http.ResponseWriter, r *http.Request) {
 	config.Clean()
 
 	if len(config.Token) == 0 {
-		writeMessage(w, "github", "Missing token")
+		msg := "Missing token"
+		log.ErrorString("github: " + msg)
+		writeMessage(w, "gitub", msg)
 		return
 	}
 
@@ -114,9 +121,8 @@ func (t *GithubT) Command(w http.ResponseWriter, r *http.Request) {
 
 		render, err := t.getCommits(client, config)
 		if err != nil {
-			//fmt.Println("Error:", err.Error())
+			log.Error("github getCommits:", err)
 			writeError(w, "github", err)
-			// TODO log error
 			return
 		}
 
@@ -126,16 +132,14 @@ func (t *GithubT) Command(w http.ResponseWriter, r *http.Request) {
 
 		me, _, err := client.Users.Get("")
 		if err != nil {
-			//fmt.Println(err)
-			// TODO log error
+			log.Error("github get user details:", err)
 			writeError(w, "github", err)
 			return
 		}
 
 		orgs, _, err := client.Organizations.List("", nil)
 		if err != nil {
-			//fmt.Println(err)
-			// TODO log error
+			log.Error("github get user's organisations:", err)
 			writeError(w, "github", err)
 			return
 		}
@@ -158,8 +162,7 @@ func (t *GithubT) Command(w http.ResponseWriter, r *http.Request) {
 				repos, _, err = client.Repositories.ListByOrg(vo, opt)
 			}
 			if err != nil {
-				//fmt.Println(err)
-				// TODO log error
+				log.Error("github get user/org repositories:", err)
 				writeError(w, "github", err)
 				return
 			}
@@ -180,13 +183,6 @@ func (t *GithubT) Command(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		if err != nil {
-			//fmt.Println(err)
-			// TODO log error
-			writeError(w, "github", err)
-			return
-		}
-
 		render = sortRepos(render)
 
 		writeJSON(w, render)
@@ -199,8 +195,7 @@ func (t *GithubT) Command(w http.ResponseWriter, r *http.Request) {
 		branches, _, err := client.Repositories.ListBranches(config.Owner, config.Repo,
 			&gogithub.ListOptions{PerPage: 100})
 		if err != nil {
-			//fmt.Println(err)
-			// TODO log error
+			log.Error("github get branch details:", err)
 			writeError(w, "github", err)
 			return
 		}
@@ -379,14 +374,14 @@ func (*GithubT) Render(config, data string) string {
 `)
 
 	if err != nil {
-		// TODO log?
+		log.Error("github render template.Parse error:", err)
 		return "Documize internal github template.Parse error: " + err.Error()
 	}
 
 	buffer := new(bytes.Buffer)
 	err = t.Execute(buffer, payload)
 	if err != nil {
-		// TODO log?
+		log.Error("github render template.Execute error:", err)
 		return "Documize internal github template.Execute error: " + err.Error()
 	}
 
