@@ -28,8 +28,9 @@
 		{{/dropdown-dialog}}
 	{{else}}
 	    {{#if folderService.canEditCurrentFolder}}
-			<div class="square-button button-green" id="start-document-button" data-tooltip="Add or import document" data-tooltip-position="top center">
+			<div class="regular-button button-green" id="start-document-button" data-tooltip="Add or import document" data-tooltip-position="top center">
 			    <i class="material-icons">add</i>
+				<div class="name">Document</div>
 			</div>
 		{{/if}}
     	{{#if isFolderOwner}}

@@ -136,6 +136,11 @@
     cursor: pointer;
 	border: none;
 	@extend .no-select;
+    
+    > .name {
+        vertical-align: top;
+        display: inline-block;
+    }
 }
 
 .button-red {
@@ -156,6 +161,12 @@
 .button-gray {
     background-color: $color-gray;
     @include button-hover-state($color-gray);
+}
+
+.button-transparent {
+    background-color: transparent;
+    color: $color-gray;
+    border: 1px solid $color-gray;   
 }
 
 .flat-button {

@@ -1,7 +1,8 @@
 <span class="hidden-xs hidden-sm">
 	{{#if session.isEditor}}
-		<div class="round-button-mono" id="add-folder-button" data-tooltip="New space" data-tooltip-position="top center">
+		<div class="regular-button button-transparent" id="add-folder-button" data-tooltip="New space" data-tooltip-position="top center">
 			<i class="material-icons">add</i>
+			<div class="name">space</div>
 		</div>
 		{{#dropdown-dialog target="add-folder-button" position="bottom left" button="Add" color="flat-green" onAction=(action 'addFolder') focusOn="new-folder-name"}}
 			<div>
