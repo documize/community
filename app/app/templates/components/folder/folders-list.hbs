@@ -1,17 +1,19 @@
-{{#if session.isEditor}}
-	<div class="round-button-mono" id="add-folder-button" data-tooltip="New space" data-tooltip-position="top center">
-		<i class="material-icons">add</i>
-	</div>
-	{{#dropdown-dialog target="add-folder-button" position="bottom left" button="Add" color="flat-green" onAction=(action 'addFolder') focusOn="new-folder-name"}}
-		<div>
-			<div class="input-control">
-				<label>New space</label>
-        		<div class="tip">A repository for related documentation</div>
-				{{input type='text' id="new-folder-name" value=newFolder}}
-			</div>
+<span class="hidden-xs hidden-sm">
+	{{#if session.isEditor}}
+		<div class="round-button-mono" id="add-folder-button" data-tooltip="New space" data-tooltip-position="top center">
+			<i class="material-icons">add</i>
 		</div>
-	{{/dropdown-dialog}}
-{{/if}}
+		{{#dropdown-dialog target="add-folder-button" position="bottom left" button="Add" color="flat-green" onAction=(action 'addFolder') focusOn="new-folder-name"}}
+			<div>
+				<div class="input-control">
+					<label>New space</label>
+					<div class="tip">A repository for related documentation</div>
+					{{input type='text' id="new-folder-name" value=newFolder}}
+				</div>
+			</div>
+		{{/dropdown-dialog}}
+	{{/if}}
+</span>
 
 <div class="folders-list">
 	<div class="section">
@@ -59,6 +61,6 @@
 	{{/if}}
 </div>
 
-<div class="copyright">
+<div class="copyright hidden-xs hidden-sm">
 	<a href="https://documize.com?ref=app-footer" target="_blank">Copyright&nbsp;&copy;&nbsp;2016 Documize</a>
 </div>

@@ -4,7 +4,7 @@
 			<div class="toolbar">
 
 				{{#if session.authenticated}}
-					<div class="meta-data pull-left">
+					<div class="meta-data pull-left hidden-xs hidden-sm">
 					    <ul class="items">
 							<li class="item">
 								<div id="owner-avatar" class="avatar" data-tooltip="{{owner.fullname}}" data-tooltip-position="right middle">{{owner.initials}}</div>
@@ -37,7 +37,7 @@
 					</div>
 				{{/if}}
 
-				<div class="actions pull-right hidden-xs">
+				<div class="actions pull-right hidden-xs hidden-sm">
 	                {{#if isEditor}}
 						{{#link-to 'document.wizard' folder.id folder.slug document.id document.slug}}
 							<div class="square-button button-green" id="add-section-button" data-tooltip="Add section" data-tooltip-position="top center">
@@ -102,39 +102,3 @@
 		</div>
 	</div>
 </div>
-
-<!--
-{{#if normalMode}}
-	<div class="edit-toolbox in-edit-toolbar">
-		<ul>
-			{{#if isEditor}}
-				<li class="tooltipped in-edit-toolbar" data-tooltip="Edit section" {{action 'editPage' editModePageId }}>
-					<i class="material-icons in-edit-toolbar">create</i>
-				</li>
-				{{#if editModeHasHistory}}
-					<li class="tooltipped in-edit-toolbar" data-tooltip="View changes" {{action 'viewHistory' editModePageId }}>
-						<i class="material-icons in-edit-toolbar">history</i>
-					</li>
-				{{/if}}
-				{{#if editModeCanDelete}}
-					<li class="tooltipped in-edit-toolbar" data-tooltip="Delete section" {{action 'askDeletePage' editModePageId }}>
-						<i class="material-icons in-edit-toolbar">delete</i>
-					</li>
-				{{/if}}
-				<li class="tooltipped in-edit-toolbar dropdown-content-type-trigger" data-tooltip="Insert section" data-activates="dropdown-content-type" data-alignment="right">
-					<i class="material-icons in-edit-toolbar">add</i>
-				</li>
-			{{/if}}
-		</ul>
-	</div>
-	<ul id="dropdown-content-type" class="dropdown-content">
-		<li><a {{action 'addPage' editModePageId "wysiwyg"}}>Text</a></li>
-		<li><a {{action 'addPage' editModePageId "table"}}>Table</a></li>
-		<li><a {{action 'addPage' editModePageId "code"}}>Code</a></li>
-	</ul>
-{{/if}}
-
-<div id="modal-history" class="modal bottom-sheet bottom-dialog">
-    {{document/editor-history model=historyModel editorClose=(action 'onEditorHistoryClose') editorAction=(action 'onEditorHistoryAction') }}
-</div>
--->
