@@ -38,6 +38,7 @@ func clientSecret() string {
 	return request.ConfigString(configKey, "clientSecret")
 }
 func authorizationCallbackURL() string {
+	// NOTE: URL value must have the path and query "/api/public/validate?section=github"
 	return request.ConfigString(configKey, "authorizationCallbackURL")
 }
 
@@ -195,7 +196,8 @@ func (t *GithubT) Command(w http.ResponseWriter, r *http.Request) {
 			writeJSON(w, []githubBranch{}) // we have nothing to return
 			return
 		}
-		branches, _, err := client.Repositories.ListBranches(config.Owner, config.Repo, nil)
+		branches, _, err := client.Repositories.ListBranches(config.Owner, config.Repo,
+			&gogithub.ListOptions{PerPage: 100})
 		if err != nil {
 			//fmt.Println(err)
 			// TODO log error
@@ -231,7 +233,7 @@ func (*GithubT) githubClient(config githubConfig) *gogithub.Client {
 func (*GithubT) getCommits(client *gogithub.Client, config githubConfig) ([]githubBranchCommits, error) {
 
 	guff, _, err := client.Repositories.ListCommits(config.Owner, config.Repo,
-		&gogithub.CommitsListOptions{SHA: config.Branch})
+		&gogithub.CommitsListOptions{SHA: config.Branch, ListOptions: gogithub.ListOptions{PerPage: 100}})
 	if err != nil {
 		return nil, err
 	}
