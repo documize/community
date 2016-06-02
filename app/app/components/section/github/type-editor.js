@@ -48,7 +48,8 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
                         repo_name: "",
                         branch: "",
                         branchURL: "",
-                        branchSince: ""
+                        branchSince: "",
+                        branchLines: 30
                     };
                     self.set('config', config);
 

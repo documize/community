@@ -242,7 +242,7 @@ func (*GithubT) getCommits(client *gogithub.Client, config githubConfig) ([]gith
 
 	opts := &gogithub.CommitsListOptions{
 		SHA:         config.Branch,
-		ListOptions: gogithub.ListOptions{PerPage: 100}}
+		ListOptions: gogithub.ListOptions{PerPage: config.BranchLines}}
 
 	var since time.Time
 
@@ -466,6 +466,7 @@ type githubConfig struct {
 	Branch      string         `json:"branch"`
 	BranchURL   string         `json:"branchURL"`
 	BranchSince string         `json:"branchSince"`
+	BranchLines int            `json:"branchLines"`
 	RepoInfo    githubRepo     `json:"repo"`
 	ClientID    string         `json:"clientId"`
 	CallbackURL string         `json:"callbackUrl"`
