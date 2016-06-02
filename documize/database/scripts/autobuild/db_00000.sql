@@ -264,3 +264,4 @@ INSERT INTO `config` VALUES ('FILEPLUGINS',
 '[{\"Comment\": \"Disable (or not) built-in html import (NOTE: no Plugin name)\",\"Disabled\": false,\"API\": \"Convert\",\"Actions\": [\"htm\",\"html\"]},{\"Comment\": \"Disable (or not) built-in Documize API import used from SDK (NOTE: no Plugin name)\",\"Disabled\": false,\"API\": \"Convert\",\"Actions\": [\"documizeapi\"]}]');
 INSERT INTO `config` VALUES ('LICENSE','{\"token\": \"\",\"endpoint\": \"https://api.documize.com\"}');
 INSERT INTO `config` VALUES ('META','{\"database\": \"db_00000.sql\"}');
+INSERT INTO `documize`.`config` VALUES ( 'SECTION-GITHUB', '{\"clientID\": \"\", \"clientSecret\": \"\", \"authorizationCallbackURL\": \"https://localhost:5001/api/public/validate?section=github\"}' );

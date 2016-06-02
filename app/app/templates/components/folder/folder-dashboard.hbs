@@ -63,4 +63,21 @@
 
 {{#if hasDocuments}}
     {{folder/documents-list documents=documents folder=folder isFolderOwner=isFolderOwner onDocumentsChecked=(action 'onDocumentsChecked') }}
+{{else}}
+	<div class="no-documents">
+		<div class="box">
+			<div class="regular-button button-transparent">
+				<i class="material-icons">add</i>
+				<div class="name">space</div>
+			</div>		
+			<div class="message">Create a new space for<br/>all your documentation</div>
+		</div>
+		<div class="box">
+			<div class="regular-button button-transparent">
+				<i class="material-icons">add</i>
+				<div class="name">document</div>
+			</div>		
+			<div class="message">Start a new document or <br/>import .doc .docx, .txt .md files</div>
+		</div>
+	</div>
 {{/if}}
