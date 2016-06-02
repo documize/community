@@ -1,5 +1,4 @@
-<div class="document-structure">
-
+<div class="document-structure hidden-xs hidden-sm">
     {{#if this.session.authenticated}}
         <div id="tocToolbar" class="toc-controls {{if actionablePage 'current-page' ''}}">
             <div id="toc-up-button" class="round-button-mono {{if upDisabled 'disabled'}}" data-tooltip="Move up" data-tooltip-position="top center" {{action 'pageUp'}}>
@@ -28,5 +27,4 @@
             </li>
         {{/each}}
     </ul>
-
 </div>
