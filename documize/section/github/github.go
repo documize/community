@@ -21,6 +21,7 @@ import (
 	"net/url"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/documize/community/documize/api/request"
 	"github.com/documize/community/wordsmith/log"
@@ -82,6 +83,17 @@ func (t *GithubT) Command(w http.ResponseWriter, r *http.Request) {
 		msg := "missing method name"
 		log.ErrorString("github: " + msg)
 		writeMessage(w, "gitub", msg)
+		return
+	}
+
+	if method == "config" {
+		var ret struct {
+			CID string `json:"clientID"`
+			URL string `json:"authorizationCallbackURL"`
+		}
+		ret.CID = clientID()
+		ret.URL = authorizationCallbackURL()
+		writeJSON(w, ret)
 		return
 	}
 
@@ -205,6 +217,7 @@ func (t *GithubT) Command(w http.ResponseWriter, r *http.Request) {
 				Name:     *vb.Name,
 				ID:       fmt.Sprintf("%s:%s:%s:%d", config.Owner, config.Repo, *vb.Name, kc),
 				Included: false,
+				URL:      "https://github.com/" + config.Owner + "/" + config.Repo + "/tree/" + *vb.Name,
 			}
 		}
 
@@ -227,8 +240,19 @@ func (*GithubT) githubClient(config githubConfig) *gogithub.Client {
 
 func (*GithubT) getCommits(client *gogithub.Client, config githubConfig) ([]githubBranchCommits, error) {
 
-	guff, _, err := client.Repositories.ListCommits(config.Owner, config.Repo,
-		&gogithub.CommitsListOptions{SHA: config.Branch, ListOptions: gogithub.ListOptions{PerPage: 100}})
+	opts := &gogithub.CommitsListOptions{
+		SHA:         config.Branch,
+		ListOptions: gogithub.ListOptions{PerPage: 100}}
+
+	var since time.Time
+
+	err := since.UnmarshalText([]byte(config.BranchSince))
+	if err == nil {
+		opts.Since = since
+	}
+
+	guff, _, err := client.Repositories.ListCommits(config.Owner, config.Repo, opts)
+
 	if err != nil {
 		return nil, err
 	}
@@ -347,7 +371,7 @@ func (*GithubT) Render(config, data string) string {
 	var err error
 
 	t, err = t.Parse(`
-<p>There are {{ .CommitCount }} commits for branch <span class="bold">{{.Config.Branch}}</span> of repository <a href="{{ .Repo.URL }}">{{.Repo.Name}}.</a></p>
+<p>There are {{ .CommitCount }} commits for branch <a href="{{.Config.BranchURL}}">{{.Config.Branch}}</a> of repository <a href="{{ .Repo.URL }}">{{.Repo.Name}}.</a></p>
 <div class="github-board">
 	{{range $data := .Data}}
     	<div class="github-group-title">
@@ -417,6 +441,7 @@ type githubBranch struct {
 	ID       string `json:"id"`
 	Name     string `json:"name"`
 	Included bool   `json:"included"`
+	URL      string `json:"url"`
 }
 
 type githubBranchCommits struct {
@@ -434,15 +459,17 @@ type githubCommit struct {
 }
 
 type githubConfig struct {
-	AppKey      string       `json:"appKey"` // TODO keep?
-	Token       string       `json:"token"`
-	Owner       string       `json:"owner"`
-	Repo        string       `json:"repo_name"`
-	Branch      string       `json:"branch"`
-	RepoInfo    githubRepo   `json:"repo"`
-	ClientID    string       `json:"clientId"`
-	CallbackURL string       `json:"callbackUrl"`
-	Lists       []githubRepo `json:"lists"`
+	AppKey      string         `json:"appKey"` // TODO keep?
+	Token       string         `json:"token"`
+	Owner       string         `json:"owner"`
+	Repo        string         `json:"repo_name"`
+	Branch      string         `json:"branch"`
+	BranchURL   string         `json:"branchURL"`
+	BranchSince string         `json:"branchSince"`
+	RepoInfo    githubRepo     `json:"repo"`
+	ClientID    string         `json:"clientId"`
+	CallbackURL string         `json:"callbackUrl"`
+	Lists       []githubBranch `json:"lists"`
 }
 
 func (c *githubConfig) Clean() {
@@ -453,6 +480,7 @@ func (c *githubConfig) Clean() {
 	for _, l := range c.Lists {
 		if l.Included {
 			c.Branch = l.Name
+			c.BranchURL = l.URL
 			break
 		}
 	}
