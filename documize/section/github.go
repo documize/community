@@ -33,9 +33,4 @@ func (*github) Meta() TypeMeta {
 
 func init() {
 	sectionsMap["github"] = &github{}
-
-	// TODO make both soft and alterable at runtime
-	gh.ClientID = "8574d0c34142dcdc53f6"
-	gh.ClientSecret = "628e04d1575e234fbf477ff7b5f7dbfc95074c9e"
-
 }

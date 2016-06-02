@@ -21,15 +21,27 @@ import (
 	"net/url"
 	"sort"
 	"strings"
+	"time"
 
+	"github.com/documize/community/documize/api/request"
 	"github.com/documize/community/wordsmith/log"
 
-	// vendored locally
 	gogithub "github.com/google/go-github/github"
 	"golang.org/x/oauth2"
 )
 
-var ClientID, ClientSecret string
+const configKey = "SECTION-GITHUB"
+
+func clientID() string {
+	return request.ConfigString(configKey, "clientID")
+}
+func clientSecret() string {
+	return request.ConfigString(configKey, "clientSecret")
+}
+func authorizationCallbackURL() string {
+	// NOTE: URL value must have the path and query "/api/public/validate?section=github"
+	return request.ConfigString(configKey, "authorizationCallbackURL")
+}
 
 type GithubT struct {
 
@@ -68,7 +80,20 @@ func (t *GithubT) Command(w http.ResponseWriter, r *http.Request) {
 	method := query.Get("method")
 
 	if len(method) == 0 {
-		writeMessage(w, "gitub", "missing method name")
+		msg := "missing method name"
+		log.ErrorString("github: " + msg)
+		writeMessage(w, "gitub", msg)
+		return
+	}
+
+	if method == "config" {
+		var ret struct {
+			CID string `json:"clientID"`
+			URL string `json:"authorizationCallbackURL"`
+		}
+		ret.CID = clientID()
+		ret.URL = authorizationCallbackURL()
+		writeJSON(w, ret)
 		return
 	}
 
@@ -76,7 +101,9 @@ func (t *GithubT) Command(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
-		writeMessage(w, "github", "Bad body")
+		msg := "Bad body"
+		log.ErrorString("github: " + msg)
+		writeMessage(w, "gitub", msg)
 		return
 	}
 
@@ -84,6 +111,7 @@ func (t *GithubT) Command(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &config)
 
 	if err != nil {
+		log.Error("github Command Unmarshal", err)
 		writeError(w, "github", err)
 		return
 	}
@@ -91,7 +119,9 @@ func (t *GithubT) Command(w http.ResponseWriter, r *http.Request) {
 	config.Clean()
 
 	if len(config.Token) == 0 {
-		writeMessage(w, "github", "Missing token")
+		msg := "Missing token"
+		log.ErrorString("github: " + msg)
+		writeMessage(w, "gitub", msg)
 		return
 	}
 
@@ -103,9 +133,8 @@ func (t *GithubT) Command(w http.ResponseWriter, r *http.Request) {
 
 		render, err := t.getCommits(client, config)
 		if err != nil {
-			//fmt.Println("Error:", err.Error())
+			log.Error("github getCommits:", err)
 			writeError(w, "github", err)
-			// TODO log error
 			return
 		}
 
@@ -115,16 +144,14 @@ func (t *GithubT) Command(w http.ResponseWriter, r *http.Request) {
 
 		me, _, err := client.Users.Get("")
 		if err != nil {
-			//fmt.Println(err)
-			// TODO log error
+			log.Error("github get user details:", err)
 			writeError(w, "github", err)
 			return
 		}
 
 		orgs, _, err := client.Organizations.List("", nil)
 		if err != nil {
-			//fmt.Println(err)
-			// TODO log error
+			log.Error("github get user's organisations:", err)
 			writeError(w, "github", err)
 			return
 		}
@@ -141,11 +168,13 @@ func (t *GithubT) Command(w http.ResponseWriter, r *http.Request) {
 			if vo == *me.Login {
 				repos, _, err = client.Repositories.List(vo, nil)
 			} else {
-				repos, _, err = client.Repositories.ListByOrg(vo, nil)
+				opt := &gogithub.RepositoryListByOrgOptions{
+					ListOptions: gogithub.ListOptions{PerPage: 100},
+				}
+				repos, _, err = client.Repositories.ListByOrg(vo, opt)
 			}
 			if err != nil {
-				//fmt.Println(err)
-				// TODO log error
+				log.Error("github get user/org repositories:", err)
 				writeError(w, "github", err)
 				return
 			}
@@ -166,13 +195,6 @@ func (t *GithubT) Command(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		if err != nil {
-			//fmt.Println(err)
-			// TODO log error
-			writeError(w, "github", err)
-			return
-		}
-
 		render = sortRepos(render)
 
 		writeJSON(w, render)
@@ -182,10 +204,10 @@ func (t *GithubT) Command(w http.ResponseWriter, r *http.Request) {
 			writeJSON(w, []githubBranch{}) // we have nothing to return
 			return
 		}
-		branches, _, err := client.Repositories.ListBranches(config.Owner, config.Repo, nil)
+		branches, _, err := client.Repositories.ListBranches(config.Owner, config.Repo,
+			&gogithub.ListOptions{PerPage: 100})
 		if err != nil {
-			//fmt.Println(err)
-			// TODO log error
+			log.Error("github get branch details:", err)
 			writeError(w, "github", err)
 			return
 		}
@@ -195,6 +217,7 @@ func (t *GithubT) Command(w http.ResponseWriter, r *http.Request) {
 				Name:     *vb.Name,
 				ID:       fmt.Sprintf("%s:%s:%s:%d", config.Owner, config.Repo, *vb.Name, kc),
 				Included: false,
+				URL:      "https://github.com/" + config.Owner + "/" + config.Repo + "/tree/" + *vb.Name,
 			}
 		}
 
@@ -217,8 +240,19 @@ func (*GithubT) githubClient(config githubConfig) *gogithub.Client {
 
 func (*GithubT) getCommits(client *gogithub.Client, config githubConfig) ([]githubBranchCommits, error) {
 
-	guff, _, err := client.Repositories.ListCommits(config.Owner, config.Repo,
-		&gogithub.CommitsListOptions{SHA: config.Branch})
+	opts := &gogithub.CommitsListOptions{
+		SHA:         config.Branch,
+		ListOptions: gogithub.ListOptions{PerPage: config.BranchLines}}
+
+	var since time.Time
+
+	err := since.UnmarshalText([]byte(config.BranchSince)) // TODO date Picker format
+	if err == nil {
+		opts.Since = since
+	}
+
+	guff, _, err := client.Repositories.ListCommits(config.Owner, config.Repo, opts)
+
 	if err != nil {
 		return nil, err
 	}
@@ -232,6 +266,7 @@ func (*GithubT) getCommits(client *gogithub.Client, config githubConfig) ([]gith
 	ret := []githubBranchCommits{}
 
 	for k, v := range guff {
+
 		if guff[k].Commit != nil {
 			if guff[k].Commit.Committer.Date != nil {
 				y, m, d := (*guff[k].Commit.Committer.Date).Date()
@@ -337,7 +372,7 @@ func (*GithubT) Render(config, data string) string {
 	var err error
 
 	t, err = t.Parse(`
-<p>There are {{ .CommitCount }} commits for branch <span class="bold">{{.Config.Branch}}</span> of repository <a href="{{ .Repo.URL }}">{{.Repo.Name}}.</a></p>
+<p>There are {{ .CommitCount }} commits for branch <a href="{{.Config.BranchURL}}">{{.Config.Branch}}</a> of repository <a href="{{ .Repo.URL }}">{{.Repo.Name}}.</a></p>
 <div class="github-board">
 	{{range $data := .Data}}
     	<div class="github-group-title">
@@ -364,14 +399,14 @@ func (*GithubT) Render(config, data string) string {
 `)
 
 	if err != nil {
-		// TODO log?
+		log.Error("github render template.Parse error:", err)
 		return "Documize internal github template.Parse error: " + err.Error()
 	}
 
 	buffer := new(bytes.Buffer)
 	err = t.Execute(buffer, payload)
 	if err != nil {
-		// TODO log?
+		log.Error("github render template.Execute error:", err)
 		return "Documize internal github template.Execute error: " + err.Error()
 	}
 
@@ -407,6 +442,7 @@ type githubBranch struct {
 	ID       string `json:"id"`
 	Name     string `json:"name"`
 	Included bool   `json:"included"`
+	URL      string `json:"url"`
 }
 
 type githubBranchCommits struct {
@@ -424,15 +460,18 @@ type githubCommit struct {
 }
 
 type githubConfig struct {
-	AppKey      string       `json:"appKey"` // TODO keep?
-	Token       string       `json:"token"`
-	Owner       string       `json:"owner"`
-	Repo        string       `json:"repo_name"`
-	Branch      string       `json:"branch"`
-	RepoInfo    githubRepo   `json:"repo"`
-	ClientID    string       `json:"clientId"`
-	CallbackURL string       `json:"callbackUrl"`
-	Lists       []githubRepo `json:"lists"`
+	AppKey      string         `json:"appKey"` // TODO keep?
+	Token       string         `json:"token"`
+	Owner       string         `json:"owner"`
+	Repo        string         `json:"repo_name"`
+	Branch      string         `json:"branch"`
+	BranchURL   string         `json:"branchURL"`
+	BranchSince string         `json:"branchSince"`
+	BranchLines int            `json:"branchLines"`
+	RepoInfo    githubRepo     `json:"repo"`
+	ClientID    string         `json:"clientId"`
+	CallbackURL string         `json:"callbackUrl"`
+	Lists       []githubBranch `json:"lists"`
 }
 
 func (c *githubConfig) Clean() {
@@ -443,6 +482,7 @@ func (c *githubConfig) Clean() {
 	for _, l := range c.Lists {
 		if l.Included {
 			c.Branch = l.Name
+			c.BranchURL = l.URL
 			break
 		}
 	}
@@ -459,8 +499,8 @@ func Callback(res http.ResponseWriter, req *http.Request) error {
 	state := req.URL.Query().Get("state")
 
 	ghurl := "https://github.com/login/oauth/access_token"
-	vals := "client_id=" + ClientID
-	vals += "&client_secret=" + ClientSecret
+	vals := "client_id=" + clientID()
+	vals += "&client_secret=" + clientSecret()
 	vals += "&code=" + code
 	vals += "&state=" + state
 

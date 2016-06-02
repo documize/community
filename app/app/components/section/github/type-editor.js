@@ -24,44 +24,53 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
     noRepos: false,
 
     didReceiveAttrs() {
-        let config = {};
 
-        try {
-            config = JSON.parse(this.get('meta.config'));
-        } catch (e) {}
+        let self = this;
+        let page = this.get('page');
+        console.log(this.get('config.clientId'));
 
-        if (is.empty(config)) {
-            config = {
-                clientId: "8574d0c34142dcdc53f6",
-                callbackUrl: "https://localhost:5001/api/public/validate?section=github",
-                token: "",
-                repo: null,
-                lists: [],
-                owner: "",
-                repo_name: "",
-                branch: ""
-            };
+        if (is.undefined(this.get('config.clientId')) || is.undefined(this.get('config.callbackUrl'))) {
+            self.get('sectionService').fetch(page, "config", {})
+                .then(function(cfg) {
+                    let config = {};
+
+                    try {
+                        config = JSON.parse(self.get('meta.config'));
+                    } catch (e) {}
+
+                    config = {
+                        clientId: cfg.clientID,
+                        callbackUrl: cfg.authorizationCallbackURL,
+                        token: "",
+                        repo: null,
+                        lists: [],
+                        owner: "",
+                        repo_name: "",
+                        branch: "",
+                        branchURL: "",
+                        branchSince: "",
+                        branchLines: 30
+                    };
+                    self.set('config', config);
+
+                    // On auth callback capture code
+                    let code = window.location.search;
+
+                    if (is.not.undefined(code) && is.not.null(code)) {
+                        let tok = code.replace("?code=", "");
+                        if (is.not.empty(code)) {
+                            self.set('config.token', tok);
+                            self.send('authStage2');
+                        }
+                    } else {
+                        if (self.get('config.token') === "") {
+                            self.send('auth');
+                        }
+                    }
+                }, function(error) { //jshint ignore: line
+                    console.log(error);
+                });
         }
-
-        this.set('config', config);
-
-
-        // On auth callback capture code
-        let code = window.location.search;
-        if (is.not.undefined(code) && is.not.null(code)) {
-            let tok = code.replace("?code=", "");
-            if (is.not.empty(code)) {
-                this.set('config.token', tok);
-                this.send('authStage2');
-            }
-        }
-
-        if ((this.get('config.clientId') === "" || this.get('config.token') === "")) {
-
-            this.send('auth');
-
-        }
-
     },
 
     willDestroyElement() {
@@ -160,15 +169,12 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
         auth() {
 
             let self = this;
-
-
             self.set('busy', true);
             self.set('authenticated', false);
             let target = "https://github.com/login/oauth/authorize?client_id=" + self.get('config.clientId') +
                 "&scope=repo&redirect_uri=" + encodeURIComponent(self.get('config.callbackUrl')) +
                 "&state=" + encodeURIComponent(window.location.href);
             window.location.href = target;
-
 
         },
 
