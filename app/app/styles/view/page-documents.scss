@@ -153,7 +153,7 @@
 .no-documents {
 	margin-top: 100px;
 	text-align: center;
-	opacity: 0.7;
+	opacity: 0.4;
 	
 	> .box {
 		padding: 35px;
@@ -163,13 +163,12 @@
 		
 		> .message {
 			font-size: 14px;
-			color: $color-gray;
-			margin-top: 35px;
+			color: $color-off-black;
+			margin-top: 20px;
 		}
 		
 		> .regular-button {
 			cursor: default !important;
 		}
-	
 	}
 }
