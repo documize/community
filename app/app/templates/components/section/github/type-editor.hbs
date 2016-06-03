@@ -1,36 +1,10 @@
-<style>
-	.github-repo {
-		width: 100%;
-		padding: 10px;
-		white-space: nowrap;
-		overflow: auto
-	}
 
-	.github-repo-title {
-		font-weight: bold;
-		color: #fff;
-		font-size: 16px;
-	}
-
-	.github-list {
-		margin: 10px 10px 0 0;
-	}
-
-	.github-list-title {
-		font-weight: bold;
-		color: #4c4c4c;
-		font-size: 14px;
-		margin: 5px;
-	}
-
-	.github-list-checkbox {
-		vertical-align: text-bottom;
-	}
-</style>
 
 {{#section/base-editor document=document folder=folder page=page busy=busy
 	tip="GitHub is how people build software. (https://github.com)"
 	isDirty=(action 'isDirty') onCancel=(action 'onCancel') onAction=(action 'onAction')}}
+
+	<div class="section-github-editor">
 
 	{{#if authenticated}}
 
@@ -86,5 +60,7 @@
 		</div>
 
 	{{/if}}
+	
+	</div>
 
 {{/section/base-editor}}

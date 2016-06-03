@@ -27,7 +27,6 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
         let self = this;
         let page = this.get('page');
-        console.log(this.get('config.clientId'));
 
         if (is.undefined(this.get('config.clientId')) || is.undefined(this.get('config.callbackUrl'))) {
             self.get('sectionService').fetch(page, "config", {})

@@ -28,7 +28,7 @@ import (
 const renderTemplate = `
 {{if .Authenticated}}
 <p class="margin-left-20">The Gemini workspace <a href="{{.Config.URL}}/workspace/{{.Config.WorkspaceID}}/items">{{.Config.WorkspaceName}}</a> contains {{.Config.ItemCount}} items.</p>
-<table class="basic-table gemini-table">
+<table class="basic-table section-gemini-table">
 	<thead>
 		<tr>
 			<th class="bordered no-width">Item Key</th>

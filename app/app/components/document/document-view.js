@@ -36,7 +36,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
     },
 
     noSections: Ember.computed('pages', function() {
-        console.log(this.get('pages.length'));
         return this.get('pages.length') === 1;
     }),
 
