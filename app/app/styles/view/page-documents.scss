@@ -48,15 +48,27 @@
 }
 
 .documents-list {
-	@extend .cards-list;
+	// @extend .cards-list;
 	margin-top: 35px;
 
-	> .document-card {
-		@extend .stacked-card;
-		margin: 0 0 12px 0;
+	> .document {
+		margin: 10px 10px;
+		padding: 10px 20px;
 		width: 100%;
+		position: relative;
+		border: 1px solid transparent;
 
 		&:hover {
+			> .link {
+				> .title {
+					color: $color-link;
+				}
+				
+				> .snippet {
+					color: $color-off-black;
+				}
+			}
+			
 			> .checkbox {
 				display: block;
 			}
@@ -86,10 +98,22 @@
 				text-decoration: none;
 				color: $color-off-black;
 			}
+			
+			> .title {
+				font-size: 16px;
+				font-weight: bold;
+				margin-bottom: 8px;
+			}
+			
+			> .snippet {
+				color: $color-gray;
+				font-size: 13px;
+			}
 
 			> .tags {
 				font-size: 0.8rem;
 				color: $color-gray;
+				margin-top: 8px;
 
 				.tag {
 					background-color: $color-off-white;

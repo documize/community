@@ -1,6 +1,6 @@
 <ul class="documents-list">
 	{{#each documents key="id" as |document|}}
-		<li class="document-card {{if document.selected "selected-card"}}">
+		<li class="document {{if document.selected "selected-card"}}">
 			{{#link-to 'document.index' folder.id folder.slug document.id document.slug class="link"}}
 				<div class="title">{{ document.name }}</div>
 				<div class="snippet">{{ document.excerpt }}</div>
