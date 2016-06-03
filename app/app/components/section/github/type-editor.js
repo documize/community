@@ -33,10 +33,6 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
                 .then(function(cfg) {
                     let config = {};
 
-                    try {
-                        config = JSON.parse(self.get('meta.config'));
-                    } catch (e) {}
-
                     config = {
                         clientId: cfg.clientID,
                         callbackUrl: cfg.authorizationCallbackURL,
@@ -50,6 +46,13 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
                         branchSince: "",
                         branchLines: 30
                     };
+
+                    try {
+                        let metaConfig = JSON.parse(self.get('meta.config'));
+                        config.repo = metaConfig.repo;
+                        config.lists = metaConfig.lists;
+                    } catch (e) {}
+
                     self.set('config', config);
 
                     // On auth callback capture code
