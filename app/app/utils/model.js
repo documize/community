@@ -39,6 +39,10 @@ let AppMeta = BaseModel.extend({
         this.set('url', [config.apiHost, config.apiNamespace, ""].join('/'));
     },
 
+    getBaseUrl(endpoint) {
+        return [this.get('host'), endpoint].join('/');
+    },
+
     getUrl(endpoint) {
         return [this.get('host'), this.get('namespace'), endpoint].join('/');
     }
