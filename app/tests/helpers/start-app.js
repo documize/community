@@ -4,8 +4,8 @@ import config from '../../config/environment';
 import './stub-session';
 import './stub-audit';
 import './user-login';
-import './allow-anonymous-access';
 import './wait-to-appear';
+import './wait-to-disappear';
 import './stub-user-notification';
 
 export default function startApp(attrs) {
