@@ -35,9 +35,9 @@ export default Ember.Component.extend(NotifierMixin, {
 
             this.set("sections", sections);
 
-			// if (this.session.get('popupBlocked')) {
-			// 	this.showNotification("Hmm, looks like your browser is blocking popups...");
-			// }
+            // if (this.session.get('popupBlocked')) {
+            // 	this.showNotification("Hmm, looks like your browser is blocking popups...");
+            // }
         },
 
         onCancel() {
@@ -46,20 +46,20 @@ export default Ember.Component.extend(NotifierMixin, {
 
         onAction() {
             let title = this.get("title");
-			let section = this.get("sections").findBy("selected", true);
+            let section = this.get("sections").findBy("selected", true);
             let contentType = section.contentType;
 
-			if (section.preview) {
-				this.showNotification("Coming soon!");
-				return;
-			}
+            if (section.preview) {
+                this.showNotification("Coming soon!");
+                return;
+            }
 
             if (is.empty(title)) {
                 $("#page-title").addClass("error").focus();
                 return;
             }
 
-			this.audit.record('added section' + section.contentType);
+            this.audit.record('added section ' + section.contentType);
 
             this.attrs.onAction(title, contentType);
         }
