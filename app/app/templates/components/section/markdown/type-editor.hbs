@@ -1,26 +1,11 @@
-<style>
-#markdown-editor {
-	width: 100%;
-	resize: none;
-	padding: 10px;
-	background-color: white;
-}
-#markdown-preview {
-	width: 100%;
-	padding: 10px;
-	background-color: white;
-	overflow: auto;
-}
-</style>
-
 {{#section/base-editor document=document folder=folder page=page isDirty=(action 'isDirty') onCancel=(action 'onCancel') onAction=(action 'onAction')}}
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-xs-6">
-				{{focus-textarea value=pageBody id="markdown-editor" class="mousetrap bordered"}}
+				{{focus-textarea id="section-markdown-editor" class="mousetrap bordered" value=pageBody}}
 			</div>
 			<div class="col-xs-6">
-				<div id="markdown-preview" class="mousetrap bordered wysiwyg">
+				<div id="section-markdown-preview" class="mousetrap bordered wysiwyg">
 				</div>
 			</div>
 		</div>

@@ -10,19 +10,19 @@ export default Ember.Component.extend({
 
     didInsertElement() {
         let height = $(document).height() - $(".document-editor > .toolbar").height() - 130;
-        $("#markdown-editor, #markdown-preview").css("height", height);
+        $("#section-markdown-editor, #section-markdown-preview").css("height", height);
 
         this.renderPreview();
         let self = this;
 
-        $("#markdown-editor").off("keyup").on("keyup", function() {
+        $("#section-markdown-editor").off("keyup").on("keyup", function() {
             self.renderPreview();
             self.set('isDirty', true);
         });
     },
 
     willDestroyElement() {
-        $("#markdown-editor").off("keyup");
+        $("#section-markdown-editor").off("keyup");
     },
 
     renderPreview() {
@@ -30,7 +30,7 @@ export default Ember.Component.extend({
             linkify: true
         });
         let result = md.render(this.get("pageBody"));
-        $("#markdown-preview").html(result);
+        $("#section-markdown-preview").html(result);
     },
 
     actions: {
