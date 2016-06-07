@@ -9,7 +9,7 @@
 //
 // https://documize.com
 
-package section
+package gemini
 
 import (
 	"bytes"
@@ -21,6 +21,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/documize/community/documize/section/provider"
 	"github.com/documize/community/wordsmith/log"
 )
 
@@ -55,17 +56,13 @@ const renderTemplate = `
 {{end}}
 `
 
-type gemini struct {
+// Provider represents Gemini
+type Provider struct {
 }
 
-// Register ourselves.
-func init() {
-	sectionsMap["gemini"] = &gemini{}
-}
-
-// Meta describes this section type.
-func (*gemini) Meta() TypeMeta {
-	section := TypeMeta{}
+// Meta describes us.
+func (*Provider) Meta() provider.TypeMeta {
+	section := provider.TypeMeta{}
 	section.ID = "23b133f9-4020-4616-9291-a98fb939735f"
 	section.Title = "Gemini"
 	section.Description = "Display work items and tickets from workspaces"
@@ -75,7 +72,7 @@ func (*gemini) Meta() TypeMeta {
 }
 
 // Render converts Gemini data into HTML suitable for browser rendering.
-func (*gemini) Render(config, data string) string {
+func (*Provider) Render(config, data string) string {
 	var items []geminiItem
 	var payload = geminiRender{}
 	var c = geminiConfig{}
@@ -99,12 +96,12 @@ func (*gemini) Render(config, data string) string {
 }
 
 // Command handles authentication, workspace listing and items retrieval.
-func (*gemini) Command(w http.ResponseWriter, r *http.Request) {
+func (*Provider) Command(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
 	method := query.Get("method")
 
 	if len(method) == 0 {
-		writeMessage(w, "gemini", "missing method name")
+		provider.WriteMessage(w, "gemini", "missing method name")
 		return
 	}
 
@@ -119,7 +116,7 @@ func (*gemini) Command(w http.ResponseWriter, r *http.Request) {
 }
 
 // Refresh just sends back data as-is.
-func (*gemini) Refresh(config, data string) (newData string) {
+func (*Provider) Refresh(config, data string) (newData string) {
 	var c = geminiConfig{}
 	err := json.Unmarshal([]byte(config), &c)
 
@@ -234,7 +231,7 @@ func auth(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
-		writeMessage(w, "gemini", "Bad payload")
+		provider.WriteMessage(w, "gemini", "Bad payload")
 		return
 	}
 
@@ -242,24 +239,24 @@ func auth(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &config)
 
 	if err != nil {
-		writeMessage(w, "gemini", "Bad payload")
+		provider.WriteMessage(w, "gemini", "Bad payload")
 		return
 	}
 
 	config.Clean()
 
 	if len(config.URL) == 0 {
-		writeMessage(w, "gemini", "Missing URL value")
+		provider.WriteMessage(w, "gemini", "Missing URL value")
 		return
 	}
 
 	if len(config.Username) == 0 {
-		writeMessage(w, "gemini", "Missing Username value")
+		provider.WriteMessage(w, "gemini", "Missing Username value")
 		return
 	}
 
 	if len(config.APIKey) == 0 {
-		writeMessage(w, "gemini", "Missing APIKey value")
+		provider.WriteMessage(w, "gemini", "Missing APIKey value")
 		return
 	}
 
@@ -273,12 +270,12 @@ func auth(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		fmt.Println(err)
-		writeError(w, "gemini", err)
+		provider.WriteError(w, "gemini", err)
 		return
 	}
 
 	if res.StatusCode != http.StatusOK {
-		writeForbidden(w)
+		provider.WriteForbidden(w)
 		return
 	}
 
@@ -290,11 +287,11 @@ func auth(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		fmt.Println(err)
-		writeError(w, "gemini", err)
+		provider.WriteError(w, "gemini", err)
 		return
 	}
 
-	writeJSON(w, g)
+	provider.WriteJSON(w, g)
 }
 
 func workspace(w http.ResponseWriter, r *http.Request) {
@@ -302,7 +299,7 @@ func workspace(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
-		writeMessage(w, "gemini", "Bad payload")
+		provider.WriteMessage(w, "gemini", "Bad payload")
 		return
 	}
 
@@ -310,29 +307,29 @@ func workspace(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &config)
 
 	if err != nil {
-		writeMessage(w, "gemini", "Bad payload")
+		provider.WriteMessage(w, "gemini", "Bad payload")
 		return
 	}
 
 	config.Clean()
 
 	if len(config.URL) == 0 {
-		writeMessage(w, "gemini", "Missing URL value")
+		provider.WriteMessage(w, "gemini", "Missing URL value")
 		return
 	}
 
 	if len(config.Username) == 0 {
-		writeMessage(w, "gemini", "Missing Username value")
+		provider.WriteMessage(w, "gemini", "Missing Username value")
 		return
 	}
 
 	if len(config.APIKey) == 0 {
-		writeMessage(w, "gemini", "Missing APIKey value")
+		provider.WriteMessage(w, "gemini", "Missing APIKey value")
 		return
 	}
 
 	if config.UserID == 0 {
-		writeMessage(w, "gemini", "Missing UserId value")
+		provider.WriteMessage(w, "gemini", "Missing UserId value")
 		return
 	}
 
@@ -346,12 +343,12 @@ func workspace(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		fmt.Println(err)
-		writeError(w, "gemini", err)
+		provider.WriteError(w, "gemini", err)
 		return
 	}
 
 	if res.StatusCode != http.StatusOK {
-		writeForbidden(w)
+		provider.WriteForbidden(w)
 		return
 	}
 
@@ -363,11 +360,11 @@ func workspace(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		fmt.Println(err)
-		writeError(w, "gemini", err)
+		provider.WriteError(w, "gemini", err)
 		return
 	}
 
-	writeJSON(w, workspace)
+	provider.WriteJSON(w, workspace)
 }
 
 func items(w http.ResponseWriter, r *http.Request) {
@@ -375,7 +372,7 @@ func items(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
-		writeMessage(w, "gemini", "Bad payload")
+		provider.WriteMessage(w, "gemini", "Bad payload")
 		return
 	}
 
@@ -383,24 +380,24 @@ func items(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &config)
 
 	if err != nil {
-		writeMessage(w, "gemini", "Bad payload")
+		provider.WriteMessage(w, "gemini", "Bad payload")
 		return
 	}
 
 	config.Clean()
 
 	if len(config.URL) == 0 {
-		writeMessage(w, "gemini", "Missing URL value")
+		provider.WriteMessage(w, "gemini", "Missing URL value")
 		return
 	}
 
 	if len(config.Username) == 0 {
-		writeMessage(w, "gemini", "Missing Username value")
+		provider.WriteMessage(w, "gemini", "Missing Username value")
 		return
 	}
 
 	if len(config.APIKey) == 0 {
-		writeMessage(w, "gemini", "Missing APIKey value")
+		provider.WriteMessage(w, "gemini", "Missing APIKey value")
 		return
 	}
 
@@ -409,7 +406,7 @@ func items(w http.ResponseWriter, r *http.Request) {
 	filter, err := json.Marshal(config.Filter)
 	if err != nil {
 		fmt.Println(err)
-		writeError(w, "gemini", err)
+		provider.WriteError(w, "gemini", err)
 		return
 	}
 
@@ -423,12 +420,12 @@ func items(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		fmt.Println(err)
-		writeError(w, "gemini", err)
+		provider.WriteError(w, "gemini", err)
 		return
 	}
 
 	if res.StatusCode != http.StatusOK {
-		writeForbidden(w)
+		provider.WriteForbidden(w)
 		return
 	}
 
@@ -440,9 +437,9 @@ func items(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		fmt.Println(err)
-		writeError(w, "gemini", err)
+		provider.WriteError(w, "gemini", err)
 		return
 	}
 
-	writeJSON(w, items)
+	provider.WriteJSON(w, items)
 }

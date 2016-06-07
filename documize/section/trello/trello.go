@@ -9,7 +9,7 @@
 //
 // https://documize.com
 
-package section
+package trello
 
 import (
 	"bytes"
@@ -20,18 +20,17 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/documize/community/documize/section/provider"
 	"github.com/documize/community/wordsmith/log"
 )
 
-type trello struct {
+// Provider represents Trello
+type Provider struct {
 }
 
-func init() {
-	sectionsMap["trello"] = &trello{}
-}
-
-func (*trello) Meta() TypeMeta {
-	section := TypeMeta{}
+// Meta describes us
+func (*Provider) Meta() provider.TypeMeta {
+	section := provider.TypeMeta{}
 	section.ID = "c455a552-202e-441c-ad79-397a8152920b"
 	section.Title = "Trello"
 	section.Description = "Embed cards from boards and lists"
@@ -41,12 +40,12 @@ func (*trello) Meta() TypeMeta {
 }
 
 // Command stub.
-func (*trello) Command(w http.ResponseWriter, r *http.Request) {
+func (*Provider) Command(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
 	method := query.Get("method")
 
 	if len(method) == 0 {
-		writeMessage(w, "trello", "missing method name")
+		provider.WriteMessage(w, "trello", "missing method name")
 		return
 	}
 
@@ -54,7 +53,7 @@ func (*trello) Command(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
-		writeMessage(w, "trello", "Bad body")
+		provider.WriteMessage(w, "trello", "Bad body")
 		return
 	}
 
@@ -62,19 +61,19 @@ func (*trello) Command(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &config)
 
 	if err != nil {
-		writeError(w, "trello", err)
+		provider.WriteError(w, "trello", err)
 		return
 	}
 
 	config.Clean()
 
 	if len(config.AppKey) == 0 {
-		writeMessage(w, "trello", "Missing appKey")
+		provider.WriteMessage(w, "trello", "Missing appKey")
 		return
 	}
 
 	if len(config.Token) == 0 {
-		writeMessage(w, "trello", "Missing token")
+		provider.WriteMessage(w, "trello", "Missing token")
 		return
 	}
 
@@ -84,38 +83,38 @@ func (*trello) Command(w http.ResponseWriter, r *http.Request) {
 
 		if err != nil {
 			fmt.Println(err)
-			writeError(w, "trello", err)
+			provider.WriteError(w, "trello", err)
 			return
 		}
 
-		writeJSON(w, render)
+		provider.WriteJSON(w, render)
 
 	case "boards":
 		render, err := getBoards(config)
 
 		if err != nil {
 			fmt.Println(err)
-			writeError(w, "trello", err)
+			provider.WriteError(w, "trello", err)
 			return
 		}
 
-		writeJSON(w, render)
+		provider.WriteJSON(w, render)
 
 	case "lists":
 		render, err := getLists(config)
 
 		if err != nil {
 			fmt.Println(err)
-			writeError(w, "trello", err)
+			provider.WriteError(w, "trello", err)
 			return
 		}
 
-		writeJSON(w, render)
+		provider.WriteJSON(w, render)
 	}
 }
 
 // Render just sends back HMTL as-is.
-func (*trello) Render(config, data string) string {
+func (*Provider) Render(config, data string) string {
 	raw := []trelloListCards{}
 	payload := trelloRender{}
 	var c = trelloConfig{}
@@ -141,7 +140,7 @@ func (*trello) Render(config, data string) string {
 }
 
 // Refresh just sends back data as-is.
-func (*trello) Refresh(config, data string) string {
+func (*Provider) Refresh(config, data string) string {
 	var c = trelloConfig{}
 	json.Unmarshal([]byte(config), &c)
 

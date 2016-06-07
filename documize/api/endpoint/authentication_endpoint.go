@@ -20,12 +20,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/documize/community/documize/api/endpoint/models"
 	"github.com/documize/community/documize/api/entity"
 	"github.com/documize/community/documize/api/request"
 	"github.com/documize/community/documize/api/util"
-	"github.com/documize/community/documize/section"
+	"github.com/documize/community/documize/section/provider"
 	"github.com/documize/community/wordsmith/log"
 	"github.com/documize/community/wordsmith/utility"
 )
@@ -228,7 +228,7 @@ func ValidateAuthToken(w http.ResponseWriter, r *http.Request) {
 
 	// TODO should this go after token validation?
 	if s := r.URL.Query().Get("section"); s != "" {
-		if err:=section.Callback(s, w, r); err!=nil {
+		if err := provider.Callback(s, w, r); err != nil {
 			log.Error("section validation failure", err)
 			w.WriteHeader(http.StatusUnauthorized)
 		}

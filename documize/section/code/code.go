@@ -9,21 +9,21 @@
 //
 // https://documize.com
 
-package section
+package code
 
 import (
 	"net/http"
+
+	"github.com/documize/community/documize/section/provider"
 )
 
-type code struct {
+// Provider represents code snippet
+type Provider struct {
 }
 
-func init() {
-	sectionsMap["code"] = &code{}
-}
-
-func (*code) Meta() TypeMeta {
-	section := TypeMeta{}
+// Meta describes us.
+func (*Provider) Meta() provider.TypeMeta {
+	section := provider.TypeMeta{}
 
 	section.ID = "4f6f2b02-8397-483d-9bb9-eea1fef13304"
 	section.Title = "Code"
@@ -35,16 +35,16 @@ func (*code) Meta() TypeMeta {
 }
 
 // Command stub.
-func (*code) Command(w http.ResponseWriter, r *http.Request) {
-	writeEmpty(w)
+func (*Provider) Command(w http.ResponseWriter, r *http.Request) {
+	provider.WriteEmpty(w)
 }
 
 // Render just sends back HMTL as-is.
-func (*code) Render(config, data string) string {
+func (*Provider) Render(config, data string) string {
 	return data
 }
 
 // Refresh just sends back data as-is.
-func (*code) Refresh(config, data string) string {
+func (*Provider) Refresh(config, data string) string {
 	return data
 }

@@ -9,21 +9,21 @@
 //
 // https://documize.com
 
-package section
+package stripe
 
 import (
 	"net/http"
+
+	"github.com/documize/community/documize/section/provider"
 )
 
-type stripe struct {
+// Provider represents Stripe
+type Provider struct {
 }
 
-func init() {
-	sectionsMap["stripe"] = &stripe{}
-}
-
-func (*stripe) Meta() TypeMeta {
-	section := TypeMeta{}
+// Meta describes us
+func (*Provider) Meta() provider.TypeMeta {
+	section := provider.TypeMeta{}
 
 	section.ID = "cb597d8d-c724-4034-b272-e8d9e261444f"
 	section.Title = "Stripe"
@@ -35,16 +35,16 @@ func (*stripe) Meta() TypeMeta {
 }
 
 // Command stub.
-func (*stripe) Command(w http.ResponseWriter, r *http.Request) {
-	writeEmpty(w)
+func (*Provider) Command(w http.ResponseWriter, r *http.Request) {
+	provider.WriteEmpty(w)
 }
 
 // Render just sends back HMTL as-is.
-func (*stripe) Render(config, data string) string {
+func (*Provider) Render(config, data string) string {
 	return data
 }
 
 // Refresh just sends back data as-is.
-func (*stripe) Refresh(config, data string) string {
+func (*Provider) Refresh(config, data string) string {
 	return data
 }

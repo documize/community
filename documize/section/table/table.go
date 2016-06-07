@@ -9,21 +9,21 @@
 //
 // https://documize.com
 
-package section
+package table
 
 import (
 	"net/http"
+
+	"github.com/documize/community/documize/section/provider"
 )
 
-type table struct {
+// Provider represents Table
+type Provider struct {
 }
 
-func init() {
-	sectionsMap["table"] = &table{}
-}
-
-func (*table) Meta() TypeMeta {
-	section := TypeMeta{}
+// Meta describes us
+func (*Provider) Meta() provider.TypeMeta {
+	section := provider.TypeMeta{}
 
 	section.ID = "81a2ea93-2dfc-434d-841e-54b832492c92"
 	section.Title = "Tabular"
@@ -35,16 +35,16 @@ func (*table) Meta() TypeMeta {
 }
 
 // Command stub.
-func (*table) Command(w http.ResponseWriter, r *http.Request) {
-	writeEmpty(w)
+func (*Provider) Command(w http.ResponseWriter, r *http.Request) {
+	provider.WriteEmpty(w)
 }
 
 // Render sends back data as-is (HTML).
-func (*table) Render(config, data string) string {
+func (*Provider) Render(config, data string) string {
 	return data
 }
 
 // Refresh just sends back data as-is.
-func (*table) Refresh(config, data string) string {
+func (*Provider) Refresh(config, data string) string {
 	return data
 }

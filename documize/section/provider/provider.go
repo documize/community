@@ -9,7 +9,7 @@
 //
 // https://documize.com
 
-package section
+package provider
 
 import (
 	"encoding/json"
@@ -22,7 +22,7 @@ import (
 )
 
 // sectionsMap is where individual sections register themselves.
-var sectionsMap = make(map[string]section)
+var sectionsMap = make(map[string]Provider)
 
 // TypeMeta details a "smart section" that represents a "page" in a document.
 type TypeMeta struct {
@@ -35,12 +35,22 @@ type TypeMeta struct {
 	Callback    func(http.ResponseWriter, *http.Request) error `json:"-"`
 }
 
-// section represents a 'page' in a document.
-type section interface {
+// Provider represents a 'page' in a document.
+type Provider interface {
 	Meta() TypeMeta                                 // Meta returns section details
 	Command(w http.ResponseWriter, r *http.Request) // Command is general-purpose method that can return data to UI
 	Render(config, data string) string              // Render converts section data into presentable HTML
 	Refresh(config, data string) string             // Refresh returns latest data
+}
+
+// Register makes document section type available
+func Register(name string, p Provider) {
+	sectionsMap[name] = p
+}
+
+// List returns available types
+func List() map[string]Provider {
+	return sectionsMap
 }
 
 // GetSectionMeta returns a list of smart sections.
@@ -92,15 +102,15 @@ func Refresh(section, config, data string) (string, bool) {
 	return "", false
 }
 
-// writeJSON writes data as JSON to HTTP response.
-func writeJSON(w http.ResponseWriter, v interface{}) {
+// WriteJSON writes data as JSON to HTTP response.
+func WriteJSON(w http.ResponseWriter, v interface{}) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
 	j, err := json.Marshal(v)
 
 	if err != nil {
-		writeMarshalError(w, err)
+		WriteMarshalError(w, err)
 		return
 	}
 
@@ -108,23 +118,23 @@ func writeJSON(w http.ResponseWriter, v interface{}) {
 	log.IfErr(err)
 }
 
-// writeString writes string tp HTTP response.
-func writeString(w http.ResponseWriter, data string) {
+// WriteString writes string tp HTTP response.
+func WriteString(w http.ResponseWriter, data string) {
 	w.WriteHeader(http.StatusOK)
 	_, err := w.Write([]byte(data))
 	log.IfErr(err)
 }
 
-// writeEmpty returns just OK to HTTP response.
-func writeEmpty(w http.ResponseWriter) {
+// WriteEmpty returns just OK to HTTP response.
+func WriteEmpty(w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 	_, err := w.Write([]byte("{}"))
 	log.IfErr(err)
 }
 
-// writeMarshalError write JSON marshalling error to HTTP response.
-func writeMarshalError(w http.ResponseWriter, err error) {
+// WriteMarshalError write JSON marshalling error to HTTP response.
+func WriteMarshalError(w http.ResponseWriter, err error) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusBadRequest)
 	_, err2 := w.Write([]byte("{Error: 'JSON marshal failed'}"))
@@ -132,7 +142,8 @@ func writeMarshalError(w http.ResponseWriter, err error) {
 	log.Error("JSON marshall failed", err)
 }
 
-func writeMessage(w http.ResponseWriter, section, msg string) {
+// WriteMessage write string to HTTP response.
+func WriteMessage(w http.ResponseWriter, section, msg string) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusBadRequest)
 	_, err := w.Write([]byte("{Message: " + msg + "}"))
@@ -140,7 +151,8 @@ func writeMessage(w http.ResponseWriter, section, msg string) {
 	log.Info(fmt.Sprintf("Error for section %s: %s", section, msg))
 }
 
-func writeError(w http.ResponseWriter, section string, err error) {
+// WriteError write given error to HTTP response.
+func WriteError(w http.ResponseWriter, section string, err error) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusBadRequest)
 	_, err2 := w.Write([]byte("{Error: 'Internal server error'}"))
@@ -148,7 +160,8 @@ func writeError(w http.ResponseWriter, section string, err error) {
 	log.Error(fmt.Sprintf("Error for section %s", section), err)
 }
 
-func writeForbidden(w http.ResponseWriter) {
+// WriteForbidden write 403 to HTTP response.
+func WriteForbidden(w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusForbidden)
 	_, err := w.Write([]byte("{Error: 'Unauthorized'}"))

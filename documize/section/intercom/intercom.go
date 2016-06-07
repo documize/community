@@ -9,21 +9,21 @@
 //
 // https://documize.com
 
-package section
+package intercom
 
 import (
 	"net/http"
+
+	"github.com/documize/community/documize/section/provider"
 )
 
-type intercom struct {
+// Provider represents Intercom
+type Provider struct {
 }
 
-func init() {
-	sectionsMap["intercom"] = &intercom{}
-}
-
-func (*intercom) Meta() TypeMeta {
-	section := TypeMeta{}
+// Meta describes us
+func (*Provider) Meta() provider.TypeMeta {
+	section := provider.TypeMeta{}
 
 	section.ID = "bf40314d-3b3c-41f9-b283-517da56aa7e4"
 	section.Title = "Intercom"
@@ -35,16 +35,16 @@ func (*intercom) Meta() TypeMeta {
 }
 
 // Command stub.
-func (*intercom) Command(w http.ResponseWriter, r *http.Request) {
-	writeEmpty(w)
+func (*Provider) Command(w http.ResponseWriter, r *http.Request) {
+	provider.WriteEmpty(w)
 }
 
 // Render just sends back HMTL as-is.
-func (*intercom) Render(config, data string) string {
+func (*Provider) Render(config, data string) string {
 	return data
 }
 
 // Refresh just sends back data as-is.
-func (*intercom) Refresh(config, data string) string {
+func (*Provider) Refresh(config, data string) string {
 	return data
 }

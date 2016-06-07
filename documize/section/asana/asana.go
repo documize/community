@@ -9,42 +9,42 @@
 //
 // https://documize.com
 
-package section
+package asana
 
 import (
 	"net/http"
+
+	"github.com/documize/community/documize/section/provider"
 )
 
-type mailchimp struct {
+// Provider represents Asana
+type Provider struct {
 }
 
-func init() {
-	sectionsMap["mailchimp"] = &mailchimp{}
-}
+// Meta describes us.
+func (*Provider) Meta() provider.TypeMeta {
+	section := provider.TypeMeta{}
 
-func (*mailchimp) Meta() TypeMeta {
-	section := TypeMeta{}
-
-	section.ID = "feab735b-2d02-4bb1-b501-ced825e22465"
-	section.Title = "Mailchimp"
-	section.Description = "Email campaigns and results"
-	section.ContentType = "mailchimp"
+	section.ID = "3a3f4661-2195-46b1-a69c-546eaccb5f93"
+	section.Title = "Asana"
+	section.Description = "Embed tasks and projects"
+	section.ContentType = "asana"
 	section.Preview = true
 
 	return section
 }
 
 // Command stub.
-func (*mailchimp) Command(w http.ResponseWriter, r *http.Request) {
-	writeEmpty(w)
+func (*Provider) Command(w http.ResponseWriter, r *http.Request) {
+	provider.WriteEmpty(w)
 }
 
 // Render just sends back HMTL as-is.
-func (*mailchimp) Render(config, data string) string {
+func (*Provider) Render(config, data string) string {
 	return data
 }
 
 // Refresh just sends back data as-is.
-func (*mailchimp) Refresh(config, data string) string {
+func (*Provider) Refresh(config, data string) string {
 	return data
 }

@@ -24,11 +24,31 @@ import (
 	"time"
 
 	"github.com/documize/community/documize/api/request"
+	"github.com/documize/community/documize/section/provider"
 	"github.com/documize/community/wordsmith/log"
 
 	gogithub "github.com/google/go-github/github"
 	"golang.org/x/oauth2"
 )
+
+// Provider represents GitHub
+type Provider struct {
+}
+
+// Meta describes us.
+func (*Provider) Meta() provider.TypeMeta {
+	section := provider.TypeMeta{}
+
+	section.ID = "38c0e4c5-291c-415e-8a4d-262ee80ba5df"
+	section.Title = "GitHub"
+	section.Description = "Code commits and branches"
+	section.ContentType = "github"
+	//section.Preview = true
+
+	section.Callback = Callback
+
+	return section
+}
 
 const configKey = "SECTION-GITHUB"
 
@@ -43,46 +63,15 @@ func authorizationCallbackURL() string {
 	return request.ConfigString(configKey, "authorizationCallbackURL")
 }
 
-type GithubT struct {
-
-	/* TODO use the shared functions in the "section" package
-	WriteJSON func (w http.ResponseWriter, v interface{})
-	WriteString func(w http.ResponseWriter, data string)
-	WriteEmpty func (w http.ResponseWriter)
-	WriteMarshalError func (w http.ResponseWriter, err error)
-	WriteMessage func (w http.ResponseWriter, section, msg string)
-	WriteError func (w http.ResponseWriter, section string, err error)
-	WriteForbidden func (w http.ResponseWriter)
-	*/
-}
-
-/* done at top level in the "section" package
-func init() {
-	sectionsMap["github"] = &GithubT{}
-}
-
-func (*GithubT) Meta() TypeMeta {
-	section :=  TypeMeta{}
-
-	section.ID = "38c0e4c5-291c-415e-8a4d-262ee80ba5df"
-	section.Title = "GitHub"
-	section.Description = "Code commits and branches"
-	section.ContentType = "github"
-	//section.Preview = true
-
-	return section
-}
-*/
-
 // Command to run the various functions required...
-func (t *GithubT) Command(w http.ResponseWriter, r *http.Request) {
+func (t *Provider) Command(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
 	method := query.Get("method")
 
 	if len(method) == 0 {
 		msg := "missing method name"
 		log.ErrorString("github: " + msg)
-		writeMessage(w, "gitub", msg)
+		provider.WriteMessage(w, "gitub", msg)
 		return
 	}
 
@@ -93,7 +82,7 @@ func (t *GithubT) Command(w http.ResponseWriter, r *http.Request) {
 		}
 		ret.CID = clientID()
 		ret.URL = authorizationCallbackURL()
-		writeJSON(w, ret)
+		provider.WriteJSON(w, ret)
 		return
 	}
 
@@ -103,7 +92,7 @@ func (t *GithubT) Command(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		msg := "Bad body"
 		log.ErrorString("github: " + msg)
-		writeMessage(w, "gitub", msg)
+		provider.WriteMessage(w, "gitub", msg)
 		return
 	}
 
@@ -112,7 +101,7 @@ func (t *GithubT) Command(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		log.Error("github Command Unmarshal", err)
-		writeError(w, "github", err)
+		provider.WriteError(w, "github", err)
 		return
 	}
 
@@ -121,7 +110,7 @@ func (t *GithubT) Command(w http.ResponseWriter, r *http.Request) {
 	if len(config.Token) == 0 {
 		msg := "Missing token"
 		log.ErrorString("github: " + msg)
-		writeMessage(w, "gitub", msg)
+		provider.WriteMessage(w, "gitub", msg)
 		return
 	}
 
@@ -134,25 +123,25 @@ func (t *GithubT) Command(w http.ResponseWriter, r *http.Request) {
 		render, err := t.getCommits(client, config)
 		if err != nil {
 			log.Error("github getCommits:", err)
-			writeError(w, "github", err)
+			provider.WriteError(w, "github", err)
 			return
 		}
 
-		writeJSON(w, render)
+		provider.WriteJSON(w, render)
 
 	case "repos":
 
 		me, _, err := client.Users.Get("")
 		if err != nil {
 			log.Error("github get user details:", err)
-			writeError(w, "github", err)
+			provider.WriteError(w, "github", err)
 			return
 		}
 
 		orgs, _, err := client.Organizations.List("", nil)
 		if err != nil {
 			log.Error("github get user's organisations:", err)
-			writeError(w, "github", err)
+			provider.WriteError(w, "github", err)
 			return
 		}
 
@@ -175,7 +164,7 @@ func (t *GithubT) Command(w http.ResponseWriter, r *http.Request) {
 			}
 			if err != nil {
 				log.Error("github get user/org repositories:", err)
-				writeError(w, "github", err)
+				provider.WriteError(w, "github", err)
 				return
 			}
 			for kr, vr := range repos {
@@ -197,18 +186,18 @@ func (t *GithubT) Command(w http.ResponseWriter, r *http.Request) {
 
 		render = sortRepos(render)
 
-		writeJSON(w, render)
+		provider.WriteJSON(w, render)
 
 	case "lists":
 		if config.Owner == "" || config.Repo == "" {
-			writeJSON(w, []githubBranch{}) // we have nothing to return
+			provider.WriteJSON(w, []githubBranch{}) // we have nothing to return
 			return
 		}
 		branches, _, err := client.Repositories.ListBranches(config.Owner, config.Repo,
 			&gogithub.ListOptions{PerPage: 100})
 		if err != nil {
 			log.Error("github get branch details:", err)
-			writeError(w, "github", err)
+			provider.WriteError(w, "github", err)
 			return
 		}
 		render := make([]githubBranch, len(branches))
@@ -221,15 +210,14 @@ func (t *GithubT) Command(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		writeJSON(w, render)
+		provider.WriteJSON(w, render)
 
 	default:
-
-		writeEmpty(w)
+		provider.WriteEmpty(w)
 	}
 }
 
-func (*GithubT) githubClient(config githubConfig) *gogithub.Client {
+func (*Provider) githubClient(config githubConfig) *gogithub.Client {
 	ts := oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: config.Token},
 	)
@@ -238,7 +226,7 @@ func (*GithubT) githubClient(config githubConfig) *gogithub.Client {
 	return gogithub.NewClient(tc)
 }
 
-func (*GithubT) getCommits(client *gogithub.Client, config githubConfig) ([]githubBranchCommits, error) {
+func (*Provider) getCommits(client *gogithub.Client, config githubConfig) ([]githubBranchCommits, error) {
 
 	opts := &gogithub.CommitsListOptions{
 		SHA:         config.Branch,
@@ -320,7 +308,7 @@ func (*GithubT) getCommits(client *gogithub.Client, config githubConfig) ([]gith
 }
 
 // Refresh ... gets the latest version
-func (t *GithubT) Refresh(configJSON, data string) string {
+func (t *Provider) Refresh(configJSON, data string) string {
 	var c = githubConfig{}
 	json.Unmarshal([]byte(configJSON), &c)
 	c.Clean()
@@ -349,7 +337,7 @@ type githubRender struct {
 }
 
 // Render ... just returns the data given
-func (*GithubT) Render(config, data string) string {
+func (*Provider) Render(config, data string) string {
 
 	raw := []githubBranchCommits{}
 	payload := githubRender{}
@@ -534,69 +522,4 @@ func Callback(res http.ResponseWriter, req *http.Request) error {
 	http.Redirect(res, req, target, http.StatusTemporaryRedirect)
 
 	return nil
-}
-
-// TODO don't copy these functions... use the ones in the "section" package
-
-// writeJSON writes data as JSON to HTTP response.
-func writeJSON(w http.ResponseWriter, v interface{}) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-
-	j, err := json.Marshal(v)
-
-	if err != nil {
-		writeMarshalError(w, err)
-		return
-	}
-
-	_, err = w.Write(j)
-	log.IfErr(err)
-}
-
-// writeString writes string tp HTTP response.
-func writeString(w http.ResponseWriter, data string) {
-	w.WriteHeader(http.StatusOK)
-	_, err := w.Write([]byte(data))
-	log.IfErr(err)
-}
-
-// writeEmpty returns just OK to HTTP response.
-func writeEmpty(w http.ResponseWriter) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	_, err := w.Write([]byte("{}"))
-	log.IfErr(err)
-}
-
-// writeMarshalError write JSON marshalling error to HTTP response.
-func writeMarshalError(w http.ResponseWriter, err error) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusBadRequest)
-	_, err2 := w.Write([]byte("{Error: 'JSON marshal failed'}"))
-	log.IfErr(err2)
-	log.Error("JSON marshall failed", err)
-}
-
-func writeMessage(w http.ResponseWriter, section, msg string) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusBadRequest)
-	_, err := w.Write([]byte("{Message: " + msg + "}"))
-	log.IfErr(err)
-	log.Info(fmt.Sprintf("Error for section %s: %s", section, msg))
-}
-
-func writeError(w http.ResponseWriter, section string, err error) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusBadRequest)
-	_, err2 := w.Write([]byte("{Error: 'Internal server error'}"))
-	log.IfErr(err2)
-	log.Error(fmt.Sprintf("Error for section %s", section), err)
-}
-
-func writeForbidden(w http.ResponseWriter) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusForbidden)
-	_, err := w.Write([]byte("{Error: 'Unauthorized'}"))
-	log.IfErr(err)
 }

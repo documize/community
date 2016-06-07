@@ -1,11 +1,11 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
@@ -23,7 +23,7 @@ import (
 	"github.com/documize/community/documize/api/entity"
 	"github.com/documize/community/documize/api/request"
 	"github.com/documize/community/documize/api/util"
-	"github.com/documize/community/documize/section"
+	"github.com/documize/community/documize/section/provider"
 	"github.com/documize/community/wordsmith/log"
 	"github.com/documize/community/wordsmith/utility"
 
@@ -90,9 +90,9 @@ func AddDocumentPage(w http.ResponseWriter, r *http.Request) {
 
 	p.Context.Transaction = tx
 
-	output, ok := section.Render(model.Page.ContentType, model.Meta.Config, model.Meta.RawBody)
+	output, ok := provider.Render(model.Page.ContentType, model.Meta.Config, model.Meta.RawBody)
 	if !ok {
-		log.ErrorString("section.Render could not find: " + model.Page.ContentType)
+		log.ErrorString("provider.Render could not find: " + model.Page.ContentType)
 	}
 
 	model.Page.Body = output
@@ -433,9 +433,9 @@ func UpdateDocumentPage(w http.ResponseWriter, r *http.Request) {
 	model.Page.SetDefaults()
 	model.Meta.SetDefaults()
 
-	output, ok := section.Render(model.Page.ContentType, model.Meta.Config, model.Meta.RawBody)
+	output, ok := provider.Render(model.Page.ContentType, model.Meta.Config, model.Meta.RawBody)
 	if !ok {
-		log.ErrorString("section.Render could not find: " + model.Page.ContentType)
+		log.ErrorString("provider.Render could not find: " + model.Page.ContentType)
 	}
 	model.Page.Body = output
 

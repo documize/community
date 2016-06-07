@@ -9,25 +9,21 @@
 //
 // https://documize.com
 
-package section
+package wysiwyg
 
 import (
 	"net/http"
+
+	"github.com/documize/community/documize/section/provider"
 )
 
-// reading:
-//      composition
-//      reflection
-
-type wysiwyg struct {
+// Provider represents WYSIWYG
+type Provider struct {
 }
 
-func init() {
-	sectionsMap["wysiwyg"] = &wysiwyg{}
-}
-
-func (*wysiwyg) Meta() TypeMeta {
-	section := TypeMeta{}
+// Meta describes us
+func (*Provider) Meta() provider.TypeMeta {
+	section := provider.TypeMeta{}
 
 	section.ID = "0f024fa0-d017-4bad-a094-2c13ce6edad7"
 	section.Title = "Rich Text"
@@ -39,16 +35,16 @@ func (*wysiwyg) Meta() TypeMeta {
 }
 
 // Command stub.
-func (*wysiwyg) Command(w http.ResponseWriter, r *http.Request) {
-	writeEmpty(w)
+func (*Provider) Command(w http.ResponseWriter, r *http.Request) {
+	provider.WriteEmpty(w)
 }
 
 // Render returns data as-is (HTML).
-func (*wysiwyg) Render(config, data string) string {
+func (*Provider) Render(config, data string) string {
 	return data
 }
 
 // Refresh just sends back data as-is.
-func (*wysiwyg) Refresh(config, data string) string {
+func (*Provider) Refresh(config, data string) string {
 	return data
 }

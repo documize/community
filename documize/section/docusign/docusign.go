@@ -9,42 +9,42 @@
 //
 // https://documize.com
 
-package section
+package docusign
 
 import (
 	"net/http"
+
+	"github.com/documize/community/documize/section/provider"
 )
 
-type zendesk struct {
+// Provider represents DocuSign
+type Provider struct {
 }
 
-func init() {
-	sectionsMap["zendesk"] = &zendesk{}
-}
+// Meta describes us.
+func (*Provider) Meta() provider.TypeMeta {
+	section := provider.TypeMeta{}
 
-func (*zendesk) Meta() TypeMeta {
-	section := TypeMeta{}
-
-	section.ID = "05b02331-4ca2-4fc2-a31a-82bc45dceafe"
-	section.Title = "Zendesk"
-	section.Description = "Show customer support tickets"
-	section.ContentType = "zendesk"
+	section.ID = "a195f983-4bd7-412b-879e-2d71d2f822a7"
+	section.Title = "DocuSign"
+	section.Description = "Sign and approve documents"
+	section.ContentType = "docusign"
 	section.Preview = true
 
 	return section
 }
 
 // Command stub.
-func (*zendesk) Command(w http.ResponseWriter, r *http.Request) {
-	writeEmpty(w)
+func (*Provider) Command(w http.ResponseWriter, r *http.Request) {
+	provider.WriteEmpty(w)
 }
 
 // Render just sends back HMTL as-is.
-func (*zendesk) Render(config, data string) string {
+func (*Provider) Render(config, data string) string {
 	return data
 }
 
 // Refresh just sends back data as-is.
-func (*zendesk) Refresh(config, data string) string {
+func (*Provider) Refresh(config, data string) string {
 	return data
 }

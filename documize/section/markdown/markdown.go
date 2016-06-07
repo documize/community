@@ -9,23 +9,22 @@
 //
 // https://documize.com
 
-package section
+package markdown
 
 import (
 	"net/http"
 
 	"github.com/documize/blackfriday"
+	"github.com/documize/community/documize/section/provider"
 )
 
-type markdown struct {
+// Provider represents Markdown
+type Provider struct {
 }
 
-func init() {
-	sectionsMap["markdown"] = &markdown{}
-}
-
-func (*markdown) Meta() TypeMeta {
-	section := TypeMeta{}
+// Meta describes us
+func (*Provider) Meta() provider.TypeMeta {
+	section := provider.TypeMeta{}
 
 	section.ID = "1470bb4a-36c6-4a98-a443-096f5658378b"
 	section.Title = "Markdown"
@@ -37,18 +36,18 @@ func (*markdown) Meta() TypeMeta {
 }
 
 // Command stub.
-func (*markdown) Command(w http.ResponseWriter, r *http.Request) {
-	writeEmpty(w)
+func (*Provider) Command(w http.ResponseWriter, r *http.Request) {
+	provider.WriteEmpty(w)
 }
 
 // Render converts markdown data into HTML suitable for browser rendering.
-func (*markdown) Render(config, data string) string {
+func (*Provider) Render(config, data string) string {
 	result := blackfriday.MarkdownCommon([]byte(data))
 
 	return string(result)
 }
 
 // Refresh just sends back data as-is.
-func (*markdown) Refresh(config, data string) string {
+func (*Provider) Refresh(config, data string) string {
 	return data
 }

@@ -9,21 +9,21 @@
 //
 // https://documize.com
 
-package section
+package salesforce
 
 import (
 	"net/http"
+
+	"github.com/documize/community/documize/section/provider"
 )
 
-type salesforce struct {
+// Provider represents Salesforce
+type Provider struct {
 }
 
-func init() {
-	sectionsMap["salesforce"] = &salesforce{}
-}
-
-func (*salesforce) Meta() TypeMeta {
-	section := TypeMeta{}
+// Meta describes us
+func (*Provider) Meta() provider.TypeMeta {
+	section := provider.TypeMeta{}
 
 	section.ID = "2240c0f8-b795-47b0-bcd4-5f6b171a2ffd"
 	section.Title = "Salesforce"
@@ -35,16 +35,16 @@ func (*salesforce) Meta() TypeMeta {
 }
 
 // Command stub.
-func (*salesforce) Command(w http.ResponseWriter, r *http.Request) {
-	writeEmpty(w)
+func (*Provider) Command(w http.ResponseWriter, r *http.Request) {
+	provider.WriteEmpty(w)
 }
 
 // Render just sends back HMTL as-is.
-func (*salesforce) Render(config, data string) string {
+func (*Provider) Render(config, data string) string {
 	return data
 }
 
 // Refresh just sends back data as-is.
-func (*salesforce) Refresh(config, data string) string {
+func (*Provider) Refresh(config, data string) string {
 	return data
 }
