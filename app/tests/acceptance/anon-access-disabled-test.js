@@ -6,6 +6,7 @@ moduleForAcceptance('Acceptance | Anon access disabled');
 
 test('visiting / when not authenticated and with { allowAnonymousAccess: false } takes user to login', function(assert) {
     server.create('meta', { allowAnonymousAccess: false });
+    server.createList('folder', 2);
     visit('/');
 
     andThen(function() {
