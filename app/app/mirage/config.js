@@ -17,7 +17,6 @@ export default function() {
     // });
 
     this.get('/public/meta', function(db) {
-        console.log(db.meta[0]);
         return db.meta[0];
     });
 
@@ -125,54 +124,27 @@ export default function() {
         }
     });
 
-    this.get('/folders', function() {
-        return [{
-            "id": "VzMuyEw_3WqiafcG",
-            "created": "2016-05-11T15:08:24Z",
-            "revised": "2016-05-11T15:08:24Z",
-            "name": "My Project",
-            "orgId": "VzMuyEw_3WqiafcD",
-            "userId": "VzMuyEw_3WqiafcE",
-            "folderType": 2
-        }, {
-            "id": "VzMygEw_3WrtFzto",
-            "created": "2016-05-11T13:24:17Z",
-            "revised": "2016-05-11T13:25:51Z",
-            "name": "Test",
-            "orgId": "VzMuyEw_3WqiafcD",
-            "userId": "VzMuyEw_3WqiafcE",
-            "folderType": 1
-        }];
-        // return [
-        //     {
-        //         "id":"VzMuyEw_3WqiafcG",
-        //         "created":"2016-05-11T15:08:24Z",
-        //         "revised":"2016-05-11T15:08:24Z",
-        //         "name":"My Project",
-        //         "orgId":"VzMuyEw_3WqiafcD",
-        //         "userId":"VzMuyEw_3WqiafcE",
-        //         "folderType":2
-        //     },{
-        //         "id":"VzMygEw_3WrtFzto",
-        //         "created":"2016-05-11T13:24:17Z",
-        //         "revised":"2016-05-11T13:25:51Z",
-        //         "name":"Test",
-        //         "orgId":"VzMuyEw_3WqiafcD",
-        //         "userId":"VzMuyEw_3WqiafcE",
-        //         "folderType":1
-        //     },{
-        //         "id":"V0Vy5Uw_3QeDAMW9",
-        //         "created":"2016-05-25T09:39:49Z",
-        //         "revised":"2016-05-25T09:39:49Z",
-        //         "name":"Test Folder",
-        //         "orgId":"VzMuyEw_3WqiafcD",
-        //         "userId":"VzMuyEw_3WqiafcE",
-        //         "folderType":2
-        //     }
-        // ];
+    this.get('/folders', function(db) {
+        return db.folders;
     });
 
-    this.post('/folders', function() {
+    this.post('/folders', function(db, request) {
+        // return {
+        //     "id":"V0Vy5Uw_3QeDAMW9",
+        //     "created":"2016-05-25T09:39:49Z",
+        //     "revised":"2016-05-25T09:39:49Z",
+        //     "name":"Test Folder",
+        //     "orgId":"VzMuyEw_3WqiafcD",
+        //     "userId":"VzMuyEw_3WqiafcE",
+        //     "folderType":2
+        // };
+        // console.log(request);
+        // var attrs = JSON.parse(request.requestBody).name;
+        // var folder = db.folders.insert(attrs);
+        // return folder;
+    });
+
+    this.put('/folders/V0Vy5Uw_3QeDAMW9', () => {
         return {
             "id":"V0Vy5Uw_3QeDAMW9",
             "created":"2016-05-25T09:39:49Z",
@@ -215,102 +187,94 @@ export default function() {
         };
     });
 
-    this.get('/users/VzMuyEw_3WqiafcE/permissions', () => {
-        return [
-            {
-                "folderId":"V0Vy5Uw_3QeDAMW9",
-                "userId":"VzMuyEw_3WqiafcE",
-                "canView":true,
-                "canEdit":true
-            },{
-                "folderId":"VzMuyEw_3WqiafcG",
-                "userId":"VzMuyEw_3WqiafcE",
-                "canView":true,
-                "canEdit":true
-            },{
-                "folderId":"VzMygEw_3WrtFzto",
-                "userId":"VzMuyEw_3WqiafcE",
-                "canView":true,
-                "canEdit":true
-            },{
-                "folderId":"VzMygEw_3WrtFzto",
-                "userId":"",
-                "canView":true,
-                "canEdit":false
-            }
-        ];
+    this.get('/users/VzMuyEw_3WqiafcE/permissions', (db) => {
+        return db.permissions;
     });
 
-    this.get('/folders/VzMuyEw_3WqiafcG/permissions', () => {
-        return [
-            {
-                "folderId":"VzMuyEw_3WqiafcG",
-                "userId":"VzMuyEw_3WqiafcE",
-                "canView":true,
-                "canEdit":true
-            }
-        ];
+    this.get('/folders/VzMuyEw_3WqiafcG/permissions', (db) => {
+        let folderId = 'VzMuyEw_3WqiafcG';
+        let permissions = db.folder_permissions
+        console.log(permissions[0]);
+        debugger;
+        return permissions;
+        // return [
+        //     {
+        //         "folderId":"VzMuyEw_3WqiafcG",
+        //         "userId":"VzMuyEw_3WqiafcE",
+        //         "canView":true,
+        //         "canEdit":true
+        //     }
+        // ];
     });
 
-    this.put('/folders/VzMuyEw_3WqiafcG', () => {
-        return {
-            "id":"VzMuyEw_3WqiafcG",
-            "created":"2016-05-11T15:08:24Z",
-            "revised":"2016-05-11T15:08:24Z",
-            "name":"Test Space",
-            "orgId":"VzMuyEw_3WqiafcD",
-            "userId":"VzMuyEw_3WqiafcE",
-            "folderType":2
-        };
+    this.put('/folders/VzMuyEw_3WqiafcG/permissions', (db, request) => {
+        let id = 'VzMuyEw_3WqiafcG';
+        let roles = JSON.parse(request.requestBody).Roles;
+        // let permissions = db.permissions.update(id, roles[2]);
+        console.log(roles);
+        debugger;
+        return permissions;
     });
 
-    this.get('/folders/VzMygEw_3WrtFzto', () => {
-        return {
-            "id": "VzMygEw_3WrtFzto",
-            "created": "2016-05-11T13:24:17Z",
-            "revised": "2016-05-11T13:25:51Z",
-            "name": "Test",
-            "orgId": "VzMuyEw_3WqiafcD",
-            "userId": "VzMuyEw_3WqiafcE",
-            "folderType": 1
-        };
+    this.put('/folders/:id', (db, request) => {
+        let id = request.params.id;
+        let attrs = JSON.parse(request.requestBody);
+        let folder = db.folders.update(id, attrs);
+        return folder;
     });
 
-    this.get('/folders/V0Vy5Uw_3QeDAMW9', () => {
-        return {
-            "id":"V0Vy5Uw_3QeDAMW9",
-            "created":"2016-05-25T09:39:49Z",
-            "revised":"2016-05-25T09:39:49Z",
-            "name":"Test Folder",
-            "orgId":"VzMuyEw_3WqiafcD",
-            "userId":"VzMuyEw_3WqiafcE",
-            "folderType":2
-        };
+    this.get('folders/:id', (db, request) => {
+        let id = request.params.id;
+        return db.folders.find(id);
     });
 
-    this.get('/folders/VzMuyEw_3WqiafcG', () => {
-        return {
-            "id": "VzMuyEw_3WqiafcG",
-            "created": "2016-05-11T15:08:24Z",
-            "revised": "2016-05-11T15:08:24Z",
-            "name": "My Project",
-            "orgId": "VzMuyEw_3WqiafcD",
-            "userId": "VzMuyEw_3WqiafcE",
-            "folderType": 2
-        };
-    });
-
-    this.get('/folders/VzMuyEw_3WqiafcG', () => {
-        return {
-            "id": "VzMuyEw_3WqiafcG",
-            "created": "2016-05-11T15:08:24Z",
-            "revised": "2016-05-11T15:08:24Z",
-            "name": "My Project",
-            "orgId": "VzMuyEw_3WqiafcD",
-            "userId": "VzMuyEw_3WqiafcE",
-            "folderType": 2
-        };
-    });
+    // this.get('/folders/VzMygEw_3WrtFzto', () => {
+    //     return {
+    //         "id": "VzMygEw_3WrtFzto",
+    //         "created": "2016-05-11T13:24:17Z",
+    //         "revised": "2016-05-11T13:25:51Z",
+    //         "name": "Test",
+    //         "orgId": "VzMuyEw_3WqiafcD",
+    //         "userId": "VzMuyEw_3WqiafcE",
+    //         "folderType": 1
+    //     };
+    // });
+    //
+    // this.get('/folders/V0Vy5Uw_3QeDAMW9', () => {
+    //     return {
+    //         "id":"V0Vy5Uw_3QeDAMW9",
+    //         "created":"2016-05-25T09:39:49Z",
+    //         "revised":"2016-05-25T09:39:49Z",
+    //         "name":"Test Folder",
+    //         "orgId":"VzMuyEw_3WqiafcD",
+    //         "userId":"VzMuyEw_3WqiafcE",
+    //         "folderType":2
+    //     };
+    // });
+    //
+    // this.get('/folders/VzMuyEw_3WqiafcG', () => {
+    //     return {
+    //         "id": "VzMuyEw_3WqiafcG",
+    //         "created": "2016-05-11T15:08:24Z",
+    //         "revised": "2016-05-11T15:08:24Z",
+    //         "name": "My Project",
+    //         "orgId": "VzMuyEw_3WqiafcD",
+    //         "userId": "VzMuyEw_3WqiafcE",
+    //         "folderType": 2
+    //     };
+    // });
+    //
+    // this.get('/folders/VzMuyEw_3WqiafcG', () => {
+    //     return {
+    //         "id": "VzMuyEw_3WqiafcG",
+    //         "created": "2016-05-11T15:08:24Z",
+    //         "revised": "2016-05-11T15:08:24Z",
+    //         "name": "My Project",
+    //         "orgId": "VzMuyEw_3WqiafcD",
+    //         "userId": "VzMuyEw_3WqiafcE",
+    //         "folderType": 2
+    //     };
+    // });
 
     this.get('/organizations/VzMuyEw_3WqiafcD', () => {
         return {
@@ -490,10 +454,6 @@ export default function() {
     });
 
     this.post('/folders/VzMuyEw_3WqiafcG/invitation', () => {
-        return {};
-    });
-
-    this.put('/folders/VzMuyEw_3WqiafcG/permissions', () => {
         return {};
     });
 
