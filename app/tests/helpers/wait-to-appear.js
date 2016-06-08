@@ -6,11 +6,9 @@ function isVisible(selector) {
 
 function checkVisibility(selector, interval, resolve, visibility) {
     if (isVisible(selector) === visibility) {
-        console.log("found in appear");
         resolve($(selector));
     } else {
         Ember.run.later(null, function() {
-            console.log("waiting in appear");
             checkVisibility(selector, interval, resolve, visibility);
         }, interval);
     }

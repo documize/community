@@ -4,15 +4,15 @@ const userNotification = Ember.Component.extend({
     notifications: [],
 
     didInsertElement() {
-        this.eventBus.subscribe('notifyUser', this, 'notifyHandler');
+        // this.eventBus.subscribe('notifyUser', this, 'notifyHandler');
     },
 
     willDestroyElement() {
-        this.eventBus.unsubscribe('notifyUser');
+        // this.eventBus.unsubscribe('notifyUser');
     },
 
     showNotification(msg) {
-        return msg;
+        // return msg;
     }
 });
 
