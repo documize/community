@@ -24,7 +24,6 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
     noRepos: false,
 
     didReceiveAttrs() {
-
         let self = this;
         let page = this.get('page');
 

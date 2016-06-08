@@ -19,7 +19,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"sort"
 	"strings"
 	"time"
 
@@ -31,36 +30,36 @@ import (
 	"golang.org/x/oauth2"
 )
 
+var meta provider.TypeMeta
+
+func init() {
+	meta = provider.TypeMeta{}
+
+	meta.ID = "38c0e4c5-291c-415e-8a4d-262ee80ba5df"
+	meta.Title = "GitHub"
+	meta.Description = "Code commits and branches"
+	meta.ContentType = "github"
+	meta.Callback = Callback
+}
+
 // Provider represents GitHub
 type Provider struct {
 }
 
 // Meta describes us.
 func (*Provider) Meta() provider.TypeMeta {
-	section := provider.TypeMeta{}
-
-	section.ID = "38c0e4c5-291c-415e-8a4d-262ee80ba5df"
-	section.Title = "GitHub"
-	section.Description = "Code commits and branches"
-	section.ContentType = "github"
-	//section.Preview = true
-
-	section.Callback = Callback
-
-	return section
+	return meta
 }
-
-const configKey = "SECTION-GITHUB"
 
 func clientID() string {
-	return request.ConfigString(configKey, "clientID")
+	return request.ConfigString(meta.ConfigHandle(), "clientID")
 }
 func clientSecret() string {
-	return request.ConfigString(configKey, "clientSecret")
+	return request.ConfigString(meta.ConfigHandle(), "clientSecret")
 }
 func authorizationCallbackURL() string {
 	// NOTE: URL value must have the path and query "/api/public/validate?section=github"
-	return request.ConfigString(configKey, "authorizationCallbackURL")
+	return request.ConfigString(meta.ConfigHandle(), "authorizationCallbackURL")
 }
 
 // Command to run the various functions required...
@@ -359,34 +358,7 @@ func (*Provider) Render(config, data string) string {
 	t := template.New("github")
 	var err error
 
-	t, err = t.Parse(`
-<div class="section-github-render">
-	<p>There are {{ .CommitCount }} commits for branch <a href="{{.Config.BranchURL}}">{{.Config.Branch}}</a> of repository <a href="{{ .Repo.URL }}">{{.Repo.Name}}.</a></p>
-	<div class="github-board">
-		{{range $data := .Data}}
-			<div class="github-group-title">
-				Commits on {{ $data.Day }}
-			</div>
-			<ul class="github-list">  
-				{{range $commit := $data.Commits}}
-					<li class="github-commit-item"> 
-						<a class="link" href="{{$commit.URL}}">
-							<div class="github-avatar">
-								<img alt="@{{$commit.Name}}" src="{{$commit.Avatar}}" height="36" width="36">
-							</div>
-							<div class="github-commit-body">
-								<div class="github-commit-title">{{$commit.Message}}</div>
-								<div class="github-commit-meta">{{$commit.Name}} committed on {{$commit.Date}}</div>
-							</div>
-						</a>
-						<div class="clearfix" />
-					</li>
-				{{end}}
-			</ul>
-		{{end}}
-	</div>
-</div>
-`)
+	t, err = t.Parse(renderTemplate)
 
 	if err != nil {
 		log.Error("github render template.Parse error:", err)
@@ -401,85 +373,6 @@ func (*Provider) Render(config, data string) string {
 	}
 
 	return buffer.String()
-}
-
-type githubRepo struct {
-	ID       string `json:"id"`
-	Name     string `json:"name"`
-	Included bool   `json:"included"`
-	Owner    string `json:"owner"`
-	Repo     string `json:"repo"`
-	Private  bool   `json:"private"` // TODO review field use
-	URL      string `json:"url"`
-}
-
-// sort repos in order that that should be presented.
-type reposToSort []githubRepo
-
-func (s reposToSort) Len() int      { return len(s) }
-func (s reposToSort) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
-func (s reposToSort) Less(i, j int) bool {
-	return s[i].Name < s[j].Name
-}
-
-func sortRepos(in []githubRepo) []githubRepo {
-	sts := reposToSort(in)
-	sort.Sort(sts)
-	return []githubRepo(sts)
-}
-
-type githubBranch struct {
-	ID       string `json:"id"`
-	Name     string `json:"name"`
-	Included bool   `json:"included"`
-	URL      string `json:"url"`
-}
-
-type githubBranchCommits struct {
-	Name    string `json:"name"`
-	Day     string `json:"day"`
-	Commits []githubCommit
-}
-
-type githubCommit struct {
-	Date    string `json:"date"`
-	Message string `json:"message"`
-	URL     string `json:"url"`
-	Name    string `json:"name"`
-	Avatar  string `json:"avatar"`
-}
-
-type githubConfig struct {
-	AppKey      string         `json:"appKey"` // TODO keep?
-	Token       string         `json:"token"`
-	Owner       string         `json:"owner"`
-	Repo        string         `json:"repo_name"`
-	Branch      string         `json:"branch"`
-	BranchURL   string         `json:"branchURL"`
-	BranchSince string         `json:"branchSince"`
-	BranchLines int            `json:"branchLines"`
-	RepoInfo    githubRepo     `json:"repo"`
-	ClientID    string         `json:"clientId"`
-	CallbackURL string         `json:"callbackUrl"`
-	Lists       []githubBranch `json:"lists"`
-}
-
-func (c *githubConfig) Clean() {
-	c.AppKey = strings.TrimSpace(c.AppKey) // TODO keep?
-	c.Token = strings.TrimSpace(c.Token)
-	c.Owner = c.RepoInfo.Owner
-	c.Repo = c.RepoInfo.Repo
-	for _, l := range c.Lists {
-		if l.Included {
-			c.Branch = l.Name
-			c.BranchURL = l.URL
-			break
-		}
-	}
-}
-
-type githubCallbackT struct {
-	AccessToken string `json:"access_token"`
 }
 
 // Callback is called by a browser redirect from Github, via the validation endpoint

@@ -23,6 +23,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
     config: {},
     boards: null,
     noBoards: false,
+	appKey: "",
 
     boardStyle: Ember.computed('config.board', function() {
         let board = this.get('config.board');
@@ -36,16 +37,17 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
     }),
 
     didReceiveAttrs() {
-        let config = {};
+        let page = this.get('page');
+		let config = {};
+		let self = this;
 
-        try {
+		try {
             config = JSON.parse(this.get('meta.config'));
         }
         catch (e) {}
 
         if (is.empty(config)) {
             config = {
-                appKey: "8e00492ee9a8934cfb8604d3a51f8f70",
                 token: "",
                 user: null,
                 board: null,
@@ -55,23 +57,30 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
         this.set('config', config);
 
-		// On auth callback capture user token
-		let hashToken = window.location.hash;
-		if (is.not.undefined(hashToken) && is.not.null(hashToken)) {
-			let token = hashToken.replace("#token=", "");
-			if (is.not.empty(token)) {
-				this.set('config.token', token);
-			}
-		}
+		this.get('sectionService').fetch(page, "config", {})
+            .then(function(s) {
+				self.set('appKey', s.appKey);
 
-        if (this.get('config.appKey') !== "" && this.get('config.token') !== "") {
-            this.send('auth');
-        }
-        else {
-            Ember.$.getScript("https://api.trello.com/1/client.js?key=" + this.get('config.appKey'), function() {
-                Trello.deauthorize();
+				// On auth callback capture user token
+				let hashToken = window.location.hash;
+				if (is.not.undefined(hashToken) && is.not.null(hashToken)) {
+					let token = hashToken.replace("#token=", "");
+					if (is.not.empty(token)) {
+						self.set('config.token', token);
+					}
+				}
+
+		        if (self.get('appKey') !== "" && self.get('config.token') !== "") {
+		            self.send('auth');
+		        }
+		        else {
+		            Ember.$.getScript("https://api.trello.com/1/client.js?key=" + self.get('appKey'), function() {
+		                Trello.deauthorize();
+		            });
+		        }
+            }, function(error) { //jshint ignore: line
+                console.log(error);
             });
-        }
     },
 
     willDestroyElement() {
@@ -144,7 +153,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
         },
 
         auth() {
-            if (this.get('config.appKey') === "") {
+            if (this.get('appKey') === "") {
                 $("#trello-appkey").addClass('error').focus();
                 this.set('authenticated', false);
                 return;
@@ -155,7 +164,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
             self.set('busy', true);
 
-            Ember.$.getScript("https://api.trello.com/1/client.js?key=" + this.get('config.appKey'), function() {
+            Ember.$.getScript("https://api.trello.com/1/client.js?key=" + this.get('appKey'), function() {
                 Trello.authorize({
                     type: "redirect",
                     interactive: true,

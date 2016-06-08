@@ -17,6 +17,7 @@ import (
 	"fmt"
 	"net/http"
 	"sort"
+	"strings"
 
 	"github.com/documize/community/wordsmith/log"
 )
@@ -33,6 +34,11 @@ type TypeMeta struct {
 	Description string                                         `json:"description"`
 	Preview     bool                                           `json:"preview"` // coming soon!
 	Callback    func(http.ResponseWriter, *http.Request) error `json:"-"`
+}
+
+// ConfigHandle returns the key name for database config table
+func (t *TypeMeta) ConfigHandle() string {
+	return fmt.Sprintf("SECTION-%s", strings.ToUpper(t.ContentType))
 }
 
 // Provider represents a 'page' in a document.
