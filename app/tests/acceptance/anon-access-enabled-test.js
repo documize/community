@@ -7,10 +7,11 @@ test('visiting / when not authenticated and with { allowAnonymousAccess: true } 
     server.create('meta', { allowAnonymousAccess: true });
     server.createList('folder', 2);
     visit('/');
+    // return pauseTest();
 
     andThen(function() {
         assert.equal(find('.login').length, 1, 'Login button is displayed');
-        assert.equal(find('.document-card').length, 2, '2 document displayed');
+        assert.equal(find('.documents-list .document').length, 2, '2 document displayed');
         assert.equal(currentURL(), '/s/VzMuyEw_3WqiafcG/my-project', 'Dashboard and public spaces are displayed without being signed in');
     });
 });

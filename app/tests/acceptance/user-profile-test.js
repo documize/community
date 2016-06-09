@@ -36,6 +36,6 @@ test('changing user details and email ', function(assert) {
 
     andThen(function() {
         assert.equal(currentURL(), '/s/VzMuyEw_3WqiafcG/my-project');
-        assert.equal(find('.name').text().trim(), 'Test User', 'Profile name displayed');
+        assert.equal(find('.content .name').text().trim(), 'Test User', 'Profile name displayed');
     });
 });
