@@ -19,12 +19,9 @@
         </div>
     {{/if}}
 
-    <ul class="entries">
-        {{#each pages key="id" as |node index|}}
-            <li class="item">
-                {{document/toc-entry page.id node.id node.level}}
-                <a id="index-{{node.id}}" class="link toc-index-item" {{action 'clickGotoPage' node.id}}>{{node.title}}</a>
-            </li>
+    <ul id="document-index" class="entries">
+        {{#each pages key="id" as |entry index|}}
+			{{document/index-entry page=entry onClick=(action 'onEntryClick')}}
         {{/each}}
     </ul>
 </div>

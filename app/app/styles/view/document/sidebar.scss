@@ -34,14 +34,15 @@
 				}
 			}
 
-			> .entries {
+			.entries {
 				padding: 0;
 				list-style: none;
 				font-size: 13px;
 				overflow-x: hidden;
+				list-style-type: none;
 
-				> .item {
-					padding: 2px 0;
+				.item {
+					padding: 4px 0;
 					text-overflow: ellipsis;
 					word-wrap: break-word;
 					white-space: nowrap;

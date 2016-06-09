@@ -1,11 +1,11 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
@@ -34,7 +34,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
     didReceiveAttrs: function() {
         this.set('showToc', is.not.undefined(this.get('pages')) && this.get('pages').get('length') > 2);
         if (is.not.null(this.get('page'))) {
-            this.send('clickGotoPage', this.get('page'));
+            this.send('onEntryClick', this.get('page'));
         }
     },
 
@@ -52,6 +52,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
         var s = $(".document-structure");
         var pos = s.position();
+
         $(window).scroll(function() {
             var windowpos = $(window).scrollTop();
             if (windowpos - 200 >= pos.top) {
@@ -69,7 +70,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
     },
 
     onDocumentPageAdded(pageId) {
-        this.send('clickGotoPage', pageId);
+        this.send('onEntryClick', pageId);
     },
 
     // Controls what user can do with the toc (left sidebar).
@@ -253,7 +254,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
             this.attrs.changePageSequence(pendingChanges);
 
-            this.send('clickGotoPage', this.get('page'));
+            this.send('onEntryClick', this.get('page'));
             this.audit.record("moved-page-up");
             this.showNotification("Moved up");
         },
@@ -326,7 +327,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
             this.attrs.changePageSequence(pendingChanges);
 
-            this.send('clickGotoPage', this.get('page'));
+            this.send('onEntryClick', this.get('page'));
             this.audit.record("moved-page-down");
             this.showNotification("Moved down");
         },
@@ -362,9 +363,9 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
             this.attrs.changePageLevel(pendingChanges);
 
-            this.send('clickGotoPage', this.get('page'));
-            this.audit.record("changed-page-sequence");
             this.showNotification("Indent");
+            this.audit.record("changed-page-sequence");
+            this.send('onEntryClick', this.get('page'));
         },
 
         // Outdent - changes a page from H3 to H2, etc.
@@ -397,12 +398,13 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
             }
 
             this.attrs.changePageLevel(pendingChanges);
-            this.audit.record("changed-page-sequence");
+
             this.showNotification("Outdent");
-            this.send('clickGotoPage', this.get('page'));
+            this.audit.record("changed-page-sequence");
+            this.send('onEntryClick', this.get('page'));
         },
 
-        clickGotoPage(id) {
+        onEntryClick(id) {
             this.setState(id);
             this.attrs.gotoPage(id);
         },

@@ -16,7 +16,8 @@
     "Tether",
     "Tooltip",
     "Drop",
-	"Dropzone"
+	"Dropzone",
+	"dragula"
   ],
   "browser": true,
   "boss": true,

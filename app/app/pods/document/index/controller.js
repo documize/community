@@ -54,11 +54,11 @@ export default Ember.Controller.extend(NotifierMixin, {
         },
 
         onPageSequenceChange(changes) {
-            var self = this;
+            let self = this;
 
             this.get('documentService').changePageSequence(this.model.get('id'), changes).then(function() {
                 _.each(changes, function(change) {
-                    var pageContent = _.findWhere(self.get('pages'), {
+                    let pageContent = _.findWhere(self.get('pages'), {
                         id: change.pageId
                     });
 
@@ -72,19 +72,23 @@ export default Ember.Controller.extend(NotifierMixin, {
         },
 
         onPageLevelChange(changes) {
-            var self = this;
-            let pages = this.get('pages');
+            let self = this;
 
             this.get('documentService').changePageLevel(this.model.get('id'), changes).then(function() {
                 _.each(changes, function(change) {
-                    let pageContent = pages.findBy("id", change.pageId);
+                    let pageContent = _.findWhere(self.get('pages'), {
+                        id: change.pageId
+                    });
 
                     if (is.not.undefined(pageContent)) {
                         pageContent.set('level', change.level);
                     }
                 });
 
-                self.set('pages', _.sortBy(self.get('pages'), "sequence"));
+                let pages = self.get('pages');
+                pages = _.sortBy(pages, "sequence");
+                self.set('pages', []);
+                self.set('pages', pages);
             });
         },
 
@@ -170,6 +174,19 @@ export default Ember.Controller.extend(NotifierMixin, {
             let self = this;
             this.get('documentService').save(doc).then(function() {
                 self.set('model', doc);
+            });
+        },
+
+        onAddPage(page) {
+            let self = this;
+
+            this.get('documentService').addPage(this.get('model.id'), page).then(function(newPage) {
+                self.transitionToRoute('document.edit',
+                    self.get('folder.id'),
+                    self.get('folder.slug'),
+                    self.get('model.id'),
+                    self.get('model.slug'),
+                    newPage.id);
             });
         }
     }
