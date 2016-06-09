@@ -13,55 +13,15 @@ import Ember from 'ember';
 import NotifierMixin from '../../mixins/notifier';
 
 export default Ember.Component.extend(NotifierMixin, {
-    title: "New Section",
-    contentType: "",
-
-    didReceiveAttrs() {
-        let section = this.get("sections").get('firstObject');
-        section.set("selected", true);
-    },
-
-    didInsertElement() {
-        $("#page-title").removeClass("error").focus();
-    },
-
     actions: {
-        setOption(id) {
-            let sections = this.get("sections");
-
-            sections.forEach(function(option) {
-                Ember.set(option, 'selected', option.id === id);
-            });
-
-            this.set("sections", sections);
-
-            // if (this.session.get('popupBlocked')) {
-            // 	this.showNotification("Hmm, looks like your browser is blocking popups...");
-            // }
-        },
-
-        onCancel() {
-            this.attrs.onCancel();
-        },
-
-        onAction() {
-            let title = this.get("title");
-            let section = this.get("sections").findBy("selected", true);
-            let contentType = section.contentType;
+        addSection(section) {
 
             if (section.preview) {
                 this.showNotification("Coming soon!");
                 return;
             }
 
-            if (is.empty(title)) {
-                $("#page-title").addClass("error").focus();
-                return;
-            }
-
-            this.audit.record('added section ' + section.contentType);
-
-            this.attrs.onAction(title, contentType);
+            this.attrs.onAction(section);
         }
     }
 });

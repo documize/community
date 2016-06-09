@@ -1,24 +1,11 @@
-<div class="page-wizard">
-	<div class="toolbar">
-		<div class="title pull-left">
-			<div class="input-control">
-				<label>Title</label>
-				<div class="tip">Add new section to <span class="bold">{{document.name}}</span></div>
-				{{focus-input type='text' id="page-title" value=title class="mousetrap"}}
-			</div>
-		</div>
-		<div class="buttons pull-right">
-			<div class="flat-button flat-gray" {{action 'onCancel'}}>Cancel</div>
-			<div class="button-gap" />
-			<div class="regular-button button-green" {{action 'onAction'}}>Add</div>
-		</div>
-		<div class="clearfix"></div>
-	</div>
+<div class="section-wizard">
 	<div class="canvas">
 		<ul class="list">
 			{{#each sections as |section|}}
-				<li class="item {{if section.selected "selected"}}" {{action 'setOption' section.id}}>
-					<img class="img" src="/sections/{{section.contentType}}.png" srcset="/sections/{{section.contentType}}@2x.png" />
+				<li class="item" {{action 'addSection' section}}>
+					<div class="icon">
+						<img class="img" src="/sections/{{section.contentType}}.png" srcset="/sections/{{section.contentType}}@2x.png" />
+					</div>
 					<div class="details">
 						<div class='title'>
 							{{section.title}}
@@ -31,7 +18,9 @@
 				</li>
 			{{/each}}
 			<li class="item">
-				<img class="img" src="/sections/suggest.png" />
+				<div class="icon">
+					<img class="img" src="/sections/suggest.png" title="{{section.title}}" alt="{{section.title}}" />
+				</div>
 				<div class="details">
 					<div class='title'>Suggest</div>
 					<div class='desc'>We'll build the integrations you need - just let us know</div>

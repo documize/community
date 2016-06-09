@@ -175,6 +175,19 @@ export default Ember.Controller.extend(NotifierMixin, {
             this.get('documentService').save(doc).then(function() {
                 self.set('model', doc);
             });
+        },
+
+        onAddPage(page) {
+            let self = this;
+
+            this.get('documentService').addPage(this.get('model.id'), page).then(function(newPage) {
+                self.transitionToRoute('document.edit',
+                    self.get('folder.id'),
+                    self.get('folder.slug'),
+                    self.get('model.id'),
+                    self.get('model.slug'),
+                    newPage.id);
+            });
         }
     }
 });

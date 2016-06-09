@@ -24,7 +24,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
     didRender() {
         if (this.get('isEditor')) {
-            this.addTooltip(document.getElementById("add-section-button"));
             this.addTooltip(document.getElementById("attachment-button"));
             this.addTooltip(document.getElementById("save-template-button"));
             this.addTooltip(document.getElementById("set-meta-button"));

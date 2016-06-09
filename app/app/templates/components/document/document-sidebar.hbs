@@ -1,7 +1,27 @@
 <div class="document-container">
 	<div class="sidebar">
-		{{document/document-sidebar-toc document=model folder=folder pages=pages page=page isEditor=isEditor
-			changePageSequence=(action 'onPageSequenceChange') changePageLevel=(action 'onPageLevelChange')
-			gotoPage=(action 'gotoPage')}}
+		{{#if showToc}}
+			{{#if isEditor}}
+				<div class="margin-bottom-20 text-center">
+					<div {{action 'addSection'}} class="regular-button button-green" id="add-section-button" data-tooltip="Add section" data-tooltip-position="top center">
+						<i class="material-icons">add</i>
+						<div class="name">section</div>
+					</div>
+				</div>
+			{{/if}}
+			{{document/document-sidebar-toc document=model folder=folder pages=pages page=page isEditor=isEditor
+				changePageSequence=(action 'onPageSequenceChange') changePageLevel=(action 'onPageLevelChange')
+				gotoPage=(action 'gotoPage')}}
+		{{/if}}
+
+		{{#if showSectionList}}
+			<div class="margin-bottom-20 pull-right">
+				<div {{action 'showToc'}} class="flat-button">
+					Cancel
+				</div>
+			</div>
+			<div class="clearfix" />
+			{{document/page-wizard document=model folder=folder sections=sections onAction=(action 'onAddSection')}}
+		{{/if}}
 	</div>
 </div>
