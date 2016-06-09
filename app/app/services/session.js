@@ -24,6 +24,7 @@ export default Ember.Service.extend({
     authenticated: false,
     folderPermissions: null,
     currentFolder: null,
+    ajax: Ember.inject.service(),
 
     isAdmin: function() {
         if (this.authenticated && is.not.null(this.user) && this.user.id !== "") {
@@ -50,68 +51,48 @@ export default Ember.Service.extend({
 
     // Authentication
     login: function(credentials) {
-        var self = this;
-        var url = self.appMeta.getUrl('public/authenticate');
+        let url = this.appMeta.getUrl('public/authenticate');
         let domain = netUtil.getSubdomain();
 
         this.clearSession();
 
-        return new Ember.RSVP.Promise(function(resolve, reject) {
-            if (is.empty(credentials.email) || is.empty(credentials.password)) {
-                reject("invalid");
-                return;
-            }
+        if (is.empty(credentials.email) || is.empty(credentials.password)) {
+            return Ember.RSVP.reject("invalid");
+        }
 
-            var encoded = encodingUtil.Base64.encode(domain + ":" + credentials.email + ":" + credentials.password);
-            var header = {
-                'Authorization': 'Basic ' + encoded
-            };
+        var encoded = encodingUtil.Base64.encode(domain + ":" + credentials.email + ":" + credentials.password);
+        var headers = {
+            'Authorization': 'Basic ' + encoded
+        };
 
-            $.ajax({
-                url: url,
-                type: 'POST',
-                headers: header,
-                success: function(response) {
-                    self.setSession(response.token, models.UserModel.create(response.user));
-                    self.get('ready', true);
-                    resolve(response);
-                },
-                error: function(reason) {
-                    reject(reason);
-                }
-            });
+        return this.get('ajax').post(url, {
+            headers
+        }).then((response)=>{
+            this.setSession(response.token, models.UserModel.create(response.user));
+            this.get('ready', true);
+            return response;
         });
     },
 
     // SSO in the form of 'domain:email:password'
     sso: function(credentials) {
-        var self = this;
-        var url = self.appMeta.getUrl('public/authenticate');
+        let url = this.appMeta.getUrl('public/authenticate');
         this.clearSession();
 
-        return new Ember.RSVP.Promise(function(resolve, reject) {
-            if (is.empty(credentials.email) || is.empty(credentials.password)) {
-                reject("invalid");
-                return;
-            }
+        if (is.empty(credentials.email) || is.empty(credentials.password)) {
+            return Ember.RSVP.reject("invalid");
+        }
 
-            var header = {
-                'Authorization': 'Basic ' + credentials
-            };
+        var headers = {
+            'Authorization': 'Basic ' + credentials
+        };
 
-            $.ajax({
-                url: url,
-                type: 'POST',
-                headers: header,
-                success: function(response) {
-                    self.setSession(response.token, models.UserModel.create(response.user));
-                    self.get('ready', true);
-                    resolve(response);
-                },
-                error: function(reason) {
-                    reject(reason);
-                }
-            });
+        return this.get('ajax').post(url, {
+            headers
+        }).then((response)=>{
+            this.setSession(response.token, models.UserModel.create(response.user));
+            this.get('ready', true);
+            resolve(response);
         });
     },
 
@@ -192,51 +173,35 @@ export default Ember.Service.extend({
         // 	this.set('popupBlocked', false);
         // }
 
-        return new Ember.RSVP.Promise(function(resolve) {
-            $.ajax({
-                url: self.get('appMeta').getUrl("public/meta"),
-                type: 'GET',
-                contentType: 'json',
-                success: function(response) {
-                    self.get('appMeta').set('orgId', response.orgId);
-                    self.get('appMeta').setSafe('title', response.title);
-                    self.get('appMeta').set('version', response.version);
-                    self.get('appMeta').setSafe('message', response.message);
-                    self.get('appMeta').set('allowAnonymousAccess', response.allowAnonymousAccess);
+        let url = this.get('appMeta').getUrl("public/meta");
 
-                    let token = self.getSessionItem('token');
+        return this.get('ajax').request(url)
+        .then((response) => {
+            this.get('appMeta').set('orgId', response.orgId);
+            this.get('appMeta').setSafe('title', response.title);
+            this.get('appMeta').set('version', response.version);
+            this.get('appMeta').setSafe('message', response.message);
+            this.get('appMeta').set('allowAnonymousAccess', response.allowAnonymousAccess);
 
-                    if (is.not.undefined(token)) {
-                        // We now validate current token
-                        let tokenCheckUrl = self.get('appMeta').getUrl(`public/validate?token=${token}`);
+            let token = this.getSessionItem('token');
 
-                        $.ajax({
-                            url: tokenCheckUrl,
-                            type: 'GET',
-                            contentType: 'json',
-                            success: function(user) {
-                                self.setSession(token, models.UserModel.create(user));
-                                self.set('ready', true);
-                                resolve();
-                            },
-                            error: function(reason) {
-                                if (reason.status === 401 || reason.status === 403) {
-                                    localStorage.clear();
-                                    window.location.href = "/auth/login";
-                                }
-                            }
-                        });
-                    } else {
-                        self.set('ready', true);
-                        resolve();
-                    }
-                },
-                error: function(reason) {
+            if (is.not.undefined(token)) {
+                // We now validate current token
+                let tokenCheckUrl = this.get('appMeta').getUrl(`public/validate?token=${token}`);
+
+                return this.get('ajax').request(tokenCheckUrl, {
+                    method: 'GET',
+                    contentType: 'json'
+                }).then((response) => {
+                    this.setSession(token, models.UserModel.create(user));
+                    this.set('ready', true);
+                }).catch((reason) => {
                     if (reason.status === 401 || reason.status === 403) {
-                        window.location.href = "https://documize.com";
+                        localStorage.clear();
+                        window.location.href = "/auth/login";
                     }
-                }
-            });
+                });
+            }
         });
     }
 });

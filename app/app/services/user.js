@@ -1,11 +1,11 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
@@ -33,17 +33,10 @@ export default Ember.Service.extend({
     getUser(userId) {
         let url = this.get('sessionService').appMeta.getUrl(`users/${userId}`);
 
-        return new Ember.RSVP.Promise(function(resolve, reject) {
-            $.ajax({
-                url: url,
-                type: 'GET',
-                success: function(response) {
-                    resolve(models.UserModel.create(response));
-                },
-                error: function(reason) {
-                    reject(reason);
-                }
-            });
+        return this.get('ajax').request(url, {
+            type: 'GET'
+        }).then((response) => {
+            return models.UserModel.create(response);
         });
     },
 
@@ -62,22 +55,13 @@ export default Ember.Service.extend({
     getFolderUsers(folderId) {
         let url = this.get('sessionService').appMeta.getUrl(`users/folder/${folderId}`);
 
-        return new Ember.RSVP.Promise(function(resolve, reject) {
-            $.ajax({
-                url: url,
-                type: 'GET',
-                success: function(response) {
-                    let data = [];
-                    _.each(response, function(obj) {
-                        data.pushObject(models.UserModel.create(obj));
-                    });
-
-                    resolve(data);
-                },
-                error: function(reason) {
-                    reject(reason);
-                }
+        return this.get('ajax').request(url).then((response)=>{
+            let data = [];
+            _.each(response, function(obj) {
+                data.pushObject(models.UserModel.create(obj));
             });
+
+            return data;
         });
     },
 
@@ -97,18 +81,10 @@ export default Ember.Service.extend({
     updatePassword(userId, password) {
         let url = this.get('sessionService').appMeta.getUrl(`users/${userId}/password`);
 
-        return new Ember.RSVP.Promise(function(resolve, reject) {
-            $.ajax({
-                url: url,
-                type: 'POST',
-                data: password,
-                success: function(response) {
-                    resolve(response);
-                },
-                error: function(reason) {
-                    reject(reason);
-                }
-            });
+        return this.get('ajax').post(url, {
+            data: password
+        }).then((response)=>{
+            return response;
         });
     },
 
@@ -116,46 +92,30 @@ export default Ember.Service.extend({
     remove(userId) {
         let url = this.get('sessionService').appMeta.getUrl(`users/${userId}`);
 
-        return new Ember.RSVP.Promise(function(resolve, reject) {
-            $.ajax({
-                url: url,
-                type: 'DELETE',
-                success: function(response) {
-                    resolve(response);
-                },
-                error: function(reason) {
-                    reject(reason);
-                }
-            });
+        return this.get('ajax').request(url, {
+            method: 'DELETE'
+        }).then((response) => {
+            return response;
         });
     },
 
     // Request password reset.
     forgotPassword(email) {
-        var url = this.get('sessionService').appMeta.getUrl('public/forgot');
+        let url = this.get('sessionService').appMeta.getUrl('public/forgot');
 
-        return new Ember.RSVP.Promise(function(resolve, reject) {
-            if (is.empty(email)) {
-                reject("invalid");
-                return;
-            }
+        if (is.empty(email)) {
+            reject("invalid");
+            return;
+        }
 
-            var data = JSON.stringify({
-                Email: email
-            });
+        let data = JSON.stringify({
+            Email: email
+        });
 
-            $.ajax({
-                url: url,
-                type: 'POST',
-                dataType: 'json',
-                data: data,
-                success: function(response) {
-                    resolve(response);
-                },
-                error: function(reason) {
-                    reject(reason);
-                }
-            });
+        return this.request('ajax').post(url, {
+            data: data
+        }).then((response)=>{
+            return response;
         });
     },
 
@@ -163,23 +123,14 @@ export default Ember.Service.extend({
     resetPassword(token, password) {
         var url = this.get('sessionService').appMeta.getUrl('public/reset/' + token);
 
-        return new Ember.RSVP.Promise(function(resolve, reject) {
-            if (is.empty(token) || is.empty(password)) {
-                reject("invalid");
-                return;
-            }
+        if (is.empty(token) || is.empty(password)) {
+            return Ember.RSVP.reject("invalid");
+        }
 
-            $.ajax({
-                url: url,
-                type: 'POST',
-                data: password,
-                success: function(response) {
-                    resolve(response);
-                },
-                error: function(reason) {
-                    reject(reason);
-                }
-            });
+        return this.request('ajax').post(url, {
+            data: password
+        }).then((response)=>{
+            return response;
         });
     }
 });

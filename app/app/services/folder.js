@@ -1,11 +1,11 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
@@ -15,6 +15,7 @@ import BaseService from '../services/base';
 
 export default BaseService.extend({
     sessionService: Ember.inject.service('session'),
+    ajax: Ember.inject.service(),
 
     // selected folder
     currentFolder: null,
@@ -25,40 +26,22 @@ export default BaseService.extend({
         let appMeta = this.get('sessionService.appMeta');
         let url = appMeta.getUrl(`folders`);
 
-        return new Ember.RSVP.Promise(function(resolve, reject) {
-            $.ajax({
-                url: url,
-                type: 'POST',
-                data: JSON.stringify(folder),
-                contentType: 'json',
-                success: function(folder) {
-                    let folderModel = models.FolderModel.create(folder);
-                    resolve(folderModel);
-                },
-                error: function(reason) {
-                    reject(reason);
-                }
-            });
+        return this.get('ajax').post(url, {
+            data: JSON.stringify(folder)
+        }).then((folder)=>{
+            let folderModel = models.FolderModel.create(folder);
+            return folderModel;
         });
     },
 
     // Returns folder model for specified folder id.
     getFolder(id) {
-        let appMeta = this.get('sessionService.appMeta')
+        let appMeta = this.get('sessionService.appMeta');
         let url = appMeta.getUrl(`folders/${id}`);
 
-        return new Ember.RSVP.Promise(function(resolve, reject) {
-            $.ajax({
-                url: url,
-                type: 'GET',
-                success: function(response) {
-                    let folder = models.FolderModel.create(response);
-                    resolve(folder);
-                },
-                error: function(reason) {
-                    reject(reason);
-                }
-            });
+        return this.get('ajax').request(url).then((response)=>{
+            let folder = models.FolderModel.create(response);
+            return folder;
         });
     },
 
@@ -80,57 +63,31 @@ export default BaseService.extend({
         let id = folder.get('id');
         let url = this.get('sessionService').appMeta.getUrl(`folders/${id}`);
 
-        return new Ember.RSVP.Promise(function(resolve, reject) {
-            $.ajax({
-                url: url,
-                type: 'PUT',
-                data: JSON.stringify(folder),
-                contentType: 'json',
-                success: function(response) {
-                    resolve(response);
-                },
-                error: function(reason) {
-                    reject(reason);
-                }
-            });
+        return this.get('ajax').request(url, {
+            method: 'PUT',
+            data: JSON.stringify(folder)
+        }).then((response)=>{
+            return response;
         });
     },
 
     remove: function(folderId, moveToId) {
-        var self = this;
-        var url = self.get('sessionService').appMeta.getUrl('folders/' + folderId + "/move/" + moveToId);
+        var url = this.get('sessionService').appMeta.getUrl('folders/' + folderId + "/move/" + moveToId);
 
-        return new Ember.RSVP.Promise(function(resolve, reject) {
-            $.ajax({
-                url: url,
-                type: 'DELETE',
-                success: function(response) {
-                    resolve(response);
-                },
-                error: function(reason) {
-                    reject(reason);
-                }
-            });
+        return this.get('ajax').request(url, {
+            method: 'DELETE'
+        }).then((response)=>{
+            return response;
         });
     },
 
     onboard: function(folderId, payload) {
-        var self = this;
-        var url = self.get('sessionService').appMeta.getUrl('public/share/' + folderId);
+        var url = this.get('sessionService').appMeta.getUrl('public/share/' + folderId);
 
-        return new Ember.RSVP.Promise(function(resolve, reject) {
-            $.ajax({
-                url: url,
-                type: "POST",
-                data: payload,
-                contentType: "application/json",
-                success: function(response) {
-                    resolve(response);
-                },
-                error: function(reason) {
-                    reject(reason);
-                }
-            });
+        return this.get('ajax').post(url, {
+            data: payload
+        }).then((response)=>{
+            return response;
         });
     },
 
@@ -138,107 +95,65 @@ export default BaseService.extend({
     getProtectedFolderInfo: function() {
         var url = this.get('sessionService').appMeta.getUrl('folders?filter=viewers');
 
-        return new Ember.RSVP.Promise(function(resolve, reject) {
-            $.ajax({
-                url: url,
-                type: 'GET',
-                success: function(response) {
-                    let data = [];
-                    _.each(response, function(obj) {
-                        data.pushObject(models.ProtectedFolderParticipant.create(obj));
-                    });
-
-                    resolve(data);
-                },
-                error: function(reason) {
-                    reject(reason);
-                }
+        return this.get('ajax').request(url).then((response)=>{
+            let data = [];
+            _.each(response, function(obj) {
+                data.pushObject(models.ProtectedFolderParticipant.create(obj));
             });
+
+            return data;
         });
     },
 
     // reloads and caches folders.
     reload() {
-        let appMeta = this.get('sessionService.appMeta')
+        let appMeta = this.get('sessionService.appMeta');
         let url = appMeta.getUrl(`folders`);
 
-        return new Ember.RSVP.Promise(function(resolve, reject) {
-            $.ajax({
-                url: url,
-                type: 'GET',
-                success: function(response) {
-                    let data = [];
-                    _.each(response, function(obj) {
-                        data.pushObject(models.FolderModel.create(obj));
-                    });
-                    resolve(data);
-                },
-                error: function(reason) {
-                    reject(reason);
-                }
+        return this.get('ajax').request(url).then((response)=>{
+            let data = [];
+            _.each(response, function(obj) {
+                data.pushObject(models.FolderModel.create(obj));
             });
+
+            return data;
         });
     },
 
     // so who can see/edit this folder?
     getPermissions(folderId) {
-        let self = this;
+        let url = this.get('sessionService').appMeta.getUrl(`folders/${folderId}/permissions`);
 
-        return new Ember.RSVP.Promise(function(resolve, reject) {
-            $.ajax({
-                url: self.get('sessionService').appMeta.getUrl(`folders/${folderId}/permissions`),
-                type: 'GET',
-                success: function(response) {
-                    let data = [];
-                    _.each(response, function(obj) {
-                        data.pushObject(models.FolderPermissionModel.create(obj));
-                    });
-                    resolve(data);
-                },
-                error: function(reason) {
-                    reject(reason);
-                }
+        return this.get('ajax').request(url).then((response)=>{
+            let data = [];
+            _.each(response, function(obj) {
+                data.pushObject(models.FolderPermissionModel.create(obj));
             });
+
+            return data;
         });
     },
 
     // persist folder permissions
     savePermissions(folderId, payload) {
-        let self = this;
+        let url = this.get('sessionService').appMeta.getUrl(`folders/${folderId}/permissions`);
 
-        return new Ember.RSVP.Promise(function(resolve, reject) {
-            $.ajax({
-                url: self.get('sessionService').appMeta.getUrl(`folders/${folderId}/permissions`),
-                type: 'PUT',
-                contentType: 'json',
-                data: JSON.stringify(payload),
-                success: function(response) {
-                    resolve(response);
-                },
-                error: function(reason) {
-                    reject(reason);
-                }
-            });
+        return this.get('ajax').request(url, {
+            method: 'PUT',
+            data: JSON.stringify(payload)
+        }).then((response) => {
+            return response;
         });
     },
 
     // share this folder with new users!
     share(folderId, invitation) {
-        let self = this;
+        let url = this.get('sessionService').appMeta.getUrl(`folders/${folderId}/invitation`);
 
-        return new Ember.RSVP.Promise(function(resolve, reject) {
-            $.ajax({
-                url: self.get('sessionService').appMeta.getUrl(`folders/${folderId}/invitation`),
-                type: 'POST',
-                contentType: 'json',
-                data: JSON.stringify(invitation),
-                success: function(response) {
-                    resolve(response);
-                },
-                error: function(reason) {
-                    reject(reason);
-                }
-            });
+        return this.get('ajax').post(url, {
+            data: JSON.stringify(invitation)
+        }).then((response) => {
+            return response;
         });
     },
 
@@ -258,43 +173,38 @@ export default BaseService.extend({
         }
 
         let url = this.get('sessionService').appMeta.getUrl('users/' + userId + "/permissions");
-        let self = this;
 
-        $.ajax({
-            url: url,
-            type: 'GET',
-            success: function(folderPermissions) {
-                // safety check
-                self.set('canEditCurrentFolder', false);
+        return this.get('ajax').request(url).then((folderPermissions) => {
+            // safety check
+            this.set('canEditCurrentFolder', false);
 
-                if (folderPermissions.length === 0) {
-                    return;
+            if (folderPermissions.length === 0) {
+                return;
+            }
+
+            let result = [];
+            let folderId = folder.get('id');
+
+            folderPermissions.forEach(function(item) {
+                if (item.folderId === folderId) {
+                    result.push(item);
+                }
+            });
+
+            let canEdit = false;
+
+            result.forEach(function(permission) {
+                if (permission.userId === userId) {
+                    canEdit = permission.canEdit;
                 }
 
-                let result = [];
-                let folderId = folder.get('id');
-
-                folderPermissions.forEach(function(item) {
-                    if (item.folderId === folderId) {
-                        result.push(item);
-                    }
-                });
-
-                let canEdit = false;
-
-                result.forEach(function(permission) {
-                    if (permission.userId === userId) {
-                        canEdit = permission.canEdit;
-                    }
-
-                    if (permission.userId === "" && !canEdit) {
-                        canEdit = permission.canEdit;
-                    }
-                });
-                Ember.run(() => {
-                    self.set('canEditCurrentFolder', canEdit && self.get('sessionService').authenticated);
-                });
-            }
+                if (permission.userId === "" && !canEdit) {
+                    canEdit = permission.canEdit;
+                }
+            });
+            Ember.run(() => {
+                this.set('canEditCurrentFolder', canEdit && this.get('sessionService').authenticated);
+            });
         });
     },
 });
