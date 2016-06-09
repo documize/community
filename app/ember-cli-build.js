@@ -56,6 +56,7 @@ module.exports = function(defaults) {
     app.import('vendor/drop.js');
     app.import('vendor/tooltip.js');
 	app.import('vendor/markdown-it.min.js');
+	app.import('vendor/dragula.js');
 
     return app.toTree();
 };
