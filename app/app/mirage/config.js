@@ -192,28 +192,26 @@ export default function() {
     });
 
     this.get('/folders/VzMuyEw_3WqiafcG/permissions', (db) => {
-        let folderId = 'VzMuyEw_3WqiafcG';
-        let permissions = db.folder_permissions
-        console.log(permissions[0]);
-        debugger;
-        return permissions;
-        // return [
-        //     {
-        //         "folderId":"VzMuyEw_3WqiafcG",
-        //         "userId":"VzMuyEw_3WqiafcE",
-        //         "canView":true,
-        //         "canEdit":true
-        //     }
-        // ];
+        // let folderId = 'VzMuyEw_3WqiafcG';
+        // let permissions = db.folder_permissions
+        // console.log(permissions[0]);
+        // debugger;
+        // return permissions;
+        return [
+            {
+                "folderId":"VzMuyEw_3WqiafcG",
+                "userId":"VzMuyEw_3WqiafcE",
+                "canView":true,
+                "canEdit":true
+            }
+        ];
     });
 
     this.put('/folders/VzMuyEw_3WqiafcG/permissions', (db, request) => {
         let id = 'VzMuyEw_3WqiafcG';
         let roles = JSON.parse(request.requestBody).Roles;
         // let permissions = db.permissions.update(id, roles[2]);
-        console.log(roles);
-        debugger;
-        return permissions;
+        // return permissions;
     });
 
     this.put('/folders/:id', (db, request) => {
