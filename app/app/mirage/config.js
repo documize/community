@@ -129,31 +129,20 @@ export default function() {
     });
 
     this.post('/folders', function(db, request) {
-        // return {
-        //     "id":"V0Vy5Uw_3QeDAMW9",
-        //     "created":"2016-05-25T09:39:49Z",
-        //     "revised":"2016-05-25T09:39:49Z",
-        //     "name":"Test Folder",
-        //     "orgId":"VzMuyEw_3WqiafcD",
-        //     "userId":"VzMuyEw_3WqiafcE",
-        //     "folderType":2
-        // };
-        // console.log(request);
-        // var attrs = JSON.parse(request.requestBody).name;
-        // var folder = db.folders.insert(attrs);
-        // return folder;
-    });
-
-    this.put('/folders/V0Vy5Uw_3QeDAMW9', () => {
-        return {
+        var name = JSON.parse(request.requestBody).name;
+        let newFolder = {
             "id":"V0Vy5Uw_3QeDAMW9",
             "created":"2016-05-25T09:39:49Z",
             "revised":"2016-05-25T09:39:49Z",
-            "name":"Test Folder",
+            "name":name,
             "orgId":"VzMuyEw_3WqiafcD",
             "userId":"VzMuyEw_3WqiafcE",
             "folderType":2
         };
+
+        let folder = db.folders.insert(newFolder);
+        console.log(newFolder);
+        return folder;
     });
 
     this.post('/public/authenticate', () => {
@@ -192,11 +181,6 @@ export default function() {
     });
 
     this.get('/folders/VzMuyEw_3WqiafcG/permissions', (db) => {
-        // let folderId = 'VzMuyEw_3WqiafcG';
-        // let permissions = db.folder_permissions
-        // console.log(permissions[0]);
-        // debugger;
-        // return permissions;
         return [
             {
                 "folderId":"VzMuyEw_3WqiafcG",
@@ -207,18 +191,59 @@ export default function() {
         ];
     });
 
-    this.put('/folders/VzMuyEw_3WqiafcG/permissions', (db, request) => {
-        let id = 'VzMuyEw_3WqiafcG';
-        let roles = JSON.parse(request.requestBody).Roles;
-        // let permissions = db.permissions.update(id, roles[2]);
-        // return permissions;
+    this.put('/folders/VzMygEw_3WrtFzto/permissions', () => {
+            return [
+                {
+                    "orgId":"VzMuyEw_3WqiafcD",
+                    "folderId":"VzMygEw_3WrtFzto",
+                    "userId":"",
+                    "canEdit":true,
+                    "canView":true
+                },{
+                    "orgId":"VzMuyEw_3WqiafcD",
+                    "folderId":"VzMygEw_3WrtFzto",
+                    "userId":"VzMyp0w_3WrtFztq",
+                    "canEdit":false,
+                    "canView":false
+                },{
+                    "orgId":"",
+                    "folderId":"VzMygEw_3WrtFzto",
+                    "userId":"VzMuyEw_3WqiafcE",
+                    "canEdit":true,
+                    "canView":true
+                }
+            ];
+    });
+
+    this.get('/folders/VzMygEw_3WrtFzto/permissions', () => {
+        return [
+            {
+                "folderId":"VzMygEw_3WrtFzto",
+                "userId":"VzMuyEw_3WqiafcE",
+                "canView":true,
+                "canEdit":true
+            }
+        ];
     });
 
     this.put('/folders/:id', (db, request) => {
         let id = request.params.id;
         let attrs = JSON.parse(request.requestBody);
         let folder = db.folders.update(id, attrs);
+        console.log(folder);
         return folder;
+    });
+
+    this.put('/folders/V0Vy5Uw_3QeDAMW9', () => {
+        return {
+            "id":"V0Vy5Uw_3QeDAMW9",
+            "created":"2016-05-25T09:39:49Z",
+            "revised":"2016-05-25T09:39:49Z",
+            "name":"Test Folder",
+            "orgId":"VzMuyEw_3WqiafcD",
+            "userId":"VzMuyEw_3WqiafcE",
+            "folderType":2
+        };
     });
 
     this.get('folders/:id', (db, request) => {

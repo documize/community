@@ -22,7 +22,6 @@ test('Adding a new folder space', function(assert) {
     fillIn('#new-folder-name', 'body', 'Test Folder');
 
     click('.actions div:contains(Add)', 'body');
-    // return pauseTest();
 
     andThen(function() {
         assert.equal(currentURL(), '/s/V0Vy5Uw_3QeDAMW9/test-folder');
@@ -118,7 +117,7 @@ test('changing space permissions', function(assert) {
         assert.equal(currentURL(), '/s/VzMuyEw_3WqiafcG/my-project');
     });
 
-    visit('/s/VzMuyEw_3WqiafcG/my-project/settings');
+    visit('/s/VzMygEw_3WrtFzto/test/settings');
     click(('.sidebar-menu .options li:contains(Permissions)'));
 
     click('tr:contains(Everyone) #canView-');

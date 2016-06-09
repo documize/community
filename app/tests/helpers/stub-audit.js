@@ -64,6 +64,6 @@ const Audit = Ember.Service.extend({
     },
 });
 
-export default Ember.Test.registerAsyncHelper('stubAudit', function(app, test, attrs={}) {
+export default Ember.Test.registerAsyncHelper('stubAudit', function(app, test, attrs = {}) {
     test.register('service:audit', Audit.extend(attrs));
 });
