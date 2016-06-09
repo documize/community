@@ -92,7 +92,7 @@ export default Ember.Service.extend({
         }).then((response)=>{
             this.setSession(response.token, models.UserModel.create(response.user));
             this.get('ready', true);
-            resolve(response);
+            return response;
         });
     },
 
@@ -192,7 +192,7 @@ export default Ember.Service.extend({
                 return this.get('ajax').request(tokenCheckUrl, {
                     method: 'GET',
                     contentType: 'json'
-                }).then((response) => {
+                }).then((user) => {
                     this.setSession(token, models.UserModel.create(user));
                     this.set('ready', true);
                 }).catch((reason) => {
