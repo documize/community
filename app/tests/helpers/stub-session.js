@@ -80,7 +80,7 @@ const Session = Ember.Service.extend({
         }).then((response)=>{
             this.setSession(response.token, models.UserModel.create(response.user));
             this.get('ready', true);
-            resolve(response);
+            return response;
         });
     },
 
@@ -113,17 +113,17 @@ const Session = Ember.Service.extend({
         // localStorage.clear();
     },
 
-    storeSessionItem: function(key, data) {
+    storeSessionItem: function() {
         // localStorage[key] = data;
         // console.log(data);
     },
 
-    getSessionItem: function(key) {
+    getSessionItem: function() {
         // return localStorage[key];
         // console.log(data);
     },
 
-    clearSessionItem: function(key) {
+    clearSessionItem: function() {
         // delete localStorage[key];
     },
 
@@ -181,12 +181,12 @@ const Session = Ember.Service.extend({
                 return this.get('ajax').request(tokenCheckUrl, {
                     method: 'GET',
                     contentType: 'json'
-                }).then((response) => {
+                }).then((user) => {
                     this.setSession(token, models.UserModel.create(user));
                     this.set('ready', true);
                 }).catch((reason) => {
                     if (reason.status === 401 || reason.status === 403) {
-                        localStorage.clear();
+                        // localStorage.clear();
                         window.location.href = "/auth/login";
                     }
                 });

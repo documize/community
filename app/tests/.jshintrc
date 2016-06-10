@@ -28,7 +28,10 @@
     "pauseTest",
     "userLogin",
     "skip",
-    "waitToAppear"
+    "waitToAppear",
+    "waitToAppear",
+    "stubUserNotification",
+    "is"
   ],
   "node": false,
   "browser": false,

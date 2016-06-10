@@ -1,4 +1,4 @@
-import { test, skip } from 'qunit';
+import { test} from 'qunit';
 import moduleForAcceptance from 'documize/tests/helpers/module-for-acceptance';
 
 moduleForAcceptance('Acceptance | User Settings');

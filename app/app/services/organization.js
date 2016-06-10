@@ -38,8 +38,6 @@ export default Ember.Service.extend({
         return this.get('ajax').request(url, {
             method: 'PUT',
             data: JSON.stringify(org)
-        }).then((response) => {
-            return response;
         });
     }
 });

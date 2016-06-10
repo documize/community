@@ -19,8 +19,8 @@ export default Ember.Service.extend({
     find(keywords) {
         let url = this.get('sessionService').appMeta.getUrl("search?keywords=" + encodeURIComponent(keywords));
 
-        return this.get('ajax').request(url).then((response) => {
-            return response;
+        return this.get('ajax').request(url, {
+            method: "GET"
         });
     },
 });

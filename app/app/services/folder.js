@@ -66,8 +66,6 @@ export default BaseService.extend({
         return this.get('ajax').request(url, {
             method: 'PUT',
             data: JSON.stringify(folder)
-        }).then((response)=>{
-            return response;
         });
     },
 
@@ -76,8 +74,6 @@ export default BaseService.extend({
 
         return this.get('ajax').request(url, {
             method: 'DELETE'
-        }).then((response)=>{
-            return response;
         });
     },
 
@@ -86,8 +82,6 @@ export default BaseService.extend({
 
         return this.get('ajax').post(url, {
             data: payload
-        }).then((response)=>{
-            return response;
         });
     },
 
@@ -141,8 +135,6 @@ export default BaseService.extend({
         return this.get('ajax').request(url, {
             method: 'PUT',
             data: JSON.stringify(payload)
-        }).then((response) => {
-            return response;
         });
     },
 
@@ -152,8 +144,6 @@ export default BaseService.extend({
 
         return this.get('ajax').post(url, {
             data: JSON.stringify(invitation)
-        }).then((response) => {
-            return response;
         });
     },
 

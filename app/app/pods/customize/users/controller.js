@@ -32,9 +32,9 @@ export default Ember.Controller.extend(NotifierMixin, {
                     $("#newUserFirstname").focus();
                     this.get('model').pushObject(user);
                 })
-                .catch(function(){
+                .catch(function(error){
                     let msg = error.status === 409 ? 'Unable to add duplicate user' : 'Unable to add user';
-                    self.showNotification(msg);
+                    this.showNotification(msg);
                 });
         },
 

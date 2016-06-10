@@ -1,6 +1,6 @@
 import Ember from 'ember';
 
-export default Ember.Test.registerAsyncHelper('userLogin', function(app) {
+export default Ember.Test.registerAsyncHelper('userLogin', function() {
     visit('/auth/login');
 
     fillIn('#authEmail', 'brizdigital@gmail.com');

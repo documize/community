@@ -83,8 +83,6 @@ export default Ember.Service.extend({
 
         return this.get('ajax').post(url, {
             data: password
-        }).then((response)=>{
-            return response;
         });
     },
 
@@ -94,8 +92,6 @@ export default Ember.Service.extend({
 
         return this.get('ajax').request(url, {
             method: 'DELETE'
-        }).then((response) => {
-            return response;
         });
     },
 
@@ -104,8 +100,7 @@ export default Ember.Service.extend({
         let url = this.get('sessionService').appMeta.getUrl('public/forgot');
 
         if (is.empty(email)) {
-            reject("invalid");
-            return;
+            return Ember.RSVP.reject("invalid");
         }
 
         let data = JSON.stringify({
@@ -114,8 +109,6 @@ export default Ember.Service.extend({
 
         return this.request('ajax').post(url, {
             data: data
-        }).then((response)=>{
-            return response;
         });
     },
 
@@ -129,8 +122,6 @@ export default Ember.Service.extend({
 
         return this.request('ajax').post(url, {
             data: password
-        }).then((response)=>{
-            return response;
         });
     }
 });

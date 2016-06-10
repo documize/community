@@ -43,8 +43,6 @@ export default BaseService.extend({
 
         return this.get('ajax').post(url, {
             data: JSON.stringify(data)
-        }).then((response)=>{
-            return response;
         });
     },
 

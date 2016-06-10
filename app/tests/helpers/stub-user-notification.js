@@ -12,7 +12,7 @@ const userNotification = Ember.Component.extend({
     },
 
     showNotification(msg) {
-        // return msg;
+        return msg;
     }
 });
 

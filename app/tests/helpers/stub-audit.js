@@ -1,6 +1,5 @@
 import Ember from 'ember';
-import netUtil from 'documize/utils/net';
-import config from 'documize/config/environment';
+// import netUtil from 'documize/utils/net';
 
 const Audit = Ember.Service.extend({
     sessionService: Ember.inject.service('session'),
@@ -20,6 +19,8 @@ const Audit = Ember.Service.extend({
             this.start();
         }
 
+        return id;
+
         // Intercom('trackEvent', id); //jshint ignore: line
         // Intercom('update'); //jshint ignore: line
     },
@@ -37,7 +38,7 @@ const Audit = Ember.Service.extend({
 
         this.set('ready', true);
 
-        let appId = config.environment === 'production' ? 'c6cocn4z' : 'itgvb1vo';
+        // let appId = config.environment === 'production' ? 'c6cocn4z' : 'itgvb1vo';
 
         // window.intercomSettings = {
         //     app_id: appId,

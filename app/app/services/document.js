@@ -21,8 +21,7 @@ export default Ember.Service.extend({
         let url = this.get('sessionService').appMeta.getUrl(`documents/${documentId}`);
 
         return this.get('ajax').request(url).then((response) => {
-            let doc = models.DocumentModel.create(response);
-            return doc;
+            return models.DocumentModel.create(response);
         });
     },
 
@@ -71,8 +70,6 @@ export default Ember.Service.extend({
         return this.get('ajax').request(url, {
             method: 'PUT',
             data: JSON.stringify(doc)
-        }).then((response) => {
-            return response;
         });
     },
 
@@ -97,8 +94,6 @@ export default Ember.Service.extend({
         return this.get('ajax').post(url, {
             data: JSON.stringify(payload),
             contentType: 'json'
-        }).then((response) => {
-            return response;
         });
     },
 
@@ -108,8 +103,6 @@ export default Ember.Service.extend({
         return this.get('ajax').post(url, {
             data: JSON.stringify(payload),
             contentType: 'json'
-        }).then((response) => {
-            return response;
         });
     },
 
@@ -118,8 +111,6 @@ export default Ember.Service.extend({
 
         return this.get('ajax').request(url, {
             method: 'DELETE'
-        }).then((response) => {
-            return response;
         });
     },
 
@@ -131,8 +122,6 @@ export default Ember.Service.extend({
             method: 'PUT',
             data: JSON.stringify(payload),
             contentType: 'json'
-        }).then((response) => {
-            return response;
         });
     },
 
@@ -143,8 +132,6 @@ export default Ember.Service.extend({
         return this.get('ajax').post(url, {
             data: JSON.stringify(payload),
             contentType: 'json'
-        }).then((response) => {
-            return response;
         });
     },
 
@@ -155,8 +142,6 @@ export default Ember.Service.extend({
         return this.get('ajax').post(url, {
             data: JSON.stringify(payload),
             contentType: 'json'
-        }).then((response) => {
-            return response;
         });
     },
 
@@ -166,16 +151,14 @@ export default Ember.Service.extend({
 
         return this.get('ajax').request(url, {
             method: 'DELETE'
-        }).then((response) => {
-            return response;
         });
     },
 
     getPageRevisions(documentId, pageId) {
         let url = this.get('sessionService').appMeta.getUrl("documents/" + documentId + "/pages/" + pageId + "/revisions");
 
-        return this.get('ajax').request(url).then((response) => {
-            return response;
+        return this.get('ajax').request(url, {
+            method: "GET"
         });
     },
 
@@ -184,16 +167,14 @@ export default Ember.Service.extend({
 
         return this.get('ajax').request(url, {
             dataType: 'text'
-        }).then((response) => {
-            return response;
         });
     },
 
     rollbackPage(documentId, pageId, revisionId) {
         let url = this.get('sessionService').appMeta.getUrl("documents/" + documentId + "/pages/" + pageId + "/revisions/" + revisionId);
 
-        return this.get('ajax').post(url).then((response) => {
-            return response;
+        return this.get('ajax').request(url, {
+            method: "POST"
         });
     },
 
@@ -201,8 +182,8 @@ export default Ember.Service.extend({
     getMeta(documentId) {
         let url = this.get('sessionService').appMeta.getUrl(`documents/${documentId}/meta`);
 
-        return this.get('ajax').request(url).then((response) => {
-            return response;
+        return this.get('ajax').request(url, {
+            method: "GET"
         });
     },
 
@@ -278,8 +259,6 @@ export default Ember.Service.extend({
 
         return this.get('ajax').request(url, {
             method: 'DELETE'
-        }).then((response) => {
-            return response;
         });
     },
 });

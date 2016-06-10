@@ -180,7 +180,7 @@ export default function() {
         return db.permissions;
     });
 
-    this.get('/folders/VzMuyEw_3WqiafcG/permissions', (db) => {
+    this.get('/folders/VzMuyEw_3WqiafcG/permissions', () => {
         return [
             {
                 "folderId":"VzMuyEw_3WqiafcG",
@@ -483,11 +483,11 @@ export default function() {
     /**
     very helpful for debugging
     */
-    this.handledRequest = function(verb, path, request) {
+    this.handledRequest = function(verb, path) {
         console.log(`👊${verb} ${path}`);
     };
 
-    this.unhandledRequest = function(verb, path, request) {
+    this.unhandledRequest = function(verb, path) {
         console.log(`🔥${verb} ${path}`);
     };
 
