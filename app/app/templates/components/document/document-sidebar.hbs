@@ -1,27 +1,17 @@
 <div class="document-container">
 	<div class="sidebar hidden-xs hidden-sm">
-		{{#if showToc}}
-			{{#if isEditor}}
-				<div class="margin-bottom-20 text-center">
-					<div {{action 'addSection'}} class="regular-button button-green" id="add-section-button" data-tooltip="Add section" data-tooltip-position="top center">
+		{{#if isEditor}}
+			<div class="margin-bottom-20 text-center">
+				{{#link-to 'document.wizard' folder.id folder.slug document.id document.slug}}
+					<div class="regular-button button-green" id="add-section-button">
 						<i class="material-icons">add</i>
 						<div class="name">section</div>
 					</div>
-				</div>
-			{{/if}}
-			{{document/document-sidebar-toc document=model folder=folder pages=pages page=page isEditor=isEditor
-				changePageSequence=(action 'onPageSequenceChange') changePageLevel=(action 'onPageLevelChange')
-				gotoPage=(action 'gotoPage')}}
-		{{/if}}
-
-		{{#if showSectionList}}
-			<div class="margin-bottom-20 pull-right">
-				<div {{action 'showToc'}} class="flat-button">
-					Cancel
-				</div>
+				{{/link-to}}
 			</div>
-			<div class="clearfix" />
-			{{document/page-wizard document=model folder=folder sections=sections onAction=(action 'onAddSection')}}
 		{{/if}}
+		{{document/document-sidebar-toc document=model folder=folder pages=pages page=page isEditor=isEditor
+			changePageSequence=(action 'onPageSequenceChange') changePageLevel=(action 'onPageLevelChange')
+			gotoPage=(action 'gotoPage')}}
 	</div>
 </div>

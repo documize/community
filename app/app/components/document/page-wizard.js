@@ -13,7 +13,20 @@ import Ember from 'ember';
 import NotifierMixin from '../../mixins/notifier';
 
 export default Ember.Component.extend(NotifierMixin, {
+
+	didRender() {
+        let self = this;
+        Mousetrap.bind('esc', function() {
+            self.send('onCancel');
+            return false;
+        });
+    },
+
     actions: {
+		onCancel() {
+			this.attrs.onCancel();
+		},
+
         addSection(section) {
 
             if (section.preview) {

@@ -10,18 +10,19 @@ export default Ember.Controller.extend(NotifierMixin, {
             this.transitionToRoute('document');
         },
 
-        onAction(title, contentType) {
-            this.audit.record("added-page");
+        onAddSection(section) {
+			let self = this;
 
-            let self = this;
+			this.audit.record("added-section");
+            this.audit.record("added-section-" + section.contentType);
 
             let page = models.PageModel.create({
                 documentId: this.get('model.document.id'),
-                title: title,
+                title: `${section.title} Section`,
                 level: 2,
                 sequence: 2048,
                 body: "",
-                contentType: contentType
+                contentType: section.contentType
             });
 
             let meta = models.PageMetaModel.create({
