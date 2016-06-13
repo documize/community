@@ -5,17 +5,6 @@ export default function() {
     this.namespace = 'api'; // make this `api`, for example, if your API is namespaced
     // this.timing = 400;      // delay for each request, automatically set to 0 during testing
 
-    // this.get('/public/meta', function() {
-    //     return {
-    //         "orgId": "VzMuyEw_3WqiafcD",
-    //         "title": "EmberSherpa",
-    //         "message": "This Documize instance contains all our team documentation",
-    //         "url": "",
-    //         "allowAnonymousAccess": false,
-    //         "version": "11.2"
-    //     };
-    // });
-
     this.get('/public/meta', function(db) {
         return db.meta[0];
     });
@@ -64,18 +53,6 @@ export default function() {
 
     this.get('/templates', function() {
         return [];
-    });
-
-    this.get('/folders/VzMuyEw_3WqiafcG', function() {
-        return {
-            "id": "VzMuyEw_3WqiafcG",
-            "created": "2016-05-11T15:08:24Z",
-            "revised": "2016-05-11T15:08:24Z",
-            "name": "My Project",
-            "orgId": "VzMuyEw_3WqiafcD",
-            "userId": "VzMuyEw_3WqiafcE",
-            "folderType": 2
-        };
     });
 
     this.get('/documents', function(db, request) {
@@ -250,54 +227,6 @@ export default function() {
         let id = request.params.id;
         return db.folders.find(id);
     });
-
-    // this.get('/folders/VzMygEw_3WrtFzto', () => {
-    //     return {
-    //         "id": "VzMygEw_3WrtFzto",
-    //         "created": "2016-05-11T13:24:17Z",
-    //         "revised": "2016-05-11T13:25:51Z",
-    //         "name": "Test",
-    //         "orgId": "VzMuyEw_3WqiafcD",
-    //         "userId": "VzMuyEw_3WqiafcE",
-    //         "folderType": 1
-    //     };
-    // });
-    //
-    // this.get('/folders/V0Vy5Uw_3QeDAMW9', () => {
-    //     return {
-    //         "id":"V0Vy5Uw_3QeDAMW9",
-    //         "created":"2016-05-25T09:39:49Z",
-    //         "revised":"2016-05-25T09:39:49Z",
-    //         "name":"Test Folder",
-    //         "orgId":"VzMuyEw_3WqiafcD",
-    //         "userId":"VzMuyEw_3WqiafcE",
-    //         "folderType":2
-    //     };
-    // });
-    //
-    // this.get('/folders/VzMuyEw_3WqiafcG', () => {
-    //     return {
-    //         "id": "VzMuyEw_3WqiafcG",
-    //         "created": "2016-05-11T15:08:24Z",
-    //         "revised": "2016-05-11T15:08:24Z",
-    //         "name": "My Project",
-    //         "orgId": "VzMuyEw_3WqiafcD",
-    //         "userId": "VzMuyEw_3WqiafcE",
-    //         "folderType": 2
-    //     };
-    // });
-    //
-    // this.get('/folders/VzMuyEw_3WqiafcG', () => {
-    //     return {
-    //         "id": "VzMuyEw_3WqiafcG",
-    //         "created": "2016-05-11T15:08:24Z",
-    //         "revised": "2016-05-11T15:08:24Z",
-    //         "name": "My Project",
-    //         "orgId": "VzMuyEw_3WqiafcD",
-    //         "userId": "VzMuyEw_3WqiafcE",
-    //         "folderType": 2
-    //     };
-    // });
 
     this.get('/organizations/VzMuyEw_3WqiafcD', () => {
         return {
