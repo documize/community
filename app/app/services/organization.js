@@ -20,7 +20,9 @@ export default Ember.Service.extend({
     getOrg(id) {
         let url = this.get('sessionService').appMeta.getUrl(`organizations/${id}`);
 
-        return this.get('ajax').request(url).then((response) =>{
+        return this.get('ajax').request(url, {
+            method: 'GET'
+        }).then((response) =>{
             let org = models.OrganizationModel.create(response);
             return org;
         });

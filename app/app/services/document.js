@@ -20,7 +20,9 @@ export default Ember.Service.extend({
     getDocument(documentId) {
         let url = this.get('sessionService').appMeta.getUrl(`documents/${documentId}`);
 
-        return this.get('ajax').request(url).then((response) => {
+        return this.get('ajax').request(url, {
+            method: "GET"
+        }).then((response) => {
             return models.DocumentModel.create(response);
         });
     },
@@ -30,7 +32,9 @@ export default Ember.Service.extend({
         let appMeta = this.get('sessionService.appMeta');
         let url = appMeta.getUrl(`documents?folder=${folderId}`);
 
-        return this.get('ajax').request(url).then((response) => {
+        return this.get('ajax').request(url, {
+            method: "GET"
+        }).then((response) => {
             let documents = Ember.ArrayProxy.create({
                 content: Ember.A([])
             });
@@ -48,7 +52,9 @@ export default Ember.Service.extend({
     getAllByTag(tag) {
         let url = this.get('sessionService').appMeta.getUrl(`documents?filter=tag&tag=${tag}`);
 
-        return this.get('ajax').request(url).then((response) => {
+        return this.get('ajax').request(url, {
+            method: "GET"
+        }).then((response) => {
             let documents = Ember.ArrayProxy.create({
                 content: Ember.A([])
             });
@@ -166,6 +172,7 @@ export default Ember.Service.extend({
         let url = this.get('sessionService').appMeta.getUrl("documents/" + documentId + "/pages/" + pageId + "/revisions/" + revisionId);
 
         return this.get('ajax').request(url, {
+            method: "GET",
             dataType: 'text'
         });
     },
@@ -191,7 +198,9 @@ export default Ember.Service.extend({
     getTableOfContents(documentId) {
         let url = this.get('sessionService').appMeta.getUrl(`documents/${documentId}/pages?content=0`);
 
-        return this.get('ajax').request(url).then((response) => {
+        return this.get('ajax').request(url, {
+            method: 'GET'
+        }).then((response) => {
             let data = [];
             _.each(response, function(obj) {
                 data.pushObject(models.PageModel.create(obj));
@@ -205,7 +214,9 @@ export default Ember.Service.extend({
     getPages(documentId) {
         let url = this.get('sessionService').appMeta.getUrl(`documents/${documentId}/pages`);
 
-        return this.get('ajax').request(url).then((response) => {
+        return this.get('ajax').request(url, {
+            method: 'GET'
+        }).then((response) => {
             let pages = [];
 
             _.each(response, function(page) {
@@ -224,7 +235,9 @@ export default Ember.Service.extend({
     getPage(documentId, pageId) {
         let url = this.get('sessionService').appMeta.getUrl(`documents/${documentId}/pages/${pageId}`);
 
-        return this.get('ajax').request(url).then((response) => {
+        return this.get('ajax').request(url, {
+            method: 'GET'
+        }).then((response) => {
             let page = models.PageModel.create(response);
             return page;
         });
@@ -234,7 +247,9 @@ export default Ember.Service.extend({
     getPageMeta(documentId, pageId) {
         let url = this.get('sessionService').appMeta.getUrl(`documents/${documentId}/pages/${pageId}/meta`);
 
-        return this.get('ajax').request(url).then((response) => {
+        return this.get('ajax').request(url, {
+            method: 'GET'
+        }).then((response) => {
             let meta = models.PageMetaModel.create(response);
             return meta;
         });
@@ -244,7 +259,9 @@ export default Ember.Service.extend({
     getAttachments(documentId) {
         let url = this.get('sessionService').appMeta.getUrl(`documents/${documentId}/attachments`);
 
-        return this.get('ajax').request(url).then((response) => {
+        return this.get('ajax').request(url, {
+            method: 'GET'
+        }).then((response) => {
             let data = [];
             _.each(response, function(obj) {
                 data.pushObject(models.AttachmentModel.create(obj));

@@ -42,7 +42,8 @@ export default BaseService.extend({
         let url = this.get('sessionService').appMeta.getUrl(endpoint);
 
         return this.get('ajax').post(url, {
-            data: JSON.stringify(data)
+            data: JSON.stringify(data),
+            contentType: "application/json"
         });
     },
 
@@ -50,7 +51,9 @@ export default BaseService.extend({
     refresh(documentId) {
         let url = this.get('sessionService').appMeta.getUrl(`sections/refresh?documentID=${documentId}`);
 
-        return this.get('ajax').request(url).then((response)=>{
+        return this.get('ajax').request(url, {
+            method: 'GET'
+        }).then((response)=>{
             let pages = [];
 
             if (is.not.null(response) && is.array(response) && response.length > 0) {

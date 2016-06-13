@@ -55,7 +55,9 @@ export default Ember.Service.extend({
     getFolderUsers(folderId) {
         let url = this.get('sessionService').appMeta.getUrl(`users/folder/${folderId}`);
 
-        return this.get('ajax').request(url).then((response)=>{
+        return this.get('ajax').request(url, {
+            method: "GET"
+        }).then((response)=>{
             let data = [];
             _.each(response, function(obj) {
                 data.pushObject(models.UserModel.create(obj));
@@ -107,7 +109,9 @@ export default Ember.Service.extend({
             Email: email
         });
 
-        return this.request('ajax').post(url, {
+        return this.get('ajax').request(url, {
+            method: 'POST',
+            dataType: 'json',
             data: data
         });
     },
@@ -120,7 +124,8 @@ export default Ember.Service.extend({
             return Ember.RSVP.reject("invalid");
         }
 
-        return this.request('ajax').post(url, {
+        return this.get('ajax').request(url, {
+            method: "POST",
             data: password
         });
     }

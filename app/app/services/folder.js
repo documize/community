@@ -27,6 +27,7 @@ export default BaseService.extend({
         let url = appMeta.getUrl(`folders`);
 
         return this.get('ajax').post(url, {
+            contentType: 'json',
             data: JSON.stringify(folder)
         }).then((folder)=>{
             let folderModel = models.FolderModel.create(folder);
@@ -39,7 +40,9 @@ export default BaseService.extend({
         let appMeta = this.get('sessionService.appMeta');
         let url = appMeta.getUrl(`folders/${id}`);
 
-        return this.get('ajax').request(url).then((response)=>{
+        return this.get('ajax').request(url, {
+            method: 'GET'
+        }).then((response)=>{
             let folder = models.FolderModel.create(response);
             return folder;
         });
@@ -65,6 +68,7 @@ export default BaseService.extend({
 
         return this.get('ajax').request(url, {
             method: 'PUT',
+            contentType: 'json',
             data: JSON.stringify(folder)
         });
     },
@@ -81,6 +85,7 @@ export default BaseService.extend({
         var url = this.get('sessionService').appMeta.getUrl('public/share/' + folderId);
 
         return this.get('ajax').post(url, {
+            contentType: "application/json",
             data: payload
         });
     },
@@ -89,7 +94,9 @@ export default BaseService.extend({
     getProtectedFolderInfo: function() {
         var url = this.get('sessionService').appMeta.getUrl('folders?filter=viewers');
 
-        return this.get('ajax').request(url).then((response)=>{
+        return this.get('ajax').request(url, {
+            method: "GET"
+        }).then((response)=>{
             let data = [];
             _.each(response, function(obj) {
                 data.pushObject(models.ProtectedFolderParticipant.create(obj));
@@ -104,7 +111,9 @@ export default BaseService.extend({
         let appMeta = this.get('sessionService.appMeta');
         let url = appMeta.getUrl(`folders`);
 
-        return this.get('ajax').request(url).then((response)=>{
+        return this.get('ajax').request(url, {
+            method: "GET"
+        }).then((response)=>{
             let data = [];
             _.each(response, function(obj) {
                 data.pushObject(models.FolderModel.create(obj));
@@ -118,7 +127,9 @@ export default BaseService.extend({
     getPermissions(folderId) {
         let url = this.get('sessionService').appMeta.getUrl(`folders/${folderId}/permissions`);
 
-        return this.get('ajax').request(url).then((response)=>{
+        return this.get('ajax').request(url, {
+            method: "GET"
+        }).then((response)=>{
             let data = [];
             _.each(response, function(obj) {
                 data.pushObject(models.FolderPermissionModel.create(obj));
@@ -134,6 +145,7 @@ export default BaseService.extend({
 
         return this.get('ajax').request(url, {
             method: 'PUT',
+            contentType: 'json',
             data: JSON.stringify(payload)
         });
     },
@@ -143,6 +155,7 @@ export default BaseService.extend({
         let url = this.get('sessionService').appMeta.getUrl(`folders/${folderId}/invitation`);
 
         return this.get('ajax').post(url, {
+            contentType: 'json',
             data: JSON.stringify(invitation)
         });
     },

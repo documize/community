@@ -38,7 +38,7 @@ export default Ember.Service.extend({
         let url = this.get('sessionService').appMeta.getUrl("templates");
 
         return this.get('ajax').request(url, {
-            type: 'GET'
+            method: 'GET'
         }).then((response) => {
             if (is.not.array(response)) {
                 response = [];
@@ -60,7 +60,7 @@ export default Ember.Service.extend({
         let url = this.get('sessionService').appMeta.getUrl("templates/stock");
 
         return this.get('ajax').request(url, {
-            type: 'GET'
+            method: 'GET'
         });
     }
 });
