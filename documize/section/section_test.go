@@ -14,24 +14,26 @@ package section
 import (
 	"net/http"
 	"testing"
+
+	"github.com/documize/community/documize/section/provider"
 )
 
-type testsection struct {
-	didRefresh bool
-}
+type testsection provider.TypeMeta
 
 var ts testsection
 
 func init() {
-	sectionsMap["testsection"] = &ts
+	provider.Register("testsection", &ts)
 }
 
 // Command is an end-point...
 func (ts *testsection) Command(w http.ResponseWriter, r *http.Request) {}
 
+var didRefresh bool
+
 // Refresh existing data, returning data in the format of the target system
 func (ts *testsection) Refresh(meta, data string) string {
-	ts.didRefresh = true
+	didRefresh = true
 	return ""
 }
 
@@ -40,8 +42,8 @@ func (*testsection) Render(meta, data string) string {
 	return "testsection " + data
 }
 
-func (*testsection) Meta() TypeMeta {
-	section := TypeMeta{}
+func (*testsection) Meta() provider.TypeMeta {
+	section := provider.TypeMeta{}
 
 	section.ID = "TestGUID"
 	section.Title = "TestSection"
@@ -52,13 +54,13 @@ func (*testsection) Meta() TypeMeta {
 }
 
 func TestSection(t *testing.T) {
-	if _, ok := Refresh("testsection", "", ""); !ok {
+	if _, ok := provider.Refresh("testsection", "", ""); !ok {
 		t.Error("did not find 'testsection' smart section (1)")
 	}
-	if !ts.didRefresh {
+	if !didRefresh {
 		t.Error("did not run the test Refresh method")
 	}
-	out, ok := Render("testsection", "meta", "dingbat")
+	out, ok := provider.Render("testsection", "meta", "dingbat")
 	if !ok {
 		t.Error("did not find 'testsection' smart section (2)")
 	}
@@ -66,7 +68,7 @@ func TestSection(t *testing.T) {
 		t.Error("wrong output from Render")
 	}
 
-	sects := GetSectionMeta()
+	sects := provider.GetSectionMeta()
 	for _, v := range sects {
 		if v.Title == "TestSection" {
 			return
