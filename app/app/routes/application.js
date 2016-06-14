@@ -23,7 +23,7 @@ export default Ember.Route.extend({
         // Session ready?
         return session.boot().then(function() {
             // Need to authenticate?
-            if (!session.appMeta.allowAnonymousAccess && !session.authenticated &&
+            if (!session.get("appMeta.allowAnonymousAccess") && !session.get("authenticated") &&
                 is.not.startWith(transition.targetName, 'auth.')) {
                 if (!self.transitioning) {
                     session.set('previousTransition', transition);

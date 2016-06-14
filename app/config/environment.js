@@ -15,7 +15,7 @@ module.exports = function(environment) {
     var ENV = {
         modulePrefix: 'documize',
         podModulePrefix: 'documize/pods',
-        locationType: 'history',
+        locationType: 'auto',
         environment: environment,
         baseURL: '/',
         apiHost: '',
@@ -25,12 +25,21 @@ module.exports = function(environment) {
         EmberENV: {
             FEATURES: {}
         },
-        APP: {}
+         "ember-cli-mirage": {
+            enabled: false
+        },
+        APP: {
+            // Allows to disable audit service in tests
+            auditEnabled: true
+        }
     };
 
     if (environment === 'development') {
         ENV.APP.LOG_TRANSITIONS = true;
         ENV.APP.LOG_TRANSITIONS_INTERNAL = true;
+        ENV['ember-cli-mirage'] = {
+          enabled: false
+        };
 
         ENV.apiHost = "https://localhost:5001";
         // ENV.apiHost = "https://demo1.dev:5001";
@@ -42,15 +51,16 @@ module.exports = function(environment) {
         ENV.APP.LOG_VIEW_LOOKUPS = false;
         // ENV.APP.LOG_TRANSITIONS = false;
         // ENV.APP.LOG_TRANSITIONS_INTERNAL = false;
-        ENV.APP.LOG_TRANSITIONS = true;
-        ENV.APP.LOG_TRANSITIONS_INTERNAL = true;
 
-        // ENV.baseURL = '/';
-        // ENV.locationType = 'none';
-        // ENV.APP.rootElement = '#ember-testing';
+        ENV.baseURL = '/';
+        ENV.locationType = 'none';
+        ENV.APP.rootElement = '#ember-testing';
+        ENV['ember-cli-mirage'] = {
+          enabled: true
+        };
+        ENV.APP.auditEnabled = false;
 
         ENV.apiHost = "https://localhost:5001";
-        // ENV.apiHost = "https://demo1.dev:5001";
     }
 
     if (environment === 'production') {
