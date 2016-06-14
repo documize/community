@@ -12,6 +12,7 @@
 package endpoint
 
 import (
+	"crypto/rand"
 	"database/sql"
 	"encoding/json"
 	"errors"
@@ -21,11 +22,13 @@ import (
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
+
 	"github.com/documize/community/documize/api/endpoint/models"
 	"github.com/documize/community/documize/api/entity"
 	"github.com/documize/community/documize/api/request"
 	"github.com/documize/community/documize/api/util"
 	"github.com/documize/community/documize/section/provider"
+	"github.com/documize/community/wordsmith/environment"
 	"github.com/documize/community/wordsmith/log"
 	"github.com/documize/community/wordsmith/utility"
 )
@@ -298,7 +301,33 @@ func preAuthorizeStaticAssets(r *http.Request) bool {
 	return false
 }
 
-const jwtKey = "tsu3Acndky8cdTNx3"
+var jwtKey string
+
+func init() {
+	environment.GetString(&jwtKey, "salt", false, "the salt string used to encode JWT tokens, if not set a random value will be generated",
+		func(t *string, n string) bool {
+			if jwtKey == "" {
+				b := make([]byte, 17)
+				_, err := rand.Read(b)
+				if err != nil {
+					jwtKey = err.Error()
+					log.Error("problem using crypto/rand", err)
+					return false
+				}
+				for k, v := range b {
+					if (v >= 'a' && v <= 'z') || (v >= 'A' && v <= 'Z') || (v >= '0' && v <= '0') {
+						b[k] = v
+					} else {
+						s := fmt.Sprintf("%x", v)
+						b[k] = s[0]
+					}
+				}
+				jwtKey = string(b)
+				log.Info("Please set DOCUMIZESALT or use -salt with this value: " + jwtKey)
+			}
+			return true
+		})
+}
 
 // Generates JSON Web Token (http://jwt.io)
 func generateJWT(user, org, domain string) string {
