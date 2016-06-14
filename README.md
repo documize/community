@@ -12,17 +12,25 @@ You can operate outside the AGPL restrictions by purchasing Documize Enterprise 
 
 ## Running Documize for the first time 
 
-Although the Documize binaries run on Linux, Windows and OSX, the build process has only been tested on OSX.
+Although the Documize binaries run on Linux, Windows and macOS, the build process has only been tested on macOS.
 
 Install the prerequisites:
 * Go from https://golang.org (be careful to set the $GOPATH environment variable correctly, you may find https://www.goinggo.net/2016/05/installing-go-and-your-workspace.html helpful)
 * NPM from https://www.npmjs.com 
 * Ember from http://emberjs.com/ 
-* MySQL (v10.7+) from http://dev.mysql.com/downloads/mysql/
+* Bower from https://bower.io/
+* MySQL (v10.7+) from http://dev.mysql.com/downloads/mysql/ (don't forget to copy the one-time password and your system may require a restart)
 
 Make sure this repository sits at the following position relative to your $GOPATH: $GOPATH/src/github.com/documize/community
 
-After cloning the repository in the above location, go there and run: ./build.sh 
+After cloning the repository in the above location, go there and run: 
+```
+cd app
+npm install
+bower install 
+cd ..
+./build.sh 
+```
 
 The build script packages up the Ember JS/HTML/CSS code for production use, then generates Go code that creates a simple in-memory file system to contain it. That generated Go code is compiled with the rest to produce a single binary for each of the target systems. 
 
