@@ -16,7 +16,7 @@ import config from '../config/environment';
 export default Ember.Service.extend({
     sessionService: Ember.inject.service('session'),
     ready: false,
-    enabled: true,
+    enabled: config.APP.auditEnabled,
 
     init() {
         this.start();

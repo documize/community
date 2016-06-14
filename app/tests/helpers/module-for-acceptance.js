@@ -6,18 +6,28 @@ export default function(name, options = {}) {
   module(name, {
     beforeEach() {
       this.application = startApp();
+      stubAudit(this);
+      stubSession(this);
+      stubUserNotification(this);
 
       if (options.beforeEach) {
         options.beforeEach.apply(this, arguments);
       }
+
+      this.register = (fullName, Factory) => {
+        let instance = this.application.__deprecatedInstance__;
+        let registry = instance.register ? instance : instance.registry;
+
+        return registry.register(fullName, Factory);
+      };
     },
 
     afterEach() {
+      destroyApp(this.application);
+
       if (options.afterEach) {
         options.afterEach.apply(this, arguments);
       }
-
-      destroyApp(this.application);
     }
   });
 }

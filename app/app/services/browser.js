@@ -19,15 +19,15 @@ export default Ember.Service.extend({
     },
 
     setTitle(title) {
-        document.title = title + " | " + this.get('sessionService').appMeta.title;
+        document.title = title + " | " + this.get('sessionService.appMeta.title');
     },
 
     setTitleReverse(title) {
-        document.title = this.get('sessionService').appMeta.title + " | " + title;
+        document.title = this.get('sessionService.appMeta.title') + " | " + title;
     },
 
     setTitleAsPhrase(title) {
-        document.title = this.get('sessionService').appMeta.title + " " + title;
+        document.title = this.get('sessionService.appMeta.title') + " " + title;
     },
 
     setTitleWithoutSuffix(title) {
@@ -38,7 +38,7 @@ export default Ember.Service.extend({
         $('meta[name=description]').remove();
 
         if (is.null(description) || is.undefined(description)) {
-            description = this.get('sessionService').appMeta.message;
+            description = this.get('sessionService.appMeta.message');
         }
 
         $('head').append('<meta name="description" content="' + description + '">');
