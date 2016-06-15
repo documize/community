@@ -117,10 +117,10 @@ func RefreshSections(w http.ResponseWriter, r *http.Request) {
 
 	for _, pm := range meta {
 		// Grab the page because we need content type and
-		page, err := p.GetPage(pm.PageID)
+		page, err2 := p.GetPage(pm.PageID)
 
-		if err != nil {
-			writeGeneralSQLError(w, method, err)
+		if err2 != nil {
+			writeGeneralSQLError(w, method, err2)
 			log.IfErr(tx.Rollback())
 			return
 		}
