@@ -9,9 +9,9 @@
     "loader.js": "^3.5.0",
     "qunit": "~1.20.0",
     "install": "~1.0.4",
-    "pretender": "~0.10.1",
+    "pretender": "~1.1.0",
     "lodash": "~3.7.0",
-    "Faker": "~3.0.0"
+    "Faker": "~3.1.0"
   },
   "resolutions": {
     "jquery": ">=2.1.1",
