@@ -1,20 +1,10 @@
-// Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
-//
-// This software (Documize Community Edition) is licensed under
-// GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
-//
-// You can operate outside the AGPL restrictions by purchasing
-// Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>.
-//
-// https://documize.com
-
 import Ember from 'ember';
-import encodingUtil from '../utils/encoding';
-import netUtil from '../utils/net';
-import models from '../utils/model';
+import models from 'documize/utils/model';
+import encodingUtil from 'documize/utils/encoding';
+import netUtil from 'documize/utils/net';
 
-export default Ember.Service.extend({
+const Session = Ember.Service.extend({
+
     ready: false,
     appMeta: null,
     isMac: false,
@@ -49,7 +39,6 @@ export default Ember.Service.extend({
         this.set('isMobile', is.mobile());
     },
 
-    // Authentication
     login: function(credentials) {
         let url = this.appMeta.getUrl('public/authenticate');
         let domain = netUtil.getSubdomain();
@@ -74,7 +63,6 @@ export default Ember.Service.extend({
         });
     },
 
-    // SSO in the form of 'domain:email:password'
     sso: function(credentials) {
         let url = this.appMeta.getUrl('public/authenticate');
         this.clearSession();
@@ -122,22 +110,23 @@ export default Ember.Service.extend({
     clearSession: function() {
         this.set('user', null);
         this.set('authenticated', false);
-        localStorage.clear();
+        // localStorage.clear();
     },
 
-    storeSessionItem: function(key, data) {
-        localStorage[key] = data;
+    storeSessionItem: function() {
+        // localStorage[key] = data;
+        // console.log(data);
     },
 
-    getSessionItem: function(key) {
-        return localStorage[key];
+    getSessionItem: function() {
+        // return localStorage[key];
+        // console.log(data);
     },
 
-    clearSessionItem: function(key) {
-        delete localStorage[key];
+    clearSessionItem: function() {
+        // delete localStorage[key];
     },
 
-    // Application boot process
     boot() {
         let self = this;
         let dbhash = "";
@@ -197,11 +186,15 @@ export default Ember.Service.extend({
                     this.set('ready', true);
                 }).catch((reason) => {
                     if (reason.status === 401 || reason.status === 403) {
-                        localStorage.clear();
+                        // localStorage.clear();
                         window.location.href = "/auth/login";
                     }
                 });
             }
         });
     }
+});
+
+export default Ember.Test.registerAsyncHelper('stubSession', function(app, test, attrs={}) {
+    test.register('service:session', Session.extend(attrs));
 });

@@ -63,3 +63,4 @@ debug
 *.crt
 Dockerfile
 container.sh
+make.sh
