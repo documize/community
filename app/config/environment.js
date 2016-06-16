@@ -30,9 +30,17 @@ module.exports = function(environment) {
         },
         APP: {
             // Allows to disable audit service in tests
-            auditEnabled: true
+            auditEnabled: true,
+			intercomKey: ""
         }
     };
+
+	process.argv.forEach(function(element){
+	   if (element.startsWith("intercom=")) {
+		   element = element.replace("intercom=", "");
+		   ENV.APP.intercomKey = element;
+	   }
+	});
 
     if (environment === 'development') {
         ENV.APP.LOG_TRANSITIONS = true;
@@ -42,7 +50,7 @@ module.exports = function(environment) {
         };
 
         ENV.apiHost = "https://localhost:5001";
-        // ENV.apiHost = "https://demo1.dev:5001";
+        ENV.apiHost = "https://demo1.dev:5001";
     }
 
     if (environment === 'test') {
@@ -75,24 +83,6 @@ module.exports = function(environment) {
 
     ENV.apiNamespace = "api";
     ENV.contentSecurityPolicy = null;
-
-    // ENV.contentSecurityPolicy = {
-    //     'img-src': "'self' data: self https://js.intercomcdn.com",
-    //     'font-src': "'self' data: fonts.gstatic.com",
-    //     'style-src': "'self' 'unsafe-inline' fonts.googleapis.com",
-    //     'script-src': "'self' https://widget.intercom.io https://js.intercomcdn.com " + ENV.apiHost,
-    //     'connect-src': "'self' " + ENV.apiHost + " https://api-ping.intercom.io https://nexus-websocket-a.intercom.io https://nexus-websocket-b.intercom.io wss://nexus-websocket-a.intercom.io wss://nexus-websocket-b.intercom.io https://api-iam.intercom.io",
-    //     'default-src': "none"
-    // };
-
-    // ENV.contentSecurityPolicy = {
-    //     'img-src': "'self' data: self",
-    //     'font-src': "'self' *",
-    //     'style-src': "'self' *",
-    //     'script-src': "'self' *",
-    //     'connect-src': "'self' *",
-    //     'default-src': "*"
-    // };
 
     return ENV;
 };

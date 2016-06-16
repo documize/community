@@ -48,27 +48,28 @@
 }
 
 .documents-list {
-	// @extend .cards-list;
-	margin-top: 35px;
+	margin: 35px 0;
 
 	> .document {
-		margin: 10px 10px;
-		padding: 10px 20px;
+		margin: 0;
+		padding: 20px 20px 25px 20px;
 		width: 100%;
 		position: relative;
-		border: 1px solid transparent;
+		border-bottom: 1px solid $color-gray2;
+		transition: .3s;
 
 		&:hover {
 			> .link {
 				> .title {
 					color: $color-link;
 				}
-				
+
 				> .snippet {
-					color: $color-off-black;
+					// color: $color-off-black;
+					color: $color-gray;
 				}
 			}
-			
+
 			> .checkbox {
 				display: block;
 			}
@@ -77,7 +78,7 @@
 		> .checkbox {
 			position: absolute;
 			display: none;
-			top: 2px;
+			top: 5px;
 			right: 12px;
 			cursor: pointer;
 
@@ -98,13 +99,13 @@
 				text-decoration: none;
 				color: $color-off-black;
 			}
-			
+
 			> .title {
 				font-size: 16px;
 				font-weight: bold;
 				margin-bottom: 8px;
 			}
-			
+
 			> .snippet {
 				color: $color-gray;
 				font-size: 13px;
@@ -136,8 +137,7 @@
 
 	> .selected-card {
 		background-color: $color-card-active !important;
-		border: 1px solid $color-link !important;
-		transition: 0.2s all ease;
+		border-bottom: 1px solid $color-link !important;
 
 		> .checkbox {
 			display: block;
@@ -178,19 +178,19 @@
 	margin-top: 100px;
 	text-align: center;
 	opacity: 0.4;
-	
+
 	> .box {
 		padding: 35px;
-		width: 300px; 
+		width: 300px;
 		display: inline-block;
 		margin: 0 20px;
-		
+
 		> .message {
 			font-size: 14px;
 			color: $color-off-black;
 			margin-top: 20px;
 		}
-		
+
 		> .regular-button {
 			cursor: default !important;
 		}

@@ -40,5 +40,10 @@
     "ember-load-initializers": "^0.5.1",
     "ember-resolver": "^2.0.3",
     "loader.js": "^4.0.1"
+  },
+  "ember-addon": {
+    "paths": [
+      "lib/intercom"
+    ]
   }
 }

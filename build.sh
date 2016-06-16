@@ -3,9 +3,13 @@
 NOW=$(date)
 echo "Build process started $NOW"
 
+# First parameter to this script is the Intercom.io key for audit logging.
+# This is optional and we use Intercom to record user activity and provider in-app support via messaging.
+intercomKey="$1"
+
 echo "Building Ember assets..."
 cd app
-ember b -o dist-prod/ --environment=production
+ember b -o dist-prod/ --environment=production intercom=$intercomKey
 
 echo "Copying Ember assets..."
 cd ..
@@ -33,8 +37,8 @@ go generate
 
 echo "Compiling app..."
 cd ../..
-for arch in amd64 386 ; do 
-    for os in darwin linux windows ; do 
+for arch in amd64 386 ; do
+    for os in darwin linux windows ; do
         if [ "$os" == "windows" ] ; then
             echo "Compiling documize-$os-$arch.exe"
             env GOOS=$os GOARCH=$arch go build -o bin/documize-$os-$arch.exe ./documize
