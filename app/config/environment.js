@@ -35,8 +35,8 @@ module.exports = function(environment) {
         }
     };
 
-	process.argv.forEach(function(element){
-		if (element !== 'undefined') {
+	process.argv.forEach(function(element) {
+		if (element !== undefined) {
 	   		if (element.startsWith("intercom=")) {
 		   		element = element.replace("intercom=", "");
 				ENV.APP.intercomKey = element;
