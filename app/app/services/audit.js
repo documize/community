@@ -24,13 +24,15 @@ export default Ember.Service.extend({
     },
 
     record(id) {
-        if (!this.get('enabled')) {
+        if (!this.get('enabled') || is.empty(this.get('appId'))) {
             return;
         }
 
         if (!this.get('ready')) {
             this.start();
         }
+
+		console.log();
 
         Intercom('trackEvent', id); //jshint ignore: line
         Intercom('update'); //jshint ignore: line
