@@ -15,7 +15,8 @@
   },
   "resolutions": {
     "jquery": ">=2.1.1",
-    "ember": "v2.5.1"
+    "ember": "v2.5.1",
+    "FakeXMLHttpRequest": "^1.4.0"
   },
   "version": "0.0.1"
 }
