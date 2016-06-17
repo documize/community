@@ -1,5 +1,7 @@
 # SDK for the Documize system
 
+The SDK is in development, please do not use in a live environment.
+
 ## documize command
 
 The directory "documize" contains a command line utility to load files onto the Documize server. 
