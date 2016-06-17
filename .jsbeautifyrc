@@ -2,15 +2,14 @@
     "indent_size": 4,
     "indent_char": " ",
     "preserve_newlines": true,
-    "css":
-    {
+    "css": {
         "indent_size": 4,
         "allowed_file_extensions": ["css", "scss", "sass", "less"]
     },
-    
-    "html":
-    {
-        "allowed_file_extensions": ["htm", "html", "xhtml", "shtml", "xml", "svg", ".hbs"]
+    "html": {
+        "allowed_file_extensions": ["htm", "html", "xhtml", "shtml", "xml", "svg", "hbs"]
+    },
+    "js": {
+        "break_chained_methods": false
     }
-
 }
