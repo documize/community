@@ -32,8 +32,6 @@ export default Ember.Service.extend({
             this.start();
         }
 
-		console.log();
-
         Intercom('trackEvent', id); //jshint ignore: line
         Intercom('update'); //jshint ignore: line
     },

@@ -5,11 +5,11 @@ export default function() {
     this.namespace = 'api'; // make this `api`, for example, if your API is namespaced
     // this.timing = 400;      // delay for each request, automatically set to 0 during testing
 
-    this.get('/public/meta', function(db) {
-        return db.meta[0];
+    this.get('/public/meta', function(schema) {
+        return schema.db.meta[0];
     });
 
-    this.get('/public/validate', function(db, request) {
+    this.get('/public/validate', function(schema, request) {
         let serverToken = request.queryParams.token;
         let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkb21haW4iOiIiLCJleHAiOjE0NjQwMjM2NjcsImlzcyI6IkRvY3VtaXplIiwib3JnIjoiVnpNdXlFd18zV3FpYWZjRCIsInN1YiI6IndlYmFwcCIsInVzZXIiOiJWek11eUV3XzNXcWlhZmNFIn0.NXZ6bo8mtvdZF_b9HavbidVUJqhmBA1zr0fSAPvbah0";
 
@@ -55,7 +55,7 @@ export default function() {
         return [];
     });
 
-    this.get('/documents', function(db, request) {
+    this.get('/documents', function(schema, request) {
         let folder_id = request.queryParams.folder;
 
         if (folder_id = "VzMuyEw_3WqiafcG") {
@@ -101,11 +101,11 @@ export default function() {
         }
     });
 
-    this.get('/folders', function(db) {
-        return db.folders;
+    this.get('/folders', function(schema) {
+        return schema.db.folders;
     });
 
-    this.post('/folders', function(db, request) {
+    this.post('/folders', function(schema, request) {
         var name = JSON.parse(request.requestBody).name;
         let newFolder = {
             "id":"V0Vy5Uw_3QeDAMW9",
@@ -117,8 +117,7 @@ export default function() {
             "folderType":2
         };
 
-        let folder = db.folders.insert(newFolder);
-        console.log(newFolder);
+        let folder = schema.db.folders.insert(newFolder);
         return folder;
     });
 
@@ -153,8 +152,8 @@ export default function() {
         };
     });
 
-    this.get('/users/VzMuyEw_3WqiafcE/permissions', (db) => {
-        return db.permissions;
+    this.get('/users/VzMuyEw_3WqiafcE/permissions', (schema) => {
+        return schema.db.permissions;
     });
 
     this.get('/folders/VzMuyEw_3WqiafcG/permissions', () => {
@@ -203,11 +202,10 @@ export default function() {
         ];
     });
 
-    this.put('/folders/:id', (db, request) => {
+    this.put('/folders/:id', (schema, request) => {
         let id = request.params.id;
         let attrs = JSON.parse(request.requestBody);
-        let folder = db.folders.update(id, attrs);
-        console.log(folder);
+        let folder = schema.db.folders.update(id, attrs);
         return folder;
     });
 
@@ -223,9 +221,9 @@ export default function() {
         };
     });
 
-    this.get('folders/:id', (db, request) => {
+    this.get('folders/:id', (schema, request) => {
         let id = request.params.id;
-        return db.folders.find(id);
+        return schema.db.folders.find(id);
     });
 
     this.get('/organizations/VzMuyEw_3WqiafcD', () => {
@@ -242,7 +240,7 @@ export default function() {
         };
     });
 
-    this.put('/organizations/VzMuyEw_3WqiafcD', (db, request) => {
+    this.put('/organizations/VzMuyEw_3WqiafcD', (schema, request) => {
         let title = JSON.parse(request.requestBody).title;
         let message = JSON.parse(request.requestBody).title;
         let allowAnonymousAccess = JSON.parse(request.requestBody).allowAnonymousAccess;
@@ -312,7 +310,7 @@ export default function() {
         }];
     });
 
-    this.post('/users', (db, request) => {
+    this.post('/users', (schema, request) => {
         let firstname = JSON.parse(request.requestBody).firstname;
         let lastname = JSON.parse(request.requestBody).lastname;
         let email = JSON.parse(request.requestBody).email;
@@ -373,7 +371,7 @@ export default function() {
         ]};
     });
 
-    this.put('/users/VzMuyEw_3WqiafcE', (db, request) => {
+    this.put('/users/VzMuyEw_3WqiafcE', (schema, request) => {
         let firstname = JSON.parse(request.requestBody).firstname;
         let lastname = JSON.parse(request.requestBody).lastname;
         let email = JSON.parse(request.requestBody).email;
