@@ -35,13 +35,6 @@ module.exports = function(environment) {
         }
     };
 
-	process.argv.forEach(function(element){
-	   if (element.startsWith("intercom=")) {
-		   element = element.replace("intercom=", "");
-		   ENV.APP.intercomKey = element;
-	   }
-	});
-
     if (environment === 'development') {
         ENV.APP.LOG_TRANSITIONS = true;
         ENV.APP.LOG_TRANSITIONS_INTERNAL = true;
@@ -50,7 +43,6 @@ module.exports = function(environment) {
         };
 
         ENV.apiHost = "https://localhost:5001";
-        ENV.apiHost = "https://demo1.dev:5001";
     }
 
     if (environment === 'test') {
@@ -80,6 +72,19 @@ module.exports = function(environment) {
 
         ENV.apiHost = "";
     }
+
+	process.argv.forEach(function(element) {
+		if (element !== undefined) {
+	   		if (element.startsWith("intercom=")) {
+		   		element = element.replace("intercom=", "");
+				ENV.APP.intercomKey = element;
+	   		}
+			if (element.startsWith("apiHost=")) {
+		   		element = element.replace("apiHost=", "");
+				ENV.apiHost = element;
+	   		}
+		}
+	});
 
     ENV.apiNamespace = "api";
     ENV.contentSecurityPolicy = null;

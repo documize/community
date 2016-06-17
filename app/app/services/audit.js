@@ -24,7 +24,7 @@ export default Ember.Service.extend({
     },
 
     record(id) {
-        if (!this.get('enabled')) {
+        if (!this.get('enabled') || is.empty(this.get('appId'))) {
             return;
         }
 
