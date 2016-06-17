@@ -85,7 +85,8 @@ func (t *Provider) Command(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer r.Body.Close()
+	defer r.Body.Close() // ignore error
+
 	body, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
@@ -309,7 +310,14 @@ func (*Provider) getCommits(client *gogithub.Client, config githubConfig) ([]git
 // Refresh ... gets the latest version
 func (t *Provider) Refresh(configJSON, data string) string {
 	var c = githubConfig{}
-	json.Unmarshal([]byte(configJSON), &c)
+
+	err := json.Unmarshal([]byte(configJSON), &c)
+
+	if err != nil {
+		log.Error("unable to unmarshall github config", err)
+		return data
+	}
+
 	c.Clean()
 
 	refreshed, err := t.getCommits(t.githubClient(c), c)
@@ -335,15 +343,27 @@ type githubRender struct {
 	CommitCount int
 }
 
-// Render ... just returns the data given
+// Render ... just returns the data given, suitably formatted
 func (*Provider) Render(config, data string) string {
+	var err error
 
 	raw := []githubBranchCommits{}
 	payload := githubRender{}
 	var c = githubConfig{}
 
-	json.Unmarshal([]byte(data), &raw)
-	json.Unmarshal([]byte(config), &c)
+	err = json.Unmarshal([]byte(data), &raw)
+
+	if err != nil {
+		log.Error("unable to unmarshall github data", err)
+		return "Documize internal github json umarshall data error: " + err.Error()
+	}
+
+	err = json.Unmarshal([]byte(config), &c)
+
+	if err != nil {
+		log.Error("unable to unmarshall github config", err)
+		return "Documize internal github json umarshall config error: " + err.Error()
+	}
 
 	c.Clean()
 
@@ -356,7 +376,6 @@ func (*Provider) Render(config, data string) string {
 	}
 
 	t := template.New("github")
-	var err error
 
 	t, err = t.Parse(renderTemplate)
 
@@ -403,12 +422,24 @@ func Callback(res http.ResponseWriter, req *http.Request) error {
 	var gt githubCallbackT
 
 	err = json.NewDecoder(res2.Body).Decode(&gt)
+	if err != nil {
+		return err
+	}
 
-	res2.Body.Close()
+	err = res2.Body.Close()
+	if err != nil {
+		return err
+	}
 
 	returl, err := url.QueryUnescape(state)
+	if err != nil {
+		return err
+	}
 
 	up, err := url.Parse(returl)
+	if err != nil {
+		return err
+	}
 
 	target := up.Scheme + "://" + up.Host + up.Path + "?code=" + gt.AccessToken
 
