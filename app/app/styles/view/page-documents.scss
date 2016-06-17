@@ -34,7 +34,7 @@
 				> .item {
 					list-style-type: none;
 					list-style: none;
-					margin: 0 0 3px 0;
+					margin: 0 0 5px 0;
 					padding: 0;
 				}
 			}
@@ -101,14 +101,14 @@
 			}
 
 			> .title {
-				font-size: 16px;
-				font-weight: bold;
-				margin-bottom: 8px;
+				font-size: 18px;
+				margin-bottom: 10px;
 			}
 
 			> .snippet {
 				color: $color-gray;
-				font-size: 13px;
+				font-size: 14px;
+				line-height: 24px;
 			}
 
 			> .tags {
@@ -117,7 +117,7 @@
 				margin-top: 8px;
 
 				.tag {
-					background-color: $color-off-white;
+					background-color: $color-white;
 					color: $color-stroke;
 					text-decoration: none;
 					display: inline-block;
@@ -128,7 +128,7 @@
 					transition: 0.2s all ease;
 
 					&:hover {
-						background-color: $color-white;
+						background-color: $color-off-white;
 					}
 				}
 			}

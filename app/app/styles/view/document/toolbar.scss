@@ -3,9 +3,8 @@
 		width: 100%;
 		margin: 0;
 		padding: 40px 40px 20px 40px;
-		background-color: darken($color-off-white, 3%);
+		background-color: $color-off-white;
 		color: $color-gray;
-		border: 1px solid $color-border2;
 
 		> .meta-data {
 	        margin: 0;
