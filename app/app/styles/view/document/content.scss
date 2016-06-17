@@ -4,10 +4,6 @@
 
 		.attachment-zone {
 			margin: 20px 0 30px 0;
-			padding: 10px;
-			background-color: $color-off-white;
-			border: 1px solid $color-border2;
-			border-radius: 2px;
 
 			> .list {
 				margin: 0;
@@ -15,9 +11,11 @@
 
 				> .item {
 					color: $color-off-black;
-					margin: 0px 5px;
+					margin-top: 10px;
 					padding: 0;
 					list-style-type: none;
+					border-bottom: 1px solid $color-gray2;
+    			padding-bottom: 10px;
 
 					> .icon {
 						vertical-align: text-top;
@@ -93,22 +91,21 @@
 .no-sections {
 	text-align: center;
 	opacity: 0.4;
-	
+
 	> .box {
 		padding: 35px;
 		display: inline-block;
 		margin: 0 20px;
-		
+
 		> .message {
 			font-size: 14px;
 			color: $color-off-black;
 			margin-top: 20px;
 		}
-		
+
 		> .regular-button {
 			cursor: default !important;
 		}
-	
+
 	}
 }
-

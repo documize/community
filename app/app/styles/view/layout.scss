@@ -84,7 +84,7 @@
             font-size: 1rem;
             font-style: normal;
             line-height: 2.6rem;
-            font-family: Tahoma, 'courier', 'arial';
+            font-family: open_sansregular;
         }
 
         &:before {
@@ -96,7 +96,7 @@
         margin: 0;
         padding: 0;
         color: $color-white;
-		padding: 20px 0 0 0;
+		    padding: 20px 0 0 0;
 
         > .option {
 			list-style: none;
@@ -118,14 +118,14 @@
 
     .dual-box {
         background-color: $color-off-white;
-        color: $color-off-black;
+        color: $color-gray;
         height: 45px;
         border: 1px solid $color-border2;
         border-radius: 4px;
         width: 100%;
         padding: 0 10px;
         cursor: pointer;
-		display: inline-block;
+		    display: inline-block;
 
         &:hover {
             @extend .z-depth-tiny;
@@ -159,5 +159,6 @@
 
     .dual-box-white {
         background-color: $color-white;
+        color: $color-off-black;
     }
 }

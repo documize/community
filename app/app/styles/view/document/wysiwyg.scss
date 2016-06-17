@@ -1,7 +1,8 @@
 .wysiwyg {
 	// font-size: 1rem;
-	font-size: 15px;
-  line-height: 30px;	
+	font-size: 16px;
+  line-height: 31px;
+	color: #3c3c3c;
 
 	table
 	{
@@ -18,7 +19,7 @@
 			p
 			{
 				margin: 0 !important;
-				padding: 0 !important; 
+				padding: 0 !important;
 			}
 		}
 	}
@@ -40,20 +41,23 @@
 
 	h1
 	{
-		font-size: 2.5em;
+		font-size: 2.3em;
 		font-weight: bold;
-		margin: 0 0 10px 0;
+		color:$color-off-black;
+		margin-bottom: 20px;
+		margin-top: 0;
 	}
 
 	h2
 	{
 		font-size: 2rem;
 		margin: 30px 0 20px 0;
+		font-family: open_sansregular;
 	}
 
 	h3
 	{
-		font-size: 1.8rem;
+		font-size: 1.6rem;
 		margin: 30px 0 20px 0;
 	}
 
@@ -73,8 +77,8 @@
 	{
 		.page-title
 		{
-			color: $color-primary;
-			font-weight: bold;
+			color:$color-off-black;
+			font-family: open_sansregular;
 		}
 	}
 
