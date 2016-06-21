@@ -9,7 +9,7 @@
 
     &:hover {
         cursor: pointer;
-        @extend .z-depth-tiny;
+        background-color: $color-off-white;
     }
 
     > .chip-text {
@@ -37,7 +37,7 @@
 
 	&:hover {
         cursor: pointer;
-        @extend .z-depth-tiny;
+        background-color: $color-off-white;
     }
 
 	> .chip-text {
