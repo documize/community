@@ -1,11 +1,11 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
@@ -255,35 +255,35 @@ func (p *Persister) UpdatePage(page entity.Page, refID, userID string, skipRevis
 		}
 	}
 
-	if page.Level == 1 { // may need to update the document name
-		var doc entity.Document
+	//if page.Level == 1 { // may need to update the document name
+	//var doc entity.Document
 
-		stmt4, err := p.Context.Transaction.Preparex("SELECT id, refid, orgid, labelid, job, location, title, excerpt, slug, tags, template, created, revised FROM document WHERE refid=?")
-		defer utility.Close(stmt4)
+	//stmt4, err := p.Context.Transaction.Preparex("SELECT id, refid, orgid, labelid, job, location, title, excerpt, slug, tags, template, created, revised FROM document WHERE refid=?")
+	//defer utility.Close(stmt4)
 
-		if err != nil {
-			log.Error(fmt.Sprintf("Unable to prepare pagemanager doc query for Id %s", page.DocumentID), err)
-			return err
-		}
+	//if err != nil {
+	//log.Error(fmt.Sprintf("Unable to prepare pagemanager doc query for Id %s", page.DocumentID), err)
+	//return err
+	//}
 
-		err = stmt4.Get(&doc, page.DocumentID)
+	//err = stmt4.Get(&doc, page.DocumentID)
 
-		if err != nil {
-			log.Error(fmt.Sprintf("Unable to execute pagemanager document query for Id %s", page.DocumentID), err)
-			return err
-		}
+	//if err != nil {
+	//log.Error(fmt.Sprintf("Unable to execute pagemanager document query for Id %s", page.DocumentID), err)
+	//return err
+	//}
 
-		if doc.Title != page.Title {
-			doc.Title = page.Title
-			doc.Revised = page.Revised
-			err = p.UpdateDocument(doc)
+	//if doc.Title != page.Title {
+	//doc.Title = page.Title
+	//doc.Revised = page.Revised
+	//err = p.UpdateDocument(doc)
 
-			if err != nil {
-				log.Error(fmt.Sprintf("Unable to update document when page 1 altered DocumentId %s", page.DocumentID), err)
-				return err
-			}
-		}
-	}
+	//if err != nil {
+	//log.Error(fmt.Sprintf("Unable to update document when page 1 altered DocumentId %s", page.DocumentID), err)
+	//return err
+	//}
+	//}
+	//}
 
 	p.Base.Audit(p.Context, "update-page", page.DocumentID, page.RefID)
 

@@ -1,5 +1,29 @@
 <div class="document-container">
     <div class="content">
+		<div class="document-summary">
+			{{document/tag-editor documentTags=document.tags isEditor=isEditor onChange=(action 'onTagChange')}}
+		</div>
+
+		{{#if attachments}}
+			<div class="attachment-zone">
+				<ul class="list">
+					{{#each attachments key="id" as |a index|}}
+						<li class="item">
+							<img class="icon" src="assets/img/attachments/{{ document/file-icon a.extension }}" />
+							<a href="{{ session.appMeta.apiUrl }}api/public/attachments/{{ session.appMeta.orgId }}/{{ a.job }}/{{ a.fileId }}">
+								<span class="file">{{ a.filename }}</span>
+							</a>
+							{{#if isEditor}}
+								<div class="action round-button-mono">
+									<i class="material-icons delete-attachment-{{a.id}}" title="Delete" {{action 'confirmDeleteAttachment' a.id a.filename}}>delete</i>
+								</div>
+							{{/if}}
+						</li>
+					{{/each}}
+				</ul>
+			</div>
+		{{/if}}
+
         <div class="pages">
             {{#each pages key="id" as |page index|}}
                 <div class="wysiwyg">
@@ -11,32 +35,6 @@
                             {{#if document.template}}
                                 <div class="is-template">TEMPLATE</div>
                             {{/if}}
-
-                            <div class="document-summary">
-
-                                {{document/tag-editor documentTags=document.tags isEditor=isEditor onChange=(action 'onTagChange')}}
-
-                                {{#if attachments}}
-                                    <div class="attachment-zone">
-                                        <ul class="list">
-                                            {{#each attachments key="id" as |a index|}}
-                                                <li class="item">
-                                                    <img class="icon" src="assets/img/attachments/{{ document/file-icon a.extension }}" />
-                                                    <a href="{{ session.appMeta.apiUrl }}api/public/attachments/{{ session.appMeta.orgId }}/{{ a.job }}/{{ a.fileId }}">
-                                                        <span class="file">{{ a.filename }}</span>
-                                                    </a>
-                                                    {{#if isEditor}}
-                                                        <div class="action round-button-mono">
-                                                            <i class="material-icons delete-attachment-{{a.id}}" title="Delete" {{action 'confirmDeleteAttachment' a.id a.filename}}>delete</i>
-                                                        </div>
-                                                    {{/if}}
-                                                </li>
-                                            {{/each}}
-                                        </ul>
-                                    </div>
-                                {{/if}}
-
-                            </div>
                         {{/if}}
 						{{section/base-renderer page=page}}
                     </div>
@@ -86,7 +84,7 @@
             <div class="regular-button button-green">
                 <i class="material-icons">add</i>
                 <div class="name">section</div>
-            </div>		
+            </div>
             <div class="message">Add a new section to this document</div>
         </div>
     </div>
