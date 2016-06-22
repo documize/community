@@ -35,7 +35,7 @@
 	                > .metric {
 						@extend .cursor-pointer;
 						text-align: center;
-						color: $color-link;
+						color: $color-primary;
 
 						.number {
 							font-size: 1.2rem;
@@ -49,7 +49,7 @@
 		                }
 
 						&:hover {
-							color: $color-gray;
+							color: $color-primary;
 						}
 	                }
 	            }
