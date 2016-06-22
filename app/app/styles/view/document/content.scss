@@ -53,15 +53,14 @@
 			display: none;
 		}
 
-		.document-tags {
-		}
-
 		.is-template {
 			color: $color-green;
 			font-weight: bold;
 		}
 
 		> .pages {
+			margin: 20px 0 50px 0; 
+
 			> .wysiwyg {
 				> .is-a-page {
 					.page-title {
