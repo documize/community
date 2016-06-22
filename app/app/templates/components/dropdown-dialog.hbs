@@ -1,21 +1,23 @@
 <div id="{{contentId}}" class="dropdown-dialog">
-    <div class="content">
-        {{yield}}
-    </div>
-    <div class="actions">
-        {{#if showCancel}}
-            <div class="flat-button" {{action 'onCancel'}}>
-                cancel
-            </div>
-        {{/if}}
-		{{#if hasSecondButton}}
-			<div class="flat-button {{color2}}" {{action 'onAction2'}}>
-	            {{button2}}
+	<form class="form" {{action 'onAction' on="submit"}}>
+		<div class="content">
+	        {{yield}}
+	    </div>
+	    <div class="actions">
+	        {{#if showCancel}}
+	            <div class="flat-button" {{action 'onCancel'}}>
+	                cancel
+	            </div>
+	        {{/if}}
+			{{#if hasSecondButton}}
+				<div class="flat-button {{color2}}" {{action 'onAction2'}}>
+		            {{button2}}
+		        </div>
+			{{/if}}
+	        <div class="flat-button {{color}}" {{action 'onAction'}}>
+	            {{button}}
 	        </div>
-		{{/if}}
-        <div class="flat-button {{color}}" {{action 'onAction'}}>
-            {{button}}
-        </div>
-    </div>
-    <div class="clearfix"></div>
+	    </div>
+	    <div class="clearfix"></div>
+	</form>
 </div>

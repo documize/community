@@ -37,7 +37,7 @@
             > .dropdown-dialog {
                 @extend .clearfix;
 
-                .content {
+				.content {
 					> p {
 	                    margin: 7px 0;
 	                    font-size: 0.9em;
@@ -48,7 +48,7 @@
 					}
 				}
 
-                > .actions {
+                .actions {
                     margin-top: 15px;
                     float: right;
                 }

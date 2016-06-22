@@ -44,7 +44,7 @@
 
 					> .action {
 						float: right;
-						vertical-align: text-top;
+						margin-top: -8px;
 						@extend .cursor-pointer;
 						display: none;
 						color: $color-stroke;
