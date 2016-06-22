@@ -27,7 +27,10 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
             this.addTooltip(document.getElementById("attachment-button"));
             this.addTooltip(document.getElementById("save-template-button"));
             this.addTooltip(document.getElementById("set-meta-button"));
+			this.addTooltip(document.getElementById("delete-document-button"));
         }
+
+		this.addTooltip(document.getElementById("print-document-button"));
 
         if (this.session.authenticated) {
             this.addTooltip(document.getElementById("owner-avatar"));
@@ -89,6 +92,10 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
     actions: {
 		deleteDocument() {
 			this.attrs.onDocumentDelete();
+        },
+
+		printDocument() {
+			window.print();
         },
 
         saveTemplate() {

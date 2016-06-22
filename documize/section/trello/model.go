@@ -14,7 +14,8 @@ package trello
 import "strings"
 
 const renderTemplate = `
-<div class="section-trello-render">
+<p class="non-printable-message">Non-printable</p>
+<div class="section-trello-render non-printable">
 	<p>There are {{ .CardCount }} cards across {{ .ListCount }} lists for board <a href="{{ .Board.URL }}">{{.Board.Name}}.</a></p>
 	<div class="trello-board" style="background-color: {{.Board.Prefs.BackgroundColor}}">
 		<a href="{{ .Board.URL }}"><div class="trello-board-title">{{.Board.Name}}</div></a>

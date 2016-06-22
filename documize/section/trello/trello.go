@@ -129,7 +129,6 @@ func (*Provider) Command(w http.ResponseWriter, r *http.Request) {
 				AppKey string `json:"appKey"`
 			}
 
-			fmt.Println(appKey)
 			config.AppKey = appKey
 			provider.WriteJSON(w, config)
 			return

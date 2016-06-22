@@ -48,7 +48,7 @@
 
 	                {{#if isEditor}}
 						<div class="button-gap"></div>
-						<div class="square-button button-gray" id="set-meta-button" data-tooltip="Set owner, title, excerpt" data-tooltip-position="top center">
+						<div class="square-button button-gray" id="set-meta-button" data-tooltip="Set meta" data-tooltip-position="top center">
 							<i class="material-icons">settings</i>
 						</div>
 						<div class="button-gap"></div>
@@ -62,13 +62,13 @@
 	                {{/if}}
 
 					<div class="button-gap"></div>
-					<div class="square-button button-gray" id="print-document-button" data-tooltip="Print this document" data-tooltip-position="top center">
+					<div class="square-button button-gray" id="print-document-button" data-tooltip="Print document" data-tooltip-position="top center" {{action 'printDocument'}}>
 						<i class="material-icons">print</i>
 					</div>
 
 					{{#if isEditor}}
 						<div class="button-gap"></div>
-						<div class="square-button button-red" id="delete-document-button" data-tooltip="Delete this document" data-tooltip-position="top center">
+						<div class="square-button button-red" id="delete-document-button" data-tooltip="Delete document" data-tooltip-position="top center">
 							<i class="material-icons">delete</i>
 						</div>
 					{{/if}}
