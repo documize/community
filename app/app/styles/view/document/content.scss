@@ -71,10 +71,12 @@
 		.is-template {
 			color: $color-green;
 			font-weight: bold;
+			font-size: 1.3em;
+			margin-bottom: 20px;
 		}
 
 		> .pages {
-			margin: 20px 0 50px 0;
+			margin: 30px 0 50px 0;
 
 			> .wysiwyg {
 				> .is-a-page {

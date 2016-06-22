@@ -223,10 +223,6 @@ export default Ember.Service.extend({
                 pages.pushObject(models.PageModel.create(page));
             });
 
-            if (pages.length > 0) {
-                Ember.set(pages[0], 'firstPage', true);
-            }
-
             return pages;
         });
     },

@@ -1,5 +1,9 @@
 <div class="document-container">
     <div class="content">
+		{{#if document.template}}
+			<div class="is-template">TEMPLATE</div>
+		{{/if}}
+
 		<div class="document-summary">
 			{{document/tag-editor documentTags=document.tags isEditor=isEditor onChange=(action 'onTagChange')}}
 		</div>
@@ -33,11 +37,6 @@
                 <div class="wysiwyg">
                     <div id="page-{{ page.id }}" class="is-a-page" data-id="{{ page.id }}" data-type="{{ page.contentType }}">
                         {{document/page-heading tagName=page.tagName document=document folder=folder page=page isEditor=isEditor onDeletePage=(action 'onDeletePage') }}
-                        {{#if page.firstPage }}
-                            {{#if document.template}}
-                                <div class="is-template">TEMPLATE</div>
-                            {{/if}}
-                        {{/if}}
 						{{section/base-renderer page=page}}
                     </div>
                 </div>
