@@ -200,9 +200,8 @@ func GetDocumentPages(w http.ResponseWriter, r *http.Request) {
 		pages, err = p.GetPages(documentID)
 	}
 
-	if err == sql.ErrNoRows {
-		writeNotFoundError(w, method, documentID)
-		return
+	if len(pages) == 0 {
+		pages = []entity.Page{}
 	}
 
 	if err != nil {
