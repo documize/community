@@ -1,11 +1,11 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
@@ -14,6 +14,7 @@ package entity
 
 import (
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -152,6 +153,15 @@ type Document struct {
 	Template bool   `json:"template"`
 }
 
+// SetDefaults ensures on blanks and cleans.
+func (d *Document) SetDefaults() {
+	d.Title = strings.TrimSpace(d.Title)
+
+	if len(d.Title) == 0 {
+		d.Title = "Document"
+	}
+}
+
 // Attachment represents an attachment to a document.
 type Attachment struct {
 	BaseEntity
@@ -183,6 +193,8 @@ func (p *Page) SetDefaults() {
 	if len(p.ContentType) == 0 {
 		p.ContentType = "wysiwyg"
 	}
+
+	p.Title = strings.TrimSpace(p.Title)
 }
 
 // PageMeta holds raw page data that is used to

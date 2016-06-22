@@ -2,6 +2,22 @@
 	> .content {
 		padding: 40px 40px 40px 20px;
 
+		.print-title {
+			display: none;
+			font-size: 2.3em;
+			font-weight: bold;
+			color:$color-off-black;
+			margin-bottom: 20px;
+			margin-top: 0;
+		}
+
+		.non-printable-message {
+			display: none;
+			font-size: 1em;
+			font-style: italic;
+			color: $color-gray;
+		}
+
 		.attachment-zone {
 			margin: 20px 0 30px 0;
 
@@ -15,7 +31,7 @@
 					padding: 0;
 					list-style-type: none;
 					border-bottom: 1px solid $color-gray2;
-    			padding-bottom: 10px;
+    				padding-bottom: 10px;
 
 					> .icon {
 						vertical-align: text-top;
@@ -33,7 +49,6 @@
 						display: none;
 						color: $color-stroke;
 					}
-
 
 					&:hover {
 						.file {
@@ -53,20 +68,17 @@
 			display: none;
 		}
 
-		.document-tags {
-			margin: 10px 0;
-		}
-
 		.is-template {
 			color: $color-green;
 			font-weight: bold;
 		}
 
 		> .pages {
+			margin: 20px 0 50px 0;
+
 			> .wysiwyg {
 				> .is-a-page {
 					.page-title {
-
 						> .page-toolbar {
 							opacity: 0.3;
 							@extend .transition-all;

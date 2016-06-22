@@ -1,11 +1,11 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
@@ -181,21 +181,22 @@ func StartDocumentFromSavedTemplate(w http.ResponseWriter, r *http.Request) {
 	// Define an empty document just in case user wanted one.
 	var err error
 	var d = entity.Document{}
-	d.Title = "Empty Document"
+	d.Title = "New Document"
 	d.Location = fmt.Sprintf("template-%s", templateID)
-	d.Excerpt = "Created from template"
+	d.Excerpt = "A new document"
 	d.Slug = utility.MakeSlug(d.Title)
 	d.Tags = ""
 	d.LabelID = folderID
 	documentID := util.UniqueID()
 	d.RefID = documentID
 
-	var pages = make([]entity.Page, 1, 1)
-	pages[0] = entity.Page{}
-	pages[0].Title = "Heading"
-	pages[0].Body = "<p>Some content here.</p>"
-	pages[0].Level = 1
-	pages[0].Sequence = 1
+	var pages = []entity.Page{}
+	//var pages = make([]entity.Page, 1, 1)
+	//pages[0] = entity.Page{}
+	//pages[0].Title = "Heading"
+	//pages[0].Body = "<p>Some content here.</p>"
+	//pages[0].Level = 1
+	//pages[0].Sequence = 1
 
 	var attachments = []entity.Attachment{}
 

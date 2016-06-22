@@ -1,11 +1,11 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
@@ -27,7 +27,10 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
             this.addTooltip(document.getElementById("attachment-button"));
             this.addTooltip(document.getElementById("save-template-button"));
             this.addTooltip(document.getElementById("set-meta-button"));
+			this.addTooltip(document.getElementById("delete-document-button"));
         }
+
+		this.addTooltip(document.getElementById("print-document-button"));
 
         if (this.session.authenticated) {
             this.addTooltip(document.getElementById("owner-avatar"));
@@ -87,6 +90,14 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
     },
 
     actions: {
+		deleteDocument() {
+			this.attrs.onDocumentDelete();
+        },
+
+		printDocument() {
+			window.print();
+        },
+
         saveTemplate() {
             var templateName = this.get('saveTemplate.name');
             var templateDescription = this.get('saveTemplate.description');

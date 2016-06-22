@@ -188,6 +188,17 @@ export default Ember.Controller.extend(NotifierMixin, {
                     self.get('model.slug'),
                     newPage.id);
             });
-        }
+        },
+
+		onDocumentDelete() {
+			console.log("deleting " + this.get('model.id'));
+			let self = this;
+
+			this.get('documentService').deleteDocument(this.get('model.id')).then(function() {
+				self.audit.record("deleted-page");
+	            self.send("showNotification", "Deleted");
+				self.transitionToRoute('folders.folder', self.get('folder.id'), self.get('folder.slug'));
+			});
+		}
     }
 });
