@@ -18,11 +18,11 @@
 		> .content {
     		padding: 20px 0 !important;
 
-			.page-toolbar {
+			.page-toolbar, .document-summary, .attachment-zone {
 				display: none !important;
 			}
 
-			.print-title, .non-printable-message, .document-summary, .attachment-zone {
+			.print-title, .non-printable-message{
 				display: block !important;
 			}
 		}
