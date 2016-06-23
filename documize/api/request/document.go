@@ -1,11 +1,11 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
@@ -29,7 +29,7 @@ func (p *Persister) AddDocument(document entity.Document) (err error) {
 	document.Created = time.Now().UTC()
 	document.Revised = document.Created // put same time in both fields
 
-	stmt, err := p.Context.Transaction.Preparex("INSERT INTO document (refId, orgid, labelid, userid, job, location, title, excerpt, slug, tags, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+	stmt, err := p.Context.Transaction.Preparex("INSERT INTO document (refId, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
 	defer utility.Close(stmt)
 
 	if err != nil {
@@ -37,7 +37,7 @@ func (p *Persister) AddDocument(document entity.Document) (err error) {
 		return
 	}
 
-	_, err = stmt.Exec(document.RefID, document.OrgID, document.LabelID, document.UserID, document.Job, document.Location, document.Title, document.Excerpt, document.Slug, document.Tags, document.Created, document.Revised)
+	_, err = stmt.Exec(document.RefID, document.OrgID, document.LabelID, document.UserID, document.Job, document.Location, document.Title, document.Excerpt, document.Slug, document.Tags, document.Template, document.Created, document.Revised)
 
 	if err != nil {
 		log.Error("Unable to execute insert for document", err)

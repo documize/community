@@ -22,6 +22,11 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
         description: ""
     },
 
+	didReceiveAttrs() {
+		this.set('saveTemplate.name', this.get('document.name'));
+		this.set('saveTemplate.description', this.get('document.excerpt'));
+	},
+
     didRender() {
         if (this.get('isEditor')) {
             this.addTooltip(document.getElementById("attachment-button"));
@@ -99,30 +104,21 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
         },
 
         saveTemplate() {
-            var templateName = this.get('saveTemplate.name');
-            var templateDescription = this.get('saveTemplate.description');
+            var name = this.get('saveTemplate.name');
+            var excerpt = this.get('saveTemplate.description');
 
-            if (is.empty(templateName)) {
+            if (is.empty(name)) {
                 $("#new-template-name").addClass("error").focus();
                 return false;
             }
 
-            if (is.empty(templateDescription)) {
+            if (is.empty(excerpt)) {
                 $("#new-template-desc").addClass("error").focus();
                 return false;
             }
 
-
-            let doc = this.get('document');
-            doc.set('template', true);
-            doc.set('name', templateName);
-            doc.set('excerpt', templateDescription);
-
-            this.set('saveTemplate.name', "");
-            this.set('saveTemplate.description', "");
-
-            this.showNotification('Templated');
-            this.attrs.onSaveTemplate(doc);
+            this.showNotification('Template saved');
+            this.attrs.onSaveTemplate(name, excerpt);
 
             return true;
         },

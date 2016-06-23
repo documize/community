@@ -77,15 +77,15 @@
 						    <p>Are you sure you want to delete this document?</p>
 						    <p>There is no undo!</p>
 						{{/dropdown-dialog}}
-						{{#dropdown-dialog target="save-template-button" position="bottom right" button="Save" color="flat-green" onAction=(action 'saveTemplate') focusOn="new-template-name"}}
+						{{#dropdown-dialog target="save-template-button" position="bottom right" button="Save as Template" color="flat-green" onAction=(action 'saveTemplate') focusOn="new-template-name"}}
 							<div>
 								<div class="input-control">
-									<label>Template Name</label>
-									<div class="tip">Short title for this type of document</div>
+									<label>Name</label>
+									<div class="tip">Short name for this type of document</div>
 									{{input type='text' id="new-template-name" value=saveTemplate.name}}
 								</div>
 								<div class="input-control">
-									<label>Description</label>
+									<label>Excerpt</label>
 									<div class="tip">Explain use case for this template</div>
 									{{textarea value=saveTemplate.description rows="3" id="new-template-desc"}}
 								</div>

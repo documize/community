@@ -3,6 +3,7 @@ import NotifierMixin from '../../../mixins/notifier';
 
 export default Ember.Controller.extend(NotifierMixin, {
     documentService: Ember.inject.service('document'),
+	templateService: Ember.inject.service('template'),
 
     queryParams: ['page'],
     page: null,
@@ -168,6 +169,11 @@ export default Ember.Controller.extend(NotifierMixin, {
 
                 self.send('onPageLevelChange', pendingChanges);
             }
+        },
+
+		onSaveTemplate(name, desc) {
+            this.get('templateService').saveAsTemplate(this.model.get('id'), name, desc).then(function() {
+            });
         },
 
         onDocumentChange(doc) {

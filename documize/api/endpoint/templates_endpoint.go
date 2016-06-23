@@ -34,6 +34,156 @@ import (
 	uuid "github.com/nu7hatch/gouuid"
 )
 
+// SaveAsTemplate saves existing document as a template.
+func SaveAsTemplate(w http.ResponseWriter, r *http.Request) {
+	method := "SaveAsTemplate"
+	p := request.GetPersister(r)
+
+	var model struct {
+		DocumentID string
+		Name       string
+		Excerpt    string
+	}
+
+	defer utility.Close(r.Body)
+	body, err := ioutil.ReadAll(r.Body)
+
+	if err != nil {
+		writeBadRequestError(w, method, "Bad payload")
+		return
+	}
+
+	err = json.Unmarshal(body, &model)
+
+	if err != nil {
+		writePayloadError(w, method, err)
+		return
+	}
+
+	if !p.CanChangeDocument(model.DocumentID) {
+		writeForbiddenError(w)
+		return
+	}
+
+	// DB transaction
+	tx, err := request.Db.Beginx()
+
+	if err != nil {
+		writeTransactionError(w, method, err)
+		return
+	}
+
+	p.Context.Transaction = tx
+
+	// Duplicate document
+	doc, err := p.GetDocument(model.DocumentID)
+
+	if err != nil {
+		writeServerError(w, method, err)
+		return
+	}
+
+	docID := util.UniqueID()
+	doc.Template = true
+	doc.Title = model.Name
+	doc.Excerpt = model.Excerpt
+	doc.RefID = docID
+	doc.ID = 0
+	doc.Template = true
+
+	// Duplicate pages and associated meta
+	pages, err := p.GetPages(model.DocumentID)
+	var pageModel []models.PageModel
+
+	if err != nil {
+		writeServerError(w, method, err)
+		return
+	}
+
+	for _, page := range pages {
+		page.DocumentID = docID
+		page.ID = 0
+
+		meta, err2 := p.GetPageMeta(page.RefID)
+
+		if err2 != nil {
+			writeServerError(w, method, err2)
+			return
+		}
+
+		pageID := util.UniqueID()
+		page.RefID = pageID
+
+		meta.PageID = pageID
+		meta.DocumentID = docID
+
+		m := models.PageModel{}
+
+		m.Page = page
+		m.Meta = meta
+
+		pageModel = append(pageModel, m)
+	}
+
+	// Duplicate attachments
+	attachments, err := p.GetAttachments(model.DocumentID)
+
+	for i, a := range attachments {
+		a.DocumentID = docID
+		a.RefID = util.UniqueID()
+		a.ID = 0
+		attachments[i] = a
+	}
+
+	// Now create the template: document, attachments, pages and their meta
+	err = p.AddDocument(doc)
+
+	if err != nil {
+		log.IfErr(tx.Rollback())
+		writeGeneralSQLError(w, method, err)
+		return
+	}
+
+	for _, a := range attachments {
+		err = p.AddAttachment(a)
+
+		if err != nil {
+			log.IfErr(tx.Rollback())
+			writeGeneralSQLError(w, method, err)
+			return
+		}
+	}
+
+	for _, m := range pageModel {
+		err = p.AddPage(m)
+
+		if err != nil {
+			log.IfErr(tx.Rollback())
+			writeGeneralSQLError(w, method, err)
+			return
+		}
+	}
+
+	// Commit and return new document template
+	log.IfErr(tx.Commit())
+
+	doc, err = p.GetDocument(docID)
+
+	if err != nil {
+		writeGeneralSQLError(w, method, err)
+		return
+	}
+
+	d, err := json.Marshal(doc)
+
+	if err != nil {
+		writeJSONMarshalError(w, method, "document", err)
+		return
+	}
+
+	writeSuccessBytes(w, d)
+}
+
 // GetSavedTemplates returns all templates saved by the user
 func GetSavedTemplates(w http.ResponseWriter, r *http.Request) {
 	method := "GetSavedTemplates"
