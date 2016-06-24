@@ -39,6 +39,7 @@
     "ember-export-application-global": "^1.0.5",
     "ember-load-initializers": "^0.5.1",
     "ember-resolver": "^2.0.3",
+    "ember-simple-auth": "git+https://github.com/documize/ember-simple-auth.git#21e638f9e33267d8944835002ee96884d34d568a",
     "loader.js": "^4.0.1"
   },
   "ember-addon": {
