@@ -3,29 +3,29 @@ import moduleForAcceptance from 'documize/tests/helpers/module-for-acceptance';
 
 moduleForAcceptance('Acceptance | Documents space');
 
-// test('Adding a new folder space', function(assert) {
-//     server.create('meta', { allowAnonymousAccess: false });
-//     server.createList('folder', 2);
-//     server.createList('permission', 4);
-//     userLogin();
-//     visit('/s/VzMuyEw_3WqiafcG/my-project');
-//
-//     andThen(function() {
-//         let personalSpaces = find('.section div:contains(PERSONAL)').length;
-//         assert.equal(currentURL(), '/s/VzMuyEw_3WqiafcG/my-project');
-//         assert.equal(personalSpaces, 1, '1 personal space is listed');
-//     });
-//
-//     click('#add-folder-button');
-//
-//     fillIn('#new-folder-name', 'body', 'Test Folder');
-//
-//     click('.actions div:contains(Add)', 'body');
-//
-//     andThen(function() {
-//         assert.equal(currentURL(), '/s/V0Vy5Uw_3QeDAMW9/test-folder');
-//     });
-// });
+test('Adding a new folder space', function(assert) {
+    server.create('meta', { allowAnonymousAccess: false });
+    server.createList('folder', 2);
+    server.createList('permission', 4);
+    userLogin();
+    visit('/s/VzMuyEw_3WqiafcG/my-project');
+
+    andThen(function() {
+        let personalSpaces = find('.section div:contains(PERSONAL)').length;
+        assert.equal(currentURL(), '/s/VzMuyEw_3WqiafcG/my-project');
+        assert.equal(personalSpaces, 1, '1 personal space is listed');
+    });
+
+    click('#add-folder-button');
+
+    fillIn('#new-folder-name', 'body', 'Test Folder');
+
+    click('.actions div:contains(Add)', 'body');
+
+    andThen(function() {
+        assert.equal(currentURL(), '/s/V0Vy5Uw_3QeDAMW9/test-folder');
+    });
+});
 
 // test('Adding a document to a space', function(assert) {
 //     server.create('meta', { allowAnonymousAccess: false });

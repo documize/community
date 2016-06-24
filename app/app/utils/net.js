@@ -40,6 +40,11 @@ function getAppUrl(domain) {
 }
 
 function isAjaxAccessError(reason) {
+	console.log(reason);
+	if (typeof reason === "undefined") {
+		return false;
+	}
+
 	if (reason.errors.length > 0 && (reason.errors[0].status === "401" || reason.errors[0].status === "403")) {
 		return true;
 	}
