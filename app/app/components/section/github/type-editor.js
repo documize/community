@@ -20,6 +20,8 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
     busy: false,
     authenticated: false,
     config: {},
+    owners: null,
+    noOwners: false, // TODO required?
     repos: null,
     noRepos: false,
 
@@ -38,7 +40,8 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
                         token: "",
                         repo: null,
                         lists: [],
-                        owner: "",
+                        owner: null,
+                        owner_name: "",
                         repo_name: "",
                         branch: "",
                         branchURL: "",
@@ -48,6 +51,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
                     try {
                         let metaConfig = JSON.parse(self.get('meta.config'));
+                        config.owner = metaConfig.owner;
                         config.repo = metaConfig.repo;
                         config.lists = metaConfig.lists;
                     } catch (e) {}
@@ -78,6 +82,46 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
         this.destroyTooltips();
     },
 
+
+    getOwnerLists() {
+        this.set('busy', true);
+
+        let self = this;
+        let owners = this.get('owners');
+        let thisOwner = this.get('config.owner');
+        let page = this.get('page');
+
+        console.log("owner", thisOwner);
+
+        if (is.null(owners) || is.undefined(owners) || owners.length === 0) {
+            this.set('noOwners', true);
+            return;
+        }
+
+        this.set('noOwners', false);
+
+        if (is.null(thisOwner) || is.undefined(thisOwner)) {
+            if (owners.length) {
+                thisOwner = owners[0];
+                this.set('config.owner', thisOwner);
+            }
+        } else {
+            this.set('config.owner', owners.findBy('id', thisOwner.id));
+        }
+
+        this.get('sectionService').fetch(page, "repos", self.get('config'))
+            .then(function(lists) {
+                self.set('busy', false);
+                self.set('repos', lists);
+                self.getRepoLists();
+            }, function(error) { //jshint ignore: line
+                self.set('busy', false);
+                self.set('authenticated', false);
+                self.showNotification("Unable to fetch repositories");
+                console.log(error);
+            });
+    },
+
     getRepoLists() {
         this.set('busy', true);
 
@@ -85,6 +129,8 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
         let repos = this.get('repos');
         let thisRepo = this.get('config.repo');
         let page = this.get('page');
+
+        console.log("repo", thisRepo);
 
         if (is.null(repos) || is.undefined(repos) || repos.length === 0) {
             this.set('noRepos', true);
@@ -153,15 +199,15 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
             self.set('busy', true);
             let page = this.get('page');
 
-            self.get('sectionService').fetch(page, "repos", self.get('config'))
-                .then(function(repos) {
+            self.get('sectionService').fetch(page, "owners", self.get('config'))
+                .then(function(owners) {
                     self.set('busy', false);
-                    self.set('repos', repos);
-                    self.getRepoLists();
+                    self.set('owners', owners);
+                    self.getOwnerLists();
                 }, function(error) { //jshint ignore: line
                     self.set('busy', false);
                     self.set('authenticated', false);
-                    self.showNotification("Unable to fetch repos");
+                    self.showNotification("Unable to fetch owners");
                     console.log(error);
                 });
 
@@ -177,6 +223,14 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
                 "&state=" + encodeURIComponent(window.location.href);
             window.location.href = target;
 
+        },
+
+        onOwnerChange(thisOwner) {
+            console.log(thisOwner);
+            this.set('isDirty', true);
+            this.set('config.owner', thisOwner);
+            this.set('config.repos', []);
+            this.getOwnerLists();
         },
 
         onRepoChange(thisRepo) {

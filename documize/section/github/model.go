@@ -42,6 +42,16 @@ const renderTemplate = `
 </div>
 `
 
+type githubOwner struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+	//Included bool   `json:"included"`
+	//Owner    string `json:"owner"`
+	//Repo     string `json:"repo"`
+	//Private  bool   `json:"private"` // TODO review field use
+	//URL      string `json:"url"`
+}
+
 type githubRepo struct {
 	ID       string `json:"id"`
 	Name     string `json:"name"`
@@ -76,12 +86,13 @@ type githubCommit struct {
 type githubConfig struct {
 	AppKey      string         `json:"appKey"` // TODO keep?
 	Token       string         `json:"token"`
-	Owner       string         `json:"owner"`
+	Owner       string         `json:"owner_name"`
 	Repo        string         `json:"repo_name"`
 	Branch      string         `json:"branch"`
 	BranchURL   string         `json:"branchURL"`
 	BranchSince string         `json:"branchSince"`
 	BranchLines int            `json:"branchLines"`
+	OwnerInfo   githubOwner    `json:"owner"`
 	RepoInfo    githubRepo     `json:"repo"`
 	ClientID    string         `json:"clientId"`
 	CallbackURL string         `json:"callbackUrl"`
@@ -91,7 +102,7 @@ type githubConfig struct {
 func (c *githubConfig) Clean() {
 	c.AppKey = strings.TrimSpace(c.AppKey) // TODO keep?
 	c.Token = strings.TrimSpace(c.Token)
-	c.Owner = c.RepoInfo.Owner
+	c.Owner = c.OwnerInfo.Name
 	c.Repo = c.RepoInfo.Repo
 	for _, l := range c.Lists {
 		if l.Included {

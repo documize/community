@@ -129,7 +129,7 @@ func (t *Provider) Command(w http.ResponseWriter, r *http.Request) {
 
 		provider.WriteJSON(w, render)
 
-	case "repos":
+	case "owners":
 
 		me, _, err := client.Users.Get("")
 		if err != nil {
@@ -145,22 +145,40 @@ func (t *Provider) Command(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		owners := make([]string, 1+len(orgs))
-		owners[0] = *me.Login
+		owners := make([]githubOwner, 1+len(orgs))
+		owners[0] = githubOwner{ID: *me.Login, Name: *me.Login}
 		for ko, vo := range orgs {
-			owners[1+ko] = *vo.Login
+			id := 1 + ko
+			owners[id].ID = *vo.Login
+			owners[id].Name = *vo.Login
 		}
 
+		owners = sortOwners(owners)
+
+		//fmt.Printf("DEBUG owners %#v\n", owners)
+
+		provider.WriteJSON(w, owners)
+
+	case "repos":
+
 		var render []githubRepo
-		for ko, vo := range owners {
+		if config.Owner != "" {
+
+			me, _, err := client.Users.Get("")
+			if err != nil {
+				log.Error("github get user details:", err)
+				provider.WriteError(w, "github", err)
+				return
+			}
+
 			var repos []gogithub.Repository
-			if vo == *me.Login {
-				repos, _, err = client.Repositories.List(vo, nil)
+			if config.Owner == *me.Login {
+				repos, _, err = client.Repositories.List(config.Owner, nil)
 			} else {
 				opt := &gogithub.RepositoryListByOrgOptions{
 					ListOptions: gogithub.ListOptions{PerPage: 100},
 				}
-				repos, _, err = client.Repositories.ListByOrg(vo, opt)
+				repos, _, err = client.Repositories.ListByOrg(config.Owner, opt)
 			}
 			if err != nil {
 				log.Error("github get user/org repositories:", err)
@@ -174,16 +192,15 @@ func (t *Provider) Command(w http.ResponseWriter, r *http.Request) {
 				}
 				render = append(render,
 					githubRepo{
-						Name:    vo + "/" + *vr.Name + private,
-						ID:      fmt.Sprintf("%s:%d:%s:%d", vo, ko, *vr.Name, kr),
-						Owner:   vo,
+						Name:    config.Owner + "/" + *vr.Name + private,
+						ID:      fmt.Sprintf("%s:%s:%d", config.Owner, *vr.Name, kr),
+						Owner:   config.Owner,
 						Repo:    *vr.Name,
 						Private: *vr.Private,
 						URL:     *vr.HTMLURL,
 					})
 			}
 		}
-
 		render = sortRepos(render)
 
 		provider.WriteJSON(w, render)
@@ -213,6 +230,7 @@ func (t *Provider) Command(w http.ResponseWriter, r *http.Request) {
 		provider.WriteJSON(w, render)
 
 	default:
+		log.ErrorString("Github connector unknown method: " + method)
 		provider.WriteEmpty(w)
 	}
 }
