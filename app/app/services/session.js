@@ -164,15 +164,6 @@ export default Ember.Service.extend({
             });
         }
 
-        // var blockedPopupTest = window.open("http://maintenance.documize.com", "directories=no,height=1,width=1,menubar=no,resizable=no,scrollbars=no,status=no,titlebar=no,top=0,location=no");
-        //
-        // if (!blockedPopupTest) {
-        // 	this.set('popupBlocked', true);
-        // } else {
-        // 	blockedPopupTest.close();
-        // 	this.set('popupBlocked', false);
-        // }
-
         let url = this.get('appMeta').getUrl("public/meta");
 
         return this.get('ajax').request(url)
@@ -196,7 +187,7 @@ export default Ember.Service.extend({
                     this.setSession(token, models.UserModel.create(user));
                     this.set('ready', true);
                 }).catch((reason) => {
-                    if (reason.status === 401 || reason.status === 403) {
+                    if (netUtil.isAjaxAccessError(reason)) {
                         localStorage.clear();
                         window.location.href = "/auth/login";
                     }
