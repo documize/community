@@ -69,10 +69,12 @@
 		}
 
 		.is-template {
-			color: $color-green;
+			color: $color-gray;
 			font-weight: bold;
-			font-size: 1.3em;
-			margin-bottom: 20px;
+			font-size: 1.5em;
+			margin-bottom: 50px;
+			padding-bottom: 5px;
+			@include border-bottom(1px);
 		}
 
 		> .pages {

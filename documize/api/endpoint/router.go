@@ -145,8 +145,8 @@ func buildSecureRoutes() *mux.Router {
 	router.HandleFunc("/api/documents/{documentID}", GetDocument).Methods("GET", "OPTIONS")
 	router.HandleFunc("/api/documents/{documentID}", UpdateDocument).Methods("PUT", "OPTIONS")
 	router.HandleFunc("/api/documents/{documentID}", DeleteDocument).Methods("DELETE", "OPTIONS")
-	// Document Meta
 
+	// Document Meta
 	router.HandleFunc("/api/documents/{documentID}/meta", GetDocumentMeta).Methods("GET", "OPTIONS")
 
 	// Document Page
@@ -198,6 +198,7 @@ func buildSecureRoutes() *mux.Router {
 	router.HandleFunc("/api/search", SearchDocuments).Methods("GET", "OPTIONS")
 
 	// Templates
+	router.HandleFunc("/api/templates", SaveAsTemplate).Methods("POST", "OPTIONS")
 	router.HandleFunc("/api/templates", GetSavedTemplates).Methods("GET", "OPTIONS")
 	router.HandleFunc("/api/templates/stock", GetStockTemplates).Methods("GET", "OPTIONS")
 	router.HandleFunc("/api/templates/{templateID}/folder/{folderID}", StartDocumentFromStockTemplate).Methods("POST", "OPTIONS").Queries("type", "stock")

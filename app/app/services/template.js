@@ -62,5 +62,20 @@ export default Ember.Service.extend({
         return this.get('ajax').request(url, {
             method: 'GET'
         });
-    }
+    },
+
+	saveAsTemplate(documentId, name, excerpt) {
+		let url = this.get('sessionService').appMeta.getUrl("templates");
+		let payload = {
+			DocumentID: documentId,
+			Name: name,
+			Excerpt: excerpt
+		};
+
+        return this.get('ajax').request(url, {
+            method: 'POST',
+            data: JSON.stringify(payload)
+        }).then(() => {
+        });
+	}
 });

@@ -2,7 +2,7 @@
     {{header/message-box message=model.excerpt}}
 {{/header/page-navigation}}
 
-{{document/document-toolbar document=model pages=pages meta=meta folder=folder isEditor=isEditor users=users owner=owner onSaveTemplate=(action 'onDocumentChange') onDocumentChange=(action 'onDocumentChange') onAttachmentUpload=(action
+{{document/document-toolbar document=model pages=pages meta=meta folder=folder isEditor=isEditor users=users owner=owner onSaveTemplate=(action 'onSaveTemplate') onDocumentChange=(action 'onDocumentChange') onAttachmentUpload=(action
 'onAttachmentUpload') onDocumentDelete=(action 'onDocumentDelete')}}
 
 <div class="container-fluid background-color-white">
