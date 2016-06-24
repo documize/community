@@ -12,10 +12,13 @@
     <meta name="author" content="Documize" />
 
 	<style>
-		#ember-testing-container {
+		#ember-testing-container, #ember-testing-container * {
 			/* Set position static to short-circuit Hubspot Tether's positioning */
 			/* https://github.com/HubSpot/tether/pull/98/ */
 			position: static !important;
+		}
+		.tether-container * {
+    		z-index: 9999;
 		}
 	</style>
 

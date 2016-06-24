@@ -7,11 +7,9 @@
 	                <i class="material-icons">mode_edit</i>
 	            </div>
 			{{/link-to}}
-            {{#unless page.firstPage}}
-                <div class="round-button-mono page-delete-button" data-tooltip="Delete" data-tooltip-position="top center" {{action 'deletePage' page.id}}>
-                    <i class="material-icons">delete</i>
-                </div>
-            {{/unless}}
+            <div class="round-button-mono page-delete-button" data-tooltip="Delete" data-tooltip-position="top center" {{action 'deletePage' page.id}}>
+                <i class="material-icons">delete</i>
+            </div>
         {{/if}}
     </div>
 </div>

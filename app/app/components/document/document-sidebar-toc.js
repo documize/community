@@ -67,6 +67,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
     willDestroyElement() {
         this.eventBus.unsubscribe('documentPageAdded');
+		this.destroyTooltips();
     },
 
     onDocumentPageAdded(pageId) {

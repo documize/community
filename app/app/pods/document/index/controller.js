@@ -197,7 +197,6 @@ export default Ember.Controller.extend(NotifierMixin, {
         },
 
 		onDocumentDelete() {
-			console.log("deleting " + this.get('model.id'));
 			let self = this;
 
 			this.get('documentService').deleteDocument(this.get('model.id')).then(function() {
