@@ -54,6 +54,9 @@ export default Ember.Component.extend({
             tetherOptions: {
                 offset: self.offset,
                 targetOffset: self.targetOffset
+				// optimizations: {
+    			// 	moveElement: false
+  		// 		}
             },
             remove: true
         });

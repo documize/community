@@ -28,9 +28,9 @@
 		{{/dropdown-dialog}}
 	{{else}}
 	    {{#if folderService.canEditCurrentFolder}}
-			<div class="regular-button button-green" id="start-document-button" data-tooltip="Add or import document" data-tooltip-position="top center">
+			<div class="regular-button button-green" id="start-document-button" data-tooltip="Add new content" data-tooltip-position="top center">
 			    <i class="material-icons">add</i>
-				<div class="name">Document</div>
+				<div class="name">Content</div>
 			</div>
 		{{/if}}
     	{{#if isFolderOwner}}
@@ -69,15 +69,15 @@
 			<div class="regular-button button-transparent">
 				<i class="material-icons">add</i>
 				<div class="name">space</div>
-			</div>		
+			</div>
 			<div class="message">Create a new space for<br/>all your documentation</div>
 		</div>
 		<div class="box">
 			<div class="regular-button button-green">
 				<i class="material-icons">add</i>
-				<div class="name">document</div>
-			</div>		
-			<div class="message">Start a new document or <br/>import .doc .docx, .txt .md files</div>
+				<div class="name">content</div>
+			</div>
+			<div class="message">Start with a content template or <br/>import .doc .docx, .txt .md files</div>
 		</div>
 	</div>
 {{/if}}
