@@ -21,9 +21,9 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
     authenticated: false,
     config: {},
     owners: null,
-    noOwners: false, // TODO required?
     repos: null,
     noRepos: false,
+    showCommits: false,
 
     didReceiveAttrs() {
         let self = this;
@@ -38,11 +38,12 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
                         clientId: cfg.clientID,
                         callbackUrl: cfg.authorizationCallbackURL,
                         token: "",
-                        repo: null,
-                        lists: [],
                         owner: null,
                         owner_name: "",
+                        repo: null,
                         repo_name: "",
+                        report: null,
+                        lists: [],
                         branch: "",
                         branchURL: "",
                         branchSince: "",
@@ -53,6 +54,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
                         let metaConfig = JSON.parse(self.get('meta.config'));
                         config.owner = metaConfig.owner;
                         config.repo = metaConfig.repo;
+                        config.report = metaConfig.report;
                         config.lists = metaConfig.lists;
                     } catch (e) {}
 
@@ -93,13 +95,6 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
         console.log("owner", thisOwner);
 
-        if (is.null(owners) || is.undefined(owners) || owners.length === 0) {
-            this.set('noOwners', true);
-            return;
-        }
-
-        this.set('noOwners', false);
-
         if (is.null(thisOwner) || is.undefined(thisOwner)) {
             if (owners.length) {
                 thisOwner = owners[0];
@@ -108,6 +103,8 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
         } else {
             this.set('config.owner', owners.findBy('id', thisOwner.id));
         }
+
+        this.set('owner', thisOwner);
 
         this.get('sectionService').fetch(page, "repos", self.get('config'))
             .then(function(lists) {
@@ -125,10 +122,8 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
     getRepoLists() {
         this.set('busy', true);
 
-        let self = this;
         let repos = this.get('repos');
         let thisRepo = this.get('config.repo');
-        let page = this.get('page');
 
         console.log("repo", thisRepo);
 
@@ -139,7 +134,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
         this.set('noRepos', false);
 
-        if (is.null(thisRepo) || is.undefined(thisRepo)) {
+        if (is.null(thisRepo) || is.undefined(thisRepo) || thisRepo.owner !== this.get('config.owner').name) {
             if (repos.length) {
                 thisRepo = repos[0];
                 this.set('config.repo', thisRepo);
@@ -148,21 +143,88 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
             this.set('config.repo', repos.findBy('id', thisRepo.id));
         }
 
-        this.get('sectionService').fetch(page, "lists", self.get('config'))
+        this.set('repo', thisRepo);
+
+        this.getReportLists();
+    },
+
+
+    getReportLists() {
+        let reports = [];
+        reports[0] = {
+            id: "commits", // used as method for fetching Go data
+            name: "Commits on a branch"
+        };
+        reports[1] = {
+            id: "open_issues", // used as method for fetching Go data
+            name: "Open Issues"
+        };
+
+        this.set("reports", reports);
+
+        let thisReport = this.get('config.report');
+
+        console.log("report", thisReport);
+
+        if (is.null(thisReport) || is.undefined(thisReport)) {
+            thisReport = reports[0];
+            this.set('config.report', thisReport);
+        } else {
+            this.set('config.report', reports.findBy('id', thisReport.id));
+        }
+
+        this.set('report', thisReport);
+
+        this.renderSwitch(thisReport);
+
+    },
+
+    renderSwitch(thisReport) {
+        this.set('showCommits', false);
+        switch (thisReport.id) {
+            case 'commits':
+                this.set('showCommits', true);
+                this.getBranchLists();
+                break;
+            case "open_issues":
+                // nothing to show
+                this.set('busy', false);
+                break;
+        }
+    },
+
+    getBranchLists() {
+        this.set('busy', true);
+
+        console.log("branches");
+
+        let self = this;
+        let page = this.get('page');
+
+        this.get('sectionService').fetch(page, "branches", self.get('config'))
             .then(function(lists) {
                 let savedLists = self.get('config.lists');
                 if (savedLists === null) {
                     savedLists = [];
                 }
 
-                lists.forEach(function(list) {
-                    let saved = savedLists.findBy("id", list.id);
-                    let included = false;
-                    if (is.not.undefined(saved)) {
-                        included = saved.included;
+                if (lists.length > 0) {
+                    let noIncluded = true;
+
+                    lists.forEach(function(list) {
+                        let saved = savedLists.findBy("id", list.id);
+                        let included = false;
+                        if (is.not.undefined(saved)) {
+                            included = saved.included;
+                            noIncluded = false;
+                        }
+                        list.included = included;
+                    });
+
+                    if (noIncluded) {
+                        lists[0].included = true; // make the first entry the default
                     }
-                    list.included = included;
-                });
+                }
 
                 self.set('config.lists', lists);
                 self.set('busy', false);
@@ -226,10 +288,10 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
         },
 
         onOwnerChange(thisOwner) {
-            console.log(thisOwner);
             this.set('isDirty', true);
             this.set('config.owner', thisOwner);
             this.set('config.repos', []);
+            this.set('config.lists', []);
             this.getOwnerLists();
         },
 
@@ -238,6 +300,12 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
             this.set('config.repo', thisRepo);
             this.set('config.lists', []);
             this.getRepoLists();
+        },
+
+        onReportChange(thisReport) {
+            this.set('isDirty', true);
+            this.set('config.report', thisReport);
+            this.getReportLists();
         },
 
         onCancel() {
@@ -255,7 +323,8 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
             meta.set('config', JSON.stringify(this.get('config')));
             meta.set('externalSource', true);
 
-            this.get('sectionService').fetch(page, "commits", this.get('config'))
+            let thisReport = this.get('config.report');
+            this.get('sectionService').fetch(page, thisReport.id, this.get('config'))
                 .then(function(response) {
                     meta.set('rawBody', JSON.stringify(response));
                     self.set('busy', false);

@@ -129,6 +129,17 @@ func (t *Provider) Command(w http.ResponseWriter, r *http.Request) {
 
 		provider.WriteJSON(w, render)
 
+	case "open_issues":
+
+		render, err := t.getOpenIssues(client, config)
+		if err != nil {
+			log.Error("github getOpenIssues:", err)
+			provider.WriteError(w, "github", err)
+			return
+		}
+
+		provider.WriteJSON(w, render)
+
 	case "owners":
 
 		me, _, err := client.Users.Get("")
@@ -205,7 +216,7 @@ func (t *Provider) Command(w http.ResponseWriter, r *http.Request) {
 
 		provider.WriteJSON(w, render)
 
-	case "lists":
+	case "branches":
 		if config.Owner == "" || config.Repo == "" {
 			provider.WriteJSON(w, []githubBranch{}) // we have nothing to return
 			return
@@ -242,6 +253,41 @@ func (*Provider) githubClient(config githubConfig) *gogithub.Client {
 	tc := oauth2.NewClient(oauth2.NoContext, ts)
 
 	return gogithub.NewClient(tc)
+}
+
+func (*Provider) getOpenIssues(client *gogithub.Client, config githubConfig) ([]githubIssue, error) {
+
+	guff, _, err := client.Issues.ListByRepo(config.Owner, config.Repo, nil)
+
+	ret := []githubIssue{}
+
+	if err != nil {
+		return ret, err
+	}
+
+	for _, v := range guff {
+		n := ""
+		a := ""
+		p := v.User
+		if p != nil {
+			if p.Name != nil {
+				n = *p.Name
+			}
+			if p.AvatarURL != nil {
+				a = *p.AvatarURL
+			}
+		}
+		ret = append(ret, githubIssue{
+			Name:    n,
+			Message: *v.Title,
+			Date:    v.UpdatedAt.Format("January 2 2006, 15:04"),
+			Avatar:  a,
+			URL:     *v.HTMLURL,
+		})
+	}
+
+	return ret, nil
+
 }
 
 func (*Provider) getCommits(client *gogithub.Client, config githubConfig) ([]githubBranchCommits, error) {
@@ -338,43 +384,42 @@ func (t *Provider) Refresh(configJSON, data string) string {
 
 	c.Clean()
 
-	refreshed, err := t.getCommits(t.githubClient(c), c)
+	switch c.ReportInfo.ID {
+	case "open_issues":
+		refreshed, err := t.getOpenIssues(t.githubClient(c), c)
+		if err != nil {
+			log.Error("unable to get github open issues", err)
+			return data
+		}
+		j, err := json.Marshal(refreshed)
+		if err != nil {
+			log.Error("unable to marshall github open issues", err)
+			return data
+		}
+		return string(j)
 
-	if err != nil {
-		return data
+	default: // to handle legacy data, this handles commits
+		refreshed, err := t.getCommits(t.githubClient(c), c)
+		if err != nil {
+			log.Error("unable to get github commits", err)
+			return data
+		}
+		j, err := json.Marshal(refreshed)
+		if err != nil {
+			log.Error("unable to marshall github commits", err)
+			return data
+		}
+		return string(j)
 	}
 
-	j, err := json.Marshal(refreshed)
-
-	if err != nil {
-		log.Error("unable to marshall github commits", err)
-		return data
-	}
-
-	return string(j)
-}
-
-type githubRender struct {
-	Config      githubConfig
-	Repo        githubRepo
-	Data        []githubBranchCommits
-	CommitCount int
 }
 
 // Render ... just returns the data given, suitably formatted
 func (*Provider) Render(config, data string) string {
 	var err error
 
-	raw := []githubBranchCommits{}
 	payload := githubRender{}
 	var c = githubConfig{}
-
-	err = json.Unmarshal([]byte(data), &raw)
-
-	if err != nil {
-		log.Error("unable to unmarshall github data", err)
-		return "Documize internal github json umarshall data error: " + err.Error()
-	}
 
 	err = json.Unmarshal([]byte(config), &c)
 
@@ -384,18 +429,47 @@ func (*Provider) Render(config, data string) string {
 	}
 
 	c.Clean()
-
 	payload.Config = c
 	payload.Repo = c.RepoInfo
-	payload.Data = raw
 
-	for _, list := range raw {
-		payload.CommitCount += len(list.Commits)
+	switch c.ReportInfo.ID {
+	case "open_issues":
+		raw := []githubIssue{}
+
+		if len(data) > 0 {
+			err = json.Unmarshal([]byte(data), &raw)
+			if err != nil {
+				log.Error("unable to unmarshall github open issue data", err)
+				return "Documize internal github json umarshall open issue data error: " + err.Error()
+			}
+		}
+		payload.OpenIssues = raw
+
+	default: // to handle legacy data, this handles commits
+		raw := []githubBranchCommits{}
+		err = json.Unmarshal([]byte(data), &raw)
+
+		if err != nil {
+			log.Error("unable to unmarshall github commit data", err)
+			return "Documize internal github json umarshall data error: " + err.Error()
+		}
+		c.ReportInfo.ID = "commits"
+		payload.BranchCommits = raw
+		for _, list := range raw {
+			payload.CommitCount += len(list.Commits)
+		}
 	}
 
 	t := template.New("github")
 
-	t, err = t.Parse(renderTemplate)
+	tmpl, ok := renderTemplates[c.ReportInfo.ID]
+	if !ok {
+		msg := "github render template not found for: " + c.ReportInfo.ID
+		log.ErrorString(msg)
+		return "Documize internal error: " + msg
+	}
+
+	t, err = t.Parse(tmpl)
 
 	if err != nil {
 		log.Error("github render template.Parse error:", err)

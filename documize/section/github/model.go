@@ -13,11 +13,20 @@ package github
 
 import "strings"
 
-const renderTemplate = `
+type githubRender struct {
+	Config        githubConfig
+	Repo          githubRepo
+	BranchCommits []githubBranchCommits
+	CommitCount   int
+	OpenIssues    []githubIssue
+}
+
+var renderTemplates = map[string]string{
+	"commits": `
 <div class="section-github-render">
 	<p>There are {{ .CommitCount }} commits for branch <a href="{{.Config.BranchURL}}">{{.Config.Branch}}</a> of repository <a href="{{ .Repo.URL }}">{{.Repo.Name}}.</a></p>
 	<div class="github-board">
-		{{range $data := .Data}}
+		{{range $data := .BranchCommits}}
 			<div class="github-group-title">
 				Commits on {{ $data.Day }}
 			</div>
@@ -40,16 +49,40 @@ const renderTemplate = `
 		{{end}}
 	</div>
 </div>
-`
+`,
+	"open_issues": `
+<div class="section-github-render">
+	<p>The issues for repository <a href="{{ .Repo.URL }}/issues">{{.Repo.Name}}.</a></p>
+	<div class="github-board">
+	<ul class="github-list">
+		{{range $data := .OpenIssues}}
+			<li class="github-commit-item">
+				<a class="link" href="{{$data.URL}}">
+					<div class="github-avatar">
+						<img alt="@{{$data.Name}}" src="{{$data.Avatar}}" height="36" width="36">
+					</div>
+					<div class="github-commit-body">
+						<div class="github-commit-title">{{$data.Message}}</div>
+						<div class="github-commit-meta">{{$data.Name}} committed on {{$data.Date}}</div>
+					</div>
+				</a>
+				<div class="clearfix" />
+			</li>
+		{{end}}
+	</ul>
+	</div>
+</div>
+`,
+}
+
+type githubReport struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
 
 type githubOwner struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
-	//Included bool   `json:"included"`
-	//Owner    string `json:"owner"`
-	//Repo     string `json:"repo"`
-	//Private  bool   `json:"private"` // TODO review field use
-	//URL      string `json:"url"`
 }
 
 type githubRepo struct {
@@ -83,6 +116,14 @@ type githubCommit struct {
 	Avatar  string `json:"avatar"`
 }
 
+type githubIssue struct {
+	Date    string `json:"date"`
+	Message string `json:"message"`
+	URL     string `json:"url"`
+	Name    string `json:"name"`
+	Avatar  string `json:"avatar"`
+}
+
 type githubConfig struct {
 	AppKey      string         `json:"appKey"` // TODO keep?
 	Token       string         `json:"token"`
@@ -94,6 +135,7 @@ type githubConfig struct {
 	BranchLines int            `json:"branchLines"`
 	OwnerInfo   githubOwner    `json:"owner"`
 	RepoInfo    githubRepo     `json:"repo"`
+	ReportInfo  githubReport   `json:"report"`
 	ClientID    string         `json:"clientId"`
 	CallbackURL string         `json:"callbackUrl"`
 	Lists       []githubBranch `json:"lists"`

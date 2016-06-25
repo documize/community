@@ -30,22 +30,29 @@
 						{{ui-select id="repos-dropdown" content=repos action=(action 'onRepoChange') optionValuePath="id" optionLabelPath="name" selection=config.repo}}
 					</div>
 					<div class="input-control">
-						<label>Branches</label>
-						<div class="tip">Select branch</div>
-						<div class="github-board">
-							{{#each config.lists as |list|}}
-								<div class="github-list" {{action 'onListCheckbox' list.id}}>
-									{{#if list.included}}
-										<i class="material-icons widget-checkbox checkbox-gray github-list-checkbox">check_box</i>
-									{{else}}
-										<i class="material-icons widget-checkbox checkbox-gray github-list-checkbox">check_box_outline_blank</i>
-									{{/if}}
-									<span class="github-list-title">{{list.name}}</span>
-								</div>
-							{{/each}}
-							<div class="clearfix" />
-						</div>
+						<label>Report</label>
+						<div class="tip">Select report type</div>
+						{{ui-select id="report-dropdown" content=reports action=(action 'onReportChange') optionValuePath="id" optionLabelPath="name" selection=config.report}}
 					</div>
+					{{#if showCommits}}
+						<div class="input-control">
+							<label>Branches</label>
+							<div class="tip">Select branch</div>
+							<div class="github-board">
+								{{#each config.lists as |list|}}
+									<div class="github-list" {{action 'onListCheckbox' list.id}}>
+										{{#if list.included}}
+											<i class="material-icons widget-checkbox checkbox-gray github-list-checkbox">check_box</i>
+										{{else}}
+											<i class="material-icons widget-checkbox checkbox-gray github-list-checkbox">check_box_outline_blank</i>
+										{{/if}}
+										<span class="github-list-title">{{list.name}}</span>
+									</div>
+								{{/each}}
+								<div class="clearfix" />
+							</div>
+						</div>
+					{{/if}}
 				{{/if}}
 			</div>
 		</div>
