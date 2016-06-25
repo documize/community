@@ -194,5 +194,25 @@ export default Ember.Service.extend({
                 });
             }
         });
+
+		let token = this.getSessionItem('token');
+
+		// TODO: the rest should be done through ESA
+		if (is.not.undefined(token)) {
+			// We now validate current token
+
+			return this.get('ajax').request(`public/validate?token=${token}`, {
+				method: 'GET',
+				contentType: 'json'
+			}).then((user) => {
+				this.setSession(token, models.UserModel.create(user));
+				this.set('ready', true);
+			}).catch((reason) => {
+				if (netUtil.isAjaxAccessError(reason)) {
+					localStorage.clear();
+					window.location.href = "/auth/login";
+				}
+			});
+		}
     }
 });
