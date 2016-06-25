@@ -12,9 +12,15 @@
 import Ember from 'ember';
 import netUtil from '../utils/net';
 
+const {
+	inject: { service }
+} = Ember;
+
 export default Ember.Route.extend({
-    userService: Ember.inject.service('user'),
-    sessionService: Ember.inject.service('session'),
+    userService: service('user'),
+    sessionService: service('session'),
+	appMeta: service(),
+
     transitioning: false,
 
     beforeModel: function(transition) {
@@ -22,7 +28,7 @@ export default Ember.Route.extend({
         let session = this.get('sessionService');
 
         // Session ready?
-        return session.boot().then(function() {
+        return this.get('appMeta').boot().then(function() {
             // Need to authenticate?
             if (!session.get("appMeta.allowAnonymousAccess") && !session.get("authenticated") &&
                 is.not.startWith(transition.targetName, 'auth.')) {
