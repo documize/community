@@ -1,11 +1,11 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
@@ -198,7 +198,16 @@ let PageModel = BaseModel.extend({
 
     tagName: Ember.computed('level', function() {
         return "h" + this.get('level');
-    })
+    }),
+
+	tocIndent: Ember.computed('level', function() {
+        return (this.get('level') - 1) * 20;
+    }),
+
+	tocIndentCss: Ember.computed('tocIndent', function() {
+		let tocIndent = this.get('tocIndent');
+        return `margin-left-${tocIndent}`;
+    }),
 });
 
 let PageMetaModel = BaseModel.extend({

@@ -16,14 +16,14 @@ export default Ember.Component.extend({
     tagName: "li",
     classNames: ["item"],
 
-    indentLevel: Ember.computed('page', function() {
-        let nodeLevel = this.get('page.level');
-        let indent = (nodeLevel - 1) * 20;
-        return indent;
-    }),
+    // indentLevel: Ember.computed('page', function() {
+    //     let nodeLevel = this.get('page.level');
+    //     let indent = (nodeLevel - 1) * 20;
+    //     return indent;
+    // }),
 
     didReceiveAttrs() {
-        this.set('classNames', ["item", "margin-left-" + this.get("indentLevel")]);
+        // this.set('classNames', ["item", "margin-left-" + this.get("page.tocIndent")]);
     },
 
     actions: {
