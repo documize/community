@@ -1,0 +1,18 @@
+{
+  "libs": [
+    "browser",
+    "jquery",
+    "underscore",
+    "is",
+    "ember"
+  ],
+  "loadEagerly": [
+    "app/app/*.js"
+  ],
+  "plugins": {
+    "requirejs": {
+      "baseURL": "./",
+      "paths": {}
+    }
+  }
+}

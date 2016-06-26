@@ -1,6 +1,6 @@
 .avatar {
     color: $color-white;
-    background-color: $color-stroke;
+    background-color: $color-gray;
     @include border-radius(20px);
     padding: 8px 0 0 0;
     letter-spacing: 1px;
@@ -11,7 +11,7 @@
 
 .avatar-large {
     color: $color-white;
-    background-color: $color-stroke;
+    background-color: $color-gray;
     @include border-radius(100px);
     height: 100px;
     width: 100px;
