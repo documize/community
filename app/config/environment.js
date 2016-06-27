@@ -44,6 +44,7 @@ module.exports = function(environment) {
         };
 
         ENV.apiHost = "https://localhost:5001";
+        ENV.apiNamespace = "api";
     }
 
     if (environment === 'test') {
