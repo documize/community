@@ -34,6 +34,9 @@
 						<div class="tip">Select report type</div>
 						{{ui-select id="report-dropdown" content=reports action=(action 'onReportChange') optionValuePath="id" optionLabelPath="name" selection=config.report}}
 					</div>
+					{{#if showIssueNum}}
+						{{input id="issue-number" value=config.issueNum type="number" min="1" step="1" enter='onIssueNumChange'}}
+					{{/if}}
 					{{#if showCommits}}
 						<div class="input-control">
 							<label>Branches</label>

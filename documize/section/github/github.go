@@ -118,7 +118,7 @@ func (t *Provider) Command(w http.ResponseWriter, r *http.Request) {
 
 	switch method {
 
-	case "commits":
+	case "commits_data":
 
 		render, err := t.getCommits(client, config)
 		if err != nil {
@@ -129,11 +129,22 @@ func (t *Provider) Command(w http.ResponseWriter, r *http.Request) {
 
 		provider.WriteJSON(w, render)
 
-	case "open_issues":
+	case "issues_data":
 
-		render, err := t.getOpenIssues(client, config)
+		render, err := t.getIssues(client, config)
 		if err != nil {
-			log.Error("github getOpenIssues:", err)
+			log.Error("github getIssues:", err)
+			provider.WriteError(w, "github", err)
+			return
+		}
+
+		provider.WriteJSON(w, render)
+
+	case "issuenum_data":
+
+		render, err := t.getIssueNum(client, config)
+		if err != nil {
+			log.Error("github getIssueNum:", err)
 			provider.WriteError(w, "github", err)
 			return
 		}
@@ -255,9 +266,78 @@ func (*Provider) githubClient(config githubConfig) *gogithub.Client {
 	return gogithub.NewClient(tc)
 }
 
-func (*Provider) getOpenIssues(client *gogithub.Client, config githubConfig) ([]githubIssue, error) {
+func (*Provider) getIssueNum(client *gogithub.Client, config githubConfig) ([]githubIssueActivity, error) {
 
-	guff, _, err := client.Issues.ListByRepo(config.Owner, config.Repo, nil)
+	ret := []githubIssueActivity{}
+
+	issue, _, err := client.Issues.Get(config.Owner, config.Repo, config.IssueNum)
+
+	if err == nil {
+		n := ""
+		a := ""
+		p := issue.User
+		if p != nil {
+			if p.Name != nil {
+				n = *p.Name
+			}
+			if p.AvatarURL != nil {
+				a = *p.AvatarURL
+			}
+		}
+		ret = append(ret, githubIssueActivity{
+			Name:    n,
+			Message: *issue.Title, // TODO move?
+			Date:    issue.UpdatedAt.Format("January 2 2006, 15:04"),
+			Avatar:  a,
+			URL:     *issue.HTMLURL,
+		})
+		ret = append(ret, githubIssueActivity{
+			Name:    n,
+			Message: *issue.Body,
+			Date:    issue.UpdatedAt.Format("January 2 2006, 15:04"),
+			Avatar:  a,
+			URL:     *issue.HTMLURL,
+		})
+	} else {
+		return ret, err
+	}
+
+	guff, _, err := client.Issues.ListComments(config.Owner, config.Repo, config.IssueNum,
+		&gogithub.IssueListCommentsOptions{ListOptions: gogithub.ListOptions{PerPage: 100}})
+
+	if err != nil {
+		return ret, err
+	}
+
+	for _, v := range guff {
+		n := ""
+		a := ""
+		p := v.User
+		if p != nil {
+			if p.Name != nil {
+				n = *p.Name
+			}
+			if p.AvatarURL != nil {
+				a = *p.AvatarURL
+			}
+		}
+		ret = append(ret, githubIssueActivity{
+			Name:    n,
+			Message: *v.Body,
+			Date:    v.UpdatedAt.Format("January 2 2006, 15:04"),
+			Avatar:  a,
+			URL:     *v.HTMLURL,
+		})
+	}
+
+	return ret, nil
+
+}
+
+func (*Provider) getIssues(client *gogithub.Client, config githubConfig) ([]githubIssue, error) {
+
+	guff, _, err := client.Issues.ListByRepo(config.Owner, config.Repo,
+		&gogithub.IssueListByRepoOptions{ListOptions: gogithub.ListOptions{PerPage: 100}})
 
 	ret := []githubIssue{}
 
@@ -385,15 +465,28 @@ func (t *Provider) Refresh(configJSON, data string) string {
 	c.Clean()
 
 	switch c.ReportInfo.ID {
-	case "open_issues":
-		refreshed, err := t.getOpenIssues(t.githubClient(c), c)
+	case "issuenum_data":
+		refreshed, err := t.getIssueNum(t.githubClient(c), c)
 		if err != nil {
-			log.Error("unable to get github open issues", err)
+			log.Error("unable to get github issue number activity", err)
 			return data
 		}
 		j, err := json.Marshal(refreshed)
 		if err != nil {
-			log.Error("unable to marshall github open issues", err)
+			log.Error("unable to marshall github issue number activity", err)
+			return data
+		}
+		return string(j)
+
+	case "issues_data":
+		refreshed, err := t.getIssues(t.githubClient(c), c)
+		if err != nil {
+			log.Error("unable to get github issues", err)
+			return data
+		}
+		j, err := json.Marshal(refreshed)
+		if err != nil {
+			log.Error("unable to marshall github issues", err)
 			return data
 		}
 		return string(j)
@@ -433,17 +526,30 @@ func (*Provider) Render(config, data string) string {
 	payload.Repo = c.RepoInfo
 
 	switch c.ReportInfo.ID {
-	case "open_issues":
+	case "issuenum_data":
+		payload.IssueNum = c.IssueNum
+		raw := []githubIssueActivity{}
+
+		if len(data) > 0 {
+			err = json.Unmarshal([]byte(data), &raw)
+			if err != nil {
+				log.Error("unable to unmarshall github issue activity data", err)
+				return "Documize internal github json umarshall issue activity data error: " + err.Error()
+			}
+		}
+		payload.IssueNumActivity = raw
+
+	case "issues_data":
 		raw := []githubIssue{}
 
 		if len(data) > 0 {
 			err = json.Unmarshal([]byte(data), &raw)
 			if err != nil {
-				log.Error("unable to unmarshall github open issue data", err)
-				return "Documize internal github json umarshall open issue data error: " + err.Error()
+				log.Error("unable to unmarshall github issue data", err)
+				return "Documize internal github json umarshall open data error: " + err.Error()
 			}
 		}
-		payload.OpenIssues = raw
+		payload.Issues = raw
 
 	default: // to handle legacy data, this handles commits
 		raw := []githubBranchCommits{}
@@ -453,7 +559,7 @@ func (*Provider) Render(config, data string) string {
 			log.Error("unable to unmarshall github commit data", err)
 			return "Documize internal github json umarshall data error: " + err.Error()
 		}
-		c.ReportInfo.ID = "commits"
+		c.ReportInfo.ID = "commits_data"
 		payload.BranchCommits = raw
 		for _, list := range raw {
 			payload.CommitCount += len(list.Commits)

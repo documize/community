@@ -24,6 +24,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
     repos: null,
     noRepos: false,
     showCommits: false,
+    showIssueNum: false,
 
     didReceiveAttrs() {
         let self = this;
@@ -47,7 +48,8 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
                         branch: "",
                         branchURL: "",
                         branchSince: "",
-                        branchLines: 30
+                        branchLines: 30,
+                        issueNum: "1"
                     };
 
                     try {
@@ -152,12 +154,16 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
     getReportLists() {
         let reports = [];
         reports[0] = {
-            id: "commits", // used as method for fetching Go data
+            id: "commits_data", // used as method for fetching Go data
             name: "Commits on a branch"
         };
         reports[1] = {
-            id: "open_issues", // used as method for fetching Go data
+            id: "issues_data", // used as method for fetching Go data
             name: "Open Issues"
+        };
+        reports[2] = {
+            id: "issuenum_data", // used as method for fetching Go data
+            name: "Individual issue activity"
         };
 
         this.set("reports", reports);
@@ -181,13 +187,18 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
     renderSwitch(thisReport) {
         this.set('showCommits', false);
+        this.set('showIssueNum', false);
         switch (thisReport.id) {
-            case 'commits':
+            case 'commits_data':
                 this.set('showCommits', true);
                 this.getBranchLists();
                 break;
-            case "open_issues":
-                // nothing to show
+            case "issues_data":
+                // nothing to show yet
+                this.set('busy', false);
+                break;
+            case "issuenum_data":
+                this.set('showIssueNum', true);
                 this.set('busy', false);
                 break;
         }

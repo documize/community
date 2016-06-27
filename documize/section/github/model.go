@@ -11,18 +11,24 @@
 
 package github
 
-import "strings"
+import (
+	//"github.com/documize/community/wordsmith/log"
+
+	"strings"
+)
 
 type githubRender struct {
-	Config        githubConfig
-	Repo          githubRepo
-	BranchCommits []githubBranchCommits
-	CommitCount   int
-	OpenIssues    []githubIssue
+	Config           githubConfig
+	Repo             githubRepo
+	BranchCommits    []githubBranchCommits
+	CommitCount      int
+	Issues           []githubIssue
+	IssueNum         int
+	IssueNumActivity []githubIssueActivity
 }
 
 var renderTemplates = map[string]string{
-	"commits": `
+	"commits_data": `
 <div class="section-github-render">
 	<p>There are {{ .CommitCount }} commits for branch <a href="{{.Config.BranchURL}}">{{.Config.Branch}}</a> of repository <a href="{{ .Repo.URL }}">{{.Repo.Name}}.</a></p>
 	<div class="github-board">
@@ -50,12 +56,35 @@ var renderTemplates = map[string]string{
 	</div>
 </div>
 `,
-	"open_issues": `
+	"issues_data": `
 <div class="section-github-render">
 	<p>The issues for repository <a href="{{ .Repo.URL }}/issues">{{.Repo.Name}}.</a></p>
 	<div class="github-board">
 	<ul class="github-list">
-		{{range $data := .OpenIssues}}
+		{{range $data := .Issues}}
+			<li class="github-commit-item">
+				<a class="link" href="{{$data.URL}}">
+					<div class="github-avatar">
+						<img alt="@{{$data.Name}}" src="{{$data.Avatar}}" height="36" width="36">
+					</div>
+					<div class="github-commit-body">
+						<div class="github-commit-title">{{$data.Message}}</div>
+						<div class="github-commit-meta">{{$data.Name}} committed on {{$data.Date}}</div>
+					</div>
+				</a>
+				<div class="clearfix" />
+			</li>
+		{{end}}
+	</ul>
+	</div>
+</div>
+`,
+	"issuenum_data": `
+<div class="section-github-render">
+	<p>Activity for issue #{{.IssueNum}} in repository <a href="{{ .Repo.URL }}/issues">{{.Repo.Name}}.</a></p>
+	<div class="github-board">
+	<ul class="github-list">
+		{{range $data := .IssueNumActivity}}
 			<li class="github-commit-item">
 				<a class="link" href="{{$data.URL}}">
 					<div class="github-avatar">
@@ -124,6 +153,14 @@ type githubIssue struct {
 	Avatar  string `json:"avatar"`
 }
 
+type githubIssueActivity struct {
+	Date    string `json:"date"`
+	Message string `json:"message"`
+	URL     string `json:"url"`
+	Name    string `json:"name"`
+	Avatar  string `json:"avatar"`
+}
+
 type githubConfig struct {
 	AppKey      string         `json:"appKey"` // TODO keep?
 	Token       string         `json:"token"`
@@ -131,14 +168,15 @@ type githubConfig struct {
 	Repo        string         `json:"repo_name"`
 	Branch      string         `json:"branch"`
 	BranchURL   string         `json:"branchURL"`
-	BranchSince string         `json:"branchSince"`
-	BranchLines int            `json:"branchLines"`
+	BranchSince string         `json:"branchSince,omitempty"`
+	BranchLines int            `json:"branchLines,omitempty"`
 	OwnerInfo   githubOwner    `json:"owner"`
 	RepoInfo    githubRepo     `json:"repo"`
 	ReportInfo  githubReport   `json:"report"`
 	ClientID    string         `json:"clientId"`
 	CallbackURL string         `json:"callbackUrl"`
-	Lists       []githubBranch `json:"lists"`
+	Lists       []githubBranch `json:"lists,omitempty"`
+	IssueNum    int            `json:"issueNum,omitempty,string"`
 }
 
 func (c *githubConfig) Clean() {
@@ -153,6 +191,12 @@ func (c *githubConfig) Clean() {
 			break
 		}
 	}
+	// var e error
+	// c.IssueNum, e = strconv.Atoi(c.IssueNumString)
+	// if e != nil {
+	// 	log.ErrorString("github clean issue number: " + e.Error())
+	// 	c.IssueNum = 1
+	// }
 }
 
 type githubCallbackT struct {
