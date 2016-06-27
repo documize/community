@@ -33,7 +33,7 @@ export default Ember.Service.extend({
 		}
 
 		return this.get('ajax').request('public/meta')
-	        .then((response) => {
+		.then((response) => {
 				this.setProperties(response);
 	        });
 	}
