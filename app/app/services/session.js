@@ -17,7 +17,8 @@ import SimpleAuthSession from 'ember-simple-auth/services/session';
 
 const {
     inject: { service },
-    computed: { oneWay }
+    computed: { oneWay, or },
+    computed
 } = Ember;
 
 export default SimpleAuthSession.extend({
@@ -25,33 +26,18 @@ export default SimpleAuthSession.extend({
     appMeta: service(),
 
     authenticated: oneWay('isAuthenticated'),
-    user: oneWay('session.content.authenticated.user'),
+    isAdmin: oneWay('user.admin'),
+    isEditor: or('user.admin', 'user.editor'),
+
+    user: computed('session.content.authenticated.user', function(){
+        let user = this.get('session.content.authenticated.user');
+        if (user) {
+            return models.UserModel.create(user);
+        }
+    }),
+
     folderPermissions: null,
     currentFolder: null,
-
-    authenticate() {
-        return this._super(...arguments)
-            .then(function({token, user}){
-                return {
-                    token,
-                    user: models.User.create(user)
-                };
-            });
-    },
-
-    isAdmin: function() {
-        if (this.authenticated && is.not.null(this.user) && this.user.id !== "") {
-            return this.user.admin;
-        }
-        return false;
-    }.property('user'),
-
-    isEditor: function() {
-        if (this.authenticated && is.not.null(this.user) && this.user.id !== "") {
-            return this.user.editor || this.user.admin;
-        }
-        return false;
-    }.property('user'),
 
     clearSession: function() {
         // TODO: clear session properly with ESA

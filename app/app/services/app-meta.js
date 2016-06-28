@@ -15,7 +15,7 @@ export default Ember.Service.extend({
 	title: '',
 	version: '',
 	message: '',
-	allowAnonymousAccess: null,
+	allowAnonymousAccess: false,
 
 	boot() {
 		let dbhash;
@@ -33,8 +33,9 @@ export default Ember.Service.extend({
 		}
 
 		return this.get('ajax').request('public/meta')
-		.then((response) => {
+			.then((response) => {
 				this.setProperties(response);
-	        });
+				return response;
+			});
 	}
 });

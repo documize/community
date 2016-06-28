@@ -31,7 +31,8 @@ module.exports = function(environment) {
     },
     'ember-simple-auth': {
       authenticationRoute: 'auth.login',
-      routeAfterAuthentication: 'folders.folder'
+      routeAfterAuthentication: 'folders.folder',
+      routeIfAlreadyAuthenticated: 'folders.folder'
     },
     APP: {
       // Allows to disable audit service in tests

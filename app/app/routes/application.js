@@ -9,66 +9,50 @@
 //
 // https://documize.com
 
+
 import Ember from 'ember';
-import netUtil from '../utils/net';
 import ApplicationRouteMixin from 'ember-simple-auth/mixins/application-route-mixin';
 
 const {
-	inject: { service }
+  inject: { service }
 } = Ember;
 
 export default Ember.Route.extend(ApplicationRouteMixin, {
-    userService: service('user'),
-    session: service('session'),
-	appMeta: service(),
-
-    transitioning: false,
-
-    beforeModel: function(transition) {
-        let self = this;
-        let session = this.get('session');
-		let appMeta = this.get('appMeta');
-
-        // Session ready?
-        return this.get('appMeta').boot().then(function() {
-            // Need to authenticate?
-            if (!appMeta.get("allowAnonymousAccess") && !session.get("isAuthenticated") &&
-                is.not.startWith(transition.targetName, 'auth.')) {
-                if (!self.transitioning) {
-                    session.set('previousTransition', transition);
-                    self.set('transitioning', true);
-                }
-
-                transition.abort();
-                self.transitionTo('auth.login');
-            }
-        });
+  appMeta: service(),
+  session: service(),
+  beforeModel() {
+    return this.get('appMeta').boot().then( data => {
+      if ( data.allowAnonymousAccess ) {
+        return this.get('session').authenticate('authenticator:anonymous', data);
+      }
+      return;
+    });
+  },
+  
+  actions: {
+    willTransition: function( /*transition*/ ) {
+      $("#zone-sidebar").css('height', 'auto');
+      Mousetrap.reset();
     },
 
-    actions: {
-        willTransition: function( /*transition*/ ) {
-			$("#zone-sidebar").css('height', 'auto');
-            Mousetrap.reset();
-        },
+    didTransition() {
+      Ember.run.schedule("afterRender",this,function() {
+        $("#zone-sidebar").css('height', $(document).height() - $("#zone-navigation").height() - $("#zone-header").height() - 35);
+      });
 
-		didTransition() {
-			Ember.run.schedule("afterRender",this,function() {
-				$("#zone-sidebar").css('height', $(document).height() - $("#zone-navigation").height() - $("#zone-header").height() - 35);
-		    });
+      return true;
+    },
 
-			return true;
-		},
-
-        error(error, transition) { // jshint ignore: line
-            if (error) {
-				if (netUtil.isAjaxAccessError(error)) {
-					localStorage.clear();
-					return this.transitionTo('auth.login');
-				}
-            }
-
-            // Return true to bubble this event to any parent route.
-            return true;
+    error(error, transition) { // jshint ignore: line
+      if (error) {
+        if (netUtil.isAjaxAccessError(error)) {
+          localStorage.clear();
+          return this.transitionTo('auth.login');
         }
-    },
+      }
+
+      // Return true to bubble this event to any parent route.
+      return true;
+    }
+  },
 });

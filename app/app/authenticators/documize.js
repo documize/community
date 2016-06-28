@@ -5,13 +5,21 @@ import netUtil from '../utils/net';
 import models from '../utils/model';
 
 const {
-    isPresent
+    isPresent,
+    RSVP: { resolve, reject }
 } = Ember;
 
 export default Base.extend({
     serverTokenEndpoint: `public/authenticate`,
 
     ajax: Ember.inject.service(),
+
+    restore(data) {
+        if (data) {
+            return resolve(data)
+        }
+        return reject();
+    },
 
     authenticate({password, email}) {
       let domain = netUtil.getSubdomain();
