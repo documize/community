@@ -23,10 +23,8 @@ export default BaseService.extend({
 
     // Add a new folder.
     add(folder) {
-        let appMeta = this.get('sessionService.appMeta');
-        let url = appMeta.getUrl(`folders`);
 
-        return this.get('ajax').post(url, {
+        return this.get('ajax').post(`folders`, {
             contentType: 'json',
             data: JSON.stringify(folder)
         }).then((folder)=>{
@@ -37,10 +35,8 @@ export default BaseService.extend({
 
     // Returns folder model for specified folder id.
     getFolder(id) {
-        let appMeta = this.get('sessionService.appMeta');
-        let url = appMeta.getUrl(`folders/${id}`);
 
-        return this.get('ajax').request(url, {
+        return this.get('ajax').request(`folders/${id}`, {
             method: 'GET'
         }).then((response)=>{
             let folder = models.FolderModel.create(response);
@@ -64,9 +60,8 @@ export default BaseService.extend({
     // Updates an existing folder record.
     save(folder) {
         let id = folder.get('id');
-        let url = this.get('sessionService').appMeta.getUrl(`folders/${id}`);
 
-        return this.get('ajax').request(url, {
+        return this.get('ajax').request(`folders/${id}`, {
             method: 'PUT',
             contentType: 'json',
             data: JSON.stringify(folder)
@@ -74,7 +69,7 @@ export default BaseService.extend({
     },
 
     remove: function(folderId, moveToId) {
-        var url = this.get('sessionService').appMeta.getUrl('folders/' + folderId + "/move/" + moveToId);
+        let url = `folders/${folderId}/move/${moveToId}`;
 
         return this.get('ajax').request(url, {
             method: 'DELETE'
@@ -82,7 +77,7 @@ export default BaseService.extend({
     },
 
     onboard: function(folderId, payload) {
-        var url = this.get('sessionService').appMeta.getUrl('public/share/' + folderId);
+        let url = `public/share/${folderId}`;
 
         return this.get('ajax').post(url, {
             contentType: "application/json",
@@ -92,9 +87,7 @@ export default BaseService.extend({
 
     // getProtectedFolderInfo returns non-private folders and who has access to them.
     getProtectedFolderInfo: function() {
-        var url = this.get('sessionService').appMeta.getUrl('folders?filter=viewers');
-
-        return this.get('ajax').request(url, {
+        return this.get('ajax').request(`folders?filter=viewers`, {
             method: "GET"
         }).then((response)=>{
             let data = [];
@@ -108,10 +101,8 @@ export default BaseService.extend({
 
     // reloads and caches folders.
     reload() {
-        let appMeta = this.get('sessionService.appMeta');
-        let url = appMeta.getUrl(`folders`);
 
-        return this.get('ajax').request(url, {
+        return this.get('ajax').request(`folders`, {
             method: "GET"
         }).then((response)=>{
             let data = [];
@@ -125,9 +116,8 @@ export default BaseService.extend({
 
     // so who can see/edit this folder?
     getPermissions(folderId) {
-        let url = this.get('sessionService').appMeta.getUrl(`folders/${folderId}/permissions`);
 
-        return this.get('ajax').request(url, {
+        return this.get('ajax').request(`folders/${folderId}/permissions`, {
             method: "GET"
         }).then((response)=>{
             let data = [];
@@ -141,9 +131,8 @@ export default BaseService.extend({
 
     // persist folder permissions
     savePermissions(folderId, payload) {
-        let url = this.get('sessionService').appMeta.getUrl(`folders/${folderId}/permissions`);
 
-        return this.get('ajax').request(url, {
+        return this.get('ajax').request(`folders/${folderId}/permissions`, {
             method: 'PUT',
             contentType: 'json',
             data: JSON.stringify(payload)
@@ -152,9 +141,8 @@ export default BaseService.extend({
 
     // share this folder with new users!
     share(folderId, invitation) {
-        let url = this.get('sessionService').appMeta.getUrl(`folders/${folderId}/invitation`);
 
-        return this.get('ajax').post(url, {
+        return this.get('ajax').post(`folders/${folderId}/invitation`, {
             contentType: 'json',
             data: JSON.stringify(invitation)
         });
@@ -175,7 +163,7 @@ export default BaseService.extend({
             userId = "0";
         }
 
-        let url = this.get('sessionService').appMeta.getUrl('users/' + userId + "/permissions");
+        let url = `users/${userId}/permissions`;
 
         return this.get('ajax').request(url).then((folderPermissions) => {
             // safety check

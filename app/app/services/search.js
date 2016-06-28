@@ -17,7 +17,7 @@ export default Ember.Service.extend({
 
     // getUsers returns all users for organization.
     find(keywords) {
-        let url = this.get('sessionService').appMeta.getUrl("search?keywords=" + encodeURIComponent(keywords));
+        let url = "search?keywords=" + encodeURIComponent(keywords);
 
         return this.get('ajax').request(url, {
             method: "GET"

@@ -51,7 +51,6 @@ export default Ember.Service.extend({
 
     // Authentication
     login: function(credentials) {
-        let url = this.appMeta.getUrl('public/authenticate');
         let domain = netUtil.getSubdomain();
 
         this.clearSession();
@@ -65,7 +64,7 @@ export default Ember.Service.extend({
             'Authorization': 'Basic ' + encoded
         };
 
-        return this.get('ajax').post(url, {
+        return this.get('ajax').post('public/authenticate', {
             headers
         }).then((response)=>{
             this.setSession(response.token, models.UserModel.create(response.user));
@@ -76,7 +75,6 @@ export default Ember.Service.extend({
 
     // SSO in the form of 'domain:email:password'
     sso: function(credentials) {
-        let url = this.appMeta.getUrl('public/authenticate');
         this.clearSession();
 
         if (is.empty(credentials.email) || is.empty(credentials.password)) {
@@ -87,7 +85,7 @@ export default Ember.Service.extend({
             'Authorization': 'Basic ' + credentials
         };
 
-        return this.get('ajax').post(url, {
+        return this.get('ajax').post('public/authenticate', {
             headers
         }).then((response)=>{
             this.setSession(response.token, models.UserModel.create(response.user));
@@ -184,9 +182,7 @@ export default Ember.Service.extend({
             });
         }
 
-        let url = this.get('appMeta').getUrl("public/meta");
-
-        return this.get('ajax').request(url)
+        return this.get('ajax').request("public/meta")
         .then((response) => {
             this.get('appMeta').set('orgId', response.orgId);
             this.get('appMeta').setSafe('title', response.title);
@@ -198,7 +194,7 @@ export default Ember.Service.extend({
 
             if (is.not.undefined(token)) {
                 // We now validate current token
-                let tokenCheckUrl = this.get('appMeta').getUrl(`public/validate?token=${token}`);
+                let tokenCheckUrl = `public/validate?token=${token}`;
 
                 return this.get('ajax').request(tokenCheckUrl, {
                     method: 'GET',
