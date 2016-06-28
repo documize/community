@@ -15,7 +15,7 @@ export default Ember.Service.extend({
 	title: '',
 	version: '',
 	message: '',
-	allowAnonymousAccess: false,
+	allowAnonymousAccess: null,
 
 	boot() {
 		let dbhash;

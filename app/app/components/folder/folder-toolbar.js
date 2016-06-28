@@ -13,6 +13,10 @@ import Ember from 'ember';
 import NotifierMixin from '../../mixins/notifier';
 import TooltipMixin from '../../mixins/tooltip';
 
+const {
+    computed
+} = Ember;
+
 export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
     documentService: Ember.inject.service('document'),
     templateService: Ember.inject.service('template'),
@@ -22,7 +26,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
     busy: false,
     importedDocuments: [],
     savedTemplates: [],
-    isFolderOwner: false,
+    isFolderOwner: computed.equal('folder.userId', 'session.user.id'),
     moveFolderId: "",
 
     didReceiveAttrs() {

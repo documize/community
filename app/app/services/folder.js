@@ -13,6 +13,10 @@ import Ember from 'ember';
 import models from '../utils/model';
 import BaseService from '../services/base';
 
+const {
+    get
+} = Ember;
+
 export default BaseService.extend({
     sessionService: Ember.inject.service('session'),
     ajax: Ember.inject.service(),
@@ -155,10 +159,10 @@ export default BaseService.extend({
         }
 
         this.set('currentFolder', folder);
-        this.get('sessionService').storeSessionItem("folder", folder.get('id'));
+        this.get('sessionService').storeSessionItem("folder", get(folder, 'id'));
         this.set('canEditCurrentFolder', false);
 
-        let userId = this.get('sessionService').user.get('id');
+        let userId = this.get('sessionService.user.id');
         if (userId === "") {
             userId = "0";
         }
@@ -194,7 +198,7 @@ export default BaseService.extend({
                 }
             });
             Ember.run(() => {
-                this.set('canEditCurrentFolder', canEdit && this.get('sessionService').authenticated);
+                this.set('canEditCurrentFolder', canEdit && this.get('sessionService.authenticated'));
             });
         });
     },

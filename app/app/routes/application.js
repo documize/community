@@ -11,26 +11,28 @@
 
 import Ember from 'ember';
 import netUtil from '../utils/net';
+import ApplicationRouteMixin from 'ember-simple-auth/mixins/application-route-mixin';
 
 const {
 	inject: { service }
 } = Ember;
 
-export default Ember.Route.extend({
+export default Ember.Route.extend(ApplicationRouteMixin, {
     userService: service('user'),
-    sessionService: service('session'),
+    session: service('session'),
 	appMeta: service(),
 
     transitioning: false,
 
     beforeModel: function(transition) {
         let self = this;
-        let session = this.get('sessionService');
+        let session = this.get('session');
+		let appMeta = this.get('appMeta');
 
         // Session ready?
         return this.get('appMeta').boot().then(function() {
             // Need to authenticate?
-            if (!session.get("appMeta.allowAnonymousAccess") && !session.get("authenticated") &&
+            if (!appMeta.get("allowAnonymousAccess") && !session.get("isAuthenticated") &&
                 is.not.startWith(transition.targetName, 'auth.')) {
                 if (!self.transitioning) {
                     session.set('previousTransition', transition);
