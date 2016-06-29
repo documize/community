@@ -13,6 +13,7 @@ import Ember from 'ember';
 import NotifierMixin from '../../../mixins/notifier';
 import TooltipMixin from '../../../mixins/tooltip';
 import SectionMixin from '../../../mixins/section';
+import netUtil from '../../../utils/net';
 
 export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin, {
     sectionService: Ember.inject.service('section'),
@@ -34,6 +35,8 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
                 APIToken: "",
                 query: "",
 				max: 10,
+				group: null,
+				system: null
             };
         }
 
@@ -47,6 +50,14 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
     willDestroyElement() {
         this.destroyTooltips();
     },
+
+	displayError(reason) {
+		if (netUtil.isAjaxAccessError(reason)) {
+			this.showNotification(`Unable to authenticate`);
+		} else {
+			this.showNotification(`Something went wrong, try again!`);
+		}
+	},
 
     actions: {
         isDirty() {
@@ -63,30 +74,71 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
             }
 
             let page = this.get('page');
+			let config = this.get('config');
             let self = this;
 
             this.set('waiting', true);
 
-            this.get('sectionService').fetch(page, "auth", this.get('config'))
+            this.get('sectionService').fetch(page, "auth", config)
             .then(function(response) {
                 self.set('authenticated', true);
                 self.set('items', response);
-                self.set('waiting', false);
-            }, function(reason) { //jshint ignore: line
+
+				self.get('sectionService').fetch(page, "options", config)
+	            .then(function(response) {
+	                self.set('options', response);
+	                self.set('waiting', false);
+
+					let options = self.get('options');
+					let group = _.findWhere(options.groups, {id: config.group.id});
+					if (is.not.undefined(group)) {
+						Ember.set(config, 'group', group);
+					}
+	            }, function(reason) { //jshint ignore: line
+	                self.set('waiting', false);
+					self.displayError(reason);
+	            });
+	        }, function(reason) { //jshint ignore: line
                 self.set('authenticated', false);
                 self.set('waiting', false);
-
-                switch (reason.status) {
-                    case 400:
-                        self.showNotification(`Unable to connect to Papertrail`);
-                        break;
-                    case 403:
-                        self.showNotification(`Unable to authenticate`);
-                        break;
-                    default:
-                        self.showNotification(`Something went wrong, try again!`);
-                }
+				self.displayError(reason);
             });
+        },
+
+		onGroupsChange(group) {
+			let config = this.get('config');
+			let page = this.get('page');
+			let self = this;
+            this.set('isDirty', true);
+            this.set('config.group', group);
+            this.set('waiting', true);
+
+			this.get('sectionService').fetch(page, "auth", config)
+	            .then(function(response) {
+					self.set('waiting', false);
+	                self.set('items', response);
+		        }, function(reason) { //jshint ignore: line
+	                self.set('waiting', false);
+					self.displayError(reason);
+	            });
+        },
+
+		onSystemsChange(system) {
+			let config = this.get('config');
+			let page = this.get('page');
+			let self = this;
+            this.set('isDirty', true);
+			this.set('config.system', system);
+            this.set('waiting', true);
+
+			this.get('sectionService').fetch(page, "auth", config)
+	            .then(function(response) {
+					self.set('waiting', false);
+	                self.set('items', response);
+		        }, function(reason) { //jshint ignore: line
+	                self.set('waiting', false);
+					self.displayError(reason);
+	            });
         },
 
         onCancel() {
@@ -126,7 +178,6 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
             }, function(reason) { //jshint ignore: line
                 self.set('authenticated', false);
                 self.set('waiting', false);
-				console.log(reason);
 				self.showNotification(`Something went wrong, try again!`);
             });
         }

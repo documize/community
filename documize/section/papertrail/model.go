@@ -61,12 +61,24 @@ type papertrailEvent struct {
 }
 
 type papertrailConfig struct {
-	APIToken string `json:"APIToken"`
-	Query    string `json:"query"`
-	Max      int    `json:"max"`
+	APIToken string           `json:"APIToken"`
+	Query    string           `json:"query"`
+	Max      int              `json:"max"`
+	Group    papertrailOption `json:"group"`
+	System   papertrailOption `json:"system"`
 }
 
 func (c *papertrailConfig) Clean() {
 	c.APIToken = strings.TrimSpace(c.APIToken)
 	c.Query = strings.TrimSpace(c.Query)
+}
+
+type papertrailOption struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+}
+
+type papertrailOptions struct {
+	Groups  []papertrailOption `json:"groups"`
+	Systems []papertrailOption `json:"systems"`
 }

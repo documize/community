@@ -21,6 +21,7 @@ import (
 	"net/url"
 
 	"github.com/documize/community/documize/section/provider"
+	"github.com/documize/community/wordsmith/log"
 )
 
 const me = "papertrail"
@@ -42,7 +43,6 @@ func (*Provider) Meta() provider.TypeMeta {
 
 // Render converts Papertrail data into HTML suitable for browser rendering.
 func (*Provider) Render(config, data string) string {
-
 	var search papertrailSearch
 	var events []papertrailEvent
 	var payload = papertrailRender{}
@@ -83,84 +83,6 @@ func (p *Provider) Command(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	switch method {
-	case "auth":
-		auth(w, r)
-		// case "items":
-		// 	items(w, r)
-	}
-}
-
-// Refresh just sends back data as-is.
-func (*Provider) Refresh(config, data string) (newData string) {
-
-	return data
-	// var c = geminiConfig{}
-	// err := json.Unmarshal([]byte(config), &c)
-	//
-	// if err != nil {
-	// 	log.Error("Unable to read Gemini config", err)
-	// 	return
-	// }
-	//
-	// c.Clean()
-	//
-	// if len(c.URL) == 0 {
-	// 	log.Info("Gemini.Refresh received empty URL")
-	// 	return
-	// }
-	//
-	// if len(c.Username) == 0 {
-	// 	log.Info("Gemini.Refresh received empty username")
-	// 	return
-	// }
-	//
-	// if len(c.APIKey) == 0 {
-	// 	log.Info("Gemini.Refresh received empty API key")
-	// 	return
-	// }
-	//
-	// req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/items/card/%d", c.URL, c.WorkspaceID), nil)
-	// // req.Header.Set("Content-Type", "application/json")
-	//
-	// creds := []byte(fmt.Sprintf("%s:%s", c.Username, c.APIKey))
-	// req.Header.Set("Authorization", "Basic "+base64.StdEncoding.EncodeToString(creds))
-	//
-	// client := &http.Client{}
-	// res, err := client.Do(req)
-	//
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return
-	// }
-	//
-	// if res.StatusCode != http.StatusOK {
-	// 	return
-	// }
-	//
-	// defer res.Body.Close()
-	// var items []geminiItem
-	//
-	// dec := json.NewDecoder(res.Body)
-	// err = dec.Decode(&items)
-	//
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return
-	// }
-	//
-	// j, err := json.Marshal(items)
-	//
-	// if err != nil {
-	// 	log.Error("unable to marshall gemini items", err)
-	// 	return
-	// }
-	//
-	// newData = string(j)
-	// return
-}
-
-func auth(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -184,11 +106,68 @@ func auth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var search string
-	if len(config.Query) > 0 {
-		search = "q=" + url.QueryEscape(config.Query)
+	switch method {
+	case "auth":
+		auth(config, w, r)
+	case "options":
+		options(config, w, r)
 	}
-	req, err := http.NewRequest("GET", "https://papertrailapp.com/api/v1/events/search.json?"+search, nil)
+}
+
+// Refresh just sends back data as-is.
+func (*Provider) Refresh(config, data string) (newData string) {
+	var c = papertrailConfig{}
+	err := json.Unmarshal([]byte(config), &c)
+
+	if err != nil {
+		log.Error("unable to read Papertrail config", err)
+		return
+	}
+
+	c.Clean()
+
+	if len(c.APIToken) == 0 {
+		log.Error("missing API token", err)
+		return
+	}
+
+	result, err := fetchEvents(c)
+
+	if err != nil {
+		log.Error("Papertrail fetchEvents failed", err)
+		return
+	}
+
+	j, err := json.Marshal(result)
+
+	if err != nil {
+		log.Error("unable to marshal Papaertrail events", err)
+		return
+	}
+
+	newData = string(j)
+	return
+}
+
+func auth(config papertrailConfig, w http.ResponseWriter, r *http.Request) {
+	result, err := fetchEvents(config)
+
+	if err != nil {
+		if err.Error() == "forbidden" {
+			provider.WriteForbidden(w)
+		} else {
+			provider.WriteError(w, me, err)
+		}
+
+		return
+	}
+
+	provider.WriteJSON(w, result)
+}
+
+func options(config papertrailConfig, w http.ResponseWriter, r *http.Request) {
+	// get systems
+	req, err := http.NewRequest("GET", "https://papertrailapp.com/api/v1/systems.json", nil)
 	req.Header.Set("X-Papertrail-Token", config.APIToken)
 
 	client := &http.Client{}
@@ -206,10 +185,10 @@ func auth(w http.ResponseWriter, r *http.Request) {
 	}
 
 	defer res.Body.Close()
-	var result interface{}
+	var systems []papertrailOption
 
 	dec := json.NewDecoder(res.Body)
-	err = dec.Decode(&result)
+	err = dec.Decode(&systems)
 
 	if err != nil {
 		fmt.Println(err)
@@ -217,156 +196,80 @@ func auth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	provider.WriteJSON(w, result)
+	// get groups
+	req, err = http.NewRequest("GET", "https://papertrailapp.com/api/v1/groups.json", nil)
+	req.Header.Set("X-Papertrail-Token", config.APIToken)
+
+	client = &http.Client{}
+	res, err = client.Do(req)
+
+	if err != nil {
+		fmt.Println(err)
+		provider.WriteError(w, me, err)
+		return
+	}
+
+	if res.StatusCode != http.StatusOK {
+		provider.WriteForbidden(w)
+		return
+	}
+
+	defer res.Body.Close()
+	var groups []papertrailOption
+
+	dec = json.NewDecoder(res.Body)
+	err = dec.Decode(&groups)
+
+	if err != nil {
+		fmt.Println(err)
+		provider.WriteError(w, me, err)
+		return
+	}
+
+	var options = papertrailOptions{}
+	options.Groups = groups
+	options.Systems = systems
+
+	provider.WriteJSON(w, options)
 }
 
-//
-// func workspace(w http.ResponseWriter, r *http.Request) {
-// 	defer r.Body.Close()
-// 	body, err := ioutil.ReadAll(r.Body)
-//
-// 	if err != nil {
-// 		provider.WriteMessage(w, "gemini", "Bad payload")
-// 		return
-// 	}
-//
-// 	var config = geminiConfig{}
-// 	err = json.Unmarshal(body, &config)
-//
-// 	if err != nil {
-// 		provider.WriteMessage(w, "gemini", "Bad payload")
-// 		return
-// 	}
-//
-// 	config.Clean()
-//
-// 	if len(config.URL) == 0 {
-// 		provider.WriteMessage(w, "gemini", "Missing URL value")
-// 		return
-// 	}
-//
-// 	if len(config.Username) == 0 {
-// 		provider.WriteMessage(w, "gemini", "Missing Username value")
-// 		return
-// 	}
-//
-// 	if len(config.APIKey) == 0 {
-// 		provider.WriteMessage(w, "gemini", "Missing APIKey value")
-// 		return
-// 	}
-//
-// 	if config.UserID == 0 {
-// 		provider.WriteMessage(w, "gemini", "Missing UserId value")
-// 		return
-// 	}
-//
-// 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/navigationcards/users/%d", config.URL, config.UserID), nil)
-//
-// 	creds := []byte(fmt.Sprintf("%s:%s", config.Username, config.APIKey))
-// 	req.Header.Set("Authorization", "Basic "+base64.StdEncoding.EncodeToString(creds))
-//
-// 	client := &http.Client{}
-// 	res, err := client.Do(req)
-//
-// 	if err != nil {
-// 		fmt.Println(err)
-// 		provider.WriteError(w, "gemini", err)
-// 		return
-// 	}
-//
-// 	if res.StatusCode != http.StatusOK {
-// 		provider.WriteForbidden(w)
-// 		return
-// 	}
-//
-// 	defer res.Body.Close()
-// 	var workspace interface{}
-//
-// 	dec := json.NewDecoder(res.Body)
-// 	err = dec.Decode(&workspace)
-//
-// 	if err != nil {
-// 		fmt.Println(err)
-// 		provider.WriteError(w, "gemini", err)
-// 		return
-// 	}
-//
-// 	provider.WriteJSON(w, workspace)
-// }
-//
-// func items(w http.ResponseWriter, r *http.Request) {
-// 	defer r.Body.Close()
-// 	body, err := ioutil.ReadAll(r.Body)
-//
-// 	if err != nil {
-// 		provider.WriteMessage(w, "gemini", "Bad payload")
-// 		return
-// 	}
-//
-// 	var config = geminiConfig{}
-// 	err = json.Unmarshal(body, &config)
-//
-// 	if err != nil {
-// 		provider.WriteMessage(w, "gemini", "Bad payload")
-// 		return
-// 	}
-//
-// 	config.Clean()
-//
-// 	if len(config.URL) == 0 {
-// 		provider.WriteMessage(w, "gemini", "Missing URL value")
-// 		return
-// 	}
-//
-// 	if len(config.Username) == 0 {
-// 		provider.WriteMessage(w, "gemini", "Missing Username value")
-// 		return
-// 	}
-//
-// 	if len(config.APIKey) == 0 {
-// 		provider.WriteMessage(w, "gemini", "Missing APIKey value")
-// 		return
-// 	}
-//
-// 	creds := []byte(fmt.Sprintf("%s:%s", config.Username, config.APIKey))
-//
-// 	filter, err := json.Marshal(config.Filter)
-// 	if err != nil {
-// 		fmt.Println(err)
-// 		provider.WriteError(w, "gemini", err)
-// 		return
-// 	}
-//
-// 	var jsonFilter = []byte(string(filter))
-// 	req, err := http.NewRequest("POST", fmt.Sprintf("%s/api/items/filtered", config.URL), bytes.NewBuffer(jsonFilter))
-// 	req.Header.Set("Content-Type", "application/json")
-// 	req.Header.Set("Authorization", "Basic "+base64.StdEncoding.EncodeToString(creds))
-//
-// 	client := &http.Client{}
-// 	res, err := client.Do(req)
-//
-// 	if err != nil {
-// 		fmt.Println(err)
-// 		provider.WriteError(w, "gemini", err)
-// 		return
-// 	}
-//
-// 	if res.StatusCode != http.StatusOK {
-// 		provider.WriteForbidden(w)
-// 		return
-// 	}
-//
-// 	defer res.Body.Close()
-// 	var items interface{}
-//
-// 	dec := json.NewDecoder(res.Body)
-// 	err = dec.Decode(&items)
-//
-// 	if err != nil {
-// 		fmt.Println(err)
-// 		provider.WriteError(w, "gemini", err)
-// 		return
-// 	}
-//
-// 	provider.WriteJSON(w, items)
-// }
+func fetchEvents(config papertrailConfig) (result interface{}, err error) {
+	var filter string
+	if len(config.Query) > 0 {
+		filter = fmt.Sprintf("q=%s", url.QueryEscape(config.Query))
+	}
+	if config.Group.ID > 0 {
+		prefix := ""
+		if len(filter) > 0 {
+			prefix = "&"
+		}
+		filter = fmt.Sprintf("%s%sgroup_id=%d", filter, prefix, config.Group.ID)
+	}
+
+	req, err := http.NewRequest("GET", "https://papertrailapp.com/api/v1/events/search.json?"+filter, nil)
+	req.Header.Set("X-Papertrail-Token", config.APIToken)
+
+	client := &http.Client{}
+	res, err := client.Do(req)
+
+	if err != nil {
+		log.Error("message", err)
+		return
+	}
+
+	if res.StatusCode != http.StatusOK {
+		log.Error("forbidden", err)
+		return
+	}
+
+	defer res.Body.Close()
+
+	dec := json.NewDecoder(res.Body)
+	err = dec.Decode(&result)
+
+	if err != nil {
+		log.Error("unable to read result", err)
+	}
+
+	return
+}

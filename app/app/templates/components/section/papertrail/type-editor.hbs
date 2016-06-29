@@ -36,6 +36,11 @@
 						<div class="tip">How many log entries do you want?</div>
 						{{input id="papertrail-max" type="number" class="mousetrap" value=config.max}}
 					</div>
+					<div class="input-control">
+						<label>Group</label>
+						<div class="tip">Optional Papertrail group</div>
+						{{ui-select id="group-dropdown" prompt="<group>" content=options.groups action=(action 'onGroupsChange') optionValuePath="id" optionLabelPath="name" selection=config.group}}
+					</div>
 				</form>
 			</div>
 		</div>
