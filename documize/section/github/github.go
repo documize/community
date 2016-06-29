@@ -142,16 +142,16 @@ func (t *Provider) Command(w http.ResponseWriter, r *http.Request) {
 
 		provider.WriteJSON(w, render)
 
-	case "issuenum_data":
+	/*case "issuenum_data":
 
-		render, err := t.getIssueNum(client, config)
-		if err != nil {
-			log.Error("github getIssueNum:", err)
-			provider.WriteError(w, "github", err)
-			return
-		}
+	render, err := t.getIssueNum(client, config)
+	if err != nil {
+		log.Error("github getIssueNum:", err)
+		provider.WriteError(w, "github", err)
+		return
+	}
 
-		provider.WriteJSON(w, render)
+	provider.WriteJSON(w, render)*/
 
 	case "owners":
 
@@ -290,6 +290,7 @@ func (*Provider) githubClient(config githubConfig) *gogithub.Client {
 	return gogithub.NewClient(tc)
 }
 
+/*
 func (*Provider) getIssueNum(client *gogithub.Client, config githubConfig) ([]githubIssueActivity, error) {
 
 	ret := []githubIssueActivity{}
@@ -301,8 +302,8 @@ func (*Provider) getIssueNum(client *gogithub.Client, config githubConfig) ([]gi
 		a := ""
 		p := issue.User
 		if p != nil {
-			if p.Name != nil {
-				n = *p.Name
+			if p.Login != nil {
+				n = *p.Login
 			}
 			if p.AvatarURL != nil {
 				a = *p.AvatarURL
@@ -310,24 +311,24 @@ func (*Provider) getIssueNum(client *gogithub.Client, config githubConfig) ([]gi
 		}
 		ret = append(ret, githubIssueActivity{
 			Name:    n,
-			Event:   "TITLE",
+			Event:   "created",
 			Message: template.HTML(*issue.Title),
-			Date:    issue.UpdatedAt.Format("January 2 2006, 15:04"),
+			Date:    "on " + issue.UpdatedAt.Format("January 2 2006, 15:04"),
 			Avatar:  a,
 			URL:     template.URL(*issue.HTMLURL),
 		})
 		ret = append(ret, githubIssueActivity{
 			Name:    n,
-			Event:   "DESCRIPTION",
+			Event:   "described",
 			Message: template.HTML(*issue.Body),
-			Date:    issue.UpdatedAt.Format("January 2 2006, 15:04"),
+			Date:    "on " + issue.UpdatedAt.Format("January 2 2006, 15:04"),
 			Avatar:  a,
 			URL:     template.URL(*issue.HTMLURL),
 		})
 		ret = append(ret, githubIssueActivity{
 			Name:    "",
-			Event:   "NOTE",
-			Message: template.HTML("Issue timeline below is in reverse order"),
+			Event:   "Note",
+			Message: template.HTML("the issue timeline below is in reverse order"),
 			Date:    "",
 			Avatar:  githubGravatar,
 			URL:     template.URL(*issue.HTMLURL),
@@ -371,8 +372,8 @@ func (*Provider) getIssueNum(client *gogithub.Client, config githubConfig) ([]gi
 					u = *ic.HTMLURL
 					p := ic.User
 					if p != nil {
-						if p.Name != nil {
-							n = *p.Name
+						if p.Login != nil {
+							n = *p.Login
 						}
 						if p.AvatarURL != nil {
 							a = *p.AvatarURL
@@ -385,7 +386,7 @@ func (*Provider) getIssueNum(client *gogithub.Client, config githubConfig) ([]gi
 				Name:    n,
 				Event:   *v.Event,
 				Message: template.HTML(m),
-				Date:    v.CreatedAt.Format("January 2 2006, 15:04"),
+				Date:    "on " + v.CreatedAt.Format("January 2 2006, 15:04"),
 				Avatar:  a,
 				URL:     template.URL(u),
 			})
@@ -395,11 +396,12 @@ func (*Provider) getIssueNum(client *gogithub.Client, config githubConfig) ([]gi
 	return ret, nil
 
 }
+*/
 
 func (*Provider) getIssues(client *gogithub.Client, config githubConfig) ([]githubIssue, error) {
 
 	opts := &gogithub.IssueListByRepoOptions{
-		Sort:        "created",
+		Sort:        "updated",
 		ListOptions: gogithub.ListOptions{PerPage: config.BranchLines}}
 
 	if config.SincePtr != nil {
@@ -436,9 +438,11 @@ func (*Provider) getIssues(client *gogithub.Client, config githubConfig) ([]gith
 			Name:    n,
 			Message: *v.Title,
 			Date:    v.CreatedAt.Format("January 2 2006, 15:04"),
+			Updated: v.UpdatedAt.Format("January 2 2006, 15:04"),
 			URL:     template.URL(*v.HTMLURL),
 			Labels:  template.HTML(l),
 			ID:      *v.Number,
+			IsOpen:  v.ClosedAt == nil,
 		})
 	}
 
@@ -537,18 +541,18 @@ func (t *Provider) Refresh(configJSON, data string) string {
 	c.Clean()
 
 	switch c.ReportInfo.ID {
-	case "issuenum_data":
-		refreshed, err := t.getIssueNum(t.githubClient(c), c)
-		if err != nil {
-			log.Error("unable to get github issue number activity", err)
-			return data
-		}
-		j, err := json.Marshal(refreshed)
-		if err != nil {
-			log.Error("unable to marshall github issue number activity", err)
-			return data
-		}
-		return string(j)
+	/*case "issuenum_data":
+	refreshed, err := t.getIssueNum(t.githubClient(c), c)
+	if err != nil {
+		log.Error("unable to get github issue number activity", err)
+		return data
+	}
+	j, err := json.Marshal(refreshed)
+	if err != nil {
+		log.Error("unable to marshall github issue number activity", err)
+		return data
+	}
+	return string(j)*/
 
 	case "issues_data":
 		refreshed, err := t.getIssues(t.githubClient(c), c)
@@ -602,31 +606,31 @@ func (p *Provider) Render(config, data string) string {
 	}
 
 	switch c.ReportInfo.ID {
-	case "issuenum_data":
-		payload.IssueNum = c.IssueNum
-		raw := []githubIssueActivity{}
+	/* case "issuenum_data":
+	payload.IssueNum = c.IssueNum
+	raw := []githubIssueActivity{}
 
-		if len(data) > 0 {
-			err = json.Unmarshal([]byte(data), &raw)
+	if len(data) > 0 {
+		err = json.Unmarshal([]byte(data), &raw)
+		if err != nil {
+			log.Error("unable to unmarshall github issue activity data", err)
+			return "Documize internal github json umarshall issue activity data error: " + err.Error()
+		}
+	}
+
+	opt := &gogithub.MarkdownOptions{Mode: "gfm", Context: c.Owner + "/" + c.Repo}
+	client := p.githubClient(c)
+	for k, v := range raw {
+		if v.Event == "commented" {
+			output, _, err := client.Markdown(string(v.Message), opt)
 			if err != nil {
-				log.Error("unable to unmarshall github issue activity data", err)
-				return "Documize internal github json umarshall issue activity data error: " + err.Error()
+				log.Error("convert commented text to markdown", err)
+			} else {
+				raw[k].Message = template.HTML(output)
 			}
 		}
-
-		opt := &gogithub.MarkdownOptions{Mode: "gfm", Context: c.Owner + "/" + c.Repo}
-		client := p.githubClient(c)
-		for k, v := range raw {
-			if v.Event == "commented" {
-				output, _, err := client.Markdown(string(v.Message), opt)
-				if err != nil {
-					log.Error("convert commented text to markdown", err)
-				} else {
-					raw[k].Message = template.HTML(output)
-				}
-			}
-		}
-		payload.IssueNumActivity = raw
+	}
+	payload.IssueNumActivity = raw */
 
 	case "issues_data":
 		raw := []githubIssue{}

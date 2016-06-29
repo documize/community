@@ -20,17 +20,17 @@ import (
 )
 
 type githubRender struct {
-	Config           githubConfig
-	Repo             githubRepo
-	List             []githubBranch
-	ShowList         bool
-	BranchCommits    []githubBranchCommits
-	CommitCount      int
-	Issues           []githubIssue
-	IssueNum         int
-	IssueNumActivity []githubIssueActivity
-	Limit            int
-	DateMessage      string
+	Config        githubConfig
+	Repo          githubRepo
+	List          []githubBranch
+	ShowList      bool
+	BranchCommits []githubBranchCommits
+	CommitCount   int
+	Issues        []githubIssue
+	//IssueNum         int
+	//IssueNumActivity []githubIssueActivity
+	Limit       int
+	DateMessage string
 }
 
 var renderTemplates = map[string]string{
@@ -86,14 +86,20 @@ var renderTemplates = map[string]string{
 			<li class="github-commit-item">
 				<a class="link" href="{{$data.URL}}">
 					<div class="issue-avatar">
-						<span aria-label="Open issue">
-							<svg aria-hidden="true" class="octicon octicon-issue-opened open" height="16" version="1.1" viewBox="0 0 14 16" width="14"><path d="M7 2.3c3.14 0 5.7 2.56 5.7 5.7s-2.56 5.7-5.7 5.7A5.71 5.71 0 0 1 1.3 8c0-3.14 2.56-5.7 5.7-5.7zM7 1C3.14 1 0 4.14 0 8s3.14 7 7 7 7-3.14 7-7-3.14-7-7-7zm1 3H6v5h2V4zm0 6H6v2h2v-2z"></path></svg>
-						</span>
-	  			</div>
+						{{if $data.IsOpen}}
+							<span aria-label="Open issue">
+								<svg aria-hidden="true" class="octicon octicon-issue-opened open" height="16" version="1.1" viewBox="0 0 14 16" width="14"><path d="M7 2.3c3.14 0 5.7 2.56 5.7 5.7s-2.56 5.7-5.7 5.7A5.71 5.71 0 0 1 1.3 8c0-3.14 2.56-5.7 5.7-5.7zM7 1C3.14 1 0 4.14 0 8s3.14 7 7 7 7-3.14 7-7-3.14-7-7-7zm1 3H6v5h2V4zm0 6H6v2h2v-2z"></path></svg>
+							</span>
+						{{else}}
+							<span aria-label="Closed issue">
+								<svg aria-hidden="true" class="octicon octicon-issue-closed closed" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7 10h2v2H7v-2zm2-6H7v5h2V4zm1.5 1.5l-1 1L12 9l4-4.5-1-1L12 7l-1.5-1.5zM8 13.7A5.71 5.71 0 0 1 2.3 8c0-3.14 2.56-5.7 5.7-5.7 1.83 0 3.45.88 4.5 2.2l.92-.92A6.947 6.947 0 0 0 8 1C4.14 1 1 4.14 1 8s3.14 7 7 7 7-3.14 7-7l-1.52 1.52c-.66 2.41-2.86 4.19-5.48 4.19v-.01z"></path></svg>
+							</span>
+						{{end}}
+				  	</div>
 					<div class="github-commit-body">
 						<div class="github-commit-title"><span class="label-name">{{$data.Message}}</span> {{$data.Labels}}</div>
 						<div class="github-commit-meta">
-							#{{$data.ID}} opened on {{$data.Date}} by {{$data.Name}}
+							#{{$data.ID}} opened on {{$data.Date}} by {{$data.Name}}, last updated {{$data.Updated}}
 						</div>
 					</div>
 				</a>
@@ -104,35 +110,34 @@ var renderTemplates = map[string]string{
 	</div>
 </div>
 `,
-	"issuenum_data": `
-<div class="section-github-render">
-	<p>
-		Activity for issue #{{.IssueNum}} in repository <a href="{{ .Repo.URL }}/issues">{{.Repo.Name}}.</a>
-		Up to {{ .Limit }} items are shown{{ .DateMessage }}.
-	</p>
-	<div class="github-board">
-	<ul class="github-list">
-		{{range $data := .IssueNumActivity}}
-			<li class="github-commit-item">
-				<div class="github-avatar">
-					<img alt="@{{$data.Name}}" src="{{$data.Avatar}}" height="36" width="36">
-				</div>
-				<div class="github-commit-body">
-					<div class="github-commit-title">
-						<a class="link" href="{{$data.URL}}">
-							{{$data.Event}}:
-						</a>
-						{{$data.Message}}
-					</div>
-					<div class="github-commit-meta">{{$data.Name}} committed on {{$data.Date}}</div>
-				</div>
-				<div class="clearfix" />
-			</li>
-		{{end}}
-	</ul>
-	</div>
-</div>
-`,
+	/* "issuenum_data": `
+	   <div class="section-github-render">
+	   	<p>
+	   		Activity for issue #{{.IssueNum}} in repository <a href="{{ .Repo.URL }}/issues">{{.Repo.Name}}.</a>
+	   		Up to {{ .Limit }} items are shown{{ .DateMessage }}.
+	   	</p>
+	   	<div class="github-board">
+	   	<ul class="github-list">
+	   		{{range $data := .IssueNumActivity}}
+	   			<li class="github-commit-item">
+	   				<div class="github-avatar">
+	   					<img alt="@{{$data.Name}}" src="{{$data.Avatar}}" height="36" width="36">
+	   				</div>
+	   				<div class="github-commit-meta">
+	   					{{$data.Name}} <a class="link" href="{{$data.URL}}">{{$data.Event}}</a> {{$data.Date}}
+	   				</div>
+	   				<div class="github-commit-body">
+	   					<div class="github-commit-title">
+	   						{{$data.Message}}
+	   					</div>
+	   				</div>
+	   				<div class="clearfix" />
+	   			</li>
+	   		{{end}}
+	   	</ul>
+	   	</div>
+	   </div>
+	   `,*/
 }
 
 type githubReport struct {
@@ -180,13 +185,16 @@ type githubCommit struct {
 type githubIssue struct {
 	ID      int           `json:"id"`
 	Date    string        `json:"date"`
+	Updated string        `json:"dated"`
 	Message string        `json:"message"`
 	URL     template.URL  `json:"url"`
 	Name    string        `json:"name"`
 	Avatar  string        `json:"avatar"`
 	Labels  template.HTML `json:"labels"`
+	IsOpen  bool          `json:"isopen"`
 }
 
+/*
 type githubIssueActivity struct {
 	Date    string        `json:"date"`
 	Event   string        `json:"event"`
@@ -195,6 +203,7 @@ type githubIssueActivity struct {
 	Name    string        `json:"name"`
 	Avatar  string        `json:"avatar"`
 }
+*/
 
 type githubConfig struct {
 	AppKey      string         `json:"appKey"` // TODO keep?

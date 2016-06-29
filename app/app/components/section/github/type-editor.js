@@ -28,9 +28,6 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
     showLabels: false,
 
     didReceiveAttrs() {
-        $.datetimepicker.setLocale('en');
-        $('#branch-since').datetimepicker();
-
         let self = this;
         let page = this.get('page');
 
@@ -53,7 +50,6 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
                         branchURL: "",
                         branchSince: "",
                         branchLines: "30",
-                        issueNum: "1"
                     };
 
                     try {
@@ -64,7 +60,6 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
                         config.lists = metaConfig.lists;
                         config.branchSince = metaConfig.branchSince;
                         config.branchLines = metaConfig.branchLines;
-                        config.issueNum = metaConfig.issueNum;
                     } catch (e) {}
 
                     self.set('config', config);
@@ -161,11 +156,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
         };
         reports[1] = {
             id: "issues_data", // used as method for fetching Go data
-            name: "Open Issues"
-        };
-        reports[2] = {
-            id: "issuenum_data", // used as method for fetching Go data
-            name: "Individual issue activity"
+            name: "Issues"
         };
 
         this.set("reports", reports);
@@ -187,6 +178,9 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
     renderSwitch(thisReport) {
 
+        $.datetimepicker.setLocale('en');
+        $('#branch-since').datetimepicker();
+
         let bl = this.get('config.branchLines');
         if (is.undefined(bl) || bl === "" || bl <= 0) {
             this.set('config.branchLines', "30");
@@ -194,7 +188,6 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
         this.set('showCommits', false);
         this.set('showLabels', false);
-        this.set('showIssueNum', false);
         switch (thisReport.id) {
             case 'commits_data':
                 this.set('showCommits', true);
@@ -203,10 +196,6 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
             case "issues_data":
                 this.set('showLabels', true);
                 this.getLabelLists();
-                break;
-            case "issuenum_data":
-                this.set('showIssueNum', true);
-                this.set('busy', false);
                 break;
         }
     },
@@ -315,11 +304,6 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
             let lists = this.get('config.lists');
             let list = lists.findBy('id', id);
 
-            // restore the list of branches to the default state
-            // lists.forEach(function(lst) {
-            //     Ember.set(lst, 'included', false);
-            // });
-
             if (list !== null) {
                 Ember.set(list, 'included', !list.included);
             }
@@ -377,10 +361,6 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
             this.set('isDirty', true);
             this.set('config.report', thisReport);
             this.getReportLists();
-        },
-
-        checkLinesChange(thisLines) {
-            console.log("onLinesChange", thisLines);
         },
 
         onCancel() {

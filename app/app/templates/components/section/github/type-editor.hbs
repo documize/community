@@ -36,9 +36,6 @@
 					</div>
 					Show items since {{input id="branch-since" value=config.branchSince type="text" }}<br>
 					Number of items to show {{input id="branch-lines" value=config.branchLines type="number" min="1" step="1" max="100" }}<br>
-					{{#if showIssueNum}}
-						Issue Number: {{input id="issue-number" value=config.issueNum type="number" min="1" step="1" }}
-					{{/if}}
 					{{#if showCommits}}
 						<div class="input-control">
 							<label>Branches</label>
@@ -62,6 +59,8 @@
 						<div class="input-control">
 							<label>Labels</label>
 							<div class="tip">Select labels - an issue must have all labels to be shown, if no label is selected all issues are shown.</div>
+							TODO: Open/Closed<br>
+							TODO: Issue Numbers<br>
 							<div class="github-board">
 								{{#each config.lists as |list|}}
 									<div class="github-list" {{action 'onLabelCheckbox' list.id}} >
