@@ -1,0 +1,46 @@
+{{#section/base-editor document=document folder=folder page=page busy=waiting tip="Papertrail cloud logging service (https://papertrailapp.com)" isDirty=(action 'isDirty') onCancel=(action 'onCancel') onAction=(action 'onAction')}}
+
+	<div class="pull-left width-45">
+		<div class="input-form">
+			<form {{action 'auth' on="submit"}}>
+				<div class="heading">
+					<div class="title">Papertrail Authentication</div>
+					<div class="tip">Provide your Papertrail API token</div>
+				</div>
+				<div class="input-control">
+					<label>API Key</label>
+					<div class="tip">API Token (from your profile)</div>
+					{{focus-input id="papertrail-apitoken" type="password" value=config.APIToken readonly=isReadonly}}
+				</div>
+				<div class="regular-button button-blue" {{ action 'auth' }}>Authenticate</div>
+			</form>
+		</div>
+	</div>
+
+	{{#if authenticated}}
+		<div class="pull-left width-10">&nbsp;</div>
+		<div class="pull-left width-45">
+			<div class="input-form">
+				<form {{action 'onAction' on="submit"}}>
+					<div class="heading">
+						<div class="title">Log Filter</div>
+						<div class="tip">Determine which log entries you want to display</div>
+					</div>
+					<div class="input-control">
+						<label>Search Query</label>
+						<div class="tip">e.g. bob OR ("some phrase" AND sally)</div>
+						{{input id="papertrail-query" type="text" class="mousetrap" value=config.query}}
+					</div>
+					<div class="input-control">
+						<label>Maximum Results</label>
+						<div class="tip">How many log entries do you want?</div>
+						{{input id="papertrail-max" type="number" class="mousetrap" value=config.max}}
+					</div>
+				</form>
+			</div>
+		</div>
+	{{/if}}
+
+	<div class="clearfix" />
+
+{{/section/base-editor}}
