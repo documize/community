@@ -22,6 +22,7 @@ import (
 	"github.com/documize/community/documize/section/intercom"
 	"github.com/documize/community/documize/section/mailchimp"
 	"github.com/documize/community/documize/section/markdown"
+	"github.com/documize/community/documize/section/papertrail"
 	"github.com/documize/community/documize/section/provider"
 	"github.com/documize/community/documize/section/salesforce"
 	"github.com/documize/community/documize/section/stripe"
@@ -43,6 +44,7 @@ func Register() {
 	provider.Register("mailchimp", &mailchimp.Provider{})
 	provider.Register("markdown", &markdown.Provider{})
 	provider.Register("salesforce", &salesforce.Provider{})
+	provider.Register("papertrail", &papertrail.Provider{})
 	provider.Register("stripe", &stripe.Provider{})
 	provider.Register("table", &table.Provider{})
 	provider.Register("trello", &trello.Provider{})
