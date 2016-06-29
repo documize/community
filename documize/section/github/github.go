@@ -426,10 +426,11 @@ func (*Provider) getIssues(client *gogithub.Client, config githubConfig) ([]gith
 		ret = append(ret, githubIssue{
 			Name:    n,
 			Message: *v.Title,
-			Date:    v.UpdatedAt.Format("January 2 2006, 15:04"),
+			Date:    v.CreatedAt.Format("January 2 2006, 15:04"),
 			Avatar:  a,
 			URL:     template.URL(*v.HTMLURL),
 			Labels:  template.HTML(l),
+			ID:      *v.Number,
 		})
 	}
 
