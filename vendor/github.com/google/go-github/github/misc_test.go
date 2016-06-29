@@ -46,20 +46,6 @@ func TestMarkdown(t *testing.T) {
 	}
 }
 
-func ExampleClient_Markdown() {
-	client := NewClient(nil)
-
-	input := "# heading #\n\nLink to issue #1"
-	opt := &MarkdownOptions{Mode: "gfm", Context: "google/go-github"}
-
-	output, _, err := client.Markdown(input, opt)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	fmt.Println(output)
-}
-
 func TestListEmojis(t *testing.T) {
 	setup()
 	defer teardown()
@@ -172,7 +158,7 @@ func TestRepositoriesService_ListServiceHooks(t *testing.T) {
 		t.Errorf("Repositories.ListHooks returned error: %v", err)
 	}
 
-	want := []ServiceHook{{
+	want := []*ServiceHook{{
 		Name:            String("n"),
 		Events:          []string{"e"},
 		SupportedEvents: []string{"s"},

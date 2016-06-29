@@ -25,12 +25,11 @@ func TestGistsService_ListComments(t *testing.T) {
 
 	opt := &ListOptions{Page: 2}
 	comments, _, err := client.Gists.ListComments("1", opt)
-
 	if err != nil {
 		t.Errorf("Gists.Comments returned error: %v", err)
 	}
 
-	want := []GistComment{{ID: Int(1)}}
+	want := []*GistComment{{ID: Int(1)}}
 	if !reflect.DeepEqual(comments, want) {
 		t.Errorf("Gists.ListComments returned %+v, want %+v", comments, want)
 	}
@@ -51,7 +50,6 @@ func TestGistsService_GetComment(t *testing.T) {
 	})
 
 	comment, _, err := client.Gists.GetComment("1", 2)
-
 	if err != nil {
 		t.Errorf("Gists.GetComment returned error: %v", err)
 	}

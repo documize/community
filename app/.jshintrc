@@ -17,7 +17,8 @@
     "Tooltip",
     "Drop",
 	"Dropzone",
-	"dragula"
+	"dragula",
+  "datetimepicker"
   ],
   "browser": true,
   "boss": true,

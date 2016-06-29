@@ -12,6 +12,7 @@
 /* jshint node: true */
 
 module.exports = function(environment) {
+
     var ENV = {
         modulePrefix: 'documize',
         podModulePrefix: 'documize/pods',
@@ -25,13 +26,13 @@ module.exports = function(environment) {
         EmberENV: {
             FEATURES: {}
         },
-         "ember-cli-mirage": {
+        "ember-cli-mirage": {
             enabled: false
         },
         APP: {
             // Allows to disable audit service in tests
             auditEnabled: true,
-			intercomKey: ""
+            intercomKey: ""
         }
     };
 
@@ -39,7 +40,7 @@ module.exports = function(environment) {
         ENV.APP.LOG_TRANSITIONS = true;
         ENV.APP.LOG_TRANSITIONS_INTERNAL = true;
         ENV['ember-cli-mirage'] = {
-          enabled: false
+            enabled: false
         };
 
         ENV.apiHost = "https://localhost:5001";
@@ -56,7 +57,7 @@ module.exports = function(environment) {
         ENV.locationType = 'none';
         ENV.APP.rootElement = '#ember-testing';
         ENV['ember-cli-mirage'] = {
-          enabled: true
+            enabled: true
         };
         ENV.APP.auditEnabled = false;
 
@@ -73,18 +74,18 @@ module.exports = function(environment) {
         ENV.apiHost = "";
     }
 
-	process.argv.forEach(function(element) {
-		if (element !== undefined) {
-	   		if (element.startsWith("intercom=")) {
-		   		element = element.replace("intercom=", "");
-				ENV.APP.intercomKey = element;
-	   		}
-			if (element.startsWith("apiHost=")) {
-		   		element = element.replace("apiHost=", "");
-				ENV.apiHost = element;
-	   		}
-		}
-	});
+    process.argv.forEach(function(element) {
+        if (element !== undefined) {
+            if (element.startsWith("intercom=")) {
+                element = element.replace("intercom=", "");
+                ENV.APP.intercomKey = element;
+            }
+            if (element.startsWith("apiHost=")) {
+                element = element.replace("apiHost=", "");
+                ENV.apiHost = element;
+            }
+        }
+    });
 
     ENV.apiNamespace = "api";
     ENV.contentSecurityPolicy = null;

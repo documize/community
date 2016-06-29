@@ -20,7 +20,6 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-	"time"
 
 	"github.com/documize/community/documize/api/request"
 	"github.com/documize/community/documize/section/provider"
@@ -177,8 +176,6 @@ func (t *Provider) Command(w http.ResponseWriter, r *http.Request) {
 
 		owners = sortOwners(owners)
 
-		//fmt.Printf("DEBUG owners %#v\n", owners)
-
 		provider.WriteJSON(w, owners)
 
 	case "repos":
@@ -193,7 +190,7 @@ func (t *Provider) Command(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			var repos []gogithub.Repository
+			var repos []*gogithub.Repository
 			if config.Owner == *me.Login {
 				repos, _, err = client.Repositories.List(config.Owner, nil)
 			} else {
@@ -251,6 +248,30 @@ func (t *Provider) Command(w http.ResponseWriter, r *http.Request) {
 
 		provider.WriteJSON(w, render)
 
+	case "labels":
+		if config.Owner == "" || config.Repo == "" {
+			provider.WriteJSON(w, []githubBranch{}) // we have nothing to return
+			return
+		}
+		labels, _, err := client.Issues.ListLabels(config.Owner, config.Repo,
+			&gogithub.ListOptions{PerPage: 100})
+		if err != nil {
+			log.Error("github get labels:", err)
+			provider.WriteError(w, "github", err)
+			return
+		}
+		render := make([]githubBranch, len(labels))
+		for kc, vb := range labels {
+			render[kc] = githubBranch{
+				Name:     *vb.Name,
+				ID:       fmt.Sprintf("%s:%s:%s", config.Owner, config.Repo, *vb.Name),
+				Included: false,
+				Color:    *vb.Color,
+			}
+		}
+
+		provider.WriteJSON(w, render)
+
 	default:
 		log.ErrorString("Github connector unknown method: " + method)
 		provider.WriteEmpty(w)
@@ -286,6 +307,7 @@ func (*Provider) getIssueNum(client *gogithub.Client, config githubConfig) ([]gi
 		}
 		ret = append(ret, githubIssueActivity{
 			Name:    n,
+			Event:   "TITLE",
 			Message: *issue.Title, // TODO move?
 			Date:    issue.UpdatedAt.Format("January 2 2006, 15:04"),
 			Avatar:  a,
@@ -293,6 +315,7 @@ func (*Provider) getIssueNum(client *gogithub.Client, config githubConfig) ([]gi
 		})
 		ret = append(ret, githubIssueActivity{
 			Name:    n,
+			Event:   "DESCRIPTION",
 			Message: *issue.Body,
 			Date:    issue.UpdatedAt.Format("January 2 2006, 15:04"),
 			Avatar:  a,
@@ -302,32 +325,59 @@ func (*Provider) getIssueNum(client *gogithub.Client, config githubConfig) ([]gi
 		return ret, err
 	}
 
-	guff, _, err := client.Issues.ListComments(config.Owner, config.Repo, config.IssueNum,
-		&gogithub.IssueListCommentsOptions{ListOptions: gogithub.ListOptions{PerPage: 100}})
+	opts := &gogithub.ListOptions{PerPage: config.BranchLines}
+
+	guff, _, err := client.Issues.ListIssueTimeline(config.Owner, config.Repo, config.IssueNum, opts)
 
 	if err != nil {
 		return ret, err
 	}
 
 	for _, v := range guff {
-		n := ""
-		a := ""
-		p := v.User
-		if p != nil {
-			if p.Name != nil {
-				n = *p.Name
+		if config.SincePtr == nil || v.CreatedAt.After(*config.SincePtr) {
+			var n, a, m, u string
+
+			p := v.Actor
+			if p != nil {
+				if p.Name != nil {
+					n = *p.Name
+				}
+				if p.AvatarURL != nil {
+					a = *p.AvatarURL
+				}
 			}
-			if p.AvatarURL != nil {
-				a = *p.AvatarURL
+
+			u = fmt.Sprintf("https://github.com/%s/%s/issues/%d#event-%d",
+				config.Owner, config.Repo, config.IssueNum, *v.ID)
+
+			if *v.Event == "commented" {
+				ic, _, err := client.Issues.GetComment(config.Owner, config.Repo, *v.ID)
+				if err != nil {
+					log.ErrorString("github error fetching issue event comment: " + err.Error())
+				} else {
+					m = *ic.Body
+					u = *ic.HTMLURL
+					p := ic.User
+					if p != nil {
+						if p.Name != nil {
+							n = *p.Name
+						}
+						if p.AvatarURL != nil {
+							a = *p.AvatarURL
+						}
+					}
+				}
 			}
+
+			ret = append(ret, githubIssueActivity{
+				Name:    n,
+				Event:   *v.Event,
+				Message: m,
+				Date:    v.CreatedAt.Format("January 2 2006, 15:04"),
+				Avatar:  a,
+				URL:     u,
+			})
 		}
-		ret = append(ret, githubIssueActivity{
-			Name:    n,
-			Message: *v.Body,
-			Date:    v.UpdatedAt.Format("January 2 2006, 15:04"),
-			Avatar:  a,
-			URL:     *v.HTMLURL,
-		})
 	}
 
 	return ret, nil
@@ -336,10 +386,22 @@ func (*Provider) getIssueNum(client *gogithub.Client, config githubConfig) ([]gi
 
 func (*Provider) getIssues(client *gogithub.Client, config githubConfig) ([]githubIssue, error) {
 
-	guff, _, err := client.Issues.ListByRepo(config.Owner, config.Repo,
-		&gogithub.IssueListByRepoOptions{ListOptions: gogithub.ListOptions{PerPage: 100}})
+	opts := &gogithub.IssueListByRepoOptions{
+		ListOptions: gogithub.ListOptions{PerPage: config.BranchLines}}
+
+	if config.SincePtr != nil {
+		opts.Since = *config.SincePtr
+	}
+
+	for _, lab := range config.Lists {
+		if lab.Included {
+			opts.Labels = append(opts.Labels, lab.Name)
+		}
+	}
 
 	ret := []githubIssue{}
+
+	guff, _, err := client.Issues.ListByRepo(config.Owner, config.Repo, opts)
 
 	if err != nil {
 		return ret, err
@@ -357,12 +419,17 @@ func (*Provider) getIssues(client *gogithub.Client, config githubConfig) ([]gith
 				a = *p.AvatarURL
 			}
 		}
+		l := ""
+		for _, ll := range v.Labels {
+			l += `<span style="color:#` + *ll.Color + `">` + *ll.Name + `</span> `
+		}
 		ret = append(ret, githubIssue{
 			Name:    n,
 			Message: *v.Title,
 			Date:    v.UpdatedAt.Format("January 2 2006, 15:04"),
 			Avatar:  a,
 			URL:     *v.HTMLURL,
+			Labels:  l,
 		})
 	}
 
@@ -376,11 +443,8 @@ func (*Provider) getCommits(client *gogithub.Client, config githubConfig) ([]git
 		SHA:         config.Branch,
 		ListOptions: gogithub.ListOptions{PerPage: config.BranchLines}}
 
-	var since time.Time
-
-	err := since.UnmarshalText([]byte(config.BranchSince)) // TODO date Picker format
-	if err == nil {
-		opts.Since = since
+	if config.SincePtr != nil {
+		opts.Since = *config.SincePtr
 	}
 
 	guff, _, err := client.Repositories.ListCommits(config.Owner, config.Repo, opts)
@@ -508,7 +572,7 @@ func (t *Provider) Refresh(configJSON, data string) string {
 }
 
 // Render ... just returns the data given, suitably formatted
-func (*Provider) Render(config, data string) string {
+func (p *Provider) Render(config, data string) string {
 	var err error
 
 	payload := githubRender{}
@@ -524,6 +588,10 @@ func (*Provider) Render(config, data string) string {
 	c.Clean()
 	payload.Config = c
 	payload.Repo = c.RepoInfo
+	payload.Limit = c.BranchLines
+	if len(c.BranchSince) > 0 {
+		payload.DateMessage = ", created after " + c.BranchSince
+	}
 
 	switch c.ReportInfo.ID {
 	case "issuenum_data":
@@ -535,6 +603,19 @@ func (*Provider) Render(config, data string) string {
 			if err != nil {
 				log.Error("unable to unmarshall github issue activity data", err)
 				return "Documize internal github json umarshall issue activity data error: " + err.Error()
+			}
+		}
+
+		opt := &gogithub.MarkdownOptions{Mode: "gfm", Context: c.Owner + "/" + c.Repo}
+		client := p.githubClient(c)
+		for k, v := range raw {
+			if v.Event == "commented" {
+				output, _, err := client.Markdown(v.Message, opt)
+				if err != nil {
+					log.Error("convert commented text to markdown", err)
+				} else {
+					raw[k].Message = output
+				}
 			}
 		}
 		payload.IssueNumActivity = raw
@@ -550,6 +631,15 @@ func (*Provider) Render(config, data string) string {
 			}
 		}
 		payload.Issues = raw
+		if len(c.Lists) > 0 {
+			for _, v := range c.Lists {
+				if v.Included {
+					payload.ShowList = true
+					break
+				}
+			}
+			payload.List = c.Lists
+		}
 
 	default: // to handle legacy data, this handles commits
 		raw := []githubBranchCommits{}

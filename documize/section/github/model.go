@@ -12,25 +12,33 @@
 package github
 
 import (
-	//"github.com/documize/community/wordsmith/log"
-
 	"strings"
+	"time"
+
+	"github.com/documize/community/wordsmith/log"
 )
 
 type githubRender struct {
 	Config           githubConfig
 	Repo             githubRepo
+	List             []githubBranch
+	ShowList         bool
 	BranchCommits    []githubBranchCommits
 	CommitCount      int
 	Issues           []githubIssue
 	IssueNum         int
 	IssueNumActivity []githubIssueActivity
+	Limit            int
+	DateMessage      string
 }
 
 var renderTemplates = map[string]string{
 	"commits_data": `
 <div class="section-github-render">
-	<p>There are {{ .CommitCount }} commits for branch <a href="{{.Config.BranchURL}}">{{.Config.Branch}}</a> of repository <a href="{{ .Repo.URL }}">{{.Repo.Name}}.</a></p>
+	<p>
+		There are {{ .CommitCount }} commits for branch <a href="{{.Config.BranchURL}}">{{.Config.Branch}}</a> of repository <a href="{{ .Repo.URL }}">{{.Repo.Name}}.</a>
+		Up to {{ .Limit }} items are shown{{ .DateMessage }}.
+	</p>
 	<div class="github-board">
 		{{range $data := .BranchCommits}}
 			<div class="github-group-title">
@@ -58,7 +66,19 @@ var renderTemplates = map[string]string{
 `,
 	"issues_data": `
 <div class="section-github-render">
-	<p>The issues for repository <a href="{{ .Repo.URL }}/issues">{{.Repo.Name}}.</a></p>
+	<p>
+		The open issues for repository <a href="{{ .Repo.URL }}/issues">{{.Repo.Name}}</a>
+		{{if .ShowList}}
+			with label(s)
+			{{range $label := .List}}
+				{{if $label.Included}}
+					<span style="background-color:#{{$label.Color}}">{{$label.Name}}</span>
+				{{end}}
+			{{end}}
+		{{end}}
+		. 
+		Up to {{ .Limit }} items are shown{{ .DateMessage }}.
+	</p>
 	<div class="github-board">
 	<ul class="github-list">
 		{{range $data := .Issues}}
@@ -69,7 +89,9 @@ var renderTemplates = map[string]string{
 					</div>
 					<div class="github-commit-body">
 						<div class="github-commit-title">{{$data.Message}}</div>
-						<div class="github-commit-meta">{{$data.Name}} committed on {{$data.Date}}</div>
+						<div class="github-commit-meta">
+							{{$data.Name}} committed on {{$data.Date}} {{$data.Labels}}
+						</div>
 					</div>
 				</a>
 				<div class="clearfix" />
@@ -81,7 +103,10 @@ var renderTemplates = map[string]string{
 `,
 	"issuenum_data": `
 <div class="section-github-render">
-	<p>Activity for issue #{{.IssueNum}} in repository <a href="{{ .Repo.URL }}/issues">{{.Repo.Name}}.</a></p>
+	<p>
+		Activity for issue #{{.IssueNum}} in repository <a href="{{ .Repo.URL }}/issues">{{.Repo.Name}}.</a>
+		Up to {{ .Limit }} items are shown{{ .DateMessage }}.
+	</p>
 	<div class="github-board">
 	<ul class="github-list">
 		{{range $data := .IssueNumActivity}}
@@ -91,7 +116,7 @@ var renderTemplates = map[string]string{
 						<img alt="@{{$data.Name}}" src="{{$data.Avatar}}" height="36" width="36">
 					</div>
 					<div class="github-commit-body">
-						<div class="github-commit-title">{{$data.Message}}</div>
+						<div class="github-commit-title">{{$data.Event}}: {{$data.Message}}</div> 
 						<div class="github-commit-meta">{{$data.Name}} committed on {{$data.Date}}</div>
 					</div>
 				</a>
@@ -129,6 +154,7 @@ type githubBranch struct {
 	Name     string `json:"name"`
 	Included bool   `json:"included"`
 	URL      string `json:"url"`
+	Color    string `json:"color,omitempty"`
 }
 
 type githubBranchCommits struct {
@@ -151,10 +177,12 @@ type githubIssue struct {
 	URL     string `json:"url"`
 	Name    string `json:"name"`
 	Avatar  string `json:"avatar"`
+	Labels  string `json:"labels"`
 }
 
 type githubIssueActivity struct {
 	Date    string `json:"date"`
+	Event   string `json:"event"`
 	Message string `json:"message"`
 	URL     string `json:"url"`
 	Name    string `json:"name"`
@@ -169,7 +197,8 @@ type githubConfig struct {
 	Branch      string         `json:"branch"`
 	BranchURL   string         `json:"branchURL"`
 	BranchSince string         `json:"branchSince,omitempty"`
-	BranchLines int            `json:"branchLines,omitempty"`
+	SincePtr    *time.Time     `json:"-"`
+	BranchLines int            `json:"branchLines,omitempty,string"`
 	OwnerInfo   githubOwner    `json:"owner"`
 	RepoInfo    githubRepo     `json:"repo"`
 	ReportInfo  githubReport   `json:"report"`
@@ -191,12 +220,19 @@ func (c *githubConfig) Clean() {
 			break
 		}
 	}
-	// var e error
-	// c.IssueNum, e = strconv.Atoi(c.IssueNumString)
-	// if e != nil {
-	// 	log.ErrorString("github clean issue number: " + e.Error())
-	// 	c.IssueNum = 1
-	// }
+	if len(c.BranchSince) >= len("yyyy/mm/dd hh:ss") {
+		var since time.Time
+		tt := []byte("yyyy-mm-ddThh:mm:00Z")
+		for _, i := range []int{0, 1, 2, 3, 5, 6, 8, 9, 11, 12, 14, 15} {
+			tt[i] = byte(c.BranchSince[i])
+		}
+		err := since.UnmarshalText(tt)
+		if err != nil {
+			log.ErrorString("Date unmarshall '" + c.BranchSince + "'->'" + string(tt) + "' error: " + err.Error())
+		} else {
+			c.SincePtr = &since
+		}
+	}
 }
 
 type githubCallbackT struct {
