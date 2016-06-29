@@ -29,6 +29,9 @@ import (
 	"golang.org/x/oauth2"
 )
 
+// TODO find a smaller image than the one below
+const githubGravatar = "https://i2.wp.com/assets-cdn.github.com/images/gravatars/gravatar-user-420.png"
+
 var meta provider.TypeMeta
 
 func init() {
@@ -321,6 +324,14 @@ func (*Provider) getIssueNum(client *gogithub.Client, config githubConfig) ([]gi
 			Avatar:  a,
 			URL:     template.URL(*issue.HTMLURL),
 		})
+		ret = append(ret, githubIssueActivity{
+			Name:    "",
+			Event:   "NOTE",
+			Message: template.HTML("Issue timeline below is in reverse order"),
+			Date:    "",
+			Avatar:  githubGravatar,
+			URL:     template.URL(*issue.HTMLURL),
+		})
 	} else {
 		return ret, err
 	}
@@ -350,7 +361,8 @@ func (*Provider) getIssueNum(client *gogithub.Client, config githubConfig) ([]gi
 			u = fmt.Sprintf("https://github.com/%s/%s/issues/%d#event-%d",
 				config.Owner, config.Repo, config.IssueNum, *v.ID)
 
-			if *v.Event == "commented" {
+			switch *v.Event {
+			case "commented":
 				ic, _, err := client.Issues.GetComment(config.Owner, config.Repo, *v.ID)
 				if err != nil {
 					log.ErrorString("github error fetching issue event comment: " + err.Error())
@@ -387,6 +399,7 @@ func (*Provider) getIssueNum(client *gogithub.Client, config githubConfig) ([]gi
 func (*Provider) getIssues(client *gogithub.Client, config githubConfig) ([]githubIssue, error) {
 
 	opts := &gogithub.IssueListByRepoOptions{
+		Sort:        "created",
 		ListOptions: gogithub.ListOptions{PerPage: config.BranchLines}}
 
 	if config.SincePtr != nil {
@@ -492,8 +505,7 @@ func (*Provider) getCommits(client *gogithub.Client, config githubConfig) ([]git
 			}
 		}
 		if a == "" {
-			// TODO find a smaller image than the one below
-			a = "https://i2.wp.com/assets-cdn.github.com/images/gravatars/gravatar-user-420.png"
+			a = githubGravatar
 		}
 		if v.HTMLURL != nil {
 			u = *v.HTMLURL
