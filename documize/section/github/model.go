@@ -12,6 +12,7 @@
 package github
 
 import (
+	"html/template"
 	"strings"
 	"time"
 
@@ -164,29 +165,29 @@ type githubBranchCommits struct {
 }
 
 type githubCommit struct {
-	Date    string `json:"date"`
-	Message string `json:"message"`
-	URL     string `json:"url"`
-	Name    string `json:"name"`
-	Avatar  string `json:"avatar"`
+	Date    string       `json:"date"`
+	Message string       `json:"message"`
+	URL     template.URL `json:"url"`
+	Name    string       `json:"name"`
+	Avatar  string       `json:"avatar"`
 }
 
 type githubIssue struct {
-	Date    string `json:"date"`
-	Message string `json:"message"`
-	URL     string `json:"url"`
-	Name    string `json:"name"`
-	Avatar  string `json:"avatar"`
-	Labels  string `json:"labels"`
+	Date    string        `json:"date"`
+	Message string        `json:"message"`
+	URL     template.URL  `json:"url"`
+	Name    string        `json:"name"`
+	Avatar  string        `json:"avatar"`
+	Labels  template.HTML `json:"labels"`
 }
 
 type githubIssueActivity struct {
-	Date    string `json:"date"`
-	Event   string `json:"event"`
-	Message string `json:"message"`
-	URL     string `json:"url"`
-	Name    string `json:"name"`
-	Avatar  string `json:"avatar"`
+	Date    string        `json:"date"`
+	Event   string        `json:"event"`
+	Message template.HTML `json:"message"`
+	URL     template.URL  `json:"url"`
+	Name    string        `json:"name"`
+	Avatar  string        `json:"avatar"`
 }
 
 type githubConfig struct {

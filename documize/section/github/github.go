@@ -308,18 +308,18 @@ func (*Provider) getIssueNum(client *gogithub.Client, config githubConfig) ([]gi
 		ret = append(ret, githubIssueActivity{
 			Name:    n,
 			Event:   "TITLE",
-			Message: *issue.Title, // TODO move?
+			Message: template.HTML(*issue.Title),
 			Date:    issue.UpdatedAt.Format("January 2 2006, 15:04"),
 			Avatar:  a,
-			URL:     *issue.HTMLURL,
+			URL:     template.URL(*issue.HTMLURL),
 		})
 		ret = append(ret, githubIssueActivity{
 			Name:    n,
 			Event:   "DESCRIPTION",
-			Message: *issue.Body,
+			Message: template.HTML(*issue.Body),
 			Date:    issue.UpdatedAt.Format("January 2 2006, 15:04"),
 			Avatar:  a,
-			URL:     *issue.HTMLURL,
+			URL:     template.URL(*issue.HTMLURL),
 		})
 	} else {
 		return ret, err
@@ -372,10 +372,10 @@ func (*Provider) getIssueNum(client *gogithub.Client, config githubConfig) ([]gi
 			ret = append(ret, githubIssueActivity{
 				Name:    n,
 				Event:   *v.Event,
-				Message: m,
+				Message: template.HTML(m),
 				Date:    v.CreatedAt.Format("January 2 2006, 15:04"),
 				Avatar:  a,
-				URL:     u,
+				URL:     template.URL(u),
 			})
 		}
 	}
@@ -421,15 +421,15 @@ func (*Provider) getIssues(client *gogithub.Client, config githubConfig) ([]gith
 		}
 		l := ""
 		for _, ll := range v.Labels {
-			l += `<span style="color:#` + *ll.Color + `">` + *ll.Name + `</span> `
+			l += `<span style="background-color:#` + *ll.Color + `">` + *ll.Name + `</span> `
 		}
 		ret = append(ret, githubIssue{
 			Name:    n,
 			Message: *v.Title,
 			Date:    v.UpdatedAt.Format("January 2 2006, 15:04"),
 			Avatar:  a,
-			URL:     *v.HTMLURL,
-			Labels:  l,
+			URL:     template.URL(*v.HTMLURL),
+			Labels:  template.HTML(l),
 		})
 	}
 
@@ -507,7 +507,7 @@ func (*Provider) getCommits(client *gogithub.Client, config githubConfig) ([]git
 			Message: m,
 			Date:    d,
 			Avatar:  a,
-			URL:     u,
+			URL:     template.URL(u),
 		})
 	}
 
@@ -610,11 +610,11 @@ func (p *Provider) Render(config, data string) string {
 		client := p.githubClient(c)
 		for k, v := range raw {
 			if v.Event == "commented" {
-				output, _, err := client.Markdown(v.Message, opt)
+				output, _, err := client.Markdown(string(v.Message), opt)
 				if err != nil {
 					log.Error("convert commented text to markdown", err)
 				} else {
-					raw[k].Message = output
+					raw[k].Message = template.HTML(output)
 				}
 			}
 		}
