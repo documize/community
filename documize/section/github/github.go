@@ -409,14 +409,10 @@ func (*Provider) getIssues(client *gogithub.Client, config githubConfig) ([]gith
 
 	for _, v := range guff {
 		n := ""
-		a := ""
-		p := v.User
-		if p != nil {
-			if p.Name != nil {
-				n = *p.Name
-			}
-			if p.AvatarURL != nil {
-				a = *p.AvatarURL
+		ptr := v.User
+		if ptr != nil {
+			if ptr.Login != nil {
+				n = *ptr.Login
 			}
 		}
 		l := ""
@@ -427,7 +423,6 @@ func (*Provider) getIssues(client *gogithub.Client, config githubConfig) ([]gith
 			Name:    n,
 			Message: *v.Title,
 			Date:    v.CreatedAt.Format("January 2 2006, 15:04"),
-			Avatar:  a,
 			URL:     template.URL(*v.HTMLURL),
 			Labels:  template.HTML(l),
 			ID:      *v.Number,

@@ -114,15 +114,18 @@ var renderTemplates = map[string]string{
 	<ul class="github-list">
 		{{range $data := .IssueNumActivity}}
 			<li class="github-commit-item">
-				<a class="link" href="{{$data.URL}}">
-					<div class="github-avatar">
-						<img alt="@{{$data.Name}}" src="{{$data.Avatar}}" height="36" width="36">
-					</div>
-					<div class="github-commit-body">
-						<div class="github-commit-title">{{$data.Event}}: {{$data.Message}}</div>
-						<div class="github-commit-meta">{{$data.Name}} committed on {{$data.Date}}</div>
-					</div>
-				</a>
+				<div class="github-avatar">
+					<img alt="@{{$data.Name}}" src="{{$data.Avatar}}" height="36" width="36">
+				</div>
+				<div class="github-commit-body">
+					<div class="github-commit-title">
+						<a class="link" href="{{$data.URL}}">
+							{{$data.Event}}: 
+						</a>
+						{{$data.Message}}
+					</div> 
+					<div class="github-commit-meta">{{$data.Name}} committed on {{$data.Date}}</div>
+				</div>
 				<div class="clearfix" />
 			</li>
 		{{end}}
