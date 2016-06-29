@@ -421,7 +421,7 @@ func (*Provider) getIssues(client *gogithub.Client, config githubConfig) ([]gith
 		}
 		l := ""
 		for _, ll := range v.Labels {
-			l += `<span style="background-color:#` + *ll.Color + `">` + *ll.Name + `</span> `
+			l += `<span class="github-issue-label" style="background-color:#` + *ll.Color + `">` + *ll.Name + `</span> `
 		}
 		ret = append(ret, githubIssue{
 			Name:    n,
