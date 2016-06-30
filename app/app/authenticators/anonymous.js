@@ -6,6 +6,9 @@ const {
 } = Ember;
 
 export default Base.extend({
+    restore(data) {
+        return resolve(data);
+    },
     authenticate(data) {
         return resolve(data);
     }
