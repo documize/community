@@ -1,10 +1,10 @@
 .page-container {
-    padding-top: 60px;
 	min-height: 500px; //ensure dropdowns render in viewport
 }
 
 .copyright {
 	margin-top: 50px;
+	text-align: center;
 
 	> a {
 		font-size: 0.8rem;
@@ -12,42 +12,58 @@
 	}
 }
 
-.header {
+.zone-navigation {
     background-color: $color-primary;
     color: $color-white;
-    height: 145px;
     padding: 0;
     margin: 0;
-    // z-index: 1;
-    // position: fixed;
     width: 100%;
     font-size: 1rem;
+	padding: 15px 40px 15px 40px;
 
     .content {
-        margin-top: 25px;
 
         > .title {
-            padding-left: 10px;
-            font-size: 1.1rem;
+            padding-left: 15px;
+            font-size: 1rem;
             display: inline-block;
             vertical-align: middle;
+			color: $color-white;
+			text-decoration: none;
         }
 
         > .name {
-            padding-right: 10px;
-            font-size: 1.1rem;
+            padding-right: 15px;
+            font-size: 1rem;
             display: inline-block;
             vertical-align: middle;
         }
 
 		> .login {
-			padding: 10px 0 0 0;
-            font-size: 1.1rem;
+			padding: 15px 0 0 0;
+            font-size: 1rem;
             display: inline-block;
 
 			> a {
 				color: $color-white;
 				text-decoration: none;
+			}
+		}
+
+		> .search {
+			padding-left: 15px;
+            font-size: 1rem;
+            display: inline-block;
+			vertical-align: middle;
+			margin-top: 5px;
+
+			> a {
+				color: $color-white;
+				text-decoration: none;
+
+				> .material-icons {
+					font-size: 1.5rem;
+				}
 			}
 		}
     }
@@ -73,7 +89,6 @@
 
         > .material-icons {
             color: $color-primary;
-            // padding: 0 0 0 8px;
             text-align: center;
             font-size: 1.4em;
         }
@@ -91,74 +106,41 @@
             border-radius: 0;
         }
     }
+}
 
-    .breadcrumb-menu {
-        margin: 0;
-        padding: 0;
-        color: $color-white;
-		    padding: 20px 0 0 0;
+.zone-header {
+	background-color: $color-header;
+	padding: 0 40px 0 40px;
 
-        > .option {
-			list-style: none;
-			list-style-type: none;
-			padding: 0 25px 22.5px 0;
-			float: left;
+	> .info {
+		padding: 20px 0 20px 0;
 
-			> a {
-	            font-size: 1rem;
-	            color: #AFB4BB;
-	            text-decoration: none;
-        	}
+		> .title {
+			color: $color-off-black;
+			font-size: 1.2rem;
 		}
 
-        > .selected > a {
-            color: $color-white !important;
-        }
-    }
+		> .message {
+			color: $color-gray;
+			font-size: 1rem;
+			margin-top: 10px;
+		}
+	}
 
-    .dual-box {
-        background-color: $color-off-white;
-        color: $color-gray;
-        height: 45px;
-        border: 1px solid $color-border2;
-        border-radius: 4px;
-        width: 100%;
-        padding: 0 10px;
-        cursor: pointer;
-		    display: inline-block;
+	> .actions {
+		padding: 20px 0 20px 0;
+	}
+}
 
-        &:hover {
-            @extend .z-depth-tiny;
-        }
+.zone-sidebar {
+	height:100%;
+	min-height:100%;
+	padding: 0 0 0 40px;
+	border-right: 1px solid $color-border;
+	float: left;
+}
 
-        .info {
-            font-size: 0.9rem;
-            line-height: 3rem;
-            display: inline-block;
-			overflow: hidden;
-			white-space: nowrap;
-			text-overflow: ellipsis;
-			width: 90%;
-        }
-
-        .icon {
-            float: right;
-            display: inline-block;
-            font-size: 1.5rem;
-            line-height: 3rem;
-            color: $color-stroke;
-        }
-
-        .input {
-            font-size: 1rem;
-            line-height: 3rem;
-            display: inline-block;
-            transition: .3s;
-        }
-    }
-
-    .dual-box-white {
-        background-color: $color-white;
-        color: $color-off-black;
-    }
+.zone-content {
+	padding: 0 40px 0 40px;
+	float: left;
 }

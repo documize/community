@@ -9,20 +9,13 @@
 //
 // https://documize.com
 
-export function initialize( /*application*/ ) {
-    // address insecure jquery defaults (kudos: @nathanhammond)
-    $.globalEval = function() {};
-    $.ajaxSetup({
-        crossDomain: true,
-        converters: {
-            'text script': text => text
-        }
-    });
+import Ember from 'ember';
 
-    Dropzone.autoDiscover = false;
-}
+export default Ember.Component.extend({
+	title: "",
+	message: "",
 
-export default {
-    name: 'application',
-    initialize: initialize
-};
+	hasMessage: Ember.computed('message', function() {
+		return this.get('message').length !== 0;
+	})
+});

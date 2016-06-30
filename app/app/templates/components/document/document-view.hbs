@@ -17,7 +17,7 @@
 				<ul class="list">
 					{{#each attachments key="id" as |a index|}}
 						<li class="item">
-							<img class="icon" src="assets/img/attachments/{{ document/file-icon a.extension }}" />
+							<img class="icon" src="assets/img/attachments/{{document/file-icon a.extension}}" />
 							<a href="{{ session.appMeta.apiUrl }}api/public/attachments/{{ session.appMeta.orgId }}/{{ a.job }}/{{ a.fileId }}">
 								<span class="file">{{ a.filename }}</span>
 							</a>

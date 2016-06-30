@@ -3,7 +3,7 @@
 @mixin button-hover-state($bg) {
     &:hover {
         background-color: lighten($bg, 3%);
-        @extend .z-depth-1;
+        @extend .z-depth-tiny;
     }
 }
 
@@ -24,7 +24,7 @@
 	@extend .no-select;
 
     &:hover {
-        @extend .z-depth-half;
+        @extend .z-depth-tiny;
     }
 
     i {
@@ -55,7 +55,38 @@
     font-size: 1.2rem;
 
     &:hover {
-        @extend .z-depth-half;
+        @extend .z-depth-tiny;
+    }
+
+    i {
+        color: $color-gray;
+        text-align: center;
+    }
+
+    &:before {
+        border-radius: 0;
+    }
+}
+
+.square-button-white {
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+	width: 32px;
+	height: 32px;
+	line-height: 31px;
+	padding: 0;
+	border-radius: 2px;
+    transition: .3s;
+    cursor: pointer;
+    vertical-align: middle;
+	background-color: $color-white;
+    border: 1px solid $color-stroke;
+    text-align: center;
+	@extend .no-select;
+
+    &:hover {
+        @extend .z-depth-tiny;
     }
 
     i {
@@ -134,8 +165,8 @@
     -webkit-tap-highlight-color: transparent;
     color: $color-white;
     cursor: pointer;
-	  border: none;
-	  @extend .no-select;
+	border: none;
+	@extend .no-select;
 
     > .name {
         vertical-align: top;
@@ -161,6 +192,13 @@
 .button-gray {
     background-color: $color-gray;
     @include button-hover-state($color-gray);
+}
+
+.button-white {
+	border: 1px solid $color-stroke;
+    background-color: $color-white;
+	color: $color-blue;
+    @include button-hover-state($color-white);
 }
 
 .button-transparent {

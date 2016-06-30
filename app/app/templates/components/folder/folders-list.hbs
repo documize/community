@@ -1,22 +1,24 @@
-<span class="hidden-xs hidden-sm">
-	{{#if session.isEditor}}
-		<div class="regular-button button-transparent" id="add-folder-button" data-tooltip="New space" data-tooltip-position="top center">
-			<i class="material-icons">add</i>
-			<div class="name">space</div>
-		</div>
-		{{#dropdown-dialog target="add-folder-button" position="bottom left" button="Add" color="flat-green" onAction=(action 'addFolder') focusOn="new-folder-name"}}
-			<div>
-				<div class="input-control">
-					<label>New space</label>
-					<div class="tip">A repository for related documentation</div>
-					{{input type='text' id="new-folder-name" class="mousetrap" value=newFolder}}
-				</div>
-			</div>
-		{{/dropdown-dialog}}
-	{{/if}}
-</span>
 
 <div class="folders-list">
+
+	{{#if session.isEditor}}
+		<div class="add-space-action hidden-xs hidden-sm">
+				<div class="regular-button button-white" id="add-folder-button" data-tooltip="New space" data-tooltip-position="top center">
+					<i class="material-icons">add</i>
+					<div class="name">space</div>
+				</div>
+				{{#dropdown-dialog target="add-folder-button" position="bottom left" button="Add" color="flat-green" onAction=(action 'addFolder') focusOn="new-folder-name"}}
+					<div>
+						<div class="input-control">
+							<label>New space</label>
+							<div class="tip">A repository for related documentation</div>
+							{{input type='text' id="new-folder-name" class="mousetrap" value=newFolder}}
+						</div>
+					</div>
+				{{/dropdown-dialog}}
+		</div>
+	{{/if}}
+
 	<div class="section">
 		<div class="heading">EVERYONE</div>
 		{{#unless hasPublicFolders}}
@@ -63,5 +65,5 @@
 </div>
 
 <div class="copyright hidden-xs hidden-sm">
-	<a href="https://documize.com?ref=app-footer" target="_blank">Copyright&nbsp;&copy;&nbsp;2016 Documize</a>
+	<a href="https://documize.com?ref=app-footer" target="_blank">Copyright&nbsp;&copy;&nbsp;2016 Documize Inc.</a>
 </div>

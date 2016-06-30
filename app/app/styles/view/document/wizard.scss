@@ -16,13 +16,13 @@
 				width: 400px;
 				height: 80px;
 				background-color: $color-white;
-				border: 1px solid $color-border2;
+				border: 1px solid $color-border;
 				border-radius: 3px;
 				margin: 0 30px 30px 0;
 
 				&:hover {
 			        background-color: $color-card-active;
-			        border: 1px solid $color-border2;
+			        border: 1px solid $color-border;
 			        transition: 0.2s all ease;
 			    }
 

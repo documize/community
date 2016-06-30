@@ -30,7 +30,7 @@
 					margin-top: 10px;
 					padding: 0;
 					list-style-type: none;
-					border-bottom: 1px solid $color-gray2;
+					border-bottom: 1px solid $color-border;
     				padding-bottom: 10px;
 
 					> .icon {
@@ -38,8 +38,16 @@
 						margin-right: 10px;
 					}
 
-					> a > .file {
-						font-size: 1rem;
+					> a {
+						color: $color-gray;
+
+						&:hover {
+							color: $color-link;
+						}
+
+						> .file {
+							font-size: 1rem;
+						}
 					}
 
 					> .action {

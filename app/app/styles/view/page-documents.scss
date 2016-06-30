@@ -2,6 +2,11 @@
 .folders-list {
 	margin: 30px 0;
 
+	> .add-space-action {
+		text-align: center;
+		margin-bottom: 30px;
+	}
+
 	> .section {
 		margin: 0 0 20px 0;
 
@@ -48,14 +53,13 @@
 }
 
 .documents-list {
-	margin: 35px 0;
+	margin: 15px 0;
 
 	> .document {
 		margin: 0;
 		padding: 20px 20px 25px 20px;
 		width: 100%;
 		position: relative;
-		border-bottom: 1px solid $color-gray2;
 		transition: .3s;
 
 		&:hover {
@@ -65,7 +69,6 @@
 				}
 
 				> .snippet {
-					// color: $color-off-black;
 					color: $color-gray;
 				}
 			}
@@ -78,15 +81,15 @@
 		> .checkbox {
 			position: absolute;
 			display: none;
-			top: 5px;
-			right: 12px;
+			top: 8px;
+			right: 15px;
 			cursor: pointer;
 
 			> .material-icons {
 				width: 10px;
 			    margin: 0;
 			    padding: 0;
-				color: $color-link;
+				color: $color-blue;
 			}
 		}
 
@@ -110,34 +113,11 @@
 				font-size: 14px;
 				line-height: 24px;
 			}
-
-			> .tags {
-				font-size: 0.8rem;
-				color: $color-gray;
-				margin-top: 8px;
-
-				.tag {
-					background-color: $color-white;
-					color: $color-stroke;
-					text-decoration: none;
-					display: inline-block;
-					margin: 5px 10px 5px 0;
-					padding: 5px 10px;
-					border: 1px solid $color-border;
-					border-radius: 15px;
-					transition: 0.2s all ease;
-
-					&:hover {
-						background-color: $color-off-white;
-					}
-				}
-			}
 		}
 	}
 
 	> .selected-card {
 		background-color: $color-card-active !important;
-		border-bottom: 1px solid $color-link !important;
 
 		> .checkbox {
 			display: block;
@@ -175,7 +155,7 @@
 }
 
 .no-documents {
-	margin-top: 100px;
+	margin-top: 50px;
 	text-align: center;
 	opacity: 0.4;
 
