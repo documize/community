@@ -1,8 +1,9 @@
 import Ember from 'ember';
 import models from '../../../utils/model';
 import NotifierMixin from '../../../mixins/notifier';
+import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 
-export default Ember.Route.extend(NotifierMixin, {
+export default Ember.Route.extend(NotifierMixin, AuthenticatedRouteMixin, {
     folderService: Ember.inject.service('folder'),
     userService: Ember.inject.service('user'),
     folder: {},

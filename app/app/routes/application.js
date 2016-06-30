@@ -28,7 +28,7 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
       return;
     });
   },
-  
+
   actions: {
     willTransition: function( /*transition*/ ) {
       $("#zone-sidebar").css('height', 'auto');

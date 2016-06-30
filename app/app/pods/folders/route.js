@@ -3,6 +3,7 @@ import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-rout
 
 export default Ember.Route.extend(AuthenticatedRouteMixin, {
     folderService: Ember.inject.service('folder'),
+    localStorage: Ember.inject.service(),
     folder: {},
 
     model: function() {
@@ -13,7 +14,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
         let self = this;
 
         if (is.empty(this.paramsFor('folders.folder'))) {
-            var lastFolder = this.session.getSessionItem("folder");
+            var lastFolder = this.get('localStorage').getSessionItem("folder");
 
             if (is.not.undefined(lastFolder)) {
                 this.get('folderService').getFolder(lastFolder).then(function(folder) {

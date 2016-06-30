@@ -1,7 +1,8 @@
 import Ember from 'ember';
+import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 // import models from '../../../utils/model';
 
-export default Ember.Route.extend({
+export default Ember.Route.extend(AuthenticatedRouteMixin, {
     documentService: Ember.inject.service('document'),
     folderService: Ember.inject.service('folder'),
     userService: Ember.inject.service('user'),
