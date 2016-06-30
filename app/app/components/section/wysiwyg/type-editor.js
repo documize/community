@@ -1,11 +1,11 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
@@ -13,6 +13,7 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
     pageBody: "",
+    appMeta: Ember.inject.service(),
 
     didReceiveAttrs() {
         this.set('pageBody', this.get('meta.rawBody'));
@@ -76,7 +77,7 @@ export default Ember.Component.extend({
         };
 
         if (typeof tinymce === 'undefined') {
-            $.getScript(this.session.appMeta.getBaseUrl("tinymce/tinymce.min.js?v=430"), function() {
+            $.getScript(this.get("appMeta").getBaseUrl("tinymce/tinymce.min.js?v=430"), function() {
                 window.tinymce.dom.Event.domLoaded = true;
                 tinymce.baseURL = "//" + window.location.host + "/tinymce";
                 tinymce.suffix = ".min";

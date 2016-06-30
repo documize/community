@@ -15,6 +15,7 @@ import models from '../utils/model';
 export default Ember.Service.extend({
     sessionService: Ember.inject.service('session'),
     ajax: Ember.inject.service(),
+    appMeta: Ember.inject.service(),
 
     // Returns attributes for specified org id.
     getOrg(id) {
@@ -30,9 +31,10 @@ export default Ember.Service.extend({
     save(org) {
         let id = org.get('id');
 
-        // refresh on-screen data
-        this.get('sessionService').get('appMeta').setSafe('message', org.message);
-        this.get('sessionService').get('appMeta').setSafe('title', org.title);
+        this.get('appMeta').setProperties({
+            message: org.message,
+            title: org.title
+        });
 
         return this.get('ajax').request(`organizations/${id}`, {
             method: 'PUT',

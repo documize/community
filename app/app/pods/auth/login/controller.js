@@ -28,6 +28,8 @@ export default Ember.Controller.extend({
                 .then((response) => {
                     this.get('audit').record("logged-in");
                     return response;
+                }).catch(() => {
+                    this.set('invalidCredentials', true);
                 });
         }
     }

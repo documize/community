@@ -20,6 +20,8 @@ const {
 export default BaseService.extend({
     sessionService: Ember.inject.service('session'),
     ajax: Ember.inject.service(),
+    localStorage: Ember.inject.service(),
+
 
     // selected folder
     currentFolder: null,
@@ -159,7 +161,7 @@ export default BaseService.extend({
         }
 
         this.set('currentFolder', folder);
-        this.get('sessionService').storeSessionItem("folder", get(folder, 'id'));
+        this.get('localStorage').storeSessionItem("folder", get(folder, 'id'));
         this.set('canEditCurrentFolder', false);
 
         let userId = this.get('sessionService.user.id');

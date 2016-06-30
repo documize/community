@@ -10,14 +10,12 @@
 // https://documize.com
 
 import Ember from 'ember';
-import encodingUtil from '../utils/encoding';
-import netUtil from '../utils/net';
 import models from '../utils/model';
 import SimpleAuthSession from 'ember-simple-auth/services/session';
 
 const {
     inject: { service },
-    computed: { oneWay, or },
+    computed: { oneWay, or, notEmpty },
     computed
 } = Ember;
 
@@ -25,34 +23,18 @@ export default SimpleAuthSession.extend({
     ajax: service(),
     appMeta: service(),
 
-    authenticated: oneWay('isAuthenticated'),
+    authenticated: notEmpty('user.id'),
     isAdmin: oneWay('user.admin'),
     isEditor: or('user.admin', 'user.editor'),
 
-    user: computed('session.content.authenticated.user', function(){
-        let user = this.get('session.content.authenticated.user');
-        if (user) {
+    user: computed('isAuthenticated', 'session.content.authenticated.user', function(){
+        if (this.get('isAuthenticated')) {
+            let user = this.get('session.content.authenticated.user') || { id: '' };
             return models.UserModel.create(user);
         }
+
     }),
 
     folderPermissions: null,
-    currentFolder: null,
-
-    clearSession: function() {
-        // TODO: clear session properly with ESA
-        localStorage.clear();
-    },
-
-    storeSessionItem: function(key, data) {
-        localStorage[key] = data;
-    },
-
-    getSessionItem: function(key) {
-        return localStorage[key];
-    },
-
-    clearSessionItem: function(key) {
-        delete localStorage[key];
-    }
+    currentFolder: null
 });

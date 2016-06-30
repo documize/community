@@ -17,6 +17,10 @@ export default Ember.Service.extend({
 	message: '',
 	allowAnonymousAccess: false,
 
+	getBaseUrl(endpoint) {
+		return [this.get('host'), endpoint].join('/');
+	},
+
 	boot() {
 		let dbhash;
 		if (is.not.null(document.head.querySelector("[property=dbhash]"))) {
