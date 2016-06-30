@@ -13,12 +13,8 @@ import Ember from 'ember';
 import netUtil from '../../utils/net';
 
 export default Ember.Component.extend({
-    dashboardMode: false,
-    searchMode: false,
-    profileMode: false,
-    settingsMode: false,
-    folderMode: false,
-    documentMode: false,
+	folderService: Ember.inject.service('folder'),
+	folder: null,
 
     didInitAttrs() {
         let self = this;
@@ -28,6 +24,12 @@ export default Ember.Component.extend({
             });
         }
     },
+
+	didReceiveAttrs() {
+		if (this.get('folder') === null) {
+			this.set("folder", this.get('folderService.currentFolder'));
+		}
+	},
 
     actions: {
         switchAccount(domain) {

@@ -6,13 +6,13 @@
                     <i class="material-icons">apps</i>
                 </div>
             {{else}}
-                {{#link-to 'folders.folder' title=session.appMeta.title}}
+                {{#link-to 'folders.folder' folder.id folder.slug title=session.appMeta.title}}
                     <div class="header-button">
                         <i class="material-icons">apps</i>
                     </div>
                 {{/link-to}}
             {{/if}}
-			{{#link-to 'folders.folder' class="title"}}
+			{{#link-to 'folders.folder' folder.id folder.slug class="title"}}
             	<div>{{session.appMeta.title}}</div>
 			{{/link-to}}
     	</div>
