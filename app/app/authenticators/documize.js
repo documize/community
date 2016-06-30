@@ -6,36 +6,42 @@ import models from '../utils/model';
 
 const {
     isPresent,
-    RSVP: { resolve, reject }
+    RSVP: { resolve, reject },
+    inject: { service }
 } = Ember;
 
 export default Base.extend({
-    serverTokenEndpoint: `public/authenticate`,
 
-    ajax: Ember.inject.service(),
+    ajax: service(),
+    appMeta: service(),
 
     restore(data) {
+        // TODO: verify authentication data
         if (data) {
-            return resolve(data)
+            return resolve(data);
         }
         return reject();
     },
 
     authenticate({password, email}) {
-      let domain = netUtil.getSubdomain();
+        let domain = netUtil.getSubdomain();
 
-      if (!isPresent(password) || !isPresent(email)) {
-          return Ember.RSVP.reject("invalid");
-      }
+        if (!isPresent(password) || !isPresent(email)) {
+            return Ember.RSVP.reject("invalid");
+        }
 
-      var encoded = encodingUtil.Base64.encode(`${domain}:${email}:${password}`);
+        var encoded = encodingUtil.Base64.encode(`${domain}:${email}:${password}`);
 
-      var headers = {
-          'Authorization': 'Basic ' + encoded
-      };
+        var headers = {
+            'Authorization': 'Basic ' + encoded
+        };
 
-      return this.get('ajax').post('public/authenticate', {
-          headers
-      });
+        return this.get('ajax').post('public/authenticate', {
+            headers
+        });
+    },
+
+    invalidate() {
+        return resolve();
     }
 });
