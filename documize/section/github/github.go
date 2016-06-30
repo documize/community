@@ -19,6 +19,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 
 	"github.com/documize/community/documize/api/request"
@@ -400,9 +401,22 @@ func (*Provider) getIssueNum(client *gogithub.Client, config githubConfig) ([]gi
 
 func (*Provider) getIssues(client *gogithub.Client, config githubConfig) ([]githubIssue, error) {
 
+	pp := config.BranchLines
+	isRequired := make(map[int]bool)
+	for _, s := range strings.Split(config.IssuesText, ",") {
+		i, err := strconv.Atoi(strings.TrimSpace(s))
+		if err == nil {
+			isRequired[i] = true
+		}
+	}
+	if len(isRequired) > 0 {
+		pp = 100
+	}
+
 	opts := &gogithub.IssueListByRepoOptions{
 		Sort:        "updated",
-		ListOptions: gogithub.ListOptions{PerPage: config.BranchLines}}
+		State:       config.IssueState.ID,
+		ListOptions: gogithub.ListOptions{PerPage: pp}}
 
 	if config.SincePtr != nil {
 		opts.Since = *config.SincePtr
@@ -423,27 +437,29 @@ func (*Provider) getIssues(client *gogithub.Client, config githubConfig) ([]gith
 	}
 
 	for _, v := range guff {
-		n := ""
-		ptr := v.User
-		if ptr != nil {
-			if ptr.Login != nil {
-				n = *ptr.Login
+		if len(isRequired) == 0 || isRequired[*v.Number] {
+			n := ""
+			ptr := v.User
+			if ptr != nil {
+				if ptr.Login != nil {
+					n = *ptr.Login
+				}
 			}
+			l := ""
+			for _, ll := range v.Labels {
+				l += `<span class="github-issue-label" style="background-color:#` + *ll.Color + `">` + *ll.Name + `</span> `
+			}
+			ret = append(ret, githubIssue{
+				Name:    n,
+				Message: *v.Title,
+				Date:    v.CreatedAt.Format("January 2 2006, 15:04"),
+				Updated: v.UpdatedAt.Format("January 2 2006, 15:04"),
+				URL:     template.URL(*v.HTMLURL),
+				Labels:  template.HTML(l),
+				ID:      *v.Number,
+				IsOpen:  *v.State == "open",
+			})
 		}
-		l := ""
-		for _, ll := range v.Labels {
-			l += `<span class="github-issue-label" style="background-color:#` + *ll.Color + `">` + *ll.Name + `</span> `
-		}
-		ret = append(ret, githubIssue{
-			Name:    n,
-			Message: *v.Title,
-			Date:    v.CreatedAt.Format("January 2 2006, 15:04"),
-			Updated: v.UpdatedAt.Format("January 2 2006, 15:04"),
-			URL:     template.URL(*v.HTMLURL),
-			Labels:  template.HTML(l),
-			ID:      *v.Number,
-			IsOpen:  v.ClosedAt == nil,
-		})
 	}
 
 	return ret, nil

@@ -57,10 +57,18 @@
 					{{/if}}
 					{{#if showLabels}}
 						<div class="input-control">
+							<label>State</label>
+							<div class="tip">Open, Closed or All issues</div>
+							{{ui-select id="issue-state-dropdown" content=states action=(action 'onStateChange') optionValuePath="id" optionLabelPath="name" selection=config.state}}
+						</div>
+						<div class="input-control">
+							<label>Issue numbers</label>
+							<div class="tip">A comma separated list of issue numbers e.g. 12, 17, 42 (TODO only those below 100 work currently)</div>
+						 	{{input id="github-issues" value=config.issues type="text" }}
+						</div>
+						<div class="input-control">
 							<label>Labels</label>
 							<div class="tip">Select labels - an issue must have all labels to be shown, if no label is selected all issues are shown.</div>
-							TODO: Open/Closed<br>
-							TODO: Issue Numbers<br>
 							<div class="github-board">
 								{{#each config.lists as |list|}}
 									<div class="github-list" {{action 'onLabelCheckbox' list.id}} >

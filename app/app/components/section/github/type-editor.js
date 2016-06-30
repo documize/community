@@ -50,6 +50,8 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
                         branchURL: "",
                         branchSince: "",
                         branchLines: "30",
+                        state: null,
+                        issues: "",
                     };
 
                     try {
@@ -60,6 +62,8 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
                         config.lists = metaConfig.lists;
                         config.branchSince = metaConfig.branchSince;
                         config.branchLines = metaConfig.branchLines;
+                        config.state = metaConfig.state;
+                        config.issues = metaConfig.issues;
                     } catch (e) {}
 
                     self.set('config', config);
@@ -250,6 +254,33 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
         let self = this;
         let page = this.get('page');
 
+        let states = [];
+        states[0] = {
+            id: "open",
+            name: "Show Open Issues"
+        };
+        states[1] = {
+            id: "closed",
+            name: "Show Closed Issues"
+        };
+        states[2] = {
+            id: "all",
+            name: "Show All Issues"
+        };
+
+        this.set("states", states);
+
+        let thisState = this.get('config.state');
+
+        if (is.null(thisState) || is.undefined(thisState)) {
+            thisState = states[0];
+            this.set('config.state', thisState);
+        } else {
+            this.set('config.state', states.findBy('id', thisState.id));
+        }
+
+        this.set('state', thisState);
+
         this.get('sectionService').fetch(page, "labels", self.get('config'))
             .then(function(lists) {
                 let savedLists = self.get('config.lists');
@@ -362,6 +393,11 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
             this.set('config.report', thisReport);
             this.getReportLists();
         },
+
+        onStateChange(thisState) {
+            this.set('config.state', thisState);
+        },
+
 
         onCancel() {
             this.attrs.onCancel();
