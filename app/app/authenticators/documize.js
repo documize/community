@@ -24,7 +24,6 @@ export default Base.extend({
     },
 
     authenticate({password, email}) {
-        debugger;
         let domain = netUtil.getSubdomain();
 
         if (!isPresent(password) || !isPresent(email)) {

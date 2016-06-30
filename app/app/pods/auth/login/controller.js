@@ -27,6 +27,7 @@ export default Ember.Controller.extend({
             this.get('session').authenticate('authenticator:documize', creds)
                 .then((response) => {
                     this.get('audit').record("logged-in");
+                    this.transitionToRoute('folders.folder');
                     return response;
                 }).catch(() => {
                     this.set('invalidCredentials', true);
