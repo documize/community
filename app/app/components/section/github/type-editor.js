@@ -182,8 +182,11 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
     renderSwitch(thisReport) {
 
-        $.datetimepicker.setLocale('en');
-        $('#branch-since').datetimepicker();
+        if (is.undefined(this.get('initDateTimePicker'))) {
+            $.datetimepicker.setLocale('en');
+            $('#branch-since').datetimepicker();
+            this.set('initDateTimePicker', "Done");
+        }
 
         let bl = this.get('config.branchLines');
         if (is.undefined(bl) || bl === "" || bl <= 0) {

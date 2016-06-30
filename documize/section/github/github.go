@@ -578,7 +578,7 @@ func (t *Provider) Refresh(configJSON, data string) string {
 
 	if err != nil {
 		log.Error("unable to unmarshall github config", err)
-		return data
+		return "internal configuration error '" + err.Error() + "'"
 	}
 
 	c.Clean()
@@ -637,7 +637,7 @@ func (p *Provider) Render(config, data string) string {
 
 	if err != nil {
 		log.Error("unable to unmarshall github config", err)
-		return "Documize internal github json umarshall config error: " + err.Error()
+		return "Please delete and recreate this Github section."
 	}
 
 	c.Clean()
@@ -682,18 +682,23 @@ func (p *Provider) Render(config, data string) string {
 			err = json.Unmarshal([]byte(data), &raw)
 			if err != nil {
 				log.Error("unable to unmarshall github issue data", err)
-				return "Documize internal github json umarshall open data error: " + err.Error()
+				return "Documize internal github json umarshall open data error: " + err.Error() + "<BR>" + data
 			}
 		}
 		payload.Issues = raw
-		if len(c.Lists) > 0 {
-			for _, v := range c.Lists {
-				if v.Included {
-					payload.ShowList = true
-					break
+		if strings.TrimSpace(c.IssuesText) != "" {
+			payload.ShowIssueNumbers = true
+			payload.DateMessage = c.IssuesText
+		} else {
+			if len(c.Lists) > 0 {
+				for _, v := range c.Lists {
+					if v.Included {
+						payload.ShowList = true
+						break
+					}
 				}
+				payload.List = c.Lists
 			}
-			payload.List = c.Lists
 		}
 
 	default: // to handle legacy data, this handles commits
@@ -702,7 +707,7 @@ func (p *Provider) Render(config, data string) string {
 
 		if err != nil {
 			log.Error("unable to unmarshall github commit data", err)
-			return "Documize internal github json umarshall data error: " + err.Error()
+			return "Documize internal github json umarshall data error: " + err.Error() + "<BR>" + data
 		}
 		c.ReportInfo.ID = "commits_data"
 		payload.BranchCommits = raw

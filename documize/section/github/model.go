@@ -20,13 +20,14 @@ import (
 )
 
 type githubRender struct {
-	Config        githubConfig
-	Repo          githubRepo
-	List          []githubBranch
-	ShowList      bool
-	BranchCommits []githubBranchCommits
-	CommitCount   int
-	Issues        []githubIssue
+	Config           githubConfig
+	Repo             githubRepo
+	List             []githubBranch
+	ShowList         bool
+	ShowIssueNumbers bool
+	BranchCommits    []githubBranchCommits
+	CommitCount      int
+	Issues           []githubIssue
 	//IssueNum         int
 	//IssueNumActivity []githubIssueActivity
 	Limit       int
@@ -76,9 +77,12 @@ var renderTemplates = map[string]string{
 					<span style="background-color:#{{$label.Color}}">{{$label.Name}}</span>
 				{{end}}
 			{{end}}
+		{{end}};
+		{{if .ShowIssueNumbers}}
+			issue(s) {{ .DateMessage }}.
+		{{else}}
+			up to {{ .Limit }} items are shown{{ .DateMessage }}.
 		{{end}}
-		.
-		Up to {{ .Limit }} items are shown{{ .DateMessage }}.
 	</p>
 	<div class="github-board">
 	<ul class="github-list">
