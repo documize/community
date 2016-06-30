@@ -401,43 +401,70 @@ func (*Provider) getIssueNum(client *gogithub.Client, config githubConfig) ([]gi
 
 func (*Provider) getIssues(client *gogithub.Client, config githubConfig) ([]githubIssue, error) {
 
-	pp := config.BranchLines
-	isRequired := make(map[int]bool)
-	for _, s := range strings.Split(config.IssuesText, ",") {
+	ret := []githubIssue{}
+
+	isRequired := make([]int, 0, 10)
+	for _, s := range strings.Split(strings.Replace(config.IssuesText, "#", "", -1), ",") {
 		i, err := strconv.Atoi(strings.TrimSpace(s))
 		if err == nil {
-			isRequired[i] = true
+			isRequired = append(isRequired, i)
 		}
 	}
 	if len(isRequired) > 0 {
-		pp = 100
-	}
 
-	opts := &gogithub.IssueListByRepoOptions{
-		Sort:        "updated",
-		State:       config.IssueState.ID,
-		ListOptions: gogithub.ListOptions{PerPage: pp}}
+		for _, i := range isRequired {
 
-	if config.SincePtr != nil {
-		opts.Since = *config.SincePtr
-	}
+			issue, _, err := client.Issues.Get(config.Owner, config.Repo, i)
 
-	for _, lab := range config.Lists {
-		if lab.Included {
-			opts.Labels = append(opts.Labels, lab.Name)
+			if err == nil {
+				n := ""
+				p := issue.User
+				if p != nil {
+					if p.Login != nil {
+						n = *p.Login
+					}
+				}
+				l := ""
+				for _, ll := range issue.Labels {
+					l += `<span class="github-issue-label" style="background-color:#` + *ll.Color + `">` + *ll.Name + `</span> `
+				}
+				ret = append(ret, githubIssue{
+					Name:    n,
+					Message: *issue.Title,
+					Date:    issue.CreatedAt.Format("January 2 2006, 15:04"),
+					Updated: issue.UpdatedAt.Format("January 2 2006, 15:04"),
+					URL:     template.URL(*issue.HTMLURL),
+					Labels:  template.HTML(l),
+					ID:      *issue.Number,
+					IsOpen:  *issue.State == "open",
+				})
+			}
 		}
-	}
 
-	ret := []githubIssue{}
+	} else {
 
-	guff, _, err := client.Issues.ListByRepo(config.Owner, config.Repo, opts)
+		opts := &gogithub.IssueListByRepoOptions{
+			Sort:        "updated",
+			State:       config.IssueState.ID,
+			ListOptions: gogithub.ListOptions{PerPage: config.BranchLines}}
 
-	if err != nil {
-		return ret, err
-	}
+		if config.SincePtr != nil {
+			opts.Since = *config.SincePtr
+		}
 
-	for _, v := range guff {
-		if len(isRequired) == 0 || isRequired[*v.Number] {
+		for _, lab := range config.Lists {
+			if lab.Included {
+				opts.Labels = append(opts.Labels, lab.Name)
+			}
+		}
+
+		guff, _, err := client.Issues.ListByRepo(config.Owner, config.Repo, opts)
+
+		if err != nil {
+			return ret, err
+		}
+
+		for _, v := range guff {
 			n := ""
 			ptr := v.User
 			if ptr != nil {
