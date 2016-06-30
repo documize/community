@@ -52,6 +52,17 @@ a {
 	}
 }
 
+a.alt {
+	color: $color-blue;
+	text-decoration: none;
+	cursor: pointer;
+
+	a:hover, a:focus {
+		text-decoration: underline;
+	}
+}
+
+
 $i: 150;
 @while $i > 0 {
 	.margin-#{$i} { margin: #{$i}px; }

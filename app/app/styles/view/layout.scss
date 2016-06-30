@@ -1,15 +1,5 @@
-.page-container {
+.zone-container {
 	min-height: 500px; //ensure dropdowns render in viewport
-}
-
-.copyright {
-	margin-top: 50px;
-	text-align: center;
-
-	> a {
-		font-size: 0.8rem;
-		color: $color-gray;
-	}
 }
 
 .zone-navigation {
@@ -143,4 +133,14 @@
 .zone-content {
 	padding: 30px 40px 30px 40px;
 	float: left;
+}
+
+.copyright {
+	margin-top: 50px;
+	text-align: center;
+
+	> a {
+		font-size: 0.8rem;
+		color: $color-gray;
+	}
 }
