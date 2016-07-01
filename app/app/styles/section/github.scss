@@ -27,16 +27,16 @@
 		vertical-align: text-bottom;
 	}
 
-.github-issue-label {
-	font-size: 11px;
-	color: white;
-	padding: 0px 4px;
-	margin-right: 5px;
-	border-radius: 2px;
-	box-shadow: inset 0 -1px 0 rgba(0,0,0,0.12);
-	display: inline-block;
-	line-height: 22px;
-	}
+	.github-issue-label {
+		font-size: 11px;
+		color: white;
+		padding: 0px 4px;
+		margin-right: 5px;
+		border-radius: 2px;
+		box-shadow: inset 0 -1px 0 rgba(0,0,0,0.12);
+		display: inline-block;
+		line-height: 22px;
+		}
 }
 
 .section-github-render {
@@ -50,7 +50,7 @@
 		display: inline-block;
 		line-height: 22px;
 	}
-	
+
     .github-board {
         width: 100%;
         white-space: nowrap;
@@ -102,11 +102,11 @@
                         margin-top: 2px;
                     }
 
-										> .issue-avatar {
-												float: left;
-												margin-right: 15px;
-												margin-top: 10px;
-										}
+						> .issue-avatar {
+							float: left;
+							margin-right: 15px;
+							margin-top: 10px;
+						}
 
                     > .github-commit-body {
                         margin: 0px;
@@ -124,11 +124,11 @@
                             text-overflow: ellipsis;
                             width: 90%;
 
-														.label-name {
-															font-size: 16px;
-															font-family: "open_sanssemibold";
-															margin: 0 10px 0 0;
-														}
+							.label-name {
+								font-size: 16px;
+								font-family: "open_sanssemibold";
+								margin: 0 10px 0 0;
+							}
                         }
 
                         > .github-commit-meta {
