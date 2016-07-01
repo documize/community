@@ -5,7 +5,7 @@ moduleForAcceptance('Acceptance | User Settings');
 
 test('visiting /settings/general', function(assert) {
     server.create('meta', { allowAnonymousAccess: false });
-    userLogin();
+    authenticateUser();
     visit('/settings/general');
 
     andThen(function() {
@@ -18,7 +18,7 @@ test('visiting /settings/general', function(assert) {
 
 test('changing the Website title and description', function(assert) {
     server.create('meta', { allowAnonymousAccess: false });
-    userLogin();
+    authenticateUser();
     visit('/settings/general');
 
     andThen(function() {
@@ -39,7 +39,7 @@ test('changing the Website title and description', function(assert) {
 
 test('visiting /settings/folders', function(assert) {
     server.create('meta', { allowAnonymousAccess: false });
-    userLogin();
+    authenticateUser();
     visit('/settings/folders');
 
     andThen(function() {
@@ -50,7 +50,7 @@ test('visiting /settings/folders', function(assert) {
 
 test('visiting /settings/users', function(assert) {
     server.create('meta', { allowAnonymousAccess: false });
-    userLogin();
+    authenticateUser();
     visit('/settings/users');
 
     andThen(function() {
@@ -64,7 +64,7 @@ test('visiting /settings/users', function(assert) {
 
 test('add a new user', function(assert) {
     server.create('meta', { allowAnonymousAccess: false });
-    userLogin();
+    authenticateUser();
     visit('/settings/users');
 
     andThen(function() {

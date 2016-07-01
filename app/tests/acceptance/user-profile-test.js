@@ -5,7 +5,7 @@ moduleForAcceptance('Acceptance | user profile');
 
 test('visiting /profile', function(assert) {
     server.createList('folder', 2);
-    userLogin();
+    authenticateUser();
     visit('/profile');
 
     andThen(function() {
@@ -18,7 +18,7 @@ test('visiting /profile', function(assert) {
 
 test('changing user details and email ', function(assert) {
     server.createList('folder', 2);
-    userLogin();
+    authenticateUser();
     visit('/profile');
 
     andThen(function() {
