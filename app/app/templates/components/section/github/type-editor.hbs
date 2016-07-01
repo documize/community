@@ -1,14 +1,10 @@
-
-
-{{#section/base-editor document=document folder=folder page=page busy=busy
-	tip="GitHub is how people build software. (https://github.com)"
-	isDirty=(action 'isDirty') onCancel=(action 'onCancel') onAction=(action 'onAction')}}
+{{#section/base-editor document=document folder=folder page=page busy=busy	tip="GitHub is how people build software. (https://github.com)"	isDirty=(action 'isDirty') onCancel=(action 'onCancel') onAction=(action 'onAction')}}
 
 	<div class="section-github-editor">
 
 	{{#if authenticated}}
 
-		<div class="pull-left width-50">
+		<div class="pull-left width-45">
 			<div class="input-form">
 				<div class="heading">
 					<div class="title">Select Repository</div>
@@ -34,8 +30,22 @@
 						<div class="tip">Select report type</div>
 						{{ui-select id="report-dropdown" content=reports action=(action 'onReportChange') optionValuePath="id" optionLabelPath="name" selection=config.report}}
 					</div>
-					Show items since {{input id="branch-since" value=config.branchSince type="text" }}<br>
-					Number of items to show {{input id="branch-lines" value=config.branchLines type="number" min="1" step="1" max="100" }}<br>
+					<div class="input-control">
+						<label>Show items since</label>
+						{{input id="branch-since" value=config.branchSince type="text" }}
+					</div>
+					<div class="input-control">
+						<label>Number of items to show</label>
+						{{input id="branch-lines" value=config.branchLines type="number" min="1" step="1" max="100" }}
+					</div>
+				{{/if}}
+			</div>
+		</div>
+
+		<div class="pull-left width-10">&nbsp;</div>
+
+		<div class="pull-left width-45">
+			<div class="input-form">
 					{{#if showCommits}}
 						<div class="input-control">
 							<label>Branches</label>
@@ -84,7 +94,6 @@
 							</div>
 						</div>
 					{{/if}}
-				{{/if}}
 			</div>
 		</div>
 
@@ -103,7 +112,7 @@
 		</div>
 
 	{{/if}}
-	
+
 	</div>
 
 {{/section/base-editor}}

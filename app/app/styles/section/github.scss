@@ -26,9 +26,31 @@
 	.github-list-checkbox {
 		vertical-align: text-bottom;
 	}
+
+.github-issue-label {
+	font-size: 11px;
+	color: white;
+	padding: 0px 4px;
+	margin-right: 5px;
+	border-radius: 2px;
+	box-shadow: inset 0 -1px 0 rgba(0,0,0,0.12);
+	display: inline-block;
+	line-height: 22px;
+	}
 }
 
 .section-github-render {
+	.github-issue-label {
+		font-size: 11px;
+		color: white;
+		padding: 0px 4px;
+		margin-right: 5px;
+		border-radius: 2px;
+		box-shadow: inset 0 -1px 0 rgba(0,0,0,0.12);
+		display: inline-block;
+		line-height: 22px;
+	}
+	
     .github-board {
         width: 100%;
         white-space: nowrap;
@@ -101,16 +123,6 @@
                             overflow: hidden;
                             text-overflow: ellipsis;
                             width: 90%;
-
-														.github-issue-label {
-															font-size: 11px;
-															color: white;
-															padding: 0px 4px;
-															margin-right: 5px;
-															border-radius: 2px;
-														  box-shadow: inset 0 -1px 0 rgba(0,0,0,0.12);
-															display: inline-block;
-														}
 
 														.label-name {
 															font-size: 16px;
