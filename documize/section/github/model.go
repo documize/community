@@ -12,7 +12,6 @@
 package github
 
 import (
-	"fmt"
 	"html/template"
 	"strings"
 	"time"
@@ -264,16 +263,18 @@ func (c *githubConfig) Clean() {
 			c.SincePtr = &since
 		}
 	}
-	fmt.Println("DEBUG-1 client:", c.Token, c.Owner, c.Repo, c.ReportInfo, c.Branch)
-	fmt.Printf("DEBUG-2 client %#v\n", *c)
+	/*
+		fmt.Println("DEBUG-1 client:", c.Token, c.Owner, c.Repo, c.ReportInfo, c.Branch)
+		fmt.Printf("DEBUG-2 client %#v\n", *c)
 
-	var x Provider
-	auth, _, err := x.githubClient(nil).Authorizations.Check(clientID(), c.Token)
-	if err != nil {
-		fmt.Printf("DEBUG-3 client %#v\n", err.Error())
-	} else {
-		fmt.Printf("DEBUG-4 client %#v\n", *auth)
-	}
+		var x Provider
+		auth, _, err := x.githubClient(nil).Authorizations.Check(clientID(), c.Token)
+		if err != nil {
+			fmt.Printf("DEBUG-3 client %#v\n", err.Error())
+		} else {
+			fmt.Printf("DEBUG-4 client %#v\n", *auth)
+		}
+	*/
 }
 
 type githubCallbackT struct {
