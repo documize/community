@@ -7,6 +7,7 @@ import './user-login';
 import './wait-to-appear';
 import './wait-to-disappear';
 import './stub-user-notification';
+import './authenticate-user';
 
 export default function startApp(attrs) {
   let application;
