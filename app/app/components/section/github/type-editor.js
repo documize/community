@@ -20,8 +20,12 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
     busy: false,
     authenticated: false,
     config: {},
+    owners: null,
     repos: null,
     noRepos: false,
+    showCommits: false,
+    showIssueNum: false,
+    showLabels: false,
 
     didReceiveAttrs() {
         let self = this;
@@ -36,20 +40,30 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
                         clientId: cfg.clientID,
                         callbackUrl: cfg.authorizationCallbackURL,
                         token: "",
+                        owner: null,
+                        owner_name: "",
                         repo: null,
-                        lists: [],
-                        owner: "",
                         repo_name: "",
+                        report: null,
+                        lists: [],
                         branch: "",
                         branchURL: "",
                         branchSince: "",
-                        branchLines: 30
+                        branchLines: "30",
+                        state: null,
+                        issues: "",
                     };
 
                     try {
                         let metaConfig = JSON.parse(self.get('meta.config'));
+                        config.owner = metaConfig.owner;
                         config.repo = metaConfig.repo;
+                        config.report = metaConfig.report;
                         config.lists = metaConfig.lists;
+                        config.branchSince = metaConfig.branchSince;
+                        config.branchLines = metaConfig.branchLines;
+                        config.state = metaConfig.state;
+                        config.issues = metaConfig.issues;
                     } catch (e) {}
 
                     self.set('config', config);
@@ -78,13 +92,43 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
         this.destroyTooltips();
     },
 
-    getRepoLists() {
+    getOwnerLists() {
         this.set('busy', true);
 
         let self = this;
+        let owners = this.get('owners');
+        let thisOwner = this.get('config.owner');
+        let page = this.get('page');
+
+        if (is.null(thisOwner) || is.undefined(thisOwner)) {
+            if (owners.length) {
+                thisOwner = owners[0];
+                this.set('config.owner', thisOwner);
+            }
+        } else {
+            this.set('config.owner', owners.findBy('id', thisOwner.id));
+        }
+
+        this.set('owner', thisOwner);
+
+        this.get('sectionService').fetch(page, "repos", self.get('config'))
+            .then(function(lists) {
+                self.set('busy', false);
+                self.set('repos', lists);
+                self.getRepoLists();
+            }, function(error) { //jshint ignore: line
+                self.set('busy', false);
+                self.set('authenticated', false);
+                self.showNotification("Unable to fetch repositories");
+                console.log(error);
+            });
+    },
+
+    getRepoLists() {
+        this.set('busy', true);
+
         let repos = this.get('repos');
         let thisRepo = this.get('config.repo');
-        let page = this.get('page');
 
         if (is.null(repos) || is.undefined(repos) || repos.length === 0) {
             this.set('noRepos', true);
@@ -93,7 +137,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
         this.set('noRepos', false);
 
-        if (is.null(thisRepo) || is.undefined(thisRepo)) {
+        if (is.null(thisRepo) || is.undefined(thisRepo) || thisRepo.owner !== this.get('config.owner').name) {
             if (repos.length) {
                 thisRepo = repos[0];
                 this.set('config.repo', thisRepo);
@@ -102,21 +146,100 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
             this.set('config.repo', repos.findBy('id', thisRepo.id));
         }
 
-        this.get('sectionService').fetch(page, "lists", self.get('config'))
+        this.set('repo', thisRepo);
+
+        this.getReportLists();
+    },
+
+
+    getReportLists() {
+        let reports = [];
+        reports[0] = {
+            id: "commits_data", // used as method for fetching Go data
+            name: "Commits on a branch"
+        };
+        reports[1] = {
+            id: "issues_data", // used as method for fetching Go data
+            name: "Issues"
+        };
+
+        this.set("reports", reports);
+
+        let thisReport = this.get('config.report');
+
+        if (is.null(thisReport) || is.undefined(thisReport)) {
+            thisReport = reports[0];
+            this.set('config.report', thisReport);
+        } else {
+            this.set('config.report', reports.findBy('id', thisReport.id));
+        }
+
+        this.set('report', thisReport);
+
+        this.renderSwitch(thisReport);
+
+    },
+
+    renderSwitch(thisReport) {
+
+        if (is.undefined(this.get('initDateTimePicker'))) {
+            $.datetimepicker.setLocale('en');
+            $('#branch-since').datetimepicker();
+            this.set('initDateTimePicker', "Done");
+        }
+
+        let bl = this.get('config.branchLines');
+        if (is.undefined(bl) || bl === "" || bl <= 0) {
+            this.set('config.branchLines', "30");
+        }
+
+        this.set('showCommits', false);
+        this.set('showLabels', false);
+        switch (thisReport.id) {
+            case 'commits_data':
+                this.set('showCommits', true);
+                this.getBranchLists();
+                break;
+            case "issues_data":
+                this.set('showLabels', true);
+                this.getLabelLists();
+                break;
+        }
+    },
+
+    getBranchLists() {
+        this.set('busy', true);
+
+        let self = this;
+        let page = this.get('page');
+
+        this.get('sectionService').fetch(page, "branches", self.get('config'))
             .then(function(lists) {
                 let savedLists = self.get('config.lists');
                 if (savedLists === null) {
                     savedLists = [];
                 }
 
-                lists.forEach(function(list) {
-                    let saved = savedLists.findBy("id", list.id);
-                    let included = false;
-                    if (is.not.undefined(saved)) {
-                        included = saved.included;
+                if (lists.length > 0) {
+                    let noIncluded = true;
+
+                    lists.forEach(function(list) {
+                        let included = false;
+                        var saved;
+                        if (is.not.undefined(savedLists)) {
+                            saved = savedLists.findBy("id", list.id);
+                        }
+                        if (is.not.undefined(saved)) {
+                            included = saved.included;
+                            noIncluded = false;
+                        }
+                        list.included = included;
+                    });
+
+                    if (noIncluded) {
+                        lists[0].included = true; // make the first entry the default
                     }
-                    list.included = included;
-                });
+                }
 
                 self.set('config.lists', lists);
                 self.set('busy', false);
@@ -124,6 +247,70 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
                 self.set('busy', false);
                 self.set('authenticated', false);
                 self.showNotification("Unable to fetch repository branches");
+                console.log(error);
+            });
+    },
+
+    getLabelLists() {
+        this.set('busy', true);
+
+        let self = this;
+        let page = this.get('page');
+
+        let states = [];
+        states[0] = {
+            id: "open",
+            name: "Show Open Issues"
+        };
+        states[1] = {
+            id: "closed",
+            name: "Show Closed Issues"
+        };
+        states[2] = {
+            id: "all",
+            name: "Show All Issues"
+        };
+
+        this.set("states", states);
+
+        let thisState = this.get('config.state');
+
+        if (is.null(thisState) || is.undefined(thisState)) {
+            thisState = states[0];
+            this.set('config.state', thisState);
+        } else {
+            this.set('config.state', states.findBy('id', thisState.id));
+        }
+
+        this.set('state', thisState);
+
+        this.get('sectionService').fetch(page, "labels", self.get('config'))
+            .then(function(lists) {
+                let savedLists = self.get('config.lists');
+                if (savedLists === null) {
+                    savedLists = [];
+                }
+
+                if (lists.length > 0) {
+                    lists.forEach(function(list) {
+                        var saved;
+                        if (is.not.undefined(savedLists)) {
+                            saved = savedLists.findBy("id", list.id);
+                        }
+                        let included = false;
+                        if (is.not.undefined(saved)) {
+                            included = saved.included;
+                        }
+                        list.included = included;
+                    });
+                }
+
+                self.set('config.lists', lists);
+                self.set('busy', false);
+            }, function(error) { //jshint ignore: line
+                self.set('busy', false);
+                self.set('authenticated', false);
+                self.showNotification("Unable to fetch repository labels");
                 console.log(error);
             });
     },
@@ -147,21 +334,31 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
             }
         },
 
+        onLabelCheckbox(id) {
+            let lists = this.get('config.lists');
+            let list = lists.findBy('id', id);
+
+            if (list !== null) {
+                Ember.set(list, 'included', !list.included);
+            }
+        },
+
+
         authStage2() {
             let self = this;
             self.set('authenticated', true);
             self.set('busy', true);
             let page = this.get('page');
 
-            self.get('sectionService').fetch(page, "repos", self.get('config'))
-                .then(function(repos) {
+            self.get('sectionService').fetch(page, "owners", self.get('config'))
+                .then(function(owners) {
                     self.set('busy', false);
-                    self.set('repos', repos);
-                    self.getRepoLists();
+                    self.set('owners', owners);
+                    self.getOwnerLists();
                 }, function(error) { //jshint ignore: line
                     self.set('busy', false);
                     self.set('authenticated', false);
-                    self.showNotification("Unable to fetch repos");
+                    self.showNotification("Unable to fetch owners");
                     console.log(error);
                 });
 
@@ -179,6 +376,14 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
         },
 
+        onOwnerChange(thisOwner) {
+            this.set('isDirty', true);
+            this.set('config.owner', thisOwner);
+            this.set('config.repos', []);
+            this.set('config.lists', []);
+            this.getOwnerLists();
+        },
+
         onRepoChange(thisRepo) {
             this.set('isDirty', true);
             this.set('config.repo', thisRepo);
@@ -186,12 +391,32 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
             this.getRepoLists();
         },
 
+        onReportChange(thisReport) {
+            this.set('isDirty', true);
+            this.set('config.report', thisReport);
+            this.getReportLists();
+        },
+
+        onStateChange(thisState) {
+            this.set('config.state', thisState);
+        },
+
+
         onCancel() {
             this.attrs.onCancel();
         },
 
         onAction(title) {
             this.set('busy', true);
+
+            let thisLines = this.get('config.branchLines');
+            if (is.undefined(thisLines) || thisLines === "") {
+                this.set('config.branchLines', 30);
+            } else if (thisLines < 1) {
+                this.set('config.branchLines', 1);
+            } else if (thisLines > 100) {
+                this.set('config.branchLines', 100);
+            }
 
             let self = this;
             let page = this.get('page');
@@ -201,7 +426,8 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
             meta.set('config', JSON.stringify(this.get('config')));
             meta.set('externalSource', true);
 
-            this.get('sectionService').fetch(page, "commits", this.get('config'))
+            let thisReport = this.get('config.report');
+            this.get('sectionService').fetch(page, thisReport.id, this.get('config'))
                 .then(function(response) {
                     meta.set('rawBody', JSON.stringify(response));
                     self.set('busy', false);

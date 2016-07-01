@@ -26,26 +26,47 @@
 	.github-list-checkbox {
 		vertical-align: text-bottom;
 	}
+
+	.github-issue-label {
+		font-size: 11px;
+		color: white;
+		padding: 0px 4px;
+		margin-right: 5px;
+		border-radius: 2px;
+		box-shadow: inset 0 -1px 0 rgba(0,0,0,0.12);
+		display: inline-block;
+		line-height: 22px;
+		}
 }
 
 .section-github-render {
+	.github-issue-label {
+		font-size: 11px;
+		color: white;
+		padding: 0px 4px;
+		margin-right: 5px;
+		border-radius: 2px;
+		box-shadow: inset 0 -1px 0 rgba(0,0,0,0.12);
+		display: inline-block;
+		line-height: 22px;
+	}
+
     .github-board {
         width: 100%;
-        padding: 10px;
         white-space: nowrap;
         color: #767676;
 
         > .github-group-title {
-            margin-bottom: 10px;
+            margin: 10px 0;
             font-size: 14px;
             color: #767676;
         }
 
         > .github-list {
-            margin: 20px;
+            margin: 10px 20px 0 20px !important;
             padding: 0;
             color: #767676;
- 
+
             > .github-commit-item {
                 display: block;
                 width: 95%;
@@ -71,15 +92,21 @@
                     background-color: #f7fbfc;
                     cursor: pointer;
                 }
-                
+
                 > .link {
                     color: #999;
-                    
+
                     > .github-avatar {
                         float: left;
                         margin-right: 15px;
                         margin-top: 2px;
                     }
+
+						> .issue-avatar {
+							float: left;
+							margin-right: 15px;
+							margin-top: 10px;
+						}
 
                     > .github-commit-body {
                         margin: 0px;
@@ -90,14 +117,20 @@
                             text-decoration: none;
                             font-size: 13px;
                             font-weight: 600;
-                            line-height: 16px;    
-                            margin: 0px;
+                            line-height: 22px;
+                            margin: 0;
                             padding: 0px;
                             overflow: hidden;
                             text-overflow: ellipsis;
-                            width: 90%; 
+                            width: 90%;
+
+							.label-name {
+								font-size: 16px;
+								font-family: "open_sanssemibold";
+								margin: 0 10px 0 0;
+							}
                         }
-                    
+
                         > .github-commit-meta {
                             font-weight: normal;
                             color: #767676;
@@ -105,7 +138,7 @@
                             line-height: 22px;
                             margin: 0px;
                             padding: 0px;
-                            width: 90%; 
+                            width: 90%;
                         }
                     }
                 }

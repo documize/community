@@ -30,12 +30,11 @@ func TestGistsService_List_specifiedUser(t *testing.T) {
 
 	opt := &GistListOptions{Since: time.Date(2013, time.January, 1, 0, 0, 0, 0, time.UTC)}
 	gists, _, err := client.Gists.List("u", opt)
-
 	if err != nil {
 		t.Errorf("Gists.List returned error: %v", err)
 	}
 
-	want := []Gist{{ID: String("1")}}
+	want := []*Gist{{ID: String("1")}}
 	if !reflect.DeepEqual(gists, want) {
 		t.Errorf("Gists.List returned %+v, want %+v", gists, want)
 	}
@@ -55,7 +54,7 @@ func TestGistsService_List_authenticatedUser(t *testing.T) {
 		t.Errorf("Gists.List returned error: %v", err)
 	}
 
-	want := []Gist{{ID: String("1")}}
+	want := []*Gist{{ID: String("1")}}
 	if !reflect.DeepEqual(gists, want) {
 		t.Errorf("Gists.List returned %+v, want %+v", gists, want)
 	}
@@ -82,12 +81,11 @@ func TestGistsService_ListAll(t *testing.T) {
 
 	opt := &GistListOptions{Since: time.Date(2013, time.January, 1, 0, 0, 0, 0, time.UTC)}
 	gists, _, err := client.Gists.ListAll(opt)
-
 	if err != nil {
 		t.Errorf("Gists.ListAll returned error: %v", err)
 	}
 
-	want := []Gist{{ID: String("1")}}
+	want := []*Gist{{ID: String("1")}}
 	if !reflect.DeepEqual(gists, want) {
 		t.Errorf("Gists.ListAll returned %+v, want %+v", gists, want)
 	}
@@ -109,12 +107,11 @@ func TestGistsService_ListStarred(t *testing.T) {
 
 	opt := &GistListOptions{Since: time.Date(2013, time.January, 1, 0, 0, 0, 0, time.UTC)}
 	gists, _, err := client.Gists.ListStarred(opt)
-
 	if err != nil {
 		t.Errorf("Gists.ListStarred returned error: %v", err)
 	}
 
-	want := []Gist{{ID: String("1")}}
+	want := []*Gist{{ID: String("1")}}
 	if !reflect.DeepEqual(gists, want) {
 		t.Errorf("Gists.ListStarred returned %+v, want %+v", gists, want)
 	}
@@ -130,7 +127,6 @@ func TestGistsService_Get(t *testing.T) {
 	})
 
 	gist, _, err := client.Gists.Get("1")
-
 	if err != nil {
 		t.Errorf("Gists.Get returned error: %v", err)
 	}
@@ -156,7 +152,6 @@ func TestGistsService_GetRevision(t *testing.T) {
 	})
 
 	gist, _, err := client.Gists.GetRevision("1", "s")
-
 	if err != nil {
 		t.Errorf("Gists.Get returned error: %v", err)
 	}
@@ -286,6 +281,53 @@ func TestGistsService_Edit_invalidID(t *testing.T) {
 	testURLParseError(t, err)
 }
 
+func TestGistsService_ListCommits(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/gists/1/commits", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		testFormValues(t, r, nil)
+		fmt.Fprint(w, `
+		  [
+		    {
+		      "url": "https://api.github.com/gists/1/1",
+		      "version": "1",
+		      "user": {
+		        "id": 1
+		      },
+		      "change_status": {
+		        "deletions": 0,
+		        "additions": 180,
+		        "total": 180
+		      },
+		      "commited_at": "2010-01-01T00:00:00Z"
+		    }
+		  ]
+		`)
+	})
+
+	gistCommits, _, err := client.Gists.ListCommits("1")
+	if err != nil {
+		t.Errorf("Gists.ListCommits returned error: %v", err)
+	}
+
+	want := []*GistCommit{{
+		URL:        String("https://api.github.com/gists/1/1"),
+		Version:    String("1"),
+		User:       &User{ID: Int(1)},
+		CommitedAt: &Timestamp{time.Date(2010, 1, 1, 00, 00, 00, 0, time.UTC)},
+		ChangeStatus: &CommitStats{
+			Additions: Int(180),
+			Deletions: Int(0),
+			Total:     Int(180),
+		}}}
+
+	if !reflect.DeepEqual(gistCommits, want) {
+		t.Errorf("Gists.ListCommits returned %+v, want %+v", gistCommits, want)
+	}
+}
+
 func TestGistsService_Delete(t *testing.T) {
 	setup()
 	defer teardown()
@@ -394,7 +436,6 @@ func TestGistsService_Fork(t *testing.T) {
 	})
 
 	gist, _, err := client.Gists.Fork("1")
-
 	if err != nil {
 		t.Errorf("Gists.Fork returned error: %v", err)
 	}
@@ -402,6 +443,42 @@ func TestGistsService_Fork(t *testing.T) {
 	want := &Gist{ID: String("2")}
 	if !reflect.DeepEqual(gist, want) {
 		t.Errorf("Gists.Fork returned %+v, want %+v", gist, want)
+	}
+}
+
+func TestGistsService_ListForks(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/gists/1/forks", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		testFormValues(t, r, nil)
+		fmt.Fprint(w, `
+		  [
+		    {"url": "https://api.github.com/gists/1",
+		     "user": {"id": 1},
+		     "id": "1",
+		     "created_at": "2010-01-01T00:00:00Z",
+		     "updated_at": "2013-01-01T00:00:00Z"
+		    }
+		  ]
+		`)
+	})
+
+	gistForks, _, err := client.Gists.ListForks("1")
+	if err != nil {
+		t.Errorf("Gists.ListForks returned error: %v", err)
+	}
+
+	want := []*GistFork{{
+		URL:       String("https://api.github.com/gists/1"),
+		ID:        String("1"),
+		User:      &User{ID: Int(1)},
+		CreatedAt: &Timestamp{time.Date(2010, 1, 1, 00, 00, 00, 0, time.UTC)},
+		UpdatedAt: &Timestamp{time.Date(2013, 1, 1, 00, 00, 00, 0, time.UTC)}}}
+
+	if !reflect.DeepEqual(gistForks, want) {
+		t.Errorf("Gists.ListForks returned %+v, want %+v", gistForks, want)
 	}
 }
 
