@@ -12,6 +12,7 @@
 package github
 
 import (
+	"fmt"
 	"html/template"
 	"strings"
 	"time"
@@ -254,7 +255,7 @@ func (c *githubConfig) Clean() {
 		var since time.Time
 		tt := []byte("yyyy-mm-ddThh:mm:00Z")
 		for _, i := range []int{0, 1, 2, 3, 5, 6, 8, 9, 11, 12, 14, 15} {
-			tt[i] = byte(c.BranchSince[i])
+			tt[i] = c.BranchSince[i]
 		}
 		err := since.UnmarshalText(tt)
 		if err != nil {
@@ -262,6 +263,16 @@ func (c *githubConfig) Clean() {
 		} else {
 			c.SincePtr = &since
 		}
+	}
+	fmt.Println("DEBUG-1 client:", c.Token, c.Owner, c.Repo, c.ReportInfo, c.Branch)
+	fmt.Printf("DEBUG-2 client %#v\n", *c)
+
+	var x Provider
+	auth, _, err := x.githubClient(nil).Authorizations.Check(clientID(), c.Token)
+	if err != nil {
+		fmt.Printf("DEBUG-3 client %#v\n", err.Error())
+	} else {
+		fmt.Printf("DEBUG-4 client %#v\n", *auth)
 	}
 }
 
