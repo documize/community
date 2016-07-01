@@ -19,6 +19,9 @@ import (
 	"github.com/documize/community/wordsmith/log"
 )
 
+const tagIssuesData = "issues_data"
+const tagCommitsData = "commits_data"
+
 type githubRender struct {
 	Config           githubConfig
 	Repo             githubRepo
@@ -35,7 +38,7 @@ type githubRender struct {
 }
 
 var renderTemplates = map[string]string{
-	"commits_data": `
+	tagCommitsData: `
 <div class="section-github-render">
 	<p>
 		There are {{ .CommitCount }} commits for branch <a href="{{.Config.BranchURL}}">{{.Config.Branch}}</a> of repository <a href="{{ .Repo.URL }}">{{.Repo.Name}}.</a>
@@ -66,15 +69,20 @@ var renderTemplates = map[string]string{
 	</div>
 </div>
 `,
-	"issues_data": `
+	tagIssuesData: `
 <div class="section-github-render">
 	<p>
-		The open issues for repository <a href="{{ .Repo.URL }}/issues">{{.Repo.Name}}</a>
+		{{if .ShowIssueNumbers}}
+			Show Selected Issues
+		{{else}}
+			{{ .Config.IssueState.Name }}
+		{{end}}
+		    for repository <a href="{{ .Repo.URL }}/issues">{{.Repo.Name}}</a>
 		{{if .ShowList}}
 			with label(s)
 			{{range $label := .List}}
 				{{if $label.Included}}
-					<span style="background-color:#{{$label.Color}}">{{$label.Name}}</span>
+					<span class="github-issue-label" style="background-color:#{{$label.Color}}">{{$label.Name}}</span>
 				{{end}}
 			{{end}}
 		{{end}};

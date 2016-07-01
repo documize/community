@@ -66,7 +66,7 @@ func authorizationCallbackURL() string {
 }
 
 // Command to run the various functions required...
-func (t *Provider) Command(w http.ResponseWriter, r *http.Request) {
+func (p *Provider) Command(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
 	method := query.Get("method")
 
@@ -117,13 +117,13 @@ func (t *Provider) Command(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	client := t.githubClient(config)
+	client := p.githubClient(config)
 
 	switch method {
 
-	case "commits_data":
+	case tagCommitsData:
 
-		render, err := t.getCommits(client, config)
+		render, err := p.getCommits(client, config)
 		if err != nil {
 			log.Error("github getCommits:", err)
 			provider.WriteError(w, "github", err)
@@ -132,9 +132,9 @@ func (t *Provider) Command(w http.ResponseWriter, r *http.Request) {
 
 		provider.WriteJSON(w, render)
 
-	case "issues_data":
+	case tagIssuesData:
 
-		render, err := t.getIssues(client, config)
+		render, err := p.getIssues(client, config)
 		if err != nil {
 			log.Error("github getIssues:", err)
 			provider.WriteError(w, "github", err)
@@ -399,6 +399,14 @@ func (*Provider) getIssueNum(client *gogithub.Client, config githubConfig) ([]gi
 }
 */
 
+func wrapLabels(labels []gogithub.Label) string {
+	l := ""
+	for _, ll := range labels {
+		l += `<span class="github-issue-label" style="background-color:#` + *ll.Color + `">` + *ll.Name + `</span> `
+	}
+	return l
+}
+
 func (*Provider) getIssues(client *gogithub.Client, config githubConfig) ([]githubIssue, error) {
 
 	ret := []githubIssue{}
@@ -424,10 +432,7 @@ func (*Provider) getIssues(client *gogithub.Client, config githubConfig) ([]gith
 						n = *p.Login
 					}
 				}
-				l := ""
-				for _, ll := range issue.Labels {
-					l += `<span class="github-issue-label" style="background-color:#` + *ll.Color + `">` + *ll.Name + `</span> `
-				}
+				l := wrapLabels(issue.Labels)
 				ret = append(ret, githubIssue{
 					Name:    n,
 					Message: *issue.Title,
@@ -472,10 +477,7 @@ func (*Provider) getIssues(client *gogithub.Client, config githubConfig) ([]gith
 					n = *ptr.Login
 				}
 			}
-			l := ""
-			for _, ll := range v.Labels {
-				l += `<span class="github-issue-label" style="background-color:#` + *ll.Color + `">` + *ll.Name + `</span> `
-			}
+			l := wrapLabels(v.Labels)
 			ret = append(ret, githubIssue{
 				Name:    n,
 				Message: *v.Title,
@@ -571,7 +573,7 @@ func (*Provider) getCommits(client *gogithub.Client, config githubConfig) ([]git
 }
 
 // Refresh ... gets the latest version
-func (t *Provider) Refresh(configJSON, data string) string {
+func (p *Provider) Refresh(configJSON, data string) string {
 	var c = githubConfig{}
 
 	err := json.Unmarshal([]byte(configJSON), &c)
@@ -597,8 +599,8 @@ func (t *Provider) Refresh(configJSON, data string) string {
 	}
 	return string(j)*/
 
-	case "issues_data":
-		refreshed, err := t.getIssues(t.githubClient(c), c)
+	case tagIssuesData:
+		refreshed, err := p.getIssues(p.githubClient(c), c)
 		if err != nil {
 			log.Error("unable to get github issues", err)
 			return data
@@ -610,8 +612,8 @@ func (t *Provider) Refresh(configJSON, data string) string {
 		}
 		return string(j)
 
-	default: // to handle legacy data, this handles commits
-		refreshed, err := t.getCommits(t.githubClient(c), c)
+	case tagCommitsData:
+		refreshed, err := p.getCommits(p.githubClient(c), c)
 		if err != nil {
 			log.Error("unable to get github commits", err)
 			return data
@@ -622,6 +624,11 @@ func (t *Provider) Refresh(configJSON, data string) string {
 			return data
 		}
 		return string(j)
+
+	default:
+		msg := "unknown data format: " + c.ReportInfo.ID
+		log.ErrorString(msg)
+		return "internal configuration error, " + msg
 	}
 
 }
@@ -675,7 +682,7 @@ func (p *Provider) Render(config, data string) string {
 	}
 	payload.IssueNumActivity = raw */
 
-	case "issues_data":
+	case tagIssuesData:
 		raw := []githubIssue{}
 
 		if len(data) > 0 {
@@ -701,7 +708,7 @@ func (p *Provider) Render(config, data string) string {
 			}
 		}
 
-	default: // to handle legacy data, this handles commits
+	case tagCommitsData:
 		raw := []githubBranchCommits{}
 		err = json.Unmarshal([]byte(data), &raw)
 
@@ -709,11 +716,17 @@ func (p *Provider) Render(config, data string) string {
 			log.Error("unable to unmarshall github commit data", err)
 			return "Documize internal github json umarshall data error: " + err.Error() + "<BR>" + data
 		}
-		c.ReportInfo.ID = "commits_data"
+		c.ReportInfo.ID = tagCommitsData
 		payload.BranchCommits = raw
 		for _, list := range raw {
 			payload.CommitCount += len(list.Commits)
 		}
+
+	default:
+		msg := "unknown data format: " + c.ReportInfo.ID
+		log.ErrorString(msg)
+		return "internal configuration error, " + msg
+
 	}
 
 	t := template.New("github")
