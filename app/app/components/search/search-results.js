@@ -21,9 +21,22 @@ export default Ember.Component.extend({
         let documents = [];
 
         _.each(temp, function(document) {
+			let refs = [];
+
+			if (document.length > 1) {
+				refs = document.slice(1);
+			}
+
+			_.each(refs, function(ref, index) {
+				ref.comma = index === refs.length-1 ? "" : ", ";
+			});
+
+			let hasRefs = refs.length > 0;
+
             documents.pushObject( {
                 doc: document[0],
-                ref: document
+                ref: refs,
+				hasReferences: hasRefs
             });
         });
 

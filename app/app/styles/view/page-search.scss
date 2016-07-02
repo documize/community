@@ -66,14 +66,6 @@
 							color: $color-link;
 							text-decoration: underline;
 						}
-
-						&:after {
-							content: '·'
-						}
-
-						&:last-of-type:after {
-							content: ''
-						}
 					}
 				}
 	        }
