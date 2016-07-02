@@ -52,14 +52,14 @@
 
 						.preview {
 							font-size: 0.7rem;
-							color: #cc9933;
+							color: $color-goldy;
 							display: inline-block;
 							margin-left: 10px;
 						}
 					}
 
 					> .desc {
-						color: $color-stroke;
+						color: $color-gray;
 						font-size: 0.8rem;
 						margin-top: 5px;
 						max-width: 300px;
