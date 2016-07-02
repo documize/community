@@ -23,17 +23,18 @@ func TestIssuesService_ListMilestones(t *testing.T) {
 			"state":     "closed",
 			"sort":      "due_date",
 			"direction": "asc",
+			"page":      "2",
 		})
 		fmt.Fprint(w, `[{"number":1}]`)
 	})
 
-	opt := &MilestoneListOptions{"closed", "due_date", "asc"}
+	opt := &MilestoneListOptions{"closed", "due_date", "asc", ListOptions{Page: 2}}
 	milestones, _, err := client.Issues.ListMilestones("o", "r", opt)
 	if err != nil {
 		t.Errorf("IssuesService.ListMilestones returned error: %v", err)
 	}
 
-	want := []Milestone{{Number: Int(1)}}
+	want := []*Milestone{{Number: Int(1)}}
 	if !reflect.DeepEqual(milestones, want) {
 		t.Errorf("IssuesService.ListMilestones returned %+v, want %+v", milestones, want)
 	}

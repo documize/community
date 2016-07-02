@@ -18,8 +18,8 @@ type ReactionsService struct {
 // Reaction represents a GitHub reaction.
 type Reaction struct {
 	// ID is the Reaction ID.
-	ID     *int `json:"id,omitempty"`
-	UserID *int `json:"user_id,omitempty"`
+	ID   *int  `json:"id,omitempty"`
+	User *User `json:"user,omitempty"`
 	// Content is the type of reaction.
 	// Possible values are:
 	//     "+1", "-1", "laugh", "confused", "heart", "hooray".
@@ -258,7 +258,7 @@ func (s ReactionsService) CreatePullRequestCommentReaction(owner, repo string, i
 //
 // GitHub API docs: https://developer.github.com/v3/reaction/reactions/#delete-a-reaction-archive
 func (s *ReactionsService) DeleteReaction(id int) (*Response, error) {
-	u := fmt.Sprintf("/reactions/%v", id)
+	u := fmt.Sprintf("reactions/%v", id)
 
 	req, err := s.client.NewRequest("DELETE", u, nil)
 	if err != nil {

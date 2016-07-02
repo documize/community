@@ -32,12 +32,11 @@ func TestPullRequestsService_List(t *testing.T) {
 
 	opt := &PullRequestListOptions{"closed", "h", "b", "created", "desc", ListOptions{Page: 2}}
 	pulls, _, err := client.PullRequests.List("o", "r", opt)
-
 	if err != nil {
 		t.Errorf("PullRequests.List returned error: %v", err)
 	}
 
-	want := []PullRequest{{Number: Int(1)}}
+	want := []*PullRequest{{Number: Int(1)}}
 	if !reflect.DeepEqual(pulls, want) {
 		t.Errorf("PullRequests.List returned %+v, want %+v", pulls, want)
 	}
@@ -58,7 +57,6 @@ func TestPullRequestsService_Get(t *testing.T) {
 	})
 
 	pull, _, err := client.PullRequests.Get("o", "r", 1)
-
 	if err != nil {
 		t.Errorf("PullRequests.Get returned error: %v", err)
 	}
@@ -79,7 +77,6 @@ func TestPullRequestsService_Get_headAndBase(t *testing.T) {
 	})
 
 	pull, _, err := client.PullRequests.Get("o", "r", 1)
-
 	if err != nil {
 		t.Errorf("PullRequests.Get returned error: %v", err)
 	}
@@ -112,7 +109,6 @@ func TestPullRequestService_Get_DiffURLAndPatchURL(t *testing.T) {
 	})
 
 	pull, _, err := client.PullRequests.Get("o", "r", 1)
-
 	if err != nil {
 		t.Errorf("PullRequests.Get returned error: %v", err)
 	}
@@ -230,7 +226,7 @@ func TestPullRequestsService_ListCommits(t *testing.T) {
 		t.Errorf("PullRequests.ListCommits returned error: %v", err)
 	}
 
-	want := []RepositoryCommit{
+	want := []*RepositoryCommit{
 		{
 			SHA: String("3"),
 			Parents: []Commit{
@@ -289,7 +285,7 @@ func TestPullRequestsService_ListFiles(t *testing.T) {
 		t.Errorf("PullRequests.ListFiles returned error: %v", err)
 	}
 
-	want := []CommitFile{
+	want := []*CommitFile{
 		{
 			SHA:       String("6dcb09b5b57875f334f61aebed695e2e4193db5e"),
 			Filename:  String("file1.txt"),
@@ -341,6 +337,7 @@ func TestPullRequestsService_Merge(t *testing.T) {
 
 	mux.HandleFunc("/repos/o/r/pulls/1/merge", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "PUT")
+		testHeader(t, r, "Accept", mediaTypeSquashPreview)
 		fmt.Fprint(w, `
 			{
 			  "sha": "6dcb09b5b57875f334f61aebed695e2e4193db5e",
@@ -349,7 +346,8 @@ func TestPullRequestsService_Merge(t *testing.T) {
 			}`)
 	})
 
-	merge, _, err := client.PullRequests.Merge("o", "r", 1, "merging pull request")
+	options := &PullRequestOptions{Squash: true}
+	merge, _, err := client.PullRequests.Merge("o", "r", 1, "merging pull request", options)
 	if err != nil {
 		t.Errorf("PullRequests.Merge returned error: %v", err)
 	}

@@ -1,18 +1,19 @@
-
-
-{{#section/base-editor document=document folder=folder page=page busy=busy
-	tip="GitHub is how people build software. (https://github.com)"
-	isDirty=(action 'isDirty') onCancel=(action 'onCancel') onAction=(action 'onAction')}}
+{{#section/base-editor document=document folder=folder page=page busy=busy	tip="GitHub is how people build software. (https://github.com)"	isDirty=(action 'isDirty') onCancel=(action 'onCancel') onAction=(action 'onAction')}}
 
 	<div class="section-github-editor">
 
 	{{#if authenticated}}
 
-		<div class="pull-left width-50">
+		<div class="pull-left width-45">
 			<div class="input-form">
 				<div class="heading">
-					<div class="title">Select Repository & Branch</div>
-					<div class="tip">Choose source of code commits to be displayed</div>
+					<div class="title">Select Repository</div>
+					<div class="tip">Choose source of code information to be displayed</div>
+				</div>
+				<div class="input-control">
+						<label>Organizations and User</label>
+						<div class="tip">Select organization or username</div>
+						{{ui-select id="owners-dropdown" content=owners action=(action 'onOwnerChange') optionValuePath="id" optionLabelPath="name" selection=config.owner}}
 				</div>
 				{{#if noRepos}}
 					<div class="input-control">
@@ -22,26 +23,77 @@
 					<div class="input-control">
 						<label>Repositories</label>
 						<div class="tip">Select repository</div>
-						{{ui-select id="boards-dropdown" content=repos action=(action 'onRepoChange') optionValuePath="id" optionLabelPath="name" selection=config.repo}}
+						{{ui-select id="repos-dropdown" content=repos action=(action 'onRepoChange') optionValuePath="id" optionLabelPath="name" selection=config.repo}}
 					</div>
 					<div class="input-control">
-						<label>Branches</label>
-						<div class="tip">Select branch</div>
-						<div class="github-board">
-							{{#each config.lists as |list|}}
-								<div class="github-list" {{action 'onListCheckbox' list.id}}>
-									{{#if list.included}}
-										<i class="material-icons widget-checkbox checkbox-gray github-list-checkbox">check_box</i>
-									{{else}}
-										<i class="material-icons widget-checkbox checkbox-gray github-list-checkbox">check_box_outline_blank</i>
-									{{/if}}
-									<span class="github-list-title">{{list.name}}</span>
-								</div>
-							{{/each}}
-							<div class="clearfix" />
-						</div>
+						<label>Report</label>
+						<div class="tip">Select report type</div>
+						{{ui-select id="report-dropdown" content=reports action=(action 'onReportChange') optionValuePath="id" optionLabelPath="name" selection=config.report}}
+					</div>
+					<div class="input-control">
+						<label>Show items since</label>
+						{{input id="branch-since" value=config.branchSince type="text" }}
+					</div>
+					<div class="input-control">
+						<label>Number of items to show</label>
+						{{input id="branch-lines" value=config.branchLines type="number" min="1" step="1" max="100" }}
 					</div>
 				{{/if}}
+			</div>
+		</div>
+
+		<div class="pull-left width-10">&nbsp;</div>
+
+		<div class="pull-left width-45">
+			<div class="input-form">
+					{{#if showCommits}}
+						<div class="input-control">
+							<label>Branches</label>
+							<div class="tip">Select branch</div>
+							<div class="github-board">
+								{{#each config.lists as |list|}}
+									<div class="github-list" {{action 'onListCheckbox' list.id}}>
+										{{#if list.included}}
+											<i class="material-icons widget-checkbox checkbox-gray github-list-checkbox">check_box</i>
+										{{else}}
+											<i class="material-icons widget-checkbox checkbox-gray github-list-checkbox">check_box_outline_blank</i>
+										{{/if}}
+										<span class="github-list-title">{{list.name}}</span>
+									</div>
+								{{/each}}
+								<div class="clearfix" />
+							</div>
+						</div>
+					{{/if}}
+					{{#if showLabels}}
+						<div class="input-control">
+							<label>State</label>
+							<div class="tip">Open, Closed or All issues</div>
+							{{ui-select id="issue-state-dropdown" content=states action=(action 'onStateChange') optionValuePath="id" optionLabelPath="name" selection=config.state}}
+						</div>
+						<div class="input-control">
+							<label>Issue numbers</label>
+							<div class="tip">A comma separated list of issue numbers e.g. 42, 1066, 1966 (other selection criteria are ignored)</div>
+						 	{{input id="github-issues" value=config.issues type="text" }}
+						</div>
+						<div class="input-control">
+							<label>Labels</label>
+							<div class="tip">Select labels - an issue must have all labels to be shown, if no label is selected all issues are shown.</div>
+							<div class="github-board">
+								{{#each config.lists as |list|}}
+									<div class="github-list" {{action 'onLabelCheckbox' list.id}} >
+										{{#if list.included}}
+											<i class="material-icons widget-checkbox checkbox-gray github-list-checkbox">check_box</i>
+										{{else}}
+											<i class="material-icons widget-checkbox checkbox-gray github-list-checkbox">check_box_outline_blank</i>
+										{{/if}}
+										<span class="github-list-title"><span class="github-issue-label" style="background-color:#{{list.color}}">{{list.name}}</span></span>
+									</div>
+								{{/each}}
+								<div class="clearfix" />
+							</div>
+						</div>
+					{{/if}}
 			</div>
 		</div>
 
@@ -60,7 +112,7 @@
 		</div>
 
 	{{/if}}
-	
+
 	</div>
 
 {{/section/base-editor}}

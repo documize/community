@@ -19,12 +19,12 @@ func TestGitService_GetTag(t *testing.T) {
 
 	mux.HandleFunc("/repos/o/r/git/tags/s", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
+		testHeader(t, r, "Accept", mediaTypeGitSigningPreview)
 
 		fmt.Fprint(w, `{"tag": "t"}`)
 	})
 
 	tag, _, err := client.Git.GetTag("o", "r", "s")
-
 	if err != nil {
 		t.Errorf("Git.GetTag returned error: %v", err)
 	}
