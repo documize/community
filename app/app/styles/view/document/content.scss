@@ -50,18 +50,21 @@
 				> .action {
 					float: right;
 					margin-top: -8px;
+					margin-right: 5px;
 					@extend .cursor-pointer;
+					opacity: 0.3;
+					@extend .transition-all;
 					display: none;
 					color: $color-stroke;
 				}
 
 				&:hover {
-					.file {
-						text-decoration: underline;
-					}
-
 					.action {
 						display: inline-block;
+
+						&:hover {
+							opacity: 1;
+						}
 					}
 				}
 			}
