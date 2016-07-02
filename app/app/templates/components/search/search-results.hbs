@@ -1,14 +1,21 @@
 <div class="search-results">
     <h2 class="heading">{{resultPhrase}}</h2>
-    <ul class="search-list">
-        {{#each results key="id" as |result index|}}
-            <li class="search-card">
-                <a href="s/{{result.folderId}}/{{result.folderSlug}}/d/{{ result.documentId }}/{{result.documentSlug}}?page={{ result.id }}">
-                    <div class="title">{{ result.documentTitle }}</div>
-                    <div class="snippet">{{ result.pageTitle }}</div>
-                    <div class="folder">{{ result.folderName }}</div>
-                    <div class="tags">{{search/tag-list documentTags=result.documentTags}}</div>
+    <ul class="list">
+        {{#each documents key="doc.id" as |result index|}}
+            <li class="item">
+                <a class="link" href="s/{{result.doc.folderId}}/{{result.doc.folderSlug}}/d/{{ result.doc.documentId }}/{{result.doc.documentSlug}}?page={{ result.doc.id }}">
+                    <div class="title">{{ result.doc.documentTitle }}</div><div class="folder">{{ result.doc.folderName }}</div>
+					<div class="excerpt">{{ result.doc.documentExcerpt }}</div>
+					<div class="chips">{{search/tag-list documentTags=result.doc.documentTags}}</div>
                 </a>
+				<div class="references">
+					<span class="label">referenced &raquo;</span>
+					{{#each result.ref as |ref index|}}
+						<a class="link" href="s/{{result.doc.folderId}}/{{result.doc.folderSlug}}/d/{{ result.doc.documentId }}/{{result.doc.documentSlug}}?page={{ ref.id }}">
+							{{ref.pageTitle}}
+						</a>
+					{{/each}}
+				</div>
             </li>
         {{/each}}
     </ul>

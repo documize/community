@@ -1,7 +1,17 @@
-{{#header/page-navigation searchMode=true}}
-    {{header/search-box filter=filter onFilter=(action 'onFilter')}}
-{{/header/page-navigation}}
+{{#layout/zone-container}}
 
-{{#layout/page-container}}
-    {{search/search-results results=results}}
-{{/layout/page-container}}
+	{{layout/zone-navigation}}
+
+	{{#layout/zone-header title=session.appMeta.title message=session.appMeta.message}}
+	{{/layout/zone-header}}
+
+	<div class="page-search">
+		<div class="input-control">
+			<label>Search</label>
+			<div class="tip">#tags, keywords, "some phrase", keyword AND keyword, keyword OR keyword</div>
+			{{focus-input class="input" type="text" value=filter placeholder='start typing...'}}
+		</div>
+		{{search/search-results results=results}}
+	</div>
+
+{{/layout/zone-container}}
