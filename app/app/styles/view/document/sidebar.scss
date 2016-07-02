@@ -1,73 +1,203 @@
-.document-container {
-	> .sidebar {
-		padding: 40px;
-		font-size: 0.875rem;
-		@extend .no-select;
+.document-sidebar {
+	@extend .no-select;
 
-		.stick {
-		    position: fixed;
-		    top: 50px;
-		}
+	> .summary-line {
+		color: $color-gray;
+		margin-top: 20px;
 
-		.document-structure {
-			> .toc-controls {
-				text-align: center;
-				margin-bottom: 20px;
+		>.items {
+			padding: 0;
+			margin: 0;
+			text-align: center;
 
-				> .round-button-mono {
-					color: $color-off-black;
-					border-color: $color-off-black;
-
-					> .material-icons {
-						color: $color-off-black;
-					}
-				}
-
-				> .disabled {
-					@extend .cursor-not-allowed;
-					color: $color-stroke;
-					border-color: $color-stroke;
-
-					> .material-icons {
-						color: $color-stroke;
-					}
-				}
+			> .divider {
+				margin-right: 20px;
+				display: inline-block;
 			}
 
-			.entries {
-				padding: 0;
-				list-style: none;
-				font-size: 13px;
-				overflow-x: hidden;
+			> .item {
 				list-style-type: none;
+				display: inline-block;
+				margin: 0;
+				padding: 0;
+				vertical-align: middle;
 
-				.item {
-					padding: 4px 0;
-					text-overflow: ellipsis;
-					word-wrap: break-word;
-					white-space: nowrap;
-					overflow: hidden;
+				> .metric {
+					@extend .cursor-pointer;
+					text-align: center;
+					color: $color-gray;
 
-					> .link {
-						color: $color-stroke;
-
-						&:hover {
-							color: $color-link;
-						}
-					}
-
-					> .selected {
-						color: $color-link;
+					.number {
+						font-size: 1.2rem;
 						font-weight: bold;
 					}
+
+					.label {
+						margin: 0;
+						padding: 0;
+						font-size: 0.8rem;
+					}
+
+					&:hover {
+						color: $color-link;
+					}
+				}
+			}
+		}
+	}
+
+	.stick {
+	    position: fixed;
+	    top: 10px;
+	}
+
+	.document-structure {
+		> .toc-controls {
+			text-align: center;
+			margin: 0;
+			padding: 30px 0 10px 0;
+			color: $color-gray;
+
+			> .round-button-mono {
+				color: $color-green;
+				border-color: $color-green;
+
+				> .material-icons {
+					color: $color-green;
 				}
 			}
 
-			.toc-bullet {
-				vertical-align: middle;
+			> .disabled {
+				@extend .cursor-not-allowed;
 				color: $color-stroke;
-				font-size: 10px;
-				margin-right: 5px;
+				border-color: $color-stroke;
+
+				> .material-icons {
+					color: $color-stroke;
+				}
+			}
+		}
+
+		.entries {
+			padding: 0;
+			list-style: none;
+			font-size: 13px;
+			overflow-x: hidden;
+			list-style-type: none;
+
+			.item {
+				padding: 4px 0;
+				text-overflow: ellipsis;
+				word-wrap: break-word;
+				white-space: nowrap;
+				overflow: hidden;
+
+				> .link {
+					color: $color-gray;
+
+					&:hover {
+						color: $color-link;
+					}
+				}
+
+				> .selected {
+					color: $color-link;
+					font-weight: bold;
+				}
+			}
+		}
+	}
+}
+
+.meta-viewers {
+	overflow-y: auto;
+	overflow-x: hidden;
+
+	> .items {
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
+		overflow-y: auto;
+		overflow-x: hidden;
+		height: 300px;
+		min-width: 300px;
+		white-space: nowrap;
+
+		> .item {
+			margin: 15px 0;
+			overflow-x: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			width: 90%;
+
+			> .avatar-box {
+				display: inline-block;
+				margin: 3px 10px 0 0;
+				vertical-align: top;
+			}
+
+			> .detail {
+				display: inline-block;
+
+				> .name {
+					font-size: 1rem;
+					color: $color-off-black;
+				}
+
+				> .date {
+					font-size: 0.8rem;
+				}
+			}
+		}
+	}
+}
+
+.meta-editors {
+	position: relative;
+
+	> .items {
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
+		overflow-y: auto;
+		overflow-x: hidden;
+		height: 300px;
+		min-width: 300px;
+		white-space: nowrap;
+
+		> .item {
+			margin: 15px 0;
+			overflow-x: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			width: 90%;
+
+			.avatar-box {
+				display: inline-block;
+				margin: 3px 10px 0 0;
+				vertical-align: top;
+			}
+
+			.detail {
+				display: inline-block;
+
+				.name {
+					font-size: 1rem;
+					color: $color-off-black;
+				}
+
+				.changed {
+					font-size: 0.9rem;
+				}
+
+				.deleted {
+					font-size: 0.9rem;
+					color: $color-red;
+				}
+
+				.date {
+					font-size: 0.8rem;
+				}
 			}
 		}
 	}

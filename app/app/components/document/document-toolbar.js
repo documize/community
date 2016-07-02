@@ -33,13 +33,10 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
             this.addTooltip(document.getElementById("save-template-button"));
             this.addTooltip(document.getElementById("set-meta-button"));
 			this.addTooltip(document.getElementById("delete-document-button"));
+			this.addTooltip(document.getElementById("add-section-button"));
         }
 
 		this.addTooltip(document.getElementById("print-document-button"));
-
-        if (this.session.authenticated) {
-            this.addTooltip(document.getElementById("owner-avatar"));
-        }
     },
 
     didInsertElement() {
@@ -136,11 +133,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
             this.showNotification("Saved");
 
             this.attrs.onDocumentChange(doc);
-            return true;
-        },
-
-        // close dialog
-        close() {
             return true;
         },
     }

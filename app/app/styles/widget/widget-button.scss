@@ -99,6 +99,12 @@
     }
 }
 
+.button-red-text {
+	> .material-icons {
+		color: $color-red !important;
+	}
+}
+
 .round-button {
     display: inline-block;
     position: relative;

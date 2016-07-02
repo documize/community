@@ -1,109 +1,105 @@
-.document-container {
-	> .content {
-		padding: 40px 40px 40px 20px;
+.document-view {
+	.print-title {
+		display: none;
+		font-size: 2.3em;
+		font-weight: bold;
+		color:$color-black;
+		margin-bottom: 20px;
+		margin-top: 0;
+	}
 
-		.print-title {
-			display: none;
-			font-size: 2.3em;
-			font-weight: bold;
-			color:$color-black;
-			margin-bottom: 20px;
-			margin-top: 0;
-		}
+	.non-printable-message {
+		display: none;
+		font-size: 1em;
+		font-style: italic;
+		color: $color-gray;
+	}
 
-		.non-printable-message {
-			display: none;
-			font-size: 1em;
-			font-style: italic;
-			color: $color-gray;
-		}
+	.attachment-zone {
+		margin: 20px 0 30px 0;
 
-		.attachment-zone {
-			margin: 20px 0 30px 0;
+		> .list {
+			margin: 0;
+			padding: 7px;
 
-			> .list {
-				margin: 0;
-				padding: 7px;
+			> .item {
+				color: $color-off-black;
+				margin-top: 10px;
+				padding: 0;
+				list-style-type: none;
+				border-bottom: 1px dotted $color-border;
+				padding-bottom: 10px;
 
-				> .item {
-					color: $color-off-black;
-					margin-top: 10px;
-					padding: 0;
-					list-style-type: none;
-					border-bottom: 1px solid $color-border;
-    				padding-bottom: 10px;
+				> .icon {
+					vertical-align: text-top;
+					margin-right: 10px;
+				}
 
-					> .icon {
-						vertical-align: text-top;
-						margin-right: 10px;
-					}
-
-					> a {
-						color: $color-gray;
-
-						&:hover {
-							color: $color-link;
-						}
-
-						> .file {
-							font-size: 1rem;
-						}
-					}
-
-					> .action {
-						float: right;
-						margin-top: -8px;
-						@extend .cursor-pointer;
-						display: none;
-						color: $color-stroke;
-					}
+				> a {
+					color: $color-gray;
 
 					&:hover {
-						.file {
-							text-decoration: underline;
-						}
+						color: $color-link;
+					}
 
-						.action {
-							display: inline-block;
-						}
+					> .file {
+						font-size: 1rem;
+					}
+				}
+
+				> .action {
+					float: right;
+					margin-top: -8px;
+					@extend .cursor-pointer;
+					display: none;
+					color: $color-stroke;
+				}
+
+				&:hover {
+					.file {
+						text-decoration: underline;
+					}
+
+					.action {
+						display: inline-block;
 					}
 				}
 			}
 		}
+	}
 
-		.delete-attachment-dialog,
-		.delete-page-dialog {
-			display: none;
-		}
+	.delete-attachment-dialog,
+	.delete-page-dialog {
+		display: none;
+	}
 
-		.is-template {
-			color: $color-gray;
-			font-weight: bold;
-			font-size: 1.5em;
-			margin-bottom: 50px;
-			padding-bottom: 5px;
-			@include border-bottom(1px);
-		}
+	.is-template {
+		color: $color-gray;
+		font-weight: bold;
+		font-size: 1.5em;
+		margin-bottom: 30px;
+		padding-bottom: 5px;
+		@include border-bottom(1px);
+	}
 
-		> .pages {
-			margin: 30px 0 50px 0;
+	> .pages {
+		margin: 30px 0 50px 0;
 
-			> .wysiwyg {
-				> .is-a-page {
-					.page-title {
-						> .page-toolbar {
-							opacity: 0.3;
-							@extend .transition-all;
-
-							&:hover {
-								opacity: 1;
-							}
-						}
+		> .wysiwyg {
+			> .is-a-page {
+				.page-title {
+					> .page-toolbar {
+						opacity: 0.3;
+						@extend .transition-all;
 
 						&:hover {
-							.page-toolbar {
-								opacity: 1;
-							}
+							opacity: 1;
+						}
+					}
+
+					&:hover {
+						.page-toolbar {
+							opacity: 1;
 						}
 					}
 				}
@@ -130,6 +126,5 @@
 		> .regular-button {
 			cursor: default !important;
 		}
-
 	}
 }
