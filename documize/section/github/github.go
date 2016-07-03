@@ -40,7 +40,7 @@ func init() {
 
 	meta.ID = "38c0e4c5-291c-415e-8a4d-262ee80ba5df"
 	meta.Title = "GitHub"
-	meta.Description = "Code commits and branches"
+	meta.Description = "Link code commits and issues"
 	meta.ContentType = "github"
 	meta.Callback = Callback
 }
@@ -652,7 +652,7 @@ func (p *Provider) Render(config, data string) string {
 	payload.Repo = c.RepoInfo
 	payload.Limit = c.BranchLines
 	if len(c.BranchSince) > 0 {
-		payload.DateMessage = ", created after " + c.BranchSince
+		payload.DateMessage = "created after " + c.BranchSince
 	}
 
 	switch c.ReportInfo.ID {

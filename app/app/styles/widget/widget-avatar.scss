@@ -2,11 +2,12 @@
     color: $color-white;
     background-color: $color-gray;
     @include border-radius(20px);
-    padding: 8px 0 0 0;
+    padding: 7px 0 0 0;
     letter-spacing: 1px;
     text-align: center;
     height: 35px;
     width: 35px;
+	cursor: crosshair;
 }
 
 .avatar-large {
@@ -20,4 +21,5 @@
     letter-spacing: 1px;
     text-align: center;
     margin: 0 auto;
+	cursor: crosshair;
 }

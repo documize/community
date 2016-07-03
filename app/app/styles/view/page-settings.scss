@@ -1,3 +1,7 @@
+.global-folder-settings {
+
+}
+
 .user-list {
 	margin: 30px 0;
 
@@ -21,7 +25,7 @@
 	}
 
 	.checkbox {
-		color: $color-link;
+		color: $color-checkbox;
 		cursor: pointer;
 	}
 }

@@ -18,6 +18,16 @@ export default Ember.Component.extend(TooltipMixin, {
     document: {},
     folder: {},
 
+	didRender() {
+		if (this.session.authenticated) {
+            this.addTooltip(document.getElementById("owner-avatar"));
+        }
+	},
+
+	willDestroyElements() {
+		this.destroyElements();
+	},
+
     actions: {
         // Page up - above pages shunt down.
         onPageSequenceChange(pendingChanges) {
@@ -31,6 +41,11 @@ export default Ember.Component.extend(TooltipMixin, {
 
         gotoPage(id) {
             return this.attrs.gotoPage(id);
+        },
+
+		// close dialog
+        close() {
+            return true;
         }
     }
 });

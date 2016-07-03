@@ -10,21 +10,17 @@
 // https://documize.com
 
 @media print {
-	.header, .sidebar, .non-printable {
+	.zone-navigation, .zone-header, .zone-sidebar, .non-printable {
 		display: none !important;
 	}
 
-	.document-container {
-		> .content {
-    		padding: 20px 0 !important;
+	.document-view {
+		.page-toolbar, .document-summary, .attachment-zone, .document-tags {
+			display: none !important;
+		}
 
-			.page-toolbar, .document-summary, .attachment-zone {
-				display: none !important;
-			}
-
-			.print-title, .non-printable-message{
-				display: block !important;
-			}
+		.print-title, .non-printable-message{
+			display: block !important;
 		}
 	}
 }

@@ -42,7 +42,7 @@ var renderTemplates = map[string]string{
 <div class="section-github-render">
 	<p>
 		There are {{ .CommitCount }} commits for branch <a href="{{.Config.BranchURL}}">{{.Config.Branch}}</a> of repository <a href="{{ .Repo.URL }}">{{.Repo.Name}}.</a>
-		Up to {{ .Limit }} items are shown{{ .DateMessage }}.
+		Showing {{ .Limit }} items {{ .DateMessage }}.
 	</p>
 	<div class="github-board">
 		{{range $data := .BranchCommits}}

@@ -14,6 +14,10 @@ import Ember from 'ember';
 export default Ember.Component.extend({
     selectedDocuments: [],
 
+	emptyState: Ember.computed('documents', function() {
+    	return this.get('documents.length') === 0;
+  	}),
+
     didReceiveAttrs() {
         this.set('selectedDocuments', []);
 		this.audit.record('viewed-space');

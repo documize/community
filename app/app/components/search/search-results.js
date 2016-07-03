@@ -1,11 +1,11 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
@@ -16,18 +16,41 @@ export default Ember.Component.extend({
     resultPhrase: "",
 
     didReceiveAttrs() {
-        let count = this.get('results').length;
-        let self = this;
+        let results = this.get('results');
+        let temp = _.groupBy(results, 'documentId');
+        let documents = [];
 
-        switch (count) {
-            case 0:
-                self.set("resultPhrase", "No results.");
-                break;
-            case 1:
-                self.set("resultPhrase", "1 reference found");
-                break;
-            default:
-                self.set("resultPhrase", `${count} references found`);
+        _.each(temp, function(document) {
+			let refs = [];
+
+			if (document.length > 1) {
+				refs = document.slice(1);
+			}
+
+			_.each(refs, function(ref, index) {
+				ref.comma = index === refs.length-1 ? "" : ", ";
+			});
+
+			let hasRefs = refs.length > 0;
+
+            documents.pushObject( {
+                doc: document[0],
+                ref: refs,
+				hasReferences: hasRefs
+            });
+        });
+
+        let phrase = 'Nothing found';
+
+        if (results.length > 0) {
+            let places = documents.length === 1 ? "place" : "places";
+            let references = results.length === 1 ? "secton" : "sections";
+            let i = results.length;
+            let j = documents.length;
+            phrase = `${i} ${references} in ${j} ${places}`;
         }
+
+        this.set('resultPhrase', phrase);
+        this.set('documents', documents);
     }
 });

@@ -1,126 +1,87 @@
-<div class="container-fluid">
-	<div class="row">
-		<div class="document-container">
-			<div class="toolbar">
-
-				{{#if session.authenticated}}
-					<div class="meta-data pull-left hidden-xs hidden-sm">
-					    <ul class="items">
-							<li class="item">
-								<div id="owner-avatar" class="avatar" data-tooltip="{{owner.fullname}}" data-tooltip-position="right middle">{{owner.initials}}</div>
-							</li>
-							<li class="divider" />
-							<li class="item">
-								<div class="date">{{formatted-date document.revised 'Do MMMM YYYY'}}</div>
-							</li>
-							<li class="divider" />
-					        <li class="item" id="meta-button-viewers">
-								<div class="metric">
-									<div class="number">{{meta.viewers.length}}</div>
-						            <div class="label">views</div>
-								</div>
-					        </li>
-							<li class="divider" />
-					        <li class="item" id="meta-button-history">
-								<div class="metric">
-									<div class="number">{{meta.editors.length}}</div>
-						            <div class="label">activity</div>
-								</div>
-					        </li>
-					    </ul>
-						{{#dropdown-dialog target="meta-button-viewers" position="bottom left" showCancel=false button="Close" onAction=(action 'close') color="flat-gray"}}
-							{{document/document-sidebar-viewers meta=meta}}
-						{{/dropdown-dialog}}
-						{{#dropdown-dialog target="meta-button-history" position="bottom left" showCancel=false button="Close" onAction=(action 'close') color="flat-gray"}}
-							{{document/document-sidebar-edits pages=pages meta=meta}}
-						{{/dropdown-dialog}}
-					</div>
-				{{/if}}
-
-				<div class="actions pull-right hidden-xs hidden-sm">
-					{{#link-to 'folders.folder' folder.id folder.slug}}
-						<div class="regular-button button-blue" id="add-section-button">
-							<i class="material-icons">arrow_back</i>
-							<div class="name">space</div>
-						</div>
-					{{/link-to}}
-
-	                {{#if isEditor}}
-						<div class="button-gap"></div>
-						<div class="square-button button-gray" id="set-meta-button" data-tooltip="Set meta" data-tooltip-position="top center">
-							<i class="material-icons">settings</i>
-						</div>
-						<div class="button-gap"></div>
-						<div class="square-button button-gray" id="attachment-button" data-tooltip="Attach file" data-tooltip-position="top center">
-							<i class="material-icons">attach_file</i>
-						</div>
-						<div class="button-gap"></div>
-						<div class="square-button button-gray" id="save-template-button" data-tooltip="Save as template" data-tooltip-position="top center">
-							<i class="material-icons">content_copy</i>
-						</div>
-	                {{/if}}
-
-					<div class="button-gap"></div>
-					<div class="square-button button-gray" id="print-document-button" data-tooltip="Print document" data-tooltip-position="top center" {{action 'printDocument'}}>
-						<i class="material-icons">print</i>
-					</div>
-
-					{{#if isEditor}}
-						<div class="button-gap"></div>
-						<div class="square-button button-red" id="delete-document-button" data-tooltip="Delete document" data-tooltip-position="top center">
-							<i class="material-icons">delete</i>
-						</div>
-					{{/if}}
-
-					{{#if isEditor}}
-						{{#dropdown-dialog target="delete-document-button" position="bottom right" button="Delete" color="flat-red" onAction=(action 'deleteDocument')}}
-						    <p>Are you sure you want to delete this document?</p>
-						    <p>There is no undo!</p>
-						{{/dropdown-dialog}}
-						{{#dropdown-dialog target="save-template-button" position="bottom right" button="Save as Template" color="flat-green" onAction=(action 'saveTemplate') focusOn="new-template-name"}}
-							<div>
-								<div class="input-control">
-									<label>Name</label>
-									<div class="tip">Short name for this type of document</div>
-									{{input type='text' id="new-template-name" value=saveTemplate.name}}
-								</div>
-								<div class="input-control">
-									<label>Excerpt</label>
-									<div class="tip">Explain use case for this template</div>
-									{{textarea value=saveTemplate.description rows="3" id="new-template-desc"}}
-								</div>
-							</div>
-						{{/dropdown-dialog}}
-                        {{#dropdown-dialog target="set-meta-button" position="bottom right" button="Save" color="flat-blue" onAction=(action 'saveMeta') selectOn="document-name"}}
-							<div>
-								<div class="input-control">
-									<label>Owner</label>
-									<div class="tip">Set the document owner</div>
-									{{ui-select id="document-owner"
-										content=users
-										action=(action (mut owner))
-										optionValuePath="id"
-										optionLabelPath="fullname"
-										selection=owner}}
-								</div>
-								<div class="input-control">
-									<label>Name</label>
-									<div class="tip">Short title for this document</div>
-									{{input type='text' id="document-name" value=document.name}}
-								</div>
-								<div class="input-control">
-									<label>Excerpt</label>
-									<div class="tip">Provide short summary of the document (max. 250)</div>
-									{{textarea value=document.excerpt rows="5" id="meta-excerpt"}}
-								</div>
-							</div>
-						{{/dropdown-dialog}}
-					{{/if}}
-				</div>
-
-				<div class="clearfix"></div>
-
-			</div>
+<div>
+	{{#link-to 'folders.folder' folder.id folder.slug}}
+		<div class="regular-button button-white">
+			<i class="material-icons">arrow_back</i>
+			<div class="name">space</div>
 		</div>
+	{{/link-to}}
+
+    {{#if isEditor}}
+		<div class="button-gap"></div>
+		<div class="square-button-white" id="set-meta-button" data-tooltip="Set meta" data-tooltip-position="top center">
+			<i class="material-icons">settings</i>
+		</div>
+		<div class="button-gap"></div>
+		<div class="square-button-white" id="attachment-button" data-tooltip="Attach file" data-tooltip-position="top center">
+			<i class="material-icons">attach_file</i>
+		</div>
+		<div class="button-gap"></div>
+		<div class="square-button-white" id="save-template-button" data-tooltip="Save as template" data-tooltip-position="top center">
+			<i class="material-icons">content_copy</i>
+		</div>
+		<div class="button-gap"></div>
+    {{/if}}
+
+	<div class="square-button-white" id="print-document-button" data-tooltip="Print me" data-tooltip-position="top center" {{action 'printDocument'}}>
+		<i class="material-icons">print</i>
 	</div>
+
+	{{#if isEditor}}
+		<div class="button-gap"></div>
+		<div class="square-button-white button-red-text" id="delete-document-button" data-tooltip="Delete content" data-tooltip-position="top center">
+			<i class="material-icons">delete</i>
+		</div>
+		<div class="button-gap"></div>
+		{{#link-to 'document.wizard' folder.id folder.slug document.id document.slug}}
+			<div class="regular-button button-green" id="add-section-button" data-tooltip="Add section" data-tooltip-position="top center">
+				<i class="material-icons">add</i>
+				<div class="name">section</div>
+			</div>
+		{{/link-to}}
+	{{/if}}
+
+	{{#if isEditor}}
+		{{#dropdown-dialog target="delete-document-button" position="bottom right" button="Delete" color="flat-red" onAction=(action 'deleteDocument')}}
+		    <p>Are you sure you want to delete this document?</p>
+		    <p>There is no undo!</p>
+		{{/dropdown-dialog}}
+		{{#dropdown-dialog target="save-template-button" position="bottom right" button="Save as Template" color="flat-green" onAction=(action 'saveTemplate') focusOn="new-template-name"}}
+			<div>
+				<div class="input-control">
+					<label>Name</label>
+					<div class="tip">Short name for this type of document</div>
+					{{input type='text' id="new-template-name" value=saveTemplate.name}}
+				</div>
+				<div class="input-control">
+					<label>Excerpt</label>
+					<div class="tip">Explain use case for this template</div>
+					{{textarea value=saveTemplate.description rows="3" id="new-template-desc"}}
+				</div>
+			</div>
+		{{/dropdown-dialog}}
+        {{#dropdown-dialog target="set-meta-button" position="bottom right" button="Save" color="flat-blue" onAction=(action 'saveMeta') selectOn="document-name"}}
+			<div>
+				<div class="input-control">
+					<label>Owner</label>
+					<div class="tip">Set the document owner</div>
+					{{ui-select id="document-owner"
+						content=users
+						action=(action (mut owner))
+						optionValuePath="id"
+						optionLabelPath="fullname"
+						selection=owner}}
+				</div>
+				<div class="input-control">
+					<label>Name</label>
+					<div class="tip">Short title for this document</div>
+					{{input type='text' id="document-name" value=document.name}}
+				</div>
+				<div class="input-control">
+					<label>Excerpt</label>
+					<div class="tip">Provide short summary of the document (max. 250)</div>
+					{{textarea value=document.excerpt rows="5" id="meta-excerpt"}}
+				</div>
+			</div>
+		{{/dropdown-dialog}}
+	{{/if}}
 </div>

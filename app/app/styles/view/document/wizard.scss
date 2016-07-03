@@ -16,13 +16,13 @@
 				width: 400px;
 				height: 80px;
 				background-color: $color-white;
-				border: 1px solid $color-border2;
+				border: 1px solid $color-border;
 				border-radius: 3px;
 				margin: 0 30px 30px 0;
 
 				&:hover {
 			        background-color: $color-card-active;
-			        border: 1px solid $color-border2;
+			        border: 1px solid $color-border;
 			        transition: 0.2s all ease;
 			    }
 
@@ -52,14 +52,14 @@
 
 						.preview {
 							font-size: 0.7rem;
-							color: #cc9933;
+							color: $color-goldy;
 							display: inline-block;
 							margin-left: 10px;
 						}
 					}
 
 					> .desc {
-						color: $color-stroke;
+						color: $color-gray;
 						font-size: 0.8rem;
 						margin-top: 5px;
 						max-width: 300px;

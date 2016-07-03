@@ -1,11 +1,11 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
@@ -18,7 +18,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"strings"
 
 	"github.com/documize/community/documize/api/entity"
 	"github.com/documize/community/documize/api/plugins"
@@ -54,15 +53,15 @@ func SearchDocuments(w http.ResponseWriter, r *http.Request) {
 		results[key] = result
 	}
 
+	if len(results) == 0 {
+		results = []entity.DocumentSearch{}
+	}
+
 	data, err := json.Marshal(results)
 
 	if err != nil {
 		writeJSONMarshalError(w, method, "search", err)
 		return
-	}
-
-	if strings.ToLower(string(data)) == "null" {
-		data = []byte("[ ]")
 	}
 
 	writeSuccessBytes(w, data)

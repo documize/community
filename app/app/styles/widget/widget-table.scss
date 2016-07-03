@@ -3,7 +3,7 @@
 	margin: 0 0 25px 0;
 	width: 100%;
 	font-size: 1rem;
-	border: 1px solid $color-border2;
+	border: 1px solid $color-border;
 	border-radius: 2px;
 	border-collapse: collapse;
 
@@ -26,21 +26,21 @@
 				text-align: left;
 				font-weight: bold;
 				padding: 10px;
-				border-bottom: 1px solid $color-border2;
+				border-bottom: 1px solid $color-border;
 			}
 		}
 	}
 
 	.bordered {
-		border: 1px solid $color-border2;
+		border: 1px solid $color-border;
 	}
 
 	.border-top {
-		border-top: 1px solid $color-border2;
+		border-top: 1px solid $color-border;
 	}
 
 	.border-bottom {
-		border-bottom: 1px solid $color-border2;
+		border-bottom: 1px solid $color-border;
 	}
 
 	.action-link {

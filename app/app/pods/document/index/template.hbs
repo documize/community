@@ -1,17 +1,29 @@
-{{#header/page-navigation folder=folder document=model documentMode=true}}
-    {{header/message-box message=model.excerpt}}
-{{/header/page-navigation}}
+{{#layout/zone-container}}
 
-{{document/document-toolbar document=model pages=pages meta=meta folder=folder isEditor=isEditor users=users owner=owner onSaveTemplate=(action 'onSaveTemplate') onDocumentChange=(action 'onDocumentChange') onAttachmentUpload=(action
-'onAttachmentUpload') onDocumentDelete=(action 'onDocumentDelete')}}
+	{{layout/zone-navigation}}
 
-<div class="container-fluid background-color-white">
-    <div class="row">
-        <div class="col-lg-3 col-md-3 col-sm-3">
-            {{document/document-sidebar document=model meta=meta folder=folder pages=pages page=page isEditor=isEditor onAddPage=(action 'onAddPage') changePageSequence=(action 'onPageSequenceChange') changePageLevel=(action 'onPageLevelChange') gotoPage=(action 'gotoPage')}}
-        </div>
-        <div class="col-lg-9 col-md-9 col-sm-9">
-            {{document/document-view document=model pages=pages attachments=attachments folder=folder folders=folders isEditor=isEditor onAttachmentDeleted=(action 'onAttachmentDeleted') onDeletePage=(action 'onPageDeleted')}}
-        </div>
-    </div>
-</div>
+	{{#layout/zone-header title=model.name message=model.excerpt}}
+		{{document/document-toolbar document=model pages=pages folder=folder
+			isEditor=isEditor users=users
+			onSaveTemplate=(action 'onSaveTemplate')
+			onDocumentChange=(action 'onDocumentChange')
+			onAttachmentUpload=(action 'onAttachmentUpload')
+			onDocumentDelete=(action 'onDocumentDelete')}}
+	{{/layout/zone-header}}
+
+	{{#layout/zone-sidebar}}
+		{{document/document-sidebar document=model meta=meta folder=folder pages=pages page=page owner=owner isEditor=isEditor
+			onAddPage=(action 'onAddPage')
+			changePageSequence=(action 'onPageSequenceChange')
+			changePageLevel=(action 'onPageLevelChange')
+			gotoPage=(action 'gotoPage')}}
+	{{/layout/zone-sidebar}}
+
+	{{#layout/zone-content}}
+		{{document/document-view document=model pages=pages attachments=attachments folder=folder folders=folders
+			isEditor=isEditor
+			onAttachmentDeleted=(action 'onAttachmentDeleted')
+			onDeletePage=(action 'onPageDeleted')}}
+	{{/layout/zone-content}}
+
+{{/layout/zone-container}}

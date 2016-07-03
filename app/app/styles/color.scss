@@ -8,35 +8,35 @@
 // by contacting <sales@documize.com>.
 //
 // https://documize.com
+
 $color-off-white: #f5f5f5;
 $color-off-black: #333333;
 $color-black: #000000;
 $color-white: #ffffff;
-$color-primary: #084d85;
-$color-link: #5abc67;
-$color-attachment: #2180cc;
-$color-red: #d9493c;
-$color-green: #1c962b;
-$color-blue: #084d85;
+$color-primary: #115a97;
+$color-red: #d04134;
+$color-green: #4caf50;
+$color-blue: #115a97;
 $color-gray: #8b9096;
-$color-background: #f8f8f8;
-$color-tooltip: #4c4c4c;
+$color-goldy: #cc9933;
+
+$color-header: #f3f5f8;
+$color-link: #4caf50;
+$color-border: #e1e1e1;
+
+$color-input: #a1a1a1;
+$color-stroke: #e1e1e1;
+
+$color-tooltip: #a1a1a1;
 $color-toast: #4c4c4c;
-$color-chip: #98A2AB;
-$color-input: #98A2AB;
-$color-stroke: #98A2AB;
+$color-checkbox: #115a97;
 $color-card-active: #f7fcff;
-$color-border: #dbdbdb;
-$color-border2: #e2e2e2;
-$color-primary-light: lighten($color-primary, 30%);
-$color-primary-dark: darken($color-primary, 10%);
-$color-gray2: #f0eeee;
-$color-active-state: #e2e2e2;
-$color-sidebar: #e7f1f6;
-$color-shadow: #dbdbdb;
-$color-error: #c23c56;
-$color-highlight: #fff8dc;
-$color-warning: #990012;
+
+$color-chip: #98A2AB;
+$color-chip: #dff0f9;
+$color-chip-border: #daeaf3;
+$color-chip-text: #1b88e3;
+
 .background-color-white {
 	background-color: $color-white;
 }
@@ -72,7 +72,4 @@ $color-warning: #990012;
 }
 .color-gray {
 	color: $color-gray;
-}
-.color-error {
-	color: $color-error;
 }

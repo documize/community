@@ -2,6 +2,7 @@ import Ember from 'ember';
 
 export default Ember.Route.extend({
     userService: Ember.inject.service('user'),
+	folderService: Ember.inject.service('folder'),
 
     beforeModel: function() {
         if (!this.session.authenticated) {
@@ -19,7 +20,6 @@ export default Ember.Route.extend({
 
     setupController(controller, model) {
         controller.set('model', model);
-		let fullname = model.get('fullname');
-        controller.set('message', `Profile for ${fullname}`);
+		controller.set("folder", this.get('folderService.currentFolder'));
     }
 });

@@ -1,17 +1,34 @@
-<div class="document-container">
-	<div class="sidebar hidden-xs hidden-sm">
-		{{#if isEditor}}
-			<div class="margin-bottom-20 text-center">
-				{{#link-to 'document.wizard' folder.id folder.slug document.id document.slug}}
-					<div class="regular-button button-green" id="add-section-button">
-						<i class="material-icons">add</i>
-						<div class="name">section</div>
+<div class="document-sidebar">
+	{{#if session.authenticated}}
+		<div class="summary-line">
+			<ul class="items">
+				<li class="item">
+					<div id="owner-avatar" class="avatar" data-tooltip="{{owner.fullname}}" data-tooltip-position="right middle">{{owner.initials}}</div>
+				</li>
+				<li class="divider" />
+		        <li class="item" id="meta-button-viewers">
+					<div class="metric">
+						<div class="number">{{meta.viewers.length}}</div>
+			            <div class="label">views</div>
 					</div>
-				{{/link-to}}
-			</div>
-		{{/if}}
-		{{document/document-sidebar-toc document=model folder=folder pages=pages page=page isEditor=isEditor
-			changePageSequence=(action 'onPageSequenceChange') changePageLevel=(action 'onPageLevelChange')
-			gotoPage=(action 'gotoPage')}}
-	</div>
+		        </li>
+				<li class="divider" />
+		        <li class="item" id="meta-button-history">
+					<div class="metric">
+						<div class="number">{{meta.editors.length}}</div>
+			            <div class="label">activity</div>
+					</div>
+		        </li>
+		    </ul>
+		</div>
+		{{#dropdown-dialog target="meta-button-viewers" position="bottom left" showCancel=false button="Close" onAction=(action 'close') color="flat-gray"}}
+			{{document/document-sidebar-viewers meta=meta}}
+		{{/dropdown-dialog}}
+		{{#dropdown-dialog target="meta-button-history" position="bottom left" showCancel=false button="Close" onAction=(action 'close') color="flat-gray"}}
+			{{document/document-sidebar-edits pages=pages meta=meta}}
+		{{/dropdown-dialog}}
+	{{/if}}
+	{{document/document-sidebar-toc document=model folder=folder pages=pages page=page isEditor=isEditor
+		changePageSequence=(action 'onPageSequenceChange') changePageLevel=(action 'onPageLevelChange')
+		gotoPage=(action 'gotoPage')}}
 </div>

@@ -7,18 +7,16 @@ export default Ember.Controller.extend({
     filter: "",
     results: [],
 
-    filterResults(filter) {
+	onKeywordChange: function() {
+        Ember.run.debounce(this, this.fetch, 750);
+    }.observes('filter'),
+
+    fetch() {
         this.audit.record('searched');
         let self = this;
 
-        this.get('searchService').find(filter).then(function(response) {
+        this.get('searchService').find(this.get('filter')).then(function(response) {
             self.set('results', response);
         });
-    },
-
-    actions: {
-        onFilter(filter) {
-            this.filterResults(filter);
-        }
     }
 });
