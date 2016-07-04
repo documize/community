@@ -73,14 +73,15 @@ test('changing space name', function(assert) {
     server.createList('folder', 2);
     server.createList('permission', 4);
     authenticateUser();
-    visit('/s/VzMuyEw_3WqiafcG/my-project/settings');
-    return pauseTest();
+    visit('/s/VzMuyEw_3WqiafcG/my-project');
+
+    click('#folder-settings-button');
 
     fillIn('#folderName', 'Test Space');
     click('.button-blue');
 
     andThen(function() {
-        let spaceName = find('.breadcrumb-menu .selected').text().trim();
+        let spaceName = find('.info .title').text().trim();
         checkForCommonAsserts();
         assert.equal(spaceName, 'Test Space', 'Space name has been changed');
         assert.equal(currentURL(), '/s/VzMuyEw_3WqiafcG/my-project/settings');
@@ -92,7 +93,9 @@ test('sharing a space', function(assert) {
     server.createList('folder', 2);
     server.createList('permission', 4);
     authenticateUser();
-    visit('/s/VzMuyEw_3WqiafcG/my-project/settings');
+    visit('/s/VzMuyEw_3WqiafcG/my-project');
+
+    click('#folder-settings-button');
 
     click(('.sidebar-menu .options li:contains(Share)'));
     fillIn('#inviteEmail', 'share-test@gmail.com');
@@ -111,25 +114,29 @@ test('changing space permissions', function(assert) {
     server.createList('folder', 2);
     server.createList('permission', 4);
     authenticateUser();
+
+    visit('/s/VzMygEw_3WrtFzto/test');
     andThen(function() {
-        let numberOfPublicFolders = find('.folders-list div:first .list a').length;
+        let numberOfPublicFolders = find('.sidebar-menu .folders-list .section .list:first a').length;
         assert.equal(numberOfPublicFolders, 1, '1 folder listed as public');
-        assert.equal(currentURL(), '/s/VzMuyEw_3WqiafcG/my-project');
+        assert.equal(currentURL(), '/s/VzMygEw_3WrtFzto/test');
     });
 
-    visit('/s/VzMygEw_3WrtFzto/test/settings');
-    click(('.sidebar-menu .options li:contains(Permissions)'));
+    click('#folder-settings-button');
+
+    click('.sidebar-menu .options li:contains(Permissions)');
 
     click('tr:contains(Everyone) #canView-');
     click('tr:contains(Everyone) #canEdit-');
     click('.button-blue');
 
-    visit('/s/VzMuyEw_3WqiafcG/my-project');
+    visit('/s/VzMygEw_3WrtFzto/test');
+    // return pauseTest();
 
     andThen(function() {
-        let numberOfPublicFolders = find('.folders-list div:first .list a').length;
+        let numberOfPublicFolders = find('.folders-list div:contains(EVERYONE) .list a').length;
         assert.equal(numberOfPublicFolders, 2, '2 folder listed as public');
-        assert.equal(currentURL(), '/s/VzMuyEw_3WqiafcG/my-project');
+        assert.equal(currentURL(), '/s/VzMygEw_3WrtFzto/test');
     });
 });
 
@@ -138,7 +145,9 @@ test('deleting a space', function(assert) {
     server.createList('folder', 2);
     server.createList('permission', 4);
     authenticateUser();
-    visit('/s/VzMuyEw_3WqiafcG/my-project/settings');
+    visit('/s/VzMuyEw_3WqiafcG/my-project');
+
+    click('#folder-settings-button');
 
     click('.sidebar-menu .options li:contains(Delete)');
 
