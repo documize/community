@@ -1,8 +1,26 @@
 .page-search {
-	margin: 50px 100px;
+
+	> .zone-header {
+		background-color: $color-header;
+		padding: 0 40px 0 40px;
+	}
+
+	.input-control {
+		padding: 20px 0;
+		margin-bottom: 0;
+	}
+
+	.input-control input {
+		background-color: $color-header;
+	}
+
+	.input-control input:focus {
+
+	}
 
 	.search-results {
 		margin: 50px 0;
+		padding: 0 40px 0 40px;
 
 	    .heading {
 	        font-size: 1.2rem;
@@ -16,6 +34,8 @@
 	        > .item {
 	            cursor: pointer;
 				margin: 0 30px 30px 0;
+				padding-bottom: 40px;
+    			border-bottom: 1px solid #e1e1e1;
 
                 > .link {
                     text-decoration: none;
@@ -40,18 +60,15 @@
                     > .excerpt {
 						margin-top: 1rem;
                         font-size: 0.9rem;
-						margin-left: 20px;
                     }
 
 					> .chips {
 						margin-top: 1rem;
-						margin-left: 20px;
 					}
                 }
 
 				> .references {
 					margin-top: 1rem;
-					margin-left: 20px;
 
 					> .label {
 						font-size: 0.9rem;

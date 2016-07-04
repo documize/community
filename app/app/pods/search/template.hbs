@@ -2,17 +2,21 @@
 
 	{{layout/zone-navigation}}
 
-	{{#layout/zone-header title=session.appMeta.title message=session.appMeta.message}}
-		{{layout/button-home}}
-	{{/layout/zone-header}}
-
 	<div class="page-search">
-		<div class="input-control">
-			<label>Search</label>
-			<div class="tip">#tags, keywords, "some phrase", keyword AND keyword, keyword OR keyword</div>
-			{{focus-input class="input" type="text" value=filter placeholder='start typing...'}}
+
+		<div id="zone-header" class="zone-header">
+			<div class="input-control pull-left width-60">
+				<label>Search</label>
+				{{focus-input class="input" type="text" value=filter placeholder='#tags, keywords, "some phrase", keyword AND keyword, keyword OR keyword'}}
+			</div>
+			<div class="actions pull-right hidden-xs hidden-sm">
+				{{layout/button-home}}
+			</div>
+			<div class="clearfix"></div>
 		</div>
+
 		{{search/search-results results=results}}
+
 	</div>
 
 {{/layout/zone-container}}
