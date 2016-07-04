@@ -74,6 +74,7 @@ test('changing space name', function(assert) {
     server.createList('permission', 4);
     authenticateUser();
     visit('/s/VzMuyEw_3WqiafcG/my-project/settings');
+    return pauseTest();
 
     fillIn('#folderName', 'Test Space');
     click('.button-blue');

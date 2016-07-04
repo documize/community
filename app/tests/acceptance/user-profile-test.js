@@ -23,7 +23,7 @@ test('changing user details and email ', function(assert) {
 
     andThen(function() {
         assert.equal(currentURL(), '/profile');
-        assert.equal(find('.name').text().trim(), 'Lennex Zinyando', 'Profile name displayed');
+        assert.equal(find('.content .name').text().trim(), 'Lennex Zinyando', 'Profile name displayed');
         assert.equal(find('#firstname').val(), 'Lennex', 'Firstaname input displays correct value');
         assert.equal(find('#lastname').val(), 'Zinyando', 'Lastname input displays correct value');
         assert.equal(find('#email').val(), 'brizdigital@gmail.com', 'Email input displays correct value');

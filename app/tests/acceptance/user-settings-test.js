@@ -95,6 +95,5 @@ function checkForCommonAsserts() {
     findWithAssert('.sidebar-menu');
     findWithAssert('#user-button');
     findWithAssert('#accounts-button');
-    findWithAssert('a:contains(Dashboard)');
-    findWithAssert('a:contains(Settings)');
+    findWithAssert('.info .title');
 }

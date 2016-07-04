@@ -1,7 +1,6 @@
 import Ember from 'ember';
 import Application from '../../app';
 import config from '../../config/environment';
-import './stub-session';
 import './stub-audit';
 import './user-login';
 import './wait-to-appear';
