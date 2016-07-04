@@ -21,6 +21,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
     documentService: Ember.inject.service('document'),
     templateService: Ember.inject.service('template'),
     folderService: Ember.inject.service('folder'),
+    session: Ember.inject.service(),
 
     folder: {},
     busy: false,
@@ -30,7 +31,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
     moveFolderId: "",
 
     didReceiveAttrs() {
-        this.set('isFolderOwner', this.get('folder.userId') === this.session.user.id);
+        this.set('isFolderOwner', this.get('folder.userId') === this.get("session.user.id"));
 
         let self = this;
 
