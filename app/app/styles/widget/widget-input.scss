@@ -44,7 +44,7 @@
     > textarea {
         resize: none;
         height: auto !important;
-		overflow-y: hidden; 
+		overflow-y: hidden;
     }
 
 	> select,
@@ -160,7 +160,7 @@
 }
 
 .input-form {
-    border: 1px solid $color-border2;
+    border: 1px solid $color-border;
     display: block;
     border-radius : 3px;
     background-color: $color-white;
@@ -187,6 +187,10 @@
 	margin-top: 30px;
 }
 
+.form-borderless {
+	padding: 0 !important;
+	border: none !important;
+}
 
 .widget-checkbox {
 	color: $color-link;

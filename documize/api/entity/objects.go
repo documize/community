@@ -275,15 +275,16 @@ type Search struct {
 
 // DocumentSearch represents 'presentable' search results.
 type DocumentSearch struct {
-	ID            string `json:"id"`
-	DocumentID    string `json:"documentId"`
-	DocumentTitle string `json:"documentTitle"`
-	DocumentSlug  string `json:"documentSlug"`
-	Tags          string `json:"documentTags"`
-	PageTitle     string `json:"pageTitle"`
-	LabelID       string `json:"folderId"`
-	LabelName     string `json:"folderName"`
-	FolderSlug    string `json:"folderSlug"`
+	ID              string `json:"id"`
+	DocumentID      string `json:"documentId"`
+	DocumentTitle   string `json:"documentTitle"`
+	DocumentSlug    string `json:"documentSlug"`
+	DocumentExcerpt string `json:"documentExcerpt"`
+	Tags            string `json:"documentTags"`
+	PageTitle       string `json:"pageTitle"`
+	LabelID         string `json:"folderId"`
+	LabelName       string `json:"folderName"`
+	FolderSlug      string `json:"folderSlug"`
 }
 
 // SiteMeta holds information associated with an Organization.

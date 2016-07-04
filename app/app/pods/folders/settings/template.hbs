@@ -1,9 +1,17 @@
-{{#header/page-navigation folder=model folderMode=true}}
-    {{header/message-box message=session.appMeta.message}}
-{{/header/page-navigation}}
+{{#layout/zone-container}}
 
-{{#layout/page-container}}
-	{{#layout/page-sidebar}}
+	{{layout/zone-navigation}}
+
+	{{#layout/zone-header title=model.name message="Settings, sharing, permissions and deletion"}}
+		{{#link-to 'folders.folder' model.id model.slug}}
+			<div class="regular-button button-white">
+				<i class="material-icons">arrow_back</i>
+				<div class="name">space</div>
+			</div>
+		{{/link-to}}
+	{{/layout/zone-header}}
+
+	{{#layout/zone-sidebar}}
 		<div class="sidebar-menu">
 			<ul class="options">
 				<li class="option {{if tabGeneral "selected"}}" {{action 'selectTab' 'tabGeneral'}}>General</li>
@@ -12,8 +20,9 @@
 				<li class="option {{if tabDelete "selected"}}" {{action 'selectTab' 'tabDelete'}}>Delete</li>
 			</ul>
 		</div>
-	{{/layout/page-sidebar}}
-	{{#layout/page-content}}
+	{{/layout/zone-sidebar}}
+
+	{{#layout/zone-content}}
 		{{#folder/folder-settings
 			tabGeneral=tabGeneral
 			tabShare=tabShare
@@ -28,5 +37,6 @@
 			onShare="onShare"
 			onPermission="onPermission" }}
 		{{/folder/folder-settings}}
-	{{/layout/page-content}}
-{{/layout/page-container}}
+	{{/layout/zone-content}}
+
+{{/layout/zone-container}}

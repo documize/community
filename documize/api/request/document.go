@@ -244,7 +244,7 @@ func (p *Persister) SearchDocument(keywords string) (results []entity.DocumentSe
 	}
 
 	sql := `SELECT search.id, documentid, pagetitle, document.labelid, document.title as documenttitle, document.tags,
-   		COALESCE(label.label,'Unknown') AS labelname
+   		COALESCE(label.label,'Unknown') AS labelname, document.excerpt as documentexcerpt
    		FROM search, document LEFT JOIN label ON label.orgid=document.orgid AND label.refid = document.labelid
 		WHERE search.documentid = document.refid AND search.orgid=? AND document.template=0 ` + tagQuery +
 		`AND document.labelid IN

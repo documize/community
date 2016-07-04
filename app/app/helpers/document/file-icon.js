@@ -1,11 +1,11 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
@@ -31,6 +31,15 @@ export function documentFileIcon(params) {
         case "mp4":
             html = "avi.png";
             break;
+
+		case "html":
+			html = "html.png";
+	        break;
+		case "css":
+			html = "css.png";
+	        break;
+
+
         case "bat":
         case "sh":
         case "ps":
@@ -41,13 +50,12 @@ export function documentFileIcon(params) {
         case "java":
         case "go":
         case "js":
-        case "html":
         case "rb":
         case "py":
-        case "css":
         case "json":
         case "config":
-            html = "bat.png";
+		case "xml":
+            html = "code.png";
             break;
         case "bin":
         case "exe":
@@ -97,9 +105,6 @@ export function documentFileIcon(params) {
             html = "doc.png";
             break;
         case "xslt":
-        case "xml":
-            html = "xml.png";
-            break;
     }
 
     return new Ember.Handlebars.SafeString(html);

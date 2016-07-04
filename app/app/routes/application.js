@@ -39,8 +39,17 @@ export default Ember.Route.extend({
 
     actions: {
         willTransition: function( /*transition*/ ) {
+			$("#zone-sidebar").css('height', 'auto');
             Mousetrap.reset();
         },
+
+		didTransition() {
+			Ember.run.schedule("afterRender",this,function() {
+				$("#zone-sidebar").css('height', $(document).height() - $("#zone-navigation").height() - $("#zone-header").height() - 35);
+		    });
+
+			return true;
+		},
 
         error(error, transition) { // jshint ignore: line
             if (error) {

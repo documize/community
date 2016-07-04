@@ -1,4 +1,4 @@
-<div class="pull-right hidden-xs hidden-sm">
+<div>
     {{#if hasSelectedDocuments}}
 		<div class="square-button button-blue" id="move-documents-button" data-tooltip="Move documents" data-tooltip-position="top center">
 		    <i class="material-icons">folder</i>
@@ -27,25 +27,25 @@
 			</ul>
 		{{/dropdown-dialog}}
 	{{else}}
-	    {{#if folderService.canEditCurrentFolder}}
-			<div class="regular-button button-green" id="start-document-button" data-tooltip="Add new content" data-tooltip-position="top center">
-			    <i class="material-icons">add</i>
-				<div class="name">Content</div>
-			</div>
-		{{/if}}
     	{{#if isFolderOwner}}
-			<div class="button-gap"></div>
 			{{#link-to 'folders.settings' folder.id folder.slug (query-params tab="tabShare")}}
-				<div class="square-button button-blue" id="folder-share-button" data-tooltip="Share space" data-tooltip-position="top center">
+				<div class="square-button-white" id="folder-share-button" data-tooltip="Share space" data-tooltip-position="top center">
 					<i class="material-icons">share</i>
 				</div>
 			{{/link-to}}
 			<div class="button-gap"></div>
 			{{#link-to 'folders.settings' folder.id folder.slug}}
-				<div class="square-button button-gray" id="folder-settings-button" data-tooltip="Space settings" data-tooltip-position="top center">
+				<div class="square-button-white" id="folder-settings-button" data-tooltip="Space settings" data-tooltip-position="top center">
 				    <i class="material-icons">settings</i>
 				</div>
 			{{/link-to}}
+		{{/if}}
+		{{#if folderService.canEditCurrentFolder}}
+			<div class="button-gap"></div>
+			<div class="regular-button button-green" id="start-document-button" data-tooltip="Add new content" data-tooltip-position="top center">
+			    <i class="material-icons">add</i>
+				<div class="name">Content</div>
+			</div>
 		{{/if}}
 		{{#if folderService.canEditCurrentFolder}}
 			{{folder/start-document
@@ -58,26 +58,3 @@
 		{{/if}}
     {{/if}}
 </div>
-
-<div class="clearfix" />
-
-{{#if hasDocuments}}
-    {{folder/documents-list documents=documents folder=folder isFolderOwner=isFolderOwner onDocumentsChecked=(action 'onDocumentsChecked') }}
-{{else}}
-	<div class="no-documents">
-		<div class="box">
-			<div class="regular-button button-transparent">
-				<i class="material-icons">add</i>
-				<div class="name">space</div>
-			</div>
-			<div class="message">Create a new space for<br/>all your documentation</div>
-		</div>
-		<div class="box">
-			<div class="regular-button button-green">
-				<i class="material-icons">add</i>
-				<div class="name">content</div>
-			</div>
-			<div class="message">Start with a content template or <br/>import .doc .docx, .txt .md files</div>
-		</div>
-	</div>
-{{/if}}

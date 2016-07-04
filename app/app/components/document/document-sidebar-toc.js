@@ -19,18 +19,13 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
     folder: {},
     pages: [],
     page: "",
-    showToc: false,
-    tocTools: {
-        UpTarget: "",
-        DownTarget: "",
-        AllowIndent: false,
-        AllowOutdent: false
-    },
-    actionablePage: false,
-    upDisabled: true,
-    downDisabled: true,
-    indentDisabled: true,
-    outdentDisabled: true,
+	state: {
+		actionablePage: false,
+	    upDisabled: true,
+	    downDisabled: true,
+	    indentDisabled: true,
+	    outdentDisabled: true
+	},
 
     didReceiveAttrs: function() {
         this.set('showToc', is.not.undefined(this.get('pages')) && this.get('pages').get('length') > 2);

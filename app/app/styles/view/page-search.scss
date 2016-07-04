@@ -1,44 +1,74 @@
+.page-search {
+	margin: 50px 100px;
 
-.search-results {
-    .heading {
-        font-size: 1.5rem;
-        color: $color-primary;
-    }
+	.search-results {
+		margin: 50px 0;
 
-    > .search-list {
-        @extend .cards-list;
-        margin-top: 20px;
+	    .heading {
+	        font-size: 1.2rem;
+	        color: $color-blue;
+	    }
 
-        > .search-card {
-            @extend .content-card;
-            width: 220px;
-            height: 200px;
-            cursor: pointer;
+	    > .list {
+	        margin-top: 20px;
+			list-style: none;
 
-            .folder {
-                font-size: 0.9rem;
-                margin: 1.7rem 0 0 0;
-                height: 1.2rem;
-                overflow: hidden;
-                color: $color-gray;
-            }
+	        > .item {
+	            cursor: pointer;
+				margin: 0 30px 30px 0;
 
-            .tags {
-                font-size: 0.9rem;
-                height: 1.2rem;
-                overflow: hidden;
-                color: $color-gray;
+                > .link {
+                    text-decoration: none;
+                    color: $color-off-black;
 
-                .tag {
-                    display: inline-block;
-                    margin-right: 5px;
+					&:hover {
+						color: $color-link;
+					}
+
+                    > .title {
+                        display: inline-block;
+						font-size: 1.2rem;
+                    }
+
+					> .folder {
+                        display: inline-block;
+                        font-size: 0.8rem;
+                        color: $color-gray;
+						margin-left: 15px;
+                    }
+
+                    > .excerpt {
+						margin-top: 1rem;
+                        font-size: 0.9rem;
+						margin-left: 20px;
+                    }
+
+					> .chips {
+						margin-top: 1rem;
+						margin-left: 20px;
+					}
                 }
-            }
 
-            a, a:hover {
-                text-decoration: none;
-                color: $color-off-black;
-            }
-        }
+				> .references {
+					margin-top: 1rem;
+					margin-left: 20px;
+
+					> .label {
+						font-size: 0.9rem;
+						color: $color-gray;
+					}
+
+					> .link {
+						font-size: 0.9rem;
+						color: $color-off-black;
+
+						&:hover {
+							color: $color-link;
+							text-decoration: underline;
+						}
+					}
+				}
+	        }
+	    }
     }
 }
