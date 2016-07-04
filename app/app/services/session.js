@@ -23,9 +23,16 @@ export default SimpleAuthSession.extend({
     ajax: service(),
     appMeta: service(),
 
+    isMac: false,
+    isMobile: false,
     authenticated: notEmpty('user.id'),
     isAdmin: oneWay('user.admin'),
     isEditor: or('user.admin', 'user.editor'),
+
+    init: function() {
+      this.set('isMac', is.mac());
+      this.set('isMobile', is.mobile());
+    },
 
     user: computed('isAuthenticated', 'session.content.authenticated.user', function(){
         if (this.get('isAuthenticated')) {
