@@ -3,12 +3,12 @@ import moduleForAcceptance from 'documize/tests/helpers/module-for-acceptance';
 
 moduleForAcceptance('Acceptance | user profile');
 
-test('visiting /profile', function(assert) {
+test('visiting /profile', function (assert) {
     server.createList('folder', 2);
     authenticateUser();
     visit('/profile');
 
-    andThen(function() {
+    andThen(function () {
         assert.equal(currentURL(), '/profile');
         assert.equal(find('#firstname').val(), 'Lennex', 'Firstaname input displays correct value');
         assert.equal(find('#lastname').val(), 'Zinyando', 'Lastname input displays correct value');
@@ -16,12 +16,12 @@ test('visiting /profile', function(assert) {
     });
 });
 
-test('changing user details and email ', function(assert) {
+test('changing user details and email ', function (assert) {
     server.createList('folder', 2);
     authenticateUser();
     visit('/profile');
 
-    andThen(function() {
+    andThen(function () {
         assert.equal(currentURL(), '/profile');
         assert.equal(find('.content .name').text().trim(), 'Lennex Zinyando', 'Profile name displayed');
         assert.equal(find('#firstname').val(), 'Lennex', 'Firstaname input displays correct value');
@@ -34,7 +34,7 @@ test('changing user details and email ', function(assert) {
     fillIn('#email', 'test.user@domain.com');
     click('.button-blue');
 
-    andThen(function() {
+    andThen(function () {
         assert.equal(currentURL(), '/s/VzMuyEw_3WqiafcG/my-project');
         assert.equal(find('.content .name').text().trim(), 'Test User', 'Profile name displayed');
     });

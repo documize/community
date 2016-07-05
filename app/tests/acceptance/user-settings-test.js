@@ -1,14 +1,14 @@
-import { test} from 'qunit';
+import { test } from 'qunit';
 import moduleForAcceptance from 'documize/tests/helpers/module-for-acceptance';
 
 moduleForAcceptance('Acceptance | User Settings');
 
-test('visiting /settings/general', function(assert) {
+test('visiting /settings/general', function (assert) {
     server.create('meta', { allowAnonymousAccess: false });
     authenticateUser();
     visit('/settings/general');
 
-    andThen(function() {
+    andThen(function () {
         assert.equal(currentURL(), '/settings/general');
         assert.equal(find('#siteTitle').val(), 'EmberSherpa', 'Website title input is filled in correctly');
         assert.equal(find('textarea').val(), 'This Documize instance contains all our team documentation', 'Message is set correctly');
@@ -16,12 +16,12 @@ test('visiting /settings/general', function(assert) {
     });
 });
 
-test('changing the Website title and description', function(assert) {
+test('changing the Website title and description', function (assert) {
     server.create('meta', { allowAnonymousAccess: false });
     authenticateUser();
     visit('/settings/general');
 
-    andThen(function() {
+    andThen(function () {
         let websiteTitle = find('.content .title').text().trim();
         let websiteTitleInput = find('#siteTitle').val();
         assert.equal(websiteTitleInput, websiteTitle, 'Website title is set to EmberSherpa');
@@ -30,30 +30,30 @@ test('changing the Website title and description', function(assert) {
     fillIn('#siteTitle', 'Documize Tests');
     click('.button-blue');
 
-    andThen(function() {
+    andThen(function () {
         let websiteTitle = find('.content .title').text().trim();
         let websiteTitleInput = find('#siteTitle').val();
         assert.equal(websiteTitleInput, websiteTitle, 'Website title is set to Documize Tests');
     });
 });
 
-test('visiting /settings/folders', function(assert) {
+test('visiting /settings/folders', function (assert) {
     server.create('meta', { allowAnonymousAccess: false });
     authenticateUser();
     visit('/settings/folders');
 
-    andThen(function() {
+    andThen(function () {
         checkForCommonAsserts();
         assert.equal(currentURL(), '/settings/folders');
     });
 });
 
-test('visiting /settings/users', function(assert) {
+test('visiting /settings/users', function (assert) {
     server.create('meta', { allowAnonymousAccess: false });
     authenticateUser();
     visit('/settings/users');
 
-    andThen(function() {
+    andThen(function () {
         checkForCommonAsserts();
         findWithAssert('.user-list');
         let numberOfUsers = find('.user-list tr').length;
@@ -62,12 +62,12 @@ test('visiting /settings/users', function(assert) {
     });
 });
 
-test('add a new user', function(assert) {
+test('add a new user', function (assert) {
     server.create('meta', { allowAnonymousAccess: false });
     authenticateUser();
     visit('/settings/users');
 
-    andThen(function() {
+    andThen(function () {
         checkForCommonAsserts();
         findWithAssert('.user-list');
         let numberOfUsers = find('.user-list tr').length;
@@ -83,7 +83,7 @@ test('add a new user', function(assert) {
     // waitToAppear('.user-notification:contains(Added)');
     // waitToDisappear('.user-notification:contains(Added)');
 
-    andThen(function() {
+    andThen(function () {
         let numberOfUsers = find('.user-list tr').length;
         assert.equal(numberOfUsers, 4, '3 Users listed');
         assert.equal(currentURL(), '/settings/users');
