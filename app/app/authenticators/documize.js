@@ -5,55 +5,55 @@ import netUtil from '../utils/net';
 import models from '../utils/model';
 
 const {
-    isPresent,
-    RSVP: { resolve, reject },
-    inject: { service }
+	isPresent,
+	RSVP: { resolve, reject },
+	inject: { service }
 } = Ember;
 
 export default Base.extend({
 
-    ajax: service(),
-    appMeta: service(),
+	ajax: service(),
+	appMeta: service(),
 
-    restore(data) {
-        // TODO: verify authentication data
-        if (data) {
-            return resolve(data);
-        }
-        return reject();
-    },
+	restore(data) {
+		// TODO: verify authentication data
+		if (data) {
+			return resolve(data);
+		}
+		return reject();
+	},
 
-    authenticate(credentials) {
-        let domain = netUtil.getSubdomain();
+	authenticate(credentials) {
+		let domain = netUtil.getSubdomain();
 
-        let encoded;
+		let encoded;
 
-        if (typeof credentials === 'object') {
+		if (typeof credentials === 'object') {
 
-            let { password, email } = credentials;
+			let { password, email } = credentials;
 
-            if (!isPresent(password) || !isPresent(email)) {
-                return Ember.RSVP.reject("invalid");
-            }
+			if (!isPresent(password) || !isPresent(email)) {
+				return Ember.RSVP.reject("invalid");
+			}
 
-            encoded = encodingUtil.Base64.encode(`${domain}:${email}:${password}`);
-        } else if (typeof credentials === 'string') {
-            encoded = credentials;
-        } else {
-            return Ember.RSVP.reject("invalid");
+			encoded = encodingUtil.Base64.encode(`${domain}:${email}:${password}`);
+		} else if (typeof credentials === 'string') {
+			encoded = credentials;
+		} else {
+			return Ember.RSVP.reject("invalid");
 
-        }
+		}
 
-        var headers = {
-            'Authorization': 'Basic ' + encoded
-        };
+		var headers = {
+			'Authorization': 'Basic ' + encoded
+		};
 
-        return this.get('ajax').post('public/authenticate', {
-            headers
-        });
-    },
+		return this.get('ajax').post('public/authenticate', {
+			headers
+		});
+	},
 
-    invalidate() {
-        return resolve();
-    }
+	invalidate() {
+		return resolve();
+	}
 });
