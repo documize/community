@@ -1,47 +1,57 @@
 {
-    "css": {
-        "indent_size": 4,
-        "allowed_file_extensions": ["css", "scss", "sass", "less"]
-    },
-    "html": {
-        "indent_size": 4,
-        "indent_char": " ",
-        "preserve_newlines": true,
-        "wrap_line_length": 0,
-        "indent_handlebars": true,
-        "indent_inner_html": false,
-        "indent_scripts": "keep"
-    },
-    "hbs": {
-        "indent_size": 4,
-        "indent_char": " ",
-        "preserve_newlines": true,
-        "wrap_line_length": 0
-    },
-    "js": {
-        "indent_size": 4,
-        "indent_char": " ",
-        "preserve_newlines": true,
-        "wrap_line_length": 0,
-        "break_chained_methods": false,
-        "indent_with_tabs": false,
-        "max_preserve_newlines": 2,
-        "jslint_happy": true,
-        "brace_style": "collapse-preserve-inline",
-        "space_after_anon_function": false,
-        "keep_function_indentation": false,
-        "space_before_conditional": true
-    },
-    "sql": {
-        "indent_size": 4,
-        "indent_char": " ",
-        "indent_level": 0,
-        "indent_with_tabs": false
-    },
-    "_default": {
-        "indent_size": 4,
-        "indent_char": " ",
-        "preserve_newlines": true,
-        "wrap_line_length": 0
-    }
+	"css": {
+		"indent_size": 4,
+		"indent_level": 0,
+		"indent_with_tabs": true,
+		"allowed_file_extensions": ["css", "scss", "sass", "less"],
+		"max_preserve_newlines": 2
+	},
+	"html": {
+		"indent_size": 4,
+		"indent_level": 0,
+		"indent_with_tabs": true,
+		"preserve_newlines": true,
+		"max_preserve_newlines": 2,
+		"wrap_line_length": 0,
+		"indent_handlebars": true,
+		"indent_inner_html": false,
+		"indent_scripts": "keep"
+	},
+	"hbs": {
+		"indent_size": 4,
+		"indent_level": 0,
+		"indent_with_tabs": true,
+		"max_preserve_newlines": 2,
+		"preserve_newlines": true,
+		"wrap_line_length": 0
+	},
+	"js": {
+		"indent_size": 4,
+		"indent_level": 0,
+		"indent_with_tabs": true,
+		"preserve_newlines": true,
+		"wrap_line_length": 0,
+		"break_chained_methods": false,
+		"max_preserve_newlines": 2,
+		"jslint_happy": true,
+		"brace_style": "collapse-preserve-inline",
+		"keep_function_indentation": false,
+		"space_after_anon_function": false,
+		"space_before_conditional": true,
+		"space_in_empty_paren": false,
+		"space_in_paren": false
+	},
+	"sql": {
+		"indent_size": 4,
+		"indent_level": 0,
+		"indent_with_tabs": true
+	},
+	"_default": {
+		"indent_size": 4,
+		"indent_level": 0,
+		"indent_with_tabs": true,
+		"preserve_newlines": true,
+		"max_preserve_newlines": 2,
+		"wrap_line_length": 0
+	}
 }
