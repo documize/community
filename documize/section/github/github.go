@@ -14,6 +14,7 @@ package github
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"html/template"
 	"io/ioutil"
@@ -110,16 +111,62 @@ func (p *Provider) Command(w http.ResponseWriter, r *http.Request) {
 
 	config.Clean()
 
-	if len(config.Token) == 0 {
-		msg := "Missing token"
-		log.ErrorString("github: " + msg)
-		provider.WriteMessage(w, "gitub", msg)
+	persist := request.GetPersister(r)
+
+	ptoken := persist.UserConfigString(meta.ContentType, "token")
+
+	switch method { // the token handling switch
+	case "set_token":
+		// write the new one
+		if err = persist.UserConfigSetJSON(meta.ContentType, `{"token":"`+config.Token+`"}`); err != nil {
+			log.Error("github settoken configuration", err)
+			provider.WriteError(w, "github", err)
+			return
+		}
+		provider.WriteEmpty(w)
 		return
+
+	case "check_token":
+		if config.Token != ptoken {
+			// user github token does not match that in the database, so use DB version as the section version may be out-of-date
+			config.Token = ptoken
+		}
+		if err = config.TokenCheck(); err != nil {
+			log.Error("github checktoken validation", err)
+			provider.WriteError(w, "github", err)
+			return
+		}
+		provider.WriteEmpty(w)
+		return
+
+	default:
+		if config.Token != ptoken {
+			if len(config.Token) == 0 {
+				if len(ptoken) == 0 {
+					err = errors.New("missing github token")
+				} else {
+					config.Token = ptoken // use database one
+				}
+			} else {
+				// this is important when switching user
+				// tokens are different...
+				if len(ptoken) == 0 {
+					err = errors.New("no user github token")
+				} else {
+					config.Token = ptoken // use database one
+				}
+			}
+		}
+		if err != nil {
+			log.Error("github clean token configuration", err)
+			provider.WriteError(w, "github", err)
+			return
+		}
 	}
 
 	client := p.githubClient(config)
 
-	switch method {
+	switch method { // the main data handling switch
 
 	case tagCommitsData:
 

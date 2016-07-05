@@ -266,3 +266,12 @@ INSERT INTO `config` VALUES ('LICENSE','{\"token\": \"\",\"endpoint\": \"https:/
 INSERT INTO `config` VALUES ('META','{\"database\": \"db_00000.sql\"}');
 INSERT INTO `config` VALUES ('SECTION-GITHUB', '{\"clientID\": \"\", \"clientSecret\": \"\", \"authorizationCallbackURL\": \"https://localhost:5001/api/public/validate?section=github\"}');
 INSERT INTO `config` VALUES ('SECTION-TRELLO','{\"appKey\": \"\"}');
+
+DROP TABLE IF EXISTS `userconfig`;
+
+CREATE TABLE IF NOT EXISTS  `userconfig` (
+	`userid` CHAR(16) NOT NULL COLLATE utf8_bin,
+	`key` CHAR(225) NOT NULL,
+	`config` JSON,
+	UNIQUE INDEX `idx_userconfig_userkey` (`userid`, `key` ASC) )
+DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;

@@ -17,7 +17,7 @@ import (
 	"time"
 
 	"github.com/documize/community/wordsmith/log"
-	//gogithub "github.com/google/go-github/github"
+	gogithub "github.com/google/go-github/github"
 )
 
 const tagIssuesData = "issues_data"
@@ -219,9 +219,8 @@ type githubIssueActivity struct {
 */
 
 type githubConfig struct {
-	AppKey string `json:"appKey"` // TODO keep?
-	Token  string `json:"token"`
-	//TokenOK     bool           `json:"tokenOK,omitempty"`
+	AppKey      string         `json:"appKey"` // TODO keep?
+	Token       string         `json:"token"`
 	Owner       string         `json:"owner_name"`
 	Repo        string         `json:"repo_name"`
 	Branch      string         `json:"branch"`
@@ -266,21 +265,17 @@ func (c *githubConfig) Clean() {
 		}
 	}
 
-	/*
-		authClient := gogithub.NewClient((&gogithub.BasicAuthTransport{
-			Username: clientID(),
-			Password: clientSecret(),
-		}).Client())
+}
 
-		auth, _, err := authClient.Authorizations.Check(clientID(), c.Token)
-		if err == nil {
-			//fmt.Printf("DEBUG auth %#v\n", *auth)
-			c.TokenOK = true
-		} else {
-			//fmt.Println("DEBUG auth err", err)
-			c.TokenOK = false
-		}
-	*/
+func (c *githubConfig) TokenCheck() error {
+	// Github authorization check
+	authClient := gogithub.NewClient((&gogithub.BasicAuthTransport{
+		Username: clientID(),
+		Password: clientSecret(),
+	}).Client())
+
+	_, _, err := authClient.Authorizations.Check(clientID(), c.Token)
+	return err
 }
 
 type githubCallbackT struct {

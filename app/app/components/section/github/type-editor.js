@@ -33,7 +33,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
         if (is.undefined(this.get('config.clientId')) || is.undefined(this.get('config.callbackUrl'))) {
             self.get('sectionService').fetch(page, "config", {})
-                .then(function(cfg) {
+                .then(function (cfg) {
                     let config = {};
 
                     config = {
@@ -71,18 +71,28 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
                     // On auth callback capture code
                     let code = window.location.search;
 
-                    if (is.not.undefined(code) && is.not.null(code)) {
+                    if (is.not.undefined(code) && is.not.null(code) && is.not.empty(code) && code !== "") {
                         let tok = code.replace("?code=", "");
-                        if (is.not.empty(code)) {
-                            self.set('config.token', tok);
-                            self.send('authStage2');
-                        }
+                        self.set('config.token', tok);
+                        self.get('sectionService').fetch(page, "set_token", self.get('config'))
+                            .then(function () {
+                                console.log("github auth code saved to db");
+                                self.send('authStage2');
+                            }, function (error) { //jshint ignore: line
+                                console.log(error);
+                                self.send('auth');
+                            });
                     } else {
-                        if (self.get('config.token') === "") {
-                            self.send('auth');
-                        }
+                        self.get('sectionService').fetch(page, "check_token", self.get('config'))
+                            .then(function () {
+                                console.log("github auth code valid");
+                                self.send('authStage2');
+                            }, function (error) { //jshint ignore: line
+                                console.log(error);
+                                self.send('auth'); // only require auth if the db does not already know the token
+                            });
                     }
-                }, function(error) { //jshint ignore: line
+                }, function (error) { //jshint ignore: line
                     console.log(error);
                 });
         }
@@ -112,11 +122,11 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
         this.set('owner', thisOwner);
 
         this.get('sectionService').fetch(page, "repos", self.get('config'))
-            .then(function(lists) {
+            .then(function (lists) {
                 self.set('busy', false);
                 self.set('repos', lists);
                 self.getRepoLists();
-            }, function(error) { //jshint ignore: line
+            }, function (error) { //jshint ignore: line
                 self.set('busy', false);
                 self.set('authenticated', false);
                 self.showNotification("Unable to fetch repositories");
@@ -150,7 +160,6 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
         this.getReportLists();
     },
-
 
     getReportLists() {
         let reports = [];
@@ -196,14 +205,14 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
         this.set('showCommits', false);
         this.set('showLabels', false);
         switch (thisReport.id) {
-            case 'commits_data':
-                this.set('showCommits', true);
-                this.getBranchLists();
-                break;
-            case "issues_data":
-                this.set('showLabels', true);
-                this.getLabelLists();
-                break;
+        case 'commits_data':
+            this.set('showCommits', true);
+            this.getBranchLists();
+            break;
+        case "issues_data":
+            this.set('showLabels', true);
+            this.getLabelLists();
+            break;
         }
     },
 
@@ -214,7 +223,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
         let page = this.get('page');
 
         this.get('sectionService').fetch(page, "branches", self.get('config'))
-            .then(function(lists) {
+            .then(function (lists) {
                 let savedLists = self.get('config.lists');
                 if (savedLists === null) {
                     savedLists = [];
@@ -223,7 +232,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
                 if (lists.length > 0) {
                     let noIncluded = true;
 
-                    lists.forEach(function(list) {
+                    lists.forEach(function (list) {
                         let included = false;
                         var saved;
                         if (is.not.undefined(savedLists)) {
@@ -243,7 +252,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
                 self.set('config.lists', lists);
                 self.set('busy', false);
-            }, function(error) { //jshint ignore: line
+            }, function (error) { //jshint ignore: line
                 self.set('busy', false);
                 self.set('authenticated', false);
                 self.showNotification("Unable to fetch repository branches");
@@ -285,14 +294,14 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
         this.set('state', thisState);
 
         this.get('sectionService').fetch(page, "labels", self.get('config'))
-            .then(function(lists) {
+            .then(function (lists) {
                 let savedLists = self.get('config.lists');
                 if (savedLists === null) {
                     savedLists = [];
                 }
 
                 if (lists.length > 0) {
-                    lists.forEach(function(list) {
+                    lists.forEach(function (list) {
                         var saved;
                         if (is.not.undefined(savedLists)) {
                             saved = savedLists.findBy("id", list.id);
@@ -307,7 +316,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
                 self.set('config.lists', lists);
                 self.set('busy', false);
-            }, function(error) { //jshint ignore: line
+            }, function (error) { //jshint ignore: line
                 self.set('busy', false);
                 self.set('authenticated', false);
                 self.showNotification("Unable to fetch repository labels");
@@ -325,7 +334,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
             let list = lists.findBy('id', id);
 
             // restore the list of branches to the default state
-            lists.forEach(function(lst) {
+            lists.forEach(function (lst) {
                 Ember.set(lst, 'included', false);
             });
 
@@ -343,7 +352,6 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
             }
         },
 
-
         authStage2() {
             let self = this;
             self.set('authenticated', true);
@@ -351,11 +359,11 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
             let page = this.get('page');
 
             self.get('sectionService').fetch(page, "owners", self.get('config'))
-                .then(function(owners) {
+                .then(function (owners) {
                     self.set('busy', false);
                     self.set('owners', owners);
                     self.getOwnerLists();
-                }, function(error) { //jshint ignore: line
+                }, function (error) { //jshint ignore: line
                     self.set('busy', false);
                     self.set('authenticated', false);
                     self.showNotification("Unable to fetch owners");
@@ -401,7 +409,6 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
             this.set('config.state', thisState);
         },
 
-
         onCancel() {
             this.attrs.onCancel();
         },
@@ -428,11 +435,11 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
             let thisReport = this.get('config.report');
             this.get('sectionService').fetch(page, thisReport.id, this.get('config'))
-                .then(function(response) {
+                .then(function (response) {
                     meta.set('rawBody', JSON.stringify(response));
                     self.set('busy', false);
                     self.attrs.onAction(page, meta);
-                }, function(reason) { //jshint ignore: line
+                }, function (reason) { //jshint ignore: line
                     self.set('busy', false);
                     self.attrs.onAction(page, meta);
                 });
