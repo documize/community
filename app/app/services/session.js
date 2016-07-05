@@ -32,7 +32,7 @@ export default SimpleAuthSession.extend({
     init: function() {
       this.set('isMac', is.mac());
       this.set('isMobile', is.mobile());
-    },
+  },
 
     user: computed('isAuthenticated', 'session.content.authenticated.user', function(){
         if (this.get('isAuthenticated')) {

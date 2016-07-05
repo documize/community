@@ -3,18 +3,18 @@ import models from '../../../utils/model';
 import NotifierMixin from '../../../mixins/notifier';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 
-export default Ember.Route.extend(NotifierMixin, AuthenticatedRouteMixin, {
+export default Ember.Route.extend(NotifierMixin, {
     folderService: Ember.inject.service('folder'),
     userService: Ember.inject.service('user'),
     folder: {},
-	tab: "",
+    tab: "",
 
-	beforeModel: function(transition) {
+    beforeModel: function (transition) {
         this.tab = is.not.undefined(transition.queryParams.tab) ? transition.queryParams.tab : "tabGeneral";
     },
 
     model(params) {
-		return this.get('folderService').getFolder(params.folder_id);
+        return this.get('folderService').getFolder(params.folder_id);
     },
 
     setupController(controller, model) {
@@ -22,17 +22,17 @@ export default Ember.Route.extend(NotifierMixin, AuthenticatedRouteMixin, {
         this.folder = model;
         controller.set('model', model);
 
-		controller.set('tabGeneral', false);
-		controller.set('tabShare', false);
-		controller.set('tabPermissions', false);
-		controller.set('tabDelete', false);
-		controller.set(this.get('tab'), true);
+        controller.set('tabGeneral', false);
+        controller.set('tabShare', false);
+        controller.set('tabPermissions', false);
+        controller.set('tabDelete', false);
+        controller.set(this.get('tab'), true);
 
-        this.get('folderService').getAll().then(function(folders) {
+        this.get('folderService').getAll().then(function (folders) {
             controller.set('folders', folders.rejectBy('id', model.get('id')));
         });
 
-        this.get('userService').getAll().then(function(users) {
+        this.get('userService').getAll().then(function (users) {
             controller.set('users', users);
 
             var folderPermissions = [];
@@ -48,7 +48,7 @@ export default Ember.Route.extend(NotifierMixin, AuthenticatedRouteMixin, {
 
             folderPermissions.pushObject(u);
 
-            users.forEach(function(user, index) /* jshint ignore:line */ {
+            users.forEach(function (user, index) /* jshint ignore:line */ {
                 if (user.get('active')) {
                     var u = models.FolderPermissionModel.create({
                         userId: user.get('id'),
@@ -64,8 +64,8 @@ export default Ember.Route.extend(NotifierMixin, AuthenticatedRouteMixin, {
                 }
             });
 
-            self.get('folderService').getPermissions(model.id).then(function(permissions) {
-                permissions.forEach(function(permission, index) /* jshint ignore:line */ {
+            self.get('folderService').getPermissions(model.id).then(function (permissions) {
+                permissions.forEach(function (permission, index) /* jshint ignore:line */ {
                     var folderPermission = folderPermissions.findBy('userId', permission.userId);
                     if (is.not.undefined(folderPermission)) {
                         Ember.set(folderPermission, 'orgId', permission.orgId);
@@ -82,45 +82,46 @@ export default Ember.Route.extend(NotifierMixin, AuthenticatedRouteMixin, {
     },
 
     actions: {
-        onRename: function(folder) {
-			let self = this;
-			this.get('folderService').save(folder).then(function() {
-				self.showNotification("Renamed");
-			});
+        onRename: function (folder) {
+            let self = this;
+            this.get('folderService').save(folder).then(function () {
+                self.showNotification("Renamed");
+            });
         },
 
         onRemove(moveId) {
             let self = this;
 
-            this.get('folderService').remove(this.folder.get('id'), moveId).then(function() { /* jshint ignore:line */
+            this.get('folderService').remove(this.folder.get('id'), moveId).then(function () { /* jshint ignore:line */
                 self.showNotification("Deleted");
                 self.session.clearSessionItem('folder');
 
-                self.get('folderService').getFolder(moveId).then(function(folder) {
+                self.get('folderService').getFolder(moveId).then(function (folder) {
                     self.get('folderService').setCurrentFolder(folder);
                     self.transitionTo('folders.folder', folder.get('id'), folder.get('slug'));
                 });
             });
         },
 
-        onShare: function(invitation) {
+        onShare: function (invitation) {
             let self = this;
 
-            this.get('folderService').share(this.folder.get('id'), invitation).then(function() {
-				self.showNotification("Shared");
+            this.get('folderService').share(this.folder.get('id'), invitation).then(function () {
+                self.showNotification("Shared");
             });
         },
 
-        onPermission: function(folder, message, permissions) {
+        onPermission: function (folder, message, permissions) {
             var self = this;
-            var data = permissions.map(function(obj){ return obj.getProperties('orgId', 'folderId' , 'userId', 'canEdit', 'canView'); });
+            var data = permissions.map(function (obj) {
+                return obj.getProperties('orgId', 'folderId', 'userId', 'canEdit', 'canView'); });
             var payload = { Message: message, Roles: data };
 
-            this.get('folderService').savePermissions(folder.get('id'), payload).then(function() {
-				self.showNotification("Saved");
+            this.get('folderService').savePermissions(folder.get('id'), payload).then(function () {
+                self.showNotification("Saved");
             });
 
-            var hasEveryone = _.find(data, function(permission) {
+            var hasEveryone = _.find(data, function (permission) {
                 return permission.userId === "" && (permission.canView || permission.canEdit);
             });
 
@@ -134,7 +135,7 @@ export default Ember.Route.extend(NotifierMixin, AuthenticatedRouteMixin, {
                 }
             }
 
-            this.get('folderService').save(folder).then(function() {
+            this.get('folderService').save(folder).then(function () {
                 // window.location.href = "/folder/" + folder.get('id') + "/" + folder.get('slug');
             });
         }

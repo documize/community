@@ -23,14 +23,26 @@ export default Base.extend({
         return reject();
     },
 
-    authenticate({password, email}) {
+    authenticate(credentials) {
         let domain = netUtil.getSubdomain();
 
-        if (!isPresent(password) || !isPresent(email)) {
-            return Ember.RSVP.reject("invalid");
-        }
+        let encoded;
 
-        var encoded = encodingUtil.Base64.encode(`${domain}:${email}:${password}`);
+        if (typeof credentials === 'object') {
+
+            let { password, email } = credentials;
+
+            if (!isPresent(password) || !isPresent(email)) {
+                return Ember.RSVP.reject("invalid");
+            }
+
+            encoded = encodingUtil.Base64.encode(`${domain}:${email}:${password}`);
+        } else if (typeof credentials === 'string') {
+            encoded = credentials;
+        } else {
+            return Ember.RSVP.reject("invalid");
+
+        }
 
         var headers = {
             'Authorization': 'Basic ' + encoded
