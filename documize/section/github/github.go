@@ -136,7 +136,7 @@ func (p *Provider) Command(w http.ResponseWriter, r *http.Request) {
 			provider.WriteError(w, "github", err)
 			return
 		}
-		provider.WriteEmpty(w)
+		provider.WriteJSON(w, config)
 		return
 
 	default:
