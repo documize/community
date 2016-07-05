@@ -1,40 +1,36 @@
 <div id="zone-navigation" class="zone-navigation">
-    <div class="pull-left">
-        <div class="content">
-            {{#if session.authenticated}}
-                <div id="accounts-button" class="header-button">
+    <div class="pull-left content">
+        {{#if session.authenticated}}
+            <div id="accounts-button" class="header-button">
+                <i class="material-icons">apps</i>
+            </div>
+        {{else}}
+            {{#link-to 'application' class='title'}}
+                <div class="header-button" title=session.appMeta.title>
                     <i class="material-icons">apps</i>
                 </div>
-            {{else}}
-                {{#link-to 'application'}}
-                    <div class="header-button" title=session.appMeta.title>
-                        <i class="material-icons">apps</i>
-                    </div>
-                {{/link-to}}
-            {{/if}}
-			{{#link-to 'application'}}
-            	<div>{{session.appMeta.title}}</div>
-			{{/link-to}}
-    	</div>
+            {{/link-to}}
+        {{/if}}
+        {{#link-to 'application' class='title'}}
+            {{session.appMeta.title}}
+        {{/link-to}}
     </div>
 
-    <div class="pull-right hidden-xs hidden-sm">
-        <div class="content">
-            {{#if session.authenticated}}
-                <div class="name">{{session.user.fullname}}</div>
-                <div id="user-button" class="header-button">
-                    <i class="initials">{{session.user.initials}}</i>
-                </div>
-            {{else}}
-                <div class="login">
-                    {{#link-to 'auth.login'}}Login{{/link-to}}
-                </div>
-            {{/if}}
-			<div class="search">
-				{{#link-to 'search'}}
-					<i class="material-icons">search</i>
-				{{/link-to}}
-			</div>
+    <div class="pull-right hidden-xs hidden-sm content">
+        {{#if session.authenticated}}
+            <div class="name">{{session.user.fullname}}</div>
+            <div id="user-button" class="header-button">
+                <i class="initials">{{session.user.initials}}</i>
+            </div>
+        {{else}}
+            <div class="login">
+                {{#link-to 'auth.login'}}Login{{/link-to}}
+            </div>
+        {{/if}}
+        <div class="search">
+            {{#link-to 'search'}}
+                <i class="material-icons">search</i>
+            {{/link-to}}
         </div>
     </div>
 
