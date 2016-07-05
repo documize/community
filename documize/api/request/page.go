@@ -372,7 +372,6 @@ func (p *Persister) DeletePage(documentID, pageID string) (rows int64, err error
 	if err == nil {
 		_, err = p.Base.DeleteWhere(p.Context.Transaction, fmt.Sprintf("DELETE FROM pagemeta WHERE orgid='%s' AND pageid='%s'", p.Context.OrgID, pageID))
 		_, err = searches.Delete(&databaseRequest{OrgID: p.Context.OrgID}, documentID, pageID)
-		_, err = p.DeletePageRevisions(pageID)
 
 		p.Base.Audit(p.Context, "remove-page", documentID, pageID)
 	}
@@ -416,52 +415,6 @@ func (p *Persister) GetDocumentPageMeta(documentID string, externalSourceOnly bo
 		log.Error(fmt.Sprintf("Unable to execute select document page meta for org %s and document %s", p.Context.OrgID, documentID), err)
 		return
 	}
-
-	return
-}
-
-/********************
-* Page Revisions
-********************/
-
-// GetPageRevision returns the revisionID page revision record.
-func (p *Persister) GetPageRevision(revisionID string) (revision entity.Revision, err error) {
-	stmt, err := Db.Preparex("SELECT id, refid, orgid, documentid, pageid, userid, contenttype, title, body, created, revised FROM revision WHERE orgid=? and refid=?")
-	defer utility.Close(stmt)
-
-	if err != nil {
-		log.Error(fmt.Sprintf("Unable to prepare select for revision %s", revisionID), err)
-		return
-	}
-
-	err = stmt.Get(&revision, p.Context.OrgID, revisionID)
-
-	if err != nil {
-		log.Error(fmt.Sprintf("Unable to execute select for revision %s", revisionID), err)
-		return
-	}
-
-	return
-}
-
-// GetPageRevisions returns a slice of page revision records for a given pageID, in the order they were created.
-// Then audits that the get-page-revisions action has occurred.
-func (p *Persister) GetPageRevisions(pageID string) (revisions []entity.Revision, err error) {
-	err = Db.Select(&revisions, "SELECT a.id,a.refid,a.orgid,a.documentid,a.pageid,a.userid,a.contenttype,a.body,a.created,a.revised,coalesce(b.email,'') as email,coalesce(b.firstname,'') as firstname, coalesce(b.lastname,'') as lastname, coalesce(b.initials,'') as initials FROM revision a LEFT JOIN user b ON a.userid=b.refid WHERE a.orgid=? AND a.pageid=? ORDER BY a.id DESC", p.Context.OrgID, pageID)
-
-	if err != nil {
-		log.Error(fmt.Sprintf("Unable to execute select revisions for org %s and page %s", p.Context.OrgID, pageID), err)
-		return
-	}
-
-	p.Base.Audit(p.Context, "get-page-revisions", "", pageID)
-
-	return
-}
-
-// DeletePageRevisions deletes all of the page revision records for a given pageID.
-func (p *Persister) DeletePageRevisions(pageID string) (rows int64, err error) {
-	rows, err = p.Base.DeleteWhere(p.Context.Transaction, fmt.Sprintf("DELETE FROM revision WHERE orgid='%s' AND pageid='%s'", p.Context.OrgID, pageID))
 
 	return
 }
