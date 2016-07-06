@@ -124,7 +124,6 @@ export default function () {
 	});
 
 	this.post('/public/authenticate', (schema, request) => {
-		debugger;
 		let authorization = request.requestHeaders.Authorization;
 		let expectedAuthorization = "Basic OmJyaXpkaWdpdGFsQGdtYWlsLmNvbTp6aW55YW5kbzEyMw==";
 
