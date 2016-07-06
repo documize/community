@@ -218,22 +218,6 @@ func (p *PageMeta) SetDefaults() {
 	}
 }
 
-// Revision holds the previous version of a Page.
-type Revision struct {
-	BaseEntity
-	OrgID       string `json:"orgId"`
-	DocumentID  string `json:"documentId"`
-	PageID      string `json:"pageId"`
-	UserID      string `json:"userId"`
-	ContentType string `json:"contentType"`
-	Title       string `json:"title"`
-	Body        string `json:"body"`
-	Email       string `json:"email"`
-	Firstname   string `json:"firstname"`
-	Lastname    string `json:"lastname"`
-	Initials    string `json:"initials"`
-}
-
 // DocumentMeta details who viewed the document.
 type DocumentMeta struct {
 	Viewers []DocumentMetaViewer `json:"viewers"`
