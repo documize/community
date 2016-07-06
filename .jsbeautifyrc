@@ -3,8 +3,9 @@
 		"indent_size": 4,
 		"indent_level": 0,
 		"indent_with_tabs": true,
-		"allowed_file_extensions": ["css", "scss", "sass", "less"],
-		"max_preserve_newlines": 2
+		"preserve_newlines": true,
+		"max_preserve_newlines": 2,
+		"newline_between_rules": true
 	},
 	"html": {
 		"indent_size": 4,
@@ -45,13 +46,5 @@
 		"indent_size": 4,
 		"indent_level": 0,
 		"indent_with_tabs": true
-	},
-	"_default": {
-		"indent_size": 4,
-		"indent_level": 0,
-		"indent_with_tabs": true,
-		"preserve_newlines": true,
-		"max_preserve_newlines": 2,
-		"wrap_line_length": 0
 	}
 }
