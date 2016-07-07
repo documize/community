@@ -65,12 +65,12 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 		},
 
 		auth() {
-			console.log(this.get('config'));
 			// missing data?
 			this.set('config.APIToken', this.get('config.APIToken').trim());
 
 			if (is.empty(this.get('config.APIToken'))) {
 				$("#papertrail-apitoken").addClass("error").focus();
+				console.log("auth token empty");
 				return;
 			}
 
@@ -85,6 +85,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 					self.set('authenticated', true);
 					self.set('items', response);
 					self.set('config.APIToken', '********'); // reset the api token once it has been sent to the host
+					console.log("auth token OK");
 
 					self.get('sectionService').fetch(page, "options", config)
 						.then(function (response) {
@@ -97,15 +98,18 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 								Ember.set(config, 'group', group);
 							}
 						}, function (reason) { //jshint ignore: line
+							self.set('authenticated', false);
 							self.set('waiting', false);
+							self.set('config.APIToken', ''); // clear the api token 
 							self.displayError(reason);
+							console.log("get options call failed");
 						});
 				}, function (reason) { //jshint ignore: line
 					self.set('authenticated', false);
 					self.set('waiting', false);
 					self.set('config.APIToken', ''); // clear the api token 
 					self.displayError(reason);
-					$("#papertrail-apitoken").addClass("error").focus();
+					console.log("auth token invalid");
 				});
 		},
 

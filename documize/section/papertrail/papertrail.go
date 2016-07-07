@@ -14,6 +14,7 @@ package papertrail
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"html/template"
 	"io/ioutil"
@@ -160,7 +161,14 @@ func (*Provider) Refresh(ctx *provider.Context, config, data string) (newData st
 func auth(ctx *provider.Context, config papertrailConfig, w http.ResponseWriter, r *http.Request) {
 	result, err := fetchEvents(config)
 
+	if result == nil {
+		err = errors.New("nil result of papertrail query")
+	}
+
 	if err != nil {
+
+		log.IfErr(ctx.SaveSecrets(`{"APIToken":""}`)) // invalid token, so reset it
+
 		if err.Error() == "forbidden" {
 			provider.WriteForbidden(w)
 		} else {
@@ -256,11 +264,17 @@ func fetchEvents(config papertrailConfig) (result interface{}, err error) {
 		filter = fmt.Sprintf("%s%sgroup_id=%d", filter, prefix, config.Group.ID)
 	}
 
-	req, err := http.NewRequest("GET", "https://papertrailapp.com/api/v1/events/search.json?"+filter, nil)
+	var req *http.Request
+	req, err = http.NewRequest("GET", "https://papertrailapp.com/api/v1/events/search.json?"+filter, nil)
+	if err != nil {
+		log.Error("new request", err)
+		return
+	}
 	req.Header.Set("X-Papertrail-Token", config.APIToken)
 
 	client := &http.Client{}
-	res, err := client.Do(req)
+	var res *http.Response
+	res, err = client.Do(req)
 
 	if err != nil {
 		log.Error("message", err)

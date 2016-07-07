@@ -2,25 +2,27 @@
 
 	<div class="pull-left width-45">
 		<div class="input-form">
-			<form {{action 'auth' on="submit"}}>
+			<form {{ action 'auth' on="submit" }} >
 				<div class="heading">
 					<div class="title">Papertrail Authentication
 						{{#if authenticated}}
 							Complete
-						{{/if}}						
+						{{/if}}		
 					</div>
 					<div class="tip">Provide your Papertrail API token</div>
 				</div>
 				<div class="input-control">
 					<label>API Key</label>
 					<div class="tip">API Token (from your profile)</div>
-					{{focus-input id="papertrail-apitoken" type="password" value=config.APIToken readonly=isReadonly}}
+					{{focus-input id="papertrail-apitoken" type="password" value=config.APIToken }}
 				</div>
-				{{#if authenticated}}
-					<div class="regular-button button-blue" {{ action 'auth' }}>Re-Authenticate</div>
-				{{else}}		
-					<div class="regular-button button-blue" {{ action 'auth' }}>Authenticate</div>
-				{{/if}}
+				<div class="regular-button button-blue" {{ action 'auth' }} >
+					{{#if authenticated}}
+						Re-Authenticate
+					{{else}}		
+						Authenticate
+					{{/if}}
+				</div>
 			</form>
 		</div>
 	</div>

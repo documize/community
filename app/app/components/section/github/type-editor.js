@@ -86,9 +86,9 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 								self.send('auth');
 							});
 					} else {
-						if (config.userId !== self.session.user.id) {
+						if (config.userId !== self.get("session.session.authenticated.user.id")) {
 							console.log("github auth wrong user ID, switching");
-							self.set('config.userId', self.session.user.id);
+							self.set('config.userId', self.get("session.session.authenticated.user.id"));
 						}
 						self.get('sectionService').fetch(page, "checkAuth", self.get('config'))
 							.then(function () {
@@ -361,7 +361,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
 		authStage2() {
 			let self = this;
-			self.set('config.userId', this.session.user.id);
+			self.set('config.userId', self.get("session.session.authenticated.user.id"));
 			self.set('authenticated', true);
 			self.set('busy', true);
 			let page = this.get('page');
