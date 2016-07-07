@@ -18,9 +18,8 @@ export default Ember.Service.extend({
 
     // Adds a new user.
     add(user) {
-        let url = this.get('sessionService').appMeta.getUrl(`users`);
 
-        return this.get('ajax').request(url, {
+        return this.get('ajax').request(`users`, {
             type: 'POST',
             data: JSON.stringify(user),
             contentType: 'json'
@@ -31,7 +30,7 @@ export default Ember.Service.extend({
 
     // Returns user model for specified user id.
     getUser(userId) {
-        let url = this.get('sessionService').appMeta.getUrl(`users/${userId}`);
+        let url = `users/${userId}`;
 
         return this.get('ajax').request(url, {
             type: 'GET'
@@ -42,9 +41,7 @@ export default Ember.Service.extend({
 
     // Returns all users for organization.
     getAll() {
-        let url = this.get('sessionService').appMeta.getUrl(`users`);
-
-        return this.get('ajax').request(url).then((response) => {
+        return this.get('ajax').request(`users`).then((response) => {
             return response.map(function(obj){
                 return models.UserModel.create(obj);
             });
@@ -53,7 +50,7 @@ export default Ember.Service.extend({
 
     // Returns all users that can see folder.
     getFolderUsers(folderId) {
-        let url = this.get('sessionService').appMeta.getUrl(`users/folder/${folderId}`);
+        let url = `users/folder/${folderId}`;
 
         return this.get('ajax').request(url, {
             method: "GET"
@@ -70,7 +67,7 @@ export default Ember.Service.extend({
     // Updates an existing user record.
     save(user) {
         let userId = user.get('id');
-        let url = this.get('sessionService').appMeta.getUrl(`users/${userId}`);
+        let url = `users/${userId}`;
 
         return this.get('ajax').request(url, {
             type: 'PUT',
@@ -81,7 +78,7 @@ export default Ember.Service.extend({
 
     // updatePassword changes the password for the specified user.
     updatePassword(userId, password) {
-        let url = this.get('sessionService').appMeta.getUrl(`users/${userId}/password`);
+        let url = `users/${userId}/password`;
 
         return this.get('ajax').post(url, {
             data: password
@@ -90,7 +87,7 @@ export default Ember.Service.extend({
 
     // Removes the specified user.
     remove(userId) {
-        let url = this.get('sessionService').appMeta.getUrl(`users/${userId}`);
+        let url = `users/${userId}`;
 
         return this.get('ajax').request(url, {
             method: 'DELETE'
@@ -99,7 +96,7 @@ export default Ember.Service.extend({
 
     // Request password reset.
     forgotPassword(email) {
-        let url = this.get('sessionService').appMeta.getUrl('public/forgot');
+        let url = `public/forgot`;
 
         if (is.empty(email)) {
             return Ember.RSVP.reject("invalid");
@@ -118,7 +115,7 @@ export default Ember.Service.extend({
 
     // Set new password.
     resetPassword(token, password) {
-        var url = this.get('sessionService').appMeta.getUrl('public/reset/' + token);
+        var url = `public/reset/${token}`;
 
         if (is.empty(token) || is.empty(password)) {
             return Ember.RSVP.reject("invalid");

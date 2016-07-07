@@ -6,13 +6,13 @@
             </div>
         {{else}}
             {{#link-to 'application' class='title'}}
-                <div class="header-button" title=session.appMeta.title>
+                <div class="header-button" title=appMeta.title>
                     <i class="material-icons">apps</i>
                 </div>
             {{/link-to}}
         {{/if}}
         {{#link-to 'application' class='title'}}
-            {{session.appMeta.title}}
+            {{appMeta.title}}
         {{/link-to}}
     </div>
 

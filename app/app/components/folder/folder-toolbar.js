@@ -13,20 +13,25 @@ import Ember from 'ember';
 import NotifierMixin from '../../mixins/notifier';
 import TooltipMixin from '../../mixins/tooltip';
 
+const {
+    computed
+} = Ember;
+
 export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
     documentService: Ember.inject.service('document'),
     templateService: Ember.inject.service('template'),
     folderService: Ember.inject.service('folder'),
+    session: Ember.inject.service(),
 
     folder: {},
     busy: false,
     importedDocuments: [],
     savedTemplates: [],
-    isFolderOwner: false,
+    isFolderOwner: computed.equal('folder.userId', 'session.user.id'),
     moveFolderId: "",
 
     didReceiveAttrs() {
-        this.set('isFolderOwner', this.get('folder.userId') === this.session.user.id);
+        this.set('isFolderOwner', this.get('folder.userId') === this.get("session.user.id"));
 
         let self = this;
 

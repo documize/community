@@ -18,9 +18,7 @@ export default Ember.Service.extend({
 
     // Returns document model for specified document id.
     getDocument(documentId) {
-        let url = this.get('sessionService').appMeta.getUrl(`documents/${documentId}`);
-
-        return this.get('ajax').request(url, {
+        return this.get('ajax').request(`documents/${documentId}`, {
             method: "GET"
         }).then((response) => {
             return models.DocumentModel.create(response);
@@ -29,10 +27,7 @@ export default Ember.Service.extend({
 
     // Returns all documents for specified folder.
     getAllByFolder(folderId) {
-        let appMeta = this.get('sessionService.appMeta');
-        let url = appMeta.getUrl(`documents?folder=${folderId}`);
-
-        return this.get('ajax').request(url, {
+        return this.get('ajax').request(`documents?folder=${folderId}`, {
             method: "GET"
         }).then((response) => {
             let documents = Ember.ArrayProxy.create({
@@ -50,9 +45,7 @@ export default Ember.Service.extend({
 
     // getDocumentsByTag returns all documents for specified tag (not folder!).
     getAllByTag(tag) {
-        let url = this.get('sessionService').appMeta.getUrl(`documents?filter=tag&tag=${tag}`);
-
-        return this.get('ajax').request(url, {
+        return this.get('ajax').request(`documents?filter=tag&tag=${tag}`, {
             method: "GET"
         }).then((response) => {
             let documents = Ember.ArrayProxy.create({
@@ -71,16 +64,15 @@ export default Ember.Service.extend({
     // saveDocument updates an existing document record.
     save(doc) {
         let id = doc.get('id');
-        let url = this.get('sessionService').appMeta.getUrl(`documents/${id}`);
 
-        return this.get('ajax').request(url, {
+        return this.get('ajax').request(`documents/${id}`, {
             method: 'PUT',
             data: JSON.stringify(doc)
         });
     },
 
     getBatchedPages: function(documentId, payload) {
-        let url = this.get('sessionService').appMeta.getUrl("documents/" + documentId + "/pages/batch");
+        let url = `documents/${documentId}/pages/batch`;
 
         return this.get('ajax').request(url, {
             method: 'POST',
@@ -95,7 +87,7 @@ export default Ember.Service.extend({
     },
 
     changePageSequence: function(documentId, payload) {
-        var url = this.get('sessionService').appMeta.getUrl("documents/" + documentId + "/pages/sequence");
+        let url = `documents/${documentId}/pages/sequence`;
 
         return this.get('ajax').post(url, {
             data: JSON.stringify(payload),
@@ -104,7 +96,7 @@ export default Ember.Service.extend({
     },
 
     changePageLevel(documentId, payload) {
-        let url = this.get('sessionService').appMeta.getUrl("documents/" + documentId + "/pages/level");
+        let url = `documents/${documentId}/pages/level`;
 
         return this.get('ajax').post(url, {
             data: JSON.stringify(payload),
@@ -113,7 +105,7 @@ export default Ember.Service.extend({
     },
 
     deleteDocument: function(documentId) {
-        let url = this.get('sessionService').appMeta.getUrl("documents/" + documentId);
+        let url = `documents/${documentId}`;
 
         return this.get('ajax').request(url, {
             method: 'DELETE'
@@ -122,7 +114,7 @@ export default Ember.Service.extend({
 
     updatePage: function(documentId, pageId, payload, skipRevision) {
         var revision = skipRevision ? "?r=true" : "?r=false";
-        let url = this.get('sessionService').appMeta.getUrl("documents/" + documentId + "/pages/" + pageId + revision);
+        let url = `documents/${documentId}/pages/${pageId}${revision}`
 
         return this.get('ajax').request(url, {
             method: 'PUT',
@@ -133,7 +125,7 @@ export default Ember.Service.extend({
 
     // addPage inserts new page to an existing document.
     addPage: function(documentId, payload) {
-        let url = this.get('sessionService').appMeta.getUrl("documents/" + documentId + "/pages");
+        let url = `documents/${documentId}/pages`;
 
         return this.get('ajax').post(url, {
             data: JSON.stringify(payload),
@@ -143,7 +135,7 @@ export default Ember.Service.extend({
 
     // Nukes multiple pages from the document.
     deletePages: function(documentId, pageId, payload) {
-        let url = this.get('sessionService').appMeta.getUrl("documents/" + documentId + "/pages/" + pageId);
+        let url = `documents/${documentId}/pages/${pageId}`;
 
         return this.get('ajax').post(url, {
             data: JSON.stringify(payload),
@@ -153,7 +145,7 @@ export default Ember.Service.extend({
 
     // Nukes a single page from the document.
     deletePage: function(documentId, pageId) {
-        let url = this.get('sessionService').appMeta.getUrl("documents/" + documentId + "/pages/" + pageId);
+        let url = `documents/${documentId}/pages/${pageId}`;
 
         return this.get('ajax').request(url, {
             method: 'DELETE'
@@ -161,7 +153,7 @@ export default Ember.Service.extend({
     },
 
     getPageRevisions(documentId, pageId) {
-        let url = this.get('sessionService').appMeta.getUrl("documents/" + documentId + "/pages/" + pageId + "/revisions");
+        let url = `documents/${documentId}/pages/${pageId}/revisions`;
 
         return this.get('ajax').request(url, {
             method: "GET"
@@ -169,7 +161,7 @@ export default Ember.Service.extend({
     },
 
     getPageRevisionDiff(documentId, pageId, revisionId) {
-        let url = this.get('sessionService').appMeta.getUrl("documents/" + documentId + "/pages/" + pageId + "/revisions/" + revisionId);
+        let url = `documents/${documentId}/pages/${pageId}/revisions/${revisionId}`;
 
         return this.get('ajax').request(url, {
             method: "GET",
@@ -178,7 +170,7 @@ export default Ember.Service.extend({
     },
 
     rollbackPage(documentId, pageId, revisionId) {
-        let url = this.get('sessionService').appMeta.getUrl("documents/" + documentId + "/pages/" + pageId + "/revisions/" + revisionId);
+        let url = `documents/${documentId}/pages/${pageId}/revisions/${revisionId}`;
 
         return this.get('ajax').request(url, {
             method: "POST"
@@ -187,18 +179,16 @@ export default Ember.Service.extend({
 
     // document meta referes to number of views, edits, approvals, etc.
     getMeta(documentId) {
-        let url = this.get('sessionService').appMeta.getUrl(`documents/${documentId}/meta`);
 
-        return this.get('ajax').request(url, {
+        return this.get('ajax').request(`documents/${documentId}/meta`, {
             method: "GET"
         });
     },
 
     // Returns all pages without the content
     getTableOfContents(documentId) {
-        let url = this.get('sessionService').appMeta.getUrl(`documents/${documentId}/pages?content=0`);
 
-        return this.get('ajax').request(url, {
+        return this.get('ajax').request(`documents/${documentId}/pages?content=0`, {
             method: 'GET'
         }).then((response) => {
             let data = [];
@@ -212,9 +202,8 @@ export default Ember.Service.extend({
 
     // Returns all document pages with content
     getPages(documentId) {
-        let url = this.get('sessionService').appMeta.getUrl(`documents/${documentId}/pages`);
 
-        return this.get('ajax').request(url, {
+        return this.get('ajax').request(`documents/${documentId}/pages`, {
             method: 'GET'
         }).then((response) => {
             let pages = [];
@@ -229,9 +218,8 @@ export default Ember.Service.extend({
 
     // Returns document page with content
     getPage(documentId, pageId) {
-        let url = this.get('sessionService').appMeta.getUrl(`documents/${documentId}/pages/${pageId}`);
 
-        return this.get('ajax').request(url, {
+        return this.get('ajax').request(`documents/${documentId}/pages/${pageId}`, {
             method: 'GET'
         }).then((response) => {
             let page = models.PageModel.create(response);
@@ -241,9 +229,8 @@ export default Ember.Service.extend({
 
     // Returns document page meta object
     getPageMeta(documentId, pageId) {
-        let url = this.get('sessionService').appMeta.getUrl(`documents/${documentId}/pages/${pageId}/meta`);
 
-        return this.get('ajax').request(url, {
+        return this.get('ajax').request(`documents/${documentId}/pages/${pageId}/meta`, {
             method: 'GET'
         }).then((response) => {
             let meta = models.PageMetaModel.create(response);
@@ -253,9 +240,8 @@ export default Ember.Service.extend({
 
     // document attachments without the actual content
     getAttachments(documentId) {
-        let url = this.get('sessionService').appMeta.getUrl(`documents/${documentId}/attachments`);
 
-        return this.get('ajax').request(url, {
+        return this.get('ajax').request(`documents/${documentId}/attachments`, {
             method: 'GET'
         }).then((response) => {
             let data = [];
@@ -268,9 +254,8 @@ export default Ember.Service.extend({
 
     // nuke an attachment
     deleteAttachment(documentId, attachmentId) {
-        let url = this.get('sessionService').appMeta.getUrl(`documents/${documentId}/attachments/${attachmentId}`);
 
-        return this.get('ajax').request(url, {
+        return this.get('ajax').request(`documents/${documentId}/attachments/${attachmentId}`, {
             method: 'DELETE'
         });
     },

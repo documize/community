@@ -1,12 +1,12 @@
 import Ember from 'ember';
 import Application from '../../app';
 import config from '../../config/environment';
-import './stub-session';
 import './stub-audit';
 import './user-login';
 import './wait-to-appear';
 import './wait-to-disappear';
 import './stub-user-notification';
+import './authenticate-user';
 
 export default function startApp(attrs) {
   let application;

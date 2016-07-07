@@ -10,57 +10,49 @@
 // https://documize.com
 
 import Ember from 'ember';
+import ApplicationRouteMixin from 'ember-simple-auth/mixins/application-route-mixin';
 import netUtil from '../utils/net';
 
-export default Ember.Route.extend({
-    userService: Ember.inject.service('user'),
-    sessionService: Ember.inject.service('session'),
-    transitioning: false,
+const {
+	inject: { service }
+} = Ember;
 
-    beforeModel: function(transition) {
-        let self = this;
-        let session = this.get('sessionService');
+export default Ember.Route.extend(ApplicationRouteMixin, {
+	appMeta: service(),
+	session: service(),
+	beforeModel() {
+		return this.get('appMeta').boot().then(data => {
+			if (data.allowAnonymousAccess) {
+				return this.get('session').authenticate('authenticator:anonymous', data);
+			}
+			return;
+		});
+	},
 
-        // Session ready?
-        return session.boot().then(function() {
-            // Need to authenticate?
-            if (!session.get("appMeta.allowAnonymousAccess") && !session.get("authenticated") &&
-                is.not.startWith(transition.targetName, 'auth.')) {
-                if (!self.transitioning) {
-                    session.set('previousTransition', transition);
-                    self.set('transitioning', true);
-                }
-
-                transition.abort();
-                self.transitionTo('auth.login');
-            }
-        });
-    },
-
-    actions: {
-        willTransition: function( /*transition*/ ) {
+	actions: {
+		willTransition: function ( /*transition*/ ) {
 			$("#zone-sidebar").css('height', 'auto');
-            Mousetrap.reset();
-        },
+			Mousetrap.reset();
+		},
 
 		didTransition() {
-			Ember.run.schedule("afterRender",this,function() {
+			Ember.run.schedule("afterRender", this, function () {
 				$("#zone-sidebar").css('height', $(document).height() - $("#zone-navigation").height() - $("#zone-header").height() - 35);
-		    });
+			});
 
 			return true;
 		},
 
-        error(error, transition) { // jshint ignore: line
-            if (error) {
+		error(error, transition) { // jshint ignore: line
+			if (error) {
 				if (netUtil.isAjaxAccessError(error)) {
 					localStorage.clear();
 					return this.transitionTo('auth.login');
 				}
-            }
+			}
 
-            // Return true to bubble this event to any parent route.
-            return true;
-        }
-    },
+			// Return true to bubble this event to any parent route.
+			return true;
+		}
+	},
 });

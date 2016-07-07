@@ -4,6 +4,8 @@ export default Ember.Controller.extend({
     email: "",
     password: "",
     invalidCredentials: false,
+    session: Ember.inject.service('session'),
+    audit: Ember.inject.service('audit'),
 
     reset() {
         this.setProperties({
@@ -20,24 +22,16 @@ export default Ember.Controller.extend({
 
     actions: {
         login() {
-            let self = this;
             let creds = this.getProperties('email', 'password');
 
-            this.session.login(creds).then(function() {
-                self.set('invalidCredentials', false);
-                self.audit.record("logged-in");
-
-                var previousTransition = self.session.get('previousTransition');
-
-                if (previousTransition) {
-                    previousTransition.retry();
-                    self.session.set('previousTransition', null);
-                } else {
-                    self.transitionToRoute('folders.folder');
-                }
-            }, function() {
-                self.set('invalidCredentials', true);
-            });
+            this.get('session').authenticate('authenticator:documize', creds)
+                .then((response) => {
+                    this.get('audit').record("logged-in");
+                    this.transitionToRoute('folders.folder');
+                    return response;
+                }).catch(() => {
+                    this.set('invalidCredentials', true);
+                });
         }
     }
 });
