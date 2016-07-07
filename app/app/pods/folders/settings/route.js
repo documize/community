@@ -1,143 +1,143 @@
 import Ember from 'ember';
 import models from '../../../utils/model';
 import NotifierMixin from '../../../mixins/notifier';
-import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 
 export default Ember.Route.extend(NotifierMixin, {
-    folderService: Ember.inject.service('folder'),
-    userService: Ember.inject.service('user'),
-    folder: {},
-    tab: "",
+	folderService: Ember.inject.service('folder'),
+	userService: Ember.inject.service('user'),
+	folder: {},
+	tab: "",
 
-    beforeModel: function (transition) {
-        this.tab = is.not.undefined(transition.queryParams.tab) ? transition.queryParams.tab : "tabGeneral";
-    },
+	beforeModel: function (transition) {
+		this.tab = is.not.undefined(transition.queryParams.tab) ? transition.queryParams.tab : "tabGeneral";
+	},
 
-    model(params) {
-        return this.get('folderService').getFolder(params.folder_id);
-    },
+	model(params) {
+		return this.get('folderService').getFolder(params.folder_id);
+	},
 
-    setupController(controller, model) {
-        var self = this;
-        this.folder = model;
-        controller.set('model', model);
+	setupController(controller, model) {
+		var self = this;
+		this.folder = model;
+		controller.set('model', model);
 
-        controller.set('tabGeneral', false);
-        controller.set('tabShare', false);
-        controller.set('tabPermissions', false);
-        controller.set('tabDelete', false);
-        controller.set(this.get('tab'), true);
+		controller.set('tabGeneral', false);
+		controller.set('tabShare', false);
+		controller.set('tabPermissions', false);
+		controller.set('tabDelete', false);
+		controller.set(this.get('tab'), true);
 
-        this.get('folderService').getAll().then(function (folders) {
-            controller.set('folders', folders.rejectBy('id', model.get('id')));
-        });
+		this.get('folderService').getAll().then(function (folders) {
+			controller.set('folders', folders.rejectBy('id', model.get('id')));
+		});
 
-        this.get('userService').getAll().then(function (users) {
-            controller.set('users', users);
+		this.get('userService').getAll().then(function (users) {
+			controller.set('users', users);
 
-            var folderPermissions = [];
+			var folderPermissions = [];
 
-            var u = models.FolderPermissionModel.create({
-                userId: "",
-                fullname: " Everyone",
-                orgId: model.get('orgId'),
-                folderId: model.get('id'),
-                canEdit: false,
-                canView: false
-            });
+			var u = models.FolderPermissionModel.create({
+				userId: "",
+				fullname: " Everyone",
+				orgId: model.get('orgId'),
+				folderId: model.get('id'),
+				canEdit: false,
+				canView: false
+			});
 
-            folderPermissions.pushObject(u);
+			folderPermissions.pushObject(u);
 
-            users.forEach(function (user, index) /* jshint ignore:line */ {
-                if (user.get('active')) {
-                    var u = models.FolderPermissionModel.create({
-                        userId: user.get('id'),
-                        fullname: user.get('fullname'),
-                        orgId: model.get('orgId'),
-                        folderId: model.get('id'),
-                        canEdit: false,
-                        canView: false,
-                        canViewPrevious: false
-                    });
+			users.forEach(function (user, index) /* jshint ignore:line */ {
+				if (user.get('active')) {
+					var u = models.FolderPermissionModel.create({
+						userId: user.get('id'),
+						fullname: user.get('fullname'),
+						orgId: model.get('orgId'),
+						folderId: model.get('id'),
+						canEdit: false,
+						canView: false,
+						canViewPrevious: false
+					});
 
-                    folderPermissions.pushObject(u);
-                }
-            });
+					folderPermissions.pushObject(u);
+				}
+			});
 
-            self.get('folderService').getPermissions(model.id).then(function (permissions) {
-                permissions.forEach(function (permission, index) /* jshint ignore:line */ {
-                    var folderPermission = folderPermissions.findBy('userId', permission.userId);
-                    if (is.not.undefined(folderPermission)) {
-                        Ember.set(folderPermission, 'orgId', permission.orgId);
-                        Ember.set(folderPermission, 'folderId', permission.folderId);
-                        Ember.set(folderPermission, 'canEdit', permission.canEdit);
-                        Ember.set(folderPermission, 'canView', permission.canView);
-                        Ember.set(folderPermission, 'canViewPrevious', permission.canView);
-                    }
-                });
+			self.get('folderService').getPermissions(model.id).then(function (permissions) {
+				permissions.forEach(function (permission, index) /* jshint ignore:line */ {
+					var folderPermission = folderPermissions.findBy('userId', permission.userId);
+					if (is.not.undefined(folderPermission)) {
+						Ember.set(folderPermission, 'orgId', permission.orgId);
+						Ember.set(folderPermission, 'folderId', permission.folderId);
+						Ember.set(folderPermission, 'canEdit', permission.canEdit);
+						Ember.set(folderPermission, 'canView', permission.canView);
+						Ember.set(folderPermission, 'canViewPrevious', permission.canView);
+					}
+				});
 
-                controller.set('permissions', folderPermissions.sortBy('fullname'));
-            });
-        });
-    },
+				controller.set('permissions', folderPermissions.sortBy('fullname'));
+			});
+		});
+	},
 
-    actions: {
-        onRename: function (folder) {
-            let self = this;
-            this.get('folderService').save(folder).then(function () {
-                self.showNotification("Renamed");
-            });
-        },
+	actions: {
+		onRename: function (folder) {
+			let self = this;
+			this.get('folderService').save(folder).then(function () {
+				self.showNotification("Renamed");
+			});
+		},
 
-        onRemove(moveId) {
-            let self = this;
+		onRemove(moveId) {
+			let self = this;
 
-            this.get('folderService').remove(this.folder.get('id'), moveId).then(function () { /* jshint ignore:line */
-                self.showNotification("Deleted");
-                self.session.clearSessionItem('folder');
+			this.get('folderService').remove(this.folder.get('id'), moveId).then(function () { /* jshint ignore:line */
+				self.showNotification("Deleted");
+				self.session.clearSessionItem('folder');
 
-                self.get('folderService').getFolder(moveId).then(function (folder) {
-                    self.get('folderService').setCurrentFolder(folder);
-                    self.transitionTo('folders.folder', folder.get('id'), folder.get('slug'));
-                });
-            });
-        },
+				self.get('folderService').getFolder(moveId).then(function (folder) {
+					self.get('folderService').setCurrentFolder(folder);
+					self.transitionTo('folders.folder', folder.get('id'), folder.get('slug'));
+				});
+			});
+		},
 
-        onShare: function (invitation) {
-            let self = this;
+		onShare: function (invitation) {
+			let self = this;
 
-            this.get('folderService').share(this.folder.get('id'), invitation).then(function () {
-                self.showNotification("Shared");
-            });
-        },
+			this.get('folderService').share(this.folder.get('id'), invitation).then(function () {
+				self.showNotification("Shared");
+			});
+		},
 
-        onPermission: function (folder, message, permissions) {
-            var self = this;
-            var data = permissions.map(function (obj) {
-                return obj.getProperties('orgId', 'folderId', 'userId', 'canEdit', 'canView'); });
-            var payload = { Message: message, Roles: data };
+		onPermission: function (folder, message, permissions) {
+			var self = this;
+			var data = permissions.map(function (obj) {
+				return obj.getProperties('orgId', 'folderId', 'userId', 'canEdit', 'canView');
+			});
+			var payload = { Message: message, Roles: data };
 
-            this.get('folderService').savePermissions(folder.get('id'), payload).then(function () {
-                self.showNotification("Saved");
-            });
+			this.get('folderService').savePermissions(folder.get('id'), payload).then(function () {
+				self.showNotification("Saved");
+			});
 
-            var hasEveryone = _.find(data, function (permission) {
-                return permission.userId === "" && (permission.canView || permission.canEdit);
-            });
+			var hasEveryone = _.find(data, function (permission) {
+				return permission.userId === "" && (permission.canView || permission.canEdit);
+			});
 
-            if (is.not.undefined(hasEveryone)) {
-                folder.markAsPublic();
-            } else {
-                if (data.length > 1) {
-                    folder.markAsRestricted();
-                } else {
-                    folder.markAsPrivate();
-                }
-            }
+			if (is.not.undefined(hasEveryone)) {
+				folder.markAsPublic();
+			} else {
+				if (data.length > 1) {
+					folder.markAsRestricted();
+				} else {
+					folder.markAsPrivate();
+				}
+			}
 
-            this.get('folderService').save(folder).then(function () {
-                // window.location.href = "/folder/" + folder.get('id') + "/" + folder.get('slug');
-            });
-        }
-    }
+			this.get('folderService').save(folder).then(function () {
+				// window.location.href = "/folder/" + folder.get('id') + "/" + folder.get('slug');
+			});
+		}
+	}
 });

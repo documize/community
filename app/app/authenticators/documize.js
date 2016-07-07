@@ -2,7 +2,6 @@ import Ember from 'ember';
 import Base from 'ember-simple-auth/authenticators/base';
 import encodingUtil from '../utils/encoding';
 import netUtil from '../utils/net';
-import models from '../utils/model';
 
 const {
 	isPresent,
