@@ -14,45 +14,45 @@ import ApplicationRouteMixin from 'ember-simple-auth/mixins/application-route-mi
 import netUtil from '../utils/net';
 
 const {
-    inject: { service }
+	inject: { service }
 } = Ember;
 
 export default Ember.Route.extend(ApplicationRouteMixin, {
-    appMeta: service(),
-    session: service(),
-    beforeModel() {
-        return this.get('appMeta').boot().then(data => {
-            if (data.allowAnonymousAccess) {
-                return this.get('session').authenticate('authenticator:anonymous', data);
-            }
-            return;
-        });
-    },
+	appMeta: service(),
+	session: service(),
+	beforeModel() {
+		return this.get('appMeta').boot().then(data => {
+			if (data.allowAnonymousAccess) {
+				return this.get('session').authenticate('authenticator:anonymous', data);
+			}
+			return;
+		});
+	},
 
-    actions: {
-        willTransition: function ( /*transition*/ ) {
-            $("#zone-sidebar").css('height', 'auto');
-            Mousetrap.reset();
-        },
+	actions: {
+		willTransition: function ( /*transition*/ ) {
+			$("#zone-sidebar").css('height', 'auto');
+			Mousetrap.reset();
+		},
 
-        didTransition() {
-            Ember.run.schedule("afterRender", this, function () {
-                $("#zone-sidebar").css('height', $(document).height() - $("#zone-navigation").height() - $("#zone-header").height() - 35);
-            });
+		didTransition() {
+			Ember.run.schedule("afterRender", this, function () {
+				$("#zone-sidebar").css('height', $(document).height() - $("#zone-navigation").height() - $("#zone-header").height() - 35);
+			});
 
-            return true;
-        },
+			return true;
+		},
 
-        error(error, transition) { // jshint ignore: line
-            if (error) {
-                if (netUtil.isAjaxAccessError(error)) {
-                    localStorage.clear();
-                    return this.transitionTo('auth.login');
-                }
-            }
+		error(error, transition) { // jshint ignore: line
+			if (error) {
+				if (netUtil.isAjaxAccessError(error)) {
+					localStorage.clear();
+					return this.transitionTo('auth.login');
+				}
+			}
 
-            // Return true to bubble this event to any parent route.
-            return true;
-        }
-    },
+			// Return true to bubble this event to any parent route.
+			return true;
+		}
+	},
 });
