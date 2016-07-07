@@ -11,90 +11,90 @@
 
 /* jshint node: true */
 
-module.exports = function(environment) {
+module.exports = function (environment) {
 
-  var ENV = {
-    modulePrefix: 'documize',
-    podModulePrefix: 'documize/pods',
-    locationType: 'auto',
-    environment: environment,
-    baseURL: '/',
-    apiHost: '',
-    apiNamespace: '',
-    contentSecurityPolicyHeader: 'Content-Security-Policy-Report-Only',
+	var ENV = {
+		modulePrefix: 'documize',
+		podModulePrefix: 'documize/pods',
+		locationType: 'auto',
+		environment: environment,
+		baseURL: '/',
+		apiHost: '',
+		apiNamespace: '',
+		contentSecurityPolicyHeader: 'Content-Security-Policy-Report-Only',
 
-    EmberENV: {
-      FEATURES: {}
-    },
-    "ember-cli-mirage": {
-      enabled: false
-    },
-    'ember-simple-auth': {
-      authenticationRoute: 'auth.login',
-      routeAfterAuthentication: 'folders.folder',
-      routeIfAlreadyAuthenticated: 'folders.folder'
-    },
-    APP: {
-      // Allows to disable audit service in tests
-      auditEnabled: true,
-      intercomKey: ""
-    }
-  };
+		EmberENV: {
+			FEATURES: {}
+		},
+		"ember-cli-mirage": {
+			enabled: false
+		},
+		'ember-simple-auth': {
+			authenticationRoute: 'auth.login',
+			routeAfterAuthentication: 'folders.folder',
+			routeIfAlreadyAuthenticated: 'folders.folder'
+		},
+		APP: {
+			// Allows to disable audit service in tests
+			auditEnabled: true,
+			intercomKey: ""
+		}
+	};
 
-  if (environment === 'development') {
-    ENV.APP.LOG_TRANSITIONS = true;
-    ENV.APP.LOG_TRANSITIONS_INTERNAL = true;
-    ENV['ember-cli-mirage'] = {
-      enabled: false
-    };
+	if (environment === 'development') {
+		ENV.APP.LOG_TRANSITIONS = true;
+		ENV.APP.LOG_TRANSITIONS_INTERNAL = true;
+		ENV['ember-cli-mirage'] = {
+			enabled: false
+		};
 
-    ENV.apiHost = "https://localhost:5001";
-    ENV.apiNamespace = "api";
-  }
+		ENV.apiHost = "https://localhost:5001";
+		ENV.apiNamespace = "api";
+	}
 
-  if (environment === 'test') {
-    ENV.APP.LOG_RESOLVER = false;
-    ENV.APP.LOG_ACTIVE_GENERATION = false;
-    ENV.APP.LOG_VIEW_LOOKUPS = false;
-    // ENV.APP.LOG_TRANSITIONS = false;
-    // ENV.APP.LOG_TRANSITIONS_INTERNAL = false;
+	if (environment === 'test') {
+		ENV.APP.LOG_RESOLVER = false;
+		ENV.APP.LOG_ACTIVE_GENERATION = false;
+		ENV.APP.LOG_VIEW_LOOKUPS = false;
+		ENV.APP.LOG_TRANSITIONS = true;
+		// ENV.APP.LOG_TRANSITIONS_INTERNAL = false;
 
-    ENV.baseURL = '/';
-    ENV.locationType = 'none';
-    ENV.APP.rootElement = '#ember-testing';
-    ENV['ember-cli-mirage'] = {
-      enabled: true
-    };
-    ENV.APP.auditEnabled = false;
+		ENV.baseURL = '/';
+		ENV.locationType = 'none';
+		ENV.APP.rootElement = '#ember-testing';
+		ENV['ember-cli-mirage'] = {
+			enabled: true
+		};
+		ENV.APP.auditEnabled = false;
 
-    ENV.apiHost = "https://localhost:5001";
-  }
+		ENV.apiHost = "https://localhost:5001";
+	}
 
-  if (environment === 'production') {
-    ENV.APP.LOG_RESOLVER = false;
-    ENV.APP.LOG_ACTIVE_GENERATION = false;
-    ENV.APP.LOG_VIEW_LOOKUPS = false;
-    ENV.APP.LOG_TRANSITIONS = false;
-    ENV.APP.LOG_TRANSITIONS_INTERNAL = false;
+	if (environment === 'production') {
+		ENV.APP.LOG_RESOLVER = false;
+		ENV.APP.LOG_ACTIVE_GENERATION = false;
+		ENV.APP.LOG_VIEW_LOOKUPS = false;
+		ENV.APP.LOG_TRANSITIONS = false;
+		ENV.APP.LOG_TRANSITIONS_INTERNAL = false;
 
-    ENV.apiHost = "";
-  }
+		ENV.apiHost = "";
+	}
 
-  process.argv.forEach(function(element) {
-    if (element !== undefined) {
-      if (element.startsWith("intercom=")) {
-        element = element.replace("intercom=", "");
-        ENV.APP.intercomKey = element;
-      }
-      if (element.startsWith("apiHost=")) {
-        element = element.replace("apiHost=", "");
-        ENV.apiHost = element;
-      }
-    }
-  });
+	process.argv.forEach(function (element) {
+		if (element !== undefined) {
+			if (element.startsWith("intercom=")) {
+				element = element.replace("intercom=", "");
+				ENV.APP.intercomKey = element;
+			}
+			if (element.startsWith("apiHost=")) {
+				element = element.replace("apiHost=", "");
+				ENV.apiHost = element;
+			}
+		}
+	});
 
-  ENV.apiNamespace = "api";
-  ENV.contentSecurityPolicy = null;
+	ENV.apiNamespace = "api";
+	ENV.contentSecurityPolicy = null;
 
-  return ENV;
+	return ENV;
 };
