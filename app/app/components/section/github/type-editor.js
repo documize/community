@@ -276,15 +276,15 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 		let states = [];
 		states[0] = {
 			id: "open",
-			name: "Show Open Issues"
+			name: "Open Issues"
 		};
 		states[1] = {
 			id: "closed",
-			name: "Show Closed Issues"
+			name: "Closed Issues"
 		};
 		states[2] = {
 			id: "all",
-			name: "Show All Issues"
+			name: "All Issues"
 		};
 
 		this.set("states", states);

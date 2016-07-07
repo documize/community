@@ -72,19 +72,19 @@ var renderTemplates = map[string]string{
 <div class="section-github-render">
 	<p>
 		{{if .ShowIssueNumbers}}
-			Show Selected Issues
+			Showing Selected Issues
 		{{else}}
 			{{ .Config.IssueState.Name }}
 		{{end}}
 		    for repository <a href="{{ .Repo.URL }}/issues">{{.Repo.Name}}</a>
 		{{if .ShowList}}
-			with label(s)
+			labelled
 			{{range $label := .List}}
 				{{if $label.Included}}
 					<span class="github-issue-label" style="background-color:#{{$label.Color}}">{{$label.Name}}</span>
 				{{end}}
 			{{end}}
-		{{end}};
+		{{end}}
 		{{if .ShowIssueNumbers}}
 			issue(s) {{ .DateMessage }}.
 		{{else}}
