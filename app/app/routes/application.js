@@ -45,7 +45,7 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
 			return true;
 		},
 
-		error(error, transition) { // jshint ignore: line
+		error(error /*, transition*/ ) {
 			if (error) {
 				if (netUtil.isAjaxAccessError(error)) {
 					localStorage.clear();
@@ -56,5 +56,5 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
 			// Return true to bubble this event to any parent route.
 			return true;
 		}
-	},
+	}
 });

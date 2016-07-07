@@ -7,7 +7,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	session: Ember.inject.service(),
 
 	beforeModel: function () {
-		if (!this.get("session").authenticated) {
+		if (!this.get("session.authenticated")) {
 			this.transitionTo('auth.login');
 		}
 	},
