@@ -14,61 +14,65 @@ import netUtil from '../utils/net';
 import config from '../config/environment';
 
 export default Ember.Service.extend({
-    sessionService: Ember.inject.service('session'),
-    ready: false,
-    enabled: config.APP.auditEnabled,
+	sessionService: Ember.inject.service('session'),
+	ready: false,
+	enabled: config.APP.auditEnabled,
 	appId: config.APP.intercomKey,
 
-    init() {
-        this.start();
-    },
+	init() {
+		this.start();
+	},
 
-    record(id) {
-        if (!this.get('enabled') || is.empty(this.get('appId'))) {
-            return;
-        }
+	record(id) {
+		if (!this.get('enabled') || this.get('appId').length === 0) {
+			return;
+		}
 
-        if (!this.get('ready')) {
-            this.start();
-        }
+		if (!this.get('ready')) {
+			this.start();
+		}
 
-        Intercom('trackEvent', id); //jshint ignore: line
-        Intercom('update'); //jshint ignore: line
-    },
+		Intercom('trackEvent', id); //jshint ignore: line
+		Intercom('update'); //jshint ignore: line
+	},
 
-    stop() {
-        Intercom('shutdown'); //jshint ignore: line
-    },
+	stop() {
+		if (!this.get('enabled') || this.get('appId').length === 0) {
+			return;
+		}
 
-    start() {
-        let session = this.get('sessionService');
+		Intercom('shutdown'); //jshint ignore: line
+	},
 
-        if (this.get('appId') === "" || !this.get('enabled') || !session.authenticated || this.get('ready')) {
-            return;
-        }
+	start() {
+		let session = this.get('sessionService');
 
-        this.set('ready', true);
+		if (this.get('appId') === "" || !this.get('enabled') || !session.authenticated || this.get('ready')) {
+			return;
+		}
 
-        window.intercomSettings = {
-            app_id: this.get('appId'),
-            name: session.user.firstname + " " + session.user.lastname,
-            email: session.user.email,
-            user_id: session.user.id,
-            "administrator": session.user.admin,
-            company: {
-                id: session.get('appMeta.orgId'),
-                name: session.get('appMeta.title').string,
-                "domain": netUtil.getSubdomain(),
-                "version": session.get('appMeta.version')
-            }
-        };
+		this.set('ready', true);
 
-        if (!session.get('isMobile')) {
-            window.intercomSettings.widget = {
-                activator: "#IntercomDefaultWidget"
-            };
-        }
+		window.intercomSettings = {
+			app_id: this.get('appId'),
+			name: session.user.firstname + " " + session.user.lastname,
+			email: session.user.email,
+			user_id: session.user.id,
+			"administrator": session.user.admin,
+			company: {
+				id: session.get('appMeta.orgId'),
+				name: session.get('appMeta.title').string,
+				"domain": netUtil.getSubdomain(),
+				"version": session.get('appMeta.version')
+			}
+		};
 
-        window.Intercom('boot', window.intercomSettings);
-    },
+		if (!session.get('isMobile')) {
+			window.intercomSettings.widget = {
+				activator: "#IntercomDefaultWidget"
+			};
+		}
+
+		window.Intercom('boot', window.intercomSettings);
+	},
 });

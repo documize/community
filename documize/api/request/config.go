@@ -67,9 +67,9 @@ func ConfigString(area, path string) (ret string) {
 	return ret
 }
 
-// UserConfigString fetches a configuration JSON element from the userconfig table.
+// UserConfigGetJSON fetches a configuration JSON element from the userconfig table for a given orgid/userid combination.
 // Errors return the empty string. A blank path returns the whole JSON object, as JSON.
-func (p *Persister) UserConfigString(area, path string) (ret string) {
+func UserConfigGetJSON(orgid, userid, area, path string) (ret string) {
 	if Db == nil {
 		return ""
 	}
@@ -77,7 +77,7 @@ func (p *Persister) UserConfigString(area, path string) (ret string) {
 		path = "." + path
 	}
 	sql := "SELECT JSON_EXTRACT(`config`,'$" + path + "') FROM `userconfig` WHERE `key` = '" + area +
-		"' AND `userid` = '" + p.Context.UserID + "';"
+		"' AND `orgid` = '" + orgid + "' AND `userid` = '" + userid + "';"
 
 	stmt, err := Db.Preparex(sql)
 	if err != nil {
@@ -105,15 +105,16 @@ func (p *Persister) UserConfigString(area, path string) (ret string) {
 
 }
 
-// UserConfigSetJSON writes a configuration JSON element to the userconfig table.
-func (p *Persister) UserConfigSetJSON(area, json string) error {
+// UserConfigSetJSON writes a configuration JSON element to the userconfig table for the current user.
+func UserConfigSetJSON(orgid, userid, area, json string) error {
 	if Db == nil {
 		return errors.New("no database")
 	}
 	if area == "" {
 		return errors.New("no area")
 	}
-	sql := "INSERT INTO `userconfig` (`userid`,`key`,`config`) VALUES ('" + p.Context.UserID + "','" + area + "','" + json +
+	sql := "INSERT INTO `userconfig` (`orgid`,`userid`,`key`,`config`) " +
+		"VALUES ('" + orgid + "','" + userid + "','" + area + "','" + json +
 		"') ON DUPLICATE KEY UPDATE `config`='" + json + "';"
 
 	stmt, err := Db.Preparex(sql)

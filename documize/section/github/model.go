@@ -13,15 +13,13 @@ package github
 
 import (
 	"html/template"
-	"strings"
 	"time"
 
 	"github.com/documize/community/wordsmith/log"
-	gogithub "github.com/google/go-github/github"
 )
 
-const tagIssuesData = "issues_data"
-const tagCommitsData = "commits_data"
+const tagIssuesData = "issuesData"
+const tagCommitsData = "commitsData"
 
 type githubRender struct {
 	Config           githubConfig
@@ -219,8 +217,9 @@ type githubIssueActivity struct {
 */
 
 type githubConfig struct {
-	AppKey      string         `json:"appKey"` // TODO keep?
-	Token       string         `json:"token"`
+	Token       string         `json:"-"` // NOTE very important that the secret Token is not leaked to the client side, so "-"
+	UserID      string         `json:"userId"`
+	PageID      string         `json:"pageId"`
 	Owner       string         `json:"owner_name"`
 	Repo        string         `json:"repo_name"`
 	Branch      string         `json:"branch"`
@@ -240,8 +239,6 @@ type githubConfig struct {
 }
 
 func (c *githubConfig) Clean() {
-	c.AppKey = strings.TrimSpace(c.AppKey) // TODO keep?
-	c.Token = strings.TrimSpace(c.Token)
 	c.Owner = c.OwnerInfo.Name
 	c.Repo = c.RepoInfo.Repo
 	for _, l := range c.Lists {
@@ -264,18 +261,6 @@ func (c *githubConfig) Clean() {
 			c.SincePtr = &since
 		}
 	}
-
-}
-
-func (c *githubConfig) TokenCheck() error {
-	// Github authorization check
-	authClient := gogithub.NewClient((&gogithub.BasicAuthTransport{
-		Username: clientID(),
-		Password: clientSecret(),
-	}).Client())
-
-	_, _, err := authClient.Authorizations.Check(clientID(), c.Token)
-	return err
 }
 
 type githubCallbackT struct {

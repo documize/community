@@ -204,6 +204,7 @@ type PageMeta struct {
 	Created        time.Time `json:"created"`
 	Revised        time.Time `json:"revised"`
 	OrgID          string    `json:"orgId"`
+	UserID         string    `json:"userId"`
 	DocumentID     string    `json:"documentId"`
 	PageID         string    `json:"pageId"`
 	RawBody        string    `json:"rawBody"`        // a blob of data

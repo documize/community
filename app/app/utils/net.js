@@ -10,37 +10,37 @@
 // https://documize.com
 
 function getSubdomain() {
-    if (is.ipv4(window.location.host)) {
-        return "";
-    }
+	if (is.ipv4(window.location.host)) {
+		return "";
+	}
 
-    let domain = "";
-    let parts = window.location.host.split(".");
+	let domain = "";
+	let parts = window.location.host.split(".");
 
-    if (parts.length > 1) {
-        domain = parts[0].toLowerCase();
-    }
+	if (parts.length > 1) {
+		domain = parts[0].toLowerCase();
+	}
 
-    return domain;
+	return domain;
 }
 
 function getAppUrl(domain) {
-    let parts = window.location.host.split(".");
-    parts.removeAt(0);
+	let parts = window.location.host.split(".");
+	parts.removeAt(0);
 
-    let leftOvers = parts.join(".");
+	let leftOvers = parts.join(".");
 
-    if (is.empty(domain)) {
-        domain = "";
-    } else {
-        domain = domain + ".";
-    }
+	if (is.empty(domain)) {
+		domain = "";
+	} else {
+		domain = domain + ".";
+	}
 
-    return window.location.protocol + "//" + domain + leftOvers;
+	return window.location.protocol + "//" + domain + leftOvers;
 }
 
 function isAjaxAccessError(reason) {
-	if (typeof reason === "undefined") {
+	if (typeof reason === "undefined" || typeof reason.errors === "undefined") {
 		return false;
 	}
 
@@ -52,7 +52,7 @@ function isAjaxAccessError(reason) {
 }
 
 export default {
-    getSubdomain,
-    getAppUrl,
+	getSubdomain,
+	getAppUrl,
 	isAjaxAccessError,
 };

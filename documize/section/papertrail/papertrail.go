@@ -42,7 +42,7 @@ func (*Provider) Meta() provider.TypeMeta {
 }
 
 // Render converts Papertrail data into HTML suitable for browser rendering.
-func (*Provider) Render(config, data string) string {
+func (*Provider) Render(ctx *provider.Context, config, data string) string {
 	var search papertrailSearch
 	var events []papertrailEvent
 	var payload = papertrailRender{}
@@ -50,6 +50,8 @@ func (*Provider) Render(config, data string) string {
 
 	json.Unmarshal([]byte(data), &search)
 	json.Unmarshal([]byte(config), &c)
+
+	c.APIToken = ctx.GetSecrets("APIToken")
 
 	max := len(search.Events)
 	if c.Max < max {
@@ -74,7 +76,7 @@ func (*Provider) Render(config, data string) string {
 }
 
 // Command handles authentication, workspace listing and items retrieval.
-func (p *Provider) Command(w http.ResponseWriter, r *http.Request) {
+func (p *Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
 	method := query.Get("method")
 
@@ -101,6 +103,10 @@ func (p *Provider) Command(w http.ResponseWriter, r *http.Request) {
 
 	config.Clean()
 
+	if config.APIToken == provider.SecretReplacement {
+		config.APIToken = ctx.GetSecrets("APIToken")
+	}
+
 	if len(config.APIToken) == 0 {
 		provider.WriteMessage(w, me, "Missing API token")
 		return
@@ -108,14 +114,14 @@ func (p *Provider) Command(w http.ResponseWriter, r *http.Request) {
 
 	switch method {
 	case "auth":
-		auth(config, w, r)
+		auth(ctx, config, w, r)
 	case "options":
 		options(config, w, r)
 	}
 }
 
 // Refresh just sends back data as-is.
-func (*Provider) Refresh(config, data string) (newData string) {
+func (*Provider) Refresh(ctx *provider.Context, config, data string) (newData string) {
 	var c = papertrailConfig{}
 	err := json.Unmarshal([]byte(config), &c)
 
@@ -125,6 +131,8 @@ func (*Provider) Refresh(config, data string) (newData string) {
 	}
 
 	c.Clean()
+
+	c.APIToken = ctx.GetSecrets("APIToken")
 
 	if len(c.APIToken) == 0 {
 		log.Error("missing API token", err)
@@ -149,7 +157,7 @@ func (*Provider) Refresh(config, data string) (newData string) {
 	return
 }
 
-func auth(config papertrailConfig, w http.ResponseWriter, r *http.Request) {
+func auth(ctx *provider.Context, config papertrailConfig, w http.ResponseWriter, r *http.Request) {
 	result, err := fetchEvents(config)
 
 	if err != nil {
@@ -161,6 +169,8 @@ func auth(config papertrailConfig, w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
+
+	log.IfErr(ctx.SaveSecrets(`{"APIToken":"` + config.APIToken + `"}`))
 
 	provider.WriteJSON(w, result)
 }

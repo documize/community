@@ -19,8 +19,13 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/documize/community/documize/api/request"
 	"github.com/documize/community/wordsmith/log"
 )
+
+// SecretReplacement is a constant used to replace secrets in data-structures when required.
+// 8 stars.
+const SecretReplacement = "********"
 
 // sectionsMap is where individual sections register themselves.
 var sectionsMap = make(map[string]Provider)
@@ -43,10 +48,26 @@ func (t *TypeMeta) ConfigHandle() string {
 
 // Provider represents a 'page' in a document.
 type Provider interface {
-	Meta() TypeMeta                                 // Meta returns section details
-	Command(w http.ResponseWriter, r *http.Request) // Command is general-purpose method that can return data to UI
-	Render(config, data string) string              // Render converts section data into presentable HTML
-	Refresh(config, data string) string             // Refresh returns latest data
+	Meta() TypeMeta                                               // Meta returns section details
+	Command(ctx *Context, w http.ResponseWriter, r *http.Request) // Command is general-purpose method that can return data to UI
+	Render(ctx *Context, config, data string) string              // Render converts section data into presentable HTML
+	Refresh(ctx *Context, config, data string) string             // Refresh returns latest data
+}
+
+// Context describes the environment the section code runs in
+type Context struct {
+	OrgID     string
+	UserID    string
+	prov      Provider
+	inCommand bool
+}
+
+// NewContext is a convenience function.
+func NewContext(orgid, userid string) *Context {
+	if orgid == "" || userid == "" {
+		log.Error("NewContext incorrect orgid:"+orgid+" userid:"+userid, errors.New("bad section context"))
+	}
+	return &Context{OrgID: orgid, UserID: userid}
 }
 
 // Register makes document section type available
@@ -71,10 +92,12 @@ func GetSectionMeta() []TypeMeta {
 }
 
 // Command passes parameters to the given section id, the returned bool indicates success.
-func Command(section string, w http.ResponseWriter, r *http.Request) bool {
+func Command(section string, ctx *Context, w http.ResponseWriter, r *http.Request) bool {
 	s, ok := sectionsMap[section]
 	if ok {
-		s.Command(w, r)
+		ctx.prov = s
+		ctx.inCommand = true
+		s.Command(ctx, w, r)
 	}
 	return ok
 }
@@ -91,19 +114,21 @@ func Callback(section string, w http.ResponseWriter, r *http.Request) error {
 }
 
 // Render runs that operation for the given section id, the returned bool indicates success.
-func Render(section, config, data string) (string, bool) {
+func Render(section string, ctx *Context, config, data string) (string, bool) {
 	s, ok := sectionsMap[section]
 	if ok {
-		return s.Render(config, data), true
+		ctx.prov = s
+		return s.Render(ctx, config, data), true
 	}
 	return "", false
 }
 
 // Refresh returns the latest data for a section.
-func Refresh(section, config, data string) (string, bool) {
+func Refresh(section string, ctx *Context, config, data string) (string, bool) {
 	s, ok := sectionsMap[section]
 	if ok {
-		return s.Refresh(config, data), true
+		ctx.prov = s
+		return s.Refresh(ctx, config, data), true
 	}
 	return "", false
 }
@@ -172,6 +197,28 @@ func WriteForbidden(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusForbidden)
 	_, err := w.Write([]byte("{Error: 'Unauthorized'}"))
 	log.IfErr(err)
+}
+
+// Secrets handling
+
+// SaveSecrets for the current user/org combination.
+// The secrets must be in the form of a JSON format string, for example `{"mysecret":"lover"}`.
+// An empty string signifies no valid secrets for this user/org combination.
+// Note that this function can only be called within the Command method of a section.
+func (c *Context) SaveSecrets(JSONobj string) error {
+	if !c.inCommand {
+		return errors.New("SaveSecrets() may only be called from within Command()")
+	}
+	return request.UserConfigSetJSON(c.OrgID, c.UserID, c.prov.Meta().ContentType, JSONobj)
+}
+
+// GetSecrets for the current context user/org.
+// For example (see SaveSecrets example): thisContext.GetSecrets("mysecret")
+// JSONpath format is defined at https://dev.mysql.com/doc/refman/5.7/en/json-path-syntax.html .
+// An empty JSONpath returns the whole JSON object, as JSON.
+// Errors return the empty string.
+func (c *Context) GetSecrets(JSONpath string) string {
+	return request.UserConfigGetJSON(c.OrgID, c.UserID, c.prov.Meta().ContentType, JSONpath)
 }
 
 // sort sections in order that that should be presented.

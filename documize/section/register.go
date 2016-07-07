@@ -50,7 +50,6 @@ func Register() {
 	provider.Register("trello", &trello.Provider{})
 	provider.Register("wysiwyg", &wysiwyg.Provider{})
 	provider.Register("zendesk", &zendesk.Provider{})
-
 	p := provider.List()
 	log.Info(fmt.Sprintf("Documize registered %d smart sections", len(p)))
 }

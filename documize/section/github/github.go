@@ -65,9 +65,22 @@ func authorizationCallbackURL() string {
 	// NOTE: URL value must have the path and query "/api/public/validate?section=github"
 	return request.ConfigString(meta.ConfigHandle(), "authorizationCallbackURL")
 }
+func validateToken(ptoken string) error {
+	// Github authorization check
+	authClient := gogithub.NewClient((&gogithub.BasicAuthTransport{
+		Username: clientID(),
+		Password: clientSecret(),
+	}).Client())
+	_, _, err := authClient.Authorizations.Check(clientID(), ptoken)
+	return err
+}
+
+func secretsJSON(token string) string {
+	return `{"token":"` + strings.TrimSpace(token) + `"}`
+}
 
 // Command to run the various functions required...
-func (p *Provider) Command(w http.ResponseWriter, r *http.Request) {
+func (p *Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
 	method := query.Get("method")
 
@@ -100,6 +113,25 @@ func (p *Provider) Command(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// get the secret token in the database
+	ptoken := ctx.GetSecrets("token")
+
+	switch method {
+
+	case "saveSecret": // secret Token update code
+
+		// write the new one, direct from JS
+		if err = ctx.SaveSecrets(string(body)); err != nil {
+			log.Error("github settoken configuration", err)
+			provider.WriteError(w, "github", err)
+			return
+		}
+		provider.WriteEmpty(w)
+		return
+
+	}
+
+	// load the config from the client-side
 	config := githubConfig{}
 	err = json.Unmarshal(body, &config)
 
@@ -110,63 +142,29 @@ func (p *Provider) Command(w http.ResponseWriter, r *http.Request) {
 	}
 
 	config.Clean()
+	// always use DB version of the token
+	config.Token = ptoken
 
-	persist := request.GetPersister(r)
+	client := p.githubClient(config)
 
-	ptoken := persist.UserConfigString(meta.ContentType, "token")
+	switch method { // the main data handling switch
 
-	switch method { // the token handling switch
-	case "set_token":
-		// write the new one
-		if err = persist.UserConfigSetJSON(meta.ContentType, `{"token":"`+config.Token+`"}`); err != nil {
-			log.Error("github settoken configuration", err)
+	case "checkAuth":
+
+		if len(ptoken) == 0 {
+			err = errors.New("empty github token")
+		} else {
+			err = validateToken(ptoken)
+		}
+		if err != nil {
+			// token now invalid, so wipe it
+			ctx.SaveSecrets("") // ignore error, already in an error state
+			log.Error("github check token validation", err)
 			provider.WriteError(w, "github", err)
 			return
 		}
 		provider.WriteEmpty(w)
 		return
-
-	case "check_token":
-		if config.Token != ptoken {
-			// user github token does not match that in the database, so use DB version as the section version may be out-of-date
-			config.Token = ptoken
-		}
-		if err = config.TokenCheck(); err != nil {
-			log.Error("github checktoken validation", err)
-			provider.WriteError(w, "github", err)
-			return
-		}
-		provider.WriteJSON(w, config)
-		return
-
-	default:
-		if config.Token != ptoken {
-			if len(config.Token) == 0 {
-				if len(ptoken) == 0 {
-					err = errors.New("missing github token")
-				} else {
-					config.Token = ptoken // use database one
-				}
-			} else {
-				// this is important when switching user
-				// tokens are different...
-				if len(ptoken) == 0 {
-					err = errors.New("no user github token")
-				} else {
-					config.Token = ptoken // use database one
-				}
-			}
-		}
-		if err != nil {
-			log.Error("github clean token configuration", err)
-			provider.WriteError(w, "github", err)
-			return
-		}
-	}
-
-	client := p.githubClient(config)
-
-	switch method { // the main data handling switch
 
 	case tagCommitsData:
 
@@ -255,7 +253,7 @@ func (p *Provider) Command(w http.ResponseWriter, r *http.Request) {
 				provider.WriteError(w, "github", err)
 				return
 			}
-			for kr, vr := range repos {
+			for _, vr := range repos {
 				private := ""
 				if *vr.Private {
 					private = " (private)"
@@ -263,7 +261,7 @@ func (p *Provider) Command(w http.ResponseWriter, r *http.Request) {
 				render = append(render,
 					githubRepo{
 						Name:    config.Owner + "/" + *vr.Name + private,
-						ID:      fmt.Sprintf("%s:%s:%d", config.Owner, *vr.Name, kr),
+						ID:      fmt.Sprintf("%s:%s", config.Owner, *vr.Name),
 						Owner:   config.Owner,
 						Repo:    *vr.Name,
 						Private: *vr.Private,
@@ -276,6 +274,7 @@ func (p *Provider) Command(w http.ResponseWriter, r *http.Request) {
 		provider.WriteJSON(w, render)
 
 	case "branches":
+
 		if config.Owner == "" || config.Repo == "" {
 			provider.WriteJSON(w, []githubBranch{}) // we have nothing to return
 			return
@@ -291,7 +290,7 @@ func (p *Provider) Command(w http.ResponseWriter, r *http.Request) {
 		for kc, vb := range branches {
 			render[kc] = githubBranch{
 				Name:     *vb.Name,
-				ID:       fmt.Sprintf("%s:%s:%s:%d", config.Owner, config.Repo, *vb.Name, kc),
+				ID:       fmt.Sprintf("%s:%s:%s", config.Owner, config.Repo, *vb.Name),
 				Included: false,
 				URL:      "https://github.com/" + config.Owner + "/" + config.Repo + "/tree/" + *vb.Name,
 			}
@@ -300,6 +299,7 @@ func (p *Provider) Command(w http.ResponseWriter, r *http.Request) {
 		provider.WriteJSON(w, render)
 
 	case "labels":
+
 		if config.Owner == "" || config.Repo == "" {
 			provider.WriteJSON(w, []githubBranch{}) // we have nothing to return
 			return
@@ -324,6 +324,7 @@ func (p *Provider) Command(w http.ResponseWriter, r *http.Request) {
 		provider.WriteJSON(w, render)
 
 	default:
+
 		log.ErrorString("Github connector unknown method: " + method)
 		provider.WriteEmpty(w)
 	}
@@ -620,7 +621,7 @@ func (*Provider) getCommits(client *gogithub.Client, config githubConfig) ([]git
 }
 
 // Refresh ... gets the latest version
-func (p *Provider) Refresh(configJSON, data string) string {
+func (p *Provider) Refresh(ctx *provider.Context, configJSON, data string) string {
 	var c = githubConfig{}
 
 	err := json.Unmarshal([]byte(configJSON), &c)
@@ -631,6 +632,7 @@ func (p *Provider) Refresh(configJSON, data string) string {
 	}
 
 	c.Clean()
+	c.Token = ctx.GetSecrets("token")
 
 	switch c.ReportInfo.ID {
 	/*case "issuenum_data":
@@ -681,7 +683,7 @@ func (p *Provider) Refresh(configJSON, data string) string {
 }
 
 // Render ... just returns the data given, suitably formatted
-func (p *Provider) Render(config, data string) string {
+func (p *Provider) Render(ctx *provider.Context, config, data string) string {
 	var err error
 
 	payload := githubRender{}
@@ -695,6 +697,8 @@ func (p *Provider) Render(config, data string) string {
 	}
 
 	c.Clean()
+	c.Token = ctx.GetSecrets("token")
+
 	payload.Config = c
 	payload.Repo = c.RepoInfo
 	payload.Limit = c.BranchLines

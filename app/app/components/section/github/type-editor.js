@@ -39,7 +39,6 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 					config = {
 						clientId: cfg.clientID,
 						callbackUrl: cfg.authorizationCallbackURL,
-						token: "",
 						owner: null,
 						owner_name: "",
 						repo: null,
@@ -52,6 +51,8 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 						branchLines: "30",
 						state: null,
 						issues: "",
+						userId: "",
+						pageId: page.get('id'),
 					};
 
 					try {
@@ -64,18 +65,19 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 						config.branchLines = metaConfig.branchLines;
 						config.state = metaConfig.state;
 						config.issues = metaConfig.issues;
-						config.token = metaConfig.token;
+						config.userId = metaConfig.userId;
+						config.pageId = metaConfig.pageId;
 					} catch (e) {}
 
 					self.set('config', config);
+					self.set('config.pageId', page.get('id'));
 
 					// On auth callback capture code
 					let code = window.location.search;
 
 					if (is.not.undefined(code) && is.not.null(code) && is.not.empty(code) && code !== "") {
 						let tok = code.replace("?code=", "");
-						self.set('config.token', tok);
-						self.get('sectionService').fetch(page, "set_token", self.get('config'))
+						self.get('sectionService').fetch(page, "saveSecret", { "token": tok })
 							.then(function () {
 								console.log("github auth code saved to db");
 								self.send('authStage2');
@@ -84,14 +86,17 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 								self.send('auth');
 							});
 					} else {
-						self.get('sectionService').fetch(page, "check_token", self.get('config'))
-							.then(function (cfg) {
-								self.set('config.token', cfg.token);
+						if (config.userId !== self.session.user.id) {
+							console.log("github auth wrong user ID, switching");
+							self.set('config.userId', self.session.user.id);
+						}
+						self.get('sectionService').fetch(page, "checkAuth", self.get('config'))
+							.then(function () {
 								console.log("github auth code valid");
 								self.send('authStage2');
 							}, function (error) { //jshint ignore: line
 								console.log(error);
-								self.send('auth'); // only require auth if the db does not already know the token
+								self.send('auth'); // require auth if the db token is invalid
 							});
 					}
 				}, function (error) { //jshint ignore: line
@@ -166,11 +171,11 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 	getReportLists() {
 		let reports = [];
 		reports[0] = {
-			id: "commits_data", // used as method for fetching Go data
+			id: "commitsData", // used as method for fetching Go data
 			name: "Commits on a branch"
 		};
 		reports[1] = {
-			id: "issues_data", // used as method for fetching Go data
+			id: "issuesData", // used as method for fetching Go data
 			name: "Issues"
 		};
 
@@ -207,11 +212,11 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 		this.set('showCommits', false);
 		this.set('showLabels', false);
 		switch (thisReport.id) {
-		case 'commits_data':
+		case 'commitsData':
 			this.set('showCommits', true);
 			this.getBranchLists();
 			break;
-		case "issues_data":
+		case 'issuesData':
 			this.set('showLabels', true);
 			this.getLabelLists();
 			break;
@@ -356,6 +361,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
 		authStage2() {
 			let self = this;
+			self.set('config.userId', this.session.user.id);
 			self.set('authenticated', true);
 			self.set('busy', true);
 			let page = this.get('page');
@@ -375,7 +381,6 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 		},
 
 		auth() {
-
 			let self = this;
 			self.set('busy', true);
 			self.set('authenticated', false);

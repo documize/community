@@ -34,6 +34,7 @@ func (p *Persister) AddPage(model models.PageModel) (err error) {
 	model.Page.SetDefaults()
 
 	model.Meta.OrgID = p.Context.OrgID
+	model.Meta.UserID = p.Context.UserID
 	model.Meta.DocumentID = model.Page.DocumentID
 	model.Meta.Created = time.Now().UTC()
 	model.Meta.Revised = time.Now().UTC()
@@ -65,7 +66,7 @@ func (p *Persister) AddPage(model models.PageModel) (err error) {
 
 	err = searches.Add(&databaseRequest{OrgID: p.Context.OrgID}, model.Page, model.Page.RefID)
 
-	stmt2, err := p.Context.Transaction.Preparex("INSERT INTO pagemeta (pageid, orgid, documentid, rawbody, config, externalsource, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+	stmt2, err := p.Context.Transaction.Preparex("INSERT INTO pagemeta (pageid, orgid, userid, documentid, rawbody, config, externalsource, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
 	defer utility.Close(stmt2)
 
 	if err != nil {
@@ -73,7 +74,7 @@ func (p *Persister) AddPage(model models.PageModel) (err error) {
 		return
 	}
 
-	_, err = stmt2.Exec(model.Meta.PageID, model.Meta.OrgID, model.Meta.DocumentID, model.Meta.RawBody, model.Meta.Config, model.Meta.ExternalSource, model.Meta.Created, model.Meta.Revised)
+	_, err = stmt2.Exec(model.Meta.PageID, model.Meta.OrgID, model.Meta.UserID, model.Meta.DocumentID, model.Meta.RawBody, model.Meta.Config, model.Meta.ExternalSource, model.Meta.Created, model.Meta.Revised)
 
 	if err != nil {
 		log.Error("Unable to execute insert for page meta", err)
@@ -291,12 +292,15 @@ func (p *Persister) UpdatePage(page entity.Page, refID, userID string, skipRevis
 }
 
 // UpdatePageMeta persists meta information associated with a document page.
-func (p *Persister) UpdatePageMeta(meta entity.PageMeta) (err error) {
+func (p *Persister) UpdatePageMeta(meta entity.PageMeta,updateUserID bool) (err error) {
 	err = nil
 	meta.Revised = time.Now().UTC()
+	if updateUserID {
+		meta.UserID=p.Context.UserID
+	}
 
 	var stmt *sqlx.NamedStmt
-	stmt, err = p.Context.Transaction.PrepareNamed("UPDATE pagemeta SET documentid=:documentid, rawbody=:rawbody, config=:config, externalsource=:externalsource, revised=:revised WHERE orgid=:orgid AND pageid=:pageid")
+	stmt, err = p.Context.Transaction.PrepareNamed("UPDATE pagemeta SET userid=:userid, documentid=:documentid, rawbody=:rawbody, config=:config, externalsource=:externalsource, revised=:revised WHERE orgid=:orgid AND pageid=:pageid")
 	defer utility.Close(stmt)
 
 	if err != nil {
@@ -383,7 +387,7 @@ func (p *Persister) DeletePage(documentID, pageID string) (rows int64, err error
 func (p *Persister) GetPageMeta(pageID string) (meta entity.PageMeta, err error) {
 	err = nil
 
-	stmt, err := Db.Preparex("SELECT id, pageid, orgid, documentid, rawbody, coalesce(config,JSON_UNQUOTE('{}')) as config, externalsource, created, revised FROM pagemeta WHERE orgid=? AND pageid=?")
+	stmt, err := Db.Preparex("SELECT id, pageid, orgid, userid, documentid, rawbody, coalesce(config,JSON_UNQUOTE('{}')) as config, externalsource, created, revised FROM pagemeta WHERE orgid=? AND pageid=?")
 	defer utility.Close(stmt)
 
 	if err != nil {
@@ -409,7 +413,7 @@ func (p *Persister) GetDocumentPageMeta(documentID string, externalSourceOnly bo
 		filter = " AND externalsource=1"
 	}
 
-	err = Db.Select(&meta, "SELECT id, pageid, orgid, documentid, rawbody, coalesce(config,JSON_UNQUOTE('{}')) as config, externalsource, created, revised FROM pagemeta WHERE orgid=? AND documentid=?"+filter, p.Context.OrgID, documentID)
+	err = Db.Select(&meta, "SELECT id, pageid, orgid, userid, documentid, rawbody, coalesce(config,JSON_UNQUOTE('{}')) as config, externalsource, created, revised FROM pagemeta WHERE orgid=? AND documentid=?"+filter, p.Context.OrgID, documentID)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to execute select document page meta for org %s and document %s", p.Context.OrgID, documentID), err)
