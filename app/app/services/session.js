@@ -14,34 +14,34 @@ import models from '../utils/model';
 import SimpleAuthSession from 'ember-simple-auth/services/session';
 
 const {
-    inject: { service },
-    computed: { oneWay, or, notEmpty },
-    computed
+	inject: { service },
+	computed: { oneWay, or, notEmpty },
+	computed
 } = Ember;
 
 export default SimpleAuthSession.extend({
-    ajax: service(),
-    appMeta: service(),
+	ajax: service(),
+	appMeta: service(),
 
-    isMac: false,
-    isMobile: false,
-    authenticated: notEmpty('user.id'),
-    isAdmin: oneWay('user.admin'),
-    isEditor: or('user.admin', 'user.editor'),
+	isMac: false,
+	isMobile: false,
+	authenticated: notEmpty('user.id'),
+	isAdmin: oneWay('user.admin'),
+	isEditor: or('user.admin', 'user.editor'),
 
-    init: function() {
-      this.set('isMac', is.mac());
-      this.set('isMobile', is.mobile());
-  },
+	init: function () {
+		this.set('isMac', is.mac());
+		this.set('isMobile', is.mobile());
+	},
 
-    user: computed('isAuthenticated', 'session.content.authenticated.user', function(){
-        if (this.get('isAuthenticated')) {
-            let user = this.get('session.content.authenticated.user') || { id: '' };
-            return models.UserModel.create(user);
-        }
+	user: computed('isAuthenticated', 'session.content.authenticated.user', function () {
+		if (this.get('isAuthenticated')) {
+			let user = this.get('session.content.authenticated.user') || { id: '' };
+			return models.UserModel.create(user);
+		}
 
-    }),
+	}),
 
-    folderPermissions: null,
-    currentFolder: null
+	folderPermissions: null,
+	currentFolder: null
 });
