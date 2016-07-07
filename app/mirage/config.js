@@ -7,6 +7,8 @@ export default function () {
 	this.namespace = 'api'; // make this `api`, for example, if your API is namespaced
 	// this.timing = 400;      // delay for each request, automatically set to 0 during testing
 
+	this.logging = true;
+
 	this.get('/public/meta', function (schema) {
 		return schema.db.meta[0];
 	});
@@ -128,37 +130,7 @@ export default function () {
 		let expectedAuthorization = "Basic OmJyaXpkaWdpdGFsQGdtYWlsLmNvbTp6aW55YW5kbzEyMw==";
 
 		if (expectedAuthorization == authorization) {
-			return {
-				"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkb21haW4iOiIiLCJleHAiOjE0NjQwMjM2NjcsImlzcyI6IkRvY3VtaXplIiwib3JnIjoiVnpNdXlFd18zV3FpYWZjRCIsInN1YiI6IndlYmFwcCIsInVzZXIiOiJWek11eUV3XzNXcWlhZmNFIn0.NXZ6bo8mtvdZF_b9HavbidVUJqhmBA1zr0fSAPvbah0",
-				"user": {
-					"id": "VzMuyEw_3WqiafcE",
-					"created": "2016-05-11T15:08:24Z",
-					"revised": "2016-05-11T15:08:24Z",
-					"firstname": "Lennex",
-					"lastname": "Zinyando",
-					"email": "brizdigital@gmail.com",
-					"initials": "LZ",
-					"active": true,
-					"editor": true,
-					"admin": true,
-					"accounts": [{
-						"id": "VzMuyEw_3WqiafcF",
-						"created": "2016-05-11T15:08:24Z",
-						"revised": "2016-05-11T15:08:24Z",
-						"admin": true,
-						"editor": true,
-						"userId": "VzMuyEw_3WqiafcE",
-						"orgId": "VzMuyEw_3WqiafcD",
-						"company": "EmberSherpa",
-						"title": "EmberSherpa",
-						"message": "This Documize instance contains all our team documentation",
-						"domain": ""
-					}]
-				}
-			};
-		} else if (expectedAuthorization != authorization) {
-			return new Mirage.Response(400);
-		} else {
+			console.log("SSO login success");
 			return {
 				"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkb21haW4iOiIiLCJleHAiOjE0NjQwMjM2NjcsImlzcyI6IkRvY3VtaXplIiwib3JnIjoiVnpNdXlFd18zV3FpYWZjRCIsInN1YiI6IndlYmFwcCIsInVzZXIiOiJWek11eUV3XzNXcWlhZmNFIn0.NXZ6bo8mtvdZF_b9HavbidVUJqhmBA1zr0fSAPvbah0",
 				"user": {
@@ -188,6 +160,39 @@ export default function () {
 				}
 			};
 		}
+
+		if (expectedAuthorization != authorization) {
+			return new Mirage.Response(401, { 'Content-Type': 'application/json' }, { message: 'Bad Request' });
+		}
+
+		return {
+			"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkb21haW4iOiIiLCJleHAiOjE0NjQwMjM2NjcsImlzcyI6IkRvY3VtaXplIiwib3JnIjoiVnpNdXlFd18zV3FpYWZjRCIsInN1YiI6IndlYmFwcCIsInVzZXIiOiJWek11eUV3XzNXcWlhZmNFIn0.NXZ6bo8mtvdZF_b9HavbidVUJqhmBA1zr0fSAPvbah0",
+			"user": {
+				"id": "VzMuyEw_3WqiafcE",
+				"created": "2016-05-11T15:08:24Z",
+				"revised": "2016-05-11T15:08:24Z",
+				"firstname": "Lennex",
+				"lastname": "Zinyando",
+				"email": "brizdigital@gmail.com",
+				"initials": "LZ",
+				"active": true,
+				"editor": true,
+				"admin": true,
+				"accounts": [{
+					"id": "VzMuyEw_3WqiafcF",
+					"created": "2016-05-11T15:08:24Z",
+					"revised": "2016-05-11T15:08:24Z",
+					"admin": true,
+					"editor": true,
+					"userId": "VzMuyEw_3WqiafcE",
+					"orgId": "VzMuyEw_3WqiafcD",
+					"company": "EmberSherpa",
+					"title": "EmberSherpa",
+					"message": "This Documize instance contains all our team documentation",
+					"domain": ""
+				}]
+			}
+		};
 
 	});
 
@@ -439,16 +444,5 @@ export default function () {
 	this.post('/folders/VzMuyEw_3WqiafcG/invitation', () => {
 		return {};
 	});
-
-	/**
-	very helpful for debugging
-	*/
-	this.handledRequest = function (verb, path) {
-		console.log(`👊${verb} ${path}`);
-	};
-
-	this.unhandledRequest = function (verb, path) {
-		console.log(`🔥${verb} ${path}`);
-	};
 
 }

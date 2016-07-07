@@ -7,10 +7,9 @@ export default Ember.Route.extend({
 		this.get("session").authenticate('authenticator:documize', token)
 			.then(() => {
 				this.transitionTo('folders.folder');
-			})
-			.catch(() => {
+			}, () => {
 				this.transitionTo('auth.login');
 				console.log(">>>>> Documize SSO failure");
 			});
-	}
+	},
 });

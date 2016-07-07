@@ -34,7 +34,6 @@ test('successful sso login authenticates redirects to dashboard', function (asse
 	server.createList('folder', 2);
 
 	visit('/auth/sso/OmJyaXpkaWdpdGFsQGdtYWlsLmNvbTp6aW55YW5kbzEyMw==');
-	// return pauseTest();
 
 	andThen(function () {
 		assert.equal(currentURL(), '/s/VzMuyEw_3WqiafcG/my-project', 'SSO login successful');
