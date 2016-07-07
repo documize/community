@@ -70,7 +70,7 @@ func RunSectionCommand(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !provider.Command(sectionName, w, r) {
+	if !provider.Command(sectionName, provider.NewContext(p.Context.OrgID, p.Context.UserID), w, r) {
 		log.ErrorString("Unable to run provider.Command() for: " + sectionName)
 		writeNotFoundError(w, "RunSectionCommand", sectionName)
 	}
@@ -125,14 +125,16 @@ func RefreshSections(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		pcontext := provider.NewContext(pm.OrgID, pm.UserID)
+
 		// Ask for data refresh
-		data, ok := provider.Refresh(page.ContentType, pm.Config, pm.RawBody)
+		data, ok := provider.Refresh(page.ContentType, pcontext, pm.Config, pm.RawBody)
 		if !ok {
 			log.ErrorString("provider.Refresh could not find: " + page.ContentType)
 		}
 
 		// Render again
-		body, ok := provider.Render(page.ContentType, pm.Config, data)
+		body, ok := provider.Render(page.ContentType, pcontext, pm.Config, data)
 		if !ok {
 			log.ErrorString("provider.Render could not find: " + page.ContentType)
 		}
@@ -153,7 +155,7 @@ func RefreshSections(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			err = p.UpdatePageMeta(pm)
+			err = p.UpdatePageMeta(pm, false) // do not change the UserID on this PageMeta
 
 			if err != nil {
 				writeGeneralSQLError(w, method, err)

@@ -168,6 +168,7 @@ CREATE TABLE IF NOT EXISTS `pagemeta` (
 	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
 	`pageid` CHAR(16) NOT NULL COLLATE utf8_bin,
 	`orgid` CHAR(16) NOT NULL COLLATE utf8_bin,
+	`userid` CHAR(16) NOT NULL COLLATE utf8_bin,
 	`documentid` CHAR(16) NOT NULL COLLATE utf8_bin,
 	`rawbody` LONGBLOB,
 	`config` JSON,
@@ -266,3 +267,16 @@ INSERT INTO `config` VALUES ('LICENSE','{\"token\": \"\",\"endpoint\": \"https:/
 INSERT INTO `config` VALUES ('META','{\"database\": \"db_00000.sql\"}');
 INSERT INTO `config` VALUES ('SECTION-GITHUB', '{\"clientID\": \"\", \"clientSecret\": \"\", \"authorizationCallbackURL\": \"https://localhost:5001/api/public/validate?section=github\"}');
 INSERT INTO `config` VALUES ('SECTION-TRELLO','{\"appKey\": \"\"}');
+
+DROP TABLE IF EXISTS `userconfig`;
+
+CREATE TABLE IF NOT EXISTS  `userconfig` (
+	`orgid` CHAR(16) NOT NULL COLLATE utf8_bin,
+	`userid` CHAR(16) NOT NULL COLLATE utf8_bin,
+	`key` CHAR(225) NOT NULL,
+	`config` JSON,
+	UNIQUE INDEX `idx_userconfig_orguserkey` (`orgid`, `userid`, `key` ASC) )
+	DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+-- TODO insert userid into pagemeta table
+-- ALTER TABLE `pagemeta` ADD `userid` CHAR(16) NOT NULL COLLATE utf8_bin AFTER `orgid`;

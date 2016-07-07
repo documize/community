@@ -4,7 +4,11 @@
 		<div class="input-form">
 			<form {{action 'auth' on="submit"}}>
 				<div class="heading">
-					<div class="title">Papertrail Authentication</div>
+					<div class="title">Papertrail Authentication
+						{{#if authenticated}}
+							Complete
+						{{/if}}						
+					</div>
 					<div class="tip">Provide your Papertrail API token</div>
 				</div>
 				<div class="input-control">
@@ -12,7 +16,11 @@
 					<div class="tip">API Token (from your profile)</div>
 					{{focus-input id="papertrail-apitoken" type="password" value=config.APIToken readonly=isReadonly}}
 				</div>
-				<div class="regular-button button-blue" {{ action 'auth' }}>Authenticate</div>
+				{{#if authenticated}}
+					<div class="regular-button button-blue" {{ action 'auth' }}>Re-Authenticate</div>
+				{{else}}		
+					<div class="regular-button button-blue" {{ action 'auth' }}>Authenticate</div>
+				{{/if}}
 			</form>
 		</div>
 	</div>

@@ -61,7 +61,7 @@ type papertrailEvent struct {
 }
 
 type papertrailConfig struct {
-	APIToken string           `json:"APIToken"`
+	APIToken string           `json:"APIToken"` // only contains the correct token just after it is typed in
 	Query    string           `json:"query"`
 	Max      int              `json:"max"`
 	Group    papertrailOption `json:"group"`

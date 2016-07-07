@@ -45,7 +45,7 @@ func (*Provider) Meta() provider.TypeMeta {
 }
 
 // Command stub.
-func (*Provider) Command(w http.ResponseWriter, r *http.Request) {
+func (*Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
 	method := query.Get("method")
 
@@ -137,7 +137,7 @@ func (*Provider) Command(w http.ResponseWriter, r *http.Request) {
 }
 
 // Render just sends back HMTL as-is.
-func (*Provider) Render(config, data string) string {
+func (*Provider) Render(ctx *provider.Context, config, data string) string {
 	raw := []trelloListCards{}
 	payload := trelloRender{}
 	var c = trelloConfig{}
@@ -163,7 +163,7 @@ func (*Provider) Render(config, data string) string {
 }
 
 // Refresh just sends back data as-is.
-func (*Provider) Refresh(config, data string) string {
+func (*Provider) Refresh(ctx *provider.Context, config, data string) string {
 	var c = trelloConfig{}
 	json.Unmarshal([]byte(config), &c)
 

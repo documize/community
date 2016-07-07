@@ -79,6 +79,8 @@ func AddDocumentPage(w http.ResponseWriter, r *http.Request) {
 	model.Meta.PageID = pageID
 	model.Page.SetDefaults()
 	model.Meta.SetDefaults()
+	model.Meta.OrgID = p.Context.OrgID
+	model.Meta.UserID = p.Context.UserID
 	// page.Title = template.HTMLEscapeString(page.Title)
 
 	tx, err := request.Db.Beginx()
@@ -90,7 +92,8 @@ func AddDocumentPage(w http.ResponseWriter, r *http.Request) {
 
 	p.Context.Transaction = tx
 
-	output, ok := provider.Render(model.Page.ContentType, model.Meta.Config, model.Meta.RawBody)
+	output, ok := provider.Render(model.Page.ContentType,
+		provider.NewContext(model.Meta.OrgID, model.Meta.UserID), model.Meta.Config, model.Meta.RawBody)
 	if !ok {
 		log.ErrorString("provider.Render could not find: " + model.Page.ContentType)
 	}
@@ -374,7 +377,7 @@ func DeleteDocumentPages(w http.ResponseWriter, r *http.Request) {
 	writeSuccessEmptyJSON(w)
 }
 
-// UpdateDocumentPage will persiste changed page and note the fact
+// UpdateDocumentPage will persist changed page and note the fact
 // that this is a new revision. If the page is the first in a document
 // then the corresponding document title will also be changed.
 func UpdateDocumentPage(w http.ResponseWriter, r *http.Request) {
@@ -432,7 +435,15 @@ func UpdateDocumentPage(w http.ResponseWriter, r *http.Request) {
 	model.Page.SetDefaults()
 	model.Meta.SetDefaults()
 
-	output, ok := provider.Render(model.Page.ContentType, model.Meta.Config, model.Meta.RawBody)
+	oldPageMeta, err := p.GetPageMeta(pageID)
+
+	if err != nil {
+		log.Error("unable to fetch old pagemeta record", err)
+		writeBadRequestError(w, method, err.Error())
+		return
+	}
+
+	output, ok := provider.Render(model.Page.ContentType, provider.NewContext(model.Meta.OrgID, oldPageMeta.UserID), model.Meta.Config, model.Meta.RawBody)
 	if !ok {
 		log.ErrorString("provider.Render could not find: " + model.Page.ContentType)
 	}
@@ -452,7 +463,7 @@ func UpdateDocumentPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = p.UpdatePageMeta(model.Meta)
+	err = p.UpdatePageMeta(model.Meta, true) // change the UserID to the current one
 
 	log.IfErr(tx.Commit())
 

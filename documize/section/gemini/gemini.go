@@ -40,7 +40,7 @@ func (*Provider) Meta() provider.TypeMeta {
 }
 
 // Render converts Gemini data into HTML suitable for browser rendering.
-func (*Provider) Render(config, data string) string {
+func (*Provider) Render(ctx *provider.Context, config, data string) string {
 	var items []geminiItem
 	var payload = geminiRender{}
 	var c = geminiConfig{}
@@ -64,7 +64,7 @@ func (*Provider) Render(config, data string) string {
 }
 
 // Command handles authentication, workspace listing and items retrieval.
-func (*Provider) Command(w http.ResponseWriter, r *http.Request) {
+func (*Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
 	method := query.Get("method")
 
@@ -84,7 +84,7 @@ func (*Provider) Command(w http.ResponseWriter, r *http.Request) {
 }
 
 // Refresh just sends back data as-is.
-func (*Provider) Refresh(config, data string) (newData string) {
+func (*Provider) Refresh(ctx *provider.Context, config, data string) (newData string) {
 	var c = geminiConfig{}
 	err := json.Unmarshal([]byte(config), &c)
 
