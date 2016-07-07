@@ -20,11 +20,13 @@ const {
 export default Ember.Route.extend(ApplicationRouteMixin, {
 	appMeta: service(),
 	session: service(),
+
 	beforeModel() {
 		return this.get('appMeta').boot().then(data => {
-			if (data.allowAnonymousAccess) {
+			if (this.get('session.session.authenticator') !== "authenticator:documize" && data.allowAnonymousAccess) {
 				return this.get('session').authenticate('authenticator:anonymous', data);
 			}
+
 			return;
 		});
 	},

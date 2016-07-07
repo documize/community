@@ -276,7 +276,5 @@ CREATE TABLE IF NOT EXISTS  `userconfig` (
 	`key` CHAR(225) NOT NULL,
 	`config` JSON,
 	UNIQUE INDEX `idx_userconfig_orguserkey` (`orgid`, `userid`, `key` ASC) )
-	DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-
--- TODO insert userid into pagemeta table
--- ALTER TABLE `pagemeta` ADD `userid` CHAR(16) NOT NULL COLLATE utf8_bin AFTER `orgid`;
+DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci
+ENGINE = InnoDB;
