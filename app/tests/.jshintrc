@@ -31,7 +31,8 @@
     "waitToAppear",
     "waitToAppear",
     "stubUserNotification",
-    "is"
+    "is",
+    "authenticateUser"
   ],
   "node": false,
   "browser": false,

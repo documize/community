@@ -15,12 +15,11 @@ import models from '../utils/model';
 export default Ember.Service.extend({
     sessionService: Ember.inject.service('session'),
     ajax: Ember.inject.service(),
+    appMeta: Ember.inject.service(),
 
     // Returns attributes for specified org id.
     getOrg(id) {
-        let url = this.get('sessionService').appMeta.getUrl(`organizations/${id}`);
-
-        return this.get('ajax').request(url, {
+        return this.get('ajax').request(`organizations/${id}`, {
             method: 'GET'
         }).then((response) =>{
             let org = models.OrganizationModel.create(response);
@@ -31,13 +30,13 @@ export default Ember.Service.extend({
     // Updates an existing organization record.
     save(org) {
         let id = org.get('id');
-        let url = this.get('sessionService').appMeta.getUrl(`organizations/${id}`);
 
-        // refresh on-screen data
-        this.get('sessionService').get('appMeta').setSafe('message', org.message);
-        this.get('sessionService').get('appMeta').setSafe('title', org.title);
+        this.get('appMeta').setProperties({
+            message: org.message,
+            title: org.title
+        });
 
-        return this.get('ajax').request(url, {
+        return this.get('ajax').request(`organizations/${id}`, {
             method: 'PUT',
             data: JSON.stringify(org)
         });

@@ -15,6 +15,7 @@ import TooltipMixin from '../../mixins/tooltip';
 
 export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
     userService: Ember.inject.service('user'),
+    localStorage: Ember.inject.service(),
     drop: null,
     users: [],
     saveTemplate: {
@@ -43,11 +44,12 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
         if (this.get('isEditor')) {
             let self = this;
             let documentId = this.get('document.id');
-            let uploadUrl = this.session.appMeta.getUrl(`documents/${documentId}/attachments`);
+            let url = this.get('appMeta.url');
+            let uploadUrl = `${url}/documents/${documentId}/attachments`;
 
             let dzone = new Dropzone("#attachment-button > i", {
                 headers: {
-                    'Authorization': 'Bearer ' + self.session.getSessionItem('token')
+                    'Authorization': 'Bearer ' + self.get('localStorage').getSessionItem('session.session.authenticated.token')
                 },
                 url: uploadUrl,
                 method: "post",

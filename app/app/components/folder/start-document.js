@@ -13,12 +13,14 @@ import Ember from 'ember';
 import NotifierMixin from '../../mixins/notifier';
 
 export default Ember.Component.extend(NotifierMixin, {
+    localStorage: Ember.inject.service(),
     tagName: 'span',
     selectedTemplate: {
         id: "0"
     },
     canEditTemplate: "",
 	drop: null,
+    appMeta: Ember.inject.service(),
 
     didReceiveAttrs() {
         this.send('setTemplate', this.get('savedTemplates')[0]);
@@ -71,13 +73,14 @@ export default Ember.Component.extend(NotifierMixin, {
 
 			let self = this;
             let folderId = this.get('folder.id');
-            let importUrl = this.session.appMeta.getUrl('import/folder/' + folderId);
+            let url = this.get('appMeta.url');
+            let importUrl = `${url}/import/folder/${folderId}`;
 
 			Dropzone.options.uploadDocuments = false;
 
             let dzone = new Dropzone("#upload-documents", {
                 headers: {
-                    'Authorization': 'Bearer ' + self.session.getSessionItem('token')
+                    'Authorization': 'Bearer ' + self.get('localStorage').getSessionItem('session.session.authenticated.token')
                 },
                 url: importUrl,
                 method: "post",

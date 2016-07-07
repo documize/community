@@ -15,15 +15,16 @@ import netUtil from '../../utils/net';
 export default Ember.Component.extend({
 	folderService: Ember.inject.service('folder'),
 	folder: null,
+	appMeta: Ember.inject.service(),
 
-    didInitAttrs() {
-        let self = this;
-        if (this.session.authenticated) {
-            this.session.user.accounts.forEach(function(account) {
-                account.active = account.orgId === self.session.appMeta.orgId;
-            });
-        }
-    },
+	didInitAttrs() {
+		if (this.get("session.authenticated")) {
+			this.get("session.user.accounts").forEach((account)=>{
+				// TODO: do not mutate account.active here
+				account.active = account.orgId === this.get("appMeta.orgId");
+			});
+		}
+	},
 
 	didReceiveAttrs() {
 		if (this.get('folder') === null) {
@@ -31,10 +32,10 @@ export default Ember.Component.extend({
 		}
 	},
 
-    actions: {
-        switchAccount(domain) {
-            this.audit.record('switched-account');
-            window.location.href = netUtil.getAppUrl(domain);
-        }
-    }
+	actions: {
+		switchAccount(domain) {
+			this.audit.record('switched-account');
+			window.location.href = netUtil.getAppUrl(domain);
+		}
+	}
 });

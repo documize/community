@@ -19,9 +19,7 @@ export default BaseService.extend({
 
     // Returns all available sections.
     getAll() {
-        let url = this.get('sessionService').appMeta.getUrl(`sections`);
-
-        return this.get('ajax').request(url,{
+        return this.get('ajax').request(`sections`,{
             method: 'GET'
         }).then((response)=>{
             let data = [];
@@ -38,8 +36,7 @@ export default BaseService.extend({
     fetch(page, method, data) {
         let documentId = page.get('documentId');
         let section = page.get('contentType');
-        let endpoint = `sections?documentID=${documentId}&section=${section}&method=${method}`;
-        let url = this.get('sessionService').appMeta.getUrl(endpoint);
+        let url = `sections?documentID=${documentId}&section=${section}&method=${method}`;
 
         return this.get('ajax').post(url, {
             data: JSON.stringify(data),
@@ -49,7 +46,7 @@ export default BaseService.extend({
 
     // Did any dynamic sections change? Fetch and send up for rendering?
     refresh(documentId) {
-        let url = this.get('sessionService').appMeta.getUrl(`sections/refresh?documentID=${documentId}`);
+        let url = `sections/refresh?documentID=${documentId}`;
 
         return this.get('ajax').request(url, {
             method: 'GET'

@@ -17,8 +17,7 @@ export default Ember.Service.extend({
     ajax: Ember.inject.service(),
 
     importStockTemplate: function(folderId, templateId) {
-
-        let url = this.get('sessionService').appMeta.getUrl("templates/" + templateId + "/folder/" + folderId + "?type=stock");
+        let url = `templates/${templateId}/folder/${folderId}?type=stock`;
 
         return this.get('ajax').request(url, {
             method: "POST"
@@ -26,7 +25,7 @@ export default Ember.Service.extend({
     },
 
     importSavedTemplate: function(folderId, templateId) {
-        let url = this.get('sessionService').appMeta.getUrl("templates/" + templateId + "/folder/" + folderId + "?type=saved");
+        let url = `templates/${templateId}/folder/${folderId}?type=saved`;
 
         return this.get('ajax').post(url).then((doc)=>{
             let docModel = models.DocumentModel.create(doc);
@@ -35,9 +34,7 @@ export default Ember.Service.extend({
     },
 
     getSavedTemplates() {
-        let url = this.get('sessionService').appMeta.getUrl("templates");
-
-        return this.get('ajax').request(url, {
+        return this.get('ajax').request(`templates`, {
             method: 'GET'
         }).then((response) => {
             if (is.not.array(response)) {
@@ -57,22 +54,19 @@ export default Ember.Service.extend({
     },
 
     getStockTemplates() {
-        let url = this.get('sessionService').appMeta.getUrl("templates/stock");
-
-        return this.get('ajax').request(url, {
+        return this.get('ajax').request(`templates/stock`, {
             method: 'GET'
         });
     },
 
 	saveAsTemplate(documentId, name, excerpt) {
-		let url = this.get('sessionService').appMeta.getUrl("templates");
 		let payload = {
 			DocumentID: documentId,
 			Name: name,
 			Excerpt: excerpt
 		};
 
-        return this.get('ajax').request(url, {
+        return this.get('ajax').request(`templates`, {
             method: 'POST',
             data: JSON.stringify(payload)
         }).then(() => {

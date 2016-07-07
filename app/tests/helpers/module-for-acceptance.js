@@ -7,7 +7,6 @@ export default function(name, options = {}) {
     beforeEach() {
       this.application = startApp();
       stubAudit(this);
-      stubSession(this);
       stubUserNotification(this);
 
       if (options.beforeEach) {
