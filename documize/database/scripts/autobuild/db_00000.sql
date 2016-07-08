@@ -254,10 +254,10 @@ ENGINE = InnoDB;
 
 DROP TABLE IF EXISTS `config`;
 
-CREATE TABLE IF NOT EXISTS  `config` (
-	`key` CHAR(225) NOT NULL,
+CREATE TABLE IF NOT EXISTS `config` (
+	`key` CHAR(255) NOT NULL,
 	`config` JSON,
-	UNIQUE INDEX `idx_config_area` (`key` ASC) )
+	UNIQUE INDEX `idx_config_area` (`key` ASC))
 DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 INSERT INTO `config` VALUES ('SMTP','{\"userid\": \"\",\"password\": \"\",\"host\": \"\",\"port\": \"\",\"sender\": \"\"}');
@@ -270,11 +270,11 @@ INSERT INTO `config` VALUES ('SECTION-TRELLO','{\"appKey\": \"\"}');
 
 DROP TABLE IF EXISTS `userconfig`;
 
-CREATE TABLE IF NOT EXISTS  `userconfig` (
+CREATE TABLE IF NOT EXISTS `userconfig` (
 	`orgid` CHAR(16) NOT NULL COLLATE utf8_bin,
 	`userid` CHAR(16) NOT NULL COLLATE utf8_bin,
-	`key` CHAR(225) NOT NULL,
+	`key` CHAR(255) NOT NULL,
 	`config` JSON,
-	UNIQUE INDEX `idx_userconfig_orguserkey` (`orgid`, `userid`, `key` ASC) )
+	UNIQUE INDEX `idx_userconfig_orguserkey` (`orgid`, `userid`, `key` ASC))
 DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci
 ENGINE = InnoDB;
