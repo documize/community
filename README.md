@@ -1,5 +1,7 @@
 # Documize Community Edition
 
+v0.14.0
+
 To discover Documize please visit https://documize.com
 
 Documize® is a registered trade mark of Documize Inc.
