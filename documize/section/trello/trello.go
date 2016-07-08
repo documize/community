@@ -25,7 +25,6 @@ import (
 )
 
 var meta provider.TypeMeta
-var appKey string
 
 func init() {
 	meta = provider.TypeMeta{}
@@ -49,11 +48,6 @@ func (*Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http.R
 	query := r.URL.Query()
 	method := query.Get("method")
 
-	if len(method) == 0 {
-		provider.WriteMessage(w, "trello", "missing method name")
-		return
-	}
-
 	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -70,19 +64,20 @@ func (*Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http.R
 		return
 	}
 
-	if appKey == "" {
-		appKey = request.ConfigString(meta.ConfigHandle(), "appKey")
+	config.Clean()
+	config.AppKey = request.ConfigString(meta.ConfigHandle(), "appKey")
+
+	if len(config.AppKey) == 0 {
+		log.ErrorString("missing trello App Key")
+		provider.WriteMessage(w, "trello", "Missing appKey")
+		return
 	}
 
-	config.Clean()
-	config.AppKey = appKey
+	if len(config.Token) == 0 {
+		config.Token = ctx.GetSecrets("token") // get a token, if we have one
+	}
 
 	if method != "config" {
-		if len(config.AppKey) == 0 {
-			provider.WriteMessage(w, "trello", "Missing appKey")
-			return
-		}
-
 		if len(config.Token) == 0 {
 			provider.WriteMessage(w, "trello", "Missing token")
 			return
@@ -94,8 +89,9 @@ func (*Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http.R
 		render, err := getCards(config)
 
 		if err != nil {
-			fmt.Println(err)
+			log.IfErr(err)
 			provider.WriteError(w, "trello", err)
+			log.IfErr(ctx.SaveSecrets("")) // failure means our secrets are invalid
 			return
 		}
 
@@ -105,8 +101,9 @@ func (*Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http.R
 		render, err := getBoards(config)
 
 		if err != nil {
-			fmt.Println(err)
+			log.IfErr(err)
 			provider.WriteError(w, "trello", err)
+			log.IfErr(ctx.SaveSecrets("")) // failure means our secrets are invalid
 			return
 		}
 
@@ -116,24 +113,36 @@ func (*Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http.R
 		render, err := getLists(config)
 
 		if err != nil {
-			fmt.Println(err)
+			log.IfErr(err)
 			provider.WriteError(w, "trello", err)
+			log.IfErr(ctx.SaveSecrets("")) // failure means our secrets are invalid
 			return
 		}
 
 		provider.WriteJSON(w, render)
 
 	case "config":
-		if method == "config" {
-			var config struct {
-				AppKey string `json:"appKey"`
-			}
-
-			config.AppKey = appKey
-			provider.WriteJSON(w, config)
-			return
+		var ret struct {
+			AppKey string `json:"appKey"`
+			Token  string `json:"token"`
 		}
+		ret.AppKey = config.AppKey
+		ret.Token = config.Token
+		provider.WriteJSON(w, ret)
+		return
+
+	default:
+		log.ErrorString("trello unknown method name: " + method)
+		provider.WriteMessage(w, "trello", "missing method name")
+		return
 	}
+
+	// the token has just worked, so save it as our secret
+	var s secrets
+	s.Token = config.Token
+	b, e := json.Marshal(s)
+	log.IfErr(e)
+	log.IfErr(ctx.SaveSecrets(string(b)))
 }
 
 // Render just sends back HMTL as-is.

@@ -104,7 +104,7 @@ func (p *Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http
 
 	config.Clean()
 
-	if config.APIToken == provider.SecretReplacement {
+	if config.APIToken == provider.SecretReplacement || config.APIToken == "" {
 		config.APIToken = ctx.GetSecrets("APIToken")
 	}
 
