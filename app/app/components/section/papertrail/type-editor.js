@@ -42,9 +42,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
 		this.set('config', config);
 
-		if (this.get('config.APIToken').length > 0) {
-			this.send('auth');
-		}
+		this.send('auth');
 	},
 
 	willDestroyElement() {
@@ -65,15 +63,6 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 		},
 
 		auth() {
-			// missing data?
-			this.set('config.APIToken', this.get('config.APIToken').trim());
-
-			if (is.empty(this.get('config.APIToken'))) {
-				$("#papertrail-apitoken").addClass("error").focus();
-				console.log("auth token empty");
-				return;
-			}
-
 			let page = this.get('page');
 			let config = this.get('config');
 			let self = this;
@@ -93,7 +82,12 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 							self.set('waiting', false);
 
 							let options = self.get('options');
-							let group = _.findWhere(options.groups, { id: config.group.id });
+							let group = {};
+							if (is.not.null(config.group)) {
+								group = _.findWhere(options.groups, { id: config.group.id });
+							} else {
+								group = options.groups[0];
+							}
 							if (is.not.undefined(group)) {
 								Ember.set(config, 'group', group);
 							}

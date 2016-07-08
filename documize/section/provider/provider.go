@@ -209,7 +209,21 @@ func (c *Context) SaveSecrets(JSONobj string) error {
 	if !c.inCommand {
 		return errors.New("SaveSecrets() may only be called from within Command()")
 	}
-	return request.UserConfigSetJSON(c.OrgID, c.UserID, c.prov.Meta().ContentType, JSONobj)
+	m := c.prov.Meta()
+	return request.UserConfigSetJSON(c.OrgID, c.UserID, m.ContentType, JSONobj)
+}
+
+// MarshalSecrets to the database.
+// Parameter the same as for json.Marshal().
+func (c *Context) MarshalSecrets(sec interface{}) error {
+	if !c.inCommand {
+		return errors.New("MarshalSecrets() may only be called from within Command()")
+	}
+	byts, err := json.Marshal(sec)
+	if err != nil {
+		return err
+	}
+	return c.SaveSecrets(string(byts))
 }
 
 // GetSecrets for the current context user/org.
@@ -218,7 +232,21 @@ func (c *Context) SaveSecrets(JSONobj string) error {
 // An empty JSONpath returns the whole JSON object, as JSON.
 // Errors return the empty string.
 func (c *Context) GetSecrets(JSONpath string) string {
-	return request.UserConfigGetJSON(c.OrgID, c.UserID, c.prov.Meta().ContentType, JSONpath)
+	m := c.prov.Meta()
+	return request.UserConfigGetJSON(c.OrgID, c.UserID, m.ContentType, JSONpath)
+}
+
+// ErrNoSecrets is returned if no secret is found in the database.
+var ErrNoSecrets = errors.New("no secrets in database")
+
+// UnmarshalSecrets from the database.
+// Parameter the same as for "v" in json.Unmarshal().
+func (c *Context) UnmarshalSecrets(v interface{}) error {
+	secTxt := c.GetSecrets("") // get all the json of the secrets
+	if len(secTxt) > 0 {
+		return json.Unmarshal([]byte(secTxt), v)
+	}
+	return ErrNoSecrets
 }
 
 // sort sections in order that that should be presented.

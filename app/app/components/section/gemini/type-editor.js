@@ -15,194 +15,212 @@ import TooltipMixin from '../../../mixins/tooltip';
 import SectionMixin from '../../../mixins/section';
 
 export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin, {
-    sectionService: Ember.inject.service('section'),
-    isDirty: false,
-    waiting: false,
-    authenticated: false,
-    user: {},
-    workspaces: [],
-    config: {},
+	sectionService: Ember.inject.service('section'),
+	isDirty: false,
+	waiting: false,
+	authenticated: false,
+	user: {},
+	workspaces: [],
+	config: {},
 
-    didReceiveAttrs() {
-        let config = {};
+	didReceiveAttrs() {
+		let config = {};
 
-        try {
-            config = JSON.parse(this.get('meta.config'));
-        } catch (e) {}
+		try {
+			config = JSON.parse(this.get('meta.config'));
+		} catch (e) {}
 
-        if (is.empty(config)) {
-            config = {
-                APIKey: "",
-                filter: {},
-                itemCount: 0,
-                url: "",
-                userId: 0,
-                username: "",
-                workspaceId: 0,
-                workspaceName: "",
-            };
-        }
+		if (is.empty(config)) {
+			config = {
+				APIKey: "",
+				filter: {},
+				itemCount: 0,
+				url: "",
+				userId: 0,
+				username: "",
+				workspaceId: 0,
+				workspaceName: "",
+			};
+		}
 
-        this.set('config', config);
+		this.set('config', config);
 
-        if (this.get('config.userId') > 0) {
-            this.send('auth');
-        }
-    },
+		let self = this;
+		self.set('waiting', true);
+		this.get('sectionService').fetch(this.get('page'), "secrets", this.get('config'))
+			.then(function (response) {
+				console.log(response);
+				self.set('waiting', false);
 
-    willDestroyElement() {
-        this.destroyTooltips();
-    },
+				self.set('config.APIKey', response.apikey);
+				self.set('config.url', response.url);
+				self.set('config.username', response.username);
 
-    getWorkspaces() {
-        let page = this.get('page');
-        let self = this;
-        this.set('waiting', true);
+				if (response.apikey.length > 0 && response.url.length > 0 && response.username.length > 0) {
+					self.send('auth');
+				}
+			}, function (reason) { //jshint ignore: line
+				console.log(reason);
+				self.set('waiting', false);
+				if (self.get('config.userId') > 0) {
+					self.send('auth');
+				}
+			});
+	},
 
-        this.get('sectionService').fetch(page, "workspace", this.get('config'))
-            .then(function(response) {
-                // console.log(response);
-                let workspaceId = self.get('config.workspaceId');
+	willDestroyElement() {
+		this.destroyTooltips();
+	},
 
-                if (response.length > 0 && workspaceId === 0) {
-                    workspaceId = response[0].Id;
-                }
+	getWorkspaces() {
+		let page = this.get('page');
+		let self = this;
+		this.set('waiting', true);
 
-                self.set("config.workspaceId", workspaceId);
-                self.set('workspaces', response);
-                self.selectWorkspace(workspaceId);
+		this.get('sectionService').fetch(page, "workspace", this.get('config'))
+			.then(function (response) {
+				// console.log(response);
+				let workspaceId = self.get('config.workspaceId');
 
-                Ember.run.schedule('afterRender', function() {
-                    window.scrollTo(0, document.body.scrollHeight);
+				if (response.length > 0 && workspaceId === 0) {
+					workspaceId = response[0].Id;
+				}
 
-                    response.forEach(function(workspace) {
-                        self.addTooltip(document.getElementById("gemini-workspace-" + workspace.Id));
-                    });
-                });
-                self.set('waiting', false);
-            }, function(reason) { //jshint ignore: line
-                self.set('workspaces', []);
-                self.set('waiting', false);
-            });
-    },
+				self.set("config.workspaceId", workspaceId);
+				self.set('workspaces', response);
+				self.selectWorkspace(workspaceId);
 
-    getItems() {
-        let page = this.get('page');
-        let self = this;
+				Ember.run.schedule('afterRender', function () {
+					window.scrollTo(0, document.body.scrollHeight);
 
-        this.set('waiting', true);
+					response.forEach(function (workspace) {
+						self.addTooltip(document.getElementById("gemini-workspace-" + workspace.Id));
+					});
+				});
+				self.set('waiting', false);
+			}, function (reason) { //jshint ignore: line
+				self.set('workspaces', []);
+				self.set('waiting', false);
+			});
+	},
 
-        this.get('sectionService').fetch(page, "items", this.get('config'))
-            .then(function(response) {
-                // console.log(response);
-                self.set('items', response);
-                self.set('config.itemCount', response.length);
-                self.set('waiting', false);
-            }, function(reason) { //jshint ignore: line
-                self.set('items', []);
-                self.set('waiting', false);
-            });
-    },
+	getItems() {
+		let page = this.get('page');
+		let self = this;
 
-    selectWorkspace(id) {
-        let self = this;
-        let w = this.get('workspaces');
+		this.set('waiting', true);
 
-        w.forEach(function(w) {
-            Ember.set(w, 'selected', w.Id === id);
+		this.get('sectionService').fetch(page, "items", this.get('config'))
+			.then(function (response) {
+				// console.log(response);
+				self.set('items', response);
+				self.set('config.itemCount', response.length);
+				self.set('waiting', false);
+			}, function (reason) { //jshint ignore: line
+				self.set('items', []);
+				self.set('waiting', false);
+			});
+	},
 
-            if (w.Id === id) {
-                self.set("config.filter", w.Filter);
-                self.set("config.workspaceId", id);
-                self.set("config.workspaceName", w.Title);
-                // console.log(self.get('config'));
-            }
-        });
+	selectWorkspace(id) {
+		let self = this;
+		let w = this.get('workspaces');
 
-        this.set('workspaces', w);
-        this.getItems();
-    },
+		w.forEach(function (w) {
+			Ember.set(w, 'selected', w.Id === id);
 
-    actions: {
-        isDirty() {
-            return this.get('isDirty');
-        },
+			if (w.Id === id) {
+				self.set("config.filter", w.Filter);
+				self.set("config.workspaceId", id);
+				self.set("config.workspaceName", w.Title);
+				// console.log(self.get('config'));
+			}
+		});
 
-        auth() {
-            // missing data?
-            if (is.empty(this.get('config.url'))) {
-                $("#gemini-url").addClass("error").focus();
-                return;
-            }
-            if (is.empty(this.get('config.username'))) {
-                $("#gemini-username").addClass("error").focus();
-                return;
-            }
-            if (is.empty(this.get('config.APIKey'))) {
-                $("#gemini-apikey").addClass("error").focus();
-                return;
-            }
+		this.set('workspaces', w);
+		this.getItems();
+	},
 
-            // knock out spaces
-            this.set('config.url', this.get('config.url').trim());
-            this.set('config.username', this.get('config.username').trim());
-            this.set('config.APIKey', this.get('config.APIKey').trim());
+	actions: {
+		isDirty() {
+			return this.get('isDirty');
+		},
 
-            // remove trailing slash in URL
-            let url = this.get('config.url');
-            if (url.indexOf("/", url.length - 1) !== -1) {
-                this.set('config.url', url.substring(0, url.length - 1));
-            }
+		auth() {
+			// missing data?
+			if (is.empty(this.get('config.url'))) {
+				$("#gemini-url").addClass("error").focus();
+				return;
+			}
+			if (is.empty(this.get('config.username'))) {
+				$("#gemini-username").addClass("error").focus();
+				return;
+			}
+			if (is.empty(this.get('config.APIKey'))) {
+				$("#gemini-apikey").addClass("error").focus();
+				return;
+			}
 
-            let page = this.get('page');
-            let self = this;
+			// knock out spaces
+			this.set('config.url', this.get('config.url').trim());
+			this.set('config.username', this.get('config.username').trim());
+			this.set('config.APIKey', this.get('config.APIKey').trim());
 
-            this.set('waiting', true);
+			// remove trailing slash in URL
+			let url = this.get('config.url');
+			if (url.indexOf("/", url.length - 1) !== -1) {
+				this.set('config.url', url.substring(0, url.length - 1));
+			}
 
-            this.get('sectionService').fetch(page, "auth", this.get('config'))
-                .then(function(response) {
-                    self.set('authenticated', true);
-                    self.set('user', response);
-                    self.set('config.userId', response.BaseEntity.id);
-                    self.set('waiting', false);
-                    self.getWorkspaces();
-                }, function(reason) { //jshint ignore: line
-                    self.set('authenticated', false);
-                    self.set('user', null);
-                    self.set('config.userId', 0);
-                    self.set('waiting', false);
+			let page = this.get('page');
+			let self = this;
 
-                    switch (reason.status) {
-                        case 400:
-                            self.showNotification(`Unable to connect to Gemini URL`);
-                            break;
-                        case 403:
-                            self.showNotification(`Unable to authenticate`);
-                            break;
-                        default:
-                            self.showNotification(`Something went wrong, try again!`);
-                    }
-                });
-        },
+			this.set('waiting', true);
 
-        onWorkspaceChange(id) {
-            this.set('isDirty', true);
-            this.selectWorkspace(id);
-        },
+			this.get('sectionService').fetch(page, "auth", this.get('config'))
+				.then(function (response) {
+					self.set('authenticated', true);
+					self.set('user', response);
+					self.set('config.userId', response.BaseEntity.id);
+					self.set('waiting', false);
+					self.getWorkspaces();
+				}, function (reason) { //jshint ignore: line
+					self.set('authenticated', false);
+					self.set('user', null);
+					self.set('config.userId', 0);
+					self.set('waiting', false);
 
-        onCancel() {
-            this.attrs.onCancel();
-        },
+					switch (reason.status) {
+					case 400:
+						self.showNotification(`Unable to connect to Gemini URL`);
+						break;
+					case 403:
+						self.showNotification(`Unable to authenticate`);
+						break;
+					default:
+						self.showNotification(`Something went wrong, try again!`);
+					}
+				});
+		},
 
-        onAction(title) {
-            let page = this.get('page');
-            let meta = this.get('meta');
-            page.set('title', title);
-            meta.set('rawBody', JSON.stringify(this.get("items")));
-            meta.set('config', JSON.stringify(this.get('config')));
-            meta.set('externalSource', true);
+		onWorkspaceChange(id) {
+			this.set('isDirty', true);
+			this.selectWorkspace(id);
+		},
 
-            this.attrs.onAction(page, meta);
-        }
-    }
+		onCancel() {
+			this.attrs.onCancel();
+		},
+
+		onAction(title) {
+			let page = this.get('page');
+			let meta = this.get('meta');
+			page.set('title', title);
+			meta.set('rawBody', JSON.stringify(this.get("items")));
+			meta.set('config', JSON.stringify(this.get('config')));
+			meta.set('externalSource', true);
+
+			this.attrs.onAction(page, meta);
+		}
+	}
 });

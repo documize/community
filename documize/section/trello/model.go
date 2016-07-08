@@ -35,6 +35,10 @@ const renderTemplate = `
 </div>
 `
 
+type secrets struct {
+	Token  string `json:"token"`
+}
+
 type trelloConfig struct {
 	AppKey string       `json:"appKey"`
 	Token  string       `json:"token"`
