@@ -16,3 +16,5 @@ Documentation:
 * [Install from binary guide](https://developers.documize.com/s/VzO9ZqMOCgABGyfW/installation/d/V16L08ucxwABhZF6/install-documize-from-binary-guide)
 * [Install for development guide](https://developers.documize.com/s/VzO9ZqMOCgABGyfW/installation/d/V16LOMucxwABhZF1/install-documize-for-development-guide)
 * [Configuration guide](https://developers.documize.com/s/VzO9ZqMOCgABGyfW/installation/d/VzSL8cVZ4QAB2B4Y/configure-documize-guide)
+
+![Alt text](screenshot.png "Documize")
