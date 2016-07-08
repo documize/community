@@ -28,9 +28,8 @@ import (
 
 const (
 	// AppVersion does what it says
-	// Versioning scheme major.minor where "minor" is optional
-	// e.g. 1, 2, 3, 4.1, 4.2, 5, 6, 7, 7.1, 8, 9, 10, ..... 127, 127.1, 128
-	AppVersion = "13.1"
+	// Versioning scheme: http://semver.org
+	AppVersion = "1.0.0"
 )
 
 var port, certFile, keyFile, forcePort2SSL string
