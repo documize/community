@@ -127,7 +127,9 @@ func (*Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http.R
 			Token  string `json:"token"`
 		}
 		ret.AppKey = config.AppKey
-		ret.Token = config.Token
+		if config.Token != "" {
+			ret.Token = provider.SecretReplacement
+		}
 		provider.WriteJSON(w, ret)
 		return
 

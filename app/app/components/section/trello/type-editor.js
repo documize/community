@@ -59,7 +59,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 		this.get('sectionService').fetch(page, "config", {})
 			.then(function (s) {
 				self.set('appKey', s.appKey);
-				self.set('config.token', s.token); // the user's own token, drawn from the DB
+				self.set('config.token', s.token); // the user's own token has been stored in the DB
 
 				// On auth callback capture user token
 				let hashToken = window.location.hash;
