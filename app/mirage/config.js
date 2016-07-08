@@ -129,7 +129,7 @@ export default function () {
 		let authorization = request.requestHeaders.Authorization;
 		let expectedAuthorization = "Basic OmJyaXpkaWdpdGFsQGdtYWlsLmNvbTp6aW55YW5kbzEyMw==";
 
-		if (expectedAuthorization == authorization) {
+		if (expectedAuthorization === authorization) {
 			console.log("SSO login success");
 			return {
 				"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkb21haW4iOiIiLCJleHAiOjE0NjQwMjM2NjcsImlzcyI6IkRvY3VtaXplIiwib3JnIjoiVnpNdXlFd18zV3FpYWZjRCIsInN1YiI6IndlYmFwcCIsInVzZXIiOiJWek11eUV3XzNXcWlhZmNFIn0.NXZ6bo8mtvdZF_b9HavbidVUJqhmBA1zr0fSAPvbah0",
@@ -161,7 +161,7 @@ export default function () {
 			};
 		}
 
-		if (expectedAuthorization != authorization) {
+		if (expectedAuthorization !== authorization) {
 			return new Mirage.Response(401, { 'Content-Type': 'application/json' }, { message: 'Bad Request' });
 		}
 

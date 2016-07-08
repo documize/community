@@ -27,6 +27,8 @@
 		{{#dropdown-dialog target="meta-button-history" position="bottom left" showCancel=false button="Close" onAction=(action 'close') color="flat-gray"}}
 			{{document/document-sidebar-edits pages=pages meta=meta}}
 		{{/dropdown-dialog}}
+	{{else}}
+		<div class="margin-top-40" />
 	{{/if}}
 	{{document/document-sidebar-toc document=model folder=folder pages=pages page=page isEditor=isEditor
 		changePageSequence=(action 'onPageSequenceChange') changePageLevel=(action 'onPageLevelChange')
