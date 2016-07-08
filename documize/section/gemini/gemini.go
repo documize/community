@@ -74,12 +74,14 @@ func (*Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http.R
 	}
 
 	switch method {
+	case "secrets":
+		secs(ctx, w, r)
 	case "auth":
-		auth(w, r)
+		auth(ctx, w, r)
 	case "workspace":
-		workspace(w, r)
+		workspace(ctx, w, r)
 	case "items":
-		items(w, r)
+		items(ctx, w, r)
 	}
 }
 
@@ -93,7 +95,7 @@ func (*Provider) Refresh(ctx *provider.Context, config, data string) (newData st
 		return
 	}
 
-	c.Clean()
+	c.Clean(ctx)
 
 	if len(c.URL) == 0 {
 		log.Info("Gemini.Refresh received empty URL")
@@ -150,7 +152,7 @@ func (*Provider) Refresh(ctx *provider.Context, config, data string) (newData st
 	return
 }
 
-func auth(w http.ResponseWriter, r *http.Request) {
+func auth(ctx *provider.Context, w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -167,7 +169,7 @@ func auth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	config.Clean()
+	config.Clean(nil) // don't look at the database for the parameters
 
 	if len(config.URL) == 0 {
 		provider.WriteMessage(w, "gemini", "Missing URL value")
@@ -203,6 +205,8 @@ func auth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	config.SaveSecrets(ctx)
+
 	defer res.Body.Close()
 	var g = geminiUser{}
 
@@ -218,7 +222,7 @@ func auth(w http.ResponseWriter, r *http.Request) {
 	provider.WriteJSON(w, g)
 }
 
-func workspace(w http.ResponseWriter, r *http.Request) {
+func workspace(ctx *provider.Context, w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -235,7 +239,7 @@ func workspace(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	config.Clean()
+	config.Clean(ctx)
 
 	if len(config.URL) == 0 {
 		provider.WriteMessage(w, "gemini", "Missing URL value")
@@ -291,7 +295,7 @@ func workspace(w http.ResponseWriter, r *http.Request) {
 	provider.WriteJSON(w, workspace)
 }
 
-func items(w http.ResponseWriter, r *http.Request) {
+func items(ctx *provider.Context, w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -308,7 +312,7 @@ func items(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	config.Clean()
+	config.Clean(ctx)
 
 	if len(config.URL) == 0 {
 		provider.WriteMessage(w, "gemini", "Missing URL value")
@@ -366,4 +370,10 @@ func items(w http.ResponseWriter, r *http.Request) {
 	}
 
 	provider.WriteJSON(w, items)
+}
+
+func secs(ctx *provider.Context, w http.ResponseWriter, r *http.Request) {
+	sec, err := getSecrets(ctx)
+	log.IfErr(err)
+	provider.WriteJSON(w, sec)
 }

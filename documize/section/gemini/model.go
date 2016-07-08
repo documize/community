@@ -11,7 +11,12 @@
 
 package gemini
 
-import "strings"
+import (
+	"strings"
+
+	"github.com/documize/community/documize/section/provider"
+	"github.com/documize/community/wordsmith/log"
+)
 
 // the HTML that is rendered by this section.
 const renderTemplate = `
@@ -82,8 +87,37 @@ type geminiConfig struct {
 	Filter        map[string]interface{} `json:"filter"`
 }
 
-func (c *geminiConfig) Clean() {
+func (c *geminiConfig) Clean(ctx *provider.Context) {
+	if ctx != nil {
+		sec, err := getSecrets(ctx)
+		if err == nil {
+			if len(sec.APIKey) > 0 && len(sec.Username) > 0 && len(sec.URL) > 0 {
+				c.APIKey = strings.TrimSpace(sec.APIKey)
+				c.Username = strings.TrimSpace(sec.Username)
+				c.URL = strings.TrimSpace(sec.URL)
+			}
+		}
+	}
 	c.APIKey = strings.TrimSpace(c.APIKey)
 	c.Username = strings.TrimSpace(c.Username)
 	c.URL = strings.TrimSpace(c.URL)
+}
+
+func (c *geminiConfig) SaveSecrets(ctx *provider.Context) {
+	var sec secrets
+	sec.APIKey = strings.TrimSpace(c.APIKey)
+	sec.Username = strings.TrimSpace(c.Username)
+	sec.URL = strings.TrimSpace(c.URL)
+	log.IfErr(ctx.MarshalSecrets(sec))
+}
+
+type secrets struct {
+	URL      string `json:"url"`
+	Username string `json:"username"`
+	APIKey   string `json:"apikey"`
+}
+
+func getSecrets(ctx *provider.Context) (sec secrets, err error) {
+	err = ctx.UnmarshalSecrets(&sec)
+	return
 }
