@@ -209,7 +209,8 @@ func (c *Context) SaveSecrets(JSONobj string) error {
 	if !c.inCommand {
 		return errors.New("SaveSecrets() may only be called from within Command()")
 	}
-	return request.UserConfigSetJSON(c.OrgID, c.UserID, c.prov.Meta().ContentType, JSONobj)
+	m := c.prov.Meta()
+	return request.UserConfigSetJSON(c.OrgID, c.UserID, m.ConfigHandle(), JSONobj)
 }
 
 // GetSecrets for the current context user/org.
@@ -218,7 +219,8 @@ func (c *Context) SaveSecrets(JSONobj string) error {
 // An empty JSONpath returns the whole JSON object, as JSON.
 // Errors return the empty string.
 func (c *Context) GetSecrets(JSONpath string) string {
-	return request.UserConfigGetJSON(c.OrgID, c.UserID, c.prov.Meta().ContentType, JSONpath)
+	m := c.prov.Meta()
+	return request.UserConfigGetJSON(c.OrgID, c.UserID, m.ConfigHandle(), JSONpath)
 }
 
 // sort sections in order that that should be presented.
