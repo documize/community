@@ -21,7 +21,7 @@ const {
 export default Ember.Service.extend({
 	ajax: service(),
 
-	url: `${config.apiHost}/${config.apiNamespace}`,
+	endpoint: `${config.apiHost}/${config.apiNamespace}`,
 	orgId: '',
 	title: '',
 	version: '',
@@ -44,13 +44,13 @@ export default Ember.Service.extend({
 				title: htmlSafe("Documize Setup"),
 				allowAnonymousAccess: false
 			});
+
 			return resolve();
 		}
 
-		return this.get('ajax').request('public/meta')
-			.then((response) => {
-				this.setProperties(response);
-				return response;
-			});
+		return this.get('ajax').request('public/meta').then((response) => {
+			this.setProperties(response);
+			return response;
+		});
 	}
 });

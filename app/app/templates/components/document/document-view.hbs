@@ -15,7 +15,7 @@
 				{{#each attachments key="id" as |a index|}}
 					<li class="item">
 						<img class="icon" src="assets/img/attachments/{{document/file-icon a.extension}}" />
-						<a href="{{ appMeta.apiUrl }}api/public/attachments/{{ appMeta.orgId }}/{{ a.job }}/{{ a.fileId }}">
+						<a href="{{ appMeta.endpoint }}/public/attachments/{{ appMeta.orgId }}/{{ a.job }}/{{ a.fileId }}">
 							<span class="file">{{ a.filename }}</span>
 						</a>
 						{{#if isEditor}}
