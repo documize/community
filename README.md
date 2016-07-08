@@ -17,4 +17,11 @@ Documentation:
 * [Install for development guide](https://developers.documize.com/s/VzO9ZqMOCgABGyfW/installation/d/V16LOMucxwABhZF1/install-documize-for-development-guide)
 * [Configuration guide](https://developers.documize.com/s/VzO9ZqMOCgABGyfW/installation/d/VzSL8cVZ4QAB2B4Y/configure-documize-guide)
 
+Tech stack:
+* EmberJS v2.5.1
+* Go v1.6.2
+* MySQL v5.7.10+
+
+Screenshot:
+
 ![Alt text](screenshot.png "Documize")
