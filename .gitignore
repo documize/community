@@ -1,0 +1,64 @@
+# Compiled Object files, Static and Dynamic libs (Shared Objects)
+*.o
+*.a
+*.so
+
+# Folders
+_obj
+_test
+_uploads
+_diffs
+_convert
+.srclib-cache
+.DS_Store
+.idea
+.vscode
+
+# Documize build artifacts
+bin/*
+dist/*
+/documize/web/bindata/*
+app/dist/*
+app/dist-prod/*
+
+# Architecture specific extensions/prefixes
+*.[568vq]
+[568vq].out
+
+# Go specific
+*.cgo1.go
+*.cgo2.c
+_cgo_defun.c
+_cgo_gotypes.go
+_cgo_export.*
+_testmain.go
+*.exe
+*.test
+/plugin-libreoffice/plugin-libreoffice
+/plugin-libreoffice/plugin-libreoffice-osx
+
+# Ember specific
+/app/dist
+/app/dist-prod
+/app/tmp
+/app/bower_components
+/app/node_modules
+/app/.sass-cache
+/app/connect.lock
+/app/coverage/*
+/app/libpeerconnection.log
+/app/npm-debug.log
+/app/testem.log
+
+# Misc.
+documize/web/bindata_assetfs.go
+build
+plugin-msword/plugin-msword
+plugin-msword/plugin-msword-osx
+npm-debug.log
+debug
+*.pem
+*.crt
+Dockerfile
+container.sh
+make.sh

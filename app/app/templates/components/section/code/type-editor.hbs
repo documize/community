@@ -1,0 +1,11 @@
+{{#section/base-editor document=document folder=folder page=page tip="Concise name that describes code snippet" isDirty=(action 'isDirty') onCancel=(action 'onCancel') onAction=(action 'onAction')}}
+	<div id="set-syntax-zone" class="margin-bottom-20 inline-block" data-tooltip="Select code syntax" data-tooltip-position="top center">
+		{{ui-select id="set-syntax-dropdown"
+			content=syntaxOptions
+			action=(action 'onSyntaxChange')
+			optionValuePath="mode"
+			optionLabelPath="name"
+			selection=codeSyntax}}
+	</div>
+	{{focus-textarea value=pageBody id="code-editor" class="mousetrap"}}
+{{/section/base-editor}}

@@ -1,0 +1,54 @@
+{{#section/base-editor document=document folder=folder page=page busy=waiting tip="Gemini enterprise issue and ticketing software (https://www.countersoft.com)" isDirty=(action 'isDirty') onCancel=(action 'onCancel') onAction=(action 'onAction')}}
+
+	<div class="pull-left" style="width: 45%;">
+	<div class="input-form">
+		<form>
+			<div class="heading">
+				<div class="title">Credentials</div>
+				<div class="tip">URL to the Gemini instance</div>
+			</div>
+			<div class="input-control">
+				<label>Gemini URL</label>
+				<div class="tip">e.g. http://helpdesk.countersoft.com</div>
+				{{focus-input id="gemini-url" type="text" value=config.url readonly=isReadonly}}
+			</div>
+			<div class="input-control">
+				<label>Username</label>
+				<div class="tip">Gemini username</div>
+				{{input id="gemini-username" type="text" value=config.username readonly=isReadonly}}
+			</div>
+			<div class="input-control">
+				<label>API Key</label>
+				<div class="tip">Gemini user API key (from user profile)</div>
+				{{input id="gemini-apikey" type="password" value=config.APIKey readonly=isReadonly}}
+			</div>
+			<div class="regular-button button-blue" {{ action 'auth' }}>Authenticate</div>
+		</form>
+	</div>
+	</div>
+
+	<div class="pull-left margin-left-40" style="width: 45%;">
+	{{#if authenticated}}
+		<div class="input-form">
+			<form>
+				<div class="heading">
+					<div class="title">Workspace</div>
+					<div class="tip">Select Gemini workspace for source of items to be displayed</div>
+				</div>
+				<ul class="section-gemini-workspaces">
+					{{#each workspaces as |card|}}
+						<li class="section-gemini-workspace" data-tooltip="{{card.Title}}" data-tooltip-position="bottom center" id="gemini-workspace-{{card.Id}}">
+							<div class="section-gemini-card" style="background-color:{{card.Color}};" {{action 'onWorkspaceChange' card.Id}}>{{card.Key}}</div>
+							{{#if card.selected}}
+								<div class="section-gemini-selected-card">&#10003;</div>
+							{{/if}}
+						</li>
+					{{/each}}
+				</ul>
+				<div class="clearfix" />
+			</form>
+		</div>
+	{{/if}}
+	</div>
+
+{{/section/base-editor}}

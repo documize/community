@@ -1,0 +1,24 @@
+<div class="search-results">
+    <h2 class="heading">{{resultPhrase}}</h2>
+    <ul class="list">
+        {{#each documents key="doc.id" as |result index|}}
+            <li class="item">
+                <a class="link" href="s/{{result.doc.folderId}}/{{result.doc.folderSlug}}/d/{{ result.doc.documentId }}/{{result.doc.documentSlug}}?page={{ result.doc.id }}">
+                    <div class="title">{{ result.doc.documentTitle }}</div><div class="folder">{{ result.doc.folderName }}</div>
+					<div class="excerpt">{{ result.doc.documentExcerpt }}</div>
+					<div class="chips">{{search/tag-list documentTags=result.doc.documentTags}}</div>
+                </a>
+				{{#if result.hasReferences}}
+					<div class="references">
+						<span class="label">referenced &raquo;</span>
+						{{#each result.ref as |ref index|}}
+							<a class="link" href="s/{{result.doc.folderId}}/{{result.doc.folderSlug}}/d/{{ result.doc.documentId }}/{{result.doc.documentSlug}}?page={{ ref.id }}">
+								{{ref.pageTitle}}{{ref.comma}}
+							</a>
+						{{/each}}
+					</div>
+				{{/if}}
+            </li>
+        {{/each}}
+    </ul>
+</div>

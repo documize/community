@@ -1,0 +1,83 @@
+<div class="folder-settings">
+	{{#if tabGeneral}}
+	    <div class="input-form form-borderless">
+	        <form>
+				<div class="input-control">
+					<label>Name</label>
+					<div class="tip">Concise name helps everyone understand what this space contains</div>
+					{{focus-input id="folderName" type="text" value=folder.name}}
+				</div>
+				<div class="regular-button button-blue" {{ action 'rename' }}>save</div>
+	        </form>
+	    </div>
+	{{/if}}
+
+	{{#if tabShare}}
+	    <div class="input-form form-borderless">
+	        <form>
+	            <div class="input-control">
+					<label>Email</label>
+					<div class="tip">Comma separate multiple email addresses</div>
+	                {{focus-input id="inviteEmail" type="text" value=inviteEmail}}
+	            </div>
+				<div class="input-control">
+			        <label>Message</label>
+			        <div class="tip">Explain why they are being invited</div>
+			        {{textarea id="explainInvite" value=inviteMessage rows=3}}
+			    </div>
+				<div class="regular-button button-blue" {{ action 'share' }}>Share</div>
+	        </form>
+	    </div>
+	{{/if}}
+
+	{{#if tabDelete}}
+		<div class="input-form form-borderless">
+			<form>
+				<div class="input-control">
+					<label>Move then Delete</label>
+					<div class="tip">Move existing documents to another space before you delete <strong>{{folder.name}}</strong></div>
+					{{ui-select id="delete-target" content=folders action=(action (mut moveTarget)) prompt="Select destination"}}
+				</div>
+				<div class="regular-button button-red" {{ action 'remove' }}>delete</div>
+			</form>
+		</div>
+	{{/if}}
+
+	{{#if tabPermissions}}
+		<div class="input-form form-borderless">
+	        <form>
+				<div class="input-control">
+					<label>Permissions</label>
+					<div class="tip">The message that gets sent to new invites for <strong>{{folder.name}}</strong></div>
+					{{textarea id="explainRole" value=roleMessage rows=3}}
+				</div>
+
+	            <table class="basic-table">
+	                <thead>
+	                    <tr>
+	                        <th>&nbsp;</th>
+	                        <th>Can View</th>
+	                        <th>Can Edit</th>
+	                    </tr>
+	                </thead>
+	                <tbody>
+	                    {{#each permissions key="@index" as |permission|}}
+	                        <tr>
+	                            <td>{{permission.fullname}}</td>
+	                            <td>
+	                                <input type="checkbox" id="canView-{{permission.userId}}" checked={{permission.canView}} />
+	                                <label for="canView-{{permission.userId}}">&nbsp;</label>
+	                            </td>
+	                            <td>
+	                                <input type="checkbox" id="canEdit-{{permission.userId}}" checked={{permission.canEdit}} />
+	                                <label for="canEdit-{{permission.userId}}">&nbsp;</label>
+	                            </td>
+	                        </tr>
+	                    {{/each}}
+	                </tbody>
+	            </table>
+				<div class="regular-button button-blue" {{ action 'setPermissions' }}>Apply</div>
+	        </form>
+	    </div>
+	{{/if}}
+</div>

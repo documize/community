@@ -1,0 +1,29 @@
+<div class="input-form form-borderless">
+    <form>
+        <div class="heading">
+            <div class="title">General Settings</div>
+            <div class="tip">Tell people about this Documize instance</div>
+        </div>
+        <div>
+            <div class="input-control">
+                <label>Title</label>
+                <div class="tip">Describe the title of this Documize instance</div>
+                {{focus-input id="siteTitle" type="text" value=model.title}}
+            </div>
+            <div class="input-control">
+                <label>Message</label>
+                <div class="tip">Describe the purpose of this Documize instance</div>
+                {{textarea id="siteMessage" rows="3" value=model.message}}
+            </div>
+            <div class="input-control">
+                <label>Anonymous Access</label>
+                <div class="tip">Content within "Everyone" will be made available to anonymous users</div>
+                <div class="checkbox">
+                    <input type="checkbox" id="allowAnonymousAccess" checked= {{model.allowAnonymousAccess}} />
+                    <label for="allowAnonymousAccess">Allow anyone to access this Documize instance</label>
+                </div>
+            </div>
+            <div class="regular-button button-blue" {{ action 'save' }}>save</div>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,22 @@
+<div class="page-title">
+    <span id="page-title-{{ page.id }}">{{ page.title }}</span>
+    <div id="page-toolbar-{{ page.id }}" class="pull-right page-toolbar hidden-xs hidden-sm">
+        {{#if isEditor}}
+			{{#link-to 'document.edit' folder.id folder.slug document.id document.slug page.id}}
+	            <div class="round-button-mono page-edit-button" data-tooltip="Edit" data-tooltip-position="top center">
+	                <i class="material-icons">mode_edit</i>
+	            </div>
+			{{/link-to}}
+            <div id="delete-page-button-{{page.id}}" class="round-button-mono page-delete-button" data-tooltip="Delete" data-tooltip-position="top center">
+                <i class="material-icons">delete</i>
+            </div>
+            {{#dropdown-dialog target=dropTarget position="top right" button="Delete" color="flat-red" onAction=(action 'deletePage' page.id)}}
+                <p>Are you sure you want to delete <span class="bold">{{page.title}}?</span></p>
+                <p>
+                    {{input type="checkbox" id=checkId class="margin-left-20" checked=deleteChildren}}
+                    <label for="{{checkId}}">&nbsp;Delete child pages</label>
+                </p>
+            {{/dropdown-dialog}}
+        {{/if}}
+    </div>
+</div>

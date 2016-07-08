@@ -1,0 +1,22 @@
+{
+  "name": "documize",
+  "dependencies": {
+    "ember": "v2.5.1",
+    "ember-cli-shims": "0.1.1",
+    "ember-cli-test-loader": "0.2.2",
+    "ember-qunit-notifications": "0.1.0",
+    "jquery": "*",
+    "loader.js": "^3.5.0",
+    "qunit": "~1.20.0",
+    "install": "~1.0.4",
+    "pretender": "~1.1.0",
+    "lodash": "~3.7.0",
+    "Faker": "~3.1.0"
+  },
+  "resolutions": {
+    "jquery": ">=2.1.1",
+    "ember": "v2.5.1",
+    "FakeXMLHttpRequest": "^1.4.0"
+  },
+  "version": "0.0.1"
+}

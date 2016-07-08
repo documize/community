@@ -1,0 +1,60 @@
+<div>
+    {{#if hasSelectedDocuments}}
+		<div class="square-button button-blue" id="move-documents-button" data-tooltip="Move documents" data-tooltip-position="top center">
+		    <i class="material-icons">folder</i>
+		</div>
+		<div class="button-gap"></div>
+		<div class="square-button button-red" id="delete-documents-button" data-tooltip="Delete documents" data-tooltip-position="top center">
+		    <i class="material-icons">delete</i>
+		</div>
+		{{#dropdown-dialog target="delete-documents-button" position="bottom right" button="Delete" color="flat-red" onAction=(action 'deleteDocuments')}}
+		    <p>Are you sure you want to delete selected documents?</p>
+		    <p>There is no undo!</p>
+		{{/dropdown-dialog}}
+		{{#dropdown-dialog target="move-documents-button" position="bottom right" button="Move" color="flat-blue" onAction=(action 'moveDocuments')}}
+		    <p class="heading">Select destination space</p>
+			<ul class="move-document-options">
+				{{#each movedFolderOptions as |folder|}}
+					<li class="option {{if folder.selected "selected"}}" {{action 'setMoveFolder' folder.id}}>
+						{{#if folder.selected}}
+							<i class="material-icons">radio_button_checked</i>
+						{{else}}
+							<i class="material-icons">radio_button_unchecked</i>
+						{{/if}}
+						&nbsp;{{ folder.name }}
+					</li>
+				{{/each}}
+			</ul>
+		{{/dropdown-dialog}}
+	{{else}}
+    	{{#if isFolderOwner}}
+			{{#link-to 'folders.settings' folder.id folder.slug (query-params tab="tabShare")}}
+				<div class="square-button-white" id="folder-share-button" data-tooltip="Share space" data-tooltip-position="top center">
+					<i class="material-icons">share</i>
+				</div>
+			{{/link-to}}
+			<div class="button-gap"></div>
+			{{#link-to 'folders.settings' folder.id folder.slug}}
+				<div class="square-button-white" id="folder-settings-button" data-tooltip="Space settings" data-tooltip-position="top center">
+				    <i class="material-icons">settings</i>
+				</div>
+			{{/link-to}}
+		{{/if}}
+		{{#if folderService.canEditCurrentFolder}}
+			<div class="button-gap"></div>
+			<div class="regular-button button-green" id="start-document-button" data-tooltip="Add new content" data-tooltip-position="top center">
+			    <i class="material-icons">add</i>
+				<div class="name">Content</div>
+			</div>
+		{{/if}}
+		{{#if folderService.canEditCurrentFolder}}
+			{{folder/start-document
+				savedTemplates=savedTemplates
+				folder=folder
+				onEditTemplate=(action 'onEditTemplate')
+				onDocumentTemplate=(action 'onDocumentTemplate')
+				onDocumentImporting=(action 'onDocumentImporting')
+				onDocumentImported=(action 'onDocumentImported')}}
+		{{/if}}
+    {{/if}}
+</div>

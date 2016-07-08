@@ -1,0 +1,79 @@
+// Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
+//
+// This software (Documize Community Edition) is licensed under 
+// GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
+//
+// You can operate outside the AGPL restrictions by purchasing
+// Documize Enterprise Edition and obtaining a commercial license
+// by contacting <sales@documize.com>. 
+//
+// https://documize.com
+
+import Ember from 'ember';
+import NotifierMixin from '../../../mixins/notifier';
+
+export default Ember.Controller.extend(NotifierMixin, {
+	userService: Ember.inject.service('user'),
+	newUser: { firstname: "", lastname: "", email: "", active: true },
+
+	actions: {
+		add: function () {
+			if (is.empty(this.newUser.firstname)) {
+				$("#newUserFirstname").addClass("error").focus();
+				return;
+			}
+			if (is.empty(this.newUser.lastname)) {
+				$("#newUserLastname").addClass("error").focus();
+				return;
+			}
+			if (is.empty(this.newUser.email) || is.not.email(this.newUser.email)) {
+				$("#newUserEmail").addClass("error").focus();
+				return;
+			}
+
+			$("#newUserFirstname").removeClass("error");
+			$("#newUserLastname").removeClass("error");
+			$("#newUserEmail").removeClass("error");
+
+			this.get('userService')
+				.add(this.get('newUser'))
+				.then((user) => {
+					this.showNotification('Added');
+					this.set('newUser', { firstname: "", lastname: "", email: "", active: true });
+					$("#newUserFirstname").focus();
+					this.get('model').pushObject(user);
+				})
+				.catch(function (error) {
+					let msg = error.status === 409 ? 'Unable to add duplicate user' : 'Unable to add user';
+					this.showNotification(msg);
+				});
+		},
+
+		onDelete(user) {
+			let self = this;
+			this.get('userService').remove(user.get('id')).then(function () {
+				self.showNotification('Deleted');
+
+				self.get('userService').getAll().then(function (users) {
+					self.set('model', users);
+				});
+			});
+		},
+
+		onSave(user) {
+			let self = this;
+			this.get('userService').save(user).then(function () {
+				self.showNotification('Saved');
+
+				self.get('userService').getAll().then(function (users) {
+					self.set('model', users);
+				});
+			});
+		},
+
+		onPassword(user, password) {
+			this.get('userService').updatePassword(user.get('id'), password);
+			this.showNotification('Password changed');
+		}
+	}
+});

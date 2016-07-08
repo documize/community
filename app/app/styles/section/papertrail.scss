@@ -1,0 +1,16 @@
+.section-papertrail-table {
+    font-size: 12px;
+    width: 90% important;
+
+	th {
+		font-size: 1rem;
+	}
+
+	td:nth-child(2) {
+		font-variant: small-caps;
+	}
+
+    a:hover {
+        text-decoration: underline;
+    }
+}

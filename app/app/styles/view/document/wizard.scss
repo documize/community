@@ -1,0 +1,74 @@
+.section-wizard {
+	margin: 30px;
+
+	> .canvas {
+		padding: 0;
+		margin: 30px 0;
+
+		> .list {
+			margin: 0;
+			padding: 0;
+
+			> .item {
+				list-style: none;
+				float: left;
+				cursor: pointer;
+				width: 400px;
+				height: 80px;
+				background-color: $color-white;
+				border: 1px solid $color-border;
+				border-radius: 3px;
+				margin: 0 30px 30px 0;
+
+				&:hover {
+			        background-color: $color-card-active;
+			        border: 1px solid $color-border;
+			        transition: 0.2s all ease;
+			    }
+
+				.icon {
+					text-align: center;
+					display: inline-block;
+
+					> .img {
+						text-align: center;
+						margin: 17px 10px 0 20px;
+						display: inline-block;
+						height: 45px;
+						width: 45px;
+					}
+				}
+
+				> .details {
+					vertical-align: top;
+					display: inline-block;
+
+					> .title {
+						font-size: 1rem;
+						font-weight: bold;
+						color: $color-off-black;
+						margin-top: 18px;
+						letter-spacing: 0.5px;
+
+						.preview {
+							font-size: 0.7rem;
+							color: $color-goldy;
+							display: inline-block;
+							margin-left: 10px;
+						}
+					}
+
+					> .desc {
+						color: $color-gray;
+						font-size: 0.8rem;
+						margin-top: 5px;
+						max-width: 300px;
+						overflow: hidden;
+						white-space: nowrap;
+						text-overflow: ellipsis;
+					}
+				}
+			}
+		}
+	}
+}

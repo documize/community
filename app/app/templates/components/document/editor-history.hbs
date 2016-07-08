@@ -1,0 +1,43 @@
+<div class="editor-button-zone z-depth-1">
+    <div class="left">
+        <h2>Revision History</h2>
+    </div>
+    <div class="right">
+        <button class="" {{ action 'cancelAction' }}>Cancel</button>
+        <button class="" {{ action 'primaryAction' }}>Revert</button>
+    </div>
+    <div class="clearfix" />
+</div>
+
+<div class="editor-editing-zone">
+    <div class="page-history">
+        <ul>
+            {{#each revisions key="id" as |revision index|}}
+                <li {{action 'produceReport' revision.id}} class="{{if revision.selected 'active'}}">
+                    <div class="avatar-large" title="{{revision.firstname}} {{revision.lastname}}">{{revision.initials}}</div>
+                    <div class="who">
+                        {{revision.firstname}}&nbsp;{{revision.lastname}}
+                    </div>
+                    <div class="time-ago" title="{{revision.created}}">
+                        {{time-ago revision.created}}
+                    </div>
+                </li>
+            {{/each}}
+        </ul>
+        <div class="clearfix"></div>
+        <div class="diff-report">
+            <div class="legend">
+                <div class="add-key">Added</div>
+                <div class="removed-key">Removed</div>
+                <div class="changed-key">Formatted</div>
+            </div>
+            {{#if busy}}
+                <div class="processing">
+                    <img src="assets/img/processing.gif" />
+                    <div class="caption">Preparing</div>
+                </div>
+            {{/if}}
+            {{diffReport}}
+        </div>
+    </div>
+</div>

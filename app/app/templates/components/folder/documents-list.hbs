@@ -1,0 +1,39 @@
+<ul class="documents-list">
+	{{#each documents key="id" as |document|}}
+		<li class="document {{if document.selected "selected-card"}}">
+			{{#link-to 'document.index' folder.id folder.slug document.id document.slug class="link"}}
+				<div class="title">{{ document.name }}</div>
+				<div class="snippet">{{ document.excerpt }}</div>
+				<div class="chips">{{folder/document-tags documentTags=document.tags}}</div>
+			{{/link-to}}
+			<div class="checkbox" {{action 'selectDocument' document.id}}>
+				{{#if session.authenticated}}
+					{{#if document.selected}}
+						<i class="material-icons">check_box</i>
+					{{else}}
+						<i class="material-icons">check_box_outline_blank</i>
+					{{/if}}
+				{{/if}}
+			</div>
+		</li>
+	{{/each}}
+</ul>
+
+{{#if emptyState}}
+	<div class="no-documents">
+		<div class="box">
+			<div class="regular-button button-transparent">
+				<i class="material-icons">add</i>
+				<div class="name">space</div>
+			</div>
+			<div class="message">Create a new space for<br/>all your content</div>
+		</div>
+		<div class="box">
+			<div class="regular-button button-green">
+				<i class="material-icons">add</i>
+				<div class="name">content</div>
+			</div>
+			<div class="message">Start with a content template or <br/>import .doc .docx, .txt .md files</div>
+		</div>
+	</div>
+{{/if}}

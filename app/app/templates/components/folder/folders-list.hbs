@@ -1,0 +1,70 @@
+<div class="sidebar-menu">
+	<div class="folders-list">
+
+		{{#if session.isEditor}}
+			<div class="add-space-action hidden-xs hidden-sm">
+					<div class="regular-button button-white" id="add-folder-button" data-tooltip="New space" data-tooltip-position="top center">
+						<i class="material-icons">add</i>
+						<div class="name">space</div>
+					</div>
+					{{#dropdown-dialog target="add-folder-button" position="bottom left" button="Add" color="flat-green" onAction=(action 'addFolder') focusOn="new-folder-name"}}
+						<div>
+							<div class="input-control">
+								<label>New space</label>
+								<div class="tip">A repository for related documentation</div>
+								{{input type='text' id="new-folder-name" class="mousetrap" value=newFolder}}
+							</div>
+						</div>
+					{{/dropdown-dialog}}
+			</div>
+		{{/if}}
+
+		<div class="section">
+			<div class="heading">EVERYONE</div>
+			{{#unless hasPublicFolders}}
+				<div class="message margin-left-15">No global spaces</div>
+			{{/unless}}
+			<ul class="list">
+				{{#each publicFolders as |folder|}}
+					{{#link-to 'folders.folder' folder.id folder.slug class="link" activeClass='selected' }}
+						<li class="item">{{ folder.name }}</li>
+					{{/link-to}}
+				{{/each}}
+			</ul>
+		</div>
+
+		{{#if session.authenticated}}
+			<div class="section">
+				<div class="heading">TEAM</div>
+				{{#unless hasProtectedFolders}}
+					<div class="message margin-left-15">No protected spaces</div>
+				{{/unless}}
+				<ul class="list">
+					{{#each protectedFolders as |folder|}}
+						{{#link-to 'folders.folder' folder.id folder.slug class="link" activeClass='selected' }}
+							<li class="item">{{ folder.name }}</li>
+						{{/link-to}}
+					{{/each}}
+				</ul>
+			</div>
+
+			<div class="section">
+				<div class="heading">PERSONAL</div>
+				{{#unless hasPrivateFolders}}
+					<div class="message margin-left-15">No private spaces</div>
+				{{/unless}}
+				<ul class="list">
+					{{#each privateFolders as |folder|}}
+						{{#link-to 'folders.folder' folder.id folder.slug class="link" activeClass='selected' }}
+							<li class="item">{{ folder.name }}</li>
+						{{/link-to}}
+					{{/each}}
+				</ul>
+			</div>
+		{{/if}}
+	</div>
+
+	<div class="copyright hidden-xs hidden-sm">
+		<a href="https://documize.com?ref=app-footer" target="_blank">Copyright&nbsp;&copy;&nbsp;2016 Documize Inc.</a>
+	</div>
+</div>

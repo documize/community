@@ -1,0 +1,174 @@
+
+.folders-list {
+	> .add-space-action {
+		text-align: center;
+		margin-bottom: 30px;
+	}
+
+	> .section {
+		margin: 0 0 20px 0;
+
+		> .heading {
+			font-size: 0.9rem;
+			font-weight: bold;
+			color: $color-gray;
+			padding-bottom: 5px;
+		}
+
+		> .message {
+			font-size: 0.8rem;
+			color: $color-gray;
+			margin-top: 10px;
+		}
+
+		> .list {
+			padding: 0;
+			margin: 5px 0 0 15px;
+
+			> .link {
+				font-size: 1rem;
+				color: $color-off-black;
+				text-decoration: none;
+
+				&:hover {
+					color: $color-link;
+				}
+
+				> .item {
+					list-style-type: none;
+					list-style: none;
+					margin: 0 0 5px 0;
+					padding: 0;
+				}
+			}
+
+			> .selected {
+				color: $color-link;
+				font-weight: bold;
+			}
+		}
+	}
+}
+
+.documents-list {
+	> .document {
+		margin: 0;
+		padding: 20px 20px 25px 20px;
+		width: 100%;
+		position: relative;
+		transition: .3s;
+
+		&:hover {
+			> .link {
+				> .title {
+					color: $color-link;
+				}
+
+				> .snippet {
+					color: $color-gray;
+				}
+			}
+
+			> .checkbox {
+				display: block;
+			}
+		}
+
+		> .checkbox {
+			position: absolute;
+			display: none;
+			top: 8px;
+			right: 15px;
+			cursor: pointer;
+
+			> .material-icons {
+				width: 10px;
+			    margin: 0;
+			    padding: 0;
+				color: $color-checkbox;
+			}
+		}
+
+		.link {
+			text-decoration: none;
+			color: $color-off-black;
+			cursor: pointer;
+
+			&:hover {
+				text-decoration: none;
+				color: $color-off-black;
+			}
+
+			> .title {
+				font-size: 18px;
+				margin-bottom: 10px;
+			}
+
+			> .snippet {
+				color: $color-gray;
+				font-size: 14px;
+				line-height: 24px;
+			}
+		}
+	}
+
+	> .selected-card {
+		background-color: $color-card-active !important;
+
+		> .checkbox {
+			display: block;
+		}
+	}
+}
+
+.move-document-options, .start-document-options {
+	height: 150px;
+	overflow-y: auto;
+	margin: 0;
+	padding: 0;
+
+	> .option {
+		vertical-align: bottom;
+		cursor: pointer;
+		font-size: 0.9rem;
+		overflow: hidden;
+		white-space: nowrap;
+
+		> .material-icons {
+			font-size: 0.9rem;
+			vertical-align: top;
+		}
+	}
+
+	> .selected {
+		color: $color-link;
+	}
+}
+
+.upload-container {
+	text-align: center;
+	margin: 2rem 0;
+}
+
+.no-documents {
+	margin-top: 50px;
+	text-align: center;
+	opacity: 0.4;
+
+	> .box {
+		padding: 35px;
+		width: 300px;
+		display: inline-block;
+		margin: 0 20px;
+
+		> .message {
+			font-size: 14px;
+			color: $color-off-black;
+			margin-top: 20px;
+		}
+
+		> .regular-button {
+			cursor: default !important;
+		}
+	}
+}

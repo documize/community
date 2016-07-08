@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,300' rel='stylesheet' type='text/css'>
+
+    <title>Documize - Issue using the given MySQL database</title>
+
+    <style>
+        html {
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #1b75bb;
+            font-size: 16px;
+            color: #ffffff;
+            padding-top: 50px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .logo {
+            margin: 0 15px;
+        }
+        
+        .content {
+            margin: 0 15px;
+        }
+        
+        .content > div {
+            margin: 50px 0;
+        }
+        
+        .content h1 {
+            font-size: 24px;
+            font-weight: 400;
+            text-transform: uppercase;
+            margin: 0 0 30px;
+        }
+        
+        .content p {
+            font-size: 18px;
+            line-height: 28px;
+            margin: 30px 0 0 0;
+        }
+        
+        .content .image {
+            text-align: center;
+        }
+        
+        .clearfix {
+            overflow: auto;
+            zoom: 1;
+        }
+        
+        .btn-main {
+            border: 1px solid #ffffff;
+            padding: 12px 20px;
+            border-radius: 5px;
+            margin-left: 25px;
+        }
+        
+        @media (min-width: 768px) {
+            body {
+                margin-top: 100px;
+            }
+            .container {
+                text-align: left;
+            }
+            .content {
+                margin: 50px 15px 0;
+            }
+            .content > div {
+                width: 50%;
+                float: left;
+                margin: 0;
+            }
+            .content h1 {
+                font-size: 28px;
+                line-height: 72px;
+            }
+            .content .image {
+                float: right;
+            }
+            .content .text {
+                max-width: 430px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrapper">
+        <div class="container">
+            <div class="logo">
+                <img src="/assets/img/setup/logo.png" alt="Documize">
+            </div>
+            <div class="content clearfix">
+                <div class="image">
+                    <img style="-webkit-user-select: none;" src="/assets/img/setup/error.png" width="184" height="159" alt="Database error">
+                </div>
+                <div class="text">
+                    <h1>Database Error</h1>
+                    <p>There seems to be a problem with the Documize database: <strong>{{.DBname}}</strong></p>
+                    <p><em>{{.Issue}}</em></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,14 @@
+<div id="zone-header" class="zone-header">
+	<div class="info pull-left width-50">
+		<div class="title">
+			&nbsp;{{title}}
+		</div>
+		<div class="{{if hasMessage "message"}}">
+			{{message}}
+		</div>
+	</div>
+	<div class="actions pull-right hidden-xs hidden-sm">
+		{{yield}}
+	</div>
+	<div class="clearfix"></div>
+</div>

@@ -1,0 +1,139 @@
+@mixin box-shadow($spec)
+{
+    -webkit-box-shadow: $spec;
+	-moz-box-shadow: $spec;
+    box-shadow: $spec;
+}
+
+@mixin border-radius($radius)
+{
+	-webkit-border-radius: $radius;
+	-moz-border-radius: $radius;
+	border-radius: $radius;
+}
+
+@mixin border-radius-top-right($radius)
+{
+	-webkit-border-top-right-radius: $radius;
+	-moz-border-radius-topright: $radius;
+	border-top-right-radius: $radius;
+}
+
+@mixin border-radius-top-left($radius)
+{
+	-webkit-border-top-left-radius: $radius;
+	-moz-border-radius-topleft: $radius;
+	border-top-left-radius: $radius;
+}
+
+@mixin border-radius-none()
+{
+	-webkit-border-radius: none;
+	-moz-border-radius: none;
+	border-radius: none;
+	-webkit-border-top-right-radius: none;
+	-moz-border-radius-topright: none;
+	border-top-right-radius: none;
+	-webkit-border-top-left-radius: none;
+	-moz-border-radius-topleft: none;
+	border-top-left-radius: none;
+}
+
+@mixin border($width)
+{
+	border: $width solid $color-border !important;
+}
+@mixin border-left($width)
+{
+	border-left: $width solid $color-border;
+}
+@mixin border-right($width)
+{
+	border-right: $width solid $color-border;
+}
+@mixin border-top($width)
+{
+	border-top: $width solid $color-border;
+}
+@mixin border-bottom($width)
+{
+	border-bottom: $width solid $color-border;
+}
+
+@mixin ease-in()
+{
+	-webkit-transition: all 0.30s ease-in-out;
+	-moz-transition: all 0.30s ease-in-out;
+	-ms-transition: all 0.30s ease-in-out;
+	-o-transition: all 0.30s ease-in-out;
+	transition: all 0.30s ease-in-out;
+}
+
+@mixin arrow-down($color, $size)
+{
+	width: 0;
+	height: 0;
+	border-left: $size solid transparent;
+	border-right: $size solid transparent;
+	border-top: $size solid $color;
+}
+
+.dotted
+{
+    border-bottom: 1px dotted $color-gray;
+}
+
+// Mixins from http://zerosixthree.se/8-sass-mixins-you-must-have-in-your-toolbox/
+@function calculateRem($size) {
+    $remSize: $size / 16px;
+    @return $remSize * 1rem;
+}
+
+@mixin font-size($size) {
+    font-size: $size;
+    font-size: calculateRem($size);
+}
+
+@mixin keyframes($animation-name) {
+    @-webkit-keyframes #{$animation-name} {
+        @content;
+    }
+
+    @-moz-keyframes #{$animation-name} {
+        @content;
+    }
+
+    @-ms-keyframes #{$animation-name} {
+        @content;
+    }
+
+    @-o-keyframes #{$animation-name} {
+        @content;
+    }
+
+    @keyframes #{$animation-name} {
+        @content;
+    }
+}
+
+@mixin animation($str) {
+    -webkit-animation: #{$str};
+    -moz-animation   : #{$str};
+    -ms-animation    : #{$str};
+    -o-animation     : #{$str};
+    animation        : #{$str};
+}
+
+@mixin transition($args...) {
+    -webkit-transition: $args;
+    -moz-transition   : $args;
+    -ms-transition    : $args;
+    -o-transition     : $args;
+    transition        : $args;
+}
+
+@mixin opacity($opacity) {
+      opacity: $opacity;
+      $opacity-ie: $opacity * 100;
+      filter: alpha(opacity=$opacity-ie); //IE8
+}

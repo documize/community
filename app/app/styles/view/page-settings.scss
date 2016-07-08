@@ -1,0 +1,35 @@
+.global-folder-settings {
+
+}
+
+.user-list {
+	margin: 30px 0;
+
+	> .heading {
+		font-size: 1.2rem;
+		color: $color-off-black;
+		font-weight: bold;
+		margin: 0 0 20px 0;
+	}
+
+	> .basic-table {
+		background-color: $color-white;
+		font-size: 0.9rem;
+	}
+
+	.inactive
+	{
+		@extend .color-red;
+		font-weight: normal;
+		text-decoration: line-through;
+	}
+
+	.checkbox {
+		color: $color-checkbox;
+		cursor: pointer;
+	}
+}
+
+.edit-user-dialog, .delete-user-dialog {
+	display: none;
+}

@@ -1,0 +1,45 @@
+{{#layout/zone-container}}
+
+	{{layout/zone-navigation}}
+
+	{{#layout/zone-header title=session.user.fullname message="Your Documize profile"}}
+		{{layout/button-home}}
+	{{/layout/zone-header}}
+
+	{{#layout/zone-sidebar}}
+		<div class="sidebar-menu">
+			<div class="avatar-large">{{session.user.initials}}</div>
+		</div>
+	{{/layout/zone-sidebar}}
+
+	{{#layout/zone-content}}
+		<div class="input-form form-borderless">
+			<form>
+				<div class="input-control">
+					<label>Firstname</label>
+					{{focus-input id="firstname" type="text" value=model.firstname}}
+				</div>
+				<div class="input-control">
+					<label>Lastname</label>
+					{{input id="lastname" type="text" value=model.lastname}}
+				</div>
+				<div class="input-control">
+					<label>Email</label>
+					{{input id="email" type="text" value=model.email}}
+				</div>
+				<div class="input-control">
+					<label>Password</label>
+					<div class="tip">Optional change your password</div>
+					{{input id="password" type="password" value=password.password}}
+				</div>
+				<div class="input-control">
+					<label>Confirm Password</label>
+					<div class="tip">Confirm your new password</div>
+					{{input id="confirmPassword" type="password" value=password.confirmation}}
+				</div>
+				<div class="regular-button button-blue" {{ action 'save' }}>save</div>
+			</form>
+		</div>
+	{{/layout/zone-content}}
+
+{{/layout/zone-container}}
