@@ -18,7 +18,9 @@ So we set about building Documize — it allows people to point-click-integr
 
 Our mission is simple: to help businesses to snapshot, track and integrate their cloud-based data to compose a new kind of document.
 
-Don’t write documents. Compose them.
+**Don’t write documents. Compose them.**
+
+@HarveyKandola, Founder, Documize Inc.
 
 ## Tech stack
 
