@@ -1,6 +1,8 @@
 # Documize Community Edition
 
-Latest release: v0.14.0
+Documentation that integrates and snapshots data from the tools you use.
+
+v0.14.0
 
 ## Why?
 
