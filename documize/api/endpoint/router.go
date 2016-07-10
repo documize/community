@@ -29,7 +29,7 @@ import (
 const (
 	// AppVersion does what it says
 	// Note: versioning scheme is not http://semver.org
-	AppVersion = "0.14.0"
+	AppVersion = "0.14.1"
 )
 
 var port, certFile, keyFile, forcePort2SSL string

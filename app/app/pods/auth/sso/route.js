@@ -15,7 +15,7 @@ export default Ember.Route.extend({
 	session: Ember.inject.service(),
 
 	model({ token }) {
-		this.get("session").authenticate('authenticator:documize', token)
+		this.get("session").authenticate('authenticator:documize', decodeURIComponent(token))
 			.then(() => {
 				this.transitionTo('folders.folder');
 			}, () => {

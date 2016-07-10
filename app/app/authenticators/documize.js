@@ -35,11 +35,9 @@ export default Base.extend({
 
 	authenticate(credentials) {
 		let domain = netUtil.getSubdomain();
-
 		let encoded;
 
 		if (typeof credentials === 'object') {
-
 			let { password, email } = credentials;
 
 			if (!isPresent(password) || !isPresent(email)) {
@@ -51,7 +49,6 @@ export default Base.extend({
 			encoded = credentials;
 		} else {
 			return Ember.RSVP.reject("invalid");
-
 		}
 
 		var headers = {
