@@ -50,7 +50,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
 			let dzone = new Dropzone("#attachment-button > i", {
 				headers: {
-					'Authorization': 'Bearer ' + self.get('localStorage').getSessionItem('token')
+					'Authorization': 'Bearer ' + self.get('session.session.content.authenticated.token')
 				},
 				url: uploadUrl,
 				method: "post",
