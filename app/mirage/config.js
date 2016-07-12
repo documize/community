@@ -13,48 +13,6 @@ export default function () {
 		return schema.db.meta[0];
 	});
 
-	this.get('/public/validate', function (schema, request) {
-		let serverToken = request.queryParams.token;
-		let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkb21haW4iOiIiLCJleHAiOjE0NjQwMjM2NjcsImlzcyI6IkRvY3VtaXplIiwib3JnIjoiVnpNdXlFd18zV3FpYWZjRCIsInN1YiI6IndlYmFwcCIsInVzZXIiOiJWek11eUV3XzNXcWlhZmNFIn0.NXZ6bo8mtvdZF_b9HavbidVUJqhmBA1zr0fSAPvbah0";
-
-		if (token = serverToken) {
-			return {
-				"id": "VzMuyEw_3WqiafcE",
-				"created": "2016-05-11T15:08:24Z",
-				"revised": "2016-05-11T15:08:24Z",
-				"firstname": "Lennex",
-				"lastname": "Zinyando",
-				"email": "brizdigital@gmail.com",
-				"initials": "LZ",
-				"active": true,
-				"editor": true,
-				"admin": true,
-				"accounts": [{
-					"id": "VzMuyEw_3WqiafcF",
-					"created": "2016-05-11T15:08:24Z",
-					"revised": "2016-05-11T15:08:24Z",
-					"admin": true,
-					"editor": true,
-					"userId": "VzMuyEw_3WqiafcE",
-					"orgId": "VzMuyEw_3WqiafcD",
-					"company": "EmberSherpa",
-					"title": "EmberSherpa",
-					"message": "This Documize instance contains all our team documentation",
-					"domain": ""
-				}]
-			};
-		}
-	});
-
-	this.get('/users/0/permissions', function () {
-		return [{
-			"folderId": "VzMygEw_3WrtFzto",
-			"userId": "",
-			"canView": true,
-			"canEdit": false
-		}];
-	});
-
 	this.get('/templates', function () {
 		return [];
 	});
@@ -90,7 +48,9 @@ export default function () {
 				"tags": "",
 				"template": false
 			}];
-		} else if (folder_id = "VzMygEw_3WrtFzto") {
+		}
+
+		if (folder_id = "VzMygEw_3WrtFzto") {
 			return {
 				"id": "VzMygEw_3WrtFzto",
 				"created": "2016-05-11T13:24:17Z",
@@ -100,7 +60,9 @@ export default function () {
 				"userId": "VzMuyEw_3WqiafcE",
 				"folderType": 1
 			};
-		} else if (folder_id = 'V0Vy5Uw_3QeDAMW9') {
+		}
+
+		if (folder_id = 'V0Vy5Uw_3QeDAMW9') {
 			return null;
 		}
 	});
@@ -110,8 +72,9 @@ export default function () {
 	});
 
 	this.post('/folders', function (schema, request) {
+		debugger;
 		var name = JSON.parse(request.requestBody).name;
-		let newFolder = {
+		let folder = {
 			"id": "V0Vy5Uw_3QeDAMW9",
 			"created": "2016-05-25T09:39:49Z",
 			"revised": "2016-05-25T09:39:49Z",
@@ -121,43 +84,19 @@ export default function () {
 			"folderType": 2
 		};
 
-		let folder = schema.db.folders.insert(newFolder);
-		return folder;
+		return schema.db.folders.insert(folder);
 	});
 
 	this.post('/public/authenticate', (schema, request) => {
 		let authorization = request.requestHeaders.Authorization;
 		let expectedAuthorization = "Basic OmJyaXpkaWdpdGFsQGdtYWlsLmNvbTp6aW55YW5kbzEyMw==";
+		let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkb21haW4iOiIiLCJleHAiOjE0NjQwMjM2NjcsImlzcyI6IkRvY3VtaXplIiwib3JnIjoiVnpNdXlFd18zV3FpYWZjRCIsInN1YiI6IndlYmFwcCIsInVzZXIiOiJWek11eUV3XzNXcWlhZmNFIn0.NXZ6bo8mtvdZF_b9HavbidVUJqhmBA1zr0fSAPvbah0";
+		let user = schema.db.users.where({ id: "VzMuyEw_3WqiafcE" });
 
 		if (expectedAuthorization === authorization) {
-			console.log("SSO login success");
 			return {
-				"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkb21haW4iOiIiLCJleHAiOjE0NjQwMjM2NjcsImlzcyI6IkRvY3VtaXplIiwib3JnIjoiVnpNdXlFd18zV3FpYWZjRCIsInN1YiI6IndlYmFwcCIsInVzZXIiOiJWek11eUV3XzNXcWlhZmNFIn0.NXZ6bo8mtvdZF_b9HavbidVUJqhmBA1zr0fSAPvbah0",
-				"user": {
-					"id": "VzMuyEw_3WqiafcE",
-					"created": "2016-05-11T15:08:24Z",
-					"revised": "2016-05-11T15:08:24Z",
-					"firstname": "Lennex",
-					"lastname": "Zinyando",
-					"email": "brizdigital@gmail.com",
-					"initials": "LZ",
-					"active": true,
-					"editor": true,
-					"admin": true,
-					"accounts": [{
-						"id": "VzMuyEw_3WqiafcF",
-						"created": "2016-05-11T15:08:24Z",
-						"revised": "2016-05-11T15:08:24Z",
-						"admin": true,
-						"editor": true,
-						"userId": "VzMuyEw_3WqiafcE",
-						"orgId": "VzMuyEw_3WqiafcD",
-						"company": "EmberSherpa",
-						"title": "EmberSherpa",
-						"message": "This Documize instance contains all our team documentation",
-						"domain": ""
-					}]
-				}
+				"token": `${token}`,
+				"user": user[0]
 			};
 		}
 
@@ -166,78 +105,27 @@ export default function () {
 		}
 
 		return {
-			"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkb21haW4iOiIiLCJleHAiOjE0NjQwMjM2NjcsImlzcyI6IkRvY3VtaXplIiwib3JnIjoiVnpNdXlFd18zV3FpYWZjRCIsInN1YiI6IndlYmFwcCIsInVzZXIiOiJWek11eUV3XzNXcWlhZmNFIn0.NXZ6bo8mtvdZF_b9HavbidVUJqhmBA1zr0fSAPvbah0",
-			"user": {
-				"id": "VzMuyEw_3WqiafcE",
-				"created": "2016-05-11T15:08:24Z",
-				"revised": "2016-05-11T15:08:24Z",
-				"firstname": "Lennex",
-				"lastname": "Zinyando",
-				"email": "brizdigital@gmail.com",
-				"initials": "LZ",
-				"active": true,
-				"editor": true,
-				"admin": true,
-				"accounts": [{
-					"id": "VzMuyEw_3WqiafcF",
-					"created": "2016-05-11T15:08:24Z",
-					"revised": "2016-05-11T15:08:24Z",
-					"admin": true,
-					"editor": true,
-					"userId": "VzMuyEw_3WqiafcE",
-					"orgId": "VzMuyEw_3WqiafcD",
-					"company": "EmberSherpa",
-					"title": "EmberSherpa",
-					"message": "This Documize instance contains all our team documentation",
-					"domain": ""
-				}]
-			}
+			"token": `${token}`,
+			"user": user[0]
 		};
 
 	});
 
-	this.get('/users/VzMuyEw_3WqiafcE/permissions', (schema) => {
-		return schema.db.permissions;
+	this.get('/users/:id/permissions', (schema, request) => {
+		let userId = request.params.id;
+		return schema.db.permissions.where({ userId: `${userId}` });
 	});
 
-	this.get('/folders/VzMuyEw_3WqiafcG/permissions', () => {
-		return [{
-			"folderId": "VzMuyEw_3WqiafcG",
-			"userId": "VzMuyEw_3WqiafcE",
-			"canView": true,
-			"canEdit": true
-		}];
+	this.get('/folders/:id/permissions', (schema, request) => {
+		let id = request.params.id;
+		return schema.db.folderPermissions.where({ id: `${id}` });
 	});
 
-	this.put('/folders/VzMygEw_3WrtFzto/permissions', () => {
-		return [{
-			"orgId": "VzMuyEw_3WqiafcD",
-			"folderId": "VzMygEw_3WrtFzto",
-			"userId": "",
-			"canEdit": true,
-			"canView": true
-		}, {
-			"orgId": "VzMuyEw_3WqiafcD",
-			"folderId": "VzMygEw_3WrtFzto",
-			"userId": "VzMyp0w_3WrtFztq",
-			"canEdit": false,
-			"canView": false
-		}, {
-			"orgId": "",
-			"folderId": "VzMygEw_3WrtFzto",
-			"userId": "VzMuyEw_3WqiafcE",
-			"canEdit": true,
-			"canView": true
-		}];
-	});
+	this.put('/folders/:id/permissions', (schema, request) => {
+		let id = request.params.id;
+		let attrs = JSON.parse(request.requestBody).Roles;
 
-	this.get('/folders/VzMygEw_3WrtFzto/permissions', () => {
-		return [{
-			"folderId": "VzMygEw_3WrtFzto",
-			"userId": "VzMuyEw_3WqiafcE",
-			"canView": true,
-			"canEdit": true
-		}];
+		// return schema.db.folderPermissions.update(`${id}`, { `${attrs[0]}` });
 	});
 
 	this.put('/folders/:id', (schema, request) => {
@@ -264,18 +152,8 @@ export default function () {
 		return schema.db.folders.find(id);
 	});
 
-	this.get('/organizations/VzMuyEw_3WqiafcD', () => {
-		return {
-			"id": "VzMuyEw_3WqiafcD",
-			"created": "2016-05-11T15:08:24Z",
-			"revised": "2016-05-23T11:23:20Z",
-			"title": "EmberSherpa",
-			"message": "This Documize instance contains all our team documentation",
-			"url": "",
-			"domain": "",
-			"email": "brizdigital@gmail.com",
-			"allowAnonymousAccess": false
-		};
+	this.get('/organizations/VzMuyEw_3WqiafcD', (schema) => {
+		return schema.db.organizations[0];
 	});
 
 	this.put('/organizations/VzMuyEw_3WqiafcD', (schema, request) => {
@@ -283,69 +161,15 @@ export default function () {
 		let message = JSON.parse(request.requestBody).title;
 		let allowAnonymousAccess = JSON.parse(request.requestBody).allowAnonymousAccess;
 
-		return {
-			"id": "VzMuyEw_3WqiafcD",
-			"created": "2016-05-11T15:08:24Z",
-			"revised": "2016-05-23T11:23:20Z",
-			"title": `${title}`,
-			"message": `${message}`,
-			"url": "",
-			"domain": "",
-			"email": "brizdigital@gmail.com",
-			"allowAnonymousAccess": `${allowAnonymousAccess}`
-		};
+		return schema.db.organizations.update('VzMuyEw_3WqiafcD', {
+			title: `${title}`,
+			message: `${message}`,
+			allowAnonymousAccess: `${allowAnonymousAccess}`
+		});
 	});
 
-	this.get('/users', () => {
-		return [{
-			"id": "VzMyp0w_3WrtFztq",
-			"created": "2016-05-11T13:24:55Z",
-			"revised": "2016-05-11T13:33:47Z",
-			"firstname": "Len",
-			"lastname": "Random",
-			"email": "zinyando@gmail.com",
-			"initials": "LR",
-			"active": true,
-			"editor": true,
-			"admin": false,
-			"accounts": [{
-				"id": "VzMyp0w_3WrtFztr",
-				"created": "2016-05-11T13:24:55Z",
-				"revised": "2016-05-11T13:24:55Z",
-				"admin": false,
-				"editor": true,
-				"userId": "VzMyp0w_3WrtFztq",
-				"orgId": "VzMuyEw_3WqiafcD",
-				"company": "EmberSherpa",
-				"title": "EmberSherpa",
-				"message": "This Documize instance contains all our team documentation",
-				"domain": ""
-			}]
-		}, {
-			"id": "VzMuyEw_3WqiafcE",
-			"created": "2016-05-11T15:08:24Z",
-			"revised": "2016-05-11T15:08:24Z",
-			"firstname": "Lennex",
-			"lastname": "Zinyando",
-			"email": "brizdigital@gmail.com",
-			"initials": "LZ",
-			"active": true,
-			"editor": true,
-			"admin": true,
-			"accounts": [{
-				"id": "VzMuyEw_3WqiafcF",
-				"created": "2016-05-11T15:08:24Z",
-				"revised": "2016-05-11T15:08:24Z",
-				"admin": true,
-				"editor": true,
-				"userId": "VzMuyEw_3WqiafcE",
-				"orgId": "VzMuyEw_3WqiafcD",
-				"company": "EmberSherpa",
-				"title": "EmberSherpa",
-				"message": "This Documize instance contains all our team documentation",
-				"domain": ""
-			}]
-		}];
+	this.get('/users', (schema, request) => {
+		return schema.db.users;
 	});
 
 	this.post('/users', (schema, request) => {
@@ -353,7 +177,7 @@ export default function () {
 		let lastname = JSON.parse(request.requestBody).lastname;
 		let email = JSON.parse(request.requestBody).email;
 
-		return {
+		let user = {
 			"id": "V0RmtUw_3QeDAMW7",
 			"created": "2016-05-24T14:35:33Z",
 			"revised": "2016-05-24T14:35:33Z",
@@ -378,35 +202,14 @@ export default function () {
 				"domain": ""
 			}]
 		};
+
+		return schema.db.users.insert(user);
 	});
 
-	this.get('/users/VzMuyEw_3WqiafcE', () => {
-
-		return {
-			"id": "VzMuyEw_3WqiafcE",
-			"created": "2016-05-11T15:08:24Z",
-			"revised": "2016-05-11T15:08:24Z",
-			"firstname": "Lennex",
-			"lastname": "Zinyando",
-			"email": "brizdigital@gmail.com",
-			"initials": "LZ",
-			"active": true,
-			"editor": true,
-			"admin": true,
-			"accounts": [{
-				"id": "VzMuyEw_3WqiafcF",
-				"created": "2016-05-11T15:08:24Z",
-				"revised": "2016-05-11T15:08:24Z",
-				"admin": true,
-				"editor": true,
-				"userId": "VzMuyEw_3WqiafcE",
-				"orgId": "VzMuyEw_3WqiafcD",
-				"company": "EmberSherpa",
-				"title": "EmberSherpa",
-				"message": "This Documize instance contains all our team documentation",
-				"domain": ""
-			}]
-		};
+	this.get('/users/:id', (schema, request) => {
+		let id = request.params.id;
+		let user = schema.db.users.where({ id: `${id}` });
+		return user[0];
 	});
 
 	this.put('/users/VzMuyEw_3WqiafcE', (schema, request) => {
@@ -414,31 +217,11 @@ export default function () {
 		let lastname = JSON.parse(request.requestBody).lastname;
 		let email = JSON.parse(request.requestBody).email;
 
-		return {
-			"id": "VzMuyEw_3WqiafcE",
-			"created": "2016-05-11T15:08:24Z",
-			"revised": "2016-05-11T15:08:24Z",
-			"firstname": `${firstname}`,
-			"lastname": `${lastname}`,
-			"email": `${email}`,
-			"initials": "LZ",
-			"active": true,
-			"editor": true,
-			"admin": true,
-			"accounts": [{
-				"id": "VzMuyEw_3WqiafcF",
-				"created": "2016-05-11T15:08:24Z",
-				"revised": "2016-05-11T15:08:24Z",
-				"admin": true,
-				"editor": true,
-				"userId": "VzMuyEw_3WqiafcE",
-				"orgId": "VzMuyEw_3WqiafcD",
-				"company": "EmberSherpa",
-				"title": "EmberSherpa",
-				"message": "This Documize instance contains all our team documentation",
-				"domain": ""
-			}]
-		};
+		return schema.db.users.update('VzMuyEw_3WqiafcE', {
+			firstname: `${firstname}`,
+			lastname: `${lastname}`,
+			email: `${email}`
+		});
 	});
 
 	this.post('/folders/VzMuyEw_3WqiafcG/invitation', () => {
