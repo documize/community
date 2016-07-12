@@ -72,7 +72,6 @@ export default function () {
 	});
 
 	this.post('/folders', function (schema, request) {
-		debugger;
 		var name = JSON.parse(request.requestBody).name;
 		let folder = {
 			"id": "V0Vy5Uw_3QeDAMW9",
@@ -121,11 +120,10 @@ export default function () {
 		return schema.db.folderPermissions.where({ id: `${id}` });
 	});
 
-	this.put('/folders/:id/permissions', (schema, request) => {
-		let id = request.params.id;
-		let attrs = JSON.parse(request.requestBody).Roles;
-
-		// return schema.db.folderPermissions.update(`${id}`, { `${attrs[0]}` });
+	this.put('/folders/:id/permissions', () => {
+		// let id = request.params.id;
+		// let attrs = JSON.parse(request.requestBody).Roles;
+		// return schema.db.folderPermissions.update('VzMygEw_3WrtFzto', attrs[0]);
 	});
 
 	this.put('/folders/:id', (schema, request) => {
@@ -168,7 +166,7 @@ export default function () {
 		});
 	});
 
-	this.get('/users', (schema, request) => {
+	this.get('/users', (schema) => {
 		return schema.db.users;
 	});
 

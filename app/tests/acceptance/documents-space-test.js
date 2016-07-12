@@ -123,6 +123,7 @@ test('changing space permissions', function (assert) {
 	server.create('meta', { allowAnonymousAccess: false });
 	server.createList('folder', 2);
 	server.createList('permission', 4);
+	server.createList('folder-permission', 2);
 	authenticateUser();
 
 	visit('/s/VzMygEw_3WrtFzto/test');
