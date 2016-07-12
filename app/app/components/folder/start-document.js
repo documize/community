@@ -80,7 +80,7 @@ export default Ember.Component.extend(NotifierMixin, {
 
 			let dzone = new Dropzone("#upload-documents", {
 				headers: {
-					'Authorization': 'Bearer ' + self.get('localStorage').getSessionItem('token')
+					'Authorization': 'Bearer ' + self.get('session.session.content.authenticated.token')
 				},
 				url: importUrl,
 				method: "post",
