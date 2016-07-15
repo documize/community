@@ -292,11 +292,11 @@ func (p *Persister) UpdatePage(page entity.Page, refID, userID string, skipRevis
 }
 
 // UpdatePageMeta persists meta information associated with a document page.
-func (p *Persister) UpdatePageMeta(meta entity.PageMeta,updateUserID bool) (err error) {
+func (p *Persister) UpdatePageMeta(meta entity.PageMeta, updateUserID bool) (err error) {
 	err = nil
 	meta.Revised = time.Now().UTC()
 	if updateUserID {
-		meta.UserID=p.Context.UserID
+		meta.UserID = p.Context.UserID
 	}
 
 	var stmt *sqlx.NamedStmt

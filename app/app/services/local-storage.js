@@ -22,5 +22,9 @@ export default Ember.Service.extend({
 
 	clearSessionItem: function (key) {
 		delete localStorage[key];
+	},
+
+	clearAll() {
+		localStorage.clear();
 	}
 });

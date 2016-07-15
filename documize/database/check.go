@@ -19,6 +19,7 @@ import (
 
 	"github.com/documize/community/documize/web"
 	"github.com/documize/community/wordsmith/log"
+	"github.com/documize/community/wordsmith/utility"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -27,19 +28,13 @@ var dbCheckOK bool // default false
 // dbPtr is a pointer to the central connection to the database, used by all database requests.
 var dbPtr **sqlx.DB
 
-// lockDB locks the database
-var lockDB func() (bool, error)
-
-// unlockDB unlocks the database
-var unlockDB func()
-
 // Check that the database is configured correctly and that all the required tables exist.
-// It must be the first function called in the
-func Check(Db *sqlx.DB, connectionString string, lDB func() (bool, error), ulDB func()) bool {
+// It must be the first function called in this package.
+func Check(Db *sqlx.DB, connectionString string) bool {
 	dbPtr = &Db
-	lockDB = lDB
-	unlockDB = ulDB
 
+	log.Info("Running database checks, this may take a while...")
+	
 	csBits := strings.Split(connectionString, "/")
 	if len(csBits) > 1 {
 		web.SiteInfo.DBname = strings.Split(csBits[len(csBits)-1], "?")[0]
@@ -52,7 +47,7 @@ func Check(Db *sqlx.DB, connectionString string, lDB func() (bool, error), ulDB 
 		web.SiteMode = web.SiteModeBadDB
 		return false
 	}
-	defer rows.Close() // ignore error
+	defer utility.Close(rows)
 	var version, charset, collation string
 	if rows.Next() {
 		err = rows.Scan(&version, &charset, &collation)

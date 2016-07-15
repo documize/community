@@ -67,6 +67,29 @@ func ConfigString(area, path string) (ret string) {
 	return ret
 }
 
+// ConfigSet writes a configuration JSON element to the config table.
+func ConfigSet(area, json string) error {
+	if Db == nil {
+		return errors.New("no database")
+	}
+	if area == "" {
+		return errors.New("no area")
+	}
+	sql := "INSERT INTO `config` (`key`,`config`) " +
+		"VALUES ('" + area + "','" + json +
+		"') ON DUPLICATE KEY UPDATE `config`='" + json + "';"
+
+	stmt, err := Db.Preparex(sql)
+	if err != nil {
+		//fmt.Printf("DEBUG: Unable to prepare select SQL for ConfigSet: %s -- error: %v\n", sql, err)
+		return err
+	}
+	defer utility.Close(stmt)
+
+	_, err = stmt.Exec()
+	return err
+}
+
 // UserConfigGetJSON fetches a configuration JSON element from the userconfig table for a given orgid/userid combination.
 // Errors return the empty string. A blank path returns the whole JSON object, as JSON.
 func UserConfigGetJSON(orgid, userid, area, path string) (ret string) {
@@ -124,6 +147,6 @@ func UserConfigSetJSON(orgid, userid, area, json string) error {
 	}
 	defer utility.Close(stmt)
 
-	_,err= stmt.Exec()
+	_, err = stmt.Exec()
 	return err
 }

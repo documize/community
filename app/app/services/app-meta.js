@@ -20,6 +20,7 @@ const {
 
 export default Ember.Service.extend({
 	ajax: service(),
+	localStorage: service(),
 
 	endpoint: `${config.apiHost}/${config.apiNamespace}`,
 	orgId: '',
@@ -27,6 +28,7 @@ export default Ember.Service.extend({
 	version: '',
 	message: '',
 	allowAnonymousAccess: false,
+	setupMode: false,
 
 	getBaseUrl(endpoint) {
 		return [this.get('host'), endpoint].join('/');
@@ -40,12 +42,14 @@ export default Ember.Service.extend({
 
 		let isInSetupMode = dbhash && dbhash !== "{{.DBhash}}";
 		if (isInSetupMode) {
-			this.setProperites({
+			this.setProperties({
 				title: htmlSafe("Documize Setup"),
-				allowAnonymousAccess: false
+				allowAnonymousAccess: true,
+				setupMode: true
 			});
+			this.get('localStorage').clearAll();
 
-			return resolve();
+			return resolve(this);
 		}
 
 		return this.get('ajax').request('public/meta').then((response) => {

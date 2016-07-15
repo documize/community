@@ -37,7 +37,7 @@ go generate
 
 echo "Compiling app..."
 cd ../..
-for arch in amd64 386 ; do
+for arch in amd64 ; do
     for os in darwin linux windows ; do
         if [ "$os" == "windows" ] ; then
             echo "Compiling documize-$os-$arch.exe"

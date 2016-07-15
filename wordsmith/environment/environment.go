@@ -1,11 +1,11 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
@@ -19,6 +19,7 @@ import (
 	"os"
 	"sort"
 	"strings"
+	"sync"
 )
 
 // CallbackT is the type signature of the callback function of GetString().
@@ -36,6 +37,7 @@ type varsT struct {
 }
 
 var vars varsT
+var varsMutex sync.Mutex
 
 // Len is part of sort.Interface.
 func (v *varsT) Len() int {
@@ -59,6 +61,8 @@ const goInit = "(default)"
 
 // GetString sets-up the flag for later use, it must be called before ParseOK(), usually in an init().
 func GetString(target *string, name string, required bool, usage string, callback CallbackT) {
+	varsMutex.Lock()
+	defer varsMutex.Unlock()
 	name = strings.ToLower(strings.TrimSpace(name))
 	setter := Prefix + strings.ToUpper(name)
 	value := os.Getenv(setter)
@@ -76,6 +80,8 @@ var showSettings = flag.Bool("showsettings", false, "if true, show settings in t
 // It should be the first thing called by any main() that uses this library.
 // If all the required variables are not present, it prints an error and calls os.Exit(2) like flag.Parse().
 func Parse(doFirst string) {
+	varsMutex.Lock()
+	defer varsMutex.Unlock()
 	flag.Parse()
 	sort.Sort(&vars)
 	for pass := 1; pass <= 2; pass++ {
