@@ -14,194 +14,193 @@ import models from '../utils/model';
 import BaseService from '../services/base';
 
 const {
-    get
+	get
 } = Ember;
 
 export default BaseService.extend({
-    sessionService: Ember.inject.service('session'),
-    ajax: Ember.inject.service(),
-    localStorage: Ember.inject.service(),
+	sessionService: Ember.inject.service('session'),
+	ajax: Ember.inject.service(),
+	localStorage: Ember.inject.service(),
 
+	// selected folder
+	currentFolder: null,
+	canEditCurrentFolder: false,
 
-    // selected folder
-    currentFolder: null,
-    canEditCurrentFolder: false,
+	// Add a new folder.
+	add(folder) {
 
-    // Add a new folder.
-    add(folder) {
+		return this.get('ajax').post(`folders`, {
+			contentType: 'json',
+			data: JSON.stringify(folder)
+		}).then((folder) => {
+			let folderModel = models.FolderModel.create(folder);
+			return folderModel;
+		});
+	},
 
-        return this.get('ajax').post(`folders`, {
-            contentType: 'json',
-            data: JSON.stringify(folder)
-        }).then((folder)=>{
-            let folderModel = models.FolderModel.create(folder);
-            return folderModel;
-        });
-    },
+	// Returns folder model for specified folder id.
+	getFolder(id) {
 
-    // Returns folder model for specified folder id.
-    getFolder(id) {
+		return this.get('ajax').request(`folders/${id}`, {
+			method: 'GET'
+		}).then((response) => {
+			let folder = models.FolderModel.create(response);
+			return folder;
+		});
+	},
 
-        return this.get('ajax').request(`folders/${id}`, {
-            method: 'GET'
-        }).then((response)=>{
-            let folder = models.FolderModel.create(response);
-            return folder;
-        });
-    },
+	// Returns all folders that user can see.
+	getAll() {
+		let self = this;
 
-    // Returns all folders that user can see.
-    getAll() {
-        let self = this;
+		if (this.get('folders') != null) {
+			return new Ember.RSVP.Promise(function (resolve) {
+				resolve(self.get('folders'));
+			});
+		} else {
+			return this.reload();
+		}
+	},
 
-        if (this.get('folders') != null) {
-            return new Ember.RSVP.Promise(function(resolve) {
-                resolve(self.get('folders'));
-            });
-        } else {
-            return this.reload();
-        }
-    },
+	// Updates an existing folder record.
+	save(folder) {
+		let id = folder.get('id');
 
-    // Updates an existing folder record.
-    save(folder) {
-        let id = folder.get('id');
+		return this.get('ajax').request(`folders/${id}`, {
+			method: 'PUT',
+			contentType: 'json',
+			data: JSON.stringify(folder)
+		});
+	},
 
-        return this.get('ajax').request(`folders/${id}`, {
-            method: 'PUT',
-            contentType: 'json',
-            data: JSON.stringify(folder)
-        });
-    },
+	remove: function (folderId, moveToId) {
+		let url = `folders/${folderId}/move/${moveToId}`;
 
-    remove: function(folderId, moveToId) {
-        let url = `folders/${folderId}/move/${moveToId}`;
+		return this.get('ajax').request(url, {
+			method: 'DELETE'
+		});
+	},
 
-        return this.get('ajax').request(url, {
-            method: 'DELETE'
-        });
-    },
+	onboard: function (folderId, payload) {
+		let url = `public/share/${folderId}`;
 
-    onboard: function(folderId, payload) {
-        let url = `public/share/${folderId}`;
+		return this.get('ajax').post(url, {
+			contentType: "application/json",
+			data: payload
+		});
+	},
 
-        return this.get('ajax').post(url, {
-            contentType: "application/json",
-            data: payload
-        });
-    },
+	// getProtectedFolderInfo returns non-private folders and who has access to them.
+	getProtectedFolderInfo: function () {
+		return this.get('ajax').request(`folders?filter=viewers`, {
+			method: "GET"
+		}).then((response) => {
+			let data = [];
+			_.each(response, function (obj) {
+				data.pushObject(models.ProtectedFolderParticipant.create(obj));
+			});
 
-    // getProtectedFolderInfo returns non-private folders and who has access to them.
-    getProtectedFolderInfo: function() {
-        return this.get('ajax').request(`folders?filter=viewers`, {
-            method: "GET"
-        }).then((response)=>{
-            let data = [];
-            _.each(response, function(obj) {
-                data.pushObject(models.ProtectedFolderParticipant.create(obj));
-            });
+			return data;
+		});
+	},
 
-            return data;
-        });
-    },
+	// reloads and caches folders.
+	reload() {
 
-    // reloads and caches folders.
-    reload() {
+		return this.get('ajax').request(`folders`, {
+			method: "GET"
+		}).then((response) => {
+			let data = [];
+			_.each(response, function (obj) {
+				data.pushObject(models.FolderModel.create(obj));
+			});
 
-        return this.get('ajax').request(`folders`, {
-            method: "GET"
-        }).then((response)=>{
-            let data = [];
-            _.each(response, function(obj) {
-                data.pushObject(models.FolderModel.create(obj));
-            });
+			return data;
+		});
+	},
 
-            return data;
-        });
-    },
+	// so who can see/edit this folder?
+	getPermissions(folderId) {
 
-    // so who can see/edit this folder?
-    getPermissions(folderId) {
+		return this.get('ajax').request(`folders/${folderId}/permissions`, {
+			method: "GET"
+		}).then((response) => {
+			let data = [];
+			_.each(response, function (obj) {
+				data.pushObject(models.FolderPermissionModel.create(obj));
+			});
 
-        return this.get('ajax').request(`folders/${folderId}/permissions`, {
-            method: "GET"
-        }).then((response)=>{
-            let data = [];
-            _.each(response, function(obj) {
-                data.pushObject(models.FolderPermissionModel.create(obj));
-            });
+			return data;
+		});
+	},
 
-            return data;
-        });
-    },
+	// persist folder permissions
+	savePermissions(folderId, payload) {
 
-    // persist folder permissions
-    savePermissions(folderId, payload) {
+		return this.get('ajax').request(`folders/${folderId}/permissions`, {
+			method: 'PUT',
+			contentType: 'json',
+			data: JSON.stringify(payload)
+		});
+	},
 
-        return this.get('ajax').request(`folders/${folderId}/permissions`, {
-            method: 'PUT',
-            contentType: 'json',
-            data: JSON.stringify(payload)
-        });
-    },
+	// share this folder with new users!
+	share(folderId, invitation) {
 
-    // share this folder with new users!
-    share(folderId, invitation) {
+		return this.get('ajax').post(`folders/${folderId}/invitation`, {
+			contentType: 'json',
+			data: JSON.stringify(invitation)
+		});
+	},
 
-        return this.get('ajax').post(`folders/${folderId}/invitation`, {
-            contentType: 'json',
-            data: JSON.stringify(invitation)
-        });
-    },
+	// Current folder caching
+	setCurrentFolder(folder) {
+		if (is.undefined(folder) || is.null(folder)) {
+			return;
+		}
 
-    // Current folder caching
-    setCurrentFolder(folder) {
-        if (is.undefined(folder) || is.null(folder)) {
-            return;
-        }
+		this.set('currentFolder', folder);
+		this.get('localStorage').storeSessionItem("folder", get(folder, 'id'));
+		this.set('canEditCurrentFolder', false);
 
-        this.set('currentFolder', folder);
-        this.get('localStorage').storeSessionItem("folder", get(folder, 'id'));
-        this.set('canEditCurrentFolder', false);
+		let userId = this.get('sessionService.user.id');
+		if (userId === "") {
+			userId = "0";
+		}
 
-        let userId = this.get('sessionService.user.id');
-        if (userId === "") {
-            userId = "0";
-        }
+		let url = `users/${userId}/permissions`;
 
-        let url = `users/${userId}/permissions`;
+		return this.get('ajax').request(url).then((folderPermissions) => {
+			// safety check
+			this.set('canEditCurrentFolder', false);
 
-        return this.get('ajax').request(url).then((folderPermissions) => {
-            // safety check
-            this.set('canEditCurrentFolder', false);
+			if (folderPermissions.length === 0) {
+				return;
+			}
 
-            if (folderPermissions.length === 0) {
-                return;
-            }
+			let result = [];
+			let folderId = folder.get('id');
 
-            let result = [];
-            let folderId = folder.get('id');
+			folderPermissions.forEach(function (item) {
+				if (item.folderId === folderId) {
+					result.push(item);
+				}
+			});
 
-            folderPermissions.forEach(function(item) {
-                if (item.folderId === folderId) {
-                    result.push(item);
-                }
-            });
+			let canEdit = false;
 
-            let canEdit = false;
+			result.forEach(function (permission) {
+				if (permission.userId === userId) {
+					canEdit = permission.canEdit;
+				}
 
-            result.forEach(function(permission) {
-                if (permission.userId === userId) {
-                    canEdit = permission.canEdit;
-                }
-
-                if (permission.userId === "" && !canEdit) {
-                    canEdit = permission.canEdit;
-                }
-            });
-            Ember.run(() => {
-                this.set('canEditCurrentFolder', canEdit && this.get('sessionService.authenticated'));
-            });
-        });
-    },
+				if (permission.userId === "" && !canEdit) {
+					canEdit = permission.canEdit;
+				}
+			});
+			Ember.run(() => {
+				this.set('canEditCurrentFolder', canEdit && this.get('sessionService.authenticated'));
+			});
+		});
+	},
 });
