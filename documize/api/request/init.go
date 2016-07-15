@@ -1,18 +1,17 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
 package request
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -69,18 +68,8 @@ func init() {
 			}
 
 			// go into setup mode if required
-			if database.Check(Db, connectionString,
-				func() (bool, error) {
-					// LockDB locks the database for migrations, returning if locked and an error.
-					// TODO, and if lock fails, wait here until it unlocks
-					return false, errors.New("LockDB TODO")
-				},
-				func() {
-					// UnlockDB unlocks the database for migrations.
-					// Reports errors in the log.
-					// TODO
-				}) {
-				if err := database.Migrate(ConfigString("META", "database")); err != nil {
+			if database.Check(Db, connectionString) {
+				if err := database.Migrate(true /* the config table exists */); err != nil {
 					log.Error("Unable to run database migration: ", err)
 					os.Exit(2)
 				}

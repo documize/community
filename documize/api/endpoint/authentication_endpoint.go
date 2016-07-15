@@ -28,6 +28,7 @@ import (
 	"github.com/documize/community/documize/api/request"
 	"github.com/documize/community/documize/api/util"
 	"github.com/documize/community/documize/section/provider"
+	"github.com/documize/community/documize/web"
 	"github.com/documize/community/wordsmith/environment"
 	"github.com/documize/community/wordsmith/log"
 	"github.com/documize/community/wordsmith/utility"
@@ -293,7 +294,8 @@ func preAuthorizeStaticAssets(r *http.Request) bool {
 		strings.ToLower(r.URL.Path) == "/favicon.ico" ||
 		strings.ToLower(r.URL.Path) == "/robots.txt" ||
 		strings.ToLower(r.URL.Path) == "/version" ||
-		strings.HasPrefix(strings.ToLower(r.URL.Path), "/api/public/") {
+		strings.HasPrefix(strings.ToLower(r.URL.Path), "/api/public/") ||
+		((web.SiteMode == web.SiteModeSetup) && (strings.ToLower(r.URL.Path) == "/api/setup")) {
 
 		return true
 	}

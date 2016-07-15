@@ -17,8 +17,6 @@ export default Ember.Route.extend({
 		if (pwd.length === 0 || pwd === "{{.DBhash}}") {
 			this.transitionTo('auth.login'); // don't allow access to this page if we are not in setup mode, kick them out altogether
 		}
-
-		this.session.clearSession();
 	},
 
 	model() {

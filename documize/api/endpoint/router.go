@@ -134,6 +134,10 @@ func buildUnsecureRoutes() *mux.Router {
 func buildSecureRoutes() *mux.Router {
 	router := mux.NewRouter()
 
+	if web.SiteMode == web.SiteModeSetup {
+		router.HandleFunc("/api/setup", database.Create).Methods("POST", "OPTIONS")
+	}
+
 	// Import & Convert Document
 	router.HandleFunc("/api/import/folder/{folderID}", UploadConvertDocument).Methods("POST", "OPTIONS")
 
@@ -254,7 +258,6 @@ func AppRouter() *mux.Router {
 		log.Info("Serving OFFLINE web app")
 	case web.SiteModeSetup:
 		log.Info("Serving SETUP web app")
-		router.HandleFunc("/setup", database.Create).Methods("POST", "OPTIONS")
 	case web.SiteModeBadDB:
 		log.Info("Serving BAD DATABASE web app")
 	default:

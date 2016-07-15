@@ -1,11 +1,11 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
@@ -15,7 +15,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"regexp"
 	"strings"
 	"time"
 
@@ -25,6 +24,7 @@ import (
 	"github.com/documize/community/wordsmith/utility"
 )
 
+// runSQL creates a transaction per call
 func runSQL(sql string) (id uint64, err error) {
 
 	if strings.TrimSpace(sql) == "" {
@@ -41,7 +41,7 @@ func runSQL(sql string) (id uint64, err error) {
 	result, err := tx.Exec(sql)
 
 	if err != nil {
-		tx.Rollback() // ignore error as already in an error state
+		log.IfErr(tx.Rollback())
 		log.Error("runSql - unable to run sql", err)
 		return
 	}
@@ -59,14 +59,6 @@ func runSQL(sql string) (id uint64, err error) {
 
 // Create the tables in a blank database
 func Create(w http.ResponseWriter, r *http.Request) {
-	txt := "database.Create()"
-	//defer func(){fmt.Println("DEBUG"+txt)}()
-
-	if dbCheckOK {
-		txt += " Check OK"
-	} else {
-		txt += " Check not OK"
-	}
 
 	defer func() {
 		target := "/setup"
@@ -92,13 +84,8 @@ func Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	txt += fmt.Sprintf("\n%#v\n", r.Form)
-
 	dbname := r.Form.Get("dbname")
 	dbhash := r.Form.Get("dbhash")
-
-	txt += fmt.Sprintf("DBname:%s (want:%s) DBhash: %s (want:%s)\n",
-		dbname, web.SiteInfo.DBname, dbhash, web.SiteInfo.DBhash)
 
 	if dbname != web.SiteInfo.DBname || dbhash != web.SiteInfo.DBhash {
 		log.Error("database.Create()'s security credentials error ", errors.New("bad db name or validation code"))
@@ -117,8 +104,6 @@ func Create(w http.ResponseWriter, r *http.Request) {
 		Revised:     time.Now(),
 	}
 
-	txt += fmt.Sprintf("\n%#v\n", details)
-
 	if details.Company == "" ||
 		details.CompanyLong == "" ||
 		details.Message == "" ||
@@ -126,43 +111,12 @@ func Create(w http.ResponseWriter, r *http.Request) {
 		details.Password == "" ||
 		details.Firstname == "" ||
 		details.Lastname == "" {
-		txt += "ERROR: required field blank"
+		log.Error("database.Create() error ",
+			errors.New("required field in database set-up form blank"))
 		return
 	}
 
-	firstSQL := "db_00000.sql"
-
-	buf, err := web.ReadFile("scripts/" + firstSQL)
-	if err != nil {
-		log.Error("database.Create()'s web.ReadFile()", err)
-		return
-	}
-
-	tx, err := (*dbPtr).Beginx()
-	if err != nil {
-		log.Error(" failed to get transaction", err)
-		return
-	}
-
-	stmts := getStatements(buf)
-
-	for i, stmt := range stmts {
-		_, err = tx.Exec(stmt)
-		txt += fmt.Sprintf("%d: %s\nResult: %v\n\n", i, stmt, err)
-		if err != nil {
-			tx.Rollback() // ignore error as already in an error state
-			log.Error("database.Create() unable to run table create sql", err)
-			return
-		}
-	}
-
-	err = tx.Commit()
-	if err != nil {
-		log.Error("database.Create()", err)
-		return
-	}
-
-	if err := Migrate(firstSQL); err != nil {
+	if err = Migrate(false /* no tables exist yet */); err != nil {
 		log.Error("database.Create()", err)
 		return
 	}
@@ -174,7 +128,6 @@ func Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	web.SiteMode = web.SiteModeNormal
-	txt += "\n Success!\n"
 }
 
 // The result of completing the onboarding process.
@@ -219,7 +172,6 @@ func setupAccount(completion onboardRequest, serial string) (err error) {
 		log.Error("Failed with error", err)
 		return err
 	}
-	//}
 
 	// Link user to organization.
 	accountID := util.UniqueID()
@@ -249,20 +201,4 @@ func setupAccount(completion onboardRequest, serial string) (err error) {
 	}
 
 	return
-}
-
-// getStatement strips out the comments and returns all the individual SQL commands (apart from "USE") as a []string.
-func getStatements(bytes []byte) []string {
-	/* Strip comments of the form '-- comment' or like this one */
-	stripped := regexp.MustCompile("(?s)--.*?\n|/\\*.*?\\*/").ReplaceAll(bytes, []byte("\n"))
-	sqls := strings.Split(string(stripped), ";")
-	ret := make([]string, 0, len(sqls))
-	for _, v := range sqls {
-		trimmed := strings.TrimSpace(v)
-		if len(trimmed) > 0 &&
-			!strings.HasPrefix(strings.ToUpper(trimmed), "USE ") { // make sure we don't USE the wrong database
-			ret = append(ret, trimmed+";")
-		}
-	}
-	return ret
 }
