@@ -100,12 +100,12 @@ func migrateEnd(tx *sqlx.Tx, err error) error {
 		log.IfErr(ulerr)
 		if err == nil {
 			log.IfErr(tx.Commit())
-			log.Info("Database migration completed.")
+			log.Info("Database checks: completed")
 			return nil
 		}
 		log.IfErr(tx.Rollback())
 	}
-	log.Error("Database migration failed: ", err)
+	log.Error("Database checks: failed: ", err)
 	return err
 }
 
@@ -125,7 +125,7 @@ func Migrate(ConfigTableExists bool) error {
 			return migrateEnd(tx, err)
 		}
 
-		log.Info("Database migration lock taken.")
+		log.Info("Database checks: lock taken")
 
 		var stmt *sql.Stmt
 		stmt, err = tx.Prepare("SELECT JSON_EXTRACT(`config`,'$.database') FROM `config` WHERE `key` = 'META';")
@@ -145,7 +145,7 @@ func Migrate(ConfigTableExists bool) error {
 				lastMigration = string(bytes.TrimPrefix(bytes.TrimSuffix(item, q), q))
 			}
 		}
-		log.Info("Database migration last previously applied file was: " + lastMigration)
+		log.Info("Database checks: last previously applied file was " + lastMigration)
 	}
 
 	mig, err := migrations(lastMigration)
@@ -154,10 +154,10 @@ func Migrate(ConfigTableExists bool) error {
 	}
 
 	if len(mig) == 0 {
-		log.Info("Database migration no updates to perform.")
+		log.Info("Database checks: no updates to perform")
 		return migrateEnd(tx, nil) // no migrations to perform
 	}
-	log.Info("Database migration will execute the following update files: " + strings.Join([]string(mig), ", "))
+	log.Info("Database checks: will execute the following update files: " + strings.Join([]string(mig), ", "))
 
 	return migrateEnd(tx, mig.migrate(tx))
 }
