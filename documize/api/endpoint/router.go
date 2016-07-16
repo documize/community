@@ -235,6 +235,10 @@ func metrics(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	w.Header().Add("X-Documize-Version", AppVersion)
 	w.Header().Add("Cache-Control", "no-cache")
 
+	// Prevent page from being displayed in an iframe
+	w.Header().Add("X-Frame-Options", "DENY")
+
+	// Force SSL delivery
 	// if certFile != "" && keyFile != "" {
 	// 	w.Header().Add("Strict-Transport-Security", "max-age=63072000; includeSubDomains")
 	// }
