@@ -1,11 +1,11 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
@@ -89,24 +89,6 @@ func testPages(t *testing.T, c *documize.Client, testFolder, testFile, testData 
 	err = c.UpdateDocumentPage(pagesAdded[0])
 	if err != nil {
 		t.Error(err)
-	}
-
-	revs, err := c.GetDocumentPageRevisions(testFile, pagesAdded[0].RefID)
-	if err != nil {
-		t.Error(err)
-	} else {
-		diff, err2 := c.GetDocumentPageDiff(testFile, pagesAdded[0].RefID, revs[0].RefID)
-		if err2 != nil {
-			t.Error(err2)
-		} else {
-			t.Logf("INFO: Revised single doc page diff: %s", string(diff))
-		}
-		err = c.RollbackDocumentPage(testFile, pagesAdded[0].RefID, revs[0].RefID)
-		if err != nil {
-			t.Error(err)
-		} else {
-			t.Logf("INFO: Rolled-back revised single doc page %s", revs[0].RefID)
-		}
 	}
 
 	err = c.DeleteDocumentPage(testFile, pagesAdded[0].RefID)
