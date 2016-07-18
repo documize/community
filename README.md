@@ -4,19 +4,7 @@ Documentation that integrates and snapshots data from the tools you use.
 
 v0.14.0
 
-## Why?
-
-In my previous startup, we sold “project management” software to businesses of all shapes and sizes. Our customers would complain that developers and business folks fought pitched battles over work visibility and deliverables. Being a developer & CTO by trade, I saw the same thing myself many times over.
-
-Developers just want to code, and generally speaking documenting a chore.
-
-It really hit home when staring at Google Docs. I struggled to pull together a coherent document explaining what happened during the latest development cycle. I wanted to share code commits, deployment logs, customer tickets, tasks with co-workers and customers. I just couldn’t do it without cut-pasting screenshots and emailing app links with sketchy instructions.
-
-At that moment, I realized the way we produce documentation was fundamentally broken because more and more of our data was in the cloud. And it was getting worse each time we adopted a new SaaS tool — more SaaS tools, more data silos, more screenshots and even more app links to send round.
-
-So we set about building Documize — it allows people to point-click-integrate their SaaS data into a different kind of “document”. You can think of the end result as a unified team inbox for any deliverable (that kills the hassle of juggling the ever-growing SaaS footprint).
-
-Our mission is simple: to help businesses to snapshot, track and integrate their cloud-based data to compose a new kind of document.
+Help businesses to snapshot, track and integrate their cloud-based data into a new kind of document.
 
 **Don’t write documents. Compose them.**
 
