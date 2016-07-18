@@ -2,13 +2,11 @@
 
 Documentation that integrates and snapshots data from the tools you use.
 
-v0.14.0
-
-Help businesses to snapshot, track and integrate their cloud-based data into a new kind of document.
-
 **Don’t write documents. Compose them.**
 
-@HarveyKandola, Founder, Documize Inc.
+## Latest version
+
+v0.15.0
 
 ## Tech stack
 
