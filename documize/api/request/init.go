@@ -19,6 +19,7 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"github.com/documize/community/documize/database"
+	"github.com/documize/community/documize/web"
 	"github.com/documize/community/wordsmith/environment"
 	"github.com/documize/community/wordsmith/log"
 	"github.com/documize/community/wordsmith/utility"
@@ -68,13 +69,15 @@ func init() {
 			}
 
 			// go into setup mode if required
-			if database.Check(Db, connectionString) {
-				if err := database.Migrate(true /* the config table exists */); err != nil {
-					log.Error("Unable to run database migration: ", err)
-					os.Exit(2)
+			if web.SiteMode != web.SiteModeOffline {
+				if database.Check(Db, connectionString) {
+					if err := database.Migrate(true /* the config table exists */); err != nil {
+						log.Error("Unable to run database migration: ", err)
+						os.Exit(2)
+					}
+				} else {
+					log.Info("database.Check(Db) !OK, going into setup mode")
 				}
-			} else {
-				log.Info("database.Check(Db) !OK, going into setup mode")
 			}
 
 			return false // value not changed
