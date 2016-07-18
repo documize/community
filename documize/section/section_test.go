@@ -27,18 +27,18 @@ func init() {
 }
 
 // Command is an end-point...
-func (ts *testsection) Command(w http.ResponseWriter, r *http.Request) {}
+func (ts *testsection) Command(ctx *provider.Context, w http.ResponseWriter, r *http.Request) {}
 
 var didRefresh bool
 
 // Refresh existing data, returning data in the format of the target system
-func (ts *testsection) Refresh(meta, data string) string {
+func (ts *testsection) Refresh(ctx *provider.Context, meta, data string) string {
 	didRefresh = true
 	return ""
 }
 
 // Render converts data in the target system format into HTML
-func (*testsection) Render(meta, data string) string {
+func (*testsection) Render(ctx *provider.Context, meta, data string) string {
 	return "testsection " + data
 }
 
@@ -54,13 +54,15 @@ func (*testsection) Meta() provider.TypeMeta {
 }
 
 func TestSection(t *testing.T) {
-	if _, ok := provider.Refresh("testsection", "", ""); !ok {
+	ctx := provider.NewContext("_orgid_", "_userid_")
+
+	if _, ok := provider.Refresh("testsection", ctx, "", ""); !ok {
 		t.Error("did not find 'testsection' smart section (1)")
 	}
 	if !didRefresh {
 		t.Error("did not run the test Refresh method")
 	}
-	out, ok := provider.Render("testsection", "meta", "dingbat")
+	out, ok := provider.Render("testsection", ctx, "meta", "dingbat")
 	if !ok {
 		t.Error("did not find 'testsection' smart section (2)")
 	}
