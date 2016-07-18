@@ -75,10 +75,6 @@ func validateToken(ptoken string) error {
 	return err
 }
 
-func secretsJSON(token string) string {
-	return `{"token":"` + strings.TrimSpace(token) + `"}`
-}
-
 // Command to run the various functions required...
 func (p *Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
