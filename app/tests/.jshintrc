@@ -32,7 +32,8 @@
     "waitToAppear",
     "stubUserNotification",
     "is",
-    "authenticateUser"
+    "authenticateUser",
+    "localStorage"
   ],
   "node": false,
   "browser": false,
