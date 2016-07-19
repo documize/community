@@ -25,17 +25,3 @@ export default Factory.extend({
 	"tags": "",
 	"template": false
 });
-// return {
-// 	"id": "VzMzBUw_3WrtFztv",
-// 	"created": "2016-05-11T13:26:29Z",
-// 	"revised": "2016-05-11T13:26:29Z",
-// 	"orgId": "VzMuyEw_3WqiafcD",
-// 	"folderId": "VzMygEw_3WrtFzto",
-// 	"userId": "VzMuyEw_3WqiafcE",
-// 	"job": "3004c449-b053-49a6-4abc-72688136184d",
-// 	"location": "/var/folders/d6/kr81d2fs5bsbm8rz2p092fy80000gn/T/documize/_uploads/3004c449-b053-49a6-4abc-72688136184d/README.md",
-// 	"name": "README",
-// 	"excerpt": "To Document/ Instructions. GO. go- bindata- assetsfs. SSL.",
-// 	"tags": "",
-// 	"template": false
-// };

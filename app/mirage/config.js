@@ -35,38 +35,14 @@ export default function () {
 			return schema.db.documents.where({ folderId: folder_id });
 		}
 
-		if (folder_id = "VzMygEw_3WrtFzto") {
-			return {
-				"id": "VzMygEw_3WrtFzto",
-				"created": "2016-05-11T13:24:17Z",
-				"revised": "2016-05-11T13:25:51Z",
-				"name": "Test",
-				"orgId": "VzMuyEw_3WqiafcD",
-				"userId": "VzMuyEw_3WqiafcE",
-				"folderType": 1
-			};
-		}
-
 		if (folder_id = 'V0Vy5Uw_3QeDAMW9') {
 			return null;
 		}
 	});
 
-	this.get('/documents/:id', function () {
-		return {
-			"id": "VzMzBUw_3WrtFztv",
-			"created": "2016-05-11T13:26:29Z",
-			"revised": "2016-05-11T13:26:29Z",
-			"orgId": "VzMuyEw_3WqiafcD",
-			"folderId": "VzMygEw_3WrtFzto",
-			"userId": "VzMuyEw_3WqiafcE",
-			"job": "3004c449-b053-49a6-4abc-72688136184d",
-			"location": "/var/folders/d6/kr81d2fs5bsbm8rz2p092fy80000gn/T/documize/_uploads/3004c449-b053-49a6-4abc-72688136184d/README.md",
-			"name": "README",
-			"excerpt": "To Document/ Instructions. GO. go- bindata- assetsfs. SSL.",
-			"tags": "",
-			"template": false
-		};
+	this.get('/documents/:id', function (schema, request) {
+		let id = request.params.id;
+		return schema.db.documents.where({ id: `${id}` })[0];
 	});
 
 	this.get('/documents/:id/pages', function () {

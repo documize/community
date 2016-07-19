@@ -30,8 +30,7 @@ test('visiting /auth/login and logging in', function (assert) {
 test('logging out a user', function (assert) {
 	server.create('meta', { allowAnonymousAccess: false });
 	userLogin();
-
-	visit('/auth/logout');
+	click('.dropdown-menu a:contains(Logout)');
 
 	andThen(function () {
 		assert.equal(currentURL(), '/auth/login', 'Logging out successful');
