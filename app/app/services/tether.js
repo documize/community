@@ -9,11 +9,25 @@
 //
 // https://documize.com
 
-import Mirage, { faker } from 'ember-cli-mirage';
+import Ember from 'ember';
 
-export default Mirage.Factory.extend({
-	"folderId": faker.list.cycle('V0Vy5Uw_3QeDAMW9', 'VzMuyEw_3WqiafcG', 'VzMygEw_3WrtFzto', 'VzMygEw_3WrtFzto', "VzMygEw_3WrtFzto"),
-	"userId": faker.list.cycle('VzMuyEw_3WqiafcE', 'VzMuyEw_3WqiafcE', 'VzMuyEw_3WqiafcE', '', 0),
-	"canView": true,
-	"canEdit": faker.list.cycle(true, true, true, false, false)
+/**
+ * This is a work around problems that tether introduces into testing.
+ * TODO: remove this code and refactor in favour of ember-tether
+ */
+export default Ember.Service.extend({
+	createDrop() {
+		if (Ember.testing) {
+			return;
+		}
+
+		return new Drop(...arguments);
+	},
+	createTooltip() {
+		if (Ember.testing) {
+			return;
+		}
+
+		return new Tooltip(...arguments);
+	}
 });

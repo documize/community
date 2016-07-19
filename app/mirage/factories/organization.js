@@ -9,11 +9,16 @@
 //
 // https://documize.com
 
-import Mirage, { faker } from 'ember-cli-mirage';
+import { Factory } from 'ember-cli-mirage';
 
-export default Mirage.Factory.extend({
-	"folderId": faker.list.cycle('V0Vy5Uw_3QeDAMW9', 'VzMuyEw_3WqiafcG', 'VzMygEw_3WrtFzto', 'VzMygEw_3WrtFzto', "VzMygEw_3WrtFzto"),
-	"userId": faker.list.cycle('VzMuyEw_3WqiafcE', 'VzMuyEw_3WqiafcE', 'VzMuyEw_3WqiafcE', '', 0),
-	"canView": true,
-	"canEdit": faker.list.cycle(true, true, true, false, false)
+export default Factory.extend({
+	"id": "VzMuyEw_3WqiafcD",
+	"created": "2016-05-11T15:08:24Z",
+	"revised": "2016-05-23T11:23:20Z",
+	"title": "EmberSherpa",
+	"message": "This Documize instance contains all our team documentation",
+	"url": "",
+	"domain": "",
+	"email": "brizdigital@gmail.com",
+	"allowAnonymousAccess": false
 });
