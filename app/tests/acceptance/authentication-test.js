@@ -1,11 +1,11 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
@@ -16,7 +16,6 @@ moduleForAcceptance('Acceptance | Authentication');
 
 test('visiting /auth/login and logging in', function (assert) {
 	server.create('meta', { allowAnonymousAccess: false });
-	server.createList('folder', 2);
 	visit('/auth/login');
 
 	fillIn('#authEmail', 'brizdigital@gmail.com');
@@ -30,7 +29,6 @@ test('visiting /auth/login and logging in', function (assert) {
 
 test('logging out a user', function (assert) {
 	server.create('meta', { allowAnonymousAccess: false });
-	server.createList('folder', 2);
 	userLogin();
 
 	visit('/auth/logout');
@@ -42,7 +40,6 @@ test('logging out a user', function (assert) {
 
 test('successful sso login authenticates redirects to dashboard', function (assert) {
 	server.create('meta', { allowAnonymousAccess: false });
-	server.createList('folder', 2);
 
 	visit('/auth/sso/OmJyaXpkaWdpdGFsQGdtYWlsLmNvbTp6aW55YW5kbzEyMw==');
 
@@ -53,7 +50,6 @@ test('successful sso login authenticates redirects to dashboard', function (asse
 
 test('sso login with bad token should redirect to login', function (assert) {
 	server.create('meta', { allowAnonymousAccess: false });
-	server.createList('folder', 2);
 
 	visit('/auth/sso/randomToken1234567890');
 

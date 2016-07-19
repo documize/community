@@ -16,7 +16,6 @@ moduleForAcceptance('Acceptance | User Settings');
 
 test('visiting /settings/general', function (assert) {
 	server.create('meta', { allowAnonymousAccess: false });
-	server.createList('organization', 1);
 	authenticateUser();
 	visit('/settings/general');
 
@@ -30,7 +29,6 @@ test('visiting /settings/general', function (assert) {
 
 test('changing the Website title and description', function (assert) {
 	server.create('meta', { allowAnonymousAccess: false });
-	server.createList('organization', 1);
 	authenticateUser();
 	visit('/settings/general');
 
@@ -63,7 +61,6 @@ test('visiting /settings/folders', function (assert) {
 
 test('visiting /settings/users', function (assert) {
 	server.create('meta', { allowAnonymousAccess: false });
-	server.createList('user', 2);
 	authenticateUser();
 	visit('/settings/users');
 
@@ -78,7 +75,6 @@ test('visiting /settings/users', function (assert) {
 
 test('add a new user', function (assert) {
 	server.create('meta', { allowAnonymousAccess: false });
-	server.createList('user', 2);
 	authenticateUser();
 	visit('/settings/users');
 
@@ -94,9 +90,6 @@ test('add a new user', function (assert) {
 	fillIn('#newUserLastname', 'User');
 	fillIn('#newUserEmail', 'test.user@domain.com');
 	click('.button-blue');
-
-	// waitToAppear('.user-notification:contains(Added)');
-	// waitToDisappear('.user-notification:contains(Added)');
 
 	andThen(function () {
 		let numberOfUsers = find('.user-list tr').length;

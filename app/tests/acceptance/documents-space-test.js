@@ -9,39 +9,38 @@
 //
 // https://documize.com
 
-import { test, skip } from 'qunit';
+import { test } from 'qunit';
 import moduleForAcceptance from 'documize/tests/helpers/module-for-acceptance';
 
 moduleForAcceptance('Acceptance | Documents space');
 
-skip('Adding a new folder space', function (assert) {
+test('Adding a new folder space', function (assert) {
 	server.create('meta', { allowAnonymousAccess: false });
-	server.createList('folder', 2);
-	server.createList('permission', 4);
 	authenticateUser();
 	visit('/s/VzMuyEw_3WqiafcG/my-project');
 
 	andThen(function () {
-		let personalSpaces = find('.section div:contains(PERSONAL)').length;
+		let personalSpaces = find('.folders-list div:contains(PERSONAL) .list a').length;
 		assert.equal(currentURL(), '/s/VzMuyEw_3WqiafcG/my-project');
 		assert.equal(personalSpaces, 1, '1 personal space is listed');
 	});
 
 	click('#add-folder-button');
 
-	fillIn('#new-folder-name', 'body', 'Test Folder');
+	fillIn('#new-folder-name', 'Test Folder');
 
-	click('.actions div:contains(Add)', 'body');
+	click('.actions div:contains(Add)');
 
 	andThen(function () {
+		let folderCount = find('.folders-list div:contains(PERSONAL) .list a').length;
+		assert.equal(folderCount, 2, 'New folder has been added');
 		assert.equal(currentURL(), '/s/V0Vy5Uw_3QeDAMW9/test-folder');
 	});
+
 });
 
-skip('Adding a document to a space', function (assert) {
+test('Adding a document to a space', function (assert) {
 	server.create('meta', { allowAnonymousAccess: false });
-	server.createList('folder', 2);
-	server.createList('permission', 4);
 	authenticateUser();
 	visit('/s/VzMuyEw_3WqiafcG/my-project');
 
@@ -52,21 +51,22 @@ skip('Adding a document to a space', function (assert) {
 		assert.equal(numberOfDocuments, 2, '2 documents listed');
 	});
 
-	click('#start-document-button');
-	click('.actions div:contains(Add)', 'body');
+	click('.actions div:contains(Start) .flat-green');
+
+	andThen(function () {
+		assert.equal(currentURL(), '/s/VzMuyEw_3WqiafcG/my-project/d/V4y7jkw_3QvCDSeS/new-document', 'New document displayed');
+	});
+
+	click('a div:contains(My Project) .space-name');
 
 	andThen(function () {
 		let numberOfDocuments = find('.documents-list li').length;
 		assert.equal(numberOfDocuments, 3, '3 documents listed');
-		assert.equal(currentURL(), '/s/VzMuyEw_3WqiafcG/my-project');
 	});
 });
 
 test('visiting space settings page', function (assert) {
 	server.create('meta', { allowAnonymousAccess: false });
-	server.createList('folder', 2);
-	server.createList('permission', 4);
-	server.createList('folder-permission', 2);
 	authenticateUser();
 	visit('/s/VzMuyEw_3WqiafcG/my-project');
 
@@ -81,8 +81,6 @@ test('visiting space settings page', function (assert) {
 
 test('changing space name', function (assert) {
 	server.create('meta', { allowAnonymousAccess: false });
-	server.createList('folder', 2);
-	server.createList('permission', 4);
 	authenticateUser();
 	visit('/s/VzMuyEw_3WqiafcG/my-project');
 
@@ -101,8 +99,6 @@ test('changing space name', function (assert) {
 
 test('sharing a space', function (assert) {
 	server.create('meta', { allowAnonymousAccess: false });
-	server.createList('folder', 2);
-	server.createList('permission', 4);
 	authenticateUser();
 	visit('/s/VzMuyEw_3WqiafcG/my-project');
 
@@ -118,12 +114,8 @@ test('sharing a space', function (assert) {
 	});
 });
 
-// Test will pass after moving to factories
 test('changing space permissions', function (assert) {
 	server.create('meta', { allowAnonymousAccess: false });
-	server.createList('folder', 2);
-	server.createList('permission', 4);
-	server.createList('folder-permission', 2);
 	authenticateUser();
 
 	visit('/s/VzMygEw_3WrtFzto/test');
@@ -152,8 +144,6 @@ test('changing space permissions', function (assert) {
 
 test('deleting a space', function (assert) {
 	server.create('meta', { allowAnonymousAccess: false });
-	server.createList('folder', 2);
-	server.createList('permission', 4);
 	authenticateUser();
 	visit('/s/VzMuyEw_3WqiafcG/my-project');
 
@@ -167,10 +157,8 @@ test('deleting a space', function (assert) {
 	});
 });
 
-skip('deleting a document', function (assert) {
+test('deleting a document', function (assert) {
 	server.create('meta', { allowAnonymousAccess: false });
-	server.createList('folder', 2);
-	server.createList('permission', 4);
 	authenticateUser();
 	visit('/s/VzMuyEw_3WqiafcG/my-project');
 
@@ -188,14 +176,33 @@ skip('deleting a document', function (assert) {
 		assert.equal(deleteButton.length, 1, 'Delete button displayed after selecting document');
 	});
 
-	click('#delete-documents-button');
-
-	waitToAppear('.drop-content');
-	click('.actions div:contains(Delete)', 'body');
+	click('.actions div:contains(Delete) .flat-red');
 
 	andThen(function () {
 		let numberOfDocuments = find('.documents-list li');
 		assert.equal(numberOfDocuments.length, 1, '1 documents is displayed');
+	});
+});
+
+test('clicking a document title displays the document', function (assert) {
+	server.create('meta', { allowAnonymousAccess: false });
+	authenticateUser();
+	visit('/s/VzMygEw_3WrtFzto/test');
+
+	click('a .title:contains(README)');
+
+	andThen(function () {
+		findWithAssert('#add-section-button');
+		findWithAssert('#delete-document-button');
+		findWithAssert('#print-document-button');
+		findWithAssert('#save-template-button');
+		findWithAssert('#attachment-button');
+		findWithAssert('#set-meta-button');
+		findWithAssert('.name.space-name');
+		findWithAssert('.document-sidebar');
+		let title = find('.zone-header .title').text().trim();
+		assert.equal(title, 'README', 'document displayed correctly');
+		assert.equal(currentURL(), '/s/VzMygEw_3WrtFzto/test/d/VzMvJEw_3WqiafcI/readme');
 	});
 });
 

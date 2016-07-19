@@ -15,8 +15,6 @@ import moduleForAcceptance from 'documize/tests/helpers/module-for-acceptance';
 moduleForAcceptance('Acceptance | user profile');
 
 test('visiting /profile', function (assert) {
-	server.createList('folder', 2);
-	server.createList('user', 2);
 	authenticateUser();
 	visit('/profile');
 
@@ -29,8 +27,6 @@ test('visiting /profile', function (assert) {
 });
 
 test('changing user details and email ', function (assert) {
-	server.createList('folder', 2);
-	server.createList('user', 2);
 	authenticateUser();
 	visit('/profile');
 
