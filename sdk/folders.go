@@ -18,8 +18,8 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/documize/community/documize/api/endpoint/models"
-	"github.com/documize/community/documize/api/entity"
+	"github.com/documize/community/core/api/endpoint/models"
+	"github.com/documize/community/core/api/entity"
 )
 
 // GetFolders returns the folders that the current user can see.

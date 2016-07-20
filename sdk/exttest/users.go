@@ -15,7 +15,7 @@ import (
 	"testing"
 
 	"github.com/documize/community/sdk"
-	"github.com/documize/community/documize/api/entity"
+	"github.com/documize/community/core/api/entity"
 )
 
 func testUsers(t *testing.T, c *documize.Client) {

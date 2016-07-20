@@ -22,7 +22,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/documize/community/documize/api/entity"
+	"github.com/documize/community/core/api/entity"
 )
 
 func (c *Client) upload(folderID, fileName string, fileReader io.Reader) (*entity.Document, error) {

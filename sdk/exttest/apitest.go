@@ -13,7 +13,7 @@ package exttest
 
 import (
 	"bytes"
-	"github.com/documize/community/documize/api/entity"
+	"github.com/documize/community/core/api/entity"
 	"github.com/documize/community/sdk"
 	"io/ioutil"
 	"os"

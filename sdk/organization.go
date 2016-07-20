@@ -18,7 +18,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/documize/community/documize/api/entity"
+	"github.com/documize/community/core/api/entity"
 )
 
 // GetOrganizations returns the user's organizations.
