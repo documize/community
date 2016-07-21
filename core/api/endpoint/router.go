@@ -12,131 +12,228 @@
 package endpoint
 
 import (
-	"fmt"
+	"encoding/json"
 	"net/http"
-	"os"
+	"sort"
 	"strings"
 
-	"github.com/codegangsta/negroni"
-	"github.com/documize/community/core/api/plugins"
-	"github.com/documize/community/core/database"
-	"github.com/documize/community/core/web"
-	"github.com/documize/community/core/environment"
 	"github.com/documize/community/core/log"
+	"github.com/documize/community/core/web"
 	"github.com/gorilla/mux"
 )
 
 const (
-	// AppVersion does what it says
-	// Note: versioning scheme is not http://semver.org
-	AppVersion = "0.15.0"
+	// RoutePrefixPublic used for the unsecured api
+	RoutePrefixPublic = "/api/public/"
+	// RoutePrefixPrivate used for secured api (requiring api)
+	RoutePrefixPrivate = "/api/"
+	// RoutePrefixRoot used for unsecured endpoints at root (e.g. robots.txt)
+	RoutePrefixRoot = "/"
 )
 
-var port, certFile, keyFile, forcePort2SSL string
-
-func init() {
-	environment.GetString(&certFile, "cert", false, "the cert.pem file used for https", nil)
-	environment.GetString(&keyFile, "key", false, "the key.pem file used for https", nil)
-	environment.GetString(&port, "port", false, "http/https port number", nil)
-	environment.GetString(&forcePort2SSL, "forcesslport", false, "redirect given http port number to TLS", nil)
+type routeDef struct {
+	Prefix  string
+	Path    string
+	Methods []string
+	Queries []string
 }
 
-var testHost string // used during automated testing
+// RouteFunc describes end-point functions
+type RouteFunc func(http.ResponseWriter, *http.Request)
 
-// Serve the Documize endpoint.
-func Serve(ready chan struct{}) {
-	err := plugins.LibSetup()
+type routeMap map[string]RouteFunc
 
-	if err != nil {
-		log.Error("Terminating before running - invalid plugin.json", err)
-		os.Exit(1)
+var routes = make(routeMap)
+
+func routesKey(prefix, path string, methods, queries []string) (string, error) {
+	rd := routeDef{
+		Prefix:  prefix,
+		Path:    path,
+		Methods: methods,
+		Queries: queries,
 	}
+	b, e := json.Marshal(rd)
+	return string(b), e
+}
 
-	log.Info(fmt.Sprintf("Documize version %s", AppVersion))
+// Add an endpoint to those that will be processed when Serve() is called.
+func Add(prefix, path string, methods, queries []string, endPtFn RouteFunc) error {
+	k, e := routesKey(prefix, path, methods, queries)
+	if e != nil {
+		return e
+	}
+	routes[k] = endPtFn
+	return nil
+}
 
-	router := mux.NewRouter()
+// Remove an endpoint.
+func Remove(prefix, path string, methods, queries []string) error {
+	k, e := routesKey(prefix, path, methods, queries)
+	if e != nil {
+		return e
+	}
+	delete(routes, k)
+	return nil
+}
 
-	router.PathPrefix("/api/public/").Handler(negroni.New(
-		negroni.HandlerFunc(cors),
-		negroni.Wrap(buildUnsecureRoutes()),
-	))
+type routeSortItem struct {
+	def routeDef
+	fun RouteFunc
+	ord int
+}
 
-	router.PathPrefix("/api").Handler(negroni.New(
-		negroni.HandlerFunc(Authorize),
-		negroni.Wrap(buildSecureRoutes()),
-	))
+type routeSorter []routeSortItem
 
-	router.PathPrefix("/").Handler(negroni.New(
-		negroni.HandlerFunc(cors),
-		negroni.Wrap(AppRouter()),
-	))
+func (s routeSorter) Len() int      { return len(s) }
+func (s routeSorter) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
+func (s routeSorter) Less(i, j int) bool {
+	if s[i].def.Prefix == s[j].def.Prefix && s[i].def.Path == s[j].def.Path {
+		return len(s[i].def.Queries) > len(s[j].def.Queries)
+	}
+	return s[i].ord < s[j].ord
+}
 
-	n := negroni.New()
-	n.Use(negroni.NewStatic(web.StaticAssetsFileSystem()))
-	n.Use(negroni.HandlerFunc(cors))
-	n.Use(negroni.HandlerFunc(metrics))
-	n.UseHandler(router)
-	ready <- struct{}{}
-
-	if certFile == "" && keyFile == "" {
-		if port == "" {
-			port = "80"
-		}
-
-		log.Info("Starting non-SSL server on " + port)
-
-		n.Run(testHost + ":" + port)
-	} else {
-		if port == "" {
-			port = "443"
-		}
-
-		if forcePort2SSL != "" {
-			log.Info("Starting non-SSL server on " + forcePort2SSL + " and redirecting to SSL server on  " + port)
-
-			go func() {
-				err := http.ListenAndServe(":"+forcePort2SSL, http.HandlerFunc(
-					func(w http.ResponseWriter, req *http.Request) {
-						var host = strings.Replace(req.Host, forcePort2SSL, port, 1) + req.RequestURI
-						http.Redirect(w, req, "https://"+host, http.StatusMovedPermanently)
-					}))
-				if err != nil {
-					log.Error("ListenAndServe on "+forcePort2SSL, err)
+func buildRoutes(prefix string) *mux.Router {
+	var rs routeSorter
+	for k, v := range routes {
+		var rd routeDef
+		if err := json.Unmarshal([]byte(k), &rd); err != nil {
+			log.Error("buildRoutes json.Unmarshal", err)
+		} else {
+			if rd.Prefix == prefix {
+				order := strings.Index(rd.Path, "{")
+				if order == -1 {
+					order = len(rd.Path)
 				}
-			}()
-		}
-
-		log.Info("Starting SSL server on " + port + " with " + certFile + " " + keyFile)
-
-		server := &http.Server{Addr: ":" + port, Handler: n}
-		server.SetKeepAlivesEnabled(true)
-		if err := server.ListenAndServeTLS(certFile, keyFile); err != nil {
-			log.Error("ListenAndServeTLS on "+port, err)
+				order = -order
+				rs = append(rs, routeSortItem{def: rd, fun: v, ord: order})
+			}
 		}
 	}
-}
-
-func buildUnsecureRoutes() *mux.Router {
+	sort.Sort(rs)
 	router := mux.NewRouter()
+	for _, it := range rs {
+		//fmt.Printf("DEBUG buildRoutes: %d %#v\n", it.ord, it.def)
 
-	router.HandleFunc("/api/public/meta", GetMeta).Methods("GET", "OPTIONS")
-	router.HandleFunc("/api/public/authenticate", Authenticate).Methods("POST", "OPTIONS")
-	router.HandleFunc("/api/public/validate", ValidateAuthToken).Methods("GET", "OPTIONS")
-	router.HandleFunc("/api/public/forgot", ForgotUserPassword).Methods("POST", "OPTIONS")
-	router.HandleFunc("/api/public/reset/{token}", ResetUserPassword).Methods("POST", "OPTIONS")
-	router.HandleFunc("/api/public/share/{folderID}", AcceptSharedFolder).Methods("POST", "OPTIONS")
-	router.HandleFunc("/api/public/attachments/{orgID}/{job}/{fileID}", AttachmentDownload).Methods("GET", "OPTIONS")
-	router.HandleFunc("/api/public/version", version).Methods("GET", "OPTIONS")
-
+		x := router.HandleFunc(it.def.Prefix+it.def.Path, it.fun)
+		if len(it.def.Methods) > 0 {
+			y := x.Methods(it.def.Methods...)
+			if len(it.def.Queries) > 0 {
+				y.Queries(it.def.Queries...)
+			}
+		}
+	}
 	return router
 }
 
+func init() { // add Unsecure Routes
+	log.IfErr(Add(RoutePrefixPublic, "meta", []string{"GET", "OPTIONS"}, nil, GetMeta))
+	log.IfErr(Add(RoutePrefixPublic, "authenticate", []string{"POST", "OPTIONS"}, nil, Authenticate))
+	log.IfErr(Add(RoutePrefixPublic, "validate", []string{"GET", "OPTIONS"}, nil, ValidateAuthToken))
+	log.IfErr(Add(RoutePrefixPublic, "forgot", []string{"POST", "OPTIONS"}, nil, ForgotUserPassword))
+	log.IfErr(Add(RoutePrefixPublic, "reset/{token}", []string{"POST", "OPTIONS"}, nil, ResetUserPassword))
+	log.IfErr(Add(RoutePrefixPublic, "share/{folderID}", []string{"POST", "OPTIONS"}, nil, AcceptSharedFolder))
+	log.IfErr(Add(RoutePrefixPublic, "attachments/{orgID}/{job}/{fileID}", []string{"GET", "OPTIONS"}, nil, AttachmentDownload))
+	log.IfErr(Add(RoutePrefixPublic, "version", []string{"GET", "OPTIONS"}, nil, version))
+}
+
+/*
+func buildUnsecureRoutes() *mux.Router {
+	router := mux.NewRouter()
+
+		router.HandleFunc("/api/public/meta", GetMeta).Methods("GET", "OPTIONS")
+		router.HandleFunc("/api/public/authenticate", Authenticate).Methods("POST", "OPTIONS")
+		router.HandleFunc("/api/public/validate", ValidateAuthToken).Methods("GET", "OPTIONS")
+		router.HandleFunc("/api/public/forgot", ForgotUserPassword).Methods("POST", "OPTIONS")
+		router.HandleFunc("/api/public/reset/{token}", ResetUserPassword).Methods("POST", "OPTIONS")
+		router.HandleFunc("/api/public/share/{folderID}", AcceptSharedFolder).Methods("POST", "OPTIONS")
+		router.HandleFunc("/api/public/attachments/{orgID}/{job}/{fileID}", AttachmentDownload).Methods("GET", "OPTIONS")
+		router.HandleFunc("/api/public/version", version).Methods("GET", "OPTIONS")
+
+	return router
+}
+*/
+
+func init() { // add secure routes
+	// Import & Convert Document
+	log.IfErr(Add(RoutePrefixPrivate, "import/folder/{folderID}", []string{"POST", "OPTIONS"}, nil, UploadConvertDocument))
+
+	// Document
+	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/export", []string{"GET", "OPTIONS"}, nil, GetDocumentAsDocx))
+	log.IfErr(Add(RoutePrefixPrivate, "documents", []string{"GET", "OPTIONS"}, []string{"filter", "tag"}, GetDocumentsByTag))
+	log.IfErr(Add(RoutePrefixPrivate, "documents", []string{"GET", "OPTIONS"}, nil, GetDocumentsByFolder))
+	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}", []string{"GET", "OPTIONS"}, nil, GetDocument))
+	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}", []string{"PUT", "OPTIONS"}, nil, UpdateDocument))
+	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}", []string{"DELETE", "OPTIONS"}, nil, DeleteDocument))
+
+	// Document Meta
+	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/meta", []string{"GET", "OPTIONS"}, nil, GetDocumentMeta))
+
+	// Document Page
+	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/pages/level", []string{"POST", "OPTIONS"}, nil, ChangeDocumentPageLevel))
+	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/pages/sequence", []string{"POST", "OPTIONS"}, nil, ChangeDocumentPageSequence))
+	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/pages/batch", []string{"POST", "OPTIONS"}, nil, GetDocumentPagesBatch))
+	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/pages", []string{"GET", "OPTIONS"}, nil, GetDocumentPages))
+	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/pages/{pageID}", []string{"PUT", "OPTIONS"}, nil, UpdateDocumentPage))
+	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/pages/{pageID}", []string{"DELETE", "OPTIONS"}, nil, DeleteDocumentPage))
+	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/pages/{pageID}", []string{"POST", "OPTIONS"}, nil, DeleteDocumentPages))
+	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/pages/{pageID}", []string{"GET", "OPTIONS"}, nil, GetDocumentPage))
+	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/pages", []string{"POST", "OPTIONS"}, nil, AddDocumentPage))
+	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/attachments", []string{"GET", "OPTIONS"}, nil, GetAttachments))
+	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/attachments/{attachmentID}", []string{"DELETE", "OPTIONS"}, nil, DeleteAttachment))
+	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/attachments", []string{"POST", "OPTIONS"}, nil, AddAttachments))
+
+	// Document Meta
+	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/pages/{pageID}/meta", []string{"GET", "OPTIONS"}, nil, GetDocumentPageMeta))
+
+	// Organization
+	log.IfErr(Add(RoutePrefixPrivate, "organizations/{orgID}", []string{"GET", "OPTIONS"}, nil, GetOrganization))
+	log.IfErr(Add(RoutePrefixPrivate, "organizations/{orgID}", []string{"PUT", "OPTIONS"}, nil, UpdateOrganization))
+
+	// Folder
+	log.IfErr(Add(RoutePrefixPrivate, "folders/{folderID}/move/{moveToId}", []string{"DELETE", "OPTIONS"}, nil, RemoveFolder))
+	log.IfErr(Add(RoutePrefixPrivate, "folders/{folderID}/permissions", []string{"PUT", "OPTIONS"}, nil, SetFolderPermissions))
+	log.IfErr(Add(RoutePrefixPrivate, "folders/{folderID}/permissions", []string{"GET", "OPTIONS"}, nil, GetFolderPermissions))
+	log.IfErr(Add(RoutePrefixPrivate, "folders/{folderID}/invitation", []string{"POST", "OPTIONS"}, nil, InviteToFolder))
+	log.IfErr(Add(RoutePrefixPrivate, "folders", []string{"GET", "OPTIONS"}, []string{"filter", "viewers"}, GetFolderVisibility))
+	log.IfErr(Add(RoutePrefixPrivate, "folders", []string{"POST", "OPTIONS"}, nil, AddFolder))
+	log.IfErr(Add(RoutePrefixPrivate, "folders", []string{"GET", "OPTIONS"}, nil, GetFolders))
+	log.IfErr(Add(RoutePrefixPrivate, "folders/{folderID}", []string{"GET", "OPTIONS"}, nil, GetFolder))
+	log.IfErr(Add(RoutePrefixPrivate, "folders/{folderID}", []string{"PUT", "OPTIONS"}, nil, UpdateFolder))
+
+	// Users
+	log.IfErr(Add(RoutePrefixPrivate, "users/{userID}/password", []string{"POST", "OPTIONS"}, nil, ChangeUserPassword))
+	log.IfErr(Add(RoutePrefixPrivate, "users/{userID}/permissions", []string{"GET", "OPTIONS"}, nil, GetUserFolderPermissions))
+	log.IfErr(Add(RoutePrefixPrivate, "users", []string{"POST", "OPTIONS"}, nil, AddUser))
+	log.IfErr(Add(RoutePrefixPrivate, "users/folder/{folderID}", []string{"GET", "OPTIONS"}, nil, GetFolderUsers))
+	log.IfErr(Add(RoutePrefixPrivate, "users", []string{"GET", "OPTIONS"}, nil, GetOrganizationUsers))
+	log.IfErr(Add(RoutePrefixPrivate, "users/{userID}", []string{"GET", "OPTIONS"}, nil, GetUser))
+	log.IfErr(Add(RoutePrefixPrivate, "users/{userID}", []string{"PUT", "OPTIONS"}, nil, UpdateUser))
+	log.IfErr(Add(RoutePrefixPrivate, "users/{userID}", []string{"DELETE", "OPTIONS"}, nil, DeleteUser))
+
+	// Search
+	log.IfErr(Add(RoutePrefixPrivate, "search", []string{"GET", "OPTIONS"}, nil, SearchDocuments))
+
+	// Templates
+	log.IfErr(Add(RoutePrefixPrivate, "templates", []string{"POST", "OPTIONS"}, nil, SaveAsTemplate))
+	log.IfErr(Add(RoutePrefixPrivate, "templates", []string{"GET", "OPTIONS"}, nil, GetSavedTemplates))
+	log.IfErr(Add(RoutePrefixPrivate, "templates/stock", []string{"GET", "OPTIONS"}, nil, GetStockTemplates))
+	log.IfErr(Add(RoutePrefixPrivate, "templates/{templateID}/folder/{folderID}", []string{"POST", "OPTIONS"}, []string{"type", "stock"}, StartDocumentFromStockTemplate))
+	log.IfErr(Add(RoutePrefixPrivate, "templates/{templateID}/folder/{folderID}", []string{"POST", "OPTIONS"}, []string{"type", "saved"}, StartDocumentFromSavedTemplate))
+
+	// Sections
+	log.IfErr(Add(RoutePrefixPrivate, "sections", []string{"GET", "OPTIONS"}, nil, GetSections))
+	log.IfErr(Add(RoutePrefixPrivate, "sections", []string{"POST", "OPTIONS"}, nil, RunSectionCommand))
+	log.IfErr(Add(RoutePrefixPrivate, "sections/refresh", []string{"GET", "OPTIONS"}, nil, RefreshSections))
+}
+
+/*
 func buildSecureRoutes() *mux.Router {
 	router := mux.NewRouter()
 
-	if web.SiteMode == web.SiteModeSetup {
-		router.HandleFunc("/api/setup", database.Create).Methods("POST", "OPTIONS")
-	}
+	//if web.SiteMode == web.SiteModeSetup {
+	//	router.HandleFunc("/api/setup", database.Create).Methods("POST", "OPTIONS")
+	//}
 
 	// Import & Convert Document
 	router.HandleFunc("/api/import/folder/{folderID}", UploadConvertDocument).Methods("POST", "OPTIONS")
@@ -214,59 +311,19 @@ func buildSecureRoutes() *mux.Router {
 
 	return router
 }
+*/
 
-func cors(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "PUT, GET, POST, DELETE, OPTIONS, PATCH")
-	w.Header().Set("Access-Control-Allow-Headers", "host, content-type, accept, authorization, origin, referer, user-agent, cache-control, x-requested-with")
-	w.Header().Set("Access-Control-Expose-Headers", "x-documize-version")
-
-	if r.Method == "OPTIONS" {
-		if _, err := w.Write([]byte("")); err != nil {
-			log.Error("cors", err)
-		}
-		return
-	}
-
-	next(w, r)
+func init() { // configures single page app handler.
+	log.IfErr(Add(RoutePrefixRoot, "robots.txt", []string{"GET", "OPTIONS"}, nil, GetRobots))
+	log.IfErr(Add(RoutePrefixRoot, "sitemap.xml", []string{"GET", "OPTIONS"}, nil, GetSitemap))
+	log.IfErr(Add(RoutePrefixRoot, "{rest:.*}", nil, nil, web.EmberHandler))
 }
 
-func metrics(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
-	w.Header().Add("X-Documize-Version", AppVersion)
-	w.Header().Add("Cache-Control", "no-cache")
-
-	// Prevent page from being displayed in an iframe
-	w.Header().Add("X-Frame-Options", "DENY")
-
-	// Force SSL delivery
-	// if certFile != "" && keyFile != "" {
-	// 	w.Header().Add("Strict-Transport-Security", "max-age=63072000; includeSubDomains")
-	// }
-
-	next(w, r)
-}
-
-func version(w http.ResponseWriter, r *http.Request) {
-	if _, err := w.Write([]byte(AppVersion)); err != nil {
-		log.Error("versionHandler", err)
-	}
-}
-
+/*
 // AppRouter configures single page app handler.
 func AppRouter() *mux.Router {
 
 	router := mux.NewRouter()
-
-	switch web.SiteMode {
-	case web.SiteModeOffline:
-		log.Info("Serving OFFLINE web app")
-	case web.SiteModeSetup:
-		log.Info("Serving SETUP web app")
-	case web.SiteModeBadDB:
-		log.Info("Serving BAD DATABASE web app")
-	default:
-		log.Info("Starting web app")
-	}
 
 	router.HandleFunc("/robots.txt", GetRobots).Methods("GET", "OPTIONS")
 	router.HandleFunc("/sitemap.xml", GetSitemap).Methods("GET", "OPTIONS")
@@ -274,3 +331,4 @@ func AppRouter() *mux.Router {
 
 	return router
 }
+*/
