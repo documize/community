@@ -8,6 +8,12 @@ Documentation that integrates and snapshots data from the tools you use.
 
 v0.15.0
 
+## OS Support
+
+* Windows
+* Linux
+* OSX
+
 ## Tech stack
 
 * EmberJS v2.5.1

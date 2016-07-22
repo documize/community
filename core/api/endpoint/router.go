@@ -126,7 +126,10 @@ func buildRoutes(prefix string) *mux.Router {
 	return router
 }
 
-func init() { // add Unsecure Routes
+func init() {
+
+	// **** add Unsecure Routes
+
 	log.IfErr(Add(RoutePrefixPublic, "meta", []string{"GET", "OPTIONS"}, nil, GetMeta))
 	log.IfErr(Add(RoutePrefixPublic, "authenticate", []string{"POST", "OPTIONS"}, nil, Authenticate))
 	log.IfErr(Add(RoutePrefixPublic, "validate", []string{"GET", "OPTIONS"}, nil, ValidateAuthToken))
@@ -135,26 +138,9 @@ func init() { // add Unsecure Routes
 	log.IfErr(Add(RoutePrefixPublic, "share/{folderID}", []string{"POST", "OPTIONS"}, nil, AcceptSharedFolder))
 	log.IfErr(Add(RoutePrefixPublic, "attachments/{orgID}/{job}/{fileID}", []string{"GET", "OPTIONS"}, nil, AttachmentDownload))
 	log.IfErr(Add(RoutePrefixPublic, "version", []string{"GET", "OPTIONS"}, nil, version))
-}
 
-/*
-func buildUnsecureRoutes() *mux.Router {
-	router := mux.NewRouter()
+	// **** add secure routes
 
-		router.HandleFunc("/api/public/meta", GetMeta).Methods("GET", "OPTIONS")
-		router.HandleFunc("/api/public/authenticate", Authenticate).Methods("POST", "OPTIONS")
-		router.HandleFunc("/api/public/validate", ValidateAuthToken).Methods("GET", "OPTIONS")
-		router.HandleFunc("/api/public/forgot", ForgotUserPassword).Methods("POST", "OPTIONS")
-		router.HandleFunc("/api/public/reset/{token}", ResetUserPassword).Methods("POST", "OPTIONS")
-		router.HandleFunc("/api/public/share/{folderID}", AcceptSharedFolder).Methods("POST", "OPTIONS")
-		router.HandleFunc("/api/public/attachments/{orgID}/{job}/{fileID}", AttachmentDownload).Methods("GET", "OPTIONS")
-		router.HandleFunc("/api/public/version", version).Methods("GET", "OPTIONS")
-
-	return router
-}
-*/
-
-func init() { // add secure routes
 	// Import & Convert Document
 	log.IfErr(Add(RoutePrefixPrivate, "import/folder/{folderID}", []string{"POST", "OPTIONS"}, nil, UploadConvertDocument))
 
@@ -183,7 +169,7 @@ func init() { // add secure routes
 	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/attachments/{attachmentID}", []string{"DELETE", "OPTIONS"}, nil, DeleteAttachment))
 	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/attachments", []string{"POST", "OPTIONS"}, nil, AddAttachments))
 
-	// Document Meta
+	// Document Page Meta
 	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/pages/{pageID}/meta", []string{"GET", "OPTIONS"}, nil, GetDocumentPageMeta))
 
 	// Organization
@@ -225,110 +211,10 @@ func init() { // add secure routes
 	log.IfErr(Add(RoutePrefixPrivate, "sections", []string{"GET", "OPTIONS"}, nil, GetSections))
 	log.IfErr(Add(RoutePrefixPrivate, "sections", []string{"POST", "OPTIONS"}, nil, RunSectionCommand))
 	log.IfErr(Add(RoutePrefixPrivate, "sections/refresh", []string{"GET", "OPTIONS"}, nil, RefreshSections))
-}
 
-/*
-func buildSecureRoutes() *mux.Router {
-	router := mux.NewRouter()
+	// **** configure single page app handler.
 
-	//if web.SiteMode == web.SiteModeSetup {
-	//	router.HandleFunc("/api/setup", database.Create).Methods("POST", "OPTIONS")
-	//}
-
-	// Import & Convert Document
-	router.HandleFunc("/api/import/folder/{folderID}", UploadConvertDocument).Methods("POST", "OPTIONS")
-
-	// Document
-	router.HandleFunc("/api/documents/{documentID}/export", GetDocumentAsDocx).Methods("GET", "OPTIONS")
-	router.HandleFunc("/api/documents", GetDocumentsByTag).Methods("GET", "OPTIONS").Queries("filter", "tag")
-	router.HandleFunc("/api/documents", GetDocumentsByFolder).Methods("GET", "OPTIONS")
-	router.HandleFunc("/api/documents/{documentID}", GetDocument).Methods("GET", "OPTIONS")
-	router.HandleFunc("/api/documents/{documentID}", UpdateDocument).Methods("PUT", "OPTIONS")
-	router.HandleFunc("/api/documents/{documentID}", DeleteDocument).Methods("DELETE", "OPTIONS")
-
-	// Document Meta
-	router.HandleFunc("/api/documents/{documentID}/meta", GetDocumentMeta).Methods("GET", "OPTIONS")
-
-	// Document Page
-	router.HandleFunc("/api/documents/{documentID}/pages/level", ChangeDocumentPageLevel).Methods("POST", "OPTIONS")
-	router.HandleFunc("/api/documents/{documentID}/pages/sequence", ChangeDocumentPageSequence).Methods("POST", "OPTIONS")
-	router.HandleFunc("/api/documents/{documentID}/pages/batch", GetDocumentPagesBatch).Methods("POST", "OPTIONS")
-	// router.HandleFunc("/api/documents/{documentID}/pages/{pageID}/revisions", GetDocumentPageRevisions).Methods("GET", "OPTIONS")
-	// router.HandleFunc("/api/documents/{documentID}/pages/{pageID}/revisions/{revisionID}", GetDocumentPageDiff).Methods("GET", "OPTIONS")
-	// router.HandleFunc("/api/documents/{documentID}/pages/{pageID}/revisions/{revisionID}", RollbackDocumentPage).Methods("POST", "OPTIONS")
-	router.HandleFunc("/api/documents/{documentID}/pages", GetDocumentPages).Methods("GET", "OPTIONS")
-	router.HandleFunc("/api/documents/{documentID}/pages/{pageID}", UpdateDocumentPage).Methods("PUT", "OPTIONS")
-	router.HandleFunc("/api/documents/{documentID}/pages/{pageID}", DeleteDocumentPage).Methods("DELETE", "OPTIONS")
-	router.HandleFunc("/api/documents/{documentID}/pages/{pageID}", DeleteDocumentPages).Methods("POST", "OPTIONS")
-	router.HandleFunc("/api/documents/{documentID}/pages/{pageID}", GetDocumentPage).Methods("GET", "OPTIONS")
-	router.HandleFunc("/api/documents/{documentID}/pages", AddDocumentPage).Methods("POST", "OPTIONS")
-	router.HandleFunc("/api/documents/{documentID}/attachments", GetAttachments).Methods("GET", "OPTIONS")
-	router.HandleFunc("/api/documents/{documentID}/attachments/{attachmentID}", DeleteAttachment).Methods("DELETE", "OPTIONS")
-	router.HandleFunc("/api/documents/{documentID}/attachments", AddAttachments).Methods("POST", "OPTIONS")
-
-	// Document Meta
-	router.HandleFunc("/api/documents/{documentID}/pages/{pageID}/meta", GetDocumentPageMeta).Methods("GET", "OPTIONS")
-
-	// Organization
-	router.HandleFunc("/api/organizations/{orgID}", GetOrganization).Methods("GET", "OPTIONS")
-	router.HandleFunc("/api/organizations/{orgID}", UpdateOrganization).Methods("PUT", "OPTIONS")
-
-	// Folder
-	router.HandleFunc("/api/folders/{folderID}/move/{moveToId}", RemoveFolder).Methods("DELETE", "OPTIONS")
-	router.HandleFunc("/api/folders/{folderID}/permissions", SetFolderPermissions).Methods("PUT", "OPTIONS")
-	router.HandleFunc("/api/folders/{folderID}/permissions", GetFolderPermissions).Methods("GET", "OPTIONS")
-	router.HandleFunc("/api/folders/{folderID}/invitation", InviteToFolder).Methods("POST", "OPTIONS")
-	router.HandleFunc("/api/folders", GetFolderVisibility).Methods("GET", "OPTIONS").Queries("filter", "viewers")
-	router.HandleFunc("/api/folders", AddFolder).Methods("POST", "OPTIONS")
-	router.HandleFunc("/api/folders", GetFolders).Methods("GET", "OPTIONS")
-	router.HandleFunc("/api/folders/{folderID}", GetFolder).Methods("GET", "OPTIONS")
-	router.HandleFunc("/api/folders/{folderID}", UpdateFolder).Methods("PUT", "OPTIONS")
-
-	// Users
-	router.HandleFunc("/api/users/{userID}/password", ChangeUserPassword).Methods("POST", "OPTIONS")
-	router.HandleFunc("/api/users/{userID}/permissions", GetUserFolderPermissions).Methods("GET", "OPTIONS")
-	router.HandleFunc("/api/users", AddUser).Methods("POST", "OPTIONS")
-	router.HandleFunc("/api/users/folder/{folderID}", GetFolderUsers).Methods("GET", "OPTIONS")
-	router.HandleFunc("/api/users", GetOrganizationUsers).Methods("GET", "OPTIONS")
-	router.HandleFunc("/api/users/{userID}", GetUser).Methods("GET", "OPTIONS")
-	router.HandleFunc("/api/users/{userID}", UpdateUser).Methods("PUT", "OPTIONS")
-	router.HandleFunc("/api/users/{userID}", DeleteUser).Methods("DELETE", "OPTIONS")
-
-	// Search
-	router.HandleFunc("/api/search", SearchDocuments).Methods("GET", "OPTIONS")
-
-	// Templates
-	router.HandleFunc("/api/templates", SaveAsTemplate).Methods("POST", "OPTIONS")
-	router.HandleFunc("/api/templates", GetSavedTemplates).Methods("GET", "OPTIONS")
-	router.HandleFunc("/api/templates/stock", GetStockTemplates).Methods("GET", "OPTIONS")
-	router.HandleFunc("/api/templates/{templateID}/folder/{folderID}", StartDocumentFromStockTemplate).Methods("POST", "OPTIONS").Queries("type", "stock")
-	router.HandleFunc("/api/templates/{templateID}/folder/{folderID}", StartDocumentFromSavedTemplate).Methods("POST", "OPTIONS").Queries("type", "saved")
-
-	// Sections
-	router.HandleFunc("/api/sections", GetSections).Methods("GET", "OPTIONS")
-	router.HandleFunc("/api/sections", RunSectionCommand).Methods("POST", "OPTIONS")
-	router.HandleFunc("/api/sections/refresh", RefreshSections).Methods("GET", "OPTIONS")
-
-	return router
-}
-*/
-
-func init() { // configures single page app handler.
 	log.IfErr(Add(RoutePrefixRoot, "robots.txt", []string{"GET", "OPTIONS"}, nil, GetRobots))
 	log.IfErr(Add(RoutePrefixRoot, "sitemap.xml", []string{"GET", "OPTIONS"}, nil, GetSitemap))
 	log.IfErr(Add(RoutePrefixRoot, "{rest:.*}", nil, nil, web.EmberHandler))
 }
-
-/*
-// AppRouter configures single page app handler.
-func AppRouter() *mux.Router {
-
-	router := mux.NewRouter()
-
-	router.HandleFunc("/robots.txt", GetRobots).Methods("GET", "OPTIONS")
-	router.HandleFunc("/sitemap.xml", GetSitemap).Methods("GET", "OPTIONS")
-	router.HandleFunc("/{rest:.*}", web.EmberHandler)
-
-	return router
-}
-*/

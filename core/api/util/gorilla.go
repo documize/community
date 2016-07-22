@@ -9,11 +9,15 @@
 //
 // https://documize.com
 
-import Mirage, { faker } from 'ember-cli-mirage';
+package util
 
-export default Mirage.Factory.extend({
-	"folderId": faker.list.cycle('V0Vy5Uw_3QeDAMW9', 'VzMuyEw_3WqiafcG', 'VzMygEw_3WrtFzto', 'VzMygEw_3WrtFzto', "VzMygEw_3WrtFzto"),
-	"userId": faker.list.cycle('VzMuyEw_3WqiafcE', 'VzMuyEw_3WqiafcE', 'VzMuyEw_3WqiafcE', '', 0),
-	"canView": true,
-	"canEdit": faker.list.cycle(true, true, true, false, false)
-});
+import (
+	"net/http"
+
+	"github.com/gorilla/mux"
+)
+
+// Params returns the paramaters to a gorilla mux request.
+func Params(r *http.Request) map[string]string {
+	return mux.Vars(r)
+}
