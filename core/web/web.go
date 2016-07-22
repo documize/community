@@ -12,16 +12,12 @@
 // Package web contains the Documize static web data.
 package web
 
-//go:generate go-bindata-assetfs -pkg web bindata/...
-
 import (
 	"html/template"
 	"net/http"
 
 	"github.com/documize/community/core/api/util"
 	"github.com/documize/community/core/environment"
-
-	assetfs "github.com/elazarl/go-bindata-assetfs"
 )
 
 // SiteMode defines that the web server should show the system to be in a particular state.
@@ -48,6 +44,16 @@ func init() {
 	SiteInfo.DBhash = util.GenerateRandomPassword()                                        // do this only once
 }
 
+// EmbedHandler is defined in each embed directory
+type EmbedHandler interface {
+	Asset(string) ([]byte, error)
+	AssetDir(string) ([]string, error)
+	StaticAssetsFileSystem() http.FileSystem
+}
+
+// Embed allows access to the embedded data
+var Embed EmbedHandler
+
 // EmberHandler provides the webserver for pages developed using the Ember programming environment.
 func EmberHandler(w http.ResponseWriter, r *http.Request) {
 	filename := "index.html"
@@ -62,7 +68,7 @@ func EmberHandler(w http.ResponseWriter, r *http.Request) {
 		SiteInfo.DBhash = ""
 	}
 
-	data, err := Asset("bindata/" + filename)
+	data, err := Embed.Asset("bindata/" + filename)
 	if err != nil {
 		// Asset was not found.
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -78,10 +84,20 @@ func EmberHandler(w http.ResponseWriter, r *http.Request) {
 
 // StaticAssetsFileSystem data encoded in the go:generate above.
 func StaticAssetsFileSystem() http.FileSystem {
-	return &assetfs.AssetFS{Asset: Asset, AssetDir: AssetDir, AssetInfo: AssetInfo, Prefix: "bindata/public"}
+	return Embed.StaticAssetsFileSystem()
+	//return &assetfs.AssetFS{Asset: Asset, AssetDir: AssetDir, AssetInfo: AssetInfo, Prefix: "bindata/public"}
 }
 
 // ReadFile is intended to substitute for ioutil.ReadFile().
 func ReadFile(filename string) ([]byte, error) {
-	return Asset("bindata/" + filename)
+	return Embed.Asset("bindata/" + filename)
+}
+
+// Asset fetch.
+func Asset(location string) ([]byte, error) {
+	return Embed.Asset(location)
+}
+
+func AssetDir(dir string) ([]string, error) {
+	return Embed.AssetDir(dir)
 }
