@@ -18,6 +18,7 @@ _convert
 bin/*
 dist/*
 embed/bindata/*
+embed/bindata_assetfs.go
 app/dist/*
 app/dist-prod/*
 
@@ -51,7 +52,6 @@ _testmain.go
 /app/testem.log
 
 # Misc.
-core/web/bindata_assetfs.go
 build
 plugin-msword/plugin-msword
 plugin-msword/plugin-msword-osx
