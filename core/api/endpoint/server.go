@@ -58,7 +58,7 @@ func Serve(ready chan struct{}) {
 	case web.SiteModeOffline:
 		log.Info("Serving OFFLINE web app")
 	case web.SiteModeSetup:
-		Add(RoutePrefixPrivate, "/setup", []string{"POST", "OPTIONS"}, nil, database.Create)
+		Add(RoutePrefixPrivate, "setup", []string{"POST", "OPTIONS"}, nil, database.Create)
 		log.Info("Serving SETUP web app")
 	case web.SiteModeBadDB:
 		log.Info("Serving BAD DATABASE web app")
