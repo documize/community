@@ -13,30 +13,30 @@ ember b -o dist-prod/ --environment=production intercom=$intercomKey
 
 echo "Copying Ember assets..."
 cd ..
-rm -rf core/web/bindata/public
-mkdir -p core/web/bindata/public
-cp -r app/dist-prod/assets core/web/bindata/public
-cp -r app/dist-prod/codemirror core/web/bindata/public/codemirror
-cp -r app/dist-prod/tinymce core/web/bindata/public/tinymce
-cp -r app/dist-prod/sections core/web/bindata/public/sections
-cp app/dist-prod/*.* core/web/bindata
-cp app/dist-prod/favicon.ico core/web/bindata/public
-rm -rf core/web/bindata/mail
-mkdir -p core/web/bindata/mail
-cp core/api/mail/*.html core/web/bindata/mail
-cp core/database/templates/*.html core/web/bindata
-rm -rf core/web/bindata/scripts
-mkdir -p core/web/bindata/scripts
-cp -r core/database/scripts/autobuild/*.sql core/web/bindata/scripts
+rm -rf embed/bindata/public
+mkdir -p embed/bindata/public
+cp -r app/dist-prod/assets embed/bindata/public
+cp -r app/dist-prod/codemirror embed/bindata/public/codemirror
+cp -r app/dist-prod/tinymce embed/bindata/public/tinymce
+cp -r app/dist-prod/sections embed/bindata/public/sections
+cp app/dist-prod/*.* embed/bindata
+cp app/dist-prod/favicon.ico embed/bindata/public
+rm -rf embed/bindata/mail
+mkdir -p embed/bindata/mail
+cp core/api/mail/*.html embed/bindata/mail
+cp core/database/templates/*.html embed/bindata
+rm -rf embed/bindata/scripts
+mkdir -p embed/bindata/scripts
+cp -r core/database/scripts/autobuild/*.sql embed/bindata/scripts
 
 echo "Generating in-memory static assets..."
 go get -u github.com/jteeuwen/go-bindata/...
 go get -u github.com/elazarl/go-bindata-assetfs/...
-cd core/web
+cd embed
 go generate
 
 echo "Compiling app..."
-cd ../..
+cd ..
 for arch in amd64 ; do
     for os in darwin linux windows ; do
         if [ "$os" == "windows" ] ; then

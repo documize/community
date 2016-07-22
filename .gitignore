@@ -17,7 +17,7 @@ _convert
 # Documize build artifacts
 bin/*
 dist/*
-/core/web/bindata/*
+embed/bindata/*
 app/dist/*
 app/dist-prod/*
 
