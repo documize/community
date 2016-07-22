@@ -20,7 +20,7 @@ import (
 	"mime/multipart"
 	"net/http"
 
-	"github.com/documize/community/documize/api/entity"
+	"github.com/documize/community/core/api/entity"
 )
 
 const emptyBraces = "{}"
