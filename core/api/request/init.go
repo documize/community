@@ -15,14 +15,15 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 
 	"github.com/documize/community/core/database"
-	"github.com/documize/community/core/web"
 	"github.com/documize/community/core/environment"
 	"github.com/documize/community/core/log"
 	"github.com/documize/community/core/utility"
+	"github.com/documize/community/core/web"
 )
 
 var connectionString string
@@ -59,6 +60,7 @@ func init() {
 
 			Db.SetMaxIdleConns(30)
 			Db.SetMaxOpenConns(100)
+			Db.SetConnMaxLifetime(time.Second * 14400)
 
 			err = Db.Ping()
 

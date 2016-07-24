@@ -18,7 +18,6 @@ _convert
 bin/*
 dist/*
 embed/bindata/*
-embed/bindata_assetfs.go
 app/dist/*
 app/dist-prod/*
 

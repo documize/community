@@ -18,6 +18,7 @@ import (
 	"strings"
 
 	"github.com/codegangsta/negroni"
+	"github.com/documize/community/core"
 	"github.com/documize/community/core/api/plugins"
 	"github.com/documize/community/core/database"
 	"github.com/documize/community/core/environment"
@@ -26,15 +27,11 @@ import (
 	"github.com/gorilla/mux"
 )
 
-const (
-	// AppVersion does what it says
-	// Note: versioning scheme is not http://semver.org
-	AppVersion = "0.15.2"
-)
-
 var port, certFile, keyFile, forcePort2SSL string
+var product core.ProdInfo
 
 func init() {
+	product = core.Product()
 	environment.GetString(&certFile, "cert", false, "the cert.pem file used for https", nil)
 	environment.GetString(&keyFile, "key", false, "the key.pem file used for https", nil)
 	environment.GetString(&port, "port", false, "http/https port number", nil)
@@ -52,7 +49,7 @@ func Serve(ready chan struct{}) {
 		os.Exit(1)
 	}
 
-	log.Info(fmt.Sprintf("Documize version %s", AppVersion))
+	log.Info(fmt.Sprintf("Starting %s version %s", product.Title, product.Version))
 
 	switch web.SiteMode {
 	case web.SiteModeOffline:
@@ -148,7 +145,8 @@ func cors(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 }
 
 func metrics(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
-	w.Header().Add("X-Documize-Version", AppVersion)
+
+	w.Header().Add("X-Documize-Version", product.Version)
 	w.Header().Add("Cache-Control", "no-cache")
 
 	// Prevent page from being displayed in an iframe
@@ -163,7 +161,7 @@ func metrics(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 }
 
 func version(w http.ResponseWriter, r *http.Request) {
-	if _, err := w.Write([]byte(AppVersion)); err != nil {
+	if _, err := w.Write([]byte(product.Version)); err != nil {
 		log.Error("versionHandler", err)
 	}
 }
