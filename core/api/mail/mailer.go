@@ -20,8 +20,8 @@ import (
 	"net/smtp"
 
 	"github.com/documize/community/core/api/request"
-	"github.com/documize/community/core/web"
 	"github.com/documize/community/core/log"
+	"github.com/documize/community/core/web"
 )
 
 // InviteNewUser invites someone new providing credentials, explaining the product and stating who is inviting them.
@@ -44,8 +44,8 @@ func InviteNewUser(recipient, inviter, url, username, password string) {
 
 	subject := fmt.Sprintf("%s has invited you to Documize", inviter)
 
-	e := newEmail()
-	e.From = creds.SMTPsender()
+	e := NewEmail()
+	e.From = SMTPCreds.SMTPsender()
 	e.To = []string{recipient}
 	e.Subject = subject
 
@@ -68,7 +68,7 @@ func InviteNewUser(recipient, inviter, url, username, password string) {
 	log.IfErr(t.Execute(buffer, &parameters))
 	e.HTML = buffer.Bytes()
 
-	err = e.Send(getHost(), getAuth())
+	err = e.Send(GetHost(), GetAuth())
 
 	if err != nil {
 		log.Error(fmt.Sprintf("%s - unable to send email", method), err)
@@ -95,8 +95,8 @@ func InviteExistingUser(recipient, inviter, url string) {
 
 	subject := fmt.Sprintf("%s has invited you to their Documize account", inviter)
 
-	e := newEmail()
-	e.From = creds.SMTPsender()
+	e := NewEmail()
+	e.From = SMTPCreds.SMTPsender()
 	e.To = []string{recipient}
 	e.Subject = subject
 
@@ -115,7 +115,7 @@ func InviteExistingUser(recipient, inviter, url string) {
 	log.IfErr(t.Execute(buffer, &parameters))
 	e.HTML = buffer.Bytes()
 
-	err = e.Send(getHost(), getAuth())
+	err = e.Send(GetHost(), GetAuth())
 
 	if err != nil {
 		log.Error(fmt.Sprintf("%s - unable to send email", method), err)
@@ -137,8 +137,8 @@ func PasswordReset(recipient, url string) {
 
 	subject := "Documize password reset request"
 
-	e := newEmail()
-	e.From = creds.SMTPsender() //e.g. "Documize <hello@documize.com>"
+	e := NewEmail()
+	e.From = SMTPCreds.SMTPsender() //e.g. "Documize <hello@documize.com>"
 	e.To = []string{recipient}
 	e.Subject = subject
 
@@ -155,7 +155,7 @@ func PasswordReset(recipient, url string) {
 	log.IfErr(t.Execute(buffer, &parameters))
 	e.HTML = buffer.Bytes()
 
-	err = e.Send(getHost(), getAuth())
+	err = e.Send(GetHost(), GetAuth())
 
 	if err != nil {
 		log.Error(fmt.Sprintf("%s - unable to send email", method), err)
@@ -182,8 +182,8 @@ func ShareFolderExistingUser(recipient, inviter, url, folder, intro string) {
 
 	subject := fmt.Sprintf("%s has shared %s with you", inviter, folder)
 
-	e := newEmail()
-	e.From = creds.SMTPsender()
+	e := NewEmail()
+	e.From = SMTPCreds.SMTPsender()
 	e.To = []string{recipient}
 	e.Subject = subject
 
@@ -206,7 +206,7 @@ func ShareFolderExistingUser(recipient, inviter, url, folder, intro string) {
 	log.IfErr(t.Execute(buffer, &parameters))
 	e.HTML = buffer.Bytes()
 
-	err = e.Send(getHost(), getAuth())
+	err = e.Send(GetHost(), GetAuth())
 
 	if err != nil {
 		log.Error(fmt.Sprintf("%s - unable to send email", method), err)
@@ -233,8 +233,8 @@ func ShareFolderNewUser(recipient, inviter, url, folder, invitationMessage strin
 
 	subject := fmt.Sprintf("%s has shared %s with you on Documize", inviter, folder)
 
-	e := newEmail()
-	e.From = creds.SMTPsender()
+	e := NewEmail()
+	e.From = SMTPCreds.SMTPsender()
 	e.To = []string{recipient}
 	e.Subject = subject
 
@@ -257,14 +257,15 @@ func ShareFolderNewUser(recipient, inviter, url, folder, invitationMessage strin
 	log.IfErr(t.Execute(buffer, &parameters))
 	e.HTML = buffer.Bytes()
 
-	err = e.Send(getHost(), getAuth())
+	err = e.Send(GetHost(), GetAuth())
 
 	if err != nil {
 		log.Error(fmt.Sprintf("%s - unable to send email", method), err)
 	}
 }
 
-var creds = struct{ SMTPuserid, SMTPpassword, SMTPhost, SMTPport, SMTPsender func() string }{
+// SMTPCreds return SMTP configuration.
+var SMTPCreds = struct{ SMTPuserid, SMTPpassword, SMTPhost, SMTPport, SMTPsender func() string }{
 	func() string { return request.ConfigString("SMTP", "userid") },
 	func() string { return request.ConfigString("SMTP", "password") },
 	func() string { return request.ConfigString("SMTP", "host") },
@@ -278,16 +279,16 @@ var creds = struct{ SMTPuserid, SMTPpassword, SMTPhost, SMTPport, SMTPsender fun
 	func() string { return request.ConfigString("SMTP", "sender") },
 }
 
-// Helper to return SMTP credentials
-func getAuth() smtp.Auth {
-	a := smtp.PlainAuth("", creds.SMTPuserid(), creds.SMTPpassword(), creds.SMTPhost())
-	//fmt.Printf("DEBUG getAuth() = %#v\n", a)
+// GetAuth to return SMTP credentials
+func GetAuth() smtp.Auth {
+	a := smtp.PlainAuth("", SMTPCreds.SMTPuserid(), SMTPCreds.SMTPpassword(), SMTPCreds.SMTPhost())
+	//fmt.Printf("DEBUG GetAuth() = %#v\n", a)
 	return a
 }
 
-// Helper to return SMTP host details
-func getHost() string {
-	h := creds.SMTPhost() + ":" + creds.SMTPport()
-	//fmt.Printf("DEBUG getHost() = %#v\n", h)
+// GetHost to return SMTP host details
+func GetHost() string {
+	h := SMTPCreds.SMTPhost() + ":" + SMTPCreds.SMTPport()
+	//fmt.Printf("DEBUG GetHost() = %#v\n", h)
 	return h
 }
