@@ -1,0 +1,27 @@
+<div class="input-form form-borderless">
+    <form>
+        <div class="input-control">
+            <label>Firstname</label>
+            {{focus-input id="firstname" type="text" value=model.firstname class=hasFirstnameError}}
+        </div>
+        <div class="input-control">
+            <label>Lastname</label>
+            {{input id="lastname" type="text" value=model.lastname class=hasLastnameError}}
+        </div>
+        <div class="input-control">
+            <label>Email</label>
+            {{input id="email" type="text" value=model.email class=hasEmailError}}
+        </div>
+        <div class="input-control">
+            <label>Password</label>
+            <div class="tip">Optional change your password</div>
+            {{input id="password" type="password" value=password.password class=hasPasswordError}}
+        </div>
+        <div class="input-control">
+            <label>Confirm Password</label>
+            <div class="tip">Confirm your new password</div>
+            {{input id="confirmPassword" type="password" value=password.confirmation class=hasConfirmPasswordError}}
+        </div>
+        <div class="regular-button button-blue" {{ action 'save' }}>save</div>
+    </form>
+</div>
