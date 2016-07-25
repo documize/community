@@ -80,7 +80,7 @@ Disallow: /
 
 	// Anonymous access would mean we allow bots to crawl.
 	if org.AllowAnonymousAccess {
-		sitemap := getAppURL(p.Context, "sitemap.xml")
+		sitemap := p.Context.GetAppURL("sitemap.xml")
 		robots = fmt.Sprintf(
 			`User-agent: *
 Disallow: /settings/
@@ -138,7 +138,7 @@ func GetSitemap(w http.ResponseWriter, r *http.Request) {
 
 		for _, folder := range folders {
 			var item sitemapItem
-			item.URL = getAppURL(p.Context, fmt.Sprintf("s/%s/%s", folder.RefID, utility.MakeSlug(folder.Name)))
+			item.URL = p.Context.GetAppURL(fmt.Sprintf("s/%s/%s", folder.RefID, utility.MakeSlug(folder.Name)))
 			item.Date = folder.Revised.Format("2006-01-02T15:04:05.999999-07:00")
 			items = append(items, item)
 		}
@@ -152,7 +152,7 @@ func GetSitemap(w http.ResponseWriter, r *http.Request) {
 
 		for _, document := range documents {
 			var item sitemapItem
-			item.URL = getAppURL(p.Context, fmt.Sprintf("s/%s/%s/d/%s/%s",
+			item.URL = p.Context.GetAppURL(fmt.Sprintf("s/%s/%s/d/%s/%s",
 				document.FolderID, utility.MakeSlug(document.Folder), document.DocumentID, utility.MakeSlug(document.Document)))
 			item.Date = document.Revised.Format("2006-01-02T15:04:05.999999-07:00")
 			items = append(items, item)

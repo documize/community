@@ -174,13 +174,13 @@ func AddUser(w http.ResponseWriter, r *http.Request) {
 		auth := fmt.Sprintf("%s:%s:%s", p.Context.AppURL, userModel.Email, requestedPassword[:size])
 		encrypted := utility.EncodeBase64([]byte(auth))
 
-		url := fmt.Sprintf("%s/%s", getAppURL(p.Context, "auth/sso"), url.QueryEscape(string(encrypted)))
+		url := fmt.Sprintf("%s/%s", p.Context.GetAppURL("auth/sso"), url.QueryEscape(string(encrypted)))
 		go mail.InviteNewUser(userModel.Email, inviter.Fullname(), url, userModel.Email, requestedPassword)
 
 		log.Info(fmt.Sprintf("%s invited by %s on %s", userModel.Email, inviter.Email, p.Context.AppURL))
 
 	} else {
-		go mail.InviteExistingUser(userModel.Email, inviter.Fullname(), getAppURL(p.Context, ""))
+		go mail.InviteExistingUser(userModel.Email, inviter.Fullname(), p.Context.GetAppURL(""))
 
 		log.Info(fmt.Sprintf("%s is giving access to an existing user %s", inviter.Email, userModel.Email))
 	}
@@ -605,9 +605,7 @@ func ForgotUserPassword(w http.ResponseWriter, r *http.Request) {
 
 	log.IfErr(tx.Commit())
 
-	appURL := getAppURL(p.Context, fmt.Sprintf("auth/reset/%s", token))
-
-	fmt.Println(appURL)
+	appURL := p.Context.GetAppURL(fmt.Sprintf("auth/reset/%s", token))
 
 	go mail.PasswordReset(user.Email, appURL)
 
