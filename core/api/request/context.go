@@ -42,6 +42,17 @@ type Context struct {
 	Transaction          *sqlx.Tx
 }
 
+//GetAppURL returns full HTTP url for the app
+func (c *Context) GetAppURL(endpoint string) string {
+	scheme := "http://"
+
+	if c.SSL {
+		scheme = "https://"
+	}
+
+	return fmt.Sprintf("%s%s/%s", scheme, c.AppURL, endpoint)
+}
+
 // NewContext simply returns a blank Context type.
 func NewContext() Context {
 	return Context{}

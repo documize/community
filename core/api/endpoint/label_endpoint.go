@@ -407,7 +407,7 @@ func SetFolderPermissions(w http.ResponseWriter, r *http.Request) {
 	hasEveryoneRole := false
 	roleCount := 0
 
-	url := getAppURL(p.Context, fmt.Sprintf("s/%s/%s", label.RefID, utility.MakeSlug(label.Name)))
+	url := p.Context.GetAppURL(fmt.Sprintf("s/%s/%s", label.RefID, utility.MakeSlug(label.Name)))
 
 	for _, role := range model.Roles {
 		role.OrgID = p.Context.OrgID
@@ -742,13 +742,13 @@ func InviteToFolder(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			url := getAppURL(p.Context, fmt.Sprintf("s/%s/%s", label.RefID, utility.MakeSlug(label.Name)))
+			url := p.Context.GetAppURL(fmt.Sprintf("s/%s/%s", label.RefID, utility.MakeSlug(label.Name)))
 			go mail.ShareFolderExistingUser(email, inviter.Fullname(), url, label.Name, model.Message)
 			log.Info(fmt.Sprintf("%s is sharing space %s with existing user %s", inviter.Email, label.Name, email))
 		} else {
 			// On-board new user
 			if strings.Contains(email, "@") {
-				url := getAppURL(p.Context, fmt.Sprintf("auth/share/%s/%s", label.RefID, utility.MakeSlug(label.Name)))
+				url := p.Context.GetAppURL(fmt.Sprintf("auth/share/%s/%s", label.RefID, utility.MakeSlug(label.Name)))
 				err = inviteNewUserToSharedFolder(p, email, inviter, url, label, model.Message)
 
 				if err != nil {
