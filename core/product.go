@@ -9,7 +9,6 @@
 //
 // https://documize.com
 
-// Package extensions represents Enterprise Edition capabilities.
 package core
 
 import "fmt"
@@ -31,7 +30,7 @@ func Product() (p ProdInfo) {
 	p.Patch = "0"
 	p.Version = fmt.Sprintf("%s.%s.%s", p.Major, p.Minor, p.Patch)
 	p.Edition = "Community"
-	p.Title = fmt.Sprintf("Documize %s Edition", p.Edition)
+	p.Title = fmt.Sprintf("%s Edition", p.Edition)
 
 	return p
 }

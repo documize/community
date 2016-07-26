@@ -77,9 +77,12 @@ func (p *Persister) GetDocument(id string) (document entity.Document, err error)
 func (p *Persister) GetDocumentMeta(id string) (meta entity.DocumentMeta, err error) {
 	err = nil
 
-	sqlViewers := `SELECT CONVERT_TZ(MAX(a.created), @@session.time_zone, '+00:00') as created, a.userid, u.firstname, u.lastname
+	sqlViewers := `SELECT CONVERT_TZ(MAX(a.created), @@session.time_zone, '+00:00') as created,
+		IFNULL(a.userid, '') AS userid, IFNULL(u.firstname, '') AS firstname, IFNULL(u.lastname, '') AS lastname
 		FROM audit a LEFT JOIN user u ON a.userid=u.refid
-		WHERE a.orgid=? AND a.documentid=? AND a.userid != '0' AND action='get-document'
+		WHERE a.orgid=? AND a.documentid=?
+		AND a.userid != '0' AND a.userid != ''
+		AND action='get-document'
 		GROUP BY a.userid ORDER BY MAX(a.created) DESC`
 
 	err = Db.Select(&meta.Viewers, sqlViewers, p.Context.OrgID, id)
@@ -88,11 +91,12 @@ func (p *Persister) GetDocumentMeta(id string) (meta entity.DocumentMeta, err er
 		log.Error(fmt.Sprintf("Unable to execute select GetDocumentMeta.viewers %s", id), err)
 		return
 	}
+
 	//SELECT CONVERT_TZ(a.created, @@session.time_zone, '+00:00') as
 	sqlEdits := `SELECT CONVERT_TZ(a.created, @@session.time_zone, '+00:00') as created,
-		a.action, a.userid, u.firstname, u.lastname, a.pageid
+		IFNULL(a.action, '') AS action, IFNULL(a.userid, '') AS userid, IFNULL(u.firstname, '') AS firstname, IFNULL(u.lastname, '') AS lastname, IFNULL(a.pageid, '') AS pageid
 		FROM audit a LEFT JOIN user u ON a.userid=u.refid
-		WHERE a.orgid=? AND a.documentid=? AND a.userid != '0'
+		WHERE a.orgid=? AND a.documentid=? AND a.userid != '0' AND a.userid != ''
 		AND (a.action='update-page' OR a.action='add-page' OR a.action='remove-page')
 		ORDER BY a.created DESC;`
 
