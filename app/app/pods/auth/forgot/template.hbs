@@ -3,20 +3,6 @@
         <img src="assets/img/logo-color.png" title="Documize" alt="Documize" class="responsive-img" />
     </div>
     <div class="login-form">
-        <form {{action 'forgot' on="submit"}}>
-            {{#if sayThanks}}
-                <div class="reset-thanks margin-bottom-30">Thanks. Check your email for instructions.</div>
-            {{else}}
-                <div class="input-control">
-                    <label>Email</label>
-                    {{focus-input type="email" value=email id="email"}}
-                </div>
-                <div class="clearfix" />
-                <div class="margin-top-10 margin-bottom-20">
-                    <button type="submit" class="regular-button button-blue">Reset</button>
-                </div>
-            {{/if}}
-            {{#link-to 'auth.login'}}Sign In{{/link-to}}
-        </form>
+        {{forgot-password forgot=(action 'forgot')}}
     </div>
 </div>
