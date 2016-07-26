@@ -31,7 +31,7 @@ export default Ember.Service.extend({
 	setupMode: false,
 
 	getBaseUrl(endpoint) {
-		return [this.get('host'), endpoint].join('/');
+		return [this.get('endpoint'), endpoint].join('/');
 	},
 
 	boot(/*requestedUrl*/) {
