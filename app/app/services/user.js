@@ -13,117 +13,117 @@ import Ember from 'ember';
 import models from '../utils/model';
 
 export default Ember.Service.extend({
-    sessionService: Ember.inject.service('session'),
-    ajax: Ember.inject.service(),
+	sessionService: Ember.inject.service('session'),
+	ajax: Ember.inject.service(),
 
-    // Adds a new user.
-    add(user) {
+	// Adds a new user.
+	add(user) {
 
-        return this.get('ajax').request(`users`, {
-            type: 'POST',
-            data: JSON.stringify(user),
-            contentType: 'json'
-        }).then(function(response){
-            return models.UserModel.create(response);
-        });
-    },
+		return this.get('ajax').request(`users`, {
+			type: 'POST',
+			data: JSON.stringify(user),
+			contentType: 'json'
+		}).then(function (response) {
+			return models.UserModel.create(response);
+		});
+	},
 
-    // Returns user model for specified user id.
-    getUser(userId) {
-        let url = `users/${userId}`;
+	// Returns user model for specified user id.
+	getUser(userId) {
+		let url = `users/${userId}`;
 
-        return this.get('ajax').request(url, {
-            type: 'GET'
-        }).then((response) => {
-            return models.UserModel.create(response);
-        });
-    },
+		return this.get('ajax').request(url, {
+			type: 'GET'
+		}).then((response) => {
+			return models.UserModel.create(response);
+		});
+	},
 
-    // Returns all users for organization.
-    getAll() {
-        return this.get('ajax').request(`users`).then((response) => {
-            return response.map(function(obj){
-                return models.UserModel.create(obj);
-            });
-        });
-    },
+	// Returns all users for organization.
+	getAll() {
+		return this.get('ajax').request(`users`).then((response) => {
+			return response.map(function (obj) {
+				return models.UserModel.create(obj);
+			});
+		});
+	},
 
-    // Returns all users that can see folder.
-    getFolderUsers(folderId) {
-        let url = `users/folder/${folderId}`;
+	// Returns all users that can see folder.
+	getFolderUsers(folderId) {
+		let url = `users/folder/${folderId}`;
 
-        return this.get('ajax').request(url, {
-            method: "GET"
-        }).then((response)=>{
-            let data = [];
-            _.each(response, function(obj) {
-                data.pushObject(models.UserModel.create(obj));
-            });
+		return this.get('ajax').request(url, {
+			method: "GET"
+		}).then((response) => {
+			let data = [];
+			_.each(response, function (obj) {
+				data.pushObject(models.UserModel.create(obj));
+			});
 
-            return data;
-        });
-    },
+			return data;
+		});
+	},
 
-    // Updates an existing user record.
-    save(user) {
-        let userId = user.get('id');
-        let url = `users/${userId}`;
+	// Updates an existing user record.
+	save(user) {
+		let userId = user.get('id');
+		let url = `users/${userId}`;
 
-        return this.get('ajax').request(url, {
-            type: 'PUT',
-            data: JSON.stringify(user),
-            contentType: 'json'
-        });
-    },
+		return this.get('ajax').request(url, {
+			type: 'PUT',
+			data: JSON.stringify(user),
+			contentType: 'json'
+		});
+	},
 
-    // updatePassword changes the password for the specified user.
-    updatePassword(userId, password) {
-        let url = `users/${userId}/password`;
+	// updatePassword changes the password for the specified user.
+	updatePassword(userId, password) {
+		let url = `users/${userId}/password`;
 
-        return this.get('ajax').post(url, {
-            data: password
-        });
-    },
+		return this.get('ajax').post(url, {
+			data: password
+		});
+	},
 
-    // Removes the specified user.
-    remove(userId) {
-        let url = `users/${userId}`;
+	// Removes the specified user.
+	remove(userId) {
+		let url = `users/${userId}`;
 
-        return this.get('ajax').request(url, {
-            method: 'DELETE'
-        });
-    },
+		return this.get('ajax').request(url, {
+			method: 'DELETE'
+		});
+	},
 
-    // Request password reset.
-    forgotPassword(email) {
-        let url = `public/forgot`;
+	// Request password reset.
+	forgotPassword(email) {
+		let url = `public/forgot`;
 
-        if (is.empty(email)) {
-            return Ember.RSVP.reject("invalid");
-        }
+		if (is.empty(email)) {
+			return Ember.RSVP.reject("invalid");
+		}
 
-        let data = JSON.stringify({
-            Email: email
-        });
+		let data = JSON.stringify({
+			email: email
+		});
 
-        return this.get('ajax').request(url, {
-            method: 'POST',
-            dataType: 'json',
-            data: data
-        });
-    },
+		return this.get('ajax').request(url, {
+			method: 'POST',
+			dataType: 'json',
+			data: data
+		});
+	},
 
-    // Set new password.
-    resetPassword(token, password) {
-        var url = `public/reset/${token}`;
+	// Set new password.
+	resetPassword(token, password) {
+		var url = `public/reset/${token}`;
 
-        if (is.empty(token) || is.empty(password)) {
-            return Ember.RSVP.reject("invalid");
-        }
+		if (is.empty(token) || is.empty(password)) {
+			return Ember.RSVP.reject("invalid");
+		}
 
-        return this.get('ajax').request(url, {
-            method: "POST",
-            data: password
-        });
-    }
+		return this.get('ajax').request(url, {
+			method: "POST",
+			data: password
+		});
+	}
 });
