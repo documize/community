@@ -12,6 +12,7 @@
 package util
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -122,5 +123,29 @@ func WriteSuccessEmptyJSON(w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 	_, err := w.Write([]byte("{}"))
+	log.IfErr(err)
+}
+
+func WriteMarshalError(w http.ResponseWriter, err error) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusBadRequest)
+	_, err2 := w.Write([]byte("{Error: 'JSON marshal failed'}"))
+	log.IfErr(err2)
+	log.Error("Failed to JSON marshal", err)
+}
+
+// WriteJSON serializes data as JSON to HTTP response.
+func WriteJSON(w http.ResponseWriter, v interface{}) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+
+	j, err := json.Marshal(v)
+
+	if err != nil {
+		WriteMarshalError(w, err)
+		return
+	}
+
+	_, err = w.Write(j)
 	log.IfErr(err)
 }
