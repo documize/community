@@ -12,10 +12,6 @@
 import Ember from 'ember';
 import NotifierMixin from "../../../mixins/notifier";
 
-const {
-	isEmpty
-} = Ember;
-
 export default Ember.Controller.extend(NotifierMixin, {
 	orgService: Ember.inject.service('organization'),
 
