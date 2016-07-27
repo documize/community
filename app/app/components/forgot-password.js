@@ -32,6 +32,7 @@ export default Ember.Component.extend({
 				Ember.set(this, 'email', '');
 			}).catch((error) => {
 				let message = error.message;
+				console.log(message);
 			});
 		}
 	}
