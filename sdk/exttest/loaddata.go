@@ -15,7 +15,7 @@ import (
 	"testing"
 
 	"github.com/documize/community/sdk"
-	"github.com/documize/community/wordsmith/api"
+api	"github.com/documize/community/core/convapi"
 )
 
 // loadData provides data-loading tests to be run locally or from the main Documize repo.

@@ -1,11 +1,11 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
@@ -19,8 +19,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/documize/community/documize/api/endpoint/models"
-	"github.com/documize/community/documize/api/entity"
+	"github.com/documize/community/core/api/endpoint/models"
+	"github.com/documize/community/core/api/entity"
 )
 
 // GetDocumentPages returns all the pages in a document.
@@ -167,69 +167,6 @@ func (c *Client) UpdateDocumentPage(pg *entity.Page) error {
 	}
 	if isError(string(res)) {
 		return errors.New(trimErrors(string(res)))
-	}
-	return nil
-}
-
-// GetDocumentPageRevisions returns all the previous versions of a given page in a document.
-func (c *Client) GetDocumentPageRevisions(documentID, pageID string) ([]entity.Revision, error) {
-	req, err := http.NewRequest("GET", c.BaseURL+"/api/documents/"+documentID+"/pages/"+pageID+"/revisions", nil)
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Add(HeaderAuthTokenName, c.Auth.Token)
-	resp, err := c.Client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close() // ignore error
-	revs := make([]entity.Revision, 0, 3)
-	dec := json.NewDecoder(resp.Body)
-	err = dec.Decode(&revs)
-	if err != nil {
-		return nil, err
-	}
-	return revs, nil
-}
-
-// GetDocumentPageDiff returns html showing the difference between the given page revision and the current version of
-// a given page in a document.
-func (c *Client) GetDocumentPageDiff(documentID, pageID, revID string) ([]byte, error) {
-	req, err := http.NewRequest("GET", c.BaseURL+"/api/documents/"+documentID+"/pages/"+pageID+"/revisions/"+revID, nil)
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Add(HeaderAuthTokenName, c.Auth.Token)
-	resp, err := c.Client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close() // ignore error
-	diff, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	return diff, nil
-}
-
-// RollbackDocumentPage reverts the given document page back to the chosen revision.
-func (c *Client) RollbackDocumentPage(documentID, pageID, revID string) error {
-	req, err := http.NewRequest("POST", c.BaseURL+"/api/documents/"+documentID+"/pages/"+pageID+"/revisions/"+revID, nil)
-	if err != nil {
-		return err
-	}
-	req.Header.Add(HeaderAuthTokenName, c.Auth.Token)
-	resp, err := c.Client.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close() // ignore error
-	diff, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return err
-	}
-	if isError(string(diff)) {
-		return errors.New(trimErrors(string(diff)))
 	}
 	return nil
 }

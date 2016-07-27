@@ -17,8 +17,8 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/documize/community/wordsmith/api"
-	"github.com/documize/community/documize/api/entity"
+api	"github.com/documize/community/core/convapi"
+	"github.com/documize/community/core/api/entity"
 )
 
 // LoadData uploads and converts the raw data comprising a Documize document into Documize, returning a fileID and error.

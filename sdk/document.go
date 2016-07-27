@@ -20,7 +20,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/documize/community/documize/api/entity"
+	"github.com/documize/community/core/api/entity"
 )
 
 // DeleteDocument removes the given document from the Documize database.

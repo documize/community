@@ -14,7 +14,8 @@ import netUtil from '../utils/net';
 import config from '../config/environment';
 
 export default Ember.Service.extend({
-	sessionService: Ember.inject.service('session'),
+	session: Ember.inject.service('session'),
+	appMeta: Ember.inject.service(),
 	ready: false,
 	enabled: config.APP.auditEnabled,
 	appId: config.APP.intercomKey,
@@ -45,9 +46,10 @@ export default Ember.Service.extend({
 	},
 
 	start() {
-		let session = this.get('sessionService');
+		let self = this;
+		let user = this.get('session.user');
 
-		if (this.get('appId') === "" || !this.get('enabled') || !session.authenticated || this.get('ready')) {
+		if (is.undefined(user) || this.get('appId') === "" || !this.get('enabled') || !this.get('session.authenticated') || this.get('ready')) {
 			return;
 		}
 
@@ -55,19 +57,19 @@ export default Ember.Service.extend({
 
 		window.intercomSettings = {
 			app_id: this.get('appId'),
-			name: session.user.firstname + " " + session.user.lastname,
-			email: session.user.email,
-			user_id: session.user.id,
-			"administrator": session.user.admin,
+			name: user.fullname,
+			email: user.email,
+			user_id: user.id,
+			"administrator": user.admin,
 			company: {
-				id: session.get('appMeta.orgId'),
-				name: session.get('appMeta.title').string,
+				id: self.get('appMeta.orgId'),
+				name: self.get('appMeta.title'),
 				"domain": netUtil.getSubdomain(),
-				"version": session.get('appMeta.version')
+				"version": self.get('appMeta.version')
 			}
 		};
 
-		if (!session.get('isMobile')) {
+		if (!this.get('session.isMobile')) {
 			window.intercomSettings.widget = {
 				activator: "#IntercomDefaultWidget"
 			};

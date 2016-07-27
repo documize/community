@@ -17,7 +17,7 @@ _convert
 # Documize build artifacts
 bin/*
 dist/*
-/documize/web/bindata/*
+embed/bindata/*
 app/dist/*
 app/dist-prod/*
 
@@ -51,7 +51,6 @@ _testmain.go
 /app/testem.log
 
 # Misc.
-documize/web/bindata_assetfs.go
 build
 plugin-msword/plugin-msword
 plugin-msword/plugin-msword-osx

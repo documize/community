@@ -32,6 +32,7 @@ export default Ember.Component.extend({
 	targetOffset: "10px 0",
 	constrainToWindow: true,
 	constrainToScrollParent: true,
+	tether: Ember.inject.service(),
 
 	hasSecondButton: Ember.computed('button2', 'color2', function () {
 		return is.not.empty(this.get('button2')) && is.not.empty(this.get('color2'));
@@ -43,9 +44,10 @@ export default Ember.Component.extend({
 
 	didInsertElement() {
 		this._super(...arguments);
+		// TODO: refactor to eliminate self
 		let self = this;
 
-		let drop = new Drop({
+		let drop = this.get('tether').createDrop({
 			target: document.getElementById(self.get('target')),
 			content: self.$(".dropdown-dialog")[0],
 			classes: 'drop-theme-basic',
@@ -65,30 +67,38 @@ export default Ember.Component.extend({
 			remove: true
 		});
 
-		self.set('drop', drop);
+		if (drop) {
+			drop.on('open', function () {
+				if (is.not.null(self.get("focusOn"))) {
+					document.getElementById(self.get("focusOn")).focus();
+				}
 
-		drop.on('open', function () {
-			if (is.not.null(self.get("focusOn"))) {
-				document.getElementById(self.get("focusOn")).focus();
-			}
+				if (is.not.null(self.get("selectOn"))) {
+					document.getElementById(self.get("selectOn")).select();
+				}
 
-			if (is.not.null(self.get("selectOn"))) {
-				document.getElementById(self.get("selectOn")).select();
-			}
+				if (is.not.null(self.get("onOpenCallback"))) {
+					self.attrs.onOpenCallback(drop);
+				}
+			});
+			self.set('drop', drop);
+		}
 
-			if (is.not.null(self.get("onOpenCallback"))) {
-				self.attrs.onOpenCallback(drop);
-			}
-		});
 	},
 
 	willDestroyElement() {
-		this.get('drop').destroy();
+		let drop = this.get('drop');
+		if (drop) {
+			drop.destroy();
+		}
 	},
 
 	actions: {
 		onCancel() {
-			this.get('drop').close();
+			let drop = this.get('drop');
+			if (drop) {
+				drop.close();
+			}
 		},
 
 		onAction() {
@@ -98,8 +108,9 @@ export default Ember.Component.extend({
 
 			let close = this.attrs.onAction();
 
-			if (close) {
-				this.get('drop').close();
+			let drop = this.get('drop');
+			if (close && drop) {
+				drop.close();
 			}
 		},
 
@@ -110,8 +121,9 @@ export default Ember.Component.extend({
 
 			let close = this.attrs.onAction2();
 
-			if (close) {
-				this.get('drop').close();
+			let drop = this.get('drop');
+			if (close && drop) {
+				drop.close();
 			}
 		}
 	}

@@ -1,6 +1,6 @@
 <div class="document-structure">
     {{#if this.session.authenticated}}
-        <div id="tocToolbar" class="toc-controls {{if state.actionablePage 'current-page' ''}}">
+        <div id="tocToolbar" class="hidden-xs hidden-sm toc-controls {{if state.actionablePage 'current-page' ''}}">
             <div id="toc-up-button" class="round-button-mono {{if state.upDisabled 'disabled'}}" data-tooltip="Move up" data-tooltip-position="top center" {{action 'pageUp'}}>
                 <i class="material-icons">arrow_upward</i>
             </div>

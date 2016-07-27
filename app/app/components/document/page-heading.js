@@ -13,7 +13,6 @@ import Ember from 'ember';
 import TooltipMixin from '../../mixins/tooltip';
 
 const {
-	computed: { oneWay, or, notEmpty },
 	computed
 } = Ember;
 
