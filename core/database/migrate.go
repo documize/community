@@ -14,15 +14,17 @@ package database
 import (
 	"bytes"
 	"database/sql"
+	"errors"
 	"regexp"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 
-	"github.com/documize/community/core/web"
 	"github.com/documize/community/core/log"
 	"github.com/documize/community/core/utility"
+	"github.com/documize/community/core/web"
 )
 
 const migrationsDir = "bindata/scripts"
@@ -96,8 +98,6 @@ func (m migrationsT) migrate(tx *sqlx.Tx) error {
 
 func migrateEnd(tx *sqlx.Tx, err error) error {
 	if tx != nil {
-		_, ulerr := tx.Exec("UNLOCK TABLES;")
-		log.IfErr(ulerr)
 		if err == nil {
 			log.IfErr(tx.Commit())
 			log.Info("Database checks: completed")
@@ -109,8 +109,32 @@ func migrateEnd(tx *sqlx.Tx, err error) error {
 	return err
 }
 
+func getLastMigration(tx *sqlx.Tx) (lastMigration string, err error) {
+	var stmt *sql.Stmt
+	stmt, err = tx.Prepare("SELECT JSON_EXTRACT(`config`,'$.database') FROM `config` WHERE `key` = 'META';")
+	if err == nil {
+		defer utility.Close(stmt)
+		var item = make([]uint8, 0)
+
+		row := stmt.QueryRow()
+
+		err = row.Scan(&item)
+		if err == nil {
+			if len(item) > 1 {
+				q := []byte(`"`)
+				lastMigration = string(bytes.TrimPrefix(bytes.TrimSuffix(item, q), q))
+			}
+		}
+	}
+	return
+}
+
 // Migrate the database as required, consolidated action.
-func Migrate(ConfigTableExists bool) error {
+func Migrate(ConfigTableExists, amLeader bool) error {
+
+	if !ConfigTableExists && !amLeader {
+		return errors.New("database.Migrate() does not work on empty databases for follower instances")
+	}
 
 	lastMigration := ""
 
@@ -120,30 +144,9 @@ func Migrate(ConfigTableExists bool) error {
 	}
 
 	if ConfigTableExists {
-		_, err = tx.Exec("LOCK TABLE `config` WRITE;")
+		lastMigration, err = getLastMigration(tx)
 		if err != nil {
 			return migrateEnd(tx, err)
-		}
-
-		log.Info("Database checks: lock taken")
-
-		var stmt *sql.Stmt
-		stmt, err = tx.Prepare("SELECT JSON_EXTRACT(`config`,'$.database') FROM `config` WHERE `key` = 'META';")
-		if err == nil {
-			defer utility.Close(stmt)
-			var item = make([]uint8, 0)
-
-			row := stmt.QueryRow()
-
-			err = row.Scan(&item)
-			if err != nil {
-				return migrateEnd(tx, err)
-			}
-
-			if len(item) > 1 {
-				q := []byte(`"`)
-				lastMigration = string(bytes.TrimPrefix(bytes.TrimSuffix(item, q), q))
-			}
 		}
 		log.Info("Database checks: last previously applied file was " + lastMigration)
 	}
@@ -157,9 +160,26 @@ func Migrate(ConfigTableExists bool) error {
 		log.Info("Database checks: no updates to perform")
 		return migrateEnd(tx, nil) // no migrations to perform
 	}
-	log.Info("Database checks: will execute the following update files: " + strings.Join([]string(mig), ", "))
 
-	return migrateEnd(tx, mig.migrate(tx))
+	if amLeader {
+		log.Info("Database checks: will execute the following update files: " + strings.Join([]string(mig), ", "))
+		return migrateEnd(tx, mig.migrate(tx))
+	}
+
+	// a follower instance
+	targetMigration := string(mig[len(mig)-1])
+	for targetMigration != lastMigration {
+		time.Sleep(time.Second)
+		log.Info("Waiting for migration process to complete")
+		tx.Rollback() // ignore error
+		tx, err := (*dbPtr).Beginx()
+		if err != nil {
+			return migrateEnd(tx, err)
+		}
+		lastMigration, _ = getLastMigration(tx)
+	}
+
+	return migrateEnd(tx, nil)
 }
 
 func processSQLfile(tx *sqlx.Tx, buf []byte) error {

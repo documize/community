@@ -19,9 +19,9 @@ import (
 	"time"
 
 	"github.com/documize/community/core/api/util"
-	"github.com/documize/community/core/web"
 	"github.com/documize/community/core/log"
 	"github.com/documize/community/core/utility"
+	"github.com/documize/community/core/web"
 )
 
 // runSQL creates a transaction per call
@@ -116,7 +116,8 @@ func Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = Migrate(false /* no tables exist yet */); err != nil {
+	if err = Migrate(false, /* no tables exist yet */
+		true /* and we must be the only instance 1st time through */); err != nil {
 		log.Error("database.Create()", err)
 		return
 	}
