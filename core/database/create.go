@@ -116,8 +116,7 @@ func Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = Migrate(false, /* no tables exist yet */
-		true /* and we must be the only instance 1st time through */); err != nil {
+	if err = Migrate(false /* no tables exist yet */); err != nil {
 		log.Error("database.Create()", err)
 		return
 	}

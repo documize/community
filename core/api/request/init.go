@@ -50,15 +50,8 @@ func init() {
 	var err error
 
 	environment.GetString(&connectionString, "db", true,
-		`'username:password@protocol(hostname:port)/databasename" for example "fred:bloggs@tcp(localhost:3306)/documize", or if a follower instance "-fred:bloggs@tcp(localhost:3306)/documize"`,
+		`'username:password@protocol(hostname:port)/databasename" for example "fred:bloggs@tcp(localhost:3306)/documize", or if a follower instance "fred:bloggs@tcp(localhost:3306)/documize"`,
 		func(*string, string) bool {
-			isLeader := true
-			followerPrefix := "-"
-			if strings.HasPrefix(connectionString, followerPrefix) {
-				isLeader = false
-				connectionString = strings.TrimPrefix(connectionString, followerPrefix)
-				log.Info("This is a follower instance, no DB schema updates will be performed")
-			}
 
 			Db, err = sqlx.Open("mysql", stdConn(connectionString))
 
@@ -81,7 +74,7 @@ func init() {
 			// go into setup mode if required
 			if web.SiteMode != web.SiteModeOffline {
 				if database.Check(Db, connectionString) {
-					if err := database.Migrate(true /* the config table exists */, isLeader); err != nil {
+					if err := database.Migrate(true /* the config table exists */); err != nil {
 						log.Error("Unable to run database migration: ", err)
 						os.Exit(2)
 					}
