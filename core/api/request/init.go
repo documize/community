@@ -50,7 +50,7 @@ func init() {
 	var err error
 
 	environment.GetString(&connectionString, "db", true,
-		`'username:password@protocol(hostname:port)/databasename" for example "fred:bloggs@tcp(localhost:3306)/documize", or if a follower instance "fred:bloggs@tcp(localhost:3306)/documize"`,
+		`'username:password@protocol(hostname:port)/databasename" for example "fred:bloggs@tcp(localhost:3306)/documize"`,
 		func(*string, string) bool {
 
 			Db, err = sqlx.Open("mysql", stdConn(connectionString))
