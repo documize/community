@@ -9,46 +9,7 @@
 				<img src="/assets/img/setup/cogs.png" width="157" height="187" alt="Setup new database" class="no-select no-outline" />
 			</div>
 		</div>
+		{{documize-setup model=model save=(action 'save')}}
 
-		<div class="col-lg-9 col-md-9 col-sm-9">
-			<div class="input-form">
-				<form>
-					<div class="heading">
-						<div class="title">Let's setup Documize</div>
-						<div class="tip">Database name is <em>{{model.dbname}}</em></div>
-					</div>
-					<div>
-						<div class="input-control">
-							<label>Team</label>
-							<div class="tip">What's your tribe called?</div>
-							{{focus-input id="siteTitle" type="text" value=model.title}}
-						</div>
-						<div class="input-control">
-							<label>Firstname</label>
-							<div class="tip">What do people call you?</div>
-							{{input id="adminFirstname" type="text" value=model.firstname}}
-						</div>
-						<div class="input-control">
-							<label>Lastname</label>
-							<div class="tip">How the government refers to you.</div>
-							{{input id="adminLastname" type="text" value=model.lastname}}
-						</div>
-						<div class="input-control">
-							<label>Email</label>
-							<div class="tip">No spam. Ever!</div>
-							{{input id="adminEmail" type="email" value=model.email}}
-						</div>
-						<div class="input-control">
-							<label>Password</label>
-							<div class="tip">Something you can remember without writing it down.</div>
-							{{input id="adminPassword" type="text" value=model.password}}
-						</div>
-						<div class="regular-button button-green" {{ action 'save' }}>Go Setup</div>
-					</div>
-				</form>
-			</div>
-		</div>
-		
 	</div>
 </div>
-
