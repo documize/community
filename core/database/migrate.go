@@ -73,27 +73,26 @@ func migrations(lastMigration string) (migrationsT, error) {
 func (m migrationsT) migrate(tx *sqlx.Tx) error {
 	for _, v := range m {
 		log.Info("Processing migration file: " + v)
+
 		buf, err := web.Asset(migrationsDir + "/" + v)
 		if err != nil {
 			return err
 		}
-		//fmt.Println("DEBUG database.Migrate() ", v, ":\n", string(buf)) // TODO actually run the SQL
+
 		err = processSQLfile(tx, buf)
 		if err != nil {
 			return err
 		}
+
 		json := `{"database":"` + v + `"}`
 		sql := "INSERT INTO `config` (`key`,`config`) " +
 			"VALUES ('META','" + json +
 			"') ON DUPLICATE KEY UPDATE `config`='" + json + "';"
 
-		_, err = tx.Exec(sql)
+		_, err = tx.Exec(sql) // add a record in the config file to say we have done the upgrade
 		if err != nil {
 			return err
 		}
-
-		//fmt.Println("DEBUG insert 10s wait for testing")
-		//time.Sleep(10 * time.Second)
 	}
 	return nil
 }
@@ -104,7 +103,8 @@ func lockDB() (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	time.Sleep(time.Duration(b[0]) * time.Duration(b[1]) * time.Millisecond / 10) // up to 6.5 secs wait
+	wait := ((time.Duration(b[0]) << 8) | time.Duration(b[1])) * time.Millisecond / 10 // up to 6.5 secs wait
+	time.Sleep(wait)
 
 	tx, err := (*dbPtr).Beginx()
 	if err != nil {
@@ -125,7 +125,7 @@ func lockDB() (bool, error) {
 	_, err = tx.Exec("INSERT INTO `config` (`key`,`config`) " +
 		fmt.Sprintf(`VALUES ('DBLOCK','{"pid": "%d"}');`, os.Getpid()))
 	if err != nil {
-		// good error might be "Error 1062: Duplicate entry 'DBLOCK' for key 'idx_config_area'"
+		// good error would be "Error 1062: Duplicate entry 'DBLOCK' for key 'idx_config_area'"
 		if strings.HasPrefix(err.Error(), "Error 1062:") {
 			log.Info("Database locked by annother Documize instance")
 			return false, nil
@@ -152,17 +152,18 @@ func unlockDB() error {
 func migrateEnd(tx *sqlx.Tx, err error, amLeader bool) error {
 	if amLeader {
 		defer func() { log.IfErr(unlockDB()) }()
-	}
-	if tx != nil {
-		if err == nil {
-			log.IfErr(tx.Commit())
-			log.Info("Database checks: completed")
-			return nil
+		if tx != nil {
+			if err == nil {
+				log.IfErr(tx.Commit())
+				log.Info("Database checks: completed")
+				return nil
+			}
+			log.IfErr(tx.Rollback())
 		}
-		log.IfErr(tx.Rollback())
+		log.Error("Database checks: failed: ", err)
+		return err
 	}
-	log.Error("Database checks: failed: ", err)
-	return err
+	return nil // not the leader, so ignore errors
 }
 
 func getLastMigration(tx *sqlx.Tx) (lastMigration string, err error) {
