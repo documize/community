@@ -7,12 +7,12 @@
         <div class="input-control">
             <label>Title</label>
             <div class="tip">Describe the title of this Documize instance</div>
-            {{focus-input id="siteTitle" type="text" value=model.title class=titleInputError}}
+            {{focus-input id="siteTitle" type="text" value=model.title class=(if hasTitleInputError 'error')}}
         </div>
         <div class="input-control">
             <label>Message</label>
             <div class="tip">Describe the purpose of this Documize instance</div>
-            {{textarea id="siteMessage" rows="3" value=model.message class=messageInputError}}
+            {{textarea id="siteMessage" rows="3" value=model.message class=(if hasMessageInputError 'error')}}
         </div>
         <div class="input-control">
             <label>Anonymous Access</label>

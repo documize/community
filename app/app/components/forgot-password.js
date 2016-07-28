@@ -8,32 +8,23 @@ const {
 export default Ember.Component.extend({
 	email: "",
 	sayThanks: false,
-	emptyEmail: computed('email', 'emptyEmailError', {
-		get() {
-			if (isEmpty(this.get('email')) && this.get('emptyEmailError')) {
-				return `error`;
-			}
-
-			return;
-		}
-	}),
+	emailEmpty: computed.empty('email'),
+	hasEmptyEmailError: computed.and('emailEmpty', 'emailIsEmpty'),
 
 	actions: {
 		forgot() {
 			let email = this.get('email');
 
 			if (isEmpty(email)) {
-				Ember.set(this, 'emptyEmailError', true);
+				Ember.set(this, 'emailIsEmpty', true);
 				return $("#email").focus();
 			}
 
 			this.get('forgot')(email).then(() => {
 				Ember.set(this, 'sayThanks', true);
 				Ember.set(this, 'email', '');
-			}).catch((error) => {
-				let message = error.message;
-				console.log(message);
-			});
+				Ember.set(this, 'emailIsEmpty', false);
+			})
 		}
 	}
 });

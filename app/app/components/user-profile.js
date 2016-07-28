@@ -9,33 +9,9 @@ const {
 
 export default Ember.Component.extend({
 	password: { password: "", confirmation: "" },
-	hasFirstnameError: computed('model.firstname', {
-		get() {
-			if (isEmpty(this.get('model.firstname'))) {
-				return `error`;
-			}
-
-			return;
-		}
-	}),
-	hasLastnameError: computed('model.lastname', {
-		get() {
-			if (isEmpty(this.get('model.lastname'))) {
-				return `error`;
-			}
-
-			return;
-		}
-	}),
-	hasEmailError: computed('model.email', {
-		get() {
-			if (isEmpty(this.get('model.email'))) {
-				return `error`;
-			}
-
-			return;
-		}
-	}),
+	hasFirstnameError: computed.empty('model.firstname'),
+	hasLastnameError: computed.empty('model.lastname'),
+	hasEmailError: computed.empty('model.email'),
 	hasPasswordError: computed('passwordError', 'password.password', {
 		get() {
 			if (isPresent(this.get('passwordError'))) {

@@ -2,50 +2,35 @@ import Ember from 'ember';
 
 const {
 	isEmpty,
-	isPresent,
 	computed,
 	get,
 	set
 } = Ember;
 
 export default Ember.Component.extend({
-	titleInputError: computed('titleError', 'model.title', {
-		get() {
-			let error = get(this, 'titleError');
-			let title = this.get('model.title');
-			if (isPresent(error) || isEmpty(title)) {
-				return `error`;
-			}
-
-			return;
-		}
-	}),
-	messageInputError: computed('messageError', 'model.message', {
-		get() {
-			let error = get(this, 'messageError');
-			let message = this.get('model.message');
-			if (isPresent(error) || isEmpty(message)) {
-				return `error`;
-			}
-
-			return;
-		}
-	}),
+	titleEmpty: computed.empty('model.title'),
+	messageEmpty: computed.empty('model.message'),
+	hasTitleInputError: computed.and('titleEmpty', 'titleError'),
+	hasMessageInputError: computed.and('messageEmpty', 'messageError'),
 
 	actions: {
 		save() {
 			if (isEmpty(this.model.get('title'))) {
-				set(this, 'titleError', 'error');
+				set(this, 'titleError', true);
 				return $("#siteTitle").focus();
 			}
 
 			if (isEmpty(this.model.get('message'))) {
-				set(this, 'messageError', 'error');
+				set(this, 'messageError', true);
 				return $("#siteMessage").focus();
 			}
 
 			this.model.set('allowAnonymousAccess', Ember.$("#allowAnonymousAccess").prop('checked'));
-			this.get('save')();
+			this.get('save')().then(() => {
+				this.showNotification('Saved');
+				set(this, 'titleError', false);
+				set(this, 'messageError', false);
+			});
 		}
 	}
 });

@@ -2,15 +2,15 @@
     <form>
         <div class="input-control">
             <label>Firstname</label>
-            {{focus-input id="firstname" type="text" value=model.firstname class=hasFirstnameError}}
+            {{focus-input id="firstname" type="text" value=model.firstname class=(if hasFirstnameError 'error')}}
         </div>
         <div class="input-control">
             <label>Lastname</label>
-            {{input id="lastname" type="text" value=model.lastname class=hasLastnameError}}
+            {{input id="lastname" type="text" value=model.lastname class=(if hasLastnameError 'error')}}
         </div>
         <div class="input-control">
             <label>Email</label>
-            {{input id="email" type="text" value=model.email class=hasEmailError}}
+            {{input id="email" type="text" value=model.email class=(if hasEmailError 'error')}}
         </div>
         <div class="input-control">
             <label>Password</label>

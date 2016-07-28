@@ -13,26 +13,10 @@ export default Ember.Component.extend({
 	password: "",
 	passwordConfirm: "",
 	mustMatch: false,
-	passwordEmpty: computed('passwordError', {
-		get() {
-			let error = this.get('passwordError');
-			if (isPresent(error)) {
-				return `error`;
-			}
-
-			return;
-		}
-	}),
-	confirmEmpty: computed('passwordConfirmError', {
-		get() {
-			let error = this.get('passwordConfirmError');
-			if (isPresent(error)) {
-				return `error`;
-			}
-
-			return;
-		}
-	}),
+	passwordEmpty: computed.empty('password'),
+	confirmEmpty: computed.empty('passwordConfirm'),
+	hasPasswordError: computed.and('passwordEmpty', 'passwordIsEmpty'),
+	hasConfirmError: computed.and('confirmEmpty', 'passwordConfirmIsEmpty'),
 
 	actions: {
 		reset() {
@@ -40,23 +24,26 @@ export default Ember.Component.extend({
 			let passwordConfirm = this.get('passwordConfirm');
 
 			if (isEmpty(password)) {
-				set(this, 'passwordError', "error");
+				set(this, 'passwordIsEmpty', true);
 				return $("#newPassword").focus();
 			}
 
 			if (isEmpty(passwordConfirm)) {
-				set(this, 'passwordConfirmError', "error");
+				set(this, 'passwordConfirmIsEmpty', true);
 				return $("#passwordConfirm").focus();
 			}
 
 			if (!isEqual(password, passwordConfirm)) {
-				set(this, 'passwordError', "error");
-				set(this, 'passwordConfirmError', "error");
+				set(this, 'hasPasswordError', true);
+				set(this, 'hasConfirmError', true);
 				set(this, 'mustMatch', true);
 				return;
 			}
 
-			this.get('reset')(password);
+			this.get('reset')(password).then(() => {
+				set(this, 'passwordIsEmpty', false);
+				set(this, 'passwordConfirmIsEmpty', false);
+			});
 		}
 	}
 });

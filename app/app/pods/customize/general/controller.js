@@ -17,8 +17,9 @@ export default Ember.Controller.extend(NotifierMixin, {
 
 	actions: {
 		save() {
-			this.get('orgService').save(this.model);
-			this.showNotification('Saved');
+			return this.get('orgService').save(this.model).then(() => {
+				this.showNotification('Saved');
+			});
 		}
 	}
 });
