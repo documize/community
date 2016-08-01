@@ -1,3 +1,14 @@
+// Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
+//
+// This software (Documize Community Edition) is licensed under
+// GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
+//
+// You can operate outside the AGPL restrictions by purchasing
+// Documize Enterprise Edition and obtaining a commercial license
+// by contacting <sales@documize.com>.
+//
+// https://documize.com
+
 import Ember from 'ember';
 
 const {
@@ -38,13 +49,13 @@ export default Ember.Component.extend({
 			let password = this.get('password.password');
 			let confirmation = this.get('password.confirmation');
 
-			if (isEmpty(this.model.get('firstname'))) {
+			if (isEmpty(this.get('model.firstname'))) {
 				return $("#firstname").focus();
 			}
-			if (isEmpty(this.model.get('lastname'))) {
+			if (isEmpty(this.get('model.lastname'))) {
 				return $("#lastname").focus();
 			}
-			if (isEmpty(this.model.get('email'))) {
+			if (isEmpty(this.get('model.email'))) {
 				return $("#email").focus();
 			}
 

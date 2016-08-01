@@ -13,14 +13,6 @@ import Ember from 'ember';
 import NotifierMixin from "../../mixins/notifier";
 import Encoding from "../../utils/encoding";
 
-const {
-	isEmpty,
-	computed,
-	isPresent,
-	get,
-	set
-} = Ember;
-
 export default Ember.Controller.extend(NotifierMixin, {
 
 	ajax: Ember.inject.service(),
