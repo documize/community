@@ -63,7 +63,7 @@ export default Ember.Service.extend({
 			"administrator": user.admin,
 			company: {
 				id: self.get('appMeta.orgId'),
-				name: self.get('appMeta.title').string,
+				name: self.get('appMeta.title'),
 				"domain": netUtil.getSubdomain(),
 				"version": self.get('appMeta.version')
 			}
