@@ -27,7 +27,7 @@ type ProdInfo struct {
 func Product() (p ProdInfo) {
 	p.Major = "0"
 	p.Minor = "16"
-	p.Patch = "0"
+	p.Patch = "1"
 	p.Version = fmt.Sprintf("%s.%s.%s", p.Major, p.Minor, p.Patch)
 	p.Edition = "Community"
 	p.Title = fmt.Sprintf("%s Edition", p.Edition)
