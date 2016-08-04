@@ -108,7 +108,7 @@ func (p *Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http
 	// always use DB version of the token
 	config.Token = ctx.GetSecrets("token") // get the secret token in the database
 
-	client := p.githubClient(config)
+	client := p.githubClient(&config)
 
 	switch method {
 
@@ -132,12 +132,12 @@ func (p *Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http
 
 		if listFailed(method, config, client, w) {
 
-			rep, ok := reports[method]
-			if !ok {
-				log.ErrorString("Github connector unknown method: " + method)
-				provider.WriteEmpty(w)
+			// TODO refactor - currently treats all remaining commands as triggering a report-set
+			gr := githubRender{}
+			for _, rep := range reports {
+				log.IfErr(rep.refresh(&gr, &config, client))
 			}
-			rep.command(p, client, config, w)
+			provider.WriteJSON(w, &gr)
 
 		}
 
@@ -158,14 +158,19 @@ func (p *Provider) Refresh(ctx *provider.Context, configJSON, data string) strin
 	c.Clean()
 	c.Token = ctx.GetSecrets("token")
 
-	rep, ok := reports[c.ReportInfo.ID]
-	if !ok {
-		msg := "github report not found for: " + c.ReportInfo.ID
-		log.ErrorString(msg)
-		return "Documize internal error: " + msg
+	var gr = githubRender{}
+	client := p.githubClient(&c)
+	for _, rep := range reports {
+		log.IfErr(rep.refresh(&gr, &c, client))
 	}
 
-	return rep.refresh(p, c, data)
+	byts, err := json.Marshal(&gr)
+	if err != nil {
+		log.Error("unable to marshall github data", err)
+		return "internal configuration error '" + err.Error() + "'"
+	}
+
+	return string(byts)
 
 }
 
@@ -186,40 +191,50 @@ func (p *Provider) Render(ctx *provider.Context, config, data string) string {
 	c.Clean()
 	c.Token = ctx.GetSecrets("token")
 
+	err = json.Unmarshal([]byte(data), &payload)
+
+	if err != nil {
+		log.Error("unable to unmarshall github data", err)
+		return "Please delete and recreate this Github section."
+	}
+
 	payload.Config = c
 	payload.Repo = c.RepoInfo
 	payload.Limit = c.BranchLines
-	if len(c.BranchSince) > 0 {
-		payload.DateMessage = "created after " + c.BranchSince
+
+	ret := ""
+	for _, repID := range c.ReportOrder {
+
+		rep, ok := reports[repID]
+		if !ok {
+			msg := "github report not found for: " + repID
+			log.ErrorString(msg)
+			return "Documize internal error: " + msg
+		}
+
+		if err = rep.render(&payload, &c); err != nil {
+			log.Error("unable to render "+repID, err)
+			return "Documize internal github render " + repID + " error: " + err.Error() + "<BR>" + data
+		}
+
+		t := template.New("github")
+
+		t, err = t.Parse(rep.template)
+
+		if err != nil {
+			log.Error("github render template.Parse error:", err)
+			return "Documize internal github template.Parse error: " + err.Error()
+		}
+
+		buffer := new(bytes.Buffer)
+		err = t.Execute(buffer, payload)
+		if err != nil {
+			log.Error("github render template.Execute error:", err)
+			return "Documize internal github template.Execute error: " + err.Error()
+		}
+
+		ret += buffer.String()
+
 	}
-
-	rep, ok := reports[c.ReportInfo.ID]
-	if !ok {
-		msg := "github report not found for: " + c.ReportInfo.ID
-		log.ErrorString(msg)
-		return "Documize internal error: " + msg
-	}
-
-	if err = rep.render(&c, &payload, data); err != nil {
-		log.Error("unable to render "+c.ReportInfo.ID, err)
-		return "Documize internal github render " + c.ReportInfo.ID + " error: " + err.Error() + "<BR>" + data
-	}
-
-	t := template.New("github")
-
-	t, err = t.Parse(rep.template)
-
-	if err != nil {
-		log.Error("github render template.Parse error:", err)
-		return "Documize internal github template.Parse error: " + err.Error()
-	}
-
-	buffer := new(bytes.Buffer)
-	err = t.Execute(buffer, payload)
-	if err != nil {
-		log.Error("github render template.Execute error:", err)
-		return "Documize internal github template.Execute error: " + err.Error()
-	}
-
-	return buffer.String()
+	return ret
 }

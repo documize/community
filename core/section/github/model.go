@@ -12,7 +12,7 @@
 package github
 
 import (
-	"net/http"
+	"fmt"
 	"time"
 
 	"github.com/documize/community/core/log"
@@ -21,24 +21,27 @@ import (
 )
 
 type githubRender struct {
-	Config           githubConfig
-	Repo             githubRepo
-	List             []githubBranch
-	ShowList         bool
-	ShowIssueNumbers bool
-	BranchCommits    []githubBranchCommits
-	CommitCount      int
-	Issues           []githubIssue
-	//IssueNum         int
-	//IssueNumActivity []githubIssueActivity
-	Limit       int
-	DateMessage string
+	Config           githubConfig          `json:"config"`
+	Repo             githubRepo            `json:"repo"`
+	List             []githubBranch        `json:"list"`
+	ShowList         bool                  `json:"showList"`
+	ShowIssueNumbers bool                  `json:"showIssueNumbers"`
+	BranchCommits    []githubBranchCommits `json:"branchCommits"`
+	CommitCount      int                   `json:"commitCount"`
+	Issues           []githubIssue         `json:"issues"`
+	OpenIssues       int                   `json:"openIssues"`
+	ClosedIssues     int                   `json:"closedIssues"`
+	Limit            int                   `json:"limit"`
+	Milestones       []githubMilestone     `json:"milestones"`
+	PullRequests     []githubPullRequest   `json:"pullRequests"`
+	OpenPRs        int                   `json:"openPRs"`
+	ClosedPRs        int                   `json:"closedPRs"`
+	AuthorStats      []githubAuthorStats   `json:"authorStats"`
 }
 
 type report struct {
-	command  func(*Provider, *gogithub.Client, githubConfig, http.ResponseWriter)
-	refresh  func(*Provider, githubConfig, string) string
-	render   func(*githubConfig, *githubRender, string) error
+	refresh  func(*githubRender, *githubConfig, *gogithub.Client) error
+	render   func(*githubRender, *githubConfig) error
 	template string
 }
 
@@ -66,6 +69,8 @@ type githubRepo struct {
 
 type githubBranch struct {
 	ID       string `json:"id"`
+	Owner    string `json:"owner"`
+	Repo     string `json:"repo"`
 	Name     string `json:"name"`
 	Included bool   `json:"included"`
 	URL      string `json:"url"`
@@ -82,6 +87,7 @@ type githubConfig struct {
 	BranchURL   string         `json:"branchURL"`
 	BranchSince string         `json:"branchSince,omitempty"`
 	SincePtr    *time.Time     `json:"-"`
+	Since       string         `json:"since"`
 	BranchLines int            `json:"branchLines,omitempty,string"`
 	OwnerInfo   githubOwner    `json:"owner"`
 	RepoInfo    githubRepo     `json:"repo"`
@@ -91,7 +97,8 @@ type githubConfig struct {
 	Lists       []githubBranch `json:"lists,omitempty"`
 	IssueState  githubReport   `json:"state,omitempty"`
 	IssuesText  string         `json:"issues,omitempty"`
-	//IssueNum    int            `json:"issueNum,omitempty,string"`
+	ReportOrder []string       `json:"reportOrder,omitempty"`
+	DateMessage string         `json:"dateMessage,omitempty"`
 }
 
 func (c *githubConfig) Clean() {
@@ -117,6 +124,32 @@ func (c *githubConfig) Clean() {
 			c.SincePtr = &since
 		}
 	}
+	if c.SincePtr == nil {
+		c.DateMessage = " (the last 7 days)"
+		since := time.Now().AddDate(0, 0, -7)
+		c.SincePtr = &since
+	} else {
+		c.DateMessage = ""
+	}
+	c.Since = (*c.SincePtr).Format(issuesTimeFormat)
+
+	// TEST DATA INSERTION DEBUG ONLY!
+	debugList := []string{"community", "enterprise", "test-data"}
+	c.Lists = make([]githubBranch, 0, len(debugList))
+	for rid, repo := range debugList {
+		c.Lists = append(c.Lists, githubBranch{
+			ID:       fmt.Sprintf("%d", rid+1),
+			Owner:    "documize",
+			Repo:     repo,
+			Name:     "master",
+			Included: true,
+			URL:      "https://github.com/documize/" + repo + "/tree/master",
+			Color:    "",
+		})
+	}
+	c.ReportOrder = []string{tagMilestonesData, tagIssuesData, tagPullRequestData, tagCommitsData}
+	c.BranchLines = 100 // overide js default of 30 with maximum allowable in one call
+
 }
 
 type githubCallbackT struct {

@@ -114,6 +114,8 @@ func listFailed(method string, config githubConfig, client *gogithub.Client, w h
 		render := make([]githubBranch, len(branches))
 		for kc, vb := range branches {
 			render[kc] = githubBranch{
+				Owner:    config.Owner,
+				Repo:     config.Repo,
 				Name:     *vb.Name,
 				ID:       fmt.Sprintf("%s:%s:%s", config.Owner, config.Repo, *vb.Name),
 				Included: false,

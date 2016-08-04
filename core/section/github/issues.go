@@ -12,16 +12,18 @@
 package github
 
 import (
-	"encoding/json"
 	"html/template"
-	"net/http"
-	"strconv"
-	"strings"
+	"sort"
+	"time"
 
 	"github.com/documize/community/core/log"
-	"github.com/documize/community/core/section/provider"
 
 	gogithub "github.com/google/go-github/github"
+)
+
+const (
+	tagIssuesData    = "issuesData"
+	issuesTimeFormat = "January 2 2006, 15:04"
 )
 
 type githubIssue struct {
@@ -34,32 +36,42 @@ type githubIssue struct {
 	Avatar  string        `json:"avatar"`
 	Labels  template.HTML `json:"labels"`
 	IsOpen  bool          `json:"isopen"`
+	Repo    string        `json:"repo"`
 }
 
-const tagIssuesData = "issuesData"
+// sort issues in order that that should be presented - by date updated.
+type issuesToSort []githubIssue
+
+func (s issuesToSort) Len() int      { return len(s) }
+func (s issuesToSort) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
+func (s issuesToSort) Less(i, j int) bool {
+	if !s[i].IsOpen && s[j].IsOpen {
+		return true
+	}
+	if s[i].IsOpen && !s[j].IsOpen {
+		return false
+	}
+	// TODO this seems a very slow approach
+	iDate, iErr := time.Parse(issuesTimeFormat, s[i].Updated)
+	log.IfErr(iErr)
+	jDate, jErr := time.Parse(issuesTimeFormat, s[j].Updated)
+	log.IfErr(jErr)
+	return iDate.Before(jDate)
+}
 
 func init() {
-	reports[tagIssuesData] = report{commandIssuesData, refreshIssues, renderIssues, `
+	reports[tagIssuesData] = report{refreshIssues, renderIssues, `
 <div class="section-github-render">
+	<h3>Issues</h3>
 	<p>
-		{{if .ShowIssueNumbers}}
-			Showing Selected Issues
-		{{else}}
-			{{ .Config.IssueState.Name }}
-		{{end}}
-		    for repository <a href="{{ .Repo.URL }}/issues">{{.Repo.Name}}</a>
+		During the period since {{.Config.Since}}{{.Config.DateMessage}}, {{.ClosedIssues}} issues were closed, while {{.OpenIssues}} remain open. 
 		{{if .ShowList}}
-			labelled
+			Labelled
 			{{range $label := .List}}
 				{{if $label.Included}}
 					<span class="github-issue-label" style="background-color:#{{$label.Color}}">{{$label.Name}}</span>
 				{{end}}
 			{{end}}
-		{{end}}
-		{{if .ShowIssueNumbers}}
-			issue(s) {{ .DateMessage }}.
-		{{else}}
-			up to {{ .Limit }} items are shown{{ .DateMessage }}.
 		{{end}}
 	</p>
 	<div class="github-board">
@@ -81,7 +93,7 @@ func init() {
 					<div class="github-commit-body">
 						<div class="github-commit-title"><span class="label-name">{{$data.Message}}</span> {{$data.Labels}}</div>
 						<div class="github-commit-meta">
-							#{{$data.ID}} opened on {{$data.Date}} by {{$data.Name}}, last updated {{$data.Updated}}
+							#{{$data.ID}} opened on {{$data.Date}} by {{$data.Name}} in {{$data.Repo}}, last updated {{$data.Updated}}
 						</div>
 					</div>
 				</a>
@@ -102,142 +114,96 @@ func wrapLabels(labels []gogithub.Label) string {
 	return l
 }
 
-func (*Provider) getIssues(client *gogithub.Client, config githubConfig) ([]githubIssue, error) {
+func getIssues(client *gogithub.Client, config *githubConfig) ([]githubIssue, error) {
 
 	ret := []githubIssue{}
 
-	isRequired := make([]int, 0, 10)
-	for _, s := range strings.Split(strings.Replace(config.IssuesText, "#", "", -1), ",") {
-		i, err := strconv.Atoi(strings.TrimSpace(s))
-		if err == nil {
-			isRequired = append(isRequired, i)
-		}
-	}
-	if len(isRequired) > 0 {
+	hadRepo := make(map[string]bool)
 
-		for _, i := range isRequired {
+	for _, orb := range config.Lists {
 
-			issue, _, err := client.Issues.Get(config.Owner, config.Repo, i)
+		rName := orb.Owner + "/" + orb.Repo
 
-			if err == nil {
-				n := ""
-				p := issue.User
-				if p != nil {
-					if p.Login != nil {
-						n = *p.Login
+		if !hadRepo[rName] {
+
+			for _, state := range []string{"open", "closed"} {
+
+				opts := &gogithub.IssueListByRepoOptions{
+					Sort:        "updated",
+					State:       state,
+					ListOptions: gogithub.ListOptions{PerPage: config.BranchLines}}
+
+				if config.SincePtr != nil && state == "closed" /* we want all the open ones */ {
+					opts.Since = *config.SincePtr
+				}
+
+				/* TODO refactor to select certain lables
+				for _, lab := range config.Lists {
+					if lab.Included {
+						opts.Labels = append(opts.Labels, lab.Name)
 					}
 				}
-				l := wrapLabels(issue.Labels)
-				ret = append(ret, githubIssue{
-					Name:    n,
-					Message: *issue.Title,
-					Date:    issue.CreatedAt.Format("January 2 2006, 15:04"),
-					Updated: issue.UpdatedAt.Format("January 2 2006, 15:04"),
-					URL:     template.URL(*issue.HTMLURL),
-					Labels:  template.HTML(l),
-					ID:      *issue.Number,
-					IsOpen:  *issue.State == "open",
-				})
-			}
-		}
+				*/
 
-	} else {
+				guff, _, err := client.Issues.ListByRepo(orb.Owner, orb.Repo, opts)
 
-		opts := &gogithub.IssueListByRepoOptions{
-			Sort:        "updated",
-			State:       config.IssueState.ID,
-			ListOptions: gogithub.ListOptions{PerPage: config.BranchLines}}
+				if err != nil {
+					return ret, err
+				}
 
-		if config.SincePtr != nil {
-			opts.Since = *config.SincePtr
-		}
-
-		for _, lab := range config.Lists {
-			if lab.Included {
-				opts.Labels = append(opts.Labels, lab.Name)
-			}
-		}
-
-		guff, _, err := client.Issues.ListByRepo(config.Owner, config.Repo, opts)
-
-		if err != nil {
-			return ret, err
-		}
-
-		for _, v := range guff {
-			n := ""
-			ptr := v.User
-			if ptr != nil {
-				if ptr.Login != nil {
-					n = *ptr.Login
+				for _, v := range guff {
+					n := ""
+					ptr := v.User
+					if ptr != nil {
+						if ptr.Login != nil {
+							n = *ptr.Login
+						}
+					}
+					l := wrapLabels(v.Labels)
+					ret = append(ret, githubIssue{
+						Name:    n,
+						Message: *v.Title,
+						Date:    v.CreatedAt.Format(issuesTimeFormat),
+						Updated: v.UpdatedAt.Format(issuesTimeFormat),
+						URL:     template.URL(*v.HTMLURL),
+						Labels:  template.HTML(l),
+						ID:      *v.Number,
+						IsOpen:  *v.State == "open",
+						Repo:    rName,
+					})
 				}
 			}
-			l := wrapLabels(v.Labels)
-			ret = append(ret, githubIssue{
-				Name:    n,
-				Message: *v.Title,
-				Date:    v.CreatedAt.Format("January 2 2006, 15:04"),
-				Updated: v.UpdatedAt.Format("January 2 2006, 15:04"),
-				URL:     template.URL(*v.HTMLURL),
-				Labels:  template.HTML(l),
-				ID:      *v.Number,
-				IsOpen:  *v.State == "open",
-			})
 		}
+		hadRepo[rName] = true
+
 	}
+
+	sort.Stable(issuesToSort(ret))
 
 	return ret, nil
 
 }
 
-func commandIssuesData(p *Provider, client *gogithub.Client, config githubConfig, w http.ResponseWriter) {
-	render, err := p.getIssues(client, config)
+func refreshIssues(gr *githubRender, config *githubConfig, client *gogithub.Client) (err error) {
+	gr.Issues, err = getIssues(client, config)
 	if err != nil {
-		log.Error("github getIssues:", err)
-		provider.WriteError(w, "github", err)
-		return
+		log.Error("unable to get github issues (cmd)", err)
+		return err
 	}
 
-	provider.WriteJSON(w, render)
-}
-
-func refreshIssues(p *Provider, c githubConfig, data string) string {
-	refreshed, err := p.getIssues(p.githubClient(c), c)
-	if err != nil {
-		log.Error("unable to get github issues", err)
-		return data
-	}
-	j, err := json.Marshal(refreshed)
-	if err != nil {
-		log.Error("unable to marshall github issues", err)
-		return data
-	}
-	return string(j)
-}
-
-func renderIssues(c *githubConfig, payload *githubRender, data string) error {
-	raw := []githubIssue{}
-
-	if len(data) > 0 {
-		err := json.Unmarshal([]byte(data), &raw)
-		if err != nil {
-			return err
+	gr.OpenIssues = 0
+	gr.ClosedIssues = 0
+	for _, v := range gr.Issues {
+		if v.IsOpen {
+			gr.OpenIssues++
+		} else {
+			gr.ClosedIssues++
 		}
 	}
-	payload.Issues = raw
-	if strings.TrimSpace(c.IssuesText) != "" {
-		payload.ShowIssueNumbers = true
-		payload.DateMessage = c.IssuesText
-	} else {
-		if len(c.Lists) > 0 {
-			for _, v := range c.Lists {
-				if v.Included {
-					payload.ShowList = true
-					break
-				}
-			}
-			payload.List = c.Lists
-		}
-	}
+
+	return nil
+}
+
+func renderIssues(payload *githubRender, c *githubConfig) error {
 	return nil
 }

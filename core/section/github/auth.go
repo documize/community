@@ -46,7 +46,7 @@ func validateToken(ptoken string) error {
 	return err
 }
 
-func (*Provider) githubClient(config githubConfig) *gogithub.Client {
+func (*Provider) githubClient(config *githubConfig) *gogithub.Client {
 	ts := oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: config.Token},
 	)
