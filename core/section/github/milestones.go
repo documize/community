@@ -21,11 +21,6 @@ import (
 	gogithub "github.com/google/go-github/github"
 )
 
-const (
-	tagMilestonesData    = "milestonesData"
-	milestonesTimeFormat = "January 2 2006"
-)
-
 type githubMilestone struct {
 	Repo         string `json:"repo"`
 	Name         string `json:"name"`
@@ -60,6 +55,27 @@ func (s milestonesToSort) Less(i, j int) bool {
 
 }
 
+const (
+	tagMilestonesData    = "milestonesData"
+	milestonesTimeFormat = "January 2 2006"
+
+	rawMSsvg  = `<path d="M8 2H6V0h2v2zm4 5H2c-.55 0-1-.45-1-1V4c0-.55.45-1 1-1h10l2 2-2 2zM8 4H6v2h2V4zM6 16h2V8H6v8z"></path>`
+	openMSsvg = `							
+<span title="Open milestone">
+	<svg height="16" width="14" version="1.1" viewBox="0 0 14 16">
+		` + rawMSsvg + `
+	</svg>
+</span>
+`
+	closedMSsvg = `							
+<span title="Closed milestone">
+	<svg height="8" width="7" version="1.1" viewBox="0 0 14 16">
+		` + rawMSsvg + `
+	</svg>
+</span>
+`
+)
+
 func init() {
 	reports[tagMilestonesData] = report{refreshMilestones, renderMilestones, `
 <div class="section-github-render">
@@ -71,13 +87,9 @@ func init() {
 				<a class="link" href="{{$data.URL}}">
 					<div class="issue-avatar">
 						{{if $data.IsOpen}}
-							<span title="Open issue">
-								<svg height="16" version="1.1" viewBox="0 0 14 16" width="14"><path d="M7 2.3c3.14 0 5.7 2.56 5.7 5.7s-2.56 5.7-5.7 5.7A5.71 5.71 0 0 1 1.3 8c0-3.14 2.56-5.7 5.7-5.7zM7 1C3.14 1 0 4.14 0 8s3.14 7 7 7 7-3.14 7-7-3.14-7-7-7zm1 3H6v5h2V4zm0 6H6v2h2v-2z"></path></svg>
-							</span>
+							` + openMSsvg + `
 						{{else}}
-							<span title="Closed issue">
-								<svg height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7 10h2v2H7v-2zm2-6H7v5h2V4zm1.5 1.5l-1 1L12 9l4-4.5-1-1L12 7l-1.5-1.5zM8 13.7A5.71 5.71 0 0 1 2.3 8c0-3.14 2.56-5.7 5.7-5.7 1.83 0 3.45.88 4.5 2.2l.92-.92A6.947 6.947 0 0 0 8 1C4.14 1 1 4.14 1 8s3.14 7 7 7 7-3.14 7-7l-1.52 1.52c-.66 2.41-2.86 4.19-5.48 4.19v-.01z"></path></svg>
-							</span>
+							` + closedMSsvg + `
 						{{end}}
 				  	</div>
 					<div class="github-commit-body">
@@ -104,61 +116,62 @@ func getMilestones(client *gogithub.Client, config *githubConfig) ([]githubMiles
 	hadRepo := make(map[string]bool)
 
 	for _, orb := range config.Lists {
-		rName := orb.Owner + "/" + orb.Repo
+		if orb.Included {
+			rName := orb.Owner + "/" + orb.Repo
 
-		if !hadRepo[rName] {
+			if !hadRepo[rName] {
 
-			for _, state := range []string{"open", "closed"} {
+				for _, state := range []string{"open", "closed"} {
 
-				opts := &gogithub.MilestoneListOptions{
-					Sort:        "updated",
-					State:       state,
-					ListOptions: gogithub.ListOptions{PerPage: config.BranchLines}}
+					opts := &gogithub.MilestoneListOptions{
+						Sort:        "updated",
+						State:       state,
+						ListOptions: gogithub.ListOptions{PerPage: config.BranchLines}}
 
-				guff, _, err := client.Issues.ListMilestones(orb.Owner, orb.Repo, opts)
+					guff, _, err := client.Issues.ListMilestones(orb.Owner, orb.Repo, opts)
 
-				if err != nil {
-					return ret, err
-				}
+					if err != nil {
+						return ret, err
+					}
 
-				for _, v := range guff {
-					include := true
-					if state == "closed" {
-						if config.SincePtr != nil {
-							if (*config.SincePtr).After(*v.ClosedAt) {
-								include = false
+					for _, v := range guff {
+						include := true
+						if state == "closed" {
+							if config.SincePtr != nil {
+								if (*config.SincePtr).After(*v.ClosedAt) {
+									include = false
+								}
 							}
 						}
-					}
-					if include {
-						dd := "No due date."
-						if v.DueOn != nil {
-							// TODO refactor to add message in red if the milestone is overdue
-							dd = "Due on " + (*v.DueOn).Format(milestonesTimeFormat) + "."
-						}
-						up := ""
-						if v.UpdatedAt != nil {
-							up = (*v.UpdatedAt).Format(milestonesTimeFormat)
-						}
+						if include {
+							dd := "No due date."
+							if v.DueOn != nil {
+								// TODO refactor to add message in red if the milestone is overdue
+								dd = "Due on " + (*v.DueOn).Format(milestonesTimeFormat) + "."
+							}
+							up := ""
+							if v.UpdatedAt != nil {
+								up = (*v.UpdatedAt).Format(milestonesTimeFormat)
+							}
 
-						ret = append(ret, githubMilestone{
-							Repo:         rName,
-							Name:         *v.Title,
-							URL:          *v.HTMLURL,
-							IsOpen:       *v.State == "open",
-							OpenIssues:   *v.OpenIssues,
-							ClosedIssues: *v.ClosedIssues,
-							CompleteMsg:  fmt.Sprintf("%2.0f%%", float64(*v.ClosedIssues*100)/float64(*v.OpenIssues+*v.ClosedIssues)),
-							DueDate:      dd,
-							UpdatedAt:    up,
-						})
+							ret = append(ret, githubMilestone{
+								Repo:         rName,
+								Name:         *v.Title,
+								URL:          *v.HTMLURL,
+								IsOpen:       *v.State == "open",
+								OpenIssues:   *v.OpenIssues,
+								ClosedIssues: *v.ClosedIssues,
+								CompleteMsg:  fmt.Sprintf("%2.0f%%", float64(*v.ClosedIssues*100)/float64(*v.OpenIssues+*v.ClosedIssues)),
+								DueDate:      dd,
+								UpdatedAt:    up,
+							})
+						}
 					}
+
 				}
-
 			}
-
+			hadRepo[rName] = true
 		}
-		hadRepo[rName] = true
 
 	}
 
@@ -175,6 +188,16 @@ func refreshMilestones(gr *githubRender, config *githubConfig, client *gogithub.
 		log.Error("unable to get github milestones", err)
 		return err
 	}
+	gr.OpenMS = 0
+	gr.ClosedMS = 0
+	for _, v := range gr.Milestones {
+		if v.IsOpen {
+			gr.OpenMS++
+		} else {
+			gr.ClosedMS++
+		}
+	}
+
 	return nil
 }
 

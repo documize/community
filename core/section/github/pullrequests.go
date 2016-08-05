@@ -20,11 +20,6 @@ import (
 	gogithub "github.com/google/go-github/github"
 )
 
-const (
-	tagPullRequestData = "pullRequestData"
-	//pullRequestTimeFormat = "January 2 2006"
-)
-
 type githubPullRequest struct {
 	Repo      string `json:"repo"`
 	Name      string `json:"name"`
@@ -55,13 +50,30 @@ func (s prToSort) Less(i, j int) bool {
 
 }
 
+const (
+	tagPullRequestData = "pullRequestData"
+
+	rawPRsvg  = `<path d="M11 11.28V5c-.03-.78-.34-1.47-.94-2.06C9.46 2.35 8.78 2.03 8 2H7V0L4 3l3 3V4h1c.27.02.48.11.69.31.21.2.3.42.31.69v6.28A1.993 1.993 0 0 0 10 15a1.993 1.993 0 0 0 1-3.72zm-1 2.92c-.66 0-1.2-.55-1.2-1.2 0-.65.55-1.2 1.2-1.2.65 0 1.2.55 1.2 1.2 0 .65-.55 1.2-1.2 1.2zM4 3c0-1.11-.89-2-2-2a1.993 1.993 0 0 0-1 3.72v6.56A1.993 1.993 0 0 0 2 15a1.993 1.993 0 0 0 1-3.72V4.72c.59-.34 1-.98 1-1.72zm-.8 10c0 .66-.55 1.2-1.2 1.2-.65 0-1.2-.55-1.2-1.2 0-.65.55-1.2 1.2-1.2.65 0 1.2.55 1.2 1.2zM2 4.2C1.34 4.2.8 3.65.8 3c0-.65.55-1.2 1.2-1.2.65 0 1.2.55 1.2 1.2 0 .65-.55 1.2-1.2 1.2z"></path>`
+	openPRsvg = `	
+	<span title="Open Pull Request" >
+			<svg height="16" width="12" version="1.1" viewBox="0 0 12 16">
+				` + rawPRsvg + `
+			</svg>							
+	</span>
+	`
+	closedPRsvg = `	
+	<span title="Closed Pull Request" >
+			<svg height="8" width="6" version="1.1" viewBox="0 0 12 16">
+				` + rawPRsvg + `
+			</svg>							
+	</span>
+	`
+)
+
 func init() {
 	reports[tagPullRequestData] = report{refreshPullReqs, renderPullReqs, `
 <div class="section-github-render">
 	<h3>Pull Requests</h3>
-	<p>
-		During the period since {{.Config.Since}}{{.Config.DateMessage}}, {{.ClosedPRs}} pull requests were closed, while {{.OpenPRs}} remain open. 
-	</p>
 	<div class="github-board">
 	<ul class="github-list">
 		{{range $data := .PullRequests}}
@@ -69,13 +81,9 @@ func init() {
 				<a class="link" href="{{$data.URL}}">
 					<div class="issue-avatar">
 						{{if $data.IsOpen}}
-							<span title="Open Pull Request" >
-								<svg aria-hidden="true"  height="16" version="1.1" viewBox="0 0 12 16" width="12"><path d="M11 11.28V5c-.03-.78-.34-1.47-.94-2.06C9.46 2.35 8.78 2.03 8 2H7V0L4 3l3 3V4h1c.27.02.48.11.69.31.21.2.3.42.31.69v6.28A1.993 1.993 0 0 0 10 15a1.993 1.993 0 0 0 1-3.72zm-1 2.92c-.66 0-1.2-.55-1.2-1.2 0-.65.55-1.2 1.2-1.2.65 0 1.2.55 1.2 1.2 0 .65-.55 1.2-1.2 1.2zM4 3c0-1.11-.89-2-2-2a1.993 1.993 0 0 0-1 3.72v6.56A1.993 1.993 0 0 0 2 15a1.993 1.993 0 0 0 1-3.72V4.72c.59-.34 1-.98 1-1.72zm-.8 10c0 .66-.55 1.2-1.2 1.2-.65 0-1.2-.55-1.2-1.2 0-.65.55-1.2 1.2-1.2.65 0 1.2.55 1.2 1.2zM2 4.2C1.34 4.2.8 3.65.8 3c0-.65.55-1.2 1.2-1.2.65 0 1.2.55 1.2 1.2 0 .65-.55 1.2-1.2 1.2z"></path></svg>							
-							</span>
+							` + openPRsvg + `
 						{{else}}
-							<span title="Closed Pull Request" >
-								<svg aria-hidden="true" height="8" version="1.1" viewBox="0 0 12 16" width="6"><path d="M11 11.28V5c-.03-.78-.34-1.47-.94-2.06C9.46 2.35 8.78 2.03 8 2H7V0L4 3l3 3V4h1c.27.02.48.11.69.31.21.2.3.42.31.69v6.28A1.993 1.993 0 0 0 10 15a1.993 1.993 0 0 0 1-3.72zm-1 2.92c-.66 0-1.2-.55-1.2-1.2 0-.65.55-1.2 1.2-1.2.65 0 1.2.55 1.2 1.2 0 .65-.55 1.2-1.2 1.2zM4 3c0-1.11-.89-2-2-2a1.993 1.993 0 0 0-1 3.72v6.56A1.993 1.993 0 0 0 2 15a1.993 1.993 0 0 0 1-3.72V4.72c.59-.34 1-.98 1-1.72zm-.8 10c0 .66-.55 1.2-1.2 1.2-.65 0-1.2-.55-1.2-1.2 0-.65.55-1.2 1.2-1.2.65 0 1.2.55 1.2 1.2zM2 4.2C1.34 4.2.8 3.65.8 3c0-.65.55-1.2 1.2-1.2.65 0 1.2.55 1.2 1.2 0 .65-.55 1.2-1.2 1.2z"></path></svg>
-							</span>
+							` + closedPRsvg + `
 						{{end}}
 				  	</div>
 					<div class="github-commit-body">
@@ -101,52 +109,54 @@ func getPullReqs(client *gogithub.Client, config *githubConfig) ([]githubPullReq
 	hadRepo := make(map[string]bool)
 
 	for _, orb := range config.Lists {
-		rName := orb.Owner + "/" + orb.Repo
+		if orb.Included {
+			rName := orb.Owner + "/" + orb.Repo
 
-		if !hadRepo[rName] {
+			if !hadRepo[rName] {
 
-			for _, state := range []string{"open", "closed"} {
+				for _, state := range []string{"open", "closed"} {
 
-				opts := &gogithub.PullRequestListOptions{
-					Sort:        "updated",
-					State:       state,
-					ListOptions: gogithub.ListOptions{PerPage: config.BranchLines}}
+					opts := &gogithub.PullRequestListOptions{
+						Sort:        "updated",
+						State:       state,
+						ListOptions: gogithub.ListOptions{PerPage: config.BranchLines}}
 
-				guff, _, err := client.PullRequests.List(orb.Owner, orb.Repo, opts)
+					guff, _, err := client.PullRequests.List(orb.Owner, orb.Repo, opts)
 
-				if err != nil {
-					return ret, err
-				}
+					if err != nil {
+						return ret, err
+					}
 
-				for _, v := range guff {
-					include := true
-					if state == "closed" {
-						if config.SincePtr != nil {
-							if (*config.SincePtr).After(*v.ClosedAt) {
-								include = false
+					for _, v := range guff {
+						include := true
+						if state == "closed" {
+							if config.SincePtr != nil {
+								if (*config.SincePtr).After(*v.ClosedAt) {
+									include = false
+								}
 							}
 						}
-					}
-					if include {
-						up := ""
-						if v.UpdatedAt != nil {
-							up = (*v.UpdatedAt).Format(milestonesTimeFormat)
-						}
+						if include {
+							up := ""
+							if v.UpdatedAt != nil {
+								up = (*v.UpdatedAt).Format(milestonesTimeFormat)
+							}
 
-						ret = append(ret, githubPullRequest{
-							Repo:      rName,
-							Name:      *v.Title,
-							URL:       *v.HTMLURL,
-							IsOpen:    *v.State == "open",
-							UpdatedAt: up,
-						})
+							ret = append(ret, githubPullRequest{
+								Repo:      rName,
+								Name:      *v.Title,
+								URL:       *v.HTMLURL,
+								IsOpen:    *v.State == "open",
+								UpdatedAt: up,
+							})
+						}
 					}
+
 				}
 
 			}
-
+			hadRepo[rName] = true
 		}
-		hadRepo[rName] = true
 
 	}
 

@@ -33,8 +33,10 @@ type githubRender struct {
 	ClosedIssues     int                   `json:"closedIssues"`
 	Limit            int                   `json:"limit"`
 	Milestones       []githubMilestone     `json:"milestones"`
+	OpenMS           int                   `json:"openMS"`
+	ClosedMS         int                   `json:"closedMS"`
 	PullRequests     []githubPullRequest   `json:"pullRequests"`
-	OpenPRs        int                   `json:"openPRs"`
+	OpenPRs          int                   `json:"openPRs"`
 	ClosedPRs        int                   `json:"closedPRs"`
 	AuthorStats      []githubAuthorStats   `json:"authorStats"`
 }
@@ -147,7 +149,7 @@ func (c *githubConfig) Clean() {
 			Color:    "",
 		})
 	}
-	c.ReportOrder = []string{tagMilestonesData, tagIssuesData, tagPullRequestData, tagCommitsData}
+	c.ReportOrder = []string{tagSummaryData, tagMilestonesData, tagIssuesData, tagPullRequestData, tagCommitsData}
 	c.BranchLines = 100 // overide js default of 30 with maximum allowable in one call
 
 }

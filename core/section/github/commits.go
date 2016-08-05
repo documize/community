@@ -120,114 +120,115 @@ func getCommits(client *gogithub.Client, config *githubConfig) ([]githubBranchCo
 	overall := []githubBranchCommits{}
 
 	for _, orb := range config.Lists {
+		if orb.Included {
 
-		opts := &gogithub.CommitsListOptions{
-			SHA:         config.Branch,
-			ListOptions: gogithub.ListOptions{PerPage: config.BranchLines}}
+			opts := &gogithub.CommitsListOptions{
+				SHA:         config.Branch,
+				ListOptions: gogithub.ListOptions{PerPage: config.BranchLines}}
 
-		if config.SincePtr != nil {
-			opts.Since = *config.SincePtr
-		}
-
-		guff, _, err := client.Repositories.ListCommits(orb.Owner, orb.Repo, opts)
-
-		if err != nil {
-			return nil, nil, err
-		}
-
-		if len(guff) == 0 {
-			return []githubBranchCommits{}, []githubAuthorStats{}, nil
-		}
-
-		day := ""
-		newDay := ""
-		ret := []githubDayCommits{}
-
-		for k, v := range guff {
-
-			if guff[k].Commit != nil {
-				if guff[k].Commit.Committer.Date != nil {
-					y, m, d := (*guff[k].Commit.Committer.Date).Date()
-					newDay = fmt.Sprintf("%s %d, %d", m.String(), d, y)
-				}
+			if config.SincePtr != nil {
+				opts.Since = *config.SincePtr
 			}
-			if day != newDay {
-				day = newDay
-				ret = append(ret, githubDayCommits{
-					Day: day,
+
+			guff, _, err := client.Repositories.ListCommits(orb.Owner, orb.Repo, opts)
+
+			if err != nil {
+				return nil, nil, err
+			}
+
+			if len(guff) == 0 {
+				return []githubBranchCommits{}, []githubAuthorStats{}, nil
+			}
+
+			day := ""
+			newDay := ""
+			ret := []githubDayCommits{}
+
+			for k, v := range guff {
+
+				if guff[k].Commit != nil {
+					if guff[k].Commit.Committer.Date != nil {
+						y, m, d := (*guff[k].Commit.Committer.Date).Date()
+						newDay = fmt.Sprintf("%s %d, %d", m.String(), d, y)
+					}
+				}
+				if day != newDay {
+					day = newDay
+					ret = append(ret, githubDayCommits{
+						Day: day,
+					})
+				}
+
+				var d, m, u string
+				if v.Commit != nil {
+					if v.Commit.Committer.Date != nil {
+						// d = fmt.Sprintf("%v", *v.Commit.Committer.Date)
+						d = v.Commit.Committer.Date.Format("January 2 2006, 15:04")
+					}
+					if v.Commit.Message != nil {
+						m = *v.Commit.Message
+					}
+				}
+				/* Use author rather than committer
+				var a, l string
+				if v.Committer != nil {
+					if v.Committer.Login != nil {
+						l = *v.Committer.Login
+					}
+					if v.Committer.AvatarURL != nil {
+						a = *v.Committer.AvatarURL
+					}
+				}
+				if a == "" {
+					a = githubGravatar
+				}
+				*/
+
+				if v.HTMLURL != nil {
+					u = *v.HTMLURL
+				}
+
+				//  update of author commits
+				al, aa := "", githubGravatar
+				if v.Author != nil {
+					if v.Author.Login != nil {
+						al = *v.Author.Login
+					}
+					if v.Author.AvatarURL != nil {
+						aa = *v.Author.AvatarURL
+					}
+					cum := authorStats[al]
+					cum.Author = al
+					cum.Avatar = aa
+					cum.CommitCount++
+					/* TODO review, this code removed as too slow
+					cmt, _, err := client.Repositories.GetCommit(orb.Owner, orb.Repo, *v.SHA)
+					if err == nil {
+						if cmt.Stats != nil {
+							if cmt.Stats.Total != nil {
+								cum.TotalChanges += (*cmt.Stats.Total)
+							}
+						}
+					}
+					*/
+					authorStats[al] = cum
+				}
+
+				ret[len(ret)-1].Commits = append(ret[len(ret)-1].Commits, githubCommit{
+					Name:    al,
+					Message: m,
+					Date:    d,
+					Avatar:  aa,
+					URL:     template.URL(u),
 				})
 			}
 
-			var d, m, u string
-			if v.Commit != nil {
-				if v.Commit.Committer.Date != nil {
-					// d = fmt.Sprintf("%v", *v.Commit.Committer.Date)
-					d = v.Commit.Committer.Date.Format("January 2 2006, 15:04")
-				}
-				if v.Commit.Message != nil {
-					m = *v.Commit.Message
-				}
-			}
-			/* Use author rather than committer
-			var a, l string
-			if v.Committer != nil {
-				if v.Committer.Login != nil {
-					l = *v.Committer.Login
-				}
-				if v.Committer.AvatarURL != nil {
-					a = *v.Committer.AvatarURL
-				}
-			}
-			if a == "" {
-				a = githubGravatar
-			}
-			*/
-
-			if v.HTMLURL != nil {
-				u = *v.HTMLURL
-			}
-
-			//  update of author commits
-			al, aa := "", githubGravatar
-			if v.Author != nil {
-				if v.Author.Login != nil {
-					al = *v.Author.Login
-				}
-				if v.Author.AvatarURL != nil {
-					aa = *v.Author.AvatarURL
-				}
-				cum := authorStats[al]
-				cum.Author = al
-				cum.Avatar = aa
-				cum.CommitCount++
-				/* TODO review, this code removed as too slow
-				cmt, _, err := client.Repositories.GetCommit(orb.Owner, orb.Repo, *v.SHA)
-				if err == nil {
-					if cmt.Stats != nil {
-						if cmt.Stats.Total != nil {
-							cum.TotalChanges += (*cmt.Stats.Total)
-						}
-					}
-				}
-				*/
-				authorStats[al] = cum
-			}
-
-			ret[len(ret)-1].Commits = append(ret[len(ret)-1].Commits, githubCommit{
-				Name:    al,
-				Message: m,
-				Date:    d,
-				Avatar:  aa,
-				URL:     template.URL(u),
+			overall = append(overall, githubBranchCommits{
+				Name: fmt.Sprintf("%s/%s:%s", orb.Owner, orb.Repo, orb.Name),
+				URL:  fmt.Sprintf("https://github.com/%s/%s/tree/%s", orb.Owner, orb.Repo, orb.Name),
+				Days: ret,
 			})
 		}
-
-		overall = append(overall, githubBranchCommits{
-			Name: fmt.Sprintf("%s/%s:%s", orb.Owner, orb.Repo, orb.Name),
-			URL:  fmt.Sprintf("https://github.com/%s/%s/tree/%s", orb.Owner, orb.Repo, orb.Name),
-			Days: ret,
-		})
-
 	}
 
 	retStats := make([]githubAuthorStats, 0, len(authorStats))
