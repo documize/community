@@ -10,21 +10,22 @@
 // https://documize.com
 
 import Ember from 'ember';
-import models from '../utils/model';
+// import models from '../utils/model';
 
 export default Ember.Service.extend({
 	sessionService: Ember.inject.service('session'),
 	ajax: Ember.inject.service(),
+	store: Ember.inject.service(),
 
 	// Adds a new user.
 	add(user) {
-
 		return this.get('ajax').request(`users`, {
 			type: 'POST',
 			data: JSON.stringify(user),
 			contentType: 'json'
-		}).then(function (response) {
-			return models.UserModel.create(response);
+		}).then((response) => {
+			let user = this.get('store').normalize('user', response);
+			return this.get('store').push({ data: user });
 		});
 	},
 
@@ -35,15 +36,17 @@ export default Ember.Service.extend({
 		return this.get('ajax').request(url, {
 			type: 'GET'
 		}).then((response) => {
-			return models.UserModel.create(response);
+			let user = this.get('store').normalize('user', response);
+			return this.get('store').push({ data: user });
 		});
 	},
 
 	// Returns all users for organization.
 	getAll() {
 		return this.get('ajax').request(`users`).then((response) => {
-			return response.map(function (obj) {
-				return models.UserModel.create(obj);
+			return response.map((obj) => {
+				let user = this.get('store').normalize('user', obj);
+				return this.get('store').push({ data: user });
 			});
 		});
 	},
@@ -56,8 +59,9 @@ export default Ember.Service.extend({
 			method: "GET"
 		}).then((response) => {
 			let data = [];
-			_.each(response, function (obj) {
-				data.pushObject(models.UserModel.create(obj));
+			_.each(response, (obj) => {
+				let user = this.get('store').normalize('user', obj);
+				data.pushObject(this.get('store').push({ data: user }));
 			});
 
 			return data;
@@ -91,6 +95,9 @@ export default Ember.Service.extend({
 
 		return this.get('ajax').request(url, {
 			method: 'DELETE'
+		}).then(() => {
+			let user = this.get('store').peekRecord('user', `${userId}`);
+			return user.deleteRecord();
 		});
 	},
 
