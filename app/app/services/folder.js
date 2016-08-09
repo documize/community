@@ -14,13 +14,15 @@ import models from '../utils/model';
 import BaseService from '../services/base';
 
 const {
-	get
+	get,
+	inject: { service }
 } = Ember;
 
 export default BaseService.extend({
-	sessionService: Ember.inject.service('session'),
-	ajax: Ember.inject.service(),
-	localStorage: Ember.inject.service(),
+	sessionService: service('session'),
+	ajax: service(),
+	localStorage: service(),
+	store: service(),
 
 	// selected folder
 	currentFolder: null,
