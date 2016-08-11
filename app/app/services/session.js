@@ -38,8 +38,9 @@ export default SimpleAuthSession.extend({
 	user: computed('isAuthenticated', 'session.content.authenticated.user', function () {
 		if (this.get('isAuthenticated')) {
 			let user = this.get('session.content.authenticated.user') || { id: '' };
-			let data = this.get('store').normalize('user', user);
-			return this.get('store').push({ data: data });
+			// let data = this.get('store').normalize('user', user);
+			// return this.get('store').push({ data: data });
+			return models.UserModel.create(user);
 		}
 	}),
 

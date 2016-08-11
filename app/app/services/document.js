@@ -256,9 +256,9 @@ export default Ember.Service.extend({
 			method: 'GET'
 		}).then((response) => {
 			let data = [];
-			_.each(response, function (obj) {
-				let data = this.get('store').normalize('attachment', obj);
-				let attachments = this.get('store').push({ data: data });
+			_.each(response, (obj) => {
+				let attachmentData = this.get('store').normalize('attachment', obj);
+				let attachments = this.get('store').push({ data: attachmentData });
 				data.pushObject(attachments);
 			});
 			return data;

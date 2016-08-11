@@ -19,7 +19,7 @@ export default Ember.Component.extend({
 
 	didInitAttrs() {
 		if (this.get("session.authenticated")) {
-			this.get("session.user.accounts").forEach((account)=>{
+			this.get("session.user.accounts").forEach((account) => {
 				// TODO: do not mutate account.active here
 				account.active = account.orgId === this.get("appMeta.orgId");
 			});
