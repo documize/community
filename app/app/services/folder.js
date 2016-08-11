@@ -10,8 +10,8 @@
 // https://documize.com
 
 import Ember from 'ember';
-import models from '../utils/model';
 import BaseService from '../services/base';
+import models from '../utils/model';
 
 const {
 	get,
@@ -35,8 +35,8 @@ export default BaseService.extend({
 			contentType: 'json',
 			data: JSON.stringify(folder)
 		}).then((folder) => {
-			let folderModel = models.FolderModel.create(folder);
-			return folderModel;
+			let data = this.get('store').normalize('folder', folder);
+			return this.get('store').push({ data: data });
 		});
 	},
 
@@ -45,19 +45,18 @@ export default BaseService.extend({
 
 		return this.get('ajax').request(`folders/${id}`, {
 			method: 'GET'
-		}).then((response) => {
-			let folder = models.FolderModel.create(response);
-			return folder;
+		}).then((folder) => {
+			let data = this.get('store').normalize('folder', folder);
+			return this.get('store').push({ data: data });
 		});
 	},
 
 	// Returns all folders that user can see.
 	getAll() {
-		let self = this;
 
 		if (this.get('folders') != null) {
-			return new Ember.RSVP.Promise(function (resolve) {
-				resolve(self.get('folders'));
+			return new Ember.RSVP.Promise((resolve) => {
+				resolve(this.get('folders'));
 			});
 		} else {
 			return this.reload();
@@ -75,7 +74,7 @@ export default BaseService.extend({
 		});
 	},
 
-	remove: function (folderId, moveToId) {
+	remove(folderId, moveToId) {
 		let url = `folders/${folderId}/move/${moveToId}`;
 
 		return this.get('ajax').request(url, {
@@ -83,7 +82,7 @@ export default BaseService.extend({
 		});
 	},
 
-	onboard: function (folderId, payload) {
+	onboard(folderId, payload) {
 		let url = `public/share/${folderId}`;
 
 		return this.get('ajax').post(url, {
@@ -93,13 +92,16 @@ export default BaseService.extend({
 	},
 
 	// getProtectedFolderInfo returns non-private folders and who has access to them.
-	getProtectedFolderInfo: function () {
+	getProtectedFolderInfo() {
 		return this.get('ajax').request(`folders?filter=viewers`, {
 			method: "GET"
 		}).then((response) => {
 			let data = [];
-			_.each(response, function (obj) {
-				data.pushObject(models.ProtectedFolderParticipant.create(obj));
+			_.each(response, (obj) => {
+				debugger;
+				let participantData = this.get('store').normalize('protected-folder-participant', obj);
+				let participant = this.get('store').push({ data: participantData });
+				data.pushObject(participant);
 			});
 
 			return data;
@@ -113,8 +115,10 @@ export default BaseService.extend({
 			method: "GET"
 		}).then((response) => {
 			let data = [];
-			_.each(response, function (obj) {
-				data.pushObject(models.FolderModel.create(obj));
+			_.each(response, (obj) => {
+				let folderData = this.get('store').normalize('folder', obj);
+				let folder = this.get('store').push({ data: folderData });
+				data.pushObject(folder);
 			});
 
 			return data;
@@ -128,8 +132,10 @@ export default BaseService.extend({
 			method: "GET"
 		}).then((response) => {
 			let data = [];
-			_.each(response, function (obj) {
-				data.pushObject(models.FolderPermissionModel.create(obj));
+			_.each(response, (obj) => {
+				let permissionData = this.get('store').normalize('folder-permission', obj);
+				let permission = this.get('store').push({ data: permissionData });
+				data.pushObject(permission);
 			});
 
 			return data;
@@ -183,7 +189,7 @@ export default BaseService.extend({
 			let result = [];
 			let folderId = folder.get('id');
 
-			folderPermissions.forEach(function (item) {
+			folderPermissions.forEach((item) => {
 				if (item.folderId === folderId) {
 					result.push(item);
 				}
@@ -191,7 +197,7 @@ export default BaseService.extend({
 
 			let canEdit = false;
 
-			result.forEach(function (permission) {
+			result.forEach((permission) => {
 				if (permission.userId === userId) {
 					canEdit = permission.canEdit;
 				}
