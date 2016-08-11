@@ -22,6 +22,7 @@ const {
 export default SimpleAuthSession.extend({
 	ajax: service(),
 	appMeta: service(),
+	store: service(),
 
 	isMac: false,
 	isMobile: false,
@@ -37,7 +38,8 @@ export default SimpleAuthSession.extend({
 	user: computed('isAuthenticated', 'session.content.authenticated.user', function () {
 		if (this.get('isAuthenticated')) {
 			let user = this.get('session.content.authenticated.user') || { id: '' };
-			return models.UserModel.create(user);
+			let data = this.get('store').normalize('user', user);
+			return this.get('store').push({ data: data });
 		}
 	}),
 
