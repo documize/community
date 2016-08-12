@@ -10,7 +10,6 @@
 // https://documize.com
 
 import Ember from 'ember';
-import models from '../utils/model';
 
 const {
 	inject: { service }
@@ -49,10 +48,9 @@ export default Ember.Service.extend({
 				content: Ember.A([])
 			});
 
-			_.each(response, (template) => {
+			templates = response.map((template) => {
 				let data = this.get('store').normalize('template', template);
-				let templateModel = this.get('store').push({ data: data });
-				templates.pushObject(templateModel);
+				return this.get('store').push({ data: data });
 			});
 
 			return templates;

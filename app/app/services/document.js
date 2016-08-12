@@ -25,8 +25,8 @@ export default Ember.Service.extend({
 		return this.get('ajax').request(`documents/${documentId}`, {
 			method: "GET"
 		}).then((response) => {
-			let doc = this.get('store').normalize('document', response);
-			return this.get('store').push({ data: doc });
+			let data = this.get('store').normalize('document', response);
+			return this.get('store').push({ data: data });
 		});
 	},
 
@@ -39,10 +39,9 @@ export default Ember.Service.extend({
 				content: Ember.A([])
 			});
 
-			_.each(response, (doc) => {
+			documents = response.map((doc) => {
 				let data = this.get('store').normalize('document', doc);
-				let documentModel = this.get('store').push({ data: data });
-				documents.pushObject(documentModel);
+				return this.get('store').push({ data: data });
 			});
 
 			return documents;
@@ -58,10 +57,9 @@ export default Ember.Service.extend({
 				content: Ember.A([])
 			});
 
-			_.each(response, function (doc) {
+			documents = response.map((doc) => {
 				let data = this.get('store').normalize('document', doc);
-				let documentModel = this.get('store').push({ data: data });
-				documents.pushObject(documentModel);
+				return this.get('store').push({ data: data });
 			});
 
 			return documents;
@@ -199,10 +197,9 @@ export default Ember.Service.extend({
 			method: 'GET'
 		}).then((response) => {
 			let data = [];
-			_.each(response, (obj) => {
+			data = response.map((obj) => {
 				let data = this.get('store').normalize('page', obj);
-				let tableOfContents = this.get('store').push({ data: data });
-				data.pushObject(tableOfContents);
+				return this.get('store').push({ data: data });
 			});
 
 			return data;
@@ -217,10 +214,9 @@ export default Ember.Service.extend({
 		}).then((response) => {
 			let pages = [];
 
-			_.each(response, (page) => {
+			pages = response.map((page) => {
 				let data = this.get('store').normalize('page', page);
-				let pageData = this.get('store').push({ data: data });
-				pages.pushObject(pageData);
+				return this.get('store').push({ data: data });
 			});
 
 			return pages;
@@ -256,11 +252,12 @@ export default Ember.Service.extend({
 			method: 'GET'
 		}).then((response) => {
 			let data = [];
-			_.each(response, (obj) => {
-				let attachmentData = this.get('store').normalize('attachment', obj);
-				let attachments = this.get('store').push({ data: attachmentData });
-				data.pushObject(attachments);
+
+			data = response.map((obj) => {
+				let data = this.get('store').normalize('attachment', obj);
+				return this.get('store').push({ data: data });
 			});
+
 			return data;
 		});
 	},

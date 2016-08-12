@@ -10,7 +10,6 @@
 // https://documize.com
 
 import Ember from 'ember';
-// import models from '../utils/model';
 
 export default Ember.Service.extend({
 	sessionService: Ember.inject.service('session'),
@@ -59,9 +58,10 @@ export default Ember.Service.extend({
 			method: "GET"
 		}).then((response) => {
 			let data = [];
-			_.each(response, (obj) => {
-				let user = this.get('store').normalize('user', obj);
-				data.pushObject(this.get('store').push({ data: user }));
+
+			data = response.map((obj) => {
+				let data = this.get('store').normalize('user', obj);
+				return this.get('store').push({ data: data })
 			});
 
 			return data;

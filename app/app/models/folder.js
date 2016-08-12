@@ -14,15 +14,15 @@ export default Model.extend({
 		return stringUtil.makeSlug(this.get('name'));
 	}),
 
-	markAsRestricted: function () {
+	markAsRestricted() {
 		this.set('folderType', constants.FolderType.Protected);
 	},
 
-	markAsPrivate: function () {
+	markAsPrivate() {
 		this.set('folderType', constants.FolderType.Private);
 	},
 
-	markAsPublic: function () {
+	markAsPublic() {
 		this.set('folderType', constants.FolderType.Public);
 	},
 

@@ -10,7 +10,6 @@
 // https://documize.com
 
 import Ember from 'ember';
-import models from '../utils/model';
 import BaseService from '../services/base';
 
 export default BaseService.extend({
@@ -24,11 +23,10 @@ export default BaseService.extend({
 			method: 'GET'
 		}).then((response) => {
 			let data = [];
-			_.each(response, (obj) => {
-				debugger;
-				let sectionData = this.get('store').normalize('section', obj);
-				let section = this.get('store').push({ data: sectionData });
-				data.pushObject(section);
+
+			data = response.map((obj) => {
+				let data = this.get('store').normalize('section', obj);
+				return this.get('store').push({ data: data });
 			});
 
 			return data;
@@ -58,10 +56,9 @@ export default BaseService.extend({
 			let pages = [];
 
 			if (is.not.null(response) && is.array(response) && response.length > 0) {
-				_.each(response, (page) => {
+				pages = response.map((page) => {
 					let data = this.get('store').normalize('page', page);
-					let pageData = this.get('store').push({ data: data });
-					pages.pushObject(pageData);
+					return this.get('store').push({ data: data });
 				});
 			}
 

@@ -11,7 +11,6 @@
 
 import Ember from 'ember';
 import BaseService from '../services/base';
-import models from '../utils/model';
 
 const {
 	get,
@@ -55,9 +54,7 @@ export default BaseService.extend({
 	getAll() {
 
 		if (this.get('folders') != null) {
-			return new Ember.RSVP.Promise((resolve) => {
-				resolve(this.get('folders'));
-			});
+			return new Ember.RSVP.resolve(this.get('folders'));
 		} else {
 			return this.reload();
 		}
@@ -97,11 +94,10 @@ export default BaseService.extend({
 			method: "GET"
 		}).then((response) => {
 			let data = [];
-			_.each(response, (obj) => {
-				debugger;
-				let participantData = this.get('store').normalize('protected-folder-participant', obj);
-				let participant = this.get('store').push({ data: participantData });
-				data.pushObject(participant);
+
+			data = response.map((obj) => {
+				let data = this.get('store').normalize('protected-folder-participant', obj);
+				return this.get('store').push({ data: data });
 			});
 
 			return data;
@@ -115,10 +111,10 @@ export default BaseService.extend({
 			method: "GET"
 		}).then((response) => {
 			let data = [];
-			_.each(response, (obj) => {
-				let folderData = this.get('store').normalize('folder', obj);
-				let folder = this.get('store').push({ data: folderData });
-				data.pushObject(folder);
+
+			data = response.map((obj) => {
+				let data = this.get('store').normalize('folder', obj);
+				return this.get('store').push({ data: data });
 			});
 
 			return data;
@@ -132,10 +128,10 @@ export default BaseService.extend({
 			method: "GET"
 		}).then((response) => {
 			let data = [];
-			_.each(response, (obj) => {
-				let permissionData = this.get('store').normalize('folder-permission', obj);
-				let permission = this.get('store').push({ data: permissionData });
-				data.pushObject(permission);
+
+			data = response.map((obj) => {
+				let data = this.get('store').normalize('folder-permission', obj);
+				return this.get('store').push({ data: data });
 			});
 
 			return data;
