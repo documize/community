@@ -12,10 +12,14 @@
 import Ember from 'ember';
 import BaseService from '../services/base';
 
+const {
+	inject: { service }
+} = Ember;
+
 export default BaseService.extend({
-	sessionService: Ember.inject.service('session'),
-	ajax: Ember.inject.service(),
-	store: Ember.inject.service(),
+	sessionService: service('session'),
+	ajax: service(),
+	store: service(),
 
 	// Returns all available sections.
 	getAll() {

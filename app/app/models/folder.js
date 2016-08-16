@@ -2,6 +2,7 @@ import Model from 'ember-data/model';
 import attr from 'ember-data/attr';
 import constants from '../utils/constants';
 import stringUtil from '../utils/string';
+import Ember from 'ember';
 // import { belongsTo, hasMany } from 'ember-data/relationships';
 
 export default Model.extend({

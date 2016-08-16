@@ -14,6 +14,7 @@ import BaseService from '../services/base';
 
 const {
 	get,
+	RSVP: { resolve },
 	inject: { service }
 } = Ember;
 
@@ -29,7 +30,6 @@ export default BaseService.extend({
 
 	// Add a new folder.
 	add(folder) {
-
 		return this.get('ajax').post(`folders`, {
 			contentType: 'json',
 			data: JSON.stringify(folder)
@@ -54,7 +54,7 @@ export default BaseService.extend({
 	getAll() {
 
 		if (this.get('folders') != null) {
-			return new Ember.RSVP.resolve(this.get('folders'));
+			return new resolve(this.get('folders'));
 		} else {
 			return this.reload();
 		}

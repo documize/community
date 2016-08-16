@@ -253,6 +253,10 @@ export default Ember.Service.extend({
 		}).then((response) => {
 			let data = [];
 
+			if (isObject(response)) {
+				return data;
+			}
+
 			data = response.map((obj) => {
 				let data = this.get('store').normalize('attachment', obj);
 				return this.get('store').push({ data: data });
@@ -270,3 +274,7 @@ export default Ember.Service.extend({
 		});
 	},
 });
+
+function isObject(a) {
+	return (!!a) && (a.constructor === Object);
+}

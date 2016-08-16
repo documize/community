@@ -11,10 +11,16 @@
 
 import Ember from 'ember';
 
+const {
+	isEmpty,
+	RSVP,
+	inject: { service }
+} = Ember;
+
 export default Ember.Service.extend({
-	sessionService: Ember.inject.service('session'),
-	ajax: Ember.inject.service(),
-	store: Ember.inject.service(),
+	sessionService: service('session'),
+	ajax: service(),
+	store: service(),
 
 	// Adds a new user.
 	add(user) {
@@ -23,8 +29,8 @@ export default Ember.Service.extend({
 			data: JSON.stringify(user),
 			contentType: 'json'
 		}).then((response) => {
-			let user = this.get('store').normalize('user', response);
-			return this.get('store').push({ data: user });
+			let data = this.get('store').normalize('user', response);
+			return this.get('store').push({ data: data });
 		});
 	},
 
@@ -35,8 +41,8 @@ export default Ember.Service.extend({
 		return this.get('ajax').request(url, {
 			type: 'GET'
 		}).then((response) => {
-			let user = this.get('store').normalize('user', response);
-			return this.get('store').push({ data: user });
+			let data = this.get('store').normalize('user', response);
+			return this.get('store').push({ data: data });
 		});
 	},
 
@@ -44,8 +50,8 @@ export default Ember.Service.extend({
 	getAll() {
 		return this.get('ajax').request(`users`).then((response) => {
 			return response.map((obj) => {
-				let user = this.get('store').normalize('user', obj);
-				return this.get('store').push({ data: user });
+				let data = this.get('store').normalize('user', obj);
+				return this.get('store').push({ data: data });
 			});
 		});
 	},
@@ -61,7 +67,7 @@ export default Ember.Service.extend({
 
 			data = response.map((obj) => {
 				let data = this.get('store').normalize('user', obj);
-				return this.get('store').push({ data: data })
+				return this.get('store').push({ data: data });
 			});
 
 			return data;
@@ -105,8 +111,8 @@ export default Ember.Service.extend({
 	forgotPassword(email) {
 		let url = `public/forgot`;
 
-		if (is.empty(email)) {
-			return Ember.RSVP.reject("invalid");
+		if (isEmpty(email)) {
+			return RSVP.reject("invalid");
 		}
 
 		let data = JSON.stringify({
@@ -124,8 +130,8 @@ export default Ember.Service.extend({
 	resetPassword(token, password) {
 		var url = `public/reset/${token}`;
 
-		if (is.empty(token) || is.empty(password)) {
-			return Ember.RSVP.reject("invalid");
+		if (isEmpty(token) || isEmpty(password)) {
+			return RSVP.reject("invalid");
 		}
 
 		return this.get('ajax').request(url, {
