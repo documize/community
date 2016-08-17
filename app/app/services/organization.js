@@ -33,11 +33,11 @@ export default Ember.Service.extend({
 
 	// Updates an existing organization record.
 	save(org) {
-		let id = org.get('id');
+		let id = org.id;
 
 		this.get('appMeta').setProperties({
-			message: org.message,
-			title: org.title
+			message: org.get('message'),
+			title: org.get('title')
 		});
 
 		return this.get('ajax').request(`organizations/${id}`, {

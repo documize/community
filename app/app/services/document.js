@@ -39,6 +39,10 @@ export default Ember.Service.extend({
 				content: Ember.A([])
 			});
 
+			if (isObject(response)) {
+				return documents;
+			}
+
 			documents = response.map((doc) => {
 				let data = this.get('store').normalize('document', doc);
 				return this.get('store').push({ data: data });

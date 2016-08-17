@@ -20,7 +20,7 @@ export default Model.extend({
 	name: attr('string'),
 	orgId: attr('string'),
 	userId: attr('string'),
-	folderType: constants.FolderType.Private,
+	folderType: attr('number', { defaultValue: 2 }),
 
 	slug: Ember.computed('name', function () {
 		return stringUtil.makeSlug(this.get('name'));

@@ -14,7 +14,7 @@ import BaseService from '../services/base';
 
 const {
 	get,
-	RSVP: { resolve },
+	RSVP,
 	inject: { service }
 } = Ember;
 
@@ -41,7 +41,6 @@ export default BaseService.extend({
 
 	// Returns folder model for specified folder id.
 	getFolder(id) {
-
 		return this.get('ajax').request(`folders/${id}`, {
 			method: 'GET'
 		}).then((folder) => {
@@ -52,12 +51,14 @@ export default BaseService.extend({
 
 	// Returns all folders that user can see.
 	getAll() {
+		let folders = this.get('folders');
 
-		if (this.get('folders') != null) {
-			return new resolve(this.get('folders'));
-		} else {
-			return this.reload();
+		if (folders != null) {
+			return new RSVP.resolve(folders);
 		}
+
+		return this.reload();
+
 	},
 
 	// Updates an existing folder record.
@@ -140,7 +141,6 @@ export default BaseService.extend({
 
 	// persist folder permissions
 	savePermissions(folderId, payload) {
-
 		return this.get('ajax').request(`folders/${folderId}/permissions`, {
 			method: 'PUT',
 			contentType: 'json',

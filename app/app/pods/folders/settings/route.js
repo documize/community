@@ -1,11 +1,11 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
@@ -13,11 +13,16 @@ import Ember from 'ember';
 import models from '../../../utils/model';
 import NotifierMixin from '../../../mixins/notifier';
 
+const {
+	inject: { service }
+} = Ember;
+
 export default Ember.Route.extend(NotifierMixin, {
-	folderService: Ember.inject.service('folder'),
-	userService: Ember.inject.service('user'),
+	folderService: service('folder'),
+	userService: service('user'),
 	folder: {},
 	tab: "",
+	localStorage: service(),
 
 	beforeModel: function (transition) {
 		this.tab = is.not.undefined(transition.queryParams.tab) ? transition.queryParams.tab : "tabGeneral";
@@ -100,36 +105,33 @@ export default Ember.Route.extend(NotifierMixin, {
 		},
 
 		onRemove(moveId) {
-			let self = this;
 
-			this.get('folderService').remove(this.folder.get('id'), moveId).then(function () { /* jshint ignore:line */
-				self.showNotification("Deleted");
-				self.session.clearSessionItem('folder');
+			this.get('folderService').remove(this.folder.get('id'), moveId).then(() => { /* jshint ignore:line */
+				this.showNotification("Deleted");
+				this.get('localStorage').clearSessionItem('folder');
 
-				self.get('folderService').getFolder(moveId).then(function (folder) {
-					self.get('folderService').setCurrentFolder(folder);
-					self.transitionTo('folders.folder', folder.get('id'), folder.get('slug'));
+				this.get('folderService').getFolder(moveId).then((folder) => {
+					this.get('folderService').setCurrentFolder(folder);
+					this.transitionTo('folders.folder', folder.get('id'), folder.get('slug'));
 				});
 			});
 		},
 
 		onShare: function (invitation) {
-			let self = this;
 
-			this.get('folderService').share(this.folder.get('id'), invitation).then(function () {
-				self.showNotification("Shared");
+			this.get('folderService').share(this.folder.get('id'), invitation).then(() => {
+				this.showNotification("Shared");
 			});
 		},
 
 		onPermission: function (folder, message, permissions) {
-			var self = this;
 			var data = permissions.map(function (obj) {
 				return obj.getProperties('orgId', 'folderId', 'userId', 'canEdit', 'canView');
 			});
 			var payload = { Message: message, Roles: data };
 
-			this.get('folderService').savePermissions(folder.get('id'), payload).then(function () {
-				self.showNotification("Saved");
+			this.get('folderService').savePermissions(folder.get('id'), payload).then(() => {
+				this.showNotification("Saved");
 			});
 
 			var hasEveryone = _.find(data, function (permission) {
