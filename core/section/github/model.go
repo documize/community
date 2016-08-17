@@ -13,6 +13,7 @@ package github
 
 import (
 	"fmt"
+	"html/template"
 	"time"
 
 	"github.com/documize/community/core/log"
@@ -29,6 +30,7 @@ type githubRender struct {
 	BranchCommits    []githubBranchCommits `json:"branchCommits"`
 	CommitCount      int                   `json:"commitCount"`
 	Issues           []githubIssue         `json:"issues"`
+	SharedLabels     []template.HTML       `json:"sharedLabels"`
 	OpenIssues       int                   `json:"openIssues"`
 	ClosedIssues     int                   `json:"closedIssues"`
 	Limit            int                   `json:"limit"`
@@ -70,6 +72,16 @@ type githubRepo struct {
 }
 
 type githubBranch struct {
+	ID       string `json:"id"`
+	Owner    string `json:"owner"`
+	Repo     string `json:"repo"`
+	Name     string `json:"name"`
+	Included bool   `json:"included"`
+	URL      string `json:"url"`
+	Color    string `json:"color,omitempty"`
+}
+
+type githubLabel struct {
 	ID       string `json:"id"`
 	Owner    string `json:"owner"`
 	Repo     string `json:"repo"`

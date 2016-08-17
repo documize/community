@@ -73,7 +73,7 @@ const (
 func init() {
 	reports[tagPullRequestData] = report{refreshPullReqs, renderPullReqs, `
 <div class="section-github-render">
-	<h3>Pull Requests</h3>
+	<h3>Pull Requests: {{.ClosedPRs}} closed, {{.OpenPRs}} open</h3>
 	<div class="github-board">
 	<ul class="github-list">
 		{{range $data := .PullRequests}}

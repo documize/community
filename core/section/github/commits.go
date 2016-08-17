@@ -42,10 +42,12 @@ type githubCommit struct {
 }
 
 type githubAuthorStats struct {
-	Author      string `json:"author"`
-	Avatar      string `json:"avatar"`
-	CommitCount int    `json:"commitCount"`
-	//TotalChanges int    `json:"totalChanges"`
+	Author       string   `json:"author"`
+	Avatar       string   `json:"avatar"`
+	CommitCount  int      `json:"commitCount"`
+	Repos        []string `json:"repos"`
+	OpenIssues   int      `json:"openIssues"`
+	ClosedIssues int      `json:"closedIssues"`
 }
 
 // sort stats in order that that should be presented.
@@ -61,13 +63,16 @@ const tagCommitsData = "commitsData"
 
 func init() {
 	reports[tagCommitsData] = report{refreshCommits, renderCommits, `
-<h3>Commits</h3>
+<h3>Contributor activity since {{.Config.Since}}{{.Config.DateMessage}}</h3>
 <div class="section-github-render">
 	<table style="width:80%">
 		<tr>
-			<th>{{.CommitCount}} commits since {{.Config.Since}}{{.Config.DateMessage}}</th>
+			<th></th>
     		<th>Author</th>
+			<th>Open Issues</th>
+			<th>Closed Issues</th>
     		<th>#commits</th>
+    		<th>Branches</th>
   		</tr>
 		{{range $stats := .AuthorStats}}
 			<tr>
@@ -77,7 +82,14 @@ func init() {
 					</div>
 				</td>
 				<td>{{$stats.Author}}</td>
+				<td>{{$stats.OpenIssues}}</td>
+				<td>{{$stats.ClosedIssues}}</td>
 				<td>{{$stats.CommitCount}}</td>
+				<td>
+					{{range $repo := $stats.Repos}}
+						{{$repo}}
+					{{end}}
+				</td>
 			</tr>
 		{{end}}
 	</table>
@@ -117,6 +129,8 @@ func getCommits(client *gogithub.Client, config *githubConfig) ([]githubBranchCo
 
 	authorStats := make(map[string]githubAuthorStats)
 
+	contribBranch := make(map[string]map[string]struct{})
+
 	overall := []githubBranchCommits{}
 
 	for _, orb := range config.Lists {
@@ -136,13 +150,11 @@ func getCommits(client *gogithub.Client, config *githubConfig) ([]githubBranchCo
 				return nil, nil, err
 			}
 
-			if len(guff) == 0 {
-				return []githubBranchCommits{}, []githubAuthorStats{}, nil
-			}
-
 			day := ""
 			newDay := ""
 			ret := []githubDayCommits{}
+
+			thisBranch := fmt.Sprintf("%s/%s:%s", orb.Owner, orb.Repo, orb.Name)
 
 			for k, v := range guff {
 
@@ -221,10 +233,15 @@ func getCommits(client *gogithub.Client, config *githubConfig) ([]githubBranchCo
 					Avatar:  aa,
 					URL:     template.URL(u),
 				})
+
+				if _, ok := contribBranch[al]; !ok {
+					contribBranch[al] = make(map[string]struct{})
+				}
+				contribBranch[al][thisBranch] = struct{}{}
 			}
 
 			overall = append(overall, githubBranchCommits{
-				Name: fmt.Sprintf("%s/%s:%s", orb.Owner, orb.Repo, orb.Name),
+				Name: thisBranch,
 				URL:  fmt.Sprintf("https://github.com/%s/%s/tree/%s", orb.Owner, orb.Repo, orb.Name),
 				Days: ret,
 			})
@@ -233,6 +250,12 @@ func getCommits(client *gogithub.Client, config *githubConfig) ([]githubBranchCo
 
 	retStats := make([]githubAuthorStats, 0, len(authorStats))
 	for _, v := range authorStats {
+		repos := contribBranch[v.Author]
+		v.Repos = make([]string, 0, len(repos))
+		for r := range repos {
+			v.Repos = append(v.Repos, r)
+		}
+		sort.Strings(v.Repos)
 		retStats = append(retStats, v)
 	}
 	sort.Stable(asToSort(retStats))
@@ -260,5 +283,18 @@ func renderCommits(payload *githubRender, c *githubConfig) error {
 			payload.CommitCount += len(day.Commits)
 		}
 	}
+
+	for a := range payload.AuthorStats {
+		for i := range payload.Issues {
+			if payload.AuthorStats[a].Author == payload.Issues[i].Name {
+				if payload.Issues[i].IsOpen {
+					payload.AuthorStats[a].OpenIssues++
+				} else {
+					payload.AuthorStats[a].ClosedIssues++
+				}
+			}
+		}
+	}
+
 	return nil
 }

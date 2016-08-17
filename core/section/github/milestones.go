@@ -31,6 +31,7 @@ type githubMilestone struct {
 	CompleteMsg  string `json:"completeMsg"`
 	DueDate      string `json:"dueDate"`
 	UpdatedAt    string `json:"updatedAt"`
+	Progress     uint   `json:"progress"`
 }
 
 // sort milestones in order that that should be presented - by date updated.
@@ -79,7 +80,7 @@ const (
 func init() {
 	reports[tagMilestonesData] = report{refreshMilestones, renderMilestones, `
 <div class="section-github-render">
-	<h3>Milestones</h3>
+	<h3>Milestones: {{.ClosedMS}} closed, {{.OpenMS}} open</h3>
 	<div class="github-board">
 	<ul class="github-list">
 		{{range $data := .Milestones}}
@@ -93,7 +94,9 @@ func init() {
 						{{end}}
 				  	</div>
 					<div class="github-commit-body">
-						<div class="github-commit-title"><span class="label-name">{{$data.Repo}} - {{$data.Name}}</span> </div>
+						<div class="github-commit-title"><span class="label-name">{{$data.Repo}} - {{$data.Name}}</span> 
+						<progress value="{{$data.Progress}}" max="100">
+						</div>
 						<div class="github-commit-meta">
 						  {{$data.DueDate}} Last updated {{$data.UpdatedAt}}. 
 						  {{$data.CompleteMsg}} complete {{$data.OpenIssues}} open {{$data.ClosedIssues}} closed
@@ -154,6 +157,8 @@ func getMilestones(client *gogithub.Client, config *githubConfig) ([]githubMiles
 								up = (*v.UpdatedAt).Format(milestonesTimeFormat)
 							}
 
+							progress := float64(*v.ClosedIssues*100) / float64(*v.OpenIssues+*v.ClosedIssues)
+
 							ret = append(ret, githubMilestone{
 								Repo:         rName,
 								Name:         *v.Title,
@@ -161,9 +166,10 @@ func getMilestones(client *gogithub.Client, config *githubConfig) ([]githubMiles
 								IsOpen:       *v.State == "open",
 								OpenIssues:   *v.OpenIssues,
 								ClosedIssues: *v.ClosedIssues,
-								CompleteMsg:  fmt.Sprintf("%2.0f%%", float64(*v.ClosedIssues*100)/float64(*v.OpenIssues+*v.ClosedIssues)),
+								CompleteMsg:  fmt.Sprintf("%2.0f%%", progress),
 								DueDate:      dd,
 								UpdatedAt:    up,
+								Progress:     uint(progress),
 							})
 						}
 					}

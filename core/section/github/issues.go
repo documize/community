@@ -22,16 +22,17 @@ import (
 )
 
 type githubIssue struct {
-	ID      int           `json:"id"`
-	Date    string        `json:"date"`
-	Updated string        `json:"dated"`
-	Message string        `json:"message"`
-	URL     template.URL  `json:"url"`
-	Name    string        `json:"name"`
-	Avatar  string        `json:"avatar"`
-	Labels  template.HTML `json:"labels"`
-	IsOpen  bool          `json:"isopen"`
-	Repo    string        `json:"repo"`
+	ID         int           `json:"id"`
+	Date       string        `json:"date"`
+	Updated    string        `json:"dated"`
+	Message    string        `json:"message"`
+	URL        template.URL  `json:"url"`
+	Name       string        `json:"name"`
+	Avatar     string        `json:"avatar"`
+	Labels     template.HTML `json:"labels"`
+	LabelNames []string      `json:"labelNames"`
+	IsOpen     bool          `json:"isopen"`
+	Repo       string        `json:"repo"`
 }
 
 // sort issues in order that that should be presented - by date updated.
@@ -73,7 +74,7 @@ const (
 func init() {
 	reports[tagIssuesData] = report{refreshIssues, renderIssues, `
 <div class="section-github-render">
-	<h3>Issues</h3>
+	<h3>Issues: {{.ClosedIssues}} closed, {{.OpenIssues}} open</h3>
 	<p>
 		{{if .ShowList}}
 			Including issues labelled
@@ -97,9 +98,9 @@ func init() {
 						{{end}}
 				  	</div>
 					<div class="github-commit-body">
-						<div class="github-commit-title"><span class="label-name">{{$data.Message}}</span> {{$data.Labels}}</div>
+						<div class="github-commit-title"><span class="label-name">{{$data.Repo}} - {{$data.Message}}</span> {{$data.Labels}}</div>
 						<div class="github-commit-meta">
-							#{{$data.ID}} opened on {{$data.Date}} by {{$data.Name}} in {{$data.Repo}}, last updated {{$data.Updated}}
+							#{{$data.ID}} opened on {{$data.Date}} by {{$data.Name}}, last updated {{$data.Updated}}
 						</div>
 					</div>
 				</a>
@@ -112,12 +113,13 @@ func init() {
 `}
 }
 
-func wrapLabels(labels []gogithub.Label) string {
-	l := ""
+func wrapLabels(labels []gogithub.Label) (l string, labelNames []string) {
+	labelNames = make([]string, 0, len(labels))
 	for _, ll := range labels {
+		labelNames = append(labelNames, *ll.Name)
 		l += `<span class="github-issue-label" style="background-color:#` + *ll.Color + `">` + *ll.Name + `</span> `
 	}
-	return l
+	return l, labelNames
 }
 
 func getIssues(client *gogithub.Client, config *githubConfig) ([]githubIssue, error) {
@@ -166,17 +168,18 @@ func getIssues(client *gogithub.Client, config *githubConfig) ([]githubIssue, er
 								n = *ptr.Login
 							}
 						}
-						l := wrapLabels(v.Labels)
+						l, ln := wrapLabels(v.Labels)
 						ret = append(ret, githubIssue{
-							Name:    n,
-							Message: *v.Title,
-							Date:    v.CreatedAt.Format(issuesTimeFormat),
-							Updated: v.UpdatedAt.Format(issuesTimeFormat),
-							URL:     template.URL(*v.HTMLURL),
-							Labels:  template.HTML(l),
-							ID:      *v.Number,
-							IsOpen:  *v.State == "open",
-							Repo:    rName,
+							Name:       n,
+							Message:    *v.Title,
+							Date:       v.CreatedAt.Format(issuesTimeFormat),
+							Updated:    v.UpdatedAt.Format(issuesTimeFormat),
+							URL:        template.URL(*v.HTMLURL),
+							Labels:     template.HTML(l),
+							LabelNames: ln,
+							ID:         *v.Number,
+							IsOpen:     *v.State == "open",
+							Repo:       rName,
 						})
 					}
 				}
@@ -201,11 +204,31 @@ func refreshIssues(gr *githubRender, config *githubConfig, client *gogithub.Clie
 
 	gr.OpenIssues = 0
 	gr.ClosedIssues = 0
+	sharedLabels := make(map[string][]string)
 	for _, v := range gr.Issues {
 		if v.IsOpen {
 			gr.OpenIssues++
 		} else {
 			gr.ClosedIssues++
+		}
+		for _, lab := range v.LabelNames {
+			sharedLabels[lab] = append(sharedLabels[lab], v.Repo)
+		}
+	}
+
+	gr.SharedLabels = make([]template.HTML, 0, len(sharedLabels)) // will usually be too big
+	for name, repos := range sharedLabels {
+		if len(repos) > 1 {
+			lab := name + ":["
+			for i, r := range repos {
+				if i > 0 {
+					lab += " "
+				}
+				lab += "<a href='https://github.com/" + r +
+					"/issues?q=is%3Aissue+label%3A" + name + "'>" + r + "</a>"
+			}
+			lab += "] "
+			gr.SharedLabels = append(gr.SharedLabels, template.HTML(lab))
 		}
 	}
 
