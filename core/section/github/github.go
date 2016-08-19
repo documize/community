@@ -201,6 +201,7 @@ func (p *Provider) Render(ctx *provider.Context, config, data string) string {
 	payload.Config = c
 	payload.Repo = c.RepoInfo
 	payload.Limit = c.BranchLines
+	payload.List = c.Lists
 
 	ret := ""
 	for _, repID := range c.ReportOrder {

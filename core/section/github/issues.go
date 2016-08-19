@@ -33,6 +33,7 @@ type githubIssue struct {
 	LabelNames []string      `json:"labelNames"`
 	IsOpen     bool          `json:"isopen"`
 	Repo       string        `json:"repo"`
+	Milestone  string        `json:"milestone"`
 }
 
 // sort issues in order that that should be presented - by date updated.
@@ -98,7 +99,7 @@ func init() {
 						{{end}}
 				  	</div>
 					<div class="github-commit-body">
-						<div class="github-commit-title"><span class="label-name">{{$data.Repo}} - {{$data.Message}}</span> {{$data.Labels}}</div>
+						<div class="github-commit-title"><span class="label-name">{{$data.Repo}} - {{$data.Message}}</span> :{{$data.Milestone}}: {{$data.Labels}}</div>
 						<div class="github-commit-meta">
 							#{{$data.ID}} opened on {{$data.Date}} by {{$data.Name}}, last updated {{$data.Updated}}
 						</div>
@@ -168,6 +169,12 @@ func getIssues(client *gogithub.Client, config *githubConfig) ([]githubIssue, er
 								n = *ptr.Login
 							}
 						}
+						ms := noMilestone
+						if v.Milestone != nil {
+							if v.Milestone.Title != nil {
+								ms = *v.Milestone.Title
+							}
+						}
 						l, ln := wrapLabels(v.Labels)
 						ret = append(ret, githubIssue{
 							Name:       n,
@@ -180,6 +187,7 @@ func getIssues(client *gogithub.Client, config *githubConfig) ([]githubIssue, er
 							ID:         *v.Number,
 							IsOpen:     *v.State == "open",
 							Repo:       rName,
+							Milestone:  ms,
 						})
 					}
 				}

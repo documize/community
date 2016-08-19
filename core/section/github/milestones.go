@@ -14,7 +14,6 @@ package github
 import (
 	"fmt"
 	"sort"
-	"time"
 
 	"github.com/documize/community/core/log"
 
@@ -34,31 +33,35 @@ type githubMilestone struct {
 	Progress     uint   `json:"progress"`
 }
 
-// sort milestones in order that that should be presented - by date updated.
+// sort milestones in order that that should be presented.
 
 type milestonesToSort []githubMilestone
 
 func (s milestonesToSort) Len() int      { return len(s) }
 func (s milestonesToSort) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
 func (s milestonesToSort) Less(i, j int) bool {
+	if s[i].Repo < s[j].Repo {
+		return true
+	}
+	if s[i].Repo > s[j].Repo {
+		return false
+	}
 	if !s[i].IsOpen && s[j].IsOpen {
 		return true
 	}
 	if s[i].IsOpen && !s[j].IsOpen {
 		return false
 	}
-	// TODO this seems a very slow approach
-	iDate, iErr := time.Parse(milestonesTimeFormat, s[i].UpdatedAt)
-	log.IfErr(iErr)
-	jDate, jErr := time.Parse(milestonesTimeFormat, s[j].UpdatedAt)
-	log.IfErr(jErr)
-	return iDate.Before(jDate)
-
+	if s[i].Progress == s[j].Progress { // order equal progress milestones
+		return s[i].Name < s[j].Name
+	}
+	return s[i].Progress >= s[j].Progress // put more complete milestones first
 }
 
 const (
 	tagMilestonesData    = "milestonesData"
 	milestonesTimeFormat = "January 2 2006"
+	noMilestone          = "no milestone"
 
 	rawMSsvg  = `<path d="M8 2H6V0h2v2zm4 5H2c-.55 0-1-.45-1-1V4c0-.55.45-1 1-1h10l2 2-2 2zM8 4H6v2h2V4zM6 16h2V8H6v8z"></path>`
 	openMSsvg = `							
@@ -181,8 +184,6 @@ func getMilestones(client *gogithub.Client, config *githubConfig) ([]githubMiles
 
 	}
 
-	sort.Stable(milestonesToSort(ret))
-
 	return ret, nil
 
 }
@@ -208,5 +209,37 @@ func refreshMilestones(gr *githubRender, config *githubConfig, client *gogithub.
 }
 
 func renderMilestones(payload *githubRender, c *githubConfig) error {
+	fmt.Println("DEBUG renderMilestones list", payload.List)
+	hadRepo := make(map[string]bool)
+	for _, orb := range payload.List {
+		fmt.Println("DEBUG branch", orb)
+		rName := orb.Owner + "/" + orb.Repo
+		if !hadRepo[rName] {
+
+			fmt.Println("DEBUG found repo", rName)
+			issuesOpen, issuesClosed := 0, 0
+			for _, iss := range payload.Issues {
+				fmt.Println("DEBUG issue", iss)
+				if iss.Repo == rName {
+					fmt.Println("DEBUG Found issue", iss)
+					if iss.Milestone == noMilestone {
+						if iss.IsOpen {
+							issuesOpen++
+						} else {
+							issuesClosed++
+						}
+					}
+				}
+			}
+			payload.Milestones = append(payload.Milestones, githubMilestone{
+				Repo: rName, Name: noMilestone, OpenIssues: issuesOpen, ClosedIssues: issuesClosed,
+			})
+
+			hadRepo[rName] = true
+		}
+	}
+
+	sort.Stable(milestonesToSort(payload.Milestones))
+
 	return nil
 }
