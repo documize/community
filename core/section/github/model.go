@@ -23,24 +23,24 @@ import (
 )
 
 type githubRender struct {
-	Config           githubConfig          `json:"config"`
-	Repo             githubRepo            `json:"repo"`
-	List             []githubBranch        `json:"list"`
-	ShowList         bool                  `json:"showList"`
-	ShowIssueNumbers bool                  `json:"showIssueNumbers"`
-	BranchCommits    []githubBranchCommits `json:"branchCommits"`
-	CommitCount      int                   `json:"commitCount"`
-	Issues           []githubIssue         `json:"issues"`
-	SharedLabels     []githubSharedLabel   `json:"sharedLabels"`
-	OpenIssues       int                   `json:"openIssues"`
-	ClosedIssues     int                   `json:"closedIssues"`
-	Limit            int                   `json:"limit"`
-	Milestones       []githubMilestone     `json:"milestones"`
-	OpenMS           int                   `json:"openMS"`
-	ClosedMS         int                   `json:"closedMS"`
-	OpenPRs          int                   `json:"openPRs"`
-	ClosedPRs        int                   `json:"closedPRs"`
-	AuthorStats      []githubAuthorStats   `json:"authorStats"`
+	Config           githubConfig        `json:"config"`
+	Repo             githubRepo          `json:"repo"`
+	List             []githubBranch      `json:"list"`
+	ShowList         bool                `json:"showList"`
+	ShowIssueNumbers bool                `json:"showIssueNumbers"`
+	BranchCommits    []githubCommit      `json:"branchCommits"`
+	CommitCount      int                 `json:"commitCount"`
+	Issues           []githubIssue       `json:"issues"`
+	SharedLabels     []githubSharedLabel `json:"sharedLabels"`
+	OpenIssues       int                 `json:"openIssues"`
+	ClosedIssues     int                 `json:"closedIssues"`
+	Limit            int                 `json:"limit"`
+	Milestones       []githubMilestone   `json:"milestones"`
+	OpenMS           int                 `json:"openMS"`
+	ClosedMS         int                 `json:"closedMS"`
+	OpenPRs          int                 `json:"openPRs"`
+	ClosedPRs        int                 `json:"closedPRs"`
+	AuthorStats      []githubAuthorStats `json:"authorStats"`
 	//PullRequests   []githubPullRequest   `json:"pullRequests"`
 }
 

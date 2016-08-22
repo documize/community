@@ -15,30 +15,29 @@ import (
 	"fmt"
 	"html/template"
 	"sort"
+	"time"
 
 	"github.com/documize/community/core/log"
 
 	gogithub "github.com/google/go-github/github"
 )
 
-type githubBranchCommits struct {
-	Name        string             `json:"name"`
-	URL         string             `json:"url"`
-	CommitCount int                `json:"commitCount"`
-	Days        []githubDayCommits `json:"days"`
-}
-
-type githubDayCommits struct {
-	Day     string         `json:"day"`
-	Commits []githubCommit `json:"commits"`
-}
+const commitTimeFormat = "January 2 2006, 15:04"
 
 type githubCommit struct {
-	Date    string       `json:"date"`
-	Message string       `json:"message"`
-	URL     template.URL `json:"url"`
-	Name    string       `json:"name"`
-	Avatar  string       `json:"avatar"`
+	Owner      string       `json:"owner"`
+	Repo       string       `json:"repo"`
+	ShowRepo   bool         `json:"showRepo"`
+	Branch     string       `json:"branch"`
+	ShowBranch bool         `json:"ShowBranch"`
+	Date       string       `json:"date"`
+	BinDate    time.Time    `json:"-"`
+	ShowDate   bool         `json:"ShowDate"`
+	Name       string       `json:"name"`
+	Avatar     string       `json:"avatar"`
+	ShowUser   bool         `json:"ShowUser"`
+	Message    string       `json:"message"`
+	URL        template.URL `json:"url"`
 }
 
 type githubAuthorStats struct {
@@ -48,6 +47,24 @@ type githubAuthorStats struct {
 	Repos        []string `json:"repos"`
 	OpenIssues   int      `json:"openIssues"`
 	ClosedIssues int      `json:"closedIssues"`
+}
+
+// order commits in a way that makes sense of the table
+type orderCommits []githubCommit
+
+func (s orderCommits) Len() int      { return len(s) }
+func (s orderCommits) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
+func (s orderCommits) Less(i, j int) bool {
+	if s[i].Repo == s[j].Repo {
+		if s[i].Branch == s[j].Branch {
+			if s[i].BinDate == s[j].BinDate {
+				return s[i].Name < s[j].Name
+			}
+			return s[i].BinDate.Before(s[j].BinDate)
+		}
+		return s[i].Branch < s[j].Branch
+	}
+	return s[i].Repo < s[j].Repo
 }
 
 // sort stats in order that that should be presented.
@@ -70,7 +87,7 @@ func (s branchByID) Less(i, j int) bool {
 
 const tagCommitsData = "commitsData"
 
-func getCommits(client *gogithub.Client, config *githubConfig) ([]githubBranchCommits, []githubAuthorStats, error) {
+func getCommits(client *gogithub.Client, config *githubConfig) ([]githubCommit, []githubAuthorStats, error) {
 
 	// first make sure we've got all the branches
 	for _, orb := range config.Lists {
@@ -100,19 +117,19 @@ func getCommits(client *gogithub.Client, config *githubConfig) ([]githubBranchCo
 			}
 		}
 	}
-	sort.Stable(branchByID(config.Lists))
+	sort.Sort(branchByID(config.Lists))
 
 	authorStats := make(map[string]githubAuthorStats)
 
 	contribBranch := make(map[string]map[string]struct{})
 
-	overall := []githubBranchCommits{}
+	overall := []githubCommit{}
 
 	for _, orb := range config.Lists {
 		if orb.Included {
 
 			opts := &gogithub.CommitsListOptions{
-				SHA:         config.Branch,
+				SHA:         orb.Name,
 				ListOptions: gogithub.ListOptions{PerPage: config.BranchLines}}
 
 			if config.SincePtr != nil {
@@ -125,50 +142,37 @@ func getCommits(client *gogithub.Client, config *githubConfig) ([]githubBranchCo
 				return nil, nil, err
 			}
 
-			day := ""
-			newDay := ""
-			ret := []githubDayCommits{}
+			thisBranch := fmt.Sprintf("%s:%s", orb.Repo, orb.Name)
 
-			thisBranch := fmt.Sprintf("%s/%s:%s", orb.Owner, orb.Repo, orb.Name)
-
-			for k, v := range guff {
-
-				if guff[k].Commit != nil {
-					if guff[k].Commit.Committer.Date != nil {
-						y, m, d := (*guff[k].Commit.Committer.Date).Date()
-						newDay = fmt.Sprintf("%s %d, %d", m.String(), d, y)
-					}
-				}
-				if day != newDay {
-					day = newDay
-					ret = append(ret, githubDayCommits{
-						Day: day,
-					})
-				}
+			for _, v := range guff {
 
 				var d, m, u string
+				var bd time.Time
 				if v.Commit != nil {
 					if v.Commit.Committer.Date != nil {
 						// d = fmt.Sprintf("%v", *v.Commit.Committer.Date)
-						d = v.Commit.Committer.Date.Format("January 2 2006, 15:04")
+						d = v.Commit.Committer.Date.Format(commitTimeFormat)
+						bd = *v.Commit.Committer.Date
 					}
 					if v.Commit.Message != nil {
 						m = *v.Commit.Message
 					}
 				}
-				/* Use author rather than committer
-				var a, l string
-				if v.Committer != nil {
-					if v.Committer.Login != nil {
-						l = *v.Committer.Login
+
+				// TODO(elliott5) remove this comment
+				/*
+					var a, l string
+					if v.Committer != nil {
+						if v.Committer.Login != nil {
+							l = *v.Committer.Login
+						}
+						if v.Committer.AvatarURL != nil {
+							a = *v.Committer.AvatarURL
+						}
 					}
-					if v.Committer.AvatarURL != nil {
-						a = *v.Committer.AvatarURL
+					if a == "" {
+						a = githubGravatar
 					}
-				}
-				if a == "" {
-					a = githubGravatar
-				}
 				*/
 
 				if v.HTMLURL != nil {
@@ -184,42 +188,64 @@ func getCommits(client *gogithub.Client, config *githubConfig) ([]githubBranchCo
 					if v.Author.AvatarURL != nil {
 						aa = *v.Author.AvatarURL
 					}
-					cum := authorStats[al]
-					cum.Author = al
-					cum.Avatar = aa
-					cum.CommitCount++
-					/* TODO review, this code removed as too slow
-					cmt, _, err := client.Repositories.GetCommit(orb.Owner, orb.Repo, *v.SHA)
-					if err == nil {
-						if cmt.Stats != nil {
-							if cmt.Stats.Total != nil {
-								cum.TotalChanges += (*cmt.Stats.Total)
-							}
-						}
-					}
-					*/
-					authorStats[al] = cum
 				}
+				l := al // use author not committer
+				a := aa // ditto
 
-				ret[len(ret)-1].Commits = append(ret[len(ret)-1].Commits, githubCommit{
-					Name:    al,
+				overall = append(overall, githubCommit{
+					Owner:   orb.Owner,
+					Repo:    orb.Repo,
+					Branch:  orb.Name,
+					Name:    l,
 					Message: m,
 					Date:    d,
-					Avatar:  aa,
+					BinDate: bd,
+					Avatar:  a,
 					URL:     template.URL(u),
 				})
 
-				if _, ok := contribBranch[al]; !ok {
-					contribBranch[al] = make(map[string]struct{})
+				if _, ok := contribBranch[l]; !ok {
+					contribBranch[l] = make(map[string]struct{})
 				}
-				contribBranch[al][thisBranch] = struct{}{}
-			}
+				contribBranch[l][thisBranch] = struct{}{}
 
-			overall = append(overall, githubBranchCommits{
-				Name: thisBranch,
-				URL:  fmt.Sprintf("https://github.com/%s/%s/tree/%s", orb.Owner, orb.Repo, orb.Name),
-				Days: ret,
-			})
+				cum := authorStats[l]
+				cum.Author = l
+				cum.Avatar = a
+				cum.CommitCount++
+				// TODO review, this code removed as too slow
+				//cmt, _, err := client.Repositories.GetCommit(orb.Owner, orb.Repo, *v.SHA)
+				//if err == nil {
+				//	if cmt.Stats != nil {
+				//		if cmt.Stats.Total != nil {
+				//			cum.TotalChanges += (*cmt.Stats.Total)
+				//		}
+				//	}
+				//}
+				//
+				authorStats[l] = cum
+			}
+		}
+	}
+
+	sort.Sort(orderCommits(overall))
+
+	for k := range overall {
+		overall[k].ShowRepo = true
+		overall[k].ShowBranch = true
+		overall[k].ShowDate = true
+		overall[k].ShowUser = true
+		if k > 0 {
+			if overall[k].Repo == overall[k-1].Repo {
+				overall[k].ShowRepo = false
+				if overall[k].Branch == overall[k-1].Branch {
+					overall[k].ShowBranch = false
+					if overall[k].Date == overall[k-1].Date {
+						overall[k].ShowDate = false
+						overall[k].ShowUser = overall[k].Name != overall[k-1].Name
+					}
+				}
+			}
 		}
 	}
 
@@ -240,7 +266,6 @@ func getCommits(client *gogithub.Client, config *githubConfig) ([]githubBranchCo
 }
 
 func refreshCommits(gr *githubRender, config *githubConfig, client *gogithub.Client) (err error) {
-
 	gr.BranchCommits, gr.AuthorStats, err = getCommits(client, config)
 	if err != nil {
 		log.Error("github refreshCommits:", err)
@@ -251,12 +276,8 @@ func refreshCommits(gr *githubRender, config *githubConfig, client *gogithub.Cli
 
 func renderCommits(payload *githubRender, c *githubConfig) error {
 	payload.CommitCount = 0
-	for l, list := range payload.BranchCommits {
-		payload.BranchCommits[l].CommitCount = 0
-		for _, day := range list.Days {
-			payload.BranchCommits[l].CommitCount += len(day.Commits)
-			payload.CommitCount += len(day.Commits)
-		}
+	for range payload.BranchCommits {
+		payload.CommitCount++
 	}
 
 	for a := range payload.AuthorStats {
@@ -273,9 +294,6 @@ func renderCommits(payload *githubRender, c *githubConfig) error {
 
 	return nil
 }
-
-// TODO(elliott5) - move to templates.go once working
-// COMMITS
 
 func init() {
 	reports[tagCommitsData] = report{refreshCommits, renderCommits, commitsTemplate}

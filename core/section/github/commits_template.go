@@ -42,33 +42,28 @@ const commitsTemplate = `
 			</tr>
 		{{end}}
 	</table>
-	{{range $branch := .BranchCommits}}
-		<h4>
-			There are {{ $branch.CommitCount }} commits for branch <a href="{{$branch.URL}}">{{$branch.Name}}</a>.
-		</h4>
-		<div class="github-board">
-			{{range $data := $branch.Days}}
-				<div class="github-group-title">
-					Commits on {{ $data.Day }}
-				</div>
-				<ul class="github-list">
-					{{range $commit := $data.Commits}}
-						<li class="github-commit-item">
-							<a class="link" href="{{$commit.URL}}">
-								<div class="github-avatar">
-									<img alt="@{{$commit.Name}}" src="{{$commit.Avatar}}" height="36" width="36">
-								</div>
-								<div class="github-commit-body">
-									<div class="github-commit-title">{{$commit.Message}}</div>
-									<div class="github-commit-meta">{{$commit.Name}} committed on {{$commit.Date}}</div>
-								</div>
-							</a>
-							<div class="clearfix" />
-						</li>
-					{{end}}
-				</ul>
-			{{end}}
-		</div>
+	<table>
+	{{range $commit := .BranchCommits}}
+		<tr>
+			<td>
+				{{if $commit.ShowRepo}}{{$commit.Repo}}{{end}} 
+			</td>
+			<td>
+				{{if $commit.ShowBranch}}{{$commit.Branch}}{{end}}
+			</td>
+			<td>
+				{{if $commit.ShowDate}}{{$commit.Date}}{{end}}
+			</td>
+			<td>
+				{{if $commit.ShowUser}}
+					<img alt="@{{$commit.Name}}" src="{{$commit.Avatar}}" height="36" width="36"> {{$commit.Name}}
+				{{end}}
+			</td>
+			<td>
+				<a class="link" href="{{$commit.URL}}">{{$commit.Message}}</a>
+			</td>
+		</tr>
 	{{end}}
+	</table>
 </div>
 `
