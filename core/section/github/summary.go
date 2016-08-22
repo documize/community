@@ -12,8 +12,6 @@
 package github
 
 import (
-	"sort"
-
 	gogithub "github.com/google/go-github/github"
 )
 
@@ -32,27 +30,7 @@ func (s branchesToSort) Less(i, j int) bool {
 }
 
 func init() {
-	reports[tagSummaryData] = report{refreshSummary, renderSummary, `
-<div class="section-github-render">
-	<h3>
-		Activity since {{.Config.Since}}{{.Config.DateMessage}} for repository branches [
-		{{range $data := .Config.Lists}}
-			{{if $data.Included}}
-					<a class="link" href="{{$data.URL}}">
-						{{$data.Owner}}/{{$data.Repo}}:{{$data.Name}}
-					</a>
-			{{end}}
-		{{end}}
-		] 
-	</h3>
-	<h3>
-		Shared Tags:
-		{{range $slabel := .SharedLabels}}
-			{{$slabel}}
-		{{end}}
-	</h3>
-</div>
-`}
+	reports[tagSummaryData] = report{refreshSummary, renderSummary, summaryTemplate}
 }
 
 func refreshSummary(gr *githubRender, config *githubConfig, client *gogithub.Client) (err error) {
@@ -60,6 +38,5 @@ func refreshSummary(gr *githubRender, config *githubConfig, client *gogithub.Cli
 }
 
 func renderSummary(payload *githubRender, c *githubConfig) error {
-	sort.Stable(branchesToSort(c.Lists)) // get the configured branches in a sensible order before printing
 	return nil
 }

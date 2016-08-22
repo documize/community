@@ -31,6 +31,7 @@ type githubMilestone struct {
 	DueDate      string `json:"dueDate"`
 	UpdatedAt    string `json:"updatedAt"`
 	Progress     uint   `json:"progress"`
+	IsMilestone  bool   `json:"isMilestone"`
 }
 
 // sort milestones in order that that should be presented.
@@ -52,6 +53,12 @@ func (s milestonesToSort) Less(i, j int) bool {
 	if s[i].IsOpen && !s[j].IsOpen {
 		return false
 	}
+	if s[i].Name != noMilestone && s[j].Name == noMilestone {
+		return true
+	}
+	if s[i].Name == noMilestone && s[j].Name != noMilestone {
+		return false
+	}
 	if s[i].Progress == s[j].Progress { // order equal progress milestones
 		return s[i].Name < s[j].Name
 	}
@@ -62,57 +69,10 @@ const (
 	tagMilestonesData    = "milestonesData"
 	milestonesTimeFormat = "January 2 2006"
 	noMilestone          = "no milestone"
-
-	rawMSsvg  = `<path d="M8 2H6V0h2v2zm4 5H2c-.55 0-1-.45-1-1V4c0-.55.45-1 1-1h10l2 2-2 2zM8 4H6v2h2V4zM6 16h2V8H6v8z"></path>`
-	openMSsvg = `							
-<span title="Open milestone">
-	<svg height="16" width="14" version="1.1" viewBox="0 0 14 16">
-		` + rawMSsvg + `
-	</svg>
-</span>
-`
-	closedMSsvg = `							
-<span title="Closed milestone">
-	<svg height="8" width="7" version="1.1" viewBox="0 0 14 16">
-		` + rawMSsvg + `
-	</svg>
-</span>
-`
 )
 
 func init() {
-	reports[tagMilestonesData] = report{refreshMilestones, renderMilestones, `
-<div class="section-github-render">
-	<h3>Milestones: {{.ClosedMS}} closed, {{.OpenMS}} open</h3>
-	<div class="github-board">
-	<ul class="github-list">
-		{{range $data := .Milestones}}
-			<li class="github-commit-item">
-				<a class="link" href="{{$data.URL}}">
-					<div class="issue-avatar">
-						{{if $data.IsOpen}}
-							` + openMSsvg + `
-						{{else}}
-							` + closedMSsvg + `
-						{{end}}
-				  	</div>
-					<div class="github-commit-body">
-						<div class="github-commit-title"><span class="label-name">{{$data.Repo}} - {{$data.Name}}</span> 
-						<progress value="{{$data.Progress}}" max="100">
-						</div>
-						<div class="github-commit-meta">
-						  {{$data.DueDate}} Last updated {{$data.UpdatedAt}}. 
-						  {{$data.CompleteMsg}} complete {{$data.OpenIssues}} open {{$data.ClosedIssues}} closed
-						</div>
-					</div>
-				</a>
-				<div class="clearfix" />
-			</li>
-		{{end}}
-	</ul>
-	</div>
-</div>
-`}
+	reports[tagMilestonesData] = report{refreshMilestones, renderMilestones, milestonesTemplate}
 }
 
 func getMilestones(client *gogithub.Client, config *githubConfig) ([]githubMilestone, error) {
@@ -163,7 +123,7 @@ func getMilestones(client *gogithub.Client, config *githubConfig) ([]githubMiles
 							progress := float64(*v.ClosedIssues*100) / float64(*v.OpenIssues+*v.ClosedIssues)
 
 							ret = append(ret, githubMilestone{
-								Repo:         rName,
+								Repo:         repoName(rName),
 								Name:         *v.Title,
 								URL:          *v.HTMLURL,
 								IsOpen:       *v.State == "open",
@@ -173,6 +133,7 @@ func getMilestones(client *gogithub.Client, config *githubConfig) ([]githubMiles
 								DueDate:      dd,
 								UpdatedAt:    up,
 								Progress:     uint(progress),
+								IsMilestone:  true,
 							})
 						}
 					}
@@ -209,19 +170,14 @@ func refreshMilestones(gr *githubRender, config *githubConfig, client *gogithub.
 }
 
 func renderMilestones(payload *githubRender, c *githubConfig) error {
-	fmt.Println("DEBUG renderMilestones list", payload.List)
 	hadRepo := make(map[string]bool)
 	for _, orb := range payload.List {
-		fmt.Println("DEBUG branch", orb)
 		rName := orb.Owner + "/" + orb.Repo
 		if !hadRepo[rName] {
 
-			fmt.Println("DEBUG found repo", rName)
 			issuesOpen, issuesClosed := 0, 0
 			for _, iss := range payload.Issues {
-				fmt.Println("DEBUG issue", iss)
-				if iss.Repo == rName {
-					fmt.Println("DEBUG Found issue", iss)
+				if iss.Repo == repoName(rName) {
 					if iss.Milestone == noMilestone {
 						if iss.IsOpen {
 							issuesOpen++
@@ -231,9 +187,12 @@ func renderMilestones(payload *githubRender, c *githubConfig) error {
 					}
 				}
 			}
-			payload.Milestones = append(payload.Milestones, githubMilestone{
-				Repo: rName, Name: noMilestone, OpenIssues: issuesOpen, ClosedIssues: issuesClosed,
-			})
+			if issuesClosed+issuesOpen > 0 {
+				payload.Milestones = append(payload.Milestones, githubMilestone{
+					Repo: rName, Name: noMilestone, IsOpen: true,
+					OpenIssues: issuesOpen, ClosedIssues: issuesClosed,
+				})
+			}
 
 			hadRepo[rName] = true
 		}

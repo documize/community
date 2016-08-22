@@ -59,73 +59,48 @@ func (s asToSort) Less(i, j int) bool {
 	return s[i].CommitCount > s[j].CommitCount
 }
 
-const tagCommitsData = "commitsData"
+// sort branches in order that that should be presented.
+type branchByID []githubBranch
 
-func init() {
-	reports[tagCommitsData] = report{refreshCommits, renderCommits, `
-<h3>Contributor activity since {{.Config.Since}}{{.Config.DateMessage}}</h3>
-<div class="section-github-render">
-	<table style="width:80%">
-		<tr>
-			<th></th>
-    		<th>Author</th>
-			<th>Open Issues</th>
-			<th>Closed Issues</th>
-    		<th>#commits</th>
-    		<th>Branches</th>
-  		</tr>
-		{{range $stats := .AuthorStats}}
-			<tr>
-				<td>
-					<div class="github-avatar">
-						<img alt="@{{$stats.Author}}" src="{{$stats.Avatar}}" height="36" width="36">
-					</div>
-				</td>
-				<td>{{$stats.Author}}</td>
-				<td>{{$stats.OpenIssues}}</td>
-				<td>{{$stats.ClosedIssues}}</td>
-				<td>{{$stats.CommitCount}}</td>
-				<td>
-					{{range $repo := $stats.Repos}}
-						{{$repo}}
-					{{end}}
-				</td>
-			</tr>
-		{{end}}
-	</table>
-	{{range $branch := .BranchCommits}}
-		<h4>
-			There are {{ $branch.CommitCount }} commits for branch <a href="{{$branch.URL}}">{{$branch.Name}}</a>.
-		</h4>
-		<div class="github-board">
-			{{range $data := $branch.Days}}
-				<div class="github-group-title">
-					Commits on {{ $data.Day }}
-				</div>
-				<ul class="github-list">
-					{{range $commit := $data.Commits}}
-						<li class="github-commit-item">
-							<a class="link" href="{{$commit.URL}}">
-								<div class="github-avatar">
-									<img alt="@{{$commit.Name}}" src="{{$commit.Avatar}}" height="36" width="36">
-								</div>
-								<div class="github-commit-body">
-									<div class="github-commit-title">{{$commit.Message}}</div>
-									<div class="github-commit-meta">{{$commit.Name}} committed on {{$commit.Date}}</div>
-								</div>
-							</a>
-							<div class="clearfix" />
-						</li>
-					{{end}}
-				</ul>
-			{{end}}
-		</div>
-	{{end}}
-</div>
-`}
+func (s branchByID) Len() int      { return len(s) }
+func (s branchByID) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
+func (s branchByID) Less(i, j int) bool {
+	return s[i].ID < s[j].ID
 }
 
+const tagCommitsData = "commitsData"
+
 func getCommits(client *gogithub.Client, config *githubConfig) ([]githubBranchCommits, []githubAuthorStats, error) {
+
+	// first make sure we've got all the branches
+	for _, orb := range config.Lists {
+		if orb.Included {
+
+			branches, _, err := client.Repositories.ListBranches(orb.Owner, orb.Repo,
+				&gogithub.ListOptions{PerPage: 100})
+			if err == nil {
+				render := make([]githubBranch, len(branches))
+				for kc, vb := range branches {
+					for _, existing := range config.Lists {
+						if orb.Owner == existing.Owner && orb.Repo == existing.Repo && orb.Name == *vb.Name {
+							goto found
+						}
+					}
+					render[kc] = githubBranch{
+						Owner:    orb.Owner,
+						Repo:     orb.Repo,
+						Name:     *vb.Name,
+						ID:       fmt.Sprintf("%s:%s:%s", orb.Owner, orb.Repo, *vb.Name),
+						Included: true,
+						URL:      "https://github.com/" + orb.Owner + "/" + orb.Repo + "/tree/" + *vb.Name,
+					}
+				found:
+				}
+				config.Lists = append(config.Lists, render...)
+			}
+		}
+	}
+	sort.Stable(branchByID(config.Lists))
 
 	authorStats := make(map[string]githubAuthorStats)
 
@@ -297,4 +272,11 @@ func renderCommits(payload *githubRender, c *githubConfig) error {
 	}
 
 	return nil
+}
+
+// TODO(elliott5) - move to templates.go once working
+// COMMITS
+
+func init() {
+	reports[tagCommitsData] = report{refreshCommits, renderCommits, commitsTemplate}
 }

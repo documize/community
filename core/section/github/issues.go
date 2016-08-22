@@ -36,12 +36,28 @@ type githubIssue struct {
 	Milestone  string        `json:"milestone"`
 }
 
+type githubSharedLabel struct {
+	Name  string        `json:"name"`
+	Count int           `json:"count"`
+	Repos template.HTML `json:"Repos"`
+}
+
 // sort issues in order that that should be presented - by date updated.
 type issuesToSort []githubIssue
 
 func (s issuesToSort) Len() int      { return len(s) }
 func (s issuesToSort) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
 func (s issuesToSort) Less(i, j int) bool {
+	if s[i].Milestone != noMilestone && s[j].Milestone == noMilestone {
+		return true
+	}
+	if s[i].Milestone == noMilestone && s[j].Milestone != noMilestone {
+		return false
+	}
+	if s[i].Milestone != s[j].Milestone {
+		// TODO should this order be by milestone completion?
+		return s[i].Milestone < s[j].Milestone
+	}
 	if !s[i].IsOpen && s[j].IsOpen {
 		return true
 	}
@@ -56,62 +72,20 @@ func (s issuesToSort) Less(i, j int) bool {
 	return iDate.Before(jDate)
 }
 
+// sort shared labels alphabetically
+type sharedLabelsSort []githubSharedLabel
+
+func (s sharedLabelsSort) Len() int           { return len(s) }
+func (s sharedLabelsSort) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
+func (s sharedLabelsSort) Less(i, j int) bool { return s[i].Name < s[j].Name }
+
 const (
 	tagIssuesData    = "issuesData"
 	issuesTimeFormat = "January 2 2006, 15:04"
-
-	openIsvg = `
-	<span title="Open issue">
-		<svg height="16" version="1.1" viewBox="0 0 14 16" width="14"><path d="M7 2.3c3.14 0 5.7 2.56 5.7 5.7s-2.56 5.7-5.7 5.7A5.71 5.71 0 0 1 1.3 8c0-3.14 2.56-5.7 5.7-5.7zM7 1C3.14 1 0 4.14 0 8s3.14 7 7 7 7-3.14 7-7-3.14-7-7-7zm1 3H6v5h2V4zm0 6H6v2h2v-2z"></path></svg>
-	</span>
-`
-	closedIsvg = `
-	<span title="Closed issue">
-		<svg height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M7 10h2v2H7v-2zm2-6H7v5h2V4zm1.5 1.5l-1 1L12 9l4-4.5-1-1L12 7l-1.5-1.5zM8 13.7A5.71 5.71 0 0 1 2.3 8c0-3.14 2.56-5.7 5.7-5.7 1.83 0 3.45.88 4.5 2.2l.92-.92A6.947 6.947 0 0 0 8 1C4.14 1 1 4.14 1 8s3.14 7 7 7 7-3.14 7-7l-1.52 1.52c-.66 2.41-2.86 4.19-5.48 4.19v-.01z"></path></svg>
-	</span>
-	`
 )
 
 func init() {
-	reports[tagIssuesData] = report{refreshIssues, renderIssues, `
-<div class="section-github-render">
-	<h3>Issues: {{.ClosedIssues}} closed, {{.OpenIssues}} open</h3>
-	<p>
-		{{if .ShowList}}
-			Including issues labelled
-			{{range $label := .List}}
-				{{if $label.Included}}
-					<span class="github-issue-label" style="background-color:#{{$label.Color}}">{{$label.Name}}</span>
-				{{end}}
-			{{end}}
-		{{end}}
-	</p>
-	<div class="github-board">
-	<ul class="github-list">
-		{{range $data := .Issues}}
-			<li class="github-commit-item">
-				<a class="link" href="{{$data.URL}}">
-					<div class="issue-avatar">
-						{{if $data.IsOpen}}
-							` + openIsvg + `
-						{{else}}
-							` + closedIsvg + `
-						{{end}}
-				  	</div>
-					<div class="github-commit-body">
-						<div class="github-commit-title"><span class="label-name">{{$data.Repo}} - {{$data.Message}}</span> :{{$data.Milestone}}: {{$data.Labels}}</div>
-						<div class="github-commit-meta">
-							#{{$data.ID}} opened on {{$data.Date}} by {{$data.Name}}, last updated {{$data.Updated}}
-						</div>
-					</div>
-				</a>
-				<div class="clearfix" />
-			</li>
-		{{end}}
-	</ul>
-	</div>
-</div>
-`}
+	reports[tagIssuesData] = report{refreshIssues, renderIssues, issuesTemplate}
 }
 
 func wrapLabels(labels []gogithub.Label) (l string, labelNames []string) {
@@ -186,7 +160,7 @@ func getIssues(client *gogithub.Client, config *githubConfig) ([]githubIssue, er
 							LabelNames: ln,
 							ID:         *v.Number,
 							IsOpen:     *v.State == "open",
-							Repo:       rName,
+							Repo:       repoName(rName),
 							Milestone:  ms,
 						})
 					}
@@ -224,21 +198,23 @@ func refreshIssues(gr *githubRender, config *githubConfig, client *gogithub.Clie
 		}
 	}
 
-	gr.SharedLabels = make([]template.HTML, 0, len(sharedLabels)) // will usually be too big
+	gr.SharedLabels = make([]githubSharedLabel, 0, len(sharedLabels)) // will usually be too big
 	for name, repos := range sharedLabels {
 		if len(repos) > 1 {
-			lab := name + ":["
+			thisLab := githubSharedLabel{Name: name, Count: len(repos)}
+			show := ""
 			for i, r := range repos {
 				if i > 0 {
-					lab += " "
+					show += ", "
 				}
-				lab += "<a href='https://github.com/" + r +
+				show += "<a href='https://github.com/" + config.Owner + "/" + r +
 					"/issues?q=is%3Aissue+label%3A" + name + "'>" + r + "</a>"
 			}
-			lab += "] "
-			gr.SharedLabels = append(gr.SharedLabels, template.HTML(lab))
+			thisLab.Repos = template.HTML(show)
+			gr.SharedLabels = append(gr.SharedLabels, thisLab)
 		}
 	}
+	sort.Stable(sharedLabelsSort(gr.SharedLabels))
 
 	return nil
 }

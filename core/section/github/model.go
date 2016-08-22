@@ -13,7 +13,8 @@ package github
 
 import (
 	"fmt"
-	"html/template"
+	"sort"
+	"strings"
 	"time"
 
 	"github.com/documize/community/core/log"
@@ -30,7 +31,7 @@ type githubRender struct {
 	BranchCommits    []githubBranchCommits `json:"branchCommits"`
 	CommitCount      int                   `json:"commitCount"`
 	Issues           []githubIssue         `json:"issues"`
-	SharedLabels     []template.HTML       `json:"sharedLabels"`
+	SharedLabels     []githubSharedLabel   `json:"sharedLabels"`
 	OpenIssues       int                   `json:"openIssues"`
 	ClosedIssues     int                   `json:"closedIssues"`
 	Limit            int                   `json:"limit"`
@@ -79,6 +80,7 @@ type githubBranch struct {
 	Included bool   `json:"included"`
 	URL      string `json:"url"`
 	Color    string `json:"color,omitempty"`
+	Comma    bool   `json:"comma"`
 }
 
 type githubLabel struct {
@@ -148,24 +150,51 @@ func (c *githubConfig) Clean() {
 	c.Since = (*c.SincePtr).Format(issuesTimeFormat)
 
 	// TEST DATA INSERTION DEBUG ONLY!
-	debugList := []string{"community", "enterprise", "test-data"}
-	c.Lists = make([]githubBranch, 0, len(debugList))
-	for rid, repo := range debugList {
-		c.Lists = append(c.Lists, githubBranch{
-			ID:       fmt.Sprintf("%d", rid+1),
-			Owner:    "documize",
-			Repo:     repo,
-			Name:     "master",
-			Included: true,
-			URL:      "https://github.com/documize/" + repo + "/tree/master",
-			Color:    "",
-		})
+	debugList := map[string][]string{
+		"community":  []string{"master"},
+		"enterprise": []string{"master"},
+		"test-data":  []string{"master"},
 	}
+	c.Lists = make([]githubBranch, 0, len(debugList)*3)
+	for repo, branches := range debugList {
+		render := make([]githubBranch, len(branches))
+		for kc, vb := range branches {
+			render[kc] = githubBranch{
+				Owner:    "documize",
+				Repo:     repo,
+				Name:     vb,
+				ID:       fmt.Sprintf("%s:%s:%s", "documize", repo, vb),
+				Included: true,
+				URL:      "https://github.com/" + "documize" + "/" + repo + "/tree/" + vb,
+			}
+		}
+		c.Lists = append(c.Lists, render...)
+	}
+	c.Owner = "documize"
 	c.ReportOrder = []string{tagSummaryData, tagMilestonesData, tagIssuesData /*, tagPullRequestData*/, tagCommitsData}
 	c.BranchLines = 100 // overide js default of 30 with maximum allowable in one call
+
+	sort.Stable(branchesToSort(c.Lists)) // get the configured branches in a sensible order for printing
+	for i := range c.Lists {
+		if i != len(c.Lists)-1 {
+			c.Lists[i].Comma = true // put the commas in the right places
+		}
+	}
 
 }
 
 type githubCallbackT struct {
 	AccessToken string `json:"access_token"`
+}
+
+func repoName(branchName string) string {
+	bits := strings.Split(branchName, "/")
+	if len(bits) != 2 {
+		return branchName + "?repo"
+	}
+	pieces := strings.Split(bits[1], ":")
+	if len(pieces) == 0 {
+		return branchName + "?repo:?branch"
+	}
+	return pieces[0]
 }
