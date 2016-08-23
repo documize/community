@@ -29,18 +29,23 @@ type githubRender struct {
 	ShowList         bool                `json:"showList"`
 	ShowIssueNumbers bool                `json:"showIssueNumbers"`
 	BranchCommits    []githubCommit      `json:"branchCommits"`
+	HasCommits       bool                `json:"hasCommits"`
 	CommitCount      int                 `json:"commitCount"`
 	Issues           []githubIssue       `json:"issues"`
+	HasIssues        bool                `json:"hasIssues"`
 	SharedLabels     []githubSharedLabel `json:"sharedLabels"`
+	HasSharedLabels  bool                `json:"hasSharedLabels"`
 	OpenIssues       int                 `json:"openIssues"`
 	ClosedIssues     int                 `json:"closedIssues"`
 	Limit            int                 `json:"limit"`
 	Milestones       []githubMilestone   `json:"milestones"`
+	HasMilestones    bool                `json:"hasMilestones"`
 	OpenMS           int                 `json:"openMS"`
 	ClosedMS         int                 `json:"closedMS"`
 	OpenPRs          int                 `json:"openPRs"`
 	ClosedPRs        int                 `json:"closedPRs"`
 	AuthorStats      []githubAuthorStats `json:"authorStats"`
+	HasAuthorStats   bool                `json:"hasAuthorStats"`
 	//PullRequests   []githubPullRequest   `json:"pullRequests"`
 }
 

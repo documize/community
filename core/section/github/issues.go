@@ -136,11 +136,13 @@ func getIssues(client *gogithub.Client, config *githubConfig) ([]githubIssue, er
 					}
 
 					for _, v := range guff {
-						n := ""
-						ptr := v.User
+						n := "(unassigned)"
+						av := githubGravatar
+						ptr := v.Assignee
 						if ptr != nil {
 							if ptr.Login != nil {
 								n = *ptr.Login
+								av = *ptr.AvatarURL
 							}
 						}
 						ms := noMilestone
@@ -152,6 +154,7 @@ func getIssues(client *gogithub.Client, config *githubConfig) ([]githubIssue, er
 						l, ln := wrapLabels(v.Labels)
 						ret = append(ret, githubIssue{
 							Name:       n,
+							Avatar:     av,
 							Message:    *v.Title,
 							Date:       v.CreatedAt.Format(issuesTimeFormat),
 							Updated:    v.UpdatedAt.Format(issuesTimeFormat),
@@ -197,6 +200,7 @@ func refreshIssues(gr *githubRender, config *githubConfig, client *gogithub.Clie
 			sharedLabels[lab] = append(sharedLabels[lab], v.Repo)
 		}
 	}
+	gr.HasIssues = (gr.OpenIssues + gr.ClosedIssues) > 0
 
 	gr.SharedLabels = make([]githubSharedLabel, 0, len(sharedLabels)) // will usually be too big
 	for name, repos := range sharedLabels {
@@ -215,6 +219,7 @@ func refreshIssues(gr *githubRender, config *githubConfig, client *gogithub.Clie
 		}
 	}
 	sort.Stable(sharedLabelsSort(gr.SharedLabels))
+	gr.HasSharedLabels = len(gr.SharedLabels) > 0
 
 	return nil
 }

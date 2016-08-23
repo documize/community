@@ -165,6 +165,7 @@ func refreshMilestones(gr *githubRender, config *githubConfig, client *gogithub.
 			gr.ClosedMS++
 		}
 	}
+	gr.HasMilestones = (gr.OpenMS + gr.ClosedMS) > 0
 
 	return nil
 }

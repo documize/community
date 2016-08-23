@@ -31,7 +31,7 @@ type githubCommit struct {
 	Branch     string       `json:"branch"`
 	ShowBranch bool         `json:"ShowBranch"`
 	Date       string       `json:"date"`
-	BinDate    time.Time    `json:"-"`
+	BinDate    time.Time    `json:"-"` // only used for sorting
 	ShowDate   bool         `json:"ShowDate"`
 	Name       string       `json:"name"`
 	Avatar     string       `json:"avatar"`
@@ -279,18 +279,31 @@ func renderCommits(payload *githubRender, c *githubConfig) error {
 	for range payload.BranchCommits {
 		payload.CommitCount++
 	}
+	payload.HasCommits = payload.CommitCount > 0
 
-	for a := range payload.AuthorStats {
-		for i := range payload.Issues {
+	for i := range payload.Issues {
+		var author int
+		for a := range payload.AuthorStats {
 			if payload.AuthorStats[a].Author == payload.Issues[i].Name {
-				if payload.Issues[i].IsOpen {
-					payload.AuthorStats[a].OpenIssues++
-				} else {
-					payload.AuthorStats[a].ClosedIssues++
-				}
+				author = a
+				goto found
 			}
 		}
+		// no Author found for issue, so create one
+		payload.AuthorStats = append(payload.AuthorStats, githubAuthorStats{
+			Author: payload.Issues[i].Name,
+			Avatar: payload.Issues[i].Avatar,
+		})
+		author = len(payload.AuthorStats) - 1
+	found:
+		if payload.Issues[i].IsOpen {
+			payload.AuthorStats[author].OpenIssues++
+		} else {
+			payload.AuthorStats[author].ClosedIssues++
+		}
 	}
+	payload.HasAuthorStats = len(payload.AuthorStats) > 0
+	sort.Stable(asToSort(payload.AuthorStats))
 
 	return nil
 }
