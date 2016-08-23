@@ -23,6 +23,7 @@ export default Ember.Route.extend(NotifierMixin, {
 	folder: {},
 	tab: "",
 	localStorage: service(),
+	store: service(),
 
 	beforeModel: function (transition) {
 		this.tab = is.not.undefined(transition.queryParams.tab) ? transition.queryParams.tab : "tabGeneral";
@@ -43,52 +44,59 @@ export default Ember.Route.extend(NotifierMixin, {
 		controller.set('tabDelete', false);
 		controller.set(this.get('tab'), true);
 
-		this.get('folderService').getAll().then(function (folders) {
+		this.get('folderService').getAll().then((folders) => {
 			controller.set('folders', folders.rejectBy('id', model.get('id')));
 		});
 
-		this.get('userService').getAll().then(function (users) {
+		this.get('userService').getAll().then((users) => {
 			controller.set('users', users);
 
 			var folderPermissions = [];
 
-			var u = models.FolderPermissionModel.create({
+			users.forEach((user) => {
+				let isActive = user.get('active');
+
+				let u = {
+					userId: user.get('id'),
+					fullname: user.get('fullname'),
+					orgId: model.get('orgId'),
+					folderId: model.get('id'),
+					canEdit: false,
+					canView: false,
+					canViewPrevious: false
+				};
+
+				if (isActive) {
+					folderPermissions.pushObject(u);
+				}
+			});
+
+			var u = {
 				userId: "",
 				fullname: " Everyone",
 				orgId: model.get('orgId'),
 				folderId: model.get('id'),
 				canEdit: false,
 				canView: false
-			});
+			};
 
 			folderPermissions.pushObject(u);
 
-			users.forEach(function (user, index) /* jshint ignore:line */ {
-				if (user.get('active')) {
-					var u = models.FolderPermissionModel.create({
-						userId: user.get('id'),
-						fullname: user.get('fullname'),
-						orgId: model.get('orgId'),
-						folderId: model.get('id'),
-						canEdit: false,
-						canView: false,
-						canViewPrevious: false
-					});
-
-					folderPermissions.pushObject(u);
-				}
-			});
-
-			self.get('folderService').getPermissions(model.id).then(function (permissions) {
-				permissions.forEach(function (permission, index) /* jshint ignore:line */ {
-					var folderPermission = folderPermissions.findBy('userId', permission.userId);
+			this.get('folderService').getPermissions(model.id).then((permissions) => {
+				permissions.forEach((permission, index) => { /* jshint ignore:line */
+					var folderPermission = folderPermissions.findBy('userId', permission.get('userId'));
 					if (is.not.undefined(folderPermission)) {
-						Ember.set(folderPermission, 'orgId', permission.orgId);
-						Ember.set(folderPermission, 'folderId', permission.folderId);
-						Ember.set(folderPermission, 'canEdit', permission.canEdit);
-						Ember.set(folderPermission, 'canView', permission.canView);
-						Ember.set(folderPermission, 'canViewPrevious', permission.canView);
+						Ember.set(folderPermission, 'orgId', permission.get('orgId'));
+						Ember.set(folderPermission, 'folderId', permission.get('folderId'));
+						Ember.set(folderPermission, 'canEdit', permission.get('canEdit'));
+						Ember.set(folderPermission, 'canView', permission.get('canView'));
+						Ember.set(folderPermission, 'canViewPrevious', permission.get('canView'));
 					}
+				});
+
+				folderPermissions.map((permission) => {
+					let data = this.get('store').normalize('folder-permission', permission);
+					return this.get('store').push({ data: data });
 				});
 
 				controller.set('permissions', folderPermissions.sortBy('fullname'));
@@ -125,8 +133,16 @@ export default Ember.Route.extend(NotifierMixin, {
 		},
 
 		onPermission: function (folder, message, permissions) {
-			var data = permissions.map(function (obj) {
-				return obj.getProperties('orgId', 'folderId', 'userId', 'canEdit', 'canView');
+			var data = permissions.map((obj) => {
+				let permission = {
+					'orgId': obj.orgId,
+					'folderId': obj.folderId,
+					'userId': obj.userId,
+					'canEdit': obj.canEdit,
+					'canView': obj.canView
+				};
+
+				return permission;
 			});
 			var payload = { Message: message, Roles: data };
 
