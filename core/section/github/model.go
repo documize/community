@@ -12,7 +12,6 @@
 package github
 
 import (
-	"fmt"
 	"sort"
 	"strings"
 	"time"
@@ -86,6 +85,7 @@ type githubBranch struct {
 	URL      string `json:"url"`
 	Color    string `json:"color,omitempty"`
 	Comma    bool   `json:"comma"`
+	Private  bool   `json:"private"`
 }
 
 type githubLabel struct {
@@ -155,37 +155,44 @@ func (c *githubConfig) Clean() {
 	c.Since = (*c.SincePtr).Format(issuesTimeFormat)
 
 	// TEST DATA INSERTION DEBUG ONLY!
-	debugList := map[string][]string{
-		"community":  []string{"master"},
-		"enterprise": []string{"master"},
-		"test-data":  []string{"master"},
-	}
-	c.Lists = make([]githubBranch, 0, len(debugList)*3)
-	for repo, branches := range debugList {
-		render := make([]githubBranch, len(branches))
-		for kc, vb := range branches {
-			render[kc] = githubBranch{
-				Owner:    "documize",
-				Repo:     repo,
-				Name:     vb,
-				ID:       fmt.Sprintf("%s:%s:%s", "documize", repo, vb),
-				Included: true,
-				URL:      "https://github.com/" + "documize" + "/" + repo + "/tree/" + vb,
-			}
+	/*
+		debugList := map[string][]string{
+			"community":  []string{"master"},
+			"enterprise": []string{"master"},
+			"test-data":  []string{"master"},
 		}
-		c.Lists = append(c.Lists, render...)
-	}
-	c.Owner = "documize"
+		c.Lists = make([]githubBranch, 0, len(debugList)*3)
+		for repo, branches := range debugList {
+			render := make([]githubBranch, len(branches))
+			for kc, vb := range branches {
+				render[kc] = githubBranch{
+					Owner:    "documize",
+					Repo:     repo,
+					Name:     vb,
+					ID:       fmt.Sprintf("%s:%s:%s", "documize", repo, vb),
+					Included: true,
+					URL:      "https://github.com/" + "documize" + "/" + repo + "/tree/" + vb,
+				}
+			}
+			c.Lists = append(c.Lists, render...)
+		}
+		c.Owner = "documize"
+	*/
 	c.ReportOrder = []string{tagSummaryData, tagMilestonesData, tagIssuesData /*, tagPullRequestData*/, tagCommitsData}
 	c.BranchLines = 100 // overide js default of 30 with maximum allowable in one call
 
 	sort.Stable(branchesToSort(c.Lists)) // get the configured branches in a sensible order for printing
+
+	lastItem := 0
 	for i := range c.Lists {
-		if i != len(c.Lists)-1 {
-			c.Lists[i].Comma = true // put the commas in the right places
+		c.Lists[i].Comma = true
+		if c.Lists[i].Included {
+			lastItem = i
 		}
 	}
-
+	if lastItem < len(c.Lists) {
+		c.Lists[lastItem].Comma = false
+	}
 }
 
 type githubCallbackT struct {

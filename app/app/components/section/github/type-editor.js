@@ -112,10 +112,10 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 	getOwnerLists() {
 		this.set('busy', true);
 
-		let self = this;
+		//let self = this;
 		let owners = this.get('owners');
 		let thisOwner = this.get('config.owner');
-		let page = this.get('page');
+		//let page = this.get('page');
 
 		if (is.null(thisOwner) || is.undefined(thisOwner)) {
 			if (owners.length) {
@@ -128,6 +128,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
 		this.set('owner', thisOwner);
 
+		/*
 		this.get('sectionService').fetch(page, "repos", self.get('config'))
 			.then(function (lists) {
 				self.set('busy', false);
@@ -139,8 +140,18 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 				self.showNotification("Unable to fetch repositories");
 				console.log(error);
 			});
+		*/
+		this.getOrgReposLists();
+
+		if (is.undefined(this.get('initDateTimePicker'))) {
+			$.datetimepicker.setLocale('en');
+			$('#branch-since').datetimepicker();
+			this.set('initDateTimePicker', "Done");
+		}
+
 	},
 
+	/*
 	getRepoLists() {
 		this.set('busy', true);
 
@@ -266,7 +277,53 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 				console.log(error);
 			});
 	},
+	*/
 
+	getOrgReposLists() {
+		this.set('busy', true);
+
+		let self = this;
+		let page = this.get('page');
+
+		this.get('sectionService').fetch(page, "orgrepos", self.get('config'))
+			.then(function (lists) {
+				let savedLists = self.get('config.lists');
+				if (savedLists === null) {
+					savedLists = [];
+				}
+
+				if (lists.length > 0) {
+					let noIncluded = true;
+
+					lists.forEach(function (list) {
+						let included = false;
+						var saved;
+						if (is.not.undefined(savedLists)) {
+							saved = savedLists.findBy("id", list.id);
+						}
+						if (is.not.undefined(saved)) {
+							included = saved.included;
+							noIncluded = false;
+						}
+						list.included = included;
+					});
+
+					if (noIncluded) {
+						lists[0].included = true; // make the first entry the default
+					}
+				}
+
+				self.set('config.lists', lists);
+				self.set('busy', false);
+			}, function (error) { //jshint ignore: line
+				self.set('busy', false);
+				self.set('authenticated', false);
+				self.showNotification("Unable to fetch repository branches");
+				console.log(error);
+			});
+	},
+
+	/*
 	getLabelLists() {
 		this.set('busy', true);
 
@@ -330,6 +387,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 				console.log(error);
 			});
 	},
+	*/
 
 	actions: {
 		isDirty() {
@@ -341,15 +399,16 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 			let list = lists.findBy('id', id);
 
 			// restore the list of branches to the default state
-			lists.forEach(function (lst) {
-				Ember.set(lst, 'included', false);
-			});
+			//lists.forEach(function (lst) {
+			//	Ember.set(lst, 'included', false);
+			//});
 
 			if (list !== null) {
 				Ember.set(list, 'included', !list.included);
 			}
 		},
 
+		/*
 		onLabelCheckbox(id) {
 			let lists = this.get('config.lists');
 			let list = lists.findBy('id', id);
@@ -358,6 +417,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 				Ember.set(list, 'included', !list.included);
 			}
 		},
+		*/
 
 		authStage2() {
 			let self = this;
@@ -399,6 +459,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 			this.getOwnerLists();
 		},
 
+		/*
 		onRepoChange(thisRepo) {
 			this.set('isDirty', true);
 			this.set('config.repo', thisRepo);
@@ -411,6 +472,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 			this.set('config.report', thisReport);
 			this.getReportLists();
 		},
+		*/
 
 		onStateChange(thisState) {
 			this.set('config.state', thisState);

@@ -42,3 +42,10 @@ func sortOwners(in []githubOwner) []githubOwner {
 	sort.Sort(sts)
 	return []githubOwner(sts)
 }
+
+// sort branches in order that that should be presented.
+func sortBranches(in []githubBranch) []githubBranch {
+	sts := branchesToSort(in)
+	sort.Sort(sts)
+	return []githubBranch(sts)
+}
