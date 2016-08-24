@@ -98,7 +98,7 @@ export default BaseService.extend({
 
 			data = response.map((obj) => {
 				let data = this.get('store').normalize('protected-folder-participant', obj);
-				return this.get('store').push({ data: data });
+				return this.get('store').push(data);
 			});
 
 			return data;
