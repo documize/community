@@ -13,6 +13,7 @@ package github
 
 const summaryTemplate = `
 <div class="section-github-render">
+
 	<h3>
 		Activity since {{.Config.Since}}{{.Config.DateMessage}} for {{.Config.Owner}} repositories:
 		{{range $data := .Config.Lists}}
@@ -23,11 +24,33 @@ const summaryTemplate = `
 			{{end}}
 		{{end}}
 	</h3>
-	<h3>
-		Common Labels: <br>
-		{{range $slabel := .SharedLabels}}
-			{{$slabel.Name}} {{$slabel.Count}} {{$slabel.Repos}} <br>
-		{{end}}
-	</h3>
+
+	{{if .HasSharedLabels}}
+		<h3>
+			Common Labels: <br>
+		</h3>
+
+		<table class="label-table" style="width: 100%;">
+		    <thead>
+		        <tr>
+		            <th class="title">Label</th>
+		            <th class="title">Count</th>
+		            <th class="title">Repositories</th>
+		        </tr>
+		    </thead>
+
+		    <tbody>
+			{{range $slabel := .SharedLabels}}
+		        <tr>
+		            <td style="width: 25%;">{{$slabel.Name}}</td>
+		            <td style="width: 25%;">{{$slabel.Count}}</td>
+		            <td style="width: 50%;">{{$slabel.Repos}}</td>
+		        </tr>
+			{{end}}
+		    </tbody>
+		</table>
+	{{end}}
+
+
 </div>
 `

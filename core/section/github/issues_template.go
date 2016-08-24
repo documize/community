@@ -24,6 +24,7 @@ const (
 	`
 	issuesTemplate = `
 <div class="section-github-render">
+{{if .HasIssues}}
 	<h3>Issues: {{.ClosedIssues}} closed, {{.OpenIssues}} open</h3>
 	<p>
 		{{if .ShowList}}
@@ -36,9 +37,25 @@ const (
 		{{end}}
 	</p>
 	<div class="github-board">
-	<ul class="github-list">
+
+
+
+	<table class="issue-table" style="width: 100%;">
+	    <thead>
+	        <tr>
+	            <th class="title">Repository</th>
+	            <th class="title">Milestone</th>
+	            <th class="title">Issues</th>
+	        </tr>
+	    </thead>
+
+	    <tbody>
 		{{range $data := .Issues}}
-			<li class="github-commit-item">
+	        <tr>
+	            <td style="width: 20%;">{{$data.Repo}}</td>
+	            <td style="width: 20%;">{{$data.Milestone}}</td>
+	            <td style="width: 60%;">
+				<li class="github-commit-item">
 				<a class="link" href="{{$data.URL}}">
 					<div class="issue-avatar">
 						{{if $data.IsOpen}}
@@ -46,19 +63,23 @@ const (
 						{{else}}
 							` + closedIsvg + `
 						{{end}}
-				  	</div>
+					</div>
 					<div class="github-commit-body">
-						<div class="github-commit-title"><span class="label-name">{{$data.Repo}} - {{$data.Message}}</span> :{{$data.Milestone}}: {{$data.Labels}}</div>
+						<div class="github-commit-title"><span class="label-name">{{$data.Message}}</span> {{$data.Labels}}</div>
 						<div class="github-commit-meta">
 							#{{$data.ID}} opened on {{$data.Date}} by {{$data.Name}}, last updated {{$data.Updated}}
 						</div>
 					</div>
 				</a>
-				<div class="clearfix" />
-			</li>
+				</li>
+				</td>
+	        </tr>
 		{{end}}
-	</ul>
+	    </tbody>
+
+	</table>
 	</div>
+{{end}}
 </div>
 `
 )
