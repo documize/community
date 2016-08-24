@@ -76,7 +76,7 @@ export default Ember.Service.extend({
 
 	// Updates an existing user record.
 	save(user) {
-		let userId = user.get('id');
+		let userId = user.id;
 		let url = `users/${userId}`;
 
 		return this.get('ajax').request(url, {

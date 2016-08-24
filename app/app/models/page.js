@@ -25,8 +25,6 @@ export default Model.extend({
 	body: attr('string'),
 	rawBody: attr('string'),
 	meta: attr(),
-	created: attr(),
-	revised: attr(),
 
 	tagName: Ember.computed('level', function () {
 		return "h" + this.get('level');
@@ -39,5 +37,7 @@ export default Model.extend({
 	tocIndentCss: Ember.computed('tocIndent', function () {
 		let tocIndent = this.get('tocIndent');
 		return `margin-left-${tocIndent}`;
-	})
+	}),
+	created: attr(),
+	revised: attr()
 });

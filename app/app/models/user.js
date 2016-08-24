@@ -34,22 +34,5 @@ export default Model.extend({
 		let first = this.get('firstname').trim();
 		let last = this.get('lastname').trim();
 		this.set('initials', first.substr(0, 1) + last.substr(0, 1));
-	},
-	//
-	// copy() {
-	// 	let copy = UserModel.create();
-	// 	copy.id = this.id;
-	// 	copy.created = this.created;
-	// 	copy.revised = this.revised;
-	// 	copy.firstname = this.firstname;
-	// 	copy.lastname = this.lastname;
-	// 	copy.email = this.email;
-	// 	copy.initials = this.initials;
-	// 	copy.active = this.active;
-	// 	copy.editor = this.editor;
-	// 	copy.admin = this.admin;
-	// 	copy.accounts = this.accounts;
-	//
-	// 	return copy;
-	// }
+	}
 });

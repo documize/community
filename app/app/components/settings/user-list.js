@@ -1,11 +1,11 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
@@ -54,7 +54,8 @@ export default Ember.Component.extend({
 			let self = this;
 
 			let user = this.users.findBy("id", id);
-			this.set('editUser', user.copy());
+			let userCopy = user.getProperties('id', 'created', 'revised', 'firstname', 'lastname', 'email', 'initials', 'active', 'editor', 'admin', 'accounts');
+			this.set('editUser', userCopy);
 			this.set('password', {
 				password: "",
 				confirmation: ""
@@ -112,15 +113,15 @@ export default Ember.Component.extend({
 			let user = this.get('editUser');
 			let password = this.get('password');
 
-			if (is.empty(user.get('firstname'))) {
+			if (is.empty(user.firstname)) {
 				$("#edit-firstname").addClass("error").focus();
 				return;
 			}
-			if (is.empty(user.get('lastname'))) {
+			if (is.empty(user.lastname)) {
 				$("#edit-lastname").addClass("error").focus();
 				return;
 			}
-			if (is.empty(user.get('email'))) {
+			if (is.empty(user.email)) {
 				$("#edit-email").addClass("error").focus();
 				return;
 			}
