@@ -150,7 +150,6 @@ func getCommits(client *gogithub.Client, config *githubConfig) ([]githubCommit, 
 				var bd time.Time
 				if v.Commit != nil {
 					if v.Commit.Committer.Date != nil {
-						// d = fmt.Sprintf("%v", *v.Commit.Committer.Date)
 						d = v.Commit.Committer.Date.Format(commitTimeFormat)
 						bd = *v.Commit.Committer.Date
 					}
@@ -159,7 +158,7 @@ func getCommits(client *gogithub.Client, config *githubConfig) ([]githubCommit, 
 					}
 				}
 
-				// TODO(elliott5) remove this comment
+				// TODO(elliott5) remove this comment when it is clear we should not use committer
 				/*
 					var a, l string
 					if v.Committer != nil {

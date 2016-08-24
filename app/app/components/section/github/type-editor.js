@@ -112,10 +112,8 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 	getOwnerLists() {
 		this.set('busy', true);
 
-		//let self = this;
 		let owners = this.get('owners');
 		let thisOwner = this.get('config.owner');
-		//let page = this.get('page');
 
 		if (is.null(thisOwner) || is.undefined(thisOwner)) {
 			if (owners.length) {
@@ -128,19 +126,6 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
 		this.set('owner', thisOwner);
 
-		/*
-		this.get('sectionService').fetch(page, "repos", self.get('config'))
-			.then(function (lists) {
-				self.set('busy', false);
-				self.set('repos', lists);
-				self.getRepoLists();
-			}, function (error) { //jshint ignore: line
-				self.set('busy', false);
-				self.set('authenticated', false);
-				self.showNotification("Unable to fetch repositories");
-				console.log(error);
-			});
-		*/
 		this.getOrgReposLists();
 
 		if (is.undefined(this.get('initDateTimePicker'))) {
@@ -150,134 +135,6 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 		}
 
 	},
-
-	/*
-	getRepoLists() {
-		this.set('busy', true);
-
-		let repos = this.get('repos');
-		let thisRepo = this.get('config.repo');
-
-		if (is.null(repos) || is.undefined(repos) || repos.length === 0) {
-			this.set('noRepos', true);
-			return;
-		}
-
-		this.set('noRepos', false);
-
-		if (is.null(thisRepo) || is.undefined(thisRepo) || thisRepo.owner !== this.get('config.owner').name) {
-			if (repos.length) {
-				thisRepo = repos[0];
-				this.set('config.repo', thisRepo);
-			}
-		} else {
-			this.set('config.repo', repos.findBy('id', thisRepo.id));
-		}
-
-		this.set('repo', thisRepo);
-
-		this.getReportLists();
-	},
-
-	getReportLists() {
-		let reports = [];
-		reports[0] = {
-			id: "commitsData", // used as method for fetching Go data
-			name: "Commits on a branch"
-		};
-		reports[1] = {
-			id: "issuesData", // used as method for fetching Go data
-			name: "Issues"
-		};
-
-		this.set("reports", reports);
-
-		let thisReport = this.get('config.report');
-
-		if (is.null(thisReport) || is.undefined(thisReport)) {
-			thisReport = reports[0];
-			this.set('config.report', thisReport);
-		} else {
-			this.set('config.report', reports.findBy('id', thisReport.id));
-		}
-
-		this.set('report', thisReport);
-
-		this.renderSwitch(thisReport);
-
-	},
-
-	renderSwitch(thisReport) {
-
-		if (is.undefined(this.get('initDateTimePicker'))) {
-			$.datetimepicker.setLocale('en');
-			$('#branch-since').datetimepicker();
-			this.set('initDateTimePicker', "Done");
-		}
-
-		let bl = this.get('config.branchLines');
-		if (is.undefined(bl) || bl === "" || bl <= 0) {
-			this.set('config.branchLines', "30");
-		}
-
-		this.set('showCommits', false);
-		this.set('showLabels', false);
-		switch (thisReport.id) {
-		case 'commitsData':
-			this.set('showCommits', true);
-			this.getBranchLists();
-			break;
-		case 'issuesData':
-			this.set('showLabels', true);
-			this.getLabelLists();
-			break;
-		}
-	},
-
-	getBranchLists() {
-		this.set('busy', true);
-
-		let self = this;
-		let page = this.get('page');
-
-		this.get('sectionService').fetch(page, "branches", self.get('config'))
-			.then(function (lists) {
-				let savedLists = self.get('config.lists');
-				if (savedLists === null) {
-					savedLists = [];
-				}
-
-				if (lists.length > 0) {
-					let noIncluded = true;
-
-					lists.forEach(function (list) {
-						let included = false;
-						var saved;
-						if (is.not.undefined(savedLists)) {
-							saved = savedLists.findBy("id", list.id);
-						}
-						if (is.not.undefined(saved)) {
-							included = saved.included;
-							noIncluded = false;
-						}
-						list.included = included;
-					});
-
-					if (noIncluded) {
-						lists[0].included = true; // make the first entry the default
-					}
-				}
-
-				self.set('config.lists', lists);
-				self.set('busy', false);
-			}, function (error) { //jshint ignore: line
-				self.set('busy', false);
-				self.set('authenticated', false);
-				self.showNotification("Unable to fetch repository branches");
-				console.log(error);
-			});
-	},
-	*/
 
 	getOrgReposLists() {
 		this.set('busy', true);
@@ -323,72 +180,6 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 			});
 	},
 
-	/*
-	getLabelLists() {
-		this.set('busy', true);
-
-		let self = this;
-		let page = this.get('page');
-
-		let states = [];
-		states[0] = {
-			id: "open",
-			name: "Open Issues"
-		};
-		states[1] = {
-			id: "closed",
-			name: "Closed Issues"
-		};
-		states[2] = {
-			id: "all",
-			name: "All Issues"
-		};
-
-		this.set("states", states);
-
-		let thisState = this.get('config.state');
-
-		if (is.null(thisState) || is.undefined(thisState)) {
-			thisState = states[0];
-			this.set('config.state', thisState);
-		} else {
-			this.set('config.state', states.findBy('id', thisState.id));
-		}
-
-		this.set('state', thisState);
-
-		this.get('sectionService').fetch(page, "labels", self.get('config'))
-			.then(function (lists) {
-				let savedLists = self.get('config.lists');
-				if (savedLists === null) {
-					savedLists = [];
-				}
-
-				if (lists.length > 0) {
-					lists.forEach(function (list) {
-						var saved;
-						if (is.not.undefined(savedLists)) {
-							saved = savedLists.findBy("id", list.id);
-						}
-						let included = false;
-						if (is.not.undefined(saved)) {
-							included = saved.included;
-						}
-						list.included = included;
-					});
-				}
-
-				self.set('config.lists', lists);
-				self.set('busy', false);
-			}, function (error) { //jshint ignore: line
-				self.set('busy', false);
-				self.set('authenticated', false);
-				self.showNotification("Unable to fetch repository labels");
-				console.log(error);
-			});
-	},
-	*/
-
 	actions: {
 		isDirty() {
 			return this.get('isDirty');
@@ -398,26 +189,10 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 			let lists = this.get('config.lists');
 			let list = lists.findBy('id', id);
 
-			// restore the list of branches to the default state
-			//lists.forEach(function (lst) {
-			//	Ember.set(lst, 'included', false);
-			//});
-
 			if (list !== null) {
 				Ember.set(list, 'included', !list.included);
 			}
 		},
-
-		/*
-		onLabelCheckbox(id) {
-			let lists = this.get('config.lists');
-			let list = lists.findBy('id', id);
-
-			if (list !== null) {
-				Ember.set(list, 'included', !list.included);
-			}
-		},
-		*/
 
 		authStage2() {
 			let self = this;
@@ -458,21 +233,6 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 			this.set('config.lists', []);
 			this.getOwnerLists();
 		},
-
-		/*
-		onRepoChange(thisRepo) {
-			this.set('isDirty', true);
-			this.set('config.repo', thisRepo);
-			this.set('config.lists', []);
-			this.getRepoLists();
-		},
-
-		onReportChange(thisReport) {
-			this.set('isDirty', true);
-			this.set('config.report', thisReport);
-			this.getReportLists();
-		},
-		*/
 
 		onStateChange(thisState) {
 			this.set('config.state', thisState);

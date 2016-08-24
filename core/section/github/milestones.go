@@ -22,6 +22,7 @@ import (
 
 type githubMilestone struct {
 	Repo         string `json:"repo"`
+	Private      bool   `json:"private"`
 	Name         string `json:"name"`
 	URL          string `json:"url"`
 	IsOpen       bool   `json:"isopen"`
@@ -124,6 +125,7 @@ func getMilestones(client *gogithub.Client, config *githubConfig) ([]githubMiles
 
 							ret = append(ret, githubMilestone{
 								Repo:         repoName(rName),
+								Private:      orb.Private,
 								Name:         *v.Title,
 								URL:          *v.HTMLURL,
 								IsOpen:       *v.State == "open",
@@ -190,7 +192,7 @@ func renderMilestones(payload *githubRender, c *githubConfig) error {
 			}
 			if issuesClosed+issuesOpen > 0 {
 				payload.Milestones = append(payload.Milestones, githubMilestone{
-					Repo: rName, Name: noMilestone, IsOpen: true,
+					Repo: orb.Repo, Private: orb.Private, Name: noMilestone, IsOpen: true,
 					OpenIssues: issuesOpen, ClosedIssues: issuesClosed,
 				})
 			}

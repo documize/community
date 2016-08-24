@@ -45,7 +45,6 @@ type githubRender struct {
 	ClosedPRs        int                 `json:"closedPRs"`
 	AuthorStats      []githubAuthorStats `json:"authorStats"`
 	HasAuthorStats   bool                `json:"hasAuthorStats"`
-	//PullRequests   []githubPullRequest   `json:"pullRequests"`
 }
 
 type report struct {
@@ -72,7 +71,7 @@ type githubRepo struct {
 	Included bool   `json:"included"`
 	Owner    string `json:"owner"`
 	Repo     string `json:"repo"`
-	Private  bool   `json:"private"` // TODO review field use
+	Private  bool   `json:"private"`
 	URL      string `json:"url"`
 }
 
@@ -154,31 +153,7 @@ func (c *githubConfig) Clean() {
 	}
 	c.Since = (*c.SincePtr).Format(issuesTimeFormat)
 
-	// TEST DATA INSERTION DEBUG ONLY!
-	/*
-		debugList := map[string][]string{
-			"community":  []string{"master"},
-			"enterprise": []string{"master"},
-			"test-data":  []string{"master"},
-		}
-		c.Lists = make([]githubBranch, 0, len(debugList)*3)
-		for repo, branches := range debugList {
-			render := make([]githubBranch, len(branches))
-			for kc, vb := range branches {
-				render[kc] = githubBranch{
-					Owner:    "documize",
-					Repo:     repo,
-					Name:     vb,
-					ID:       fmt.Sprintf("%s:%s:%s", "documize", repo, vb),
-					Included: true,
-					URL:      "https://github.com/" + "documize" + "/" + repo + "/tree/" + vb,
-				}
-			}
-			c.Lists = append(c.Lists, render...)
-		}
-		c.Owner = "documize"
-	*/
-	c.ReportOrder = []string{tagSummaryData, tagMilestonesData, tagIssuesData /*, tagPullRequestData*/, tagCommitsData}
+	c.ReportOrder = []string{tagSummaryData, tagMilestonesData, tagIssuesData, tagCommitsData}
 	c.BranchLines = 100 // overide js default of 30 with maximum allowable in one call
 
 	sort.Stable(branchesToSort(c.Lists)) // get the configured branches in a sensible order for printing

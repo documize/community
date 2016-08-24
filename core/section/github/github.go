@@ -132,7 +132,6 @@ func (p *Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http
 
 		if listFailed(method, config, client, w) {
 
-			// TODO refactor - currently treats all remaining commands as triggering a report-set
 			gr := githubRender{}
 			for _, rep := range reports {
 				log.IfErr(rep.refresh(&gr, &config, client))

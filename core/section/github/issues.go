@@ -33,6 +33,7 @@ type githubIssue struct {
 	LabelNames []string      `json:"labelNames"`
 	IsOpen     bool          `json:"isopen"`
 	Repo       string        `json:"repo"`
+	Private    bool          `json:"private"`
 	Milestone  string        `json:"milestone"`
 }
 
@@ -121,14 +122,6 @@ func getIssues(client *gogithub.Client, config *githubConfig) ([]githubIssue, er
 						opts.Since = *config.SincePtr
 					}
 
-					/* TODO refactor to select certain lables
-					for _, lab := range config.Lists {
-						if lab.Included {
-							opts.Labels = append(opts.Labels, lab.Name)
-						}
-					}
-					*/
-
 					guff, _, err := client.Issues.ListByRepo(orb.Owner, orb.Repo, opts)
 
 					if err != nil {
@@ -164,6 +157,7 @@ func getIssues(client *gogithub.Client, config *githubConfig) ([]githubIssue, er
 							ID:         *v.Number,
 							IsOpen:     *v.State == "open",
 							Repo:       repoName(rName),
+							Private:    orb.Private,
 							Milestone:  ms,
 						})
 					}
