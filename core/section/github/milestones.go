@@ -193,7 +193,7 @@ func renderMilestones(payload *githubRender, c *githubConfig) error {
 			if issuesClosed+issuesOpen > 0 {
 				payload.Milestones = append(payload.Milestones, githubMilestone{
 					Repo: orb.Repo, Private: orb.Private, Name: noMilestone, IsOpen: true,
-					OpenIssues: issuesOpen, ClosedIssues: issuesClosed,
+					OpenIssues: issuesOpen, ClosedIssues: issuesClosed, URL: orb.URL,
 				})
 			}
 
