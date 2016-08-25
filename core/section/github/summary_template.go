@@ -31,7 +31,7 @@ const summaryTemplate = `
 		</h3>
 
 		<table class="label-table" style="width: 100%;">
-		    <thead>
+		    <thead class="github">
 		        <tr>
 		            <th class="title">Label</th>
 		            <th class="title">Count</th>
@@ -39,12 +39,12 @@ const summaryTemplate = `
 		        </tr>
 		    </thead>
 
-		    <tbody>
+		    <tbody class="github">
 			{{range $slabel := .SharedLabels}}
 		        <tr>
-		            <td style="width: 25%;">{{$slabel.Name}}</td>
-		            <td style="width: 25%;">{{$slabel.Count}}</td>
-		            <td style="width: 50%;">{{$slabel.Repos}}</td>
+		            <td style="width: 15%;">{{$slabel.Name}}</td>
+		            <td style="width: 15%;">{{$slabel.Count}}</td>
+		            <td style="width: 70%;">{{$slabel.Repos}}</td>
 		        </tr>
 			{{end}}
 		    </tbody>

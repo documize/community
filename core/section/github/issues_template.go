@@ -41,7 +41,7 @@ const (
 
 
 	<table class="issue-table" style="width: 100%;">
-	    <thead>
+	    <thead class="github">
 	        <tr>
 	            <th class="title">Repository</th>
 	            <th class="title">Milestone</th>
@@ -49,11 +49,11 @@ const (
 	        </tr>
 	    </thead>
 
-	    <tbody>
+	    <tbody class="github">
 		{{range $data := .Issues}}
 	        <tr>
-	            <td style="width: 20%;">{{$data.Repo}}</td>
-	            <td style="width: 20%;">{{$data.Milestone}}</td>
+	            <td style="width: 20%;"><span><a class="link" href="{{$data.URL}}">{{$data.Repo}}</a></span> {{if $data.Private}}(Private){{end}}</td>
+	            <td style="width: 20%;"><span class="milestone">{{$data.Milestone}}</span></td>
 	            <td style="width: 60%;">
 				<li class="github-commit-item">
 				<a class="link" href="{{$data.URL}}">

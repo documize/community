@@ -34,22 +34,22 @@ const (
 		<h3>Milestones: {{.ClosedMS}} closed, {{.OpenMS}} open</h3>
 		<div class="github-board">
 		<table class="milestone-table" style="width: 100%;">
-		    <thead>
+		    <thead class="github">
 		        <tr>
 		            <th class="title">Repository</th>
 		            <th class="title">Milestone</th>
 		            <th class="title">Issue Progress</th>
-					<th class="title">X</th>
+					<th class="title"></th>
 		        </tr>
 		    </thead>
 
-		    <tbody>
+		    <tbody class="github">
 			{{range $data := .Milestones}}
 		        <tr>
-		            <td style="width: 25%;">{{$data.Repo}} </td>
-		            <td style="width: 20%;">{{$data.Name}} <br>
+		            <td style="width: 15%;"><span><a class="link" href="{{$data.URL}}">{{$data.Repo}}</a></span> {{if $data.Private}}(Private){{end}}</td>
+		            <td style="width: 30%;"><span class="milestone">{{$data.Name}}</span><br>
 						{{if $data.IsMilestone}}
-							{{$data.DueDate}} Last updated {{$data.UpdatedAt}}.
+							{{$data.DueDate}} <span><img src="assets/img/github/icon-last-updated.png" alt="Last Updated">Last updated {{$data.UpdatedAt}}</span>
 						{{end}}
 					</td>
 		            <td style="width: 45%;">
