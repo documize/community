@@ -26,7 +26,7 @@ export default Ember.Service.extend({
 			method: "GET"
 		}).then((response) => {
 			let data = this.get('store').normalize('document', response);
-			return this.get('store').push({ data: data });
+			return this.get('store').push(data);
 		});
 	},
 
@@ -45,7 +45,7 @@ export default Ember.Service.extend({
 
 			documents = response.map((doc) => {
 				let data = this.get('store').normalize('document', doc);
-				return this.get('store').push({ data: data });
+				return this.get('store').push(data);
 			});
 
 			return documents;
@@ -63,7 +63,7 @@ export default Ember.Service.extend({
 
 			documents = response.map((doc) => {
 				let data = this.get('store').normalize('document', doc);
-				return this.get('store').push({ data: data });
+				return this.get('store').push(data);
 			});
 
 			return documents;
@@ -203,7 +203,7 @@ export default Ember.Service.extend({
 			let data = [];
 			data = response.map((obj) => {
 				let data = this.get('store').normalize('page', obj);
-				return this.get('store').push({ data: data });
+				return this.get('store').push(data);
 			});
 
 			return data;
@@ -220,7 +220,7 @@ export default Ember.Service.extend({
 
 			pages = response.map((page) => {
 				let data = this.get('store').normalize('page', page);
-				return this.get('store').push({ data: data });
+				return this.get('store').push(data);
 			});
 
 			return pages;
@@ -234,7 +234,7 @@ export default Ember.Service.extend({
 			method: 'GET'
 		}).then((response) => {
 			let data = this.get('store').normalize('page', response);
-			return this.get('store').push({ data: data });
+			return this.get('store').push(data);
 		});
 	},
 
@@ -245,7 +245,7 @@ export default Ember.Service.extend({
 			method: 'GET'
 		}).then((response) => {
 			let data = this.get('store').normalize('page-meta', response);
-			return this.get('store').push({ data: data });
+			return this.get('store').push(data);
 		});
 	},
 
@@ -263,7 +263,7 @@ export default Ember.Service.extend({
 
 			data = response.map((obj) => {
 				let data = this.get('store').normalize('attachment', obj);
-				return this.get('store').push({ data: data });
+				return this.get('store').push(data);
 			});
 
 			return data;

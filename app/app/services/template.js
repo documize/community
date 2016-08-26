@@ -33,7 +33,7 @@ export default Ember.Service.extend({
 
 		return this.get('ajax').post(url).then((doc) => {
 			let data = this.get('store').normalize('document', doc);
-			return this.get('store').push({ data: data });
+			return this.get('store').push(data);
 		});
 	},
 
@@ -50,7 +50,7 @@ export default Ember.Service.extend({
 
 			templates = response.map((template) => {
 				let data = this.get('store').normalize('template', template);
-				return this.get('store').push({ data: data });
+				return this.get('store').push(data);
 			});
 
 			return templates;

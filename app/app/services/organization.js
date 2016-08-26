@@ -27,7 +27,7 @@ export default Ember.Service.extend({
 			method: 'GET'
 		}).then((response) => {
 			let data = this.get('store').normalize('organization', response);
-			return this.get('store').push({ data: data });
+			return this.get('store').push(data);
 		});
 	},
 

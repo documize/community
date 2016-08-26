@@ -30,5 +30,7 @@ export default Model.extend({
 	selected: attr('boolean', { defaultValue: false }),
 	slug: Ember.computed('name', function () {
 		return stringUtil.makeSlug(this.get('name'));
-	})
+	}),
+	created: attr(),
+	revised: attr()
 });

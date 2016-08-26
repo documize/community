@@ -1,5 +1,4 @@
 import Ember from 'ember';
-import models from '../../../utils/model';
 import NotifierMixin from '../../../mixins/notifier';
 
 export default Ember.Controller.extend(NotifierMixin, {
@@ -11,11 +10,6 @@ export default Ember.Controller.extend(NotifierMixin, {
 		},
 
 		onAddSection(section) {
-			let self = this;
-			debugger;
-
-			console.log(section.get('contentType'));
-
 			this.audit.record("added-section");
 			this.audit.record("added-section-" + section.get('contentType'));
 
@@ -29,7 +23,7 @@ export default Ember.Controller.extend(NotifierMixin, {
 			};
 
 			let data = this.get('store').normalize('page', page);
-			let pageData = this.get('store').push({ data: data });
+			let pageData = this.get('store').push(data);
 
 			let meta = {
 				documentId: this.get('model.document.id'),
@@ -37,8 +31,8 @@ export default Ember.Controller.extend(NotifierMixin, {
 				config: ""
 			};
 
-			let metaData = this.get('store').normalize('page-meta', meta);
-			let pageMetaData = this.get('store').push({ data: metaData });
+			let pageMeta = this.get('store').normalize('page-meta', meta);
+			let pageMetaData = this.get('store').push(pageMeta);
 
 			let model = {
 				page: pageData,

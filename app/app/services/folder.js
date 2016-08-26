@@ -35,7 +35,7 @@ export default BaseService.extend({
 			data: JSON.stringify(folder)
 		}).then((folder) => {
 			let data = this.get('store').normalize('folder', folder);
-			return this.get('store').push({ data: data });
+			return this.get('store').push(data);
 		});
 	},
 
@@ -45,7 +45,7 @@ export default BaseService.extend({
 			method: 'GET'
 		}).then((folder) => {
 			let data = this.get('store').normalize('folder', folder);
-			return this.get('store').push({ data: data });
+			return this.get('store').push(data);
 		});
 	},
 
@@ -115,7 +115,7 @@ export default BaseService.extend({
 
 			data = response.map((obj) => {
 				let data = this.get('store').normalize('folder', obj);
-				return this.get('store').push({ data: data });
+				return this.get('store').push(data);
 			});
 
 			return data;
@@ -132,7 +132,7 @@ export default BaseService.extend({
 
 			data = response.map((obj) => {
 				let data = this.get('store').normalize('folder-permission', obj);
-				return this.get('store').push({ data: data });
+				return this.get('store').push(data);
 			});
 
 			return data;

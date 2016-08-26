@@ -30,7 +30,7 @@ export default BaseService.extend({
 
 			data = response.map((obj) => {
 				let data = this.get('store').normalize('section', obj);
-				return this.get('store').push({ data: data });
+				return this.get('store').push(data);
 			});
 
 			return data;
@@ -62,7 +62,7 @@ export default BaseService.extend({
 			if (is.not.null(response) && is.array(response) && response.length > 0) {
 				pages = response.map((page) => {
 					let data = this.get('store').normalize('page', page);
-					return this.get('store').push({ data: data });
+					return this.get('store').push(data);
 				});
 			}
 

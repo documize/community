@@ -30,7 +30,7 @@ export default Ember.Service.extend({
 			contentType: 'json'
 		}).then((response) => {
 			let data = this.get('store').normalize('user', response);
-			return this.get('store').push({ data: data });
+			return this.get('store').push(data);
 		});
 	},
 
@@ -42,7 +42,7 @@ export default Ember.Service.extend({
 			type: 'GET'
 		}).then((response) => {
 			let data = this.get('store').normalize('user', response);
-			return this.get('store').push({ data: data });
+			return this.get('store').push(data);
 		});
 	},
 
@@ -51,7 +51,7 @@ export default Ember.Service.extend({
 		return this.get('ajax').request(`users`).then((response) => {
 			return response.map((obj) => {
 				let data = this.get('store').normalize('user', obj);
-				return this.get('store').push({ data: data });
+				return this.get('store').push(data);
 			});
 		});
 	},
@@ -67,7 +67,7 @@ export default Ember.Service.extend({
 
 			data = response.map((obj) => {
 				let data = this.get('store').normalize('user', obj);
-				return this.get('store').push({ data: data });
+				return this.get('store').push(data);
 			});
 
 			return data;

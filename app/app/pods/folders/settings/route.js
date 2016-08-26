@@ -10,7 +10,6 @@
 // https://documize.com
 
 import Ember from 'ember';
-import models from '../../../utils/model';
 import NotifierMixin from '../../../mixins/notifier';
 
 const {
@@ -34,7 +33,6 @@ export default Ember.Route.extend(NotifierMixin, {
 	},
 
 	setupController(controller, model) {
-		var self = this;
 		this.folder = model;
 		controller.set('model', model);
 
@@ -96,7 +94,7 @@ export default Ember.Route.extend(NotifierMixin, {
 
 				folderPermissions.map((permission) => {
 					let data = this.get('store').normalize('folder-permission', permission);
-					return this.get('store').push({ data: data });
+					return this.get('store').push(data);
 				});
 
 				controller.set('permissions', folderPermissions.sortBy('fullname'));
