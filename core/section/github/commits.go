@@ -258,7 +258,7 @@ func getCommits(client *gogithub.Client, config *githubConfig) ([]githubCommit, 
 		sort.Strings(v.Repos)
 		retStats = append(retStats, v)
 	}
-	sort.Stable(asToSort(retStats))
+	sort.Sort(asToSort(retStats))
 
 	return overall, retStats, nil
 
@@ -302,7 +302,7 @@ func renderCommits(payload *githubRender, c *githubConfig) error {
 		}
 	}
 	payload.HasAuthorStats = len(payload.AuthorStats) > 0
-	sort.Stable(asToSort(payload.AuthorStats))
+	sort.Sort(asToSort(payload.AuthorStats))
 
 	return nil
 }

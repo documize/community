@@ -23,7 +23,6 @@ import (
 
 type githubRender struct {
 	Config           githubConfig        `json:"config"`
-	Repo             githubRepo          `json:"repo"`
 	List             []githubBranch      `json:"list"`
 	ShowList         bool                `json:"showList"`
 	ShowIssueNumbers bool                `json:"showIssueNumbers"`
@@ -55,24 +54,9 @@ type report struct {
 
 var reports = make(map[string]report)
 
-type githubReport struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
-}
-
 type githubOwner struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
-}
-
-type githubRepo struct {
-	ID       string `json:"id"`
-	Name     string `json:"name"`
-	Included bool   `json:"included"`
-	Owner    string `json:"owner"`
-	Repo     string `json:"repo"`
-	Private  bool   `json:"private"`
-	URL      string `json:"url"`
 }
 
 type githubBranch struct {
@@ -102,35 +86,20 @@ type githubConfig struct {
 	UserID      string         `json:"userId"`
 	PageID      string         `json:"pageId"`
 	Owner       string         `json:"owner_name"`
-	Repo        string         `json:"repo_name"`
-	Branch      string         `json:"branch"`
-	BranchURL   string         `json:"branchURL"`
 	BranchSince string         `json:"branchSince,omitempty"`
 	SincePtr    *time.Time     `json:"-"`
-	Since       string         `json:"since"`
+	Since       string         `json:"-"`
 	BranchLines int            `json:"branchLines,omitempty,string"`
 	OwnerInfo   githubOwner    `json:"owner"`
-	RepoInfo    githubRepo     `json:"repo"`
-	ReportInfo  githubReport   `json:"report"`
 	ClientID    string         `json:"clientId"`
 	CallbackURL string         `json:"callbackUrl"`
 	Lists       []githubBranch `json:"lists,omitempty"`
-	IssueState  githubReport   `json:"state,omitempty"`
-	IssuesText  string         `json:"issues,omitempty"`
-	ReportOrder []string       `json:"reportOrder,omitempty"`
-	DateMessage string         `json:"dateMessage,omitempty"`
+	ReportOrder []string       `json:"-"`
+	DateMessage string         `json:"-"`
 }
 
 func (c *githubConfig) Clean() {
 	c.Owner = c.OwnerInfo.Name
-	c.Repo = c.RepoInfo.Repo
-	for _, l := range c.Lists {
-		if l.Included {
-			c.Branch = l.Name
-			c.BranchURL = l.URL
-			break
-		}
-	}
 	if len(c.BranchSince) >= len("yyyy/mm/dd hh:ss") {
 		var since time.Time
 		tt := []byte("yyyy-mm-ddThh:mm:00Z")
@@ -154,9 +123,9 @@ func (c *githubConfig) Clean() {
 	c.Since = (*c.SincePtr).Format(issuesTimeFormat)
 
 	c.ReportOrder = []string{tagSummaryData, tagMilestonesData, tagIssuesData, tagCommitsData}
-	c.BranchLines = 100 // overide js default of 30 with maximum allowable in one call
+	c.BranchLines = 100 // overide  any existing value with maximum allowable in one call
 
-	sort.Stable(branchesToSort(c.Lists)) // get the configured branches in a sensible order for printing
+	sort.Sort(branchesToSort(c.Lists)) // get the configured branches in a sensible order for display
 
 	lastItem := 0
 	for i := range c.Lists {

@@ -21,11 +21,6 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 	authenticated: false,
 	config: {},
 	owners: null,
-	repos: null,
-	noRepos: false,
-	showCommits: false,
-	showIssueNum: false,
-	showLabels: false,
 
 	didReceiveAttrs() {
 		let self = this;
@@ -41,16 +36,9 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 						callbackUrl: cfg.authorizationCallbackURL,
 						owner: null,
 						owner_name: "",
-						repo: null,
-						repo_name: "",
-						report: null,
 						lists: [],
-						branch: "",
-						branchURL: "",
 						branchSince: "",
-						branchLines: "30",
-						state: null,
-						issues: "",
+						branchLines: "100",
 						userId: "",
 						pageId: page.get('id'),
 					};
@@ -58,13 +46,8 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 					try {
 						let metaConfig = JSON.parse(self.get('meta.config'));
 						config.owner = metaConfig.owner;
-						config.repo = metaConfig.repo;
-						config.report = metaConfig.report;
 						config.lists = metaConfig.lists;
 						config.branchSince = metaConfig.branchSince;
-						config.branchLines = metaConfig.branchLines;
-						config.state = metaConfig.state;
-						config.issues = metaConfig.issues;
 						config.userId = metaConfig.userId;
 						config.pageId = metaConfig.pageId;
 					} catch (e) {}
@@ -175,7 +158,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 			}, function (error) { //jshint ignore: line
 				self.set('busy', false);
 				self.set('authenticated', false);
-				self.showNotification("Unable to fetch repository branches");
+				self.showNotification("Unable to fetch repositories");
 				console.log(error);
 			});
 	},
@@ -229,7 +212,6 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 		onOwnerChange(thisOwner) {
 			this.set('isDirty', true);
 			this.set('config.owner', thisOwner);
-			this.set('config.repos', []);
 			this.set('config.lists', []);
 			this.getOwnerLists();
 		},
@@ -245,15 +227,6 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 		onAction(title) {
 			this.set('busy', true);
 
-			let thisLines = this.get('config.branchLines');
-			if (is.undefined(thisLines) || thisLines === "") {
-				this.set('config.branchLines', 30);
-			} else if (thisLines < 1) {
-				this.set('config.branchLines', 1);
-			} else if (thisLines > 100) {
-				this.set('config.branchLines', 100);
-			}
-
 			let self = this;
 			let page = this.get('page');
 			let meta = this.get('meta');
@@ -262,8 +235,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 			meta.set('config', JSON.stringify(this.get('config')));
 			meta.set('externalSource', true);
 
-			let thisReport = this.get('config.report');
-			this.get('sectionService').fetch(page, thisReport.id, this.get('config'))
+			this.get('sectionService').fetch(page, 'content', this.get('config'))
 				.then(function (response) {
 					meta.set('rawBody', JSON.stringify(response));
 					self.set('busy', false);

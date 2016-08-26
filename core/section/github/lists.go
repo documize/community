@@ -52,7 +52,6 @@ func listFailed(method string, config githubConfig, client *gogithub.Client, w h
 
 		provider.WriteJSON(w, owners)
 
-
 	case "orgrepos":
 
 		var render []githubBranch
@@ -96,6 +95,9 @@ func listFailed(method string, config githubConfig, client *gogithub.Client, w h
 
 		provider.WriteJSON(w, render)
 
+	case "content":
+
+		provider.WriteJSON(w, refreshReportData(&config, client))
 
 	default:
 		return true // failed to get a list

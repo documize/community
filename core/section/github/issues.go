@@ -168,7 +168,7 @@ func getIssues(client *gogithub.Client, config *githubConfig) ([]githubIssue, er
 
 	}
 
-	sort.Stable(issuesToSort(ret))
+	sort.Sort(issuesToSort(ret))
 
 	return ret, nil
 
@@ -212,7 +212,7 @@ func refreshIssues(gr *githubRender, config *githubConfig, client *gogithub.Clie
 			gr.SharedLabels = append(gr.SharedLabels, thisLab)
 		}
 	}
-	sort.Stable(sharedLabelsSort(gr.SharedLabels))
+	sort.Sort(sharedLabelsSort(gr.SharedLabels))
 	gr.HasSharedLabels = len(gr.SharedLabels) > 0
 
 	return nil

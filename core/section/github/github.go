@@ -18,9 +18,12 @@ import (
 	"html/template"
 	"io/ioutil"
 	"net/http"
+	"strings"
 
 	"github.com/documize/community/core/log"
 	"github.com/documize/community/core/section/provider"
+
+	gogithub "github.com/google/go-github/github"
 )
 
 // TODO find a smaller image than the one below
@@ -157,13 +160,9 @@ func (p *Provider) Refresh(ctx *provider.Context, configJSON, data string) strin
 	c.Clean()
 	c.Token = ctx.GetSecrets("token")
 
-	var gr = githubRender{}
 	client := p.githubClient(&c)
-	for _, rep := range reports {
-		log.IfErr(rep.refresh(&gr, &c, client))
-	}
 
-	byts, err := json.Marshal(&gr)
+	byts, err := json.Marshal(refreshReportData(&c, client))
 	if err != nil {
 		log.Error("unable to marshall github data", err)
 		return "internal configuration error '" + err.Error() + "'"
@@ -171,6 +170,14 @@ func (p *Provider) Refresh(ctx *provider.Context, configJSON, data string) strin
 
 	return string(byts)
 
+}
+
+func refreshReportData(c *githubConfig, client *gogithub.Client) *githubRender {
+	var gr = githubRender{}
+	for _, rep := range reports {
+		log.IfErr(rep.refresh(&gr, c, client))
+	}
+	return &gr
 }
 
 // Render ... just returns the data given, suitably formatted
@@ -190,15 +197,20 @@ func (p *Provider) Render(ctx *provider.Context, config, data string) string {
 	c.Clean()
 	c.Token = ctx.GetSecrets("token")
 
-	err = json.Unmarshal([]byte(data), &payload)
+	data = strings.TrimSpace(data)
+	if len(data) == 0 {
+		// TODO review why this error occurs & if it should be reported - seems to occur for new sections
+		// log.ErrorString(fmt.Sprintf("Rendered empty github JSON payload as '' for owner %s repos %#v", c.Owner, c.Lists))
+		return ""
+	}
 
+	err = json.Unmarshal([]byte(data), &payload)
 	if err != nil {
 		log.Error("unable to unmarshall github data", err)
 		return "Please delete and recreate this Github section."
 	}
 
 	payload.Config = c
-	payload.Repo = c.RepoInfo
 	payload.Limit = c.BranchLines
 	payload.List = c.Lists
 

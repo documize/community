@@ -15,16 +15,10 @@
 						<div class="tip">Select organization or username whose repositories you want to show</div>
 						{{ui-select id="owners-dropdown" content=owners action=(action 'onOwnerChange') optionValuePath="id" optionLabelPath="name" selection=config.owner}}
 				</div>
-				{{#if noRepos}}
-					<div class="input-control">
-						<div class="color-error">You have no repositories.</div>
-					</div>
-				{{else}}
-					<div class="input-control">
-						<label>Show items since (default 7 days ago)</label>
-						{{input id="branch-since" value=config.branchSince type="text" }}<br>
-					</div>
-				{{/if}}
+				<div class="input-control">
+					<label>Show items since (default 7 days ago)</label>
+					{{input id="branch-since" value=config.branchSince type="text" }}<br>
+				</div>
 			</div>
 		</div>
 

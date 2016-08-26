@@ -201,7 +201,7 @@ func renderMilestones(payload *githubRender, c *githubConfig) error {
 		}
 	}
 
-	sort.Stable(milestonesToSort(payload.Milestones))
+	sort.Sort(milestonesToSort(payload.Milestones))
 
 	return nil
 }
