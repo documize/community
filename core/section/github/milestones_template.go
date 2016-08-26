@@ -31,14 +31,15 @@ const (
 <div class="section-github-render">
 
 	{{if .HasMilestones}}
-		<h3>Milestones: {{.ClosedMS}} closed, {{.OpenMS}} open</h3>
+		<h3>Milestones</h3>
+		<p>There are {{.ClosedMS}} closed and {{.OpenMS}} open</p>
 		<div class="github-board">
 		<table class="milestone-table" style="width: 100%;">
 		    <thead class="github">
 		        <tr>
 		            <th class="title">Repository</th>
 		            <th class="title">Milestone</th>
-		            <th class="title">Issue Progress</th>
+		            <th class="title">Progress</th>
 					<th class="title"></th>
 		        </tr>
 		    </thead>
@@ -46,13 +47,18 @@ const (
 		    <tbody class="github">
 			{{range $data := .Milestones}}
 		        <tr>
-		            <td style="width: 15%;"><span><a class="link" href="{{$data.URL}}">{{$data.Repo}}</a></span> {{if $data.Private}}(Private){{end}}</td>
-		            <td style="width: 30%;"><span class="milestone">{{$data.Name}}</span><br>
+		            <td style="width: 30%;">
+						<span><a class="link" href="{{$data.URL}}">{{$data.Repo}}</a></span>
+						{{if $data.Private}}<span class="label-private">Private</span>{{end}}
+					</td>
+		            <td style="width: 35%;">
+					<span class="milestone">{{$data.Name}}</span><br>
 						{{if $data.IsMilestone}}
-							{{$data.DueDate}} <span><img src="assets/img/github/icon-last-updated.png" alt="Last Updated">Last updated {{$data.UpdatedAt}}</span>
+							<span class="date-meta">{{$data.DueDate}}</span>
+							<span class="date-meta"><img src="assets/img/github/icon-last-updated.png" alt="Last Updated">Last updated {{$data.UpdatedAt}}</span>
 						{{end}}
 					</td>
-		            <td style="width: 45%;">
+		            <td style="width: 30%;">
 						{{if $data.IsMilestone}}
 							<progress value="{{$data.Progress}}" max="100"></progress> <br>
 							{{$data.CompleteMsg}} complete {{$data.OpenIssues}} open {{$data.ClosedIssues}} closed
@@ -60,7 +66,7 @@ const (
 							{{$data.OpenIssues}} open {{$data.ClosedIssues}} closed
 						{{end}}
 					</td>
-					<td style="width: 10%;">
+					<td style="width: 5%;">
 						{{if $data.IsOpen}}
 							` + openMSsvg + `
 						{{else}}

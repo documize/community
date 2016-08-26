@@ -16,7 +16,7 @@ const commitsTemplate = `
 
 {{if .HasAuthorStats}}
 
-	<h3>Contributor activity since {{.Config.Since}}{{.Config.DateMessage}}</h3>
+	<h3>Contributor activity</h3>
 	<table class="contributor-table" style="width: 100%;">
 		<thead class="github">
 			<tr>
@@ -50,24 +50,21 @@ const commitsTemplate = `
 {{end}}
 
 {{if .HasCommits}}
-	<h3>Commits activity since {{.Config.Since}}{{.Config.DateMessage}}</h3>
+	<h3>Commits activity</h3>
 
 	<table class="contributor-table" style="width: 100%;">
 		<thead class="github">
 			<tr>
-				<th class="title">Repository:Branch</th>
-				<th class="title">Date</th>
 				<th class="title">Contributor</th>
-				<th class="title">Commits</th>
+				<th class="title">Commits / Date</th>
+				<th class="title">Repository:Branch</th>
 			</tr>
 		</thead>
 
 		<tbody class="github">
 		{{range $commit := .BranchCommits}}
 			<tr>
-				<td style="width: 20%;">{{if $commit.ShowBranch}}{{$commit.Repo}}:{{$commit.Branch}}{{end}}</td>
-				<td style="width: 15%;">{{if $commit.ShowDate}}{{$commit.Date}}{{end}}</td>
-				<td style="width: 15%;">
+				<td style="width: 20%;">
 					{{if $commit.ShowUser}}
 					<div class="github-avatar">
 						<img alt="@{{$commit.Name}}" src="{{$commit.Avatar}}" height="36" width="36">
@@ -75,7 +72,11 @@ const commitsTemplate = `
 					 {{$commit.Name}}
 					{{end}}
 				</td>
-				<td style="width: 50%;"><a class="link" href="{{$commit.URL}}">{{$commit.Message}}</td>
+				<td style="width: 40%;">
+					<a class="link" href="{{$commit.URL}}">{{$commit.Message}}</a><br>
+					<span class="date-meta">{{if $commit.ShowDate}}{{$commit.Date}}{{end}}</span>
+				</td>
+				<td style="width: 30%;">{{if $commit.ShowBranch}}{{$commit.Repo}}:{{$commit.Branch}}{{end}}</td>
 			</tr>
 		{{end}}
 		</tbody>

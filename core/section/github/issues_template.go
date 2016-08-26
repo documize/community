@@ -25,7 +25,8 @@ const (
 	issuesTemplate = `
 <div class="section-github-render">
 {{if .HasIssues}}
-	<h3>Issues: {{.ClosedIssues}} closed, {{.OpenIssues}} open</h3>
+	<h3>Issues</h3>
+	<p>There are {{.ClosedIssues}} closed and {{.OpenIssues}} open</p>
 	<p>
 		{{if .ShowList}}
 			Including issues labelled
@@ -43,35 +44,36 @@ const (
 	<table class="issue-table" style="width: 100%;">
 	    <thead class="github">
 	        <tr>
-	            <th class="title">Repository</th>
-	            <th class="title">Milestone</th>
-	            <th class="title">Issues</th>
+				<th class="title">Repository / Milestone</th>
+				<th class="title">Issues</th>
 	        </tr>
 	    </thead>
 
 	    <tbody class="github">
 		{{range $data := .Issues}}
 	        <tr>
-	            <td style="width: 20%;"><span><a class="link" href="{{$data.URL}}">{{$data.Repo}}</a></span> {{if $data.Private}}(Private){{end}}</td>
-	            <td style="width: 20%;"><span class="milestone">{{$data.Milestone}}</span></td>
-	            <td style="width: 60%;">
-				<li class="github-commit-item">
-				<a class="link" href="{{$data.URL}}">
-					<div class="issue-avatar">
-						{{if $data.IsOpen}}
-							` + openIsvg + `
-						{{else}}
-							` + closedIsvg + `
-						{{end}}
-					</div>
-					<div class="github-commit-body">
-						<div class="github-commit-title"><span class="label-name">{{$data.Message}}</span> {{$data.Labels}}</div>
-						<div class="github-commit-meta">
-							#{{$data.ID}} opened on {{$data.Date}} by {{$data.Name}}, last updated {{$data.Updated}}
+	            <td style="width: 30%;">
+					<span><a class="link" href="{{$data.URL}}">{{$data.Repo}}</a></span>{{if $data.Private}}<span class="label-private">Private</span>{{end}}</br>
+					<span class="milestone">{{$data.Milestone}}</span>
+				</td>
+				<td style="width: 70%;">
+					<li class="github-commit-item">
+					<a class="link" href="{{$data.URL}}">
+						<div class="issue-avatar">
+							{{if $data.IsOpen}}
+								` + openIsvg + `
+							{{else}}
+								` + closedIsvg + `
+							{{end}}
 						</div>
-					</div>
-				</a>
-				</li>
+						<div class="github-commit-body">
+							<div class="github-commit-title"><span class="label-name">{{$data.Message}}</span> {{$data.Labels}}</div>
+							<div class="github-commit-meta">
+								#{{$data.ID}} opened on {{$data.Date}} by {{$data.Name}}, last updated {{$data.Updated}}
+							</div>
+						</div>
+					</a>
+					</li>
 				</td>
 	        </tr>
 		{{end}}
