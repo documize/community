@@ -24,10 +24,10 @@ export default Ember.Component.extend({
 
 	didInitAttrs() {
 		if (this.get("session.authenticated")) {
-			// this.get("session.session.content.authenticated.user.accounts").forEach((account) => {
-			// 	// TODO: do not mutate account.active here
-			// 	account.active = account.orgId === this.get("appMeta.orgId");
-			// });
+			this.get("session.session.content.authenticated.user.accounts").forEach((account) => {
+				// TODO: do not mutate account.active here
+				account.active = account.orgId === this.get("appMeta.orgId");
+			});
 		}
 	},
 
