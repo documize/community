@@ -15,7 +15,7 @@ export default Ember.Controller.extend(NotifierMixin, {
 
 			let page = {
 				documentId: this.get('model.document.id'),
-				title: `${section.get('contentType')} Section`,
+				title: `${section.get('title')} Section`,
 				level: 1,
 				sequence: 2048,
 				body: "",
