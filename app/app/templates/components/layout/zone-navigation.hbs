@@ -50,7 +50,7 @@
                 <li class="item">
                     {{#link-to 'profile'}}Profile{{/link-to}}
                 </li>
-                {{#if session.isAdmin}}
+                {{#if session.session.content.authenticated.user.admin}}
                     <li class="item">
                         {{#link-to 'customize.general'}}Settings{{/link-to}}
                     </li>

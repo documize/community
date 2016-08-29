@@ -17,9 +17,9 @@ const {
 } = Ember;
 
 export default Ember.Component.extend({
-	folderService: Ember.inject.service('folder'),
+	folderService: service('folder'),
 	folder: null,
-	appMeta: Ember.inject.service(),
+	appMeta: service(),
 	session: service(),
 
 	didInitAttrs() {
