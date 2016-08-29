@@ -84,11 +84,13 @@ export default Ember.Route.extend(NotifierMixin, {
 				permissions.forEach((permission, index) => { /* jshint ignore:line */
 					var folderPermission = folderPermissions.findBy('userId', permission.get('userId'));
 					if (is.not.undefined(folderPermission)) {
-						Ember.set(folderPermission, 'orgId', permission.get('orgId'));
-						Ember.set(folderPermission, 'folderId', permission.get('folderId'));
-						Ember.set(folderPermission, 'canEdit', permission.get('canEdit'));
-						Ember.set(folderPermission, 'canView', permission.get('canView'));
-						Ember.set(folderPermission, 'canViewPrevious', permission.get('canView'));
+						Ember.setProperties(folderPermission, {
+							orgId: permission.get('orgId'),
+							folderId: permission.get('folderId'),
+							canEdit: permission.get('canEdit'),
+							canView: permission.get('canView'),
+							canViewPrevious: permission.get('canView')
+						});
 					}
 				});
 
