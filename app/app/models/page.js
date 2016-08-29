@@ -12,7 +12,7 @@
 import Model from 'ember-data/model';
 import attr from 'ember-data/attr';
 import Ember from 'ember';
-// import { belongsTo, hasMany } from 'ember-data/relationships';
+// import { hasMany } from 'ember-data/relationships';
 
 export default Model.extend({
 	documentId: attr('string'),
@@ -25,6 +25,7 @@ export default Model.extend({
 	body: attr('string'),
 	rawBody: attr('string'),
 	meta: attr(),
+	// meta: hasMany('page-meta'),
 
 	tagName: Ember.computed('level', function () {
 		return "h" + this.get('level');

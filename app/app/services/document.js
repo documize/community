@@ -124,6 +124,7 @@ export default Ember.Service.extend({
 	updatePage: function (documentId, pageId, payload, skipRevision) {
 		var revision = skipRevision ? "?r=true" : "?r=false";
 		let url = `documents/${documentId}/pages/${pageId}${revision}`;
+		Ember.set(payload.meta, 'id', parseInt(payload.meta.id));
 
 		return this.get('ajax').request(url, {
 			method: 'PUT',

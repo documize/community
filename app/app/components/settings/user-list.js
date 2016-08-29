@@ -112,7 +112,6 @@ export default Ember.Component.extend({
 		save() {
 			let user = this.get('editUser');
 			let password = this.get('password');
-			debugger;
 
 			if (is.empty(user.firstname)) {
 				$("#edit-firstname").addClass("error").focus();
