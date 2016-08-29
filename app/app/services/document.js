@@ -73,12 +73,10 @@ export default Ember.Service.extend({
 	// saveDocument updates an existing document record.
 	save(doc) {
 		let id = doc.get('id');
-		let data = doc.toJSON();
-		Ember.set(data, 'id', id)
 
 		return this.get('ajax').request(`documents/${id}`, {
 			method: 'PUT',
-			data: JSON.stringify(data)
+			data: JSON.stringify(doc)
 		});
 	},
 

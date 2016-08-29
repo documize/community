@@ -24,7 +24,7 @@ export default Model.extend({
 	folderId: attr('string'),
 	userId: attr('string'),
 	tags: attr('string'),
-	template: attr('string'),
+	template: attr('boolean'),
 
 	// client-side property
 	selected: attr('boolean', { defaultValue: false }),
