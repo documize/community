@@ -22,8 +22,8 @@ const (
 `
 	closedMSsvg = `
 <span title="Closed milestone">
-	<svg height="8" width="7" version="1.1" viewBox="0 0 14 16">
-		` + rawMSsvg + `
+	<svg aria-hidden="true" class="octicon octicon-check" height="16" version="1.1" viewBox="0 0 12 16" width="12">
+		<path d="M12 5l-8 8-4-4 1.5-1.5L4 10l6.5-6.5z"></path>
 	</svg>
 </span>
 `
