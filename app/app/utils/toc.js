@@ -94,24 +94,24 @@ function getState(toc, page) {
 
 		if (index3 !== -1) {
 			for (var i3 = index3; i3 < toc.length; i3++) {
-				if (toc[i3].level < page.level) {
+				if (toc[i3].get('level') < page.get('level')) {
 					break;
 				}
 
-				if (page.level === toc[i3].level) {
+				if (page.get('level') === toc[i3].get('level')) {
 					state.tocTools.downTarget = toc[i3].id;
 					break;
 				}
 			}
 		}
 
-		if (page.level > downPage.level) {
+		if (page.get('level') > downPage.get('level')) {
 			state.tocTools.downTarget = '';
 		}
 	}
 
 	// can we outdent?
-	state.tocTools.allowOutdent = page.level > 1;
+	state.tocTools.allowOutdent = page.get('level') > 1;
 
 	state.upDisabled = state.tocTools.upTarget === '';
 	state.downDisabled = state.tocTools.downTarget === '';
