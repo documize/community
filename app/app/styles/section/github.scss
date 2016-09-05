@@ -45,8 +45,18 @@
 		margin-bottom: 0px;
 	}
 
+	h6 {
+		font-size: 18px;
+		margin: 0;
+		display: inline;
+	}
+
+	h6 a {
+		color: inherit;
+	}
+
 	p {
-		margin: 0px;
+		margin-top: 5px;
 	}
 
 	.github-board {
@@ -68,7 +78,7 @@
 
 	tbody.github td {
 		border: none !important;
-		padding: 15px 30px !important;
+		padding: 8px 30px !important;
 	}
 
 	span.label-private {
@@ -88,12 +98,49 @@
 	}
 
 	table.milestone-table {
-
+		progress[value] {
+				background-color: #eeeeee;
+				border-radius: 3px;
+				height: 10px;
+				width: 50%;
+		}
 	}
 
+	.github-issue-label {
+		font-size: 11px;
+		color: white;
+		padding: 0px 4px;
+		margin-right: 5px;
+		border-radius: 2px;
+		box-shadow: inset 0 -1px 0 rgba(0,0,0,0.12);
+		display: inline-block;
+		line-height: 22px;
+		}
 
+	.date-meta {
+		color: #767676;
+		font-size: 13px;
+	}
+	.dataid {
+		color: #767676;
+		font-size: 13px;
+	}
 
+	.repo {
+		font-size: 16px;
+	}
 
+	.branch {
+		font-family: "open_sanssemibold";
+	}
+
+	.milestone {
+		font-size: 15px;
+	}
+
+	.github-avatar {
+		border-radius: 4px;
+	}
 
 }
 
@@ -122,38 +169,10 @@
     		margin-right: 10px;
 		}
 
-	progress[value] {
-			background-color: #eeeeee;
-			border-radius: 3px;
-			height: 10px;
-			width: 50%;
-	}
 
 	table.contributor-table {
 		    margin-top: 30px !important;
 	}
-
-	.github-avatar {
-		float: left;
-		margin-right: 20px;
-	}
-
-	.github-avatar img {
-		border-radius: 4px;
-	}
-
-	.github-issue-label {
-		font-size: 11px;
-		color: white;
-		padding: 0px 4px;
-		margin-right: 5px;
-		border-radius: 2px;
-		box-shadow: inset 0 -1px 0 rgba(0,0,0,0.12);
-		display: inline-block;
-		line-height: 22px;
-		}
-
-
 
 	table.issue-table td a.link {
 			font-size: 18px;

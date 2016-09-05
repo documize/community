@@ -27,10 +27,10 @@ const summaryTemplate = `
 
 	{{if .HasSharedLabels}}
 		<h3>Common Labels</h3>
-		<p>There 
+		<p>There
 		{{if eq 1 (len .SharedLabels)}} is {{else}} are {{end}}
 		{{len .SharedLabels}}
-		shared 
+		shared
 		{{if eq 1 (len .SharedLabels)}} label {{else}} labels {{end}}
 		across the repositories.</p>
 		<table style="width:100%;">
@@ -38,7 +38,7 @@ const summaryTemplate = `
 			{{range $slabel := .SharedLabels}}
 		        <tr>
 		            <td style="width:100%;">
-						<span style="background-color:#{{$slabel.Color}}">{{$slabel.Name}} ({{$slabel.Count}})</span> in {{$slabel.Repos}}
+						<span class="github-issue-label" style="background-color:#{{$slabel.Color}}">{{$slabel.Name}} ({{$slabel.Count}})</span> in {{$slabel.Repos}}
 					</td>
 		        </tr>
 			{{end}}

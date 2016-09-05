@@ -34,9 +34,9 @@ const (
 		<h3>Milestones</h3>
 		<p>
 			There are
-			{{.ClosedMS}} 
+			{{.ClosedMS}}
 			{{if eq 1 .ClosedMS}} milestone {{else}} milestones {{end}}
-			closed and {{.OpenMS}} 
+			closed and {{.OpenMS}}
 			{{if eq 1 .OpenMS}} milestone {{else}} milestones {{end}}
 			open across {{.RepoCount}}
 			{{if eq 1 .RepoCount}} repository. {{else}} repositories. {{end}}
@@ -46,7 +46,7 @@ const (
 		    <tbody class="github">
 			{{range $data := .Milestones}}
 		        <tr>
-					<td style="width: 5%;">
+					<td style="width:5%;">
 						{{if $data.IsMilestone}}
 							{{if $data.IsOpen}}
 								` + openMSsvg + `
@@ -55,14 +55,14 @@ const (
 							{{end}}
 						{{end}}
 					</td>
-		            <td style="width: 35%;">
-					<span class="milestone">{{$data.Name}}</span>
+		            <td style="width:55%;">
+					<h6>{{$data.Name}}</h6>
 						{{if $data.IsMilestone}}
 							<span class="date-meta">{{$data.DueDate}}</span>
 						{{end}}<br>
-						<span><a class="link" href="{{$data.URL}}">{{$data.Repo}}</a></span>
+						<span class="repo"><a class="link" href="{{$data.URL}}">{{$data.Repo}}</a></span>
 					</td>
-		            <td style="width: 60%;">
+		            <td style="width:40%;">
 						{{if $data.IsMilestone}}
 							<progress value="{{$data.Progress}}" max="100"></progress> <br>
 							{{$data.CompleteMsg}} complete {{$data.OpenIssues}} open {{$data.ClosedIssues}} closed

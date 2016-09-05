@@ -31,7 +31,11 @@ const (
 {{if .HasIssues}}
 	<h3>Issues</h3>
 	<p>
-		There are {{.ClosedIssues}} closed and {{.OpenIssues}} open across {{.RepoCount}} 
+		There are {{.ClosedIssues}} closed
+			{{if eq 1 .ClosedIssues}}issue{{else}}issues{{end}}
+		 	and {{.OpenIssues}} open
+		 	{{if eq 1 .OpenIssues}}issue{{else}}issues{{end}}
+		 across {{.RepoCount}}
 		{{if eq 1 .RepoCount}} repository. {{else}} repositories. {{end}}
 	</p>
 	<p>
@@ -52,7 +56,7 @@ const (
 	    <tbody class="github">
 		{{range $data := .Issues}}
 	        <tr>
-				<td style="width: 5%;">
+				<td style="width:5%;">
 					<div class="issue-avatar">
 						{{if $data.IsOpen}}
 							` + openIsvg + `
@@ -62,18 +66,14 @@ const (
 					</div>
 				</td>
 
-	            <td style="width: 35%;">
-					{{$data.Message}}</br>
-					<span class="milestone">{{$data.Milestone}}</span> {{$data.Labels}}
+	            <td style="width:55%;">
+					<h6><a class="link" href="{{$data.URL}}">{{$data.Message}} <span class="dataid">#{{$data.ID}}</span></a></h6> </br>
+					<span class="milestone">{{$data.Milestone}}</span> <span class="issue-label">{{$data.Labels}}</span>
 				</td>
 
-				<td style="width:60%;">
-				<span><a class="link" href="{{$data.URL}}">{{$data.Repo}}</a></span>
-					<div class="github-commit-body">
-						<div class="github-commit-meta">
-							#{{$data.ID}} opened on {{$data.Date}} by {{$data.Name}}
-						</div>
-					</div>
+				<td style="width:40%;">
+					<h6>{{$data.Repo}}</h6> <br>
+					<span class="date-meta">opened on {{$data.Date}} by {{$data.Name}}</span>
 				</td>
 	        </tr>
 		{{end}}
