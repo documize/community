@@ -15,12 +15,12 @@ const commitsTemplate = `
 <div class="section-github-render">
 {{if .HasAuthorStats}}
 	<h3>Contributors</h3>
-	
+
 	<p>
 		There
-		{{if eq 1 (len .AuthorStats)}}is{{else}}are{{end}}
-		{{len .AuthorStats}}
-		{{if eq 1 (len .AuthorStats)}}contributor{{else}}contributors{{end}}
+		{{if eq 1 .NumContributors}}is{{else}}are{{end}}
+		{{.NumContributors}}
+		{{if eq 1 .NumContributors}}contributor{{else}}contributors{{end}}
 		across {{.RepoCount}}
 		{{if eq 1 .RepoCount}} repository. {{else}} repositories. {{end}}
 	</p>
@@ -29,11 +29,11 @@ const commitsTemplate = `
 		<tbody class="github">
 		{{range $stats := .AuthorStats}}
 			<tr>
-				<td style="width:5%;">
+				<td class="width-5">
 					<img class="github-avatar" alt="@{{$stats.Author}}" src="{{$stats.Avatar}}" height="36" width="36">
 				</td>
 
-				<td style="width:95%;">
+				<td class="width-95">
 					<h6>{{$stats.Author}}</h6>
 					{{if gt $stats.OpenIssues 0}}
 						has been assigned {{$stats.OpenIssues}}
@@ -81,6 +81,7 @@ const commitsTemplate = `
 				</td>
 				<td style="width:55%;">
 					{{if $commit.ShowBranch}}{{$commit.Repo}}:<span class="branch">{{$commit.Branch}}</span>{{end}}
+					<br>
 				</td>
 			</tr>
 		{{end}}

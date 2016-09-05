@@ -50,11 +50,11 @@ const (
 	</p>
 	<div class="github-board">
 
-	<table class="issue-table" style="width: 100%;">
+	<table class="issue-table width-100">
 	    <tbody class="github">
 		{{range $data := .Issues}}
 	        <tr>
-				<td style="width:5%;">
+				<td class="width-5">
 					<div class="issue-avatar">
 						{{if $data.IsOpen}}
 							` + openIsvg + `
@@ -64,12 +64,12 @@ const (
 					</div>
 				</td>
 
-	            <td style="width:55%;">
+	            <td class="width-55">
 					<h6><a class="link" href="{{$data.URL}}">{{$data.Message}} <span class="dataid">#{{$data.ID}}</span></a></h6> </br>
 					<span class="milestone">{{$data.Milestone}}</span> <span class="issue-label">{{$data.Labels}}</span>
 				</td>
 
-				<td style="width:40%;">
+				<td class="width-40">
 					<h6>{{$data.Repo}}</h6> <br>
 					<span class="date-meta">{{$data.Creator}} opened on {{$data.Date}}</span>
 				</td>

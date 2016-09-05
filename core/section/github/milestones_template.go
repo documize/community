@@ -42,7 +42,7 @@ const (
 			{{if eq 1 .RepoCount}} repository. {{else}} repositories. {{end}}
 		</p>
 		<div class="github-board">
-		<table class="milestone-table" style="width: 100%;">
+		<table class="milestone-table width-100">
 		    <tbody class="github">
 			{{range $data := .Milestones}}
 		        <tr>
@@ -55,14 +55,14 @@ const (
 							{{end}}
 						{{end}}
 					</td>
-		            <td style="width:55%;">
+		            <td class="width-55">
 					<h6>{{$data.Name}}</h6>
 						{{if $data.IsMilestone}}
 							<span class="date-meta">{{$data.DueDate}}</span>
 						{{end}}<br>
 						<span class="repo"><a class="link" href="{{$data.URL}}">{{$data.Repo}}</a></span>
 					</td>
-		            <td style="width:40%;">
+		            <td class="width-40">
 						{{if $data.IsMilestone}}
 							<progress value="{{$data.Progress}}" max="100"></progress> <br>
 							{{$data.CompleteMsg}} complete {{$data.OpenIssues}} open {{$data.ClosedIssues}} closed

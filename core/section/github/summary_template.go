@@ -33,11 +33,11 @@ const summaryTemplate = `
 		shared
 		{{if eq 1 (len .SharedLabels)}} label {{else}} labels {{end}}
 		across the repositories.</p>
-		<table style="width:100%;">
+		<table class="width-100">
 		    <tbody class="github">
 			{{range $slabel := .SharedLabels}}
 		        <tr>
-		            <td style="width:100%;">
+		            <td class="width-100">
 						<span class="github-issue-label" style="background-color:#{{$slabel.Color}}">{{$slabel.Name}} ({{$slabel.Count}})</span> in {{$slabel.Repos}}
 					</td>
 		        </tr>
