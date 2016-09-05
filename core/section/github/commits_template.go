@@ -16,33 +16,23 @@ const commitsTemplate = `
 
 {{if .HasAuthorStats}}
 
-	<h3>Contributor activity</h3>
+	<h3>Contributors</h3>
+	<p>There are 3 contributors across 6 repositories.</p>
 	<table class="contributor-table" style="width: 100%;">
-		<thead class="github">
-			<tr>
-				<th class="title">Contributor</th>
-				<th class="title">Assigned/Closed</th>
-				<th class="title">#Commits</th>
-				<th class="title">Branches</th>
-			</tr>
-		</thead>
 
 		<tbody class="github">
 		{{range $stats := .AuthorStats}}
 			<tr>
-				<td style="width: 20%;">
-					<div class="github-avatar">
-						<img alt="@{{$stats.Author}}" src="{{$stats.Avatar}}" height="36" width="36">
-					</div>
-					{{$stats.Author}}
+				<td style="width: 5%;">
+					<img alt="@{{$stats.Author}}" src="{{$stats.Avatar}}" height="36" width="36">
 				</td>
-				<td style="width: 15%;">{{$stats.OpenIssues}} / {{$stats.ClosedIssues}}</td>
-				<td style="width: 15%;">{{$stats.CommitCount}}</td>
-				<td style="width: 50%;">
-					{{range $repo := $stats.Repos}}
-						{{$repo}}<br>
-					{{end}}
+
+				<td style="width:50%;">
+					{{$stats.Author}} has been assigned {{$stats.OpenIssues}} issues, {{$stats.ClosedIssues}} are now closed, has made {{$stats.CommitCount}} commit on 6 branches.
+					<br>
+					{{range $repo := $stats.Repos}}	{{$repo}}, {{end}}
 				</td>
+
 			</tr>
 		{{end}}
 		</tbody>
@@ -50,7 +40,7 @@ const commitsTemplate = `
 {{end}}
 
 {{if .HasCommits}}
-	<h3>Commits activity</h3>
+	<h3>Commits</h3>
 
 	<table class="contributor-table" style="width: 100%;">
 		<thead class="github">

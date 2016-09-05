@@ -114,7 +114,7 @@ func getMilestones(client *gogithub.Client, config *githubConfig) ([]githubMiles
 							dd := "No due date."
 							if v.DueOn != nil {
 								// TODO refactor to add message in red if the milestone is overdue
-								dd = "Due on " + (*v.DueOn).Format(milestonesTimeFormat) + "."
+								dd = "due on " + (*v.DueOn).Format(milestonesTimeFormat) + ""
 							}
 							up := ""
 							if v.UpdatedAt != nil {

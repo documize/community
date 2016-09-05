@@ -14,7 +14,7 @@ package github
 const summaryTemplate = `
 <div class="section-github-render">
 
-	<h5>
+	<p>
 		Activity since {{.Config.Since}}{{.Config.DateMessage}} for {{.Config.Owner}} repositories:
 		{{range $data := .Config.Lists}}
 			{{if $data.Included}}
@@ -23,28 +23,16 @@ const summaryTemplate = `
 					</a>
 			{{end}}
 		{{end}}
-	</h5>
+	</p>
 
 	{{if .HasSharedLabels}}
-		<h3>
-			Common Labels <br>
-		</h3>
-
-		<table class="label-table" style="width: 100%;">
-		    <thead class="github">
-		        <tr>
-		            <th class="title">Label</th>
-		            <th class="title">Count</th>
-		            <th class="title">Repositories</th>
-		        </tr>
-		    </thead>
-
+		<h3>Common Labels</h3>
+		<p>There is 1 shared label across the repositories.</p>
+		<table style="width:100%;">
 		    <tbody class="github">
 			{{range $slabel := .SharedLabels}}
 		        <tr>
-		            <td style="width: 15%;">{{$slabel.Name}}</td>
-		            <td style="width: 15%;">{{$slabel.Count}}</td>
-		            <td style="width: 70%;">{{$slabel.Repos}}</td>
+		            <td style="width:100%;">{{$slabel.Name}} ({{$slabel.Count}}) in {{$slabel.Repos}}</td>
 		        </tr>
 			{{end}}
 		    </tbody>
