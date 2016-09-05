@@ -61,7 +61,7 @@ const commitsTemplate = `
 
 {{if .HasCommits}}
 	<h3>Commits</h3>
-	<p> There are {{len .BranchCommits}} commits by {{len .AuthorStats}} contributors
+	<p> There are {{len .BranchCommits}} commits by {{.NumContributors}} contributors
 		across {{.RepoCount}}
 		{{if eq 1 .RepoCount}} repository. {{else}} repositories. {{end}}
 	</p>
