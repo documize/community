@@ -15,12 +15,12 @@ const summaryTemplate = `
 <div class="section-github-render">
 
 	<p>
-		Activity since {{.Config.Since}}{{.Config.DateMessage}} for {{.Config.Owner}} repositories:
+	Activity since {{.Config.Since}}{{.Config.DateMessage}} for {{.Config.Owner}} repositories:
 		{{range $data := .Config.Lists}}
 			{{if $data.Included}}
-					<a class="link" href="{{$data.URL}}">
-						{{$data.Repo}}{{if $data.Comma}},{{end}}
-					</a>
+				<a class="link" href="{{$data.URL}}">
+					{{$data.Repo}}{{if $data.Comma}},{{end}}
+				</a>
 			{{end}}
 		{{end}}
 	</p>
@@ -45,7 +45,5 @@ const summaryTemplate = `
 		    </tbody>
 		</table>
 	{{end}}
-
-
 </div>
 `

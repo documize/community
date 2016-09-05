@@ -14,22 +14,22 @@ package github
 const (
 	rawMSsvg  = `<path d="M8 2H6V0h2v2zm4 5H2c-.55 0-1-.45-1-1V4c0-.55.45-1 1-1h10l2 2-2 2zM8 4H6v2h2V4zM6 16h2V8H6v8z"></path>`
 	openMSsvg = `
-<span title="Open milestone">
-	<svg height="16" width="14" version="1.1" viewBox="0 0 14 16">
-		` + rawMSsvg + `
-	</svg>
-</span>
-`
+		<span title="Open milestone">
+			<svg height="16" width="14" version="1.1" viewBox="0 0 14 16">
+				` + rawMSsvg + `
+			</svg>
+		</span>
+		`
 	closedMSsvg = `
-<span title="Closed milestone">
-	<svg aria-hidden="true" class="octicon octicon-check" height="16" version="1.1" viewBox="0 0 12 16" width="12">
-		<path d="M12 5l-8 8-4-4 1.5-1.5L4 10l6.5-6.5z"></path>
-	</svg>
-</span>
-`
+		<span title="Closed milestone">
+			<svg aria-hidden="true" class="octicon octicon-check" height="16" version="1.1" viewBox="0 0 12 16" width="12">
+				<path d="M12 5l-8 8-4-4 1.5-1.5L4 10l6.5-6.5z"></path>
+			</svg>
+		</span>
+		`
 	milestonesTemplate = `
-<div class="section-github-render">
 
+	<div class="section-github-render">
 	{{if .HasMilestones}}
 		<h3>Milestones</h3>
 		<p>
