@@ -27,7 +27,12 @@ const summaryTemplate = `
 
 	{{if .HasSharedLabels}}
 		<h3>Common Labels</h3>
-		<p>There is 1 shared label across the repositories.</p>
+		<p>There 
+		{{if eq 1 (len .SharedLabels)}} is {{else}} are {{end}}
+		{{len .SharedLabels}}
+		shared 
+		{{if eq 1 (len .SharedLabels)}} label {{else}} labels {{end}}
+		across the repositories.</p>
 		<table style="width:100%;">
 		    <tbody class="github">
 			{{range $slabel := .SharedLabels}}

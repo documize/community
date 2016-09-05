@@ -174,30 +174,34 @@ func refreshMilestones(gr *githubRender, config *githubConfig, client *gogithub.
 
 func renderMilestones(payload *githubRender, c *githubConfig) error {
 	hadRepo := make(map[string]bool)
+	payload.RepoCount = 0
 	for _, orb := range payload.List {
 		rName := orb.Owner + "/" + orb.Repo
 		if !hadRepo[rName] {
+			if orb.Included {
 
-			issuesOpen, issuesClosed := 0, 0
-			for _, iss := range payload.Issues {
-				if iss.Repo == repoName(rName) {
-					if iss.Milestone == noMilestone {
-						if iss.IsOpen {
-							issuesOpen++
-						} else {
-							issuesClosed++
+				payload.RepoCount++
+				issuesOpen, issuesClosed := 0, 0
+				for _, iss := range payload.Issues {
+					if iss.Repo == repoName(rName) {
+						if iss.Milestone == noMilestone {
+							if iss.IsOpen {
+								issuesOpen++
+							} else {
+								issuesClosed++
+							}
 						}
 					}
 				}
-			}
-			if issuesClosed+issuesOpen > 0 {
-				payload.Milestones = append(payload.Milestones, githubMilestone{
-					Repo: orb.Repo, Private: orb.Private, Name: noMilestone, IsOpen: true,
-					OpenIssues: issuesOpen, ClosedIssues: issuesClosed, URL: orb.URL,
-				})
-			}
+				if issuesClosed+issuesOpen > 0 {
+					payload.Milestones = append(payload.Milestones, githubMilestone{
+						Repo: orb.Repo, Private: orb.Private, Name: noMilestone, IsOpen: true,
+						OpenIssues: issuesOpen, ClosedIssues: issuesClosed, URL: orb.URL,
+					})
+				}
 
-			hadRepo[rName] = true
+				hadRepo[rName] = true
+			}
 		}
 	}
 

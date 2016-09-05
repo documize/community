@@ -32,17 +32,27 @@ const (
 
 	{{if .HasMilestones}}
 		<h3>Milestones</h3>
-		<p>There is {{.ClosedMS}} milestone closed and {{.OpenMS}} milestone open across #number repositories.</p>
+		<p>
+			There are
+			{{.ClosedMS}} 
+			{{if eq 1 .ClosedMS}} milestone {{else}} milestones {{end}}
+			closed and {{.OpenMS}} 
+			{{if eq 1 .OpenMS}} milestone {{else}} milestones {{end}}
+			open across {{.RepoCount}}
+			{{if eq 1 .RepoCount}} repository. {{else}} repositories. {{end}}
+		</p>
 		<div class="github-board">
 		<table class="milestone-table" style="width: 100%;">
 		    <tbody class="github">
 			{{range $data := .Milestones}}
 		        <tr>
 					<td style="width: 5%;">
-						{{if $data.IsOpen}}
-							` + openMSsvg + `
-						{{else}}
-							` + closedMSsvg + `
+						{{if $data.IsMilestone}}
+							{{if $data.IsOpen}}
+								` + openMSsvg + `
+							{{else}}
+								` + closedMSsvg + `
+							{{end}}
 						{{end}}
 					</td>
 		            <td style="width: 35%;">

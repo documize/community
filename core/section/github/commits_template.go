@@ -17,7 +17,14 @@ const commitsTemplate = `
 {{if .HasAuthorStats}}
 
 	<h3>Contributors</h3>
-	<p>There are 3 contributors across 6 repositories.</p>
+	<p>
+		There 
+		{{if eq 1 (len .AuthorStats)}}is{{else}}are{{end}}
+		{{len .AuthorStats}}
+		{{if eq 1 (len .AuthorStats)}}contributor{{else}}contributors{{end}}
+		across {{.RepoCount}} 
+		{{if eq 1 .RepoCount}} repository. {{else}} repositories. {{end}}
+	</p>
 	<table class="contributor-table" style="width: 100%;">
 
 		<tbody class="github">

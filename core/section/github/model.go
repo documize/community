@@ -24,6 +24,7 @@ import (
 type githubRender struct {
 	Config           githubConfig        `json:"config"`
 	List             []githubBranch      `json:"list"`
+	RepoCount        int                 `json:"repoCount"`
 	ShowList         bool                `json:"showList"`
 	ShowIssueNumbers bool                `json:"showIssueNumbers"`
 	BranchCommits    []githubCommit      `json:"branchCommits"`

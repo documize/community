@@ -30,7 +30,10 @@ const (
 <div class="section-github-render">
 {{if .HasIssues}}
 	<h3>Issues</h3>
-	<p>There are {{.ClosedIssues}} closed and {{.OpenIssues}} open across 6 repositories.</p>
+	<p>
+		There are {{.ClosedIssues}} closed and {{.OpenIssues}} open across {{.RepoCount}} 
+		{{if eq 1 .RepoCount}} repository. {{else}} repositories. {{end}}
+	</p>
 	<p>
 		{{if .ShowList}}
 			Including issues labelled
