@@ -32,7 +32,9 @@ const summaryTemplate = `
 		    <tbody class="github">
 			{{range $slabel := .SharedLabels}}
 		        <tr>
-		            <td style="width:100%;">{{$slabel.Name}} ({{$slabel.Count}}) in {{$slabel.Repos}}</td>
+		            <td style="width:100%;">
+						<span style="background-color:#{{$slabel.Color}}">{{$slabel.Name}} ({{$slabel.Count}})</span> in {{$slabel.Repos}}
+					</td>
 		        </tr>
 			{{end}}
 		    </tbody>

@@ -22,24 +22,26 @@ import (
 )
 
 type githubIssue struct {
-	ID         int           `json:"id"`
-	Date       string        `json:"date"`
-	Updated    string        `json:"dated"`
-	Message    string        `json:"message"`
-	URL        template.URL  `json:"url"`
-	Name       string        `json:"name"`
-	Avatar     string        `json:"avatar"`
-	Labels     template.HTML `json:"labels"`
-	LabelNames []string      `json:"labelNames"`
-	IsOpen     bool          `json:"isopen"`
-	Repo       string        `json:"repo"`
-	Private    bool          `json:"private"`
-	Milestone  string        `json:"milestone"`
+	ID          int           `json:"id"`
+	Date        string        `json:"date"`
+	Updated     string        `json:"dated"`
+	Message     string        `json:"message"`
+	URL         template.URL  `json:"url"`
+	Name        string        `json:"name"`
+	Avatar      string        `json:"avatar"`
+	Labels      template.HTML `json:"labels"`
+	LabelNames  []string      `json:"labelNames"`
+	LabelColors []string      `json:"labelColors"`
+	IsOpen      bool          `json:"isopen"`
+	Repo        string        `json:"repo"`
+	Private     bool          `json:"private"`
+	Milestone   string        `json:"milestone"`
 }
 
 type githubSharedLabel struct {
 	Name  string        `json:"name"`
 	Count int           `json:"count"`
+	Color string        `json:"color"`
 	Repos template.HTML `json:"Repos"`
 }
 
@@ -89,13 +91,15 @@ func init() {
 	reports[tagIssuesData] = report{refreshIssues, renderIssues, issuesTemplate}
 }
 
-func wrapLabels(labels []gogithub.Label) (l string, labelNames []string) {
+func wrapLabels(labels []gogithub.Label) (l string, labelNames []string, labelColors []string) {
 	labelNames = make([]string, 0, len(labels))
+	labelColors = make([]string, 0, len(labels))
 	for _, ll := range labels {
 		labelNames = append(labelNames, *ll.Name)
+		labelColors = append(labelColors, *ll.Color)
 		l += `<span class="github-issue-label" style="background-color:#` + *ll.Color + `">` + *ll.Name + `</span> `
 	}
-	return l, labelNames
+	return l, labelNames, labelColors
 }
 
 func getIssues(client *gogithub.Client, config *githubConfig) ([]githubIssue, error) {
@@ -144,21 +148,22 @@ func getIssues(client *gogithub.Client, config *githubConfig) ([]githubIssue, er
 								ms = *v.Milestone.Title
 							}
 						}
-						l, ln := wrapLabels(v.Labels)
+						l, ln, lc := wrapLabels(v.Labels)
 						ret = append(ret, githubIssue{
-							Name:       n,
-							Avatar:     av,
-							Message:    *v.Title,
-							Date:       v.CreatedAt.Format(issuesTimeFormat),
-							Updated:    v.UpdatedAt.Format(issuesTimeFormat),
-							URL:        template.URL(*v.HTMLURL),
-							Labels:     template.HTML(l),
-							LabelNames: ln,
-							ID:         *v.Number,
-							IsOpen:     *v.State == "open",
-							Repo:       repoName(rName),
-							Private:    orb.Private,
-							Milestone:  ms,
+							Name:        n,
+							Avatar:      av,
+							Message:     *v.Title,
+							Date:        v.CreatedAt.Format(issuesTimeFormat),
+							Updated:     v.UpdatedAt.Format(issuesTimeFormat),
+							URL:         template.URL(*v.HTMLURL),
+							Labels:      template.HTML(l),
+							LabelNames:  ln,
+							LabelColors: lc,
+							ID:          *v.Number,
+							IsOpen:      *v.State == "open",
+							Repo:        repoName(rName),
+							Private:     orb.Private,
+							Milestone:   ms,
 						})
 					}
 				}
@@ -184,14 +189,18 @@ func refreshIssues(gr *githubRender, config *githubConfig, client *gogithub.Clie
 	gr.OpenIssues = 0
 	gr.ClosedIssues = 0
 	sharedLabels := make(map[string][]string)
+	sharedLabelColors := make(map[string]string)
 	for _, v := range gr.Issues {
 		if v.IsOpen {
 			gr.OpenIssues++
 		} else {
 			gr.ClosedIssues++
 		}
-		for _, lab := range v.LabelNames {
+		for i, lab := range v.LabelNames {
 			sharedLabels[lab] = append(sharedLabels[lab], v.Repo)
+			if _, exists := sharedLabelColors[lab]; !exists { // use the first one we see
+				sharedLabelColors[lab] = v.LabelColors[i]
+			}
 		}
 	}
 	gr.HasIssues = (gr.OpenIssues + gr.ClosedIssues) > 0
@@ -199,7 +208,7 @@ func refreshIssues(gr *githubRender, config *githubConfig, client *gogithub.Clie
 	gr.SharedLabels = make([]githubSharedLabel, 0, len(sharedLabels)) // will usually be too big
 	for name, repos := range sharedLabels {
 		if len(repos) > 1 {
-			thisLab := githubSharedLabel{Name: name, Count: len(repos)}
+			thisLab := githubSharedLabel{Name: name, Count: len(repos), Color: sharedLabelColors[name]}
 			show := ""
 			for i, r := range repos {
 				if i > 0 {
