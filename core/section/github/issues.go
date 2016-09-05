@@ -85,6 +85,7 @@ func (s sharedLabelsSort) Less(i, j int) bool { return s[i].Name < s[j].Name }
 const (
 	tagIssuesData    = "issuesData"
 	issuesTimeFormat = "January 2 2006, 15:04"
+	unassignedIssue  = "(unassigned)"
 )
 
 func init() {
@@ -133,7 +134,7 @@ func getIssues(client *gogithub.Client, config *githubConfig) ([]githubIssue, er
 					}
 
 					for _, v := range guff {
-						n := "(unassigned)"
+						n := unassignedIssue
 						av := githubGravatar
 						ptr := v.Assignee
 						if ptr != nil {

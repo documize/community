@@ -33,6 +33,7 @@ type githubCommit struct {
 	Date       string       `json:"date"`
 	BinDate    time.Time    `json:"-"` // only used for sorting
 	ShowDate   bool         `json:"ShowDate"`
+	Login      string       `json:"login"`
 	Name       string       `json:"name"`
 	Avatar     string       `json:"avatar"`
 	ShowUser   bool         `json:"ShowUser"`
@@ -42,6 +43,7 @@ type githubCommit struct {
 
 type githubAuthorStats struct {
 	Author       string   `json:"author"`
+	Login        string   `json:"login"`
 	Avatar       string   `json:"avatar"`
 	CommitCount  int      `json:"commitCount"`
 	Repos        []string `json:"repos"`
@@ -119,6 +121,8 @@ func getCommits(client *gogithub.Client, config *githubConfig) ([]githubCommit, 
 	}
 	sort.Sort(branchByID(config.Lists))
 
+	config.UserNames = make(map[string]string)
+
 	authorStats := make(map[string]githubAuthorStats)
 
 	contribBranch := make(map[string]map[string]struct{})
@@ -158,48 +162,53 @@ func getCommits(client *gogithub.Client, config *githubConfig) ([]githubCommit, 
 					}
 				}
 
-				// TODO(elliott5) remove this comment when it is clear we should not use committer
-				/*
-					var a, l string
-					if v.Committer != nil {
-						if v.Committer.Login != nil {
-							l = *v.Committer.Login
-						}
-						if v.Committer.AvatarURL != nil {
-							a = *v.Committer.AvatarURL
-						}
-					}
-					if a == "" {
-						a = githubGravatar
-					}
-				*/
-
 				if v.HTMLURL != nil {
 					u = *v.HTMLURL
 				}
 
-				//  update of author commits
-				al, aa := "", githubGravatar
+				// author commits
+				al, an, aa := "", "", githubGravatar
 				if v.Author != nil {
 					if v.Author.Login != nil {
 						al = *v.Author.Login
+						an = al
+
+						if content, found := config.UserNames[al]; found {
+							if len(content) > 0 {
+								an = content
+							}
+						} else {
+							usr, _, err := client.Users.Get(al)
+							if err == nil {
+								if usr.Name != nil {
+									if len(*usr.Name) > 0 {
+										config.UserNames[al] = *usr.Name
+										an = *usr.Name
+									}
+								}
+							} else {
+								config.UserNames[al] = al // don't look again for a missing name
+							}
+						}
+
 					}
+
 					if v.Author.AvatarURL != nil {
 						aa = *v.Author.AvatarURL
 					}
 				}
-				l := al // use author not committer
-				a := aa // ditto
+				l := al // use author login
 
 				overall = append(overall, githubCommit{
 					Owner:   orb.Owner,
 					Repo:    orb.Repo,
 					Branch:  orb.Name,
-					Name:    l,
+					Name:    an,
+					Login:   l,
 					Message: m,
 					Date:    d,
 					BinDate: bd,
-					Avatar:  a,
+					Avatar:  aa,
 					URL:     template.URL(u),
 				})
 
@@ -209,8 +218,9 @@ func getCommits(client *gogithub.Client, config *githubConfig) ([]githubCommit, 
 				contribBranch[l][thisBranch] = struct{}{}
 
 				cum := authorStats[l]
-				cum.Author = l
-				cum.Avatar = a
+				cum.Login = l
+				cum.Author = an
+				cum.Avatar = aa
 				cum.CommitCount++
 				// TODO review, this code removed as too slow
 				//cmt, _, err := client.Repositories.GetCommit(orb.Owner, orb.Repo, *v.SHA)
@@ -250,7 +260,7 @@ func getCommits(client *gogithub.Client, config *githubConfig) ([]githubCommit, 
 
 	retStats := make([]githubAuthorStats, 0, len(authorStats))
 	for _, v := range authorStats {
-		repos := contribBranch[v.Author]
+		repos := contribBranch[v.Login]
 		v.Repos = make([]string, 0, len(repos))
 		for r := range repos {
 			v.Repos = append(v.Repos, r)
@@ -283,7 +293,8 @@ func renderCommits(payload *githubRender, c *githubConfig) error {
 	for i := range payload.Issues {
 		var author int
 		for a := range payload.AuthorStats {
-			if payload.AuthorStats[a].Author == payload.Issues[i].Name {
+			if payload.AuthorStats[a].Login == payload.Issues[i].Name ||
+				(payload.AuthorStats[a].Login == "" && payload.Issues[i].Name == unassignedIssue) {
 				author = a
 				goto found
 			}

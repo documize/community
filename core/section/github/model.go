@@ -83,20 +83,21 @@ type githubLabel struct {
 }
 
 type githubConfig struct {
-	Token       string         `json:"-"` // NOTE very important that the secret Token is not leaked to the client side, so "-"
-	UserID      string         `json:"userId"`
-	PageID      string         `json:"pageId"`
-	Owner       string         `json:"owner_name"`
-	BranchSince string         `json:"branchSince,omitempty"`
-	SincePtr    *time.Time     `json:"-"`
-	Since       string         `json:"-"`
-	BranchLines int            `json:"branchLines,omitempty,string"`
-	OwnerInfo   githubOwner    `json:"owner"`
-	ClientID    string         `json:"clientId"`
-	CallbackURL string         `json:"callbackUrl"`
-	Lists       []githubBranch `json:"lists,omitempty"`
-	ReportOrder []string       `json:"-"`
-	DateMessage string         `json:"-"`
+	Token       string            `json:"-"` // NOTE very important that the secret Token is not leaked to the client side, so "-"
+	UserID      string            `json:"userId"`
+	PageID      string            `json:"pageId"`
+	Owner       string            `json:"owner_name"`
+	BranchSince string            `json:"branchSince,omitempty"`
+	SincePtr    *time.Time        `json:"-"`
+	Since       string            `json:"-"`
+	BranchLines int               `json:"branchLines,omitempty,string"`
+	OwnerInfo   githubOwner       `json:"owner"`
+	ClientID    string            `json:"clientId"`
+	CallbackURL string            `json:"callbackUrl"`
+	Lists       []githubBranch    `json:"lists,omitempty"`
+	ReportOrder []string          `json:"-"`
+	DateMessage string            `json:"-"`
+	UserNames   map[string]string `json:"UserNames"`
 }
 
 func (c *githubConfig) Clean() {
