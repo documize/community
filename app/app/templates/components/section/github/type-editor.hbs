@@ -7,38 +7,18 @@
 		<div class="pull-left width-45">
 			<div class="input-form">
 				<div class="heading">
-					<div class="title">Select Repository</div>
+					<div class="title">Select Repositories</div>
 					<div class="tip">Choose source of code information to be displayed</div>
 				</div>
 				<div class="input-control">
-						<label>Organizations and User</label>
-						<div class="tip">Select organization or username</div>
+						<label>Organization or User</label>
+						<div class="tip">Select organization or username whose repositories you want to show</div>
 						{{ui-select id="owners-dropdown" content=owners action=(action 'onOwnerChange') optionValuePath="id" optionLabelPath="name" selection=config.owner}}
 				</div>
-				{{#if noRepos}}
-					<div class="input-control">
-						<div class="color-error">You have no repositories.</div>
-					</div>
-				{{else}}
-					<div class="input-control">
-						<label>Repositories</label>
-						<div class="tip">Select repository</div>
-						{{ui-select id="repos-dropdown" content=repos action=(action 'onRepoChange') optionValuePath="id" optionLabelPath="name" selection=config.repo}}
-					</div>
-					<div class="input-control">
-						<label>Report</label>
-						<div class="tip">Select report type</div>
-						{{ui-select id="report-dropdown" content=reports action=(action 'onReportChange') optionValuePath="id" optionLabelPath="name" selection=config.report}}
-					</div>
-					<div class="input-control">
-						<label>Show items since</label>
-						{{input id="branch-since" value=config.branchSince type="text" }}
-					</div>
-					<div class="input-control">
-						<label>Number of items to show</label>
-						{{input id="branch-lines" value=config.branchLines type="number" min="1" step="1" max="100" }}
-					</div>
-				{{/if}}
+				<div class="input-control">
+					<label>Show items since (default 7 days ago)</label>
+					{{input id="branch-since" value=config.branchSince type="text" }}<br>
+				</div>
 			</div>
 		</div>
 
@@ -46,10 +26,9 @@
 
 		<div class="pull-left width-45">
 			<div class="input-form">
-					{{#if showCommits}}
 						<div class="input-control">
-							<label>Branches</label>
-							<div class="tip">Select branch</div>
+							<label>Repositories</label>
+							<div class="tip">Select the repositories to show</div>
 							<div class="github-board">
 								{{#each config.lists as |list|}}
 									<div class="github-list" {{action 'onListCheckbox' list.id}}>
@@ -58,42 +37,12 @@
 										{{else}}
 											<i class="material-icons widget-checkbox checkbox-gray github-list-checkbox">check_box_outline_blank</i>
 										{{/if}}
-										<span class="github-list-title">{{list.name}}</span>
+										<span class="github-list-title">{{list.repo}} {{#if list.private}}(private){{/if}}</span>
 									</div>
 								{{/each}}
 								<div class="clearfix" />
 							</div>
 						</div>
-					{{/if}}
-					{{#if showLabels}}
-						<div class="input-control">
-							<label>State</label>
-							<div class="tip">Open, Closed or All issues</div>
-							{{ui-select id="issue-state-dropdown" content=states action=(action 'onStateChange') optionValuePath="id" optionLabelPath="name" selection=config.state}}
-						</div>
-						<div class="input-control">
-							<label>Issue numbers</label>
-							<div class="tip">A comma separated list of issue numbers e.g. 42, 1066, 1966 (other selection criteria are ignored)</div>
-						 	{{input id="github-issues" value=config.issues type="text" }}
-						</div>
-						<div class="input-control">
-							<label>Labels</label>
-							<div class="tip">Select labels - an issue must have all labels to be shown, if no label is selected all issues are shown.</div>
-							<div class="github-board">
-								{{#each config.lists as |list|}}
-									<div class="github-list" {{action 'onLabelCheckbox' list.id}} >
-										{{#if list.included}}
-											<i class="material-icons widget-checkbox checkbox-gray github-list-checkbox">check_box</i>
-										{{else}}
-											<i class="material-icons widget-checkbox checkbox-gray github-list-checkbox">check_box_outline_blank</i>
-										{{/if}}
-										<span class="github-list-title"><span class="github-issue-label" style="background-color:#{{list.color}}">{{list.name}}</span></span>
-									</div>
-								{{/each}}
-								<div class="clearfix" />
-							</div>
-						</div>
-					{{/if}}
 			</div>
 		</div>
 
