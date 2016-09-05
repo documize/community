@@ -28,6 +28,7 @@ type githubIssue struct {
 	Message     string        `json:"message"`
 	URL         template.URL  `json:"url"`
 	Name        string        `json:"name"`
+	Creator     string        `json:"creator"`
 	Avatar      string        `json:"avatar"`
 	Labels      template.HTML `json:"labels"`
 	LabelNames  []string      `json:"labelNames"`
@@ -152,6 +153,7 @@ func getIssues(client *gogithub.Client, config *githubConfig) ([]githubIssue, er
 						l, ln, lc := wrapLabels(v.Labels)
 						ret = append(ret, githubIssue{
 							Name:        n,
+							Creator:     getUserName(client, config, *v.User.Login),
 							Avatar:      av,
 							Message:     *v.Title,
 							Date:        v.CreatedAt.Format(issuesTimeFormat),

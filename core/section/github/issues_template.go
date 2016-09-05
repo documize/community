@@ -73,7 +73,7 @@ const (
 
 				<td style="width:40%;">
 					<h6>{{$data.Repo}}</h6> <br>
-					<span class="date-meta">opened on {{$data.Date}} by {{$data.Name}}</span>
+					<span class="date-meta">{{$data.Creator}} opened on {{$data.Date}}</span>
 				</td>
 	        </tr>
 		{{end}}

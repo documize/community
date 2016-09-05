@@ -171,26 +171,7 @@ func getCommits(client *gogithub.Client, config *githubConfig) ([]githubCommit, 
 				if v.Author != nil {
 					if v.Author.Login != nil {
 						al = *v.Author.Login
-						an = al
-
-						if content, found := config.UserNames[al]; found {
-							if len(content) > 0 {
-								an = content
-							}
-						} else {
-							usr, _, err := client.Users.Get(al)
-							if err == nil {
-								if usr.Name != nil {
-									if len(*usr.Name) > 0 {
-										config.UserNames[al] = *usr.Name
-										an = *usr.Name
-									}
-								}
-							} else {
-								config.UserNames[al] = al // don't look again for a missing name
-							}
-						}
-
+						an = getUserName(client, config, al)
 					}
 
 					if v.Author.AvatarURL != nil {
@@ -314,6 +295,8 @@ func renderCommits(payload *githubRender, c *githubConfig) error {
 	}
 	payload.HasAuthorStats = len(payload.AuthorStats) > 0
 	sort.Sort(asToSort(payload.AuthorStats))
+
+	payload.NumContributors = len(payload.AuthorStats) - 1
 
 	return nil
 }
