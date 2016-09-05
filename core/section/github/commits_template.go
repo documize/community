@@ -35,9 +35,23 @@ const commitsTemplate = `
 				</td>
 
 				<td style="width:95%;">
-					<h6>{{$stats.Author}}</h6> has been assigned {{$stats.OpenIssues}} issues, {{$stats.ClosedIssues}} are now closed, has made {{$stats.CommitCount}} commit on 6 branches.
-					<br>
-					{{range $repo := $stats.Repos}}	{{$repo}}, {{end}}
+					<h6>{{$stats.Author}}</h6>
+					{{if gt $stats.OpenIssues 0}}
+						has been assigned {{$stats.OpenIssues}}
+						{{if eq 1 $stats.OpenIssues}} issue,
+					 	{{else}} issues, {{end}}
+					 {{end}}
+					 {{if gt $stats.ClosedIssues 0}}
+						{{$stats.ClosedIssues}} have been closed,
+					{{end}}
+
+					{{if gt $stats.CommitCount 0}}
+						has made {{$stats.CommitCount}}
+						{{if eq 1 $stats.CommitCount}} commit {{else}} commits {{end}}
+						on {{len $stats.Repos}} {{if eq 1 (len $stats.Repos)}} branch. {{else}} branches. {{end}}
+						<br>
+						{{range $repo := $stats.Repos}}	{{$repo}}, {{end}}
+					{{end}}
 				</td>
 
 			</tr>
