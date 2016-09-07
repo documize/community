@@ -188,6 +188,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 							.then(function (boards) {
 								self.set('busy', false);
 								self.set('boards', boards);
+								self.set('config.boards', boards); // save the boards in the config too
 								self.getBoardLists();
 							}, function (error) { //jshint ignore: line
 								self.set('busy', false);

@@ -13,37 +13,16 @@ package trello
 
 import "strings"
 
-const renderTemplate = `
-<p class="non-printable-message">Non-printable</p>
-<div class="section-trello-render non-printable">
-	<p>There are {{ .CardCount }} cards across {{ .ListCount }} lists for board <a href="{{ .Board.URL }}">{{.Board.Name}}.</a></p>
-	<div class="trello-board" style="background-color: {{.Board.Prefs.BackgroundColor}}">
-		<a href="{{ .Board.URL }}"><div class="trello-board-title">{{.Board.Name}}</div></a>
-		{{range $data := .Data}}
-			<div class="trello-list">
-				<div class="trello-list-title">{{ $data.List.Name }}</div>
-				{{range $card := $data.Cards}}
-					<a href="{{ $card.URL }}">
-						<div class="trello-card">
-							{{ $card.Name }}
-						</div>
-					</a>
-				{{end}}
-			</div>
-		{{end}}
-	</div>
-</div>
-`
-
 type secrets struct {
-	Token  string `json:"token"`
+	Token string `json:"token"`
 }
 
 type trelloConfig struct {
-	AppKey string       `json:"appKey"`
-	Token  string       `json:"token"`
-	Board  trelloBoard  `json:"board"`
-	Lists  []trelloList `json:"lists"`
+	AppKey string        `json:"appKey"`
+	Token  string        `json:"token"`
+	Board  trelloBoard   `json:"board"` // TODO review
+	Lists  []trelloList  `json:"lists"` // TODO review
+	Boards []trelloBoard `json:"boards"`
 }
 
 func (c *trelloConfig) Clean() {
@@ -197,9 +176,35 @@ type trelloListCards struct {
 	Cards []trelloCard
 }
 
-type trelloRender struct {
+type trelloRenderBoard struct {
 	Board     trelloBoard
 	Data      []trelloListCards
 	CardCount int
 	ListCount int
+}
+
+type trelloSharedLabel struct {
+	Name   string
+	Color  string
+	Boards []string
+}
+
+type trelloBoardAssignCount struct {
+	BoardName string
+	Count     int
+}
+
+type trelloBoardAssign struct {
+	AvatarHash string
+	MemberName   string
+	AssignCounts []trelloBoardAssignCount
+}
+
+type trelloRender struct {
+	Boards []trelloRenderBoard
+
+	// items below are generated during the render phase
+	SharedLabels      []trelloSharedLabel
+	MembersByID       map[string]trelloMember
+	MemberBoardAssign []trelloBoardAssign
 }
