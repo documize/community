@@ -3,7 +3,7 @@
 
 	> .summary-line {
 		color: $color-gray;
-		margin-top: 20px;
+		margin: 20px 0 30px 0;
 
 		>.items {
 			padding: 0;
@@ -51,11 +51,23 @@
 	    top: 10px;
 	}
 
+	.close-action {
+		float: right;
+
+		> .round-button-mono {
+			color: $color-stroke;
+			border-color: $color-stroke;
+
+			> .material-icons {
+				color: $color-stroke;
+			}
+		}
+	}
+
 	.document-structure {
 		> .toc-controls {
 			text-align: center;
 			margin: 0;
-			padding: 30px 0 10px 0;
 			color: $color-gray;
 
 			> .round-button-mono {
@@ -84,6 +96,7 @@
 			font-size: 13px;
 			overflow-x: hidden;
 			list-style-type: none;
+			margin: 20px 0 0 0;
 
 			.item {
 				padding: 4px 0;
@@ -110,17 +123,10 @@
 }
 
 .meta-viewers {
-	overflow-y: auto;
-	overflow-x: hidden;
-
 	> .items {
 		list-style-type: none;
 		margin: 0;
 		padding: 0;
-		overflow-y: auto;
-		overflow-x: hidden;
-		height: 300px;
-		min-width: 300px;
 		white-space: nowrap;
 
 		> .item {
@@ -159,10 +165,6 @@
 		list-style-type: none;
 		margin: 0;
 		padding: 0;
-		overflow-y: auto;
-		overflow-x: hidden;
-		height: 300px;
-		min-width: 300px;
 		white-space: nowrap;
 
 		> .item {

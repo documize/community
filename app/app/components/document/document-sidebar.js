@@ -14,9 +14,11 @@ import TooltipMixin from '../../mixins/tooltip';
 
 export default Ember.Component.extend(TooltipMixin, {
     documentService: Ember.inject.service('document'),
-
     document: {},
     folder: {},
+	showToc: true,
+	showViews: false,
+	showContributions: false,
 
 	didRender() {
 		if (this.session.authenticated) {
@@ -46,6 +48,24 @@ export default Ember.Component.extend(TooltipMixin, {
 		// close dialog
         close() {
             return true;
-        }
+        },
+
+		showToc() {
+			this.set('showToc', true);
+			this.set('showViews', false);
+			this.set('showContributions', false);
+		},
+
+		showViews() {
+			this.set('showToc', false);
+			this.set('showViews', true);
+			this.set('showContributions', false);
+		},
+
+		showContributions() {
+			this.set('showToc', false);
+			this.set('showViews', false);
+			this.set('showContributions', true);
+		}
     }
 });
