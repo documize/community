@@ -13,7 +13,10 @@ package trello
 
 const membersTemplate = `
 <h3>Member Stats</h3>
-<p> There are {{len .MemberBoardAssign}} members assigned to ##9 cards across {{len .Boards}} boards.</p>
+<p> 
+	There are {{len .MemberBoardAssign}} members assigned to {{.CardAssignTotal}} cards
+	of the total {{.CardTotal}} cards across {{len .Boards}} boards.
+</p>
 
 <div class="section-trello-render non-printable">
 	<table class="trello-table" class="width-100">

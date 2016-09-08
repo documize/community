@@ -263,4 +263,6 @@ type trelloRender struct {
 	SharedLabels      []trelloSharedLabel
 	MembersByID       map[string]trelloMember
 	MemberBoardAssign []trelloBoardAssign
+	CardAssignTotal   int
+	CardTotal         int
 }

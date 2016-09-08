@@ -412,6 +412,10 @@ func fetchBoardActions(config *trelloConfig, render *trelloRender, boardID strin
 
 func buildPayloadAnalysis(config *trelloConfig, render *trelloRender) {
 
+	//totals
+	render.CardTotal = 0
+	render.CardAssignTotal = 0
+
 	// pre-process labels
 	type labT struct {
 		color  string
@@ -426,6 +430,10 @@ func buildPayloadAnalysis(config *trelloConfig, render *trelloRender) {
 	for _, brd := range render.Boards {
 		for _, lst := range brd.Data {
 			for _, crd := range lst.Cards {
+				render.CardTotal++
+				if len(crd.MembersID) > 0 {
+					render.CardAssignTotal++
+				}
 
 				// process labels
 				for _, lab := range crd.Labels {
