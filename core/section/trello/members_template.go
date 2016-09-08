@@ -12,14 +12,28 @@
 package trello
 
 const membersTemplate = `
-<b>Member Stats</b><br>
-{{range $m := .MemberBoardAssign}}
-	<img src="https://trello-avatars.s3.amazonaws.com/{{$m.AvatarHash}}/50.png">
-	{{$m.MemberName}} : 
-	{{range $ac := $m.AssignCounts}}
-		{{$ac.BoardName}} ({{$ac.Count}}),
-	{{end}}
-	<br>
-{{end}}
-<br>
+<h3>Member Stats</h3>
+<p> There are {{len .MemberBoardAssign}} members assigned to ##9 cards across {{len .Boards}} boards.</p>
+
+<div class="section-trello-render non-printable">
+	<table class="trello-table" class="width-100">
+		<tbody>
+
+		{{range $m := .MemberBoardAssign}}
+			<tr>
+				<td class="width-15">
+					<img class="trello-avatar" src="https://trello-avatars.s3.amazonaws.com/{{$m.AvatarHash}}/50.png" height="50" alt="Member Avatar">
+				</td>
+				<td class="width-85">
+					<h6>{{$m.MemberName}}</h6>
+					{{range $ac := $m.AssignCounts}}
+						{{$ac.BoardName}} ({{$ac.Count}}),
+					{{end}}
+				</td>
+			</tr>
+		{{end}}
+		</tbody>
+	</table>
+</div>
+
 `
