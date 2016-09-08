@@ -19,10 +19,10 @@ const labelsTemplate = `
 		<tbody class="trello">
 		{{range $l := .SharedLabels}}
 			<tr>
-				<td class="width-15">
+				<td class="width-25">
 					<span class="trello-label" style="background-color: {{ $l.Color }}">{{ $l.Name }} ({{len $l.Boards}})</span>
 				</td>
-				<td class="width-85">
+				<td class="width-75">
 					{{range $brd := $l.Boards}}
 					{{ $brd }},
 					{{end}}

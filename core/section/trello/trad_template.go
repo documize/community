@@ -12,27 +12,28 @@
 package trello
 
 const tradTemplate = `
-<b>Previous version</b>
-
-{{range $b := .Boards}}
-	<p class="non-printable-message">Non-printable</p>
-	<div class="section-trello-render non-printable">
-		<p>There are {{ $b.CardCount }} cards across {{ $b.ListCount }} lists for board <a href="{{ $b.Board.URL }}">{{$b.Board.Name}}.</a></p>
-		<div class="trello-board" style="background-color: {{$b.Board.Prefs.BackgroundColor}}">
-			<a href="{{ $b.Board.URL }}"><div class="trello-board-title">{{$b.Board.Name}}</div></a>
-			{{range $data := $b.Data}}
-				<div class="trello-list">
-					<div class="trello-list-title">{{ $data.List.Name }}</div>
-					{{range $card := $data.Cards}}
-						<a href="{{ $card.URL }}">
-							<div class="trello-card">
-								{{ $card.Name }}
-							</div>
-						</a>
-					{{end}}
-				</div>
-			{{end}}
+{{if eq 1 (len .Boards)}}
+	<h3>#Board Name</h3>
+	{{range $b := .Boards}}
+		<p class="non-printable-message">Non-printable</p>
+		<div class="section-trello-render non-printable">
+			<p>There are {{ $b.CardCount }} cards across {{ $b.ListCount }} lists for board <a href="{{ $b.Board.URL }}">{{$b.Board.Name}}.</a></p>
+			<div class="trello-board" style="background-color: {{$b.Board.Prefs.BackgroundColor}}">
+				<a href="{{ $b.Board.URL }}"><div class="trello-board-title">{{$b.Board.Name}}</div></a>
+				{{range $data := $b.Data}}
+					<div class="trello-list">
+						<div class="trello-list-title">{{ $data.List.Name }}</div>
+						{{range $card := $data.Cards}}
+							<a href="{{ $card.URL }}">
+								<div class="trello-card">
+									{{ $card.Name }}
+								</div>
+							</a>
+						{{end}}
+					</div>
+				{{end}}
+			</div>
 		</div>
-	</div>
+	{{end}}
 {{end}}
 `
