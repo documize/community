@@ -31,6 +31,61 @@ func (c *trelloConfig) Clean() {
 }
 
 // Trello objects based upon https://github.com/VojtechVitek/go-trello
+
+type trelloAction struct {
+	//client          *Client
+	Id              string `json:"id"`
+	IdMemberCreator string `json:"idMemberCreator"`
+	Data            struct {
+		DateLastEdited string `json:"dateLastEdited"`
+		ListBefore     struct {
+			Id   string `json:"id"`
+			Name string `json:"name"`
+		} `json:"listBefore"`
+		ListAfter struct {
+			Id   string `json:"id"`
+			Name string `json:"name"`
+		} `json:"listAfter"`
+		CheckItem struct {
+			Id    string `json:"id"`
+			State string `json:"state"`
+			Name  string `json:"name"`
+		} `json:"checkItem"`
+		CheckList struct {
+			Id   string `json:"id"`
+			Name string `json:"name"`
+		} `json:"checklist"`
+		List struct {
+			Id   string `json:"id"`
+			Name string `json:"name"`
+		} `json:"list"`
+		TextData struct {
+			Emoji struct{} `json:"emoji"`
+		} `json:"textData"`
+		Board struct {
+			Id        string `json:"id"`
+			Name      string `json:"name"`
+			ShortLink string `json:"shortLink"`
+		} `json:"board"`
+		Card struct {
+			Id        string `json:"id"`
+			Name      string `json:"name"`
+			ShortLink string `json:"shortLink"`
+			IdShort   int    `json:"idShort"`
+		} `json:"card"`
+		Text string `json:"text"`
+	} `json:"data"`
+	Type          string `json:"type"`
+	Date          string `json:"date"`
+	MemberCreator struct {
+		Id         string `json:"id"`
+		AvatarHash string `json:"avatarHash"`
+		FullName   string `json:"fullName"`
+		Initials   string `json:"initials"`
+		Username   string `json:"username"`
+	} `json:"memberCreator"`
+}
+
 type trelloMember struct {
 	ID         string `json:"id"`
 	AvatarHash string `json:"avatarHash"`
@@ -178,6 +233,7 @@ type trelloListCards struct {
 
 type trelloRenderBoard struct {
 	Board     trelloBoard
+	Actions   []trelloAction
 	Data      []trelloListCards
 	CardCount int
 	ListCount int
@@ -195,7 +251,7 @@ type trelloBoardAssignCount struct {
 }
 
 type trelloBoardAssign struct {
-	AvatarHash string
+	AvatarHash   string
 	MemberName   string
 	AssignCounts []trelloBoardAssignCount
 }

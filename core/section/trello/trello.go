@@ -19,6 +19,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"sort"
+	"time"
 
 	"github.com/documize/community/core/api/request"
 	"github.com/documize/community/core/log"
@@ -205,6 +206,8 @@ func (*Provider) Refresh(ctx *provider.Context, config, data string) string {
 			payload.CardCount += len(list.Cards)
 		}
 
+		payload.Actions = fetchBoardActions(&c, &save, board.ID, nil) // TODO pass in date
+
 		save.Boards = append(save.Boards, payload)
 	}
 
@@ -220,7 +223,9 @@ func (*Provider) Refresh(ctx *provider.Context, config, data string) string {
 
 // Helpers
 func getBoards(config trelloConfig) (boards []trelloBoard, err error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("https://api.trello.com/1/members/me/boards?fields=id,name,url,closed,prefs,idOrganization&key=%s&token=%s", config.AppKey, config.Token), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf(
+		"https://api.trello.com/1/members/me/boards?fields=id,name,url,closed,prefs,idOrganization&key=%s&token=%s",
+		config.AppKey, config.Token), nil)
 	log.IfErr(err)
 	client := &http.Client{}
 	res, err := client.Do(req)
@@ -370,6 +375,41 @@ func fetchMember(config *trelloConfig, render *trelloRender, memberID string) (m
 	return
 }
 
+func fetchBoardActions(config *trelloConfig, render *trelloRender, boardID string, since *time.Time) (actions []trelloAction) {
+
+	if len(config.AppKey) == 0 {
+		config.AppKey = request.ConfigString(meta.ConfigHandle(), "appKey")
+	}
+	uri := fmt.Sprintf("https://api.trello.com/1/boards/%s/actions?since=2016-08-01&key=%s&token=%s", boardID, config.AppKey, config.Token)
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		log.IfErr(err)
+		return
+	}
+	client := &http.Client{}
+	res, err := client.Do(req)
+	if err != nil {
+		log.IfErr(err)
+		return
+	}
+
+	if res.StatusCode != http.StatusOK {
+		log.ErrorString("Trello fetch board actions HTTP status not OK")
+		return
+	}
+
+	defer res.Body.Close()
+
+	dec := json.NewDecoder(res.Body)
+	err = dec.Decode(&actions)
+	if err != nil {
+		log.IfErr(err)
+		return
+	}
+
+	return
+}
+
 func buildPayloadAnalysis(config *trelloConfig, render *trelloRender) {
 
 	// pre-process labels
@@ -438,7 +478,7 @@ func buildPayloadAnalysis(config *trelloConfig, render *trelloRender) {
 			memInfo := fetchMember(config, render, mem)
 			if mNam == memInfo.FullName {
 				render.MemberBoardAssign = append(render.MemberBoardAssign, trelloBoardAssign{MemberName: mNam, AvatarHash: memInfo.AvatarHash})
-				for _, b := range render.Boards {
+				for _, b := range render.Boards { // these are already in order
 					if count, ok := brdCounts[b.Board.ID]; ok {
 						render.MemberBoardAssign[len(render.MemberBoardAssign)-1].AssignCounts =
 							append(render.MemberBoardAssign[len(render.MemberBoardAssign)-1].AssignCounts,
