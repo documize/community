@@ -14,12 +14,18 @@ package trello
 const boardsTemplate = `
 
 <b>All Boards</b><br>
+Changes since ###1 Aug 2016###.
 {{range $b := .Boards}}
 	<div>
 		<p>There are {{ len $b.Actions }} actions for board <a href="{{ $b.Board.URL }}">{{$b.Board.Name}}.</a></p>
 		<div>
-			{{range $act := $b.Actions}}
-                {{$act.Date}} {{$act.Type}} {{$act.MemberCreator.FullName}} <br>
+			{{range $idx, $act := $b.ActionSummary}}
+				{{$act}} {{$idx}},
+			{{end}}
+			{{if gt (len $b.Archived) 0}}
+				archiveCard
+				{{len $b.Archived}}.
+				<br>
 			{{end}}
 		</div>
 	</div>

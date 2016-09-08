@@ -162,10 +162,19 @@ func (*Provider) Render(ctx *provider.Context, config, data string) string {
 	t := template.New("trello")
 	var err error
 	t, err = t.Parse(renderTemplate)
-	log.IfErr(err)
+
+	if err != nil {
+		log.IfErr(err)
+		return ""
+	}
 
 	buffer := new(bytes.Buffer)
-	t.Execute(buffer, payload)
+	err = t.Execute(buffer, payload)
+
+	if err != nil {
+		log.IfErr(err)
+		return ""
+	}
 
 	return buffer.String()
 }
@@ -206,7 +215,7 @@ func (*Provider) Refresh(ctx *provider.Context, config, data string) string {
 			payload.CardCount += len(list.Cards)
 		}
 
-		payload.Actions = fetchBoardActions(&c, &save, board.ID, nil) // TODO pass in date
+		payload.Actions, payload.Archived = fetchBoardActions(&c, &save, board.ID, nil) // TODO pass in date
 
 		save.Boards = append(save.Boards, payload)
 	}
@@ -375,36 +384,79 @@ func fetchMember(config *trelloConfig, render *trelloRender, memberID string) (m
 	return
 }
 
-func fetchBoardActions(config *trelloConfig, render *trelloRender, boardID string, since *time.Time) (actions []trelloAction) {
+func fetchBoardActions(config *trelloConfig, render *trelloRender, boardID string, since *time.Time) (actions []trelloAction, archived []trelloCard) {
+
+	sinceString := "2016-08-01" // TODO
 
 	if len(config.AppKey) == 0 {
 		config.AppKey = request.ConfigString(meta.ConfigHandle(), "appKey")
 	}
-	uri := fmt.Sprintf("https://api.trello.com/1/boards/%s/actions?since=2016-08-01&key=%s&token=%s", boardID, config.AppKey, config.Token)
-	req, err := http.NewRequest("GET", uri, nil)
-	if err != nil {
-		log.IfErr(err)
-		return
-	}
-	client := &http.Client{}
-	res, err := client.Do(req)
-	if err != nil {
-		log.IfErr(err)
-		return
+
+	{
+		uri := fmt.Sprintf("https://api.trello.com/1/boards/%s/actions?limit=1000&since=%s&key=%s&token=%s", boardID, sinceString, config.AppKey, config.Token)
+
+		req, err := http.NewRequest("GET", uri, nil)
+		if err != nil {
+			log.IfErr(err)
+			return
+		}
+		client := &http.Client{}
+		res, err := client.Do(req)
+		if err != nil {
+			log.IfErr(err)
+			return
+		}
+
+		if res.StatusCode != http.StatusOK {
+			log.ErrorString("Trello fetch board actions HTTP status not OK")
+			return
+		}
+
+		defer res.Body.Close()
+
+		dec := json.NewDecoder(res.Body)
+		err = dec.Decode(&actions)
+		if err != nil {
+			log.IfErr(err)
+			return
+		}
 	}
 
-	if res.StatusCode != http.StatusOK {
-		log.ErrorString("Trello fetch board actions HTTP status not OK")
-		return
-	}
+	{
+		uri := fmt.Sprintf("https://api.trello.com/1/boards/%s/cards?filter=closed&since=%s&key=%s&token=%s",
+			boardID, sinceString, config.AppKey, config.Token)
+		req, err := http.NewRequest("GET", uri, nil)
+		if err != nil {
+			log.IfErr(err)
+			return
+		}
+		client := &http.Client{}
+		res, err := client.Do(req)
+		if err != nil {
+			log.IfErr(err)
+			return
+		}
 
-	defer res.Body.Close()
+		if res.StatusCode != http.StatusOK {
+			msg := ""
+			txt, err := ioutil.ReadAll(res.Body)
+			if err == nil {
+				msg = string(txt)
+			} else {
+				msg = err.Error()
+			}
+			log.ErrorString("Trello fetch board archived HTTP status not OK - " + msg)
+			return
+		}
 
-	dec := json.NewDecoder(res.Body)
-	err = dec.Decode(&actions)
-	if err != nil {
-		log.IfErr(err)
-		return
+		defer res.Body.Close()
+
+		dec := json.NewDecoder(res.Body)
+		err = dec.Decode(&archived)
+		if err != nil {
+			log.IfErr(err)
+			return
+		}
 	}
 
 	return
@@ -427,7 +479,7 @@ func buildPayloadAnalysis(config *trelloConfig, render *trelloRender) {
 	memberBoardCount := make(map[string]map[string]int)
 
 	// main loop
-	for _, brd := range render.Boards {
+	for brdIdx, brd := range render.Boards {
 		for _, lst := range brd.Data {
 			for _, crd := range lst.Cards {
 				render.CardTotal++
@@ -451,6 +503,14 @@ func buildPayloadAnalysis(config *trelloConfig, render *trelloRender) {
 					memberBoardCount[mem][brd.Board.ID]++
 				}
 			}
+		}
+
+		// ActionSummary
+		if render.Boards[brdIdx].ActionSummary == nil {
+			render.Boards[brdIdx].ActionSummary = make(map[string]int)
+		}
+		for _, act := range brd.Actions {
+			render.Boards[brdIdx].ActionSummary[act.Type]++
 		}
 	}
 

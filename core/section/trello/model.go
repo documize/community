@@ -33,7 +33,6 @@ func (c *trelloConfig) Clean() {
 // Trello objects based upon https://github.com/VojtechVitek/go-trello
 
 type trelloAction struct {
-	//client          *Client
 	Id              string `json:"id"`
 	IdMemberCreator string `json:"idMemberCreator"`
 	Data            struct {
@@ -232,11 +231,13 @@ type trelloListCards struct {
 }
 
 type trelloRenderBoard struct {
-	Board     trelloBoard
-	Actions   []trelloAction
-	Data      []trelloListCards
-	CardCount int
-	ListCount int
+	Board         trelloBoard
+	Data          []trelloListCards
+	CardCount     int
+	ListCount     int
+	Actions       []trelloAction
+	ActionSummary map[string]int
+	Archived      []trelloCard
 }
 
 type trelloSharedLabel struct {
