@@ -1,4 +1,4 @@
-
+/* enterprise edition */
 DROP TABLE IF EXISTS `share`;
 
 CREATE TABLE IF NOT EXISTS `share` (

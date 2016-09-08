@@ -6,14 +6,14 @@
 					<div id="owner-avatar" class="avatar" data-tooltip="{{owner.fullname}}" data-tooltip-position="right middle">{{owner.initials}}</div>
 				</li>
 				<li class="divider" />
-		        <li class="item" id="meta-button-viewers">
+		        <li class="item" {{action 'showViews'}}>
 					<div class="metric">
 						<div class="number">{{meta.viewers.length}}</div>
 			            <div class="label">views</div>
 					</div>
 		        </li>
 				<li class="divider" />
-		        <li class="item" id="meta-button-history">
+		        <li class="item" {{action 'showContributions'}}>
 					<div class="metric">
 						<div class="number">{{meta.editors.length}}</div>
 			            <div class="label">activity</div>
@@ -21,16 +21,21 @@
 		        </li>
 		    </ul>
 		</div>
-		{{#dropdown-dialog target="meta-button-viewers" position="bottom left" showCancel=false button="Close" onAction=(action 'close') color="flat-gray"}}
-			{{document/document-sidebar-viewers meta=meta}}
-		{{/dropdown-dialog}}
-		{{#dropdown-dialog target="meta-button-history" position="bottom left" showCancel=false button="Close" onAction=(action 'close') color="flat-gray"}}
-			{{document/document-sidebar-edits pages=pages meta=meta}}
-		{{/dropdown-dialog}}
 	{{else}}
 		<div class="margin-top-40" />
 	{{/if}}
-	{{document/document-sidebar-toc document=model folder=folder pages=pages page=page isEditor=isEditor
-		changePageSequence=(action 'onPageSequenceChange') changePageLevel=(action 'onPageLevelChange')
-		gotoPage=(action 'gotoPage')}}
+
+	{{#if showToc}}
+		{{document/document-sidebar-toc document=model folder=folder pages=pages page=page isEditor=isEditor
+			changePageSequence=(action 'onPageSequenceChange') changePageLevel=(action 'onPageLevelChange')
+			gotoPage=(action 'gotoPage')}}
+	{{/if}}
+	{{#if showViews}}
+		{{document/document-sidebar-close-action close=(action 'showToc')}}
+		{{document/document-sidebar-viewers meta=meta}}
+	{{/if}}
+	{{#if showContributions}}
+		{{document/document-sidebar-close-action close=(action 'showToc')}}
+		{{document/document-sidebar-edits pages=pages meta=meta}}
+	{{/if}}
 </div>
