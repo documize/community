@@ -12,15 +12,19 @@
 package trello
 
 const archiveTemplate = `
-<b>Deleted and Archived Cards</b><br> 
+<h3>Deleted and Archived Cards</h3>
 Since ###1st Aug 2016###<br>
 {{range $b := .Boards}}
 	<div>
-		<p>For board <a href="{{ $b.Board.URL }}">{{$b.Board.Name}}</a>.</p>
+		<p>For board
+			<a href="{{ $b.Board.URL }}">
+				<span style="background-color: {{$b.Board.Prefs.BackgroundColor}}">{{$b.Board.Name}}</span>
+			</a>
+		</p>
 		<div>
 			{{range $act := $b.Actions}}
                 {{if eq $act.Type "deleteCard" }}
-                    Deleted: 
+                    Deleted:
 				    {{$act.Data.List.Name}}/{{$act.Data.Card.Name}} - {{$act.Data.Text}}
 			    	<br>
                 {{end}}
