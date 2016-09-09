@@ -13,7 +13,7 @@ package trello
 
 const archiveTemplate = `
 <h3>Deleted and Archived Cards</h3>
-Since ###1st Aug 2016###<br>
+<p>Changes since {{.Since}}.</p>
 {{range $b := .Boards}}
 	<div>
 		<p>For board
