@@ -36,13 +36,18 @@
 
     table.trello-table {
         border:none!important;
-        margin-left: 0 !important;
+        margin-left: 20px !important;
         margin-bottom: 20px !important;
     }
 
     table.trello-table td {
         border:none!important;
         padding: 20px 20px 0 0  !important;
+        vertical-align: top;
+    }
+
+    tbody.board-stats td {
+        padding-right: 40px!important;
     }
 
     span.trello-label {
@@ -52,13 +57,36 @@
         text-shadow: 0 0 5px rgba(0,0,0,.2),0 0 2px #000;
     }
 
+    span.trello-board {
+        color: white;
+        padding: 20px 20px;
+        width: 190px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: inline-block;
+        border-radius: 4px;
+        margin-right: 20px;
+    }
+
     .trello-avatar {
         border-radius: 3px;
+        margin-right: 10px;
     }
 
     h6 {
         font-size: 18px;
         margin: 0;
+    }
+
+    p.board-stats {
+        font-size: 18px;
+    }
+
+    span.stat-number {
+        font-family: "open_sanslight";
+        font-size: 50px;
+        margin-right: 15px;
     }
 
 	> .trello-board {

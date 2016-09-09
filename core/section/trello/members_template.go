@@ -17,20 +17,22 @@ const membersTemplate = `
 	There are {{len .MemberBoardAssign}} members assigned to {{.CardAssignTotal}} cards	of the total {{.CardTotal}} cards across {{len .Boards}} boards.
 </p>
 
-<div class="section-trello-render non-printable">
+<div class="section-trello-render">
 	<table class="trello-table" class="width-100">
 		<tbody>
 
 		{{range $m := .MemberBoardAssign}}
 			<tr>
-				<td class="width-15">
+				<td>
 					<img class="trello-avatar" src="https://trello-avatars.s3.amazonaws.com/{{$m.AvatarHash}}/50.png" height="50" alt="Member Avatar">
 				</td>
-				<td class="width-85">
+				<td>
 					<h6>{{$m.MemberName}}</h6>
-					{{range $ac := $m.AssignCounts}}
-						{{$ac.BoardName}} ({{$ac.Count}}),
-					{{end}}
+					<p>
+						{{range $ac := $m.AssignCounts}}
+							{{$ac.BoardName}} ({{$ac.Count}}),
+						{{end}}
+					</p>
 				</td>
 			</tr>
 		{{end}}

@@ -14,7 +14,7 @@ package trello
 const labelsTemplate = `
 <h3>Labels</h3>
 <p>There are {{len .SharedLabels}} common labels across the boards.</p>
-<div class="section-trello-render non-printable">
+<div class="section-trello-render">
 	<table class="trello-table" class="width-100">
 		<tbody class="trello">
 		{{range $l := .SharedLabels}}

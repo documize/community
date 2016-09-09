@@ -14,29 +14,32 @@ package trello
 const archiveTemplate = `
 <h3>Deleted and Archived Cards</h3>
 <p>Changes since {{.Since}}.</p>
-{{range $b := .Boards}}
-	<div>
-		<p>For board
-			<a href="{{ $b.Board.URL }}">
-				<span style="background-color: {{$b.Board.Prefs.BackgroundColor}}">{{$b.Board.Name}}</span>
-			</a>
-		</p>
-		<div>
-			{{range $act := $b.Actions}}
-                {{if eq $act.Type "deleteCard" }}
-                    Deleted:
-				    {{$act.Data.List.Name}}/{{$act.Data.Card.Name}} - {{$act.Data.Text}}
-			    	<br>
-                {{end}}
-			{{end}}
-			{{range $arch := $b.Archived}}
-				 Archived:
-                {{$arch.Name}} - {{$arch.Desc}}
-				<br>
-			{{end}}
-		</div>
-	</div>
-{{end}}
-
-<br>
+<div class="section-trello-render">
+	<table class="trello-table" class="width-100">
+		<tbody class="trello">
+		{{range $b := .Boards}}
+			<tr>
+				<td>
+					<a href="{{ $b.Board.URL }}">
+						<span class="trello-board" style="background-color: {{$b.Board.Prefs.BackgroundColor}}">{{$b.Board.Name}}</span>
+					</a>
+				</td>
+				<td>
+					{{range $act := $b.Actions}}
+						{{if eq $act.Type "deleteCard" }}
+						Deleted:
+							{{$act.Data.List.Name}} : {{$act.Data.Card.Name}} - {{$act.Data.Text}}
+						{{end}}
+					{{end}}
+					{{range $arch := $b.Archived}}
+						Archived:
+							{{$arch.Name}} - {{$arch.Desc}}
+						<br>
+					{{end}}
+				</td>
+			</tr>
+		{{end}}
+		</tbody>
+	</table>
+</div>
 `
