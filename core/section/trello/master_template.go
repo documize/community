@@ -11,9 +11,8 @@
 
 package trello
 
-const renderTemplate = `
-<h3>Header for Trello Multi-Board Test (in master_template.go)</h3>
-` + labelsTemplate +
+const renderTemplate = `` +
+	labelsTemplate +
 	boardsTemplate +
 	graphsTemplate +
 	membersTemplate +

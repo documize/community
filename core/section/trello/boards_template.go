@@ -13,7 +13,7 @@ package trello
 
 const boardsTemplate = `
 
-<h3>All Boards</h3>
+<h3>Boards</h3>
 <p>Changes since {{.Since}}.</p>
 <div class="section-trello-render">
 	<table class="trello-table" class="width-100">

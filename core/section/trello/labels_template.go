@@ -12,24 +12,26 @@
 package trello
 
 const labelsTemplate = `
-<h3>Labels</h3>
-<p>There are {{len .SharedLabels}} common labels across the boards.</p>
-<div class="section-trello-render">
-	<table class="trello-table" class="width-100">
-		<tbody class="trello">
-		{{range $l := .SharedLabels}}
-			<tr>
-				<td class="width-25">
-					<span class="trello-label" style="background-color: {{ $l.Color }}">{{ $l.Name }} ({{len $l.Boards}})</span>
-				</td>
-				<td class="width-75">
-					{{range $brd := $l.Boards}}
-					{{ $brd }},
-					{{end}}
-				</td>
-			</tr>
-		{{end}}
-		</tbody>
-	</table>
-</div>
+{{if gt (len .SharedLabels) 0}}
+	<h3>Labels</h3>
+	<p>There are {{len .SharedLabels}} common labels across the boards.</p>
+	<div class="section-trello-render">
+		<table class="trello-table" class="width-100">
+			<tbody class="trello">
+			{{range $l := .SharedLabels}}
+				<tr>
+					<td class="width-25">
+						<span class="trello-label" style="background-color: {{ $l.Color }}">{{ $l.Name }} ({{len $l.Boards}})</span>
+					</td>
+					<td class="width-75">
+						{{range $brd := $l.Boards}}
+						{{ $brd }},
+						{{end}}
+					</td>
+				</tr>
+			{{end}}
+			</tbody>
+		</table>
+	</div>
+{{end}}
 `
