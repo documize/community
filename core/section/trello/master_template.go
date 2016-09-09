@@ -15,7 +15,7 @@ const renderTemplate = `
 <h3>Header for Trello Multi-Board Test (in master_template.go)</h3>
 ` + labelsTemplate +
 	boardsTemplate +
-	// graphsTemplate +
+	graphsTemplate +
 	membersTemplate +
 	archiveTemplate +
 	tradTemplate +

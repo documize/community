@@ -11,18 +11,23 @@
 
 package trello
 
-import "strings"
+import (
+	"strings"
+	"time"
+)
 
 type secrets struct {
 	Token string `json:"token"`
 }
 
 type trelloConfig struct {
-	AppKey string        `json:"appKey"`
-	Token  string        `json:"token"`
-	Board  trelloBoard   `json:"board"` // TODO review
-	Lists  []trelloList  `json:"lists"` // TODO review
-	Boards []trelloBoard `json:"boards"`
+	AppKey   string        `json:"appKey"`
+	Token    string        `json:"token"`
+	Board    trelloBoard   `json:"board"`
+	Lists    []trelloList  `json:"lists"`
+	Boards   []trelloBoard `json:"boards"`
+	Since    string        `json:"since,omitempty"`
+	SincePtr *time.Time    `json:"-"`
 }
 
 func (c *trelloConfig) Clean() {
@@ -162,6 +167,7 @@ type trelloBoard struct {
 		Blue   string `json:"blue"`
 		Purple string `json:"purple"`
 	} `json:"labelNames"`
+	Included bool `json:"included"` // indicates whether we display this board
 }
 
 type trelloBoardBackground struct {
@@ -258,6 +264,8 @@ type trelloBoardAssign struct {
 }
 
 type trelloRender struct {
+	Config trelloConfig
+
 	Boards []trelloRenderBoard
 
 	Since string

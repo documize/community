@@ -12,8 +12,7 @@
 package trello
 
 const tradTemplate = `
-{{if eq 1 (len .Boards)}}
-	<h3>#Board Name</h3>
+{{if false}}
 	{{range $b := .Boards}}
 		<p class="non-printable-message">Non-printable</p>
 		<div class="section-trello-render non-printable">

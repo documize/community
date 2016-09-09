@@ -50,7 +50,8 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 				token: "",
 				user: null,
 				board: null,
-				lists: []
+				lists: [],
+				boards: []
 			};
 		}
 
@@ -101,6 +102,12 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
 		this.set('noBoards', false);
 
+		if (is.undefined(self.get('initDateTimePicker'))) {
+			$.datetimepicker.setLocale('en');
+			$('#trello-since').datetimepicker();
+			self.set('initDateTimePicker', "Done");
+		}
+
 		if (is.null(board) || is.undefined(board)) {
 			if (boards.length) {
 				board = boards[0];
@@ -147,6 +154,15 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
 			if (list !== null) {
 				Ember.set(list, 'included', !list.included);
+			}
+		},
+
+		onBoardCheckbox(id) {
+			let boards = this.get('config.boards');
+			let board = boards.findBy('id', id);
+
+			if (board !== null) {
+				Ember.set(board, 'included', !board.included);
 			}
 		},
 

@@ -183,45 +183,67 @@ func (*Provider) Render(ctx *provider.Context, config, data string) string {
 // Refresh just sends back data as-is.
 func (*Provider) Refresh(ctx *provider.Context, config, data string) string {
 	var c = trelloConfig{}
-	json.Unmarshal([]byte(config), &c)
+	log.IfErr(json.Unmarshal([]byte(config), &c))
 
 	save := trelloRender{}
+	save.Config = c
 	save.Boards = make([]trelloRenderBoard, 0, len(c.Boards))
 
-	for _, board := range c.Boards {
-
-		var payload = trelloRenderBoard{}
-
-		c.Board = board
-		c.AppKey = request.ConfigString(meta.ConfigHandle(), "appKey")
-
-		lsts, err := getLists(c)
-		log.IfErr(err)
-		if err == nil {
-			c.Lists = lsts
+	if len(c.Since) >= len("yyyy/mm/dd hh:ss") {
+		var since time.Time
+		tt := []byte("yyyy-mm-ddThh:mm:00Z")
+		for _, i := range []int{0, 1, 2, 3, 5, 6, 8, 9, 11, 12, 14, 15} {
+			tt[i] = c.Since[i]
 		}
-
-		for l := range c.Lists {
-			c.Lists[l].Included = true
+		err := since.UnmarshalText(tt)
+		if err != nil {
+			log.ErrorString("Date unmarshall '" + c.Since + "'->'" + string(tt) + "' error: " + err.Error())
+		} else {
+			c.SincePtr = &since
 		}
-
-		refreshed, err := getCards(c)
-		log.IfErr(err)
-
-		payload.Board = c.Board
-		payload.Data = refreshed
-		payload.ListCount = len(refreshed)
-
-		for _, list := range refreshed {
-			payload.CardCount += len(list.Cards)
-		}
-
-		payload.Actions, payload.Archived = fetchBoardActions(&c, &save, board.ID, nil) // TODO pass in date
-
-		save.Boards = append(save.Boards, payload)
 	}
+	dateMessage := ""
+	if c.SincePtr == nil {
+		dateMessage = " (the last 7 days)"
+		since := time.Now().AddDate(0, 0, -7)
+		c.SincePtr = &since
+		c.Since = (*c.SincePtr).Format("2006/01/02 ")
+	}
+	save.Since = (*c.SincePtr).Format("January 2, 2006") + dateMessage
 
-	save.Since = "# 1 Aug 2016 #"
+	for _, board := range c.Boards {
+		if board.Included {
+			var payload = trelloRenderBoard{}
+
+			c.Board = board
+			c.AppKey = request.ConfigString(meta.ConfigHandle(), "appKey")
+
+			lsts, err := getLists(c)
+			log.IfErr(err)
+			if err == nil {
+				c.Lists = lsts
+			}
+
+			for l := range c.Lists {
+				c.Lists[l].Included = true
+			}
+
+			refreshed, err := getCards(c)
+			log.IfErr(err)
+
+			payload.Board = c.Board
+			payload.Data = refreshed
+			payload.ListCount = len(refreshed)
+
+			for _, list := range refreshed {
+				payload.CardCount += len(list.Cards)
+			}
+
+			payload.Actions, payload.Archived = fetchBoardActions(&c, &save, board.ID, c.Since)
+
+			save.Boards = append(save.Boards, payload)
+		}
+	}
 
 	j, err := json.Marshal(save)
 
@@ -266,6 +288,10 @@ func getBoards(config trelloConfig) (boards []trelloBoard, err error) {
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
+	}
+
+	for bx := range boards {
+		boards[bx].Included = true // include boards by default
 	}
 
 	return boards, nil
@@ -387,9 +413,9 @@ func fetchMember(config *trelloConfig, render *trelloRender, memberID string) (m
 	return
 }
 
-func fetchBoardActions(config *trelloConfig, render *trelloRender, boardID string, since *time.Time) (actions []trelloAction, archived []trelloCard) {
+func fetchBoardActions(config *trelloConfig, render *trelloRender, boardID string, since string) (actions []trelloAction, archived []trelloCard) {
 
-	sinceString := "2016-08-01" // TODO
+	sinceString := since[:10]
 
 	if len(config.AppKey) == 0 {
 		config.AppKey = request.ConfigString(meta.ConfigHandle(), "appKey")

@@ -12,17 +12,21 @@
 package trello
 
 const graphsTemplate = `
-<b>Single Boards (graphs)</b><br>
-{{range $b := .Boards}}
-	<div>
-		<p>There are {{ $b.CardCount }} cards across {{ $b.ListCount }} lists for board <a href="{{ $b.Board.URL }}">{{$b.Board.Name}}.</a></p>
+{{if false}}
+
+	<b>Single Boards (graphs)</b><br>
+	{{range $b := .Boards}}
 		<div>
-			{{range $data := $b.Data}}
-				<div style="background-color: {{$b.Board.Prefs.BackgroundColor}}">
-					<progress value="{{len $data.Cards}}" max="{{ $b.CardCount }}"></progress> {{ $data.List.Name }}
-				</div>
-			{{end}}
+			<p>There are {{ $b.CardCount }} cards across {{ $b.ListCount }} lists for board <a href="{{ $b.Board.URL }}">{{$b.Board.Name}}.</a></p>
+			<div>
+				{{range $data := $b.Data}}
+					<div style="background-color: {{$b.Board.Prefs.BackgroundColor}}">
+						<progress value="{{len $data.Cards}}" max="{{ $b.CardCount }}"></progress> {{ $data.List.Name }}
+					</div>
+				{{end}}
+			</div>
 		</div>
-	</div>
+	{{end}}
+
 {{end}}
 `
