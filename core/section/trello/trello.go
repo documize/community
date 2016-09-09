@@ -20,6 +20,7 @@ import (
 	"net/http"
 	"sort"
 	"time"
+	"unicode"
 
 	"github.com/documize/community/core/api/request"
 	"github.com/documize/community/core/log"
@@ -219,6 +220,8 @@ func (*Provider) Refresh(ctx *provider.Context, config, data string) string {
 
 		save.Boards = append(save.Boards, payload)
 	}
+
+	save.Since = "# 1 Aug 2016 #"
 
 	j, err := json.Marshal(save)
 
@@ -467,6 +470,7 @@ func buildPayloadAnalysis(config *trelloConfig, render *trelloRender) {
 	//totals
 	render.CardTotal = 0
 	render.CardAssignTotal = 0
+	render.ListTotal = 0
 
 	// pre-process labels
 	type labT struct {
@@ -481,6 +485,7 @@ func buildPayloadAnalysis(config *trelloConfig, render *trelloRender) {
 	// main loop
 	for brdIdx, brd := range render.Boards {
 		for _, lst := range brd.Data {
+			render.ListTotal++
 			for _, crd := range lst.Cards {
 				render.CardTotal++
 				if len(crd.MembersID) > 0 {
@@ -510,7 +515,16 @@ func buildPayloadAnalysis(config *trelloConfig, render *trelloRender) {
 			render.Boards[brdIdx].ActionSummary = make(map[string]int)
 		}
 		for _, act := range brd.Actions {
-			render.Boards[brdIdx].ActionSummary[act.Type]++
+			englishType := ""
+			for _, c := range act.Type {
+				if unicode.IsUpper(c) {
+					englishType += " "
+					englishType += string(unicode.ToLower(c))
+				} else {
+					englishType += string(c)
+				}
+			}
+			render.Boards[brdIdx].ActionSummary[englishType]++
 		}
 	}
 

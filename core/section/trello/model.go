@@ -260,10 +260,13 @@ type trelloBoardAssign struct {
 type trelloRender struct {
 	Boards []trelloRenderBoard
 
+	Since string
+
 	// items below are generated during the render phase
 	SharedLabels      []trelloSharedLabel
 	MembersByID       map[string]trelloMember
 	MemberBoardAssign []trelloBoardAssign
 	CardAssignTotal   int
 	CardTotal         int
+	ListTotal         int
 }
