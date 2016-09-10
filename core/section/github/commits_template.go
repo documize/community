@@ -37,8 +37,7 @@ const commitsTemplate = `
 							<div class="contributor-meta">
 								{{if gt $stats.OpenIssues 0}}
 									assigned {{$stats.OpenIssues}}
-									{{if eq 1 $stats.OpenIssues}} issue
-								 	{{else}} issues {{end}}
+									{{if eq 1 $stats.OpenIssues}} issue {{else}} issues {{end}}
 								{{end}}
 								{{if gt $stats.ClosedIssues 0}}
 									 &middot; {{$stats.ClosedIssues}} closed
