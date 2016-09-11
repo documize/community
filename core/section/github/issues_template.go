@@ -40,7 +40,7 @@ const (
 	</p>
 
 	<div class="margin-top-20"></div>
-	<table class="github-table no-width">
+	<table class="github-table">
 		<tbody>
 			{{range $data := .Issues}}
 				<tr>
@@ -54,7 +54,7 @@ const (
 						</div>
 					</td>
 					<td><div class="margin-left-10"></div></td>
-					<td class="no-width">
+					<td>
 						<div class="issue-name"><a href="{{$data.URL}}">{{$data.Message}} <span class="dataid"></span></a></div>
 						<span class="milestone-meta">#{{$data.ID}} &middot; {{$data.Repo}} &middot; {{$data.Milestone}} &middot; {{$data.Creator}} opened on {{$data.Date}}</span>
 						<div>{{$data.Labels}}</div>
