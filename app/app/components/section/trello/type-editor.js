@@ -117,30 +117,34 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 			this.set('config.board', boards.findBy('id', board.id));
 		}
 
-		this.get('sectionService').fetch(page, "lists", self.get('config'))
-			.then(function (lists) {
-				let savedLists = self.get('config.lists');
-				if (savedLists === null) {
-					savedLists = [];
-				}
-
-				lists.forEach(function (list) {
-					let saved = savedLists.findBy("id", list.id);
-					let included = true;
-					if (is.not.undefined(saved)) {
-						included = saved.included;
+		if (is.null(board.id) || is.undefined(board.id)) {
+			self.set('busy', false);
+		} else {
+			this.get('sectionService').fetch(page, "lists", self.get('config'))
+				.then(function (lists) {
+					let savedLists = self.get('config.lists');
+					if (savedLists === null) {
+						savedLists = [];
 					}
-					list.included = included;
-				});
 
-				self.set('config.lists', lists);
-				self.set('busy', false);
-			}, function (error) { //jshint ignore: line
-				self.set('busy', false);
-				self.set('authenticated', false);
-				self.showNotification("Unable to fetch board lists");
-				console.log(error);
-			});
+					lists.forEach(function (list) {
+						let saved = savedLists.findBy("id", list.id);
+						let included = true;
+						if (is.not.undefined(saved)) {
+							included = saved.included;
+						}
+						list.included = included;
+					});
+
+					self.set('config.lists', lists);
+					self.set('busy', false);
+				}, function (error) { //jshint ignore: line
+					self.set('busy', false);
+					self.set('authenticated', false);
+					self.showNotification("Unable to fetch board lists");
+					console.log(error);
+				});
+		}
 	},
 
 	actions: {
@@ -203,8 +207,9 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 						self.get('sectionService').fetch(page, "boards", self.get('config'))
 							.then(function (boards) {
 								self.set('busy', false);
-								self.set('boards', boards);
+								boards.unshift({ id: null, name: "--None--", backgroundColor: "white" }); // add the non-selection to the front
 								self.set('config.boards', boards); // save the boards in the config too
+								self.set('boards', boards);
 								self.getBoardLists();
 							}, function (error) { //jshint ignore: line
 								self.set('busy', false);

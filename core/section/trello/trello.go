@@ -224,7 +224,7 @@ func (*Provider) Refresh(ctx *provider.Context, config, data string) string {
 	}
 
 	for _, board := range c.Boards {
-		if board.Included {
+		if board.Included && board.ID != "" {
 			var payload = trelloRenderBoard{}
 
 			c.Board = board
@@ -315,6 +315,9 @@ func getBoards(config trelloConfig) (boards []trelloBoard, err error) {
 }
 
 func getLists(config trelloConfig) (lists []trelloList, err error) {
+	if config.Board.ID == "" {
+		return
+	}
 	uri := fmt.Sprintf("https://api.trello.com/1/boards/%s/lists/open?key=%s&token=%s", config.Board.ID, config.AppKey, config.Token)
 	req, err := http.NewRequest("GET", uri, nil)
 	log.IfErr(err)
