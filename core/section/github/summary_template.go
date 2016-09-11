@@ -13,9 +13,7 @@ package github
 
 const summaryTemplate = `
 <div class="section-github-render">
-
-	<p>
-	Activity since {{.Config.Since}}{{.Config.DateMessage}} for {{.Config.Owner}} repositories:
+	<p>Activity since {{.Config.Since}}{{.Config.DateMessage}} for {{.Config.Owner}} repositories:
 		{{range $data := .Config.Lists}}
 			{{if $data.Included}}
 				<a class="link" href="{{$data.URL}}">
@@ -26,22 +24,21 @@ const summaryTemplate = `
 	</p>
 
 	{{if .HasSharedLabels}}
-		<h3>Common Labels</h3>
+		<div class="heading">Labels</div>
 		<p>There
 		{{if eq 1 (len .SharedLabels)}} is {{else}} are {{end}}
 		{{len .SharedLabels}}
 		shared
 		{{if eq 1 (len .SharedLabels)}} label {{else}} labels {{end}}
 		across the repositories.</p>
-		<table class="width-100">
-		    <tbody class="github">
-			{{range $slabel := .SharedLabels}}
-		        <tr>
-		            <td class="width-100">
-						<span class="github-issue-label" style="background-color:#{{$slabel.Color}}">{{$slabel.Name}} ({{$slabel.Count}})</span> in {{$slabel.Repos}}
-					</td>
-		        </tr>
-			{{end}}
+		<table class="github-table">
+		    <tbody>
+				{{range $slabel := .SharedLabels}}
+			        <tr>
+			            <td class="no-width"><span class="issue-label" style="background-color:#{{$slabel.Color}}">{{$slabel.Name}} ({{$slabel.Count}})</span></td>
+						<td>{{$slabel.Repos}}</td>
+			        </tr>
+				{{end}}
 		    </tbody>
 		</table>
 	{{end}}

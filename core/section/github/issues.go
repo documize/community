@@ -99,7 +99,7 @@ func wrapLabels(labels []gogithub.Label) (l string, labelNames []string, labelCo
 	for _, ll := range labels {
 		labelNames = append(labelNames, *ll.Name)
 		labelColors = append(labelColors, *ll.Color)
-		l += `<span class="github-issue-label" style="background-color:#` + *ll.Color + `">` + *ll.Name + `</span> `
+		l += `<span class="issue-label" style="background-color:#` + *ll.Color + `">` + *ll.Name + `</span> `
 	}
 	return l, labelNames, labelColors
 }

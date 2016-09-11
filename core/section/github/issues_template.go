@@ -29,7 +29,7 @@ const (
 	issuesTemplate = `
 <div class="section-github-render">
 {{if .HasIssues}}
-	<h3>Issues</h3>
+	<div class="heading">Issues</div>
 	<p>
 		There are {{.ClosedIssues}} closed
 			{{if eq 1 .ClosedIssues}}issue{{else}}issues{{end}}
@@ -38,47 +38,31 @@ const (
 		 across {{.RepoCount}}
 		{{if eq 1 .RepoCount}} repository. {{else}} repositories. {{end}}
 	</p>
-	<p>
-		{{if .ShowList}}
-			Including issues labelled
-			{{range $label := .List}}
-				{{if $label.Included}}
-					<span class="github-issue-label" style="background-color:#{{$label.Color}}">{{$label.Name}}</span>
-				{{end}}
+
+	<div class="margin-top-20"></div>
+	<table class="github-table no-width">
+		<tbody>
+			{{range $data := .Issues}}
+				<tr>
+					<td class="no-width">
+						<div class="issue-symbol">
+							{{if $data.IsOpen}}
+								` + openIsvg + `
+							{{else}}
+								` + closedIsvg + `
+							{{end}}
+						</div>
+					</td>
+					<td><div class="margin-left-10"></div></td>
+					<td class="no-width">
+						<div class="issue-name"><a href="{{$data.URL}}">{{$data.Message}} <span class="dataid"></span></a></div>
+						<span class="milestone-meta">#{{$data.ID}} &middot; {{$data.Repo}} &middot; {{$data.Milestone}} &middot; {{$data.Creator}} opened on {{$data.Date}}</span>
+						<div>{{$data.Labels}}</div>
+					</td>
+				</tr>
 			{{end}}
-		{{end}}
-	</p>
-	<div class="github-board">
-
-	<table class="issue-table width-100">
-	    <tbody class="github">
-		{{range $data := .Issues}}
-	        <tr>
-				<td class="width-5">
-					<div class="issue-avatar">
-						{{if $data.IsOpen}}
-							` + openIsvg + `
-						{{else}}
-							` + closedIsvg + `
-						{{end}}
-					</div>
-				</td>
-
-	            <td class="width-55">
-					<h6><a class="link" href="{{$data.URL}}">{{$data.Message}} <span class="dataid">#{{$data.ID}}</span></a></h6> </br>
-					<span class="milestone">{{$data.Milestone}}</span> <span class="issue-label">{{$data.Labels}}</span>
-				</td>
-
-				<td class="width-40">
-					<h6>{{$data.Repo}}</h6> <br>
-					<span class="date-meta">{{$data.Creator}} opened on {{$data.Date}}</span>
-				</td>
-	        </tr>
-		{{end}}
-	    </tbody>
-
+		</tbody>
 	</table>
-	</div>
 {{end}}
 </div>
 `

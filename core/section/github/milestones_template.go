@@ -28,10 +28,9 @@ const (
 		</span>
 		`
 	milestonesTemplate = `
-
-	<div class="section-github-render">
+<div class="section-github-render">
 	{{if .HasMilestones}}
-		<h3>Milestones</h3>
+		<div class="heading">Milestones</div>
 		<p>
 			There are
 			{{.ClosedMS}}
@@ -41,40 +40,43 @@ const (
 			open across {{.RepoCount}}
 			{{if eq 1 .RepoCount}} repository. {{else}} repositories. {{end}}
 		</p>
-		<div class="github-board">
-		<table class="milestone-table width-100">
-		    <tbody class="github">
-			{{range $data := .Milestones}}
-		        <tr>
-					<td style="width:5%;">
-						{{if $data.IsMilestone}}
-							{{if $data.IsOpen}}
-								` + openMSsvg + `
-							{{else}}
-								` + closedMSsvg + `
+		<div class="margin-top-20"></div>
+		<table class="github-table no-width">
+		    <tbody>
+				{{range $data := .Milestones}}
+			        <tr>
+						<td class="no-width">
+							<div class="milestone-symbol">
+								{{if $data.IsMilestone}}
+									{{if $data.IsOpen}}
+										` + openMSsvg + `
+									{{else}}
+										` + closedMSsvg + `
+									{{end}}
+								{{end}}
+							</div>
+						</td>
+						<td><div class="margin-left-10"></div></td>
+			            <td class="no-width">
+							<div class="milestone-name"><a class="link" href="{{$data.URL}}">{{$data.Name}}</a></div>
+							<span class="milestone-meta">{{$data.Repo}}</span>
+							{{if $data.IsMilestone}}
+								<span class="milestone-meta">&middot; {{$data.DueDate}}</span>
 							{{end}}
-						{{end}}
-					</td>
-		            <td class="width-55">
-					<h6>{{$data.Name}}</h6>
-						{{if $data.IsMilestone}}
-							<span class="date-meta">{{$data.DueDate}}</span>
-						{{end}}<br>
-						<span class="repo"><a class="link" href="{{$data.URL}}">{{$data.Repo}}</a></span>
-					</td>
-		            <td class="width-40">
-						{{if $data.IsMilestone}}
-							<progress value="{{$data.Progress}}" max="100"></progress> <br>
-							{{$data.CompleteMsg}} complete {{$data.OpenIssues}} open {{$data.ClosedIssues}} closed
-						{{else}}
-							{{$data.OpenIssues}} open {{$data.ClosedIssues}} closed
-						{{end}}
-					</td>
-		        </tr>
-			{{end}}
+						</td>
+						<td><div class="margin-left-150"></div></td>
+			            <td class="no-width">
+							{{if $data.IsMilestone}}
+								<progress value="{{$data.Progress}}" max="100"></progress>
+								<div class="progress-meta"><span class="bold color-off-black">{{$data.CompleteMsg}}</span> complete &nbsp;&nbsp;&nbsp;<span class="bold color-off-black">{{$data.OpenIssues}}</span> open &nbsp;&nbsp;&nbsp;<span class="bold color-off-black">{{$data.ClosedIssues}}</span> closed</div>
+							{{else}}
+								<div class="progress-meta"><span class="bold color-off-black">{{$data.OpenIssues}}</span> open <span class="bold color-off-black">{{$data.ClosedIssues}}</span> closed</div>
+							{{end}}
+						</td>
+			        </tr>
+				{{end}}
 		    </tbody>
 		</table>
-		</div>
 	{{end}}
 </div>
 `

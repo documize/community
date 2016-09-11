@@ -2,9 +2,12 @@
 	{{#if session.authenticated}}
 		<div class="summary-line hidden-xs hidden-sm">
 			<ul class="items">
-				<li class="item">
-					<div id="owner-avatar" class="avatar" data-tooltip="{{owner.fullname}}" data-tooltip-position="right middle">{{owner.initials}}</div>
-				</li>
+				<li class="item" {{action 'showToc'}}>
+					<div class="metric">
+						<div class="number">{{pages.length}}</div>
+			            <div class="label">sections</div>
+					</div>
+		        </li>
 				<li class="divider" />
 		        <li class="item" {{action 'showViews'}}>
 					<div class="metric">
@@ -31,11 +34,9 @@
 			gotoPage=(action 'gotoPage')}}
 	{{/if}}
 	{{#if showViews}}
-		{{document/document-sidebar-close-action close=(action 'showToc')}}
 		{{document/document-sidebar-viewers meta=meta}}
 	{{/if}}
 	{{#if showContributions}}
-		{{document/document-sidebar-close-action close=(action 'showToc')}}
 		{{document/document-sidebar-edits pages=pages meta=meta}}
 	{{/if}}
 </div>
