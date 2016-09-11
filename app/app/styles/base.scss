@@ -62,7 +62,6 @@ a.alt {
 	}
 }
 
-
 $i: 150;
 @while $i > 0 {
 	.margin-#{$i} { margin: #{$i}px; }

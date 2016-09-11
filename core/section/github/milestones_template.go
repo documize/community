@@ -41,7 +41,7 @@ const (
 			{{if eq 1 .RepoCount}} repository. {{else}} repositories. {{end}}
 		</p>
 		<div class="margin-top-20"></div>
-		<table class="github-table no-width">
+		<table class="github-table">
 		    <tbody>
 				{{range $data := .Milestones}}
 			        <tr>
@@ -57,7 +57,7 @@ const (
 							</div>
 						</td>
 						<td><div class="margin-left-10"></div></td>
-			            <td class="no-width">
+			            <td>
 							<div class="milestone-name"><a class="link" href="{{$data.URL}}">{{$data.Name}}</a></div>
 							<span class="milestone-meta">{{$data.Repo}}</span>
 							{{if $data.IsMilestone}}

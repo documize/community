@@ -25,7 +25,7 @@ const commitsTemplate = `
 		</p>
 
 		<div class="margin-top-20"></div>
-		<table class="github-table no-width">
+		<table class="github-table">
 			<tbody>
 				{{range $stats := .AuthorStats}}
 					<tr>
@@ -65,7 +65,7 @@ const commitsTemplate = `
 			{{if eq 1 .RepoCount}} repository. {{else}} repositories. {{end}}
 		</p>
 		<div class="margin-top-20"></div>
-		<table class="github-table no-width">
+		<table class="github-table">
 			<tbody>
 				{{range $commit := .BranchCommits}}
 					<tr>
