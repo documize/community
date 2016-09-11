@@ -13,7 +13,7 @@ package trello
 
 const labelsTemplate = `
 {{if gt (len .SharedLabels) 0}}
-	<h3>Labels</h3>
+	<div class="heading">Labels</div>
 	<p>There are {{len .SharedLabels}} common labels across the boards.</p>
 	<div class="section-trello-render">
 		<table class="trello-table" class="width-100">
@@ -24,9 +24,7 @@ const labelsTemplate = `
 						<span class="trello-label" style="background-color: {{ $l.Color }}">{{ $l.Name }} ({{len $l.Boards}})</span>
 					</td>
 					<td class="width-75">
-						{{range $brd := $l.Boards}}
-						{{ $brd }},
-						{{end}}
+						{{range $idx, $brd := $l.Boards}}{{if gt $idx 0}}, {{end}}{{ $brd }}{{end}}.
 					</td>
 				</tr>
 			{{end}}

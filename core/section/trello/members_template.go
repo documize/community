@@ -12,32 +12,31 @@
 package trello
 
 const membersTemplate = `
-<h3>Member Stats</h3>
-<p>
-	There are {{len .MemberBoardAssign}} members assigned to {{.CardAssignTotal}} cards	of the total {{.CardTotal}} cards across {{len .Boards}} boards.
-</p>
+{{if gt (len .Boards) 0}}
+	<div class="heading">Member Stats</div>
+	<p>
+		There are {{len .MemberBoardAssign}} members assigned to {{.CardAssignTotal}} cards	of the total {{.CardTotal}} cards across {{len .Boards}} boards.
+	</p>
 
-<div class="section-trello-render">
-	<table class="trello-table" class="width-100">
-		<tbody>
+	<div class="section-trello-render">
+		<table class="trello-table" class="width-100">
+			<tbody>
 
-		{{range $m := .MemberBoardAssign}}
-			<tr>
-				<td>
-					<img class="trello-avatar" src="https://trello-avatars.s3.amazonaws.com/{{$m.AvatarHash}}/50.png" height="50" alt="Member Avatar">
-				</td>
-				<td>
-					<h6>{{$m.MemberName}}</h6>
-					<p>
-						{{range $ac := $m.AssignCounts}}
-							{{$ac.BoardName}} ({{$ac.Count}}),
-						{{end}}
-					</p>
-				</td>
-			</tr>
-		{{end}}
-		</tbody>
-	</table>
-</div>
-
+			{{range $m := .MemberBoardAssign}}
+				<tr>
+					<td>
+						<img class="trello-avatar" src="https://trello-avatars.s3.amazonaws.com/{{$m.AvatarHash}}/50.png" height="50" alt="Member Avatar">
+					</td>
+					<td>
+						<h6>{{$m.MemberName}}</h6>
+						<p>
+							{{range $idx, $ac := $m.AssignCounts}}{{if gt $idx 0}}, {{end}}{{$ac.BoardName}} ({{$ac.Count}}){{end}}.
+						</p>
+					</td>
+				</tr>
+			{{end}}
+			</tbody>
+		</table>
+	</div>
+{{end}}
 `

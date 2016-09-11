@@ -264,11 +264,9 @@ type trelloBoardAssign struct {
 }
 
 type trelloRender struct {
-	Config trelloConfig
-
 	Boards []trelloRenderBoard
-
-	Since string
+	Since  string
+	Detail trelloRenderBoard
 
 	// items below are generated during the render phase
 	SharedLabels      []trelloSharedLabel

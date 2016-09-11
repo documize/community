@@ -186,7 +186,6 @@ func (*Provider) Refresh(ctx *provider.Context, config, data string) string {
 	log.IfErr(json.Unmarshal([]byte(config), &c))
 
 	save := trelloRender{}
-	save.Config = c
 	save.Boards = make([]trelloRenderBoard, 0, len(c.Boards))
 
 	if len(c.Since) >= len("yyyy/mm/dd hh:ss") {
@@ -211,12 +210,24 @@ func (*Provider) Refresh(ctx *provider.Context, config, data string) string {
 	}
 	save.Since = (*c.SincePtr).Format("January 2, 2006") + dateMessage
 
+	c.AppKey = request.ConfigString(meta.ConfigHandle(), "appKey")
+
+	if c.Board.ID != "" { // set up detail board
+		var err error
+		save.Detail.Board = c.Board
+		save.Detail.Data, err = getCards(c)
+		log.IfErr(err)
+		save.Detail.ListCount = len(save.Detail.Data)
+		for _, list := range save.Detail.Data {
+			save.Detail.CardCount += len(list.Cards)
+		}
+	}
+
 	for _, board := range c.Boards {
 		if board.Included {
 			var payload = trelloRenderBoard{}
 
 			c.Board = board
-			c.AppKey = request.ConfigString(meta.ConfigHandle(), "appKey")
 
 			lsts, err := getLists(c)
 			log.IfErr(err)

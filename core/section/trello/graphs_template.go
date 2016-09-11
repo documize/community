@@ -14,7 +14,7 @@ package trello
 const graphsTemplate = `
 {{if false}}
 
-	<b>Single Boards (graphs)</b><br>
+	<div class="heading">Single Boards (graphs)</div>
 	{{range $b := .Boards}}
 		<div>
 			<p>There are {{ $b.CardCount }} cards across {{ $b.ListCount }} lists for board <a href="{{ $b.Board.URL }}">{{$b.Board.Name}}.</a></p>
