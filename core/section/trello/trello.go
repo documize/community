@@ -288,6 +288,10 @@ func getBoards(config trelloConfig) (boards []trelloBoard, err error) {
 	defer res.Body.Close()
 	dec := json.NewDecoder(res.Body)
 	err = dec.Decode(&b)
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
 
 	// we only show open, team boards (not personal)
 	for _, b := range b {
@@ -296,13 +300,15 @@ func getBoards(config trelloConfig) (boards []trelloBoard, err error) {
 		}
 	}
 
-	if err != nil {
-		fmt.Println(err)
-		return nil, err
-	}
-
-	for bx := range boards {
+	for bx, bd := range boards {
+		for _, cd := range config.Boards {
+			if bd.ID == cd.ID {
+				boards[bx].Included = cd.Included // to pick up the previous selection or not
+				goto foundID
+			}
+		}
 		boards[bx].Included = true // include boards by default
+	foundID:
 	}
 
 	return boards, nil
