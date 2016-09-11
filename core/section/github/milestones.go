@@ -13,6 +13,7 @@ package github
 
 import (
 	"fmt"
+	"html/template"
 	"sort"
 
 	"github.com/documize/community/core/log"
@@ -21,18 +22,18 @@ import (
 )
 
 type githubMilestone struct {
-	Repo         string `json:"repo"`
-	Private      bool   `json:"private"`
-	Name         string `json:"name"`
-	URL          string `json:"url"`
-	IsOpen       bool   `json:"isopen"`
-	OpenIssues   int    `json:"openIssues"`
-	ClosedIssues int    `json:"closedIssues"`
-	CompleteMsg  string `json:"completeMsg"`
-	DueDate      string `json:"dueDate"`
-	UpdatedAt    string `json:"updatedAt"`
-	Progress     uint   `json:"progress"`
-	IsMilestone  bool   `json:"isMilestone"`
+	Repo         string       `json:"repo"`
+	Private      bool         `json:"private"`
+	Name         string       `json:"name"`
+	URL          template.URL `json:"url"`
+	IsOpen       bool         `json:"isopen"`
+	OpenIssues   int          `json:"openIssues"`
+	ClosedIssues int          `json:"closedIssues"`
+	CompleteMsg  string       `json:"completeMsg"`
+	DueDate      string       `json:"dueDate"`
+	UpdatedAt    string       `json:"updatedAt"`
+	Progress     uint         `json:"progress"`
+	IsMilestone  bool         `json:"isMilestone"`
 }
 
 // sort milestones in order that that should be presented.
@@ -124,10 +125,12 @@ func getMilestones(client *gogithub.Client, config *githubConfig) ([]githubMiles
 							progress := float64(*v.ClosedIssues*100) / float64(*v.OpenIssues+*v.ClosedIssues)
 
 							ret = append(ret, githubMilestone{
-								Repo:         repoName(rName),
-								Private:      orb.Private,
-								Name:         *v.Title,
-								URL:          *v.HTMLURL,
+								Repo:    repoName(rName),
+								Private: orb.Private,
+								Name:    *v.Title,
+								URL: template.URL(fmt.Sprintf(
+									"https://github.com/%s/%s/milestone/%d",
+									orb.Owner, orb.Repo, *v.Number)), // *v.HTMLURL does not give the correct value
 								IsOpen:       *v.State == "open",
 								OpenIssues:   *v.OpenIssues,
 								ClosedIssues: *v.ClosedIssues,
@@ -196,7 +199,7 @@ func renderMilestones(payload *githubRender, c *githubConfig) error {
 				if issuesClosed+issuesOpen > 0 {
 					payload.Milestones = append(payload.Milestones, githubMilestone{
 						Repo: orb.Repo, Private: orb.Private, Name: noMilestone, IsOpen: true,
-						OpenIssues: issuesOpen, ClosedIssues: issuesClosed, URL: orb.URL,
+						OpenIssues: issuesOpen, ClosedIssues: issuesClosed, URL: template.URL(orb.URL),
 					})
 				}
 

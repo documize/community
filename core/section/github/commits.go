@@ -29,14 +29,13 @@ type githubCommit struct {
 	Repo       string       `json:"repo"`
 	ShowRepo   bool         `json:"showRepo"`
 	Branch     string       `json:"branch"`
-	ShowBranch bool         `json:"ShowBranch"`
+	ShowBranch bool         `json:"showBranch"`
 	Date       string       `json:"date"`
 	BinDate    time.Time    `json:"-"` // only used for sorting
-	ShowDate   bool         `json:"ShowDate"`
+	ShowDate   bool         `json:"showDate"`
 	Login      string       `json:"login"`
 	Name       string       `json:"name"`
 	Avatar     string       `json:"avatar"`
-	ShowUser   bool         `json:"ShowUser"`
 	Message    string       `json:"message"`
 	URL        template.URL `json:"url"`
 }
@@ -224,7 +223,6 @@ func getCommits(client *gogithub.Client, config *githubConfig) ([]githubCommit, 
 		overall[k].ShowRepo = true
 		overall[k].ShowBranch = true
 		overall[k].ShowDate = true
-		overall[k].ShowUser = true
 		if k > 0 {
 			if overall[k].Repo == overall[k-1].Repo {
 				overall[k].ShowRepo = false
@@ -232,7 +230,6 @@ func getCommits(client *gogithub.Client, config *githubConfig) ([]githubCommit, 
 					overall[k].ShowBranch = false
 					if overall[k].Date == overall[k-1].Date {
 						overall[k].ShowDate = false
-						overall[k].ShowUser = overall[k].Name != overall[k-1].Name
 					}
 				}
 			}

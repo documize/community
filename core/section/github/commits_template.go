@@ -73,9 +73,7 @@ const commitsTemplate = `
 							<img class="github-avatar" alt="@{{$commit.Name}}" src="{{$commit.Avatar}}" />
 						</td>
 						<td>
-							{{if $commit.ShowUser}}
-								<div class="contributor-name"><a href="{{$commit.URL}}">{{$commit.Message}}</a></div>
-							{{end}}
+							<div class="contributor-name"><a href="{{$commit.URL}}">{{$commit.Message}}</a></div>
 							<div class="contributor-meta">
 								{{$commit.Name}}
 								{{if $commit.ShowDate}}	&middot; {{$commit.Date}} {{end}}
