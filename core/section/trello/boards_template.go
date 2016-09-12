@@ -23,21 +23,24 @@ const boardsTemplate = `
 					<tr>
 						<td>
 							<a href="{{ $b.Board.URL }}">
-								<span class="trello-board" style="background-color: {{$b.Board.Prefs.BackgroundColor}}">{{$b.Board.Name}}</span>
+								<div class="trello-board" style="background-color: {{$b.Board.Prefs.BackgroundColor}}">
+									{{$b.Board.Name}}
+									<span>{{$b.Board.OrgName}}</span>
+								</div>
 							</a>
 						</td>
 						<td>
 							<div class="board-summary">
-								{{ len $b.Actions }}{{if eq 1 (len $b.Actions)}}action {{else}} actions {{end}}
+								{{ len $b.Actions }}{{if eq 1 (len $b.Actions)}} action {{else}} actions {{end}}
 							</div>
 							<span class="board-meta">
 								{{range $act, $tot := $b.ActionSummary}}
 									{{$act}} ({{$tot}}),
 								{{end}}
 								{{if gt (len $b.Archived) 0}}
-									archive card ({{len $b.Archived}}).
+									archive card ({{len $b.Archived}})
 								{{else}}
-									no cards archived.
+									no cards archived
 								{{end}}
 								<br>
 							</span>
