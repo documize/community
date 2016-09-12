@@ -45,7 +45,12 @@ const boardsTemplate = `
 							</a>
 						</td>
 						<td>
-							<div class="board-summary">There are {{ len $b.Actions }} actions for this board.</div>
+							<div class="board-summary">There
+								{{if eq 1 (len $b.Actions)}} is {{else}} are {{end}}
+								{{ len $b.Actions }}
+								{{if eq 1 (len $b.Actions)}}action {{else}} actions {{end}}
+								for this board.
+							</div>
 							<span class="board-meta">
 								{{range $act, $tot := $b.ActionSummary}}
 									{{$act}} ({{$tot}}),

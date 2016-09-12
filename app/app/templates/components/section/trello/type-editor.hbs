@@ -8,18 +8,18 @@
 					<div class="color-error">You have no team boards to share - personal boards are never shown.</div>
 				</div>
 		{{else}}
-	
+
 			<div class="pull-left width-50">
 				<div class="input-form">
 					<div class="heading">
-						<div class="title">Select Board & Lists</div>
+						<div class="title">Select Board &amp; Lists</div>
 						<div class="tip">Choose lists to include from board</div>
 					</div>
 					<div class="input-control">
 						<label>Show summary from (default 7 days ago)</label>
 						{{input id="trello-since" value=config.since type="text" }}<br>
 					</div>
-					
+
 					<div class="input-control">
 							<label>Select which boards you want to see</label>
 							<div class="tip">All boards are selectd by default</div>
@@ -32,7 +32,7 @@
 											{{else}}
 												<i class="material-icons widget-checkbox checkbox-gray github-list-checkbox">check_box_outline_blank</i>
 											{{/if}}
-											<span style="background-color: {{board.prefs.backgroundColor}}">{{board.name}}</span>
+											<span style="background-color: {{board.prefs.backgroundColor}}">{{board.idOrganization}} / {{board.name}}</span>
 										</div>
 									{{/if}}
 								{{/each}}
@@ -71,7 +71,7 @@
 					</div>
 				</div>
 		{{/if}}
-	
+
 	{{else}}
 
 		<div class="pull-left width-50">

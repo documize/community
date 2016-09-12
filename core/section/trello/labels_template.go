@@ -13,9 +13,6 @@ package trello
 
 const labelsTemplate = `
 <div class="section-trello-render">
-
-<p>Activity since #date for team Documize boards: <a class="link" href="#">Board Name</a></p>
-
 	{{if gt (len .SharedLabels) 0}}
 		<div class="heading">Labels</div>
 		<p>There are {{len .SharedLabels}} common labels across the boards.</p>
@@ -28,7 +25,7 @@ const labelsTemplate = `
 							<span class="trello-label" style="background-color: {{ $l.Color }}">{{ $l.Name }} ({{len $l.Boards}})</span>
 						</td>
 						<td>
-							<a class="link" href="#">{{range $idx, $brd := $l.Boards}}{{if gt $idx 0}}</a>, {{end}}{{ $brd }}{{end}}.
+							{{range $idx, $brd := $l.Boards}}{{if gt $idx 0}}, {{end}}<a class="link" href="#">{{ $brd }}</a>{{end}}.
 						</td>
 					</tr>
 				{{end}}

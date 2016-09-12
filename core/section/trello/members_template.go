@@ -16,7 +16,7 @@ const membersTemplate = `
 	{{if gt (len .Boards) 0}}
 		<div class="heading">Member Stats</div>
 		<p>
-			There are {{len .MemberBoardAssign}} members assigned to {{.CardAssignTotal}} cards	of the total {{.CardTotal}} cards across {{len .Boards}} boards.
+			There {{if eq 1 (len .MemberBoardAssign)}} is one member {{else}} are {{len .MemberBoardAssign}}  members {{end}} assigned to {{.CardAssignTotal}} cards of the total {{.CardTotal}} cards across {{len .Boards}} boards.
 		</p>
 
 		<div class="section-trello-render">

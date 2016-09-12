@@ -11,7 +11,8 @@
 
 package trello
 
-const renderTemplate = `` +
+const renderTemplate = `<p>Activity since {{.Since}} for boards:
+{{range $idx, $brd := .Boards}}{{if gt $idx 0}}, {{end}}<a class="link" href="{{$brd.Board.URL}}">{{$brd.Board.Name}}</a>{{end}}.</p>` +
 	labelsTemplate +
 	boardsTemplate +
 	graphsTemplate +
