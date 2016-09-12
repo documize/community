@@ -15,26 +15,8 @@ const boardsTemplate = `
 <div class="section-trello-render">
 	{{if gt (len .Boards) 0}}
 		<div class="heading">Boards</div>
-		<p>Changes since {{.Since}}.</p>
+		<p>There are {{len .Boards}} boards, {{.ListTotal}} since lists, {{.CardTotal}} cards and {{len .MemberBoardAssign}} members {{.Since}}.</p>
 		<div class="section-trello-render">
-			<table class="trello-table" class="width-100">
-				<tbody class="board-stats">
-					<tr>
-						<td>
-							<span class="stat-number">{{len .Boards}}</span>boards
-						</td>
-						<td>
-							<span class="stat-number">{{.ListTotal}}</span>lists
-						</td>
-						<td>
-							<span class="stat-number">{{.CardTotal}}</span>cards
-						</td>
-						<td>
-							<span class="stat-number">{{len .MemberBoardAssign}}</span>members
-						</td>
-					</tr>
-				</tbody>
-			</table>
 			<table class="trello-table" class="width-100">
 				<tbody class="trello">
 				{{range $b := .Boards}}
@@ -45,11 +27,8 @@ const boardsTemplate = `
 							</a>
 						</td>
 						<td>
-							<div class="board-summary">There
-								{{if eq 1 (len $b.Actions)}} is {{else}} are {{end}}
-								{{ len $b.Actions }}
-								{{if eq 1 (len $b.Actions)}}action {{else}} actions {{end}}
-								for this board.
+							<div class="board-summary">
+								{{ len $b.Actions }}{{if eq 1 (len $b.Actions)}}action {{else}} actions {{end}}
 							</div>
 							<span class="board-meta">
 								{{range $act, $tot := $b.ActionSummary}}

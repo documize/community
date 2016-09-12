@@ -14,7 +14,7 @@ package trello
 const membersTemplate = `
 <div class="section-trello-render">
 	{{if gt (len .Boards) 0}}
-		<div class="heading">Member Stats</div>
+		<div class="heading">Members</div>
 		<p>
 			There {{if eq 1 (len .MemberBoardAssign)}} is one member {{else}} are {{len .MemberBoardAssign}}  members {{end}} assigned to {{.CardAssignTotal}} cards of the total {{.CardTotal}} cards across {{len .Boards}} boards.
 		</p>
@@ -30,7 +30,7 @@ const membersTemplate = `
 						<td>
 							<div class="member-name">{{$m.MemberName}}</div>
 							<div class="member-meta">
-								{{range $idx, $ac := $m.AssignCounts}}{{if gt $idx 0}}, {{end}}{{$ac.BoardName}} ({{$ac.Count}}){{end}}.
+								{{range $idx, $ac := $m.AssignCounts}}{{if gt $idx 0}}, {{end}}{{$ac.BoardName}} ({{$ac.Count}}){{end}}
 							</div>
 							<div class="margin-top-10"></div>
 						</td>
