@@ -543,7 +543,8 @@ func buildPayloadAnalysis(config *trelloConfig, render *trelloRender) {
 					if _, exists := labels[lab.Name]; !exists {
 						labels[lab.Name] = labT{color: lab.Color, boards: make(map[string]bool)}
 					}
-					labels[lab.Name].boards[brd.Board.Name] = true
+					labels[lab.Name].boards[fmt.Sprintf(`<a class="link" href="%s">%s</a>`,
+						brd.Board.URL, brd.Board.Name)] = true
 				}
 
 				// process member stats
@@ -588,8 +589,12 @@ func buildPayloadAnalysis(config *trelloConfig, render *trelloRender) {
 				brds = append(brds, bname)
 			}
 			sort.Strings(brds)
+			htm := []template.HTML{}
+			for _, h := range brds {
+				htm = append(htm, template.HTML(h))
+			}
 			render.SharedLabels = append(render.SharedLabels, trelloSharedLabel{
-				Name: lname, Color: labels[lname].color, Boards: brds,
+				Name: lname, Color: labels[lname].color, Boards: htm,
 			})
 		}
 	}

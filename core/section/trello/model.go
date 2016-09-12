@@ -12,6 +12,7 @@
 package trello
 
 import (
+	"html/template"
 	"strings"
 	"time"
 )
@@ -249,7 +250,7 @@ type trelloRenderBoard struct {
 type trelloSharedLabel struct {
 	Name   string
 	Color  string
-	Boards []string
+	Boards []template.HTML
 }
 
 type trelloBoardAssignCount struct {

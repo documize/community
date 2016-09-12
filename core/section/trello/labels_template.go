@@ -25,7 +25,7 @@ const labelsTemplate = `
 							<span class="trello-label" style="background-color: {{ $l.Color }}">{{ $l.Name }} ({{len $l.Boards}})</span>
 						</td>
 						<td>
-							{{range $idx, $brd := $l.Boards}}{{if gt $idx 0}}, {{end}}<a class="link" href="#">{{ $brd }}</a>{{end}}.
+							{{range $idx, $brd := $l.Boards}}{{if gt $idx 0}}, {{end}}{{ $brd }}{{end}}.
 						</td>
 					</tr>
 				{{end}}
