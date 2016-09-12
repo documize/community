@@ -22,7 +22,6 @@ const membersTemplate = `
 		<div class="section-trello-render">
 			<table class="trello-table no-width">
 				<tbody>
-
 				{{range $m := .MemberBoardAssign}}
 					<tr>
 						<td class="no-width">
@@ -33,6 +32,7 @@ const membersTemplate = `
 							<div class="member-meta">
 								{{range $idx, $ac := $m.AssignCounts}}{{if gt $idx 0}}, {{end}}{{$ac.BoardName}} ({{$ac.Count}}){{end}}.
 							</div>
+							<div class="margin-top-10"></div>
 						</td>
 					</tr>
 				{{end}}

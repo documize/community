@@ -89,9 +89,14 @@
         margin-right: 20px;
     }
 
-    .board-summary, .member-name {
+    .board-summary {
 		font-size: 1.2rem;
 	}
+
+    .member-name {
+        font-size: 1.2rem;
+        line-height: 15px;
+    }
 
     .board-meta, .member-meta {
         color: $color-gray;
