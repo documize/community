@@ -101,7 +101,7 @@ func (*Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http.R
 		provider.WriteJSON(w, render)
 
 	case "boards":
-		render, err := getBoards(config)
+		render, err := getBoards(&config)
 
 		if err != nil {
 			log.IfErr(err)
@@ -267,7 +267,44 @@ func (*Provider) Refresh(ctx *provider.Context, config, data string) string {
 }
 
 // Helpers
-func getBoards(config trelloConfig) (boards []trelloBoard, err error) {
+
+func getOrg(config *trelloConfig, orgID string) (*trelloOrganization, error) {
+	if config.OrgByID == nil {
+		config.OrgByID = make(map[string]trelloOrganization)
+	}
+	if org, found := config.OrgByID[orgID]; found {
+		return &org, nil
+	}
+	req, err := http.NewRequest("GET", fmt.Sprintf(
+		"https://api.trello.com/1/organizations/%s?fields=name,desc&key=%s&token=%s",
+		orgID, config.AppKey, config.Token), nil)
+	log.IfErr(err)
+	client := &http.Client{}
+	res, err := client.Do(req)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("error: HTTP status code %d", res.StatusCode)
+	}
+
+	b := trelloOrganization{}
+
+	defer res.Body.Close()
+	dec := json.NewDecoder(res.Body)
+	err = dec.Decode(&b)
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	config.OrgByID[orgID] = b
+	return &b, nil
+}
+
+func getBoards(config *trelloConfig) (boards []trelloBoard, err error) {
 	req, err := http.NewRequest("GET", fmt.Sprintf(
 		"https://api.trello.com/1/members/me/boards?fields=id,name,url,closed,prefs,idOrganization&key=%s&token=%s",
 		config.AppKey, config.Token), nil)
@@ -296,6 +333,11 @@ func getBoards(config trelloConfig) (boards []trelloBoard, err error) {
 	// we only show open, team boards (not personal)
 	for _, b := range b {
 		if !b.Closed && len(b.OrganizationID) > 0 {
+			if o, e := getOrg(config, b.OrganizationID); e == nil {
+				b.OrgName = o.Name
+			} else {
+				log.Error("failed to get organisation infomation", e)
+			}
 			boards = append(boards, b)
 		}
 	}
@@ -521,7 +563,7 @@ func buildPayloadAnalysis(config *trelloConfig, render *trelloRender) {
 	// pre-process labels
 	type labT struct {
 		color  string
-		boards map[string]bool
+		boards map[string]trelloBoard
 	}
 	labels := make(map[string]labT)
 
@@ -541,10 +583,9 @@ func buildPayloadAnalysis(config *trelloConfig, render *trelloRender) {
 				// process labels
 				for _, lab := range crd.Labels {
 					if _, exists := labels[lab.Name]; !exists {
-						labels[lab.Name] = labT{color: lab.Color, boards: make(map[string]bool)}
+						labels[lab.Name] = labT{color: lab.Color, boards: make(map[string]trelloBoard)}
 					}
-					labels[lab.Name].boards[fmt.Sprintf(`<a class="link" href="%s">%s</a>`,
-						brd.Board.URL, brd.Board.Name)] = true
+					labels[lab.Name].boards[brd.Board.URL+"::"+brd.Board.Name] = brd.Board
 				}
 
 				// process member stats
@@ -589,12 +630,12 @@ func buildPayloadAnalysis(config *trelloConfig, render *trelloRender) {
 				brds = append(brds, bname)
 			}
 			sort.Strings(brds)
-			htm := []template.HTML{}
+			lbrds := []trelloBoard{}
 			for _, h := range brds {
-				htm = append(htm, template.HTML(h))
+				lbrds = append(lbrds, labels[lname].boards[h])
 			}
 			render.SharedLabels = append(render.SharedLabels, trelloSharedLabel{
-				Name: lname, Color: labels[lname].color, Boards: htm,
+				Name: lname, Color: labels[lname].color, Boards: lbrds,
 			})
 		}
 	}
