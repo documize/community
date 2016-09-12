@@ -12,55 +12,57 @@
 package trello
 
 const boardsTemplate = `
-{{if gt (len .Boards) 0}}
-	<div class="heading">Boards</div>
-	<p>Changes since {{.Since}}.</p>
-	<div class="section-trello-render">
-		<table class="trello-table" class="width-100">
-			<tbody class="board-stats">
-				<tr>
-					<td>
-						<span class="stat-number">{{len .Boards}}</span> Boards
-					</td>
-					<td>
-						<span class="stat-number">{{.ListTotal}}</span> Lists
-					</td>
-					<td>
-						<span class="stat-number">{{.CardTotal}}</span> Cards
-					</td>
-					<td>
-						<span class="stat-number">{{len .MemberBoardAssign}}</span> Members
-					</td>
-				</tr>
-			</tbody>
-		</table>
-		<table class="trello-table" class="width-100">
-			<tbody class="trello">
-			{{range $b := .Boards}}
-				<tr>
-					<td>
-						<a href="{{ $b.Board.URL }}">
-							<span class="trello-board" style="background-color: {{$b.Board.Prefs.BackgroundColor}}">{{$b.Board.Name}}</span>
-						</a>
-					</td>
-					<td>
-						<h6>There are {{ len $b.Actions }} actions for this board.</h6>
-						<p>
-							{{range $act, $tot := $b.ActionSummary}}
-								{{$act}} ({{$tot}}),
-							{{end}}
-							{{if gt (len $b.Archived) 0}}
-								archive card ({{len $b.Archived}}).
-							{{else}}
-								no cards archived.
-							{{end}}
-							<br>
-						</p>
-					</td>
-				</tr>
-			{{end}}
-			</tbody>
-		</table>
-	</div>
-{{end}}
+<div class="section-trello-render">
+	{{if gt (len .Boards) 0}}
+		<div class="heading">Boards</div>
+		<p>Changes since {{.Since}}.</p>
+		<div class="section-trello-render">
+			<table class="trello-table" class="width-100">
+				<tbody class="board-stats">
+					<tr>
+						<td>
+							<span class="stat-number">{{len .Boards}}</span>boards
+						</td>
+						<td>
+							<span class="stat-number">{{.ListTotal}}</span>lists
+						</td>
+						<td>
+							<span class="stat-number">{{.CardTotal}}</span>cards
+						</td>
+						<td>
+							<span class="stat-number">{{len .MemberBoardAssign}}</span>members
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<table class="trello-table" class="width-100">
+				<tbody class="trello">
+				{{range $b := .Boards}}
+					<tr>
+						<td>
+							<a href="{{ $b.Board.URL }}">
+								<span class="trello-board" style="background-color: {{$b.Board.Prefs.BackgroundColor}}">{{$b.Board.Name}}</span>
+							</a>
+						</td>
+						<td>
+							<div class="board-summary">There are {{ len $b.Actions }} actions for this board.</div>
+							<span class="board-meta">
+								{{range $act, $tot := $b.ActionSummary}}
+									{{$act}} ({{$tot}}),
+								{{end}}
+								{{if gt (len $b.Archived) 0}}
+									archive card ({{len $b.Archived}}).
+								{{else}}
+									no cards archived.
+								{{end}}
+								<br>
+							</span>
+						</td>
+					</tr>
+				{{end}}
+				</tbody>
+			</table>
+		</div>
+	{{end}}
+</div>
 `

@@ -12,6 +12,8 @@
 package trello
 
 const archiveTemplate = `
+<div class="section-trello-render">
+
 {{if gt (len .Boards) 0}}
 	<div class="heading">Deleted and Archived Cards</div>
 	<p>Changes since {{.Since}}.</p>
@@ -30,9 +32,9 @@ const archiveTemplate = `
 							{{if eq $act.Type "deleteCard" }}
 								Deleted:
 									{{$act.Data.List.Name}}
-									{{if ne $act.Data.Card.Name ""}} 
-										: {{$act.Data.Card.Name}} 
-										{{if ne $act.Data.Text ""}} 	
+									{{if ne $act.Data.Card.Name ""}}
+										: {{$act.Data.Card.Name}}
+										{{if ne $act.Data.Text ""}}
 											- {{$act.Data.Text}}
 										{{end}}
 									{{end}}
@@ -41,7 +43,7 @@ const archiveTemplate = `
 						{{end}}
 						{{range $arch := $b.Archived}}
 							Archived:
-								{{$arch.Name}} 
+								{{$arch.Name}}
 								{{if ne $arch.Desc ""}}
 									- {{$arch.Desc}}
 								{{end}}
@@ -54,4 +56,5 @@ const archiveTemplate = `
 		</table>
 	</div>
 {{end}}
+</div>
 `

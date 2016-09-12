@@ -12,31 +12,33 @@
 package trello
 
 const membersTemplate = `
-{{if gt (len .Boards) 0}}
-	<div class="heading">Member Stats</div>
-	<p>
-		There are {{len .MemberBoardAssign}} members assigned to {{.CardAssignTotal}} cards	of the total {{.CardTotal}} cards across {{len .Boards}} boards.
-	</p>
+<div class="section-trello-render">
+	{{if gt (len .Boards) 0}}
+		<div class="heading">Member Stats</div>
+		<p>
+			There are {{len .MemberBoardAssign}} members assigned to {{.CardAssignTotal}} cards	of the total {{.CardTotal}} cards across {{len .Boards}} boards.
+		</p>
 
-	<div class="section-trello-render">
-		<table class="trello-table" class="width-100">
-			<tbody>
+		<div class="section-trello-render">
+			<table class="trello-table no-width">
+				<tbody>
 
-			{{range $m := .MemberBoardAssign}}
-				<tr>
-					<td>
-						<img class="trello-avatar" src="https://trello-avatars.s3.amazonaws.com/{{$m.AvatarHash}}/50.png" height="50" alt="Member Avatar">
-					</td>
-					<td>
-						<h6>{{$m.MemberName}}</h6>
-						<p>
-							{{range $idx, $ac := $m.AssignCounts}}{{if gt $idx 0}}, {{end}}{{$ac.BoardName}} ({{$ac.Count}}){{end}}.
-						</p>
-					</td>
-				</tr>
-			{{end}}
-			</tbody>
-		</table>
-	</div>
-{{end}}
+				{{range $m := .MemberBoardAssign}}
+					<tr>
+						<td class="no-width">
+							<img class="trello-avatar" src="https://trello-avatars.s3.amazonaws.com/{{$m.AvatarHash}}/50.png" alt="Member Avatar">
+						</td>
+						<td>
+							<div class="member-name">{{$m.MemberName}}</div>
+							<div class="member-meta">
+								{{range $idx, $ac := $m.AssignCounts}}{{if gt $idx 0}}, {{end}}{{$ac.BoardName}} ({{$ac.Count}}){{end}}.
+							</div>
+						</td>
+					</tr>
+				{{end}}
+				</tbody>
+			</table>
+		</div>
+	{{end}}
+</div>
 `

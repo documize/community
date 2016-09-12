@@ -12,27 +12,29 @@
 package trello
 
 const tradTemplate = `
-{{if ne .Detail.Board.ID ""}}
-	<div class="heading">Board: {{.Detail.Board.Name}}</div>
-	<p class="non-printable-message">Non-printable</p>
-	<div class="section-trello-render non-printable">
-		<p>There are {{ .Detail.CardCount }} cards across {{ .Detail.ListCount }} lists 
-		for board <a href="{{ .Detail.Board.URL }}">{{.Detail.Board.Name}}.</a></p>
-		<div class="trello-board" style="background-color: {{.Detail.Board.Prefs.BackgroundColor}}">
-			<a href="{{ .Detail.Board.URL }}"><div class="trello-board-title">{{.Detail.Board.Name}}</div></a>
-			{{range $data := .Detail.Data}}
-				<div class="trello-list">
-					<div class="trello-list-title">{{ $data.List.Name }}</div>
-					{{range $card := $data.Cards}}
-						<a href="{{ $card.URL }}">
-							<div class="trello-card">
-								{{ $card.Name }}
-							</div>
-						</a>
-					{{end}}
-				</div>
-			{{end}}
+<div class="section-trello-render">
+	{{if ne .Detail.Board.ID ""}}
+		<div class="heading">Board: {{.Detail.Board.Name}}</div>
+		<p class="non-printable-message">Non-printable</p>
+		<div class="section-trello-render non-printable">
+			<p>There are {{ .Detail.CardCount }} cards across {{ .Detail.ListCount }} lists
+			for board <a href="{{ .Detail.Board.URL }}">{{.Detail.Board.Name}}.</a></p>
+			<div class="single-trello-board" style="background-color: {{.Detail.Board.Prefs.BackgroundColor}}">
+				<a href="{{ .Detail.Board.URL }}"><div class="trello-board-title">{{.Detail.Board.Name}}</div></a>
+				{{range $data := .Detail.Data}}
+					<div class="trello-list">
+						<div class="trello-list-title">{{ $data.List.Name }}</div>
+						{{range $card := $data.Cards}}
+							<a href="{{ $card.URL }}">
+								<div class="trello-card">
+									{{ $card.Name }}
+								</div>
+							</a>
+						{{end}}
+					</div>
+				{{end}}
+			</div>
 		</div>
-	</div>
-{{end}}
+	{{end}}
+</div>
 `
