@@ -51,7 +51,7 @@
 						<div class="input-control">
 							<label>Individual Board</label>
 							<div class="tip">Select board</div>
-							{{ui-select id="boards-dropdown" content=boards action=(action 'onBoardChange') optionValuePath="id" optionLabelPath="name" selection=config.board}}
+							{{ui-select id="boards-dropdown" content=boards action=(action 'onBoardChange') optionValuePath="id" optionLabelPath="namePath" selection=config.board}}
 						</div>
 						{{#if config.board.id}}
 							<div class="input-control">

@@ -19,6 +19,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"sort"
+	"strings"
 	"time"
 	"unicode"
 
@@ -335,6 +336,7 @@ func getBoards(config *trelloConfig) (boards []trelloBoard, err error) {
 		if !b.Closed && len(b.OrganizationID) > 0 {
 			if o, e := getOrg(config, b.OrganizationID); e == nil {
 				b.OrgName = o.Name
+				b.NamePath = o.Name + " / " + b.Name
 			} else {
 				log.Error("failed to get organisation infomation", e)
 			}
@@ -585,7 +587,7 @@ func buildPayloadAnalysis(config *trelloConfig, render *trelloRender) {
 					if _, exists := labels[lab.Name]; !exists {
 						labels[lab.Name] = labT{color: lab.Color, boards: make(map[string]trelloBoard)}
 					}
-					labels[lab.Name].boards[brd.Board.URL+"::"+brd.Board.Name] = brd.Board
+					labels[lab.Name].boards[brd.Board.URL+" / "+brd.Board.Name] = brd.Board
 				}
 
 				// process member stats
@@ -612,7 +614,13 @@ func buildPayloadAnalysis(config *trelloConfig, render *trelloRender) {
 					englishType += string(c)
 				}
 			}
-			render.Boards[brdIdx].ActionSummary[englishType]++
+			englishType = strings.Replace(englishType, "organization", "team", -1)
+			if newTxt, found := activityTranslation[englishType]; found {
+				englishType = newTxt
+			}
+			if len(englishType) > 0 {
+				render.Boards[brdIdx].ActionSummary[englishType]++
+			}
 		}
 	}
 

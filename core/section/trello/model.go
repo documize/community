@@ -184,6 +184,7 @@ type trelloBoard struct {
 		Purple string `json:"purple"`
 	} `json:"labelNames"`
 	Included bool `json:"included"` // indicates whether we display this board
+	NamePath string `json:"namePath"` // the "team / board" form
 }
 
 type trelloBoardBackground struct {

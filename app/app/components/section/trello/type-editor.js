@@ -207,7 +207,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 						self.get('sectionService').fetch(page, "boards", self.get('config'))
 							.then(function (boards) {
 								self.set('busy', false);
-								boards.unshift({ id: null, name: "--None--", backgroundColor: "white" }); // add the non-selection to the front
+								boards.unshift({ id: null, namePath: "< do not show >", backgroundColor: "white" }); // add the non-selection to the front
 								self.set('config.boards', boards); // save the boards in the config too
 								self.set('boards', boards);
 								self.getBoardLists();
