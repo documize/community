@@ -12,6 +12,6 @@
 package trello
 
 var activityTranslation = map[string]string{
-	"comment card": "comment on card", // TODO, this just to prove the method
-	"update board": "",                // TODO, this just to test the delete functionality
+//"comment card": "comment on card", // TODO, this just to prove the ranslation method
+//"update board": "",                // TODO, this just to test the delete functionality
 }
