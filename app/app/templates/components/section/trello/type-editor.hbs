@@ -2,6 +2,8 @@
 	tip="Trello is the visual way to manage your projects and organize anything (https://trello.com)"
 	isDirty=(action 'isDirty') onCancel=(action 'onCancel') onAction=(action 'onAction')}}
 
+<div class="section-trello-editor">
+
 	{{#if authenticated}}
 		{{#if noBoards}}
 				<div class="input-control">
@@ -9,7 +11,7 @@
 				</div>
 		{{else}}
 
-			<div class="pull-left width-50">
+			<div class="pull-left width-45">
 				<div class="input-form">
 					<div class="heading">
 						<div class="title">Select Board &amp; Lists</div>
@@ -23,16 +25,16 @@
 					<div class="input-control">
 							<label>Select which boards you want to see</label>
 							<div class="tip">All boards are selectd by default</div>
-							<div class="github-board">
+							<div class="trello-board">
 								{{#each config.boards as |board|}}
 									{{#if board.id}}
-										<div class="github-list" {{action 'onBoardCheckbox' board.id}}>
+										<div class="trello-list" {{action 'onBoardCheckbox' board.id}}>
 											{{#if board.included}}
-												<i class="material-icons widget-checkbox checkbox-gray github-list-checkbox">check_box</i>
+												<i class="material-icons widget-checkbox checkbox-gray trello-list-checkbox">check_box</i>
 											{{else}}
-												<i class="material-icons widget-checkbox checkbox-gray github-list-checkbox">check_box_outline_blank</i>
+												<i class="material-icons widget-checkbox checkbox-gray trello-list-checkbox">check_box_outline_blank</i>
 											{{/if}}
-											<span style="background-color: {{board.prefs.backgroundColor}}">{{board.idOrganization}} / {{board.name}}</span>
+											<span class="trello-label" style="background-color: {{board.prefs.backgroundColor}}">{{board.orgName}} / {{board.name}}</span>
 										</div>
 									{{/if}}
 								{{/each}}
@@ -41,7 +43,10 @@
 					</div>
 				</div>
 			</div>
-			<div class="pull-right width-50">
+
+			<div class="pull-left width-10">&nbsp;</div>
+
+			<div class="pull-left width-45">
 				<div class="input-form">
 						<div class="input-control">
 							<label>Individual Board</label>
@@ -87,5 +92,5 @@
 		</div>
 
 	{{/if}}
-
+</div>
 {{/section/base-editor}}
