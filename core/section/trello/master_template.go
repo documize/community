@@ -11,8 +11,13 @@
 
 package trello
 
-const renderTemplate = `<p>Activity since {{.Since}} for boards:
-{{range $idx, $brd := .Boards}}{{if gt $idx 0}}, {{end}}<a class="link" href="{{$brd.Board.URL}}">{{$brd.Board.OrgName}}/{{$brd.Board.Name}}</a>{{end}}.</p>` +
+const renderTemplate = `
+{{if eq .Since ""}}
+<p>Preparing...</p>
+{{else}}
+<p>Activity since {{.Since}} for boards:
+{{range $idx, $brd := .Boards}}{{if gt $idx 0}}, {{end}}<a class="link" href="{{$brd.Board.URL}}">{{$brd.Board.OrgName}}/{{$brd.Board.Name}}</a>{{end}}.</p>
+{{end}}` +
 	labelsTemplate +
 	boardsTemplate +
 	graphsTemplate +
