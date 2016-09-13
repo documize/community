@@ -12,6 +12,19 @@
 package trello
 
 var activityTranslation = map[string]string{
-//"comment card": "comment on card", // TODO, this just to prove the ranslation method
-//"update board": "",                // TODO, this just to test the delete functionality
+    "add checklist to card": "checklist added to card",
+    "add member to card": "member added to card",
+    "comment card": "commented on card",
+    "create card": "created card",
+    "create list": "created list",
+    "delete card": "deleted card",
+    "update board": "updated board",
+    "add to team board": "",
+    "create board": "",
+    "update card": "updated card",
+    "update check item state on card": "check item updated on card",
+    "update list": "updated list",
+    "add attachment to card" : "attachment added to card",
+    "copy card" : "copied card",
+    "copy comment card" : "copied comment on card",
 }

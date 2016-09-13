@@ -31,14 +31,14 @@ const boardsTemplate = `
 						</td>
 						<td>
 							<div class="board-summary">
-								{{ len $b.Actions }}{{if eq 1 (len $b.Actions)}} action {{else}} actions {{end}}
+								<!-- {{ len $b.Actions }}{{if eq 1 (len $b.Actions)}} action {{else}} actions {{end}} -->
 							</div>
 							<span class="board-meta">
 								{{range $act, $tot := $b.ActionSummary}}
-									{{$act}} ({{$tot}}),
+									{{$tot}} {{$act}}{{if ne 1 $tot}}s{{end}},
 								{{end}}
 								{{if gt (len $b.Archived) 0}}
-									archive card ({{len $b.Archived}})
+									{{len $b.Archived}} {{if eq 1 (len $b.Archived)}}card {{else}} cards {{end}}archived
 								{{else}}
 									no cards archived
 								{{end}}
