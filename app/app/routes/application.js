@@ -22,6 +22,20 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
 	session: service(),
 
 	beforeModel(transition) {
+		let MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
+
+		let observer = new MutationObserver(function(/*mutations, observer*/) {
+		    // fired when a mutation occurs
+		    // console.log(mutations, observer);
+			$("#zone-sidebar").css('height', $(document).height() - $("#zone-navigation").height() - $("#zone-header").height() - 35);
+		});
+
+		observer.observe(document, {
+			subtree: true,
+			attributes: false,
+			childList: true
+		});
+
 		return this.get('appMeta').boot(transition.targetName).then(data => {
 			if (this.get('session.session.authenticator') !== "authenticator:documize" && data.allowAnonymousAccess) {
 				return this.get('session').authenticate('authenticator:anonymous', data);
@@ -35,14 +49,6 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
 		willTransition: function ( /*transition*/ ) {
 			$("#zone-sidebar").css('height', 'auto');
 			Mousetrap.reset();
-		},
-
-		didTransition() {
-			Ember.run.schedule("afterRender", this, function () {
-				$("#zone-sidebar").css('height', $(document).height() - $("#zone-navigation").height() - $("#zone-header").height() - 35);
-			});
-
-			return true;
 		},
 
 		error(error /*, transition*/ ) {
