@@ -98,7 +98,7 @@ export default Ember.Controller.extend(NotifierMixin, {
 				});
 
 				let pages = self.get('pages');
-				pages = pages.sortBy('sequence')
+				pages = pages.sortBy('sequence');
 				self.set('pages', []);
 				self.set('pages', pages);
 			});
