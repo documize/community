@@ -15,7 +15,7 @@ const boardsTemplate = `
 <div class="section-trello-render">
 	{{if gt (len .Boards) 0}}
 		<div class="heading">Boards</div>
-		<p>There are {{len .Boards}} boards, {{.ListTotal}} since lists, {{.CardTotal}} cards and {{len .MemberBoardAssign}} members {{.Since}}.</p>
+		<p>There are {{len .Boards}} boards, {{.ListTotal}} lists, {{.CardTotal}} cards and {{len .MemberBoardAssign}} members. Activity since {{.Since}}</p>
 		<div class="section-trello-render">
 			<table class="trello-table" class="width-100">
 				<tbody class="trello">
