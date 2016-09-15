@@ -34,13 +34,13 @@ const boardsTemplate = `
 								<!-- {{ len $b.Actions }}{{if eq 1 (len $b.Actions)}} action {{else}} actions {{end}} -->
 							</div>
 							<span class="board-meta">
-								{{range $act, $tot := $b.ActionSummary}}
-									{{$tot}} {{$act}}{{if ne 1 $tot}}s{{end}},
-								{{end}}
+								{{range $idx, $act := $b.ActionSummary}}{{if ne $idx 0}}{{- ","}} {{end}}{{$act.Count}} {{$act.Name -}}{{if ne 1 $act.Count}}{{"s" -}}{{end}}{{end}}{{if gt (len $b.Archived) 0}}, {{end}}
 								{{if gt (len $b.Archived) 0}}
-									{{len $b.Archived}} {{if eq 1 (len $b.Archived)}}card {{else}} cards {{end}}archived
+								 	{{len $b.Archived}} {{if eq 1 (len $b.Archived)}}card {{else}} cards {{end}}archived
 								{{else}}
-									no cards archived
+									{{if eq (len $b.ActionSummary) 0}}
+										no activity
+									{{end}}
 								{{end}}
 								<br>
 							</span>

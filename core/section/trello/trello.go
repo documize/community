@@ -601,9 +601,8 @@ func buildPayloadAnalysis(config *trelloConfig, render *trelloRender) {
 		}
 
 		// ActionSummary
-		if render.Boards[brdIdx].ActionSummary == nil {
-			render.Boards[brdIdx].ActionSummary = make(map[string]int)
-		}
+		actionSummaryMap := make(map[string]int)
+
 		for _, act := range brd.Actions {
 			englishType := ""
 			for _, c := range act.Type {
@@ -619,9 +618,20 @@ func buildPayloadAnalysis(config *trelloConfig, render *trelloRender) {
 				englishType = newTxt
 			}
 			if len(englishType) > 0 {
-				render.Boards[brdIdx].ActionSummary[englishType]++
+				actionSummaryMap[englishType]++
 			}
 		}
+		acts := make([]string, 0, len(actionSummaryMap))
+		for a := range actionSummaryMap {
+			acts = append(acts, a)
+		}
+		sort.Strings(acts)
+		render.Boards[brdIdx].ActionSummary = make([]trelloActionSummaryEntry, len(acts))
+		for k, v := range acts {
+			render.Boards[brdIdx].ActionSummary[k] = trelloActionSummaryEntry{Name: v, Count: actionSummaryMap[v]}
+
+		}
+
 	}
 
 	//post-process labels

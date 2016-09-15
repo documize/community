@@ -183,7 +183,7 @@ type trelloBoard struct {
 		Blue   string `json:"blue"`
 		Purple string `json:"purple"`
 	} `json:"labelNames"`
-	Included bool `json:"included"` // indicates whether we display this board
+	Included bool   `json:"included"` // indicates whether we display this board
 	NamePath string `json:"namePath"` // the "team / board" form
 }
 
@@ -253,13 +253,18 @@ type trelloListCards struct {
 	Cards []trelloCard
 }
 
+type trelloActionSummaryEntry struct {
+	Name  string
+	Count int
+}
+
 type trelloRenderBoard struct {
 	Board         trelloBoard
 	Data          []trelloListCards
 	CardCount     int
 	ListCount     int
 	Actions       []trelloAction
-	ActionSummary map[string]int
+	ActionSummary []trelloActionSummaryEntry
 	Archived      []trelloCard
 }
 
