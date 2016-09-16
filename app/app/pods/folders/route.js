@@ -27,7 +27,6 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	},
 
 	afterModel: function (model) {
-
 		let params = this.paramsFor('folders.folder');
 
 		if (is.empty(params)) {

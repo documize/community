@@ -9,22 +9,17 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import Model from 'ember-data/model';
+import attr from 'ember-data/attr';
+// import { belongsTo } from 'ember-data/relationships';
 
-const {
-	inject: { service }
-} = Ember;
-
-export default Ember.Service.extend({
-	sessionService: service('session'),
-	ajax: service(),
-
-	// getUsers returns all users for organization.
-	find(keywords) {
-		let url = "search?keywords=" + encodeURIComponent(keywords);
-
-		return this.get('ajax').request(url, {
-			method: "GET"
-		});
-	},
+export default Model.extend({
+	pageId: attr('string'),
+	documentId: attr('string'),
+	orgId: attr('string'),
+	rawBody: attr(),
+	config: attr(),
+	externalSource: attr('boolean', { defaultValue: false }),
+	created: attr(),
+	revised: attr(),
 });

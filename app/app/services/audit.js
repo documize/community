@@ -13,9 +13,13 @@ import Ember from 'ember';
 import netUtil from '../utils/net';
 import config from '../config/environment';
 
+const {
+	inject: { service }
+} = Ember;
+
 export default Ember.Service.extend({
-	session: Ember.inject.service('session'),
-	appMeta: Ember.inject.service(),
+	session: service('session'),
+	appMeta: service(),
 	ready: false,
 	enabled: config.APP.auditEnabled,
 	appId: config.APP.intercomKey,

@@ -12,14 +12,19 @@
 import Ember from 'ember';
 import netUtil from '../../utils/net';
 
+const {
+	inject: { service }
+} = Ember;
+
 export default Ember.Component.extend({
-	folderService: Ember.inject.service('folder'),
+	folderService: service('folder'),
 	folder: null,
-	appMeta: Ember.inject.service(),
+	appMeta: service(),
+	session: service(),
 
 	didInitAttrs() {
 		if (this.get("session.authenticated")) {
-			this.get("session.user.accounts").forEach((account)=>{
+			this.get("session.session.content.authenticated.user.accounts").forEach((account) => {
 				// TODO: do not mutate account.active here
 				account.active = account.orgId === this.get("appMeta.orgId");
 			});

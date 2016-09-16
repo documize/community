@@ -10,18 +10,23 @@
 // https://documize.com
 
 import Ember from 'ember';
-import models from '../utils/model';
+
+const {
+	inject: { service }
+} = Ember;
 
 export default Ember.Service.extend({
-	sessionService: Ember.inject.service('session'),
-	ajax: Ember.inject.service(),
+	sessionService: service('session'),
+	ajax: service(),
+	store: service(),
 
 	// Returns document model for specified document id.
 	getDocument(documentId) {
 		return this.get('ajax').request(`documents/${documentId}`, {
 			method: "GET"
 		}).then((response) => {
-			return models.DocumentModel.create(response);
+			let data = this.get('store').normalize('document', response);
+			return this.get('store').push(data);
 		});
 	},
 
@@ -34,9 +39,13 @@ export default Ember.Service.extend({
 				content: Ember.A([])
 			});
 
-			_.each(response, function (doc) {
-				let documentModel = models.DocumentModel.create(doc);
-				documents.pushObject(documentModel);
+			if (isObject(response)) {
+				return documents;
+			}
+
+			documents = response.map((doc) => {
+				let data = this.get('store').normalize('document', doc);
+				return this.get('store').push(data);
 			});
 
 			return documents;
@@ -52,9 +61,9 @@ export default Ember.Service.extend({
 				content: Ember.A([])
 			});
 
-			_.each(response, function (doc) {
-				let documentModel = models.DocumentModel.create(doc);
-				documents.pushObject(documentModel);
+			documents = response.map((doc) => {
+				let data = this.get('store').normalize('document', doc);
+				return this.get('store').push(data);
 			});
 
 			return documents;
@@ -115,6 +124,7 @@ export default Ember.Service.extend({
 	updatePage: function (documentId, pageId, payload, skipRevision) {
 		var revision = skipRevision ? "?r=true" : "?r=false";
 		let url = `documents/${documentId}/pages/${pageId}${revision}`;
+		Ember.set(payload.meta, 'id', parseInt(payload.meta.id));
 
 		return this.get('ajax').request(url, {
 			method: 'PUT',
@@ -192,8 +202,9 @@ export default Ember.Service.extend({
 			method: 'GET'
 		}).then((response) => {
 			let data = [];
-			_.each(response, function (obj) {
-				data.pushObject(models.PageModel.create(obj));
+			data = response.map((obj) => {
+				let data = this.get('store').normalize('page', obj);
+				return this.get('store').push(data);
 			});
 
 			return data;
@@ -208,8 +219,9 @@ export default Ember.Service.extend({
 		}).then((response) => {
 			let pages = [];
 
-			_.each(response, function (page) {
-				pages.pushObject(models.PageModel.create(page));
+			pages = response.map((page) => {
+				let data = this.get('store').normalize('page', page);
+				return this.get('store').push(data);
 			});
 
 			return pages;
@@ -222,8 +234,8 @@ export default Ember.Service.extend({
 		return this.get('ajax').request(`documents/${documentId}/pages/${pageId}`, {
 			method: 'GET'
 		}).then((response) => {
-			let page = models.PageModel.create(response);
-			return page;
+			let data = this.get('store').normalize('page', response);
+			return this.get('store').push(data);
 		});
 	},
 
@@ -233,8 +245,8 @@ export default Ember.Service.extend({
 		return this.get('ajax').request(`documents/${documentId}/pages/${pageId}/meta`, {
 			method: 'GET'
 		}).then((response) => {
-			let meta = models.PageMetaModel.create(response);
-			return meta;
+			let data = this.get('store').normalize('page-meta', response);
+			return this.get('store').push(data);
 		});
 	},
 
@@ -245,9 +257,16 @@ export default Ember.Service.extend({
 			method: 'GET'
 		}).then((response) => {
 			let data = [];
-			_.each(response, function (obj) {
-				data.pushObject(models.AttachmentModel.create(obj));
+
+			if (isObject(response)) {
+				return data;
+			}
+
+			data = response.map((obj) => {
+				let data = this.get('store').normalize('attachment', obj);
+				return this.get('store').push(data);
 			});
+
 			return data;
 		});
 	},
@@ -260,3 +279,7 @@ export default Ember.Service.extend({
 		});
 	},
 });
+
+function isObject(a) {
+	return (!!a) && (a.constructor === Object);
+}
