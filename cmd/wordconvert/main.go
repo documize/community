@@ -36,8 +36,9 @@ var outputDir = flag.String("o", ".", "specify the directory to hold the output"
 var ignoreBadCert = flag.Bool("k", false, "ignore bad certificate errors")
 var verbose = flag.Bool("v", false, "verbose progress messages")
 var stayziped = flag.Bool("z", false, "do not automatically unzip content")
-var token = flag.String("t", "", "authorization token (use your e-mail address during beta period)")
+var token = flag.String("t", "", "authorization token (if you use your e-mail address here during preview period, we will tell you before changes are made)")
 var ignoreErrs = flag.Bool("e", false, "report errors on individual files, but continue")
+var version = flag.Bool("version", false, "display the version of this code")
 
 func validXtn(fn string) bool {
 	lcfn := strings.ToLower(fn)
@@ -64,6 +65,10 @@ func errCanContinue(can bool, err error) bool {
 func main() {
 
 	flag.Parse()
+
+	if *version {
+		fmt.Println("Version: 0.1 preview")
+	}
 
 	if *outputDir != "." {
 		if err := os.Mkdir(*outputDir, 0777); err != nil && !os.IsExist(err) {
