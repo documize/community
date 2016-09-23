@@ -40,6 +40,7 @@ var token = flag.String("t", "", "authorization token (if you use your e-mail ad
 var ignoreErrs = flag.Bool("e", false, "report errors on individual files, but continue")
 var version = flag.Bool("version", false, "display the version of this code")
 
+// does the file have a valid extension
 func validXtn(fn string) bool {
 	lcfn := strings.ToLower(fn)
 	for _, xtn := range []string{".doc", ".docx", ".pdf"} {
@@ -50,6 +51,7 @@ func validXtn(fn string) bool {
 	return false
 }
 
+//  errCanContinue is the mechanism to print errors yet continue, if that command line option is chosen
 func errCanContinue(can bool, err error) bool {
 	if err == nil {
 		return false
@@ -95,7 +97,9 @@ func main() {
 func processFiles(hclient *http.Client) {
 
 	for _, fileName := range flag.Args() {
+
 		if validXtn(fileName) {
+
 			if *verbose {
 				fmt.Println("processing", fileName)
 			}
@@ -109,7 +113,7 @@ func processFiles(hclient *http.Client) {
 			bodyWriter := multipart.NewWriter(bodyBuf)
 
 			_, fn := path.Split(fileName)
-			fileWriter, err := bodyWriter.CreateFormFile("wordfile", fn)
+			fileWriter, err := bodyWriter.CreateFormFile("wordfile", fn) // name as expected by the API
 			if errCanContinue(true, err) {
 				continue
 			}
@@ -127,7 +131,7 @@ func processFiles(hclient *http.Client) {
 
 			target := fmt.Sprintf(serverURLfmt, *server)
 			if *token != "" {
-				target += "?token=" + *token
+				target += "?token=" + *token // NOTE: after the preview phase, token will not be optional
 			}
 
 			req, err := http.NewRequest("POST",
@@ -168,21 +172,26 @@ func processFiles(hclient *http.Client) {
 					continue
 				}
 			}
+
 		} else {
+
 			if *verbose {
 				fmt.Println("ignored", fileName)
 			}
+
 		}
 	}
 }
 
+// simple unzip
 func unzipFiles(zipdata []byte, targetDir string) error {
+
 	rdr, err := zip.NewReader(bytes.NewReader(zipdata), int64(len(zipdata)))
 	if err != nil {
 		return err
 	}
 
-	if err := os.Mkdir(targetDir, 0777); err != nil && !os.IsExist(err) {
+	if err := os.Mkdir(targetDir, 0777); err != nil && !os.IsExist(err) { // make sure the target directory exists
 		return err
 	}
 
