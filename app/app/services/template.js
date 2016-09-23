@@ -10,54 +10,58 @@
 // https://documize.com
 
 import Ember from 'ember';
-import models from '../utils/model';
+
+const {
+	inject: { service }
+} = Ember;
 
 export default Ember.Service.extend({
-    sessionService: Ember.inject.service('session'),
-    ajax: Ember.inject.service(),
+	sessionService: service('session'),
+	ajax: service(),
+	store: service(),
 
-    importStockTemplate: function(folderId, templateId) {
-        let url = `templates/${templateId}/folder/${folderId}?type=stock`;
+	importStockTemplate: function (folderId, templateId) {
+		let url = `templates/${templateId}/folder/${folderId}?type=stock`;
 
-        return this.get('ajax').request(url, {
-            method: "POST"
-        });
-    },
+		return this.get('ajax').request(url, {
+			method: "POST"
+		});
+	},
 
-    importSavedTemplate: function(folderId, templateId) {
-        let url = `templates/${templateId}/folder/${folderId}?type=saved`;
+	importSavedTemplate: function (folderId, templateId) {
+		let url = `templates/${templateId}/folder/${folderId}?type=saved`;
 
-        return this.get('ajax').post(url).then((doc)=>{
-            let docModel = models.DocumentModel.create(doc);
-            return docModel;
-        });
-    },
+		return this.get('ajax').post(url).then((doc) => {
+			let data = this.get('store').normalize('document', doc);
+			return this.get('store').push(data);
+		});
+	},
 
-    getSavedTemplates() {
-        return this.get('ajax').request(`templates`, {
-            method: 'GET'
-        }).then((response) => {
-            if (is.not.array(response)) {
-                response = [];
-            }
-            let templates = Ember.ArrayProxy.create({
-                content: Ember.A([])
-            });
+	getSavedTemplates() {
+		return this.get('ajax').request(`templates`, {
+			method: 'GET'
+		}).then((response) => {
+			if (is.not.array(response)) {
+				response = [];
+			}
+			let templates = Ember.ArrayProxy.create({
+				content: Ember.A([])
+			});
 
-            _.each(response, function(template) {
-                let templateModel = models.TemplateModel.create(template);
-                templates.pushObject(templateModel);
-            });
+			templates = response.map((template) => {
+				let data = this.get('store').normalize('template', template);
+				return this.get('store').push(data);
+			});
 
-            return templates;
-        });
-    },
+			return templates;
+		});
+	},
 
-    getStockTemplates() {
-        return this.get('ajax').request(`templates/stock`, {
-            method: 'GET'
-        });
-    },
+	getStockTemplates() {
+		return this.get('ajax').request(`templates/stock`, {
+			method: 'GET'
+		});
+	},
 
 	saveAsTemplate(documentId, name, excerpt) {
 		let payload = {
@@ -66,10 +70,9 @@ export default Ember.Service.extend({
 			Excerpt: excerpt
 		};
 
-        return this.get('ajax').request(`templates`, {
-            method: 'POST',
-            data: JSON.stringify(payload)
-        }).then(() => {
-        });
+		return this.get('ajax').request(`templates`, {
+			method: 'POST',
+			data: JSON.stringify(payload)
+		}).then(() => {});
 	}
 });

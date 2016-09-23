@@ -10,24 +10,31 @@
 // https://documize.com
 
 import Ember from 'ember';
-import models from '../utils/model';
 import SimpleAuthSession from 'ember-simple-auth/services/session';
 
 const {
 	inject: { service },
-	computed: { oneWay, or, notEmpty },
 	computed
 } = Ember;
 
 export default SimpleAuthSession.extend({
 	ajax: service(),
 	appMeta: service(),
+	store: service(),
 
 	isMac: false,
 	isMobile: false,
-	authenticated: notEmpty('user.id'),
-	isAdmin: oneWay('user.admin'),
-	isEditor: or('user.admin', 'user.editor'),
+	authenticated: computed('user.id', function () {
+		return this.get('user.id') !== '0';
+	}),
+	isAdmin: computed('user', function () {
+		let data = this.get('user');
+		return data.get('admin');
+	}),
+	isEditor: computed('user', function () {
+		let data = this.get('user');
+		return data.get('editor');
+	}),
 
 	init: function () {
 		this.set('isMac', is.mac());
@@ -37,7 +44,8 @@ export default SimpleAuthSession.extend({
 	user: computed('isAuthenticated', 'session.content.authenticated.user', function () {
 		if (this.get('isAuthenticated')) {
 			let user = this.get('session.content.authenticated.user') || { id: '' };
-			return models.UserModel.create(user);
+			let data = this.get('store').normalize('user', user);
+			return this.get('store').push(data);
 		}
 	}),
 

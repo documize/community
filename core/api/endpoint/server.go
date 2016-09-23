@@ -120,7 +120,25 @@ func Serve(ready chan struct{}) {
 
 		log.Info("Starting SSL server on " + port + " with " + certFile + " " + keyFile)
 
-		server := &http.Server{Addr: ":" + port, Handler: n}
+		// myTLSConfig := &tls.Config{
+		// 	CipherSuites: []uint16{
+		// 		tls.TLS_RSA_WITH_3DES_EDE_CBC_SHA,
+		// 		tls.TLS_RSA_WITH_AES_128_CBC_SHA,
+		// 		tls.TLS_RSA_WITH_AES_256_CBC_SHA,
+		// 		// tls.TLS_RSA_WITH_AES_128_CBC_SHA256,
+		// 		// tls.TLS_RSA_WITH_AES_256_CBC_SHA256,
+		// 		tls.TLS_RSA_WITH_AES_128_GCM_SHA256,
+		// 		tls.TLS_RSA_WITH_AES_256_GCM_SHA384,
+		// 		tls.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
+		// 		tls.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
+		// 		// tls.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,
+		// 		// tls.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384,
+		// 		tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+		// 		tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384}}
+		// // tls.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256}}
+		// myTLSConfig.PreferServerCipherSuites = true
+
+		server := &http.Server{Addr: ":" + port, Handler: n /*, TLSConfig: myTLSConfig*/}
 		server.SetKeepAlivesEnabled(true)
 		if err := server.ListenAndServeTLS(certFile, keyFile); err != nil {
 			log.Error("ListenAndServeTLS on "+port, err)

@@ -11,16 +11,20 @@
 
 import Ember from 'ember';
 
+const {
+	inject: { service }
+} = Ember;
+
 export default Ember.Service.extend({
-    sessionService: Ember.inject.service('session'),
-    ajax: Ember.inject.service(),
+	sessionService: service('session'),
+	ajax: service(),
 
-    // getUsers returns all users for organization.
-    find(keywords) {
-        let url = "search?keywords=" + encodeURIComponent(keywords);
+	// getUsers returns all users for organization.
+	find(keywords) {
+		let url = "search?keywords=" + encodeURIComponent(keywords);
 
-        return this.get('ajax').request(url, {
-            method: "GET"
-        });
-    },
+		return this.get('ajax').request(url, {
+			method: "GET"
+		});
+	},
 });

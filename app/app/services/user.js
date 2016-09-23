@@ -10,21 +10,27 @@
 // https://documize.com
 
 import Ember from 'ember';
-import models from '../utils/model';
+
+const {
+	isEmpty,
+	RSVP,
+	inject: { service }
+} = Ember;
 
 export default Ember.Service.extend({
-	sessionService: Ember.inject.service('session'),
-	ajax: Ember.inject.service(),
+	sessionService: service('session'),
+	ajax: service(),
+	store: service(),
 
 	// Adds a new user.
 	add(user) {
-
 		return this.get('ajax').request(`users`, {
 			type: 'POST',
 			data: JSON.stringify(user),
 			contentType: 'json'
-		}).then(function (response) {
-			return models.UserModel.create(response);
+		}).then((response) => {
+			let data = this.get('store').normalize('user', response);
+			return this.get('store').push(data);
 		});
 	},
 
@@ -35,15 +41,17 @@ export default Ember.Service.extend({
 		return this.get('ajax').request(url, {
 			type: 'GET'
 		}).then((response) => {
-			return models.UserModel.create(response);
+			let data = this.get('store').normalize('user', response);
+			return this.get('store').push(data);
 		});
 	},
 
 	// Returns all users for organization.
 	getAll() {
 		return this.get('ajax').request(`users`).then((response) => {
-			return response.map(function (obj) {
-				return models.UserModel.create(obj);
+			return response.map((obj) => {
+				let data = this.get('store').normalize('user', obj);
+				return this.get('store').push(data);
 			});
 		});
 	},
@@ -56,8 +64,10 @@ export default Ember.Service.extend({
 			method: "GET"
 		}).then((response) => {
 			let data = [];
-			_.each(response, function (obj) {
-				data.pushObject(models.UserModel.create(obj));
+
+			data = response.map((obj) => {
+				let data = this.get('store').normalize('user', obj);
+				return this.get('store').push(data);
 			});
 
 			return data;
@@ -66,7 +76,7 @@ export default Ember.Service.extend({
 
 	// Updates an existing user record.
 	save(user) {
-		let userId = user.get('id');
+		let userId = user.id;
 		let url = `users/${userId}`;
 
 		return this.get('ajax').request(url, {
@@ -91,6 +101,9 @@ export default Ember.Service.extend({
 
 		return this.get('ajax').request(url, {
 			method: 'DELETE'
+		}).then(() => {
+			let user = this.get('store').peekRecord('user', `${userId}`);
+			return user.deleteRecord();
 		});
 	},
 
@@ -98,8 +111,8 @@ export default Ember.Service.extend({
 	forgotPassword(email) {
 		let url = `public/forgot`;
 
-		if (is.empty(email)) {
-			return Ember.RSVP.reject("invalid");
+		if (isEmpty(email)) {
+			return RSVP.reject("invalid");
 		}
 
 		let data = JSON.stringify({
@@ -117,8 +130,8 @@ export default Ember.Service.extend({
 	resetPassword(token, password) {
 		var url = `public/reset/${token}`;
 
-		if (is.empty(token) || is.empty(password)) {
-			return Ember.RSVP.reject("invalid");
+		if (isEmpty(token) || isEmpty(password)) {
+			return RSVP.reject("invalid");
 		}
 
 		return this.get('ajax').request(url, {

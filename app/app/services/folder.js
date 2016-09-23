@@ -10,17 +10,19 @@
 // https://documize.com
 
 import Ember from 'ember';
-import models from '../utils/model';
 import BaseService from '../services/base';
 
 const {
-	get
+	get,
+	RSVP,
+	inject: { service }
 } = Ember;
 
 export default BaseService.extend({
-	sessionService: Ember.inject.service('session'),
-	ajax: Ember.inject.service(),
-	localStorage: Ember.inject.service(),
+	sessionService: service('session'),
+	ajax: service(),
+	localStorage: service(),
+	store: service(),
 
 	// selected folder
 	currentFolder: null,
@@ -28,38 +30,35 @@ export default BaseService.extend({
 
 	// Add a new folder.
 	add(folder) {
-
 		return this.get('ajax').post(`folders`, {
 			contentType: 'json',
 			data: JSON.stringify(folder)
 		}).then((folder) => {
-			let folderModel = models.FolderModel.create(folder);
-			return folderModel;
+			let data = this.get('store').normalize('folder', folder);
+			return this.get('store').push(data);
 		});
 	},
 
 	// Returns folder model for specified folder id.
 	getFolder(id) {
-
 		return this.get('ajax').request(`folders/${id}`, {
 			method: 'GET'
-		}).then((response) => {
-			let folder = models.FolderModel.create(response);
-			return folder;
+		}).then((folder) => {
+			let data = this.get('store').normalize('folder', folder);
+			return this.get('store').push(data);
 		});
 	},
 
 	// Returns all folders that user can see.
 	getAll() {
-		let self = this;
+		let folders = this.get('folders');
 
-		if (this.get('folders') != null) {
-			return new Ember.RSVP.Promise(function (resolve) {
-				resolve(self.get('folders'));
-			});
-		} else {
-			return this.reload();
+		if (folders != null) {
+			return new RSVP.resolve(folders);
 		}
+
+		return this.reload();
+
 	},
 
 	// Updates an existing folder record.
@@ -73,7 +72,7 @@ export default BaseService.extend({
 		});
 	},
 
-	remove: function (folderId, moveToId) {
+	remove(folderId, moveToId) {
 		let url = `folders/${folderId}/move/${moveToId}`;
 
 		return this.get('ajax').request(url, {
@@ -81,7 +80,7 @@ export default BaseService.extend({
 		});
 	},
 
-	onboard: function (folderId, payload) {
+	onboard(folderId, payload) {
 		let url = `public/share/${folderId}`;
 
 		return this.get('ajax').post(url, {
@@ -91,13 +90,15 @@ export default BaseService.extend({
 	},
 
 	// getProtectedFolderInfo returns non-private folders and who has access to them.
-	getProtectedFolderInfo: function () {
+	getProtectedFolderInfo() {
 		return this.get('ajax').request(`folders?filter=viewers`, {
 			method: "GET"
 		}).then((response) => {
 			let data = [];
-			_.each(response, function (obj) {
-				data.pushObject(models.ProtectedFolderParticipant.create(obj));
+
+			data = response.map((obj) => {
+				let data = this.get('store').normalize('protected-folder-participant', obj);
+				return this.get('store').push(data);
 			});
 
 			return data;
@@ -111,8 +112,10 @@ export default BaseService.extend({
 			method: "GET"
 		}).then((response) => {
 			let data = [];
-			_.each(response, function (obj) {
-				data.pushObject(models.FolderModel.create(obj));
+
+			data = response.map((obj) => {
+				let data = this.get('store').normalize('folder', obj);
+				return this.get('store').push(data);
 			});
 
 			return data;
@@ -126,8 +129,10 @@ export default BaseService.extend({
 			method: "GET"
 		}).then((response) => {
 			let data = [];
-			_.each(response, function (obj) {
-				data.pushObject(models.FolderPermissionModel.create(obj));
+
+			data = response.map((obj) => {
+				let data = this.get('store').normalize('folder-permission', obj);
+				return this.get('store').push(data);
 			});
 
 			return data;
@@ -136,7 +141,6 @@ export default BaseService.extend({
 
 	// persist folder permissions
 	savePermissions(folderId, payload) {
-
 		return this.get('ajax').request(`folders/${folderId}/permissions`, {
 			method: 'PUT',
 			contentType: 'json',
@@ -181,7 +185,7 @@ export default BaseService.extend({
 			let result = [];
 			let folderId = folder.get('id');
 
-			folderPermissions.forEach(function (item) {
+			folderPermissions.forEach((item) => {
 				if (item.folderId === folderId) {
 					result.push(item);
 				}
@@ -189,7 +193,7 @@ export default BaseService.extend({
 
 			let canEdit = false;
 
-			result.forEach(function (permission) {
+			result.forEach((permission) => {
 				if (permission.userId === userId) {
 					canEdit = permission.canEdit;
 				}
