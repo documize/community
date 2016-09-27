@@ -42,9 +42,9 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 			changes.forEach(function (newPage) {
 				let oldPage = self.get('pages').findBy('id', newPage.get('id'));
 				if (is.not.undefined(oldPage)) {
-					oldPage.set('body', newPage.body);
-					oldPage.set('revised', newPage.revised);
-					self.showNotification(`Refreshed ${oldPage.title}`);
+					oldPage.set('body', newPage.get('body'));
+					oldPage.set('revised', newPage.get('revised'));
+					self.showNotification(`Refreshed ${oldPage.get('title')}`);
 				}
 			});
 		});
