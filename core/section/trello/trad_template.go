@@ -14,7 +14,7 @@ package trello
 const tradTemplate = `
 <div class="section-trello-render">
 	{{if ne .Detail.Board.ID ""}}
-		<div class="heading" style="background-color: {{.Detail.Board.Prefs.BackgroundColor}}">
+		<div class="heading" style="background-color:{{.Detail.Board.Prefs.BackgroundColor}};">
 			<h3><a href="{{ .Detail.Board.URL }}">{{.Detail.Board.Name}} Board</a></h3>
 			<p>There are {{ .Detail.CardCount }} cards across {{ .Detail.ListCount }} lists</p>
 		</div>
@@ -26,9 +26,8 @@ const tradTemplate = `
 				{{range $data := .Detail.Data}}
 				<thead>
 					<tr>
-						<th class="title">{{ $data.List.Name }} <span>{{len $data.Cards}}</span></th>
-					</tr>
-					<tr>
+						<th class="title">{{ $data.List.Name }} <span>{{len $data.Cards}} cards</span></th>
+						<th></th>
 					</tr>
 				</thead>
 
@@ -42,9 +41,9 @@ const tradTemplate = `
 							</div>
 						</a>
 						</td>
-						<td>
+						<td style="text-align:right;">
 							{{range $label := $card.Labels}}
-								<span style="background-color:{{$label.Color}}"> {{$label.Name}} </span>
+								<span class="trello-label" style="background-color:{{$label.Color}}"> {{$label.Name}} </span>
 							{{end}}
 						</td>
 					</tr>

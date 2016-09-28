@@ -59,9 +59,8 @@
     }
 
     .heading {
-        padding: 20px;
-        color: white;
-        border-radius: 5px;
+        padding: 10px 20px;
+        color: white!important;
 
         a {
             color: white!important;
@@ -70,6 +69,7 @@
         h3 {
             font-size: 22px;
             margin: 0;
+            font-family: "open_sanslight";
         }
 
         p {
@@ -89,12 +89,26 @@
         border-bottom: 1px solid #e1e1e1;
         text-transform: uppercase;
         font-size: 14px;
+
+        span {
+            color:#838d94;
+        }
+
     }
 
     .trello-single-board tbody tr td {
         border: none!important;
         padding-left: 20px!important;
         padding-bottom: 0!important;
+    }
+
+    .trello-label {
+        color:white;
+        font-size: 11px;
+        padding: 4px 6px;
+        border-radius: 4px;
+        box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.12);
+        margin-left: 10px;
     }
 
 }
