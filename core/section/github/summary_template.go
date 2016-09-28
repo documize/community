@@ -13,7 +13,7 @@ package github
 
 const summaryTemplate = `
 <div class="section-github-render">
-	<p>Activity since {{.Config.Since}}{{.Config.DateMessage}} for {{.Config.Owner}} repositories:
+	<p>Activity since {{.Config.Since}}{{.Config.DateMessage}} for {{.Config.Owner}} repository
 		{{range $data := .Config.Lists}}
 			{{if $data.Included}}
 				<a class="link" href="{{$data.URL}}">
@@ -23,6 +23,7 @@ const summaryTemplate = `
 		{{end}}
 	</p>
 
+	<!--
 	{{if .HasSharedLabels}}
 		<div class="heading">Labels</div>
 		<p>There
@@ -42,5 +43,6 @@ const summaryTemplate = `
 		    </tbody>
 		</table>
 	{{end}}
+	-->
 </div>
 `

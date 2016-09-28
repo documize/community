@@ -30,14 +30,14 @@ const (
 <div class="section-github-render">
 {{if .HasIssues}}
 	<div class="heading">Issues</div>
-	<p>
+	<!-- <p>
 		There are {{.ClosedIssues}} closed
 			{{if eq 1 .ClosedIssues}}issue{{else}}issues{{end}}
 		 	and {{.OpenIssues}} open
 		 	{{if eq 1 .OpenIssues}}issue{{else}}issues{{end}}
 		 across {{.RepoCount}}
 		{{if eq 1 .RepoCount}} repository. {{else}} repositories. {{end}}
-	</p>
+	</p> -->
 
 	<div class="margin-top-20"></div>
 	<table class="github-table">

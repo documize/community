@@ -31,7 +31,7 @@ const (
 <div class="section-github-render">
 	{{if .HasMilestones}}
 		<div class="heading">Milestones</div>
-		<p>
+		<!-- <p>
 			There are
 			{{.ClosedMS}}
 			{{if eq 1 .ClosedMS}} milestone {{else}} milestones {{end}}
@@ -39,7 +39,7 @@ const (
 			{{if eq 1 .OpenMS}} milestone {{else}} milestones {{end}}
 			open across {{.RepoCount}}
 			{{if eq 1 .RepoCount}} repository. {{else}} repositories. {{end}}
-		</p>
+		</p> -->
 		<div class="margin-top-20"></div>
 		<table class="github-table">
 		    <tbody>

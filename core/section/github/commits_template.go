@@ -13,6 +13,7 @@ package github
 
 const commitsTemplate = `
 <div class="section-github-render">
+	<!--
 	{{if .HasAuthorStats}}
 		<div class="heading">Contributors</div>
 		<p>
@@ -58,12 +59,13 @@ const commitsTemplate = `
 			</tbody>
 		</table>
 	{{end}}
+	-->
 
 	{{if .HasCommits}}
 		<div class="heading">Commits</div>
-		<p>There are {{len .BranchCommits}} commits by {{.NumContributors}} contributors across {{.RepoCount}}
+		<!-- <p>There are {{len .BranchCommits}} commits by {{.NumContributors}} contributors across {{.RepoCount}}
 			{{if eq 1 .RepoCount}} repository. {{else}} repositories. {{end}}
-		</p>
+		</p> -->
 		<div class="margin-top-20"></div>
 		<table class="github-table">
 			<tbody>

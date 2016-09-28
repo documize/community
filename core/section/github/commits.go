@@ -90,6 +90,10 @@ const tagCommitsData = "commitsData"
 
 func getCommits(client *gogithub.Client, config *githubConfig) ([]githubCommit, []githubAuthorStats, error) {
 
+	if !config.ShowCommits {
+		return nil, nil, nil
+	}
+
 	// first make sure we've got all the branches
 	for _, orb := range config.Lists {
 		if orb.Included {
@@ -253,6 +257,11 @@ func getCommits(client *gogithub.Client, config *githubConfig) ([]githubCommit, 
 }
 
 func refreshCommits(gr *githubRender, config *githubConfig, client *gogithub.Client) (err error) {
+
+	if !config.ShowCommits {
+		return nil
+	}
+
 	gr.BranchCommits, gr.AuthorStats, err = getCommits(client, config)
 	if err != nil {
 		log.Error("github refreshCommits:", err)
@@ -262,6 +271,11 @@ func refreshCommits(gr *githubRender, config *githubConfig, client *gogithub.Cli
 }
 
 func renderCommits(payload *githubRender, c *githubConfig) error {
+
+	if !c.ShowCommits {
+		return nil
+	}
+
 	payload.CommitCount = 0
 	for range payload.BranchCommits {
 		payload.CommitCount++

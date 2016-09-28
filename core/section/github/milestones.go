@@ -79,6 +79,10 @@ func init() {
 
 func getMilestones(client *gogithub.Client, config *githubConfig) ([]githubMilestone, error) {
 
+	if !config.ShowMilestones {
+		return nil, nil
+	}
+
 	ret := []githubMilestone{}
 
 	hadRepo := make(map[string]bool)
@@ -156,6 +160,10 @@ func getMilestones(client *gogithub.Client, config *githubConfig) ([]githubMiles
 
 func refreshMilestones(gr *githubRender, config *githubConfig, client *gogithub.Client) (err error) {
 
+	if !config.ShowMilestones {
+		return nil
+	}
+
 	gr.Milestones, err = getMilestones(client, config)
 	if err != nil {
 		log.Error("unable to get github milestones", err)
@@ -176,6 +184,11 @@ func refreshMilestones(gr *githubRender, config *githubConfig, client *gogithub.
 }
 
 func renderMilestones(payload *githubRender, c *githubConfig) error {
+
+	if !c.ShowMilestones {
+		return nil
+	}
+
 	hadRepo := make(map[string]bool)
 	payload.RepoCount = 0
 	for _, orb := range payload.List {

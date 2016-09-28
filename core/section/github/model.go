@@ -84,21 +84,24 @@ type githubLabel struct {
 }
 
 type githubConfig struct {
-	Token       string            `json:"-"` // NOTE very important that the secret Token is not leaked to the client side, so "-"
-	UserID      string            `json:"userId"`
-	PageID      string            `json:"pageId"`
-	Owner       string            `json:"owner_name"`
-	BranchSince string            `json:"branchSince,omitempty"`
-	SincePtr    *time.Time        `json:"-"`
-	Since       string            `json:"-"`
-	BranchLines int               `json:"branchLines,omitempty,string"`
-	OwnerInfo   githubOwner       `json:"owner"`
-	ClientID    string            `json:"clientId"`
-	CallbackURL string            `json:"callbackUrl"`
-	Lists       []githubBranch    `json:"lists,omitempty"`
-	ReportOrder []string          `json:"-"`
-	DateMessage string            `json:"-"`
-	UserNames   map[string]string `json:"UserNames"`
+	Token          string            `json:"-"` // NOTE very important that the secret Token is not leaked to the client side, so "-"
+	UserID         string            `json:"userId"`
+	PageID         string            `json:"pageId"`
+	Owner          string            `json:"owner_name"`
+	BranchSince    string            `json:"branchSince,omitempty"`
+	SincePtr       *time.Time        `json:"-"`
+	Since          string            `json:"-"`
+	BranchLines    int               `json:"branchLines,omitempty,string"`
+	OwnerInfo      githubOwner       `json:"owner"`
+	ClientID       string            `json:"clientId"`
+	CallbackURL    string            `json:"callbackUrl"`
+	Lists          []githubBranch    `json:"lists,omitempty"`
+	ReportOrder    []string          `json:"-"`
+	DateMessage    string            `json:"-"`
+	UserNames      map[string]string `json:"UserNames"`
+	ShowMilestones bool              `json:"showMilestones,omitempty"`
+	ShowIssues     bool              `json:"showIssues,omitempty"`
+	ShowCommits    bool              `json:"showCommits,omitempty"`
 }
 
 func (c *githubConfig) Clean() {
@@ -125,7 +128,18 @@ func (c *githubConfig) Clean() {
 	}
 	c.Since = (*c.SincePtr).Format(issuesTimeFormat)
 
-	c.ReportOrder = []string{tagSummaryData, tagMilestonesData, tagIssuesData, tagCommitsData}
+	c.ReportOrder = []string{tagSummaryData}
+
+	if c.ShowMilestones {
+		c.ReportOrder = append(c.ReportOrder, tagMilestonesData)
+	}
+	if c.ShowIssues {
+		c.ReportOrder = append(c.ReportOrder, tagIssuesData)
+	}
+	if c.ShowCommits {
+		c.ReportOrder = append(c.ReportOrder, tagCommitsData)
+	}
+
 	c.BranchLines = 100 // overide  any existing value with maximum allowable in one call
 
 	sort.Sort(branchesToSort(c.Lists)) // get the configured branches in a sensible order for display

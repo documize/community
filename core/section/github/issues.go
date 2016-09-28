@@ -106,6 +106,10 @@ func wrapLabels(labels []gogithub.Label) (l string, labelNames []string, labelCo
 
 func getIssues(client *gogithub.Client, config *githubConfig) ([]githubIssue, error) {
 
+	if !config.ShowIssues {
+		return nil, nil
+	}
+
 	ret := []githubIssue{}
 
 	hadRepo := make(map[string]bool)
@@ -183,6 +187,11 @@ func getIssues(client *gogithub.Client, config *githubConfig) ([]githubIssue, er
 }
 
 func refreshIssues(gr *githubRender, config *githubConfig, client *gogithub.Client) (err error) {
+
+	if !config.ShowIssues {
+		return nil
+	}
+
 	gr.Issues, err = getIssues(client, config)
 	if err != nil {
 		log.Error("unable to get github issues (cmd)", err)
