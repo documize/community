@@ -40,6 +40,11 @@
 }
 
 .section-github-render {
+
+	a:hover {
+		text-decoration: underline;
+	}
+
 	.github-table {
 		margin: 0 !important;
 		border: none !important;
@@ -56,15 +61,36 @@
 		margin: 30px 0 0 0;
 	}
 
+	.github-table thead tr th {
+		padding: 15px 0;
+		border-bottom: 1px solid #e1e1e1;
+		text-transform: uppercase;
+		font-size: 14px;
+		text-align: left;
+
+		span {
+			color:#838d94;
+		}
+
+	}
+
+	.github-table tbody tr td {
+		border: none!important;
+		padding-left: 20px!important;
+		padding-bottom: 0!important;
+	}
+
+	span.dataid {
+		color:#838d94;
+	}
+
 	.issue-label {
-		font-size: 11px;
-		color: $color-white;
-		padding: 0px 8px;
-		margin-right: 5px;
-		border-radius: 2px;
-		box-shadow: inset 0 -1px 0 rgba(0,0,0,0.12);
-		display: inline-block;
-		line-height: 22px;
+		color:white;
+        font-size: 11px;
+        padding: 4px 6px;
+        border-radius: 4px;
+        box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.12);
+        margin-left: 10px;
 	}
 
 	progress[value] {
@@ -74,45 +100,15 @@
 		width: 150px;
 	}
 
-	.progress-meta {
-		color: $color-gray;
-		font-size: 1rem;
-		font-family: "arial";
+	span.issue-state {
+		float: left;
+    	margin-right: 10px;
+    	margin-top: 3px;
 	}
 
-	.contributor-name {
-		line-height: 15px;
-	}
-
-	.milestone-name, .issue-name, .contributor-name {
-		font-size: 1.2rem;
-	}
-
-	.milestone-symbol {
-		padding-top: 3px;
-	}
-
-	.issue-symbol {
-		padding-top: 3px;
-	}
-
-	.contributor-meta {
-		line-height: 30px;
-	}
-
-	.milestone-meta, .issue-meta, .contributor-meta {
-		color: $color-gray;
-		font-size: 1rem;
-	}
-
-	.github-avatar {
+	img.github-avatar {
+		width: 24px;
 		border-radius: 4px;
-		width: 36px;
-		height: 36px;
-		margin-right: 5px;
-	}
-
-	.branch {
-		font-family: "open_sanssemibold";
+		margin-right: 10px;
 	}
 }

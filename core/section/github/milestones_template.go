@@ -30,41 +30,34 @@ const (
 	milestonesTemplate = `
 <div class="section-github-render">
 	{{if .HasMilestones}}
-		<div class="heading">Milestones</div>
-		<!-- <p>
-			There are
-			{{.ClosedMS}}
-			{{if eq 1 .ClosedMS}} milestone {{else}} milestones {{end}}
-			closed and {{.OpenMS}}
-			{{if eq 1 .OpenMS}} milestone {{else}} milestones {{end}}
-			open across {{.RepoCount}}
-			{{if eq 1 .RepoCount}} repository. {{else}} repositories. {{end}}
-		</p> -->
-		<div class="margin-top-20"></div>
-		<table class="github-table">
-		    <tbody>
+		<table class="github-table" style="width: 100%;">
+			<thead>
+				<tr>
+				<th class="title">Milestones <span> {{.ClosedMS}} {{if eq 1 .ClosedMS}} closed and {{.OpenMS}} {{if eq 1 .OpenMS}} open </span>
+				</th>
+				<th></th>
+				</tr>
+			</thead>
+
+			<tbody>
 				{{range $data := .Milestones}}
 			        <tr>
-						<td class="no-width">
-							<div class="milestone-symbol">
-								{{if $data.IsMilestone}}
-									{{if $data.IsOpen}}
-										` + openMSsvg + `
-									{{else}}
-										` + closedMSsvg + `
-									{{end}}
+						<td>
+							{{if $data.IsMilestone}}
+								{{if $data.IsOpen}}
+									` + openMSsvg + `
+								{{else}}
+									` + closedMSsvg + `
 								{{end}}
-							</div>
+							{{end}}
 						</td>
-						<td><div class="margin-left-10"></div></td>
 			            <td>
 							<div class="milestone-name"><a class="link" href="{{$data.URL}}">{{$data.Name}}</a></div>
 							<span class="milestone-meta">{{$data.Repo}}</span>
 							{{if $data.IsMilestone}}
-								<span class="milestone-meta">&middot; {{$data.DueDate}}</span>
+								<span class="milestone-meta"> &middot; {{$data.DueDate}}</span>
 							{{end}}
 						</td>
-						<td><div class="margin-left-150"></div></td>
 			            <td class="no-width">
 							{{if $data.IsMilestone}}
 								<progress value="{{$data.Progress}}" max="100"></progress>

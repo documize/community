@@ -14,7 +14,7 @@ package trello
 const tradTemplate = `
 <div class="section-trello-render">
 	{{if ne .Detail.Board.ID ""}}
-		<div class="heading" style="background-color:{{.Detail.Board.Prefs.BackgroundColor}};">
+		<div class="heading">
 			<h3><a href="{{ .Detail.Board.URL }}">{{.Detail.Board.Name}} Board</a></h3>
 			<p>There are {{ .Detail.CardCount }} cards across {{ .Detail.ListCount }} lists</p>
 		</div>

@@ -235,6 +235,9 @@ func (p *Provider) Render(ctx *provider.Context, config, data string) string {
 
 		if err != nil {
 			log.Error("github render template.Parse error:", err)
+			for k,v := range strings.Split(resp.template,"\n"){
+				fmt.Println("DEBUG",k+1,v)
+			}
 			return "Documize internal github template.Parse error: " + err.Error()
 		}
 
