@@ -15,7 +15,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
+	//"fmt"
 	"html/template"
 	"io/ioutil"
 	"net/http"
@@ -236,9 +236,9 @@ func (p *Provider) Render(ctx *provider.Context, config, data string) string {
 
 		if err != nil {
 			log.Error("github render template.Parse error:", err)
-			for k, v := range strings.Split(rep.template, "\n") {
-				fmt.Println("DEBUG", k+1, v)
-			}
+			//for k, v := range strings.Split(rep.template, "\n") {
+			//	fmt.Println("DEBUG", k+1, v)
+			//}
 			return "Documize internal github template.Parse error: " + err.Error()
 		}
 

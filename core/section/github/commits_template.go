@@ -81,13 +81,13 @@ const commitsTemplate = `
 					<tr>
 						<td style="no-width">
 							<a href="{{$commit.URL}}">{{$commit.Message}}</a>
+							<span class="dataid"> {{$commit.Branch}}</span>
 						</td>
 						<td style="text-align:right;">
 							<div class="contributor-meta">
 								<img class="github-avatar" alt="@{{$commit.Name}}" src="{{$commit.Avatar}}" />
 								{{$commit.Name}}
-								{{if $commit.ShowDate}}	&middot; {{$commit.Date}} {{end}}
-								{{if $commit.ShowBranch}} &middot; {{$commit.Repo}}:<span class="bold">{{$commit.Branch}}</span>{{end}}
+								&middot; {{$commit.Date}}
 							</div>
 						</td>
 					</tr>

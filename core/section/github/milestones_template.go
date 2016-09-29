@@ -33,7 +33,7 @@ const (
 		<table class="github-table" style="width: 100%;">
 			<thead>
 				<tr>
-				<th class="title">Milestones <span> {{.ClosedMS}} {{if eq 1 .ClosedMS}} closed and {{.OpenMS}} {{if eq 1 .OpenMS}} open </span>
+				<th class="title">Milestones <span> {{.ClosedMS}} closed and {{.OpenMS}} open</span>
 				</th>
 				<th></th>
 				</tr>
