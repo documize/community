@@ -14,27 +14,46 @@ package trello
 const tradTemplate = `
 <div class="section-trello-render">
 	{{if ne .Detail.Board.ID ""}}
-		<div class="heading">{{.Detail.Board.Name}} Board</div>
+		<div class="heading">
+			<p>There are {{ .Detail.CardCount }} cards across {{ .Detail.ListCount }} lists on <a href="{{ .Detail.Board.URL }}">{{.Detail.Board.Name}} Board</a></p>
+		</div>
+
 		<p class="non-printable-message">Non-printable</p>
 		<div class="section-trello-render non-printable">
-			<p>There are {{ .Detail.CardCount }} cards across {{ .Detail.ListCount }} lists
-			for board <a href="{{ .Detail.Board.URL }}">{{.Detail.Board.Name}}.</a></p>
-			<div class="single-trello-board" style="background-color: {{.Detail.Board.Prefs.BackgroundColor}}">
-				<a href="{{ .Detail.Board.URL }}"><div class="trello-board-title">{{.Detail.Board.Name}}</div></a>
+			<div class="single-trello-board">
+			<table class="trello-single-board" style="width: 100%;">
 				{{range $data := .Detail.Data}}
-					<div class="trello-list">
-						<div class="trello-list-title">{{ $data.List.Name }}</div>
-						{{range $card := $data.Cards}}
-							<a href="{{ $card.URL }}">
-								<div class="trello-card">
-									{{ $card.Name }}
-								</div>
-							</a>
-						{{end}}
-					</div>
+				<thead>
+					<tr>
+						<th class="title">{{ $data.List.Name }} <span>&middot; {{len $data.Cards}} cards</span></th>
+						<th></th>
+					</tr>
+				</thead>
+
+				<tbody>
+					{{range $card := $data.Cards}}
+					<tr>
+						<td>
+						<a href="{{ $card.URL }}">
+							<div class="trello-card">
+								{{ $card.Name }}
+							</div>
+						</a>
+						</td>
+						<td style="text-align:right;">
+							{{range $label := $card.Labels}}
+								<span class="trello-label" style="background-color:{{$label.Color}}"> {{$label.Name}} </span>
+							{{end}}
+						</td>
+					</tr>
+					{{end}}
+				</tbody>
 				{{end}}
+			</table>
+
 			</div>
 		</div>
 	{{end}}
 </div>
+
 `

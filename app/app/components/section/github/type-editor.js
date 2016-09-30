@@ -41,6 +41,9 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 						branchLines: "100",
 						userId: "",
 						pageId: page.get('id'),
+						showMilestones: false,
+						showIssues: false,
+						showCommits: false,
 					};
 
 					try {
@@ -50,6 +53,9 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 						config.branchSince = metaConfig.branchSince;
 						config.userId = metaConfig.userId;
 						config.pageId = metaConfig.pageId;
+						config.showMilestones = metaConfig.showMilestones;
+						config.showIssues = metaConfig.showIssues;
+						config.showCommits = metaConfig.showCommits;
 					} catch (e) {}
 
 					self.set('config', config);
@@ -168,12 +174,16 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 			return this.get('isDirty');
 		},
 
-		onListCheckbox(id) {
+		onListCheckbox(id) { // select one repository only
 			let lists = this.get('config.lists');
 			let list = lists.findBy('id', id);
 
+			lists.forEach(function (entry) {
+				Ember.set(entry, 'included', false);
+			});
+
 			if (list !== null) {
-				Ember.set(list, 'included', !list.included);
+				Ember.set(list, 'included', true);
 			}
 		},
 

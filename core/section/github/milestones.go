@@ -79,6 +79,10 @@ func init() {
 
 func getMilestones(client *gogithub.Client, config *githubConfig) ([]githubMilestone, error) {
 
+	if !config.ShowMilestones {
+		return nil, nil
+	}
+
 	ret := []githubMilestone{}
 
 	hadRepo := make(map[string]bool)
@@ -115,7 +119,7 @@ func getMilestones(client *gogithub.Client, config *githubConfig) ([]githubMiles
 							dd := "no due date"
 							if v.DueOn != nil {
 								// TODO refactor to add message in red if the milestone is overdue
-								dd = "due on " + (*v.DueOn).Format(milestonesTimeFormat) + ""
+								dd = "due " + (*v.DueOn).Format(milestonesTimeFormat) + ""
 							}
 							up := ""
 							if v.UpdatedAt != nil {
@@ -156,6 +160,10 @@ func getMilestones(client *gogithub.Client, config *githubConfig) ([]githubMiles
 
 func refreshMilestones(gr *githubRender, config *githubConfig, client *gogithub.Client) (err error) {
 
+	if !config.ShowMilestones {
+		return nil
+	}
+
 	gr.Milestones, err = getMilestones(client, config)
 	if err != nil {
 		log.Error("unable to get github milestones", err)
@@ -176,6 +184,11 @@ func refreshMilestones(gr *githubRender, config *githubConfig, client *gogithub.
 }
 
 func renderMilestones(payload *githubRender, c *githubConfig) error {
+
+	if !c.ShowMilestones {
+		return nil
+	}
+
 	hadRepo := make(map[string]bool)
 	payload.RepoCount = 0
 	for _, orb := range payload.List {
@@ -197,10 +210,10 @@ func renderMilestones(payload *githubRender, c *githubConfig) error {
 					}
 				}
 				if issuesClosed+issuesOpen > 0 {
-					payload.Milestones = append(payload.Milestones, githubMilestone{
-						Repo: orb.Repo, Private: orb.Private, Name: noMilestone, IsOpen: true,
-						OpenIssues: issuesOpen, ClosedIssues: issuesClosed, URL: template.URL(orb.URL),
-					})
+					//payload.Milestones = append(payload.Milestones, githubMilestone{
+					//	Repo: orb.Repo, Private: orb.Private, Name: noMilestone, IsOpen: true,
+					//	OpenIssues: issuesOpen, ClosedIssues: issuesClosed, URL: template.URL(orb.URL),
+					//})
 				}
 
 				hadRepo[rName] = true

@@ -13,6 +13,7 @@ package github
 
 const commitsTemplate = `
 <div class="section-github-render">
+	<!--
 	{{if .HasAuthorStats}}
 		<div class="heading">Contributors</div>
 		<p>
@@ -24,8 +25,15 @@ const commitsTemplate = `
 			{{if eq 1 .RepoCount}} repository. {{else}} repositories. {{end}}
 		</p>
 
-		<div class="margin-top-20"></div>
 		<table class="github-table">
+
+			<thead>
+				<tr>
+				<th class="title">Contributors</th>
+				<th></th>
+				</tr>
+			</thead>
+
 			<tbody>
 				{{range $stats := .AuthorStats}}
 					<tr>
@@ -51,35 +59,36 @@ const commitsTemplate = `
 									{{range $repo := $stats.Repos}}	&middot; {{$repo}} {{end}}
 								{{end}}
 							</div>
-							<div class="margin-top-10"></div>
 						</td>
 					</tr>
 				{{end}}
 			</tbody>
 		</table>
 	{{end}}
+	-->
 
 	{{if .HasCommits}}
-		<div class="heading">Commits</div>
-		<p>There are {{len .BranchCommits}} commits by {{.NumContributors}} contributors across {{.RepoCount}}
-			{{if eq 1 .RepoCount}} repository. {{else}} repositories. {{end}}
-		</p>
-		<div class="margin-top-20"></div>
-		<table class="github-table">
+		<table class="github-table" style="width: 100%;">
+			<thead>
+				<tr>
+				<th class="title">Commits <span>&middot; {{len .BranchCommits}} commits by {{.NumContributors}} contributors</span>
+				</th>
+				<th></th>
+				</tr>
+			</thead>
 			<tbody>
 				{{range $commit := .BranchCommits}}
 					<tr>
-						<td style="no-width">
-							<img class="github-avatar" alt="@{{$commit.Name}}" src="{{$commit.Avatar}}" />
-						</td>
 						<td>
-							<div class="contributor-name"><a href="{{$commit.URL}}">{{$commit.Message}}</a></div>
+							<a href="{{$commit.URL}}">{{$commit.Message}}</a>
+							<span class="data"> {{$commit.Branch}}</span>
+						</td>
+						<td class="right-column">
 							<div class="contributor-meta">
+								<img class="github-avatar" alt="@{{$commit.Name}}" src="{{$commit.Avatar}}" />
 								{{$commit.Name}}
-								{{if $commit.ShowDate}}	&middot; {{$commit.Date}} {{end}}
-								{{if $commit.ShowBranch}} &middot; {{$commit.Repo}}:<span class="bold">{{$commit.Branch}}</span>{{end}}
+								&middot; {{$commit.Date}}
 							</div>
-							<div class="margin-top-10"></div>
 						</td>
 					</tr>
 				{{end}}

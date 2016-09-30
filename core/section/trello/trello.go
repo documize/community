@@ -351,7 +351,7 @@ func getBoards(config *trelloConfig) (boards []trelloBoard, err error) {
 				goto foundID
 			}
 		}
-		boards[bx].Included = true // include boards by default
+		boards[bx].Included = false // don't include boards by default
 	foundID:
 	}
 

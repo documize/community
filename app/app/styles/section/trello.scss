@@ -53,140 +53,51 @@
 }
 
 .section-trello-render {
-    .trello-table {
-        border: none!important;
-        margin: 0px !important;
 
-        td {
-            border: none !important;
-			vertical-align: top;
-        }
+    a:hover {
+        text-decoration: underline;
     }
 
     .heading {
-        font-size: 1.6rem;
-        margin: 30px 0 0 0;
+
+        h3 {
+            font-size: 22px;
+            margin: 0;
+            font-family: "open_sanslight";
+        }
+
+    }
+
+    table.trello-single-board {
+        border: none!important;
+        text-align: left;
+        margin:0!important;
+    }
+
+    .trello-single-board thead tr th {
+        padding: 15px 0;
+        border-bottom: 1px solid #e1e1e1;
+        text-transform: uppercase;
+        font-size: 14px;
+
+        span {
+            color:#838d94;
+        }
+
+    }
+
+    .trello-single-board tbody tr td {
+        border: none!important;
+        padding: 5px 20px 5px 20px !important;
     }
 
     .trello-label {
+        color:white;
         font-size: 11px;
-        color: #fff;
-        padding: 0 8px;
-        margin-right: 5px;
-        border-radius: 2px;
-        box-shadow: inset 0 -1px 0 rgba(0,0,0,.12);
-        display: inline-block;
-        line-height: 22px;
-        text-shadow: 0 0 5px rgba(0,0,0,.2),0 0 2px #000;
-    }
-
-    .board-stats {
-        margin-bottom: 10px;
-            td {
-                color: $color-gray;
-                padding: 20px 40px 30px 0px !important;
-            }
-            .stat-number {
-                font-family: "open_sanslight";
-                font-size: 40px;
-                margin-right: 20px;
-                color: black;
-            }
-    }
-
-    .trello-board {
-        color: white;
-        padding: 15px 20px;
-        width: 190px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: inline-block;
+        padding: 4px 6px;
         border-radius: 4px;
-        margin-right: 20px;
-
-        span {
-            display: table;
-            font-size: 14px;
-            line-height: 10px;
-            opacity: 0.5;
-            padding-bottom: 10px;
-            margin-bottom: 8px;
-        }
+        box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.12);
+        margin-left: 14px;
     }
 
-    .board-summary {
-		font-size: 1.2rem;
-	}
-
-    .member-name {
-        font-size: 1.2rem;
-        line-height: 15px;
-    }
-
-    .board-meta, .member-meta {
-        color: $color-gray;
-    }
-
-    .trello-avatar {
-        border-radius: 4px;
-		width: 36px;
-		height: 36px;
-		margin-right: 5px;
-    }
-
-	> .single-trello-board {
-		width: 100%;
-		max-height: 600px;
-		padding: 10px;
-		white-space: nowrap;
-		overflow: auto;
-
-        > a {
-            > .trello-board-title {
-                font-weight: bold;
-                color: #fff;
-                font-size: 16px;
-            }
-        }
-
-        > .trello-list {
-            background-color: #e2e4e6;
-            padding: 10px;
-            border-radius: 3px;
-            margin: 10px 10px 0 0;
-            width: 300px;
-            max-height: 500px;
-            display: inline-block;
-            white-space: nowrap;
-            overflow: auto;
-            vertical-align: top;
-
-            > .trello-list-title {
-                font-weight: bold;
-                color: #4c4c4c;
-                font-size: 14px;
-                margin: 0 10px 10px 0;
-            }
-
-            > a {
-                > .trello-card {
-                    color: #4c4c4c;
-                    border-bottom: 1px solid #CDD2D4;
-                    background-color: #fff;
-                    border-radius: 3px;
-                    padding: 7px 7px;
-                    margin: 5px 0;
-                    font-size: 14px;
-                    font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
-                    line-height: 18px;
-                    overflow: hidden;
-                    word-wrap: break-word;
-                    white-space: normal;
-                    cursor: pointer;
-                    vertical-align: top;
-                }
-            }
-        }
-	}
 }
