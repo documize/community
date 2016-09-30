@@ -33,10 +33,9 @@ const (
 		<thead>
 			<tr>
 			<th class="title">
-				Issues <span>{{.ClosedIssues}} closed {{if eq 1 .ClosedIssues}}{{else}}issues{{end}} and {{.OpenIssues}} open
+				Issues <span>&middot; {{.ClosedIssues}} closed {{if eq 1 .ClosedIssues}}{{else}}issues{{end}} and {{.OpenIssues}} open
 				{{if eq 1 .OpenIssues}}issue{{else}}{{end}}</span>
 			</th>
-
 				<th></th>
 			</tr>
 		</thead>
@@ -50,10 +49,10 @@ const (
 					{{else}}
 						` + closedIsvg + `
 					{{end}}
-						<a href="{{$data.URL}}">{{$data.Message}}</a> <span class="dataid">#{{$data.ID}}</span>
+						<a href="{{$data.URL}}">{{$data.Message}}</a> <span class="data">#{{$data.ID}}</span>
 						{{$data.Labels}}
 					</td>
-					<td style="text-align:right;">
+					<td class="right-column">
 						<div class="milestone-meta">
 							<span class="meta-milestone">{{$data.Milestone}}</span> &middot;
 							<span class="meta-creator">{{$data.Creator}}</span> &middot; <span class="meta-date">{{$data.Date}}</span>

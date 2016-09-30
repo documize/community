@@ -14,15 +14,15 @@ package github
 const (
 	rawMSsvg  = `<path d="M8 2H6V0h2v2zm4 5H2c-.55 0-1-.45-1-1V4c0-.55.45-1 1-1h10l2 2-2 2zM8 4H6v2h2V4zM6 16h2V8H6v8z"></path>`
 	openMSsvg = `
-		<span title="Open milestone">
+		<span class="issue-state" title="Open Milestone">
 			<svg height="16" width="14" version="1.1" viewBox="0 0 14 16">
 				` + rawMSsvg + `
 			</svg>
 		</span>
 		`
 	closedMSsvg = `
-		<span title="Closed milestone">
-			<svg aria-hidden="true" class="octicon octicon-check" height="16" version="1.1" viewBox="0 0 12 16" width="12">
+		<span class="issue-state" title="Closed Milestone">
+			<svg aria-hidden="true" class="octicon octicon-check" height="16" height="14" version="1.1" viewBox="0 0 12 16">
 				<path d="M12 5l-8 8-4-4 1.5-1.5L4 10l6.5-6.5z"></path>
 			</svg>
 		</span>
@@ -33,7 +33,7 @@ const (
 		<table class="github-table" style="width: 100%;">
 			<thead>
 				<tr>
-				<th class="title">Milestones <span> {{.ClosedMS}} closed and {{.OpenMS}} open</span>
+				<th class="title">Milestones <span>&middot; {{.ClosedMS}} closed and {{.OpenMS}} open</span>
 				</th>
 				<th></th>
 				</tr>
@@ -50,21 +50,20 @@ const (
 									` + closedMSsvg + `
 								{{end}}
 							{{end}}
+							<a class="link" href="{{$data.URL}}">{{$data.Name}}</a>
+							<span class="data"> &middot; {{if $data.IsMilestone}} {{$data.DueDate}}{{end}} </span>
 						</td>
-			            <td>
-							<div class="milestone-name"><a class="link" href="{{$data.URL}}">{{$data.Name}}</a></div>
-							<span class="milestone-meta">{{$data.Repo}}</span>
+			            <td class="right-column">
 							{{if $data.IsMilestone}}
-								<span class="milestone-meta"> &middot; {{$data.DueDate}}</span>
-							{{end}}
-						</td>
-			            <td class="no-width">
-							{{if $data.IsMilestone}}
-								<progress value="{{$data.Progress}}" max="100"></progress>
-								<div class="progress-meta"><span class="bold color-off-black">{{$data.CompleteMsg}}</span> complete &nbsp;&nbsp;&nbsp;<span class="bold color-off-black">{{$data.OpenIssues}}</span> open &nbsp;&nbsp;&nbsp;<span class="bold color-off-black">{{$data.ClosedIssues}}</span> closed</div>
+								<span class="bold color-off-black">{{$data.CompleteMsg}}</span> complete
+								<span class="bold color-off-black">{{$data.OpenIssues}}</span> 	open
+								<span class="bold color-off-black">{{$data.ClosedIssues}}</span> closed
 							{{else}}
-								<div class="progress-meta"><span class="bold color-off-black">{{$data.OpenIssues}}</span> open <span class="bold color-off-black">{{$data.ClosedIssues}}</span> closed</div>
+								<span class="bold color-off-black">{{$data.OpenIssues}}</span> open <span class="bold color-off-black">{{$data.ClosedIssues}}</span> closed
 							{{end}}
+							<div class="progress-bar">
+								<div class="progress" style="width:{{$data.Progress}}%;"></div>
+							</div>
 						</td>
 			        </tr>
 				{{end}}

@@ -15,8 +15,7 @@ const tradTemplate = `
 <div class="section-trello-render">
 	{{if ne .Detail.Board.ID ""}}
 		<div class="heading">
-			<h3><a href="{{ .Detail.Board.URL }}">{{.Detail.Board.Name}} Board</a></h3>
-			<p>There are {{ .Detail.CardCount }} cards across {{ .Detail.ListCount }} lists</p>
+			<p>There are {{ .Detail.CardCount }} cards across {{ .Detail.ListCount }} lists on <a href="{{ .Detail.Board.URL }}">{{.Detail.Board.Name}} Board</a></p>
 		</div>
 
 		<p class="non-printable-message">Non-printable</p>
@@ -26,7 +25,7 @@ const tradTemplate = `
 				{{range $data := .Detail.Data}}
 				<thead>
 					<tr>
-						<th class="title">{{ $data.List.Name }} <span>{{len $data.Cards}} cards</span></th>
+						<th class="title">{{ $data.List.Name }} <span>&middot; {{len $data.Cards}} cards</span></th>
 						<th></th>
 					</tr>
 				</thead>

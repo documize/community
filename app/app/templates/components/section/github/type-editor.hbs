@@ -20,16 +20,16 @@
 					{{input id="branch-since" value=config.branchSince type="text" }}<br>
 				</div>
 				<div class="input-control">
-					<label>Show Milestones</label>
-					{{input id="show-milestone" checked=config.showMilestones type="checkbox"}}<br>
-				</div>
-				<div class="input-control">
-					<label>Show Issues</label>
-					{{input id="show-issues" checked=config.showIssues type="checkbox"}}<br>
-				</div>
-				<div class="input-control">
-					<label>Show Commits</label>
-					{{input id="show-commits" checked=config.showCommits type="checkbox" }}<br>
+					<label>GitHub Views</label>
+					<div class="tip">Select the views you want to show</div>
+					<div class="github-view">
+						{{input id="show-milestone" checked=config.showMilestones type="checkbox"}}
+						<label>Show Milestones</label>
+						{{input id="show-issues" checked=config.showIssues type="checkbox"}}
+						<label>Show Issues</label>
+						{{input id="show-commits" checked=config.showCommits type="checkbox" }}
+						<label>Show Commits</label>
+					</div>
 				</div>
 			</div>
 		</div>

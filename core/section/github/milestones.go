@@ -119,7 +119,7 @@ func getMilestones(client *gogithub.Client, config *githubConfig) ([]githubMiles
 							dd := "no due date"
 							if v.DueOn != nil {
 								// TODO refactor to add message in red if the milestone is overdue
-								dd = "due on " + (*v.DueOn).Format(milestonesTimeFormat) + ""
+								dd = "due " + (*v.DueOn).Format(milestonesTimeFormat) + ""
 							}
 							up := ""
 							if v.UpdatedAt != nil {
@@ -210,10 +210,10 @@ func renderMilestones(payload *githubRender, c *githubConfig) error {
 					}
 				}
 				if issuesClosed+issuesOpen > 0 {
-					payload.Milestones = append(payload.Milestones, githubMilestone{
-						Repo: orb.Repo, Private: orb.Private, Name: noMilestone, IsOpen: true,
-						OpenIssues: issuesOpen, ClosedIssues: issuesClosed, URL: template.URL(orb.URL),
-					})
+					//payload.Milestones = append(payload.Milestones, githubMilestone{
+					//	Repo: orb.Repo, Private: orb.Private, Name: noMilestone, IsOpen: true,
+					//	OpenIssues: issuesOpen, ClosedIssues: issuesClosed, URL: template.URL(orb.URL),
+					//})
 				}
 
 				hadRepo[rName] = true

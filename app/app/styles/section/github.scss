@@ -1,4 +1,8 @@
 .section-github-editor {
+	.github-view label {
+		margin: 0 10px;
+	}
+
 	.github-repo {
 		width: 100%;
 		padding: 10px;
@@ -46,7 +50,7 @@
 	}
 
 	.github-table {
-		margin: 0 !important;
+		margin: 10px 0 !important;
 		border: none !important;
 		line-height: 30px;
 
@@ -76,11 +80,15 @@
 
 	.github-table tbody tr td {
 		border: none!important;
-		padding-left: 20px!important;
-		padding-bottom: 0!important;
+		padding: 5px 20px 5px 20px !important;
 	}
 
-	span.dataid {
+	.github-table .right-column {
+		text-align: right;
+		color:#838d94;
+	}
+
+	span.data {
 		color:#838d94;
 	}
 
@@ -93,11 +101,18 @@
         margin-left: 10px;
 	}
 
-	progress[value] {
-		background-color: $color-off-white;
-		border-radius: 3px;
-		height: 15px;
-		width: 150px;
+	.progress-bar {
+		display: inline-block; border-radius: 3px;
+		width: 40%;
+		background-color: #f1f1f1;
+		height: 8px;
+		margin-left: 10px;
+
+		.progress {
+			height: 8px;
+			border-radius: 4px;
+			background-color: #4caf50;
+		}
 	}
 
 	span.issue-state {
