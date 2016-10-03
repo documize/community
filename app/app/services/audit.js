@@ -61,10 +61,10 @@ export default Ember.Service.extend({
 
 		window.intercomSettings = {
 			app_id: this.get('appId'),
-			name: user.fullname,
-			email: user.email,
-			user_id: user.id,
-			"administrator": user.admin,
+			name: user.get('fullname'),
+			email: user.get('email'),
+			user_id: user.get('id'),
+			"administrator": user.get('admin'),
 			company: {
 				id: self.get('appMeta.orgId'),
 				name: self.get('appMeta.title'),
@@ -74,9 +74,10 @@ export default Ember.Service.extend({
 		};
 
 		if (!this.get('session.isMobile')) {
-			window.intercomSettings.widget = {
-				activator: "#IntercomDefaultWidget"
-			};
+			// uncomment these lines if you want to use Intercom messenger within Documize
+			// window.intercomSettings.widget = {
+			// 	activator: "#IntercomDefaultWidget"
+			// };
 		}
 
 		window.Intercom('boot', window.intercomSettings);
