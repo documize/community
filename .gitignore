@@ -49,6 +49,7 @@ _testmain.go
 /app/libpeerconnection.log
 /app/npm-debug.log
 /app/testem.log
+node_modules
 
 # Misc.
 build

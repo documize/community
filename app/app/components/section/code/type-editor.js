@@ -19,7 +19,9 @@ export default Ember.Component.extend(TooltipMixin, {
     syntaxOptions: [],
     codeSyntax: null,
 
-    didInitAttrs() {
+	init() {
+		this._super(...arguments);
+
         let self = this;
         CodeMirror.modeURL = "codemirror/mode/%N/%N.js";
 

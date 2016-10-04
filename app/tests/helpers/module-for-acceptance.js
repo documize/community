@@ -1,39 +1,32 @@
 import { module } from 'qunit';
+import Ember from 'ember';
 import startApp from '../helpers/start-app';
 import destroyApp from '../helpers/destroy-app';
 
-export default function (name, options = {}) {
-	module(name, {
-		beforeEach() {
-			this.application = startApp();
-			localStorage.setItem('folder', 'VzMuyEw_3WqiafcG');
-			stubAudit(this);
-			stubUserNotification(this);
-			server.createList('folder', 2);
-			server.createList('user', 2);
-			server.createList('document', 2);
-			server.createList('permission', 4);
-			server.createList('folder-permission', 2);
-			server.createList('organization', 1);
+const { RSVP: { Promise } } = Ember;
 
-			if (options.beforeEach) {
-				options.beforeEach.apply(this, arguments);
-			}
+export default function(name, options = {}) {
+  module(name, {
+    beforeEach() {
+      	this.application = startApp();
+		localStorage.setItem('folder', 'VzMuyEw_3WqiafcG');
+		stubAudit(this);
+		stubUserNotification(this);
+		server.createList('folder', 2);
+		server.createList('user', 2);
+		server.createList('document', 2);
+		server.createList('permission', 4);
+		server.createList('folder-permission', 2);
+		server.createList('organization', 1);
 
-			this.register = (fullName, Factory) => {
-				let instance = this.application.__deprecatedInstance__;
-				let registry = instance.register ? instance : instance.registry;
+      if (options.beforeEach) {
+        return options.beforeEach.apply(this, arguments);
+      }
+    },
 
-				return registry.register(fullName, Factory);
-			};
-		},
-
-		afterEach() {
-			destroyApp(this.application);
-
-			if (options.afterEach) {
-				options.afterEach.apply(this, arguments);
-			}
-		}
-	});
+    afterEach() {
+      let afterEach = options.afterEach && options.afterEach.apply(this, arguments);
+      return Promise.resolve(afterEach).then(() => destroyApp(this.application));
+    }
+  });
 }

@@ -22,7 +22,9 @@ export default Ember.Component.extend({
 	appMeta: service(),
 	session: service(),
 
-	didInitAttrs() {
+	init() {
+		this._super(...arguments);
+		
 		if (this.get("session.authenticated")) {
 			this.get("session.session.content.authenticated.user.accounts").forEach((account) => {
 				// TODO: do not mutate account.active here
