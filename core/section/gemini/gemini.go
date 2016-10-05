@@ -20,8 +20,8 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/documize/community/core/section/provider"
 	"github.com/documize/community/core/log"
+	"github.com/documize/community/core/section/provider"
 )
 
 // Provider represents Gemini
@@ -33,7 +33,7 @@ func (*Provider) Meta() provider.TypeMeta {
 	section := provider.TypeMeta{}
 	section.ID = "23b133f9-4020-4616-9291-a98fb939735f"
 	section.Title = "Gemini"
-	section.Description = "Display work items and tickets from workspaces"
+	section.Description = "Work items and tickets"
 	section.ContentType = "gemini"
 
 	return section

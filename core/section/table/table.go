@@ -27,7 +27,7 @@ func (*Provider) Meta() provider.TypeMeta {
 
 	section.ID = "81a2ea93-2dfc-434d-841e-54b832492c92"
 	section.Title = "Tabular"
-	section.Description = "Rows, columns and formatting for tabular data"
+	section.Description = "Rows, columns for tabular data"
 	section.ContentType = "table"
 	section.Order = 9996
 

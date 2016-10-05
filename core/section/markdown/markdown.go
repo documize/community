@@ -28,7 +28,7 @@ func (*Provider) Meta() provider.TypeMeta {
 
 	section.ID = "1470bb4a-36c6-4a98-a443-096f5658378b"
 	section.Title = "Markdown"
-	section.Description = "CommonMark based markdown content with preview"
+	section.Description = "CommonMark based content"
 	section.ContentType = "markdown"
 	section.Order = 9998
 

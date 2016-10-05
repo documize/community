@@ -46,19 +46,19 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
     didInsertElement() {
         this.eventBus.subscribe('documentPageAdded', this, 'onDocumentPageAdded');
 
-        var s = $(".document-structure");
-        var pos = s.position();
-
-        $(window).scroll(function() {
-            var windowpos = $(window).scrollTop();
-            if (windowpos - 200 >= pos.top) {
-                s.addClass("stick");
-                s.css('width', s.parent().width());
-            } else {
-                s.removeClass("stick");
-                s.css('width', 'auto');
-            }
-        });
+		// let s = $(".document-structure");
+        // let pos = s.position();
+		//
+		// $(window).scroll(_.throttle(function() {
+		// 	let windowpos = $(window).scrollTop();
+        //     if (windowpos - 200 >= pos.top) {
+        //         s.addClass("stuck-toc");
+        //         s.css('width', s.parent().width());
+        //     } else {
+        //         s.removeClass("stuck-toc");
+        //         s.css('width', 'auto');
+        //     }
+        // }, 50));
     },
 
     willDestroyElement() {

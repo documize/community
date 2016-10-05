@@ -1,8 +1,4 @@
 <div class="section-wizard">
-	<div class="buttons pull-right">
-		<div class="flat-button flat-gray" {{action 'onCancel'}}>Cancel</div>
-	</div>
-	<div class="clearfix"></div>
 	<div class="canvas">
 		<ul class="list">
 			{{#each sections as |section|}}
@@ -19,17 +15,9 @@
 						</div>
 						<div class='desc'>{{section.description}}</div>
 					</div>
+					<div class="clearfix" />
 				</li>
 			{{/each}}
-			<li class="item">
-				<div class="icon">
-					<img class="img" src="/sections/suggest.png" title="{{section.title}}" alt="{{section.title}}" />
-				</div>
-				<div class="details">
-					<div class='title'>Suggest</div>
-					<div class='desc'>We'll build the integrations you need - just let us know</div>
-				</div>
-			</li>
 		</ul>
 	</div>
 </div>

@@ -11,23 +11,41 @@
 
 import Ember from 'ember';
 import TooltipMixin from '../../mixins/tooltip';
+import NotifierMixin from '../../mixins/notifier';
 
-export default Ember.Component.extend(TooltipMixin, {
+export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
     documentService: Ember.inject.service('document'),
     document: {},
     folder: {},
 	showToc: true,
 	showViews: false,
 	showContributions: false,
+	showSections: false,
 
 	didRender() {
 		if (this.session.authenticated) {
             this.addTooltip(document.getElementById("owner-avatar"));
+			this.addTooltip(document.getElementById("section-tool"));
         }
 	},
 
-	willDestroyElements() {
-		this.destroyElements();
+	didInsertElement() {
+		let s = $(".section-tool");
+        let pos = s.position();
+
+		$(window).scroll(_.throttle(function() {
+            let windowpos = $(window).scrollTop();
+            if (windowpos - 200 >= pos.top) {
+                s.addClass("stuck-tool");
+				s.css('left', parseInt($(".zone-sidebar").css('width')) - 18 + 'px');
+            } else {
+				s.removeClass("stuck-tool");
+            }
+        }, 50));
+	},
+
+	willDestroyElement() {
+		this.destroyTooltips();
 	},
 
     actions: {
@@ -45,27 +63,40 @@ export default Ember.Component.extend(TooltipMixin, {
             return this.attrs.gotoPage(id);
         },
 
-		// close dialog
-        close() {
-            return true;
-        },
-
 		showToc() {
 			this.set('showToc', true);
 			this.set('showViews', false);
 			this.set('showContributions', false);
+			this.set('showSections', false);
 		},
 
 		showViews() {
 			this.set('showToc', false);
 			this.set('showViews', true);
 			this.set('showContributions', false);
+			this.set('showSections', false);
 		},
 
 		showContributions() {
 			this.set('showToc', false);
 			this.set('showViews', false);
 			this.set('showContributions', true);
+			this.set('showSections', false);
+		},
+
+		showSections() {
+			this.set('showToc', false);
+			this.set('showViews', false);
+			this.set('showContributions', false);
+			this.set('showSections', true);
+		},
+
+		onCancel() {
+			this.send('showToc');
+		},
+
+		onAddSection(section) {
+			this.attrs.onAddSection(section);
 		}
     }
 });

@@ -13,9 +13,18 @@ import Ember from 'ember';
 import NotifierMixin from '../../mixins/notifier';
 
 export default Ember.Component.extend(NotifierMixin, {
+	sectionService: Ember.inject.service('section'),
+
+	didReceiveAttrs() {
+		let self = this;
+		this.get('sectionService').getAll().then(function(sections) {
+			self.set('sections', sections);
+		});
+	},
 
 	didRender() {
         let self = this;
+
         Mousetrap.bind('esc', function() {
             self.send('onCancel');
             return false;
@@ -28,12 +37,6 @@ export default Ember.Component.extend(NotifierMixin, {
 		},
 
         addSection(section) {
-
-            if (section.preview) {
-                this.showNotification("Coming soon!");
-                return;
-            }
-
             this.attrs.onAction(section);
         }
     }

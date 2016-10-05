@@ -27,7 +27,7 @@ func (*Provider) Meta() provider.TypeMeta {
 
 	section.ID = "4f6f2b02-8397-483d-9bb9-eea1fef13304"
 	section.Title = "Code"
-	section.Description = "Formatted code samples supporting 50+ languages"
+	section.Description = "Formatted code snippets"
 	section.ContentType = "code"
 	section.Order = 9997
 

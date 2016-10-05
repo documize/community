@@ -27,7 +27,7 @@ func (*Provider) Meta() provider.TypeMeta {
 
 	section.ID = "0f024fa0-d017-4bad-a094-2c13ce6edad7"
 	section.Title = "Rich Text"
-	section.Description = "WYSIWYG editing with cut-paste image support"
+	section.Description = "Rich text WYSIWYG"
 	section.ContentType = "wysiwyg"
 	section.Order = 9999
 

@@ -31,13 +31,6 @@
 		<div class="square-button-white button-red-text" id="delete-document-button" data-tooltip="Delete content" data-tooltip-position="top center">
 			<i class="material-icons">delete</i>
 		</div>
-		<div class="button-gap"></div>
-		{{#link-to 'document.wizard' folder.id folder.slug document.id document.slug}}
-			<div class="regular-button button-green" id="add-section-button" data-tooltip="Add section" data-tooltip-position="top center">
-				<i class="material-icons">add</i>
-				<div class="name">section</div>
-			</div>
-		{{/link-to}}
 	{{/if}}
 
 	{{#if isEditor}}
