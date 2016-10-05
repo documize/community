@@ -30,22 +30,26 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 	},
 
 	didInsertElement() {
-		let s = $(".section-tool");
-        let pos = s.position();
-
-		$(window).scroll(_.throttle(function() {
-            let windowpos = $(window).scrollTop();
-            if (windowpos - 200 >= pos.top) {
-                s.addClass("stuck-tool");
-				s.css('left', parseInt($(".zone-sidebar").css('width')) - 18 + 'px');
-            } else {
-				s.removeClass("stuck-tool");
-            }
-        }, 50));
+		let _this = this;
+        this.eventBus.subscribe('resized', this, 'positionTool');
+		this.eventBus.subscribe('scrolled', this, 'positionTool');
 	},
 
 	willDestroyElement() {
 		this.destroyTooltips();
+	},
+
+	positionTool() {
+		let s = $(".section-tool");
+        let pos = s.position();
+		let windowpos = $(window).scrollTop();
+
+		if (windowpos - 200 >= pos.top) {
+			s.addClass("stuck-tool");
+			s.css('left', parseInt($(".zone-sidebar").css('width')) - 18 + 'px');
+		} else {
+			s.removeClass("stuck-tool");
+		}
 	},
 
     actions: {
