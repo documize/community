@@ -22,6 +22,7 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 	showContributions: false,
 	showSections: false,
 	showScrollTool: false,
+	showingSections: false,
 
 	didRender() {
 		if (this.session.authenticated) {
@@ -85,6 +86,8 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 			this.set('showViews', false);
 			this.set('showContributions', false);
 			this.set('showSections', false);
+
+			this.set('showingSections', false);
 		},
 
 		showViews() {
@@ -92,6 +95,8 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 			this.set('showViews', true);
 			this.set('showContributions', false);
 			this.set('showSections', false);
+
+			this.set('showingSections', false);
 		},
 
 		showContributions() {
@@ -99,6 +104,8 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 			this.set('showViews', false);
 			this.set('showContributions', true);
 			this.set('showSections', false);
+
+			this.set('showingSections', false);
 		},
 
 		showSections() {
@@ -106,18 +113,24 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 			this.set('showViews', false);
 			this.set('showContributions', false);
 			this.set('showSections', true);
+
+			this.set('showingSections', true);
 		},
 
 		onCancel() {
 			this.send('showToc');
+			this.set('showingSections', false);
 		},
 
 		onAddSection(section) {
 			this.attrs.onAddSection(section);
+
+			this.set('showingSections', false);
 		},
 
 		scrollTop() {
 			this.set('showScrollTool', false);
+
 			$("html,body").animate({
 				scrollTop: 0
 			}, 500, "linear");
