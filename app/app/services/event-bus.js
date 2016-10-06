@@ -15,7 +15,7 @@ export default Ember.Service.extend(Ember.Evented, {
 	init() {
 		let _this = this;
 
-		window.addEventListener("scroll", _.debounce(function() {
+		window.addEventListener("scroll", _.throttle(function() {
 			_this.publish('scrolled', null);
 		}, 100));
 

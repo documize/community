@@ -21,6 +21,7 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 	showViews: false,
 	showContributions: false,
 	showSections: false,
+	showScrollTool: false,
 
 	didRender() {
 		if (this.session.authenticated) {
@@ -30,9 +31,20 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 	},
 
 	didInsertElement() {
-		let _this = this;
         this.eventBus.subscribe('resized', this, 'positionTool');
 		this.eventBus.subscribe('scrolled', this, 'positionTool');
+
+		// new Waypoint({
+		// 	element: document.getElementById('zone-header'),
+		// 	handler: function(direction) {
+		// 		console.log(direction);
+		// 		if (direction === 'up') {
+		// 			$(".scroll-tool").addClass('hide');
+		// 			console.log("hiding");
+		// 		}
+		// 	},
+		// 	offset: 50
+		// });
 	},
 
 	willDestroyElement() {
@@ -40,14 +52,15 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 	},
 
 	positionTool() {
-		let s = $(".section-tool");
-        let pos = s.position();
+		let s = $(".scroll-tool");
 		let windowpos = $(window).scrollTop();
 
-		if (windowpos - 200 >= pos.top) {
+		if (windowpos >= 300) {
+			this.set('showScrollTool', true);
 			s.addClass("stuck-tool");
 			s.css('left', parseInt($(".zone-sidebar").css('width')) - 18 + 'px');
 		} else {
+			this.set('showScrollTool', false);
 			s.removeClass("stuck-tool");
 		}
 	},
@@ -101,6 +114,13 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 
 		onAddSection(section) {
 			this.attrs.onAddSection(section);
+		},
+
+		scrollTop() {
+			this.set('showScrollTool', false);
+			$("html,body").animate({
+				scrollTop: 0
+			}, 500, "linear");
 		}
     }
 });
