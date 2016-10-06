@@ -57,6 +57,7 @@
 		width: 100%;
 		position: relative;
 		transition: .3s;
+		border-bottom: 1px solid $color-border;
 
 		&:hover {
 			> .link {
