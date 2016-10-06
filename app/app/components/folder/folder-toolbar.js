@@ -22,7 +22,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
     templateService: Ember.inject.service('template'),
     folderService: Ember.inject.service('folder'),
     session: Ember.inject.service(),
-
+	showToolbar: false,
     folder: {},
     busy: false,
     importedDocuments: [],
@@ -31,9 +31,12 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
     moveFolderId: "",
 
     didReceiveAttrs() {
+		let self = this;
+
         this.set('isFolderOwner', this.get('folder.userId') === this.get("session.user.id"));
 
-        let self = this;
+		let show = this.get('isFolderOwner') || this.get('hasSelectedDocuments') || this.get('folderService').get('canEditCurrentFolder');
+		this.set('showToolbar', show);
 
         this.get('templateService').getSavedTemplates().then(function(saved) {
             let emptyTemplate = {
@@ -62,6 +65,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
                 this.addTooltip(document.getElementById("folder-settings-button"));
             }
             if (this.get('folderService').get('canEditCurrentFolder')) {
+				this.addTooltip(document.getElementById("import-document-button"));
                 this.addTooltip(document.getElementById("start-document-button"));
             }
         }

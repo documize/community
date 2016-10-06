@@ -107,7 +107,7 @@ export function documentFileIcon(params) {
         case "xslt":
     }
 
-    return new Ember.Handlebars.SafeString(html);
+    return new Ember.String.htmlSafe(html);
 }
 
 export default Ember.Helper.helper(documentFileIcon);

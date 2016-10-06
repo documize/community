@@ -1,12 +1,39 @@
-
 .folders-list {
-	> .add-space-action {
-		text-align: center;
-		margin-bottom: 30px;
+	margin-top: 30px;
+
+	.doc-tool {
+		position: absolute;
+		top: 150px;
+		right: -18px;
+		z-index: 999;
+	}
+
+	.scroll-space-tool {
+		position: absolute;
+		top: 150px;
+		right: -18px;
+		z-index: 888;
+		-webkit-animation: fadein 1s; /* Safari, Chrome and Opera > 12.1 */
+      	-moz-animation: fadein 1s; /* Firefox < 16 */
+       	-ms-animation: fadein 1s; /* Internet Explorer */
+        -o-animation: fadein 1s; /* Opera < 12.1 */
+        animation: fadein 1s;
+	}
+
+	.stuck-space-tool {
+		position: fixed !important;
+		top: 150px !important;
+		right: 0;
+		left: 0;
+		-webkit-animation: fadein 1s; /* Safari, Chrome and Opera > 12.1 */
+      	-moz-animation: fadein 1s; /* Firefox < 16 */
+       	-ms-animation: fadein 1s; /* Internet Explorer */
+        -o-animation: fadein 1s; /* Opera < 12.1 */
+        animation: fadein 1s;
 	}
 
 	> .section {
-		margin: 0 0 20px 0;
+		margin: 0 0 40px 0;
 
 		> .heading {
 			font-size: 0.9rem;

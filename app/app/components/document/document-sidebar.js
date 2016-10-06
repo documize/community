@@ -34,18 +34,6 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 	didInsertElement() {
         this.eventBus.subscribe('resized', this, 'positionTool');
 		this.eventBus.subscribe('scrolled', this, 'positionTool');
-
-		// new Waypoint({
-		// 	element: document.getElementById('zone-header'),
-		// 	handler: function(direction) {
-		// 		console.log(direction);
-		// 		if (direction === 'up') {
-		// 			$(".scroll-tool").addClass('hide');
-		// 			console.log("hiding");
-		// 		}
-		// 	},
-		// 	offset: 50
-		// });
 	},
 
 	willDestroyElement() {

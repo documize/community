@@ -22,12 +22,12 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
 	session: service(),
 
 	beforeModel(transition) {
+		// start TODO: ugly hack
 		let MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
-
 		let observer = new MutationObserver(function(/*mutations, observer*/) {
 		    // fired when a mutation occurs
 		    // console.log(mutations, observer);
-			$("#zone-sidebar").css('height', $(document).height() - $("#zone-navigation").height() - $("#zone-header").height() - 35);
+			$("#zone-sidebar").css('height', $(document).height() - $("#zone-navigation").height());
 		});
 
 		observer.observe(document, {
@@ -35,6 +35,7 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
 			attributes: false,
 			childList: true
 		});
+		// end TODO: ugly hack
 
 		return this.get('appMeta').boot(transition.targetName).then(data => {
 			if (this.get('session.session.authenticator') !== "authenticator:documize" && data.allowAnonymousAccess) {
@@ -47,7 +48,10 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
 
 	actions: {
 		willTransition: function ( /*transition*/ ) {
+			// start TODO: ugly hack
 			$("#zone-sidebar").css('height', 'auto');
+			// end TODO: ugly hack
+
 			Mousetrap.reset();
 		},
 

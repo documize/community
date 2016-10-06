@@ -50,7 +50,7 @@
     transition: .3s;
     cursor: pointer;
     vertical-align: middle;
-    border: 1px solid $color-gray;
+    border: 1px solid $color-stroke;
     text-align: center;
 	@extend .no-select;
 	@include ease-in();
@@ -61,7 +61,7 @@
     }
 
     i {
-        color: $color-gray;
+        color: $color-stroke;
         text-align: center;
     }
 

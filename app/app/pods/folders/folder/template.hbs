@@ -2,7 +2,11 @@
 
 	{{layout/zone-navigation}}
 
-	{{#layout/zone-header title=model.folder.name message="A space provides a place for related content"}}
+	{{#layout/zone-sidebar}}
+		{{folder/folders-list folders=model.folders folder=model.folder onFolderAdd=(action 'onFolderAdd')}}
+	{{/layout/zone-sidebar}}
+
+	{{#layout/zone-content}}
 		{{folder/folder-toolbar
 			folders=model.folders
 			folder=model.folder
@@ -11,13 +15,7 @@
 			onDeleteDocument=(action 'onDeleteDocument')
 			onMoveDocument=(action 'onMoveDocument')
 			showDocument=(action 'showDocument')}}
-	{{/layout/zone-header}}
 
-	{{#layout/zone-sidebar}}
-		{{folder/folders-list folders=model.folders onFolderAdd=(action 'onFolderAdd')}}
-	{{/layout/zone-sidebar}}
-
-	{{#layout/zone-content}}
 		{{folder/documents-list documents=model.documents folder=model.folder isFolderOwner=isFolderOwner onDocumentsChecked=(action 'onDocumentsChecked') }}
 	{{/layout/zone-content}}
 
