@@ -14,42 +14,17 @@ import NotifierMixin from '../../mixins/notifier';
 
 export default Ember.Component.extend(NotifierMixin, {
 	localStorage: Ember.inject.service(),
-	tagName: 'span',
-	selectedTemplate: {
-		id: "0"
-	},
 	canEditTemplate: "",
 
-	didReceiveAttrs() {
-		this.send('setTemplate', this.get('savedTemplates')[0]);
-	},
-
 	actions: {
-		setTemplate(chosen) {
-			if (is.undefined(chosen)) {
-				return;
-			}
-
-			this.set('selectedTemplate', chosen);
-			this.set('canEditTemplate', chosen.id !== "0" ? "Edit" : "");
-
-			let templates = this.get('savedTemplates');
-
-			templates.forEach(template => {
-				Ember.set(template, 'selected', template.id === chosen.id);
-			});
-		},
-
-		editTemplate() {
-			let template = this.get('selectedTemplate');
+		editTemplate(template) {
 			this.audit.record('edited-saved-template');
 			this.attrs.onEditTemplate(template);
 
 			return true;
 		},
 
-		startDocument() {
-			let template = this.get('selectedTemplate');
+		startDocument(template) {
 			this.audit.record('used-saved-template');
 			this.attrs.onDocumentTemplate(template.id, template.title, "private");
 
@@ -57,3 +32,22 @@ export default Ember.Component.extend(NotifierMixin, {
 		}
 	}
 });
+
+/*
+setTemplate(chosen) {
+	if (is.undefined(chosen)) {
+		return;
+	}
+
+	this.set('selectedTemplate', chosen);
+	this.set('canEditTemplate', chosen.id !== "0" ? "Edit" : "");
+
+	let templates = this.get('savedTemplates');
+
+	templates.forEach(template => {
+		Ember.set(template, 'selected', template.id === chosen.id);
+	});
+},
+
+
+*/

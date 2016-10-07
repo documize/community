@@ -1,14 +1,17 @@
-{{#dropdown-dialog target="start-document-button" position="bottom left" button="Start" color="flat-green" onAction=(action 'startDocument') button2=canEditTemplate color2="flat-blue" onAction2=(action 'editTemplate')}}
-	<ul class="start-document-options" style="min-width:185px;">
-		{{#each savedTemplates key="id" as |template|}}
-			<li class="option {{if template.selected "selected"}}" {{action 'setTemplate' template}}>
-				{{#if template.selected}}
-					<i class="material-icons">radio_button_checked</i>
-				{{else}}
-					<i class="material-icons">radio_button_unchecked</i>
-				{{/if}}
-				&nbsp;{{ template.title }}
+<div class="templates-list">
+	<ul class="list">
+		{{#each savedTemplates key="id"as |template|}}
+			<li class="item" {{action 'startDocument' template}}>
+				<div class="icon">
+					<img class="img" src="/assets/img/{{template.img}}.png" srcset="/assets/img/{{template.img}}@2x.png" />
+				</div>
+				<div class="details">
+					<div class='title'>
+						{{template.title}}
+					</div>
+					<div class='desc'>{{template.description}}</div>
+				</div>
 			</li>
 		{{/each}}
 	</ul>
-{{/dropdown-dialog}}
+</div>

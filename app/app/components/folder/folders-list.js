@@ -26,6 +26,8 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 	hasPrivateFolders: false,
 	newFolder: "",
 	showScrollTool: false,
+	showingDocument: false,
+	showingList: true,
 
 	init() {
 		this._super(...arguments);
@@ -35,8 +37,13 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
             let emptyTemplate = {
                 id: "0",
                 title: "Empty document",
-                selected: true
+				description: "An empty canvas for your masterpiece",
+				img: "template-blank",
             };
+
+			saved.forEach(function(t) {
+				t.img = "template-saved";
+			});
 
             saved.unshiftObject(emptyTemplate);
             _this.set('savedTemplates', saved);
@@ -132,6 +139,16 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 
 			this.set('newFolder', "");
 			return true;
+		},
+
+		showDocument() {
+			this.set('showingDocument', true);
+			this.set('showingList', false);
+		},
+
+		showList() {
+			this.set('showingDocument', false);
+			this.set('showingList', true);
 		},
 
 		onEditTemplate(template) {
