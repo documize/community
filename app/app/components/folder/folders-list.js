@@ -50,12 +50,6 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 	},
 
 	didInsertElement() {
-		this._super(...arguments);
-
-		if (this.session.authenticated) {
-			this.addTooltip(document.getElementById("add-space-button"));
-		}
-
 		this.eventBus.subscribe('resized', this, 'positionTool');
 		this.eventBus.subscribe('scrolled', this, 'positionTool');
 	},
@@ -115,7 +109,7 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 
 	navigateToDocument(document) {
         this.attrs.showDocument(this.get('folder'), document);
-    },	
+    },
 
 	actions: {
 		scrollTop() {
