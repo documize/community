@@ -22,7 +22,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
     documentService: Ember.inject.service('document'),
     session: Ember.inject.service(),
 	appMeta: Ember.inject.service(),
-	
+
 	showToolbar: false,
     folder: {},
     busy: false,
@@ -66,7 +66,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
 		Dropzone.options.uploadDocuments = false;
 
-		let dzone = new Dropzone("#import-document-button", {
+		let dzone = new Dropzone("#import-document-button > i", {
 			headers: {
 				'Authorization': 'Bearer ' + self.get('session.session.content.authenticated.token')
 			},
