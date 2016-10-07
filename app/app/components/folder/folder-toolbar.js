@@ -29,6 +29,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
     importedDocuments: [],
     isFolderOwner: computed.equal('folder.userId', 'session.user.id'),
     moveFolderId: "",
+	drop: null,
 
     didReceiveAttrs() {
         this.set('isFolderOwner', this.get('folder.userId') === this.get("session.user.id"));
@@ -56,55 +57,60 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 				this.addTooltip(document.getElementById("import-document-button"));
             }
         }
-    },
+    
+        if (this.get('folderService').get('canEditCurrentFolder')) {
+			let self = this;
+			let folderId = this.get('folder.id');
+			let url = this.get('appMeta.endpoint');
+			let importUrl = `${url}/import/folder/${folderId}`;
 
-	didInsertElement() {
-		let self = this;
-		let folderId = this.get('folder.id');
-		let url = this.get('appMeta.endpoint');
-		let importUrl = `${url}/import/folder/${folderId}`;
+			let dzone = new Dropzone("#import-document-button > i", {
+				headers: {
+					'Authorization': 'Bearer ' + self.get('session.session.content.authenticated.token')
+				},
+				url: importUrl,
+				method: "post",
+				paramName: 'attachment',
+				acceptedFiles: ".doc,.docx,.txt,.md,.markdown",
+				clickable: true,
+				maxFilesize: 10,
+				parallelUploads: 3,
+				uploadMultiple: false,
+				addRemoveLinks: false,
+				autoProcessQueue: true,
 
-		Dropzone.options.uploadDocuments = false;
+				init: function () {
+					this.on("success", function (document) {
+						self.send('onDocumentImported', document.name, document);
+					});
 
-		let dzone = new Dropzone("#import-document-button > i", {
-			headers: {
-				'Authorization': 'Bearer ' + self.get('session.session.content.authenticated.token')
-			},
-			url: importUrl,
-			method: "post",
-			paramName: 'attachment',
-			acceptedFiles: ".doc,.docx,.txt,.md,.markdown",
-			clickable: true,
-			maxFilesize: 10,
-			parallelUploads: 3,
-			uploadMultiple: false,
-			addRemoveLinks: false,
-			autoProcessQueue: true,
+					this.on("error", function (x) {
+						console.log("Conversion failed for ", x.name, " obj ", x); // TODO proper error handling
+					});
 
-			init: function () {
-				this.on("success", function (document) {
-					self.send('onDocumentImported', document.name, document);
-				});
+					this.on("queuecomplete", function () {});
 
-				this.on("error", function (x) {
-					console.log("Conversion failed for ", x.name, " obj ", x); // TODO proper error handling
-				});
+					this.on("addedfile", function (file) {
+						self.send('onDocumentImporting', file.name);
+						self.audit.record('converted-document');
+					});
+				}
+			});
 
-				this.on("queuecomplete", function () {});
+			dzone.on("complete", function (file) {
+				dzone.removeFile(file);
+			});
 
-				this.on("addedfile", function (file) {
-					self.send('onDocumentImporting', file.name);
-					self.audit.record('converted-document');
-				});
-			}
-		});
-
-		dzone.on("complete", function (file) {
-			dzone.removeFile(file);
-		});
+			this.set('drop', dzone);
+		}
 	},
 
     willDestroyElement() {
+		if (is.not.null(this.get('drop'))) {
+			this.get('drop').destroy();
+			this.set('drop', null);
+		}
+
         this.destroyTooltips();
     },
 
