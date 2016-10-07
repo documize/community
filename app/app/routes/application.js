@@ -47,11 +47,7 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
 	},
 
 	actions: {
-		willTransition: function ( /*transition*/ ) {
-			// start TODO: ugly hack
-			$("#zone-sidebar").css('height', 'auto');
-			// end TODO: ugly hack
-
+		willTransition: function( /*transition*/ ) {
 			Mousetrap.reset();
 		},
 
