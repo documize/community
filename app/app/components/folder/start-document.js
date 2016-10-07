@@ -32,22 +32,3 @@ export default Ember.Component.extend(NotifierMixin, {
 		}
 	}
 });
-
-/*
-setTemplate(chosen) {
-	if (is.undefined(chosen)) {
-		return;
-	}
-
-	this.set('selectedTemplate', chosen);
-	this.set('canEditTemplate', chosen.id !== "0" ? "Edit" : "");
-
-	let templates = this.get('savedTemplates');
-
-	templates.forEach(template => {
-		Ember.set(template, 'selected', template.id === chosen.id);
-	});
-},
-
-
-*/

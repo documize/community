@@ -36,8 +36,8 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 		this.get('templateService').getSavedTemplates().then(function(saved) {
             let emptyTemplate = {
                 id: "0",
-                title: "Empty document",
-				description: "An empty canvas for your masterpiece",
+                title: "Empty",
+				description: "An empty canvas for your words",
 				img: "template-blank",
             };
 
