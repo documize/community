@@ -15,9 +15,16 @@
 {{/if}}
 
 <div class="folders-list">
-	<div id="new-document" class="round-button button-green doc-tool" data-tooltip="New space" data-tooltip-position="top center">
-		<i class="material-icons">add</i>
-	</div>
+	{{#if folderService.canEditCurrentFolder}}
+		<div id="start-document-button" class="round-button button-green doc-tool" data-tooltip="Document" data-tooltip-position="top center">
+			<i class="material-icons">add</i>
+		</div>
+		{{folder/start-document
+			savedTemplates=savedTemplates
+			folder=folder
+			onEditTemplate=(action 'onEditTemplate')
+			onDocumentTemplate=(action 'onDocumentTemplate')}}
+	{{/if}}
 
 	{{#if showScrollTool}}
 		<div {{action 'scrollTop'}} id="scroll-space-tool" class="round-button round-button-mono button-white scroll-space-tool" data-tooltip="Back to top" data-tooltip-position="top center">

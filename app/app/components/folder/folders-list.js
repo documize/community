@@ -12,17 +12,42 @@
 import Ember from 'ember';
 import constants from '../../utils/constants';
 import TooltipMixin from '../../mixins/tooltip';
+import NotifierMixin from '../../mixins/notifier';
 
-export default Ember.Component.extend(TooltipMixin, {
+export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 	folderService: Ember.inject.service('folder'),
+	templateService: Ember.inject.service('template'),
 	publicFolders: [],
 	protectedFolders: [],
 	privateFolders: [],
+	savedTemplates: [],
 	hasPublicFolders: false,
 	hasProtectedFolders: false,
 	hasPrivateFolders: false,
 	newFolder: "",
 	showScrollTool: false,
+
+	init() {
+		this._super(...arguments);
+
+		let _this = this;
+		this.get('templateService').getSavedTemplates().then(function(saved) {
+            let emptyTemplate = {
+                id: "0",
+                title: "Empty document",
+                selected: true
+            };
+
+            saved.unshiftObject(emptyTemplate);
+            _this.set('savedTemplates', saved);
+        });
+	},
+
+	didRender() {
+		if (this.get('folderService').get('canEditCurrentFolder')) {
+			this.addTooltip(document.getElementById("start-document-button"));
+		}
+	},
 
 	didInsertElement() {
 		this._super(...arguments);
@@ -88,7 +113,19 @@ export default Ember.Component.extend(TooltipMixin, {
 		}
 	},
 
+	navigateToDocument(document) {
+        this.attrs.showDocument(this.get('folder'), document);
+    },	
+
 	actions: {
+		scrollTop() {
+			this.set('showScrollTool', false);
+
+			$("html,body").animate({
+				scrollTop: 0
+			}, 500, "linear");
+		},
+
 		addFolder() {
 			var folderName = this.get('newFolder');
 
@@ -103,12 +140,18 @@ export default Ember.Component.extend(TooltipMixin, {
 			return true;
 		},
 
-		scrollTop() {
-			this.set('showScrollTool', false);
+		onEditTemplate(template) {
+            this.navigateToDocument(template);
+        },
 
-			$("html,body").animate({
-				scrollTop: 0
-			}, 500, "linear");
-		}
+        onDocumentTemplate(id /*, title, type*/ ) {
+            let self = this;
+
+            this.send("showNotification", "Creating");
+
+            this.get('templateService').importSavedTemplate(this.folder.get('id'), id).then(function(document) {
+                self.navigateToDocument(document);
+            });
+        }
 	}
 });

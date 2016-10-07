@@ -18,35 +18,23 @@ const {
 } = Ember;
 
 export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
+	folderService: Ember.inject.service('folder'),
     documentService: Ember.inject.service('document'),
-    templateService: Ember.inject.service('template'),
-    folderService: Ember.inject.service('folder'),
     session: Ember.inject.service(),
+	appMeta: Ember.inject.service(),
+	
 	showToolbar: false,
     folder: {},
     busy: false,
     importedDocuments: [],
-    savedTemplates: [],
     isFolderOwner: computed.equal('folder.userId', 'session.user.id'),
     moveFolderId: "",
 
     didReceiveAttrs() {
-		let self = this;
-
         this.set('isFolderOwner', this.get('folder.userId') === this.get("session.user.id"));
 
 		let show = this.get('isFolderOwner') || this.get('hasSelectedDocuments') || this.get('folderService').get('canEditCurrentFolder');
 		this.set('showToolbar', show);
-
-        this.get('templateService').getSavedTemplates().then(function(saved) {
-            let emptyTemplate = {
-                id: "0",
-                title: "Empty document",
-                selected: true
-            };
-            saved.unshiftObject(emptyTemplate);
-            self.set('savedTemplates', saved);
-        });
 
         let targets = _.reject(this.get('folders'), {
             id: this.get('folder').get('id')
@@ -66,34 +54,61 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
             }
             if (this.get('folderService').get('canEditCurrentFolder')) {
 				this.addTooltip(document.getElementById("import-document-button"));
-                this.addTooltip(document.getElementById("start-document-button"));
             }
         }
     },
+
+	didInsertElement() {
+		let self = this;
+		let folderId = this.get('folder.id');
+		let url = this.get('appMeta.endpoint');
+		let importUrl = `${url}/import/folder/${folderId}`;
+
+		Dropzone.options.uploadDocuments = false;
+
+		let dzone = new Dropzone("#import-document-button", {
+			headers: {
+				'Authorization': 'Bearer ' + self.get('session.session.content.authenticated.token')
+			},
+			url: importUrl,
+			method: "post",
+			paramName: 'attachment',
+			acceptedFiles: ".doc,.docx,.txt,.md,.markdown",
+			clickable: true,
+			maxFilesize: 10,
+			parallelUploads: 3,
+			uploadMultiple: false,
+			addRemoveLinks: false,
+			autoProcessQueue: true,
+
+			init: function () {
+				this.on("success", function (document) {
+					self.send('onDocumentImported', document.name, document);
+				});
+
+				this.on("error", function (x) {
+					console.log("Conversion failed for ", x.name, " obj ", x); // TODO proper error handling
+				});
+
+				this.on("queuecomplete", function () {});
+
+				this.on("addedfile", function (file) {
+					self.send('onDocumentImporting', file.name);
+					self.audit.record('converted-document');
+				});
+			}
+		});
+
+		dzone.on("complete", function (file) {
+			dzone.removeFile(file);
+		});
+	},
 
     willDestroyElement() {
         this.destroyTooltips();
     },
 
-    navigateToDocument(document) {
-        this.attrs.showDocument(this.get('folder'), document);
-    },
-
     actions: {
-        onEditTemplate(template) {
-            this.navigateToDocument(template);
-        },
-
-        onDocumentTemplate(id /*, title, type*/ ) {
-            let self = this;
-
-            this.send("showNotification", "Creating");
-
-            this.get('templateService').importSavedTemplate(this.folder.get('id'), id).then(function(document) {
-                self.navigateToDocument(document);
-            });
-        },
-
         onDocumentImporting(filename) {
             this.send("showNotification", `Importing ${filename}`);
 

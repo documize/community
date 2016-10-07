@@ -3,7 +3,9 @@
 	{{layout/zone-navigation}}
 
 	{{#layout/zone-sidebar}}
-		{{folder/folders-list folders=model.folders folder=model.folder onFolderAdd=(action 'onFolderAdd')}}
+		{{folder/folders-list folders=model.folders folder=model.folder
+			onFolderAdd=(action 'onFolderAdd')
+			showDocument=(action 'showDocument')}}
 	{{/layout/zone-sidebar}}
 
 	{{#layout/zone-content}}
@@ -13,8 +15,7 @@
 			hasSelectedDocuments=hasSelectedDocuments
 			refresh=(action 'refresh')
 			onDeleteDocument=(action 'onDeleteDocument')
-			onMoveDocument=(action 'onMoveDocument')
-			showDocument=(action 'showDocument')}}
+			onMoveDocument=(action 'onMoveDocument')}}
 
 		{{folder/documents-list documents=model.documents folder=model.folder isFolderOwner=isFolderOwner onDocumentsChecked=(action 'onDocumentsChecked') }}
 	{{/layout/zone-content}}
