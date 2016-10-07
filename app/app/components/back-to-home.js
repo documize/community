@@ -10,5 +10,7 @@
 // https://documize.com
 
 import Ember from 'ember';
+import stringUtil from '../utils/string';
 
-export default Ember.Component.extend({});
+export default Ember.Component.extend({
+});

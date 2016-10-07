@@ -3,13 +3,7 @@
 	{{layout/zone-navigation}}
 
 	{{#layout/zone-sidebar}}
-		{{#link-to 'folders.folder' model.id model.slug}}
-			<div class="regular-button button-white">
-				<i class="material-icons">arrow_back</i>
-				<div class="name">space</div>
-			</div>
-		{{/link-to}}
-
+		{{back-to-space document=model folder=model}}
 		<div class="sidebar-menu">
 			<ul class="options">
 				<li class="option {{if tabGeneral "selected"}}" {{action 'selectTab' 'tabGeneral'}}>General</li>

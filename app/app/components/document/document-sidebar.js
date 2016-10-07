@@ -41,6 +41,10 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 	},
 
 	positionTool() {
+		if (this.get('isDestroyed') || this.get('isDestroying')) {
+			return;
+		}
+
 		let s = $(".scroll-tool");
 		let windowpos = $(window).scrollTop();
 

@@ -1,18 +1,6 @@
 .document-sidebar {
 	@extend .no-select;
-	margin-top: 40px;
 	width: 100%;
-
-	.space-button {
-		width: 100%;
-	}
-
-	.space-name {
-		max-width: 90%;
-		text-overflow: ellipsis;
-		overflow: hidden;
-		white-space: nowrap;
-	}
 
 	> .summary-line {
 		color: $color-gray;

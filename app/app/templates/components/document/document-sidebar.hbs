@@ -1,10 +1,5 @@
 <div class="document-sidebar">
-	{{#link-to 'folders.folder' folder.id folder.slug}}
-		<div class="regular-button button-white space-button">
-			<i class="material-icons">arrow_back</i>
-			<div class="name space-name">{{folder.name}}</div>
-		</div>
-	{{/link-to}}
+	{{back-to-space document=model folder=folder}}
 
 	{{#if session.authenticated}}
 		<div class="summary-line hidden-xs hidden-sm">

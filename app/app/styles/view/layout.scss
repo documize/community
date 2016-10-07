@@ -91,31 +91,31 @@
 	}
 }
 
-// .zone-header {
-// 	background-color: $color-header;
-// 	padding: 0 40px 0 40px;
-// 	> .info {
-// 		padding: 20px 0 20px 0;
-// 		> .title {
-// 			color: $color-off-black;
-// 			font-size: 1.2rem;
-// 		}
-// 		> .message {
-// 			color: $color-gray;
-// 			font-size: 1rem;
-// 			margin: 10px 0 0 5px;
-// 		}
-// 	}
-// 	> .actions {
-// 		padding: 20px 0 20px 0;
-// 	}
-// }
+.zone-header {
+	background-color: $color-header;
+	padding: 0 40px 0 40px;
+	> .info {
+		padding: 20px 0 20px 0;
+		> .title {
+			color: $color-off-black;
+			font-size: 1.2rem;
+		}
+		> .message {
+			color: $color-gray;
+			font-size: 1rem;
+			margin: 10px 0 0 5px;
+		}
+	}
+	> .actions {
+		padding: 20px 0 20px 0;
+	}
+}
 
 .zone-sidebar {
 	background-color: $color-header;
 	height: 100%;
 	min-height: 100%;
-	padding: 0 40px 0 40px;
+	padding: 40px 40px 0 40px;
 	float: left;
 }
 
