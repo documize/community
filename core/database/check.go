@@ -17,9 +17,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/documize/community/core/web"
 	"github.com/documize/community/core/log"
 	"github.com/documize/community/core/utility"
+	"github.com/documize/community/core/web"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -34,7 +34,7 @@ func Check(Db *sqlx.DB, connectionString string) bool {
 	dbPtr = &Db
 
 	log.Info("Running database checks, this may take a while...")
-	
+
 	csBits := strings.Split(connectionString, "/")
 	if len(csBits) > 1 {
 		web.SiteInfo.DBname = strings.Split(csBits[len(csBits)-1], "?")[0]
@@ -62,11 +62,6 @@ func Check(Db *sqlx.DB, connectionString string) bool {
 		return false
 	}
 
-	// See http://dba.stackexchange.com/questions/63763/is-there-any-difference-between-these-two-version-of-mysql-5-1-73-community-lo
-	version = strings.Replace(version, "-log", "", 1)
-	version = strings.Replace(version, "-debug", "", 1)
-	version = strings.Replace(version, "-demo", "", 1)
-
 	{ // check minimum MySQL version as we need JSON column type. 5.7.10
 		vParts := strings.Split(version, ".")
 		if len(vParts) < 3 {
@@ -77,13 +72,16 @@ func Check(Db *sqlx.DB, connectionString string) bool {
 		}
 		verInts := []int{5, 7, 10} // Minimum MySQL version
 		for k, v := range verInts {
-			i, err := strconv.Atoi(vParts[k])
-			if err != nil {
-				log.Error("MySQL version element "+strconv.Itoa(k+1)+" of '"+version+"' not an integer:", err)
-				web.SiteInfo.Issue = "MySQL version element " + strconv.Itoa(k+1) + " of '" + version + "' not an integer: " + err.Error()
-				web.SiteMode = web.SiteModeBadDB
-				return false
-			}
+			i := ExtractVersionNumber(vParts[k])
+
+			// i, err := strconv.Atoi(vParts[k])
+			// if err != nil {
+			// 	log.Error("MySQL version element "+strconv.Itoa(k+1)+" of '"+version+"' not an integer:", err)
+			// 	web.SiteInfo.Issue = "MySQL version element " + strconv.Itoa(k+1) + " of '" + version + "' not an integer: " + err.Error()
+			// 	web.SiteMode = web.SiteModeBadDB
+			// 	return false
+			// }
+
 			if i < v {
 				want := fmt.Sprintf("%d.%d.%d", verInts[0], verInts[1], verInts[2])
 				log.Error("MySQL version element "+strconv.Itoa(k+1)+" of '"+version+"' not high enough, need at least version "+want, errors.New("bad MySQL version"))
@@ -147,4 +145,37 @@ func Check(Db *sqlx.DB, connectionString string) bool {
 	web.SiteInfo.DBname = ""          // do not give this info when not in set-up mode
 	dbCheckOK = true
 	return true
+}
+
+// ExtractVersionNumber checks and sends back an integer.
+// MySQL can have version numbers like 5.5.47-0ubuntu0.14.04.1
+func ExtractVersionNumber(s string) (num int) {
+	num = 0
+
+	// deal with build suffixes
+	// http://dba.stackexchange.com/questions/63763/is-there-any-difference-between-these-two-version-of-mysql-5-1-73-community-lo
+	s = strings.Replace(s, "-log", "", 1)
+	s = strings.Replace(s, "-debug", "", 1)
+	s = strings.Replace(s, "-demo", "", 1)
+
+	// convert to number
+	num, err := strconv.Atoi(s)
+
+	if err != nil {
+		num = 0
+		// probably found "47-0ubuntu0.14.04.1" so we need to lose everything after the hypen
+		pos := strings.Index(s, "-")
+		if pos > 1 {
+			num, err = strconv.Atoi(s[:pos])
+		}
+
+		if err != nil {
+			num = 0
+			log.Error("MySQL version element '"+s+"' not an integer:", err)
+			web.SiteInfo.Issue = "MySQL version element '" + s + "' not an integer: " + err.Error()
+			web.SiteMode = web.SiteModeBadDB
+		}
+	}
+
+	return
 }
