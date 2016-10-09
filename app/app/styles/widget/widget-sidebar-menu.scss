@@ -1,5 +1,5 @@
 .sidebar-menu {
-	margin: 30px 0;
+	margin: 30px 0 0 0;
 
 	> .options {
 		padding: 0;
@@ -11,7 +11,7 @@
 			list-style: none;
 			cursor: pointer;
 			@extend .no-select;
-			color: $color-gray;
+			color: $color-off-black;
 
 			&:hover {
 				color: $color-link;

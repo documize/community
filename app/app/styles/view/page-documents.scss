@@ -1,12 +1,39 @@
-
-.folders-list {
-	> .add-space-action {
-		text-align: center;
-		margin-bottom: 30px;
+.space-tools {
+	.doc-tool {
+		position: absolute;
+		top: 150px;
+		right: -18px;
+		z-index: 999;
 	}
 
+	.scroll-space-tool {
+		position: absolute;
+		top: 150px;
+		right: -18px;
+		z-index: 888;
+		-webkit-animation: fadein 1s; /* Safari, Chrome and Opera > 12.1 */
+		-moz-animation: fadein 1s; /* Firefox < 16 */
+		-ms-animation: fadein 1s; /* Internet Explorer */
+		-o-animation: fadein 1s; /* Opera < 12.1 */
+		animation: fadein 1s;
+	}
+
+	.stuck-space-tool {
+		position: fixed !important;
+		top: 150px !important;
+		right: 0;
+		left: 0;
+		-webkit-animation: fadein 1s; /* Safari, Chrome and Opera > 12.1 */
+		-moz-animation: fadein 1s; /* Firefox < 16 */
+		-ms-animation: fadein 1s; /* Internet Explorer */
+		-o-animation: fadein 1s; /* Opera < 12.1 */
+		animation: fadein 1s;
+	}
+}
+
+.folders-list {
 	> .section {
-		margin: 0 0 20px 0;
+		margin: 30px 0 10px 0;
 
 		> .heading {
 			font-size: 0.9rem;
@@ -57,6 +84,7 @@
 		width: 100%;
 		position: relative;
 		transition: .3s;
+		border-bottom: 1px solid $color-border;
 
 		&:hover {
 			> .link {
@@ -145,11 +173,6 @@
 	}
 }
 
-.upload-container {
-	text-align: center;
-	margin: 2rem 0;
-}
-
 .no-documents {
 	margin-top: 50px;
 	text-align: center;
@@ -169,6 +192,70 @@
 
 		> .regular-button {
 			cursor: default !important;
+		}
+	}
+}
+
+.templates-list {
+	margin: 0;
+
+	> .list {
+		margin: 0;
+		padding: 0;
+
+		> .item {
+			list-style: none;
+			cursor: pointer;
+			padding: 10px 5px;
+			margin: 5px 0;
+			@include ease-in();
+
+			&:hover {
+				@include ease-in();
+
+				> .details {
+					> .title {
+						color: $color-primary;
+					}
+
+					> .desc {
+						color: $color-primary;
+					}
+				}
+		    }
+
+			.icon {
+				text-align: center;
+				display: inline-block;
+				width: 50px;
+
+				> .img {
+					float: left;
+					text-align: center;
+					display: inline-block;
+					height: 40px;
+					width: 40px;
+				}
+			}
+
+			> .details {
+				vertical-align: top;
+				display: inline-block;
+				width: 80%;
+
+				> .title {
+					font-size: 1rem;
+					font-weight: bold;
+					color: $color-off-black;
+					letter-spacing: 0.5px;
+				}
+
+				> .desc {
+					color: $color-gray;
+					font-size: 0.9rem;
+					margin-top: 5px;
+				}
+			}
 		}
 	}
 }

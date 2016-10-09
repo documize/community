@@ -12,22 +12,53 @@
 import Ember from 'ember';
 import constants from '../../utils/constants';
 import TooltipMixin from '../../mixins/tooltip';
+import NotifierMixin from '../../mixins/notifier';
 
-export default Ember.Component.extend(TooltipMixin, {
+export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 	folderService: Ember.inject.service('folder'),
+	templateService: Ember.inject.service('template'),
 	publicFolders: [],
 	protectedFolders: [],
 	privateFolders: [],
+	savedTemplates: [],
 	hasPublicFolders: false,
 	hasProtectedFolders: false,
 	hasPrivateFolders: false,
 	newFolder: "",
+	showScrollTool: false,
+	showingDocument: false,
+	showingList: true,
+
+	init() {
+		this._super(...arguments);
+
+		let _this = this;
+		this.get('templateService').getSavedTemplates().then(function(saved) {
+            let emptyTemplate = {
+                id: "0",
+                title: "Empty",
+				description: "An empty canvas for your words",
+				img: "template-blank",
+            };
+
+			saved.forEach(function(t) {
+				t.img = "template-saved";
+			});
+
+            saved.unshiftObject(emptyTemplate);
+            _this.set('savedTemplates', saved);
+        });
+	},
+
+	didRender() {
+		if (this.get('folderService').get('canEditCurrentFolder')) {
+			this.addTooltip(document.getElementById("start-document-button"));
+		}
+	},
 
 	didInsertElement() {
-		this._super(...arguments);
-		if (this.session.authenticated) {
-			this.addTooltip(document.getElementById("add-folder-button"));
-		}
+		this.eventBus.subscribe('resized', this, 'positionTool');
+		this.eventBus.subscribe('scrolled', this, 'positionTool');
 	},
 
 	didReceiveAttrs() {
@@ -65,7 +96,37 @@ export default Ember.Component.extend(TooltipMixin, {
 		this.destroyTooltips();
 	},
 
+	positionTool() {
+		if (this.get('isDestroyed') || this.get('isDestroying')) {
+			return;
+		}
+
+		let s = $(".scroll-space-tool");
+		let windowpos = $(window).scrollTop();
+
+		if (windowpos >= 300) {
+			this.set('showScrollTool', true);
+			s.addClass("stuck-space-tool");
+			s.css('left', parseInt($(".zone-sidebar").css('width')) - 18 + 'px');
+		} else {
+			this.set('showScrollTool', false);
+			s.removeClass("stuck-space-tool");
+		}
+	},
+
+	navigateToDocument(document) {
+        this.attrs.showDocument(this.get('folder'), document);
+    },
+
 	actions: {
+		scrollTop() {
+			this.set('showScrollTool', false);
+
+			$("html,body").animate({
+				scrollTop: 0
+			}, 500, "linear");
+		},
+
 		addFolder() {
 			var folderName = this.get('newFolder');
 
@@ -78,6 +139,30 @@ export default Ember.Component.extend(TooltipMixin, {
 
 			this.set('newFolder', "");
 			return true;
-		}
+		},
+
+		showDocument() {
+			this.set('showingDocument', true);
+			this.set('showingList', false);
+		},
+
+		showList() {
+			this.set('showingDocument', false);
+			this.set('showingList', true);
+		},
+
+		onEditTemplate(template) {
+            this.navigateToDocument(template);
+        },
+
+        onDocumentTemplate(id /*, title, type*/ ) {
+            let self = this;
+
+            this.send("showNotification", "Creating");
+
+            this.get('templateService').importSavedTemplate(this.folder.get('id'), id).then(function(document) {
+                self.navigateToDocument(document);
+            });
+        }
 	}
 });

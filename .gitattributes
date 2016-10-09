@@ -2,4 +2,11 @@
 * text=auto
 
 # These files are text and should be normalized (convert crlf > lf)
-*.hbs text
+*.hbs text eol=lf
+*.js text eol=lf
+*.html text eol=lf
+*.go text eol=lf
+*.sql text eol=lf
+*.scss text eol=lf
+*.js text eol=lf
+*.json text eol=lf

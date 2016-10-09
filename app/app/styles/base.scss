@@ -17,6 +17,7 @@
 .text-left { text-align: left; }
 .text-right { text-align: right; }
 .text-center { text-align: center; }
+.center { margin: 0 auto; }
 .bold { font-weight: bold; }
 .italic { font-style: italic; }
 .text-uppercase { text-transform: uppercase; }
@@ -52,7 +53,7 @@ a {
 	text-shadow: 1px 1px 1px rgba(0,0,0,0.004);
 
 	a:hover, a:focus {
-		text-decoration: underline;
+		text-decoration: none;
 	}
 }
 

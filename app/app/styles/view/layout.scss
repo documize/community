@@ -9,7 +9,8 @@
 	margin: 0;
 	width: 100%;
 	font-size: 1rem;
-	padding: 15px 40px 15px 40px;
+	padding: 10px 40px 10px 40px;
+
 	.content {
 		> .title {
 			padding-left: 15px;
@@ -49,6 +50,7 @@
 			}
 		}
 	}
+
 	.header-button {
 		display: inline-block;
 		position: relative;
@@ -63,14 +65,21 @@
 		vertical-align: middle;
 		background-color: $color-white;
 		text-align: center;
+
 		&:hover {
 			@extend .z-depth-1;
 		}
+
+		&:before {
+			border-radius: 0;
+		}
+
 		> .material-icons {
 			color: $color-primary;
 			text-align: center;
 			font-size: 1.4em;
 		}
+
 		> .initials {
 			color: $color-primary;
 			text-align: center;
@@ -79,15 +88,12 @@
 			line-height: 2.6rem;
 			font-family: open_sansregular;
 		}
-		&:before {
-			border-radius: 0;
-		}
 	}
 }
 
 .zone-header {
 	background-color: $color-header;
-	padding: 0 40px 0 40px;
+	padding: 30px 40px 30px 40px;
 	> .info {
 		padding: 20px 0 20px 0;
 		> .title {
@@ -106,10 +112,10 @@
 }
 
 .zone-sidebar {
+	background-color: $color-header;
 	height: 100%;
 	min-height: 100%;
-	padding: 0 40px 0 40px;
-	border-right: 1px solid $color-border;
+	padding: 40px 40px 0 40px;
 	float: left;
 }
 

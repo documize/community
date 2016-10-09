@@ -34,7 +34,7 @@ export default Ember.Service.extend({
 		return [this.get('endpoint'), endpoint].join('/');
 	},
 
-	boot(/*requestedUrl*/) {
+	boot(requestedUrl) { // jshint ignore:line
 		let dbhash;
 		if (is.not.null(document.head.querySelector("[property=dbhash]"))) {
 			dbhash = document.head.querySelector("[property=dbhash]").content;

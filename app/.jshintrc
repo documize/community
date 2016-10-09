@@ -18,7 +18,8 @@
     "Drop",
 	"Dropzone",
 	"dragula",
-  "datetimepicker"
+  	"datetimepicker",
+	"Waypoint"
   ],
   "browser": true,
   "boss": true,

@@ -35,7 +35,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 			this.addTooltip(document.getElementById("save-template-button"));
 			this.addTooltip(document.getElementById("set-meta-button"));
 			this.addTooltip(document.getElementById("delete-document-button"));
-			this.addTooltip(document.getElementById("add-section-button"));
 		}
 
 		this.addTooltip(document.getElementById("print-document-button"));

@@ -20,7 +20,7 @@
 
 		> .list {
 			margin: 0;
-			padding: 7px;
+			padding: 7px 0;
 
 			> .item {
 				color: $color-off-black;
@@ -31,7 +31,6 @@
 				padding-bottom: 10px;
 
 				> .icon {
-					vertical-align: text-top;
 					margin-right: 10px;
 				}
 
@@ -43,16 +42,16 @@
 					}
 
 					> .file {
-						font-size: 0.9rem;
+						font-size: 1rem;
 					}
 				}
 
 				> .action {
 					float: right;
-					margin-top: -8px;
+					margin-top: -2px;
 					margin-right: 5px;
 					@extend .cursor-pointer;
-					opacity: 0.3;
+					opacity: 0.5;
 					@extend .transition-all;
 					display: none;
 					color: $color-stroke;

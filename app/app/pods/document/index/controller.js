@@ -193,15 +193,42 @@ export default Ember.Controller.extend(NotifierMixin, {
 			});
 		},
 
-		onAddPage(page) {
-			let self = this;
+		onAddSection(section) {
+			this.audit.record("added-section");
+			this.audit.record("added-section-" + section.get('contentType'));
 
-			this.get('documentService').addPage(this.get('model.id'), page).then(function (newPage) {
-				self.transitionToRoute('document.edit',
-					self.get('folder.id'),
-					self.get('folder.slug'),
-					self.get('model.id'),
-					self.get('model.slug'),
+			let page = {
+				documentId: this.get('model.id'),
+				title: `${section.get('title')} Section`,
+				level: 1,
+				sequence: 2048,
+				body: "",
+				contentType: section.get('contentType')
+			};
+
+			let data = this.get('store').normalize('page', page);
+			let pageData = this.get('store').push(data);
+
+			let meta = {
+				documentId: this.get('model.id'),
+				rawBody: "",
+				config: ""
+			};
+
+			let pageMeta = this.get('store').normalize('page-meta', meta);
+			let pageMetaData = this.get('store').push(pageMeta);
+
+			let model = {
+				page: pageData,
+				meta: pageMetaData
+			};
+
+			this.get('documentService').addPage(this.get('model.id'), model).then((newPage) => {
+				this.transitionToRoute('document.edit',
+					this.get('folder.id'),
+					this.get('folder.slug'),
+					this.get('model.id'),
+					this.get('model.slug'),
 					newPage.id);
 			});
 		},

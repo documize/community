@@ -1,43 +1,29 @@
-<div>
-	{{#link-to 'folders.folder' folder.id folder.slug}}
-		<div class="regular-button button-white">
-			<i class="material-icons">arrow_back</i>
-			<div class="name space-name">{{folder.name}}</div>
-		</div>
-	{{/link-to}}
-
+<div class="pull-right hidden-xs hidden-sm">
     {{#if isEditor}}
 		<div class="button-gap"></div>
-		<div class="square-button-white" id="set-meta-button" data-tooltip="Set meta" data-tooltip-position="top center">
-			<i class="material-icons">settings</i>
+		<div class="round-button-mono" id="set-meta-button" data-tooltip="Set meta" data-tooltip-position="top center">
+			<i class="material-icons color-gray">settings</i>
 		</div>
 		<div class="button-gap"></div>
-		<div class="square-button-white" id="attachment-button" data-tooltip="Attach file" data-tooltip-position="top center">
-			<i class="material-icons">attach_file</i>
+		<div class="round-button-mono" id="attachment-button" data-tooltip="Attach file" data-tooltip-position="top center">
+			<i class="material-icons color-gray">attach_file</i>
 		</div>
 		<div class="button-gap"></div>
-		<div class="square-button-white" id="save-template-button" data-tooltip="Save as template" data-tooltip-position="top center">
-			<i class="material-icons">content_copy</i>
+		<div class="round-button-mono" id="save-template-button" data-tooltip="Save as template" data-tooltip-position="top center">
+			<i class="material-icons color-gray">content_copy</i>
 		</div>
 		<div class="button-gap"></div>
     {{/if}}
 
-	<div class="square-button-white" id="print-document-button" data-tooltip="Print me" data-tooltip-position="top center" {{action 'printDocument'}}>
-		<i class="material-icons">print</i>
+	<div class="round-button-mono" id="print-document-button" data-tooltip="Print me" data-tooltip-position="top center" {{action 'printDocument'}}>
+		<i class="material-icons color-gray">print</i>
 	</div>
 
 	{{#if isEditor}}
 		<div class="button-gap"></div>
-		<div class="square-button-white button-red-text" id="delete-document-button" data-tooltip="Delete content" data-tooltip-position="top center">
-			<i class="material-icons">delete</i>
+		<div class="round-button-mono button-red-text" id="delete-document-button" data-tooltip="Delete content" data-tooltip-position="top center">
+			<i class="material-icons color-gray">delete</i>
 		</div>
-		<div class="button-gap"></div>
-		{{#link-to 'document.wizard' folder.id folder.slug document.id document.slug}}
-			<div class="regular-button button-green" id="add-section-button" data-tooltip="Add section" data-tooltip-position="top center">
-				<i class="material-icons">add</i>
-				<div class="name">section</div>
-			</div>
-		{{/link-to}}
 	{{/if}}
 
 	{{#if isEditor}}
@@ -85,3 +71,4 @@
 		{{/dropdown-dialog}}
 	{{/if}}
 </div>
+<div class="margin-bottom-20 clearfix" />
