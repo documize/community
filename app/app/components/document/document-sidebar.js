@@ -78,7 +78,6 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 			this.set('showViews', false);
 			this.set('showContributions', false);
 			this.set('showSections', false);
-
 			this.set('showingSections', false);
 		},
 
@@ -87,7 +86,6 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 			this.set('showViews', true);
 			this.set('showContributions', false);
 			this.set('showSections', false);
-
 			this.set('showingSections', false);
 		},
 
@@ -96,7 +94,6 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 			this.set('showViews', false);
 			this.set('showContributions', true);
 			this.set('showSections', false);
-
 			this.set('showingSections', false);
 		},
 
@@ -105,7 +102,6 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 			this.set('showViews', false);
 			this.set('showContributions', false);
 			this.set('showSections', true);
-
 			this.set('showingSections', true);
 		},
 

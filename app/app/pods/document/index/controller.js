@@ -232,19 +232,6 @@ export default Ember.Controller.extend(NotifierMixin, {
 					newPage.id);
 			});
 		},
-		//
-		// onAddPage(page) {
-		// 	let self = this;
-		//
-		// 	this.get('documentService').addPage(this.get('model.id'), page).then(function (newPage) {
-		// 		self.transitionToRoute('document.edit',
-		// 			self.get('folder.id'),
-		// 			self.get('folder.slug'),
-		// 			self.get('model.id'),
-		// 			self.get('model.slug'),
-		// 			newPage.id);
-		// 	});
-		// },
 
 		onDocumentDelete() {
 			let self = this;

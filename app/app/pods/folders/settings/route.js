@@ -113,7 +113,6 @@ export default Ember.Route.extend(NotifierMixin, {
 		},
 
 		onRemove(moveId) {
-
 			this.get('folderService').remove(this.folder.get('id'), moveId).then(() => { /* jshint ignore:line */
 				this.showNotification("Deleted");
 				this.get('localStorage').clearSessionItem('folder');
@@ -125,8 +124,7 @@ export default Ember.Route.extend(NotifierMixin, {
 			});
 		},
 
-		onShare: function (invitation) {
-
+		onShare: function(invitation) {
 			this.get('folderService').share(this.folder.get('id'), invitation).then(() => {
 				this.showNotification("Shared");
 			});
