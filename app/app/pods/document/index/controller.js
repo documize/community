@@ -128,14 +128,14 @@ export default Ember.Controller.extend(NotifierMixin, {
 			let pendingChanges = [];
 
 			// select affected pages
-			for (var i = pageIndex + 1; i < pages.length; i++) {
-				if (pages[i].level <= page.level) {
+			for (var i = pageIndex + 1; i < pages.get('length'); i++) {
+				if (pages[i].get('level') <= page.get('level')) {
 					break;
 				}
 
 				pendingChanges.push({
-					pageId: pages[i].id,
-					level: pages[i].level - 1
+					pageId: pages[i].get('id'),
+					level: pages[i].get('level') - 1
 				});
 			}
 
@@ -167,7 +167,7 @@ export default Ember.Controller.extend(NotifierMixin, {
 				// page delete followed by re-leveling child pages
 				this.get('documentService').deletePage(documentId, deleteId).then(function () {
 					self.set('pages', _.reject(self.get('pages'), function (p) {
-						return p.id === deleteId;
+						return p.get('id') === deleteId;
 					}));
 
 					self.audit.record("deleted-page");

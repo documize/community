@@ -162,7 +162,7 @@ func init() {
 	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/pages", []string{"GET", "OPTIONS"}, nil, GetDocumentPages))
 	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/pages/{pageID}", []string{"PUT", "OPTIONS"}, nil, UpdateDocumentPage))
 	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/pages/{pageID}", []string{"DELETE", "OPTIONS"}, nil, DeleteDocumentPage))
-	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/pages/{pageID}", []string{"POST", "OPTIONS"}, nil, DeleteDocumentPages))
+	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/pages", []string{"DELETE", "OPTIONS"}, nil, DeleteDocumentPages))
 	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/pages/{pageID}", []string{"GET", "OPTIONS"}, nil, GetDocumentPage))
 	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/pages", []string{"POST", "OPTIONS"}, nil, AddDocumentPage))
 	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/attachments", []string{"GET", "OPTIONS"}, nil, GetAttachments))

@@ -145,11 +145,12 @@ export default Ember.Service.extend({
 
 	// Nukes multiple pages from the document.
 	deletePages: function (documentId, pageId, payload) {
-		let url = `documents/${documentId}/pages/${pageId}`;
+		let url = `documents/${documentId}/pages`;
 
-		return this.get('ajax').post(url, {
+		return this.get('ajax').request(url, {
 			data: JSON.stringify(payload),
-			contentType: 'json'
+			contentType: 'json',
+			method: 'DELETE'
 		});
 	},
 
