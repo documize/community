@@ -1,6 +1,6 @@
 {{#section/base-editor document=document folder=folder page=page busy=waiting tip="Gemini enterprise issue and ticketing software (https://www.countersoft.com)" isDirty=(action 'isDirty') onCancel=(action 'onCancel') onAction=(action 'onAction')}}
 
-	<div class="pull-left" style="width: 45%;">
+<div class="pull-left" style="width: 45%;">
 	<div class="input-form">
 		<form>
 			<div class="heading">
@@ -25,9 +25,9 @@
 			<div class="regular-button button-blue" {{ action 'auth' }}>Authenticate</div>
 		</form>
 	</div>
-	</div>
+</div>
 
-	<div class="pull-left margin-left-40" style="width: 45%;">
+<div class="pull-left margin-left-40" style="width: 45%;">
 	{{#if authenticated}}
 		<div class="input-form">
 			<form>
@@ -49,6 +49,6 @@
 			</form>
 		</div>
 	{{/if}}
-	</div>
+</div>
 
 {{/section/base-editor}}
