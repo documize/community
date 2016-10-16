@@ -20,8 +20,6 @@ export default Ember.Component.extend({
 	},
 
 	didInsertElement() {
-		let self = this;
-
 		let options = {
 			selector: "#rich-text-editor",
 			relative_urls: false,
@@ -72,12 +70,12 @@ export default Ember.Component.extend({
 			},
 			toolbar1: "formatselect fontselect fontsizeselect | bold italic underline | link unlink | image media | codesample | outdent indent | alignleft aligncenter alignright alignjustify | bullist numlist | forecolor backcolor",
 			save_onsavecallback: function () {
-				self.send('onAction');
+				Mousetrap.trigger('ctrl+s');
 			}
 		};
 
 		if (typeof tinymce === 'undefined') {
-			$.getScript("/tinymce/tinymce.min.js?v=430", function () {
+			$.getScript("/tinymce/tinymce.min.js?v=443", function () {
 				window.tinymce.dom.Event.domLoaded = true;
 				tinymce.baseURL = "//" + window.location.host + "/tinymce";
 				tinymce.suffix = ".min";
