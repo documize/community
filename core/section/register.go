@@ -14,6 +14,8 @@ package section
 import (
 	"fmt"
 
+	"github.com/documize/community/core/log"
+	"github.com/documize/community/core/section/airtable"
 	"github.com/documize/community/core/section/code"
 	"github.com/documize/community/core/section/gemini"
 	"github.com/documize/community/core/section/github"
@@ -23,7 +25,6 @@ import (
 	"github.com/documize/community/core/section/table"
 	"github.com/documize/community/core/section/trello"
 	"github.com/documize/community/core/section/wysiwyg"
-	"github.com/documize/community/core/log"
 )
 
 // Register sections
@@ -36,6 +37,7 @@ func Register() {
 	provider.Register("table", &table.Provider{})
 	provider.Register("trello", &trello.Provider{})
 	provider.Register("wysiwyg", &wysiwyg.Provider{})
+	provider.Register("airtable", &airtable.Provider{})
 	p := provider.List()
 	log.Info(fmt.Sprintf("Documize registered %d smart sections", len(p)))
 }

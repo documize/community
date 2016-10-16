@@ -15,7 +15,7 @@ export default Ember.Component.extend({
 	drop: null,
 	cancelLabel: "Close",
 	actionLabel: "Save",
-	tip: "Short and concise title for the page",
+	tip: "Short and concise title",
 	busy: false,
 
 	didRender() {

@@ -99,7 +99,7 @@ function getState(toc, page) {
 				}
 
 				if (page.get('level') === toc[i3].get('level')) {
-					state.tocTools.downTarget = toc[i3].id;
+					state.tocTools.downTarget = toc[i3].get('id');
 					break;
 				}
 			}
@@ -149,7 +149,7 @@ function moveUp(state, pages, current) {
 		var sequence = (sequence1 + sequence2) / 2;
 
 		pendingChanges.push({
-			pageId: current.id,
+			pageId: current.get('id'),
 			sequence: sequence
 		});
 
@@ -161,7 +161,7 @@ function moveUp(state, pages, current) {
 			sequence = (sequence + page1.get('sequence')) / 2;
 
 			pendingChanges.push({
-				pageId: pages[i].id,
+				pageId: pages[i].get('id'),
 				sequence: sequence
 			});
 		}
@@ -185,7 +185,7 @@ function moveDown(state, pages, current) {
 	var upperSequence = 0;
 	var cutOff = _.rest(pages, downTargetIndex);
 	var siblings = _.reject(cutOff, function (p) {
-		return p.get('level') !== current.get('level') || p.id === current.id || p.id === downTarget.id;
+		return p.get('level') !== current.get('level') || p.get('id') === current.get('id') || p.get('id') === downTarget.get('id');
 	});
 
 	if (siblings.length > 0) {
@@ -208,7 +208,7 @@ function moveDown(state, pages, current) {
 	}
 
 	pendingChanges.push({
-		pageId: current.id,
+		pageId: current.get('id'),
 		sequence: startingSequence
 	});
 
@@ -222,7 +222,7 @@ function moveDown(state, pages, current) {
 		var sequence2 = (sequence + upperSequence) / 2;
 
 		pendingChanges.push({
-			pageId: pages[i].id,
+			pageId: pages[i].get('id'),
 			sequence: sequence2
 		});
 	}
@@ -236,7 +236,7 @@ function indent(state, pages, current) {
 	var pendingChanges = [];
 
 	pendingChanges.push({
-		pageId: current.id,
+		pageId: current.get('id'),
 		level: current.get('level') + state.tocTools.indentIncrement
 	});
 
@@ -246,7 +246,7 @@ function indent(state, pages, current) {
 		}
 
 		pendingChanges.push({
-			pageId: pages[i].id,
+			pageId: pages[i].get('id'),
 			level: pages[i].get('level') + state.tocTools.indentIncrement
 		});
 	}
@@ -259,7 +259,7 @@ function outdent(state, pages, current) {
 	var pendingChanges = [];
 
 	pendingChanges.push({
-		pageId: current.id,
+		pageId: current.get('id'),
 		level: current.get('level') - 1
 	});
 
@@ -269,7 +269,7 @@ function outdent(state, pages, current) {
 		}
 
 		pendingChanges.push({
-			pageId: pages[i].id,
+			pageId: pages[i].get('id'),
 			level: pages[i].get('level') - 1
 		});
 	}

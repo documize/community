@@ -33,7 +33,8 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
 		observer.observe(document, {
 			subtree: true,
 			attributes: false,
-			childList: true
+			childList: true,
+			characterData: true
 		});
 		// end TODO: ugly hack
 

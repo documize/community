@@ -23,8 +23,8 @@ import (
 	"github.com/documize/community/core/api/entity"
 	"github.com/documize/community/core/api/request"
 	"github.com/documize/community/core/api/util"
-	"github.com/documize/community/core/section/provider"
 	"github.com/documize/community/core/log"
+	"github.com/documize/community/core/section/provider"
 	"github.com/documize/community/core/utility"
 
 	"github.com/gorilla/mux"
@@ -287,7 +287,7 @@ func DeleteDocumentPage(w http.ResponseWriter, r *http.Request) {
 
 	pageID := params["pageID"]
 
-	if len(documentID) == 0 {
+	if len(pageID) == 0 {
 		writeMissingDataError(w, method, "pageID")
 		return
 	}
