@@ -2,7 +2,7 @@
 {
     width: 100%;
     text-align: left;
-    color: $color-primary;
+    color: $color-off-black;
     letter-spacing: 1px;
 
     .stage-1
@@ -145,17 +145,18 @@
 
     .sidebar
     {
-        padding: 50px 50px 0 50px;
+        margin-left: -15px;
+        padding: 100px 50px 50px 50px;
         overflow: auto;
 
         .logo
         {
-            height: 100px;
+            height: 62px;
             margin-bottom: 15px;
             margin-top: 20px;
         }
 
-        h1
+        h2
         {
             font-size: 2rem;;
             color: $color-primary;
@@ -165,6 +166,7 @@
         p
         {
             font-size: 1.3rem;
+            color: $color-primary;
         }
 
         p.note
@@ -179,8 +181,11 @@
         height: 400px;
         width: 500px;
         margin-top: 200px;
-        background-color: #eaeaea;
+        background-color: #f6f9fc;
         position: relative;
+        border-radius: 10px;
+        background-color: #fff;
+        box-shadow: 0 6px 20px 0 rgba(30,71,101,.1);
     }
 
 	input[type='email'], input[type='text'], input[type='password'] {

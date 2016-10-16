@@ -6,7 +6,6 @@
 
 	table
 	{
-		margin: 10px 20px 0 20px !important;
 		// width: auto !important;
 
 		@include border(1px);
@@ -43,37 +42,45 @@
 			font-family: "open_sanssemibold";
 	}
 
+	h1.doc-name {
+		font-size: 2em;
+		font-family: open_sansregular;
+	}
+
 	h1
 	{
 		font-size: 1.6em;
-		font-family: open_sansregular;
+		font-family: open_sanslight;
 		color:$color-off-black;
 		margin: 30px 0 20px 0;
 	}
 
 	h2
 	{
-		font-size: 2rem;
+		font-size: 1.5em;
 		margin: 30px 0 20px 0;
-		font-family: open_sansregular;
+		font-family: open_sanslight;
 	}
 
 	h3
 	{
-		font-size: 1.6rem;
+		font-size: 1.4rem;
 		margin: 30px 0 20px 0;
+		font-family: open_sanslight;
 	}
 
 	h4
 	{
-		font-size: 1.6rem;
+		font-size: 1.3rem;
 		margin: 30px 0 20px 0;
+		font-family: open_sanslight;
 	}
 
 	h5, h6, h7, h8, h9
 	{
-		font-size: 1.4rem;
+		font-size: 1.2rem;
 		margin: 30px 0 20px 0;
+		font-family: open_sanslight;
 	}
 
 	h2, h3, h4, h5, h6, h7, h8, h9
@@ -118,7 +125,7 @@
 		}
 		td,
 		th {
-		  border: 1px solid #dddddd;
+		  border: 1px solid #f3f5f8;
 		  padding: 5px 7px !important;
 		}
 		td:empty,
@@ -134,7 +141,7 @@
 		  border-width: 2px;
 		}
 		th {
-		  background: #efefef;
+		  background: #f7f6f6;
 		}
 	}
 }

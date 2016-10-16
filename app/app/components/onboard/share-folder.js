@@ -1,11 +1,11 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
@@ -29,9 +29,9 @@ export default Ember.Component.extend({
         // Stage 1 - person name keypress handler
         $("#stage-1-firstname, #stage-1-lastname").keyup(function() {
             if (!$("#stage-1-firstname").val() || !$("#stage-1-lastname").val()) {
-                $(".name-status").attr("src", "assets/img/onboard/person-red.png");
+                $(".name-status").attr("src", "/assets/img/onboard/person-red.png");
             } else {
-                $(".name-status").attr("src", "assets/img/onboard/person-green.png");
+                $(".name-status").attr("src", "/assets/img/onboard/person-green.png");
             }
         });
 
@@ -40,14 +40,14 @@ export default Ember.Component.extend({
             if (!$("#stage-1-firstname").val()) {
                 $("#stage-1-firstname").focus();
                 $("#stage-1-firstname").addClass("error");
-                $(".name-status").attr("src", "assets/img/onboard/person-red.png");
+                $(".name-status").attr("src", "/assets/img/onboard/person-red.png");
                 return;
             }
 
             if (!$("#stage-1-lastname").val()) {
                 $("#stage-1-lastname").focus();
                 $("#stage-1-lastname").addClass("error");
-                $(".name-status").attr("src", "assets/img/onboard/person-red.png");
+                $(".name-status").attr("src", "/assets/img/onboard/person-red.png");
                 return;
             }
 
@@ -67,9 +67,9 @@ export default Ember.Component.extend({
                 $("#stage-2-password-confirm").keyup(function() {
                     if ($("#stage-2-password").val().length < 6 || $("#stage-2-password").val().length > 50 ||
                         ($("#stage-2-password").val() !== $("#stage-2-password-confirm").val())) {
-                        $(".password-status").attr("src", "assets/img/onboard/lock-red.png");
+                        $(".password-status").attr("src", "/assets/img/onboard/lock-red.png");
                     } else {
-                        $(".password-status").attr("src", "assets/img/onboard/lock-green.png");
+                        $(".password-status").attr("src", "/assets/img/onboard/lock-green.png");
                     }
                 });
             });
@@ -91,7 +91,7 @@ export default Ember.Component.extend({
 
             if ($("#stage-2-password-confirm").val() !== $("#stage-2-password").val()) {
                 $(".mismatch").show();
-                $(".password-status").attr("src", "assets/img/onboard/lock-red.png");
+                $(".password-status").attr("src", "/assets/img/onboard/lock-red.png");
                 return;
             }
 
