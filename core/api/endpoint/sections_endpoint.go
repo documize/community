@@ -18,8 +18,8 @@ import (
 	"github.com/documize/community/core/api/entity"
 	"github.com/documize/community/core/api/request"
 	"github.com/documize/community/core/api/util"
-	"github.com/documize/community/core/section/provider"
 	"github.com/documize/community/core/log"
+	"github.com/documize/community/core/section/provider"
 )
 
 // GetSections returns available smart sections.

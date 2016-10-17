@@ -1,11 +1,11 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
@@ -18,7 +18,7 @@ import (
 )
 
 func TestWords(t *testing.T) {
-	ws(t, " the quick brown fox jumps over the lazy dog [ ] [" +string(rune(0x200B)), 0, true,
+	ws(t, " the quick brown fox jumps over the lazy dog [ ] ["+string(rune(0x200B)), 0, true,
 		"the quick brown fox jumps over the lazy dog [ [", 1)
 	ws(t, "the quick brown [ dog jumps over the lazy ] fox", 0, false,
 		"the quick brown [ fox .", 0)
