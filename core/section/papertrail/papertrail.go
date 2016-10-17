@@ -21,8 +21,8 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/documize/community/core/section/provider"
 	"github.com/documize/community/core/log"
+	"github.com/documize/community/core/section/provider"
 )
 
 const me = "papertrail"
