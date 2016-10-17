@@ -55,7 +55,7 @@ func TestConvertFileResult(t *testing.T) {
 	}
 	rj := "Romeo & Juliet"
 	doc = ConvertFileResult(fn, &api.DocumentConversionResponse{
-		Pages: []api.Page{api.Page{Title: rj}},
+		Pages: []api.Page{{Title: rj}},
 	})
 	if doc.Title != rj || doc.Slug != "romeo-juliet" {
 		t.Error("title not passed through correctly")
