@@ -18,6 +18,7 @@ import (
 	"github.com/documize/community/core/api/util"
 )
 
+// SetupPersister prepares context for database activity.
 func SetupPersister() (*Persister, error) {
 	var err error
 	c := Context{
@@ -40,6 +41,7 @@ func SetupPersister() (*Persister, error) {
 	return p, err
 }
 
+// SetupOrganization creates "tenant" record in database.
 func (p *Persister) SetupOrganization(company, title, message, domain, email string) (entity.Organization, error) {
 	org := entity.Organization{
 		BaseEntity: entity.BaseEntity{RefID: p.Context.OrgID},

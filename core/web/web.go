@@ -98,6 +98,7 @@ func Asset(location string) ([]byte, error) {
 	return Embed.Asset(location)
 }
 
+// AssetDir returns web app "assets" folder.
 func AssetDir(dir string) ([]string, error) {
 	return Embed.AssetDir(dir)
 }

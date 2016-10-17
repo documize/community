@@ -19,6 +19,7 @@ import (
 	"github.com/documize/community/core/log"
 )
 
+// WritePayloadError error handling
 func WritePayloadError(w http.ResponseWriter, method string, err error) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusBadRequest)
@@ -27,6 +28,7 @@ func WritePayloadError(w http.ResponseWriter, method string, err error) {
 	log.Error(fmt.Sprintf("Unable to decode HTML request body for method %s", method), err)
 }
 
+// WriteTransactionError error handling
 func WriteTransactionError(w http.ResponseWriter, method string, err error) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusInternalServerError)
@@ -35,6 +37,7 @@ func WriteTransactionError(w http.ResponseWriter, method string, err error) {
 	log.Error(fmt.Sprintf("Unable to get database transaction  for method %s", method), err)
 }
 
+// WriteMissingDataError error handling
 func WriteMissingDataError(w http.ResponseWriter, method, parameter string) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusBadRequest)
@@ -43,6 +46,7 @@ func WriteMissingDataError(w http.ResponseWriter, method, parameter string) {
 	log.Info(fmt.Sprintf("Missing data %s for method %s", parameter, method))
 }
 
+// WriteNotFoundError error handling
 func WriteNotFoundError(w http.ResponseWriter, method string, id string) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusNotFound)
@@ -51,6 +55,7 @@ func WriteNotFoundError(w http.ResponseWriter, method string, id string) {
 	log.Info(fmt.Sprintf("Not found ID %s for method %s", id, method))
 }
 
+// WriteGeneralSQLError error handling
 func WriteGeneralSQLError(w http.ResponseWriter, method string, err error) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusBadRequest)
@@ -59,6 +64,7 @@ func WriteGeneralSQLError(w http.ResponseWriter, method string, err error) {
 	log.Error(fmt.Sprintf("General SQL error for method %s", method), err)
 }
 
+// WriteJSONMarshalError error handling
 func WriteJSONMarshalError(w http.ResponseWriter, method, entity string, err error) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusBadRequest)
@@ -67,6 +73,7 @@ func WriteJSONMarshalError(w http.ResponseWriter, method, entity string, err err
 	log.Error(fmt.Sprintf("Failed to JSON marshal %s for method %s", entity, method), err)
 }
 
+// WriteServerError error handling
 func WriteServerError(w http.ResponseWriter, method string, err error) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusBadRequest)
@@ -75,6 +82,7 @@ func WriteServerError(w http.ResponseWriter, method string, err error) {
 	log.Error(fmt.Sprintf("Internal server error for method %s", method), err)
 }
 
+// WriteDuplicateError error handling
 func WriteDuplicateError(w http.ResponseWriter, method, entity string) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusConflict)
@@ -83,6 +91,7 @@ func WriteDuplicateError(w http.ResponseWriter, method, entity string) {
 	log.Info(fmt.Sprintf("Duplicate %s record detected for method %s", entity, method))
 }
 
+// WriteUnauthorizedError error handling
 func WriteUnauthorizedError(w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusUnauthorized)
@@ -90,6 +99,7 @@ func WriteUnauthorizedError(w http.ResponseWriter) {
 	log.IfErr(err)
 }
 
+// WriteForbiddenError error handling
 func WriteForbiddenError(w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusForbidden)
@@ -97,6 +107,7 @@ func WriteForbiddenError(w http.ResponseWriter) {
 	log.IfErr(err)
 }
 
+// WriteBadRequestError error handling
 func WriteBadRequestError(w http.ResponseWriter, method, message string) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusBadRequest)
@@ -105,6 +116,7 @@ func WriteBadRequestError(w http.ResponseWriter, method, message string) {
 	log.Info(fmt.Sprintf("Bad Request %s for method %s", message, method))
 }
 
+// WriteSuccessBytes dumps bytes to HTTP response
 func WriteSuccessBytes(w http.ResponseWriter, data []byte) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
@@ -112,6 +124,7 @@ func WriteSuccessBytes(w http.ResponseWriter, data []byte) {
 	log.IfErr(err)
 }
 
+// WriteSuccessString writes string to HTTP response
 func WriteSuccessString(w http.ResponseWriter, data string) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
@@ -119,6 +132,7 @@ func WriteSuccessString(w http.ResponseWriter, data string) {
 	log.IfErr(err)
 }
 
+// WriteSuccessEmptyJSON writes empty JSON HTTP response
 func WriteSuccessEmptyJSON(w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
@@ -126,6 +140,7 @@ func WriteSuccessEmptyJSON(w http.ResponseWriter) {
 	log.IfErr(err)
 }
 
+// WriteMarshalError error handling
 func WriteMarshalError(w http.ResponseWriter, err error) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusBadRequest)

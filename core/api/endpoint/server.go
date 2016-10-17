@@ -28,6 +28,8 @@ import (
 )
 
 var port, certFile, keyFile, forcePort2SSL string
+
+// Product details app edition and version
 var Product core.ProdInfo
 
 func init() {
