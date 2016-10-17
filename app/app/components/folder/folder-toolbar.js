@@ -44,7 +44,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
         this.set('movedFolderOptions', targets);
     },
 
-    didRender() {
+	didRender() {
         if (this.get('hasSelectedDocuments')) {
             this.addTooltip(document.getElementById("move-documents-button"));
             this.addTooltip(document.getElementById("delete-documents-button"));
@@ -57,52 +57,14 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 				this.addTooltip(document.getElementById("import-document-button"));
             }
         }
-    
-        if (this.get('folderService').get('canEditCurrentFolder')) {
-			let self = this;
-			let folderId = this.get('folder.id');
-			let url = this.get('appMeta.endpoint');
-			let importUrl = `${url}/import/folder/${folderId}`;
+	},
 
-			let dzone = new Dropzone("#import-document-button > i", {
-				headers: {
-					'Authorization': 'Bearer ' + self.get('session.session.content.authenticated.token')
-				},
-				url: importUrl,
-				method: "post",
-				paramName: 'attachment',
-				acceptedFiles: ".doc,.docx,.txt,.md,.markdown",
-				clickable: true,
-				maxFilesize: 10,
-				parallelUploads: 3,
-				uploadMultiple: false,
-				addRemoveLinks: false,
-				autoProcessQueue: true,
+	didUpdate() {
+		this.setupImport();
+	},
 
-				init: function () {
-					this.on("success", function (document) {
-						self.send('onDocumentImported', document.name, document);
-					});
-
-					this.on("error", function (x) {
-						console.log("Conversion failed for ", x.name, " obj ", x); // TODO proper error handling
-					});
-
-					this.on("queuecomplete", function () {});
-
-					this.on("addedfile", function (file) {
-						self.send('onDocumentImporting', file.name);
-						self.audit.record('converted-document');
-					});
-				}
-			});
-
-			dzone.on("complete", function (file) {
-				dzone.removeFile(file);
-			});
-
-			this.set('drop', dzone);
-		}
+	didInsertElement() {
+		// this.setupImport();
 	},
 
     willDestroyElement() {
@@ -113,6 +75,65 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
         this.destroyTooltips();
     },
+
+	setupImport() {
+		// guard against unecessary file upload component init
+		if (this.get('hasSelectedDocuments') || !this.get('folderService').get('canEditCurrentFolder')) {
+			return;
+		}
+
+		// already done init?
+		if (is.not.null(this.get('drop'))) {
+			if (is.not.null(this.get('drop'))) {
+				this.get('drop').destroy();
+				this.set('drop', null);
+			}
+		}
+
+		let self = this;
+		let folderId = this.get('folder.id');
+		let url = this.get('appMeta.endpoint');
+		let importUrl = `${url}/import/folder/${folderId}`;
+
+		let dzone = new Dropzone("#import-document-button > i", {
+			headers: {
+				'Authorization': 'Bearer ' + self.get('session.session.content.authenticated.token')
+			},
+			url: importUrl,
+			method: "post",
+			paramName: 'attachment',
+			acceptedFiles: ".doc,.docx,.txt,.md,.markdown",
+			clickable: true,
+			maxFilesize: 10,
+			parallelUploads: 3,
+			uploadMultiple: false,
+			addRemoveLinks: false,
+			autoProcessQueue: true,
+
+			init: function () {
+				this.on("success", function (document) {
+					self.send('onDocumentImported', document.name, document);
+				});
+
+				this.on("error", function (x) {
+					console.log("Conversion failed for ", x.name, " obj ", x); // TODO proper error handling
+				});
+
+				this.on("queuecomplete", function () {});
+
+				this.on("addedfile", function (file) {
+					self.send('onDocumentImporting', file.name);
+					self.audit.record('converted-document');
+				});
+			}
+		});
+
+		dzone.on("complete", function (file) {
+			dzone.removeFile(file);
+		});
+
+		this.set('drop', dzone);
+	},
 
     actions: {
         onDocumentImporting(filename) {

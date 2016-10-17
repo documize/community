@@ -47,6 +47,10 @@ export default Ember.Component.extend({
 		// TODO: refactor to eliminate self
 		let self = this;
 
+		if (is.null(self.get('target'))) {
+			return;
+		}
+
 		let drop = this.get('tether').createDrop({
 			target: document.getElementById(self.get('target')),
 			content: self.$(".dropdown-dialog")[0],

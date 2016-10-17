@@ -1,7 +1,7 @@
 <div class="document-view">
-	
+
 	<div class="wysiwyg">
-		<h1>{{document.name}}</h1>
+		<h1 class="doc-name">{{document.name}}</h1>
 	</div>
 
 	{{#if document.template}}
@@ -64,11 +64,12 @@
 {{#if noSections}}
     <div class="no-sections">
         <div class="box">
-            <div class="regular-button button-green">
-                <i class="material-icons">add</i>
-				<div class="name">section</div>
-            </div>
-            <div class="message">Add a new section to this document</div>
+            <div class="message">Click the
+				<div class="round-button-mono">
+			        <i class="material-icons color-gray">add</i>
+					<div class="name">section</div>
+			    </div>
+				 to add a new section to this document</div>
         </div>
     </div>
 {{/if}}

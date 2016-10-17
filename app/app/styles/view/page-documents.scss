@@ -174,20 +174,24 @@
 }
 
 .no-documents {
-	margin-top: 50px;
+	margin-top: 150px;
 	text-align: center;
-	opacity: 0.4;
+	opacity: 0.5;
+	background-image: url("/assets/img/no-documents.png");
+	background-repeat: no-repeat;
+	background-position: center; 
 
 	> .box {
-		padding: 35px;
-		width: 300px;
-		display: inline-block;
-		margin: 0 20px;
+		max-width: 400px;
+    	margin: 0 auto;
+    	border: 1px dashed #b3adad;
+    	padding: 20px;
 
 		> .message {
 			font-size: 14px;
 			color: $color-off-black;
 			margin-top: 20px;
+			line-height: 50px;
 		}
 
 		> .regular-button {
