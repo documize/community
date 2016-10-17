@@ -1,11 +1,11 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
@@ -14,7 +14,7 @@ package store
 import (
 	"github.com/documize/community/core/api/plugins"
 	"github.com/documize/community/core/api/util"
-api	"github.com/documize/community/core/convapi"
+	api "github.com/documize/community/core/convapi"
 	"github.com/documize/community/core/log"
 	"io/ioutil"
 	"os"
