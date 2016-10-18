@@ -2,12 +2,17 @@
 
 <div class="templates-list">
 	<ul class="list">
-		{{#each savedTemplates key="id"as |template|}}
-			<li class="item" {{action 'startDocument' template}}>
+		{{#each savedTemplates key="id" as |template|}}
+			<li class="item">
 				<div class="icon">
 					<img class="img" src="/assets/img/{{template.img}}.png" srcset="/assets/img/{{template.img}}@2x.png" />
+					{{#if editor}}
+						{{#unless template.locked}}
+							<div class="edit-control" {{action 'editTemplate' template}}>edit</div>
+						{{/unless}}
+					{{/if}}
 				</div>
-				<div class="details">
+				<div class="details" {{action 'startDocument' template}}>
 					<div class='title'>
 						{{template.title}}
 					</div>

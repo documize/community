@@ -179,7 +179,7 @@
 	opacity: 0.5;
 	background-image: url("/assets/img/no-documents.png");
 	background-repeat: no-repeat;
-	background-position: center; 
+	background-position: center;
 
 	> .box {
 		max-width: 400px;
@@ -209,24 +209,9 @@
 
 		> .item {
 			list-style: none;
-			cursor: pointer;
 			padding: 10px 5px;
-			margin: 5px 0;
+			margin: 20px 0;
 			@include ease-in();
-
-			&:hover {
-				@include ease-in();
-
-				> .details {
-					> .title {
-						color: $color-primary;
-					}
-
-					> .desc {
-						color: $color-primary;
-					}
-				}
-		    }
 
 			.icon {
 				text-align: center;
@@ -240,12 +225,26 @@
 					height: 40px;
 					width: 40px;
 				}
+
+				> .edit-control {
+					color: $color-gray;
+					font-size: 0.9rem;
+					text-align: center;
+					float: left;
+				    margin: 5px 0 0 9px;
+					cursor: pointer;
+
+					&:hover {
+						color: $color-link;
+					}
+				}
 			}
 
 			> .details {
 				vertical-align: top;
 				display: inline-block;
 				width: 80%;
+				cursor: pointer;
 
 				> .title {
 					font-size: 1rem;
@@ -255,10 +254,16 @@
 				}
 
 				> .desc {
-					color: $color-gray;
+					color: $color-off-black;
 					font-size: 0.9rem;
 					margin-top: 5px;
 				}
+
+				&:hover {
+					> .title, > .desc {
+						color: $color-link !important;
+					}
+			    }
 			}
 		}
 	}
