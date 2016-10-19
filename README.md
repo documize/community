@@ -4,7 +4,7 @@ Modern Wiki + Docs integrating data from SaaS tools.
 
 ![Alt text](screenshot.png "Documize")
 
-**Don’t write documents. Compose them.**
+The mission is to bring software dev inspired features (refactoring, testing, linting, metrics, PRs) to those poor souls stuck writing docs in the dark ages.
 
 ## Latest version
 
