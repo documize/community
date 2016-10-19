@@ -1,6 +1,8 @@
 # Documize Community Edition
 
-Documentation that integrates and snapshots data from the tools you use.
+Modern Wiki + Docs integrating data from SaaS tools.
+
+![Alt text](screenshot.png "Documize")
 
 **Don’t write documents. Compose them.**
 
@@ -16,7 +18,7 @@ v0.15.0
 
 ## Tech stack
 
-* EmberJS v2.5.1
+* EmberJS v2.8.1
 * Go v1.6.2
 * MySQL v5.7.10+
 
@@ -25,10 +27,6 @@ v0.15.0
 * [Install from binary guide](https://developers.documize.com/s/VzO9ZqMOCgABGyfW/installation/d/V16L08ucxwABhZF6/install-documize-from-binary-guide)
 * [Install for development guide](https://developers.documize.com/s/VzO9ZqMOCgABGyfW/installation/d/V16LOMucxwABhZF1/install-documize-for-development-guide)
 * [Configuration guide](https://developers.documize.com/s/VzO9ZqMOCgABGyfW/installation/d/VzSL8cVZ4QAB2B4Y/configure-documize-guide)
-
-## Screenshot
-
-![Alt text](screenshot.png "Documize")
 
 ## Auth0 Integration
 
