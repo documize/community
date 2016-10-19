@@ -8,6 +8,9 @@
 				{{#link-to 'customize.general' activeClass='selected' class="option" tagName="li"}}General{{/link-to}}
 				{{#link-to 'customize.folders' activeClass='selected' class="option" tagName="li"}}Spaces{{/link-to}}
 				{{#link-to 'customize.users' activeClass='selected' class="option" tagName="li"}}Users{{/link-to}}
+				{{#if session.isGlobalAdmin}}
+					{{#link-to 'customize.global' activeClass='selected' class="option" tagName="li"}}Global{{/link-to}}
+				{{/if}}
 			</ul>
 		</div>
 	{{/layout/zone-sidebar}}

@@ -22,6 +22,7 @@ export default Model.extend({
 	active: attr('boolean', { defaultValue: false }),
 	editor: attr('boolean', { defaultValue: false }),
 	admin: attr('boolean', { defaultValue: false }),
+	global: attr('boolean', { defaultValue: false }),
 	accounts: attr(),
 	created: attr(),
 	revised: attr(),

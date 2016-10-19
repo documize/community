@@ -45,6 +45,7 @@ type User struct {
 	Active    bool      `json:"active"`
 	Editor    bool      `json:"editor"`
 	Admin     bool      `json:"admin"`
+	Global    bool      `json:"global"`
 	Password  string    `json:"-"`
 	Salt      string    `json:"-"`
 	Reset     string    `json:"-"`

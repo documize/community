@@ -164,7 +164,7 @@ func setupAccount(completion onboardRequest, serial string) (err error) {
 
 	userID := util.UniqueID()
 
-	sql = fmt.Sprintf("insert into user (refid, firstname, lastname, email, initials, salt, password) values (\"%s\",\"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\")",
+	sql = fmt.Sprintf("insert into user (refid, firstname, lastname, email, initials, salt, password, global) values (\"%s\",\"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", 1)",
 		userID, completion.Firstname, completion.Lastname, completion.Email, utility.MakeInitials(completion.Firstname, completion.Lastname), salt, password)
 	_, err = runSQL(sql)
 

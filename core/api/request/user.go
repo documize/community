@@ -55,7 +55,7 @@ func (p *Persister) AddUser(user entity.User) (err error) {
 
 // GetUser returns the user record for the given id.
 func (p *Persister) GetUser(id string) (user entity.User, err error) {
-	stmt, err := Db.Preparex("SELECT id, refid, firstname, lastname, email, initials, password, salt, reset, active, created, revised FROM user WHERE refid=?")
+	stmt, err := Db.Preparex("SELECT id, refid, firstname, lastname, email, initials, global, password, salt, reset, active, created, revised FROM user WHERE refid=?")
 	defer utility.Close(stmt)
 
 	if err != nil {
@@ -77,7 +77,7 @@ func (p *Persister) GetUser(id string) (user entity.User, err error) {
 func (p *Persister) GetUserByEmail(email string) (user entity.User, err error) {
 	email = strings.TrimSpace(strings.ToLower(email))
 
-	stmt, err := Db.Preparex("SELECT id, refid, firstname, lastname, email, initials, password, salt, reset, active, created, revised FROM user WHERE TRIM(LOWER(email))=?")
+	stmt, err := Db.Preparex("SELECT id, refid, firstname, lastname, email, initials, global, password, salt, reset, active, created, revised FROM user WHERE TRIM(LOWER(email))=?")
 	defer utility.Close(stmt)
 
 	if err != nil {
@@ -99,7 +99,7 @@ func (p *Persister) GetUserByEmail(email string) (user entity.User, err error) {
 func (p *Persister) GetUserByDomain(domain, email string) (user entity.User, err error) {
 	email = strings.TrimSpace(strings.ToLower(email))
 
-	stmt, err := Db.Preparex("SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.password, u.salt, u.reset, u.active, u.created, u.revised FROM user u, account a, organization o WHERE TRIM(LOWER(u.email))=? AND u.refid=a.userid AND a.orgid=o.refid AND TRIM(LOWER(o.domain))=?")
+	stmt, err := Db.Preparex("SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.global, u.password, u.salt, u.reset, u.active, u.created, u.revised FROM user u, account a, organization o WHERE TRIM(LOWER(u.email))=? AND u.refid=a.userid AND a.orgid=o.refid AND TRIM(LOWER(o.domain))=?")
 	defer utility.Close(stmt)
 
 	if err != nil {
@@ -119,7 +119,7 @@ func (p *Persister) GetUserByDomain(domain, email string) (user entity.User, err
 
 // GetUserByToken returns a user record given a reset token value.
 func (p *Persister) GetUserByToken(token string) (user entity.User, err error) {
-	stmt, err := Db.Preparex("SELECT  id, refid, firstname, lastname, email, initials, password, salt, reset, active, created, revised FROM user WHERE reset=?")
+	stmt, err := Db.Preparex("SELECT  id, refid, firstname, lastname, email, initials, global, password, salt, reset, active, created, revised FROM user WHERE reset=?")
 	defer utility.Close(stmt)
 
 	if err != nil {
@@ -141,7 +141,7 @@ func (p *Persister) GetUserByToken(token string) (user entity.User, err error) {
 // This occurs when we you share a folder with a new user and they have to complete
 // the onboarding process.
 func (p *Persister) GetUserBySerial(serial string) (user entity.User, err error) {
-	stmt, err := Db.Preparex("SELECT id, refid, firstname, lastname, email, initials, password, salt, reset, active, created, revised FROM user WHERE salt=?")
+	stmt, err := Db.Preparex("SELECT id, refid, firstname, lastname, email, initials, global, password, salt, reset, active, created, revised FROM user WHERE salt=?")
 	defer utility.Close(stmt)
 
 	if err != nil {

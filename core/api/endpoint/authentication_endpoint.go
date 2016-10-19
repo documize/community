@@ -199,6 +199,7 @@ func Authorize(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 		context.OrgName = org.Title
 		context.Administrator = false
 		context.Editor = false
+		context.Global = false
 
 		// Fetch user permissions for this org
 		if context.Authenticated {
@@ -211,6 +212,7 @@ func Authorize(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 
 			context.Administrator = user.Admin
 			context.Editor = user.Editor
+			context.Global = user.Global
 		}
 
 		request.SetContext(r, context)

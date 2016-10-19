@@ -212,6 +212,10 @@ func init() {
 	log.IfErr(Add(RoutePrefixPrivate, "sections", []string{"POST", "OPTIONS"}, nil, RunSectionCommand))
 	log.IfErr(Add(RoutePrefixPrivate, "sections/refresh", []string{"GET", "OPTIONS"}, nil, RefreshSections))
 
+	// Global installation-wide config
+	log.IfErr(Add(RoutePrefixPrivate, "global", []string{"GET", "OPTIONS"}, nil, GetGlobalConfig))
+	log.IfErr(Add(RoutePrefixPrivate, "global", []string{"PUT", "OPTIONS"}, nil, SaveGlobalConfig))
+
 	// **** configure single page app handler.
 
 	log.IfErr(Add(RoutePrefixRoot, "robots.txt", []string{"GET", "OPTIONS"}, nil, GetRobots))
