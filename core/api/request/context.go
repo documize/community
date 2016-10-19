@@ -32,6 +32,7 @@ type Context struct {
 	Administrator        bool
 	Guest                bool
 	Editor               bool
+	Global               bool
 	UserID               string
 	OrgID                string
 	OrgName              string

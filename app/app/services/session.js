@@ -35,6 +35,10 @@ export default SimpleAuthSession.extend({
 		let data = this.get('user');
 		return data.get('editor');
 	}),
+	isGlobalAdmin: computed('user', function () {
+		let data = this.get('user');
+		return data.get('global');
+	}),
 
 	init: function () {
 		this.set('isMac', is.mac());

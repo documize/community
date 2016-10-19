@@ -18,24 +18,24 @@ const {
 } = Ember;
 
 export default Ember.Component.extend({
-	titleEmpty: computed.empty('model.title'),
-	messageEmpty: computed.empty('model.message'),
+	titleEmpty: computed.empty('model.general.title'),
+	messageEmpty: computed.empty('model.general.message'),
 	hasTitleInputError: computed.and('titleEmpty', 'titleError'),
 	hasMessageInputError: computed.and('messageEmpty', 'messageError'),
 
 	actions: {
 		save() {
-			if (isEmpty(this.get('model.title'))) {
+			if (isEmpty(this.get('model.general.title'))) {
 				set(this, 'titleError', true);
 				return $("#siteTitle").focus();
 			}
 
-			if (isEmpty(this.get('model.message'))) {
+			if (isEmpty(this.get('model.general.message'))) {
 				set(this, 'messageError', true);
 				return $("#siteMessage").focus();
 			}
 
-			this.model.set('allowAnonymousAccess', Ember.$("#allowAnonymousAccess").prop('checked'));
+			this.model.general.set('allowAnonymousAccess', Ember.$("#allowAnonymousAccess").prop('checked'));
 			this.get('save')().then(() => {
 				set(this, 'titleError', false);
 				set(this, 'messageError', false);
