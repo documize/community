@@ -1,0 +1,18 @@
+/* community edition */
+DROP TABLE IF EXISTS `link`;
+
+CREATE TABLE IF NOT EXISTS `link` (
+	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	`refid` CHAR(16) NOT NULL COLLATE utf8_bin,
+	`orgid` CHAR(16) NOT NULL COLLATE utf8_bin,
+	`sourceid` CHAR(16) NOT NULL COLLATE utf8_bin,
+	`documentid` CHAR(16) NOT NULL COLLATE utf8_bin,
+	`sectionid` CHAR(16) DEFAULT '' COLLATE utf8_bin,
+	`userid` CHAR(16) DEFAULT '' COLLATE utf8_bin,
+	`linktype` CHAR(16) NOT NULL COLLATE utf8_bin,
+	`orphan` BOOL NOT NULL DEFAULT 0,
+	`created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	`revised` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	CONSTRAINT pk_id PRIMARY KEY (id))
+DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci
+ENGINE =  InnoDB;

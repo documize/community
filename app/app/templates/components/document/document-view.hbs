@@ -20,7 +20,7 @@
 				{{#each attachments key="id" as |a index|}}
 					<li class="item">
 						<img class="icon" src="/assets/img/attachments/{{document/file-icon a.extension}}" />
-						<a href="{{ appMeta.endpoint }}/public/attachments/{{ appMeta.orgId }}/{{ a.job }}/{{ a.fileId }}">
+						<a href="{{ appMeta.endpoint }}/public/attachments/{{ appMeta.orgId }}/{{ a.id }}">
 							<span class="file">{{ a.filename }}</span>
 						</a>
 						{{#if isEditor}}
@@ -34,42 +34,41 @@
 		</div>
 	{{/if}}
 
-    <div class="pages">
-        {{#each pages key="id" as |page index|}}
-            <div class="wysiwyg">
-                <div id="page-{{ page.id }}" class="is-a-page" data-id="{{ page.id }}" data-type="{{ page.contentType }}">
-                    {{document/page-heading tagName=page.tagName document=document folder=folder page=page isEditor=isEditor onDeletePage=(action 'onDeletePage')}}
-					{{section/base-renderer page=page}}
-                </div>
-            </div>
-        {{/each}}
-    </div>
+	<div class="pages">
+		{{#each pages key="id" as |page index|}}
+			<div class="wysiwyg">
+				<div id="page-{{ page.id }}" class="is-a-page" data-id="{{ page.id }}" data-type="{{ page.contentType }}">
+					{{document/page-heading tagName=page.tagName document=document folder=folder page=page isEditor=isEditor onDeletePage=(action 'onDeletePage')}} {{section/base-renderer page=page}}
+				</div>
+			</div>
+		{{/each}}
+	</div>
 
-    <div class="dropdown-dialog delete-attachment-dialog">
-        <div class="content">
-            <p>Are you sure you want to delete <span class="bold">{{deleteAttachment.name}}?</span></p>
-        </div>
-        <div class="actions">
-            <div class="flat-button" {{action 'cancel'}}>
-                cancel
-            </div>
-            <div class="flat-button flat-red" {{action 'deleteAttachment'}}>
-                delete
-            </div>
-        </div>
-        <div class="clearfix"></div>
-    </div>
+	<div class="dropdown-dialog delete-attachment-dialog">
+		<div class="content">
+			<p>Are you sure you want to delete <span class="bold">{{deleteAttachment.name}}?</span></p>
+		</div>
+		<div class="actions">
+			<div class="flat-button" {{action 'cancel'}}>
+				cancel
+			</div>
+			<div class="flat-button flat-red" {{action 'deleteAttachment'}}>
+				delete
+			</div>
+		</div>
+		<div class="clearfix"></div>
+	</div>
 </div>
 
 {{#if noSections}}
-    <div class="no-sections">
-        <div class="box">
-            <div class="message">Click the
+	<div class="no-sections">
+		<div class="box">
+			<div class="message">Click the
 				<div class="round-button-mono">
-			        <i class="material-icons color-gray">add</i>
+					<i class="material-icons color-gray">add</i>
 					<div class="name">section</div>
-			    </div>
-				 to add a new section to this document</div>
-        </div>
-    </div>
+				</div>
+				to add a new section to this document</div>
+		</div>
+	</div>
 {{/if}}

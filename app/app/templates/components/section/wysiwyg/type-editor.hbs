@@ -1,3 +1,10 @@
 {{#section/base-editor document=document folder=folder page=page isDirty=(action 'isDirty') onCancel=(action 'onCancel') onAction=(action 'onAction')}}
-	{{focus-textarea value=pageBody id="rich-text-editor" class="mousetrap"}}
+	<div class="{{if showSidebar 'width-70' 'width-100'}} pull-left">
+		{{focus-textarea value=pageBody id="rich-text-editor" class="mousetrap"}}
+	</div>
+
+	<div class="{{if showSidebar 'width-30' 'no-display'}} pull-left">
+		{{link/content-linker document=document folder=folder page=page linkName=linkName onInsertLink=(action 'onInsertLink')}}
+	</div>
+
 {{/section/base-editor}}

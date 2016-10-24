@@ -11,15 +11,24 @@
 
 import Ember from 'ember';
 
+const {
+	inject: { service }
+} = Ember;
+
 export default Ember.Component.extend({
-	pageBody: "",
 	appMeta: Ember.inject.service(),
+	link: service(),
+	pageBody: "",
+	drop: null,
+	showSidebar: false,
 
 	didReceiveAttrs() {
 		this.set('pageBody', this.get('meta.rawBody'));
 	},
 
 	didInsertElement() {
+		let self = this;
+
 		let options = {
 			selector: "#rich-text-editor",
 			relative_urls: false,
@@ -34,7 +43,7 @@ export default Ember.Component.extend({
 			image_advtab: true,
 			image_caption: true,
 			media_live_embeds: true,
-			fontsize_formats: "8pt 10pt 12pt 14pt 16pt 18pt 20pt 22pt 24pt 26pt 28pt 30pt 32pt 34pt 36pt",
+			fontsize_formats: "8px 10px 12px 14px 18px 24px 36px 40px 50px 60px",
 			formats: {
 				bold: {
 					inline: 'b'
@@ -48,29 +57,29 @@ export default Ember.Component.extend({
 				'advlist autolink lists link image charmap print preview hr anchor pagebreak',
 				'searchreplace wordcount visualblocks visualchars code codesample fullscreen',
 				'insertdatetime media nonbreaking save table directionality',
-				'emoticons template paste textcolor colorpicker textpattern imagetools'
+				'template paste textcolor colorpicker textpattern imagetools'
 			],
-			menu: {
-				edit: {
-					title: 'Edit',
-					items: 'undo redo | cut copy paste pastetext | selectall | searchreplace'
-				},
-				insert: {
-					title: 'Insert',
-					items: 'anchor link media | hr | charmap emoticons | blockquote'
-				},
-				format: {
-					title: 'Format',
-					items: 'bold italic underline strikethrough superscript subscript | formats fonts | removeformat'
-				},
-				table: {
-					title: 'Table',
-					items: 'inserttable tableprops deletetable | cell row column'
-				}
-			},
-			toolbar1: "formatselect fontselect fontsizeselect | bold italic underline | link unlink | image media | codesample | outdent indent | alignleft aligncenter alignright alignjustify | bullist numlist | forecolor backcolor",
+			menu: {},
+			menubar: false,
+			toolbar1: "bold italic underline strikethrough superscript subscript | outdent indent bullist numlist forecolor backcolor | alignleft aligncenter alignright alignjustify | link unlink | table image media | hr codesample",
+			toolbar2: "formatselect fontselect fontsizeselect | documizeLinkButton",
 			save_onsavecallback: function () {
 				Mousetrap.trigger('ctrl+s');
+			},
+			setup: function (editor) {
+				editor.addButton('documizeLinkButton', {
+					title: 'Insert Link',
+					icon: false,
+					image: '/favicon.ico',
+					onclick: function () {
+						let showSidebar = !self.get('showSidebar');
+						self.set('showSidebar', showSidebar);
+
+						if (showSidebar) {
+							self.send('showSidebar');
+						}
+					}
+				});
 			}
 		};
 
@@ -91,6 +100,16 @@ export default Ember.Component.extend({
 	},
 
 	actions: {
+		showSidebar() {
+			this.set('linkName', tinymce.activeEditor.selection.getContent());
+		},
+
+		onInsertLink(link) {
+			let linkHTML = this.get('link').buildLink(link);
+			tinymce.activeEditor.insertContent(linkHTML);
+			this.set('showSidebar', false);
+		},
+
 		isDirty() {
 			return is.not.undefined(tinymce) && is.not.undefined(tinymce.activeEditor) && tinymce.activeEditor.isDirty();
 		},
@@ -110,3 +129,7 @@ export default Ember.Component.extend({
 		}
 	}
 });
+
+// editor.insertContent('&nbsp;<b>It\'s my button!</b>&nbsp;');
+// Selects the first paragraph found
+// tinyMCE.activeEditor.selection.select(tinyMCE.activeEditor.dom.select('p')[0]);
