@@ -20,6 +20,7 @@ import (
 
 	"github.com/documize/community/core/api/endpoint/models"
 	"github.com/documize/community/core/api/entity"
+	"github.com/documize/community/core/api/util"
 	"github.com/documize/community/core/log"
 	"github.com/documize/community/core/utility"
 )
@@ -285,6 +286,27 @@ func (p *Persister) UpdatePage(page entity.Page, refID, userID string, skipRevis
 	//}
 	//}
 	//}
+
+	// fimnd any content links
+	links := util.GetContentLinks(page.Body)
+
+	// delete previous content links for this page
+	_, _ = p.DeleteSourceLinks(page.RefID)
+
+	// save latest content links for this page
+	for _, link := range links {
+		link.OrgID = p.Context.OrgID
+		link.UserID = p.Context.UserID
+		link.SourceID = page.RefID
+		link.Orphan = false
+
+		err := p.AddContentLink(link)
+
+		if err != nil {
+			log.Error(fmt.Sprintf("Unable to insert content links for page %s", page.RefID), err)
+			return err
+		}
+	}
 
 	p.Base.Audit(p.Context, "update-page", page.DocumentID, page.RefID)
 

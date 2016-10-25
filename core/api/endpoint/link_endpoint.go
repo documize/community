@@ -69,7 +69,7 @@ func GetLinkCandidates(w http.ResponseWriter, r *http.Request) {
 			c := entity.LinkCandidate{
 				RefID:      util.UniqueID(),
 				DocumentID: documentID,
-				PageID:     p.RefID,
+				TargetID:   p.RefID,
 				LinkType:   "section",
 				Title:      p.Title,
 			}
@@ -94,12 +94,12 @@ func GetLinkCandidates(w http.ResponseWriter, r *http.Request) {
 
 	for _, f := range files {
 		c := entity.LinkCandidate{
-			RefID:               util.UniqueID(),
-			DocumentID:          documentID,
-			AttachmentID:        f.RefID,
-			LinkType:            "file",
-			Title:               f.Filename,
-			AttachmentExtension: f.Extension,
+			RefID:      util.UniqueID(),
+			DocumentID: documentID,
+			TargetID:   f.RefID,
+			LinkType:   "file",
+			Title:      f.Filename,
+			Context:    f.Extension,
 		}
 
 		fc = append(fc, c)

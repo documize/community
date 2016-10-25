@@ -20,14 +20,14 @@ import (
 	"github.com/documize/community/core/utility"
 )
 
-// AddLink inserts wiki-link into the store.
+// AddContentLink inserts wiki-link into the store.
 // These links exist when content references another document or content.
-func (p *Persister) AddLink(l entity.Link) (err error) {
+func (p *Persister) AddContentLink(l entity.Link) (err error) {
 	l.UserID = p.Context.UserID
 	l.Created = time.Now().UTC()
 	l.Revised = time.Now().UTC()
 
-	stmt, err := p.Context.Transaction.Preparex("INSERT INTO link (refid, orgid, userid, sourceid, documentid, pageid, linktype, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
+	stmt, err := p.Context.Transaction.Preparex("INSERT INTO link (refid, orgid, userid, sourceid, documentid, targetid, linktype, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
 	defer utility.Close(stmt)
 
 	if err != nil {
@@ -35,7 +35,7 @@ func (p *Persister) AddLink(l entity.Link) (err error) {
 		return
 	}
 
-	_, err = stmt.Exec(l.RefID, l.OrgID, l.UserID, l.SourceID, l.DocumentID, l.PageID, l.LinkType, l.Created, l.Revised)
+	_, err = stmt.Exec(l.RefID, l.OrgID, l.UserID, l.SourceID, l.DocumentID, l.TargetID, l.LinkType, l.Created, l.Revised)
 
 	if err != nil {
 		log.Error("Unable to execute insert for link", err)
@@ -49,7 +49,7 @@ func (p *Persister) AddLink(l entity.Link) (err error) {
 func (p *Persister) GetReferencedLinks(sectionID string) (links []entity.Link, err error) {
 	err = nil
 
-	sql := "SELECT id,refid,orgid,userid,sourceid,documentid,sectionid,linktype,orphan,created,revised from link WHERE orgid=? AND sourceid=?"
+	sql := "SELECT id,refid,orgid,userid,sourceid,documentid,targetid,linktype,orphan,created,revised from link WHERE orgid=? AND sourceid=?"
 
 	err = Db.Select(&links, sql, p.Context.OrgID, sectionID)
 
@@ -61,11 +61,11 @@ func (p *Persister) GetReferencedLinks(sectionID string) (links []entity.Link, e
 	return
 }
 
-// GetLinksToSection returns all links that are linking to the specified section.
-func (p *Persister) GetLinksToSection(sectionID string) (links []entity.Link, err error) {
+// GetContentLinksForSection returns all links that are linking to the specified section.
+func (p *Persister) GetContentLinksForSection(sectionID string) (links []entity.Link, err error) {
 	err = nil
 
-	sql := "SELECT id,refid,orgid,userid,sourceid,documentid,sectionid,linktype,orphan,created,revised from link WHERE orgid=? AND sectionid=?"
+	sql := "SELECT id,refid,orgid,userid,sourceid,documentid,targetid,linktype,orphan,created,revised from link WHERE orgid=? AND sectionid=?"
 
 	err = Db.Select(&links, sql, p.Context.OrgID, sectionID)
 
@@ -77,11 +77,11 @@ func (p *Persister) GetLinksToSection(sectionID string) (links []entity.Link, er
 	return
 }
 
-// GetLinksToDocument returns all links that are linking to the specified document.
-func (p *Persister) GetLinksToDocument(documentID string) (links []entity.Link, err error) {
+// GetContentLinksForDocument returns all links that are linking to the specified document.
+func (p *Persister) GetContentLinksForDocument(documentID string) (links []entity.Link, err error) {
 	err = nil
 
-	sql := "SELECT id,refid,orgid,userid,sourceid,documentid,sectionid,linktype,orphan,created,revised from link WHERE orgid=? AND documentid=?"
+	sql := "SELECT id,refid,orgid,userid,sourceid,documentid,targetid,linktype,orphan,created,revised from link WHERE orgid=? AND documentid=?"
 
 	err = Db.Select(&links, sql, p.Context.OrgID, documentID)
 
@@ -93,8 +93,8 @@ func (p *Persister) GetLinksToDocument(documentID string) (links []entity.Link, 
 	return
 }
 
-// MarkLinkAsOrphan marks the link record as being invalid.
-func (p *Persister) MarkLinkAsOrphan(l entity.Link) (err error) {
+// MarkOrphanContentLink marks the link record as being invalid.
+func (p *Persister) MarkOrphanContentLink(l entity.Link) (err error) {
 	l.Orphan = true
 	l.Revised = time.Now().UTC()
 
@@ -116,50 +116,12 @@ func (p *Persister) MarkLinkAsOrphan(l entity.Link) (err error) {
 	return
 }
 
+// DeleteSourceLinks removes saved links for given source.
+func (p *Persister) DeleteSourceLinks(sourceID string) (rows int64, err error) {
+	return p.Base.DeleteWhere(p.Context.Transaction, fmt.Sprintf("DELETE FROM link WHERE orgid=\"%s\" AND sourceid=\"%s\"", p.Context.OrgID, sourceID))
+}
+
 // DeleteLink removes saved link from the store.
 func (p *Persister) DeleteLink(id string) (rows int64, err error) {
 	return p.Base.DeleteConstrained(p.Context.Transaction, "link", p.Context.OrgID, id)
 }
-
-// GetLinkCandidates returns matching results based upon specified parameters.
-// func (p *Persister) GetLinkCandidates(keywords string) (c []entity.LinkCandidate, err error) {
-// 	err = nil
-//
-// 	sql := "SELECT id,refid,orgid,userid,sourceid,documentid,sectionid,linktype,orphan,created,revised from link WHERE orgid=? AND sectionid=?"
-//
-// 	err = Db.Select(&links, sql, p.Context.OrgID, sectionID)
-//
-// 	if err != nil {
-// 		log.Error(fmt.Sprintf("Unable to execute select links for org %s", p.Context.OrgID), err)
-// 		return
-// 	}
-//
-// 	return
-// }
-//
-// package main
-//
-// import (
-// 	"fmt"
-// 	"regexp"
-// )
-//
-// var imgRE = regexp.MustCompile(`<a[^>]+\bhref=["']([^"']+)["']`)
-//
-// func findImages(htm string) []string {
-// 	imgs := imgRE.FindAllStringSubmatch(htm, -1)
-// 	out := make([]string, len(imgs))
-// 	for i := range out {
-// 		out[i] = imgs[i][1]
-// 	}
-// 	return out
-// }
-//
-// func main() {
-// 	fmt.Printf("%q", findImages(data))
-// }
-//
-// const data = `
-// <p>dfdfdf</p><a href="/link/section/34354"><x><z?>
-// <a czx zcxz href='/link/file/file.exe'><x><z?>
-// `

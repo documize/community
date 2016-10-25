@@ -28,7 +28,7 @@
 						{{#each candidates.attachments as |a|}}
 							<li class="link-item" {{ action 'setSelection' a }}>
 								{{#ui/ui-checkbox selected=a.selected}}
-									<img class="icon" src="/assets/img/attachments/{{document/file-icon a.attachmentExtension}}" />
+									<img class="icon" src="/assets/img/attachments/{{document/file-icon a.context}}" />
 									{{ a.title }}
 								{{/ui/ui-checkbox}}
 							</li>

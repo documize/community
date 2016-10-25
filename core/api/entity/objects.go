@@ -346,25 +346,21 @@ type SitemapDocument struct {
 // Link defines a reference between a section and another document/section/attachment.
 type Link struct {
 	BaseEntity
-	OrgID        string `json:"orgId"`
-	UserID       string `json:"userId"`
-	LinkType     string `json:"linkType"`
-	SourceID     string `json:"sourceId"`
-	DocumentID   string `json:"documentId"`
-	PageID       string `json:"pageId"`
-	AttachmentID string `json:"attachmentId"`
-	Orphan       bool   `json:"orphan"`
+	OrgID      string `json:"orgId"`
+	UserID     string `json:"userId"`
+	LinkType   string `json:"linkType"`
+	SourceID   string `json:"sourceId"`
+	DocumentID string `json:"documentId"`
+	TargetID   string `json:"targetId"`
+	Orphan     bool   `json:"orphan"`
 }
 
 // LinkCandidate defines a potential link to a document/section/attachment.
 type LinkCandidate struct {
-	RefID               string `json:"id"`
-	OrgID               string `json:"orgId"`
-	LinkType            string `json:"linkType"`
-	DocumentID          string `json:"documentId"`
-	PageID              string `json:"pageId"`
-	AttachmentID        string `json:"attachmentId"`
-	AttachmentExtension string `json:"attachmentExtension"`
-	Title               string `json:"title"`   // what we label the link
-	Context             string `json:"context"` // additional context (e.g. excerpt, parent)
+	RefID      string `json:"id"`
+	LinkType   string `json:"linkType"`
+	DocumentID string `json:"documentId"`
+	TargetID   string `json:"targetId"`
+	Title      string `json:"title"`   // what we label the link
+	Context    string `json:"context"` // additional context (e.g. excerpt, parent, file extension)
 }

@@ -115,7 +115,3 @@ export default Ember.Component.extend({
 		}
 	}
 });
-
-// editor.insertContent('&nbsp;<b>It\'s my button!</b>&nbsp;');
-// Selects the first paragraph found
-// tinyMCE.activeEditor.selection.select(tinyMCE.activeEditor.dom.select('p')[0]);
