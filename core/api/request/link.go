@@ -136,3 +136,30 @@ func (p *Persister) DeleteLink(id string) (rows int64, err error) {
 //
 // 	return
 // }
+//
+// package main
+//
+// import (
+// 	"fmt"
+// 	"regexp"
+// )
+//
+// var imgRE = regexp.MustCompile(`<a[^>]+\bhref=["']([^"']+)["']`)
+//
+// func findImages(htm string) []string {
+// 	imgs := imgRE.FindAllStringSubmatch(htm, -1)
+// 	out := make([]string, len(imgs))
+// 	for i := range out {
+// 		out[i] = imgs[i][1]
+// 	}
+// 	return out
+// }
+//
+// func main() {
+// 	fmt.Printf("%q", findImages(data))
+// }
+//
+// const data = `
+// <p>dfdfdf</p><a href="/link/section/34354"><x><z?>
+// <a czx zcxz href='/link/file/file.exe'><x><z?>
+// `

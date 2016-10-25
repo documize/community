@@ -8,14 +8,12 @@
 // by contacting <sales@documize.com>.
 //
 // https://documize.com
-
 @import "color.scss";
 @import "font.scss";
 @import "functions.scss";
 @import "base.scss";
 @import "widget/widget.scss";
 @import "view/layout.scss";
-@import "view/content-linker.scss";
 @import "view/page-search.scss";
 @import "view/page-documents.scss";
 @import "view/page-settings.scss";
@@ -27,11 +25,11 @@
 @import "view/document/wysiwyg.scss";
 @import "view/document/editor.scss";
 @import "view/document/wizard.scss";
+@import "view/document/edit-tools.scss";
 @import "view/common.scss";
 @import "vendor.scss";
 @import "responsive.scss";
 @import "print.scss";
-
 @import "section/trello.scss";
 @import "section/gemini.scss";
 @import "section/github.scss";

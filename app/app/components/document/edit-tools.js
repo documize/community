@@ -10,16 +10,18 @@
 // https://documize.com
 
 import Ember from 'ember';
+import TooltipMixin from '../../mixins/tooltip';
 
 const {
 	inject: { service }
 } = Ember;
 
-export default Ember.Component.extend({
+export default Ember.Component.extend(TooltipMixin, {
 	link: service(),
 	hasSections: false,
 	hasAttachments: false,
 	linkName: '',
+	keywords: '',
 	selection: null,
 
 	init() {
@@ -36,24 +38,37 @@ export default Ember.Component.extend({
 		});
 	},
 
-	didReceiveAttrs() {},
+	didRender() {
+		this.addTooltip(document.getElementById("content-linker-button"));
+	},
 
-	didInsertElement() {},
-
-	willDestroyElement() {},
+	willDestroyElement() {
+		this.destroyTooltips();
+	},
 
 	actions: {
+		setSelection(i) {
+			this.set('selection', i);
+
+			let candidates = this.get('candidates');
+
+			candidates.pages.forEach(c => {
+				Ember.set(c, 'selected', c.id === i.id);
+			});
+
+			candidates.attachments.forEach(c => {
+				Ember.set(c, 'selected', c.id === i.id);
+			});
+		},
+
 		onInsertLink() {
 			let selection = this.get('selection');
-			let linkName = this.get('linkName');
 
-			if (linkName.length) {
-				selection.title = linkName;
+			if (is.null(selection)) {
+				return;
 			}
 
-			if (is.not.null(selection)) {
-				this.get('onInsertLink')(selection);
-			}
+			return this.get('onInsertLink')(selection);
 		}
 	}
 });

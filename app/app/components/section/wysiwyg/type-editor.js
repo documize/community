@@ -19,25 +19,23 @@ export default Ember.Component.extend({
 	appMeta: Ember.inject.service(),
 	link: service(),
 	pageBody: "",
-	drop: null,
-	showSidebar: false,
 
 	didReceiveAttrs() {
 		this.set('pageBody', this.get('meta.rawBody'));
 	},
 
 	didInsertElement() {
-		let self = this;
+		let maxHeight = $(document).height() - $(".document-editor > .toolbar").height() - 200;
 
 		let options = {
 			selector: "#rich-text-editor",
 			relative_urls: false,
-			cache_suffix: "?v=430",
+			cache_suffix: "?v=443",
 			browser_spellcheck: false,
 			gecko_spellcheck: false,
 			theme: "modern",
 			statusbar: false,
-			height: $(document).height() - $(".document-editor > .toolbar").height() - 200,
+			height: maxHeight,
 			entity_encoding: "raw",
 			paste_data_images: true,
 			image_advtab: true,
@@ -62,24 +60,9 @@ export default Ember.Component.extend({
 			menu: {},
 			menubar: false,
 			toolbar1: "bold italic underline strikethrough superscript subscript | outdent indent bullist numlist forecolor backcolor | alignleft aligncenter alignright alignjustify | link unlink | table image media | hr codesample",
-			toolbar2: "formatselect fontselect fontsizeselect | documizeLinkButton",
+			toolbar2: "formatselect fontselect fontsizeselect",
 			save_onsavecallback: function () {
 				Mousetrap.trigger('ctrl+s');
-			},
-			setup: function (editor) {
-				editor.addButton('documizeLinkButton', {
-					title: 'Insert Link',
-					icon: false,
-					image: '/favicon.ico',
-					onclick: function () {
-						let showSidebar = !self.get('showSidebar');
-						self.set('showSidebar', showSidebar);
-
-						if (showSidebar) {
-							self.send('showSidebar');
-						}
-					}
-				});
 			}
 		};
 
@@ -100,14 +83,17 @@ export default Ember.Component.extend({
 	},
 
 	actions: {
-		showSidebar() {
-			this.set('linkName', tinymce.activeEditor.selection.getContent());
-		},
-
 		onInsertLink(link) {
+			let userSelection = tinymce.activeEditor.selection.getContent();
+
+			if (is.not.empty(userSelection)) {
+				Ember.set(link, 'title', userSelection);
+			}
+
 			let linkHTML = this.get('link').buildLink(link);
 			tinymce.activeEditor.insertContent(linkHTML);
-			this.set('showSidebar', false);
+
+			return true;
 		},
 
 		isDirty() {

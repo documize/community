@@ -52,3 +52,21 @@ export default Ember.Service.extend({
 		return result;
 	}
 });
+
+/*
+
+we should not redirect to a link that is in the same document!
+
+what happens if we delete attachment?
+
+UpdatePage(): find and persist links from saved content
+
+
+
+
+1. We need to deal with links server-side
+2. We need to click on links in the browser and 'navigate' to linked content
+
+
+
+*/

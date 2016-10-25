@@ -1,0 +1,8 @@
+<div class="checkbox-option {{if selected 'checkbox-option-selected'}}">
+	{{#if selected}}
+		<i class="material-icons checkbox-option-selected">radio_button_checked</i>
+	{{else}}
+		<i class="material-icons">radio_button_unchecked</i>
+	{{/if}}
+	{{yield}}
+</div>
