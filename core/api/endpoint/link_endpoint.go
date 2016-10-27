@@ -15,12 +15,14 @@ import (
 	"database/sql"
 	"encoding/json"
 	"net/http"
+	"net/url"
 
 	"github.com/gorilla/mux"
 
 	"github.com/documize/community/core/api/entity"
 	"github.com/documize/community/core/api/request"
 	"github.com/documize/community/core/api/util"
+	"github.com/documize/community/core/log"
 )
 
 // GetLinkCandidates returns references to documents/sections/attachments.
@@ -112,11 +114,47 @@ func GetLinkCandidates(w http.ResponseWriter, r *http.Request) {
 	var payload struct {
 		Pages       []entity.LinkCandidate `json:"pages"`
 		Attachments []entity.LinkCandidate `json:"attachments"`
-		Matches     []entity.LinkCandidate `json:"matches"`
 	}
 
 	payload.Pages = pc
 	payload.Attachments = fc
+
+	json, err := json.Marshal(payload)
+
+	if err != nil {
+		util.WriteMarshalError(w, err)
+		return
+	}
+
+	util.WriteSuccessBytes(w, json)
+}
+
+// SearchLinkCandidates endpoint takes a list of keywords and returns a list of document references matching those keywords.
+func SearchLinkCandidates(w http.ResponseWriter, r *http.Request) {
+	method := "SearchLinkCandidates"
+	p := request.GetPersister(r)
+
+	query := r.URL.Query()
+	keywords := query.Get("keywords")
+	decoded, err := url.QueryUnescape(keywords)
+	log.IfErr(err)
+
+	docs, pages, attachments, err := p.SearchLinkCandidates(decoded)
+
+	if err != nil {
+		util.WriteServerError(w, method, err)
+		return
+	}
+
+	var payload struct {
+		Documents   []entity.LinkCandidate `json:"documents"`
+		Pages       []entity.LinkCandidate `json:"pages"`
+		Attachments []entity.LinkCandidate `json:"attachments"`
+	}
+
+	payload.Documents = docs
+	payload.Pages = pages
+	payload.Attachments = attachments
 
 	json, err := json.Marshal(payload)
 

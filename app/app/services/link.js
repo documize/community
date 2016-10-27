@@ -22,13 +22,34 @@ export default Ember.Service.extend({
 	store: service(),
 
 	// Returns candidate links using provided parameters
-	getCandidates(folderId, documentId, pageId /*, keywords*/ ) {
+	getCandidates(folderId, documentId, pageId) {
 		return this.get('ajax').request(`links/${folderId}/${documentId}/${pageId}`, {
 			method: 'GET'
 		}).then((response) => {
 			return response;
 		});
 	},
+
+	// Returns keyword-based candidates
+	searchCandidates(keywords) {
+		let url = "links?keywords=" + encodeURIComponent(keywords);
+
+		return this.get('ajax').request(url, {
+			method: 'GET'
+		}).then((response) => {
+			return response;
+		});
+	},
+
+	// getUsers returns all users for organization.
+	find(keywords) {
+		let url = "search?keywords=" + encodeURIComponent(keywords);
+
+		return this.get('ajax').request(url, {
+			method: "GET"
+		});
+	},
+
 
 	buildLink(link) {
 		let result = "";
@@ -44,7 +65,6 @@ export default Ember.Service.extend({
 			href = `${endpoint}/public/attachments/${orgId}/${link.targetId}`;
 			result = `<a data-documize='true' data-link-space-id='${link.folderId}' data-link-id='${link.id}' data-link-document-id='${link.documentId}' data-link-target-id='${link.targetId}' data-link-type='${link.linkType}' href='${href}'>${link.title}</a>`;
 		}
-
 
 		return result;
 	},
@@ -85,7 +105,7 @@ export default Ember.Service.extend({
 		}
 
 		// handle document link
-		if (link.inkType === "document") {
+		if (link.linkType === "document") {
 			router.transitionTo('document', link.folderId, folderSlug, link.documentId, documentSlug);
 			return;
 		}
@@ -99,7 +119,6 @@ export default Ember.Service.extend({
 });
 
 /*
-	Keyword search results - docs, section, files
 
 	The link id's get ZERO'd in Page.Body whenever:
 		- doc is moved to different space

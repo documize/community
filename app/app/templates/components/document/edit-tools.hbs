@@ -15,9 +15,9 @@
 					<ul class="link-list">
 						{{#each candidates.pages as |p|}}
 							<li class="link-item" {{ action 'setSelection' p }}>
-								{{#ui/ui-checkbox selected=p.selected}}
+								{{#ui/ui-selection selected=p.selected}}
 									{{p.title}}
-								{{/ui/ui-checkbox}}
+								{{/ui/ui-selection}}
 							</li>
 						{{/each}}
 					</ul>
@@ -27,10 +27,10 @@
 					<ul class="link-list">
 						{{#each candidates.attachments as |a|}}
 							<li class="link-item" {{ action 'setSelection' a }}>
-								{{#ui/ui-checkbox selected=a.selected}}
+								{{#ui/ui-selection selected=a.selected}}
 									<img class="icon" src="/assets/img/attachments/{{document/file-icon a.context}}" />
 									{{ a.title }}
-								{{/ui/ui-checkbox}}
+								{{/ui/ui-selection}}
 							</li>
 						{{/each}}
 					</ul>
@@ -39,9 +39,36 @@
 				{{#if showSearch}}
 					<div class="input-control">
 						<label>Search</label>
-						<div class="tip">keywords</div>
+						<div class="tip">For content or attachments</div>
 						{{focus-input id="content-linker-search" type="input" value=keywords placeholder="keyword search"}}
 					</div>
+					{{#unless hasMatches}}
+						Nothing found.
+					{{/unless}}
+					<ul class="link-list">
+						{{#each matches.documents as |m|}}
+							<li class="link-item" {{ action 'setSelection' m }}>
+								{{#ui/ui-selection selected=m.selected}}
+									{{m.title}}
+								{{/ui/ui-selection}}
+							</li>
+						{{/each}}
+						{{#each matches.pages as |m|}}
+							<li class="link-item" {{ action 'setSelection' m }}>
+								{{#ui/ui-selection selected=m.selected}}
+									{{m.title}}<br/><span class="color-gray">{{m.context}}</span>
+								{{/ui/ui-selection}}
+							</li>
+						{{/each}}
+						{{#each matches.attachments as |a|}}
+							<li class="link-item" {{ action 'setSelection' a }}>
+								{{#ui/ui-selection selected=a.selected}}
+									<img class="icon" src="/assets/img/attachments/{{document/file-icon a.context}}" />
+									{{ a.title }}
+								{{/ui/ui-selection}}
+							</li>
+						{{/each}}
+					</ul>
 				{{/if}}
 
 				<div class="hide regular-button button-blue pull-right" {{ action 'onInsertLink' }}>Insert</div>

@@ -21,6 +21,11 @@ export default Ember.Component.extend(TooltipMixin, {
 	linkName: '',
 	keywords: '',
 	selection: null,
+	matches: {
+		documents: [],
+		pages: [],
+		attachments: []
+	},
 	tabs: [
 		{ label: 'Section', selected: true },
 		{ label: 'Attachment', selected: false },
@@ -36,6 +41,11 @@ export default Ember.Component.extend(TooltipMixin, {
 	showSearch: Ember.computed('tabs.@each.selected', function() {
 		return this.get('tabs').findBy('label', 'Search').selected;
 	}),
+	hasMatches: Ember.computed('matches', function() {
+		let m = this.get('matches');
+		return m.documents.length || m.pages.length || m.attachments.length;
+	}),
+
 
 	init() {
 		this._super(...arguments);
@@ -60,17 +70,48 @@ export default Ember.Component.extend(TooltipMixin, {
 		this.destroyTooltips();
 	},
 
+	onKeywordChange: function () {
+		Ember.run.debounce(this, this.fetch, 750);
+	}.observes('keywords'),
+
+	fetch() {
+		let keywords = this.get('keywords');
+		let self = this;
+
+		if (_.isEmpty(keywords)) {
+			this.set('matches', { documents: [], pages: [], attachments: [] });
+			return;
+		}
+
+		this.get('link').searchCandidates(keywords).then(function (matches) {
+			self.set('matches', matches);
+		});
+	},
+
 	actions: {
 		setSelection(i) {
-			this.set('selection', i);
-
 			let candidates = this.get('candidates');
+			let matches = this.get('matches');
+
+			this.set('selection', i);
 
 			candidates.pages.forEach(c => {
 				Ember.set(c, 'selected', c.id === i.id);
 			});
 
 			candidates.attachments.forEach(c => {
+				Ember.set(c, 'selected', c.id === i.id);
+			});
+
+			matches.documents.forEach(c => {
+				Ember.set(c, 'selected', c.id === i.id);
+			});
+
+			matches.pages.forEach(c => {
+				Ember.set(c, 'selected', c.id === i.id);
+			});
+
+			matches.attachments.forEach(c => {
 				Ember.set(c, 'selected', c.id === i.id);
 			});
 		},

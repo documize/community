@@ -1,11 +1,11 @@
 .edit-tools {
 	margin: 0 0 0 20px;
-	min-height: 500px;
+	min-height: 600px;
 }
 
 .content-linker-dialog {
 	width: 350px;
-	height: 400px;
+	height: 500px;
 	overflow-y: auto;
 
 	.link-list {
@@ -14,7 +14,7 @@
 
 		.link-item {
 			margin: 0;
-			padding: 2px 0;
+			padding: 0;
 			font-size: 0.9rem;
 			color: $color-gray;
 			cursor: pointer;

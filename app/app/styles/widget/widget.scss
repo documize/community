@@ -60,6 +60,7 @@
 .z-depth-5 {
 	box-shadow: 0 27px 24px 0 rgba(0, 0, 0, 0.2), 0 40px 77px 0 rgba(0, 0, 0, 0.22);
 }
+
 @import "widget-avatar";
 @import "widget-button";
 @import "widget-card";
@@ -72,3 +73,4 @@
 @import "widget-tooltip";
 @import "widget-checkbox";
 @import "widget-tab";
+@import "widget-selection";
