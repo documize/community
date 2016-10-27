@@ -325,7 +325,7 @@ CREATE TABLE IF NOT EXISTS `link` (
 	`sourcepageid` CHAR(16) NOT NULL COLLATE utf8_bin,
 	`linktype` CHAR(16) NOT NULL COLLATE utf8_bin,
 	`targetdocumentid` CHAR(16) NOT NULL COLLATE utf8_bin,
-	`targetpageid` CHAR(16) DEFAULT '' COLLATE utf8_bin,
+	`targetid` CHAR(16) NOT NULL DEFAULT '' COLLATE utf8_bin,
 	`orphan` BOOL NOT NULL DEFAULT 0,
 	`created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	`revised` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

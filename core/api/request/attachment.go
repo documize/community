@@ -102,5 +102,10 @@ func (p *Persister) GetAttachmentsWithData(docID string) (attachments []entity.A
 
 // DeleteAttachment deletes the id record from the database attachment table.
 func (p *Persister) DeleteAttachment(id string) (rows int64, err error) {
-	return p.Base.DeleteConstrained(p.Context.Transaction, "attachment", p.Context.OrgID, id)
+	rows, err = p.Base.DeleteConstrained(p.Context.Transaction, "attachment", p.Context.OrgID, id)
+
+	// Mark references to this document as orphaned
+	err = p.MarkOrphanAttachmentLink(id)
+
+	return
 }

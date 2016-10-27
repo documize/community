@@ -27,7 +27,7 @@ func (p *Persister) AddContentLink(l entity.Link) (err error) {
 	l.Created = time.Now().UTC()
 	l.Revised = time.Now().UTC()
 
-	stmt, err := p.Context.Transaction.Preparex("INSERT INTO link (refid, orgid, folderid, userid, sourcedocumentid, sourcepageid, targetdocumentid, targetpageid, linktype, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+	stmt, err := p.Context.Transaction.Preparex("INSERT INTO link (refid, orgid, folderid, userid, sourcedocumentid, sourcepageid, targetdocumentid, targetid, linktype, orphan, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
 	defer utility.Close(stmt)
 
 	if err != nil {
@@ -35,7 +35,7 @@ func (p *Persister) AddContentLink(l entity.Link) (err error) {
 		return
 	}
 
-	_, err = stmt.Exec(l.RefID, l.OrgID, l.FolderID, l.UserID, l.SourceDocumentID, l.SourcePageID, l.TargetDocumentID, l.TargetPageID, l.LinkType, l.Created, l.Revised)
+	_, err = stmt.Exec(l.RefID, l.OrgID, l.FolderID, l.UserID, l.SourceDocumentID, l.SourcePageID, l.TargetDocumentID, l.TargetID, l.LinkType, l.Orphan, l.Created, l.Revised)
 
 	if err != nil {
 		log.Error("Unable to execute insert for link", err)
@@ -185,11 +185,34 @@ func (p *Persister) GetDocumentOutboundLinks(documentID string) (links []entity.
 	err = nil
 
 	err = Db.Select(&links,
-		`select l.refid, l.orgid, l.folderid, l.userid, l.sourcedocumentid, l.sourcepageid, l.targetdocumentid, l.targetpageid, l.linktype, l.orphan, l.created, l.revised
+		`select l.refid, l.orgid, l.folderid, l.userid, l.sourcedocumentid, l.sourcepageid, l.targetdocumentid, l.targetid, l.linktype, l.orphan, l.created, l.revised
 		FROM link l
 		WHERE l.orgid=? AND l.sourcedocumentid=?`,
 		p.Context.OrgID,
 		documentID)
+
+	if err != nil {
+		return
+	}
+
+	if len(links) == 0 {
+		links = []entity.Link{}
+	}
+
+	return
+}
+
+// GetPageLinks returns outbound links for specified page in document.
+func (p *Persister) GetPageLinks(documentID, pageID string) (links []entity.Link, err error) {
+	err = nil
+
+	err = Db.Select(&links,
+		`select l.refid, l.orgid, l.folderid, l.userid, l.sourcedocumentid, l.sourcepageid, l.targetdocumentid, l.targetid, l.linktype, l.orphan, l.created, l.revised
+		FROM link l
+		WHERE l.orgid=? AND l.sourcedocumentid=? AND l.sourcepageid=?`,
+		p.Context.OrgID,
+		documentID,
+		pageID)
 
 	if err != nil {
 		return
@@ -216,10 +239,6 @@ func (p *Persister) MarkOrphanDocumentLink(documentID string) (err error) {
 
 	_, err = stmt.Exec(revised, p.Context.OrgID, documentID)
 
-	if err != nil {
-		return
-	}
-
 	return
 }
 
@@ -227,7 +246,7 @@ func (p *Persister) MarkOrphanDocumentLink(documentID string) (err error) {
 func (p *Persister) MarkOrphanPageLink(pageID string) (err error) {
 	revised := time.Now().UTC()
 
-	stmt, err := p.Context.Transaction.Preparex("UPDATE link SET orphan=1, revised=? WHERE linktype='section' AND orgid=? AND targetpageid=?")
+	stmt, err := p.Context.Transaction.Preparex("UPDATE link SET orphan=1, revised=? WHERE linktype='section' AND orgid=? AND targetid=?")
 
 	if err != nil {
 		return
@@ -237,9 +256,22 @@ func (p *Persister) MarkOrphanPageLink(pageID string) (err error) {
 
 	_, err = stmt.Exec(revised, p.Context.OrgID, pageID)
 
+	return
+}
+
+// MarkOrphanAttachmentLink marks all link records referencing specified attachment.
+func (p *Persister) MarkOrphanAttachmentLink(attachmentID string) (err error) {
+	revised := time.Now().UTC()
+
+	stmt, err := p.Context.Transaction.Preparex("UPDATE link SET orphan=1, revised=? WHERE linktype='file' AND orgid=? AND targetid=?")
+
 	if err != nil {
 		return
 	}
+
+	defer utility.Close(stmt)
+
+	_, err = stmt.Exec(revised, p.Context.OrgID, attachmentID)
 
 	return
 }

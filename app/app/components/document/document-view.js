@@ -70,7 +70,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		let doc = this.get('document');
 		let self = this;
 
-		$("a[data-documize='true']").off('click').on('click', function() {
+		$("a[data-documize='true']").off('click').on('click', function(e) {
 			let link = links.getLinkObject(self.get('meta.outboundLinks'), this);
 
 			// local link? exists?
@@ -88,6 +88,8 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 			if (link.orphan) {
 				$(this).addClass('broken-link');
 				self.showNotification('Broken link!');
+				e.preventDefault();
+				e.stopPropagation();
 				return false;
 			}
 

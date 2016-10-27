@@ -355,7 +355,7 @@ type Link struct {
 	SourceDocumentID string `json:"sourceDocumentId"`
 	SourcePageID     string `json:"sourcePageId"`
 	TargetDocumentID string `json:"targetDocumentId"`
-	TargetPageID     string `json:"targetPageId"`
+	TargetID         string `json:"targetId"`
 	Orphan           bool   `json:"orphan"`
 }
 

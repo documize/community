@@ -290,6 +290,10 @@ func (p *Persister) UpdatePage(page entity.Page, refID, userID string, skipRevis
 	// find any content links in the HTML
 	links := util.GetContentLinks(page.Body)
 
+	// get a copy of previously saved links
+	previousLinks, _ := p.GetPageLinks(page.DocumentID, page.RefID)
+	fmt.Println(len(previousLinks))
+
 	// delete previous content links for this page
 	_, _ = p.DeleteSourcePageLinks(page.RefID)
 
@@ -299,11 +303,22 @@ func (p *Persister) UpdatePage(page entity.Page, refID, userID string, skipRevis
 		link.OrgID = p.Context.OrgID
 		link.UserID = p.Context.UserID
 		link.SourceDocumentID = page.DocumentID
+		link.SourcePageID = page.RefID
 
-		if link.LinkType == "section" {
-			link.SourcePageID = page.RefID
+		if link.LinkType == "document" {
+			link.TargetID = ""
 		}
 
+		// We check if there was a previously saved version of this link.
+		// If we find one, we carry forward the orphan flag.
+		for _, p := range previousLinks {
+			if link.TargetID == p.TargetID && link.LinkType == p.LinkType {
+				link.Orphan = p.Orphan
+				break
+			}
+		}
+
+		// save
 		err := p.AddContentLink(link)
 
 		if err != nil {
