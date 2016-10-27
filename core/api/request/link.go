@@ -24,11 +24,10 @@ import (
 // AddContentLink inserts wiki-link into the store.
 // These links exist when content references another document or content.
 func (p *Persister) AddContentLink(l entity.Link) (err error) {
-	l.UserID = p.Context.UserID
 	l.Created = time.Now().UTC()
 	l.Revised = time.Now().UTC()
 
-	stmt, err := p.Context.Transaction.Preparex("INSERT INTO link (refid, orgid, folderid, userid, sourceid, documentid, targetid, linktype, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+	stmt, err := p.Context.Transaction.Preparex("INSERT INTO link (refid, orgid, folderid, userid, sourcedocumentid, sourcepageid, targetdocumentid, targetpageid, linktype, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
 	defer utility.Close(stmt)
 
 	if err != nil {
@@ -36,7 +35,7 @@ func (p *Persister) AddContentLink(l entity.Link) (err error) {
 		return
 	}
 
-	_, err = stmt.Exec(l.RefID, l.OrgID, l.FolderID, l.UserID, l.SourceID, l.DocumentID, l.TargetID, l.LinkType, l.Created, l.Revised)
+	_, err = stmt.Exec(l.RefID, l.OrgID, l.FolderID, l.UserID, l.SourceDocumentID, l.SourcePageID, l.TargetDocumentID, l.TargetPageID, l.LinkType, l.Created, l.Revised)
 
 	if err != nil {
 		log.Error("Unable to execute insert for link", err)
@@ -181,80 +180,78 @@ func (p *Persister) SearchLinkCandidates(keywords string) (docs []entity.LinkCan
 	return
 }
 
-// GetReferencedLinks returns all links that the specified section is referencing.
-// func (p *Persister) GetReferencedLinks(sectionID string) (links []entity.Link, err error) {
-// 	err = nil
-//
-// 	sql := "SELECT id,refid,orgid,folderid,userid,sourceid,documentid,targetid,linktype,orphan,created,revised from link WHERE orgid=? AND sourceid=?"
-//
-// 	err = Db.Select(&links, sql, p.Context.OrgID, sectionID)
-//
-// 	if err != nil {
-// 		log.Error(fmt.Sprintf("Unable to execute select links for org %s", p.Context.OrgID), err)
-// 		return
-// 	}
-//
-// 	return
-// }
-//
-// // GetContentLinksForSection returns all links that are linking to the specified section.
-// func (p *Persister) GetContentLinksForSection(sectionID string) (links []entity.Link, err error) {
-// 	err = nil
-//
-// 	sql := "SELECT id,refid,orgid,folderid,userid,sourceid,documentid,targetid,linktype,orphan,created,revised from link WHERE orgid=? AND sectionid=?"
-//
-// 	err = Db.Select(&links, sql, p.Context.OrgID, sectionID)
-//
-// 	if err != nil {
-// 		log.Error(fmt.Sprintf("Unable to execute select links for org %s", p.Context.OrgID), err)
-// 		return
-// 	}
-//
-// 	return
-// }
-//
-// // GetContentLinksForDocument returns all links that are linking to the specified document.
-// func (p *Persister) GetContentLinksForDocument(documentID string) (links []entity.Link, err error) {
-// 	err = nil
-//
-// 	sql := "SELECT id,refid,orgid,folderid,userid,sourceid,documentid,targetid,linktype,orphan,created,revised from link WHERE orgid=? AND documentid=?"
-//
-// 	err = Db.Select(&links, sql, p.Context.OrgID, documentID)
-//
-// 	if err != nil {
-// 		log.Error(fmt.Sprintf("Unable to execute select links for org %s", p.Context.OrgID), err)
-// 		return
-// 	}
-//
-// 	return
-// }
+// GetDocumentOutboundLinks returns outbound links for specified document.
+func (p *Persister) GetDocumentOutboundLinks(documentID string) (links []entity.Link, err error) {
+	err = nil
 
-// MarkOrphanContentLink marks the link record as being invalid.
-func (p *Persister) MarkOrphanContentLink(l entity.Link) (err error) {
-	l.Orphan = true
-	l.Revised = time.Now().UTC()
-
-	stmt, err := p.Context.Transaction.PrepareNamed("UPDATE link SET orphan=1 revised=:revised WHERE orgid=:orgid AND refid=:refid")
-	defer utility.Close(stmt)
+	err = Db.Select(&links,
+		`select l.refid, l.orgid, l.folderid, l.userid, l.sourcedocumentid, l.sourcepageid, l.targetdocumentid, l.targetpageid, l.linktype, l.orphan, l.created, l.revised
+		FROM link l
+		WHERE l.orgid=? AND l.sourcedocumentid=?`,
+		p.Context.OrgID,
+		documentID)
 
 	if err != nil {
-		log.Error(fmt.Sprintf("Unable to prepare update for link %s", l.RefID), err)
 		return
 	}
 
-	_, err = stmt.Exec(&l)
+	if len(links) == 0 {
+		links = []entity.Link{}
+	}
+
+	return
+}
+
+// MarkOrphanDocumentLink marks all link records referencing specified document.
+func (p *Persister) MarkOrphanDocumentLink(documentID string) (err error) {
+	revised := time.Now().UTC()
+
+	stmt, err := p.Context.Transaction.Preparex("UPDATE link SET orphan=1, revised=? WHERE linktype='document' AND orgid=? AND targetdocumentid=?")
 
 	if err != nil {
-		log.Error(fmt.Sprintf("Unable to execute update for link %s", l.RefID), err)
+		return
+	}
+
+	defer utility.Close(stmt)
+
+	_, err = stmt.Exec(revised, p.Context.OrgID, documentID)
+
+	if err != nil {
 		return
 	}
 
 	return
 }
 
-// DeleteSourceLinks removes saved links for given source.
-func (p *Persister) DeleteSourceLinks(sourceID string) (rows int64, err error) {
-	return p.Base.DeleteWhere(p.Context.Transaction, fmt.Sprintf("DELETE FROM link WHERE orgid=\"%s\" AND sourceid=\"%s\"", p.Context.OrgID, sourceID))
+// MarkOrphanPageLink marks all link records referencing specified page.
+func (p *Persister) MarkOrphanPageLink(pageID string) (err error) {
+	revised := time.Now().UTC()
+
+	stmt, err := p.Context.Transaction.Preparex("UPDATE link SET orphan=1, revised=? WHERE linktype='section' AND orgid=? AND targetpageid=?")
+
+	if err != nil {
+		return
+	}
+
+	defer utility.Close(stmt)
+
+	_, err = stmt.Exec(revised, p.Context.OrgID, pageID)
+
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+// DeleteSourcePageLinks removes saved links for given source.
+func (p *Persister) DeleteSourcePageLinks(pageID string) (rows int64, err error) {
+	return p.Base.DeleteWhere(p.Context.Transaction, fmt.Sprintf("DELETE FROM link WHERE orgid=\"%s\" AND sourcepageid=\"%s\"", p.Context.OrgID, pageID))
+}
+
+// DeleteSourceDocumentLinks removes saved links for given document.
+func (p *Persister) DeleteSourceDocumentLinks(documentID string) (rows int64, err error) {
+	return p.Base.DeleteWhere(p.Context.Transaction, fmt.Sprintf("DELETE FROM link WHERE orgid=\"%s\" AND sourcedocumentid=\"%s\"", p.Context.OrgID, documentID))
 }
 
 // DeleteLink removes saved link from the store.

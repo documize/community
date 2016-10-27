@@ -71,19 +71,24 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		let self = this;
 
 		$("a[data-documize='true']").off('click').on('click', function() {
-			let link = links.getLinkObject(this);
+			let link = links.getLinkObject(self.get('meta.outboundLinks'), this);
 
 			// local link? exists?
 			if (link.linkType === "section" && link.documentId === doc.get('id')) {
 				let exists = self.get('pages').findBy('id', link.targetId);
 
-				if (_.isUndefined(exists) || link.orphan) {
-					self.showNotification('Broken link!');
-					return false;
+				if (_.isUndefined(exists)) {
+					link.orphan = true;
 				} else {
 					self.attrs.gotoPage(link.targetId);
 					return false;
 				}
+			}
+
+			if (link.orphan) {
+				$(this).addClass('broken-link');
+				self.showNotification('Broken link!');
+				return false;
 			}
 
 			links.linkClick(doc, link);

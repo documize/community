@@ -291,14 +291,18 @@ func (p *Persister) UpdatePage(page entity.Page, refID, userID string, skipRevis
 	links := util.GetContentLinks(page.Body)
 
 	// delete previous content links for this page
-	_, _ = p.DeleteSourceLinks(page.RefID)
+	_, _ = p.DeleteSourcePageLinks(page.RefID)
 
 	// save latest content links for this page
 	for _, link := range links {
+		link.Orphan = false
 		link.OrgID = p.Context.OrgID
 		link.UserID = p.Context.UserID
-		link.SourceID = page.RefID
-		link.Orphan = false
+		link.SourceDocumentID = page.DocumentID
+
+		if link.LinkType == "section" {
+			link.SourcePageID = page.RefID
+		}
 
 		err := p.AddContentLink(link)
 
@@ -398,6 +402,12 @@ func (p *Persister) DeletePage(documentID, pageID string) (rows int64, err error
 	if err == nil {
 		_, err = p.Base.DeleteWhere(p.Context.Transaction, fmt.Sprintf("DELETE FROM pagemeta WHERE orgid='%s' AND pageid='%s'", p.Context.OrgID, pageID))
 		_, err = searches.Delete(&databaseRequest{OrgID: p.Context.OrgID}, documentID, pageID)
+
+		// delete content links from this page
+		_, err = p.DeleteSourcePageLinks(pageID)
+
+		// mark as orphan links to this page
+		err = p.MarkOrphanPageLink(pageID)
 
 		p.Base.Audit(p.Context, "remove-page", documentID, pageID)
 	}

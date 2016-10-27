@@ -132,6 +132,11 @@ a {
 	}
 }
 
+a.broken-link {
+	color: $color-red;
+	text-decoration: line-through;
+}
+
 a.alt {
 	color: $color-blue;
 	text-decoration: none;

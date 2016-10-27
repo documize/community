@@ -50,7 +50,6 @@ export default Ember.Service.extend({
 		});
 	},
 
-
 	buildLink(link) {
 		let result = "";
 		let href = "";
@@ -59,21 +58,21 @@ export default Ember.Service.extend({
 
 		if (link.linkType === "section" || link.linkType === "document") {
 			href = `/link/${link.linkType}/${link.id}`;
-			result = `<a data-documize='true' data-link-space-id='${link.folderId}' data-link-id='${link.id}' data-link-document-id='${link.documentId}' data-link-target-id='${link.targetId}' data-link-type='${link.linkType}' href='${href}'>${link.title}</a>`;
+			result = `<a data-documize='true' data-link-space-id='${link.folderId}' data-link-id='${link.id}' data-link-target-document-id='${link.documentId}' data-link-target-id='${link.targetId}' data-link-type='${link.linkType}' href='${href}'>${link.title}</a>`;
 		}
 		if (link.linkType === "file") {
 			href = `${endpoint}/public/attachments/${orgId}/${link.targetId}`;
-			result = `<a data-documize='true' data-link-space-id='${link.folderId}' data-link-id='${link.id}' data-link-document-id='${link.documentId}' data-link-target-id='${link.targetId}' data-link-type='${link.linkType}' href='${href}'>${link.title}</a>`;
+			result = `<a data-documize='true' data-link-space-id='${link.folderId}' data-link-id='${link.id}' data-link-target-document-id='${link.documentId}' data-link-target-id='${link.targetId}' data-link-type='${link.linkType}' href='${href}'>${link.title}</a>`;
 		}
 
 		return result;
 	},
 
-	getLinkObject(a) {
+	getLinkObject(outboundLinks, a) {
 		let link = {
 			linkId: a.attributes["data-link-id"].value,
 			linkType: a.attributes["data-link-type"].value,
-			documentId: a.attributes["data-link-document-id"].value,
+			documentId: a.attributes["data-link-target-document-id"].value,
 			folderId: a.attributes["data-link-space-id"].value,
 			targetId: a.attributes["data-link-target-id"].value,
 			url: a.attributes["href"].value,
@@ -81,6 +80,15 @@ export default Ember.Service.extend({
 		};
 
 		link.orphan = _.isEmpty(link.linkId) || _.isEmpty(link.documentId) || _.isEmpty(link.folderId) || _.isEmpty(link.targetId);
+
+		// we check latest state of link using database data
+		let existing = outboundLinks.findBy('id', link.linkId);
+
+		if (_.isUndefined(existing)) {
+			link.orphan = true;
+		} else {
+			link.orphan = existing.orphan;
+		}
 
 		return link;
 	},
@@ -119,21 +127,12 @@ export default Ember.Service.extend({
 });
 
 /*
-
-	The link id's get ZERO'd in Page.Body whenever:
-		- doc is moved to different space
-		- doc is deleted (set to ZERO and marked as orphan)
-		- page is deleted (set to ZERO and marked as orphan)
-		- page is moved to different doc (update data-document-id attribute value)
-		- attachment is deleted (remove HREF)
-
-	link/section/{documentId}/{sectionId}:
-		- if ZERO id show notification
-		- store previous positions -- localStorage, dropdown menu?
-
-	Markdown editor support
+	when attachment deleted:
+		mark as orphan references where link.documentid = document.refId
 
 	permission checks:
 		can view space
 		can view document
+
+	Markdown editor support
 */

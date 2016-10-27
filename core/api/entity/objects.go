@@ -222,8 +222,10 @@ func (p *PageMeta) SetDefaults() {
 
 // DocumentMeta details who viewed the document.
 type DocumentMeta struct {
-	Viewers []DocumentMetaViewer `json:"viewers"`
-	Editors []DocumentMetaEditor `json:"editors"`
+	Viewers       []DocumentMetaViewer `json:"viewers"`
+	Editors       []DocumentMetaEditor `json:"editors"`
+	InboundLinks  []Link               `json:"inboundLinks"`
+	OutboundLinks []Link               `json:"outboundLinks"`
 }
 
 // DocumentMetaViewer contains the "view" metatdata content.
@@ -346,14 +348,15 @@ type SitemapDocument struct {
 // Link defines a reference between a section and another document/section/attachment.
 type Link struct {
 	BaseEntity
-	OrgID      string `json:"orgId"`
-	FolderID   string `json:"folderId"`
-	UserID     string `json:"userId"`
-	LinkType   string `json:"linkType"`
-	SourceID   string `json:"sourceId"`
-	DocumentID string `json:"documentId"`
-	TargetID   string `json:"targetId"`
-	Orphan     bool   `json:"orphan"`
+	OrgID            string `json:"orgId"`
+	FolderID         string `json:"folderId"`
+	UserID           string `json:"userId"`
+	LinkType         string `json:"linkType"`
+	SourceDocumentID string `json:"sourceDocumentId"`
+	SourcePageID     string `json:"sourcePageId"`
+	TargetDocumentID string `json:"targetDocumentId"`
+	TargetPageID     string `json:"targetPageId"`
+	Orphan           bool   `json:"orphan"`
 }
 
 // LinkCandidate defines a potential link to a document/section/attachment.
