@@ -213,7 +213,7 @@ func init() {
 	log.IfErr(Add(RoutePrefixPrivate, "sections/refresh", []string{"GET", "OPTIONS"}, nil, RefreshSections))
 
 	// Links
-	log.IfErr(Add(RoutePrefixPrivate, "links/{documentID}/{pageID}", []string{"GET", "OPTIONS"}, nil, GetLinkCandidates))
+	log.IfErr(Add(RoutePrefixPrivate, "links/{folderID}/{documentID}/{pageID}", []string{"GET", "OPTIONS"}, nil, GetLinkCandidates))
 
 	// Global installation-wide config
 	log.IfErr(Add(RoutePrefixPrivate, "global", []string{"GET", "OPTIONS"}, nil, GetGlobalConfig))

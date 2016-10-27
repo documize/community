@@ -18,20 +18,34 @@ const {
 
 export default Ember.Component.extend(TooltipMixin, {
 	link: service(),
-	hasSections: false,
-	hasAttachments: false,
 	linkName: '',
 	keywords: '',
 	selection: null,
+	tabs: [
+		{ label: 'Section', selected: true },
+		{ label: 'Attachment', selected: false },
+		{ label: 'Search', selected: false }
+	],
+
+	showSections: Ember.computed('tabs.@each.selected', function() {
+		return this.get('tabs').findBy('label', 'Section').selected;
+	}),
+	showAttachments: Ember.computed('tabs.@each.selected', function() {
+		return this.get('tabs').findBy('label', 'Attachment').selected;
+	}),
+	showSearch: Ember.computed('tabs.@each.selected', function() {
+		return this.get('tabs').findBy('label', 'Search').selected;
+	}),
 
 	init() {
 		this._super(...arguments);
 		let self = this;
 
+		let folderId = this.get('folder.id');
 		let documentId = this.get('document.id');
 		let pageId = this.get('page.id');
 
-		this.get('link').getCandidates(documentId, pageId).then(function (candidates) {
+		this.get('link').getCandidates(folderId, documentId, pageId).then(function (candidates) {
 			self.set('candidates', candidates);
 			self.set('hasSections', is.not.null(candidates.pages) && candidates.pages.length);
 			self.set('hasAttachments', is.not.null(candidates.attachments) && candidates.attachments.length);
@@ -69,6 +83,10 @@ export default Ember.Component.extend(TooltipMixin, {
 			}
 
 			return this.get('onInsertLink')(selection);
+		},
+
+		onTabSelect(tabs) {
+			this.set('tabs', tabs);
 		}
 	}
 });

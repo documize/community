@@ -1,0 +1,27 @@
+.widget-tab {
+	width: 100%;
+	margin: 0;
+	padding: 0 5px;
+	text-align: center;
+	border-bottom: 1px solid $color-border;
+
+	> .tab {
+		display: inline-block;
+		margin: 0;
+		padding: 5px 10px;
+		color: $color-off-black;
+		text-align: center;
+		cursor: pointer;
+		@include ease-in();
+
+		&:hover {
+			background-color: $color-off-white;
+			color: $color-link;
+		}
+	}
+
+	> .selected {
+		background-color: $color-off-white;
+		color: $color-link;
+	}
+}

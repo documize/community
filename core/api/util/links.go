@@ -60,6 +60,8 @@ func getLink(t html.Token) (ok bool, link entity.Link) {
 			ok = true
 		case "data-link-id":
 			link.RefID = strings.TrimSpace(a.Val)
+		case "data-link-space-id":
+			link.FolderID = strings.TrimSpace(a.Val)
 		case "data-link-document-id":
 			link.DocumentID = strings.TrimSpace(a.Val)
 		case "data-link-target-id":

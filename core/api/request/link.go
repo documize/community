@@ -27,7 +27,7 @@ func (p *Persister) AddContentLink(l entity.Link) (err error) {
 	l.Created = time.Now().UTC()
 	l.Revised = time.Now().UTC()
 
-	stmt, err := p.Context.Transaction.Preparex("INSERT INTO link (refid, orgid, userid, sourceid, documentid, targetid, linktype, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
+	stmt, err := p.Context.Transaction.Preparex("INSERT INTO link (refid, orgid, folderid, userid, sourceid, documentid, targetid, linktype, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
 	defer utility.Close(stmt)
 
 	if err != nil {
@@ -35,7 +35,7 @@ func (p *Persister) AddContentLink(l entity.Link) (err error) {
 		return
 	}
 
-	_, err = stmt.Exec(l.RefID, l.OrgID, l.UserID, l.SourceID, l.DocumentID, l.TargetID, l.LinkType, l.Created, l.Revised)
+	_, err = stmt.Exec(l.RefID, l.OrgID, l.FolderID, l.UserID, l.SourceID, l.DocumentID, l.TargetID, l.LinkType, l.Created, l.Revised)
 
 	if err != nil {
 		log.Error("Unable to execute insert for link", err)
@@ -49,7 +49,7 @@ func (p *Persister) AddContentLink(l entity.Link) (err error) {
 func (p *Persister) GetReferencedLinks(sectionID string) (links []entity.Link, err error) {
 	err = nil
 
-	sql := "SELECT id,refid,orgid,userid,sourceid,documentid,targetid,linktype,orphan,created,revised from link WHERE orgid=? AND sourceid=?"
+	sql := "SELECT id,refid,orgid,folderid,userid,sourceid,documentid,targetid,linktype,orphan,created,revised from link WHERE orgid=? AND sourceid=?"
 
 	err = Db.Select(&links, sql, p.Context.OrgID, sectionID)
 
@@ -65,7 +65,7 @@ func (p *Persister) GetReferencedLinks(sectionID string) (links []entity.Link, e
 func (p *Persister) GetContentLinksForSection(sectionID string) (links []entity.Link, err error) {
 	err = nil
 
-	sql := "SELECT id,refid,orgid,userid,sourceid,documentid,targetid,linktype,orphan,created,revised from link WHERE orgid=? AND sectionid=?"
+	sql := "SELECT id,refid,orgid,folderid,userid,sourceid,documentid,targetid,linktype,orphan,created,revised from link WHERE orgid=? AND sectionid=?"
 
 	err = Db.Select(&links, sql, p.Context.OrgID, sectionID)
 
@@ -81,7 +81,7 @@ func (p *Persister) GetContentLinksForSection(sectionID string) (links []entity.
 func (p *Persister) GetContentLinksForDocument(documentID string) (links []entity.Link, err error) {
 	err = nil
 
-	sql := "SELECT id,refid,orgid,userid,sourceid,documentid,targetid,linktype,orphan,created,revised from link WHERE orgid=? AND documentid=?"
+	sql := "SELECT id,refid,orgid,folderid,userid,sourceid,documentid,targetid,linktype,orphan,created,revised from link WHERE orgid=? AND documentid=?"
 
 	err = Db.Select(&links, sql, p.Context.OrgID, documentID)
 

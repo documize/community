@@ -10,14 +10,11 @@
 // https://documize.com
 
 export function initialize(application) {
-    application.inject('route', 'eventBus', 'service:eventBus');
-    application.inject('component', 'eventBus', 'service:eventBus');
-    application.inject('controller', 'eventBus', 'service:eventBus');
-    application.inject('mixin', 'eventBus', 'service:eventBus');
+    application.inject('component', 'router', 'router:main');
+	application.inject('service', 'router', 'router:main');
 }
 
 export default {
-    name: 'eventBus',
-    after: 'application',
+    name: 'route-injector',
     initialize: initialize
 };

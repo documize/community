@@ -25,6 +25,7 @@ export default Ember.Service.extend({
 	appId: config.APP.intercomKey,
 
 	init() {
+		this._super(...arguments);
 		this.start();
 	},
 

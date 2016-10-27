@@ -287,7 +287,7 @@ func (p *Persister) UpdatePage(page entity.Page, refID, userID string, skipRevis
 	//}
 	//}
 
-	// fimnd any content links
+	// find any content links in the HTML
 	links := util.GetContentLinks(page.Body)
 
 	// delete previous content links for this page

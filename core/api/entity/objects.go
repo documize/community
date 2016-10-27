@@ -347,6 +347,7 @@ type SitemapDocument struct {
 type Link struct {
 	BaseEntity
 	OrgID      string `json:"orgId"`
+	FolderID   string `json:"folderId"`
 	UserID     string `json:"userId"`
 	LinkType   string `json:"linkType"`
 	SourceID   string `json:"sourceId"`
@@ -359,6 +360,7 @@ type Link struct {
 type LinkCandidate struct {
 	RefID      string `json:"id"`
 	LinkType   string `json:"linkType"`
+	FolderID   string `json:"folderId"`
 	DocumentID string `json:"documentId"`
 	TargetID   string `json:"targetId"`
 	Title      string `json:"title"`   // what we label the link

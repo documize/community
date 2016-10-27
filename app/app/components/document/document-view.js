@@ -17,6 +17,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	documentService: Ember.inject.service('document'),
 	sectionService: Ember.inject.service('section'),
 	appMeta: Ember.inject.service(),
+	link: Ember.inject.service(),
 	/* Parameters */
 	document: null,
 	// pages: [],
@@ -50,6 +51,10 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		});
 	},
 
+	didRender() {
+		this.contentLinkHandler();
+	},
+
 	willDestroyElement() {
 		this.destroyTooltips();
 
@@ -58,6 +63,32 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		if (is.not.null(drop)) {
 			drop.destroy();
 		}
+	},
+
+	contentLinkHandler() {
+		let links = this.get('link');
+		let doc = this.get('document');
+		let self = this;
+
+		$("a[data-documize='true']").off('click').on('click', function() {
+			let link = links.getLinkObject(this);
+
+			// local link? exists?
+			if (link.linkType === "section" && link.documentId === doc.get('id')) {
+				let exists = self.get('pages').findBy('id', link.targetId);
+
+				if (_.isUndefined(exists) || link.orphan) {
+					self.showNotification('Broken link!');
+					return false;
+				} else {
+					self.attrs.gotoPage(link.targetId);
+					return false;
+				}
+			}
+
+			links.linkClick(doc, link);
+			return false;
+		});
 	},
 
 	actions: {

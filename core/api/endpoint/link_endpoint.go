@@ -29,6 +29,7 @@ func GetLinkCandidates(w http.ResponseWriter, r *http.Request) {
 	p := request.GetPersister(r)
 
 	params := mux.Vars(r)
+	folderID := params["folderID"]
 	documentID := params["documentID"]
 	pageID := params["pageID"]
 
@@ -68,6 +69,7 @@ func GetLinkCandidates(w http.ResponseWriter, r *http.Request) {
 		if p.RefID != pageID {
 			c := entity.LinkCandidate{
 				RefID:      util.UniqueID(),
+				FolderID:   folderID,
 				DocumentID: documentID,
 				TargetID:   p.RefID,
 				LinkType:   "section",
@@ -95,6 +97,7 @@ func GetLinkCandidates(w http.ResponseWriter, r *http.Request) {
 	for _, f := range files {
 		c := entity.LinkCandidate{
 			RefID:      util.UniqueID(),
+			FolderID:   folderID,
 			DocumentID: documentID,
 			TargetID:   f.RefID,
 			LinkType:   "file",
@@ -124,13 +127,3 @@ func GetLinkCandidates(w http.ResponseWriter, r *http.Request) {
 
 	util.WriteSuccessBytes(w, json)
 }
-
-/*
-	DocumentID string `json:"documentId"`
-	PageID     string `json:"pageId"`
-	FileID     string `json:"fileId"`
-	LinkType   string `json:"linkType"`
-	Title      string `json:"caption"` // what we label the link
-	Context    string `json:"context"` // additional context (e.g. excerpt, parent)
-
-*/

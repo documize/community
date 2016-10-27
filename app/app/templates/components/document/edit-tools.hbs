@@ -4,15 +4,14 @@
 		<i class="material-icons color-white">link</i>
 	</div>
 
-	{{#dropdown-dialog target="content-linker-button" focusOn="content-linker-search" position="bottom right" button="Insert" color="flat-blue" onAction=(action 'onInsertLink')}}
+	{{#dropdown-dialog target="content-linker-button" position="bottom right" button="Insert" color="flat-blue" onAction=(action 'onInsertLink')}}
 		<div class="content-linker-dialog">
 			<form>
-				<div class="input-control">
-					<label>Insert Link</label>
-					<div class="tip">Choose content below or search</div>
-					{{focus-input id="content-linker-search" type="input" value=keywords placeholder="keyword search"}}
-				</div>
-				{{#if hasSections}}
+				{{ui/ui-tab tabs=tabs onTabSelect=(action 'onTabSelect')}}
+
+				<div class="margin-top-40" />
+
+				{{#if showSections}}
 					<ul class="link-list">
 						{{#each candidates.pages as |p|}}
 							<li class="link-item" {{ action 'setSelection' p }}>
@@ -23,7 +22,8 @@
 						{{/each}}
 					</ul>
 				{{/if}}
-				{{#if hasAttachments}}
+
+				{{#if showAttachments}}
 					<ul class="link-list">
 						{{#each candidates.attachments as |a|}}
 							<li class="link-item" {{ action 'setSelection' a }}>
@@ -35,6 +35,15 @@
 						{{/each}}
 					</ul>
 				{{/if}}
+
+				{{#if showSearch}}
+					<div class="input-control">
+						<label>Search</label>
+						<div class="tip">keywords</div>
+						{{focus-input id="content-linker-search" type="input" value=keywords placeholder="keyword search"}}
+					</div>
+				{{/if}}
+
 				<div class="hide regular-button button-blue pull-right" {{ action 'onInsertLink' }}>Insert</div>
 				<div class="hide clearfix" />
 			</form>

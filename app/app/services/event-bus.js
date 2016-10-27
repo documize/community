@@ -13,6 +13,7 @@ import Ember from 'ember';
 
 export default Ember.Service.extend(Ember.Evented, {
 	init() {
+		this._super(...arguments);
 		let _this = this;
 
 		window.addEventListener("scroll", _.throttle(function() {

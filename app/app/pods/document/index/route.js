@@ -1,11 +1,11 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
@@ -16,7 +16,6 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	documentService: Ember.inject.service('document'),
 	folderService: Ember.inject.service('folder'),
 	userService: Ember.inject.service('user'),
-
 	pages: [],
 	attachments: [],
 	users: [],
@@ -107,14 +106,5 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 		controller.set('meta', meta);
 
 		this.browser.setMetaDescription(model.get('excerpt'));
-	},
-
-	// Document view needs all white background!
-	activate() {
-		Ember.$('html').addClass('background-color-white');
-	},
-
-	deactivate() {
-		Ember.$('html').removeClass('background-color-white');
 	}
 });

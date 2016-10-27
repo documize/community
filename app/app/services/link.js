@@ -19,10 +19,11 @@ export default Ember.Service.extend({
 	sessionService: service('session'),
 	ajax: service(),
 	appMeta: service(),
+	store: service(),
 
 	// Returns candidate links using provided parameters
-	getCandidates(documentId, pageId /*, keywords*/ ) {
-		return this.get('ajax').request(`links/${documentId}/${pageId}`, {
+	getCandidates(folderId, documentId, pageId /*, keywords*/ ) {
+		return this.get('ajax').request(`links/${folderId}/${documentId}/${pageId}`, {
 			method: 'GET'
 		}).then((response) => {
 			return response;
@@ -35,45 +36,85 @@ export default Ember.Service.extend({
 		let endpoint = this.get('appMeta').get('endpoint');
 		let orgId = this.get('appMeta').get('orgId');
 
-		if (link.linkType === "section") {
+		if (link.linkType === "section" || link.linkType === "document") {
 			href = `/link/${link.linkType}/${link.id}`;
+			result = `<a data-documize='true' data-link-space-id='${link.folderId}' data-link-id='${link.id}' data-link-document-id='${link.documentId}' data-link-target-id='${link.targetId}' data-link-type='${link.linkType}' href='${href}'>${link.title}</a>`;
 		}
 		if (link.linkType === "file") {
 			href = `${endpoint}/public/attachments/${orgId}/${link.targetId}`;
-		}
-		if (link.linkType === "document") {
-			href = `/link/${link.linkType}/${link.id}`;
+			result = `<a data-documize='true' data-link-space-id='${link.folderId}' data-link-id='${link.id}' data-link-document-id='${link.documentId}' data-link-target-id='${link.targetId}' data-link-type='${link.linkType}' href='${href}'>${link.title}</a>`;
 		}
 
-		result = `<a data-documize='true' data-link-id='${link.id}' data-link-document-id='${link.documentId}' data-link-target-id='${link.targetId}' data-link-type='${link.linkType}' href='${href}'>${link.title}</a>`;
 
 		return result;
+	},
+
+	getLinkObject(a) {
+		let link = {
+			linkId: a.attributes["data-link-id"].value,
+			linkType: a.attributes["data-link-type"].value,
+			documentId: a.attributes["data-link-document-id"].value,
+			folderId: a.attributes["data-link-space-id"].value,
+			targetId: a.attributes["data-link-target-id"].value,
+			url: a.attributes["href"].value,
+			orphan: false
+		};
+
+		link.orphan = _.isEmpty(link.linkId) || _.isEmpty(link.documentId) || _.isEmpty(link.folderId) || _.isEmpty(link.targetId);
+
+		return link;
+	},
+
+	linkClick(doc, link) {
+		if (link.orphan) {
+			return;
+		}
+
+		let router = this.get('router');
+		let targetFolder = this.get('store').peekRecord('folder', link.folderId);
+		let targetDocument = this.get('store').peekRecord('document', link.documentId);
+		let folderSlug = is.null(targetFolder) ? "s" : targetFolder.get('slug');
+		let documentSlug = is.null(targetDocument) ? "d" : targetDocument.get('slug');
+
+		// handle section link
+		if (link.linkType === "section") {
+			let options = {};
+	        options['page'] = link.targetId;
+			router.transitionTo('document', link.folderId, folderSlug, link.documentId, documentSlug, { queryParams: options });
+			return;
+		}
+
+		// handle document link
+		if (link.inkType === "document") {
+			router.transitionTo('document', link.folderId, folderSlug, link.documentId, documentSlug);
+			return;
+		}
+
+		// handle attachment links
+		if (link.linkType === "file") {
+			window.location.href = link.url;
+			return;
+		}
 	}
 });
 
 /*
+	Keyword search results - docs, section, files
 
-link handler
-	- implement link redirect handler --
-		- for documents: client-side detect
-		- for sections:
-		- for attachments: direct link
-	-
+	The link id's get ZERO'd in Page.Body whenever:
+		- doc is moved to different space
+		- doc is deleted (set to ZERO and marked as orphan)
+		- page is deleted (set to ZERO and marked as orphan)
+		- page is moved to different doc (update data-document-id attribute value)
+		- attachment is deleted (remove HREF)
 
-onDelete document/section/file:
-	- mark link table row as ORPHAN
-	- doc view: meta data fetch to load orphaned content
+	link/section/{documentId}/{sectionId}:
+		- if ZERO id show notification
+		- store previous positions -- localStorage, dropdown menu?
 
-Keyword search results - docs, section, files
+	Markdown editor support
 
-we should not redirect to a link that is in the same document!
-what happens if we delete attachment?
-UpdatePage(): find and persist links from saved content
-
-1. We need to deal with links server-side
-2. We need to click on links in the browser and 'navigate' to linked content
-
-editor.insertContent('&nbsp;<b>It\'s my button!</b>&nbsp;');
-Selects the first paragraph found
-tinyMCE.activeEditor.selection.select(tinyMCE.activeEditor.dom.select('p')[0]);
+	permission checks:
+		can view space
+		can view document
 */
