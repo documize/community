@@ -292,7 +292,6 @@ func (p *Persister) UpdatePage(page entity.Page, refID, userID string, skipRevis
 
 	// get a copy of previously saved links
 	previousLinks, _ := p.GetPageLinks(page.DocumentID, page.RefID)
-	fmt.Println(len(previousLinks))
 
 	// delete previous content links for this page
 	_, _ = p.DeleteSourcePageLinks(page.RefID)
