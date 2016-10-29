@@ -20,6 +20,7 @@ import (
 
 	"github.com/documize/community/core/api/endpoint/models"
 	"github.com/documize/community/core/api/entity"
+	"github.com/documize/community/core/api/util"
 	"github.com/documize/community/core/log"
 	"github.com/documize/community/core/utility"
 )
@@ -286,6 +287,46 @@ func (p *Persister) UpdatePage(page entity.Page, refID, userID string, skipRevis
 	//}
 	//}
 
+	// find any content links in the HTML
+	links := util.GetContentLinks(page.Body)
+
+	// get a copy of previously saved links
+	previousLinks, _ := p.GetPageLinks(page.DocumentID, page.RefID)
+	fmt.Println(len(previousLinks))
+
+	// delete previous content links for this page
+	_, _ = p.DeleteSourcePageLinks(page.RefID)
+
+	// save latest content links for this page
+	for _, link := range links {
+		link.Orphan = false
+		link.OrgID = p.Context.OrgID
+		link.UserID = p.Context.UserID
+		link.SourceDocumentID = page.DocumentID
+		link.SourcePageID = page.RefID
+
+		if link.LinkType == "document" {
+			link.TargetID = ""
+		}
+
+		// We check if there was a previously saved version of this link.
+		// If we find one, we carry forward the orphan flag.
+		for _, p := range previousLinks {
+			if link.TargetID == p.TargetID && link.LinkType == p.LinkType {
+				link.Orphan = p.Orphan
+				break
+			}
+		}
+
+		// save
+		err := p.AddContentLink(link)
+
+		if err != nil {
+			log.Error(fmt.Sprintf("Unable to insert content links for page %s", page.RefID), err)
+			return err
+		}
+	}
+
 	p.Base.Audit(p.Context, "update-page", page.DocumentID, page.RefID)
 
 	return
@@ -376,6 +417,12 @@ func (p *Persister) DeletePage(documentID, pageID string) (rows int64, err error
 	if err == nil {
 		_, err = p.Base.DeleteWhere(p.Context.Transaction, fmt.Sprintf("DELETE FROM pagemeta WHERE orgid='%s' AND pageid='%s'", p.Context.OrgID, pageID))
 		_, err = searches.Delete(&databaseRequest{OrgID: p.Context.OrgID}, documentID, pageID)
+
+		// delete content links from this page
+		_, err = p.DeleteSourcePageLinks(pageID)
+
+		// mark as orphan links to this page
+		err = p.MarkOrphanPageLink(pageID)
 
 		p.Base.Audit(p.Context, "remove-page", documentID, pageID)
 	}

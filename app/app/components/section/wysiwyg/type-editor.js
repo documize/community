@@ -11,30 +11,37 @@
 
 import Ember from 'ember';
 
+const {
+	inject: { service }
+} = Ember;
+
 export default Ember.Component.extend({
+	appMeta: service(),
+	link: service(),
 	pageBody: "",
-	appMeta: Ember.inject.service(),
 
 	didReceiveAttrs() {
 		this.set('pageBody', this.get('meta.rawBody'));
 	},
 
 	didInsertElement() {
+		let maxHeight = $(document).height() - $(".document-editor > .toolbar").height() - 200;
+
 		let options = {
 			selector: "#rich-text-editor",
 			relative_urls: false,
-			cache_suffix: "?v=430",
+			cache_suffix: "?v=443",
 			browser_spellcheck: false,
 			gecko_spellcheck: false,
 			theme: "modern",
 			statusbar: false,
-			height: $(document).height() - $(".document-editor > .toolbar").height() - 200,
+			height: maxHeight,
 			entity_encoding: "raw",
 			paste_data_images: true,
 			image_advtab: true,
 			image_caption: true,
 			media_live_embeds: true,
-			fontsize_formats: "8pt 10pt 12pt 14pt 16pt 18pt 20pt 22pt 24pt 26pt 28pt 30pt 32pt 34pt 36pt",
+			fontsize_formats: "8px 10px 12px 14px 18px 24px 36px 40px 50px 60px",
 			formats: {
 				bold: {
 					inline: 'b'
@@ -48,27 +55,12 @@ export default Ember.Component.extend({
 				'advlist autolink lists link image charmap print preview hr anchor pagebreak',
 				'searchreplace wordcount visualblocks visualchars code codesample fullscreen',
 				'insertdatetime media nonbreaking save table directionality',
-				'emoticons template paste textcolor colorpicker textpattern imagetools'
+				'template paste textcolor colorpicker textpattern imagetools'
 			],
-			menu: {
-				edit: {
-					title: 'Edit',
-					items: 'undo redo | cut copy paste pastetext | selectall | searchreplace'
-				},
-				insert: {
-					title: 'Insert',
-					items: 'anchor link media | hr | charmap emoticons | blockquote'
-				},
-				format: {
-					title: 'Format',
-					items: 'bold italic underline strikethrough superscript subscript | formats fonts | removeformat'
-				},
-				table: {
-					title: 'Table',
-					items: 'inserttable tableprops deletetable | cell row column'
-				}
-			},
-			toolbar1: "formatselect fontselect fontsizeselect | bold italic underline | link unlink | image media | codesample | outdent indent | alignleft aligncenter alignright alignjustify | bullist numlist | forecolor backcolor",
+			menu: {},
+			menubar: false,
+			toolbar1: "bold italic underline strikethrough superscript subscript | outdent indent bullist numlist forecolor backcolor | alignleft aligncenter alignright alignjustify | link unlink | table image media | hr codesample",
+			toolbar2: "formatselect fontselect fontsizeselect",
 			save_onsavecallback: function () {
 				Mousetrap.trigger('ctrl+s');
 			}
@@ -91,6 +83,19 @@ export default Ember.Component.extend({
 	},
 
 	actions: {
+		onInsertLink(link) {
+			let userSelection = tinymce.activeEditor.selection.getContent();
+
+			if (is.not.empty(userSelection)) {
+				Ember.set(link, 'title', userSelection);
+			}
+
+			let linkHTML = this.get('link').buildLink(link);
+			tinymce.activeEditor.insertContent(linkHTML);
+
+			return true;
+		},
+
 		isDirty() {
 			return is.not.undefined(tinymce) && is.not.undefined(tinymce.activeEditor) && tinymce.activeEditor.isDirty();
 		},

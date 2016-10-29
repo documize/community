@@ -41,6 +41,8 @@ export default SimpleAuthSession.extend({
 	}),
 
 	init: function () {
+		this._super(...arguments);
+		
 		this.set('isMac', is.mac());
 		this.set('isMobile', is.mobile());
 	},

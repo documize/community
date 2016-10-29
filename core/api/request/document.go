@@ -107,6 +107,13 @@ func (p *Persister) GetDocumentMeta(id string) (meta entity.DocumentMeta, err er
 		return
 	}
 
+	meta.OutboundLinks, err = p.GetDocumentOutboundLinks(id)
+
+	if err != nil {
+		log.Error(fmt.Sprintf("Unable to execute GetDocumentOutboundLinks for document %s", id), err)
+		return
+	}
+
 	return
 }
 
@@ -396,6 +403,18 @@ func (p *Persister) DeleteDocument(documentID string) (rows int64, err error) {
 
 	_ /*attachment rows*/, err = p.Base.DeleteWhere(p.Context.Transaction, fmt.Sprintf("DELETE from attachment WHERE documentid=\"%s\" AND orgid=\"%s\"", documentID, p.Context.OrgID))
 
+	if err != nil {
+		return
+	}
+
+	// Mark references to this document as orphaned
+	err = p.MarkOrphanDocumentLink(documentID)
+	if err != nil {
+		return
+	}
+
+	// Remove all references from this document
+	_, err = p.DeleteSourceDocumentLinks(documentID)
 	if err != nil {
 		return
 	}

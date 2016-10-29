@@ -47,23 +47,23 @@ func (p *Persister) AddAttachment(a entity.Attachment) (err error) {
 	return
 }
 
-// GetAttachmentByJobAndFileID returns the database attachment record specified by the parameters.
-func (p *Persister) GetAttachmentByJobAndFileID(orgID, job, fileID string) (attachment entity.Attachment, err error) {
+// GetAttachment returns the database attachment record specified by the parameters.
+func (p *Persister) GetAttachment(orgID, attachmentID string) (attachment entity.Attachment, err error) {
 
 	err = nil
 
-	stmt, err := Db.Preparex("SELECT id, refid, orgid, documentid, job, fileid, filename, data, extension, created, revised FROM attachment WHERE orgid=? and job=? and fileid=?")
+	stmt, err := Db.Preparex("SELECT id, refid, orgid, documentid, job, fileid, filename, data, extension, created, revised FROM attachment WHERE orgid=? and refid=?")
 	defer utility.Close(stmt)
 
 	if err != nil {
-		log.Error(fmt.Sprintf("Unable to prepare select for attachment %s/%s", job, fileID), err)
+		log.Error(fmt.Sprintf("Unable to prepare select for attachment %s", attachmentID), err)
 		return
 	}
 
-	err = stmt.Get(&attachment, orgID, job, fileID)
+	err = stmt.Get(&attachment, orgID, attachmentID)
 
 	if err != nil {
-		log.Error(fmt.Sprintf("Unable to execute select for attachment %s/%s", job, fileID), err)
+		log.Error(fmt.Sprintf("Unable to execute select for attachment %s", attachmentID), err)
 		return
 	}
 
@@ -102,5 +102,10 @@ func (p *Persister) GetAttachmentsWithData(docID string) (attachments []entity.A
 
 // DeleteAttachment deletes the id record from the database attachment table.
 func (p *Persister) DeleteAttachment(id string) (rows int64, err error) {
-	return p.Base.DeleteConstrained(p.Context.Transaction, "attachment", p.Context.OrgID, id)
+	rows, err = p.Base.DeleteConstrained(p.Context.Transaction, "attachment", p.Context.OrgID, id)
+
+	// Mark references to this document as orphaned
+	err = p.MarkOrphanAttachmentLink(id)
+
+	return
 }

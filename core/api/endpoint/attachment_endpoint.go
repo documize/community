@@ -40,7 +40,7 @@ func AttachmentDownload(w http.ResponseWriter, r *http.Request) {
 
 	params := mux.Vars(r)
 
-	attachment, err := p.GetAttachmentByJobAndFileID(params["orgID"], params["job"], params["fileID"])
+	attachment, err := p.GetAttachment(params["orgID"], params["attachmentID"])
 
 	if err == sql.ErrNoRows {
 		writeNotFoundError(w, method, params["fileID"])

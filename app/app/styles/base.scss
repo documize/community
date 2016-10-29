@@ -9,26 +9,100 @@
 //
 // https://documize.com
 
-.cursor-pointer { cursor: pointer; }
-.cursor-not-allowed { cursor: not-allowed !important; }
-.cursor-auto { cursor: auto; }
-.vertical-top { vertical-align: top; }
-.inline-block { display: inline-block; }
-.text-left { text-align: left; }
-.text-right { text-align: right; }
-.text-center { text-align: center; }
-.center { margin: 0 auto; }
-.bold { font-weight: bold; }
-.italic { font-style: italic; }
-.text-uppercase { text-transform: uppercase; }
-.truncate { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } // requires element to specify width
-.absolute-center { margin: auto; position: absolute; top: 0; left: 0; bottom: 0; right: 0; }
-.no-width { white-space: nowrap; width: 1%; }
-.no-float { float: none !important; }
-.no-overflow-x { overflow-x: visible !important; }
-input:-webkit-autofill { -webkit-box-shadow: 0 0 0px 1000px white inset; }
-img.responsive-img, video.responsive-video { max-width: 100%; height: auto; }
-.bordered { border: 1px solid $color-border; }
+.cursor-pointer {
+	cursor: pointer;
+}
+
+.cursor-not-allowed {
+	cursor: not-allowed !important;
+}
+
+.cursor-auto {
+	cursor: auto;
+}
+
+.vertical-top {
+	vertical-align: top;
+}
+
+.inline-block {
+	display: inline-block;
+}
+
+.text-left {
+	text-align: left;
+}
+
+.text-right {
+	text-align: right;
+}
+
+.text-center {
+	text-align: center;
+}
+
+.center {
+	margin: 0 auto;
+}
+
+.bold {
+	font-weight: bold;
+}
+
+.italic {
+	font-style: italic;
+}
+
+.text-uppercase {
+	text-transform: uppercase;
+}
+
+.truncate {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+// requires element to specify width
+
+.absolute-center {
+	margin: auto;
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+}
+
+.no-width {
+	white-space: nowrap;
+	width: 1%;
+}
+
+.no-float {
+	float: none !important;
+}
+
+.no-overflow-x {
+	overflow-x: visible !important;
+}
+
+.no-display {
+	display: none;
+}
+
+input:-webkit-autofill {
+	-webkit-box-shadow: 0 0 0 1000px white inset;
+}
+
+img.responsive-img,
+video.responsive-video {
+	max-width: 100%;
+	height: auto;
+}
+
+.bordered {
+	border: 1px solid $color-border;
+}
 
 html {
 	overflow-y: scroll;
@@ -52,9 +126,15 @@ a {
 	-webkit-font-smoothing: antialiased;
 	text-shadow: 1px 1px 1px rgba(0,0,0,0.004);
 
-	a:hover, a:focus {
+	a:focus,
+	a:hover {
 		text-decoration: none;
 	}
+}
+
+a.broken-link {
+	color: $color-red;
+	text-decoration: line-through;
 }
 
 a.alt {
@@ -62,52 +142,81 @@ a.alt {
 	text-decoration: none;
 	cursor: pointer;
 
-	a:hover, a:focus {
+	a:focus,
+	a:hover {
 		text-decoration: underline;
 	}
 }
 
 $i: 150;
 @while $i > 0 {
-	.margin-#{$i} { margin: #{$i}px; }
-	.margin-top-#{$i} { margin-top: #{$i}px; }
-	.margin-bottom-#{$i} { margin-bottom: #{$i}px; }
-	.margin-right-#{$i} { margin-right: #{$i}px; }
-	.margin-left-#{$i} { margin-left: #{$i}px; }
+	.margin-#{$i} {
+		margin: #{$i}px;
+	}
+
+	.margin-top-#{$i} {
+		margin-top: #{$i}px;
+	}
+
+	.margin-bottom-#{$i} {
+		margin-bottom: #{$i}px;
+	}
+
+	.margin-right-#{$i} {
+		margin-right: #{$i}px;
+	}
+
+	.margin-left-#{$i} {
+		margin-left: #{$i}px;
+	}
 	$i: $i - 5;
 }
 
 $i: 150;
 @while $i > 0 {
-	.padding-#{$i} { padding: #{$i}px; }
-	.padding-top-#{$i} { padding-top: #{$i}px; }
-	.padding-bottom-#{$i} { padding-bottom: #{$i}px; }
-	.padding-right-#{$i} { padding-right: #{$i}px; }
-	.padding-left-#{$i} { padding-left: #{$i}px; }
+	.padding-#{$i} {
+		padding: #{$i}px;
+	}
+
+	.padding-top-#{$i} {
+		padding-top: #{$i}px;
+	}
+
+	.padding-bottom-#{$i} {
+		padding-bottom: #{$i}px;
+	}
+
+	.padding-right-#{$i} {
+		padding-right: #{$i}px;
+	}
+
+	.padding-left-#{$i} {
+		padding-left: #{$i}px;
+	}
 	$i: $i - 5;
 }
 
 $i: 100;
 @while $i > 0 {
-	.width-#{$i} { width: #{$i}#{"%"}; }
-	$i: $i - 5;
+	.width-#{$i} {
+		width: #{$i}#{"%"};
+	}
+	$i: $i - 1;
 }
 
-.no-outline
-{
-	outline:none !important;
-	border:none !important;
-	box-shadow:none !important;
+.no-outline {
+	outline: none !important;
+	border: none !important;
+	box-shadow: none !important;
 
-	&:focus, &:active
-	{
-		border:none !important;
-		box-shadow:none !important;
+	&:active,
+	&:focus {
+		border: none !important;
+		box-shadow: none !important;
 	}
 }
 
-.no-select
-{
+.no-select {
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 	-khtml-user-select: none;
@@ -127,11 +236,12 @@ ul {
 	}
 }
 
-.clearfix:before,
-.clearfix:after {
+.clearfix:after,
+.clearfix:before {
 	content: " ";
 	display: table;
 }
+
 .clearfix:after {
 	clear: both;
 }

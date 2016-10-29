@@ -101,5 +101,5 @@ export default Router.map(function () {
         path: '/*wildcard'
     });
 
-    this.route('pods', function () {});
+    // this.route('pods', function () {});
 });

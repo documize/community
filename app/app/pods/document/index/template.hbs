@@ -18,8 +18,9 @@
 			onAttachmentUpload=(action 'onAttachmentUpload')
 			onDocumentDelete=(action 'onDocumentDelete')}}
 
-		{{document/document-view document=model pages=pages attachments=attachments folder=folder folders=folders
+		{{document/document-view document=model meta=meta pages=pages attachments=attachments folder=folder folders=folders
 			isEditor=isEditor
+			gotoPage=(action 'gotoPage')
 			onAttachmentDeleted=(action 'onAttachmentDeleted')
 			onDeletePage=(action 'onPageDeleted')}}
 	{{/layout/zone-content}}

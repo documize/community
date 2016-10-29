@@ -4,12 +4,7 @@
 			<i class="material-icons color-gray">close</i>
 		</div>
 
-		{{folder/start-document
-			savedTemplates=savedTemplates
-			folder=folder
-			editor=folderService.canEditCurrentFolder
-			onEditTemplate=(action 'onEditTemplate')
-			onDocumentTemplate=(action 'onDocumentTemplate')}}
+		{{folder/start-document savedTemplates=savedTemplates folder=folder editor=folderService.canEditCurrentFolder onEditTemplate=(action 'onEditTemplate') onDocumentTemplate=(action 'onDocumentTemplate')}}
 	{{/if}}
 
 	{{#if showScrollTool}}
@@ -35,7 +30,7 @@
 				<i class="material-icons">add</i>
 				<div class="name">Space</div>
 			</div>
-			{{#dropdown-dialog target="add-space-button" position="bottom left" button="Add" color="flat-green" onAction=(action 'addFolder') focusOn="new-folder-name"}}
+			{{#dropdown-dialog target="add-space-button" position="bottom left" button="Add" color="flat-green" onAction=(action 'addFolder') focusOn="new-folder-name" }}
 				<div>
 					<div class="input-control">
 						<label>New space</label>
@@ -91,8 +86,6 @@
 		{{/if}}
 	{{/if}}
 </div>
-
-
 
 <div class="copyright hidden-xs hidden-sm">
 	<a href="https://documize.com?ref=app-footer" target="_blank">Copyright&nbsp;&copy;&nbsp;2016 Documize Inc.</a>

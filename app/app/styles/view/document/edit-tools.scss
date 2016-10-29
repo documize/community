@@ -1,0 +1,44 @@
+.edit-tools {
+	margin: 0 0 0 20px;
+	min-height: 600px;
+
+	> .toolbar {
+		margin: 0;
+		padding: 0;
+
+		> .item {
+			list-style-type: none;
+			margin: 0 0 20px;
+		}
+	}
+}
+
+.content-counter-dialog {
+	width: 200px;
+	height: 200px;
+}
+
+.content-linker-dialog {
+	width: 350px;
+	height: 500px;
+	overflow-y: auto;
+
+	.link-list {
+		margin: 0;
+		padding: 0;
+
+		.link-item {
+			margin: 0;
+			padding: 0;
+			font-size: 0.9rem;
+			color: $color-gray;
+			cursor: pointer;
+
+			.icon {
+				margin-right: 5px;
+				height: 15px;
+				width: 15px;
+			}
+		}
+	}
+}

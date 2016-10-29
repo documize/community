@@ -14,67 +14,63 @@ import NotifierMixin from '../../mixins/notifier';
 import TooltipMixin from '../../mixins/tooltip';
 
 const {
-    computed
+	computed
 } = Ember;
 
 export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	folderService: Ember.inject.service('folder'),
-    documentService: Ember.inject.service('document'),
-    session: Ember.inject.service(),
+	documentService: Ember.inject.service('document'),
+	session: Ember.inject.service(),
 	appMeta: Ember.inject.service(),
 
 	showToolbar: false,
-    folder: {},
-    busy: false,
-    importedDocuments: [],
-    isFolderOwner: computed.equal('folder.userId', 'session.user.id'),
-    moveFolderId: "",
+	folder: {},
+	busy: false,
+	importedDocuments: [],
+	isFolderOwner: computed.equal('folder.userId', 'session.user.id'),
+	moveFolderId: "",
 	drop: null,
 
-    didReceiveAttrs() {
-        this.set('isFolderOwner', this.get('folder.userId') === this.get("session.user.id"));
+	didReceiveAttrs() {
+		this.set('isFolderOwner', this.get('folder.userId') === this.get("session.user.id"));
 
 		let show = this.get('isFolderOwner') || this.get('hasSelectedDocuments') || this.get('folderService').get('canEditCurrentFolder');
 		this.set('showToolbar', show);
 
-        let targets = _.reject(this.get('folders'), {
-            id: this.get('folder').get('id')
-        });
+		let targets = _.reject(this.get('folders'), {
+			id: this.get('folder').get('id')
+		});
 
-        this.set('movedFolderOptions', targets);
-    },
+		this.set('movedFolderOptions', targets);
+	},
 
 	didRender() {
-        if (this.get('hasSelectedDocuments')) {
-            this.addTooltip(document.getElementById("move-documents-button"));
-            this.addTooltip(document.getElementById("delete-documents-button"));
-        } else {
-            if (this.get('isFolderOwner')) {
-                this.addTooltip(document.getElementById("folder-share-button"));
-                this.addTooltip(document.getElementById("folder-settings-button"));
-            }
-            if (this.get('folderService').get('canEditCurrentFolder')) {
+		if (this.get('hasSelectedDocuments')) {
+			this.addTooltip(document.getElementById("move-documents-button"));
+			this.addTooltip(document.getElementById("delete-documents-button"));
+		} else {
+			if (this.get('isFolderOwner')) {
+				this.addTooltip(document.getElementById("folder-share-button"));
+				this.addTooltip(document.getElementById("folder-settings-button"));
+			}
+			if (this.get('folderService').get('canEditCurrentFolder')) {
 				this.addTooltip(document.getElementById("import-document-button"));
-            }
-        }
+			}
+		}
 	},
 
 	didUpdate() {
 		this.setupImport();
 	},
 
-	didInsertElement() {
-		// this.setupImport();
-	},
-
-    willDestroyElement() {
+	willDestroyElement() {
 		if (is.not.null(this.get('drop'))) {
 			this.get('drop').destroy();
 			this.set('drop', null);
 		}
 
-        this.destroyTooltips();
-    },
+		this.destroyTooltips();
+	},
 
 	setupImport() {
 		// guard against unecessary file upload component init
@@ -135,52 +131,52 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		this.set('drop', dzone);
 	},
 
-    actions: {
-        onDocumentImporting(filename) {
-            this.send("showNotification", `Importing ${filename}`);
+	actions: {
+		onDocumentImporting(filename) {
+			this.send("showNotification", `Importing ${filename}`);
 
-            let documents = this.get('importedDocuments');
-            documents.push(filename);
-            this.set('importedDocuments', documents);
-        },
+			let documents = this.get('importedDocuments');
+			documents.push(filename);
+			this.set('importedDocuments', documents);
+		},
 
-        onDocumentImported(filename /*, document*/ ) {
-            this.send("showNotification", `${filename} ready`);
+		onDocumentImported(filename /*, document*/ ) {
+			this.send("showNotification", `${filename} ready`);
 
-            let documents = this.get('importedDocuments');
-            documents.pop(filename);
-            this.set('importedDocuments', documents);
+			let documents = this.get('importedDocuments');
+			documents.pop(filename);
+			this.set('importedDocuments', documents);
 
-            this.attrs.refresh();
+			this.attrs.refresh();
 
-            if (documents.length === 0) {
-                // this.get('showDocument')(this.get('folder'), document);
-            }
-        },
+			if (documents.length === 0) {
+				// this.get('showDocument')(this.get('folder'), document);
+			}
+		},
 
-        deleteDocuments() {
+		deleteDocuments() {
 			this.attrs.onDeleteDocument();
-        },
+		},
 
-        setMoveFolder(folderId) {
-            this.set('moveFolderId', folderId);
+		setMoveFolder(folderId) {
+			this.set('moveFolderId', folderId);
 
-            let folders = this.get('folders');
+			let folders = this.get('folders');
 
-            folders.forEach(folder => {
-                folder.set('selected', folder.id === folderId);
-            });
-        },
+			folders.forEach(folder => {
+				folder.set('selected', folder.id === folderId);
+			});
+		},
 
-        moveDocuments() {
-            if (this.get("moveFolderId") === "") {
-                return false;
-            }
+		moveDocuments() {
+			if (this.get("moveFolderId") === "") {
+				return false;
+			}
 
-            this.attrs.onMoveDocument(this.get('moveFolderId'));
-            this.set("moveFolderId", "");
+			this.attrs.onMoveDocument(this.get('moveFolderId'));
+			this.set("moveFolderId", "");
 
-            return true;
-        }
-    }
+			return true;
+		}
+	}
 });

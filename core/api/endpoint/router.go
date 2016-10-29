@@ -136,7 +136,7 @@ func init() {
 	log.IfErr(Add(RoutePrefixPublic, "forgot", []string{"POST", "OPTIONS"}, nil, ForgotUserPassword))
 	log.IfErr(Add(RoutePrefixPublic, "reset/{token}", []string{"POST", "OPTIONS"}, nil, ResetUserPassword))
 	log.IfErr(Add(RoutePrefixPublic, "share/{folderID}", []string{"POST", "OPTIONS"}, nil, AcceptSharedFolder))
-	log.IfErr(Add(RoutePrefixPublic, "attachments/{orgID}/{job}/{fileID}", []string{"GET", "OPTIONS"}, nil, AttachmentDownload))
+	log.IfErr(Add(RoutePrefixPublic, "attachments/{orgID}/{attachmentID}", []string{"GET", "OPTIONS"}, nil, AttachmentDownload))
 	log.IfErr(Add(RoutePrefixPublic, "version", []string{"GET", "OPTIONS"}, nil, version))
 
 	// **** add secure routes
@@ -212,12 +212,15 @@ func init() {
 	log.IfErr(Add(RoutePrefixPrivate, "sections", []string{"POST", "OPTIONS"}, nil, RunSectionCommand))
 	log.IfErr(Add(RoutePrefixPrivate, "sections/refresh", []string{"GET", "OPTIONS"}, nil, RefreshSections))
 
+	// Links
+	log.IfErr(Add(RoutePrefixPrivate, "links/{folderID}/{documentID}/{pageID}", []string{"GET", "OPTIONS"}, nil, GetLinkCandidates))
+	log.IfErr(Add(RoutePrefixPrivate, "links", []string{"GET", "OPTIONS"}, nil, SearchLinkCandidates))
+
 	// Global installation-wide config
 	log.IfErr(Add(RoutePrefixPrivate, "global", []string{"GET", "OPTIONS"}, nil, GetGlobalConfig))
 	log.IfErr(Add(RoutePrefixPrivate, "global", []string{"PUT", "OPTIONS"}, nil, SaveGlobalConfig))
 
-	// **** configure single page app handler.
-
+	// Single page app handler
 	log.IfErr(Add(RoutePrefixRoot, "robots.txt", []string{"GET", "OPTIONS"}, nil, GetRobots))
 	log.IfErr(Add(RoutePrefixRoot, "sitemap.xml", []string{"GET", "OPTIONS"}, nil, GetSitemap))
 	log.IfErr(Add(RoutePrefixRoot, "{rest:.*}", nil, nil, web.EmberHandler))

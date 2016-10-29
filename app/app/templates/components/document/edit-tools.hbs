@@ -1,0 +1,84 @@
+<div class="edit-tools">
+
+	<ul class="toolbar">
+		<li class="item">
+			<div class="square-button-mono button-gray" id="content-linker-button" data-tooltip="Reference link" data-tooltip-position="left middle">
+				<i class="material-icons color-white">link</i>
+			</div>
+		</li>
+	</ul>
+
+	{{#dropdown-dialog target="content-linker-button" position="bottom right" button="Insert" color="flat-blue" onAction=(action 'onInsertLink')}}
+		<div class="content-linker-dialog">
+			<form>
+				{{ui/ui-tab tabs=tabs onTabSelect=(action 'onTabSelect')}}
+
+				<div class="margin-top-40" />
+
+				{{#if showSections}}
+					<ul class="link-list">
+						{{#each candidates.pages as |p|}}
+							<li class="link-item" {{ action 'setSelection' p }}>
+								{{#ui/ui-selection selected=p.selected}}
+									{{p.title}}
+								{{/ui/ui-selection}}
+							</li>
+						{{/each}}
+					</ul>
+				{{/if}}
+
+				{{#if showAttachments}}
+					<ul class="link-list">
+						{{#each candidates.attachments as |a|}}
+							<li class="link-item" {{ action 'setSelection' a }}>
+								{{#ui/ui-selection selected=a.selected}}
+									<img class="icon" src="/assets/img/attachments/{{document/file-icon a.context}}" />
+									{{ a.title }}
+								{{/ui/ui-selection}}
+							</li>
+						{{/each}}
+					</ul>
+				{{/if}}
+
+				{{#if showSearch}}
+					<div class="input-control">
+						<label>Search</label>
+						<div class="tip">For content or attachments</div>
+						{{focus-input id="content-linker-search" type="input" value=keywords placeholder="keyword search" autocomplete="off"}}
+					</div>
+					{{#unless hasMatches}}
+						Nothing found.
+					{{/unless}}
+					<ul class="link-list">
+						{{#each matches.documents as |m|}}
+							<li class="link-item" {{ action 'setSelection' m }}>
+								{{#ui/ui-selection selected=m.selected}}
+									{{m.title}}
+								{{/ui/ui-selection}}
+							</li>
+						{{/each}}
+						{{#each matches.pages as |m|}}
+							<li class="link-item" {{ action 'setSelection' m }}>
+								{{#ui/ui-selection selected=m.selected}}
+									{{m.title}}<br/><span class="color-gray">{{m.context}}</span>
+								{{/ui/ui-selection}}
+							</li>
+						{{/each}}
+						{{#each matches.attachments as |a|}}
+							<li class="link-item" {{ action 'setSelection' a }}>
+								{{#ui/ui-selection selected=a.selected}}
+									<img class="icon" src="/assets/img/attachments/{{document/file-icon a.context}}" />
+									{{ a.title }}
+								{{/ui/ui-selection}}
+							</li>
+						{{/each}}
+					</ul>
+				{{/if}}
+
+				<div class="hide regular-button button-blue pull-right" {{ action 'onInsertLink' }}>Insert</div>
+				<div class="hide clearfix" />
+			</form>
+		</div>
+	{{/dropdown-dialog}}
+
+</div>

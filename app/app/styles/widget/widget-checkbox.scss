@@ -1,0 +1,21 @@
+.checkbox-option {
+	vertical-align: bottom;
+	cursor: pointer;
+	font-size: 0.9rem;
+	overflow: hidden;
+	white-space: nowrap;
+
+	> .material-icons {
+		font-size: 0.9rem;
+		vertical-align: top;
+		margin-right: 5px;
+	}
+
+	&:hover {
+		color: $color-link;
+	}
+}
+
+.checkbox-option-selected {
+	color: $color-link;
+}
