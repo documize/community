@@ -54,7 +54,9 @@ export default Ember.Component.extend({
 	actions: {
 		onInsertLink(link) {
 			let linkMarkdown = this.get('link').buildLink(link);
+
 			miscUtil.insertAtCursor($("#section-markdown-editor")[0], linkMarkdown);
+			this.set('pageBody', $("#section-markdown-editor").val());
 
 			return true;
 		},
