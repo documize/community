@@ -107,7 +107,7 @@ export default Ember.Service.extend({
 		// handle section link
 		if (link.linkType === "section") {
 			let options = {};
-	        options['page'] = link.targetId;
+			options['page'] = link.targetId;
 			router.transitionTo('document', link.folderId, folderSlug, link.documentId, documentSlug, { queryParams: options });
 			return;
 		}
@@ -127,12 +127,5 @@ export default Ember.Service.extend({
 });
 
 /*
-	when attachment deleted:
-		mark as orphan references where link.documentid = document.refId
-
-	permission checks:
-		can view space
-		can view document
-
-	Markdown editor support
+	doc meta to show inbound and outbound links.
 */

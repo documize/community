@@ -1,8 +1,12 @@
 <div class="edit-tools">
 
-	<div class="square-button-mono button-gray" id="content-linker-button" data-tooltip="Insert content link" data-tooltip-position="left middle">
-		<i class="material-icons color-white">link</i>
-	</div>
+	<ul class="toolbar">
+		<li class="item">
+			<div class="square-button-mono button-gray" id="content-linker-button" data-tooltip="Reference link" data-tooltip-position="left middle">
+				<i class="material-icons color-white">link</i>
+			</div>
+		</li>
+	</ul>
 
 	{{#dropdown-dialog target="content-linker-button" position="bottom right" button="Insert" color="flat-blue" onAction=(action 'onInsertLink')}}
 		<div class="content-linker-dialog">

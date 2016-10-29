@@ -32,20 +32,19 @@ export default Ember.Component.extend(TooltipMixin, {
 		{ label: 'Search', selected: false }
 	],
 
-	showSections: Ember.computed('tabs.@each.selected', function() {
+	showSections: Ember.computed('tabs.@each.selected', function () {
 		return this.get('tabs').findBy('label', 'Section').selected;
 	}),
-	showAttachments: Ember.computed('tabs.@each.selected', function() {
+	showAttachments: Ember.computed('tabs.@each.selected', function () {
 		return this.get('tabs').findBy('label', 'Attachment').selected;
 	}),
-	showSearch: Ember.computed('tabs.@each.selected', function() {
+	showSearch: Ember.computed('tabs.@each.selected', function () {
 		return this.get('tabs').findBy('label', 'Search').selected;
 	}),
-	hasMatches: Ember.computed('matches', function() {
+	hasMatches: Ember.computed('matches', function () {
 		let m = this.get('matches');
 		return m.documents.length || m.pages.length || m.attachments.length;
 	}),
-
 
 	init() {
 		this._super(...arguments);
@@ -64,6 +63,7 @@ export default Ember.Component.extend(TooltipMixin, {
 
 	didRender() {
 		this.addTooltip(document.getElementById("content-linker-button"));
+		this.addTooltip(document.getElementById("content-counter-button"));
 	},
 
 	willDestroyElement() {

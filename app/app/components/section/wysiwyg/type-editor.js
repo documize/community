@@ -16,7 +16,7 @@ const {
 } = Ember;
 
 export default Ember.Component.extend({
-	appMeta: Ember.inject.service(),
+	appMeta: service(),
 	link: service(),
 	pageBody: "",
 

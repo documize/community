@@ -1,6 +1,21 @@
 .edit-tools {
 	margin: 0 0 0 20px;
 	min-height: 600px;
+
+	> .toolbar {
+		margin: 0;
+		padding: 0;
+
+		> .item {
+			list-style-type: none;
+			margin: 0 0 20px;
+		}
+	}
+}
+
+.content-counter-dialog {
+	width: 200px;
+	height: 200px;
 }
 
 .content-linker-dialog {
