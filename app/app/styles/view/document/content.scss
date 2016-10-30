@@ -110,23 +110,7 @@
 	}
 }
 
-.no-sections {
+.empty-state-document {
+	margin-top: 150px;
 	text-align: center;
-	opacity: 0.5;
-
-	> .box {
-		padding: 35px;
-		display: inline-block;
-		margin: 0 20px;
-
-		> .message {
-			font-size: 14px;
-			color: $color-off-black;
-			margin-top: 20px;
-		}
-
-		> .regular-button {
-			cursor: default !important;
-		}
-	}
 }

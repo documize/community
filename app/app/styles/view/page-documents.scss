@@ -173,31 +173,9 @@
 	}
 }
 
-.no-documents {
+.empty-state-space {
 	margin-top: 150px;
 	text-align: center;
-	opacity: 0.5;
-	background-image: url("/assets/img/no-documents.png");
-	background-repeat: no-repeat;
-	background-position: center;
-
-	> .box {
-		max-width: 400px;
-    	margin: 0 auto;
-    	border: 1px dashed #b3adad;
-    	padding: 20px;
-
-		> .message {
-			font-size: 14px;
-			color: $color-off-black;
-			margin-top: 20px;
-			line-height: 50px;
-		}
-
-		> .regular-button {
-			cursor: default !important;
-		}
-	}
 }
 
 .templates-list {
