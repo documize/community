@@ -120,6 +120,10 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
     },
 
 	actions: {
+		onImport() {
+			this.attrs.onImport();
+		},
+		
 		scrollTop() {
 			this.set('showScrollTool', false);
 
