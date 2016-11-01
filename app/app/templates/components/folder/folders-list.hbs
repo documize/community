@@ -4,7 +4,10 @@
 			<i class="material-icons color-gray">close</i>
 		</div>
 
-		{{folder/start-document savedTemplates=savedTemplates folder=folder editor=folderService.canEditCurrentFolder onEditTemplate=(action 'onEditTemplate') onDocumentTemplate=(action 'onDocumentTemplate')}}
+		{{folder/start-document savedTemplates=savedTemplates folder=folder editor=folderService.canEditCurrentFolder
+			onImport=(action 'onImport')
+			onEditTemplate=(action 'onEditTemplate')
+			onDocumentTemplate=(action 'onDocumentTemplate')}}
 	{{/if}}
 
 	{{#if showScrollTool}}
