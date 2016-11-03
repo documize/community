@@ -23,7 +23,7 @@ export default Ember.Component.extend(TooltipMixin, {
 		this._super(...arguments);
 
         let self = this;
-        CodeMirror.modeURL = "codemirror/mode/%N/%N.js";
+        CodeMirror.modeURL = "/codemirror/mode/%N/%N.js";
 
         let rawBody = this.get('meta.rawBody');
         let cleanBody = rawBody.replace("</pre>", "");
