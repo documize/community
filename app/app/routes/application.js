@@ -22,22 +22,6 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
 	session: service(),
 
 	beforeModel(transition) {
-		// start TODO: ugly hack
-		let MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
-		let observer = new MutationObserver(function(/*mutations, observer*/) {
-		    // fired when a mutation occurs
-		    // console.log(mutations, observer);
-			$("#zone-sidebar").css('height', $(document).height() - $("#zone-navigation").height());
-		});
-
-		observer.observe(document, {
-			subtree: true,
-			attributes: false,
-			childList: true,
-			characterData: true
-		});
-		// end TODO: ugly hack
-
 		return this.get('appMeta').boot(transition.targetName).then(data => {
 			if (this.get('session.session.authenticator') !== "authenticator:documize" && data.allowAnonymousAccess) {
 				return this.get('session').authenticate('authenticator:anonymous', data);

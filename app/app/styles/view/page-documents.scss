@@ -3,14 +3,14 @@
 		position: absolute;
 		top: 150px;
 		right: -18px;
-		z-index: 999;
+		z-index: 888;
 	}
 
 	.scroll-space-tool {
 		position: absolute;
 		top: 150px;
 		right: -18px;
-		z-index: 888;
+		z-index: 999;
 		-webkit-animation: fadein 1s; /* Safari, Chrome and Opera > 12.1 */
 		-moz-animation: fadein 1s; /* Firefox < 16 */
 		-ms-animation: fadein 1s; /* Internet Explorer */
@@ -179,13 +179,6 @@
 }
 
 .start-document {
-	> .space-name {
-		color: $color-primary;
-		font-size: 1.3rem;
-		font-weight: bold;
-		margin-bottom: 30px;
-	}
-
 	> .import-document-button {
 		width: 100%;
 		padding: 20px;

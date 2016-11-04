@@ -1,22 +1,18 @@
-{{#layout/zone-container}}
+{{layout/zone-navigation}}
 
-	{{layout/zone-navigation}}
-	{{#layout/zone-sidebar}}
-		{{back-to-home}}
-		<div class="sidebar-menu">
-			<ul class="options">
-				{{#link-to 'customize.general' activeClass='selected' class="option" tagName="li"}}General{{/link-to}}
-				{{#link-to 'customize.folders' activeClass='selected' class="option" tagName="li"}}Spaces{{/link-to}}
-				{{#link-to 'customize.users' activeClass='selected' class="option" tagName="li"}}Users{{/link-to}}
-				{{#if session.isGlobalAdmin}}
-					{{#link-to 'customize.global' activeClass='selected' class="option" tagName="li"}}Global{{/link-to}}
-				{{/if}}
-			</ul>
-		</div>
-	{{/layout/zone-sidebar}}
+{{#layout/zone-sidebar}}
+	<div class="sidebar-menu">
+		<ul class="options">
+			{{#link-to 'customize.general' activeClass='selected' class="option" tagName="li"}}General{{/link-to}}
+			{{#link-to 'customize.folders' activeClass='selected' class="option" tagName="li"}}Spaces{{/link-to}}
+			{{#link-to 'customize.users' activeClass='selected' class="option" tagName="li"}}Users{{/link-to}}
+			{{#if session.isGlobalAdmin}}
+				{{#link-to 'customize.global' activeClass='selected' class="option" tagName="li"}}Global{{/link-to}}
+			{{/if}}
+		</ul>
+	</div>
+{{/layout/zone-sidebar}}
 
-	{{#layout/zone-content}}
-		{{outlet}}
-	{{/layout/zone-content}}
-
-{{/layout/zone-container}}
+{{#layout/zone-content}}
+	{{outlet}}
+{{/layout/zone-content}}

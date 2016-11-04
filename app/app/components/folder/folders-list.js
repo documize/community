@@ -14,9 +14,14 @@ import constants from '../../utils/constants';
 import TooltipMixin from '../../mixins/tooltip';
 import NotifierMixin from '../../mixins/notifier';
 
+const {
+	inject: { service }
+} = Ember;
+
 export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 	folderService: Ember.inject.service('folder'),
 	templateService: Ember.inject.service('template'),
+	appMeta: service(),
 	publicFolders: [],
 	protectedFolders: [],
 	privateFolders: [],
@@ -108,7 +113,7 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 		if (windowpos >= 300) {
 			this.set('showScrollTool', true);
 			s.addClass("stuck-space-tool");
-			s.css('left', parseInt($(".zone-sidebar").css('width')) - 18 + 'px');
+			s.css('left', parseInt($(".zone-navigation").css('width')) + parseInt($(".zone-sidebar").css('width')) - 17 + 'px');
 		} else {
 			this.set('showScrollTool', false);
 			s.removeClass("stuck-space-tool");
@@ -123,7 +128,7 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 		onImport() {
 			this.attrs.onImport();
 		},
-		
+
 		scrollTop() {
 			this.set('showScrollTool', false);
 

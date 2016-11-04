@@ -43,11 +43,10 @@ export default Ember.Component.extend({
         let phrase = 'Nothing found';
 
         if (results.length > 0) {
-            let places = documents.length === 1 ? "place" : "places";
-            let references = results.length === 1 ? "secton" : "sections";
+            let references = results.length === 1 ? "reference" : "references";
             let i = results.length;
             let j = documents.length;
-            phrase = `${i} ${references} in ${j} ${places}`;
+            phrase = `${i} ${references}`;
         }
 
         this.set('resultPhrase', phrase);

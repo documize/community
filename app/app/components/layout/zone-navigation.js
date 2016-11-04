@@ -21,10 +21,15 @@ export default Ember.Component.extend({
 	folder: null,
 	appMeta: service(),
 	session: service(),
+	view: {
+		search: false,
+		settings: false,
+		profile: false
+	},
 
 	init() {
 		this._super(...arguments);
-		
+
 		if (this.get("session.authenticated")) {
 			this.get("session.session.content.authenticated.user.accounts").forEach((account) => {
 				// TODO: do not mutate account.active here
@@ -37,6 +42,12 @@ export default Ember.Component.extend({
 		if (this.get('folder') === null) {
 			this.set("folder", this.get('folderService.currentFolder'));
 		}
+
+		let route = this.get('router.currentRouteName');
+		console.log(route);
+		this.set('view.settings', (route === 'customize.general') ? true : false);
+		this.set('view.profile', (route === 'profile') ? true : false);
+		this.set('view.search', (route === 'search') ? true : false);
 	},
 
 	actions: {

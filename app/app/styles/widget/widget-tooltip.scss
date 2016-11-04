@@ -1,6 +1,7 @@
 // https://github.com/HubSpot/tooltip
 
 .tooltip-element {
+	z-index: 999;
   box-sizing: border-box;
   &:after, &:before {
     box-sizing: border-box;

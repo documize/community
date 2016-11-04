@@ -26,8 +26,11 @@
 </div>
 
 <div class="folders-list">
-	{{#if showingList}}
+	<div class="zone-sidebar-title">
+		{{appMeta.title}}
+	</div>
 
+	{{#if showingList}}
 		{{#if session.isEditor}}
 			<div id="add-space-button" class="regular-button button-white">
 				<i class="material-icons">add</i>
@@ -88,8 +91,4 @@
 			</div>
 		{{/if}}
 	{{/if}}
-</div>
-
-<div class="copyright hidden-xs hidden-sm">
-	<a href="https://documize.com?ref=app-footer" target="_blank">Copyright&nbsp;&copy;&nbsp;2016 Documize Inc.</a>
 </div>
