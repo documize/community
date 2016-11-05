@@ -62,5 +62,3 @@ debug
 Dockerfile
 container.sh
 make.sh
-
-embed/bindata_assetfs.go
