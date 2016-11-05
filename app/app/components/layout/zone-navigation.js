@@ -11,12 +11,13 @@
 
 import Ember from 'ember';
 import netUtil from '../../utils/net';
+import TooltipMixin from '../../mixins/tooltip';
 
 const {
 	inject: { service }
 } = Ember;
 
-export default Ember.Component.extend({
+export default Ember.Component.extend(TooltipMixin, {
 	folderService: service('folder'),
 	folder: null,
 	appMeta: service(),
@@ -49,6 +50,17 @@ export default Ember.Component.extend({
 		this.set('view.settings', (is.startWith(route, 'customize')) ? true : false);
 		this.set('view.profile', (route === 'profile') ? true : false);
 		this.set('view.search', (route === 'search') ? true : false);
+	},
+
+	didRender() {
+		if (this.get('session.isAdmin')) {
+			this.addTooltip(document.getElementById("workspace-settings"));
+		}
+		if (this.get("session.authenticated")) {
+			this.addTooltip(document.getElementById("workspace-logout"));
+		} else {
+			this.addTooltip(document.getElementById("workspace-login"));
+		}
 	},
 
 	actions: {

@@ -12,44 +12,43 @@
 import Ember from 'ember';
 
 export default Ember.Component.extend({
-    results: [],
-    resultPhrase: "",
+	results: [],
+	resultPhrase: "",
 
-    didReceiveAttrs() {
-        let results = this.get('results');
-        let temp = _.groupBy(results, 'documentId');
-        let documents = [];
+	didReceiveAttrs() {
+		let results = this.get('results');
+		let temp = _.groupBy(results, 'documentId');
+		let documents = [];
 
-        _.each(temp, function(document) {
+		_.each(temp, function (document) {
 			let refs = [];
 
 			if (document.length > 1) {
 				refs = document.slice(1);
 			}
 
-			_.each(refs, function(ref, index) {
-				ref.comma = index === refs.length-1 ? "" : ", ";
+			_.each(refs, function (ref, index) {
+				ref.comma = index === refs.length - 1 ? "" : ", ";
 			});
 
 			let hasRefs = refs.length > 0;
 
-            documents.pushObject( {
-                doc: document[0],
-                ref: refs,
+			documents.pushObject({
+				doc: document[0],
+				ref: refs,
 				hasReferences: hasRefs
-            });
-        });
+			});
+		});
 
-        let phrase = 'Nothing found';
+		let phrase = 'Nothing found';
 
-        if (results.length > 0) {
-            let references = results.length === 1 ? "reference" : "references";
-            let i = results.length;
-            let j = documents.length;
-            phrase = `${i} ${references}`;
-        }
+		if (results.length > 0) {
+			let references = results.length === 1 ? "reference" : "references";
+			let i = results.length;
+			phrase = `${i} ${references}`;
+		}
 
-        this.set('resultPhrase', phrase);
-        this.set('documents', documents);
-    }
+		this.set('resultPhrase', phrase);
+		this.set('documents', documents);
+	}
 });

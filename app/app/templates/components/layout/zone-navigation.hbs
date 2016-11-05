@@ -29,14 +29,14 @@
 
 	    <ul class="bottom-zone">
 			{{#if session.session.content.authenticated.user.admin}}
-				<li class="{{if view.settings 'selected'}}">
+				<li id="workspace-settings" class="{{if view.settings 'selected'}}" data-tooltip="Settings" data-tooltip-position="right center">
 		            {{#link-to 'customize.general'}}
 		                <i class="material-icons icon-tool">tune</i>
 		            {{/link-to}}
 				</li>
 			{{/if}}
 	        {{#if session.authenticated}}
-				<li>
+				<li id="workspace-logout" data-tooltip="Logout" data-tooltip-position="right center">
 		            {{#link-to 'auth.logout'}}
 		                <i class="material-icons icon-tool">exit_to_app</i>
 		            {{/link-to}}
@@ -49,7 +49,7 @@
 		            {{/link-to}}
 				</li>
 	        {{else}}
-				<li>
+				<li id="workspace-login" data-tooltip="Login" data-tooltip-position="right center">
 	                {{#link-to 'auth.login'}}
 						<i class="material-icons icon-tool">lock_open</i>
 					{{/link-to}}
