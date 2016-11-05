@@ -15,19 +15,9 @@
 		            {{/link-to}}
 				</li>
 	        {{/if}}
-			<li>
-	            {{#link-to 'search'}}
-	                <i class="material-icons icon-tool">language</i>
-	            {{/link-to}}
-			</li>
-			<li>
-	            {{#link-to 'search'}}
-	                <i class="material-icons icon-tool">people_outline</i>
-	            {{/link-to}}
-			</li>
-			<li>
-	            {{#link-to 'search'}}
-	                <i class="material-icons icon-tool">person_outline</i>
+			<li class="{{if view.folder 'selected'}}">
+	            {{#link-to 'folders'}}
+	                <i class="material-icons icon-tool">home</i>
 	            {{/link-to}}
 			</li>
 			<li class="{{if view.search 'selected'}}">

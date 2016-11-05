@@ -9,8 +9,8 @@
 	z-index: 999;
 	overflow-x: hidden;
 
-	 > .bottom-zone,
-	> .top-zone {
+	 > .top-zone,
+	> .bottom-zone {
 		position: absolute;
 		padding: 0;
 		width: 100%;
@@ -24,7 +24,7 @@
 		}
 
 		.selected {
-			background-color: $color-link;
+			// background-color: $color-link;
 
 			> a {
 				> .material-icons {
@@ -37,12 +37,12 @@
 
 	> .top-zone {
 		top: 0;
-		padding-top: 10px;
+		// padding-top: 10px;
 	}
 
 	> .bottom-zone {
 		bottom: 0;
-		// padding-bottom: 10px;
+		padding-bottom: 10px;
 	}
 
 	.filled-tool {
@@ -100,35 +100,11 @@
 	}
 }
 
-.zone-header {
-	background-color: $color-header;
-	padding: 30px 40px;
-
-	> .info {
-		padding: 20px 0;
-
-		> .title {
-			color: $color-off-black;
-			font-size: 1.2rem;
-		}
-
-		> .message {
-			color: $color-gray;
-			font-size: 1rem;
-			margin: 10px 0 0 5px;
-		}
-	}
-
-	> .actions {
-		padding: 20px 0;
-	}
-}
-
 .zone-sidebar {
 	background-color: $color-header;
 	height: 100%;
 	min-height: 100%;
-	padding: 35px 40px 0;
+	padding: 30px 40px 0;
 	position: fixed;
 	margin: 0;
 	z-index: 888;
@@ -138,12 +114,20 @@
 		color: $color-primary;
 		font-size: 1.3rem;
 		font-weight: bold;
-		margin-bottom: 30px;
+		margin-bottom: 10px;
 
+		 > a > .material-icons,
 		> .material-icons {
 			font-size: 1rem;
 			vertical-align: middle;
 		}
+	}
+
+	.zone-sidebar-info {
+		color: $color-gray;
+		font-size: 1rem;
+		font-weight: bold;
+		margin-bottom: 30px;
 	}
 }
 

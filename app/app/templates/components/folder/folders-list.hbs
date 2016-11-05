@@ -1,5 +1,6 @@
 <div class="space-tools">
 	{{#if showingDocument}}
+		{{layout/sidebar-intro title=folder.name message='Import files or start with a template'}}
 		<div {{action 'showList'}} id="cancel-tool" class="round-button round-button-mono button-white doc-tool">
 			<i class="material-icons color-gray">close</i>
 		</div>
@@ -26,11 +27,8 @@
 </div>
 
 <div class="folders-list">
-	<div class="zone-sidebar-title">
-		{{appMeta.title}}
-	</div>
-
 	{{#if showingList}}
+		{{layout/sidebar-intro title=appMeta.title message=appMeta.message}}
 		{{#if session.isEditor}}
 			<div id="add-space-button" class="regular-button button-white">
 				<i class="material-icons">add</i>

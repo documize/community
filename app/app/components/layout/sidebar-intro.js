@@ -8,24 +8,8 @@
 // by contacting <sales@documize.com>.
 //
 // https://documize.com
-@media print {
-	.non-printable,
-	.zone-navigation,
-	.zone-sidebar {
-		display: none !important;
-	}
 
-	.document-view {
-		.attachment-zone,
-		.document-summary,
-		.document-tags,
-		.page-toolbar {
-			display: none !important;
-		}
+import Ember from 'ember';
 
-		.non-printable-message,
-		.print-title {
-			display: block !important;
-		}
-	}
-}
+export default Ember.Component.extend({
+});

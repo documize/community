@@ -22,6 +22,7 @@ export default Ember.Component.extend({
 	appMeta: service(),
 	session: service(),
 	view: {
+		folder: false,
 		search: false,
 		settings: false,
 		profile: false
@@ -44,8 +45,8 @@ export default Ember.Component.extend({
 		}
 
 		let route = this.get('router.currentRouteName');
-		console.log(route);
-		this.set('view.settings', (route === 'customize.general') ? true : false);
+		this.set('view.folder', (is.startWith(route, 'folder')) ? true : false);
+		this.set('view.settings', (is.startWith(route, 'customize')) ? true : false);
 		this.set('view.profile', (route === 'profile') ? true : false);
 		this.set('view.search', (route === 'search') ? true : false);
 	},

@@ -1,12 +1,10 @@
 {{layout/zone-navigation}}
 
 {{#layout/zone-sidebar}}
+	{{layout/sidebar-intro title="Search" message='Search by: #tags, keywords, "some phrase", this AND that, this OR that'}}
 	<div class="page-search">
 		<div class="input-control">
 			{{focus-input type="text" value=filter placeholder='search'}}
-			<p>#tags, keywords, "some phrase"</p>
-			<p>keyword AND keyword</p>
-			<p>keyword OR keyword</p>
 		</div>
 	</div>
 {{/layout/zone-sidebar}}

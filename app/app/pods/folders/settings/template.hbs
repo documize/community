@@ -1,7 +1,11 @@
 {{layout/zone-navigation}}
 
 {{#layout/zone-sidebar}}
-	{{back-to-space folder=model}}
+	{{#layout/sidebar-intro message='Rename, delete, share and manage space permissions'}}
+		{{#link-to 'folders.folder' model.id model.slug}}
+			<i class="material-icons">arrow_back</i>&nbsp;{{model.name}}
+		{{/link-to}}
+	{{/layout/sidebar-intro}}
 	<div class="sidebar-menu">
 		<ul class="options">
 			<li class="option {{if tabGeneral "selected"}}" {{action 'selectTab' 'tabGeneral'}}>General</li>
