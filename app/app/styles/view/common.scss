@@ -1,21 +1,17 @@
-.space-button {
-	width: 100%;
-}
+.explainer {
+	text-align: center;
 
-.space-name {
-	max-width: 90%;
-	text-overflow: ellipsis;
-	overflow: hidden;
-	white-space: nowrap;
-}
+	> .empty-state {
+		margin: 30px 0 0;
+		font-size: 2rem;
+		color: $color-gray;
+		font-family: 'open_sanslight';
+	}
 
-.back-to-home-button {
-	width: 100%;
-}
-
-.back-to-home-name {
-	max-width: 90%;
-	text-overflow: ellipsis;
-	overflow: hidden;
-	white-space: nowrap;
+	> .normal-state {
+		margin: 10px;
+		font-size: 2rem;
+		color: $color-gray;
+		font-family: 'open_sanslight';
+	}
 }

@@ -8,18 +8,23 @@
 // by contacting <sales@documize.com>.
 //
 // https://documize.com
-
 @media print {
-	.zone-navigation, .zone-header, .zone-sidebar, .non-printable {
+	.non-printable,
+	.zone-navigation,
+	.zone-sidebar {
 		display: none !important;
 	}
 
 	.document-view {
-		.page-toolbar, .document-summary, .attachment-zone, .document-tags {
+		.attachment-zone,
+		.document-summary,
+		.document-tags,
+		.page-toolbar {
 			display: none !important;
 		}
 
-		.print-title, .non-printable-message {
+		.non-printable-message,
+		.print-title {
 			display: block !important;
 		}
 	}

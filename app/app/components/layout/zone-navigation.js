@@ -11,20 +11,27 @@
 
 import Ember from 'ember';
 import netUtil from '../../utils/net';
+import TooltipMixin from '../../mixins/tooltip';
 
 const {
 	inject: { service }
 } = Ember;
 
-export default Ember.Component.extend({
+export default Ember.Component.extend(TooltipMixin, {
 	folderService: service('folder'),
 	folder: null,
 	appMeta: service(),
 	session: service(),
+	view: {
+		folder: false,
+		search: false,
+		settings: false,
+		profile: false
+	},
 
 	init() {
 		this._super(...arguments);
-		
+
 		if (this.get("session.authenticated")) {
 			this.get("session.session.content.authenticated.user.accounts").forEach((account) => {
 				// TODO: do not mutate account.active here
@@ -36,6 +43,23 @@ export default Ember.Component.extend({
 	didReceiveAttrs() {
 		if (this.get('folder') === null) {
 			this.set("folder", this.get('folderService.currentFolder'));
+		}
+
+		let route = this.get('router.currentRouteName');
+		this.set('view.folder', (is.startWith(route, 'folder')) ? true : false);
+		this.set('view.settings', (is.startWith(route, 'customize')) ? true : false);
+		this.set('view.profile', (route === 'profile') ? true : false);
+		this.set('view.search', (route === 'search') ? true : false);
+	},
+
+	didRender() {
+		if (this.get('session.isAdmin')) {
+			this.addTooltip(document.getElementById("workspace-settings"));
+		}
+		if (this.get("session.authenticated")) {
+			this.addTooltip(document.getElementById("workspace-logout"));
+		} else {
+			this.addTooltip(document.getElementById("workspace-login"));
 		}
 	},
 

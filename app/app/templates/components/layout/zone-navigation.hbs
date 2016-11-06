@@ -1,38 +1,61 @@
 <div id="zone-navigation" class="zone-navigation">
-    <div class="pull-left content">
-        {{#if session.authenticated}}
-            <div id="accounts-button" class="header-button">
-                <i class="material-icons">apps</i>
-            </div>
-        {{else}}
-            {{#link-to 'application' class='title'}}
-                <div class="header-button" title=appMeta.title>
-                    <i class="material-icons">apps</i>
-                </div>
-            {{/link-to}}
-        {{/if}}
-        {{#link-to 'application' class='title'}}
-            {{appMeta.title}}
-        {{/link-to}}
-    </div>
+		<ul class="top-zone">
+	        {{#if session.authenticated}}
+				<li>
+					<div id="accounts-button" class="filled-tool">
+		                <i class="material-icons">apps</i>
+		            </div>
+				</li>
+	        {{else}}
+				<li>
+		            {{#link-to 'application' class='title'}}
+		                <div class="filled-tool" title={{appMeta.title}}>
+		                    <i class="material-icons">apps</i>
+		                </div>
+		            {{/link-to}}
+				</li>
+	        {{/if}}
+			<li class="{{if view.folder 'selected'}}">
+	            {{#link-to 'folders'}}
+	                <i class="material-icons icon-tool">home</i>
+	            {{/link-to}}
+			</li>
+			<li class="{{if view.search 'selected'}}">
+	            {{#link-to 'search'}}
+	                <i class="material-icons icon-tool">search</i>
+	            {{/link-to}}
+			</li>
+	    </ul>
 
-    <div class="pull-right hidden-xs hidden-sm content">
-        {{#if session.authenticated}}
-            <div class="name">{{session.user.fullname}}</div>
-            <div id="user-button" class="header-button">
-                <i class="initials">{{session.user.initials}}</i>
-            </div>
-        {{else}}
-            <div class="login">
-                {{#link-to 'auth.login'}}Login{{/link-to}}
-            </div>
-        {{/if}}
-        <div class="search">
-            {{#link-to 'search'}}
-                <i class="material-icons">search</i>
-            {{/link-to}}
-        </div>
-    </div>
+	    <ul class="bottom-zone">
+			{{#if session.session.content.authenticated.user.admin}}
+				<li id="workspace-settings" class="{{if view.settings 'selected'}}" data-tooltip="Settings" data-tooltip-position="right center">
+		            {{#link-to 'customize.general'}}
+		                <i class="material-icons icon-tool">tune</i>
+		            {{/link-to}}
+				</li>
+			{{/if}}
+	        {{#if session.authenticated}}
+				<li id="workspace-logout" data-tooltip="Logout" data-tooltip-position="right center">
+		            {{#link-to 'auth.logout'}}
+		                <i class="material-icons icon-tool">exit_to_app</i>
+		            {{/link-to}}
+				</li>
+				<li class="{{if view.profile 'selected'}}">
+					{{#link-to 'profile'}}
+						<div class="filled-tool">
+							<i class="initials">{{session.user.initials}}</i>
+						</div>
+		            {{/link-to}}
+				</li>
+	        {{else}}
+				<li id="workspace-login" data-tooltip="Login" data-tooltip-position="right center">
+	                {{#link-to 'auth.login'}}
+						<i class="material-icons icon-tool">lock_open</i>
+					{{/link-to}}
+		        </li>
+	        {{/if}}
+	    </ul>
 
     {{#if session.authenticated}}
         {{#dropdown-menu target="accounts-button" position="bottom left" open="click" }}
@@ -44,23 +67,5 @@
                 <li class="item"><a href="https://documize.com/welcome">Add team...</a></li>
             </ul>
         {{/dropdown-menu}}
-
-        {{#dropdown-menu target="user-button" position="bottom right" open="click" }}
-            <ul class="menu">
-                <li class="item">
-                    {{#link-to 'profile'}}Profile{{/link-to}}
-                </li>
-                {{#if session.session.content.authenticated.user.admin}}
-                    <li class="item">
-                        {{#link-to 'customize.general'}}Settings{{/link-to}}
-                    </li>
-                {{/if}}
-                <li class="divider"></li>
-                <li class="item">
-                    {{#link-to 'auth.logout'}}Logout{{/link-to}}
-                </li>
-            </ul>
-        {{/dropdown-menu}}
     {{/if}}
-	<div class="clearfix"></div>
 </div>

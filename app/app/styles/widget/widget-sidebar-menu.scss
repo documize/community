@@ -1,5 +1,5 @@
 .sidebar-menu {
-	margin: 30px 0 0 0;
+	margin: 0;
 
 	> .options {
 		padding: 0;
@@ -7,7 +7,7 @@
 
 		> .option {
 			margin-bottom: 15px;
-			font-size: 1rem;
+			font-size: 1.3rem;
 			list-style: none;
 			cursor: pointer;
 			@extend .no-select;

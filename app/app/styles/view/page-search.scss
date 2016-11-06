@@ -1,30 +1,14 @@
 .page-search {
-
-	> .zone-header {
-		background-color: $color-header;
-		padding: 0 40px 0 40px;
-	}
-
 	.input-control {
-		padding: 20px 0;
-		margin-bottom: 0;
-	}
-
-	.input-control input {
-		background-color: $color-header;
-	}
-
-	.input-control input:focus {
-
+		> input {
+			background-color: $color-header;
+		}
 	}
 
 	.search-results {
-		margin: 50px 0;
-		padding: 0 40px 0 40px;
-
 	    .heading {
 	        font-size: 1.2rem;
-	        color: $color-blue;
+	        color: $color-off-black;
 	    }
 
 	    > .list {

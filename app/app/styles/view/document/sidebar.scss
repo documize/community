@@ -6,7 +6,7 @@
 		color: $color-gray;
 		margin: 30px 0;
 
-		>.items {
+		> .items {
 			padding: 0;
 			margin: 0;
 			text-align: center;
@@ -54,44 +54,44 @@
 	}
 
 	.stuck-toc {
-	    position: fixed;
-	    top: 20px;
-		-webkit-animation: fadein 1s; /* Safari, Chrome and Opera > 12.1 */
-      	-moz-animation: fadein 1s; /* Firefox < 16 */
-       	-ms-animation: fadein 1s; /* Internet Explorer */
-        -o-animation: fadein 1s; /* Opera < 12.1 */
-        animation: fadein 1s;
+		position: fixed;
+		top: 20px;
+		-webkit-animation: fadein 1s;
+		-moz-animation: fadein 1s;
+		-ms-animation: fadein 1s;
+		-o-animation: fadein 1s;
+		animation: fadein 1s;
 	}
 
 	.section-tool {
 		position: absolute;
-		top: 150px;
+		top: 130px;
 		right: -18px;
 		z-index: 999;
 	}
 
 	.scroll-tool {
 		position: absolute;
-		top: 150px;
+		top: 130px;
 		right: -18px;
-		z-index: 888;
-		-webkit-animation: fadein 1s; /* Safari, Chrome and Opera > 12.1 */
-      	-moz-animation: fadein 1s; /* Firefox < 16 */
-       	-ms-animation: fadein 1s; /* Internet Explorer */
-        -o-animation: fadein 1s; /* Opera < 12.1 */
-        animation: fadein 1s;
+		z-index: 999;
+		-webkit-animation: fadein 1s;
+		-moz-animation: fadein 1s;
+		-ms-animation: fadein 1s;
+		-o-animation: fadein 1s;
+		animation: fadein 1s;
 	}
 
 	.stuck-tool {
 		position: fixed !important;
-		top: 150px !important;
+		top: 130px !important;
 		right: 0;
 		left: 0;
-		-webkit-animation: fadein 1s; /* Safari, Chrome and Opera > 12.1 */
-      	-moz-animation: fadein 1s; /* Firefox < 16 */
-       	-ms-animation: fadein 1s; /* Internet Explorer */
-        -o-animation: fadein 1s; /* Opera < 12.1 */
-        animation: fadein 1s;
+		-webkit-animation: fadein 1s;
+		-moz-animation: fadein 1s;
+		-ms-animation: fadein 1s;
+		-o-animation: fadein 1s;
+		animation: fadein 1s;
 	}
 
 	.close-action {
@@ -139,7 +139,7 @@
 			font-size: 13px;
 			overflow-x: hidden;
 			list-style-type: none;
-			margin: 20px 0 0 0;
+			margin: 20px 0 0;
 
 			.item {
 				padding: 4px 0;

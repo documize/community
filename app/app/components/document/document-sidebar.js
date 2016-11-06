@@ -51,7 +51,7 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 		if (windowpos >= 300) {
 			this.set('showScrollTool', true);
 			s.addClass("stuck-tool");
-			s.css('left', parseInt($(".zone-sidebar").css('width')) - 18 + 'px');
+			s.css('left', parseInt($(".zone-navigation").css('width')) + parseInt($(".zone-sidebar").css('width')) - 18 + 'px');
 		} else {
 			this.set('showScrollTool', false);
 			s.removeClass("stuck-tool");

@@ -1,39 +1,39 @@
 .space-tools {
 	.doc-tool {
 		position: absolute;
-		top: 150px;
+		top: 130px;
 		right: -18px;
-		z-index: 999;
+		z-index: 888;
 	}
 
 	.scroll-space-tool {
 		position: absolute;
-		top: 150px;
+		top: 130px;
 		right: -18px;
-		z-index: 888;
-		-webkit-animation: fadein 1s; /* Safari, Chrome and Opera > 12.1 */
-		-moz-animation: fadein 1s; /* Firefox < 16 */
-		-ms-animation: fadein 1s; /* Internet Explorer */
-		-o-animation: fadein 1s; /* Opera < 12.1 */
+		z-index: 999;
+		-webkit-animation: fadein 1s;
+		-moz-animation: fadein 1s;
+		-ms-animation: fadein 1s;
+		-o-animation: fadein 1s;
 		animation: fadein 1s;
 	}
 
 	.stuck-space-tool {
 		position: fixed !important;
-		top: 150px !important;
+		top: 130px !important;
 		right: 0;
 		left: 0;
-		-webkit-animation: fadein 1s; /* Safari, Chrome and Opera > 12.1 */
-		-moz-animation: fadein 1s; /* Firefox < 16 */
-		-ms-animation: fadein 1s; /* Internet Explorer */
-		-o-animation: fadein 1s; /* Opera < 12.1 */
+		-webkit-animation: fadein 1s;
+		-moz-animation: fadein 1s;
+		-ms-animation: fadein 1s;
+		-o-animation: fadein 1s;
 		animation: fadein 1s;
 	}
 }
 
 .folders-list {
 	> .section {
-		margin: 30px 0 10px 0;
+		margin: 30px 0 10px;
 
 		> .heading {
 			font-size: 0.9rem;
@@ -64,7 +64,7 @@
 				> .item {
 					list-style-type: none;
 					list-style: none;
-					margin: 0 0 5px 0;
+					margin: 0 0 5px;
 					padding: 0;
 				}
 			}
@@ -80,10 +80,10 @@
 .documents-list {
 	> .document {
 		margin: 0;
-		padding: 20px 20px 25px 20px;
+		padding: 20px 20px 25px;
 		width: 100%;
 		position: relative;
-		transition: .3s;
+		transition: 0.3s;
 		border-bottom: 1px solid $color-border;
 
 		&:hover {
@@ -111,8 +111,8 @@
 
 			> .material-icons {
 				width: 10px;
-			    margin: 0;
-			    padding: 0;
+				margin: 0;
+				padding: 0;
 				color: $color-checkbox;
 			}
 		}
@@ -149,7 +149,8 @@
 	}
 }
 
-.move-document-options, .start-document-options {
+.move-document-options,
+.start-document-options {
 	height: 150px;
 	overflow-y: auto;
 	margin: 0;
@@ -179,13 +180,6 @@
 }
 
 .start-document {
-	> .space-name {
-		color: $color-primary;
-		font-size: 1.3rem;
-		font-weight: bold;
-		margin-bottom: 30px;
-	}
-
 	> .import-document-button {
 		width: 100%;
 		padding: 20px;
@@ -204,7 +198,8 @@
 			color: $color-link;
 		}
 
-		> .dz-preview, .dz-processing {
+		 > .dz-preview,
+		.dz-processing {
 			display: none !important;
 		}
 	}
@@ -240,7 +235,7 @@
 						font-size: 0.9rem;
 						text-align: center;
 						float: left;
-					    margin: 5px 0 0 9px;
+						margin: 5px 0 0 9px;
 						cursor: pointer;
 
 						&:hover {
@@ -269,10 +264,11 @@
 					}
 
 					&:hover {
-						> .title, > .desc {
+						 > .title,
+						> .desc {
 							color: $color-link !important;
 						}
-				    }
+					}
 				}
 			}
 		}

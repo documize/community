@@ -1,22 +1,16 @@
-{{#layout/zone-container}}
+{{layout/zone-navigation}}
 
-	{{layout/zone-navigation}}
-
+{{#layout/zone-sidebar}}
+	{{layout/sidebar-intro title="Search" message='Search by: #tags, keywords, "some phrase", this AND that, this OR that'}}
 	<div class="page-search">
-
-		<div id="zone-header" class="zone-header">
-			<div class="input-control pull-left width-60">
-				<label>Search</label>
-				{{focus-input class="input" type="text" value=filter placeholder='#tags, keywords, "some phrase", keyword AND keyword, keyword OR keyword'}}
-			</div>
-			<div class="actions pull-right hidden-xs hidden-sm">
-				{{layout/button-home}}
-			</div>
-			<div class="clearfix"></div>
+		<div class="input-control">
+			{{focus-input type="text" value=filter placeholder='search'}}
 		</div>
-
-		{{search/search-results results=results}}
-
 	</div>
+{{/layout/zone-sidebar}}
 
-{{/layout/zone-container}}
+{{#layout/zone-content}}
+	<div class="page-search">
+		{{search/search-results results=results}}
+	</div>
+{{/layout/zone-content}}

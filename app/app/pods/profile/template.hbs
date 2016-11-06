@@ -1,16 +1,12 @@
-{{#layout/zone-container}}
+{{layout/zone-navigation}}
 
-	{{layout/zone-navigation}}
+{{#layout/zone-sidebar}}
+	{{layout/sidebar-intro title="Profile" message=session.user.fullname}}
+	<div class="sidebar-menu">
+		<div class="avatar-large">{{session.user.initials}}</div>
+	</div>
+{{/layout/zone-sidebar}}
 
-	{{#layout/zone-sidebar}}
-		{{back-to-home}}
-		<div class="sidebar-menu">
-			<div class="avatar-large">{{session.user.initials}}</div>
-		</div>
-	{{/layout/zone-sidebar}}
-
-	{{#layout/zone-content}}
-		{{user-profile model=model save=(action 'save')}}
-	{{/layout/zone-content}}
-
-{{/layout/zone-container}}
+{{#layout/zone-content}}
+	{{user-profile model=model save=(action 'save')}}
+{{/layout/zone-content}}
