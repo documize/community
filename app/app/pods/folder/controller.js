@@ -10,7 +10,7 @@
 // https://documize.com
 
 import Ember from 'ember';
-import NotifierMixin from '../../../mixins/notifier';
+import NotifierMixin from '../../mixins/notifier';
 
 export default Ember.Controller.extend(NotifierMixin, {
 	documentService: Ember.inject.service('document'),
@@ -71,7 +71,7 @@ export default Ember.Controller.extend(NotifierMixin, {
 
 			this.get('folderService').add({ name: folder }).then(function (newFolder) {
 				self.get('folderService').setCurrentFolder(newFolder);
-				self.transitionToRoute('folders.folder', newFolder.get('id'), newFolder.get('slug'));
+				self.transitionToRoute('folder', newFolder.get('id'), newFolder.get('slug'));
 			});
 		}
 	}

@@ -1,1 +1,8 @@
-{{outlet}}
+{{layout/zone-navigation}}
+
+{{#layout/zone-sidebar}}
+	{{folder/folders-list folders=model noFolder=true onFolderAdd=(action 'onFolderAdd')}}
+{{/layout/zone-sidebar}}
+
+{{#layout/zone-content}}
+{{/layout/zone-content}}

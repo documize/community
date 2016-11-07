@@ -38,6 +38,8 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
 
 		error(error /*, transition*/ ) {
 			if (error) {
+				console.log(error);
+
 				if (netUtil.isAjaxAccessError(error)) {
 					localStorage.clear();
 					return this.transitionTo('auth.login');

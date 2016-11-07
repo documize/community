@@ -32,8 +32,8 @@ module.exports = function (environment) {
 		},
 		'ember-simple-auth': {
 			authenticationRoute: 'auth.login',
-			routeAfterAuthentication: 'folders.folder',
-			routeIfAlreadyAuthenticated: 'folders.folder'
+			routeAfterAuthentication: 'folders',
+			routeIfAlreadyAuthenticated: 'folders'
 		},
 		APP: {
 			// Allows to disable audit service in tests
@@ -45,6 +45,9 @@ module.exports = function (environment) {
 	if (environment === 'development') {
 		ENV.APP.LOG_TRANSITIONS = true;
 		ENV.APP.LOG_TRANSITIONS_INTERNAL = true;
+		ENV.APP.LOG_RESOLVER = false;
+		ENV.APP.LOG_ACTIVE_GENERATION = false;
+		ENV.APP.LOG_VIEW_LOOKUPS = false;
 		ENV['ember-cli-mirage'] = {
 			enabled: false
 		};
