@@ -24,13 +24,18 @@ export default Ember.Component.extend(NotifierMixin, {
 		this.setupImport();
 	},
 
+	willDestroyElement() {
+		if (is.not.null(this.get('drop'))) {
+			this.get('drop').destroy();
+			this.set('drop', null);
+		}
+	},
+
 	setupImport() {
 		// already done init?
 		if (is.not.null(this.get('drop'))) {
-			if (is.not.null(this.get('drop'))) {
-				this.get('drop').destroy();
-				this.set('drop', null);
-			}
+			this.get('drop').destroy();
+			this.set('drop', null);
 		}
 
 		let self = this;
