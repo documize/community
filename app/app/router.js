@@ -19,13 +19,14 @@ var Router = Ember.Router.extend({
 export default Router.map(function () {
 	this.route('folders', {
 		path: '/'
-	}, function () {
-		this.route('folder', {
-			path: 's/:folder_id/:folder_slug'
-		});
-		this.route('settings', {
-			path: 's/:folder_id/:folder_slug/settings'
-		});
+	});
+	
+    this.route('folder', {
+		path: 's/:folder_id/:folder_slug'
+	});
+
+	this.route('settings', {
+		path: 's/:folder_id/:folder_slug/settings'
 	});
 
 	this.route('document', {

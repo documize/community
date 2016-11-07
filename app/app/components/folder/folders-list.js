@@ -37,6 +37,10 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 	init() {
 		this._super(...arguments);
 
+		if (this.get('noFolder')) {
+			return;
+		}
+
 		let _this = this;
 		this.get('templateService').getSavedTemplates().then(function(saved) {
             let emptyTemplate = {
@@ -57,12 +61,20 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 	},
 
 	didRender() {
+		if (this.get('noFolder')) {
+			return;
+		}
+
 		if (this.get('folderService').get('canEditCurrentFolder')) {
 			this.addTooltip(document.getElementById("start-document-button"));
 		}
 	},
 
 	didInsertElement() {
+		if (this.get('noFolder')) {
+			return;
+		}
+
 		this.eventBus.subscribe('resized', this, 'positionTool');
 		this.eventBus.subscribe('scrolled', this, 'positionTool');
 	},

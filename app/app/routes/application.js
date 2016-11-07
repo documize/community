@@ -12,12 +12,13 @@
 import Ember from 'ember';
 import ApplicationRouteMixin from 'ember-simple-auth/mixins/application-route-mixin';
 import netUtil from '../utils/net';
+import TooltipMixin from '../mixins/tooltip';
 
 const {
 	inject: { service }
 } = Ember;
 
-export default Ember.Route.extend(ApplicationRouteMixin, {
+export default Ember.Route.extend(ApplicationRouteMixin, TooltipMixin, {
 	appMeta: service(),
 	session: service(),
 
@@ -34,10 +35,13 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
 	actions: {
 		willTransition: function( /*transition*/ ) {
 			Mousetrap.reset();
+			this.destroyTooltips();
 		},
 
 		error(error /*, transition*/ ) {
 			if (error) {
+				console.log(error);
+
 				if (netUtil.isAjaxAccessError(error)) {
 					localStorage.clear();
 					return this.transitionTo('auth.login');

@@ -239,7 +239,7 @@ export default Ember.Controller.extend(NotifierMixin, {
 			this.get('documentService').deleteDocument(this.get('model.id')).then(function () {
 				self.audit.record("deleted-page");
 				self.send("showNotification", "Deleted");
-				self.transitionToRoute('folders.folder', self.get('folder.id'), self.get('folder.slug'));
+				self.transitionToRoute('folder', self.get('folder.id'), self.get('folder.slug'));
 			});
 		}
 	}

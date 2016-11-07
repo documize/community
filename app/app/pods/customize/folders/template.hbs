@@ -17,7 +17,7 @@
 	                    {{#each folders as |folder|}}
 	                        <tr>
 	                            <td class="bordered">
-	                                {{#link-to 'folders.folder' folder.id folder.slug class="alt"}}{{folder.name}}{{/link-to}}
+	                                {{#link-to 'folder' folder.id folder.slug class="alt"}}{{folder.name}}{{/link-to}}
 	                            </td>
 	                            <td class="bordered">
 	                                {{#each folder.sharedWith as |person|}}

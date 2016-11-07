@@ -1,30 +1,32 @@
-<div class="space-tools">
-	{{#if showingDocument}}
-		{{layout/sidebar-intro title=folder.name message='Import files or start with a template'}}
-		<div {{action 'showList'}} id="cancel-tool" class="round-button round-button-mono button-white doc-tool">
-			<i class="material-icons color-gray">close</i>
-		</div>
+{{#unless noFolder}}
+	<div class="space-tools">
+		{{#if showingDocument}}
+			{{layout/sidebar-intro title=folder.name message='Import files or start with a template'}}
+			<div {{action 'showList'}} id="cancel-tool" class="round-button round-button-mono button-white doc-tool">
+				<i class="material-icons color-gray">close</i>
+			</div>
 
-		{{folder/start-document savedTemplates=savedTemplates folder=folder editor=folderService.canEditCurrentFolder
-			onImport=(action 'onImport')
-			onEditTemplate=(action 'onEditTemplate')
-			onDocumentTemplate=(action 'onDocumentTemplate')}}
-	{{/if}}
+			{{folder/start-document savedTemplates=savedTemplates folder=folder editor=folderService.canEditCurrentFolder
+				onImport=(action 'onImport')
+				onEditTemplate=(action 'onEditTemplate')
+				onDocumentTemplate=(action 'onDocumentTemplate')}}
+		{{/if}}
 
-	{{#if showScrollTool}}
-		<div {{action 'scrollTop'}} id="scroll-space-tool" class="round-button round-button-mono button-white scroll-space-tool" data-tooltip="Back to top" data-tooltip-position="top center">
-			<i class="material-icons color-gray">vertical_align_top</i>
-		</div>
-	{{/if}}
-
-	{{#if showingList}}
-		{{#if folderService.canEditCurrentFolder}}
-			<div {{action 'showDocument'}} class="round-button button-green doc-tool" data-tooltip="Document" data-tooltip-position="top center">
-				<i class="material-icons">add</i>
+		{{#if showScrollTool}}
+			<div {{action 'scrollTop'}} id="scroll-space-tool" class="round-button round-button-mono button-white scroll-space-tool" data-tooltip="Back to top" data-tooltip-position="top center">
+				<i class="material-icons color-gray">vertical_align_top</i>
 			</div>
 		{{/if}}
-	{{/if}}
-</div>
+
+		{{#if showingList}}
+			{{#if folderService.canEditCurrentFolder}}
+				<div {{action 'showDocument'}} class="round-button button-green doc-tool" data-tooltip="Document" data-tooltip-position="top center">
+					<i class="material-icons">add</i>
+				</div>
+			{{/if}}
+		{{/if}}
+	</div>
+{{/unless}}
 
 <div class="folders-list">
 	{{#if showingList}}
@@ -52,7 +54,7 @@
 			{{/unless}}
 			<ul class="list">
 				{{#each publicFolders as |folder|}}
-					{{#link-to 'folders.folder' folder.id folder.slug class="link" activeClass='selected' }}
+					{{#link-to 'folder' folder.id folder.slug class="link" activeClass='selected' }}
 						<li class="item">{{ folder.name }}</li>
 					{{/link-to}}
 				{{/each}}
@@ -67,7 +69,7 @@
 				{{/unless}}
 				<ul class="list">
 					{{#each protectedFolders as |folder|}}
-						{{#link-to 'folders.folder' folder.id folder.slug class="link" activeClass='selected' }}
+						{{#link-to 'folder' folder.id folder.slug class="link" activeClass='selected' }}
 							<li class="item">{{ folder.name }}</li>
 						{{/link-to}}
 					{{/each}}
@@ -81,7 +83,7 @@
 				{{/unless}}
 				<ul class="list">
 					{{#each privateFolders as |folder|}}
-						{{#link-to 'folders.folder' folder.id folder.slug class="link" activeClass='selected' }}
+						{{#link-to 'folder' folder.id folder.slug class="link" activeClass='selected' }}
 							<li class="item">{{ folder.name }}</li>
 						{{/link-to}}
 					{{/each}}
