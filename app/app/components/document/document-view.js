@@ -39,16 +39,16 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	didInsertElement() {
 		let self = this;
 
-		this.get('sectionService').refresh(this.get('document.id')).then(function (changes) {
-			changes.forEach(function (newPage) {
-				let oldPage = self.get('pages').findBy('id', newPage.get('id'));
-				if (is.not.undefined(oldPage)) {
-					oldPage.set('body', newPage.get('body'));
-					oldPage.set('revised', newPage.get('revised'));
-					self.showNotification(`Refreshed ${oldPage.get('title')}`);
-				}
-			});
-		});
+		// this.get('sectionService').refresh(this.get('document.id')).then(function (changes) {
+		// 	changes.forEach(function (newPage) {
+		// 		let oldPage = self.get('pages').findBy('id', newPage.get('id'));
+		// 		if (is.not.undefined(oldPage)) {
+		// 			oldPage.set('body', newPage.get('body'));
+		// 			oldPage.set('revised', newPage.get('revised'));
+		// 			self.showNotification(`Refreshed ${oldPage.get('title')}`);
+		// 		}
+		// 	});
+		// });
 	},
 
 	didRender() {

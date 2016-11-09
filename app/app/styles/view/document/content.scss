@@ -15,66 +15,6 @@
 		color: $color-gray;
 	}
 
-	.attachment-zone {
-		margin: 20px 0 30px 0;
-
-		> .list {
-			margin: 0;
-			padding: 7px 0;
-
-			> .item {
-				color: $color-off-black;
-				margin-top: 10px;
-				padding: 0;
-				list-style-type: none;
-				border-bottom: 1px dotted $color-border;
-				padding-bottom: 10px;
-
-				> .icon {
-					margin-right: 10px;
-				}
-
-				> a {
-					color: $color-gray;
-
-					&:hover {
-						color: $color-link;
-					}
-
-					> .file {
-						font-size: 1rem;
-					}
-				}
-
-				> .action {
-					float: right;
-					margin-top: -2px;
-					margin-right: 5px;
-					@extend .cursor-pointer;
-					opacity: 0.5;
-					@extend .transition-all;
-					display: none;
-					color: $color-stroke;
-				}
-
-				&:hover {
-					.action {
-						display: inline-block;
-
-						&:hover {
-							opacity: 1;
-						}
-					}
-				}
-			}
-		}
-	}
-
-	.delete-attachment-dialog,
-	.delete-page-dialog {
-		display: none;
-	}
-
 	.is-template {
 		color: $color-gray;
 		font-weight: bold;

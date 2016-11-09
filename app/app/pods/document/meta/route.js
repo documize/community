@@ -16,41 +16,24 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	documentService: Ember.inject.service('document'),
 	folderService: Ember.inject.service('folder'),
 	userService: Ember.inject.service('user'),
-	pages: [],
-	attachments: [],
-	users: [],
-	meta: [],
-	folder: null,
-	queryParams: {
-		page: {
-			refreshModel: false
-		}
-	},
 
-	beforeModel(transition) {
-		this.pageId = is.not.undefined(transition.queryParams.page) ? transition.queryParams.page : "";
+	model() {
+		this.audit.record("viewed-document-meta");
 
 		let folders = this.get('store').peekAll('folder');
 		let folder = this.get('store').peekRecord('folder', this.paramsFor('document').folder_id);
 		this.set('folders', folders);
 		this.set('folder', folder);
-		this.get('folderService').setCurrentFolder(folder);
-	},
 
-	model() {
-		this.audit.record("viewed-document");
 		return this.modelFor('document');
 	},
 
-	afterModel(model) {
-		var self = this;
-		var documentId = model.get('id');
-
-		this.browser.setTitle(model.get('name'));
+	afterModel() {
+		let self = this;
 
 		return new Ember.RSVP.Promise(function (resolve) {
-			self.get('documentService').getPages(documentId).then(function (pages) {
-				self.set('pages', pages);
+			self.get('userService').getFolderUsers(self.get('folder.id')).then(function (users) {
+				self.set('users', users);
 				resolve();
 			});
 		});
@@ -58,10 +41,21 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 
 	setupController(controller, model) {
 		controller.set('model', model);
-		controller.set('folder', this.folder);
+		controller.set('folder', this.get('folder'));
 		controller.set('folders', this.get('folders').rejectBy('id', 0));
-		controller.set('currentPage', this.pageId);
 		controller.set('isEditor', this.get('folderService').get('canEditCurrentFolder'));
-		controller.set('pages', this.get('pages'));
+		controller.set('users', this.get('users'));
+
+		// setup document owner
+		let owner = this.get('users').findBy('id', model.get('userId'));
+
+		// no document owner? You are the owner!
+		if (is.undefined(owner)) {
+			owner = this.session.user;
+			model.set('userId', this.get('session.session.authenticated.user.id'));
+			this.get('documentService').save(model);
+		}
+
+		controller.set('owner', owner);
 	}
 });

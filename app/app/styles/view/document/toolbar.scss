@@ -1,0 +1,61 @@
+.document-toolbar {
+	position: relative;
+	margin: -30px 0 40px;
+	height: 60px;
+	padding: 5px 30px 0;
+	background-color: $color-off-white;
+	@include border-radius-bottom-right(5px);
+	@include border-radius-bottom-left(5px);
+	@extend .no-select;
+
+	> .tabs {
+		width: 80%;
+		height: 50px;
+		margin-top: 15px;
+		display: inline-block;
+
+		> .tab {
+			list-style-type: none;
+			display: inline-block;
+			margin: 0 20px 0 0;
+			padding: 0;
+			color: $color-gray;
+			font-family: $font-semibold;
+			cursor: pointer;
+
+			&:hover {
+				color: $color-link;
+			}
+
+			> a {
+				color: $color-gray;
+			}
+
+			> .active {
+				color: $color-link;
+			}
+		}
+	}
+
+	> .options {
+		width: 20%;
+		height: 50px;
+		margin-top: 15px;
+		display: inline-block;
+		text-align: right;
+		float: right;
+
+		> .option {
+			list-style-type: none;
+			display: inline-block;
+			margin: 0 0 0 20px;
+			padding: 0;
+			color: $color-gray;
+			cursor: pointer;
+
+			&:hover {
+				color: $color-link;
+			}
+		}
+	}
+}

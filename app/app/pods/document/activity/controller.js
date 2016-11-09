@@ -10,15 +10,7 @@
 // https://documize.com
 
 import Ember from 'ember';
+import NotifierMixin from '../../../mixins/notifier';
 
-export default Ember.Component.extend({
-    page: {},
-    tagName: "li",
-    classNames: ["item"],
-
-    actions: {
-        onClick(id) {
-            this.get('onClick')(id);
-        }
-    }
+export default Ember.Controller.extend(NotifierMixin, {
 });

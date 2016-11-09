@@ -85,9 +85,9 @@ export default Ember.Component.extend({
 					self.attrs.onOpenCallback(drop);
 				}
 			});
+
 			self.set('drop', drop);
 		}
-
 	},
 
 	willDestroyElement() {

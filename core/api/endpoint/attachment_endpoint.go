@@ -91,6 +91,10 @@ func GetAttachments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if len(a) == 0 {
+		a = []entity.Attachment{}
+	}
+
 	json, err := json.Marshal(a)
 
 	if err != nil {

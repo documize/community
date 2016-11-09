@@ -23,7 +23,7 @@ export default Ember.Component.extend({
 		this._super(...arguments);
         let tagz = [];
 
-        if (this.get('documentTags').length > 1) {
+        if (!_.isUndefined(this.get('documentTags')) && this.get('documentTags').length > 1) {
             let tags = this.get('documentTags').split('#');
             _.each(tags, function(tag) {
                 if (tag.length > 0) {

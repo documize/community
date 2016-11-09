@@ -1,1 +1,15 @@
-{{outlet}}
+{{layout/zone-navigation}}
+
+{{#layout/zone-sidebar}}
+	{{document/document-sidebar document=model folder=folder pages=pages page=page isEditor=isEditor onAddSection=(action
+	'onAddSection') changePageSequence=(action 'onPageSequenceChange') changePageLevel=(action 'onPageLevelChange') gotoPage=(action
+	'gotoPage')}}
+{{/layout/zone-sidebar}}
+
+{{#layout/zone-content}}
+	{{document/document-toolbar document=model pages=pages folder=folder isEditor=isEditor onSaveTemplate=(action
+	'onSaveTemplate') onDocumentDelete=(action
+	'onDocumentDelete')}}
+
+	{{outlet}}
+{{/layout/zone-content}}

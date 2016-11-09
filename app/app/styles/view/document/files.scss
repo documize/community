@@ -1,0 +1,78 @@
+.document-files {
+	margin: 0;
+
+	> .upload-document-files {
+		width: 50%;
+		padding: 20px;
+		margin: 0 auto;
+		text-align: center;
+		color: $color-gray;
+		border: 2px dotted $color-gray;
+		cursor: pointer;
+		font-size: 1rem;
+		line-height: 1.7rem;
+		@include border-radius(10px);
+		@include ease-in();
+
+		&:hover {
+			border-color: $color-link;
+			color: $color-link;
+		}
+
+		.dz-processing,
+		> .dz-preview {
+			display: none !important;
+		}
+	}
+
+	> .list {
+		margin: 0 0 50px;
+		padding: 7px 0;
+
+		> .item {
+			color: $color-off-black;
+			margin-top: 10px;
+			padding: 0;
+			list-style-type: none;
+			border-bottom: 1px solid $color-border;
+			padding-bottom: 10px;
+
+			> .icon {
+				margin-right: 10px;
+			}
+
+			> a {
+				color: $color-gray;
+
+				&:hover {
+					color: $color-link;
+				}
+
+				> .file {
+					font-size: 1rem;
+				}
+			}
+
+			> .action {
+				float: right;
+				margin-top: -2px;
+				margin-right: 5px;
+				@extend .cursor-pointer;
+				@extend .transition-all;
+				display: none;
+				color: $color-gray;
+			}
+
+			&:hover {
+				.action {
+					display: inline-block;
+				}
+			}
+		}
+	}
+}
+
+.delete-attachment-dialog,
+.delete-page-dialog {
+	display: none;
+}

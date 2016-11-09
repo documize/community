@@ -20,18 +20,6 @@ export default Ember.Controller.extend(NotifierMixin, {
 	page: null,
 	folder: {},
 	pages: [],
-	attachments: null,
-
-	getAttachments() {
-		let self = this;
-		this.get('documentService').getAttachments(this.model.get('id')).then(function (attachments) {
-			if (is.array(attachments)) {
-				self.set('attachments', attachments);
-			} else {
-				self.set('attachments', []);
-			}
-		});
-	},
 
 	// Jump to the right part of the document.
 	scrollToPage(pageId) {
@@ -63,56 +51,6 @@ export default Ember.Controller.extend(NotifierMixin, {
 			}
 
 			this.scrollToPage(pageId);
-		},
-
-		onPageSequenceChange(changes) {
-			let self = this;
-
-			this.get('documentService').changePageSequence(this.model.get('id'), changes).then(function () {
-				_.each(changes, function (change) {
-					let pageContent = _.findWhere(self.get('pages'), {
-						id: change.pageId
-					});
-
-					if (is.not.undefined(pageContent)) {
-						pageContent.set('sequence', change.sequence);
-					}
-				});
-
-				self.set('pages', self.get('pages').sortBy('sequence'));
-			});
-		},
-
-		onPageLevelChange(changes) {
-			let self = this;
-
-			this.get('documentService').changePageLevel(this.model.get('id'), changes).then(function () {
-				_.each(changes, function (change) {
-					let pageContent = _.findWhere(self.get('pages'), {
-						id: change.pageId
-					});
-
-					if (is.not.undefined(pageContent)) {
-						pageContent.set('level', change.level);
-					}
-				});
-
-				let pages = self.get('pages');
-				pages = pages.sortBy('sequence');
-				self.set('pages', []);
-				self.set('pages', pages);
-			});
-		},
-
-		onAttachmentUpload() {
-			this.getAttachments();
-		},
-
-		onAttachmentDeleted(id) {
-			let self = this;
-			this.get('documentService').deleteAttachment(this.model.get('id'), id).then(function () {
-				self.getAttachments();
-			});
 		},
 
 		onPageDeleted(deletePage) {
@@ -181,66 +119,5 @@ export default Ember.Controller.extend(NotifierMixin, {
 				self.send('onPageLevelChange', pendingChanges);
 			}
 		},
-
-		onSaveTemplate(name, desc) {
-			this.get('templateService').saveAsTemplate(this.model.get('id'), name, desc).then(function () {});
-		},
-
-		onDocumentChange(doc) {
-			let self = this;
-			this.get('documentService').save(doc).then(function () {
-				self.set('model', doc);
-			});
-		},
-
-		onAddSection(section) {
-			this.audit.record("added-section");
-			this.audit.record("added-section-" + section.get('contentType'));
-
-			let page = {
-				documentId: this.get('model.id'),
-				title: `${section.get('title')} Section`,
-				level: 1,
-				sequence: 2048,
-				body: "",
-				contentType: section.get('contentType')
-			};
-
-			let data = this.get('store').normalize('page', page);
-			let pageData = this.get('store').push(data);
-
-			let meta = {
-				documentId: this.get('model.id'),
-				rawBody: "",
-				config: ""
-			};
-
-			let pageMeta = this.get('store').normalize('page-meta', meta);
-			let pageMetaData = this.get('store').push(pageMeta);
-
-			let model = {
-				page: pageData,
-				meta: pageMetaData
-			};
-
-			this.get('documentService').addPage(this.get('model.id'), model).then((newPage) => {
-				this.transitionToRoute('document.edit',
-					this.get('folder.id'),
-					this.get('folder.slug'),
-					this.get('model.id'),
-					this.get('model.slug'),
-					newPage.id);
-			});
-		},
-
-		onDocumentDelete() {
-			let self = this;
-
-			this.get('documentService').deleteDocument(this.get('model.id')).then(function () {
-				self.audit.record("deleted-page");
-				self.send("showNotification", "Deleted");
-				self.transitionToRoute('folder', self.get('folder.id'), self.get('folder.slug'));
-			});
-		}
 	}
 });

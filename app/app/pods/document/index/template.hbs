@@ -1,17 +1,2 @@
-{{layout/zone-navigation}}
-
-{{#layout/zone-sidebar}}
-	{{document/document-sidebar document=model meta=meta folder=folder pages=pages page=page owner=owner isEditor=isEditor onAddSection=(action
-	'onAddSection') changePageSequence=(action 'onPageSequenceChange') changePageLevel=(action 'onPageLevelChange') gotoPage=(action
-	'gotoPage')}}
-{{/layout/zone-sidebar}}
-
-{{#layout/zone-content}}
-	{{document/document-toolbar document=model pages=pages folder=folder owner=owner isEditor=isEditor users=users onSaveTemplate=(action
-	'onSaveTemplate') onDocumentChange=(action 'onDocumentChange') onAttachmentUpload=(action 'onAttachmentUpload') onDocumentDelete=(action
-	'onDocumentDelete')}}
-
-	{{document/document-view document=model meta=meta pages=pages attachments=attachments folder=folder
-	folders=folders isEditor=isEditor gotoPage=(action 'gotoPage') onAttachmentDeleted=(action 'onAttachmentDeleted') onDeletePage=(action
-	'onPageDeleted')}}
-{{/layout/zone-content}}
+{{document/document-view document=model meta=meta pages=pages attachments=attachments folder=folder
+folders=folders isEditor=isEditor gotoPage=(action 'gotoPage') onDeletePage=(action 'onPageDeleted')}}
