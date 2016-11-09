@@ -29,6 +29,7 @@ func (*Provider) Meta() provider.TypeMeta {
 	section.Title = "Tabular"
 	section.Description = "Rows, columns for tabular data"
 	section.ContentType = "table"
+	section.PageType = "section"
 	section.Order = 9996
 
 	return section

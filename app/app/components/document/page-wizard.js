@@ -13,31 +13,28 @@ import Ember from 'ember';
 import NotifierMixin from '../../mixins/notifier';
 
 export default Ember.Component.extend(NotifierMixin, {
-	sectionService: Ember.inject.service('section'),
+	display: 'section', // which CSS to use
 
-	didReceiveAttrs() {
+	didRender() {
 		let self = this;
-		this.get('sectionService').getAll().then(function(sections) {
-			self.set('sections', sections);
+
+		Mousetrap.bind('esc', function () {
+			if (self.get('isDestroyed') || self.get('isDestroying')) {
+				return;
+			}
+
+			self.send('onCancel');
+			return false;
 		});
 	},
 
-	didRender() {
-        let self = this;
-
-        Mousetrap.bind('esc', function() {
-            self.send('onCancel');
-            return false;
-        });
-    },
-
-    actions: {
+	actions: {
 		onCancel() {
 			this.attrs.onCancel();
 		},
 
-        addSection(section) {
-            this.attrs.onAction(section);
-        }
-    }
+		addSection(section) {
+			this.attrs.onAction(section);
+		}
+	}
 });

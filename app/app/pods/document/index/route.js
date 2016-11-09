@@ -62,6 +62,6 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 		controller.set('folders', this.get('folders').rejectBy('id', 0));
 		controller.set('currentPage', this.pageId);
 		controller.set('isEditor', this.get('folderService').get('canEditCurrentFolder'));
-		controller.set('pages', this.get('pages'));
+		controller.set('pages', this.get('pages').filterBy('pageType', 'section'));
 	}
 });

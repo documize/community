@@ -29,6 +29,7 @@ func (*Provider) Meta() provider.TypeMeta {
 	section.Title = "Code"
 	section.Description = "Formatted code snippets"
 	section.ContentType = "code"
+	section.PageType = "section"
 	section.Order = 9997
 
 	return section

@@ -3,7 +3,7 @@
 	margin: -30px 0 40px;
 	height: 60px;
 	padding: 5px 30px 0;
-	background-color: $color-off-white;
+	background-color: $color-sidebar;
 	@include border-radius-bottom-right(5px);
 	@include border-radius-bottom-left(5px);
 	@extend .no-select;
@@ -33,6 +33,26 @@
 
 			> .active {
 				color: $color-link;
+
+				> .add-tab {
+					> i {
+						color: $color-link;
+					}
+				}
+			}
+
+			.add-tab {
+				display: inline-block;
+				vertical-align: text-top;
+
+				> i {
+					font-size: 1.5rem;
+					color: $color-gray;
+
+					&:hover {
+						color: $color-green;
+					}
+				}
 			}
 		}
 	}

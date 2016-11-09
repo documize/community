@@ -36,6 +36,7 @@ func init() {
 	meta.Title = "Trello"
 	meta.Description = "Embed cards from boards and lists"
 	meta.ContentType = "trello"
+	meta.PageType = "tab"
 }
 
 // Provider represents Trello

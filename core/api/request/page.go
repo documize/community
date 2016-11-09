@@ -50,7 +50,7 @@ func (p *Persister) AddPage(model models.PageModel) (err error) {
 		model.Page.Sequence = maxSeq * 2
 	}
 
-	stmt, err := p.Context.Transaction.Preparex("INSERT INTO page (refid, orgid, documentid, userid, contenttype, level, title, body, revisions, sequence, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+	stmt, err := p.Context.Transaction.Preparex("INSERT INTO page (refid, orgid, documentid, userid, contenttype, pagetype, level, title, body, revisions, sequence, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
 	defer utility.Close(stmt)
 
 	if err != nil {
@@ -58,7 +58,7 @@ func (p *Persister) AddPage(model models.PageModel) (err error) {
 		return
 	}
 
-	_, err = stmt.Exec(model.Page.RefID, model.Page.OrgID, model.Page.DocumentID, model.Page.UserID, model.Page.ContentType, model.Page.Level, model.Page.Title, model.Page.Body, model.Page.Revisions, model.Page.Sequence, model.Page.Created, model.Page.Revised)
+	_, err = stmt.Exec(model.Page.RefID, model.Page.OrgID, model.Page.DocumentID, model.Page.UserID, model.Page.ContentType, model.Page.PageType, model.Page.Level, model.Page.Title, model.Page.Body, model.Page.Revisions, model.Page.Sequence, model.Page.Created, model.Page.Revised)
 
 	if err != nil {
 		log.Error("Unable to execute insert for page", err)
@@ -91,7 +91,7 @@ func (p *Persister) AddPage(model models.PageModel) (err error) {
 func (p *Persister) GetPage(pageID string) (page entity.Page, err error) {
 	err = nil
 
-	stmt, err := Db.Preparex("SELECT a.id, a.refid, a.orgid, a.documentid, a.userid, a.contenttype, a.level, a.sequence, a.title, a.body, a.revisions, a.created, a.revised FROM page a WHERE a.orgid=? AND a.refid=?")
+	stmt, err := Db.Preparex("SELECT a.id, a.refid, a.orgid, a.documentid, a.userid, a.contenttype, a.pagetype, a.level, a.sequence, a.title, a.body, a.revisions, a.created, a.revised FROM page a WHERE a.orgid=? AND a.refid=?")
 	defer utility.Close(stmt)
 
 	if err != nil {
@@ -113,7 +113,7 @@ func (p *Persister) GetPage(pageID string) (page entity.Page, err error) {
 func (p *Persister) GetPages(documentID string) (pages []entity.Page, err error) {
 	err = nil
 
-	err = Db.Select(&pages, "SELECT a.id, a.refid, a.orgid, a.documentid, a.userid, a.contenttype, a.level, a.sequence, a.title, a.body, a.revisions, a.created, a.revised FROM page a WHERE a.orgid=? AND a.documentid=? ORDER BY a.sequence", p.Context.OrgID, documentID)
+	err = Db.Select(&pages, "SELECT a.id, a.refid, a.orgid, a.documentid, a.userid, a.contenttype, a.pagetype, a.level, a.sequence, a.title, a.body, a.revisions, a.created, a.revised FROM page a WHERE a.orgid=? AND a.documentid=? ORDER BY a.sequence", p.Context.OrgID, documentID)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to execute select pages for org %s and document %s", p.Context.OrgID, documentID), err)
@@ -130,7 +130,7 @@ func (p *Persister) GetPagesWhereIn(documentID, inPages string) (pages []entity.
 
 	args := []interface{}{p.Context.OrgID, documentID}
 	tempValues := strings.Split(inPages, ",")
-	sql := "SELECT a.id, a.refid, a.orgid, a.documentid, a.userid, a.contenttype, a.level, a.sequence, a.title, a.body, a.revisions, a.created, a.revised FROM page a WHERE a.orgid=? AND a.documentid=? AND a.refid IN (?" + strings.Repeat(",?", len(tempValues)-1) + ") ORDER BY sequence"
+	sql := "SELECT a.id, a.refid, a.orgid, a.documentid, a.userid, a.contenttype, a.pagetype, a.level, a.sequence, a.title, a.body, a.revisions, a.created, a.revised FROM page a WHERE a.orgid=? AND a.documentid=? AND a.refid IN (?" + strings.Repeat(",?", len(tempValues)-1) + ") ORDER BY sequence"
 
 	inValues := make([]interface{}, len(tempValues))
 
@@ -180,7 +180,7 @@ func (p *Persister) GetPagesWhereIn(documentID, inPages string) (pages []entity.
 // GetPagesWithoutContent returns a slice containing all the page records for a given documentID, in presentation sequence,
 // but without the body field (which holds the HTML content).
 func (p *Persister) GetPagesWithoutContent(documentID string) (pages []entity.Page, err error) {
-	err = Db.Select(&pages, "SELECT id, refid, orgid, documentid, userid, contenttype, sequence, level, title, revisions, created, revised FROM page WHERE orgid=? AND documentid=? ORDER BY sequence", p.Context.OrgID, documentID)
+	err = Db.Select(&pages, "SELECT id, refid, orgid, documentid, userid, contenttype, pagetype, sequence, level, title, revisions, created, revised FROM page WHERE orgid=? AND documentid=? ORDER BY sequence", p.Context.OrgID, documentID)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to execute select pages for org %s and document %s", p.Context.OrgID, documentID), err)
@@ -199,7 +199,7 @@ func (p *Persister) UpdatePage(page entity.Page, refID, userID string, skipRevis
 	// Store revision history
 	if !skipRevision {
 		var stmt *sqlx.Stmt
-		stmt, err = p.Context.Transaction.Preparex("INSERT INTO revision (refid, orgid, documentid, ownerid, pageid, userid, contenttype, title, body, rawbody, config, created, revised) SELECT ? as refid, a.orgid, a.documentid, a.userid as ownerid, a.refid as pageid, ? as userid, a.contenttype, a.title, a.body, b.rawbody, b.config, ? as created, ? as revised FROM page a, pagemeta b WHERE a.refid=? AND a.refid=b.pageid")
+		stmt, err = p.Context.Transaction.Preparex("INSERT INTO revision (refid, orgid, documentid, ownerid, pageid, userid, contenttype, pagetype, title, body, rawbody, config, created, revised) SELECT ? as refid, a.orgid, a.documentid, a.userid as ownerid, a.refid as pageid, ? as userid, a.contenttype, a.pagetype, a.title, a.body, b.rawbody, b.config, ? as created, ? as revised FROM page a, pagemeta b WHERE a.refid=? AND a.refid=b.pageid")
 
 		defer utility.Close(stmt)
 

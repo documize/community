@@ -1,0 +1,31 @@
+<div class="document-section">
+
+	{{#if viewMode}}
+		<div class="toolbar pull-right">
+			<div class="buttons">
+				<div class="round-button-mono" {{action 'onEdit'}}>
+					<i class="material-icons color-gray">edit</i>
+				</div>
+				<div class="button-gap"></div>
+				<div class="round-button-mono" id="delete-section-button">
+					<i class="material-icons color-gray">delete</i>
+				</div>
+			</div>
+		</div>
+		<div class="clearfix"/>
+		{{#dropdown-dialog target="delete-section-button" position="bottom right" button="Delete" color="flat-red" onAction=(action 'onDelete')}}
+			<p>Are you sure you want to delete this section?</p>
+			<p>There is no undo!</p>
+		{{/dropdown-dialog}}
+
+		<div class="wysiwyg">
+			<h1>{{model.page.title}}</h1>
+			{{section/base-renderer page=model.page}}
+		</div>
+	{{/if}}
+
+	{{#if editMode}}
+		{{document/document-editor document=model.document folder=model.folder page=model.page meta=model.meta onCancel=(action 'onCancel') onAction=(action 'onAction')}}
+	{{/if}}
+
+</div>

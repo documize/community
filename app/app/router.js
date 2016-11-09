@@ -41,6 +41,9 @@ export default Router.map(function () {
 		this.route('activity', {
 			path: 'activity'
 		});
+		this.route('section', {
+			path: 'section/:page_id'
+		});
 		this.route('edit', {
 			path: 'edit/:page_id'
 		});

@@ -29,6 +29,7 @@ func (*Provider) Meta() provider.TypeMeta {
 	section.Title = "Rich Text"
 	section.Description = "Rich text WYSIWYG"
 	section.ContentType = "wysiwyg"
+	section.PageType = "section"
 	section.Order = 9999
 
 	return section

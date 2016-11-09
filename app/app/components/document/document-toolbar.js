@@ -30,6 +30,12 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		this.set('saveTemplate.description', this.get('document.excerpt'));
 	},
 
+	didRender() {
+		if (this.session.isEditor) {
+			this.addTooltip(document.getElementById("add-document-tab"));
+		}
+	},
+
 	willDestroyElement() {
 		this.destroyTooltips();
 	},

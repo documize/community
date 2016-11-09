@@ -18,6 +18,7 @@ export default Model.extend({
 	documentId: attr('string'),
 	orgId: attr('string'),
 	contentType: attr('string'),
+	pageType: attr('string'),
 	level: attr('number', { defaultValue: 1 }),
 	sequence: attr('number', { defaultValue: 0 }),
 	revisions: attr('number', { defaultValue: 0 }),

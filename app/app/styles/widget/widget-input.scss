@@ -51,8 +51,8 @@
 		overflow-y: hidden;
 	}
 
-	 > div select,
-	> select {
+	 > select,
+	> div select {
 		background-color: $color-white;
 		padding: 5px;
 		border: 1px solid $color-input;
@@ -167,25 +167,25 @@
 	padding: 30px 40px;
 	border: 10px solid $color-border;
 	@include border-radius(15px);
+}
 
-	> .form-header {
-		> .title {
-			font-size: 1.4rem;
-			font-weight: normal;
-			font-family: $font-semibold;
-			pointer-events: none;
-			font-weight: bold;
-			color: $color-off-black;
-		}
+.form-header {
+	> .title {
+		font-size: 1.4rem;
+		font-weight: normal;
+		font-family: $font-semibold;
+		pointer-events: none;
+		font-weight: bold;
+		color: $color-off-black;
+	}
 
-		> .tip {
-			color: $color-input;
-			font-size: 1.2rem;
-			margin: 5px 0 30px;
-			padding: 0;
-			font-family: $font-light;
-			text-align: left;
-		}
+	> .tip {
+		color: $color-input;
+		font-size: 1.2rem;
+		margin: 5px 0 30px;
+		padding: 0;
+		font-family: $font-light;
+		text-align: left;
 	}
 }
 

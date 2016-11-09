@@ -13,6 +13,7 @@ import Ember from 'ember';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 
 export default Ember.Route.extend(AuthenticatedRouteMixin, {
+	sectionService: Ember.inject.service('section'),
 	documentService: Ember.inject.service('document'),
 	folderService: Ember.inject.service('folder'),
 	userService: Ember.inject.service('user'),
@@ -46,7 +47,11 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 		return new Ember.RSVP.Promise(function (resolve) {
 			self.get('documentService').getPages(documentId).then(function (pages) {
 				self.set('pages', pages);
-				resolve();
+
+				self.get('sectionService').getAll().then(function (sections) {
+					self.set('sections', sections.filterBy('pageType', 'section'));
+					resolve();
+				});
 			});
 		});
 	},
@@ -57,7 +62,9 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 		controller.set('folders', this.get('folders').rejectBy('id', 0));
 		controller.set('currentPage', this.pageId);
 		controller.set('isEditor', this.get('folderService').get('canEditCurrentFolder'));
-		controller.set('pages', this.get('pages'));
+		controller.set('pages', this.get('pages').filterBy('pageType', 'section'));
+		controller.set('tabs', this.get('pages').filterBy('pageType', 'tab'));
+		controller.set('sections', this.get('sections'));
 
 		// setup document owner
 		let owner = this.get('users').findBy('id', model.get('userId'));

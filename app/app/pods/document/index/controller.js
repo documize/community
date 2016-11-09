@@ -93,13 +93,6 @@ export default Ember.Controller.extend(NotifierMixin, {
 					}
 
 					self.set('pages', _.sortBy(self.get('pages'), "sequence"));
-
-					self.audit.record("deleted-page");
-
-					// fetch document meta
-					self.get('documentService').getMeta(self.model.get('id')).then(function (meta) {
-						self.set('meta', meta);
-					});
 				});
 			} else {
 				// page delete followed by re-leveling child pages
@@ -107,17 +100,12 @@ export default Ember.Controller.extend(NotifierMixin, {
 					self.set('pages', _.reject(self.get('pages'), function (p) {
 						return p.get('id') === deleteId;
 					}));
-
-					self.audit.record("deleted-page");
-
-					// fetch document meta
-					self.get('documentService').getMeta(self.model.get('id')).then(function (meta) {
-						self.set('meta', meta);
-					});
 				});
 
 				self.send('onPageLevelChange', pendingChanges);
 			}
+
+			self.audit.record("deleted-page");
 		},
 	}
 });

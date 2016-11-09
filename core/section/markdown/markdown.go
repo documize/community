@@ -30,6 +30,7 @@ func (*Provider) Meta() provider.TypeMeta {
 	section.Title = "Markdown"
 	section.Description = "CommonMark based content"
 	section.ContentType = "markdown"
+	section.PageType = "section"
 	section.Order = 9998
 
 	return section

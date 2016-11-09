@@ -5,31 +5,26 @@
 	{{#if authenticated}}
 
 		<div class="pull-left width-45">
-			<div class="input-form">
-				<div class="heading">
-					<div class="title">Select Repository</div>
-					<div class="tip">Choose source of code information to be displayed</div>
-				</div>
-				<div class="input-control">
-						<label>Organization or User</label>
-						<div class="tip">Select organization or username whose repository you want to show</div>
-						{{ui-select id="owners-dropdown" content=owners action=(action 'onOwnerChange') optionValuePath="id" optionLabelPath="name" selection=config.owner}}
-				</div>
-				<div class="input-control">
-					<label>Show items since (default 7 days ago)</label>
-					{{input id="branch-since" value=config.branchSince type="text" }}<br>
-				</div>
-				<div class="input-control">
-					<label>GitHub Views</label>
-					<div class="tip">Select the views you want to show</div>
-					<div class="github-view">
-						{{input id="show-milestone" checked=config.showMilestones type="checkbox"}}
-						<label>Show Milestones</label>
-						{{input id="show-issues" checked=config.showIssues type="checkbox"}}
-						<label>Show Issues</label>
-						{{input id="show-commits" checked=config.showCommits type="checkbox" }}
-						<label>Show Commits</label>
-					</div>
+			<div class="input-control">
+					<label>Select repository</label>
+					<div class="tip">Select organization or user whose repository you want to show</div>
+					{{ui-select id="owners-dropdown" content=owners action=(action 'onOwnerChange') optionValuePath="id" optionLabelPath="name" selection=config.owner}}
+			</div>
+			<div class="input-control">
+				<label>Show items since</label>
+				<div class="tip">default is 7 days ago</div>
+				{{input id="branch-since" value=config.branchSince type="text" }}<br>
+			</div>
+			<div class="input-control">
+				<label>GitHub Views</label>
+				<div class="tip">Select the views you want to show</div>
+				<div class="github-view">
+					{{input id="show-milestone" checked=config.showMilestones type="checkbox"}}
+					<label>Show Milestones</label>
+					{{input id="show-issues" checked=config.showIssues type="checkbox"}}
+					<label>Show Issues</label>
+					{{input id="show-commits" checked=config.showCommits type="checkbox" }}
+					<label>Show Commits</label>
 				</div>
 			</div>
 		</div>

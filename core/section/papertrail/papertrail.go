@@ -38,6 +38,7 @@ func (*Provider) Meta() provider.TypeMeta {
 	section.Title = "Papertrail"
 	section.Description = "Display log entries"
 	section.ContentType = "papertrail"
+	section.PageType = "tab"
 
 	return section
 }

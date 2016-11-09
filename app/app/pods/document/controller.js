@@ -172,7 +172,8 @@ export default Ember.Controller.extend(NotifierMixin, {
 				level: 1,
 				sequence: 2048,
 				body: "",
-				contentType: section.get('contentType')
+				contentType: section.get('contentType'),
+				pageType: section.get('pageType')
 			};
 
 			let data = this.get('store').normalize('page', page);

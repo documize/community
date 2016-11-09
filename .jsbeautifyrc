@@ -5,7 +5,17 @@
 		"indent_with_tabs": true,
 		"preserve_newlines": true,
 		"max_preserve_newlines": 2,
-		"newline_between_rules": true
+		"newline_between_rules": true,
+		"selector_separator_newlines": true
+	},
+	"scss": {
+		"indent_size": 4,
+		"indent_level": 0,
+		"indent_with_tabs": true,
+		"preserve_newlines": true,
+		"max_preserve_newlines": 2,
+		"newline_between_rules": true,
+		"selector_separator_newlines": true
 	},
 	"html": {
 		"indent_size": 4,

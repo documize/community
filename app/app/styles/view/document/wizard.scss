@@ -1,5 +1,5 @@
 .section-wizard {
-	margin: 20px 0 30px 0;
+	margin: 20px 0 30px;
 
 	> .canvas {
 		padding: 0;
@@ -27,7 +27,7 @@
 							color: $color-primary;
 						}
 					}
-			    }
+				}
 
 				.icon {
 					text-align: center;
@@ -47,6 +47,76 @@
 					vertical-align: top;
 					display: inline-block;
 					width: 80%;
+
+					> .title {
+						font-size: 1rem;
+						font-weight: bold;
+						color: $color-off-black;
+						letter-spacing: 0.5px;
+					}
+
+					> .desc {
+						color: $color-gray;
+						font-size: 0.9rem;
+						margin-top: 5px;
+					}
+				}
+			}
+		}
+	}
+}
+
+.tab-wizard {
+	margin: 20px 0 30px;
+
+	> .canvas {
+		padding: 0;
+
+		> .list {
+			margin: 0;
+			padding: 0;
+
+			> .item {
+				list-style: none;
+				cursor: pointer;
+				padding: 20px;
+				float: left;
+				@include ease-in();
+
+				&:hover {
+					@include ease-in();
+
+					> .details {
+						> .title {
+							color: $color-primary;
+						}
+
+						> .desc {
+							color: $color-primary;
+						}
+					}
+				}
+
+				.icon {
+					text-align: center;
+					display: inline-block;
+					width: 50px;
+					margin-right: 10px;
+					float: left;
+
+					> .img {
+						float: left;
+						text-align: center;
+						display: inline-block;
+						height: 40px;
+						width: 40px;
+					}
+				}
+
+				> .details {
+					vertical-align: top;
+					display: inline-block;
+					float: left;
 
 					> .title {
 						font-size: 1rem;

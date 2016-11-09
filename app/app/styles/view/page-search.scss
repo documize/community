@@ -1,55 +1,55 @@
 .page-search {
 	.input-control {
 		> input {
-			background-color: $color-header;
+			background-color: $color-sidebar;
 		}
 	}
 
 	.search-results {
-	    .heading {
-	        font-size: 1.2rem;
-	        color: $color-off-black;
-	    }
+		.heading {
+			font-size: 1.2rem;
+			color: $color-off-black;
+		}
 
-	    > .list {
-	        margin-top: 20px;
+		> .list {
+			margin-top: 20px;
 			list-style: none;
 
-	        > .item {
-	            cursor: pointer;
+			> .item {
+				cursor: pointer;
 				margin: 0 30px 30px 0;
 				padding-bottom: 40px;
-    			border-bottom: 1px solid #e1e1e1;
+				border-bottom: 1px solid #e1e1e1;
 
-                > .link {
-                    text-decoration: none;
-                    color: $color-off-black;
+				> .link {
+					text-decoration: none;
+					color: $color-off-black;
 
 					&:hover {
 						color: $color-link;
 					}
 
-                    > .title {
-                        display: inline-block;
+					> .title {
+						display: inline-block;
 						font-size: 1.2rem;
-                    }
+					}
 
 					> .folder {
-                        display: inline-block;
-                        font-size: 0.8rem;
-                        color: $color-gray;
+						display: inline-block;
+						font-size: 0.8rem;
+						color: $color-gray;
 						margin-left: 15px;
-                    }
+					}
 
-                    > .excerpt {
+					> .excerpt {
 						margin-top: 1rem;
-                        font-size: 0.9rem;
-                    }
+						font-size: 0.9rem;
+					}
 
 					> .chips {
 						margin-top: 1rem;
 					}
-                }
+				}
 
 				> .references {
 					margin-top: 1rem;
@@ -69,7 +69,7 @@
 						}
 					}
 				}
-	        }
-	    }
-    }
+			}
+		}
+	}
 }

@@ -182,6 +182,7 @@ type Page struct {
 	DocumentID  string  `json:"documentId"`
 	UserID      string  `json:"userId"`
 	ContentType string  `json:"contentType"`
+	PageType    string  `json:"pageType"`
 	Level       uint64  `json:"level"`
 	Sequence    float64 `json:"sequence"`
 	Title       string  `json:"title"`
@@ -193,6 +194,7 @@ type Page struct {
 func (p *Page) SetDefaults() {
 	if len(p.ContentType) == 0 {
 		p.ContentType = "wysiwyg"
+		p.PageType = "section"
 	}
 
 	p.Title = strings.TrimSpace(p.Title)
