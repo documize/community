@@ -10,6 +10,10 @@
 			width: 100%;
 			border-bottom: 1px solid $color-border;
 
+			&:last-of-type {
+				border-bottom: none !important;
+			}
+
 			> .avatar-box {
 				display: inline-block;
 				margin: 3px 10px 0 0;

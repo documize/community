@@ -19,8 +19,8 @@
 			color: $color-link;
 		}
 
-		.dz-processing,
-		> .dz-preview {
+		 > .dz-preview,
+		.dz-processing {
 			display: none !important;
 		}
 	}
@@ -36,6 +36,10 @@
 			list-style-type: none;
 			border-bottom: 1px solid $color-border;
 			padding-bottom: 10px;
+
+			&:last-of-type {
+				border-bottom: none !important;
+			}
 
 			> .icon {
 				margin-right: 10px;
