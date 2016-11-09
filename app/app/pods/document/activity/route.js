@@ -16,17 +16,43 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	documentService: Ember.inject.service('document'),
 	folderService: Ember.inject.service('folder'),
 	userService: Ember.inject.service('user'),
-
-	beforeModel(transition) {
-	},
+	pages: [],
 
 	model() {
+		this.audit.record("viewed-document-activity");
+
+		let folders = this.get('store').peekAll('folder');
+		let folder = this.get('store').peekRecord('folder', this.paramsFor('document').folder_id);
+
+		this.set('folders', folders);
+		this.set('folder', folder);
+
+		return this.modelFor('document');
 	},
 
 	afterModel(model) {
+		let self = this;
+
+		let pages = this.get('store').peekAll('page').filter((page) => {
+			return page.get('documentId') === model.get('id');
+		});
+
+		this.set('pages', pages);
+
+		return new Ember.RSVP.Promise(function (resolve) {
+			self.get('documentService').getMeta(model.get('id')).then(function (activity) {
+				self.set('activity', activity);
+				resolve();
+			});
+		});
 	},
 
 	setupController(controller, model) {
 		controller.set('model', model);
+		controller.set('folder', this.get('folder'));
+		controller.set('folders', this.get('folders').rejectBy('id', 0));
+		controller.set('isEditor', this.get('folderService').get('canEditCurrentFolder'));
+		controller.set('activity', this.get('activity'));
+		controller.set('pages', this.get('pages'));
 	}
 });

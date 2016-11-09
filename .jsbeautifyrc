@@ -38,8 +38,10 @@
 		"brace_style": "collapse-preserve-inline",
 		"keep_function_indentation": false,
 		"space_after_anon_function": false,
+		"space_before_anon_function": false,
 		"space_before_conditional": true,
 		"space_in_empty_paren": false,
+		"space_before_func_paren": false,
 		"space_in_paren": false
 	},
 	"sql": {

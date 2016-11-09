@@ -12,17 +12,27 @@
 import Ember from 'ember';
 
 export default Ember.Component.extend({
-	document: {},
-	meta: [],
-	pages: [],
+	sortedItems: [],
 
 	didReceiveAttrs() {
-		let editors = this.get('meta.editors');
+		let editors = this.get('activity.editors');
+		let viewers = this.get('activity.viewers');
 		let toc = this.get('pages');
+		let sorted = [];
 
 		if (is.null(editors)) {
-			return;
+			editors = [];
 		}
+
+		if (is.null(viewers)) {
+			viewers = [];
+		}
+
+		viewers.forEach((item) => {
+			Ember.set(item, 'changeLabel', "viewed");
+			Ember.set(item, "viewed", true);
+			sorted.pushObject({ date: item.created, item: item });
+		});
 
 		editors.forEach(function (item) {
 			Ember.set(item, "added", item.action === "add-page");
@@ -32,6 +42,7 @@ export default Ember.Component.extend({
 			let page = _.findWhere(toc, {
 				id: item.pageId
 			});
+
 			let title = "";
 
 			if (is.not.undefined(page)) {
@@ -59,6 +70,10 @@ export default Ember.Component.extend({
 					Ember.set(item, 'changeLabel', "removed section");
 				}
 			}
+
+			sorted.pushObject({ date: item.created, item: item });
 		});
+
+		this.set('sortedItems', _.sortBy(sorted, 'date').reverse());
 	}
 });
