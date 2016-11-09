@@ -1,4 +1,18 @@
 <div class="document-activity">
+	<ul class="metrics">
+		<li class="metric">
+			<div class="label">created</div>
+			<div class="number">{{time-ago document.created}}</div>
+		</li>
+		<li class="metric">
+			<div class="label">viewers</div>
+			<div class="number">{{activity.viewers.length}}</div>
+		</li>
+		<li class="metric">
+			<div class="label">actions</div>
+			<div class="number">{{activity.editors.length}}</div>
+		</li>
+	</ul>
     <ul class="items">
         {{#each sortedItems as |e|}}
             <li class="item">

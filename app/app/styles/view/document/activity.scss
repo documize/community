@@ -1,4 +1,31 @@
 .document-activity {
+	> .metrics {
+		list-style-type: none;
+		margin: 0 0 30px;
+		padding: 0;
+		width: 100%;
+		text-align: center;
+
+		> .metric {
+			padding: 0 30px;
+			display: inline-block;
+			text-align: center;
+
+			.label {
+				padding: 0 0 10px;
+				font-family: $font-regular;
+				font-size: 0.9rem;
+				color: $color-gray;
+			}
+
+			.number {
+				font-family: $font-light;
+				font-size: 2rem;
+				color: $color-off-black;
+			}
+		}
+	}
+
 	> .items {
 		list-style-type: none;
 		margin: 0;
