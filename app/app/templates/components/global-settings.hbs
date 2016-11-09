@@ -1,34 +1,32 @@
-<form>
-    <div class="input-control">
-        <label>Global Settings</label>
+<form class="form-bordered">
+    <div class="form-header">
+        <div class="title">Global Settings</div>
         <div class="tip">Settings applicable for all tenants</div>
     </div>
-    <div>
-        <div class="input-control">
-            <label>SMTP Host</label>
-            <div class="tip">e.g. my.host.com</div>
-            {{focus-input id="smtp-host" type="text" value=model.global.host class=(if SMTPHostEmptyError 'error')}}
-        </div>
-		<div class="input-control">
-            <label>SMTP Port</label>
-            <div class="tip">e.g. 587</div>
-            {{input id="smtp-port" type="text" value=model.global.port class=(if SMTPPortEmptyError 'error')}}
-        </div>
-		<div class="input-control">
-            <label>SMTP Sender</label>
-            <div class="tip">e.g. noreply@documize.com</div>
-            {{input id="smtp-sender" type="text" value=model.global.sender class=(if SMTPSenderEmptyError 'error')}}
-        </div>
-		<div class="input-control">
-            <label>SMTP User ID</label>
-            <div class="tip">Your credentials</div>
-            {{input id="smtp-userid" type="text" value=model.global.userid class=(if SMTPUserIdEmptyError 'error')}}
-        </div>
-		<div class="input-control">
-            <label>SMTP Password</label>
-            <div class="tip">Your credentials</div>
-            {{input id="smtp-password" type="text" value=model.global.password class=(if SMTPPasswordEmptyError 'error')}}
-        </div>
-        <div class="regular-button button-blue" {{ action 'save' }}>save</div>
+    <div class="input-control">
+        <label>SMTP Host</label>
+        <div class="tip">e.g. my.host.com</div>
+        {{focus-input id="smtp-host" type="text" value=model.global.host class=(if SMTPHostEmptyError 'error')}}
     </div>
+	<div class="input-control">
+        <label>SMTP Port</label>
+        <div class="tip">e.g. 587</div>
+        {{input id="smtp-port" type="text" value=model.global.port class=(if SMTPPortEmptyError 'error')}}
+    </div>
+	<div class="input-control">
+        <label>SMTP Sender</label>
+        <div class="tip">e.g. noreply@documize.com</div>
+        {{input id="smtp-sender" type="text" value=model.global.sender class=(if SMTPSenderEmptyError 'error')}}
+    </div>
+	<div class="input-control">
+        <label>SMTP User ID</label>
+        <div class="tip">Your credentials</div>
+        {{input id="smtp-userid" type="text" value=model.global.userid class=(if SMTPUserIdEmptyError 'error')}}
+    </div>
+	<div class="input-control">
+        <label>SMTP Password</label>
+        <div class="tip">Your credentials</div>
+        {{input id="smtp-password" type="text" value=model.global.password class=(if SMTPPasswordEmptyError 'error')}}
+    </div>
+    <div class="regular-button button-blue" {{ action 'save' }}>save</div>
 </form>

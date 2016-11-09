@@ -1,8 +1,8 @@
-<form>
-    <div class="input-control">
-        <label>Add User</label>
-        <div class="tip">New users receive an invitation email with a random password</div>
-    </div>
+<form class="form-bordered">
+	<div class="form-header">
+		<div class="title">Add user</div>
+		<div class="tip">New users receive an invitation email with a random password</div>
+	</div>
     <div class="input-control">
         <label>Firstname</label>
         {{focus-input id="newUserFirstname" type="text" value=newUser.firstname class=(if hasFirstnameEmptyError 'error')}}

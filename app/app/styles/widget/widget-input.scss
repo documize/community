@@ -4,7 +4,7 @@
 
 .input-control {
 	position: relative;
-	margin-bottom: 25px;
+	margin-bottom: 50px;
 
 	> label {
 		color: $color-input;
@@ -51,8 +51,8 @@
 		overflow-y: hidden;
 	}
 
-	 > select,
-	> div select {
+	 > div select,
+	> select {
 		background-color: $color-white;
 		padding: 5px;
 		border: 1px solid $color-input;
@@ -163,40 +163,30 @@
 	}
 }
 
-.input-form {
-	border: 1px solid $color-border;
-	display: block;
-	border-radius: 3px;
-	background-color: $color-white;
-	padding: 30px 50px;
+.form-bordered {
+	padding: 30px 40px;
+	border: 10px solid $color-border;
+	@include border-radius(15px);
 
-	 > .heading,
-	> form .heading {
+	> .form-header {
 		> .title {
-			font-size: 1.1rem;
+			font-size: 1.4rem;
+			font-weight: normal;
+			font-family: $font-semibold;
+			pointer-events: none;
 			font-weight: bold;
 			color: $color-off-black;
 		}
 
 		> .tip {
 			color: $color-input;
-			font-size: 0.9em;
+			font-size: 1.2rem;
 			margin: 5px 0 30px;
 			padding: 0;
+			font-family: $font-light;
 			text-align: left;
 		}
 	}
-}
-
-.form-bordered {
-	padding: 30px 40px;
-	border: 10px solid $color-border;
-	@include border-radius(15px);
-}
-
-.form-borderless {
-	padding: 0 !important;
-	border: none !important;
 }
 
 .form-divider {
