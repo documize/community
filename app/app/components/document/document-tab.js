@@ -14,6 +14,7 @@ import NotifierMixin from '../../mixins/notifier';
 import TooltipMixin from '../../mixins/tooltip';
 
 export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
+	sectionService: Ember.inject.service('section'),
 	viewMode: true,
 	editMode: false,
 
@@ -21,6 +22,20 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		if (this.get('mode') === 'edit') {
 			this.send('onEdit');
 		}
+	},
+
+	didInsertElement() {
+		let self = this;
+		this.get('sectionService').refresh(this.get('model.document.id')).then(function (changes) {
+			changes.forEach(function (newPage) {
+				let oldPage = self.get('model.page');
+				if (!_.isUndefined(oldPage) && oldPage.get('id') === newPage.get('id')) {
+					oldPage.set('body', newPage.get('body'));
+					oldPage.set('revised', newPage.get('revised'));
+					self.showNotification(`Refreshed ${oldPage.get('title')}`);
+				}
+			});
+		});
 	},
 
 	actions: {

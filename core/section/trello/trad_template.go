@@ -17,8 +17,6 @@ const tradTemplate = `
 		<div class="heading">
 			<p>There are {{ .Detail.CardCount }} cards across {{ .Detail.ListCount }} lists on <a href="{{ .Detail.Board.URL }}">{{.Detail.Board.Name}} Board</a></p>
 		</div>
-
-		<p class="non-printable-message">Non-printable</p>
 		<div class="section-trello-render non-printable">
 			<div class="single-trello-board">
 			<table class="trello-single-board" style="width: 100%;">

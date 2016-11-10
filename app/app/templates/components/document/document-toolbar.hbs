@@ -19,7 +19,7 @@
 		{{/if}}
 		{{#each tabs as |tab|}}
 			<li class="tab">
-				{{#link-to 'document.section' tab.id}}{{tab.title}}{{/link-to}}
+				{{#link-to 'document.section' tab.id (query-params mode='view')}}{{tab.title}}{{/link-to}}
 			</li>
 		{{/each}}
 		{{#if isEditor}}

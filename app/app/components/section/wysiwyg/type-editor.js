@@ -59,7 +59,7 @@ export default Ember.Component.extend({
 			],
 			menu: {},
 			menubar: false,
-			toolbar1: "bold italic underline strikethrough superscript subscript | outdent indent bullist numlist forecolor backcolor | alignleft aligncenter alignright alignjustify | link unlink | table image media | hr codesample",
+			toolbar1: "bold italic underline strikethrough superscript subscript | outdent indent bullist numlist forecolor backcolor | alignleft aligncenter alignright alignjustify | link unlink | table image media codesample",
 			toolbar2: "formatselect fontselect fontsizeselect",
 			save_onsavecallback: function () {
 				Mousetrap.trigger('ctrl+s');
