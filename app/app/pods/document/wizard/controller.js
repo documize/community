@@ -40,12 +40,9 @@ export default Ember.Controller.extend(NotifierMixin, {
 			};
 
 			this.get('documentService').addPage(this.get('model.document.id'), model).then((newPage) => {
-				this.transitionToRoute('document.section',
-					this.get('model.folder.id'),
-					this.get('model.folder.slug'),
-					this.get('model.document.id'),
-					this.get('model.document.slug'),
-					newPage.id);
+				let options = {};
+				options['mode'] = 'edit';
+				this.transitionToRoute('document.section', newPage.id,  { queryParams: options });
 			});
 		}
 	}

@@ -124,12 +124,16 @@ export default Ember.Service.extend({
 	updatePage: function (documentId, pageId, payload, skipRevision) {
 		var revision = skipRevision ? "?r=true" : "?r=false";
 		let url = `documents/${documentId}/pages/${pageId}${revision}`;
+
 		Ember.set(payload.meta, 'id', parseInt(payload.meta.id));
 
 		return this.get('ajax').request(url, {
 			method: 'PUT',
 			data: JSON.stringify(payload),
 			contentType: 'json'
+		}).then((response) => {
+			let data = this.get('store').normalize('page', response);
+			return this.get('store').push(data);
 		});
 	},
 
@@ -140,6 +144,9 @@ export default Ember.Service.extend({
 		return this.get('ajax').post(url, {
 			data: JSON.stringify(payload),
 			contentType: 'json'
+		}).then((response) => {
+			let data = this.get('store').normalize('page', response);
+			return this.get('store').push(data);
 		});
 	},
 

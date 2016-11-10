@@ -83,6 +83,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 
 	actions: {
 		error(error /*, transition*/ ) {
+			console.log(error);
 			if (error) {
 				this.transitionTo('/not-found');
 				return false;

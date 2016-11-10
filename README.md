@@ -1,6 +1,6 @@
 # Documize Community Edition
 
-Modern Wiki + Docs integrating data from SaaS tools.
+The Document IDE for wikis and documents.
 
 ![Alt text](screenshot.png "Documize")
 
@@ -8,7 +8,7 @@ The mission is to bring software dev inspired features (refactoring, testing, li
 
 ## Latest version
 
-v0.30.0
+v0.31.0
 
 ## OS Support
 

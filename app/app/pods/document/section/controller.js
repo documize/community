@@ -14,6 +14,8 @@ import NotifierMixin from '../../../mixins/notifier';
 
 export default Ember.Controller.extend(NotifierMixin, {
 	documentService: Ember.inject.service('document'),
+	queryParams: ['mode'],
+	mode: null,
 
 	actions: {
 		onAction(page, meta) {

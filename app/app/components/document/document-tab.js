@@ -17,6 +17,12 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	viewMode: true,
 	editMode: false,
 
+	didReceiveAttrs(){
+		if (this.get('mode') === 'edit') {
+			this.send('onEdit');
+		}
+	},
+
 	actions: {
 		onEdit() {
 			this.set('viewMode', false);

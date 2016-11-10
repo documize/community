@@ -85,9 +85,8 @@ const commitsTemplate = `
 						</td>
 						<td class="right-column">
 							<div class="contributor-meta">
-								<img class="github-avatar" alt="@{{$commit.Name}}" src="{{$commit.Avatar}}" />
-								{{$commit.Name}}
-								&middot; {{$commit.Date}}
+								<img class="github-avatar" title="@{{$commit.Name}}" alt="@{{$commit.Name}}" src="{{$commit.Avatar}}" />
+								{{$commit.Date}}
 							</div>
 						</td>
 					</tr>

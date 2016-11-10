@@ -26,7 +26,7 @@ type ProdInfo struct {
 // Product returns product edition details
 func Product() (p ProdInfo) {
 	p.Major = "0"
-	p.Minor = "30"
+	p.Minor = "31"
 	p.Patch = "0"
 	p.Version = fmt.Sprintf("%s.%s.%s", p.Major, p.Minor, p.Patch)
 	p.Edition = "Community"
