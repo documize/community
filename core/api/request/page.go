@@ -29,24 +29,26 @@ import (
 func (p *Persister) AddPage(model models.PageModel) (err error) {
 	err = nil
 	model.Page.OrgID = p.Context.OrgID
+	model.Page.UserID = p.Context.UserID
 	model.Page.Created = time.Now().UTC()
 	model.Page.Revised = time.Now().UTC()
-	model.Page.UserID = p.Context.UserID
-	model.Page.SetDefaults()
 
 	model.Meta.OrgID = p.Context.OrgID
 	model.Meta.UserID = p.Context.UserID
 	model.Meta.DocumentID = model.Page.DocumentID
 	model.Meta.Created = time.Now().UTC()
 	model.Meta.Revised = time.Now().UTC()
-	model.Meta.SetDefaults()
 
-	// Get maximum page sequence number and increment
-	row := Db.QueryRow("SELECT max(sequence) FROM page WHERE orgid=? and documentid=?", p.Context.OrgID, model.Page.DocumentID)
-	var maxSeq float64
-	err = row.Scan(&maxSeq)
+	if model.Page.IsSectionType() {
+		// Get maximum page sequence number and increment
+		row := Db.QueryRow("SELECT max(sequence) FROM page WHERE orgid=? AND documentid=? AND pagetype='section'", p.Context.OrgID, model.Page.DocumentID)
+		var maxSeq float64
+		err = row.Scan(&maxSeq)
 
-	if err == nil {
+		if err != nil {
+			log.Error("unable to select max page.sequence", err)
+		}
+
 		model.Page.Sequence = maxSeq * 2
 	}
 

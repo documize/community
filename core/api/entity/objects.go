@@ -194,10 +194,23 @@ type Page struct {
 func (p *Page) SetDefaults() {
 	if len(p.ContentType) == 0 {
 		p.ContentType = "wysiwyg"
-		p.PageType = "section"
+	}
+
+	if p.IsTabType() {
+		p.Sequence = 0
 	}
 
 	p.Title = strings.TrimSpace(p.Title)
+}
+
+// IsSectionType tells us that page is "words"
+func (p *Page) IsSectionType() bool {
+	return p.PageType == "section"
+}
+
+// IsTabType tells us that page is "SaaS data embed"
+func (p *Page) IsTabType() bool {
+	return p.PageType == "tab"
 }
 
 // PageMeta holds raw page data that is used to

@@ -15,7 +15,6 @@ import NotifierMixin from '../../../mixins/notifier';
 export default Ember.Controller.extend(NotifierMixin, {
 	documentService: Ember.inject.service('document'),
 	templateService: Ember.inject.service('template'),
-
 	queryParams: ['page'],
 	page: null,
 	folder: {},
@@ -91,17 +90,6 @@ export default Ember.Controller.extend(NotifierMixin, {
 				self.set('pages', pages);
 			});
 		},
-
-		// onSaveTemplate(name, desc) {
-		// 	this.get('templateService').saveAsTemplate(this.model.get('id'), name, desc).then(function () {});
-		// },
-		//
-		// onDocumentChange(doc) {
-		// 	let self = this;
-		// 	this.get('documentService').save(doc).then(function () {
-		// 		self.set('model', doc);
-		// 	});
-		// },
 
 		onPageDeleted(deletePage) {
 			let self = this;

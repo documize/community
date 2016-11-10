@@ -144,9 +144,6 @@ export default Ember.Service.extend({
 		return this.get('ajax').post(url, {
 			data: JSON.stringify(payload),
 			contentType: 'json'
-		}).then((response) => {
-			let data = this.get('store').normalize('page', response);
-			return this.get('store').push(data);
 		});
 	},
 
