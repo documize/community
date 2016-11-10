@@ -10,16 +10,16 @@ export default Ember.Controller.extend(NotifierMixin, {
 		},
 
 		onAddSection(section) {
-			this.audit.record("added-section");
 			this.audit.record("added-section-" + section.get('contentType'));
 
 			let page = {
 				documentId: this.get('model.document.id'),
-				title: `${section.get('title')} Section`,
+				title: `${section.get('title')}`,
 				level: 1,
 				sequence: 2048,
 				body: "",
-				contentType: section.get('contentType')
+				contentType: section.get('contentType'),
+				pageType: section.get('pageType')
 			};
 
 			let data = this.get('store').normalize('page', page);
@@ -40,7 +40,7 @@ export default Ember.Controller.extend(NotifierMixin, {
 			};
 
 			this.get('documentService').addPage(this.get('model.document.id'), model).then((newPage) => {
-				this.transitionToRoute('document.edit',
+				this.transitionToRoute('document.section',
 					this.get('model.folder.id'),
 					this.get('model.folder.slug'),
 					this.get('model.document.id'),

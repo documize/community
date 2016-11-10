@@ -29,6 +29,11 @@
 
 			> a {
 				color: $color-gray;
+				@include ease-in();
+
+				&:hover {
+					color: $color-link;
+				}
 			}
 
 			> .active {
@@ -44,13 +49,14 @@
 			.add-tab {
 				display: inline-block;
 				vertical-align: text-top;
+				@include ease-in();
 
 				> i {
 					font-size: 1.5rem;
 					color: $color-gray;
 
 					&:hover {
-						color: $color-green;
+						color: $color-link;
 					}
 				}
 			}
@@ -72,6 +78,7 @@
 			padding: 0;
 			color: $color-gray;
 			cursor: pointer;
+			@include ease-in();
 
 			&:hover {
 				color: $color-link;

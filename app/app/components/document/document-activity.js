@@ -17,7 +17,7 @@ export default Ember.Component.extend({
 	didReceiveAttrs() {
 		let editors = this.get('activity.editors');
 		let viewers = this.get('activity.viewers');
-		let toc = this.get('pages');
+		let pages = this.get('pages');
 		let sorted = [];
 
 		if (is.null(editors)) {
@@ -39,39 +39,28 @@ export default Ember.Component.extend({
 			Ember.set(item, "changed", item.action === "update-page");
 			Ember.set(item, "deleted", item.action === "remove-page");
 
-			let page = _.findWhere(toc, {
-				id: item.pageId
-			});
-
+			let page = pages.findBy('id', item.pageId);
 			let title = "";
 
-			if (is.not.undefined(page)) {
-				title = page.get('title');
-
-				if (item.added) {
-					Ember.set(item, 'changeLabel', "added " + title);
-				}
-
-				if (item.changed) {
-					Ember.set(item, 'changeLabel', "changed " + title);
-				}
+			if (item.deleted || is.undefined(page)) {
+				title = "removed section";
 			} else {
-				Ember.set(item, "deleted", true);
-
 				if (item.added) {
-					Ember.set(item, 'changeLabel', "added section (since removed)");
+					title = "added " + page.get('title');
 				}
 
 				if (item.changed) {
-					Ember.set(item, 'changeLabel', "changed section (since removed)");
-				}
-
-				if (item.deleted) {
-					Ember.set(item, 'changeLabel', "removed section");
+					title = "changed " + page.get('title');
 				}
 			}
 
-			sorted.pushObject({ date: item.created, item: item });
+			Ember.set(item, 'changeLabel', title);
+
+			let exists = sorted.findBy('item.pageId', item.pageId);
+
+			if (is.undefined(exists)) {
+				sorted.pushObject({ date: item.created, item: item });
+			}
 		});
 
 		this.set('sortedItems', _.sortBy(sorted, 'date').reverse());
