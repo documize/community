@@ -89,9 +89,8 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 		},
 
 		onAddSection(section) {
+			this.send('showToc');
 			this.attrs.onAddSection(section);
-
-			this.set('showingSections', false);
 		},
 
 		scrollTop() {

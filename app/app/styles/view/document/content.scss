@@ -16,12 +16,12 @@
 	}
 
 	.is-template {
-		color: $color-gray;
+		color: $color-goldy;
 		font-weight: bold;
 		font-size: 1.5em;
 		margin-bottom: 30px;
 		padding-bottom: 5px;
-		@include border-bottom(1px);
+		border-bottom: 1px dotted $color-goldy;
 	}
 
 	> .pages {

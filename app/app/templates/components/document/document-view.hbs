@@ -1,11 +1,11 @@
 <div class="document-view">
-	<div class="wysiwyg">
-		<h1 class="doc-name">{{document.name}}</h1>
-	</div>
-
 	{{#if document.template}}
 		<div class="is-template">TEMPLATE</div>
 	{{/if}}
+
+	<div class="wysiwyg">
+		<h1 class="doc-name">{{document.name}}</h1>
+	</div>
 
 	{{document/tag-editor documentTags=document.tags isEditor=isEditor onChange=(action 'onTagChange')}}
 

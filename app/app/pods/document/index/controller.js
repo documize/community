@@ -53,6 +53,56 @@ export default Ember.Controller.extend(NotifierMixin, {
 			this.scrollToPage(pageId);
 		},
 
+		onPageSequenceChange(changes) {
+			let self = this;
+
+			this.get('documentService').changePageSequence(this.model.get('id'), changes).then(function () {
+				_.each(changes, function (change) {
+					let pageContent = _.findWhere(self.get('pages'), {
+						id: change.pageId
+					});
+
+					if (is.not.undefined(pageContent)) {
+						pageContent.set('sequence', change.sequence);
+					}
+				});
+
+				self.set('pages', self.get('pages').sortBy('sequence'));
+			});
+		},
+
+		onPageLevelChange(changes) {
+			let self = this;
+
+			this.get('documentService').changePageLevel(this.model.get('id'), changes).then(function () {
+				_.each(changes, function (change) {
+					let pageContent = _.findWhere(self.get('pages'), {
+						id: change.pageId
+					});
+
+					if (is.not.undefined(pageContent)) {
+						pageContent.set('level', change.level);
+					}
+				});
+
+				let pages = self.get('pages');
+				pages = pages.sortBy('sequence');
+				self.set('pages', []);
+				self.set('pages', pages);
+			});
+		},
+
+		// onSaveTemplate(name, desc) {
+		// 	this.get('templateService').saveAsTemplate(this.model.get('id'), name, desc).then(function () {});
+		// },
+		//
+		// onDocumentChange(doc) {
+		// 	let self = this;
+		// 	this.get('documentService').save(doc).then(function () {
+		// 		self.set('model', doc);
+		// 	});
+		// },
+
 		onPageDeleted(deletePage) {
 			let self = this;
 			let documentId = this.get('model.id');
