@@ -46,7 +46,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 
 		return new Ember.RSVP.Promise(function (resolve) {
 			self.get('documentService').getPages(documentId).then(function (pages) {
-				self.set('pages', pages);
+				self.set('allPages', pages);
 
 				self.get('sectionService').getAll().then(function (sections) {
 					self.set('sections', sections.filterBy('pageType', 'section'));
@@ -62,8 +62,8 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 		controller.set('folders', this.get('folders').rejectBy('id', 0));
 		controller.set('currentPage', this.pageId);
 		controller.set('isEditor', this.get('folderService').get('canEditCurrentFolder'));
-		controller.set('pages', this.get('pages').filterBy('pageType', 'section'));
-		controller.set('tabs', this.get('pages').filterBy('pageType', 'tab'));
+		controller.set('pages', this.get('allPages').filterBy('pageType', 'section'));
+		controller.set('tabs', this.get('allPages').filterBy('pageType', 'tab'));
 		controller.set('sections', this.get('sections'));
 
 		// setup document owner

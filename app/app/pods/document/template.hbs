@@ -7,5 +7,7 @@
 
 {{#layout/zone-content}}
 	{{document/document-toolbar document=model pages=pages tabs=tabs folder=folder isEditor=isEditor
-		onSaveTemplate=(action 'onSaveTemplate') onDocumentDelete=(action 'onDocumentDelete')}} {{outlet}}
+		onSaveTemplate=(action 'onSaveTemplate') onDocumentDelete=(action 'onDocumentDelete')}}
+
+		{{outlet}}
 {{/layout/zone-content}}

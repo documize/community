@@ -160,6 +160,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		onEntryClick(id) {
 			this.setState(id);
 			this.attrs.gotoPage(id);
-		},
-	},
+		}
+	}
 });

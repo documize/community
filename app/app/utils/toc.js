@@ -203,7 +203,7 @@ function moveDown(state, pages, current) {
 		}
 	} else {
 		// startingSequence = downTarget.sequence * 2;
-		startingSequence = cutOff[cutOff.length - 1].sequence * 2;
+		startingSequence = cutOff[cutOff.length - 1].get('sequence') * 2;
 		upperSequence = startingSequence * 2;
 	}
 
