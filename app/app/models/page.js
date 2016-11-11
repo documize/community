@@ -26,10 +26,9 @@ export default Model.extend({
 	body: attr('string'),
 	rawBody: attr('string'),
 	meta: attr(),
-	// meta: hasMany('page-meta'),
 
 	tagName: Ember.computed('level', function () {
-		return "h" + this.get('level');
+		return "h" + (this.get('level') + 1);
 	}),
 
 	tocIndent: Ember.computed('level', function () {
