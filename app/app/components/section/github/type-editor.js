@@ -43,7 +43,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 					pageId: page.get('id'),
 					showMilestones: false,
 					showIssues: false,
-					showCommits: false,
+					showCommits: true,
 				};
 
 				try {
@@ -58,14 +58,19 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 					config.showCommits = metaConfig.showCommits;
 				} catch (e) {}
 
+				if (_.isUndefined(config.showCommits)) {
+					config.showCommits = true;
+				}
+
 				self.set('config', config);
 				self.set('config.pageId', page.get('id'));
 
 				// On auth callback capture code
 				let code = window.location.search;
+				code = code.replace("?mode=edit", "");
 
 				if (is.not.undefined(code) && is.not.null(code) && is.not.empty(code) && code !== "") {
-					let tok = code.replace("?mode=edit&code=", "");
+					let tok = code.replace("&code=", "");
 					self.get('sectionService').fetch(page, "saveSecret", { "token": tok })
 						.then(function () {
 							self.send('authStage2');
@@ -120,7 +125,6 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 			$('#branch-since').datetimepicker();
 			this.set('initDateTimePicker', "Done");
 		}
-
 	},
 
 	getOrgReposLists() {

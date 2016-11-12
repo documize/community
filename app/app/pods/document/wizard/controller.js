@@ -25,7 +25,8 @@ export default Ember.Controller.extend(NotifierMixin, {
 			let meta = {
 				documentId: this.get('model.document.id'),
 				rawBody: "",
-				config: ""
+				config: "",
+				externaleSource: true
 			};
 
 			let model = {
