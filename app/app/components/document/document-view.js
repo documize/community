@@ -50,8 +50,9 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 				if (_.isUndefined(exists)) {
 					link.orphan = true;
 				} else {
-					self.attrs.gotoPage(link.targetId);
-					return false;
+					if (link.linkType === "section") {
+						self.attrs.gotoPage(link.targetId);
+					}
 				}
 			}
 

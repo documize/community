@@ -18,24 +18,22 @@ const {
 
 export default Ember.Component.extend({
 	link: service(),
-
+	editMode: true,
 	isDirty: false,
 	pageBody: "",
+	pagePreview: "",
+	height: $(document).height() - 450,
 
 	didReceiveAttrs() {
 		this.set("pageBody", this.get("meta.rawBody"));
 	},
 
 	didInsertElement() {
-		let height = $(document).height() - $(".document-editor > .toolbar").height() - 130;
-		$("#section-markdown-editor, #section-markdown-preview").css("height", height);
+		$("#section-markdown-editor").css("height", this.get('height'));
+		$("#section-markdown-preview").css("height", this.get('height'));
 
-		this.renderPreview();
-		let self = this;
-
-		$("#section-markdown-editor").off("keyup").on("keyup", function () {
-			self.renderPreview();
-			self.set('isDirty', true);
+		$("#section-markdown-editor").off("keyup").on("keyup", () => {
+			this.set('isDirty', true);
 		});
 	},
 
@@ -43,15 +41,26 @@ export default Ember.Component.extend({
 		$("#section-markdown-editor").off("keyup");
 	},
 
-	renderPreview() {
-		let md = window.markdownit({
-			linkify: true
-		});
-		let result = md.render(this.get("pageBody"));
-		$("#section-markdown-preview").html(result);
-	},
-
 	actions: {
+		toggleMode() {
+			this.set('editMode', !this.get('editMode'));
+
+			Ember.run.schedule('afterRender', () => {
+				if (this.get('editMode')) {
+					$("#section-markdown-editor").off("keyup").on("keyup", () => {
+						this.set('isDirty', true);
+					});
+					$("#section-markdown-editor").css("height", this.get('height'));
+				} else {
+					let md = window.markdownit({ linkify: true });
+					let result = md.render(this.get("pageBody"));
+
+					this.set('pagePreview', result);
+					$("#section-markdown-preview").css("height", this.get('height'));
+				}
+			});
+		},
+
 		onInsertLink(link) {
 			let linkMarkdown = this.get('link').buildLink(link);
 

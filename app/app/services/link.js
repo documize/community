@@ -33,7 +33,6 @@ export default Ember.Service.extend({
 		return this.get('ajax').request(`links/${folderId}/${documentId}/${pageId}`, {
 			method: 'GET'
 		}).then((response) => {
-			console.log(response);
 			return response;
 		});
 	},
