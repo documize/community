@@ -6,7 +6,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	folderService: Ember.inject.service('folder'),
 	sectionService: Ember.inject.service('section'),
 
-	model(params) {
+	model() {
 		return Ember.RSVP.hash({
 			folders: this.modelFor('document').folders,
 			folder: this.modelFor('document').folder,

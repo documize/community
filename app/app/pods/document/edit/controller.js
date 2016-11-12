@@ -10,9 +10,8 @@
 // https://documize.com
 
 import Ember from 'ember';
-import NotifierMixin from '../../../mixins/notifier';
 
-export default Ember.Controller.extend(NotifierMixin, {
+export default Ember.Controller.extend({
 	documentService: Ember.inject.service('document'),
 
 	actions: {
@@ -26,8 +25,6 @@ export default Ember.Controller.extend(NotifierMixin, {
 
 		onAction(page, meta) {
 			let self = this;
-			this.showNotification("Saving");
-
 			let model = {
 				page: page.toJSON({ includeId: true }),
 				meta: meta.toJSON({ includeId: true })

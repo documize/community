@@ -46,7 +46,7 @@ func (p *Persister) AddPage(model models.PageModel) (err error) {
 		err = row.Scan(&maxSeq)
 
 		if err != nil {
-			log.Error("unable to select max page.sequence", err)
+			maxSeq = 2048
 		}
 
 		model.Page.Sequence = maxSeq * 2

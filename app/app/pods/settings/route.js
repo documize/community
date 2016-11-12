@@ -145,7 +145,6 @@ export default Ember.Route.extend(NotifierMixin, {
 			var payload = { Message: message, Roles: data };
 
 			this.get('folderService').savePermissions(folder.get('id'), payload).then(() => {
-				this.showNotification("Saved");
 			});
 
 			var hasEveryone = _.find(data, function (permission) {

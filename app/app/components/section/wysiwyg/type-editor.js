@@ -25,7 +25,7 @@ export default Ember.Component.extend({
 	},
 
 	didInsertElement() {
-		let maxHeight = $(document).height() - $(".document-editor > .toolbar").height() - 200;
+		let maxHeight = $(document).height() - 450;
 
 		let options = {
 			selector: "#rich-text-editor",

@@ -10,15 +10,13 @@
 // https://documize.com
 
 import Ember from 'ember';
-import NotifierMixin from '../../../mixins/notifier';
 
-export default Ember.Controller.extend(NotifierMixin, {
+export default Ember.Controller.extend({
 	documentService: Ember.inject.service('document'),
 
 	actions: {
 		onSave(doc) {
 			this.get('documentService').save(doc).then(() => {
-				this.showNotification('Saved');
 				this.transitionToRoute('document.index');
 			});
 		}

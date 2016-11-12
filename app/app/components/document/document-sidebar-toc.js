@@ -69,7 +69,8 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		let state = tocUtil.getState(toc, page);
 
 		if (!this.get('isEditor') || is.empty(pageId)) {
-			state.actionablePage = state.upDisabled = state.downDisabled = state.indentDisabled = state.outdentDisabled = false;
+			state.actionablePage = false;
+			state.upDisabled = state.downDisabled = state.indentDisabled = state.outdentDisabled = true;
 		}
 
 		this.set('state', state);
