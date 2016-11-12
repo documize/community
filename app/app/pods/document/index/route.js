@@ -14,6 +14,7 @@ import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-rout
 
 export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	documentService: Ember.inject.service('document'),
+	linkService: Ember.inject.service('link'),
 	folderService: Ember.inject.service('folder'),
 	userService: Ember.inject.service('user'),
 	queryParams: {
@@ -34,23 +35,32 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 		this.set('document', document);
 		this.set('folders', folders);
 		this.set('folder', folder);
+
+		return new Ember.RSVP.Promise((resolve) => {
+			this.get('documentService').getPages(this.get('documentId')).then((pages) => {
+				this.set('allPages', pages);
+				this.set('pages', pages.filterBy('pageType', 'section'));
+				this.set('tabs', pages.filterBy('pageType', 'tab'));
+				resolve();
+			});
+		});
+
 	},
 
 	model() {
 		this.browser.setTitle(this.get('document.name'));
 		this.browser.setMetaDescription(this.get('document.excerpt'));
 
-		let self = this;
-
 		return Ember.RSVP.hash({
-			folders: self.get('folders'),
-			folder: self.get('folder'),
-			document: self.get('document'),
-			page: self.get('pageId'),
-			isEditor: self.get('folderService').get('canEditCurrentFolder'),
-			pages: self.get('documentService').getPages(self.get('documentId')).then(function (pages) {
-				return pages.filterBy('pageType', 'section');
-			})
+			folders: this.get('folders'),
+			folder: this.get('folder'),
+			document: this.get('document'),
+			page: this.get('pageId'),
+			isEditor: this.get('folderService').get('canEditCurrentFolder'),
+			allPages: this.get('allPages'),
+			pages: this.get('pages'),
+			tabs: this.get('tabs'),
+			links: this.get('linkService').getDocumentLinks(this.get('documentId'))
 		});
 	}
 });

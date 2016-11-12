@@ -74,7 +74,7 @@ func GetLinkCandidates(w http.ResponseWriter, r *http.Request) {
 				FolderID:   folderID,
 				DocumentID: documentID,
 				TargetID:   p.RefID,
-				LinkType:   "section",
+				LinkType:   p.PageType,
 				Title:      p.Title,
 			}
 			pc = append(pc, c)

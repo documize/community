@@ -237,10 +237,8 @@ func (p *PageMeta) SetDefaults() {
 
 // DocumentMeta details who viewed the document.
 type DocumentMeta struct {
-	Viewers       []DocumentMetaViewer `json:"viewers"`
-	Editors       []DocumentMetaEditor `json:"editors"`
-	InboundLinks  []Link               `json:"inboundLinks"`
-	OutboundLinks []Link               `json:"outboundLinks"`
+	Viewers []DocumentMetaViewer `json:"viewers"`
+	Editors []DocumentMetaEditor `json:"editors"`
 }
 
 // DocumentMetaViewer contains the "view" metatdata content.

@@ -107,13 +107,6 @@ func (p *Persister) GetDocumentMeta(id string) (meta entity.DocumentMeta, err er
 		return
 	}
 
-	meta.OutboundLinks, err = p.GetDocumentOutboundLinks(id)
-
-	if err != nil {
-		log.Error(fmt.Sprintf("Unable to execute GetDocumentOutboundLinks for document %s", id), err)
-		return
-	}
-
 	return
 }
 

@@ -215,6 +215,7 @@ func init() {
 	// Links
 	log.IfErr(Add(RoutePrefixPrivate, "links/{folderID}/{documentID}/{pageID}", []string{"GET", "OPTIONS"}, nil, GetLinkCandidates))
 	log.IfErr(Add(RoutePrefixPrivate, "links", []string{"GET", "OPTIONS"}, nil, SearchLinkCandidates))
+	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/links", []string{"GET", "OPTIONS"}, nil, GetDocumentLinks))
 
 	// Global installation-wide config
 	log.IfErr(Add(RoutePrefixPrivate, "global", []string{"GET", "OPTIONS"}, nil, GetGlobalConfig))
