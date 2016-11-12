@@ -28,30 +28,16 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	},
 
 	model(params) {
-		let self = this;
-		let document = this.modelFor('document');
-		let folders = this.get('store').peekAll('folder');
-		let folder = this.get('store').peekRecord('folder', this.paramsFor('document').folder_id);
-
-		let pages = this.get('store').peekAll('page').filter((page) => {
-			return page.get('documentId') === document.get('id') && page.get('pageType') === 'section';
-		});
-
-		let tabs = this.get('store').peekAll('page').filter((page) => {
-			return page.get('documentId') === document.get('id') && page.get('pageType') === 'tab';
-		});
-
-		let page = tabs.findBy('id', params.page_id);
-
-		this.audit.record("viewed-document-section-" + page.get('contentType'));
-
 		return Ember.RSVP.hash({
-			folders: folders,
-			folder: folder,
-			document: document,
-			pages: pages,
-			page: page,
-			meta: self.get('documentService').getPageMeta(document.get('id'), params.page_id)
+			folders: this.modelFor('document').folders,
+			folder: this.modelFor('document').folder,
+			document: this.modelFor('document').document,
+			pages: this.modelFor('document').pages,
+			tabs: this.get('documentService').getPages(this.modelFor('document').document.get('id')).then((pages) => {
+				return pages.filterBy('pageType', 'tab');
+			}),
+			page: this.get('documentService').getPage(this.modelFor('document').document.get('id'), params.page_id),
+			meta: this.get('documentService').getPageMeta(this.modelFor('document').document.get('id'), params.page_id)
 		});
 	},
 });

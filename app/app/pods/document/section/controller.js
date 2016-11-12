@@ -19,7 +19,6 @@ export default Ember.Controller.extend(NotifierMixin, {
 
 	actions: {
 		onAction(page, meta) {
-			let self = this;
 			this.showNotification("Saving");
 
 			let model = {
@@ -27,21 +26,20 @@ export default Ember.Controller.extend(NotifierMixin, {
 				meta: meta.toJSON({ includeId: true })
 			};
 
-			this.get('documentService').updatePage(page.get('documentId'), page.get('id'), model).then(function (page) {
-				self.audit.record("edited-page");
-				let data = self.get('store').normalize('page', page);
-				self.get('store').push(data);
+			this.get('documentService').updatePage(page.get('documentId'), page.get('id'), model).then((page) => {
+				this.audit.record("edited-page");
+				let data = this.get('store').normalize('page', page);
+				this.get('store').push(data);
+				this.get('target.router').refresh();
 			});
 		},
 
 		onDelete(document, page) {
-			let self = this;
-
-			this.get('documentService').deletePage(document.get('id'), page.get('id')).then(function () {
-				page.deleteRecord();
-				self.audit.record("deleted-page");
-				self.showNotification('Deleted');
-				self.transitionToRoute('document');
+			this.get('documentService').deletePage(document.get('id'), page.get('id')).then(() => {
+				this.audit.record("deleted-page");
+				this.showNotification('Deleted');
+				this.transitionToRoute('document');
+				this.get('target.router').refresh();
 			});
 		}
 	}

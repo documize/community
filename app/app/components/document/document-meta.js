@@ -16,6 +16,18 @@ import TooltipMixin from '../../mixins/tooltip';
 export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	appMeta: Ember.inject.service(),
 
+	didReceiveAttrs() {
+		// setup document owner
+		let owner = this.get('users').findBy('id', this.get('document.userId'));
+
+		// no document owner? You are the owner!
+		if (is.undefined(owner)) {
+			owner = this.session.user;
+		}
+
+		this.set('owner', owner);
+	},
+
 	actions: {
 		onSave() {
 			let doc = this.get('document');

@@ -25,6 +25,7 @@
 			gotoPage=(action 'gotoPage')}}
 	{{/if}}
 	{{#if showSections}}
-		{{document/page-wizard display='section' document=document folder=folder sections=sections onCancel=(action 'onCancel') onAction=(action 'onAddSection')}}
+		{{document/page-wizard display='section' document=document folder=folder sections=sections
+		onCancel=(action 'onCancel') onAction=(action 'onAddSection')}}
 	{{/if}}
 </div>

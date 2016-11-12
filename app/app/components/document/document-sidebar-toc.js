@@ -31,7 +31,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	}),
 
 	didReceiveAttrs: function () {
-		this.set('showToc', is.not.undefined(this.get('pages')) && this.get('pages').get('length') > 2);
+		this.set('showToc', is.not.undefined(this.get('pages')) && this.get('pages').get('length') > 0);
 		if (is.not.null(this.get('page'))) {
 			this.send('onEntryClick', this.get('page'));
 		}
@@ -66,7 +66,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
 		let toc = this.get('pages');
 		let page = _.findWhere(toc, { id: pageId });
-
 		let state = tocUtil.getState(toc, page);
 
 		if (!this.get('isEditor') || is.empty(pageId)) {

@@ -14,45 +14,20 @@ import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-rout
 
 export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	documentService: Ember.inject.service('document'),
-	folderService: Ember.inject.service('folder'),
-	userService: Ember.inject.service('user'),
-	pages: [],
 
 	model() {
 		this.audit.record("viewed-document-activity");
 
-		let folders = this.get('store').peekAll('folder');
-		let folder = this.get('store').peekRecord('folder', this.paramsFor('document').folder_id);
-
-		this.set('folders', folders);
-		this.set('folder', folder);
-
-		return this.modelFor('document');
-	},
-
-	afterModel(model) {
-		let self = this;
-
-		let pages = this.get('store').peekAll('page').filter((page) => {
-			return page.get('documentId') === model.get('id');
+		return Ember.RSVP.hash({
+			folders: this.modelFor('document').folders,
+			folder: this.modelFor('document').folder,
+			document: this.modelFor('document').document,
+			isEditor: this.modelFor('document').isEditor,
+			pages: this.modelFor('document').allPages,
+			tabs: this.modelFor('document').tabs,
+			activity: this.get('documentService').getMeta(this.modelFor('document').document.get('id')).then((activity) => {
+				return activity;
+			})
 		});
-
-		this.set('pages', pages);
-
-		return new Ember.RSVP.Promise(function (resolve) {
-			self.get('documentService').getMeta(model.get('id')).then(function (activity) {
-				self.set('activity', activity);
-				resolve();
-			});
-		});
-	},
-
-	setupController(controller, model) {
-		controller.set('model', model);
-		controller.set('folder', this.get('folder'));
-		controller.set('folders', this.get('folders').rejectBy('id', 0));
-		controller.set('isEditor', this.get('folderService').get('canEditCurrentFolder'));
-		controller.set('activity', this.get('activity'));
-		controller.set('pages', this.get('pages'));
 	}
 });

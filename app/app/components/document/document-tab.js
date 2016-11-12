@@ -22,6 +22,8 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		if (this.get('mode') === 'edit') {
 			this.send('onEdit');
 		}
+
+		this.audit.record("viewed-document-section-" + this.get('model.page.contentType'));
 	},
 
 	didInsertElement() {
@@ -42,11 +44,13 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		onEdit() {
 			this.set('viewMode', false);
 			this.set('editMode', true);
+			this.set('mode', 'edit');
 		},
 
 		onView() {
 			this.set('viewMode', true);
 			this.set('editMode', false);
+			this.set('mode', 'view');
 		},
 
 		onCancel() {

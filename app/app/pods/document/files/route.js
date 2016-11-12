@@ -10,25 +10,22 @@
 // https://documize.com
 
 import Ember from 'ember';
-import RSVP from 'rsvp';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 
 export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	documentService: Ember.inject.service('document'),
-	folderService: Ember.inject.service('folder'),
-	userService: Ember.inject.service('user'),
 
 	model() {
 		this.audit.record("viewed-document-attachments");
 
-		return RSVP.hash({
-			document: this.modelFor('document'),
-			files: this.get('documentService').getAttachments(this.modelFor('document').get('id'))
+		return Ember.RSVP.hash({
+			folders: this.modelFor('document').folders,
+			folder: this.modelFor('document').folder,
+			document: this.modelFor('document').document,
+			isEditor: this.modelFor('document').isEditor,
+			pages: this.modelFor('document').allPages,
+			tabs: this.modelFor('document').tabs,
+			files: this.get('documentService').getAttachments(this.modelFor('document').document.get('id'))
 		});
-	},
-
-	setupController(controller, model) {
-		controller.set('model', model);
-		controller.set('isEditor', this.get('folderService').get('canEditCurrentFolder'));
 	}
 });

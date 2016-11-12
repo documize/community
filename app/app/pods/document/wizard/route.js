@@ -6,12 +6,13 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	folderService: Ember.inject.service('folder'),
 	sectionService: Ember.inject.service('section'),
 
-	model() {
-		let self = this;
-
+	model(params) {
 		return Ember.RSVP.hash({
-			folder: self.get('folderService').getFolder(self.paramsFor('document').folder_id),
-			document: self.get('documentService').getDocument(self.paramsFor('document').document_id),
+			folders: this.modelFor('document').folders,
+			folder: this.modelFor('document').folder,
+			document: this.modelFor('document').document,
+			pages: this.modelFor('document').pages,
+			tabs: this.modelFor('document').tabs,
 			sections: this.get('sectionService').getAll().then(function (sections) {
 				return sections.filterBy('pageType', 'tab');
 			})

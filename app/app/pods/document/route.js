@@ -16,74 +16,56 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	sectionService: Ember.inject.service('section'),
 	documentService: Ember.inject.service('document'),
 	folderService: Ember.inject.service('folder'),
-	userService: Ember.inject.service('user'),
-	pages: [],
-	users: [],
-	meta: [],
-	folder: null,
 
 	beforeModel(transition) {
-		this.pageId = is.not.undefined(transition.queryParams.page) ? transition.queryParams.page : "";
-		var self = this;
+		this.set('pageId', is.not.undefined(transition.queryParams.page) ? transition.queryParams.page : "");
+		this.set('folderId', this.paramsFor('document').folder_id);
+		this.set('documentId', this.paramsFor('document').document_id);
 
-		this.get('folderService').getAll().then(function (folders) {
-			self.set('folders', folders);
-			self.set('folder', folders.findBy("id", self.paramsFor('document').folder_id));
-			self.get('folderService').setCurrentFolder(self.get('folder'));
-		});
-	},
+		return new Ember.RSVP.Promise((resolve) => {
+			this.get('folderService').getAll().then((folders) => {
+				this.set('folders', folders);
 
-	model: function (params) {
-		// this.audit.record("viewed-document");
-		return this.get('documentService').getDocument(params.document_id);
-	},
+				this.get('folderService').getFolder(this.get('folderId')).then((folder) => {
+					this.set('folder', folder);
 
-	afterModel(model) {
-		var self = this;
-		var documentId = model.get('id');
+					this.get('folderService').setCurrentFolder(folder).then(() => {
+						this.set('isEditor', this.get('folderService').get('canEditCurrentFolder'));
 
-		this.browser.setTitle(model.get('name'));
-
-		return new Ember.RSVP.Promise(function (resolve) {
-			self.get('documentService').getPages(documentId).then(function (pages) {
-				self.set('allPages', pages);
-
-				self.get('sectionService').getAll().then(function (sections) {
-					self.set('sections', sections.filterBy('pageType', 'section'));
-					resolve();
+						this.get('documentService').getPages(this.get('documentId')).then((pages) => {
+							this.set('allPages', pages);
+							this.set('pages', pages.filterBy('pageType', 'section'));
+							this.set('tabs', pages.filterBy('pageType', 'tab'));
+							resolve();
+						});
+					});
 				});
 			});
 		});
 	},
 
-	setupController(controller, model) {
-		controller.set('model', model);
-		controller.set('folder', this.folder);
-		controller.set('folders', this.get('folders').rejectBy('id', 0));
-		controller.set('currentPage', this.pageId);
-		controller.set('isEditor', this.get('folderService').get('canEditCurrentFolder'));
-		controller.set('pages', this.get('allPages').filterBy('pageType', 'section'));
-		controller.set('tabs', this.get('allPages').filterBy('pageType', 'tab'));
-		controller.set('sections', this.get('sections'));
-
-		// setup document owner
-		let owner = this.get('users').findBy('id', model.get('userId'));
-
-		// no document owner? You are the owner!
-		if (is.undefined(owner)) {
-			owner = this.session.user;
-			model.set('userId', this.get('session.session.authenticated.user.id'));
-			this.get('documentService').save(model);
-		}
-
-		controller.set('owner', owner);
-
-		this.browser.setMetaDescription(model.get('excerpt'));
+	model() {
+		return Ember.RSVP.hash({
+			folders: this.get('folders'),
+			folder: this.get('folder'),
+			document: this.get('documentService').getDocument(this.get('documentId')).then((document) => {
+				return document;
+			}),
+			page: this.get('pageId'),
+			isEditor: this.get('isEditor'),
+			allPages: this.get('allPages'),
+			pages: this.get('pages'),
+			tabs: this.get('tabs'),
+			sections: this.get('sectionService').getAll().then((sections) => {
+				return sections.filterBy('pageType', 'section');
+			}),
+		});
 	},
 
 	actions: {
 		error(error /*, transition*/ ) {
 			console.log(error);
+			console.log(error.stack);
 			if (error) {
 				this.transitionTo('/not-found');
 				return false;

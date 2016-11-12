@@ -16,11 +16,6 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	documentService: Ember.inject.service('document'),
 	folderService: Ember.inject.service('folder'),
 	userService: Ember.inject.service('user'),
-	pages: [],
-	attachments: [],
-	users: [],
-	meta: [],
-	folder: null,
 	queryParams: {
 		page: {
 			refreshModel: false
@@ -28,40 +23,34 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	},
 
 	beforeModel(transition) {
-		this.pageId = is.not.undefined(transition.queryParams.page) ? transition.queryParams.page : "";
+		this.set('pageId', is.not.undefined(transition.queryParams.page) ? transition.queryParams.page : "");
+		this.set('folderId', this.paramsFor('document').folder_id);
+		this.set('documentId', this.paramsFor('document').document_id);
 
 		let folders = this.get('store').peekAll('folder');
-		let folder = this.get('store').peekRecord('folder', this.paramsFor('document').folder_id);
+		let folder = this.get('store').peekRecord('folder', this.get('folderId'));
+		let document = this.get('store').peekRecord('document', this.get('documentId'));
+
+		this.set('document', document);
 		this.set('folders', folders);
 		this.set('folder', folder);
-		this.get('folderService').setCurrentFolder(folder);
 	},
 
 	model() {
-		this.audit.record("viewed-document");
-		return this.modelFor('document');
-	},
+		this.browser.setTitle(this.get('document.name'));
+		this.browser.setMetaDescription(this.get('document.excerpt'));
 
-	afterModel(model) {
-		var self = this;
-		var documentId = model.get('id');
+		let self = this;
 
-		this.browser.setTitle(model.get('name'));
-
-		return new Ember.RSVP.Promise(function (resolve) {
-			self.get('documentService').getPages(documentId).then(function (pages) {
-				self.set('pages', pages);
-				resolve();
-			});
+		return Ember.RSVP.hash({
+			folders: self.get('folders'),
+			folder: self.get('folder'),
+			document: self.get('document'),
+			page: self.get('pageId'),
+			isEditor: self.get('folderService').get('canEditCurrentFolder'),
+			pages: self.get('documentService').getPages(self.get('documentId')).then(function (pages) {
+				return pages.filterBy('pageType', 'section');
+			})
 		});
-	},
-
-	setupController(controller, model) {
-		controller.set('model', model);
-		controller.set('folder', this.folder);
-		controller.set('folders', this.get('folders').rejectBy('id', 0));
-		controller.set('currentPage', this.pageId);
-		controller.set('isEditor', this.get('folderService').get('canEditCurrentFolder'));
-		controller.set('pages', this.get('pages').filterBy('pageType', 'section'));
 	}
 });

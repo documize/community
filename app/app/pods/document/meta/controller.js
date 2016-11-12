@@ -17,12 +17,9 @@ export default Ember.Controller.extend(NotifierMixin, {
 
 	actions: {
 		onSave(doc) {
-			let self = this;
-
-			this.get('documentService').save(doc).then(function () {
-				self.showNotification('Saved');
-				self.set('model', doc);
-				self.transitionToRoute('document.index');
+			this.get('documentService').save(doc).then(() => {
+				this.showNotification('Saved');
+				this.transitionToRoute('document.index');
 			});
 		}
 	}
