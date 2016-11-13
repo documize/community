@@ -39,5 +39,5 @@ func Register() {
 	provider.Register("wysiwyg", &wysiwyg.Provider{})
 	provider.Register("airtable", &airtable.Provider{})
 	p := provider.List()
-	log.Info(fmt.Sprintf("Documize registered %d smart sections", len(p)))
+	log.Info(fmt.Sprintf("Documize registered %d sections and tabs", len(p)))
 }

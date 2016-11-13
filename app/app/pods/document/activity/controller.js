@@ -10,11 +10,7 @@
 // https://documize.com
 
 import Ember from 'ember';
+import NotifierMixin from '../../../mixins/notifier';
 
-export default Ember.Component.extend({
-    actions: {
-		close() {
-			this.attrs.close();
-		}
-    }
+export default Ember.Controller.extend(NotifierMixin, {
 });

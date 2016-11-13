@@ -5,7 +5,17 @@
 		"indent_with_tabs": true,
 		"preserve_newlines": true,
 		"max_preserve_newlines": 2,
-		"newline_between_rules": true
+		"newline_between_rules": true,
+		"selector_separator_newlines": true
+	},
+	"scss": {
+		"indent_size": 4,
+		"indent_level": 0,
+		"indent_with_tabs": true,
+		"preserve_newlines": true,
+		"max_preserve_newlines": 2,
+		"newline_between_rules": true,
+		"selector_separator_newlines": true
 	},
 	"html": {
 		"indent_size": 4,
@@ -38,8 +48,10 @@
 		"brace_style": "collapse-preserve-inline",
 		"keep_function_indentation": false,
 		"space_after_anon_function": false,
+		"space_before_anon_function": false,
 		"space_before_conditional": true,
 		"space_in_empty_paren": false,
+		"space_before_func_paren": false,
 		"space_in_paren": false
 	},
 	"sql": {

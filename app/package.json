@@ -1,7 +1,7 @@
 {
 	"name": "documize",
-	"version": "0.30.0",
-	"description": "The Documentation IDE",
+	"version": "0.31.0",
+	"description": "The Document IDE",
 	"private": true,
 	"directories": {
 		"doc": "doc",

@@ -29,6 +29,7 @@ func (*Provider) Meta() provider.TypeMeta {
 	section.Title = "Airtable"
 	section.Description = "Databases, tables, views"
 	section.ContentType = "airtable"
+	section.PageType = "tab"
 
 	return section
 }

@@ -2,57 +2,6 @@
 	@extend .no-select;
 	width: 100%;
 
-	> .summary-line {
-		color: $color-gray;
-		margin: 30px 0;
-
-		> .items {
-			padding: 0;
-			margin: 0;
-			text-align: center;
-
-			> .divider {
-				margin-right: 20px;
-				display: inline-block;
-			}
-
-			> .item {
-				list-style-type: none;
-				display: inline-block;
-				margin: 0;
-				padding: 0;
-				vertical-align: middle;
-
-				> .metric {
-					@extend .cursor-pointer;
-					text-align: center;
-					color: $color-gray;
-
-					.number {
-						font-size: 1.2rem;
-						font-weight: bold;
-					}
-
-					.label {
-						margin: 0;
-						padding: 0;
-						font-size: 0.8rem;
-					}
-
-					&:hover {
-						color: $color-link;
-					}
-				}
-			}
-
-			> .active {
-				> .metric {
-					color: $color-link;
-				}
-			}
-		}
-	}
-
 	.stuck-toc {
 		position: fixed;
 		top: 20px;
@@ -109,7 +58,6 @@
 
 	.document-structure {
 		> .toc-controls {
-			text-align: center;
 			margin: 0;
 			color: $color-gray;
 
@@ -140,6 +88,7 @@
 			overflow-x: hidden;
 			list-style-type: none;
 			margin: 20px 0 0;
+			font-family: $font-semibold;
 
 			.item {
 				padding: 4px 0;
@@ -159,89 +108,6 @@
 				> .selected {
 					color: $color-link;
 					font-weight: bold;
-				}
-			}
-		}
-	}
-}
-
-.meta-viewers {
-	> .items {
-		list-style-type: none;
-		margin: 0;
-		padding: 0;
-		white-space: nowrap;
-
-		> .item {
-			margin: 15px 0;
-			overflow-x: hidden;
-			white-space: nowrap;
-			text-overflow: ellipsis;
-			width: 90%;
-
-			> .avatar-box {
-				display: inline-block;
-				margin: 3px 10px 0 0;
-				vertical-align: top;
-			}
-
-			> .detail {
-				display: inline-block;
-
-				> .name {
-					font-size: 1rem;
-					color: $color-off-black;
-				}
-
-				> .date {
-					font-size: 0.8rem;
-				}
-			}
-		}
-	}
-}
-
-.meta-editors {
-	position: relative;
-
-	> .items {
-		list-style-type: none;
-		margin: 0;
-		padding: 0;
-		white-space: nowrap;
-
-		> .item {
-			margin: 15px 0;
-			overflow-x: hidden;
-			white-space: nowrap;
-			text-overflow: ellipsis;
-			width: 90%;
-
-			.avatar-box {
-				display: inline-block;
-				margin: 3px 10px 0 0;
-				vertical-align: top;
-			}
-
-			.detail {
-				display: inline-block;
-
-				.name {
-					font-size: 1rem;
-					color: $color-off-black;
-				}
-
-				.changed {
-					font-size: 0.9rem;
-				}
-
-				.deleted {
-					font-size: 0.9rem;
-					color: $color-red;
-				}
-
-				.date {
-					font-size: 0.8rem;
 				}
 			}
 		}

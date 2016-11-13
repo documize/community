@@ -18,6 +18,8 @@ export default Ember.Component.extend({
 	position: 'bottom right',
 	contentId: "",
 	drop: null,
+	onOpenCallback: null, // callback when opened
+	onCloseCallback: null, // callback when closed
 	tether: Ember.inject.service(),
 
 	didReceiveAttrs() {
@@ -44,7 +46,20 @@ export default Ember.Component.extend({
 			}
 		});
 
-		self.set('drop', drop);
+		if (drop) {
+			drop.on('open', function () {
+				if (is.not.null(self.get("onOpenCallback"))) {
+					self.attrs.onOpenCallback(drop);
+				}
+			});
+			drop.on('close', function () {
+				if (is.not.null(self.get("onCloseCallback"))) {
+					self.attrs.onCloseCallback();
+				}
+			});
+
+			self.set('drop', drop);
+		}
 	},
 
 	willDestroyElement() {

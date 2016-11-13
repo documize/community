@@ -10,8 +10,9 @@
 			font-size: 1.3rem;
 			list-style: none;
 			cursor: pointer;
-			@extend .no-select;
 			color: $color-off-black;
+			@extend .no-select;
+			@include ease-in();
 
 			&:hover {
 				color: $color-link;

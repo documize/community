@@ -35,6 +35,7 @@ func (*Provider) Meta() provider.TypeMeta {
 	section.Title = "Gemini"
 	section.Description = "Work items and tickets"
 	section.ContentType = "gemini"
+	section.PageType = "tab"
 
 	return section
 }

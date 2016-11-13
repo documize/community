@@ -39,6 +39,7 @@ func init() {
 	meta.Title = "GitHub"
 	meta.Description = "Link code commits and issues"
 	meta.ContentType = "github"
+	meta.PageType = "tab"
 	meta.Callback = Callback
 }
 

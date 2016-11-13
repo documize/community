@@ -28,69 +28,72 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
 		if (is.undefined(this.get('config.clientId')) || is.undefined(this.get('config.callbackUrl'))) {
 			self.get('sectionService').fetch(page, "config", {})
-				.then(function (cfg) {
-					let config = {};
+			.then(function (cfg) {
+				let config = {};
 
-					config = {
-						clientId: cfg.clientID,
-						callbackUrl: cfg.authorizationCallbackURL,
-						owner: null,
-						owner_name: "",
-						lists: [],
-						branchSince: "",
-						branchLines: "100",
-						userId: "",
-						pageId: page.get('id'),
-						showMilestones: false,
-						showIssues: false,
-						showCommits: false,
-					};
+				config = {
+					clientId: cfg.clientID,
+					callbackUrl: cfg.authorizationCallbackURL,
+					owner: null,
+					owner_name: "",
+					lists: [],
+					branchSince: "",
+					branchLines: "100",
+					userId: "",
+					pageId: page.get('id'),
+					showMilestones: false,
+					showIssues: false,
+					showCommits: true,
+				};
 
-					try {
-						let metaConfig = JSON.parse(self.get('meta.config'));
-						config.owner = metaConfig.owner;
-						config.lists = metaConfig.lists;
-						config.branchSince = metaConfig.branchSince;
-						config.userId = metaConfig.userId;
-						config.pageId = metaConfig.pageId;
-						config.showMilestones = metaConfig.showMilestones;
-						config.showIssues = metaConfig.showIssues;
-						config.showCommits = metaConfig.showCommits;
-					} catch (e) {}
+				try {
+					let metaConfig = JSON.parse(self.get('meta.config'));
+					config.owner = metaConfig.owner;
+					config.lists = metaConfig.lists;
+					config.branchSince = metaConfig.branchSince;
+					config.userId = metaConfig.userId;
+					config.pageId = metaConfig.pageId;
+					config.showMilestones = metaConfig.showMilestones;
+					config.showIssues = metaConfig.showIssues;
+					config.showCommits = metaConfig.showCommits;
+				} catch (e) {}
 
-					self.set('config', config);
-					self.set('config.pageId', page.get('id'));
+				if (_.isUndefined(config.showCommits)) {
+					config.showCommits = true;
+				}
 
-					// On auth callback capture code
-					let code = window.location.search;
+				self.set('config', config);
+				self.set('config.pageId', page.get('id'));
 
-					if (is.not.undefined(code) && is.not.null(code) && is.not.empty(code) && code !== "") {
-						let tok = code.replace("?code=", "");
-						self.get('sectionService').fetch(page, "saveSecret", { "token": tok })
-							.then(function () {
-								console.log("github auth code saved to db");
-								self.send('authStage2');
-							}, function (error) { //jshint ignore: line
-								console.log(error);
-								self.send('auth');
-							});
-					} else {
-						if (config.userId !== self.get("session.session.authenticated.user.id")) {
-							console.log("github auth wrong user ID, switching");
-							self.set('config.userId', self.get("session.session.authenticated.user.id"));
-						}
-						self.get('sectionService').fetch(page, "checkAuth", self.get('config'))
-							.then(function () {
-								console.log("github auth code valid");
-								self.send('authStage2');
-							}, function (error) { //jshint ignore: line
-								console.log(error);
-								self.send('auth'); // require auth if the db token is invalid
-							});
+				// On auth callback capture code
+				let code = window.location.search;
+				code = code.replace("?mode=edit", "");
+
+				if (is.not.undefined(code) && is.not.null(code) && is.not.empty(code) && code !== "") {
+					let tok = code.replace("&code=", "");
+					self.get('sectionService').fetch(page, "saveSecret", { "token": tok })
+						.then(function () {
+							self.send('authStage2');
+						}, function (error) { //jshint ignore: line
+							console.log(error);
+							self.send('auth');
+						});
+				} else {
+					if (config.userId !== self.get("session.session.authenticated.user.id")) {
+						console.log("github auth wrong user ID, switching");
+						self.set('config.userId', self.get("session.session.authenticated.user.id"));
 					}
-				}, function (error) { //jshint ignore: line
-					console.log(error);
-				});
+					self.get('sectionService').fetch(page, "checkAuth", self.get('config'))
+						.then(function () {
+							self.send('authStage2');
+						}, function (error) { //jshint ignore: line
+							console.log(error);
+							self.send('auth'); // require auth if the db token is invalid
+						});
+				}
+			}, function (error) { //jshint ignore: line
+				console.log(error);
+			});
 		}
 	},
 
@@ -122,7 +125,6 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 			$('#branch-since').datetimepicker();
 			this.set('initDateTimePicker', "Done");
 		}
-
 	},
 
 	getOrgReposLists() {
@@ -132,41 +134,41 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 		let page = this.get('page');
 
 		this.get('sectionService').fetch(page, "orgrepos", self.get('config'))
-			.then(function (lists) {
-				let savedLists = self.get('config.lists');
-				if (savedLists === null) {
-					savedLists = [];
-				}
+		.then(function (lists) {
+			let savedLists = self.get('config.lists');
+			if (savedLists === null) {
+				savedLists = [];
+			}
 
-				if (lists.length > 0) {
-					let noIncluded = true;
+			if (lists.length > 0) {
+				let noIncluded = true;
 
-					lists.forEach(function (list) {
-						let included = false;
-						var saved;
-						if (is.not.undefined(savedLists)) {
-							saved = savedLists.findBy("id", list.id);
-						}
-						if (is.not.undefined(saved)) {
-							included = saved.included;
-							noIncluded = false;
-						}
-						list.included = included;
-					});
-
-					if (noIncluded) {
-						lists[0].included = true; // make the first entry the default
+				lists.forEach(function (list) {
+					let included = false;
+					var saved;
+					if (is.not.undefined(savedLists)) {
+						saved = savedLists.findBy("id", list.id);
 					}
-				}
+					if (is.not.undefined(saved)) {
+						included = saved.included;
+						noIncluded = false;
+					}
+					list.included = included;
+				});
 
-				self.set('config.lists', lists);
-				self.set('busy', false);
-			}, function (error) { //jshint ignore: line
-				self.set('busy', false);
-				self.set('authenticated', false);
-				self.showNotification("Unable to fetch repositories");
-				console.log(error);
-			});
+				if (noIncluded) {
+					lists[0].included = true; // make the first entry the default
+				}
+			}
+
+			self.set('config.lists', lists);
+			self.set('busy', false);
+		}, function (error) { //jshint ignore: line
+			self.set('busy', false);
+			self.set('authenticated', false);
+			self.showNotification("Unable to fetch repositories");
+			console.log(error);
+		});
 	},
 
 	actions: {
@@ -212,11 +214,12 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 			let self = this;
 			self.set('busy', true);
 			self.set('authenticated', false);
+
 			let target = "https://github.com/login/oauth/authorize?client_id=" + self.get('config.clientId') +
 				"&scope=repo&redirect_uri=" + encodeURIComponent(self.get('config.callbackUrl')) +
 				"&state=" + encodeURIComponent(window.location.href);
-			window.location.href = target;
 
+			window.location.href = target;
 		},
 
 		onOwnerChange(thisOwner) {

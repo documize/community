@@ -102,7 +102,7 @@ func Callback(res http.ResponseWriter, req *http.Request) error {
 		return err
 	}
 
-	target := up.Scheme + "://" + up.Host + up.Path + "?code=" + gt.AccessToken
+	target := up.Scheme + "://" + up.Host + up.Path + "?mode=edit&code=" + gt.AccessToken
 
 	http.Redirect(res, req, target, http.StatusTemporaryRedirect)
 

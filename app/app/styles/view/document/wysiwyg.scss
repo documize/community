@@ -39,48 +39,48 @@
 
 	b
 	{
-			font-family: "open_sanssemibold";
+		font-family: $font-semibold;
 	}
 
-	h1.doc-name {
+	h1 {
 		font-size: 2em;
-		font-family: open_sansregular;
+		font-family: $font-semibold;
 	}
 
-	h1
-	{
-		font-size: 1.6em;
-		font-family: open_sanslight;
-		color:$color-off-black;
-		margin: 30px 0 20px 0;
-	}
+	// h1
+	// {
+	// 	font-size: 1.6em;
+	// 	font-family: open_sanslight;
+	// 	color:$color-off-black;
+	// 	margin: 0 0 20px 0;
+	// }
 
 	h2
 	{
-		font-size: 1.5em;
+		font-size: 1.7em;
 		margin: 30px 0 20px 0;
-		font-family: open_sanslight;
+		font-family: $font-regular;
 	}
 
 	h3
 	{
-		font-size: 1.4rem;
+		font-size: 1.5rem;
 		margin: 30px 0 20px 0;
-		font-family: open_sanslight;
+		font-family: $font-regular;
 	}
 
 	h4
 	{
 		font-size: 1.3rem;
 		margin: 30px 0 20px 0;
-		font-family: open_sanslight;
+		font-family: $font-regular;
 	}
 
 	h5, h6, h7, h8, h9
 	{
-		font-size: 1.2rem;
+		font-size: 1.3rem;
 		margin: 30px 0 20px 0;
-		font-family: open_sanslight;
+		font-family: $font-regular;
 	}
 
 	h2, h3, h4, h5, h6, h7, h8, h9
@@ -88,7 +88,7 @@
 		.page-title
 		{
 			color:$color-off-black;
-			font-family: open_sansregular;
+			font-family: $font-regular;
 		}
 	}
 

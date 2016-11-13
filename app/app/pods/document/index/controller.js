@@ -14,24 +14,7 @@ import NotifierMixin from '../../../mixins/notifier';
 
 export default Ember.Controller.extend(NotifierMixin, {
 	documentService: Ember.inject.service('document'),
-	templateService: Ember.inject.service('template'),
-
 	queryParams: ['page'],
-	page: null,
-	folder: {},
-	pages: [],
-	attachments: null,
-
-	getAttachments() {
-		let self = this;
-		this.get('documentService').getAttachments(this.model.get('id')).then(function (attachments) {
-			if (is.array(attachments)) {
-				self.set('attachments', attachments);
-			} else {
-				self.set('attachments', []);
-			}
-		});
-	},
 
 	// Jump to the right part of the document.
 	scrollToPage(pageId) {
@@ -66,11 +49,9 @@ export default Ember.Controller.extend(NotifierMixin, {
 		},
 
 		onPageSequenceChange(changes) {
-			let self = this;
-
-			this.get('documentService').changePageSequence(this.model.get('id'), changes).then(function () {
-				_.each(changes, function (change) {
-					let pageContent = _.findWhere(self.get('pages'), {
+			this.get('documentService').changePageSequence(this.get('model.document.id'), changes).then(() => {
+				_.each(changes, (change) => {
+					let pageContent = _.findWhere(this.get('model.pages'), {
 						id: change.pageId
 					});
 
@@ -79,16 +60,15 @@ export default Ember.Controller.extend(NotifierMixin, {
 					}
 				});
 
-				self.set('pages', self.get('pages').sortBy('sequence'));
+				this.set('model.pages', this.get('model.pages').sortBy('sequence'));
+				this.get('target.router').refresh();
 			});
 		},
 
 		onPageLevelChange(changes) {
-			let self = this;
-
-			this.get('documentService').changePageLevel(this.model.get('id'), changes).then(function () {
-				_.each(changes, function (change) {
-					let pageContent = _.findWhere(self.get('pages'), {
+			this.get('documentService').changePageLevel(this.get('model.document.id'), changes).then(() => {
+				_.each(changes, (change) => {
+					let pageContent = _.findWhere(this.get('model.pages'), {
 						id: change.pageId
 					});
 
@@ -97,28 +77,17 @@ export default Ember.Controller.extend(NotifierMixin, {
 					}
 				});
 
-				let pages = self.get('pages');
+				let pages = this.get('model.pages');
 				pages = pages.sortBy('sequence');
-				self.set('pages', []);
-				self.set('pages', pages);
-			});
-		},
+				this.set('model.pages', pages);
 
-		onAttachmentUpload() {
-			this.getAttachments();
-		},
-
-		onAttachmentDeleted(id) {
-			let self = this;
-			this.get('documentService').deleteAttachment(this.model.get('id'), id).then(function () {
-				self.getAttachments();
+				this.get('target.router').refresh();
 			});
 		},
 
 		onPageDeleted(deletePage) {
-			let self = this;
-			let documentId = this.get('model.id');
-			let pages = this.get('pages');
+			let documentId = this.get('model.document.id');
+			let pages = this.get('model.pages');
 			let deleteId = deletePage.id;
 			let deleteChildren = deletePage.children;
 			let page = _.findWhere(pages, {
@@ -126,6 +95,8 @@ export default Ember.Controller.extend(NotifierMixin, {
 			});
 			let pageIndex = _.indexOf(pages, page, false);
 			let pendingChanges = [];
+
+			this.audit.record("deleted-page");
 
 			// select affected pages
 			for (var i = pageIndex + 1; i < pages.get('length'); i++) {
@@ -145,102 +116,28 @@ export default Ember.Controller.extend(NotifierMixin, {
 					pageId: deleteId
 				});
 
-				this.get('documentService').deletePages(documentId, deleteId, pendingChanges).then(function () {
+				this.get('documentService').deletePages(documentId, deleteId, pendingChanges).then(() => {
 					// update our models so we don't have to reload from db
 					for (var i = 0; i < pendingChanges.length; i++) {
 						let pageId = pendingChanges[i].pageId;
-						self.set('pages', _.reject(self.get('pages'), function (p) { //jshint ignore: line
-							return p.id === pageId;
+						this.set('model.pages', _.reject(pages, function (p) { //jshint ignore: line
+							return p.get('id') === pageId;
 						}));
 					}
 
-					self.set('pages', _.sortBy(self.get('pages'), "sequence"));
-
-					self.audit.record("deleted-page");
-
-					// fetch document meta
-					self.get('documentService').getMeta(self.model.get('id')).then(function (meta) {
-						self.set('meta', meta);
-					});
+					this.set('model.pages', _.sortBy(pages, "sequence"));
+					this.get('target.router').refresh();
 				});
 			} else {
 				// page delete followed by re-leveling child pages
-				this.get('documentService').deletePage(documentId, deleteId).then(function () {
-					self.set('pages', _.reject(self.get('pages'), function (p) {
+				this.get('documentService').deletePage(documentId, deleteId).then(() => {
+					this.set('model.pages', _.reject(pages, function (p) {
 						return p.get('id') === deleteId;
 					}));
 
-					self.audit.record("deleted-page");
-
-					// fetch document meta
-					self.get('documentService').getMeta(self.model.get('id')).then(function (meta) {
-						self.set('meta', meta);
-					});
+					this.send('onPageLevelChange', pendingChanges);
 				});
-
-				self.send('onPageLevelChange', pendingChanges);
 			}
-		},
-
-		onSaveTemplate(name, desc) {
-			this.get('templateService').saveAsTemplate(this.model.get('id'), name, desc).then(function () {});
-		},
-
-		onDocumentChange(doc) {
-			let self = this;
-			this.get('documentService').save(doc).then(function () {
-				self.set('model', doc);
-			});
-		},
-
-		onAddSection(section) {
-			this.audit.record("added-section");
-			this.audit.record("added-section-" + section.get('contentType'));
-
-			let page = {
-				documentId: this.get('model.id'),
-				title: `${section.get('title')} Section`,
-				level: 1,
-				sequence: 2048,
-				body: "",
-				contentType: section.get('contentType')
-			};
-
-			let data = this.get('store').normalize('page', page);
-			let pageData = this.get('store').push(data);
-
-			let meta = {
-				documentId: this.get('model.id'),
-				rawBody: "",
-				config: ""
-			};
-
-			let pageMeta = this.get('store').normalize('page-meta', meta);
-			let pageMetaData = this.get('store').push(pageMeta);
-
-			let model = {
-				page: pageData,
-				meta: pageMetaData
-			};
-
-			this.get('documentService').addPage(this.get('model.id'), model).then((newPage) => {
-				this.transitionToRoute('document.edit',
-					this.get('folder.id'),
-					this.get('folder.slug'),
-					this.get('model.id'),
-					this.get('model.slug'),
-					newPage.id);
-			});
-		},
-
-		onDocumentDelete() {
-			let self = this;
-
-			this.get('documentService').deleteDocument(this.get('model.id')).then(function () {
-				self.audit.record("deleted-page");
-				self.send("showNotification", "Deleted");
-				self.transitionToRoute('folder', self.get('folder.id'), self.get('folder.slug'));
-			});
 		}
 	}
 });

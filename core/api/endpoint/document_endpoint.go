@@ -142,6 +142,40 @@ func GetDocumentMeta(w http.ResponseWriter, r *http.Request) {
 	writeSuccessBytes(w, json)
 }
 
+// GetDocumentLinks is an endpoint returning the links for a document.
+func GetDocumentLinks(w http.ResponseWriter, r *http.Request) {
+	method := "GetDocumentLinks"
+	p := request.GetPersister(r)
+
+	params := mux.Vars(r)
+	id := params["documentID"]
+
+	if len(id) == 0 {
+		writeMissingDataError(w, method, "documentID")
+		return
+	}
+
+	oLinks, err := p.GetDocumentOutboundLinks(id)
+
+	if len(oLinks) == 0 {
+		oLinks = []entity.Link{}
+	}
+
+	if err != nil && err != sql.ErrNoRows {
+		writeGeneralSQLError(w, method, err)
+		return
+	}
+
+	json, err := json.Marshal(oLinks)
+
+	if err != nil {
+		writeJSONMarshalError(w, method, "link", err)
+		return
+	}
+
+	writeSuccessBytes(w, json)
+}
+
 // GetDocumentsByFolder is an endpoint that returns the documents in a given folder.
 func GetDocumentsByFolder(w http.ResponseWriter, r *http.Request) {
 	method := "GetDocumentsByFolder"

@@ -7,7 +7,7 @@
 		width: 100%;
 		padding: 10px;
 		white-space: nowrap;
-		overflow: auto
+		overflow: auto;
 	}
 
 	.github-repo-title {
@@ -21,7 +21,6 @@
 	}
 
 	.github-list-title {
-		font-weight: bold;
 		color: #4c4c4c;
 		font-size: 14px;
 		margin: 5px;
@@ -34,17 +33,16 @@
 	.github-issue-label {
 		font-size: 11px;
 		color: white;
-		padding: 0px 4px;
+		padding: 0 4px;
 		margin-right: 5px;
 		border-radius: 2px;
 		box-shadow: inset 0 -1px 0 rgba(0,0,0,0.12);
 		display: inline-block;
 		line-height: 22px;
-		}
+	}
 }
 
 .section-github-render {
-
 	a:hover {
 		text-decoration: underline;
 	}
@@ -62,7 +60,7 @@
 
 	.heading {
 		font-size: 1.6rem;
-		margin: 30px 0 0 0;
+		margin: 30px 0 0;
 	}
 
 	.github-table thead tr th {
@@ -73,36 +71,37 @@
 		text-align: left;
 
 		span {
-			color:#838d94;
+			color: #838d94;
 		}
 
 	}
 
 	.github-table tbody tr td {
 		border: none!important;
-		padding: 5px 20px 5px 20px !important;
+		padding: 5px 20px !important;
 	}
 
 	.github-table .right-column {
 		text-align: right;
-		color:#838d94;
+		color: #838d94;
 	}
 
 	span.data {
-		color:#838d94;
+		color: #838d94;
 	}
 
 	.issue-label {
-		color:white;
-        font-size: 11px;
-        padding: 4px 6px;
-        border-radius: 4px;
-        box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.12);
-        margin-left: 10px;
+		color: white;
+		font-size: 11px;
+		padding: 4px 6px;
+		border-radius: 4px;
+		box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.12);
+		margin-left: 10px;
 	}
 
 	.progress-bar {
-		display: inline-block; border-radius: 3px;
+		display: inline-block;
+		border-radius: 3px;
 		width: 40%;
 		background-color: #f1f1f1;
 		height: 8px;
@@ -117,8 +116,8 @@
 
 	span.issue-state {
 		float: left;
-    	margin-right: 10px;
-    	margin-top: 3px;
+		margin-right: 10px;
+		margin-top: 3px;
 	}
 
 	img.github-avatar {

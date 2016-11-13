@@ -21,6 +21,13 @@ export default Ember.Service.extend({
 	appMeta: service(),
 	store: service(),
 
+	// Returns links within specified document
+	getDocumentLinks(documentId) {
+		return this.get('ajax').request(`documents/${documentId}/links`, {
+			method: "GET"
+		});
+	},
+
 	// Returns candidate links using provided parameters
 	getCandidates(folderId, documentId, pageId) {
 		return this.get('ajax').request(`links/${folderId}/${documentId}/${pageId}`, {
@@ -56,7 +63,7 @@ export default Ember.Service.extend({
 		let endpoint = this.get('appMeta').get('endpoint');
 		let orgId = this.get('appMeta').get('orgId');
 
-		if (link.linkType === "section" || link.linkType === "document") {
+		if (link.linkType === "section" || link.linkType === "tab" || link.linkType === "document") {
 			href = `/link/${link.linkType}/${link.id}`;
 			result = `<a data-documize='true' data-link-space-id='${link.folderId}' data-link-id='${link.id}' data-link-target-document-id='${link.documentId}' data-link-target-id='${link.targetId}' data-link-type='${link.linkType}' href='${href}'>${link.title}</a>`;
 		}
@@ -112,6 +119,14 @@ export default Ember.Service.extend({
 			return;
 		}
 
+		// handle tab link
+		if (link.linkType === "tab") {
+			let options = {};
+			options['mode'] = 'view';
+			router.transitionTo('document.section', link.targetId, { queryParams: options });
+			return;
+		}
+
 		// handle document link
 		if (link.linkType === "document") {
 			router.transitionTo('document', link.folderId, folderSlug, link.documentId, documentSlug);
@@ -125,7 +140,3 @@ export default Ember.Service.extend({
 		}
 	}
 });
-
-/*
-	doc meta to show inbound and outbound links.
-*/

@@ -72,18 +72,6 @@ function getState(toc, page) {
 			if (state.tocTools.indentIncrement === 0) {
 				state.tocTools.indentIncrement = 1;
 			}
-
-			// for (var i2 = index2; i2 >= 0; i2--) {
-			// 	if (page.level < toc[i2].level) {
-			// 		state.tocTools.allowIndent = false;
-			// 		break;
-			// 	}
-			//
-			// 	if (page.level === toc[i2].level) {
-			// 		state.tocTools.allowIndent = true;
-			// 		break;
-			// 	}
-			// }
 		}
 	}
 
@@ -203,7 +191,7 @@ function moveDown(state, pages, current) {
 		}
 	} else {
 		// startingSequence = downTarget.sequence * 2;
-		startingSequence = cutOff[cutOff.length - 1].sequence * 2;
+		startingSequence = cutOff[cutOff.length - 1].get('sequence') * 2;
 		upperSequence = startingSequence * 2;
 	}
 

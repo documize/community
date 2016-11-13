@@ -1,77 +1,81 @@
-* { box-sizing: border-box; }
+* {
+	box-sizing: border-box;
+}
 
 .input-control {
-    position: relative;
-    margin-bottom: 25px;
+	position: relative;
+	margin-bottom: 50px;
 
-    > label {
-      color: $color-input;
-      font-size: 1.1em;
-      font-weight: normal;
-      pointer-events: none;
-    }
+	> label {
+		color: $color-input;
+		font-size: 1.1em;
+		font-weight: normal;
+		font-family: $font-semibold;
+		pointer-events: none;
+	}
 
-    > .tip {
-        color: $color-input;
-        font-size: 0.8em;
-        margin: 5px 0 10px 0;
-        padding: 0;
-        text-align: left;
-    }
+	> .tip {
+		color: $color-input;
+		font-size: 1em;
+		margin: 5px 0 10px;
+		padding: 0;
+		text-align: left;
+		font-family: $font-light;
+	}
 
-    > input,
-    textarea {
-        font-size: 1em;
-        padding: 8px 0 10px 0;
-        margin: 0 0 15px 0;
-        display: block;
-        width: 100%;
-        border: none;
-        border-bottom: 1px solid $color-input;
-        height: 2.3rem;
-        outline: none;
+	> input,
+	textarea {
+		font-size: 1em;
+		padding: 8px 0 10px;
+		margin: 0 0 15px;
+		display: block;
+		width: 100%;
+		border: none;
+		border-bottom: 1px solid $color-input;
+		height: 2.3rem;
+		outline: none;
 
-        &:focus {
-            outline: none;
-            border-bottom: 1px solid $color-input !important;
-            box-shadow: 0 1px 0 0 $color-input !important;
-            transition: 0.2s ease all;
-            -moz-transition: 0.2s ease all;
-            -webkit-transition: 0.2s ease all;
-        }
-    }
+		&:focus {
+			outline: none;
+			border-bottom: 1px solid $color-primary !important;
+			box-shadow: 0 1px 0 0 $color-primary !important;
+			transition: 0.2s ease all;
+			-moz-transition: 0.2s ease all;
+			-webkit-transition: 0.2s ease all;
+		}
+	}
 
-    > textarea {
-        resize: none;
-        height: auto !important;
+	> textarea {
+		resize: none;
+		height: auto !important;
 		overflow-y: hidden;
-    }
+	}
 
-	> select,
+	 > select,
 	> div select {
 		background-color: $color-white;
-	    padding: 5px;
-	    border: 1px solid $color-input;
-	    border-radius: 2px;
-        height: 2.3rem;
+		padding: 5px;
+		border: 1px solid $color-input;
+		border-radius: 2px;
+		height: 2.3rem;
 		font-size: 1rem;
 		display: inline-block;
 
 		&:focus {
-            outline: none;
-            border: 1px solid $color-input !important;
-            box-shadow: none !important;
-            transition: 0.2s ease all;
-            -moz-transition: 0.2s ease all;
-            -webkit-transition: 0.2s ease all;
-        }
+			outline: none;
+			border: 1px solid $color-input !important;
+			box-shadow: none !important;
+			transition: 0.2s ease all;
+			-moz-transition: 0.2s ease all;
+			-webkit-transition: 0.2s ease all;
+		}
 	}
 
 	> .checkbox {
 		width: 100%;
 		font-size: 1em;
-		padding: 8px 0 10px 0;
-		margin: 0 0 15px 0;
+		padding: 8px 0 10px;
+		margin: 0 0 15px;
 		display: inline-block;
 		border: none;
 		border-bottom: 1px solid $color-input;
@@ -89,7 +93,7 @@
 
 		> input[type='checkbox'] {
 			font-size: 1em;
-			padding: 8px 0 10px 0;
+			padding: 8px 0 10px;
 			margin: 0 0 15px 5px;
 			display: inline-block;
 			border: none;
@@ -108,88 +112,85 @@
 		}
 
 		> label {
-	      color: $color-off-black;
-	      font-size: 1em;
-	      font-weight: normal;
-	      pointer-events: none;
-		  display: inline-block;
-		  margin-left: 5px;
-	    }
+			color: $color-off-black;
+			font-size: 1em;
+			font-weight: normal;
+			pointer-events: none;
+			display: inline-block;
+			margin-left: 5px;
+		}
 	}
 
 	.error {
 		border-color: $color-red;
 
 		&:focus {
-            border-bottom: 1px solid $color-red !important;
-            box-shadow: 0 1px 0 0 $color-red !important;
-        }
+			border-bottom: 1px solid $color-red !important;
+			box-shadow: 0 1px 0 0 $color-red !important;
+		}
 	}
 
 	select.error {
 		border-color: $color-red;
 
 		&:focus {
-            border: 1px solid $color-red !important;
-            box-shadow: none !important;
-        }
+			border: 1px solid $color-red !important;
+			box-shadow: none !important;
+		}
 	}
 }
 
 .input-inline {
-    display: inline-block;
-    cursor: default;
-    width: 97%;
+	display: inline-block;
+	cursor: default;
+	width: 97%;
 
-    > input {
-        font-size: 1em;
-        padding: 0;
-        margin: 0;
-        width: 100%;
-        border: none;
-        height: auto;
-        outline: none;
-        display: inline-block;
+	> input {
+		font-size: 1em;
+		padding: 0;
+		margin: 0;
+		width: 100%;
+		border: none;
+		height: auto;
+		outline: none;
+		display: inline-block;
 
-        &:focus {
-            outline: none;
-            border-bottom: none !important;
-            box-shadow: none !important;
-        }
-    }
+		&:focus {
+			outline: none;
+			border-bottom: none !important;
+			box-shadow: none !important;
+		}
+	}
 }
 
-.input-form {
-    border: 1px solid $color-border;
-    display: block;
-    border-radius : 3px;
-    background-color: $color-white;
-	padding: 30px 50px;
+.form-bordered {
+	padding: 30px 40px;
+	border: 10px solid $color-border;
+	@include border-radius(15px);
+}
 
-	> .heading, > form .heading {
-		>.title {
-			font-size: 1.1rem;
-			font-weight: bold;
-			color: $color-off-black;
-		}
+.form-header {
+	> .title {
+		font-size: 1.4rem;
+		font-weight: normal;
+		font-family: $font-semibold;
+		pointer-events: none;
+		font-weight: bold;
+		color: $color-off-black;
+	}
 
-		> .tip {
-			color: $color-input;
-			font-size: 0.9em;
-			margin: 5px 0 30px 0;
-			padding: 0;
-			text-align: left;
-		}
+	> .tip {
+		color: $color-input;
+		font-size: 1.2rem;
+		margin: 5px 0 30px;
+		padding: 0;
+		font-family: $font-light;
+		text-align: left;
 	}
 }
 
 .form-divider {
 	margin-top: 30px;
-}
-
-.form-borderless {
-	padding: 0 !important;
-	border: none !important;
 }
 
 .widget-checkbox {

@@ -18,6 +18,7 @@ export default Model.extend({
 	documentId: attr('string'),
 	orgId: attr('string'),
 	contentType: attr('string'),
+	pageType: attr('string'),
 	level: attr('number', { defaultValue: 1 }),
 	sequence: attr('number', { defaultValue: 0 }),
 	revisions: attr('number', { defaultValue: 0 }),
@@ -25,10 +26,9 @@ export default Model.extend({
 	body: attr('string'),
 	rawBody: attr('string'),
 	meta: attr(),
-	// meta: hasMany('page-meta'),
 
 	tagName: Ember.computed('level', function () {
-		return "h" + this.get('level');
+		return "h" + (this.get('level') + 1);
 	}),
 
 	tocIndent: Ember.computed('level', function () {

@@ -179,6 +179,8 @@ func processDocument(p request.Persister, filename, job, folderID string, fileRe
 		page.Sequence = float64(k+1) * 1024.0 // need to start above 0 to allow insertion before the first item
 		pageID := util.UniqueID()
 		page.RefID = pageID
+		page.ContentType = "wysiwyg"
+		page.PageType = "section"
 
 		meta := entity.PageMeta{}
 		meta.PageID = pageID

@@ -20,7 +20,7 @@ $color-blue: #2667af;
 $color-gray: #8b9096;
 $color-goldy: #cc9933;
 
-$color-header: #f3f5f8;
+$color-sidebar: #f3f5f8;
 $color-link: #0092d3;
 $color-border: #f3f5f8;
 
@@ -40,36 +40,47 @@ $color-chip-text: #1b88e3;
 .color-white {
 	color: $color-white !important;
 }
+
 .color-off-white {
 	color: $color-off-white !important;
 }
+
 .color-black {
 	color: $color-black !important;
 }
+
 .color-off-black {
 	color: $color-off-black !important;
 }
+
 .color-primary {
 	color: $color-primary !important;
 }
+
 .color-link {
 	color: $color-link !important;
 }
+
 .color-blue {
 	color: $color-blue !important;
 }
+
 .color-red {
 	color: $color-red !important;
 }
+
 .color-green {
 	color: $color-green !important;
 }
+
 .color-gray {
 	color: $color-gray !important;
 }
+
 .background-color-white {
 	background-color: $color-white !important;
 }
+
 .background-color-primary {
 	background-color: $color-primary !important;
 }

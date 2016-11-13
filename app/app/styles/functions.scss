@@ -26,6 +26,20 @@
 	border-top-left-radius: $radius;
 }
 
+@mixin border-radius-bottom-right($radius)
+{
+	-webkit-border-bottom-right-radius: $radius;
+	-moz-border-radius-bottomright: $radius;
+	border-bottom-right-radius: $radius;
+}
+
+@mixin border-radius-bottom-left($radius)
+{
+	-webkit-border-bottom-left-radius: $radius;
+	-moz-border-radius-bottomleft: $radius;
+	border-bottom-left-radius: $radius;
+}
+
 @mixin border-radius-none()
 {
 	-webkit-border-radius: none;

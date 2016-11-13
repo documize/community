@@ -14,97 +14,53 @@ import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-rout
 
 export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	documentService: Ember.inject.service('document'),
+	linkService: Ember.inject.service('link'),
 	folderService: Ember.inject.service('folder'),
 	userService: Ember.inject.service('user'),
-	pages: [],
-	attachments: [],
-	users: [],
-	meta: [],
-	folder: null,
-
-	beforeModel: function (transition) {
-		this.pageId = is.not.undefined(transition.queryParams.page) ? transition.queryParams.page : "";
-		var self = this;
-
-		this.get('folderService').getAll().then(function (folders) {
-			self.set('folders', folders);
-			self.set('folder', folders.findBy("id", self.paramsFor('document').folder_id));
-			self.get('folderService').setCurrentFolder(self.get('folder'));
-		});
+	queryParams: {
+		page: {
+			refreshModel: false
+		}
 	},
 
-	model: function () {
-		this.audit.record("viewed-document");
-		return this.modelFor('document');
-	},
+	beforeModel(transition) {
+		this.set('pageId', is.not.undefined(transition.queryParams.page) ? transition.queryParams.page : "");
+		this.set('folderId', this.paramsFor('document').folder_id);
+		this.set('documentId', this.paramsFor('document').document_id);
 
-	afterModel: function (model) {
-		var self = this;
-		var documentId = model.get('id');
+		let folders = this.get('store').peekAll('folder');
+		let folder = this.get('store').peekRecord('folder', this.get('folderId'));
+		let document = this.get('store').peekRecord('document', this.get('documentId'));
 
-		this.browser.setTitle(model.get('name'));
+		this.set('document', document);
+		this.set('folders', folders);
+		this.set('folder', folder);
 
-		// We resolve the promise when all data is ready.
-		return new Ember.RSVP.Promise(function (resolve) {
-			self.get('documentService').getPages(documentId).then(function (pages) {
-				self.set('pages', pages);
-
-				self.get('documentService').getAttachments(documentId).then(function (attachments) {
-					self.set('attachments', is.array(attachments) ? attachments : []);
-
-					if (self.session.authenticated) {
-						self.get('documentService').getMeta(documentId).then(function (meta) {
-							self.set('meta', meta);
-
-							self.get('userService').getFolderUsers(self.get('folder.id')).then(function (users) {
-								self.set('users', users);
-								resolve();
-							});
-						});
-					} else {
-						resolve();
-					}
-				});
+		return new Ember.RSVP.Promise((resolve) => {
+			this.get('documentService').getPages(this.get('documentId')).then((pages) => {
+				this.set('allPages', pages);
+				this.set('pages', pages.filterBy('pageType', 'section'));
+				this.set('tabs', pages.filterBy('pageType', 'tab'));
+				resolve();
 			});
 		});
+
 	},
 
-	setupController(controller, model) {
-		controller.set('model', model);
-		controller.set('folder', this.folder);
-		controller.set('folders', this.get('folders').rejectBy('id', 0));
-		controller.set('currentPage', this.pageId);
-		controller.set('isEditor', this.get('folderService').get('canEditCurrentFolder'));
-		controller.set('pages', this.get('pages'));
-		controller.set('attachments', this.get('attachments'));
-		controller.set('users', this.get('users'));
+	model() {
+		this.browser.setTitle(this.get('document.name'));
+		this.browser.setMetaDescription(this.get('document.excerpt'));
 
-		// setup document owner
-		let owner = this.get('users').findBy('id', model.get('userId'));
-
-		// no document owner? You are the owner!
-		if (is.undefined(owner)) {
-			owner = this.session.user;
-			model.set('userId', this.get('session.session.authenticated.user.id'));
-			this.get('documentService').save(model);
-		}
-
-		controller.set('owner', owner);
-
-		// check for no meta
-		let meta = this.get('meta');
-
-		if (is.not.null(meta)) {
-			if (is.null(meta.editors)) {
-				meta.editors = [];
-			}
-			if (is.null(meta.viewers)) {
-				meta.viewers = [];
-			}
-		}
-
-		controller.set('meta', meta);
-
-		this.browser.setMetaDescription(model.get('excerpt'));
+		return Ember.RSVP.hash({
+			folders: this.get('folders'),
+			folder: this.get('folder'),
+			document: this.get('document'),
+			page: this.get('pageId'),
+			isEditor: this.get('folderService').get('canEditCurrentFolder'),
+			allPages: this.get('allPages'),
+			pages: this.get('pages'),
+			tabs: this.get('tabs'),
+			links: this.get('linkService').getDocumentLinks(this.get('documentId'))
+		});
 	}
 });

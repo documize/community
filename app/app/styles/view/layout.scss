@@ -9,8 +9,8 @@
 	z-index: 999;
 	overflow-x: hidden;
 
-	 > .top-zone,
-	> .bottom-zone {
+	 > .bottom-zone,
+	> .top-zone {
 		position: absolute;
 		padding: 0;
 		width: 100%;
@@ -101,7 +101,7 @@
 }
 
 .zone-sidebar {
-	background-color: $color-header;
+	background-color: $color-sidebar;
 	height: 100%;
 	min-height: 100%;
 	padding: 30px 40px 0;
@@ -116,8 +116,8 @@
 		font-weight: bold;
 		margin-bottom: 10px;
 
-		 > a > .material-icons,
-		> .material-icons {
+		 > .material-icons,
+		> a > .material-icons {
 			font-size: 1rem;
 			vertical-align: middle;
 		}
@@ -133,6 +133,6 @@
 
 .zone-content {
 	min-height: 500px; //ensure dropdowns render in viewport
-	padding: 30px 40px 30px 100px;
+	padding: 30px 40px 30px 110px;
 	z-index: 777;
 }

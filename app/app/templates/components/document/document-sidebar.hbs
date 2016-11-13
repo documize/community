@@ -1,34 +1,6 @@
 <div class="document-sidebar">
 	{{back-to-space folder=folder}}
-
-	{{#if session.authenticated}}
-		<div class="summary-line hidden-xs hidden-sm">
-			<ul class="items">
-				<li class="item {{if showToc "active"}}" {{action 'showToc'}}>
-					<div class="metric">
-						<div class="number">{{pages.length}}</div>
-			            <div class="label">sections</div>
-					</div>
-		        </li>
-				<li class="divider" />
-		        <li class="item {{if showViews "active"}}" {{action 'showViews'}}>
-					<div class="metric">
-						<div class="number">{{meta.viewers.length}}</div>
-			            <div class="label">views</div>
-					</div>
-		        </li>
-				<li class="divider" />
-		        <li class="item {{if showContributions "active"}}" {{action 'showContributions'}}>
-					<div class="metric">
-						<div class="number">{{meta.editors.length}}</div>
-			            <div class="label">activity</div>
-					</div>
-		        </li>
-		    </ul>
-		</div>
-	{{else}}
-		<div class="margin-top-40" />
-	{{/if}}
+	<div class="margin-top-40" />
 
 	{{#if isEditor}}
 		<div {{action 'showSections'}} id="section-tool" class="round-button round-button-mono button-white section-tool" data-tooltip="Content" data-tooltip-position="top center">
@@ -48,17 +20,12 @@
 	{{/if}}
 
 	{{#if showToc}}
-		{{document/document-sidebar-toc document=model folder=folder pages=pages page=page isEditor=isEditor
+		{{document/document-sidebar-toc document=document folder=folder pages=pages page=page isEditor=isEditor
 			changePageSequence=(action 'onPageSequenceChange') changePageLevel=(action 'onPageLevelChange')
 			gotoPage=(action 'gotoPage')}}
 	{{/if}}
-	{{#if showViews}}
-		{{document/document-sidebar-viewers meta=meta}}
-	{{/if}}
-	{{#if showContributions}}
-		{{document/document-sidebar-edits pages=pages meta=meta}}
-	{{/if}}
 	{{#if showSections}}
-		{{document/page-wizard document=document folder=folder onCancel=(action 'onCancel') onAction=(action 'onAddSection')}}
+		{{document/page-wizard display='section' document=document folder=folder sections=sections
+		onCancel=(action 'onCancel') onAction=(action 'onAddSection')}}
 	{{/if}}
 </div>

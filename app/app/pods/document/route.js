@@ -13,15 +13,59 @@ import Ember from 'ember';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 
 export default Ember.Route.extend(AuthenticatedRouteMixin, {
+	sectionService: Ember.inject.service('section'),
 	documentService: Ember.inject.service('document'),
+	folderService: Ember.inject.service('folder'),
 
-	model: function (params) {
-		this.audit.record("viewed-document");
-		return this.get('documentService').getDocument(params.document_id);
+	beforeModel(transition) {
+		this.set('pageId', is.not.undefined(transition.queryParams.page) ? transition.queryParams.page : "");
+		this.set('folderId', this.paramsFor('document').folder_id);
+		this.set('documentId', this.paramsFor('document').document_id);
+
+		return new Ember.RSVP.Promise((resolve) => {
+			this.get('folderService').getAll().then((folders) => {
+				this.set('folders', folders);
+
+				this.get('folderService').getFolder(this.get('folderId')).then((folder) => {
+					this.set('folder', folder);
+
+					this.get('folderService').setCurrentFolder(folder).then(() => {
+						this.set('isEditor', this.get('folderService').get('canEditCurrentFolder'));
+
+						this.get('documentService').getPages(this.get('documentId')).then((pages) => {
+							this.set('allPages', pages);
+							this.set('pages', pages.filterBy('pageType', 'section'));
+							this.set('tabs', pages.filterBy('pageType', 'tab'));
+							resolve();
+						});
+					});
+				});
+			});
+		});
+	},
+
+	model() {
+		return Ember.RSVP.hash({
+			folders: this.get('folders'),
+			folder: this.get('folder'),
+			document: this.get('documentService').getDocument(this.get('documentId')).then((document) => {
+				return document;
+			}),
+			page: this.get('pageId'),
+			isEditor: this.get('isEditor'),
+			allPages: this.get('allPages'),
+			pages: this.get('pages'),
+			tabs: this.get('tabs'),
+			sections: this.get('sectionService').getAll().then((sections) => {
+				return sections.filterBy('pageType', 'section');
+			}),
+		});
 	},
 
 	actions: {
 		error(error /*, transition*/ ) {
+			console.log(error);
+			console.log(error.stack);
 			if (error) {
 				this.transitionTo('/not-found');
 				return false;

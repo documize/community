@@ -20,7 +20,7 @@ export default Router.map(function () {
 	this.route('folders', {
 		path: '/'
 	});
-	
+
     this.route('folder', {
 		path: 's/:folder_id/:folder_slug'
 	});
@@ -32,6 +32,18 @@ export default Router.map(function () {
 	this.route('document', {
 		path: 's/:folder_id/:folder_slug/d/:document_id/:document_slug'
 	}, function () {
+		this.route('files', {
+			path: 'files'
+		});
+		this.route('meta', {
+			path: 'meta'
+		});
+		this.route('activity', {
+			path: 'activity'
+		});
+		this.route('section', {
+			path: 'section/:page_id'
+		});
 		this.route('edit', {
 			path: 'edit/:page_id'
 		});

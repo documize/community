@@ -18,15 +18,12 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
     document: {},
     folder: {},
 	showToc: true,
-	showViews: false,
-	showContributions: false,
 	showSections: false,
 	showScrollTool: false,
 	showingSections: false,
 
 	didRender() {
 		if (this.session.authenticated) {
-            this.addTooltip(document.getElementById("owner-avatar"));
 			this.addTooltip(document.getElementById("section-tool"));
         }
 	},
@@ -75,32 +72,13 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 
 		showToc() {
 			this.set('showToc', true);
-			this.set('showViews', false);
-			this.set('showContributions', false);
 			this.set('showSections', false);
 			this.set('showingSections', false);
 		},
 
-		showViews() {
-			this.set('showToc', false);
-			this.set('showViews', true);
-			this.set('showContributions', false);
-			this.set('showSections', false);
-			this.set('showingSections', false);
-		},
-
-		showContributions() {
-			this.set('showToc', false);
-			this.set('showViews', false);
-			this.set('showContributions', true);
-			this.set('showSections', false);
-			this.set('showingSections', false);
-		},
 
 		showSections() {
 			this.set('showToc', false);
-			this.set('showViews', false);
-			this.set('showContributions', false);
 			this.set('showSections', true);
 			this.set('showingSections', true);
 		},
@@ -111,9 +89,8 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 		},
 
 		onAddSection(section) {
+			this.send('showToc');
 			this.attrs.onAddSection(section);
-
-			this.set('showingSections', false);
 		},
 
 		scrollTop() {

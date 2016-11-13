@@ -1,9 +1,7 @@
 .document-editor {
 	> .toolbar {
-		@extend .z-depth-tiny;
-		background-color: $color-white;
 		width: 100%;
-		padding: 20px 40px;
+		padding: 0;
 
 		> .title {
 			width: 50%;
@@ -12,7 +10,7 @@
 				margin: 0;
 
 				> input {
-					margin: 0 0 5px 0;
+					margin: 0 0 5px;
 				}
 			}
 		}
@@ -23,7 +21,7 @@
 	}
 
 	> .canvas {
-		padding: 40px 40px;
+		padding: 40px 0;
 	}
 
 	.cancel-edits-dialog {

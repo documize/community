@@ -94,7 +94,7 @@ func (p *Persister) SearchLinkCandidates(keywords string) (docs []entity.LinkCan
 	temp = []entity.LinkCandidate{}
 
 	err = Db.Select(&temp,
-		`SELECT p.refid as targetid, p.documentid as documentid, p.title as title, d.title as context, d.labelid as folderid from page p
+		`SELECT p.refid as targetid, p.documentid as documentid, p.title as title, p.pagetype as linktype, d.title as context, d.labelid as folderid from page p
 		LEFT JOIN document d ON d.refid=p.documentid WHERE p.orgid=? AND `+likeQuery+` AND d.labelid IN
 		(SELECT refid from label WHERE orgid=? AND type=2 AND userid=?
     	UNION ALL SELECT refid FROM label a where orgid=? AND type=1 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid='' AND (canedit=1 OR canview=1))
@@ -120,7 +120,7 @@ func (p *Persister) SearchLinkCandidates(keywords string) (docs []entity.LinkCan
 			FolderID:   r.FolderID,
 			DocumentID: r.DocumentID,
 			TargetID:   r.TargetID,
-			LinkType:   "section",
+			LinkType:   r.LinkType,
 			Title:      r.Title,
 			Context:    r.Context,
 		}

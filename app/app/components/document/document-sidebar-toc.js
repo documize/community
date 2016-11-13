@@ -15,70 +15,73 @@ import TooltipMixin from '../../mixins/tooltip';
 import tocUtil from '../../utils/toc';
 
 export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
-    document: {},
-    folder: {},
-    pages: [],
-    page: "",
+	document: {},
+	folder: {},
+	pages: [],
+	page: "",
 	state: {
 		actionablePage: false,
-	    upDisabled: true,
-	    downDisabled: true,
-	    indentDisabled: true,
-	    outdentDisabled: true
+		upDisabled: true,
+		downDisabled: true,
+		indentDisabled: true,
+		outdentDisabled: true
+	},
+	emptyState: Ember.computed('pages', function () {
+		return this.get('pages.length') === 0;
+	}),
+
+	didReceiveAttrs: function () {
+		this.set('showToc', is.not.undefined(this.get('pages')) && this.get('pages').get('length') > 0);
+		if (is.not.null(this.get('page'))) {
+			this.send('onEntryClick', this.get('page'));
+		}
 	},
 
-    didReceiveAttrs: function() {
-        this.set('showToc', is.not.undefined(this.get('pages')) && this.get('pages').get('length') > 2);
-        if (is.not.null(this.get('page'))) {
-            this.send('onEntryClick', this.get('page'));
-        }
-    },
-
-    didRender: function() {
-        if (this.session.authenticated) {
-            this.addTooltip(document.getElementById("toc-up-button"));
-            this.addTooltip(document.getElementById("toc-down-button"));
-            this.addTooltip(document.getElementById("toc-outdent-button"));
-            this.addTooltip(document.getElementById("toc-indent-button"));
-        }
-    },
-
-    didInsertElement() {
-        this.eventBus.subscribe('documentPageAdded', this, 'onDocumentPageAdded');
+	didRender: function () {
+		if (this.session.authenticated) {
+			this.addTooltip(document.getElementById("toc-up-button"));
+			this.addTooltip(document.getElementById("toc-down-button"));
+			this.addTooltip(document.getElementById("toc-outdent-button"));
+			this.addTooltip(document.getElementById("toc-indent-button"));
+		}
 	},
 
-    willDestroyElement() {
-        this.eventBus.unsubscribe('documentPageAdded');
+	didInsertElement() {
+		this.eventBus.subscribe('documentPageAdded', this, 'onDocumentPageAdded');
+	},
+
+	willDestroyElement() {
+		this.eventBus.unsubscribe('documentPageAdded');
 		this.destroyTooltips();
-    },
+	},
 
-    onDocumentPageAdded(pageId) {
-        this.send('onEntryClick', pageId);
-    },
+	onDocumentPageAdded(pageId) {
+		this.send('onEntryClick', pageId);
+	},
 
-    // Controls what user can do with the toc (left sidebar).
-    // Identifies the target pages.
-    setState(pageId) {
+	// Controls what user can do with the toc (left sidebar).
+	// Identifies the target pages.
+	setState(pageId) {
 		this.set('page', pageId);
 
-        let toc = this.get('pages');
-        let page = _.findWhere(toc, { id: pageId });
-
+		let toc = this.get('pages');
+		let page = _.findWhere(toc, { id: pageId });
 		let state = tocUtil.getState(toc, page);
 
-        if (!this.get('isEditor') || is.empty(pageId)) {
-			state.actionablePage = state.upDisabled = state.downDisabled = state.indentDisabled = state.outdentDisabled = false;
-        }
+		if (!this.get('isEditor') || is.empty(pageId)) {
+			state.actionablePage = false;
+			state.upDisabled = state.downDisabled = state.indentDisabled = state.outdentDisabled = true;
+		}
 
 		this.set('state', state);
-    },
+	},
 
-    actions: {
-        // Page up - above pages shunt down.
-        pageUp() {
+	actions: {
+		// Page up - above pages shunt down.
+		pageUp() {
 			if (this.get('state.upDisabled')) {
-                return;
-            }
+				return;
+			}
 
 			let state = this.get('state');
 			let pages = this.get('pages');
@@ -88,75 +91,75 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 			if (pendingChanges.length > 0) {
 				this.attrs.changePageSequence(pendingChanges);
 
-	            this.send('onEntryClick', this.get('page'));
-	            this.audit.record("moved-page-up");
-	            this.showNotification("Moved up");
+				this.send('onEntryClick', this.get('page'));
+				this.audit.record("moved-page-up");
+				this.showNotification("Moved up");
 			}
-        },
+		},
 
-        // Move down -- pages below shift up.
-        pageDown() {
+		// Move down -- pages below shift up.
+		pageDown() {
 			if (this.get('state.downDisabled')) {
-                return;
-            }
+				return;
+			}
 
 			let state = this.get('state');
-            var pages = this.get('pages');
-            var page = _.findWhere(pages, { id: this.get('page') });
+			var pages = this.get('pages');
+			var page = _.findWhere(pages, { id: this.get('page') });
 			let pendingChanges = tocUtil.moveDown(state, pages, page);
 
 			if (pendingChanges.length > 0) {
-	            this.attrs.changePageSequence(pendingChanges);
+				this.attrs.changePageSequence(pendingChanges);
 
-	            this.send('onEntryClick', this.get('page'));
-	            this.audit.record("moved-page-down");
-	            this.showNotification("Moved down");
+				this.send('onEntryClick', this.get('page'));
+				this.audit.record("moved-page-down");
+				this.showNotification("Moved down");
 			}
-        },
+		},
 
-        // Indent - changes a page from H2 to H3, etc.
-        pageIndent() {
+		// Indent - changes a page from H2 to H3, etc.
+		pageIndent() {
 			if (this.get('state.indentDisabled')) {
-                return;
-            }
+				return;
+			}
 
 			let state = this.get('state');
-            var pages = this.get('pages');
-            var page = _.findWhere(pages, { id: this.get('page') });
+			var pages = this.get('pages');
+			var page = _.findWhere(pages, { id: this.get('page') });
 			let pendingChanges = tocUtil.indent(state, pages, page);
 
 			if (pendingChanges.length > 0) {
-	            this.attrs.changePageLevel(pendingChanges);
+				this.attrs.changePageLevel(pendingChanges);
 
-	            this.showNotification("Indent");
-	            this.audit.record("changed-page-sequence");
-	            this.send('onEntryClick', this.get('page'));
+				this.showNotification("Indent");
+				this.audit.record("changed-page-sequence");
+				this.send('onEntryClick', this.get('page'));
 			}
-        },
+		},
 
-        // Outdent - changes a page from H3 to H2, etc.
-        pageOutdent() {
-            if (this.get('state.outdentDisabled')) {
-                return;
-            }
+		// Outdent - changes a page from H3 to H2, etc.
+		pageOutdent() {
+			if (this.get('state.outdentDisabled')) {
+				return;
+			}
 
 			let state = this.get('state');
-            var pages = this.get('pages');
-            var page = _.findWhere(pages, { id: this.get('page') });
+			var pages = this.get('pages');
+			var page = _.findWhere(pages, { id: this.get('page') });
 			let pendingChanges = tocUtil.outdent(state, pages, page);
 
 			if (pendingChanges.length > 0) {
-	            this.attrs.changePageLevel(pendingChanges);
+				this.attrs.changePageLevel(pendingChanges);
 
-	            this.showNotification("Outdent");
-	            this.audit.record("changed-page-sequence");
-	            this.send('onEntryClick', this.get('page'));
+				this.showNotification("Outdent");
+				this.audit.record("changed-page-sequence");
+				this.send('onEntryClick', this.get('page'));
 			}
-        },
+		},
 
-        onEntryClick(id) {
-            this.setState(id);
-            this.attrs.gotoPage(id);
-        },
-    },
+		onEntryClick(id) {
+			this.setState(id);
+			this.attrs.gotoPage(id);
+		}
+	}
 });

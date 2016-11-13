@@ -182,6 +182,7 @@ type Page struct {
 	DocumentID  string  `json:"documentId"`
 	UserID      string  `json:"userId"`
 	ContentType string  `json:"contentType"`
+	PageType    string  `json:"pageType"`
 	Level       uint64  `json:"level"`
 	Sequence    float64 `json:"sequence"`
 	Title       string  `json:"title"`
@@ -195,7 +196,21 @@ func (p *Page) SetDefaults() {
 		p.ContentType = "wysiwyg"
 	}
 
+	if p.IsTabType() {
+		p.Sequence = 0
+	}
+
 	p.Title = strings.TrimSpace(p.Title)
+}
+
+// IsSectionType tells us that page is "words"
+func (p *Page) IsSectionType() bool {
+	return p.PageType == "section"
+}
+
+// IsTabType tells us that page is "SaaS data embed"
+func (p *Page) IsTabType() bool {
+	return p.PageType == "tab"
 }
 
 // PageMeta holds raw page data that is used to
@@ -222,10 +237,8 @@ func (p *PageMeta) SetDefaults() {
 
 // DocumentMeta details who viewed the document.
 type DocumentMeta struct {
-	Viewers       []DocumentMetaViewer `json:"viewers"`
-	Editors       []DocumentMetaEditor `json:"editors"`
-	InboundLinks  []Link               `json:"inboundLinks"`
-	OutboundLinks []Link               `json:"outboundLinks"`
+	Viewers []DocumentMetaViewer `json:"viewers"`
+	Editors []DocumentMetaEditor `json:"editors"`
 }
 
 // DocumentMetaViewer contains the "view" metatdata content.

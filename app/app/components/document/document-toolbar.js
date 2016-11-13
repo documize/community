@@ -19,6 +19,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	localStorage: Ember.inject.service(),
 	drop: null,
 	users: [],
+	menuOpen: false,
 	saveTemplate: {
 		name: "",
 		description: ""
@@ -30,70 +31,20 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	},
 
 	didRender() {
-		if (this.get('isEditor')) {
-			this.addTooltip(document.getElementById("attachment-button"));
-			this.addTooltip(document.getElementById("save-template-button"));
-			this.addTooltip(document.getElementById("set-meta-button"));
-			this.addTooltip(document.getElementById("delete-document-button"));
-		}
-
-		this.addTooltip(document.getElementById("print-document-button"));
-	},
-
-	didInsertElement() {
-		if (this.get('isEditor')) {
-			let self = this;
-			let documentId = this.get('document.id');
-			let url = this.get('appMeta.endpoint');
-			let uploadUrl = `${url}/documents/${documentId}/attachments`;
-
-			let dzone = new Dropzone("#attachment-button > i", {
-				headers: {
-					'Authorization': 'Bearer ' + self.get('session.session.content.authenticated.token')
-				},
-				url: uploadUrl,
-				method: "post",
-				paramName: 'attachment',
-				clickable: true,
-				maxFilesize: 10,
-				parallelUploads: 3,
-				uploadMultiple: false,
-				addRemoveLinks: false,
-				autoProcessQueue: true,
-
-				init: function () {
-					this.on("success", function (file /*, response*/ ) {
-						self.showNotification(`Attached ${file.name}`);
-					});
-
-					this.on("queuecomplete", function () {
-						self.attrs.onAttachmentUpload();
-					});
-
-					this.on("addedfile", function ( /*file*/ ) {
-						self.audit.record('attached-file');
-					});
-				}
-			});
-
-			dzone.on("complete", function (file) {
-				dzone.removeFile(file);
-			});
-
-			this.set('drop', dzone);
+		if (this.session.isEditor) {
+			this.addTooltip(document.getElementById("add-document-tab"));
 		}
 	},
 
 	willDestroyElement() {
-		if (is.not.null(this.get('drop'))) {
-			this.get('drop').destroy();
-			this.set('drop', null);
-		}
-
 		this.destroyTooltips();
 	},
 
 	actions: {
+		onMenuOpen() {
+			this.set('menuOpen', !this.get('menuOpen'));
+		},
+
 		deleteDocument() {
 			this.attrs.onDocumentDelete();
 		},
@@ -120,22 +71,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 			this.attrs.onSaveTemplate(name, excerpt);
 
 			return true;
-		},
-
-		saveMeta() {
-			let doc = this.get('document');
-
-			if (is.empty(doc.get('excerpt'))) {
-				$("meta-excerpt").addClass("error").focus();
-				return false;
-			}
-
-			doc.set('excerpt', doc.get('excerpt').substring(0, 250));
-			doc.set('userId', this.get('owner.id'));
-			this.showNotification("Saved");
-
-			this.attrs.onDocumentChange(doc);
-			return true;
-		},
+		}
 	}
 });

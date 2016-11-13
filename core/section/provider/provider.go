@@ -35,6 +35,7 @@ type TypeMeta struct {
 	ID          string                                         `json:"id"`
 	Order       int                                            `json:"order"`
 	ContentType string                                         `json:"contentType"`
+	PageType    string                                         `json:"pageType"`
 	Title       string                                         `json:"title"`
 	Description string                                         `json:"description"`
 	Preview     bool                                           `json:"preview"` // coming soon!

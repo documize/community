@@ -16,6 +16,7 @@ import Ember from 'ember';
 
 export default Model.extend({
 	contentType: attr('string'),
+	pageType: attr('string'),
 	title: attr('string'),
 	description: attr('string'),
 	iconFont: attr('string'),
@@ -24,6 +25,7 @@ export default Model.extend({
 	hasImage: Ember.computed('iconFont', 'iconFile', function () {
 		return this.get('iconFile').length > 0;
 	}),
+
 	created: attr(),
 	revised: attr()
 });
