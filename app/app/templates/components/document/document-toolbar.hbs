@@ -34,6 +34,9 @@
 	</ul>
 
 	<ul class="options">
+		{{#if isEditor}}
+			<li class="option" id="save-template-button"><i class="material-icons">content_copy</i></li>
+		{{/if}}
 		<li class="option" id="document-toolbar-menu"><i class="material-icons">more_horiz</i></li>
 	</ul>
 
@@ -53,6 +56,9 @@
 			<p>Are you sure you want to delete this document?</p>
 			<p>There is no undo!</p>
 		{{/dropdown-dialog}}
+	{{/if}}
+
+	{{#if isEditor}}
 		{{#dropdown-dialog target="save-template-button" position="bottom right" button="Save as Template" color="flat-green" onAction=(action 'saveTemplate') focusOn="new-template-name" }}
 			<div>
 				<div class="input-control">
