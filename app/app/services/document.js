@@ -27,6 +27,9 @@ export default Ember.Service.extend({
 		}).then((response) => {
 			let data = this.get('store').normalize('document', response);
 			return this.get('store').push(data);
+		}).catch((error) => {
+			this.get('router').transitionTo('/not-found');
+			return error;
 		});
 	},
 

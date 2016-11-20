@@ -23,20 +23,24 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 		this.set('documentId', this.paramsFor('document').document_id);
 
 		return new Ember.RSVP.Promise((resolve) => {
-			this.get('folderService').getAll().then((folders) => {
-				this.set('folders', folders);
+			this.get('documentService').getDocument(this.get('documentId')).then((document) => {
+				this.set('document', document);
 
-				this.get('folderService').getFolder(this.get('folderId')).then((folder) => {
-					this.set('folder', folder);
+				this.get('folderService').getAll().then((folders) => {
+					this.set('folders', folders);
 
-					this.get('folderService').setCurrentFolder(folder).then(() => {
-						this.set('isEditor', this.get('folderService').get('canEditCurrentFolder'));
+					this.get('folderService').getFolder(this.get('folderId')).then((folder) => {
+						this.set('folder', folder);
 
-						this.get('documentService').getPages(this.get('documentId')).then((pages) => {
-							this.set('allPages', pages);
-							this.set('pages', pages.filterBy('pageType', 'section'));
-							this.set('tabs', pages.filterBy('pageType', 'tab'));
-							resolve();
+						this.get('folderService').setCurrentFolder(folder).then(() => {
+							this.set('isEditor', this.get('folderService').get('canEditCurrentFolder'));
+
+							this.get('documentService').getPages(this.get('documentId')).then((pages) => {
+								this.set('allPages', pages);
+								this.set('pages', pages.filterBy('pageType', 'section'));
+								this.set('tabs', pages.filterBy('pageType', 'tab'));
+								resolve();
+							});
 						});
 					});
 				});
@@ -48,9 +52,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 		return Ember.RSVP.hash({
 			folders: this.get('folders'),
 			folder: this.get('folder'),
-			document: this.get('documentService').getDocument(this.get('documentId')).then((document) => {
-				return document;
-			}),
+			document: this.get('document'),
 			page: this.get('pageId'),
 			isEditor: this.get('isEditor'),
 			allPages: this.get('allPages'),
@@ -65,7 +67,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	actions: {
 		error(error /*, transition*/ ) {
 			console.log(error);
-			console.log(error.stack);
+
 			if (error) {
 				this.transitionTo('/not-found');
 				return false;

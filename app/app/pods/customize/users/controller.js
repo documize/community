@@ -55,7 +55,7 @@ export default Ember.Controller.extend(NotifierMixin, {
 		},
 
 		onPassword(user, password) {
-			this.get('userService').updatePassword(user.get('id'), password);
+			this.get('userService').updatePassword(user.id, password);
 			this.showNotification('Password changed');
 		}
 	}

@@ -240,7 +240,7 @@ CREATE TABLE IF NOT EXISTS `revision` (
 	`pageid` CHAR(16) NOT NULL COLLATE utf8_bin,
 	`userid` CHAR(16) NOT NULL COLLATE utf8_bin,
 	`contenttype` CHAR(20) NOT NULL DEFAULT 'wysiwyg',
-	`pagetype` CHAR(10) NOT NULL DEFAULT 'section',	
+	`pagetype` CHAR(10) NOT NULL DEFAULT 'section',
 	`title` NVARCHAR(2000) NOT NULL,
 	`body` LONGTEXT,
 	`rawbody` LONGBLOB,
@@ -332,5 +332,21 @@ CREATE TABLE IF NOT EXISTS `link` (
 	`created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	`revised` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT pk_id PRIMARY KEY (id))
+DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci
+ENGINE =  InnoDB;
+
+DROP TABLE IF EXISTS `participant`;
+
+CREATE TABLE IF NOT EXISTS `participant` (
+	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	`refid` CHAR(16) NOT NULL COLLATE utf8_bin,
+	`orgid` CHAR(16) NOT NULL COLLATE utf8_bin,
+	`documentid` CHAR(16) NOT NULL COLLATE utf8_bin,
+	`userid` CHAR(16) DEFAULT '' COLLATE utf8_bin,
+	`roletype` CHAR(1) NOT NULL DEFAULT 'I' COLLATE utf8_bin,
+	`lastviewed` TIMESTAMP NULL,
+	`created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	CONSTRAINT pk_id PRIMARY KEY (id),
+	INDEX `idx_participant_documentid` (`documentid` ASC))
 DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci
 ENGINE =  InnoDB;

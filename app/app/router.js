@@ -35,9 +35,6 @@ export default Router.map(function () {
 		this.route('files', {
 			path: 'files'
 		});
-		this.route('meta', {
-			path: 'meta'
-		});
 		this.route('activity', {
 			path: 'activity'
 		});
