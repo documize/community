@@ -206,7 +206,7 @@ func (m *baseManager) DeleteWhere(tx *sqlx.Tx, statement string) (rows int64, er
 // Audit inserts a record into the audit table.
 func (m *baseManager) Audit(c Context, action, document, page string) {
 
-	_, err := Db.Exec("INSERT INTO audit (orgid, userid, documentid, pageid, action) VALUES (?,?,?,?,?)", c.OrgID, c.UserID, document, page, action)
+	_, err := Db.Exec("INSERT INTO audit (orgid, userid, documentid, pageid, action, created) VALUES (?, ?, ?, ?, ?, ?)", c.OrgID, c.UserID, document, page, action, time.Now().UTC())
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable record audit for action %s, user %s, customer %s", action, c.UserID, c.OrgID), err)

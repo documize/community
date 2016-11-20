@@ -7,11 +7,6 @@
 		<li class="tab">
 			{{#link-to 'document.files'}}Files{{/link-to}}
 		</li>
-		{{#if isEditor}}
-			<li class="tab">
-				{{#link-to 'document.meta'}}Meta{{/link-to}}
-			</li>
-		{{/if}}
 		{{#if session.authenticated}}
 			<li class="tab">
 				{{#link-to 'document.activity'}}Activity{{/link-to}}
@@ -35,6 +30,7 @@
 
 	<ul class="options">
 		{{#if isEditor}}
+			<li class="option" id="set-meta-button"><i class="material-icons">settings</i></li>
 			<li class="option" id="save-template-button"><i class="material-icons">content_copy</i></li>
 		{{/if}}
 		<li class="option" id="document-toolbar-menu"><i class="material-icons">more_horiz</i></li>
@@ -44,7 +40,6 @@
 		<ul class="menu">
 			<li class="item" id="print-document-button" {{action 'printDocument'}}>Print</li>
 			{{#if isEditor}}
-				<li class="item" id="save-template-button">Save as template</li>
 				<li class="divider"></li>
 				<li class="item" id="delete-document-button">Delete</li>
 			{{/if}}
@@ -71,6 +66,19 @@
 					<div class="tip">Explain use case for this template</div>
 					{{textarea value=saveTemplate.description rows="3" id="new-template-desc"}}
 				</div>
+			</div>
+		{{/dropdown-dialog}}
+
+		{{#dropdown-dialog target="set-meta-button" position="bottom right" button="Save" color="flat-green" onAction=(action 'saveMeta') focusOn="meta-name" }}
+			<div class="input-control">
+				<label>Name</label>
+				<div class="tip">Short title for this document</div>
+				{{focus-input type='text' id="meta-name" value=document.name}}
+			</div>
+			<div class="input-control">
+				<label>Excerpt</label>
+				<div class="tip">Provide short summary of the document (max. 250)</div>
+				{{textarea value=document.excerpt rows="5" id="meta-excerpt"}}
 			</div>
 		{{/dropdown-dialog}}
 	{{/if}}

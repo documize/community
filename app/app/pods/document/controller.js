@@ -92,6 +92,12 @@ export default Ember.Controller.extend(NotifierMixin, {
 			this.get('templateService').saveAsTemplate(this.get('model.document.id'), name, desc).then(function () {});
 		},
 
+		onSaveMeta(doc) {
+			this.get('documentService').save(doc).then(() => {
+				this.transitionToRoute('document.index');
+			});
+		},
+
 		onAddSection(section) {
 			this.audit.record("added-section-" + section.get('contentType'));
 

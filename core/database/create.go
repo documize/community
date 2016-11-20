@@ -101,7 +101,7 @@ func Create(w http.ResponseWriter, r *http.Request) {
 		Password:    r.Form.Get("password"),
 		Firstname:   r.Form.Get("firstname"),
 		Lastname:    r.Form.Get("lastname"),
-		Revised:     time.Now(),
+		Revised:     time.Now().UTC(),
 	}
 
 	if details.Company == "" ||

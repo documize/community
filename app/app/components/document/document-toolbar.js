@@ -71,6 +71,25 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 			this.attrs.onSaveTemplate(name, excerpt);
 
 			return true;
-		}
+		},
+
+		saveMeta() {
+			let doc = this.get('document');
+
+			if (is.empty(doc.get('name'))) {
+				$("#meta-name").addClass("error").focus();
+				return false;
+			}
+
+			if (is.empty(doc.get('excerpt'))) {
+				$("#meta-excerpt").addClass("error").focus();
+				return false;
+			}
+
+			doc.set('excerpt', doc.get('excerpt').substring(0, 250));
+
+			this.attrs.onSaveMeta(doc);
+			return true;
+		},
 	}
 });

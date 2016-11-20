@@ -323,7 +323,9 @@ function dragula (initialContainers, options) {
     var initial = isInitialPlacement(parent);
     if (initial === false && reverts) {
       if (_copy) {
-        parent.removeChild(_copy);
+        if (parent) {
+          parent.removeChild(_copy);
+        }
       } else {
         _source.insertBefore(item, _initialSibling);
       }
@@ -644,7 +646,10 @@ module.exports = dragula;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./classes":1,"contra/emitter":4,"crossvent":8}],3:[function(require,module,exports){
+},{"./classes":1,"contra/emitter":5,"crossvent":6}],3:[function(require,module,exports){
+module.exports = function atoa (a, n) { return Array.prototype.slice.call(a, n); }
+
+},{}],4:[function(require,module,exports){
 'use strict';
 
 var ticky = require('ticky');
@@ -656,7 +661,7 @@ module.exports = function debounce (fn, args, ctx) {
   });
 };
 
-},{"ticky":6}],4:[function(require,module,exports){
+},{"ticky":9}],5:[function(require,module,exports){
 'use strict';
 
 var atoa = require('atoa');
@@ -712,72 +717,7 @@ module.exports = function emitter (thing, options) {
   return thing;
 };
 
-},{"./debounce":3,"atoa":5}],5:[function(require,module,exports){
-module.exports = function atoa (a, n) { return Array.prototype.slice.call(a, n); }
-
-},{}],6:[function(require,module,exports){
-var si = typeof setImmediate === 'function', tick;
-if (si) {
-  tick = function (fn) { setImmediate(fn); };
-} else {
-  tick = function (fn) { setTimeout(fn, 0); };
-}
-
-module.exports = tick;
-},{}],7:[function(require,module,exports){
-(function (global){
-
-var NativeCustomEvent = global.CustomEvent;
-
-function useNative () {
-  try {
-    var p = new NativeCustomEvent('cat', { detail: { foo: 'bar' } });
-    return  'cat' === p.type && 'bar' === p.detail.foo;
-  } catch (e) {
-  }
-  return false;
-}
-
-/**
- * Cross-browser `CustomEvent` constructor.
- *
- * https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent.CustomEvent
- *
- * @public
- */
-
-module.exports = useNative() ? NativeCustomEvent :
-
-// IE >= 9
-'function' === typeof document.createEvent ? function CustomEvent (type, params) {
-  var e = document.createEvent('CustomEvent');
-  if (params) {
-    e.initCustomEvent(type, params.bubbles, params.cancelable, params.detail);
-  } else {
-    e.initCustomEvent(type, false, false, void 0);
-  }
-  return e;
-} :
-
-// IE <= 8
-function CustomEvent (type, params) {
-  var e = document.createEventObject();
-  e.type = type;
-  if (params) {
-    e.bubbles = Boolean(params.bubbles);
-    e.cancelable = Boolean(params.cancelable);
-    e.detail = params.detail;
-  } else {
-    e.bubbles = false;
-    e.cancelable = false;
-    e.detail = void 0;
-  }
-  return e;
-}
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
-},{}],8:[function(require,module,exports){
+},{"./debounce":4,"atoa":3}],6:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -883,7 +823,7 @@ function find (el, type, fn) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./eventmap":9,"custom-event":7}],9:[function(require,module,exports){
+},{"./eventmap":7,"custom-event":8}],7:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -901,5 +841,67 @@ module.exports = eventmap;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
+},{}],8:[function(require,module,exports){
+(function (global){
+
+var NativeCustomEvent = global.CustomEvent;
+
+function useNative () {
+  try {
+    var p = new NativeCustomEvent('cat', { detail: { foo: 'bar' } });
+    return  'cat' === p.type && 'bar' === p.detail.foo;
+  } catch (e) {
+  }
+  return false;
+}
+
+/**
+ * Cross-browser `CustomEvent` constructor.
+ *
+ * https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent.CustomEvent
+ *
+ * @public
+ */
+
+module.exports = useNative() ? NativeCustomEvent :
+
+// IE >= 9
+'function' === typeof document.createEvent ? function CustomEvent (type, params) {
+  var e = document.createEvent('CustomEvent');
+  if (params) {
+    e.initCustomEvent(type, params.bubbles, params.cancelable, params.detail);
+  } else {
+    e.initCustomEvent(type, false, false, void 0);
+  }
+  return e;
+} :
+
+// IE <= 8
+function CustomEvent (type, params) {
+  var e = document.createEventObject();
+  e.type = type;
+  if (params) {
+    e.bubbles = Boolean(params.bubbles);
+    e.cancelable = Boolean(params.cancelable);
+    e.detail = params.detail;
+  } else {
+    e.bubbles = false;
+    e.cancelable = false;
+    e.detail = void 0;
+  }
+  return e;
+}
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+
+},{}],9:[function(require,module,exports){
+var si = typeof setImmediate === 'function', tick;
+if (si) {
+  tick = function (fn) { setImmediate(fn); };
+} else {
+  tick = function (fn) { setTimeout(fn, 0); };
+}
+
+module.exports = tick;
 },{}]},{},[2])(2)
 });
