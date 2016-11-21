@@ -48,6 +48,7 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
                 title: "Empty",
 				description: "An empty canvas for your words",
 				img: "template-blank",
+				layout: "doc",
 				locked: true
             };
 

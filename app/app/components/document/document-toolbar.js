@@ -28,6 +28,10 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	didReceiveAttrs() {
 		this.set('saveTemplate.name', this.get('document.name'));
 		this.set('saveTemplate.description', this.get('document.excerpt'));
+
+		let doc = this.get('document');
+
+		this.set('layoutLabel', doc.get('layout') === 'doc' ? 'Wiki style' : 'Document style');
 	},
 
 	didRender() {
@@ -51,6 +55,17 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
 		printDocument() {
 			window.print();
+		},
+
+		changeLayout() {
+			let doc = this.get('document');
+			let layout = doc.get('layout') === 'doc' ? 'wiki' : 'doc';
+
+			doc.set('layout', layout);
+
+			this.attrs.onSaveMeta(doc);
+
+			this.set('layoutLabel', doc.get('layout') === 'doc' ? 'Wiki style' : 'Document style');
 		},
 
 		saveTemplate() {

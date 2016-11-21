@@ -336,18 +336,12 @@ func StartDocumentFromSavedTemplate(w http.ResponseWriter, r *http.Request) {
 	d.Excerpt = "A new document"
 	d.Slug = utility.MakeSlug(d.Title)
 	d.Tags = ""
+	d.Layout = "doc"
 	d.LabelID = folderID
 	documentID := util.UniqueID()
 	d.RefID = documentID
 
 	var pages = []entity.Page{}
-	//var pages = make([]entity.Page, 1, 1)
-	//pages[0] = entity.Page{}
-	//pages[0].Title = "Heading"
-	//pages[0].Body = "<p>Some content here.</p>"
-	//pages[0].Level = 1
-	//pages[0].Sequence = 1
-
 	var attachments = []entity.Attachment{}
 
 	// Fetch document and associated pages, attachments if we have template ID
@@ -394,13 +388,22 @@ func StartDocumentFromSavedTemplate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, page := range pages {
+		meta, err2 := p.GetPageMeta(page.RefID)
+		if err2 != nil {
+			log.IfErr(tx.Rollback())
+			writeGeneralSQLError(w, method, err)
+			return
+		}
+
 		page.DocumentID = documentID
 		pageID := util.UniqueID()
 		page.RefID = pageID
 
-		meta := entity.PageMeta{}
+		// meta := entity.PageMeta{}
 		meta.PageID = pageID
-		meta.RawBody = page.Body
+		meta.DocumentID = documentID
+
+		// meta.RawBody = page.Body
 
 		model := models.PageModel{}
 		model.Page = page
