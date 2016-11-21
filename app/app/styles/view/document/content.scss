@@ -1,3 +1,13 @@
+.wiki-layout {
+
+}
+
+.doc-layout {
+	padding: 60px 50px;
+	box-shadow: 0 0 0 0.75pt $color-stroke,0 0 3pt 0.75pt $color-stroke;
+	margin: 30px 40px 50px 40px;
+}
+
 .document-view {
 	.print-title {
 		display: none;

@@ -15,6 +15,10 @@
 		display: none !important;
 	}
 
+	.zone-content {
+		padding: 0 !important;
+	}
+
 	.document-view {
 		.attachment-zone,
 		.document-summary,
@@ -27,5 +31,11 @@
 		.print-title {
 			display: block !important;
 		}
+	}
+
+	.doc-layout {
+		padding: 0 !important;
+		box-shadow: none !important;
+		margin: 0 !important;
 	}
 }

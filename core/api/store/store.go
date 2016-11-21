@@ -38,6 +38,7 @@ func ConvertFileResult(filename string, fileResult *api.DocumentConversionRespon
 	document.LabelID = ""
 	document.Job = ""
 	document.Location = filename
+
 	if fileResult != nil {
 		if len(fileResult.Pages) > 0 {
 			document.Title = fileResult.Pages[0].Title

@@ -38,7 +38,13 @@
 
 	{{#dropdown-menu target="document-toolbar-menu" position="bottom right" open="click" onOpenCallback=(action 'onMenuOpen') onCloseCallback=(action 'onMenuOpen')}}
 		<ul class="menu">
+			{{#if isEditor}}
+				<li class="item" {{action 'changeLayout'}} >{{layoutLabel}}</li>
+				<li class="divider"></li>
+			{{/if}}
+
 			<li class="item" id="print-document-button" {{action 'printDocument'}}>Print</li>
+
 			{{#if isEditor}}
 				<li class="divider"></li>
 				<li class="item" id="delete-document-button">Delete</li>

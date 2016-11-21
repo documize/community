@@ -28,8 +28,11 @@ func (p *Persister) AddDocument(document entity.Document) (err error) {
 	document.OrgID = p.Context.OrgID
 	document.Created = time.Now().UTC()
 	document.Revised = document.Created // put same time in both fields
+	if document.Layout == "" {
+		document.Layout = "doc"
+	}
 
-	stmt, err := p.Context.Transaction.Preparex("INSERT INTO document (refId, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+	stmt, err := p.Context.Transaction.Preparex("INSERT INTO document (refId, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, layout, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
 	defer utility.Close(stmt)
 
 	if err != nil {
@@ -37,7 +40,7 @@ func (p *Persister) AddDocument(document entity.Document) (err error) {
 		return
 	}
 
-	_, err = stmt.Exec(document.RefID, document.OrgID, document.LabelID, document.UserID, document.Job, document.Location, document.Title, document.Excerpt, document.Slug, document.Tags, document.Template, document.Created, document.Revised)
+	_, err = stmt.Exec(document.RefID, document.OrgID, document.LabelID, document.UserID, document.Job, document.Location, document.Title, document.Excerpt, document.Slug, document.Tags, document.Template, document.Layout, document.Created, document.Revised)
 
 	if err != nil {
 		log.Error("Unable to execute insert for document", err)
@@ -53,7 +56,7 @@ func (p *Persister) AddDocument(document entity.Document) (err error) {
 func (p *Persister) GetDocument(id string) (document entity.Document, err error) {
 	err = nil
 
-	stmt, err := Db.Preparex("SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, created, revised FROM document WHERE orgid=? and refid=?")
+	stmt, err := Db.Preparex("SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, layout, created, revised FROM document WHERE orgid=? and refid=?")
 	defer utility.Close(stmt)
 
 	if err != nil {
@@ -112,7 +115,7 @@ func (p *Persister) GetDocumentMeta(id string) (meta entity.DocumentMeta, err er
 
 // GetDocuments returns a slice containg all of the the documents for the client's organisation, with the most recient first.
 func (p *Persister) GetDocuments() (documents []entity.Document, err error) {
-	err = Db.Select(&documents, "SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, created, revised FROM document WHERE orgid=? AND template=0 ORDER BY revised DESC", p.Context.OrgID)
+	err = Db.Select(&documents, "SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, layout, created, revised FROM document WHERE orgid=? AND template=0 ORDER BY revised DESC", p.Context.OrgID)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to execute select documents for org %s", p.Context.OrgID), err)
@@ -125,7 +128,7 @@ func (p *Persister) GetDocuments() (documents []entity.Document, err error) {
 // GetDocumentsByFolder returns a slice containing the documents for a given folder, most recient first.
 func (p *Persister) GetDocumentsByFolder(folderID string) (documents []entity.Document, err error) {
 	err = nil
-	err = Db.Select(&documents, "SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, created, revised FROM document WHERE orgid=? AND template=0 AND labelid=? ORDER BY revised DESC", p.Context.OrgID, folderID)
+	err = Db.Select(&documents, "SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, layout, created, revised FROM document WHERE orgid=? AND template=0 AND labelid=? ORDER BY revised DESC", p.Context.OrgID, folderID)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to execute select documents for org %s", p.Context.OrgID), err)
@@ -141,7 +144,7 @@ func (p *Persister) GetDocumentsByTag(tag string) (documents []entity.Document, 
 	tagQuery := "tags LIKE '%#" + tag + "#%'"
 
 	err = Db.Select(&documents,
-		`SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, created, revised FROM document WHERE orgid=? AND template=0 AND `+tagQuery+` AND labelid IN
+		`SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, layout, created, revised FROM document WHERE orgid=? AND template=0 AND `+tagQuery+` AND labelid IN
 		(SELECT refid from label WHERE orgid=? AND type=2 AND userid=?
     	UNION ALL SELECT refid FROM label a where orgid=? AND type=1 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid='' AND (canedit=1 OR canview=1))
 		UNION ALL SELECT refid FROM label a where orgid=? AND type=3 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid=? AND (canedit=1 OR canview=1)))
@@ -166,7 +169,7 @@ func (p *Persister) GetDocumentsByTag(tag string) (documents []entity.Document, 
 // GetDocumentTemplates returns a slice containing the documents available as templates to the client's organisation, in title order.
 func (p *Persister) GetDocumentTemplates() (documents []entity.Document, err error) {
 	err = Db.Select(&documents,
-		`SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, created, revised FROM document WHERE orgid=? AND template=1 AND labelid IN
+		`SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, layout, created, revised FROM document WHERE orgid=? AND template=1 AND labelid IN
 		(SELECT refid from label WHERE orgid=? AND type=2 AND userid=?
     	UNION ALL SELECT refid FROM label a where orgid=? AND type=1 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid='' AND (canedit=1 OR canview=1))
 		UNION ALL SELECT refid FROM label a where orgid=? AND type=3 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid=? AND (canedit=1 OR canview=1)))
@@ -283,7 +286,7 @@ func (p *Persister) SearchDocument(keywords string) (results []entity.DocumentSe
 func (p *Persister) UpdateDocument(document entity.Document) (err error) {
 	document.Revised = time.Now().UTC()
 
-	stmt, err := p.Context.Transaction.PrepareNamed("UPDATE document SET labelid=:labelid, userid=:userid, job=:job, location=:location, title=:title, excerpt=:excerpt, slug=:slug, tags=:tags, template=:template, revised=:revised WHERE orgid=:orgid AND refid=:refid")
+	stmt, err := p.Context.Transaction.PrepareNamed("UPDATE document SET labelid=:labelid, userid=:userid, job=:job, location=:location, title=:title, excerpt=:excerpt, slug=:slug, tags=:tags, template=:template, layout=:layout, revised=:revised WHERE orgid=:orgid AND refid=:refid")
 	defer utility.Close(stmt)
 
 	if err != nil {
