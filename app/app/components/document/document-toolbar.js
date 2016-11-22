@@ -118,6 +118,8 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		},
 
 		unpin() {
+			this.audit.record('unpinned-document');
+
 			this.get('pinned').unpinItem(this.get('pinState.pinId')).then(() => {
 				this.set('pinState.isPinned', false);
 				this.set('pinState.pinId', '');
@@ -136,6 +138,8 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 				$("#pin-document-name").addClass("error").focus();
 				return false;
 			}
+
+			this.audit.record('pinned-document');
 
 			this.get('pinned').pinItem(pin).then((pin) => {
 				this.set('pinState.isPinned', true);

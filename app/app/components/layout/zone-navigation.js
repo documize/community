@@ -72,6 +72,8 @@ export default Ember.Component.extend(TooltipMixin, {
 			var sortable = Sortable.create(document.getElementById('pinned-zone'), {
 				animation: 150,
 				onEnd: function () {
+					self.audit.record('reorganized-pins');
+
 					self.get('pinned').updateSequence(this.toArray()).then((pins) => {
 						self.set('pins', pins);
 					});
@@ -94,7 +96,15 @@ export default Ember.Component.extend(TooltipMixin, {
 	},
 
 	setupPins() {
+		if (this.get('isDestroyed') || this.get('isDestroying')) {
+			return;
+		}
+
 		this.get('pinned').getUserPins().then((pins) => {
+			if (this.get('isDestroyed') || this.get('isDestroying')) {
+				return;
+			}
+
 			this.set('pins', pins);
 
 			pins.forEach((pin) => {

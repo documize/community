@@ -100,6 +100,8 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		},
 
 		unpin() {
+			this.audit.record('unpinned-space');
+
 			this.get('pinned').unpinItem(this.get('pinState.pinId')).then(() => {
 				this.set('pinState.isPinned', false);
 				this.set('pinState.pinId', '');
@@ -119,6 +121,8 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 				return false;
 			}
 
+			this.audit.record('pinned-space');
+
 			this.get('pinned').pinItem(pin).then((pin) => {
 				this.set('pinState.isPinned', true);
 				this.set('pinState.pinId', pin.get('id'));
@@ -126,6 +130,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 			});
 
 			return true;
-		}		
+		}
 	}
 });
