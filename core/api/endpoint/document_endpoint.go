@@ -276,6 +276,14 @@ func DeleteDocument(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	_, err = p.DeletePinnedDocument(documentID)
+
+	if err != nil && err != sql.ErrNoRows {
+		log.IfErr(tx.Rollback())
+		writeServerError(w, method, err)
+		return
+	}
+
 	log.IfErr(tx.Commit())
 
 	writeSuccessEmptyJSON(w)

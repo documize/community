@@ -29,9 +29,16 @@
 	</ul>
 
 	<ul class="options">
+		{{#if session.authenticated}}
+			{{#if pinState.isPinned}}
+				<li class="option" {{action 'unpin'}}><i class="material-icons pinned">star</i></li>
+			{{else}}
+				<li class="option" id="pin-document-button"><i class="material-icons">star_border</i></li>
+			{{/if}}
+		{{/if}}
 		{{#if isEditor}}
-			<li class="option" id="set-meta-button"><i class="material-icons">settings</i></li>
 			<li class="option" id="save-template-button"><i class="material-icons">content_copy</i></li>
+			<li class="option" id="set-meta-button"><i class="material-icons">settings</i></li>
 		{{/if}}
 		<li class="option" id="document-toolbar-menu"><i class="material-icons">more_horiz</i></li>
 	</ul>
@@ -57,6 +64,20 @@
 			<p>Are you sure you want to delete this document?</p>
 			<p>There is no undo!</p>
 		{{/dropdown-dialog}}
+	{{/if}}
+
+	{{#if session.authenticated}}
+		{{#unless pinState.isPinned}}
+			{{#dropdown-dialog target="pin-document-button" position="bottom right" button="Pin" color="flat-green" onAction=(action 'pin') focusOn="pin-document-name" }}
+				<div>
+					<div class="input-control">
+						<label>Pin Document</label>
+						<div class="tip">A 3 or 4 character name</div>
+						{{input type='text' id="pin-document-name" value=pinState.newName}}
+					</div>
+				</div>
+			{{/dropdown-dialog}}
+		{{/unless}}
 	{{/if}}
 
 	{{#if isEditor}}

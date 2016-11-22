@@ -53,7 +53,7 @@ module.exports = function (defaults) {
 	app.import('vendor/drop.js');
 	app.import('vendor/tooltip.js');
 	app.import('vendor/markdown-it.min.js');
-	app.import('vendor/dragula.js');
+	app.import('vendor/sortable.js');
 	app.import('vendor/datetimepicker.min.js');
 	app.import('vendor/hoverIntent.js');
 	app.import('vendor/waypoints.js');

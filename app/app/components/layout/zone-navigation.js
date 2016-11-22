@@ -19,15 +19,18 @@ const {
 
 export default Ember.Component.extend(TooltipMixin, {
 	folderService: service('folder'),
-	folder: null,
 	appMeta: service(),
 	session: service(),
+	store: service(),
+	folder: null,
 	view: {
 		folder: false,
 		search: false,
 		settings: false,
 		profile: false
 	},
+	pinned: service(),
+	pins: [],
 
 	init() {
 		this._super(...arguments);
@@ -38,6 +41,8 @@ export default Ember.Component.extend(TooltipMixin, {
 				account.active = account.orgId === this.get("appMeta.orgId");
 			});
 		}
+
+		this.set('pins', this.get('pinned').get('pins'));
 	},
 
 	didReceiveAttrs() {
@@ -52,6 +57,31 @@ export default Ember.Component.extend(TooltipMixin, {
 		this.set('view.search', (route === 'search') ? true : false);
 	},
 
+	didInsertElement() {
+		this._super(...arguments);
+
+		// Size the pinned items zone
+		if (this.get("session.authenticated")) {
+			this.eventBus.subscribe('resized', this, 'sizePinnedZone');
+			this.eventBus.subscribe('pinChange', this, 'setupPins');
+			this.sizePinnedZone();
+			this.setupPins();
+
+			let self = this;
+
+			var sortable = Sortable.create(document.getElementById('pinned-zone'), {
+				animation: 150,
+				onEnd: function () {
+					self.get('pinned').updateSequence(this.toArray()).then((pins) => {
+						self.set('pins', pins);
+					});
+			    }
+			});
+
+			this.set('sortable', sortable);
+		}
+	},
+
 	didRender() {
 		if (this.get('session.isAdmin')) {
 			this.addTooltip(document.getElementById("workspace-settings"));
@@ -63,10 +93,53 @@ export default Ember.Component.extend(TooltipMixin, {
 		}
 	},
 
+	setupPins() {
+		this.get('pinned').getUserPins().then((pins) => {
+			this.set('pins', pins);
+
+			pins.forEach((pin) => {
+				this.addTooltip(document.getElementById(`pin-${pin.id}`));
+			});
+		});
+	},
+
+	// set height for pinned zone so ti scrolls on spill
+	sizePinnedZone() {
+		let topofBottomZone = parseInt($('#bottom-zone').css("top").replace("px", ""));
+		let heightOfTopZone = parseInt($('#top-zone').css("height").replace("px", ""));
+		let size = topofBottomZone - heightOfTopZone - 40;
+		$('#pinned-zone').css('height', size + "px");
+	},
+
+	willDestroyElement() {
+		let sortable = this.get('sortable');
+
+		if (!_.isUndefined(sortable)) {
+			sortable.destroy();
+		}
+
+		this.destroyTooltips();
+	},
+
 	actions: {
 		switchAccount(domain) {
 			this.audit.record('switched-account');
 			window.location.href = netUtil.getAppUrl(domain);
+		},
+
+		jumpToPin(pin) {
+			let folderId = pin.get('folderId');
+			let documentId = pin.get('documentId');
+
+			if (_.isEmpty(documentId)) {
+				// jump to space
+				let folder = this.get('store').peekRecord('folder', folderId);
+				this.get('router').transitionTo('folder', folderId, folder.get('slug'));
+			} else {
+				// jump to doc
+				let folder = this.get('store').peekRecord('folder', folderId);
+				this.get('router').transitionTo('document', folderId, folder.get('slug'), documentId, 'document');
+			}
 		}
 	}
 });
