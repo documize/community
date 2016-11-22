@@ -83,6 +83,10 @@
 			&:hover {
 				color: $color-link;
 			}
+
+			> .pinned {
+				color: $color-primary;
+			}
 		}
 	}
 }

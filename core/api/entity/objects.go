@@ -385,3 +385,14 @@ type LinkCandidate struct {
 	Title      string `json:"title"`   // what we label the link
 	Context    string `json:"context"` // additional context (e.g. excerpt, parent, file extension)
 }
+
+// Pin defines a saved link to a document or space
+type Pin struct {
+	BaseEntity
+	OrgID      string `json:"orgId"`
+	UserID     string `json:"userId"`
+	FolderID   string `json:"folderId"`
+	DocumentID string `json:"documentId"`
+	Pin        string `json:"pin"`
+	Sequence   int    `json:"sequence"`
+}

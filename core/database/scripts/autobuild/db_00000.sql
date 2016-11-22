@@ -351,3 +351,21 @@ CREATE TABLE IF NOT EXISTS `participant` (
 	INDEX `idx_participant_documentid` (`documentid` ASC))
 DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci
 ENGINE =  InnoDB;
+
+DROP TABLE IF EXISTS `pin`;
+
+CREATE TABLE IF NOT EXISTS `pin` (
+	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	`refid` CHAR(16) NOT NULL COLLATE utf8_bin,
+	`orgid` CHAR(16) NOT NULL COLLATE utf8_bin,
+	`userid` CHAR(16) DEFAULT '' COLLATE utf8_bin,
+	`labelid` CHAR(16) DEFAULT '' COLLATE utf8_bin,
+	`documentid` CHAR(16) DEFAULT '' COLLATE utf8_bin,
+	`sequence` INT UNSIGNED NOT NULL DEFAULT 99,
+	`pin` CHAR(20) NOT NULL DEFAULT '' COLLATE utf8_bin,
+	`created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	`revised` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	CONSTRAINT pk_id PRIMARY KEY (id),
+	INDEX `idx_pin_userid` (`userid` ASC))
+DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci
+ENGINE =  InnoDB;

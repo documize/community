@@ -21,6 +21,7 @@ const {
 export default Ember.Route.extend(ApplicationRouteMixin, TooltipMixin, {
 	appMeta: service(),
 	session: service(),
+	pinned: service(),
 
 	beforeModel(transition) {
 		return this.get('appMeta').boot(transition.targetName).then(data => {

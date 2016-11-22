@@ -319,6 +319,14 @@ func RemoveFolder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	_, err = p.DeletePinnedSpace(id)
+
+	if err != nil && err != sql.ErrNoRows {
+		log.IfErr(tx.Rollback())
+		writeServerError(w, method, err)
+		return
+	}
+
 	log.IfErr(tx.Commit())
 
 	writeSuccessString(w, "{}")

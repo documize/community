@@ -98,6 +98,50 @@
 			color: $color-white;
 		}
 	}
+
+	.pinned-zone {
+		position: relative;
+		top: 220px;
+		padding: 0;
+		margin: 0;
+		width: 100%;
+		overflow: scroll;
+
+		> .pin {
+			cursor: pointer;
+			margin: 20px 0 20px 9px;
+		    padding: 11px 3px;
+			height: 40px;
+			width: 40px;
+			text-align: center;
+			overflow: hidden;
+			text-transform: uppercase;
+			@include ease-in();
+			@include border-radius(3px);
+			font-family: $font-semibold;
+			font-size: 12px;
+			letter-spacing: -1px;
+			background-color: $color-off-white;
+			color: $color-primary;
+
+			> .key {
+				width: 30px;
+				text-align: center;
+				display: inline-block;
+				overflow: hidden;
+			}
+
+			&:hover {
+				background-color: $color-link;
+				color: $color-off-white;
+			}
+		}
+
+		> .sortable-ghost {
+			background-color: $color-gray;
+			color: $color-off-white;
+		}
+	}
 }
 
 .zone-sidebar {

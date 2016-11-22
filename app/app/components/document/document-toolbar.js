@@ -24,6 +24,12 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		name: "",
 		description: ""
 	},
+	pinned: Ember.inject.service(),
+	pinState : {
+		isPinned: false,
+		pinId: '',
+		newName: '',
+	},
 
 	didReceiveAttrs() {
 		this.set('saveTemplate.name', this.get('document.name'));
@@ -32,6 +38,10 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		let doc = this.get('document');
 
 		this.set('layoutLabel', doc.get('layout') === 'doc' ? 'Wiki style' : 'Document style');
+
+		this.set('pinState.pinId', this.get('pinned').isDocumentPinned(doc.get('id')));
+		this.set('pinState.isPinned', this.get('pinState.pinId') !== '');
+		this.set('pinState.newName', doc.get('name').substring(0,3).toUpperCase());
 	},
 
 	didRender() {
@@ -106,5 +116,34 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 			this.attrs.onSaveMeta(doc);
 			return true;
 		},
+
+		unpin() {
+			this.get('pinned').unpinItem(this.get('pinState.pinId')).then(() => {
+				this.set('pinState.isPinned', false);
+				this.set('pinState.pinId', '');
+				this.eventBus.publish('pinChange');
+			});
+		},
+
+		pin() {
+			let pin = {
+				pin: this.get('pinState.newName'),
+				documentId: this.get('document.id'),
+				folderId: this.get('folder.id')
+			};
+
+			if (is.empty(pin.pin)) {
+				$("#pin-document-name").addClass("error").focus();
+				return false;
+			}
+
+			this.get('pinned').pinItem(pin).then((pin) => {
+				this.set('pinState.isPinned', true);
+				this.set('pinState.pinId', pin.get('id'));
+				this.eventBus.publish('pinChange');
+			});
+
+			return true;
+		}
 	}
 });

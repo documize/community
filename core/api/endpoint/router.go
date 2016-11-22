@@ -221,6 +221,12 @@ func init() {
 	log.IfErr(Add(RoutePrefixPrivate, "global", []string{"GET", "OPTIONS"}, nil, GetGlobalConfig))
 	log.IfErr(Add(RoutePrefixPrivate, "global", []string{"PUT", "OPTIONS"}, nil, SaveGlobalConfig))
 
+	// Pinned items
+	log.IfErr(Add(RoutePrefixPrivate, "pin/{userID}", []string{"POST", "OPTIONS"}, nil, AddPin))
+	log.IfErr(Add(RoutePrefixPrivate, "pin/{userID}", []string{"GET", "OPTIONS"}, nil, GetUserPins))
+	log.IfErr(Add(RoutePrefixPrivate, "pin/{userID}/sequence", []string{"POST", "OPTIONS"}, nil, UpdatePinSequence))
+	log.IfErr(Add(RoutePrefixPrivate, "pin/{userID}/{pinID}", []string{"DELETE", "OPTIONS"}, nil, DeleteUserPin))
+
 	// Single page app handler
 	log.IfErr(Add(RoutePrefixRoot, "robots.txt", []string{"GET", "OPTIONS"}, nil, GetRobots))
 	log.IfErr(Add(RoutePrefixRoot, "sitemap.xml", []string{"GET", "OPTIONS"}, nil, GetSitemap))

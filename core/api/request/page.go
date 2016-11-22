@@ -16,13 +16,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jmoiron/sqlx"
-
 	"github.com/documize/community/core/api/endpoint/models"
 	"github.com/documize/community/core/api/entity"
 	"github.com/documize/community/core/api/util"
 	"github.com/documize/community/core/log"
 	"github.com/documize/community/core/utility"
+	"github.com/jmoiron/sqlx"
 )
 
 // AddPage inserts the given page into the page table, adds that page to the queue of pages to index and audits that the page has been added.

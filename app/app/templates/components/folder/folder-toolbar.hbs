@@ -28,6 +28,20 @@
 				</ul>
 			{{/dropdown-dialog}}
 		{{else}}
+			{{#if session.authenticated}}
+				{{#if pinState.isPinned}}
+					<div class="round-button-mono" {{action 'unpin'}}>
+						<i class="material-icons color-primary">star</i>
+					</div>
+				{{else}}
+					<div class="round-button-mono" id="pin-space-button">
+						<i class="material-icons color-gray">star_border</i>
+					</div>
+				{{/if}}
+				{{#if isFolderOwner}}
+					<div class="button-gap"></div>
+				{{/if}}
+			{{/if}}
 	    	{{#if isFolderOwner}}
 				{{#link-to 'settings' folder.id folder.slug (query-params tab="tabShare")}}
 					<div class="round-button-mono" id="folder-share-button" data-tooltip="Share" data-tooltip-position="top center">
@@ -40,6 +54,17 @@
 					    <i class="material-icons color-gray">settings</i>
 					</div>
 				{{/link-to}}
+			{{/if}}
+			{{#if session.authenticated}}
+				{{#unless pinState.isPinned}}
+					{{#dropdown-dialog target="pin-space-button" position="bottom right" button="Pin" color="flat-green" onAction=(action 'pin') focusOn="pin-space-name" }}
+						<div class="input-control">
+							<label>Pin Space</label>
+							<div class="tip">A 3 or 4 character name</div>
+							{{input type='text' id="pin-space-name" value=pinState.newName}}
+						</div>
+					{{/dropdown-dialog}}
+				{{/unless}}
 			{{/if}}
 	    {{/if}}
 	</div>

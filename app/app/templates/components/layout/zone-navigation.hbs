@@ -1,61 +1,67 @@
 <div id="zone-navigation" class="zone-navigation">
-		<ul class="top-zone">
-	        {{#if session.authenticated}}
-				<li>
-					<div id="accounts-button" class="filled-tool">
-		                <i class="material-icons">apps</i>
-		            </div>
-				</li>
-	        {{else}}
-				<li>
-		            {{#link-to 'folders' class='title'}}
-		                <div class="filled-tool" title={{appMeta.title}}>
-		                    <i class="material-icons">apps</i>
-		                </div>
-		            {{/link-to}}
-				</li>
-	        {{/if}}
-			<li class="{{if view.folder 'selected'}}">
-	            {{#link-to 'folders'}}
-	                <i class="material-icons icon-tool">home</i>
+	<ul id="top-zone" class="top-zone">
+        {{#if session.authenticated}}
+			<li>
+				<div id="accounts-button" class="filled-tool">
+	                <i class="material-icons">apps</i>
+	            </div>
+			</li>
+        {{else}}
+			<li>
+	            {{#link-to 'folders' class='title'}}
+	                <div class="filled-tool" title={{appMeta.title}}>
+	                    <i class="material-icons">apps</i>
+	                </div>
 	            {{/link-to}}
 			</li>
-			<li class="{{if view.search 'selected'}}">
-	            {{#link-to 'search'}}
-	                <i class="material-icons icon-tool">search</i>
-	            {{/link-to}}
-			</li>
-	    </ul>
+        {{/if}}
+		<li class="{{if view.folder 'selected'}}">
+            {{#link-to 'folders'}}
+                <i class="material-icons icon-tool">home</i>
+            {{/link-to}}
+		</li>
+		<li class="{{if view.search 'selected'}}">
+            {{#link-to 'search'}}
+                <i class="material-icons icon-tool">search</i>
+            {{/link-to}}
+		</li>
+    </ul>
 
-	    <ul class="bottom-zone">
-			{{#if session.session.content.authenticated.user.admin}}
-				<li id="workspace-settings" class="{{if view.settings 'selected'}}" data-tooltip="Settings" data-tooltip-position="right center">
-		            {{#link-to 'customize.general'}}
-		                <i class="material-icons icon-tool">tune</i>
-		            {{/link-to}}
-				</li>
-			{{/if}}
-	        {{#if session.authenticated}}
-				<li id="workspace-logout" data-tooltip="Logout" data-tooltip-position="right center">
-		            {{#link-to 'auth.logout'}}
-		                <i class="material-icons icon-tool">exit_to_app</i>
-		            {{/link-to}}
-				</li>
-				<li class="{{if view.profile 'selected'}}">
-					{{#link-to 'profile'}}
-						<div class="filled-tool">
-							<i class="initials">{{session.user.initials}}</i>
-						</div>
-		            {{/link-to}}
-				</li>
-	        {{else}}
-				<li id="workspace-login" data-tooltip="Login" data-tooltip-position="right center">
-	                {{#link-to 'auth.login'}}
-						<i class="material-icons icon-tool">lock_open</i>
-					{{/link-to}}
-		        </li>
-	        {{/if}}
-	    </ul>
+	<ul id="pinned-zone" class="pinned-zone">
+		{{#each pins as |pin|}}
+			<li {{action 'jumpToPin' pin}} data-id={{pin.id}} id="pin-{{pin.id}}" data-tooltip="{{pin.pin}}" data-tooltip-position="right middle" class="pin"><span class="key">{{pin.pin}}</span></li>
+		{{/each}}
+	</ul>
+
+    <ul id="bottom-zone" class="bottom-zone">
+		{{#if session.session.content.authenticated.user.admin}}
+			<li id="workspace-settings" class="{{if view.settings 'selected'}}" data-tooltip="Settings" data-tooltip-position="right center">
+	            {{#link-to 'customize.general'}}
+	                <i class="material-icons icon-tool">tune</i>
+	            {{/link-to}}
+			</li>
+		{{/if}}
+        {{#if session.authenticated}}
+			<li id="workspace-logout" data-tooltip="Logout" data-tooltip-position="right center">
+	            {{#link-to 'auth.logout'}}
+	                <i class="material-icons icon-tool">exit_to_app</i>
+	            {{/link-to}}
+			</li>
+			<li class="{{if view.profile 'selected'}}">
+				{{#link-to 'profile'}}
+					<div class="filled-tool">
+						<i class="initials">{{session.user.initials}}</i>
+					</div>
+	            {{/link-to}}
+			</li>
+        {{else}}
+			<li id="workspace-login" data-tooltip="Login" data-tooltip-position="right center">
+                {{#link-to 'auth.login'}}
+					<i class="material-icons icon-tool">lock_open</i>
+				{{/link-to}}
+	        </li>
+        {{/if}}
+    </ul>
 
     {{#if session.authenticated}}
         {{#dropdown-menu target="accounts-button" position="bottom left" open="click" }}
