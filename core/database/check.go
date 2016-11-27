@@ -118,7 +118,7 @@ func Check(Db *sqlx.DB, connectionString string) bool {
 			return false
 		}
 		if strings.TrimSpace(flds[0]) == "0" {
-			log.Error("Entering database set-up mode because the database is empty.", errors.New("no tables"))
+			log.Info("Entering database set-up mode because the database is empty.....")
 			web.SiteMode = web.SiteModeSetup
 			return false
 		}
