@@ -87,6 +87,11 @@ func Create(w http.ResponseWriter, r *http.Request) {
 	dbname := r.Form.Get("dbname")
 	dbhash := r.Form.Get("dbhash")
 
+	fmt.Println(dbname)
+	fmt.Println(dbhash)
+	fmt.Println(web.SiteInfo.DBname)
+	fmt.Println(web.SiteInfo.DBhash)
+
 	if dbname != web.SiteInfo.DBname || dbhash != web.SiteInfo.DBhash {
 		log.Error("database.Create()'s security credentials error ", errors.New("bad db name or validation code"))
 		return

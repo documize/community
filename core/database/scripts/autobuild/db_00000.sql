@@ -9,7 +9,6 @@ CREATE TABLE IF NOT EXISTS `user` (
 	`lastname` NVARCHAR(500) NOT NULL,
 	`email` NVARCHAR(250) NOT NULL UNIQUE,
 	`initials` NVARCHAR(10) NOT NULL DEFAULT "",
-	`global` BOOL NOT NULL DEFAULT 0,
 	`password` NVARCHAR(500) NOT NULL DEFAULT "",
 	`salt` NVARCHAR(100) NOT NULL DEFAULT "",
 	`reset` NVARCHAR(100) NOT NULL DEFAULT "",
@@ -131,7 +130,6 @@ CREATE TABLE IF NOT EXISTS `document` (
 	`slug` NVARCHAR(2000) NOT NULL,
 	`tags` NVARCHAR(1000) NOT NULL DEFAULT '',
 	`template` BOOL NOT NULL DEFAULT 0,
-	`layout` CHAR(10) NOT NULL DEFAULT 'doc',
 	`created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	`revised` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT pk_refid PRIMARY KEY (refid),
@@ -150,7 +148,6 @@ CREATE TABLE IF NOT EXISTS `page` (
 	`documentid` CHAR(16) NOT NULL COLLATE utf8_bin,
 	`userid` CHAR(16) DEFAULT '' COLLATE utf8_bin,
 	`contenttype` CHAR(20) NOT NULL DEFAULT 'wysiwyg',
-	`pagetype` CHAR(10) NOT NULL DEFAULT 'section',
 	`level` INT UNSIGNED NOT NULL,
 	`sequence` DOUBLE NOT NULL,
 	`title` NVARCHAR(2000) NOT NULL,
@@ -241,7 +238,6 @@ CREATE TABLE IF NOT EXISTS `revision` (
 	`pageid` CHAR(16) NOT NULL COLLATE utf8_bin,
 	`userid` CHAR(16) NOT NULL COLLATE utf8_bin,
 	`contenttype` CHAR(20) NOT NULL DEFAULT 'wysiwyg',
-	`pagetype` CHAR(10) NOT NULL DEFAULT 'section',
 	`title` NVARCHAR(2000) NOT NULL,
 	`body` LONGTEXT,
 	`rawbody` LONGBLOB,
@@ -282,90 +278,3 @@ CREATE TABLE IF NOT EXISTS `userconfig` (
 	UNIQUE INDEX `idx_userconfig_orguserkey` (`orgid`, `userid`, `key` ASC))
 DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci
 ENGINE = InnoDB;
-
-DROP TABLE IF EXISTS `share`;
-
-CREATE TABLE IF NOT EXISTS `share` (
-	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-	`orgid` CHAR(16) NOT NULL COLLATE utf8_bin,
-	`documentid` CHAR(16) NOT NULL COLLATE utf8_bin,
-	`userid` CHAR(16) DEFAULT '' COLLATE utf8_bin,
-	`email` NVARCHAR(250) NOT NULL DEFAULT '',
-	`message` NVARCHAR(500) NOT NULL DEFAULT '',
-	`viewed` VARCHAR(500) NOT NULL DEFAULT '',
-	`secret` VARCHAR(200) NOT NULL DEFAULT '',
-	`expires` CHAR(16) DEFAULT '' COLLATE utf8_bin,
-	`active` BOOL NOT NULL DEFAULT 1,
-	`created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	CONSTRAINT pk_id PRIMARY KEY (id))
-DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci
-ENGINE =  InnoDB;
-
-DROP TABLE IF EXISTS `feedback`;
-
-CREATE TABLE IF NOT EXISTS `feedback` (
-	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-	`refid` CHAR(16) NOT NULL COLLATE utf8_bin,
-	`orgid` CHAR(16) NOT NULL COLLATE utf8_bin,
-	`documentid` CHAR(16) NOT NULL COLLATE utf8_bin,
-	`userid` CHAR(16) DEFAULT '' COLLATE utf8_bin,
-	`email` NVARCHAR(250) NOT NULL DEFAULT '',
-	`feedback` LONGTEXT,
-	`created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	CONSTRAINT pk_id PRIMARY KEY (id))
-DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci
-ENGINE =  InnoDB;
-
-DROP TABLE IF EXISTS `link`;
-
-CREATE TABLE IF NOT EXISTS `link` (
-	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-	`refid` CHAR(16) NOT NULL COLLATE utf8_bin,
-	`orgid` CHAR(16) NOT NULL COLLATE utf8_bin,
-	`folderid` CHAR(16) NOT NULL COLLATE utf8_bin,
-	`userid` CHAR(16) NOT NULL COLLATE utf8_bin,
-	`sourcedocumentid` CHAR(16) NOT NULL COLLATE utf8_bin,
-	`sourcepageid` CHAR(16) NOT NULL COLLATE utf8_bin,
-	`linktype` CHAR(16) NOT NULL COLLATE utf8_bin,
-	`targetdocumentid` CHAR(16) NOT NULL COLLATE utf8_bin,
-	`targetid` CHAR(16) NOT NULL DEFAULT '' COLLATE utf8_bin,
-	`orphan` BOOL NOT NULL DEFAULT 0,
-	`created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	`revised` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	CONSTRAINT pk_id PRIMARY KEY (id))
-DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci
-ENGINE =  InnoDB;
-
-DROP TABLE IF EXISTS `participant`;
-
-CREATE TABLE IF NOT EXISTS `participant` (
-	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-	`refid` CHAR(16) NOT NULL COLLATE utf8_bin,
-	`orgid` CHAR(16) NOT NULL COLLATE utf8_bin,
-	`documentid` CHAR(16) NOT NULL COLLATE utf8_bin,
-	`userid` CHAR(16) DEFAULT '' COLLATE utf8_bin,
-	`roletype` CHAR(1) NOT NULL DEFAULT 'I' COLLATE utf8_bin,
-	`lastviewed` TIMESTAMP NULL,
-	`created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	CONSTRAINT pk_id PRIMARY KEY (id),
-	INDEX `idx_participant_documentid` (`documentid` ASC))
-DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci
-ENGINE =  InnoDB;
-
-DROP TABLE IF EXISTS `pin`;
-
-CREATE TABLE IF NOT EXISTS `pin` (
-	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-	`refid` CHAR(16) NOT NULL COLLATE utf8_bin,
-	`orgid` CHAR(16) NOT NULL COLLATE utf8_bin,
-	`userid` CHAR(16) DEFAULT '' COLLATE utf8_bin,
-	`labelid` CHAR(16) DEFAULT '' COLLATE utf8_bin,
-	`documentid` CHAR(16) DEFAULT '' COLLATE utf8_bin,
-	`sequence` INT UNSIGNED NOT NULL DEFAULT 99,
-	`pin` CHAR(20) NOT NULL DEFAULT '' COLLATE utf8_bin,
-	`created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	`revised` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	CONSTRAINT pk_id PRIMARY KEY (id),
-	INDEX `idx_pin_userid` (`userid` ASC))
-DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci
-ENGINE =  InnoDB;
