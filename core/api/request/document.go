@@ -71,7 +71,7 @@ func (p *Persister) GetDocument(id string) (document entity.Document, err error)
 		return
 	}
 
-	p.Base.Audit(p.Context, "get-document", id, "")
+	p.Base.Audit(p.Context, AuditGetDocument, id, "")
 
 	return
 }
@@ -80,8 +80,10 @@ func (p *Persister) GetDocument(id string) (document entity.Document, err error)
 func (p *Persister) GetDocumentMeta(id string) (meta entity.DocumentMeta, err error) {
 	err = nil
 
-	sqlViewers := `SELECT CONVERT_TZ(MAX(a.created), @@session.time_zone, '+00:00') as created,
-		IFNULL(a.userid, '') AS userid, IFNULL(u.firstname, '') AS firstname, IFNULL(u.lastname, '') AS lastname
+	//	sqlViewers := `SELECT CONVERT_TZ(MAX(a.created), @@session.time_zone, '+00:00') as created,
+
+	sqlViewers := `SELECT MAX(a.created) as created,
+		IFNULL(a.userid, '') AS userid, IFNULL(u.firstname, 'Anonymous') AS firstname, IFNULL(u.lastname, 'Viewer') AS lastname
 		FROM audit a LEFT JOIN user u ON a.userid=u.refid
 		WHERE a.orgid=? AND a.documentid=?
 		AND a.userid != '0' AND a.userid != ''
@@ -96,8 +98,10 @@ func (p *Persister) GetDocumentMeta(id string) (meta entity.DocumentMeta, err er
 	}
 
 	//SELECT CONVERT_TZ(a.created, @@session.time_zone, '+00:00') as
-	sqlEdits := `SELECT CONVERT_TZ(a.created, @@session.time_zone, '+00:00') as created,
-		IFNULL(a.action, '') AS action, IFNULL(a.userid, '') AS userid, IFNULL(u.firstname, '') AS firstname, IFNULL(u.lastname, '') AS lastname, IFNULL(a.pageid, '') AS pageid
+	//	sqlEdits := `SELECT CONVERT_TZ(a.created, @@session.time_zone, '+00:00') as created,
+
+	sqlEdits := `SELECT a.created,
+		IFNULL(a.action, '') AS action, IFNULL(a.userid, '') AS userid, IFNULL(u.firstname, 'Anonymous') AS firstname, IFNULL(u.lastname, 'Viewer') AS lastname, IFNULL(a.pageid, '') AS pageid
 		FROM audit a LEFT JOIN user u ON a.userid=u.refid
 		WHERE a.orgid=? AND a.documentid=? AND a.userid != '0' AND a.userid != ''
 		AND (a.action='update-page' OR a.action='add-page' OR a.action='remove-page')

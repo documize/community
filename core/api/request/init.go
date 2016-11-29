@@ -222,3 +222,8 @@ func (m *baseManager) SQLPrepareError(method string, id string) string {
 func (m *baseManager) SQLSelectError(method string, id string) string {
 	return fmt.Sprintf("Unable to execute SQL for %s, ID %s", method, id)
 }
+
+const (
+	// AuditGetDocument means someone viewed a document
+	AuditGetDocument string = "get-document"
+)
