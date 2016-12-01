@@ -194,7 +194,7 @@ export default Ember.Service.extend({
 			dataType: 'text'
 		}).then((response) => {
 			return response;
-		}).catch((error) => {
+		}).catch(() => {
 			return "";
 		});
 	},
