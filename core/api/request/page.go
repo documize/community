@@ -450,7 +450,7 @@ func (p *Persister) GetDocumentPageMeta(documentID string, externalSourceOnly bo
 
 // GetPageRevision returns the revisionID page revision record.
 func (p *Persister) GetPageRevision(revisionID string) (revision entity.Revision, err error) {
-	stmt, err := Db.Preparex("SELECT id, refid, orgid, documentid, ownerid, pageid, userid, contenttype, pagetype, title, body, rawbody, coalesce(config,JSON_UNQUOTE('{}')) as config, created, revised FROM revision WHERE orgid=? and refid=?")
+	stmt, err := Db.Preparex("SELECT id, refid, orgid, documentid, ownerid, pageid, userid, contenttype, pagetype, title, body, coalesce(rawbody, '') as rawbody, coalesce(config,JSON_UNQUOTE('{}')) as config, created, revised FROM revision WHERE orgid=? and refid=?")
 	defer utility.Close(stmt)
 
 	if err != nil {
