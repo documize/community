@@ -39,6 +39,11 @@ export default Model.extend({
 		let tocIndent = this.get('tocIndent');
 		return `margin-left-${tocIndent}`;
 	}),
+
+	hasRevisions: Ember.computed('revisions', function () {
+		return this.get('revisions') > 0;
+	}),
+
 	created: attr(),
 	revised: attr()
 });

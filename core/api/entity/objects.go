@@ -238,6 +238,27 @@ func (p *PageMeta) SetDefaults() {
 	}
 }
 
+// Revision holds the previous version of a Page.
+type Revision struct {
+	BaseEntity
+	OrgID       string `json:"orgId"`
+	DocumentID  string `json:"documentId"`
+	PageID      string `json:"pageId"`
+	OwnerID     string `json:"ownerId"`
+	UserID      string `json:"userId"`
+	ContentType string `json:"contentType"`
+	PageType    string `json:"pageType"`
+	Title       string `json:"title"`
+	Body        string `json:"body"`
+	RawBody     string `json:"rawBody"`
+	Config      string `json:"config"`
+	Email       string `json:"email"`
+	Firstname   string `json:"firstname"`
+	Lastname    string `json:"lastname"`
+	Initials    string `json:"initials"`
+	Revisions   int    `json:"revisions"`
+}
+
 // DocumentMeta details who viewed the document.
 type DocumentMeta struct {
 	Viewers []DocumentMetaViewer `json:"viewers"`

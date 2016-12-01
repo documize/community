@@ -170,6 +170,14 @@ export default Ember.Service.extend({
 		});
 	},
 
+	getDocumentRevisions(documentId) {
+		let url = `documents/${documentId}/revisions`;
+
+		return this.get('ajax').request(url, {
+			method: "GET"
+		});
+	},
+
 	getPageRevisions(documentId, pageId) {
 		let url = `documents/${documentId}/pages/${pageId}/revisions`;
 
@@ -184,6 +192,10 @@ export default Ember.Service.extend({
 		return this.get('ajax').request(url, {
 			method: "GET",
 			dataType: 'text'
+		}).then((response) => {
+			return response;
+		}).catch((error) => {
+			return "";
 		});
 	},
 

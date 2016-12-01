@@ -47,6 +47,9 @@ export default Router.map(function () {
 		this.route('wizard', {
 			path: 'add'
 		});
+		this.route('history', {
+			path: 'history'
+		});
 	});
 
 	this.route('customize', {

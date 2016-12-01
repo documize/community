@@ -1,0 +1,72 @@
+.document-history {
+	position: relative;
+
+	> .sidebar {
+		position: relative;
+		overflow-y: scroll;
+
+		> .heading {
+			font-size: 1.2rem;
+			font-family: $font-light;
+			color: $color-off-black;
+		}
+
+		> .line {
+			width: 2px;
+			background-color: $color-stroke;
+			height: 100%;
+			position: absolute;
+			left: 17px;
+			z-index: -1;
+		}
+
+		> .items {
+			list-style-type: none;
+			margin: 0;
+			padding: 20px 0 10px;
+			white-space: nowrap;
+
+			> .item {
+				margin: 0;
+				padding: 10px 0;
+				width: 100%;
+				color: $color-off-black;
+				@include ease-in();
+				cursor: pointer;
+
+				> .avatar-box {
+					display: inline-block;
+				}
+
+				> .date {
+					display: inline-block;
+					font-size: 1rem;
+					font-family: $font-light;
+					margin-left: 25px;
+				}
+
+				> .detail {
+					display: block;
+					font-size: 1.2rem;
+					font-family: $font-semibold;
+					margin-left: 65px;
+					overflow: hidden;
+					text-overflow: ellipsis;
+				}
+
+				&:hover {
+					color: $color-link;
+				}
+			}
+
+			> .deleted {
+				color: $color-red;
+				cursor: not-allowed;
+
+				&:hover {
+					color: $color-red;
+				}
+			}
+		}
+	}
+}

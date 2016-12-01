@@ -258,36 +258,6 @@ func (p *Persister) UpdatePage(page entity.Page, refID, userID string, skipRevis
 		}
 	}
 
-	//if page.Level == 1 { // may need to update the document name
-	//var doc entity.Document
-
-	//stmt4, err := p.Context.Transaction.Preparex("SELECT id, refid, orgid, labelid, job, location, title, excerpt, slug, tags, template, created, revised FROM document WHERE refid=?")
-	//defer utility.Close(stmt4)
-
-	//if err != nil {
-	//log.Error(fmt.Sprintf("Unable to prepare pagemanager doc query for Id %s", page.DocumentID), err)
-	//return err
-	//}
-
-	//err = stmt4.Get(&doc, page.DocumentID)
-
-	//if err != nil {
-	//log.Error(fmt.Sprintf("Unable to execute pagemanager document query for Id %s", page.DocumentID), err)
-	//return err
-	//}
-
-	//if doc.Title != page.Title {
-	//doc.Title = page.Title
-	//doc.Revised = page.Revised
-	//err = p.UpdateDocument(doc)
-
-	//if err != nil {
-	//log.Error(fmt.Sprintf("Unable to update document when page 1 altered DocumentId %s", page.DocumentID), err)
-	//return err
-	//}
-	//}
-	//}
-
 	// find any content links in the HTML
 	links := util.GetContentLinks(page.Body)
 
@@ -336,6 +306,7 @@ func (p *Persister) UpdatePage(page entity.Page, refID, userID string, skipRevis
 func (p *Persister) UpdatePageMeta(meta entity.PageMeta, updateUserID bool) (err error) {
 	err = nil
 	meta.Revised = time.Now().UTC()
+
 	if updateUserID {
 		meta.UserID = p.Context.UserID
 	}
@@ -424,6 +395,9 @@ func (p *Persister) DeletePage(documentID, pageID string) (rows int64, err error
 		// mark as orphan links to this page
 		err = p.MarkOrphanPageLink(pageID)
 
+		// nuke revisions
+		_, err = p.DeletePageRevisions(pageID)
+
 		p.Base.Audit(p.Context, "remove-page", documentID, pageID)
 	}
 
@@ -466,6 +440,71 @@ func (p *Persister) GetDocumentPageMeta(documentID string, externalSourceOnly bo
 		log.Error(fmt.Sprintf("Unable to execute select document page meta for org %s and document %s", p.Context.OrgID, documentID), err)
 		return
 	}
+
+	return
+}
+
+/********************
+* Page Revisions
+********************/
+
+// GetPageRevision returns the revisionID page revision record.
+func (p *Persister) GetPageRevision(revisionID string) (revision entity.Revision, err error) {
+	stmt, err := Db.Preparex("SELECT id, refid, orgid, documentid, ownerid, pageid, userid, contenttype, pagetype, title, body, rawbody, coalesce(config,JSON_UNQUOTE('{}')) as config, created, revised FROM revision WHERE orgid=? and refid=?")
+	defer utility.Close(stmt)
+
+	if err != nil {
+		log.Error(fmt.Sprintf("Unable to prepare select for revision %s", revisionID), err)
+		return
+	}
+
+	err = stmt.Get(&revision, p.Context.OrgID, revisionID)
+
+	if err != nil {
+		log.Error(fmt.Sprintf("Unable to execute select for revision %s", revisionID), err)
+		return
+	}
+
+	return
+}
+
+// GetDocumentRevisions returns a slice of page revision records for a given document, in the order they were created.
+// Then audits that the get-page-revisions action has occurred.
+func (p *Persister) GetDocumentRevisions(documentID string) (revisions []entity.Revision, err error) {
+	err = Db.Select(&revisions, "SELECT a.id, a.refid, a.orgid, a.documentid, a.ownerid, a.pageid, a.userid, a.contenttype, a.pagetype, a.title, /*a.body, a.rawbody, a.config,*/ a.created, a.revised, coalesce(b.email,'') as email, coalesce(b.firstname,'') as firstname, coalesce(b.lastname,'') as lastname, coalesce(b.initials,'') as initials, coalesce(p.revisions, 0) as revisions FROM revision a LEFT JOIN user b ON a.userid=b.refid LEFT JOIN page p ON a.pageid=p.refid WHERE a.orgid=? AND a.documentid=? AND a.pagetype='section' ORDER BY a.id DESC", p.Context.OrgID, documentID)
+
+	if err != nil {
+		log.Error(fmt.Sprintf("Unable to execute select revisions for org %s and document %s", p.Context.OrgID, documentID), err)
+		return
+	}
+
+	if len(revisions) == 0 {
+		revisions = []entity.Revision{}
+	}
+
+	p.Base.Audit(p.Context, "get-document-revisions", documentID, "")
+
+	return
+}
+
+// GetPageRevisions returns a slice of page revision records for a given pageID, in the order they were created.
+// Then audits that the get-page-revisions action has occurred.
+func (p *Persister) GetPageRevisions(pageID string) (revisions []entity.Revision, err error) {
+	err = Db.Select(&revisions, "SELECT a.id, a.refid, a.orgid, a.documentid, a.ownerid, a.pageid, a.userid, a.contenttype, a.pagetype, a.title, /*a.body, a.rawbody, a.config,*/ a.created, a.revised, coalesce(b.email,'') as email, coalesce(b.firstname,'') as firstname, coalesce(b.lastname,'') as lastname, coalesce(b.initials,'') as initials FROM revision a LEFT JOIN user b ON a.userid=b.refid WHERE a.orgid=? AND a.pageid=? AND a.pagetype='section' ORDER BY a.id DESC", p.Context.OrgID, pageID)
+
+	if err != nil {
+		log.Error(fmt.Sprintf("Unable to execute select revisions for org %s and page %s", p.Context.OrgID, pageID), err)
+		return
+	}
+
+	p.Base.Audit(p.Context, "get-page-revisions", "", pageID)
+
+	return
+}
+
+// DeletePageRevisions deletes all of the page revision records for a given pageID.
+func (p *Persister) DeletePageRevisions(pageID string) (rows int64, err error) {
+	rows, err = p.Base.DeleteWhere(p.Context.Transaction, fmt.Sprintf("DELETE FROM revision WHERE orgid='%s' AND pageid='%s'", p.Context.OrgID, pageID))
 
 	return
 }

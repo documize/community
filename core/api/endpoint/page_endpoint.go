@@ -26,6 +26,7 @@ import (
 	"github.com/documize/community/core/log"
 	"github.com/documize/community/core/section/provider"
 	"github.com/documize/community/core/utility"
+	htmldiff "github.com/documize/html-diff"
 
 	"github.com/gorilla/mux"
 )
@@ -644,4 +645,233 @@ func GetDocumentPageMeta(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeSuccessBytes(w, json)
+}
+
+/********************
+* Page Revisions
+********************/
+
+// GetDocumentRevisions returns all changes for a document.
+func GetDocumentRevisions(w http.ResponseWriter, r *http.Request) {
+	method := "GetDocumentPageRevisions"
+	p := request.GetPersister(r)
+
+	params := mux.Vars(r)
+	documentID := params["documentID"]
+
+	if len(documentID) == 0 {
+		writeMissingDataError(w, method, "documentID")
+		return
+	}
+
+	if !p.CanViewDocument(documentID) {
+		writeForbiddenError(w)
+		return
+	}
+
+	revisions, err := p.GetDocumentRevisions(documentID)
+
+	payload, err := json.Marshal(revisions)
+
+	if err != nil {
+		writeJSONMarshalError(w, method, "revision", err)
+		return
+	}
+
+	writeSuccessBytes(w, payload)
+}
+
+// GetDocumentPageRevisions returns all changes for a given page.
+func GetDocumentPageRevisions(w http.ResponseWriter, r *http.Request) {
+	method := "GetDocumentPageRevisions"
+	p := request.GetPersister(r)
+
+	params := mux.Vars(r)
+	documentID := params["documentID"]
+
+	if len(documentID) == 0 {
+		writeMissingDataError(w, method, "documentID")
+		return
+	}
+
+	if !p.CanViewDocument(documentID) {
+		writeForbiddenError(w)
+		return
+	}
+
+	pageID := params["pageID"]
+
+	if len(pageID) == 0 {
+		writeMissingDataError(w, method, "pageID")
+		return
+	}
+
+	revisions, err := p.GetPageRevisions(pageID)
+
+	payload, err := json.Marshal(revisions)
+
+	if err != nil {
+		writeJSONMarshalError(w, method, "revision", err)
+		return
+	}
+
+	writeSuccessBytes(w, payload)
+}
+
+// GetDocumentPageDiff returns HTML diff between two revisions of a given page.
+func GetDocumentPageDiff(w http.ResponseWriter, r *http.Request) {
+	method := "GetDocumentPageDiff"
+	p := request.GetPersister(r)
+
+	params := mux.Vars(r)
+	documentID := params["documentID"]
+
+	if len(documentID) == 0 {
+		writeMissingDataError(w, method, "documentID")
+		return
+	}
+
+	if !p.CanViewDocument(documentID) {
+		writeForbiddenError(w)
+		return
+	}
+
+	pageID := params["pageID"]
+
+	if len(pageID) == 0 {
+		writeMissingDataError(w, method, "pageID")
+		return
+	}
+
+	revisionID := params["revisionID"]
+
+	if len(revisionID) == 0 {
+		writeMissingDataError(w, method, "revisionID")
+		return
+	}
+
+	page, err := p.GetPage(pageID)
+
+	if err == sql.ErrNoRows {
+		writeNotFoundError(w, method, revisionID)
+		return
+	}
+
+	revision, err := p.GetPageRevision(revisionID)
+
+	latestHTML := page.Body
+	previousHTML := revision.Body
+	var result []byte
+
+	var cfg = &htmldiff.Config{
+		Granularity:  5,
+		InsertedSpan: []htmldiff.Attribute{{Key: "style", Val: "background-color: palegreen;"}},
+		DeletedSpan:  []htmldiff.Attribute{{Key: "style", Val: "background-color: lightpink; text-decoration: line-through;"}},
+		ReplacedSpan: []htmldiff.Attribute{{Key: "style", Val: "background-color: lightskyblue;"}},
+		CleanTags:    []string{"documize"},
+	}
+	res, err := cfg.HTMLdiff([]string{latestHTML, previousHTML})
+	if err != nil {
+		writeServerError(w, method, err)
+		return
+	}
+
+	result = []byte(res[0])
+
+	_, err = w.Write(result)
+	log.IfErr(err)
+}
+
+// RollbackDocumentPage rolls-back to a specific page revision.
+func RollbackDocumentPage(w http.ResponseWriter, r *http.Request) {
+	method := "RollbackDocumentPage"
+	p := request.GetPersister(r)
+
+	params := mux.Vars(r)
+	documentID := params["documentID"]
+
+	if len(documentID) == 0 {
+		writeMissingDataError(w, method, "documentID")
+		return
+	}
+
+	pageID := params["pageID"]
+
+	if len(pageID) == 0 {
+		writeMissingDataError(w, method, "pageID")
+		return
+	}
+
+	revisionID := params["revisionID"]
+
+	if len(revisionID) == 0 {
+		writeMissingDataError(w, method, "revisionID")
+		return
+	}
+
+	if !p.CanChangeDocument(documentID) {
+		writeForbiddenError(w)
+		return
+	}
+
+	tx, err := request.Db.Beginx()
+	if err != nil {
+		writeTransactionError(w, method, err)
+		return
+	}
+
+	p.Context.Transaction = tx
+
+	// fetch page
+	page, err := p.GetPage(pageID)
+	if err != nil {
+		writeGeneralSQLError(w, method, err)
+		return
+	}
+
+	// fetch page meta
+	meta, err := p.GetPageMeta(pageID)
+	if err != nil {
+		writeGeneralSQLError(w, method, err)
+		return
+	}
+
+	// fetch revision
+	revision, err := p.GetPageRevision(revisionID)
+	if err != nil {
+		writeGeneralSQLError(w, method, err)
+		return
+	}
+
+	// roll back page
+	page.Body = revision.Body
+	refID := util.UniqueID()
+
+	err = p.UpdatePage(page, refID, p.Context.UserID, false)
+	if err != nil {
+		log.IfErr(tx.Rollback())
+		writeGeneralSQLError(w, method, err)
+		return
+	}
+
+	// roll back page meta
+	meta.Config = revision.Config
+	meta.RawBody = revision.RawBody
+
+	err = p.UpdatePageMeta(meta, false)
+	if err != nil {
+		log.IfErr(tx.Rollback())
+		writeGeneralSQLError(w, method, err)
+		return
+	}
+
+	log.IfErr(tx.Commit())
+
+	payload, err := json.Marshal(page)
+	if err != nil {
+		writeJSONMarshalError(w, method, "revision", err)
+		return
+	}
+
+	writeSuccessBytes(w, payload)
 }
