@@ -159,6 +159,11 @@ func init() {
 	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/pages/level", []string{"POST", "OPTIONS"}, nil, ChangeDocumentPageLevel))
 	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/pages/sequence", []string{"POST", "OPTIONS"}, nil, ChangeDocumentPageSequence))
 	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/pages/batch", []string{"POST", "OPTIONS"}, nil, GetDocumentPagesBatch))
+	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/pages/{pageID}/revisions", []string{"GET", "OPTIONS"}, nil, GetDocumentPageRevisions))
+	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/pages/{pageID}/revisions/{revisionID}", []string{"GET", "OPTIONS"}, nil, GetDocumentPageDiff))
+	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/pages/{pageID}/revisions/{revisionID}", []string{"POST", "OPTIONS"}, nil, RollbackDocumentPage))
+	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/revisions", []string{"GET", "OPTIONS"}, nil, GetDocumentRevisions))
+
 	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/pages", []string{"GET", "OPTIONS"}, nil, GetDocumentPages))
 	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/pages/{pageID}", []string{"PUT", "OPTIONS"}, nil, UpdateDocumentPage))
 	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/pages/{pageID}", []string{"DELETE", "OPTIONS"}, nil, DeleteDocumentPage))

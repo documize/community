@@ -36,6 +36,11 @@
 				<li class="option" id="pin-document-button"><i class="material-icons">star_border</i></li>
 			{{/if}}
 		{{/if}}
+		{{#if session.authenticated}}
+			{{#link-to 'document.history'}}
+				<li class="option"><i class="material-icons">history</i></li>
+			{{/link-to}}
+		{{/if}}
 		{{#if isEditor}}
 			<li class="option" id="save-template-button"><i class="material-icons">content_copy</i></li>
 			<li class="option" id="set-meta-button"><i class="material-icons">settings</i></li>

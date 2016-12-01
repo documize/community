@@ -88,5 +88,27 @@
 				color: $color-primary;
 			}
 		}
+
+		> a  {
+			display: inline-block;
+
+			> .option {
+				list-style-type: none;
+				display: inline-block;
+				margin: 0 0 0 20px;
+				padding: 0;
+				color: $color-gray;
+				cursor: pointer;
+				@include ease-in();
+
+				&:hover {
+					color: $color-link;
+				}
+
+				> .pinned {
+					color: $color-primary;
+				}
+			}
+		}
 	}
 }
