@@ -13,7 +13,6 @@
     "start": "ember server",
     "test": "ember test"
   },
-  "repository": "",
   "engines": {
     "node": ">= 0.10.0"
   },
@@ -21,6 +20,10 @@
   "license": "AGPL",
   "devDependencies": {
     "broccoli-asset-rev": "^2.4.5",
+    "devtron": "^1.4.0",
+    "electron": "^1.4.10",
+    "electron-packager": "^8.3.0",
+    "electron-rebuild": "^1.4.0",
     "ember-ajax": "^2.4.1",
     "ember-cli": "2.10.0",
     "ember-cli-app-version": "^2.0.0",
@@ -38,7 +41,9 @@
     "ember-cli-test-loader": "^1.1.0",
     "ember-cli-uglify": "^1.2.0",
     "ember-data": "^2.10.0",
+    "ember-electron": "1.10.8",
     "ember-export-application-global": "^1.0.5",
+    "ember-inspector": "^2.0.4",
     "ember-load-initializers": "^0.5.1",
     "ember-resolver": "^2.0.3",
     "ember-simple-auth": "git+https://github.com/documize/ember-simple-auth.git#21e638f9e33267d8944835002ee96884d34d568a",
@@ -48,5 +53,47 @@
     "paths": [
       "lib/intercom"
     ]
+  },
+  "main": "electron.js",
+  "ember-electron": {
+    "WHAT IS THIS?": "Please see the README.md",
+    "copy-files": [
+      "electron.js",
+      "package.json"
+    ],
+    "name": null,
+    "platform": null,
+    "arch": null,
+    "version": null,
+    "app-bundle-id": null,
+    "app-category-type": null,
+    "app-copyright": null,
+    "app-version": null,
+    "asar": null,
+    "asar-unpack": null,
+    "asar-unpack-dir": null,
+    "build-version": null,
+    "cache": null,
+    "extend-info": null,
+    "extra-resource": null,
+    "helper-bundle-id": null,
+    "icon": null,
+    "ignore": null,
+    "out": null,
+    "osx-sign": {
+      "identity": null,
+      "entitlements": null,
+      "entitlements-inherit": null
+    },
+    "overwrite": null,
+    "prune": null,
+    "strict-ssl": null,
+    "version-string": {
+      "CompanyName": null,
+      "FileDescription": null,
+      "OriginalFilename": null,
+      "ProductName": null,
+      "InternalName": null
+    }
   }
 }

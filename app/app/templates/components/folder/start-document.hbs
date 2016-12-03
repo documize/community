@@ -9,7 +9,7 @@
 			{{#each savedTemplates key="id" as |template|}}
 				<li class="item">
 					<div class="icon">
-						<img class="img" src="/assets/img/{{template.img}}.png" srcset="/assets/img/{{template.img}}@2x.png" />
+						<img class="img" src="{{session.assetURL}}assets/img/{{template.img}}.png" srcset="{{session.assetURL}}assets/img/{{template.img}}@2x.png" />
 						{{#if editor}}
 							{{#unless template.locked}}
 								<div class="edit-control" {{action 'editTemplate' template}}>edit</div>

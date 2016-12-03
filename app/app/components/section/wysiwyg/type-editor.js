@@ -67,9 +67,18 @@ export default Ember.Component.extend({
 		};
 
 		if (typeof tinymce === 'undefined') {
-			$.getScript("/tinymce/tinymce.min.js?v=443", function () {
+			let url = this.session.get('assetURL');
+			let tinymceBaseURL = "//" + window.location.host + "/tinymce";
+
+			// handle desktop app
+			if (url === null) {
+				url = '';
+				tinymceBaseURL = "tinymce";
+			}
+
+			$.getScript(url + "tinymce/tinymce.min.js?v=443", function () {
 				window.tinymce.dom.Event.domLoaded = true;
-				tinymce.baseURL = "//" + window.location.host + "/tinymce";
+				tinymce.baseURL = tinymceBaseURL;
 				tinymce.suffix = ".min";
 				tinymce.init(options);
 			});

@@ -4,7 +4,7 @@
 			{{#each sections as |section|}}
 				<li class="item" {{action 'addSection' section}}>
 					<div class="icon">
-						<img class="img" src="/sections/{{section.contentType}}.png" srcset="/sections/{{section.contentType}}@2x.png" />
+						<img class="img" src="{{session.assetURL}}sections/{{section.contentType}}.png" srcset="{{session.assetURL}}sections/{{section.contentType}}@2x.png" />
 					</div>
 					<div class="details">
 						<div class='title'>

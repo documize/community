@@ -9,7 +9,7 @@
 		</div>
 		<div class="buttons pull-right">
 			{{#if busy}}
-				<img src="/assets/img/busy-gray.gif" class="busy-indicator" />
+				<img src="{{session.assetURL}}assets/img/busy-gray.gif" class="busy-indicator" />
 			{{/if}}
 			<div id="editor-cancel" class="flat-button flat-gray" {{action 'onCancel'}}>{{cancelLabel}}</div>
 			<div class="button-gap" />

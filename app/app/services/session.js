@@ -11,6 +11,7 @@
 
 import Ember from 'ember';
 import SimpleAuthSession from 'ember-simple-auth/services/session';
+import config from '../config/environment';
 
 const {
 	inject: { service },
@@ -39,12 +40,15 @@ export default SimpleAuthSession.extend({
 		let data = this.get('user');
 		return data.get('global');
 	}),
+	assetURL: null,
+
 
 	init: function () {
 		this._super(...arguments);
-		
+
 		this.set('isMac', is.mac());
 		this.set('isMobile', is.mobile());
+		this.set('assetURL', config.rootURL);
 	},
 
 	user: computed('isAuthenticated', 'session.content.authenticated.user', function () {

@@ -47,7 +47,7 @@ export default Ember.Service.extend({
 				allowAnonymousAccess: true,
 				setupMode: true
 			});
-			
+
 			this.get('localStorage').clearAll();
 
 			return resolve(this);

@@ -16,7 +16,11 @@ export default Ember.Component.extend({
     codeSyntax: "htmlmixed",
 
     didReceiveAttrs() {
-        CodeMirror.modeURL = "/codemirror/mode/%N/%N.js";
+		if (this.session.get('assetURL') === null) {
+			CodeMirror.modeURL = "codemirror/mode/%N/%N.js";
+		} else {
+			CodeMirror.modeURL = "/codemirror/mode/%N/%N.js";
+		}
 
         let page = this.get('page');
         let rawBody = page.get('body');

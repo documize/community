@@ -16,10 +16,9 @@ module.exports = function (environment) {
 	var ENV = {
 		modulePrefix: 'documize',
 		podModulePrefix: 'documize/pods',
-		locationType: 'auto',
+		locationType: process.env.EMBER_CLI_ELECTRON ? 'hash' : 'auto',
 		environment: environment,
-		rootURL: '/',
-		// baseURL: '/',
+		rootURL: process.env.EMBER_CLI_ELECTRON ? null : '/',
 		apiHost: '',
 		apiNamespace: '',
 		contentSecurityPolicyHeader: 'Content-Security-Policy-Report-Only',

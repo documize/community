@@ -11,22 +11,22 @@
 		<meta name="author" content="Documize" />
 		<meta name="description" content="Documize">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-		<link rel="shortcut icon" href="/favicon.ico?v=1.1" />
-		<link rel="icon" type="image/png" href="/favicon-32x32.png?v=1.1" sizes="32x32" />
-		<link rel="stylesheet" href="/assets/vendor.css">
-		<link rel="stylesheet" href="/assets/documize.css">
+		<link rel="shortcut icon" href="{{rootURL}}favicon.ico?v=1.1" />
+		<link rel="icon" type="image/png" href="{{rootURL}}favicon-32x32.png?v=1.1" sizes="32x32" />
+		<link rel="stylesheet" href="{{rootURL}}assets/vendor.css">
+		<link rel="stylesheet" href="{{rootURL}}assets/documize.css">
 		{{content-for 'head-footer'}}
 	</head>
 
 	<body>
 		{{content-for 'body'}}
-		<script src="/assets/vendor.js"></script>
-		<script src="/assets/documize.js"></script>
-		<script src="/codemirror/lib/codemirror.js"></script>
-		<script src="/codemirror/mode/meta.js"></script>
-		<script src="/codemirror/addon/mode/loadmode.js"></script>
-		<script src="/codemirror/addon/runmode/runmode.js"></script>
-		<script src="/codemirror/addon/runmode/colorize.js"></script>
+		<script src="{{rootURL}}assets/vendor.js"></script>
+		<script src="{{rootURL}}assets/documize.js"></script>
+		<script src="{{rootURL}}codemirror/lib/codemirror.js"></script>
+		<script src="{{rootURL}}codemirror/mode/meta.js"></script>
+		<script src="{{rootURL}}codemirror/addon/mode/loadmode.js"></script>
+		<script src="{{rootURL}}codemirror/addon/runmode/runmode.js"></script>
+		<script src="{{rootURL}}codemirror/addon/runmode/colorize.js"></script>
 		{{content-for 'body-footer'}}
 	</body>
 

@@ -9,7 +9,9 @@
 //
 // https://documize.com
 
-export function initialize( /*application*/ ) {
+// import env from '../config/environment';
+
+export function initialize(/*application*/) {
     // address insecure jquery defaults (kudos: @nathanhammond)
     $.globalEval = function() {};
     $.ajaxSetup({
