@@ -185,6 +185,7 @@ func processDocument(p request.Persister, filename, job, folderID string, fileRe
 		meta := entity.PageMeta{}
 		meta.PageID = pageID
 		meta.RawBody = page.Body
+		meta.Config = "{}"
 
 		model := models.PageModel{}
 		model.Page = page
