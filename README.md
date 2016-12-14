@@ -8,13 +8,13 @@ The mission is to bring software dev inspired features (refactoring, testing, li
 
 ## Latest version
 
-v0.37.0
+v0.38.0
 
 ## OS Support
 
 - Windows
 - Linux
-- OSX
+- macOS
 
 ## Tech stack
 
