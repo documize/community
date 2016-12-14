@@ -9,7 +9,7 @@
 	z-index: 999;
 	overflow-x: hidden;
 
-	 > .bottom-zone,
+	> .bottom-zone,
 	> .top-zone {
 		position: absolute;
 		padding: 0;
@@ -104,8 +104,9 @@
 		top: 220px;
 		padding: 0;
 		margin: 0;
-		width: 100%;
-		overflow: scroll;
+		width: 80px;
+		overflow-x: hidden;
+		overflow-y: scroll;
 
 		> .pin {
 			cursor: pointer;
