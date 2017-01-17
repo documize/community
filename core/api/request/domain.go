@@ -16,7 +16,17 @@ import (
 	"strings"
 )
 
-// find the subdomain (which is actually the organisation )
+// GetRequestSubdomain extracts subdomain from referring URL.
+func GetRequestSubdomain(r *http.Request) string {
+	return urlSubdomain(r.Referer())
+}
+
+// GetSubdomainFromHost extracts the subdomain from the requesting URL.
+func GetSubdomainFromHost(r *http.Request) string {
+	return urlSubdomain(r.Host)
+}
+
+// Find the subdomain (which is actually the organisation).
 func urlSubdomain(url string) string {
 	url = strings.ToLower(url)
 	url = strings.Replace(url, "https://", "", 1)
@@ -31,14 +41,4 @@ func urlSubdomain(url string) string {
 	}
 
 	return CheckDomain(url)
-}
-
-// GetRequestSubdomain extracts subdomain from referring URL.
-func GetRequestSubdomain(r *http.Request) string {
-	return urlSubdomain(r.Referer())
-}
-
-// GetSubdomainFromHost extracts the subdomain from the requesting URL.
-func GetSubdomainFromHost(r *http.Request) string {
-	return urlSubdomain(r.Host)
 }

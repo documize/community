@@ -13,19 +13,48 @@ package database
 
 import "testing"
 
-// go test github.com/documize/community/core/database -run TestVersionExtract
-func TestVersionExtract(t *testing.T) {
-	ts(t, "5", 5)
-	ts(t, "45-0ubuntu0-12.12.3", 45)
-	ts(t, "untu0-12.12.3", 0)
-	ts(t, "junk-string", 0)
-	ts(t, "somethingstring", 0)
+//
+// // go test github.com/documize/community/core/database -run TestVersionExtract
+// func TestVersionExtract(t *testing.T) {
+// 	ts(t, "5", 5)
+// 	ts(t, "45-0ubuntu0-12.12.3", 45)
+// 	ts(t, "untu0-12.12.3", 0)
+// 	ts(t, "junk-string", 0)
+// 	ts(t, "somethingstring", 0)
+// }
+//
+// func ts(t *testing.T, in string, out int) {
+// 	got := ExtractVersionNumber(in)
+//
+// 	if got != out {
+// 		t.Errorf("version input `%s` got `%d` expected `%d`\n", in, got, out)
+// 	}
+// }
+
+// go test github.com/documize/community/core/database -run TestGetVersion
+func TestGetVersion(t *testing.T) {
+	ts2(t, "5.7.10", []int{5, 7, 10})
+	ts2(t, "5.7.10-log", []int{5, 7, 10})
+	ts2(t, "5.7.10-demo", []int{5, 7, 10})
+	ts2(t, "5.7.10-debug", []int{5, 7, 10})
+	ts2(t, "5.7.16-10", []int{5, 7, 16})
+	ts2(t, "5.7.12-0ubuntu0-12.12.3", []int{5, 7, 12})
+	ts2(t, "10.1.20-MariaDB-1~jessie", []int{10, 1, 20})
+	ts2(t, "ubuntu0-12.12.3", []int{0, 0, 0})
+	ts2(t, "junk-string", []int{0, 0, 0})
+	ts2(t, "somethingstring", []int{0, 0, 0})
 }
 
-func ts(t *testing.T, in string, out int) {
-	got := ExtractVersionNumber(in)
+func ts2(t *testing.T, in string, out []int) {
+	got, _ := GetSQLVersion(in)
 
-	if got != out {
-		t.Errorf("version input `%s` got `%d` expected `%d`\n", in, got, out)
+	// if err != nil {
+	// 	t.Errorf("Unable to GetSQLVersion %s", err)
+	// }
+
+	for k, v := range got {
+		if v != out[k] {
+			t.Errorf("version input of %s got %d for position %d but expected %d\n", in, v, k, out[k])
+		}
 	}
 }

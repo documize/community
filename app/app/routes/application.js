@@ -39,9 +39,10 @@ export default Ember.Route.extend(ApplicationRouteMixin, TooltipMixin, {
 			this.destroyTooltips();
 		},
 
-		error(error /*, transition*/ ) {
+		error(error, transition) {
 			if (error) {
 				console.log(error);
+				console.log(transition);
 
 				if (netUtil.isAjaxAccessError(error)) {
 					localStorage.clear();
