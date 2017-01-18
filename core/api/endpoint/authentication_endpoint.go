@@ -70,7 +70,7 @@ func Authenticate(w http.ResponseWriter, r *http.Request) {
 	domain = request.CheckDomain(domain) // TODO optimize by removing this once js allows empty domains
 	email := strings.TrimSpace(strings.ToLower(credentials[1]))
 	password := credentials[2]
-	log.Info("logon attempt for " + domain + " @ " + email)
+	log.Info("logon attempt " + email + " @ " + domain)
 
 	user, err := p.GetUserByDomain(domain, email)
 
@@ -167,8 +167,10 @@ func Authorize(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 		}
 
 		domain := request.GetSubdomainFromHost(r)
+		domain2 := request.GetRequestSubdomain(r)
+		if org.Domain != domain && org.Domain != domain2 {
+			log.Info(fmt.Sprintf("domain mismatch %s vs. %s vs. %s", domain, domain2, org.Domain))
 
-		if org.Domain != domain {
 			writeUnauthorizedError(w)
 			return
 		}

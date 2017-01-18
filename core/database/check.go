@@ -23,6 +23,11 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+// sql variantsa
+const sqlVariantMySQL string = "MySQL"
+const sqlVariantPercona string = "Percona"
+const sqlVariantMariaDB string = "MariaDB"
+
 var dbCheckOK bool // default false
 
 // dbPtr is a pointer to the central connection to the database, used by all database requests.
@@ -40,7 +45,7 @@ func Check(Db *sqlx.DB, connectionString string) bool {
 		web.SiteInfo.DBname = strings.Split(csBits[len(csBits)-1], "?")[0]
 	}
 
-	rows, err := Db.Query("SELECT VERSION() AS version, @@character_set_database AS charset, @@collation_database AS collation;")
+	rows, err := Db.Query("SELECT VERSION() AS version, @@version_comment as comment, @@character_set_database AS charset, @@collation_database AS collation;")
 	if err != nil {
 		log.Error("Can't get MySQL configuration", err)
 		web.SiteInfo.Issue = "Can't get MySQL configuration: " + err.Error()
@@ -48,13 +53,15 @@ func Check(Db *sqlx.DB, connectionString string) bool {
 		return false
 	}
 	defer utility.Close(rows)
-	var version, charset, collation string
+	var version, dbComment, charset, collation string
 	if rows.Next() {
-		err = rows.Scan(&version, &charset, &collation)
+		err = rows.Scan(&version, &dbComment, &charset, &collation)
 	}
+
 	if err == nil {
 		err = rows.Err() // get any error encountered during iteration
 	}
+
 	if err != nil {
 		log.Error("no MySQL configuration returned", err)
 		web.SiteInfo.Issue = "no MySQL configuration return issue: " + err.Error()
@@ -62,33 +69,31 @@ func Check(Db *sqlx.DB, connectionString string) bool {
 		return false
 	}
 
-	{ // check minimum MySQL version as we need JSON column type. 5.7.10
-		vParts := strings.Split(version, ".")
-		if len(vParts) < 3 {
-			log.Error("MySQL version not of the form a.b.c:", errors.New(version))
-			web.SiteInfo.Issue = "MySQL version in the wrong format: " + version
+	// Get SQL variant as this affects minimum version checking logic.
+	// MySQL and Percona share same version scheme (e..g 5.7.10).
+	// MariaDB starts at 10.2.x
+	sqlVariant := GetSQLVariant(dbComment)
+	log.Info("SQL variant: " + sqlVariant)
+	log.Info("SQL version: " + version)
+
+	verNums, err := GetSQLVersion(version)
+	if err != nil {
+		log.Error("Database version check failed", err)
+	}
+
+	// Check minimum MySQL version as we need JSON column type.
+	verInts := []int{5, 7, 10} // Minimum MySQL version
+	if sqlVariant == sqlVariantMariaDB {
+		verInts = []int{10, 2, 0} // Minimum MariaDB version
+	}
+
+	for k, v := range verInts {
+		if verNums[k] < v {
+			want := fmt.Sprintf("%d.%d.%d", verInts[0], verInts[1], verInts[2])
+			log.Error("MySQL version element "+strconv.Itoa(k+1)+" of '"+version+"' not high enough, need at least version "+want, errors.New("bad MySQL version"))
+			web.SiteInfo.Issue = "MySQL version element " + strconv.Itoa(k+1) + " of '" + version + "' not high enough, need at least version " + want
 			web.SiteMode = web.SiteModeBadDB
 			return false
-		}
-		verInts := []int{5, 7, 10} // Minimum MySQL version
-		for k, v := range verInts {
-			i := ExtractVersionNumber(vParts[k])
-
-			// i, err := strconv.Atoi(vParts[k])
-			// if err != nil {
-			// 	log.Error("MySQL version element "+strconv.Itoa(k+1)+" of '"+version+"' not an integer:", err)
-			// 	web.SiteInfo.Issue = "MySQL version element " + strconv.Itoa(k+1) + " of '" + version + "' not an integer: " + err.Error()
-			// 	web.SiteMode = web.SiteModeBadDB
-			// 	return false
-			// }
-
-			if i < v {
-				want := fmt.Sprintf("%d.%d.%d", verInts[0], verInts[1], verInts[2])
-				log.Error("MySQL version element "+strconv.Itoa(k+1)+" of '"+version+"' not high enough, need at least version "+want, errors.New("bad MySQL version"))
-				web.SiteInfo.Issue = "MySQL version element " + strconv.Itoa(k+1) + " of '" + version + "' not high enough, need at least version " + want
-				web.SiteMode = web.SiteModeBadDB
-				return false
-			}
 		}
 	}
 
@@ -147,34 +152,45 @@ func Check(Db *sqlx.DB, connectionString string) bool {
 	return true
 }
 
-// ExtractVersionNumber checks and sends back an integer.
-// MySQL can have version numbers like 5.5.47-0ubuntu0.14.04.1
-func ExtractVersionNumber(s string) (num int) {
-	num = 0
+// GetSQLVariant uses database value form @@version_comment to deduce MySQL variant.
+func GetSQLVariant(vc string) string {
+	vc = strings.ToLower(vc)
 
-	// deal with build suffixes
-	// http://dba.stackexchange.com/questions/63763/is-there-any-difference-between-these-two-version-of-mysql-5-1-73-community-lo
-	s = strings.Replace(s, "-log", "", 1)
-	s = strings.Replace(s, "-debug", "", 1)
-	s = strings.Replace(s, "-demo", "", 1)
+	if strings.Contains(vc, "mariadb") {
+		return sqlVariantMariaDB
+	} else if strings.Contains(vc, "percona") {
+		return sqlVariantPercona
+	} else if strings.Contains(vc, "mysql") {
+		return sqlVariantMySQL
+	}
 
-	// convert to number
-	num, err := strconv.Atoi(s)
+	return "UNKNOWN"
+}
 
-	if err != nil {
-		num = 0
-		// probably found "47-0ubuntu0.14.04.1" so we need to lose everything after the hypen
-		pos := strings.Index(s, "-")
-		if pos > 1 {
-			num, err = strconv.Atoi(s[:pos])
-		}
+// GetSQLVersion returns SQL version as major,minor,patch numerics.
+func GetSQLVersion(v string) (ints []int, err error) {
+	ints = []int{0, 0, 0}
+
+	pos := strings.Index(v, "-")
+	if pos > 1 {
+		v = v[:pos]
+	}
+
+	vs := strings.Split(v, ".")
+
+	if len(vs) < 3 {
+		err = errors.New("MySQL version not of the form a.b.c")
+		return
+	}
+
+	for key, val := range vs {
+		num, err := strconv.Atoi(val)
 
 		if err != nil {
-			num = 0
-			log.Error("MySQL version element '"+s+"' not an integer:", err)
-			web.SiteInfo.Issue = "MySQL version element '" + s + "' not an integer: " + err.Error()
-			web.SiteMode = web.SiteModeBadDB
+			return ints, err
 		}
+
+		ints[key] = num
 	}
 
 	return

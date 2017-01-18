@@ -32,7 +32,7 @@ func (p *Persister) AddDocument(document entity.Document) (err error) {
 		document.Layout = "doc"
 	}
 
-	stmt, err := p.Context.Transaction.Preparex("INSERT INTO document (refId, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, layout, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+	stmt, err := p.Context.Transaction.Preparex("INSERT INTO document (refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, layout, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
 	defer utility.Close(stmt)
 
 	if err != nil {
