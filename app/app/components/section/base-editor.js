@@ -30,6 +30,10 @@ export default Ember.Component.extend({
 		});
 
 		$("#page-title").removeClass("error");
+
+		$("#page-title").focus(function() {
+			$(this).select();
+		});
 	},
 
 	willDestroyElement() {
