@@ -57,16 +57,12 @@ export default Ember.Component.extend({
 			classes: 'drop-theme-basic',
 			position: self.get('position'),
 			openOn: self.get('open'),
+			constrainToWindow: false,
+			constrainToScrollParent: false,
 			tetherOptions: {
 				offset: self.offset,
 				targetOffset: self.targetOffset,
-				// optimizations: {
-				// 	moveElement: false
-				// },
-				constraints: [{
-					to: 'window',
-					attachment: 'together'
-				}]
+				targetModifier: 'scroll-handle'
 			},
 			remove: true
 		});

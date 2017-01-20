@@ -142,6 +142,51 @@ export default Ember.Controller.extend(NotifierMixin, {
 			});
 		},
 
+		onInsertTemplate(template) {
+			this.audit.record("added-section-template-" + template.get('contentType'));
+
+			let page = {
+				documentId: this.get('model.document.id'),
+				title: `${template.get('title')}`,
+				level: 1,
+				sequence: 0,
+				body: template.get('body'),
+				contentType: template.get('contentType'),
+				pageType: template.get('pageType'),
+				presetId: template.get('id')
+			};
+
+			let meta = {
+				documentId: this.get('model.document.id'),
+				rawBody: "",
+				config: ""
+			};
+
+			let model = {
+				page: page,
+				meta: meta
+			};
+
+			this.get('documentService').addPage(this.get('model.document.id'), model).then((newPage) => {
+				let data = this.get('store').normalize('page', newPage);
+				this.get('store').push(data);
+
+				this.get('documentService').getPages(this.get('model.document.id')).then((pages) => {
+					this.set('model.pages', pages.filterBy('pageType', 'section'));
+					this.set('model.tabs', pages.filterBy('pageType', 'tab'));
+
+					this.get('documentService').getPageMeta(this.get('model.document.id'), newPage.id).then(() => {
+						this.transitionToRoute('document.edit',
+							this.get('model.folder.id'),
+							this.get('model.folder.slug'),
+							this.get('model.document.id'),
+							this.get('model.document.slug'),
+							newPage.id);
+					});
+				});
+			});
+		},
+
 		onDocumentDelete() {
 			this.get('documentService').deleteDocument(this.get('model.document.id')).then(() => {
 				this.audit.record("deleted-page");

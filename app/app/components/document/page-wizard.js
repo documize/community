@@ -14,6 +14,12 @@ import NotifierMixin from '../../mixins/notifier';
 
 export default Ember.Component.extend(NotifierMixin, {
 	display: 'section', // which CSS to use
+	hasTemplates: false,
+
+	didReceiveAttrs() {
+		console.log(this.get('templates.length'));
+		this.set('hasTemplates', this.get('templates.length') > 0);
+	},
 
 	didRender() {
 		let self = this;
@@ -34,7 +40,11 @@ export default Ember.Component.extend(NotifierMixin, {
 		},
 
 		addSection(section) {
-			this.attrs.onAction(section);
+			this.attrs.onAddSection(section);
+		},
+
+		insertTemplate(template) {
+			this.attrs.onInsertTemplate(template);
 		}
 	}
 });

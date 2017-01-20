@@ -296,7 +296,7 @@ export default Ember.Service.extend({
 		return this.get('ajax').request(`documents/${documentId}/attachments/${attachmentId}`, {
 			method: 'DELETE'
 		});
-	},
+	}
 });
 
 function isObject(a) {

@@ -97,6 +97,15 @@
                         }
                     }
 
+					> li.danger {
+						color: $color-red;
+
+						&:hover {
+							color: $color-red;
+							font-weight: bold;
+                        }
+					}
+
                     > li.divider {
                         height: 1px;
                         border-top: 1px solid $color-border;

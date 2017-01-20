@@ -3,20 +3,46 @@
     <div id="page-toolbar-{{ page.id }}" class="pull-right page-toolbar hidden-xs hidden-sm">
         {{#if isEditor}}
 			{{#link-to 'document.edit' folder.id folder.slug document.id document.slug page.id}}
-	            <div class="round-button-mono page-edit-button" data-tooltip="Edit" data-tooltip-position="top center">
-	                <i class="material-icons">mode_edit</i>
+	            <div class="round-button-mono page-action-button" data-tooltip="Edit" data-tooltip-position="top center">
+	                <i class="material-icons color-gray">mode_edit</i>
 	            </div>
 			{{/link-to}}
-            <div id="delete-page-button-{{page.id}}" class="round-button-mono page-delete-button" data-tooltip="Delete" data-tooltip-position="top center">
-                <i class="material-icons">delete</i>
+
+            <div id="page-menu-{{page.id}}" class="round-button-mono page-action-button" data-tooltip="More options" data-tooltip-position="top center">
+                <i class="material-icons color-gray">more_vert</i>
             </div>
-            {{#dropdown-dialog target=dropTarget position="top right" button="Delete" color="flat-red" onAction=(action 'deletePage' page.id)}}
-                <p>Are you sure you want to delete <span class="bold">{{page.title}}?</span></p>
-                <p>
-                    {{input type="checkbox" id=checkId class="margin-left-20" checked=deleteChildren}}
-                    <label for="{{checkId}}">&nbsp;Delete child pages</label>
-                </p>
-            {{/dropdown-dialog}}
+
+			{{#dropdown-menu target=menuTarget position="bottom right" open="click" onOpenCallback=(action 'onMenuOpen') onCloseCallback=(action 'onMenuOpen')}}
+				<ul class="menu">
+					<li class="item">Duplicate</li>
+					<li class="item">Move</li>
+					<li class="item" id="saveas-page-button-{{page.id}}">Publish</li>
+					<li class="divider"></li>
+					<li class="item danger" id={{deleteButtonId}}>Delete</li>
+				</ul>
+			{{/dropdown-menu}}
+
+			{{#if menuOpen}}
+	            {{#dropdown-dialog target=deleteButtonId position="top right" button="Delete" color="flat-red" onAction=(action 'deletePage' page.id)}}
+	                <p>Are you sure you want to delete <span class="bold">{{page.title}}?</span></p>
+	                <p>
+	                    {{input type="checkbox" id=checkId class="margin-left-20" checked=deleteChildren}}
+	                    <label for="{{checkId}}">&nbsp;Delete child pages</label>
+	                </p>
+	            {{/dropdown-dialog}}
+				{{#dropdown-dialog id=saveAsDialogId target=saveAsTarget position="top right" button="Publish" color="flat-green" focusOn=saveAsTitleId onAction=(action 'saveAsPage' page.id)}}
+					<div class="form-header">
+						<div class="tip">
+							<span class="bold">{{folder.name}}:</span> Content Block
+						</div>
+					</div>
+					<div class="input-control">
+						<label>Name</label>
+						<div class="tip">Short description to help others understand<br/>this reusable content block</div>
+						{{textarea rows="3" value=saveAsTitle id=saveAsTitleId}}
+					</div>
+	            {{/dropdown-dialog}}
+			{{/if}}
         {{/if}}
     </div>
 </div>

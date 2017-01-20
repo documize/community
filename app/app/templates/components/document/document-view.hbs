@@ -17,7 +17,7 @@
 		{{#each pages key="id" as |page index|}}
 			<div class="wysiwyg">
 				<div id="page-{{ page.id }}" class="is-a-page" data-id="{{ page.id }}" data-type="{{ page.contentType }}">
-					{{document/page-heading tagName=page.tagName document=document folder=folder page=page isEditor=isEditor onDeletePage=(action 'onDeletePage')}}
+					{{document/page-heading tagName=page.tagName document=document folder=folder page=page isEditor=isEditor onSaveAsPage=(action 'onSaveAsPage') onDeletePage=(action 'onDeletePage')}}
 					{{section/base-renderer page=page}}
 				</div>
 			</div>

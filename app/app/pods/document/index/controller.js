@@ -14,6 +14,7 @@ import NotifierMixin from '../../../mixins/notifier';
 
 export default Ember.Controller.extend(NotifierMixin, {
 	documentService: Ember.inject.service('document'),
+	sectionService: Ember.inject.service('section'),
 	queryParams: ['page'],
 
 	// Jump to the right part of the document.
@@ -82,6 +83,12 @@ export default Ember.Controller.extend(NotifierMixin, {
 				this.set('model.pages', pages);
 
 				this.get('target.router').refresh();
+			});
+		},
+
+		onSaveAsPage(params) {
+			this.get('sectionService').saveSectionTemplate(params).then(() => {
+				this.showNotification("Published");
 			});
 		},
 

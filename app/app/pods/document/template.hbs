@@ -2,7 +2,7 @@
 
 {{#layout/zone-sidebar}}
 	{{document/document-sidebar document=model.document folder=model.folder pages=model.pages page=model.page isEditor=model.isEditor sections=model.sections
-		onAddSection=(action 'onAddSection') changePageSequence=(action 'onPageSequenceChange') changePageLevel=(action 'onPageLevelChange') gotoPage=(action 'gotoPage')}}
+		onAddSection=(action 'onAddSection') onInsertTemplate=(action 'onInsertTemplate') changePageSequence=(action 'onPageSequenceChange') changePageLevel=(action 'onPageLevelChange') gotoPage=(action 'gotoPage')}}
 {{/layout/zone-sidebar}}
 
 {{#layout/zone-content}}

@@ -22,6 +22,8 @@ export default Model.extend({
 	level: attr('number', { defaultValue: 1 }),
 	sequence: attr('number', { defaultValue: 0 }),
 	revisions: attr('number', { defaultValue: 0 }),
+	preset: attr('boolean', { defaultValue: false }),
+	presetId: attr('string'),
 	title: attr('string'),
 	body: attr('string'),
 	rawBody: attr('string'),

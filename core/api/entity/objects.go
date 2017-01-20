@@ -186,6 +186,8 @@ type Page struct {
 	UserID      string  `json:"userId"`
 	ContentType string  `json:"contentType"`
 	PageType    string  `json:"pageType"`
+	Preset      bool    `json:"preset"`
+	PresetID    string  `json:"presetId"`
 	Level       uint64  `json:"level"`
 	Sequence    float64 `json:"sequence"`
 	Title       string  `json:"title"`
@@ -257,6 +259,14 @@ type Revision struct {
 	Lastname    string `json:"lastname"`
 	Initials    string `json:"initials"`
 	Revisions   int    `json:"revisions"`
+}
+
+// PageTemplate represents a section that has been published as a template.
+// We have to create this struct to hold user name.
+type PageTemplate struct {
+	Page
+	Firstname string `json:"firstname"`
+	Lastname  string `json:"lastname"`
 }
 
 // DocumentMeta details who viewed the document.

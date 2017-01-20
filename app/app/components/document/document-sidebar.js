@@ -15,12 +15,20 @@ import NotifierMixin from '../../mixins/notifier';
 
 export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
     documentService: Ember.inject.service('document'),
+	sectionService: Ember.inject.service('section'),
     document: {},
     folder: {},
 	showToc: true,
 	showSections: false,
 	showScrollTool: false,
 	showingSections: false,
+
+	init() {
+		this._super(...arguments);
+		this.get('sectionService').getSpaceSectionTemplates(this.get('folder.id')).then((t) => {
+			this.set('templates', t);
+		});
+	},
 
 	didRender() {
 		if (this.session.authenticated) {
@@ -91,6 +99,11 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 		onAddSection(section) {
 			this.send('showToc');
 			this.attrs.onAddSection(section);
+		},
+
+		onInsertTemplate(template) {
+			this.send('showToc');
+			this.attrs.onInsertTemplate(template);
 		},
 
 		scrollTop() {

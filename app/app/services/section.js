@@ -68,5 +68,35 @@ export default BaseService.extend({
 
 			return pages;
 		});
+	},
+
+	/******************************
+	* Reusable section blocks
+	******************************/
+
+	// Saves section as template
+	saveSectionTemplate(payload) {
+		let url = `sections/templates`;
+
+		return this.get('ajax').post(url, {
+			data: JSON.stringify(payload),
+			contentType: 'json'
+		});
+	},
+
+	// Returns all available sections.
+	getSpaceSectionTemplates(folderId) {
+		return this.get('ajax').request(`sections/templates/${folderId}`, {
+			method: 'GET'
+		}).then((response) => {
+			let data = [];
+
+			data = response.map((obj) => {
+				let data = this.get('store').normalize('pageTemplate', obj);
+				return this.get('store').push(data);
+			});
+
+			return data;
+		});
 	}
 });

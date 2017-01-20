@@ -17,6 +17,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	appMeta: Ember.inject.service(),
 	userService: Ember.inject.service('user'),
 	localStorage: Ember.inject.service(),
+	pinned: Ember.inject.service(),
 	drop: null,
 	users: [],
 	menuOpen: false,
@@ -24,7 +25,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		name: "",
 		description: ""
 	},
-	pinned: Ember.inject.service(),
 	pinState : {
 		isPinned: false,
 		pinId: '',
