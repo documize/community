@@ -50,7 +50,7 @@ func (p *Persister) AddPage(model models.PageModel) (err error) {
 		model.Page.Sequence = maxSeq * 2
 	}
 
-	stmt, err := p.Context.Transaction.Preparex("INSERT INTO page (refid, orgid, documentid, userid, contenttype, pagetype, level, title, body, revisions, sequence, preset, presetid, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+	stmt, err := p.Context.Transaction.Preparex("INSERT INTO page (refid, orgid, documentid, userid, contenttype, pagetype, level, title, body, revisions, sequence, blockid, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
 	defer utility.Close(stmt)
 
 	if err != nil {
@@ -58,7 +58,7 @@ func (p *Persister) AddPage(model models.PageModel) (err error) {
 		return
 	}
 
-	_, err = stmt.Exec(model.Page.RefID, model.Page.OrgID, model.Page.DocumentID, model.Page.UserID, model.Page.ContentType, model.Page.PageType, model.Page.Level, model.Page.Title, model.Page.Body, model.Page.Revisions, model.Page.Sequence, model.Page.Preset, model.Page.PresetID, model.Page.Created, model.Page.Revised)
+	_, err = stmt.Exec(model.Page.RefID, model.Page.OrgID, model.Page.DocumentID, model.Page.UserID, model.Page.ContentType, model.Page.PageType, model.Page.Level, model.Page.Title, model.Page.Body, model.Page.Revisions, model.Page.Sequence, model.Page.BlockID, model.Page.Created, model.Page.Revised)
 
 	if err != nil {
 		log.Error("Unable to execute insert for page", err)
@@ -89,9 +89,7 @@ func (p *Persister) AddPage(model models.PageModel) (err error) {
 
 // GetPage returns the pageID page record from the page table.
 func (p *Persister) GetPage(pageID string) (page entity.Page, err error) {
-	err = nil
-
-	stmt, err := Db.Preparex("SELECT a.id, a.refid, a.orgid, a.documentid, a.userid, a.contenttype, a.pagetype, a.level, a.sequence, a.title, a.body, a.revisions, a.preset, a.presetid, a.created, a.revised FROM page a WHERE a.orgid=? AND a.refid=?")
+	stmt, err := Db.Preparex("SELECT a.id, a.refid, a.orgid, a.documentid, a.userid, a.contenttype, a.pagetype, a.level, a.sequence, a.title, a.body, a.revisions, a.blockid, a.created, a.revised FROM page a WHERE a.orgid=? AND a.refid=?")
 	defer utility.Close(stmt)
 
 	if err != nil {
@@ -111,9 +109,7 @@ func (p *Persister) GetPage(pageID string) (page entity.Page, err error) {
 
 // GetPages returns a slice containing all the page records for a given documentID, in presentation sequence.
 func (p *Persister) GetPages(documentID string) (pages []entity.Page, err error) {
-	err = nil
-
-	err = Db.Select(&pages, "SELECT a.id, a.refid, a.orgid, a.documentid, a.userid, a.contenttype, a.pagetype, a.level, a.sequence, a.title, a.body, a.revisions, a.preset, a.presetid, a.created, a.revised FROM page a WHERE a.orgid=? AND a.documentid=? ORDER BY a.sequence", p.Context.OrgID, documentID)
+	err = Db.Select(&pages, "SELECT a.id, a.refid, a.orgid, a.documentid, a.userid, a.contenttype, a.pagetype, a.level, a.sequence, a.title, a.body, a.revisions, a.blockid, a.created, a.revised FROM page a WHERE a.orgid=? AND a.documentid=? ORDER BY a.sequence", p.Context.OrgID, documentID)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to execute select pages for org %s and document %s", p.Context.OrgID, documentID), err)
@@ -126,11 +122,9 @@ func (p *Persister) GetPages(documentID string) (pages []entity.Page, err error)
 // GetPagesWhereIn returns a slice, in presentation sequence, containing those page records for a given documentID
 // where their refid is in the comma-separated list passed as inPages.
 func (p *Persister) GetPagesWhereIn(documentID, inPages string) (pages []entity.Page, err error) {
-	err = nil
-
 	args := []interface{}{p.Context.OrgID, documentID}
 	tempValues := strings.Split(inPages, ",")
-	sql := "SELECT a.id, a.refid, a.orgid, a.documentid, a.userid, a.contenttype, a.pagetype, a.level, a.sequence, a.title, a.body, a.preset, a.presetid, a.revisions, a.created, a.revised FROM page a WHERE a.orgid=? AND a.documentid=? AND a.refid IN (?" + strings.Repeat(",?", len(tempValues)-1) + ") ORDER BY sequence"
+	sql := "SELECT a.id, a.refid, a.orgid, a.documentid, a.userid, a.contenttype, a.pagetype, a.level, a.sequence, a.title, a.body, a.blockid, a.revisions, a.created, a.revised FROM page a WHERE a.orgid=? AND a.documentid=? AND a.refid IN (?" + strings.Repeat(",?", len(tempValues)-1) + ") ORDER BY sequence"
 
 	inValues := make([]interface{}, len(tempValues))
 
@@ -180,7 +174,7 @@ func (p *Persister) GetPagesWhereIn(documentID, inPages string) (pages []entity.
 // GetPagesWithoutContent returns a slice containing all the page records for a given documentID, in presentation sequence,
 // but without the body field (which holds the HTML content).
 func (p *Persister) GetPagesWithoutContent(documentID string) (pages []entity.Page, err error) {
-	err = Db.Select(&pages, "SELECT id, refid, orgid, documentid, userid, contenttype, pagetype, sequence, level, title, revisions, preset, presetid, created, revised FROM page WHERE orgid=? AND documentid=? ORDER BY sequence", p.Context.OrgID, documentID)
+	err = Db.Select(&pages, "SELECT id, refid, orgid, documentid, userid, contenttype, pagetype, sequence, level, title, revisions, blockid, created, revised FROM page WHERE orgid=? AND documentid=? ORDER BY sequence", p.Context.OrgID, documentID)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to execute select pages for org %s and document %s", p.Context.OrgID, documentID), err)
@@ -193,7 +187,6 @@ func (p *Persister) GetPagesWithoutContent(documentID string) (pages []entity.Pa
 // UpdatePage saves changes to the database and handles recording of revisions.
 // Not all updates result in a revision being recorded hence the parameter.
 func (p *Persister) UpdatePage(page entity.Page, refID, userID string, skipRevision bool) (err error) {
-	err = nil
 	page.Revised = time.Now().UTC()
 
 	// Store revision history
@@ -303,7 +296,6 @@ func (p *Persister) UpdatePage(page entity.Page, refID, userID string, skipRevis
 
 // UpdatePageMeta persists meta information associated with a document page.
 func (p *Persister) UpdatePageMeta(meta entity.PageMeta, updateUserID bool) (err error) {
-	err = nil
 	meta.Revised = time.Now().UTC()
 
 	if updateUserID {
@@ -405,8 +397,6 @@ func (p *Persister) DeletePage(documentID, pageID string) (rows int64, err error
 
 // GetPageMeta returns the meta information associated with the page.
 func (p *Persister) GetPageMeta(pageID string) (meta entity.PageMeta, err error) {
-	err = nil
-
 	stmt, err := Db.Preparex("SELECT id, pageid, orgid, userid, documentid, rawbody, coalesce(config,JSON_UNQUOTE('{}')) as config, externalsource, created, revised FROM pagemeta WHERE orgid=? AND pageid=?")
 	defer utility.Close(stmt)
 
@@ -427,7 +417,6 @@ func (p *Persister) GetPageMeta(pageID string) (meta entity.PageMeta, err error)
 
 // GetDocumentPageMeta returns the meta information associated with a document.
 func (p *Persister) GetDocumentPageMeta(documentID string, externalSourceOnly bool) (meta []entity.PageMeta, err error) {
-	err = nil
 	filter := ""
 	if externalSourceOnly {
 		filter = " AND externalsource=1"
@@ -504,27 +493,6 @@ func (p *Persister) GetPageRevisions(pageID string) (revisions []entity.Revision
 // DeletePageRevisions deletes all of the page revision records for a given pageID.
 func (p *Persister) DeletePageRevisions(pageID string) (rows int64, err error) {
 	rows, err = p.Base.DeleteWhere(p.Context.Transaction, fmt.Sprintf("DELETE FROM revision WHERE orgid='%s' AND pageid='%s'", p.Context.OrgID, pageID))
-
-	return
-}
-
-/********************
-* Section templates
-********************/
-
-// GetSpaceSectionTemplates returns a slice all saved section templates.
-func (p *Persister) GetSpaceSectionTemplates(folderID string) (pages []entity.PageTemplate, err error) {
-	err = Db.Select(&pages, `SELECT a.id, a.refid, a.orgid, a.documentid, a.userid, a.contenttype, a.pagetype, a.level, a.sequence, a.title, a.body, a.revisions, a.preset, a.presetid, a.created, a.revised, u.firstname, u.lastname
-		FROM page a
-		LEFT JOIN document b ON a.documentid = b.refid
-		LEFT JOIN user u ON a.userid = u.refid
-		WHERE a.orgid=? AND b.labelid=? AND a.preset=1
-		ORDER BY a.title`, p.Context.OrgID, folderID)
-
-	if err != nil {
-		log.Error(fmt.Sprintf("Unable to execute GetSpaceSectionTemplates for org %s and space %s", p.Context.OrgID, folderID), err)
-		return
-	}
 
 	return
 }

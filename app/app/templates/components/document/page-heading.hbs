@@ -30,7 +30,7 @@
 	                    <label for="{{checkId}}">&nbsp;Delete child pages</label>
 	                </p>
 	            {{/dropdown-dialog}}
-				{{#dropdown-dialog id=saveAsDialogId target=saveAsTarget position="top right" button="Publish" color="flat-green" focusOn=saveAsTitleId onAction=(action 'saveAsPage' page.id)}}
+				{{#dropdown-dialog id=saveAsDialogId target=saveAsTarget position="top right" button="Publish" color="flat-green" focusOn=blockTitleId onAction=(action 'onAddBlock' page)}}
 					<div class="form-header">
 						<div class="tip">
 							<span class="bold">{{folder.name}}:</span> Content Block
@@ -38,8 +38,13 @@
 					</div>
 					<div class="input-control">
 						<label>Name</label>
-						<div class="tip">Short description to help others understand<br/>this reusable content block</div>
-						{{textarea rows="3" value=saveAsTitle id=saveAsTitleId}}
+						<div class="tip">Short title for reusable content block</div>
+						{{input type="text" value=blockTitle id=blockTitleId}}
+					</div>
+					<div class="input-control">
+						<label>Name</label>
+						<div class="tip">Short description to help others understand<br/>the reusable content block</div>
+						{{textarea rows="3" value=blockExcerpt id=blockExcerptId}}
 					</div>
 	            {{/dropdown-dialog}}
 			{{/if}}

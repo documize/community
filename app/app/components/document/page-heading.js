@@ -13,14 +13,16 @@ import Ember from 'ember';
 import TooltipMixin from '../../mixins/tooltip';
 
 const {
-	computed
+	computed,
+	inject: { service }
 } = Ember;
 
 export default Ember.Component.extend(TooltipMixin, {
+	documentService: service('document'),
 	deleteChildren: false,
 	menuOpen: false,
-	saveAsTitle: "",
-
+	blockTitle: "",
+	blockExcerpt: "",
 
 	checkId: computed('page', function () {
 		let id = this.get('page.id');
@@ -42,9 +44,13 @@ export default Ember.Component.extend(TooltipMixin, {
 		let id = this.get('page.id');
 		return `save-as-dialog-${id}`;
 	}),
-	saveAsTitleId: computed('page', function () {
+	blockTitleId: computed('page', function () {
 		let id = this.get('page.id');
-		return `save-as-title-${id}`;
+		return `block-title-${id}`;
+	}),
+	blockExcerptId: computed('page', function () {
+		let id = this.get('page.id');
+		return `block-excerpt-${id}`;
 	}),
 
 	didRender() {
@@ -55,7 +61,8 @@ export default Ember.Component.extend(TooltipMixin, {
 			});
 		}
 
-		$("#" + this.get('saveAsTitleId')).removeClass('error');
+		$("#" + this.get('blockTitleId')).removeClass('error');
+		$("#" + this.get('blockExcerptId')).removeClass('error');
 	},
 
 	willDestroyElement() {
@@ -79,20 +86,44 @@ export default Ember.Component.extend(TooltipMixin, {
 			this.attrs.onDeletePage(id, this.get('deleteChildren'));
 		},
 
-		saveAsPage(id) {
-			let titleElem = '#' + this.get('saveAsTitleId');
-			let saveAsTitle = this.get('saveAsTitle');
-			if (is.empty(saveAsTitle)) {
+		onAddBlock(page) {
+			let titleElem = '#' + this.get('blockTitleId');
+			let blockTitle = this.get('blockTitle');
+			if (is.empty(blockTitle)) {
 				$(titleElem).addClass('error');
 				return;
 			}
 
-			this.attrs.onSaveAsPage(id, saveAsTitle);
-			this.set('menuOpen', false);
-			this.set('saveAsTitle', '');
-			$(titleElem).removeClass('error');
+			let excerptElem = '#' + this.get('blockExcerptId');
+			let blockExcerpt = this.get('blockExcerpt');
+			blockExcerpt = blockExcerpt.replace(/\n/g, "");
+			if (is.empty(blockExcerpt)) {
+				$(excerptElem).addClass('error');
+				return;
+			}
 
-			return true;
+			this.get('documentService').getPageMeta(this.get('document.id'), page.get('id')).then((pm) => {
+				let block = {
+					folderId: this.get('folder.id'),
+					contentType: page.get('contentType'),
+					pageType: page.get('pageType'),
+					title: blockTitle,
+					body: page.get('body'),
+					excerpt: blockExcerpt,
+					rawBody: pm.get('rawBody'),
+					config: pm.get('config'),
+					externalSource: pm.get('externalSource')
+				};
+
+				this.attrs.onAddBlock(block);
+				this.set('menuOpen', false);
+				this.set('blockTitle', '');
+				this.set('blockExcerpt', '');
+				$(titleElem).removeClass('error');
+				$(excerptElem).removeClass('error');
+
+				return true;
+			});
 		},
 	}
 });

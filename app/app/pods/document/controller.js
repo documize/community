@@ -142,24 +142,25 @@ export default Ember.Controller.extend(NotifierMixin, {
 			});
 		},
 
-		onInsertTemplate(template) {
-			this.audit.record("added-section-template-" + template.get('contentType'));
+		onInsertBlock(block) {
+			this.audit.record("added-content-block-" + block.get('contentType'));
 
 			let page = {
 				documentId: this.get('model.document.id'),
-				title: `${template.get('title')}`,
+				title: `${block.get('title')}`,
 				level: 1,
 				sequence: 0,
-				body: template.get('body'),
-				contentType: template.get('contentType'),
-				pageType: template.get('pageType'),
-				presetId: template.get('id')
+				body: block.get('body'),
+				contentType: block.get('contentType'),
+				pageType: block.get('pageType'),
+				blockId: block.get('id')
 			};
 
 			let meta = {
 				documentId: this.get('model.document.id'),
-				rawBody: "",
-				config: ""
+				rawBody: block.get('rawBody'),
+				config: block.get('config'),
+				externalSource: block.get('externalSource')
 			};
 
 			let model = {

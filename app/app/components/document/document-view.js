@@ -70,14 +70,8 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	},
 
 	actions: {
-		onSaveAsPage(id, title) {
-			let params = {
-				documentId: this.get('document.id'),
-				pageId: id,
-				title: title,
-			};
-
-			this.attrs.onSaveAsPage(params);
+		onAddBlock(block) {
+			this.attrs.onAddBlock(block);
 		},
 
 		onDeletePage(id, deleteChildren) {

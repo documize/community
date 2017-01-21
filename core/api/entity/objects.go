@@ -186,8 +186,7 @@ type Page struct {
 	UserID      string  `json:"userId"`
 	ContentType string  `json:"contentType"`
 	PageType    string  `json:"pageType"`
-	Preset      bool    `json:"preset"`
-	PresetID    string  `json:"presetId"`
+	BlockID     string  `json:"blockId"`
 	Level       uint64  `json:"level"`
 	Sequence    float64 `json:"sequence"`
 	Title       string  `json:"title"`
@@ -261,12 +260,23 @@ type Revision struct {
 	Revisions   int    `json:"revisions"`
 }
 
-// PageTemplate represents a section that has been published as a template.
-// We have to create this struct to hold user name.
-type PageTemplate struct {
-	Page
-	Firstname string `json:"firstname"`
-	Lastname  string `json:"lastname"`
+// Block represents a section that has been published as a reusable content block.
+type Block struct {
+	BaseEntity
+	OrgID          string `json:"orgId"`
+	LabelID        string `json:"folderId"`
+	UserID         string `json:"userId"`
+	ContentType    string `json:"contentType"`
+	PageType       string `json:"pageType"`
+	Title          string `json:"title"`
+	Body           string `json:"body"`
+	Excerpt        string `json:"excerpt"`
+	RawBody        string `json:"rawBody"`        // a blob of data
+	Config         string `json:"config"`         // JSON based custom config for this type
+	ExternalSource bool   `json:"externalSource"` // true indicates data sourced externally
+	Used           uint64 `json:"used"`
+	Firstname      string `json:"firstname"`
+	Lastname       string `json:"lastname"`
 }
 
 // DocumentMeta details who viewed the document.

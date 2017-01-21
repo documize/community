@@ -25,8 +25,8 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 
 	init() {
 		this._super(...arguments);
-		this.get('sectionService').getSpaceSectionTemplates(this.get('folder.id')).then((t) => {
-			this.set('templates', t);
+		this.get('sectionService').getSpaceBlocks(this.get('folder.id')).then((b) => {
+			this.set('blocks', b);
 		});
 	},
 
@@ -101,9 +101,9 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 			this.attrs.onAddSection(section);
 		},
 
-		onInsertTemplate(template) {
+		onInsertBlock(block) {
 			this.send('showToc');
-			this.attrs.onInsertTemplate(template);
+			this.attrs.onInsertBlock(block);
 		},
 
 		scrollTop() {

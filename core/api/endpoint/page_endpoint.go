@@ -78,23 +78,13 @@ func AddDocumentPage(w http.ResponseWriter, r *http.Request) {
 	pageID := util.UniqueID()
 	model.Page.RefID = pageID
 	model.Meta.PageID = pageID
+	model.Meta.OrgID = p.Context.OrgID   // required for Render call below
+	model.Meta.UserID = p.Context.UserID // required for Render call below
 	model.Page.SetDefaults()
 	model.Meta.SetDefaults()
 	// page.Title = template.HTMLEscapeString(page.Title)
 
-	// laod previous meta if page is being created from published template
-	if model.Page.PresetID != "" {
-		em, err2 := p.GetPageMeta(model.Page.PresetID)
-		if err2 != nil {
-			writeGeneralSQLError(w, method, err2)
-			return
-		}
-		model.Meta = em
-		model.Meta.PageID = pageID
-	}
-
 	tx, err := request.Db.Beginx()
-
 	if err != nil {
 		writeTransactionError(w, method, err)
 		return
@@ -102,8 +92,7 @@ func AddDocumentPage(w http.ResponseWriter, r *http.Request) {
 
 	p.Context.Transaction = tx
 
-	output, ok := provider.Render(model.Page.ContentType,
-		provider.NewContext(model.Meta.OrgID, model.Meta.UserID), model.Meta.Config, model.Meta.RawBody)
+	output, ok := provider.Render(model.Page.ContentType, provider.NewContext(model.Meta.OrgID, model.Meta.UserID), model.Meta.Config, model.Meta.RawBody)
 	if !ok {
 		log.ErrorString("provider.Render could not find: " + model.Page.ContentType)
 	}
@@ -111,11 +100,14 @@ func AddDocumentPage(w http.ResponseWriter, r *http.Request) {
 	model.Page.Body = output
 
 	err = p.AddPage(*model)
-
 	if err != nil {
 		log.IfErr(tx.Rollback())
 		writeGeneralSQLError(w, method, err)
 		return
+	}
+
+	if len(model.Page.BlockID) > 0 {
+		p.IncrementBlockUsage(model.Page.BlockID)
 	}
 
 	log.IfErr(tx.Commit())
@@ -324,6 +316,17 @@ func DeleteDocumentPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	page, err := p.GetPage(pageID)
+	if err != nil {
+		log.IfErr(tx.Rollback())
+		writeGeneralSQLError(w, method, err)
+		return
+	}
+
+	if len(page.BlockID) > 0 {
+		p.DecrementBlockUsage(page.BlockID)
+	}
+
 	log.IfErr(tx.Commit())
 
 	writeSuccessEmptyJSON(w)
@@ -374,11 +377,21 @@ func DeleteDocumentPages(w http.ResponseWriter, r *http.Request) {
 
 	for _, page := range *model {
 		_, err = p.DeletePage(documentID, page.PageID)
-
 		if err != nil {
 			log.IfErr(tx.Rollback())
 			writeGeneralSQLError(w, method, err)
 			return
+		}
+
+		pageData, err := p.GetPage(page.PageID)
+		if err != nil {
+			log.IfErr(tx.Rollback())
+			writeGeneralSQLError(w, method, err)
+			return
+		}
+
+		if len(pageData.BlockID) > 0 {
+			p.DecrementBlockUsage(pageData.BlockID)
 		}
 	}
 
@@ -883,146 +896,4 @@ func RollbackDocumentPage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeSuccessBytes(w, payload)
-}
-
-/********************
-* Page Templates
-********************/
-
-type sectionTemplate struct {
-	DocumentID string `json:"documentId"`
-	PageID     string `json:"pageId"`
-	Title      string `json:"title"`
-}
-
-// SavePageAsTemplate inserts new section into document.
-func SavePageAsTemplate(w http.ResponseWriter, r *http.Request) {
-	method := "SavePageAsTemplate"
-	p := request.GetPersister(r)
-
-	defer utility.Close(r.Body)
-	body, err := ioutil.ReadAll(r.Body)
-
-	if err != nil {
-		writeBadRequestError(w, method, "Bad payload")
-		return
-	}
-
-	payload := new(sectionTemplate)
-	err = json.Unmarshal(body, &payload)
-	if err != nil {
-		writePayloadError(w, method, err)
-		return
-	}
-
-	// Data checks
-	if len(payload.DocumentID) == 0 {
-		writeMissingDataError(w, method, "documentID")
-		return
-	}
-
-	if len(payload.PageID) == 0 {
-		writeMissingDataError(w, method, "pageID")
-		return
-	}
-
-	if len(payload.Title) == 0 {
-		writeMissingDataError(w, method, "title")
-		return
-	}
-
-	if !p.CanChangeDocument(payload.DocumentID) {
-		writeForbiddenError(w)
-		return
-	}
-
-	// if strings.HasPrefix(newTitle, "\"") {
-	// 	newTitle = newTitle[1:]
-	// }
-	// if strings.HasSuffix(newTitle, "\"") {
-	// 	newTitle = newTitle[:len(newTitle)-1]
-	// }
-
-	// get previous page
-	prevPage, err := p.GetPage(payload.PageID)
-	if err != nil {
-		writeServerError(w, method, err)
-		return
-	}
-
-	prevMeta, err := p.GetPageMeta(payload.PageID)
-	if err != nil {
-		writeServerError(w, method, err)
-		return
-	}
-
-	// safety check
-	if prevPage.DocumentID != payload.DocumentID || prevMeta.DocumentID != payload.DocumentID {
-		writeUnauthorizedError(w)
-		return
-	}
-
-	newID := util.UniqueID()
-	prevPage.RefID = newID
-	prevPage.Preset = true
-	prevPage.Title = payload.Title
-	prevMeta.PageID = newID
-
-	tx, err := request.Db.Beginx()
-	if err != nil {
-		writeTransactionError(w, method, err)
-		return
-	}
-	p.Context.Transaction = tx
-
-	model := new(models.PageModel)
-	model.Page = prevPage
-	model.Meta = prevMeta
-
-	err = p.AddPage(*model)
-	if err != nil {
-		log.IfErr(tx.Rollback())
-		writeGeneralSQLError(w, method, err)
-		return
-	}
-
-	log.IfErr(tx.Commit())
-
-	writeSuccessEmptyJSON(w)
-}
-
-// GetSpaceSectionTemplates gets published section templates
-func GetSpaceSectionTemplates(w http.ResponseWriter, r *http.Request) {
-	method := "GetSpaceSectionTemplates"
-	p := request.GetPersister(r)
-
-	params := mux.Vars(r)
-	folderID := params["folderID"]
-
-	if len(folderID) == 0 {
-		writeMissingDataError(w, method, "folderID")
-		return
-	}
-
-	var pages []entity.PageTemplate
-	var err error
-
-	pages, err = p.GetSpaceSectionTemplates(folderID)
-
-	if len(pages) == 0 {
-		pages = []entity.PageTemplate{}
-	}
-
-	if err != nil {
-		writeGeneralSQLError(w, method, err)
-		return
-	}
-
-	json, err := json.Marshal(pages)
-	if err != nil {
-		writeJSONMarshalError(w, method, "page", err)
-		return
-	}
-
-	writeSuccessBytes(w, json)
 }

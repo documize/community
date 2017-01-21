@@ -17,8 +17,7 @@ export default Ember.Component.extend(NotifierMixin, {
 	hasTemplates: false,
 
 	didReceiveAttrs() {
-		console.log(this.get('templates.length'));
-		this.set('hasTemplates', this.get('templates.length') > 0);
+		this.set('hasBlocks', this.get('blocks.length') > 0);
 	},
 
 	didRender() {
@@ -43,8 +42,8 @@ export default Ember.Component.extend(NotifierMixin, {
 			this.attrs.onAddSection(section);
 		},
 
-		insertTemplate(template) {
-			this.attrs.onInsertTemplate(template);
+		onInsertBlock(block) {
+			this.attrs.onInsertBlock(block);
 		}
 	}
 });

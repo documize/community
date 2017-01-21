@@ -86,8 +86,8 @@ export default Ember.Controller.extend(NotifierMixin, {
 			});
 		},
 
-		onSaveAsPage(params) {
-			this.get('sectionService').saveSectionTemplate(params).then(() => {
+		onAddBlock(block) {
+			this.get('sectionService').addBlock(block).then(() => {
 				this.showNotification("Published");
 			});
 		},

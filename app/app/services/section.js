@@ -70,13 +70,13 @@ export default BaseService.extend({
 		});
 	},
 
-	/******************************
-	* Reusable section blocks
-	******************************/
+	/**************************************************
+	 * Reusable Content Blocks
+	 **************************************************/
 
-	// Saves section as template
-	saveSectionTemplate(payload) {
-		let url = `sections/templates`;
+	// Save new reusable content block.
+	addBlock(payload) {
+		let url = `sections/blocks`;
 
 		return this.get('ajax').post(url, {
 			data: JSON.stringify(payload),
@@ -84,15 +84,15 @@ export default BaseService.extend({
 		});
 	},
 
-	// Returns all available sections.
-	getSpaceSectionTemplates(folderId) {
-		return this.get('ajax').request(`sections/templates/${folderId}`, {
+	// Returns all available reusable content block for section.
+	getSpaceBlocks(folderId) {
+		return this.get('ajax').request(`sections/blocks/${folderId}`, {
 			method: 'GET'
 		}).then((response) => {
 			let data = [];
 
 			data = response.map((obj) => {
-				let data = this.get('store').normalize('pageTemplate', obj);
+				let data = this.get('store').normalize('block', obj);
 				return this.get('store').push(data);
 			});
 

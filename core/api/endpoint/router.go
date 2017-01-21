@@ -216,8 +216,8 @@ func init() {
 	log.IfErr(Add(RoutePrefixPrivate, "sections", []string{"GET", "OPTIONS"}, nil, GetSections))
 	log.IfErr(Add(RoutePrefixPrivate, "sections", []string{"POST", "OPTIONS"}, nil, RunSectionCommand))
 	log.IfErr(Add(RoutePrefixPrivate, "sections/refresh", []string{"GET", "OPTIONS"}, nil, RefreshSections))
-	log.IfErr(Add(RoutePrefixPrivate, "sections/templates/{folderID}", []string{"GET", "OPTIONS"}, nil, GetSpaceSectionTemplates))
-	log.IfErr(Add(RoutePrefixPrivate, "sections/templates", []string{"POST", "OPTIONS"}, nil, SavePageAsTemplate))
+	log.IfErr(Add(RoutePrefixPrivate, "sections/blocks/{folderID}", []string{"GET", "OPTIONS"}, nil, GetBlocksForSpace))
+	log.IfErr(Add(RoutePrefixPrivate, "sections/blocks", []string{"POST", "OPTIONS"}, nil, AddBlock))
 
 	// Links
 	log.IfErr(Add(RoutePrefixPrivate, "links/{folderID}/{documentID}/{pageID}", []string{"GET", "OPTIONS"}, nil, GetLinkCandidates))
