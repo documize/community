@@ -15,6 +15,7 @@ import NotifierMixin from '../../mixins/notifier';
 export default Ember.Controller.extend(NotifierMixin, {
 	documentService: Ember.inject.service('document'),
 	templateService: Ember.inject.service('template'),
+	sectionService: Ember.inject.service('section'),
 	page: null,
 	folder: {},
 	pages: [],
@@ -185,6 +186,14 @@ export default Ember.Controller.extend(NotifierMixin, {
 							newPage.id);
 					});
 				});
+			});
+		},
+
+		onDeleteBlock(blockId) {
+			this.get('sectionService').deleteBlock(blockId).then(() => {
+				this.audit.record("deleted-block");
+				this.send("showNotification", "Deleted");
+				this.transitionToRoute('document.index');
 			});
 		},
 

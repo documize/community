@@ -219,6 +219,7 @@ func init() {
 	log.IfErr(Add(RoutePrefixPrivate, "sections/blocks/space/{folderID}", []string{"GET", "OPTIONS"}, nil, GetBlocksForSpace))
 	log.IfErr(Add(RoutePrefixPrivate, "sections/blocks/{blockID}", []string{"GET", "OPTIONS"}, nil, GetBlock))
 	log.IfErr(Add(RoutePrefixPrivate, "sections/blocks/{blockID}", []string{"PUT", "OPTIONS"}, nil, UpdateBlock))
+	log.IfErr(Add(RoutePrefixPrivate, "sections/blocks/{blockID}", []string{"DELETE", "OPTIONS"}, nil, DeleteBlock))
 	log.IfErr(Add(RoutePrefixPrivate, "sections/blocks", []string{"POST", "OPTIONS"}, nil, AddBlock))
 
 	// Links

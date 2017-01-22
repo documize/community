@@ -226,7 +226,19 @@ func AddBlock(w http.ResponseWriter, r *http.Request) {
 
 	log.IfErr(tx.Commit())
 
-	writeSuccessEmptyJSON(w)
+	b, err = p.GetBlock(b.RefID)
+	if err != nil {
+		writeGeneralSQLError(w, method, err)
+		return
+	}
+
+	json, err := json.Marshal(b)
+	if err != nil {
+		writeJSONMarshalError(w, method, "block", err)
+		return
+	}
+
+	writeSuccessBytes(w, json)
 }
 
 // GetBlock returns requested reusable content block.
@@ -327,6 +339,46 @@ func UpdateBlock(w http.ResponseWriter, r *http.Request) {
 	p.Context.Transaction = tx
 
 	err = p.UpdateBlock(b)
+	if err != nil {
+		log.IfErr(tx.Rollback())
+		writeGeneralSQLError(w, method, err)
+		return
+	}
+
+	log.IfErr(tx.Commit())
+
+	writeSuccessEmptyJSON(w)
+}
+
+// DeleteBlock removes requested reusable content block.
+func DeleteBlock(w http.ResponseWriter, r *http.Request) {
+	method := "DeleteBlock"
+	p := request.GetPersister(r)
+
+	params := mux.Vars(r)
+	blockID := params["blockID"]
+
+	if len(blockID) == 0 {
+		writeMissingDataError(w, method, "blockID")
+		return
+	}
+
+	tx, err := request.Db.Beginx()
+	if err != nil {
+		writeTransactionError(w, method, err)
+		return
+	}
+
+	p.Context.Transaction = tx
+
+	_, err = p.DeleteBlock(blockID)
+	if err != nil {
+		log.IfErr(tx.Rollback())
+		writeGeneralSQLError(w, method, err)
+		return
+	}
+
+	err = p.RemoveBlockReference(blockID)
 	if err != nil {
 		log.IfErr(tx.Rollback())
 		writeGeneralSQLError(w, method, err)

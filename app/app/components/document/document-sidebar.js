@@ -106,6 +106,11 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 			this.attrs.onInsertBlock(block);
 		},
 
+		onDeleteBlock(id) {
+			this.set('blocks', this.get('blocks').filter((item) => item.get('id') !== id));
+			this.attrs.onDeleteBlock(id);
+		},
+
 		scrollTop() {
 			this.set('showScrollTool', false);
 

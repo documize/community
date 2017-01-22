@@ -12,6 +12,7 @@
 package request
 
 import (
+	"database/sql"
 	"fmt"
 	"time"
 
@@ -107,6 +108,30 @@ func (p *Persister) DecrementBlockUsage(id string) (err error) {
 	_, err = stmt.Exec(time.Now().UTC(), p.Context.OrgID, id)
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to execute DecrementBlockUsage id %s", id), err)
+		return
+	}
+
+	return
+}
+
+// RemoveBlockReference clears page.blockid for given blockID.
+func (p *Persister) RemoveBlockReference(id string) (err error) {
+	stmt, err := p.Context.Transaction.Preparex("UPDATE page SET blockid='', revised=? WHERE orgid=? AND blockid=?")
+	defer utility.Close(stmt)
+	if err != nil {
+		log.Error(fmt.Sprintf("Unable to prepare update RemoveBlockReference id %s", id), err)
+		return
+	}
+
+	_, err = stmt.Exec(time.Now().UTC(), p.Context.OrgID, id)
+
+	// skip no rows affected
+	if err == sql.ErrNoRows {
+		return
+	}
+
+	if err != nil {
+		log.Error(fmt.Sprintf("Unable to execute RemoveBlockReference id %s", id), err)
 		return
 	}
 

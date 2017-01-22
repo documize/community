@@ -21,10 +21,6 @@ export default Ember.Component.extend({
 		return is.not.undefined(this.get('page.excerpt'));
 	}),
 
-	didReceiveAttrs() {
-		this._super(...arguments);
-	},
-
 	didRender() {
 		let self = this;
 		Mousetrap.bind('esc', function () {

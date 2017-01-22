@@ -40,9 +40,15 @@
 								<i class="material-icons">mode_edit</i>
 							{{/link-to}}
 							<div class="divider"></div>
-							<i class="material-icons">delete</i>
+							<i class="material-icons" id={{block.deleteId}}>delete</i>
 						</div>
 						<div class="clearfix" />
+						{{#dropdown-dialog target=block.deleteId position="top right" button="Delete" color="flat-red" onAction=(action 'onDeleteBlock' block.id)}}
+			                <p>
+								Are you sure you want to delete block<br/>
+								<span class="bold">{{block.title}}?</span>
+							</p>
+			            {{/dropdown-dialog}}
 					</li>
 				{{/each}}
 			</ul>

@@ -81,6 +81,9 @@ export default BaseService.extend({
 		return this.get('ajax').post(url, {
 			data: JSON.stringify(payload),
 			contentType: 'json'
+		}).then((response) => {
+			let data = this.get('store').normalize('block', response);
+			return this.get('store').push(data);
 		});
 	},
 
@@ -115,6 +118,15 @@ export default BaseService.extend({
 		return this.get('ajax').request(`sections/blocks/${block.id}`, {
 			method: 'PUT',
 			data: JSON.stringify(block)
+		});
+	},
+
+	// Removes specified reusable content block.
+	deleteBlock: function (blockId) {
+		let url = `sections/blocks/${blockId}`;
+
+		return this.get('ajax').request(url, {
+			method: 'DELETE'
 		});
 	}
 });
