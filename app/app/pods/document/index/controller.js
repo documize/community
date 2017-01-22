@@ -92,6 +92,18 @@ export default Ember.Controller.extend(NotifierMixin, {
 			});
 		},
 
+		onCopyPage(pageId, targetDocumentId) {
+			let documentId = this.get('model.document.id');
+			this.get('documentService').copyPage(documentId, pageId, targetDocumentId).then((page) => {
+				this.showNotification("Copied");
+	
+				// refresh data if copied to same document
+				if (documentId === targetDocumentId) {
+					this.get('target.router').refresh();
+				}
+			});
+		},
+
 		onPageDeleted(deletePage) {
 			let documentId = this.get('model.document.id');
 			let pages = this.get('model.pages');

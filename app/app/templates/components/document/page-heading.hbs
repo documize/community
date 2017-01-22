@@ -14,7 +14,7 @@
 
 			{{#dropdown-menu target=menuTarget position="bottom right" open="click" onOpenCallback=(action 'onMenuOpen') onCloseCallback=(action 'onMenuOpen')}}
 				<ul class="menu">
-					<li class="item">Duplicate</li>
+					<li class="item" id={{copyButtonId}}>Copy</li>
 					<li class="item">Move</li>
 					<li class="item" id="saveas-page-button-{{page.id}}">Publish</li>
 					<li class="divider"></li>
@@ -23,14 +23,14 @@
 			{{/dropdown-menu}}
 
 			{{#if menuOpen}}
-	            {{#dropdown-dialog target=deleteButtonId position="top right" button="Delete" color="flat-red" onAction=(action 'deletePage' page.id)}}
+	            {{#dropdown-dialog target=deleteButtonId position="bottom right" button="Delete" color="flat-red" onAction=(action 'deletePage' page.id)}}
 	                <p>Are you sure you want to delete <span class="bold">{{page.title}}?</span></p>
 	                <p>
 	                    {{input type="checkbox" id=checkId class="margin-left-20" checked=deleteChildren}}
 	                    <label for="{{checkId}}">&nbsp;Delete child pages</label>
 	                </p>
 	            {{/dropdown-dialog}}
-				{{#dropdown-dialog id=saveAsDialogId target=saveAsTarget position="top right" button="Publish" color="flat-green" focusOn=blockTitleId onAction=(action 'onAddBlock' page)}}
+				{{#dropdown-dialog id=saveAsDialogId target=saveAsTarget position="bottom right" button="Publish" color="flat-green" focusOn=blockTitleId onAction=(action 'onAddBlock' page)}}
 					<div class="form-header">
 						<div class="tip">
 							<span class="bold">{{folder.name}}:</span> Content Block
@@ -45,6 +45,18 @@
 						<label>Name</label>
 						<div class="tip">Short description to help others understand<br/>the reusable content block</div>
 						{{textarea rows="3" value=blockExcerpt id=blockExcerptId}}
+					</div>
+	            {{/dropdown-dialog}}
+				{{#dropdown-dialog id=copyDialogId target=copyButtonId position="bottom right" button="Copy" color="flat-green" onOpenCallback=(action 'onCopyDialogOpen') onAction=(action 'onCopyPage' page)}}
+					<div class="form-header">
+						<div class="tip">
+							<span class="bold">Copy:</span> {{page.title}}
+						</div>
+					</div>
+					<div class="input-control">
+						<label>Target</label>
+						<div class="tip">Select where the content should be copied to</div>
+						{{ui-select content=documentList action=(action 'onTargetChange') optionValuePath="id" optionLabelPath="name" selection=document}}
 					</div>
 	            {{/dropdown-dialog}}
 			{{/if}}

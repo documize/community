@@ -23,6 +23,9 @@ export default Ember.Component.extend(TooltipMixin, {
 	menuOpen: false,
 	blockTitle: "",
 	blockExcerpt: "",
+	documentList: [], 		//includes the current document
+	documentListOthers: [], //excludes the current document
+	selectedDocument: null,
 
 	checkId: computed('page', function () {
 		let id = this.get('page.id');
@@ -51,6 +54,14 @@ export default Ember.Component.extend(TooltipMixin, {
 	blockExcerptId: computed('page', function () {
 		let id = this.get('page.id');
 		return `block-excerpt-${id}`;
+	}),
+	copyButtonId: computed('page', function () {
+		let id = this.get('page.id');
+		return `copy-page-button-${id}`;
+	}),
+	copyDialogId: computed('page', function () {
+		let id = this.get('page.id');
+		return `copy-dialog-${id}`;
 	}),
 
 	didRender() {
@@ -125,5 +136,33 @@ export default Ember.Component.extend(TooltipMixin, {
 				return true;
 			});
 		},
+
+		// Copy action
+		onCopyDialogOpen() {
+		// Fetch document targets once.
+			if (this.get('documentList').length > 0) {
+				return;
+			}
+
+			this.get('documentService').getPageMoveCopyTargets().then((d) => {
+				let me = this.get('document');
+				this.set('documentList', d);
+				this.set('documentListOthers', d.filter((item) => item.get('id') !== me.get('id')));
+			});
+		},
+
+		onTargetChange(d) {
+			this.set('selectedDocument', d);
+		},
+
+		onCopyPage(page) {
+			let targetDocumentId = this.get('document.id');
+			if (is.not.null(this.get('selectedDocument'))) {
+				targetDocumentId = this.get('selectedDocument.id')
+			}
+
+			this.attrs.onCopyPage(page.get('id'), targetDocumentId);
+			return true;
+		}
 	}
 });
