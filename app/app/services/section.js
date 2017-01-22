@@ -84,9 +84,19 @@ export default BaseService.extend({
 		});
 	},
 
+	// Returns reusable content block.
+	getBlock(blockId) {
+		return this.get('ajax').request(`sections/blocks/${blockId}`, {
+			method: 'GET'
+		}).then((response) => {
+			let data = this.get('store').normalize('block', response);
+			return this.get('store').push(data);
+		});
+	},
+
 	// Returns all available reusable content block for section.
 	getSpaceBlocks(folderId) {
-		return this.get('ajax').request(`sections/blocks/${folderId}`, {
+		return this.get('ajax').request(`sections/blocks/space/${folderId}`, {
 			method: 'GET'
 		}).then((response) => {
 			let data = [];
@@ -97,6 +107,14 @@ export default BaseService.extend({
 			});
 
 			return data;
+		});
+	},
+
+	// Returns reusable content block.
+	updateBlock(block) {
+		return this.get('ajax').request(`sections/blocks/${block.id}`, {
+			method: 'PUT',
+			data: JSON.stringify(block)
 		});
 	}
 });

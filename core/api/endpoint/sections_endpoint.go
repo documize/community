@@ -229,6 +229,34 @@ func AddBlock(w http.ResponseWriter, r *http.Request) {
 	writeSuccessEmptyJSON(w)
 }
 
+// GetBlock returns requested reusable content block.
+func GetBlock(w http.ResponseWriter, r *http.Request) {
+	method := "GetBlock"
+	p := request.GetPersister(r)
+
+	params := mux.Vars(r)
+	blockID := params["blockID"]
+
+	if len(blockID) == 0 {
+		writeMissingDataError(w, method, "blockID")
+		return
+	}
+
+	b, err := p.GetBlock(blockID)
+	if err != nil {
+		writeGeneralSQLError(w, method, err)
+		return
+	}
+
+	json, err := json.Marshal(b)
+	if err != nil {
+		writeJSONMarshalError(w, method, "block", err)
+		return
+	}
+
+	writeSuccessBytes(w, json)
+}
+
 // GetBlocksForSpace returns available reusable content blocks for the space.
 func GetBlocksForSpace(w http.ResponseWriter, r *http.Request) {
 	method := "GetBlocksForSpace"
@@ -263,4 +291,49 @@ func GetBlocksForSpace(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeSuccessBytes(w, json)
+}
+
+// UpdateBlock inserts new reusable content block into database.
+func UpdateBlock(w http.ResponseWriter, r *http.Request) {
+	method := "UpdateBlock"
+	p := request.GetPersister(r)
+
+	defer utility.Close(r.Body)
+	body, err := ioutil.ReadAll(r.Body)
+
+	if err != nil {
+		writeBadRequestError(w, method, "Bad payload")
+		return
+	}
+
+	b := entity.Block{}
+	err = json.Unmarshal(body, &b)
+	if err != nil {
+		writePayloadError(w, method, err)
+		return
+	}
+
+	if !p.CanUploadDocument(b.LabelID) {
+		writeForbiddenError(w)
+		return
+	}
+
+	tx, err := request.Db.Beginx()
+	if err != nil {
+		writeTransactionError(w, method, err)
+		return
+	}
+
+	p.Context.Transaction = tx
+
+	err = p.UpdateBlock(b)
+	if err != nil {
+		log.IfErr(tx.Rollback())
+		writeGeneralSQLError(w, method, err)
+		return
+	}
+
+	log.IfErr(tx.Commit())
+
+	writeSuccessEmptyJSON(w)
 }

@@ -29,6 +29,10 @@
 				&:hover {
 					@include ease-in();
 
+					> .actions {
+						display: inline-block;
+					}
+
 					> .details {
 						> .title {
 							color: $color-primary;
@@ -71,6 +75,25 @@
 						font-size: 0.9rem;
 						margin-top: 5px;
 					}
+				}
+
+				> .actions {
+					display: none;
+					vertical-align: top;
+					text-align: center;
+					width: 20px;
+					margin-top: 5px;
+					opacity: 0.3;
+
+					> .material-icons, a {
+						color: $color-gray;
+
+						&:hover {
+							opacity: 1;
+							color: $color-primary;
+						}
+					}
+
 				}
 			}
 		}

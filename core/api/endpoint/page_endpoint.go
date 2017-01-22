@@ -308,14 +308,6 @@ func DeleteDocumentPage(w http.ResponseWriter, r *http.Request) {
 
 	p.Context.Transaction = tx
 
-	_, err = p.DeletePage(documentID, pageID)
-
-	if err != nil {
-		log.IfErr(tx.Rollback())
-		writeGeneralSQLError(w, method, err)
-		return
-	}
-
 	page, err := p.GetPage(pageID)
 	if err != nil {
 		log.IfErr(tx.Rollback())
@@ -325,6 +317,14 @@ func DeleteDocumentPage(w http.ResponseWriter, r *http.Request) {
 
 	if len(page.BlockID) > 0 {
 		p.DecrementBlockUsage(page.BlockID)
+	}
+
+	_, err = p.DeletePage(documentID, pageID)
+
+	if err != nil {
+		log.IfErr(tx.Rollback())
+		writeGeneralSQLError(w, method, err)
+		return
 	}
 
 	log.IfErr(tx.Commit())
@@ -376,13 +376,6 @@ func DeleteDocumentPages(w http.ResponseWriter, r *http.Request) {
 	p.Context.Transaction = tx
 
 	for _, page := range *model {
-		_, err = p.DeletePage(documentID, page.PageID)
-		if err != nil {
-			log.IfErr(tx.Rollback())
-			writeGeneralSQLError(w, method, err)
-			return
-		}
-
 		pageData, err := p.GetPage(page.PageID)
 		if err != nil {
 			log.IfErr(tx.Rollback())
@@ -392,6 +385,13 @@ func DeleteDocumentPages(w http.ResponseWriter, r *http.Request) {
 
 		if len(pageData.BlockID) > 0 {
 			p.DecrementBlockUsage(pageData.BlockID)
+		}
+
+		_, err = p.DeletePage(documentID, page.PageID)
+		if err != nil {
+			log.IfErr(tx.Rollback())
+			writeGeneralSQLError(w, method, err)
+			return
 		}
 	}
 

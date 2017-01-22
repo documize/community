@@ -17,6 +17,13 @@ export default Ember.Component.extend({
 	actionLabel: "Save",
 	tip: "Short and concise title",
 	busy: false,
+	hasExcerpt: Ember.computed('page', function () {
+		return is.not.undefined(this.get('page.excerpt'));
+	}),
+
+	didReceiveAttrs() {
+		this._super(...arguments);
+	},
 
 	didRender() {
 		let self = this;
@@ -30,8 +37,12 @@ export default Ember.Component.extend({
 		});
 
 		$("#page-title").removeClass("error");
+		$("#page-excerpt").removeClass("error");
 
 		$("#page-title").focus(function() {
+			$(this).select();
+		});
+		$("#page-excerpt").focus(function() {
 			$(this).select();
 		});
 	},
@@ -77,6 +88,11 @@ export default Ember.Component.extend({
 
 			if (is.empty(this.get('page.title'))) {
 				$("#page-title").addClass("error").focus();
+				return;
+			}
+
+			if (this.get('hasExcerpt') && is.empty(this.get('page.excerpt'))) {
+				$("#page-excerpt").addClass("error").focus();
 				return;
 			}
 

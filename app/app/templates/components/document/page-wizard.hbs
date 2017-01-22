@@ -24,16 +24,23 @@
 			<div class="template-caption">Reusable Content</div>
 			<ul class="list">
 				{{#each blocks as |block|}}
-					<li class="item" {{action 'onInsertBlock' block}}>
-						<div class="icon">
+					<li class="item">
+						<div class="icon" {{action 'onInsertBlock' block}}>
 							<img class="img" src="/assets/img/section-saved.png" srcset="/assets/img/section-saved@2x.png" />
 						</div>
-						<div class="details">
+						<div class="details" {{action 'onInsertBlock' block}}>
 							<div class='title'>
 								{{block.title}}
 							</div>
 							<div class='desc'>{{block.excerpt}}</div>
 							<div class='desc'>By {{block.firstname}} {{block.lastname}}, {{time-ago block.created}} (used: {{ block.used }})</div>
+						</div>
+						<div class="actions">
+							{{#link-to 'document.block' folder.id folder.slug document.id document.slug block.id}}
+								<i class="material-icons">mode_edit</i>
+							{{/link-to}}
+							<div class="divider"></div>
+							<i class="material-icons">delete</i>
 						</div>
 						<div class="clearfix" />
 					</li>
@@ -41,7 +48,7 @@
 			</ul>
 		{{else}}
 			<div class="divider"></div>
-			<div class="template-caption">No reusable content</div>
+			<div class="template-caption">Published, reusable sections appear below</div>
 		{{/if}}
 	</div>
 </div>

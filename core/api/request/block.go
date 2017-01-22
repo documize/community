@@ -48,7 +48,7 @@ func (p *Persister) AddBlock(b entity.Block) (err error) {
 
 // GetBlock returns requested reusable content block.
 func (p *Persister) GetBlock(id string) (b entity.Block, err error) {
-	stmt, err := Db.Preparex("SELECT id, refid, orgid, labelid, userid, contenttype, pagetype, title, body, excerpt, rawbody, config, externalsource, used, created, revised FROM block WHERE orgid=? AND refid=?")
+	stmt, err := Db.Preparex("SELECT a.id, a.refid, a.orgid, a.labelid, a.userid, a.contenttype, a.pagetype, a.title, a.body, a.excerpt, a.rawbody, a.config, a.externalsource, a.used, a.created, a.revised, b.firstname, b.lastname FROM block a LEFT JOIN user b ON a.userid = b.refid WHERE a.orgid=? AND a.refid=?")
 	defer utility.Close(stmt)
 
 	if err != nil {
@@ -67,7 +67,7 @@ func (p *Persister) GetBlock(id string) (b entity.Block, err error) {
 
 // GetBlocksForSpace returns all reusable content scoped to given space.
 func (p *Persister) GetBlocksForSpace(labelID string) (b []entity.Block, err error) {
-	err = Db.Select(&b, "SELECT a.id, a.refid, a.orgid, a.labelid, a.userid, a.contenttype, a.pagetype, a.title, a.body, a.excerpt, a.rawbody, a.config, a.externalsource, a.used, a.created, a.revised, b.firstname, b.lastname FROM block a LEFT JOIN user b ON a.userid = b.refid WHERE orgid=? AND labelid=? ORDER BY a.title", p.Context.OrgID, labelID)
+	err = Db.Select(&b, "SELECT a.id, a.refid, a.orgid, a.labelid, a.userid, a.contenttype, a.pagetype, a.title, a.body, a.excerpt, a.rawbody, a.config, a.externalsource, a.used, a.created, a.revised, b.firstname, b.lastname FROM block a LEFT JOIN user b ON a.userid = b.refid WHERE a.orgid=? AND a.labelid=? ORDER BY a.title", p.Context.OrgID, labelID)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to execute select GetBlocksForSpace org %s and label %s", p.Context.OrgID, labelID), err)
