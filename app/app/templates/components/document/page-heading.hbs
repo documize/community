@@ -15,8 +15,8 @@
 			{{#dropdown-menu target=menuTarget position="bottom right" open="click" onOpenCallback=(action 'onMenuOpen') onCloseCallback=(action 'onMenuOpen')}}
 				<ul class="menu">
 					<li class="item" id={{copyButtonId}}>Copy</li>
-					<li class="item">Move</li>
-					<li class="item" id="saveas-page-button-{{page.id}}">Publish</li>
+					<li class="item" id={{moveButtonId}}>Move</li>
+					<li class="item" id={{publishButtonId}}>Publish</li>
 					<li class="divider"></li>
 					<li class="item danger" id={{deleteButtonId}}>Delete</li>
 				</ul>
@@ -30,7 +30,7 @@
 	                    <label for="{{checkId}}">&nbsp;Delete child pages</label>
 	                </p>
 	            {{/dropdown-dialog}}
-				{{#dropdown-dialog id=saveAsDialogId target=saveAsTarget position="bottom right" button="Publish" color="flat-green" focusOn=blockTitleId onAction=(action 'onAddBlock' page)}}
+				{{#dropdown-dialog id=publishDialogId target=publishButtonId position="bottom right" button="Publish" color="flat-green" focusOn=blockTitleId onAction=(action 'onAddBlock' page)}}
 					<div class="form-header">
 						<div class="tip">
 							<span class="bold">{{folder.name}}:</span> Content Block
@@ -57,6 +57,18 @@
 						<label>Target</label>
 						<div class="tip">Select where the content should be copied to</div>
 						{{ui-select content=documentList action=(action 'onTargetChange') optionValuePath="id" optionLabelPath="name" selection=document}}
+					</div>
+	            {{/dropdown-dialog}}
+				{{#dropdown-dialog id=moveDialogId target=moveButtonId position="bottom right" button="Move" color="flat-green" onOpenCallback=(action 'onCopyDialogOpen') onAction=(action 'onMovePage' page)}}
+					<div class="form-header">
+						<div class="tip">
+							<span class="bold">move:</span> {{page.title}}
+						</div>
+					</div>
+					<div class="input-control">
+						<label>Target</label>
+						<div class="tip">Select where the content should be moved to</div>
+						{{ui-select content=documentListOthers action=(action 'onTargetChange') optionValuePath="id" optionLabelPath="name"}}
 					</div>
 	            {{/dropdown-dialog}}
 			{{/if}}

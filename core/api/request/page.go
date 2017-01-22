@@ -496,3 +496,17 @@ func (p *Persister) DeletePageRevisions(pageID string) (rows int64, err error) {
 
 	return
 }
+
+// GetNextPageSequence returns the next sequence numbner to use for a page in given document.
+func (p *Persister) GetNextPageSequence(documentID string) (maxSeq float64, err error) {
+	row := Db.QueryRow("SELECT max(sequence) FROM page WHERE orgid=? AND documentid=? AND pagetype='section'", p.Context.OrgID, documentID)
+
+	err = row.Scan(&maxSeq)
+	if err != nil {
+		maxSeq = 2048
+	}
+
+	maxSeq = maxSeq * 2
+
+	return
+}

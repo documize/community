@@ -325,6 +325,16 @@ export default Ember.Service.extend({
 			let data = this.get('store').normalize('page', response);
 			return this.get('store').push(data);
 		});
+	},
+
+	// Move existing page to different document.
+	movePage(documentId, pageId, targetDocumentId) {
+		return this.get('ajax').request(`documents/${documentId}/pages/${pageId}/move/${targetDocumentId}`, {
+			method: 'POST'
+		}).then((response) => {
+			let data = this.get('store').normalize('page', response);
+			return this.get('store').push(data);
+		});
 	}
 });
 

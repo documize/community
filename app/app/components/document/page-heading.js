@@ -39,13 +39,13 @@ export default Ember.Component.extend(TooltipMixin, {
 		let id = this.get('page.id');
 		return `delete-page-button-${id}`;
 	}),
-	saveAsTarget: computed('page', function () {
+	publishButtonId: computed('page', function () {
 		let id = this.get('page.id');
-		return `saveas-page-button-${id}`;
+		return `publish-button-${id}`;
 	}),
-	saveAsDialogId: computed('page', function () {
+	publishDialogId: computed('page', function () {
 		let id = this.get('page.id');
-		return `save-as-dialog-${id}`;
+		return `publish-dialog-${id}`;
 	}),
 	blockTitleId: computed('page', function () {
 		let id = this.get('page.id');
@@ -62,6 +62,14 @@ export default Ember.Component.extend(TooltipMixin, {
 	copyDialogId: computed('page', function () {
 		let id = this.get('page.id');
 		return `copy-dialog-${id}`;
+	}),
+	moveButtonId: computed('page', function () {
+		let id = this.get('page.id');
+		return `move-page-button-${id}`;
+	}),
+	moveDialogId: computed('page', function () {
+		let id = this.get('page.id');
+		return `move-dialog-${id}`;
 	}),
 
 	didRender() {
@@ -82,7 +90,13 @@ export default Ember.Component.extend(TooltipMixin, {
 
 	actions: {
 		onMenuOpen() {
-			if ($('#' + this.get('saveAsDialogId')).is( ":visible" )) {
+			if ($('#' + this.get('publishDialogId')).is( ":visible" )) {
+				return;
+			}
+			if ($('#' + this.get('copyDialogId')).is( ":visible" )) {
+				return;
+			}
+			if ($('#' + this.get('moveDialogId')).is( ":visible" )) {
 				return;
 			}
 
@@ -137,9 +151,9 @@ export default Ember.Component.extend(TooltipMixin, {
 			});
 		},
 
-		// Copy action
+		// Copy/move actions
 		onCopyDialogOpen() {
-		// Fetch document targets once.
+			// Fetch document targets once.
 			if (this.get('documentList').length > 0) {
 				return;
 			}
@@ -156,13 +170,34 @@ export default Ember.Component.extend(TooltipMixin, {
 		},
 
 		onCopyPage(page) {
+			// can't proceed if no data
+			if (this.get('documentList'.length) === 0) {
+				return;
+			}
+
 			let targetDocumentId = this.get('document.id');
 			if (is.not.null(this.get('selectedDocument'))) {
-				targetDocumentId = this.get('selectedDocument.id')
+				targetDocumentId = this.get('selectedDocument.id');
 			}
 
 			this.attrs.onCopyPage(page.get('id'), targetDocumentId);
 			return true;
-		}
+		},
+
+		onMovePage(page) {
+			// can't proceed if no data
+			if (this.get('documentListOthers.length') === 0) {
+				return;
+			}
+
+			if (is.null(this.get('selectedDocument'))) {
+				this.set('selectedDocument', this.get('documentListOthers')[0]);
+			}
+
+			let targetDocumentId = this.get('selectedDocument.id');
+
+			this.attrs.onMovePage(page.get('id'), targetDocumentId);
+			return true;
+		}		
 	}
 });
