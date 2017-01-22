@@ -212,6 +212,31 @@ AND d.template=0`, orgID)
 	return
 }
 
+// GetDocumentList returns a slice containing the documents available as templates to the client's organisation, in title order.
+func (p *Persister) GetDocumentList() (documents []entity.Document, err error) {
+	err = Db.Select(&documents,
+		`SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, layout, created, revised FROM document WHERE orgid=? AND template=0 AND labelid IN
+		(SELECT refid from label WHERE orgid=? AND type=2 AND userid=?
+    	UNION ALL SELECT refid FROM label a where orgid=? AND type=1 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid='' AND (canedit=1 OR canview=1))
+		UNION ALL SELECT refid FROM label a where orgid=? AND type=3 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid=? AND (canedit=1 OR canview=1)))
+		ORDER BY title`,
+		p.Context.OrgID,
+		p.Context.OrgID,
+		p.Context.UserID,
+		p.Context.OrgID,
+		p.Context.OrgID,
+		p.Context.OrgID,
+		p.Context.OrgID,
+		p.Context.UserID)
+
+	if err != nil {
+		log.Error(fmt.Sprintf("Unable to execute GetDocumentList org %s", p.Context.OrgID), err)
+		return
+	}
+
+	return
+}
+
 // SearchDocument searches the documents that the client is allowed to see, using the keywords search string, then audits that search.
 // Visible documents include both those in the client's own organisation and those that are public, or whose visibility includes the client.
 func (p *Persister) SearchDocument(keywords string) (results []entity.DocumentSearch, err error) {

@@ -12,8 +12,23 @@
 import Ember from 'ember';
 import NotifierMixin from '../../mixins/notifier';
 
+const {
+	computed,
+} = Ember;
+
 export default Ember.Component.extend(NotifierMixin, {
 	display: 'section', // which CSS to use
+	hasTemplates: false,
+
+	didReceiveAttrs() {
+		let blocks = this.get('blocks');
+
+		this.set('hasBlocks', blocks.get('length') > 0);
+
+		blocks.forEach((b) => {
+			b.set('deleteId', `delete-block-button-${b.id}`);
+		});
+	},
 
 	didRender() {
 		let self = this;
@@ -34,7 +49,15 @@ export default Ember.Component.extend(NotifierMixin, {
 		},
 
 		addSection(section) {
-			this.attrs.onAction(section);
+			this.attrs.onAddSection(section);
+		},
+
+		onDeleteBlock(id) {
+			this.attrs.onDeleteBlock(id);
+		},
+
+		onInsertBlock(block) {
+			this.attrs.onInsertBlock(block);
 		}
 	}
 });

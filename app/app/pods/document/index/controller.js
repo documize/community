@@ -14,6 +14,7 @@ import NotifierMixin from '../../../mixins/notifier';
 
 export default Ember.Controller.extend(NotifierMixin, {
 	documentService: Ember.inject.service('document'),
+	sectionService: Ember.inject.service('section'),
 	queryParams: ['page'],
 
 	// Jump to the right part of the document.
@@ -82,6 +83,34 @@ export default Ember.Controller.extend(NotifierMixin, {
 				this.set('model.pages', pages);
 
 				this.get('target.router').refresh();
+			});
+		},
+
+		onAddBlock(block) {
+			this.get('sectionService').addBlock(block).then(() => {
+				this.showNotification("Published");
+			});
+		},
+
+		onCopyPage(pageId, targetDocumentId) {
+			let documentId = this.get('model.document.id');
+			this.get('documentService').copyPage(documentId, pageId, targetDocumentId).then(() => {
+				this.showNotification("Copied");
+	
+				// refresh data if copied to same document
+				if (documentId === targetDocumentId) {
+					this.get('target.router').refresh();
+				}
+			});
+		},
+
+		onMovePage(pageId, targetDocumentId) {
+			let documentId = this.get('model.document.id');
+
+			this.get('documentService').copyPage(documentId, pageId, targetDocumentId).then(() => {
+				this.showNotification("Moved");
+
+				this.send('onPageDeleted', { id: pageId, children: false });
 			});
 		},
 

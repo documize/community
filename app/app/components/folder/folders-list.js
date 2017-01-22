@@ -53,7 +53,7 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
             };
 
 			saved.forEach(function(t) {
-				t.img = "template-saved";
+				Ember.set(t, 'img', 'template-saved');
 			});
 
             saved.unshiftObject(emptyTemplate);

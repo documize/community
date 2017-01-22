@@ -68,5 +68,65 @@ export default BaseService.extend({
 
 			return pages;
 		});
+	},
+
+	/**************************************************
+	 * Reusable Content Blocks
+	 **************************************************/
+
+	// Save new reusable content block.
+	addBlock(payload) {
+		let url = `sections/blocks`;
+
+		return this.get('ajax').post(url, {
+			data: JSON.stringify(payload),
+			contentType: 'json'
+		}).then((response) => {
+			let data = this.get('store').normalize('block', response);
+			return this.get('store').push(data);
+		});
+	},
+
+	// Returns reusable content block.
+	getBlock(blockId) {
+		return this.get('ajax').request(`sections/blocks/${blockId}`, {
+			method: 'GET'
+		}).then((response) => {
+			let data = this.get('store').normalize('block', response);
+			return this.get('store').push(data);
+		});
+	},
+
+	// Returns all available reusable content block for section.
+	getSpaceBlocks(folderId) {
+		return this.get('ajax').request(`sections/blocks/space/${folderId}`, {
+			method: 'GET'
+		}).then((response) => {
+			let data = [];
+
+			data = response.map((obj) => {
+				let data = this.get('store').normalize('block', obj);
+				return this.get('store').push(data);
+			});
+
+			return data;
+		});
+	},
+
+	// Returns reusable content block.
+	updateBlock(block) {
+		return this.get('ajax').request(`sections/blocks/${block.id}`, {
+			method: 'PUT',
+			data: JSON.stringify(block)
+		});
+	},
+
+	// Removes specified reusable content block.
+	deleteBlock: function (blockId) {
+		let url = `sections/blocks/${blockId}`;
+
+		return this.get('ajax').request(url, {
+			method: 'DELETE'
+		});
 	}
 });

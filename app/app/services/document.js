@@ -292,11 +292,50 @@ export default Ember.Service.extend({
 
 	// nuke an attachment
 	deleteAttachment(documentId, attachmentId) {
-
 		return this.get('ajax').request(`documents/${documentId}/attachments/${attachmentId}`, {
 			method: 'DELETE'
 		});
 	},
+
+	//**************************************************
+	// Page Move Copy
+	//**************************************************
+
+	// Return list of documents that can accept a page.
+	getPageMoveCopyTargets() {
+		return this.get('ajax').request(`sections/targets`, {
+			method: 'GET'
+		}).then((response) => {
+			let data = [];
+
+			data = response.map((obj) => {
+				let data = this.get('store').normalize('document', obj);
+				return this.get('store').push(data);
+			});
+
+			return data;
+		});
+	},
+
+	// Copy existing page to same or different document.
+	copyPage(documentId, pageId, targetDocumentId) {
+		return this.get('ajax').request(`documents/${documentId}/pages/${pageId}/copy/${targetDocumentId}`, {
+			method: 'POST'
+		}).then((response) => {
+			let data = this.get('store').normalize('page', response);
+			return this.get('store').push(data);
+		});
+	},
+
+	// Move existing page to different document.
+	movePage(documentId, pageId, targetDocumentId) {
+		return this.get('ajax').request(`documents/${documentId}/pages/${pageId}/move/${targetDocumentId}`, {
+			method: 'POST'
+		}).then((response) => {
+			let data = this.get('store').normalize('page', response);
+			return this.get('store').push(data);
+		});
+	}
 });
 
 function isObject(a) {

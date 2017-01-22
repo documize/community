@@ -26,7 +26,6 @@ import (
 
 // AddPage inserts the given page into the page table, adds that page to the queue of pages to index and audits that the page has been added.
 func (p *Persister) AddPage(model models.PageModel) (err error) {
-	err = nil
 	model.Page.OrgID = p.Context.OrgID
 	model.Page.UserID = p.Context.UserID
 	model.Page.Created = time.Now().UTC()
@@ -51,7 +50,7 @@ func (p *Persister) AddPage(model models.PageModel) (err error) {
 		model.Page.Sequence = maxSeq * 2
 	}
 
-	stmt, err := p.Context.Transaction.Preparex("INSERT INTO page (refid, orgid, documentid, userid, contenttype, pagetype, level, title, body, revisions, sequence, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+	stmt, err := p.Context.Transaction.Preparex("INSERT INTO page (refid, orgid, documentid, userid, contenttype, pagetype, level, title, body, revisions, sequence, blockid, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
 	defer utility.Close(stmt)
 
 	if err != nil {
@@ -59,14 +58,14 @@ func (p *Persister) AddPage(model models.PageModel) (err error) {
 		return
 	}
 
-	_, err = stmt.Exec(model.Page.RefID, model.Page.OrgID, model.Page.DocumentID, model.Page.UserID, model.Page.ContentType, model.Page.PageType, model.Page.Level, model.Page.Title, model.Page.Body, model.Page.Revisions, model.Page.Sequence, model.Page.Created, model.Page.Revised)
+	_, err = stmt.Exec(model.Page.RefID, model.Page.OrgID, model.Page.DocumentID, model.Page.UserID, model.Page.ContentType, model.Page.PageType, model.Page.Level, model.Page.Title, model.Page.Body, model.Page.Revisions, model.Page.Sequence, model.Page.BlockID, model.Page.Created, model.Page.Revised)
 
 	if err != nil {
 		log.Error("Unable to execute insert for page", err)
 		return
 	}
 
-	err = searches.Add(&databaseRequest{OrgID: p.Context.OrgID}, model.Page, model.Page.RefID)
+	_ = searches.Add(&databaseRequest{OrgID: p.Context.OrgID}, model.Page, model.Page.RefID)
 
 	stmt2, err := p.Context.Transaction.Preparex("INSERT INTO pagemeta (pageid, orgid, userid, documentid, rawbody, config, externalsource, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
 	defer utility.Close(stmt2)
@@ -90,9 +89,7 @@ func (p *Persister) AddPage(model models.PageModel) (err error) {
 
 // GetPage returns the pageID page record from the page table.
 func (p *Persister) GetPage(pageID string) (page entity.Page, err error) {
-	err = nil
-
-	stmt, err := Db.Preparex("SELECT a.id, a.refid, a.orgid, a.documentid, a.userid, a.contenttype, a.pagetype, a.level, a.sequence, a.title, a.body, a.revisions, a.created, a.revised FROM page a WHERE a.orgid=? AND a.refid=?")
+	stmt, err := Db.Preparex("SELECT a.id, a.refid, a.orgid, a.documentid, a.userid, a.contenttype, a.pagetype, a.level, a.sequence, a.title, a.body, a.revisions, a.blockid, a.created, a.revised FROM page a WHERE a.orgid=? AND a.refid=?")
 	defer utility.Close(stmt)
 
 	if err != nil {
@@ -112,9 +109,7 @@ func (p *Persister) GetPage(pageID string) (page entity.Page, err error) {
 
 // GetPages returns a slice containing all the page records for a given documentID, in presentation sequence.
 func (p *Persister) GetPages(documentID string) (pages []entity.Page, err error) {
-	err = nil
-
-	err = Db.Select(&pages, "SELECT a.id, a.refid, a.orgid, a.documentid, a.userid, a.contenttype, a.pagetype, a.level, a.sequence, a.title, a.body, a.revisions, a.created, a.revised FROM page a WHERE a.orgid=? AND a.documentid=? ORDER BY a.sequence", p.Context.OrgID, documentID)
+	err = Db.Select(&pages, "SELECT a.id, a.refid, a.orgid, a.documentid, a.userid, a.contenttype, a.pagetype, a.level, a.sequence, a.title, a.body, a.revisions, a.blockid, a.created, a.revised FROM page a WHERE a.orgid=? AND a.documentid=? ORDER BY a.sequence", p.Context.OrgID, documentID)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to execute select pages for org %s and document %s", p.Context.OrgID, documentID), err)
@@ -127,11 +122,9 @@ func (p *Persister) GetPages(documentID string) (pages []entity.Page, err error)
 // GetPagesWhereIn returns a slice, in presentation sequence, containing those page records for a given documentID
 // where their refid is in the comma-separated list passed as inPages.
 func (p *Persister) GetPagesWhereIn(documentID, inPages string) (pages []entity.Page, err error) {
-	err = nil
-
 	args := []interface{}{p.Context.OrgID, documentID}
 	tempValues := strings.Split(inPages, ",")
-	sql := "SELECT a.id, a.refid, a.orgid, a.documentid, a.userid, a.contenttype, a.pagetype, a.level, a.sequence, a.title, a.body, a.revisions, a.created, a.revised FROM page a WHERE a.orgid=? AND a.documentid=? AND a.refid IN (?" + strings.Repeat(",?", len(tempValues)-1) + ") ORDER BY sequence"
+	sql := "SELECT a.id, a.refid, a.orgid, a.documentid, a.userid, a.contenttype, a.pagetype, a.level, a.sequence, a.title, a.body, a.blockid, a.revisions, a.created, a.revised FROM page a WHERE a.orgid=? AND a.documentid=? AND a.refid IN (?" + strings.Repeat(",?", len(tempValues)-1) + ") ORDER BY sequence"
 
 	inValues := make([]interface{}, len(tempValues))
 
@@ -181,7 +174,7 @@ func (p *Persister) GetPagesWhereIn(documentID, inPages string) (pages []entity.
 // GetPagesWithoutContent returns a slice containing all the page records for a given documentID, in presentation sequence,
 // but without the body field (which holds the HTML content).
 func (p *Persister) GetPagesWithoutContent(documentID string) (pages []entity.Page, err error) {
-	err = Db.Select(&pages, "SELECT id, refid, orgid, documentid, userid, contenttype, pagetype, sequence, level, title, revisions, created, revised FROM page WHERE orgid=? AND documentid=? ORDER BY sequence", p.Context.OrgID, documentID)
+	err = Db.Select(&pages, "SELECT id, refid, orgid, documentid, userid, contenttype, pagetype, sequence, level, title, revisions, blockid, created, revised FROM page WHERE orgid=? AND documentid=? ORDER BY sequence", p.Context.OrgID, documentID)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to execute select pages for org %s and document %s", p.Context.OrgID, documentID), err)
@@ -194,7 +187,6 @@ func (p *Persister) GetPagesWithoutContent(documentID string) (pages []entity.Pa
 // UpdatePage saves changes to the database and handles recording of revisions.
 // Not all updates result in a revision being recorded hence the parameter.
 func (p *Persister) UpdatePage(page entity.Page, refID, userID string, skipRevision bool) (err error) {
-	err = nil
 	page.Revised = time.Now().UTC()
 
 	// Store revision history
@@ -304,7 +296,6 @@ func (p *Persister) UpdatePage(page entity.Page, refID, userID string, skipRevis
 
 // UpdatePageMeta persists meta information associated with a document page.
 func (p *Persister) UpdatePageMeta(meta entity.PageMeta, updateUserID bool) (err error) {
-	err = nil
 	meta.Revised = time.Now().UTC()
 
 	if updateUserID {
@@ -386,17 +377,17 @@ func (p *Persister) DeletePage(documentID, pageID string) (rows int64, err error
 	rows, err = p.Base.DeleteConstrained(p.Context.Transaction, "page", p.Context.OrgID, pageID)
 
 	if err == nil {
-		_, err = p.Base.DeleteWhere(p.Context.Transaction, fmt.Sprintf("DELETE FROM pagemeta WHERE orgid='%s' AND pageid='%s'", p.Context.OrgID, pageID))
-		_, err = searches.Delete(&databaseRequest{OrgID: p.Context.OrgID}, documentID, pageID)
+		_, _ = p.Base.DeleteWhere(p.Context.Transaction, fmt.Sprintf("DELETE FROM pagemeta WHERE orgid='%s' AND pageid='%s'", p.Context.OrgID, pageID))
+		_, _ = searches.Delete(&databaseRequest{OrgID: p.Context.OrgID}, documentID, pageID)
 
 		// delete content links from this page
-		_, err = p.DeleteSourcePageLinks(pageID)
+		_, _ = p.DeleteSourcePageLinks(pageID)
 
 		// mark as orphan links to this page
-		err = p.MarkOrphanPageLink(pageID)
+		_ = p.MarkOrphanPageLink(pageID)
 
 		// nuke revisions
-		_, err = p.DeletePageRevisions(pageID)
+		_, _ = p.DeletePageRevisions(pageID)
 
 		p.Base.Audit(p.Context, "remove-page", documentID, pageID)
 	}
@@ -406,8 +397,6 @@ func (p *Persister) DeletePage(documentID, pageID string) (rows int64, err error
 
 // GetPageMeta returns the meta information associated with the page.
 func (p *Persister) GetPageMeta(pageID string) (meta entity.PageMeta, err error) {
-	err = nil
-
 	stmt, err := Db.Preparex("SELECT id, pageid, orgid, userid, documentid, rawbody, coalesce(config,JSON_UNQUOTE('{}')) as config, externalsource, created, revised FROM pagemeta WHERE orgid=? AND pageid=?")
 	defer utility.Close(stmt)
 
@@ -428,7 +417,6 @@ func (p *Persister) GetPageMeta(pageID string) (meta entity.PageMeta, err error)
 
 // GetDocumentPageMeta returns the meta information associated with a document.
 func (p *Persister) GetDocumentPageMeta(documentID string, externalSourceOnly bool) (meta []entity.PageMeta, err error) {
-	err = nil
 	filter := ""
 	if externalSourceOnly {
 		filter = " AND externalsource=1"
@@ -505,6 +493,20 @@ func (p *Persister) GetPageRevisions(pageID string) (revisions []entity.Revision
 // DeletePageRevisions deletes all of the page revision records for a given pageID.
 func (p *Persister) DeletePageRevisions(pageID string) (rows int64, err error) {
 	rows, err = p.Base.DeleteWhere(p.Context.Transaction, fmt.Sprintf("DELETE FROM revision WHERE orgid='%s' AND pageid='%s'", p.Context.OrgID, pageID))
+
+	return
+}
+
+// GetNextPageSequence returns the next sequence numbner to use for a page in given document.
+func (p *Persister) GetNextPageSequence(documentID string) (maxSeq float64, err error) {
+	row := Db.QueryRow("SELECT max(sequence) FROM page WHERE orgid=? AND documentid=? AND pagetype='section'", p.Context.OrgID, documentID)
+
+	err = row.Scan(&maxSeq)
+	if err != nil {
+		maxSeq = 2048
+	}
+
+	maxSeq = maxSeq * 2
 
 	return
 }

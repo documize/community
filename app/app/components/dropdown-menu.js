@@ -24,10 +24,6 @@ export default Ember.Component.extend({
 
 	didReceiveAttrs() {
 		this.set("contentId", 'dropdown-menu-' + stringUtil.makeId(10));
-
-		// if (this.session.get('isMobile')) {
-		// 	this.set('open', "click");
-		// }
 	},
 
 	didInsertElement() {
@@ -40,10 +36,14 @@ export default Ember.Component.extend({
 			classes: 'drop-theme-menu',
 			position: self.get('position'),
 			openOn: self.get('open'),
+			constrainToWindow: false,
+			constrainToScrollParent: false,
 			tetherOptions: {
 				offset: "5px 0",
-				targetOffset: "10px 0"
-			}
+				targetOffset: "10px 0",
+				targetModifier: 'scroll-handle',
+			},
+			remove: true
 		});
 
 		if (drop) {

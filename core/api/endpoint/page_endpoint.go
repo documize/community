@@ -78,14 +78,13 @@ func AddDocumentPage(w http.ResponseWriter, r *http.Request) {
 	pageID := util.UniqueID()
 	model.Page.RefID = pageID
 	model.Meta.PageID = pageID
+	model.Meta.OrgID = p.Context.OrgID   // required for Render call below
+	model.Meta.UserID = p.Context.UserID // required for Render call below
 	model.Page.SetDefaults()
 	model.Meta.SetDefaults()
-	model.Meta.OrgID = p.Context.OrgID
-	model.Meta.UserID = p.Context.UserID
 	// page.Title = template.HTMLEscapeString(page.Title)
 
 	tx, err := request.Db.Beginx()
-
 	if err != nil {
 		writeTransactionError(w, method, err)
 		return
@@ -93,8 +92,7 @@ func AddDocumentPage(w http.ResponseWriter, r *http.Request) {
 
 	p.Context.Transaction = tx
 
-	output, ok := provider.Render(model.Page.ContentType,
-		provider.NewContext(model.Meta.OrgID, model.Meta.UserID), model.Meta.Config, model.Meta.RawBody)
+	output, ok := provider.Render(model.Page.ContentType, provider.NewContext(model.Meta.OrgID, model.Meta.UserID), model.Meta.Config, model.Meta.RawBody)
 	if !ok {
 		log.ErrorString("provider.Render could not find: " + model.Page.ContentType)
 	}
@@ -102,16 +100,19 @@ func AddDocumentPage(w http.ResponseWriter, r *http.Request) {
 	model.Page.Body = output
 
 	err = p.AddPage(*model)
-
 	if err != nil {
 		log.IfErr(tx.Rollback())
 		writeGeneralSQLError(w, method, err)
 		return
 	}
 
+	if len(model.Page.BlockID) > 0 {
+		p.IncrementBlockUsage(model.Page.BlockID)
+	}
+
 	log.IfErr(tx.Commit())
 
-	newPage, err := p.GetPage(pageID)
+	newPage, _ := p.GetPage(pageID)
 
 	json, err := json.Marshal(newPage)
 
@@ -307,6 +308,17 @@ func DeleteDocumentPage(w http.ResponseWriter, r *http.Request) {
 
 	p.Context.Transaction = tx
 
+	page, err := p.GetPage(pageID)
+	if err != nil {
+		log.IfErr(tx.Rollback())
+		writeGeneralSQLError(w, method, err)
+		return
+	}
+
+	if len(page.BlockID) > 0 {
+		p.DecrementBlockUsage(page.BlockID)
+	}
+
 	_, err = p.DeletePage(documentID, pageID)
 
 	if err != nil {
@@ -364,8 +376,18 @@ func DeleteDocumentPages(w http.ResponseWriter, r *http.Request) {
 	p.Context.Transaction = tx
 
 	for _, page := range *model {
-		_, err = p.DeletePage(documentID, page.PageID)
+		pageData, err := p.GetPage(page.PageID)
+		if err != nil {
+			log.IfErr(tx.Rollback())
+			writeGeneralSQLError(w, method, err)
+			return
+		}
 
+		if len(pageData.BlockID) > 0 {
+			p.DecrementBlockUsage(pageData.BlockID)
+		}
+
+		_, err = p.DeletePage(documentID, page.PageID)
 		if err != nil {
 			log.IfErr(tx.Rollback())
 			writeGeneralSQLError(w, method, err)
@@ -647,9 +669,38 @@ func GetDocumentPageMeta(w http.ResponseWriter, r *http.Request) {
 	writeSuccessBytes(w, json)
 }
 
-/********************
-* Page Revisions
-********************/
+// GetPageMoveCopyTargets returns available documents for page copy/move axction.
+func GetPageMoveCopyTargets(w http.ResponseWriter, r *http.Request) {
+	method := "GetPageMoveCopyTargets"
+	p := request.GetPersister(r)
+
+	var d []entity.Document
+	var err error
+
+	d, err = p.GetDocumentList()
+
+	if len(d) == 0 {
+		d = []entity.Document{}
+	}
+
+	if err != nil {
+		writeGeneralSQLError(w, method, err)
+		return
+	}
+
+	json, err := json.Marshal(d)
+
+	if err != nil {
+		writeJSONMarshalError(w, method, "document", err)
+		return
+	}
+
+	writeSuccessBytes(w, json)
+}
+
+//**************************************************
+// Page Revisions
+//**************************************************
 
 // GetDocumentRevisions returns all changes for a document.
 func GetDocumentRevisions(w http.ResponseWriter, r *http.Request) {
@@ -669,7 +720,7 @@ func GetDocumentRevisions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	revisions, err := p.GetDocumentRevisions(documentID)
+	revisions, _ := p.GetDocumentRevisions(documentID)
 
 	payload, err := json.Marshal(revisions)
 
@@ -706,7 +757,7 @@ func GetDocumentPageRevisions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	revisions, err := p.GetPageRevisions(pageID)
+	revisions, _ := p.GetPageRevisions(pageID)
 
 	payload, err := json.Marshal(revisions)
 
@@ -757,7 +808,7 @@ func GetDocumentPageDiff(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	revision, err := p.GetPageRevision(revisionID)
+	revision, _ := p.GetPageRevision(revisionID)
 
 	latestHTML := page.Body
 	previousHTML := revision.Body
@@ -874,4 +925,103 @@ func RollbackDocumentPage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeSuccessBytes(w, payload)
+}
+
+//**************************************************
+// Copy Move Page
+//**************************************************
+
+// CopyPage copies page to either same or different document.
+func CopyPage(w http.ResponseWriter, r *http.Request) {
+	method := "CopyPage"
+	p := request.GetPersister(r)
+
+	params := mux.Vars(r)
+	documentID := params["documentID"]
+	pageID := params["pageID"]
+	targetID := params["targetID"]
+
+	// data checks
+	if len(documentID) == 0 {
+		writeMissingDataError(w, method, "documentID")
+		return
+	}
+	if len(pageID) == 0 {
+		writeMissingDataError(w, method, "pageID")
+		return
+	}
+	if len(targetID) == 0 {
+		writeMissingDataError(w, method, "targetID")
+		return
+	}
+
+	// permission
+	if !p.CanViewDocument(documentID) {
+		writeForbiddenError(w)
+		return
+	}
+
+	// fetch data
+	page, err := p.GetPage(pageID)
+	if err == sql.ErrNoRows {
+		writeNotFoundError(w, method, documentID)
+		return
+	}
+	if err != nil {
+		writeGeneralSQLError(w, method, err)
+		return
+	}
+
+	pageMeta, err := p.GetPageMeta(pageID)
+	if err == sql.ErrNoRows {
+		writeNotFoundError(w, method, documentID)
+		return
+	}
+	if err != nil {
+		writeGeneralSQLError(w, method, err)
+		return
+	}
+
+	newPageID := util.UniqueID()
+	page.RefID = newPageID
+	page.Level = 1
+	page.DocumentID = targetID
+	page.UserID = p.Context.UserID
+	pageMeta.DocumentID = targetID
+	pageMeta.PageID = newPageID
+	pageMeta.UserID = p.Context.UserID
+
+	model := new(models.PageModel)
+	model.Meta = pageMeta
+	model.Page = page
+
+	tx, err := request.Db.Beginx()
+	if err != nil {
+		writeTransactionError(w, method, err)
+		return
+	}
+	p.Context.Transaction = tx
+
+	err = p.AddPage(*model)
+	if err != nil {
+		log.IfErr(tx.Rollback())
+		writeGeneralSQLError(w, method, err)
+		return
+	}
+
+	if len(model.Page.BlockID) > 0 {
+		p.IncrementBlockUsage(model.Page.BlockID)
+	}
+
+	log.IfErr(tx.Commit())
+
+	newPage, _ := p.GetPage(pageID)
+	json, err := json.Marshal(newPage)
+
+	if err != nil {
+		writeJSONMarshalError(w, method, "page", err)
+		return
+	}
+
+	writeSuccessBytes(w, json)
 }

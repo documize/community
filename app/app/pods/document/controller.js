@@ -15,6 +15,7 @@ import NotifierMixin from '../../mixins/notifier';
 export default Ember.Controller.extend(NotifierMixin, {
 	documentService: Ember.inject.service('document'),
 	templateService: Ember.inject.service('template'),
+	sectionService: Ember.inject.service('section'),
 	page: null,
 	folder: {},
 	pages: [],
@@ -139,6 +140,60 @@ export default Ember.Controller.extend(NotifierMixin, {
 							newPage.id);
 					});
 				});
+			});
+		},
+
+		onInsertBlock(block) {
+			this.audit.record("added-content-block-" + block.get('contentType'));
+
+			let page = {
+				documentId: this.get('model.document.id'),
+				title: `${block.get('title')}`,
+				level: 1,
+				sequence: 0,
+				body: block.get('body'),
+				contentType: block.get('contentType'),
+				pageType: block.get('pageType'),
+				blockId: block.get('id')
+			};
+
+			let meta = {
+				documentId: this.get('model.document.id'),
+				rawBody: block.get('rawBody'),
+				config: block.get('config'),
+				externalSource: block.get('externalSource')
+			};
+
+			let model = {
+				page: page,
+				meta: meta
+			};
+
+			this.get('documentService').addPage(this.get('model.document.id'), model).then((newPage) => {
+				let data = this.get('store').normalize('page', newPage);
+				this.get('store').push(data);
+
+				this.get('documentService').getPages(this.get('model.document.id')).then((pages) => {
+					this.set('model.pages', pages.filterBy('pageType', 'section'));
+					this.set('model.tabs', pages.filterBy('pageType', 'tab'));
+
+					this.get('documentService').getPageMeta(this.get('model.document.id'), newPage.id).then(() => {
+						this.transitionToRoute('document.edit',
+							this.get('model.folder.id'),
+							this.get('model.folder.slug'),
+							this.get('model.document.id'),
+							this.get('model.document.slug'),
+							newPage.id);
+					});
+				});
+			});
+		},
+
+		onDeleteBlock(blockId) {
+			this.get('sectionService').deleteBlock(blockId).then(() => {
+				this.audit.record("deleted-block");
+				this.send("showNotification", "Deleted");
+				this.transitionToRoute('document.index');
 			});
 		},
 

@@ -41,12 +41,13 @@
 			> .is-a-page {
 				.page-title {
 					> .page-toolbar {
-						opacity: 0.3;
+						// opacity: 0.5;
+						opacity: 0;
 						@extend .transition-all;
 
-						&:hover {
-							opacity: 1;
-						}
+						// &:hover {
+						// 	opacity: 1;
+						// }
 					}
 
 					&:hover {

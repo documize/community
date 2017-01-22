@@ -59,7 +59,7 @@
 
 			{{#if isEditor}}
 				<li class="divider"></li>
-				<li class="item" id="delete-document-button">Delete</li>
+				<li class="item danger" id="delete-document-button">Delete</li>
 			{{/if}}
 		</ul>
 	{{/dropdown-menu}}
@@ -74,12 +74,10 @@
 	{{#if session.authenticated}}
 		{{#unless pinState.isPinned}}
 			{{#dropdown-dialog target="pin-document-button" position="bottom right" button="Pin" color="flat-green" onAction=(action 'pin') focusOn="pin-document-name" }}
-				<div>
-					<div class="input-control">
-						<label>Pin Document</label>
-						<div class="tip">A 3 or 4 character name</div>
-						{{input type='text' id="pin-document-name" value=pinState.newName}}
-					</div>
+				<div class="input-control">
+					<label>Pin Document</label>
+					<div class="tip">A 3 or 4 character name</div>
+					{{input type='text' id="pin-document-name" value=pinState.newName}}
 				</div>
 			{{/dropdown-dialog}}
 		{{/unless}}
@@ -87,17 +85,15 @@
 
 	{{#if isEditor}}
 		{{#dropdown-dialog target="save-template-button" position="bottom right" button="Save as Template" color="flat-green" onAction=(action 'saveTemplate') focusOn="new-template-name" }}
-			<div>
-				<div class="input-control">
-					<label>Name</label>
-					<div class="tip">Short name for this type of document</div>
-					{{input type='text' id="new-template-name" value=saveTemplate.name}}
-				</div>
-				<div class="input-control">
-					<label>Excerpt</label>
-					<div class="tip">Explain use case for this template</div>
-					{{textarea value=saveTemplate.description rows="3" id="new-template-desc"}}
-				</div>
+			<div class="input-control">
+				<label>Name</label>
+				<div class="tip">Short name for this type of document</div>
+				{{input type='text' id="new-template-name" value=saveTemplate.name}}
+			</div>
+			<div class="input-control">
+				<label>Excerpt</label>
+				<div class="tip">Explain use case for this template</div>
+				{{textarea value=saveTemplate.description rows="3" id="new-template-desc"}}
 			</div>
 		{{/dropdown-dialog}}
 

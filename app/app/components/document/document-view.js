@@ -70,6 +70,18 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	},
 
 	actions: {
+		onAddBlock(block) {
+			this.attrs.onAddBlock(block);
+		},
+
+		onCopyPage(pageId, documentId) {
+			this.attrs.onCopyPage(pageId, documentId);
+		},
+
+		onMovePage(pageId, documentId) {
+			this.attrs.onMovePage(pageId, documentId);
+		},
+
 		onDeletePage(id, deleteChildren) {
 			let page = this.get('pages').findBy("id", id);
 

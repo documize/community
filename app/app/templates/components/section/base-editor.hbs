@@ -6,6 +6,15 @@
 				<div class="tip">{{tip}}</div>
 				{{focus-input type='text' id="page-title" value=page.title class="mousetrap"}}
 			</div>
+			{{#if hasExcerpt}}
+				<div class="margin-top-30">
+					<div class="input-control">
+						<label>Excerpt</label>
+						<div class="tip">Short description</div>
+						{{textarea rows="3" id="page-excerpt" value=page.excerpt class="mousetrap"}}
+					</div>
+				</div>
+			{{/if}}
 		</div>
 		<div class="buttons pull-right">
 			{{#if busy}}

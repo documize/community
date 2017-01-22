@@ -127,8 +127,9 @@ func buildRoutes(prefix string) *mux.Router {
 }
 
 func init() {
-
-	// **** add Unsecure Routes
+	//**************************************************
+	// Non-secure routes
+	//**************************************************
 
 	log.IfErr(Add(RoutePrefixPublic, "meta", []string{"GET", "OPTIONS"}, nil, GetMeta))
 	log.IfErr(Add(RoutePrefixPublic, "authenticate", []string{"POST", "OPTIONS"}, nil, Authenticate))
@@ -139,7 +140,9 @@ func init() {
 	log.IfErr(Add(RoutePrefixPublic, "attachments/{orgID}/{attachmentID}", []string{"GET", "OPTIONS"}, nil, AttachmentDownload))
 	log.IfErr(Add(RoutePrefixPublic, "version", []string{"GET", "OPTIONS"}, nil, version))
 
-	// **** add secure routes
+	//**************************************************
+	// Secure routes
+	//**************************************************
 
 	// Import & Convert Document
 	log.IfErr(Add(RoutePrefixPrivate, "import/folder/{folderID}", []string{"POST", "OPTIONS"}, nil, UploadConvertDocument))
@@ -151,8 +154,6 @@ func init() {
 	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}", []string{"GET", "OPTIONS"}, nil, GetDocument))
 	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}", []string{"PUT", "OPTIONS"}, nil, UpdateDocument))
 	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}", []string{"DELETE", "OPTIONS"}, nil, DeleteDocument))
-
-	// Document Meta
 	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/meta", []string{"GET", "OPTIONS"}, nil, GetDocumentMeta))
 
 	// Document Page
@@ -173,9 +174,8 @@ func init() {
 	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/attachments", []string{"GET", "OPTIONS"}, nil, GetAttachments))
 	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/attachments/{attachmentID}", []string{"DELETE", "OPTIONS"}, nil, DeleteAttachment))
 	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/attachments", []string{"POST", "OPTIONS"}, nil, AddAttachments))
-
-	// Document Page Meta
 	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/pages/{pageID}/meta", []string{"GET", "OPTIONS"}, nil, GetDocumentPageMeta))
+	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/pages/{pageID}/copy/{targetID}", []string{"POST", "OPTIONS"}, nil, CopyPage))
 
 	// Organization
 	log.IfErr(Add(RoutePrefixPrivate, "organizations/{orgID}", []string{"GET", "OPTIONS"}, nil, GetOrganization))
@@ -216,6 +216,12 @@ func init() {
 	log.IfErr(Add(RoutePrefixPrivate, "sections", []string{"GET", "OPTIONS"}, nil, GetSections))
 	log.IfErr(Add(RoutePrefixPrivate, "sections", []string{"POST", "OPTIONS"}, nil, RunSectionCommand))
 	log.IfErr(Add(RoutePrefixPrivate, "sections/refresh", []string{"GET", "OPTIONS"}, nil, RefreshSections))
+	log.IfErr(Add(RoutePrefixPrivate, "sections/blocks/space/{folderID}", []string{"GET", "OPTIONS"}, nil, GetBlocksForSpace))
+	log.IfErr(Add(RoutePrefixPrivate, "sections/blocks/{blockID}", []string{"GET", "OPTIONS"}, nil, GetBlock))
+	log.IfErr(Add(RoutePrefixPrivate, "sections/blocks/{blockID}", []string{"PUT", "OPTIONS"}, nil, UpdateBlock))
+	log.IfErr(Add(RoutePrefixPrivate, "sections/blocks/{blockID}", []string{"DELETE", "OPTIONS"}, nil, DeleteBlock))
+	log.IfErr(Add(RoutePrefixPrivate, "sections/blocks", []string{"POST", "OPTIONS"}, nil, AddBlock))
+	log.IfErr(Add(RoutePrefixPrivate, "sections/targets", []string{"GET", "OPTIONS"}, nil, GetPageMoveCopyTargets))
 
 	// Links
 	log.IfErr(Add(RoutePrefixPrivate, "links/{folderID}/{documentID}/{pageID}", []string{"GET", "OPTIONS"}, nil, GetLinkCandidates))

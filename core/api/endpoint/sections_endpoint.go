@@ -13,6 +13,7 @@ package endpoint
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/documize/community/core/api/entity"
@@ -20,6 +21,8 @@ import (
 	"github.com/documize/community/core/api/util"
 	"github.com/documize/community/core/log"
 	"github.com/documize/community/core/section/provider"
+	"github.com/documize/community/core/utility"
+	"github.com/gorilla/mux"
 )
 
 // GetSections returns available smart sections.
@@ -76,8 +79,7 @@ func RunSectionCommand(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// RefreshSections updates document sections where the data
-// is externally sourced.
+// RefreshSections updates document sections where the data is externally sourced.
 func RefreshSections(w http.ResponseWriter, r *http.Request) {
 	method := "RefreshSections"
 	p := request.GetPersister(r)
@@ -175,4 +177,215 @@ func RefreshSections(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeSuccessBytes(w, json)
+}
+
+/**************************************************
+ * Reusable Content Blocks
+ **************************************************/
+
+// AddBlock inserts new reusable content block into database.
+func AddBlock(w http.ResponseWriter, r *http.Request) {
+	method := "AddBlock"
+	p := request.GetPersister(r)
+
+	defer utility.Close(r.Body)
+	body, err := ioutil.ReadAll(r.Body)
+
+	if err != nil {
+		writeBadRequestError(w, method, "Bad payload")
+		return
+	}
+
+	b := entity.Block{}
+	err = json.Unmarshal(body, &b)
+	if err != nil {
+		writePayloadError(w, method, err)
+		return
+	}
+
+	if !p.CanUploadDocument(b.LabelID) {
+		writeForbiddenError(w)
+		return
+	}
+
+	b.RefID = util.UniqueID()
+
+	tx, err := request.Db.Beginx()
+	if err != nil {
+		writeTransactionError(w, method, err)
+		return
+	}
+	p.Context.Transaction = tx
+
+	err = p.AddBlock(b)
+	if err != nil {
+		log.IfErr(tx.Rollback())
+		writeGeneralSQLError(w, method, err)
+		return
+	}
+
+	log.IfErr(tx.Commit())
+
+	b, err = p.GetBlock(b.RefID)
+	if err != nil {
+		writeGeneralSQLError(w, method, err)
+		return
+	}
+
+	json, err := json.Marshal(b)
+	if err != nil {
+		writeJSONMarshalError(w, method, "block", err)
+		return
+	}
+
+	writeSuccessBytes(w, json)
+}
+
+// GetBlock returns requested reusable content block.
+func GetBlock(w http.ResponseWriter, r *http.Request) {
+	method := "GetBlock"
+	p := request.GetPersister(r)
+
+	params := mux.Vars(r)
+	blockID := params["blockID"]
+
+	if len(blockID) == 0 {
+		writeMissingDataError(w, method, "blockID")
+		return
+	}
+
+	b, err := p.GetBlock(blockID)
+	if err != nil {
+		writeGeneralSQLError(w, method, err)
+		return
+	}
+
+	json, err := json.Marshal(b)
+	if err != nil {
+		writeJSONMarshalError(w, method, "block", err)
+		return
+	}
+
+	writeSuccessBytes(w, json)
+}
+
+// GetBlocksForSpace returns available reusable content blocks for the space.
+func GetBlocksForSpace(w http.ResponseWriter, r *http.Request) {
+	method := "GetBlocksForSpace"
+	p := request.GetPersister(r)
+
+	params := mux.Vars(r)
+	folderID := params["folderID"]
+
+	if len(folderID) == 0 {
+		writeMissingDataError(w, method, "folderID")
+		return
+	}
+
+	var b []entity.Block
+	var err error
+
+	b, err = p.GetBlocksForSpace(folderID)
+
+	if len(b) == 0 {
+		b = []entity.Block{}
+	}
+
+	if err != nil {
+		writeGeneralSQLError(w, method, err)
+		return
+	}
+
+	json, err := json.Marshal(b)
+	if err != nil {
+		writeJSONMarshalError(w, method, "block", err)
+		return
+	}
+
+	writeSuccessBytes(w, json)
+}
+
+// UpdateBlock inserts new reusable content block into database.
+func UpdateBlock(w http.ResponseWriter, r *http.Request) {
+	method := "UpdateBlock"
+	p := request.GetPersister(r)
+
+	defer utility.Close(r.Body)
+	body, err := ioutil.ReadAll(r.Body)
+
+	if err != nil {
+		writeBadRequestError(w, method, "Bad payload")
+		return
+	}
+
+	b := entity.Block{}
+	err = json.Unmarshal(body, &b)
+	if err != nil {
+		writePayloadError(w, method, err)
+		return
+	}
+
+	if !p.CanUploadDocument(b.LabelID) {
+		writeForbiddenError(w)
+		return
+	}
+
+	tx, err := request.Db.Beginx()
+	if err != nil {
+		writeTransactionError(w, method, err)
+		return
+	}
+
+	p.Context.Transaction = tx
+
+	err = p.UpdateBlock(b)
+	if err != nil {
+		log.IfErr(tx.Rollback())
+		writeGeneralSQLError(w, method, err)
+		return
+	}
+
+	log.IfErr(tx.Commit())
+
+	writeSuccessEmptyJSON(w)
+}
+
+// DeleteBlock removes requested reusable content block.
+func DeleteBlock(w http.ResponseWriter, r *http.Request) {
+	method := "DeleteBlock"
+	p := request.GetPersister(r)
+
+	params := mux.Vars(r)
+	blockID := params["blockID"]
+
+	if len(blockID) == 0 {
+		writeMissingDataError(w, method, "blockID")
+		return
+	}
+
+	tx, err := request.Db.Beginx()
+	if err != nil {
+		writeTransactionError(w, method, err)
+		return
+	}
+
+	p.Context.Transaction = tx
+
+	_, err = p.DeleteBlock(blockID)
+	if err != nil {
+		log.IfErr(tx.Rollback())
+		writeGeneralSQLError(w, method, err)
+		return
+	}
+
+	err = p.RemoveBlockReference(blockID)
+	if err != nil {
+		log.IfErr(tx.Rollback())
+		writeGeneralSQLError(w, method, err)
+		return
+	}
+
+	log.IfErr(tx.Commit())
+
+	writeSuccessEmptyJSON(w)
 }

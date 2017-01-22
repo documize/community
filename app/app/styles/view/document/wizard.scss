@@ -4,6 +4,17 @@
 	> .canvas {
 		padding: 0;
 
+		> .divider {
+			margin: 30px 0 20px 0;
+			border-top: 1px dotted $color-gray;
+		}
+
+		> .template-caption {
+			text-align: center;
+			color: $color-gray;
+			padding-bottom: 10px;
+		}
+
 		> .list {
 			margin: 0;
 			padding: 0;
@@ -17,6 +28,10 @@
 
 				&:hover {
 					@include ease-in();
+
+					> .actions {
+						display: inline-block;
+					}
 
 					> .details {
 						> .title {
@@ -59,6 +74,19 @@
 						color: $color-gray;
 						font-size: 0.9rem;
 						margin-top: 5px;
+					}
+				}
+
+				> .actions {
+					display: none;
+					vertical-align: top;
+					text-align: center;
+					width: 20px;
+					margin-top: 5px;
+					opacity: 0.4;
+
+					> .material-icons, a {
+						color: $color-gray;
 					}
 				}
 			}

@@ -56,8 +56,6 @@ func (p *Persister) AddPin(pin entity.Pin) (err error) {
 
 // GetPin returns requested pinned item.
 func (p *Persister) GetPin(id string) (pin entity.Pin, err error) {
-	err = nil
-
 	stmt, err := Db.Preparex("SELECT id, refid, orgid, userid, labelid as folderid, documentid, pin, sequence, created, revised FROM pin WHERE orgid=? AND refid=?")
 	defer utility.Close(stmt)
 
@@ -90,7 +88,6 @@ func (p *Persister) GetUserPins(userID string) (pins []entity.Pin, err error) {
 
 // UpdatePin updates existing pinned item.
 func (p *Persister) UpdatePin(pin entity.Pin) (err error) {
-	err = nil
 	pin.Revised = time.Now().UTC()
 
 	var stmt *sqlx.NamedStmt
@@ -114,8 +111,6 @@ func (p *Persister) UpdatePin(pin entity.Pin) (err error) {
 
 // UpdatePinSequence updates existing pinned item sequence number
 func (p *Persister) UpdatePinSequence(pinID string, sequence int) (err error) {
-	err = nil
-
 	stmt, err := p.Context.Transaction.Preparex("UPDATE pin SET sequence=?, revised=? WHERE orgid=? AND userid=? AND refid=?")
 	defer utility.Close(stmt)
 
