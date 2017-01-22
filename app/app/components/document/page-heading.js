@@ -171,7 +171,7 @@ export default Ember.Component.extend(TooltipMixin, {
 
 		onCopyPage(page) {
 			// can't proceed if no data
-			if (this.get('documentList'.length) === 0) {
+			if (this.get('documentList.length') === 0) {
 				return;
 			}
 
