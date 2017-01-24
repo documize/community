@@ -19,41 +19,43 @@
 				</li>
 			{{/each}}
 		</ul>
-		{{#if hasBlocks}}
-			<div class="divider"></div>
-			<div class="template-caption">Reusable content</div>
-			<ul class="list">
-				{{#each blocks as |block|}}
-					<li class="item min-height">
-						<div class="icon">
-							<img class="img" src="/assets/img/section-saved.png" srcset="/assets/img/section-saved@2x.png"  {{action 'onInsertBlock' block}}/>
-							<div class="actions">
-								{{#link-to 'document.block' folder.id folder.slug document.id document.slug block.id}}
-									<i class="material-icons">mode_edit</i>
-								{{/link-to}}
-								<i class="material-icons" id={{block.deleteId}}>delete</i>
+		{{#if blockMode}}
+			{{#if hasBlocks}}
+				<div class="divider"></div>
+				<div class="template-caption">Reusable content</div>
+				<ul class="list">
+					{{#each blocks as |block|}}
+						<li class="item min-height">
+							<div class="icon">
+								<img class="img" src="/assets/img/section-saved.png" srcset="/assets/img/section-saved@2x.png"  {{action 'onInsertBlock' block}}/>
+								<div class="actions">
+									{{#link-to 'document.block' folder.id folder.slug document.id document.slug block.id}}
+										<i class="material-icons">mode_edit</i>
+									{{/link-to}}
+									<i class="material-icons" id={{block.deleteId}}>delete</i>
+								</div>
 							</div>
-						</div>
-						<div class="details" {{action 'onInsertBlock' block}}>
-							<div class='title'>
-								{{block.title}}
+							<div class="details" {{action 'onInsertBlock' block}}>
+								<div class='title'>
+									{{block.title}}
+								</div>
+								<div class='desc'>{{block.excerpt}}</div>
+								<div class='desc'>By {{block.firstname}} {{block.lastname}}, {{time-ago block.created}} (used: {{ block.used }})</div>
 							</div>
-							<div class='desc'>{{block.excerpt}}</div>
-							<div class='desc'>By {{block.firstname}} {{block.lastname}}, {{time-ago block.created}} (used: {{ block.used }})</div>
-						</div>
-						<div class="clearfix" />
-						{{#dropdown-dialog target=block.deleteId position="bottom left" button="Delete" color="flat-red" onAction=(action 'onDeleteBlock' block.id)}}
-			                <p>
-								Are you sure you want to delete block<br/>
-								<span class="bold">{{block.title}}?</span>
-							</p>
-			            {{/dropdown-dialog}}
-					</li>
-				{{/each}}
-			</ul>
-		{{else}}
-			<div class="divider"></div>
-			<div class="template-caption">Reusable content appears below</div>
+							<div class="clearfix" />
+							{{#dropdown-dialog target=block.deleteId position="bottom left" button="Delete" color="flat-red" onAction=(action 'onDeleteBlock' block.id)}}
+								<p>
+									Are you sure you want to delete block<br/>
+									<span class="bold">{{block.title}}?</span>
+								</p>
+							{{/dropdown-dialog}}
+						</li>
+					{{/each}}
+				</ul>
+			{{else}}
+				<div class="divider"></div>
+				<div class="template-caption">Reusable content appears below</div>
+			{{/if}}
 		{{/if}}
 	</div>
 </div>

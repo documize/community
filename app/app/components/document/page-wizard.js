@@ -12,16 +12,20 @@
 import Ember from 'ember';
 import NotifierMixin from '../../mixins/notifier';
 
-const {
-	computed,
-} = Ember;
-
 export default Ember.Component.extend(NotifierMixin, {
 	display: 'section', // which CSS to use
 	hasTemplates: false,
+	hasBlocks: false,
+	blockMode: false,
 
 	didReceiveAttrs() {
 		let blocks = this.get('blocks');
+		let blockMode = is.not.undefined(blocks);
+
+		this.set('blockMode', blockMode);
+		if (!blockMode) {
+			return;
+		}
 
 		this.set('hasBlocks', blocks.get('length') > 0);
 
