@@ -212,10 +212,20 @@
 			padding: 0;
 
 			> .item {
+				cursor: pointer;
 				list-style: none;
 				padding: 10px 5px;
-				margin: 20px 0;
+				margin: 10px 0;
+				min-height: 90px;
 				@include ease-in();
+
+				&:hover {
+					> .icon {
+						> .edit-control {
+							display: block;
+						}
+					}
+				}
 
 				.icon {
 					text-align: center;
@@ -223,7 +233,6 @@
 					width: 50px;
 
 					> .img {
-						float: left;
 						text-align: center;
 						display: inline-block;
 						height: 40px;
@@ -231,15 +240,16 @@
 					}
 
 					> .edit-control {
-						color: $color-gray;
-						font-size: 0.9rem;
+						display: none;
+						vertical-align: top;
 						text-align: center;
-						float: left;
-						margin: 5px 0 0 9px;
+						margin-top: 5px;
+						opacity: 0.5;
 						cursor: pointer;
+						color: $color-gray;
 
 						&:hover {
-							color: $color-link;
+							color: $color-link;								
 						}
 					}
 				}
@@ -247,7 +257,7 @@
 				> .details {
 					vertical-align: top;
 					display: inline-block;
-					width: 80%;
+					width: 85%;
 					cursor: pointer;
 
 					> .title {
@@ -258,7 +268,7 @@
 					}
 
 					> .desc {
-						color: $color-off-black;
+						color: $color-gray;
 						font-size: 0.9rem;
 						margin-top: 5px;
 					}

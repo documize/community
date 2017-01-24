@@ -56,7 +56,7 @@
 					<div class="input-control">
 						<label>Target</label>
 						<div class="tip">Select where the content should be copied to</div>
-						{{ui-select content=documentList action=(action 'onTargetChange') optionValuePath="id" optionLabelPath="name" selection=document}}
+						{{ui-select cssClass="dropdown-page-toolbar" content=documentList action=(action 'onTargetChange') optionValuePath="id" optionLabelPath="name" selection=document}}
 					</div>
 	            {{/dropdown-dialog}}
 				{{#dropdown-dialog id=moveDialogId target=moveButtonId position="bottom right" button="Move" color="flat-green" onOpenCallback=(action 'onCopyDialogOpen') onAction=(action 'onMovePage' page)}}
@@ -68,7 +68,7 @@
 					<div class="input-control">
 						<label>Target</label>
 						<div class="tip">Select where the content should be moved to</div>
-						{{ui-select content=documentListOthers action=(action 'onTargetChange') optionValuePath="id" optionLabelPath="name"}}
+						{{ui-select cssClass="dropdown-page-toolbar" content=documentListOthers action=(action 'onTargetChange') optionValuePath="id" optionLabelPath="name"}}
 					</div>
 	            {{/dropdown-dialog}}
 			{{/if}}

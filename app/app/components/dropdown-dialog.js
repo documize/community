@@ -57,7 +57,7 @@ export default Ember.Component.extend({
 			classes: 'drop-theme-basic',
 			position: self.get('position'),
 			openOn: self.get('open'),
-			constrainToWindow: false,
+			constrainToWindow: true,
 			constrainToScrollParent: false,
 			tetherOptions: {
 				offset: self.offset,

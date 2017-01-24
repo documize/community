@@ -39,21 +39,19 @@
 
 		> .wysiwyg {
 			> .is-a-page {
-				.page-title {
-					> .page-toolbar {
-						// opacity: 0.5;
-						opacity: 0;
-						@extend .transition-all;
+				@extend .transition-all;
 
-						// &:hover {
-						// 	opacity: 1;
-						// }
-					}
-
-					&:hover {
-						.page-toolbar {
+				&:hover {
+					.page-title {
+						> .page-toolbar {
 							opacity: 1;
 						}
+					}
+				}
+
+				.page-title {
+					> .page-toolbar {
+						opacity: 0;
 					}
 				}
 			}
@@ -64,4 +62,8 @@
 .empty-state-document {
 	margin-top: 150px;
 	text-align: center;
+}
+
+.dropdown-page-toolbar {
+	width: 300px;
 }
