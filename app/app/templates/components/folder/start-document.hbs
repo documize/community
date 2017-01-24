@@ -9,7 +9,9 @@
 			{{#each savedTemplates key="id" as |template|}}
 				<li class="item">
 					<div class="icon">
-						<img class="img" src="/assets/img/{{template.img}}.png" srcset="/assets/img/{{template.img}}@2x.png" {{action 'startDocument' template}} />
+						<div class="symbol" {{action 'startDocument' template}}>
+							<i class="material-icons">{{template.img}}</i>
+						</div>
 						{{#if editor}}
 							{{#unless template.locked}}
 								<i class="material-icons edit-control" {{action 'editTemplate' template}}>mode_edit</i>

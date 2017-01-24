@@ -47,13 +47,13 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
                 id: "0",
                 title: "Empty",
 				description: "An empty canvas for your words",
-				img: "template-blank",
+				img: "insert_drive_file",
 				layout: "doc",
 				locked: true
             };
 
 			saved.forEach(function(t) {
-				Ember.set(t, 'img', 'template-saved');
+				Ember.set(t, 'img', 'content_copy');
 			});
 
             saved.unshiftObject(emptyTemplate);

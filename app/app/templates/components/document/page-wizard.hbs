@@ -27,7 +27,9 @@
 					{{#each blocks as |block|}}
 						<li class="item min-height">
 							<div class="icon">
-								<img class="img" src="/assets/img/section-saved.png" srcset="/assets/img/section-saved@2x.png"  {{action 'onInsertBlock' block}}/>
+								<div class="symbol" {{action 'onInsertBlock' block}}>
+									<i class="material-icons">view_agenda</i>
+								</div>
 								<div class="actions">
 									{{#link-to 'document.block' folder.id folder.slug document.id document.slug block.id}}
 										<i class="material-icons">mode_edit</i>
