@@ -11,25 +11,38 @@
 
 package trello
 
-import (
-	"strings"
-	"time"
-)
+import "strings"
+
+const renderTemplate = `
+<div class="section-trello-render">
+	<p>There are {{ .CardCount }} cards across {{ .ListCount }} lists for board <a href="{{ .Board.URL }}">{{.Board.Name}}.</a></p>
+	<div class="trello-board" style="background-color: {{.Board.Prefs.BackgroundColor}}">
+		<a href="{{ .Board.URL }}"><div class="trello-board-title">{{.Board.Name}}</div></a>
+		{{range $data := .Data}}
+			<div class="trello-list">
+				<div class="trello-list-title">{{ $data.List.Name }}</div>
+				{{range $card := $data.Cards}}
+					<a href="{{ $card.URL }}">
+						<div class="trello-card">
+							{{ $card.Name }}
+						</div>
+					</a>
+				{{end}}
+			</div>
+		{{end}}
+	</div>
+</div>
+`
 
 type secrets struct {
 	Token string `json:"token"`
 }
 
 type trelloConfig struct {
-	AppKey   string        `json:"appKey"`
-	Token    string        `json:"token"`
-	Board    trelloBoard   `json:"board"`
-	Lists    []trelloList  `json:"lists"`
-	Boards   []trelloBoard `json:"boards"`
-	Since    string        `json:"since,omitempty"`
-	SincePtr *time.Time    `json:"-"`
-
-	OrgByID map[string]trelloOrganization `json:"-"`
+	AppKey string       `json:"appKey"`
+	Token  string       `json:"token"`
+	Board  trelloBoard  `json:"board"`
+	Lists  []trelloList `json:"lists"`
 }
 
 func (c *trelloConfig) Clean() {
@@ -38,73 +51,6 @@ func (c *trelloConfig) Clean() {
 }
 
 // Trello objects based upon https://github.com/VojtechVitek/go-trello
-
-type trelloOrganization struct {
-	ID          string   `json:"id"`
-	Name        string   `json:"name"`
-	DisplayName string   `json:"displayName"`
-	Desc        string   `json:"desc"`
-	DescData    string   `json:"descData"`
-	URL         string   `json:"url"`
-	Website     string   `json:"website"`
-	LogoHash    string   `json:"logoHash"`
-	Products    []string `json:"products"`
-	PowerUps    []string `json:"powerUps"`
-}
-
-type trelloAction struct {
-	ID              string `json:"id"`
-	IDMemberCreator string `json:"idMemberCreator"`
-	Data            struct {
-		DateLastEdited string `json:"dateLastEdited"`
-		ListBefore     struct {
-			ID   string `json:"id"`
-			Name string `json:"name"`
-		} `json:"listBefore"`
-		ListAfter struct {
-			ID   string `json:"id"`
-			Name string `json:"name"`
-		} `json:"listAfter"`
-		CheckItem struct {
-			ID    string `json:"id"`
-			State string `json:"state"`
-			Name  string `json:"name"`
-		} `json:"checkItem"`
-		CheckList struct {
-			ID   string `json:"id"`
-			Name string `json:"name"`
-		} `json:"checklist"`
-		List struct {
-			ID   string `json:"id"`
-			Name string `json:"name"`
-		} `json:"list"`
-		TextData struct {
-			Emoji struct{} `json:"emoji"`
-		} `json:"textData"`
-		Board struct {
-			ID        string `json:"id"`
-			Name      string `json:"name"`
-			ShortLink string `json:"shortLink"`
-		} `json:"board"`
-		Card struct {
-			ID        string `json:"id"`
-			Name      string `json:"name"`
-			ShortLink string `json:"shortLink"`
-			IDShort   int    `json:"idShort"`
-		} `json:"card"`
-		Text string `json:"text"`
-	} `json:"data"`
-	Type          string `json:"type"`
-	Date          string `json:"date"`
-	MemberCreator struct {
-		ID         string `json:"id"`
-		AvatarHash string `json:"avatarHash"`
-		FullName   string `json:"fullName"`
-		Initials   string `json:"initials"`
-		Username   string `json:"username"`
-	} `json:"memberCreator"`
-}
-
 type trelloMember struct {
 	ID         string `json:"id"`
 	AvatarHash string `json:"avatarHash"`
@@ -147,7 +93,6 @@ type trelloBoard struct {
 	Name           string `json:"name"`
 	Closed         bool   `json:"closed"`
 	OrganizationID string `json:"idOrganization"`
-	OrgName        string `json:"orgName"`
 	Pinned         bool   `json:"pinned"`
 	URL            string `json:"url"`
 	ShortURL       string `json:"shortUrl"`
@@ -183,8 +128,6 @@ type trelloBoard struct {
 		Blue   string `json:"blue"`
 		Purple string `json:"purple"`
 	} `json:"labelNames"`
-	Included bool   `json:"included"` // indicates whether we display this board
-	NamePath string `json:"namePath"` // the "team / board" form
 }
 
 type trelloBoardBackground struct {
@@ -253,48 +196,9 @@ type trelloListCards struct {
 	Cards []trelloCard
 }
 
-type trelloActionSummaryEntry struct {
-	Name  string
-	Count int
-}
-
-type trelloRenderBoard struct {
-	Board         trelloBoard
-	Data          []trelloListCards
-	CardCount     int
-	ListCount     int
-	Actions       []trelloAction
-	ActionSummary []trelloActionSummaryEntry
-	Archived      []trelloCard
-}
-
-type trelloSharedLabel struct {
-	Name   string
-	Color  string
-	Boards []trelloBoard
-}
-
-type trelloBoardAssignCount struct {
-	BoardName string
-	Count     int
-}
-
-type trelloBoardAssign struct {
-	AvatarHash   string
-	MemberName   string
-	AssignCounts []trelloBoardAssignCount
-}
-
 type trelloRender struct {
-	Boards []trelloRenderBoard
-	Since  string
-	Detail trelloRenderBoard
-
-	// items below are generated during the render phase
-	SharedLabels      []trelloSharedLabel
-	MembersByID       map[string]trelloMember
-	MemberBoardAssign []trelloBoardAssign
-	CardAssignTotal   int
-	CardTotal         int
-	ListTotal         int
+	Board     trelloBoard
+	Data      []trelloListCards
+	CardCount int
+	ListCount int
 }

@@ -27,7 +27,7 @@ import (
 
 const me = "papertrail"
 
-// Provider represents Gemini
+// Provider represents Papertrail
 type Provider struct {
 }
 
