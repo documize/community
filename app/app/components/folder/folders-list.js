@@ -80,6 +80,12 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 		this.eventBus.subscribe('scrolled', this, 'positionTool');
 	},
 
+	willDestroyElement() {
+		this.eventBus.unsubscribe('resized');
+		this.eventBus.unsubscribe('scrolled');
+		this.destroyTooltips();
+	},
+
 	didReceiveAttrs() {
 		let folders = this.get('folders');
 
@@ -109,10 +115,6 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 		this.set('hasPublicFolders', this.get('publicFolders.length') > 0);
 		this.set('hasPrivateFolders', this.get('privateFolders.length') > 0);
 		this.set('hasProtectedFolders', this.get('protectedFolders.length') > 0);
-	},
-
-	willDestroyElement() {
-		this.destroyTooltips();
 	},
 
 	positionTool() {

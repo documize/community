@@ -34,6 +34,10 @@ export default Ember.Component.extend({
 		this.sizeSidebar();
 	},
 
+	willDestroyElement() {
+		this.eventBus.unsubscribe('resized');
+	},
+
 	sizeSidebar() {
 		let size = $(window).height() - 200;
 		this.$('.document-history > .sidebar').css('height', size + "px");

@@ -42,6 +42,8 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 	},
 
 	willDestroyElement() {
+        this.eventBus.unsubscribe('resized');
+		this.eventBus.unsubscribe('scrolled');
 		this.destroyTooltips();
 	},
 

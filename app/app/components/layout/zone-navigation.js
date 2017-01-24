@@ -128,6 +128,9 @@ export default Ember.Component.extend(TooltipMixin, {
 			sortable.destroy();
 		}
 
+		this.eventBus.unsubscribe('resized');
+		this.eventBus.unsubscribe('pinChange');
+
 		this.destroyTooltips();
 	},
 
