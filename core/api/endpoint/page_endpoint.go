@@ -84,6 +84,12 @@ func AddDocumentPage(w http.ResponseWriter, r *http.Request) {
 	model.Meta.SetDefaults()
 	// page.Title = template.HTMLEscapeString(page.Title)
 
+	doc, err := p.GetDocument(documentID)
+	if err != nil {
+		writeGeneralSQLError(w, method, err)
+		return
+	}
+
 	tx, err := request.Db.Beginx()
 	if err != nil {
 		writeTransactionError(w, method, err)
@@ -110,12 +116,17 @@ func AddDocumentPage(w http.ResponseWriter, r *http.Request) {
 		p.IncrementBlockUsage(model.Page.BlockID)
 	}
 
+	_ = p.RecordUserActivity(entity.UserActivity{
+		LabelID:      doc.LabelID,
+		SourceID:     model.Page.DocumentID,
+		SourceType:   entity.ActivitySourceTypeDocument,
+		ActivityType: entity.ActivityTypeCreated})
+
 	log.IfErr(tx.Commit())
 
 	newPage, _ := p.GetPage(pageID)
 
 	json, err := json.Marshal(newPage)
-
 	if err != nil {
 		writeJSONMarshalError(w, method, "page", err)
 		return
@@ -265,7 +276,6 @@ func GetDocumentPagesBatch(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json, err := json.Marshal(pages)
-
 	if err != nil {
 		writeJSONMarshalError(w, method, "document", err)
 		return
@@ -299,13 +309,17 @@ func DeleteDocumentPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tx, err := request.Db.Beginx()
+	doc, err := p.GetDocument(documentID)
+	if err != nil {
+		writeGeneralSQLError(w, method, err)
+		return
+	}
 
+	tx, err := request.Db.Beginx()
 	if err != nil {
 		writeTransactionError(w, method, err)
 		return
 	}
-
 	p.Context.Transaction = tx
 
 	page, err := p.GetPage(pageID)
@@ -326,6 +340,12 @@ func DeleteDocumentPage(w http.ResponseWriter, r *http.Request) {
 		writeGeneralSQLError(w, method, err)
 		return
 	}
+
+	_ = p.RecordUserActivity(entity.UserActivity{
+		LabelID:      doc.LabelID,
+		SourceID:     documentID,
+		SourceType:   entity.ActivitySourceTypeDocument,
+		ActivityType: entity.ActivityTypeDeleted})
 
 	log.IfErr(tx.Commit())
 
@@ -352,7 +372,6 @@ func DeleteDocumentPages(w http.ResponseWriter, r *http.Request) {
 
 	defer utility.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
-
 	if err != nil {
 		writeBadRequestError(w, method, "Bad body")
 		return
@@ -366,13 +385,17 @@ func DeleteDocumentPages(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tx, err := request.Db.Beginx()
+	doc, err := p.GetDocument(documentID)
+	if err != nil {
+		writeGeneralSQLError(w, method, err)
+		return
+	}
 
+	tx, err := request.Db.Beginx()
 	if err != nil {
 		writeTransactionError(w, method, err)
 		return
 	}
-
 	p.Context.Transaction = tx
 
 	for _, page := range *model {
@@ -395,6 +418,12 @@ func DeleteDocumentPages(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	_ = p.RecordUserActivity(entity.UserActivity{
+		LabelID:      doc.LabelID,
+		SourceID:     documentID,
+		SourceType:   entity.ActivitySourceTypeDocument,
+		ActivityType: entity.ActivityTypeDeleted})
+
 	log.IfErr(tx.Commit())
 
 	writeSuccessEmptyJSON(w)
@@ -406,22 +435,20 @@ func DeleteDocumentPages(w http.ResponseWriter, r *http.Request) {
 func UpdateDocumentPage(w http.ResponseWriter, r *http.Request) {
 	method := "UpdateDocumentPage"
 	p := request.GetPersister(r)
+	params := mux.Vars(r)
 
 	if !p.Context.Editor {
 		writeForbiddenError(w)
 		return
 	}
 
-	params := mux.Vars(r)
 	documentID := params["documentID"]
-
 	if len(documentID) == 0 {
 		writeMissingDataError(w, method, "documentID")
 		return
 	}
 
 	pageID := params["pageID"]
-
 	if len(pageID) == 0 {
 		writeMissingDataError(w, method, "pageID")
 		return
@@ -429,7 +456,6 @@ func UpdateDocumentPage(w http.ResponseWriter, r *http.Request) {
 
 	defer utility.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
-
 	if err != nil {
 		writeBadRequestError(w, method, "Bad request body")
 		return
@@ -437,7 +463,6 @@ func UpdateDocumentPage(w http.ResponseWriter, r *http.Request) {
 
 	model := new(models.PageModel)
 	err = json.Unmarshal(body, &model)
-
 	if err != nil {
 		writePayloadError(w, method, err)
 		return
@@ -448,8 +473,13 @@ func UpdateDocumentPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tx, err := request.Db.Beginx()
+	doc, err := p.GetDocument(documentID)
+	if err != nil {
+		writeGeneralSQLError(w, method, err)
+		return
+	}
 
+	tx, err := request.Db.Beginx()
 	if err != nil {
 		writeTransactionError(w, method, err)
 		return
@@ -487,6 +517,12 @@ func UpdateDocumentPage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = p.UpdatePageMeta(model.Meta, true) // change the UserID to the current one
+
+	_ = p.RecordUserActivity(entity.UserActivity{
+		LabelID:      doc.LabelID,
+		SourceID:     model.Page.DocumentID,
+		SourceType:   entity.ActivitySourceTypeDocument,
+		ActivityType: entity.ActivityTypeEdited})
 
 	log.IfErr(tx.Commit())
 
@@ -894,6 +930,13 @@ func RollbackDocumentPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// fetch doc
+	doc, err := p.GetDocument(documentID)
+	if err != nil {
+		writeGeneralSQLError(w, method, err)
+		return
+	}
+
 	// roll back page
 	page.Body = revision.Body
 	refID := util.UniqueID()
@@ -915,6 +958,12 @@ func RollbackDocumentPage(w http.ResponseWriter, r *http.Request) {
 		writeGeneralSQLError(w, method, err)
 		return
 	}
+
+	_ = p.RecordUserActivity(entity.UserActivity{
+		LabelID:      doc.LabelID,
+		SourceID:     page.DocumentID,
+		SourceType:   entity.ActivitySourceTypeDocument,
+		ActivityType: entity.ActivityTypeReverted})
 
 	log.IfErr(tx.Commit())
 
@@ -962,6 +1011,12 @@ func CopyPage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// fetch data
+	doc, err := p.GetDocument(documentID)
+	if err != nil {
+		writeGeneralSQLError(w, method, err)
+		return
+	}
+
 	page, err := p.GetPage(pageID)
 	if err == sql.ErrNoRows {
 		writeNotFoundError(w, method, documentID)
@@ -1012,6 +1067,13 @@ func CopyPage(w http.ResponseWriter, r *http.Request) {
 	if len(model.Page.BlockID) > 0 {
 		p.IncrementBlockUsage(model.Page.BlockID)
 	}
+
+	// Log action against target document
+	_ = p.RecordUserActivity(entity.UserActivity{
+		LabelID:      doc.LabelID,
+		SourceID:     targetID,
+		SourceType:   entity.ActivitySourceTypeDocument,
+		ActivityType: entity.ActivityTypeEdited})
 
 	log.IfErr(tx.Commit())
 

@@ -68,8 +68,8 @@ func AddFolder(w http.ResponseWriter, r *http.Request) {
 	id := util.UniqueID()
 	folder.RefID = id
 	folder.OrgID = p.Context.OrgID
-	err = addFolder(p, &folder)
 
+	err = addFolder(p, &folder)
 	if err != nil {
 		log.IfErr(tx.Rollback())
 		writeGeneralSQLError(w, method, err)
@@ -78,10 +78,9 @@ func AddFolder(w http.ResponseWriter, r *http.Request) {
 
 	log.IfErr(tx.Commit())
 
-	folder, err = p.GetLabel(id)
+	folder, _ = p.GetLabel(id)
 
 	json, err := json.Marshal(folder)
-
 	if err != nil {
 		writeJSONMarshalError(w, method, "folder", err)
 		return

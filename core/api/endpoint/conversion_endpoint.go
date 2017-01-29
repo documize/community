@@ -62,19 +62,15 @@ func uploadDocument(w http.ResponseWriter, r *http.Request) (string, string, str
 	}
 
 	// generate job id
-	var job = "some-uuid"
-
 	newUUID, err := uuid.NewV4()
-
 	if err != nil {
 		writeServerError(w, method, err)
 		return "", "", ""
 	}
 
-	job = newUUID.String()
+	job := newUUID.String()
 
 	err = storageProvider.Upload(job, filename.Filename, b.Bytes())
-
 	if err != nil {
 		writeServerError(w, method, err)
 		return "", "", ""
@@ -229,10 +225,7 @@ func processDocument(p request.Persister, filename, job, folderID string, fileRe
 		return
 	}
 
-	// New code from normal conversion code
-
 	tx, err = request.Db.Beginx()
-
 	if err != nil {
 		log.Error("Cannot begin a transatcion", err)
 		return
@@ -248,9 +241,13 @@ func processDocument(p request.Persister, filename, job, folderID string, fileRe
 		return
 	}
 
-	log.IfErr(tx.Commit())
+	p.RecordUserActivity(entity.UserActivity{
+		LabelID:      newDocument.LabelID,
+		SourceID:     newDocument.RefID,
+		SourceType:   entity.ActivitySourceTypeDocument,
+		ActivityType: entity.ActivityTypeCreated})
 
-	// End new code
+	log.IfErr(tx.Commit())
 
 	return
 }

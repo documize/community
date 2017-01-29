@@ -59,8 +59,6 @@ func (p *Persister) AddOrganization(org entity.Organization) error {
 
 // GetOrganization returns the Organization reocrod from the organization database table with the given id.
 func (p *Persister) GetOrganization(id string) (org entity.Organization, err error) {
-	err = nil
-
 	stmt, err := Db.Preparex("SELECT id, refid, company, title, message, url, domain, email, serial, active, allowanonymousaccess, created, revised FROM organization WHERE refid=?")
 	defer utility.Close(stmt)
 
@@ -128,7 +126,6 @@ func (p *Persister) GetOrganizationByDomain(subdomain string) (org entity.Organi
 
 // UpdateOrganization updates the given organization record in the database to the values supplied.
 func (p *Persister) UpdateOrganization(org entity.Organization) (err error) {
-	err = nil
 	org.Revised = time.Now().UTC()
 
 	stmt, err := p.Context.Transaction.PrepareNamed("UPDATE organization SET title=:title, message=:message, email=:email, allowanonymousaccess=:allowanonymousaccess, revised=:revised WHERE refid=:refid")
@@ -164,8 +161,6 @@ func (p *Persister) DeleteOrganization(orgID string) (rows int64, err error) {
 
 // RemoveOrganization sets the orgID organization to be inactive, thus executing a "soft delete" operation.
 func (p *Persister) RemoveOrganization(orgID string) (err error) {
-	err = nil
-
 	stmt, err := p.Context.Transaction.Preparex("UPDATE organization SET active=0 WHERE refid=?")
 	defer utility.Close(stmt)
 

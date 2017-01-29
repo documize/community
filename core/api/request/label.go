@@ -46,9 +46,6 @@ func (p *Persister) AddLabel(l entity.Label) (err error) {
 
 // GetLabel returns a folder from the store.
 func (p *Persister) GetLabel(id string) (label entity.Label, err error) {
-
-	err = nil
-
 	stmt, err := Db.Preparex("SELECT id,refid,label as name,orgid,userid,type,created,revised FROM label WHERE orgid=? and refid=?")
 	defer utility.Close(stmt)
 
@@ -69,8 +66,6 @@ func (p *Persister) GetLabel(id string) (label entity.Label, err error) {
 
 // GetPublicFolders returns folders that anyone can see.
 func (p *Persister) GetPublicFolders(orgID string) (labels []entity.Label, err error) {
-	err = nil
-
 	sql := "SELECT id,refid,label as name,orgid,userid,type,created,revised FROM label a where orgid=? AND type=1"
 
 	err = Db.Select(&labels, sql, orgID)
@@ -86,8 +81,6 @@ func (p *Persister) GetPublicFolders(orgID string) (labels []entity.Label, err e
 // GetLabels returns folders that the user can see.
 // Also handles which folders can be seen by anonymous users.
 func (p *Persister) GetLabels() (labels []entity.Label, err error) {
-	err = nil
-
 	sql := `
 (SELECT id,refid,label as name,orgid,userid,type,created,revised from label WHERE orgid=? AND type=2 AND userid=?)
 UNION ALL
@@ -117,7 +110,6 @@ ORDER BY name`
 
 // UpdateLabel saves folder changes.
 func (p *Persister) UpdateLabel(label entity.Label) (err error) {
-	err = nil
 	label.Revised = time.Now().UTC()
 
 	stmt, err := p.Context.Transaction.PrepareNamed("UPDATE label SET label=:name, type=:type, userid=:userid, revised=:revised WHERE orgid=:orgid AND refid=:refid")
@@ -140,8 +132,6 @@ func (p *Persister) UpdateLabel(label entity.Label) (err error) {
 
 // ChangeLabelOwner transfer folder ownership.
 func (p *Persister) ChangeLabelOwner(currentOwner, newOwner string) (err error) {
-	err = nil
-
 	stmt, err := p.Context.Transaction.Preparex("UPDATE label SET userid=? WHERE userid=? AND orgid=?")
 	defer utility.Close(stmt)
 
@@ -162,8 +152,6 @@ func (p *Persister) ChangeLabelOwner(currentOwner, newOwner string) (err error) 
 
 // GetFolderVisibility returns the list of people who can see shared folders.
 func (p *Persister) GetFolderVisibility() (visibleTo []entity.FolderVisibility, err error) {
-	err = nil
-
 	sql := `
 SELECT a.userid,
 	COALESCE(u.firstname, '') as firstname,

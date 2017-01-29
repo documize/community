@@ -46,9 +46,6 @@ func (p *Persister) AddLabelRole(l entity.LabelRole) (err error) {
 
 // GetLabelRoles returns a slice of labelrole records, for the given labelID in the client's organization, grouped by user.
 func (p *Persister) GetLabelRoles(labelID string) (roles []entity.LabelRole, err error) {
-
-	err = nil
-
 	query := `SELECT id, refid, labelid, orgid, userid, canview, canedit, created, revised FROM labelrole WHERE orgid=? AND labelid=?` // was + "GROUP BY userid"
 
 	err = Db.Select(&roles, query, p.Context.OrgID, labelID)

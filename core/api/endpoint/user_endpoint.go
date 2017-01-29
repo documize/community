@@ -189,7 +189,6 @@ func AddUser(w http.ResponseWriter, r *http.Request) {
 	userModel, err = getSecuredUser(p, p.Context.OrgID, userID)
 
 	json, err := json.Marshal(userModel)
-
 	if err != nil {
 		writeJSONMarshalError(w, method, "user", err)
 		return

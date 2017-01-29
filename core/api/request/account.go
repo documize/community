@@ -14,10 +14,11 @@ package request
 import (
 	"database/sql"
 	"fmt"
+	"time"
+
 	"github.com/documize/community/core/api/entity"
 	"github.com/documize/community/core/log"
 	"github.com/documize/community/core/utility"
-	"time"
 )
 
 // AddAccount inserts the given record into the datbase account table.
@@ -45,8 +46,6 @@ func (p *Persister) AddAccount(account entity.Account) (err error) {
 
 // GetUserAccount returns the databse account record corresponding to the given userID, using the client's current organizaion.
 func (p *Persister) GetUserAccount(userID string) (account entity.Account, err error) {
-	err = nil
-
 	stmt, err := Db.Preparex("SELECT a.*, b.company, b.title, b.message, b.domain FROM account a, organization b WHERE b.refid=a.orgid and a.orgid=? and a.userid=? AND b.active=1")
 	defer utility.Close(stmt)
 
@@ -67,9 +66,6 @@ func (p *Persister) GetUserAccount(userID string) (account entity.Account, err e
 
 // GetUserAccounts returns a slice of database account records, for all organizations that the userID is a member of, in organization title order.
 func (p *Persister) GetUserAccounts(userID string) (t []entity.Account, err error) {
-
-	err = nil
-
 	err = Db.Select(&t, "SELECT a.*, b.company, b.title, b.message, b.domain FROM account a, organization b WHERE a.userid=? AND a.orgid=b.refid AND b.active=1 ORDER BY b.title", userID)
 
 	if err != sql.ErrNoRows && err != nil {
@@ -81,9 +77,6 @@ func (p *Persister) GetUserAccounts(userID string) (t []entity.Account, err erro
 
 // GetAccountsByOrg returns a slice of database account records, for all users in the client's organization.
 func (p *Persister) GetAccountsByOrg() (t []entity.Account, err error) {
-
-	err = nil
-
 	err = Db.Select(&t, "SELECT a.*, b.company, b.title, b.message, b.domain FROM account a, organization b WHERE a.orgid=b.refid AND a.orgid=? AND b.active=1", p.Context.OrgID)
 
 	if err != sql.ErrNoRows && err != nil {
@@ -95,9 +88,6 @@ func (p *Persister) GetAccountsByOrg() (t []entity.Account, err error) {
 
 // UpdateAccount updates the database record for the given account to the given values.
 func (p *Persister) UpdateAccount(account entity.Account) (err error) {
-
-	err = nil
-
 	account.Revised = time.Now().UTC()
 
 	stmt, err := p.Context.Transaction.PrepareNamed("UPDATE account SET userid=:userid, admin=:admin, editor=:editor, revised=:revised WHERE orgid=:orgid AND refid=:refid")
@@ -120,7 +110,6 @@ func (p *Persister) UpdateAccount(account entity.Account) (err error) {
 
 // HasOrgAccount returns if the given orgID has valid userID.
 func (p *Persister) HasOrgAccount(orgID, userID string) bool {
-
 	row := Db.QueryRow("SELECT count(*) FROM account WHERE orgid=? and userid=?", orgID, userID)
 
 	var count int

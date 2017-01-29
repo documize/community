@@ -98,11 +98,30 @@ func GetDocument(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json, err := json.Marshal(document)
-
 	if err != nil {
 		writeJSONMarshalError(w, method, "document", err)
 		return
 	}
+
+	p.Context.Transaction, err = request.Db.Beginx()
+	if err != nil {
+		writeTransactionError(w, method, err)
+		return
+	}
+
+	err = p.RecordUserActivity(entity.UserActivity{
+		LabelID:      document.LabelID,
+		SourceID:     document.RefID,
+		SourceType:   entity.ActivitySourceTypeDocument,
+		ActivityType: entity.ActivityTypeRead})
+
+	if err != nil {
+		log.IfErr(p.Context.Transaction.Rollback())
+		log.Error("Cannot record user activity", err)
+		return
+	}
+
+	log.IfErr(p.Context.Transaction.Commit())
 
 	writeSuccessBytes(w, json)
 }
@@ -259,8 +278,13 @@ func DeleteDocument(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tx, err := request.Db.Beginx()
+	doc, err := p.GetDocument(documentID)
+	if err != nil {
+		writeGeneralSQLError(w, method, err)
+		return
+	}
 
+	tx, err := request.Db.Beginx()
 	if err != nil {
 		writeTransactionError(w, method, err)
 		return
@@ -283,6 +307,12 @@ func DeleteDocument(w http.ResponseWriter, r *http.Request) {
 		writeServerError(w, method, err)
 		return
 	}
+
+	_ = p.RecordUserActivity(entity.UserActivity{
+		LabelID:      doc.LabelID,
+		SourceID:     documentID,
+		SourceType:   entity.ActivitySourceTypeDocument,
+		ActivityType: entity.ActivityTypeDeleted})
 
 	log.IfErr(tx.Commit())
 
@@ -404,7 +434,6 @@ func UpdateDocument(w http.ResponseWriter, r *http.Request) {
 	d.RefID = documentID
 
 	tx, err := request.Db.Beginx()
-
 	if err != nil {
 		writeTransactionError(w, method, err)
 		return
@@ -413,7 +442,6 @@ func UpdateDocument(w http.ResponseWriter, r *http.Request) {
 	p.Context.Transaction = tx
 
 	err = p.UpdateDocument(d)
-
 	if err != nil {
 		log.IfErr(tx.Rollback())
 		writeGeneralSQLError(w, method, err)

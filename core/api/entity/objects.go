@@ -437,3 +437,62 @@ type Pin struct {
 	Pin        string `json:"pin"`
 	Sequence   int    `json:"sequence"`
 }
+
+// UserActivity represents an activity undertaken by a user.
+type UserActivity struct {
+	ID           uint64             `json:"-"`
+	OrgID        string             `json:"orgId"`
+	UserID       string             `json:"userId"`
+	LabelID      string             `json:"folderId"`
+	SourceID     string             `json:"sourceId"`
+	SourceName   string             `json:"sourceName"` // e.g. Document or Space name
+	SourceType   ActivitySourceType `json:"sourceType"`
+	ActivityType ActivityType       `json:"activityType"`
+	Created      time.Time          `json:"created"`
+}
+
+// ActivitySourceType details where the activity occured.
+type ActivitySourceType int
+
+// ActivityType determines type of user activity
+type ActivityType int
+
+const (
+	// ActivitySourceTypeSpace indicates activity against a space.
+	ActivitySourceTypeSpace ActivitySourceType = 1
+
+	// ActivitySourceTypeDocument indicates activity against a document.
+	ActivitySourceTypeDocument ActivitySourceType = 2
+)
+
+const (
+	// ActivityTypeCreated records user document creation
+	ActivityTypeCreated ActivityType = 1
+
+	// ActivityTypeRead states user has read document
+	ActivityTypeRead ActivityType = 2
+
+	// ActivityTypeEdited states user has editing document
+	ActivityTypeEdited ActivityType = 3
+
+	// ActivityTypeDeleted records user deleting space/document
+	ActivityTypeDeleted ActivityType = 4
+
+	// ActivityTypeArchived records user archiving space/document
+	ActivityTypeArchived ActivityType = 5
+
+	// ActivityTypeApproved records user approval of document
+	ActivityTypeApproved ActivityType = 6
+
+	// ActivityTypeReverted records user content roll-back to previous version
+	ActivityTypeReverted ActivityType = 7
+
+	// ActivityTypePublishedTemplate records user creating new document template
+	ActivityTypePublishedTemplate ActivityType = 8
+
+	// ActivityTypePublishedBlock records user creating reusable content block
+	ActivityTypePublishedBlock ActivityType = 9
+
+	// ActivityTypeFeedback records user providing document feedback
+	ActivityTypeFeedback ActivityType = 10
+)

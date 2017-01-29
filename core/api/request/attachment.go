@@ -49,9 +49,6 @@ func (p *Persister) AddAttachment(a entity.Attachment) (err error) {
 
 // GetAttachment returns the database attachment record specified by the parameters.
 func (p *Persister) GetAttachment(orgID, attachmentID string) (attachment entity.Attachment, err error) {
-
-	err = nil
-
 	stmt, err := Db.Preparex("SELECT id, refid, orgid, documentid, job, fileid, filename, data, extension, created, revised FROM attachment WHERE orgid=? and refid=?")
 	defer utility.Close(stmt)
 
@@ -72,9 +69,6 @@ func (p *Persister) GetAttachment(orgID, attachmentID string) (attachment entity
 
 // GetAttachments returns a slice containing the attachement records (excluding their data) for document docID, ordered by filename.
 func (p *Persister) GetAttachments(docID string) (attachments []entity.Attachment, err error) {
-
-	err = nil
-
 	err = Db.Select(&attachments, "SELECT id, refid, orgid, documentid, job, fileid, filename, extension, created, revised FROM attachment WHERE orgid=? and documentid=? order by filename", p.Context.OrgID, docID)
 
 	if err != nil {
@@ -87,9 +81,6 @@ func (p *Persister) GetAttachments(docID string) (attachments []entity.Attachmen
 
 // GetAttachmentsWithData returns a slice containing the attachement records (including their data) for document docID, ordered by filename.
 func (p *Persister) GetAttachmentsWithData(docID string) (attachments []entity.Attachment, err error) {
-
-	err = nil
-
 	err = Db.Select(&attachments, "SELECT id, refid, orgid, documentid, job, fileid, filename, extension, data, created, revised FROM attachment WHERE orgid=? and documentid=? order by filename", p.Context.OrgID, docID)
 
 	if err != nil {
@@ -102,7 +93,7 @@ func (p *Persister) GetAttachmentsWithData(docID string) (attachments []entity.A
 
 // DeleteAttachment deletes the id record from the database attachment table.
 func (p *Persister) DeleteAttachment(id string) (rows int64, err error) {
-	rows, err = p.Base.DeleteConstrained(p.Context.Transaction, "attachment", p.Context.OrgID, id)
+	rows, _ = p.Base.DeleteConstrained(p.Context.Transaction, "attachment", p.Context.OrgID, id)
 
 	// Mark references to this document as orphaned
 	err = p.MarkOrphanAttachmentLink(id)

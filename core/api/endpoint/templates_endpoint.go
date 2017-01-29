@@ -126,8 +126,7 @@ func SaveAsTemplate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Duplicate attachments
-	attachments, err := p.GetAttachments(model.DocumentID)
-
+	attachments, _ := p.GetAttachments(model.DocumentID)
 	for i, a := range attachments {
 		a.DocumentID = docID
 		a.RefID = util.UniqueID()
@@ -358,8 +357,8 @@ func StartDocumentFromSavedTemplate(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		pages, err = p.GetPages(templateID)
-		attachments, err = p.GetAttachmentsWithData(templateID)
+		pages, _ = p.GetPages(templateID)
+		attachments, _ = p.GetAttachmentsWithData(templateID)
 	}
 
 	// create new document

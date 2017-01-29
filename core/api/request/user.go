@@ -48,8 +48,6 @@ func (p *Persister) AddUser(user entity.User) (err error) {
 		return er
 	}
 
-	p.Base.Audit(p.Context, "add-user", "", "")
-
 	return
 }
 
@@ -205,8 +203,6 @@ func (p *Persister) UpdateUser(user entity.User) (err error) {
 		return
 	}
 
-	p.Base.Audit(p.Context, "update-user", "", "")
-
 	return
 }
 
@@ -233,8 +229,6 @@ func (p *Persister) UpdateUserPassword(userID, salt, password string) (err error
 		return er
 	}
 
-	p.Base.Audit(p.Context, "change-password", "", "")
-
 	return
 }
 
@@ -254,8 +248,6 @@ func (p *Persister) DeactiveUser(userID string) (err error) {
 		log.Error(fmt.Sprintf("Unable to deactivate user %s", userID), err)
 		return
 	}
-
-	p.Base.Audit(p.Context, "deactivate-user", "", "")
 
 	return
 }
@@ -284,8 +276,6 @@ func (p *Persister) ForgotUserPassword(email, token string) (err error) {
 		err = sql.ErrNoRows
 		return
 	}
-
-	p.Base.Audit(p.Context, "forgot-password", "", "")
 
 	return
 }

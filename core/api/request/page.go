@@ -82,8 +82,6 @@ func (p *Persister) AddPage(model models.PageModel) (err error) {
 		return
 	}
 
-	p.Base.Audit(p.Context, "add-page", model.Page.DocumentID, model.Page.RefID)
-
 	return
 }
 
@@ -289,8 +287,6 @@ func (p *Persister) UpdatePage(page entity.Page, refID, userID string, skipRevis
 		}
 	}
 
-	p.Base.Audit(p.Context, "update-page", page.DocumentID, page.RefID)
-
 	return
 }
 
@@ -341,8 +337,6 @@ func (p *Persister) UpdatePageSequence(documentID, pageID string, sequence float
 
 	err = searches.UpdateSequence(&databaseRequest{OrgID: p.Context.OrgID}, documentID, pageID, sequence)
 
-	p.Base.Audit(p.Context, "re-sequence-page", "", pageID)
-
 	return
 }
 
@@ -366,8 +360,6 @@ func (p *Persister) UpdatePageLevel(documentID, pageID string, level int) (err e
 
 	err = searches.UpdateLevel(&databaseRequest{OrgID: p.Context.OrgID}, documentID, pageID, level)
 
-	p.Base.Audit(p.Context, "re-level-page", "", pageID)
-
 	return
 }
 
@@ -388,8 +380,6 @@ func (p *Persister) DeletePage(documentID, pageID string) (rows int64, err error
 
 		// nuke revisions
 		_, _ = p.DeletePageRevisions(pageID)
-
-		p.Base.Audit(p.Context, "remove-page", documentID, pageID)
 	}
 
 	return
@@ -470,8 +460,6 @@ func (p *Persister) GetDocumentRevisions(documentID string) (revisions []entity.
 		revisions = []entity.Revision{}
 	}
 
-	p.Base.Audit(p.Context, "get-document-revisions", documentID, "")
-
 	return
 }
 
@@ -484,8 +472,6 @@ func (p *Persister) GetPageRevisions(pageID string) (revisions []entity.Revision
 		log.Error(fmt.Sprintf("Unable to execute select revisions for org %s and page %s", p.Context.OrgID, pageID), err)
 		return
 	}
-
-	p.Base.Audit(p.Context, "get-page-revisions", "", pageID)
 
 	return
 }
