@@ -23,7 +23,6 @@ import (
 
 // AddPin saves pinned item.
 func (p *Persister) AddPin(pin entity.Pin) (err error) {
-
 	row := Db.QueryRow("SELECT max(sequence) FROM pin WHERE orgid=? AND userid=?", p.Context.OrgID, p.Context.UserID)
 	var maxSeq int
 	err = row.Scan(&maxSeq)

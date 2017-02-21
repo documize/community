@@ -48,9 +48,6 @@ func (p *Persister) AddContentLink(l entity.Link) (err error) {
 // SearchLinkCandidates returns matching documents, sections and attachments using keywords.
 func (p *Persister) SearchLinkCandidates(keywords string) (docs []entity.LinkCandidate,
 	pages []entity.LinkCandidate, attachments []entity.LinkCandidate, err error) {
-
-	err = nil
-
 	// find matching documents
 	temp := []entity.LinkCandidate{}
 	likeQuery := "title LIKE '%" + keywords + "%'"
@@ -182,8 +179,6 @@ func (p *Persister) SearchLinkCandidates(keywords string) (docs []entity.LinkCan
 
 // GetDocumentOutboundLinks returns outbound links for specified document.
 func (p *Persister) GetDocumentOutboundLinks(documentID string) (links []entity.Link, err error) {
-	err = nil
-
 	err = Db.Select(&links,
 		`select l.refid, l.orgid, l.folderid, l.userid, l.sourcedocumentid, l.sourcepageid, l.targetdocumentid, l.targetid, l.linktype, l.orphan, l.created, l.revised
 		FROM link l
@@ -204,8 +199,6 @@ func (p *Persister) GetDocumentOutboundLinks(documentID string) (links []entity.
 
 // GetPageLinks returns outbound links for specified page in document.
 func (p *Persister) GetPageLinks(documentID, pageID string) (links []entity.Link, err error) {
-	err = nil
-
 	err = Db.Select(&links,
 		`select l.refid, l.orgid, l.folderid, l.userid, l.sourcedocumentid, l.sourcepageid, l.targetdocumentid, l.targetid, l.linktype, l.orphan, l.created, l.revised
 		FROM link l

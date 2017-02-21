@@ -47,15 +47,11 @@ func (p *Persister) AddDocument(document entity.Document) (err error) {
 		return
 	}
 
-	p.Base.Audit(p.Context, "add-document", document.RefID, "")
-
 	return
 }
 
 // GetDocument fetches the document record with the given id fromt the document table and audits that it has been got.
 func (p *Persister) GetDocument(id string) (document entity.Document, err error) {
-	err = nil
-
 	stmt, err := Db.Preparex("SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, layout, created, revised FROM document WHERE orgid=? and refid=?")
 	defer utility.Close(stmt)
 
@@ -71,15 +67,11 @@ func (p *Persister) GetDocument(id string) (document entity.Document, err error)
 		return
 	}
 
-	p.Base.Audit(p.Context, AuditGetDocument, id, "")
-
 	return
 }
 
 // GetDocumentMeta returns the metadata for a specified document.
 func (p *Persister) GetDocumentMeta(id string) (meta entity.DocumentMeta, err error) {
-	err = nil
-
 	//	sqlViewers := `SELECT CONVERT_TZ(MAX(a.created), @@session.time_zone, '+00:00') as created,
 
 	sqlViewers := `SELECT MAX(a.created) as created,
@@ -131,7 +123,6 @@ func (p *Persister) GetDocuments() (documents []entity.Document, err error) {
 
 // GetDocumentsByFolder returns a slice containing the documents for a given folder, most recient first.
 func (p *Persister) GetDocumentsByFolder(folderID string) (documents []entity.Document, err error) {
-	err = nil
 	err = Db.Select(&documents, "SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, layout, created, revised FROM document WHERE orgid=? AND template=0 AND labelid=? ORDER BY revised DESC", p.Context.OrgID, folderID)
 
 	if err != nil {
@@ -306,8 +297,6 @@ func (p *Persister) SearchDocument(keywords string) (results []entity.DocumentSe
 		return
 	}
 
-	p.Base.Audit(p.Context, "search", "", "")
-
 	return
 }
 
@@ -345,8 +334,6 @@ func (p *Persister) UpdateDocument(document entity.Document) (err error) {
 		return
 	}
 
-	p.Base.Audit(p.Context, "update-document", document.RefID, "")
-
 	return
 }
 
@@ -377,8 +364,6 @@ func (p *Persister) ChangeDocumentLabel(document, label string) (err error) {
 		return re
 	}
 
-	p.Base.Audit(p.Context, "update-document-label", document, "")
-
 	return
 }
 
@@ -399,8 +384,6 @@ func (p *Persister) MoveDocumentLabel(id, move string) (err error) {
 		log.Error(fmt.Sprintf("Unable to execute update for document label move %s", id), err)
 		return
 	}
-
-	p.Base.Audit(p.Context, "move-document-label", "", "")
 
 	return
 }
@@ -443,8 +426,6 @@ func (p *Persister) DeleteDocument(documentID string) (rows int64, err error) {
 	if err != nil {
 		return
 	}
-
-	p.Base.Audit(p.Context, "delete-document", documentID, "")
 
 	return p.Base.DeleteConstrained(p.Context.Transaction, "document", p.Context.OrgID, documentID)
 }

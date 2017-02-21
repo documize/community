@@ -128,9 +128,6 @@ type baseManager struct {
 }
 
 func (m *baseManager) Delete(tx *sqlx.Tx, table string, id string) (rows int64, err error) {
-
-	err = nil
-
 	stmt, err := tx.Preparex("DELETE FROM " + table + " WHERE refid=?")
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to prepare delete of row in table %s", table), err)
@@ -203,16 +200,6 @@ func (m *baseManager) DeleteWhere(tx *sqlx.Tx, statement string) (rows int64, er
 	return
 }
 
-// Audit inserts a record into the audit table.
-func (m *baseManager) Audit(c Context, action, document, page string) {
-
-	_, err := Db.Exec("INSERT INTO audit (orgid, userid, documentid, pageid, action, created) VALUES (?, ?, ?, ?, ?, ?)", c.OrgID, c.UserID, document, page, action, time.Now().UTC())
-
-	if err != nil {
-		log.Error(fmt.Sprintf("Unable record audit for action %s, user %s, customer %s", action, c.UserID, c.OrgID), err)
-	}
-}
-
 // SQLPrepareError returns a string detailing the location of the error.
 func (m *baseManager) SQLPrepareError(method string, id string) string {
 	return fmt.Sprintf("Unable to prepare SQL for %s, ID %s", method, id)
@@ -222,8 +209,3 @@ func (m *baseManager) SQLPrepareError(method string, id string) string {
 func (m *baseManager) SQLSelectError(method string, id string) string {
 	return fmt.Sprintf("Unable to execute SQL for %s, ID %s", method, id)
 }
-
-const (
-	// AuditGetDocument means someone viewed a document
-	AuditGetDocument string = "get-document"
-)
