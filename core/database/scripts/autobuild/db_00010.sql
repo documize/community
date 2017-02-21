@@ -69,6 +69,7 @@ CREATE TABLE IF NOT EXISTS `useraction` (
 	`refid` CHAR(16) NOT NULL COLLATE utf8_bin,
 	`orgid` CHAR(16) NOT NULL COLLATE utf8_bin,
 	`userid` CHAR(16) NOT NULL COLLATE utf8_bin,
+	`documentid` CHAR(16) NOT NULL COLLATE utf8_bin,
 	`requestorid` CHAR(16) NOT NULL COLLATE utf8_bin,
    	`actiontype` INT NOT NULL DEFAULT 0,
 	`note` NVARCHAR(2000) NOT NULL DEFAULT '',
@@ -81,6 +82,7 @@ CREATE TABLE IF NOT EXISTS `useraction` (
 	CONSTRAINT pk_id PRIMARY KEY (id),
 	INDEX `idx_useraction_refid` (`refid` ASC),
 	INDEX `idx_useraction_userid` (`userid` ASC),
+	INDEX `idx_useraction_documentid` (`documentid` ASC),
 	INDEX `idx_useraction_requestorid` (`requestorid` ASC))
 DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci
 ENGINE =  InnoDB;
