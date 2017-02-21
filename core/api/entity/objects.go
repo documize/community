@@ -89,6 +89,7 @@ type Account struct {
 	Title   string `json:"title"`
 	Message string `json:"message"`
 	Domain  string `json:"domain"`
+	Active  bool   `json:"active"`
 }
 
 // Label defines a container for documents.

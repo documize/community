@@ -26,7 +26,7 @@ func (p *Persister) AddAccount(account entity.Account) (err error) {
 	account.Created = time.Now().UTC()
 	account.Revised = time.Now().UTC()
 
-	stmt, err := p.Context.Transaction.Preparex("INSERT INTO account (refid, orgid, userid, admin, editor, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?)")
+	stmt, err := p.Context.Transaction.Preparex("INSERT INTO account (refid, orgid, userid, admin, editor, active, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
 	defer utility.Close(stmt)
 
 	if err != nil {
@@ -34,7 +34,7 @@ func (p *Persister) AddAccount(account entity.Account) (err error) {
 		return
 	}
 
-	_, err = stmt.Exec(account.RefID, account.OrgID, account.UserID, account.Admin, account.Editor, account.Created, account.Revised)
+	_, err = stmt.Exec(account.RefID, account.OrgID, account.UserID, account.Admin, account.Editor, account.Active, account.Created, account.Revised)
 
 	if err != nil {
 		log.Error("Unable to execute insert for account", err)
@@ -44,9 +44,9 @@ func (p *Persister) AddAccount(account entity.Account) (err error) {
 	return
 }
 
-// GetUserAccount returns the databse account record corresponding to the given userID, using the client's current organizaion.
+// GetUserAccount returns the database account record corresponding to the given userID, using the client's current organizaion.
 func (p *Persister) GetUserAccount(userID string) (account entity.Account, err error) {
-	stmt, err := Db.Preparex("SELECT a.*, b.company, b.title, b.message, b.domain FROM account a, organization b WHERE b.refid=a.orgid and a.orgid=? and a.userid=? AND b.active=1")
+	stmt, err := Db.Preparex("SELECT a.*, b.company, b.title, b.message, b.domain FROM account a, organization b WHERE b.refid=a.orgid and a.orgid=? and a.userid=?")
 	defer utility.Close(stmt)
 
 	if err != nil {
@@ -66,7 +66,7 @@ func (p *Persister) GetUserAccount(userID string) (account entity.Account, err e
 
 // GetUserAccounts returns a slice of database account records, for all organizations that the userID is a member of, in organization title order.
 func (p *Persister) GetUserAccounts(userID string) (t []entity.Account, err error) {
-	err = Db.Select(&t, "SELECT a.*, b.company, b.title, b.message, b.domain FROM account a, organization b WHERE a.userid=? AND a.orgid=b.refid AND b.active=1 ORDER BY b.title", userID)
+	err = Db.Select(&t, "SELECT a.*, b.company, b.title, b.message, b.domain FROM account a, organization b WHERE a.userid=? AND a.orgid=b.refid AND a.active=1 ORDER BY b.title", userID)
 
 	if err != sql.ErrNoRows && err != nil {
 		log.Error(fmt.Sprintf("Unable to execute select account for user %s", userID), err)
@@ -77,7 +77,7 @@ func (p *Persister) GetUserAccounts(userID string) (t []entity.Account, err erro
 
 // GetAccountsByOrg returns a slice of database account records, for all users in the client's organization.
 func (p *Persister) GetAccountsByOrg() (t []entity.Account, err error) {
-	err = Db.Select(&t, "SELECT a.*, b.company, b.title, b.message, b.domain FROM account a, organization b WHERE a.orgid=b.refid AND a.orgid=? AND b.active=1", p.Context.OrgID)
+	err = Db.Select(&t, "SELECT a.*, b.company, b.title, b.message, b.domain FROM account a, organization b WHERE a.orgid=b.refid AND a.orgid=? AND a.active=1", p.Context.OrgID)
 
 	if err != sql.ErrNoRows && err != nil {
 		log.Error(fmt.Sprintf("Unable to execute select account for org %s", p.Context.OrgID), err)
@@ -90,7 +90,7 @@ func (p *Persister) GetAccountsByOrg() (t []entity.Account, err error) {
 func (p *Persister) UpdateAccount(account entity.Account) (err error) {
 	account.Revised = time.Now().UTC()
 
-	stmt, err := p.Context.Transaction.PrepareNamed("UPDATE account SET userid=:userid, admin=:admin, editor=:editor, revised=:revised WHERE orgid=:orgid AND refid=:refid")
+	stmt, err := p.Context.Transaction.PrepareNamed("UPDATE account SET userid=:userid, admin=:admin, editor=:editor, active=:active, revised=:revised WHERE orgid=:orgid AND refid=:refid")
 	defer utility.Close(stmt)
 
 	if err != nil {

@@ -441,6 +441,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 	account.Editor = user.Editor
 	account.Admin = user.Admin
+	account.Active = user.Active
 
 	err = p.UpdateAccount(account)
 	if err != nil {
@@ -690,11 +691,13 @@ func attachUserAccounts(p request.Persister, orgID string, user *entity.User) {
 	user.Accounts = a
 	user.Editor = false
 	user.Admin = false
+	user.Active = false
 
 	for _, account := range user.Accounts {
 		if account.OrgID == orgID {
 			user.Admin = account.Admin
 			user.Editor = account.Editor
+			user.Active = account.Active
 			break
 		}
 	}
