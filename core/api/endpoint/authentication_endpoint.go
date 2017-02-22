@@ -84,7 +84,7 @@ func Authenticate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !user.Active || len(user.Reset) > 0 || len(user.Password) == 0 {
+	if len(user.Reset) > 0 || len(user.Password) == 0 {
 		writeUnauthorizedError(w)
 		return
 	}
@@ -104,6 +104,8 @@ func Authenticate(w http.ResponseWriter, r *http.Request) {
 
 	// Attach user accounts and work out permissions
 	attachUserAccounts(p, org.RefID, &user)
+
+	// active check
 
 	if len(user.Accounts) == 0 {
 		writeUnauthorizedError(w)
