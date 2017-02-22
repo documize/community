@@ -86,3 +86,6 @@ CREATE TABLE IF NOT EXISTS `useraction` (
 	INDEX `idx_useraction_requestorid` (`requestorid` ASC))
 DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci
 ENGINE =  InnoDB;
+
+/* community edition */
+ALTER TABLE account ADD COLUMN `active` BOOL NOT NULL DEFAULT 1 AFTER `admin`;
