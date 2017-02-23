@@ -11,8 +11,10 @@
 
 package core
 
-import "fmt"
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 // ProdInfo describes a product
 type ProdInfo struct {
@@ -25,19 +27,6 @@ type ProdInfo struct {
 	License License
 }
 
-// Product returns product edition details
-func Product() (p ProdInfo) {
-	p.Major = "0"
-	p.Minor = "42"
-	p.Patch = "0"
-	p.Version = fmt.Sprintf("%s.%s.%s", p.Major, p.Minor, p.Patch)
-	p.Edition = "Community"
-	p.Title = fmt.Sprintf("%s Edition", p.Edition)
-	p.License = License{}
-
-	return
-}
-
 // License holds details of product license.
 type License struct {
 	Name    string    `json:"name"`
@@ -47,22 +36,12 @@ type License struct {
 	End     time.Time `json:"end"`
 	Seats   int       `json:"seats"`
 	Trial   bool      `json:"trial"`
+	Valid   bool
 }
 
 // IsEmpty determines if we have a license.
 func (l *License) IsEmpty() bool {
 	return l.Seats == 0 && len(l.Name) == 0 && len(l.Email) == 0 && l.Start.Year() == 1 && l.End.Year() == 1
-}
-
-// IsValid determines if we have populated and valid license.
-// An empty license is valid.
-func (l *License) IsValid() bool {
-	if l.IsEmpty() {
-		return true
-	}
-
-	now := time.Now().UTC()
-	return l.End.Day() <= now.Day() && l.End.Month() <= now.Month() && l.End.Year() <= now.Year()
 }
 
 // Status returns formatted message stating if license is empty/populated and invalid/valid.
@@ -72,7 +51,7 @@ func (l *License) Status() string {
 		lp = "empty"
 	}
 	lv := "invalid"
-	if l.IsValid() {
+	if l.Valid {
 		lv = "valid"
 	}
 

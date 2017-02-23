@@ -36,12 +36,12 @@
 
 <form class="form-bordered">
     <div class="form-header">
-        <div class="title">Edition License</div>
-        <div class="tip">Product license</div>
+        <div class="title">Optional Edition License</div>
+        <div class="tip">Only applies to Enterprise Edition</div>
     </div>
     <div class="input-control">
-        <label>License XML</label>
-        <div class="tip">Please provide valid XML</div>
+        <label>License</label>
+        <div class="tip">XML format accepted</div>
         {{textarea value=model.license rows="5"}}
     </div>
     <div class="regular-button button-blue" {{ action 'saveLicense' }}>save</div>

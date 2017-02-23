@@ -33,14 +33,21 @@ var port, certFile, keyFile, forcePort2SSL string
 var Product core.ProdInfo
 
 func init() {
-	Product = core.Product()
+	Product.Major = "0"
+	Product.Minor = "42"
+	Product.Patch = "0"
+	Product.Version = fmt.Sprintf("%s.%s.%s", Product.Major, Product.Minor, Product.Patch)
+	Product.Edition = "Community"
+	Product.Title = fmt.Sprintf("%s Edition", Product.Edition)
+	Product.License = core.License{}
+	Product.License.Valid = true
+
 	environment.GetString(&certFile, "cert", false, "the cert.pem file used for https", nil)
 	environment.GetString(&keyFile, "key", false, "the key.pem file used for https", nil)
 	environment.GetString(&port, "port", false, "http/https port number", nil)
 	environment.GetString(&forcePort2SSL, "forcesslport", false, "redirect given http port number to TLS", nil)
 
-	// license state
-	log.Info(Product.License.Status())
+	log.Info("Server.Init complete")
 }
 
 var testHost string // used during automated testing
