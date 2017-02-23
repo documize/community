@@ -38,6 +38,9 @@ func init() {
 	environment.GetString(&keyFile, "key", false, "the key.pem file used for https", nil)
 	environment.GetString(&port, "port", false, "http/https port number", nil)
 	environment.GetString(&forcePort2SSL, "forcesslport", false, "redirect given http port number to TLS", nil)
+
+	// license state
+	log.Info(Product.License.Status())
 }
 
 var testHost string // used during automated testing

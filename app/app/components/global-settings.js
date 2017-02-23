@@ -16,14 +16,14 @@ const {
 } = Ember;
 
 export default Ember.Component.extend({
-	SMTPHostEmptyError: computed.empty('model.global.host'),
-	SMTPPortEmptyError: computed.empty('model.global.port'),
-	SMTPSenderEmptyError: computed.empty('model.global.sender'),
-	SMTPUserIdEmptyError: computed.empty('model.global.userid'),
-	SMTPPasswordEmptyError: computed.empty('model.global.password'),
+	SMTPHostEmptyError: computed.empty('model.smtp.host'),
+	SMTPPortEmptyError: computed.empty('model.smtp.port'),
+	SMTPSenderEmptyError: computed.empty('model.smtp.sender'),
+	SMTPUserIdEmptyError: computed.empty('model.smtp.userid'),
+	SMTPPasswordEmptyError: computed.empty('model.smtp.password'),
 
 	actions: {
-		save() {
+		saveSMTP() {
 			if (this.get('SMTPHostEmptyError')) {
 				$("#smtp-host").focus();
 				return;
@@ -45,7 +45,12 @@ export default Ember.Component.extend({
 				return;
 			}
 
-			this.get('save')().then(() => {
+			this.get('saveSMTP')().then(() => {
+			});
+		},
+
+		saveLicense() {
+			this.get('saveLicense')().then(() => {
 			});
 		}
 	}
