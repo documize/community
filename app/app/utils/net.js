@@ -63,9 +63,22 @@ function isAjaxNotFoundError(reason) {
 	return false;
 }
 
+function isInvalidLicenseError(reason) {
+	if (typeof reason === "undefined" || typeof reason.errors === "undefined") {
+		return false;
+	}
+
+	if (reason.errors.length > 0 && reason.errors[0].status === "402") {
+		return true;
+	}
+
+	return false;
+}
+
 export default {
 	getSubdomain,
 	getAppUrl,
 	isAjaxAccessError,
 	isAjaxNotFoundError,
+	isInvalidLicenseError,
 };

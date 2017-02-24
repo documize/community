@@ -32,6 +32,11 @@ import (
 
 // AddFolder creates a new folder.
 func AddFolder(w http.ResponseWriter, r *http.Request) {
+	if IsInvalidLicense() {
+		util.WriteBadLicense(w)
+		return
+	}
+
 	method := "AddFolder"
 	p := request.GetPersister(r)
 
@@ -263,6 +268,11 @@ func UpdateFolder(w http.ResponseWriter, r *http.Request) {
 
 // RemoveFolder moves documents to another folder before deleting it
 func RemoveFolder(w http.ResponseWriter, r *http.Request) {
+	if IsInvalidLicense() {
+		util.WriteBadLicense(w)
+		return
+	}
+
 	method := "RemoveFolder"
 	p := request.GetPersister(r)
 

@@ -21,10 +21,10 @@ export default Ember.Service.extend({
 	appMeta: service(),
 	store: service(),
 
-	// Returns global configuration.
-	getConfig() {
+	// Returns SMTP configuration.
+	getSMTPConfig() {
 		if(this.get('sessionService.isGlobalAdmin')) {
-			return this.get('ajax').request(`global`, {
+			return this.get('ajax').request(`global/smtp`, {
 				method: 'GET'
 			}).then((response) => {
 				return response;
@@ -32,12 +32,35 @@ export default Ember.Service.extend({
 		}
 	},
 
-	// Saves global configuration.
-	saveConfig(config) {
+	// Saves SMTP configuration.
+	saveSMTPConfig(config) {
 		if(this.get('sessionService.isGlobalAdmin')) {
-			return this.get('ajax').request(`global`, {
+			return this.get('ajax').request(`global/smtp`, {
 				method: 'PUT',
 				data: JSON.stringify(config)
+			});
+		}
+	},
+
+	// Returns product license.
+	getLicense() {
+		if(this.get('sessionService.isGlobalAdmin')) {
+			return this.get('ajax').request(`global/license`, {
+				method: 'GET',
+				dataType: "text"
+			}).then((response) => {
+				return response;
+			});
+		}
+	},
+
+	// Saves product license.
+	saveLicense(license) {
+		if(this.get('sessionService.isGlobalAdmin')) {
+			return this.get('ajax').request(`global/license`, {
+				method: 'PUT',
+				dataType: 'text',
+				data: license
 			});
 		}
 	}

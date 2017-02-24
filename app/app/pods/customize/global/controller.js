@@ -16,9 +16,17 @@ export default Ember.Controller.extend(NotifierMixin, {
 	global: Ember.inject.service(),
 
 	actions: {
-		save() {
+		saveSMTP() {
 			if(this.get('session.isGlobalAdmin')) {
-				return this.get('global').saveConfig(this.model.global).then(() => {
+				return this.get('global').saveSMTPConfig(this.model.smtp).then(() => {
+					this.showNotification('Saved');
+				});
+			}
+		},
+
+		saveLicense() {
+			if(this.get('session.isGlobalAdmin')) {
+				return this.get('global').saveLicense(this.model.license).then(() => {
 					this.showNotification('Saved');
 				});
 			}

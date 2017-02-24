@@ -164,3 +164,17 @@ func WriteJSON(w http.ResponseWriter, v interface{}) {
 	_, err = w.Write(j)
 	log.IfErr(err)
 }
+
+// WriteBadLicense writes 402 when license is invalid
+func WriteBadLicense(w http.ResponseWriter) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusPaymentRequired)
+	var e struct {
+		Reason string
+	}
+	e.Reason = "invalid or expired Documize license"
+
+	j, _ := json.Marshal(e)
+	_, err := w.Write(j)
+	log.IfErr(err)
+}

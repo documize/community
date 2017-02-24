@@ -41,6 +41,11 @@ func writeTransactionError(w http.ResponseWriter, method string, err error) {
 	log.Error(fmt.Sprintf("Unable to get database transaction  for method %s", method), err)
 }
 
+// IsInvalidLicense returns true if license is invalid
+func IsInvalidLicense() bool {
+	return Product.License.Valid == false
+}
+
 /*
 func WriteAddRecordError(w http.ResponseWriter, method string, err error) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")

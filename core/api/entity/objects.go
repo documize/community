@@ -341,6 +341,8 @@ type SiteMeta struct {
 	URL                  string `json:"url"`
 	AllowAnonymousAccess bool   `json:"allowAnonymousAccess"`
 	Version              string `json:"version"`
+	Edition              string `json:"edition"`
+	Valid                bool   `json:"valid"`
 }
 
 // Template is used to create a new document.

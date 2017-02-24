@@ -18,7 +18,6 @@ import (
 	"net/http"
 	"text/template"
 
-	"github.com/documize/community/core"
 	"github.com/documize/community/core/api/entity"
 	"github.com/documize/community/core/api/request"
 	"github.com/documize/community/core/log"
@@ -41,13 +40,13 @@ func GetMeta(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	product := core.Product()
-
 	data.OrgID = org.RefID
 	data.Title = org.Title
 	data.Message = org.Message
 	data.AllowAnonymousAccess = org.AllowAnonymousAccess
-	data.Version = product.Version
+	data.Version = Product.Version
+	data.Edition = Product.License.Edition
+	data.Valid = Product.License.Valid
 
 	json, err := json.Marshal(data)
 

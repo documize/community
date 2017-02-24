@@ -185,6 +185,11 @@ func RefreshSections(w http.ResponseWriter, r *http.Request) {
 
 // AddBlock inserts new reusable content block into database.
 func AddBlock(w http.ResponseWriter, r *http.Request) {
+	if IsInvalidLicense() {
+		util.WriteBadLicense(w)
+		return
+	}
+
 	method := "AddBlock"
 	p := request.GetPersister(r)
 

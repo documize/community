@@ -229,8 +229,10 @@ func init() {
 	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/links", []string{"GET", "OPTIONS"}, nil, GetDocumentLinks))
 
 	// Global installation-wide config
-	log.IfErr(Add(RoutePrefixPrivate, "global", []string{"GET", "OPTIONS"}, nil, GetGlobalConfig))
-	log.IfErr(Add(RoutePrefixPrivate, "global", []string{"PUT", "OPTIONS"}, nil, SaveGlobalConfig))
+	log.IfErr(Add(RoutePrefixPrivate, "global/smtp", []string{"GET", "OPTIONS"}, nil, GetSMTPConfig))
+	log.IfErr(Add(RoutePrefixPrivate, "global/smtp", []string{"PUT", "OPTIONS"}, nil, SaveSMTPConfig))
+	log.IfErr(Add(RoutePrefixPrivate, "global/license", []string{"GET", "OPTIONS"}, nil, GetLicense))
+	log.IfErr(Add(RoutePrefixPrivate, "global/license", []string{"PUT", "OPTIONS"}, nil, SaveLicense))
 
 	// Pinned items
 	log.IfErr(Add(RoutePrefixPrivate, "pin/{userID}", []string{"POST", "OPTIONS"}, nil, AddPin))

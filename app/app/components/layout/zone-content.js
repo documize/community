@@ -10,6 +10,18 @@
 // https://documize.com
 
 import Ember from 'ember';
+import NotifierMixin from '../../mixins/notifier';
 
-export default Ember.Component.extend({
+const {
+	inject: { service }
+} = Ember;
+
+export default Ember.Component.extend(NotifierMixin, {
+    appMeta :service(),
+
+    didRender() {
+        if (this.get('appMeta').invalidLicense()) {
+            this.showNotification(`!! Expired or invalid license !!`);
+        }
+    }
 });

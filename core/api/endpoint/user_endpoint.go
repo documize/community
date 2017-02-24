@@ -33,6 +33,11 @@ import (
 
 // AddUser is the endpoint that enables an administrator to add a new user for their orgaisation.
 func AddUser(w http.ResponseWriter, r *http.Request) {
+	if IsInvalidLicense() {
+		util.WriteBadLicense(w)
+		return
+	}
+
 	method := "AddUser"
 	p := request.GetPersister(r)
 

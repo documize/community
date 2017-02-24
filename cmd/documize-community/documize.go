@@ -18,8 +18,7 @@ import (
 	"github.com/documize/community/core/section"
 
 	_ "github.com/documize/community/embed" // the compressed front-end code and static data
-
-	_ "github.com/go-sql-driver/mysql" // the mysql driver is required behind the scenes
+	_ "github.com/go-sql-driver/mysql"      // the mysql driver is required behind the scenes
 )
 
 func main() {

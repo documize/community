@@ -26,7 +26,8 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 
 	model() {
 		return RSVP.hash({
-			global: this.get('global').getConfig()
+			smtp: this.get('global').getSMTPConfig(),
+			license: this.get('global').getLicense()
 		});
 	},
 
