@@ -36,6 +36,11 @@ import (
 
 // SaveAsTemplate saves existing document as a template.
 func SaveAsTemplate(w http.ResponseWriter, r *http.Request) {
+	if IsInvalidLicense() {
+		util.WriteBadLicense(w)
+		return
+	}
+
 	method := "SaveAsTemplate"
 	p := request.GetPersister(r)
 

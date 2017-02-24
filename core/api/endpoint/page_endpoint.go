@@ -33,6 +33,11 @@ import (
 
 // AddDocumentPage inserts new section into document.
 func AddDocumentPage(w http.ResponseWriter, r *http.Request) {
+	if IsInvalidLicense() {
+		util.WriteBadLicense(w)
+		return
+	}
+
 	method := "AddDocumentPage"
 	p := request.GetPersister(r)
 
@@ -286,6 +291,11 @@ func GetDocumentPagesBatch(w http.ResponseWriter, r *http.Request) {
 
 // DeleteDocumentPage deletes a page.
 func DeleteDocumentPage(w http.ResponseWriter, r *http.Request) {
+	if IsInvalidLicense() {
+		util.WriteBadLicense(w)
+		return
+	}
+
 	method := "DeleteDocumentPage"
 	p := request.GetPersister(r)
 
@@ -354,6 +364,11 @@ func DeleteDocumentPage(w http.ResponseWriter, r *http.Request) {
 
 // DeleteDocumentPages batch deletes pages.
 func DeleteDocumentPages(w http.ResponseWriter, r *http.Request) {
+	if IsInvalidLicense() {
+		util.WriteBadLicense(w)
+		return
+	}
+
 	method := "DeleteDocumentPages"
 	p := request.GetPersister(r)
 
@@ -433,6 +448,11 @@ func DeleteDocumentPages(w http.ResponseWriter, r *http.Request) {
 // that this is a new revision. If the page is the first in a document
 // then the corresponding document title will also be changed.
 func UpdateDocumentPage(w http.ResponseWriter, r *http.Request) {
+	if IsInvalidLicense() {
+		util.WriteBadLicense(w)
+		return
+	}
+
 	method := "UpdateDocumentPage"
 	p := request.GetPersister(r)
 	params := mux.Vars(r)
@@ -540,6 +560,11 @@ func UpdateDocumentPage(w http.ResponseWriter, r *http.Request) {
 
 // ChangeDocumentPageSequence will swap page sequence for a given number of pages.
 func ChangeDocumentPageSequence(w http.ResponseWriter, r *http.Request) {
+	if IsInvalidLicense() {
+		util.WriteBadLicense(w)
+		return
+	}
+
 	method := "ChangeDocumentPageSequence"
 	p := request.GetPersister(r)
 
@@ -598,6 +623,11 @@ func ChangeDocumentPageSequence(w http.ResponseWriter, r *http.Request) {
 
 // ChangeDocumentPageLevel handles page indent/outdent changes.
 func ChangeDocumentPageLevel(w http.ResponseWriter, r *http.Request) {
+	if IsInvalidLicense() {
+		util.WriteBadLicense(w)
+		return
+	}
+
 	method := "ChangeDocumentPageLevel"
 	p := request.GetPersister(r)
 
@@ -740,6 +770,11 @@ func GetPageMoveCopyTargets(w http.ResponseWriter, r *http.Request) {
 
 // GetDocumentRevisions returns all changes for a document.
 func GetDocumentRevisions(w http.ResponseWriter, r *http.Request) {
+	if IsInvalidLicense() {
+		util.WriteBadLicense(w)
+		return
+	}
+
 	method := "GetDocumentPageRevisions"
 	p := request.GetPersister(r)
 
@@ -770,6 +805,11 @@ func GetDocumentRevisions(w http.ResponseWriter, r *http.Request) {
 
 // GetDocumentPageRevisions returns all changes for a given page.
 func GetDocumentPageRevisions(w http.ResponseWriter, r *http.Request) {
+	if IsInvalidLicense() {
+		util.WriteBadLicense(w)
+		return
+	}
+
 	method := "GetDocumentPageRevisions"
 	p := request.GetPersister(r)
 
@@ -807,6 +847,11 @@ func GetDocumentPageRevisions(w http.ResponseWriter, r *http.Request) {
 
 // GetDocumentPageDiff returns HTML diff between two revisions of a given page.
 func GetDocumentPageDiff(w http.ResponseWriter, r *http.Request) {
+	if IsInvalidLicense() {
+		util.WriteBadLicense(w)
+		return
+	}
+
 	method := "GetDocumentPageDiff"
 	p := request.GetPersister(r)
 

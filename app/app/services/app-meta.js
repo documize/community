@@ -27,8 +27,14 @@ export default Ember.Service.extend({
 	title: '',
 	version: '',
 	message: '',
+	edition: 'Community',
+	valid: true,
 	allowAnonymousAccess: false,
 	setupMode: false,
+
+	invalidLicense() {
+		return this.valid === false;
+	},
 
 	getBaseUrl(endpoint) {
 		return [this.get('endpoint'), endpoint].join('/');

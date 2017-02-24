@@ -28,6 +28,11 @@ import (
 
 // AddPin saves pinned item.
 func AddPin(w http.ResponseWriter, r *http.Request) {
+	if IsInvalidLicense() {
+		util.WriteBadLicense(w)
+		return
+	}
+
 	method := "AddPin"
 	p := request.GetPersister(r)
 	params := mux.Vars(r)
@@ -131,6 +136,11 @@ func GetUserPins(w http.ResponseWriter, r *http.Request) {
 
 // DeleteUserPin removes saved user pin.
 func DeleteUserPin(w http.ResponseWriter, r *http.Request) {
+	if IsInvalidLicense() {
+		util.WriteBadLicense(w)
+		return
+	}
+
 	method := "DeleteUserPin"
 	p := request.GetPersister(r)
 	params := mux.Vars(r)
@@ -175,6 +185,11 @@ func DeleteUserPin(w http.ResponseWriter, r *http.Request) {
 
 // UpdatePinSequence records order of pinned items.
 func UpdatePinSequence(w http.ResponseWriter, r *http.Request) {
+	if IsInvalidLicense() {
+		util.WriteBadLicense(w)
+		return
+	}
+
 	method := "UpdatePinSequence"
 	p := request.GetPersister(r)
 	params := mux.Vars(r)

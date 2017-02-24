@@ -54,7 +54,7 @@ export default Ember.Service.extend({
 		}
 	},
 
-	// Saves product license
+	// Saves product license.
 	saveLicense(license) {
 		if(this.get('sessionService.isGlobalAdmin')) {
 			return this.get('ajax').request(`global/license`, {

@@ -45,6 +45,8 @@ func GetMeta(w http.ResponseWriter, r *http.Request) {
 	data.Message = org.Message
 	data.AllowAnonymousAccess = org.AllowAnonymousAccess
 	data.Version = Product.Version
+	data.Edition = Product.License.Edition
+	data.Valid = Product.License.Valid
 
 	json, err := json.Marshal(data)
 

@@ -109,25 +109,13 @@ func GetLicense(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 	}
 
-	output, err := xml.MarshalIndent(x, "  ", "    ")
+	output, err := xml.Marshal(x)
 	if err != nil {
 		fmt.Printf("error: %v\n", err)
 	}
 
 	w.WriteHeader(http.StatusOK)
 	w.Write(output)
-
-	// // marshal as JSON
-	// var y map[string]interface{}
-	// json.Unmarshal([]byte(config), &y)
-
-	// json, err := json.Marshal(y)
-	// if err != nil {
-	// 	writeJSONMarshalError(w, method, "EDITION-LICENSE", err)
-	// 	return
-	// }
-
-	// util.WriteSuccessBytes(w, json)
 }
 
 // SaveLicense persists product license
