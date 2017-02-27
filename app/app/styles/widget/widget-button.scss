@@ -217,6 +217,13 @@
     @include button-hover-state($color-white);
 }
 
+.button-black {
+	border: 1px solid $color-stroke;
+    background-color: $color-off-black;
+	color: $color-white;
+    @include button-hover-state($color-black);
+}
+
 .button-transparent {
     background-color: transparent;
     color: $color-gray;

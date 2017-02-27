@@ -3,12 +3,12 @@
     <div id="page-toolbar-{{ page.id }}" class="pull-right page-toolbar hidden-xs hidden-sm">
         {{#if isEditor}}
 			{{#link-to 'document.edit' folder.id folder.slug document.id document.slug page.id}}
-	            <div class="round-button-mono page-action-button" data-tooltip="Edit" data-tooltip-position="top center">
+	            <div class="round-button-mono">
 	                <i class="material-icons color-gray">mode_edit</i>
 	            </div>
 			{{/link-to}}
 
-            <div id="page-menu-{{page.id}}" class="round-button-mono page-action-button" data-tooltip="More options" data-tooltip-position="top center">
+            <div id="page-menu-{{page.id}}" class="round-button-mono">
                 <i class="material-icons color-gray">more_vert</i>
             </div>
 

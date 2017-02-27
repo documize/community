@@ -161,6 +161,16 @@
 			box-shadow: none !important;
 		}
 	}
+
+	.error-inline {
+		border-left: 3px solid $color-red;
+	}
+}
+
+.input-transparent {
+	> input, textarea {
+		background-color: transparent !important;
+	}
 }
 
 .form-bordered {

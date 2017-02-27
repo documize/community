@@ -1,6 +1,33 @@
-.document-sidebar {
+.document-sidebar-content {
+	display: inline-block;
+	width: 340px;
+	padding: 40px 20px;
+}
+
+.document-sidebar-toolbar {
+	display: inline-block;
+    width: 60px;
+    background-color: $color-toolbar;
+    text-align: center;
+    position: fixed;
+    right: 0;
+    top: 0;
+    height: 100%;
+	padding: 50px 0 0 0;
+}
+
+.xxxx {
+
+	.is-template {
+		color: $color-goldy;
+		font-weight: bold;
+		font-size: 1.5em;
+		margin-bottom: 30px;
+		padding-bottom: 5px;
+		border-bottom: 1px dotted $color-goldy;
+	}
+
 	@extend .no-select;
-	width: 100%;
 
 	.stuck-toc {
 		position: fixed;

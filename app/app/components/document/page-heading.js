@@ -73,19 +73,8 @@ export default Ember.Component.extend(TooltipMixin, {
 	}),
 
 	didRender() {
-		if (this.get('isEditor')) {
-			let self = this;
-			$(".page-action-button").each(function (i, el) {
-				self.addTooltip(el);
-			});
-		}
-
 		$("#" + this.get('blockTitleId')).removeClass('error');
 		$("#" + this.get('blockExcerptId')).removeClass('error');
-	},
-
-	willDestroyElement() {
-		this.destroyTooltips();
 	},
 
 	actions: {
@@ -198,6 +187,6 @@ export default Ember.Component.extend(TooltipMixin, {
 
 			this.attrs.onMovePage(page.get('id'), targetDocumentId);
 			return true;
-		}		
+		}
 	}
 });

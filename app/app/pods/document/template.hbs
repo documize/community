@@ -1,13 +1,75 @@
 {{layout/zone-navigation}}
 
-{{#layout/zone-sidebar}}
-	{{document/document-sidebar document=model.document folder=model.folder pages=model.pages page=model.page isEditor=model.isEditor sections=model.sections
-		onAddSection=(action 'onAddSection') onInsertBlock=(action 'onInsertBlock') onDeleteBlock=(action 'onDeleteBlock') changePageSequence=(action 'onPageSequenceChange') changePageLevel=(action 'onPageLevelChange') gotoPage=(action 'gotoPage')}}
-{{/layout/zone-sidebar}}
+<div id="wrapper" class={{if toggled 'toggled'}}>
+	<div id="sidebar-wrapper">
+		<div class="document-sidebar-content">
+			{{#if model.document.template}}
+				<div class="is-template">TEMPLATE</div>
+			{{/if}}
 
-{{#layout/zone-content}}
-	{{document/document-toolbar document=model.document pages=model.pages tabs=model.tabs folder=model.folder isEditor=model.isEditor
-		onSaveTemplate=(action 'onSaveTemplate') onSaveMeta=(action 'onSaveMeta')  onDocumentDelete=(action 'onDocumentDelete')}}
+			{{document/tag-editor documentTags=model.document.tags isEditor=model.isEditor onChange=(action 'onTagChange')}}
+			{{#layout/zone-document-sidebar}}
+			{{/layout/zone-document-sidebar}}
+		</div>
+		<div class="document-sidebar-toolbar">
+			<div class="round-button-mono">
+				<i class="material-icons color-gray">more_horiz</i>
+			</div>
+			<div class="margin-top-20"></div>
+			<div class="round-button-mono">
+				<i class="material-icons color-gray">view_headline</i>
+			</div>
+			<div class="margin-top-20"></div>
+			<div class="round-button-mono">
+				<i class="material-icons color-gray">attach_file</i>
+			</div>
+			<div class="margin-top-20"></div>
+			<div class="round-button-mono">
+				<i class="material-icons color-gray">timeline</i>
+			</div>
+			<div class="margin-top-20"></div>
+			<div class="round-button-mono">
+				<i class="material-icons color-gray">person</i>
+			</div>
+			<div class="margin-top-20"></div>
+			<div class="round-button-mono">
+				<i class="material-icons color-gray">chat_bubble</i>
+			</div>
+			<div class="margin-top-20"></div>
+			<div class="round-button-mono">
+				<i class="material-icons color-gray">share</i>
+			</div>
+		</div>
+	</div>
 
-		{{outlet}}
-{{/layout/zone-content}}
+	<div id="page-content-wrapper">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-lg-12">
+					{{#if toggled}}
+						<div id="menu-toggle" class="pull-right" {{action 'toggleMenu'}}>
+							<div class="round-button button-black">
+								<i class="material-icons">keyboard_arrow_left</i>
+							</div>
+						</div>
+					{{else}}
+						<div id="menu-toggle" class="pull-right" {{action 'toggleMenu'}}>
+							<div class="round-button button-black">
+								<i class="material-icons">keyboard_arrow_right</i>
+							</div>
+						</div>
+					{{/if}}
+					<div id="zone-document-content" class="zone-document-content">
+						<div class="back-to-space">
+							{{#link-to 'folder' model.folder.id model.folder.slug}}
+								<i class="material-icons">arrow_back</i>&nbsp;{{model.folder.name}}
+							{{/link-to}}
+						</div>
+						{{document/document-heading document=model.document isEditor=model.isEditor onSaveDocument=(action 'onSaveDocument')}}
+						{{document/document-view document=model.document links=model.links allPages=model.allPages tabs=model.tabs pages=model.pages folder=model.folder folders=model.folders isEditor=model.isEditor gotoPage=(action 'gotoPage') onAddBlock=(action 'onAddBlock') onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onPageDeleted')}}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

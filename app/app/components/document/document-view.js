@@ -97,11 +97,5 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
 			this.attrs.onDeletePage(params);
 		},
-
-		onTagChange(tags) {
-			let doc = this.get('document');
-			doc.set('tags', tags);
-			this.get('documentService').save(doc);
-		}
 	}
 });

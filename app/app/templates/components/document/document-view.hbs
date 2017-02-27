@@ -1,23 +1,9 @@
-<div class="document-view {{document.layout}}-layout">
-	{{#if document.template}}
-		<div class="is-template">TEMPLATE</div>
-	{{/if}}
-
-	<div class="wysiwyg">
-		<h1 class="doc-name">{{document.name}}</h1>
-	</div>
-
-	{{document/tag-editor documentTags=document.tags isEditor=isEditor onChange=(action 'onTagChange')}}
-
-	<div class="print-title">
-		{{document.name}}
-	</div>
-
+<div class="document-view">
 	<div class="pages">
 		{{#each pages key="id" as |page index|}}
 			<div class="wysiwyg">
 				<div id="page-{{ page.id }}" class="is-a-page" data-id="{{ page.id }}" data-type="{{ page.contentType }}">
-					{{document/page-heading tagName=page.tagName document=document folder=folder page=page isEditor=isEditor 
+					{{document/page-heading tagName=page.tagName document=document folder=folder page=page isEditor=isEditor
 						onAddBlock=(action 'onAddBlock') onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onDeletePage')}}
 					{{section/base-renderer page=page}}
 				</div>

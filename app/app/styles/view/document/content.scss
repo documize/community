@@ -1,45 +1,72 @@
-.wiki-layout {
-
+.zone-document {
+	min-height: 500px; //ensure dropdowns render in viewport
+	height: 100%;
+	margin-left: 60px;
+	padding: 30px 70px;
+	z-index: 777;
+	background-color: $color-off-white;
 }
 
-.doc-layout {
-	padding: 60px 50px;
-	box-shadow: 0 0 0 0.75pt $color-stroke,0 0 3pt 0.75pt $color-stroke;
-	margin: 30px 40px 50px 40px;
+.zone-document-content {
+	> .back-to-space {
+		margin: 10px 0;
+
+		> a {
+			vertical-align: middle;
+			color: $color-primary;
+			font-size: 1rem;
+
+			> .material-icons {
+				font-size: 1rem;
+				vertical-align: middle;
+			}
+		}
+	}
+
+	.doc-title {
+		margin: 30px 0 10px;
+		font-weight: bold;
+	}
+
+	.doc-excerpt {
+		font-size: 1rem;
+		color: $color-gray;
+		margin: 0 0 75px;
+	}
+
+	.edit-document-heading {
+		margin-top: 30px;
+
+		.edit-doc-title {
+			> input {
+				font-weight: bold;
+				font-size: 2rem;
+				margin: 0 0 10px;
+				color: $color-wysiwyg;
+			}
+		}
+
+		.edit-doc-excerpt {
+			font-size: 1rem;
+			margin: 0 0 10px;
+			color: $color-gray;
+		}
+	}
 }
 
 .document-view {
-	.print-title {
-		display: none;
-		font-size: 2.3em;
-		font-weight: bold;
-		color:$color-black;
-		margin-bottom: 20px;
-		margin-top: 0;
-	}
-
-	.non-printable-message {
-		display: none;
-		font-size: 1em;
-		font-style: italic;
-		color: $color-gray;
-	}
-
-	.is-template {
-		color: $color-goldy;
-		font-weight: bold;
-		font-size: 1.5em;
-		margin-bottom: 30px;
-		padding-bottom: 5px;
-		border-bottom: 1px dotted $color-goldy;
-	}
-
 	> .pages {
-		margin: 30px 0 50px 0;
+		margin: 30px 0 50px;
 
 		> .wysiwyg {
 			> .is-a-page {
 				@extend .transition-all;
+				@include border-radius(2px);
+				@include ease-in();
+				padding: 50px;
+				box-shadow: 0 0 0 0.75pt $color-stroke,0 0 3pt 0.75pt $color-stroke;
+				margin: 30px 0;
+				background-color: $color-white;
 
 				&:hover {
 					.page-title {
