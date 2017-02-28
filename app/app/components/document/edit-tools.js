@@ -31,6 +31,10 @@ export default Ember.Component.extend(TooltipMixin, {
 		{ label: 'Attachment', selected: false },
 		{ label: 'Search', selected: false }
 	],
+	buttonId: Ember.computed('page', function () {
+		let page = this.get('page');
+		return `content-linker-button-${page.id}`;
+	}),
 
 	showSections: Ember.computed('tabs.@each.selected', function () {
 		return this.get('tabs').findBy('label', 'Section').selected;

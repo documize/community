@@ -56,6 +56,9 @@ export default Ember.Component.extend({
 		if (is.not.null(drop)) {
 			drop.destroy();
 		}
+
+		Mousetrap.unbind('esc');
+		Mousetrap.unbind(['ctrl+s', 'command+s']);
 	},
 
 	actions: {
@@ -70,7 +73,7 @@ export default Ember.Component.extend({
 					position: "bottom right",
 					openOn: "always",
 					constrainToWindow: true,
-					constrainToScrollParent: false,					
+					constrainToScrollParent: false,
 					tetherOptions: {
 						offset: "5px 0",
 						targetOffset: "10px 0"
@@ -88,6 +91,10 @@ export default Ember.Component.extend({
 
 		onAction() {
 			if (this.get('busy') || is.empty(this.get('page.title'))) {
+				return;
+			}
+
+			if (this.get('isDestroyed') || this.get('isDestroying')) {
 				return;
 			}
 

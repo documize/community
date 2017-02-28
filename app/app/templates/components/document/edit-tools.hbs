@@ -1,13 +1,13 @@
 <div class="edit-tools">
 	<ul class="toolbar">
 		<li class="item">
-			<div class="round-button-mono" id="content-linker-button" data-tooltip="Reference link" data-tooltip-position="top center">
+			<div class="round-button-mono" id={{buttonId}} data-tooltip="Reference link" data-tooltip-position="top center">
 				<i class="material-icons color-blue">link</i>
 			</div>
 		</li>
 	</ul>
 
-	{{#dropdown-dialog target="content-linker-button" position="bottom right" button="Insert" color="flat-blue" onAction=(action 'onInsertLink')}}
+	{{#dropdown-dialog target=buttonId position="bottom right" button="Insert" color="flat-blue" onAction=(action 'onInsertLink')}}
 		<div class="content-linker-dialog">
 			<form>
 				{{ui/ui-tab tabs=tabs onTabSelect=(action 'onTabSelect')}}

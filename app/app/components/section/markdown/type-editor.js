@@ -111,6 +111,10 @@ export default Ember.Component.extend(TooltipMixin, {
             dragDrop: false,
 			extraKeys: {"Enter": "newlineAndIndentContinueMarkdownList"}
         });
+		
+		CodeMirror.commands.save = function(/*instance*/){
+			Mousetrap.trigger('ctrl+s');
+		};
 
         this.set('codeEditor', editor);
 

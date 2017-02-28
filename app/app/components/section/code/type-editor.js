@@ -83,6 +83,10 @@ export default Ember.Component.extend(TooltipMixin, {
             dragDrop: false
         });
 
+		CodeMirror.commands.save = function(/*instance*/){
+			Mousetrap.trigger('ctrl+s');
+		};
+
         this.set('codeEditor', editor);
 
         let syntax = this.get("codeSyntax");
