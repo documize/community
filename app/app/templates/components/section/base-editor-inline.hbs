@@ -1,7 +1,7 @@
 <div class="document-editor">
 	<div class="toolbar">
 		<div class="input-inline input-transparent edit-title pull-left">
-			{{focus-input type="text" id=pageId value=page.title class=(if hasNameError 'error-inline') placeholder=tip class="mousetrap"}}
+			{{focus-input type="text" id=pageId value=page.title class=(if hasNameError 'error-inline') placeholder="Name" class="mousetrap"}}
 		</div>
 		<div class="buttons pull-right">
 			{{#if busy}}
@@ -10,12 +10,12 @@
 			<div class="round-button-mono" {{action 'onAction'}}>
 				<i class="material-icons color-green">check</i>
 			</div>
-			<div class="round-button-mono" {{action 'onCancel'}} id="editor-cancel-{{page.id}}">
+			<div class="round-button-mono" {{action 'onCancel'}} id={{cancelId}}>
 				<i class="material-icons color-gray">close</i>
 			</div>
 		</div>
 		<div class="clearfix"></div>
-		<div class="dropdown-dialog cancel-edits-dialog" id="cancel-edits-dialog">
+		<div class="dropdown-dialog cancel-edits-dialog" id={{dialogId}}>
 			<div class="content">
 				<p>Do you want to cancel editing and lose unsaved changes?</p>
 			</div>

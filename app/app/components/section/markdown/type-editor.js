@@ -10,7 +10,6 @@
 // https://documize.com
 
 import Ember from 'ember';
-import miscUtil from '../../../utils/misc';
 import TooltipMixin from '../../../mixins/tooltip';
 
 const {
@@ -19,10 +18,12 @@ const {
 
 export default Ember.Component.extend(TooltipMixin, {
 	link: service(),
-	editMode: true,
-	isDirty: false,
 	pageBody: "",
 	pagePreview: "",
+	editMode: true,
+	codeSyntax: null,
+	codeEditor: null,
+
 	editorId: Ember.computed('page', function () {
 		let page = this.get('page');
 		return `markdown-editor-${page.id}`;
@@ -36,23 +37,89 @@ export default Ember.Component.extend(TooltipMixin, {
 		return `markdown-tooltip-${page.id}`;
 	}),
 
-	didReceiveAttrs() {
-		this.set("pageBody", this.get("meta.rawBody"));
-	},
+	init() {
+		this._super(...arguments);
+
+        let self = this;
+        CodeMirror.modeURL = "/codemirror/mode/%N/%N.js";
+
+        let rawBody = this.get('meta.rawBody');
+        let cleanBody = rawBody.replace("</pre>", "");
+
+        cleanBody = cleanBody.replace('<pre class="code-mirror cm-s-solarized cm-s-dark" data-lang="', "");
+        let startPos = cleanBody.indexOf('">');
+        let syntax = {
+            mode: "markdown",
+            name: "Markdown"
+        };
+
+        if (startPos !== -1) {
+            syntax = cleanBody.substring(0, startPos);
+            cleanBody = cleanBody.substring(startPos + 2);
+        }
+
+        this.set('pageBody', cleanBody);
+
+		let opts = [];
+
+		_.each(_.sortBy(CodeMirror.modeInfo, 'name'), function(item) {
+			let i = {
+				mode: item.mode,
+				name: item.name
+			};
+			opts.pushObject(i);
+
+			if (item.mode === syntax) {
+				self.set('codeSyntax', i);
+			}
+		});
+
+		this.set('syntaxOptions', opts);
+
+        // default check
+        if (is.null(this.get("codeSyntax"))) {
+            this.set("codeSyntax", opts.findBy("mode", "markdown"));
+        }
+    },
 
 	didInsertElement() {
-		$("#" + this.get('editorId')).off("keyup").on("keyup", () => {
-			this.set('isDirty', true);
-		});
+		this.attachEditor();
+    },
+
+    willDestroyElement() {
+        this.set('codeEditor', null);
+		this.destroyTooltips();
+		// $("#" + this.get('editorId')).off("keyup");
+    },
+
+	getBody() {
+		return this.get('codeEditor').getDoc().getValue();
 	},
 
 	didRender() {
 		this.addTooltip(document.getElementById(this.get('tooltipId')));
 	},
 
-	willDestroyElement() {
-		this.destroyTooltips();
-		$("#" + this.get('editorId')).off("keyup");
+	attachEditor() {
+		var editor = CodeMirror.fromTextArea(document.getElementById(this.get('editorId')), {
+            theme: "solarized light",
+            lineNumbers: true,
+            lineWrapping: true,
+            indentUnit: 4,
+            tabSize: 4,
+            value: "",
+            dragDrop: false,
+			extraKeys: {"Enter": "newlineAndIndentContinueMarkdownList"}
+        });
+
+        this.set('codeEditor', editor);
+
+        let syntax = this.get("codeSyntax");
+
+        if (is.not.undefined(syntax)) {
+            CodeMirror.autoLoadMode(editor, syntax.mode);
+            editor.setOption("mode", syntax.mode);
+        }
 	},
 
 	actions: {
@@ -61,12 +128,10 @@ export default Ember.Component.extend(TooltipMixin, {
 
 			Ember.run.schedule('afterRender', () => {
 				if (this.get('editMode')) {
-					$("#" + this.get('editorId')).off("keyup").on("keyup", () => {
-						this.set('isDirty', true);
-					});
+					this.attachEditor();
 				} else {
 					let md = window.markdownit({ linkify: true });
-					let result = md.render(this.get("pageBody"));
+					let result = md.render(this.getBody());
 
 					this.set('pagePreview', result);
 				}
@@ -75,15 +140,13 @@ export default Ember.Component.extend(TooltipMixin, {
 
 		onInsertLink(link) {
 			let linkMarkdown = this.get('link').buildLink(link);
-
-			miscUtil.insertAtCursor($("#" + this.get('editorId'))[0], linkMarkdown);
-			this.set('pageBody', $("#" + this.get('editorId')).val());
+			this.get('codeEditor').getDoc().replaceSelection(linkMarkdown);
 
 			return true;
 		},
 
 		isDirty() {
-			return this.get('isDirty');
+			return this.get('codeEditor').getDoc().isClean() === false;
 		},
 
 		onCancel() {
@@ -94,7 +157,7 @@ export default Ember.Component.extend(TooltipMixin, {
 			let page = this.get('page');
 			let meta = this.get('meta');
 			page.set('title', title);
-			meta.set('rawBody', this.get("pageBody"));
+			meta.set('rawBody', this.getBody());
 
 			this.attrs.onAction(page, meta);
 		}

@@ -15,9 +15,9 @@ import TooltipMixin from '../../../mixins/tooltip';
 export default Ember.Component.extend(TooltipMixin, {
     isDirty: false,
     pageBody: "",
-    codeEditor: null,
     syntaxOptions: [],
     codeSyntax: null,
+	codeEditor: null,
 	editorId: Ember.computed('page', function () {
 		let page = this.get('page');
 		return `code-editor-${page.id}`;
@@ -116,7 +116,7 @@ export default Ember.Component.extend(TooltipMixin, {
         },
 
         isDirty() {
-            return this.get('isDirty');
+            return this.get('isDirty') || (this.get('codeEditor').getDoc().isClean() === false);
         },
 
         onCancel() {

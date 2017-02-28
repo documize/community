@@ -18,13 +18,20 @@ const {
 
 export default Ember.Component.extend({
 	drop: null,
-	tip: "Short and concise title",
 	busy: false,
 
 	hasNameError: computed.empty('page.title'),
 	pageId: Ember.computed('page', function () {
 		let page = this.get('page');
 		return `page-editor-${page.id}`;
+	}),
+	cancelId: Ember.computed('page', function () {
+		let page = this.get('page');
+		return `cancel-edits-button-${page.id}`;
+	}),
+	dialogId: Ember.computed('page', function () {
+		let page = this.get('page');
+		return `discard-edits-dialog-${page.id}`;
 	}),
 
 	didRender() {
@@ -54,16 +61,16 @@ export default Ember.Component.extend({
 	actions: {
 		onCancel() {
 			if (this.attrs.isDirty() !== null && this.attrs.isDirty()) {
-				$(".discard-edits-dialog").css("display", "block");
-
-				let page = this.get('page');
+				$('#' + this.get('dialogId')).css("display", "block");
 
 				let drop = new Drop({
-					target: $("#editor-cancel" + page.get('id'))[0],
-					content: $(".cancel-edits-dialog-" + page.get('id'))[0],
+					target: $('#' + this.get('cancelId'))[0],
+					content: $('#' + this.get('dialogId'))[0],
 					classes: 'drop-theme-basic',
 					position: "bottom right",
 					openOn: "always",
+					constrainToWindow: true,
+					constrainToScrollParent: false,					
 					tetherOptions: {
 						offset: "5px 0",
 						targetOffset: "10px 0"
@@ -80,11 +87,7 @@ export default Ember.Component.extend({
 		},
 
 		onAction() {
-			if (this.get('busy')) {
-				return;
-			}
-
-			if (is.empty(this.get('page.title'))) {
+			if (this.get('busy') || is.empty(this.get('page.title'))) {
 				return;
 			}
 
