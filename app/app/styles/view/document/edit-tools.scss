@@ -1,16 +1,7 @@
 .edit-tools {
-	margin: 0 0 0 20px;
-	min-height: 600px;
-
-	> .toolbar {
-		margin: 0;
-		padding: 0;
-
-		> .item {
-			list-style-type: none;
-			margin: 0 0 20px;
-		}
-	}
+	position: absolute;
+	top: 18px;
+	right: 78px;
 }
 
 .content-counter-dialog {
@@ -20,7 +11,7 @@
 
 .content-linker-dialog {
 	width: 350px;
-	height: 500px;
+	height: 350px;
 	overflow-y: auto;
 
 	.link-list {

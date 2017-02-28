@@ -25,23 +25,22 @@ export default Ember.Component.extend({
 	},
 
 	didInsertElement() {
-		let maxHeight = $(document).height() - 450;
-
 		let options = {
-			selector: "#rich-text-editor",
+			selector: "#rich-text-editor-" + this.get('page.id'),
 			relative_urls: false,
 			cache_suffix: "?v=443",
 			browser_spellcheck: false,
 			gecko_spellcheck: false,
 			theme: "modern",
+			skin: 'charcoal',
 			statusbar: false,
-			height: maxHeight,
+			inline: true,
 			entity_encoding: "raw",
 			paste_data_images: true,
 			image_advtab: true,
 			image_caption: true,
 			media_live_embeds: true,
-			fontsize_formats: "8px 10px 12px 14px 18px 24px 36px 40px 50px 60px",
+			fontsize_formats: "8px 10px 12px 14px 17px 18px 24px 36px 40px 50px 60px",
 			formats: {
 				bold: {
 					inline: 'b'
@@ -59,8 +58,8 @@ export default Ember.Component.extend({
 			],
 			menu: {},
 			menubar: false,
-			toolbar1: "bold italic underline strikethrough superscript subscript | outdent indent bullist numlist forecolor backcolor | alignleft aligncenter alignright alignjustify | link unlink | table image media codesample",
-			toolbar2: "formatselect fontselect fontsizeselect",
+			toolbar1: "formatselect fontsizeselect | bold italic underline strikethrough superscript subscript | forecolor backcolor link unlink",
+			toolbar2: "outdent indent bullist numlist | alignleft aligncenter alignright alignjustify | table image media codesample",
 			save_onsavecallback: function () {
 				Mousetrap.trigger('ctrl+s');
 			}

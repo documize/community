@@ -6,7 +6,6 @@
 			{{#if model.document.template}}
 				<div class="is-template">TEMPLATE</div>
 			{{/if}}
-
 			{{document/tag-editor documentTags=model.document.tags isEditor=model.isEditor onChange=(action 'onTagChange')}}
 			{{#layout/zone-document-sidebar}}
 			{{/layout/zone-document-sidebar}}
@@ -66,7 +65,9 @@
 							{{/link-to}}
 						</div>
 						{{document/document-heading document=model.document isEditor=model.isEditor onSaveDocument=(action 'onSaveDocument')}}
-						{{document/document-view document=model.document links=model.links allPages=model.allPages tabs=model.tabs pages=model.pages folder=model.folder folders=model.folders isEditor=model.isEditor gotoPage=(action 'gotoPage') onAddBlock=(action 'onAddBlock') onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onPageDeleted')}}
+						{{document/document-view document=model.document links=model.links allPages=model.allPages tabs=model.tabs pages=model.pages
+							folder=model.folder folders=model.folders isEditor=model.isEditor onSavePage=(action 'onSavePage')
+							gotoPage=(action 'gotoPage') onAddBlock=(action 'onAddBlock') onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onPageDeleted')}}
 					</div>
 				</div>
 			</div>

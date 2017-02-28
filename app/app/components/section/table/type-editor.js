@@ -14,6 +14,10 @@ import Ember from 'ember';
 export default Ember.Component.extend({
 	isDirty: false,
 	pageBody: "",
+	editorId: Ember.computed('page', function () {
+		let page = this.get('page');
+		return `table-editor-${page.id}`;
+	}),
 	defaultTable: '<table class="wysiwyg-table" style="width: 100%;"><thead><tr><th><br></th><th><br></th><th><br></th><th><br></th></tr></thead><tbody><tr><td style="width: 25.0000%;"><br></td><td style="width: 25.0000%;"><br></td><td style="width: 25.0000%;"><br></td><td style="width: 25.0000%;"><br></td></tr><tr><td style="width: 25.0000%;"><br></td><td style="width: 25.0000%;"><br></td><td style="width: 25.0000%;"><br></td><td style="width: 25.0000%;"><br></td></tr><tr><td style="width: 25.0000%;"><br></td><td style="width: 25.0000%;"><br></td><td style="width: 25.0000%;"><br></td><td style="width: 25.0000%;"><br></td></tr></tbody></table>',
 
 	didReceiveAttrs() {
@@ -25,23 +29,20 @@ export default Ember.Component.extend({
 	},
 
 	didInsertElement() {
-		$('#table-editor').froalaEditor({
+		let id = '#' + this.get('editorId');
+		$(id).froalaEditor({
 			toolbarButtons: [],
-			height: $(document).height() - 400,
 			toolbarInline: true,
 			tableResizerOffset: 10
 		});
 
-		$('#table-editor').on('froalaEditor.contentChanged', () => {
+		$(id).on('froalaEditor.contentChanged', () => {
 			this.set('isDirty', true);
 		});
 	},
 
 	willDestroyElement() {
-		$('#table-editor').off('froalaEditor.contentChanged');
-		// if ($('#table-editor').data('froala.editor')) {
-		// 	$('#table-editor').froalaEditor('destroy');
-		// }
+		$('#' + this.get('editorId')).off('froalaEditor.contentChanged');
 	},
 
 	actions: {
@@ -57,7 +58,7 @@ export default Ember.Component.extend({
 			let page = this.get('page');
 			let meta = this.get('meta');
 
-			let body = $("#table-editor").froalaEditor('html.get', true);
+			let body = $('#' + this.get('editorId')).froalaEditor('html.get', true);
 			page.set('title', title);
 
 			if (is.empty(body)) {

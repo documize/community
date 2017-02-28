@@ -1,26 +1,13 @@
-{{#section/base-editor document=document folder=folder page=page isDirty=(action 'isDirty') onCancel=(action 'onCancel') onAction=(action 'onAction')}}
-	<div class="container-fluid">
-		<div class="row">
-			{{#if editMode}}
-				<div class="col-xs-11 col-sm-11 col-md-11 col-lg-11">
-					<div class="margin-bottom-10" >
-	 					<a {{action 'toggleMode'}}>Preview</a>
-					</div>
-					{{focus-textarea id="section-markdown-editor" class="mousetrap wysiwyg" value=pageBody}}
-				</div>
-				<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
-					{{document/edit-tools document=document folder=folder page=page onInsertLink=(action 'onInsertLink')}}
-				</div>
-			{{else}}
-				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-					<div class="margin-bottom-10" >
-	 					<a {{action 'toggleMode'}}>Edit</a>
-					</div>
-					<div id="section-markdown-preview" class="mousetrap wysiwyg bordered">
-						{{{pagePreview}}}
-					</div>
-				</div>
-			{{/if}}
-		</div>
+{{#section/base-editor-inline document=document folder=folder page=page isDirty=(action 'isDirty') onCancel=(action 'onCancel') onAction=(action 'onAction')}}
+	<div class="section-markdown-preview-button round-button-mono" id={{tooltipId}} {{action 'toggleMode'}} data-tooltip="Toggle Preview" data-tooltip-position="top center">
+		<i class="material-icons color-gray">visibility</i>
 	</div>
-{{/section/base-editor}}
+	{{document/edit-tools document=document folder=folder page=page onInsertLink=(action 'onInsertLink')}}
+	{{#if editMode}}
+		{{focus-textarea id=editorId class="mousetrap wysiwyg section-markdown-preview" value=pageBody}}
+	{{else}}
+		<div class="mousetrap wysiwyg section-markdown-preview">
+			{{{pagePreview}}}
+		</div>
+	{{/if}}
+{{/section/base-editor-inline}}

@@ -92,15 +92,16 @@ export default Ember.Component.extend(TooltipMixin, {
 			this.set('menuOpen', !this.get('menuOpen'));
 		},
 
-		editPage(id) {
-			this.attrs.onEditPage(id);
+		onEdit() {
+			this.attrs.onEdit();
 		},
 
-		deletePage(id) {
-			this.attrs.onDeletePage(id, this.get('deleteChildren'));
+		deletePage() {
+			this.attrs.onDeletePage(this.get('deleteChildren'));
 		},
 
-		onAddBlock(page) {
+		onAddBlock() {
+			let page = this.get('page');
 			let titleElem = '#' + this.get('blockTitleId');
 			let blockTitle = this.get('blockTitle');
 			if (is.empty(blockTitle)) {
@@ -158,7 +159,7 @@ export default Ember.Component.extend(TooltipMixin, {
 			this.set('selectedDocument', d);
 		},
 
-		onCopyPage(page) {
+		onCopyPage() {
 			// can't proceed if no data
 			if (this.get('documentList.length') === 0) {
 				return;
@@ -169,11 +170,11 @@ export default Ember.Component.extend(TooltipMixin, {
 				targetDocumentId = this.get('selectedDocument.id');
 			}
 
-			this.attrs.onCopyPage(page.get('id'), targetDocumentId);
+			this.attrs.onCopyPage(targetDocumentId);
 			return true;
 		},
 
-		onMovePage(page) {
+		onMovePage() {
 			// can't proceed if no data
 			if (this.get('documentListOthers.length') === 0) {
 				return;
@@ -185,7 +186,7 @@ export default Ember.Component.extend(TooltipMixin, {
 
 			let targetDocumentId = this.get('selectedDocument.id');
 
-			this.attrs.onMovePage(page.get('id'), targetDocumentId);
+			this.attrs.onMovePage(targetDocumentId);
 			return true;
 		}
 	}

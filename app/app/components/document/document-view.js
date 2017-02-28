@@ -18,10 +18,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	sectionService: Ember.inject.service('section'),
 	appMeta: Ember.inject.service(),
 	link: Ember.inject.service(),
-	document: null,
-	folder: null,
-	folders: [],
-	isEditor: false,
 
 	noSections: Ember.computed('pages', function () {
 		return this.get('pages.length') === 0;
@@ -97,5 +93,9 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
 			this.attrs.onDeletePage(params);
 		},
+
+		onSavePage(page, meta) {
+			this.attrs.onSavePage(page, meta);
+		}
 	}
 });

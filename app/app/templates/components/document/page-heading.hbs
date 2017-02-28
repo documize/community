@@ -2,13 +2,10 @@
     <span id="page-title-{{ page.id }}">{{ page.title }}</span>
     <div id="page-toolbar-{{ page.id }}" class="pull-right page-toolbar hidden-xs hidden-sm">
         {{#if isEditor}}
-			{{#link-to 'document.edit' folder.id folder.slug document.id document.slug page.id}}
-	            <div class="round-button-mono">
-	                <i class="material-icons color-gray">mode_edit</i>
-	            </div>
-			{{/link-to}}
-
-            <div id="page-menu-{{page.id}}" class="round-button-mono">
+            <div class="round-button-mono" {{action 'onEdit'}}>
+                <i class="material-icons color-gray">mode_edit</i>
+            </div>
+            <div class="round-button-mono" id="page-menu-{{page.id}}">
                 <i class="material-icons color-gray">more_vert</i>
             </div>
 
@@ -23,14 +20,14 @@
 			{{/dropdown-menu}}
 
 			{{#if menuOpen}}
-	            {{#dropdown-dialog target=deleteButtonId position="bottom right" button="Delete" color="flat-red" onAction=(action 'deletePage' page.id)}}
+	            {{#dropdown-dialog target=deleteButtonId position="bottom right" button="Delete" color="flat-red" onAction=(action 'deletePage')}}
 	                <p>Are you sure you want to delete <span class="bold">{{page.title}}?</span></p>
 	                <p>
 	                    {{input type="checkbox" id=checkId class="margin-left-20" checked=deleteChildren}}
 	                    <label for="{{checkId}}">&nbsp;Delete child pages</label>
 	                </p>
 	            {{/dropdown-dialog}}
-				{{#dropdown-dialog id=publishDialogId target=publishButtonId position="bottom right" button="Publish" color="flat-green" focusOn=blockTitleId onAction=(action 'onAddBlock' page)}}
+				{{#dropdown-dialog id=publishDialogId target=publishButtonId position="bottom right" button="Publish" color="flat-green" focusOn=blockTitleId onAction=(action 'onAddBlock')}}
 					<div class="form-header">
 						<div class="tip">
 							<span class="bold">{{folder.name}}:</span> Content Block
@@ -47,7 +44,7 @@
 						{{textarea rows="3" value=blockExcerpt id=blockExcerptId}}
 					</div>
 	            {{/dropdown-dialog}}
-				{{#dropdown-dialog id=copyDialogId target=copyButtonId position="bottom right" button="Copy" color="flat-green" onOpenCallback=(action 'onCopyDialogOpen') onAction=(action 'onCopyPage' page)}}
+				{{#dropdown-dialog id=copyDialogId target=copyButtonId position="bottom right" button="Copy" color="flat-green" onOpenCallback=(action 'onCopyDialogOpen') onAction=(action 'onCopyPage')}}
 					<div class="form-header">
 						<div class="tip">
 							<span class="bold">Copy:</span> {{page.title}}
@@ -59,7 +56,7 @@
 						{{ui-select cssClass="dropdown-page-toolbar" content=documentList action=(action 'onTargetChange') optionValuePath="id" optionLabelPath="name" selection=document}}
 					</div>
 	            {{/dropdown-dialog}}
-				{{#dropdown-dialog id=moveDialogId target=moveButtonId position="bottom right" button="Move" color="flat-green" onOpenCallback=(action 'onCopyDialogOpen') onAction=(action 'onMovePage' page)}}
+				{{#dropdown-dialog id=moveDialogId target=moveButtonId position="bottom right" button="Move" color="flat-green" onOpenCallback=(action 'onCopyDialogOpen') onAction=(action 'onMovePage')}}
 					<div class="form-header">
 						<div class="tip">
 							<span class="bold">move:</span> {{page.title}}

@@ -96,6 +96,25 @@ export default Ember.Controller.extend(NotifierMixin, {
 			});
 		},
 
+		onSavePage(page, meta) {
+			let self = this;
+			let documentId = this.get('model.document.id');
+			let model = {
+				page: page.toJSON({ includeId: true }),
+				meta: meta.toJSON({ includeId: true })
+			};
+
+			this.get('documentService').updatePage(documentId, page.get('id'), model).then(function () {
+				self.audit.record("edited-page");
+				self.get('documentService').getPages(documentId).then((pages) => {
+					self.set('model.allPages', pages);
+					self.set('model.pages', pages.filterBy('pageType', 'section'));
+					self.set('model.tabs', pages.filterBy('pageType', 'tab'));
+				});
+
+			});
+		},
+
 		onPageDeleted(deletePage) {
 			let documentId = this.get('model.document.id');
 			let pages = this.get('model.pages');

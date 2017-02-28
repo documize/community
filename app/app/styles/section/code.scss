@@ -1,3 +1,13 @@
+.section-code-editor {
+	margin-top: 6px;
+
+	> .syntax-selector {
+		position: absolute;
+		top: 24px;
+		right: 90px;
+	}
+}
+
 /* BASICS */
 .CodeMirror {
   /* Set height, width, borders, and global font properties here */

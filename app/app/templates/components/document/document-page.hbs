@@ -1,0 +1,10 @@
+<div id="page-{{ page.id }}" class="is-a-page" data-id="{{ page.id }}" data-type="{{ page.contentType }}">
+	{{#unless editMode}}
+			{{document/page-heading tagName=page.tagName document=document folder=folder page=page isEditor=isEditor
+				onEdit=(action 'onEdit')
+				onAddBlock=(action 'onAddBlock') onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onDeletePage')}}
+			{{section/base-renderer page=page}}
+	{{else}}
+		{{document/document-editor document=document folder=folder page=page meta=meta onCancel=(action 'onCancelEdit') onAction=(action 'onSavePage')}}
+	{{/unless}}
+</div>

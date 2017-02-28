@@ -1,13 +1,6 @@
-{{#section/base-editor document=document folder=folder page=page isDirty=(action 'isDirty') onCancel=(action 'onCancel') onAction=(action 'onAction')}}
-	<div class="container-fluid">
-		<div class="row">
-			<div class="col-xs-11 col-sm-11 col-md-11 col-lg-11">
-				{{focus-textarea value=pageBody id="rich-text-editor" class="mousetrap"}}
-			</div>
-
-			<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
-				{{document/edit-tools document=document folder=folder page=page onInsertLink=(action 'onInsertLink')}}
-			</div>
-		</div>
+{{#section/base-editor-inline document=document folder=folder page=page isDirty=(action 'isDirty') onCancel=(action 'onCancel') onAction=(action 'onAction')}}
+	{{document/edit-tools document=document folder=folder page=page onInsertLink=(action 'onInsertLink')}}
+	<div id="rich-text-editor-{{page.id}}" class="mousetrap wysiwyg wysiwyg-editor">
+		{{{pageBody}}}
 	</div>
-{{/section/base-editor}}
+{{/section/base-editor-inline}}

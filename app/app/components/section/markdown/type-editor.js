@@ -11,34 +11,48 @@
 
 import Ember from 'ember';
 import miscUtil from '../../../utils/misc';
+import TooltipMixin from '../../../mixins/tooltip';
 
 const {
 	inject: { service }
 } = Ember;
 
-export default Ember.Component.extend({
+export default Ember.Component.extend(TooltipMixin, {
 	link: service(),
 	editMode: true,
 	isDirty: false,
 	pageBody: "",
 	pagePreview: "",
-	height: $(document).height() - 450,
+	editorId: Ember.computed('page', function () {
+		let page = this.get('page');
+		return `markdown-editor-${page.id}`;
+	}),
+	previewId: Ember.computed('page', function () {
+		let page = this.get('page');
+		return `markdown-preview-${page.id}`;
+	}),
+	tooltipId: Ember.computed('page', function () {
+		let page = this.get('page');
+		return `markdown-tooltip-${page.id}`;
+	}),
 
 	didReceiveAttrs() {
 		this.set("pageBody", this.get("meta.rawBody"));
 	},
 
 	didInsertElement() {
-		$("#section-markdown-editor").css("height", this.get('height'));
-		$("#section-markdown-preview").css("height", this.get('height'));
-
-		$("#section-markdown-editor").off("keyup").on("keyup", () => {
+		$("#" + this.get('editorId')).off("keyup").on("keyup", () => {
 			this.set('isDirty', true);
 		});
 	},
 
+	didRender() {
+		this.addTooltip(document.getElementById(this.get('tooltipId')));
+	},
+
 	willDestroyElement() {
-		$("#section-markdown-editor").off("keyup");
+		this.destroyTooltips();
+		$("#" + this.get('editorId')).off("keyup");
 	},
 
 	actions: {
@@ -47,16 +61,14 @@ export default Ember.Component.extend({
 
 			Ember.run.schedule('afterRender', () => {
 				if (this.get('editMode')) {
-					$("#section-markdown-editor").off("keyup").on("keyup", () => {
+					$("#" + this.get('editorId')).off("keyup").on("keyup", () => {
 						this.set('isDirty', true);
 					});
-					$("#section-markdown-editor").css("height", this.get('height'));
 				} else {
 					let md = window.markdownit({ linkify: true });
 					let result = md.render(this.get("pageBody"));
 
 					this.set('pagePreview', result);
-					$("#section-markdown-preview").css("height", this.get('height'));
 				}
 			});
 		},
@@ -64,8 +76,8 @@ export default Ember.Component.extend({
 		onInsertLink(link) {
 			let linkMarkdown = this.get('link').buildLink(link);
 
-			miscUtil.insertAtCursor($("#section-markdown-editor")[0], linkMarkdown);
-			this.set('pageBody', $("#section-markdown-editor").val());
+			miscUtil.insertAtCursor($("#" + this.get('editorId'))[0], linkMarkdown);
+			this.set('pageBody', $("#" + this.get('editorId')).val());
 
 			return true;
 		},

@@ -55,32 +55,28 @@
 }
 
 .document-view {
-	> .pages {
-		margin: 30px 0 50px;
+	margin: 30px 0 50px;
+	
+	.is-a-page {
+		@extend .transition-all;
+		@include border-radius(2px);
+		@include ease-in();
+		padding: 50px;
+		box-shadow: 0 0 0 0.75pt $color-stroke,0 0 3pt 0.75pt $color-stroke;
+		margin: 30px 0;
+		background-color: $color-white;
 
-		> .wysiwyg {
-			> .is-a-page {
-				@extend .transition-all;
-				@include border-radius(2px);
-				@include ease-in();
-				padding: 50px;
-				box-shadow: 0 0 0 0.75pt $color-stroke,0 0 3pt 0.75pt $color-stroke;
-				margin: 30px 0;
-				background-color: $color-white;
-
-				&:hover {
-					.page-title {
-						> .page-toolbar {
-							opacity: 1;
-						}
-					}
+		&:hover {
+			.page-title {
+				> .page-toolbar {
+					opacity: 1;
 				}
+			}
+		}
 
-				.page-title {
-					> .page-toolbar {
-						opacity: 0;
-					}
-				}
+		.page-title {
+			> .page-toolbar {
+				opacity: 0;
 			}
 		}
 	}

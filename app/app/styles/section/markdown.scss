@@ -1,13 +1,15 @@
-#section-markdown-editor {
+.section-markdown-editor, .section-markdown-preview {
 	width: 100%;
-	resize: none;
-	padding: 10px;
-	background-color: white;
+	margin: 0;
+	padding: 0;
+	@extend .no-outline;
+	margin-top: -10px;
+	border: none;
+	@extend .no-outline;
 }
 
-#section-markdown-preview {
-	width: 100%;
-	padding: 10px;
-	background-color: white;
-	overflow: auto;
+.section-markdown-preview-button {
+	position: absolute;
+	top: 18px;
+	right: 118px;
 }

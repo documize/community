@@ -17,7 +17,6 @@ const {
 	computed,
 } = Ember;
 
-
 export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	documentService: Ember.inject.service('document'),
 	editMode: false,
