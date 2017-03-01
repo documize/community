@@ -19,12 +19,34 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	appMeta: Ember.inject.service(),
 	link: Ember.inject.service(),
 
-	noSections: Ember.computed('pages', function () {
-		return this.get('pages.length') === 0;
-	}),
+	didReceiveAttrs() {
+		this.get('sectionService').getSpaceBlocks(this.get('folder.id')).then((blocks) => {
+			this.set('blocks', blocks);
+			this.set('hasBlocks', blocks.get('length') > 0);
+
+			blocks.forEach((b) => {
+				b.set('deleteId', `delete-block-button-${b.id}`);
+			});
+		});
+	},
 
 	didRender() {
 		this.contentLinkHandler();
+
+		let self = this;
+		$(".tooltipped").each(function(i, el) {
+			self.addTooltip(el);
+		});
+	},
+
+	didInsertElement() {
+		$(".start-section").hoverIntent({interval: 100, over: function() {
+			// in
+			$(this).find('.start-button').css("display", "block").removeClass('fadeOut').addClass('fadeIn');
+		}, out: function() {
+			//out
+			$(this).find('.start-button').css("display", "none").removeClass('fadeIn').addClass('fadeOut');
+		} });
 	},
 
 	willDestroyElement() {
@@ -96,6 +118,41 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
 		onSavePage(page, meta) {
 			this.attrs.onSavePage(page, meta);
+		},
+
+		///////////////// move to page-wizard ??????????!!!!!!!!!!!!!!!!!!!
+
+		onShowSectionWizard(page) {
+			if ($("#new-section-wizard").is(':visible') && $("#new-section-wizard").attr('data-page-id') === page.id) {
+				this.send('onHideSectionWizard');
+				return;
+			}
+
+			$("#new-section-wizard").attr('data-page-id', page.id);
+			$("#new-section-wizard").insertAfter(`#add-section-button-${page.id}`);
+			$("#new-section-wizard").fadeIn(100, 'linear', function() {
+			});
+		},
+
+		onHideSectionWizard() {
+			$("#new-section-wizard").fadeOut(100, 'linear', function() {
+			});
+		},
+
+		onCancel() {
+			this.attrs.onCancel();
+		},
+
+		addSection(section) {
+			this.attrs.onAddSection(section);
+		},
+
+		onDeleteBlock(id) {
+			this.attrs.onDeleteBlock(id);
+		},
+
+		onInsertBlock(block) {
+			this.attrs.onInsertBlock(block);
 		}
 	}
 });

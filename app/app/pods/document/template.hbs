@@ -66,7 +66,7 @@
 						</div>
 						{{document/document-heading document=model.document isEditor=model.isEditor onSaveDocument=(action 'onSaveDocument')}}
 						{{document/document-view document=model.document links=model.links allPages=model.allPages tabs=model.tabs pages=model.pages
-							folder=model.folder folders=model.folders isEditor=model.isEditor onSavePage=(action 'onSavePage')
+							folder=model.folder folders=model.folders sections=model.sections isEditor=model.isEditor onSavePage=(action 'onSavePage')
 							gotoPage=(action 'gotoPage') onAddBlock=(action 'onAddBlock') onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onPageDeleted')}}
 					</div>
 				</div>

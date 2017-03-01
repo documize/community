@@ -59,7 +59,9 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 			pages: this.get('pages'),
 			tabs: this.get('tabs'),
 			sections: this.get('sectionService').getAll().then((sections) => {
-				return sections.filterBy('pageType', 'section');
+				return sections;
+				// return sections.filterBy('pageType', 'section');
+				// return sections.filterBy('pageType', 'tab');
 			}),
 		});
 	},

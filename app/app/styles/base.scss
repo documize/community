@@ -199,7 +199,7 @@ $i: 150;
 $i: 100;
 @while $i > 0 {
 	.width-#{$i} {
-		width: #{$i}#{"%"};
+		width: #{$i}#{"%"} !important;
 	}
 	$i: $i - 1;
 }
