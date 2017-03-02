@@ -9,7 +9,7 @@
                 <i class="material-icons color-gray">more_vert</i>
             </div>
 
-			{{#dropdown-menu target=menuTarget position="bottom right" open="click" onOpenCallback=(action 'onMenuOpen') onCloseCallback=(action 'onMenuOpen')}}
+			{{#dropdown-menu target=menuTarget position="top right" open="click" onOpenCallback=(action 'onMenuOpen') onCloseCallback=(action 'onMenuOpen')}}
 				<ul class="menu">
 					<li class="item" id={{copyButtonId}}>Copy</li>
 					<li class="item" id={{moveButtonId}}>Move</li>
@@ -27,7 +27,7 @@
 	                    <label for="{{checkId}}">&nbsp;Delete child pages</label>
 	                </p>
 	            {{/dropdown-dialog}}
-				{{#dropdown-dialog id=publishDialogId target=publishButtonId position="bottom right" button="Publish" color="flat-green" focusOn=blockTitleId onAction=(action 'onAddBlock')}}
+				{{#dropdown-dialog id=publishDialogId target=publishButtonId position="bottom right" button="Publish" color="flat-green" focusOn=blockTitleId onAction=(action 'onSavePageAsBlock')}}
 					<div class="form-header">
 						<div class="tip">
 							<span class="bold">{{folder.name}}:</span> Content Block

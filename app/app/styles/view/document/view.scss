@@ -57,7 +57,6 @@
 .document-view {
 	margin: 0 0 50px 0;
 	max-width: 1200px;
-	@include ease-in();
 
 	.is-a-page {
 		@extend .transition-all;
@@ -88,11 +87,12 @@
 	}
 
 	.start-section {
+		@include ease-in();
+		@extend .no-select;
 		height: 60px;
 		background-color: transparent;
 		position: relative;
 		cursor: pointer;
-		@include ease-in();
 
 		> .start-button {
 			display: none;
@@ -132,7 +132,6 @@
 
 	.new-section-wizard {
 		@include border-radius(2px);
-		@include ease-in();
 		margin: 0 0 30px 0;
 		padding: 30px;
 		border: 1px solid $color-stroke;

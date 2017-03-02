@@ -57,6 +57,8 @@ module.exports = function (defaults) {
 	app.import('vendor/datetimepicker.min.js');
 	app.import('vendor/hoverIntent.js');
 	app.import('vendor/waypoints.js');
+	app.import('vendor/velocity.js');
+	app.import('vendor/velocity.ui.js');
 
 	return app.toTree();
 };

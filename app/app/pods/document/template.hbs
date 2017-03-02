@@ -46,13 +46,13 @@
 			<div class="row">
 				<div class="col-lg-12">
 					{{#if toggled}}
-						<div id="menu-toggle" class="pull-right" {{action 'toggleMenu'}}>
+						<div id="sidebar-toggle" class="pull-right" {{action 'toggleSidebar'}}>
 							<div class="round-button button-black">
 								<i class="material-icons">keyboard_arrow_left</i>
 							</div>
 						</div>
 					{{else}}
-						<div id="menu-toggle" class="pull-right" {{action 'toggleMenu'}}>
+						<div id="sidebar-toggle" class="pull-right" {{action 'toggleSidebar'}}>
 							<div class="round-button button-black">
 								<i class="material-icons">keyboard_arrow_right</i>
 							</div>
@@ -66,8 +66,7 @@
 						</div>
 						{{document/document-heading document=model.document isEditor=model.isEditor onSaveDocument=(action 'onSaveDocument')}}
 						{{document/document-view document=model.document links=model.links allPages=model.allPages tabs=model.tabs pages=model.pages
-							folder=model.folder folders=model.folders sections=model.sections isEditor=model.isEditor onSavePage=(action 'onSavePage')
-							gotoPage=(action 'gotoPage') onAddBlock=(action 'onAddBlock') onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onPageDeleted')}}
+							folder=model.folder folders=model.folders sections=model.sections isEditor=model.isEditor onSavePage=(action 'onSavePage') gotoPage=(action 'gotoPage') onInsertSection=(action 'onInsertSection') onSavePageAsBlock=(action 'onSavePageAsBlock') onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onPageDeleted')}}
 					</div>
 				</div>
 			</div>

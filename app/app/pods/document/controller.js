@@ -21,6 +21,8 @@ export default Ember.Controller.extend(NotifierMixin, {
 	pages: [],
 	toggled: false,
 
+	// to test
+	// to test
 	// Jump to the right part of the document.
 	scrollToPage(pageId) {
 		Ember.run.schedule('afterRender', function () {
@@ -45,7 +47,7 @@ export default Ember.Controller.extend(NotifierMixin, {
 	},
 
 	actions: {
-		toggleMenu() {
+		toggleSidebar() {
 			this.set('toggled', !this.get('toggled'));
 		},
 
@@ -58,20 +60,6 @@ export default Ember.Controller.extend(NotifierMixin, {
 		onSaveDocument(doc) {
 			this.get('documentService').save(doc);
 			this.showNotification('Saved');
-		},
-
-		gotoPage(pageId) {
-			if (is.null(pageId)) {
-				return;
-			}
-
-			this.scrollToPage(pageId);
-		},
-
-		onAddBlock(block) {
-			this.get('sectionService').addBlock(block).then(() => {
-				this.showNotification("Published");
-			});
 		},
 
 		onCopyPage(pageId, targetDocumentId) {
@@ -168,6 +156,88 @@ export default Ember.Controller.extend(NotifierMixin, {
 					this.send('onPageLevelChange', pendingChanges);
 				});
 			}
+		},
+
+		onInsertSection(data) {
+			return new Ember.RSVP.Promise((resolve) => {
+				this.get('documentService').addPage(this.get('model.document.id'), data).then((newPage) => {
+					let data = this.get('store').normalize('page', newPage);
+					this.get('store').push(data);
+
+					this.get('documentService').getPages(this.get('model.document.id')).then((pages) => {
+						this.set('model.allPages', pages);
+						this.set('model.pages', pages.filterBy('pageType', 'section'));
+						this.set('model.tabs', pages.filterBy('pageType', 'tab'));
+
+						resolve(newPage.id);
+
+						// this.get('documentService').getPageMeta(this.get('model.document.id'), newPage.id).then(() => {
+						// 	console.log("ready to edit");
+						// 	// this.transitionToRoute('document.edit',
+						// 	// 	this.get('model.folder.id'),
+						// 	// 	this.get('model.folder.slug'),
+						// 	// 	this.get('model.document.id'),
+						// 	// 	this.get('model.document.slug'),
+						// 	// 	newPage.id);
+						// });
+					});
+				});
+			});
+		},
+
+		// to test
+		onPageSequenceChange(changes) {
+			this.get('documentService').changePageSequence(this.get('model.document.id'), changes).then(() => {
+				_.each(changes, (change) => {
+					let pageContent = _.findWhere(this.get('model.pages'), {
+						id: change.pageId
+					});
+
+					if (is.not.undefined(pageContent)) {
+						pageContent.set('sequence', change.sequence);
+					}
+				});
+
+				this.set('model.pages', this.get('model.pages').sortBy('sequence'));
+				this.get('target.router').refresh();
+			});
+		},
+
+		// to test
+		onPageLevelChange(changes) {
+			this.get('documentService').changePageLevel(this.get('model.document.id'), changes).then(() => {
+				_.each(changes, (change) => {
+					let pageContent = _.findWhere(this.get('model.pages'), {
+						id: change.pageId
+					});
+
+					if (is.not.undefined(pageContent)) {
+						pageContent.set('level', change.level);
+					}
+				});
+
+				let pages = this.get('model.pages');
+				pages = pages.sortBy('sequence');
+				this.set('model.pages', []);
+				this.set('model.pages', pages);
+				this.get('target.router').refresh();
+			});
+		},
+
+		// to test
+		gotoPage(pageId) {
+			if (is.null(pageId)) {
+				return;
+			}
+
+			this.scrollToPage(pageId);
+		},
+
+		// to test
+		onSavePageAsBlock(block) {
+			this.get('sectionService').addBlock(block).then(() => {
+				this.showNotification("Published");
+			});
 		}
 	}
 });
@@ -181,42 +251,6 @@ gotoPage(pageId) {
 	this.scrollToPage(pageId);
 },
 
-onPageSequenceChange(changes) {
-	this.get('documentService').changePageSequence(this.get('model.document.id'), changes).then(() => {
-		_.each(changes, (change) => {
-			let pageContent = _.findWhere(this.get('model.pages'), {
-				id: change.pageId
-			});
-
-			if (is.not.undefined(pageContent)) {
-				pageContent.set('sequence', change.sequence);
-			}
-		});
-
-		this.set('model.pages', this.get('model.pages').sortBy('sequence'));
-		this.get('target.router').refresh();
-	});
-},
-
-onPageLevelChange(changes) {
-	this.get('documentService').changePageLevel(this.get('model.document.id'), changes).then(() => {
-		_.each(changes, (change) => {
-			let pageContent = _.findWhere(this.get('model.pages'), {
-				id: change.pageId
-			});
-
-			if (is.not.undefined(pageContent)) {
-				pageContent.set('level', change.level);
-			}
-		});
-
-		let pages = this.get('model.pages');
-		pages = pages.sortBy('sequence');
-		this.set('model.pages', []);
-		this.set('model.pages', pages);
-		this.get('target.router').refresh();
-	});
-},
 
 onSaveTemplate(name, desc) {
 	this.get('templateService').saveAsTemplate(this.get('model.document.id'), name, desc).then(function () {});
@@ -225,50 +259,6 @@ onSaveTemplate(name, desc) {
 onSaveMeta(doc) {
 	this.get('documentService').save(doc).then(() => {
 		this.transitionToRoute('document.index');
-	});
-},
-
-onAddSection(section) {
-	this.audit.record("added-section-" + section.get('contentType'));
-
-	let page = {
-		documentId: this.get('model.document.id'),
-		title: `${section.get('title')}`,
-		level: 1,
-		sequence: 0,
-		body: "",
-		contentType: section.get('contentType'),
-		pageType: section.get('pageType')
-	};
-
-	let meta = {
-		documentId: this.get('model.document.id'),
-		rawBody: "",
-		config: ""
-	};
-
-	let model = {
-		page: page,
-		meta: meta
-	};
-
-	this.get('documentService').addPage(this.get('model.document.id'), model).then((newPage) => {
-		let data = this.get('store').normalize('page', newPage);
-		this.get('store').push(data);
-
-		this.get('documentService').getPages(this.get('model.document.id')).then((pages) => {
-			this.set('model.pages', pages.filterBy('pageType', 'section'));
-			this.set('model.tabs', pages.filterBy('pageType', 'tab'));
-
-			this.get('documentService').getPageMeta(this.get('model.document.id'), newPage.id).then(() => {
-				this.transitionToRoute('document.edit',
-					this.get('model.folder.id'),
-					this.get('model.folder.slug'),
-					this.get('model.document.id'),
-					this.get('model.document.slug'),
-					newPage.id);
-			});
-		});
 	});
 },
 

@@ -37,9 +37,9 @@ func (p *Persister) AddPage(model models.PageModel) (err error) {
 	model.Meta.Created = time.Now().UTC()
 	model.Meta.Revised = time.Now().UTC()
 
-	if model.Page.IsSectionType() {
-		// Get maximum page sequence number and increment
-		row := Db.QueryRow("SELECT max(sequence) FROM page WHERE orgid=? AND documentid=? AND pagetype='section'", p.Context.OrgID, model.Page.DocumentID)
+	if model.Page.Sequence == 0 {
+		// Get maximum page sequence number and increment (used to be AND pagetype='section')
+		row := Db.QueryRow("SELECT max(sequence) FROM page WHERE orgid=? AND documentid=?", p.Context.OrgID, model.Page.DocumentID)
 		var maxSeq float64
 		err = row.Scan(&maxSeq)
 
@@ -485,7 +485,8 @@ func (p *Persister) DeletePageRevisions(pageID string) (rows int64, err error) {
 
 // GetNextPageSequence returns the next sequence numbner to use for a page in given document.
 func (p *Persister) GetNextPageSequence(documentID string) (maxSeq float64, err error) {
-	row := Db.QueryRow("SELECT max(sequence) FROM page WHERE orgid=? AND documentid=? AND pagetype='section'", p.Context.OrgID, documentID)
+	row := Db.QueryRow("SELECT max(sequence) FROM page WHERE orgid=? AND documentid=?", p.Context.OrgID, documentID)
+	// row := Db.QueryRow("SELECT max(sequence) FROM page WHERE orgid=? AND documentid=? AND pagetype='section'", p.Context.OrgID, documentID)
 
 	err = row.Scan(&maxSeq)
 	if err != nil {

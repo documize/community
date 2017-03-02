@@ -13,11 +13,21 @@ import Ember from 'ember';
 import NotifierMixin from '../../mixins/notifier';
 import TooltipMixin from '../../mixins/tooltip';
 
+const {
+	computed,
+} = Ember;
+
 export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	documentService: Ember.inject.service('document'),
 	sectionService: Ember.inject.service('section'),
 	appMeta: Ember.inject.service(),
 	link: Ember.inject.service(),
+
+	newSectionName: '',
+	newSectionNameMissing: computed.empty('newSectionName'),
+	newSectionLocation: '',
+	beforePage: '',
+	toEdit: '',
 
 	didReceiveAttrs() {
 		this.get('sectionService').getSpaceBlocks(this.get('folder.id')).then((blocks) => {
@@ -87,9 +97,36 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		});
 	},
 
+	addSection(model) {
+		// calculate sequence of page (position in document)
+		let sequence = 0;
+		let beforePage = this.get('beforePage');
+
+		if (is.not.null(beforePage)) {
+			// get any page before the beforePage so we can insert this new section between them
+			let index = _.findIndex(this.get('pages'), function(p) { return p.get('id') === beforePage.get('id'); });
+			let beforeBeforePage = this.get('pages')[index-1];
+
+			if (is.not.undefined(beforeBeforePage)) {
+				sequence = (beforePage.get('sequence') + beforeBeforePage.get('sequence')) / 2;
+			} else {
+				sequence = beforePage.get('sequence') / 2;
+			}
+		}
+
+		model.page.sequence = sequence;
+
+		this.send('onHideSectionWizard');
+
+		const promise = this.get('onInsertSection')(model);
+		promise.then((id) => {
+			this.set('toEdit', id);
+		});
+	},
+
 	actions: {
-		onAddBlock(block) {
-			this.attrs.onAddBlock(block);
+		onSavePageAsBlock(block) {
+			this.attrs.onSavePageAsBlock(block);
 		},
 
 		onCopyPage(pageId, documentId) {
@@ -100,19 +137,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 			this.attrs.onMovePage(pageId, documentId);
 		},
 
-		onDeletePage(id, deleteChildren) {
-			let page = this.get('pages').findBy("id", id);
-
-			if (is.undefined(page)) {
-				return;
-			}
-
-			let params = {
-				id: id,
-				title: page.get('title'),
-				children: deleteChildren
-			};
-
+		onDeletePage(params) {
 			this.attrs.onDeletePage(params);
 		},
 
@@ -120,39 +145,104 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 			this.attrs.onSavePage(page, meta);
 		},
 
-		///////////////// move to page-wizard ??????????!!!!!!!!!!!!!!!!!!!
+		// Section wizard related
 
 		onShowSectionWizard(page) {
-			if ($("#new-section-wizard").is(':visible') && $("#new-section-wizard").attr('data-page-id') === page.id) {
+			let beforePage = this.get('beforePage');
+
+			if (is.not.null(beforePage) && $("#new-section-wizard").is(':visible') && beforePage.get('id') === page.id) {
 				this.send('onHideSectionWizard');
 				return;
 			}
 
-			$("#new-section-wizard").attr('data-page-id', page.id);
+			this.set('newSectionLocation', page.id);
+			this.set('beforePage', page);
+
 			$("#new-section-wizard").insertAfter(`#add-section-button-${page.id}`);
-			$("#new-section-wizard").fadeIn(100, 'linear', function() {
-			});
+			$("#new-section-wizard").velocity("transition.slideDownIn", {duration: 300, complete:
+				function() {
+					$("#new-section-name").focus();
+				}});
 		},
 
 		onHideSectionWizard() {
-			$("#new-section-wizard").fadeOut(100, 'linear', function() {
-			});
+			this.set('newSectionLocation', '');
+			this.set('beforePage', null);
+			$("#new-section-wizard").velocity("transition.slideUpOut", { duration: 300 });
 		},
 
-		onCancel() {
-			this.attrs.onCancel();
+		onInsertSection(section) {
+			let sectionName = this.get('newSectionName');
+			if (is.empty(sectionName)) {
+				$("#new-section-name").focus();
+				return;
+			}
+
+			let page = {
+				documentId: this.get('document.id'),
+				title: sectionName,
+				level: 1,
+				sequence: 0, // calculated elsewhere
+				body: "",
+				contentType: section.get('contentType'),
+				pageType: section.get('pageType')
+			};
+
+			let meta = {
+				documentId: this.get('document.id'),
+				rawBody: "",
+				config: ""
+			};
+
+			let model = {
+				page: page,
+				meta: meta
+			};
+
+			this.audit.record("added-section-" + page.contentType);
+
+			this.addSection(model);
 		},
 
-		addSection(section) {
-			this.attrs.onAddSection(section);
+		onInsertBlock(block) {
+			let sectionName = this.get('newSectionName');
+			if (is.empty(sectionName)) {
+				$("#new-section-name").focus();
+				return;
+			}
+
+			let page = {
+				documentId: this.get('document.id'),
+				title: `${block.get('title')}`,
+				level: 1,
+				sequence: 0, // calculated elsewhere
+				body: block.get('body'),
+				contentType: block.get('contentType'),
+				pageType: block.get('pageType'),
+				blockId: block.get('id')
+			};
+
+			let meta = {
+				documentId: this.get('document.id'),
+				rawBody: block.get('rawBody'),
+				config: block.get('config'),
+				externalSource: block.get('externalSource')
+			};
+
+			let model = {
+				page: page,
+				meta: meta
+			};
+
+			this.audit.record("added-content-block-" + block.get('contentType'));
+
+			this.addSection(model);
 		},
 
+		// to test
 		onDeleteBlock(id) {
 			this.attrs.onDeleteBlock(id);
 		},
 
-		onInsertBlock(block) {
-			this.attrs.onInsertBlock(block);
-		}
 	}
 });

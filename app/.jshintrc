@@ -19,7 +19,8 @@
 		"Dropzone",
 		"Sortable",
 		"datetimepicker",
-		"Waypoint"
+		"Waypoint",
+		"velocity"
 	],
 	"browser": true,
 	"boss": true,

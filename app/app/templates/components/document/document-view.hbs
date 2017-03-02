@@ -12,8 +12,9 @@
 		{{else}}
 			<div class="section-divider" />
 		{{/if}}
-		{{#document/document-page document=document folder=folder page=page isEditor=isEditor onSavePage=(action 'onSavePage')
-			onAddBlock=(action 'onAddBlock') onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onDeletePage')}}
+		{{#document/document-page document=document folder=folder page=page isEditor=isEditor toEdit=toEdit
+			onSavePage=(action 'onSavePage') onSavePageAsBlock=(action 'onSavePageAsBlock')
+			onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onDeletePage')}}
 		{{/document/document-page}}
 	{{else}}
 		no sections!
@@ -24,7 +25,7 @@
 
 	<div id="new-section-wizard" class="new-section-wizard">
 		<div class="input-inline input-transparent pull-left width-80">
-			{{focus-input type="text" value=newSectionName class="section-name {{(if hasNameError 'error-inline')}}" placeholder="Name" autocomplete="off"}}
+			{{input type="text" id="new-section-name" value=newSectionName class=(if newSectionNameMissing 'section-name error-inline' 'section-name') placeholder="Name" autocomplete="off"}}
 		</div>
 		<div class="round-button-mono pull-right" {{action 'onHideSectionWizard'}}>
 			<i class="material-icons color-gray">close</i>
@@ -34,7 +35,7 @@
 		<div class="list-wrapper">
 			<ul class="preset-list">
 				{{#each sections as |section|}}
-					<li class="item" {{action 'addSection' section}}>
+					<li class="item" {{action 'onInsertSection' section}}>
 						<div class="icon">
 							<img class="img" src="/sections/{{section.contentType}}.png" srcset="/sections/{{section.contentType}}@2x.png" />
 						</div>

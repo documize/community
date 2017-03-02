@@ -18,9 +18,17 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	sectionService: Ember.inject.service('section'),
 	editMode: false,
 
+	didReceiveAttrs() {
+		let toEdit = this.get('toEdit');
+
+		if (toEdit === this.get('page.id')) {
+			this.send('onEdit');
+		}
+	},
+
 	actions: {
-		onAddBlock(block) {
-			this.attrs.onAddBlock(block);
+		onSavePageAsBlock(block) {
+			this.attrs.onSavePageAsBlock(block);
 		},
 
 		onCopyPage(documentId) {

@@ -100,7 +100,7 @@ export default Ember.Component.extend(TooltipMixin, {
 			this.attrs.onDeletePage(this.get('deleteChildren'));
 		},
 
-		onAddBlock() {
+		onSavePageAsBlock() {
 			let page = this.get('page');
 			let titleElem = '#' + this.get('blockTitleId');
 			let blockTitle = this.get('blockTitle');
@@ -130,7 +130,8 @@ export default Ember.Component.extend(TooltipMixin, {
 					externalSource: pm.get('externalSource')
 				};
 
-				this.attrs.onAddBlock(block);
+				this.attrs.onSavePageAsBlock(block);
+				
 				this.set('menuOpen', false);
 				this.set('blockTitle', '');
 				this.set('blockExcerpt', '');
