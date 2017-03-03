@@ -4,7 +4,6 @@
 	margin-left: 60px;
 	padding: 30px 70px;
 	z-index: 777;
-	background-color: $color-off-white;
 }
 
 .zone-document-content {
@@ -56,13 +55,12 @@
 
 .document-view {
 	margin: 0 0 50px 0;
-	max-width: 1200px;
 
 	.is-a-page {
 		@extend .transition-all;
 		@include border-radius(2px);
 		@include ease-in();
-		padding: 50px;
+		padding: 25px 50px;
 		box-shadow: 0 0 0 0.75pt $color-stroke,0 0 3pt 0.75pt $color-stroke;
 		background-color: $color-white;
 
@@ -79,6 +77,72 @@
 				opacity: 0;
 			}
 		}
+	}
+
+	.is-a-tab {
+		// @extend .transition-all;
+		@include border-radius(2px);
+		@include ease-in();
+		padding: 25px 50px;
+		box-shadow: 0 0 0 0.75pt $color-stroke,0 0 3pt 0.75pt $color-stroke;
+		background-color: $color-white;
+
+		.icon {
+			text-align: center;
+			display: inline-block;
+			width: 40px;
+			vertical-align: bottom;
+			margin-right: 5px;
+
+			> .img {
+				text-align: center;
+				display: inline-block;
+				height: 30px;
+				width: 30px;
+			}
+		}
+
+		> .title {
+			font-size: 1.3rem;
+			font-weight: normal;
+			color: $color-off-black;
+			letter-spacing: 0.5px;
+			margin-top: 8px;
+		}
+
+		&:hover {
+			.page-title {
+				> .page-toolbar {
+					opacity: 1;
+				}
+			}
+		}
+
+		.page-title {
+			> .page-toolbar {
+				opacity: 0;
+			}
+		}
+	}
+
+	.tab-min {
+		padding: 0px 50px;
+		height: 65px;
+		overflow: hidden;
+		cursor: normal;
+
+		.page-title {
+			> .page-toolbar {
+				opacity: 1;
+			}
+		}
+	}
+
+	.tab-max {
+		padding: 25px 50px;
+		height: auto;
+		overflow: auto;
+		cursor: normal;
 	}
 
 	.section-divider {

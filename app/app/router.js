@@ -44,9 +44,9 @@ export default Router.map(function () {
 		// this.route('edit', {
 		// 	path: 'edit/:page_id'
 		// });
-		this.route('wizard', {
-			path: 'add'
-		});
+		// this.route('wizard', {
+		// 	path: 'add'
+		// });
 		this.route('history', {
 			path: 'history'
 		});

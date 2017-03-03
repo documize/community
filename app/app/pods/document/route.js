@@ -16,6 +16,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	sectionService: Ember.inject.service('section'),
 	documentService: Ember.inject.service('document'),
 	folderService: Ember.inject.service('folder'),
+	linkService: Ember.inject.service('link'),
 
 	beforeModel(transition) {
 		this.set('pageId', is.not.undefined(transition.queryParams.page) ? transition.queryParams.page : "");
@@ -36,9 +37,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 							this.set('isEditor', this.get('folderService').get('canEditCurrentFolder'));
 
 							this.get('documentService').getPages(this.get('documentId')).then((pages) => {
-								this.set('allPages', pages);
-								this.set('pages', pages.filterBy('pageType', 'section'));
-								this.set('tabs', pages.filterBy('pageType', 'tab'));
+								this.set('pages', pages);
 								resolve();
 							});
 						});
@@ -55,15 +54,18 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 			document: this.get('document'),
 			page: this.get('pageId'),
 			isEditor: this.get('isEditor'),
-			allPages: this.get('allPages'),
 			pages: this.get('pages'),
-			tabs: this.get('tabs'),
-			sections: this.get('sectionService').getAll().then((sections) => {
-				return sections;
-				// return sections.filterBy('pageType', 'section');
-				// return sections.filterBy('pageType', 'tab');
-			}),
+			links: this.get('linkService').getDocumentLinks(this.get('documentId')),
+			sections: this.get('sectionService').getAll()
 		});
+	},
+	
+	activate() {
+		$('body').addClass('background-color-off-white');
+	},
+
+	deactivate() {
+		$('body').removeClass('background-color-off-white');
 	},
 
 	actions: {

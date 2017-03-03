@@ -30,6 +30,10 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	toEdit: '',
 
 	didReceiveAttrs() {
+		if (this.get('isDestroyed') || this.get('isDestroying')) {
+			return;
+		}
+
 		this.get('sectionService').getSpaceBlocks(this.get('folder.id')).then((blocks) => {
 			this.set('blocks', blocks);
 			this.set('hasBlocks', blocks.get('length') > 0);
@@ -73,7 +77,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
 			// local link? exists?
 			if ((link.linkType === "section" || link.linkType === "tab") && link.documentId === doc.get('id')) {
-				let exists = self.get('allPages').findBy('id', link.targetId);
+				let exists = self.get('pages').findBy('id', link.targetId);
 
 				if (_.isUndefined(exists)) {
 					link.orphan = true;
@@ -120,7 +124,11 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
 		const promise = this.get('onInsertSection')(model);
 		promise.then((id) => {
-			this.set('toEdit', id);
+			if (model.page.contentType === 'section') {
+				this.set('toEdit', id);
+			} else {
+				this.get('onEditSection')(id);
+			}
 		});
 	},
 

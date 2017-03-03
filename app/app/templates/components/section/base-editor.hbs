@@ -1,44 +1,33 @@
-<div class="document-editor form-bordered">
-	<div class="toolbar">
-		<div class="title pull-left">
-			<div class="input-control">
-				<label>Title</label>
-				<div class="tip">{{tip}}</div>
-				{{focus-input type='text' id="page-title" value=page.title class="mousetrap"}}
-			</div>
-			{{#if hasExcerpt}}
-				<div class="margin-top-30">
-					<div class="input-control">
-						<label>Excerpt</label>
-						<div class="tip">Short description</div>
-						{{textarea rows="3" id="page-excerpt" value=page.excerpt class="mousetrap"}}
-					</div>
-				</div>
-			{{/if}}
+<div class="section-editor">
+	<div class="buttons">
+		{{#if busy}}
+			<img src="/assets/img/busy-gray.gif" class="busy-indicator" />
+		{{/if}}
+		<div id="editor-cancel" class="flat-button flat-gray" {{action 'onCancel'}}>{{cancelLabel}}</div>
+		<div class="button-gap" />
+		<div class="regular-button button-green" {{action 'onAction'}}>{{actionLabel}}</div>
+	</div>
+	<div class="clearfix"></div>
+	<div class="title">
+		<div class="input-control">
+			<label>Title</label>
+			<div class="tip">{{tip}}</div>
+			{{focus-input type='text' id="page-title" value=page.title class="mousetrap"}}
 		</div>
-		<div class="buttons pull-right">
-			{{#if busy}}
-				<img src="/assets/img/busy-gray.gif" class="busy-indicator" />
-			{{/if}}
-			<div id="editor-cancel" class="flat-button flat-gray" {{action 'onCancel'}}>{{cancelLabel}}</div>
-			<div class="button-gap" />
-			<div class="regular-button button-green" {{action 'onAction'}}>{{actionLabel}}</div>
+	</div>
+	<div class="dropdown-dialog cancel-edits-dialog">
+		<div class="content">
+			<p>Do you want to cancel editing and lose unsaved changes?</p>
+		</div>
+		<div class="actions">
+			<div class="flat-button" {{action 'keepEditing'}}>
+				no
+			</div>
+			<div class="flat-button flat-red" {{action 'discardEdits'}}>
+				yes
+			</div>
 		</div>
 		<div class="clearfix"></div>
-		<div class="dropdown-dialog cancel-edits-dialog">
-			<div class="content">
-				<p>Do you want to cancel editing and lose unsaved changes?</p>
-			</div>
-			<div class="actions">
-				<div class="flat-button" {{action 'keepEditing'}}>
-					no
-				</div>
-				<div class="flat-button flat-red" {{action 'discardEdits'}}>
-					yes
-				</div>
-			</div>
-			<div class="clearfix"></div>
-		</div>
 	</div>
 	<div class="canvas">
 		{{yield}}

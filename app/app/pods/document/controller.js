@@ -13,233 +13,233 @@ import Ember from 'ember';
 import NotifierMixin from '../../mixins/notifier';
 
 export default Ember.Controller.extend(NotifierMixin, {
-	documentService: Ember.inject.service('document'),
-	templateService: Ember.inject.service('template'),
-	sectionService: Ember.inject.service('section'),
-	page: null,
-	folder: {},
-	pages: [],
-	toggled: false,
-
-	// to test
-	// to test
-	// Jump to the right part of the document.
-	scrollToPage(pageId) {
-		Ember.run.schedule('afterRender', function () {
-			let dest;
-			let target = "#page-title-" + pageId;
-			let targetOffset = $(target).offset();
-
-			if (is.undefined(targetOffset)) {
-				return;
-			}
-
-			dest = targetOffset.top > $(document).height() - $(window).height() ? $(document).height() - $(window).height() : targetOffset.top;
-			// small correction to ensure we also show page title
-			dest = dest > 50 ? dest - 74 : dest;
-
-			$("html,body").animate({
-				scrollTop: dest
-			}, 500, "linear");
-			$(".toc-index-item").removeClass("selected");
-			$("#index-" + pageId).addClass("selected");
-		});
-	},
-
-	actions: {
-		toggleSidebar() {
-			this.set('toggled', !this.get('toggled'));
-		},
-
-		onTagChange(tags) {
-			let doc = this.get('model.document');
-			doc.set('tags', tags);
-			this.get('documentService').save(doc);
-		},
-
-		onSaveDocument(doc) {
-			this.get('documentService').save(doc);
-			this.showNotification('Saved');
-		},
-
-		onCopyPage(pageId, targetDocumentId) {
-			let documentId = this.get('model.document.id');
-			this.get('documentService').copyPage(documentId, pageId, targetDocumentId).then(() => {
-				this.showNotification("Copied");
-
-				// refresh data if copied to same document
-				if (documentId === targetDocumentId) {
-					this.get('target.router').refresh();
-				}
-			});
-		},
-
-		onMovePage(pageId, targetDocumentId) {
-			let documentId = this.get('model.document.id');
-
-			this.get('documentService').copyPage(documentId, pageId, targetDocumentId).then(() => {
-				this.showNotification("Moved");
-
-				this.send('onPageDeleted', { id: pageId, children: false });
-			});
-		},
-
-		onSavePage(page, meta) {
-			let self = this;
-			let documentId = this.get('model.document.id');
-			let model = {
-				page: page.toJSON({ includeId: true }),
-				meta: meta.toJSON({ includeId: true })
-			};
-
-			this.get('documentService').updatePage(documentId, page.get('id'), model).then(function () {
-				self.audit.record("edited-page");
-				self.get('documentService').getPages(documentId).then((pages) => {
-					self.set('model.allPages', pages);
-					self.set('model.pages', pages.filterBy('pageType', 'section'));
-					self.set('model.tabs', pages.filterBy('pageType', 'tab'));
-				});
-
-			});
-		},
-
-		onPageDeleted(deletePage) {
-			let documentId = this.get('model.document.id');
-			let pages = this.get('model.pages');
-			let deleteId = deletePage.id;
-			let deleteChildren = deletePage.children;
-			let page = _.findWhere(pages, {
-				id: deleteId
-			});
-			let pageIndex = _.indexOf(pages, page, false);
-			let pendingChanges = [];
-
-			this.audit.record("deleted-page");
-
-			// select affected pages
-			for (var i = pageIndex + 1; i < pages.get('length'); i++) {
-				if (pages[i].get('level') <= page.get('level')) {
-					break;
-				}
-
-				pendingChanges.push({
-					pageId: pages[i].get('id'),
-					level: pages[i].get('level') - 1
-				});
-			}
-
-			if (deleteChildren) {
-				// nuke of page tree
-				pendingChanges.push({
-					pageId: deleteId
-				});
-
-				this.get('documentService').deletePages(documentId, deleteId, pendingChanges).then(() => {
-					// update our models so we don't have to reload from db
-					for (var i = 0; i < pendingChanges.length; i++) {
-						let pageId = pendingChanges[i].pageId;
-						this.set('model.pages', _.reject(pages, function (p) { //jshint ignore: line
-							return p.get('id') === pageId;
-						}));
-					}
-
-					this.set('model.pages', _.sortBy(pages, "sequence"));
-					this.get('target.router').refresh();
-				});
-			} else {
-				// page delete followed by re-leveling child pages
-				this.get('documentService').deletePage(documentId, deleteId).then(() => {
-					this.set('model.pages', _.reject(pages, function (p) {
-						return p.get('id') === deleteId;
-					}));
-
-					this.send('onPageLevelChange', pendingChanges);
-				});
-			}
-		},
-
-		onInsertSection(data) {
-			return new Ember.RSVP.Promise((resolve) => {
-				this.get('documentService').addPage(this.get('model.document.id'), data).then((newPage) => {
-					let data = this.get('store').normalize('page', newPage);
-					this.get('store').push(data);
-
-					this.get('documentService').getPages(this.get('model.document.id')).then((pages) => {
-						this.set('model.allPages', pages);
-						this.set('model.pages', pages.filterBy('pageType', 'section'));
-						this.set('model.tabs', pages.filterBy('pageType', 'tab'));
-
-						resolve(newPage.id);
-
-						// this.get('documentService').getPageMeta(this.get('model.document.id'), newPage.id).then(() => {
-						// 	console.log("ready to edit");
-						// 	// this.transitionToRoute('document.edit',
-						// 	// 	this.get('model.folder.id'),
-						// 	// 	this.get('model.folder.slug'),
-						// 	// 	this.get('model.document.id'),
-						// 	// 	this.get('model.document.slug'),
-						// 	// 	newPage.id);
-						// });
-					});
-				});
-			});
-		},
-
-		// to test
-		onPageSequenceChange(changes) {
-			this.get('documentService').changePageSequence(this.get('model.document.id'), changes).then(() => {
-				_.each(changes, (change) => {
-					let pageContent = _.findWhere(this.get('model.pages'), {
-						id: change.pageId
-					});
-
-					if (is.not.undefined(pageContent)) {
-						pageContent.set('sequence', change.sequence);
-					}
-				});
-
-				this.set('model.pages', this.get('model.pages').sortBy('sequence'));
-				this.get('target.router').refresh();
-			});
-		},
-
-		// to test
-		onPageLevelChange(changes) {
-			this.get('documentService').changePageLevel(this.get('model.document.id'), changes).then(() => {
-				_.each(changes, (change) => {
-					let pageContent = _.findWhere(this.get('model.pages'), {
-						id: change.pageId
-					});
-
-					if (is.not.undefined(pageContent)) {
-						pageContent.set('level', change.level);
-					}
-				});
-
-				let pages = this.get('model.pages');
-				pages = pages.sortBy('sequence');
-				this.set('model.pages', []);
-				this.set('model.pages', pages);
-				this.get('target.router').refresh();
-			});
-		},
-
-		// to test
-		gotoPage(pageId) {
-			if (is.null(pageId)) {
-				return;
-			}
-
-			this.scrollToPage(pageId);
-		},
-
-		// to test
-		onSavePageAsBlock(block) {
-			this.get('sectionService').addBlock(block).then(() => {
-				this.showNotification("Published");
-			});
-		}
-	}
+	// documentService: Ember.inject.service('document'),
+	// templateService: Ember.inject.service('template'),
+	// sectionService: Ember.inject.service('section'),
+	// page: null,
+	// folder: {},
+	// pages: [],
+	// toggled: false,
+	//
+	// // to test
+	// // to test
+	// // Jump to the right part of the document.
+	// scrollToPage(pageId) {
+	// 	Ember.run.schedule('afterRender', function () {
+	// 		let dest;
+	// 		let target = "#page-title-" + pageId;
+	// 		let targetOffset = $(target).offset();
+	//
+	// 		if (is.undefined(targetOffset)) {
+	// 			return;
+	// 		}
+	//
+	// 		dest = targetOffset.top > $(document).height() - $(window).height() ? $(document).height() - $(window).height() : targetOffset.top;
+	// 		// small correction to ensure we also show page title
+	// 		dest = dest > 50 ? dest - 74 : dest;
+	//
+	// 		$("html,body").animate({
+	// 			scrollTop: dest
+	// 		}, 500, "linear");
+	// 		$(".toc-index-item").removeClass("selected");
+	// 		$("#index-" + pageId).addClass("selected");
+	// 	});
+	// },
+	//
+	// actions: {
+	// 	toggleSidebar() {
+	// 		this.set('toggled', !this.get('toggled'));
+	// 	},
+	//
+	// 	onTagChange(tags) {
+	// 		let doc = this.get('model.document');
+	// 		doc.set('tags', tags);
+	// 		this.get('documentService').save(doc);
+	// 	},
+	//
+	// 	onSaveDocument(doc) {
+	// 		this.get('documentService').save(doc);
+	// 		this.showNotification('Saved');
+	// 	},
+	//
+	// 	onCopyPage(pageId, targetDocumentId) {
+	// 		let documentId = this.get('model.document.id');
+	// 		this.get('documentService').copyPage(documentId, pageId, targetDocumentId).then(() => {
+	// 			this.showNotification("Copied");
+	//
+	// 			// refresh data if copied to same document
+	// 			if (documentId === targetDocumentId) {
+	// 				this.get('target.router').refresh();
+	// 			}
+	// 		});
+	// 	},
+	//
+	// 	onMovePage(pageId, targetDocumentId) {
+	// 		let documentId = this.get('model.document.id');
+	//
+	// 		this.get('documentService').copyPage(documentId, pageId, targetDocumentId).then(() => {
+	// 			this.showNotification("Moved");
+	//
+	// 			this.send('onPageDeleted', { id: pageId, children: false });
+	// 		});
+	// 	},
+	//
+	// 	onSavePage(page, meta) {
+	// 		let self = this;
+	// 		let documentId = this.get('model.document.id');
+	// 		let model = {
+	// 			page: page.toJSON({ includeId: true }),
+	// 			meta: meta.toJSON({ includeId: true })
+	// 		};
+	//
+	// 		this.get('documentService').updatePage(documentId, page.get('id'), model).then(function () {
+	// 			self.audit.record("edited-page");
+	// 			self.get('documentService').getPages(documentId).then((pages) => {
+	// 				self.set('model.allPages', pages);
+	// 				self.set('model.pages', pages.filterBy('pageType', 'section'));
+	// 				self.set('model.tabs', pages.filterBy('pageType', 'tab'));
+	// 			});
+	//
+	// 		});
+	// 	},
+	//
+	// 	onPageDeleted(deletePage) {
+	// 		let documentId = this.get('model.document.id');
+	// 		let pages = this.get('model.pages');
+	// 		let deleteId = deletePage.id;
+	// 		let deleteChildren = deletePage.children;
+	// 		let page = _.findWhere(pages, {
+	// 			id: deleteId
+	// 		});
+	// 		let pageIndex = _.indexOf(pages, page, false);
+	// 		let pendingChanges = [];
+	//
+	// 		this.audit.record("deleted-page");
+	//
+	// 		// select affected pages
+	// 		for (var i = pageIndex + 1; i < pages.get('length'); i++) {
+	// 			if (pages[i].get('level') <= page.get('level')) {
+	// 				break;
+	// 			}
+	//
+	// 			pendingChanges.push({
+	// 				pageId: pages[i].get('id'),
+	// 				level: pages[i].get('level') - 1
+	// 			});
+	// 		}
+	//
+	// 		if (deleteChildren) {
+	// 			// nuke of page tree
+	// 			pendingChanges.push({
+	// 				pageId: deleteId
+	// 			});
+	//
+	// 			this.get('documentService').deletePages(documentId, deleteId, pendingChanges).then(() => {
+	// 				// update our models so we don't have to reload from db
+	// 				for (var i = 0; i < pendingChanges.length; i++) {
+	// 					let pageId = pendingChanges[i].pageId;
+	// 					this.set('model.pages', _.reject(pages, function (p) { //jshint ignore: line
+	// 						return p.get('id') === pageId;
+	// 					}));
+	// 				}
+	//
+	// 				this.set('model.pages', _.sortBy(pages, "sequence"));
+	// 				this.get('target.router').refresh();
+	// 			});
+	// 		} else {
+	// 			// page delete followed by re-leveling child pages
+	// 			this.get('documentService').deletePage(documentId, deleteId).then(() => {
+	// 				this.set('model.pages', _.reject(pages, function (p) {
+	// 					return p.get('id') === deleteId;
+	// 				}));
+	//
+	// 				this.send('onPageLevelChange', pendingChanges);
+	// 			});
+	// 		}
+	// 	},
+	//
+	// 	onInsertSection(data) {
+	// 		return new Ember.RSVP.Promise((resolve) => {
+	// 			this.get('documentService').addPage(this.get('model.document.id'), data).then((newPage) => {
+	// 				let data = this.get('store').normalize('page', newPage);
+	// 				this.get('store').push(data);
+	//
+	// 				this.get('documentService').getPages(this.get('model.document.id')).then((pages) => {
+	// 					this.set('model.allPages', pages);
+	// 					this.set('model.pages', pages.filterBy('pageType', 'section'));
+	// 					this.set('model.tabs', pages.filterBy('pageType', 'tab'));
+	//
+	// 					resolve(newPage.id);
+	//
+	// 					// this.get('documentService').getPageMeta(this.get('model.document.id'), newPage.id).then(() => {
+	// 					// 	console.log("ready to edit");
+	// 					// 	// this.transitionToRoute('document.edit',
+	// 					// 	// 	this.get('model.folder.id'),
+	// 					// 	// 	this.get('model.folder.slug'),
+	// 					// 	// 	this.get('model.document.id'),
+	// 					// 	// 	this.get('model.document.slug'),
+	// 					// 	// 	newPage.id);
+	// 					// });
+	// 				});
+	// 			});
+	// 		});
+	// 	},
+	//
+	// 	// to test
+	// 	onPageSequenceChange(changes) {
+	// 		this.get('documentService').changePageSequence(this.get('model.document.id'), changes).then(() => {
+	// 			_.each(changes, (change) => {
+	// 				let pageContent = _.findWhere(this.get('model.pages'), {
+	// 					id: change.pageId
+	// 				});
+	//
+	// 				if (is.not.undefined(pageContent)) {
+	// 					pageContent.set('sequence', change.sequence);
+	// 				}
+	// 			});
+	//
+	// 			this.set('model.pages', this.get('model.pages').sortBy('sequence'));
+	// 			this.get('target.router').refresh();
+	// 		});
+	// 	},
+	//
+	// 	// to test
+	// 	onPageLevelChange(changes) {
+	// 		this.get('documentService').changePageLevel(this.get('model.document.id'), changes).then(() => {
+	// 			_.each(changes, (change) => {
+	// 				let pageContent = _.findWhere(this.get('model.pages'), {
+	// 					id: change.pageId
+	// 				});
+	//
+	// 				if (is.not.undefined(pageContent)) {
+	// 					pageContent.set('level', change.level);
+	// 				}
+	// 			});
+	//
+	// 			let pages = this.get('model.pages');
+	// 			pages = pages.sortBy('sequence');
+	// 			this.set('model.pages', []);
+	// 			this.set('model.pages', pages);
+	// 			this.get('target.router').refresh();
+	// 		});
+	// 	},
+	//
+	// 	// to test
+	// 	gotoPage(pageId) {
+	// 		if (is.null(pageId)) {
+	// 			return;
+	// 		}
+	//
+	// 		this.scrollToPage(pageId);
+	// 	},
+	//
+	// 	// to test
+	// 	onSavePageAsBlock(block) {
+	// 		this.get('sectionService').addBlock(block).then(() => {
+	// 			this.showNotification("Published");
+	// 		});
+	// 	}
+	// }
 });
 
 /*

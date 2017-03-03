@@ -12,10 +12,18 @@
 		{{else}}
 			<div class="section-divider" />
 		{{/if}}
-		{{#document/document-page document=document folder=folder page=page isEditor=isEditor toEdit=toEdit
-			onSavePage=(action 'onSavePage') onSavePageAsBlock=(action 'onSavePageAsBlock')
-			onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onDeletePage')}}
-		{{/document/document-page}}
+		{{#if (is-equal page.pageType 'section')}}
+			{{#document/document-page document=document folder=folder page=page isEditor=isEditor toEdit=toEdit
+				onSavePage=(action 'onSavePage') onSavePageAsBlock=(action 'onSavePageAsBlock')
+				onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onDeletePage')}}
+			{{/document/document-page}}
+		{{/if}}
+		{{#if (is-equal page.pageType 'tab')}}
+			{{#document/document-tab document=document folder=folder page=page isEditor=isEditor
+				onSavePage=(action 'onSavePage') onSavePageAsBlock=(action 'onSavePageAsBlock')
+				onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onDeletePage')}}
+			{{/document/document-tab}}
+		{{/if}}
 	{{else}}
 		no sections!
 		<div class="empty-state-document">

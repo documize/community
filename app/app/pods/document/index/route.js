@@ -14,39 +14,33 @@ import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-rout
 
 export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	documentService: Ember.inject.service('document'),
+	linkService: Ember.inject.service('link'),
 	folderService: Ember.inject.service('folder'),
 	userService: Ember.inject.service('user'),
-	pageId: '',
 	queryParams: {
-		mode: {
+		page: {
 			refreshModel: false
 		}
 	},
 
 	beforeModel(transition) {
-		this.set('mode', !_.isUndefined(transition.queryParams.mode) ? transition.queryParams.mode : '');
+		this.set('pageId', is.not.undefined(transition.queryParams.page) ? transition.queryParams.page : "");
 	},
 
-	model(params) {
+	model() {
+		let document = this.modelFor('document').document;
+		this.browser.setTitle(document.get('name'));
+		this.browser.setMetaDescription(document.get('excerpt'));
+
 		return Ember.RSVP.hash({
 			folders: this.modelFor('document').folders,
 			folder: this.modelFor('document').folder,
 			document: this.modelFor('document').document,
-			pageId: this.modelFor('document').page,
+			page: this.get('pageId'),
 			isEditor: this.get('folderService').get('canEditCurrentFolder'),
 			pages: this.modelFor('document').pages,
 			links: this.modelFor('document').links,
-			sections: this.modelFor('document').sections,
-			page: this.get('documentService').getPage(this.modelFor('document').document.get('id'), params.page_id),
-			meta: this.get('documentService').getPageMeta(this.modelFor('document').document.get('id'), params.page_id)
+			sections: this.modelFor('document').sections
 		});
-	},
-
-	activate() {
-		$('body').addClass('background-color-off-white');
-	},
-
-	deactivate() {
-		$('body').removeClass('background-color-off-white');
 	}
 });

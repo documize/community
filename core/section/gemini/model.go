@@ -21,7 +21,7 @@ import (
 // the HTML that is rendered by this section.
 const renderTemplate = `
 {{if .Authenticated}}
-<p class="margin-left-20">The Gemini workspace <a href="{{.Config.URL}}/workspace/{{.Config.WorkspaceID}}/items">{{.Config.WorkspaceName}}</a> contains {{.Config.ItemCount}} items.</p>
+<p>The Gemini workspace <a href="{{.Config.URL}}/workspace/{{.Config.WorkspaceID}}/items">{{.Config.WorkspaceName}}</a> contains {{.Config.ItemCount}} items.</p>
 <table class="basic-table section-gemini-table">
 	<thead>
 		<tr>

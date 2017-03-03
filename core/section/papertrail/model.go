@@ -16,7 +16,7 @@ import "strings"
 // the HTML that is rendered by this section.
 const renderTemplate = `
 {{if .HasData}}
-<p class="margin-left-20">The <a href="https://papertrailapp.com">Papertrail log</a> for query <em>{{.Config.Query}}</em> contains {{.Count}} entries.</p>
+<p >The <a href="https://papertrailapp.com">Papertrail log</a> for query <em>{{.Config.Query}}</em> contains {{.Count}} entries.</p>
 <table class="basic-table section-papertrail-table">
 	<thead>
 		<tr>
