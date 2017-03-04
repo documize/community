@@ -1,4 +1,5 @@
 <div id="wrapper" class={{if toggled 'toggled'}}>
+	
 	<div id="sidebar-wrapper">
 		<div class="document-sidebar-content">
 			{{#if model.document.template}}
@@ -66,11 +67,12 @@
 						{{document/document-view document=model.document links=model.links pages=model.pages
 							folder=model.folder folders=model.folders sections=model.sections isEditor=model.isEditor pageId=pageId
 							onSavePage=(action 'onSavePage') onInsertSection=(action 'onInsertSection') 
-							onSavePageAsBlock=(action 'onSavePageAsBlock') onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') 
+							onSavePageAsBlock=(action 'onSavePageAsBlock') onDeleteBlock=(action 'onDeleteBlock') onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') 
 							onDeletePage=(action 'onPageDeleted')}}
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
+	
 </div>

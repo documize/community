@@ -73,7 +73,7 @@
 				<ul class="block-list">
 					{{#each blocks as |block|}}
 						<li class="item tooltipped" data-tooltip="{{block.firstname}} {{block.lastname}}, {{time-ago block.created}}, used: {{ block.used }}" data-tooltip-position="bottom center">
-							<div class="actions hide">
+							<div class="block-actions">
 								{{#link-to 'document.block' folder.id folder.slug document.id document.slug block.id}}
 									<i class="material-icons">mode_edit</i>
 								{{/link-to}}

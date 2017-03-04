@@ -138,17 +138,36 @@ export default Ember.Controller.extend(NotifierMixin, {
 					this.get('documentService').getPages(this.get('model.document.id')).then((pages) => {
 						this.set('model.pages', pages);
 
-						if (newPage.pageType === 'section') {
-							resolve(newPage.id);
-						} else {
+						if (newPage.pageType === 'tab') {
 							this.transitionToRoute('document.section',
 								this.get('model.folder.id'),
 								this.get('model.folder.slug'),
 								this.get('model.document.id'),
 								this.get('model.document.slug'),
 								newPage.id);
+						} else {
+							resolve(newPage.id);
 						}
 					});
+				});
+			});
+		},
+
+		onDeleteBlock(blockId) {
+			return new Ember.RSVP.Promise((resolve) => {
+				this.get('sectionService').deleteBlock(blockId).then(() => {
+					this.audit.record("deleted-block");
+					this.send("showNotification", "Deleted");
+					resolve();
+				});
+			});
+		},
+
+		onSavePageAsBlock(block) {
+			return new Ember.RSVP.Promise((resolve) => {
+				this.get('sectionService').addBlock(block).then(() => {
+					this.showNotification("Published");
+					resolve();
 				});
 			});
 		},
@@ -191,24 +210,10 @@ export default Ember.Controller.extend(NotifierMixin, {
 				this.get('target.router').refresh();
 			});
 		},
-
-		// to test
-		onSavePageAsBlock(block) {
-			this.get('sectionService').addBlock(block).then(() => {
-				this.showNotification("Published");
-			});
-		}
 	}
 });
 
 /*
-onDeleteBlock(blockId) {
-	this.get('sectionService').deleteBlock(blockId).then(() => {
-		this.audit.record("deleted-block");
-		this.send("showNotification", "Deleted");
-		this.transitionToRoute('document.index');
-	});
-},
 
 onDocumentDelete() {
 	this.get('documentService').deleteDocument(this.get('model.document.id')).then(() => {

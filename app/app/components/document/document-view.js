@@ -30,19 +30,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	toEdit: '',
 
 	didReceiveAttrs() {
-		this.get('sectionService').getSpaceBlocks(this.get('folder.id')).then((blocks) => {
-			if (this.get('isDestroyed') || this.get('isDestroying')) {
-				return;
-			}
-
-			this.set('blocks', blocks);
-			this.set('hasBlocks', blocks.get('length') > 0);
-
-			// to test
-			blocks.forEach((b) => {
-				b.set('deleteId', `delete-block-button-${b.id}`);
-			});
-		});
+		this.loadBlocks();
 	},
 
 	didRender() {
@@ -137,17 +125,30 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		this.send('onHideSectionWizard');
 		this.set('pageId', '');
 
-		const promise = this.get('onInsertSection')(model);
-		promise.then((id) => {
-			if (model.page.pageType === 'section') {
-				this.set('toEdit', id);
+		return this.get('onInsertSection')(model);
+	},
+
+	loadBlocks() {
+		this.get('sectionService').getSpaceBlocks(this.get('folder.id')).then((blocks) => {
+			if (this.get('isDestroyed') || this.get('isDestroying')) {
+				return;
 			}
+
+			this.set('blocks', blocks);
+			this.set('hasBlocks', blocks.get('length') > 0);
+
+			blocks.forEach((b) => {
+				b.set('deleteId', `delete-block-button-${b.id}`);
+			});
 		});
 	},
 
 	actions: {
 		onSavePageAsBlock(block) {
-			this.attrs.onSavePageAsBlock(block);
+			const promise = this.attrs.onSavePageAsBlock(block);
+			promise.then(() => {
+				this.loadBlocks();
+			});
 		},
 
 		onCopyPage(pageId, documentId) {
@@ -231,7 +232,12 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
 			this.audit.record("added-section-" + page.contentType);
 
-			this.addSection(model);
+			const promise = this.addSection(model);
+			promise.then((id) => {
+				if (model.page.pageType === 'section') {
+					this.set('toEdit', id);
+				}
+			});
 		},
 
 		onInsertBlock(block) {
@@ -266,12 +272,18 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
 			this.audit.record("added-content-block-" + block.get('contentType'));
 
+
 			this.addSection(model);
 		},
 
-		// to test
 		onDeleteBlock(id) {
-			this.attrs.onDeleteBlock(id);
-		}
+			const promise = this.attrs.onDeleteBlock(id);
+
+			promise.then(() => {
+				this.loadBlocks();
+			});
+
+			return true;
+		}		
 	}
 });

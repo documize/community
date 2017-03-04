@@ -27,5 +27,13 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 			document: self.modelFor('document').document,
 			block: self.get('sectionService').getBlock(params.block_id),
 		});
-	}
+	},
+
+	activate() {
+		$('body').addClass('background-color-off-white');
+	},
+
+	deactivate() {
+		$('body').removeClass('background-color-off-white');
+	}	
 });
