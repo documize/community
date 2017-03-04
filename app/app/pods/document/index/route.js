@@ -18,13 +18,13 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	folderService: Ember.inject.service('folder'),
 	userService: Ember.inject.service('user'),
 	queryParams: {
-		page: {
+		pageId: {
 			refreshModel: false
 		}
 	},
 
 	beforeModel(transition) {
-		this.set('pageId', is.not.undefined(transition.queryParams.page) ? transition.queryParams.page : "");
+		this.set('pageId', is.not.undefined(transition.queryParams.pageId) ? transition.queryParams.pageId : '');
 	},
 
 	model() {
@@ -36,7 +36,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 			folders: this.modelFor('document').folders,
 			folder: this.modelFor('document').folder,
 			document: this.modelFor('document').document,
-			page: this.get('pageId'),
+			pageId: this.get('pageId'),
 			isEditor: this.get('folderService').get('canEditCurrentFolder'),
 			pages: this.modelFor('document').pages,
 			links: this.modelFor('document').links,

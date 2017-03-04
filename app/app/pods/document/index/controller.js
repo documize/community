@@ -16,35 +16,9 @@ export default Ember.Controller.extend(NotifierMixin, {
 	documentService: Ember.inject.service('document'),
 	templateService: Ember.inject.service('template'),
 	sectionService: Ember.inject.service('section'),
-	page: null,
 	folder: {},
 	pages: [],
 	toggled: false,
-
-	// to test
-	// to test
-	// Jump to the right part of the document.
-	scrollToPage(pageId) {
-		Ember.run.schedule('afterRender', function () {
-			let dest;
-			let target = "#page-title-" + pageId;
-			let targetOffset = $(target).offset();
-
-			if (is.undefined(targetOffset)) {
-				return;
-			}
-
-			dest = targetOffset.top > $(document).height() - $(window).height() ? $(document).height() - $(window).height() : targetOffset.top;
-			// small correction to ensure we also show page title
-			dest = dest > 50 ? dest - 74 : dest;
-
-			$("html,body").animate({
-				scrollTop: dest
-			}, 500, "linear");
-			$(".toc-index-item").removeClass("selected");
-			$("#index-" + pageId).addClass("selected");
-		});
-	},
 
 	actions: {
 		toggleSidebar() {
@@ -219,15 +193,6 @@ export default Ember.Controller.extend(NotifierMixin, {
 		},
 
 		// to test
-		gotoPage(pageId) {
-			if (is.null(pageId)) {
-				return;
-			}
-
-			this.scrollToPage(pageId);
-		},
-
-		// to test
 		onSavePageAsBlock(block) {
 			this.get('sectionService').addBlock(block).then(() => {
 				this.showNotification("Published");
@@ -237,71 +202,6 @@ export default Ember.Controller.extend(NotifierMixin, {
 });
 
 /*
-gotoPage(pageId) {
-	if (is.null(pageId)) {
-		return;
-	}
-
-	this.scrollToPage(pageId);
-},
-
-
-onSaveTemplate(name, desc) {
-	this.get('templateService').saveAsTemplate(this.get('model.document.id'), name, desc).then(function () {});
-},
-
-onSaveMeta(doc) {
-	this.get('documentService').save(doc).then(() => {
-		this.transitionToRoute('document.index');
-	});
-},
-
-onInsertBlock(block) {
-	this.audit.record("added-content-block-" + block.get('contentType'));
-
-	let page = {
-		documentId: this.get('model.document.id'),
-		title: `${block.get('title')}`,
-		level: 1,
-		sequence: 0,
-		body: block.get('body'),
-		contentType: block.get('contentType'),
-		pageType: block.get('pageType'),
-		blockId: block.get('id')
-	};
-
-	let meta = {
-		documentId: this.get('model.document.id'),
-		rawBody: block.get('rawBody'),
-		config: block.get('config'),
-		externalSource: block.get('externalSource')
-	};
-
-	let model = {
-		page: page,
-		meta: meta
-	};
-
-	this.get('documentService').addPage(this.get('model.document.id'), model).then((newPage) => {
-		let data = this.get('store').normalize('page', newPage);
-		this.get('store').push(data);
-
-		this.get('documentService').getPages(this.get('model.document.id')).then((pages) => {
-			this.set('model.pages', pages.filterBy('pageType', 'section'));
-			this.set('model.tabs', pages.filterBy('pageType', 'tab'));
-
-			this.get('documentService').getPageMeta(this.get('model.document.id'), newPage.id).then(() => {
-				this.transitionToRoute('document.edit',
-					this.get('model.folder.id'),
-					this.get('model.folder.slug'),
-					this.get('model.document.id'),
-					this.get('model.document.slug'),
-					newPage.id);
-			});
-		});
-	});
-},
-
 onDeleteBlock(blockId) {
 	this.get('sectionService').deleteBlock(blockId).then(() => {
 		this.audit.record("deleted-block");
@@ -317,5 +217,4 @@ onDocumentDelete() {
 		this.transitionToRoute('folder', this.get('model.folder.id'), this.get('model.folder.slug'));
 	});
 }
-
 */

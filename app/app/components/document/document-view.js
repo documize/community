@@ -62,6 +62,16 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 			// out
 			$(this).find('.start-button').velocity("transition.slideUpOut", {duration: 300});
 		} });
+
+		let jumpTo = this.get('pageId');
+		if (is.not.empty(jumpTo)) {
+			let self = this;
+			$("#page-" + jumpTo).velocity("scroll", { duration: 250, offset: -100, complete:
+				function() {
+					self.set('pageId', '');
+				}
+			});
+		}		
 	},
 
 	willDestroyElement() {
@@ -125,6 +135,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		model.page.sequence = sequence;
 
 		this.send('onHideSectionWizard');
+		this.set('pageId', '');
 
 		const promise = this.get('onInsertSection')(model);
 		promise.then((id) => {

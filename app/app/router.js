@@ -41,12 +41,6 @@ export default Router.map(function () {
 		this.route('section', {
 			path: 'section/:page_id'
 		});
-		// this.route('edit', {
-		// 	path: 'edit/:page_id'
-		// });
-		// this.route('wizard', {
-		// 	path: 'add'
-		// });
 		this.route('history', {
 			path: 'history'
 		});
