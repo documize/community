@@ -1,35 +1,51 @@
 <div class="document-view">
-	{{#each pages key="id" as |page index|}}
+	{{#if hasPages}}
+		{{#each pages key="id" as |page index|}}
+			{{#if isEditor}}
+				<div class="start-section" data-index={{index}} data-before-id={{page.id}} id="add-section-button-{{page.id}}" {{action 'onShowSectionWizard' page}}>
+					<div class="start-button">
+						<div class="round-button round-button-small button-green">
+							<i class="material-icons">add</i>
+						</div>
+						<div class="label">section</div>
+					</div>
+				</div>
+			{{else}}
+				<div class="section-divider" />
+			{{/if}}
+			{{#if (is-equal page.pageType 'section')}}
+				{{#document/document-page document=document folder=folder page=page isEditor=isEditor toEdit=toEdit
+					onSavePage=(action 'onSavePage') onSavePageAsBlock=(action 'onSavePageAsBlock')
+					onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onDeletePage')}}
+				{{/document/document-page}}
+			{{/if}}
+			{{#if (is-equal page.pageType 'tab')}}
+				{{#document/document-tab document=document folder=folder page=page isEditor=isEditor
+					onSavePage=(action 'onSavePage') onSavePageAsBlock=(action 'onSavePageAsBlock')
+					onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onDeletePage')}}
+				{{/document/document-tab}}
+			{{/if}}
+		{{/each}}
+		<div class="start-section" data-index="0" data-before-id="0" id="add-section-button-0" {{action 'onShowSectionWizard'}}>
+			<div class="start-button">
+				<div class="round-button round-button-small button-green">
+					<i class="material-icons">add</i>
+				</div>
+				<div class="label">section</div>
+			</div>
+		</div>
+	{{else}}
 		{{#if isEditor}}
-			<div class="start-section" data-index={{index}} data-before-id={{page.id}} id="add-section-button-{{page.id}}" {{action 'onShowSectionWizard' page}}>
-				<div class="start-button animated">
+			<div class="start-section start-section-empty-state" data-index="-1" data-before-id="0" id="add-section-button-0" {{action 'onShowSectionWizard'}}>
+				<div class="start-button">
 					<div class="round-button round-button-small button-green">
 						<i class="material-icons">add</i>
 					</div>
 					<div class="label">section</div>
 				</div>
 			</div>
-		{{else}}
-			<div class="section-divider" />
 		{{/if}}
-		{{#if (is-equal page.pageType 'section')}}
-			{{#document/document-page document=document folder=folder page=page isEditor=isEditor toEdit=toEdit
-				onSavePage=(action 'onSavePage') onSavePageAsBlock=(action 'onSavePageAsBlock')
-				onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onDeletePage')}}
-			{{/document/document-page}}
-		{{/if}}
-		{{#if (is-equal page.pageType 'tab')}}
-			{{#document/document-tab document=document folder=folder page=page isEditor=isEditor
-				onSavePage=(action 'onSavePage') onSavePageAsBlock=(action 'onSavePageAsBlock')
-				onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onDeletePage')}}
-			{{/document/document-tab}}
-		{{/if}}
-	{{else}}
-		no sections!
-		<div class="empty-state-document">
-			<img src="/assets/img/empty-state-document.gif" />
-		</div>
-	{{/each}}
+	{{/if}}
 
 	<div id="new-section-wizard" class="new-section-wizard">
 		<div class="input-inline input-transparent pull-left width-80">

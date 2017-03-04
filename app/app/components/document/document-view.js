@@ -22,7 +22,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	sectionService: Ember.inject.service('section'),
 	appMeta: Ember.inject.service(),
 	link: Ember.inject.service(),
-
+	hasPages: computed.notEmpty('pages'),
 	newSectionName: '',
 	newSectionNameMissing: computed.empty('newSectionName'),
 	newSectionLocation: '',
@@ -38,6 +38,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 			this.set('blocks', blocks);
 			this.set('hasBlocks', blocks.get('length') > 0);
 
+			// to test
 			blocks.forEach((b) => {
 				b.set('deleteId', `delete-block-button-${b.id}`);
 			});
@@ -54,12 +55,12 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	},
 
 	didInsertElement() {
-		$(".start-section").hoverIntent({interval: 100, over: function() {
+		$(".start-section:not(.start-section-empty-state)").hoverIntent({interval: 100, over: function() {
 			// in
-			$(this).find('.start-button').css("display", "block").removeClass('fadeOut').addClass('fadeIn');
+			$(this).find('.start-button').velocity("transition.slideDownIn", {duration: 300});
 		}, out: function() {
-			//out
-			$(this).find('.start-button').css("display", "none").removeClass('fadeIn').addClass('fadeOut');
+			// out
+			$(this).find('.start-button').velocity("transition.slideUpOut", {duration: 300});
 		} });
 	},
 
@@ -109,12 +110,15 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		if (is.not.null(beforePage)) {
 			// get any page before the beforePage so we can insert this new section between them
 			let index = _.findIndex(this.get('pages'), function(p) { return p.get('id') === beforePage.get('id'); });
-			let beforeBeforePage = this.get('pages')[index-1];
 
-			if (is.not.undefined(beforeBeforePage)) {
-				sequence = (beforePage.get('sequence') + beforeBeforePage.get('sequence')) / 2;
-			} else {
-				sequence = beforePage.get('sequence') / 2;
+			if (index !== -1) {
+				let beforeBeforePage = this.get('pages')[index-1];
+
+				if (is.not.undefined(beforeBeforePage)) {
+					sequence = (beforePage.get('sequence') + beforeBeforePage.get('sequence')) / 2;
+				} else {
+					sequence = beforePage.get('sequence') / 2;
+				}
 			}
 		}
 
@@ -124,7 +128,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
 		const promise = this.get('onInsertSection')(model);
 		promise.then((id) => {
-			if (model.page.contentType === 'section') {
+			if (model.page.pageType === 'section') {
 				this.set('toEdit', id);
 			} else {
 				this.get('onEditSection')(id);
@@ -154,17 +158,26 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		},
 
 		// Section wizard related
-
 		onShowSectionWizard(page) {
-			let beforePage = this.get('beforePage');
+			if (is.undefined(page)) {
+				page = { id: '0' };
+			}
 
+			let beforePage = this.get('beforePage');
 			if (is.not.null(beforePage) && $("#new-section-wizard").is(':visible') && beforePage.get('id') === page.id) {
 				this.send('onHideSectionWizard');
 				return;
 			}
 
 			this.set('newSectionLocation', page.id);
-			this.set('beforePage', page);
+
+			if (page.id === '0') {
+				// this handles add section at the end of the document
+				// because we are not before another page
+				this.set('beforePage', null);
+			} else {
+				this.set('beforePage', page);
+			}
 
 			$("#new-section-wizard").insertAfter(`#add-section-button-${page.id}`);
 			$("#new-section-wizard").velocity("transition.slideDownIn", {duration: 300, complete:
@@ -250,7 +263,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		// to test
 		onDeleteBlock(id) {
 			this.attrs.onDeleteBlock(id);
-		},
-
+		}
 	}
 });

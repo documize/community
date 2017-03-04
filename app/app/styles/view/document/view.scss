@@ -151,7 +151,6 @@
 	}
 
 	.start-section {
-		@include ease-in();
 		@extend .no-select;
 		height: 60px;
 		background-color: transparent;
@@ -191,6 +190,12 @@
 			> .start-button {
 				padding-top: 0;
 			}
+		}
+	}
+
+	.start-section-empty-state {
+		> .start-button {
+			display: block;
 		}
 	}
 

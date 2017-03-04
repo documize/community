@@ -21,7 +21,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	didReceiveAttrs() {
 		let toEdit = this.get('toEdit');
 
-		if (toEdit === this.get('page.id')) {
+		if (toEdit === this.get('page.id') && this.get('isEditor')) {
 			this.send('onEdit');
 		}
 	},

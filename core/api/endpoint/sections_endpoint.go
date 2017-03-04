@@ -12,6 +12,7 @@
 package endpoint
 
 import (
+	"database/sql"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
@@ -120,6 +121,10 @@ func RefreshSections(w http.ResponseWriter, r *http.Request) {
 	for _, pm := range meta {
 		// Grab the page because we need content type and
 		page, err2 := p.GetPage(pm.PageID)
+
+		if err2 == sql.ErrNoRows {
+			continue
+		}
 
 		if err2 != nil {
 			writeGeneralSQLError(w, method, err2)
