@@ -19,7 +19,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	userService: Ember.inject.service('user'),
 	queryParams: {
 		pageId: {
-			refreshModel: false
+			refreshModel: true
 		}
 	},
 
@@ -38,7 +38,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 			document: this.modelFor('document').document,
 			pageId: this.get('pageId'),
 			isEditor: this.get('folderService').get('canEditCurrentFolder'),
-			pages: this.modelFor('document').pages,
+			pages: this.get('documentService').getPages(this.modelFor('document').document.get('id')),
 			links: this.modelFor('document').links,
 			sections: this.modelFor('document').sections
 		});

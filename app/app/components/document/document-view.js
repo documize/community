@@ -30,11 +30,11 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	toEdit: '',
 
 	didReceiveAttrs() {
-		if (this.get('isDestroyed') || this.get('isDestroying')) {
-			return;
-		}
-
 		this.get('sectionService').getSpaceBlocks(this.get('folder.id')).then((blocks) => {
+			if (this.get('isDestroyed') || this.get('isDestroying')) {
+				return;
+			}
+
 			this.set('blocks', blocks);
 			this.set('hasBlocks', blocks.get('length') > 0);
 
@@ -141,8 +141,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		promise.then((id) => {
 			if (model.page.pageType === 'section') {
 				this.set('toEdit', id);
-			} else {
-				this.get('onEditSection')(id);
 			}
 		});
 	},

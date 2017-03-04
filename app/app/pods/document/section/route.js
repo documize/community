@@ -17,15 +17,6 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	folderService: Ember.inject.service('folder'),
 	userService: Ember.inject.service('user'),
 	pageId: '',
-	queryParams: {
-		mode: {
-			refreshModel: false
-		}
-	},
-
-	beforeModel(transition) {
-		this.set('mode', !_.isUndefined(transition.queryParams.mode) ? transition.queryParams.mode : '');
-	},
 
 	model(params) {
 		return Ember.RSVP.hash({

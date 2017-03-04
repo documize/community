@@ -53,7 +53,6 @@ export default Ember.Controller.extend(NotifierMixin, {
 
 			this.get('documentService').copyPage(documentId, pageId, targetDocumentId).then(() => {
 				this.showNotification("Moved");
-
 				this.send('onPageDeleted', { id: pageId, children: false });
 			});
 		},
@@ -70,8 +69,8 @@ export default Ember.Controller.extend(NotifierMixin, {
 				self.audit.record("edited-page");
 				self.get('documentService').getPages(documentId).then((pages) => {
 					self.set('model.pages', pages);
+					self.get('target.router').refresh();
 				});
-
 			});
 		},
 
@@ -138,19 +137,20 @@ export default Ember.Controller.extend(NotifierMixin, {
 
 					this.get('documentService').getPages(this.get('model.document.id')).then((pages) => {
 						this.set('model.pages', pages);
-						resolve(newPage.id);
+
+						if (newPage.pageType === 'section') {
+							resolve(newPage.id);
+						} else {
+							this.transitionToRoute('document.section',
+								this.get('model.folder.id'),
+								this.get('model.folder.slug'),
+								this.get('model.document.id'),
+								this.get('model.document.slug'),
+								newPage.id);
+						}
 					});
 				});
 			});
-		},
-
-		onEditSection(pageId) {
-			this.transitionToRoute('document.section',
-				this.get('model.folder.id'),
-				this.get('model.folder.slug'),
-				this.get('model.document.id'),
-				this.get('model.document.slug'),
-				pageId);
 		},
 
 		// to test
