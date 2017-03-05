@@ -2,6 +2,17 @@
 	position: absolute;
 	top: 18px;
 	right: 78px;
+
+	> .toolbar {
+		margin: 0;
+		padding: 0;
+		line-height: 0;
+
+		> li {
+			list-style: none;
+			list-style-type: none;				
+		}
+	}
 }
 
 .content-counter-dialog {

@@ -23,8 +23,9 @@
 	}
 
 	.doc-title {
+		font-size: 2rem;
 		margin: 30px 0 10px;
-		font-weight: bold;
+		font-weight: normal;
 	}
 
 	.doc-excerpt {
@@ -38,8 +39,8 @@
 
 		.edit-doc-title {
 			> input {
-				font-weight: bold;
 				font-size: 2rem;
+				font-weight: normal;
 				margin: 0 0 10px;
 				color: $color-wysiwyg;
 			}
@@ -80,7 +81,6 @@
 	}
 
 	.is-a-tab {
-		// @extend .transition-all;
 		@include border-radius(2px);
 		@include ease-in();
 		padding: 25px 50px;

@@ -29,7 +29,8 @@ export default Model.extend({
 	meta: attr(),
 
 	tagName: Ember.computed('level', function () {
-		return "h" + (this.get('level') + 1);
+		return "h2";
+		// return "h" + (this.get('level') + 1);
 	}),
 
 	tocIndent: Ember.computed('level', function () {

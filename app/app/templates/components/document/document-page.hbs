@@ -1,4 +1,4 @@
-<div id="page-{{ page.id }}" class="is-a-page" data-id="{{ page.id }}" data-type="{{ page.contentType }}">
+<div id="page-{{ page.id }}" class="is-a-page wysiwyg" data-id="{{ page.id }}" data-type="{{ page.contentType }}">
 	{{#unless editMode}}
 		{{document/page-heading tagName=page.tagName document=document folder=folder page=page isEditor=isEditor tabMode=tabMode
 			onEdit=(action 'onEdit')
