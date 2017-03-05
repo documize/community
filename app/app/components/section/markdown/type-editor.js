@@ -32,10 +32,6 @@ export default Ember.Component.extend(TooltipMixin, {
 		let page = this.get('page');
 		return `markdown-preview-${page.id}`;
 	}),
-	tooltipId: Ember.computed('page', function () {
-		let page = this.get('page');
-		return `markdown-tooltip-${page.id}`;
-	}),
 
 	init() {
 		this._super(...arguments);
@@ -127,7 +123,7 @@ export default Ember.Component.extend(TooltipMixin, {
 	},
 
 	actions: {
-		toggleMode() {
+		onPreview() {
 			this.set('editMode', !this.get('editMode'));
 
 			Ember.run.schedule('afterRender', () => {

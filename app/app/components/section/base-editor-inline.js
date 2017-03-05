@@ -33,6 +33,14 @@ export default Ember.Component.extend({
 		let page = this.get('page');
 		return `discard-edits-dialog-${page.id}`;
 	}),
+	contentLinkerButtonId: Ember.computed('page', function () {
+		let page = this.get('page');
+		return `content-linker-button-${page.id}`;
+	}),
+	previewButtonId: Ember.computed('page', function () {
+		let page = this.get('page');
+		return `content-preview-button-${page.id}`;
+	}),
 
 	didRender() {
 		let self = this;
@@ -108,6 +116,14 @@ export default Ember.Component.extend({
 
 		discardEdits() {
 			this.attrs.onCancel();
-		}
+		},
+
+		onInsertLink(selection) {
+			return this.get('onInsertLink')(selection);
+		},		
+
+		onPreview() {
+			return this.get('onPreview')();
+		},		
 	}
 });

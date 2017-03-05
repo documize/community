@@ -1,6 +1,6 @@
 .document-editor {
 	position: relative;
-	
+
 	> .toolbar {
 		width: 100%;
 		padding: 0;
@@ -11,7 +11,7 @@
 			> input {
 				font-weight: bold;
 				font-size: 1.5rem;
-				margin: 17px 0 0 0;
+				margin: 16px 0 10px 0;
 				color: $color-wysiwyg;
 			}
 		}
@@ -28,4 +28,14 @@
 	.cancel-edits-dialog {
 		display: none;
 	}
+}
+
+.document-editor-full {
+	@extend .transition-all;
+	@include border-radius(2px);
+	@include ease-in();
+	position: relative;
+	padding: 25px 50px;
+	box-shadow: 0 0 0 0.75pt $color-stroke,0 0 3pt 0.75pt $color-stroke;
+	background-color: $color-white;
 }

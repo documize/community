@@ -16,31 +16,23 @@ export default Ember.Controller.extend({
 
 	actions: {
 		onCancel( /*page*/ ) {
-			this.transitionToRoute('document', {
-				queryParams: {
-					page: this.get('model.page.id')
-				}
-			});
+			this.transitionToRoute('document');
 		},
 
 		onAction(page, meta) {
 			let self = this;
 
-			let block = this.get('model.block');
-			block.set('title', page.get('title'));
-			block.set('body', page.get('body'));
-			block.set('excerpt', page.get('excerpt'));
-			block.set('rawBody', meta.get('rawBody'));
-			block.set('config', meta.get('config'));
-			block.set('externalSource', meta.get('externalSource'));
+			let b = this.get('model.block');
+			b.set('title', page.get('title'));
+			b.set('body', page.get('body'));
+			b.set('excerpt', page.get('excerpt'));
+			b.set('rawBody', meta.get('rawBody'));
+			b.set('config', meta.get('config'));
+			b.set('externalSource', meta.get('externalSource'));
 
-			this.get('sectionService').updateBlock(block).then(function () {
+			this.get('sectionService').updateBlock(b).then(function () {
 				self.audit.record("edited-block");
-				self.transitionToRoute('document', {
-					queryParams: {
-						page: page.get('id')
-					}
-				});
+				self.transitionToRoute('document');
 			});
 		}
 	}

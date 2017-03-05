@@ -320,9 +320,15 @@ func UpdateBlock(w http.ResponseWriter, r *http.Request) {
 	method := "UpdateBlock"
 	p := request.GetPersister(r)
 
+	params := mux.Vars(r)
+	blockID := params["blockID"]
+	if len(blockID) == 0 {
+		writeMissingDataError(w, method, "blockID")
+		return
+	}
+
 	defer utility.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
-
 	if err != nil {
 		writeBadRequestError(w, method, "Bad payload")
 		return
@@ -334,6 +340,8 @@ func UpdateBlock(w http.ResponseWriter, r *http.Request) {
 		writePayloadError(w, method, err)
 		return
 	}
+
+	b.RefID = blockID
 
 	if !p.CanUploadDocument(b.LabelID) {
 		writeForbiddenError(w)
