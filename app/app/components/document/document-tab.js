@@ -23,14 +23,22 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	},
 
 	didInsertElement() {
-		let self = this;
-		this.get('sectionService').refresh(this.get('document.id')).then(function (changes) {
-			changes.forEach(function (newPage) {
-				let oldPage = self.get('page');
-				if (!_.isUndefined(oldPage) && oldPage.get('id') === newPage.get('id')) {
+		this.get('sectionService').refresh(this.get('document.id')).then((changes) => {
+			if (this.get('isDestroyed') || this.get('isDestroying')) {
+				return;
+			}
+
+			let oldPage = this.get('page');
+
+			if (is.undefined(changes) || is.undefined(oldPage)) {
+				return;
+			}
+
+			changes.forEach((newPage) => {
+				if (oldPage.get('id') === newPage.get('id')) {
 					oldPage.set('body', newPage.get('body'));
 					oldPage.set('revised', newPage.get('revised'));
-					self.showNotification(`Refreshed ${oldPage.get('title')}`);
+					this.showNotification(`Refreshed ${oldPage.get('title')}`);
 				}
 			});
 		});
@@ -67,7 +75,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 			};
 
 			this.attrs.onDeletePage(params);
-		},
-
+		}
 	}
 });

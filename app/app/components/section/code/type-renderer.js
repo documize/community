@@ -16,6 +16,8 @@ export default Ember.Component.extend({
     codeSyntax: "htmlmixed",
 
     didReceiveAttrs() {
+        this._super(...arguments);
+
         CodeMirror.modeURL = "/codemirror/mode/%N/%N.js";
 
         let page = this.get('page');
@@ -27,9 +29,22 @@ export default Ember.Component.extend({
             this.set('codeSyntax', cleanBody.substring(0, startPos));
             this.set('codeBody', cleanBody.substring(startPos + 2));
         }
+
+        _.each(_.sortBy(CodeMirror.modeInfo, 'name'), (item) => {
+            let i = {
+                mode: item.mode,
+                name: item.name
+            };
+
+            if (item.mode === this.get('codeSyntax')) {
+                this.set('codeSyntax', i);
+            }
+        });
     },
 
-    didRender() {
+    didInsertElement() {
+        this._super(...arguments);
+
         let page = this.get('page');
         let elem = `page-${page.id}-code`;
 
@@ -44,14 +59,18 @@ export default Ember.Component.extend({
             readOnly: true
         });
 
-        let syntax = this.get("codeSyntax");
-        CodeMirror.autoLoadMode(editor, syntax);
-        editor.setOption("mode", syntax);
-
         this.set('codeEditor', editor);
+
+        let syntax = this.get("codeSyntax");
+        if (is.not.undefined(syntax)) {
+            CodeMirror.autoLoadMode(editor, syntax.mode);
+            editor.setOption("mode", syntax.mode);
+        }
     },
 
     willDestroyElement() {
+        this._super(...arguments);
+
         this.set('codeEditor', null);
     }
 });

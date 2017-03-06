@@ -18,10 +18,20 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	sectionService: Ember.inject.service('section'),
 	editMode: false,
 
-	didReceiveAttrs() {
-		let toEdit = this.get('toEdit');
+	init() {
+		this._super(...arguments);
 
-		if (toEdit === this.get('page.id') && this.get('isEditor')) {
+		let page = this.get('page');
+
+		this.get('documentService').getPageMeta(page.get('documentId'), page.get('id')).then((meta) => {
+			this.set('meta', meta);
+		});
+	},
+
+	didReceiveAttrs() {
+		this._super(...arguments);
+
+		if (this.get('toEdit') === this.get('page.id') && this.get('isEditor')) {
 			this.send('onEdit');
 		}
 	},
@@ -60,12 +70,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 				return;
 			}
 
-			let page = this.get('page');
-
-			this.get('documentService').getPageMeta(page.get('documentId'), page.get('id')).then((meta) => {
-				this.set('editMode', true);
-				this.set('meta', meta);
-			});
+			this.set('editMode', true);
 		},
 
 		onCancelEdit() {
@@ -73,8 +78,8 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		},
 
 		onSavePage(page, meta) {
+			this.get('onSavePage')(page, meta);
 			this.set('editMode', false);
-			this.attrs.onSavePage(page, meta);
 		}
 	}
 });

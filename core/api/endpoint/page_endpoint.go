@@ -499,7 +499,7 @@ func UpdateDocumentPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tx, err := request.Db.Beginx()
+	p.Context.Transaction, err = request.Db.Beginx()
 	if err != nil {
 		writeTransactionError(w, method, err)
 		return
@@ -522,17 +522,14 @@ func UpdateDocumentPage(w http.ResponseWriter, r *http.Request) {
 	}
 	model.Page.Body = output
 
-	p.Context.Transaction = tx
-
 	var skipRevision bool
 	skipRevision, err = strconv.ParseBool(r.URL.Query().Get("r"))
 
 	refID := util.UniqueID()
 	err = p.UpdatePage(model.Page, refID, p.Context.UserID, skipRevision)
-
 	if err != nil {
 		writeGeneralSQLError(w, method, err)
-		log.IfErr(tx.Rollback())
+		log.IfErr(p.Context.Transaction.Rollback())
 		return
 	}
 
@@ -544,7 +541,7 @@ func UpdateDocumentPage(w http.ResponseWriter, r *http.Request) {
 		SourceType:   entity.ActivitySourceTypeDocument,
 		ActivityType: entity.ActivityTypeEdited})
 
-	log.IfErr(tx.Commit())
+	log.IfErr(p.Context.Transaction.Commit())
 
 	updatedPage, err := p.GetPage(pageID)
 

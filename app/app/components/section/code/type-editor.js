@@ -90,7 +90,6 @@ export default Ember.Component.extend(TooltipMixin, {
         this.set('codeEditor', editor);
 
         let syntax = this.get("codeSyntax");
-
         if (is.not.undefined(syntax)) {
             CodeMirror.autoLoadMode(editor, syntax.mode);
             editor.setOption("mode", syntax.mode);

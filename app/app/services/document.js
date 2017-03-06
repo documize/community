@@ -232,7 +232,6 @@ export default Ember.Service.extend({
 
 	// Returns all document pages with content
 	getPages(documentId) {
-
 		return this.get('ajax').request(`documents/${documentId}/pages`, {
 			method: 'GET'
 		}).then((response) => {

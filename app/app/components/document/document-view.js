@@ -30,10 +30,14 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	toEdit: '',
 
 	didReceiveAttrs() {
+		this._super(...arguments);
+		
 		this.loadBlocks();
 	},
 
 	didRender() {
+		this._super(...arguments);
+		
 		this.contentLinkHandler();
 
 		let self = this;
@@ -43,6 +47,8 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	},
 
 	didInsertElement() {
+		this._super(...arguments);
+		
 		$(".start-section:not(.start-section-empty-state)").hoverIntent({interval: 100, over: function() {
 			// in
 			$(this).find('.start-button').velocity("transition.slideDownIn", {duration: 300});
@@ -63,6 +69,8 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	},
 
 	willDestroyElement() {
+		this._super(...arguments);
+		
 		this.destroyTooltips();
 	},
 
