@@ -17,6 +17,9 @@ export default Ember.Component.extend({
 
     didReceiveAttrs() {
         this._super(...arguments);
+        if (this.get('isDestroyed') || this.get('isDestroying')) {
+            return;
+        }
 
         CodeMirror.modeURL = "/codemirror/mode/%N/%N.js";
 
@@ -44,6 +47,9 @@ export default Ember.Component.extend({
 
     didInsertElement() {
         this._super(...arguments);
+        if (this.get('isDestroyed') || this.get('isDestroying')) {
+            return;
+        }
 
         let page = this.get('page');
         let elem = `page-${page.id}-code`;

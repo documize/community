@@ -37,6 +37,13 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	},
 
 	actions: {
+		onSavePage(page, meta) {
+			this.set('page', page);
+			this.set('meta', meta);
+			this.set('editMode', false);
+			this.get('onSavePage')(page, meta);
+		},
+
 		onSavePageAsBlock(block) {
 			this.attrs.onSavePageAsBlock(block);
 		},
@@ -74,11 +81,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		},
 
 		onCancelEdit() {
-			this.set('editMode', false);
-		},
-
-		onSavePage(page, meta) {
-			this.get('onSavePage')(page, meta);
 			this.set('editMode', false);
 		}
 	}
