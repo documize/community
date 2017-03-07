@@ -1,43 +1,9 @@
 <div id="wrapper" class={{if toggled 'toggled'}}>
 	
 	<div id="sidebar-wrapper">
-		<div class="document-sidebar-common">
-			{{#if model.document.template}}
-				<div class="is-template">TEMPLATE</div>
-			{{/if}}
-			{{document/tag-editor documentTags=model.document.tags isEditor=model.isEditor onChange=(action 'onTagChange')}}
-			{{#layout/zone-document-sidebar}}
-			{{/layout/zone-document-sidebar}}
-		</div>
-		<div class="document-sidebar-toolbar">
-			<div class="round-button-mono">
-				<i class="material-icons color-gray">more_horiz</i>
-			</div>
-			<div class="margin-top-20"></div>
-			<div class="round-button-mono">
-				<i class="material-icons color-gray">view_headline</i>
-			</div>
-			<div class="margin-top-20"></div>
-			<div class="round-button-mono">
-				<i class="material-icons color-gray">attach_file</i>
-			</div>
-			<div class="margin-top-20"></div>
-			<div class="round-button-mono">
-				<i class="material-icons color-gray">timeline</i>
-			</div>
-			<div class="margin-top-20"></div>
-			<div class="round-button-mono">
-				<i class="material-icons color-gray">person</i>
-			</div>
-			<div class="margin-top-20"></div>
-			<div class="round-button-mono">
-				<i class="material-icons color-gray">chat_bubble</i>
-			</div>
-			<div class="margin-top-20"></div>
-			<div class="round-button-mono">
-				<i class="material-icons color-gray">share</i>
-			</div>
-		</div>
+		{{document/sidebar-zone folders=model.folders folder=model.folder document=model.document
+			pages=model.pages sections=model.section links=model.links isEditor=model.isEditor
+			onDocumentDelete=(action 'onDocumentDelete') onSaveTemplate=(action 'onSaveTemplate')}}
 	</div>
 
 	<div id="page-content-wrapper">

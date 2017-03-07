@@ -6,7 +6,7 @@
 			{{/if}}
 
 			{{#if contentLinkerButton}}
-				{{document/edit-tools tagName="span" document=document folder=folder page=page onInsertLink=(action 'onInsertLink')}}
+				{{document/content-linker tagName="span" document=document folder=folder page=page onInsertLink=(action 'onInsertLink')}}
 				<div class="round-button-mono" id={{contentLinkerButtonId}} data-tooltip="Reference link" data-tooltip-position="top center">
 					<i class="material-icons color-blue">link</i>
 				</div>

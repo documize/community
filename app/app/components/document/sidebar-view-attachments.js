@@ -14,17 +14,24 @@ import NotifierMixin from '../../mixins/notifier';
 import TooltipMixin from '../../mixins/tooltip';
 
 export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
+	documentService: Ember.inject.service('document'),
 	appMeta: Ember.inject.service(),
 	drop: null,
+	emptyState: Ember.computed.empty('files'),
 	deleteAttachment: {
 		id: "",
 		name: "",
 	},
-	emptyState: Ember.computed('files', function () {
-		return this.get('files.length') === 0;
-	}),
+
+	init() {
+		this._super(...arguments);
+		
+		this.getAttachments();
+	},
 
 	didInsertElement() {
+		this._super(...arguments);
+
 		if (!this.get('isEditor')) {
 			return;
 		}
@@ -54,7 +61,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 				});
 
 				this.on("queuecomplete", function () {
-					self.attrs.onUpload();
+					self.getAttachments();
 				});
 
 				this.on("addedfile", function ( /*file*/ ) {
@@ -71,15 +78,22 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	},
 
 	willDestroyElement() {
-		let drop = this.get('drop');
+		this._super(...arguments);
 
+		let drop = this.get('drop');
 		if (is.not.null(drop)) {
 			drop.destroy();
 		}
 	},
 
+	getAttachments() {
+		this.get('documentService').getAttachments(this.get('document.id')).then((files) => {
+			this.set('files', files);
+		});
+	},
+
 	actions: {
-		confirmDeleteAttachment(id, name) {
+		onConfirmDelete(id, name) {
 			this.set('deleteAttachment', {
 				id: id,
 				name: name
@@ -103,7 +117,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 			this.set('drop', drop);
 		},
 
-		cancel() {
+		onCancel() {
 			let drop = this.get('drop');
 			drop.close();
 
@@ -113,16 +127,19 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 			});
 		},
 
-		deleteAttachment() {
+		onDelete() {
 			let attachment = this.get('deleteAttachment');
 			let drop = this.get('drop');
 			drop.close();
 
-			this.attrs.onDelete(this.get('deleteAttachment').id, attachment.name);
+			this.showNotification(`Deleted ${name}`);
 
-			this.set('deleteAttachment', {
-				id: "",
-				name: ""
+			this.get('documentService').deleteAttachment(this.get('document.id'), attachment.id).then(() => {
+				this.getAttachments();
+				this.set('deleteAttachment', {
+					id: "",
+					name: ""
+				});
 			});
 
 			return true;

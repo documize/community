@@ -25,12 +25,6 @@ export default Ember.Controller.extend(NotifierMixin, {
 			this.set('toggled', !this.get('toggled'));
 		},
 
-		onTagChange(tags) {
-			let doc = this.get('model.document');
-			doc.set('tags', tags);
-			this.get('documentService').save(doc);
-		},
-
 		onSaveDocument(doc) {
 			this.get('documentService').save(doc);
 			this.showNotification('Saved');
@@ -169,6 +163,18 @@ export default Ember.Controller.extend(NotifierMixin, {
 			});
 		},
 
+		onDocumentDelete() {
+			this.get('documentService').deleteDocument(this.get('model.document.id')).then(() => {
+				this.audit.record("deleted-page");
+				this.send("showNotification", "Deleted");
+				this.transitionToRoute('folder', this.get('model.folder.id'), this.get('model.folder.slug'));
+			});
+		},
+
+		onSaveTemplate(name, desc) {
+			this.get('templateService').saveAsTemplate(this.get('model.document.id'), name, desc).then(function () {});
+		},
+
 		// to test
 		onPageSequenceChange(changes) {
 			this.get('documentService').changePageSequence(this.get('model.document.id'), changes).then(() => {
@@ -206,17 +212,6 @@ export default Ember.Controller.extend(NotifierMixin, {
 				this.set('model.pages', pages);
 				this.get('target.router').refresh();
 			});
-		},
+		}
 	}
 });
-
-/*
-
-onDocumentDelete() {
-	this.get('documentService').deleteDocument(this.get('model.document.id')).then(() => {
-		this.audit.record("deleted-page");
-		this.send("showNotification", "Deleted");
-		this.transitionToRoute('folder', this.get('model.folder.id'), this.get('model.folder.slug'));
-	});
-}
-*/
