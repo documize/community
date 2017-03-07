@@ -1,4 +1,4 @@
-.document-sidebar-content {
+.document-sidebar-common {
 	display: inline-block;
 	width: 340px;
 	padding: 40px 20px;
@@ -16,127 +16,127 @@
 	padding: 50px 0 0 0;
 }
 
-.xxxx {
+// .xxxx {
 
-	.is-template {
-		color: $color-goldy;
-		font-weight: bold;
-		font-size: 1.5em;
-		margin-bottom: 30px;
-		padding-bottom: 5px;
-		border-bottom: 1px dotted $color-goldy;
-	}
+// 	.is-template {
+// 		color: $color-goldy;
+// 		font-weight: bold;
+// 		font-size: 1.5em;
+// 		margin-bottom: 30px;
+// 		padding-bottom: 5px;
+// 		border-bottom: 1px dotted $color-goldy;
+// 	}
 
-	@extend .no-select;
+// 	@extend .no-select;
 
-	.stuck-toc {
-		position: fixed;
-		top: 20px;
-		-webkit-animation: fadein 1s;
-		-moz-animation: fadein 1s;
-		-ms-animation: fadein 1s;
-		-o-animation: fadein 1s;
-		animation: fadein 1s;
-	}
+// 	.stuck-toc {
+// 		position: fixed;
+// 		top: 20px;
+// 		-webkit-animation: fadein 1s;
+// 		-moz-animation: fadein 1s;
+// 		-ms-animation: fadein 1s;
+// 		-o-animation: fadein 1s;
+// 		animation: fadein 1s;
+// 	}
 
-	.section-tool {
-		position: absolute;
-		top: 130px;
-		right: -18px;
-		z-index: 999;
-	}
+// 	.section-tool {
+// 		position: absolute;
+// 		top: 130px;
+// 		right: -18px;
+// 		z-index: 999;
+// 	}
 
-	.scroll-tool {
-		position: absolute;
-		top: 130px;
-		right: -18px;
-		z-index: 999;
-		-webkit-animation: fadein 1s;
-		-moz-animation: fadein 1s;
-		-ms-animation: fadein 1s;
-		-o-animation: fadein 1s;
-		animation: fadein 1s;
-	}
+// 	.scroll-tool {
+// 		position: absolute;
+// 		top: 130px;
+// 		right: -18px;
+// 		z-index: 999;
+// 		-webkit-animation: fadein 1s;
+// 		-moz-animation: fadein 1s;
+// 		-ms-animation: fadein 1s;
+// 		-o-animation: fadein 1s;
+// 		animation: fadein 1s;
+// 	}
 
-	.stuck-tool {
-		position: fixed !important;
-		top: 130px !important;
-		right: 0;
-		left: 0;
-		-webkit-animation: fadein 1s;
-		-moz-animation: fadein 1s;
-		-ms-animation: fadein 1s;
-		-o-animation: fadein 1s;
-		animation: fadein 1s;
-	}
+// 	.stuck-tool {
+// 		position: fixed !important;
+// 		top: 130px !important;
+// 		right: 0;
+// 		left: 0;
+// 		-webkit-animation: fadein 1s;
+// 		-moz-animation: fadein 1s;
+// 		-ms-animation: fadein 1s;
+// 		-o-animation: fadein 1s;
+// 		animation: fadein 1s;
+// 	}
 
-	.close-action {
-		float: right;
+// 	.close-action {
+// 		float: right;
 
-		> .round-button-mono {
-			color: $color-stroke;
-			border-color: $color-stroke;
+// 		> .round-button-mono {
+// 			color: $color-stroke;
+// 			border-color: $color-stroke;
 
-			> .material-icons {
-				color: $color-stroke;
-			}
-		}
-	}
+// 			> .material-icons {
+// 				color: $color-stroke;
+// 			}
+// 		}
+// 	}
 
-	.document-structure {
-		> .toc-controls {
-			margin: 0;
-			color: $color-gray;
+// 	.document-structure {
+// 		> .toc-controls {
+// 			margin: 0;
+// 			color: $color-gray;
 
-			> .round-button-mono {
-				color: $color-green;
-				border-color: $color-green;
+// 			> .round-button-mono {
+// 				color: $color-green;
+// 				border-color: $color-green;
 
-				> .material-icons {
-					color: $color-green;
-				}
-			}
+// 				> .material-icons {
+// 					color: $color-green;
+// 				}
+// 			}
 
-			> .disabled {
-				@extend .cursor-not-allowed;
-				color: $color-stroke;
-				border-color: $color-stroke;
+// 			> .disabled {
+// 				@extend .cursor-not-allowed;
+// 				color: $color-stroke;
+// 				border-color: $color-stroke;
 
-				> .material-icons {
-					color: $color-stroke;
-				}
-			}
-		}
+// 				> .material-icons {
+// 					color: $color-stroke;
+// 				}
+// 			}
+// 		}
 
-		.entries {
-			padding: 0;
-			list-style: none;
-			font-size: 13px;
-			overflow-x: hidden;
-			list-style-type: none;
-			margin: 20px 0 0;
-			font-family: $font-semibold;
+// 		.entries {
+// 			padding: 0;
+// 			list-style: none;
+// 			font-size: 13px;
+// 			overflow-x: hidden;
+// 			list-style-type: none;
+// 			margin: 20px 0 0;
+// 			font-family: $font-semibold;
 
-			.item {
-				padding: 4px 0;
-				text-overflow: ellipsis;
-				word-wrap: break-word;
-				white-space: nowrap;
-				overflow: hidden;
+// 			.item {
+// 				padding: 4px 0;
+// 				text-overflow: ellipsis;
+// 				word-wrap: break-word;
+// 				white-space: nowrap;
+// 				overflow: hidden;
 
-				> .link {
-					color: $color-gray;
+// 				> .link {
+// 					color: $color-gray;
 
-					&:hover {
-						color: $color-link;
-					}
-				}
+// 					&:hover {
+// 						color: $color-link;
+// 					}
+// 				}
 
-				> .selected {
-					color: $color-link;
-					font-weight: bold;
-				}
-			}
-		}
-	}
-}
+// 				> .selected {
+// 					color: $color-link;
+// 					font-weight: bold;
+// 				}
+// 			}
+// 		}
+// 	}
+// }

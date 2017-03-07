@@ -12,9 +12,4 @@
 import Ember from 'ember';
 
 export default Ember.Component.extend({
-    didReceiveAttrs() {
-        this._super(...arguments);
-        
-        this.set('rendererType', 'section/' + this.get('page.contentType') + '/type-renderer');
-    }
 });

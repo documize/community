@@ -1,10 +1,10 @@
 <div id="page-{{ page.id }}" class="is-a-page wysiwyg" data-id="{{ page.id }}" data-type="{{ page.contentType }}">
-	{{#unless editMode}}
+	{{#if editMode}}
+		{{document/document-editor document=document folder=folder page=page meta=meta onCancel=(action 'onCancelEdit') onAction=(action 'onSavePage')}}
+	{{else}}
 		{{document/page-heading tagName=page.tagName document=document folder=folder page=page isEditor=isEditor tabMode=tabMode
 			onEdit=(action 'onEdit') onSavePageAsBlock=(action 'onSavePageAsBlock')
 			onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onDeletePage')}}
 		{{section/base-renderer page=page}}
-	{{else}}
-		{{document/document-editor document=document folder=folder page=page meta=meta onCancel=(action 'onCancelEdit') onAction=(action 'onSavePage')}}
-	{{/unless}}
+	{{/if}}
 </div>

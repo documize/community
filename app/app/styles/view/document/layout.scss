@@ -1,3 +1,5 @@
+$document-sidebar-width: 400px;
+
 #wrapper {
     padding-right: 0;
 	margin-left: 60px;
@@ -8,11 +10,9 @@
 	background-color: $color-off-white;
 }
 
-$document-sidebar-width: 400px;
-
-#wrapper.toggled {
-    // padding-right: $document-sidebar-width;
-}
+// #wrapper.toggled {
+//    padding-right: $document-sidebar-width;
+// }
 
 #sidebar-wrapper {
     // z-index: 1000;
