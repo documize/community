@@ -1,9 +1,11 @@
 <div class="document-sidebar-panel">
 	<div class="title">Attachments</div>
 	<div class="document-sidebar-view-attachments">
-		<div id="upload-document-files" class="upload-document-files">
-			Drag-drop files or click to select files
-		</div>
+		{{#if isEditor}}
+			<div id="upload-document-files" class="upload-document-files">
+				Drag-drop files or click to select files
+			</div>
+		{{/if}}
 
 		<ul class="list">
 			{{#each files key="id" as |a index|}}
