@@ -112,18 +112,10 @@ export default Ember.Service.extend({
 		let documentSlug = is.null(targetDocument) ? "d" : targetDocument.get('slug');
 
 		// handle section link
-		if (link.linkType === "section") {
+		if (link.linkType === "section" || link.linkType === "tab") {
 			let options = {};
-			options['page'] = link.targetId;
+			options['pageId'] = link.targetId;
 			router.transitionTo('document', link.folderId, folderSlug, link.documentId, documentSlug, { queryParams: options });
-			return;
-		}
-
-		// handle tab link
-		if (link.linkType === "tab") {
-			let options = {};
-			options['mode'] = 'view';
-			router.transitionTo('document.section', link.targetId, { queryParams: options });
 			return;
 		}
 

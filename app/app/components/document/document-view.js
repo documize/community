@@ -114,7 +114,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		let level = 1;
 		let beforePage = this.get('beforePage');
 
-
 		if (is.not.null(beforePage)) {
 			level = beforePage.get('level');
 

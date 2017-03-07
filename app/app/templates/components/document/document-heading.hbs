@@ -1,5 +1,5 @@
 {{#unless editMode}}
-	<div class="{{if isEditor 'cursor-pointer'}}" onclick={{if isEditor (action 'toggleEdit')}}>
+	<div class="document-heading {{if isEditor 'cursor-pointer'}}" onclick={{if isEditor (action 'toggleEdit')}}>
 		<h1 class="doc-title">{{document.name}}</h1>
 		<div class="doc-excerpt">{{document.excerpt}}</div>
 	</div>

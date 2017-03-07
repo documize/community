@@ -11,31 +11,30 @@
 @media print {
 	.non-printable,
 	.zone-navigation,
-	.zone-sidebar {
+	.zone-sidebar,
+	#sidebar-wrapper,
+	.document-heading,
+	.edit-document-heading,
+	#sidebar-toggle,
+	.back-to-space,
+	.start-section,
+	.new-section-wizard {
 		display: none !important;
 	}
 
-	.zone-content {
+	#page-content-wrapper, #wrapper {
 		padding: 0 !important;
-	}
-
-	.document-view {
-		.attachment-zone,
-		.document-summary,
-		.document-tags,
-		.page-toolbar {
-			display: none !important;
-		}
-
-		.non-printable-message,
-		.print-title {
-			display: block !important;
-		}
-	}
-
-	.doc-layout {
-		padding: 0 !important;
-		box-shadow: none !important;
 		margin: 0 !important;
+	}
+
+	.non-printable-message,
+	.print-title {
+		display: block !important;
+	}
+
+	.is-a-tab, .is-a-page {
+		padding: 0 !important;
+		margin: 0 !important;
+		box-shadow: none !important;
 	}
 }

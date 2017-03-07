@@ -153,7 +153,6 @@ type Document struct {
 	Slug     string `json:"-"`
 	Tags     string `json:"tags"`
 	Template bool   `json:"template"`
-	Layout   string `json:"layout"`
 }
 
 // SetDefaults ensures on blanks and cleans.
@@ -163,8 +162,6 @@ func (d *Document) SetDefaults() {
 	if len(d.Title) == 0 {
 		d.Title = "Document"
 	}
-
-	d.Layout = "doc"
 }
 
 // Attachment represents an attachment to a document.
