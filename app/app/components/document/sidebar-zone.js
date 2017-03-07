@@ -30,13 +30,13 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 		name: "",
 		description: ""
 	},
-	currentTab: '',
+	tab: '',
 
 	init() {
 		this._super(...arguments);
 
-		if (is.empty(this.get('currentTab'))) {
-			this.set('currentTab', 'attachments');
+		if (is.empty(this.get('tab'))) {
+			this.set('tab', 'attachments');
 		}
 	},
 
@@ -65,7 +65,7 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 
     actions: {
 		onChangeTab(tab) {
-			this.set('currentTab', tab);
+			this.set('tab', tab);
 		},
 
 		onTagChange(tags) {

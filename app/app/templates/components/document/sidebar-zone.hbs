@@ -3,15 +3,15 @@
         <i class="material-icons color-gray">more_horiz</i>
     </div>
     <div class="margin-top-20"></div>
-    <div class="round-button-mono {{if (is-equal currentTab 'index') 'selected'}}" {{action 'onChangeTab' 'index'}}>
+    <div class="round-button-mono {{if (is-equal tab 'index') 'selected'}}" {{action 'onChangeTab' 'index'}}>
         <i class="material-icons">view_headline</i>
     </div>
     <div class="margin-top-20"></div>
-    <div class="round-button-mono {{if (is-equal currentTab 'attachments') 'selected'}}" {{action 'onChangeTab' 'attachments'}}>
+    <div class="round-button-mono {{if (is-equal tab 'attachments') 'selected'}}" {{action 'onChangeTab' 'attachments'}}>
         <i class="material-icons">attach_file</i>
     </div>
     <div class="margin-top-20"></div>
-    <div class="round-button-mono {{if (is-equal currentTab 'activity') 'selected'}}" {{action 'onChangeTab' 'activity'}}>
+    <div class="round-button-mono {{if (is-equal tab 'activity') 'selected'}}" {{action 'onChangeTab' 'activity'}}>
         <i class="material-icons">timeline</i>
     </div>
     <div class="margin-top-20"></div>
@@ -36,11 +36,11 @@
 </div>
 
 <div class="document-sidebar-wrapper">
-    {{#if (is-equal currentTab 'attachments')}}
+    {{#if (is-equal tab 'attachments')}}
         {{document/sidebar-view-attachments document=document isEditor=isEditor}}
     {{/if}}
 
-    {{#if (is-equal currentTab 'activity')}}
+    {{#if (is-equal tab 'activity')}}
         {{document/sidebar-view-activity document=document pages=pages isEditor=isEditor}}
     {{/if}}
 </div>

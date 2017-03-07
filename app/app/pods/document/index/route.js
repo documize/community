@@ -20,11 +20,15 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	queryParams: {
 		pageId: {
 			refreshModel: true
+		},
+		tab: {
+			refreshModel: false
 		}
 	},
 
 	beforeModel(transition) {
 		this.set('pageId', is.not.undefined(transition.queryParams.pageId) ? transition.queryParams.pageId : '');
+		this.set('tab', is.not.undefined(transition.queryParams.tab) ? transition.queryParams.tab : '');
 	},
 
 	model() {
