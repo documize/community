@@ -15,9 +15,4 @@ export default {
         Private: 2,
         Protected: 3
     },
-
-	DisplayLayout: {
-		DisplayLayoutDoc: "doc",
-		DisplayLayoutWiki: "wiki"
-	}
 };
