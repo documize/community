@@ -18,22 +18,17 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	sectionService: Ember.inject.service('section'),
 	editMode: false,
 
-	init() {
+	didReceiveAttrs() {
 		this._super(...arguments);
 
 		let page = this.get('page');
 
 		this.get('documentService').getPageMeta(page.get('documentId'), page.get('id')).then((meta) => {
 			this.set('meta', meta);
+			if (this.get('toEdit') === this.get('page.id') && this.get('isEditor')) {
+				this.send('onEdit');
+			}
 		});
-	},
-
-	didReceiveAttrs() {
-		this._super(...arguments);
-
-		if (this.get('toEdit') === this.get('page.id') && this.get('isEditor')) {
-			this.send('onEdit');
-		}
 	},
 
 	actions: {

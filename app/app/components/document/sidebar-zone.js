@@ -36,7 +36,7 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 		this._super(...arguments);
 
 		if (is.empty(this.get('tab'))) {
-			this.set('tab', 'attachments');
+			this.set('tab', 'index');
 		}
 	},
 
@@ -85,6 +85,18 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 		onPrintDocument() {
 			window.print();
 		},
+
+		onPageSequenceChange(changes) {
+			this.get('onPageSequenceChange')(changes);
+		},	
+
+		onPageLevelChange(changes) {
+			this.get('onPageLevelChange')(changes);
+		},	
+
+		onGotoPage(id) {
+			this.get('onGotoPage')(id);
+		},	
 
 		onUnpin() {
 			this.audit.record('unpinned-document');

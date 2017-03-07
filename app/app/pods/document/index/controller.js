@@ -175,7 +175,6 @@ export default Ember.Controller.extend(NotifierMixin, {
 			this.get('templateService').saveAsTemplate(this.get('model.document.id'), name, desc).then(function () {});
 		},
 
-		// to test
 		onPageSequenceChange(changes) {
 			this.get('documentService').changePageSequence(this.get('model.document.id'), changes).then(() => {
 				_.each(changes, (change) => {
@@ -193,7 +192,6 @@ export default Ember.Controller.extend(NotifierMixin, {
 			});
 		},
 
-		// to test
 		onPageLevelChange(changes) {
 			this.get('documentService').changePageLevel(this.get('model.document.id'), changes).then(() => {
 				_.each(changes, (change) => {
@@ -212,6 +210,11 @@ export default Ember.Controller.extend(NotifierMixin, {
 				this.set('model.pages', pages);
 				this.get('target.router').refresh();
 			});
+		},
+
+		// tbd
+		onGotoPage(id) {
+			this.set('pageId', id);
 		}
 	}
 });

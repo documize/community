@@ -16,7 +16,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	documentService: Ember.inject.service('document'),
 	folderService: Ember.inject.service('folder'),
 	userService: Ember.inject.service('user'),
-
+	
 	model(params) {
 		return Ember.RSVP.hash({
 			folders: this.modelFor('document').folders,

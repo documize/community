@@ -23,7 +23,6 @@ export default Ember.Component.extend(TooltipMixin, {
 	editMode: true,
 	codeSyntax: null,
 	codeEditor: null,
-
 	editorId: Ember.computed('page', function () {
 		let page = this.get('page');
 		return `markdown-editor-${page.id}`;
@@ -85,7 +84,6 @@ export default Ember.Component.extend(TooltipMixin, {
     willDestroyElement() {
         this.set('codeEditor', null);
 		this.destroyTooltips();
-		// $("#" + this.get('editorId')).off("keyup");
     },
 
 	getBody() {

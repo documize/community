@@ -31,13 +31,18 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	}),
 
 	didReceiveAttrs: function () {
+		this._super(...arguments);
+		
 		this.set('showToc', is.not.undefined(this.get('pages')) && this.get('pages').get('length') > 0);
+
 		if (is.not.null(this.get('page'))) {
 			this.send('onEntryClick', this.get('page'));
 		}
 	},
 
 	didRender: function () {
+		this._super(...arguments);
+		
 		if (this.session.authenticated) {
 			this.addTooltip(document.getElementById("toc-up-button"));
 			this.addTooltip(document.getElementById("toc-down-button"));
@@ -47,10 +52,14 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	},
 
 	didInsertElement() {
+		this._super(...arguments);
+		
 		this.eventBus.subscribe('documentPageAdded', this, 'onDocumentPageAdded');
 	},
 
 	willDestroyElement() {
+		this._super(...arguments);
+		
 		this.eventBus.unsubscribe('documentPageAdded');
 		this.destroyTooltips();
 	},
@@ -89,7 +98,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 			let pendingChanges = tocUtil.moveUp(state, pages, page);
 
 			if (pendingChanges.length > 0) {
-				this.attrs.changePageSequence(pendingChanges);
+				this.attrs.onPageSequenceChange(pendingChanges);
 
 				this.send('onEntryClick', this.get('page'));
 				this.audit.record("moved-page-up");
@@ -109,7 +118,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 			let pendingChanges = tocUtil.moveDown(state, pages, page);
 
 			if (pendingChanges.length > 0) {
-				this.attrs.changePageSequence(pendingChanges);
+				this.attrs.onPageSequenceChange(pendingChanges);
 
 				this.send('onEntryClick', this.get('page'));
 				this.audit.record("moved-page-down");
@@ -129,7 +138,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 			let pendingChanges = tocUtil.indent(state, pages, page);
 
 			if (pendingChanges.length > 0) {
-				this.attrs.changePageLevel(pendingChanges);
+				this.attrs.onPageLevelChange(pendingChanges);
 
 				this.showNotification("Indent");
 				this.audit.record("changed-page-sequence");
@@ -149,7 +158,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 			let pendingChanges = tocUtil.outdent(state, pages, page);
 
 			if (pendingChanges.length > 0) {
-				this.attrs.changePageLevel(pendingChanges);
+				this.attrs.onPageLevelChange(pendingChanges);
 
 				this.showNotification("Outdent");
 				this.audit.record("changed-page-sequence");
@@ -159,7 +168,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
 		onEntryClick(id) {
 			this.setState(id);
-			this.attrs.gotoPage(id);
+			this.attrs.onGotoPage(id);
 		}
 	}
 });

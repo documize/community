@@ -3,7 +3,8 @@
 	<div id="sidebar-wrapper">
 		{{document/sidebar-zone folders=model.folders folder=model.folder document=model.document
 			pages=model.pages sections=model.section links=model.links isEditor=model.isEditor tab=tab
-			onDocumentDelete=(action 'onDocumentDelete') onSaveTemplate=(action 'onSaveTemplate')}}
+			onDocumentDelete=(action 'onDocumentDelete') onSaveTemplate=(action 'onSaveTemplate')
+			onPageSequenceChange=(action 'onPageSequenceChange') onPageLevelChange=(action 'onPageLevelChange') onGotoPage=(action 'onGotoPage')}}
 	</div>
 
 	<div id="page-content-wrapper">

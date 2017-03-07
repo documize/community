@@ -36,6 +36,11 @@
 </div>
 
 <div class="document-sidebar-wrapper">
+    {{#if (is-equal tab 'index')}}
+		{{document/sidebar-view-index document=document folder=folder pages=pages page=page isEditor=isEditor
+			onPageSequenceChange=(action 'onPageSequenceChange') onPageLevelChange=(action 'onPageLevelChange') onGotoPage=(action 'onGotoPage')}}
+    {{/if}}
+
     {{#if (is-equal tab 'attachments')}}
         {{document/sidebar-view-attachments document=document isEditor=isEditor}}
     {{/if}}
