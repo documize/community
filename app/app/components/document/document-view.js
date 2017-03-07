@@ -111,9 +111,13 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	addSection(model) {
 		// calculate sequence of page (position in document)
 		let sequence = 0;
+		let level = 1;
 		let beforePage = this.get('beforePage');
 
+
 		if (is.not.null(beforePage)) {
+			level = beforePage.get('level');
+
 			// get any page before the beforePage so we can insert this new section between them
 			let index = _.findIndex(this.get('pages'), function(p) { return p.get('id') === beforePage.get('id'); });
 
@@ -129,6 +133,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		}
 
 		model.page.sequence = sequence;
+		model.page.level = level;
 
 		this.send('onHideSectionWizard');
 		this.set('pageId', '');
