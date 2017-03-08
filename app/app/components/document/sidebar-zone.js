@@ -35,7 +35,7 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 	init() {
 		this._super(...arguments);
 
-		if (is.empty(this.get('tab'))) {
+		if (is.empty(this.get('tab')) || is.undefined(this.get('tab'))) {
 			this.set('tab', 'index');
 		}
 	},

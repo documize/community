@@ -15,8 +15,8 @@
 	}
 
 	> .tip {
-		color: $color-input;
-		font-size: 1em;
+		color: $color-gray;
+		font-size: 0.9em;
 		margin: 5px 0 10px;
 		padding: 0;
 		text-align: left;
@@ -168,6 +168,8 @@
 }
 
 .input-transparent {
+	background-color: transparent !important;
+
 	> input, textarea {
 		background-color: transparent !important;
 	}

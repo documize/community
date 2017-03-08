@@ -30,7 +30,6 @@
 			overflow-x: hidden;
 			list-style-type: none;
 			margin: 20px 0 0;
-			font-family: $font-semibold;
 
 			.item {
 				padding: 4px 0;
@@ -40,7 +39,7 @@
 				overflow: hidden;
 
 				> .link {
-					color: $color-gray;
+					color: $color-off-black;
 
 					&:hover {
 						color: $color-link;
