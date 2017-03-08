@@ -790,6 +790,10 @@ func GetDocumentRevisions(w http.ResponseWriter, r *http.Request) {
 
 	revisions, _ := p.GetDocumentRevisions(documentID)
 
+	if len(revisions) == 0 {
+		revisions = []entity.Revision{}
+	}
+
 	payload, err := json.Marshal(revisions)
 
 	if err != nil {
@@ -831,6 +835,10 @@ func GetDocumentPageRevisions(w http.ResponseWriter, r *http.Request) {
 	}
 
 	revisions, _ := p.GetPageRevisions(pageID)
+
+	if len(revisions) == 0 {
+		revisions = []entity.Revision{}
+	}
 
 	payload, err := json.Marshal(revisions)
 

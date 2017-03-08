@@ -12,7 +12,7 @@
 import Ember from 'ember';
 
 export default Ember.Component.extend({
-	revision: {},
+	revision: null,
 	hasDiff: Ember.computed('diff', function () {
 		return this.get('diff').length > 0;
 	}),
@@ -20,38 +20,28 @@ export default Ember.Component.extend({
 	didReceiveAttrs() {
 		let revisions = this.get('revisions');
 
-		revisions.forEach((revision) => {
-			Ember.set(revision, 'deleted', revision.revisions === 0);
+		revisions.forEach((r) => {
+			Ember.set(r, 'deleted', r.revisions === 0);
+			Ember.set(r, 'label', `${r.created} - ${r.firstname} ${r.lastname} - ${r.title}`);
 		});
+
+		if (revisions.length > 0 && is.null(this.get('revision'))) {
+			this.send('onSelectRevision', revisions[0]);
+		}
 
 		this.set('revisions', revisions);
 	},
 
-	didInsertElement() {
-		this._super(...arguments);
-
-		this.eventBus.subscribe('resized', this, 'sizeSidebar');
-		this.sizeSidebar();
-	},
-
-	willDestroyElement() {
-		this.eventBus.unsubscribe('resized');
-	},
-
-	sizeSidebar() {
-		let size = $(window).height() - 200;
-		this.$('.document-history > .sidebar').css('height', size + "px");
-	},
-
 	actions: {
-		getDiff(revision) {
+		onSelectRevision(revision) {
 			this.set('revision', revision);
+
 			if (!revision.deleted) {
 				this.attrs.onFetchDiff(revision.pageId, revision.id);
 			}
 		},
 
-		rollback() {
+		onRollback() {
 			let revision = this.get('revision');
 			this.attrs.onRollback(revision.pageId, revision.id);
 		}

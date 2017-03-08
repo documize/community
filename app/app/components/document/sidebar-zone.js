@@ -51,18 +51,6 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 		this.set('pinState.newName', this.get('document.name').substring(0,3).toUpperCase());	
 	},
 
-	didRender() {
-		this._super(...arguments);
-	},
-
-	didInsertElement() {
-		this._super(...arguments);
-	},
-
-	willDestroyElement() {
-		this._super(...arguments);
-	},
-
     actions: {
 		onChangeTab(tab) {
 			this.set('tab', tab);

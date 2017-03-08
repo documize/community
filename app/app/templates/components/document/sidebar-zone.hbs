@@ -15,6 +15,18 @@
         <div class="round-button-mono {{if (is-equal tab 'activity') 'selected'}}" {{action 'onChangeTab' 'activity'}}>
             <i class="material-icons">timeline</i>
         </div>
+        <div class="margin-top-20"></div>
+        <div class="round-button-mono {{if (is-equal tab 'feedback') 'feedback'}}" {{action 'onChangeTab' 'feedback'}}>
+            <i class="material-icons">chat_bubble</i>
+        </div>
+        <div class="margin-top-20"></div>
+        <div class="round-button-mono {{if (is-equal tab 'actions') 'selected'}}" {{action 'onChangeTab' 'actions'}}>
+            <i class="material-icons">person</i>
+        </div>
+        <div class="margin-top-20"></div>
+        <div class="round-button-mono {{if (is-equal tab 'share') 'selected'}}" {{action 'onChangeTab' 'share'}}>
+            <i class="material-icons">share</i>
+        </div>
     {{/if}}
 </div>
 
@@ -38,6 +50,18 @@
     {{#if (is-equal tab 'activity')}}
         {{document/sidebar-view-activity document=document pages=pages isEditor=isEditor}}
     {{/if}}
+
+    {{#if (is-equal tab 'feedback')}}
+        {{enterprise/sidebar-view-feedback document=document isEditor=isEditor}}
+    {{/if}}
+
+    {{#if (is-equal tab 'actions')}}
+        {{enterprise/sidebar-view-actions document=document folder=folder isEditor=isEditor}}
+    {{/if}}
+
+    {{#if (is-equal tab 'share')}}
+        {{enterprise/sidebar-view-share document=document isEditor=isEditor}}
+    {{/if}}
 </div>
 
 {{#dropdown-menu target="sidebar-zone-more-button" position="bottom right" open="click" onOpenCallback=(action 'onMenuOpen') onCloseCallback=(action 'onMenuOpen')}}
@@ -48,13 +72,20 @@
             {{else}}
                 <li class="item" id="pin-document-button">Pin</li>
             {{/if}}        
+            <li class="item" id="pin-document-button">
+                {{#link-to 'document.history'}}History{{/link-to}}
+            </li>
+            <li class="divider"></li>
+        {{/if}}
+
+        {{#if isEditor}}
+            <li class="item" id="save-template-button">Template</li>
+            <li class="divider"></li>
         {{/if}}
 
         <li class="item" id="print-document-button" {{action 'onPrintDocument'}}>Print</li>
 
         {{#if isEditor}}
-            <li class="divider"></li>
-            <li class="item" id="save-template-button">Template</li>
             <li class="divider"></li>
             <li class="item danger" id="delete-document-button">Delete</li>
         {{/if}}

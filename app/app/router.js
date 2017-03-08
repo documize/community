@@ -38,6 +38,9 @@ export default Router.map(function () {
 		this.route('block', {
 			path: 'block/:block_id'
 		});
+		this.route('history', {
+			path: 'history'
+		});
 	});
 
 	this.route('customize', {
