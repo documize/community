@@ -21,11 +21,12 @@ export default Ember.Controller.extend(NotifierMixin, {
 				this.get('model.folder.id'),
 				this.get('model.folder.slug'),
 				this.get('model.document.id'),
-				this.get('model.document.slug'));
+				this.get('model.document.slug'),
+				{ queryParams: { pageId: this.get('model.page.id') }});
 		},
 
 		onAction(page, meta) {
-			this.showNotification("Saving");
+			this.showNotification("Saved");
 
 			let model = {
 				page: page.toJSON({ includeId: true }),

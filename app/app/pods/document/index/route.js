@@ -17,18 +17,10 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	linkService: Ember.inject.service('link'),
 	folderService: Ember.inject.service('folder'),
 	userService: Ember.inject.service('user'),
-	queryParams: {
-		pageId: {
-			refreshModel: true
-		},
-		tab: {
-			refreshModel: false
-		}
-	},
 
 	beforeModel(transition) {
 		this.set('pageId', is.not.undefined(transition.queryParams.pageId) ? transition.queryParams.pageId : '');
-		this.set('tab', is.not.undefined(transition.queryParams.tab) ? transition.queryParams.tab : '');
+		this.set('tab', is.not.undefined(transition.queryParams.tab) ? transition.queryParams.tab : 'index');
 	},
 
 	model() {
@@ -40,11 +32,12 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 			folders: this.modelFor('document').folders,
 			folder: this.modelFor('document').folder,
 			document: this.modelFor('document').document,
-			pageId: this.get('pageId'),
-			isEditor: this.get('folderService').get('canEditCurrentFolder'),
 			pages: this.get('documentService').getPages(this.modelFor('document').document.get('id')),
 			links: this.modelFor('document').links,
-			sections: this.modelFor('document').sections
+			sections: this.modelFor('document').sections,
+			pageId: this.get('pageId'),
+			tab: this.get('tab'),
+			isEditor: this.get('folderService').get('canEditCurrentFolder')
 		});
 	}
 });

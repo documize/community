@@ -17,11 +17,11 @@ export default Ember.Controller.extend(NotifierMixin, {
 			this.audit.record("restored-page");
 
 			this.get('documentService').rollbackPage(this.get('model.document.id'), pageId, revisionId).then(() => {
-				this.transitionToRoute('document', {
-					queryParams: {
-						page: pageId
-					}
-				});
+				this.transitionToRoute('document.index',
+					this.get('model.folder.id'),
+					this.get('model.folder.slug'),
+					this.get('model.document.id'),
+					this.get('model.document.slug'));
 			});
 		}
 	}

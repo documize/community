@@ -18,7 +18,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	document: {},
 	folder: {},
 	pages: [],
-	page: "",
+	currentPageId: "",
 	state: {
 		actionablePage: false,
 		upDisabled: true,
@@ -35,8 +35,8 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		
 		this.set('showToc', is.not.undefined(this.get('pages')) && this.get('pages').get('length') > 0);
 
-		if (is.not.null(this.get('page'))) {
-			this.send('onEntryClick', this.get('page'));
+		if (is.not.null(this.get('currentPageId'))) {
+			this.send('onEntryClick', this.get('currentPageId'));
 		}
 	},
 
@@ -71,7 +71,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	// Controls what user can do with the toc (left sidebar).
 	// Identifies the target pages.
 	setState(pageId) {
-		this.set('page', pageId);
+		this.set('currentPageId', pageId);
 
 		let toc = this.get('pages');
 		let page = _.findWhere(toc, { id: pageId });
@@ -94,13 +94,13 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
 			let state = this.get('state');
 			let pages = this.get('pages');
-			let page = _.findWhere(pages, { id: this.get('page') });
+			let page = _.findWhere(pages, { id: this.get('currentPageId') });
 			let pendingChanges = tocUtil.moveUp(state, pages, page);
 
 			if (pendingChanges.length > 0) {
 				this.attrs.onPageSequenceChange(pendingChanges);
 
-				this.send('onEntryClick', this.get('page'));
+				this.send('onEntryClick', this.get('currentPageId'));
 				this.audit.record("moved-page-up");
 				this.showNotification("Moved up");
 			}
@@ -114,13 +114,13 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
 			let state = this.get('state');
 			var pages = this.get('pages');
-			var page = _.findWhere(pages, { id: this.get('page') });
+			var page = _.findWhere(pages, { id: this.get('currentPageId') });
 			let pendingChanges = tocUtil.moveDown(state, pages, page);
 
 			if (pendingChanges.length > 0) {
 				this.attrs.onPageSequenceChange(pendingChanges);
 
-				this.send('onEntryClick', this.get('page'));
+				this.send('onEntryClick', this.get('currentPageId'));
 				this.audit.record("moved-page-down");
 				this.showNotification("Moved down");
 			}
@@ -134,7 +134,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
 			let state = this.get('state');
 			var pages = this.get('pages');
-			var page = _.findWhere(pages, { id: this.get('page') });
+			var page = _.findWhere(pages, { id: this.get('currentPageId') });
 			let pendingChanges = tocUtil.indent(state, pages, page);
 
 			if (pendingChanges.length > 0) {
@@ -142,7 +142,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
 				this.showNotification("Indent");
 				this.audit.record("changed-page-sequence");
-				this.send('onEntryClick', this.get('page'));
+				this.send('onEntryClick', this.get('currentPageId'));
 			}
 		},
 
@@ -154,7 +154,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
 			let state = this.get('state');
 			var pages = this.get('pages');
-			var page = _.findWhere(pages, { id: this.get('page') });
+			var page = _.findWhere(pages, { id: this.get('currentPageId') });
 			let pendingChanges = tocUtil.outdent(state, pages, page);
 
 			if (pendingChanges.length > 0) {
@@ -162,7 +162,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
 				this.showNotification("Outdent");
 				this.audit.record("changed-page-sequence");
-				this.send('onEntryClick', this.get('page'));
+				this.send('onEntryClick', this.get('currentPageId'));
 			}
 		},
 

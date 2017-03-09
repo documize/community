@@ -41,6 +41,7 @@ module.exports = function (defaults) {
 		}
 	});
 
+	app.import('vendor/documize.js');
 	app.import('vendor/dropzone.js');
 	app.import('vendor/is.js');
 	app.import('vendor/md5.js');

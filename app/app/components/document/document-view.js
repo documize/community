@@ -37,13 +37,13 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
 	didRender() {
 		this._super(...arguments);
-		
-		this.contentLinkHandler();
 
-		let self = this;
-		$(".tooltipped").each(function(i, el) {
-			self.addTooltip(el);
-		});
+		let jumpTo = this.get('pageId');
+		if (is.not.empty(jumpTo) && is.not.undefined(jumpTo) && !$("#page-" + jumpTo).inView()) {
+			$("#page-" + jumpTo).velocity("scroll", { duration: 250, offset: -100 });
+		}		
+
+		this.contentLinkHandler();
 	},
 
 	didInsertElement() {
@@ -57,15 +57,10 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 			$(this).find('.start-button').velocity("transition.slideUpOut", {duration: 300});
 		} });
 
-		let jumpTo = this.get('pageId');
-		if (is.not.empty(jumpTo)) {
-			let self = this;
-			$("#page-" + jumpTo).velocity("scroll", { duration: 250, offset: -100, complete:
-				function() {
-					self.set('pageId', '');
-				}
-			});
-		}		
+		let self = this;
+		$(".tooltipped").each(function(i, el) {
+			self.addTooltip(el);
+		});
 	},
 
 	willDestroyElement() {

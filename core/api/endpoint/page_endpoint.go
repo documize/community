@@ -1090,6 +1090,7 @@ func CopyPage(w http.ResponseWriter, r *http.Request) {
 	newPageID := util.UniqueID()
 	page.RefID = newPageID
 	page.Level = 1
+	page.Sequence = 0
 	page.DocumentID = targetID
 	page.UserID = p.Context.UserID
 	pageMeta.DocumentID = targetID

@@ -16,11 +16,12 @@
 		> .canvas {
 			padding: 0;
 		}
+	}
 
-		.revision-picker {
-			width: 300px;
-			float: left;
-			margin-bottom: 30px;
-		}
+	.revision-picker {
+		width: 300px;
+		float: left;
+		margin-top: 10px;
+		display: inline-block;
 	}
 }

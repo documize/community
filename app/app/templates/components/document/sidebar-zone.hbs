@@ -15,18 +15,6 @@
         <div class="round-button-mono {{if (is-equal tab 'activity') 'selected'}}" {{action 'onChangeTab' 'activity'}}>
             <i class="material-icons">timeline</i>
         </div>
-        <div class="margin-top-20"></div>
-        <div class="round-button-mono {{if (is-equal tab 'feedback') 'feedback'}}" {{action 'onChangeTab' 'feedback'}}>
-            <i class="material-icons">chat_bubble</i>
-        </div>
-        <div class="margin-top-20"></div>
-        <div class="round-button-mono {{if (is-equal tab 'actions') 'selected'}}" {{action 'onChangeTab' 'actions'}}>
-            <i class="material-icons">person</i>
-        </div>
-        <div class="margin-top-20"></div>
-        <div class="round-button-mono {{if (is-equal tab 'share') 'selected'}}" {{action 'onChangeTab' 'share'}}>
-            <i class="material-icons">share</i>
-        </div>
     {{/if}}
 </div>
 
@@ -49,18 +37,6 @@
 
     {{#if (is-equal tab 'activity')}}
         {{document/sidebar-view-activity document=document pages=pages isEditor=isEditor}}
-    {{/if}}
-
-    {{#if (is-equal tab 'feedback')}}
-        {{enterprise/sidebar-view-feedback document=document isEditor=isEditor}}
-    {{/if}}
-
-    {{#if (is-equal tab 'actions')}}
-        {{enterprise/sidebar-view-actions document=document folder=folder isEditor=isEditor}}
-    {{/if}}
-
-    {{#if (is-equal tab 'share')}}
-        {{enterprise/sidebar-view-share document=document isEditor=isEditor}}
     {{/if}}
 </div>
 
@@ -93,22 +69,24 @@
 {{/dropdown-menu}}
 
 {{#if session.authenticated}}
+    {{#if menuOpen}}
+        {{#unless pinState.isPinned}}
+            {{#dropdown-dialog target="pin-document-button" position="bottom right" button="Pin" color="flat-green" onAction=(action 'onPin') focusOn="pin-document-name" }}
+                <div class="input-control">
+                    <label>Pin Document</label>
+                    <div class="tip">A 3 or 4 character name</div>
+                    {{input type='text' id="pin-document-name" value=pinState.newName}}
+                </div>
+            {{/dropdown-dialog}}
+        {{/unless}}
+    {{/if}}
+
     {{#if isEditor}}
         {{#if menuOpen}}
             {{#dropdown-dialog target="delete-document-button" position="bottom right" button="Delete" color="flat-red" onAction=(action 'onDeleteDocument')}}
                 <p>Are you sure you want to delete this document?</p>
                 <p>There is no undo, so be careful.</p>
             {{/dropdown-dialog}}
-
-            {{#unless pinState.isPinned}}
-                {{#dropdown-dialog target="pin-document-button" position="bottom right" button="Pin" color="flat-green" onAction=(action 'onPin') focusOn="pin-document-name" }}
-                    <div class="input-control">
-                        <label>Pin Document</label>
-                        <div class="tip">A 3 or 4 character name</div>
-                        {{input type='text' id="pin-document-name" value=pinState.newName}}
-                    </div>
-                {{/dropdown-dialog}}
-            {{/unless}}
 
             {{#dropdown-dialog target="save-template-button" position="bottom right" button="Save as Template" color="flat-green" onAction=(action 'onSaveTemplate') focusOn="new-template-name" }}
                 <div class="input-control">

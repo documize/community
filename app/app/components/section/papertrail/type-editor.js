@@ -74,7 +74,6 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 					self.set('authenticated', true);
 					self.set('items', response);
 					self.set('config.APIToken', '********'); // reset the api token once it has been sent to the host
-					console.log("auth token OK");
 
 					self.get('sectionService').fetch(page, "options", config)
 						.then(function (response) {

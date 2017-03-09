@@ -19,6 +19,9 @@ export default Ember.Controller.extend(NotifierMixin, {
 	folder: {},
 	pages: [],
 	toggled: false,
+	queryParams: ['pageId', 'tab'],
+  	pageId: '',
+  	tab: 'index',
 
 	actions: {
 		toggleSidebar() {
@@ -212,7 +215,6 @@ export default Ember.Controller.extend(NotifierMixin, {
 			});
 		},
 
-		// tbd
 		onGotoPage(id) {
 			this.set('pageId', id);
 		}

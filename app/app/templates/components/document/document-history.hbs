@@ -1,11 +1,14 @@
+{{ui-select tagName="span" class="revision-picker" content=revisions action=(action 'onSelectRevision') optionValuePath="id" optionLabelPath="label"}}
+
+<div id="restore-history-button" class="regular-button button-green pull-right">Restore</div>
+{{#dropdown-dialog target="restore-history-button" position="bottom right" button="Restore" color="flat-green" onAction=(action 'onRollback')}}
+	<p>Are you sure you want to roll back to this version?</p>
+{{/dropdown-dialog}}
+<div class="clearfix" />
+<div class="margin-bottom-50" />
+
 <div class="diff-zone">
-	{{ui-select tagName="div" class="revision-picker" content=revisions action=(action 'onSelectRevision') optionValuePath="id" optionLabelPath="label"}}
 	{{#if hasDiff}}
-		<div id="restore-history-button" class="regular-button button-green pull-right">Restore</div>
-		{{#dropdown-dialog target="restore-history-button" position="bottom right" button="Restore" color="flat-green" onAction=(action 'onRollback')}}
-			<p>Are you sure you want to roll back to this version?</p>
-		{{/dropdown-dialog}}
-		<div class="clearfix" />
 		<div class="is-a-page wysiwyg">
 			{{{diff}}}
 		</div>
