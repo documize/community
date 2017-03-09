@@ -40,6 +40,7 @@ export default Ember.Controller.extend(NotifierMixin, {
 
 				// refresh data if copied to same document
 				if (documentId === targetDocumentId) {
+					this.set('pageId', '');
 					this.get('target.router').refresh();
 				}
 			});
@@ -62,7 +63,7 @@ export default Ember.Controller.extend(NotifierMixin, {
 			};
 
 			this.get('documentService').updatePage(documentId, page.get('id'), model).then(() => {
-				this.get('target.router').refresh();
+				this.set('pageId', page.get('id'));
 			});
 
 			this.audit.record("edited-page");
@@ -93,6 +94,8 @@ export default Ember.Controller.extend(NotifierMixin, {
 				});
 			}
 
+			this.set('pageId', '');
+
 			if (deleteChildren) {
 				// nuke of page tree
 				pendingChanges.push({
@@ -109,7 +112,11 @@ export default Ember.Controller.extend(NotifierMixin, {
 					}
 
 					this.set('model.pages', _.sortBy(pages, "sequence"));
-					this.get('target.router').refresh();
+					this.transitionToRoute('document.index',
+						this.get('model.folder.id'),
+						this.get('model.folder.slug'),
+						this.get('model.document.id'),
+						this.get('model.document.slug'));
 				});
 			} else {
 				// page delete followed by re-leveling child pages
@@ -128,6 +135,7 @@ export default Ember.Controller.extend(NotifierMixin, {
 				this.get('documentService').addPage(this.get('model.document.id'), data).then((newPage) => {
 					let data = this.get('store').normalize('page', newPage);
 					this.get('store').push(data);
+					this.set('pageId', newPage.id);
 
 					this.get('documentService').getPages(this.get('model.document.id')).then((pages) => {
 						this.set('model.pages', pages);
@@ -216,7 +224,9 @@ export default Ember.Controller.extend(NotifierMixin, {
 		},
 
 		onGotoPage(id) {
-			this.set('pageId', id);
+			if (this.get('pageId') !== id && id !== '') {
+				this.set('pageId', id);
+			}
 		}
 	}
 });

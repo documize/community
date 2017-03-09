@@ -198,10 +198,6 @@ func (p *Page) SetDefaults() {
 		p.ContentType = "wysiwyg"
 	}
 
-	// if p.IsTabType() {
-	// 	p.Sequence = 0
-	// }
-
 	p.Title = strings.TrimSpace(p.Title)
 }
 

@@ -18,11 +18,6 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	folderService: Ember.inject.service('folder'),
 	userService: Ember.inject.service('user'),
 
-	beforeModel(transition) {
-		this.set('pageId', is.not.undefined(transition.queryParams.pageId) ? transition.queryParams.pageId : '');
-		this.set('tab', is.not.undefined(transition.queryParams.tab) ? transition.queryParams.tab : 'index');
-	},
-
 	model() {
 		let document = this.modelFor('document').document;
 		this.browser.setTitle(document.get('name'));
@@ -35,8 +30,6 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 			pages: this.get('documentService').getPages(this.modelFor('document').document.get('id')),
 			links: this.modelFor('document').links,
 			sections: this.modelFor('document').sections,
-			pageId: this.get('pageId'),
-			tab: this.get('tab'),
 			isEditor: this.get('folderService').get('canEditCurrentFolder')
 		});
 	}

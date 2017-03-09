@@ -43,7 +43,7 @@ export default Ember.Controller.extend(NotifierMixin, {
 					this.get('model.folder.slug'),
 					this.get('model.document.id'),
 					this.get('model.document.slug'), 
-					{ queryParams: { pageId: page.id }});
+					{ queryParams: { pageId: page.get('id')}});
 			});
 		},
 	}

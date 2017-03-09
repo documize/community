@@ -225,7 +225,7 @@
 }
 
 .button-black {
-	border: 1px solid $color-stroke;
+	border: none;
     background-color: $color-off-black;
 	color: $color-white;
     @include button-hover-state($color-black);

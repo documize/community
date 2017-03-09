@@ -37,6 +37,7 @@
 				word-wrap: break-word;
 				white-space: nowrap;
 				overflow: hidden;
+				@extend .no-select;
 
 				> .link {
 					color: $color-off-black;

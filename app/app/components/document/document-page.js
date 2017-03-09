@@ -72,6 +72,8 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 				return;
 			}
 
+			this.get('toEdit', '');
+			// this.set('pageId', this.get('page.id'));
 			this.set('editMode', true);
 		},
 

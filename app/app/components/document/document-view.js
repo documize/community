@@ -33,15 +33,17 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		this._super(...arguments);
 		
 		this.loadBlocks();
+
+		  Ember.run.schedule('afterRender', () => {
+			let jumpTo = "#page-" + this.get('pageId');
+			if (!$(jumpTo).inView()) {
+				$(jumpTo).velocity("scroll", { duration: 250, offset: -100 });
+			}
+		});		
 	},
 
 	didRender() {
 		this._super(...arguments);
-
-		let jumpTo = this.get('pageId');
-		if (is.not.empty(jumpTo) && is.not.undefined(jumpTo) && !$("#page-" + jumpTo).inView()) {
-			$("#page-" + jumpTo).velocity("scroll", { duration: 250, offset: -100 });
-		}		
 
 		this.contentLinkHandler();
 	},
@@ -130,7 +132,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		model.page.level = level;
 
 		this.send('onHideSectionWizard');
-		this.set('pageId', '');
 
 		return this.get('onInsertSection')(model);
 	},
@@ -179,6 +180,8 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 			if (is.undefined(page)) {
 				page = { id: '0' };
 			}
+
+			this.set('pageId', '');
 
 			let beforePage = this.get('beforePage');
 			if (is.not.null(beforePage) && $("#new-section-wizard").is(':visible') && beforePage.get('id') === page.id) {
@@ -241,8 +244,12 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
 			const promise = this.addSection(model);
 			promise.then((id) => {
+				this.set('pageId', id);
+
 				if (model.page.pageType === 'section') {
 					this.set('toEdit', id);
+				} else {
+					this.set('toEdit', '');
 				}
 			});
 		},
@@ -279,8 +286,16 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
 			this.audit.record("added-content-block-" + block.get('contentType'));
 
+			const promise = this.addSection(model);
+			promise.then((id) => {
+				this.set('pageId', id);
 
-			this.addSection(model);
+				// if (model.page.pageType === 'section') {
+				// 	this.set('toEdit', id);
+				// } else {
+				// 	this.set('toEdit', '');
+				// }
+			});
 		},
 
 		onDeleteBlock(id) {

@@ -46,6 +46,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
 	actions: {
 		onExpand() {
+			this.set('pageId', this.get('page.id'));
 			this.set('expanded', !this.get('expanded'));
 		},
 
