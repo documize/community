@@ -10,22 +10,19 @@
 // https://documize.com
 
 $.fn.inView = function(){
-    let win = $(window);
-    let obj = $(this);
+    var win = $(window);
+    var obj = $(this);
 
     // trap for no object
     if (obj.length === 0) {
         return false;
     }
 
-    // the top Scroll Position in the page
-    let scrollPosition = win.scrollTop();
+    var scrollPosition = win.scrollTop();
 
-    // the end of the visible area in the page, starting from the scroll position
-    let visibleArea = win.scrollTop() + win.height();
+    var visibleArea = win.scrollTop() + win.height();
 
-    // we check to see if the start of object is in view
-    let objPos = obj.offset().top;// + obj.outerHeight();
+    var objPos = obj.offset().top;// + obj.outerHeight();
     
 	return(visibleArea >= objPos && scrollPosition <= objPos ? true : false);
 };

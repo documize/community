@@ -6,6 +6,7 @@
 		"-Promise",
 		"moment",
 		"$",
+		"jQuery",
 		"_",
 		"is",
 		"Mousetrap",
