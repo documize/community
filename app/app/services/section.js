@@ -67,6 +67,9 @@ export default BaseService.extend({
 			}
 
 			return pages;
+		}).catch((/*error*/) => {
+			// we ignore any error to cater for anon users who don't
+			// have permissions to perform refresh
 		});
 	},
 

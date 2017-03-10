@@ -211,6 +211,9 @@ export default Ember.Service.extend({
 	getMeta(documentId) {
 		return this.get('ajax').request(`documents/${documentId}/meta`, {
 			method: "GET"
+		}).then((response) => {
+			return response;
+		}).catch(() => {
 		});
 	},
 
@@ -265,6 +268,7 @@ export default Ember.Service.extend({
 		}).then((response) => {
 			let data = this.get('store').normalize('page-meta', response);
 			return this.get('store').push(data);
+		}).catch(() => {
 		});
 	},
 
