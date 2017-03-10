@@ -39,7 +39,7 @@ export default Ember.Component.extend(TooltipMixin, {
         cleanBody = cleanBody.replace('<pre class="code-mirror cm-s-solarized cm-s-dark" data-lang="', "");
         let startPos = cleanBody.indexOf('">');
         let syntax = {
-            mode: "html",
+            mode: "htmlmixed",
             name: "HTML"
         };
 
@@ -53,10 +53,7 @@ export default Ember.Component.extend(TooltipMixin, {
         let opts = [];
 
         _.each(_.sortBy(CodeMirror.modeInfo, 'name'), function(item) {
-            let i = {
-                mode: item.mode,
-                name: item.name
-            };
+            let i = { mode: item.mode, name: item.name };
             opts.pushObject(i);
 
             if (item.mode === syntax) {
@@ -68,7 +65,7 @@ export default Ember.Component.extend(TooltipMixin, {
 
         // default check
         if (is.null(this.get("codeSyntax"))) {
-            this.set("codeSyntax", opts.findBy("mode", "html"));
+            this.set("codeSyntax", opts.findBy("mode", "htmlmixed"));
         }
     },
 

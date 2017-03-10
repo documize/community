@@ -34,13 +34,11 @@ export default Ember.Component.extend({
         }
 
         _.each(_.sortBy(CodeMirror.modeInfo, 'name'), (item) => {
-            let i = {
-                mode: item.mode,
-                name: item.name
-            };
+            let i = { mode: item.mode, name: item.name };
 
             if (item.mode === this.get('codeSyntax')) {
                 this.set('codeSyntax', i);
+        console.log(this.get('codeSyntax'));
             }
         });
     },
@@ -69,6 +67,7 @@ export default Ember.Component.extend({
 
         let syntax = this.get("codeSyntax");
         if (is.not.undefined(syntax)) {
+            console.log(syntax);
             CodeMirror.autoLoadMode(editor, syntax.mode);
             editor.setOption("mode", syntax.mode);
         }
