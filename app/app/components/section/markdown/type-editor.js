@@ -79,6 +79,7 @@ export default Ember.Component.extend(TooltipMixin, {
 
 	didInsertElement() {
 		this.attachEditor();
+		this.addTooltip(document.getElementById(this.get('tooltipId')));
     },
 
     willDestroyElement() {
@@ -90,14 +91,10 @@ export default Ember.Component.extend(TooltipMixin, {
 		return this.get('codeEditor').getDoc().getValue();
 	},
 
-	didRender() {
-		this.addTooltip(document.getElementById(this.get('tooltipId')));
-	},
-
 	attachEditor() {
 		var editor = CodeMirror.fromTextArea(document.getElementById(this.get('editorId')), {
-            theme: "solarized light",
-            lineNumbers: true,
+            theme: "default",
+            lineNumbers: false,
             lineWrapping: true,
             indentUnit: 4,
             tabSize: 4,
@@ -128,6 +125,7 @@ export default Ember.Component.extend(TooltipMixin, {
 				if (this.get('editMode')) {
 					this.attachEditor();
 				} else {
+					this.set('pageBody',this.getBody());
 					let md = window.markdownit({ linkify: true });
 					let result = md.render(this.getBody());
 

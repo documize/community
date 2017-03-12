@@ -71,7 +71,7 @@ export default Ember.Component.extend(TooltipMixin, {
 
     didInsertElement() {
         var editor = CodeMirror.fromTextArea(document.getElementById(this.get('editorId')), {
-            theme: "solarized dark",
+            theme: "material",
             lineNumbers: true,
             lineWrapping: true,
             indentUnit: 4,

@@ -6,11 +6,16 @@
 	<style>
 		.CodeMirror {
 			height: auto !important;
+			font-family: Helvetica;
 			font-size: 17px;
+		}
+
+		.CodeMirror pre {
+			padding: 0;
 		}
 	</style>
 
-	<div class="section-code-editor">
+	<div class="section-markdown-editor">
 		{{#if editMode}}
 			{{focus-textarea value=pageBody id=editorId class="mousetrap"}}
 		{{else}}

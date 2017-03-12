@@ -52,7 +52,7 @@ export default Ember.Component.extend({
         let elem = `page-${page.id}-code`;
 
         var editor = CodeMirror.fromTextArea(document.getElementById(elem), {
-            theme: "solarized dark",
+            theme: "material",
             lineNumbers: true,
             lineWrapping: true,
             indentUnit: 4,
