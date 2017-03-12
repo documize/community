@@ -1,13 +1,2 @@
 {{layout/zone-navigation}}
-
-{{#layout/zone-sidebar}}
-	{{document/document-sidebar document=model.document folder=model.folder pages=model.pages page=model.page isEditor=model.isEditor sections=model.sections
-		onAddSection=(action 'onAddSection') onInsertBlock=(action 'onInsertBlock') onDeleteBlock=(action 'onDeleteBlock') changePageSequence=(action 'onPageSequenceChange') changePageLevel=(action 'onPageLevelChange') gotoPage=(action 'gotoPage')}}
-{{/layout/zone-sidebar}}
-
-{{#layout/zone-content}}
-	{{document/document-toolbar document=model.document pages=model.pages tabs=model.tabs folder=model.folder isEditor=model.isEditor
-		onSaveTemplate=(action 'onSaveTemplate') onSaveMeta=(action 'onSaveMeta')  onDocumentDelete=(action 'onDocumentDelete')}}
-
-		{{outlet}}
-{{/layout/zone-content}}
+{{outlet}}

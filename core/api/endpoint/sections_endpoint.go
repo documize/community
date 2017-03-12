@@ -12,6 +12,7 @@
 package endpoint
 
 import (
+	"database/sql"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
@@ -120,6 +121,10 @@ func RefreshSections(w http.ResponseWriter, r *http.Request) {
 	for _, pm := range meta {
 		// Grab the page because we need content type and
 		page, err2 := p.GetPage(pm.PageID)
+
+		if err2 == sql.ErrNoRows {
+			continue
+		}
 
 		if err2 != nil {
 			writeGeneralSQLError(w, method, err2)
@@ -315,9 +320,15 @@ func UpdateBlock(w http.ResponseWriter, r *http.Request) {
 	method := "UpdateBlock"
 	p := request.GetPersister(r)
 
+	params := mux.Vars(r)
+	blockID := params["blockID"]
+	if len(blockID) == 0 {
+		writeMissingDataError(w, method, "blockID")
+		return
+	}
+
 	defer utility.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
-
 	if err != nil {
 		writeBadRequestError(w, method, "Bad payload")
 		return
@@ -329,6 +340,8 @@ func UpdateBlock(w http.ResponseWriter, r *http.Request) {
 		writePayloadError(w, method, err)
 		return
 	}
+
+	b.RefID = blockID
 
 	if !p.CanUploadDocument(b.LabelID) {
 		writeForbiddenError(w)

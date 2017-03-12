@@ -1,3 +1,5 @@
-{{#section/base-editor document=document folder=folder page=page tip="Concise name that describes the table" isDirty=(action 'isDirty') onCancel=(action 'onCancel') onAction=(action 'onAction')}}
-	{{textarea value=pageBody id="table-editor" class="mousetrap"}}
-{{/section/base-editor}}
+{{#section/base-editor-inline document=document folder=folder page=page isDirty=(action 'isDirty') onCancel=(action 'onCancel') onAction=(action 'onAction')}}
+	<div class="table-editor-wrapper wysiwyg">
+		{{textarea value=pageBody id=editorId class="mousetrap"}}
+	</div>
+{{/section/base-editor-inline}}

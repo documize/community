@@ -17,50 +17,20 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	linkService: Ember.inject.service('link'),
 	folderService: Ember.inject.service('folder'),
 	userService: Ember.inject.service('user'),
-	queryParams: {
-		page: {
-			refreshModel: false
-		}
-	},
-
-	beforeModel(transition) {
-		this.set('pageId', is.not.undefined(transition.queryParams.page) ? transition.queryParams.page : "");
-		this.set('folderId', this.paramsFor('document').folder_id);
-		this.set('documentId', this.paramsFor('document').document_id);
-
-		let folders = this.get('store').peekAll('folder');
-		let folder = this.get('store').peekRecord('folder', this.get('folderId'));
-		let document = this.get('store').peekRecord('document', this.get('documentId'));
-
-		this.set('document', document);
-		this.set('folders', folders);
-		this.set('folder', folder);
-
-		return new Ember.RSVP.Promise((resolve) => {
-			this.get('documentService').getPages(this.get('documentId')).then((pages) => {
-				this.set('allPages', pages);
-				this.set('pages', pages.filterBy('pageType', 'section'));
-				this.set('tabs', pages.filterBy('pageType', 'tab'));
-				resolve();
-			});
-		});
-
-	},
 
 	model() {
-		this.browser.setTitle(this.get('document.name'));
-		this.browser.setMetaDescription(this.get('document.excerpt'));
+		let document = this.modelFor('document').document;
+		this.browser.setTitle(document.get('name'));
+		this.browser.setMetaDescription(document.get('excerpt'));
 
 		return Ember.RSVP.hash({
-			folders: this.get('folders'),
-			folder: this.get('folder'),
-			document: this.get('document'),
-			page: this.get('pageId'),
-			isEditor: this.get('folderService').get('canEditCurrentFolder'),
-			allPages: this.get('allPages'),
-			pages: this.get('pages'),
-			tabs: this.get('tabs'),
-			links: this.get('linkService').getDocumentLinks(this.get('documentId'))
+			folders: this.modelFor('document').folders,
+			folder: this.modelFor('document').folder,
+			document: this.modelFor('document').document,
+			pages: this.get('documentService').getPages(this.modelFor('document').document.get('id')),
+			links: this.modelFor('document').links,
+			sections: this.modelFor('document').sections,
+			isEditor: this.get('folderService').get('canEditCurrentFolder')
 		});
 	}
 });

@@ -1,72 +1,27 @@
-.document-history {
-	position: relative;
+.zone-document-history {
+	margin-left: 60px;
+	padding: 20px 60px;
+	z-index: 777;
+    position: relative;
 
-	> .sidebar {
+	.diff-zone {
+		@extend .transition-all;
+		@include border-radius(2px);
+		@include ease-in();
 		position: relative;
-		overflow-y: scroll;
+		padding: 25px 50px;
+		box-shadow: 0 0 0 0.75pt $color-stroke,0 0 3pt 0.75pt $color-stroke;
+		background-color: $color-white;
 
-		> .heading {
-			font-size: 1.2rem;
-			font-family: $font-light;
-			color: $color-off-black;
+		> .canvas {
+			padding: 0;
 		}
+	}
 
-		> .line {
-			width: 2px;
-			background-color: $color-stroke;
-			height: 100%;
-			position: absolute;
-			left: 17px;
-			z-index: -1;
-		}
-
-		> .items {
-			list-style-type: none;
-			margin: 0;
-			padding: 20px 0 10px;
-			white-space: nowrap;
-
-			> .item {
-				margin: 0;
-				padding: 10px 0;
-				width: 100%;
-				color: $color-off-black;
-				@include ease-in();
-				cursor: pointer;
-
-				> .avatar-box {
-					display: inline-block;
-				}
-
-				> .date {
-					display: inline-block;
-					font-size: 1rem;
-					font-family: $font-light;
-					margin-left: 25px;
-				}
-
-				> .detail {
-					display: block;
-					font-size: 1.2rem;
-					font-family: $font-semibold;
-					margin-left: 65px;
-					overflow: hidden;
-					text-overflow: ellipsis;
-				}
-
-				&:hover {
-					color: $color-link;
-				}
-			}
-
-			> .deleted {
-				color: $color-red;
-				cursor: not-allowed;
-
-				&:hover {
-					color: $color-red;
-				}
-			}
-		}
+	.revision-picker {
+		width: 300px;
+		float: left;
+		margin-top: 10px;
+		display: inline-block;
 	}
 }

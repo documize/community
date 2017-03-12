@@ -1,2 +1,21 @@
-{{document/document-history document=model.document folder=model.folder pages=model.pages revisions=model.revisions diff=model.diff
-	onFetchDiff=(action 'onFetchDiff') onRollback=(action 'onRollback')}}
+<div class="zone-document-history">
+	<div class="container">
+		<div class="row">
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+				<div id="zone-document-content" class="zone-document-content">
+					<div class="back-to-space">
+						{{#link-to 'document.index' model.folder.id model.folder.slug model.document.id model.document.slug}}
+							<i class="material-icons">arrow_back</i>&nbsp;{{model.document.name}}
+						{{/link-to}}
+					</div>
+					{{document/document-heading document=model.document isEditor=false}}
+					{{document/document-history document=model.document folder=model.folder pages=model.pages
+					revisions=model.revisions diff=model.diff onFetchDiff=(action 'onFetchDiff') onRollback=(action 'onRollback')}}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+

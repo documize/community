@@ -340,7 +340,6 @@ func StartDocumentFromSavedTemplate(w http.ResponseWriter, r *http.Request) {
 	d.Excerpt = "A new document"
 	d.Slug = utility.MakeSlug(d.Title)
 	d.Tags = ""
-	d.Layout = "doc"
 	d.LabelID = folderID
 	documentID := util.UniqueID()
 	d.RefID = documentID

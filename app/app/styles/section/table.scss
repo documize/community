@@ -1,3 +1,7 @@
+.table-editor-wrapper {
+	margin-top: 6px;
+}
+
 .fr-element,
 .fr-element:focus {
   outline: 0px solid transparent;
@@ -1165,12 +1169,12 @@ table th.fr-selected-cell {
    * Video style
    */
 }
-.fr-view table {
-  border: none;
-  border-collapse: collapse;
-  empty-cells: show;
-  max-width: 100%;
-}
+// .fr-view table {
+//   border: none;
+//   border-collapse: collapse;
+//   empty-cells: show;
+//   max-width: 100%;
+// }
 .fr-view table.fr-dashed-borders td,
 .fr-view table.fr-dashed-borders th {
   border-style: dashed;
@@ -1178,25 +1182,25 @@ table th.fr-selected-cell {
 .fr-view table.fr-alternate-rows tbody tr:nth-child(2n) {
   background: #f5f5f5;
 }
-.fr-view table td,
-.fr-view table th {
-  border: 1px solid #dddddd;
-}
-.fr-view table td:empty,
-.fr-view table th:empty {
-  height: 20px;
-}
-.fr-view table td.fr-highlighted,
-.fr-view table th.fr-highlighted {
-  border: 1px double red;
-}
-.fr-view table td.fr-thick,
-.fr-view table th.fr-thick {
-  border-width: 2px;
-}
-.fr-view table th {
-  background: #e6e6e6;
-}
+// .fr-view table td,
+// .fr-view table th {
+//   border: 1px solid #dddddd;
+// }
+// .fr-view table td:empty,
+// .fr-view table th:empty {
+//   height: 20px;
+// }
+// .fr-view table td.fr-highlighted,
+// .fr-view table th.fr-highlighted {
+//   border: 1px double red;
+// }
+// .fr-view table td.fr-thick,
+// .fr-view table th.fr-thick {
+//   border-width: 2px;
+// }
+// .fr-view table th {
+//   background: #e6e6e6;
+// }
 .fr-view hr {
   clear: both;
   user-select: none;

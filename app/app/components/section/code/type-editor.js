@@ -15,9 +15,17 @@ import TooltipMixin from '../../../mixins/tooltip';
 export default Ember.Component.extend(TooltipMixin, {
     isDirty: false,
     pageBody: "",
-    codeEditor: null,
     syntaxOptions: [],
     codeSyntax: null,
+	codeEditor: null,
+	editorId: Ember.computed('page', function () {
+		let page = this.get('page');
+		return `code-editor-${page.id}`;
+	}),
+	syntaxId: Ember.computed('page', function () {
+		let page = this.get('page');
+		return `code-editor-syntax-${page.id}`;
+	}),
 
 	init() {
 		this._super(...arguments);
@@ -31,7 +39,7 @@ export default Ember.Component.extend(TooltipMixin, {
         cleanBody = cleanBody.replace('<pre class="code-mirror cm-s-solarized cm-s-dark" data-lang="', "");
         let startPos = cleanBody.indexOf('">');
         let syntax = {
-            mode: "html",
+            mode: "htmlmixed",
             name: "HTML"
         };
 
@@ -45,10 +53,7 @@ export default Ember.Component.extend(TooltipMixin, {
         let opts = [];
 
         _.each(_.sortBy(CodeMirror.modeInfo, 'name'), function(item) {
-            let i = {
-                mode: item.mode,
-                name: item.name
-            };
+            let i = { mode: item.mode, name: item.name };
             opts.pushObject(i);
 
             if (item.mode === syntax) {
@@ -60,16 +65,12 @@ export default Ember.Component.extend(TooltipMixin, {
 
         // default check
         if (is.null(this.get("codeSyntax"))) {
-            this.set("codeSyntax", opts.findBy("mode", "html"));
+            this.set("codeSyntax", opts.findBy("mode", "htmlmixed"));
         }
     },
 
-    didRender() {
-        this.addTooltip(document.getElementById("set-syntax-zone"));
-    },
-
     didInsertElement() {
-        var editor = CodeMirror.fromTextArea(document.getElementById("code-editor"), {
+        var editor = CodeMirror.fromTextArea(document.getElementById(this.get('editorId')), {
             theme: "solarized dark",
             lineNumbers: true,
             lineWrapping: true,
@@ -79,12 +80,13 @@ export default Ember.Component.extend(TooltipMixin, {
             dragDrop: false
         });
 
-        editor.setSize("100%", $(document).height() - $(".document-editor > .toolbar").height() - 180);
+		CodeMirror.commands.save = function(/*instance*/){
+			Mousetrap.trigger('ctrl+s');
+		};
 
         this.set('codeEditor', editor);
 
         let syntax = this.get("codeSyntax");
-
         if (is.not.undefined(syntax)) {
             CodeMirror.autoLoadMode(editor, syntax.mode);
             editor.setOption("mode", syntax.mode);
@@ -92,7 +94,6 @@ export default Ember.Component.extend(TooltipMixin, {
     },
 
     willDestroyElement() {
-        this.destroyTooltips();
         this.set('codeEditor', null);
     },
 
@@ -115,7 +116,7 @@ export default Ember.Component.extend(TooltipMixin, {
         },
 
         isDirty() {
-            return this.get('isDirty');
+            return this.get('isDirty') || (this.get('codeEditor').getDoc().isClean() === false);
         },
 
         onCancel() {

@@ -110,11 +110,16 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
 		this.get('sectionService').fetch(page, "items", this.get('config'))
 			.then(function (response) {
-				// console.log(response);
+				if (self.get('isDestroyed') || self.get('isDestroying')) {
+					return;
+				}
 				self.set('items', response);
 				self.set('config.itemCount', response.length);
 				self.set('waiting', false);
 			}, function (reason) { //jshint ignore: line
+				if (self.get('isDestroyed') || self.get('isDestroying')) {
+					return;
+				}
 				self.set('items', []);
 				self.set('waiting', false);
 			});

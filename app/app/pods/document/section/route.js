@@ -16,28 +16,25 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	documentService: Ember.inject.service('document'),
 	folderService: Ember.inject.service('folder'),
 	userService: Ember.inject.service('user'),
-	pageId: '',
-	queryParams: {
-		mode: {
-			refreshModel: false
-		}
-	},
-
-	beforeModel(transition) {
-		this.set('mode', !_.isUndefined(transition.queryParams.mode) ? transition.queryParams.mode : '');
-	},
-
+	
 	model(params) {
 		return Ember.RSVP.hash({
 			folders: this.modelFor('document').folders,
 			folder: this.modelFor('document').folder,
 			document: this.modelFor('document').document,
-			pages: this.modelFor('document').pages,
-			tabs: this.get('documentService').getPages(this.modelFor('document').document.get('id')).then((pages) => {
-				return pages.filterBy('pageType', 'tab');
-			}),
+			isEditor: this.get('folderService').get('canEditCurrentFolder'),
+			links: this.modelFor('document').links,
+			sections: this.modelFor('document').sections,
 			page: this.get('documentService').getPage(this.modelFor('document').document.get('id'), params.page_id),
 			meta: this.get('documentService').getPageMeta(this.modelFor('document').document.get('id'), params.page_id)
 		});
 	},
+
+	activate() {
+		$('body').addClass('background-color-off-white');
+	},
+
+	deactivate() {
+		$('body').removeClass('background-color-off-white');
+	}
 });

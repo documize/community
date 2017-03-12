@@ -1,0 +1,64 @@
+<div class="document-editor {{if blockMode 'document-editor-full'}}">
+	<div class="toolbar">
+		<div class="buttons pull-right">
+			{{#if busy}}
+				<img src="/assets/img/busy-gray.gif" class="busy-indicator" />
+			{{/if}}
+
+			{{#if contentLinkerButton}}
+				{{document/content-linker tagName="span" document=document folder=folder page=page onInsertLink=(action 'onInsertLink')}}
+				<div class="round-button-mono" id={{contentLinkerButtonId}} data-tooltip="Reference link" data-tooltip-position="top center">
+					<i class="material-icons color-blue">link</i>
+				</div>
+			{{/if}}
+
+			{{#if previewButton}}
+				<div class="round-button-mono" {{action 'onPreview'}}  id={{previewButtonId}} data-tooltip="Toggle Preview" data-tooltip-position="top center">
+					<i class="material-icons color-gray">visibility</i>
+				</div>
+			{{/if}}
+
+			<div class="round-button-mono" {{action 'onAction'}}>
+				<i class="material-icons color-green">check</i>
+			</div>
+			<div class="round-button-mono" {{action 'onCancel'}} id={{cancelId}}>
+				<i class="material-icons color-gray">close</i>
+			</div>
+		</div>
+		{{#if blockMode}}
+			<div class="clearfix"></div>
+			<div class="input-control">
+				<label>Name</label>
+				{{focus-input id="page-id-{{pageId}}" value=page.title class="mousetrap"}}
+			</div>
+			<div class="input-control">
+				<label>Description</label>
+				{{textarea id="page-excerpt-{{pageId}}" value=page.excerpt class="mousetrap" rows="3"}}
+			</div>
+		{{else}}
+			<div class="input-inline input-transparent edit-title pull-left">
+				{{focus-input type="text" id=pageId value=page.title class=(if hasNameError 'error-inline') placeholder="Name" class="mousetrap"}}
+			</div>
+		{{/if}}		
+		<div class="clearfix"></div>
+
+		<div class="dropdown-dialog cancel-edits-dialog" id={{dialogId}}>
+			<div class="content">
+				<p>Do you want to cancel editing and lose unsaved changes?</p>
+			</div>
+			<div class="actions">
+				<div class="flat-button" {{action 'keepEditing'}}>
+					no
+				</div>
+				<div class="flat-button flat-red" {{action 'discardEdits'}}>
+					yes
+				</div>
+			</div>
+			<div class="clearfix"></div>
+		</div>
+	</div>
+	<div class="canvas">
+		{{yield}}
+	</div>
+	<div class="clearfix"></div>
+</div>

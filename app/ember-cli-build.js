@@ -41,6 +41,7 @@ module.exports = function (defaults) {
 		}
 	});
 
+	app.import('vendor/documize.js');
 	app.import('vendor/dropzone.js');
 	app.import('vendor/is.js');
 	app.import('vendor/md5.js');
@@ -57,6 +58,8 @@ module.exports = function (defaults) {
 	app.import('vendor/datetimepicker.min.js');
 	app.import('vendor/hoverIntent.js');
 	app.import('vendor/waypoints.js');
+	app.import('vendor/velocity.js');
+	app.import('vendor/velocity.ui.js');
 
 	return app.toTree();
 };

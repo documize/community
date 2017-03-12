@@ -1,40 +1,17 @@
-<div class="container width-100">
-	<div class="row">
+{{ui-select tagName="span" class="revision-picker" content=revisions action=(action 'onSelectRevision') optionValuePath="id" optionLabelPath="label"}}
 
-		<div class="col-xs-9 col-sm-9 col-md-9 col-lg-9">
-			{{#if hasDiff}}
-				<div id="restore-history-button" class="regular-button button-green pull-right margin-right-40">
-					Restore
-				</div>
-				{{#dropdown-dialog target="restore-history-button" position="bottom right" button="Restore" color="flat-green" onAction=(action 'rollback')}}
-					<p>Are you sure you want to roll back to this version?</p>
-				{{/dropdown-dialog}}
-				<div class="clearfix" />
-				<div class="doc-layout">
-					{{{diff}}}
-				</div>
-			{{/if}}
+<div id="restore-history-button" class="regular-button button-green pull-right">Restore</div>
+{{#dropdown-dialog target="restore-history-button" position="bottom right" button="Restore" color="flat-green" onAction=(action 'onRollback')}}
+	<p>Are you sure you want to roll back to this version?</p>
+{{/dropdown-dialog}}
+<div class="clearfix" />
+<div class="margin-bottom-50" />
+
+<div class="diff-zone">
+	{{#if hasDiff}}
+		<div class="is-a-page wysiwyg">
+			{{{diff}}}
 		</div>
-
-		<div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
-			<div class="document-history">
-				<div class="sidebar">
-					<p class="heading">{{revisions.length}} changes</p>
-					<div class="line" />
-					<ul class="items">
-						{{#each revisions as |r|}}
-				            <li class="item {{if r.deleted 'deleted'}}" {{action 'getDiff' r}}>
-								<div class="avatar-box">
-									{{ui/ui-avatar refId=r.id firstname=r.firstname lastname=r.lastname}}
-				                </div>
-								<div class="date">{{time-ago r.created}}</div>
-				                <div class="detail">{{r.title}}</div>
-				            </li>
-				        {{/each}}
-					</ul>
-				</div>
-			</div>
-		</div>
-
-	</div>
+	{{/if}}
+	<div class="clearfix" />
 </div>

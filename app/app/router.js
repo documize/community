@@ -32,26 +32,14 @@ export default Router.map(function () {
 	this.route('document', {
 		path: 's/:folder_id/:folder_slug/d/:document_id/:document_slug'
 	}, function () {
-		this.route('files', {
-			path: 'files'
-		});
-		this.route('activity', {
-			path: 'activity'
-		});
 		this.route('section', {
 			path: 'section/:page_id'
 		});
-		this.route('edit', {
-			path: 'edit/:page_id'
-		});
-		this.route('wizard', {
-			path: 'add'
+		this.route('block', {
+			path: 'block/:block_id'
 		});
 		this.route('history', {
 			path: 'history'
-		});
-		this.route('block', {
-			path: 'block/:block_id'
 		});
 	});
 

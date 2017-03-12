@@ -14,12 +14,19 @@ import NotifierMixin from '../../../mixins/notifier';
 
 export default Ember.Controller.extend(NotifierMixin, {
 	documentService: Ember.inject.service('document'),
-	queryParams: ['mode'],
-	mode: null,
 
 	actions: {
+		onCancel() {
+			this.transitionToRoute('document.index',
+				this.get('model.folder.id'),
+				this.get('model.folder.slug'),
+				this.get('model.document.id'),
+				this.get('model.document.slug'),
+				{ queryParams: { pageId: this.get('model.page.id') }});
+		},
+
 		onAction(page, meta) {
-			this.showNotification("Saving");
+			this.showNotification("Saved");
 
 			let model = {
 				page: page.toJSON({ includeId: true }),
@@ -30,17 +37,14 @@ export default Ember.Controller.extend(NotifierMixin, {
 				this.audit.record("edited-page");
 				let data = this.get('store').normalize('page', page);
 				this.get('store').push(data);
-				this.get('target.router').refresh();
+
+				this.transitionToRoute('document.index',
+					this.get('model.folder.id'),
+					this.get('model.folder.slug'),
+					this.get('model.document.id'),
+					this.get('model.document.slug'), 
+					{ queryParams: { pageId: page.get('id')}});
 			});
 		},
-
-		onDelete(document, page) {
-			this.get('documentService').deletePage(document.get('id'), page.get('id')).then(() => {
-				this.audit.record("deleted-page");
-				this.showNotification('Deleted');
-				this.transitionToRoute('document');
-				this.get('target.router').refresh();
-			});
-		}
 	}
 });

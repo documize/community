@@ -19,29 +19,32 @@ export default Ember.Component.extend({
 	appMeta: service(),
 	link: service(),
 	pageBody: "",
+	editorId: Ember.computed('page', function () {
+		let page = this.get('page');
+		return `wysiwyg-editor-${page.id}`;
+	}),
 
 	didReceiveAttrs() {
 		this.set('pageBody', this.get('meta.rawBody'));
 	},
 
 	didInsertElement() {
-		let maxHeight = $(document).height() - 450;
-
 		let options = {
-			selector: "#rich-text-editor",
+			selector: "#" + this.get('editorId'),
 			relative_urls: false,
 			cache_suffix: "?v=443",
 			browser_spellcheck: false,
 			gecko_spellcheck: false,
 			theme: "modern",
+			skin: 'documize',
 			statusbar: false,
-			height: maxHeight,
+			inline: true,
 			entity_encoding: "raw",
 			paste_data_images: true,
 			image_advtab: true,
 			image_caption: true,
 			media_live_embeds: true,
-			fontsize_formats: "8px 10px 12px 14px 18px 24px 36px 40px 50px 60px",
+			fontsize_formats: "8px 10px 12px 14px 17px 18px 24px 36px 40px 50px 60px",
 			formats: {
 				bold: {
 					inline: 'b'
@@ -50,6 +53,17 @@ export default Ember.Component.extend({
 					inline: 'i'
 				}
 			},
+			codesample_languages: [
+			        {text: 'HTML/XML', value: 'markup'},
+			        {text: 'JavaScript', value: 'javascript'},
+			        {text: 'CSS', value: 'css'},
+			        {text: 'PHP', value: 'php'},
+			        {text: 'Ruby', value: 'ruby'},
+			        {text: 'Python', value: 'python'},
+			        {text: 'Java', value: 'java'},
+			        {text: 'C', value: 'c'},
+			        {text: 'C#', value: 'csharp'},
+			        {text: 'C++', value: 'cpp'}],
 			extended_valid_elements: "b,i,b/strong,i/em",
 			plugins: [
 				'advlist autolink lists link image charmap print preview hr anchor pagebreak',
@@ -59,8 +73,8 @@ export default Ember.Component.extend({
 			],
 			menu: {},
 			menubar: false,
-			toolbar1: "bold italic underline strikethrough superscript subscript | outdent indent bullist numlist forecolor backcolor | alignleft aligncenter alignright alignjustify | link unlink | table image media codesample",
-			toolbar2: "formatselect fontselect fontsizeselect",
+			toolbar1: "formatselect fontsizeselect | bold italic underline strikethrough superscript subscript | forecolor backcolor link unlink",
+			toolbar2: "outdent indent bullist numlist | alignleft aligncenter alignright alignjustify | table image media codesample",
 			save_onsavecallback: function () {
 				Mousetrap.trigger('ctrl+s');
 			}
@@ -79,25 +93,27 @@ export default Ember.Component.extend({
 	},
 
 	willDestroyElement() {
-		tinymce.remove();
+		tinymce.EditorManager.execCommand('mceRemoveEditor', true, this.get('editorId'));
 	},
 
 	actions: {
 		onInsertLink(link) {
-			let userSelection = tinymce.activeEditor.selection.getContent();
+			let editor = tinymce.EditorManager.get(this.get('editorId'));
+			let userSelection = editor.selection.getContent();
 
 			if (is.not.empty(userSelection)) {
 				Ember.set(link, 'title', userSelection);
 			}
 
 			let linkHTML = this.get('link').buildLink(link);
-			tinymce.activeEditor.insertContent(linkHTML);
+			editor.insertContent(linkHTML);
 
 			return true;
 		},
 
 		isDirty() {
-			return is.not.undefined(tinymce) && is.not.undefined(tinymce.activeEditor) && tinymce.activeEditor.isDirty();
+			let editor = tinymce.EditorManager.get(this.get('editorId'));
+			return is.not.undefined(tinymce) && is.not.undefined(editor) && editor.isDirty();
 		},
 
 		onCancel() {
@@ -107,9 +123,10 @@ export default Ember.Component.extend({
 		onAction(title) {
 			let page = this.get('page');
 			let meta = this.get('meta');
+			let editor = tinymce.EditorManager.get(this.get('editorId'));
 
 			page.set('title', title);
-			meta.set('rawBody', tinymce.activeEditor.getContent());
+			meta.set('rawBody', editor.getContent());
 
 			this.attrs.onAction(page, meta);
 		}

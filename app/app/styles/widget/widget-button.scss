@@ -138,6 +138,13 @@
     }
 }
 
+.round-button-small {
+	width: 20px;
+    height: 20px;
+    line-height: 20px;
+	font-size: 0.9rem;
+}
+
 .square-button {
     display: inline-block;
     position: relative;
@@ -215,6 +222,13 @@
     background-color: $color-white;
 	color: $color-blue;
     @include button-hover-state($color-white);
+}
+
+.button-black {
+	border: none;
+    background-color: $color-off-black;
+	color: $color-white;
+    @include button-hover-state($color-black);
 }
 
 .button-transparent {

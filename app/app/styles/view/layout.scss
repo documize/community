@@ -1,13 +1,14 @@
 .zone-navigation {
 	position: fixed;
-	margin: 0;
-	padding: 0;
+	top: 0;
 	width: 60px;
 	min-height: 100%;
 	height: 100%;
-	background-color: $color-primary;
+	margin: 0;
+	padding: 0;
 	z-index: 999;
 	overflow-x: hidden;
+	background-color: $color-primary;
 
 	> .bottom-zone,
 	> .top-zone {
@@ -80,7 +81,6 @@
 			font-size: 1rem;
 			font-style: normal;
 			line-height: 2.6rem;
-			font-family: open_sansregular;
 		}
 	}
 
@@ -111,7 +111,7 @@
 		> .pin {
 			cursor: pointer;
 			margin: 20px 0 20px 9px;
-		    padding: 11px 3px;
+		    padding: 14px 3px;
 			height: 40px;
 			width: 40px;
 			text-align: center;

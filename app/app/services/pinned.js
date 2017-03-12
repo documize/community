@@ -21,6 +21,7 @@ export default Ember.Service.extend({
 	appMeta: service(),
 	store: service(),
 	pins: [],
+	initialized: false,
 
 	getUserPins() {
 		let userId = this.get('session.user.id');
@@ -41,6 +42,7 @@ export default Ember.Service.extend({
 			});
 
 			this.set('pins', pins);
+			this.set('initialized', true);
 
 			return pins;
 		});
@@ -102,16 +104,32 @@ export default Ember.Service.extend({
 
 	isDocumentPinned(documentId) {
 		let userId = this.get('session.user.id');
-		let pins = this.get('pins');
-		let pinId = '';
 
-		pins.forEach((pin) => {
-			if (pin.get('userId') === userId && pin.get('documentId') === documentId) {
-				pinId = pin.get('id');
-			}
-		});
+		if (this.get('initialized') === false) {
+			this.getUserPins().then(() => {
+				let pins = this.get('pins');
+				let pinId = '';
 
-		return pinId;
+				pins.forEach((pin) => {
+					if (pin.get('userId') === userId && pin.get('documentId') === documentId) {
+						pinId = pin.get('id');
+					}
+				});
+
+				return pinId;
+			});
+		} else {
+			let pins = this.get('pins');
+			let pinId = '';
+
+			pins.forEach((pin) => {
+				if (pin.get('userId') === userId && pin.get('documentId') === documentId) {
+					pinId = pin.get('id');
+				}
+			});
+
+			return pinId;
+		}
 	},
 
 	isSpacePinned(spaceId) {

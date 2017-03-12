@@ -1,0 +1,66 @@
+.document-sidebar-common {
+	display: inline-block;
+	width: 340px;
+	padding: 40px 20px 40px 20px;
+
+    > .pinner {
+        cursor: pointer;
+    
+        > .material-icons {
+            color: $color-primary;
+        }
+    }
+
+	> .template-header {
+		color: $color-goldy;
+		font-size: 1.5em;
+		margin-bottom: 20px;
+	}
+}
+
+.document-sidebar-toolbar {
+	display: inline-block;
+    width: 60px;
+    background-color: $color-toolbar;
+    text-align: center;
+    position: fixed;
+    right: 0;
+    top: 0;
+    height: 100%;
+	padding: 50px 0 0 0;
+
+    > .selected {
+        background-color: $color-off-black !important;
+        border: none;
+
+        > .material-icons {
+            color: $color-white !important;
+        }
+    }
+
+    > .round-button-mono {
+        > .material-icons {
+            color: $color-gray;
+        }
+    }
+}
+
+.document-sidebar-wrapper {
+	padding: 40px 20px 40px 20px;
+    margin-right: 60px;
+
+    .document-sidebar-panel {
+        width: 300px;
+        // top: 0;
+        // bottom: 0;
+        // position: fixed;
+        // overflow-y: scroll;
+        // overflow-x: hidden;
+
+        > .title {
+            color: $color-primary;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+    }
+}
