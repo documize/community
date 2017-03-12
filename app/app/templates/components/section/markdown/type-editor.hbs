@@ -3,6 +3,13 @@
 	previewButton=true onPreview=(action 'onPreview')  
 	isDirty=(action 'isDirty') onCancel=(action 'onCancel') onAction=(action 'onAction')}}
 
+	<style>
+		.CodeMirror {
+			height: auto !important;
+			font-size: 17px;
+		}
+	</style>
+
 	<div class="section-code-editor">
 		{{#if editMode}}
 			{{focus-textarea value=pageBody id=editorId class="mousetrap"}}
@@ -12,4 +19,5 @@
 			</div>
 		{{/if}}
 	</div>
+
 {{/section/base-editor-inline}}
