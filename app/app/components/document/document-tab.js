@@ -18,10 +18,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	viewMode: true,
 	editMode: false,
 
-	didReceiveAttrs(){
-		this.audit.record("viewed-document-section-" + this.get('model.page.contentType'));
-	},
-
 	didInsertElement() {
 		this.get('sectionService').refresh(this.get('document.id')).then((changes) => {
 			if (this.get('isDestroyed') || this.get('isDestroying')) {

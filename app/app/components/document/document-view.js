@@ -240,7 +240,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 				meta: meta
 			};
 
-			this.audit.record("added-section-" + page.contentType);
+			this.audit.record("added-section-" + section.get('contentType'));
 
 			const promise = this.addSection(model);
 			promise.then((id) => {
