@@ -22,6 +22,8 @@
       "list3" : "override-list3",
       "hr" : "override-hr",
       "image" : "override-image",
+      "imageAltText": "override-image-alt-text",
+      "imageMarker": "override-image-marker",
       "linkInline" : "override-link-inline",
       "linkEmail" : "override-link-email",
       "linkText" : "override-link-text",
@@ -88,6 +90,9 @@
 
   FT("formatting_escape",
      "[formatting-escape \\*]");
+
+  FT("formatting_image",
+     "[formatting&formatting-image&image&image-marker !][formatting&formatting-image&image&image-alt-text&link [[][image&image-alt-text&link alt text][formatting&formatting-image&image&image-alt-text&link ]]][formatting&formatting-link-string&string&url (][url&string http://link.to/image.jpg][formatting&formatting-link-string&string&url )]");
 
   MT("plainText",
      "foo");
@@ -352,11 +357,10 @@
      "[variable-2 1. foo]",
      "[variable-2 2. bar]");
 
-  // Lists require a preceding blank line (per Dingus)
-  MT("listBogus",
+  MT("listFromParagraph",
      "foo",
-     "1. bar",
-     "2. hello");
+     "[variable-2 1. bar]",
+     "[variable-2 2. hello]");
 
   // List after hr
   MT("listAfterHr",
@@ -451,6 +455,18 @@
      "[variable-2 * bar]",
      "",
      "hello");
+
+  MT("listCommonMarkIndentationCode",
+     "[variable-2 * Code blocks also affect]",
+     "  [variable-3 * The next level starts where the contents start.]",
+     "   [variable-3 *    Anything less than that will keep the item on the same level.]",
+     "       [variable-3 * Each list item can indent the first level further and further.]",
+     "  [variable-3 * For the most part, this makes sense while writing a list.]",
+     "    [keyword * This means two items with same indentation can be different levels.]",
+     "     [keyword *  Each level has an indent requirement that can change between items.]",
+     "       [keyword * A list item that meets this will be part of the next level.]",
+     "   [variable-3 * Otherwise, it will be part of the level where it does meet this.]",
+     " [variable-2 * World]");
 
   // Blockquote
   MT("blockquote",
@@ -577,6 +593,20 @@
   MT("hrDashLong",
      "[hr ---------------------------------------]");
 
+  //Images
+  MT("Images",
+     "[image&image-marker !][image&image-alt-text&link [[alt text]]][string&url (http://link.to/image.jpg)]")
+
+  //Images with highlight alt text
+  MT("imageEm",
+     "[image&image-marker !][image&image-alt-text&link [[][image-alt-text&em&image&link *alt text*][image&image-alt-text&link ]]][string&url (http://link.to/image.jpg)]");
+
+  MT("imageStrong",
+     "[image&image-marker !][image&image-alt-text&link [[][image-alt-text&strong&image&link **alt text**][image&image-alt-text&link ]]][string&url (http://link.to/image.jpg)]");
+
+  MT("imageEmStrong",
+     "[image&image-marker !][image&image-alt-text&link [[][image-alt-text&image&strong&link **][image&image-alt-text&em&strong&link *alt text**][image&image-alt-text&em&link *][image&image-alt-text&link ]]][string&url (http://link.to/image.jpg)]");
+
   // Inline link with title
   MT("linkTitle",
      "[link [[foo]]][string&url (http://example.com/ \"bar\")] hello");
@@ -587,7 +617,7 @@
 
   // Inline link with image
   MT("linkImage",
-     "[link [[][tag ![[foo]]][string&url (http://example.com/)][link ]]][string&url (http://example.com/)] bar");
+     "[link [[][link&image&image-marker !][link&image&image-alt-text&link [[alt text]]][string&url (http://link.to/image.jpg)][link ]]][string&url (http://example.com/)] bar");
 
   // Inline link with Em
   MT("linkEm",
@@ -603,15 +633,15 @@
 
   // Image with title
   MT("imageTitle",
-     "[tag ![[foo]]][string&url (http://example.com/ \"bar\")] hello");
+     "[image&image-marker !][image&image-alt-text&link [[alt text]]][string&url (http://example.com/ \"bar\")] hello");
 
   // Image without title
   MT("imageNoTitle",
-     "[tag ![[foo]]][string&url (http://example.com/)] bar");
+     "[image&image-marker !][image&image-alt-text&link [[alt text]]][string&url (http://example.com/)] bar");
 
   // Image with asterisks
   MT("imageAsterisks",
-     "[tag ![[*foo*]]][string&url (http://example.com/)] bar");
+     "[image&image-marker !][image&image-alt-text&link [[ ][image&image-alt-text&em&link *alt text*][image&image-alt-text&link ]]][string&url (http://link.to/image.jpg)] bar");
 
   // Not a link. Should be normal text due to square brackets being used
   // regularly in text, especially in quoted material, and no space is allowed
@@ -635,7 +665,7 @@
   MT("linkReferenceEmStrong",
      "[link [[][link&strong **][link&em&strong *foo**][link&em *][link ]]][string&url [[bar]]] hello");
 
-  // Reference-style links with optional space separator (per docuentation)
+  // Reference-style links with optional space separator (per documentation)
   // "You can optionally use a space to separate the sets of brackets"
   MT("linkReferenceSpace",
      "[link [[foo]]] [string&url [[bar]]] hello");
@@ -671,7 +701,7 @@
   MT("labelTitleSingleQuotes",
      "[link [[foo]]:] [string&url http://example.com/  'bar']");
 
-  MT("labelTitleParenthese",
+  MT("labelTitleParentheses",
      "[link [[foo]]:] [string&url http://example.com/  (bar)]");
 
   MT("labelTitleInvalid",
@@ -688,7 +718,7 @@
      "[link [[foo]]:] [string&url http://example.com/]",
      "[string 'bar'] hello");
 
-  MT("labelTitleNextParenthese",
+  MT("labelTitleNextParentheses",
      "[link [[foo]]:] [string&url http://example.com/]",
      "[string (bar)] hello");
 
@@ -769,6 +799,9 @@
 
   MT("emStrongMixed",
      "[em *foo][em&strong __bar_hello** world]");
+
+  MT("linkWithNestedParens",
+     "[link [[foo]]][string&url (bar(baz))]")
 
   // These characters should be escaped:
   // \   backslash
@@ -863,7 +896,7 @@
     "[override-hr * * *]");
 
   TokenTypeOverrideTest("overrideImage",
-    "[override-image ![[foo]]][override-link-href&url (http://example.com/)]")
+    "[override-image&override-image-marker !][override-image&override-image-alt-text&link [[alt text]]][override-link-href&url (http://link.to/image.jpg)]");
 
   TokenTypeOverrideTest("overrideLinkText",
     "[override-link-text [[foo]]][override-link-href&url (http://example.com)]");

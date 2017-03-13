@@ -35,46 +35,35 @@ export default Ember.Component.extend(TooltipMixin, {
 	init() {
 		this._super(...arguments);
 
-        let self = this;
+        // let self = this;
         CodeMirror.modeURL = "/codemirror/mode/%N/%N.js";
 
-        let rawBody = this.get('meta.rawBody');
-        let cleanBody = rawBody.replace("</pre>", "");
+        this.set('pageBody', this.get('meta.rawBody').trim());
 
-        cleanBody = cleanBody.replace('<pre class="code-mirror cm-s-solarized cm-s-dark" data-lang="', "");
-        let startPos = cleanBody.indexOf('">');
-        let syntax = {
-            mode: "markdown",
-            name: "Markdown"
-        };
+		// let opts = [];
+        // let syntax = {
+        //     mode: "markdown",
+        //     name: "Markdown"
+        // };
 
-        if (startPos !== -1) {
-            syntax = cleanBody.substring(0, startPos);
-            cleanBody = cleanBody.substring(startPos + 2);
-        }
+		// _.each(_.sortBy(CodeMirror.modeInfo, 'name'), function(item) {
+		// 	let i = {
+		// 		mode: item.mode,
+		// 		name: item.name
+		// 	};
+		// 	opts.pushObject(i);
 
-        this.set('pageBody', cleanBody);
+		// 	if (item.mode === syntax) {
+		// 		self.set('codeSyntax', i);
+		// 	}
+		// });
 
-		let opts = [];
+		// this.set('syntaxOptions', opts);
 
-		_.each(_.sortBy(CodeMirror.modeInfo, 'name'), function(item) {
-			let i = {
-				mode: item.mode,
-				name: item.name
-			};
-			opts.pushObject(i);
-
-			if (item.mode === syntax) {
-				self.set('codeSyntax', i);
-			}
-		});
-
-		this.set('syntaxOptions', opts);
-
-        // default check
-        if (is.null(this.get("codeSyntax"))) {
-            this.set("codeSyntax", opts.findBy("mode", "markdown"));
-        }
+        // // default check
+        // if (is.null(this.get("codeSyntax"))) {
+        //     this.set("codeSyntax", opts.findBy("mode", "markdown"));
+        // }
     },
 
 	didInsertElement() {
@@ -83,17 +72,25 @@ export default Ember.Component.extend(TooltipMixin, {
     },
 
     willDestroyElement() {
-        this.set('codeEditor', null);
+		let editor = this.get('codeEditor');
+
+		if (this.get('editMode')) {
+			editor.toTextArea();
+			editor = null;
+		}
+
+		this.set('codeEditor', null);
 		this.destroyTooltips();
     },
 
 	getBody() {
-		return this.get('codeEditor').getDoc().getValue();
+		return this.get('codeEditor').getDoc().getValue().trim();
 	},
 
 	attachEditor() {
 		var editor = CodeMirror.fromTextArea(document.getElementById(this.get('editorId')), {
             theme: "default",
+			mode: "markdown",
             lineNumbers: false,
             lineWrapping: true,
             indentUnit: 4,
@@ -112,8 +109,8 @@ export default Ember.Component.extend(TooltipMixin, {
         let syntax = this.get("codeSyntax");
 
         if (is.not.undefined(syntax)) {
-            CodeMirror.autoLoadMode(editor, syntax.mode);
-            editor.setOption("mode", syntax.mode);
+            CodeMirror.autoLoadMode(editor, "markdown");
+            editor.setOption("mode", "markdown");
         }
 	},
 

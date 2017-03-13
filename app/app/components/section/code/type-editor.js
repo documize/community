@@ -94,7 +94,16 @@ export default Ember.Component.extend(TooltipMixin, {
     },
 
     willDestroyElement() {
-        this.set('codeEditor', null);
+		let editor = this.get('codeEditor');
+
+		if (is.not.null(editor)) {
+			editor.toTextArea();
+			editor = null;
+			this.set('codeEditor', null);
+		}
+
+		this.destroyTooltips();
+
     },
 
     // Wrap code in PRE tag with language identifier for subsequent rendering.
