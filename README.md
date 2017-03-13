@@ -1,6 +1,6 @@
 # Documize Community Edition
 
-The Document IDE for wikis and documents.
+Documize is an Integrated Document Environment (IDE) unifying documents, wiki, reporting and dashboards -- one tool to power the enterprise-wide knowledge backbone.
 
 ![Alt text](screenshot.png "Documize")
 
