@@ -17,7 +17,7 @@
 
 	<div class="section-markdown-editor">
 		{{#if editMode}}
-			{{focus-textarea value=pageBody id=editorId class="mousetrap"}}
+			<textarea id={{editorId}} class="mousetrap">{{{pageBody}}}</textarea>
 		{{else}}
 			<div class="mousetrap wysiwyg section-markdown-preview">
 				{{{pagePreview}}}

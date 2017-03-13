@@ -74,6 +74,12 @@ export default Ember.Component.extend({
     willDestroyElement() {
         this._super(...arguments);
 
+		let editor = this.get('codeEditor');
+		if (is.not.null(editor)) {
+			editor.toTextArea();
+			editor = null;
+        }
+
         this.set('codeEditor', null);
     }
 });
