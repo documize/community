@@ -62,7 +62,8 @@ export default Ember.Controller.extend(NotifierMixin, {
 				meta: meta.toJSON({ includeId: true })
 			};
 
-			this.get('documentService').updatePage(documentId, page.get('id'), model).then(() => {
+			this.get('documentService').updatePage(documentId, page.get('id'), model).then((up) => {
+				page = up;
 				this.set('pageId', page.get('id'));
 			});
 

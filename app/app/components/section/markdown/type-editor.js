@@ -34,36 +34,7 @@ export default Ember.Component.extend(TooltipMixin, {
 
 	init() {
 		this._super(...arguments);
-
-        // let self = this;
-        CodeMirror.modeURL = "/codemirror/mode/%N/%N.js";
-
         this.set('pageBody', this.get('meta.rawBody').trim());
-
-		// let opts = [];
-        // let syntax = {
-        //     mode: "markdown",
-        //     name: "Markdown"
-        // };
-
-		// _.each(_.sortBy(CodeMirror.modeInfo, 'name'), function(item) {
-		// 	let i = {
-		// 		mode: item.mode,
-		// 		name: item.name
-		// 	};
-		// 	opts.pushObject(i);
-
-		// 	if (item.mode === syntax) {
-		// 		self.set('codeSyntax', i);
-		// 	}
-		// });
-
-		// this.set('syntaxOptions', opts);
-
-        // // default check
-        // if (is.null(this.get("codeSyntax"))) {
-        //     this.set("codeSyntax", opts.findBy("mode", "markdown"));
-        // }
     },
 
 	didInsertElement() {

@@ -20,6 +20,7 @@ export function initialize( /*application*/ ) {
     });
 
     Dropzone.autoDiscover = false;
+    CodeMirror.modeURL = "/codemirror/mode/%N/%N.js";
 }
 
 export default {

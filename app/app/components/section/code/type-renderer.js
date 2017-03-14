@@ -17,11 +17,10 @@ export default Ember.Component.extend({
 
     didReceiveAttrs() {
         this._super(...arguments);
+        
         if (this.get('isDestroyed') || this.get('isDestroying')) {
             return;
         }
-
-        CodeMirror.modeURL = "/codemirror/mode/%N/%N.js";
 
         let page = this.get('page');
         let rawBody = page.get('body');
@@ -44,6 +43,7 @@ export default Ember.Component.extend({
 
     didInsertElement() {
         this._super(...arguments);
+        
         if (this.get('isDestroyed') || this.get('isDestroying')) {
             return;
         }
