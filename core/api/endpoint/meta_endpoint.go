@@ -33,7 +33,6 @@ func GetMeta(w http.ResponseWriter, r *http.Request) {
 	data.URL = request.GetSubdomainFromHost(r)
 
 	org, err := p.GetOrganizationByDomain(data.URL)
-
 	if err != nil {
 		log.Info(fmt.Sprintf("%s URL not found", data.URL))
 		writeForbiddenError(w)
@@ -44,12 +43,13 @@ func GetMeta(w http.ResponseWriter, r *http.Request) {
 	data.Title = org.Title
 	data.Message = org.Message
 	data.AllowAnonymousAccess = org.AllowAnonymousAccess
+	data.AuthProvider = org.AuthProvider
+	data.AuthConfig = org.AuthConfig
 	data.Version = Product.Version
 	data.Edition = Product.License.Edition
 	data.Valid = Product.License.Valid
 
 	json, err := json.Marshal(data)
-
 	if err != nil {
 		writeJSONMarshalError(w, method, "meta", err)
 		return

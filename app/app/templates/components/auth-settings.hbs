@@ -1,0 +1,22 @@
+<form class="form-bordered">
+    <div class="form-header">
+        <div class="title">Authentication</div>
+        <div class="tip">Determine the method for user authentication</div>
+    </div>
+    <div class="input-control">
+        <label>Provider</label>
+        <div class="tip">External authentication servers, services must be accessible from the server running this Documize instance</div>
+        {{#ui/ui-radio selected=isDocumizeProvider onClick=(action 'onDocumize')}}Documize &mdash; email/password{{/ui/ui-radio}}
+        {{#ui/ui-radio selected=isKeycloakProvider onClick=(action 'onKeycloak')}}Keycloak &mdash; bring your own authenticaiton server{{/ui/ui-radio}}
+    </div>
+
+    {{#if isKeycloakProvider}}
+        <div class="input-control">
+            <label>Keycloak OIDC JSON</label>
+            <div class="tip">Realm Client JSON configuration from Keycloak admin console</div>
+            {{textarea id="keycloak-config" type="text" rows=7 value=keycloakConfig class=(if KeycloakUrlError 'error')}}
+        </div>
+    {{/if}}
+
+    <div class="regular-button button-blue" {{action 'onSave'}}>save</div>
+</form>

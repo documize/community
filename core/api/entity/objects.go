@@ -74,6 +74,8 @@ type Organization struct {
 	Domain               string `json:"domain"`
 	Email                string `json:"email"`
 	AllowAnonymousAccess bool   `json:"allowAnonymousAccess"`
+	AuthProvider         string `json:"authProvider"`
+	AuthConfig           string `json:"authConfig"`
 	Serial               string `json:"-"`
 	Active               bool   `json:"-"`
 }
@@ -333,6 +335,8 @@ type SiteMeta struct {
 	Message              string `json:"message"`
 	URL                  string `json:"url"`
 	AllowAnonymousAccess bool   `json:"allowAnonymousAccess"`
+	AuthProvider         string `json:"authProvider"`
+	AuthConfig           string `json:"authConfig"`
 	Version              string `json:"version"`
 	Edition              string `json:"edition"`
 	Valid                bool   `json:"valid"`

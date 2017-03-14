@@ -15,4 +15,9 @@ export default {
         Private: 2,
         Protected: 3
     },
+
+    AuthProvider: {
+        Documize: 'documize',
+        Keycloak: 'keycloak'
+    }
 };

@@ -58,6 +58,9 @@ export default Router.map(function () {
 		this.route('global', {
 			path: 'global'
 		});
+		this.route('auth', {
+			path: 'auth'
+		});
 	});
 
 	this.route('setup', {

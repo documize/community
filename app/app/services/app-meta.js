@@ -30,6 +30,8 @@ export default Ember.Service.extend({
 	edition: 'Community',
 	valid: true,
 	allowAnonymousAccess: false,
+	authProvider: 'documize',
+	authConfig: null,
 	setupMode: false,
 
 	invalidLicense() {
