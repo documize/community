@@ -23,10 +23,12 @@ export default Ember.Component.extend({
 	KeycloakUrlError: computed.empty('keycloakConfig.url'),
 	KeycloakRealmError: computed.empty('keycloakConfig.realm'),
 	KeycloakClientIdError: computed.empty('keycloakConfig.clientId'),
+	KeycloakPublicKeyError: computed.empty('keycloakConfig.publicKey'),
 	keycloakConfig: { 
 		url: '',
 		realm: '',
-		clientId: ''
+		clientId: '',
+		publicKey: '',
 	},
 
 	didReceiveAttrs() {
@@ -81,6 +83,20 @@ export default Ember.Component.extend({
 						this.$("#keycloak-clientId").focus();
 						return;
 					}
+					if (this.get('KeycloakPublicKeyError')) {
+						this.$("#keycloak-publicKey").focus();
+						return;
+					}
+
+					let pk = this.get('keycloakConfig.publicKey');
+					if (is.not.startWith(pk, '-----BEGIN PUBLIC KEY-----')) {
+						pk = '-----BEGIN PUBLIC KEY-----' + pk;
+					}
+					if (is.not.endWith(pk, '-----END PUBLIC KEY-----')) {
+						pk = pk + '-----END PUBLIC KEY-----' ;
+					}
+
+					this.set('keycloakConfig.publicKey', pk);
 
 					config = this.get('keycloakConfig');
 					break;

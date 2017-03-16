@@ -11,6 +11,10 @@
     </div>
 
     {{#if isKeycloakProvider}}
+        <div class="form-header">
+            <div class="title">Keycloak Configuration</div>
+            <div class="tip">Connection parameters</div>
+        </div>
         <div class="input-control">
             <label>Keycloak Server URL</label>
             <div class="tip">e.g. http://localhost:8888/auth</div>
@@ -25,6 +29,11 @@
             <label>Keycloak OIDC Client ID</label>
             <div class="tip">e.g. account</div>
             {{input id="keycloak-clientId" type="text" value=keycloakConfig.clientId class=(if KeycloakClientIdError 'error')}}
+        </div>
+        <div class="input-control">
+            <label>Keycloak Realm Public Key</label>
+            <div class="tip">Copy the RSA public key from Realm Settings &rarr; Keys</div>
+            {{textarea id="keycloak-publicKey" type="text" value=keycloakConfig.publicKey rows=7 class=(if KeycloakPublicKeyError 'error')}}
         </div>
     {{/if}}
 

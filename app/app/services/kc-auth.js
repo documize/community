@@ -69,6 +69,7 @@ export default Ember.Service.extend({
 			username: profile.username,
 			firstname: profile.firstName,
 			lastname: profile.lastName,
+            remoteId: profile.id
 		};
 	}
 });

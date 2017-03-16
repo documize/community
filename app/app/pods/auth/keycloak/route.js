@@ -44,6 +44,8 @@ export default Ember.Route.extend({
 			this.get('kcAuth').fetchProfile(kc).then((profile) => {
 				let data = this.get('kcAuth').mapProfile(kc, profile);
 
+				console.log(kc);
+				console.log(profile);
 				console.log(data);
 
 				// this.get("session").authenticate('authenticator:keycloak', data)
