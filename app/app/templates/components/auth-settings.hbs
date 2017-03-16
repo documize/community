@@ -7,14 +7,24 @@
         <label>Provider</label>
         <div class="tip">External authentication servers, services must be accessible from the server running this Documize instance</div>
         {{#ui/ui-radio selected=isDocumizeProvider onClick=(action 'onDocumize')}}Documize &mdash; email/password{{/ui/ui-radio}}
-        {{#ui/ui-radio selected=isKeycloakProvider onClick=(action 'onKeycloak')}}Keycloak &mdash; bring your own authenticaiton server{{/ui/ui-radio}}
+        {{#ui/ui-radio selected=isKeycloakProvider onClick=(action 'onKeycloak')}}Keycloak &mdash; bring your own authentication server{{/ui/ui-radio}}
     </div>
 
     {{#if isKeycloakProvider}}
         <div class="input-control">
-            <label>Keycloak OIDC JSON</label>
-            <div class="tip">Realm Client JSON configuration from Keycloak admin console</div>
-            {{textarea id="keycloak-config" type="text" rows=7 value=keycloakConfig class=(if KeycloakUrlError 'error')}}
+            <label>Keycloak Server URL</label>
+            <div class="tip">e.g. http://localhost:8888/auth</div>
+            {{focus-input id="keycloak-url" type="text" value=keycloakConfig.url class=(if KeycloakUrlError 'error')}}
+        </div>
+        <div class="input-control">
+            <label>Keycloak Realm</label>
+            <div class="tip">e.g. main</div>
+            {{input id="keycloak-realm" type="text" value=keycloakConfig.realm class=(if keycloakRealmError 'error')}}
+        </div>
+        <div class="input-control">
+            <label>Keycloak OIDC Client ID</label>
+            <div class="tip">e.g. account</div>
+            {{input id="keycloak-clientId" type="text" value=keycloakConfig.clientId class=(if KeycloakClientIdError 'error')}}
         </div>
     {{/if}}
 

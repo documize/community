@@ -73,6 +73,9 @@ export default Router.map(function () {
 		this.route('sso', {
 			path: 'sso/:token'
 		});
+		this.route('keycloak', {
+			path: 'keycloak'
+		});
 		this.route('login', {
 			path: 'login'
 		});

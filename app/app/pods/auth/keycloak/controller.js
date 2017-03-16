@@ -11,16 +11,4 @@
 
 import Ember from 'ember';
 
-export default Ember.Route.extend({
-	model: function (params) {
-		return params.token;
-	},
-
-	activate() {
-		$('body').addClass('background-color-off-white');
-	},
-
-	deactivate() {
-		$('body').removeClass('background-color-off-white');
-	}
-});
+export default Ember.Controller.extend({});

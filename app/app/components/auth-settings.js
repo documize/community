@@ -19,8 +19,15 @@ const {
 export default Ember.Component.extend({
 	isDocumizeProvider: computed.equal('authProvider', constants.AuthProvider.Documize),
 	isKeycloakProvider: computed.equal('authProvider', constants.AuthProvider.Keycloak),
-	KeycloakConfigError: computed.empty('keycloakConfig'),
-	keycloakConfig: '',
+
+	KeycloakUrlError: computed.empty('keycloakConfig.url'),
+	KeycloakRealmError: computed.empty('keycloakConfig.realm'),
+	KeycloakClientIdError: computed.empty('keycloakConfig.clientId'),
+	keycloakConfig: { 
+		url: '',
+		realm: '',
+		clientId: ''
+	},
 
 	didReceiveAttrs() {
 		this._super(...arguments);
@@ -31,7 +38,15 @@ export default Ember.Component.extend({
 			case constants.AuthProvider.Documize:
 				break;
 			case constants.AuthProvider.Keycloak:
-				this.set('keycloakConfig', this.get('authConfig'));
+				let config = this.get('authConfig');
+
+				if (is.undefined(config) || is.null(config) || is.empty(config) ) {
+					config = {};
+				} else {
+					config = JSON.parse(config);
+				}
+
+				this.set('keycloakConfig', config);
 				break;
 		}
 	},
@@ -46,11 +61,6 @@ export default Ember.Component.extend({
 		},
 
 		onSave() {
-			if (this.get('KeycloakConfigError')) {
-				this.$("#keycloak-id").focus();
-				return;
-			}
-
 			let provider = this.get('authProvider');
 			let config = this.get('authConfig');
 
@@ -59,6 +69,19 @@ export default Ember.Component.extend({
 					config = {};
 					break;
 				case constants.AuthProvider.Keycloak:
+					if (this.get('KeycloakUrlError')) {
+						this.$("#keycloak-url").focus();
+						return;
+					}
+					if (this.get('KeycloakRealmError')) {
+						this.$("#keycloak-realm").focus();
+						return;
+					}
+					if (this.get('KeycloakClientIdError')) {
+						this.$("#keycloak-clientId").focus();
+						return;
+					}
+
 					config = this.get('keycloakConfig');
 					break;
 			}

@@ -14,17 +14,17 @@ import NotifierMixin from "../../../mixins/notifier";
 
 export default Ember.Controller.extend(NotifierMixin, {
 	global: Ember.inject.service(),
+    appMeta: Ember.inject.service(),
 
 	actions: {
 		onSave(provider, config) {
 			if(this.get('session.isGlobalAdmin')) {
-				let data = { authProvider: provider, authConfig: config };
+				let data = { authProvider: provider, authConfig: JSON.stringify(config) };
 
 				return this.get('global').saveAuthConfig(data).then(() => {
 					this.showNotification('Saved');
-					if (this.get('authProvider') !== provider) {
-						// window.location.reload();
-					}
+                    this.set('appMeta.authProvider', provider);
+                    this.set('appMeta.authConfig', config);
 				});
 			}
 		}

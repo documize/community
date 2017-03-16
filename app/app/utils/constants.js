@@ -19,5 +19,12 @@ export default {
     AuthProvider: {
         Documize: 'documize',
         Keycloak: 'keycloak'
-    }
+    },
+	
+	DocumentActionType: {
+		Read: 1,
+		Feedback: 2,
+		Contribute: 3,
+		Approve: 4
+	}
 };

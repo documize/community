@@ -21,7 +21,8 @@
 		"Sortable",
 		"datetimepicker",
 		"Waypoint",
-		"velocity"
+		"velocity",
+		"Keycloak"
 	],
 	"browser": true,
 	"boss": true,

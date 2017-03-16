@@ -29,7 +29,7 @@ export default Base.extend({
 		if (data) {
 			return resolve(data);
 		}
-		
+
 		return reject();
 	},
 
@@ -53,7 +53,7 @@ export default Base.extend({
 
 		let headers = { 'Authorization': 'Basic ' + encoded };
 
-		return this.get('ajax').post('public/authenticate', { headers });
+		return this.get('ajax').post('public/authenticate', { headers });		
 	},
 
 	invalidate() {

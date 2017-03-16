@@ -11,6 +11,7 @@
 
 import Ember from 'ember';
 import config from '../config/environment';
+import constants from '../utils/constants';
 
 const {
 	String: { htmlSafe },
@@ -30,7 +31,7 @@ export default Ember.Service.extend({
 	edition: 'Community',
 	valid: true,
 	allowAnonymousAccess: false,
-	authProvider: 'documize',
+	authProvider: constants.AuthProvider.Documize,
 	authConfig: null,
 	setupMode: false,
 
