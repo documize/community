@@ -25,11 +25,15 @@ export default Ember.Component.extend({
 	KeycloakRealmError: computed.empty('keycloakConfig.realm'),
 	KeycloakClientIdError: computed.empty('keycloakConfig.clientId'),
 	KeycloakPublicKeyError: computed.empty('keycloakConfig.publicKey'),
+	KeycloakAdminUserError: computed.empty('keycloakConfig.adminUser'),
+	KeycloakAdminPasswordError: computed.empty('keycloakConfig.adminPassword'),
 	keycloakConfig: { 
 		url: '',
 		realm: '',
 		clientId: '',
 		publicKey: '',
+		adminUser: '',
+		adminPassword: ''
 	},
 
 	didReceiveAttrs() {
@@ -89,16 +93,14 @@ export default Ember.Component.extend({
 						this.$("#keycloak-publicKey").focus();
 						return;
 					}
-
-					// let pk = this.get('keycloakConfig.publicKey');
-					// if (is.not.startWith(pk, '-----BEGIN PUBLIC KEY-----')) {
-					// 	pk = '-----BEGIN PUBLIC KEY-----' + pk;
-					// }
-					// if (is.not.endWith(pk, '-----END PUBLIC KEY-----')) {
-					// 	pk = pk + '-----END PUBLIC KEY-----' ;
-					// }
-
-					// this.set('keycloakConfig.publicKey', pk);
+					if (this.get('KeycloakAdminUserError')) {
+						this.$("#keycloak-admin-user").focus();
+						return;
+					}
+					if (this.get('KeycloakAdminPasswordError')) {
+						this.$("#keycloak-admin-password").focus();
+						return;
+					}
 
 					config = Ember.copy(this.get('keycloakConfig'));
 					Ember.set(config, 'publicKey', encoding.Base64.encode(this.get('keycloakConfig.publicKey')));

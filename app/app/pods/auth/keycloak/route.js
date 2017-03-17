@@ -15,7 +15,8 @@ import constants from '../../../utils/constants';
 export default Ember.Route.extend({
 	session: Ember.inject.service(),
 	appMeta: Ember.inject.service(),
-	kcAuth: Ember.inject.service(),	
+	kcAuth: Ember.inject.service(),
+	localStorage: Ember.inject.service(),
 	queryParams: {
 		mode: {
 			refreshModel: false
@@ -33,11 +34,16 @@ export default Ember.Route.extend({
 			return;
 		}
 
+		if (this.get('mode') === 'reject') {
+			return;
+		}
+
 		this.get('kcAuth').boot(JSON.parse(authConfig)).then((kc) => {
 			if (!kc.authenticated) {
 				this.get('kcAuth').login().then(() => {
 				}, (reject) => {
-					console.log(reject);
+					this.get('localStorage').storeSessionItem('kc-error', reject);
+					this.transitionTo('auth.keycloak', { queryParams: { mode: 'reject' }});
 				});
 			}
 
@@ -47,16 +53,23 @@ export default Ember.Route.extend({
 					this.get('audit').record("logged-in-keycloak");
 					this.transitionTo('folders');
 				}, (reject) => {
-					debugger;
-					console.log(">>>>> Documize Keycloak authentication failure");
-					this.transitionTo('auth.login');
+					this.get('localStorage').storeSessionItem('kc-error', reject);
+					this.transitionTo('auth.keycloak', { queryParams: { mode: 'reject' }});
 				});
 
-            }, (err) => {
-				console.log(err);
+            }, (reject) => {
+				this.get('localStorage').storeSessionItem('kc-error', reject);
+				this.transitionTo('auth.keycloak', { queryParams: { mode: 'reject' }});
             });
-		}, (reason) => {
-			console.log(reason);
+		}, (reject) => {
+			this.get('localStorage').storeSessionItem('kc-error', reject);
+			this.transitionTo('auth.keycloak', { queryParams: { mode: 'reject' }});
 		});
 	},
+
+	model() {
+		return {
+			mode: this.get('mode')
+		}
+	}
 });

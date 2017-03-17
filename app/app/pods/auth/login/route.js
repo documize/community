@@ -15,6 +15,7 @@ import constants from '../../../utils/constants';
 export default Ember.Route.extend({
     appMeta: Ember.inject.service(),
 	kcAuth: Ember.inject.service(),
+	localStorage: Ember.inject.service(),
 	showLogin: false,
 
 	beforeModel(/*transition*/) {
@@ -28,13 +29,16 @@ export default Ember.Route.extend({
 				this.get('kcAuth').boot(JSON.parse(authConfig)).then(() => {
 					this.get('kcAuth').login().then(() => {
 					}, (reject) => {
-						console.log(reject);
+						this.get('localStorage').storeSessionItem('kc-error', reject);
+						this.transitionTo('auth.keycloak', { queryParams: { mode: 'reject' }});
 					});
 				}, (reject) => {
-					console.log(reject);
+					this.get('localStorage').storeSessionItem('kc-error', reject);
+					this.transitionTo('auth.keycloak', { queryParams: { mode: 'reject' }});
 				});
 
 				break;
+				
 			default:
 				this.set('showLogin', true);
 				break;

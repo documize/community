@@ -13,7 +13,7 @@
     {{#if isKeycloakProvider}}
         <div class="form-header">
             <div class="title">Keycloak Configuration</div>
-            <div class="tip">Connection parameters</div>
+            <div class="tip">Connection parameters &mdash; create a documize user in Master realm with 'manage-users' role against target realm</div>
         </div>
         <div class="input-control">
             <label>Keycloak Server URL</label>
@@ -34,6 +34,16 @@
             <label>Keycloak Realm Public Key</label>
             <div class="tip">Copy the RSA public key from Realm Settings &rarr; Keys</div>
             {{textarea id="keycloak-publicKey" type="text" value=keycloakConfig.publicKey rows=7 class=(if KeycloakPublicKeyError 'error')}}
+        </div>
+        <div class="input-control">
+            <label>Keycloak Username</label>
+            <div class="tip">Used to connect with Keycloak and sync users with Documize</div>
+            {{input id="keycloak-admin-user" type="text" value=keycloakConfig.adminUser class=(if KeycloakAdminUserError 'error')}}
+        </div>
+        <div class="input-control">
+            <label>Keycloak Password</label>
+            <div class="tip">Used to connect with Keycloak and sync users with Documize</div>
+            {{input id="keycloak-admin-password" type="password" value=keycloakConfig.adminPassword class=(if KeycloakAdminPasswordError 'error')}}
         </div>
     {{/if}}
 
