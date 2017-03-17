@@ -13,7 +13,6 @@ package endpoint
 
 import (
 	"crypto/rand"
-	"crypto/rsa"
 	"fmt"
 	"net/http"
 	"strings"
@@ -56,18 +55,14 @@ func init() {
 
 // Generates JSON Web Token (http://jwt.io)
 func generateJWT(user, org, domain string) string {
-	token := jwt.New(jwt.SigningMethodHS256)
-
-	// issuer
-	token.Claims["iss"] = "Documize"
-	// subject
-	token.Claims["sub"] = "webapp"
-	// expiry
-	token.Claims["exp"] = time.Now().Add(time.Hour * 168).Unix()
-	// data
-	token.Claims["user"] = user
-	token.Claims["org"] = org
-	token.Claims["domain"] = domain
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"iss":    "Documize",
+		"sub":    "webapp",
+		"exp":    time.Now().Add(time.Hour * 168).Unix(),
+		"user":   user,
+		"org":    org,
+		"domain": domain,
+	})
 
 	tokenString, _ := token.SignedString([]byte(jwtKey))
 
@@ -98,7 +93,7 @@ func findJWT(r *http.Request) (token string) {
 }
 
 // We take in raw token string and decode it.
-func decodeJWT(tokenString string) (c request.Context, claims map[string]interface{}, err error) {
+func decodeJWT(tokenString string) (c request.Context, claims jwt.Claims, err error) {
 	method := "decodeJWT"
 
 	// sensible defaults
@@ -139,8 +134,13 @@ func decodeJWT(tokenString string) (c request.Context, claims map[string]interfa
 	}
 
 	c = request.NewContext()
-	c.UserID = token.Claims["user"].(string)
-	c.OrgID = token.Claims["org"].(string)
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		c.UserID = claims["user"].(string)
+		c.OrgID = claims["org"].(string)
+	} else {
+		fmt.Println(err)
+	}
 
 	if len(c.UserID) == 0 || len(c.OrgID) == 0 {
 		err = fmt.Errorf("%s : unable parse token data", method)
@@ -154,71 +154,18 @@ func decodeJWT(tokenString string) (c request.Context, claims map[string]interfa
 }
 
 // We take in Keycloak token string and decode it.
-func decodeKeycloakJWT(t, pk string) (err error) {
-	// method := "decodeKeycloakJWT"
+func decodeKeycloakJWT(t, pk string) (c jwt.MapClaims, err error) {
+	token, err := jwt.Parse(t, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		}
 
-	log.Info(t)
-	log.Info(pk)
+		return jwt.ParseRSAPublicKeyFromPEM([]byte(pk))
+	})
 
-	var rsaPSSKey *rsa.PublicKey
-	if rsaPSSKey, err = jwt.ParseRSAPublicKeyFromPEM([]byte(pk)); err != nil {
-		log.Error("Unable to parse RSA public key", err)
-		return
+	if c, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		return c, nil
 	}
 
-	parts := strings.Split(t, ".")
-	m := jwt.GetSigningMethod("RSA256")
-
-	err = m.Verify(strings.Join(parts[0:2], "."), parts[2], rsaPSSKey)
-	if err != nil {
-		log.Error("Error while verifying key", err)
-		return
-	}
-
-	// token, err := jwt.Parse(t, func(token *jwt.Token) (interface{}, error) {
-	// 	p, pe := jwt.ParseRSAPublicKeyFromPEM([]byte(pk))
-	// 	if pe != nil {
-	// 		log.Error("have jwt err", pe)
-	// 	}
-	// 	return p, pe
-	// 	// return []byte(jwtKey), nil
-	// })
-
-	// if err != nil {
-	// 	err = fmt.Errorf("bad authorization token")
-	// 	return
-	// }
-
-	// if !token.Valid {
-	// 	if ve, ok := err.(*jwt.ValidationError); ok {
-	// 		if ve.Errors&jwt.ValidationErrorMalformed != 0 {
-	// 			log.Error("invalid token", err)
-	// 			err = fmt.Errorf("bad token")
-	// 			return
-	// 		} else if ve.Errors&(jwt.ValidationErrorExpired|jwt.ValidationErrorNotValidYet) != 0 {
-	// 			log.Error("expired token", err)
-	// 			err = fmt.Errorf("expired token")
-	// 			return
-	// 		} else {
-	// 			log.Error("invalid token", err)
-	// 			err = fmt.Errorf("bad token")
-	// 			return
-	// 		}
-	// 	} else {
-	// 		log.Error("invalid token", err)
-	// 		err = fmt.Errorf("bad token")
-	// 		return
-	// 	}
-	// }
-
-	// email := token.Claims["user"].(string)
-	// exp := token.Claims["exp"].(string)
-	// sub := token.Claims["sub"].(string)
-
-	// if len(email) == 0 || len(exp) == 0 || len(sub) == 0 {
-	// 	err = fmt.Errorf("%s : unable parse Keycloak token data", method)
-	// 	return
-	// }
-
-	return nil
+	return nil, err
 }

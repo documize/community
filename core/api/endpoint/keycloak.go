@@ -14,23 +14,20 @@ package endpoint
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
 
 	"github.com/documize/community/core/api/endpoint/models"
+	"github.com/documize/community/core/api/entity"
 	"github.com/documize/community/core/api/request"
+	"github.com/documize/community/core/api/util"
 	"github.com/documize/community/core/log"
-	// "github.com/documize/community/core/section/provider"
 	"github.com/documize/community/core/utility"
 )
 
 // AuthenticateKeycloak checks Keycloak authentication credentials.
-//
-// TODO:
-// 1. validate keycloak token
-// 2. implement new user additions: user & account with RefID
-//
 func AuthenticateKeycloak(w http.ResponseWriter, r *http.Request) {
 	method := "AuthenticateKeycloak"
 	p := request.GetPersister(r)
@@ -49,7 +46,6 @@ func AuthenticateKeycloak(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Clean data.
 	a.Domain = strings.TrimSpace(strings.ToLower(a.Domain))
 	a.Domain = request.CheckDomain(a.Domain) // TODO optimize by removing this once js allows empty domains
 	a.Email = strings.TrimSpace(strings.ToLower(a.Email))
@@ -60,24 +56,42 @@ func AuthenticateKeycloak(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Validate Keycloak credentials
-	pks := "LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS1NSUlCSWpBTkJna3Foa2lHOXcwQkFRRUZBQU9DQVE4QU1JSUJDZ0tDQVFFQTAwRzI3KzZYNzJFWllIY3NyY1pHekYwZzFsL1gzeVdLS20vZ3NnMCtjMWdXQ2R4ZmI4QmtkbFdCcXhXZVRoSEZCVUVETnorakFyTjBlL0dFMXorMmxnQzJlMkQwemFlcjdlSHZ6bzlBK1hkb0h4KzRNS3RUbkxZZS9aYUFpc3ExSHVURkRKZElKZFRJVUpTWUFXZlNrSmJtdGhIOUVPMmF3SVhEQzlMMWpDa2IwNHZmZ0xERFA3bVo1YzV6NHJPcGluTU45V3RkSm8xeC90VG0xVDlwRHQ3NDRIUHBoMENSbW5OcTRCdWo2SGpaQ3hCcFF1aUp5am0yT0lIdm4vWUJxVUlSUitMcFlJREV1d2FQRU04QkF1eWYvU3BBTGNNaG9oZndzR255QnFMV3QwVFBua3plZjl6ZWN3WEdsQXlYbUZCWlVkR1k3Z0hOdDRpVmdvMXp5d0lEQVFBQi0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQ=="
-	pkb, err := utility.DecodeBase64([]byte(pks))
+	org, err := p.GetOrganizationByDomain(a.Domain)
 	if err != nil {
-		log.Error("", err)
-		writeBadRequestError(w, method, "Unable to decode authentication token")
+		writeUnauthorizedError(w)
+		return
+	}
+
+	p.Context.OrgID = org.RefID
+
+	// Fetch Keycloak auth provider config
+	ac := keycloakConfig{}
+	err = json.Unmarshal([]byte(org.AuthConfig), &ac)
+	if err != nil {
+		writeBadRequestError(w, method, "Unable to unmarshall Keycloak Public Key")
+		return
+	}
+
+	// Decode and prepare RSA Public Key used by keycloak to sign JWT.
+	pkb, err := utility.DecodeBase64([]byte(ac.PublicKey))
+	if err != nil {
+		writeBadRequestError(w, method, "Unable to base64 decode Keycloak Public Key")
 		return
 	}
 	pk := string(pkb)
-	pk = `
------BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA00G27+6X72EZYHcsrcZGzF0g1l/X3yWKKm/gsg0+c1gWCdxfb8BkdlWBqxWeThHFBUEDNz+jArN0e/GE1z+2lgC2e2D0zaer7eHvzo9A+XdoHx+4MKtTnLYe/ZaAisq1HuTFDJdIJdTIUJSYAWfSkJbmthH9EO2awIXDC9L1jCkb04vfgLDDP7mZ5c5z4rOpinMN9WtdJo1x/tTm1T9pDt744HPph0CRmnNq4Buj6HjZCxBpQuiJyjm2OIHvn/YBqUIRR+LpYIDEuwaPEM8BAuyf/SpALcMhohfwsGnyBqLWt0TPnkzef9zecwXGlAyXmFBZUdGY7gHNt4iVgo1zywIDAQAB
------END PUBLIC KEY-----
-	`
+	pk = fmt.Sprintf("-----BEGIN PUBLIC KEY-----\n%s\n-----END PUBLIC KEY-----", pk)
 
-	err = decodeKeycloakJWT(a.Token, pk)
+	// Decode and verify Keycloak JWT
+	claims, err := decodeKeycloakJWT(a.Token, pk)
 	if err != nil {
 		writeServerError(w, method, err)
+		return
+	}
+
+	// Compare the contents from JWT with what we have.
+	// Guards against MITM token tampering.
+	if a.Email != claims["email"].(string) || claims["sub"].(string) != a.RemoteID {
+		writeUnauthorizedError(w)
 		return
 	}
 
@@ -99,16 +113,15 @@ MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA00G27+6X72EZYHcsrcZGzF0g1l/X3yWKKm/g
 			return
 		}
 
+		user, err = addUser(p, a)
+		if err != nil {
+			writeServerError(w, method, err)
+			return
+		}
 	}
 
 	// Password correct and active user
 	if a.Email != strings.TrimSpace(strings.ToLower(user.Email)) {
-		writeUnauthorizedError(w)
-		return
-	}
-
-	org, err := p.GetOrganizationByDomain(a.Domain)
-	if err != nil {
 		writeUnauthorizedError(w)
 		return
 	}
@@ -146,6 +159,85 @@ MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA00G27+6X72EZYHcsrcZGzF0g1l/X3yWKKm/g
 	}
 
 	writeSuccessBytes(w, json)
+}
+
+// Helper method to setup user account in Documize using Keycloak provided user data.
+func addUser(p request.Persister, a keycloakAuthRequest) (u entity.User, err error) {
+	u.Firstname = a.Firstname
+	u.Lastname = a.Lastname
+	u.Email = a.Email
+	u.Initials = utility.MakeInitials(a.Firstname, a.Lastname)
+	u.Salt = util.GenerateSalt()
+	u.Password = util.GeneratePassword(util.GenerateRandomPassword(), u.Salt)
+
+	// only create account if not dupe
+	addUser := true
+	addAccount := true
+	var userID string
+
+	userDupe, err := p.GetUserByEmail(a.Email)
+
+	if err != nil && err != sql.ErrNoRows {
+		return u, err
+	}
+
+	if u.Email == userDupe.Email {
+		addUser = false
+		userID = userDupe.RefID
+	}
+
+	p.Context.Transaction, err = request.Db.Beginx()
+	if err != nil {
+		return u, err
+	}
+
+	if addUser {
+		userID = util.UniqueID()
+		u.RefID = userID
+		err = p.AddUser(u)
+
+		if err != nil {
+			log.IfErr(p.Context.Transaction.Rollback())
+			return u, err
+		}
+	} else {
+		attachUserAccounts(p, p.Context.OrgID, &userDupe)
+
+		for _, a := range userDupe.Accounts {
+			if a.OrgID == p.Context.OrgID {
+				addAccount = false
+				break
+			}
+		}
+	}
+
+	// set up user account for the org
+	if addAccount {
+		var a entity.Account
+		a.UserID = userID
+		a.OrgID = p.Context.OrgID
+		a.Editor = true
+		a.Admin = false
+		accountID := util.UniqueID()
+		a.RefID = accountID
+		a.Active = true
+
+		err = p.AddAccount(a)
+		if err != nil {
+			log.IfErr(p.Context.Transaction.Rollback())
+			return u, err
+		}
+	}
+
+	log.IfErr(p.Context.Transaction.Commit())
+
+	// If we did not add user or give them access (account) then we error back
+	if !addUser && !addAccount {
+		log.IfErr(p.Context.Transaction.Rollback())
+		return u, err
+	}
+
+	return p.GetUser(userID)
 }
 
 // Data received via Keycloak client library
