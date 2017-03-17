@@ -44,17 +44,19 @@ export default Ember.Route.extend({
 			this.get('kcAuth').fetchProfile(kc).then((profile) => {
 				let data = this.get('kcAuth').mapProfile(kc, profile);
 
-				console.log(kc);
-				console.log(profile);
-				console.log(data);
+				// console.log(kc);
+				// console.log(profile);
+				// console.log(data);
 
-				// this.get("session").authenticate('authenticator:keycloak', data)
-				// 	.then(() => {
-				// 		this.transitionTo('folders');
-				// 	}, () => {
-				// 		this.transitionTo('auth.login');
-				// 		console.log(">>>>> Documize SSO failure");
-				// 	});
+				this.get("session").authenticate('authenticator:keycloak', data).then(() => {
+					debugger;
+					this.get('audit').record("logged-in-keycloak");
+					this.transitionTo('folders');
+				}, (reject) => {
+					debugger;
+					console.log(">>>>> Documize Keycloak authentication failure");
+					this.transitionTo('auth.login');
+				});
 
             }, (err) => {
 				console.log(err);

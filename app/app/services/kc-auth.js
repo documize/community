@@ -63,13 +63,14 @@ export default Ember.Service.extend({
 
 	mapProfile(kc, profile) {
 		return {
+            domain: '',
 			token: kc.token,
-			enabled: profile.enabled,
-			email: profile.email,
-			username: profile.username,
-			firstname: profile.firstName,
-			lastname: profile.lastName,
-            remoteId: profile.id
+            remoteId: is.null(profile.id) || is.undefined(profile.id) ? profile.email: profile.id,
+			email: is.null(profile.email) || is.undefined(profile.email) ? '': profile.email,
+			username: is.null(profile.username) || is.undefined(profile.username) ? '': profile.username,
+			firstname: is.null(profile.firstName) || is.undefined(profile.firstName) ? profile.username: profile.firstName,
+			lastname: is.null(profile.lastName) || is.undefined(profile.lastName) ? profile.username: profile.lastName,
+			enabled: is.null(profile.enabled) || is.undefined(profile.enabled) ? true: profile.enabled
 		};
 	}
 });

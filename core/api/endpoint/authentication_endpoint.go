@@ -24,7 +24,7 @@ import (
 	"github.com/documize/community/core/api/request"
 	"github.com/documize/community/core/api/util"
 	"github.com/documize/community/core/log"
-	"github.com/documize/community/core/section/provider"
+	// "github.com/documize/community/core/section/provider"
 	"github.com/documize/community/core/utility"
 	"github.com/documize/community/core/web"
 )
@@ -45,15 +45,15 @@ func Authenticate(w http.ResponseWriter, r *http.Request) {
 
 	// decode what we received
 	data := strings.Replace(authHeader, "Basic ", "", 1)
-	decodedBytes, err := utility.DecodeBase64([]byte(data))
 
+	decodedBytes, err := utility.DecodeBase64([]byte(data))
 	if err != nil {
 		writeBadRequestError(w, method, "Unable to decode authentication token")
 		return
 	}
+	decoded := string(decodedBytes)
 
 	// check that we have domain:email:password (but allow for : in password field!)
-	decoded := string(decodedBytes)
 	credentials := strings.SplitN(decoded, ":", 3)
 
 	if len(credentials) != 3 {
@@ -228,65 +228,6 @@ func Authorize(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	}
 }
 
-// ValidateAuthToken checks the auth token and returns the corresponding user.
-func ValidateAuthToken(w http.ResponseWriter, r *http.Request) {
-
-	// TODO should this go after token validation?
-	if s := r.URL.Query().Get("section"); s != "" {
-		if err := provider.Callback(s, w, r); err != nil {
-			log.Error("section validation failure", err)
-			w.WriteHeader(http.StatusUnauthorized)
-		}
-		return
-	}
-
-	method := "ValidateAuthToken"
-
-	context, claims, err := decodeJWT(findJWT(r))
-
-	if err != nil {
-		log.Error("token validation", err)
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
-
-	request.SetContext(r, context)
-	p := request.GetPersister(r)
-
-	org, err := p.GetOrganization(context.OrgID)
-
-	if err != nil {
-		log.Error("token validation", err)
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
-
-	domain := request.GetSubdomainFromHost(r)
-
-	if org.Domain != domain || claims["domain"] != domain {
-		log.Error("token validation", err)
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
-
-	user, err := getSecuredUser(p, context.OrgID, context.UserID)
-
-	if err != nil {
-		log.Error("get user error for token validation", err)
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
-
-	json, err := json.Marshal(user)
-
-	if err != nil {
-		writeJSONMarshalError(w, method, "user", err)
-		return
-	}
-
-	writeSuccessBytes(w, json)
-}
-
 // Certain assets/URL do not require authentication.
 // Just stops the log files being clogged up with failed auth errors.
 func preAuthorizeStaticAssets(r *http.Request) bool {
@@ -303,3 +244,62 @@ func preAuthorizeStaticAssets(r *http.Request) bool {
 
 	return false
 }
+
+// // ValidateAuthToken checks the auth token and returns the corresponding user.
+// func ValidateAuthToken(w http.ResponseWriter, r *http.Request) {
+
+// 	// TODO should this go after token validation?
+// 	if s := r.URL.Query().Get("section"); s != "" {
+// 		if err := provider.Callback(s, w, r); err != nil {
+// 			log.Error("section validation failure", err)
+// 			w.WriteHeader(http.StatusUnauthorized)
+// 		}
+// 		return
+// 	}
+
+// 	method := "ValidateAuthToken"
+
+// 	context, claims, err := decodeJWT(findJWT(r))
+
+// 	if err != nil {
+// 		log.Error("token validation", err)
+// 		w.WriteHeader(http.StatusUnauthorized)
+// 		return
+// 	}
+
+// 	request.SetContext(r, context)
+// 	p := request.GetPersister(r)
+
+// 	org, err := p.GetOrganization(context.OrgID)
+
+// 	if err != nil {
+// 		log.Error("token validation", err)
+// 		w.WriteHeader(http.StatusUnauthorized)
+// 		return
+// 	}
+
+// 	domain := request.GetSubdomainFromHost(r)
+
+// 	if org.Domain != domain || claims["domain"] != domain {
+// 		log.Error("token validation", err)
+// 		w.WriteHeader(http.StatusUnauthorized)
+// 		return
+// 	}
+
+// 	user, err := getSecuredUser(p, context.OrgID, context.UserID)
+
+// 	if err != nil {
+// 		log.Error("get user error for token validation", err)
+// 		w.WriteHeader(http.StatusUnauthorized)
+// 		return
+// 	}
+
+// 	json, err := json.Marshal(user)
+
+// 	if err != nil {
+// 		writeJSONMarshalError(w, method, "user", err)
+// 		return
+// 	}
+
+// 	writeSuccessBytes(w, json)
+// }

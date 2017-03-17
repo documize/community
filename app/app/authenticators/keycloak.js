@@ -11,7 +11,6 @@
 
 import Ember from 'ember';
 import Base from 'ember-simple-auth/authenticators/base';
-import encodingUtil from '../utils/encoding';
 import netUtil from '../utils/net';
 
 const {
@@ -33,27 +32,17 @@ export default Base.extend({
 		return reject();
 	},
 
-	authenticate(credentials) {
-		let domain = netUtil.getSubdomain();
-		let encoded;
+	authenticate(data) {
+		data.domain = netUtil.getSubdomain();
 
-		if (typeof credentials === 'object') {
-			let { password, email } = credentials;
-
-			if (!isPresent(password) || !isPresent(email)) {
-				return Ember.RSVP.reject("invalid");
-			}
-
-			encoded = encodingUtil.Base64.encode(`${domain}:${email}:${password}`);
-		} else if (typeof credentials === 'string') {
-			encoded = credentials;
-		} else {
+		if (!isPresent(data.token) || !isPresent(data.email)) {
 			return Ember.RSVP.reject("invalid");
 		}
 
-		let headers = { 'Authorization': 'Basic ' + encoded };
-
-		return this.get('ajax').post('public/authenticate', { headers });		
+		return this.get('ajax').post('public/authenticate/keycloak', {
+			data: JSON.stringify(data),
+			contentType: 'json'
+		});
 	},
 
 	invalidate() {

@@ -43,29 +43,6 @@ export default Ember.Controller.extend({
 				}).catch(() => {
 					this.set('invalidCredentials', true);
 				});
-
-			// let authProvider = this.get('appMeta.authProvider');
-			// let authConfig = this.get('appMeta.authConfig');
-			// switch (authProvider) {
-			// 	case constants.AuthProvider.Documize:
-			// 		let creds = this.getProperties('email', 'password');
-		
-			// 		this.get('session').authenticate('authenticator:documize', creds)
-			// 			.then((response) => {
-			// 				this.get('audit').record("logged-in");
-			// 				this.transitionToRoute('folders');
-			// 				return response;
-			// 			}).catch(() => {
-			// 				this.set('invalidCredentials', true);
-			// 			});
-					
-			// 		break;
-			
-			// 	case constants.AuthProvider.Keycloak:
-			// 		// this.get('session').authenticate('authenticator:keycloak', authConfig);
-		
-			// 		break;
-			// }
 		}
 	}
 });

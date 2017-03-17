@@ -11,6 +11,7 @@
 
 import Ember from 'ember';
 import constants from '../utils/constants';
+import encoding from '../utils/encoding';
 
 const {
 	computed
@@ -46,6 +47,7 @@ export default Ember.Component.extend({
 					config = {};
 				} else {
 					config = JSON.parse(config);
+					config.publicKey = encoding.Base64.decode(config.publicKey);
 				}
 
 				this.set('keycloakConfig', config);
@@ -98,7 +100,8 @@ export default Ember.Component.extend({
 
 					this.set('keycloakConfig.publicKey', pk);
 
-					config = this.get('keycloakConfig');
+					config = Ember.copy(this.get('keycloakConfig'));
+					Ember.set(config, 'publicKey', encoding.Base64.encode(pk));
 					break;
 			}
 
