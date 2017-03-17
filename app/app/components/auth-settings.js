@@ -90,18 +90,18 @@ export default Ember.Component.extend({
 						return;
 					}
 
-					let pk = this.get('keycloakConfig.publicKey');
-					if (is.not.startWith(pk, '-----BEGIN PUBLIC KEY-----')) {
-						pk = '-----BEGIN PUBLIC KEY-----' + pk;
-					}
-					if (is.not.endWith(pk, '-----END PUBLIC KEY-----')) {
-						pk = pk + '-----END PUBLIC KEY-----' ;
-					}
+					// let pk = this.get('keycloakConfig.publicKey');
+					// if (is.not.startWith(pk, '-----BEGIN PUBLIC KEY-----')) {
+					// 	pk = '-----BEGIN PUBLIC KEY-----' + pk;
+					// }
+					// if (is.not.endWith(pk, '-----END PUBLIC KEY-----')) {
+					// 	pk = pk + '-----END PUBLIC KEY-----' ;
+					// }
 
-					this.set('keycloakConfig.publicKey', pk);
+					// this.set('keycloakConfig.publicKey', pk);
 
 					config = Ember.copy(this.get('keycloakConfig'));
-					Ember.set(config, 'publicKey', encoding.Base64.encode(pk));
+					Ember.set(config, 'publicKey', encoding.Base64.encode(this.get('keycloakConfig.publicKey')));
 					break;
 			}
 

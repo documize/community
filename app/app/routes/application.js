@@ -25,7 +25,9 @@ export default Ember.Route.extend(ApplicationRouteMixin, TooltipMixin, {
 
 	beforeModel(transition) {
 		return this.get('appMeta').boot(transition.targetName).then(data => {
-			if (this.get('session.session.authenticator') !== "authenticator:documize" && data.allowAnonymousAccess) {
+			if (this.get('session.session.authenticator') !== "authenticator:documize" &&
+				this.get('session.session.authenticator') !== "authenticator:keycloak" && 
+				data.allowAnonymousAccess) {
 				return this.get('session').authenticate('authenticator:anonymous', data);
 			}
 

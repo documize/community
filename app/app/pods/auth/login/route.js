@@ -15,6 +15,7 @@ import constants from '../../../utils/constants';
 export default Ember.Route.extend({
     appMeta: Ember.inject.service(),
 	kcAuth: Ember.inject.service(),
+	showLogin: false,
 
 	beforeModel(/*transition*/) {
 		let authProvider = this.get('appMeta.authProvider');
@@ -22,6 +23,8 @@ export default Ember.Route.extend({
 
 		switch (authProvider) {
 			case constants.AuthProvider.Keycloak:
+				this.set('showLogin', false);
+
 				this.get('kcAuth').boot(JSON.parse(authConfig)).then(() => {
 					this.get('kcAuth').login().then(() => {
 					}, (reject) => {
@@ -32,7 +35,16 @@ export default Ember.Route.extend({
 				});
 
 				break;
+			default:
+				this.set('showLogin', true);
+				break;
 		}
+	},
+
+	model() {
+		return  {
+			showLogin: this.get('showLogin')
+		};
 	},
 
 	setupController: function (controller, model) {

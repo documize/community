@@ -24,7 +24,6 @@ import (
 	"github.com/documize/community/core/api/request"
 	"github.com/documize/community/core/api/util"
 	"github.com/documize/community/core/log"
-	// "github.com/documize/community/core/section/provider"
 	"github.com/documize/community/core/utility"
 	"github.com/documize/community/core/web"
 )
@@ -244,62 +243,3 @@ func preAuthorizeStaticAssets(r *http.Request) bool {
 
 	return false
 }
-
-// // ValidateAuthToken checks the auth token and returns the corresponding user.
-// func ValidateAuthToken(w http.ResponseWriter, r *http.Request) {
-
-// 	// TODO should this go after token validation?
-// 	if s := r.URL.Query().Get("section"); s != "" {
-// 		if err := provider.Callback(s, w, r); err != nil {
-// 			log.Error("section validation failure", err)
-// 			w.WriteHeader(http.StatusUnauthorized)
-// 		}
-// 		return
-// 	}
-
-// 	method := "ValidateAuthToken"
-
-// 	context, claims, err := decodeJWT(findJWT(r))
-
-// 	if err != nil {
-// 		log.Error("token validation", err)
-// 		w.WriteHeader(http.StatusUnauthorized)
-// 		return
-// 	}
-
-// 	request.SetContext(r, context)
-// 	p := request.GetPersister(r)
-
-// 	org, err := p.GetOrganization(context.OrgID)
-
-// 	if err != nil {
-// 		log.Error("token validation", err)
-// 		w.WriteHeader(http.StatusUnauthorized)
-// 		return
-// 	}
-
-// 	domain := request.GetSubdomainFromHost(r)
-
-// 	if org.Domain != domain || claims["domain"] != domain {
-// 		log.Error("token validation", err)
-// 		w.WriteHeader(http.StatusUnauthorized)
-// 		return
-// 	}
-
-// 	user, err := getSecuredUser(p, context.OrgID, context.UserID)
-
-// 	if err != nil {
-// 		log.Error("get user error for token validation", err)
-// 		w.WriteHeader(http.StatusUnauthorized)
-// 		return
-// 	}
-
-// 	json, err := json.Marshal(user)
-
-// 	if err != nil {
-// 		writeJSONMarshalError(w, method, "user", err)
-// 		return
-// 	}
-
-// 	writeSuccessBytes(w, json)
-// }
