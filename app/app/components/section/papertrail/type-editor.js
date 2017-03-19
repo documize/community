@@ -28,7 +28,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
 		try {
 			config = JSON.parse(this.get('meta.config'));
-		} catch (e) {}
+		} catch (e) {} // eslint-disable-line no-empty
 
 		if (is.empty(config)) {
 			config = {
@@ -90,19 +90,19 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 							if (is.not.undefined(group)) {
 								Ember.set(config, 'group', group);
 							}
-						}, function (reason) { //jshint ignore: line
+						}, function (reason) { 
 							self.set('authenticated', false);
 							self.set('waiting', false);
 							self.set('config.APIToken', ''); // clear the api token 
 							self.displayError(reason);
-							console.log("get options call failed");
+							console.log("get options call failed"); // eslint-disable-line no-console
 						});
-				}, function (reason) { //jshint ignore: line
+				}, function (reason) { 
 					self.set('authenticated', false);
 					self.set('waiting', false);
 					self.set('config.APIToken', ''); // clear the api token 
 					self.displayError(reason);
-					console.log("auth token invalid");
+					console.log("auth token invalid"); // eslint-disable-line no-console
 				});
 		},
 
@@ -176,7 +176,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
 					self.set('waiting', false);
 					self.attrs.onAction(page, meta);
-				}, function (reason) { //jshint ignore: line
+				}, function (reason) { // eslint-disable-line no-unused-vars
 					self.set('authenticated', false);
 					self.set('waiting', false);
 					self.showNotification(`Something went wrong, try again!`);

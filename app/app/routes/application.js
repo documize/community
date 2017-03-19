@@ -43,8 +43,8 @@ export default Ember.Route.extend(ApplicationRouteMixin, TooltipMixin, {
 
 		error(error, transition) {
 			if (error) {
-				console.log(error);
-				console.log(transition);
+				console.log(error); // eslint-disable-line no-console
+				console.log(transition); // eslint-disable-line no-console
 
 				if (netUtil.isAjaxAccessError(error)) {
 					localStorage.clear();

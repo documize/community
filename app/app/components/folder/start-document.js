@@ -64,7 +64,7 @@ export default Ember.Component.extend(NotifierMixin, {
 				});
 
 				this.on("error", function (x) {
-					console.log("Conversion failed for ", x.name, " obj ", x); // TODO proper error handling
+					console.log("Conversion failed for ", x.name, " obj ", x); // eslint-disable-line no-console
 				});
 
 				this.on("queuecomplete", function () {});

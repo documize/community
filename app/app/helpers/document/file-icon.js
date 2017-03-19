@@ -34,11 +34,10 @@ export function documentFileIcon(params) {
 
 		case "html":
 			html = "html.png";
-	        break;
+            break;
 		case "css":
 			html = "css.png";
-	        break;
-
+            break;
 
         case "bat":
         case "sh":

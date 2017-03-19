@@ -56,7 +56,8 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 					config.showMilestones = metaConfig.showMilestones;
 					config.showIssues = metaConfig.showIssues;
 					config.showCommits = metaConfig.showCommits;
-				} catch (e) {}
+				} catch (e) { // eslint-disable-line no-empty
+				}
 
 				if (_.isUndefined(config.showCommits)) {
 					config.showCommits = true;
@@ -75,24 +76,24 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 						.then(function () {
 							self.send('authStage2');
 						}, function (error) { //jshint ignore: line
-							console.log(error);
+							console.log(error); // eslint-disable-line no-console
 							self.send('auth');
 						});
 				} else {
 					if (config.userId !== self.get("session.session.authenticated.user.id")) {
-						console.log("github auth wrong user ID, switching");
+						console.log("github auth wrong user ID, switching"); // eslint-disable-line no-console
 						self.set('config.userId', self.get("session.session.authenticated.user.id"));
 					}
 					self.get('sectionService').fetch(page, "checkAuth", self.get('config'))
 						.then(function () {
 							self.send('authStage2');
-						}, function (error) { //jshint ignore: line
-							console.log(error);
+						}, function (error) { 
+							console.log(error); // eslint-disable-line no-console
 							self.send('auth'); // require auth if the db token is invalid
 						});
 				}
-			}, function (error) { //jshint ignore: line
-				console.log(error);
+			}, function (error) { 
+				console.log(error); // eslint-disable-line no-console
 			});
 		}
 	},
@@ -163,11 +164,11 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
 			self.set('config.lists', lists);
 			self.set('busy', false);
-		}, function (error) { //jshint ignore: line
+		}, function (error) { 
 			self.set('busy', false);
 			self.set('authenticated', false);
 			self.showNotification("Unable to fetch repositories");
-			console.log(error);
+			console.log(error); // eslint-disable-line no-console
 		});
 	},
 
@@ -201,11 +202,11 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 					self.set('busy', false);
 					self.set('owners', owners);
 					self.getOwnerLists();
-				}, function (error) { //jshint ignore: line
+				}, function (error) { 
 					self.set('busy', false);
 					self.set('authenticated', false);
 					self.showNotification("Unable to fetch owners");
-					console.log(error);
+					console.log(error); // eslint-disable-line no-console
 				});
 
 		},
@@ -253,7 +254,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 					meta.set('rawBody', JSON.stringify(response));
 					self.set('busy', false);
 					self.attrs.onAction(page, meta);
-				}, function (reason) { //jshint ignore: line
+				}, function (reason) { // eslint-disable-line no-unused-vars
 					self.set('busy', false);
 					self.attrs.onAction(page, meta);
 				});

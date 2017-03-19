@@ -31,7 +31,6 @@ export default Ember.Service.extend({
 				this.get('audit').record("initialized-keycloak");
                 resolve(this.get('keycloak'));
             }).error((err) => {
-                console.log('Keycloak init failed', err);
                 reject(err);
             });
         });
@@ -55,7 +54,6 @@ export default Ember.Service.extend({
             kc.loadUserProfile().success((profile) => {
                 return resolve(profile);
             }).error((err) => {
-                console.log('Keycloak loadUserProfile failed', err);
                 return reject(err);
             });
         });

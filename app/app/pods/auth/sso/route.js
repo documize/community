@@ -20,7 +20,6 @@ export default Ember.Route.extend({
 				this.transitionTo('folders');
 			}, () => {
 				this.transitionTo('auth.login');
-				console.log(">>>>> Documize SSO failure");
 			});
 	},
 });

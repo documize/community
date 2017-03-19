@@ -77,7 +77,7 @@ export default Ember.Component.extend(TooltipMixin, {
 					self.get('pinned').updateSequence(this.toArray()).then((pins) => {
 						self.set('pins', pins);
 					});
-			    }
+				}
 			});
 
 			this.set('sortable', sortable);

@@ -20,8 +20,8 @@ export default Ember.Controller.extend(NotifierMixin, {
 	pages: [],
 	toggled: false,
 	queryParams: ['pageId', 'tab'],
-  	pageId: '',
-  	tab: 'index',
+	pageId: '',
+	tab: 'index',
 
 	actions: {
 		toggleSidebar() {

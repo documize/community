@@ -43,8 +43,9 @@ export default Ember.Component.extend({
 
 		switch (provider) {
 			case constants.AuthProvider.Documize:
+				// nothing to do
 				break;
-			case constants.AuthProvider.Keycloak:
+			case constants.AuthProvider.Keycloak: // eslint-disable-line no-case-declarations
 				let config = this.get('authConfig');
 
 				if (is.undefined(config) || is.null(config) || is.empty(config) ) {

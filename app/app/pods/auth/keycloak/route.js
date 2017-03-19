@@ -30,7 +30,6 @@ export default Ember.Route.extend({
 		let authConfig = this.get('appMeta.authConfig');
 
 		if (authProvider !== constants.AuthProvider.Keycloak) {
-			console.log('Expecting keycloak auth but found ' + authProvider);
 			return;
 		}
 

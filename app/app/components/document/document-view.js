@@ -34,7 +34,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		
 		this.loadBlocks();
 
-		  Ember.run.schedule('afterRender', () => {
+		Ember.run.schedule('afterRender', () => {
 			let jumpTo = "#page-" + this.get('pageId');
 			if (!$(jumpTo).inView()) {
 				$(jumpTo).velocity("scroll", { duration: 250, offset: -100 });

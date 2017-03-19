@@ -48,7 +48,6 @@ export default Ember.Component.extend(NotifierMixin, {
         },
 
         addFolder() {
-            console.log("adding folder!");
             return true;
         }
     }

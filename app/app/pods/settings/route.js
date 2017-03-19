@@ -81,7 +81,7 @@ export default Ember.Route.extend(NotifierMixin, {
 			folderPermissions.pushObject(u);
 
 			this.get('folderService').getPermissions(model.id).then((permissions) => {
-				permissions.forEach((permission, index) => { /* jshint ignore:line */
+				permissions.forEach((permission, index) => { // eslint-disable-line no-unused-vars
 					var folderPermission = folderPermissions.findBy('userId', permission.get('userId'));
 					if (is.not.undefined(folderPermission)) {
 						Ember.setProperties(folderPermission, {

@@ -103,7 +103,7 @@ export default Ember.Component.extend({
 				message = this.getDefaultInvitationMessage();
 			}
 
-			this.get('permissions').forEach((permission, index) => { /* jshint ignore:line */
+			this.get('permissions').forEach((permission, index) => { // eslint-disable-line no-unused-vars
 				Ember.set(permission, 'canView', $("#canView-" + permission.userId).prop('checked'));
 				Ember.set(permission, 'canEdit', $("#canEdit-" + permission.userId).prop('checked'));
 			});
