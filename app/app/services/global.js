@@ -73,5 +73,15 @@ export default Ember.Service.extend({
 				data: JSON.stringify(config)
 			});
 		}
-	}
+	},
+
+	syncExternalUsers() {
+		if(this.get('sessionService.isGlobalAdmin')) {
+			return this.get('ajax').request(`users/sync`, {
+				method: 'GET'
+			}).then((response) => {
+				return response;
+			});
+		}
+	},
 });

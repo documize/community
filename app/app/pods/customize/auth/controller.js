@@ -27,6 +27,12 @@ export default Ember.Controller.extend(NotifierMixin, {
                     this.set('appMeta.authConfig', config);
 				});
 			}
+		},
+
+		onSync() {
+			return this.get('global').syncExternalUsers().then((response) => {
+				this.showNotification(response.message);
+			});
 		}
 	}
 });

@@ -28,6 +28,7 @@ import (
 	"github.com/documize/community/core/api/util"
 	"github.com/documize/community/core/log"
 	"github.com/documize/community/core/utility"
+	"sort"
 	"strconv"
 )
 
@@ -117,7 +118,15 @@ func AuthenticateKeycloak(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		user, err = addUser(p, a)
+		user = entity.User{}
+		user.Firstname = a.Firstname
+		user.Lastname = a.Lastname
+		user.Email = a.Email
+		user.Initials = utility.MakeInitials(user.Firstname, user.Lastname)
+		user.Salt = util.GenerateSalt()
+		user.Password = util.GeneratePassword(util.GenerateRandomPassword(), user.Salt)
+
+		err = addUser(p, &user)
 		if err != nil {
 			writeServerError(w, method, err)
 			return
@@ -162,32 +171,100 @@ func AuthenticateKeycloak(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = SyncUsers(ac)
-	if err != nil {
-		log.Error("su", err)
-	}
-
 	writeSuccessBytes(w, json)
 }
 
-// Helper method to setup user account in Documize using Keycloak provided user data.
-func addUser(p request.Persister, a keycloakAuthRequest) (u entity.User, err error) {
-	u.Firstname = a.Firstname
-	u.Lastname = a.Lastname
-	u.Email = a.Email
-	u.Initials = utility.MakeInitials(a.Firstname, a.Lastname)
-	u.Salt = util.GenerateSalt()
-	u.Password = util.GeneratePassword(util.GenerateRandomPassword(), u.Salt)
+// SyncKeycloak gets list of Keycloak users and inserts new users into Documize
+// and marks Keycloak disabled users as inactive.
+func SyncKeycloak(w http.ResponseWriter, r *http.Request) {
+	p := request.GetPersister(r)
 
+	if !p.Context.Administrator {
+		writeForbiddenError(w)
+		return
+	}
+
+	var result struct {
+		Message string `json:"message"`
+	}
+
+	// Org contains raw auth provider config
+	org, err := p.GetOrganization(p.Context.OrgID)
+	if err != nil {
+		result.Message = "Unable to get organization record"
+		log.Error(result.Message, err)
+		util.WriteJSON(w, result)
+		return
+	}
+
+	// Make Keycloak auth provider config
+	c := keycloakConfig{}
+	err = json.Unmarshal([]byte(org.AuthConfig), &c)
+	if err != nil {
+		result.Message = "Unable process Keycloak public key"
+		log.Error(result.Message, err)
+		util.WriteJSON(w, result)
+		return
+	}
+
+	// User list from Keycloak
+	kcUsers, err := KeycloakUsers(c)
+	if err != nil {
+		result.Message = "Unable to fetch Keycloak users: " + err.Error()
+		log.Error(result.Message, err)
+		util.WriteJSON(w, result)
+		return
+	}
+
+	// User list from Documize
+	dmzUsers, err := p.GetUsersForOrganization()
+	if err != nil {
+		result.Message = "Unable to fetch Documize users"
+		log.Error(result.Message, err)
+		util.WriteJSON(w, result)
+		return
+	}
+
+	sort.Slice(kcUsers, func(i, j int) bool { return kcUsers[i].Email < kcUsers[j].Email })
+	sort.Slice(dmzUsers, func(i, j int) bool { return dmzUsers[i].Email < dmzUsers[j].Email })
+
+	insert := []entity.User{}
+
+	for _, k := range kcUsers {
+		exists := false
+
+		for _, d := range dmzUsers {
+			if k.Email == d.Email {
+				exists = true
+			}
+		}
+
+		if !exists {
+			insert = append(insert, k)
+		}
+	}
+
+	// Insert new users into Documize
+	for _, u := range insert {
+		err = addUser(p, &u)
+	}
+
+	result.Message = fmt.Sprintf("Keycloak sync'ed %d users, %d new additions", len(kcUsers), len(insert))
+	log.Info(result.Message)
+	util.WriteJSON(w, result)
+}
+
+// Helper method to setup user account in Documize using Keycloak provided user data.
+func addUser(p request.Persister, u *entity.User) (err error) {
 	// only create account if not dupe
 	addUser := true
 	addAccount := true
 	var userID string
 
-	userDupe, err := p.GetUserByEmail(a.Email)
+	userDupe, err := p.GetUserByEmail(u.Email)
 
 	if err != nil && err != sql.ErrNoRows {
-		return u, err
+		return err
 	}
 
 	if u.Email == userDupe.Email {
@@ -197,17 +274,17 @@ func addUser(p request.Persister, a keycloakAuthRequest) (u entity.User, err err
 
 	p.Context.Transaction, err = request.Db.Beginx()
 	if err != nil {
-		return u, err
+		return err
 	}
 
 	if addUser {
 		userID = util.UniqueID()
 		u.RefID = userID
-		err = p.AddUser(u)
+		err = p.AddUser(*u)
 
 		if err != nil {
 			log.IfErr(p.Context.Transaction.Rollback())
-			return u, err
+			return err
 		}
 	} else {
 		attachUserAccounts(p, p.Context.OrgID, &userDupe)
@@ -234,23 +311,22 @@ func addUser(p request.Persister, a keycloakAuthRequest) (u entity.User, err err
 		err = p.AddAccount(a)
 		if err != nil {
 			log.IfErr(p.Context.Transaction.Rollback())
-			return u, err
+			return err
 		}
 	}
 
 	log.IfErr(p.Context.Transaction.Commit())
 
-	// If we did not add user or give them access (account) then we error back
-	if !addUser && !addAccount {
-		log.IfErr(p.Context.Transaction.Rollback())
-		return u, err
-	}
+	nu, err := p.GetUser(userID)
+	u = &nu
 
-	return p.GetUser(userID)
+	return err
 }
 
-// SyncUsers gets list of Keycloak users for specified Realm, Client Id
-func SyncUsers(c keycloakConfig) (err error) {
+// KeycloakUsers gets list of Keycloak users for specified Realm, Client Id
+func KeycloakUsers(c keycloakConfig) (users []entity.User, err error) {
+	users = []entity.User{}
+
 	form := url.Values{}
 	form.Add("username", c.AdminUser)
 	form.Add("password", c.AdminPassword)
@@ -267,59 +343,65 @@ func SyncUsers(c keycloakConfig) (err error) {
 	client := &http.Client{}
 	res, err := client.Do(req)
 	if err != nil {
-		return err
+		return users, err
 	}
 
 	defer res.Body.Close()
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return err
+		return users, err
 	}
 
 	ka := keycloakAPIAuth{}
 	err = json.Unmarshal(body, &ka)
 	if err != nil {
-		return err
+		return users, err
 	}
 
 	if res.StatusCode != http.StatusOK {
-		return errors.New("Keycloak authentication failed " + res.Status)
+		return users, errors.New("Keycloak authentication failed " + res.Status)
 	}
 
-	req, err = http.NewRequest("GET",
-		fmt.Sprintf("%s/admin/realms/%s/users?max=500", c.URL, c.Realm),
-		nil)
+	req, err = http.NewRequest("GET", fmt.Sprintf("%s/admin/realms/%s/users?max=500", c.URL, c.Realm), nil)
 
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", ka.AccessToken))
 
 	client = &http.Client{}
 	res, err = client.Do(req)
 	if err != nil {
-		return err
+		return users, err
+
 	}
 
 	defer res.Body.Close()
 	body, err = ioutil.ReadAll(res.Body)
 	if err != nil {
-		return err
+		return users, err
 	}
 
-	u := []keycloakUser{}
-	err = json.Unmarshal(body, &u)
+	kcUsers := []keycloakUser{}
+	err = json.Unmarshal(body, &kcUsers)
 	if err != nil {
-		return err
+		return users, err
 	}
 
 	if res.StatusCode != http.StatusOK {
-		return errors.New("Keycloak /users call failed " + res.Status)
+		return users, errors.New("Keycloak /users call failed " + res.Status)
 	}
 
-	log.Info(fmt.Sprintf("%d", res.StatusCode))
+	for _, kc := range kcUsers {
+		u := entity.User{}
+		u.Email = kc.Email
+		u.Firstname = kc.Firstname
+		u.Lastname = kc.Lastname
+		u.Initials = utility.MakeInitials(u.Firstname, u.Lastname)
+		u.Active = kc.Enabled
+		u.Editor = false
 
-	fmt.Println(fmt.Sprintf("%d len", len(u)))
-	fmt.Println(u[0].Email)
+		users = append(users, u)
+	}
 
-	return nil
+	return users, nil
 }
 
 // Data received via Keycloak client library

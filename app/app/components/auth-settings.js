@@ -111,5 +111,9 @@ export default Ember.Component.extend({
 			this.get('onSave')(provider, config).then(() => {
 			});
 		},
+
+		onSync() {
+			this.get('onSync')();
+		}
 	}
 });

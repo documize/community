@@ -202,6 +202,7 @@ func init() {
 	log.IfErr(Add(RoutePrefixPrivate, "users/{userID}", []string{"GET", "OPTIONS"}, nil, GetUser))
 	log.IfErr(Add(RoutePrefixPrivate, "users/{userID}", []string{"PUT", "OPTIONS"}, nil, UpdateUser))
 	log.IfErr(Add(RoutePrefixPrivate, "users/{userID}", []string{"DELETE", "OPTIONS"}, nil, DeleteUser))
+	log.IfErr(Add(RoutePrefixPrivate, "users/sync", []string{"GET", "OPTIONS"}, nil, SyncKeycloak))
 
 	// Search
 	log.IfErr(Add(RoutePrefixPrivate, "search", []string{"GET", "OPTIONS"}, nil, SearchDocuments))

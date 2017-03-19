@@ -38,7 +38,7 @@ var dbPtr **sqlx.DB
 func Check(Db *sqlx.DB, connectionString string) bool {
 	dbPtr = &Db
 
-	log.Info("Running database checks, this may take a while...")
+	log.Info("Database checks: started")
 
 	csBits := strings.Split(connectionString, "/")
 	if len(csBits) > 1 {
@@ -73,8 +73,8 @@ func Check(Db *sqlx.DB, connectionString string) bool {
 	// MySQL and Percona share same version scheme (e..g 5.7.10).
 	// MariaDB starts at 10.2.x
 	sqlVariant := GetSQLVariant(dbComment)
-	log.Info("SQL variant: " + sqlVariant)
-	log.Info("SQL version: " + version)
+	log.Info("Database checks: SQL variant " + sqlVariant)
+	log.Info("Database checks: SQL version " + version)
 
 	verNums, err := GetSQLVersion(version)
 	if err != nil {

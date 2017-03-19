@@ -14,6 +14,7 @@ import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-rout
 
 export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	userService: Ember.inject.service('user'),
+	global: Ember.inject.service('global'),
 
 	beforeModel: function () {
 		if (!this.session.isAdmin) {
@@ -21,8 +22,14 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 		}
 	},
 
-	model: function () {
-		return this.get('userService').getAll();
+	model() {
+		return new Ember.RSVP.Promise((resolve) => {
+			this.get('global').syncExternalUsers().then(() => {
+				this.get('userService').getAll().then((users) =>{
+					resolve(users);
+				});
+			});
+		});
 	},
 
 	activate: function () {

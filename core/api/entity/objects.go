@@ -64,6 +64,17 @@ func (user *User) Fullname() string {
 	return fmt.Sprintf("%s %s", user.Firstname, user.Lastname)
 }
 
+// GetAccount returns matching org account using orgID
+func (user *User) GetAccount(orgID string) (a Account, found bool) {
+	for _, a := range user.Accounts {
+		if a.OrgID == orgID {
+			return a, true
+		}
+	}
+
+	return a, false
+}
+
 // Organization defines a company that uses this app.
 type Organization struct {
 	BaseEntity
