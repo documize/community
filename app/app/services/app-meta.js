@@ -22,7 +22,7 @@ const {
 export default Ember.Service.extend({
 	ajax: service(),
 	localStorage: service(),
-
+	kcAuth: service(),
 	endpoint: `${config.apiHost}/${config.apiNamespace}`,
 	orgId: '',
 	title: '',
@@ -64,6 +64,7 @@ export default Ember.Service.extend({
 
 		return this.get('ajax').request('public/meta').then((response) => {
 			this.setProperties(response);
+
 			return response;
 		});
 	}

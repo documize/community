@@ -18,30 +18,31 @@ export default Ember.Route.extend({
 	localStorage: Ember.inject.service(),
 	showLogin: false,
 
-	beforeModel(/*transition*/) {
-		let authProvider = this.get('appMeta.authProvider');
+	beforeModel(transition) {
+		return new Ember.RSVP.Promise((resolve) => {
+			let authProvider = this.get('appMeta.authProvider');
 
-		switch (authProvider) {
-			case constants.AuthProvider.Keycloak:
-				this.set('showLogin', false);
+			switch (authProvider) {
+				case constants.AuthProvider.Keycloak:
+					this.set('showLogin', false);
 
-				this.get('kcAuth').boot().then(() => {
 					this.get('kcAuth').login().then(() => {
+						this.transitionTo('auth.keycloak', { queryParams: { mode: 'login' }});
+						resolve();
 					}, (reject) => {
-						this.get('localStorage').storeSessionItem('kc-error', reject);
+						transition.abort();
+						console.log (reject); // eslint-disable-line no-console
 						this.transitionTo('auth.keycloak', { queryParams: { mode: 'reject' }});
 					});
-				}, (reject) => {
-					this.get('localStorage').storeSessionItem('kc-error', reject);
-					this.transitionTo('auth.keycloak', { queryParams: { mode: 'reject' }});
-				});
 
-				break;
-				
-			default:
-				this.set('showLogin', true);
-				break;
-		}
+					break;
+					
+				default:
+					this.set('showLogin', true);
+					resolve();
+					break;
+			}
+		});
 	},
 
 	model() {

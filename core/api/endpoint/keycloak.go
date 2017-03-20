@@ -89,7 +89,7 @@ func AuthenticateKeycloak(w http.ResponseWriter, r *http.Request) {
 	// Decode and verify Keycloak JWT
 	claims, err := decodeKeycloakJWT(a.Token, pk)
 	if err != nil {
-		writeServerError(w, method, err)
+		util.WriteRequestError(w, err.Error())
 		return
 	}
 

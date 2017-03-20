@@ -7,6 +7,7 @@
 
 {{#if (is-equal model.mode 'reject')}}
     <div class="sso-box">
-        <p>Keycloak Authentication Failure</p>
+        <p>Keycloak authentication failure</p>
+        <p>{{model.message}}</p>
     </div>
 {{/if}}

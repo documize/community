@@ -19,52 +19,43 @@ export default Ember.Route.extend({
 	localStorage: Ember.inject.service(),
 	queryParams: {
 		mode: {
-			refreshModel: false
+			refreshModel: true
 		}
 	},
+	message: '',
 
 	beforeModel(transition) {
-		this.set('mode', is.not.undefined(transition.queryParams.mode) ? transition.queryParams.mode : 'login');
-		if (this.get('appMeta.authProvider') !== constants.AuthProvider.Keycloak) {
-			return;
-		}
+		return new Ember.RSVP.Promise((resolve) => {
+			this.set('mode', is.not.undefined(transition.queryParams.mode) ? transition.queryParams.mode : 'reject');
 
-		if (this.get('mode') === 'reject') {
-			return;
-		}
-
-		this.get('kcAuth').boot().then((kc) => {
-			if (!kc.authenticated) {
-				this.get('kcAuth').login().then(() => {
-				}, (reject) => {
-					this.get('localStorage').storeSessionItem('kc-error', reject);
-					this.set('mode', 'reject');
-				});
+			if (this.get('mode') === 'reject' || this.get('appMeta.authProvider') !== constants.AuthProvider.Keycloak) {
+				resolve();
 			}
 
-			this.get('kcAuth').fetchProfile(kc).then((profile) => {
-				let data = this.get('kcAuth').mapProfile(kc, profile);
-				this.get("session").authenticate('authenticator:keycloak', data).then(() => {
-					this.get('audit').record("logged-in-keycloak");
-					this.transitionTo('folders');
-				}, (reject) => {
-					this.get('localStorage').storeSessionItem('kc-error', reject);
-					this.set('mode', 'reject');
-				});
+				this.get('kcAuth').fetchProfile().then((profile) => {
+					let data = this.get('kcAuth').mapProfile(profile);
 
-            }, (reject) => {
-				this.get('localStorage').storeSessionItem('kc-error', reject);
-				this.set('mode', 'reject');
-            });
-		}, (reject) => {
-			this.get('localStorage').storeSessionItem('kc-error', reject);
-			this.set('mode', 'reject');
+					this.get("session").authenticate('authenticator:keycloak', data).then(() => {
+						this.get('audit').record("logged-in-keycloak");
+						this.transitionTo('folders');
+					}, (reject) => {
+						this.set('message', reject.Error);
+						this.set('mode', 'reject');
+						resolve();
+					});
+
+				}, (reject) => {
+					this.set('mode', 'reject');
+					this.set('message', reject);
+					resolve();
+				});
 		});
 	},
 
 	model() {
 		return {
-			mode: this.get('mode')
+			mode: this.get('mode'),
+			message: this.get('message')
 		}
 	}
 });
