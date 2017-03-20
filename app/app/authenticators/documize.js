@@ -23,6 +23,7 @@ const {
 export default Base.extend({
 	ajax: service(),
 	appMeta: service(),
+	localStorage: service(),
 
 	restore(data) {
 		// TODO: verify authentication data
@@ -57,6 +58,7 @@ export default Base.extend({
 	},
 
 	invalidate() {
+		this.get('localStorage').clearAll();		
 		return resolve();
 	}
 });

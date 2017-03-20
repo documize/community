@@ -20,13 +20,12 @@ export default Ember.Route.extend({
 
 	beforeModel(/*transition*/) {
 		let authProvider = this.get('appMeta.authProvider');
-		let authConfig = this.get('appMeta.authConfig');
 
 		switch (authProvider) {
 			case constants.AuthProvider.Keycloak:
 				this.set('showLogin', false);
 
-				this.get('kcAuth').boot(JSON.parse(authConfig)).then(() => {
+				this.get('kcAuth').boot().then(() => {
 					this.get('kcAuth').login().then(() => {
 					}, (reject) => {
 						this.get('localStorage').storeSessionItem('kc-error', reject);

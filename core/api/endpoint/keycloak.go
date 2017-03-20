@@ -112,12 +112,6 @@ func AuthenticateKeycloak(w http.ResponseWriter, r *http.Request) {
 	if err == sql.ErrNoRows {
 		log.Info("keycloak add user " + a.Email + " @ " + a.Domain)
 
-		p.Context.Transaction, err = request.Db.Beginx()
-		if err != nil {
-			writeTransactionError(w, method, err)
-			return
-		}
-
 		user = entity.User{}
 		user.Firstname = a.Firstname
 		user.Lastname = a.Lastname

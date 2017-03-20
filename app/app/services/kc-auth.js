@@ -23,11 +23,16 @@ export default Ember.Service.extend({
 	appMeta: service(),
 	keycloak: null,
 
-	boot(options) {
-        this.set('keycloak', new Keycloak(options));
+    init () {
+        this._super(...arguments);
+        this.keycloak = null;
+    },
+
+	boot() {
+        this.set('keycloak', new Keycloak(JSON.parse(this.get('appMeta.authConfig'))));
 
         return new Ember.RSVP.Promise((resolve, reject) => {
-            this.keycloak.init().success(() => {
+            this.get('keycloak').init().success(() => {
 				this.get('audit').record("initialized-keycloak");
                 resolve(this.get('keycloak'));
             }).error((err) => {
@@ -37,15 +42,35 @@ export default Ember.Service.extend({
     },
 
 	login() {
+        this.set('keycloak', new Keycloak(JSON.parse(this.get('appMeta.authConfig'))));
 		let url = netUtil.getAppUrl(netUtil.getSubdomain()) + '/auth/keycloak?mode=login';
 
         return new Ember.RSVP.Promise((resolve, reject) => {
-            if (this.get('keycloak').authenticated) {
-                return resolve(this.get('keycloak'));
-            }
+            this.boot().then(() => {
+                this.get('keycloak').login({redirectUri: url}).success(() => {
+                    return resolve();
+                }).error(() => {
+                    return reject(new Error('login failed'));
+                });            
+            });
+        });
+    },
 
-            this.get('keycloak').login( {redirectUri: url} );
-            return reject();
+    logout() {
+        this.set('keycloak', new Keycloak(JSON.parse(this.get('appMeta.authConfig'))));
+
+        return new Ember.RSVP.Promise((resolve, reject) => {
+            this.boot().then(() => {
+                this.get('keycloak').logout(JSON.parse(this.get('appMeta.authConfig'))).success(() => {
+                    this.get('keycloak').clearToken();
+                    resolve();
+                }).error((error) => {
+                    this.get('keycloak').clearToken();
+                    reject(error);
+                });
+            }, (error) => {
+                reject(error);
+            });
         });
     },
 

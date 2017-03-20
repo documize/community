@@ -18,7 +18,7 @@ v0.44.0
 
 ## Tech stack
 
-- EmberJS (v2.11.2)
+- EmberJS (v2.12.0)
 - Go (v1.8)
 - MySQL (v5.7.10+) or Percona (v5.7.16-10+)
 
@@ -37,7 +37,6 @@ Documize provides out-of-the-box integration with [Redhat Keycloak](http://www.k
 Documize is compatible with Auth0 identity as a service.
 
 [![JWT Auth for open source projects](https://cdn.auth0.com/oss/badges/a0-badge-dark.png)](https://auth0.com/?utm_source=oss&utm_medium=gp&utm_campaign=oss)
-
 
 Open Source Identity and Access Management
 

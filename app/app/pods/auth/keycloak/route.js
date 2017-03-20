@@ -25,11 +25,7 @@ export default Ember.Route.extend({
 
 	beforeModel(transition) {
 		this.set('mode', is.not.undefined(transition.queryParams.mode) ? transition.queryParams.mode : 'login');
-
-		let authProvider = this.get('appMeta.authProvider');
-		let authConfig = this.get('appMeta.authConfig');
-
-		if (authProvider !== constants.AuthProvider.Keycloak) {
+		if (this.get('appMeta.authProvider') !== constants.AuthProvider.Keycloak) {
 			return;
 		}
 
@@ -37,12 +33,12 @@ export default Ember.Route.extend({
 			return;
 		}
 
-		this.get('kcAuth').boot(JSON.parse(authConfig)).then((kc) => {
+		this.get('kcAuth').boot().then((kc) => {
 			if (!kc.authenticated) {
 				this.get('kcAuth').login().then(() => {
 				}, (reject) => {
 					this.get('localStorage').storeSessionItem('kc-error', reject);
-					this.transitionTo('auth.keycloak', { queryParams: { mode: 'reject' }});
+					this.set('mode', 'reject');
 				});
 			}
 
@@ -53,16 +49,16 @@ export default Ember.Route.extend({
 					this.transitionTo('folders');
 				}, (reject) => {
 					this.get('localStorage').storeSessionItem('kc-error', reject);
-					this.transitionTo('auth.keycloak', { queryParams: { mode: 'reject' }});
+					this.set('mode', 'reject');
 				});
 
             }, (reject) => {
 				this.get('localStorage').storeSessionItem('kc-error', reject);
-				this.transitionTo('auth.keycloak', { queryParams: { mode: 'reject' }});
+				this.set('mode', 'reject');
             });
 		}, (reject) => {
 			this.get('localStorage').storeSessionItem('kc-error', reject);
-			this.transitionTo('auth.keycloak', { queryParams: { mode: 'reject' }});
+			this.set('mode', 'reject');
 		});
 	},
 

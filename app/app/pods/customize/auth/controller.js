@@ -15,6 +15,7 @@ import NotifierMixin from "../../../mixins/notifier";
 export default Ember.Controller.extend(NotifierMixin, {
 	global: Ember.inject.service(),
     appMeta: Ember.inject.service(),
+	session: Ember.inject.service(),
 
 	actions: {
 		onSave(provider, config) {
@@ -23,8 +24,15 @@ export default Ember.Controller.extend(NotifierMixin, {
 
 				return this.get('global').saveAuthConfig(data).then(() => {
 					this.showNotification('Saved');
-                    this.set('appMeta.authProvider', provider);
-                    this.set('appMeta.authConfig', config);
+					if (provider !== this.get('appMeta.authProvider')) {
+						this.get('session').logout();
+						this.set('appMeta.authProvider', provider);
+						this.set('appMeta.authConfig', config);
+						window.location.href= '/';
+					} else {
+						this.set('appMeta.authProvider', provider);
+						this.set('appMeta.authConfig', config);
+					}
 				});
 			}
 		},

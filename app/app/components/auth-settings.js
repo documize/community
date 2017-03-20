@@ -18,9 +18,9 @@ const {
 } = Ember;
 
 export default Ember.Component.extend({
+	appMeta: Ember.inject.service(),
 	isDocumizeProvider: computed.equal('authProvider', constants.AuthProvider.Documize),
 	isKeycloakProvider: computed.equal('authProvider', constants.AuthProvider.Keycloak),
-
 	KeycloakUrlError: computed.empty('keycloakConfig.url'),
 	KeycloakRealmError: computed.empty('keycloakConfig.realm'),
 	KeycloakClientIdError: computed.empty('keycloakConfig.clientId'),

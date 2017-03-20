@@ -22,6 +22,8 @@ const {
 export default Base.extend({
 	ajax: service(),
 	appMeta: service(),
+	kcAuth: service(),
+	localStorage: service(),
 
 	restore(data) {
 		// TODO: verify authentication data
@@ -46,6 +48,7 @@ export default Base.extend({
 	},
 
 	invalidate() {
-		return resolve();
+		this.get('localStorage').clearAll();		
+		return this.get('kcAuth').logout();
 	}
 });
