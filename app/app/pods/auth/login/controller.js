@@ -10,13 +10,13 @@
 // https://documize.com
 
 import Ember from 'ember';
-// import constants from '../../../utils/constants';
+import AuthProvider from '../../../mixins/auth';
 
-export default Ember.Controller.extend({
+export default Ember.Controller.extend(AuthProvider, {
 	appMeta: Ember.inject.service('app-meta'),
-	invalidCredentials: false,
 	session: Ember.inject.service('session'),
 	audit: Ember.inject.service('audit'),
+	invalidCredentials: false,
 
 	reset() {
 		this.setProperties({
@@ -28,21 +28,19 @@ export default Ember.Controller.extend({
 		if (dbhash.length > 0 && dbhash !== "{{.DBhash}}") {
 			this.transitionToRoute('setup');
 		}
-
 	},
 
 	actions: {
 		login() {
 			let creds = this.getProperties('email', 'password');
 
-			this.get('session').authenticate('authenticator:documize', creds)
-				.then((response) => {
-					this.get('audit').record("logged-in");
-					this.transitionToRoute('folders');
-					return response;
-				}).catch(() => {
-					this.set('invalidCredentials', true);
-				});
+			this.get('session').authenticate('authenticator:documize', creds).then((response) => {
+				this.get('audit').record("logged-in");
+				this.transitionToRoute('folders');
+				return response;
+			}).catch(() => {
+				this.set('invalidCredentials', true);
+			});
 		}
 	}
 });

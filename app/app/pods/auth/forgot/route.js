@@ -10,10 +10,27 @@
 // https://documize.com
 
 import Ember from 'ember';
+import constants from '../../../utils/constants';
 
 export default Ember.Route.extend({
+    appMeta: Ember.inject.service(),
+
+	beforeModel() {
+		if (this.get('appMeta.authProvider') === constants.AuthProvider.Keycloak) {
+			this.transitionTo('auth.login');
+		}
+	},
+
 	setupController(controller, model) {
 		controller.set('model', model);
 		controller.set('sayThanks', false);
-	}
+	},
+
+	activate() {
+		$('body').addClass('background-color-off-white');
+	},
+
+	deactivate() {
+		$('body').removeClass('background-color-off-white');
+	}	
 });
