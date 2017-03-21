@@ -11,11 +11,19 @@
 
 import Ember from 'ember';
 import NotifierMixin from "../../../mixins/notifier";
+import constants from '../../../utils/constants';
 
 export default Ember.Controller.extend(NotifierMixin, {
 	global: Ember.inject.service(),
     appMeta: Ember.inject.service(),
 	session: Ember.inject.service(),
+
+	handleProviderChange(data) {
+		this.get('session').logout();
+		this.set('appMeta.authProvider', data.authProvider);
+		this.set('appMeta.authConfig', data.authConfig);
+		window.location.href= '/';
+	},
 
 	actions: {
 		onSave(provider, config) {
@@ -24,11 +32,15 @@ export default Ember.Controller.extend(NotifierMixin, {
 
 				return this.get('global').saveAuthConfig(data).then(() => {
 					this.showNotification('Saved');
+
 					if (provider !== this.get('appMeta.authProvider')) {
-						this.get('session').logout();
-						this.set('appMeta.authProvider', provider);
-						this.set('appMeta.authConfig', config);
-						window.location.href= '/';
+						if (provider === constants.AuthProvider.Keycloak) {
+							this.get('global').syncExternalUsers().then(() => {
+								this.handleProviderChange(data);
+							});
+						} else {
+							this.handleProviderChange(data);
+						}
 					} else {
 						this.set('appMeta.authProvider', provider);
 						this.set('appMeta.authConfig', config);

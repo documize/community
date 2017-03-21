@@ -10,8 +10,9 @@
 // https://documize.com
 
 import Ember from 'ember';
+import AuthProvider from '../../mixins/auth';
 
-export default Ember.Component.extend({
+export default Ember.Component.extend(AuthProvider, {
 	editUser: null,
 	deleteUser: null,
 	drop: null,

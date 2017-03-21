@@ -10,6 +10,7 @@
 // https://documize.com
 
 import Ember from 'ember';
+import AuthProvider from '../../mixins/auth';
 
 const {
 	isEmpty,
@@ -18,7 +19,7 @@ const {
 	get
 } = Ember;
 
-export default Ember.Component.extend({
+export default Ember.Component.extend(AuthProvider, {
 	newUser: { firstname: "", lastname: "", email: "", active: true },
 	firstnameEmpty: computed.empty('newUser.firstname'),
 	lastnameEmpty: computed.empty('newUser.lastname'),

@@ -10,8 +10,8 @@
 // https://documize.com
 
 import Ember from 'ember';
-import constants from '../utils/constants';
-import encoding from '../utils/encoding';
+import constants from '../../utils/constants';
+import encoding from '../../utils/encoding';
 
 const {
 	computed
