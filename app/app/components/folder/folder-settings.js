@@ -10,12 +10,13 @@
 // https://documize.com
 
 import Ember from 'ember';
+import AuthMixin from '../../mixins/auth';
 
 const {
 	inject: { service }
 } = Ember;
 
-export default Ember.Component.extend({
+export default Ember.Component.extend(AuthMixin, {
 	folderService: service('folder'),
 	appMeta: service(),
 	users: [],

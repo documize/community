@@ -7,6 +7,6 @@
 
 {{#layout/zone-content}}
 	{{folder/folder-toolbar folders=model.folders folder=model.folder hasSelectedDocuments=hasSelectedDocuments onDeleteDocument=(action
-	'onDeleteDocument') onMoveDocument=(action 'onMoveDocument')}} {{folder/documents-list documents=model.documents folder=model.folder
-	isFolderOwner=isFolderOwner onDocumentsChecked=(action 'onDocumentsChecked') }}
+	'onDeleteDocument') onMoveDocument=(action 'onMoveDocument')}}
+	{{folder/documents-list documents=model.documents folder=model.folder isFolderOwner=isFolderOwner onDocumentsChecked=(action 'onDocumentsChecked') }}
 {{/layout/zone-content}}

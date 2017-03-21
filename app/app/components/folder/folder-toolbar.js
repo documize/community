@@ -12,12 +12,13 @@
 import Ember from 'ember';
 import NotifierMixin from '../../mixins/notifier';
 import TooltipMixin from '../../mixins/tooltip';
+import AuthMixin from '../../mixins/auth';
 
 const {
 	computed
 } = Ember;
 
-export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
+export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 	folderService: Ember.inject.service('folder'),
 	session: Ember.inject.service(),
 	appMeta: Ember.inject.service(),

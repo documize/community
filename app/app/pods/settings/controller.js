@@ -10,8 +10,9 @@
 // https://documize.com
 
 import Ember from 'ember';
+import AuthMixin from '../../mixins/auth';
 
-export default Ember.Controller.extend({
+export default Ember.Controller.extend(AuthMixin, {
 	tabGeneral: false,
 	tabShare: false,
 	tabPermissions: false,
