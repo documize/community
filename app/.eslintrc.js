@@ -32,5 +32,6 @@ module.exports = {
     "userLogin": true,
     "Keycloak": true,
     "Intercom": true,
+    "slug": true
   }
 };

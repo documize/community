@@ -61,6 +61,7 @@ module.exports = function (defaults) {
 	app.import('vendor/velocity.js');
 	app.import('vendor/velocity.ui.js');
 	app.import('vendor/keycloak.js');
+	app.import('vendor/slug.js');
 
 	return app.toTree();
 };
