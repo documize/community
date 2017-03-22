@@ -155,6 +155,23 @@ func (p *Persister) GetUserBySerial(serial string) (user entity.User, err error)
 	return
 }
 
+// GetActiveUsersForOrganization returns a slice containing of active user records for the organization
+// identified in the Persister.
+func (p *Persister) GetActiveUsersForOrganization() (users []entity.User, err error) {
+	err = Db.Select(&users,
+		`SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.password, u.salt, u.reset, u.created, u.revised
+		FROM user u
+		WHERE u.refid IN (SELECT userid FROM account WHERE orgid = ? AND active=1) ORDER BY u.firstname,u.lastname`,
+		p.Context.OrgID)
+
+	if err != nil {
+		log.Error(fmt.Sprintf("Unable to get all users for org %s", p.Context.OrgID), err)
+		return
+	}
+
+	return
+}
+
 // GetUsersForOrganization returns a slice containing all of the user records for the organizaiton
 // identified in the Persister.
 func (p *Persister) GetUsersForOrganization() (users []entity.User, err error) {

@@ -29,6 +29,7 @@ import (
 	"github.com/documize/community/core/utility"
 
 	"github.com/gorilla/mux"
+	"strconv"
 )
 
 // AddUser is the endpoint that enables an administrator to add a new user for their orgaisation.
@@ -212,11 +213,30 @@ func GetOrganizationUsers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	users, err := p.GetUsersForOrganization()
+	active, err := strconv.ParseBool(r.URL.Query().Get("active"))
+	if err != nil {
+		active = false
+	}
 
-	if err != nil && err != sql.ErrNoRows {
-		writeServerError(w, method, err)
-		return
+	users := []entity.User{}
+
+	if active {
+		users, err = p.GetActiveUsersForOrganization()
+		if err != nil && err != sql.ErrNoRows {
+			writeServerError(w, method, err)
+			return
+		}
+
+	} else {
+		users, err = p.GetUsersForOrganization()
+		if err != nil && err != sql.ErrNoRows {
+			writeServerError(w, method, err)
+			return
+		}
+	}
+
+	if len(users) == 0 {
+		users = []entity.User{}
 	}
 
 	for i := range users {
@@ -224,7 +244,6 @@ func GetOrganizationUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json, err := json.Marshal(users)
-
 	if err != nil {
 		writeJSONMarshalError(w, method, "user", err)
 		return

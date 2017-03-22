@@ -191,6 +191,14 @@ func SyncKeycloak(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Exit if not using Keycloak
+	if org.AuthProvider != "keycloak" {
+		result.Message = "Skipping user sync with Keycloak as it is not the configured option"
+		log.Info(result.Message)
+		util.WriteJSON(w, result)
+		return
+	}
+
 	// Make Keycloak auth provider config
 	c := keycloakConfig{}
 	err = json.Unmarshal([]byte(org.AuthConfig), &c)
