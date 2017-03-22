@@ -10,6 +10,7 @@
 // https://documize.com
 
 import Ember from 'ember';
+import AuthProvider from '../mixins/auth';
 
 const {
 	computed,
@@ -18,7 +19,7 @@ const {
 	isPresent
 } = Ember;
 
-export default Ember.Component.extend({
+export default Ember.Component.extend(AuthProvider, {
 	password: { password: "", confirmation: "" },
 	hasFirstnameError: computed.empty('model.firstname'),
 	hasLastnameError: computed.empty('model.lastname'),
@@ -43,6 +44,10 @@ export default Ember.Component.extend({
 			return;
 		}
 	}),
+
+	didReceiveAttrs() {
+		this.set
+	},
 
 	actions: {
 		save() {

@@ -24,8 +24,12 @@ export default Ember.Route.extend(ApplicationRouteMixin, TooltipMixin, {
 	pinned: service(),
 
 	beforeModel(transition) {
+		this._super(...arguments);
+		
 		return this.get('appMeta').boot(transition.targetName).then(data => {
-			if (this.get('session.session.authenticator') !== "authenticator:documize" && data.allowAnonymousAccess) {
+			if (this.get('session.session.authenticator') !== "authenticator:documize" &&
+				this.get('session.session.authenticator') !== "authenticator:keycloak" && 
+				data.allowAnonymousAccess) {
 				return this.get('session').authenticate('authenticator:anonymous', data);
 			}
 
@@ -41,8 +45,8 @@ export default Ember.Route.extend(ApplicationRouteMixin, TooltipMixin, {
 
 		error(error, transition) {
 			if (error) {
-				console.log(error);
-				console.log(transition);
+				console.log(error); // eslint-disable-line no-console
+				console.log(transition); // eslint-disable-line no-console
 
 				if (netUtil.isAjaxAccessError(error)) {
 					localStorage.clear();
@@ -50,8 +54,7 @@ export default Ember.Route.extend(ApplicationRouteMixin, TooltipMixin, {
 				}
 			}
 
-			// Return true to bubble this event to any parent route.
-			return true;
+			return true; // bubble this event to any parent route
 		}
 	}
 });

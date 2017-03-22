@@ -10,12 +10,13 @@
 // https://documize.com
 
 import Ember from 'ember';
+import AuthMixin from '../../mixins/auth';
 
 const {
 	inject: { service }
 } = Ember;
 
-export default Ember.Component.extend({
+export default Ember.Component.extend(AuthMixin, {
 	folderService: service('folder'),
 	appMeta: service(),
 	users: [],
@@ -103,7 +104,7 @@ export default Ember.Component.extend({
 				message = this.getDefaultInvitationMessage();
 			}
 
-			this.get('permissions').forEach((permission, index) => { /* jshint ignore:line */
+			this.get('permissions').forEach((permission, index) => { // eslint-disable-line no-unused-vars
 				Ember.set(permission, 'canView', $("#canView-" + permission.userId).prop('checked'));
 				Ember.set(permission, 'canEdit', $("#canEdit-" + permission.userId).prop('checked'));
 			});

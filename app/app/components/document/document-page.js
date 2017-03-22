@@ -21,9 +21,17 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	didReceiveAttrs() {
 		this._super(...arguments);
 
+		if (this.get('isDestroyed') || this.get('isDestroying')) {
+			return;
+		}
+
 		let page = this.get('page');
 
 		this.get('documentService').getPageMeta(page.get('documentId'), page.get('id')).then((meta) => {
+			if (this.get('isDestroyed') || this.get('isDestroying')) {
+				return;
+			}
+
 			this.set('meta', meta);
 			if (this.get('toEdit') === this.get('page.id') && this.get('isEditor')) {
 				this.send('onEdit');

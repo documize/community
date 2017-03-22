@@ -39,6 +39,8 @@
 }
 
 .round-button-mono {
+	@extend .no-select;
+	@include ease-in();
     display: inline-block;
     position: relative;
     overflow: hidden;
@@ -52,9 +54,8 @@
     vertical-align: middle;
     border: 1px solid $color-stroke;
     text-align: center;
-	@extend .no-select;
-	@include ease-in();
     font-size: 1.2rem;
+    background-color: transparent;
 
     &:hover {
         @extend .z-depth-tiny;

@@ -13,14 +13,14 @@ import Ember from 'ember';
 
 export default Ember.Service.extend({
     action: function(entry) {
-        console.log(entry);
+        console.log(entry); // eslint-disable-line no-console
     },
 
     error: function(entry) {
-        console.log(entry);
+        console.log(entry); // eslint-disable-line no-console
     },
 
     info: function(entry) {
-        console.log(entry);
+        console.log(entry); // eslint-disable-line no-console
     }
 });

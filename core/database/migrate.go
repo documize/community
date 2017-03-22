@@ -211,7 +211,7 @@ func Migrate(ConfigTableExists bool) error {
 		if err != nil {
 			return migrateEnd(tx, err, amLeader)
 		}
-		log.Info("Database checks: last previously applied file was " + lastMigration)
+		log.Info("Database checks: last applied " + lastMigration)
 	}
 
 	mig, err := migrations(lastMigration)
@@ -220,7 +220,7 @@ func Migrate(ConfigTableExists bool) error {
 	}
 
 	if len(mig) == 0 {
-		log.Info("Database checks: no updates to perform")
+		log.Info("Database checks: no updates required")
 		return migrateEnd(tx, nil, amLeader) // no migrations to perform
 	}
 
@@ -233,7 +233,7 @@ func Migrate(ConfigTableExists bool) error {
 	targetMigration := string(mig[len(mig)-1])
 	for targetMigration != lastMigration {
 		time.Sleep(time.Second)
-		log.Info("Waiting for database migration process to complete")
+		log.Info("Waiting for database migration completion")
 		tx.Rollback()                // ignore error
 		tx, err := (*dbPtr).Beginx() // need this in order to see the changed situation since last tx
 		if err != nil {

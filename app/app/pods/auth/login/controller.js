@@ -10,39 +10,37 @@
 // https://documize.com
 
 import Ember from 'ember';
+import AuthProvider from '../../../mixins/auth';
 
-export default Ember.Controller.extend({
-	email: "",
-	password: "",
-	invalidCredentials: false,
+export default Ember.Controller.extend(AuthProvider, {
+	appMeta: Ember.inject.service('app-meta'),
 	session: Ember.inject.service('session'),
 	audit: Ember.inject.service('audit'),
+	invalidCredentials: false,
 
 	reset() {
 		this.setProperties({
-			email: "",
-			password: ""
+			email: '',
+			password: ''
 		});
 
 		let dbhash = document.head.querySelector("[property=dbhash]").content;
 		if (dbhash.length > 0 && dbhash !== "{{.DBhash}}") {
 			this.transitionToRoute('setup');
 		}
-
 	},
 
 	actions: {
 		login() {
 			let creds = this.getProperties('email', 'password');
 
-			this.get('session').authenticate('authenticator:documize', creds)
-				.then((response) => {
-					this.get('audit').record("logged-in");
-					this.transitionToRoute('folders');
-					return response;
-				}).catch(() => {
-					this.set('invalidCredentials', true);
-				});
+			this.get('session').authenticate('authenticator:documize', creds).then((response) => {
+				this.get('audit').record("logged-in");
+				this.transitionToRoute('folders');
+				return response;
+			}).catch(() => {
+				this.set('invalidCredentials', true);
+			});
 		}
 	}
 });

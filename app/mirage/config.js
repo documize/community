@@ -31,11 +31,11 @@ export default function () {
 	this.get('/documents', function (schema, request) {
 		let folder_id = request.queryParams.folder;
 
-		if (folder_id = "VzMuyEw_3WqiafcG") {
+		if (folder_id === "VzMuyEw_3WqiafcG") {
 			return schema.db.documents.where({ folderId: folder_id });
 		}
 
-		if (folder_id = 'V0Vy5Uw_3QeDAMW9') {
+		if (folder_id === 'V0Vy5Uw_3QeDAMW9') {
 			return null;
 		}
 	});

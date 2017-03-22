@@ -43,7 +43,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
 		try {
 			config = JSON.parse(this.get('meta.config'));
-		} catch (e) {}
+		} catch (e) {} // eslint-disable-line no-empty
 
 		if (is.empty(config)) {
 			config = {
@@ -77,8 +77,8 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 						Trello.deauthorize();
 					});
 				}
-			}, function (error) { //jshint ignore: line
-				console.log(error);
+			}, function (error) { 
+				console.log(error); // eslint-disable-line no-console
 			});
 	},
 
@@ -132,7 +132,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 				self.set('busy', false);
 				self.set('authenticated', false);
 				self.showNotification("Unable to fetch board lists");
-				console.log(error);
+				console.log(error); // eslint-disable-line no-console
 			});
 	},
 
@@ -181,7 +181,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 						Trello.members.get("me", function (user) {
 							self.set('config.user', user);
 						}, function (error) {
-							console.log(error);
+							console.log(error); // eslint-disable-line no-console
 						});
 
 						self.get('sectionService').fetch(page, "boards", self.get('config'))
@@ -193,14 +193,14 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 								self.set('busy', false);
 								self.set('authenticated', false);
 								self.showNotification("Unable to fetch boards");
-								console.log(error);
+								console.log(error); // eslint-disable-line no-console
 							});
 					},
 					error: function (error) {
 						self.set('busy', false);
 						self.set('authenticated', false);
 						self.showNotification("Unable to authenticate");
-						console.log(error);
+						console.log(error); // eslint-disable-line no-console
 					}
 				});
 			});
@@ -233,7 +233,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 					meta.set('rawBody', JSON.stringify(response));
 					self.set('busy', false);
 					self.attrs.onAction(page, meta);
-				}, function (reason) { //jshint ignore: line
+				}, function (reason) { // eslint-disable-line no-unused-vars
 					self.set('busy', false);
 					self.attrs.onAction(page, meta);
 				});

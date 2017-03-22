@@ -132,8 +132,9 @@ func init() {
 	//**************************************************
 
 	log.IfErr(Add(RoutePrefixPublic, "meta", []string{"GET", "OPTIONS"}, nil, GetMeta))
+	log.IfErr(Add(RoutePrefixPublic, "authenticate/keycloak", []string{"POST", "OPTIONS"}, nil, AuthenticateKeycloak))
 	log.IfErr(Add(RoutePrefixPublic, "authenticate", []string{"POST", "OPTIONS"}, nil, Authenticate))
-	log.IfErr(Add(RoutePrefixPublic, "validate", []string{"GET", "OPTIONS"}, nil, ValidateAuthToken))
+	// log.IfErr(Add(RoutePrefixPublic, "validate", []string{"GET", "OPTIONS"}, nil, ValidateAuthToken))
 	log.IfErr(Add(RoutePrefixPublic, "forgot", []string{"POST", "OPTIONS"}, nil, ForgotUserPassword))
 	log.IfErr(Add(RoutePrefixPublic, "reset/{token}", []string{"POST", "OPTIONS"}, nil, ResetUserPassword))
 	log.IfErr(Add(RoutePrefixPublic, "share/{folderID}", []string{"POST", "OPTIONS"}, nil, AcceptSharedFolder))
@@ -201,6 +202,7 @@ func init() {
 	log.IfErr(Add(RoutePrefixPrivate, "users/{userID}", []string{"GET", "OPTIONS"}, nil, GetUser))
 	log.IfErr(Add(RoutePrefixPrivate, "users/{userID}", []string{"PUT", "OPTIONS"}, nil, UpdateUser))
 	log.IfErr(Add(RoutePrefixPrivate, "users/{userID}", []string{"DELETE", "OPTIONS"}, nil, DeleteUser))
+	log.IfErr(Add(RoutePrefixPrivate, "users/sync", []string{"GET", "OPTIONS"}, nil, SyncKeycloak))
 
 	// Search
 	log.IfErr(Add(RoutePrefixPrivate, "search", []string{"GET", "OPTIONS"}, nil, SearchDocuments))
@@ -233,6 +235,7 @@ func init() {
 	log.IfErr(Add(RoutePrefixPrivate, "global/smtp", []string{"PUT", "OPTIONS"}, nil, SaveSMTPConfig))
 	log.IfErr(Add(RoutePrefixPrivate, "global/license", []string{"GET", "OPTIONS"}, nil, GetLicense))
 	log.IfErr(Add(RoutePrefixPrivate, "global/license", []string{"PUT", "OPTIONS"}, nil, SaveLicense))
+	log.IfErr(Add(RoutePrefixPrivate, "global/auth", []string{"PUT", "OPTIONS"}, nil, SaveAuthConfig))
 
 	// Pinned items
 	log.IfErr(Add(RoutePrefixPrivate, "pin/{userID}", []string{"POST", "OPTIONS"}, nil, AddPin))

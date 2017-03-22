@@ -12,12 +12,13 @@
 import Ember from 'ember';
 import NotifierMixin from '../../mixins/notifier';
 import TooltipMixin from '../../mixins/tooltip';
+import AuthMixin from '../../mixins/auth';
 
 const {
 	computed
 } = Ember;
 
-export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
+export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 	folderService: Ember.inject.service('folder'),
 	session: Ember.inject.service(),
 	appMeta: Ember.inject.service(),
@@ -37,7 +38,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	didReceiveAttrs() {
 		this.set('isFolderOwner', this.get('folder.userId') === this.get("session.user.id"));
 
-		let show = this.get('isFolderOwner') || this.get('hasSelectedDocuments') || this.get('folderService').get('canEditCurrentFolder');
+		let show = this.get('session.authenticated') || this.get('isFolderOwner') || this.get('hasSelectedDocuments') || this.get('folderService').get('canEditCurrentFolder');
 		this.set('showToolbar', show);
 
 		let targets = _.reject(this.get('folders'), {

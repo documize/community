@@ -43,11 +43,19 @@
 				{{/if}}
 			{{/if}}
 	    	{{#if isFolderOwner}}
-				{{#link-to 'settings' folder.id folder.slug (query-params tab="tabShare")}}
-					<div class="round-button-mono" id="folder-share-button" data-tooltip="Share" data-tooltip-position="top center">
-						<i class="material-icons color-gray">share</i>
-					</div>
-				{{/link-to}}
+				{{#if isAuthProviderDocumize}}
+					{{#link-to 'settings' folder.id folder.slug (query-params tab="tabShare")}}
+						<div class="round-button-mono" id="folder-share-button" data-tooltip="Share" data-tooltip-position="top center">
+							<i class="material-icons color-gray">share</i>
+						</div>
+					{{/link-to}}
+				{{else}}
+					{{#link-to 'settings' folder.id folder.slug (query-params tab="tabPermissions")}}
+						<div class="round-button-mono" id="folder-share-button" data-tooltip="Share" data-tooltip-position="top center">
+							<i class="material-icons color-gray">share</i>
+						</div>
+					{{/link-to}}
+				{{/if}}
 				<div class="button-gap"></div>
 				{{#link-to 'settings' folder.id folder.slug}}
 					<div class="round-button-mono" id="folder-settings-button" data-tooltip="Settings" data-tooltip-position="top center">

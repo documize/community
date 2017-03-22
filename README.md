@@ -8,7 +8,7 @@ The mission is to bring software dev inspired features (refactoring, testing, li
 
 ## Latest version
 
-v0.43.1
+v0.44.0
 
 ## OS Support
 
@@ -18,7 +18,7 @@ v0.43.1
 
 ## Tech stack
 
-- EmberJS (v2.11.2)
+- EmberJS (v2.12.0)
 - Go (v1.8)
 - MySQL (v5.7.10+) or Percona (v5.7.16-10+)
 
@@ -28,11 +28,17 @@ v0.43.1
 - [Install for development guide](https://developers.documize.com/s/VzO9ZqMOCgABGyfW/installation/d/V16LOMucxwABhZF1/install-documize-for-development-guide)
 - [Configuration guide](https://developers.documize.com/s/VzO9ZqMOCgABGyfW/installation/d/VzSL8cVZ4QAB2B4Y/configure-documize-guide)
 
+## Keycloak Integration
+
+Documize provides out-of-the-box integration with [Redhat Keycloak](http://www.keycloak.org) for open source identity and access management.
+
 ## Auth0 Integration
 
 Documize is compatible with Auth0 identity as a service.
 
 [![JWT Auth for open source projects](https://cdn.auth0.com/oss/badges/a0-badge-dark.png)](https://auth0.com/?utm_source=oss&utm_medium=gp&utm_campaign=oss)
+
+Open Source Identity and Access Management
 
 ## Word Conversion to HTML
 

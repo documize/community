@@ -26,9 +26,8 @@ export default Ember.Controller.extend(NotifierMixin, {
 			}).then(() => {
 				var credentials = Encoding.Base64.encode(":" + this.model.email + ":" + this.model.password);
 				window.location.href = "/auth/sso/" + encodeURIComponent(credentials);
-			}).catch((error) => {
+			}).catch((error) => { // eslint-disable-line no-unused-vars
 				// TODO notify user of the error within the GUI
-				console.log("Something went wrong attempting database creation, see server log: " + error);
 			});
 		}
 	}

@@ -62,5 +62,11 @@
             font-size: 1.1rem;
             margin-bottom: 30px;
         }
+
+        .document-sidebar-form-wrapper {
+            padding: 20px;
+            border: 1px solid $color-stroke;
+            @include border-radius(3px);
+        }
     }
 }

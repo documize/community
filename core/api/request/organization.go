@@ -59,7 +59,7 @@ func (p *Persister) AddOrganization(org entity.Organization) error {
 
 // GetOrganization returns the Organization reocrod from the organization database table with the given id.
 func (p *Persister) GetOrganization(id string) (org entity.Organization, err error) {
-	stmt, err := Db.Preparex("SELECT id, refid, company, title, message, url, domain, email, serial, active, allowanonymousaccess, created, revised FROM organization WHERE refid=?")
+	stmt, err := Db.Preparex("SELECT id, refid, company, title, message, url, domain, email, serial, active, allowanonymousaccess, authprovider, coalesce(authconfig,JSON_UNQUOTE('{}')) as authconfig, created, revised FROM organization WHERE refid=?")
 	defer utility.Close(stmt)
 
 	if err != nil {
@@ -77,24 +77,6 @@ func (p *Persister) GetOrganization(id string) (org entity.Organization, err err
 	return
 }
 
-// CheckDomain makes sure there is an organisation with the correct domain
-func CheckDomain(domain string) string {
-	row := Db.QueryRow("SELECT COUNT(*) FROM organization WHERE domain=? AND active=1", domain)
-
-	var count int
-	err := row.Scan(&count)
-
-	if err != nil {
-		return ""
-	}
-
-	if count == 1 {
-		return domain
-	}
-
-	return ""
-}
-
 // GetOrganizationByDomain returns the organization matching a given URL subdomain.
 func (p *Persister) GetOrganizationByDomain(subdomain string) (org entity.Organization, err error) {
 	err = nil
@@ -104,7 +86,7 @@ func (p *Persister) GetOrganizationByDomain(subdomain string) (org entity.Organi
 
 		var stmt *sqlx.Stmt
 
-		stmt, err = Db.Preparex("SELECT id, refid, company, title, message, url, domain, email, serial, active, allowanonymousaccess, created, revised FROM organization WHERE domain=? AND active=1")
+		stmt, err = Db.Preparex("SELECT id, refid, company, title, message, url, domain, email, serial, active, allowanonymousaccess, authprovider, coalesce(authconfig,JSON_UNQUOTE('{}')) as authconfig, created, revised FROM organization WHERE domain=? AND active=1")
 		defer utility.Close(stmt)
 
 		if err != nil {
@@ -185,4 +167,43 @@ func (p *Persister) RemoveOrganization(orgID string) (err error) {
 	}
 
 	return
+}
+
+// UpdateAuthConfig updates the given organization record in the database with the auth config details.
+func (p *Persister) UpdateAuthConfig(org entity.Organization) (err error) {
+	org.Revised = time.Now().UTC()
+
+	stmt, err := p.Context.Transaction.PrepareNamed("UPDATE organization SET allowanonymousaccess=:allowanonymousaccess, authprovider=:authprovider, authconfig=:authconfig, revised=:revised WHERE refid=:refid")
+	if err != nil {
+		log.Error(fmt.Sprintf("Unable to prepare UpdateAuthConfig %s", org.RefID), err)
+		return
+	}
+
+	defer utility.Close(stmt)
+
+	_, err = stmt.Exec(&org)
+	if err != nil {
+		log.Error(fmt.Sprintf("Unable to execute UpdateAuthConfig %s", org.RefID), err)
+		return
+	}
+
+	return
+}
+
+// CheckDomain makes sure there is an organisation with the correct domain
+func CheckDomain(domain string) string {
+	row := Db.QueryRow("SELECT COUNT(*) FROM organization WHERE domain=? AND active=1", domain)
+
+	var count int
+	err := row.Scan(&count)
+
+	if err != nil {
+		return ""
+	}
+
+	if count == 1 {
+		return domain
+	}
+
+	return ""
 }

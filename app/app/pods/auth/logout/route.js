@@ -17,18 +17,19 @@ export default Ember.Route.extend({
 	appMeta: Ember.inject.service(),
 
 	activate: function () {
-		this.get('session').invalidate();
-		this.audit.record("logged-in");
+		this.audit.record("logged-out");
 		this.audit.stop();
 
-		if (config.environment === 'test') {
-			this.transitionTo('auth.login');
-		} else {
-			if (this.get("appMeta.allowAnonymousAccess")) {
-				this.transitionTo('folders');
-			} else {
+		this.get('session').invalidate().then(() => { 
+			if (config.environment === 'test') {
 				this.transitionTo('auth.login');
+			} else {
+				if (this.get("appMeta.allowAnonymousAccess")) {
+					this.transitionTo('folders');
+				} else {
+					this.transitionTo('auth.login');
+				}
 			}
-		}
+		});
 	}
 });

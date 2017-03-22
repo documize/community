@@ -176,3 +176,60 @@ type licenseJSON struct {
   <Signature>some signature</Signature>
 </DocumizeLicense>
 */
+
+// SaveAuthConfig returns installation-wide authentication configuration
+func SaveAuthConfig(w http.ResponseWriter, r *http.Request) {
+	method := "SaveAuthConfig"
+	p := request.GetPersister(r)
+
+	if !p.Context.Global {
+		writeForbiddenError(w)
+		return
+	}
+
+	defer r.Body.Close()
+
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		writePayloadError(w, method, err)
+		return
+	}
+
+	var data authData
+	err = json.Unmarshal(body, &data)
+	if err != nil {
+		writePayloadError(w, method, err)
+		return
+	}
+
+	org, err := p.GetOrganization(p.Context.OrgID)
+	if err != nil {
+		util.WriteGeneralSQLError(w, method, err)
+		return
+	}
+
+	org.AuthProvider = data.AuthProvider
+	org.AuthConfig = data.AuthConfig
+
+	p.Context.Transaction, err = request.Db.Beginx()
+	if err != nil {
+		writeTransactionError(w, method, err)
+		return
+	}
+
+	err = p.UpdateAuthConfig(org)
+	if err != nil {
+		util.WriteGeneralSQLError(w, method, err)
+		p.Context.Transaction.Rollback()
+		return
+	}
+
+	p.Context.Transaction.Commit()
+
+	util.WriteSuccessEmptyJSON(w)
+}
+
+type authData struct {
+	AuthProvider string `json:"authProvider"`
+	AuthConfig   string `json:"authConfig"`
+}

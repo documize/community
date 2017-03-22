@@ -146,7 +146,6 @@ func WriteMarshalError(w http.ResponseWriter, err error) {
 	w.WriteHeader(http.StatusBadRequest)
 	_, err2 := w.Write([]byte("{Error: 'JSON marshal failed'}"))
 	log.IfErr(err2)
-	log.Error("Failed to JSON marshal", err)
 }
 
 // WriteJSON serializes data as JSON to HTTP response.
@@ -162,6 +161,15 @@ func WriteJSON(w http.ResponseWriter, v interface{}) {
 	}
 
 	_, err = w.Write(j)
+	log.IfErr(err)
+}
+
+// WriteRequestError sends custom error message.
+func WriteRequestError(w http.ResponseWriter, msg string) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusBadRequest)
+
+	_, err := w.Write([]byte(fmt.Sprintf("{Error: '%s'}", msg)))
 	log.IfErr(err)
 }
 

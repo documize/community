@@ -9,9 +9,11 @@
 //
 // https://documize.com
 
-// make url friendly slug from specified text.
+// Make url friendly slug from specified text.
+// Has to handle non-english character text "Общее" text!
 function makeSlug(text) {
-    return text.toLowerCase().replace(/[^\w ]+/g, '').replace(/ +/g, '-');
+    return slug(text, { mode: 'rfc3986', lower: true});
+    //return text.toLowerCase().replace(/[^\w ]+/g, '').replace(/ +/g, '-');
 }
 
 function makeId(len) {
@@ -34,3 +36,4 @@ export default {
     makeId,
     endsWith
 };
+

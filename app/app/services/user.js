@@ -46,15 +46,26 @@ export default Ember.Service.extend({
 		});
 	},
 
-	// Returns all users for organization.
+	// Returns all active users for organization.
 	getAll() {
-		return this.get('ajax').request(`users`).then((response) => {
+		return this.get('ajax').request(`users?active=1`).then((response) => {
 			return response.map((obj) => {
 				let data = this.get('store').normalize('user', obj);
 				return this.get('store').push(data);
 			});
 		});
 	},
+
+	// Returns all active and inactive users for organization.
+	getComplete() {
+		return this.get('ajax').request(`users?active=0`).then((response) => {
+			return response.map((obj) => {
+				let data = this.get('store').normalize('user', obj);
+				return this.get('store').push(data);
+			});
+		});
+	},
+
 
 	// Returns all users that can see folder.
 	getFolderUsers(folderId) {

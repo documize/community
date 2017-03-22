@@ -64,6 +64,7 @@
 		padding: 25px 50px;
 		box-shadow: 0 0 0 0.75pt $color-stroke,0 0 3pt 0.75pt $color-stroke;
 		background-color: $color-white;
+		overflow-x: scroll;
 
 		&:hover {
 			.page-title {

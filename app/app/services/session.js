@@ -21,7 +21,9 @@ export default SimpleAuthSession.extend({
 	ajax: service(),
 	appMeta: service(),
 	store: service(),
-
+	localStorage: service(),
+	folderPermissions: null,
+	currentFolder: null,
 	isMac: false,
 	isMobile: false,
 	authenticated: computed('user.id', function () {
@@ -40,7 +42,7 @@ export default SimpleAuthSession.extend({
 		return data.get('global');
 	}),
 
-	init: function () {
+	init() {
 		this._super(...arguments);
 		
 		this.set('isMac', is.mac());
@@ -55,6 +57,7 @@ export default SimpleAuthSession.extend({
 		}
 	}),
 
-	folderPermissions: null,
-	currentFolder: null
+	logout() {
+		this.get('localStorage').clearAll();
+	}
 });

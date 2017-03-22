@@ -5,18 +5,12 @@
 	    </div>
 	    <div class="actions">
 	        {{#if showCancel}}
-	            <div class="flat-button" {{action 'onCancel'}}>
-	                cancel
-	            </div>
+	            <div class="flat-button" {{action 'onCancel'}}>cancel</div>
 	        {{/if}}
 			{{#if hasSecondButton}}
-				<div class="flat-button {{color2}}" {{action 'onAction2'}}>
-		            {{button2}}
-		        </div>
+				<div class="flat-button {{color2}}" {{action 'onAction2'}}>{{button2}}</div>
 			{{/if}}
-	        <div class="flat-button {{color}} dropdown-dialog-action-button" {{action 'onAction'}}>
-	            {{button}}
-	        </div>
+	        <div class="flat-button {{color}} dropdown-dialog-action-button" {{action 'onAction'}}>{{button}}</div>
 	    </div>
 	    <div class="clearfix"></div>
 	</form>

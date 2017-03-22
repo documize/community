@@ -1,0 +1,53 @@
+<form class="form-bordered">
+    <div class="form-header">
+        <div class="title">Authentication</div>
+        <div class="tip">Determine the method for user authentication</div>
+    </div>
+    <div class="input-control">
+        <label>Provider</label>
+        <div class="tip">External authentication servers, services must be accessible from the server running this Documize instance</div>
+        {{#ui/ui-radio selected=isDocumizeProvider onClick=(action 'onDocumize')}}Documize &mdash; email/password{{/ui/ui-radio}}
+        {{#ui/ui-radio selected=isKeycloakProvider onClick=(action 'onKeycloak')}}Keycloak &mdash; bring your own authentication server{{/ui/ui-radio}}
+    </div>
+
+    {{#if isKeycloakProvider}}
+        <div class="form-header">
+            <div class="title">Keycloak Configuration</div>
+            <div class="tip">Connection parameters &mdash; create a documize user in Master realm with 'manage-users' role against target realm</div>
+        </div>
+        <div class="input-control">
+            <label>Keycloak Server URL</label>
+            <div class="tip">e.g. http://localhost:8888/auth</div>
+            {{focus-input id="keycloak-url" type="text" value=keycloakConfig.url class=(if KeycloakUrlError 'error')}}
+        </div>
+        <div class="input-control">
+            <label>Keycloak Realm</label>
+            <div class="tip">e.g. main</div>
+            {{input id="keycloak-realm" type="text" value=keycloakConfig.realm class=(if keycloakRealmError 'error')}}
+        </div>
+        <div class="input-control">
+            <label>Keycloak OIDC Client ID</label>
+            <div class="tip">e.g. account</div>
+            {{input id="keycloak-clientId" type="text" value=keycloakConfig.clientId class=(if KeycloakClientIdError 'error')}}
+        </div>
+        <div class="input-control">
+            <label>Keycloak Realm Public Key</label>
+            <div class="tip">Copy the RSA public key from Realm Settings &rarr; Keys</div>
+            {{textarea id="keycloak-publicKey" type="text" value=keycloakConfig.publicKey rows=7 class=(if KeycloakPublicKeyError 'error')}}
+        </div>
+        <div class="input-control">
+            <label>Keycloak Username</label>
+            <div class="tip">Used to connect with Keycloak and sync users with Documize</div>
+            {{input id="keycloak-admin-user" type="text" value=keycloakConfig.adminUser class=(if KeycloakAdminUserError 'error')}}
+        </div>
+        <div class="input-control">
+            <label>Keycloak Password</label>
+            <div class="tip">Used to connect with Keycloak and sync users with Documize</div>
+            {{input id="keycloak-admin-password" type="password" value=keycloakConfig.adminPassword class=(if KeycloakAdminPasswordError 'error')}}
+        </div>
+    {{/if}}
+
+    <div class="regular-button button-blue" {{action 'onSave'}}>save</div>
+    <div class="button-gap" />
+    <div class="regular-button button-green" {{action 'onSync'}}>sync users</div>
+</form>

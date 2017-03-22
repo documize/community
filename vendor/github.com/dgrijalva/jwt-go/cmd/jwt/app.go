@@ -16,7 +16,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/dgrijalva/jwt-go"
+	jwt "github.com/dgrijalva/jwt-go"
 )
 
 var (
@@ -25,13 +25,20 @@ var (
 	flagKey     = flag.String("key", "", "path to key file or '-' to read from stdin")
 	flagCompact = flag.Bool("compact", false, "output compact JSON")
 	flagDebug   = flag.Bool("debug", false, "print out all kinds of debug data")
+	flagClaims  = make(ArgList)
+	flagHead    = make(ArgList)
 
 	// Modes - exactly one of these is required
-	flagSign   = flag.String("sign", "", "path to claims object to sign or '-' to read from stdin")
+	flagSign   = flag.String("sign", "", "path to claims object to sign, '-' to read from stdin, or '+' to use only -claim args")
 	flagVerify = flag.String("verify", "", "path to JWT token to verify or '-' to read from stdin")
+	flagShow   = flag.String("show", "", "path to JWT file or '-' to read from stdin")
 )
 
 func main() {
+	// Plug in Var flags
+	flag.Var(flagClaims, "claim", "add additional claims. may be used more than once")
+	flag.Var(flagHead, "header", "add additional header params. may be used more than once")
+
 	// Usage message if you ask for -help or if you mess up inputs.
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
@@ -56,6 +63,8 @@ func start() error {
 		return signToken()
 	} else if *flagVerify != "" {
 		return verifyToken()
+	} else if *flagShow != "" {
+		return showToken()
 	} else {
 		flag.Usage()
 		return fmt.Errorf("None of the required flags are present.  What do you want me to do?")
@@ -71,6 +80,8 @@ func loadData(p string) ([]byte, error) {
 	var rdr io.Reader
 	if p == "-" {
 		rdr = os.Stdin
+	} else if p == "+" {
+		return []byte("{}"), nil
 	} else {
 		if f, err := os.Open(p); err == nil {
 			rdr = f
@@ -123,6 +134,8 @@ func verifyToken() error {
 		}
 		if isEs() {
 			return jwt.ParseECPublicKeyFromPEM(data)
+		} else if isRs() {
+			return jwt.ParseRSAPublicKeyFromPEM(data)
 		}
 		return data, nil
 	})
@@ -163,9 +176,16 @@ func signToken() error {
 	}
 
 	// parse the JSON of the claims
-	var claims map[string]interface{}
+	var claims jwt.MapClaims
 	if err := json.Unmarshal(tokData, &claims); err != nil {
 		return fmt.Errorf("Couldn't parse claims JSON: %v", err)
+	}
+
+	// add command line claims
+	if len(flagClaims) > 0 {
+		for k, v := range flagClaims {
+			claims[k] = v
+		}
 	}
 
 	// get the key
@@ -182,14 +202,29 @@ func signToken() error {
 	}
 
 	// create a new token
-	token := jwt.New(alg)
-	token.Claims = claims
+	token := jwt.NewWithClaims(alg, claims)
+
+	// add command line headers
+	if len(flagHead) > 0 {
+		for k, v := range flagHead {
+			token.Header[k] = v
+		}
+	}
 
 	if isEs() {
 		if k, ok := key.([]byte); !ok {
 			return fmt.Errorf("Couldn't convert key data to key")
 		} else {
 			key, err = jwt.ParseECPrivateKeyFromPEM(k)
+			if err != nil {
+				return err
+			}
+		}
+	} else if isRs() {
+		if k, ok := key.([]byte); !ok {
+			return fmt.Errorf("Couldn't convert key data to key")
+		} else {
+			key, err = jwt.ParseRSAPrivateKeyFromPEM(k)
 			if err != nil {
 				return err
 			}
@@ -205,6 +240,43 @@ func signToken() error {
 	return nil
 }
 
+// showToken pretty-prints the token on the command line.
+func showToken() error {
+	// get the token
+	tokData, err := loadData(*flagShow)
+	if err != nil {
+		return fmt.Errorf("Couldn't read token: %v", err)
+	}
+
+	// trim possible whitespace from token
+	tokData = regexp.MustCompile(`\s*$`).ReplaceAll(tokData, []byte{})
+	if *flagDebug {
+		fmt.Fprintf(os.Stderr, "Token len: %v bytes\n", len(tokData))
+	}
+
+	token, err := jwt.Parse(string(tokData), nil)
+	if token == nil {
+		return fmt.Errorf("malformed token: %v", err)
+	}
+
+	// Print the token details
+	fmt.Println("Header:")
+	if err := printJSON(token.Header); err != nil {
+		return fmt.Errorf("Failed to output header: %v", err)
+	}
+
+	fmt.Println("Claims:")
+	if err := printJSON(token.Claims); err != nil {
+		return fmt.Errorf("Failed to output claims: %v", err)
+	}
+
+	return nil
+}
+
 func isEs() bool {
 	return strings.HasPrefix(*flagAlg, "ES")
+}
+
+func isRs() bool {
+	return strings.HasPrefix(*flagAlg, "RS")
 }

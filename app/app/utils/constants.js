@@ -15,4 +15,16 @@ export default {
         Private: 2,
         Protected: 3
     },
+
+    AuthProvider: {
+        Documize: 'documize',
+        Keycloak: 'keycloak'
+    },
+	
+	DocumentActionType: {
+		Read: 1,
+		Feedback: 2,
+		Contribute: 3,
+		Approve: 4
+	}
 };

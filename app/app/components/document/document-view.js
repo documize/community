@@ -23,7 +23,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	appMeta: Ember.inject.service(),
 	link: Ember.inject.service(),
 	hasPages: computed.notEmpty('pages'),
-	newSectionName: '',
+	newSectionName: 'Section',
 	newSectionNameMissing: computed.empty('newSectionName'),
 	newSectionLocation: '',
 	beforePage: '',
@@ -34,7 +34,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		
 		this.loadBlocks();
 
-		  Ember.run.schedule('afterRender', () => {
+		Ember.run.schedule('afterRender', () => {
 			let jumpTo = "#page-" + this.get('pageId');
 			if (!$(jumpTo).inView()) {
 				$(jumpTo).velocity("scroll", { duration: 250, offset: -100 });
@@ -51,13 +51,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	didInsertElement() {
 		this._super(...arguments);
 		
-		$(".start-section:not(.start-section-empty-state)").hoverIntent({interval: 100, over: function() {
-			// in
-			$(this).find('.start-button').velocity("transition.slideDownIn", {duration: 300});
-		}, out: function() {
-			// out
-			$(this).find('.start-button').velocity("transition.slideUpOut", {duration: 300});
-		} });
+		this.setupAddWizard();
 
 		let self = this;
 		$(".tooltipped").each(function(i, el) {
@@ -67,6 +61,8 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
 	willDestroyElement() {
 		this._super(...arguments);
+
+		$('.start-section:not(.start-section-empty-state)').off('.hoverIntent');
 		
 		this.destroyTooltips();
 	},
@@ -103,6 +99,20 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 			links.linkClick(doc, link);
 			return false;
 		});
+	},
+
+	setupAddWizard() {
+		Ember.run.schedule('afterRender', () => {
+			$('.start-section:not(.start-section-empty-state)').off('.hoverIntent');
+
+			$('.start-section:not(.start-section-empty-state)').hoverIntent({interval: 100, over: function() {
+				// in
+				$(this).find('.start-button').velocity("transition.slideDownIn", {duration: 300});
+			}, out: function() {
+				// out
+				$(this).find('.start-button').velocity("transition.slideUpOut", {duration: 300});
+			} });
+		});		
 	},
 
 	addSection(model) {
@@ -172,10 +182,10 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		},
 
 		onSavePage(page, meta) {
+			this.set('toEdit', '');
 			this.attrs.onSavePage(page, meta);
 		},
 
-		// Section wizard related
 		onShowSectionWizard(page) {
 			if (is.undefined(page)) {
 				page = { id: '0' };
@@ -200,7 +210,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 			}
 
 			$("#new-section-wizard").insertAfter(`#add-section-button-${page.id}`);
-			$("#new-section-wizard").velocity("transition.slideDownIn", {duration: 300, complete:
+			$("#new-section-wizard").velocity("transition.slideDownIn", { duration: 300, complete:
 				function() {
 					$("#new-section-name").focus();
 				}});
@@ -209,6 +219,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		onHideSectionWizard() {
 			this.set('newSectionLocation', '');
 			this.set('beforePage', null);
+			$("#new-section-wizard").insertAfter('#wizard-placeholder');
 			$("#new-section-wizard").velocity("transition.slideUpOut", { duration: 300 });
 		},
 
@@ -251,6 +262,8 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 				} else {
 					this.set('toEdit', '');
 				}
+
+				this.setupAddWizard();		
 			});
 		},
 
@@ -289,12 +302,8 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 			const promise = this.addSection(model);
 			promise.then((id) => {
 				this.set('pageId', id);
-
-				// if (model.page.pageType === 'section') {
-				// 	this.set('toEdit', id);
-				// } else {
-				// 	this.set('toEdit', '');
-				// }
+				
+				this.setupAddWizard();		
 			});
 		},
 

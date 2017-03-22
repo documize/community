@@ -7,7 +7,9 @@
 	<div class="sidebar-menu">
 		<ul class="options">
 			<li class="option {{if tabGeneral "selected"}}" {{action 'selectTab' 'tabGeneral'}}>General</li>
-			<li class="option {{if tabShare "selected"}}" {{action 'selectTab' 'tabShare'}}>Share</li>
+			{{#if isAuthProviderDocumize}}
+				<li class="option {{if tabShare "selected"}}" {{action 'selectTab' 'tabShare'}}>Share</li>
+			{{/if}}
 			<li class="option {{if tabPermissions "selected"}}" {{action 'selectTab' 'tabPermissions'}}>Permissions</li>
 			<li class="option {{if tabDelete "selected"}}" {{action 'selectTab' 'tabDelete'}}>Delete</li>
 		</ul>

@@ -15,15 +15,17 @@
         <label>Email</label>
         {{input id="email" type="text" value=model.email class=(if hasEmailError 'error')}}
     </div>
-    <div class="input-control">
-        <label>Password</label>
-        <div class="tip">Optional change your password</div>
-        {{input id="password" type="password" value=password.password class=hasPasswordError}}
-    </div>
-    <div class="input-control">
-        <label>Confirm Password</label>
-        <div class="tip">Confirm your new password</div>
-        {{input id="confirmPassword" type="password" value=password.confirmation class=hasConfirmPasswordError}}
-    </div>
+    {{#if isAuthProviderDocumize}}
+        <div class="input-control">
+            <label>Password</label>
+            <div class="tip">Optional change your password</div>
+            {{input id="password" type="password" value=password.password class=hasPasswordError}}
+        </div>
+        <div class="input-control">
+            <label>Confirm Password</label>
+            <div class="tip">Confirm your new password</div>
+            {{input id="confirmPassword" type="password" value=password.confirmation class=hasConfirmPasswordError}}
+        </div>
+    {{/if}}
     <div class="regular-button button-blue" {{ action 'save' }}>save</div>
 </div>

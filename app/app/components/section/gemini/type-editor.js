@@ -28,7 +28,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
 		try {
 			config = JSON.parse(this.get('meta.config'));
-		} catch (e) {}
+		} catch (e) {} // eslint-disable-line no-empty
 
 		if (is.empty(config)) {
 			config = {
@@ -57,8 +57,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 				if (response.apikey.length > 0 && response.url.length > 0 && response.username.length > 0) {
 					self.send('auth');
 				}
-			}, function (reason) { //jshint ignore: line
-				console.log(reason);
+			}, function (reason) { // eslint-disable-line no-unused-vars
 				self.set('waiting', false);
 				if (self.get('config.userId') > 0) {
 					self.send('auth');
@@ -96,7 +95,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 					});
 				});
 				self.set('waiting', false);
-			}, function (reason) { //jshint ignore: line
+			}, function (reason) { // eslint-disable-line no-unused-vars
 				self.set('workspaces', []);
 				self.set('waiting', false);
 			});
@@ -116,7 +115,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 				self.set('items', response);
 				self.set('config.itemCount', response.length);
 				self.set('waiting', false);
-			}, function (reason) { //jshint ignore: line
+			}, function (reason) { // eslint-disable-line no-unused-vars
 				if (self.get('isDestroyed') || self.get('isDestroying')) {
 					return;
 				}
@@ -187,7 +186,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 					self.set('config.userId', response.BaseEntity.id);
 					self.set('waiting', false);
 					self.getWorkspaces();
-				}, function (reason) { //jshint ignore: line
+				}, function (reason) { // eslint-disable-line no-unused-vars
 					self.set('authenticated', false);
 					self.set('user', null);
 					self.set('config.userId', 0);

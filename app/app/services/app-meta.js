@@ -11,6 +11,7 @@
 
 import Ember from 'ember';
 import config from '../config/environment';
+import constants from '../utils/constants';
 
 const {
 	String: { htmlSafe },
@@ -21,7 +22,7 @@ const {
 export default Ember.Service.extend({
 	ajax: service(),
 	localStorage: service(),
-
+	kcAuth: service(),
 	endpoint: `${config.apiHost}/${config.apiNamespace}`,
 	orgId: '',
 	title: '',
@@ -30,6 +31,8 @@ export default Ember.Service.extend({
 	edition: 'Community',
 	valid: true,
 	allowAnonymousAccess: false,
+	authProvider: constants.AuthProvider.Documize,
+	authConfig: null,
 	setupMode: false,
 
 	invalidLicense() {
@@ -40,7 +43,7 @@ export default Ember.Service.extend({
 		return [this.get('endpoint'), endpoint].join('/');
 	},
 
-	boot(requestedUrl) { // jshint ignore:line
+	boot(requestedUrl) { // eslint-disable-line no-unused-vars
 		let dbhash;
 		if (is.not.null(document.head.querySelector("[property=dbhash]"))) {
 			dbhash = document.head.querySelector("[property=dbhash]").content;
@@ -54,6 +57,18 @@ export default Ember.Service.extend({
 				setupMode: true
 			});
 			
+			this.get('localStorage').clearAll();
+
+			return resolve(this);
+		}
+
+		if (requestedUrl === 'secure') {
+			this.setProperties({
+				title: htmlSafe("Secure document viewing"),
+				allowAnonymousAccess: true,
+				setupMode: true
+			});
+
 			this.get('localStorage').clearAll();
 
 			return resolve(this);

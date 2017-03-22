@@ -24,5 +24,13 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 		controller.set('serial', this.serial);
 		controller.set('slug', this.slug);
 		controller.set('folderId', this.folderId);
-	}
+	},
+
+	activate() {
+		$('body').addClass('background-color-off-white');
+	},
+
+	deactivate() {
+		$('body').removeClass('background-color-off-white');
+	}	
 });

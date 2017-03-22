@@ -17,7 +17,8 @@ export default Ember.Component.extend({
     prompt: null,
     optionValuePath: 'id',
     optionLabelPath: 'name',
-    action: Ember.K, // action to fire on change
+    action() {}, // action to fire on change
+    // action: Ember.K, // action to fire on change
 
     // shadow the passed-in `selection` to avoid
     // leaking changes to it via a 2-way binding

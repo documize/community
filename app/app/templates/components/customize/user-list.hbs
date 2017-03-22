@@ -91,22 +91,24 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="input-control">
-                        <label>Password</label>
-                        <div class="tip">Optional new password</div>
-                        {{input id="edit-password" type="password" value=password.password}}
+            {{#if isAuthProviderDocumize}}
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="input-control">
+                            <label>Password</label>
+                            <div class="tip">Optional new password</div>
+                            {{input id="edit-password" type="password" value=password.password}}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-control">
+                            <label>Confirm Password</label>
+                            <div class="tip">Confirm new password</div>
+                            {{input id="edit-confirmPassword" type="password" value=password.confirmation}}
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="input-control">
-                        <label>Confirm Password</label>
-                        <div class="tip">Confirm new password</div>
-                        {{input id="edit-confirmPassword" type="password" value=password.confirmation}}
-                    </div>
-                </div>
-            </div>
+            {{/if}}
         </form>
     </div>
     <div class="actions">

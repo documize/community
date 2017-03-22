@@ -64,6 +64,17 @@ func (user *User) Fullname() string {
 	return fmt.Sprintf("%s %s", user.Firstname, user.Lastname)
 }
 
+// GetAccount returns matching org account using orgID
+func (user *User) GetAccount(orgID string) (a Account, found bool) {
+	for _, a := range user.Accounts {
+		if a.OrgID == orgID {
+			return a, true
+		}
+	}
+
+	return a, false
+}
+
 // Organization defines a company that uses this app.
 type Organization struct {
 	BaseEntity
@@ -74,6 +85,8 @@ type Organization struct {
 	Domain               string `json:"domain"`
 	Email                string `json:"email"`
 	AllowAnonymousAccess bool   `json:"allowAnonymousAccess"`
+	AuthProvider         string `json:"authProvider"`
+	AuthConfig           string `json:"authConfig"`
 	Serial               string `json:"-"`
 	Active               bool   `json:"-"`
 }
@@ -333,6 +346,8 @@ type SiteMeta struct {
 	Message              string `json:"message"`
 	URL                  string `json:"url"`
 	AllowAnonymousAccess bool   `json:"allowAnonymousAccess"`
+	AuthProvider         string `json:"authProvider"`
+	AuthConfig           string `json:"authConfig"`
 	Version              string `json:"version"`
 	Edition              string `json:"edition"`
 	Valid                bool   `json:"valid"`

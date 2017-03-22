@@ -58,10 +58,17 @@ export default Router.map(function () {
 		this.route('global', {
 			path: 'global'
 		});
+		this.route('auth', {
+			path: 'auth'
+		});
 	});
 
 	this.route('setup', {
 		path: 'setup'
+	});
+
+	this.route('secure', {
+		path: 'secure/:token'
 	});
 
 	this.route('auth', {
@@ -69,6 +76,9 @@ export default Router.map(function () {
 	}, function () {
 		this.route('sso', {
 			path: 'sso/:token'
+		});
+		this.route('keycloak', {
+			path: 'keycloak'
 		});
 		this.route('login', {
 			path: 'login'

@@ -11,9 +11,12 @@
 
 import Ember from 'ember';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
+import constants from '../../../utils/constants';
 
 export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	userService: Ember.inject.service('user'),
+	global: Ember.inject.service('global'),
+	appMeta: Ember.inject.service(),
 
 	beforeModel: function () {
 		if (!this.session.isAdmin) {
@@ -21,8 +24,20 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 		}
 	},
 
-	model: function () {
-		return this.get('userService').getAll();
+	model() {
+		return new Ember.RSVP.Promise((resolve) => {
+			if (this.get('appMeta.authProvider') == constants.AuthProvider.Keycloak) {
+				this.get('global').syncExternalUsers().then(() => {
+					this.get('userService').getComplete().then((users) =>{
+						resolve(users);
+					});
+				});
+			} else {
+				this.get('userService').getComplete().then((users) =>{
+					resolve(users);
+				});
+			}
+		});
 	},
 
 	activate: function () {

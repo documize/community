@@ -21,15 +21,16 @@ const {
 } = Ember;
 
 export default Base.extend({
-
 	ajax: service(),
 	appMeta: service(),
+	localStorage: service(),
 
 	restore(data) {
 		// TODO: verify authentication data
 		if (data) {
 			return resolve(data);
 		}
+		
 		return reject();
 	},
 
@@ -51,16 +52,13 @@ export default Base.extend({
 			return Ember.RSVP.reject("invalid");
 		}
 
-		var headers = {
-			'Authorization': 'Basic ' + encoded
-		};
+		let headers = { 'Authorization': 'Basic ' + encoded };
 
-		return this.get('ajax').post('public/authenticate', {
-			headers
-		});
+		return this.get('ajax').post('public/authenticate', { headers });
 	},
 
 	invalidate() {
+		this.get('localStorage').clearAll();		
 		return resolve();
 	}
 });

@@ -1,4 +1,5 @@
 <div class="document-view">
+
 	{{#if hasPages}}
 		{{#each pages key="id" as |page index|}}
 			{{#if isEditor}}
@@ -47,6 +48,8 @@
 		{{/if}}
 	{{/if}}
 
+	<div id="wizard-placeholder" class="hide margin-top-50" />
+
 	<div id="new-section-wizard" class="new-section-wizard">
 		<div class="input-inline input-transparent pull-left width-80">
 			{{input type="text" id="new-section-name" value=newSectionName class=(if newSectionNameMissing 'section-name error-inline' 'section-name') placeholder="Name" autocomplete="off"}}
@@ -94,4 +97,5 @@
 			{{/if}}
 		</div>
 	</div>
+
 </div>
