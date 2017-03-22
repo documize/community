@@ -24,6 +24,8 @@ export default Ember.Route.extend(ApplicationRouteMixin, TooltipMixin, {
 	pinned: service(),
 
 	beforeModel(transition) {
+		this._super(...arguments);
+		
 		return this.get('appMeta').boot(transition.targetName).then(data => {
 			if (this.get('session.session.authenticator') !== "authenticator:documize" &&
 				this.get('session.session.authenticator') !== "authenticator:keycloak" && 
@@ -52,8 +54,7 @@ export default Ember.Route.extend(ApplicationRouteMixin, TooltipMixin, {
 				}
 			}
 
-			// Return true to bubble this event to any parent route.
-			return true;
+			return true; // bubble this event to any parent route
 		}
 	}
 });

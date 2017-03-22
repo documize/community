@@ -42,7 +42,7 @@ export default SimpleAuthSession.extend({
 		return data.get('global');
 	}),
 
-	init: function () {
+	init() {
 		this._super(...arguments);
 		
 		this.set('isMac', is.mac());
