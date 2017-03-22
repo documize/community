@@ -113,11 +113,7 @@ export default Ember.Controller.extend(NotifierMixin, {
 					}
 
 					this.set('model.pages', _.sortBy(pages, "sequence"));
-					this.transitionToRoute('document.index',
-						this.get('model.folder.id'),
-						this.get('model.folder.slug'),
-						this.get('model.document.id'),
-						this.get('model.document.slug'));
+					this.get('target.router').refresh();
 				});
 			} else {
 				// page delete followed by re-leveling child pages

@@ -24,7 +24,7 @@
 	                <p>Are you sure you want to delete <span class="bold">{{page.title}}?</span></p>
 	                <p>
 	                    {{input type="checkbox" id=checkId class="margin-left-20" checked=deleteChildren}}
-	                    <label for="{{checkId}}">&nbsp;Delete child pages</label>
+	                    <label for="{{checkId}}">&nbsp;Delete child sections</label>
 	                </p>
 	            {{/dropdown-dialog}}
 				{{#dropdown-dialog id=publishDialogId target=publishButtonId position="bottom right" button="Publish" color="flat-green" focusOn=blockTitleId onAction=(action 'onSavePageAsBlock')}}
