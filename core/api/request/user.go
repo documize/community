@@ -189,7 +189,12 @@ func (p *Persister) GetUsersForOrganization() (users []entity.User, err error) {
 // GetFolderUsers returns a slice containing all user records for given folder.
 func (p *Persister) GetFolderUsers(folderID string) (users []entity.User, err error) {
 	err = Db.Select(&users,
-		"SELECT id, refid, firstname, lastname, email, initials, password, salt, reset, created, revised FROM user WHERE refid IN (SELECT userid from labelrole WHERE orgid=? AND labelid=?) ORDER BY firstname,lastname", p.Context.OrgID, folderID)
+		`SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.password, u.salt, u.reset, u.created, u.revised 
+		FROM user u, account a
+		WHERE u.refid IN (SELECT userid from labelrole WHERE orgid=? AND labelid=?) 
+		AND a.orgid=? AND u.refid = a.userid AND a.active=1
+		ORDER BY u.firstname, u.lastname`,
+		p.Context.OrgID, folderID, p.Context.OrgID)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to get all users for org %s", p.Context.OrgID), err)

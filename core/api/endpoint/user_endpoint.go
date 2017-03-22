@@ -279,7 +279,7 @@ func GetFolderUsers(w http.ResponseWriter, r *http.Request) {
 	switch folder.Type {
 	case entity.FolderTypePublic:
 		// return all users for team
-		users, err = p.GetUsersForOrganization()
+		users, err = p.GetActiveUsersForOrganization()
 		break
 	case entity.FolderTypePrivate:
 		// just me
