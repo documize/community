@@ -19,8 +19,12 @@ const {
 export default Ember.Component.extend({
 	drop: null,
 	busy: false,
-
+	mousetrap: null,
 	hasNameError: computed.empty('page.title'),
+	containerId: Ember.computed('page', function () {
+		let page = this.get('page');
+		return `base-editor-inline-container-${page.id}`;
+	}),
 	pageId: Ember.computed('page', function () {
 		let page = this.get('page');
 		return `page-editor-${page.id}`;
@@ -43,15 +47,19 @@ export default Ember.Component.extend({
 	}),
 
 	didRender() {
-		let self = this;
-		Mousetrap.bind('esc', function () {
-			self.send('onCancel');
+		let msContainer = document.getElementById(this.get('containerId'));
+		let mousetrap = new Mousetrap(msContainer);
+
+		mousetrap.bind('esc', () => {
+			this.send('onCancel');
 			return false;
 		});
-		Mousetrap.bind(['ctrl+s', 'command+s'], function () {
-			self.send('onAction');
+		mousetrap.bind(['ctrl+s', 'command+s'], () => {
+			this.send('onAction');
 			return false;
 		});
+
+		this.set('mousetrap', mousetrap);
 
 		$('#' + this.get('pageId')).focus(function() {
 			$(this).select();
@@ -65,8 +73,11 @@ export default Ember.Component.extend({
 			drop.destroy();
 		}
 
-		Mousetrap.unbind('esc');
-		Mousetrap.unbind(['ctrl+s', 'command+s']);
+		let mousetrap = this.get('mousetrap');
+		if (is.not.null(mousetrap)) {
+			mousetrap.unbind('esc');
+			mousetrap.unbind(['ctrl+s', 'command+s']);
+		}
 	},
 
 	actions: {

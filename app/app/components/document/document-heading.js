@@ -22,18 +22,27 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	editMode: false,
 	docName: '',
 	docExcerpt: '',
-
 	hasNameError: computed.empty('docName'),
 	hasExcerptError: computed.empty('docExcerpt'),
+
+	keyUp(e) {
+		if (e.keyCode === 27) { // escape key
+			this.send('onCancel');
+		}
+	},
 
 	actions: {
 		toggleEdit() {
 			this.set('docName', this.get('document.name'));
 			this.set('docExcerpt', this.get('document.excerpt'));
 			this.set('editMode', true);
+
+			Ember.run.schedule('afterRender', () => {
+				$('#document-name').select();
+			});
 		},
 
-		onSaveDocument() {
+		onSave() {
 			if (this.get('hasNameError') || this.get('hasExcerptError')) {
 				return;
 			}
@@ -46,7 +55,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 			this.set('editMode', false);
 		},
 
-		cancel() {
+		onCancel() {
 			this.set('editMode', false);
 		}
 	}
