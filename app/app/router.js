@@ -67,6 +67,10 @@ export default Router.map(function () {
 		path: 'setup'
 	});
 
+	this.route('secure', {
+		path: 'secure/:token'
+	});
+
 	this.route('auth', {
 		path: 'auth'
 	}, function () {

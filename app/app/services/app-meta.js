@@ -62,9 +62,20 @@ export default Ember.Service.extend({
 			return resolve(this);
 		}
 
+		if (requestedUrl === 'secure') {
+			this.setProperties({
+				title: htmlSafe("Secure document viewing"),
+				allowAnonymousAccess: true,
+				setupMode: true
+			});
+
+			this.get('localStorage').clearAll();
+
+			return resolve(this);
+		}
+
 		return this.get('ajax').request('public/meta').then((response) => {
 			this.setProperties(response);
-
 			return response;
 		});
 	}
