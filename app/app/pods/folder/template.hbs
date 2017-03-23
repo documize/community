@@ -1,12 +1,12 @@
 {{layout/zone-navigation}}
-
-{{#layout/zone-sidebar}}
-	{{folder/folders-list folders=model.folders folder=model.folder onImport=(action 'onImport') onFolderAdd=(action 'onFolderAdd')
-	showDocument=(action 'showDocument')}}
-{{/layout/zone-sidebar}}
-
-{{#layout/zone-content}}
-	{{folder/folder-toolbar folders=model.folders folder=model.folder hasSelectedDocuments=hasSelectedDocuments onDeleteDocument=(action
-	'onDeleteDocument') onMoveDocument=(action 'onMoveDocument')}}
-	{{folder/documents-list documents=model.documents folder=model.folder isFolderOwner=isFolderOwner onDocumentsChecked=(action 'onDocumentsChecked') }}
-{{/layout/zone-content}}
+{{#layout/zone-container}}
+	{{#layout/zone-sidebar}}
+		{{folder/folders-list folders=model.folders folder=model.folder onImport=(action 'onImport') onFolderAdd=(action 'onFolderAdd')
+		showDocument=(action 'showDocument')}}
+	{{/layout/zone-sidebar}}
+	{{#layout/zone-content}}
+		{{folder/folder-toolbar folders=model.folders folder=model.folder hasSelectedDocuments=hasSelectedDocuments onDeleteDocument=(action
+		'onDeleteDocument') onMoveDocument=(action 'onMoveDocument')}}
+		{{folder/documents-list documents=model.documents folder=model.folder isFolderOwner=isFolderOwner onDocumentsChecked=(action 'onDocumentsChecked') }}
+	{{/layout/zone-content}}
+{{/layout/zone-container}}

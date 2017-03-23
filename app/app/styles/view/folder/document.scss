@@ -1,0 +1,96 @@
+.documents-list {
+	> .document {
+		margin: 0;
+		padding: 20px 20px 25px;
+		width: 100%;
+		position: relative;
+		transition: 0.3s;
+		border-bottom: 1px solid $color-border;
+
+		&:hover {
+			> .link {
+				> .title {
+					color: $color-link;
+				}
+
+				> .snippet {
+					color: $color-gray;
+				}
+			}
+
+			> .checkbox {
+				display: block;
+			}
+		}
+
+		> .checkbox {
+			position: absolute;
+			display: none;
+			top: 8px;
+			right: 15px;
+			cursor: pointer;
+
+			> .material-icons {
+				width: 10px;
+				margin: 0;
+				padding: 0;
+				color: $color-checkbox;
+			}
+		}
+
+		.link {
+			text-decoration: none;
+			color: $color-off-black;
+			cursor: pointer;
+
+			&:hover {
+				text-decoration: none;
+				color: $color-off-black;
+			}
+
+			> .title {
+				font-size: 18px;
+				margin-bottom: 10px;
+			}
+
+			> .snippet {
+				color: $color-gray;
+				font-size: 14px;
+				line-height: 24px;
+			}
+		}
+	}
+
+	> .selected-card {
+		background-color: $color-card-active !important;
+
+		> .checkbox {
+			display: block;
+		}
+	}
+}
+
+.move-document-options,
+.start-document-options {
+	height: 150px;
+	overflow-y: auto;
+	margin: 0;
+	padding: 0;
+
+	> .option {
+		vertical-align: bottom;
+		cursor: pointer;
+		font-size: 0.9rem;
+		overflow: hidden;
+		white-space: nowrap;
+
+		> .material-icons {
+			font-size: 0.9rem;
+			vertical-align: top;
+		}
+	}
+
+	> .selected {
+		color: $color-link;
+	}
+}

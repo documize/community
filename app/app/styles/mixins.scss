@@ -92,6 +92,13 @@
 	border-top: $size solid $color;
 }
 
+@mixin content-container($pad-tb: 25px, $pad-lr: 50px) {
+    @include border-radius(2px);
+    padding: $pad-tb $pad-lr;
+    box-shadow: 0 0 0 0.75pt $color-stroke,0 0 3pt 0.75pt $color-stroke;
+    background-color: $color-white;
+}
+
 .dotted
 {
     border-bottom: 1px dotted $color-gray;
@@ -147,9 +154,9 @@
 }
 
 @mixin opacity($opacity) {
-      opacity: $opacity;
-      $opacity-ie: $opacity * 100;
-      filter: alpha(opacity=$opacity-ie); //IE8
+    opacity: $opacity;
+    $opacity-ie: $opacity * 100;
+    filter: alpha(opacity=$opacity-ie); //IE8
 }
 
 @keyframes fadein {

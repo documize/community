@@ -6,9 +6,10 @@
 	}
 
 	.search-results {
-		.heading {
-			font-size: 1.2rem;
-			color: $color-off-black;
+		> .heading {
+			font-size: 2rem;
+			margin-bottom: 10px;
+			font-weight: normal;
 		}
 
 		> .list {
@@ -16,10 +17,9 @@
 			list-style: none;
 
 			> .item {
+				@include content-container();
 				cursor: pointer;
-				margin: 0 30px 30px 0;
-				padding-bottom: 40px;
-				border-bottom: 1px solid #e1e1e1;
+				margin-bottom: 30px;
 
 				> .link {
 					text-decoration: none;
@@ -35,10 +35,9 @@
 					}
 
 					> .folder {
-						display: inline-block;
 						font-size: 0.8rem;
 						color: $color-gray;
-						margin-left: 15px;
+						margin-top: 5px;
 					}
 
 					> .excerpt {
@@ -48,25 +47,6 @@
 
 					> .chips {
 						margin-top: 1rem;
-					}
-				}
-
-				> .references {
-					margin-top: 1rem;
-
-					> .label {
-						font-size: 0.9rem;
-						color: $color-gray;
-					}
-
-					> .link {
-						font-size: 0.9rem;
-						color: $color-off-black;
-
-						&:hover {
-							color: $color-link;
-							text-decoration: underline;
-						}
 					}
 				}
 			}
