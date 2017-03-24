@@ -341,6 +341,64 @@ func RemoveFolder(w http.ResponseWriter, r *http.Request) {
 	writeSuccessString(w, "{}")
 }
 
+// DeleteFolder deletes empty folder.
+func DeleteFolder(w http.ResponseWriter, r *http.Request) {
+	if IsInvalidLicense() {
+		util.WriteBadLicense(w)
+		return
+	}
+
+	method := "DeleteFolder"
+	p := request.GetPersister(r)
+
+	if !p.Context.Editor {
+		writeForbiddenError(w)
+		return
+	}
+
+	params := mux.Vars(r)
+	id := params["folderID"]
+
+	if len(id) == 0 {
+		writeMissingDataError(w, method, "folderID")
+		return
+	}
+
+	tx, err := request.Db.Beginx()
+
+	if err != nil {
+		writeTransactionError(w, method, err)
+		return
+	}
+
+	p.Context.Transaction = tx
+
+	_, err = p.DeleteLabel(id)
+	if err != nil {
+		log.IfErr(tx.Rollback())
+		writeServerError(w, method, err)
+		return
+	}
+
+	_, err = p.DeleteLabelRoles(id)
+	if err != nil {
+		log.IfErr(tx.Rollback())
+		writeServerError(w, method, err)
+		return
+	}
+
+	_, err = p.DeletePinnedSpace(id)
+	if err != nil && err != sql.ErrNoRows {
+		log.IfErr(tx.Rollback())
+		writeServerError(w, method, err)
+		return
+	}
+
+	log.IfErr(tx.Commit())
+
+	writeSuccessString(w, "{}")
+}
+
 // SetFolderPermissions persists specified folder permissions
 func SetFolderPermissions(w http.ResponseWriter, r *http.Request) {
 	method := "SetFolderPermissions"

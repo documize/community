@@ -80,6 +80,12 @@ export default BaseService.extend({
 		});
 	},
 
+	delete(folderId) {
+		return this.get('ajax').request(`folders/${folderId}`, {
+			method: 'DELETE'
+		});
+	},
+
 	onboard(folderId, payload) {
 		let url = `public/share/${folderId}`;
 

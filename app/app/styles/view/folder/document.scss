@@ -1,11 +1,35 @@
+.folder-heading {
+	margin: 0 0 55px 0;
+
+	.folder-title {
+		font-size: 2rem;
+		margin: 0 0 10px 0;
+		font-weight: normal;
+	}
+}
+
+.edit-folder-heading {
+	margin: 0 0 10px 0;
+
+	.edit-folder-title {
+		> input {
+			font-size: 2rem;
+			font-weight: normal;
+			margin: 0 0 10px;
+			color: $color-wysiwyg;
+		}
+	}
+}
+
 .documents-list {
 	> .document {
-		margin: 0;
-		padding: 20px 20px 25px;
-		width: 100%;
+		@include content-container();
+		margin-bottom: 30px;
+		// padding: 20px 20px 25px;
+		// width: 100%;
 		position: relative;
 		transition: 0.3s;
-		border-bottom: 1px solid $color-border;
+		// border-bottom: 1px solid $color-border;
 
 		&:hover {
 			> .link {
@@ -26,8 +50,8 @@
 		> .checkbox {
 			position: absolute;
 			display: none;
-			top: 8px;
-			right: 15px;
+			top: 10px;
+			right: 20px;
 			cursor: pointer;
 
 			> .material-icons {
@@ -72,7 +96,7 @@
 
 .move-document-options,
 .start-document-options {
-	height: 150px;
+	height: 200px;
 	overflow-y: auto;
 	margin: 0;
 	padding: 0;

@@ -15,7 +15,7 @@ import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-rout
 export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	documentService: Ember.inject.service('document'),
 	folderService: Ember.inject.service('folder'),
-
+	session: Ember.inject.service(''),
 	folder: {},
 
 	model: function (params) {
@@ -30,5 +30,16 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 		controller.set('model', model);
 		this.browser.setTitle(model.folder.get('name'));
 		this.get('folderService').setCurrentFolder(model.folder);
-	}
+        controller.set('isEditor', this.get('folderService').get('canEditCurrentFolder'));
+        controller.set('isFolderOwner', this.get('session.user.id') === model.folder.get('userId'));
+	},
+
+	actions: {
+		error(error /*, transition*/ ) {
+			if (error) {
+				this.transitionTo('/not-found');
+				return false;
+			}
+		}
+	}	
 });

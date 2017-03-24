@@ -16,38 +16,15 @@ const {
 	inject: { service }
 } = Ember;
 
-export default Ember.Route.extend(NotifierMixin, {
+export default Ember.Component.extend(NotifierMixin, {
 	folderService: service('folder'),
 	userService: service('user'),
-	folder: {},
-	tab: "",
-	localStorage: service(),
+	appMeta: service(),
 	store: service(),
 
-	beforeModel: function (transition) {
-		this.tab = is.not.undefined(transition.queryParams.tab) ? transition.queryParams.tab : "tabGeneral";
-	},
-
-	model(params) {
-		return this.get('folderService').getFolder(params.folder_id);
-	},
-
-	setupController(controller, model) {
-		this.folder = model;
-		controller.set('model', model);
-
-		controller.set('tabGeneral', false);
-		controller.set('tabShare', false);
-		controller.set('tabPermissions', false);
-		controller.set('tabDelete', false);
-		controller.set(this.get('tab'), true);
-
-		this.get('folderService').getAll().then((folders) => {
-			controller.set('folders', folders.rejectBy('id', model.get('id')));
-		});
-
+	didReceiveAttrs() {
 		this.get('userService').getAll().then((users) => {
-			controller.set('users', users);
+			this.set('users', users);
 
 			var folderPermissions = [];
 
@@ -57,8 +34,8 @@ export default Ember.Route.extend(NotifierMixin, {
 				let u = {
 					userId: user.get('id'),
 					fullname: user.get('fullname'),
-					orgId: model.get('orgId'),
-					folderId: model.get('id'),
+					orgId: this.get('folder.orgId'),
+					folderId: this.get('folder.id'),
 					canEdit: false,
 					canView: false,
 					canViewPrevious: false
@@ -72,15 +49,15 @@ export default Ember.Route.extend(NotifierMixin, {
 			var u = {
 				userId: "",
 				fullname: " Everyone",
-				orgId: model.get('orgId'),
-				folderId: model.get('id'),
+				orgId: this.get('folder.orgId'),
+				folderId: this.get('folder.id'),
 				canEdit: false,
 				canView: false
 			};
 
 			folderPermissions.pushObject(u);
 
-			this.get('folderService').getPermissions(model.id).then((permissions) => {
+			this.get('folderService').getPermissions(this.get('folder.id')).then((permissions) => {
 				permissions.forEach((permission, index) => { // eslint-disable-line no-unused-vars
 					var folderPermission = folderPermissions.findBy('userId', permission.get('userId'));
 					if (is.not.undefined(folderPermission)) {
@@ -99,38 +76,26 @@ export default Ember.Route.extend(NotifierMixin, {
 					return this.get('store').push(data);
 				});
 
-				controller.set('permissions', folderPermissions.sortBy('fullname'));
+				this.set('permissions', folderPermissions.sortBy('fullname'));
 			});
-		});
+		});		
+	},
+
+	getDefaultInvitationMessage() {
+		return "Hey there, I am sharing the " + this.get('folder.name') + " (in " + this.get("appMeta.title") + ") with you so we can both access the same documents.";
 	},
 
 	actions: {
-		onRename: function (folder) {
-			let self = this;
-			this.get('folderService').save(folder).then(function () {
-				self.showNotification("Renamed");
+		setPermissions() {
+			let message = this.getDefaultInvitationMessage();
+			let folder = this.get('folder');
+			let permissions = this.get('permissions');
+	
+			this.get('permissions').forEach((permission, index) => { // eslint-disable-line no-unused-vars
+				Ember.set(permission, 'canView', $("#canView-" + permission.userId).prop('checked'));
+				Ember.set(permission, 'canEdit', $("#canEdit-" + permission.userId).prop('checked'));
 			});
-		},
 
-		onRemove(moveId) {
-			this.get('folderService').remove(this.folder.get('id'), moveId).then(() => { /* jshint ignore:line */
-				this.showNotification("Deleted");
-				this.get('localStorage').clearSessionItem('folder');
-
-				this.get('folderService').getFolder(moveId).then((folder) => {
-					this.get('folderService').setCurrentFolder(folder);
-					this.transitionTo('folder', folder.get('id'), folder.get('slug'));
-				});
-			});
-		},
-
-		onShare: function(invitation) {
-			this.get('folderService').share(this.folder.get('id'), invitation).then(() => {
-				this.showNotification("Shared");
-			});
-		},
-
-		onPermission: function (folder, message, permissions) {
 			var data = permissions.map((obj) => {
 				let permission = {
 					'orgId': obj.orgId,
@@ -142,6 +107,7 @@ export default Ember.Route.extend(NotifierMixin, {
 
 				return permission;
 			});
+
 			var payload = { Message: message, Roles: data };
 
 			this.get('folderService').savePermissions(folder.get('id'), payload).then(() => {

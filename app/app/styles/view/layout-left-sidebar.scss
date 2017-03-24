@@ -35,6 +35,12 @@ $sidebar-width: 400px;
     position: absolute;
     margin-top: 30px;
 	padding: 30px;
+
+    .page-content-title {
+		font-size: 2rem;
+		margin: 30px 0 10px;
+		font-weight: normal;
+	}
 }
 
 #wrapper.toggled #page-content-wrapper {
@@ -160,10 +166,11 @@ $sidebar-width: 400px;
             margin-bottom: 30px;
         }
 
-        .document-sidebar-form-wrapper {
+        .folder-sidebar-form-wrapper, .document-sidebar-form-wrapper {
             padding: 20px;
             border: 1px solid $color-stroke;
             @include border-radius(3px);
+            background-color: $color-white;
         }
     }
 }

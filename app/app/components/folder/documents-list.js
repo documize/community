@@ -13,6 +13,7 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
     selectedDocuments: [],
+	moveTarget: null,
 
 	emptyState: Ember.computed('documents', function() {
         return this.get('documents.length') === 0;
@@ -21,6 +22,8 @@ export default Ember.Component.extend({
     didReceiveAttrs() {
         this.set('selectedDocuments', []);
 		this.audit.record('viewed-space');
+
+        this.set('deleteTargets', this.get('folders').rejectBy('id', this.get('folder.id')));
     },
 
     actions: {
@@ -41,6 +44,10 @@ export default Ember.Component.extend({
 
             this.set('selectedDocuments', list);
             this.get('onDocumentsChecked')(list);
-        }
+        },
+
+		onDelete() {
+			this.get("onDeleteSpace")();
+		}	
     }
 });

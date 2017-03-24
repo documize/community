@@ -15,8 +15,11 @@ import NotifierMixin from '../../mixins/notifier';
 export default Ember.Controller.extend(NotifierMixin, {
 	documentService: Ember.inject.service('document'),
 	folderService: Ember.inject.service('folder'),
+	localStorage: Ember.inject.service('localStorage'),	
 	hasSelectedDocuments: false,
 	selectedDocuments: [],
+	queryParams: ['tab'],
+	tab: 'index',
 
 	actions: {
 		onImport() {
@@ -72,6 +75,14 @@ export default Ember.Controller.extend(NotifierMixin, {
 			this.get('folderService').add({ name: folder }).then(function (newFolder) {
 				self.get('folderService').setCurrentFolder(newFolder);
 				self.transitionToRoute('folder', newFolder.get('id'), newFolder.get('slug'));
+			});
+		},
+
+		onDeleteSpace() {
+			this.get('folderService').delete(this.get('model.folder.id')).then(() => { /* jshint ignore:line */
+				this.showNotification("Deleted");
+				this.get('localStorage').clearSessionItem('folder');
+				this.transitionToRoute('application');
 			});
 		}
 	}
