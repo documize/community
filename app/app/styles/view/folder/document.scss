@@ -22,7 +22,7 @@
 }
 
 .documents-list {
-	> .document {
+	.document-item {
 		@include content-container();
 		margin: 0;
 		position: relative;
@@ -82,17 +82,17 @@
 		}
 	}
 
-	> .wizard-item {
+	.wizard-item {
 		margin: 0;
 		padding: 0;
 	}
 
-	> .no-wizard-item {
+	.no-wizard-item {
 		margin: 50px 0;
 		padding: 0;
 	}
 
-	> .selected-card {
+	.selected-card {
 		background-color: $color-card-active !important;
 
 		> .checkbox {

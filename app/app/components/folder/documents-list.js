@@ -82,7 +82,12 @@ export default Ember.Component.extend({
 
 			this.set('docId', docId);
 
-			$("#new-document-wizard").insertAfter(`#document-${docId}`);
+			if (docId === '') {
+				$("#new-document-wizard").insertAfter('#wizard-placeholder');
+			} else {
+				$("#new-document-wizard").insertAfter(`#document-${docId}`);
+			}
+
 			$("#new-document-wizard").velocity("transition.slideDownIn", { duration: 300, complete:
 				function() {
 					$("#new-document-name").focus();
