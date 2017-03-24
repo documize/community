@@ -18,20 +18,36 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	session: Ember.inject.service(''),
 	folder: {},
 
-	model: function (params) {
+	beforeModel() {
+		this.set('folderId', this.paramsFor('folder').folder_id)
+
+		return new Ember.RSVP.Promise((resolve) => {
+			this.get('folderService').getFolder(this.get('folderId')).then((folder) => {
+				this.set('folder', folder);
+
+				this.get('folderService').setCurrentFolder(folder).then(() => {
+					this.set('isEditor', this.get('folderService').get('canEditCurrentFolder'));
+					this.set('isFolderOwner', this.get('session.user.id') === folder.get('userId'));
+				
+					resolve();
+				});
+			});
+		});
+	},
+
+	model(params) {
 		return Ember.RSVP.hash({
-			folder: this.get('folderService').getFolder(params.folder_id),
+			folder: this.get('folder'),
+			isEditor: this.get('isEditor'),
+			isFolderOwner: this.get('isFolderOwner'),
 			folders: this.get('folderService').getAll(),
 			documents: this.get('documentService').getAllByFolder(params.folder_id)
 		});
 	},
 
-	setupController: function (controller, model) {
+	setupController(controller, model) {
 		controller.set('model', model);
 		this.browser.setTitle(model.folder.get('name'));
-		this.get('folderService').setCurrentFolder(model.folder);
-        controller.set('isEditor', this.get('folderService').get('canEditCurrentFolder'));
-        controller.set('isFolderOwner', this.get('session.user.id') === model.folder.get('userId'));
 	},
 
 	actions: {

@@ -12,13 +12,37 @@
 import Ember from 'ember';
 import NotifierMixin from '../../mixins/notifier';
 
+
+const {
+	computed,
+} = Ember;
 export default Ember.Component.extend(NotifierMixin, {
 	localStorage: Ember.inject.service(),
 	appMeta: Ember.inject.service(),
-
+	templateService: Ember.inject.service('template'),
 	canEditTemplate: "",
 	importedDocuments: [],
+	savedTemplates: [],
 	drop: null,
+	newDocumentName: 'New Document',
+	newDocumentNameMissing: computed.empty('newDocumentName'),
+
+	init() {
+		this._super(...arguments);
+
+		this.get('templateService').getSavedTemplates().then((saved) => {
+            let emptyTemplate = {
+                id: "0",
+                title: "Empty",
+				description: "An empty canvas for your words",
+				layout: "doc",
+				locked: true
+            };
+
+            saved.unshiftObject(emptyTemplate);
+            this.set('savedTemplates', saved);
+        });
+	},
 
 	didInsertElement() {
 		this.setupImport();
@@ -84,8 +108,31 @@ export default Ember.Component.extend(NotifierMixin, {
 	},
 
 	actions: {
+		onHideDocumentWizard() {
+			this.get('onHideDocumentWizard')();
+		},
+
+		editTemplate(template) {
+			this.audit.record('edited-saved-template');
+			this.get('router').transitionTo('document', this.get('folder.id'), this.get('folder.slug'), template.get('id'), template.get('slug'));
+
+			return true;
+		},
+
+		startDocument(template) {
+			this.audit.record('used-saved-template');
+            this.send("showNotification", "Creating");
+
+            this.get('templateService').importSavedTemplate(this.folder.get('id'), template.id).then((document) => {
+				this.get('router').transitionTo('document', this.get('folder.id'), this.get('folder.slug'), document.get('id'), document.get('slug'));
+            });
+
+			return true;
+		},
+
 		onDocumentImporting(filename) {
 			this.send("showNotification", `Importing ${filename}`);
+			this.get('onHideDocumentWizard')();
 
 			let documents = this.get('importedDocuments');
 			documents.push(filename);
@@ -99,25 +146,12 @@ export default Ember.Component.extend(NotifierMixin, {
 			documents.pop(filename);
 			this.set('importedDocuments', documents);
 
-			this.attrs.onImport();
+			this.get('onImport')();
 
 			if (documents.length === 0) {
 				// this.get('showDocument')(this.get('folder'), document);
 			}
 		},
-
-		editTemplate(template) {
-			this.audit.record('edited-saved-template');
-			this.attrs.onEditTemplate(template);
-
-			return true;
-		},
-
-		startDocument(template) {
-			this.audit.record('used-saved-template');
-			this.attrs.onDocumentTemplate(template.id, template.title, "private");
-
-			return true;
-		}
 	}
 });
+

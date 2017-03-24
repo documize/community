@@ -1,15 +1,77 @@
 .start-document {
-	> .import-document-button {
+	@extend .no-select;
+	height: 60px;
+	background-color: transparent;
+	position: relative;
+	cursor: pointer;
+
+	> .start-button {
+		display: none;
+		text-align: center;
+		padding-top: 20px;
+		color: $color-green;
+		font-size: 1rem;
+		position: relative;
+
+		> .round-button {
+			opacity: 0.6 !important;
+		}
+
+		> .label {
+			display: inline-block;
+			margin-left: 10px;
+		}
+
+		> .line {
+			display: inline-block;
+			height: 1px;
+			border: 1px solid $color-green;
+			width: 100px;
+			margin: 0 20px 0 20px;
+			opacity: 0.2;
+		}
+	}
+
+	&:first-of-type {
+		height: 30px;
+
+		> .start-button {
+			padding-top: 0;
+		}
+	}
+}
+
+.start-document-empty-state {
+	> .start-button {
+		display: block;
+	}
+}
+
+.new-document-wizard {
+	@include border-radius(2px);
+	margin: 30px 0 30px 0;
+	padding: 30px;
+	border: 1px solid $color-stroke;
+	background-color: $color-off-white;
+	display: none;
+
+	.document-name {
+		font-weight: bold;
+		font-size: 1.5rem;
+		margin: 0 0 30px 0;
+		color: $color-black;
+	}
+
+	.import-document-button {
 		width: 100%;
 		padding: 20px;
-		margin: 30px 0;
+		margin: 0 0 30px 0;
 		text-align: center;
 		color: $color-gray;
-		border: 2px dotted $color-gray;
+		border: 1px solid $color-stroke;
 		cursor: pointer;
 		font-size: 1rem;
 		line-height: 1.7rem;
-		@include border-radius(10px);
 		@include ease-in();
 
 		&:hover {
@@ -23,83 +85,78 @@
 		}
 	}
 
-	> .templates-list {
-		margin: 0;
+	> .list-wrapper {
+		// height: 440px;
+		// overflow-y: auto;
 
-		> .list {
+		> .template-list {
 			margin: 0;
 			padding: 0;
 
 			> .item {
-				cursor: pointer;
-				list-style: none;
-				padding: 10px 5px;
-				margin: 10px 0;
-				min-height: 90px;
 				@include ease-in();
+				@include border-radius(4px);
+				list-style: none;
+				cursor: pointer;
+				display: inline-block;
+				border: 1px solid $color-stroke;
+				background-color: $color-white;
+				margin: 0 20px 20px 0;
+				padding: 12px 0 0 20px;
+				width: 423px;
+				height: 60px;
+				position: relative;
 
 				&:hover {
-					> .icon {
-						> .edit-control {
-							display: block;
-						}
+					@include ease-in();
+					border-color: $color-link;
+
+					> .template-actions {
+						display: block;
 					}
 				}
 
-				.icon {
-					text-align: center;
-					display: inline-block;
-					width: 50px;
+				> .template-actions {
+					@include ease-in();
+					display: none;
+					position: absolute;
+					top: 10px;
+					right: 8px;
 
-					> .img {
-						text-align: center;
-						display: inline-block;
-						height: 40px;
-						width: 40px;
-					}
-
-					> .edit-control {
-						display: none;
-						vertical-align: top;
-						text-align: center;
-						margin-top: 5px;
-						opacity: 0.5;
-						cursor: pointer;
-						color: $color-gray;
-
-						&:hover {
-							color: $color-link;								
-						}
+					.material-icons {
+						color: $color-stroke;
+						font-size: 1rem;
 					}
 				}
 
 				> .details {
-					vertical-align: top;
-					display: inline-block;
-					width: 80%;
-					cursor: pointer;
+					width: 350px;
+					overflow: hidden;
+					text-overflow: ellipsis;
+					white-space: nowrap;
 
 					> .title {
 						font-size: 1rem;
-						font-weight: bold;
+						font-weight: normal;
 						color: $color-off-black;
 						letter-spacing: 0.5px;
+						margin-top: 0;
+						overflow: hidden;
+						text-overflow: ellipsis;
+						white-space: nowrap;
 					}
 
 					> .desc {
 						color: $color-gray;
-						font-size: 0.9rem;
+						font-size: 0.8rem;
 						margin-top: 5px;
-					}
-
-					&:hover {
-						 > .title,
-						> .desc {
-							color: $color-link !important;
-						}
+						overflow: hidden;
+						text-overflow: ellipsis;
+						white-space: nowrap;
 					}
 				}
 			}
 		}
 	}
 }
+

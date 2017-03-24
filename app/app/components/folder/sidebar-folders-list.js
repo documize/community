@@ -24,33 +24,6 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, AuthMixin, {
 	hasPrivateFolders: false,
 	newFolder: '',
 
-	// init() {
-	// 	this._super(...arguments);
-
-	// 	if (this.get('noFolder')) {
-	// 		return;
-	// 	}
-
-	// 	let _this = this;
-	// 	this.get('templateService').getSavedTemplates().then(function(saved) {
-    //         let emptyTemplate = {
-    //             id: "0",
-    //             title: "Empty",
-	// 			description: "An empty canvas for your words",
-	// 			img: "insert_drive_file",
-	// 			layout: "doc",
-	// 			locked: true
-    //         };
-
-	// 		saved.forEach(function(t) {
-	// 			Ember.set(t, 'img', 'content_copy');
-	// 		});
-
-    //         saved.unshiftObject(emptyTemplate);
-    //         _this.set('savedTemplates', saved);
-    //     });
-	// },
-
 	didReceiveAttrs() {
 		let folders = this.get('folders');
 
@@ -83,10 +56,6 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, AuthMixin, {
 	},
 
 	actions: {
-		// onImport() {
-		// 	this.attrs.onImport();
-		// },
-
 		addFolder() {
 			var folderName = this.get('newFolder');
 
@@ -99,30 +68,6 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, AuthMixin, {
 
 			this.set('newFolder', '');
 			return true;
-		},
-
-		// showDocument() {
-		// 	this.set('showingDocument', true);
-		// 	this.set('showingList', false);
-		// },
-
-		// showList() {
-		// 	this.set('showingDocument', false);
-		// 	this.set('showingList', true);
-		// },
-
-		// onEditTemplate(template) {
-        //     this.navigateToDocument(template);
-        // },
-
-        // onDocumentTemplate(id /*, title, type*/ ) {
-        //     let self = this;
-
-        //     this.send("showNotification", "Creating");
-
-        //     this.get('templateService').importSavedTemplate(this.folder.get('id'), id).then(function(document) {
-        //         self.navigateToDocument(document);
-        //     });
-        // },
+		}
 	}
 });

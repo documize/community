@@ -1,31 +1,35 @@
-<div class="start-document">
+<div id="new-document-wizard" class="new-document-wizard">
+
+	<div class="input-inline input-transparent pull-left width-80">
+		{{input type="text" id="new-document-name" value=newDocumentName class=(if newDocumentNameMissing 'document-name error-inline' 'document-name') placeholder="Name" autocomplete="off"}}
+	</div>
+	<div class="round-button-mono pull-right" {{action 'onHideDocumentWizard'}}>
+		<i class="material-icons color-gray">close</i>
+	</div>
+	<div class="clearfix" />
+
 	<div id="import-document-button" class="import-document-button">
-		Drag-drop .doc, .docx, .txt, .md, .markdown<br/>
-		or click to select files
+		Drag-drop or click to select .doc, .docx, .txt, .md, .markdown files
 	</div>
 
-	<div class="templates-list">
-		<ul class="list">
+	<div class="list-wrapper">
+		<ul class="template-list">
 			{{#each savedTemplates key="id" as |template|}}
 				<li class="item">
-					<div class="icon">
-						<div class="symbol" {{action 'startDocument' template}}>
-							<i class="material-icons">{{template.img}}</i>
-						</div>
-						{{#if editor}}
-							{{#unless template.locked}}
-								<i class="material-icons edit-control" {{action 'editTemplate' template}}>mode_edit</i>
-							{{/unless}}
-						{{/if}}
-					</div>
+					{{#if isEditor}}
+						{{#unless template.locked}}
+							<div class="template-actions">
+								<i class="material-icons" {{action 'editTemplate' template}}>mode_edit</i>
+							</div>
+						{{/unless}}
+					{{/if}}
 					<div class="details" {{action 'startDocument' template}}>
-						<div class='title'>
-							{{template.title}}
-						</div>
+						<div class='title'>{{template.title}}</div>
 						<div class='desc'>{{template.description}}</div>
 					</div>
 				</li>
 			{{/each}}
 		</ul>
 	</div>
+
 </div>

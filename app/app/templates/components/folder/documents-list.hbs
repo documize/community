@@ -1,6 +1,6 @@
 <ul class="documents-list">
 	{{#each documents key="id" as |document|}}
-		<li class="document {{if document.selected "selected-card"}}">
+		<li id="document-{{document.id}}" class="document {{if document.selected "selected-card"}}">
 			{{#link-to 'document.index' folder.id folder.slug document.id document.slug class="link"}}
 				<div class="title">{{ document.name }}</div>
 				<div class="snippet">{{ document.excerpt }}</div>
@@ -16,8 +16,23 @@
 				{{/if}}
 			</div>
 		</li>
+		{{#if canCreate}}
+			<li class="wizard-item start-document" {{action 'onShowDocumentWizard' document.id}}>
+				<div class="start-button">
+					<div class="round-button round-button-small button-green">
+						<i class="material-icons">add</i>
+					</div>
+					<div class="label">document</div>
+				</div>
+			</li>
+		{{else}}
+			<li class="no-wizard-item" />
+		{{/if}}
 	{{/each}}
 </ul>
+
+<div id="wizard-placeholder" class="hide margin-top-50" />
+{{folder/start-document folder=folder isEditor=isEditor onImport=(action 'onImport') onHideDocumentWizard=(action 'onHideDocumentWizard')}}
 
 {{#if emptyState}}
 	<div class="regular-button button-red" {{action 'onDelete'}}>delete</div>

@@ -24,12 +24,9 @@
 .documents-list {
 	> .document {
 		@include content-container();
-		margin-bottom: 30px;
-		// padding: 20px 20px 25px;
-		// width: 100%;
+		margin: 0;
 		position: relative;
 		transition: 0.3s;
-		// border-bottom: 1px solid $color-border;
 
 		&:hover {
 			> .link {
@@ -83,6 +80,16 @@
 				line-height: 24px;
 			}
 		}
+	}
+
+	> .wizard-item {
+		margin: 0;
+		padding: 0;
+	}
+
+	> .no-wizard-item {
+		margin: 50px 0;
+		padding: 0;
 	}
 
 	> .selected-card {

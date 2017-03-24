@@ -46,33 +46,6 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, AuthMixin, {
 		}
 	},
 
-
-	// 	this._super(...arguments);
-
-	// 	if (this.get('noFolder')) {
-	// 		return;
-	// 	}
-
-	// 	let _this = this;
-	// 	this.get('templateService').getSavedTemplates().then(function(saved) {
-    //         let emptyTemplate = {
-    //             id: "0",
-    //             title: "Empty",
-	// 			description: "An empty canvas for your words",
-	// 			img: "insert_drive_file",
-	// 			layout: "doc",
-	// 			locked: true
-    //         };
-
-	// 		saved.forEach(function(t) {
-	// 			Ember.set(t, 'img', 'content_copy');
-	// 		});
-
-    //         saved.unshiftObject(emptyTemplate);
-    //         _this.set('savedTemplates', saved);
-    //     });
-	// },
-
 	didReceiveAttrs() {
 		if (!this.get('noFolder')) {
 			let folder = this.get('folder');
@@ -82,33 +55,11 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, AuthMixin, {
 		}
 	},
 
-	// navigateToDocument(document) {
-    //     this.attrs.showDocument(this.get('folder'), document);
-    // },
-
 	actions: {
-		// onImport() {
-		// 	this.attrs.onImport();
-		// },
-
 		onFolderAdd(folderName) {
 			this.attrs.onFolderAdd(folderName);
 			return true;
 		},
-
-		// onEditTemplate(template) {
-        //     this.navigateToDocument(template);
-        // },
-
-        // onDocumentTemplate(id /*, title, type*/ ) {
-        //     let self = this;
-
-        //     this.send("showNotification", "Creating");
-
-        //     this.get('templateService').importSavedTemplate(this.folder.get('id'), id).then(function(document) {
-        //         self.navigateToDocument(document);
-        //     });
-        // },
 
 		onChangeTab(tab) {
 			this.set('tab', tab);

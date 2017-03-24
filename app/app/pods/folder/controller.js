@@ -22,10 +22,6 @@ export default Ember.Controller.extend(NotifierMixin, {
 	tab: 'index',
 
 	actions: {
-		onImport() {
-			this.get('target.router').refresh();
-		},
-
 		onDocumentsChecked(documents) {
 			this.set('selectedDocuments', documents);
 			this.set('hasSelectedDocuments', documents.length > 0);
@@ -64,10 +60,6 @@ export default Ember.Controller.extend(NotifierMixin, {
 			this.send("showNotification", "Deleted");
 		},
 
-		showDocument(folder, document) {
-			this.transitionToRoute('document', folder.get('id'), folder.get('slug'), document.get('id'), document.get('slug'));
-		},
-
 		onFolderAdd(folder) {
 			let self = this;
 			this.showNotification("Added");
@@ -84,6 +76,10 @@ export default Ember.Controller.extend(NotifierMixin, {
 				this.get('localStorage').clearSessionItem('folder');
 				this.transitionToRoute('application');
 			});
+		},
+
+		onImport() {
+			this.get('target.router').refresh();
 		}
 	}
 });
