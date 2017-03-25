@@ -1,0 +1,67 @@
+<div class="sidebar-toolbar">
+	{{#unless noFolder}}
+		<div class="margin-top-20"></div>
+		<div class="round-button-mono {{if (is-equal tab 'index') 'selected'}}" {{action 'onChangeTab' 'index'}}>
+			<i class="material-icons">view_headline</i>
+		</div>
+		<div class="margin-top-20"></div>
+
+		{{#if session.authenticated}}
+	    	{{#if isFolderOwner}}
+				{{#if isAuthProviderDocumize}}
+					<div class="round-button-mono {{if (is-equal tab 'share') 'selected'}}" {{action 'onChangeTab' 'share'}}>
+						<i class="material-icons">person_add</i>
+					</div>
+					<div class="margin-top-20"></div>
+				{{/if}}
+				<div class="round-button-mono {{if (is-equal tab 'permissions') 'selected'}}" {{action 'onChangeTab' 'permissions'}}>
+					<i class="material-icons">group</i>
+				</div>
+				<div class="margin-top-20"></div>
+			{{/if}}
+			<div class="round-button-mono" id="space-more-button">
+				<i class="material-icons">more_horiz</i>
+			</div>
+
+			{{#dropdown-menu target="space-more-button" position="bottom left" open="click" onOpenCallback=(action 'onMenuOpen') onCloseCallback=(action 'onMenuOpen')}}
+				<ul class="menu">
+					{{#if pinState.isPinned}}
+						<li class="item" {{action 'onUnpin'}}>Unpin</li>
+					{{else}}
+						<li class="item" id="pin-space-button">Pin</li>
+					{{/if}}        
+				</ul>
+			{{/dropdown-menu}}
+
+		    {{#if menuOpen}}
+				{{#unless pinState.isPinned}}
+					{{#dropdown-dialog target="pin-space-button" position="bottom left" button="Pin" color="flat-green" onAction=(action 'onPin') focusOn="pin-space-name" }}
+						<div class="input-control">
+							<label>Pin Space</label>
+							<div class="tip">A 3 or 4 character name</div>
+							{{input type='text' id="pin-space-name" value=pinState.newName}}
+						</div>
+					{{/dropdown-dialog}}
+				{{/unless}}
+			{{/if}}
+		{{/if}}
+	{{/unless}}
+</div>
+
+<div class="sidebar-common">
+		{{layout/sidebar-intro title=appMeta.title message=appMeta.message}}
+</div>
+
+<div class="sidebar-wrapper">
+    {{#if (is-equal tab 'index')}}
+		{{folder/sidebar-folders-list folders=folders folder=folder isFolderOwner=isFolderOwner onFolderAdd=(action 'onFolderAdd')}}	
+    {{/if}}
+
+    {{#if (is-equal tab 'share')}}
+		{{folder/sidebar-share folders=folders folder=folder}}	
+    {{/if}}
+
+    {{#if (is-equal tab 'permissions')}}
+		{{folder/sidebar-permissions folders=folders folder=folder}}	
+    {{/if}}
+</div>

@@ -183,6 +183,7 @@ func init() {
 	log.IfErr(Add(RoutePrefixPrivate, "organizations/{orgID}", []string{"PUT", "OPTIONS"}, nil, UpdateOrganization))
 
 	// Folder
+	log.IfErr(Add(RoutePrefixPrivate, "folders/{folderID}", []string{"DELETE", "OPTIONS"}, nil, DeleteFolder))
 	log.IfErr(Add(RoutePrefixPrivate, "folders/{folderID}/move/{moveToId}", []string{"DELETE", "OPTIONS"}, nil, RemoveFolder))
 	log.IfErr(Add(RoutePrefixPrivate, "folders/{folderID}/permissions", []string{"PUT", "OPTIONS"}, nil, SetFolderPermissions))
 	log.IfErr(Add(RoutePrefixPrivate, "folders/{folderID}/permissions", []string{"GET", "OPTIONS"}, nil, GetFolderPermissions))

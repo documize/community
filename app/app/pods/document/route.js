@@ -54,14 +54,6 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 			sections: this.get('sectionService').getAll()
 		});
 	},
-	
-	activate() {
-		$('body').addClass('background-color-off-white');
-	},
-
-	deactivate() {
-		$('body').removeClass('background-color-off-white');
-	},
 
 	actions: {
 		error(error /*, transition*/ ) {

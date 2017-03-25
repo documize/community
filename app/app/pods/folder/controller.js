@@ -15,14 +15,13 @@ import NotifierMixin from '../../mixins/notifier';
 export default Ember.Controller.extend(NotifierMixin, {
 	documentService: Ember.inject.service('document'),
 	folderService: Ember.inject.service('folder'),
+	localStorage: Ember.inject.service('localStorage'),	
 	hasSelectedDocuments: false,
 	selectedDocuments: [],
+	queryParams: ['tab'],
+	tab: 'index',
 
 	actions: {
-		onImport() {
-			this.get('target.router').refresh();
-		},
-
 		onDocumentsChecked(documents) {
 			this.set('selectedDocuments', documents);
 			this.set('hasSelectedDocuments', documents.length > 0);
@@ -61,10 +60,6 @@ export default Ember.Controller.extend(NotifierMixin, {
 			this.send("showNotification", "Deleted");
 		},
 
-		showDocument(folder, document) {
-			this.transitionToRoute('document', folder.get('id'), folder.get('slug'), document.get('id'), document.get('slug'));
-		},
-
 		onFolderAdd(folder) {
 			let self = this;
 			this.showNotification("Added");
@@ -73,6 +68,18 @@ export default Ember.Controller.extend(NotifierMixin, {
 				self.get('folderService').setCurrentFolder(newFolder);
 				self.transitionToRoute('folder', newFolder.get('id'), newFolder.get('slug'));
 			});
+		},
+
+		onDeleteSpace() {
+			this.get('folderService').delete(this.get('model.folder.id')).then(() => { /* jshint ignore:line */
+				this.showNotification("Deleted");
+				this.get('localStorage').clearSessionItem('folder');
+				this.transitionToRoute('application');
+			});
+		},
+
+		onImport() {
+			this.get('target.router').refresh();
 		}
 	}
 });

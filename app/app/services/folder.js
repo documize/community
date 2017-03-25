@@ -80,6 +80,12 @@ export default BaseService.extend({
 		});
 	},
 
+	delete(folderId) {
+		return this.get('ajax').request(`folders/${folderId}`, {
+			method: 'DELETE'
+		});
+	},
+
 	onboard(folderId, payload) {
 		let url = `public/share/${folderId}`;
 
@@ -202,6 +208,7 @@ export default BaseService.extend({
 					canEdit = permission.canEdit;
 				}
 			});
+			
 			Ember.run(() => {
 				this.set('canEditCurrentFolder', canEdit && this.get('sessionService.authenticated'));
 			});

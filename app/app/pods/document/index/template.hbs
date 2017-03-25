@@ -1,45 +1,23 @@
-<div id="wrapper" class={{if toggled 'toggled'}}>
-	
-	<div id="sidebar-wrapper">
+{{#layout/zone-container}}
+	{{#layout/zone-sidebar}}
 		{{document/sidebar-zone folders=model.folders folder=model.folder document=model.document
 			pages=model.pages sections=model.section links=model.links isEditor=model.isEditor tab=tab
 			onDocumentDelete=(action 'onDocumentDelete') onSaveTemplate=(action 'onSaveTemplate')
 			onPageSequenceChange=(action 'onPageSequenceChange') onPageLevelChange=(action 'onPageLevelChange') onGotoPage=(action 'onGotoPage')}}
-	</div>
-
-	<div id="page-content-wrapper">
-		<div class="{{if toggled 'container' 'container-fluid'}}">
-			<div class="row">
-				<div class="col-lg-12">
-					{{#if toggled}}
-						<div id="sidebar-toggle" class="pull-right" {{action 'toggleSidebar'}}>
-							<div class="round-button button-black">
-								<i class="material-icons">keyboard_arrow_left</i>
-							</div>
-						</div>
-					{{else}}
-						<div id="sidebar-toggle" class="pull-right" {{action 'toggleSidebar'}}>
-							<div class="round-button button-black">
-								<i class="material-icons">keyboard_arrow_right</i>
-							</div>
-						</div>
-					{{/if}}
-					<div id="zone-document-content" class="zone-document-content">
-						<div class="back-to-space">
-							{{#link-to 'folder' model.folder.id model.folder.slug}}
-								<i class="material-icons">arrow_back</i>&nbsp;{{model.folder.name}}
-							{{/link-to}}
-						</div>
-						{{document/document-heading document=model.document isEditor=model.isEditor onSaveDocument=(action 'onSaveDocument')}}
-						{{document/document-view document=model.document links=model.links pages=model.pages
-							folder=model.folder folders=model.folders sections=model.sections isEditor=model.isEditor pageId=pageId
-							onSavePage=(action 'onSavePage') onInsertSection=(action 'onInsertSection') 
-							onSavePageAsBlock=(action 'onSavePageAsBlock') onDeleteBlock=(action 'onDeleteBlock') 
-							onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onPageDeleted')}}
-					</div>
-				</div>
+	{{/layout/zone-sidebar}}
+	{{#layout/zone-content}}
+		<div id="zone-document-content" class="zone-document-content">
+			<div class="back-to-space">
+				{{#link-to 'folder' model.folder.id model.folder.slug}}
+					<i class="material-icons">arrow_back</i>&nbsp;{{model.folder.name}}
+				{{/link-to}}
 			</div>
+			{{document/document-heading document=model.document isEditor=model.isEditor onSaveDocument=(action 'onSaveDocument')}}
+			{{document/document-view document=model.document links=model.links pages=model.pages
+				folder=model.folder folders=model.folders sections=model.sections isEditor=model.isEditor pageId=pageId
+				onSavePage=(action 'onSavePage') onInsertSection=(action 'onInsertSection') 
+				onSavePageAsBlock=(action 'onSavePageAsBlock') onDeleteBlock=(action 'onDeleteBlock') 
+				onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onPageDeleted')}}
 		</div>
-	</div>
-	
-</div>
+	{{/layout/zone-content}}
+{{/layout/zone-container}}

@@ -28,12 +28,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 	isFolderOwner: computed.equal('folder.userId', 'session.user.id'),
 	moveFolderId: "",
 	drop: null,
-	pinned: Ember.inject.service(),
-	pinState : {
-		isPinned: false,
-		pinId: '',
-		newName: '',
-	},
 
 	didReceiveAttrs() {
 		this.set('isFolderOwner', this.get('folder.userId') === this.get("session.user.id"));
@@ -46,11 +40,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 		});
 
 		this.set('movedFolderOptions', targets);
-
-		let folder = this.get('folder');
-		this.set('pinState.pinId', this.get('pinned').isSpacePinned(folder.get('id')));
-		this.set('pinState.isPinned', this.get('pinState.pinId') !== '');
-		this.set('pinState.newName', folder.get('name').substring(0,3).toUpperCase());
 	},
 
 	didRender() {
@@ -96,39 +85,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 
 			this.attrs.onMoveDocument(this.get('moveFolderId'));
 			this.set("moveFolderId", "");
-
-			return true;
-		},
-
-		unpin() {
-			this.audit.record('unpinned-space');
-
-			this.get('pinned').unpinItem(this.get('pinState.pinId')).then(() => {
-				this.set('pinState.isPinned', false);
-				this.set('pinState.pinId', '');
-				this.eventBus.publish('pinChange');
-			});
-		},
-
-		pin() {
-			let pin = {
-				pin: this.get('pinState.newName'),
-				documentId: '',
-				folderId: this.get('folder.id')
-			};
-
-			if (is.empty(pin.pin)) {
-				$("#pin-space-name").addClass("error").focus();
-				return false;
-			}
-
-			this.audit.record('pinned-space');
-
-			this.get('pinned').pinItem(pin).then((pin) => {
-				this.set('pinState.isPinned', true);
-				this.set('pinState.pinId', pin.get('id'));
-				this.eventBus.publish('pinChange');
-			});
 
 			return true;
 		}

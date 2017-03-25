@@ -1,0 +1,40 @@
+.sidebar-folder-share {
+    > .input-control {
+        margin-bottom: 30px;
+    }
+}
+
+.sidebar-permissions {
+    > .input-control {
+        margin-bottom: 30px;
+    }
+
+    > .permissions-table {
+        border: none;
+        padding: 0;
+        margin: 0 0 30px 0;
+        width: 100%;
+
+        > thead {
+            > tr {
+                > th {
+                    font-weight: bold;
+                    text-align: center;
+                }
+            }
+        }
+
+        > tbody {
+            > tr {
+                > td {
+                    padding: 8px 0;
+                }
+
+                > td:nth-child(2), td:nth-child(3) {
+                    text-align: center;
+                }
+            }
+        }
+    }
+}
+
