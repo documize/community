@@ -24,15 +24,17 @@ v0.44.0
 
 ## Documentation
 
-- [Install from binary guide](https://developers.documize.com/s/VzO9ZqMOCgABGyfW/installation/d/V16L08ucxwABhZF6/install-documize-from-binary-guide)
-- [Install for development guide](https://developers.documize.com/s/VzO9ZqMOCgABGyfW/installation/d/V16LOMucxwABhZF1/install-documize-for-development-guide)
-- [Configuration guide](https://developers.documize.com/s/VzO9ZqMOCgABGyfW/installation/d/VzSL8cVZ4QAB2B4Y/configure-documize-guide)
+https://developers.documize.com
 
 ## Keycloak Integration
 
 Documize provides out-of-the-box integration with [Redhat Keycloak](http://www.keycloak.org) for open source identity and access management.
 
-## Auth0 Integration
+Connect and authenticate with LDAP, Active Directory and more.
+
+https://developers.documize.com
+
+## Auth0 Compatible
 
 Documize is compatible with Auth0 identity as a service.
 
