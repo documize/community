@@ -3,13 +3,11 @@
 		margin: 10px 0;
 
 		> a {
-			vertical-align: middle;
-			color: $color-primary;
-			font-size: 1rem;
-
-			> .material-icons {
-				font-size: 1rem;
-				vertical-align: middle;
+			> .regular-button {
+				> .name {
+					// max-width: 150px;
+					// @extend .truncate;
+				}
 			}
 		}
 	}
