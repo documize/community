@@ -49,6 +49,9 @@ func GetMeta(w http.ResponseWriter, r *http.Request) {
 	data.Edition = Product.License.Edition
 	data.Valid = Product.License.Valid
 
+	// Strip secrets
+	data.AuthConfig = StripAuthSecrets(org.AuthProvider, org.AuthConfig)
+
 	json, err := json.Marshal(data)
 	if err != nil {
 		writeJSONMarshalError(w, method, "meta", err)

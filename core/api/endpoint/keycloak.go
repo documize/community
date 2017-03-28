@@ -439,6 +439,36 @@ func KeycloakUsers(c keycloakConfig) (users []entity.User, err error) {
 	return users, nil
 }
 
+// StripAuthSecrets removes sensitive data from auth provider configuration
+func StripAuthSecrets(provider, config string) string {
+	switch provider {
+	case "documize":
+		return config
+		break
+	case "keycloak":
+		c := keycloakConfig{}
+		err := json.Unmarshal([]byte(config), &c)
+		if err != nil {
+			log.Error("StripAuthSecrets", err)
+			return config
+		}
+		c.AdminPassword = ""
+		c.AdminUser = ""
+		c.PublicKey = ""
+
+		j, err := json.Marshal(c)
+		if err != nil {
+			log.Error("StripAuthSecrets", err)
+			return config
+		}
+
+		return string(j)
+		break
+	}
+
+	return config
+}
+
 // Data received via Keycloak client library
 type keycloakAuthRequest struct {
 	Domain    string `json:"domain"`
