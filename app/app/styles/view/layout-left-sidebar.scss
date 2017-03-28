@@ -15,6 +15,7 @@ $sidebar-width: 400px;
     position: fixed;
     overflow-x: hidden;
     left: $sidebar-width;
+    top: 0;
     width: 0;
     height: 100%;
     margin-left: -$sidebar-width;
@@ -31,11 +32,20 @@ $sidebar-width: 400px;
     width: $sidebar-width;
 }
 
+.page-container {
+    margin-right: auto;
+    margin-left: auto;
+    padding-left: 30px;
+    padding-right: 30px;
+    max-width: 1200px;
+}
+
 #page-content-wrapper {
     width: 100%;
     position: absolute;
-    margin-top: 30px;
 	padding: 30px;
+    margin: 0 auto;
+    margin-top: 30px;
 
     .page-content-title {
 		font-size: 2rem;

@@ -14,5 +14,10 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 			diff: "",
 			revisions: this.get('documentService').getDocumentRevisions(this.modelFor('document').document.get('id'))
 		});
+	},
+
+	setupController(controller, model) {
+		controller.set('model', model);
+		controller.set('hasRevisions', model.revisions.length > 0);
 	}
 });
