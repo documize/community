@@ -34,13 +34,13 @@ export default Ember.Service.extend({
             let keycloak = new Keycloak(JSON.parse(this.get('appMeta.authConfig')));
             this.set('keycloak', keycloak);
 
-            keycloak.onTokenExpired = function () {
-                keycloak.clearToken();
-            };
+            // keycloak.onTokenExpired = function () {
+            //     keycloak.clearToken();
+            // };
 
-            keycloak.onAuthRefreshError = function () {
-                keycloak.clearToken();
-            };
+            // keycloak.onAuthRefreshError = function () {
+            //     keycloak.clearToken();
+            // };
 
             this.get('keycloak').init().success(() => {
 				this.get('audit').record("initialized-keycloak");

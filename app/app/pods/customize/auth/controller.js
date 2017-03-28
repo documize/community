@@ -11,48 +11,39 @@
 
 import Ember from 'ember';
 import NotifierMixin from "../../../mixins/notifier";
-import constants from '../../../utils/constants';
+// import constants from '../../../utils/constants';
 
 export default Ember.Controller.extend(NotifierMixin, {
 	global: Ember.inject.service(),
     appMeta: Ember.inject.service(),
 	session: Ember.inject.service(),
 
-	handleProviderChange(data) {
-		this.get('session').logout();
-		this.set('appMeta.authProvider', data.authProvider);
-		this.set('appMeta.authConfig', data.authConfig);
-		window.location.href= '/';
-	},
-
 	actions: {
-		onSave(provider, config) {
-			if(this.get('session.isGlobalAdmin')) {
-				let data = { authProvider: provider, authConfig: JSON.stringify(config) };
-
-				return this.get('global').saveAuthConfig(data).then(() => {
-					this.showNotification('Saved');
-
-					if (provider !== this.get('appMeta.authProvider')) {
-						if (provider === constants.AuthProvider.Keycloak) {
-							this.get('global').syncExternalUsers().then(() => {
-								this.handleProviderChange(data);
-							});
-						} else {
-							this.handleProviderChange(data);
-						}
-					} else {
-						this.set('appMeta.authProvider', provider);
-						this.set('appMeta.authConfig', config);
-					}
-				});
-			}
+		onSave(data) {
+			return new Ember.RSVP.Promise((resolve) => {
+				if(!this.get('session.isGlobalAdmin')) {
+					resolve();
+				} else {
+					this.get('global').saveAuthConfig(data).then(() => {
+						resolve();
+					});
+				}
+			});
 		},
 
 		onSync() {
-			return this.get('global').syncExternalUsers().then((response) => {
-				this.showNotification(response.message);
-			});
+			return new Ember.RSVP.Promise((resolve) => {
+				this.get('global').syncExternalUsers().then((response) => {
+					resolve(response);
+				});
+			});			
+		},
+
+		onChange(data) {
+			this.get('session').logout();
+			this.set('appMeta.authProvider', data.authProvider);
+			this.set('appMeta.authConfig', data.authConfig);
+			window.location.href= '/';			
 		}
 	}
 });

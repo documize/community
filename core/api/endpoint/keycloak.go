@@ -89,6 +89,8 @@ func AuthenticateKeycloak(w http.ResponseWriter, r *http.Request) {
 	// Decode and verify Keycloak JWT
 	claims, err := decodeKeycloakJWT(a.Token, pk)
 	if err != nil {
+		log.Info("decodeKeycloakJWT failed")
+		log.Info(pk)
 		util.WriteRequestError(w, err.Error())
 		return
 	}
@@ -180,12 +182,14 @@ func SyncKeycloak(w http.ResponseWriter, r *http.Request) {
 
 	var result struct {
 		Message string `json:"message"`
+		IsError bool   `json:"isError"`
 	}
 
 	// Org contains raw auth provider config
 	org, err := p.GetOrganization(p.Context.OrgID)
 	if err != nil {
-		result.Message = "Unable to get organization record"
+		result.Message = "Error: unable to get organization record"
+		result.IsError = true
 		log.Error(result.Message, err)
 		util.WriteJSON(w, result)
 		return
@@ -193,7 +197,8 @@ func SyncKeycloak(w http.ResponseWriter, r *http.Request) {
 
 	// Exit if not using Keycloak
 	if org.AuthProvider != "keycloak" {
-		result.Message = "Skipping user sync with Keycloak as it is not the configured option"
+		result.Message = "Error: skipping user sync with Keycloak as it is not the configured option"
+		result.IsError = true
 		log.Info(result.Message)
 		util.WriteJSON(w, result)
 		return
@@ -203,7 +208,8 @@ func SyncKeycloak(w http.ResponseWriter, r *http.Request) {
 	c := keycloakConfig{}
 	err = json.Unmarshal([]byte(org.AuthConfig), &c)
 	if err != nil {
-		result.Message = "Unable process Keycloak public key"
+		result.Message = "Error: unable read Keycloak configuration data"
+		result.IsError = true
 		log.Error(result.Message, err)
 		util.WriteJSON(w, result)
 		return
@@ -212,7 +218,8 @@ func SyncKeycloak(w http.ResponseWriter, r *http.Request) {
 	// User list from Keycloak
 	kcUsers, err := KeycloakUsers(c)
 	if err != nil {
-		result.Message = "Unable to fetch Keycloak users: " + err.Error()
+		result.Message = "Error: unable to fetch Keycloak users: " + err.Error()
+		result.IsError = true
 		log.Error(result.Message, err)
 		util.WriteJSON(w, result)
 		return
@@ -221,7 +228,8 @@ func SyncKeycloak(w http.ResponseWriter, r *http.Request) {
 	// User list from Documize
 	dmzUsers, err := p.GetUsersForOrganization()
 	if err != nil {
-		result.Message = "Unable to fetch Documize users"
+		result.Message = "Error: unable to fetch Documize users"
+		result.IsError = true
 		log.Error(result.Message, err)
 		util.WriteJSON(w, result)
 		return
@@ -339,19 +347,30 @@ func KeycloakUsers(c keycloakConfig) (users []entity.User, err error) {
 		fmt.Sprintf("%s/realms/master/protocol/openid-connect/token", c.URL),
 		bytes.NewBufferString(form.Encode()))
 
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Add("Content-Length", strconv.Itoa(len(form.Encode())))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Set("Content-Length", strconv.Itoa(len(form.Encode())))
 
 	client := &http.Client{}
 	res, err := client.Do(req)
 	if err != nil {
+		log.Info("Keycloak: cannot connect to auth URL")
 		return users, err
 	}
 
 	defer res.Body.Close()
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
+		log.Info("Keycloak: cannot read response from auth request")
+		log.Info(string(body))
 		return users, err
+	}
+
+	if res.StatusCode != http.StatusOK {
+		if res.StatusCode == http.StatusUnauthorized {
+			return users, errors.New("Check Keycloak username/password")
+		}
+
+		return users, errors.New("Keycloak authentication failed " + res.Status)
 	}
 
 	ka := keycloakAPIAuth{}
@@ -360,17 +379,21 @@ func KeycloakUsers(c keycloakConfig) (users []entity.User, err error) {
 		return users, err
 	}
 
-	if res.StatusCode != http.StatusOK {
-		return users, errors.New("Keycloak authentication failed " + res.Status)
+	url := fmt.Sprintf("%s/admin/realms/%s/users?max=500", c.URL, c.Realm)
+	c.Group = strings.TrimSpace(c.Group)
+
+	if len(c.Group) > 0 {
+		log.Info("Keycloak: filtering by Group members")
+		url = fmt.Sprintf("%s/admin/realms/%s/groups/%s/members?max=500", c.URL, c.Realm, c.Group)
 	}
 
-	req, err = http.NewRequest("GET", fmt.Sprintf("%s/admin/realms/%s/users?max=500", c.URL, c.Realm), nil)
-
+	req, err = http.NewRequest("GET", url, nil)
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", ka.AccessToken))
 
 	client = &http.Client{}
 	res, err = client.Do(req)
 	if err != nil {
+		log.Info("Keycloak: unable to fetch users")
 		return users, err
 
 	}
@@ -378,17 +401,27 @@ func KeycloakUsers(c keycloakConfig) (users []entity.User, err error) {
 	defer res.Body.Close()
 	body, err = ioutil.ReadAll(res.Body)
 	if err != nil {
+		log.Info("Keycloak: unable to read user list response")
 		return users, err
+	}
+
+	if res.StatusCode != http.StatusOK {
+		if res.StatusCode == http.StatusNotFound {
+			if c.Group != "" {
+				return users, errors.New("Keycloak Realm/Client/Group ID not found")
+			}
+
+			return users, errors.New("Keycloak Realm/Client Id not found")
+		}
+
+		return users, errors.New("Keycloak users list call failed " + res.Status)
 	}
 
 	kcUsers := []keycloakUser{}
 	err = json.Unmarshal(body, &kcUsers)
 	if err != nil {
+		log.Info("Keycloak: unable to unmarshal user list response")
 		return users, err
-	}
-
-	if res.StatusCode != http.StatusOK {
-		return users, errors.New("Keycloak /users call failed " + res.Status)
 	}
 
 	for _, kc := range kcUsers {
@@ -426,6 +459,7 @@ type keycloakConfig struct {
 	PublicKey     string `json:"publicKey"`
 	AdminUser     string `json:"adminUser"`
 	AdminPassword string `json:"adminPassword"`
+	Group         string `json:"group"`
 }
 
 // keycloakAPIAuth is returned when authenticating with Keycloak REST API.

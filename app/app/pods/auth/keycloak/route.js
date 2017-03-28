@@ -32,23 +32,23 @@ export default Ember.Route.extend({
 				resolve();
 			}
 
-				this.get('kcAuth').fetchProfile().then((profile) => {
-					let data = this.get('kcAuth').mapProfile(profile);
+			this.get('kcAuth').fetchProfile().then((profile) => {
+				let data = this.get('kcAuth').mapProfile(profile);
 
-					this.get("session").authenticate('authenticator:keycloak', data).then(() => {
-						this.get('audit').record("logged-in-keycloak");
-						this.transitionTo('folders');
-					}, (reject) => {
-						this.set('message', reject.Error);
-						this.set('mode', 'reject');
-						resolve();
-					});
-
+				this.get("session").authenticate('authenticator:keycloak', data).then(() => {
+					this.get('audit').record("logged-in-keycloak");
+					this.transitionTo('folders');
 				}, (reject) => {
+					this.set('message', reject.Error);
 					this.set('mode', 'reject');
-					this.set('message', reject);
 					resolve();
 				});
+
+			}, (reject) => {
+				this.set('mode', 'reject');
+				this.set('message', reject);
+				resolve();
+			});
 		});
 	},
 

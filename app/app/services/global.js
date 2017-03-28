@@ -81,6 +81,8 @@ export default Ember.Service.extend({
 				method: 'GET'
 			}).then((response) => {
 				return response;
+			}).catch((error) => {
+				return error;
 			});
 		}
 	},

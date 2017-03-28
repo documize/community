@@ -1,4 +1,4 @@
-<form class="">
+<form class=>
     <div class="form-header">
         <div class="title">Authentication</div>
         <div class="tip">Determine the method for user authentication</div>
@@ -26,18 +26,23 @@
             {{input id="keycloak-realm" type="text" value=keycloakConfig.realm class=(if keycloakRealmError 'error')}}
         </div>
         <div class="input-control">
+            <label>Keycloak Realm Public Key</label>
+            <div class="tip">Copy the RSA Public Key from Realm Settings &rarr; Keys</div>
+            {{textarea id="keycloak-publicKey" type="text" value=keycloakConfig.publicKey rows=7 class=(if KeycloakPublicKeyError 'error')}}
+        </div>
+        <div class="input-control">
             <label>Keycloak OIDC Client ID</label>
             <div class="tip">e.g. account</div>
             {{input id="keycloak-clientId" type="text" value=keycloakConfig.clientId class=(if KeycloakClientIdError 'error')}}
         </div>
         <div class="input-control">
-            <label>Keycloak Realm Public Key</label>
-            <div class="tip">Copy the RSA public key from Realm Settings &rarr; Keys</div>
-            {{textarea id="keycloak-publicKey" type="text" value=keycloakConfig.publicKey rows=7 class=(if KeycloakPublicKeyError 'error')}}
+            <label>Keycloak Group ID (Optional)</label>
+            <div class="tip">If you want to sync users in a particular Group (e.g. 'Documize Users'), provide the Group ID (e.g. 511d8b61-1ec8-45f6-bc8d-5de64d54c9d2)</div>
+            {{input id="keycloak-group" type="text" value=keycloakConfig.group}}
         </div>
         <div class="input-control">
             <label>Keycloak Username</label>
-            <div class="tip">Used to connect with Keycloak and sync users with Documize</div>
+            <div class="tip">Used to connect with Keycloak and sync users with Documize (create user under Master Realm and assign 'view-users' role against Realm specified above)</div>
             {{input id="keycloak-admin-user" type="text" value=keycloakConfig.adminUser class=(if KeycloakAdminUserError 'error')}}
         </div>
         <div class="input-control">
@@ -48,6 +53,4 @@
     {{/if}}
 
     <div class="regular-button button-blue" {{action 'onSave'}}>save</div>
-    <div class="button-gap" />
-    <div class="regular-button button-green" {{action 'onSync'}}>sync users</div>
 </form>
