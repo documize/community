@@ -148,8 +148,3 @@ export default Ember.Component.extend(NotifierMixin, {
 		}
 	}
 });
-/*
-
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAl4M0UGhKFHe6LKyx2qNu5zTzYifMcsyvH+lV2Z3vgwQtuCf5zFrW/fHglBq9C1DQko/r2eUlVQOM+9C5nfmI60cLVGXviXRU1nWZ3MKQDogaVmSqnESOyVqBfOFEHbjuEeh5xqsLTIGElHFkEVgOfbsqs4GSmCYDgkYc6GMM9YIsk86VbBmprfaXUHmO44cR+Kh6y7rvoTAfKSohRav4+6Pl2+kZRj6SebG629OQb+q6IWVe93kC6NJWk9Y4v5teaAKui/VsoY83Ox/AblNt1wUl4QPrS9t/Be1h0M9XHfmQkmWAZnMkeo6vkcwvU9ioXkX4Zy/148M8u+WXSpgagQIDAQAB
-
-*/
