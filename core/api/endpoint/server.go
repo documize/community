@@ -175,7 +175,6 @@ func cors(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 }
 
 func metrics(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
-
 	w.Header().Add("X-Documize-Version", Product.Version)
 	w.Header().Add("Cache-Control", "no-cache")
 

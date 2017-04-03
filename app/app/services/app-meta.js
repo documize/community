@@ -23,6 +23,7 @@ export default Ember.Service.extend({
 	ajax: service(),
 	localStorage: service(),
 	kcAuth: service(),
+	apiHost: `${config.apiHost}`,
 	endpoint: `${config.apiHost}/${config.apiNamespace}`,
 	orgId: '',
 	title: '',

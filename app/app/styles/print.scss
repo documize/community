@@ -9,22 +9,57 @@
 //
 // https://documize.com
 @media print {
-	.non-printable,
-	.zone-navigation,
-	.zone-sidebar,
-	#sidebar-wrapper,
-	.document-heading,
-	.edit-document-heading,
-	#sidebar-toggle,
-	.back-to-space,
-	.start-section,
-	.new-section-wizard {
-		display: none !important;
+	@page {
+		size: 8.5in 11in;
+		margin: 20mm;
+
+		@top-right {
+			font-size: 12px;
+			content: string(doctitle);
+			color: $color-off-black;
+		}
+
+		@bottom-left {
+			font-size: 12px;
+			content: 'Exported from Documize';
+			color: $color-off-black;
+		}
+
+		@bottom-right {
+			content: counter(page);
+			font-size: 12px;
+			color: $color-off-black;
+		}
 	}
 
-	#page-content-wrapper, #wrapper {
-		padding: 0 !important;
+	html, body {
+		background-color: transparent !important;
+		max-width: none !important;
+		float: none !important;
+		position: relative !important;
+		height: initial !important;
+		min-height: initial !important;
+	}
+
+	.non-printable,
+	.zone-navigation,
+	#sidebar-wrapper,
+	.sidebar-wrapper,
+	.sidebar-common,
+	.sidebar-toolbar,
+	.sidebar-panel,
+	.edit-document-heading,
+	.back-to-space,
+	.start-section,
+	.start-button,
+	.is-a-tab, 
+	.new-section-wizard {
+		float: none !important;
+		display: none !important;
 		margin: 0 !important;
+		padding: 0 !important;
+		width: 0 !important;
+		z-index: 0 !important;
 	}
 
 	.non-printable-message,
@@ -32,9 +67,80 @@
 		display: block !important;
 	}
 
-	.is-a-tab, .is-a-page {
+	#wrapper {
 		padding: 0 !important;
 		margin: 0 !important;
-		box-shadow: none !important;
+		position: relative !important;
+		box-shadow: initial !important;
+		border-radius: initial !important;
+		float: none !important;
+		overflow-x: initial !important;
+        padding-left: 0 !important;
+
+		.page-container {
+			padding: 0 !important;
+			margin: 0 !important;
+			position: initial !important;
+			box-shadow: initial !important;
+			border-radius: initial !important;
+			width: initial !important;
+			max-width: initial !important;
+			float: initial !important;
+			overflow-x: initial !important;
+
+			#page-content-wrapper {
+				padding: 0 !important;
+				margin: 0 !important;
+				position: initial !important;
+				box-shadow: initial !important;
+				border-radius: initial !important;
+				width: initial !important;
+				max-width: initial !important;
+				float: initial !important;
+				overflow-x: initial !important;
+
+				#zone-document-content {
+					padding: 0 !important;
+					margin: 0 !important;
+					position: initial !important;
+					box-shadow: initial !important;
+					border-radius: initial !important;
+					width: initial !important;
+					max-width: initial !important;
+					float: initial !important;
+					overflow-x: initial !important;
+
+					.document-heading {
+						.doc-title {
+							margin: 0 0 10px 0 !important;
+						}
+					}
+
+					.document-view {
+						padding: 0 !important;
+						margin: 0 !important;
+						position: initial !important;
+						box-shadow: initial !important;
+						border-radius: initial !important;
+						width: initial !important;
+						max-width: initial !important;
+						float: initial !important;
+						overflow-x: initial !important;
+
+						.is-a-page /*, .is-a-tab */ {
+							padding: 0 !important;
+							margin: 30px 0 20px 0 !important;
+							position: initial !important;
+							box-shadow: initial !important;
+							border-radius: initial !important;
+							width: initial !important;
+							max-width: initial !important;
+							float: initial !important;
+							overflow-x: initial !important;
+						}
+					}
+				}
+			}
+		}
 	}
 }

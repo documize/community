@@ -227,16 +227,16 @@ textarea {
   font-size: inherit;
   line-height: inherit;
 }
-a {
-  /*color: #337ab7;*/
-  /*text-decoration: none;*/
+/*a {
+  color: #337ab7;
+  text-decoration: none;
 }
-/*a:hover,
-a:focus {*/
-  /*color: #23527c;*/
-  /*text-decoration: underline;*/
+a:hover,
+a:focus {
+  color: #23527c;
+  text-decoration: underline;
 }
-/*a:focus {
+a:focus {
   outline: thin dotted;
   outline: 5px auto -webkit-focus-ring-color;
   outline-offset: -2px;
@@ -1155,7 +1155,7 @@ hr {
     display: none !important;
   }
 }
-.visible-print {
+/*.visible-print {
   display: none !important;
 }
 @media print {
@@ -1201,4 +1201,4 @@ hr {
   .hidden-print {
     display: none !important;
   }
-}
+}*/
