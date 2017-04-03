@@ -33,9 +33,9 @@ var port, certFile, keyFile, forcePort2SSL string
 var Product core.ProdInfo
 
 func init() {
-	Product.Major = "0"
-	Product.Minor = "44"
-	Product.Patch = "1"
+	Product.Major = "1"
+	Product.Minor = "0"
+	Product.Patch = "0"
 	Product.Version = fmt.Sprintf("%s.%s.%s", Product.Major, Product.Minor, Product.Patch)
 	Product.Edition = "Community"
 	Product.Title = fmt.Sprintf("%s Edition", Product.Edition)
