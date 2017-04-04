@@ -208,12 +208,19 @@ export default Ember.Service.extend({
 	},
 
 	// document meta referes to number of views, edits, approvals, etc.
-	getMeta(documentId) {
-		return this.get('ajax').request(`documents/${documentId}/meta`, {
+	getActivity(documentId) {
+		return this.get('ajax').request(`documents/${documentId}/activity`, {
 			method: "GET"
 		}).then((response) => {
-			return response;
+			let data = [];
+			data = response.map((obj) => {
+				let data = this.get('store').normalize('documentActivity', obj);
+				return this.get('store').push(data);
+			});
+
+			return data;
 		}).catch(() => {
+			return [];
 		});
 	},
 

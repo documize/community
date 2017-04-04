@@ -28,12 +28,15 @@ export default Ember.Service.extend({
 		});
 	},
 
-	importSavedTemplate: function (folderId, templateId) {
+	importSavedTemplate: function (folderId, templateId, docName) {
 		let url = `templates/${templateId}/folder/${folderId}?type=saved`;
 
-		return this.get('ajax').post(url).then((doc) => {
+		return this.get('ajax').request(url, {
+			method: 'POST',
+			data: docName
+		}).then((doc) => {
 			let data = this.get('store').normalize('document', doc);
-			return this.get('store').push(data);
+			return this.get('store').push(data);			
 		});
 	},
 

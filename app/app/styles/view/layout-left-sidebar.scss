@@ -7,7 +7,6 @@ $sidebar-width: 400px;
     -moz-transition: all 0.5s ease;
     -o-transition: all 0.5s ease;
     transition: all 0.5s ease;
-	background-color: $color-off-white;
 }
 
 #sidebar-wrapper {
@@ -20,16 +19,11 @@ $sidebar-width: 400px;
     height: 100%;
     margin-left: -$sidebar-width;
 	border-right: 1px solid $color-stroke;
-    background: $color-off-white;
     overflow-y: auto;
     -webkit-transition: all 0.5s ease;
     -moz-transition: all 0.5s ease;
     -o-transition: all 0.5s ease;
     transition: all 0.5s ease;
-}
-
-#wrapper.toggled #sidebar-wrapper {
-    width: $sidebar-width;
 }
 
 .page-container {
@@ -42,7 +36,8 @@ $sidebar-width: 400px;
 
 #page-content-wrapper {
     width: 100%;
-    position: absolute;
+    position: relative;
+    // position: absolute;
 	padding: 30px;
     margin: 0 auto;
     margin-top: 30px;
@@ -54,42 +49,19 @@ $sidebar-width: 400px;
 	}
 }
 
-#wrapper.toggled #page-content-wrapper {
-    position: absolute;
-    margin-right: -$sidebar-width;
-}
-
 @media(min-width:768px) {
     #wrapper {
         padding-left: $sidebar-width;
-    }
-
-    #wrapper.toggled {
-        padding-left: 0;
-		padding-right: 0;
     }
 
     #sidebar-wrapper {
         width: $sidebar-width;
     }
 
-    #wrapper.toggled #sidebar-wrapper {
-        width: 0;
-
-		.sidebar-toolbar {
-			position: relative;
-		}
-    }
-
-    #page-content-wrapper {
-        padding: 30px;
-        position: relative;
-    }
-
-    #wrapper.toggled #page-content-wrapper {
-        position: relative;
-        margin-left: 0;
-    }
+    // #page-content-wrapper {
+    //     padding: 30px;
+    //     position: relative;
+    // }
 }
 
 .sidebar-toolbar {

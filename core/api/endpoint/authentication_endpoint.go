@@ -227,6 +227,93 @@ func Authorize(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	}
 }
 
+// ValidToken finds and validates authentication token.
+func ValidToken(r *http.Request) (context request.Context, valid bool) {
+	valid = false
+
+	token := findJWT(r)
+	hasToken := len(token) > 1
+	context, _, tokenErr := decodeJWT(token)
+
+	var org = entity.Organization{}
+	var err = errors.New("")
+	p := request.GetPersister(r)
+
+	// We always grab the org record regardless of token status.
+	// Why? If bad token we might be OK to alow anonymous access
+	// depending upon the domain in question.
+	if len(context.OrgID) == 0 {
+		org, err = p.GetOrganizationByDomain(request.GetRequestSubdomain(r))
+	} else {
+		org, err = p.GetOrganization(context.OrgID)
+	}
+
+	context.Subdomain = org.Domain
+
+	// Inability to find org record spells the end of this request.
+	if err != nil {
+		return
+	}
+
+	// If we have bad auth token and the domain does not allow anon access
+	if !org.AllowAnonymousAccess && tokenErr != nil {
+		return
+	}
+
+	domain := request.GetSubdomainFromHost(r)
+	domain2 := request.GetRequestSubdomain(r)
+	if org.Domain != domain && org.Domain != domain2 {
+		return
+	}
+
+	// If we have bad auth token and the domain allows anon access
+	// then we generate guest context.
+	if org.AllowAnonymousAccess {
+		// So you have a bad token
+		if hasToken {
+			if tokenErr != nil {
+				return
+			}
+		} else {
+			// Just grant anon user guest access
+			context.UserID = "0"
+			context.OrgID = org.RefID
+			context.Authenticated = false
+			context.Guest = true
+		}
+	}
+
+	// Refresh context and persister
+	request.SetContext(r, context)
+	p = request.GetPersister(r)
+
+	context.AllowAnonymousAccess = org.AllowAnonymousAccess
+	context.OrgName = org.Title
+	context.Administrator = false
+	context.Editor = false
+	context.Global = false
+
+	// Fetch user permissions for this org
+	if context.Authenticated {
+		user, err := getSecuredUser(p, org.RefID, context.UserID)
+
+		if err != nil {
+			return
+		}
+
+		context.Administrator = user.Admin
+		context.Editor = user.Editor
+		context.Global = user.Global
+	}
+
+	request.SetContext(r, context)
+	p = request.GetPersister(r)
+
+	valid = context.Authenticated || org.AllowAnonymousAccess
+
+	return
+}
+
 // Certain assets/URL do not require authentication.
 // Just stops the log files being clogged up with failed auth errors.
 func preAuthorizeStaticAssets(r *http.Request) bool {

@@ -155,7 +155,7 @@ func init() {
 	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}", []string{"GET", "OPTIONS"}, nil, GetDocument))
 	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}", []string{"PUT", "OPTIONS"}, nil, UpdateDocument))
 	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}", []string{"DELETE", "OPTIONS"}, nil, DeleteDocument))
-	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/meta", []string{"GET", "OPTIONS"}, nil, GetDocumentMeta))
+	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/activity", []string{"GET", "OPTIONS"}, nil, GetDocumentActivity))
 
 	// Document Page
 	log.IfErr(Add(RoutePrefixPrivate, "documents/{documentID}/pages/level", []string{"POST", "OPTIONS"}, nil, ChangeDocumentPageLevel))

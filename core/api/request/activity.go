@@ -12,8 +12,11 @@
 package request
 
 import (
+	"database/sql"
+	"fmt"
 	"time"
 
+	"github.com/documize/community/core/api/endpoint/models"
 	"github.com/documize/community/core/api/entity"
 	"github.com/documize/community/core/log"
 	"github.com/documize/community/core/utility"
@@ -37,6 +40,30 @@ func (p *Persister) RecordUserActivity(activity entity.UserActivity) (err error)
 
 	if err != nil {
 		log.Error("Unable to execute insert RecordUserActivity", err)
+		return
+	}
+
+	return
+}
+
+// GetDocumentActivity returns the metadata for a specified document.
+func (p *Persister) GetDocumentActivity(id string) (a []models.DocumentActivity, err error) {
+	s := `SELECT a.id, a.created, a.orgid, IFNULL(a.userid, '') AS userid, a.labelid, a.sourceid as documentid, a.activitytype,
+		IFNULL(u.firstname, 'Anonymous') AS firstname, IFNULL(u.lastname, 'Viewer') AS lastname
+		FROM useractivity a
+		LEFT JOIN user u ON a.userid=u.refid
+		WHERE a.orgid=? AND a.sourceid=? AND a.sourcetype=2
+		AND a.userid != '0' AND a.userid != ''
+		ORDER BY a.created DESC`
+
+	err = Db.Select(&a, s, p.Context.OrgID, id)
+
+	if len(a) == 0 {
+		a = []models.DocumentActivity{}
+	}
+
+	if err != nil && err != sql.ErrNoRows {
+		log.Error(fmt.Sprintf("Unable to execute GetDocumentActivity %s", id), err)
 		return
 	}
 
