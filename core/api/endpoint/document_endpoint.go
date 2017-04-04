@@ -26,6 +26,7 @@ import (
 	"github.com/documize/community/core/log"
 	"github.com/documize/community/core/utility"
 
+	"github.com/documize/community/core/api/util"
 	"github.com/gorilla/mux"
 )
 
@@ -126,39 +127,25 @@ func GetDocument(w http.ResponseWriter, r *http.Request) {
 	writeSuccessBytes(w, json)
 }
 
-// GetDocumentMeta is an endpoint returning the metadata for a document.
-func GetDocumentMeta(w http.ResponseWriter, r *http.Request) {
-	method := "GetDocumentMeta"
+// GetDocumentActivity is an endpoint returning the activity logs for specified document.
+func GetDocumentActivity(w http.ResponseWriter, r *http.Request) {
+	method := "GetDocumentActivity"
 	p := request.GetPersister(r)
-
 	params := mux.Vars(r)
-	id := params["documentID"]
 
+	id := params["documentID"]
 	if len(id) == 0 {
 		writeMissingDataError(w, method, "documentID")
 		return
 	}
 
-	meta, err := p.GetDocumentMeta(id)
-
-	if err == sql.ErrNoRows {
-		writeNotFoundError(w, method, id)
-		return
-	}
-
-	if err != nil {
+	a, err := p.GetDocumentActivity(id)
+	if err != nil && err != sql.ErrNoRows {
 		writeGeneralSQLError(w, method, err)
 		return
 	}
 
-	json, err := json.Marshal(meta)
-
-	if err != nil {
-		writeJSONMarshalError(w, method, "document", err)
-		return
-	}
-
-	writeSuccessBytes(w, json)
+	util.WriteJSON(w, a)
 }
 
 // GetDocumentLinks is an endpoint returning the links for a document.

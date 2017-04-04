@@ -16,6 +16,7 @@ package models
 
 import (
 	"github.com/documize/community/core/api/entity"
+	"time"
 )
 
 // PageSequenceRequestModel details a page ID and its sequence within the document.
@@ -65,4 +66,17 @@ type AcceptSharedFolderModel struct {
 type PageModel struct {
 	Page entity.Page     `json:"page"`
 	Meta entity.PageMeta `json:"meta"`
+}
+
+// DocumentActivity represents an activity taken against a document.
+type DocumentActivity struct {
+	ID           int       `json:"id"`
+	OrgID        string    `json:"orgId"`
+	LabelID      string    `json:"folderId"`
+	DocumentID   string    `json:"documentId"`
+	UserID       string    `json:"userId"`
+	Firstname    string    `json:"firstname"`
+	Lastname     string    `json:"lastname"`
+	ActivityType int       `json:"activityType"`
+	Created      time.Time `json:"created"`
 }

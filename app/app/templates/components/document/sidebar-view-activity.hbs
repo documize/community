@@ -2,26 +2,13 @@
 	<div class="title">Activity</div>
 	<div class="document-sidebar-view-activity">
 		<ul class="items">
-			{{#each sortedItems as |e|}}
+			{{#each activity as |a|}}
 				<li class="item">
 					<div class="avatar-box">
-						<div class="avatar">{{user-initials e.item.firstname e.item.lastname}}</div>
+						<div class="avatar">{{user-initials a.firstname a.lastname}}</div>
 					</div>
-					<div class="name">{{e.item.firstname}} {{e.item.lastname}}, {{time-ago e.date}}</div>
-					<div class="detail">
-						{{#if e.item.deleted}}
-							<div class="deleted">{{e.item.changeLabel}}</div>
-							{{/if}}
-						{{#if e.item.changed}}
-							<div class="changed">{{e.item.changeLabel}}</div>
-						{{/if}}
-						{{#if e.item.added}}
-							<div class="added">{{e.item.changeLabel}}</div>
-						{{/if}}
-						{{#if e.item.viewed}}
-							<div class="viewed">{{e.item.changeLabel}}</div>
-						{{/if}}
-					</div>
+					<div class="name">{{a.firstname}} {{a.lastname}}</div>
+					<div class="detail {{a.activityColor}}">{{a.activityLabel}}, {{time-ago a.created}}</div>
 				</li>
 			{{/each}}
 		</ul>

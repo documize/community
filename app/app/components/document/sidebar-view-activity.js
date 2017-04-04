@@ -13,64 +13,12 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
 	documentService: Ember.inject.service('document'),
-	appMeta: Ember.inject.service(),
-	sortedItems: [],
 
 	didReceiveAttrs() {
 		this._super(...arguments);
 
-		this.get('documentService').getMeta(this.get('document.id')).then((activity) => {
+		this.get('documentService').getActivity(this.get('document.id')).then((activity) => {
 			this.set('activity', activity);
-		
-			let editors = this.get('activity.editors');
-			let viewers = this.get('activity.viewers');
-			let pages = this.get('pages');
-			let sorted = [];
-
-			if (is.null(editors)) {
-				editors = [];
-			}
-
-			if (is.null(viewers)) {
-				viewers = [];
-			}
-
-			viewers.forEach((item) => {
-				Ember.set(item, 'changeLabel', "viewed");
-				Ember.set(item, "viewed", true);
-				sorted.pushObject({ date: item.created, item: item });
-			});
-
-			editors.forEach(function (item) {
-				Ember.set(item, "added", item.action === "add-page");
-				Ember.set(item, "changed", item.action === "update-page");
-				Ember.set(item, "deleted", item.action === "remove-page");
-
-				let page = pages.findBy('id', item.pageId);
-				let title = "";
-
-				if (item.deleted || is.undefined(page)) {
-					title = "removed section";
-				} else {
-					if (item.added) {
-						title = "added " + page.get('title');
-					}
-
-					if (item.changed) {
-						title = "changed " + page.get('title');
-					}
-				}
-
-				Ember.set(item, 'changeLabel', title);
-
-				let exists = sorted.findBy('item.pageId', item.pageId);
-
-				if (is.undefined(exists)) {
-					sorted.pushObject({ date: item.created, item: item });
-				}
-			});
-
-			this.set('sortedItems', _.sortBy(sorted, 'date').reverse());
 		});	
 	}
 });

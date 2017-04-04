@@ -26,5 +26,18 @@ export default {
 		Feedback: 2,
 		Contribute: 3,
 		Approve: 4
-	}
+	},
+
+    UserActivityType: {
+        Created: 1,
+        Read: 2,
+        Edited: 3,
+        Deleted: 4,
+        Archived: 5,
+        Approved: 6,
+        Reverted: 7,
+        PublishedTemplate: 8,
+        PublishedBlock: 9,
+        Feedback: 10
+    }
 };
