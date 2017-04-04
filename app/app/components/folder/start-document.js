@@ -123,7 +123,7 @@ export default Ember.Component.extend(NotifierMixin, {
 			this.audit.record('used-saved-template');
             this.send("showNotification", "Creating");
 
-            this.get('templateService').importSavedTemplate(this.folder.get('id'), template.id).then((document) => {
+            this.get('templateService').importSavedTemplate(this.folder.get('id'), template.id, this.get('newDocumentName')).then((document) => {
 				this.get('router').transitionTo('document', this.get('folder.id'), this.get('folder.slug'), document.get('id'), document.get('slug'));
             });
 

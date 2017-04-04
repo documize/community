@@ -315,27 +315,32 @@ func StartDocumentFromStockTemplate(w http.ResponseWriter, r *http.Request) {
 func StartDocumentFromSavedTemplate(w http.ResponseWriter, r *http.Request) {
 	method := "StartDocumentFromSavedTemplate"
 	p := request.GetPersister(r)
-
 	params := mux.Vars(r)
-	folderID := params["folderID"]
 
+	folderID := params["folderID"]
 	if len(folderID) == 0 {
 		writeMissingDataError(w, method, "folderID")
 		return
 	}
 
 	templateID := params["templateID"]
-
-	// We are OK with zero valued template ID because it signals 'give me empty document'
 	if len(templateID) == 0 {
 		writeMissingDataError(w, method, "templateID")
 		return
 	}
 
+	defer utility.Close(r.Body)
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		writeBadRequestError(w, method, "Bad payload")
+		return
+	}
+
+	docTitle := string(body)
+
 	// Define an empty document just in case user wanted one.
-	var err error
 	var d = entity.Document{}
-	d.Title = "New Document"
+	d.Title = docTitle
 	d.Location = fmt.Sprintf("template-%s", templateID)
 	d.Excerpt = "A new document"
 	d.Slug = utility.MakeSlug(d.Title)
@@ -381,6 +386,7 @@ func StartDocumentFromSavedTemplate(w http.ResponseWriter, r *http.Request) {
 	d.Template = false
 	d.LabelID = folderID
 	d.UserID = p.Context.UserID
+	d.Title = docTitle
 
 	err = p.AddDocument(d)
 

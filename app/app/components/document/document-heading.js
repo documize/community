@@ -49,7 +49,11 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
 			this.set('document.name', this.get('docName'));
 			this.set('document.excerpt', this.get('docExcerpt'));
+
 			this.showNotification('Saved');
+			this.get('browser').setTitle(this.get('document.name'));
+			this.get('browser').setMetaDescription(this.get('document.excerpt'));
+			
 			this.get('documentService').save(this.get('document'));
 
 			this.set('editMode', false);
