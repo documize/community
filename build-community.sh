@@ -41,10 +41,10 @@ for arch in amd64 ; do
     for os in darwin linux windows ; do
         if [ "$os" == "windows" ] ; then
             echo "Compiling documize-community-$os-$arch.exe"
-            env GOOS=$os GOARCH=$arch go build -o bin/documize-community-$os-$arch.exe ./cmd/documize-community
+            env GOOS=$os GOARCH=$arch go build -gcflags=-trimpath=$GOPATH -asmflags=-trimpath=$GOPATH -o bin/documize-community-$os-$arch.exe ./cmd/documize-community
         else
             echo "Compiling documize-community-$os-$arch"
-            env GOOS=$os GOARCH=$arch go build -o bin/documize-community-$os-$arch ./cmd/documize-community
+            env GOOS=$os GOARCH=$arch go build -gcflags=-trimpath=$GOPATH -asmflags=-trimpath=$GOPATH -o bin/documize-community-$os-$arch ./cmd/documize-community
         fi
     done
 done

@@ -71,6 +71,8 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 		},
 
 		onPrintDocument() {
+			this.audit.record('printed-document');
+			$("#sidebar-zone-more-button").click();
 			window.print();
 		},
 
