@@ -20,11 +20,19 @@ export default Ember.Component.extend({
     }),
 
     didReceiveAttrs() {
+		this._super(...arguments);
+
 		this.audit.record('viewed-space');
         this.set('selectedDocuments', []);
         this.set('canCreate', this.get('folderService').get('canEditCurrentFolder'));
         this.set('deleteTargets', this.get('folders').rejectBy('id', this.get('folder.id')));
     },
+
+	didUpdateAttrs() {
+		this._super(...arguments);
+		
+		this.setupAddWizard();
+	},	
 
 	didInsertElement() {
 		this._super(...arguments);

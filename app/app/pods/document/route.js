@@ -44,6 +44,8 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	},
 
 	model() {
+		this.audit.record('viewed-document');
+	
 		return Ember.RSVP.hash({
 			folders: this.get('folders'),
 			folder: this.get('folder'),

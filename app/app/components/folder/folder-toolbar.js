@@ -84,7 +84,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 			}
 
 			this.attrs.onMoveDocument(this.get('moveFolderId'));
-			this.set("moveFolderId", "");
 
 			return true;
 		}

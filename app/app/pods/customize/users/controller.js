@@ -37,7 +37,7 @@ export default Ember.Controller.extend(NotifierMixin, {
 			this.get('userService').remove(user.get('id')).then(function () {
 				self.showNotification('Deleted');
 
-				self.get('userService').getAll().then(function (users) {
+				self.get('userService').getComplete().then(function (users) {
 					self.set('model', users);
 				});
 			});
@@ -48,7 +48,7 @@ export default Ember.Controller.extend(NotifierMixin, {
 			this.get('userService').save(user).then(function () {
 				self.showNotification('Saved');
 
-				self.get('userService').getAll().then(function (users) {
+				self.get('userService').getComplete().then(function (users) {
 					self.set('model', users);
 				});
 			});

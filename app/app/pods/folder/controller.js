@@ -34,6 +34,7 @@ export default Ember.Controller.extend(NotifierMixin, {
 			documents.forEach(function (documentId) {
 				self.get('documentService').getDocument(documentId).then(function (doc) {
 					doc.set('folderId', folder);
+					doc.set('selected', !doc.get('selected'));
 					self.get('documentService').save(doc).then(function () {
 						self.get('target.router').refresh();
 					});
