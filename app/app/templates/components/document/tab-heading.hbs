@@ -52,7 +52,7 @@
 							{{input type="text" value=blockTitle id=blockTitleId}}
 						</div>
 						<div class="input-control">
-							<label>Name</label>
+							<label>Description</label>
 							<div class="tip">Short description to help others understand<br/>the reusable content block</div>
 							{{textarea rows="3" value=blockExcerpt id=blockExcerptId}}
 						</div>
@@ -72,7 +72,7 @@
 					{{#dropdown-dialog id=moveDialogId target=moveButtonId position="bottom right" button="Move" color="flat-green" onOpenCallback=(action 'onCopyDialogOpen') onAction=(action 'onMovePage')}}
 						<div class="form-header">
 							<div class="tip">
-								<span class="bold">move:</span> {{page.title}}
+								<span class="bold">Move:</span> {{page.title}}
 							</div>
 						</div>
 						<div class="input-control">

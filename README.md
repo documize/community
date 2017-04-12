@@ -24,7 +24,7 @@ v1.45.0
 
 ## Documentation
 
-https://developers.documize.com
+<https://docs.documize.com>
 
 ## Keycloak Integration
 
@@ -32,7 +32,7 @@ Documize provides out-of-the-box integration with [Redhat Keycloak](http://www.k
 
 Connect and authenticate with LDAP, Active Directory and more.
 
-https://developers.documize.com
+<https://docs.documize.com>
 
 ## Auth0 Compatible
 
