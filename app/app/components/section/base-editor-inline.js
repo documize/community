@@ -48,7 +48,11 @@ export default Ember.Component.extend({
 
 	didRender() {
 		let msContainer = document.getElementById(this.get('containerId'));
-		let mousetrap = new Mousetrap(msContainer);
+		let mousetrap = this.get('mousetrap');
+
+		if (is.null(mousetrap)) {
+			mousetrap = new Mousetrap(msContainer);
+		}
 
 		mousetrap.bind('esc', () => {
 			this.send('onCancel');
@@ -68,7 +72,6 @@ export default Ember.Component.extend({
 
 	willDestroyElement() {
 		let drop = this.get('drop');
-
 		if (is.not.null(drop)) {
 			drop.destroy();
 		}
