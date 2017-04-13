@@ -30,16 +30,20 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 			authConfig: null,
 		};
 
-		switch (data.authProvider) {
-			case constants.AuthProvider.Keycloak:
-				data.authConfig = this.get('appMeta.authConfig');
-				break;
-			case constants.AuthProvider.Documize:
-				data.authConfig = '';
-				break;
-		}
+		return new Ember.RSVP.Promise((resolve) => {
+			this.get('global').getAuthConfig().then((config) => {
+				switch (data.authProvider) {
+					case constants.AuthProvider.Keycloak:
+						data.authConfig = config;
+						break;
+					case constants.AuthProvider.Documize:
+						data.authConfig = '';
+						break;
+				}
 
-		return data;
+				resolve(data);
+			});
+		});
 	},
 
 	activate() {

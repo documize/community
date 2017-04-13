@@ -233,3 +233,21 @@ type authData struct {
 	AuthProvider string `json:"authProvider"`
 	AuthConfig   string `json:"authConfig"`
 }
+
+// GetAuthConfig returns installation-wide auth configuration
+func GetAuthConfig(w http.ResponseWriter, r *http.Request) {
+	p := request.GetPersister(r)
+
+	if !p.Context.Global {
+		writeForbiddenError(w)
+		return
+	}
+
+	org, err := p.GetOrganization(p.Context.OrgID)
+	if err != nil {
+		writeForbiddenError(w)
+		return
+	}
+
+	util.WriteJSON(w, org.AuthConfig)
+}

@@ -236,6 +236,7 @@ func init() {
 	log.IfErr(Add(RoutePrefixPrivate, "global/smtp", []string{"PUT", "OPTIONS"}, nil, SaveSMTPConfig))
 	log.IfErr(Add(RoutePrefixPrivate, "global/license", []string{"GET", "OPTIONS"}, nil, GetLicense))
 	log.IfErr(Add(RoutePrefixPrivate, "global/license", []string{"PUT", "OPTIONS"}, nil, SaveLicense))
+	log.IfErr(Add(RoutePrefixPrivate, "global/auth", []string{"GET", "OPTIONS"}, nil, GetAuthConfig))
 	log.IfErr(Add(RoutePrefixPrivate, "global/auth", []string{"PUT", "OPTIONS"}, nil, SaveAuthConfig))
 
 	// Pinned items

@@ -165,6 +165,9 @@ func cors(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	w.Header().Set("Access-Control-Expose-Headers", "x-documize-version")
 
 	if r.Method == "OPTIONS" {
+		w.Header().Add("X-Documize-Version", Product.Version)
+		w.Header().Add("Cache-Control", "no-cache")
+
 		if _, err := w.Write([]byte("")); err != nil {
 			log.Error("cors", err)
 		}
@@ -177,7 +180,6 @@ func cors(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 func metrics(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	w.Header().Add("X-Documize-Version", Product.Version)
 	w.Header().Add("Cache-Control", "no-cache")
-
 	// Prevent page from being displayed in an iframe
 	w.Header().Add("X-Frame-Options", "DENY")
 

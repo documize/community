@@ -65,6 +65,17 @@ export default Ember.Service.extend({
 		}
 	},
 
+	// Returns auth config for Documize instance.
+	getAuthConfig() {
+		if(this.get('sessionService.isGlobalAdmin')) {
+			return this.get('ajax').request(`global/auth`, {
+				method: 'GET'
+			}).then((response) => {
+				return response;
+			});
+		}
+	},	
+
 	// Saves auth config for Documize instance.
 	saveAuthConfig(config) {
 		if(this.get('sessionService.isGlobalAdmin')) {

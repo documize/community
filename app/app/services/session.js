@@ -26,28 +26,6 @@ export default SimpleAuthSession.extend({
 	currentFolder: null,
 	isMac: false,
 	isMobile: false,
-	authenticated: computed('user.id', function () {
-		return this.get('user.id') !== '0';
-	}),
-	isAdmin: computed('user', function () {
-		let data = this.get('user');
-		return data.get('admin');
-	}),
-	isEditor: computed('user', function () {
-		let data = this.get('user');
-		return data.get('editor');
-	}),
-	isGlobalAdmin: computed('user', function () {
-		let data = this.get('user');
-		return data.get('global');
-	}),
-
-	init() {
-		this._super(...arguments);
-		
-		this.set('isMac', is.mac());
-		this.set('isMobile', is.mobile());
-	},
 
 	user: computed('isAuthenticated', 'session.content.authenticated.user', function () {
 		if (this.get('isAuthenticated')) {
@@ -56,6 +34,25 @@ export default SimpleAuthSession.extend({
 			return this.get('store').push(data);
 		}
 	}),
+	authenticated: computed('session.content.authenticated.user', function () {
+		return this.get('session.content.authenticated.user.id') !== '0';
+	}),
+	isAdmin: computed('session.content.authenticated.user', function () {
+		return this.get('session.content.authenticated.user.admin') === true;
+	}),
+	isEditor: computed('session.content.authenticated.user', function () {
+		return this.get('session.content.authenticated.user.editor') === true;
+	}),
+	isGlobalAdmin: computed('session.content.authenticated.user', function () {
+		return this.get('session.content.authenticated.user.global') === true;
+	}),
+
+	init() {
+		this._super(...arguments);
+		
+		this.set('isMac', is.mac());
+		this.set('isMobile', is.mobile());
+	},
 
 	logout() {
 		this.get('localStorage').clearAll();
