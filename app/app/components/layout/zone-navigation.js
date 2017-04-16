@@ -11,6 +11,7 @@
 
 import Ember from 'ember';
 import netUtil from '../../utils/net';
+import constants from '../../utils/constants';
 import TooltipMixin from '../../mixins/tooltip';
 
 const {
@@ -31,18 +32,25 @@ export default Ember.Component.extend(TooltipMixin, {
 	},
 	pinned: service(),
 	pins: [],
+	enableLogout: true,
 
 	init() {
 		this._super(...arguments);
 
-		if (this.get("session.authenticated")) {
-			this.get("session.session.content.authenticated.user.accounts").forEach((account) => {
+		if (this.get("session.authenticated") && this.get("session.user.id") !== '0') {
+			this.get("session.user.accounts").forEach((account) => {
 				// TODO: do not mutate account.active here
 				account.active = account.orgId === this.get("appMeta.orgId");
 			});
 		}
 
 		this.set('pins', this.get('pinned').get('pins'));
+
+		if (this.get('appMeta.authProvider') === constants.AuthProvider.Keycloak) {
+			let config = this.get('appMeta.authConfig');
+			config = JSON.parse(config);
+			this.set('enableLogout', !config.disableLogout);
+		}
 	},
 
 	didReceiveAttrs() {
@@ -88,7 +96,7 @@ export default Ember.Component.extend(TooltipMixin, {
 		if (this.get('session.isAdmin')) {
 			this.addTooltip(document.getElementById("workspace-settings"));
 		}
-		if (this.get("session.authenticated")) {
+		if (this.get("session.authenticated") && this.get('enableLogout')) {
 			this.addTooltip(document.getElementById("workspace-logout"));
 		} else {
 			this.addTooltip(document.getElementById("workspace-login"));

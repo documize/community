@@ -50,6 +50,22 @@
             <div class="tip">Used to connect with Keycloak and sync users with Documize</div>
             {{input id="keycloak-admin-password" type="password" value=keycloakConfig.adminPassword class=(if KeycloakAdminPasswordError 'error')}}
         </div>
+        <div class="input-control">
+            <label>Disable Logout</label>
+            <div class="tip">Hide the logout button for Keycloak users</div>
+            <div class="checkbox">
+                {{input type="checkbox" checked=keycloakConfig.disableLogout}}
+                <label for="allowAnonymousAccess">Do not show logout button</label>
+            </div>            
+        </div>
+        <div class="input-control">
+            <label>Grant Add Space Permission</label>
+            <div class="tip">Determine if Keycloak sync'ed users permission to add new spaces</div>
+            <div class="checkbox">
+                {{input type="checkbox" checked=keycloakConfig.defaultPermissionAddSpace}}
+                <label for="allowAnonymousAccess">Can add spaces</label>
+            </div>            
+        </div>
     {{/if}}
 
     <div class="regular-button button-blue" {{action 'onSave'}}>save</div>

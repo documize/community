@@ -51,13 +51,15 @@
 					</div>
 	            {{/link-to}}
 			</li>
-			<li id="workspace-logout" data-tooltip="Logout" data-tooltip-position="right center">
-	            {{#link-to 'auth.logout'}}
-					<div class="round-button-mono button-white">
-		                <i class="material-icons icon-tool">exit_to_app</i>
-					</div>
-	            {{/link-to}}
-			</li>
+			{{#if enableLogout}}
+				<li id="workspace-logout" data-tooltip="Logout" data-tooltip-position="right center">
+					{{#link-to 'auth.logout'}}
+						<div class="round-button-mono button-white">
+							<i class="material-icons icon-tool">exit_to_app</i>
+						</div>
+					{{/link-to}}
+				</li>
+			{{/if}}
         {{else}}
 			<li id="workspace-login" data-tooltip="Login" data-tooltip-position="right center">
                 {{#link-to 'auth.login'}}

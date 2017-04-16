@@ -35,7 +35,9 @@ export default Ember.Component.extend(NotifierMixin, {
 		publicKey: '',
 		adminUser: '',
 		adminPassword: '',
-		group: ''
+		group: '',
+		disableLogout: false,
+		defaultPermissionAddSpace: false
 	},
 
 	didReceiveAttrs() {
@@ -55,6 +57,8 @@ export default Ember.Component.extend(NotifierMixin, {
 				} else {
 					config = JSON.parse(config);
 					config.publicKey = encoding.Base64.decode(config.publicKey);
+					config.defaultPermissionAddSpace = config.hasOwnProperty('defaultPermissionAddSpace') ? config.defaultPermissionAddSpace : false;
+					config.disableLogout = config.hasOwnProperty('disableLogout') ? config.disableLogout : true;
 				}
 
 				this.set('keycloakConfig', config);
@@ -113,6 +117,8 @@ export default Ember.Component.extend(NotifierMixin, {
 					config.group = is.undefined(config.group) ? '' : config.group.trim();
 					config.adminUser = config.adminUser.trim();
 					config.adminPassword = config.adminPassword.trim();
+					config.defaultPermissionAddSpace = config.hasOwnProperty('defaultPermissionAddSpace') ? config.defaultPermissionAddSpace : true;
+					config.disableLogout = config.hasOwnProperty('disableLogout') ? config.disableLogout : true;
 
 					if (is.endWith(config.url, '/')) {
 						config.url = config.url.substring(0, config.url.length-1);

@@ -122,7 +122,7 @@ func AuthenticateKeycloak(w http.ResponseWriter, r *http.Request) {
 		user.Salt = util.GenerateSalt()
 		user.Password = util.GeneratePassword(util.GenerateRandomPassword(), user.Salt)
 
-		err = addUser(p, &user)
+		err = addUser(p, &user, ac.DefaultPermissionAddSpace)
 		if err != nil {
 			writeServerError(w, method, err)
 			return
@@ -256,7 +256,7 @@ func SyncKeycloak(w http.ResponseWriter, r *http.Request) {
 
 	// Insert new users into Documize
 	for _, u := range insert {
-		err = addUser(p, &u)
+		err = addUser(p, &u, c.DefaultPermissionAddSpace)
 	}
 
 	result.Message = fmt.Sprintf("Keycloak sync'ed %d users, %d new additions", len(kcUsers), len(insert))
@@ -265,7 +265,7 @@ func SyncKeycloak(w http.ResponseWriter, r *http.Request) {
 }
 
 // Helper method to setup user account in Documize using Keycloak provided user data.
-func addUser(p request.Persister, u *entity.User) (err error) {
+func addUser(p request.Persister, u *entity.User, addSpace bool) (err error) {
 	// only create account if not dupe
 	addUser := true
 	addAccount := true
@@ -312,7 +312,7 @@ func addUser(p request.Persister, u *entity.User) (err error) {
 		var a entity.Account
 		a.UserID = userID
 		a.OrgID = p.Context.OrgID
-		a.Editor = true
+		a.Editor = addSpace
 		a.Admin = false
 		accountID := util.UniqueID()
 		a.RefID = accountID
@@ -483,13 +483,15 @@ type keycloakAuthRequest struct {
 
 // Keycloak server configuration
 type keycloakConfig struct {
-	URL           string `json:"url"`
-	Realm         string `json:"realm"`
-	ClientID      string `json:"clientId"`
-	PublicKey     string `json:"publicKey"`
-	AdminUser     string `json:"adminUser"`
-	AdminPassword string `json:"adminPassword"`
-	Group         string `json:"group"`
+	URL                       string `json:"url"`
+	Realm                     string `json:"realm"`
+	ClientID                  string `json:"clientId"`
+	PublicKey                 string `json:"publicKey"`
+	AdminUser                 string `json:"adminUser"`
+	AdminPassword             string `json:"adminPassword"`
+	Group                     string `json:"group"`
+	DisableLogout             bool   `json:"disableLogout"`
+	DefaultPermissionAddSpace bool   `json:"defaultPermissionAddSpace"`
 }
 
 // keycloakAPIAuth is returned when authenticating with Keycloak REST API.
