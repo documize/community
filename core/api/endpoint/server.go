@@ -35,7 +35,7 @@ var Product core.ProdInfo
 func init() {
 	Product.Major = "1"
 	Product.Minor = "45"
-	Product.Patch = "1"
+	Product.Patch = "2"
 	Product.Version = fmt.Sprintf("%s.%s.%s", Product.Major, Product.Minor, Product.Patch)
 	Product.Edition = "Community"
 	Product.Title = fmt.Sprintf("%s Edition", Product.Edition)
@@ -132,23 +132,7 @@ func Serve(ready chan struct{}) {
 
 		log.Info("Starting SSL server on " + port + " with " + certFile + " " + keyFile)
 
-		// myTLSConfig := &tls.Config{
-		// 	CipherSuites: []uint16{
-		// 		tls.TLS_RSA_WITH_3DES_EDE_CBC_SHA,
-		// 		tls.TLS_RSA_WITH_AES_128_CBC_SHA,
-		// 		tls.TLS_RSA_WITH_AES_256_CBC_SHA,
-		// 		// tls.TLS_RSA_WITH_AES_128_CBC_SHA256,
-		// 		// tls.TLS_RSA_WITH_AES_256_CBC_SHA256,
-		// 		tls.TLS_RSA_WITH_AES_128_GCM_SHA256,
-		// 		tls.TLS_RSA_WITH_AES_256_GCM_SHA384,
-		// 		tls.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
-		// 		tls.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
-		// 		// tls.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,
-		// 		// tls.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384,
-		// 		tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
-		// 		tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384}}
-		// // tls.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256}}
-		// myTLSConfig.PreferServerCipherSuites = true
+		// TODO: https://blog.gopheracademy.com/advent-2016/exposing-go-on-the-internet/
 
 		server := &http.Server{Addr: ":" + port, Handler: n /*, TLSConfig: myTLSConfig*/}
 		server.SetKeepAlivesEnabled(true)
