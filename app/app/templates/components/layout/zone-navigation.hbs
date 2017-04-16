@@ -1,6 +1,6 @@
 <div id="zone-navigation" class="zone-navigation">
 	<ul id="top-zone" class="top-zone">
-        {{#if session.authenticated}}
+        {{#if session.hasAccounts}}
 			<li>
 				<div id="accounts-button" class="round-button-mono button-white">
 	                <i class="material-icons">apps</i>
@@ -71,14 +71,12 @@
         {{/if}}
     </ul>
 
-    {{#if session.authenticated}}
+    {{#if session.hasAccounts}}
         {{#dropdown-menu target="accounts-button" position="bottom right" open="click" }}
             <ul class="menu">
-                {{#each session.user.accounts as |account|}}
+                {{#each session.accounts as |account|}}
                     <li class="item" {{action 'switchAccount' account.domain }}>{{account.title}}</li>
                 {{/each}}
-                <li class="divider"></li>
-                <li class="item"><a href="https://documize.com/welcome">Add team...</a></li>
             </ul>
         {{/dropdown-menu}}
     {{/if}}

@@ -26,25 +26,36 @@ export default SimpleAuthSession.extend({
 	currentFolder: null,
 	isMac: false,
 	isMobile: false,
-
+	hasAccounts: computed('isAuthenticated', 'session.content.authenticated.user', function() {
+		return this.get('session.authenticator') !== 'authenticator:anonymous' && this.get('session.content.authenticated.user.accounts').length > 0;
+	}),
+	accounts: computed('hasAccounts', function() {
+		return this.get('session.content.authenticated.user.accounts');
+	}),
 	user: computed('isAuthenticated', 'session.content.authenticated.user', function () {
 		if (this.get('isAuthenticated')) {
-			let user = this.get('session.content.authenticated.user') || { id: '' };
+			let user = this.get('session.content.authenticated.user') || { id: '0' };
 			let data = this.get('store').normalize('user', user);
 			return this.get('store').push(data);
 		}
 	}),
 	authenticated: computed('session.content.authenticated.user', function () {
-		return this.get('session.content.authenticated.user.id') !== '0';
+		return this.get('session.authenticator') !== 'authenticator:anonymous' && this.get('session.content.authenticated.user.id') !== '0';
 	}),
 	isAdmin: computed('session.content.authenticated.user', function () {
-		return this.get('session.content.authenticated.user.admin') === true;
+		return this.get('session.authenticator') !== 'authenticator:anonymous' && 
+			this.get('session.content.authenticated.user.id') !== '0' &&
+			this.get('session.content.authenticated.user.admin') === true;
 	}),
 	isEditor: computed('session.content.authenticated.user', function () {
-		return this.get('session.content.authenticated.user.editor') === true;
+		return this.get('session.authenticator') !== 'authenticator:anonymous' && 
+			this.get('session.content.authenticated.user.id') !== '0' &&
+			this.get('session.content.authenticated.user.editor') === true;
 	}),
 	isGlobalAdmin: computed('session.content.authenticated.user', function () {
-		return this.get('session.content.authenticated.user.global') === true;
+		return this.get('session.authenticator') !== 'authenticator:anonymous' && 
+			this.get('session.content.authenticated.user.id') !== '0' &&
+			this.get('session.content.authenticated.user.global') === true;
 	}),
 
 	init() {

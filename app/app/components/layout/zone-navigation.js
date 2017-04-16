@@ -38,7 +38,7 @@ export default Ember.Component.extend(TooltipMixin, {
 		this._super(...arguments);
 
 		if (this.get("session.authenticated") && this.get("session.user.id") !== '0') {
-			this.get("session.user.accounts").forEach((account) => {
+			this.get("session.accounts").forEach((account) => {
 				// TODO: do not mutate account.active here
 				account.active = account.orgId === this.get("appMeta.orgId");
 			});
