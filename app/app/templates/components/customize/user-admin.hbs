@@ -1,51 +1,76 @@
-<div class="user-list">
+<div class="user-admin">
 	<div class="form-header">
 		<div class="title">User Management</div>
 		<div class="tip">Set basic information, passwords and permissions for {{users.length}} users</div>
 	</div>
+
     <table class="basic-table">
         <thead>
             <tr>
-                <th class="border-bottom border-top">Firstname</th>
-                <th class="border-bottom border-top">Lastname</th>
-                <th class="border-bottom border-top">Email</th>
-                <th class="border-bottom border-top no-width">Active</th>
-                <th class="border-bottom border-top no-width">Add Spaces</th>
-                <th class="border-bottom border-top no-width">Admin</th>
-                <th class="border-bottom border-top no-width">&nbsp;</th>
+                <th class="">
+                    <div class="input-inline input-transparent">
+                        {{focus-input type="text" placeholder="< type here to filter users >" value=filter}}
+                    </div>
+                </th>
+                <th class="no-width">Create spaces</th>
+                <th class="no-width">Is administrator</th>
+                <th class="no-width">Is active</th>
+                <th class="no-width">
+                    {{#if hasSelectedUsers}}
+                        <div class="round-button round-button-small button-red" id="bulk-delete-users">
+                            <i class="material-icons">delete</i>
+                        </div>
+                        {{#dropdown-dialog target="bulk-delete-users" position="bottom right" button="Delete" color="flat-red" onAction=(action 'onBulkDelete')}}
+                            <p>Are you sure you want to delete selected users?</p>
+                        {{/dropdown-dialog}}
+                    {{/if}}
+                </th>
             </tr>
         </thead>
         <tbody>
-            {{#each users as |user|}}
+            {{#each filteredUsers as |user|}}
                 <tr>
-                    <td class="border-bottom {{if user.active '' 'inactive'}}">{{ user.firstname }}</td>
-                    <td class="border-bottom {{if user.active '' 'inactive'}}">{{ user.lastname }}</td>
-                    <td class="border-bottom {{if user.active '' 'inactive'}}">{{ user.email }}</td>
-                    <td class="border-bottom no-width">
-                        {{#if user.me}}
-                            <i class="material-icons">check_box</i> {{else if user.active}}
-                            <i class="material-icons checkbox" {{action 'toggleActive' user.id}}>check_box</i>
-                        {{else}}
-                            <i class="material-icons checkbox" {{action 'toggleActive' user.id}}>check_box_outline_blank</i>
-                        {{/if}}
+                    <td class="{{unless user.active 'inactive-user'}} {{if user.admin 'admin-user'}}">
+                        <div class="selector pull-left">
+                            {{#unless user.me}}
+                                {{#if user.selected}}
+                                    <i class="material-icons checkbox" {{action 'toggleSelect' user}}>check_box</i>
+                                {{else}}
+                                    <i class="material-icons checkbox" {{action 'toggleSelect' user}}>check_box_outline_blank</i>
+                                {{/if}}
+                            {{/unless}}
+                        </div>
+                        <div class="name">{{ user.fullname }}</div>
+                        <div class="email">{{ user.email }}</div>
                     </td>
-                    <td class="border-bottom no-width">
+                    <td class="no-width text-center">
                         {{#if user.me}}
-                            <i class="material-icons">check_box</i> {{else if user.editor}}
+                            <i class="material-icons color-gray">check_box</i>
+                        {{else if user.editor}}
                             <i class="material-icons checkbox" {{action 'toggleEditor' user.id}}>check_box</i>
                         {{else}}
                             <i class="material-icons checkbox" {{action 'toggleEditor' user.id}}>check_box_outline_blank</i>
                         {{/if}}
                     </td>
-                    <td class="border-bottom no-width">
+                    <td class="no-width text-center">
                         {{#if user.me}}
-                            <i class="material-icons">check_box</i> {{else if user.admin}}
+                            <i class="material-icons color-gray">check_box</i>
+                        {{else if user.admin}}
                             <i class="material-icons checkbox" {{action 'toggleAdmin' user.id}}>check_box</i>
                         {{else}}
                             <i class="material-icons checkbox" {{action 'toggleAdmin' user.id}}>check_box_outline_blank</i>
                         {{/if}}
                     </td>
-                    <td class="border-bottom no-width">
+                    <td class="no-width text-center">
+                        {{#if user.me}}
+                            <i class="material-icons color-gray">check_box</i>
+                        {{else if user.active}}
+                            <i class="material-icons checkbox" {{action 'toggleActive' user.id}}>check_box</i>
+                        {{else}}
+                            <i class="material-icons checkbox" {{action 'toggleActive' user.id}}>check_box_outline_blank</i>
+                        {{/if}}
+                    </td>
+                    <td class="no-width text-center">
                         {{#if user.me}}
                             <div class="edit-button-{{user.id}} round-button-mono" title="Edit" {{action "edit" user.id}}>
                                 <i class="material-icons">edit</i>

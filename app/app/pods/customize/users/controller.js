@@ -32,9 +32,9 @@ export default Ember.Controller.extend(NotifierMixin, {
 				});
 		},
 
-		onDelete(user) {
+		onDelete(userId) {
 			let self = this;
-			this.get('userService').remove(user.get('id')).then(function () {
+			this.get('userService').remove(userId).then(function () {
 				self.showNotification('Deleted');
 
 				self.get('userService').getComplete().then(function (users) {

@@ -35,7 +35,7 @@ var Product core.ProdInfo
 func init() {
 	Product.Major = "1"
 	Product.Minor = "45"
-	Product.Patch = "2"
+	Product.Patch = "3"
 	Product.Version = fmt.Sprintf("%s.%s.%s", Product.Major, Product.Minor, Product.Patch)
 	Product.Edition = "Community"
 	Product.Title = fmt.Sprintf("%s Edition", Product.Edition)

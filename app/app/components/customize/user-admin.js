@@ -17,11 +17,18 @@ export default Ember.Component.extend(AuthProvider, {
 	deleteUser: null,
 	drop: null,
 	password: {},
+	filter: '',
+	filteredUsers: [],
+	selectedUsers: [],
+	hasSelectedUsers: false,
 
 	didReceiveAttrs() {
 		this.users.forEach(user => {
 			user.set('me', user.get('id') === this.get('session.session.authenticated.user.id'));
+			user.set('selected', false);
 		});
+
+		this.set('filteredUsers', this.users);
 	},
 
 	willDestroyElement() {
@@ -32,7 +39,39 @@ export default Ember.Component.extend(AuthProvider, {
 		}
 	},
 
+	onKeywordChange: function () {
+		Ember.run.debounce(this, this.filterUsers, 350);
+	}.observes('filter'),
+
+	filterUsers() {
+		let users = this.get('users');
+		let filteredUsers = [];
+		let filter = this.get('filter').toLowerCase();
+
+		users.forEach(user => {
+			if (user.get('fullname').toLowerCase().includes(filter) || user.get('email').toLowerCase().includes(filter)) {
+				filteredUsers.pushObject(user);
+			}
+		});
+
+		this.set('filteredUsers', filteredUsers);
+	},
+
 	actions: {
+		toggleSelect(user) {
+			user.set('selected', !user.get('selected'));
+
+			let su = this.get('selectedUsers');
+			if (user.get('selected')) {
+				su.push(user.get('id'));
+			} else {
+				su = _.reject(su, function(id){ return id === user.get('id') });
+			}
+
+			this.set('selectedUsers', su);
+			this.set('hasSelectedUsers', su.length > 0);
+		},
+		
 		toggleActive(id) {
 			let user = this.users.findBy("id", id);
 			user.set('active', !user.get('active'));
@@ -142,8 +181,22 @@ export default Ember.Component.extend(AuthProvider, {
 			let drop = this.get('drop');
 			drop.close();
 
-			let user = this.get('deleteUser');
-			this.attrs.onDelete(user);
+			this.set('selectedUsers', []);
+			this.set('hasSelectedUsers', false);
+			this.attrs.onDelete(this.get('deleteUser.id'));
+		},
+
+		onBulkDelete() {
+			let su = this.get('selectedUsers');
+			
+			su.forEach(userId => {
+				this.attrs.onDelete(userId);
+			});
+
+			this.set('selectedUsers', []);
+			this.set('hasSelectedUsers', false);
+			
+			return true;
 		}
 	}
 });

@@ -1,7 +1,7 @@
 .page-customize {
 	@include content-container();
 
-	.user-list {
+	.user-admin {
 		margin: 30px 0;
 
 		> .heading {
@@ -13,14 +13,71 @@
 
 		> .basic-table {
 			background-color: $color-white;
-			font-size: 0.9rem;
+			border: none !important;
+			font-size: 1rem;
+			color: $color-off-black;
+
+			> thead {
+				> tr {
+					> th {
+						height: 40px;
+						font-weight: bold;
+						color: $color-gray;
+					}
+
+					> th:first-child {
+						font-weight: normal;
+					}
+
+					> th:last-child {
+						text-align: center;
+					}
+				}
+			}
+
+			> tbody {
+				> tr {
+					> td {
+						vertical-align: middle;
+						text-align: center;
+
+						> .selector {
+							> i {
+								color: $color-off-black;
+							}
+						}
+
+						> .name {
+							font-size: 1rem;
+							color: $color-off-black;
+							margin: 0 0 0 30px;
+						}
+
+						> .email {
+							font-size: 0.9rem;
+							color: $color-gray;
+							margin: 0 0 0 30px;
+						}
+					}
+
+					> td:first-child, td:last-child {
+						text-align: left;
+					}
+				}
+			}
 		}
 
-		.inactive
+		.inactive-user
 		{
 			@extend .color-red;
 			font-weight: normal;
 			text-decoration: line-through;
+		}
+
+		.admin-user
+		{
+			@extend .color-primary;
+			font-weight: normal;
 		}
 
 		.checkbox {
