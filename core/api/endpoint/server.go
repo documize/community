@@ -34,8 +34,8 @@ var Product core.ProdInfo
 
 func init() {
 	Product.Major = "1"
-	Product.Minor = "45"
-	Product.Patch = "3"
+	Product.Minor = "46"
+	Product.Patch = "0"
 	Product.Version = fmt.Sprintf("%s.%s.%s", Product.Major, Product.Minor, Product.Patch)
 	Product.Edition = "Community"
 	Product.Title = fmt.Sprintf("%s Edition", Product.Edition)
@@ -146,7 +146,7 @@ func cors(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "PUT, GET, POST, DELETE, OPTIONS, PATCH")
 	w.Header().Set("Access-Control-Allow-Headers", "host, content-type, accept, authorization, origin, referer, user-agent, cache-control, x-requested-with")
-	w.Header().Set("Access-Control-Expose-Headers", "x-documize-version")
+	w.Header().Set("Access-Control-Expose-Headers", "x-documize-version, x-documize-status")
 
 	if r.Method == "OPTIONS" {
 		w.Header().Add("X-Documize-Version", Product.Version)

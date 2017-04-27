@@ -8,7 +8,7 @@ The mission is to bring software dev inspired features (refactoring, testing, li
 
 ## Latest version
 
-v1.45.3
+v1.46.0
 
 ## OS Support
 

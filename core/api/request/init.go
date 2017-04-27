@@ -88,8 +88,9 @@ func init() {
 }
 
 var stdParams = map[string]string{
-	"charset":   "utf8",
-	"parseTime": "True",
+	"charset":          "utf8",
+	"parseTime":        "True",
+	"maxAllowedPacket": "4194304", // 4194304 // 16777216 = 16MB
 }
 
 func stdConn(cs string) string {
