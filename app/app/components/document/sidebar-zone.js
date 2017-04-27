@@ -16,6 +16,7 @@ import NotifierMixin from '../../mixins/notifier';
 export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
     documentService: Ember.inject.service('document'),
 	sectionService: Ember.inject.service('section'),
+	sessionService: Ember.inject.service('session'),
 	appMeta: Ember.inject.service(),
 	userService: Ember.inject.service('user'),
 	localStorage: Ember.inject.service(),
@@ -138,6 +139,14 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 			this.showNotification('Template saved');
 			this.attrs.onSaveTemplate(name, excerpt);
 
+			return true;
+		},
+		
+		onLayoutChange(layout) {
+			let doc = this.get('document');
+			doc.set('layout', layout);
+			this.get('documentService').save(doc);
+			
 			return true;
 		}
     }

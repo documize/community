@@ -43,6 +43,13 @@
 {{#dropdown-menu target="sidebar-zone-more-button" position="bottom left" open="click" onOpenCallback=(action 'onMenuOpen') onCloseCallback=(action 'onMenuOpen')}}
     <ul class="menu">
         {{#if session.authenticated}}
+            {{#if (is-equal document.layout 'section')}}
+                <li class="item" {{action 'onLayoutChange' 'doc'}}>Flat view</li>
+                <li class="divider"></li>
+            {{else}}
+                <li class="item" {{action 'onLayoutChange' 'section'}}>Section view</li>
+                <li class="divider"></li>
+            {{/if}}
             {{#if pinState.isPinned}}
                 <li class="item" {{action 'onUnpin'}}>Unpin</li>
             {{else}}

@@ -51,7 +51,7 @@
 		@include content-container();
 		@include ease-in();
 		@extend .transition-all;
-		overflow-x: scroll;
+		overflow-x: auto;
 
 		&:hover {
 			.page-title {
@@ -326,6 +326,28 @@
 				}
 			}
 		}
+	}
+}
+
+.document-view-unified {
+	margin: 0 0 50px 0;
+	@include content-container();
+	@include ease-in();
+	@extend .transition-all;
+
+	.is-a-page, .is-a-tab {
+		padding: 0 !important;
+		box-shadow: none !important;
+		background-color: transparent !important;
+		@include border-radius(0px);
+	}
+
+	.tab-min, .tab-max {
+		padding: 0 !important;
+	}
+
+	.start-section {
+		height: 50px !important;
 	}
 }
 

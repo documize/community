@@ -166,6 +166,7 @@ type Document struct {
 	Slug     string `json:"-"`
 	Tags     string `json:"tags"`
 	Template bool   `json:"template"`
+	Layout   string `json:"layout"`
 }
 
 // SetDefaults ensures on blanks and cleans.
