@@ -87,7 +87,7 @@ export default Ember.Service.extend({
 	},
 
 	syncExternalUsers() {
-		if(this.get('sessionService.isGlobalAdmin')) {
+		if(this.get('sessionService.isAdmin')) {
 			return this.get('ajax').request(`users/sync`, {
 				method: 'GET'
 			}).then((response) => {
