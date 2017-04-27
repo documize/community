@@ -211,12 +211,25 @@ func Authorize(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 			context.Administrator = user.Admin
 			context.Editor = user.Editor
 			context.Global = user.Global
+
+			var state struct {
+				Active bool `json:"active"`
+				Admin  bool `json:"admin"`
+				Editor bool `json:"editor"`
+			}
+
+			state.Active = user.Active
+			state.Admin = user.Admin
+			state.Editor = user.Editor
+			sb, err := json.Marshal(state)
+
+			w.Header().Add("X-Documize-Status", string(sb))
 		}
 
 		request.SetContext(r, context)
 		p = request.GetPersister(r)
 
-		// Middleware moves on if we say 'yes' -- autheticated or allow anon access.
+		// Middleware moves on if we say 'yes' -- authenticated or allow anon access.
 		authenticated = context.Authenticated || org.AllowAnonymousAccess
 	}
 

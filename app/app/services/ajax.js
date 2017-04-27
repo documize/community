@@ -33,5 +33,21 @@ export default AjaxService.extend({
 
 			return headers;
 		}
-	})
+	}),
+
+	handleResponse(status, headers /*, payload*/) {
+		try {
+			let user = this.get('session.session.content.authenticated.user');
+			let userUpdate = headers['x-documize-status'];
+			if (is.not.empty(userUpdate)) {
+				let latest = JSON.parse(userUpdate);
+
+				if (!latest.active || user.editor !== latest.editor || user.admin !== latest.admin) {
+					window.location.href = 'auth/login';
+				}
+			}
+		} catch(e){} // eslint-disable-line no-empty
+
+		return this._super(...arguments);
+	}
 });
