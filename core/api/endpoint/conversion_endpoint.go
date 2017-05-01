@@ -110,14 +110,12 @@ func convertDocument(w http.ResponseWriter, r *http.Request, job, folderID strin
 	// All the commented-out code below should be in following function call
 
 	newDocument, err := processDocument(p, filename, job, folderID, fileResult)
-
 	if err != nil {
 		writeServerError(w, method, err)
 		return
 	}
 
 	json, err := json.Marshal(newDocument)
-
 	if err != nil {
 		writeJSONMarshalError(w, method, "conversion", err)
 		return

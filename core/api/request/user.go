@@ -301,3 +301,20 @@ func (p *Persister) ForgotUserPassword(email, token string) (err error) {
 
 	return
 }
+
+// CountActiveUsers returns the number of active users in the system.
+func CountActiveUsers() (c int) {
+	row := Db.QueryRow("SELECT count(*) FROM user u WHERE u.refid IN (SELECT userid FROM account WHERE active=1)")
+
+	err := row.Scan(&c)
+	if err != nil && err != sql.ErrNoRows {
+		log.Error("CountActiveUsers", err)
+		return 0
+	}
+
+	if err == sql.ErrNoRows {
+		return 0
+	}
+
+	return
+}

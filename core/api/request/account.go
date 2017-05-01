@@ -86,6 +86,23 @@ func (p *Persister) GetAccountsByOrg() (t []entity.Account, err error) {
 	return
 }
 
+// CountOrgAccounts returns the numnber of active user accounts for specified organization.
+func (p *Persister) CountOrgAccounts() (c int) {
+	row := Db.QueryRow("SELECT count(*) FROM account WHERE orgid=? AND active=1", p.Context.OrgID)
+
+	err := row.Scan(&c)
+	if err != nil && err != sql.ErrNoRows {
+		log.Error(p.Base.SQLSelectError("CountOrgAccounts", p.Context.OrgID), err)
+		return 0
+	}
+
+	if err == sql.ErrNoRows {
+		return 0
+	}
+
+	return
+}
+
 // UpdateAccount updates the database record for the given account to the given values.
 func (p *Persister) UpdateAccount(account entity.Account) (err error) {
 	account.Revised = time.Now().UTC()

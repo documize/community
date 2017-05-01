@@ -28,6 +28,7 @@ import (
 	"github.com/documize/community/core/log"
 	"github.com/documize/community/core/utility"
 
+	"github.com/documize/community/core/event"
 	"github.com/gorilla/mux"
 	"strconv"
 )
@@ -173,6 +174,14 @@ func AddUser(w http.ResponseWriter, r *http.Request) {
 	// Invite new user
 	inviter, err := p.GetUser(p.Context.UserID)
 	log.IfErr(err)
+
+	if addUser {
+		event.Handler().Publish(string(event.TypeAddUser))
+	}
+
+	if addAccount {
+		event.Handler().Publish(string(event.TypeAddAccount))
+	}
 
 	// Prepare invitation email (that contains SSO link)
 	if addUser && addAccount {
@@ -385,6 +394,8 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	log.IfErr(err)
 
 	log.IfErr(tx.Commit())
+
+	event.Handler().Publish(string(event.TypeRemoveUser))
 
 	writeSuccessString(w, "{}")
 }

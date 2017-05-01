@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"github.com/documize/community/core/api/request"
 	"github.com/documize/community/core/api/util"
+	"github.com/documize/community/core/event"
 )
 
 // GetSMTPConfig returns installation-wide SMTP settings
@@ -156,6 +157,8 @@ func SaveLicense(w http.ResponseWriter, r *http.Request) {
 	}
 
 	request.ConfigSet("EDITION-LICENSE", js)
+
+	event.Handler().Publish(string(event.TypeSystemLicenseChange))
 
 	util.WriteSuccessEmptyJSON(w)
 }

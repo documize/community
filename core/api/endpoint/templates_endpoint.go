@@ -28,6 +28,7 @@ import (
 	"github.com/documize/community/core/api/request"
 	"github.com/documize/community/core/api/util"
 	api "github.com/documize/community/core/convapi"
+	"github.com/documize/community/core/event"
 	"github.com/documize/community/core/log"
 	"github.com/documize/community/core/utility"
 
@@ -389,7 +390,6 @@ func StartDocumentFromSavedTemplate(w http.ResponseWriter, r *http.Request) {
 	d.Title = docTitle
 
 	err = p.AddDocument(d)
-
 	if err != nil {
 		log.IfErr(tx.Rollback())
 		writeGeneralSQLError(w, method, err)
@@ -455,14 +455,14 @@ func StartDocumentFromSavedTemplate(w http.ResponseWriter, r *http.Request) {
 	log.IfErr(tx.Commit())
 
 	newDocument, err := p.GetDocument(documentID)
-
 	if err != nil {
 		writeServerError(w, method, err)
 		return
 	}
 
-	data, err := json.Marshal(newDocument)
+	event.Handler().Publish(string(event.TypeAddDocument), newDocument.Title)
 
+	data, err := json.Marshal(newDocument)
 	if err != nil {
 		writeJSONMarshalError(w, method, "document", err)
 		return
