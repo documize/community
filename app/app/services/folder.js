@@ -46,6 +46,9 @@ export default BaseService.extend({
 		}).then((folder) => {
 			let data = this.get('store').normalize('folder', folder);
 			return this.get('store').push(data);
+		}).catch((error) => {
+			this.get('router').transitionTo('/not-found');
+			return error;
 		});
 	},
 

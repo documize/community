@@ -44,7 +44,7 @@ export default Ember.Service.extend({
 		return [this.get('endpoint'), endpoint].join('/');
 	},
 
-	boot(requestedUrl) { // eslint-disable-line no-unused-vars
+	boot(requestedRoute, requestedUrl) { // eslint-disable-line no-unused-vars
 		let dbhash;
 		if (is.not.null(document.head.querySelector("[property=dbhash]"))) {
 			dbhash = document.head.querySelector("[property=dbhash]").content;
@@ -63,7 +63,7 @@ export default Ember.Service.extend({
 			return resolve(this);
 		}
 
-		if (requestedUrl === 'secure') {
+		if (requestedRoute === 'secure') {
 			this.setProperties({
 				title: htmlSafe("Secure document viewing"),
 				allowAnonymousAccess: true,
@@ -77,6 +77,7 @@ export default Ember.Service.extend({
 
 		return this.get('ajax').request('public/meta').then((response) => {
 			this.setProperties(response);
+			this.get('localStorage').storeSessionItem('entryUrl', requestedUrl);
 			return response;
 		});
 	}

@@ -22,19 +22,31 @@ export default Ember.Route.extend(ApplicationRouteMixin, TooltipMixin, {
 	appMeta: service(),
 	session: service(),
 	pinned: service(),
+	localStorage: service(),
 
 	beforeModel(transition) {
 		this._super(...arguments);
-		
-		return this.get('appMeta').boot(transition.targetName).then(data => {
-			if (this.get('session.session.authenticator') !== "authenticator:documize" &&
-				this.get('session.session.authenticator') !== "authenticator:keycloak" && 
-				data.allowAnonymousAccess) {
+
+		let sa = this.get('session.session.authenticator');
+
+		return this.get('appMeta').boot(transition.targetName, window.location.href).then(data => {
+			if (sa !== "authenticator:documize" && sa !== "authenticator:keycloak" && data.allowAnonymousAccess) {
 				return this.get('session').authenticate('authenticator:anonymous', data);
 			}
 
 			return;
 		});
+	},
+
+	sessionAuthenticated() {
+		let next = this.get('localStorage').getSessionItem('entryUrl');
+		if (is.not.null(next) && is.not.undefined(next)) {
+			this.get('localStorage').clearSessionItem('entryUrl')
+
+			if (is.not.include(next, '/auth/')) {
+				window.location.href= next;
+			} 
+		}
 	},
 
 	actions: {

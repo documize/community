@@ -51,6 +51,7 @@ export default Ember.Component.extend({
 
 		saveLicense() {
 			this.get('saveLicense')().then(() => {
+				window.location.reload();
 			});
 		}
 	}
