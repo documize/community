@@ -19,6 +19,7 @@ import (
 	"github.com/documize/community/core/api/entity"
 	"github.com/documize/community/core/log"
 	"github.com/documize/community/core/utility"
+	"github.com/pkg/errors"
 )
 
 // AddAccount inserts the given record into the datbase account table.
@@ -30,14 +31,14 @@ func (p *Persister) AddAccount(account entity.Account) (err error) {
 	defer utility.Close(stmt)
 
 	if err != nil {
-		log.Error("Unable to prepare insert for account", err)
+		errors.Wrap(err, "Unable to prepare insert for account")
 		return
 	}
 
 	_, err = stmt.Exec(account.RefID, account.OrgID, account.UserID, account.Admin, account.Editor, account.Active, account.Created, account.Revised)
 
 	if err != nil {
-		log.Error("Unable to execute insert for account", err)
+		errors.Wrap(err, "Unable to execute insert for account")
 		return
 	}
 

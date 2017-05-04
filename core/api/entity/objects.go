@@ -556,8 +556,9 @@ const (
 	EventTypeUserDelete         EventType = "removed-user"
 	EventTypeUserPasswordReset  EventType = "reset-user-password"
 	EventTypeAccountAdd         EventType = "added-account"
-	EventTypeSystemLicense      EventType = "changed-license"
-	EventTypeSystemAuth         EventType = "changed-auth-config"
+	EventTypeSystemLicense      EventType = "changed-system-license"
+	EventTypeSystemAuth         EventType = "changed-system-auth"
+	EventTypeSystemSMTP         EventType = "changed-system-smtp"
 	EventTypeSessionStart       EventType = "started-session"
 	EventTypeSearch             EventType = "searched"
 )

@@ -83,6 +83,8 @@ func SaveSMTPConfig(w http.ResponseWriter, r *http.Request) {
 	request.ConfigSet("SMTP", config)
 
 	util.WriteSuccessEmptyJSON(w)
+
+	p.RecordEvent(entity.EventTypeSystemSMTP)
 }
 
 // GetLicense returns product license
