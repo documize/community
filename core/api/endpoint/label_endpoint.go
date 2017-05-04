@@ -81,6 +81,8 @@ func AddFolder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	p.RecordEvent(entity.EventTypeSpaceAdd)
+
 	log.IfErr(tx.Commit())
 
 	folder, _ = p.GetLabel(id)
@@ -254,6 +256,8 @@ func UpdateFolder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	p.RecordEvent(entity.EventTypeSpaceUpdate)
+
 	log.IfErr(tx.Commit())
 
 	json, err := json.Marshal(folder)
@@ -336,6 +340,8 @@ func RemoveFolder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	p.RecordEvent(entity.EventTypeSpaceDelete)
+
 	log.IfErr(tx.Commit())
 
 	writeSuccessString(w, "{}")
@@ -393,6 +399,8 @@ func DeleteFolder(w http.ResponseWriter, r *http.Request) {
 		writeServerError(w, method, err)
 		return
 	}
+
+	p.RecordEvent(entity.EventTypeSpaceDelete)
 
 	log.IfErr(tx.Commit())
 
@@ -554,6 +562,8 @@ func SetFolderPermissions(w http.ResponseWriter, r *http.Request) {
 
 	log.Error("p.UpdateLabel()", p.UpdateLabel(label))
 
+	p.RecordEvent(entity.EventTypeSpacePermission)
+
 	log.Error("tx.Commit()", tx.Commit())
 
 	writeSuccessEmptyJSON(w)
@@ -685,10 +695,11 @@ func AcceptSharedFolder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	p.RecordEvent(entity.EventTypeSpaceJoin)
+
 	log.IfErr(tx.Commit())
 
 	data, err := json.Marshal(user)
-
 	if err != nil {
 		writeJSONMarshalError(w, method, "user", err)
 		return
@@ -848,6 +859,8 @@ func InviteToFolder(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+
+	p.RecordEvent(entity.EventTypeSpaceInvite)
 
 	log.IfErr(tx.Commit())
 

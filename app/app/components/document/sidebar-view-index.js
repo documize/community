@@ -101,7 +101,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 				this.attrs.onPageSequenceChange(pendingChanges);
 
 				this.send('onEntryClick', this.get('currentPageId'));
-				this.audit.record("moved-page-up");
 				this.showNotification("Moved up");
 			}
 		},
@@ -121,7 +120,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 				this.attrs.onPageSequenceChange(pendingChanges);
 
 				this.send('onEntryClick', this.get('currentPageId'));
-				this.audit.record("moved-page-down");
 				this.showNotification("Moved down");
 			}
 		},
@@ -141,7 +139,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 				this.attrs.onPageLevelChange(pendingChanges);
 
 				this.showNotification("Indent");
-				this.audit.record("changed-page-sequence");
 				this.send('onEntryClick', this.get('currentPageId'));
 			}
 		},
@@ -161,7 +158,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 				this.attrs.onPageLevelChange(pendingChanges);
 
 				this.showNotification("Outdent");
-				this.audit.record("changed-page-sequence");
 				this.send('onEntryClick', this.get('currentPageId'));
 			}
 		},

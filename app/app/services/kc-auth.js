@@ -18,7 +18,6 @@ const {
 
 export default Ember.Service.extend({
 	sessionService: service('session'),
-    audit: service(),
 	ajax: service(),
 	appMeta: service(),
 	keycloak: null,
@@ -43,7 +42,6 @@ export default Ember.Service.extend({
             // };
 
             this.get('keycloak').init().success(() => {
-				this.get('audit').record("initialized-keycloak");
                 resolve(this.get('keycloak'));
             }).error((err) => {
                 reject(err);

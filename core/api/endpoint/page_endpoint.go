@@ -127,6 +127,8 @@ func AddDocumentPage(w http.ResponseWriter, r *http.Request) {
 		SourceType:   entity.ActivitySourceTypeDocument,
 		ActivityType: entity.ActivityTypeCreated})
 
+	p.RecordEvent(entity.EventTypeSectionAdd)
+
 	log.IfErr(tx.Commit())
 
 	newPage, _ := p.GetPage(pageID)
@@ -357,6 +359,8 @@ func DeleteDocumentPage(w http.ResponseWriter, r *http.Request) {
 		SourceType:   entity.ActivitySourceTypeDocument,
 		ActivityType: entity.ActivityTypeDeleted})
 
+	p.RecordEvent(entity.EventTypeSectionDelete)
+
 	log.IfErr(tx.Commit())
 
 	writeSuccessEmptyJSON(w)
@@ -438,6 +442,8 @@ func DeleteDocumentPages(w http.ResponseWriter, r *http.Request) {
 		SourceID:     documentID,
 		SourceType:   entity.ActivitySourceTypeDocument,
 		ActivityType: entity.ActivityTypeDeleted})
+
+	p.RecordEvent(entity.EventTypeSectionDelete)
 
 	log.IfErr(tx.Commit())
 
@@ -541,12 +547,13 @@ func UpdateDocumentPage(w http.ResponseWriter, r *http.Request) {
 		SourceType:   entity.ActivitySourceTypeDocument,
 		ActivityType: entity.ActivityTypeEdited})
 
+	p.RecordEvent(entity.EventTypeSectionUpdate)
+
 	log.IfErr(p.Context.Transaction.Commit())
 
 	updatedPage, err := p.GetPage(pageID)
 
 	json, err := json.Marshal(updatedPage)
-
 	if err != nil {
 		writeJSONMarshalError(w, method, "page", err)
 		return
@@ -613,6 +620,8 @@ func ChangeDocumentPageSequence(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	p.RecordEvent(entity.EventTypeSectionResequence)
+
 	log.IfErr(tx.Commit())
 
 	writeSuccessEmptyJSON(w)
@@ -675,6 +684,8 @@ func ChangeDocumentPageLevel(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+
+	p.RecordEvent(entity.EventTypeSectionResequence)
 
 	log.IfErr(tx.Commit())
 
@@ -800,6 +811,8 @@ func GetDocumentRevisions(w http.ResponseWriter, r *http.Request) {
 		writeJSONMarshalError(w, method, "revision", err)
 		return
 	}
+
+	p.RecordEvent(entity.EventTypeDocumentRevisions)
 
 	writeSuccessBytes(w, payload)
 }
@@ -1015,6 +1028,8 @@ func RollbackDocumentPage(w http.ResponseWriter, r *http.Request) {
 		SourceType:   entity.ActivitySourceTypeDocument,
 		ActivityType: entity.ActivityTypeReverted})
 
+	p.RecordEvent(entity.EventTypeSectionRollback)
+
 	log.IfErr(tx.Commit())
 
 	payload, err := json.Marshal(page)
@@ -1125,6 +1140,8 @@ func CopyPage(w http.ResponseWriter, r *http.Request) {
 		SourceID:     targetID,
 		SourceType:   entity.ActivitySourceTypeDocument,
 		ActivityType: entity.ActivityTypeEdited})
+
+	p.RecordEvent(entity.EventTypeSectionCopy)
 
 	log.IfErr(tx.Commit())
 

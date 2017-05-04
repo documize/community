@@ -34,7 +34,6 @@ export default Ember.Controller.extend(NotifierMixin, {
 			};
 
 			this.get('documentService').updatePage(page.get('documentId'), page.get('id'), model).then((page) => {
-				this.audit.record("edited-page");
 				let data = this.get('store').normalize('page', page);
 				this.get('store').push(data);
 

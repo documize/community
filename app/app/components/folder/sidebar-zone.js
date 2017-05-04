@@ -70,8 +70,6 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, AuthMixin, {
 		},
 
 		onUnpin() {
-			this.audit.record('unpinned-space');
-
 			this.get('pinned').unpinItem(this.get('pinState.pinId')).then(() => {
 				this.set('pinState.isPinned', false);
 				this.set('pinState.pinId', '');
@@ -90,8 +88,6 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, AuthMixin, {
 				$('#pin-space-name').addClass('error').focus();
 				return false;
 			}
-
-			this.audit.record('pinned-space');
 
 			this.get('pinned').pinItem(pin).then((pin) => {
 				this.set('pinState.isPinned', true);

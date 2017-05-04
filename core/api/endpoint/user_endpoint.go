@@ -163,6 +163,16 @@ func AddUser(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	if addUser {
+		event.Handler().Publish(string(event.TypeAddUser))
+		p.RecordEvent(entity.EventTypeUserAdd)
+	}
+
+	if addAccount {
+		event.Handler().Publish(string(event.TypeAddAccount))
+		p.RecordEvent(entity.EventTypeAccountAdd)
+	}
+
 	log.IfErr(tx.Commit())
 
 	// If we did not add user or give them access (account) then we error back
@@ -174,14 +184,6 @@ func AddUser(w http.ResponseWriter, r *http.Request) {
 	// Invite new user
 	inviter, err := p.GetUser(p.Context.UserID)
 	log.IfErr(err)
-
-	if addUser {
-		event.Handler().Publish(string(event.TypeAddUser))
-	}
-
-	if addAccount {
-		event.Handler().Publish(string(event.TypeAddAccount))
-	}
 
 	// Prepare invitation email (that contains SSO link)
 	if addUser && addAccount {
@@ -393,6 +395,8 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	err = p.ChangeLabelOwner(userID, p.Context.UserID)
 	log.IfErr(err)
 
+	p.RecordEvent(entity.EventTypeUserDelete)
+
 	log.IfErr(tx.Commit())
 
 	event.Handler().Publish(string(event.TypeRemoveUser))
@@ -484,6 +488,8 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 		writeGeneralSQLError(w, method, err)
 		return
 	}
+
+	p.RecordEvent(entity.EventTypeUserUpdate)
 
 	log.IfErr(tx.Commit())
 
@@ -700,6 +706,8 @@ func ResetUserPassword(w http.ResponseWriter, r *http.Request) {
 		log.Error("ResetUserPassword - failed to change password", err)
 		return
 	}
+
+	p.RecordEvent(entity.EventTypeUserPasswordReset)
 
 	log.IfErr(tx.Commit())
 

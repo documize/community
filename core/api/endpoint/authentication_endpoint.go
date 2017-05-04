@@ -90,7 +90,6 @@ func Authenticate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	org, err := p.GetOrganizationByDomain(domain)
-
 	if err != nil {
 		writeUnauthorizedError(w)
 		return
@@ -111,7 +110,6 @@ func Authenticate(w http.ResponseWriter, r *http.Request) {
 	authModel.User = user
 
 	json, err := json.Marshal(authModel)
-
 	if err != nil {
 		writeJSONMarshalError(w, method, "user", err)
 		return

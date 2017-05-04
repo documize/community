@@ -66,8 +66,6 @@ export default Ember.Controller.extend(NotifierMixin, {
 				page = up;
 				this.set('pageId', page.get('id'));
 			});
-
-			this.audit.record("edited-page");
 		},
 
 		onPageDeleted(deletePage) {
@@ -80,8 +78,6 @@ export default Ember.Controller.extend(NotifierMixin, {
 			});
 			let pageIndex = _.indexOf(pages, page, false);
 			let pendingChanges = [];
-
-			this.audit.record("deleted-page");
 
 			// select affected pages
 			for (var i = pageIndex + 1; i < pages.get('length'); i++) {
@@ -155,7 +151,6 @@ export default Ember.Controller.extend(NotifierMixin, {
 		onDeleteBlock(blockId) {
 			return new Ember.RSVP.Promise((resolve) => {
 				this.get('sectionService').deleteBlock(blockId).then(() => {
-					this.audit.record("deleted-block");
 					this.send("showNotification", "Deleted");
 					resolve();
 				});
@@ -173,7 +168,6 @@ export default Ember.Controller.extend(NotifierMixin, {
 
 		onDocumentDelete() {
 			this.get('documentService').deleteDocument(this.get('model.document.id')).then(() => {
-				this.audit.record("deleted-page");
 				this.send("showNotification", "Deleted");
 				this.transitionToRoute('folder', this.get('model.folder.id'), this.get('model.folder.slug'));
 			});

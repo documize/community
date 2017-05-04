@@ -169,6 +169,8 @@ func SaveAsTemplate(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	p.RecordEvent(entity.EventTypeTemplateAdd)
+
 	// Commit and return new document template
 	log.IfErr(tx.Commit())
 
@@ -180,7 +182,6 @@ func SaveAsTemplate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	d, err := json.Marshal(doc)
-
 	if err != nil {
 		writeJSONMarshalError(w, method, "document", err)
 		return
@@ -451,6 +452,8 @@ func StartDocumentFromSavedTemplate(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+
+	p.RecordEvent(entity.EventTypeTemplateUse)
 
 	log.IfErr(tx.Commit())
 

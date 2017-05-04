@@ -15,7 +15,6 @@ import AuthProvider from '../../../mixins/auth';
 export default Ember.Controller.extend(AuthProvider, {
 	appMeta: Ember.inject.service('app-meta'),
 	session: Ember.inject.service('session'),
-	audit: Ember.inject.service('audit'),
 	invalidCredentials: false,
 
 	reset() {
@@ -35,7 +34,6 @@ export default Ember.Controller.extend(AuthProvider, {
 			let creds = this.getProperties('email', 'password');
 
 			this.get('session').authenticate('authenticator:documize', creds).then((response) => {
-				this.get('audit').record("logged-in");
 				this.transitionToRoute('folders');
 				return response;
 			}).catch(() => {

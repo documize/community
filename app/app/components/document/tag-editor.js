@@ -84,8 +84,6 @@ export default Ember.Component.extend({
 
             this.get('onChange')(save);
 
-            this.audit.record('added-tag');
-
             return true;
         },
 
@@ -106,7 +104,6 @@ export default Ember.Component.extend({
 
             this.set('tagz', tags);
             this.get('onChange')(save);
-            this.audit.record('removed tag');
         },
     }
 });

@@ -20,8 +20,6 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	model(params) {
 		let self = this;
 
-		this.audit.record("edited-block");
- 
 		return Ember.RSVP.hash({
 			folder: self.modelFor('document').folder,
 			document: self.modelFor('document').document,

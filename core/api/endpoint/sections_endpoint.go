@@ -234,6 +234,8 @@ func AddBlock(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	p.RecordEvent(entity.EventTypeBlockAdd)
+
 	log.IfErr(tx.Commit())
 
 	b, err = p.GetBlock(b.RefID)
@@ -363,6 +365,8 @@ func UpdateBlock(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	p.RecordEvent(entity.EventTypeBlockUpdate)
+
 	log.IfErr(tx.Commit())
 
 	writeSuccessEmptyJSON(w)
@@ -402,6 +406,8 @@ func DeleteBlock(w http.ResponseWriter, r *http.Request) {
 		writeGeneralSQLError(w, method, err)
 		return
 	}
+
+	p.RecordEvent(entity.EventTypeBlockDelete)
 
 	log.IfErr(tx.Commit())
 

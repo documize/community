@@ -64,6 +64,8 @@ func AttachmentDownload(w http.ResponseWriter, r *http.Request) {
 
 	_, err = w.Write(attachment.Data)
 	log.IfErr(err)
+
+	p.RecordEvent(entity.EventTypeAttachmentDownload)
 }
 
 // GetAttachments is an end-point that returns all of the attachments of a particular documentID.
@@ -125,7 +127,6 @@ func DeleteAttachment(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tx, err := request.Db.Beginx()
-
 	if err != nil {
 		writeTransactionError(w, method, err)
 		return
@@ -140,6 +141,8 @@ func DeleteAttachment(w http.ResponseWriter, r *http.Request) {
 		writeGeneralSQLError(w, method, err)
 		return
 	}
+
+	p.RecordEvent(entity.EventTypeAttachmentDelete)
 
 	log.IfErr(tx.Commit())
 
@@ -216,6 +219,8 @@ func AddAttachments(w http.ResponseWriter, r *http.Request) {
 		writeGeneralSQLError(w, method, err)
 		return
 	}
+
+	p.RecordEvent(entity.EventTypeAttachmentAdd)
 
 	log.IfErr(tx.Commit())
 
