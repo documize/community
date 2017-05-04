@@ -795,6 +795,7 @@ func InviteToFolder(w http.ResponseWriter, r *http.Request) {
 				a.OrgID = p.Context.OrgID
 				a.Admin = false
 				a.Editor = false
+				a.Active = true
 				accountID := util.UniqueID()
 				a.RefID = accountID
 
@@ -897,6 +898,7 @@ func inviteNewUserToSharedFolder(p request.Persister, email string, invitedBy en
 	a.OrgID = p.Context.OrgID
 	a.Admin = false
 	a.Editor = false
+	a.Active = true
 	accountID := util.UniqueID()
 	a.RefID = accountID
 

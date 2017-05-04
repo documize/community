@@ -529,7 +529,6 @@ const (
 	EventTypeDocumentDelete     EventType = "removed-document"
 	EventTypeDocumentRevisions  EventType = "viewed-document-revisions"
 	EventTypeSpaceAdd           EventType = "added-space"
-	EventTypeSpaceView          EventType = "viewed-space"
 	EventTypeSpaceUpdate        EventType = "updated-space"
 	EventTypeSpaceDelete        EventType = "removed-space"
 	EventTypeSpacePermission    EventType = "changed-space-permissions"

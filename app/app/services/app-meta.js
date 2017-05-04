@@ -77,7 +77,11 @@ export default Ember.Service.extend({
 
 		return this.get('ajax').request('public/meta').then((response) => {
 			this.setProperties(response);
-			this.get('localStorage').storeSessionItem('entryUrl', requestedUrl);
+
+			if (is.not.include(requestedUrl, '/auth/')) { 
+				this.get('localStorage').storeSessionItem('entryUrl', requestedUrl);
+			}
+
 			return response;
 		});
 	}

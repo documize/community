@@ -13,6 +13,11 @@ import Ember from 'ember';
 
 export default Ember.Route.extend({
 	session: Ember.inject.service(),
+	localStorage: Ember.inject.service(),
+
+	beforeModel() {
+		this.get('localStorage').clearAll();
+	},
 
 	model({ token }) {
 		this.get("session").authenticate('authenticator:documize', decodeURIComponent(token))
