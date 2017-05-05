@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS `userevent` (
 	`orgid` CHAR(16) NOT NULL COLLATE utf8_bin,
 	`userid` CHAR(16) NOT NULL COLLATE utf8_bin,
 	`eventtype` VARCHAR(100) NOT NULL DEFAULT '',
+	`ip` VARCHAR(39) NOT NULL COLLATE utf8_bin DEFAULT '',
 	`created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT pk_id PRIMARY KEY (id),
 	INDEX `idx_userevent_orgid` (`orgid` ASC),

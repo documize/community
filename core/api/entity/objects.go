@@ -515,6 +515,7 @@ type AppEvent struct {
 	OrgID   string    `json:"orgId"`
 	UserID  string    `json:"userId"`
 	Type    string    `json:"eventType"`
+	IP      string    `json:"ip"`
 	Created time.Time `json:"created"`
 }
 

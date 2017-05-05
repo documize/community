@@ -24,6 +24,7 @@ func (p *Persister) RecordEvent(t entity.EventType) {
 	e.OrgID = p.Context.OrgID
 	e.UserID = p.Context.UserID
 	e.Created = time.Now().UTC()
+	e.IP = p.Context.ClientIP
 	e.Type = string(t)
 
 	if e.OrgID == "" || e.UserID == "" {
@@ -37,14 +38,14 @@ func (p *Persister) RecordEvent(t entity.EventType) {
 		return
 	}
 
-	stmt, err := tx.Preparex("INSERT INTO userevent (orgid, userid, eventtype, created) VALUES (?, ?, ?, ?)")
+	stmt, err := tx.Preparex("INSERT INTO userevent (orgid, userid, eventtype, ip, created) VALUES (?, ?, ?, ?, ?)")
 	if err != nil {
 		tx.Rollback()
 		log.Error("Unable to prepare insert RecordEvent", err)
 		return
 	}
 
-	_, err = stmt.Exec(e.OrgID, e.UserID, e.Type, e.Created)
+	_, err = stmt.Exec(e.OrgID, e.UserID, e.Type, e.IP, e.Created)
 	if err != nil {
 		log.Error("Unable to execute insert RecordEvent", err)
 		tx.Rollback()
