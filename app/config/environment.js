@@ -36,9 +36,6 @@ module.exports = function (environment) {
 			routeIfAlreadyAuthenticated: 'folders'
 		},
 		APP: {
-			// Allows to disable audit service in tests
-			auditEnabled: true,
-			intercomKey: ""
 		}
 	};
 
@@ -69,7 +66,6 @@ module.exports = function (environment) {
 		ENV['ember-cli-mirage'] = {
 			enabled: true
 		};
-		ENV.APP.auditEnabled = false;
 
 		ENV.apiHost = "https://localhost:5001";
 	}
@@ -86,10 +82,6 @@ module.exports = function (environment) {
 
 	process.argv.forEach(function (element) {
 		if (element !== undefined) {
-			if (element.startsWith("intercom=")) {
-				element = element.replace("intercom=", "");
-				ENV.APP.intercomKey = element;
-			}
 			if (element.startsWith("apiHost=")) {
 				element = element.replace("apiHost=", "");
 				ENV.apiHost = element;

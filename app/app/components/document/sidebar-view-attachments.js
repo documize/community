@@ -65,7 +65,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 				});
 
 				this.on("addedfile", function ( /*file*/ ) {
-					self.audit.record('attached-file');
 				});
 			}
 		});

@@ -251,8 +251,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 				meta: meta
 			};
 
-			this.audit.record("added-section-" + section.get('contentType'));
-
 			const promise = this.addSection(model);
 			promise.then((id) => {
 				this.set('pageId', id);
@@ -296,8 +294,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 				page: page,
 				meta: meta
 			};
-
-			this.audit.record("added-content-block-" + block.get('contentType'));
 
 			const promise = this.addSection(model);
 			promise.then((id) => {

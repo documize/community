@@ -19,6 +19,5 @@ export function initialize(application) {
 export default {
     name: 'session',
     after: 'application',
-    before: 'audit',
     initialize: initialize
 };

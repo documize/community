@@ -22,7 +22,6 @@ export default Ember.Controller.extend({
 	}.observes('filter'),
 
 	fetch() {
-		this.audit.record('searched');
 		let self = this;
 
 		this.get('searchService').find(this.get('filter')).then(function (response) {

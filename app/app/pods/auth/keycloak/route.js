@@ -36,7 +36,6 @@ export default Ember.Route.extend({
 				let data = this.get('kcAuth').mapProfile(profile);
 
 				this.get("session").authenticate('authenticator:keycloak', data).then(() => {
-					this.get('audit').record("logged-in-keycloak");
 					this.transitionTo('folders');
 				}, (reject) => {
 					this.set('message', reject.Error);

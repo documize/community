@@ -31,7 +31,6 @@ module.exports = {
     "stubUserNotification": true,
     "userLogin": true,
     "Keycloak": true,
-    "Intercom": true,
     "slug": true
   }
 };

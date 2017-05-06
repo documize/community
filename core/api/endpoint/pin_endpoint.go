@@ -85,6 +85,8 @@ func AddPin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	p.RecordEvent(entity.EventTypePinAdd)
+
 	log.IfErr(tx.Commit())
 
 	newPin, err := p.GetPin(pin.RefID)
@@ -178,6 +180,8 @@ func DeleteUserPin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	p.RecordEvent(entity.EventTypePinDelete)
+
 	log.IfErr(tx.Commit())
 
 	util.WriteSuccessEmptyJSON(w)
@@ -237,6 +241,8 @@ func UpdatePinSequence(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+
+	p.RecordEvent(entity.EventTypePinResequence)
 
 	log.IfErr(tx.Commit())
 

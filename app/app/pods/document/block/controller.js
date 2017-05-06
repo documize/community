@@ -31,7 +31,6 @@ export default Ember.Controller.extend({
 			b.set('externalSource', meta.get('externalSource'));
 
 			this.get('sectionService').updateBlock(b).then(function () {
-				self.audit.record("edited-block");
 				self.transitionToRoute('document');
 			});
 		}

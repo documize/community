@@ -17,9 +17,6 @@ export default Ember.Route.extend({
 	appMeta: Ember.inject.service(),
 
 	activate: function () {
-		this.audit.record("logged-out");
-		this.audit.stop();
-
 		this.get('session').invalidate().then(() => { 
 			if (config.environment === 'test') {
 				this.transitionTo('auth.login');

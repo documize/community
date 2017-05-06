@@ -65,6 +65,8 @@ func SearchDocuments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	p.RecordEvent(entity.EventTypeSearch)
+
 	writeSuccessBytes(w, data)
 }
 
@@ -110,17 +112,13 @@ func GetDocument(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = p.RecordUserActivity(entity.UserActivity{
+	_ = p.RecordUserActivity(entity.UserActivity{
 		LabelID:      document.LabelID,
 		SourceID:     document.RefID,
 		SourceType:   entity.ActivitySourceTypeDocument,
 		ActivityType: entity.ActivityTypeRead})
 
-	if err != nil {
-		log.IfErr(p.Context.Transaction.Rollback())
-		log.Error("Cannot record user activity", err)
-		return
-	}
+	p.RecordEvent(entity.EventTypeDocumentView)
 
 	log.IfErr(p.Context.Transaction.Commit())
 
@@ -301,6 +299,8 @@ func DeleteDocument(w http.ResponseWriter, r *http.Request) {
 		SourceType:   entity.ActivitySourceTypeDocument,
 		ActivityType: entity.ActivityTypeDeleted})
 
+	p.RecordEvent(entity.EventTypeDocumentDelete)
+
 	log.IfErr(tx.Commit())
 
 	writeSuccessEmptyJSON(w)
@@ -434,6 +434,8 @@ func UpdateDocument(w http.ResponseWriter, r *http.Request) {
 		writeGeneralSQLError(w, method, err)
 		return
 	}
+
+	p.RecordEvent(entity.EventTypeDocumentUpdate)
 
 	log.IfErr(tx.Commit())
 

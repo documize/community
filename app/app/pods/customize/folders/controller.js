@@ -32,7 +32,6 @@ export default Ember.Controller.extend(NotifierMixin, {
 
 				this.get('folderService').save(folder).then(() => {
 					this.showNotification("Changed");
-					this.audit.record('changed-folder-owner');
 				});
 
 				this.send('onChangeOwner');

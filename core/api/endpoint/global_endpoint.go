@@ -18,9 +18,11 @@ import (
 
 	"encoding/xml"
 	"fmt"
+	"github.com/documize/community/core/api/entity"
 	"github.com/documize/community/core/api/request"
 	"github.com/documize/community/core/api/util"
 	"github.com/documize/community/core/event"
+	"github.com/documize/community/core/log"
 )
 
 // GetSMTPConfig returns installation-wide SMTP settings
@@ -81,6 +83,8 @@ func SaveSMTPConfig(w http.ResponseWriter, r *http.Request) {
 	request.ConfigSet("SMTP", config)
 
 	util.WriteSuccessEmptyJSON(w)
+
+	p.RecordEvent(entity.EventTypeSystemSMTP)
 }
 
 // GetLicense returns product license
@@ -160,6 +164,15 @@ func SaveLicense(w http.ResponseWriter, r *http.Request) {
 
 	event.Handler().Publish(string(event.TypeSystemLicenseChange))
 
+	p.Context.Transaction, err = request.Db.Beginx()
+	if err != nil {
+		writeTransactionError(w, method, err)
+		return
+	}
+
+	p.RecordEvent(entity.EventTypeSystemLicense)
+	log.IfErr(p.Context.Transaction.Commit())
+
 	util.WriteSuccessEmptyJSON(w)
 }
 
@@ -226,6 +239,8 @@ func SaveAuthConfig(w http.ResponseWriter, r *http.Request) {
 		p.Context.Transaction.Rollback()
 		return
 	}
+
+	p.RecordEvent(entity.EventTypeSystemAuth)
 
 	p.Context.Transaction.Commit()
 

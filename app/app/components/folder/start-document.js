@@ -95,7 +95,6 @@ export default Ember.Component.extend(NotifierMixin, {
 
 				this.on("addedfile", function (file) {
 					self.send('onDocumentImporting', file.name);
-					self.audit.record('converted-document');
 				});
 			}
 		});
@@ -113,14 +112,12 @@ export default Ember.Component.extend(NotifierMixin, {
 		},
 
 		editTemplate(template) {
-			this.audit.record('edited-saved-template');
 			this.get('router').transitionTo('document', this.get('folder.id'), this.get('folder.slug'), template.get('id'), template.get('slug'));
 
 			return true;
 		},
 
 		startDocument(template) {
-			this.audit.record('used-saved-template');
             this.send("showNotification", "Creating");
 
             this.get('templateService').importSavedTemplate(this.folder.get('id'), template.id, this.get('newDocumentName')).then((document) => {

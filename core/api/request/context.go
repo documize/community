@@ -21,6 +21,7 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"github.com/documize/community/core/log"
+	"github.com/documize/community/core/utility"
 )
 
 var rc = Context{}
@@ -39,6 +40,7 @@ type Context struct {
 	SSL                  bool
 	AppURL               string // e.g. https://{url}.documize.com
 	Subdomain            string
+	ClientIP             string
 	Expires              time.Time
 	Transaction          *sqlx.Tx
 }
@@ -60,7 +62,6 @@ func NewContext() Context {
 }
 
 func getContext(r *http.Request) Context {
-
 	if value := context.Get(r, rc); value != nil {
 		return value.(Context)
 	}
@@ -73,6 +74,14 @@ func SetContext(r *http.Request, c Context) {
 	c.AppURL = r.Host
 	c.Subdomain = GetSubdomainFromHost(r)
 	c.SSL = r.TLS != nil
+
+	// get user IP from request
+	c.ClientIP = utility.GetRemoteIP(r.RemoteAddr)
+
+	fip := r.Header.Get("X-Forwarded-For")
+	if len(fip) > 0 {
+		c.ClientIP = fip
+	}
 
 	context.Set(r, rc, c)
 }

@@ -10,12 +10,9 @@
 // https://documize.com
 
 import Ember from 'ember';
-import encodingUtil from '../../utils/encoding';
-import netUtil from '../../utils/net';
 
 export default Ember.Component.extend({
     folderService: Ember.inject.service('folder'),
-
     serial: "",
     folderId: "",
     slug: "",
@@ -111,10 +108,16 @@ export default Ember.Component.extend({
                 var password = $("#stage-2-password").val();
 
                 self.get('folderService').onboard(self.folderId, payload).then(function(user) {
-                    var credentials = encodingUtil.Base64.encode(netUtil.getSubdomain() + ":" + user.email + ":" + password);
-                    self.session.sso(credentials).then(function() {
+                    let creds = { password: password, email: user.email };
+
+                    self.get('session').authenticate('authenticator:documize', creds).then(() => {
                         window.location.href = 's/' + self.folderId + "/" + self.slug;
                     });
+
+                    // var credentials = encodingUtil.Base64.encode(netUtil.getSubdomain() + ":" + user.email + ":" + password);
+                    // self.session.sso(credentials).then(function() {
+                    //     window.location.href = 's/' + self.folderId + "/" + self.slug;
+                    // });
                 }, function() {
                     window.location.href = "/";
                 });

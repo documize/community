@@ -245,6 +245,8 @@ func processDocument(p request.Persister, filename, job, folderID string, fileRe
 		SourceType:   entity.ActivitySourceTypeDocument,
 		ActivityType: entity.ActivityTypeCreated})
 
+	p.RecordEvent(entity.EventTypeDocumentUpload)
+
 	log.IfErr(tx.Commit())
 
 	return

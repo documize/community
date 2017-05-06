@@ -3,13 +3,9 @@
 NOW=$(date)
 echo "Build process started $NOW"
 
-# First parameter to this script is the Intercom.io key for audit logging.
-# This is optional and we use Intercom to record user activity and provider in-app support via messaging.
-intercomKey="$1"
-
 echo "Building Ember assets..."
 cd app
-ember b -o dist-prod/ --environment=production intercom=$intercomKey
+ember b -o dist-prod/ --environment=production
 
 echo "Copying Ember assets..."
 cd ..
