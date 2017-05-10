@@ -16,6 +16,7 @@ export default Ember.Controller.extend(NotifierMixin, {
 	documentService: Ember.inject.service('document'),
 	templateService: Ember.inject.service('template'),
 	sectionService: Ember.inject.service('section'),
+	linkService: Ember.inject.service('link'),
 	folder: {},
 	pages: [],
 	toggled: false,
@@ -42,6 +43,10 @@ export default Ember.Controller.extend(NotifierMixin, {
 				if (documentId === targetDocumentId) {
 					this.set('pageId', '');
 					this.get('target.router').refresh();
+
+					this.get('linkService').getDocumentLinks(this.get('model.document.id')).then((links) => {
+						this.set('model.links', links);
+					});
 				}
 			});
 		},
@@ -65,6 +70,9 @@ export default Ember.Controller.extend(NotifierMixin, {
 			this.get('documentService').updatePage(documentId, page.get('id'), model).then((up) => {
 				page = up;
 				this.set('pageId', page.get('id'));
+				this.get('linkService').getDocumentLinks(this.get('model.document.id')).then((links) => {
+					this.set('model.links', links);
+				});
 			});
 		},
 

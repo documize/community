@@ -39,7 +39,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 			if (!$(jumpTo).inView()) {
 				$(jumpTo).velocity("scroll", { duration: 250, offset: -100 });
 			}
-		});		
+		});
 	},
 
 	didRender() {
@@ -83,7 +83,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 					link.orphan = true;
 				} else {
 					if (link.linkType === "section") {
-						self.attrs.gotoPage(link.targetId);
+						self.attrs.onGotoPage(link.targetId);
 					}
 				}
 			}
