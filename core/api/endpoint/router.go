@@ -134,7 +134,7 @@ func init() {
 	log.IfErr(Add(RoutePrefixPublic, "meta", []string{"GET", "OPTIONS"}, nil, GetMeta))
 	log.IfErr(Add(RoutePrefixPublic, "authenticate/keycloak", []string{"POST", "OPTIONS"}, nil, AuthenticateKeycloak))
 	log.IfErr(Add(RoutePrefixPublic, "authenticate", []string{"POST", "OPTIONS"}, nil, Authenticate))
-	// log.IfErr(Add(RoutePrefixPublic, "validate", []string{"GET", "OPTIONS"}, nil, ValidateAuthToken))
+	log.IfErr(Add(RoutePrefixPublic, "validate", []string{"GET", "OPTIONS"}, nil, ValidateAuthToken))
 	log.IfErr(Add(RoutePrefixPublic, "forgot", []string{"POST", "OPTIONS"}, nil, ForgotUserPassword))
 	log.IfErr(Add(RoutePrefixPublic, "reset/{token}", []string{"POST", "OPTIONS"}, nil, ResetUserPassword))
 	log.IfErr(Add(RoutePrefixPublic, "share/{folderID}", []string{"POST", "OPTIONS"}, nil, AcceptSharedFolder))

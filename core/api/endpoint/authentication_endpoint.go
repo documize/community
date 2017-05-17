@@ -24,6 +24,7 @@ import (
 	"github.com/documize/community/core/api/request"
 	"github.com/documize/community/core/api/util"
 	"github.com/documize/community/core/log"
+	"github.com/documize/community/core/section/provider"
 	"github.com/documize/community/core/utility"
 	"github.com/documize/community/core/web"
 )
@@ -238,9 +239,19 @@ func Authorize(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	}
 }
 
-// ValidToken finds and validates authentication token.
-func ValidToken(r *http.Request) (context request.Context, valid bool) {
-	valid = false
+// ValidateAuthToken finds and validates authentication token.
+func ValidateAuthToken(w http.ResponseWriter, r *http.Request) {
+
+	log.Info("cb gh")
+	// TODO should this go after token validation?
+	if s := r.URL.Query().Get("section"); s != "" {
+		if err := provider.Callback(s, w, r); err != nil {
+			log.Error("section validation failure", err)
+			w.WriteHeader(http.StatusUnauthorized)
+		}
+
+		return
+	}
 
 	token := findJWT(r)
 	hasToken := len(token) > 1
@@ -263,6 +274,7 @@ func ValidToken(r *http.Request) (context request.Context, valid bool) {
 
 	// Inability to find org record spells the end of this request.
 	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 
@@ -274,6 +286,7 @@ func ValidToken(r *http.Request) (context request.Context, valid bool) {
 	domain := request.GetSubdomainFromHost(r)
 	domain2 := request.GetRequestSubdomain(r)
 	if org.Domain != domain && org.Domain != domain2 {
+		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 
@@ -283,6 +296,7 @@ func ValidToken(r *http.Request) (context request.Context, valid bool) {
 		// So you have a bad token
 		if hasToken {
 			if tokenErr != nil {
+				w.WriteHeader(http.StatusUnauthorized)
 				return
 			}
 		} else {
@@ -305,23 +319,23 @@ func ValidToken(r *http.Request) (context request.Context, valid bool) {
 	context.Global = false
 
 	// Fetch user permissions for this org
-	if context.Authenticated {
-		user, err := getSecuredUser(p, org.RefID, context.UserID)
-
-		if err != nil {
-			return
-		}
-
-		context.Administrator = user.Admin
-		context.Editor = user.Editor
-		context.Global = user.Global
+	if !context.Authenticated {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
 	}
 
-	request.SetContext(r, context)
-	p = request.GetPersister(r)
+	user, err := getSecuredUser(p, org.RefID, context.UserID)
 
-	valid = context.Authenticated || org.AllowAnonymousAccess
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
 
+	context.Administrator = user.Admin
+	context.Editor = user.Editor
+	context.Global = user.Global
+
+	util.WriteJSON(w, user)
 	return
 }
 

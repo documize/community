@@ -26,7 +26,7 @@ import (
 // Msword type provides a peg to hang the Convert method on.
 type Msword struct{}
 
-// Convert converts a file into the Countersoft Documize format.
+// Convert converts a file into the Documize format.
 func (file *Msword) Convert(r api.DocumentConversionRequest, reply *api.DocumentConversionResponse) error {
 	byts, err := json.Marshal(r)
 	if err != nil {

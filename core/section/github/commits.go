@@ -1,6 +1,6 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under
+// This software (Documize unity Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
@@ -22,7 +22,7 @@ import (
 	gogithub "github.com/google/go-github/github"
 )
 
-const commitTimeFormat = "January 2 2006, 15:04"
+const commitTimeFormat = "2006-01-02, 15:04"
 
 type githubCommit struct {
 	Owner      string       `json:"owner"`

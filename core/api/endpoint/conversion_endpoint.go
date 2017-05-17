@@ -33,10 +33,23 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// UploadConvertDocument is an endpoint to both upload and convert a document
+func UploadConvertDocument(w http.ResponseWriter, r *http.Request) {
+	job, folderID, orgID := uploadDocument(w, r)
+	if job == "" {
+		return // error already handled
+	}
+
+	convertDocument(w, r, job, folderID, api.ConversionJobRequest{
+		Job:        job,
+		IndexDepth: 4,
+		OrgID:      orgID,
+	})
+}
+
 func uploadDocument(w http.ResponseWriter, r *http.Request) (string, string, string) {
 	method := "uploadDocument"
 	p := request.GetPersister(r)
-
 	params := mux.Vars(r)
 	folderID := params["folderID"]
 
@@ -47,7 +60,6 @@ func uploadDocument(w http.ResponseWriter, r *http.Request) (string, string, str
 
 	// grab file
 	filedata, filename, err := r.FormFile("attachment")
-
 	if err != nil {
 		writeMissingDataError(w, method, "attachment")
 		return "", "", ""
@@ -55,7 +67,6 @@ func uploadDocument(w http.ResponseWriter, r *http.Request) (string, string, str
 
 	b := new(bytes.Buffer)
 	_, err = io.Copy(b, filedata)
-
 	if err != nil {
 		writeServerError(w, method, err)
 		return "", "", ""
@@ -90,7 +101,6 @@ func convertDocument(w http.ResponseWriter, r *http.Request, job, folderID strin
 	var err error
 
 	filename, fileResult, err = storageProvider.Convert(conversion)
-
 	if err != nil {
 		writePayloadError(w, method, err)
 		return
@@ -122,19 +132,6 @@ func convertDocument(w http.ResponseWriter, r *http.Request, job, folderID strin
 	}
 
 	writeSuccessBytes(w, json)
-}
-
-// UploadConvertDocument is an endpoint to both upload and convert a document
-func UploadConvertDocument(w http.ResponseWriter, r *http.Request) {
-	job, folderID, orgID := uploadDocument(w, r)
-	if job == "" {
-		return // error already handled
-	}
-	convertDocument(w, r, job, folderID, api.ConversionJobRequest{
-		Job:        job,
-		IndexDepth: 4,
-		OrgID:      orgID,
-	})
 }
 
 func processDocument(p request.Persister, filename, job, folderID string, fileResult *api.DocumentConversionResponse) (newDocument entity.Document, err error) {

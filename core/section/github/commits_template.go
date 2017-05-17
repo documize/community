@@ -71,7 +71,7 @@ const commitsTemplate = `
 		<table class="github-table" style="width: 100%;">
 			<thead>
 				<tr>
-				<th class="title">Commits <span>&middot; {{len .BranchCommits}} commits by {{.NumContributors}} contributors</span>
+				<th class="title">Commits <span>&middot; {{len .BranchCommits}} commits</span>
 				</th>
 				<th></th>
 				</tr>
@@ -85,8 +85,8 @@ const commitsTemplate = `
 						</td>
 						<td class="right-column">
 							<div class="contributor-meta">
-								<img class="github-avatar" title="@{{$commit.Name}}" alt="@{{$commit.Name}}" src="{{$commit.Avatar}}" />
 								{{$commit.Date}}
+								<img class="github-avatar" title="@{{$commit.Name}}" alt="@{{$commit.Name}}" src="{{$commit.Avatar}}" />
 							</div>
 						</td>
 					</tr>

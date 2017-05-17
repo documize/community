@@ -43,6 +43,8 @@
 }
 
 .section-github-render {
+	font-size: 0.9rem;
+
 	a:hover {
 		text-decoration: underline;
 	}
@@ -77,8 +79,8 @@
 	}
 
 	.github-table tbody tr td {
-		border: none!important;
-		padding: 5px 20px !important;
+		border: none !important;
+		padding: 5px 0 !important;
 	}
 
 	.github-table .right-column {
@@ -114,6 +116,11 @@
 		}
 	}
 
+	.contributor-meta {
+		white-space: nowrap;
+		width: 1%;
+	}
+
 	span.issue-state {
 		float: left;
 		margin-right: 10px;
@@ -123,6 +130,6 @@
 	img.github-avatar {
 		width: 24px;
 		border-radius: 4px;
-		margin-right: 10px;
+		margin-left: 10px;
 	}
 }
