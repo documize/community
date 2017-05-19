@@ -45,10 +45,6 @@ export default Ember.Component.extend(AuthProvider, {
 		}
 	}),
 
-	didReceiveAttrs() {
-		this.set
-	},
-
 	actions: {
 		save() {
 			let password = this.get('password.password');

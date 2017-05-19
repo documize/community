@@ -121,6 +121,7 @@ func Serve(ready chan struct{}) {
 			go func() {
 				err := http.ListenAndServe(":"+forcePort2SSL, http.HandlerFunc(
 					func(w http.ResponseWriter, req *http.Request) {
+						w.Header().Set("Connection", "close")
 						var host = strings.Replace(req.Host, forcePort2SSL, port, 1) + req.RequestURI
 						http.Redirect(w, req, "https://"+host, http.StatusMovedPermanently)
 					}))
