@@ -13,13 +13,13 @@ package apidocumizecom
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"path/filepath"
 
 	api "github.com/documize/community/core/convapi"
-
 	"golang.org/x/net/context"
 )
 
@@ -35,14 +35,14 @@ func (file *Msword) Convert(r api.DocumentConversionRequest, reply *api.Document
 	base := filepath.Base(r.Filename)
 	fmt.Println("Starting conversion of document: ", base)
 
+	var transport = &http.Transport{
+		TLSClientConfig: &tls.Config{
+			InsecureSkipVerify: true, // TODO should be glick.InsecureSkipVerifyTLS (from -insecure flag) but get error: x509: certificate signed by unknown authority
+		}}
+
 	client := &http.Client{Transport: transport}
 
-	tok, err := token()
-	if err != nil {
-		return err
-	}
-
-	resp, err := client.Post(endPoint()+"/api/word?token="+tok, "application/json", bytes.NewReader(byts))
+	resp, err := client.Post(r.ServiceEndpoint+"/api/word", "application/json", bytes.NewReader(byts))
 	if err != nil {
 		return err
 	}

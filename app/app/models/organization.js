@@ -17,6 +17,7 @@ export default Model.extend({
 	title: attr('string'),
 	message: attr('string'),
 	email: attr('string'),
+	conversionEndpoint: attr('string'),
 	allowAnonymousAccess: attr('boolean', { defaultValue: false }),
 	created: attr(),
 	revised: attr()

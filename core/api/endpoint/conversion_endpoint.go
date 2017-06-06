@@ -13,6 +13,7 @@ package endpoint
 
 import (
 	"bytes"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -27,10 +28,8 @@ import (
 	"github.com/documize/community/core/api/util"
 	api "github.com/documize/community/core/convapi"
 	"github.com/documize/community/core/log"
-
-	uuid "github.com/nu7hatch/gouuid"
-
 	"github.com/gorilla/mux"
+	uuid "github.com/nu7hatch/gouuid"
 )
 
 // UploadConvertDocument is an endpoint to both upload and convert a document
@@ -96,10 +95,24 @@ func convertDocument(w http.ResponseWriter, r *http.Request, job, folderID strin
 	method := "convertDocument"
 	p := request.GetPersister(r)
 
+	licenseKey := request.ConfigString("EDITION-LICENSE", "key")
+	licenseSignature := request.ConfigString("EDITION-LICENSE", "signature")
+	k, _ := hex.DecodeString(licenseKey)
+	s, _ := hex.DecodeString(licenseSignature)
+
+	conversion.LicenseKey = k
+	conversion.LicenseSignature = s
+
+	org, err := p.GetOrganization(p.Context.OrgID)
+	if err != nil {
+		writePayloadError(w, method, err)
+		return
+	}
+
+	conversion.ServiceEndpoint = org.ConversionEndpoint
+
 	var fileResult *api.DocumentConversionResponse
 	var filename string
-	var err error
-
 	filename, fileResult, err = storageProvider.Convert(conversion)
 	if err != nil {
 		writePayloadError(w, method, err)

@@ -25,6 +25,7 @@ export default Ember.Service.extend({
 	kcAuth: service(),
 	apiHost: `${config.apiHost}`,
 	endpoint: `${config.apiHost}/${config.apiNamespace}`,
+	conversionEndpoint: '',
 	orgId: '',
 	title: '',
 	version: '',
@@ -57,7 +58,7 @@ export default Ember.Service.extend({
 				allowAnonymousAccess: true,
 				setupMode: true
 			});
-			
+
 			this.get('localStorage').clearAll();
 
 			return resolve(this);
@@ -78,7 +79,7 @@ export default Ember.Service.extend({
 		return this.get('ajax').request('public/meta').then((response) => {
 			this.setProperties(response);
 
-			if (is.not.include(requestedUrl, '/auth/')) { 
+			if (is.not.include(requestedUrl, '/auth/')) {
 				this.get('localStorage').storeSessionItem('entryUrl', requestedUrl);
 			}
 

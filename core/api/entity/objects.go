@@ -87,6 +87,7 @@ type Organization struct {
 	AllowAnonymousAccess bool   `json:"allowAnonymousAccess"`
 	AuthProvider         string `json:"authProvider"`
 	AuthConfig           string `json:"authConfig"`
+	ConversionEndpoint   string `json:"conversionEndpoint"`
 	Serial               string `json:"-"`
 	Active               bool   `json:"-"`
 }
@@ -352,6 +353,7 @@ type SiteMeta struct {
 	Version              string `json:"version"`
 	Edition              string `json:"edition"`
 	Valid                bool   `json:"valid"`
+	ConversionEndpoint   string `json:"conversionEndpoint"`
 }
 
 // Template is used to create a new document.

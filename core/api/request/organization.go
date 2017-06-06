@@ -59,7 +59,7 @@ func (p *Persister) AddOrganization(org entity.Organization) error {
 
 // GetOrganization returns the Organization reocrod from the organization database table with the given id.
 func (p *Persister) GetOrganization(id string) (org entity.Organization, err error) {
-	stmt, err := Db.Preparex("SELECT id, refid, company, title, message, url, domain, email, serial, active, allowanonymousaccess, authprovider, coalesce(authconfig,JSON_UNQUOTE('{}')) as authconfig, created, revised FROM organization WHERE refid=?")
+	stmt, err := Db.Preparex("SELECT id, refid, company, title, message, url, domain, service as conversionendpoint, email, serial, active, allowanonymousaccess, authprovider, coalesce(authconfig,JSON_UNQUOTE('{}')) as authconfig, created, revised FROM organization WHERE refid=?")
 	defer utility.Close(stmt)
 
 	if err != nil {
@@ -86,7 +86,7 @@ func (p *Persister) GetOrganizationByDomain(subdomain string) (org entity.Organi
 
 		var stmt *sqlx.Stmt
 
-		stmt, err = Db.Preparex("SELECT id, refid, company, title, message, url, domain, email, serial, active, allowanonymousaccess, authprovider, coalesce(authconfig,JSON_UNQUOTE('{}')) as authconfig, created, revised FROM organization WHERE domain=? AND active=1")
+		stmt, err = Db.Preparex("SELECT id, refid, company, title, message, url, domain, service as conversionendpoint, email, serial, active, allowanonymousaccess, authprovider, coalesce(authconfig,JSON_UNQUOTE('{}')) as authconfig, created, revised FROM organization WHERE domain=? AND active=1")
 		defer utility.Close(stmt)
 
 		if err != nil {
@@ -110,7 +110,7 @@ func (p *Persister) GetOrganizationByDomain(subdomain string) (org entity.Organi
 func (p *Persister) UpdateOrganization(org entity.Organization) (err error) {
 	org.Revised = time.Now().UTC()
 
-	stmt, err := p.Context.Transaction.PrepareNamed("UPDATE organization SET title=:title, message=:message, email=:email, allowanonymousaccess=:allowanonymousaccess, revised=:revised WHERE refid=:refid")
+	stmt, err := p.Context.Transaction.PrepareNamed("UPDATE organization SET title=:title, message=:message, service=:conversionendpoint, email=:email, allowanonymousaccess=:allowanonymousaccess, revised=:revised WHERE refid=:refid")
 	defer utility.Close(stmt)
 
 	if err != nil {

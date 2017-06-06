@@ -13,9 +13,12 @@ package convapi
 
 // ConversionJobRequest is the information used to set-up a conversion job.
 type ConversionJobRequest struct {
-	Job        string
-	IndexDepth uint
-	OrgID      string
+	Job              string
+	IndexDepth       uint
+	OrgID            string
+	LicenseKey       []byte
+	LicenseSignature []byte
+	ServiceEndpoint  string
 }
 
 // DocumentExport is the type used by a document export plugin.

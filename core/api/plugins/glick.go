@@ -14,7 +14,6 @@ package plugins
 
 import (
 	"bytes"
-	"fmt"
 	"io/ioutil"
 	"time"
 
@@ -89,15 +88,11 @@ func LibSetup() error {
 		}
 	}
 
-	if err = apidocumizecom.CheckToken(); err == nil {
-		for _, xtn := range []string{"doc", "docx"} {
-			err = Lib.RegPlugin("Convert", xtn, apidocumizecom.MSwordConvert, nil)
-			if err != nil {
-				return err
-			}
+	for _, xtn := range []string{"doc", "docx"} {
+		err = Lib.RegPlugin("Convert", xtn, apidocumizecom.MSwordConvert, nil)
+		if err != nil {
+			return err
 		}
-	} else {
-		log.Info(fmt.Sprintf("Documize API token is not valid: %v", err))
 	}
 
 	err = Lib.RegPlugin("Convert", "documizeapi", documizeapi.Convert, nil)

@@ -105,6 +105,9 @@ func (store *LocalStorageProvider) Convert(params api.ConversionJobRequest) (fil
 				fileRequest.Filename = filename
 				fileRequest.Filedata = fileData
 				fileRequest.PageBreakLevel = params.IndexDepth
+				fileRequest.LicenseKey = params.LicenseKey
+				fileRequest.LicenseSignature = params.LicenseSignature
+				fileRequest.ServiceEndpoint = params.ServiceEndpoint
 				//fileRequest.Job = params.OrgID + string(os.PathSeparator) + params.Job
 				//fileRequest.OrgID = params.OrgID
 

@@ -37,7 +37,8 @@ export default Ember.Service.extend({
 
 		this.get('appMeta').setProperties({
 			message: org.get('message'),
-			title: org.get('title')
+			title: org.get('title'),
+			conversionEndpoint: org.get('conversionEndpoint')
 		});
 
 		return this.get('ajax').request(`organizations/${id}`, {

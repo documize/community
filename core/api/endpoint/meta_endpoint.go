@@ -48,6 +48,7 @@ func GetMeta(w http.ResponseWriter, r *http.Request) {
 	data.Version = Product.Version
 	data.Edition = Product.License.Edition
 	data.Valid = Product.License.Valid
+	data.ConversionEndpoint = org.ConversionEndpoint
 
 	// Strip secrets
 	data.AuthConfig = StripAuthSecrets(org.AuthProvider, org.AuthConfig)

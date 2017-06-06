@@ -25,7 +25,6 @@ import (
 
 // Convert provides the entry-point into the document conversion process.
 func Convert(ctx context.Context, xtn string, fileRequest *api.DocumentConversionRequest) (*api.DocumentConversionResponse, error) {
-	fileRequest.Token = plugins.Lib.Token("Convert", xtn)
 	fileResultI, err := plugins.Lib.Run(ctx, "Convert", xtn, fileRequest)
 	if err != nil {
 		return nil, err

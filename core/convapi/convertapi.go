@@ -9,15 +9,17 @@
 //
 // https://documize.com
 
-// Package convapi provides the defininitions of types used for file conversion communication between different components of the Documize system.
+// Package convapi provides the definitions of types used for file conversion communication between different components of the Documize system.
 package convapi
 
 // DocumentConversionRequest is what is passed to a Convert plugin.
 type DocumentConversionRequest struct {
-	Filename       string
-	Filedata       []byte
-	PageBreakLevel uint
-	Token          string // authorisation token
+	Filename         string
+	Filedata         []byte
+	PageBreakLevel   uint
+	LicenseKey       []byte
+	LicenseSignature []byte
+	ServiceEndpoint  string
 }
 
 // Page holds the contents of a Documize page,
