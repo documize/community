@@ -81,7 +81,7 @@ func LibSetup() error {
 		}
 	}
 
-	for _, xtn := range []string{"md"} {
+	for _, xtn := range []string{"md", "markdown"} {
 		err = Lib.RegPlugin("Convert", xtn, md.Convert, nil)
 		if err != nil {
 			return err

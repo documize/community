@@ -27,6 +27,9 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 
 	setupController(controller, model) {
 		let nonPrivateFolders = model.rejectBy('folderType', 2);
+		if (is.empty(nonPrivateFolders) || is.null(model) || is.undefined(model)) {
+			nonPrivateFolders = [];
+		}
 		controller.set('folders', nonPrivateFolders);
 
 		this.get('folderService').getProtectedFolderInfo().then((people) => {
@@ -48,7 +51,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	},
 
 	activate() {
-		document.title = "Folders | Documize";
+		document.title = "Spaces | Documize";
 	},
 
 	actions: {

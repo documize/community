@@ -74,7 +74,7 @@ export default Ember.Component.extend(NotifierMixin, {
 			url: importUrl,
 			method: "post",
 			paramName: 'attachment',
-			acceptedFiles: ".doc,.docx,.txt,.md,.markdown",
+			acceptedFiles: ".doc,.docx,.md,.markdown,.htm,.html",
 			clickable: true,
 			maxFilesize: 10,
 			parallelUploads: 3,
