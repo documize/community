@@ -83,6 +83,8 @@ func init() {
 				}
 			}
 
+			fmt.Println(Db.DriverName())
+
 			return false // value not changed
 		})
 }

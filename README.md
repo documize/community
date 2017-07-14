@@ -8,7 +8,7 @@ The mission is to bring software dev inspired features (refactoring, testing, li
 
 ## Latest version
 
-v1.48.2
+v1.49.0
 
 ## OS Support
 
@@ -18,7 +18,7 @@ v1.48.2
 
 ## Tech stack
 
-- EmberJS (v2.12.0)
+- EmberJS (v2.14.0)
 - Go (v1.8)
 - MySQL (v5.7.10+) or Percona (v5.7.16-10+)
 
