@@ -685,6 +685,8 @@ func AcceptSharedFolder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	p.Context.UserID = user.RefID
+
 	salt := util.GenerateSalt()
 
 	log.IfErr(p.UpdateUserPassword(user.RefID, salt, util.GeneratePassword(model.Password, salt)))

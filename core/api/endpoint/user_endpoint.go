@@ -147,12 +147,12 @@ func AddUser(w http.ResponseWriter, r *http.Request) {
 	// set up user account for the org
 	if addAccount {
 		var a entity.Account
+		a.RefID = util.UniqueID()
 		a.UserID = userID
 		a.OrgID = p.Context.OrgID
 		a.Editor = true
 		a.Admin = false
-		accountID := util.UniqueID()
-		a.RefID = accountID
+		a.Active = true
 
 		err = p.AddAccount(a)
 
