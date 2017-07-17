@@ -44,6 +44,7 @@ function isAjaxAccessError(reason) {
 		return false;
 	}
 
+	// Sometimes we get not error code back so we detect failure to get all spaces for user.
 	if (reason.message === 'Ajax authorization failed') {
 		return true;
 	}
