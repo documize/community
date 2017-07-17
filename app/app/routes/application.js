@@ -45,7 +45,7 @@ export default Ember.Route.extend(ApplicationRouteMixin, TooltipMixin, {
 
 			if (is.not.include(next, '/auth/')) {
 				window.location.href= next;
-			} 
+			}
 		}
 	},
 

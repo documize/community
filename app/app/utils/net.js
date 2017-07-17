@@ -40,12 +40,18 @@ function getAppUrl(domain) {
 }
 
 function isAjaxAccessError(reason) {
-	if (typeof reason === "undefined" || typeof reason.errors === "undefined") {
+	if (typeof reason === "undefined") {
 		return false;
 	}
 
-	if (reason.errors.length > 0 && (reason.errors[0].status === "401" || reason.errors[0].status === "403")) {
+	if (reason.message === 'Ajax authorization failed') {
 		return true;
+	}
+
+	if (typeof reason.errors === "undefined") {
+		if (reason.errors.length > 0 && (reason.errors[0].status === "401" || reason.errors[0].status === "403")) {
+			return true;
+		}
 	}
 
 	return false;
