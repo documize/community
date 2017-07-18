@@ -33,6 +33,7 @@ import (
 	"github.com/documize/community/core/secrets"
 	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/core/stringutil"
+	"github.com/documize/community/core/uniqueid"
 )
 
 // AuthenticateKeycloak checks Keycloak authentication credentials.
@@ -291,7 +292,7 @@ func addUser(p request.Persister, u *entity.User, addSpace bool) (err error) {
 	}
 
 	if addUser {
-		userID = util.UniqueID()
+		userID = uniqueid.Generate()
 		u.RefID = userID
 		err = p.AddUser(*u)
 
@@ -317,7 +318,7 @@ func addUser(p request.Persister, u *entity.User, addSpace bool) (err error) {
 		a.OrgID = p.Context.OrgID
 		a.Editor = addSpace
 		a.Admin = false
-		accountID := util.UniqueID()
+		accountID := uniqueid.Generate()
 		a.RefID = accountID
 		a.Active = true
 

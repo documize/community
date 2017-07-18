@@ -15,19 +15,19 @@ package request
 
 import (
 	"github.com/documize/community/core/api/entity"
-	"github.com/documize/community/core/api/util"
+	"github.com/documize/community/core/uniqueid"
 )
 
 // SetupPersister prepares context for database activity.
 func SetupPersister() (*Persister, error) {
 	var err error
 	c := Context{
-		Authenticated: true,            // bool
-		Guest:         false,           // bool
-		Administrator: true,            // bool
-		Editor:        true,            // bool
-		UserID:        util.UniqueID(), // string
-		OrgID:         util.UniqueID(), // string
+		Authenticated: true,                // bool
+		Guest:         false,               // bool
+		Administrator: true,                // bool
+		Editor:        true,                // bool
+		UserID:        uniqueid.Generate(), // string
+		OrgID:         uniqueid.Generate(), // string
 		//OrgURL:               "http://wwww.test.org",    // string
 		//OrgName:              "TestOrgName",          // string
 		AllowAnonymousAccess: false, // bool

@@ -23,6 +23,7 @@ import (
 	"github.com/documize/community/core/log"
 	"github.com/documize/community/core/section/provider"
 	"github.com/documize/community/core/streamutil"
+	"github.com/documize/community/core/uniqueid"
 	"github.com/gorilla/mux"
 )
 
@@ -153,7 +154,7 @@ func RefreshSections(w http.ResponseWriter, r *http.Request) {
 			page.Body = body
 			pages = append(pages, page)
 
-			refID := util.UniqueID()
+			refID := uniqueid.Generate()
 			err = p.UpdatePage(page, refID, p.Context.UserID, false)
 
 			if err != nil {
@@ -218,7 +219,7 @@ func AddBlock(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	b.RefID = util.UniqueID()
+	b.RefID = uniqueid.Generate()
 
 	tx, err := request.Db.Beginx()
 	if err != nil {

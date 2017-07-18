@@ -16,9 +16,9 @@ import (
 	"time"
 
 	"github.com/documize/community/core/api/entity"
-	"github.com/documize/community/core/api/util"
 	"github.com/documize/community/core/log"
 	"github.com/documize/community/core/streamutil"
+	"github.com/documize/community/core/uniqueid"
 )
 
 // AddContentLink inserts wiki-link into the store.
@@ -74,7 +74,7 @@ func (p *Persister) SearchLinkCandidates(keywords string) (docs []entity.LinkCan
 
 	for _, r := range temp {
 		c := entity.LinkCandidate{
-			RefID:      util.UniqueID(),
+			RefID:      uniqueid.Generate(),
 			FolderID:   r.FolderID,
 			DocumentID: r.DocumentID,
 			TargetID:   r.DocumentID,
@@ -113,7 +113,7 @@ func (p *Persister) SearchLinkCandidates(keywords string) (docs []entity.LinkCan
 
 	for _, r := range temp {
 		c := entity.LinkCandidate{
-			RefID:      util.UniqueID(),
+			RefID:      uniqueid.Generate(),
 			FolderID:   r.FolderID,
 			DocumentID: r.DocumentID,
 			TargetID:   r.TargetID,
@@ -152,7 +152,7 @@ func (p *Persister) SearchLinkCandidates(keywords string) (docs []entity.LinkCan
 
 	for _, r := range temp {
 		c := entity.LinkCandidate{
-			RefID:      util.UniqueID(),
+			RefID:      uniqueid.Generate(),
 			FolderID:   r.FolderID,
 			DocumentID: r.DocumentID,
 			TargetID:   r.TargetID,

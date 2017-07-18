@@ -9,14 +9,12 @@
 //
 // https://documize.com
 
-package util_test
+package uniqueid
 
 import (
 	"runtime"
 	"sync"
 	"testing"
-
-	"github.com/documize/community/core/api/util"
 )
 
 const sample = 1 << 24
@@ -47,7 +45,7 @@ func TestUniqueID(t *testing.T) {
 	for i := 0; i < c; i++ {
 		go func() {
 			for i := 0; i < ss; i++ {
-				mm(t, util.UniqueID())
+				mm(t, Generate())
 			}
 			wg.Done()
 		}()
@@ -57,6 +55,6 @@ func TestUniqueID(t *testing.T) {
 
 func BenchmarkUniqueID(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		util.UniqueID()
+		Generate()
 	}
 }

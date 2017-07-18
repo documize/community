@@ -32,6 +32,7 @@ import (
 	"github.com/documize/community/core/secrets"
 	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/core/stringutil"
+	"github.com/documize/community/core/uniqueid"
 	"github.com/gorilla/mux"
 )
 
@@ -123,7 +124,7 @@ func AddUser(w http.ResponseWriter, r *http.Request) {
 	p.Context.Transaction = tx
 
 	if addUser {
-		userID = util.UniqueID()
+		userID = uniqueid.Generate()
 		userModel.RefID = userID
 		err = p.AddUser(userModel)
 
@@ -149,7 +150,7 @@ func AddUser(w http.ResponseWriter, r *http.Request) {
 	// set up user account for the org
 	if addAccount {
 		var a entity.Account
-		a.RefID = util.UniqueID()
+		a.RefID = uniqueid.Generate()
 		a.UserID = userID
 		a.OrgID = p.Context.OrgID
 		a.Editor = true

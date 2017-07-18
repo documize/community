@@ -22,7 +22,7 @@ import (
 	"github.com/documize/community/core/api/request"
 	"github.com/documize/community/core/api/util"
 	"github.com/documize/community/core/log"
-
+	"github.com/documize/community/core/uniqueid"
 	"github.com/gorilla/mux"
 )
 
@@ -62,7 +62,7 @@ func AddPin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pin.RefID = util.UniqueID()
+	pin.RefID = uniqueid.Generate()
 	pin.OrgID = p.Context.OrgID
 	pin.UserID = p.Context.UserID
 	pin.Pin = strings.TrimSpace(pin.Pin)

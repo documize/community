@@ -18,10 +18,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/documize/community/core/api/util"
 	"github.com/documize/community/core/log"
 	"github.com/documize/community/core/secrets"
 	"github.com/documize/community/core/stringutil"
+	"github.com/documize/community/core/uniqueid"
 	"github.com/documize/community/core/web"
 )
 
@@ -157,7 +157,7 @@ func setupAccount(completion onboardRequest, serial string) (err error) {
 	password := secrets.GeneratePassword(completion.Password, salt)
 
 	// Allocate organization to the user.
-	orgID := util.UniqueID()
+	orgID := uniqueid.Generate()
 
 	sql := fmt.Sprintf("insert into organization (refid, company, title, message, domain, email, serial) values (\"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\")",
 		orgID, completion.Company, completion.CompanyLong, completion.Message, completion.URL, completion.Email, serial)
@@ -168,7 +168,7 @@ func setupAccount(completion onboardRequest, serial string) (err error) {
 		return
 	}
 
-	userID := util.UniqueID()
+	userID := uniqueid.Generate()
 
 	sql = fmt.Sprintf("insert into user (refid, firstname, lastname, email, initials, salt, password, global) values (\"%s\",\"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", 1)",
 		userID, completion.Firstname, completion.Lastname, completion.Email, stringutil.MakeInitials(completion.Firstname, completion.Lastname), salt, password)
@@ -180,7 +180,7 @@ func setupAccount(completion onboardRequest, serial string) (err error) {
 	}
 
 	// Link user to organization.
-	accountID := util.UniqueID()
+	accountID := uniqueid.Generate()
 	sql = fmt.Sprintf("insert into account (refid, userid, orgid, admin, editor) values (\"%s\", \"%s\", \"%s\",1, 1)", accountID, userID, orgID)
 	_, err = runSQL(sql)
 
@@ -190,7 +190,7 @@ func setupAccount(completion onboardRequest, serial string) (err error) {
 	}
 
 	// Set up default labels for main collection.
-	labelID := util.UniqueID()
+	labelID := uniqueid.Generate()
 	sql = fmt.Sprintf("insert into label (refid, orgid, label, type, userid) values (\"%s\", \"%s\", \"My Project\", 2, \"%s\")", labelID, orgID, userID)
 	_, err = runSQL(sql)
 
@@ -198,7 +198,7 @@ func setupAccount(completion onboardRequest, serial string) (err error) {
 		log.Error("insert into label failed", err)
 	}
 
-	labelRoleID := util.UniqueID()
+	labelRoleID := uniqueid.Generate()
 	sql = fmt.Sprintf("insert into labelrole (refid, labelid, orgid, userid, canview, canedit) values (\"%s\", \"%s\", \"%s\", \"%s\", 1, 1)", labelRoleID, labelID, orgID, userID)
 	_, err = runSQL(sql)
 

@@ -25,9 +25,9 @@ import (
 	"github.com/documize/community/core/api/entity"
 	"github.com/documize/community/core/api/request"
 	"github.com/documize/community/core/api/store"
-	"github.com/documize/community/core/api/util"
 	api "github.com/documize/community/core/convapi"
 	"github.com/documize/community/core/log"
+	"github.com/documize/community/core/uniqueid"
 	"github.com/gorilla/mux"
 	uuid "github.com/nu7hatch/gouuid"
 )
@@ -154,7 +154,7 @@ func processDocument(p request.Persister, filename, job, folderID string, fileRe
 	document.OrgID = p.Context.OrgID
 	document.LabelID = folderID
 	document.UserID = p.Context.UserID
-	documentID := util.UniqueID()
+	documentID := uniqueid.Generate()
 	document.RefID = documentID
 
 	tx, err := request.Db.Beginx()
@@ -181,7 +181,7 @@ func processDocument(p request.Persister, filename, job, folderID string, fileRe
 		page.Title = v.Title
 		page.Body = string(v.Body)
 		page.Sequence = float64(k+1) * 1024.0 // need to start above 0 to allow insertion before the first item
-		pageID := util.UniqueID()
+		pageID := uniqueid.Generate()
 		page.RefID = pageID
 		page.ContentType = "wysiwyg"
 		page.PageType = "section"
@@ -212,7 +212,7 @@ func processDocument(p request.Persister, filename, job, folderID string, fileRe
 		a.FileID = e.ID
 		a.Filename = strings.Replace(e.Name, "embeddings/", "", 1)
 		a.Data = e.Data
-		refID := util.UniqueID()
+		refID := uniqueid.Generate()
 		a.RefID = refID
 
 		err = p.AddAttachment(a)

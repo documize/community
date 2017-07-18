@@ -30,6 +30,7 @@ import (
 	"github.com/documize/community/core/secrets"
 	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/core/stringutil"
+	"github.com/documize/community/core/uniqueid"
 )
 
 // AddFolder creates a new folder.
@@ -72,7 +73,7 @@ func AddFolder(w http.ResponseWriter, r *http.Request) {
 
 	p.Context.Transaction = tx
 
-	id := util.UniqueID()
+	id := uniqueid.Generate()
 	folder.RefID = id
 	folder.OrgID = p.Context.OrgID
 
@@ -114,7 +115,7 @@ func addFolder(p request.Persister, label *entity.Label) (err error) {
 	role.UserID = p.Context.UserID
 	role.CanEdit = true
 	role.CanView = true
-	refID := util.UniqueID()
+	refID := uniqueid.Generate()
 	role.RefID = refID
 
 	err = p.AddLabelRole(role)
@@ -511,7 +512,7 @@ func SetFolderPermissions(w http.ResponseWriter, r *http.Request) {
 
 		// Only persist if there is a role!
 		if role.CanView || role.CanEdit {
-			roleID := util.UniqueID()
+			roleID := uniqueid.Generate()
 			role.RefID = roleID
 			err = p.AddLabelRole(role)
 			roleCount++
@@ -545,7 +546,7 @@ func SetFolderPermissions(w http.ResponseWriter, r *http.Request) {
 		role.UserID = p.Context.UserID
 		role.CanEdit = true
 		role.CanView = true
-		roleID := util.UniqueID()
+		roleID := uniqueid.Generate()
 		role.RefID = roleID
 		err = p.AddLabelRole(role)
 		log.IfErr(err)
@@ -800,7 +801,7 @@ func InviteToFolder(w http.ResponseWriter, r *http.Request) {
 				a.Admin = false
 				a.Editor = false
 				a.Active = true
-				accountID := util.UniqueID()
+				accountID := uniqueid.Generate()
 				a.RefID = accountID
 
 				err = p.AddAccount(a)
@@ -822,7 +823,7 @@ func InviteToFolder(w http.ResponseWriter, r *http.Request) {
 			role.UserID = user.RefID
 			role.CanEdit = false
 			role.CanView = true
-			roleID := util.UniqueID()
+			roleID := uniqueid.Generate()
 			role.RefID = roleID
 
 			err = p.AddLabelRole(role)
@@ -887,7 +888,7 @@ func inviteNewUserToSharedFolder(p request.Persister, email string, invitedBy en
 	user.Salt = secrets.GenerateSalt()
 	requestedPassword := secrets.GenerateRandomPassword()
 	user.Password = secrets.GeneratePassword(requestedPassword, user.Salt)
-	userID := util.UniqueID()
+	userID := uniqueid.Generate()
 	user.RefID = userID
 
 	err = p.AddUser(user)
@@ -903,7 +904,7 @@ func inviteNewUserToSharedFolder(p request.Persister, email string, invitedBy en
 	a.Admin = false
 	a.Editor = false
 	a.Active = true
-	accountID := util.UniqueID()
+	accountID := uniqueid.Generate()
 	a.RefID = accountID
 
 	err = p.AddAccount(a)
@@ -918,7 +919,7 @@ func inviteNewUserToSharedFolder(p request.Persister, email string, invitedBy en
 	role.UserID = userID
 	role.CanEdit = false
 	role.CanView = true
-	roleID := util.UniqueID()
+	roleID := uniqueid.Generate()
 	role.RefID = roleID
 
 	err = p.AddLabelRole(role)

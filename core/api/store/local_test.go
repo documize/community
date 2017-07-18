@@ -25,7 +25,7 @@ import (
 var lsp LocalStorageProvider
 
 func TestUpload(t *testing.T) {
-	jb := "job" + util.UniqueID()
+	jb := "job" + uniqueid.Generate()
 	fn := "file.txt"
 	cont := "content\n"
 	err := lsp.Upload(jb, fn, []byte(cont))
@@ -54,7 +54,7 @@ func TestConvert(t *testing.T) {
 	}
 	defer log.IfErr(plugins.Lib.KillSubProcs())
 
-	jb := "job" + util.UniqueID()
+	jb := "job" + uniqueid.Generate()
 
 	_, _, err =
 		lsp.Convert(api.ConversionJobRequest{
