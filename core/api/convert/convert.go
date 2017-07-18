@@ -14,11 +14,9 @@ package convert
 
 import (
 	"errors"
-	"github.com/documize/community/core/api/convert/excerpt"
 	"github.com/documize/community/core/api/convert/html"
 	"github.com/documize/community/core/api/plugins"
 	api "github.com/documize/community/core/convapi"
-	"github.com/documize/community/core/utility"
 
 	"golang.org/x/net/context"
 )
@@ -48,32 +46,6 @@ func Convert(ctx context.Context, xtn string, fileRequest *api.DocumentConversio
 		fileResult.Pages[p].Body = bodyPolicy.SanitizeBytes(pg.Body)
 	}
 	*/
-
-	if fileResult.Excerpt != "" {
-		//fmt.Println("DEBUG supplied excerpt: " + fileResult.Excerpt)
-	} else {
-		titleWds := []string{}
-		bodyWds := []string{}
-		for p := range fileResult.Pages {
-			var wds []string
-			var err error
-			if p > 0 { // title 0 is already the title of the document
-				wds, _, err = utility.Words(utility.HTML(fileResult.Pages[p].Title), 0, false)
-				if err != nil {
-					return nil, err
-				}
-				titleWds = append(titleWds, wds...)
-				titleWds = append(titleWds, ".")
-			}
-			wds, _, err = utility.Words(utility.HTML(string(fileResult.Pages[p].Body)), 0, false)
-			if err != nil {
-				return nil, err
-			}
-			bodyWds = append(bodyWds, wds...)
-			bodyWds = append(bodyWds, ".")
-		}
-		fileResult.Excerpt = excerpt.Excerpt(titleWds, bodyWds)
-	}
 
 	return fileResult, nil
 }
