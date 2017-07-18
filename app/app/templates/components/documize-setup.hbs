@@ -4,27 +4,27 @@
 			<div class="title">Let's setup Documize</div>
 			<div class="tip">Database name is <em>{{model.dbname}}</em></div>
 		</div>
-		<div class="input-control">
+		<div class="input-control input-transparent">
 			<label>Team</label>
 			<div class="tip">What's your tribe called?</div>
 			{{focus-input id="siteTitle" type="text" value=model.title class=(if hasEmptyTitleError 'error')}}
 		</div>
-		<div class="input-control">
+		<div class="input-control input-transparent">
 			<label>Firstname</label>
 			<div class="tip">What do people call you?</div>
 			{{input id="adminFirstname" type="text" value=model.firstname class=(if hasEmptyFirstnameError 'error')}}
 		</div>
-		<div class="input-control">
+		<div class="input-control input-transparent">
 			<label>Lastname</label>
-			<div class="tip">How the government refers to you.</div>
+			<div class="tip">How the government refers to you</div>
 			{{input id="adminLastname" type="text" value=model.lastname class=(if hasEmptyLastnameError 'error')}}
 		</div>
-		<div class="input-control">
+		<div class="input-control input-transparent">
 			<label>Email</label>
 			<div class="tip">No spam. Ever!</div>
 			{{input id="adminEmail" type="email" value=model.email class=(if hasEmptyEmailError 'error')}}
 		</div>
-		<div class="input-control">
+		<div class="input-control input-transparent">
 			<label>Password</label>
 			<div class="tip">Something you can remember without writing it down.</div>
 			{{input id="adminPassword" type="text" value=model.password class=(if hasEmptyPasswordError 'error')}}

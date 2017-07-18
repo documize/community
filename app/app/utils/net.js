@@ -49,7 +49,7 @@ function isAjaxAccessError(reason) {
 		return true;
 	}
 
-	if (typeof reason.errors === "undefined") {
+	if (typeof reason.errors !== "undefined") {
 		if (reason.errors.length > 0 && (reason.errors[0].status === "401" || reason.errors[0].status === "403")) {
 			return true;
 		}
