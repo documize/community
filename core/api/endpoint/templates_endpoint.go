@@ -12,15 +12,12 @@
 package endpoint
 
 import (
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
-
-	"database/sql"
-
-	"github.com/gorilla/mux"
 
 	"github.com/documize/community/core/api/convert"
 	"github.com/documize/community/core/api/endpoint/models"
@@ -30,8 +27,10 @@ import (
 	api "github.com/documize/community/core/convapi"
 	"github.com/documize/community/core/event"
 	"github.com/documize/community/core/log"
-	"github.com/documize/community/core/utility"
-
+	"github.com/documize/community/core/secrets"
+	"github.com/documize/community/core/streamutil"
+	"github.com/documize/community/core/stringutil"
+	"github.com/gorilla/mux"
 	uuid "github.com/nu7hatch/gouuid"
 )
 
@@ -51,7 +50,7 @@ func SaveAsTemplate(w http.ResponseWriter, r *http.Request) {
 		Excerpt    string
 	}
 
-	defer utility.Close(r.Body)
+	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
@@ -331,7 +330,7 @@ func StartDocumentFromSavedTemplate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer utility.Close(r.Body)
+	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		writeBadRequestError(w, method, "Bad payload")
@@ -345,7 +344,7 @@ func StartDocumentFromSavedTemplate(w http.ResponseWriter, r *http.Request) {
 	d.Title = docTitle
 	d.Location = fmt.Sprintf("template-%s", templateID)
 	d.Excerpt = "A new document"
-	d.Slug = utility.MakeSlug(d.Title)
+	d.Slug = stringutil.MakeSlug(d.Title)
 	d.Tags = ""
 	d.LabelID = folderID
 	documentID := util.UniqueID()
@@ -439,7 +438,7 @@ func StartDocumentFromSavedTemplate(w http.ResponseWriter, r *http.Request) {
 	for _, a := range attachments {
 		a.DocumentID = documentID
 		a.Job = newUUID.String()
-		random := util.GenerateSalt()
+		random := secrets.GenerateSalt()
 		a.FileID = random[0:9]
 		attachmentID := util.UniqueID()
 		a.RefID = attachmentID

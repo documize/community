@@ -18,9 +18,9 @@ import (
 
 	"github.com/documize/community/core/api/endpoint/models"
 	"github.com/documize/community/core/api/entity"
-	"github.com/documize/community/core/api/util"
 	"github.com/documize/community/core/log"
-	"github.com/documize/community/core/utility"
+	"github.com/documize/community/core/streamutil"
+	"github.com/documize/community/domain/link"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -51,7 +51,7 @@ func (p *Persister) AddPage(model models.PageModel) (err error) {
 	}
 
 	stmt, err := p.Context.Transaction.Preparex("INSERT INTO page (refid, orgid, documentid, userid, contenttype, pagetype, level, title, body, revisions, sequence, blockid, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error("Unable to prepare insert for page", err)
@@ -68,7 +68,7 @@ func (p *Persister) AddPage(model models.PageModel) (err error) {
 	_ = searches.Add(&databaseRequest{OrgID: p.Context.OrgID}, model.Page, model.Page.RefID)
 
 	stmt2, err := p.Context.Transaction.Preparex("INSERT INTO pagemeta (pageid, orgid, userid, documentid, rawbody, config, externalsource, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
-	defer utility.Close(stmt2)
+	defer streamutil.Close(stmt2)
 
 	if err != nil {
 		log.Error("Unable to prepare insert for page meta", err)
@@ -88,7 +88,7 @@ func (p *Persister) AddPage(model models.PageModel) (err error) {
 // GetPage returns the pageID page record from the page table.
 func (p *Persister) GetPage(pageID string) (page entity.Page, err error) {
 	stmt, err := Db.Preparex("SELECT a.id, a.refid, a.orgid, a.documentid, a.userid, a.contenttype, a.pagetype, a.level, a.sequence, a.title, a.body, a.revisions, a.blockid, a.created, a.revised FROM page a WHERE a.orgid=? AND a.refid=?")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to prepare select for page %s", pageID), err)
@@ -133,7 +133,7 @@ func (p *Persister) GetPagesWhereIn(documentID, inPages string) (pages []entity.
 	args = append(args, inValues...)
 
 	stmt, err := Db.Preparex(sql)
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Failed to prepare select pages for org %s and document %s where in %s", p.Context.OrgID, documentID, inPages), err)
@@ -147,7 +147,7 @@ func (p *Persister) GetPagesWhereIn(documentID, inPages string) (pages []entity.
 		return
 	}
 
-	defer utility.Close(rows)
+	defer streamutil.Close(rows)
 
 	for rows.Next() {
 		page := entity.Page{}
@@ -192,7 +192,7 @@ func (p *Persister) UpdatePage(page entity.Page, refID, userID string, skipRevis
 		var stmt *sqlx.Stmt
 		stmt, err = p.Context.Transaction.Preparex("INSERT INTO revision (refid, orgid, documentid, ownerid, pageid, userid, contenttype, pagetype, title, body, rawbody, config, created, revised) SELECT ? as refid, a.orgid, a.documentid, a.userid as ownerid, a.refid as pageid, ? as userid, a.contenttype, a.pagetype, a.title, a.body, b.rawbody, b.config, ? as created, ? as revised FROM page a, pagemeta b WHERE a.refid=? AND a.refid=b.pageid")
 
-		defer utility.Close(stmt)
+		defer streamutil.Close(stmt)
 
 		if err != nil {
 			log.Error(fmt.Sprintf("Unable to prepare insert for page revision %s", page.RefID), err)
@@ -210,7 +210,7 @@ func (p *Persister) UpdatePage(page entity.Page, refID, userID string, skipRevis
 	// Update page
 	var stmt2 *sqlx.NamedStmt
 	stmt2, err = p.Context.Transaction.PrepareNamed("UPDATE page SET documentid=:documentid, level=:level, title=:title, body=:body, revisions=:revisions, sequence=:sequence, revised=:revised WHERE orgid=:orgid AND refid=:refid")
-	defer utility.Close(stmt2)
+	defer streamutil.Close(stmt2)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to prepare update for page %s", page.RefID), err)
@@ -233,7 +233,7 @@ func (p *Persister) UpdatePage(page entity.Page, refID, userID string, skipRevis
 	// Update revisions counter
 	if !skipRevision {
 		stmt3, err := p.Context.Transaction.Preparex("UPDATE page SET revisions=revisions+1 WHERE orgid=? AND refid=?")
-		defer utility.Close(stmt3)
+		defer streamutil.Close(stmt3)
 
 		if err != nil {
 			log.Error(fmt.Sprintf("Unable to prepare revisions counter update for page %s", page.RefID), err)
@@ -249,7 +249,7 @@ func (p *Persister) UpdatePage(page entity.Page, refID, userID string, skipRevis
 	}
 
 	// find any content links in the HTML
-	links := util.GetContentLinks(page.Body)
+	links := link.GetContentLinks(page.Body)
 
 	// get a copy of previously saved links
 	previousLinks, _ := p.GetPageLinks(page.DocumentID, page.RefID)
@@ -300,7 +300,7 @@ func (p *Persister) UpdatePageMeta(meta entity.PageMeta, updateUserID bool) (err
 
 	var stmt *sqlx.NamedStmt
 	stmt, err = p.Context.Transaction.PrepareNamed("UPDATE pagemeta SET userid=:userid, documentid=:documentid, rawbody=:rawbody, config=:config, externalsource=:externalsource, revised=:revised WHERE orgid=:orgid AND pageid=:pageid")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to prepare update for page meta %s", meta.PageID), err)
@@ -321,7 +321,7 @@ func (p *Persister) UpdatePageMeta(meta entity.PageMeta, updateUserID bool) (err
 // It then propagates that change into the search table and audits that it has occurred.
 func (p *Persister) UpdatePageSequence(documentID, pageID string, sequence float64) (err error) {
 	stmt, err := p.Context.Transaction.Preparex("UPDATE page SET sequence=? WHERE orgid=? AND refid=?")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to prepare update for page %s", pageID), err)
@@ -344,7 +344,7 @@ func (p *Persister) UpdatePageSequence(documentID, pageID string, sequence float
 // It then propagates that change into the search table and audits that it has occurred.
 func (p *Persister) UpdatePageLevel(documentID, pageID string, level int) (err error) {
 	stmt, err := p.Context.Transaction.Preparex("UPDATE page SET level=? WHERE orgid=? AND refid=?")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to prepare update for page %s", pageID), err)
@@ -388,7 +388,7 @@ func (p *Persister) DeletePage(documentID, pageID string) (rows int64, err error
 // GetPageMeta returns the meta information associated with the page.
 func (p *Persister) GetPageMeta(pageID string) (meta entity.PageMeta, err error) {
 	stmt, err := Db.Preparex("SELECT id, pageid, orgid, userid, documentid, rawbody, coalesce(config,JSON_UNQUOTE('{}')) as config, externalsource, created, revised FROM pagemeta WHERE orgid=? AND pageid=?")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to prepare select for pagemeta %s", pageID), err)
@@ -429,7 +429,7 @@ func (p *Persister) GetDocumentPageMeta(documentID string, externalSourceOnly bo
 // GetPageRevision returns the revisionID page revision record.
 func (p *Persister) GetPageRevision(revisionID string) (revision entity.Revision, err error) {
 	stmt, err := Db.Preparex("SELECT id, refid, orgid, documentid, ownerid, pageid, userid, contenttype, pagetype, title, body, coalesce(rawbody, '') as rawbody, coalesce(config,JSON_UNQUOTE('{}')) as config, created, revised FROM revision WHERE orgid=? and refid=?")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to prepare select for revision %s", revisionID), err)

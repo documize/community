@@ -24,8 +24,8 @@ import (
 	"github.com/documize/community/core/api/request"
 	"github.com/documize/community/core/api/util"
 	"github.com/documize/community/core/log"
+	"github.com/documize/community/core/secrets"
 	"github.com/documize/community/core/section/provider"
-	"github.com/documize/community/core/utility"
 	"github.com/documize/community/core/web"
 )
 
@@ -46,7 +46,7 @@ func Authenticate(w http.ResponseWriter, r *http.Request) {
 	// decode what we received
 	data := strings.Replace(authHeader, "Basic ", "", 1)
 
-	decodedBytes, err := utility.DecodeBase64([]byte(data))
+	decodedBytes, err := secrets.DecodeBase64([]byte(data))
 	if err != nil {
 		writeBadRequestError(w, method, "Unable to decode authentication token")
 		return
@@ -85,7 +85,7 @@ func Authenticate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Password correct and active user
-	if email != strings.TrimSpace(strings.ToLower(user.Email)) || !util.MatchPassword(user.Password, password, user.Salt) {
+	if email != strings.TrimSpace(strings.ToLower(user.Email)) || !secrets.MatchPassword(user.Password, password, user.Salt) {
 		writeUnauthorizedError(w)
 		return
 	}

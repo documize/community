@@ -16,8 +16,8 @@ import (
 	"html/template"
 	"net/http"
 
-	"github.com/documize/community/core/api/util"
-	"github.com/documize/community/core/environment"
+	"github.com/documize/community/core/env"
+	"github.com/documize/community/core/secrets"
 )
 
 // SiteMode defines that the web server should show the system to be in a particular state.
@@ -40,8 +40,8 @@ var SiteInfo struct {
 }
 
 func init() {
-	environment.GetString(&SiteMode, "offline", false, "set to '1' for OFFLINE mode", nil) // no sense overriding this setting from the DB
-	SiteInfo.DBhash = util.GenerateRandomPassword()                                        // do this only once
+	env.GetString(&SiteMode, "offline", false, "set to '1' for OFFLINE mode", nil) // no sense overriding this setting from the DB
+	SiteInfo.DBhash = secrets.GenerateRandomPassword()                             // do this only once
 }
 
 // EmbedHandler is defined in each embed directory

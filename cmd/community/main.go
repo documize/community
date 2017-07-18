@@ -14,7 +14,7 @@ package main
 
 import (
 	"github.com/documize/community/core/api/endpoint"
-	"github.com/documize/community/core/environment"
+	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/section"
 
 	_ "github.com/documize/community/embed" // the compressed front-end code and static data
@@ -22,7 +22,7 @@ import (
 )
 
 func main() {
-	environment.Parse("db")         // process the db value first
+	env.Parse("db")                 // process the db value first
 	ready := make(chan struct{}, 1) // channel is used for testing
 
 	section.Register()

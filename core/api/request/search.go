@@ -18,12 +18,12 @@ import (
 	"sync"
 	"time"
 
-	_ "github.com/go-sql-driver/mysql" // required for sqlx but not directly called
-	"github.com/jmoiron/sqlx"
-
 	"github.com/documize/community/core/api/entity"
 	"github.com/documize/community/core/log"
-	"github.com/documize/community/core/utility"
+	"github.com/documize/community/core/streamutil"
+	"github.com/documize/community/core/stringutil"
+	_ "github.com/go-sql-driver/mysql" // required for sqlx but not directly called
+	"github.com/jmoiron/sqlx"
 )
 
 // SearchManager type provides the datastructure for the queues of activity to be serialized through a single background goroutine.
@@ -143,7 +143,7 @@ func (m *SearchManager) Add(request *databaseRequest, page entity.Page, id strin
 func searchAdd(request *databaseRequest, page entity.Page) (err error) {
 	id := page.RefID
 	// translate the html into text for the search
-	nonHTML, err := utility.HTML(page.Body).Text(false)
+	nonHTML, err := stringutil.HTML(page.Body).Text(false)
 	if err != nil {
 		log.Error("Unable to decode the html for searching", err)
 		return
@@ -158,7 +158,7 @@ func searchAdd(request *databaseRequest, page entity.Page) (err error) {
 		log.Error("Unable to prepare insert for search", err)
 		return
 	}
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	_, err = stmt.Exec(nonHTML, id)
 	if err != nil {
@@ -179,7 +179,7 @@ func (m *SearchManager) Update(request *databaseRequest, page entity.Page) (err 
 
 func searchUpdate(request *databaseRequest, page entity.Page) (err error) {
 	// translate the html into text for the search
-	nonHTML, err := utility.HTML(page.Body).Text(false)
+	nonHTML, err := stringutil.HTML(page.Body).Text(false)
 	if err != nil {
 		log.Error("Unable to decode the html for searching", err)
 		return
@@ -190,7 +190,7 @@ func searchUpdate(request *databaseRequest, page entity.Page) (err error) {
 		log.Error(fmt.Sprintf("Unable to prepare search update for page %s", page.RefID), err)
 		return err // could have been redefined
 	}
-	defer utility.Close(su)
+	defer streamutil.Close(su)
 
 	_, err = su.Exec(page.Title, nonHTML, page.Sequence, page.Level, page.Revised, page.RefID)
 	if err != nil {
@@ -220,7 +220,7 @@ func searchUpdateDocument(request *databaseRequest, page entity.Page) (err error
 		log.Error(fmt.Sprintf("Unable to prepare search update for document %s", page.DocumentID), err)
 		return err // may have been redefined
 	}
-	defer utility.Close(searchstmt)
+	defer streamutil.Close(searchstmt)
 
 	_, err = searchstmt.Exec(page.Title, page.Body, time.Now().UTC(), page.DocumentID)
 	if err != nil {
@@ -271,7 +271,7 @@ func searchRebuild(request *databaseRequest, page entity.Page) (err error) {
 		log.Error(fmt.Sprintf("Unable to prepare searchRebuild select for docId %s", page.DocumentID), err)
 		return err
 	}
-	defer utility.Close(stmt2)
+	defer streamutil.Close(stmt2)
 	err = stmt2.Select(&pages, page.DocumentID)
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to execute searchRebuild select for docId %s", page.DocumentID), err)
@@ -298,7 +298,7 @@ func searchRebuild(request *databaseRequest, page entity.Page) (err error) {
 			log.Error(fmt.Sprintf("Unable to prepare select from searchRebuild for pageId %s", pages[0].ID), err)
 			return err
 		}
-		defer utility.Close(stmt1)
+		defer streamutil.Close(stmt1)
 
 		err = stmt1.Get(&target, pages[0].ID)
 		if err != nil {
@@ -338,7 +338,7 @@ func searchUpdateSequence(request *databaseRequest, page entity.Page) (err error
 		log.Error(fmt.Sprintf("Unable to prepare search sequence update for page %s", page.RefID), err)
 		return err
 	}
-	defer utility.Close(supdate)
+	defer streamutil.Close(supdate)
 
 	_, err = supdate.Exec(page.Sequence, time.Now().UTC(), page.RefID)
 	if err != nil {
@@ -372,7 +372,7 @@ func searchUpdateLevel(request *databaseRequest, page entity.Page) (err error) {
 		log.Error(fmt.Sprintf("Unable to prepare search level update for page %s", pageID), err)
 		return err
 	}
-	defer utility.Close(supdate)
+	defer streamutil.Close(supdate)
 
 	_, err = supdate.Exec(level, time.Now().UTC(), pageID)
 	if err != nil {
@@ -420,7 +420,7 @@ func (m *SearchManager) GetPageContext(request *databaseRequest, pageID string, 
 		log.Error(fmt.Sprintf("Unable to prepare setPageContext select for pageId %s", pageID), err)
 		return nil, err
 	}
-	defer utility.Close(stmt1)
+	defer streamutil.Close(stmt1)
 
 	err = stmt1.Get(&target, pageID)
 	if err != nil {
@@ -440,7 +440,7 @@ func (m *SearchManager) GetPageContext(request *databaseRequest, pageID string, 
 			log.Error(fmt.Sprintf("Unable to prepare GetPageContext next select for pageId %s", pageID), err)
 			return nil, err
 		}
-		defer utility.Close(stmt2)
+		defer streamutil.Close(stmt2)
 
 		err = stmt2.Get(&next, target.DocumentID, target.DocumentID, target.Sequence, target.Level-1)
 		if err != nil {

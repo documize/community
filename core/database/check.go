@@ -18,7 +18,7 @@ import (
 	"strings"
 
 	"github.com/documize/community/core/log"
-	"github.com/documize/community/core/utility"
+	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/core/web"
 	"github.com/jmoiron/sqlx"
 )
@@ -52,7 +52,7 @@ func Check(Db *sqlx.DB, connectionString string) bool {
 		web.SiteMode = web.SiteModeBadDB
 		return false
 	}
-	defer utility.Close(rows)
+	defer streamutil.Close(rows)
 	var version, dbComment, charset, collation string
 	if rows.Next() {
 		err = rows.Scan(&version, &dbComment, &charset, &collation)

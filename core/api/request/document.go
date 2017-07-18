@@ -20,7 +20,7 @@ import (
 
 	"github.com/documize/community/core/api/entity"
 	"github.com/documize/community/core/log"
-	"github.com/documize/community/core/utility"
+	"github.com/documize/community/core/streamutil"
 )
 
 // AddDocument inserts the given document record into the document table and audits that it has been done.
@@ -30,7 +30,7 @@ func (p *Persister) AddDocument(document entity.Document) (err error) {
 	document.Revised = document.Created // put same time in both fields
 
 	stmt, err := p.Context.Transaction.Preparex("INSERT INTO document (refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error("Unable to prepare insert for document", err)
@@ -50,7 +50,7 @@ func (p *Persister) AddDocument(document entity.Document) (err error) {
 // GetDocument fetches the document record with the given id fromt the document table and audits that it has been got.
 func (p *Persister) GetDocument(id string) (document entity.Document, err error) {
 	stmt, err := Db.Preparex("SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, layout, created, revised FROM document WHERE orgid=? and refid=?")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to prepare select for document %s", id), err)
@@ -302,7 +302,7 @@ func (p *Persister) UpdateDocument(document entity.Document) (err error) {
 	document.Revised = time.Now().UTC()
 
 	stmt, err := p.Context.Transaction.PrepareNamed("UPDATE document SET labelid=:labelid, userid=:userid, job=:job, location=:location, title=:title, excerpt=:excerpt, slug=:slug, tags=:tags, template=:template, layout=:layout, revised=:revised WHERE orgid=:orgid AND refid=:refid")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to prepare update for document %s", document.RefID), err)
@@ -339,7 +339,7 @@ func (p *Persister) ChangeDocumentLabel(document, label string) (err error) {
 	revised := time.Now().UTC()
 
 	stmt, err := p.Context.Transaction.Preparex("UPDATE document SET labelid=?, revised=? WHERE orgid=? AND refid=?")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to prepare update for document label change %s", document), err)
@@ -368,7 +368,7 @@ func (p *Persister) ChangeDocumentLabel(document, label string) (err error) {
 // Then audits that move.
 func (p *Persister) MoveDocumentLabel(id, move string) (err error) {
 	stmt, err := p.Context.Transaction.Preparex("UPDATE document SET labelid=? WHERE orgid=? AND labelid=?")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to prepare update for document label move %s", id), err)

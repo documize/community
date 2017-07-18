@@ -20,9 +20,9 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"github.com/documize/community/core/database"
-	"github.com/documize/community/core/environment"
+	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/log"
-	"github.com/documize/community/core/utility"
+	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/core/web"
 )
 
@@ -49,7 +49,7 @@ func (dr *databaseRequest) MakeTx() (err error) {
 func init() {
 	var err error
 
-	environment.GetString(&connectionString, "db", true,
+	env.GetString(&connectionString, "db", true,
 		`'username:password@protocol(hostname:port)/databasename" for example "fred:bloggs@tcp(localhost:3306)/documize"`,
 		func(*string, string) bool {
 
@@ -134,7 +134,7 @@ func (m *baseManager) Delete(tx *sqlx.Tx, table string, id string) (rows int64, 
 		log.Error(fmt.Sprintf("Unable to prepare delete of row in table %s", table), err)
 		return
 	}
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	result, err := stmt.Exec(id)
 
@@ -154,7 +154,7 @@ func (m *baseManager) DeleteConstrained(tx *sqlx.Tx, table string, orgID, id str
 		log.Error(fmt.Sprintf("Unable to prepare constrained delete of row in table %s", table), err)
 		return
 	}
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	result, err := stmt.Exec(orgID, id)
 
@@ -174,7 +174,7 @@ func (m *baseManager) DeleteConstrainedWithID(tx *sqlx.Tx, table string, orgID, 
 		log.Error(fmt.Sprintf("Unable to prepare ConstrainedWithID delete of row in table %s", table), err)
 		return
 	}
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	result, err := stmt.Exec(orgID, id)
 

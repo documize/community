@@ -18,7 +18,7 @@ import (
 
 	"github.com/documize/community/core/api/entity"
 	"github.com/documize/community/core/log"
-	"github.com/documize/community/core/utility"
+	"github.com/documize/community/core/streamutil"
 )
 
 // AddLabelRole inserts the given record into the labelrole database table.
@@ -27,7 +27,7 @@ func (p *Persister) AddLabelRole(l entity.LabelRole) (err error) {
 	l.Revised = time.Now().UTC()
 
 	stmt, err := p.Context.Transaction.Preparex("INSERT INTO labelrole (refid, labelid, orgid, userid, canview, canedit, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error("Unable to prepare insert for label role", err)
@@ -116,7 +116,7 @@ func (p *Persister) DeleteUserFolderRoles(labelID, userID string) (rows int64, e
 // MoveLabelRoles changes the labelid for an organization's labelrole records from previousLabel to newLabel.
 func (p *Persister) MoveLabelRoles(previousLabel, newLabel string) (err error) {
 	stmt, err := p.Context.Transaction.Preparex("UPDATE labelrole SET labelid=? WHERE labelid=? AND orgid=?")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to prepare move label roles for label  %s", previousLabel), err)

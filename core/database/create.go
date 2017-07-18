@@ -20,7 +20,8 @@ import (
 
 	"github.com/documize/community/core/api/util"
 	"github.com/documize/community/core/log"
-	"github.com/documize/community/core/utility"
+	"github.com/documize/community/core/secrets"
+	"github.com/documize/community/core/stringutil"
 	"github.com/documize/community/core/web"
 )
 
@@ -126,7 +127,7 @@ func Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = setupAccount(details, util.GenerateSalt())
+	err = setupAccount(details, secrets.GenerateSalt())
 	if err != nil {
 		log.Error("database.Create()", err)
 		return
@@ -152,8 +153,8 @@ type onboardRequest struct {
 // Once done, they can then login and use Documize.
 func setupAccount(completion onboardRequest, serial string) (err error) {
 	//accountTitle := "This is where you will find documentation for your all projects. You can customize this message from the settings screen."
-	salt := util.GenerateSalt()
-	password := util.GeneratePassword(completion.Password, salt)
+	salt := secrets.GenerateSalt()
+	password := secrets.GeneratePassword(completion.Password, salt)
 
 	// Allocate organization to the user.
 	orgID := util.UniqueID()
@@ -170,7 +171,7 @@ func setupAccount(completion onboardRequest, serial string) (err error) {
 	userID := util.UniqueID()
 
 	sql = fmt.Sprintf("insert into user (refid, firstname, lastname, email, initials, salt, password, global) values (\"%s\",\"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", 1)",
-		userID, completion.Firstname, completion.Lastname, completion.Email, utility.MakeInitials(completion.Firstname, completion.Lastname), salt, password)
+		userID, completion.Firstname, completion.Lastname, completion.Email, stringutil.MakeInitials(completion.Firstname, completion.Lastname), salt, password)
 	_, err = runSQL(sql)
 
 	if err != nil {

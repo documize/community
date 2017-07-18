@@ -18,7 +18,7 @@ import (
 	"github.com/documize/community/core/api/entity"
 	"github.com/documize/community/core/api/util"
 	"github.com/documize/community/core/log"
-	"github.com/documize/community/core/utility"
+	"github.com/documize/community/core/streamutil"
 )
 
 // AddContentLink inserts wiki-link into the store.
@@ -28,7 +28,7 @@ func (p *Persister) AddContentLink(l entity.Link) (err error) {
 	l.Revised = time.Now().UTC()
 
 	stmt, err := p.Context.Transaction.Preparex("INSERT INTO link (refid, orgid, folderid, userid, sourcedocumentid, sourcepageid, targetdocumentid, targetid, linktype, orphan, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error("Unable to prepare insert for link", err)
@@ -228,7 +228,7 @@ func (p *Persister) MarkOrphanDocumentLink(documentID string) (err error) {
 		return
 	}
 
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	_, err = stmt.Exec(revised, p.Context.OrgID, documentID)
 
@@ -245,7 +245,7 @@ func (p *Persister) MarkOrphanPageLink(pageID string) (err error) {
 		return
 	}
 
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	_, err = stmt.Exec(revised, p.Context.OrgID, pageID)
 
@@ -262,7 +262,7 @@ func (p *Persister) MarkOrphanAttachmentLink(attachmentID string) (err error) {
 		return
 	}
 
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	_, err = stmt.Exec(revised, p.Context.OrgID, attachmentID)
 

@@ -23,10 +23,10 @@ import (
 	"github.com/documize/community/core/api/plugins"
 	"github.com/documize/community/core/api/request"
 	"github.com/documize/community/core/api/store"
-	"github.com/documize/community/core/log"
-	"github.com/documize/community/core/utility"
-
 	"github.com/documize/community/core/api/util"
+	"github.com/documize/community/core/log"
+	"github.com/documize/community/core/streamutil"
+	"github.com/documize/community/core/stringutil"
 	"github.com/gorilla/mux"
 )
 
@@ -49,8 +49,8 @@ func SearchDocuments(w http.ResponseWriter, r *http.Request) {
 
 	// Put in slugs for easy UI display of search URL
 	for key, result := range results {
-		result.DocumentSlug = utility.MakeSlug(result.DocumentTitle)
-		result.FolderSlug = utility.MakeSlug(result.LabelName)
+		result.DocumentSlug = stringutil.MakeSlug(result.DocumentTitle)
+		result.FolderSlug = stringutil.MakeSlug(result.LabelName)
 		results[key] = result
 	}
 
@@ -362,16 +362,16 @@ func GetDocumentAsDocx(w http.ResponseWriter, r *http.Request) {
 	html = append(html, []byte("<html><head></head><body>")...)
 	for _, page := range pages {
 		html = append(html, []byte(fmt.Sprintf("<h%d>", page.Level))...)
-		html = append(html, utility.EscapeHTMLcomplexCharsByte([]byte(page.Title))...)
+		html = append(html, stringutil.EscapeHTMLcomplexCharsByte([]byte(page.Title))...)
 		html = append(html, []byte(fmt.Sprintf("</h%d>", page.Level))...)
-		html = append(html, utility.EscapeHTMLcomplexCharsByte([]byte(page.Body))...)
+		html = append(html, stringutil.EscapeHTMLcomplexCharsByte([]byte(page.Body))...)
 	}
 	html = append(html, []byte("</body></html>")...)
 
 	export, err := store.ExportAs(xtn, string(html))
 	log.Error("store.ExportAs()", err)
 
-	w.Header().Set("Content-Disposition", "attachment; filename="+utility.MakeSlug(document.Title)+"."+xtn)
+	w.Header().Set("Content-Disposition", "attachment; filename="+stringutil.MakeSlug(document.Title)+"."+xtn)
 	w.Header().Set("Content-Type", "application/octet-stream")
 	w.Header().Set("Content-Length", fmt.Sprintf("%d", len(export.File)))
 
@@ -402,7 +402,7 @@ func UpdateDocument(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer utility.Close(r.Body)
+	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {

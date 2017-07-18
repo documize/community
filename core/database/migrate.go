@@ -22,11 +22,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jmoiron/sqlx"
-
 	"github.com/documize/community/core/log"
-	"github.com/documize/community/core/utility"
+	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/core/web"
+	"github.com/jmoiron/sqlx"
 )
 
 const migrationsDir = "bindata/scripts"
@@ -170,7 +169,7 @@ func getLastMigration(tx *sqlx.Tx) (lastMigration string, err error) {
 	var stmt *sql.Stmt
 	stmt, err = tx.Prepare("SELECT JSON_EXTRACT(`config`,'$.database') FROM `config` WHERE `key` = 'META';")
 	if err == nil {
-		defer utility.Close(stmt)
+		defer streamutil.Close(stmt)
 		var item = make([]uint8, 0)
 
 		row := stmt.QueryRow()

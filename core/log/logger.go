@@ -20,7 +20,7 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 
-	env "github.com/documize/community/core/environment"
+	"github.com/documize/community/core/env"
 )
 
 var environment = "Non-production"

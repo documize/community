@@ -23,7 +23,7 @@ import (
 	"github.com/documize/community/core/api/convert/md"
 	"github.com/documize/community/core/api/request"
 	api "github.com/documize/community/core/convapi"
-	"github.com/documize/community/core/environment"
+	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/log"
 	"github.com/documize/glick"
 )
@@ -33,9 +33,9 @@ var PluginFile = "DB" // this points to the database
 var insecure = "false"
 
 func init() {
-	environment.GetString(&PluginFile, "plugin", false,
+	env.GetString(&PluginFile, "plugin", false,
 		"the JSON file describing plugins, default 'DB' uses the database config table 'FILEPLUGINS' entry", nil)
-	environment.GetString(&insecure, "insecure", false,
+	env.GetString(&insecure, "insecure", false,
 		"if 'true' allow https endpoints with invalid certificates (only for testing)", nil)
 }
 

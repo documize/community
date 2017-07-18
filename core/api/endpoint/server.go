@@ -21,7 +21,7 @@ import (
 	"github.com/documize/community/core"
 	"github.com/documize/community/core/api/plugins"
 	"github.com/documize/community/core/database"
-	"github.com/documize/community/core/environment"
+	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/log"
 	"github.com/documize/community/core/web"
 	"github.com/gorilla/mux"
@@ -45,10 +45,10 @@ func init() {
 	Product.License.Trial = false
 	Product.License.Edition = "Community"
 
-	environment.GetString(&certFile, "cert", false, "the cert.pem file used for https", nil)
-	environment.GetString(&keyFile, "key", false, "the key.pem file used for https", nil)
-	environment.GetString(&port, "port", false, "http/https port number", nil)
-	environment.GetString(&forcePort2SSL, "forcesslport", false, "redirect given http port number to TLS", nil)
+	env.GetString(&certFile, "cert", false, "the cert.pem file used for https", nil)
+	env.GetString(&keyFile, "key", false, "the key.pem file used for https", nil)
+	env.GetString(&port, "port", false, "http/https port number", nil)
+	env.GetString(&forcePort2SSL, "forcesslport", false, "redirect given http port number to TLS", nil)
 
 	log.Info("Server.Init complete")
 }

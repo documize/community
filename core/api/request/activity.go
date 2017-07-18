@@ -19,7 +19,7 @@ import (
 	"github.com/documize/community/core/api/endpoint/models"
 	"github.com/documize/community/core/api/entity"
 	"github.com/documize/community/core/log"
-	"github.com/documize/community/core/utility"
+	"github.com/documize/community/core/streamutil"
 )
 
 // RecordUserActivity logs user initiated data changes.
@@ -29,7 +29,7 @@ func (p *Persister) RecordUserActivity(activity entity.UserActivity) (err error)
 	activity.Created = time.Now().UTC()
 
 	stmt, err := p.Context.Transaction.Preparex("INSERT INTO useractivity (orgid, userid, labelid, sourceid, sourcetype, activitytype, created) VALUES (?, ?, ?, ?, ?, ?, ?)")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error("Unable to prepare insert RecordUserActivity", err)

@@ -21,14 +21,14 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 
 	"github.com/documize/community/core/api/request"
-	"github.com/documize/community/core/environment"
+	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/log"
 )
 
 var jwtKey string
 
 func init() {
-	environment.GetString(&jwtKey, "salt", false, "the salt string used to encode JWT tokens, if not set a random value will be generated",
+	env.GetString(&jwtKey, "salt", false, "the salt string used to encode JWT tokens, if not set a random value will be generated",
 		func(t *string, n string) bool {
 			if jwtKey == "" {
 				b := make([]byte, 17)

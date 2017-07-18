@@ -25,9 +25,8 @@ import (
 	"github.com/documize/community/core/api/util"
 	"github.com/documize/community/core/log"
 	"github.com/documize/community/core/section/provider"
-	"github.com/documize/community/core/utility"
+	"github.com/documize/community/core/streamutil"
 	htmldiff "github.com/documize/html-diff"
-
 	"github.com/gorilla/mux"
 )
 
@@ -54,7 +53,7 @@ func AddDocumentPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer utility.Close(r.Body)
+	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
@@ -260,7 +259,7 @@ func GetDocumentPagesBatch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer utility.Close(r.Body)
+	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
@@ -389,7 +388,7 @@ func DeleteDocumentPages(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer utility.Close(r.Body)
+	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		writeBadRequestError(w, method, "Bad body")
@@ -480,7 +479,7 @@ func UpdateDocumentPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer utility.Close(r.Body)
+	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		writeBadRequestError(w, method, "Bad request body")
@@ -585,7 +584,7 @@ func ChangeDocumentPageSequence(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer utility.Close(r.Body)
+	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
@@ -650,7 +649,7 @@ func ChangeDocumentPageLevel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer utility.Close(r.Body)
+	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {

@@ -27,7 +27,9 @@ import (
 	"github.com/documize/community/core/api/request"
 	"github.com/documize/community/core/api/util"
 	"github.com/documize/community/core/log"
-	"github.com/documize/community/core/utility"
+	"github.com/documize/community/core/secrets"
+	"github.com/documize/community/core/streamutil"
+	"github.com/documize/community/core/stringutil"
 )
 
 // AddFolder creates a new folder.
@@ -45,7 +47,7 @@ func AddFolder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer utility.Close(r.Body)
+	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
@@ -221,7 +223,7 @@ func UpdateFolder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer utility.Close(r.Body)
+	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
@@ -432,7 +434,7 @@ func SetFolderPermissions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer utility.Close(r.Body)
+	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
@@ -490,7 +492,7 @@ func SetFolderPermissions(w http.ResponseWriter, r *http.Request) {
 	hasEveryoneRole := false
 	roleCount := 0
 
-	url := p.Context.GetAppURL(fmt.Sprintf("s/%s/%s", label.RefID, utility.MakeSlug(label.Name)))
+	url := p.Context.GetAppURL(fmt.Sprintf("s/%s/%s", label.RefID, stringutil.MakeSlug(label.Name)))
 
 	for _, role := range model.Roles {
 		role.OrgID = p.Context.OrgID
@@ -625,7 +627,7 @@ func AcceptSharedFolder(w http.ResponseWriter, r *http.Request) {
 
 	p.Context.OrgID = org.RefID
 
-	defer utility.Close(r.Body)
+	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
@@ -666,7 +668,7 @@ func AcceptSharedFolder(w http.ResponseWriter, r *http.Request) {
 
 	user.Firstname = model.Firstname
 	user.Lastname = model.Lastname
-	user.Initials = utility.MakeInitials(user.Firstname, user.Lastname)
+	user.Initials = stringutil.MakeInitials(user.Firstname, user.Lastname)
 
 	tx, err := request.Db.Beginx()
 
@@ -687,9 +689,9 @@ func AcceptSharedFolder(w http.ResponseWriter, r *http.Request) {
 
 	p.Context.UserID = user.RefID
 
-	salt := util.GenerateSalt()
+	salt := secrets.GenerateSalt()
 
-	log.IfErr(p.UpdateUserPassword(user.RefID, salt, util.GeneratePassword(model.Password, salt)))
+	log.IfErr(p.UpdateUserPassword(user.RefID, salt, secrets.GeneratePassword(model.Password, salt)))
 
 	if err != nil {
 		log.IfErr(tx.Rollback())
@@ -735,7 +737,7 @@ func InviteToFolder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer utility.Close(r.Body)
+	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
@@ -831,13 +833,13 @@ func InviteToFolder(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			url := p.Context.GetAppURL(fmt.Sprintf("s/%s/%s", label.RefID, utility.MakeSlug(label.Name)))
+			url := p.Context.GetAppURL(fmt.Sprintf("s/%s/%s", label.RefID, stringutil.MakeSlug(label.Name)))
 			go mail.ShareFolderExistingUser(email, inviter.Fullname(), url, label.Name, model.Message)
 			log.Info(fmt.Sprintf("%s is sharing space %s with existing user %s", inviter.Email, label.Name, email))
 		} else {
 			// On-board new user
 			if strings.Contains(email, "@") {
-				url := p.Context.GetAppURL(fmt.Sprintf("auth/share/%s/%s", label.RefID, utility.MakeSlug(label.Name)))
+				url := p.Context.GetAppURL(fmt.Sprintf("auth/share/%s/%s", label.RefID, stringutil.MakeSlug(label.Name)))
 				err = inviteNewUserToSharedFolder(p, email, inviter, url, label, model.Message)
 
 				if err != nil {
@@ -882,9 +884,9 @@ func inviteNewUserToSharedFolder(p request.Persister, email string, invitedBy en
 	user.Email = email
 	user.Firstname = email
 	user.Lastname = ""
-	user.Salt = util.GenerateSalt()
-	requestedPassword := util.GenerateRandomPassword()
-	user.Password = util.GeneratePassword(requestedPassword, user.Salt)
+	user.Salt = secrets.GenerateSalt()
+	requestedPassword := secrets.GenerateRandomPassword()
+	user.Password = secrets.GeneratePassword(requestedPassword, user.Salt)
 	userID := util.UniqueID()
 	user.RefID = userID
 
