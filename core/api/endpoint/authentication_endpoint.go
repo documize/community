@@ -19,6 +19,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/documize/community/core/api"
 	"github.com/documize/community/core/api/endpoint/models"
 	"github.com/documize/community/core/api/entity"
 	"github.com/documize/community/core/api/request"
@@ -348,7 +349,7 @@ func preAuthorizeStaticAssets(r *http.Request) bool {
 		strings.ToLower(r.URL.Path) == "/robots.txt" ||
 		strings.ToLower(r.URL.Path) == "/version" ||
 		strings.HasPrefix(strings.ToLower(r.URL.Path), "/api/public/") ||
-		((web.SiteMode == web.SiteModeSetup) && (strings.ToLower(r.URL.Path) == "/api/setup")) {
+		((api.Runtime.Flags.SiteMode == web.SiteModeSetup) && (strings.ToLower(r.URL.Path) == "/api/setup")) {
 
 		return true
 	}

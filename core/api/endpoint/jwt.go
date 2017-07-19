@@ -12,46 +12,44 @@
 package endpoint
 
 import (
-	"crypto/rand"
 	"fmt"
 	"net/http"
 	"strings"
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
-
+	"github.com/documize/community/core/api"
 	"github.com/documize/community/core/api/request"
-	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/log"
 )
 
-var jwtKey string
+// var jwtKey string
 
-func init() {
-	env.GetString(&jwtKey, "salt", false, "the salt string used to encode JWT tokens, if not set a random value will be generated",
-		func(t *string, n string) bool {
-			if jwtKey == "" {
-				b := make([]byte, 17)
-				_, err := rand.Read(b)
-				if err != nil {
-					jwtKey = err.Error()
-					log.Error("problem using crypto/rand", err)
-					return false
-				}
-				for k, v := range b {
-					if (v >= 'a' && v <= 'z') || (v >= 'A' && v <= 'Z') || (v >= '0' && v <= '0') {
-						b[k] = v
-					} else {
-						s := fmt.Sprintf("%x", v)
-						b[k] = s[0]
-					}
-				}
-				jwtKey = string(b)
-				log.Info("Please set DOCUMIZESALT or use -salt with this value: " + jwtKey)
-			}
-			return true
-		})
-}
+// func init() {
+// 	env.GetString(&jwtKey, "salt", false, "the salt string used to encode JWT tokens, if not set a random value will be generated",
+// 		func(t *string, n string) bool {
+// 			if jwtKey == "" {
+// 				b := make([]byte, 17)
+// 				_, err := rand.Read(b)
+// 				if err != nil {
+// 					jwtKey = err.Error()
+// 					log.Error("problem using crypto/rand", err)
+// 					return false
+// 				}
+// 				for k, v := range b {
+// 					if (v >= 'a' && v <= 'z') || (v >= 'A' && v <= 'Z') || (v >= '0' && v <= '0') {
+// 						b[k] = v
+// 					} else {
+// 						s := fmt.Sprintf("%x", v)
+// 						b[k] = s[0]
+// 					}
+// 				}
+// 				jwtKey = string(b)
+// 				log.Info("Please set DOCUMIZESALT or use -salt with this value: " + jwtKey)
+// 			}
+// 			return true
+// 		})
+// }
 
 // Generates JSON Web Token (http://jwt.io)
 func generateJWT(user, org, domain string) string {
@@ -64,7 +62,7 @@ func generateJWT(user, org, domain string) string {
 		"domain": domain,
 	})
 
-	tokenString, _ := token.SignedString([]byte(jwtKey))
+	tokenString, _ := token.SignedString([]byte(api.Runtime.Flags.Salt))
 
 	return tokenString
 }
@@ -103,7 +101,7 @@ func decodeJWT(tokenString string) (c request.Context, claims jwt.Claims, err er
 	c.Guest = false
 
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		return []byte(jwtKey), nil
+		return []byte(api.Runtime.Flags.Salt), nil
 	})
 
 	if err != nil {

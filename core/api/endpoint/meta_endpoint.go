@@ -18,6 +18,7 @@ import (
 	"net/http"
 	"text/template"
 
+	"github.com/documize/community/core/api"
 	"github.com/documize/community/core/api/entity"
 	"github.com/documize/community/core/api/request"
 	"github.com/documize/community/core/log"
@@ -45,9 +46,9 @@ func GetMeta(w http.ResponseWriter, r *http.Request) {
 	data.AllowAnonymousAccess = org.AllowAnonymousAccess
 	data.AuthProvider = org.AuthProvider
 	data.AuthConfig = org.AuthConfig
-	data.Version = Product.Version
-	data.Edition = Product.License.Edition
-	data.Valid = Product.License.Valid
+	data.Version = api.Runtime.Product.Version
+	data.Edition = api.Runtime.Product.License.Edition
+	data.Valid = api.Runtime.Product.License.Valid
 	data.ConversionEndpoint = org.ConversionEndpoint
 
 	// Strip secrets

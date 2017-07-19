@@ -17,6 +17,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/log"
 	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/core/web"
@@ -31,25 +32,25 @@ const sqlVariantMariaDB string = "MariaDB"
 var dbCheckOK bool // default false
 
 // dbPtr is a pointer to the central connection to the database, used by all database requests.
-var dbPtr **sqlx.DB
+var dbPtr *sqlx.DB
 
 // Check that the database is configured correctly and that all the required tables exist.
 // It must be the first function called in this package.
-func Check(Db *sqlx.DB, connectionString string) bool {
-	dbPtr = &Db
+func Check(runtime env.Runtime) bool {
+	dbPtr = runtime.Db
 
 	log.Info("Database checks: started")
 
-	csBits := strings.Split(connectionString, "/")
+	csBits := strings.Split(runtime.Flags.DBConn, "/")
 	if len(csBits) > 1 {
 		web.SiteInfo.DBname = strings.Split(csBits[len(csBits)-1], "?")[0]
 	}
 
-	rows, err := Db.Query("SELECT VERSION() AS version, @@version_comment as comment, @@character_set_database AS charset, @@collation_database AS collation;")
+	rows, err := runtime.Db.Query("SELECT VERSION() AS version, @@version_comment as comment, @@character_set_database AS charset, @@collation_database AS collation;")
 	if err != nil {
 		log.Error("Can't get MySQL configuration", err)
 		web.SiteInfo.Issue = "Can't get MySQL configuration: " + err.Error()
-		web.SiteMode = web.SiteModeBadDB
+		runtime.Flags.SiteMode = web.SiteModeBadDB
 		return false
 	}
 	defer streamutil.Close(rows)
@@ -65,7 +66,7 @@ func Check(Db *sqlx.DB, connectionString string) bool {
 	if err != nil {
 		log.Error("no MySQL configuration returned", err)
 		web.SiteInfo.Issue = "no MySQL configuration return issue: " + err.Error()
-		web.SiteMode = web.SiteModeBadDB
+		runtime.Flags.SiteMode = web.SiteModeBadDB
 		return false
 	}
 
@@ -92,7 +93,7 @@ func Check(Db *sqlx.DB, connectionString string) bool {
 			want := fmt.Sprintf("%d.%d.%d", verInts[0], verInts[1], verInts[2])
 			log.Error("MySQL version element "+strconv.Itoa(k+1)+" of '"+version+"' not high enough, need at least version "+want, errors.New("bad MySQL version"))
 			web.SiteInfo.Issue = "MySQL version element " + strconv.Itoa(k+1) + " of '" + version + "' not high enough, need at least version " + want
-			web.SiteMode = web.SiteModeBadDB
+			runtime.Flags.SiteMode = web.SiteModeBadDB
 			return false
 		}
 	}
@@ -101,30 +102,30 @@ func Check(Db *sqlx.DB, connectionString string) bool {
 		if charset != "utf8" {
 			log.Error("MySQL character set not utf8:", errors.New(charset))
 			web.SiteInfo.Issue = "MySQL character set not utf8: " + charset
-			web.SiteMode = web.SiteModeBadDB
+			runtime.Flags.SiteMode = web.SiteModeBadDB
 			return false
 		}
 		if !strings.HasPrefix(collation, "utf8") {
 			log.Error("MySQL collation sequence not utf8...:", errors.New(collation))
 			web.SiteInfo.Issue = "MySQL collation sequence not utf8...: " + collation
-			web.SiteMode = web.SiteModeBadDB
+			runtime.Flags.SiteMode = web.SiteModeBadDB
 			return false
 		}
 	}
 
 	{ // if there are no rows in the database, enter set-up mode
 		var flds []string
-		if err := Db.Select(&flds,
+		if err := runtime.Db.Select(&flds,
 			`SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '`+web.SiteInfo.DBname+
 				`' and TABLE_TYPE='BASE TABLE'`); err != nil {
 			log.Error("Can't get MySQL number of tables", err)
 			web.SiteInfo.Issue = "Can't get MySQL number of tables: " + err.Error()
-			web.SiteMode = web.SiteModeBadDB
+			runtime.Flags.SiteMode = web.SiteModeBadDB
 			return false
 		}
 		if strings.TrimSpace(flds[0]) == "0" {
 			log.Info("Entering database set-up mode because the database is empty.....")
-			web.SiteMode = web.SiteModeSetup
+			runtime.Flags.SiteMode = web.SiteModeSetup
 			return false
 		}
 	}
@@ -137,17 +138,17 @@ func Check(Db *sqlx.DB, connectionString string) bool {
 
 		for _, table := range tables {
 			var dummy []string
-			if err := Db.Select(&dummy, "SELECT 1 FROM "+table+" LIMIT 1;"); err != nil {
+			if err := runtime.Db.Select(&dummy, "SELECT 1 FROM "+table+" LIMIT 1;"); err != nil {
 				log.Error("Entering bad database mode because: SELECT 1 FROM "+table+" LIMIT 1;", err)
 				web.SiteInfo.Issue = "MySQL database is not empty, but does not contain table: " + table
-				web.SiteMode = web.SiteModeBadDB
+				runtime.Flags.SiteMode = web.SiteModeBadDB
 				return false
 			}
 		}
 	}
 
-	web.SiteMode = web.SiteModeNormal // actually no need to do this (as already ""), this for documentation
-	web.SiteInfo.DBname = ""          // do not give this info when not in set-up mode
+	runtime.Flags.SiteMode = web.SiteModeNormal // actually no need to do this (as already ""), this for documentation
+	web.SiteInfo.DBname = ""                    // do not give this info when not in set-up mode
 	dbCheckOK = true
 	return true
 }

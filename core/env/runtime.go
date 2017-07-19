@@ -17,6 +17,8 @@ import "github.com/jmoiron/sqlx"
 // Runtime provides access to database, logger and other server-level scoped objects.
 // Use Context for per-request values.
 type Runtime struct {
-	Db  *sqlx.DB
-	Log Logger
+	Flags   Flags
+	Db      *sqlx.DB
+	Log     Logger
+	Product ProdInfo
 }
