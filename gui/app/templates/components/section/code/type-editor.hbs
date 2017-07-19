@@ -1,0 +1,19 @@
+{{#section/base-editor-inline document=document folder=folder page=page tip="Concise name that describes code snippet" isDirty=(action 'isDirty') onCancel=(action 'onCancel') onAction=(action 'onAction')}}
+	<div class="section-code-editor">
+		<div class="syntax-selector">
+			{{ui-select id=syntaxId
+				content=syntaxOptions
+				action=(action 'onSyntaxChange')
+				optionValuePath="mode"
+				optionLabelPath="name"
+				selection=codeSyntax}}
+		</div>
+		<style>
+			.CodeMirror {
+				height: auto !important;
+				font-size: 17px;
+			}
+		</style>
+		{{focus-textarea value=pageBody id=editorId class="mousetrap"}}
+	</div>
+{{/section/base-editor-inline}}

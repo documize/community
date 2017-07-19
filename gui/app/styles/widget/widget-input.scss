@@ -1,0 +1,215 @@
+* {
+	box-sizing: border-box;
+}
+
+.input-control {
+	position: relative;
+	margin-bottom: 50px;
+
+	> label {
+		color: $color-input;
+		font-size: 1.1em;
+		font-weight: normal;
+		font-family: $font-semibold;
+		pointer-events: none;
+	}
+
+	> .tip {
+		color: $color-gray;
+		font-size: 0.9em;
+		margin: 5px 0 10px;
+		padding: 0;
+		text-align: left;
+		font-family: $font-light;
+	}
+
+	> input,
+	textarea {
+		font-size: 1em;
+		padding: 8px 0 10px;
+		margin: 0 0 15px;
+		display: block;
+		width: 100%;
+		border: none;
+		border-bottom: 1px solid $color-input;
+		height: 2.3rem;
+		outline: none;
+
+		&:focus {
+			outline: none;
+			border-bottom: 1px solid $color-primary !important;
+			box-shadow: 0 1px 0 0 $color-primary !important;
+			transition: 0.2s ease all;
+			-moz-transition: 0.2s ease all;
+			-webkit-transition: 0.2s ease all;
+		}
+	}
+
+	> textarea {
+		resize: none;
+		height: auto !important;
+		overflow-y: hidden;
+	}
+
+	 > select,
+	> div select {
+		background-color: $color-white;
+		padding: 5px;
+		border: 1px solid $color-input;
+		border-radius: 2px;
+		height: 2.3rem;
+		font-size: 1rem;
+		display: inline-block;
+
+		&:focus {
+			outline: none;
+			border: 1px solid $color-input !important;
+			box-shadow: none !important;
+			transition: 0.2s ease all;
+			-moz-transition: 0.2s ease all;
+			-webkit-transition: 0.2s ease all;
+		}
+	}
+
+	> .checkbox {
+		width: 100%;
+		font-size: 1em;
+		padding: 8px 0 10px;
+		margin: 0 0 15px;
+		display: inline-block;
+		border: none;
+		border-bottom: 1px solid $color-input;
+		height: 2.5rem;
+		outline: none;
+
+		&:hover {
+			outline: none;
+			border-bottom: 1px solid $color-input !important;
+			box-shadow: 0 1px 0 0 $color-input !important;
+			transition: 0.2s ease all;
+			-moz-transition: 0.2s ease all;
+			-webkit-transition: 0.2s ease all;
+		}
+
+		> input[type='checkbox'] {
+			font-size: 1em;
+			padding: 8px 0 10px;
+			margin: 0 0 15px 5px;
+			display: inline-block;
+			border: none;
+			border-bottom: none;
+			height: 1rem;
+			outline: none;
+
+			&:focus {
+				outline: none;
+				border-bottom: none !important;
+				box-shadow: none !important;
+				transition: 0.2s ease all;
+				-moz-transition: 0.2s ease all;
+				-webkit-transition: 0.2s ease all;
+			}
+		}
+
+		> label {
+			color: $color-off-black;
+			font-size: 1em;
+			font-weight: normal;
+			pointer-events: none;
+			display: inline-block;
+			margin-left: 5px;
+		}
+	}
+
+	.error {
+		border-color: $color-red;
+
+		&:focus {
+			border-bottom: 1px solid $color-red !important;
+			box-shadow: 0 1px 0 0 $color-red !important;
+		}
+	}
+
+	select.error {
+		border-color: $color-red;
+
+		&:focus {
+			border: 1px solid $color-red !important;
+			box-shadow: none !important;
+		}
+	}
+}
+
+.input-inline {
+	display: inline-block;
+	cursor: default;
+	width: 97%;
+
+	> input {
+		font-size: 1em;
+		padding: 0;
+		margin: 0;
+		width: 100%;
+		border: none;
+		height: auto;
+		outline: none;
+		display: inline-block;
+
+		&:focus {
+			outline: none;
+			border-bottom: none !important;
+			box-shadow: none !important;
+		}
+	}
+
+	.error-inline {
+		border-left: 3px solid $color-red;
+	}
+}
+
+.input-transparent {
+	background-color: transparent !important;
+
+	> input, textarea {
+		background-color: transparent !important;
+	}
+}
+
+.form-bordered {
+	padding: 30px 40px;
+	border: 10px solid $color-border;
+	@include border-radius(15px);
+}
+
+.form-header {
+	> .title {
+		font-size: 1.4rem;
+		font-weight: normal;
+		font-family: $font-semibold;
+		pointer-events: none;
+		font-weight: bold;
+		color: $color-off-black;
+	}
+
+	> .tip {
+		color: $color-input;
+		font-size: 1.2rem;
+		margin: 5px 0 30px;
+		padding: 0;
+		font-family: $font-light;
+		text-align: left;
+	}
+}
+
+.form-divider {
+	margin-top: 30px;
+}
+
+.widget-checkbox {
+	color: $color-link;
+	cursor: pointer;
+}
+
+.checkbox-gray {
+	color: $color-gray !important;
+}

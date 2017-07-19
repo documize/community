@@ -1,0 +1,22 @@
+{{layout/zone-navigation}}
+{{#layout/zone-container}}
+	{{#layout/zone-sidebar}}
+		<div class="sidebar-toolbar">
+		</div>
+		<div class="sidebar-common">
+			{{layout/sidebar-intro title="Search" message='#tag, keyword, "some phrase", this AND that, this OR that'}}
+		</div>
+		<div class="sidebar-wrapper">
+			<div class="page-search">
+				<div class="input-control">
+					{{focus-input type="text" value=filter placeholder='search'}}
+				</div>
+			</div>
+		</div>
+	{{/layout/zone-sidebar}}
+	{{#layout/zone-content}}
+		<div class="page-search">
+			{{search/search-results results=results}}
+		</div>
+	{{/layout/zone-content}}
+{{/layout/zone-container}}

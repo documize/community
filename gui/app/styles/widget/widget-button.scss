@@ -1,0 +1,316 @@
+// Copyright (c) 2015 Documize Inc.
+
+@mixin button-hover-state($bg) {
+    &:hover {
+        background-color: lighten($bg, 3%);
+        @extend .z-depth-tiny;
+    }
+}
+
+.square-button-mono {
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+	width: 32px;
+	height: 32px;
+	line-height: 31px;
+	padding: 0;
+	border-radius: 2px;
+    transition: .3s;
+    cursor: pointer;
+    vertical-align: middle;
+    border: 1px solid $color-gray;
+    text-align: center;
+	@extend .no-select;
+	@include ease-in();
+
+    &:hover {
+        @extend .z-depth-tiny;
+    }
+
+    i {
+        color: $color-gray;
+        text-align: center;
+    }
+
+    &:before {
+        border-radius: 0;
+    }
+}
+
+.round-button-mono {
+	@extend .no-select;
+	@include ease-in();
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+    width: 35px;
+    height: 35px;
+    line-height: 34px;
+    padding: 0;
+    border-radius: 50%;
+    transition: .3s;
+    cursor: pointer;
+    vertical-align: middle;
+    border: 1px solid $color-stroke;
+    text-align: center;
+    font-size: 1.2rem;
+    background-color: transparent;
+
+    &:hover {
+        @extend .z-depth-tiny;
+    }
+
+    i {
+        color: $color-stroke;
+        text-align: center;
+		width: 100%;
+    }
+
+    &:before {
+        border-radius: 0;
+    }
+}
+
+.square-button-white {
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+	width: 32px;
+	height: 32px;
+	line-height: 31px;
+	padding: 0;
+	border-radius: 2px;
+    transition: .3s;
+    cursor: pointer;
+    vertical-align: middle;
+	background-color: $color-white;
+    border: 1px solid $color-stroke;
+    text-align: center;
+	@extend .no-select;
+	@include ease-in();
+
+    &:hover {
+        @extend .z-depth-tiny;
+    }
+
+    i {
+        color: $color-gray;
+        text-align: center;
+    }
+
+    &:before {
+        border-radius: 0;
+    }
+}
+
+.button-red-text {
+	&:hover {
+		> .material-icons {
+			@include ease-in();
+			color: $color-red !important;
+		}
+	}
+}
+
+.round-button {
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+    width: 35px;
+    height: 35px;
+    line-height: 36px;
+    padding: 0;
+    border-radius: 50%;
+    transition: .3s;
+    cursor: pointer;
+    vertical-align: middle;
+    text-align: center;
+	@extend .no-select;
+	@include ease-in();
+	font-size: 1.2rem;
+
+    > i {
+        color: $color-white;
+    }
+
+    &:before {
+        border-radius: 0;
+    }
+}
+
+.round-button-small {
+	width: 20px;
+    height: 20px;
+    line-height: 20px;
+	font-size: 0.9rem;
+
+    > .material-icons {
+        font-size: 0.9rem;
+    }
+}
+
+.square-button {
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+    width: 32px;
+    height: 32px;
+    line-height: 34px;
+    padding: 0;
+    border-radius: 2px;
+    transition: .3s;
+    cursor: pointer;
+    vertical-align: middle;
+    text-align: center;
+	@extend .no-select;
+	@include ease-in();
+
+    > i {
+        color: $color-white;
+    }
+
+    &:before {
+        border-radius: 0;
+    }
+}
+
+.regular-button {
+    text-decoration: none;
+    padding: 0 1rem;
+    text-align: center;
+    letter-spacing: .5px;
+    transition: .2s ease-out;
+    border-radius: 2px;
+    display: inline-block;
+    height: 32px;
+    line-height: 34px;
+    font-size: 0.9em;
+    outline: 0;
+    text-transform: uppercase;
+    vertical-align: middle;
+    -webkit-tap-highlight-color: transparent;
+    color: $color-white;
+    cursor: pointer;
+	border: none;
+	@extend .no-select;
+	@include ease-in();
+
+    > .name {
+        vertical-align: top;
+        display: inline-block;
+    }
+}
+
+.button-red {
+    background-color: $color-red;
+    @include button-hover-state($color-red);
+}
+
+.button-blue {
+    background-color: $color-blue;
+    @include button-hover-state($color-blue);
+}
+
+.button-green {
+    background-color: $color-green;
+    @include button-hover-state($color-green);
+}
+
+.button-gray {
+    background-color: $color-gray;
+    @include button-hover-state($color-gray);
+}
+
+.button-white {
+	border: 1px solid $color-stroke;
+    background-color: $color-white;
+	color: $color-blue;
+    @include button-hover-state($color-white);
+}
+
+.button-black {
+	border: none;
+    background-color: $color-off-black;
+	color: $color-white;
+    @include button-hover-state($color-black);
+}
+
+.button-transparent {
+    background-color: transparent;
+    color: $color-gray;
+    border: 1px solid $color-gray;
+}
+
+.flat-button {
+    box-shadow: none;
+    background-color: transparent;
+    color: $color-off-black;
+    cursor: pointer;
+    border: 1px solid transparent;
+    text-decoration: none;
+    padding:  0 0.7rem;
+    text-align: center;
+    letter-spacing: .5px;
+    transition: .2s ease-out;
+    border-radius: 2px;
+    display: inline-block;
+    height: 33px;
+    line-height: 34px;
+    font-size: 0.9em;
+    outline: 0;
+    text-transform: uppercase;
+    vertical-align: middle;
+    -webkit-tap-highlight-color: transparent;
+	@extend .no-select;
+	@include ease-in();
+
+    &:hover {
+        box-shadow: none;
+        border: 1px solid #e2e2e2;
+    }
+
+    &:active {
+        background-color: $color-off-white;
+    }
+}
+
+.flat-red {
+    color: $color-red;
+
+    &:hover {
+        border: 1px solid $color-red;
+    }
+}
+
+.flat-blue {
+    color: $color-blue;
+
+    &:hover {
+        border: 1px solid $color-blue;
+    }
+}
+
+.flat-green {
+    color: $color-green;
+
+    &:hover {
+        border: 1px solid $color-green;
+    }
+}
+
+.flat-gray {
+    color: $color-gray;
+
+    &:hover {
+        border: 1px solid $color-gray;
+    }
+}
+
+.button-gap {
+	width: 5px;
+	margin: 0;
+	padding: 0;
+	display: inline-block;
+	@extend .no-select;
+}

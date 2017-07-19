@@ -1,0 +1,48 @@
+<form>
+    <div class="form-header">
+        <div class="title">Mail Server Settings</div>
+        <div class="tip">Used for sending email notifications</div>
+    </div>
+    <div class="input-control">
+        <label>SMTP Host</label>
+        <div class="tip">e.g. my.host.com</div>
+        {{focus-input id="smtp-host" type="text" value=model.smtp.host class=(if SMTPHostEmptyError 'error')}}
+    </div>
+	<div class="input-control">
+        <label>SMTP Port</label>
+        <div class="tip">e.g. 587</div>
+        {{input id="smtp-port" type="text" value=model.smtp.port class=(if SMTPPortEmptyError 'error')}}
+    </div>
+	<div class="input-control">
+        <label>SMTP Sender</label>
+        <div class="tip">e.g. noreply@documize.com</div>
+        {{input id="smtp-sender" type="text" value=model.smtp.sender class=(if SMTPSenderEmptyError 'error')}}
+    </div>
+	<div class="input-control">
+        <label>SMTP User ID</label>
+        <div class="tip">Your credentials</div>
+        {{input id="smtp-userid" type="text" value=model.smtp.userid class=(if SMTPUserIdEmptyError 'error')}}
+    </div>
+	<div class="input-control">
+        <label>SMTP Password</label>
+        <div class="tip">Your credentials</div>
+        {{input id="smtp-password" type="text" value=model.smtp.password class=(if SMTPPasswordEmptyError 'error')}}
+    </div>
+    <div class="regular-button button-blue" {{ action 'saveSMTP' }}>save</div>
+</form>
+
+<div class="margin-top-50">
+</div>
+
+<form class="form-bordered">
+    <div class="form-header">
+        <div class="title">Optional Edition License</div>
+        <div class="tip">Only applies to Enterprise Edition</div>
+    </div>
+    <div class="input-control">
+        <label>License</label>
+        <div class="tip">XML format accepted</div>
+        {{textarea value=model.license rows="15"}}
+    </div>
+    <div class="regular-button button-blue" {{ action 'saveLicense' }}>save</div>
+</form>

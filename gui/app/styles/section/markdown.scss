@@ -1,0 +1,19 @@
+.section-markdown-editor {
+	margin-top: 3px;
+}
+
+.section-markdown-preview {
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	@extend .no-outline;
+	margin-top: -10px;
+	border: none;
+	@extend .no-outline;
+}
+
+.section-markdown-preview-button {
+	position: absolute;
+	top: 18px;
+	right: 118px;
+}

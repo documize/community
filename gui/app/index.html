@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		{{content-for 'head'}}
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>Documize</title>
+		<meta property="dbname" content="{{.DBname}}" />
+		<meta property="dbhash" content="{{.DBhash}}" />
+		<meta name="author" content="Documize" />
+		<meta name="description" content="Documize">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<link rel="shortcut icon" href="/favicon.ico?v=1.1" />
+		<link rel="icon" type="image/png" href="/favicon-32x32.png?v=1.1" sizes="32x32" />
+		<link rel="stylesheet" href="/assets/vendor.css">
+		<link rel="stylesheet" href="/assets/documize.css">
+		{{content-for 'head-footer'}}
+	</head>
+	<body>
+		{{content-for 'body'}}
+		<script src="/assets/vendor.js"></script>
+		<script src="/assets/documize.js"></script>
+		<script src="/codemirror/lib/codemirror.js"></script>
+		<script src="/codemirror/mode/meta.js"></script>
+		<script src="/codemirror/addon/mode/loadmode.js"></script>
+		<script src="/codemirror/addon/mode/overlay.js"></script>
+		<script src="/codemirror/addon/runmode/runmode.js"></script>
+		<script src="/codemirror/addon/runmode/colorize.js"></script>
+		{{content-for 'body-footer'}}
+	</body>
+</html>

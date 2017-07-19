@@ -1,0 +1,16 @@
+<div class="sidebar-panel">
+	<div class="title">Activity</div>
+	<div class="document-sidebar-view-activity">
+		<ul class="items">
+			{{#each activity as |a|}}
+				<li class="item">
+					<div class="avatar-box">
+						<div class="avatar">{{user-initials a.firstname a.lastname}}</div>
+					</div>
+					<div class="name">{{a.firstname}} {{a.lastname}}</div>
+					<div class="detail {{a.activityColor}}">{{a.activityLabel}}, {{time-ago a.created}}</div>
+				</li>
+			{{/each}}
+		</ul>
+	</div>
+</div>

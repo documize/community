@@ -15,7 +15,7 @@ package env
 import "github.com/jmoiron/sqlx"
 
 // Runtime provides access to database, logger and other server-level scoped objects.
-// Do not share per-request data -- use Context for per-request values.
+// Use Context for per-request values.
 type Runtime struct {
 	Db  *sqlx.DB
 	Log Logger

@@ -1,0 +1,83 @@
+<div id="zone-navigation" class="zone-navigation">
+	<ul id="top-zone" class="top-zone">
+        {{#if session.hasAccounts}}
+			<li>
+				<div id="accounts-button" class="round-button-mono button-white">
+	                <i class="material-icons">apps</i>
+	            </div>
+			</li>
+        {{else}}
+			<li>
+	            {{#link-to 'folders' class='title'}}
+	                <div class="round-button-mono button-white" title={{appMeta.title}}>
+	                    <i class="material-icons">apps</i>
+	                </div>
+	            {{/link-to}}
+			</li>
+        {{/if}}
+		<li class="{{if view.folder 'selected'}}">
+            {{#link-to 'folders' tagName="div" class="round-button-mono button-white"}}
+                <i class="material-icons">home</i>
+            {{/link-to}}
+		</li>
+		<li class="{{if view.search 'selected'}}">
+            {{#link-to 'search' tagName="div" class="round-button-mono button-white"}}
+                <i class="material-icons icon-tool">search</i>
+            {{/link-to}}
+		</li>
+    </ul>
+
+	<ul id="pinned-zone" class="pinned-zone">
+		{{#each pins as |pin|}}
+			<li {{action 'jumpToPin' pin}} data-id={{pin.id}} id="pin-{{pin.id}}" data-tooltip="{{pin.pin}}" data-tooltip-position="right middle" class="pin"><span class="key">{{pin.pin}}</span></li>
+		{{/each}}
+	</ul>
+
+    <ul id="bottom-zone" class="bottom-zone">
+		{{#if session.session.content.authenticated.user.admin}}
+			<li id="workspace-settings" class="{{if view.settings 'selected'}}" data-tooltip="Settings" data-tooltip-position="right center">
+	            {{#link-to 'customize.general'}}
+					<div class="round-button-mono button-white">
+		                <i class="material-icons icon-tool">tune</i>
+					</div>
+	            {{/link-to}}
+			</li>
+		{{/if}}
+        {{#if session.authenticated}}
+			<li class="{{if view.profile 'selected'}}">
+				{{#link-to 'profile'}}
+					<div class="round-button-mono button-white">
+						<i class="material-icons profile-link">{{session.user.initials}}</i>
+					</div>
+	            {{/link-to}}
+			</li>
+			{{#if enableLogout}}
+				<li id="workspace-logout" data-tooltip="Logout" data-tooltip-position="right center">
+					{{#link-to 'auth.logout'}}
+						<div class="round-button-mono button-white">
+							<i class="material-icons icon-tool">exit_to_app</i>
+						</div>
+					{{/link-to}}
+				</li>
+			{{/if}}
+        {{else}}
+			<li id="workspace-login" data-tooltip="Login" data-tooltip-position="right center">
+                {{#link-to 'auth.login'}}
+					<div class="round-button-mono button-white">
+						<i class="material-icons">lock_open</i>
+					</div>
+				{{/link-to}}
+	        </li>
+        {{/if}}
+    </ul>
+
+    {{#if session.hasAccounts}}
+        {{#dropdown-menu target="accounts-button" position="bottom right" open="click" }}
+            <ul class="menu">
+                {{#each session.accounts as |account|}}
+                    <li class="item" {{action 'switchAccount' account.domain }}>{{account.title}}</li>
+                {{/each}}
+            </ul>
+        {{/dropdown-menu}}
+    {{/if}}
+</div>

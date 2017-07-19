@@ -31,14 +31,14 @@ func (p *Persister) AddAccount(account entity.Account) (err error) {
 	defer streamutil.Close(stmt)
 
 	if err != nil {
-		errors.Wrap(err, "Unable to prepare insert for account")
+		err = errors.Wrap(err, "unable to prepare insert for account")
 		return
 	}
 
 	_, err = stmt.Exec(account.RefID, account.OrgID, account.UserID, account.Admin, account.Editor, account.Active, account.Created, account.Revised)
 
 	if err != nil {
-		errors.Wrap(err, "Unable to execute insert for account")
+		err = errors.Wrap(err, "unable to execute insert for account")
 		return
 	}
 

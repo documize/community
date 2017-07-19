@@ -1,0 +1,28 @@
+{{layout/zone-navigation}}
+{{#layout/zone-container}}
+	{{#layout/zone-sidebar}}
+		<div class="sidebar-toolbar">
+		</div>
+		<div class="sidebar-common">
+			{{layout/sidebar-intro title='Settings' message='Documize application settings'}}
+		</div>
+		<div class="sidebar-wrapper">
+			<div class="sidebar-menu">
+				<ul class="options">
+					{{#link-to 'customize.general' activeClass='selected' class="option" tagName="li"}}General{{/link-to}}
+					{{#link-to 'customize.folders' activeClass='selected' class="option" tagName="li"}}Spaces{{/link-to}}
+					{{#link-to 'customize.users' activeClass='selected' class="option" tagName="li"}}Users{{/link-to}}
+					{{#if session.isGlobalAdmin}}
+						{{#link-to 'customize.global' activeClass='selected' class="option" tagName="li"}}Global{{/link-to}}
+						{{#link-to 'customize.auth' activeClass='selected' class="option" tagName="li"}}Authentication{{/link-to}}
+					{{/if}}
+				</ul>
+			</div>
+		</div>
+	{{/layout/zone-sidebar}}
+	{{#layout/zone-content}}
+		<div class="page-customize">
+			{{outlet}}
+		</div>
+	{{/layout/zone-content}}
+{{/layout/zone-container}}

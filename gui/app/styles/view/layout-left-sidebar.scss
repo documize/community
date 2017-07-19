@@ -1,0 +1,159 @@
+$sidebar-width: 400px;
+
+#wrapper {
+    padding-left: 0;
+	margin-right: 60px;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+#sidebar-wrapper {
+	z-index: 888;
+    position: fixed;
+    overflow-x: hidden;
+    left: $sidebar-width;
+    top: 0;
+    width: 0;
+    height: 100%;
+    margin-left: -$sidebar-width;
+	border-right: 1px solid $color-stroke;
+    overflow-y: auto;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+.page-container {
+    margin-right: auto;
+    margin-left: auto;
+    padding-left: 30px;
+    padding-right: 30px;
+    max-width: 1200px;
+}
+
+#page-content-wrapper {
+    width: 100%;
+    position: relative;
+    // position: absolute;
+	padding: 30px;
+    margin: 0 auto;
+    margin-top: 30px;
+
+    .page-content-title {
+		font-size: 2rem;
+		margin: 30px 0 10px;
+		font-weight: normal;
+	}
+}
+
+@media(min-width:768px) {
+    #wrapper {
+        padding-left: $sidebar-width;
+    }
+
+    #sidebar-wrapper {
+        width: $sidebar-width;
+    }
+
+    // #page-content-wrapper {
+    //     padding: 30px;
+    //     position: relative;
+    // }
+}
+
+.sidebar-toolbar {
+	display: inline-block;
+    width: 60px;
+    background-color: $color-primary;
+    text-align: center;
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100%;
+	padding: 40px 0 0 0;
+
+    > .selected {
+        background-color: $color-link !important;
+        border: 1px solid $color-link !important;
+
+        > .material-icons {
+			color: $color-white !important;
+        }
+    }
+
+    > .round-button-mono {
+        background-color: $color-off-white;
+        border: 1px solid $color-off-white;
+
+        > .material-icons {
+			@include ease-in();
+			color: $color-gray;
+        }
+
+		&:hover {
+			> .material-icons {
+				color: $color-link;
+			}
+		}
+    }
+}
+
+.sidebar-common {
+	display: inline-block;
+	width: 340px;
+	padding: 40px 20px 0px 20px;
+	margin-left: 60px;
+
+    > .pinner {
+        cursor: pointer;
+    
+        > .material-icons {
+            color: $color-primary;
+        }
+    }
+
+	> .template-header {
+		color: $color-goldy;
+		font-size: 1.5em;
+		margin-bottom: 20px;
+	}
+
+    .zone-sidebar-page-title {
+        color: $color-primary;
+        font-size: 1.3rem;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+    .zone-sidebar-page-info {
+        color: $color-gray;
+        font-size: 1rem;
+        line-height: 1.5rem;
+        margin-bottom: 30px;
+    }
+}
+
+.sidebar-wrapper {
+	padding: 40px 20px 40px 20px;
+    margin-left: 60px;
+
+    .sidebar-panel {
+        width: 300px;
+
+        > .title {
+            color: $color-primary;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+
+        .folder-sidebar-form-wrapper, .document-sidebar-form-wrapper {
+            padding: 20px;
+            border: 1px solid $color-stroke;
+            @include border-radius(3px);
+            background-color: $color-white;
+        }
+    }
+}

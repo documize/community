@@ -1,0 +1,163 @@
+<div class="user-admin">
+	<div class="form-header">
+		<div class="title">User Management</div>
+		<div class="tip">Set basic information, passwords and permissions for {{users.length}} users</div>
+	</div>
+
+    <table class="basic-table">
+        <thead>
+            <tr>
+                <th class="">
+                    <div class="input-inline input-transparent">
+                        {{focus-input type="text" placeholder="< type here to filter users >" value=filter}}
+                    </div>
+                </th>
+                <th class="no-width">Create spaces</th>
+                <th class="no-width">Is administrator</th>
+                <th class="no-width">Is active</th>
+                <th class="no-width">
+                    {{#if hasSelectedUsers}}
+                        <div class="round-button round-button-small button-red" id="bulk-delete-users">
+                            <i class="material-icons">delete</i>
+                        </div>
+                        {{#dropdown-dialog target="bulk-delete-users" position="bottom right" button="Delete" color="flat-red" onAction=(action 'onBulkDelete')}}
+                            <p>Are you sure you want to delete selected users?</p>
+                        {{/dropdown-dialog}}
+                    {{/if}}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each filteredUsers as |user|}}
+                <tr>
+                    <td class="{{unless user.active 'inactive-user'}} {{if user.admin 'admin-user'}}">
+                        <div class="selector pull-left">
+                            {{#unless user.me}}
+                                {{#if user.selected}}
+                                    <i class="material-icons checkbox" {{action 'toggleSelect' user}}>check_box</i>
+                                {{else}}
+                                    <i class="material-icons checkbox" {{action 'toggleSelect' user}}>check_box_outline_blank</i>
+                                {{/if}}
+                            {{/unless}}
+                        </div>
+                        <div class="name">{{ user.fullname }}</div>
+                        <div class="email">{{ user.email }}</div>
+                    </td>
+                    <td class="no-width text-center">
+                        {{#if user.me}}
+                            <i class="material-icons color-gray">check_box</i>
+                        {{else if user.editor}}
+                            <i class="material-icons checkbox" {{action 'toggleEditor' user.id}}>check_box</i>
+                        {{else}}
+                            <i class="material-icons checkbox" {{action 'toggleEditor' user.id}}>check_box_outline_blank</i>
+                        {{/if}}
+                    </td>
+                    <td class="no-width text-center">
+                        {{#if user.me}}
+                            <i class="material-icons color-gray">check_box</i>
+                        {{else if user.admin}}
+                            <i class="material-icons checkbox" {{action 'toggleAdmin' user.id}}>check_box</i>
+                        {{else}}
+                            <i class="material-icons checkbox" {{action 'toggleAdmin' user.id}}>check_box_outline_blank</i>
+                        {{/if}}
+                    </td>
+                    <td class="no-width text-center">
+                        {{#if user.me}}
+                            <i class="material-icons color-gray">check_box</i>
+                        {{else if user.active}}
+                            <i class="material-icons checkbox" {{action 'toggleActive' user.id}}>check_box</i>
+                        {{else}}
+                            <i class="material-icons checkbox" {{action 'toggleActive' user.id}}>check_box_outline_blank</i>
+                        {{/if}}
+                    </td>
+                    <td class="no-width text-center">
+                        {{#if user.me}}
+                            <div class="edit-button-{{user.id}} round-button-mono" title="Edit" {{action "edit" user.id}}>
+                                <i class="material-icons">edit</i>
+                            </div>
+                        {{else}}
+                            <div class="edit-button-{{user.id}} round-button-mono" title="Edit" {{action "edit" user.id}}>
+                                <i class="material-icons">edit</i>
+                            </div>
+                            <div class="button-gap"></div>
+                            <div class="delete-button-{{user.id}} round-button-mono" title="Delete" {{action "confirmDelete" user.id}}>
+                                <i class="material-icons">delete</i>
+                            </div>
+                        {{/if}}
+                    </td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+
+<div class="dropdown-dialog edit-user-dialog">
+    <div class="content">
+        <form>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="input-control">
+                        <label>Firstname</label>
+                        {{input id="edit-firstname" type="text" value=editUser.firstname}}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-control">
+                        <label>Lastname</label>
+                        {{input id="edit-lastname" type="text" value=editUser.lastname}}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="input-control">
+                        <label>Email</label>
+                        {{input id="edit-email" type="text" value=editUser.email}}
+                    </div>
+                </div>
+            </div>
+            {{#if isAuthProviderDocumize}}
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="input-control">
+                            <label>Password</label>
+                            <div class="tip">Optional new password</div>
+                            {{input id="edit-password" type="password" value=password.password}}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-control">
+                            <label>Confirm Password</label>
+                            <div class="tip">Confirm new password</div>
+                            {{input id="edit-confirmPassword" type="password" value=password.confirmation}}
+                        </div>
+                    </div>
+                </div>
+            {{/if}}
+        </form>
+    </div>
+    <div class="actions">
+        <div class="flat-button" {{action 'cancel'}}>
+            cancel
+        </div>
+        <div class="flat-button flat-blue" {{action 'save'}}>
+            save
+        </div>
+    </div>
+    <div class="clearfix"></div>
+</div>
+
+<div class="dropdown-dialog delete-user-dialog">
+    <div class="content">
+        <p>Are you sure you want to delete user <span class="bold">{{deleteUser.fullname}}?</span></p>
+    </div>
+    <div class="actions">
+        <div class="flat-button" {{action 'cancel'}}>
+            cancel
+        </div>
+        <div class="flat-button flat-red" {{action 'delete'}}>
+            delete
+        </div>
+    </div>
+    <div class="clearfix"></div>
+</div>

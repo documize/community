@@ -1,0 +1,31 @@
+<div class="page-profile">
+	<div class="form-header">
+		<div class="title">About You</div>
+		<div class="tip"></div>
+	</div>
+    <div class="input-control">
+        <label>Firstname</label>
+        {{focus-input id="firstname" type="text" value=model.firstname class=(if hasFirstnameError 'error')}}
+    </div>
+    <div class="input-control">
+        <label>Lastname</label>
+        {{input id="lastname" type="text" value=model.lastname class=(if hasLastnameError 'error')}}
+    </div>
+    <div class="input-control">
+        <label>Email</label>
+        {{input id="email" type="text" value=model.email class=(if hasEmailError 'error')}}
+    </div>
+    {{#if isAuthProviderDocumize}}
+        <div class="input-control">
+            <label>Password</label>
+            <div class="tip">New password</div>
+            {{input id="password" type="password" value=password.password class=hasPasswordError}}
+        </div>
+        <div class="input-control">
+            <label>Confirm Password</label>
+            <div class="tip">Confirm your new password</div>
+            {{input id="confirmPassword" type="password" value=password.confirmation class=hasConfirmPasswordError}}
+        </div>
+    {{/if}}
+    <div class="regular-button button-blue" {{ action 'save' }}>save</div>
+</div>

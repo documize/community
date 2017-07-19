@@ -12,8 +12,11 @@
 // Package env provides runtime, server level setup and configuration
 package env
 
+import "github.com/jmoiron/sqlx"
+
 // Logger provides the interface for Documize compatible loggers.
 type Logger interface {
 	Info(message string)
 	Error(message string, err error)
+	SetDB(db *sqlx.DB)
 }

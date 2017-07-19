@@ -18,8 +18,8 @@ _convert
 bin/*
 dist/*
 embed/bindata/*
-app/dist/*
-app/dist-prod/*
+gui/dist/*
+gui/dist-prod/*
 
 # Architecture specific extensions/prefixes
 *.[568vq]
@@ -38,17 +38,17 @@ _testmain.go
 /plugin-libreoffice/plugin-libreoffice-osx
 
 # Ember specific
-/app/dist
-/app/dist-prod
-/app/tmp
-/app/bower_components
-/app/node_modules
-/app/.sass-cache
-/app/connect.lock
-/app/coverage/*
-/app/libpeerconnection.log
-/app/npm-debug.log
-/app/testem.log
+/gui/dist
+/gui/dist-prod
+/gui/tmp
+/gui/bower_components
+/gui/node_modules
+/gui/.sass-cache
+/gui/connect.lock
+/gui/coverage/*
+/gui/libpeerconnection.log
+/gui/npm-debug.log
+/gui/testem.log
 node_modules
 
 # Misc.

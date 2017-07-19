@@ -1,0 +1,138 @@
+.wysiwyg {
+	font-size: 17px;
+	line-height: 30px;
+	color: $color-wysiwyg;
+
+	table {
+		@include border(1px);
+
+		td {
+			padding: 5px 7px !important;
+			@include border(1px);
+
+			p {
+				margin: 0 !important;
+				padding: 0 !important;
+			}
+		}
+	}
+
+	ol,
+	ul {
+		margin: 15px 0;
+		padding: 0 0 0 40px;
+		line-height: 20px;
+	}
+
+	ol {
+		li {
+			list-style-type: decimal;
+			line-height: 20px;
+		}
+	}
+
+	ul {
+		li {
+			list-style-type: disc;
+			line-height: 20px;
+		}
+	}
+
+	h1 {
+		font-size: 1.7rem;
+		font-weight: bold;
+		margin: 16px 0;
+	}
+
+	h2 {
+		font-size: 1.5rem;
+		font-weight: bold;
+		margin: 16px 0;
+	}
+
+	h3 {
+		font-size: 1.3rem;
+		font-weight: bold;
+		margin: 16px 0;
+	}
+
+	h4,
+	h5,
+	h6,
+	h7,
+	h8,
+	h9 {
+		font-size: 1.1rem;
+		font-weight: bold;
+		margin: 16px 0;
+	}
+
+	h2,
+	h3,
+	h4,
+	h5,
+	h6,
+	h7,
+	h8,
+	h9 {
+		.page-title {
+			color: $color-off-black;
+		}
+	}
+
+	pre {
+		background-color: $color-off-white;
+		padding: 10px;
+		border: 1px solid $color-border;
+		@include border-radius(3px);
+	}
+
+	.code-mirror {
+		background-color: none;
+		padding: 10px;
+		border: none;
+		@include border-radius(0px);
+	}
+
+	.wysiwyg-table {
+		border: none;
+		border-collapse: collapse;
+		empty-cells: show;
+		max-width: 100% !important;
+		margin: 0 !important;
+
+		.fr-dashed-borders td,
+		.fr-dashed-borders th {
+			border-style: dashed;
+		}
+
+		.fr-alternate-rows tbody tr:nth-child(2n) {
+			background: #f5f5f5;
+		}
+
+		td,
+		th {
+			border: 1px solid #f3f5f8;
+			padding: 5px 7px !important;
+		}
+
+		td:empty,
+		th:empty {
+			height: 20px;
+		}
+
+		td.fr-highlighted,
+		th.fr-highlighted {
+			border: 1px double red;
+		}
+
+		td.fr-thick,
+		th.fr-thick {
+			border-width: 2px;
+		}
+
+		th {
+			background: #f7f6f6;
+		}
+	}
+}

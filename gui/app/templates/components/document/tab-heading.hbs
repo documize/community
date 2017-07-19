@@ -1,0 +1,92 @@
+<div class="page-title">
+	<div class="icon">
+		<img class="img" src="/sections/{{page.contentType}}.png" srcset="/sections/{{page.contentType}}@2x.png" />
+	</div>
+    <span id="page-title-{{ page.id }}">{{ page.title }}</span>
+    <div id="page-toolbar-{{ page.id }}" class="pull-right page-toolbar hidden-xs hidden-sm">
+		{{#unless expanded}}
+			<div class="round-button-mono" {{action 'toggleExpand'}}>
+				<i class="material-icons color-gray">expand_more</i>
+			</div>
+		{{else}}
+        	{{#if isEditor}}
+				{{#link-to 'document.section' page.id}}
+					<div class="round-button-mono">
+		                <i class="material-icons color-gray">mode_edit</i>
+		            </div>
+				{{/link-to}}
+	            <div class="round-button-mono" id="page-menu-{{page.id}}">
+	                <i class="material-icons color-gray">more_vert</i>
+	            </div>
+				<div class="round-button-mono" {{action 'toggleExpand'}}>
+					<i class="material-icons color-gray">expand_less</i>
+				</div>
+
+				{{#dropdown-menu target=menuTarget position="top right" open="click" onOpenCallback=(action 'onMenuOpen') onCloseCallback=(action 'onMenuOpen')}}
+					<ul class="menu">
+						<li class="item" id={{copyButtonId}}>Copy</li>
+						<li class="item" id={{moveButtonId}}>Move</li>
+						<li class="item" id={{publishButtonId}}>Publish</li>
+						<li class="divider"></li>
+						<li class="item danger" id={{deleteButtonId}}>Delete</li>
+					</ul>
+				{{/dropdown-menu}}
+
+				{{#if menuOpen}}
+		            {{#dropdown-dialog target=deleteButtonId position="bottom right" button="Delete" color="flat-red" onAction=(action 'deletePage')}}
+		                <p>Are you sure you want to delete <span class="bold">{{page.title}}?</span></p>
+		                <p>
+		                    {{input type="checkbox" id=checkId class="margin-left-20" checked=deleteChildren}}
+		                    <label for="{{checkId}}">&nbsp;Delete child sections</label>
+		                </p>
+		            {{/dropdown-dialog}}
+					{{#dropdown-dialog id=publishDialogId target=publishButtonId position="bottom right" button="Publish" color="flat-green" focusOn=blockTitleId onAction=(action 'onSavePageAsBlock')}}
+						<div class="form-header">
+							<div class="tip">
+								<span class="bold">{{folder.name}}:</span> Content Block
+							</div>
+						</div>
+						<div class="input-control">
+							<label>Name</label>
+							<div class="tip">Short title for reusable content block</div>
+							{{input type="text" value=blockTitle id=blockTitleId}}
+						</div>
+						<div class="input-control">
+							<label>Description</label>
+							<div class="tip">Short description to help others understand<br/>the reusable content block</div>
+							{{textarea rows="3" value=blockExcerpt id=blockExcerptId}}
+						</div>
+		            {{/dropdown-dialog}}
+					{{#dropdown-dialog id=copyDialogId target=copyButtonId position="bottom right" button="Copy" color="flat-green" onOpenCallback=(action 'onCopyDialogOpen') onAction=(action 'onCopyPage')}}
+						<div class="form-header">
+							<div class="tip">
+								<span class="bold">Copy:</span> {{page.title}}
+							</div>
+						</div>
+						<div class="input-control">
+							<label>Target</label>
+							<div class="tip">Select where the content should be copied to</div>
+							{{ui-select cssClass="dropdown-page-toolbar" content=documentList action=(action 'onTargetChange') optionValuePath="id" optionLabelPath="name" selection=document}}
+						</div>
+		            {{/dropdown-dialog}}
+					{{#dropdown-dialog id=moveDialogId target=moveButtonId position="bottom right" button="Move" color="flat-green" onOpenCallback=(action 'onCopyDialogOpen') onAction=(action 'onMovePage')}}
+						<div class="form-header">
+							<div class="tip">
+								<span class="bold">Move:</span> {{page.title}}
+							</div>
+						</div>
+						<div class="input-control">
+							<label>Target</label>
+							<div class="tip">Select where the content should be moved to</div>
+							{{ui-select cssClass="dropdown-page-toolbar" content=documentListOthers action=(action 'onTargetChange') optionValuePath="id" optionLabelPath="name"}}
+						</div>
+		            {{/dropdown-dialog}}
+				{{/if}}
+			{{else}}
+				<div class="round-button-mono" {{action 'toggleExpand'}}>
+					<i class="material-icons color-gray">expand_less</i>
+				</div>
+	        {{/if}}
+		{{/unless}}
+    </div>
+</div>

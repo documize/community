@@ -23,6 +23,7 @@ import (
 	"github.com/documize/community/core/env"
 )
 
+
 var environment = "Non-production"
 
 func init() {
