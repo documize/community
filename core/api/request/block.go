@@ -18,7 +18,7 @@ import (
 
 	"github.com/documize/community/core/api/entity"
 	"github.com/documize/community/core/log"
-	"github.com/documize/community/core/utility"
+	"github.com/documize/community/core/streamutil"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -30,7 +30,7 @@ func (p *Persister) AddBlock(b entity.Block) (err error) {
 	b.Revised = time.Now().UTC()
 
 	stmt, err := p.Context.Transaction.Preparex("INSERT INTO block (refid, orgid, labelid, userid, contenttype, pagetype, title, body, excerpt, rawbody, config, externalsource, used, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error("Unable to prepare insert AddBlock", err)
@@ -50,7 +50,7 @@ func (p *Persister) AddBlock(b entity.Block) (err error) {
 // GetBlock returns requested reusable content block.
 func (p *Persister) GetBlock(id string) (b entity.Block, err error) {
 	stmt, err := Db.Preparex("SELECT a.id, a.refid, a.orgid, a.labelid, a.userid, a.contenttype, a.pagetype, a.title, a.body, a.excerpt, a.rawbody, a.config, a.externalsource, a.used, a.created, a.revised, b.firstname, b.lastname FROM block a LEFT JOIN user b ON a.userid = b.refid WHERE a.orgid=? AND a.refid=?")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to prepare select GetBlock %s", id), err)
@@ -81,7 +81,7 @@ func (p *Persister) GetBlocksForSpace(labelID string) (b []entity.Block, err err
 // IncrementBlockUsage increments usage counter for content block.
 func (p *Persister) IncrementBlockUsage(id string) (err error) {
 	stmt, err := p.Context.Transaction.Preparex("UPDATE block SET used=used+1, revised=? WHERE orgid=? AND refid=?")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to prepare update IncrementBlockUsage id %s", id), err)
 		return
@@ -99,7 +99,7 @@ func (p *Persister) IncrementBlockUsage(id string) (err error) {
 // DecrementBlockUsage decrements usage counter for content block.
 func (p *Persister) DecrementBlockUsage(id string) (err error) {
 	stmt, err := p.Context.Transaction.Preparex("UPDATE block SET used=used-1, revised=? WHERE orgid=? AND refid=?")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to prepare update DecrementBlockUsage id %s", id), err)
 		return
@@ -117,7 +117,7 @@ func (p *Persister) DecrementBlockUsage(id string) (err error) {
 // RemoveBlockReference clears page.blockid for given blockID.
 func (p *Persister) RemoveBlockReference(id string) (err error) {
 	stmt, err := p.Context.Transaction.Preparex("UPDATE page SET blockid='', revised=? WHERE orgid=? AND blockid=?")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to prepare update RemoveBlockReference id %s", id), err)
 		return
@@ -144,7 +144,7 @@ func (p *Persister) UpdateBlock(b entity.Block) (err error) {
 
 	var stmt *sqlx.NamedStmt
 	stmt, err = p.Context.Transaction.PrepareNamed("UPDATE block SET title=:title, body=:body, excerpt=:excerpt, rawbody=:rawbody, config=:config, revised=:revised WHERE orgid=:orgid AND refid=:refid")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to prepare update UpdateBlock %s", b.RefID), err)

@@ -18,12 +18,10 @@ import (
 
 	api "github.com/documize/community/core/convapi"
 	"github.com/documize/community/core/log"
-	"github.com/documize/community/core/utility"
-
+	"github.com/documize/community/core/stringutil"
+	"golang.org/x/net/context"
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
-
-	"golang.org/x/net/context"
 )
 
 const maxTitle = 2000   // NOTE: must be the same length as database page.title
@@ -75,7 +73,7 @@ func (h *htmlToSplit) testableSplit(request *api.DocumentConversionRequest,
 				if bdy.Type == html.ElementNode && bdy.DataAtom == atom.Body {
 					h.thisSect = api.Page{
 						Level: 1,
-						Title: utility.BeautifyFilename(request.Filename),
+						Title: stringutil.BeautifyFilename(request.Filename),
 						Body:  []byte(``)}
 					err := h.processChildren(bdy)
 					if err != nil {
@@ -147,7 +145,7 @@ func (h *htmlToSplit) renderHeading(c *html.Node, level uint64) error {
 	if err != nil {
 		return err
 	}
-	str, err := utility.HTML(string(byt)).Text(false) // heading text
+	str, err := stringutil.HTML(string(byt)).Text(false) // heading text
 	if err != nil {
 		return err
 	}
@@ -191,7 +189,7 @@ func (h *htmlToSplit) renderAppend(c *html.Node) error {
 	if err != nil {
 		return err
 	}
-	ebyt := utility.EscapeHTMLcomplexCharsByte(byt)
+	ebyt := stringutil.EscapeHTMLcomplexCharsByte(byt)
 	if len(ebyt) > maxBody {
 		msg := fmt.Sprintf("(Documize warning: HTML render element ignored, size of %d exceeded maxBody of %d.)", len(ebyt), maxBody)
 		log.Info(msg)

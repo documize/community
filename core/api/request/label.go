@@ -17,7 +17,7 @@ import (
 
 	"github.com/documize/community/core/api/entity"
 	"github.com/documize/community/core/log"
-	"github.com/documize/community/core/utility"
+	"github.com/documize/community/core/streamutil"
 )
 
 // AddLabel adds new folder into the store.
@@ -27,7 +27,7 @@ func (p *Persister) AddLabel(l entity.Label) (err error) {
 	l.Revised = time.Now().UTC()
 
 	stmt, err := p.Context.Transaction.Preparex("INSERT INTO label (refid, label, orgid, userid, type, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?)")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error("Unable to prepare insert for label", err)
@@ -47,7 +47,7 @@ func (p *Persister) AddLabel(l entity.Label) (err error) {
 // GetLabel returns a folder from the store.
 func (p *Persister) GetLabel(id string) (label entity.Label, err error) {
 	stmt, err := Db.Preparex("SELECT id,refid,label as name,orgid,userid,type,created,revised FROM label WHERE orgid=? and refid=?")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to prepare select for label %s", id), err)
@@ -113,7 +113,7 @@ func (p *Persister) UpdateLabel(label entity.Label) (err error) {
 	label.Revised = time.Now().UTC()
 
 	stmt, err := p.Context.Transaction.PrepareNamed("UPDATE label SET label=:name, type=:type, userid=:userid, revised=:revised WHERE orgid=:orgid AND refid=:refid")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to prepare update for label %s", label.RefID), err)
@@ -133,7 +133,7 @@ func (p *Persister) UpdateLabel(label entity.Label) (err error) {
 // ChangeLabelOwner transfer folder ownership.
 func (p *Persister) ChangeLabelOwner(currentOwner, newOwner string) (err error) {
 	stmt, err := p.Context.Transaction.Preparex("UPDATE label SET userid=? WHERE userid=? AND orgid=?")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to prepare change label owner for  %s", currentOwner), err)

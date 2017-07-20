@@ -22,14 +22,12 @@ import (
 
 	"github.com/documize/community/core/api/entity"
 	"github.com/documize/community/core/api/request"
-	"github.com/documize/community/core/api/util"
 	"github.com/documize/community/core/log"
-
-	uuid "github.com/nu7hatch/gouuid"
-
+	"github.com/documize/community/core/secrets"
+	"github.com/documize/community/core/uniqueid"
 	"github.com/gorilla/mux"
-
 	_ "github.com/mytrile/mime-ext" // this adds a large number of mime extensions
+	uuid "github.com/nu7hatch/gouuid"
 )
 
 // AttachmentDownload is the end-point that responds to a request for a particular attachment
@@ -194,11 +192,11 @@ func AddAttachments(w http.ResponseWriter, r *http.Request) {
 	job = newUUID.String()
 
 	var a entity.Attachment
-	refID := util.UniqueID()
+	refID := uniqueid.Generate()
 	a.RefID = refID
 	a.DocumentID = documentID
 	a.Job = job
-	random := util.GenerateSalt()
+	random := secrets.GenerateSalt()
 	a.FileID = random[0:9]
 	a.Filename = filename.Filename
 	a.Data = b.Bytes()

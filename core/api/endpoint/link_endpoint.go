@@ -23,6 +23,7 @@ import (
 	"github.com/documize/community/core/api/request"
 	"github.com/documize/community/core/api/util"
 	"github.com/documize/community/core/log"
+	"github.com/documize/community/core/uniqueid"
 )
 
 // GetLinkCandidates returns references to documents/sections/attachments.
@@ -70,7 +71,7 @@ func GetLinkCandidates(w http.ResponseWriter, r *http.Request) {
 	for _, p := range pages {
 		if p.RefID != pageID {
 			c := entity.LinkCandidate{
-				RefID:      util.UniqueID(),
+				RefID:      uniqueid.Generate(),
 				FolderID:   folderID,
 				DocumentID: documentID,
 				TargetID:   p.RefID,
@@ -98,7 +99,7 @@ func GetLinkCandidates(w http.ResponseWriter, r *http.Request) {
 
 	for _, f := range files {
 		c := entity.LinkCandidate{
-			RefID:      util.UniqueID(),
+			RefID:      uniqueid.Generate(),
 			FolderID:   folderID,
 			DocumentID: documentID,
 			TargetID:   f.RefID,

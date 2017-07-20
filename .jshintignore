@@ -1,4 +1,4 @@
-app/public/tinymce/**
-app/public/tinymce/
-app/public/tinymce
+gui/public/tinymce/**
+gui/public/tinymce/
+gui/public/tinymce
 

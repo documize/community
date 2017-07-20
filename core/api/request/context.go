@@ -15,13 +15,13 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gorilla/context"
 	"github.com/jmoiron/sqlx"
 
 	"github.com/documize/community/core/log"
-	"github.com/documize/community/core/utility"
 )
 
 var rc = Context{}
@@ -76,7 +76,12 @@ func SetContext(r *http.Request, c Context) {
 	c.SSL = r.TLS != nil
 
 	// get user IP from request
-	c.ClientIP = utility.GetRemoteIP(r.RemoteAddr)
+	i := strings.LastIndex(r.RemoteAddr, ":")
+	if i == -1 {
+		c.ClientIP = r.RemoteAddr
+	} else {
+		c.ClientIP = r.RemoteAddr[:i]
+	}
 
 	fip := r.Header.Get("X-Forwarded-For")
 	if len(fip) > 0 {

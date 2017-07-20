@@ -21,8 +21,7 @@ import (
 	"github.com/documize/community/core/api/entity"
 	"github.com/documize/community/core/api/request"
 	"github.com/documize/community/core/log"
-	"github.com/documize/community/core/utility"
-
+	"github.com/documize/community/core/streamutil"
 	"github.com/gorilla/mux"
 )
 
@@ -66,7 +65,7 @@ func UpdateOrganization(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer utility.Close(r.Body)
+	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {

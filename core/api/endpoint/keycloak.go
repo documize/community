@@ -12,24 +12,28 @@
 package endpoint
 
 import (
+	"bytes"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"obiwan/utility"
+	"sort"
+	"strconv"
 	"strings"
 
-	"bytes"
-	"errors"
 	"github.com/documize/community/core/api/endpoint/models"
 	"github.com/documize/community/core/api/entity"
 	"github.com/documize/community/core/api/request"
 	"github.com/documize/community/core/api/util"
 	"github.com/documize/community/core/log"
-	"github.com/documize/community/core/utility"
-	"sort"
-	"strconv"
+	"github.com/documize/community/core/secrets"
+	"github.com/documize/community/core/streamutil"
+	"github.com/documize/community/core/stringutil"
+	"github.com/documize/community/core/uniqueid"
 )
 
 // AuthenticateKeycloak checks Keycloak authentication credentials.
@@ -37,7 +41,7 @@ func AuthenticateKeycloak(w http.ResponseWriter, r *http.Request) {
 	method := "AuthenticateKeycloak"
 	p := request.GetPersister(r)
 
-	defer utility.Close(r.Body)
+	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		writeBadRequestError(w, method, "Bad payload")
@@ -118,9 +122,9 @@ func AuthenticateKeycloak(w http.ResponseWriter, r *http.Request) {
 		user.Firstname = a.Firstname
 		user.Lastname = a.Lastname
 		user.Email = a.Email
-		user.Initials = utility.MakeInitials(user.Firstname, user.Lastname)
-		user.Salt = util.GenerateSalt()
-		user.Password = util.GeneratePassword(util.GenerateRandomPassword(), user.Salt)
+		user.Initials = stringutil.MakeInitials(user.Firstname, user.Lastname)
+		user.Salt = secrets.GenerateSalt()
+		user.Password = secrets.GeneratePassword(secrets.GenerateRandomPassword(), user.Salt)
 
 		err = addUser(p, &user, ac.DefaultPermissionAddSpace)
 		if err != nil {
@@ -288,7 +292,7 @@ func addUser(p request.Persister, u *entity.User, addSpace bool) (err error) {
 	}
 
 	if addUser {
-		userID = util.UniqueID()
+		userID = uniqueid.Generate()
 		u.RefID = userID
 		err = p.AddUser(*u)
 
@@ -314,7 +318,7 @@ func addUser(p request.Persister, u *entity.User, addSpace bool) (err error) {
 		a.OrgID = p.Context.OrgID
 		a.Editor = addSpace
 		a.Admin = false
-		accountID := util.UniqueID()
+		accountID := uniqueid.Generate()
 		a.RefID = accountID
 		a.Active = true
 
@@ -429,7 +433,7 @@ func KeycloakUsers(c keycloakConfig) (users []entity.User, err error) {
 		u.Email = kc.Email
 		u.Firstname = kc.Firstname
 		u.Lastname = kc.Lastname
-		u.Initials = utility.MakeInitials(u.Firstname, u.Lastname)
+		u.Initials = stringutil.MakeInitials(u.Firstname, u.Lastname)
 		u.Active = kc.Enabled
 		u.Editor = false
 

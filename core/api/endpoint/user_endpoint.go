@@ -18,6 +18,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"obiwan/utility"
+	"strconv"
 	"strings"
 
 	"github.com/documize/community/core/api/entity"
@@ -25,12 +27,13 @@ import (
 	"github.com/documize/community/core/api/request"
 	"github.com/documize/community/core/api/util"
 	api "github.com/documize/community/core/convapi"
-	"github.com/documize/community/core/log"
-	"github.com/documize/community/core/utility"
-
 	"github.com/documize/community/core/event"
+	"github.com/documize/community/core/log"
+	"github.com/documize/community/core/secrets"
+	"github.com/documize/community/core/streamutil"
+	"github.com/documize/community/core/stringutil"
+	"github.com/documize/community/core/uniqueid"
 	"github.com/gorilla/mux"
-	"strconv"
 )
 
 // AddUser is the endpoint that enables an administrator to add a new user for their orgaisation.
@@ -48,7 +51,7 @@ func AddUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer utility.Close(r.Body)
+	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
@@ -85,12 +88,12 @@ func AddUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userModel.Initials = utility.MakeInitials(userModel.Firstname, userModel.Lastname)
+	userModel.Initials = stringutil.MakeInitials(userModel.Firstname, userModel.Lastname)
 
 	// generate secrets
-	requestedPassword := util.GenerateRandomPassword()
-	userModel.Salt = util.GenerateSalt()
-	userModel.Password = util.GeneratePassword(requestedPassword, userModel.Salt)
+	requestedPassword := secrets.GenerateRandomPassword()
+	userModel.Salt = secrets.GenerateSalt()
+	userModel.Password = secrets.GeneratePassword(requestedPassword, userModel.Salt)
 
 	// only create account if not dupe
 	addUser := true
@@ -121,7 +124,7 @@ func AddUser(w http.ResponseWriter, r *http.Request) {
 	p.Context.Transaction = tx
 
 	if addUser {
-		userID = util.UniqueID()
+		userID = uniqueid.Generate()
 		userModel.RefID = userID
 		err = p.AddUser(userModel)
 
@@ -147,7 +150,7 @@ func AddUser(w http.ResponseWriter, r *http.Request) {
 	// set up user account for the org
 	if addAccount {
 		var a entity.Account
-		a.RefID = util.UniqueID()
+		a.RefID = uniqueid.Generate()
 		a.UserID = userID
 		a.OrgID = p.Context.OrgID
 		a.Editor = true
@@ -419,7 +422,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer utility.Close(r.Body)
+	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
@@ -457,7 +460,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	p.Context.Transaction = tx
 
 	user.RefID = userID
-	user.Initials = utility.MakeInitials(user.Firstname, user.Lastname)
+	user.Initials = stringutil.MakeInitials(user.Firstname, user.Lastname)
 
 	err = p.UpdateUser(user)
 
@@ -516,7 +519,7 @@ func ChangeUserPassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer utility.Close(r.Body)
+	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
@@ -548,9 +551,9 @@ func ChangeUserPassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user.Salt = util.GenerateSalt()
+	user.Salt = secrets.GenerateSalt()
 
-	err = p.UpdateUserPassword(userID, user.Salt, util.GeneratePassword(newPassword, user.Salt))
+	err = p.UpdateUserPassword(userID, user.Salt, secrets.GeneratePassword(newPassword, user.Salt))
 
 	if err != nil {
 		writeGeneralSQLError(w, method, err)
@@ -604,7 +607,7 @@ func ForgotUserPassword(w http.ResponseWriter, r *http.Request) {
 	method := "ForgotUserPassword"
 	p := request.GetPersister(r)
 
-	defer utility.Close(r.Body)
+	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
@@ -629,7 +632,7 @@ func ForgotUserPassword(w http.ResponseWriter, r *http.Request) {
 
 	p.Context.Transaction = tx
 
-	token := util.GenerateSalt()
+	token := secrets.GenerateSalt()
 
 	err = p.ForgotUserPassword(user.Email, token)
 
@@ -667,7 +670,7 @@ func ResetUserPassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer utility.Close(r.Body)
+	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
@@ -696,9 +699,9 @@ func ResetUserPassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user.Salt = util.GenerateSalt()
+	user.Salt = secrets.GenerateSalt()
 
-	err = p.UpdateUserPassword(user.RefID, user.Salt, util.GeneratePassword(newPassword, user.Salt))
+	err = p.UpdateUserPassword(user.RefID, user.Salt, secrets.GeneratePassword(newPassword, user.Salt))
 
 	if err != nil {
 		log.IfErr(tx.Rollback())

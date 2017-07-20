@@ -15,7 +15,7 @@ import (
 	"bytes"
 	"errors"
 
-	"github.com/documize/community/core/utility"
+	"github.com/documize/community/core/streamutil"
 )
 
 /* NOT CURRENTLY USED
@@ -47,7 +47,7 @@ func ConfigString(area, path string) (ret string) {
 		//fmt.Printf("DEBUG: Unable to prepare select SQL for ConfigString: %s -- error: %v\n", sql, err)
 		return ""
 	}
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	var item = make([]uint8, 0)
 
@@ -84,7 +84,7 @@ func ConfigSet(area, json string) error {
 		//fmt.Printf("DEBUG: Unable to prepare select SQL for ConfigSet: %s -- error: %v\n", sql, err)
 		return err
 	}
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	_, err = stmt.Exec()
 	return err
@@ -107,7 +107,7 @@ func UserConfigGetJSON(orgid, userid, area, path string) (ret string) {
 		//fmt.Printf("DEBUG: Unable to prepare select SQL for ConfigString: %s -- error: %v\n", sql, err)
 		return ""
 	}
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	var item = make([]uint8, 0)
 
@@ -145,7 +145,7 @@ func UserConfigSetJSON(orgid, userid, area, json string) error {
 		//fmt.Printf("DEBUG: Unable to prepare select SQL for UserConfigSetJSON: %s -- error: %v\n", sql, err)
 		return err
 	}
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	_, err = stmt.Exec()
 	return err

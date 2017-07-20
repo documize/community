@@ -17,7 +17,7 @@ import (
 
 	"github.com/documize/community/core/api/entity"
 	"github.com/documize/community/core/log"
-	"github.com/documize/community/core/utility"
+	"github.com/documize/community/core/streamutil"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -36,7 +36,7 @@ func (p *Persister) AddPin(pin entity.Pin) (err error) {
 	pin.Sequence = maxSeq + 1
 
 	stmt, err := p.Context.Transaction.Preparex("INSERT INTO pin (refid, orgid, userid, labelid, documentid, pin, sequence, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error("Unable to prepare insert for pin", err)
@@ -56,7 +56,7 @@ func (p *Persister) AddPin(pin entity.Pin) (err error) {
 // GetPin returns requested pinned item.
 func (p *Persister) GetPin(id string) (pin entity.Pin, err error) {
 	stmt, err := Db.Preparex("SELECT id, refid, orgid, userid, labelid as folderid, documentid, pin, sequence, created, revised FROM pin WHERE orgid=? AND refid=?")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to prepare select for pin %s", id), err)
@@ -91,7 +91,7 @@ func (p *Persister) UpdatePin(pin entity.Pin) (err error) {
 
 	var stmt *sqlx.NamedStmt
 	stmt, err = p.Context.Transaction.PrepareNamed("UPDATE pin SET labelid=:folderid, documentid=:documentid, pin=:pin, sequence=:sequence, revised=:revised WHERE orgid=:orgid AND refid=:refid")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to prepare update for pin %s", pin.RefID), err)
@@ -111,7 +111,7 @@ func (p *Persister) UpdatePin(pin entity.Pin) (err error) {
 // UpdatePinSequence updates existing pinned item sequence number
 func (p *Persister) UpdatePinSequence(pinID string, sequence int) (err error) {
 	stmt, err := p.Context.Transaction.Preparex("UPDATE pin SET sequence=?, revised=? WHERE orgid=? AND userid=? AND refid=?")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to prepare update for pin sequence %s", pinID), err)

@@ -17,9 +17,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/documize/community/core/api"
 	"github.com/documize/community/core/api/entity"
 	"github.com/documize/community/core/log"
-	"github.com/documize/community/core/utility"
+	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/core/web"
 	"github.com/jmoiron/sqlx"
 )
@@ -31,7 +32,7 @@ func (p *Persister) AddOrganization(org entity.Organization) error {
 
 	stmt, err := p.Context.Transaction.Preparex(
 		"INSERT INTO organization (refid, company, title, message, url, domain, email, allowanonymousaccess, serial, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error("Unable to prepare insert for org", err)
@@ -60,7 +61,7 @@ func (p *Persister) AddOrganization(org entity.Organization) error {
 // GetOrganization returns the Organization reocrod from the organization database table with the given id.
 func (p *Persister) GetOrganization(id string) (org entity.Organization, err error) {
 	stmt, err := Db.Preparex("SELECT id, refid, company, title, message, url, domain, service as conversionendpoint, email, serial, active, allowanonymousaccess, authprovider, coalesce(authconfig,JSON_UNQUOTE('{}')) as authconfig, created, revised FROM organization WHERE refid=?")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to prepare select for org %s", id), err)
@@ -82,12 +83,12 @@ func (p *Persister) GetOrganizationByDomain(subdomain string) (org entity.Organi
 	err = nil
 	subdomain = strings.ToLower(subdomain)
 
-	if web.SiteMode == web.SiteModeNormal { // only return an organization when running normally
+	if api.Runtime.Flags.SiteMode == web.SiteModeNormal { // only return an organization when running normally
 
 		var stmt *sqlx.Stmt
 
 		stmt, err = Db.Preparex("SELECT id, refid, company, title, message, url, domain, service as conversionendpoint, email, serial, active, allowanonymousaccess, authprovider, coalesce(authconfig,JSON_UNQUOTE('{}')) as authconfig, created, revised FROM organization WHERE domain=? AND active=1")
-		defer utility.Close(stmt)
+		defer streamutil.Close(stmt)
 
 		if err != nil {
 			log.Error(fmt.Sprintf("Unable to prepare select for subdomain %s", subdomain), err)
@@ -111,7 +112,7 @@ func (p *Persister) UpdateOrganization(org entity.Organization) (err error) {
 	org.Revised = time.Now().UTC()
 
 	stmt, err := p.Context.Transaction.PrepareNamed("UPDATE organization SET title=:title, message=:message, service=:conversionendpoint, email=:email, allowanonymousaccess=:allowanonymousaccess, revised=:revised WHERE refid=:refid")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to prepare update for org %s", org.RefID), err)
@@ -144,7 +145,7 @@ func (p *Persister) DeleteOrganization(orgID string) (rows int64, err error) {
 // RemoveOrganization sets the orgID organization to be inactive, thus executing a "soft delete" operation.
 func (p *Persister) RemoveOrganization(orgID string) (err error) {
 	stmt, err := p.Context.Transaction.Preparex("UPDATE organization SET active=0 WHERE refid=?")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to prepare soft delete for org %s", orgID), err)
@@ -179,7 +180,7 @@ func (p *Persister) UpdateAuthConfig(org entity.Organization) (err error) {
 		return
 	}
 
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	_, err = stmt.Exec(&org)
 	if err != nil {

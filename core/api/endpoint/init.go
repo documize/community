@@ -15,6 +15,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/documize/community/core/api"
 	"github.com/documize/community/core/api/store"
 	"github.com/documize/community/core/log"
 )
@@ -43,7 +44,7 @@ func writeTransactionError(w http.ResponseWriter, method string, err error) {
 
 // IsInvalidLicense returns true if license is invalid
 func IsInvalidLicense() bool {
-	return Product.License.Valid == false
+	return api.Runtime.Product.License.Valid == false
 }
 
 /*

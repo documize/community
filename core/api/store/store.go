@@ -17,7 +17,7 @@ import (
 
 	"github.com/documize/community/core/api/entity"
 	api "github.com/documize/community/core/convapi"
-	"github.com/documize/community/core/utility"
+	"github.com/documize/community/core/stringutil"
 )
 
 // StorageProvider describes the interface for document conversion and take-on.
@@ -42,7 +42,7 @@ func ConvertFileResult(filename string, fileResult *api.DocumentConversionRespon
 	if fileResult != nil {
 		if len(fileResult.Pages) > 0 {
 			document.Title = fileResult.Pages[0].Title
-			document.Slug = utility.MakeSlug(fileResult.Pages[0].Title)
+			document.Slug = stringutil.MakeSlug(fileResult.Pages[0].Title)
 		}
 		document.Excerpt = fileResult.Excerpt
 	}

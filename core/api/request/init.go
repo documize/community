@@ -13,17 +13,16 @@ package request
 
 import (
 	"fmt"
-	"os"
-	"strings"
-	"time"
+	// "os"
+	// "strings"
+	// "time"
 
 	"github.com/jmoiron/sqlx"
-
-	"github.com/documize/community/core/database"
-	"github.com/documize/community/core/environment"
+	// "github.com/documize/community/core/database"
+	// "github.com/documize/community/core/env"
 	"github.com/documize/community/core/log"
-	"github.com/documize/community/core/utility"
-	"github.com/documize/community/core/web"
+	"github.com/documize/community/core/streamutil"
+	// "github.com/documize/community/core/web"
 )
 
 var connectionString string
@@ -46,84 +45,84 @@ func (dr *databaseRequest) MakeTx() (err error) {
 	return err
 }
 
-func init() {
-	var err error
+// func init() {
+// 	var err error
 
-	environment.GetString(&connectionString, "db", true,
-		`'username:password@protocol(hostname:port)/databasename" for example "fred:bloggs@tcp(localhost:3306)/documize"`,
-		func(*string, string) bool {
+// 	env.GetString(&connectionString, "db", true,
+// 		`'username:password@protocol(hostname:port)/databasename" for example "fred:bloggs@tcp(localhost:3306)/documize"`,
+// 		func(*string, string) bool {
 
-			Db, err = sqlx.Open("mysql", stdConn(connectionString))
+// 			Db, err = sqlx.Open("mysql", stdConn(connectionString))
 
-			if err != nil {
-				log.Error("Unable to setup database", err)
-			}
+// 			if err != nil {
+// 				log.Error("Unable to setup database", err)
+// 			}
 
-			Db.SetMaxIdleConns(30)
-			Db.SetMaxOpenConns(100)
-			Db.SetConnMaxLifetime(time.Second * 14400)
+// 			Db.SetMaxIdleConns(30)
+// 			Db.SetMaxOpenConns(100)
+// 			Db.SetConnMaxLifetime(time.Second * 14400)
 
-			err = Db.Ping()
+// 			err = Db.Ping()
 
-			if err != nil {
-				log.Error("Unable to connect to database, connection string should be of the form: '"+
-					"username:password@tcp(host:3306)/database'", err)
-				os.Exit(2)
-			}
+// 			if err != nil {
+// 				log.Error("Unable to connect to database, connection string should be of the form: '"+
+// 					"username:password@tcp(host:3306)/database'", err)
+// 				os.Exit(2)
+// 			}
 
-			// go into setup mode if required
-			if web.SiteMode != web.SiteModeOffline {
-				if database.Check(Db, connectionString) {
-					if err := database.Migrate(true /* the config table exists */); err != nil {
-						log.Error("Unable to run database migration: ", err)
-						os.Exit(2)
-					}
-				} else {
-					log.Info("database.Check(Db) !OK, going into setup mode")
-				}
-			}
+// 			// go into setup mode if required
+// 			if web.SiteMode != web.SiteModeOffline {
+// 				if database.Check(Db, connectionString) {
+// 					if err := database.Migrate(true /* the config table exists */); err != nil {
+// 						log.Error("Unable to run database migration: ", err)
+// 						os.Exit(2)
+// 					}
+// 				} else {
+// 					log.Info("database.Check(Db) !OK, going into setup mode")
+// 				}
+// 			}
 
-			return false // value not changed
-		})
-}
+// 			return false // value not changed
+// 		})
+// }
 
-var stdParams = map[string]string{
-	"charset":          "utf8",
-	"parseTime":        "True",
-	"maxAllowedPacket": "4194304", // 4194304 // 16777216 = 16MB
-}
+// var stdParams = map[string]string{
+// 	"charset":          "utf8",
+// 	"parseTime":        "True",
+// 	"maxAllowedPacket": "4194304", // 4194304 // 16777216 = 16MB
+// }
 
-func stdConn(cs string) string {
-	queryBits := strings.Split(cs, "?")
-	ret := queryBits[0] + "?"
-	retFirst := true
-	if len(queryBits) == 2 {
-		paramBits := strings.Split(queryBits[1], "&")
-		for _, pb := range paramBits {
-			found := false
-			if assignBits := strings.Split(pb, "="); len(assignBits) == 2 {
-				_, found = stdParams[strings.TrimSpace(assignBits[0])]
-			}
-			if !found { // if we can't work out what it is, put it through
-				if retFirst {
-					retFirst = false
-				} else {
-					ret += "&"
-				}
-				ret += pb
-			}
-		}
-	}
-	for k, v := range stdParams {
-		if retFirst {
-			retFirst = false
-		} else {
-			ret += "&"
-		}
-		ret += k + "=" + v
-	}
-	return ret
-}
+// func stdConn(cs string) string {
+// 	queryBits := strings.Split(cs, "?")
+// 	ret := queryBits[0] + "?"
+// 	retFirst := true
+// 	if len(queryBits) == 2 {
+// 		paramBits := strings.Split(queryBits[1], "&")
+// 		for _, pb := range paramBits {
+// 			found := false
+// 			if assignBits := strings.Split(pb, "="); len(assignBits) == 2 {
+// 				_, found = stdParams[strings.TrimSpace(assignBits[0])]
+// 			}
+// 			if !found { // if we can't work out what it is, put it through
+// 				if retFirst {
+// 					retFirst = false
+// 				} else {
+// 					ret += "&"
+// 				}
+// 				ret += pb
+// 			}
+// 		}
+// 	}
+// 	for k, v := range stdParams {
+// 		if retFirst {
+// 			retFirst = false
+// 		} else {
+// 			ret += "&"
+// 		}
+// 		ret += k + "=" + v
+// 	}
+// 	return ret
+// }
 
 type baseManager struct {
 }
@@ -134,7 +133,7 @@ func (m *baseManager) Delete(tx *sqlx.Tx, table string, id string) (rows int64, 
 		log.Error(fmt.Sprintf("Unable to prepare delete of row in table %s", table), err)
 		return
 	}
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	result, err := stmt.Exec(id)
 
@@ -154,7 +153,7 @@ func (m *baseManager) DeleteConstrained(tx *sqlx.Tx, table string, orgID, id str
 		log.Error(fmt.Sprintf("Unable to prepare constrained delete of row in table %s", table), err)
 		return
 	}
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	result, err := stmt.Exec(orgID, id)
 
@@ -174,7 +173,7 @@ func (m *baseManager) DeleteConstrainedWithID(tx *sqlx.Tx, table string, orgID, 
 		log.Error(fmt.Sprintf("Unable to prepare ConstrainedWithID delete of row in table %s", table), err)
 		return
 	}
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	result, err := stmt.Exec(orgID, id)
 

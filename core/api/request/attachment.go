@@ -18,7 +18,7 @@ import (
 
 	"github.com/documize/community/core/api/entity"
 	"github.com/documize/community/core/log"
-	"github.com/documize/community/core/utility"
+	"github.com/documize/community/core/streamutil"
 )
 
 // AddAttachment inserts the given record into the database attachement table.
@@ -30,7 +30,7 @@ func (p *Persister) AddAttachment(a entity.Attachment) (err error) {
 	a.Extension = bits[len(bits)-1]
 
 	stmt, err := p.Context.Transaction.Preparex("INSERT INTO attachment (refid, orgid, documentid, job, fileid, filename, data, extension, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error("Unable to prepare insert for attachment", err)
@@ -50,7 +50,7 @@ func (p *Persister) AddAttachment(a entity.Attachment) (err error) {
 // GetAttachment returns the database attachment record specified by the parameters.
 func (p *Persister) GetAttachment(orgID, attachmentID string) (attachment entity.Attachment, err error) {
 	stmt, err := Db.Preparex("SELECT id, refid, orgid, documentid, job, fileid, filename, data, extension, created, revised FROM attachment WHERE orgid=? and refid=?")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to prepare select for attachment %s", attachmentID), err)

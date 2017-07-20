@@ -19,8 +19,6 @@ import (
 	"runtime"
 
 	log "github.com/Sirupsen/logrus"
-
-	env "github.com/documize/community/core/environment"
 )
 
 var environment = "Non-production"
@@ -29,12 +27,6 @@ func init() {
 	log.SetFormatter(new(log.TextFormatter))
 	log.SetOutput(os.Stdout)
 	log.SetLevel(log.DebugLevel)
-	env.GetString(&environment, "log", false,
-		"system being logged e.g. 'PRODUCTION'",
-		func(*string, string) bool {
-			log.Infoln(environment + " environment logging enabled")
-			return false
-		})
 }
 
 // Debug logs a message for debug purposes.

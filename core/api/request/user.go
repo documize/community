@@ -20,7 +20,7 @@ import (
 
 	"github.com/documize/community/core/api/entity"
 	"github.com/documize/community/core/log"
-	"github.com/documize/community/core/utility"
+	"github.com/documize/community/core/streamutil"
 )
 
 // AddUser adds the given user record to the user table.
@@ -29,7 +29,7 @@ func (p *Persister) AddUser(user entity.User) (err error) {
 	user.Revised = time.Now().UTC()
 
 	stmt, err := p.Context.Transaction.Preparex("INSERT INTO user (refid, firstname, lastname, email, initials, password, salt, reset, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error("Unable to prepare insert for user", err)
@@ -54,7 +54,7 @@ func (p *Persister) AddUser(user entity.User) (err error) {
 // GetUser returns the user record for the given id.
 func (p *Persister) GetUser(id string) (user entity.User, err error) {
 	stmt, err := Db.Preparex("SELECT id, refid, firstname, lastname, email, initials, global, password, salt, reset, created, revised FROM user WHERE refid=?")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to prepare select for user %s", id), err)
@@ -76,7 +76,7 @@ func (p *Persister) GetUserByEmail(email string) (user entity.User, err error) {
 	email = strings.TrimSpace(strings.ToLower(email))
 
 	stmt, err := Db.Preparex("SELECT id, refid, firstname, lastname, email, initials, global, password, salt, reset, created, revised FROM user WHERE TRIM(LOWER(email))=?")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to prepare select for user by email %s", email), err)
@@ -98,7 +98,7 @@ func (p *Persister) GetUserByDomain(domain, email string) (user entity.User, err
 	email = strings.TrimSpace(strings.ToLower(email))
 
 	stmt, err := Db.Preparex("SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.global, u.password, u.salt, u.reset, u.created, u.revised FROM user u, account a, organization o WHERE TRIM(LOWER(u.email))=? AND u.refid=a.userid AND a.orgid=o.refid AND TRIM(LOWER(o.domain))=?")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to prepare GetUserByDomain %s %s", domain, email), err)
@@ -118,7 +118,7 @@ func (p *Persister) GetUserByDomain(domain, email string) (user entity.User, err
 // GetUserByToken returns a user record given a reset token value.
 func (p *Persister) GetUserByToken(token string) (user entity.User, err error) {
 	stmt, err := Db.Preparex("SELECT  id, refid, firstname, lastname, email, initials, global, password, salt, reset, created, revised FROM user WHERE reset=?")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to prepare select for user by token %s", token), err)
@@ -140,7 +140,7 @@ func (p *Persister) GetUserByToken(token string) (user entity.User, err error) {
 // the onboarding process.
 func (p *Persister) GetUserBySerial(serial string) (user entity.User, err error) {
 	stmt, err := Db.Preparex("SELECT id, refid, firstname, lastname, email, initials, global, password, salt, reset, created, revised FROM user WHERE salt=?")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		return
@@ -211,7 +211,7 @@ func (p *Persister) UpdateUser(user entity.User) (err error) {
 
 	stmt, err := p.Context.Transaction.PrepareNamed(
 		"UPDATE user SET firstname=:firstname, lastname=:lastname, email=:email, revised=:revised, initials=:initials WHERE refid=:refid")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to prepare update for user %s", user.RefID), err)
@@ -231,7 +231,7 @@ func (p *Persister) UpdateUser(user entity.User) (err error) {
 // UpdateUserPassword updates a user record with new password and salt values.
 func (p *Persister) UpdateUserPassword(userID, salt, password string) (err error) {
 	stmt, err := p.Context.Transaction.Preparex("UPDATE user SET salt=?, password=?, reset='' WHERE refid=?")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error("Unable to prepare update for user", err)
@@ -257,7 +257,7 @@ func (p *Persister) UpdateUserPassword(userID, salt, password string) (err error
 // DeactiveUser deletes the account record for the given userID and persister.Context.OrgID.
 func (p *Persister) DeactiveUser(userID string) (err error) {
 	stmt, err := p.Context.Transaction.Preparex("DELETE FROM account WHERE userid=? and orgid=?")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error("Unable to prepare update for user", err)
@@ -277,7 +277,7 @@ func (p *Persister) DeactiveUser(userID string) (err error) {
 // ForgotUserPassword sets the password to '' and the reset field to token, for a user identified by email.
 func (p *Persister) ForgotUserPassword(email, token string) (err error) {
 	stmt, err := p.Context.Transaction.Preparex("UPDATE user SET reset=?, password='' WHERE LOWER(email)=?")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error("Unable to prepare update for reset password", err)

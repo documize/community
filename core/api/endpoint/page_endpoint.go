@@ -25,9 +25,9 @@ import (
 	"github.com/documize/community/core/api/util"
 	"github.com/documize/community/core/log"
 	"github.com/documize/community/core/section/provider"
-	"github.com/documize/community/core/utility"
+	"github.com/documize/community/core/streamutil"
+	"github.com/documize/community/core/uniqueid"
 	htmldiff "github.com/documize/html-diff"
-
 	"github.com/gorilla/mux"
 )
 
@@ -54,7 +54,7 @@ func AddDocumentPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer utility.Close(r.Body)
+	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
@@ -80,7 +80,7 @@ func AddDocumentPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pageID := util.UniqueID()
+	pageID := uniqueid.Generate()
 	model.Page.RefID = pageID
 	model.Meta.PageID = pageID
 	model.Meta.OrgID = p.Context.OrgID   // required for Render call below
@@ -260,7 +260,7 @@ func GetDocumentPagesBatch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer utility.Close(r.Body)
+	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
@@ -389,7 +389,7 @@ func DeleteDocumentPages(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer utility.Close(r.Body)
+	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		writeBadRequestError(w, method, "Bad body")
@@ -480,7 +480,7 @@ func UpdateDocumentPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer utility.Close(r.Body)
+	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		writeBadRequestError(w, method, "Bad request body")
@@ -531,7 +531,7 @@ func UpdateDocumentPage(w http.ResponseWriter, r *http.Request) {
 	var skipRevision bool
 	skipRevision, err = strconv.ParseBool(r.URL.Query().Get("r"))
 
-	refID := util.UniqueID()
+	refID := uniqueid.Generate()
 	err = p.UpdatePage(model.Page, refID, p.Context.UserID, skipRevision)
 	if err != nil {
 		writeGeneralSQLError(w, method, err)
@@ -585,7 +585,7 @@ func ChangeDocumentPageSequence(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer utility.Close(r.Body)
+	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
@@ -650,7 +650,7 @@ func ChangeDocumentPageLevel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer utility.Close(r.Body)
+	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
@@ -1002,7 +1002,7 @@ func RollbackDocumentPage(w http.ResponseWriter, r *http.Request) {
 
 	// roll back page
 	page.Body = revision.Body
-	refID := util.UniqueID()
+	refID := uniqueid.Generate()
 
 	err = p.UpdatePage(page, refID, p.Context.UserID, false)
 	if err != nil {
@@ -1102,7 +1102,7 @@ func CopyPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newPageID := util.UniqueID()
+	newPageID := uniqueid.Generate()
 	page.RefID = newPageID
 	page.Level = 1
 	page.Sequence = 0

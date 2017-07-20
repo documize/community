@@ -18,7 +18,7 @@ import (
 
 	"github.com/documize/community/core/api/entity"
 	"github.com/documize/community/core/log"
-	"github.com/documize/community/core/utility"
+	"github.com/documize/community/core/streamutil"
 	"github.com/pkg/errors"
 )
 
@@ -28,17 +28,17 @@ func (p *Persister) AddAccount(account entity.Account) (err error) {
 	account.Revised = time.Now().UTC()
 
 	stmt, err := p.Context.Transaction.Preparex("INSERT INTO account (refid, orgid, userid, admin, editor, active, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
-		errors.Wrap(err, "Unable to prepare insert for account")
+		err = errors.Wrap(err, "unable to prepare insert for account")
 		return
 	}
 
 	_, err = stmt.Exec(account.RefID, account.OrgID, account.UserID, account.Admin, account.Editor, account.Active, account.Created, account.Revised)
 
 	if err != nil {
-		errors.Wrap(err, "Unable to execute insert for account")
+		err = errors.Wrap(err, "unable to execute insert for account")
 		return
 	}
 
@@ -48,7 +48,7 @@ func (p *Persister) AddAccount(account entity.Account) (err error) {
 // GetUserAccount returns the database account record corresponding to the given userID, using the client's current organizaion.
 func (p *Persister) GetUserAccount(userID string) (account entity.Account, err error) {
 	stmt, err := Db.Preparex("SELECT a.*, b.company, b.title, b.message, b.domain FROM account a, organization b WHERE b.refid=a.orgid and a.orgid=? and a.userid=?")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to prepare select for account by user %s", userID), err)
@@ -109,7 +109,7 @@ func (p *Persister) UpdateAccount(account entity.Account) (err error) {
 	account.Revised = time.Now().UTC()
 
 	stmt, err := p.Context.Transaction.PrepareNamed("UPDATE account SET userid=:userid, admin=:admin, editor=:editor, active=:active, revised=:revised WHERE orgid=:orgid AND refid=:refid")
-	defer utility.Close(stmt)
+	defer streamutil.Close(stmt)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to prepare update for account %s", account.RefID), err)
