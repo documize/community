@@ -36,7 +36,7 @@ var dbPtr *sqlx.DB
 
 // Check that the database is configured correctly and that all the required tables exist.
 // It must be the first function called in this package.
-func Check(runtime env.Runtime) bool {
+func Check(runtime *env.Runtime) bool {
 	dbPtr = runtime.Db
 
 	log.Info("Database checks: started")

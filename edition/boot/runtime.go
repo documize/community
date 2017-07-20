@@ -26,36 +26,6 @@ import (
 
 // InitRuntime prepares runtime using command line and environment variables.
 func InitRuntime(r *env.Runtime) bool {
-	// Prepare DB
-	db, err := sqlx.Open("mysql", stdConn(r.Flags.DBConn))
-	if err != nil {
-		r.Log.Error("unable to setup database", err)
-	}
-
-	r.Db = db
-	r.Db.SetMaxIdleConns(30)
-	r.Db.SetMaxOpenConns(100)
-	r.Db.SetConnMaxLifetime(time.Second * 14400)
-
-	err = r.Db.Ping()
-	if err != nil {
-		r.Log.Error("unable to connect to database, connection string should be of the form: '"+
-			"username:password@tcp(host:3306)/database'", err)
-		return false
-	}
-
-	// go into setup mode if required
-	if r.Flags.SiteMode != web.SiteModeOffline {
-		if database.Check(*r) {
-			if err := database.Migrate(true /* the config table exists */); err != nil {
-				r.Log.Error("unable to run database migration", err)
-				return false
-			}
-		} else {
-			r.Log.Info("going into setup mode to prepare new database")
-		}
-	}
-
 	// Prepare SALT
 	if r.Flags.Salt == "" {
 		b := make([]byte, 17)
@@ -87,6 +57,36 @@ func InitRuntime(r *env.Runtime) bool {
 	} else {
 		if r.Flags.HTTPPort == "" {
 			r.Flags.HTTPPort = "443"
+		}
+	}
+
+	// Prepare DB
+	db, err := sqlx.Open("mysql", stdConn(r.Flags.DBConn))
+	if err != nil {
+		r.Log.Error("unable to setup database", err)
+	}
+
+	r.Db = db
+	r.Db.SetMaxIdleConns(30)
+	r.Db.SetMaxOpenConns(100)
+	r.Db.SetConnMaxLifetime(time.Second * 14400)
+
+	err = r.Db.Ping()
+	if err != nil {
+		r.Log.Error("unable to connect to database, connection string should be of the form: '"+
+			"username:password@tcp(host:3306)/database'", err)
+		return false
+	}
+
+	// go into setup mode if required
+	if r.Flags.SiteMode != web.SiteModeOffline {
+		if database.Check(r) {
+			if err := database.Migrate(true /* the config table exists */); err != nil {
+				r.Log.Error("unable to run database migration", err)
+				return false
+			}
+		} else {
+			r.Log.Info("going into setup mode to prepare new database")
 		}
 	}
 

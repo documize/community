@@ -37,7 +37,7 @@ func init() {
 	runtime.Product = env.ProdInfo{}
 	runtime.Product.Major = "1"
 	runtime.Product.Minor = "50"
-	runtime.Product.Patch = "0"
+	runtime.Product.Patch = "1"
 	runtime.Product.Version = fmt.Sprintf("%s.%s.%s", runtime.Product.Major, runtime.Product.Minor, runtime.Product.Patch)
 	runtime.Product.Edition = "Community"
 	runtime.Product.Title = fmt.Sprintf("%s Edition", runtime.Product.Edition)
