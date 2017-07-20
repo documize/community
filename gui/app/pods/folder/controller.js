@@ -15,7 +15,7 @@ import NotifierMixin from '../../mixins/notifier';
 export default Ember.Controller.extend(NotifierMixin, {
 	documentService: Ember.inject.service('document'),
 	folderService: Ember.inject.service('folder'),
-	localStorage: Ember.inject.service('localStorage'),	
+	localStorage: Ember.inject.service('localStorage'),
 	hasSelectedDocuments: false,
 	selectedDocuments: [],
 	queryParams: ['tab'],

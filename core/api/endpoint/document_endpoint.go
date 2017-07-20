@@ -205,6 +205,10 @@ func GetDocumentsByFolder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if len(documents) == 0 {
+		documents = []entity.Document{}
+	}
+
 	json, err := json.Marshal(documents)
 
 	if err != nil {

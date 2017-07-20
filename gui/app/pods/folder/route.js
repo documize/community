@@ -28,7 +28,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 				this.get('folderService').setCurrentFolder(folder).then(() => {
 					this.set('isEditor', this.get('folderService').get('canEditCurrentFolder'));
 					this.set('isFolderOwner', this.get('session.user.id') === folder.get('userId'));
-				
+
 					resolve();
 				});
 			});
@@ -52,10 +52,11 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 
 	actions: {
 		error(error /*, transition*/ ) {
+			console.log(error); // eslint-disable-line no-console
 			if (error) {
 				this.transitionTo('/not-found');
 				return false;
 			}
 		}
-	}	
+	}
 });
