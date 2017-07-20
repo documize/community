@@ -52,8 +52,13 @@ func init() {
 	runtime.Product.License.Trial = false
 	runtime.Product.License.Edition = "Community"
 
+	// parse settings from command line and environment
 	runtime.Flags = env.ParseFlags()
-	flagPrep(&runtime)
+	flagsOK := flagPrep(&runtime)
+
+	if flagsOK {
+		// runtime.Log = runtime.Log.SetDB(runtime.Db)
+	}
 
 	// temp code repair
 	api.Runtime = runtime
