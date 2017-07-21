@@ -13,43 +13,30 @@
 package boot
 
 import (
-	"crypto/rand"
-	"fmt"
 	"strings"
 	"time"
 
 	"github.com/documize/community/core/database"
 	"github.com/documize/community/core/env"
+	"github.com/documize/community/core/secrets"
 	"github.com/documize/community/core/web"
 	"github.com/jmoiron/sqlx"
 )
 
 // InitRuntime prepares runtime using command line and environment variables.
 func InitRuntime(r *env.Runtime) bool {
-	// Prepare SALT
+	// We need SALT to hash auth JWT tokens
 	if r.Flags.Salt == "" {
-		b := make([]byte, 17)
+		r.Flags.Salt = secrets.RandSalt()
 
-		_, err := rand.Read(b)
-		if err != nil {
-			r.Log.Error("problem using crypto/rand", err)
+		if r.Flags.Salt == "" {
 			return false
 		}
 
-		for k, v := range b {
-			if (v >= 'a' && v <= 'z') || (v >= 'A' && v <= 'Z') || (v >= '0' && v <= '0') {
-				b[k] = v
-			} else {
-				s := fmt.Sprintf("%x", v)
-				b[k] = s[0]
-			}
-		}
-
-		r.Flags.Salt = string(b)
 		r.Log.Info("please set DOCUMIZESALT or use -salt with this value: " + r.Flags.Salt)
 	}
 
-	// Prepare HTTP ports
+	// We can use either or both HTTP and HTTPS ports
 	if r.Flags.SSLCertFile == "" && r.Flags.SSLKeyFile == "" {
 		if r.Flags.HTTPPort == "" {
 			r.Flags.HTTPPort = "80"
