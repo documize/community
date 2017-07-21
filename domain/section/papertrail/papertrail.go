@@ -21,14 +21,15 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/documize/community/core/log"
-	"github.com/documize/community/core/section/provider"
+	"github.com/documize/community/core/env"
+	"github.com/documize/community/domain/section/provider"
 )
 
 const me = "papertrail"
 
 // Provider represents Papertrail
 type Provider struct {
+	Runtime env.Runtime
 }
 
 // Meta describes us.
@@ -116,19 +117,19 @@ func (p *Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http
 
 	switch method {
 	case "auth":
-		auth(ctx, config, w, r)
+		auth(p.Runtime, ctx, config, w, r)
 	case "options":
 		options(config, w, r)
 	}
 }
 
 // Refresh just sends back data as-is.
-func (*Provider) Refresh(ctx *provider.Context, config, data string) (newData string) {
+func (p *Provider) Refresh(ctx *provider.Context, config, data string) (newData string) {
 	var c = papertrailConfig{}
 	err := json.Unmarshal([]byte(config), &c)
 
 	if err != nil {
-		log.Error("unable to read Papertrail config", err)
+		p.Runtime.Log.Error("unable to read Papertrail config", err)
 		return
 	}
 
@@ -137,21 +138,21 @@ func (*Provider) Refresh(ctx *provider.Context, config, data string) (newData st
 	c.APIToken = ctx.GetSecrets("APIToken")
 
 	if len(c.APIToken) == 0 {
-		log.Error("missing API token", err)
+		p.Runtime.Log.Error("missing API token", err)
 		return
 	}
 
-	result, err := fetchEvents(c)
+	result, err := fetchEvents(p.Runtime, c)
 
 	if err != nil {
-		log.Error("Papertrail fetchEvents failed", err)
+		p.Runtime.Log.Error("Papertrail fetchEvents failed", err)
 		return
 	}
 
 	j, err := json.Marshal(result)
 
 	if err != nil {
-		log.Error("unable to marshal Papaertrail events", err)
+		p.Runtime.Log.Error("unable to marshal Papaertrail events", err)
 		return
 	}
 
@@ -159,8 +160,8 @@ func (*Provider) Refresh(ctx *provider.Context, config, data string) (newData st
 	return
 }
 
-func auth(ctx *provider.Context, config papertrailConfig, w http.ResponseWriter, r *http.Request) {
-	result, err := fetchEvents(config)
+func auth(rt env.Runtime, ctx *provider.Context, config papertrailConfig, w http.ResponseWriter, r *http.Request) {
+	result, err := fetchEvents(rt, config)
 
 	if result == nil {
 		err = errors.New("nil result of papertrail query")
@@ -168,7 +169,7 @@ func auth(ctx *provider.Context, config papertrailConfig, w http.ResponseWriter,
 
 	if err != nil {
 
-		log.IfErr(ctx.SaveSecrets(`{"APIToken":""}`)) // invalid token, so reset it
+		ctx.SaveSecrets(`{"APIToken":""}`) // invalid token, so reset it
 
 		if err.Error() == "forbidden" {
 			provider.WriteForbidden(w)
@@ -179,7 +180,7 @@ func auth(ctx *provider.Context, config papertrailConfig, w http.ResponseWriter,
 		return
 	}
 
-	log.IfErr(ctx.SaveSecrets(`{"APIToken":"` + config.APIToken + `"}`))
+	ctx.SaveSecrets(`{"APIToken":"` + config.APIToken + `"}`)
 
 	provider.WriteJSON(w, result)
 }
@@ -252,7 +253,7 @@ func options(config papertrailConfig, w http.ResponseWriter, r *http.Request) {
 	provider.WriteJSON(w, options)
 }
 
-func fetchEvents(config papertrailConfig) (result interface{}, err error) {
+func fetchEvents(rt env.Runtime, config papertrailConfig) (result interface{}, err error) {
 	var filter string
 	if len(config.Query) > 0 {
 		filter = fmt.Sprintf("q=%s", url.QueryEscape(config.Query))
@@ -268,7 +269,7 @@ func fetchEvents(config papertrailConfig) (result interface{}, err error) {
 	var req *http.Request
 	req, err = http.NewRequest("GET", "https://papertrailapp.com/api/v1/events/search.json?"+filter, nil)
 	if err != nil {
-		log.Error("new request", err)
+		rt.Log.Error("new request", err)
 		return
 	}
 	req.Header.Set("X-Papertrail-Token", config.APIToken)
@@ -278,12 +279,12 @@ func fetchEvents(config papertrailConfig) (result interface{}, err error) {
 	res, err = client.Do(req)
 
 	if err != nil {
-		log.Error("message", err)
+		rt.Log.Error("message", err)
 		return
 	}
 
 	if res.StatusCode != http.StatusOK {
-		log.Error("forbidden", err)
+		rt.Log.Error("forbidden", err)
 		return
 	}
 
@@ -293,7 +294,7 @@ func fetchEvents(config papertrailConfig) (result interface{}, err error) {
 	err = dec.Decode(&result)
 
 	if err != nil {
-		log.Error("unable to read result", err)
+		rt.Log.Error("unable to read result", err)
 	}
 
 	return

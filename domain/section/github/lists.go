@@ -15,27 +15,26 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/documize/community/core/log"
-	"github.com/documize/community/core/section/provider"
-
+	"github.com/documize/community/core/env"
+	"github.com/documize/community/domain/section/provider"
 	gogithub "github.com/google/go-github/github"
 )
 
-func listFailed(method string, config githubConfig, client *gogithub.Client, w http.ResponseWriter) (failed bool) {
+func listFailed(rt env.Runtime, method string, config githubConfig, client *gogithub.Client, w http.ResponseWriter) (failed bool) {
 	switch method { // which list to choose?
 
 	case "owners":
 
 		me, _, err := client.Users.Get("")
 		if err != nil {
-			log.Error("github get user details:", err)
+			rt.Log.Error("github get user details:", err)
 			provider.WriteError(w, "github", err)
 			return
 		}
 
 		orgs, _, err := client.Organizations.List("", nil)
 		if err != nil {
-			log.Error("github get user's organisations:", err)
+			rt.Log.Error("github get user's organisations:", err)
 			provider.WriteError(w, "github", err)
 			return
 		}
@@ -59,7 +58,7 @@ func listFailed(method string, config githubConfig, client *gogithub.Client, w h
 
 			me, _, err := client.Users.Get("")
 			if err != nil {
-				log.Error("github get user details:", err)
+				rt.Log.Error("github get user details:", err)
 				provider.WriteError(w, "github", err)
 				return
 			}
@@ -74,7 +73,7 @@ func listFailed(method string, config githubConfig, client *gogithub.Client, w h
 				repos, _, err = client.Repositories.ListByOrg(config.Owner, opt)
 			}
 			if err != nil {
-				log.Error("github get user/org repositories:", err)
+				rt.Log.Error("github get user/org repositories:", err)
 				provider.WriteError(w, "github", err)
 				return
 			}

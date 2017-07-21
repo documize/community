@@ -20,8 +20,8 @@ import (
 	"net/http"
 
 	"github.com/documize/community/core/api/request"
-	"github.com/documize/community/core/log"
-	"github.com/documize/community/core/section/provider"
+	"github.com/documize/community/core/env"
+	"github.com/documize/community/domain/section/provider"
 )
 
 var meta provider.TypeMeta
@@ -36,8 +36,9 @@ func init() {
 	meta.PageType = "tab"
 }
 
-// Provider represents GitHub
+// Provider represents Trello
 type Provider struct {
+	Runtime env.Runtime
 }
 
 // Meta describes us.
@@ -46,7 +47,7 @@ func (*Provider) Meta() provider.TypeMeta {
 }
 
 // Command stub.
-func (*Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http.Request) {
+func (p *Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
 	method := query.Get("method")
 
@@ -70,7 +71,7 @@ func (*Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http.R
 	config.AppKey = request.ConfigString(meta.ConfigHandle(), "appKey")
 
 	if len(config.AppKey) == 0 {
-		log.ErrorString("missing trello App Key")
+		p.Runtime.Log.Info("missing trello App Key")
 		provider.WriteMessage(w, "trello", "Missing appKey")
 		return
 	}
@@ -91,9 +92,9 @@ func (*Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http.R
 		render, err := getCards(config)
 
 		if err != nil {
-			log.IfErr(err)
+			p.Runtime.Log.Error("failed to render cards", err)
 			provider.WriteError(w, "trello", err)
-			log.IfErr(ctx.SaveSecrets("")) // failure means our secrets are invalid
+			ctx.SaveSecrets("") // failure means our secrets are invalid
 			return
 		}
 
@@ -103,9 +104,9 @@ func (*Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http.R
 		render, err := getBoards(config)
 
 		if err != nil {
-			log.IfErr(err)
+			p.Runtime.Log.Error("failed to render board", err)
 			provider.WriteError(w, "trello", err)
-			log.IfErr(ctx.SaveSecrets("")) // failure means our secrets are invalid
+			ctx.SaveSecrets("") // failure means our secrets are invalid
 			return
 		}
 
@@ -115,9 +116,9 @@ func (*Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http.R
 		render, err := getLists(config)
 
 		if err != nil {
-			log.IfErr(err)
+			p.Runtime.Log.Error("failed to get Trello lists", err)
 			provider.WriteError(w, "trello", err)
-			log.IfErr(ctx.SaveSecrets("")) // failure means our secrets are invalid
+			ctx.SaveSecrets("") // failure means our secrets are invalid
 			return
 		}
 
@@ -136,7 +137,7 @@ func (*Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http.R
 		return
 
 	default:
-		log.ErrorString("trello unknown method name: " + method)
+		p.Runtime.Log.Info("unknown trello method called: " + method)
 		provider.WriteMessage(w, "trello", "missing method name")
 		return
 	}
@@ -145,8 +146,11 @@ func (*Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http.R
 	var s secrets
 	s.Token = config.Token
 	b, e := json.Marshal(s)
-	log.IfErr(e)
-	log.IfErr(ctx.SaveSecrets(string(b)))
+	if err != nil {
+		p.Runtime.Log.Error("failed save Trello secrets", e)
+	}
+
+	ctx.SaveSecrets(string(b))
 }
 
 // Render just sends back HMTL as-is.
@@ -176,7 +180,7 @@ func (*Provider) Render(ctx *provider.Context, config, data string) string {
 }
 
 // Refresh just sends back data as-is.
-func (*Provider) Refresh(ctx *provider.Context, config, data string) string {
+func (p *Provider) Refresh(ctx *provider.Context, config, data string) string {
 	var c = trelloConfig{}
 	json.Unmarshal([]byte(config), &c)
 
@@ -189,7 +193,7 @@ func (*Provider) Refresh(ctx *provider.Context, config, data string) string {
 	j, err := json.Marshal(refreshed)
 
 	if err != nil {
-		log.Error("unable to marshall trello cards", err)
+		p.Runtime.Log.Error("failed to marshal trello data", err)
 		return data
 	}
 
@@ -224,7 +228,6 @@ func getBoards(config trelloConfig) (boards []trelloBoard, err error) {
 	}
 
 	if err != nil {
-		fmt.Println(err)
 		return nil, err
 	}
 
@@ -250,7 +253,6 @@ func getLists(config trelloConfig) (lists []trelloList, err error) {
 	err = dec.Decode(&lists)
 
 	if err != nil {
-		fmt.Println(err)
 		return nil, err
 	}
 

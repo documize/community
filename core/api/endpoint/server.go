@@ -26,30 +26,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// var port, certFile, keyFile, forcePort2SSL string
-
-// Product details app edition and version
-// var Product env.ProdInfo
-
-// func init() {
-// 	// Product.Major = "1"
-// 	// Product.Minor = "50"
-// 	// Product.Patch = "0"
-// 	// Product.Version = fmt.Sprintf("%s.%s.%s", Product.Major, Product.Minor, Product.Patch)
-// 	// Product.Edition = "Community"
-// 	// Product.Title = fmt.Sprintf("%s Edition", Product.Edition)
-// 	// Product.License = env.License{}
-// 	// Product.License.Seats = 1
-// 	// Product.License.Valid = true
-// 	// Product.License.Trial = false
-// 	// Product.License.Edition = "Community"
-
-// 	// env.GetString(&certFile, "cert", false, "the cert.pem file used for https", nil)
-// 	// env.GetString(&keyFile, "key", false, "the key.pem file used for https", nil)
-// 	// env.GetString(&port, "port", false, "http/https port number", nil)
-// 	// env.GetString(&forcePort2SSL, "forcesslport", false, "redirect given http port number to TLS", nil)
-// }
-
 var testHost string // used during automated testing
 
 // Serve the Documize endpoint.

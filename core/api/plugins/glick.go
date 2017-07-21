@@ -31,13 +31,6 @@ import (
 var PluginFile = "DB" // this points to the database
 var insecure = "false"
 
-// func init() {
-// 	env.GetString(&PluginFile, "plugin", false,
-// 		"the JSON file describing plugins, default 'DB' uses the database config table 'FILEPLUGINS' entry", nil)
-// 	env.GetString(&insecure, "insecure", false,
-// 		"if 'true' allow https endpoints with invalid certificates (only for testing)", nil)
-// }
-
 type infoLog struct{}
 
 func (i infoLog) Write(b []byte) (int, error) {

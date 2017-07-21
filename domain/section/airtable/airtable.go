@@ -9,28 +9,29 @@
 //
 // https://documize.com
 
-package code
+package airtable
 
 import (
 	"net/http"
 
-	"github.com/documize/community/core/section/provider"
+	"github.com/documize/community/core/env"
+	"github.com/documize/community/domain/section/provider"
 )
 
-// Provider represents code snippet
+// Provider represents Airtable
 type Provider struct {
+	Runtime env.Runtime
 }
 
-// Meta describes us.
+// Meta describes us
 func (*Provider) Meta() provider.TypeMeta {
 	section := provider.TypeMeta{}
 
-	section.ID = "4f6f2b02-8397-483d-9bb9-eea1fef13304"
-	section.Title = "Code"
-	section.Description = "Formatted code snippets"
-	section.ContentType = "code"
-	section.PageType = "section"
-	section.Order = 9997
+	section.ID = "3cfa411e-73bf-474c-841a-effd6b00fdd8"
+	section.Title = "Airtable"
+	section.Description = "Databases, tables, views"
+	section.ContentType = "airtable"
+	section.PageType = "tab"
 
 	return section
 }
@@ -40,12 +41,25 @@ func (*Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http.R
 	provider.WriteEmpty(w)
 }
 
-// Render just sends back HMTL as-is.
+// Render converts markdown data into HTML suitable for browser rendering.
 func (*Provider) Render(ctx *provider.Context, config, data string) string {
-	return data
+	return embed(config, data)
 }
 
 // Refresh just sends back data as-is.
 func (*Provider) Refresh(ctx *provider.Context, config, data string) string {
+	return embed(config, data)
+}
+
+func embed(config, data string) string {
 	return data
+	// return `
+	// <iframe class="airtable-embed"
+	// src="https://airtable.com/embed/shrFOcQ6BYrlUe62L?backgroundColor=yellow&viewControls=on"
+	// frameborder="0"
+	// onmousewheel=""
+	// width="100%"
+	// height="533"
+	// style="background: transparent; border: 1px solid #ccc;"></iframe>
+	// `
 }

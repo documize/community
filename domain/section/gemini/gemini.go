@@ -20,12 +20,13 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/documize/community/core/log"
-	"github.com/documize/community/core/section/provider"
+	"github.com/documize/community/core/env"
+	"github.com/documize/community/domain/section/provider"
 )
 
 // Provider represents Gemini
 type Provider struct {
+	Runtime env.Runtime
 }
 
 // Meta describes us.
@@ -87,29 +88,29 @@ func (*Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http.R
 }
 
 // Refresh just sends back data as-is.
-func (*Provider) Refresh(ctx *provider.Context, config, data string) (newData string) {
+func (p *Provider) Refresh(ctx *provider.Context, config, data string) (newData string) {
 	var c = geminiConfig{}
 	err := json.Unmarshal([]byte(config), &c)
 
 	if err != nil {
-		log.Error("Unable to read Gemini config", err)
+		p.Runtime.Log.Error("Unable to read Gemini config", err)
 		return
 	}
 
 	c.Clean(ctx)
 
 	if len(c.URL) == 0 {
-		log.Info("Gemini.Refresh received empty URL")
+		p.Runtime.Log.Info("Gemini.Refresh received empty URL")
 		return
 	}
 
 	if len(c.Username) == 0 {
-		log.Info("Gemini.Refresh received empty username")
+		p.Runtime.Log.Info("Gemini.Refresh received empty username")
 		return
 	}
 
 	if len(c.APIKey) == 0 {
-		log.Info("Gemini.Refresh received empty API key")
+		p.Runtime.Log.Info("Gemini.Refresh received empty API key")
 		return
 	}
 
@@ -136,16 +137,15 @@ func (*Provider) Refresh(ctx *provider.Context, config, data string) (newData st
 
 	dec := json.NewDecoder(res.Body)
 	err = dec.Decode(&items)
-
 	if err != nil {
-		fmt.Println(err)
+		p.Runtime.Log.Error("unable to Decode gemini items", err)
 		return
 	}
 
 	j, err := json.Marshal(items)
 
 	if err != nil {
-		log.Error("unable to marshall gemini items", err)
+		p.Runtime.Log.Error("unable to marshal gemini items", err)
 		return
 	}
 
@@ -196,7 +196,6 @@ func auth(ctx *provider.Context, w http.ResponseWriter, r *http.Request) {
 	res, err := client.Do(req)
 
 	if err != nil {
-		fmt.Println(err)
 		provider.WriteError(w, "gemini", err)
 		return
 	}
@@ -215,7 +214,6 @@ func auth(ctx *provider.Context, w http.ResponseWriter, r *http.Request) {
 	err = dec.Decode(&g)
 
 	if err != nil {
-		fmt.Println(err)
 		provider.WriteError(w, "gemini", err)
 		return
 	}
@@ -288,7 +286,6 @@ func workspace(ctx *provider.Context, w http.ResponseWriter, r *http.Request) {
 	err = dec.Decode(&workspace)
 
 	if err != nil {
-		fmt.Println(err)
 		provider.WriteError(w, "gemini", err)
 		return
 	}
@@ -334,7 +331,6 @@ func items(ctx *provider.Context, w http.ResponseWriter, r *http.Request) {
 
 	filter, err := json.Marshal(config.Filter)
 	if err != nil {
-		fmt.Println(err)
 		provider.WriteError(w, "gemini", err)
 		return
 	}
@@ -348,7 +344,6 @@ func items(ctx *provider.Context, w http.ResponseWriter, r *http.Request) {
 	res, err := client.Do(req)
 
 	if err != nil {
-		fmt.Println(err)
 		provider.WriteError(w, "gemini", err)
 		return
 	}
@@ -374,7 +369,6 @@ func items(ctx *provider.Context, w http.ResponseWriter, r *http.Request) {
 }
 
 func secs(ctx *provider.Context, w http.ResponseWriter, r *http.Request) {
-	sec, err := getSecrets(ctx)
-	log.IfErr(err)
+	sec, _ := getSecrets(ctx)
 	provider.WriteJSON(w, sec)
 }

@@ -14,8 +14,7 @@ package gemini
 import (
 	"strings"
 
-	"github.com/documize/community/core/log"
-	"github.com/documize/community/core/section/provider"
+	"github.com/documize/community/domain/section/provider"
 )
 
 // the HTML that is rendered by this section.
@@ -108,7 +107,7 @@ func (c *geminiConfig) SaveSecrets(ctx *provider.Context) {
 	sec.APIKey = strings.TrimSpace(c.APIKey)
 	sec.Username = strings.TrimSpace(c.Username)
 	sec.URL = strings.TrimSpace(c.URL)
-	log.IfErr(ctx.MarshalSecrets(sec))
+	ctx.MarshalSecrets(sec)
 }
 
 type secrets struct {

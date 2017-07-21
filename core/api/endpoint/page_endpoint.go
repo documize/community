@@ -24,9 +24,9 @@ import (
 	"github.com/documize/community/core/api/request"
 	"github.com/documize/community/core/api/util"
 	"github.com/documize/community/core/log"
-	"github.com/documize/community/core/section/provider"
 	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/core/uniqueid"
+	"github.com/documize/community/domain/section/provider"
 	htmldiff "github.com/documize/html-diff"
 	"github.com/gorilla/mux"
 )

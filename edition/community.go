@@ -19,49 +19,49 @@ import (
 	"github.com/documize/community/core/api/endpoint"
 	"github.com/documize/community/core/api/request"
 	"github.com/documize/community/core/env"
-	"github.com/documize/community/core/section"
+	"github.com/documize/community/domain/section"
 	"github.com/documize/community/edition/boot"
 	"github.com/documize/community/edition/logging"
 	_ "github.com/documize/community/embed" // the compressed front-end code and static data
 	_ "github.com/go-sql-driver/mysql"      // the mysql driver is required behind the scenes
 )
 
-func init() {
+var rt env.Runtime
+
+func main() {
 	// runtime stores server/application level information
-	runtime := env.Runtime{}
+	rt := env.Runtime{}
 
 	// wire up logging implementation
-	runtime.Log = logging.NewLogger()
+	rt.Log = logging.NewLogger()
 
 	// define product edition details
-	runtime.Product = env.ProdInfo{}
-	runtime.Product.Major = "1"
-	runtime.Product.Minor = "50"
-	runtime.Product.Patch = "1"
-	runtime.Product.Version = fmt.Sprintf("%s.%s.%s", runtime.Product.Major, runtime.Product.Minor, runtime.Product.Patch)
-	runtime.Product.Edition = "Community"
-	runtime.Product.Title = fmt.Sprintf("%s Edition", runtime.Product.Edition)
-	runtime.Product.License = env.License{}
-	runtime.Product.License.Seats = 1
-	runtime.Product.License.Valid = true
-	runtime.Product.License.Trial = false
-	runtime.Product.License.Edition = "Community"
+	rt.Product = env.ProdInfo{}
+	rt.Product.Major = "1"
+	rt.Product.Minor = "50"
+	rt.Product.Patch = "2"
+	rt.Product.Version = fmt.Sprintf("%s.%s.%s", rt.Product.Major, rt.Product.Minor, rt.Product.Patch)
+	rt.Product.Edition = "Community"
+	rt.Product.Title = fmt.Sprintf("%s Edition", rt.Product.Edition)
+	rt.Product.License = env.License{}
+	rt.Product.License.Seats = 1
+	rt.Product.License.Valid = true
+	rt.Product.License.Trial = false
+	rt.Product.License.Edition = "Community"
 
 	// parse settings from command line and environment
-	runtime.Flags = env.ParseFlags()
-	flagsOK := boot.InitRuntime(&runtime)
+	rt.Flags = env.ParseFlags()
+	flagsOK := boot.InitRuntime(&rt)
 
 	if flagsOK {
 		// runtime.Log = runtime.Log.SetDB(runtime.Db)
 	}
 
 	// temp code repair
-	api.Runtime = runtime
-	request.Db = runtime.Db
-}
+	api.Runtime = rt
+	request.Db = rt.Db
 
-func main() {
-	section.Register()
+	section.Register(rt)
 
 	ready := make(chan struct{}, 1) // channel is used for testing
 	endpoint.Serve(ready)

@@ -14,11 +14,13 @@ package wysiwyg
 import (
 	"net/http"
 
-	"github.com/documize/community/core/section/provider"
+	"github.com/documize/community/core/env"
+	"github.com/documize/community/domain/section/provider"
 )
 
 // Provider represents WYSIWYG
 type Provider struct {
+	Runtime env.Runtime
 }
 
 // Meta describes us

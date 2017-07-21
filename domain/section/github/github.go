@@ -15,15 +15,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	//"fmt"
 	"html/template"
 	"io/ioutil"
 	"net/http"
 	"strings"
 
-	"github.com/documize/community/core/log"
-	"github.com/documize/community/core/section/provider"
-
+	"github.com/documize/community/core/env"
+	"github.com/documize/community/domain/section/provider"
 	gogithub "github.com/google/go-github/github"
 )
 
@@ -45,6 +43,7 @@ func init() {
 
 // Provider represents GitHub
 type Provider struct {
+	Runtime env.Runtime
 }
 
 // Meta describes us.
@@ -59,7 +58,6 @@ func (p *Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http
 
 	if len(method) == 0 {
 		msg := "missing method name"
-		log.ErrorString("github: " + msg)
 		provider.WriteMessage(w, "gitub", msg)
 		return
 	}
@@ -80,9 +78,8 @@ func (p *Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http
 	body, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
-		msg := "Bad body"
-		log.ErrorString("github: " + msg)
-		provider.WriteMessage(w, "github", msg)
+		p.Runtime.Log.Error("bad body", errors.New("Missing body"))
+		provider.WriteMessage(w, "github", "bad body")
 		return
 	}
 
@@ -90,7 +87,7 @@ func (p *Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http
 
 		// write the new one, direct from JS
 		if err = ctx.SaveSecrets(string(body)); err != nil {
-			log.Error("github settoken configuration", err)
+			p.Runtime.Log.Error("github settoken configuration", err)
 			provider.WriteError(w, "github", err)
 			return
 		}
@@ -104,7 +101,7 @@ func (p *Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http
 	err = json.Unmarshal(body, &config)
 
 	if err != nil {
-		log.Error("github Command Unmarshal", err)
+		p.Runtime.Log.Error("github Command Unmarshal", err)
 		provider.WriteError(w, "github", err)
 		return
 	}
@@ -127,7 +124,7 @@ func (p *Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http
 		if err != nil {
 			// token now invalid, so wipe it
 			ctx.SaveSecrets("") // ignore error, already in an error state
-			log.Error("github check token validation", err)
+			p.Runtime.Log.Error("github check token validation", err)
 			provider.WriteError(w, "github", err)
 			return
 		}
@@ -135,11 +132,11 @@ func (p *Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http
 
 	default:
 
-		if listFailed(method, config, client, w) {
+		if listFailed(p.Runtime, method, config, client, w) {
 
 			gr := githubRender{}
 			for _, rep := range reports {
-				log.IfErr(rep.refresh(&gr, &config, client))
+				rep.refresh(&gr, &config, client)
 			}
 			provider.WriteJSON(w, &gr)
 
@@ -153,9 +150,8 @@ func (p *Provider) Refresh(ctx *provider.Context, configJSON, data string) strin
 	var c = githubConfig{}
 
 	err := json.Unmarshal([]byte(configJSON), &c)
-
 	if err != nil {
-		log.Error("unable to unmarshall github config", err)
+		p.Runtime.Log.Error("unable to unmarshall github config", err)
 		return "internal configuration error '" + err.Error() + "'"
 	}
 
@@ -166,7 +162,7 @@ func (p *Provider) Refresh(ctx *provider.Context, configJSON, data string) strin
 
 	byts, err := json.Marshal(refreshReportData(&c, client))
 	if err != nil {
-		log.Error("unable to marshall github data", err)
+		p.Runtime.Log.Error("unable to marshall github data", err)
 		return "internal configuration error '" + err.Error() + "'"
 	}
 
@@ -177,7 +173,7 @@ func (p *Provider) Refresh(ctx *provider.Context, configJSON, data string) strin
 func refreshReportData(c *githubConfig, client *gogithub.Client) *githubRender {
 	var gr = githubRender{}
 	for _, rep := range reports {
-		log.IfErr(rep.refresh(&gr, c, client))
+		rep.refresh(&gr, c, client)
 	}
 	return &gr
 }
@@ -192,7 +188,7 @@ func (p *Provider) Render(ctx *provider.Context, config, data string) string {
 	err = json.Unmarshal([]byte(config), &c)
 
 	if err != nil {
-		log.Error("unable to unmarshall github config", err)
+		p.Runtime.Log.Error("unable to unmarshall github config", err)
 		return "Please delete and recreate this Github section."
 	}
 
@@ -208,7 +204,7 @@ func (p *Provider) Render(ctx *provider.Context, config, data string) string {
 
 	err = json.Unmarshal([]byte(data), &payload)
 	if err != nil {
-		log.Error("unable to unmarshall github data", err)
+		p.Runtime.Log.Error("unable to unmarshall github data", err)
 		return "Please delete and recreate this Github section."
 	}
 
@@ -222,12 +218,12 @@ func (p *Provider) Render(ctx *provider.Context, config, data string) string {
 		rep, ok := reports[repID]
 		if !ok {
 			msg := "github report not found for: " + repID
-			log.ErrorString(msg)
+			p.Runtime.Log.Info(msg)
 			return "Documize internal error: " + msg
 		}
 
 		if err = rep.render(&payload, &c); err != nil {
-			log.Error("unable to render "+repID, err)
+			p.Runtime.Log.Error("unable to render "+repID, err)
 			return "Documize internal github render " + repID + " error: " + err.Error() + "<BR>" + data
 		}
 
@@ -236,7 +232,7 @@ func (p *Provider) Render(ctx *provider.Context, config, data string) string {
 		t, err = t.Parse(rep.template)
 
 		if err != nil {
-			log.Error("github render template.Parse error:", err)
+			p.Runtime.Log.Error("github render template.Parse error:", err)
 			//for k, v := range strings.Split(rep.template, "\n") {
 			//	fmt.Println("DEBUG", k+1, v)
 			//}
@@ -246,7 +242,7 @@ func (p *Provider) Render(ctx *provider.Context, config, data string) string {
 		buffer := new(bytes.Buffer)
 		err = t.Execute(buffer, payload)
 		if err != nil {
-			log.Error("github render template.Execute error:", err)
+			p.Runtime.Log.Error("github render template.Execute error:", err)
 			return "Documize internal github template.Execute error: " + err.Error()
 		}
 
