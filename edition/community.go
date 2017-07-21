@@ -61,8 +61,9 @@ func main() {
 	api.Runtime = rt
 	request.Db = rt.Db
 
+	// Register smart sections
 	section.Register(rt)
 
-	ready := make(chan struct{}, 1) // channel is used for testing
+	ready := make(chan struct{}, 1) // channel signals router ready
 	endpoint.Serve(ready)
 }
