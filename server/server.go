@@ -32,7 +32,6 @@ var testHost string // used during automated testing
 
 // Start router to handle all HTTP traffic.
 func Start(rt env.Runtime, ready chan struct{}) {
-	routing.RegisterEndpoints(rt)
 
 	err := plugins.LibSetup()
 	if err != nil {
@@ -42,6 +41,7 @@ func Start(rt env.Runtime, ready chan struct{}) {
 
 	rt.Log.Info(fmt.Sprintf("Starting %s version %s", api.Runtime.Product.Title, api.Runtime.Product.Version))
 
+	// decide which mode to serve up
 	switch api.Runtime.Flags.SiteMode {
 	case web.SiteModeOffline:
 		rt.Log.Info("Serving OFFLINE web server")
@@ -54,6 +54,10 @@ func Start(rt env.Runtime, ready chan struct{}) {
 		rt.Log.Info("Starting web server")
 	}
 
+	// define API endpoints
+	routing.RegisterEndpoints(rt)
+
+	// wire up API endpoints
 	router := mux.NewRouter()
 
 	// "/api/public/..."
@@ -80,6 +84,7 @@ func Start(rt env.Runtime, ready chan struct{}) {
 	n.Use(negroni.HandlerFunc(metrics))
 	n.UseHandler(router)
 
+	// start server
 	if !api.Runtime.Flags.SSLEnabled() {
 		rt.Log.Info("Starting non-SSL server on " + api.Runtime.Flags.HTTPPort)
 		n.Run(testHost + ":" + api.Runtime.Flags.HTTPPort)

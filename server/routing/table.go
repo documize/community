@@ -43,6 +43,23 @@ type routeMap map[string]RouteFunc
 
 var routes = make(routeMap)
 
+type routeSortItem struct {
+	def routeDef
+	fun RouteFunc
+	ord int
+}
+
+type routeSorter []routeSortItem
+
+func (s routeSorter) Len() int      { return len(s) }
+func (s routeSorter) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
+func (s routeSorter) Less(i, j int) bool {
+	if s[i].def.Prefix == s[j].def.Prefix && s[i].def.Path == s[j].def.Path {
+		return len(s[i].def.Queries) > len(s[j].def.Queries)
+	}
+	return s[i].ord < s[j].ord
+}
+
 func routesKey(rt env.Runtime, prefix, path string, methods, queries []string) (string, error) {
 	rd := routeDef{
 		Prefix:  prefix,
@@ -77,23 +94,6 @@ func Remove(rt env.Runtime, prefix, path string, methods, queries []string) erro
 	}
 	delete(routes, k)
 	return nil
-}
-
-type routeSortItem struct {
-	def routeDef
-	fun RouteFunc
-	ord int
-}
-
-type routeSorter []routeSortItem
-
-func (s routeSorter) Len() int      { return len(s) }
-func (s routeSorter) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
-func (s routeSorter) Less(i, j int) bool {
-	if s[i].def.Prefix == s[j].def.Prefix && s[i].def.Path == s[j].def.Path {
-		return len(s[i].def.Queries) > len(s[j].def.Queries)
-	}
-	return s[i].ord < s[j].ord
 }
 
 // BuildRoutes returns all matching routes for specified scope.

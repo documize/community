@@ -35,7 +35,7 @@ func main() {
 	// wire up logging implementation
 	rt.Log = logging.NewLogger()
 
-	// define product edition details
+	// product details
 	rt.Product = env.ProdInfo{}
 	rt.Product.Major = "1"
 	rt.Product.Minor = "50"
