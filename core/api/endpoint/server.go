@@ -18,10 +18,11 @@ import (
 	"strings"
 
 	"github.com/codegangsta/negroni"
+	"github.com/documize/api/wordsmith/log"
 	"github.com/documize/community/core/api"
 	"github.com/documize/community/core/api/plugins"
 	"github.com/documize/community/core/database"
-	"github.com/documize/community/core/log"
+	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/web"
 	"github.com/gorilla/mux"
 )
@@ -29,11 +30,10 @@ import (
 var testHost string // used during automated testing
 
 // Serve the Documize endpoint.
-func Serve(ready chan struct{}) {
+func Serve(rt env.Runtime, ready chan struct{}) {
 	err := plugins.LibSetup()
-
 	if err != nil {
-		log.Error("Terminating before running - invalid plugin.json", err)
+		rt.Log.Error("Terminating before running - invalid plugin.json", err)
 		os.Exit(1)
 	}
 
@@ -41,14 +41,14 @@ func Serve(ready chan struct{}) {
 
 	switch api.Runtime.Flags.SiteMode {
 	case web.SiteModeOffline:
-		log.Info("Serving OFFLINE web app")
+		rt.Log.Info("Serving OFFLINE web app")
 	case web.SiteModeSetup:
 		Add(RoutePrefixPrivate, "setup", []string{"POST", "OPTIONS"}, nil, database.Create)
-		log.Info("Serving SETUP web app")
+		rt.Log.Info("Serving SETUP web app")
 	case web.SiteModeBadDB:
-		log.Info("Serving BAD DATABASE web app")
+		rt.Log.Info("Serving BAD DATABASE web app")
 	default:
-		log.Info("Starting web app")
+		rt.Log.Info("Starting web app")
 	}
 
 	router := mux.NewRouter()
@@ -79,11 +79,11 @@ func Serve(ready chan struct{}) {
 	ready <- struct{}{}
 
 	if !api.Runtime.Flags.SSLEnabled() {
-		log.Info("Starting non-SSL server on " + api.Runtime.Flags.HTTPPort)
+		rt.Log.Info("Starting non-SSL server on " + api.Runtime.Flags.HTTPPort)
 		n.Run(testHost + ":" + api.Runtime.Flags.HTTPPort)
 	} else {
 		if api.Runtime.Flags.ForceHTTPPort2SSL != "" {
-			log.Info("Starting non-SSL server on " + api.Runtime.Flags.ForceHTTPPort2SSL + " and redirecting to SSL server on  " + api.Runtime.Flags.HTTPPort)
+			rt.Log.Info("Starting non-SSL server on " + api.Runtime.Flags.ForceHTTPPort2SSL + " and redirecting to SSL server on  " + api.Runtime.Flags.HTTPPort)
 
 			go func() {
 				err := http.ListenAndServe(":"+api.Runtime.Flags.ForceHTTPPort2SSL, http.HandlerFunc(
@@ -93,19 +93,20 @@ func Serve(ready chan struct{}) {
 						http.Redirect(w, req, "https://"+host, http.StatusMovedPermanently)
 					}))
 				if err != nil {
-					log.Error("ListenAndServe on "+api.Runtime.Flags.ForceHTTPPort2SSL, err)
+					rt.Log.Error("ListenAndServe on "+api.Runtime.Flags.ForceHTTPPort2SSL, err)
 				}
 			}()
 		}
 
-		log.Info("Starting SSL server on " + api.Runtime.Flags.HTTPPort + " with " + api.Runtime.Flags.SSLCertFile + " " + api.Runtime.Flags.SSLKeyFile)
+		rt.Log.Info("Starting SSL server on " + api.Runtime.Flags.HTTPPort + " with " + api.Runtime.Flags.SSLCertFile + " " + api.Runtime.Flags.SSLKeyFile)
 
 		// TODO: https://blog.gopheracademy.com/advent-2016/exposing-go-on-the-internet/
 
 		server := &http.Server{Addr: ":" + api.Runtime.Flags.HTTPPort, Handler: n /*, TLSConfig: myTLSConfig*/}
 		server.SetKeepAlivesEnabled(true)
+
 		if err := server.ListenAndServeTLS(api.Runtime.Flags.SSLCertFile, api.Runtime.Flags.SSLKeyFile); err != nil {
-			log.Error("ListenAndServeTLS on "+api.Runtime.Flags.HTTPPort, err)
+			rt.Log.Error("ListenAndServeTLS on "+api.Runtime.Flags.HTTPPort, err)
 		}
 	}
 }
@@ -120,9 +121,8 @@ func cors(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 		w.Header().Add("X-Documize-Version", api.Runtime.Product.Version)
 		w.Header().Add("Cache-Control", "no-cache")
 
-		if _, err := w.Write([]byte("")); err != nil {
-			log.Error("cors", err)
-		}
+		w.Write([]byte(""))
+
 		return
 	}
 
@@ -144,7 +144,5 @@ func metrics(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 }
 
 func version(w http.ResponseWriter, r *http.Request) {
-	if _, err := w.Write([]byte(api.Runtime.Product.Version)); err != nil {
-		log.Error("versionHandler", err)
-	}
+	w.Write([]byte(api.Runtime.Product.Version))
 }
