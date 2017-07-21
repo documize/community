@@ -23,7 +23,7 @@ import (
 	"github.com/documize/community/core/secrets"
 	"github.com/documize/community/core/stringutil"
 	"github.com/documize/community/core/uniqueid"
-	"github.com/documize/community/core/web"
+	"github.com/documize/community/server/web"
 )
 
 // runSQL creates a transaction per call
@@ -61,7 +61,6 @@ func runSQL(sql string) (id uint64, err error) {
 
 // Create the tables in a blank database
 func Create(w http.ResponseWriter, r *http.Request) {
-
 	defer func() {
 		target := "/setup"
 		status := http.StatusBadRequest
@@ -123,7 +122,7 @@ func Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = Migrate(false /* no tables exist yet */); err != nil {
+	if err = Migrate(api.Runtime, false /* no tables exist yet */); err != nil {
 		log.Error("database.Create()", err)
 		return
 	}

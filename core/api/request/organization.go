@@ -21,7 +21,7 @@ import (
 	"github.com/documize/community/core/api/entity"
 	"github.com/documize/community/core/log"
 	"github.com/documize/community/core/streamutil"
-	"github.com/documize/community/core/web"
+	"github.com/documize/community/server/web"
 	"github.com/jmoiron/sqlx"
 )
 

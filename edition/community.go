@@ -16,14 +16,14 @@ import (
 	"fmt"
 
 	"github.com/documize/community/core/api"
-	"github.com/documize/community/core/api/endpoint"
 	"github.com/documize/community/core/api/request"
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/domain/section"
 	"github.com/documize/community/edition/boot"
 	"github.com/documize/community/edition/logging"
 	_ "github.com/documize/community/embed" // the compressed front-end code and static data
-	_ "github.com/go-sql-driver/mysql"      // the mysql driver is required behind the scenes
+	"github.com/documize/community/server"
+	_ "github.com/go-sql-driver/mysql" // the mysql driver is required behind the scenes
 )
 
 var rt env.Runtime
@@ -65,5 +65,5 @@ func main() {
 	section.Register(rt)
 
 	ready := make(chan struct{}, 1) // channel signals router ready
-	endpoint.Serve(rt, ready)
+	server.Start(rt, ready)
 }

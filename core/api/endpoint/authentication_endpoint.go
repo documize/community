@@ -26,8 +26,8 @@ import (
 	"github.com/documize/community/core/api/util"
 	"github.com/documize/community/core/log"
 	"github.com/documize/community/core/secrets"
-	"github.com/documize/community/core/web"
 	"github.com/documize/community/domain/section/provider"
+	"github.com/documize/community/server/web"
 )
 
 // Authenticate user based up HTTP Authorization header.

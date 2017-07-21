@@ -9,7 +9,7 @@
 //
 // https://documize.com
 
-package endpoint
+package server
 
 import (
 	"fmt"
@@ -18,57 +18,60 @@ import (
 	"strings"
 
 	"github.com/codegangsta/negroni"
-	"github.com/documize/api/wordsmith/log"
 	"github.com/documize/community/core/api"
+	"github.com/documize/community/core/api/endpoint"
 	"github.com/documize/community/core/api/plugins"
 	"github.com/documize/community/core/database"
 	"github.com/documize/community/core/env"
-	"github.com/documize/community/core/web"
+	"github.com/documize/community/server/routing"
+	"github.com/documize/community/server/web"
 	"github.com/gorilla/mux"
 )
 
 var testHost string // used during automated testing
 
-// Serve the Documize endpoint.
-func Serve(rt env.Runtime, ready chan struct{}) {
+// Start router to handle all HTTP traffic.
+func Start(rt env.Runtime, ready chan struct{}) {
+	routing.RegisterEndpoints(rt)
+
 	err := plugins.LibSetup()
 	if err != nil {
 		rt.Log.Error("Terminating before running - invalid plugin.json", err)
 		os.Exit(1)
 	}
 
-	log.Info(fmt.Sprintf("Starting %s version %s", api.Runtime.Product.Title, api.Runtime.Product.Version))
+	rt.Log.Info(fmt.Sprintf("Starting %s version %s", api.Runtime.Product.Title, api.Runtime.Product.Version))
 
 	switch api.Runtime.Flags.SiteMode {
 	case web.SiteModeOffline:
-		rt.Log.Info("Serving OFFLINE web app")
+		rt.Log.Info("Serving OFFLINE web server")
 	case web.SiteModeSetup:
-		Add(RoutePrefixPrivate, "setup", []string{"POST", "OPTIONS"}, nil, database.Create)
-		rt.Log.Info("Serving SETUP web app")
+		routing.Add(rt, routing.RoutePrefixPrivate, "setup", []string{"POST", "OPTIONS"}, nil, database.Create)
+		rt.Log.Info("Serving SETUP web server")
 	case web.SiteModeBadDB:
-		rt.Log.Info("Serving BAD DATABASE web app")
+		rt.Log.Info("Serving BAD DATABASE web server")
 	default:
-		rt.Log.Info("Starting web app")
+		rt.Log.Info("Starting web server")
 	}
 
 	router := mux.NewRouter()
 
 	// "/api/public/..."
-	router.PathPrefix(RoutePrefixPublic).Handler(negroni.New(
+	router.PathPrefix(routing.RoutePrefixPublic).Handler(negroni.New(
 		negroni.HandlerFunc(cors),
-		negroni.Wrap(buildRoutes(RoutePrefixPublic)),
+		negroni.Wrap(routing.BuildRoutes(rt, routing.RoutePrefixPublic)),
 	))
 
 	// "/api/..."
-	router.PathPrefix(RoutePrefixPrivate).Handler(negroni.New(
-		negroni.HandlerFunc(Authorize),
-		negroni.Wrap(buildRoutes(RoutePrefixPrivate)),
+	router.PathPrefix(routing.RoutePrefixPrivate).Handler(negroni.New(
+		negroni.HandlerFunc(endpoint.Authorize),
+		negroni.Wrap(routing.BuildRoutes(rt, routing.RoutePrefixPrivate)),
 	))
 
 	// "/..."
-	router.PathPrefix(RoutePrefixRoot).Handler(negroni.New(
+	router.PathPrefix(routing.RoutePrefixRoot).Handler(negroni.New(
 		negroni.HandlerFunc(cors),
-		negroni.Wrap(buildRoutes(RoutePrefixRoot)),
+		negroni.Wrap(routing.BuildRoutes(rt, routing.RoutePrefixRoot)),
 	))
 
 	n := negroni.New()
@@ -76,7 +79,6 @@ func Serve(rt env.Runtime, ready chan struct{}) {
 	n.Use(negroni.HandlerFunc(cors))
 	n.Use(negroni.HandlerFunc(metrics))
 	n.UseHandler(router)
-	ready <- struct{}{}
 
 	if !api.Runtime.Flags.SSLEnabled() {
 		rt.Log.Info("Starting non-SSL server on " + api.Runtime.Flags.HTTPPort)
@@ -132,17 +134,9 @@ func cors(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 func metrics(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	w.Header().Add("X-Documize-Version", api.Runtime.Product.Version)
 	w.Header().Add("Cache-Control", "no-cache")
+
 	// Prevent page from being displayed in an iframe
 	w.Header().Add("X-Frame-Options", "DENY")
 
-	// Force SSL delivery
-	// if certFile != "" && keyFile != "" {
-	// 	w.Header().Add("Strict-Transport-Security", "max-age=63072000; includeSubDomains")
-	// }
-
 	next(w, r)
-}
-
-func version(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte(api.Runtime.Product.Version))
 }

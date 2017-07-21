@@ -20,9 +20,6 @@ import (
 	"github.com/documize/community/core/secrets"
 )
 
-// SiteMode defines that the web server should show the system to be in a particular state.
-// var SiteMode string
-
 const (
 	// SiteModeNormal serves app
 	SiteModeNormal = ""
@@ -40,21 +37,10 @@ var SiteInfo struct {
 }
 
 func init() {
-	// env.GetString(&SiteMode, "offline", false, "set to '1' for OFFLINE mode", nil) // no sense overriding this setting from the DB
 	SiteInfo.DBhash = secrets.GenerateRandomPassword() // do this only once
 }
 
-// EmbedHandler is defined in each embed directory
-type EmbedHandler interface {
-	Asset(string) ([]byte, error)
-	AssetDir(string) ([]string, error)
-	StaticAssetsFileSystem() http.FileSystem
-}
-
-// Embed allows access to the embedded data
-var Embed EmbedHandler
-
-// EmberHandler provides the webserver for pages developed using the Ember programming environment.
+// EmberHandler serves HTML web pages
 func EmberHandler(w http.ResponseWriter, r *http.Request) {
 	filename := "index.html"
 	switch api.Runtime.Flags.SiteMode {
@@ -70,7 +56,6 @@ func EmberHandler(w http.ResponseWriter, r *http.Request) {
 
 	data, err := Embed.Asset("bindata/" + filename)
 	if err != nil {
-		// Asset was not found.
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -80,25 +65,4 @@ func EmberHandler(w http.ResponseWriter, r *http.Request) {
 	if err := emberView.Execute(w, SiteInfo); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
-}
-
-// StaticAssetsFileSystem data encoded in the go:generate above.
-func StaticAssetsFileSystem() http.FileSystem {
-	return Embed.StaticAssetsFileSystem()
-	//return &assetfs.AssetFS{Asset: Asset, AssetDir: AssetDir, AssetInfo: AssetInfo, Prefix: "bindata/public"}
-}
-
-// ReadFile is intended to substitute for ioutil.ReadFile().
-func ReadFile(filename string) ([]byte, error) {
-	return Embed.Asset("bindata/" + filename)
-}
-
-// Asset fetch.
-func Asset(location string) ([]byte, error) {
-	return Embed.Asset(location)
-}
-
-// AssetDir returns web app "assets" folder.
-func AssetDir(dir string) ([]string, error) {
-	return Embed.AssetDir(dir)
 }

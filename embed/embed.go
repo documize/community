@@ -17,8 +17,7 @@ package embed
 import (
 	"net/http"
 
-	"github.com/documize/community/core/web"
-
+	"github.com/documize/community/server/web"
 	assetfs "github.com/elazarl/go-bindata-assetfs"
 )
 

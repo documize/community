@@ -21,7 +21,7 @@ import (
 
 	"github.com/documize/community/core/api/request"
 	"github.com/documize/community/core/log"
-	"github.com/documize/community/core/web"
+	"github.com/documize/community/server/web"
 )
 
 // InviteNewUser invites someone new providing credentials, explaining the product and stating who is inviting them.
