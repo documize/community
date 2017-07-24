@@ -140,7 +140,7 @@ func AuthenticateKeycloak(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Attach user accounts and work out permissions.
-	attachUserAccounts(p, org.RefID, &user)
+	AttachUserAccounts(p, org.RefID, &user)
 
 	// No accounts signals data integrity problem
 	// so we reject login request.
@@ -301,7 +301,7 @@ func addUser(p request.Persister, u *entity.User, addSpace bool) (err error) {
 			return err
 		}
 	} else {
-		attachUserAccounts(p, p.Context.OrgID, &userDupe)
+		AttachUserAccounts(p, p.Context.OrgID, &userDupe)
 
 		for _, a := range userDupe.Accounts {
 			if a.OrgID == p.Context.OrgID {

@@ -136,7 +136,7 @@ func AddUser(w http.ResponseWriter, r *http.Request) {
 
 		log.Info("Adding user")
 	} else {
-		attachUserAccounts(p, p.Context.OrgID, &userDupe)
+		AttachUserAccounts(p, p.Context.OrgID, &userDupe)
 
 		for _, a := range userDupe.Accounts {
 			if a.OrgID == p.Context.OrgID {
@@ -206,7 +206,7 @@ func AddUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Send back new user record
-	userModel, err = getSecuredUser(p, p.Context.OrgID, userID)
+	userModel, err = GetSecuredUser(p, p.Context.OrgID, userID)
 
 	json, err := json.Marshal(userModel)
 	if err != nil {
@@ -254,7 +254,7 @@ func GetOrganizationUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for i := range users {
-		attachUserAccounts(p, p.Context.OrgID, &users[i])
+		AttachUserAccounts(p, p.Context.OrgID, &users[i])
 	}
 
 	json, err := json.Marshal(users)
@@ -333,7 +333,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := getSecuredUser(p, p.Context.OrgID, userID)
+	user, err := GetSecuredUser(p, p.Context.OrgID, userID)
 
 	if err == sql.ErrNoRows {
 		writeNotFoundError(w, method, userID)
@@ -719,13 +719,14 @@ func ResetUserPassword(w http.ResponseWriter, r *http.Request) {
 }
 
 // Get user object contain associated accounts but credentials are wiped.
-func getSecuredUser(p request.Persister, orgID, user string) (u entity.User, err error) {
+func GetSecuredUser(p request.Persister, orgID, user string) (u entity.User, err error) {
 	u, err = p.GetUser(user)
-	attachUserAccounts(p, orgID, &u)
+	AttachUserAccounts(p, orgID, &u)
+
 	return
 }
 
-func attachUserAccounts(p request.Persister, orgID string, user *entity.User) {
+func AttachUserAccounts(p request.Persister, orgID string, user *entity.User) {
 	user.ProtectSecrets()
 	a, err := p.GetUserAccounts(user.RefID)
 

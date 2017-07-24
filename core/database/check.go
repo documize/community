@@ -49,7 +49,7 @@ func Check(runtime *env.Runtime) bool {
 	if err != nil {
 		runtime.Log.Error("Can't get MySQL configuration", err)
 		web.SiteInfo.Issue = "Can't get MySQL configuration: " + err.Error()
-		runtime.Flags.SiteMode = web.SiteModeBadDB
+		runtime.Flags.SiteMode = env.SiteModeBadDB
 		return false
 	}
 	defer streamutil.Close(rows)
@@ -65,7 +65,7 @@ func Check(runtime *env.Runtime) bool {
 	if err != nil {
 		runtime.Log.Error("no MySQL configuration returned", err)
 		web.SiteInfo.Issue = "no MySQL configuration return issue: " + err.Error()
-		runtime.Flags.SiteMode = web.SiteModeBadDB
+		runtime.Flags.SiteMode = env.SiteModeBadDB
 		return false
 	}
 
@@ -92,7 +92,7 @@ func Check(runtime *env.Runtime) bool {
 			want := fmt.Sprintf("%d.%d.%d", verInts[0], verInts[1], verInts[2])
 			runtime.Log.Error("MySQL version element "+strconv.Itoa(k+1)+" of '"+version+"' not high enough, need at least version "+want, errors.New("bad MySQL version"))
 			web.SiteInfo.Issue = "MySQL version element " + strconv.Itoa(k+1) + " of '" + version + "' not high enough, need at least version " + want
-			runtime.Flags.SiteMode = web.SiteModeBadDB
+			runtime.Flags.SiteMode = env.SiteModeBadDB
 			return false
 		}
 	}
@@ -101,13 +101,13 @@ func Check(runtime *env.Runtime) bool {
 		if charset != "utf8" {
 			runtime.Log.Error("MySQL character set not utf8:", errors.New(charset))
 			web.SiteInfo.Issue = "MySQL character set not utf8: " + charset
-			runtime.Flags.SiteMode = web.SiteModeBadDB
+			runtime.Flags.SiteMode = env.SiteModeBadDB
 			return false
 		}
 		if !strings.HasPrefix(collation, "utf8") {
 			runtime.Log.Error("MySQL collation sequence not utf8...:", errors.New(collation))
 			web.SiteInfo.Issue = "MySQL collation sequence not utf8...: " + collation
-			runtime.Flags.SiteMode = web.SiteModeBadDB
+			runtime.Flags.SiteMode = env.SiteModeBadDB
 			return false
 		}
 	}
@@ -119,12 +119,12 @@ func Check(runtime *env.Runtime) bool {
 				`' and TABLE_TYPE='BASE TABLE'`); err != nil {
 			runtime.Log.Error("Can't get MySQL number of tables", err)
 			web.SiteInfo.Issue = "Can't get MySQL number of tables: " + err.Error()
-			runtime.Flags.SiteMode = web.SiteModeBadDB
+			runtime.Flags.SiteMode = env.SiteModeBadDB
 			return false
 		}
 		if strings.TrimSpace(flds[0]) == "0" {
 			runtime.Log.Info("Entering database set-up mode because the database is empty.....")
-			runtime.Flags.SiteMode = web.SiteModeSetup
+			runtime.Flags.SiteMode = env.SiteModeSetup
 			return false
 		}
 	}
@@ -140,13 +140,13 @@ func Check(runtime *env.Runtime) bool {
 			if err := runtime.Db.Select(&dummy, "SELECT 1 FROM "+table+" LIMIT 1;"); err != nil {
 				runtime.Log.Error("Entering bad database mode because: SELECT 1 FROM "+table+" LIMIT 1;", err)
 				web.SiteInfo.Issue = "MySQL database is not empty, but does not contain table: " + table
-				runtime.Flags.SiteMode = web.SiteModeBadDB
+				runtime.Flags.SiteMode = env.SiteModeBadDB
 				return false
 			}
 		}
 	}
 
-	runtime.Flags.SiteMode = web.SiteModeNormal // actually no need to do this (as already ""), this for documentation
+	runtime.Flags.SiteMode = env.SiteModeNormal // actually no need to do this (as already ""), this for documentation
 	web.SiteInfo.DBname = ""                    // do not give this info when not in set-up mode
 	dbCheckOK = true
 	return true

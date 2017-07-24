@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"github.com/documize/community/core/api"
+	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/log"
 	"github.com/documize/community/core/secrets"
 	"github.com/documize/community/core/stringutil"
@@ -65,7 +66,7 @@ func Create(w http.ResponseWriter, r *http.Request) {
 		target := "/setup"
 		status := http.StatusBadRequest
 
-		if api.Runtime.Flags.SiteMode == web.SiteModeNormal {
+		if api.Runtime.Flags.SiteMode == env.SiteModeNormal {
 			target = "/"
 			status = http.StatusOK
 		}
@@ -133,7 +134,7 @@ func Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	api.Runtime.Flags.SiteMode = web.SiteModeNormal
+	api.Runtime.Flags.SiteMode = env.SiteModeNormal
 }
 
 // The result of completing the onboarding process.

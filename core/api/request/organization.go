@@ -19,9 +19,9 @@ import (
 
 	"github.com/documize/community/core/api"
 	"github.com/documize/community/core/api/entity"
+	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/log"
 	"github.com/documize/community/core/streamutil"
-	"github.com/documize/community/server/web"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -83,7 +83,7 @@ func (p *Persister) GetOrganizationByDomain(subdomain string) (org entity.Organi
 	err = nil
 	subdomain = strings.ToLower(subdomain)
 
-	if api.Runtime.Flags.SiteMode == web.SiteModeNormal { // only return an organization when running normally
+	if api.Runtime.Flags.SiteMode == env.SiteModeNormal { // only return an organization when running normally
 
 		var stmt *sqlx.Stmt
 

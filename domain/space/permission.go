@@ -12,3 +12,51 @@
 // Package space handles API calls and persistence for spaces.
 // Spaces in Documize contain documents.
 package space
+
+import (
+	"database/sql"
+	"fmt"
+
+	"github.com/documize/community/domain"
+)
+
+// CanViewSpace returns if the user has permission to view the given spaceID.
+func CanViewSpace(s domain.StoreContext, spaceID string) (hasPermission bool) {
+	roles, err := GetRoles(s, spaceID)
+	if err == sql.ErrNoRows {
+		err = nil
+	}
+	if err != nil {
+		s.Runtime.Log.Error(fmt.Sprintf("check space permissions %s", spaceID), err)
+		return false
+	}
+
+	for _, role := range roles {
+		if role.LabelID == spaceID && (role.CanView || role.CanEdit) {
+			return true
+		}
+	}
+
+	return false
+}
+
+// CanViewSpaceDocuments returns if the user has permission to view a document within the specified space.
+func CanViewSpaceDocuments(s domain.StoreContext, spaceID string) (hasPermission bool) {
+	roles, err := GetRoles(s, spaceID)
+	if err == sql.ErrNoRows {
+		err = nil
+	}
+
+	if err != nil {
+		s.Runtime.Log.Error(fmt.Sprintf("check space permissions %s", spaceID), err)
+		return false
+	}
+
+	for _, role := range roles {
+		if role.LabelID == spaceID && (role.CanView || role.CanEdit) {
+			return true
+		}
+	}
+
+	return false
+}

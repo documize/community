@@ -9,22 +9,20 @@
 //
 // https://documize.com
 
-// Package request provides HTTP request parsing functions.
-package request
+package auth
 
 import (
-	"net/http"
-
-	"github.com/gorilla/mux"
+	"github.com/documize/community/core/env"
+	"github.com/documize/community/domain/user"
 )
 
-// Param returns the requested paramater from route request.
-func Param(r *http.Request, p string) string {
-	params := mux.Vars(r)
-	return params[p]
+// Handler contains the runtime information such as logging and database.
+type Handler struct {
+	Runtime env.Runtime
 }
 
-// Params returns the paramaters from route request.
-func Params(r *http.Request) map[string]string {
-	return mux.Vars(r)
+// AuthenticationModel details authentication token and user details.
+type AuthenticationModel struct {
+	Token string    `json:"token"`
+	User  user.User `json:"user"`
 }

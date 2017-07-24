@@ -24,10 +24,10 @@ import (
 	"github.com/documize/community/core/api/entity"
 	"github.com/documize/community/core/api/request"
 	"github.com/documize/community/core/api/util"
+	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/log"
 	"github.com/documize/community/core/secrets"
 	"github.com/documize/community/domain/section/provider"
-	"github.com/documize/community/server/web"
 )
 
 // Authenticate user based up HTTP Authorization header.
@@ -98,7 +98,7 @@ func Authenticate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Attach user accounts and work out permissions
-	attachUserAccounts(p, org.RefID, &user)
+	AttachUserAccounts(p, org.RefID, &user)
 
 	// active check
 
@@ -201,7 +201,7 @@ func Authorize(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 
 		// Fetch user permissions for this org
 		if context.Authenticated {
-			user, err := getSecuredUser(p, org.RefID, context.UserID)
+			user, err := GetSecuredUser(p, org.RefID, context.UserID)
 
 			if err != nil {
 				writeServerError(w, method, err)
@@ -242,8 +242,6 @@ func Authorize(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 
 // ValidateAuthToken finds and validates authentication token.
 func ValidateAuthToken(w http.ResponseWriter, r *http.Request) {
-
-	log.Info("cb gh")
 	// TODO should this go after token validation?
 	if s := r.URL.Query().Get("section"); s != "" {
 		if err := provider.Callback(s, w, r); err != nil {
@@ -325,7 +323,7 @@ func ValidateAuthToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := getSecuredUser(p, org.RefID, context.UserID)
+	user, err := GetSecuredUser(p, org.RefID, context.UserID)
 
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
@@ -349,7 +347,7 @@ func preAuthorizeStaticAssets(r *http.Request) bool {
 		strings.ToLower(r.URL.Path) == "/robots.txt" ||
 		strings.ToLower(r.URL.Path) == "/version" ||
 		strings.HasPrefix(strings.ToLower(r.URL.Path), "/api/public/") ||
-		((api.Runtime.Flags.SiteMode == web.SiteModeSetup) && (strings.ToLower(r.URL.Path) == "/api/setup")) {
+		((api.Runtime.Flags.SiteMode == env.SiteModeSetup) && (strings.ToLower(r.URL.Path) == "/api/setup")) {
 
 		return true
 	}

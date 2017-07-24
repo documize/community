@@ -22,3 +22,14 @@ type Runtime struct {
 	Log     Logger
 	Product ProdInfo
 }
+
+const (
+	// SiteModeNormal serves app
+	SiteModeNormal = ""
+	// SiteModeOffline serves offline.html
+	SiteModeOffline = "1"
+	// SiteModeSetup tells Ember to serve setup route
+	SiteModeSetup = "2"
+	// SiteModeBadDB redirects to db-error.html page
+	SiteModeBadDB = "3"
+)

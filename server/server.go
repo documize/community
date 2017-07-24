@@ -18,7 +18,6 @@ import (
 	"strings"
 
 	"github.com/codegangsta/negroni"
-	"github.com/documize/community/core/api"
 	"github.com/documize/community/core/api/endpoint"
 	"github.com/documize/community/core/api/plugins"
 	"github.com/documize/community/core/database"
@@ -39,20 +38,23 @@ func Start(rt env.Runtime, ready chan struct{}) {
 		os.Exit(1)
 	}
 
-	rt.Log.Info(fmt.Sprintf("Starting %s version %s", api.Runtime.Product.Title, api.Runtime.Product.Version))
+	rt.Log.Info(fmt.Sprintf("Starting %s version %s", rt.Product.Title, rt.Product.Version))
 
 	// decide which mode to serve up
-	switch api.Runtime.Flags.SiteMode {
-	case web.SiteModeOffline:
+	switch rt.Flags.SiteMode {
+	case env.SiteModeOffline:
 		rt.Log.Info("Serving OFFLINE web server")
-	case web.SiteModeSetup:
+	case env.SiteModeSetup:
 		routing.Add(rt, routing.RoutePrefixPrivate, "setup", []string{"POST", "OPTIONS"}, nil, database.Create)
 		rt.Log.Info("Serving SETUP web server")
-	case web.SiteModeBadDB:
+	case env.SiteModeBadDB:
 		rt.Log.Info("Serving BAD DATABASE web server")
 	default:
 		rt.Log.Info("Starting web server")
 	}
+
+	// define middleware
+	cm := middleware{Runtime: rt}
 
 	// define API endpoints
 	routing.RegisterEndpoints(rt)
@@ -62,7 +64,7 @@ func Start(rt env.Runtime, ready chan struct{}) {
 
 	// "/api/public/..."
 	router.PathPrefix(routing.RoutePrefixPublic).Handler(negroni.New(
-		negroni.HandlerFunc(cors),
+		negroni.HandlerFunc(cm.cors),
 		negroni.Wrap(routing.BuildRoutes(rt, routing.RoutePrefixPublic)),
 	))
 
@@ -74,74 +76,46 @@ func Start(rt env.Runtime, ready chan struct{}) {
 
 	// "/..."
 	router.PathPrefix(routing.RoutePrefixRoot).Handler(negroni.New(
-		negroni.HandlerFunc(cors),
+		negroni.HandlerFunc(cm.cors),
 		negroni.Wrap(routing.BuildRoutes(rt, routing.RoutePrefixRoot)),
 	))
 
 	n := negroni.New()
 	n.Use(negroni.NewStatic(web.StaticAssetsFileSystem()))
-	n.Use(negroni.HandlerFunc(cors))
-	n.Use(negroni.HandlerFunc(metrics))
+	n.Use(negroni.HandlerFunc(cm.cors))
+	n.Use(negroni.HandlerFunc(cm.metrics))
 	n.UseHandler(router)
 
 	// start server
-	if !api.Runtime.Flags.SSLEnabled() {
-		rt.Log.Info("Starting non-SSL server on " + api.Runtime.Flags.HTTPPort)
-		n.Run(testHost + ":" + api.Runtime.Flags.HTTPPort)
+	if !rt.Flags.SSLEnabled() {
+		rt.Log.Info("Starting non-SSL server on " + rt.Flags.HTTPPort)
+		n.Run(testHost + ":" + rt.Flags.HTTPPort)
 	} else {
-		if api.Runtime.Flags.ForceHTTPPort2SSL != "" {
-			rt.Log.Info("Starting non-SSL server on " + api.Runtime.Flags.ForceHTTPPort2SSL + " and redirecting to SSL server on  " + api.Runtime.Flags.HTTPPort)
+		if rt.Flags.ForceHTTPPort2SSL != "" {
+			rt.Log.Info("Starting non-SSL server on " + rt.Flags.ForceHTTPPort2SSL + " and redirecting to SSL server on  " + rt.Flags.HTTPPort)
 
 			go func() {
-				err := http.ListenAndServe(":"+api.Runtime.Flags.ForceHTTPPort2SSL, http.HandlerFunc(
+				err := http.ListenAndServe(":"+rt.Flags.ForceHTTPPort2SSL, http.HandlerFunc(
 					func(w http.ResponseWriter, req *http.Request) {
 						w.Header().Set("Connection", "close")
-						var host = strings.Replace(req.Host, api.Runtime.Flags.ForceHTTPPort2SSL, api.Runtime.Flags.HTTPPort, 1) + req.RequestURI
+						var host = strings.Replace(req.Host, rt.Flags.ForceHTTPPort2SSL, rt.Flags.HTTPPort, 1) + req.RequestURI
 						http.Redirect(w, req, "https://"+host, http.StatusMovedPermanently)
 					}))
 				if err != nil {
-					rt.Log.Error("ListenAndServe on "+api.Runtime.Flags.ForceHTTPPort2SSL, err)
+					rt.Log.Error("ListenAndServe on "+rt.Flags.ForceHTTPPort2SSL, err)
 				}
 			}()
 		}
 
-		rt.Log.Info("Starting SSL server on " + api.Runtime.Flags.HTTPPort + " with " + api.Runtime.Flags.SSLCertFile + " " + api.Runtime.Flags.SSLKeyFile)
+		rt.Log.Info("Starting SSL server on " + rt.Flags.HTTPPort + " with " + rt.Flags.SSLCertFile + " " + rt.Flags.SSLKeyFile)
 
 		// TODO: https://blog.gopheracademy.com/advent-2016/exposing-go-on-the-internet/
 
-		server := &http.Server{Addr: ":" + api.Runtime.Flags.HTTPPort, Handler: n /*, TLSConfig: myTLSConfig*/}
+		server := &http.Server{Addr: ":" + rt.Flags.HTTPPort, Handler: n /*, TLSConfig: myTLSConfig*/}
 		server.SetKeepAlivesEnabled(true)
 
-		if err := server.ListenAndServeTLS(api.Runtime.Flags.SSLCertFile, api.Runtime.Flags.SSLKeyFile); err != nil {
-			rt.Log.Error("ListenAndServeTLS on "+api.Runtime.Flags.HTTPPort, err)
+		if err := server.ListenAndServeTLS(rt.Flags.SSLCertFile, rt.Flags.SSLKeyFile); err != nil {
+			rt.Log.Error("ListenAndServeTLS on "+rt.Flags.HTTPPort, err)
 		}
 	}
-}
-
-func cors(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "PUT, GET, POST, DELETE, OPTIONS, PATCH")
-	w.Header().Set("Access-Control-Allow-Headers", "host, content-type, accept, authorization, origin, referer, user-agent, cache-control, x-requested-with")
-	w.Header().Set("Access-Control-Expose-Headers", "x-documize-version, x-documize-status")
-
-	if r.Method == "OPTIONS" {
-		w.Header().Add("X-Documize-Version", api.Runtime.Product.Version)
-		w.Header().Add("Cache-Control", "no-cache")
-
-		w.Write([]byte(""))
-
-		return
-	}
-
-	next(w, r)
-}
-
-func metrics(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
-	w.Header().Add("X-Documize-Version", api.Runtime.Product.Version)
-	w.Header().Add("Cache-Control", "no-cache")
-
-	// Prevent page from being displayed in an iframe
-	w.Header().Add("X-Frame-Options", "DENY")
-
-	next(w, r)
 }

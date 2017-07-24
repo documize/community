@@ -28,6 +28,8 @@ const (
 	RoutePrefixPrivate = "/api/"
 	// RoutePrefixRoot used for unsecured endpoints at root (e.g. robots.txt)
 	RoutePrefixRoot = "/"
+	// RoutePrefixTesting used for isolated testing of routes with custom middleware
+	RoutePrefixTesting = "/testing/"
 )
 
 type routeDef struct {

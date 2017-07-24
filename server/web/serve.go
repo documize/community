@@ -17,18 +17,8 @@ import (
 	"net/http"
 
 	"github.com/documize/community/core/api"
+	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/secrets"
-)
-
-const (
-	// SiteModeNormal serves app
-	SiteModeNormal = ""
-	// SiteModeOffline serves offline.html
-	SiteModeOffline = "1"
-	// SiteModeSetup tells Ember to serve setup route
-	SiteModeSetup = "2"
-	// SiteModeBadDB redirects to db-error.html page
-	SiteModeBadDB = "3"
 )
 
 // SiteInfo describes set-up information about the site
@@ -44,11 +34,11 @@ func init() {
 func EmberHandler(w http.ResponseWriter, r *http.Request) {
 	filename := "index.html"
 	switch api.Runtime.Flags.SiteMode {
-	case SiteModeOffline:
+	case env.SiteModeOffline:
 		filename = "offline.html"
-	case SiteModeSetup:
+	case env.SiteModeSetup:
 		// NoOp
-	case SiteModeBadDB:
+	case env.SiteModeBadDB:
 		filename = "db-error.html"
 	default:
 		SiteInfo.DBhash = ""
