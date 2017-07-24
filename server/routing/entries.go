@@ -21,7 +21,7 @@ import (
 )
 
 // RegisterEndpoints register routes for serving API endpoints
-func RegisterEndpoints(rt env.Runtime) {
+func RegisterEndpoints(rt *env.Runtime) {
 	//**************************************************
 	// Non-secure routes
 	//**************************************************

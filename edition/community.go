@@ -65,5 +65,5 @@ func main() {
 	section.Register(rt)
 
 	ready := make(chan struct{}, 1) // channel signals router ready
-	server.Start(rt, ready)
+	server.Start(&rt, ready)
 }

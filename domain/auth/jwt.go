@@ -23,7 +23,7 @@ import (
 )
 
 // GenerateJWT generates JSON Web Token (http://jwt.io)
-func GenerateJWT(rt env.Runtime, user, org, domain string) string {
+func GenerateJWT(rt *env.Runtime, user, org, domain string) string {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"iss":    "Documize",
 		"sub":    "webapp",
@@ -61,7 +61,7 @@ func FindJWT(r *http.Request) (token string) {
 }
 
 // DecodeJWT decodes raw token.
-func DecodeJWT(rt env.Runtime, tokenString string) (c domain.RequestContext, claims jwt.Claims, err error) {
+func DecodeJWT(rt *env.Runtime, tokenString string) (c domain.RequestContext, claims jwt.Claims, err error) {
 	// sensible defaults
 	c.UserID = ""
 	c.OrgID = ""

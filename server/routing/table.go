@@ -62,7 +62,7 @@ func (s routeSorter) Less(i, j int) bool {
 	return s[i].ord < s[j].ord
 }
 
-func routesKey(rt env.Runtime, prefix, path string, methods, queries []string) (string, error) {
+func routesKey(rt *env.Runtime, prefix, path string, methods, queries []string) (string, error) {
 	rd := routeDef{
 		Prefix:  prefix,
 		Path:    path,
@@ -79,7 +79,7 @@ func routesKey(rt env.Runtime, prefix, path string, methods, queries []string) (
 }
 
 // Add an endpoint to those that will be processed when Serve() is called.
-func Add(rt env.Runtime, prefix, path string, methods, queries []string, endPtFn RouteFunc) error {
+func Add(rt *env.Runtime, prefix, path string, methods, queries []string, endPtFn RouteFunc) error {
 	k, e := routesKey(rt, prefix, path, methods, queries)
 	if e != nil {
 		return e
@@ -89,7 +89,7 @@ func Add(rt env.Runtime, prefix, path string, methods, queries []string, endPtFn
 }
 
 // Remove an endpoint.
-func Remove(rt env.Runtime, prefix, path string, methods, queries []string) error {
+func Remove(rt *env.Runtime, prefix, path string, methods, queries []string) error {
 	k, e := routesKey(rt, prefix, path, methods, queries)
 	if e != nil {
 		return e
@@ -99,7 +99,7 @@ func Remove(rt env.Runtime, prefix, path string, methods, queries []string) erro
 }
 
 // BuildRoutes returns all matching routes for specified scope.
-func BuildRoutes(rt env.Runtime, prefix string) *mux.Router {
+func BuildRoutes(rt *env.Runtime, prefix string) *mux.Router {
 	var rs routeSorter
 	for k, v := range routes {
 		var rd routeDef

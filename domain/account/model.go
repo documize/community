@@ -18,7 +18,7 @@ import (
 
 // Handler contains the runtime information such as logging and database.
 type Handler struct {
-	Runtime env.Runtime
+	Runtime *env.Runtime
 }
 
 // Account links a User to an Organization.

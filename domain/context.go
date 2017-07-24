@@ -53,12 +53,11 @@ func GetRequestContext(r *http.Request) RequestContext {
 
 // StoreContext provides data persistence methods with runtime and request context.
 type StoreContext struct {
-	Runtime env.Runtime
+	Runtime *env.Runtime
 	Context RequestContext
 }
 
-// NewContexts returns request scoped user context and store context for persistence logic.
-func NewContexts(rt env.Runtime, r *http.Request) (RequestContext, StoreContext) {
-	ctx := GetRequestContext(r)
-	return ctx, StoreContext{Runtime: rt, Context: ctx}
+// NewContext returns request scoped user context and store context for persistence logic.
+func NewContext(rt *env.Runtime, r *http.Request) StoreContext {
+	return StoreContext{Runtime: rt, Context: GetRequestContext(r)}
 }

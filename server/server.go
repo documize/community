@@ -30,7 +30,7 @@ import (
 var testHost string // used during automated testing
 
 // Start router to handle all HTTP traffic.
-func Start(rt env.Runtime, ready chan struct{}) {
+func Start(rt *env.Runtime, ready chan struct{}) {
 
 	err := plugins.LibSetup()
 	if err != nil {

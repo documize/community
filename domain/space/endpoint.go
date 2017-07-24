@@ -41,14 +41,14 @@ import (
 // Add creates a new space.
 func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	method := "AddSpace"
-	ctx, s := domain.NewContexts(h.Runtime, r)
+	s := domain.NewContext(h.Runtime, r)
 
 	if !h.Runtime.Product.License.IsValid() {
 		response.WriteBadLicense(w)
 		return
 	}
 
-	if !ctx.Editor {
+	if !s.Context.Editor {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -72,25 +72,25 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctx.Transaction, err = h.Runtime.Db.Beginx()
+	s.Context.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		return
 	}
 
 	space.RefID = uniqueid.Generate()
-	space.OrgID = ctx.OrgID
+	space.OrgID = s.Context.OrgID
 
 	err = addSpace(s, space)
 	if err != nil {
-		ctx.Transaction.Rollback()
+		s.Context.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
 		return
 	}
 
 	eventing.Record(s, eventing.EventTypeSpaceAdd)
 
-	ctx.Transaction.Commit()
+	s.Context.Transaction.Commit()
 
 	space, _ = Get(s, space.RefID)
 
@@ -100,7 +100,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 // Get returns the requested space.
 func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	method := "Get"
-	_, s := domain.NewContexts(h.Runtime, r)
+	s := domain.NewContext(h.Runtime, r)
 
 	id := request.Param(r, "folderID")
 	if len(id) == 0 {
@@ -124,7 +124,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 // GetAll returns spaces the user can see.
 func (h *Handler) GetAll(w http.ResponseWriter, r *http.Request) {
 	method := "GetAll"
-	_, s := domain.NewContexts(h.Runtime, r)
+	s := domain.NewContext(h.Runtime, r)
 
 	sp, err := GetAll(s)
 	if err != nil && err != sql.ErrNoRows {
@@ -142,7 +142,7 @@ func (h *Handler) GetAll(w http.ResponseWriter, r *http.Request) {
 // GetSpaceViewers returns the users that can see the shared spaces.
 func (h *Handler) GetSpaceViewers(w http.ResponseWriter, r *http.Request) {
 	method := "GetSpaceViewers"
-	_, s := domain.NewContexts(h.Runtime, r)
+	s := domain.NewContext(h.Runtime, r)
 
 	v, err := Viewers(s)
 	if err != nil && err != sql.ErrNoRows {
@@ -160,9 +160,9 @@ func (h *Handler) GetSpaceViewers(w http.ResponseWriter, r *http.Request) {
 // Update processes request to save space object to the database
 func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	method := "space.Update"
-	ctx, s := domain.NewContexts(h.Runtime, r)
+	s := domain.NewContext(h.Runtime, r)
 
-	if !ctx.Editor {
+	if !s.Context.Editor {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -194,7 +194,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 	sp.RefID = folderID
 
-	ctx.Transaction, err = h.Runtime.Db.Beginx()
+	s.Context.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		return
@@ -202,14 +202,14 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 	err = Update(s, sp)
 	if err != nil {
-		ctx.Transaction.Rollback()
+		s.Context.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
 		return
 	}
 
 	eventing.Record(s, eventing.EventTypeSpaceUpdate)
 
-	ctx.Transaction.Commit()
+	s.Context.Transaction.Commit()
 
 	response.WriteJSON(w, sp)
 }
@@ -217,14 +217,14 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 // Remove moves documents to another folder before deleting it
 func (h *Handler) Remove(w http.ResponseWriter, r *http.Request) {
 	method := "space.Remove"
-	ctx, s := domain.NewContexts(h.Runtime, r)
+	s := domain.NewContext(h.Runtime, r)
 
 	if !h.Runtime.Product.License.IsValid() {
 		response.WriteBadLicense(w)
 		return
 	}
 
-	if !ctx.Editor {
+	if !s.Context.Editor {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -242,7 +242,7 @@ func (h *Handler) Remove(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var err error
-	ctx.Transaction, err = h.Runtime.Db.Beginx()
+	s.Context.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		return
@@ -250,35 +250,35 @@ func (h *Handler) Remove(w http.ResponseWriter, r *http.Request) {
 
 	_, err = Delete(s, id)
 	if err != nil {
-		ctx.Transaction.Rollback()
+		s.Context.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
 		return
 	}
 
 	err = document.MoveDocumentSpace(s, id, move)
 	if err != nil {
-		ctx.Transaction.Rollback()
+		s.Context.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
 		return
 	}
 
 	err = MoveSpaceRoles(s, id, move)
 	if err != nil {
-		ctx.Transaction.Rollback()
+		s.Context.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
 		return
 	}
 
 	_, err = pin.DeletePinnedSpace(s, id)
 	if err != nil && err != sql.ErrNoRows {
-		ctx.Transaction.Rollback()
+		s.Context.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
 		return
 	}
 
 	eventing.Record(s, eventing.EventTypeSpaceDelete)
 
-	ctx.Transaction.Commit()
+	s.Context.Transaction.Commit()
 
 	response.WriteEmpty(w)
 }
@@ -286,14 +286,14 @@ func (h *Handler) Remove(w http.ResponseWriter, r *http.Request) {
 // Delete deletes empty space.
 func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	method := "space.Delete"
-	ctx, s := domain.NewContexts(h.Runtime, r)
+	s := domain.NewContext(h.Runtime, r)
 
 	if !h.Runtime.Product.License.IsValid() {
 		response.WriteBadLicense(w)
 		return
 	}
 
-	if !ctx.Editor {
+	if !s.Context.Editor {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -305,7 +305,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var err error
-	ctx.Transaction, err = h.Runtime.Db.Beginx()
+	s.Context.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		return
@@ -313,37 +313,37 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	_, err = Delete(s, id)
 	if err != nil {
-		ctx.Transaction.Rollback()
+		s.Context.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
 		return
 	}
 
 	_, err = DeleteSpaceRoles(s, id)
 	if err != nil {
-		ctx.Transaction.Rollback()
+		s.Context.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
 		return
 	}
 
 	_, err = pin.DeletePinnedSpace(s, id)
 	if err != nil && err != sql.ErrNoRows {
-		ctx.Transaction.Rollback()
+		s.Context.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
 		return
 	}
 
 	eventing.Record(s, eventing.EventTypeSpaceDelete)
 
-	ctx.Transaction.Commit()
+	s.Context.Transaction.Commit()
 	response.WriteEmpty(w)
 }
 
 // SetPermissions persists specified spac3 permissions
 func (h *Handler) SetPermissions(w http.ResponseWriter, r *http.Request) {
 	method := "space.SetPermissions"
-	ctx, s := domain.NewContexts(h.Runtime, r)
+	s := domain.NewContext(h.Runtime, r)
 
-	if !ctx.Editor {
+	if !s.Context.Editor {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -379,7 +379,7 @@ func (h *Handler) SetPermissions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctx.Transaction, err = h.Runtime.Db.Beginx()
+	s.Context.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		return
@@ -389,7 +389,7 @@ func (h *Handler) SetPermissions(w http.ResponseWriter, r *http.Request) {
 	// Why? So we can send out folder invitation emails.
 	previousRoles, err := GetRoles(s, id)
 	if err != nil {
-		ctx.Transaction.Rollback()
+		s.Context.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
 		return
 	}
@@ -404,7 +404,7 @@ func (h *Handler) SetPermissions(w http.ResponseWriter, r *http.Request) {
 	// Who is sharing this folder?
 	inviter, err := user.Get(s, s.Context.UserID)
 	if err != nil {
-		ctx.Transaction.Rollback()
+		s.Context.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
 		return
 	}
@@ -412,7 +412,7 @@ func (h *Handler) SetPermissions(w http.ResponseWriter, r *http.Request) {
 	// Nuke all previous permissions for this folder
 	_, err = DeleteSpaceRoles(s, id)
 	if err != nil {
-		ctx.Transaction.Rollback()
+		s.Context.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
 		return
 	}
@@ -479,7 +479,7 @@ func (h *Handler) SetPermissions(w http.ResponseWriter, r *http.Request) {
 
 		err = AddRole(s, role)
 		if err != nil {
-			ctx.Transaction.Rollback()
+			s.Context.Transaction.Rollback()
 			response.WriteServerError(w, method, err)
 			return
 		}
@@ -498,14 +498,14 @@ func (h *Handler) SetPermissions(w http.ResponseWriter, r *http.Request) {
 
 	err = Update(s, sp)
 	if err != nil {
-		ctx.Transaction.Rollback()
+		s.Context.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
 		return
 	}
 
 	eventing.Record(s, eventing.EventTypeSpacePermission)
 
-	ctx.Transaction.Commit()
+	s.Context.Transaction.Commit()
 
 	response.WriteEmpty(w)
 }
@@ -513,7 +513,7 @@ func (h *Handler) SetPermissions(w http.ResponseWriter, r *http.Request) {
 // GetPermissions returns user permissions for the requested folder.
 func (h *Handler) GetPermissions(w http.ResponseWriter, r *http.Request) {
 	method := "space.GetPermissions"
-	_, s := domain.NewContexts(h.Runtime, r)
+	s := domain.NewContext(h.Runtime, r)
 
 	folderID := request.Param(r, "folderID")
 	if len(folderID) == 0 {
@@ -537,7 +537,7 @@ func (h *Handler) GetPermissions(w http.ResponseWriter, r *http.Request) {
 // AcceptInvitation records the fact that a user has completed space onboard process.
 func (h *Handler) AcceptInvitation(w http.ResponseWriter, r *http.Request) {
 	method := "space.AcceptInvitation"
-	ctx, s := domain.NewContexts(h.Runtime, r)
+	s := domain.NewContext(h.Runtime, r)
 
 	folderID := request.Param(r, "folderID")
 	if len(folderID) == 0 {
@@ -545,14 +545,13 @@ func (h *Handler) AcceptInvitation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	org, err := organization.GetOrganizationByDomain(s, ctx.Subdomain)
+	org, err := organization.GetOrganizationByDomain(s, s.Context.Subdomain)
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		return
 	}
 
 	// AcceptShare does not authenticate the user hence the context needs to set up
-	ctx.OrgID = org.RefID
 	s.Context.OrgID = org.RefID
 
 	defer streamutil.Close(r.Body)
@@ -581,14 +580,13 @@ func (h *Handler) AcceptInvitation(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// AcceptShare does not authenticate the user hence the context needs to set up
-	ctx.UserID = u.RefID
 	s.Context.UserID = u.RefID
 
 	u.Firstname = model.Firstname
 	u.Lastname = model.Lastname
 	u.Initials = stringutil.MakeInitials(u.Firstname, u.Lastname)
 
-	ctx.Transaction, err = h.Runtime.Db.Beginx()
+	s.Context.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		return
@@ -596,7 +594,7 @@ func (h *Handler) AcceptInvitation(w http.ResponseWriter, r *http.Request) {
 
 	err = user.UpdateUser(s, u)
 	if err != nil {
-		ctx.Transaction.Rollback()
+		s.Context.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
 		return
 	}
@@ -605,14 +603,14 @@ func (h *Handler) AcceptInvitation(w http.ResponseWriter, r *http.Request) {
 
 	err = user.UpdateUserPassword(s, u.RefID, salt, secrets.GeneratePassword(model.Password, salt))
 	if err != nil {
-		ctx.Transaction.Rollback()
+		s.Context.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
 		return
 	}
 
 	eventing.Record(s, eventing.EventTypeSpaceJoin)
 
-	ctx.Transaction.Commit()
+	s.Context.Transaction.Commit()
 
 	response.WriteJSON(w, u)
 }
@@ -620,7 +618,7 @@ func (h *Handler) AcceptInvitation(w http.ResponseWriter, r *http.Request) {
 // Invite sends users folder invitation emails.
 func (h *Handler) Invite(w http.ResponseWriter, r *http.Request) {
 	method := "space.Invite"
-	ctx, s := domain.NewContexts(h.Runtime, r)
+	s := domain.NewContext(h.Runtime, r)
 
 	id := request.Param(r, "folderID")
 	if len(id) == 0 {
@@ -653,13 +651,13 @@ func (h *Handler) Invite(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctx.Transaction, err = h.Runtime.Db.Beginx()
+	s.Context.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		return
 	}
 
-	inviter, err := user.Get(s, ctx.UserID)
+	inviter, err := user.Get(s, s.Context.UserID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		return
@@ -668,7 +666,7 @@ func (h *Handler) Invite(w http.ResponseWriter, r *http.Request) {
 	for _, email := range model.Recipients {
 		u, err := user.GetByEmail(s, email)
 		if err != nil && err != sql.ErrNoRows {
-			ctx.Transaction.Rollback()
+			s.Context.Transaction.Rollback()
 			response.WriteServerError(w, method, err)
 			return
 		}
@@ -677,7 +675,7 @@ func (h *Handler) Invite(w http.ResponseWriter, r *http.Request) {
 			// Ensure they have access to this organization
 			accounts, err2 := account.GetUserAccounts(s, u.RefID)
 			if err2 != nil {
-				ctx.Transaction.Rollback()
+				s.Context.Transaction.Rollback()
 				response.WriteServerError(w, method, err)
 				return
 			}
@@ -702,7 +700,7 @@ func (h *Handler) Invite(w http.ResponseWriter, r *http.Request) {
 
 				err = account.Add(s, a)
 				if err != nil {
-					ctx.Transaction.Rollback()
+					s.Context.Transaction.Rollback()
 					response.WriteServerError(w, method, err)
 					return
 				}
@@ -713,7 +711,7 @@ func (h *Handler) Invite(w http.ResponseWriter, r *http.Request) {
 
 			role := Role{}
 			role.LabelID = sp.RefID
-			role.OrgID = ctx.OrgID
+			role.OrgID = s.Context.OrgID
 			role.UserID = u.RefID
 			role.CanEdit = false
 			role.CanView = true
@@ -722,23 +720,23 @@ func (h *Handler) Invite(w http.ResponseWriter, r *http.Request) {
 
 			err = AddRole(s, role)
 			if err != nil {
-				ctx.Transaction.Rollback()
+				s.Context.Transaction.Rollback()
 				response.WriteServerError(w, method, err)
 				return
 			}
 
-			url := ctx.GetAppURL(fmt.Sprintf("s/%s/%s", sp.RefID, stringutil.MakeSlug(sp.Name)))
+			url := s.Context.GetAppURL(fmt.Sprintf("s/%s/%s", sp.RefID, stringutil.MakeSlug(sp.Name)))
 			go mail.ShareFolderExistingUser(email, inviter.Fullname(), url, sp.Name, model.Message)
 
 			h.Runtime.Log.Info(fmt.Sprintf("%s is sharing space %s with existing user %s", inviter.Email, sp.Name, email))
 		} else {
 			// On-board new user
 			if strings.Contains(email, "@") {
-				url := ctx.GetAppURL(fmt.Sprintf("auth/share/%s/%s", sp.RefID, stringutil.MakeSlug(sp.Name)))
+				url := s.Context.GetAppURL(fmt.Sprintf("auth/share/%s/%s", sp.RefID, stringutil.MakeSlug(sp.Name)))
 				err = inviteNewUserToSharedSpace(s, email, inviter, url, sp, model.Message)
 
 				if err != nil {
-					ctx.Transaction.Rollback()
+					s.Context.Transaction.Rollback()
 					response.WriteServerError(w, method, err)
 					return
 				}
@@ -754,7 +752,7 @@ func (h *Handler) Invite(w http.ResponseWriter, r *http.Request) {
 
 		err = Update(s, sp)
 		if err != nil {
-			ctx.Transaction.Rollback()
+			s.Context.Transaction.Rollback()
 			response.WriteServerError(w, method, err)
 			return
 		}
@@ -762,7 +760,7 @@ func (h *Handler) Invite(w http.ResponseWriter, r *http.Request) {
 
 	eventing.Record(s, eventing.EventTypeSpaceInvite)
 
-	ctx.Transaction.Commit()
+	s.Context.Transaction.Commit()
 
 	response.WriteEmpty(w)
 }

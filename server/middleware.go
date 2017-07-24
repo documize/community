@@ -28,7 +28,7 @@ import (
 )
 
 type middleware struct {
-	Runtime env.Runtime
+	Runtime *env.Runtime
 }
 
 func (m *middleware) cors(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
@@ -194,7 +194,7 @@ func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http
 
 // Certain assets/URL do not require authentication.
 // Just stops the log files being clogged up with failed auth errors.
-func preAuthorizeStaticAssets(rt env.Runtime, r *http.Request) bool {
+func preAuthorizeStaticAssets(rt *env.Runtime, r *http.Request) bool {
 	if strings.ToLower(r.URL.Path) == "/" ||
 		strings.ToLower(r.URL.Path) == "/validate" ||
 		strings.ToLower(r.URL.Path) == "/favicon.ico" ||
