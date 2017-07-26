@@ -11,15 +11,10 @@
 
 package auth
 
-/*
-// Handler contains the runtime information such as logging and database.
-type Handler struct {
-	Runtime *env.Runtime
-}
+import "github.com/documize/community/model/user"
 
 // AuthenticationModel details authentication token and user details.
 type AuthenticationModel struct {
 	Token string    `json:"token"`
 	User  user.User `json:"user"`
 }
-*/

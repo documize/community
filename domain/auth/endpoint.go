@@ -11,13 +11,34 @@
 
 package auth
 
-/*
-// Authenticate user based up HTTP Authorization header.
-// An encrypted authentication token is issued with an expiry date.
-func (h *Handler) Authenticate(w http.ResponseWriter, r *http.Request) {
-	method := "Authenticate"
+import (
+	"database/sql"
+	"errors"
+	"net/http"
+	"strings"
 
-	s := domain.StoreContext{Runtime: h.Runtime, Context: domain.GetRequestContext(r)}
+	"github.com/documize/community/core/env"
+	"github.com/documize/community/core/response"
+	"github.com/documize/community/core/secrets"
+	"github.com/documize/community/domain"
+	"github.com/documize/community/domain/organization"
+	"github.com/documize/community/domain/section/provider"
+	"github.com/documize/community/domain/user"
+	"github.com/documize/community/model/auth"
+	"github.com/documize/community/model/org"
+)
+
+// Handler contains the runtime information such as logging and database.
+type Handler struct {
+	Runtime *env.Runtime
+	Store   *domain.Store
+}
+
+// Login user based up HTTP Authorization header.
+// An encrypted authentication token is issued with an expiry date.
+func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
+	method := "auth.Login"
+	ctx := domain.GetRequestContext(r)
 
 	// check for http header
 	authHeader := r.Header.Get("Authorization")
@@ -46,23 +67,20 @@ func (h *Handler) Authenticate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	dom := strings.TrimSpace(strings.ToLower(credentials[0]))
-	dom = organization.CheckDomain(s, dom) // TODO optimize by removing this once js allows empty domains
+	dom = h.Store.Organization.CheckDomain(ctx, dom) // TODO optimize by removing this once js allows empty domains
 	email := strings.TrimSpace(strings.ToLower(credentials[1]))
 	password := credentials[2]
 	h.Runtime.Log.Info("logon attempt " + email + " @ " + dom)
 
-	u, err := user.GetByDomain(s, dom, email)
-
+	u, err := h.Store.User.GetByDomain(ctx, dom, email)
 	if err == sql.ErrNoRows {
 		response.WriteUnauthorizedError(w)
 		return
 	}
-
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		return
 	}
-
 	if len(u.Reset) > 0 || len(u.Password) == 0 {
 		response.WriteUnauthorizedError(w)
 		return
@@ -74,31 +92,29 @@ func (h *Handler) Authenticate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	org, err := organization.GetOrganizationByDomain(s, dom)
+	org, err := h.Store.Organization.GetOrganizationByDomain(ctx, dom)
 	if err != nil {
 		response.WriteUnauthorizedError(w)
 		return
 	}
 
 	// Attach user accounts and work out permissions
-	user.AttachUserAccounts(s, org.RefID, &u)
-
-	// active check
+	user.AttachUserAccounts(ctx, *h.Store, org.RefID, &u)
 
 	if len(u.Accounts) == 0 {
 		response.WriteUnauthorizedError(w)
 		return
 	}
 
-	authModel := AuthenticationModel{}
+	authModel := auth.AuthenticationModel{}
 	authModel.Token = GenerateJWT(h.Runtime, u.RefID, org.RefID, dom)
 	authModel.User = u
 
 	response.WriteJSON(w, authModel)
 }
 
-// ValidateAuthToken finds and validates authentication token.
-func (h *Handler) ValidateAuthToken(w http.ResponseWriter, r *http.Request) {
+// ValidateToken finds and validates authentication token.
+func (h *Handler) ValidateToken(w http.ResponseWriter, r *http.Request) {
 	// TODO should this go after token validation?
 	if s := r.URL.Query().Get("section"); s != "" {
 		if err := provider.Callback(s, w, r); err != nil {
@@ -109,40 +125,40 @@ func (h *Handler) ValidateAuthToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	s := domain.StoreContext{Runtime: h.Runtime, Context: domain.GetRequestContext(r)}
-
 	token := FindJWT(r)
 	rc, _, tokenErr := DecodeJWT(h.Runtime, token)
 
-	var org = organization.Organization{}
+	var org = org.Organization{}
 	var err = errors.New("")
 
 	// We always grab the org record regardless of token status.
 	// Why? If bad token we might be OK to alow anonymous access
 	// depending upon the domain in question.
 	if len(rc.OrgID) == 0 {
-		org, err = organization.GetOrganizationByDomain(s, organization.GetRequestSubdomain(s, r))
+		dom := organization.GetRequestSubdomain(r)
+		org, err = h.Store.Organization.GetOrganizationByDomain(rc, dom)
 	} else {
-		org, err = organization.GetOrganization(s, rc.OrgID)
+		org, err = h.Store.Organization.GetOrganization(rc, rc.OrgID)
 	}
 
 	rc.Subdomain = org.Domain
 
 	// Inability to find org record spells the end of this request.
 	if err != nil {
-		w.WriteHeader(http.StatusUnauthorized)
+		response.WriteUnauthorizedError(w)
 		return
 	}
 
 	// If we have bad auth token and the domain does not allow anon access
 	if !org.AllowAnonymousAccess && tokenErr != nil {
+		response.WriteUnauthorizedError(w)
 		return
 	}
 
-	dom := organization.GetSubdomainFromHost(s, r)
-	dom2 := organization.GetRequestSubdomain(s, r)
+	dom := organization.GetSubdomainFromHost(r)
+	dom2 := organization.GetRequestSubdomain(r)
 	if org.Domain != dom && org.Domain != dom2 {
-		w.WriteHeader(http.StatusUnauthorized)
+		response.WriteUnauthorizedError(w)
 		return
 	}
 
@@ -152,7 +168,7 @@ func (h *Handler) ValidateAuthToken(w http.ResponseWriter, r *http.Request) {
 		// So you have a bad token
 		if len(token) > 1 {
 			if tokenErr != nil {
-				w.WriteHeader(http.StatusUnauthorized)
+				response.WriteUnauthorizedError(w)
 				return
 			}
 		} else {
@@ -170,18 +186,18 @@ func (h *Handler) ValidateAuthToken(w http.ResponseWriter, r *http.Request) {
 	rc.Editor = false
 	rc.Global = false
 	rc.AppURL = r.Host
-	rc.Subdomain = organization.GetSubdomainFromHost(s, r)
+	rc.Subdomain = organization.GetSubdomainFromHost(r)
 	rc.SSL = r.TLS != nil
 
 	// Fetch user permissions for this org
 	if !rc.Authenticated {
-		w.WriteHeader(http.StatusUnauthorized)
+		response.WriteUnauthorizedError(w)
 		return
 	}
 
-	u, err := user.GetSecuredUser(s, org.RefID, rc.UserID)
+	u, err := user.GetSecuredUser(rc, *h.Store, org.RefID, rc.UserID)
 	if err != nil {
-		w.WriteHeader(http.StatusUnauthorized)
+		response.WriteUnauthorizedError(w)
 		return
 	}
 
@@ -190,6 +206,4 @@ func (h *Handler) ValidateAuthToken(w http.ResponseWriter, r *http.Request) {
 	rc.Global = u.Global
 
 	response.WriteJSON(w, u)
-	return
 }
-*/

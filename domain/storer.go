@@ -14,8 +14,12 @@ package domain
 
 import (
 	"github.com/documize/community/model/account"
+	"github.com/documize/community/model/attachment"
 	"github.com/documize/community/model/audit"
+	"github.com/documize/community/model/doc"
+	"github.com/documize/community/model/link"
 	"github.com/documize/community/model/org"
+	"github.com/documize/community/model/page"
 	"github.com/documize/community/model/pin"
 	"github.com/documize/community/model/space"
 	"github.com/documize/community/model/user"
@@ -30,6 +34,10 @@ type Store struct {
 	Pin          PinStorer
 	Audit        AuditStorer
 	Document     DocumentStorer
+	Setting      SettingStorer
+	Attachment   AttachmentStorer
+	Link         LinkStorer
+	Page         PageStorer
 }
 
 // SpaceStorer defines required methods for space management
@@ -112,7 +120,43 @@ type AuditStorer interface {
 
 // DocumentStorer defines required methods for document handling
 type DocumentStorer interface {
+	Get(ctx RequestContext, id string) (document doc.Document, err error)
 	MoveDocumentSpace(ctx RequestContext, id, move string) (err error)
+	PublicDocuments(ctx RequestContext, orgID string) (documents []doc.SitemapDocument, err error)
 }
 
-// https://github.com/golang-sql/sqlexp/blob/c2488a8be21d20d31abf0d05c2735efd2d09afe4/quoter.go#L46
+// SettingStorer defines required methods for persisting global and user level settings
+type SettingStorer interface {
+	Get(ctx RequestContext, area, path string) string
+	Set(ctx RequestContext, area, value string) error
+	GetUser(ctx RequestContext, orgID, userID, area, path string) string
+	SetUser(ctx RequestContext, orgID, userID, area, json string) error
+}
+
+// AttachmentStorer defines required methods for persisting document attachments
+type AttachmentStorer interface {
+	Add(ctx RequestContext, a attachment.Attachment) (err error)
+	GetAttachment(ctx RequestContext, orgID, attachmentID string) (a attachment.Attachment, err error)
+	GetAttachments(ctx RequestContext, docID string) (a []attachment.Attachment, err error)
+	GetAttachmentsWithData(ctx RequestContext, docID string) (a []attachment.Attachment, err error)
+	Delete(ctx RequestContext, id string) (rows int64, err error)
+}
+
+// LinkStorer defines required methods for persisting content links
+type LinkStorer interface {
+	Add(ctx RequestContext, l link.Link) (err error)
+	SearchCandidates(ctx RequestContext, keywords string) (docs []link.Candidate, pages []link.Candidate, attachments []link.Candidate, err error)
+	GetDocumentOutboundLinks(ctx RequestContext, documentID string) (links []link.Link, err error)
+	GetPageLinks(ctx RequestContext, documentID, pageID string) (links []link.Link, err error)
+	MarkOrphanDocumentLink(ctx RequestContext, documentID string) (err error)
+	MarkOrphanPageLink(ctx RequestContext, pageID string) (err error)
+	MarkOrphanAttachmentLink(ctx RequestContext, attachmentID string) (err error)
+	DeleteSourcePageLinks(ctx RequestContext, pageID string) (rows int64, err error)
+	DeleteSourceDocumentLinks(ctx RequestContext, documentID string) (rows int64, err error)
+	DeleteLink(ctx RequestContext, id string) (rows int64, err error)
+}
+
+// PageStorer defines required methods for persisting document pages
+type PageStorer interface {
+	GetPagesWithoutContent(ctx RequestContext, documentID string) (pages []page.Page, err error)
+}

@@ -12,27 +12,48 @@
 package user
 
 import (
+	"database/sql"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"net/url"
+	"strings"
+
+	"strconv"
+
+	"github.com/documize/community/core/api/mail"
 	"github.com/documize/community/core/env"
+	"github.com/documize/community/core/event"
+	"github.com/documize/community/core/request"
+	"github.com/documize/community/core/response"
+	"github.com/documize/community/core/secrets"
+	"github.com/documize/community/core/streamutil"
+	"github.com/documize/community/core/stringutil"
+	"github.com/documize/community/core/uniqueid"
 	"github.com/documize/community/domain"
+	"github.com/documize/community/model/account"
+	"github.com/documize/community/model/audit"
+	"github.com/documize/community/model/space"
+	"github.com/documize/community/model/user"
 )
 
 // Handler contains the runtime information such as logging and database.
 type Handler struct {
 	Runtime *env.Runtime
-	Store   domain.Store
+	Store   *domain.Store
 }
 
-/*
-// AddUser is the endpoint that enables an administrator to add a new user for their orgaisation.
-func (h *Handler) AddUser(w http.ResponseWriter, r *http.Request) {
-	method := "user.AddUser"
+// Add is the endpoint that enables an administrator to add a new user for their orgaisation.
+func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
+	method := "user.Add"
 	ctx := domain.GetRequestContext(r)
 
 	if !h.Runtime.Product.License.IsValid() {
 		response.WriteBadLicense(w)
 	}
 
-	if !s.Context.Administrator {
+	if !ctx.Administrator {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -44,7 +65,7 @@ func (h *Handler) AddUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userModel := model.User{}
+	userModel := user.User{}
 	err = json.Unmarshal(body, &userModel)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())
@@ -82,7 +103,7 @@ func (h *Handler) AddUser(w http.ResponseWriter, r *http.Request) {
 	addAccount := true
 	var userID string
 
-	userDupe, err := h.Store.User.GetByEmail(s, userModel.Email)
+	userDupe, err := h.Store.User.GetByEmail(ctx, userModel.Email)
 	if err != nil && err != sql.ErrNoRows {
 		response.WriteServerError(w, method, err)
 		return
@@ -95,7 +116,7 @@ func (h *Handler) AddUser(w http.ResponseWriter, r *http.Request) {
 		h.Runtime.Log.Info("Dupe user found, will not add " + userModel.Email)
 	}
 
-	s.Context.Transaction, err = request.Db.Beginx()
+	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		return
@@ -105,19 +126,19 @@ func (h *Handler) AddUser(w http.ResponseWriter, r *http.Request) {
 		userID = uniqueid.Generate()
 		userModel.RefID = userID
 
-		err = h.Store.User.Add(s, userModel)
+		err = h.Store.User.Add(ctx, userModel)
 		if err != nil {
-			s.Context.Transaction.Rollback()
+			ctx.Transaction.Rollback()
 			response.WriteServerError(w, method, err)
 			return
 		}
 
 		h.Runtime.Log.Info("Adding user")
 	} else {
-		AttachUserAccounts(s, s.Context.OrgID, &userDupe)
+		AttachUserAccounts(ctx, *h.Store, ctx.OrgID, &userDupe)
 
 		for _, a := range userDupe.Accounts {
-			if a.OrgID == s.Context.OrgID {
+			if a.OrgID == ctx.OrgID {
 				addAccount = false
 				h.Runtime.Log.Info("Dupe account found, will not add")
 				break
@@ -127,17 +148,17 @@ func (h *Handler) AddUser(w http.ResponseWriter, r *http.Request) {
 
 	// set up user account for the org
 	if addAccount {
-		var a model.Account
+		var a account.Account
 		a.RefID = uniqueid.Generate()
 		a.UserID = userID
-		a.OrgID = s.Context.OrgID
+		a.OrgID = ctx.OrgID
 		a.Editor = true
 		a.Admin = false
 		a.Active = true
 
-		err = account.Add(s, a)
+		err = h.Store.Account.Add(ctx, a)
 		if err != nil {
-			s.Context.Transaction.Rollback()
+			ctx.Transaction.Rollback()
 			response.WriteServerError(w, method, err)
 			return
 		}
@@ -145,15 +166,15 @@ func (h *Handler) AddUser(w http.ResponseWriter, r *http.Request) {
 
 	if addUser {
 		event.Handler().Publish(string(event.TypeAddUser))
-		eventing.Record(s, eventing.EventTypeUserAdd)
+		h.Store.Audit.Record(ctx, audit.EventTypeUserAdd)
 	}
 
 	if addAccount {
 		event.Handler().Publish(string(event.TypeAddAccount))
-		eventing.Record(s, eventing.EventTypeAccountAdd)
+		h.Store.Audit.Record(ctx, audit.EventTypeAccountAdd)
 	}
 
-	s.Context.Transaction.Commit()
+	ctx.Transaction.Commit()
 
 	// If we did not add user or give them access (account) then we error back
 	if !addUser && !addAccount {
@@ -162,7 +183,7 @@ func (h *Handler) AddUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Invite new user
-	inviter, err := h.Store.User.Get(s, s.Context.UserID)
+	inviter, err := h.Store.User.Get(ctx, ctx.UserID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		return
@@ -172,16 +193,16 @@ func (h *Handler) AddUser(w http.ResponseWriter, r *http.Request) {
 	if addUser && addAccount {
 		size := len(requestedPassword)
 
-		auth := fmt.Sprintf("%s:%s:%s", s.Context.AppURL, userModel.Email, requestedPassword[:size])
+		auth := fmt.Sprintf("%s:%s:%s", ctx.AppURL, userModel.Email, requestedPassword[:size])
 		encrypted := secrets.EncodeBase64([]byte(auth))
 
-		url := fmt.Sprintf("%s/%s", s.Context.GetAppURL("auth/sso"), url.QueryEscape(string(encrypted)))
+		url := fmt.Sprintf("%s/%s", ctx.GetAppURL("auth/sso"), url.QueryEscape(string(encrypted)))
 		go mail.InviteNewUser(userModel.Email, inviter.Fullname(), url, userModel.Email, requestedPassword)
 
-		h.Runtime.Log.Info(fmt.Sprintf("%s invited by %s on %s", userModel.Email, inviter.Email, s.Context.AppURL))
+		h.Runtime.Log.Info(fmt.Sprintf("%s invited by %s on %s", userModel.Email, inviter.Email, ctx.AppURL))
 
 	} else {
-		go mail.InviteExistingUser(userModel.Email, inviter.Fullname(), s.Context.GetAppURL(""))
+		go mail.InviteExistingUser(userModel.Email, inviter.Fullname(), ctx.GetAppURL(""))
 
 		h.Runtime.Log.Info(fmt.Sprintf("%s is giving access to an existing user %s", inviter.Email, userModel.Email))
 	}
@@ -189,33 +210,32 @@ func (h *Handler) AddUser(w http.ResponseWriter, r *http.Request) {
 	response.WriteJSON(w, userModel)
 }
 
-/*
 // GetOrganizationUsers is the endpoint that allows administrators to view the users in their organisation.
 func (h *Handler) GetOrganizationUsers(w http.ResponseWriter, r *http.Request) {
-	method := "pin.GetUserPins"
-	s := domain.NewContext(h.Runtime, r)
+	method := "user.GetOrganizationUsers"
+	ctx := domain.GetRequestContext(r)
 
-	if !s.Context.Editor && !s.Context.Administrator {
+	if !ctx.Administrator {
 		response.WriteForbiddenError(w)
 		return
 	}
 
-	active, err := strconv.ParseBool(request.Query("active"))
+	active, err := strconv.ParseBool(request.Query(r, "active"))
 	if err != nil {
 		active = false
 	}
 
-	u := []User{}
+	u := []user.User{}
 
 	if active {
-		u, err = GetActiveUsersForOrganization(s)
+		u, err = h.Store.User.GetActiveUsersForOrganization(ctx)
 		if err != nil && err != sql.ErrNoRows {
 			response.WriteServerError(w, method, err)
 			return
 		}
 
 	} else {
-		u, err = GetUsersForOrganization(s)
+		u, err = h.Store.User.GetUsersForOrganization(ctx)
 		if err != nil && err != sql.ErrNoRows {
 			response.WriteServerError(w, method, err)
 			return
@@ -223,11 +243,11 @@ func (h *Handler) GetOrganizationUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(u) == 0 {
-		u = []User{}
+		u = []user.User{}
 	}
 
 	for i := range u {
-		AttachUserAccounts(s, s.Context.OrgID, &u[i])
+		AttachUserAccounts(ctx, *h.Store, ctx.OrgID, &u[i])
 	}
 
 	response.WriteJSON(w, u)
@@ -236,19 +256,19 @@ func (h *Handler) GetOrganizationUsers(w http.ResponseWriter, r *http.Request) {
 // GetSpaceUsers returns every user within a given space
 func (h *Handler) GetSpaceUsers(w http.ResponseWriter, r *http.Request) {
 	method := "user.GetSpaceUsers"
-	s := domain.NewContext(h.Runtime, r)
+	ctx := domain.GetRequestContext(r)
 
-	var u []User
+	var u []user.User
 	var err error
 
-	folderID := request.Param("folderID")
+	folderID := request.Param(r, "folderID")
 	if len(folderID) == 0 {
 		response.WriteMissingDataError(w, method, "folderID")
 		return
 	}
 
 	// check to see space type as it determines user selection criteria
-	folder, err := space.Get(s, folderID)
+	folder, err := h.Store.Space.Get(ctx, folderID)
 	if err != nil && err != sql.ErrNoRows {
 		h.Runtime.Log.Error("cannot get space", err)
 		response.WriteJSON(w, u)
@@ -256,22 +276,22 @@ func (h *Handler) GetSpaceUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	switch folder.Type {
-	case entity.FolderTypePublic:
-		u, err = GetActiveUsersForOrganization(s)
+	case space.ScopePublic:
+		u, err = h.Store.User.GetActiveUsersForOrganization(ctx)
 		break
-	case entity.FolderTypePrivate:
+	case space.ScopePrivate:
 		// just me
-		var me User
-		user, err = Get(s, s.Context.UserID)
+		var me user.User
+		me, err = h.Store.User.Get(ctx, ctx.UserID)
 		u = append(u, me)
 		break
-	case entity.FolderTypeRestricted:
-		u, err = GetSpaceUsers(s, folderID)
+	case space.ScopeRestricted:
+		u, err = h.Store.User.GetSpaceUsers(ctx, folderID)
 		break
 	}
 
 	if len(u) == 0 {
-		u = []User
+		u = []user.User{}
 	}
 
 	if err != nil && err != sql.ErrNoRows {
@@ -283,25 +303,25 @@ func (h *Handler) GetSpaceUsers(w http.ResponseWriter, r *http.Request) {
 	response.WriteJSON(w, u)
 }
 
-// GetUser returns user specified by ID
-func (h *Handler) GetUser(w http.ResponseWriter, r *http.Request) {
-	method := "user.GetUser"
-	s := domain.NewContext(h.Runtime, r)
+// Get returns user specified by ID
+func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
+	method := "user.Get"
+	ctx := domain.GetRequestContext(r)
 
-	userID := request.Param("userID")
+	userID := request.Param(r, "userID")
 	if len(userID) == 0 {
 		response.WriteMissingDataError(w, method, "userId")
 		return
 	}
 
-	if userID != s.Context.UserID {
+	if userID != ctx.UserID {
 		response.WriteBadRequestError(w, method, "userId mismatch")
 		return
 	}
 
-	u, err := GetSecuredUser(s, s.Context.OrgID, userID)
+	u, err := GetSecuredUser(ctx, *h.Store, ctx.OrgID, userID)
 	if err == sql.ErrNoRows {
-		response.WriteNotFoundError(s, method, s.Context.UserID)
+		response.WriteNotFoundError(w, method, ctx.UserID)
 		return
 	}
 	if err != nil {
@@ -309,66 +329,63 @@ func (h *Handler) GetUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response.WriteJSON(u)
+	response.WriteJSON(w, u)
+}
 
-// DeleteUser is the endpoint to delete a user specified by userID, the caller must be an Administrator.
-func (h *Handler) DeleteUser(w http.ResponseWriter, r *http.Request) {
-	method := "user.DeleteUser"
-	s := domain.NewContext(h.Runtime, r)
+// Delete is the endpoint to delete a user specified by userID, the caller must be an Administrator.
+func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
+	method := "user.Delete"
+	ctx := domain.GetRequestContext(r)
 
-	if !s.Context.Administrator {
-		response.WriteForbiddenError(w)
-		return
-	}
-
-	userID := response.Params("userID")
+	userID := request.Param(r, "userID")
 	if len(userID) == 0 {
-		response.WriteMissingDataError(w, method, "userID")
+		response.WriteMissingDataError(w, method, "userId")
 		return
 	}
 
-	if userID == s.Context.UserID {
+	if userID == ctx.UserID {
 		response.WriteBadRequestError(w, method, "cannot delete self")
 		return
 	}
 
 	var err error
-	s.Context.Transaction, err = h.Runtime.Db.Beginx()
+	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		return
 	}
 
-	err = DeactiveUser(s, userID)
+	err = h.Store.User.DeactiveUser(ctx, userID)
 	if err != nil {
-		s.Context.Transaction.Rollback()
+		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
 		return
 	}
 
-	err = space.ChangeLabelOwner(s, userID, s.Context.UserID)
+	err = h.Store.Space.ChangeOwner(ctx, userID, ctx.UserID)
 	if err != nil {
-		s.Context.Transaction.Rollback()
+		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
 		return
 	}
 
-	eventing.Record(s, eventing.EventTypeUserDelete)
+	h.Store.Audit.Record(ctx, audit.EventTypeUserDelete)
+
 	event.Handler().Publish(string(event.TypeRemoveUser))
 
-	s.Context.Transaction.Commit()
+	ctx.Transaction.Commit()
 
-	response.WriteEmpty()
+	response.WriteEmpty(w)
 }
 
-// UpdateUser is the endpoint to update user information for the given userID.
+// Update is the endpoint to update user information for the given userID.
 // Note that unless they have admin privildges, a user can only update their own information.
 // Also, only admins can update user roles in organisations.
-func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
-	method := "user.DeleteUser"
-	s := domain.NewContext(h.Runtime, r)
+func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
+	method := "user.Update"
+	ctx := domain.GetRequestContext(r)
 
-	userID := request.Param("userID")
+	userID := request.Param(r, "userID")
 	if len(userID) == 0 {
 		response.WriteBadRequestError(w, method, "user id must be numeric")
 		return
@@ -377,11 +394,11 @@ func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		response.WritePayloadError(w, method, err)
+		response.WriteBadRequestError(w, method, err.Error())
 		return
 	}
 
-	u := User{}
+	u := user.User{}
 	err = json.Unmarshal(body, &u)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())
@@ -389,7 +406,7 @@ func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// can only update your own account unless you are an admin
-	if s.Context.UserID != userID && !s.Context.Administrator {
+	if ctx.UserID != userID && !ctx.Administrator {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -400,7 +417,7 @@ func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	s.Context.Transaction, err = h.Runtime.Db.Beginx()
+	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		return
@@ -409,9 +426,9 @@ func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	u.RefID = userID
 	u.Initials = stringutil.MakeInitials(u.Firstname, u.Lastname)
 
-	err = UpdateUser(s, u)
+	err = h.Store.User.UpdateUser(ctx, u)
 	if err != nil {
-		s.Context.Transaction.Rollback()
+		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
 		return
 	}
@@ -419,9 +436,9 @@ func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	// Now we update user roles for this organization.
 	// That means we have to first find their account record
 	// for this organization.
-	a, err := account.GetUserAccount(s, userID)
+	a, err := h.Store.Account.GetUserAccount(ctx, userID)
 	if err != nil {
-		s.Context.Transaction.Rollback()
+		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
 		return
 	}
@@ -430,26 +447,26 @@ func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	a.Admin = u.Admin
 	a.Active = u.Active
 
-	err = account.UpdateAccount(s, account)
+	err = h.Store.Account.UpdateAccount(ctx, a)
 	if err != nil {
-		s.Context.Transaction.Rollback()
+		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
 		return
 	}
 
-	eventing.Record(s, eventing.EventTypeUserUpdate)
+	h.Store.Audit.Record(ctx, audit.EventTypeUserUpdate)
 
-	s.Context.Transaction.Commit()
+	ctx.Transaction.Commit()
 
-	response.WriteJSON(u)
+	response.WriteEmpty(w)
 }
 
-// ChangeUserPassword accepts password change from within the app.
-func (h *Handler) ChangeUserPassword(w http.ResponseWriter, r *http.Request) {
-	method := "user.ChangeUserPassword"
-	s := domain.NewContext(h.Runtime, r)
+// ChangePassword accepts password change from within the app.
+func (h *Handler) ChangePassword(w http.ResponseWriter, r *http.Request) {
+	method := "user.ChangePassword"
+	ctx := domain.GetRequestContext(r)
 
-	userID := response.Param("userID")
+	userID := request.Param(r, "userID")
 	if len(userID) == 0 {
 		response.WriteMissingDataError(w, method, "user id")
 		return
@@ -464,18 +481,18 @@ func (h *Handler) ChangeUserPassword(w http.ResponseWriter, r *http.Request) {
 	newPassword := string(body)
 
 	// can only update your own account unless you are an admin
-	if userID != s.Context.UserID && !s.Context.Administrator {
+	if userID != ctx.UserID || !ctx.Administrator {
 		response.WriteForbiddenError(w)
 		return
 	}
 
-	s.Context.Transaction, err = h.Runtime.Db.Beginx()
+	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		return
 	}
 
-	u, err := Get(s, userID)
+	u, err := h.Store.User.Get(ctx, userID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		return
@@ -483,28 +500,29 @@ func (h *Handler) ChangeUserPassword(w http.ResponseWriter, r *http.Request) {
 
 	u.Salt = secrets.GenerateSalt()
 
-	err = UpdateUserPassword(s, userID, user.Salt, secrets.GeneratePassword(newPassword, user.Salt))
+	err = h.Store.User.UpdateUserPassword(ctx, userID, u.Salt, secrets.GeneratePassword(newPassword, u.Salt))
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		return
 	}
 
-	s.Context.Transaction.Rollback()
+	ctx.Transaction.Rollback()
+
 	response.WriteEmpty(w)
 }
 
-// GetUserFolderPermissions returns folder permission for authenticated user.
-func (h *Handler) GetUserFolderPermissions(w http.ResponseWriter, r *http.Request) {
-	method := "user.ChangeUserPassword"
-	s := domain.NewContext(h.Runtime, r)
+// UserSpacePermissions returns folder permission for authenticated user.
+func (h *Handler) UserSpacePermissions(w http.ResponseWriter, r *http.Request) {
+	method := "user.UserSpacePermissions"
+	ctx := domain.GetRequestContext(r)
 
-	userID := request.Param("userID")
-	if userID != p.Context.UserID {
+	userID := request.Param(r, "userID")
+	if userID != ctx.UserID {
 		response.WriteForbiddenError(w)
 		return
 	}
 
-	roles, err := space.GetUserLabelRoles(s, userID)
+	roles, err := h.Store.Space.GetUserRoles(ctx)
 	if err == sql.ErrNoRows {
 		err = nil
 		roles = []space.Role{}
@@ -517,12 +535,12 @@ func (h *Handler) GetUserFolderPermissions(w http.ResponseWriter, r *http.Reques
 	response.WriteJSON(w, roles)
 }
 
-// ForgotUserPassword initiates the change password procedure.
+// ForgotPassword initiates the change password procedure.
 // Generates a reset token and sends email to the user.
 // User has to click link in email and then provide a new password.
-func (h *Handler) ForgotUserPassword(w http.ResponseWriter, r *http.Request) {
-	method := "user.ForgotUserPassword"
-	s := domain.NewContext(h.Runtime, r)
+func (h *Handler) ForgotPassword(w http.ResponseWriter, r *http.Request) {
+	method := "user.ForgotPassword"
+	ctx := domain.GetRequestContext(r)
 
 	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
@@ -531,14 +549,14 @@ func (h *Handler) ForgotUserPassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	u := new(User)
+	u := new(user.User)
 	err = json.Unmarshal(body, &u)
 	if err != nil {
 		response.WriteBadRequestError(w, method, "JSON body")
 		return
 	}
 
-	s.Context.Transaction, err = request.Db.Beginx()
+	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		return
@@ -546,33 +564,33 @@ func (h *Handler) ForgotUserPassword(w http.ResponseWriter, r *http.Request) {
 
 	token := secrets.GenerateSalt()
 
-	err = ForgotUserPassword(s, u.Email, token)
+	err = h.Store.User.ForgotUserPassword(ctx, u.Email, token)
 	if err != nil && err != sql.ErrNoRows {
-		s.Context.Transaction.Rollback()
+		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
 		return
 	}
 
 	if err == sql.ErrNoRows {
 		response.WriteEmpty(w)
-		h.Runtime.Log.Info(fmt.Errorf("User %s not found for password reset process", u.Email))
+		h.Runtime.Log.Info(fmt.Sprintf("User %s not found for password reset process", u.Email))
 		return
 	}
 
-	s.Context.Transaction.Commit()
+	ctx.Transaction.Commit()
 
-	appURL := s.Context.GetAppURL(fmt.Sprintf("auth/reset/%s", token))
+	appURL := ctx.GetAppURL(fmt.Sprintf("auth/reset/%s", token))
 	go mail.PasswordReset(u.Email, appURL)
 
 	response.WriteEmpty(w)
 }
 
-// ResetUserPassword stores the newly chosen password for the user.
-func (h *Handler) ResetUserPassword(w http.ResponseWriter, r *http.Request) {
+// ResetPassword stores the newly chosen password for the user.
+func (h *Handler) ResetPassword(w http.ResponseWriter, r *http.Request) {
 	method := "user.ForgotUserPassword"
-	s := domain.NewContext(h.Runtime, r)
+	ctx := domain.GetRequestContext(r)
 
-	token := request.Param("token")
+	token := request.Param(r, "token")
 	if len(token) == 0 {
 		response.WriteMissingDataError(w, method, "missing token")
 		return
@@ -586,31 +604,30 @@ func (h *Handler) ResetUserPassword(w http.ResponseWriter, r *http.Request) {
 	}
 	newPassword := string(body)
 
-	s.Context.Transaction, err = h.Runtime.Db.Beginx()
+	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		return
 	}
 
-	u, err := GetByToken(token)
+	u, err := h.Store.User.GetByToken(ctx, token)
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		return
 	}
 
-	user.Salt = secrets.GenerateSalt()
+	u.Salt = secrets.GenerateSalt()
 
-	err = UpdateUserPassword(s, u.RefID, u.Salt, secrets.GeneratePassword(newPassword, u.Salt))
+	err = h.Store.User.UpdateUserPassword(ctx, u.RefID, u.Salt, secrets.GeneratePassword(newPassword, u.Salt))
 	if err != nil {
-		s.Context.Transaction.Rollback()
+		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
 		return
 	}
 
-	eventing.Record(s, eventing.EventTypeUserPasswordReset)
+	h.Store.Audit.Record(ctx, audit.EventTypeUserPasswordReset)
 
-	s.Context.Transaction.Commit()
+	ctx.Transaction.Commit()
 
 	response.WriteEmpty(w)
 }
-*/
