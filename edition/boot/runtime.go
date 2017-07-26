@@ -19,11 +19,12 @@ import (
 	"github.com/documize/community/core/database"
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/secrets"
+	"github.com/documize/community/domain"
 	"github.com/jmoiron/sqlx"
 )
 
 // InitRuntime prepares runtime using command line and environment variables.
-func InitRuntime(r *env.Runtime) bool {
+func InitRuntime(r *env.Runtime, s *domain.Store) bool {
 	// We need SALT to hash auth JWT tokens
 	if r.Flags.Salt == "" {
 		r.Flags.Salt = secrets.RandSalt()
@@ -75,6 +76,9 @@ func InitRuntime(r *env.Runtime) bool {
 			r.Log.Info("going into setup mode to prepare new database")
 		}
 	}
+
+	// setup store based upon database type
+	AttachStore(r, s)
 
 	return true
 }

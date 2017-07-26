@@ -9,28 +9,34 @@
 //
 // https://documize.com
 
-// Package space handles API calls and persistence for spaces.
-// Spaces in Documize contain documents.
-package space
+// Package mysql handles data persistence for spaces.
+package mysql
 
 import (
 	"database/sql"
 	"fmt"
 	"time"
 
+	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/store/mysql"
+	"github.com/documize/community/model/space"
 	"github.com/pkg/errors"
 )
 
+// Scope provides data access to MySQL.
+type Scope struct {
+	Runtime *env.Runtime
+}
+
 // Add adds new folder into the store.
-func Add(s domain.StoreContext, sp Space) (err error) {
-	sp.UserID = s.Context.UserID
+func (s Scope) Add(ctx domain.RequestContext, sp space.Space) (err error) {
+	sp.UserID = ctx.UserID
 	sp.Created = time.Now().UTC()
 	sp.Revised = time.Now().UTC()
 
-	stmt, err := s.Context.Transaction.Preparex("INSERT INTO label (refid, label, orgid, userid, type, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?)")
+	stmt, err := ctx.Transaction.Preparex("INSERT INTO label (refid, label, orgid, userid, type, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?)")
 	defer streamutil.Close(stmt)
 
 	if err != nil {
@@ -48,7 +54,7 @@ func Add(s domain.StoreContext, sp Space) (err error) {
 }
 
 // Get returns a space from the store.
-func Get(s domain.StoreContext, id string) (sp Space, err error) {
+func (s Scope) Get(ctx domain.RequestContext, id string) (sp space.Space, err error) {
 	stmt, err := s.Runtime.Db.Preparex("SELECT id,refid,label as name,orgid,userid,type,created,revised FROM label WHERE orgid=? and refid=?")
 	defer streamutil.Close(stmt)
 
@@ -57,7 +63,7 @@ func Get(s domain.StoreContext, id string) (sp Space, err error) {
 		return
 	}
 
-	err = stmt.Get(&sp, s.Context.OrgID, id)
+	err = stmt.Get(&sp, ctx.OrgID, id)
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to execute select for label %s", id))
 		return
@@ -67,7 +73,7 @@ func Get(s domain.StoreContext, id string) (sp Space, err error) {
 }
 
 // PublicSpaces returns folders that anyone can see.
-func PublicSpaces(s domain.StoreContext, orgID string) (sp []Space, err error) {
+func (s Scope) PublicSpaces(ctx domain.RequestContext, orgID string) (sp []space.Space, err error) {
 	sql := "SELECT id,refid,label as name,orgid,userid,type,created,revised FROM label a where orgid=? AND type=1"
 
 	err = s.Runtime.Db.Select(&sp, sql, orgID)
@@ -82,7 +88,7 @@ func PublicSpaces(s domain.StoreContext, orgID string) (sp []Space, err error) {
 
 // GetAll returns folders that the user can see.
 // Also handles which folders can be seen by anonymous users.
-func GetAll(s domain.StoreContext) (sp []Space, err error) {
+func (s Scope) GetAll(ctx domain.RequestContext) (sp []space.Space, err error) {
 	sql := `
 (SELECT id,refid,label as name,orgid,userid,type,created,revised from label WHERE orgid=? AND type=2 AND userid=?)
 UNION ALL
@@ -94,16 +100,16 @@ UNION ALL
 ORDER BY name`
 
 	err = s.Runtime.Db.Select(&sp, sql,
-		s.Context.OrgID,
-		s.Context.UserID,
-		s.Context.OrgID,
-		s.Context.OrgID,
-		s.Context.OrgID,
-		s.Context.OrgID,
-		s.Context.UserID)
+		ctx.OrgID,
+		ctx.UserID,
+		ctx.OrgID,
+		ctx.OrgID,
+		ctx.OrgID,
+		ctx.OrgID,
+		ctx.UserID)
 
 	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("Unable to execute select labels for org %s", s.Context.OrgID))
+		err = errors.Wrap(err, fmt.Sprintf("Unable to execute select labels for org %s", ctx.OrgID))
 		return
 	}
 
@@ -111,10 +117,10 @@ ORDER BY name`
 }
 
 // Update saves space changes.
-func Update(s domain.StoreContext, sp Space) (err error) {
+func (s Scope) Update(ctx domain.RequestContext, sp space.Space) (err error) {
 	sp.Revised = time.Now().UTC()
 
-	stmt, err := s.Context.Transaction.PrepareNamed("UPDATE label SET label=:name, type=:type, userid=:userid, revised=:revised WHERE orgid=:orgid AND refid=:refid")
+	stmt, err := ctx.Transaction.PrepareNamed("UPDATE label SET label=:name, type=:type, userid=:userid, revised=:revised WHERE orgid=:orgid AND refid=:refid")
 	defer streamutil.Close(stmt)
 
 	if err != nil {
@@ -132,8 +138,8 @@ func Update(s domain.StoreContext, sp Space) (err error) {
 }
 
 // ChangeOwner transfer space ownership.
-func ChangeOwner(s domain.StoreContext, currentOwner, newOwner string) (err error) {
-	stmt, err := s.Context.Transaction.Preparex("UPDATE label SET userid=? WHERE userid=? AND orgid=?")
+func (s Scope) ChangeOwner(ctx domain.RequestContext, currentOwner, newOwner string) (err error) {
+	stmt, err := ctx.Transaction.Preparex("UPDATE label SET userid=? WHERE userid=? AND orgid=?")
 	defer streamutil.Close(stmt)
 
 	if err != nil {
@@ -141,7 +147,7 @@ func ChangeOwner(s domain.StoreContext, currentOwner, newOwner string) (err erro
 		return
 	}
 
-	_, err = stmt.Exec(newOwner, currentOwner, s.Context.OrgID)
+	_, err = stmt.Exec(newOwner, currentOwner, ctx.OrgID)
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to execute change space owner for  %s", currentOwner))
 		return
@@ -151,7 +157,7 @@ func ChangeOwner(s domain.StoreContext, currentOwner, newOwner string) (err erro
 }
 
 // Viewers returns the list of people who can see shared folders.
-func Viewers(s domain.StoreContext) (v []Viewer, err error) {
+func (s Scope) Viewers(ctx domain.RequestContext) (v []space.Viewer, err error) {
 	sql := `
 SELECT a.userid,
 	COALESCE(u.firstname, '') as firstname,
@@ -167,23 +173,23 @@ WHERE a.orgid=? AND b.type != 2
 GROUP BY a.labelid,a.userid
 ORDER BY u.firstname,u.lastname`
 
-	err = s.Runtime.Db.Select(&v, sql, s.Context.OrgID)
+	err = s.Runtime.Db.Select(&v, sql, ctx.OrgID)
 
 	return
 }
 
 // Delete removes space from the store.
-func Delete(s domain.StoreContext, id string) (rows int64, err error) {
+func (s Scope) Delete(ctx domain.RequestContext, id string) (rows int64, err error) {
 	b := mysql.BaseQuery{}
-	return b.DeleteConstrained(s.Context.Transaction, "label", s.Context.OrgID, id)
+	return b.DeleteConstrained(ctx.Transaction, "label", ctx.OrgID, id)
 }
 
 // AddRole inserts the given record into the labelrole database table.
-func AddRole(s domain.StoreContext, r Role) (err error) {
+func (s Scope) AddRole(ctx domain.RequestContext, r space.Role) (err error) {
 	r.Created = time.Now().UTC()
 	r.Revised = time.Now().UTC()
 
-	stmt, err := s.Context.Transaction.Preparex("INSERT INTO labelrole (refid, labelid, orgid, userid, canview, canedit, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+	stmt, err := ctx.Transaction.Preparex("INSERT INTO labelrole (refid, labelid, orgid, userid, canview, canedit, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
 	defer streamutil.Close(stmt)
 
 	if err != nil {
@@ -201,10 +207,10 @@ func AddRole(s domain.StoreContext, r Role) (err error) {
 }
 
 // GetRoles returns a slice of labelrole records, for the given labelID in the client's organization, grouped by user.
-func GetRoles(s domain.StoreContext, labelID string) (r []Role, err error) {
+func (s Scope) GetRoles(ctx domain.RequestContext, labelID string) (r []space.Role, err error) {
 	query := `SELECT id, refid, labelid, orgid, userid, canview, canedit, created, revised FROM labelrole WHERE orgid=? AND labelid=?` // was + "GROUP BY userid"
 
-	err = s.Runtime.Db.Select(&r, query, s.Context.OrgID, labelID)
+	err = s.Runtime.Db.Select(&r, query, ctx.OrgID, labelID)
 
 	if err == sql.ErrNoRows {
 		err = nil
@@ -220,19 +226,19 @@ func GetRoles(s domain.StoreContext, labelID string) (r []Role, err error) {
 
 // GetUserRoles returns a slice of role records, for both the client's user and organization, and
 // those space roles that exist for all users in the client's organization.
-func GetUserRoles(s domain.StoreContext) (r []Role, err error) {
+func (s Scope) GetUserRoles(ctx domain.RequestContext) (r []space.Role, err error) {
 	err = s.Runtime.Db.Select(&r, `
 		SELECT id, refid, labelid, orgid, userid, canview, canedit, created, revised FROM labelrole WHERE orgid=? and userid=?
 		UNION ALL
 		SELECT id, refid, labelid, orgid, userid, canview, canedit, created, revised FROM labelrole WHERE orgid=? AND userid=''`,
-		s.Context.OrgID, s.Context.UserID, s.Context.OrgID)
+		ctx.OrgID, ctx.UserID, ctx.OrgID)
 
 	if err == sql.ErrNoRows {
 		err = nil
 	}
 
 	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("unable to execute select for user space roles %s", s.Context.UserID))
+		err = errors.Wrap(err, fmt.Sprintf("unable to execute select for user space roles %s", ctx.UserID))
 		return
 	}
 
@@ -240,36 +246,36 @@ func GetUserRoles(s domain.StoreContext) (r []Role, err error) {
 }
 
 // DeleteRole deletes the labelRoleID record from the labelrole table.
-func DeleteRole(s domain.StoreContext, roleID string) (rows int64, err error) {
+func (s Scope) DeleteRole(ctx domain.RequestContext, roleID string) (rows int64, err error) {
 	b := mysql.BaseQuery{}
 
-	sql := fmt.Sprintf("DELETE FROM labelrole WHERE orgid='%s' AND refid='%s'", s.Context.OrgID, roleID)
+	sql := fmt.Sprintf("DELETE FROM labelrole WHERE orgid='%s' AND refid='%s'", ctx.OrgID, roleID)
 
-	return b.DeleteWhere(s.Context.Transaction, sql)
+	return b.DeleteWhere(ctx.Transaction, sql)
 }
 
 // DeleteSpaceRoles deletes records from the labelrole table which have the given space ID.
-func DeleteSpaceRoles(s domain.StoreContext, spaceID string) (rows int64, err error) {
+func (s Scope) DeleteSpaceRoles(ctx domain.RequestContext, spaceID string) (rows int64, err error) {
 	b := mysql.BaseQuery{}
 
-	sql := fmt.Sprintf("DELETE FROM labelrole WHERE orgid='%s' AND labelid='%s'", s.Context.OrgID, spaceID)
+	sql := fmt.Sprintf("DELETE FROM labelrole WHERE orgid='%s' AND labelid='%s'", ctx.OrgID, spaceID)
 
-	return b.DeleteWhere(s.Context.Transaction, sql)
+	return b.DeleteWhere(ctx.Transaction, sql)
 }
 
 // DeleteUserSpaceRoles removes all roles for the specified user, for the specified space.
-func DeleteUserSpaceRoles(s domain.StoreContext, spaceID, userID string) (rows int64, err error) {
+func (s Scope) DeleteUserSpaceRoles(ctx domain.RequestContext, spaceID, userID string) (rows int64, err error) {
 	b := mysql.BaseQuery{}
 
 	sql := fmt.Sprintf("DELETE FROM labelrole WHERE orgid='%s' AND labelid='%s' AND userid='%s'",
-		s.Context.OrgID, spaceID, userID)
+		ctx.OrgID, spaceID, userID)
 
-	return b.DeleteWhere(s.Context.Transaction, sql)
+	return b.DeleteWhere(ctx.Transaction, sql)
 }
 
 // MoveSpaceRoles changes the space ID for space role records from previousLabel to newLabel.
-func MoveSpaceRoles(s domain.StoreContext, previousLabel, newLabel string) (err error) {
-	stmt, err := s.Context.Transaction.Preparex("UPDATE labelrole SET labelid=? WHERE labelid=? AND orgid=?")
+func (s Scope) MoveSpaceRoles(ctx domain.RequestContext, previousLabel, newLabel string) (err error) {
+	stmt, err := ctx.Transaction.Preparex("UPDATE labelrole SET labelid=? WHERE labelid=? AND orgid=?")
 	defer streamutil.Close(stmt)
 
 	if err != nil {
@@ -277,7 +283,7 @@ func MoveSpaceRoles(s domain.StoreContext, previousLabel, newLabel string) (err 
 		return
 	}
 
-	_, err = stmt.Exec(newLabel, previousLabel, s.Context.OrgID)
+	_, err = stmt.Exec(newLabel, previousLabel, ctx.OrgID)
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to execute move space roles for label  %s", previousLabel))
 	}

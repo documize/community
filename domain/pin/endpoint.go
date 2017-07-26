@@ -18,17 +18,25 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/request"
 	"github.com/documize/community/core/response"
 	"github.com/documize/community/core/uniqueid"
 	"github.com/documize/community/domain"
-	"github.com/documize/community/domain/eventing"
+	"github.com/documize/community/model/audit"
+	"github.com/documize/community/model/pin"
 )
+
+// Handler contains the runtime information such as logging and database.
+type Handler struct {
+	Runtime *env.Runtime
+	Store   *domain.Store
+}
 
 // Add saves pinned item.
 func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	method := "pin.Add"
-	s := domain.NewContext(h.Runtime, r)
+	ctx := domain.GetRequestContext(r)
 
 	userID := request.Param(r, "userID")
 	if len(userID) == 0 {
@@ -41,7 +49,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !s.Context.Authenticated {
+	if !ctx.Authenticated {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -53,7 +61,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var pin Pin
+	var pin pin.Pin
 	err = json.Unmarshal(body, &pin)
 	if err != nil {
 		response.WriteBadRequestError(w, method, "pin")
@@ -61,31 +69,31 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pin.RefID = uniqueid.Generate()
-	pin.OrgID = s.Context.OrgID
-	pin.UserID = s.Context.UserID
+	pin.OrgID = ctx.OrgID
+	pin.UserID = ctx.UserID
 	pin.Pin = strings.TrimSpace(pin.Pin)
 	if len(pin.Pin) > 20 {
 		pin.Pin = pin.Pin[0:20]
 	}
 
-	s.Context.Transaction, err = h.Runtime.Db.Beginx()
+	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		return
 	}
 
-	err = Add(s, pin)
+	err = h.Store.Pin.Add(ctx, pin)
 	if err != nil {
-		s.Context.Transaction.Rollback()
+		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
 		return
 	}
 
-	eventing.Record(s, eventing.EventTypePinAdd)
+	h.Store.Audit.Record(ctx, audit.EventTypePinAdd)
 
-	s.Context.Transaction.Commit()
+	ctx.Transaction.Commit()
 
-	newPin, err := GetPin(s, pin.RefID)
+	newPin, err := h.Store.Pin.GetPin(ctx, pin.RefID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		return
@@ -97,7 +105,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 // GetUserPins returns users' pins.
 func (h *Handler) GetUserPins(w http.ResponseWriter, r *http.Request) {
 	method := "pin.GetUserPins"
-	s := domain.NewContext(h.Runtime, r)
+	ctx := domain.GetRequestContext(r)
 
 	userID := request.Param(r, "userID")
 	if len(userID) == 0 {
@@ -105,19 +113,19 @@ func (h *Handler) GetUserPins(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !s.Context.Authenticated {
+	if !ctx.Authenticated {
 		response.WriteForbiddenError(w)
 		return
 	}
 
-	pins, err := GetUserPins(s, userID)
+	pins, err := h.Store.Pin.GetUserPins(ctx, userID)
 	if err != nil && err != sql.ErrNoRows {
 		response.WriteServerError(w, method, err)
 		return
 	}
 
 	if err == sql.ErrNoRows {
-		pins = []Pin{}
+		pins = []pin.Pin{}
 	}
 
 	response.WriteJSON(w, pins)
@@ -126,7 +134,7 @@ func (h *Handler) GetUserPins(w http.ResponseWriter, r *http.Request) {
 // DeleteUserPin removes saved user pin.
 func (h *Handler) DeleteUserPin(w http.ResponseWriter, r *http.Request) {
 	method := "pin.DeleteUserPin"
-	s := domain.NewContext(h.Runtime, r)
+	ctx := domain.GetRequestContext(r)
 
 	userID := request.Param(r, "userID")
 	if len(userID) == 0 {
@@ -145,28 +153,28 @@ func (h *Handler) DeleteUserPin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if s.Context.UserID != userID {
+	if ctx.UserID != userID {
 		response.WriteForbiddenError(w)
 		return
 	}
 
 	var err error
-	s.Context.Transaction, err = h.Runtime.Db.Beginx()
+	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		return
 	}
 
-	_, err = DeletePin(s, pinID)
+	_, err = h.Store.Pin.DeletePin(ctx, pinID)
 	if err != nil && err != sql.ErrNoRows {
-		s.Context.Transaction.Rollback()
+		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
 		return
 	}
 
-	eventing.Record(s, eventing.EventTypePinDelete)
+	h.Store.Audit.Record(ctx, audit.EventTypePinDelete)
 
-	s.Context.Transaction.Commit()
+	ctx.Transaction.Commit()
 
 	response.WriteEmpty(w)
 }
@@ -174,7 +182,7 @@ func (h *Handler) DeleteUserPin(w http.ResponseWriter, r *http.Request) {
 // UpdatePinSequence records order of pinned items.
 func (h *Handler) UpdatePinSequence(w http.ResponseWriter, r *http.Request) {
 	method := "pin.DeleteUserPin"
-	s := domain.NewContext(h.Runtime, r)
+	ctx := domain.GetRequestContext(r)
 
 	userID := request.Param(r, "userID")
 	if len(userID) == 0 {
@@ -187,7 +195,7 @@ func (h *Handler) UpdatePinSequence(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !s.Context.Authenticated {
+	if !ctx.Authenticated {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -207,26 +215,26 @@ func (h *Handler) UpdatePinSequence(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	s.Context.Transaction, err = h.Runtime.Db.Beginx()
+	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		return
 	}
 
 	for k, v := range pins {
-		err = UpdatePinSequence(s, v, k+1)
+		err = h.Store.Pin.UpdatePinSequence(ctx, v, k+1)
 		if err != nil {
-			s.Context.Transaction.Rollback()
+			ctx.Transaction.Rollback()
 			response.WriteServerError(w, method, err)
 			return
 		}
 	}
 
-	eventing.Record(s, eventing.EventTypePinResequence)
+	h.Store.Audit.Record(ctx, audit.EventTypePinResequence)
 
-	s.Context.Transaction.Commit()
+	ctx.Transaction.Commit()
 
-	newPins, err := GetUserPins(s, userID)
+	newPins, err := h.Store.Pin.GetUserPins(ctx, userID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		return

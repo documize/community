@@ -14,22 +14,19 @@ package organization
 import (
 	"net/http"
 	"strings"
-
-	"github.com/documize/community/domain"
 )
 
 // GetRequestSubdomain extracts subdomain from referring URL.
-func GetRequestSubdomain(s domain.StoreContext, r *http.Request) string {
-	return urlSubdomain(s, r.Referer())
+func GetRequestSubdomain(r *http.Request) string {
+	return urlSubdomain(r.Referer())
 }
 
 // GetSubdomainFromHost extracts the subdomain from the requesting URL.
-func GetSubdomainFromHost(s domain.StoreContext, r *http.Request) string {
-	return urlSubdomain(s, r.Host)
+func GetSubdomainFromHost(r *http.Request) string {
+	return urlSubdomain(r.Host)
 }
 
-// Find the subdomain (which is actually the organisation).
-func urlSubdomain(s domain.StoreContext, url string) string {
+func urlSubdomain(url string) string {
 	url = strings.ToLower(url)
 	url = strings.Replace(url, "https://", "", 1)
 	url = strings.Replace(url, "http://", "", 1)
@@ -42,5 +39,5 @@ func urlSubdomain(s domain.StoreContext, url string) string {
 		url = ""
 	}
 
-	return CheckDomain(s, url)
+	return url
 }

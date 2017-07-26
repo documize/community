@@ -18,29 +18,30 @@ import (
 	"github.com/documize/community/core/secrets"
 	"github.com/documize/community/core/uniqueid"
 	"github.com/documize/community/domain"
-	"github.com/documize/community/domain/account"
-	"github.com/documize/community/domain/user"
+	"github.com/documize/community/model/account"
+	"github.com/documize/community/model/space"
+	"github.com/documize/community/model/user"
 )
 
 // addSpace prepares and creates space record.
-func addSpace(s domain.StoreContext, sp Space) (err error) {
-	sp.Type = ScopePrivate
-	sp.UserID = s.Context.UserID
+func addSpace(ctx domain.RequestContext, s *domain.Store, sp space.Space) (err error) {
+	sp.Type = space.ScopePrivate
+	sp.UserID = ctx.UserID
 
-	err = Add(s, sp)
+	err = s.Space.Add(ctx, sp)
 	if err != nil {
 		return
 	}
 
-	role := Role{}
+	role := space.Role{}
 	role.LabelID = sp.RefID
 	role.OrgID = sp.OrgID
-	role.UserID = s.Context.UserID
+	role.UserID = ctx.UserID
 	role.CanEdit = true
 	role.CanView = true
 	role.RefID = uniqueid.Generate()
 
-	err = AddRole(s, role)
+	err = s.Space.AddRole(ctx, role)
 
 	return
 }
@@ -49,8 +50,8 @@ func addSpace(s domain.StoreContext, sp Space) (err error) {
 // We create the user account with default values and then take them
 // through a welcome process designed to capture profile data.
 // We add them to the organization and grant them view-only folder access.
-func inviteNewUserToSharedSpace(s domain.StoreContext, email string, invitedBy user.User,
-	baseURL string, sp Space, invitationMessage string) (err error) {
+func inviteNewUserToSharedSpace(ctx domain.RequestContext, s *domain.Store, email string, invitedBy user.User,
+	baseURL string, sp space.Space, invitationMessage string) (err error) {
 
 	var u = user.User{}
 	u.Email = email
@@ -62,7 +63,7 @@ func inviteNewUserToSharedSpace(s domain.StoreContext, email string, invitedBy u
 	userID := uniqueid.Generate()
 	u.RefID = userID
 
-	err = user.Add(s, u)
+	err = s.User.Add(ctx, u)
 	if err != nil {
 		return
 	}
@@ -70,28 +71,28 @@ func inviteNewUserToSharedSpace(s domain.StoreContext, email string, invitedBy u
 	// Let's give this user access to the organization
 	var a account.Account
 	a.UserID = userID
-	a.OrgID = s.Context.OrgID
+	a.OrgID = ctx.OrgID
 	a.Admin = false
 	a.Editor = false
 	a.Active = true
 	accountID := uniqueid.Generate()
 	a.RefID = accountID
 
-	err = account.Add(s, a)
+	err = s.Account.Add(ctx, a)
 	if err != nil {
 		return
 	}
 
-	role := Role{}
+	role := space.Role{}
 	role.LabelID = sp.RefID
-	role.OrgID = s.Context.OrgID
+	role.OrgID = ctx.OrgID
 	role.UserID = userID
 	role.CanEdit = false
 	role.CanView = true
 	roleID := uniqueid.Generate()
 	role.RefID = roleID
 
-	err = AddRole(s, role)
+	err = s.Space.AddRole(ctx, role)
 	if err != nil {
 		return
 	}

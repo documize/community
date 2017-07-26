@@ -1,3 +1,15 @@
+// Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
+//
+// This software (Documize Community Edition) is licensed under
+// GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
+//
+// You can operate outside the AGPL restrictions by purchasing
+// Documize Enterprise Edition and obtaining a commercial license
+// by contacting <sales@documize.com>.
+//
+// https://documize.com
+
+// Package domain defines data structures for moving data between services.
 package domain
 
 import (
@@ -5,7 +17,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/documize/community/core/env"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -51,13 +62,13 @@ func GetRequestContext(r *http.Request) RequestContext {
 	return r.Context().Value(DocumizeContextKey).(RequestContext)
 }
 
-// StoreContext provides data persistence methods with runtime and request context.
-type StoreContext struct {
-	Runtime *env.Runtime
-	Context RequestContext
-}
+// // Scope provides data persistence methods with runtime and request context.
+// type Scope struct {
+// 	Runtime *env.Runtime
+// 	Context RequestContext
+// }
 
-// NewContext returns request scoped user context and store context for persistence logic.
-func NewContext(rt *env.Runtime, r *http.Request) StoreContext {
-	return StoreContext{Runtime: rt, Context: GetRequestContext(r)}
-}
+// // NewScope returns request scoped user context and store context for persistence logic.
+// func NewScope(rt *env.Runtime, r *http.Request) Scope {
+// 	return Scope{Runtime: rt, Context: GetRequestContext(r)}
+// }

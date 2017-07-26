@@ -14,19 +14,13 @@ package user
 import (
 	"fmt"
 
-	"github.com/documize/community/core/env"
-	"github.com/documize/community/domain"
-	"github.com/documize/community/domain/account"
+	"github.com/documize/community/model"
+	"github.com/documize/community/model/account"
 )
-
-// Handler contains the runtime information such as logging and database.
-type Handler struct {
-	Runtime *env.Runtime
-}
 
 // User defines a login.
 type User struct {
-	domain.BaseEntity
+	model.BaseEntity
 	Firstname string            `json:"firstname"`
 	Lastname  string            `json:"lastname"`
 	Email     string            `json:"email"`

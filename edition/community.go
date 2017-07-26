@@ -24,6 +24,7 @@ import (
 	_ "github.com/documize/community/embed" // the compressed front-end code and static data
 	"github.com/documize/community/server"
 	_ "github.com/go-sql-driver/mysql" // the mysql driver is required behind the scenes
+	"github.com/documize/community/domain"
 )
 
 var rt env.Runtime
@@ -49,9 +50,12 @@ func main() {
 	rt.Product.License.Trial = false
 	rt.Product.License.Edition = "Community"
 
+	// setup store
+	s := domain.Store{}
+
 	// parse settings from command line and environment
 	rt.Flags = env.ParseFlags()
-	flagsOK := boot.InitRuntime(&rt)
+	flagsOK := boot.InitRuntime(&rt, &s)
 
 	if flagsOK {
 		// runtime.Log = runtime.Log.SetDB(runtime.Db)
@@ -65,5 +69,5 @@ func main() {
 	section.Register(rt)
 
 	ready := make(chan struct{}, 1) // channel signals router ready
-	server.Start(&rt, ready)
+	server.Start(&rt, &s, ready)
 }

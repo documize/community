@@ -17,11 +17,15 @@ import (
 	"github.com/documize/community/core/api"
 	"github.com/documize/community/core/api/endpoint"
 	"github.com/documize/community/core/env"
+	"github.com/documize/community/domain"
+	"github.com/documize/community/domain/organization"
+	"github.com/documize/community/domain/pin"
+	"github.com/documize/community/domain/space"
 	"github.com/documize/community/server/web"
 )
 
 // RegisterEndpoints register routes for serving API endpoints
-func RegisterEndpoints(rt *env.Runtime) {
+func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	//**************************************************
 	// Non-secure routes
 	//**************************************************
@@ -75,20 +79,22 @@ func RegisterEndpoints(rt *env.Runtime) {
 	Add(rt, RoutePrefixPrivate, "documents/{documentID}/pages/{pageID}/copy/{targetID}", []string{"POST", "OPTIONS"}, nil, endpoint.CopyPage)
 
 	// Organization
-	Add(rt, RoutePrefixPrivate, "organizations/{orgID}", []string{"GET", "OPTIONS"}, nil, endpoint.GetOrganization)
-	Add(rt, RoutePrefixPrivate, "organizations/{orgID}", []string{"PUT", "OPTIONS"}, nil, endpoint.UpdateOrganization)
+	organization := organization.Handler{Runtime: rt, Store: s}
+	Add(rt, RoutePrefixPrivate, "organizations/{orgID}", []string{"GET", "OPTIONS"}, nil, organization.Get)
+	Add(rt, RoutePrefixPrivate, "organizations/{orgID}", []string{"PUT", "OPTIONS"}, nil, organization.Update)
 
-	// Folder
-	Add(rt, RoutePrefixPrivate, "folders/{folderID}", []string{"DELETE", "OPTIONS"}, nil, endpoint.DeleteFolder)
-	Add(rt, RoutePrefixPrivate, "folders/{folderID}/move/{moveToId}", []string{"DELETE", "OPTIONS"}, nil, endpoint.RemoveFolder)
-	Add(rt, RoutePrefixPrivate, "folders/{folderID}/permissions", []string{"PUT", "OPTIONS"}, nil, endpoint.SetFolderPermissions)
-	Add(rt, RoutePrefixPrivate, "folders/{folderID}/permissions", []string{"GET", "OPTIONS"}, nil, endpoint.GetFolderPermissions)
-	Add(rt, RoutePrefixPrivate, "folders/{folderID}/invitation", []string{"POST", "OPTIONS"}, nil, endpoint.InviteToFolder)
-	Add(rt, RoutePrefixPrivate, "folders", []string{"GET", "OPTIONS"}, []string{"filter", "viewers"}, endpoint.GetFolderVisibility)
-	Add(rt, RoutePrefixPrivate, "folders", []string{"POST", "OPTIONS"}, nil, endpoint.AddFolder)
-	Add(rt, RoutePrefixPrivate, "folders", []string{"GET", "OPTIONS"}, nil, endpoint.GetFolders)
-	Add(rt, RoutePrefixPrivate, "folders/{folderID}", []string{"GET", "OPTIONS"}, nil, endpoint.GetFolder)
-	Add(rt, RoutePrefixPrivate, "folders/{folderID}", []string{"PUT", "OPTIONS"}, nil, endpoint.UpdateFolder)
+	// Space
+	space := space.Handler{Runtime: rt, Store: s}
+	Add(rt, RoutePrefixPrivate, "folders/{folderID}", []string{"DELETE", "OPTIONS"}, nil, space.Delete)
+	Add(rt, RoutePrefixPrivate, "folders/{folderID}/move/{moveToId}", []string{"DELETE", "OPTIONS"}, nil, space.Remove)
+	Add(rt, RoutePrefixPrivate, "folders/{folderID}/permissions", []string{"PUT", "OPTIONS"}, nil, space.SetPermissions)
+	Add(rt, RoutePrefixPrivate, "folders/{folderID}/permissions", []string{"GET", "OPTIONS"}, nil, space.GetPermissions)
+	Add(rt, RoutePrefixPrivate, "folders/{folderID}/invitation", []string{"POST", "OPTIONS"}, nil, space.Invite)
+	Add(rt, RoutePrefixPrivate, "folders", []string{"GET", "OPTIONS"}, []string{"filter", "viewers"}, space.GetSpaceViewers)
+	Add(rt, RoutePrefixPrivate, "folders", []string{"POST", "OPTIONS"}, nil, space.Add)
+	Add(rt, RoutePrefixPrivate, "folders", []string{"GET", "OPTIONS"}, nil, space.GetAll)
+	Add(rt, RoutePrefixPrivate, "folders/{folderID}", []string{"GET", "OPTIONS"}, nil, space.Get)
+	Add(rt, RoutePrefixPrivate, "folders/{folderID}", []string{"PUT", "OPTIONS"}, nil, space.Update)
 
 	// Users
 	Add(rt, RoutePrefixPrivate, "users/{userID}/password", []string{"POST", "OPTIONS"}, nil, endpoint.ChangeUserPassword)
@@ -136,10 +142,11 @@ func RegisterEndpoints(rt *env.Runtime) {
 	Add(rt, RoutePrefixPrivate, "global/auth", []string{"PUT", "OPTIONS"}, nil, endpoint.SaveAuthConfig)
 
 	// Pinned items
-	Add(rt, RoutePrefixPrivate, "pin/{userID}", []string{"POST", "OPTIONS"}, nil, endpoint.AddPin)
-	Add(rt, RoutePrefixPrivate, "pin/{userID}", []string{"GET", "OPTIONS"}, nil, endpoint.GetUserPins)
-	Add(rt, RoutePrefixPrivate, "pin/{userID}/sequence", []string{"POST", "OPTIONS"}, nil, endpoint.UpdatePinSequence)
-	Add(rt, RoutePrefixPrivate, "pin/{userID}/{pinID}", []string{"DELETE", "OPTIONS"}, nil, endpoint.DeleteUserPin)
+	pin := pin.Handler{Runtime: rt, Store: s}
+	Add(rt, RoutePrefixPrivate, "pin/{userID}", []string{"POST", "OPTIONS"}, nil, pin.Add)
+	Add(rt, RoutePrefixPrivate, "pin/{userID}", []string{"GET", "OPTIONS"}, nil, pin.GetUserPins)
+	Add(rt, RoutePrefixPrivate, "pin/{userID}/sequence", []string{"POST", "OPTIONS"}, nil, pin.UpdatePinSequence)
+	Add(rt, RoutePrefixPrivate, "pin/{userID}/{pinID}", []string{"DELETE", "OPTIONS"}, nil, pin.DeleteUserPin)
 
 	// Single page app handler
 	Add(rt, RoutePrefixRoot, "robots.txt", []string{"GET", "OPTIONS"}, nil, endpoint.GetRobots)

@@ -21,16 +21,22 @@ import (
 	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/store/mysql"
+	"github.com/documize/community/model/org"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 )
 
+// Scope provides data access to MySQL.
+type Scope struct {
+	Runtime *env.Runtime
+}
+
 // AddOrganization inserts the passed organization record into the organization table.
-func AddOrganization(s domain.StoreContext, org Organization) error {
+func (s Scope) AddOrganization(ctx domain.RequestContext, org org.Organization) error {
 	org.Created = time.Now().UTC()
 	org.Revised = time.Now().UTC()
 
-	stmt, err := s.Context.Transaction.Preparex(
+	stmt, err := ctx.Transaction.Preparex(
 		"INSERT INTO organization (refid, company, title, message, url, domain, email, allowanonymousaccess, serial, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
 	defer streamutil.Close(stmt)
 
@@ -51,7 +57,7 @@ func AddOrganization(s domain.StoreContext, org Organization) error {
 }
 
 // GetOrganization returns the Organization reocrod from the organization database table with the given id.
-func GetOrganization(s domain.StoreContext, id string) (org Organization, err error) {
+func (s Scope) GetOrganization(ctx domain.RequestContext, id string) (org org.Organization, err error) {
 	stmt, err := s.Runtime.Db.Preparex("SELECT id, refid, company, title, message, url, domain, service as conversionendpoint, email, serial, active, allowanonymousaccess, authprovider, coalesce(authconfig,JSON_UNQUOTE('{}')) as authconfig, created, revised FROM organization WHERE refid=?")
 	defer streamutil.Close(stmt)
 
@@ -71,7 +77,7 @@ func GetOrganization(s domain.StoreContext, id string) (org Organization, err er
 }
 
 // GetOrganizationByDomain returns the organization matching a given URL subdomain.
-func GetOrganizationByDomain(s domain.StoreContext, subdomain string) (org Organization, err error) {
+func (s Scope) GetOrganizationByDomain(ctx domain.RequestContext, subdomain string) (org org.Organization, err error) {
 	err = nil
 	subdomain = strings.ToLower(subdomain)
 
@@ -98,10 +104,10 @@ func GetOrganizationByDomain(s domain.StoreContext, subdomain string) (org Organ
 }
 
 // UpdateOrganization updates the given organization record in the database to the values supplied.
-func UpdateOrganization(s domain.StoreContext, org Organization) (err error) {
+func (s Scope) UpdateOrganization(ctx domain.RequestContext, org org.Organization) (err error) {
 	org.Revised = time.Now().UTC()
 
-	stmt, err := s.Context.Transaction.PrepareNamed("UPDATE organization SET title=:title, message=:message, service=:conversionendpoint, email=:email, allowanonymousaccess=:allowanonymousaccess, revised=:revised WHERE refid=:refid")
+	stmt, err := ctx.Transaction.PrepareNamed("UPDATE organization SET title=:title, message=:message, service=:conversionendpoint, email=:email, allowanonymousaccess=:allowanonymousaccess, revised=:revised WHERE refid=:refid")
 	defer streamutil.Close(stmt)
 
 	if err != nil {
@@ -119,14 +125,14 @@ func UpdateOrganization(s domain.StoreContext, org Organization) (err error) {
 }
 
 // DeleteOrganization deletes the orgID organization from the organization table.
-func DeleteOrganization(s domain.StoreContext, orgID string) (rows int64, err error) {
+func (s Scope) DeleteOrganization(ctx domain.RequestContext, orgID string) (rows int64, err error) {
 	b := mysql.BaseQuery{}
-	return b.Delete(s.Context.Transaction, "organization", orgID)
+	return b.Delete(ctx.Transaction, "organization", orgID)
 }
 
 // RemoveOrganization sets the orgID organization to be inactive, thus executing a "soft delete" operation.
-func RemoveOrganization(s domain.StoreContext, rc domain.RequestContext, orgID string) (err error) {
-	stmt, err := s.Context.Transaction.Preparex("UPDATE organization SET active=0 WHERE refid=?")
+func (s Scope) RemoveOrganization(ctx domain.RequestContext, orgID string) (err error) {
+	stmt, err := ctx.Transaction.Preparex("UPDATE organization SET active=0 WHERE refid=?")
 	defer streamutil.Close(stmt)
 
 	if err != nil {
@@ -144,10 +150,10 @@ func RemoveOrganization(s domain.StoreContext, rc domain.RequestContext, orgID s
 }
 
 // UpdateAuthConfig updates the given organization record in the database with the auth config details.
-func UpdateAuthConfig(s domain.StoreContext, org Organization) (err error) {
+func (s Scope) UpdateAuthConfig(ctx domain.RequestContext, org org.Organization) (err error) {
 	org.Revised = time.Now().UTC()
 
-	stmt, err := s.Context.Transaction.PrepareNamed("UPDATE organization SET allowanonymousaccess=:allowanonymousaccess, authprovider=:authprovider, authconfig=:authconfig, revised=:revised WHERE refid=:refid")
+	stmt, err := ctx.Transaction.PrepareNamed("UPDATE organization SET allowanonymousaccess=:allowanonymousaccess, authprovider=:authprovider, authconfig=:authconfig, revised=:revised WHERE refid=:refid")
 	defer streamutil.Close(stmt)
 
 	if err != nil {
@@ -165,7 +171,7 @@ func UpdateAuthConfig(s domain.StoreContext, org Organization) (err error) {
 }
 
 // CheckDomain makes sure there is an organisation with the correct domain
-func CheckDomain(s domain.StoreContext, domain string) string {
+func (s Scope) CheckDomain(ctx domain.RequestContext, domain string) string {
 	row := s.Runtime.Db.QueryRow("SELECT COUNT(*) FROM organization WHERE domain=? AND active=1", domain)
 
 	var count int

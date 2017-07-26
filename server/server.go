@@ -22,6 +22,7 @@ import (
 	"github.com/documize/community/core/api/plugins"
 	"github.com/documize/community/core/database"
 	"github.com/documize/community/core/env"
+	"github.com/documize/community/domain"
 	"github.com/documize/community/server/routing"
 	"github.com/documize/community/server/web"
 	"github.com/gorilla/mux"
@@ -30,8 +31,7 @@ import (
 var testHost string // used during automated testing
 
 // Start router to handle all HTTP traffic.
-func Start(rt *env.Runtime, ready chan struct{}) {
-
+func Start(rt *env.Runtime, s *domain.Store, ready chan struct{}) {
 	err := plugins.LibSetup()
 	if err != nil {
 		rt.Log.Error("Terminating before running - invalid plugin.json", err)
@@ -54,10 +54,10 @@ func Start(rt *env.Runtime, ready chan struct{}) {
 	}
 
 	// define middleware
-	cm := middleware{Runtime: rt}
+	cm := middleware{Runtime: rt, Store: s}
 
 	// define API endpoints
-	routing.RegisterEndpoints(rt)
+	routing.RegisterEndpoints(rt, s)
 
 	// wire up API endpoints
 	router := mux.NewRouter()

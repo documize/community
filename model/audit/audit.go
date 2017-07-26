@@ -10,7 +10,7 @@
 // https://documize.com
 
 // Package eventing records and propagates events based on user actions.
-package eventing
+package audit
 
 import "time"
 

@@ -13,23 +13,23 @@ package user
 
 import (
 	"github.com/documize/community/domain"
-	"github.com/documize/community/domain/account"
+	"github.com/documize/community/model/user"
 	"github.com/pkg/errors"
 )
 
 // GetSecuredUser contain associated accounts but credentials are wiped.
-func GetSecuredUser(s domain.StoreContext, orgID, q string) (u User, err error) {
-	u, err = Get(s, q)
-	AttachUserAccounts(s, orgID, &u)
+func GetSecuredUser(ctx domain.RequestContext, s domain.Store, orgID, q string) (u user.User, err error) {
+	u, err = s.User.Get(ctx, q)
+	AttachUserAccounts(ctx, s, orgID, &u)
 
 	return
 }
 
 // AttachUserAccounts attachs user accounts to user object.
-func AttachUserAccounts(s domain.StoreContext, orgID string, u *User) {
+func AttachUserAccounts(ctx domain.RequestContext, s domain.Store, orgID string, u *user.User) {
 	u.ProtectSecrets()
 
-	a, err := account.GetUserAccounts(s, u.RefID)
+	a, err := s.Account.GetUserAccounts(ctx, u.RefID)
 	if err != nil {
 		err = errors.Wrap(err, "fetch user accounts")
 		return

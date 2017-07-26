@@ -9,23 +9,30 @@
 //
 // https://documize.com
 
-// Package eventing records user events.
-package eventing
+// Package audit records user events.
+package audit
 
 import (
 	"time"
 
+	"github.com/documize/community/core/env"
 	"github.com/documize/community/domain"
+	"github.com/documize/community/model/audit"
 	"github.com/pkg/errors"
 )
 
+// Scope provides data access to MySQL.
+type Scope struct {
+	Runtime *env.Runtime
+}
+
 // Record adds event entry for specified user.
-func Record(s domain.StoreContext, t EventType) {
-	e := AppEvent{}
-	e.OrgID = s.Context.OrgID
-	e.UserID = s.Context.UserID
+func (s Scope) Record(ctx domain.RequestContext, t audit.EventType) {
+	e := audit.AppEvent{}
+	e.OrgID = ctx.OrgID
+	e.UserID = ctx.UserID
 	e.Created = time.Now().UTC()
-	e.IP = s.Context.ClientIP
+	e.IP = ctx.ClientIP
 	e.Type = string(t)
 
 	tx, err := s.Runtime.Db.Beginx()

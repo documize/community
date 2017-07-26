@@ -718,7 +718,7 @@ func ResetUserPassword(w http.ResponseWriter, r *http.Request) {
 	log.IfErr(err)
 }
 
-// Get user object contain associated accounts but credentials are wiped.
+// GetSecuredUser wipes credentials.
 func GetSecuredUser(p request.Persister, orgID, user string) (u entity.User, err error) {
 	u, err = p.GetUser(user)
 	AttachUserAccounts(p, orgID, &u)
@@ -726,6 +726,7 @@ func GetSecuredUser(p request.Persister, orgID, user string) (u entity.User, err
 	return
 }
 
+// AttachUserAccounts ...
 func AttachUserAccounts(p request.Persister, orgID string, user *entity.User) {
 	user.ProtectSecrets()
 	a, err := p.GetUserAccounts(user.RefID)

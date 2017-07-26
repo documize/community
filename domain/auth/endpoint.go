@@ -11,20 +11,7 @@
 
 package auth
 
-import (
-	"database/sql"
-	"errors"
-	"net/http"
-	"strings"
-
-	"github.com/documize/community/core/response"
-	"github.com/documize/community/core/secrets"
-	"github.com/documize/community/domain"
-	"github.com/documize/community/domain/organization"
-	"github.com/documize/community/domain/section/provider"
-	"github.com/documize/community/domain/user"
-)
-
+/*
 // Authenticate user based up HTTP Authorization header.
 // An encrypted authentication token is issued with an expiry date.
 func (h *Handler) Authenticate(w http.ResponseWriter, r *http.Request) {
@@ -205,3 +192,4 @@ func (h *Handler) ValidateAuthToken(w http.ResponseWriter, r *http.Request) {
 	response.WriteJSON(w, u)
 	return
 }
+*/

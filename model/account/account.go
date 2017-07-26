@@ -11,19 +11,11 @@
 
 package account
 
-import (
-	"github.com/documize/community/core/env"
-	"github.com/documize/community/domain"
-)
-
-// Handler contains the runtime information such as logging and database.
-type Handler struct {
-	Runtime *env.Runtime
-}
+import "github.com/documize/community/model"
 
 // Account links a User to an Organization.
 type Account struct {
-	domain.BaseEntity
+	model.BaseEntity
 	Admin   bool   `json:"admin"`
 	Editor  bool   `json:"editor"`
 	UserID  string `json:"userId"`

@@ -14,14 +14,20 @@ package document
 import (
 	"fmt"
 
+	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/domain"
 	"github.com/pkg/errors"
 )
 
+// Scope provides data access to MySQL.
+type Scope struct {
+	Runtime *env.Runtime
+}
+
 // MoveDocumentSpace changes the label for client's organization's documents which have space "id", to "move".
-func MoveDocumentSpace(s domain.StoreContext, id, move string) (err error) {
-	stmt, err := s.Context.Transaction.Preparex("UPDATE document SET labelid=? WHERE orgid=? AND labelid=?")
+func (s Scope) MoveDocumentSpace(ctx domain.RequestContext, id, move string) (err error) {
+	stmt, err := ctx.Transaction.Preparex("UPDATE document SET labelid=? WHERE orgid=? AND labelid=?")
 	defer streamutil.Close(stmt)
 
 	if err != nil {
@@ -29,7 +35,7 @@ func MoveDocumentSpace(s domain.StoreContext, id, move string) (err error) {
 		return
 	}
 
-	_, err = stmt.Exec(move, s.Context.OrgID, id)
+	_, err = stmt.Exec(move, ctx.OrgID, id)
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("execute document space move %s", id))
 		return

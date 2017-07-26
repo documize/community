@@ -25,10 +25,12 @@ import (
 	"github.com/documize/community/domain/auth"
 	"github.com/documize/community/domain/organization"
 	"github.com/documize/community/domain/user"
+	"github.com/documize/community/model/org"
 )
 
 type middleware struct {
 	Runtime *env.Runtime
+	Store   *domain.Store
 }
 
 func (m *middleware) cors(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
@@ -65,8 +67,6 @@ func (m *middleware) metrics(w http.ResponseWriter, r *http.Request, next http.H
 func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	method := "Authorize"
 
-	s := domain.StoreContext{Runtime: m.Runtime, Context: domain.RequestContext{}}
-
 	// Let certain requests pass straight through
 	authenticated := preAuthorizeStaticAssets(m.Runtime, r)
 
@@ -74,13 +74,15 @@ func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http
 		token := auth.FindJWT(r)
 		rc, _, tokenErr := auth.DecodeJWT(m.Runtime, token)
 
-		var org = organization.Organization{}
+		var org = org.Organization{}
 		var err = errors.New("")
 
 		if len(rc.OrgID) == 0 {
-			org, err = organization.GetOrganizationByDomain(s, organization.GetRequestSubdomain(s, r))
+			dom := organization.GetRequestSubdomain(r)
+			dom = m.Store.Organization.CheckDomain(rc, dom)
+			org, err = m.Store.Organization.GetOrganizationByDomain(rc, dom)
 		} else {
-			org, err = organization.GetOrganization(s, rc.OrgID)
+			org, err = m.Store.Organization.GetOrganization(rc, rc.OrgID)
 		}
 
 		// Inability to find org record spells the end of this request.
@@ -96,8 +98,8 @@ func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http
 		}
 
 		rc.Subdomain = org.Domain
-		dom := organization.GetSubdomainFromHost(s, r)
-		dom2 := organization.GetRequestSubdomain(s, r)
+		dom := organization.GetSubdomainFromHost(r)
+		dom2 := organization.GetRequestSubdomain(r)
 
 		if org.Domain != dom && org.Domain != dom2 {
 			m.Runtime.Log.Info(fmt.Sprintf("domain mismatch %s vs. %s vs. %s", dom, dom2, org.Domain))
@@ -130,7 +132,7 @@ func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http
 		rc.Editor = false
 		rc.Global = false
 		rc.AppURL = r.Host
-		rc.Subdomain = organization.GetSubdomainFromHost(s, r)
+		rc.Subdomain = organization.GetSubdomainFromHost(r)
 		rc.SSL = r.TLS != nil
 
 		// get user IP from request
@@ -148,8 +150,7 @@ func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http
 
 		// Fetch user permissions for this org
 		if rc.Authenticated {
-			u, err := user.GetSecuredUser(s, org.RefID, rc.UserID)
-
+			u, err := user.GetSecuredUser(rc, *m.Store, org.RefID, rc.UserID)
 			if err != nil {
 				response.WriteServerError(w, method, err)
 				return

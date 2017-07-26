@@ -9,21 +9,13 @@
 //
 // https://documize.com
 
-package organization
+package org
 
-import (
-	"github.com/documize/community/core/env"
-	"github.com/documize/community/domain"
-)
-
-// Handler contains the runtime information such as logging and database.
-type Handler struct {
-	Runtime *env.Runtime
-}
+import "github.com/documize/community/model"
 
 // Organization defines a company that uses this app.
 type Organization struct {
-	domain.BaseEntity
+	model.BaseEntity
 	Company              string `json:"-"`
 	Title                string `json:"title"`
 	Message              string `json:"message"`

@@ -13,13 +13,7 @@
 // Spaces in Documize contain documents.
 package space
 
-import (
-	"database/sql"
-	"fmt"
-
-	"github.com/documize/community/domain"
-)
-
+/*
 // CanViewSpace returns if the user has permission to view the given spaceID.
 func CanViewSpace(s domain.StoreContext, spaceID string) (hasPermission bool) {
 	roles, err := GetRoles(s, spaceID)
@@ -60,3 +54,4 @@ func CanViewSpaceDocuments(s domain.StoreContext, spaceID string) (hasPermission
 
 	return false
 }
+*/

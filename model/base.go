@@ -9,8 +9,8 @@
 //
 // https://documize.com
 
-// Package domain ...
-package domain
+// Package model ...
+package model
 
 import (
 	"time"

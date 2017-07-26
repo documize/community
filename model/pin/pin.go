@@ -9,5 +9,17 @@
 //
 // https://documize.com
 
-// Package request provides HTTP request parsing functions.
-package request
+package pin
+
+import "github.com/documize/community/model"
+
+// Pin defines a saved link to a document or space
+type Pin struct {
+	model.BaseEntity
+	OrgID      string `json:"orgId"`
+	UserID     string `json:"userId"`
+	FolderID   string `json:"folderId"`
+	DocumentID string `json:"documentId"`
+	Pin        string `json:"pin"`
+	Sequence   int    `json:"sequence"`
+}

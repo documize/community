@@ -11,11 +11,7 @@
 
 package auth
 
-import (
-	"github.com/documize/community/core/env"
-	"github.com/documize/community/domain/user"
-)
-
+/*
 // Handler contains the runtime information such as logging and database.
 type Handler struct {
 	Runtime *env.Runtime
@@ -26,3 +22,4 @@ type AuthenticationModel struct {
 	Token string    `json:"token"`
 	User  user.User `json:"user"`
 }
+*/

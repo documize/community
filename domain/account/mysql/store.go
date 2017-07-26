@@ -1,22 +1,40 @@
-package account
+// Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
+//
+// This software (Documize Community Edition) is licensed under
+// GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
+//
+// You can operate outside the AGPL restrictions by purchasing
+// Documize Enterprise Edition and obtaining a commercial license
+// by contacting <sales@documize.com>.
+//
+// https://documize.com
+
+package mysql
 
 import (
 	"database/sql"
 	"fmt"
 	"time"
 
+	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/store/mysql"
+	"github.com/documize/community/model/account"
 	"github.com/pkg/errors"
 )
 
+// Scope provides data access to MySQL.
+type Scope struct {
+	Runtime *env.Runtime
+}
+
 // Add inserts the given record into the datbase account table.
-func Add(s domain.StoreContext, account Account) (err error) {
+func (s Scope) Add(ctx domain.RequestContext, account account.Account) (err error) {
 	account.Created = time.Now().UTC()
 	account.Revised = time.Now().UTC()
 
-	stmt, err := s.Context.Transaction.Preparex("INSERT INTO account (refid, orgid, userid, admin, editor, active, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+	stmt, err := ctx.Transaction.Preparex("INSERT INTO account (refid, orgid, userid, admin, editor, active, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
 	defer streamutil.Close(stmt)
 
 	if err != nil {
@@ -35,7 +53,7 @@ func Add(s domain.StoreContext, account Account) (err error) {
 }
 
 // GetUserAccount returns the database account record corresponding to the given userID, using the client's current organizaion.
-func GetUserAccount(s domain.StoreContext, userID string) (account Account, err error) {
+func (s Scope) GetUserAccount(ctx domain.RequestContext, userID string) (account account.Account, err error) {
 	stmt, err := s.Runtime.Db.Preparex("SELECT a.*, b.company, b.title, b.message, b.domain FROM account a, organization b WHERE b.refid=a.orgid and a.orgid=? and a.userid=?")
 	defer streamutil.Close(stmt)
 
@@ -44,7 +62,7 @@ func GetUserAccount(s domain.StoreContext, userID string) (account Account, err 
 		return
 	}
 
-	err = stmt.Get(&account, s.Context.OrgID, userID)
+	err = stmt.Get(&account, ctx.OrgID, userID)
 	if err != sql.ErrNoRows && err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("execute select for account by user %s", userID))
 		return
@@ -54,7 +72,7 @@ func GetUserAccount(s domain.StoreContext, userID string) (account Account, err 
 }
 
 // GetUserAccounts returns a slice of database account records, for all organizations that the userID is a member of, in organization title order.
-func GetUserAccounts(s domain.StoreContext, userID string) (t []Account, err error) {
+func (s Scope) GetUserAccounts(ctx domain.RequestContext, userID string) (t []account.Account, err error) {
 	err = s.Runtime.Db.Select(&t, "SELECT a.*, b.company, b.title, b.message, b.domain FROM account a, organization b WHERE a.userid=? AND a.orgid=b.refid AND a.active=1 ORDER BY b.title", userID)
 
 	if err != sql.ErrNoRows && err != nil {
@@ -65,19 +83,19 @@ func GetUserAccounts(s domain.StoreContext, userID string) (t []Account, err err
 }
 
 // GetAccountsByOrg returns a slice of database account records, for all users in the client's organization.
-func GetAccountsByOrg(s domain.StoreContext) (t []Account, err error) {
-	err = s.Runtime.Db.Select(&t, "SELECT a.*, b.company, b.title, b.message, b.domain FROM account a, organization b WHERE a.orgid=b.refid AND a.orgid=? AND a.active=1", s.Context.OrgID)
+func (s Scope) GetAccountsByOrg(ctx domain.RequestContext) (t []account.Account, err error) {
+	err = s.Runtime.Db.Select(&t, "SELECT a.*, b.company, b.title, b.message, b.domain FROM account a, organization b WHERE a.orgid=b.refid AND a.orgid=? AND a.active=1", ctx.OrgID)
 
 	if err != sql.ErrNoRows && err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("execute select account for org %s", s.Context.OrgID))
+		err = errors.Wrap(err, fmt.Sprintf("execute select account for org %s", ctx.OrgID))
 	}
 
 	return
 }
 
 // CountOrgAccounts returns the numnber of active user accounts for specified organization.
-func CountOrgAccounts(s domain.StoreContext) (c int) {
-	row := s.Runtime.Db.QueryRow("SELECT count(*) FROM account WHERE orgid=? AND active=1", s.Context.OrgID)
+func (s Scope) CountOrgAccounts(ctx domain.RequestContext) (c int) {
+	row := s.Runtime.Db.QueryRow("SELECT count(*) FROM account WHERE orgid=? AND active=1", ctx.OrgID)
 
 	err := row.Scan(&c)
 
@@ -94,10 +112,10 @@ func CountOrgAccounts(s domain.StoreContext) (c int) {
 }
 
 // UpdateAccount updates the database record for the given account to the given values.
-func UpdateAccount(s domain.StoreContext, account Account) (err error) {
+func (s Scope) UpdateAccount(ctx domain.RequestContext, account account.Account) (err error) {
 	account.Revised = time.Now().UTC()
 
-	stmt, err := s.Context.Transaction.PrepareNamed("UPDATE account SET userid=:userid, admin=:admin, editor=:editor, active=:active, revised=:revised WHERE orgid=:orgid AND refid=:refid")
+	stmt, err := ctx.Transaction.PrepareNamed("UPDATE account SET userid=:userid, admin=:admin, editor=:editor, active=:active, revised=:revised WHERE orgid=:orgid AND refid=:refid")
 	defer streamutil.Close(stmt)
 
 	if err != nil {
@@ -115,7 +133,7 @@ func UpdateAccount(s domain.StoreContext, account Account) (err error) {
 }
 
 // HasOrgAccount returns if the given orgID has valid userID.
-func HasOrgAccount(s domain.StoreContext, orgID, userID string) bool {
+func (s Scope) HasOrgAccount(ctx domain.RequestContext, orgID, userID string) bool {
 	row := s.Runtime.Db.QueryRow("SELECT count(*) FROM account WHERE orgid=? and userid=?", orgID, userID)
 
 	var count int
@@ -138,7 +156,7 @@ func HasOrgAccount(s domain.StoreContext, orgID, userID string) bool {
 }
 
 // DeleteAccount deletes the database record in the account table for user ID.
-func DeleteAccount(s domain.StoreContext, ID string) (rows int64, err error) {
+func (s Scope) DeleteAccount(ctx domain.RequestContext, ID string) (rows int64, err error) {
 	b := mysql.BaseQuery{}
-	return b.DeleteConstrained(s.Context.Transaction, "account", s.Context.OrgID, ID)
+	return b.DeleteConstrained(ctx.Transaction, "account", ctx.OrgID, ID)
 }

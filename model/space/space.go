@@ -9,23 +9,13 @@
 //
 // https://documize.com
 
-// Package space handles API calls and persistence for spaces.
-// Spaces in Documize contain documents.
 package space
 
-import (
-	"github.com/documize/community/core/env"
-	"github.com/documize/community/domain"
-)
-
-// Handler contains the runtime information such as logging and database.
-type Handler struct {
-	Runtime *env.Runtime
-}
+import "github.com/documize/community/model"
 
 // Space defines a container for documents.
 type Space struct {
-	domain.BaseEntity
+	model.BaseEntity
 	Name   string `json:"name"`
 	OrgID  string `json:"orgId"`
 	UserID string `json:"userId"`
@@ -63,7 +53,7 @@ func (l *Space) IsRestricted() bool {
 
 // Role determines user permissions for a folder.
 type Role struct {
-	domain.BaseEntityObfuscated
+	model.BaseEntityObfuscated
 	OrgID   string `json:"-"`
 	LabelID string `json:"folderId"`
 	UserID  string `json:"userId"`
