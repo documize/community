@@ -14,6 +14,7 @@ package domain
 
 import (
 	"github.com/documize/community/model/account"
+	"github.com/documize/community/model/activity"
 	"github.com/documize/community/model/attachment"
 	"github.com/documize/community/model/audit"
 	"github.com/documize/community/model/doc"
@@ -21,6 +22,7 @@ import (
 	"github.com/documize/community/model/org"
 	"github.com/documize/community/model/page"
 	"github.com/documize/community/model/pin"
+	"github.com/documize/community/model/search"
 	"github.com/documize/community/model/space"
 	"github.com/documize/community/model/user"
 )
@@ -38,6 +40,8 @@ type Store struct {
 	Attachment   AttachmentStorer
 	Link         LinkStorer
 	Page         PageStorer
+	Activity     ActivityStorer
+	Search       SearchStorer
 }
 
 // SpaceStorer defines required methods for space management
@@ -120,9 +124,19 @@ type AuditStorer interface {
 
 // DocumentStorer defines required methods for document handling
 type DocumentStorer interface {
+	Add(ctx RequestContext, document doc.Document) (err error)
 	Get(ctx RequestContext, id string) (document doc.Document, err error)
-	MoveDocumentSpace(ctx RequestContext, id, move string) (err error)
+	GetAll() (ctx RequestContext, documents []doc.Document, err error)
+	GetBySpace(ctx RequestContext, folderID string) (documents []doc.Document, err error)
+	GetByTag(ctx RequestContext, tag string) (documents []doc.Document, err error)
+	DocumentList(ctx RequestContext) (documents []doc.Document, err error)
+	Templates() (ctx RequestContext, documents []doc.Document, err error)
+	DocumentMeta(ctx RequestContext, id string) (meta doc.DocumentMeta, err error)
 	PublicDocuments(ctx RequestContext, orgID string) (documents []doc.SitemapDocument, err error)
+	Update(ctx RequestContext, document doc.Document) (err error)
+	ChangeDocumentSpace(ctx RequestContext, document, space string) (err error)
+	MoveDocumentSpace(ctx RequestContext, id, move string) (err error)
+	Delete(ctx RequestContext, documentID string) (rows int64, err error)
 }
 
 // SettingStorer defines required methods for persisting global and user level settings
@@ -156,7 +170,26 @@ type LinkStorer interface {
 	DeleteLink(ctx RequestContext, id string) (rows int64, err error)
 }
 
+// ActivityStorer defines required methods for persisting document activity
+type ActivityStorer interface {
+	RecordUserActivity(ctx RequestContext, activity activity.UserActivity) (err error)
+	GetDocumentActivity(ctx RequestContext, id string) (a []activity.DocumentActivity, err error)
+}
+
 // PageStorer defines required methods for persisting document pages
 type PageStorer interface {
 	GetPagesWithoutContent(ctx RequestContext, documentID string) (pages []page.Page, err error)
+}
+
+// SearchStorer defines required methods for persisting search queries
+type SearchStorer interface {
+	Add(ctx RequestContext, page page.Page) (err error)
+	Update(ctx RequestContext, page page.Page) (err error)
+	UpdateDocument(ctx RequestContext, page page.Page) (err error)
+	DeleteDocument(ctx RequestContext, page page.Page) (err error)
+	Rebuild(ctx RequestContext, p page.Page) (err error)
+	UpdateSequence(ctx RequestContext, page page.Page) (err error)
+	UpdateLevel(ctx RequestContext, page page.Page) (err error)
+	Delete(ctx RequestContext, page page.Page) (err error)
+	Documents(ctx RequestContext, keywords string) (results []search.DocumentSearch, err error)
 }

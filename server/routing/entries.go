@@ -19,6 +19,7 @@ import (
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/attachment"
 	"github.com/documize/community/domain/auth"
+	"github.com/documize/community/domain/document"
 	"github.com/documize/community/domain/link"
 	"github.com/documize/community/domain/meta"
 	"github.com/documize/community/domain/organization"
@@ -31,7 +32,7 @@ import (
 
 // RegisterEndpoints register routes for serving API endpoints
 func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
-	// We pass server/application level contextual requirements into HTTP handlers
+	// Pass server/application level contextual requirements into HTTP handlers
 	// DO NOT pass in per request context (that is done by auth middleware per request)
 	pin := pin.Handler{Runtime: rt, Store: s}
 	auth := auth.Handler{Runtime: rt, Store: s}
@@ -40,6 +41,7 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	link := link.Handler{Runtime: rt, Store: s}
 	space := space.Handler{Runtime: rt, Store: s}
 	setting := setting.Handler{Runtime: rt, Store: s}
+	document := document.Handler{Runtime: rt, Store: s}
 	attachment := attachment.Handler{Runtime: rt, Store: s}
 	organization := organization.Handler{Runtime: rt, Store: s}
 
@@ -65,13 +67,13 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	// Import & Convert Document
 	Add(rt, RoutePrefixPrivate, "import/folder/{folderID}", []string{"POST", "OPTIONS"}, nil, endpoint.UploadConvertDocument)
 
-	Add(rt, RoutePrefixPrivate, "documents/{documentID}/export", []string{"GET", "OPTIONS"}, nil, endpoint.GetDocumentAsDocx)
-	Add(rt, RoutePrefixPrivate, "documents", []string{"GET", "OPTIONS"}, []string{"filter", "tag"}, endpoint.GetDocumentsByTag)
-	Add(rt, RoutePrefixPrivate, "documents", []string{"GET", "OPTIONS"}, nil, endpoint.GetDocumentsByFolder)
-	Add(rt, RoutePrefixPrivate, "documents/{documentID}", []string{"GET", "OPTIONS"}, nil, endpoint.GetDocument)
-	Add(rt, RoutePrefixPrivate, "documents/{documentID}", []string{"PUT", "OPTIONS"}, nil, endpoint.UpdateDocument)
-	Add(rt, RoutePrefixPrivate, "documents/{documentID}", []string{"DELETE", "OPTIONS"}, nil, endpoint.DeleteDocument)
-	Add(rt, RoutePrefixPrivate, "documents/{documentID}/activity", []string{"GET", "OPTIONS"}, nil, endpoint.GetDocumentActivity)
+	// Add(rt, RoutePrefixPrivate, "documents/{documentID}/export", []string{"GET", "OPTIONS"}, nil, endpoint.GetDocumentAsDocx)
+	Add(rt, RoutePrefixPrivate, "documents", []string{"GET", "OPTIONS"}, []string{"filter", "tag"}, document.ByTag)
+	Add(rt, RoutePrefixPrivate, "documents", []string{"GET", "OPTIONS"}, nil, document.BySpace)
+	Add(rt, RoutePrefixPrivate, "documents/{documentID}", []string{"GET", "OPTIONS"}, nil, document.Get)
+	Add(rt, RoutePrefixPrivate, "documents/{documentID}", []string{"PUT", "OPTIONS"}, nil, document.Update)
+	Add(rt, RoutePrefixPrivate, "documents/{documentID}", []string{"DELETE", "OPTIONS"}, nil, document.Delete)
+	Add(rt, RoutePrefixPrivate, "documents/{documentID}/activity", []string{"GET", "OPTIONS"}, nil, document.Activity)
 
 	Add(rt, RoutePrefixPrivate, "documents/{documentID}/pages/level", []string{"POST", "OPTIONS"}, nil, endpoint.ChangeDocumentPageLevel)
 	Add(rt, RoutePrefixPrivate, "documents/{documentID}/pages/sequence", []string{"POST", "OPTIONS"}, nil, endpoint.ChangeDocumentPageSequence)
@@ -117,7 +119,7 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	Add(rt, RoutePrefixPrivate, "users/{userID}", []string{"DELETE", "OPTIONS"}, nil, user.Delete)
 	Add(rt, RoutePrefixPrivate, "users/sync", []string{"GET", "OPTIONS"}, nil, endpoint.SyncKeycloak)
 
-	Add(rt, RoutePrefixPrivate, "search", []string{"GET", "OPTIONS"}, nil, endpoint.SearchDocuments)
+	Add(rt, RoutePrefixPrivate, "search", []string{"GET", "OPTIONS"}, nil, document.SearchDocuments)
 
 	Add(rt, RoutePrefixPrivate, "templates", []string{"POST", "OPTIONS"}, nil, endpoint.SaveAsTemplate)
 	Add(rt, RoutePrefixPrivate, "templates", []string{"GET", "OPTIONS"}, nil, endpoint.GetSavedTemplates)
@@ -137,7 +139,7 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 
 	Add(rt, RoutePrefixPrivate, "links/{folderID}/{documentID}/{pageID}", []string{"GET", "OPTIONS"}, nil, link.GetLinkCandidates)
 	Add(rt, RoutePrefixPrivate, "links", []string{"GET", "OPTIONS"}, nil, link.SearchLinkCandidates)
-	Add(rt, RoutePrefixPrivate, "documents/{documentID}/links", []string{"GET", "OPTIONS"}, nil, endpoint.GetDocumentLinks)
+	Add(rt, RoutePrefixPrivate, "documents/{documentID}/links", []string{"GET", "OPTIONS"}, nil, document.DocumentLinks)
 
 	Add(rt, RoutePrefixPrivate, "global/smtp", []string{"GET", "OPTIONS"}, nil, setting.SMTP)
 	Add(rt, RoutePrefixPrivate, "global/smtp", []string{"PUT", "OPTIONS"}, nil, setting.SetSMTP)

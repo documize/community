@@ -23,6 +23,7 @@ import (
 	org "github.com/documize/community/domain/organization/mysql"
 	page "github.com/documize/community/domain/page/mysql"
 	pin "github.com/documize/community/domain/pin/mysql"
+	search "github.com/documize/community/domain/search/mysql"
 	setting "github.com/documize/community/domain/setting/mysql"
 	space "github.com/documize/community/domain/space/mysql"
 	user "github.com/documize/community/domain/user/mysql"
@@ -41,6 +42,7 @@ func AttachStore(r *env.Runtime, s *domain.Store) {
 	s.Attachment = attachment.Scope{Runtime: r}
 	s.Link = link.Scope{Runtime: r}
 	s.Page = page.Scope{Runtime: r}
+	s.Search = search.Scope{Runtime: r}
 }
 
 // https://github.com/golang-sql/sqlexp/blob/c2488a8be21d20d31abf0d05c2735efd2d09afe4/quoter.go#L46

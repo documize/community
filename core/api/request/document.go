@@ -187,10 +187,10 @@ func (p *Persister) GetDocumentTemplates() (documents []entity.Document, err err
 func (p *Persister) GetPublicDocuments(orgID string) (documents []entity.SitemapDocument, err error) {
 	err = Db.Select(&documents,
 		`SELECT d.refid as documentid, d.title as document, d.revised as revised, l.refid as folderid, l.label as folder
-FROM document d LEFT JOIN label l ON l.refid=d.labelid
-WHERE d.orgid=?
-AND l.type=1
-AND d.template=0`, orgID)
+		FROM document d LEFT JOIN label l ON l.refid=d.labelid
+		WHERE d.orgid=?
+		AND l.type=1
+		AND d.template=0`, orgID)
 
 	if err != nil {
 		log.Error(fmt.Sprintf("Unable to execute GetPublicDocuments for org %s", orgID), err)

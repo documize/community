@@ -71,3 +71,16 @@ const (
 	// TypeFeedback records user providing document feedback
 	TypeFeedback Type = 10
 )
+
+// DocumentActivity represents an activity taken against a document.
+type DocumentActivity struct {
+	ID           int       `json:"id"`
+	OrgID        string    `json:"orgId"`
+	LabelID      string    `json:"folderId"`
+	DocumentID   string    `json:"documentId"`
+	UserID       string    `json:"userId"`
+	Firstname    string    `json:"firstname"`
+	Lastname     string    `json:"lastname"`
+	ActivityType int       `json:"activityType"`
+	Created      time.Time `json:"created"`
+}

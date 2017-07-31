@@ -13,15 +13,19 @@
 // Spaces in Documize contain documents.
 package space
 
-/*
+import (
+	"database/sql"
+
+	"github.com/documize/community/domain"
+)
+
 // CanViewSpace returns if the user has permission to view the given spaceID.
-func CanViewSpace(s domain.StoreContext, spaceID string) (hasPermission bool) {
-	roles, err := GetRoles(s, spaceID)
+func CanViewSpace(ctx domain.RequestContext, s domain.Store, spaceID string) (hasPermission bool) {
+	roles, err := s.Space.GetRoles(ctx, spaceID)
 	if err == sql.ErrNoRows {
 		err = nil
 	}
 	if err != nil {
-		s.Runtime.Log.Error(fmt.Sprintf("check space permissions %s", spaceID), err)
 		return false
 	}
 
@@ -35,14 +39,13 @@ func CanViewSpace(s domain.StoreContext, spaceID string) (hasPermission bool) {
 }
 
 // CanViewSpaceDocuments returns if the user has permission to view a document within the specified space.
-func CanViewSpaceDocuments(s domain.StoreContext, spaceID string) (hasPermission bool) {
-	roles, err := GetRoles(s, spaceID)
+func CanViewSpaceDocuments(ctx domain.RequestContext, s domain.Store, spaceID string) (hasPermission bool) {
+	roles, err := s.Space.GetRoles(ctx, spaceID)
 	if err == sql.ErrNoRows {
 		err = nil
 	}
 
 	if err != nil {
-		s.Runtime.Log.Error(fmt.Sprintf("check space permissions %s", spaceID), err)
 		return false
 	}
 
@@ -54,4 +57,3 @@ func CanViewSpaceDocuments(s domain.StoreContext, spaceID string) (hasPermission
 
 	return false
 }
-*/
