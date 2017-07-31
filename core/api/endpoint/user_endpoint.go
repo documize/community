@@ -13,12 +13,12 @@ package endpoint
 
 import (
 	"database/sql"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"obiwan/utility"
 	"strconv"
 	"strings"
 
@@ -192,7 +192,7 @@ func AddUser(w http.ResponseWriter, r *http.Request) {
 	if addUser && addAccount {
 		size := len(requestedPassword)
 		auth := fmt.Sprintf("%s:%s:%s", p.Context.AppURL, userModel.Email, requestedPassword[:size])
-		encrypted := utility.EncodeBase64([]byte(auth))
+		encrypted := encodeBase64([]byte(auth))
 
 		url := fmt.Sprintf("%s/%s", p.Context.GetAppURL("auth/sso"), url.QueryEscape(string(encrypted)))
 		go mail.InviteNewUser(userModel.Email, inviter.Fullname(), url, userModel.Email, requestedPassword)
@@ -763,4 +763,17 @@ func writeUsers(w http.ResponseWriter, u []entity.User) {
 	}
 
 	writeSuccessBytes(w, j)
+}
+
+func encodeBase64(b []byte) []byte {
+	return []byte(base64.StdEncoding.EncodeToString(b))
+}
+
+
+func decodeBase64(b []byte) ([]byte, error) {
+	data, err := base64.StdEncoding.DecodeString(string(b))
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
 }

@@ -20,7 +20,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"obiwan/utility"
 	"sort"
 	"strconv"
 	"strings"
@@ -82,7 +81,7 @@ func AuthenticateKeycloak(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Decode and prepare RSA Public Key used by keycloak to sign JWT.
-	pkb, err := utility.DecodeBase64([]byte(ac.PublicKey))
+	pkb, err := decodeBase64([]byte(ac.PublicKey))
 	if err != nil {
 		writeBadRequestError(w, method, "Unable to base64 decode Keycloak Public Key")
 		return
