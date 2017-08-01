@@ -24,6 +24,7 @@ import (
 	"github.com/documize/community/domain/meta"
 	"github.com/documize/community/domain/organization"
 	"github.com/documize/community/domain/pin"
+	"github.com/documize/community/domain/search"
 	"github.com/documize/community/domain/setting"
 	"github.com/documize/community/domain/space"
 	"github.com/documize/community/domain/user"
@@ -32,6 +33,9 @@ import (
 
 // RegisterEndpoints register routes for serving API endpoints
 func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
+	// base services
+	indexer := search.NewIndexer(rt, s)
+
 	// Pass server/application level contextual requirements into HTTP handlers
 	// DO NOT pass in per request context (that is done by auth middleware per request)
 	pin := pin.Handler{Runtime: rt, Store: s}
@@ -41,7 +45,7 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	link := link.Handler{Runtime: rt, Store: s}
 	space := space.Handler{Runtime: rt, Store: s}
 	setting := setting.Handler{Runtime: rt, Store: s}
-	document := document.Handler{Runtime: rt, Store: s}
+	document := document.Handler{Runtime: rt, Store: s, Indexer: indexer}
 	attachment := attachment.Handler{Runtime: rt, Store: s}
 	organization := organization.Handler{Runtime: rt, Store: s}
 

@@ -24,12 +24,12 @@ import (
 	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/core/stringutil"
 	"github.com/documize/community/domain"
+	indexer "github.com/documize/community/domain/search"
 	"github.com/documize/community/domain/space"
 	"github.com/documize/community/model/activity"
 	"github.com/documize/community/model/audit"
 	"github.com/documize/community/model/doc"
 	"github.com/documize/community/model/link"
-	"github.com/documize/community/model/page"
 	"github.com/documize/community/model/search"
 )
 
@@ -37,39 +37,7 @@ import (
 type Handler struct {
 	Runtime *env.Runtime
 	Store   *domain.Store
-}
-
-// SearchDocuments endpoint takes a list of keywords and returns a list of document references matching those keywords.
-func (h *Handler) SearchDocuments(w http.ResponseWriter, r *http.Request) {
-	method := "document.search"
-	ctx := domain.GetRequestContext(r)
-
-	keywords := request.Query(r, "keywords")
-	decoded, err := url.QueryUnescape(keywords)
-	if err != nil {
-		response.WriteBadRequestError(w, method, err.Error())
-		return
-	}
-
-	results, err := h.Store.Search.Documents(ctx, decoded)
-	if err != nil {
-		h.Runtime.Log.Error("search failed", err)
-	}
-
-	// Put in slugs for easy UI display of search URL
-	for key, result := range results {
-		result.DocumentSlug = stringutil.MakeSlug(result.DocumentTitle)
-		result.FolderSlug = stringutil.MakeSlug(result.LabelName)
-		results[key] = result
-	}
-
-	if len(results) == 0 {
-		results = []search.DocumentSearch{}
-	}
-
-	h.Store.Audit.Record(ctx, audit.EventTypeSearch)
-
-	response.WriteJSON(w, results)
+	Indexer indexer.Indexer
 }
 
 // Get is an endpoint that returns the document-level information for a given documentID.
@@ -269,10 +237,9 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 	h.Store.Audit.Record(ctx, audit.EventTypeDocumentUpdate)
 
-	p := page.Page{DocumentID: documentID, OrgID: ctx.OrgID, Body: d.Slug, Title: d.Title}
-	h.Store.Search.UpdateDocument(ctx, p)
-
 	ctx.Transaction.Commit()
+
+	h.Indexer.UpdateDocument(ctx, d)
 
 	response.WriteEmpty(w)
 }
@@ -330,10 +297,42 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	h.Store.Audit.Record(ctx, audit.EventTypeDocumentDelete)
 
-	p := page.Page{DocumentID: documentID, OrgID: ctx.OrgID}
-	h.Store.Search.DeleteDocument(ctx, p)
-
 	ctx.Transaction.Commit()
 
+	h.Indexer.DeleteDocument(ctx, documentID)
+
 	response.WriteEmpty(w)
+}
+
+// SearchDocuments endpoint takes a list of keywords and returns a list of document references matching those keywords.
+func (h *Handler) SearchDocuments(w http.ResponseWriter, r *http.Request) {
+	method := "document.search"
+	ctx := domain.GetRequestContext(r)
+
+	keywords := request.Query(r, "keywords")
+	decoded, err := url.QueryUnescape(keywords)
+	if err != nil {
+		response.WriteBadRequestError(w, method, err.Error())
+		return
+	}
+
+	results, err := h.Store.Search.Documents(ctx, decoded)
+	if err != nil {
+		h.Runtime.Log.Error("search failed", err)
+	}
+
+	// Put in slugs for easy UI display of search URL
+	for key, result := range results {
+		result.DocumentSlug = stringutil.MakeSlug(result.DocumentTitle)
+		result.FolderSlug = stringutil.MakeSlug(result.LabelName)
+		results[key] = result
+	}
+
+	if len(results) == 0 {
+		results = []search.DocumentSearch{}
+	}
+
+	h.Store.Audit.Record(ctx, audit.EventTypeSearch)
+
+	response.WriteJSON(w, results)
 }

@@ -11,7 +11,9 @@
 
 package search
 
-import "time"
+import (
+	"time"
+)
 
 // Search holds raw search results.
 type Search struct {

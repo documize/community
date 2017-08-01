@@ -19,7 +19,6 @@ import (
 	"github.com/documize/community/core/api/request"
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/domain"
-	"github.com/documize/community/domain/search"
 	"github.com/documize/community/domain/section"
 	"github.com/documize/community/edition/boot"
 	"github.com/documize/community/edition/logging"
@@ -68,9 +67,6 @@ func main() {
 
 	// Register smart sections
 	section.Register(rt)
-
-	// Search indexer queue
-	search.Start(&rt, &s)
 
 	ready := make(chan struct{}, 1) // channel signals router ready
 	server.Start(&rt, &s, ready)

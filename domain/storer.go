@@ -42,6 +42,7 @@ type Store struct {
 	Page         PageStorer
 	Activity     ActivityStorer
 	Search       SearchStorer
+	Indexer      Indexer
 }
 
 // SpaceStorer defines required methods for space management
@@ -192,4 +193,15 @@ type SearchStorer interface {
 	UpdateLevel(ctx RequestContext, page page.Page) (err error)
 	Delete(ctx RequestContext, page page.Page) (err error)
 	Documents(ctx RequestContext, keywords string) (results []search.DocumentSearch, err error)
+}
+
+// Indexer defines required methods for managing search indexing process
+type Indexer interface {
+	Add(ctx RequestContext, page page.Page, id string) (err error)
+	Update(ctx RequestContext, page page.Page) (err error)
+	UpdateDocument(ctx RequestContext, page page.Page) (err error)
+	DeleteDocument(ctx RequestContext, documentID string) (err error)
+	UpdateSequence(ctx RequestContext, documentID, pageID string, sequence float64) (err error)
+	UpdateLevel(ctx RequestContext, documentID, pageID string, level int) (err error)
+	Delete(ctx RequestContext, documentID, pageID string) (err error)
 }
