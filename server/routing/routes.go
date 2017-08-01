@@ -19,6 +19,7 @@ import (
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/attachment"
 	"github.com/documize/community/domain/auth"
+	"github.com/documize/community/domain/block"
 	"github.com/documize/community/domain/document"
 	"github.com/documize/community/domain/link"
 	"github.com/documize/community/domain/meta"
@@ -44,6 +45,7 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	user := user.Handler{Runtime: rt, Store: s}
 	link := link.Handler{Runtime: rt, Store: s}
 	space := space.Handler{Runtime: rt, Store: s}
+	block := block.Handler{Runtime: rt, Store: s}
 	setting := setting.Handler{Runtime: rt, Store: s}
 	document := document.Handler{Runtime: rt, Store: s, Indexer: indexer}
 	attachment := attachment.Handler{Runtime: rt, Store: s}
@@ -134,11 +136,11 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	Add(rt, RoutePrefixPrivate, "sections", []string{"GET", "OPTIONS"}, nil, endpoint.GetSections)
 	Add(rt, RoutePrefixPrivate, "sections", []string{"POST", "OPTIONS"}, nil, endpoint.RunSectionCommand)
 	Add(rt, RoutePrefixPrivate, "sections/refresh", []string{"GET", "OPTIONS"}, nil, endpoint.RefreshSections)
-	Add(rt, RoutePrefixPrivate, "sections/blocks/space/{folderID}", []string{"GET", "OPTIONS"}, nil, endpoint.GetBlocksForSpace)
-	Add(rt, RoutePrefixPrivate, "sections/blocks/{blockID}", []string{"GET", "OPTIONS"}, nil, endpoint.GetBlock)
-	Add(rt, RoutePrefixPrivate, "sections/blocks/{blockID}", []string{"PUT", "OPTIONS"}, nil, endpoint.UpdateBlock)
-	Add(rt, RoutePrefixPrivate, "sections/blocks/{blockID}", []string{"DELETE", "OPTIONS"}, nil, endpoint.DeleteBlock)
-	Add(rt, RoutePrefixPrivate, "sections/blocks", []string{"POST", "OPTIONS"}, nil, endpoint.AddBlock)
+	Add(rt, RoutePrefixPrivate, "sections/blocks/space/{folderID}", []string{"GET", "OPTIONS"}, nil, block.GetBySpace)
+	Add(rt, RoutePrefixPrivate, "sections/blocks/{blockID}", []string{"GET", "OPTIONS"}, nil, block.Get)
+	Add(rt, RoutePrefixPrivate, "sections/blocks/{blockID}", []string{"PUT", "OPTIONS"}, nil, block.Update)
+	Add(rt, RoutePrefixPrivate, "sections/blocks/{blockID}", []string{"DELETE", "OPTIONS"}, nil, block.Delete)
+	Add(rt, RoutePrefixPrivate, "sections/blocks", []string{"POST", "OPTIONS"}, nil, block.Add)
 	Add(rt, RoutePrefixPrivate, "sections/targets", []string{"GET", "OPTIONS"}, nil, endpoint.GetPageMoveCopyTargets)
 
 	Add(rt, RoutePrefixPrivate, "links/{folderID}/{documentID}/{pageID}", []string{"GET", "OPTIONS"}, nil, link.GetLinkCandidates)

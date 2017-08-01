@@ -9,7 +9,7 @@
 //
 // https://documize.com
 
-package document
+package mysql
 
 import (
 	"fmt"

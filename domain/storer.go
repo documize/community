@@ -17,6 +17,7 @@ import (
 	"github.com/documize/community/model/activity"
 	"github.com/documize/community/model/attachment"
 	"github.com/documize/community/model/audit"
+	"github.com/documize/community/model/block"
 	"github.com/documize/community/model/doc"
 	"github.com/documize/community/model/link"
 	"github.com/documize/community/model/org"
@@ -43,6 +44,7 @@ type Store struct {
 	Activity     ActivityStorer
 	Search       SearchStorer
 	Indexer      Indexer
+	Block        BlockStorer
 }
 
 // SpaceStorer defines required methods for space management
@@ -204,4 +206,16 @@ type Indexer interface {
 	UpdateSequence(ctx RequestContext, documentID, pageID string, sequence float64) (err error)
 	UpdateLevel(ctx RequestContext, documentID, pageID string, level int) (err error)
 	Delete(ctx RequestContext, documentID, pageID string) (err error)
+}
+
+// BlockStorer defines required methods for persisting reusable content blocks
+type BlockStorer interface {
+	Add(ctx RequestContext, b block.Block) (err error)
+	Get(ctx RequestContext, id string) (b block.Block, err error)
+	GetBySpace(ctx RequestContext, spaceID string) (b []block.Block, err error)
+	IncrementUsage(ctx RequestContext, id string) (err error)
+	DecrementUsage(ctx RequestContext, id string) (err error)
+	RemoveReference(ctx RequestContext, id string) (err error)
+	Update(ctx RequestContext, b block.Block) (err error)
+	Delete(ctx RequestContext, id string) (rows int64, err error)
 }

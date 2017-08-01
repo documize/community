@@ -18,6 +18,7 @@ import (
 	account "github.com/documize/community/domain/account/mysql"
 	attachment "github.com/documize/community/domain/attachment/mysql"
 	audit "github.com/documize/community/domain/audit/mysql"
+	block "github.com/documize/community/domain/block/mysql"
 	doc "github.com/documize/community/domain/document/mysql"
 	link "github.com/documize/community/domain/link/mysql"
 	org "github.com/documize/community/domain/organization/mysql"
@@ -43,6 +44,7 @@ func AttachStore(r *env.Runtime, s *domain.Store) {
 	s.Link = link.Scope{Runtime: r}
 	s.Page = page.Scope{Runtime: r}
 	s.Search = search.Scope{Runtime: r}
+	s.Block = block.Scope{Runtime: r}
 }
 
 // https://github.com/golang-sql/sqlexp/blob/c2488a8be21d20d31abf0d05c2735efd2d09afe4/quoter.go#L46
