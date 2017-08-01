@@ -179,11 +179,6 @@ type ActivityStorer interface {
 	GetDocumentActivity(ctx RequestContext, id string) (a []activity.DocumentActivity, err error)
 }
 
-// PageStorer defines required methods for persisting document pages
-type PageStorer interface {
-	GetPagesWithoutContent(ctx RequestContext, documentID string) (pages []page.Page, err error)
-}
-
 // SearchStorer defines required methods for persisting search queries
 type SearchStorer interface {
 	Add(ctx RequestContext, page page.Page) (err error)
@@ -218,4 +213,25 @@ type BlockStorer interface {
 	RemoveReference(ctx RequestContext, id string) (err error)
 	Update(ctx RequestContext, b block.Block) (err error)
 	Delete(ctx RequestContext, id string) (rows int64, err error)
+}
+
+// PageStorer defines required methods for persisting document pages
+type PageStorer interface {
+	Add(ctx RequestContext, model page.NewPage) (err error)
+	Get(ctx RequestContext, pageID string) (p page.Page, err error)
+	GetPages(ctx RequestContext, documentID string) (p []page.Page, err error)
+	GetPagesWhereIn(ctx RequestContext, documentID, inPages string) (p []page.Page, err error)
+	GetPagesWithoutContent(ctx RequestContext, documentID string) (pages []page.Page, err error)
+	Update(ctx RequestContext, page page.Page, refID, userID string, skipRevision bool) (err error)
+	UpdateMeta(ctx RequestContext, meta page.Meta, updateUserID bool) (err error)
+	UpdateSequence(ctx RequestContext, documentID, pageID string, sequence float64) (err error)
+	UpdateLevel(ctx RequestContext, documentID, pageID string, level int) (err error)
+	Delete(ctx RequestContext, documentID, pageID string) (rows int64, err error)
+	GetPageMeta(ctx RequestContext, pageID string) (meta page.Meta, err error)
+	GetPageRevision(ctx RequestContext, revisionID string) (revision page.Revision, err error)
+	GetPageRevisions(ctx RequestContext, pageID string) (revisions []page.Revision, err error)
+	GetDocumentRevisions(ctx RequestContext, documentID string) (revisions []page.Revision, err error)
+	GetDocumentPageMeta(ctx RequestContext, documentID string, externalSourceOnly bool) (meta []page.Meta, err error)
+	DeletePageRevisions(ctx RequestContext, pageID string) (rows int64, err error)
+	GetNextPageSequence(ctx RequestContext, documentID string) (maxSeq float64, err error)
 }

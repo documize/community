@@ -95,3 +95,22 @@ type Revision struct {
 	Initials    string `json:"initials"`
 	Revisions   int    `json:"revisions"`
 }
+
+// NewPage contains the page and associated meta.
+type NewPage struct {
+	Page Page `json:"page"`
+	Meta Meta `json:"meta"`
+}
+
+
+// PageSequenceRequest details a page ID and its sequence within the document.
+type PageSequenceRequest struct {
+	PageID   string  `json:"pageId"`
+	Sequence float64 `json:"sequence"`
+}
+
+// PageLevelRequest details a page ID and level.
+type PageLevelRequest struct {
+	PageID string `json:"pageId"`
+	Level  int    `json:"level"`
+}

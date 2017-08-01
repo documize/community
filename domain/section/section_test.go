@@ -15,7 +15,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/documize/community/core/section/provider"
+	"github.com/documize/community/domain/section/provider"
 )
 
 type testsection provider.TypeMeta
