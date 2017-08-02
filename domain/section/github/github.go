@@ -21,6 +21,7 @@ import (
 	"strings"
 
 	"github.com/documize/community/core/env"
+	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/section/provider"
 	gogithub "github.com/google/go-github/github"
 )
@@ -43,7 +44,8 @@ func init() {
 
 // Provider represents GitHub
 type Provider struct {
-	Runtime env.Runtime
+	Runtime *env.Runtime
+	Store   *domain.Store
 }
 
 // Meta describes us.
@@ -67,8 +69,8 @@ func (p *Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http
 			CID string `json:"clientID"`
 			URL string `json:"authorizationCallbackURL"`
 		}
-		ret.CID = clientID()
-		ret.URL = authorizationCallbackURL()
+		ret.CID = clientID(ctx.Request, p.Store)
+		ret.URL = authorizationCallbackURL(ctx.Request, p.Store)
 		provider.WriteJSON(w, ret)
 		return
 	}
@@ -86,7 +88,7 @@ func (p *Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http
 	if method == "saveSecret" { // secret Token update code
 
 		// write the new one, direct from JS
-		if err = ctx.SaveSecrets(string(body)); err != nil {
+		if err = ctx.SaveSecrets(string(body), p.Store); err != nil {
 			p.Runtime.Log.Error("github settoken configuration", err)
 			provider.WriteError(w, "github", err)
 			return
@@ -108,7 +110,7 @@ func (p *Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http
 
 	config.Clean()
 	// always use DB version of the token
-	config.Token = ctx.GetSecrets("token") // get the secret token in the database
+	config.Token = ctx.GetSecrets("token", p.Store) // get the secret token in the database
 
 	client := p.githubClient(&config)
 
@@ -119,11 +121,11 @@ func (p *Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http
 		if len(config.Token) == 0 {
 			err = errors.New("empty github token")
 		} else {
-			err = validateToken(config.Token)
+			err = validateToken(*ctx, p.Store, config.Token)
 		}
 		if err != nil {
 			// token now invalid, so wipe it
-			ctx.SaveSecrets("") // ignore error, already in an error state
+			ctx.SaveSecrets("", p.Store) // ignore error, already in an error state
 			p.Runtime.Log.Error("github check token validation", err)
 			provider.WriteError(w, "github", err)
 			return
@@ -156,7 +158,7 @@ func (p *Provider) Refresh(ctx *provider.Context, configJSON, data string) strin
 	}
 
 	c.Clean()
-	c.Token = ctx.GetSecrets("token")
+	c.Token = ctx.GetSecrets("token", p.Store)
 
 	client := p.githubClient(&c)
 
@@ -193,7 +195,7 @@ func (p *Provider) Render(ctx *provider.Context, config, data string) string {
 	}
 
 	c.Clean()
-	c.Token = ctx.GetSecrets("token")
+	c.Token = ctx.GetSecrets("token", p.Store)
 
 	data = strings.TrimSpace(data)
 	if len(data) == 0 {

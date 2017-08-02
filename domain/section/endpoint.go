@@ -69,7 +69,7 @@ func (h *Handler) RunSectionCommand(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !provider.Command(sectionName, provider.NewContext(ctx.OrgID, ctx.UserID), w, r) {
+	if !provider.Command(sectionName, provider.NewContext(ctx.OrgID, ctx.UserID, ctx), w, r) {
 		h.Runtime.Log.Info("Unable to run provider.Command() for: " + sectionName)
 		response.WriteNotFoundError(w, "RunSectionCommand", sectionName)
 	}
@@ -122,7 +122,7 @@ func (h *Handler) RefreshSections(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		pcontext := provider.NewContext(pm.OrgID, pm.UserID)
+		pcontext := provider.NewContext(pm.OrgID, pm.UserID, ctx)
 
 		// Ask for data refresh
 		data, ok := provider.Refresh(page.ContentType, pcontext, pm.Config, pm.RawBody)

@@ -17,7 +17,6 @@ import (
 
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/streamutil"
-	"github.com/documize/community/domain"
 	"github.com/pkg/errors"
 )
 
@@ -27,7 +26,7 @@ type Scope struct {
 }
 
 // Get fetches a configuration JSON element from the config table.
-func (s Scope) Get(ctx domain.RequestContext, area, path string) (value string) {
+func (s Scope) Get(area, path string) (value string) {
 	if path != "" {
 		path = "." + path
 	}
@@ -58,7 +57,7 @@ func (s Scope) Get(ctx domain.RequestContext, area, path string) (value string) 
 }
 
 // Set writes a configuration JSON element to the config table.
-func (s Scope) Set(ctx domain.RequestContext, area, json string) error {
+func (s Scope) Set(area, json string) error {
 	if area == "" {
 		return errors.New("no area")
 	}
@@ -81,7 +80,7 @@ func (s Scope) Set(ctx domain.RequestContext, area, json string) error {
 
 // GetUser fetches a configuration JSON element from the userconfig table for a given orgid/userid combination.
 // Errors return the empty string. A blank path returns the whole JSON object, as JSON.
-func (s Scope) GetUser(ctx domain.RequestContext, orgID, userID, area, path string) (value string) {
+func (s Scope) GetUser(orgID, userID, area, path string) (value string) {
 	if path != "" {
 		path = "." + path
 	}
@@ -113,7 +112,7 @@ func (s Scope) GetUser(ctx domain.RequestContext, orgID, userID, area, path stri
 }
 
 // SetUser writes a configuration JSON element to the userconfig table for the current user.
-func (s Scope) SetUser(ctx domain.RequestContext, orgID, userID, area, json string) error {
+func (s Scope) SetUser(orgID, userID, area, json string) error {
 	if area == "" {
 		return errors.New("no area")
 	}

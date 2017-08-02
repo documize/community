@@ -14,6 +14,7 @@ package gemini
 import (
 	"strings"
 
+	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/section/provider"
 )
 
@@ -86,9 +87,9 @@ type geminiConfig struct {
 	Filter        map[string]interface{} `json:"filter"`
 }
 
-func (c *geminiConfig) Clean(ctx *provider.Context) {
+func (c *geminiConfig) Clean(ctx *provider.Context, store *domain.Store) {
 	if ctx != nil {
-		sec, err := getSecrets(ctx)
+		sec, err := getSecrets(ctx, store)
 		if err == nil {
 			if len(sec.APIKey) > 0 && len(sec.Username) > 0 && len(sec.URL) > 0 {
 				c.APIKey = strings.TrimSpace(sec.APIKey)
@@ -102,12 +103,12 @@ func (c *geminiConfig) Clean(ctx *provider.Context) {
 	c.URL = strings.TrimSpace(c.URL)
 }
 
-func (c *geminiConfig) SaveSecrets(ctx *provider.Context) {
+func (c *geminiConfig) SaveSecrets(ctx *provider.Context, store *domain.Store) {
 	var sec secrets
 	sec.APIKey = strings.TrimSpace(c.APIKey)
 	sec.Username = strings.TrimSpace(c.Username)
 	sec.URL = strings.TrimSpace(c.URL)
-	ctx.MarshalSecrets(sec)
+	ctx.MarshalSecrets(sec, store)
 }
 
 type secrets struct {
@@ -116,7 +117,7 @@ type secrets struct {
 	APIKey   string `json:"apikey"`
 }
 
-func getSecrets(ctx *provider.Context) (sec secrets, err error) {
-	err = ctx.UnmarshalSecrets(&sec)
+func getSecrets(ctx *provider.Context, store *domain.Store) (sec secrets, err error) {
+	err = ctx.UnmarshalSecrets(&sec, store)
 	return
 }

@@ -15,8 +15,6 @@ package main
 import (
 	"fmt"
 
-	"github.com/documize/community/core/api"
-	"github.com/documize/community/core/api/request"
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/section"
@@ -61,12 +59,8 @@ func main() {
 		// runtime.Log = runtime.Log.SetDB(runtime.Db)
 	}
 
-	// temp code repair
-	api.Runtime = rt
-	request.Db = rt.Db
-
 	// Register smart sections
-	section.Register(rt)
+	section.Register(&rt, &s)
 
 	ready := make(chan struct{}, 1) // channel signals router ready
 	server.Start(&rt, &s, ready)

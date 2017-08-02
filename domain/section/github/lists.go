@@ -20,7 +20,7 @@ import (
 	gogithub "github.com/google/go-github/github"
 )
 
-func listFailed(rt env.Runtime, method string, config githubConfig, client *gogithub.Client, w http.ResponseWriter) (failed bool) {
+func listFailed(rt *env.Runtime, method string, config githubConfig, client *gogithub.Client, w http.ResponseWriter) (failed bool) {
 	switch method { // which list to choose?
 
 	case "owners":

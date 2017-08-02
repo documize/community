@@ -18,7 +18,6 @@ import (
 	"strings"
 
 	"github.com/codegangsta/negroni"
-	"github.com/documize/community/core/api/endpoint"
 	"github.com/documize/community/core/api/plugins"
 	"github.com/documize/community/core/database"
 	"github.com/documize/community/core/env"
@@ -32,7 +31,7 @@ var testHost string // used during automated testing
 
 // Start router to handle all HTTP traffic.
 func Start(rt *env.Runtime, s *domain.Store, ready chan struct{}) {
-	err := plugins.LibSetup()
+	err := plugins.Setup(s)
 	if err != nil {
 		rt.Log.Error("Terminating before running - invalid plugin.json", err)
 		os.Exit(1)
@@ -45,7 +44,8 @@ func Start(rt *env.Runtime, s *domain.Store, ready chan struct{}) {
 	case env.SiteModeOffline:
 		rt.Log.Info("Serving OFFLINE web server")
 	case env.SiteModeSetup:
-		routing.Add(rt, routing.RoutePrefixPrivate, "setup", []string{"POST", "OPTIONS"}, nil, database.Create)
+		dbHandler := database.Handler{Runtime: rt, Store: s}
+		routing.Add(rt, routing.RoutePrefixPrivate, "setup", []string{"POST", "OPTIONS"}, nil, dbHandler.Create)
 		rt.Log.Info("Serving SETUP web server")
 	case env.SiteModeBadDB:
 		rt.Log.Info("Serving BAD DATABASE web server")
@@ -70,7 +70,7 @@ func Start(rt *env.Runtime, s *domain.Store, ready chan struct{}) {
 
 	// "/api/..."
 	router.PathPrefix(routing.RoutePrefixPrivate).Handler(negroni.New(
-		negroni.HandlerFunc(endpoint.Authorize),
+		negroni.HandlerFunc(cm.Authorize),
 		negroni.Wrap(routing.BuildRoutes(rt, routing.RoutePrefixPrivate)),
 	))
 

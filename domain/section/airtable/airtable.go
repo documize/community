@@ -15,12 +15,14 @@ import (
 	"net/http"
 
 	"github.com/documize/community/core/env"
+	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/section/provider"
 )
 
 // Provider represents Airtable
 type Provider struct {
-	Runtime env.Runtime
+	Runtime *env.Runtime
+	Store   *domain.Store
 }
 
 // Meta describes us

@@ -15,14 +15,12 @@ package store
 
 import (
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"strings"
 
 	"github.com/documize/community/core/api/convert"
 	api "github.com/documize/community/core/convapi"
-	"github.com/documize/community/core/log"
 )
 
 var folderPath string
@@ -33,8 +31,7 @@ func init() {
 		tempDir += string(os.PathSeparator)
 	}
 	folderPath = tempDir + "documize" + string(os.PathSeparator) + "_uploads" + string(os.PathSeparator)
-	log.Info("Temporary upload directory: " + folderPath)
-	log.IfErr(os.MkdirAll(folderPath, os.ModePerm))
+	os.MkdirAll(folderPath, os.ModePerm)
 }
 
 // LocalStorageProvider provides an implementation of StorageProvider.
@@ -48,14 +45,12 @@ func (store *LocalStorageProvider) Upload(job string, filename string, file []by
 	err = os.MkdirAll(destination, os.ModePerm)
 
 	if err != nil {
-		log.Error(fmt.Sprintf("Cannot create local folder %s", destination), err)
 		return err
 	}
 
 	err = ioutil.WriteFile(destination+filename, file, 0666)
 
 	if err != nil {
-		log.Error(fmt.Sprintf("Cannot write to local file %s", destination+filename), err)
 		return err
 	}
 
@@ -85,18 +80,15 @@ func (store *LocalStorageProvider) Convert(params api.ConversionJobRequest) (fil
 	}
 
 	// remove temporary directory on exit
-	defer func() { log.IfErr(os.RemoveAll(inputFolder)) }()
+	defer func() { os.RemoveAll(inputFolder) }()
 
 	for _, v := range list {
 
 		if v.Size() > 0 && !strings.HasPrefix(v.Name(), ".") && v.Mode().IsRegular() {
 			filename = inputFolder + v.Name()
-			log.Info(fmt.Sprintf("Fetching document %s", filename))
-
 			fileData, err := ioutil.ReadFile(filename)
 
 			if err != nil {
-				log.Error(fmt.Sprintf("Unable to fetch document %s", filename), err)
 				return filename, fileResult, err
 			}
 

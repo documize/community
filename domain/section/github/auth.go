@@ -17,32 +17,33 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/documize/community/core/api/request"
-
+	"github.com/documize/community/core/env"
+	"github.com/documize/community/domain"
+	"github.com/documize/community/domain/section/provider"
 	gogithub "github.com/google/go-github/github"
 	"golang.org/x/oauth2"
 )
 
-func clientID() string {
-	return request.ConfigString(meta.ConfigHandle(), "clientID")
+func clientID(ctx domain.RequestContext, s *domain.Store) string {
+	return s.Setting.Get(meta.ConfigHandle(), "clientID")
 }
 
-func clientSecret() string {
-	return request.ConfigString(meta.ConfigHandle(), "clientSecret")
+func clientSecret(ctx domain.RequestContext, s *domain.Store) string {
+	return s.Setting.Get(meta.ConfigHandle(), "clientSecret")
 }
 
-func authorizationCallbackURL() string {
+func authorizationCallbackURL(ctx domain.RequestContext, s *domain.Store) string {
 	// NOTE: URL value must have the path and query "/api/public/validate?section=github"
-	return request.ConfigString(meta.ConfigHandle(), "authorizationCallbackURL")
+	return s.Setting.Get(meta.ConfigHandle(), "authorizationCallbackURL")
 }
 
-func validateToken(ptoken string) error {
+func validateToken(ctx provider.Context, s *domain.Store, ptoken string) error {
 	// Github authorization check
 	authClient := gogithub.NewClient((&gogithub.BasicAuthTransport{
-		Username: clientID(),
-		Password: clientSecret(),
+		Username: clientID(ctx.Request, s),
+		Password: clientSecret(ctx.Request, s),
 	}).Client())
-	_, _, err := authClient.Authorizations.Check(clientID(), ptoken)
+	_, _, err := authClient.Authorizations.Check(clientID(ctx.Request, s), ptoken)
 	return err
 }
 
@@ -56,14 +57,15 @@ func (*Provider) githubClient(config *githubConfig) *gogithub.Client {
 }
 
 // Callback is called by a browser redirect from Github, via the validation endpoint
-func Callback(res http.ResponseWriter, req *http.Request) error {
+func Callback(rt *env.Runtime, s *domain.Store, res http.ResponseWriter, req *http.Request) error {
+	ctx := domain.GetRequestContext(req)
 
 	code := req.URL.Query().Get("code")
 	state := req.URL.Query().Get("state")
 
 	ghurl := "https://github.com/login/oauth/access_token"
-	vals := "client_id=" + clientID()
-	vals += "&client_secret=" + clientSecret()
+	vals := "client_id=" + clientID(ctx, s)
+	vals += "&client_secret=" + clientSecret(ctx, s)
 	vals += "&code=" + code
 	vals += "&state=" + state
 

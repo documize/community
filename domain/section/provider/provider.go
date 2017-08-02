@@ -19,8 +19,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/documize/community/core/api/request"
-	"github.com/documize/community/core/log"
+	"github.com/documize/community/core/env"
+	"github.com/documize/community/domain"
 )
 
 // SecretReplacement is a constant used to replace secrets in data-structures when required.
@@ -32,14 +32,14 @@ var sectionsMap = make(map[string]Provider)
 
 // TypeMeta details a "smart section" that represents a "page" in a document.
 type TypeMeta struct {
-	ID          string                                         `json:"id"`
-	Order       int                                            `json:"order"`
-	ContentType string                                         `json:"contentType"`
-	PageType    string                                         `json:"pageType"`
-	Title       string                                         `json:"title"`
-	Description string                                         `json:"description"`
-	Preview     bool                                           `json:"preview"` // coming soon!
-	Callback    func(http.ResponseWriter, *http.Request) error `json:"-"`
+	ID          string                                                                      `json:"id"`
+	Order       int                                                                         `json:"order"`
+	ContentType string                                                                      `json:"contentType"`
+	PageType    string                                                                      `json:"pageType"`
+	Title       string                                                                      `json:"title"`
+	Description string                                                                      `json:"description"`
+	Preview     bool                                                                        `json:"preview"` // coming soon!
+	Callback    func(*env.Runtime, *domain.Store, http.ResponseWriter, *http.Request) error `json:"-"`
 }
 
 // ConfigHandle returns the key name for database config table
@@ -61,14 +61,12 @@ type Context struct {
 	UserID    string
 	prov      Provider
 	inCommand bool
+	Request   domain.RequestContext
 }
 
 // NewContext is a convenience function.
-func NewContext(orgid, userid string) *Context {
-	if orgid == "" || userid == "" {
-		log.Error("NewContext incorrect orgid:"+orgid+" userid:"+userid, errors.New("bad section context"))
-	}
-	return &Context{OrgID: orgid, UserID: userid}
+func NewContext(orgid, userid string, ctx domain.RequestContext) *Context {
+	return &Context{OrgID: orgid, UserID: userid, Request: ctx}
 }
 
 // Register makes document section type available
@@ -104,11 +102,11 @@ func Command(section string, ctx *Context, w http.ResponseWriter, r *http.Reques
 }
 
 // Callback passes parameters to the given section callback, the returned error indicates success.
-func Callback(section string, w http.ResponseWriter, r *http.Request) error {
+func Callback(section string, rt *env.Runtime, store *domain.Store, w http.ResponseWriter, r *http.Request) error {
 	s, ok := sectionsMap[section]
 	if ok {
 		if cb := s.Meta().Callback; cb != nil {
-			return cb(w, r)
+			return cb(rt, store, w, r)
 		}
 	}
 	return errors.New("section not found")
@@ -147,57 +145,47 @@ func WriteJSON(w http.ResponseWriter, v interface{}) {
 	}
 
 	_, err = w.Write(j)
-	log.IfErr(err)
 }
 
 // WriteString writes string tp HTTP response.
 func WriteString(w http.ResponseWriter, data string) {
 	w.WriteHeader(http.StatusOK)
-	_, err := w.Write([]byte(data))
-	log.IfErr(err)
+	w.Write([]byte(data))
 }
 
 // WriteEmpty returns just OK to HTTP response.
 func WriteEmpty(w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
-	_, err := w.Write([]byte("{}"))
-	log.IfErr(err)
+	w.Write([]byte("{}"))
 }
 
 // WriteMarshalError write JSON marshalling error to HTTP response.
 func WriteMarshalError(w http.ResponseWriter, err error) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusBadRequest)
-	_, err2 := w.Write([]byte("{Error: 'JSON marshal failed'}"))
-	log.IfErr(err2)
-	log.Error("JSON marshall failed", err)
+	w.Write([]byte("{Error: 'JSON marshal failed'}"))
 }
 
 // WriteMessage write string to HTTP response.
 func WriteMessage(w http.ResponseWriter, section, msg string) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusBadRequest)
-	_, err := w.Write([]byte("{Message: " + msg + "}"))
-	log.IfErr(err)
-	log.Info(fmt.Sprintf("Error for section %s: %s", section, msg))
+	w.Write([]byte("{Message: " + msg + "}"))
 }
 
 // WriteError write given error to HTTP response.
 func WriteError(w http.ResponseWriter, section string, err error) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusBadRequest)
-	_, err2 := w.Write([]byte("{Error: 'Internal server error'}"))
-	log.IfErr(err2)
-	log.Error(fmt.Sprintf("Error for section %s", section), err)
+	w.Write([]byte("{Error: 'Internal server error'}"))
 }
 
 // WriteForbidden write 403 to HTTP response.
 func WriteForbidden(w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusForbidden)
-	_, err := w.Write([]byte("{Error: 'Unauthorized'}"))
-	log.IfErr(err)
+	w.Write([]byte("{Error: 'Unauthorized'}"))
 }
 
 // Secrets handling
@@ -206,17 +194,17 @@ func WriteForbidden(w http.ResponseWriter) {
 // The secrets must be in the form of a JSON format string, for example `{"mysecret":"lover"}`.
 // An empty string signifies no valid secrets for this user/org combination.
 // Note that this function can only be called within the Command method of a section.
-func (c *Context) SaveSecrets(JSONobj string) error {
+func (c *Context) SaveSecrets(JSONobj string, s *domain.Store) error {
 	if !c.inCommand {
 		return errors.New("SaveSecrets() may only be called from within Command()")
 	}
 	m := c.prov.Meta()
-	return request.UserConfigSetJSON(c.OrgID, c.UserID, m.ContentType, JSONobj)
+	return s.Setting.SetUser(c.OrgID, c.UserID, m.ContentType, JSONobj)
 }
 
 // MarshalSecrets to the database.
 // Parameter the same as for json.Marshal().
-func (c *Context) MarshalSecrets(sec interface{}) error {
+func (c *Context) MarshalSecrets(sec interface{}, s *domain.Store) error {
 	if !c.inCommand {
 		return errors.New("MarshalSecrets() may only be called from within Command()")
 	}
@@ -224,7 +212,7 @@ func (c *Context) MarshalSecrets(sec interface{}) error {
 	if err != nil {
 		return err
 	}
-	return c.SaveSecrets(string(byts))
+	return c.SaveSecrets(string(byts), s)
 }
 
 // GetSecrets for the current context user/org.
@@ -232,9 +220,9 @@ func (c *Context) MarshalSecrets(sec interface{}) error {
 // JSONpath format is defined at https://dev.mysql.com/doc/refman/5.7/en/json-path-syntax.html .
 // An empty JSONpath returns the whole JSON object, as JSON.
 // Errors return the empty string.
-func (c *Context) GetSecrets(JSONpath string) string {
+func (c *Context) GetSecrets(JSONpath string, s *domain.Store) string {
 	m := c.prov.Meta()
-	return request.UserConfigGetJSON(c.OrgID, c.UserID, m.ContentType, JSONpath)
+	return s.Setting.GetUser(c.OrgID, c.UserID, m.ContentType, JSONpath)
 }
 
 // ErrNoSecrets is returned if no secret is found in the database.
@@ -242,8 +230,8 @@ var ErrNoSecrets = errors.New("no secrets in database")
 
 // UnmarshalSecrets from the database.
 // Parameter the same as for "v" in json.Unmarshal().
-func (c *Context) UnmarshalSecrets(v interface{}) error {
-	secTxt := c.GetSecrets("") // get all the json of the secrets
+func (c *Context) UnmarshalSecrets(v interface{}, s *domain.Store) error {
+	secTxt := c.GetSecrets("", s) // get all the json of the secrets
 	if len(secTxt) > 0 {
 		return json.Unmarshal([]byte(secTxt), v)
 	}

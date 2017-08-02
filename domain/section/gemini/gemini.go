@@ -21,12 +21,14 @@ import (
 	"net/http"
 
 	"github.com/documize/community/core/env"
+	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/section/provider"
 )
 
 // Provider represents Gemini
 type Provider struct {
-	Runtime env.Runtime
+	Runtime *env.Runtime
+	Store   *domain.Store
 }
 
 // Meta describes us.
@@ -66,7 +68,7 @@ func (*Provider) Render(ctx *provider.Context, config, data string) string {
 }
 
 // Command handles authentication, workspace listing and items retrieval.
-func (*Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http.Request) {
+func (p *Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
 	method := query.Get("method")
 
@@ -77,13 +79,13 @@ func (*Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http.R
 
 	switch method {
 	case "secrets":
-		secs(ctx, w, r)
+		secs(ctx, p.Store, w, r)
 	case "auth":
-		auth(ctx, w, r)
+		auth(ctx, p.Store, w, r)
 	case "workspace":
-		workspace(ctx, w, r)
+		workspace(ctx, p.Store, w, r)
 	case "items":
-		items(ctx, w, r)
+		items(ctx, p.Store, w, r)
 	}
 }
 
@@ -97,7 +99,7 @@ func (p *Provider) Refresh(ctx *provider.Context, config, data string) (newData 
 		return
 	}
 
-	c.Clean(ctx)
+	c.Clean(ctx, p.Store)
 
 	if len(c.URL) == 0 {
 		p.Runtime.Log.Info("Gemini.Refresh received empty URL")
@@ -153,7 +155,7 @@ func (p *Provider) Refresh(ctx *provider.Context, config, data string) (newData 
 	return
 }
 
-func auth(ctx *provider.Context, w http.ResponseWriter, r *http.Request) {
+func auth(ctx *provider.Context, store *domain.Store, w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -170,7 +172,7 @@ func auth(ctx *provider.Context, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	config.Clean(nil) // don't look at the database for the parameters
+	config.Clean(nil, store) // don't look at the database for the parameters
 
 	if len(config.URL) == 0 {
 		provider.WriteMessage(w, "gemini", "Missing URL value")
@@ -205,7 +207,7 @@ func auth(ctx *provider.Context, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	config.SaveSecrets(ctx)
+	config.SaveSecrets(ctx, store)
 
 	defer res.Body.Close()
 	var g = geminiUser{}
@@ -221,7 +223,7 @@ func auth(ctx *provider.Context, w http.ResponseWriter, r *http.Request) {
 	provider.WriteJSON(w, g)
 }
 
-func workspace(ctx *provider.Context, w http.ResponseWriter, r *http.Request) {
+func workspace(ctx *provider.Context, store *domain.Store, w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -238,7 +240,7 @@ func workspace(ctx *provider.Context, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	config.Clean(ctx)
+	config.Clean(ctx, store)
 
 	if len(config.URL) == 0 {
 		provider.WriteMessage(w, "gemini", "Missing URL value")
@@ -293,7 +295,7 @@ func workspace(ctx *provider.Context, w http.ResponseWriter, r *http.Request) {
 	provider.WriteJSON(w, workspace)
 }
 
-func items(ctx *provider.Context, w http.ResponseWriter, r *http.Request) {
+func items(ctx *provider.Context, store *domain.Store, w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -310,7 +312,7 @@ func items(ctx *provider.Context, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	config.Clean(ctx)
+	config.Clean(ctx, store)
 
 	if len(config.URL) == 0 {
 		provider.WriteMessage(w, "gemini", "Missing URL value")
@@ -368,7 +370,7 @@ func items(ctx *provider.Context, w http.ResponseWriter, r *http.Request) {
 	provider.WriteJSON(w, items)
 }
 
-func secs(ctx *provider.Context, w http.ResponseWriter, r *http.Request) {
-	sec, _ := getSecrets(ctx)
+func secs(ctx *provider.Context, store *domain.Store, w http.ResponseWriter, r *http.Request) {
+	sec, _ := getSecrets(ctx, store)
 	provider.WriteJSON(w, sec)
 }

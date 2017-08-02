@@ -14,10 +14,11 @@ package space
 import (
 	"fmt"
 
-	"github.com/documize/community/core/api/mail"
+	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/secrets"
 	"github.com/documize/community/core/uniqueid"
 	"github.com/documize/community/domain"
+	"github.com/documize/community/domain/mail"
 	"github.com/documize/community/model/account"
 	"github.com/documize/community/model/space"
 	"github.com/documize/community/model/user"
@@ -50,7 +51,7 @@ func addSpace(ctx domain.RequestContext, s *domain.Store, sp space.Space) (err e
 // We create the user account with default values and then take them
 // through a welcome process designed to capture profile data.
 // We add them to the organization and grant them view-only folder access.
-func inviteNewUserToSharedSpace(ctx domain.RequestContext, s *domain.Store, email string, invitedBy user.User,
+func inviteNewUserToSharedSpace(ctx domain.RequestContext, rt *env.Runtime, s *domain.Store, email string, invitedBy user.User,
 	baseURL string, sp space.Space, invitationMessage string) (err error) {
 
 	var u = user.User{}
@@ -97,8 +98,10 @@ func inviteNewUserToSharedSpace(ctx domain.RequestContext, s *domain.Store, emai
 		return
 	}
 
+	mailer := mail.Mailer{Runtime: rt, Store: s, Context: ctx}
+
 	url := fmt.Sprintf("%s/%s", baseURL, u.Salt)
-	go mail.ShareFolderNewUser(u.Email, invitedBy.Fullname(), url, sp.Name, invitationMessage)
+	go mailer.ShareFolderNewUser(u.Email, invitedBy.Fullname(), url, sp.Name, invitationMessage)
 
 	return
 }

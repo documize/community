@@ -69,7 +69,7 @@ func migrations(lastMigration string) (migrationsT, error) {
 }
 
 // migrate the database as required, by applying the migrations.
-func (m migrationsT) migrate(runtime env.Runtime, tx *sqlx.Tx) error {
+func (m migrationsT) migrate(runtime *env.Runtime, tx *sqlx.Tx) error {
 	for _, v := range m {
 		runtime.Log.Info("Processing migration file: " + v)
 
@@ -96,7 +96,7 @@ func (m migrationsT) migrate(runtime env.Runtime, tx *sqlx.Tx) error {
 	return nil
 }
 
-func lockDB(runtime env.Runtime) (bool, error) {
+func lockDB(runtime *env.Runtime) (bool, error) {
 	b := make([]byte, 2)
 	_, err := rand.Read(b)
 	if err != nil {
@@ -105,7 +105,7 @@ func lockDB(runtime env.Runtime) (bool, error) {
 	wait := ((time.Duration(b[0]) << 8) | time.Duration(b[1])) * time.Millisecond / 10 // up to 6.5 secs wait
 	time.Sleep(wait)
 
-	tx, err := (*dbPtr).Beginx()
+	tx, err := runtime.Db.Beginx()
 	if err != nil {
 		return false, err
 	}
@@ -138,8 +138,8 @@ func lockDB(runtime env.Runtime) (bool, error) {
 	return true, err // success!
 }
 
-func unlockDB() error {
-	tx, err := (*dbPtr).Beginx()
+func unlockDB(rt *env.Runtime) error {
+	tx, err := rt.Db.Beginx()
 	if err != nil {
 		return err
 	}
@@ -150,9 +150,9 @@ func unlockDB() error {
 	return tx.Commit()
 }
 
-func migrateEnd(runtime env.Runtime, tx *sqlx.Tx, err error, amLeader bool) error {
+func migrateEnd(runtime *env.Runtime, tx *sqlx.Tx, err error, amLeader bool) error {
 	if amLeader {
-		defer func() { unlockDB() }()
+		defer func() { unlockDB(runtime) }()
 		if tx != nil {
 			if err == nil {
 				tx.Commit()
@@ -188,7 +188,7 @@ func getLastMigration(tx *sqlx.Tx) (lastMigration string, err error) {
 }
 
 // Migrate the database as required, consolidated action.
-func Migrate(runtime env.Runtime, ConfigTableExists bool) error {
+func Migrate(runtime *env.Runtime, ConfigTableExists bool) error {
 	amLeader := false
 
 	if ConfigTableExists {
@@ -201,7 +201,7 @@ func Migrate(runtime env.Runtime, ConfigTableExists bool) error {
 		amLeader = true // what else can you do?
 	}
 
-	tx, err := (*dbPtr).Beginx()
+	tx, err := runtime.Db.Beginx()
 	if err != nil {
 		return migrateEnd(runtime, tx, err, amLeader)
 	}
@@ -236,8 +236,8 @@ func Migrate(runtime env.Runtime, ConfigTableExists bool) error {
 	for targetMigration != lastMigration {
 		time.Sleep(time.Second)
 		runtime.Log.Info("Waiting for database migration completion")
-		tx.Rollback()                // ignore error
-		tx, err := (*dbPtr).Beginx() // need this in order to see the changed situation since last tx
+		tx.Rollback()                  // ignore error
+		tx, err := runtime.Db.Beginx() // need this in order to see the changed situation since last tx
 		if err != nil {
 			return migrateEnd(runtime, tx, err, amLeader)
 		}

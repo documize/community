@@ -144,10 +144,10 @@ type DocumentStorer interface {
 
 // SettingStorer defines required methods for persisting global and user level settings
 type SettingStorer interface {
-	Get(ctx RequestContext, area, path string) string
-	Set(ctx RequestContext, area, value string) error
-	GetUser(ctx RequestContext, orgID, userID, area, path string) string
-	SetUser(ctx RequestContext, orgID, userID, area, json string) error
+	Get(area, path string) string
+	Set(area, value string) error
+	GetUser(orgID, userID, area, path string) string
+	SetUser(orgID, userID, area, json string) error
 }
 
 // AttachmentStorer defines required methods for persisting document attachments

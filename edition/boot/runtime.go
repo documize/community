@@ -68,7 +68,7 @@ func InitRuntime(r *env.Runtime, s *domain.Store) bool {
 	// go into setup mode if required
 	if r.Flags.SiteMode != env.SiteModeOffline {
 		if database.Check(r) {
-			if err := database.Migrate(*r, true /* the config table exists */); err != nil {
+			if err := database.Migrate(r, true /* the config table exists */); err != nil {
 				r.Log.Error("unable to run database migration", err)
 				return false
 			}

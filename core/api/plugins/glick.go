@@ -21,9 +21,9 @@ import (
 	"github.com/documize/community/core/api/convert/documizeapi"
 	"github.com/documize/community/core/api/convert/html"
 	"github.com/documize/community/core/api/convert/md"
-	"github.com/documize/community/core/api/request"
 	api "github.com/documize/community/core/convapi"
 	"github.com/documize/community/core/log"
+	"github.com/documize/community/domain"
 	"github.com/documize/glick"
 )
 
@@ -48,9 +48,9 @@ func (i errorLog) Write(b []byte) (int, error) {
 // Lib holds a pointer to the global glick Library for the Documize app.
 var Lib *glick.Library
 
-// LibSetup configures the global library at Lib,
+// Setup configures the global library at Lib,
 // largely based on the "config.json" file. It should be called only once.
-func LibSetup() error {
+func Setup(s *domain.Store) error {
 	if insecure == "true" {
 		glick.InsecureSkipVerifyTLS = true
 	}
@@ -100,7 +100,7 @@ func LibSetup() error {
 
 	var json = make([]byte, 0)
 	if PluginFile == "DB" {
-		json = []byte(request.ConfigString("FILEPLUGINS", ""))
+		json = []byte(s.Setting.Get("FILEPLUGINS", ""))
 		if len(bytes.TrimSpace(json)) == 0 {
 			return nil // don't fail if the DB does not exist yet
 		}

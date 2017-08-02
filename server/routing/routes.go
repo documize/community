@@ -166,5 +166,7 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 
 	Add(rt, RoutePrefixRoot, "robots.txt", []string{"GET", "OPTIONS"}, nil, meta.RobotsTxt)
 	Add(rt, RoutePrefixRoot, "sitemap.xml", []string{"GET", "OPTIONS"}, nil, meta.Sitemap)
-	Add(rt, RoutePrefixRoot, "{rest:.*}", nil, nil, web.EmberHandler)
+
+	webHandler := web.Handler{Runtime: rt, Store: s}
+	Add(rt, RoutePrefixRoot, "{rest:.*}", nil, nil, webHandler.EmberHandler)
 }

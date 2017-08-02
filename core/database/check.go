@@ -20,7 +20,6 @@ import (
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/server/web"
-	"github.com/jmoiron/sqlx"
 )
 
 // sql variantsa
@@ -30,14 +29,9 @@ const sqlVariantMariaDB string = "MariaDB"
 
 var dbCheckOK bool // default false
 
-// dbPtr is a pointer to the central connection to the database, used by all database requests.
-var dbPtr *sqlx.DB
-
 // Check that the database is configured correctly and that all the required tables exist.
 // It must be the first function called in this package.
 func Check(runtime *env.Runtime) bool {
-	dbPtr = runtime.Db
-
 	runtime.Log.Info("Database checks: started")
 
 	csBits := strings.Split(runtime.Flags.DBConn, "/")

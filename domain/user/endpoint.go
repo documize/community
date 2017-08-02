@@ -22,7 +22,6 @@ import (
 
 	"strconv"
 
-	"github.com/documize/community/core/api/mail"
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/event"
 	"github.com/documize/community/core/request"
@@ -32,6 +31,7 @@ import (
 	"github.com/documize/community/core/stringutil"
 	"github.com/documize/community/core/uniqueid"
 	"github.com/documize/community/domain"
+	"github.com/documize/community/domain/mail"
 	"github.com/documize/community/model/account"
 	"github.com/documize/community/model/audit"
 	"github.com/documize/community/model/space"
@@ -197,12 +197,14 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		encrypted := secrets.EncodeBase64([]byte(auth))
 
 		url := fmt.Sprintf("%s/%s", ctx.GetAppURL("auth/sso"), url.QueryEscape(string(encrypted)))
-		go mail.InviteNewUser(userModel.Email, inviter.Fullname(), url, userModel.Email, requestedPassword)
+		mailer := mail.Mailer{Runtime: h.Runtime, Store: h.Store, Context: ctx}
+		go mailer.InviteNewUser(userModel.Email, inviter.Fullname(), url, userModel.Email, requestedPassword)
 
 		h.Runtime.Log.Info(fmt.Sprintf("%s invited by %s on %s", userModel.Email, inviter.Email, ctx.AppURL))
 
 	} else {
-		go mail.InviteExistingUser(userModel.Email, inviter.Fullname(), ctx.GetAppURL(""))
+		mailer := mail.Mailer{Runtime: h.Runtime, Store: h.Store, Context: ctx}
+		go mailer.InviteExistingUser(userModel.Email, inviter.Fullname(), ctx.GetAppURL(""))
 
 		h.Runtime.Log.Info(fmt.Sprintf("%s is giving access to an existing user %s", inviter.Email, userModel.Email))
 	}
@@ -580,7 +582,8 @@ func (h *Handler) ForgotPassword(w http.ResponseWriter, r *http.Request) {
 	ctx.Transaction.Commit()
 
 	appURL := ctx.GetAppURL(fmt.Sprintf("auth/reset/%s", token))
-	go mail.PasswordReset(u.Email, appURL)
+	mailer := mail.Mailer{Runtime: h.Runtime, Store: h.Store, Context: ctx}
+	go mailer.PasswordReset(u.Email, appURL)
 
 	response.WriteEmpty(w)
 }

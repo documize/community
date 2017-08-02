@@ -19,8 +19,8 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/documize/community/core/api/request"
 	"github.com/documize/community/core/env"
+	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/section/provider"
 )
 
@@ -38,7 +38,8 @@ func init() {
 
 // Provider represents Trello
 type Provider struct {
-	Runtime env.Runtime
+	Runtime *env.Runtime
+	Store   *domain.Store
 }
 
 // Meta describes us.
@@ -68,7 +69,7 @@ func (p *Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http
 	}
 
 	config.Clean()
-	config.AppKey = request.ConfigString(meta.ConfigHandle(), "appKey")
+	config.AppKey = p.Store.Setting.Get(meta.ConfigHandle(), "appKey")
 
 	if len(config.AppKey) == 0 {
 		p.Runtime.Log.Info("missing trello App Key")
@@ -77,7 +78,7 @@ func (p *Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http
 	}
 
 	if len(config.Token) == 0 {
-		config.Token = ctx.GetSecrets("token") // get a token, if we have one
+		config.Token = ctx.GetSecrets("token", p.Store) // get a token, if we have one
 	}
 
 	if method != "config" {
@@ -94,7 +95,7 @@ func (p *Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http
 		if err != nil {
 			p.Runtime.Log.Error("failed to render cards", err)
 			provider.WriteError(w, "trello", err)
-			ctx.SaveSecrets("") // failure means our secrets are invalid
+			ctx.SaveSecrets("", p.Store) // failure means our secrets are invalid
 			return
 		}
 
@@ -106,7 +107,7 @@ func (p *Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http
 		if err != nil {
 			p.Runtime.Log.Error("failed to render board", err)
 			provider.WriteError(w, "trello", err)
-			ctx.SaveSecrets("") // failure means our secrets are invalid
+			ctx.SaveSecrets("", p.Store) // failure means our secrets are invalid
 			return
 		}
 
@@ -118,7 +119,7 @@ func (p *Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http
 		if err != nil {
 			p.Runtime.Log.Error("failed to get Trello lists", err)
 			provider.WriteError(w, "trello", err)
-			ctx.SaveSecrets("") // failure means our secrets are invalid
+			ctx.SaveSecrets("", p.Store) // failure means our secrets are invalid
 			return
 		}
 
@@ -150,7 +151,7 @@ func (p *Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http
 		p.Runtime.Log.Error("failed save Trello secrets", e)
 	}
 
-	ctx.SaveSecrets(string(b))
+	ctx.SaveSecrets(string(b), p.Store)
 }
 
 // Render just sends back HMTL as-is.

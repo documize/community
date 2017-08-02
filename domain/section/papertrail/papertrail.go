@@ -22,6 +22,7 @@ import (
 	"net/url"
 
 	"github.com/documize/community/core/env"
+	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/section/provider"
 )
 
@@ -29,7 +30,8 @@ const me = "papertrail"
 
 // Provider represents Papertrail
 type Provider struct {
-	Runtime env.Runtime
+	Runtime *env.Runtime
+	Store   *domain.Store
 }
 
 // Meta describes us.
@@ -45,7 +47,7 @@ func (*Provider) Meta() provider.TypeMeta {
 }
 
 // Render converts Papertrail data into HTML suitable for browser rendering.
-func (*Provider) Render(ctx *provider.Context, config, data string) string {
+func (p *Provider) Render(ctx *provider.Context, config, data string) string {
 	var search papertrailSearch
 	var events []papertrailEvent
 	var payload = papertrailRender{}
@@ -54,7 +56,7 @@ func (*Provider) Render(ctx *provider.Context, config, data string) string {
 	json.Unmarshal([]byte(data), &search)
 	json.Unmarshal([]byte(config), &c)
 
-	c.APIToken = ctx.GetSecrets("APIToken")
+	c.APIToken = ctx.GetSecrets("APIToken", p.Store)
 
 	max := len(search.Events)
 	if c.Max < max {
@@ -107,7 +109,7 @@ func (p *Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http
 	config.Clean()
 
 	if config.APIToken == provider.SecretReplacement || config.APIToken == "" {
-		config.APIToken = ctx.GetSecrets("APIToken")
+		config.APIToken = ctx.GetSecrets("APIToken", p.Store)
 	}
 
 	if len(config.APIToken) == 0 {
@@ -117,7 +119,7 @@ func (p *Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http
 
 	switch method {
 	case "auth":
-		auth(p.Runtime, ctx, config, w, r)
+		auth(p.Runtime, p.Store, ctx, config, w, r)
 	case "options":
 		options(config, w, r)
 	}
@@ -135,7 +137,7 @@ func (p *Provider) Refresh(ctx *provider.Context, config, data string) (newData 
 
 	c.Clean()
 
-	c.APIToken = ctx.GetSecrets("APIToken")
+	c.APIToken = ctx.GetSecrets("APIToken", p.Store)
 
 	if len(c.APIToken) == 0 {
 		p.Runtime.Log.Error("missing API token", err)
@@ -160,7 +162,7 @@ func (p *Provider) Refresh(ctx *provider.Context, config, data string) (newData 
 	return
 }
 
-func auth(rt env.Runtime, ctx *provider.Context, config papertrailConfig, w http.ResponseWriter, r *http.Request) {
+func auth(rt *env.Runtime, store *domain.Store, ctx *provider.Context, config papertrailConfig, w http.ResponseWriter, r *http.Request) {
 	result, err := fetchEvents(rt, config)
 
 	if result == nil {
@@ -169,7 +171,7 @@ func auth(rt env.Runtime, ctx *provider.Context, config papertrailConfig, w http
 
 	if err != nil {
 
-		ctx.SaveSecrets(`{"APIToken":""}`) // invalid token, so reset it
+		ctx.SaveSecrets(`{"APIToken":""}`, store) // invalid token, so reset it
 
 		if err.Error() == "forbidden" {
 			provider.WriteForbidden(w)
@@ -180,7 +182,7 @@ func auth(rt env.Runtime, ctx *provider.Context, config papertrailConfig, w http
 		return
 	}
 
-	ctx.SaveSecrets(`{"APIToken":"` + config.APIToken + `"}`)
+	ctx.SaveSecrets(`{"APIToken":"`+config.APIToken+`"}`, store)
 
 	provider.WriteJSON(w, result)
 }
@@ -253,7 +255,7 @@ func options(config papertrailConfig, w http.ResponseWriter, r *http.Request) {
 	provider.WriteJSON(w, options)
 }
 
-func fetchEvents(rt env.Runtime, config papertrailConfig) (result interface{}, err error) {
+func fetchEvents(rt *env.Runtime, config papertrailConfig) (result interface{}, err error) {
 	var filter string
 	if len(config.Query) > 0 {
 		filter = fmt.Sprintf("q=%s", url.QueryEscape(config.Query))

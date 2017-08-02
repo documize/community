@@ -41,7 +41,7 @@ func (h *Handler) SMTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	config := h.Store.Setting.Get(ctx, "SMTP", "")
+	config := h.Store.Setting.Get("SMTP", "")
 
 	var y map[string]interface{}
 	json.Unmarshal([]byte(config), &y)
@@ -82,7 +82,7 @@ func (h *Handler) SetSMTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.Store.Setting.Set(ctx, "SMTP", config)
+	h.Store.Setting.Set("SMTP", config)
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSystemSMTP)
 
@@ -98,7 +98,7 @@ func (h *Handler) License(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	config := h.Store.Setting.Get(ctx, "EDITION-LICENSE", "")
+	config := h.Store.Setting.Get("EDITION-LICENSE", "")
 	if len(config) == 0 {
 		config = "{}"
 	}
@@ -159,7 +159,7 @@ func (h *Handler) SetLicense(w http.ResponseWriter, r *http.Request) {
 		js = string(j)
 	}
 
-	h.Store.Setting.Set(ctx, "EDITION-LICENSE", js)
+	h.Store.Setting.Set("EDITION-LICENSE", js)
 
 	event.Handler().Publish(string(event.TypeSystemLicenseChange))
 

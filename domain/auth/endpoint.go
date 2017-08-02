@@ -117,7 +117,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) ValidateToken(w http.ResponseWriter, r *http.Request) {
 	// TODO should this go after token validation?
 	if s := r.URL.Query().Get("section"); s != "" {
-		if err := provider.Callback(s, w, r); err != nil {
+		if err := provider.Callback(s, h.Runtime, h.Store, w, r); err != nil {
 			h.Runtime.Log.Error("section validation failure", err)
 			w.WriteHeader(http.StatusUnauthorized)
 		}

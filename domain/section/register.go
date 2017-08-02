@@ -15,6 +15,7 @@ import (
 	"fmt"
 
 	"github.com/documize/community/core/env"
+	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/section/airtable"
 	"github.com/documize/community/domain/section/code"
 	"github.com/documize/community/domain/section/gemini"
@@ -28,17 +29,17 @@ import (
 )
 
 // Register sections
-func Register(rt env.Runtime) {
-	provider.Register("code", &code.Provider{Runtime: rt})
-	provider.Register("gemini", &gemini.Provider{Runtime: rt})
-	provider.Register("github", &github.Provider{Runtime: rt})
-	provider.Register("markdown", &markdown.Provider{Runtime: rt})
-	provider.Register("papertrail", &papertrail.Provider{Runtime: rt})
-	provider.Register("table", &table.Provider{Runtime: rt})
-	provider.Register("code", &code.Provider{Runtime: rt})
-	provider.Register("trello", &trello.Provider{Runtime: rt})
-	provider.Register("wysiwyg", &wysiwyg.Provider{Runtime: rt})
-	provider.Register("airtable", &airtable.Provider{Runtime: rt})
+func Register(rt *env.Runtime, s *domain.Store) {
+	provider.Register("code", &code.Provider{Runtime: rt, Store: s})
+	provider.Register("gemini", &gemini.Provider{Runtime: rt, Store: s})
+	provider.Register("github", &github.Provider{Runtime: rt, Store: s})
+	provider.Register("markdown", &markdown.Provider{Runtime: rt, Store: s})
+	provider.Register("papertrail", &papertrail.Provider{Runtime: rt, Store: s})
+	provider.Register("table", &table.Provider{Runtime: rt, Store: s})
+	provider.Register("code", &code.Provider{Runtime: rt, Store: s})
+	provider.Register("trello", &trello.Provider{Runtime: rt, Store: s})
+	provider.Register("wysiwyg", &wysiwyg.Provider{Runtime: rt, Store: s})
+	provider.Register("airtable", &airtable.Provider{Runtime: rt, Store: s})
 
 	p := provider.List()
 	rt.Log.Info(fmt.Sprintf("Registered %d sections", len(p)))

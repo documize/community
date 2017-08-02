@@ -109,7 +109,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	output, ok := provider.Render(model.Page.ContentType, provider.NewContext(model.Meta.OrgID, model.Meta.UserID), model.Meta.Config, model.Meta.RawBody)
+	output, ok := provider.Render(model.Page.ContentType, provider.NewContext(model.Meta.OrgID, model.Meta.UserID, ctx), model.Meta.Config, model.Meta.RawBody)
 	if !ok {
 		h.Runtime.Log.Info("provider.Render could not find: " + model.Page.ContentType)
 	}
@@ -496,7 +496,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	output, ok := provider.Render(model.Page.ContentType, provider.NewContext(model.Meta.OrgID, oldPageMeta.UserID), model.Meta.Config, model.Meta.RawBody)
+	output, ok := provider.Render(model.Page.ContentType, provider.NewContext(model.Meta.OrgID, oldPageMeta.UserID, ctx), model.Meta.Config, model.Meta.RawBody)
 	if !ok {
 		h.Runtime.Log.Info("provider.Render could not find: " + model.Page.ContentType)
 	}

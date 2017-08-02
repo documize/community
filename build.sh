@@ -19,7 +19,7 @@ cp gui/dist-prod/*.* embed/bindata
 cp gui/dist-prod/favicon.ico embed/bindata/public
 rm -rf embed/bindata/mail
 mkdir -p embed/bindata/mail
-cp core/api/mail/*.html embed/bindata/mail
+cp domain/mail/*.html embed/bindata/mail
 cp core/database/templates/*.html embed/bindata
 rm -rf embed/bindata/scripts
 mkdir -p embed/bindata/scripts

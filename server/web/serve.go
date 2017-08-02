@@ -16,9 +16,9 @@ import (
 	"html/template"
 	"net/http"
 
-	"github.com/documize/community/core/api"
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/secrets"
+	"github.com/documize/community/domain"
 )
 
 // SiteInfo describes set-up information about the site
@@ -30,10 +30,16 @@ func init() {
 	SiteInfo.DBhash = secrets.GenerateRandomPassword() // do this only once
 }
 
+// Handler contains the runtime information such as logging and database.
+type Handler struct {
+	Runtime *env.Runtime
+	Store   *domain.Store
+}
+
 // EmberHandler serves HTML web pages
-func EmberHandler(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) EmberHandler(w http.ResponseWriter, r *http.Request) {
 	filename := "index.html"
-	switch api.Runtime.Flags.SiteMode {
+	switch h.Runtime.Flags.SiteMode {
 	case env.SiteModeOffline:
 		filename = "offline.html"
 	case env.SiteModeSetup:

@@ -19,13 +19,13 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/documize/community/core/api/store"
 	api "github.com/documize/community/core/convapi"
 	"github.com/documize/community/core/request"
 	"github.com/documize/community/core/response"
 	"github.com/documize/community/core/stringutil"
 	"github.com/documize/community/core/uniqueid"
 	"github.com/documize/community/domain"
+	"github.com/documize/community/domain/conversion/store"
 	"github.com/documize/community/domain/document"
 	"github.com/documize/community/model/activity"
 	"github.com/documize/community/model/attachment"
@@ -36,7 +36,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-var storageProvider store.StorageProvider
+var storageProvider StorageProvider
 
 func init() {
 	storageProvider = new(store.LocalStorageProvider)
@@ -91,8 +91,8 @@ func (h *Handler) convert(w http.ResponseWriter, r *http.Request, job, folderID 
 	method := "conversion.upload"
 	ctx := domain.GetRequestContext(r)
 
-	licenseKey := h.Store.Setting.Get(ctx, "EDITION-LICENSE", "key")
-	licenseSignature := h.Store.Setting.Get(ctx, "EDITION-LICENSE", "signature")
+	licenseKey := h.Store.Setting.Get("EDITION-LICENSE", "key")
+	licenseSignature := h.Store.Setting.Get("EDITION-LICENSE", "signature")
 	k, _ := hex.DecodeString(licenseKey)
 	s, _ := hex.DecodeString(licenseSignature)
 

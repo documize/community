@@ -21,8 +21,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/documize/api/wordsmith/log"
-	"github.com/documize/community/core/api/mail"
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/request"
 	"github.com/documize/community/core/response"
@@ -31,6 +29,7 @@ import (
 	"github.com/documize/community/core/stringutil"
 	"github.com/documize/community/core/uniqueid"
 	"github.com/documize/community/domain"
+	"github.com/documize/community/domain/mail"
 	"github.com/documize/community/model/account"
 	"github.com/documize/community/model/audit"
 	"github.com/documize/community/model/space"
@@ -449,8 +448,11 @@ func (h *Handler) SetPermissions(w http.ResponseWriter, r *http.Request) {
 			roleID := uniqueid.Generate()
 			role.RefID = roleID
 			err = h.Store.Space.AddRole(ctx, role)
+			if err != nil {
+				h.Runtime.Log.Error("add role", err)
+			}
+
 			roleCount++
-			log.IfErr(err)
 
 			// We send out folder invitation emails to those users
 			// that have *just* been given permissions.
@@ -462,7 +464,8 @@ func (h *Handler) SetPermissions(w http.ResponseWriter, r *http.Request) {
 					existingUser, err = h.Store.User.Get(ctx, role.UserID)
 
 					if err == nil {
-						go mail.ShareFolderExistingUser(existingUser.Email, inviter.Fullname(), url, sp.Name, model.Message)
+						mailer := mail.Mailer{Runtime: h.Runtime, Store: h.Store, Context: ctx}
+						go mailer.ShareFolderExistingUser(existingUser.Email, inviter.Fullname(), url, sp.Name, model.Message)
 						h.Runtime.Log.Info(fmt.Sprintf("%s is sharing space %s with existing user %s", inviter.Email, sp.Name, existingUser.Email))
 					} else {
 						response.WriteServerError(w, method, err)
@@ -732,14 +735,15 @@ func (h *Handler) Invite(w http.ResponseWriter, r *http.Request) {
 			}
 
 			url := ctx.GetAppURL(fmt.Sprintf("s/%s/%s", sp.RefID, stringutil.MakeSlug(sp.Name)))
-			go mail.ShareFolderExistingUser(email, inviter.Fullname(), url, sp.Name, model.Message)
+			mailer := mail.Mailer{Runtime: h.Runtime, Store: h.Store, Context: ctx}
+			go mailer.ShareFolderExistingUser(email, inviter.Fullname(), url, sp.Name, model.Message)
 
 			h.Runtime.Log.Info(fmt.Sprintf("%s is sharing space %s with existing user %s", inviter.Email, sp.Name, email))
 		} else {
 			// On-board new user
 			if strings.Contains(email, "@") {
 				url := ctx.GetAppURL(fmt.Sprintf("auth/share/%s/%s", sp.RefID, stringutil.MakeSlug(sp.Name)))
-				err = inviteNewUserToSharedSpace(ctx, h.Store, email, inviter, url, sp, model.Message)
+				err = inviteNewUserToSharedSpace(ctx, h.Runtime, h.Store, email, inviter, url, sp, model.Message)
 
 				if err != nil {
 					ctx.Transaction.Rollback()
