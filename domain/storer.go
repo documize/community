@@ -30,21 +30,20 @@ import (
 
 // Store provides access to data store (database)
 type Store struct {
+	Account      AccountStorer
+	Activity     ActivityStorer
+	Attachment   AttachmentStorer
+	Audit        AuditStorer
+	Block        BlockStorer
+	Document     DocumentStorer
+	Link         LinkStorer
+	Organization OrganizationStorer
+	Page         PageStorer
+	Pin          PinStorer
+	Search       SearchStorer
+	Setting      SettingStorer
 	Space        SpaceStorer
 	User         UserStorer
-	Account      AccountStorer
-	Organization OrganizationStorer
-	Pin          PinStorer
-	Audit        AuditStorer
-	Document     DocumentStorer
-	Setting      SettingStorer
-	Attachment   AttachmentStorer
-	Link         LinkStorer
-	Page         PageStorer
-	Activity     ActivityStorer
-	Search       SearchStorer
-	Indexer      Indexer
-	Block        BlockStorer
 }
 
 // SpaceStorer defines required methods for space management
@@ -100,7 +99,7 @@ type AccountStorer interface {
 type OrganizationStorer interface {
 	AddOrganization(ctx RequestContext, org org.Organization) error
 	GetOrganization(ctx RequestContext, id string) (org org.Organization, err error)
-	GetOrganizationByDomain(ctx RequestContext, subdomain string) (org org.Organization, err error)
+	GetOrganizationByDomain(subdomain string) (org org.Organization, err error)
 	UpdateOrganization(ctx RequestContext, org org.Organization) (err error)
 	DeleteOrganization(ctx RequestContext, orgID string) (rows int64, err error)
 	RemoveOrganization(ctx RequestContext, orgID string) (err error)

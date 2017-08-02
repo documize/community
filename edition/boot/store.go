@@ -16,6 +16,7 @@ import (
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/domain"
 	account "github.com/documize/community/domain/account/mysql"
+	activity "github.com/documize/community/domain/activity/mysql"
 	attachment "github.com/documize/community/domain/attachment/mysql"
 	audit "github.com/documize/community/domain/audit/mysql"
 	block "github.com/documize/community/domain/block/mysql"
@@ -32,19 +33,20 @@ import (
 
 // AttachStore selects database persistence layer
 func AttachStore(r *env.Runtime, s *domain.Store) {
-	s.Space = space.Scope{Runtime: r}
 	s.Account = account.Scope{Runtime: r}
-	s.Organization = org.Scope{Runtime: r}
-	s.User = user.Scope{Runtime: r}
-	s.Pin = pin.Scope{Runtime: r}
-	s.Audit = audit.Scope{Runtime: r}
-	s.Document = doc.Scope{Runtime: r}
-	s.Setting = setting.Scope{Runtime: r}
+	s.Activity = activity.Scope{Runtime: r}
 	s.Attachment = attachment.Scope{Runtime: r}
-	s.Link = link.Scope{Runtime: r}
-	s.Page = page.Scope{Runtime: r}
-	s.Search = search.Scope{Runtime: r}
+	s.Audit = audit.Scope{Runtime: r}
 	s.Block = block.Scope{Runtime: r}
+	s.Document = doc.Scope{Runtime: r}
+	s.Link = link.Scope{Runtime: r}
+	s.Organization = org.Scope{Runtime: r}
+	s.Page = page.Scope{Runtime: r}
+	s.Pin = pin.Scope{Runtime: r}
+	s.Search = search.Scope{Runtime: r}
+	s.Setting = setting.Scope{Runtime: r}
+	s.Space = space.Scope{Runtime: r}
+	s.User = user.Scope{Runtime: r}
 }
 
 // https://github.com/golang-sql/sqlexp/blob/c2488a8be21d20d31abf0d05c2735efd2d09afe4/quoter.go#L46

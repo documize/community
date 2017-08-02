@@ -80,7 +80,7 @@ func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http
 		if len(rc.OrgID) == 0 {
 			dom := organization.GetRequestSubdomain(r)
 			dom = m.Store.Organization.CheckDomain(rc, dom)
-			org, err = m.Store.Organization.GetOrganizationByDomain(rc, dom)
+			org, err = m.Store.Organization.GetOrganizationByDomain(dom)
 		} else {
 			org, err = m.Store.Organization.GetOrganization(rc, rc.OrgID)
 		}

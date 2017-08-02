@@ -37,12 +37,10 @@ type Handler struct {
 
 // Meta provides org meta data based upon request domain (e.g. acme.documize.com).
 func (h *Handler) Meta(w http.ResponseWriter, r *http.Request) {
-	ctx := domain.GetRequestContext(r)
-
 	data := org.SiteMeta{}
 	data.URL = organization.GetSubdomainFromHost(r)
 
-	org, err := h.Store.Organization.GetOrganizationByDomain(ctx, data.URL)
+	org, err := h.Store.Organization.GetOrganizationByDomain(data.URL)
 	if err != nil {
 		response.WriteForbiddenError(w)
 		return
@@ -72,7 +70,7 @@ func (h *Handler) RobotsTxt(w http.ResponseWriter, r *http.Request) {
 	ctx := domain.GetRequestContext(r)
 
 	dom := organization.GetSubdomainFromHost(r)
-	org, err := h.Store.Organization.GetOrganizationByDomain(ctx, dom)
+	org, err := h.Store.Organization.GetOrganizationByDomain(dom)
 
 	// default is to deny
 	robots :=
@@ -116,7 +114,7 @@ func (h *Handler) Sitemap(w http.ResponseWriter, r *http.Request) {
 	ctx := domain.GetRequestContext(r)
 
 	dom := organization.GetSubdomainFromHost(r)
-	org, err := h.Store.Organization.GetOrganizationByDomain(ctx, dom)
+	org, err := h.Store.Organization.GetOrganizationByDomain(dom)
 
 	if err != nil {
 		h.Runtime.Log.Error(fmt.Sprintf("%s failed to get Organization for domain %s", method, dom), err)

@@ -27,6 +27,7 @@ import (
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/document"
 	"github.com/documize/community/domain/link"
+	indexer "github.com/documize/community/domain/search"
 	"github.com/documize/community/domain/section/provider"
 	"github.com/documize/community/model/activity"
 	"github.com/documize/community/model/audit"
@@ -39,6 +40,7 @@ import (
 type Handler struct {
 	Runtime *env.Runtime
 	Store   *domain.Store
+	Indexer indexer.Indexer
 }
 
 // Add inserts new section into document.
@@ -140,7 +142,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 
 	np, _ := h.Store.Page.Get(ctx, pageID)
 
-	h.Store.Indexer.Add(ctx, np, pageID)
+	h.Indexer.Add(ctx, np, pageID)
 
 	response.WriteJSON(w, np)
 }
@@ -326,7 +328,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSectionDelete)
 
-	h.Store.Indexer.Delete(ctx, documentID, pageID)
+	h.Indexer.Delete(ctx, documentID, pageID)
 
 	h.Store.Link.DeleteSourcePageLinks(ctx, pageID)
 
@@ -405,7 +407,7 @@ func (h *Handler) DeletePages(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		h.Store.Indexer.Delete(ctx, documentID, page.PageID)
+		h.Indexer.Delete(ctx, documentID, page.PageID)
 
 		h.Store.Link.DeleteSourcePageLinks(ctx, page.PageID)
 
@@ -567,7 +569,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 	ctx.Transaction.Commit()
 
-	h.Store.Indexer.Update(ctx, model.Page)
+	h.Indexer.Update(ctx, model.Page)
 
 	updatedPage, err := h.Store.Page.Get(ctx, pageID)
 
@@ -623,7 +625,7 @@ func (h *Handler) ChangePageSequence(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		h.Store.Indexer.UpdateSequence(ctx, documentID, p.PageID, p.Sequence)
+		h.Indexer.UpdateSequence(ctx, documentID, p.PageID, p.Sequence)
 	}
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSectionResequence)
@@ -682,7 +684,7 @@ func (h *Handler) ChangePageLevel(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		h.Store.Indexer.UpdateLevel(ctx, documentID, p.PageID, p.Level)
+		h.Indexer.UpdateLevel(ctx, documentID, p.PageID, p.Level)
 	}
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSectionResequence)

@@ -57,7 +57,7 @@ func (h *Handler) GetLinkCandidates(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// permission check
-	if document.CanViewDocument(ctx, *h.Store, documentID) {
+	if !document.CanViewDocument(ctx, *h.Store, documentID) {
 		response.WriteForbiddenError(w)
 		return
 	}

@@ -554,7 +554,7 @@ func (h *Handler) AcceptInvitation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	org, err := h.Store.Organization.GetOrganizationByDomain(ctx, ctx.Subdomain)
+	org, err := h.Store.Organization.GetOrganizationByDomain(ctx.Subdomain)
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		return

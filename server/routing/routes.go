@@ -48,7 +48,7 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	meta := meta.Handler{Runtime: rt, Store: s}
 	user := user.Handler{Runtime: rt, Store: s}
 	link := link.Handler{Runtime: rt, Store: s}
-	page := page.Handler{Runtime: rt, Store: s}
+	page := page.Handler{Runtime: rt, Store: s, Indexer: indexer}
 	space := space.Handler{Runtime: rt, Store: s}
 	block := block.Handler{Runtime: rt, Store: s}
 	section := section.Handler{Runtime: rt, Store: s}

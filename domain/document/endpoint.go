@@ -61,7 +61,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if CanViewDocumentInFolder(ctx, *h.Store, document.LabelID) {
+	if !CanViewDocumentInFolder(ctx, *h.Store, document.LabelID) {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -72,11 +72,15 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
+	err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
 		LabelID:      document.LabelID,
 		SourceID:     document.RefID,
 		SourceType:   activity.SourceTypeDocument,
 		ActivityType: activity.TypeRead})
+
+	if err != nil {
+		h.Runtime.Log.Error("record user activity", err)
+	}
 
 	h.Store.Audit.Record(ctx, audit.EventTypeDocumentView)
 
@@ -143,6 +147,7 @@ func (h *Handler) BySpace(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !space.CanViewSpace(ctx, *h.Store, folderID) {
+		h.Runtime.Log.Info("no permission to view space documents")
 		response.WriteForbiddenError(w)
 		return
 	}

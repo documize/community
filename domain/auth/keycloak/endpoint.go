@@ -161,7 +161,7 @@ func (h *Handler) Authenticate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	org, err := h.Store.Organization.GetOrganizationByDomain(ctx, a.Domain)
+	org, err := h.Store.Organization.GetOrganizationByDomain(a.Domain)
 	if err != nil {
 		response.WriteUnauthorizedError(w)
 		return

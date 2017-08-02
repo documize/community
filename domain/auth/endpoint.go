@@ -92,7 +92,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	org, err := h.Store.Organization.GetOrganizationByDomain(ctx, dom)
+	org, err := h.Store.Organization.GetOrganizationByDomain(dom)
 	if err != nil {
 		response.WriteUnauthorizedError(w)
 		return
@@ -136,7 +136,7 @@ func (h *Handler) ValidateToken(w http.ResponseWriter, r *http.Request) {
 	// depending upon the domain in question.
 	if len(rc.OrgID) == 0 {
 		dom := organization.GetRequestSubdomain(r)
-		org, err = h.Store.Organization.GetOrganizationByDomain(rc, dom)
+		org, err = h.Store.Organization.GetOrganizationByDomain(dom)
 	} else {
 		org, err = h.Store.Organization.GetOrganization(rc, rc.OrgID)
 	}
