@@ -157,7 +157,7 @@ func (s Scope) GetByTag(ctx domain.RequestContext, tag string) (documents []doc.
 }
 
 // Templates returns a slice containing the documents available as templates to the client's organisation, in title order.
-func (s Scope) Templates() (ctx domain.RequestContext, documents []doc.Document, err error) {
+func (s Scope) Templates(ctx domain.RequestContext) ( documents []doc.Document, err error) {
 	err = s.Runtime.Db.Select(&documents,
 		`SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, layout, created, revised FROM document WHERE orgid=? AND template=1 AND labelid IN
 		(SELECT refid from label WHERE orgid=? AND type=2 AND userid=?

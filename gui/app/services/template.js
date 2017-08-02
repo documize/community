@@ -20,14 +20,6 @@ export default Ember.Service.extend({
 	ajax: service(),
 	store: service(),
 
-	importStockTemplate: function (folderId, templateId) {
-		let url = `templates/${templateId}/folder/${folderId}?type=stock`;
-
-		return this.get('ajax').request(url, {
-			method: "POST"
-		});
-	},
-
 	importSavedTemplate: function (folderId, templateId, docName) {
 		let url = `templates/${templateId}/folder/${folderId}?type=saved`;
 
@@ -36,7 +28,7 @@ export default Ember.Service.extend({
 			data: docName
 		}).then((doc) => {
 			let data = this.get('store').normalize('document', doc);
-			return this.get('store').push(data);			
+			return this.get('store').push(data);
 		});
 	},
 
@@ -57,12 +49,6 @@ export default Ember.Service.extend({
 			});
 
 			return templates;
-		});
-	},
-
-	getStockTemplates() {
-		return this.get('ajax').request(`templates/stock`, {
-			method: 'GET'
 		});
 	},
 

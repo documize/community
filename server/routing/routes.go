@@ -31,6 +31,7 @@ import (
 	"github.com/documize/community/domain/section"
 	"github.com/documize/community/domain/setting"
 	"github.com/documize/community/domain/space"
+	"github.com/documize/community/domain/template"
 	"github.com/documize/community/domain/user"
 	"github.com/documize/community/server/web"
 )
@@ -53,6 +54,7 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	section := section.Handler{Runtime: rt, Store: s}
 	setting := setting.Handler{Runtime: rt, Store: s}
 	keycloak := keycloak.Handler{Runtime: rt, Store: s}
+	template := template.Handler{Runtime: rt, Store: s}
 	document := document.Handler{Runtime: rt, Store: s, Indexer: indexer}
 	attachment := attachment.Handler{Runtime: rt, Store: s}
 	organization := organization.Handler{Runtime: rt, Store: s}
@@ -133,11 +135,9 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 
 	Add(rt, RoutePrefixPrivate, "search", []string{"GET", "OPTIONS"}, nil, document.SearchDocuments)
 
-	Add(rt, RoutePrefixPrivate, "templates", []string{"POST", "OPTIONS"}, nil, endpoint.SaveAsTemplate)
-	Add(rt, RoutePrefixPrivate, "templates", []string{"GET", "OPTIONS"}, nil, endpoint.GetSavedTemplates)
-	Add(rt, RoutePrefixPrivate, "templates/stock", []string{"GET", "OPTIONS"}, nil, endpoint.GetStockTemplates)
-	Add(rt, RoutePrefixPrivate, "templates/{templateID}/folder/{folderID}", []string{"POST", "OPTIONS"}, []string{"type", "stock"}, endpoint.StartDocumentFromStockTemplate)
-	Add(rt, RoutePrefixPrivate, "templates/{templateID}/folder/{folderID}", []string{"POST", "OPTIONS"}, []string{"type", "saved"}, endpoint.StartDocumentFromSavedTemplate)
+	Add(rt, RoutePrefixPrivate, "templates", []string{"POST", "OPTIONS"}, nil, template.SaveAs)
+	Add(rt, RoutePrefixPrivate, "templates", []string{"GET", "OPTIONS"}, nil, template.SavedList)
+	Add(rt, RoutePrefixPrivate, "templates/{templateID}/folder/{folderID}", []string{"POST", "OPTIONS"}, []string{"type", "saved"}, template.Use)
 
 	Add(rt, RoutePrefixPrivate, "sections", []string{"GET", "OPTIONS"}, nil, section.GetSections)
 	Add(rt, RoutePrefixPrivate, "sections", []string{"POST", "OPTIONS"}, nil, section.RunSectionCommand)
