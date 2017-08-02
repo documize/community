@@ -14,10 +14,9 @@ package conversion
 import (
 	"net/http"
 
+	api "github.com/documize/community/core/convapi"
 	"github.com/documize/community/core/env"
-	"github.com/documize/community/core/response"
 	"github.com/documize/community/domain"
-	"github.com/documize/community/model/template"
 )
 
 // Handler contains the runtime information such as logging and database.
@@ -26,30 +25,16 @@ type Handler struct {
 	Store   *domain.Store
 }
 
-// SavedList returns all templates saved by the user
-func (h *Handler) SavedList(w http.ResponseWriter, r *http.Request) {
-	method := "template.saved"
-	ctx := domain.GetRequestContext(r)
-
-	documents, err := h.Store.Document.Templates(ctx)
-	if err != nil {
-		response.WriteServerError(w, method, err)
-		return
+// UploadConvert is an endpoint to both upload and convert a document
+func (h *Handler) UploadConvert(w http.ResponseWriter, r *http.Request) {
+	job, folderID, orgID := h.upload(w, r)
+	if job == "" {
+		return // error already handled
 	}
 
-	templates := []template.Template{}
-
-	for _, d := range documents {
-		var t = template.Template{}
-		t.ID = d.RefID
-		t.Title = d.Title
-		t.Description = d.Excerpt
-		t.Author = ""
-		t.Dated = d.Created
-		t.Type = template.TypePrivate
-
-		templates = append(templates, t)
-	}
-
-	response.WriteJSON(w, templates)
+	h.convert(w, r, job, folderID, api.ConversionJobRequest{
+		Job:        job,
+		IndexDepth: 4,
+		OrgID:      orgID,
+	})
 }

@@ -14,13 +14,13 @@ package routing
 import (
 	"net/http"
 
-	"github.com/documize/community/core/api/endpoint"
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/attachment"
 	"github.com/documize/community/domain/auth"
 	"github.com/documize/community/domain/auth/keycloak"
 	"github.com/documize/community/domain/block"
+	"github.com/documize/community/domain/conversion"
 	"github.com/documize/community/domain/document"
 	"github.com/documize/community/domain/link"
 	"github.com/documize/community/domain/meta"
@@ -57,6 +57,7 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	template := template.Handler{Runtime: rt, Store: s}
 	document := document.Handler{Runtime: rt, Store: s, Indexer: indexer}
 	attachment := attachment.Handler{Runtime: rt, Store: s}
+	conversion := conversion.Handler{Runtime: rt, Store: s}
 	organization := organization.Handler{Runtime: rt, Store: s}
 
 	//**************************************************
@@ -78,10 +79,8 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	// Secure routes
 	//**************************************************
 
-	// Import & Convert Document
-	Add(rt, RoutePrefixPrivate, "import/folder/{folderID}", []string{"POST", "OPTIONS"}, nil, endpoint.UploadConvertDocument)
+	Add(rt, RoutePrefixPrivate, "import/folder/{folderID}", []string{"POST", "OPTIONS"}, nil, conversion.UploadConvert)
 
-	// Add(rt, RoutePrefixPrivate, "documents/{documentID}/export", []string{"GET", "OPTIONS"}, nil, endpoint.GetDocumentAsDocx)
 	Add(rt, RoutePrefixPrivate, "documents", []string{"GET", "OPTIONS"}, []string{"filter", "tag"}, document.ByTag)
 	Add(rt, RoutePrefixPrivate, "documents", []string{"GET", "OPTIONS"}, nil, document.BySpace)
 	Add(rt, RoutePrefixPrivate, "documents/{documentID}", []string{"GET", "OPTIONS"}, nil, document.Get)
