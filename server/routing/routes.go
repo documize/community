@@ -19,6 +19,7 @@ import (
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/attachment"
 	"github.com/documize/community/domain/auth"
+	"github.com/documize/community/domain/auth/keycloak"
 	"github.com/documize/community/domain/block"
 	"github.com/documize/community/domain/document"
 	"github.com/documize/community/domain/link"
@@ -51,6 +52,7 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	block := block.Handler{Runtime: rt, Store: s}
 	section := section.Handler{Runtime: rt, Store: s}
 	setting := setting.Handler{Runtime: rt, Store: s}
+	keycloak := keycloak.Handler{Runtime: rt, Store: s}
 	document := document.Handler{Runtime: rt, Store: s, Indexer: indexer}
 	attachment := attachment.Handler{Runtime: rt, Store: s}
 	organization := organization.Handler{Runtime: rt, Store: s}
@@ -59,7 +61,7 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	// Non-secure routes
 	//**************************************************
 	Add(rt, RoutePrefixPublic, "meta", []string{"GET", "OPTIONS"}, nil, meta.Meta)
-	Add(rt, RoutePrefixPublic, "authenticate/keycloak", []string{"POST", "OPTIONS"}, nil, endpoint.AuthenticateKeycloak)
+	Add(rt, RoutePrefixPublic, "authenticate/keycloak", []string{"POST", "OPTIONS"}, nil, keycloak.Authenticate)
 	Add(rt, RoutePrefixPublic, "authenticate", []string{"POST", "OPTIONS"}, nil, auth.Login)
 	Add(rt, RoutePrefixPublic, "validate", []string{"GET", "OPTIONS"}, nil, auth.ValidateToken)
 	Add(rt, RoutePrefixPublic, "forgot", []string{"POST", "OPTIONS"}, nil, user.ForgotPassword)
@@ -127,7 +129,7 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	Add(rt, RoutePrefixPrivate, "users/{userID}", []string{"GET", "OPTIONS"}, nil, user.Get)
 	Add(rt, RoutePrefixPrivate, "users/{userID}", []string{"PUT", "OPTIONS"}, nil, user.Update)
 	Add(rt, RoutePrefixPrivate, "users/{userID}", []string{"DELETE", "OPTIONS"}, nil, user.Delete)
-	Add(rt, RoutePrefixPrivate, "users/sync", []string{"GET", "OPTIONS"}, nil, endpoint.SyncKeycloak)
+	Add(rt, RoutePrefixPrivate, "users/sync", []string{"GET", "OPTIONS"}, nil, keycloak.Sync)
 
 	Add(rt, RoutePrefixPrivate, "search", []string{"GET", "OPTIONS"}, nil, document.SearchDocuments)
 
