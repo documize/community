@@ -62,6 +62,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -69,6 +70,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &userModel)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -106,6 +108,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	userDupe, err := h.Store.User.GetByEmail(ctx, userModel.Email)
 	if err != nil && err != sql.ErrNoRows {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -119,6 +122,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -130,6 +134,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			ctx.Transaction.Rollback()
 			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
 			return
 		}
 
@@ -160,6 +165,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			ctx.Transaction.Rollback()
 			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
 			return
 		}
 	}
@@ -186,6 +192,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	inviter, err := h.Store.User.Get(ctx, ctx.UserID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -233,6 +240,7 @@ func (h *Handler) GetOrganizationUsers(w http.ResponseWriter, r *http.Request) {
 		u, err = h.Store.User.GetActiveUsersForOrganization(ctx)
 		if err != nil && err != sql.ErrNoRows {
 			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
 			return
 		}
 
@@ -240,6 +248,7 @@ func (h *Handler) GetOrganizationUsers(w http.ResponseWriter, r *http.Request) {
 		u, err = h.Store.User.GetUsersForOrganization(ctx)
 		if err != nil && err != sql.ErrNoRows {
 			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
 			return
 		}
 	}
@@ -272,8 +281,8 @@ func (h *Handler) GetSpaceUsers(w http.ResponseWriter, r *http.Request) {
 	// check to see space type as it determines user selection criteria
 	folder, err := h.Store.Space.Get(ctx, folderID)
 	if err != nil && err != sql.ErrNoRows {
-		h.Runtime.Log.Error("cannot get space", err)
 		response.WriteJSON(w, u)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -297,8 +306,8 @@ func (h *Handler) GetSpaceUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil && err != sql.ErrNoRows {
-		h.Runtime.Log.Error("cannot get users for space", err)
 		response.WriteJSON(w, u)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -328,6 +337,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	}
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -354,6 +364,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -361,6 +372,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -368,6 +380,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -397,6 +410,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -404,6 +418,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &u)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -422,6 +437,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -432,6 +448,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -442,6 +459,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -453,6 +471,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -478,6 +497,7 @@ func (h *Handler) ChangePassword(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 	newPassword := string(body)
@@ -497,6 +517,7 @@ func (h *Handler) ChangePassword(w http.ResponseWriter, r *http.Request) {
 	u, err := h.Store.User.Get(ctx, userID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -505,6 +526,7 @@ func (h *Handler) ChangePassword(w http.ResponseWriter, r *http.Request) {
 	err = h.Store.User.UpdateUserPassword(ctx, userID, u.Salt, secrets.GeneratePassword(newPassword, u.Salt))
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -531,6 +553,7 @@ func (h *Handler) UserSpacePermissions(w http.ResponseWriter, r *http.Request) {
 	}
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -548,6 +571,7 @@ func (h *Handler) ForgotPassword(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		response.WriteBadRequestError(w, method, "cannot ready payload")
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -555,12 +579,14 @@ func (h *Handler) ForgotPassword(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &u)
 	if err != nil {
 		response.WriteBadRequestError(w, method, "JSON body")
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -570,6 +596,7 @@ func (h *Handler) ForgotPassword(w http.ResponseWriter, r *http.Request) {
 	if err != nil && err != sql.ErrNoRows {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -603,6 +630,7 @@ func (h *Handler) ResetPassword(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		response.WriteBadRequestError(w, method, "JSON body")
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 	newPassword := string(body)
@@ -610,12 +638,14 @@ func (h *Handler) ResetPassword(w http.ResponseWriter, r *http.Request) {
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
 	u, err := h.Store.User.GetByToken(ctx, token)
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -625,6 +655,7 @@ func (h *Handler) ResetPassword(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 

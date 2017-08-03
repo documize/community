@@ -15,7 +15,6 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 
-	"github.com/documize/community/core/log"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -32,8 +31,8 @@ func GenerateSalt() string {
 // GenerateRandom returns a string of the specified length using crypo/rand
 func GenerateRandom(size int) string {
 	b := make([]byte, size)
-	_, err := rand.Read(b)
-	log.IfErr(err)
+	rand.Read(b)
+
 	return hex.EncodeToString(b)
 }
 
@@ -42,11 +41,7 @@ func GeneratePassword(password string, salt string) string {
 	pwd := []byte(salt + password)
 
 	// Hashing the password with the cost of 10
-	hashedPassword, err := bcrypt.GenerateFromPassword(pwd, 10)
-
-	if err != nil {
-		log.Error("GeneratePassword failed", err)
-	}
+	hashedPassword, _ := bcrypt.GenerateFromPassword(pwd, 10)
 
 	return string(hashedPassword)
 }

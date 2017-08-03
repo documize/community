@@ -55,8 +55,6 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
-
-	"github.com/documize/community/core/log"
 )
 
 const (
@@ -177,8 +175,7 @@ func (e *Email) Bytes() ([]byte, error) {
 	// TODO: determine the content type based on message/attachment mix.
 	headers.Set("Content-Type", "multipart/mixed;\r\n boundary="+w.Boundary())
 	headerToBytes(buff, headers)
-	_, err := io.WriteString(buff, "\r\n")
-	log.IfErr(err)
+	io.WriteString(buff, "\r\n")
 	// Start the multipart/mixed part
 	fmt.Fprintf(buff, "--%s\r\n", w.Boundary())
 	header := textproto.MIMEHeader{}
@@ -354,8 +351,7 @@ func base64Wrap(w io.Writer, b []byte) {
 	// Process raw chunks until there's no longer enough to fill a line.
 	for len(b) >= maxRaw {
 		base64.StdEncoding.Encode(buffer, b[:maxRaw])
-		_, err := w.Write(buffer)
-		log.IfErr(err)
+		w.Write(buffer)
 		b = b[maxRaw:]
 	}
 	// Handle the last chunk of bytes.
@@ -363,8 +359,7 @@ func base64Wrap(w io.Writer, b []byte) {
 		out := buffer[:base64.StdEncoding.EncodedLen(len(b))]
 		base64.StdEncoding.Encode(out, b)
 		out = append(out, "\r\n"...)
-		_, err := w.Write(out)
-		log.IfErr(err)
+		w.Write(out)
 	}
 }
 
@@ -373,8 +368,7 @@ func base64Wrap(w io.Writer, b []byte) {
 func headerToBytes(buff *bytes.Buffer, header textproto.MIMEHeader) {
 	for field, vals := range header {
 		for _, subval := range vals {
-			_, err := io.WriteString(buff, field+": "+subval+"\r\n")
-			log.IfErr(err)
+			io.WriteString(buff, field+": "+subval+"\r\n")
 		}
 	}
 }

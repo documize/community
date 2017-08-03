@@ -16,8 +16,6 @@ import (
 	"html/template"
 	"sort"
 
-	"github.com/documize/community/core/log"
-
 	gogithub "github.com/google/go-github/github"
 )
 
@@ -166,7 +164,6 @@ func refreshMilestones(gr *githubRender, config *githubConfig, client *gogithub.
 
 	gr.Milestones, err = getMilestones(client, config)
 	if err != nil {
-		log.Error("unable to get github milestones", err)
 		return err
 	}
 	gr.OpenMS = 0

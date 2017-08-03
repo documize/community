@@ -16,8 +16,6 @@ import (
 	"sort"
 	"time"
 
-	"github.com/documize/community/core/log"
-
 	gogithub "github.com/google/go-github/github"
 )
 
@@ -69,10 +67,8 @@ func (s issuesToSort) Less(i, j int) bool {
 		return false
 	}
 	// TODO this seems a very slow approach
-	iDate, iErr := time.Parse(issuesTimeFormat, s[i].Updated)
-	log.IfErr(iErr)
-	jDate, jErr := time.Parse(issuesTimeFormat, s[j].Updated)
-	log.IfErr(jErr)
+	iDate, _ := time.Parse(issuesTimeFormat, s[i].Updated)
+	jDate, _ := time.Parse(issuesTimeFormat, s[j].Updated)
 	return iDate.Before(jDate)
 }
 
@@ -187,14 +183,12 @@ func getIssues(client *gogithub.Client, config *githubConfig) ([]githubIssue, er
 }
 
 func refreshIssues(gr *githubRender, config *githubConfig, client *gogithub.Client) (err error) {
-
 	if !config.ShowIssues {
 		return nil
 	}
 
 	gr.Issues, err = getIssues(client, config)
 	if err != nil {
-		log.Error("unable to get github issues (cmd)", err)
 		return err
 	}
 

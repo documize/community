@@ -17,7 +17,6 @@ import (
 	"strings"
 
 	api "github.com/documize/community/core/convapi"
-	"github.com/documize/community/core/log"
 	"github.com/documize/community/core/stringutil"
 	"golang.org/x/net/context"
 	"golang.org/x/net/html"
@@ -192,7 +191,6 @@ func (h *htmlToSplit) renderAppend(c *html.Node) error {
 	ebyt := stringutil.EscapeHTMLcomplexCharsByte(byt)
 	if len(ebyt) > maxBody {
 		msg := fmt.Sprintf("(Documize warning: HTML render element ignored, size of %d exceeded maxBody of %d.)", len(ebyt), maxBody)
-		log.Info(msg)
 		ebyt = []byte("<p><b>" + msg + "</b></p>")
 	}
 	if len(h.thisSect.Body)+len(ebyt) > maxBody {

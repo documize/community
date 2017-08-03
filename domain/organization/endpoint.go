@@ -46,6 +46,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	org, err := h.Store.Organization.GetOrganization(ctx, ctx.OrgID)
 	if err != nil && err != sql.ErrNoRows {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -67,6 +68,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -78,6 +80,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -85,6 +88,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 

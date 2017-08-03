@@ -50,6 +50,7 @@ func (h *Handler) Download(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err != nil {
+		h.Runtime.Log.Error("get attachment", err)
 		response.WriteServerError(w, method, err)
 		return
 	}
@@ -66,7 +67,7 @@ func (h *Handler) Download(w http.ResponseWriter, r *http.Request) {
 
 	_, err = w.Write(a.Data)
 	if err != nil {
-		h.Runtime.Log.Error("writing attachment", err)
+		h.Runtime.Log.Error("write attachment", err)
 		return
 	}
 
@@ -91,6 +92,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 
 	a, err := h.Store.Attachment.GetAttachments(ctx, documentID)
 	if err != nil && err != sql.ErrNoRows {
+		h.Runtime.Log.Error("get attachment", err)
 		response.WriteServerError(w, method, err)
 		return
 	}
@@ -127,6 +129,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	var err error
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
+		h.Runtime.Log.Error("transaction", err)
 		response.WriteServerError(w, method, err)
 		return
 	}
@@ -135,6 +138,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error("delete attachment", err)
 		return
 	}
 
@@ -143,6 +147,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error("delete attachment links", err)
 		return
 	}
 
@@ -170,7 +175,6 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	}
 
 	filedata, filename, err := r.FormFile("attachment")
-
 	if err != nil {
 		response.WriteMissingDataError(w, method, "attachment")
 		return
@@ -180,17 +184,17 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	_, err = io.Copy(b, filedata)
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error("add attachment", err)
 		return
 	}
 
 	var job = "some-uuid"
-
 	newUUID, err := uuid.NewV4()
 	if err != nil {
+		h.Runtime.Log.Error("uuid", err)
 		response.WriteServerError(w, method, err)
 		return
 	}
-
 	job = newUUID.String()
 
 	var a attachment.Attachment
@@ -206,6 +210,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error("transaction", err)
 		return
 	}
 
@@ -213,6 +218,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error("add attachment", err)
 		return
 	}
 

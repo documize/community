@@ -17,8 +17,6 @@ import (
 	"sort"
 	"time"
 
-	"github.com/documize/community/core/log"
-
 	gogithub "github.com/google/go-github/github"
 )
 
@@ -257,21 +255,19 @@ func getCommits(client *gogithub.Client, config *githubConfig) ([]githubCommit, 
 }
 
 func refreshCommits(gr *githubRender, config *githubConfig, client *gogithub.Client) (err error) {
-
 	if !config.ShowCommits {
 		return nil
 	}
 
 	gr.BranchCommits, gr.AuthorStats, err = getCommits(client, config)
 	if err != nil {
-		log.Error("github refreshCommits:", err)
 		return err
 	}
+
 	return nil
 }
 
 func renderCommits(payload *githubRender, c *githubConfig) error {
-
 	if !c.ShowCommits {
 		return nil
 	}

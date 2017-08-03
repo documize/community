@@ -53,6 +53,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	decodedBytes, err := secrets.DecodeBase64([]byte(data))
 	if err != nil {
 		response.WriteBadRequestError(w, method, "Unable to decode authentication token")
+		h.Runtime.Log.Error("decode auth header", err)
 		return
 	}
 
@@ -60,9 +61,9 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 
 	// check that we have domain:email:password (but allow for : in password field!)
 	credentials := strings.SplitN(decoded, ":", 3)
-
 	if len(credentials) != 3 {
 		response.WriteBadRequestError(w, method, "Bad authentication token, expecting domain:email:password")
+		h.Runtime.Log.Error("bad auth token", err)
 		return
 	}
 
@@ -95,14 +96,15 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	org, err := h.Store.Organization.GetOrganizationByDomain(dom)
 	if err != nil {
 		response.WriteUnauthorizedError(w)
+		h.Runtime.Log.Error("bad auth organization", err)
 		return
 	}
 
 	// Attach user accounts and work out permissions
 	user.AttachUserAccounts(ctx, *h.Store, org.RefID, &u)
-
 	if len(u.Accounts) == 0 {
 		response.WriteUnauthorizedError(w)
+		h.Runtime.Log.Error("bad auth accounts", err)
 		return
 	}
 
@@ -118,8 +120,8 @@ func (h *Handler) ValidateToken(w http.ResponseWriter, r *http.Request) {
 	// TODO should this go after token validation?
 	if s := r.URL.Query().Get("section"); s != "" {
 		if err := provider.Callback(s, h.Runtime, h.Store, w, r); err != nil {
-			h.Runtime.Log.Error("section validation failure", err)
 			w.WriteHeader(http.StatusUnauthorized)
+			h.Runtime.Log.Error("section validation failure", err)
 		}
 
 		return
@@ -198,6 +200,7 @@ func (h *Handler) ValidateToken(w http.ResponseWriter, r *http.Request) {
 	u, err := user.GetSecuredUser(rc, *h.Store, org.RefID, rc.UserID)
 	if err != nil {
 		response.WriteUnauthorizedError(w)
+		h.Runtime.Log.Error("ValidateToken", err)
 		return
 	}
 

@@ -58,6 +58,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		response.WriteBadRequestError(w, method, "body")
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -65,6 +66,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &pin)
 	if err != nil {
 		response.WriteBadRequestError(w, method, "pin")
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -79,6 +81,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -86,6 +89,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -121,6 +125,7 @@ func (h *Handler) GetUserPins(w http.ResponseWriter, r *http.Request) {
 	pins, err := h.Store.Pin.GetUserPins(ctx, userID)
 	if err != nil && err != sql.ErrNoRows {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -162,6 +167,7 @@ func (h *Handler) DeleteUserPin(w http.ResponseWriter, r *http.Request) {
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -169,6 +175,7 @@ func (h *Handler) DeleteUserPin(w http.ResponseWriter, r *http.Request) {
 	if err != nil && err != sql.ErrNoRows {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -204,6 +211,7 @@ func (h *Handler) UpdatePinSequence(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -212,12 +220,14 @@ func (h *Handler) UpdatePinSequence(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &pins)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -226,6 +236,7 @@ func (h *Handler) UpdatePinSequence(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			ctx.Transaction.Rollback()
 			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
 			return
 		}
 	}
@@ -237,6 +248,7 @@ func (h *Handler) UpdatePinSequence(w http.ResponseWriter, r *http.Request) {
 	newPins, err := h.Store.Pin.GetUserPins(ctx, userID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 

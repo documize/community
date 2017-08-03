@@ -22,7 +22,6 @@ import (
 	"github.com/documize/community/core/api/convert/html"
 	"github.com/documize/community/core/api/convert/md"
 	api "github.com/documize/community/core/convapi"
-	"github.com/documize/community/core/log"
 	"github.com/documize/community/domain"
 	"github.com/documize/glick"
 )
@@ -34,14 +33,14 @@ var insecure = "false"
 type infoLog struct{}
 
 func (i infoLog) Write(b []byte) (int, error) {
-	log.Info(string(b))
+	// log.Info(string(b))
 	return len(b), nil
 }
 
 type errorLog struct{}
 
 func (i errorLog) Write(b []byte) (int, error) {
-	log.ErrorString(string(b))
+	// log.ErrorString(string(b))
 	return len(b), nil
 }
 
@@ -107,7 +106,6 @@ func Setup(s *domain.Store) error {
 	} else {
 		json, err = ioutil.ReadFile(PluginFile)
 		if err != nil {
-			log.Info("Plugin file '" + PluginFile + "' not found, using no plugins")
 			json = []byte(" [ ] \n")
 			err = nil
 		}

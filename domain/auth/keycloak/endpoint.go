@@ -58,8 +58,8 @@ func (h *Handler) Sync(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		result.Message = "Error: unable to get organization record"
 		result.IsError = true
-		h.Runtime.Log.Error(result.Message, err)
 		response.WriteJSON(w, result)
+		h.Runtime.Log.Error(result.Message, err)
 		return
 	}
 
@@ -67,8 +67,8 @@ func (h *Handler) Sync(w http.ResponseWriter, r *http.Request) {
 	if org.AuthProvider != "keycloak" {
 		result.Message = "Error: skipping user sync with Keycloak as it is not the configured option"
 		result.IsError = true
-		h.Runtime.Log.Info(result.Message)
 		response.WriteJSON(w, result)
+		h.Runtime.Log.Info(result.Message)
 		return
 	}
 
@@ -78,8 +78,8 @@ func (h *Handler) Sync(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		result.Message = "Error: unable read Keycloak configuration data"
 		result.IsError = true
-		h.Runtime.Log.Error(result.Message, err)
 		response.WriteJSON(w, result)
+		h.Runtime.Log.Error(result.Message, err)
 		return
 	}
 
@@ -88,8 +88,8 @@ func (h *Handler) Sync(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		result.Message = "Error: unable to fetch Keycloak users: " + err.Error()
 		result.IsError = true
-		h.Runtime.Log.Error(result.Message, err)
 		response.WriteJSON(w, result)
+		h.Runtime.Log.Error(result.Message, err)
 		return
 	}
 
@@ -98,8 +98,8 @@ func (h *Handler) Sync(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		result.Message = "Error: unable to fetch Documize users"
 		result.IsError = true
-		h.Runtime.Log.Error(result.Message, err)
 		response.WriteJSON(w, result)
+		h.Runtime.Log.Error(result.Message, err)
 		return
 	}
 
@@ -128,8 +128,8 @@ func (h *Handler) Sync(w http.ResponseWriter, r *http.Request) {
 	}
 
 	result.Message = fmt.Sprintf("Keycloak sync'ed %d users, %d new additions", len(kcUsers), len(insert))
-	h.Runtime.Log.Info(result.Message)
 	response.WriteJSON(w, result)
+	h.Runtime.Log.Info(result.Message)
 }
 
 // Authenticate checks Keycloak authentication credentials.
@@ -141,6 +141,7 @@ func (h *Handler) Authenticate(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		response.WriteBadRequestError(w, method, "Bad payload")
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -148,6 +149,7 @@ func (h *Handler) Authenticate(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &a)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -164,6 +166,7 @@ func (h *Handler) Authenticate(w http.ResponseWriter, r *http.Request) {
 	org, err := h.Store.Organization.GetOrganizationByDomain(a.Domain)
 	if err != nil {
 		response.WriteUnauthorizedError(w)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -174,6 +177,7 @@ func (h *Handler) Authenticate(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal([]byte(org.AuthConfig), &ac)
 	if err != nil {
 		response.WriteBadRequestError(w, method, "Unable to unmarshall Keycloak Public Key")
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -181,6 +185,7 @@ func (h *Handler) Authenticate(w http.ResponseWriter, r *http.Request) {
 	pkb, err := secrets.DecodeBase64([]byte(ac.PublicKey))
 	if err != nil {
 		response.WriteBadRequestError(w, method, "Unable to base64 decode Keycloak Public Key")
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 	pk := string(pkb)
@@ -189,8 +194,8 @@ func (h *Handler) Authenticate(w http.ResponseWriter, r *http.Request) {
 	// Decode and verify Keycloak JWT
 	claims, err := auth.DecodeKeycloakJWT(a.Token, pk)
 	if err != nil {
-		h.Runtime.Log.Info("decodeKeycloakJWT failed")
 		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Info("decodeKeycloakJWT failed")
 		return
 	}
 
@@ -198,6 +203,7 @@ func (h *Handler) Authenticate(w http.ResponseWriter, r *http.Request) {
 	// Guards against MITM token tampering.
 	if a.Email != claims["email"].(string) || claims["sub"].(string) != a.RemoteID {
 		response.WriteUnauthorizedError(w)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -206,6 +212,7 @@ func (h *Handler) Authenticate(w http.ResponseWriter, r *http.Request) {
 	u, err := h.Store.User.GetByDomain(ctx, a.Domain, a.Email)
 	if err != nil && err != sql.ErrNoRows {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -224,6 +231,7 @@ func (h *Handler) Authenticate(w http.ResponseWriter, r *http.Request) {
 		err = addUser(ctx, h.Runtime, h.Store, u, ac.DefaultPermissionAddSpace)
 		if err != nil {
 			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
 			return
 		}
 	}
@@ -241,6 +249,7 @@ func (h *Handler) Authenticate(w http.ResponseWriter, r *http.Request) {
 	// so we reject login request.
 	if len(u.Accounts) == 0 {
 		response.WriteUnauthorizedError(w)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -249,6 +258,7 @@ func (h *Handler) Authenticate(w http.ResponseWriter, r *http.Request) {
 		if ac.OrgID == org.RefID {
 			if ac.Active == false {
 				response.WriteUnauthorizedError(w)
+				h.Runtime.Log.Error(method, err)
 				return
 			}
 			break

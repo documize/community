@@ -68,6 +68,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -75,6 +76,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &model)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -99,15 +101,15 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 
 	doc, err := h.Store.Document.Get(ctx, documentID)
 	if err != nil {
-		h.Runtime.Log.Error(method, err)
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
-		h.Runtime.Log.Error(method, err)
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -121,8 +123,8 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	err = h.Store.Page.Add(ctx, *model)
 	if err != nil {
 		ctx.Transaction.Rollback()
-		h.Runtime.Log.Error(method, err)
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -176,6 +178,7 @@ func (h *Handler) GetPage(w http.ResponseWriter, r *http.Request) {
 	}
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -219,7 +222,7 @@ func (h *Handler) GetPages(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		response.WriteServerError(w, method, err)
-		return
+		h.Runtime.Log.Error(method, err)
 	}
 
 	response.WriteJSON(w, pages)
@@ -245,6 +248,7 @@ func (h *Handler) GetPagesBatch(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -253,10 +257,12 @@ func (h *Handler) GetPagesBatch(w http.ResponseWriter, r *http.Request) {
 	pages, err := h.Store.Page.GetPagesWhereIn(ctx, documentID, requestedPages)
 	if err == sql.ErrNoRows {
 		response.WriteNotFoundError(w, method, documentID)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -293,12 +299,14 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	doc, err := h.Store.Document.Get(ctx, documentID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -306,6 +314,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -317,6 +326,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -379,12 +389,14 @@ func (h *Handler) DeletePages(w http.ResponseWriter, r *http.Request) {
 	doc, err := h.Store.Document.Get(ctx, documentID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -393,6 +405,7 @@ func (h *Handler) DeletePages(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			ctx.Transaction.Rollback()
 			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
 			return
 		}
 
@@ -404,6 +417,7 @@ func (h *Handler) DeletePages(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			ctx.Transaction.Rollback()
 			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
 			return
 		}
 
@@ -462,6 +476,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		response.WriteBadRequestError(w, method, "Bad request body")
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -469,6 +484,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &model)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -480,12 +496,14 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	doc, err := h.Store.Document.Get(ctx, documentID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -495,6 +513,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	oldPageMeta, err := h.Store.Page.GetPageMeta(ctx, pageID)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -512,6 +531,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		ctx.Transaction.Rollback()
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -519,6 +539,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		ctx.Transaction.Rollback()
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -601,6 +622,7 @@ func (h *Handler) ChangePageSequence(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -608,12 +630,14 @@ func (h *Handler) ChangePageSequence(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &model)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -622,6 +646,7 @@ func (h *Handler) ChangePageSequence(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			ctx.Transaction.Rollback()
 			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
 			return
 		}
 
@@ -660,6 +685,7 @@ func (h *Handler) ChangePageLevel(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -667,12 +693,14 @@ func (h *Handler) ChangePageLevel(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &model)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -681,6 +709,7 @@ func (h *Handler) ChangePageLevel(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			ctx.Transaction.Rollback()
 			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
 			return
 		}
 
@@ -719,14 +748,17 @@ func (h *Handler) GetMeta(w http.ResponseWriter, r *http.Request) {
 	meta, err := h.Store.Page.GetPageMeta(ctx, pageID)
 	if err == sql.ErrNoRows {
 		response.WriteNotFoundError(w, method, pageID)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 	if meta.DocumentID != documentID {
 		response.WriteBadRequestError(w, method, "documentID mismatch")
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -751,6 +783,7 @@ func (h *Handler) GetMoveCopyTargets(w http.ResponseWriter, r *http.Request) {
 	}
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -790,26 +823,31 @@ func (h *Handler) Copy(w http.ResponseWriter, r *http.Request) {
 	doc, err := h.Store.Document.Get(ctx, documentID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
 	p, err := h.Store.Page.Get(ctx, pageID)
 	if err == sql.ErrNoRows {
 		response.WriteNotFoundError(w, method, documentID)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
 	pageMeta, err := h.Store.Page.GetPageMeta(ctx, pageID)
 	if err == sql.ErrNoRows {
 		response.WriteNotFoundError(w, method, documentID)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -830,6 +868,7 @@ func (h *Handler) Copy(w http.ResponseWriter, r *http.Request) {
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -837,6 +876,7 @@ func (h *Handler) Copy(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -966,10 +1006,12 @@ func (h *Handler) GetDiff(w http.ResponseWriter, r *http.Request) {
 	p, err := h.Store.Page.Get(ctx, pageID)
 	if err == sql.ErrNoRows {
 		response.WriteNotFoundError(w, method, pageID)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -1029,6 +1071,7 @@ func (h *Handler) Rollback(w http.ResponseWriter, r *http.Request) {
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -1041,18 +1084,21 @@ func (h *Handler) Rollback(w http.ResponseWriter, r *http.Request) {
 	meta, err := h.Store.Page.GetPageMeta(ctx, pageID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
 	revision, err := h.Store.Page.GetPageRevision(ctx, revisionID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
 	doc, err := h.Store.Document.Get(ctx, documentID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -1064,6 +1110,7 @@ func (h *Handler) Rollback(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -1075,6 +1122,7 @@ func (h *Handler) Rollback(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 

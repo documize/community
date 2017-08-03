@@ -65,7 +65,7 @@ func (m *middleware) metrics(w http.ResponseWriter, r *http.Request, next http.H
 // request.Context provides caller user information.
 // Site meta sent back as HTTP custom headers.
 func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
-	method := "Authorize"
+	method := "middleware.auth"
 
 	// Let certain requests pass straight through
 	authenticated := preAuthorizeStaticAssets(m.Runtime, r)
@@ -88,6 +88,7 @@ func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http
 		// Inability to find org record spells the end of this request.
 		if err != nil {
 			response.WriteForbiddenError(w)
+			m.Runtime.Log.Error(method, err)
 			return
 		}
 
@@ -103,7 +104,6 @@ func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http
 
 		if org.Domain != dom && org.Domain != dom2 {
 			m.Runtime.Log.Info(fmt.Sprintf("domain mismatch %s vs. %s vs. %s", dom, dom2, org.Domain))
-
 			response.WriteUnauthorizedError(w)
 			return
 		}

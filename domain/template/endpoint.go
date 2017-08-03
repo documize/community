@@ -50,6 +50,7 @@ func (h *Handler) SavedList(w http.ResponseWriter, r *http.Request) {
 	documents, err := h.Store.Document.Templates(ctx)
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -90,12 +91,14 @@ func (h *Handler) SaveAs(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		response.WriteBadRequestError(w, method, "Bad payload")
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
 	err = json.Unmarshal(body, &model)
 	if err != nil {
 		response.WriteBadRequestError(w, method, "unmarshal")
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -108,6 +111,7 @@ func (h *Handler) SaveAs(w http.ResponseWriter, r *http.Request) {
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -115,6 +119,7 @@ func (h *Handler) SaveAs(w http.ResponseWriter, r *http.Request) {
 	doc, err := h.Store.Document.Get(ctx, model.DocumentID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -132,6 +137,7 @@ func (h *Handler) SaveAs(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -142,6 +148,7 @@ func (h *Handler) SaveAs(w http.ResponseWriter, r *http.Request) {
 		meta, err2 := h.Store.Page.GetPageMeta(ctx, p.RefID)
 		if err2 != nil {
 			response.WriteServerError(w, method, err2)
+			h.Runtime.Log.Error(method, err)
 			return
 		}
 
@@ -171,6 +178,7 @@ func (h *Handler) SaveAs(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -180,6 +188,7 @@ func (h *Handler) SaveAs(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			ctx.Transaction.Rollback()
 			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
 			return
 		}
 	}
@@ -190,6 +199,7 @@ func (h *Handler) SaveAs(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			ctx.Transaction.Rollback()
 			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
 			return
 		}
 	}
@@ -202,6 +212,7 @@ func (h *Handler) SaveAs(w http.ResponseWriter, r *http.Request) {
 	doc, err = h.Store.Document.Get(ctx, docID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -230,6 +241,7 @@ func (h *Handler) Use(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		response.WriteBadRequestError(w, method, "Bad payload")
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -259,6 +271,7 @@ func (h *Handler) Use(w http.ResponseWriter, r *http.Request) {
 		}
 		if err != nil {
 			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
 			return
 		}
 
@@ -269,6 +282,7 @@ func (h *Handler) Use(w http.ResponseWriter, r *http.Request) {
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -284,6 +298,7 @@ func (h *Handler) Use(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -292,6 +307,7 @@ func (h *Handler) Use(w http.ResponseWriter, r *http.Request) {
 		if err2 != nil {
 			ctx.Transaction.Rollback()
 			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
 			return
 		}
 
@@ -311,6 +327,7 @@ func (h *Handler) Use(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			ctx.Transaction.Rollback()
 			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
 			return
 		}
 	}
@@ -329,6 +346,7 @@ func (h *Handler) Use(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			ctx.Transaction.Rollback()
 			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
 			return
 		}
 	}

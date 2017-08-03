@@ -18,7 +18,6 @@ import (
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/model/audit"
-	"github.com/pkg/errors"
 )
 
 // Scope provides data access to MySQL.
@@ -37,21 +36,21 @@ func (s Scope) Record(ctx domain.RequestContext, t audit.EventType) {
 
 	tx, err := s.Runtime.Db.Beginx()
 	if err != nil {
-		err = errors.Wrap(err, "start transaction")
+		s.Runtime.Log.Error("transaction", err)
 		return
 	}
 
 	stmt, err := tx.Preparex("INSERT INTO userevent (orgid, userid, eventtype, ip, created) VALUES (?, ?, ?, ?, ?)")
 	if err != nil {
 		tx.Rollback()
-		err = errors.Wrap(err, "prepare insert RecordEvent")
+		s.Runtime.Log.Error("prepare audit insert", err)
 		return
 	}
 
 	_, err = stmt.Exec(e.OrgID, e.UserID, e.Type, e.IP, e.Created)
 	if err != nil {
-		err = errors.Wrap(err, "execute insert RecordEvent")
 		tx.Rollback()
+		s.Runtime.Log.Error("execute audit insert", err)
 		return
 	}
 

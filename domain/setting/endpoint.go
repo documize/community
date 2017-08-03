@@ -49,6 +49,7 @@ func (h *Handler) SMTP(w http.ResponseWriter, r *http.Request) {
 	j, err := json.Marshal(y)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -70,6 +71,7 @@ func (h *Handler) SetSMTP(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -79,6 +81,7 @@ func (h *Handler) SetSMTP(w http.ResponseWriter, r *http.Request) {
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -177,6 +180,7 @@ func (h *Handler) SetLicense(w http.ResponseWriter, r *http.Request) {
 
 // AuthConfig returns installation-wide auth configuration
 func (h *Handler) AuthConfig(w http.ResponseWriter, r *http.Request) {
+	method := "global.auth"
 	ctx := domain.GetRequestContext(r)
 
 	if !ctx.Global {
@@ -187,6 +191,7 @@ func (h *Handler) AuthConfig(w http.ResponseWriter, r *http.Request) {
 	org, err := h.Store.Organization.GetOrganization(ctx, ctx.OrgID)
 	if err != nil {
 		response.WriteForbiddenError(w)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -195,7 +200,7 @@ func (h *Handler) AuthConfig(w http.ResponseWriter, r *http.Request) {
 
 // SetAuthConfig persists installation-wide authentication configuration
 func (h *Handler) SetAuthConfig(w http.ResponseWriter, r *http.Request) {
-	method := "SaveAuthConfig"
+	method := "global.auth.save"
 	ctx := domain.GetRequestContext(r)
 
 	if !ctx.Global {
@@ -215,12 +220,14 @@ func (h *Handler) SetAuthConfig(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &data)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
 	org, err := h.Store.Organization.GetOrganization(ctx, ctx.OrgID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -230,6 +237,7 @@ func (h *Handler) SetAuthConfig(w http.ResponseWriter, r *http.Request) {
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -237,6 +245,7 @@ func (h *Handler) SetAuthConfig(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 

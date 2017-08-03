@@ -61,6 +61,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -68,6 +69,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &space)
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -79,6 +81,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -89,6 +92,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -115,10 +119,12 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	sp, err := h.Store.Space.Get(ctx, id)
 	if err == sql.ErrNoRows {
 		response.WriteNotFoundError(w, method, id)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -131,8 +137,10 @@ func (h *Handler) GetAll(w http.ResponseWriter, r *http.Request) {
 	ctx := domain.GetRequestContext(r)
 
 	sp, err := h.Store.Space.GetAll(ctx)
+
 	if err != nil && err != sql.ErrNoRows {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -151,6 +159,7 @@ func (h *Handler) GetSpaceViewers(w http.ResponseWriter, r *http.Request) {
 	v, err := h.Store.Space.Viewers(ctx)
 	if err != nil && err != sql.ErrNoRows {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -181,6 +190,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -188,11 +198,13 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &sp)
 	if err != nil {
 		response.WriteBadRequestError(w, method, "marshal")
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
 	if len(sp.Name) == 0 {
 		response.WriteMissingDataError(w, method, "name")
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -201,6 +213,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -208,6 +221,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -249,6 +263,7 @@ func (h *Handler) Remove(w http.ResponseWriter, r *http.Request) {
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -256,6 +271,7 @@ func (h *Handler) Remove(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -263,6 +279,7 @@ func (h *Handler) Remove(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -270,6 +287,7 @@ func (h *Handler) Remove(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -277,6 +295,7 @@ func (h *Handler) Remove(w http.ResponseWriter, r *http.Request) {
 	if err != nil && err != sql.ErrNoRows {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -312,6 +331,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -319,6 +339,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -326,6 +347,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -333,6 +355,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	if err != nil && err != sql.ErrNoRows {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -374,6 +397,7 @@ func (h *Handler) SetPermissions(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -381,12 +405,14 @@ func (h *Handler) SetPermissions(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &model)
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -396,6 +422,7 @@ func (h *Handler) SetPermissions(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -411,6 +438,7 @@ func (h *Handler) SetPermissions(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -419,6 +447,7 @@ func (h *Handler) SetPermissions(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -509,6 +538,7 @@ func (h *Handler) SetPermissions(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -557,6 +587,7 @@ func (h *Handler) AcceptInvitation(w http.ResponseWriter, r *http.Request) {
 	org, err := h.Store.Organization.GetOrganizationByDomain(ctx.Subdomain)
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -567,6 +598,7 @@ func (h *Handler) AcceptInvitation(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -574,6 +606,7 @@ func (h *Handler) AcceptInvitation(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &model)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -585,6 +618,7 @@ func (h *Handler) AcceptInvitation(w http.ResponseWriter, r *http.Request) {
 	u, err := h.Store.User.GetBySerial(ctx, model.Serial)
 	if err != nil && err == sql.ErrNoRows {
 		response.WriteDuplicateError(w, method, "user")
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -598,6 +632,7 @@ func (h *Handler) AcceptInvitation(w http.ResponseWriter, r *http.Request) {
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -605,6 +640,7 @@ func (h *Handler) AcceptInvitation(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -614,6 +650,7 @@ func (h *Handler) AcceptInvitation(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -638,6 +675,7 @@ func (h *Handler) Invite(w http.ResponseWriter, r *http.Request) {
 	sp, err := h.Store.Space.Get(ctx, id)
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -650,6 +688,7 @@ func (h *Handler) Invite(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		response.WriteBadRequestError(w, method, "body")
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -657,18 +696,21 @@ func (h *Handler) Invite(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &model)
 	if err != nil {
 		response.WriteBadRequestError(w, method, "json")
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
 	inviter, err := h.Store.User.Get(ctx, ctx.UserID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -677,6 +719,7 @@ func (h *Handler) Invite(w http.ResponseWriter, r *http.Request) {
 		if err != nil && err != sql.ErrNoRows {
 			ctx.Transaction.Rollback()
 			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
 			return
 		}
 
@@ -686,6 +729,7 @@ func (h *Handler) Invite(w http.ResponseWriter, r *http.Request) {
 			if err2 != nil {
 				ctx.Transaction.Rollback()
 				response.WriteServerError(w, method, err)
+				h.Runtime.Log.Error(method, err)
 				return
 			}
 
@@ -711,6 +755,7 @@ func (h *Handler) Invite(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					ctx.Transaction.Rollback()
 					response.WriteServerError(w, method, err)
+					h.Runtime.Log.Error(method, err)
 					return
 				}
 			}
@@ -731,6 +776,7 @@ func (h *Handler) Invite(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				ctx.Transaction.Rollback()
 				response.WriteServerError(w, method, err)
+				h.Runtime.Log.Error(method, err)
 				return
 			}
 
@@ -748,6 +794,7 @@ func (h *Handler) Invite(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					ctx.Transaction.Rollback()
 					response.WriteServerError(w, method, err)
+					h.Runtime.Log.Error(method, err)
 					return
 				}
 
@@ -764,6 +811,7 @@ func (h *Handler) Invite(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			ctx.Transaction.Rollback()
 			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
 			return
 		}
 	}

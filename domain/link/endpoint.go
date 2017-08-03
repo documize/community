@@ -65,13 +65,13 @@ func (h *Handler) GetLinkCandidates(w http.ResponseWriter, r *http.Request) {
 	// We can link to a section within the same document so
 	// let's get all pages for the document and remove "us".
 	pages, err := h.Store.Page.GetPagesWithoutContent(ctx, documentID)
-	if err != nil && err != sql.ErrNoRows {
-		response.WriteServerError(w, method, err)
-		return
-	}
-
 	if len(pages) == 0 {
 		pages = []page.Page{}
+	}
+	if err != nil && err != sql.ErrNoRows {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
 	}
 
 	pc := []link.Candidate{}
@@ -93,13 +93,14 @@ func (h *Handler) GetLinkCandidates(w http.ResponseWriter, r *http.Request) {
 	// We can link to attachment within the same document so
 	// let's get all attachments for the document.
 	files, err := h.Store.Attachment.GetAttachments(ctx, documentID)
-	if err != nil && err != sql.ErrNoRows {
-		response.WriteServerError(w, method, err)
-		return
-	}
-
 	if len(files) == 0 {
 		files = []attachment.Attachment{}
+	}
+
+	if err != nil && err != sql.ErrNoRows {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
 	}
 
 	fc := []link.Candidate{}
@@ -137,12 +138,13 @@ func (h *Handler) SearchLinkCandidates(w http.ResponseWriter, r *http.Request) {
 	keywords := request.Query(r, "keywords")
 	decoded, err := url.QueryUnescape(keywords)
 	if err != nil {
-		h.Runtime.Log.Error("decode query string", err)
+		h.Runtime.Log.Error(method, err)
 	}
 
 	docs, pages, attachments, err := h.Store.Link.SearchCandidates(ctx, decoded)
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 

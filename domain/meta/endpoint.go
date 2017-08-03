@@ -18,7 +18,6 @@ import (
 	"text/template"
 
 	"github.com/documize/community/core/env"
-	"github.com/documize/community/core/log"
 	"github.com/documize/community/core/response"
 	"github.com/documize/community/core/stringutil"
 	"github.com/documize/community/domain"
@@ -75,8 +74,8 @@ func (h *Handler) RobotsTxt(w http.ResponseWriter, r *http.Request) {
 	// default is to deny
 	robots :=
 		`User-agent: *
-Disallow: /
-`
+		Disallow: /
+		`
 
 	if err != nil {
 		h.Runtime.Log.Error(fmt.Sprintf("%s failed to get Organization for domain %s", method, dom), err)
@@ -122,12 +121,12 @@ func (h *Handler) Sitemap(w http.ResponseWriter, r *http.Request) {
 
 	sitemap :=
 		`<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-    {{range .}}<url>
-        <loc>{{ .URL }}</loc>
-        <lastmod>{{ .Date }}</lastmod>
-    </url>{{end}}
-</urlset>`
+		<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+			{{range .}}<url>
+				<loc>{{ .URL }}</loc>
+				<lastmod>{{ .Date }}</lastmod>
+			</url>{{end}}
+		</urlset>`
 
 	var items []sitemapItem
 
@@ -167,7 +166,7 @@ func (h *Handler) Sitemap(w http.ResponseWriter, r *http.Request) {
 
 	buffer := new(bytes.Buffer)
 	t := template.Must(template.New("tmp").Parse(sitemap))
-	log.IfErr(t.Execute(buffer, &items))
+	t.Execute(buffer, &items)
 
 	response.WriteBytes(w, buffer.Bytes())
 }

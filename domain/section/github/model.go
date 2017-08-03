@@ -16,8 +16,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/documize/community/core/log"
-
 	gogithub "github.com/google/go-github/github"
 )
 
@@ -114,7 +112,6 @@ func (c *githubConfig) Clean() {
 		}
 		err := since.UnmarshalText(tt)
 		if err != nil {
-			log.ErrorString("Date unmarshall '" + c.BranchSince + "'->'" + string(tt) + "' error: " + err.Error())
 		} else {
 			c.SincePtr = &since
 		}

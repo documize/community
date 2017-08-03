@@ -64,6 +64,7 @@ func (h *Handler) upload(w http.ResponseWriter, r *http.Request) (string, string
 	_, err = io.Copy(b, filedata)
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return "", "", ""
 	}
 
@@ -71,6 +72,7 @@ func (h *Handler) upload(w http.ResponseWriter, r *http.Request) (string, string
 	newUUID, err := uuid.NewV4()
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return "", "", ""
 	}
 
@@ -79,6 +81,7 @@ func (h *Handler) upload(w http.ResponseWriter, r *http.Request) (string, string
 	err = storageProvider.Upload(job, filename.Filename, b.Bytes())
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return "", "", ""
 	}
 
@@ -102,6 +105,7 @@ func (h *Handler) convert(w http.ResponseWriter, r *http.Request, job, folderID 
 	org, err := h.Store.Organization.GetOrganization(ctx, ctx.OrgID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -112,11 +116,13 @@ func (h *Handler) convert(w http.ResponseWriter, r *http.Request, job, folderID 
 	filename, fileResult, err = storageProvider.Convert(conversion)
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
 	if fileResult.Err != "" {
 		response.WriteServerError(w, method, errors.New(fileResult.Err))
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -129,12 +135,14 @@ func (h *Handler) convert(w http.ResponseWriter, r *http.Request, job, folderID 
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
 	nd, err := processDocument(ctx, h.Store, filename, job, folderID, fileResult)
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 

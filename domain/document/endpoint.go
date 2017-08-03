@@ -58,6 +58,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	}
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -69,6 +70,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -79,7 +81,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 		ActivityType: activity.TypeRead})
 
 	if err != nil {
-		h.Runtime.Log.Error("record user activity", err)
+		h.Runtime.Log.Error(method, err)
 	}
 
 	h.Store.Audit.Record(ctx, audit.EventTypeDocumentView)
@@ -103,6 +105,7 @@ func (h *Handler) Activity(w http.ResponseWriter, r *http.Request) {
 	a, err := h.Store.Activity.GetDocumentActivity(ctx, id)
 	if err != nil && err != sql.ErrNoRows {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -121,13 +124,12 @@ func (h *Handler) DocumentLinks(w http.ResponseWriter, r *http.Request) {
 	}
 
 	l, err := h.Store.Link.GetDocumentOutboundLinks(ctx, id)
-
 	if len(l) == 0 {
 		l = []link.Link{}
 	}
-
 	if err != nil && err != sql.ErrNoRows {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -147,19 +149,20 @@ func (h *Handler) BySpace(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !space.CanViewSpace(ctx, *h.Store, folderID) {
-		h.Runtime.Log.Info("no permission to view space documents")
 		response.WriteForbiddenError(w)
 		return
 	}
 
 	documents, err := h.Store.Document.GetBySpace(ctx, folderID)
-	if err != nil && err != sql.ErrNoRows {
-		response.WriteServerError(w, method, err)
-		return
-	}
 
 	if len(documents) == 0 {
 		documents = []doc.Document{}
+	}
+
+	if err != nil && err != sql.ErrNoRows {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
 	}
 
 	response.WriteJSON(w, documents)
@@ -177,13 +180,15 @@ func (h *Handler) ByTag(w http.ResponseWriter, r *http.Request) {
 	}
 
 	documents, err := h.Store.Document.GetByTag(ctx, tag)
-	if err != nil && err != sql.ErrNoRows {
-		response.WriteServerError(w, method, err)
-		return
-	}
 
 	if len(documents) == 0 {
 		documents = []doc.Document{}
+	}
+
+	if err != nil && err != sql.ErrNoRows {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
 	}
 
 	response.WriteJSON(w, documents)
@@ -215,6 +220,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -222,6 +228,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &d)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -230,6 +237,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -237,6 +245,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -268,12 +277,14 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	doc, err := h.Store.Document.Get(ctx, documentID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -281,6 +292,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -288,6 +300,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	if err != nil && err != sql.ErrNoRows {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -323,7 +336,7 @@ func (h *Handler) SearchDocuments(w http.ResponseWriter, r *http.Request) {
 
 	results, err := h.Store.Search.Documents(ctx, decoded)
 	if err != nil {
-		h.Runtime.Log.Error("search failed", err)
+		h.Runtime.Log.Error(method, err)
 	}
 
 	// Put in slugs for easy UI display of search URL
