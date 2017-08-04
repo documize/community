@@ -159,6 +159,8 @@ func TestDSNWithCustomTLS(t *testing.T) {
 		t.Error(err.Error())
 	} else if cfg.tls.ServerName != name {
 		t.Errorf("did not get the correct ServerName (%s) parsing DSN (%s).", name, tst)
+	} else if tlsCfg.ServerName != "" {
+		t.Errorf("tlsCfg was mutated ServerName (%s) should be empty parsing DSN (%s).", name, tst)
 	}
 
 	DeregisterTLSConfig("utils_test")
@@ -215,6 +217,22 @@ func TestDSNUnsafeCollation(t *testing.T) {
 	_, err = ParseDSN("/dbname?collation=utf8mb4_general_ci&interpolateParams=true")
 	if err != nil {
 		t.Errorf("expected %v, got %v", nil, err)
+	}
+}
+
+func TestParamsAreSorted(t *testing.T) {
+	expected := "/dbname?interpolateParams=true&foobar=baz&quux=loo"
+	dsn := &Config{
+		DBName:            "dbname",
+		InterpolateParams: true,
+		Params: map[string]string{
+			"quux":   "loo",
+			"foobar": "baz",
+		},
+	}
+	actual := dsn.FormatDSN()
+	if actual != expected {
+		t.Errorf("generic Config.Params were not sorted: want %#v, got %#v", expected, actual)
 	}
 }
 
