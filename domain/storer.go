@@ -80,7 +80,7 @@ type UserStorer interface {
 	UpdateUserPassword(ctx RequestContext, userID, salt, password string) (err error)
 	DeactiveUser(ctx RequestContext, userID string) (err error)
 	ForgotUserPassword(ctx RequestContext, email, token string) (err error)
-	CountActiveUsers(ctx RequestContext) (c int)
+	CountActiveUsers() (c int)
 }
 
 // AccountStorer defines required methods for account management

@@ -283,7 +283,7 @@ func (s Scope) ForgotUserPassword(ctx domain.RequestContext, email, token string
 }
 
 // CountActiveUsers returns the number of active users in the system.
-func (s Scope) CountActiveUsers(ctx domain.RequestContext) (c int) {
+func (s Scope) CountActiveUsers() (c int) {
 	row := s.Runtime.Db.QueryRow("SELECT count(*) FROM user u WHERE u.refid IN (SELECT userid FROM account WHERE active=1)")
 
 	err := row.Scan(&c)

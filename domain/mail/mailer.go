@@ -29,13 +29,13 @@ type Mailer struct {
 	Runtime     *env.Runtime
 	Store       *domain.Store
 	Context     domain.RequestContext
-	credentials credentials
+	Credentials Credentials
 }
 
 // InviteNewUser invites someone new providing credentials, explaining the product and stating who is inviting them.
 func (m *Mailer) InviteNewUser(recipient, inviter, url, username, password string) {
 	method := "InviteNewUser"
-	m.loadCredentials()
+	m.LoadCredentials()
 
 	file, err := web.ReadFile("mail/invite-new-user.html")
 	if err != nil {
@@ -53,7 +53,7 @@ func (m *Mailer) InviteNewUser(recipient, inviter, url, username, password strin
 	subject := fmt.Sprintf("%s has invited you to Documize", inviter)
 
 	e := NewEmail()
-	e.From = m.credentials.SMTPsender
+	e.From = m.Credentials.SMTPsender
 	e.To = []string{recipient}
 	e.Subject = subject
 
@@ -85,7 +85,7 @@ func (m *Mailer) InviteNewUser(recipient, inviter, url, username, password strin
 // InviteExistingUser invites a known user to an organization.
 func (m *Mailer) InviteExistingUser(recipient, inviter, url string) {
 	method := "InviteExistingUser"
-	m.loadCredentials()
+	m.LoadCredentials()
 
 	file, err := web.ReadFile("mail/invite-existing-user.html")
 	if err != nil {
@@ -103,7 +103,7 @@ func (m *Mailer) InviteExistingUser(recipient, inviter, url string) {
 	subject := fmt.Sprintf("%s has invited you to their Documize account", inviter)
 
 	e := NewEmail()
-	e.From = m.credentials.SMTPsender
+	e.From = m.Credentials.SMTPsender
 	e.To = []string{recipient}
 	e.Subject = subject
 
@@ -131,7 +131,7 @@ func (m *Mailer) InviteExistingUser(recipient, inviter, url string) {
 // PasswordReset sends a reset email with an embedded token.
 func (m *Mailer) PasswordReset(recipient, url string) {
 	method := "PasswordReset"
-	m.loadCredentials()
+	m.LoadCredentials()
 
 	file, err := web.ReadFile("mail/password-reset.html")
 	if err != nil {
@@ -144,7 +144,7 @@ func (m *Mailer) PasswordReset(recipient, url string) {
 	subject := "Documize password reset request"
 
 	e := NewEmail()
-	e.From = m.credentials.SMTPsender //e.g. "Documize <hello@documize.com>"
+	e.From = m.Credentials.SMTPsender //e.g. "Documize <hello@documize.com>"
 	e.To = []string{recipient}
 	e.Subject = subject
 
@@ -170,7 +170,7 @@ func (m *Mailer) PasswordReset(recipient, url string) {
 // ShareFolderExistingUser provides an existing user with a link to a newly shared folder.
 func (m *Mailer) ShareFolderExistingUser(recipient, inviter, url, folder, intro string) {
 	method := "ShareFolderExistingUser"
-	m.loadCredentials()
+	m.LoadCredentials()
 
 	file, err := web.ReadFile("mail/share-folder-existing-user.html")
 	if err != nil {
@@ -188,7 +188,7 @@ func (m *Mailer) ShareFolderExistingUser(recipient, inviter, url, folder, intro 
 	subject := fmt.Sprintf("%s has shared %s with you", inviter, folder)
 
 	e := NewEmail()
-	e.From = m.credentials.SMTPsender
+	e.From = m.Credentials.SMTPsender
 	e.To = []string{recipient}
 	e.Subject = subject
 
@@ -217,10 +217,10 @@ func (m *Mailer) ShareFolderExistingUser(recipient, inviter, url, folder, intro 
 	}
 }
 
-// ShareFolderNewUser invites new user providing credentials, explaining the product and stating who is inviting them.
+// ShareFolderNewUser invites new user providing Credentials, explaining the product and stating who is inviting them.
 func (m *Mailer) ShareFolderNewUser(recipient, inviter, url, folder, invitationMessage string) {
 	method := "ShareFolderNewUser"
-	m.loadCredentials()
+	m.LoadCredentials()
 
 	file, err := web.ReadFile("mail/share-folder-new-user.html")
 	if err != nil {
@@ -238,7 +238,7 @@ func (m *Mailer) ShareFolderNewUser(recipient, inviter, url, folder, invitationM
 	subject := fmt.Sprintf("%s has shared %s with you on Documize", inviter, folder)
 
 	e := NewEmail()
-	e.From = m.credentials.SMTPsender
+	e.From = m.Credentials.SMTPsender
 	e.To = []string{recipient}
 	e.Subject = subject
 
@@ -267,7 +267,8 @@ func (m *Mailer) ShareFolderNewUser(recipient, inviter, url, folder, invitationM
 	}
 }
 
-type credentials struct {
+// Credentials holds SMTP endpoint and authentication methods
+type Credentials struct {
 	SMTPuserid   string
 	SMTPpassword string
 	SMTPhost     string
@@ -277,20 +278,21 @@ type credentials struct {
 
 // GetAuth to return SMTP authentication details
 func (m *Mailer) GetAuth() smtp.Auth {
-	a := smtp.PlainAuth("", m.credentials.SMTPuserid, m.credentials.SMTPpassword, m.credentials.SMTPhost)
+	a := smtp.PlainAuth("", m.Credentials.SMTPuserid, m.Credentials.SMTPpassword, m.Credentials.SMTPhost)
 	return a
 }
 
 // GetHost to return SMTP host details
 func (m *Mailer) GetHost() string {
-	h := m.credentials.SMTPhost + ":" + m.credentials.SMTPport
+	h := m.Credentials.SMTPhost + ":" + m.Credentials.SMTPport
 	return h
 }
 
-func (m *Mailer) loadCredentials() {
-	m.credentials.SMTPuserid = m.Store.Setting.Get("SMTP", "userid")
-	m.credentials.SMTPpassword = m.Store.Setting.Get("SMTP", "password")
-	m.credentials.SMTPhost = m.Store.Setting.Get("SMTP", "host")
-	m.credentials.SMTPport = m.Store.Setting.Get("SMTP", "port")
-	m.credentials.SMTPsender = m.Store.Setting.Get("SMTP", "sender")
+// LoadCredentials loads up SMTP details from database
+func (m *Mailer) LoadCredentials() {
+	m.Credentials.SMTPuserid = m.Store.Setting.Get("SMTP", "userid")
+	m.Credentials.SMTPpassword = m.Store.Setting.Get("SMTP", "password")
+	m.Credentials.SMTPhost = m.Store.Setting.Get("SMTP", "host")
+	m.Credentials.SMTPport = m.Store.Setting.Get("SMTP", "port")
+	m.Credentials.SMTPsender = m.Store.Setting.Get("SMTP", "sender")
 }
