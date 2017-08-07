@@ -65,15 +65,15 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var space = space.Space{}
-	err = json.Unmarshal(body, &space)
+	var sp = space.Space{}
+	err = json.Unmarshal(body, &sp)
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
 		return
 	}
 
-	if len(space.Name) == 0 {
+	if len(sp.Name) == 0 {
 		response.WriteMissingDataError(w, method, "name")
 		return
 	}
@@ -85,10 +85,12 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	space.RefID = uniqueid.Generate()
-	space.OrgID = ctx.OrgID
+	sp.RefID = uniqueid.Generate()
+	sp.OrgID = ctx.OrgID
+	sp.Type = space.ScopePrivate
+	sp.UserID = ctx.UserID
 
-	err = h.Store.Space.Add(ctx, space)
+	err = h.Store.Space.Add(ctx, sp)
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
@@ -96,13 +98,29 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.Store.Audit.Record(ctx, audit.EventTypeSpaceAdd)
+	role := space.Role{}
+	role.LabelID = sp.RefID
+	role.OrgID = sp.OrgID
+	role.UserID = ctx.UserID
+	role.CanEdit = true
+	role.CanView = true
+	role.RefID = uniqueid.Generate()
+
+	err = h.Store.Space.AddRole(ctx, role)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
 
 	ctx.Transaction.Commit()
 
-	space, _ = h.Store.Space.Get(ctx, space.RefID)
+	h.Store.Audit.Record(ctx, audit.EventTypeSpaceAdd)
 
-	response.WriteJSON(w, space)
+	sp, _ = h.Store.Space.Get(ctx, sp.RefID)
+
+	response.WriteJSON(w, sp)
 }
 
 // Get returns the requested space.

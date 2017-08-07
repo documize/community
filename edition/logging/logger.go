@@ -13,8 +13,11 @@
 package logging
 
 import (
+	"bytes"
+	"fmt"
 	"log"
 	"os"
+	"runtime"
 
 	"github.com/documize/community/core/env"
 	"github.com/jmoiron/sqlx"
@@ -35,6 +38,14 @@ func (l Logger) Info(message string) {
 func (l Logger) Error(message string, err error) {
 	l.log.Println(message)
 	l.log.Println(err)
+
+	stack := make([]byte, 4096)
+	runtime.Stack(stack, false)
+	if idx := bytes.IndexByte(stack, 0); idx > 0 && idx < len(stack) {
+		stack = stack[:idx] // remove trailing nulls from stack dump
+	}
+
+	l.log.Println(fmt.Sprintf("%s", stack))
 }
 
 // SetDB associates database connection with given logger.

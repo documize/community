@@ -44,7 +44,6 @@ type RequestContext struct {
 //GetAppURL returns full HTTP url for the app
 func (c *RequestContext) GetAppURL(endpoint string) string {
 	scheme := "http://"
-
 	if c.SSL {
 		scheme = "https://"
 	}
@@ -58,17 +57,12 @@ type key string
 const DocumizeContextKey key = "documize context key"
 
 // GetRequestContext returns RequestContext from context.Context
-func GetRequestContext(r *http.Request) RequestContext {
-	return r.Context().Value(DocumizeContextKey).(RequestContext)
+func GetRequestContext(r *http.Request) (ctx RequestContext) {
+	c := r.Context()
+	if c != nil && c.Value(DocumizeContextKey) != nil {
+		ctx = c.Value(DocumizeContextKey).(RequestContext)
+		return
+	}
+
+	return RequestContext{}
 }
-
-// // Scope provides data persistence methods with runtime and request context.
-// type Scope struct {
-// 	Runtime *env.Runtime
-// 	Context RequestContext
-// }
-
-// // NewScope returns request scoped user context and store context for persistence logic.
-// func NewScope(rt *env.Runtime, r *http.Request) Scope {
-// 	return Scope{Runtime: rt, Context: GetRequestContext(r)}
-// }

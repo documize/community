@@ -278,7 +278,7 @@ func (s Scope) Documents(ctx domain.RequestContext, keywords string) (results []
 		keywords = strings.Replace(keywords, "  ", "", -1)
 	}
 
-	keywords = strings.TrimSpace(keywords)
+	keywords = strings.ToLower(strings.TrimSpace(keywords))
 
 	if len(keywords) > 0 {
 		keywordQuery = "AND MATCH(pagetitle,body) AGAINST('" + keywords + "' in boolean mode)"

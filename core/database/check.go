@@ -92,7 +92,7 @@ func Check(runtime *env.Runtime) bool {
 	}
 
 	{ // check the MySQL character set and collation
-		if charset != "utf8" {
+		if charset != "utf8" && charset != "utf8mb4" {
 			runtime.Log.Error("MySQL character set not utf8:", errors.New(charset))
 			web.SiteInfo.Issue = "MySQL character set not utf8: " + charset
 			runtime.Flags.SiteMode = env.SiteModeBadDB

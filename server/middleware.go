@@ -68,9 +68,11 @@ func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http
 	method := "middleware.auth"
 
 	// Let certain requests pass straight through
-	authenticated := preAuthorizeStaticAssets(m.Runtime, r)
-
-	if !authenticated {
+	authenticated, ctx := m.preAuthorizeStaticAssets(m.Runtime, r)
+	if authenticated {
+		ctx2 := context.WithValue(r.Context(), domain.DocumizeContextKey, ctx)
+		r = r.WithContext(ctx2)
+	} else {
 		token := auth.FindJWT(r)
 		rc, _, tokenErr := auth.DecodeJWT(m.Runtime, token)
 
@@ -195,7 +197,9 @@ func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http
 
 // Certain assets/URL do not require authentication.
 // Just stops the log files being clogged up with failed auth errors.
-func preAuthorizeStaticAssets(rt *env.Runtime, r *http.Request) bool {
+func (m *middleware) preAuthorizeStaticAssets(rt *env.Runtime, r *http.Request) (auth bool, ctx domain.RequestContext) {
+	ctx = domain.RequestContext{}
+
 	if strings.ToLower(r.URL.Path) == "/" ||
 		strings.ToLower(r.URL.Path) == "/validate" ||
 		strings.ToLower(r.URL.Path) == "/favicon.ico" ||
@@ -204,8 +208,27 @@ func preAuthorizeStaticAssets(rt *env.Runtime, r *http.Request) bool {
 		strings.HasPrefix(strings.ToLower(r.URL.Path), "/api/public/") ||
 		((rt.Flags.SiteMode == env.SiteModeSetup) && (strings.ToLower(r.URL.Path) == "/api/setup")) {
 
-		return true
+		return true, ctx
 	}
 
-	return false
+	if strings.HasPrefix(strings.ToLower(r.URL.Path), "/api/public/") ||
+		((rt.Flags.SiteMode == env.SiteModeSetup) && (strings.ToLower(r.URL.Path) == "/api/setup")) {
+
+		dom := organization.GetRequestSubdomain(r)
+		dom = m.Store.Organization.CheckDomain(ctx, dom)
+
+		org, _ := m.Store.Organization.GetOrganizationByDomain(dom)
+		ctx.Subdomain = organization.GetSubdomainFromHost(r)
+		ctx.AllowAnonymousAccess = org.AllowAnonymousAccess
+		ctx.OrgName = org.Title
+		ctx.Administrator = false
+		ctx.Editor = false
+		ctx.Global = false
+		ctx.AppURL = r.Host
+		ctx.SSL = r.TLS != nil
+
+		return true, ctx
+	}
+
+	return false, ctx
 }

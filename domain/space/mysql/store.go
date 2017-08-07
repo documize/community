@@ -72,7 +72,7 @@ func (s Scope) Get(ctx domain.RequestContext, id string) (sp space.Space, err er
 	return
 }
 
-// PublicSpaces returns folders that anyone can see.
+// PublicSpaces returns spaces that anyone can see.
 func (s Scope) PublicSpaces(ctx domain.RequestContext, orgID string) (sp []space.Space, err error) {
 	sql := "SELECT id,refid,label as name,orgid,userid,type,created,revised FROM label a where orgid=? AND type=1"
 
@@ -86,18 +86,18 @@ func (s Scope) PublicSpaces(ctx domain.RequestContext, orgID string) (sp []space
 	return
 }
 
-// GetAll returns folders that the user can see.
-// Also handles which folders can be seen by anonymous users.
+// GetAll returns spaces that the user can see.
+// Also handles which spaces can be seen by anonymous users.
 func (s Scope) GetAll(ctx domain.RequestContext) (sp []space.Space, err error) {
 	sql := `
-(SELECT id,refid,label as name,orgid,userid,type,created,revised from label WHERE orgid=? AND type=2 AND userid=?)
-UNION ALL
-(SELECT id,refid,label as name,orgid,userid,type,created,revised FROM label a where orgid=? AND type=1 AND refid in
-	(SELECT labelid from labelrole WHERE orgid=? AND userid='' AND (canedit=1 OR canview=1)))
-UNION ALL
-(SELECT id,refid,label as name,orgid,userid,type,created,revised FROM label a where orgid=? AND type=3 AND refid in
-	(SELECT labelid from labelrole WHERE orgid=? AND userid=? AND (canedit=1 OR canview=1)))
-ORDER BY name`
+	(SELECT id,refid,label as name,orgid,userid,type,created,revised from label WHERE orgid=? AND type=2 AND userid=?)
+	UNION ALL
+	(SELECT id,refid,label as name,orgid,userid,type,created,revised FROM label a where orgid=? AND type=1 AND refid in
+		(SELECT labelid from labelrole WHERE orgid=? AND userid='' AND (canedit=1 OR canview=1)))
+	UNION ALL
+	(SELECT id,refid,label as name,orgid,userid,type,created,revised FROM label a where orgid=? AND type=3 AND refid in
+		(SELECT labelid from labelrole WHERE orgid=? AND userid=? AND (canedit=1 OR canview=1)))
+	ORDER BY name`
 
 	err = s.Runtime.Db.Select(&sp, sql,
 		ctx.OrgID,
@@ -156,22 +156,22 @@ func (s Scope) ChangeOwner(ctx domain.RequestContext, currentOwner, newOwner str
 	return
 }
 
-// Viewers returns the list of people who can see shared folders.
+// Viewers returns the list of people who can see shared spaces.
 func (s Scope) Viewers(ctx domain.RequestContext) (v []space.Viewer, err error) {
 	sql := `
-SELECT a.userid,
-	COALESCE(u.firstname, '') as firstname,
-	COALESCE(u.lastname, '') as lastname,
-	COALESCE(u.email, '') as email,
-	a.labelid,
-	b.label as name,
-	b.type
-FROM labelrole a
-LEFT JOIN label b ON b.refid=a.labelid
-LEFT JOIN user u ON u.refid=a.userid
-WHERE a.orgid=? AND b.type != 2
-GROUP BY a.labelid,a.userid
-ORDER BY u.firstname,u.lastname`
+	SELECT a.userid,
+		COALESCE(u.firstname, '') as firstname,
+		COALESCE(u.lastname, '') as lastname,
+		COALESCE(u.email, '') as email,
+		a.labelid,
+		b.label as name,
+		b.type
+	FROM labelrole a
+	LEFT JOIN label b ON b.refid=a.labelid
+	LEFT JOIN user u ON u.refid=a.userid
+	WHERE a.orgid=? AND b.type != 2
+	GROUP BY a.labelid,a.userid
+	ORDER BY u.firstname,u.lastname`
 
 	err = s.Runtime.Db.Select(&v, sql, ctx.OrgID)
 
