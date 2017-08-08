@@ -748,7 +748,9 @@ func (h *Handler) GetMeta(w http.ResponseWriter, r *http.Request) {
 	meta, err := h.Store.Page.GetPageMeta(ctx, pageID)
 	if err == sql.ErrNoRows {
 		response.WriteNotFoundError(w, method, pageID)
-		h.Runtime.Log.Error(method, err)
+		h.Runtime.Log.Info(method + " no record")
+		meta = page.Meta{}
+		response.WriteJSON(w, meta)
 		return
 	}
 	if err != nil {

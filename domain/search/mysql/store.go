@@ -278,7 +278,8 @@ func (s Scope) Documents(ctx domain.RequestContext, keywords string) (results []
 		keywords = strings.Replace(keywords, "  ", "", -1)
 	}
 
-	keywords = strings.ToLower(strings.TrimSpace(keywords))
+	keywords = strings.TrimSpace(keywords)
+	// keywords = strings.ToLower(keywords)
 
 	if len(keywords) > 0 {
 		keywordQuery = "AND MATCH(pagetitle,body) AGAINST('" + keywords + "' in boolean mode)"
@@ -292,8 +293,6 @@ func (s Scope) Documents(ctx domain.RequestContext, keywords string) (results []
 		(SELECT refid from label WHERE orgid=? AND type=2 AND userid=?
     	UNION ALL SELECT refid FROM label a where orgid=? AND type=1 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid='' AND (canedit=1 OR canview=1))
 		UNION ALL SELECT refid FROM label a where orgid=? AND type=3 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid=? AND (canedit=1 OR canview=1))) ` + keywordQuery
-	// AND MATCH(pagetitle,body)
-	//  		AGAINST('` + keywords + "' in boolean mode)"
 
 	err = s.Runtime.Db.Select(&results,
 		sql,
