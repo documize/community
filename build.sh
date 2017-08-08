@@ -17,6 +17,7 @@ cp -r gui/dist-prod/tinymce embed/bindata/public/tinymce
 cp -r gui/dist-prod/sections embed/bindata/public/sections
 cp gui/dist-prod/*.* embed/bindata
 cp gui/dist-prod/favicon.ico embed/bindata/public
+cp gui/dist-prod/manifest.json embed/bindata/public
 rm -rf embed/bindata/mail
 mkdir -p embed/bindata/mail
 cp domain/mail/*.html embed/bindata/mail

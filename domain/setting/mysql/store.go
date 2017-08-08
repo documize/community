@@ -13,6 +13,7 @@ package mysql
 
 import (
 	"bytes"
+	"database/sql"
 	"fmt"
 
 	"github.com/documize/community/core/env"
@@ -85,10 +86,10 @@ func (s Scope) GetUser(orgID, userID, area, path string) (value string) {
 		path = "." + path
 	}
 
-	sql := "SELECT JSON_EXTRACT(`config`,'$" + path + "') FROM `userconfig` WHERE `key` = '" + area +
+	qry := "SELECT JSON_EXTRACT(`config`,'$" + path + "') FROM `userconfig` WHERE `key` = '" + area +
 		"' AND `orgid` = '" + orgID + "' AND `userid` = '" + userID + "';"
 
-	stmt, err := s.Runtime.Db.Preparex(sql)
+	stmt, err := s.Runtime.Db.Preparex(qry)
 	defer streamutil.Close(stmt)
 
 	if err != nil {
@@ -98,7 +99,7 @@ func (s Scope) GetUser(orgID, userID, area, path string) (value string) {
 	var item = make([]uint8, 0)
 
 	err = stmt.Get(&item)
-	if err != nil {
+	if err != nil && err != sql.ErrNoRows {
 		s.Runtime.Log.Error(fmt.Sprintf("setting.GetUser for user %s %s %s", userID, area, path), err)
 		return ""
 	}
