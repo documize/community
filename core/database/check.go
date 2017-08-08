@@ -22,11 +22,6 @@ import (
 	"github.com/documize/community/server/web"
 )
 
-// sql variantsa
-const sqlVariantMySQL string = "MySQL"
-const sqlVariantPercona string = "Percona"
-const sqlVariantMariaDB string = "MariaDB"
-
 var dbCheckOK bool // default false
 
 // Check that the database is configured correctly and that all the required tables exist.
@@ -66,8 +61,8 @@ func Check(runtime *env.Runtime) bool {
 	// Get SQL variant as this affects minimum version checking logic.
 	// MySQL and Percona share same version scheme (e..g 5.7.10).
 	// MariaDB starts at 10.2.x
-	sqlVariant := GetSQLVariant(dbComment)
-	runtime.Log.Info("Database checks: SQL variant " + sqlVariant)
+	runtime.DbVariant = GetSQLVariant(dbComment)
+	runtime.Log.Info(fmt.Sprintf("Database checks: SQL variant %v", runtime.DbVariant))
 	runtime.Log.Info("Database checks: SQL version " + version)
 
 	verNums, err := GetSQLVersion(version)
@@ -77,7 +72,7 @@ func Check(runtime *env.Runtime) bool {
 
 	// Check minimum MySQL version as we need JSON column type.
 	verInts := []int{5, 7, 10} // Minimum MySQL version
-	if sqlVariant == sqlVariantMariaDB {
+	if runtime.DbVariant == env.DBVariantMariaDB {
 		verInts = []int{10, 2, 0} // Minimum MariaDB version
 	}
 
@@ -93,8 +88,8 @@ func Check(runtime *env.Runtime) bool {
 
 	{ // check the MySQL character set and collation
 		if charset != "utf8" && charset != "utf8mb4" {
-			runtime.Log.Error("MySQL character set not utf8:", errors.New(charset))
-			web.SiteInfo.Issue = "MySQL character set not utf8: " + charset
+			runtime.Log.Error("MySQL character set not utf8/utf8mb4:", errors.New(charset))
+			web.SiteInfo.Issue = "MySQL character set not utf8/utf8mb4: " + charset
 			runtime.Flags.SiteMode = env.SiteModeBadDB
 			return false
 		}
@@ -147,15 +142,15 @@ func Check(runtime *env.Runtime) bool {
 }
 
 // GetSQLVariant uses database value form @@version_comment to deduce MySQL variant.
-func GetSQLVariant(vc string) string {
+func GetSQLVariant(vc string) env.DbVariant {
 	vc = strings.ToLower(vc)
 
 	if strings.Contains(vc, "mariadb") {
-		return sqlVariantMariaDB
+		return env.DBVariantMariaDB
 	} else if strings.Contains(vc, "percona") {
-		return sqlVariantPercona
+		return env.DBVariantPercona
 	} else if strings.Contains(vc, "mysql") {
-		return sqlVariantMySQL
+		return env.DbVariantMySQL
 	}
 
 	return "UNKNOWN"

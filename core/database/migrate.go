@@ -78,7 +78,7 @@ func (m migrationsT) migrate(runtime *env.Runtime, tx *sqlx.Tx) error {
 			return err
 		}
 
-		err = processSQLfile(tx, buf)
+		err = processSQLfile(tx, runtime.DbVariant, buf)
 		if err != nil {
 			return err
 		}
@@ -247,10 +247,15 @@ func Migrate(runtime *env.Runtime, ConfigTableExists bool) error {
 	return migrateEnd(runtime, tx, nil, amLeader)
 }
 
-func processSQLfile(tx *sqlx.Tx, buf []byte) error {
+func processSQLfile(tx *sqlx.Tx, v env.DbVariant, buf []byte) error {
 	stmts := getStatements(buf)
 
 	for _, stmt := range stmts {
+		// MariaDB has no specific JSON column type (but has JSON queries)
+		if v == env.DBVariantMariaDB {
+			stmt = strings.Replace(stmt, "` JSON", "` TEXT", -1)
+		}
+
 		_, err := tx.Exec(stmt)
 		if err != nil {
 			return err

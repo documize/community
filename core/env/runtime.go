@@ -17,10 +17,11 @@ import "github.com/jmoiron/sqlx"
 // Runtime provides access to database, logger and other server-level scoped objects.
 // Use Context for per-request values.
 type Runtime struct {
-	Flags   Flags
-	Db      *sqlx.DB
-	Log     Logger
-	Product ProdInfo
+	Flags     Flags
+	Db        *sqlx.DB
+	DbVariant DbVariant
+	Log       Logger
+	Product   ProdInfo
 }
 
 const (
@@ -32,4 +33,16 @@ const (
 	SiteModeSetup = "2"
 	// SiteModeBadDB redirects to db-error.html page
 	SiteModeBadDB = "3"
+)
+
+// DbVariant details SQL database variant
+type DbVariant string
+
+const (
+	// DbVariantMySQL is MySQL
+	DbVariantMySQL DbVariant = "MySQL"
+	// DBVariantPercona is Percona
+	DBVariantPercona DbVariant = "Percona"
+	// DBVariantMariaDB is MariaDB
+	DBVariantMariaDB DbVariant = "MariaDB"
 )
