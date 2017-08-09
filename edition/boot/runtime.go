@@ -72,8 +72,6 @@ func InitRuntime(r *env.Runtime, s *domain.Store) bool {
 				r.Log.Error("unable to run database migration", err)
 				return false
 			}
-		} else {
-			r.Log.Info("going into setup mode to prepare new database")
 		}
 	}
 

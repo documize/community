@@ -73,7 +73,7 @@ func Check(runtime *env.Runtime) bool {
 	// Check minimum MySQL version as we need JSON column type.
 	verInts := []int{5, 7, 10} // Minimum MySQL version
 	if runtime.DbVariant == env.DBVariantMariaDB {
-		verInts = []int{10, 2, 0} // Minimum MariaDB version
+		verInts = []int{10, 3, 0} // Minimum MariaDB version
 	}
 
 	for k, v := range verInts {

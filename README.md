@@ -20,7 +20,7 @@ v1.51.0
 
 - EmberJS (v2.14.0)
 - Go (v1.8.3)
-- MySQL (v5.7.10+) or Percona (v5.7.16-10+)
+- MySQL (v5.7.10+) or Percona (v5.7.16-10+) or MariaDB (10.3.0+)
 
 ## Documentation
 

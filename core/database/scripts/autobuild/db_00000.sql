@@ -5,19 +5,19 @@ DROP TABLE IF EXISTS `user`;
 CREATE TABLE IF NOT EXISTS `user` (
 	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
 	`refid` CHAR(16) NOT NULL COLLATE utf8_bin,
-	`firstname` NVARCHAR(500) NOT NULL,
-	`lastname` NVARCHAR(500) NOT NULL,
-	`email` NVARCHAR(250) NOT NULL UNIQUE,
-	`initials` NVARCHAR(10) NOT NULL DEFAULT "",
-	`password` NVARCHAR(500) NOT NULL DEFAULT "",
-	`salt` NVARCHAR(100) NOT NULL DEFAULT "",
-	`reset` NVARCHAR(100) NOT NULL DEFAULT "",
+	`firstname` VARCHAR(500) NOT NULL,
+	`lastname` VARCHAR(500) NOT NULL,
+	`email` VARCHAR(250) NOT NULL UNIQUE,
+	`initials` VARCHAR(10) NOT NULL DEFAULT "",
+	`password` VARCHAR(500) NOT NULL DEFAULT "",
+	`salt` VARCHAR(100) NOT NULL DEFAULT "",
+	`reset` VARCHAR(100) NOT NULL DEFAULT "",
 	`active` BOOL NOT NULL DEFAULT 1,
 	`created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	`revised` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT pk_refid PRIMARY KEY (refid),
 	UNIQUE INDEX `idx_user_id` (`id` ASC))
-DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci
+DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin
 ENGINE = InnoDB;
 
 DROP TABLE IF EXISTS `audit`;
@@ -28,11 +28,11 @@ CREATE TABLE IF NOT EXISTS `audit` (
 	`userid` CHAR(16) NOT NULL COLLATE utf8_bin,
 	`documentid` CHAR(16) NOT NULL DEFAULT "" COLLATE utf8_bin,
 	`pageid` CHAR(16) NOT NULL DEFAULT "" COLLATE utf8_bin,
-	`action` NVARCHAR(200) NOT NULL DEFAULT "",
+	`action` VARCHAR(200) NOT NULL DEFAULT "",
 	`created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	UNIQUE INDEX `idx_audit_id` (`id` ASC),
 	INDEX `idx_orgid_url` (`orgid`))
-DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci
+DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin
 ENGINE = InnoDB;
 
 DROP TABLE IF EXISTS `organization`;
@@ -40,15 +40,15 @@ DROP TABLE IF EXISTS `organization`;
 CREATE TABLE IF NOT EXISTS `organization` (
 	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
 	`refid` CHAR(16) NOT NULL COLLATE utf8_bin,
-	`company` NVARCHAR(500) NOT NULL,
-	`title` NVARCHAR(500) NOT NULL,
-	`message` NVARCHAR(500) NOT NULL,
-	`url` NVARCHAR(200) NOT NULL DEFAULT "",
-	`domain` NVARCHAR(200) NOT NULL DEFAULT "",
-	`email` NVARCHAR(500) NOT NULL DEFAULT "",
+	`company` VARCHAR(500) NOT NULL,
+	`title` VARCHAR(500) NOT NULL,
+	`message` VARCHAR(500) NOT NULL,
+	`url` VARCHAR(200) NOT NULL DEFAULT "",
+	`domain` VARCHAR(200) NOT NULL DEFAULT "",
+	`email` VARCHAR(500) NOT NULL DEFAULT "",
 	`allowanonymousaccess` BOOL NOT NULL DEFAULT 0,
 	`verified` BOOL NOT NULL DEFAULT 0,
-	`serial` NVARCHAR(50) NOT NULL DEFAULT "",
+	`serial` VARCHAR(50) NOT NULL DEFAULT "",
 	`active` BOOL NOT NULL DEFAULT 1,
 	`created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	`revised` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS `organization` (
 	UNIQUE INDEX `idx_organization_id` (`id` ASC),
 	INDEX `idx_organization_url` (`url`),
 	INDEX `idx_organization_domain` (`domain`))
-DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci
+DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin
 ENGINE = InnoDB;
 
 DROP TABLE IF EXISTS `account`;
@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS `account` (
 	UNIQUE INDEX `idx_account_id` (`id` ASC),
 	INDEX `idx_account_userid` (`userid` ASC),
 	INDEX `idx_account_orgid` (`orgid` ASC))
-DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci
+DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin
 ENGINE = InnoDB;
 
 DROP TABLE IF EXISTS `label`;
@@ -82,7 +82,7 @@ DROP TABLE IF EXISTS `label`;
 CREATE TABLE IF NOT EXISTS `label` (
 	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
 	`refid` CHAR(16) NOT NULL COLLATE utf8_bin,
-	`label` NVARCHAR(255) NOT NULL,
+	`label` VARCHAR(255) NOT NULL,
 	`orgid` CHAR(16) NOT NULL COLLATE utf8_bin,
 	`userid` CHAR(16) NOT NULL DEFAULT "" COLLATE utf8_bin,
    	`type` INT NOT NULL DEFAULT 1,
@@ -92,7 +92,7 @@ CREATE TABLE IF NOT EXISTS `label` (
 	UNIQUE INDEX `idx_label_id` (`id` ASC),
 	INDEX `idx_label_userid` (`userid` ASC),
 	INDEX `idx_label_orgid` (`orgid` ASC))
-DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci
+DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin
 ENGINE = InnoDB;
 
 DROP TABLE IF EXISTS `labelrole`;
@@ -112,7 +112,7 @@ CREATE TABLE IF NOT EXISTS `labelrole` (
 	INDEX `idx_labelrole_userid` (`userid` ASC),
     INDEX `idx_labelrole_labelid` (`labelid` ASC),
 	INDEX `idx_labelrole_orgid` (`orgid` ASC))
-DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci
+DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin
 ENGINE = InnoDB;
 
 DROP TABLE IF EXISTS `document`;
@@ -124,11 +124,11 @@ CREATE TABLE IF NOT EXISTS `document` (
 	`labelid` CHAR(16) NOT NULL COLLATE utf8_bin,
 	`userid` CHAR(16) NOT NULL COLLATE utf8_bin,
 	`job` CHAR(36) NOT NULL,
-	`location` NVARCHAR(2000) NOT NULL,
-	`title` NVARCHAR(2000) NOT NULL,
-	`excerpt` NVARCHAR(2000) NOT NULL,
-	`slug` NVARCHAR(2000) NOT NULL,
-	`tags` NVARCHAR(1000) NOT NULL DEFAULT '',
+	`location` VARCHAR(2000) NOT NULL,
+	`title` VARCHAR(2000) NOT NULL,
+	`excerpt` VARCHAR(2000) NOT NULL,
+	`slug` VARCHAR(2000) NOT NULL,
+	`tags` VARCHAR(1000) NOT NULL DEFAULT '',
 	`template` BOOL NOT NULL DEFAULT 0,
 	`created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	`revised` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -136,7 +136,7 @@ CREATE TABLE IF NOT EXISTS `document` (
 	UNIQUE INDEX `idx_document_id` (`id` ASC),
 	INDEX `idx_document_orgid` (`orgid` ASC),
 	INDEX `idx_document_labelid` (`labelid` ASC))
-DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci
+DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin
 ENGINE = InnoDB;
 
 DROP TABLE IF EXISTS `page`;
@@ -150,7 +150,7 @@ CREATE TABLE IF NOT EXISTS `page` (
 	`contenttype` CHAR(20) NOT NULL DEFAULT 'wysiwyg',
 	`level` INT UNSIGNED NOT NULL,
 	`sequence` DOUBLE NOT NULL,
-	`title` NVARCHAR(2000) NOT NULL,
+	`title` VARCHAR(2000) NOT NULL,
 	`body` LONGTEXT,
 	`revisions` INT UNSIGNED NOT NULL,
 	`created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -159,7 +159,7 @@ CREATE TABLE IF NOT EXISTS `page` (
 	UNIQUE INDEX `idx_page_id` (`id` ASC),
 	INDEX `idx_page_orgid` (`orgid` ASC),
 	INDEX `idx_page_documentid` (`documentid` ASC))
-DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci
+DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin
 ENGINE =  InnoDB;
 
 DROP TABLE IF EXISTS `pagemeta`;
@@ -180,7 +180,7 @@ CREATE TABLE IF NOT EXISTS `pagemeta` (
 	INDEX `idx_pagemeta_pageid` (`pageid` ASC),
 	INDEX `idx_pagemeta_orgid` (`orgid` ASC),
 	INDEX `idx_pagemeta_documentid` (`documentid` ASC))
-DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci
+DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin
 ENGINE =  InnoDB;
 
 DROP TABLE IF EXISTS `attachment`;
@@ -192,7 +192,7 @@ CREATE TABLE IF NOT EXISTS `attachment` (
 	`documentid` CHAR(16) NOT NULL COLLATE utf8_bin,
 	`job` CHAR(36) NOT NULL,
 	`fileid` CHAR(10) NOT NULL,
-	`filename` NVARCHAR(255) NOT NULL,
+	`filename` VARCHAR(255) NOT NULL,
 	`data` LONGBLOB,
 	`extension` CHAR(6) NOT NULL,
 	`created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -202,7 +202,7 @@ CREATE TABLE IF NOT EXISTS `attachment` (
 	INDEX `idx_attachment_orgid` (`orgid` ASC),
 	INDEX `idx_attachment_documentid` (`documentid` ASC),
 	INDEX `idx_attachment_job_and_fileid` (`job`,`fileid` ASC))
-DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci
+DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin
 ENGINE =  InnoDB;
 
 DROP TABLE IF EXISTS `search`;
@@ -213,9 +213,9 @@ CREATE TABLE IF NOT EXISTS `search` (
 	`documentid` CHAR(16) NOT NULL COLLATE utf8_bin,
 	`level` INT UNSIGNED NOT NULL,
 	`sequence` DOUBLE NOT NULL,
-	`documenttitle` NVARCHAR(2000) NOT NULL,
-	`pagetitle` NVARCHAR(2000) NOT NULL,
-	`slug` NVARCHAR(2000) NOT NULL,
+	`documenttitle` VARCHAR(2000) NOT NULL,
+	`pagetitle` VARCHAR(2000) NOT NULL,
+	`slug` VARCHAR(2000) NOT NULL,
 	`body` LONGTEXT,
 	`created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	`revised` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -224,7 +224,7 @@ CREATE TABLE IF NOT EXISTS `search` (
 	INDEX `idx_search_documentid` (`documentid` ASC),
 	INDEX `idx_search_sequence` (`sequence` ASC),
 	FULLTEXT(`pagetitle`,`body`))
-DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci
+DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin
 ENGINE = MyISAM;
 
 DROP TABLE IF EXISTS `revision`;
@@ -238,7 +238,7 @@ CREATE TABLE IF NOT EXISTS `revision` (
 	`pageid` CHAR(16) NOT NULL COLLATE utf8_bin,
 	`userid` CHAR(16) NOT NULL COLLATE utf8_bin,
 	`contenttype` CHAR(20) NOT NULL DEFAULT 'wysiwyg',
-	`title` NVARCHAR(2000) NOT NULL,
+	`title` VARCHAR(2000) NOT NULL,
 	`body` LONGTEXT,
 	`rawbody` LONGBLOB,
 	`config` JSON,
@@ -249,7 +249,7 @@ CREATE TABLE IF NOT EXISTS `revision` (
 	INDEX `idx_revision_orgid` (`orgid` ASC),
 	INDEX `idx_revision_documentid` (`documentid` ASC),
 	INDEX `idx_revision_pageid` (`pageid` ASC))
-DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci
+DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin
 ENGINE = InnoDB;
 
 DROP TABLE IF EXISTS `config`;
@@ -258,7 +258,7 @@ CREATE TABLE IF NOT EXISTS `config` (
 	`key` CHAR(255) NOT NULL,
 	`config` JSON,
 	UNIQUE INDEX `idx_config_area` (`key` ASC))
-DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
 
 INSERT INTO `config` VALUES ('SMTP','{\"userid\": \"\",\"password\": \"\",\"host\": \"\",\"port\": \"\",\"sender\": \"\"}');
 INSERT INTO `config` VALUES ('FILEPLUGINS',
@@ -275,5 +275,5 @@ CREATE TABLE IF NOT EXISTS `userconfig` (
 	`key` CHAR(255) NOT NULL,
 	`config` JSON,
 	UNIQUE INDEX `idx_userconfig_orguserkey` (`orgid`, `userid`, `key` ASC))
-DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci
+DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin
 ENGINE = InnoDB;

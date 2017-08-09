@@ -31,12 +31,6 @@ var testHost string // used during automated testing
 
 // Start router to handle all HTTP traffic.
 func Start(rt *env.Runtime, s *domain.Store, ready chan struct{}) {
-	err := plugins.Setup(s)
-	if err != nil {
-		rt.Log.Error("Terminating before running - invalid plugin.json", err)
-		os.Exit(1)
-	}
-
 	rt.Log.Info(fmt.Sprintf("Starting %s version %s", rt.Product.Title, rt.Product.Version))
 
 	// decide which mode to serve up
@@ -50,6 +44,11 @@ func Start(rt *env.Runtime, s *domain.Store, ready chan struct{}) {
 	case env.SiteModeBadDB:
 		rt.Log.Info("Serving BAD DATABASE web server")
 	default:
+		err := plugins.Setup(s)
+		if err != nil {
+			rt.Log.Error("Terminating before running - invalid plugin.json", err)
+			os.Exit(1)
+		}
 		rt.Log.Info("Starting web server")
 	}
 

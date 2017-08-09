@@ -45,4 +45,8 @@ const (
 	DBVariantPercona DbVariant = "Percona"
 	// DBVariantMariaDB is MariaDB
 	DBVariantMariaDB DbVariant = "MariaDB"
+	// DBVariantMSSQL is Microsoft SQL Server
+	DBVariantMSSQL DbVariant = "MSSQL"
+	// DBVariantPostgreSQL is PostgreSQL
+	DBVariantPostgreSQL DbVariant = "PostgreSQL"
 )

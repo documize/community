@@ -279,10 +279,9 @@ func (s Scope) Documents(ctx domain.RequestContext, keywords string) (results []
 	}
 
 	keywords = strings.TrimSpace(keywords)
-	// keywords = strings.ToLower(keywords)
 
 	if len(keywords) > 0 {
-		keywordQuery = "AND MATCH(pagetitle,body) AGAINST('" + keywords + "' in boolean mode)"
+		keywordQuery = "AND MATCH(documenttitle,pagetitle,body) AGAINST('" + keywords + "' in boolean mode)"
 	}
 
 	sql := `SELECT search.id, documentid, pagetitle, document.labelid, document.title as documenttitle, document.tags,
