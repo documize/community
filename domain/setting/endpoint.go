@@ -175,7 +175,7 @@ func (h *Handler) SetLicense(w http.ResponseWriter, r *http.Request) {
 	ctx.Transaction.Commit()
 
 	h.Runtime.Log.Info("License changed")
-	event.Handler().Publish(string(event.TypeSystemLicenseChange), h.Runtime, h.Store)
+	event.Handler().Publish(string(event.TypeSystemLicenseChange))
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSystemLicense)
 
