@@ -14,6 +14,7 @@ package convert
 
 import (
 	"errors"
+
 	"github.com/documize/community/core/api/convert/html"
 	"github.com/documize/community/core/api/plugins"
 	api "github.com/documize/community/core/convapi"
@@ -53,7 +54,7 @@ func Convert(ctx context.Context, xtn string, fileRequest *api.DocumentConversio
 /* TODO add sanitisation for body & title HTML
 var titlePolicy, bodyPolicy *bluemonday.Policy
 
-func init() {
+func xxx() {
 	policy := bluemonday.UGCPolicy()
 	policy.RequireNoFollowOnLinks(true)
 

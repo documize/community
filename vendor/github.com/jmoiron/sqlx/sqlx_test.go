@@ -591,10 +591,20 @@ func TestNilReceiver(t *testing.T) {
 func TestNamedQuery(t *testing.T) {
 	var schema = Schema{
 		create: `
+			CREATE TABLE place (
+				id integer PRIMARY KEY,
+				name text NULL
+			);
 			CREATE TABLE person (
 				first_name text NULL,
 				last_name text NULL,
 				email text NULL
+			);
+			CREATE TABLE placeperson (
+				first_name text NULL,
+				last_name text NULL,
+				email text NULL,
+				place_id integer NULL
 			);
 			CREATE TABLE jsperson (
 				"FIRST" text NULL,
@@ -604,6 +614,8 @@ func TestNamedQuery(t *testing.T) {
 		drop: `
 			drop table person;
 			drop table jsperson;
+			drop table place;
+			drop table placeperson;
 			`,
 	}
 
@@ -734,6 +746,76 @@ func TestNamedQuery(t *testing.T) {
 
 		db.Mapper = &old
 
+		// Test nested structs
+		type Place struct {
+			ID   int            `db:"id"`
+			Name sql.NullString `db:"name"`
+		}
+		type PlacePerson struct {
+			FirstName sql.NullString `db:"first_name"`
+			LastName  sql.NullString `db:"last_name"`
+			Email     sql.NullString
+			Place     Place `db:"place"`
+		}
+
+		pl := Place{
+			Name: sql.NullString{String: "myplace", Valid: true},
+		}
+
+		pp := PlacePerson{
+			FirstName: sql.NullString{String: "ben", Valid: true},
+			LastName:  sql.NullString{String: "doe", Valid: true},
+			Email:     sql.NullString{String: "ben@doe.com", Valid: true},
+		}
+
+		q2 := `INSERT INTO place (id, name) VALUES (1, :name)`
+		_, err = db.NamedExec(q2, pl)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		id := 1
+		pp.Place.ID = id
+
+		q3 := `INSERT INTO placeperson (first_name, last_name, email, place_id) VALUES (:first_name, :last_name, :email, :place.id)`
+		_, err = db.NamedExec(q3, pp)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		pp2 := &PlacePerson{}
+		rows, err = db.NamedQuery(`
+			SELECT
+				first_name,
+				last_name,
+				email,
+				place.id AS "place.id",
+				place.name AS "place.name"
+			FROM placeperson
+			INNER JOIN place ON place.id = placeperson.place_id
+			WHERE
+				place.id=:place.id`, pp)
+		if err != nil {
+			log.Fatal(err)
+		}
+		for rows.Next() {
+			err = rows.StructScan(pp2)
+			if err != nil {
+				t.Error(err)
+			}
+			if pp2.FirstName.String != "ben" {
+				t.Error("Expected first name of `ben`, got " + pp2.FirstName.String)
+			}
+			if pp2.LastName.String != "doe" {
+				t.Error("Expected first name of `doe`, got " + pp2.LastName.String)
+			}
+			if pp2.Place.Name.String != "myplace" {
+				t.Error("Expected place name of `myplace`, got " + pp2.Place.Name.String)
+			}
+			if pp2.Place.ID != pp.Place.ID {
+				t.Errorf("Expected place name of %v, got %v", pp.Place.ID, pp2.Place.ID)
+			}
+		}
 	})
 }
 
@@ -885,6 +967,9 @@ func TestUsage(t *testing.T) {
 			t.Error("Expected an error")
 		}
 		err = stmt1.Get(&jason, "DoesNotExist User 2")
+		if err == nil {
+			t.Fatal(err)
+		}
 
 		stmt2, err := db.Preparex(db.Rebind("SELECT * FROM person WHERE first_name=?"))
 		if err != nil {
@@ -905,6 +990,10 @@ func TestUsage(t *testing.T) {
 
 		places := []*Place{}
 		err = db.Select(&places, "SELECT telcode FROM place ORDER BY telcode ASC")
+		if err != nil {
+			t.Fatal(err)
+		}
+
 		usa, singsing, honkers := places[0], places[1], places[2]
 
 		if usa.TelCode != 1 || honkers.TelCode != 852 || singsing.TelCode != 65 {
@@ -922,6 +1011,10 @@ func TestUsage(t *testing.T) {
 		// this test also verifies that you can use either a []Struct{} or a []*Struct{}
 		places2 := []Place{}
 		err = db.Select(&places2, "SELECT * FROM place ORDER BY telcode ASC")
+		if err != nil {
+			t.Fatal(err)
+		}
+
 		usa, singsing, honkers = &places2[0], &places2[1], &places2[2]
 
 		// this should return a type error that &p is not a pointer to a struct slice
@@ -1276,8 +1369,9 @@ func TestBindMap(t *testing.T) {
 
 type Message struct {
 	Text       string      `db:"string"`
-	Properties PropertyMap // Stored as JSON in the database
+	Properties PropertyMap `db:"properties"` // Stored as JSON in the database
 }
+
 type PropertyMap map[string]string
 
 // Implement driver.Valuer and sql.Scanner interfaces on PropertyMap
@@ -1314,7 +1408,7 @@ func TestEmbeddedMaps(t *testing.T) {
 			{"Hello, World", PropertyMap{"one": "1", "two": "2"}},
 			{"Thanks, Joy", PropertyMap{"pull": "request"}},
 		}
-		q1 := `INSERT INTO message (string, properties) VALUES (:string, :properties)`
+		q1 := `INSERT INTO message (string, properties) VALUES (:string, :properties);`
 		for _, m := range messages {
 			_, err := db.NamedExec(q1, m)
 			if err != nil {
@@ -1324,19 +1418,19 @@ func TestEmbeddedMaps(t *testing.T) {
 		var count int
 		err := db.Get(&count, "SELECT count(*) FROM message")
 		if err != nil {
-			t.Error(err)
+			t.Fatal(err)
 		}
 		if count != len(messages) {
-			t.Errorf("Expected %d messages in DB, found %d", len(messages), count)
+			t.Fatalf("Expected %d messages in DB, found %d", len(messages), count)
 		}
 
 		var m Message
-		err = db.Get(&m, "SELECT * FROM message LIMIT 1")
+		err = db.Get(&m, "SELECT * FROM message LIMIT 1;")
 		if err != nil {
-			t.Error(err)
+			t.Fatal(err)
 		}
 		if m.Properties == nil {
-			t.Error("Expected m.Properties to not be nil, but it was.")
+			t.Fatal("Expected m.Properties to not be nil, but it was.")
 		}
 	})
 }
@@ -1359,31 +1453,25 @@ func TestIssue197(t *testing.T) {
 		if err = db.Get(&v, `SELECT '{"a": "b"}' AS raw`); err != nil {
 			t.Fatal(err)
 		}
-		fmt.Printf("%s: v %s\n", db.DriverName(), v.Raw)
 		if err = db.Get(&q, `SELECT 'null' AS raw`); err != nil {
 			t.Fatal(err)
 		}
-		fmt.Printf("%s: v %s\n", db.DriverName(), v.Raw)
 
 		var v2, q2 Var2
 		if err = db.Get(&v2, `SELECT '{"a": "b"}' AS raw`); err != nil {
 			t.Fatal(err)
 		}
-		fmt.Printf("%s: v2 %s\n", db.DriverName(), v2.Raw)
 		if err = db.Get(&q2, `SELECT 'null' AS raw`); err != nil {
 			t.Fatal(err)
 		}
-		fmt.Printf("%s: v2 %s\n", db.DriverName(), v2.Raw)
 
 		var v3, q3 Var3
 		if err = db.QueryRow(`SELECT '{"a": "b"}' AS raw`).Scan(&v3.Raw); err != nil {
 			t.Fatal(err)
 		}
-		fmt.Printf("v3 %s\n", v3.Raw)
 		if err = db.QueryRow(`SELECT '{"c": "d"}' AS raw`).Scan(&q3.Raw); err != nil {
 			t.Fatal(err)
 		}
-		fmt.Printf("v3 %s\n", v3.Raw)
 		t.Fail()
 	})
 }
@@ -1646,6 +1734,36 @@ func BenchmarkIn(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		_, _, _ = In(q, []interface{}{"foo", []int{0, 5, 7, 2, 9}, "bar"}...)
+	}
+}
+
+func BenchmarkIn1k(b *testing.B) {
+	q := `SELECT * FROM foo WHERE x = ? AND v in (?) AND y = ?`
+
+	var vals [1000]interface{}
+
+	for i := 0; i < b.N; i++ {
+		_, _, _ = In(q, []interface{}{"foo", vals[:], "bar"}...)
+	}
+}
+
+func BenchmarkIn1kInt(b *testing.B) {
+	q := `SELECT * FROM foo WHERE x = ? AND v in (?) AND y = ?`
+
+	var vals [1000]int
+
+	for i := 0; i < b.N; i++ {
+		_, _, _ = In(q, []interface{}{"foo", vals[:], "bar"}...)
+	}
+}
+
+func BenchmarkIn1kString(b *testing.B) {
+	q := `SELECT * FROM foo WHERE x = ? AND v in (?) AND y = ?`
+
+	var vals [1000]string
+
+	for i := 0; i < b.N; i++ {
+		_, _, _ = In(q, []interface{}{"foo", vals[:], "bar"}...)
 	}
 }
 

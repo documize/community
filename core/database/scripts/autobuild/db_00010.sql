@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS `useractivity` (
 	INDEX `idx_activity_userid` (`userid` ASC),
 	INDEX `idx_activity_sourceid` (`sourceid` ASC),
 	INDEX `idx_activity_activitytype` (`activitytype` ASC))
-DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci
+DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin
 ENGINE =  InnoDB;
 /* Note:
  *  - this table replaces the soon-to-be-deprecated audit log table
@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS `useraction` (
 	INDEX `idx_useraction_userid` (`userid` ASC),
 	INDEX `idx_useraction_documentid` (`documentid` ASC),
 	INDEX `idx_useraction_requestorid` (`requestorid` ASC))
-DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci
+DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin
 ENGINE =  InnoDB;
 
 /* community edition */

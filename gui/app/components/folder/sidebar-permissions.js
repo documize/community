@@ -78,11 +78,11 @@ export default Ember.Component.extend(NotifierMixin, {
 
 				this.set('permissions', folderPermissions.sortBy('fullname'));
 			});
-		});		
+		});
 	},
 
 	getDefaultInvitationMessage() {
-		return "Hey there, I am sharing the " + this.get('folder.name') + " (in " + this.get("appMeta.title") + ") with you so we can both access the same documents.";
+		return "Hey there, I am sharing the " + this.get('folder.name') + " space (in " + this.get("appMeta.title") + ") with you so we can both access the same documents.";
 	},
 
 	actions: {
@@ -90,7 +90,7 @@ export default Ember.Component.extend(NotifierMixin, {
 			let message = this.getDefaultInvitationMessage();
 			let folder = this.get('folder');
 			let permissions = this.get('permissions');
-	
+
 			this.get('permissions').forEach((permission, index) => { // eslint-disable-line no-unused-vars
 				Ember.set(permission, 'canView', $("#canView-" + permission.userId).prop('checked'));
 				Ember.set(permission, 'canEdit', $("#canEdit-" + permission.userId).prop('checked'));

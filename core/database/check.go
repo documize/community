@@ -18,28 +18,16 @@ import (
 	"strings"
 
 	"github.com/documize/community/core/env"
-	"github.com/documize/community/core/log"
 	"github.com/documize/community/core/streamutil"
-	"github.com/documize/community/core/web"
-	"github.com/jmoiron/sqlx"
+	"github.com/documize/community/server/web"
 )
 
-// sql variantsa
-const sqlVariantMySQL string = "MySQL"
-const sqlVariantPercona string = "Percona"
-const sqlVariantMariaDB string = "MariaDB"
-
 var dbCheckOK bool // default false
-
-// dbPtr is a pointer to the central connection to the database, used by all database requests.
-var dbPtr *sqlx.DB
 
 // Check that the database is configured correctly and that all the required tables exist.
 // It must be the first function called in this package.
 func Check(runtime *env.Runtime) bool {
-	dbPtr = runtime.Db
-
-	log.Info("Database checks: started")
+	runtime.Log.Info("Database checks: started")
 
 	csBits := strings.Split(runtime.Flags.DBConn, "/")
 	if len(csBits) > 1 {
@@ -48,9 +36,9 @@ func Check(runtime *env.Runtime) bool {
 
 	rows, err := runtime.Db.Query("SELECT VERSION() AS version, @@version_comment as comment, @@character_set_database AS charset, @@collation_database AS collation;")
 	if err != nil {
-		log.Error("Can't get MySQL configuration", err)
+		runtime.Log.Error("Can't get MySQL configuration", err)
 		web.SiteInfo.Issue = "Can't get MySQL configuration: " + err.Error()
-		runtime.Flags.SiteMode = web.SiteModeBadDB
+		runtime.Flags.SiteMode = env.SiteModeBadDB
 		return false
 	}
 	defer streamutil.Close(rows)
@@ -64,51 +52,51 @@ func Check(runtime *env.Runtime) bool {
 	}
 
 	if err != nil {
-		log.Error("no MySQL configuration returned", err)
+		runtime.Log.Error("no MySQL configuration returned", err)
 		web.SiteInfo.Issue = "no MySQL configuration return issue: " + err.Error()
-		runtime.Flags.SiteMode = web.SiteModeBadDB
+		runtime.Flags.SiteMode = env.SiteModeBadDB
 		return false
 	}
 
 	// Get SQL variant as this affects minimum version checking logic.
 	// MySQL and Percona share same version scheme (e..g 5.7.10).
 	// MariaDB starts at 10.2.x
-	sqlVariant := GetSQLVariant(dbComment)
-	log.Info("Database checks: SQL variant " + sqlVariant)
-	log.Info("Database checks: SQL version " + version)
+	runtime.DbVariant = GetSQLVariant(dbComment)
+	runtime.Log.Info(fmt.Sprintf("Database checks: SQL variant %v", runtime.DbVariant))
+	runtime.Log.Info("Database checks: SQL version " + version)
 
 	verNums, err := GetSQLVersion(version)
 	if err != nil {
-		log.Error("Database version check failed", err)
+		runtime.Log.Error("Database version check failed", err)
 	}
 
 	// Check minimum MySQL version as we need JSON column type.
 	verInts := []int{5, 7, 10} // Minimum MySQL version
-	if sqlVariant == sqlVariantMariaDB {
-		verInts = []int{10, 2, 0} // Minimum MariaDB version
+	if runtime.DbVariant == env.DBVariantMariaDB {
+		verInts = []int{10, 3, 0} // Minimum MariaDB version
 	}
 
 	for k, v := range verInts {
 		if verNums[k] < v {
 			want := fmt.Sprintf("%d.%d.%d", verInts[0], verInts[1], verInts[2])
-			log.Error("MySQL version element "+strconv.Itoa(k+1)+" of '"+version+"' not high enough, need at least version "+want, errors.New("bad MySQL version"))
+			runtime.Log.Error("MySQL version element "+strconv.Itoa(k+1)+" of '"+version+"' not high enough, need at least version "+want, errors.New("bad MySQL version"))
 			web.SiteInfo.Issue = "MySQL version element " + strconv.Itoa(k+1) + " of '" + version + "' not high enough, need at least version " + want
-			runtime.Flags.SiteMode = web.SiteModeBadDB
+			runtime.Flags.SiteMode = env.SiteModeBadDB
 			return false
 		}
 	}
 
 	{ // check the MySQL character set and collation
-		if charset != "utf8" {
-			log.Error("MySQL character set not utf8:", errors.New(charset))
-			web.SiteInfo.Issue = "MySQL character set not utf8: " + charset
-			runtime.Flags.SiteMode = web.SiteModeBadDB
+		if charset != "utf8" && charset != "utf8mb4" {
+			runtime.Log.Error("MySQL character set not utf8/utf8mb4:", errors.New(charset))
+			web.SiteInfo.Issue = "MySQL character set not utf8/utf8mb4: " + charset
+			runtime.Flags.SiteMode = env.SiteModeBadDB
 			return false
 		}
 		if !strings.HasPrefix(collation, "utf8") {
-			log.Error("MySQL collation sequence not utf8...:", errors.New(collation))
+			runtime.Log.Error("MySQL collation sequence not utf8...:", errors.New(collation))
 			web.SiteInfo.Issue = "MySQL collation sequence not utf8...: " + collation
-			runtime.Flags.SiteMode = web.SiteModeBadDB
+			runtime.Flags.SiteMode = env.SiteModeBadDB
 			return false
 		}
 	}
@@ -118,14 +106,14 @@ func Check(runtime *env.Runtime) bool {
 		if err := runtime.Db.Select(&flds,
 			`SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '`+web.SiteInfo.DBname+
 				`' and TABLE_TYPE='BASE TABLE'`); err != nil {
-			log.Error("Can't get MySQL number of tables", err)
+			runtime.Log.Error("Can't get MySQL number of tables", err)
 			web.SiteInfo.Issue = "Can't get MySQL number of tables: " + err.Error()
-			runtime.Flags.SiteMode = web.SiteModeBadDB
+			runtime.Flags.SiteMode = env.SiteModeBadDB
 			return false
 		}
 		if strings.TrimSpace(flds[0]) == "0" {
-			log.Info("Entering database set-up mode because the database is empty.....")
-			runtime.Flags.SiteMode = web.SiteModeSetup
+			runtime.Log.Info("Entering database set-up mode because the database is empty.....")
+			runtime.Flags.SiteMode = env.SiteModeSetup
 			return false
 		}
 	}
@@ -139,30 +127,30 @@ func Check(runtime *env.Runtime) bool {
 		for _, table := range tables {
 			var dummy []string
 			if err := runtime.Db.Select(&dummy, "SELECT 1 FROM "+table+" LIMIT 1;"); err != nil {
-				log.Error("Entering bad database mode because: SELECT 1 FROM "+table+" LIMIT 1;", err)
+				runtime.Log.Error("Entering bad database mode because: SELECT 1 FROM "+table+" LIMIT 1;", err)
 				web.SiteInfo.Issue = "MySQL database is not empty, but does not contain table: " + table
-				runtime.Flags.SiteMode = web.SiteModeBadDB
+				runtime.Flags.SiteMode = env.SiteModeBadDB
 				return false
 			}
 		}
 	}
 
-	runtime.Flags.SiteMode = web.SiteModeNormal // actually no need to do this (as already ""), this for documentation
+	runtime.Flags.SiteMode = env.SiteModeNormal // actually no need to do this (as already ""), this for documentation
 	web.SiteInfo.DBname = ""                    // do not give this info when not in set-up mode
 	dbCheckOK = true
 	return true
 }
 
 // GetSQLVariant uses database value form @@version_comment to deduce MySQL variant.
-func GetSQLVariant(vc string) string {
+func GetSQLVariant(vc string) env.DbVariant {
 	vc = strings.ToLower(vc)
 
 	if strings.Contains(vc, "mariadb") {
-		return sqlVariantMariaDB
+		return env.DBVariantMariaDB
 	} else if strings.Contains(vc, "percona") {
-		return sqlVariantPercona
+		return env.DBVariantPercona
 	} else if strings.Contains(vc, "mysql") {
-		return sqlVariantMySQL
+		return env.DbVariantMySQL
 	}
 
 	return "UNKNOWN"

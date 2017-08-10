@@ -25,7 +25,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
 	init() {
 		this._super(...arguments);
-		
+
 		this.getAttachments();
 	},
 
@@ -104,7 +104,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 				target: $(".delete-attachment-" + id)[0],
 				content: $(".delete-attachment-dialog")[0],
 				classes: 'drop-theme-basic',
-				position: "bottom right",
+				position: "bottom left",
 				openOn: "always",
 				tetherOptions: {
 					offset: "5px 0",

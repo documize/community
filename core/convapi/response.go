@@ -13,7 +13,6 @@ package convapi
 
 import (
 	"encoding/json"
-	"github.com/documize/community/core/log"
 	"net/http"
 )
 
@@ -33,7 +32,6 @@ func SetJSONResponse(w http.ResponseWriter) {
 // WriteError to the http.ResponseWriter, taking care to provide the correct
 // response error code within the JSON response.
 func WriteError(w http.ResponseWriter, err error) {
-
 	response := apiJSONResponse{}
 	response.Message = err.Error()
 	response.Success = false
@@ -57,20 +55,13 @@ func WriteError(w http.ResponseWriter, err error) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
-	json, err := json.Marshal(response)
-	if err != nil {
-		log.Error("json.Marshal", err)
-	}
-
-	if _, err := w.Write(json); err != nil {
-		log.Error("write to ResponseWriter", err)
-	}
+	json, _ := json.Marshal(response)
+	w.Write(json)
 }
 
 // WriteErrorBadRequest provides feedback to a Documize client on an error,
 // where that error is described in a string.
 func WriteErrorBadRequest(w http.ResponseWriter, message string) {
-
 	response := apiJSONResponse{}
 	response.Message = message
 	response.Success = false
@@ -79,12 +70,7 @@ func WriteErrorBadRequest(w http.ResponseWriter, message string) {
 	response.Code = 400
 	w.WriteHeader(http.StatusBadRequest)
 
-	json, err := json.Marshal(response)
-	if err != nil {
-		log.Error("json.Marshal", err)
-	}
+	json, _ := json.Marshal(response)
 
-	if _, err := w.Write(json); err != nil {
-		log.Error("write to ResponseWriter", err)
-	}
+	w.Write(json)
 }

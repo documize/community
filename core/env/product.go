@@ -58,6 +58,11 @@ func (l *License) Status() string {
 	return fmt.Sprintf("License is %s and %s", lp, lv)
 }
 
+// IsValid returns if license is valid
+func (l *License) IsValid() bool {
+	return l.Valid == true
+}
+
 // LicenseData holds encrypted data and is unpacked into License.
 type LicenseData struct {
 	Key       string `json:"key"`

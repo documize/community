@@ -12,5 +12,5 @@ CREATE TABLE IF NOT EXISTS `participant` (
 	`created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT pk_id PRIMARY KEY (id),
 	INDEX `idx_participant_documentid` (`documentid` ASC))
-DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci
+DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin
 ENGINE =  InnoDB;

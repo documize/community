@@ -36,7 +36,7 @@ export default Ember.Controller.extend(NotifierMixin, {
 					doc.set('folderId', folder);
 					doc.set('selected', !doc.get('selected'));
 					self.get('documentService').save(doc).then(function () {
-						self.get('target.router').refresh();
+						self.get('target._routerMicrolib').refresh();
 					});
 				});
 			});
@@ -52,7 +52,7 @@ export default Ember.Controller.extend(NotifierMixin, {
 
 			documents.forEach(function (document) {
 				self.get('documentService').deleteDocument(document).then(function () {
-					self.get('target.router').refresh();
+					self.get('target._routerMicrolib').refresh();
 				});
 			});
 
@@ -80,7 +80,7 @@ export default Ember.Controller.extend(NotifierMixin, {
 		},
 
 		onImport() {
-			this.get('target.router').refresh();
+			this.get('target._routerMicrolib').refresh();
 		}
 	}
 });

@@ -19,12 +19,12 @@ import (
 	"github.com/documize/community/core/database"
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/secrets"
-	"github.com/documize/community/core/web"
+	"github.com/documize/community/domain"
 	"github.com/jmoiron/sqlx"
 )
 
 // InitRuntime prepares runtime using command line and environment variables.
-func InitRuntime(r *env.Runtime) bool {
+func InitRuntime(r *env.Runtime, s *domain.Store) bool {
 	// We need SALT to hash auth JWT tokens
 	if r.Flags.Salt == "" {
 		r.Flags.Salt = secrets.RandSalt()
@@ -66,22 +66,23 @@ func InitRuntime(r *env.Runtime) bool {
 	}
 
 	// go into setup mode if required
-	if r.Flags.SiteMode != web.SiteModeOffline {
+	if r.Flags.SiteMode != env.SiteModeOffline {
 		if database.Check(r) {
-			if err := database.Migrate(true /* the config table exists */); err != nil {
+			if err := database.Migrate(r, true /* the config table exists */); err != nil {
 				r.Log.Error("unable to run database migration", err)
 				return false
 			}
-		} else {
-			r.Log.Info("going into setup mode to prepare new database")
 		}
 	}
+
+	// setup store based upon database type
+	AttachStore(r, s)
 
 	return true
 }
 
 var stdParams = map[string]string{
-	"charset":          "utf8",
+	"charset":          "utf8mb4",
 	"parseTime":        "True",
 	"maxAllowedPacket": "4194304", // 4194304 // 16777216 = 16MB
 }

@@ -18,6 +18,12 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// Param returns the requested paramater from route request.
+func Param(r *http.Request, p string) string {
+	params := mux.Vars(r)
+	return params[p]
+}
+
 // Params returns the paramaters from route request.
 func Params(r *http.Request) map[string]string {
 	return mux.Vars(r)

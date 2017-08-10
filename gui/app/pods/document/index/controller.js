@@ -42,7 +42,7 @@ export default Ember.Controller.extend(NotifierMixin, {
 				// refresh data if copied to same document
 				if (documentId === targetDocumentId) {
 					this.set('pageId', '');
-					this.get('target.router').refresh();
+					this.get('target._routerMicrolib').refresh();
 
 					this.get('linkService').getDocumentLinks(this.get('model.document.id')).then((links) => {
 						this.set('model.links', links);
@@ -117,7 +117,7 @@ export default Ember.Controller.extend(NotifierMixin, {
 					}
 
 					this.set('model.pages', _.sortBy(pages, "sequence"));
-					this.get('target.router').refresh();
+					this.get('target._routerMicrolib').refresh();
 				});
 			} else {
 				// page delete followed by re-leveling child pages
@@ -198,7 +198,7 @@ export default Ember.Controller.extend(NotifierMixin, {
 				});
 
 				this.set('model.pages', this.get('model.pages').sortBy('sequence'));
-				this.get('target.router').refresh();
+				this.get('target._routerMicrolib').refresh();
 			});
 		},
 
@@ -218,7 +218,7 @@ export default Ember.Controller.extend(NotifierMixin, {
 				pages = pages.sortBy('sequence');
 				this.set('model.pages', []);
 				this.set('model.pages', pages);
-				this.get('target.router').refresh();
+				this.get('target._routerMicrolib').refresh();
 			});
 		},
 

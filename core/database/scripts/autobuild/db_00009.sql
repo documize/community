@@ -9,9 +9,9 @@ CREATE TABLE IF NOT EXISTS `block` (
 	`userid` CHAR(16) DEFAULT '' COLLATE utf8_bin,
 	`contenttype` CHAR(20) NOT NULL DEFAULT 'wysiwyg',
 	`pagetype` CHAR(10) NOT NULL DEFAULT 'section',
-	`title` NVARCHAR(2000) NOT NULL,
+	`title` VARCHAR(2000) NOT NULL,
 	`body` LONGTEXT,
-	`excerpt` NVARCHAR(2000) NOT NULL,
+	`excerpt` VARCHAR(2000) NOT NULL,
 	`used` INT UNSIGNED NOT NULL,
 	`rawbody` LONGBLOB,
 	`config` JSON,
@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS `block` (
 	CONSTRAINT pk_id PRIMARY KEY (id),
 	INDEX `idx_block_refid` (`refid` ASC),
 	INDEX `idx_block_labelid` (`labelid` ASC))
-DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci
+DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin
 ENGINE =  InnoDB;
 
 ALTER TABLE page ADD COLUMN `blockid` CHAR(16) NOT NULL DEFAULT '' COLLATE utf8_bin AFTER `pagetype`;

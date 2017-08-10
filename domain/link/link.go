@@ -14,13 +14,13 @@ package link
 import (
 	"strings"
 
-	"github.com/documize/community/core/api/entity"
+	"github.com/documize/community/model/link"
 	"golang.org/x/net/html"
 )
 
 // GetContentLinks returns Documize generated <a> links.
 // such links have an identifying attribute e.g. <a data-documize='true'...
-func GetContentLinks(body string) (links []entity.Link) {
+func GetContentLinks(body string) (links []link.Link) {
 	z := html.NewTokenizer(strings.NewReader(body))
 
 	for {
@@ -49,7 +49,7 @@ func GetContentLinks(body string) (links []entity.Link) {
 }
 
 // Helper function to pull the href attribute from a Token
-func getLink(t html.Token) (ok bool, link entity.Link) {
+func getLink(t html.Token) (ok bool, link link.Link) {
 	ok = false
 
 	// Iterate over all of the Token's attributes until we find an "href"
