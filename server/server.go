@@ -85,6 +85,9 @@ func Start(rt *env.Runtime, s *domain.Store, ready chan struct{}) {
 	n.Use(negroni.HandlerFunc(cm.metrics))
 	n.UseHandler(router)
 
+	// tell caller we are ready to serve HTTP
+	ready <- struct{}{}
+
 	// start server
 	if !rt.Flags.SSLEnabled() {
 		rt.Log.Info("Starting non-SSL server on " + rt.Flags.HTTPPort)

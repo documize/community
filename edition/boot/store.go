@@ -19,7 +19,6 @@ import (
 
 // AttachStore selects database persistence layer
 func AttachStore(r *env.Runtime, s *domain.Store) {
-
 	switch r.DbVariant {
 	case env.DbVariantMySQL, env.DBVariantPercona, env.DBVariantMariaDB:
 		StoreMySQL(r, s)
