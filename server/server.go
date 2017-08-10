@@ -91,6 +91,12 @@ func Start(rt *env.Runtime, s *domain.Store, ready chan struct{}) {
 	// start server
 	if !rt.Flags.SSLEnabled() {
 		rt.Log.Info("Starting non-SSL server on " + rt.Flags.HTTPPort)
+		if rt.Flags.SiteMode == env.SiteModeSetup {
+			rt.Log.Info("***")
+			rt.Log.Info(fmt.Sprintf("*** Go to http://localhost:%s/setup in your web browser and complete setup wizard ***", rt.Flags.HTTPPort))
+			rt.Log.Info("***")
+		}
+
 		n.Run(testHost + ":" + rt.Flags.HTTPPort)
 	} else {
 		if rt.Flags.ForceHTTPPort2SSL != "" {
@@ -107,6 +113,12 @@ func Start(rt *env.Runtime, s *domain.Store, ready chan struct{}) {
 					rt.Log.Error("ListenAndServe on "+rt.Flags.ForceHTTPPort2SSL, err)
 				}
 			}()
+		}
+
+		if rt.Flags.SiteMode == env.SiteModeSetup {
+			rt.Log.Info("***")
+			rt.Log.Info(fmt.Sprintf("*** Go to https://localhost:%s/setup in your web browser and complete setup wizard ***", rt.Flags.HTTPPort))
+			rt.Log.Info("***")
 		}
 
 		rt.Log.Info("Starting SSL server on " + rt.Flags.HTTPPort + " with " + rt.Flags.SSLCertFile + " " + rt.Flags.SSLKeyFile)

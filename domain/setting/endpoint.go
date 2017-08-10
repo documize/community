@@ -148,23 +148,23 @@ func (h *Handler) SetLicense(w http.ResponseWriter, r *http.Request) {
 	lj := licenseJSON{}
 	x := licenseXML{Key: "", Signature: ""}
 
-	err = xml.Unmarshal([]byte(config), &x)
-	if err == nil {
+	err1 := xml.Unmarshal([]byte(config), &x)
+	if err1 == nil {
 		lj.Key = x.Key
 		lj.Signature = x.Signature
 	} else {
 		h.Runtime.Log.Error("failed to XML unmarshal EDITION-LICENSE", err)
 	}
 
-	j, err := json.Marshal(lj)
+	j, err2 := json.Marshal(lj)
 	js := "{}"
-	if err == nil {
+	if err2 == nil {
 		js = string(j)
+	} else {
+		h.Runtime.Log.Error("failed to JSON marshal EDITION-LICENSE", err2)
 	}
 
 	h.Store.Setting.Set("EDITION-LICENSE", js)
-
-	event.Handler().Publish(string(event.TypeSystemLicenseChange))
 
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
@@ -172,8 +172,12 @@ func (h *Handler) SetLicense(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.Store.Audit.Record(ctx, audit.EventTypeSystemLicense)
 	ctx.Transaction.Commit()
+
+	h.Runtime.Log.Info("License changed")
+	event.Handler().Publish(string(event.TypeSystemLicenseChange), h.Runtime, h.Store)
+
+	h.Store.Audit.Record(ctx, audit.EventTypeSystemLicense)
 
 	response.WriteEmpty(w)
 }
