@@ -132,14 +132,14 @@ func (s Scope) DeleteDocument(ctx domain.RequestContext, ID string) (err error) 
 func (s Scope) IndexContent(ctx domain.RequestContext, p page.Page) (err error) {
 	// remove previous search entries
 	var stmt1 *sqlx.Stmt
-	stmt1, err = ctx.Transaction.Preparex("DELETE FROM search WHERE orgid=? AND documentid=? AND itemid=? AND itemtype='page' )")
+	stmt1, err = ctx.Transaction.Preparex("DELETE FROM search WHERE orgid=? AND documentid=? AND itemid=? AND itemtype='page'")
 	defer streamutil.Close(stmt1)
 	if err != nil {
 		err = errors.Wrap(err, "prepare delete document content entry")
 		return
 	}
 
-	_, err = stmt1.Exec(ctx.OrgID, p.DocumentID)
+	_, err = stmt1.Exec(ctx.OrgID, p.DocumentID, p.RefID)
 	if err != nil {
 		err = errors.Wrap(err, "execute delete document content entry")
 		return
@@ -157,7 +157,7 @@ func (s Scope) IndexContent(ctx domain.RequestContext, p page.Page) (err error) 
 	// prepare content
 	content, err := stringutil.HTML(p.Body).Text(false)
 	if err != nil {
-		err = errors.Wrap(err, "search strip HTMl failed")
+		err = errors.Wrap(err, "search strip HTML failed")
 		return
 	}
 	content = strings.TrimSpace(content)
@@ -175,14 +175,14 @@ func (s Scope) IndexContent(ctx domain.RequestContext, p page.Page) (err error) 
 func (s Scope) DeleteContent(ctx domain.RequestContext, pageID string) (err error) {
 	// remove all search entries
 	var stmt1 *sqlx.Stmt
-	stmt1, err = ctx.Transaction.Preparex("DELETE FROM search WHERE orgid=? AND itemid=? AND itemtype='page'")
+	stmt1, err = ctx.Transaction.Preparex("DELETE FROM search WHERE orgid=? AND itemid=? AND itemtype=?")
 	defer streamutil.Close(stmt1)
 	if err != nil {
 		err = errors.Wrap(err, "prepare delete document content entry")
 		return
 	}
 
-	_, err = stmt1.Exec(ctx.OrgID, pageID)
+	_, err = stmt1.Exec(ctx.OrgID, pageID, "page")
 	if err != nil {
 		err = errors.Wrap(err, "execute delete document content entry")
 		return
