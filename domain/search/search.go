@@ -13,102 +13,93 @@ package search
 
 import (
 	"github.com/documize/community/domain"
-	"github.com/documize/community/model"
+	"github.com/documize/community/model/attachment"
 	"github.com/documize/community/model/doc"
 	"github.com/documize/community/model/page"
 )
 
-// Add should be called when a new page is added to a document.
-func (m *Indexer) Add(ctx domain.RequestContext, page page.Page, id string) (err error) {
-	page.RefID = id
+// IndexDocument adds search indesd entries for document inserting title, tags and attachments as
+// searchable items. Any existing document entries are removed.
+func (m *Indexer) IndexDocument(ctx domain.RequestContext, d doc.Document, a []attachment.Attachment) {
+	method := "search.IndexDocument"
+	var err error
 
-	err = m.addQueue(queueEntry{
-		action: m.store.Search.Add,
-		Page:   page,
-		ctx:    ctx,
-	})
-
-	return
-}
-
-// Update should be called after a page record has been updated.
-func (m *Indexer) Update(ctx domain.RequestContext, page page.Page) (err error) {
-	err = m.addQueue(queueEntry{
-		action: m.store.Search.Update,
-		Page:   page,
-		ctx:    ctx,
-	})
-
-	return
-}
-
-// UpdateDocument should be called after a document record has been updated.
-func (m *Indexer) UpdateDocument(ctx domain.RequestContext, document doc.Document) (err error) {
-	err = m.addQueue(queueEntry{
-		action: m.store.Search.UpdateDocument,
-		Page: page.Page{
-			DocumentID: document.RefID,
-			Title:      document.Title,
-			Body:       document.Slug, // NOTE body==slug in this context
-		},
-		ctx: ctx,
-	})
-
-	return
-}
-
-// DeleteDocument should be called after a document record has been deleted.
-func (m *Indexer) DeleteDocument(ctx domain.RequestContext, documentID string) (err error) {
-	if len(documentID) > 0 {
-		m.queue <- queueEntry{
-			action: m.store.Search.DeleteDocument,
-			Page:   page.Page{DocumentID: documentID},
-			ctx:    ctx,
-		}
+	ctx.Transaction, err = m.runtime.Db.Beginx()
+	if err != nil {
+		m.runtime.Log.Error(method, err)
+		return
 	}
-	return
+
+	err = m.store.Search.IndexDocument(ctx, d, a)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		m.runtime.Log.Error(method, err)
+		return
+	}
+
+	ctx.Transaction.Commit()
 }
 
-// UpdateSequence should be called after a page record has been resequenced.
-func (m *Indexer) UpdateSequence(ctx domain.RequestContext, documentID, pageID string, sequence float64) (err error) {
-	err = m.addQueue(queueEntry{
-		action: m.store.Search.UpdateSequence,
-		Page: page.Page{
-			BaseEntity: model.BaseEntity{RefID: pageID},
-			Sequence:   sequence,
-			DocumentID: documentID,
-		},
-		ctx: ctx,
-	})
+// DeleteDocument removes all search entries for document.
+func (m *Indexer) DeleteDocument(ctx domain.RequestContext, ID string) {
+	method := "search.DeleteDocument"
+	var err error
 
-	return
+	ctx.Transaction, err = m.runtime.Db.Beginx()
+	if err != nil {
+		m.runtime.Log.Error(method, err)
+		return
+	}
+
+	err = m.store.Search.DeleteDocument(ctx, ID)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		m.runtime.Log.Error(method, err)
+		return
+	}
+
+	ctx.Transaction.Commit()
 }
 
-// UpdateLevel should be called after the level of a page has been changed.
-func (m *Indexer) UpdateLevel(ctx domain.RequestContext, documentID, pageID string, level int) (err error) {
-	err = m.addQueue(queueEntry{
-		action: m.store.Search.UpdateLevel,
-		Page: page.Page{
-			BaseEntity: model.BaseEntity{RefID: pageID},
-			Level:      uint64(level),
-			DocumentID: documentID,
-		},
-		ctx: ctx,
-	})
+// IndexContent adds search index entry for document context.
+// Any existing document entries are removed.
+func (m *Indexer) IndexContent(ctx domain.RequestContext, p page.Page) {
+	method := "search.IndexContent"
+	var err error
 
-	return
+	ctx.Transaction, err = m.runtime.Db.Beginx()
+	if err != nil {
+		m.runtime.Log.Error(method, err)
+		return
+	}
+
+	err = m.store.Search.IndexContent(ctx, p)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		m.runtime.Log.Error(method, err)
+		return
+	}
+
+	ctx.Transaction.Commit()
 }
 
-// Delete should be called after a page has been deleted.
-func (m *Indexer) Delete(ctx domain.RequestContext, documentID, pageID string) (rows int64, err error) {
-	err = m.addQueue(queueEntry{
-		action: m.store.Search.Delete,
-		Page: page.Page{
-			BaseEntity: model.BaseEntity{RefID: pageID},
-			DocumentID: documentID,
-		},
-		ctx: ctx,
-	})
+// DeleteContent removes all search entries for specific document content.
+func (m *Indexer) DeleteContent(ctx domain.RequestContext, pageID string) {
+	method := "search.DeleteContent"
+	var err error
 
-	return
+	ctx.Transaction, err = m.runtime.Db.Beginx()
+	if err != nil {
+		m.runtime.Log.Error(method, err)
+		return
+	}
+
+	err = m.store.Search.DeleteContent(ctx, pageID)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		m.runtime.Log.Error(method, err)
+		return
+	}
+
+	ctx.Transaction.Commit()
 }

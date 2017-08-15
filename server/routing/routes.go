@@ -54,10 +54,10 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	section := section.Handler{Runtime: rt, Store: s}
 	setting := setting.Handler{Runtime: rt, Store: s}
 	keycloak := keycloak.Handler{Runtime: rt, Store: s}
-	template := template.Handler{Runtime: rt, Store: s}
+	template := template.Handler{Runtime: rt, Store: s, Indexer: indexer}
 	document := document.Handler{Runtime: rt, Store: s, Indexer: indexer}
-	attachment := attachment.Handler{Runtime: rt, Store: s}
-	conversion := conversion.Handler{Runtime: rt, Store: s}
+	attachment := attachment.Handler{Runtime: rt, Store: s, Indexer: indexer}
+	conversion := conversion.Handler{Runtime: rt, Store: s, Indexer: indexer}
 	organization := organization.Handler{Runtime: rt, Store: s}
 
 	//**************************************************

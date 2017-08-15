@@ -17,8 +17,8 @@ export default Ember.Controller.extend({
 	results: [],
 	matchDoc: true,
 	matchContent: true,
-	matchFile: true,
-	matchTag: true,
+	matchFile: false,
+	matchTag: false,
 
 	onKeywordChange: function () {
 		Ember.run.debounce(this, this.fetch, 750);

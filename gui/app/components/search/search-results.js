@@ -17,15 +17,22 @@ export default Ember.Component.extend({
 
 	didReceiveAttrs() {
 		let docs = this.get('results');
+		let duped = [];
 		let phrase = 'Nothing found';
 
 		if (docs.length > 0) {
+			duped = _.uniq(docs, function (item) {
+				return item.documentId;
+			});
+
 			let references = docs.length === 1 ? "reference" : "references";
+			let docLabel = duped.length === 1 ? "document" : "documents";
 			let i = docs.length;
-			phrase = `${i} ${references}`;
+			let j = duped.length;
+			phrase = `${i} ${references} across ${j} ${docLabel}`;
 		}
 
 		this.set('resultPhrase', phrase);
-		this.set('documents', docs);
+		this.set('documents', duped);
 	}
 });

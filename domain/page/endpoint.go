@@ -143,8 +143,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	ctx.Transaction.Commit()
 
 	np, _ := h.Store.Page.Get(ctx, pageID)
-
-	h.Indexer.Add(ctx, np, pageID)
+	go h.Indexer.IndexContent(ctx, np)
 
 	response.WriteJSON(w, np)
 }
@@ -338,7 +337,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSectionDelete)
 
-	h.Indexer.Delete(ctx, documentID, pageID)
+	go h.Indexer.DeleteContent(ctx, pageID)
 
 	h.Store.Link.DeleteSourcePageLinks(ctx, pageID)
 
@@ -421,7 +420,7 @@ func (h *Handler) DeletePages(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		h.Indexer.Delete(ctx, documentID, page.PageID)
+		go h.Indexer.DeleteContent(ctx, page.PageID)
 
 		h.Store.Link.DeleteSourcePageLinks(ctx, page.PageID)
 
@@ -590,7 +589,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 	ctx.Transaction.Commit()
 
-	h.Indexer.Update(ctx, model.Page)
+	go h.Indexer.IndexContent(ctx, model.Page)
 
 	updatedPage, err := h.Store.Page.Get(ctx, pageID)
 
@@ -649,8 +648,6 @@ func (h *Handler) ChangePageSequence(w http.ResponseWriter, r *http.Request) {
 			h.Runtime.Log.Error(method, err)
 			return
 		}
-
-		h.Indexer.UpdateSequence(ctx, documentID, p.PageID, p.Sequence)
 	}
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSectionResequence)
@@ -712,8 +709,6 @@ func (h *Handler) ChangePageLevel(w http.ResponseWriter, r *http.Request) {
 			h.Runtime.Log.Error(method, err)
 			return
 		}
-
-		h.Indexer.UpdateLevel(ctx, documentID, p.PageID, p.Level)
 	}
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSectionResequence)

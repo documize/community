@@ -252,7 +252,8 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 	ctx.Transaction.Commit()
 
-	h.Indexer.UpdateDocument(ctx, d)
+	a, _ := h.Store.Attachment.GetAttachments(ctx, documentID)
+	go h.Indexer.IndexDocument(ctx, d, a)
 
 	response.WriteEmpty(w)
 }
@@ -316,7 +317,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	ctx.Transaction.Commit()
 
-	h.Indexer.DeleteDocument(ctx, documentID)
+	go h.Indexer.DeleteDocument(ctx, documentID)
 
 	response.WriteEmpty(w)
 }

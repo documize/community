@@ -17,12 +17,14 @@ import (
 	api "github.com/documize/community/core/convapi"
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/domain"
+	indexer "github.com/documize/community/domain/search"
 )
 
 // Handler contains the runtime information such as logging and database.
 type Handler struct {
 	Runtime *env.Runtime
 	Store   *domain.Store
+	Indexer indexer.Indexer
 }
 
 // UploadConvert is an endpoint to both upload and convert a document

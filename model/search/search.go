@@ -11,25 +11,6 @@
 
 package search
 
-import (
-	"time"
-)
-
-// Search holds raw search results.
-type Search struct {
-	ID            string    `json:"id"`
-	Created       time.Time `json:"created"`
-	Revised       time.Time `json:"revised"`
-	OrgID         string
-	DocumentID    string
-	Level         uint64
-	Sequence      float64
-	DocumentTitle string
-	Slug          string
-	PageTitle     string
-	Body          string
-}
-
 // QueryOptions defines how we search.
 type QueryOptions struct {
 	Keywords   string `json:"keywords"`
