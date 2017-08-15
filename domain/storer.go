@@ -188,7 +188,7 @@ type SearchStorer interface {
 	UpdateSequence(ctx RequestContext, page page.Page) (err error)
 	UpdateLevel(ctx RequestContext, page page.Page) (err error)
 	Delete(ctx RequestContext, page page.Page) (err error)
-	Documents(ctx RequestContext, keywords string) (results []search.DocumentSearch, err error)
+	Documents(ctx RequestContext, options search.QueryOptions) (results []search.QueryResult, err error)
 }
 
 // Indexer defines required methods for managing search indexing process

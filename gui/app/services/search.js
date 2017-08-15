@@ -19,12 +19,12 @@ export default Ember.Service.extend({
 	sessionService: service('session'),
 	ajax: service(),
 
-	// getUsers returns all users for organization.
-	find(keywords) {
-		let url = "search?keywords=" + encodeURIComponent(keywords);
-
-		return this.get('ajax').request(url, {
-			method: "GET"
+	// find all matching documents.
+	find(payload) {
+		return this.get('ajax').request("search", {
+			method: "POST",
+			data: JSON.stringify(payload),
+			contentType: 'json'
 		});
 	},
 });

@@ -12,8 +12,8 @@
 package mysql
 
 import (
+	"database/sql"
 	"fmt"
-	"regexp"
 	"strings"
 	"time"
 
@@ -244,68 +244,156 @@ func (s Scope) Delete(ctx domain.RequestContext, page page.Page) (err error) {
 
 // Documents searches the documents that the client is allowed to see, using the keywords search string, then audits that search.
 // Visible documents include both those in the client's own organisation and those that are public, or whose visibility includes the client.
-func (s Scope) Documents(ctx domain.RequestContext, keywords string) (results []search.DocumentSearch, err error) {
-	if len(keywords) == 0 {
+func (s Scope) Documents(ctx domain.RequestContext, q search.QueryOptions) (results []search.QueryResult, err error) {
+	q.Keywords = strings.TrimSpace(q.Keywords)
+
+	if len(q.Keywords) == 0 {
 		return
 	}
 
-	var tagQuery, keywordQuery string
+	results = []search.QueryResult{}
 
-	r, _ := regexp.Compile(`(#[a-z0-9][a-z0-9\-_]*)`)
-	res := r.FindAllString(keywords, -1)
-
-	if len(res) == 0 {
-		tagQuery = " "
-	} else {
-		if len(res) == 1 {
-			tagQuery = " AND document.tags LIKE '%" + res[0] + "#%' "
-		} else {
-			fmt.Println("lots of tags!")
-
-			tagQuery = " AND ("
-
-			for i := 0; i < len(res); i++ {
-				tagQuery += "document.tags LIKE '%" + res[i] + "#%'"
-				if i < len(res)-1 {
-					tagQuery += " OR "
-				}
-			}
-
-			tagQuery += ") "
+	// Match doc names
+	if q.Doc {
+		r1, err1 := s.matchFullText(ctx, q.Keywords, "doc")
+		if err1 != nil {
+			err = errors.Wrap(err1, "search document names")
+			return
 		}
 
-		keywords = r.ReplaceAllString(keywords, "")
-		keywords = strings.Replace(keywords, "  ", "", -1)
+		results = append(results, r1...)
 	}
 
-	keywords = strings.TrimSpace(keywords)
+	// Match doc content
+	if q.Content {
+		r2, err2 := s.matchFullText(ctx, q.Keywords, "page")
+		if err2 != nil {
+			err = errors.Wrap(err2, "search document content")
+			return
+		}
 
-	if len(keywords) > 0 {
-		keywordQuery = "AND MATCH(documenttitle,pagetitle,body) AGAINST('" + keywords + "' in boolean mode)"
+		results = append(results, r2...)
 	}
 
-	sql := `SELECT search.id, documentid, pagetitle, document.labelid, document.title as documenttitle, document.tags,
-   		COALESCE(label.label,'Unknown') AS labelname, document.excerpt as documentexcerpt
-   		FROM search, document LEFT JOIN label ON label.orgid=document.orgid AND label.refid = document.labelid
-		WHERE search.documentid = document.refid AND search.orgid=? AND document.template=0 ` + tagQuery +
-		`AND document.labelid IN
-		(SELECT refid from label WHERE orgid=? AND type=2 AND userid=?
-    	UNION ALL SELECT refid FROM label a where orgid=? AND type=1 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid='' AND (canedit=1 OR canview=1))
-		UNION ALL SELECT refid FROM label a where orgid=? AND type=3 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid=? AND (canedit=1 OR canview=1))) ` + keywordQuery
+	// Match doc tags
+	if q.Tag {
+		r3, err3 := s.matchFullText(ctx, q.Keywords, "tag")
+		if err3 != nil {
+			err = errors.Wrap(err3, "search document tag")
+			return
+		}
 
-	err = s.Runtime.Db.Select(&results,
-		sql,
+		results = append(results, r3...)
+	}
+
+	// Match doc attachments
+	if q.Attachment {
+		r4, err4 := s.matchLike(ctx, q.Keywords, "file")
+		if err4 != nil {
+			err = errors.Wrap(err4, "search document attachments")
+			return
+		}
+
+		results = append(results, r4...)
+	}
+
+	return
+}
+
+func (s Scope) matchFullText(ctx domain.RequestContext, keywords, itemType string) (r []search.QueryResult, err error) {
+	sql1 := `
+	SELECT 
+		s.id, s.orgid, s.documentid, s.itemid, s.itemtype, 
+		d.labelid as spaceid, COALESCE(d.title,'Unknown') AS document, d.tags, d.excerpt, 
+		COALESCE(l.label,'Unknown') AS space
+	FROM
+		search s,
+		document d
+	LEFT JOIN 
+		label l ON l.orgid=d.orgid AND l.refid = d.labelid
+	WHERE
+		s.orgid = ?
+		AND s.itemtype = ?
+		AND s.documentid = d.refid 
+		-- AND d.template = 0
+		AND d.labelid IN (SELECT refid from label WHERE orgid=? AND type=2 AND userid=?
+			UNION ALL SELECT refid FROM label a where orgid=? AND type=1 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid='' AND (canedit=1 OR canview=1))
+			UNION ALL SELECT refid FROM label a where orgid=? AND type=3 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid=? AND (canedit=1 OR canview=1)))
+		AND MATCH(s.content) AGAINST(? IN BOOLEAN MODE)`
+
+	err = s.Runtime.Db.Select(&r,
+		sql1,
 		ctx.OrgID,
+		itemType,
 		ctx.OrgID,
 		ctx.UserID,
 		ctx.OrgID,
 		ctx.OrgID,
 		ctx.OrgID,
 		ctx.OrgID,
-		ctx.UserID)
+		ctx.UserID,
+		keywords)
+
+	if err == sql.ErrNoRows {
+		err = nil
+		r = []search.QueryResult{}
+	}
 
 	if err != nil {
-		err = errors.Wrap(err, "search documents")
+		err = errors.Wrap(err, "search document "+itemType)
+		return
+	}
+
+	return
+}
+
+func (s Scope) matchLike(ctx domain.RequestContext, keywords, itemType string) (r []search.QueryResult, err error) {
+	// LIKE clause does not like quotes!
+	keywords = strings.Replace(keywords, "'", "", -1)
+	keywords = strings.Replace(keywords, "\"", "", -1)
+	keywords = strings.Replace(keywords, "%", "", -1)
+	keywords = fmt.Sprintf("%%%s%%", keywords)
+
+	sql1 := `
+	SELECT 
+		s.id, s.orgid, s.documentid, s.itemid, s.itemtype, 
+		d.labelid as spaceid, COALESCE(d.title,'Unknown') AS document, d.tags, d.excerpt, 
+		COALESCE(l.label,'Unknown') AS space
+	FROM
+		search s,
+		document d
+	LEFT JOIN 
+		label l ON l.orgid=d.orgid AND l.refid = d.labelid
+	WHERE
+		s.orgid = ?
+		AND s.itemtype = ?
+		AND s.documentid = d.refid 
+		-- AND d.template = 0
+		AND d.labelid IN (SELECT refid from label WHERE orgid=? AND type=2 AND userid=?
+			UNION ALL SELECT refid FROM label a where orgid=? AND type=1 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid='' AND (canedit=1 OR canview=1))
+			UNION ALL SELECT refid FROM label a where orgid=? AND type=3 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid=? AND (canedit=1 OR canview=1)))
+		AND s.content LIKE ?`
+
+	err = s.Runtime.Db.Select(&r,
+		sql1,
+		ctx.OrgID,
+		itemType,
+		ctx.OrgID,
+		ctx.UserID,
+		ctx.OrgID,
+		ctx.OrgID,
+		ctx.OrgID,
+		ctx.OrgID,
+		ctx.UserID,
+		keywords)
+
+	if err == sql.ErrNoRows {
+		err = nil
+		r = []search.QueryResult{}
+	}
+
+	if err != nil {
+		err = errors.Wrap(err, "search document "+itemType)
 		return
 	}
 

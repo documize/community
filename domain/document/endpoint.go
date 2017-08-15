@@ -16,7 +16,6 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
-	"net/url"
 
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/request"
@@ -327,27 +326,36 @@ func (h *Handler) SearchDocuments(w http.ResponseWriter, r *http.Request) {
 	method := "document.search"
 	ctx := domain.GetRequestContext(r)
 
-	keywords := request.Query(r, "keywords")
-	decoded, err := url.QueryUnescape(keywords)
+	defer streamutil.Close(r.Body)
+	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
-	results, err := h.Store.Search.Documents(ctx, decoded)
+	options := search.QueryOptions{}
+	err = json.Unmarshal(body, &options)
+	if err != nil {
+		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	results, err := h.Store.Search.Documents(ctx, options)
 	if err != nil {
 		h.Runtime.Log.Error(method, err)
 	}
 
 	// Put in slugs for easy UI display of search URL
 	for key, result := range results {
-		result.DocumentSlug = stringutil.MakeSlug(result.DocumentTitle)
-		result.FolderSlug = stringutil.MakeSlug(result.LabelName)
+		result.DocumentSlug = stringutil.MakeSlug(result.Document)
+		result.SpaceSlug = stringutil.MakeSlug(result.Space)
 		results[key] = result
 	}
 
 	if len(results) == 0 {
-		results = []search.DocumentSearch{}
+		results = []search.QueryResult{}
 	}
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSearch)

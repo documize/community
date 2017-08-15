@@ -1,15 +1,26 @@
 {{layout/zone-navigation}}
+
 {{#layout/zone-container}}
 	{{#layout/zone-sidebar}}
 		<div class="sidebar-toolbar">
 		</div>
 		<div class="sidebar-common">
-			{{layout/sidebar-intro title="Search" message='#tag, keyword, "some phrase", this AND that, this OR that'}}
+			{{layout/sidebar-intro title="Search" message='Search across document name, contents, tags and attachment filenames'}}
 		</div>
 		<div class="sidebar-wrapper">
 			<div class="page-search">
 				<div class="input-control">
-					{{focus-input type="text" value=filter placeholder='type search phrase (case sensitive)'}}
+					{{focus-input type="text" value=filter placeholder='type search phrase'}}
+					{{#ui/ui-checkbox selected=matchDoc}}document name{{/ui/ui-checkbox}}
+					{{#ui/ui-checkbox selected=matchContent}}document content{{/ui/ui-checkbox}}
+					{{#ui/ui-checkbox selected=matchFile}}attachment name{{/ui/ui-checkbox}}
+					{{#ui/ui-checkbox selected=matchTag}}tag name{{/ui/ui-checkbox}}
+				</div>
+				<div class="examples">
+					<p>a OR b</p>
+					<p>x AND y</p>
+					<p>"phrase match"</p>
+					<p>* for wildcard match</p>
 				</div>
 			</div>
 		</div>
