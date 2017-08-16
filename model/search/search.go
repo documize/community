@@ -11,35 +11,27 @@
 
 package search
 
-import (
-	"time"
-)
-
-// Search holds raw search results.
-type Search struct {
-	ID            string    `json:"id"`
-	Created       time.Time `json:"created"`
-	Revised       time.Time `json:"revised"`
-	OrgID         string
-	DocumentID    string
-	Level         uint64
-	Sequence      float64
-	DocumentTitle string
-	Slug          string
-	PageTitle     string
-	Body          string
+// QueryOptions defines how we search.
+type QueryOptions struct {
+	Keywords   string `json:"keywords"`
+	Doc        bool   `json:"doc"`
+	Tag        bool   `json:"tag"`
+	Attachment bool   `json:"attachment"`
+	Content    bool   `json:"content"`
 }
 
-// DocumentSearch represents 'presentable' search results.
-type DocumentSearch struct {
-	ID              string `json:"id"`
-	DocumentID      string `json:"documentId"`
-	DocumentTitle   string `json:"documentTitle"`
-	DocumentSlug    string `json:"documentSlug"`
-	DocumentExcerpt string `json:"documentExcerpt"`
-	Tags            string `json:"documentTags"`
-	PageTitle       string `json:"pageTitle"`
-	LabelID         string `json:"folderId"`
-	LabelName       string `json:"folderName"`
-	FolderSlug      string `json:"folderSlug"`
+// QueryResult represents 'presentable' search results.
+type QueryResult struct {
+	ID           string `json:"id"`
+	OrgID        string `json:"orgId"`
+	ItemID       string `json:"itemId"`
+	ItemType     string `json:"itemType"`
+	DocumentID   string `json:"documentId"`
+	DocumentSlug string `json:"documentSlug"`
+	Document     string `json:"document"`
+	Excerpt      string `json:"excerpt"`
+	Tags         string `json:"tags"`
+	SpaceID      string `json:"spaceId"`
+	Space        string `json:"space"`
+	SpaceSlug    string `json:"spaceSlug"`
 }

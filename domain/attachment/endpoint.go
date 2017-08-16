@@ -26,6 +26,7 @@ import (
 	"github.com/documize/community/core/uniqueid"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/document"
+	indexer "github.com/documize/community/domain/search"
 	"github.com/documize/community/model/attachment"
 	"github.com/documize/community/model/audit"
 	uuid "github.com/nu7hatch/gouuid"
@@ -35,6 +36,7 @@ import (
 type Handler struct {
 	Runtime *env.Runtime
 	Store   *domain.Store
+	Indexer indexer.Indexer
 }
 
 // Download is the end-point that responds to a request for a particular attachment
@@ -155,6 +157,10 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	ctx.Transaction.Commit()
 
+	a, _ := h.Store.Attachment.GetAttachments(ctx, documentID)
+	d, _ := h.Store.Document.Get(ctx, documentID)
+	go h.Indexer.IndexDocument(ctx, d, a)
+
 	response.WriteEmpty(w)
 }
 
@@ -225,6 +231,10 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	h.Store.Audit.Record(ctx, audit.EventTypeAttachmentAdd)
 
 	ctx.Transaction.Commit()
+
+	all, _ := h.Store.Attachment.GetAttachments(ctx, documentID)
+	d, _ := h.Store.Document.Get(ctx, documentID)
+	go h.Indexer.IndexDocument(ctx, d, all)
 
 	response.WriteEmpty(w)
 }

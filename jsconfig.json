@@ -3,5 +3,5 @@
 		"target": "es6",
 		"experimentalDecorators": true
 	},
-	"exclude": ["node_modules", "bower_components", "tmp", "vendor", ".git", "dist", "dist-prod"]
+	"exclude": ["node_modules", "bower_components", "tmp", "vendor", ".git", "dist", "dist-prod", "gui/node_modules", "gui/dist", "gui/dist-prod", "gui/tmp"]
 }

@@ -54,10 +54,10 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	section := section.Handler{Runtime: rt, Store: s}
 	setting := setting.Handler{Runtime: rt, Store: s}
 	keycloak := keycloak.Handler{Runtime: rt, Store: s}
-	template := template.Handler{Runtime: rt, Store: s}
+	template := template.Handler{Runtime: rt, Store: s, Indexer: indexer}
 	document := document.Handler{Runtime: rt, Store: s, Indexer: indexer}
-	attachment := attachment.Handler{Runtime: rt, Store: s}
-	conversion := conversion.Handler{Runtime: rt, Store: s}
+	attachment := attachment.Handler{Runtime: rt, Store: s, Indexer: indexer}
+	conversion := conversion.Handler{Runtime: rt, Store: s, Indexer: indexer}
 	organization := organization.Handler{Runtime: rt, Store: s}
 
 	//**************************************************
@@ -132,7 +132,7 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	Add(rt, RoutePrefixPrivate, "users/{userID}", []string{"DELETE", "OPTIONS"}, nil, user.Delete)
 	Add(rt, RoutePrefixPrivate, "users/sync", []string{"GET", "OPTIONS"}, nil, keycloak.Sync)
 
-	Add(rt, RoutePrefixPrivate, "search", []string{"GET", "OPTIONS"}, nil, document.SearchDocuments)
+	Add(rt, RoutePrefixPrivate, "search", []string{"POST", "OPTIONS"}, nil, document.SearchDocuments)
 
 	Add(rt, RoutePrefixPrivate, "templates", []string{"POST", "OPTIONS"}, nil, template.SaveAs)
 	Add(rt, RoutePrefixPrivate, "templates", []string{"GET", "OPTIONS"}, nil, template.SavedList)

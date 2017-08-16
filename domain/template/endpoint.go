@@ -28,6 +28,7 @@ import (
 	"github.com/documize/community/core/uniqueid"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/document"
+	indexer "github.com/documize/community/domain/search"
 	"github.com/documize/community/model/attachment"
 	"github.com/documize/community/model/audit"
 	"github.com/documize/community/model/doc"
@@ -40,6 +41,7 @@ import (
 type Handler struct {
 	Runtime *env.Runtime
 	Store   *domain.Store
+	Indexer indexer.Indexer
 }
 
 // SavedList returns all templates saved by the user
@@ -362,6 +364,9 @@ func (h *Handler) Use(w http.ResponseWriter, r *http.Request) {
 	}
 
 	event.Handler().Publish(string(event.TypeAddDocument), nd.Title)
+
+	a, _ := h.Store.Attachment.GetAttachments(ctx, documentID)
+	go h.Indexer.IndexDocument(ctx, nd, a)
 
 	response.WriteJSON(w, nd)
 }

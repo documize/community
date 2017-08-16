@@ -12,17 +12,16 @@
 package mysql
 
 import (
+	"database/sql"
 	"fmt"
-	"regexp"
 	"strings"
-	"time"
 
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/core/stringutil"
 	"github.com/documize/community/domain"
-	"github.com/documize/community/domain/store/mysql"
-	"github.com/documize/community/model"
+	"github.com/documize/community/model/attachment"
+	"github.com/documize/community/model/doc"
 	"github.com/documize/community/model/page"
 	"github.com/documize/community/model/search"
 	"github.com/jmoiron/sqlx"
@@ -34,278 +33,316 @@ type Scope struct {
 	Runtime *env.Runtime
 }
 
-// Add search entry  (legacy name: searchAdd).
-func (s Scope) Add(ctx domain.RequestContext, page page.Page) (err error) {
-	id := page.RefID
-
-	// translate the html into text for the search
-	nonHTML, err := stringutil.HTML(page.Body).Text(false)
+// IndexDocument adds search index entries for document inserting title, tags and attachments as
+// searchable items. Any existing document entries are removed.
+func (s Scope) IndexDocument(ctx domain.RequestContext, doc doc.Document, a []attachment.Attachment) (err error) {
+	// remove previous search entries
+	var stmt1 *sqlx.Stmt
+	stmt1, err = ctx.Transaction.Preparex("DELETE FROM search WHERE orgid=? AND documentid=? AND (itemtype='doc' OR itemtype='file' OR itemtype='tag')")
+	defer streamutil.Close(stmt1)
 	if err != nil {
-		errors.Wrap(err, "search decode body")
+		err = errors.Wrap(err, "prepare delete document index entries")
 		return
 	}
 
-	// insert into the search table, getting the document title along the way
-	var stmt *sqlx.Stmt
-	stmt, err = ctx.Transaction.Preparex(
-		"INSERT INTO search (id, orgid, documentid, level, sequence, documenttitle, slug, pagetitle, body, created, revised) " +
-			" SELECT page.refid,page.orgid,document.refid,page.level,page.sequence,document.title,document.slug,page.title,?,page.created,page.revised " +
-			" FROM document,page WHERE page.refid=? AND document.refid=page.documentid")
-
-	defer streamutil.Close(stmt)
-
+	_, err = stmt1.Exec(ctx.OrgID, doc.RefID)
 	if err != nil {
-		err = errors.Wrap(err, "prepare search insert")
+		err = errors.Wrap(err, "execute delete document index entries")
 		return
 	}
 
-	_, err = stmt.Exec(nonHTML, id)
-
-	if err != nil {
-		err = errors.Wrap(err, "execute search insert")
-		return
-	}
-
-	return nil
-}
-
-// Update search entry (legacy name: searchUpdate).
-func (s Scope) Update(ctx domain.RequestContext, page page.Page) (err error) {
-	// translate the html into text for the search
-	nonHTML, err := stringutil.HTML(page.Body).Text(false)
-	if err != nil {
-		err = errors.Wrap(err, "search decode body")
-		return
-	}
-
-	su, err := ctx.Transaction.Preparex("UPDATE search SET pagetitle=?,body=?,sequence=?,level=?,revised=? WHERE id=?")
-	defer streamutil.Close(su)
-
-	if err != nil {
-		err = errors.Wrap(err, "prepare search update")
-		return err
-	}
-
-	_, err = su.Exec(page.Title, nonHTML, page.Sequence, page.Level, page.Revised, page.RefID)
-
-	if err != nil {
-		err = errors.Wrap(err, "execute search update")
-		return
-	}
-
-	return nil
-}
-
-// UpdateDocument search entries for document (legacy name: searchUpdateDocument).
-func (s Scope) UpdateDocument(ctx domain.RequestContext, page page.Page) (err error) {
-	stmt, err := ctx.Transaction.Preparex("UPDATE search SET documenttitle=?, slug=?, revised=? WHERE documentid=?")
-	defer streamutil.Close(stmt)
-
-	if err != nil {
-		err = errors.Wrap(err, "prepare search document update")
-		return err
-	}
-
-	_, err = stmt.Exec(page.Title, page.Body, time.Now().UTC(), page.DocumentID)
-
-	if err != nil {
-		err = errors.Wrap(err, "execute search document update")
-		return err
-	}
-
-	return nil
-}
-
-// DeleteDocument removes document search entries (legacy name: searchDeleteDocument)
-func (s Scope) DeleteDocument(ctx domain.RequestContext, page page.Page) (err error) {
-	var bm = mysql.BaseQuery{}
-
-	_, err = bm.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE from search WHERE documentid='%s'", page.DocumentID))
-
-	if err != nil {
-		err = errors.Wrap(err, "delete document search entries")
-	}
-
-	return nil
-}
-
-// Rebuild ... (legacy name: searchRebuild)
-func (s Scope) Rebuild(ctx domain.RequestContext, p page.Page) (err error) {
-	var bm = mysql.BaseQuery{}
-
-	_, err = bm.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE from search WHERE documentid='%s'", p.DocumentID))
-	if err != nil {
-		err = errors.Wrap(err, err.Error())
-		return err
-	}
-
-	var pages []struct{ ID string }
-
-	stmt2, err := ctx.Transaction.Preparex("SELECT refid as id FROM page WHERE documentid=? ")
+	// insert doc title
+	var stmt2 *sqlx.Stmt
+	stmt2, err = ctx.Transaction.Preparex("INSERT INTO search (orgid, documentid, itemid, itemtype, content) VALUES (?, ?, ?, ?, ?)")
 	defer streamutil.Close(stmt2)
-
 	if err != nil {
-		err = errors.Wrap(err, err.Error())
-		return err
+		err = errors.Wrap(err, "prepare insert document title entry")
+		return
 	}
 
-	err = stmt2.Select(&pages, p.DocumentID)
+	_, err = stmt2.Exec(ctx.OrgID, doc.RefID, "", "doc", doc.Title)
 	if err != nil {
-		err = errors.Wrap(err, err.Error())
-		return err
+		err = errors.Wrap(err, "execute insert document title entry")
+		return
 	}
 
-	if len(pages) > 0 {
-		for _, pg := range pages {
-			err = s.Add(ctx, page.Page{BaseEntity: model.BaseEntity{RefID: pg.ID}})
-			if err != nil {
-				err = errors.Wrap(err, err.Error())
-				return err
-			}
+	// insert doc tags
+	tags := strings.Split(doc.Tags, "#")
+	for _, t := range tags {
+		if len(t) == 0 {
+			continue
 		}
 
-		// rebuild doc-level tags & excerpts
-		// get the 0'th page data and rewrite it
-
-		target := page.Page{}
-
-		stmt1, err := ctx.Transaction.Preparex("SELECT * FROM page WHERE refid=?")
-		defer streamutil.Close(stmt1)
-
+		var stmt3 *sqlx.Stmt
+		stmt3, err = ctx.Transaction.Preparex("INSERT INTO search (orgid, documentid, itemid, itemtype, content) VALUES (?, ?, ?, ?, ?)")
+		defer streamutil.Close(stmt3)
 		if err != nil {
-			err = errors.Wrap(err, err.Error())
-			return err
+			err = errors.Wrap(err, "prepare insert document tag entry")
+			return
 		}
 
-		err = stmt1.Get(&target, pages[0].ID)
+		_, err = stmt3.Exec(ctx.OrgID, doc.RefID, "", "tag", t)
 		if err != nil {
-			err = errors.Wrap(err, err.Error())
-			return err
-		}
-
-		err = s.Update(ctx, target) // to rebuild the document-level tags + excerpt
-		if err != nil {
-			err = errors.Wrap(err, err.Error())
-			return err
+			err = errors.Wrap(err, "execute insert document tag entry")
+			return
 		}
 	}
 
-	return
+	for _, file := range a {
+		var stmt4 *sqlx.Stmt
+		stmt4, err = ctx.Transaction.Preparex("INSERT INTO search (orgid, documentid, itemid, itemtype, content) VALUES (?, ?, ?, ?, ?)")
+		defer streamutil.Close(stmt4)
+		if err != nil {
+			err = errors.Wrap(err, "prepare insert document file entry")
+			return
+		}
+
+		_, err = stmt4.Exec(ctx.OrgID, doc.RefID, file.RefID, "file", file.Filename)
+		if err != nil {
+			err = errors.Wrap(err, "execute insert document file entry")
+			return
+		}
+	}
+
+	return nil
 }
 
-// UpdateSequence ... (legacy name: searchUpdateSequence)
-func (s Scope) UpdateSequence(ctx domain.RequestContext, page page.Page) (err error) {
-	supdate, err := ctx.Transaction.Preparex("UPDATE search SET sequence=?,revised=? WHERE id=?")
-	defer streamutil.Close(supdate)
-
+// DeleteDocument removes all search entries for document.
+func (s Scope) DeleteDocument(ctx domain.RequestContext, ID string) (err error) {
+	// remove all search entries
+	var stmt1 *sqlx.Stmt
+	stmt1, err = ctx.Transaction.Preparex("DELETE FROM search WHERE orgid=? AND documentid=?")
+	defer streamutil.Close(stmt1)
 	if err != nil {
-		err = errors.Wrap(err, "prepare search update sequence")
-		return err
+		err = errors.Wrap(err, "prepare delete document entries")
+		return
 	}
 
-	_, err = supdate.Exec(page.Sequence, time.Now().UTC(), page.RefID)
+	_, err = stmt1.Exec(ctx.OrgID, ID)
 	if err != nil {
-		err = errors.Wrap(err, "execute search update sequence")
+		err = errors.Wrap(err, "execute delete document entries")
 		return
 	}
 
 	return
 }
 
-// UpdateLevel ... legacy name: searchUpdateLevel)
-func (s Scope) UpdateLevel(ctx domain.RequestContext, page page.Page) (err error) {
-	pageID := page.RefID
-	level := page.Level
-
-	supdate, err := ctx.Transaction.Preparex("UPDATE search SET level=?,revised=? WHERE id=?")
-	defer streamutil.Close(supdate)
-
+// IndexContent adds search index entry for document context.
+// Any existing document entries are removed.
+func (s Scope) IndexContent(ctx domain.RequestContext, p page.Page) (err error) {
+	// remove previous search entries
+	var stmt1 *sqlx.Stmt
+	stmt1, err = ctx.Transaction.Preparex("DELETE FROM search WHERE orgid=? AND documentid=? AND itemid=? AND itemtype='page'")
+	defer streamutil.Close(stmt1)
 	if err != nil {
-		err = errors.Wrap(err, "prepare search update level")
-		return err
-	}
-
-	_, err = supdate.Exec(level, time.Now().UTC(), pageID)
-	if err != nil {
-		err = errors.Wrap(err, "execute search update level")
+		err = errors.Wrap(err, "prepare delete document content entry")
 		return
 	}
 
-	return
+	_, err = stmt1.Exec(ctx.OrgID, p.DocumentID, p.RefID)
+	if err != nil {
+		err = errors.Wrap(err, "execute delete document content entry")
+		return
+	}
+
+	// insert doc title
+	var stmt2 *sqlx.Stmt
+	stmt2, err = ctx.Transaction.Preparex("INSERT INTO search (orgid, documentid, itemid, itemtype, content) VALUES (?, ?, ?, ?, ?)")
+	defer streamutil.Close(stmt2)
+	if err != nil {
+		err = errors.Wrap(err, "prepare insert document content entry")
+		return
+	}
+
+	// prepare content
+	content, err := stringutil.HTML(p.Body).Text(false)
+	if err != nil {
+		err = errors.Wrap(err, "search strip HTML failed")
+		return
+	}
+	content = strings.TrimSpace(content)
+
+	_, err = stmt2.Exec(ctx.OrgID, p.DocumentID, p.RefID, "page", content)
+	if err != nil {
+		err = errors.Wrap(err, "execute insert document content entry")
+		return
+	}
+
+	return nil
 }
 
-// Delete ... (legacy name: searchDelete).
-func (s Scope) Delete(ctx domain.RequestContext, page page.Page) (err error) {
-	var bm = mysql.BaseQuery{}
-	_, err = bm.DeleteConstrainedWithID(ctx.Transaction, "search", ctx.OrgID, page.RefID)
+// DeleteContent removes all search entries for specific document content.
+func (s Scope) DeleteContent(ctx domain.RequestContext, pageID string) (err error) {
+	// remove all search entries
+	var stmt1 *sqlx.Stmt
+	stmt1, err = ctx.Transaction.Preparex("DELETE FROM search WHERE orgid=? AND itemid=? AND itemtype=?")
+	defer streamutil.Close(stmt1)
+	if err != nil {
+		err = errors.Wrap(err, "prepare delete document content entry")
+		return
+	}
+
+	_, err = stmt1.Exec(ctx.OrgID, pageID, "page")
+	if err != nil {
+		err = errors.Wrap(err, "execute delete document content entry")
+		return
+	}
 
 	return
 }
 
 // Documents searches the documents that the client is allowed to see, using the keywords search string, then audits that search.
 // Visible documents include both those in the client's own organisation and those that are public, or whose visibility includes the client.
-func (s Scope) Documents(ctx domain.RequestContext, keywords string) (results []search.DocumentSearch, err error) {
-	if len(keywords) == 0 {
+func (s Scope) Documents(ctx domain.RequestContext, q search.QueryOptions) (results []search.QueryResult, err error) {
+	q.Keywords = strings.TrimSpace(q.Keywords)
+
+	if len(q.Keywords) == 0 {
 		return
 	}
 
-	var tagQuery, keywordQuery string
+	results = []search.QueryResult{}
 
-	r, _ := regexp.Compile(`(#[a-z0-9][a-z0-9\-_]*)`)
-	res := r.FindAllString(keywords, -1)
-
-	if len(res) == 0 {
-		tagQuery = " "
-	} else {
-		if len(res) == 1 {
-			tagQuery = " AND document.tags LIKE '%" + res[0] + "#%' "
-		} else {
-			fmt.Println("lots of tags!")
-
-			tagQuery = " AND ("
-
-			for i := 0; i < len(res); i++ {
-				tagQuery += "document.tags LIKE '%" + res[i] + "#%'"
-				if i < len(res)-1 {
-					tagQuery += " OR "
-				}
-			}
-
-			tagQuery += ") "
+	// Match doc names
+	if q.Doc {
+		r1, err1 := s.matchFullText(ctx, q.Keywords, "doc")
+		if err1 != nil {
+			err = errors.Wrap(err1, "search document names")
+			return
 		}
 
-		keywords = r.ReplaceAllString(keywords, "")
-		keywords = strings.Replace(keywords, "  ", "", -1)
+		results = append(results, r1...)
 	}
 
-	keywords = strings.TrimSpace(keywords)
+	// Match doc content
+	if q.Content {
+		r2, err2 := s.matchFullText(ctx, q.Keywords, "page")
+		if err2 != nil {
+			err = errors.Wrap(err2, "search document content")
+			return
+		}
 
-	if len(keywords) > 0 {
-		keywordQuery = "AND MATCH(documenttitle,pagetitle,body) AGAINST('" + keywords + "' in boolean mode)"
+		results = append(results, r2...)
 	}
 
-	sql := `SELECT search.id, documentid, pagetitle, document.labelid, document.title as documenttitle, document.tags,
-   		COALESCE(label.label,'Unknown') AS labelname, document.excerpt as documentexcerpt
-   		FROM search, document LEFT JOIN label ON label.orgid=document.orgid AND label.refid = document.labelid
-		WHERE search.documentid = document.refid AND search.orgid=? AND document.template=0 ` + tagQuery +
-		`AND document.labelid IN
-		(SELECT refid from label WHERE orgid=? AND type=2 AND userid=?
-    	UNION ALL SELECT refid FROM label a where orgid=? AND type=1 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid='' AND (canedit=1 OR canview=1))
-		UNION ALL SELECT refid FROM label a where orgid=? AND type=3 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid=? AND (canedit=1 OR canview=1))) ` + keywordQuery
+	// Match doc tags
+	if q.Tag {
+		r3, err3 := s.matchFullText(ctx, q.Keywords, "tag")
+		if err3 != nil {
+			err = errors.Wrap(err3, "search document tag")
+			return
+		}
 
-	err = s.Runtime.Db.Select(&results,
-		sql,
+		results = append(results, r3...)
+	}
+
+	// Match doc attachments
+	if q.Attachment {
+		r4, err4 := s.matchLike(ctx, q.Keywords, "file")
+		if err4 != nil {
+			err = errors.Wrap(err4, "search document attachments")
+			return
+		}
+
+		results = append(results, r4...)
+	}
+
+	return
+}
+
+func (s Scope) matchFullText(ctx domain.RequestContext, keywords, itemType string) (r []search.QueryResult, err error) {
+	sql1 := `
+	SELECT 
+		s.id, s.orgid, s.documentid, s.itemid, s.itemtype, 
+		d.labelid as spaceid, COALESCE(d.title,'Unknown') AS document, d.tags, d.excerpt, 
+		COALESCE(l.label,'Unknown') AS space
+	FROM
+		search s,
+		document d
+	LEFT JOIN 
+		label l ON l.orgid=d.orgid AND l.refid = d.labelid
+	WHERE
+		s.orgid = ?
+		AND s.itemtype = ?
+		AND s.documentid = d.refid 
+		-- AND d.template = 0
+		AND d.labelid IN (SELECT refid from label WHERE orgid=? AND type=2 AND userid=?
+			UNION ALL SELECT refid FROM label a where orgid=? AND type=1 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid='' AND (canedit=1 OR canview=1))
+			UNION ALL SELECT refid FROM label a where orgid=? AND type=3 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid=? AND (canedit=1 OR canview=1)))
+		AND MATCH(s.content) AGAINST(? IN BOOLEAN MODE)`
+
+	err = s.Runtime.Db.Select(&r,
+		sql1,
 		ctx.OrgID,
+		itemType,
 		ctx.OrgID,
 		ctx.UserID,
 		ctx.OrgID,
 		ctx.OrgID,
 		ctx.OrgID,
 		ctx.OrgID,
-		ctx.UserID)
+		ctx.UserID,
+		keywords)
+
+	if err == sql.ErrNoRows {
+		err = nil
+		r = []search.QueryResult{}
+	}
 
 	if err != nil {
-		err = errors.Wrap(err, "search documents")
+		err = errors.Wrap(err, "search document "+itemType)
+		return
+	}
+
+	return
+}
+
+func (s Scope) matchLike(ctx domain.RequestContext, keywords, itemType string) (r []search.QueryResult, err error) {
+	// LIKE clause does not like quotes!
+	keywords = strings.Replace(keywords, "'", "", -1)
+	keywords = strings.Replace(keywords, "\"", "", -1)
+	keywords = strings.Replace(keywords, "%", "", -1)
+	keywords = fmt.Sprintf("%%%s%%", keywords)
+
+	sql1 := `
+	SELECT 
+		s.id, s.orgid, s.documentid, s.itemid, s.itemtype, 
+		d.labelid as spaceid, COALESCE(d.title,'Unknown') AS document, d.tags, d.excerpt, 
+		COALESCE(l.label,'Unknown') AS space
+	FROM
+		search s,
+		document d
+	LEFT JOIN 
+		label l ON l.orgid=d.orgid AND l.refid = d.labelid
+	WHERE
+		s.orgid = ?
+		AND s.itemtype = ?
+		AND s.documentid = d.refid 
+		-- AND d.template = 0
+		AND d.labelid IN (SELECT refid from label WHERE orgid=? AND type=2 AND userid=?
+			UNION ALL SELECT refid FROM label a where orgid=? AND type=1 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid='' AND (canedit=1 OR canview=1))
+			UNION ALL SELECT refid FROM label a where orgid=? AND type=3 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid=? AND (canedit=1 OR canview=1)))
+		AND s.content LIKE ?`
+
+	err = s.Runtime.Db.Select(&r,
+		sql1,
+		ctx.OrgID,
+		itemType,
+		ctx.OrgID,
+		ctx.UserID,
+		ctx.OrgID,
+		ctx.OrgID,
+		ctx.OrgID,
+		ctx.OrgID,
+		ctx.UserID,
+		keywords)
+
+	if err == sql.ErrNoRows {
+		err = nil
+		r = []search.QueryResult{}
+	}
+
+	if err != nil {
+		err = errors.Wrap(err, "search document "+itemType)
 		return
 	}
 

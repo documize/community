@@ -146,6 +146,9 @@ func (h *Handler) convert(w http.ResponseWriter, r *http.Request, job, folderID 
 		return
 	}
 
+	a, _ := h.Store.Attachment.GetAttachments(ctx, nd.RefID)
+	go h.Indexer.IndexDocument(ctx, nd, a)
+
 	response.WriteJSON(w, nd)
 }
 
