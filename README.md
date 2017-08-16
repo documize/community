@@ -42,10 +42,6 @@ Documize is compatible with Auth0 identity as a service.
 
 Open Source Identity and Access Management
 
-## Word Conversion to HTML
-
-- [Code for `wordconvert` utility](https://github.com/documize/community/tree/master/cmd/wordconvert)
-
 ## Legal
 
 <https://documize.com>
