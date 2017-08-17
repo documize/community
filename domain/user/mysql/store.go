@@ -201,6 +201,68 @@ func (s Scope) GetSpaceUsers(ctx domain.RequestContext, folderID string) (u []us
 	return
 }
 
+// GetVisibleUsers returns all users that can be "seen" by a user.
+// "Seen" means users who share at least one space in common.
+// Explicit access must be provided to a user in order to associate them
+// as having access to a space. Simply marking a space as vieewable by "everyone" is not enough.
+func (s Scope) GetVisibleUsers(ctx domain.RequestContext) (u []user.User, err error) {
+	err = s.Runtime.Db.Select(&u,
+		`SELECT id, refid, firstname, lastname, email, initials, password, salt, reset, created, revised
+		FROM user 
+		WHERE 
+			refid IN (SELECT userid FROM account WHERE orgid = ?)
+			AND refid IN 
+				(SELECT userid FROM labelrole where userid != '' AND orgid=?
+					AND labelid IN (
+						SELECT refid FROM label WHERE orgid=? AND type=2 AND userid=?
+						UNION ALL
+						SELECT refid FROM label a WHERE orgid=? AND type=1 AND refid IN (SELECT labelid FROM labelrole WHERE orgid=? AND userid='' AND (canedit=1 OR canview=1))
+						UNION ALL
+						SELECT refid FROM label a WHERE orgid=? AND type=3 AND refid IN (SELECT labelid FROM labelrole WHERE orgid=? AND userid=? AND (canedit=1 OR canview=1))
+					)
+				GROUP BY userid)
+		ORDER BY firstname, lastname`,
+		ctx.OrgID,
+		ctx.OrgID,
+		ctx.OrgID,
+		ctx.UserID,
+		ctx.OrgID,
+		ctx.OrgID,
+		ctx.OrgID,
+		ctx.OrgID,
+		ctx.UserID)
+
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("get visible users for org %s user %s", ctx.OrgID, ctx.UserID))
+		return
+	}
+
+	return
+}
+
+/*
+
+`SELECT
+	id, refid, firstname, lastname, email, initials, password, salt, reset, created, revised
+FROM
+	user
+WHERE
+	refid IN (SELECT userid FROM account where orgid = '4Tec34w8')
+	AND refid IN
+		(SELECT userid FROM labelrole where userid != '' AND orgid='4Tec34w8'
+			AND labelid IN (
+				SELECT refid FROM label WHERE orgid='4Tec34w8' AND type=2 AND userid='iJdf6qUW'
+				UNION ALL
+				SELECT refid FROM label a WHERE orgid='4Tec34w8' AND type=1 AND refid IN (SELECT labelid FROM labelrole WHERE orgid='4Tec34w8' AND userid='' AND (canedit=1 OR canview=1))
+				UNION ALL
+				SELECT refid FROM label a WHERE orgid='4Tec34w8' AND type=3 AND refid IN (SELECT labelid FROM labelrole WHERE orgid='4Tec34w8' AND userid='iJdf6qUW' AND (canedit=1 OR canview=1))
+			)
+	 	GROUP BY userid)
+ORDER BY
+	firstname, lastname`
+
+*/
+
 // UpdateUser updates the user table using the given replacement user record.
 func (s Scope) UpdateUser(ctx domain.RequestContext, u user.User) (err error) {
 	u.Revised = time.Now().UTC()
