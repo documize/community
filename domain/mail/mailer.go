@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/smtp"
+	"strings"
 
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/domain"
@@ -290,9 +291,9 @@ func (m *Mailer) GetHost() string {
 
 // LoadCredentials loads up SMTP details from database
 func (m *Mailer) LoadCredentials() {
-	m.Credentials.SMTPuserid = m.Store.Setting.Get("SMTP", "userid")
-	m.Credentials.SMTPpassword = m.Store.Setting.Get("SMTP", "password")
-	m.Credentials.SMTPhost = m.Store.Setting.Get("SMTP", "host")
-	m.Credentials.SMTPport = m.Store.Setting.Get("SMTP", "port")
-	m.Credentials.SMTPsender = m.Store.Setting.Get("SMTP", "sender")
+	m.Credentials.SMTPuserid = strings.TrimSpace(m.Store.Setting.Get("SMTP", "userid"))
+	m.Credentials.SMTPpassword = strings.TrimSpace(m.Store.Setting.Get("SMTP", "password"))
+	m.Credentials.SMTPhost = strings.TrimSpace(m.Store.Setting.Get("SMTP", "host"))
+	m.Credentials.SMTPport = strings.TrimSpace(m.Store.Setting.Get("SMTP", "port"))
+	m.Credentials.SMTPsender = strings.TrimSpace(m.Store.Setting.Get("SMTP", "sender"))
 }
