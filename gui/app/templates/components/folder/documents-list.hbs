@@ -7,15 +7,15 @@
 					<div class="snippet">{{ document.excerpt }}</div>
 					<div class="chips">{{folder/document-tags documentTags=document.tags}}</div>
 				{{/link-to}}
-				<div class="checkbox" {{action 'selectDocument' document.id}}>
-					{{#if session.authenticated}}
+				{{#if session.authenticated}}
+					<div class="checkbox" {{action 'selectDocument' document.id}}>
 						{{#if document.selected}}
 							<i class="material-icons">check_box</i>
 						{{else}}
 							<i class="material-icons">check_box_outline_blank</i>
 						{{/if}}
-					{{/if}}
-				</div>
+					</div>
+				{{/if}}
 			</div>
 			{{#if canCreate}}
 				<div class="wizard-item start-document" {{action 'onShowDocumentWizard' document.id}}>

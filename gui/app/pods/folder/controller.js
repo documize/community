@@ -16,17 +16,12 @@ export default Ember.Controller.extend(NotifierMixin, {
 	documentService: Ember.inject.service('document'),
 	folderService: Ember.inject.service('folder'),
 	localStorage: Ember.inject.service('localStorage'),
-	hasSelectedDocuments: false,
 	selectedDocuments: [],
+	hasSelectedDocuments: Ember.computed.gt('selectedDocuments.length', 0),
 	queryParams: ['tab'],
 	tab: 'index',
 
 	actions: {
-		onDocumentsChecked(documents) {
-			this.set('selectedDocuments', documents);
-			this.set('hasSelectedDocuments', documents.length > 0);
-		},
-
 		onMoveDocument(folder) {
 			let self = this;
 			let documents = this.get('selectedDocuments');
@@ -42,23 +37,29 @@ export default Ember.Controller.extend(NotifierMixin, {
 			});
 
 			this.set('selectedDocuments', []);
-			this.set('hasSelectedDocuments', false);
 			this.send("showNotification", "Moved");
 		},
 
 		onDeleteDocument() {
 			let documents = this.get('selectedDocuments');
 			let self = this;
+			let promises = [];
 
-			documents.forEach(function (document) {
-				self.get('documentService').deleteDocument(document).then(function () {
-					self.get('target._routerMicrolib').refresh();
-				});
+			documents.forEach(function (document, index) {
+				promises[index] = self.get('documentService').deleteDocument(document);
 			});
 
-			this.set('selectedDocuments', []);
-			this.set('hasSelectedDocuments', false);
-			this.send("showNotification", "Deleted");
+			Ember.RSVP.all(promises).then(() => {
+				let documents = this.get('model.documents');
+				documents.forEach(function (document) {
+					document.set('selected', false);
+				});
+				this.set('model.documents', documents);
+
+				this.set('selectedDocuments', []);
+				this.send("showNotification", "Deleted");
+				this.get('target._routerMicrolib').refresh();
+			});
 		},
 
 		onFolderAdd(folder) {

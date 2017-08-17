@@ -13,7 +13,6 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
     folderService: Ember.inject.service('folder'),
-    selectedDocuments: [],
 	moveTarget: null,
 	emptyState: Ember.computed('documents', function() {
         return this.get('documents.length') === 0;
@@ -22,20 +21,19 @@ export default Ember.Component.extend({
     didReceiveAttrs() {
 		this._super(...arguments);
 
-        this.set('selectedDocuments', []);
         this.set('canCreate', this.get('folderService').get('canEditCurrentFolder'));
         this.set('deleteTargets', this.get('folders').rejectBy('id', this.get('folder.id')));
     },
 
 	didUpdateAttrs() {
 		this._super(...arguments);
-		
+
 		this.setupAddWizard();
-	},	
+	},
 
 	didInsertElement() {
 		this._super(...arguments);
-		
+
 		this.setupAddWizard();
 	},
 
@@ -50,7 +48,7 @@ export default Ember.Component.extend({
 				// out
 				$(this).find('.start-button').velocity("transition.slideUpOut", {duration: 300});
 			} });
-		});		
+		});
 	},
 
     actions: {
@@ -61,16 +59,12 @@ export default Ember.Component.extend({
             doc.set('selected', !doc.get('selected'));
 
             if (doc.get('selected')) {
-                list.push(documentId);
+				list.pushObject(documentId);
             } else {
-                var index = list.indexOf(documentId);
-                if (index > -1) {
-                    list.splice(index, 1);
-                }
-            }
+				list = _.without(list, documentId);
+			}
 
-            this.set('selectedDocuments', list);
-            this.get('onDocumentsChecked')(list);
+			this.set('selectedDocuments', list);
         },
 
 		onDelete() {
