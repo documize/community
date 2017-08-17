@@ -135,8 +135,8 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	Add(rt, RoutePrefixPrivate, "search", []string{"POST", "OPTIONS"}, nil, document.SearchDocuments)
 
 	Add(rt, RoutePrefixPrivate, "templates", []string{"POST", "OPTIONS"}, nil, template.SaveAs)
-	Add(rt, RoutePrefixPrivate, "templates", []string{"GET", "OPTIONS"}, nil, template.SavedList)
 	Add(rt, RoutePrefixPrivate, "templates/{templateID}/folder/{folderID}", []string{"POST", "OPTIONS"}, []string{"type", "saved"}, template.Use)
+	Add(rt, RoutePrefixPrivate, "templates/{folderID}", []string{"GET", "OPTIONS"}, nil, template.SavedList)
 
 	Add(rt, RoutePrefixPrivate, "sections", []string{"GET", "OPTIONS"}, nil, section.GetSections)
 	Add(rt, RoutePrefixPrivate, "sections", []string{"POST", "OPTIONS"}, nil, section.RunSectionCommand)

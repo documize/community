@@ -33,7 +33,7 @@
 	{{/each}}
 </div>
 
-{{folder/start-document folder=folder isEditor=isEditor onImport=(action 'onImport') onHideDocumentWizard=(action 'onHideDocumentWizard')}}
+{{folder/start-document folder=folder templates=templates isEditor=isEditor onImport=(action 'onImport') onHideDocumentWizard=(action 'onHideDocumentWizard')}}
 
 {{#if emptyState}}
 	{{#if canCreate}}

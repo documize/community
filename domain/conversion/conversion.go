@@ -229,12 +229,12 @@ func processDocument(ctx domain.RequestContext, store *domain.Store, filename, j
 		return
 	}
 
-	err = store.Document.Update(ctx, newDocument) // TODO review - this seems to write-back an unaltered record from that read above, but within that it calls searches.UpdateDocument() to reindex the doc.
-	if err != nil {
-		ctx.Transaction.Rollback()
-		err = errors.Wrap(err, "cannot updater new document")
-		return
-	}
+	// err = store.Document.Update(ctx, newDocument) // TODO review - this seems to write-back an unaltered record from that read above, but within that it calls searches.UpdateDocument() to reindex the doc.
+	// if err != nil {
+	// 	ctx.Transaction.Rollback()
+	// 	err = errors.Wrap(err, "cannot updater new document")
+	// 	return
+	// }
 
 	store.Activity.RecordUserActivity(ctx, activity.UserActivity{
 		LabelID:      newDocument.LabelID,

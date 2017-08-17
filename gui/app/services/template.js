@@ -32,8 +32,8 @@ export default Ember.Service.extend({
 		});
 	},
 
-	getSavedTemplates() {
-		return this.get('ajax').request(`templates`, {
+	getSavedTemplates(folderId) {
+		return this.get('ajax').request(`templates/${folderId}`, {
 			method: 'GET'
 		}).then((response) => {
 			if (is.not.array(response)) {

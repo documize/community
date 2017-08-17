@@ -133,6 +133,7 @@ type DocumentStorer interface {
 	GetByTag(ctx RequestContext, tag string) (documents []doc.Document, err error)
 	DocumentList(ctx RequestContext) (documents []doc.Document, err error)
 	Templates(ctx RequestContext) (documents []doc.Document, err error)
+	TemplatesBySpace(ctx RequestContext, spaceID string) (documents []doc.Document, err error)
 	DocumentMeta(ctx RequestContext, id string) (meta doc.DocumentMeta, err error)
 	PublicDocuments(ctx RequestContext, orgID string) (documents []doc.SitemapDocument, err error)
 	Update(ctx RequestContext, document doc.Document) (err error)

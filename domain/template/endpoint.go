@@ -49,7 +49,13 @@ func (h *Handler) SavedList(w http.ResponseWriter, r *http.Request) {
 	method := "template.saved"
 	ctx := domain.GetRequestContext(r)
 
-	documents, err := h.Store.Document.Templates(ctx)
+	folderID := request.Param(r, "folderID")
+	if len(folderID) == 0 {
+		response.WriteMissingDataError(w, method, "folderID")
+		return
+	}
+
+	documents, err := h.Store.Document.TemplatesBySpace(ctx, folderID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
@@ -67,7 +73,9 @@ func (h *Handler) SavedList(w http.ResponseWriter, r *http.Request) {
 		t.Dated = d.Created
 		t.Type = template.TypePrivate
 
-		templates = append(templates, t)
+		if d.LabelID == folderID {
+			templates = append(templates, t)
+		}
 	}
 
 	response.WriteJSON(w, templates)

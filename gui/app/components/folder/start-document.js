@@ -12,14 +12,13 @@
 import Ember from 'ember';
 import NotifierMixin from '../../mixins/notifier';
 
-
 const {
 	computed,
 } = Ember;
+
 export default Ember.Component.extend(NotifierMixin, {
 	localStorage: Ember.inject.service(),
 	appMeta: Ember.inject.service(),
-	templateService: Ember.inject.service('template'),
 	canEditTemplate: "",
 	importedDocuments: [],
 	savedTemplates: [],
@@ -27,25 +26,12 @@ export default Ember.Component.extend(NotifierMixin, {
 	newDocumentName: 'New Document',
 	newDocumentNameMissing: computed.empty('newDocumentName'),
 
-	init() {
-		this._super(...arguments);
-
-		this.get('templateService').getSavedTemplates().then((saved) => {
-            let emptyTemplate = {
-                id: "0",
-                title: "Empty",
-				description: "An empty canvas for your words",
-				layout: "doc",
-				locked: true
-            };
-
-            saved.unshiftObject(emptyTemplate);
-            this.set('savedTemplates', saved);
-        });
-	},
-
 	didInsertElement() {
 		this.setupImport();
+	},
+
+	didReceiveAttrs() {
+		this.setupTemplates();
 	},
 
 	willDestroyElement() {
@@ -53,6 +39,21 @@ export default Ember.Component.extend(NotifierMixin, {
 			this.get('drop').destroy();
 			this.set('drop', null);
 		}
+	},
+
+	setupTemplates() {
+		let templates = this.get('templates');
+
+		let emptyTemplate = {
+			id: "0",
+			title: "Empty",
+			description: "An empty canvas for your words",
+			layout: "doc",
+			locked: true
+		};
+
+		templates.unshiftObject(emptyTemplate);
+		this.set('savedTemplates', templates);
 	},
 
 	setupImport() {
@@ -151,4 +152,3 @@ export default Ember.Component.extend(NotifierMixin, {
 		},
 	}
 });
-

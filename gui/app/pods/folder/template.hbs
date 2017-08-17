@@ -8,7 +8,7 @@
 		{{folder/folder-heading folder=model.folder  isFolderOwner=model.isFolderOwner isEditor=model.isEditor}}
 		{{folder/folder-toolbar folders=model.folders folder=model.folder hasSelectedDocuments=hasSelectedDocuments
 			onDeleteDocument=(action 'onDeleteDocument') onMoveDocument=(action 'onMoveDocument')}}
-		{{folder/documents-list documents=model.documents folders=model.folders folder=model.folder isFolderOwner=model.isFolderOwner isEditor=model.isEditor
+		{{folder/documents-list documents=model.documents folders=model.folders folder=model.folder templates=model.templates isFolderOwner=model.isFolderOwner isEditor=model.isEditor
 			onDocumentsChecked=(action 'onDocumentsChecked') onDeleteSpace=(action 'onDeleteSpace') onImport=(action 'onImport')}}
 	{{/layout/zone-content}}
 {{/layout/zone-container}}
