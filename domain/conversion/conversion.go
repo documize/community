@@ -19,6 +19,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/documize/community/core/env"
+
 	api "github.com/documize/community/core/convapi"
 	"github.com/documize/community/core/request"
 	"github.com/documize/community/core/response"
@@ -139,7 +141,7 @@ func (h *Handler) convert(w http.ResponseWriter, r *http.Request, job, folderID 
 		return
 	}
 
-	nd, err := processDocument(ctx, h.Store, filename, job, folderID, fileResult)
+	nd, err := processDocument(ctx, h.Runtime, h.Store, filename, job, folderID, fileResult)
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
@@ -152,7 +154,7 @@ func (h *Handler) convert(w http.ResponseWriter, r *http.Request, job, folderID 
 	response.WriteJSON(w, nd)
 }
 
-func processDocument(ctx domain.RequestContext, store *domain.Store, filename, job, folderID string, fileResult *api.DocumentConversionResponse) (newDocument doc.Document, err error) {
+func processDocument(ctx domain.RequestContext, r *env.Runtime, store *domain.Store, filename, job, folderID string, fileResult *api.DocumentConversionResponse) (newDocument doc.Document, err error) {
 	// Convert into database objects
 	document := convertFileResult(filename, fileResult)
 	document.Job = job
@@ -222,6 +224,8 @@ func processDocument(ctx domain.RequestContext, store *domain.Store, filename, j
 		}
 	}
 
+	ctx.Transaction.Commit()
+
 	newDocument, err = store.Document.Get(ctx, documentID)
 	if err != nil {
 		ctx.Transaction.Rollback()
@@ -243,8 +247,6 @@ func processDocument(ctx domain.RequestContext, store *domain.Store, filename, j
 		ActivityType: activity.TypeCreated})
 
 	store.Audit.Record(ctx, audit.EventTypeDocumentUpload)
-
-	ctx.Transaction.Commit()
 
 	return
 }
