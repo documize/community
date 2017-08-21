@@ -128,8 +128,6 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	// Get back new space
 	sp, _ = h.Store.Space.Get(ctx, sp.RefID)
 
-	fmt.Println(model)
-
 	// clone existing space?
 	if model.CloneID != "" && (model.CopyDocument || model.CopyPermission || model.CopyTemplate) {
 		ctx.Transaction, err = h.Runtime.Db.Beginx()
@@ -247,6 +245,24 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 						h.Runtime.Log.Error(method, err)
 						return
 					}
+				}
+			}
+		}
+
+		if model.CopyTemplate {
+			blocks, err := h.Store.Block.GetBySpace(ctx, model.CloneID)
+
+			for _, b := range blocks {
+				b.RefID = uniqueid.Generate()
+				b.LabelID = sp.RefID
+				b.UserID = ctx.UserID
+
+				err = h.Store.Block.Add(ctx, b)
+				if err != nil {
+					ctx.Transaction.Rollback()
+					response.WriteServerError(w, method, err)
+					h.Runtime.Log.Error(method, err)
+					return
 				}
 			}
 		}
