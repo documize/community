@@ -29,10 +29,10 @@ export default BaseService.extend({
 	canEditCurrentFolder: false,
 
 	// Add a new folder.
-	add(folder) {
+	add(payload) {
 		return this.get('ajax').post(`folders`, {
 			contentType: 'json',
-			data: JSON.stringify(folder)
+			data: JSON.stringify(payload)
 		}).then((folder) => {
 			let data = this.get('store').normalize('folder', folder);
 			return this.get('store').push(data);

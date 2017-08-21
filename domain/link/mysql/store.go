@@ -13,6 +13,7 @@ package mysql
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/documize/community/core/env"
@@ -162,15 +163,18 @@ func (s Scope) DeleteLink(ctx domain.RequestContext, id string) (rows int64, err
 // SearchCandidates returns matching documents, sections and attachments using keywords.
 func (s Scope) SearchCandidates(ctx domain.RequestContext, keywords string) (docs []link.Candidate,
 	pages []link.Candidate, attachments []link.Candidate, err error) {
+
 	// find matching documents
 	temp := []link.Candidate{}
-	likeQuery := "title LIKE '%" + keywords + "%'"
+	keywords = strings.TrimSpace(strings.ToLower(keywords))
+	likeQuery := "LOWER(title) LIKE '%" + keywords + "%'"
 
 	err = s.Runtime.Db.Select(&temp,
-		`SELECT refid as documentid, labelid as folderid,title from document WHERE orgid=? AND `+likeQuery+` AND labelid IN
-		(SELECT refid from label WHERE orgid=? AND type=2 AND userid=?
-    	UNION ALL SELECT refid FROM label a where orgid=? AND type=1 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid='' AND (canedit=1 OR canview=1))
-		UNION ALL SELECT refid FROM label a where orgid=? AND type=3 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid=? AND (canedit=1 OR canview=1)))
+		`SELECT d.refid as documentid, d. labelid as folderid, d.title, l.label as context
+		FROM document d LEFT JOIN label l ON d.labelid=l.refid WHERE l.orgid=? AND `+likeQuery+` AND d.labelid IN
+		(SELECT refid FROM label WHERE orgid=? AND type=2 AND userid=?
+    	UNION ALL SELECT refid FROM label a WHERE orgid=? AND type=1 AND refid IN (SELECT labelid FROM labelrole WHERE orgid=? AND userid='' AND (canedit=1 OR canview=1))
+		UNION ALL SELECT refid FROM label a WHERE orgid=? AND type=3 AND refid IN (SELECT labelid FROM labelrole WHERE orgid=? AND userid=? AND (canedit=1 OR canview=1)))
 		ORDER BY title`,
 		ctx.OrgID,
 		ctx.OrgID,
@@ -194,22 +198,22 @@ func (s Scope) SearchCandidates(ctx domain.RequestContext, keywords string) (doc
 			TargetID:   r.DocumentID,
 			LinkType:   "document",
 			Title:      r.Title,
-			Context:    "",
+			Context:    r.Context,
 		}
 
 		docs = append(docs, c)
 	}
 
 	// find matching sections
-	likeQuery = "p.title LIKE '%" + keywords + "%'"
+	likeQuery = "LOWER(p.title) LIKE '%" + keywords + "%'"
 	temp = []link.Candidate{}
 
 	err = s.Runtime.Db.Select(&temp,
-		`SELECT p.refid as targetid, p.documentid as documentid, p.title as title, p.pagetype as linktype, d.title as context, d.labelid as folderid from page p
-		LEFT JOIN document d ON d.refid=p.documentid WHERE p.orgid=? AND `+likeQuery+` AND d.labelid IN
-		(SELECT refid from label WHERE orgid=? AND type=2 AND userid=?
-    	UNION ALL SELECT refid FROM label a where orgid=? AND type=1 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid='' AND (canedit=1 OR canview=1))
-		UNION ALL SELECT refid FROM label a where orgid=? AND type=3 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid=? AND (canedit=1 OR canview=1)))
+		`SELECT p.refid as targetid, p.documentid as documentid, p.title as title, p.pagetype as linktype, d.title as context, d.labelid as folderid
+		FROM page p LEFT JOIN document d ON d.refid=p.documentid WHERE p.orgid=? AND `+likeQuery+` AND d.labelid IN
+		(SELECT refid FROM label WHERE orgid=? AND type=2 AND userid=?
+    	UNION ALL SELECT refid FROM label a WHERE orgid=? AND type=1 AND refid IN (SELECT labelid FROM labelrole WHERE orgid=? AND userid='' AND (canedit=1 OR canview=1))
+		UNION ALL SELECT refid FROM label a WHERE orgid=? AND type=3 AND refid IN (SELECT labelid FROM labelrole WHERE orgid=? AND userid=? AND (canedit=1 OR canview=1)))
 		ORDER BY p.title`,
 		ctx.OrgID,
 		ctx.OrgID,
@@ -240,15 +244,15 @@ func (s Scope) SearchCandidates(ctx domain.RequestContext, keywords string) (doc
 	}
 
 	// find matching attachments
-	likeQuery = "a.filename LIKE '%" + keywords + "%'"
+	likeQuery = "LOWER(a.filename) LIKE '%" + keywords + "%'"
 	temp = []link.Candidate{}
 
 	err = s.Runtime.Db.Select(&temp,
-		`SELECT a.refid as targetid, a.documentid as documentid, a.filename as title, a.extension as context, d.labelid as folderid from attachment a
-		LEFT JOIN document d ON d.refid=a.documentid WHERE a.orgid=? AND `+likeQuery+` AND d.labelid IN
-		(SELECT refid from label WHERE orgid=? AND type=2 AND userid=?
-    	UNION ALL SELECT refid FROM label a where orgid=? AND type=1 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid='' AND (canedit=1 OR canview=1))
-		UNION ALL SELECT refid FROM label a where orgid=? AND type=3 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid=? AND (canedit=1 OR canview=1)))
+		`SELECT a.refid as targetid, a.documentid as documentid, a.filename as title, a.extension as context, d.labelid as folderid
+		FROM attachment a LEFT JOIN document d ON d.refid=a.documentid WHERE a.orgid=? AND `+likeQuery+` AND d.labelid IN
+		(SELECT refid FROM label WHERE orgid=? AND type=2 AND userid=?
+    	UNION ALL SELECT refid FROM label a WHERE orgid=? AND type=1 AND refid IN (SELECT labelid FROM labelrole WHERE orgid=? AND userid='' AND (canedit=1 OR canview=1))
+		UNION ALL SELECT refid FROM label a WHERE orgid=? AND type=3 AND refid IN (SELECT labelid FROM labelrole WHERE orgid=? AND userid=? AND (canedit=1 OR canview=1)))
 		ORDER BY a.filename`,
 		ctx.OrgID,
 		ctx.OrgID,

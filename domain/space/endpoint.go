@@ -32,8 +32,11 @@ import (
 	"github.com/documize/community/domain/mail"
 	"github.com/documize/community/model/account"
 	"github.com/documize/community/model/audit"
+	"github.com/documize/community/model/doc"
+	"github.com/documize/community/model/page"
 	"github.com/documize/community/model/space"
 	"github.com/documize/community/model/user"
+	uuid "github.com/nu7hatch/gouuid"
 )
 
 // Handler contains the runtime information such as logging and database.
@@ -65,15 +68,17 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var sp = space.Space{}
-	err = json.Unmarshal(body, &sp)
+	var model = space.NewSpaceRequest{}
+	err = json.Unmarshal(body, &model)
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
 		return
 	}
 
-	if len(sp.Name) == 0 {
+	model.Name = strings.TrimSpace(model.Name)
+	model.CloneID = strings.TrimSpace(model.CloneID)
+	if len(model.Name) == 0 {
 		response.WriteMissingDataError(w, method, "name")
 		return
 	}
@@ -85,6 +90,8 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var sp space.Space
+	sp.Name = model.Name
 	sp.RefID = uniqueid.Generate()
 	sp.OrgID = ctx.OrgID
 	sp.Type = space.ScopePrivate
@@ -118,7 +125,134 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSpaceAdd)
 
+	// Get back new space
 	sp, _ = h.Store.Space.Get(ctx, sp.RefID)
+
+	fmt.Println(model)
+
+	// clone existing space?
+	if model.CloneID != "" && (model.CopyDocument || model.CopyPermission || model.CopyTemplate) {
+		ctx.Transaction, err = h.Runtime.Db.Beginx()
+		if err != nil {
+			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
+			return
+		}
+
+		spCloneRoles, err := h.Store.Space.GetRoles(ctx, model.CloneID)
+		if err != nil {
+			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
+			return
+		}
+
+		if model.CopyPermission {
+			for _, r := range spCloneRoles {
+				r.RefID = uniqueid.Generate()
+				r.LabelID = sp.RefID
+
+				err = h.Store.Space.AddRole(ctx, r)
+				if err != nil {
+					ctx.Transaction.Rollback()
+					response.WriteServerError(w, method, err)
+					h.Runtime.Log.Error(method, err)
+					return
+				}
+			}
+		}
+
+		toCopy := []doc.Document{}
+		spCloneTemplates, err := h.Store.Document.TemplatesBySpace(ctx, model.CloneID)
+		if err != nil {
+			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
+			return
+		}
+		toCopy = append(toCopy, spCloneTemplates...)
+
+		if model.CopyDocument {
+			docs, err := h.Store.Document.GetBySpace(ctx, model.CloneID)
+
+			if err != nil {
+				ctx.Transaction.Rollback()
+				response.WriteServerError(w, method, err)
+				h.Runtime.Log.Error(method, err)
+				return
+			}
+
+			toCopy = append(toCopy, docs...)
+		}
+
+		if len(toCopy) > 0 {
+			for _, t := range toCopy {
+				origID := t.RefID
+
+				documentID := uniqueid.Generate()
+				t.RefID = documentID
+				t.LabelID = sp.RefID
+
+				err = h.Store.Document.Add(ctx, t)
+				if err != nil {
+					ctx.Transaction.Rollback()
+					response.WriteServerError(w, method, err)
+					h.Runtime.Log.Error(method, err)
+					return
+				}
+
+				pages, _ := h.Store.Page.GetPages(ctx, origID)
+				for _, p := range pages {
+					meta, err2 := h.Store.Page.GetPageMeta(ctx, p.RefID)
+					if err2 != nil {
+						ctx.Transaction.Rollback()
+						response.WriteServerError(w, method, err)
+						h.Runtime.Log.Error(method, err)
+						return
+					}
+
+					p.DocumentID = documentID
+					pageID := uniqueid.Generate()
+					p.RefID = pageID
+
+					meta.PageID = pageID
+					meta.DocumentID = documentID
+
+					model := page.NewPage{}
+					model.Page = p
+					model.Meta = meta
+
+					err = h.Store.Page.Add(ctx, model)
+
+					if err != nil {
+						ctx.Transaction.Rollback()
+						response.WriteServerError(w, method, err)
+						h.Runtime.Log.Error(method, err)
+						return
+					}
+				}
+
+				newUUID, _ := uuid.NewV4()
+				attachments, _ := h.Store.Attachment.GetAttachmentsWithData(ctx, origID)
+				for _, a := range attachments {
+					attachmentID := uniqueid.Generate()
+					a.RefID = attachmentID
+					a.DocumentID = documentID
+					a.Job = newUUID.String()
+					random := secrets.GenerateSalt()
+					a.FileID = random[0:9]
+
+					err = h.Store.Attachment.Add(ctx, a)
+					if err != nil {
+						ctx.Transaction.Rollback()
+						response.WriteServerError(w, method, err)
+						h.Runtime.Log.Error(method, err)
+						return
+					}
+				}
+			}
+		}
+
+		ctx.Transaction.Commit()
+	}
 
 	response.WriteJSON(w, sp)
 }

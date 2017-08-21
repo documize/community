@@ -189,6 +189,7 @@
 		pointer-events: none;
 		font-weight: bold;
 		color: $color-off-black;
+		@extend .no-select;
 	}
 
 	> .tip {
@@ -198,6 +199,7 @@
 		padding: 0;
 		font-family: $font-light;
 		text-align: left;
+		@extend .no-select;
 	}
 }
 

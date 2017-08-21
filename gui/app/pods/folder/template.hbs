@@ -2,7 +2,7 @@
 {{#layout/zone-container}}
 	{{#layout/zone-sidebar}}
 		{{folder/sidebar-zone folders=model.folders folder=model.folder isFolderOwner=model.isFolderOwner isEditor=model.isEditor tab=tab
-		onFolderAdd=(action 'onFolderAdd')}}
+		onAddSpace=(action 'onAddSpace')}}
 	{{/layout/zone-sidebar}}
 	{{#layout/zone-content}}
 		{{folder/folder-heading folder=model.folder  isFolderOwner=model.isFolderOwner isEditor=model.isEditor}}

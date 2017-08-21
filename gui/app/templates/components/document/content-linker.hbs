@@ -43,7 +43,7 @@
 					{{#each matches.documents as |m|}}
 						<li class="link-item" {{ action 'setSelection' m }}>
 							{{#ui/ui-selection selected=m.selected}}
-								{{m.title}}
+								{{m.title}}<br/><span class="color-gray">{{m.context}}</span>
 							{{/ui/ui-selection}}
 						</li>
 					{{/each}}

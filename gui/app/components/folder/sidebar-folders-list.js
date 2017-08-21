@@ -24,9 +24,10 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, AuthMixin, {
 	hasPrivateFolders: false,
 	newFolder: '',
 	copyTemplate: true,
-	copyBlock: true,
 	copyPermission: true,
 	copyDocument: false,
+	clonedSpace: { id: "" },
+	showSpace: false,
 
 	didReceiveAttrs() {
 		let folders = this.get('folders');
@@ -60,17 +61,42 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, AuthMixin, {
 	},
 
 	actions: {
-		addFolder() {
-			var folderName = this.get('newFolder');
+		onToggleNewSpace() {
+			let val = !this.get('showSpace');
+			this.set('showSpace', val);
+
+			if (val) {
+				Ember.run.schedule('afterRender', () => {
+					$("#new-folder-name").focus();
+				});
+			}
+		},
+
+		onCloneSpaceSelect(sp) {
+			this.set('clonedSpace', sp)
+		},
+
+		onAdd() {
+			let folderName = this.get('newFolder');
+			let clonedId = this.get('clonedSpace.id');
 
 			if (is.empty(folderName)) {
 				$("#new-folder-name").addClass("error").focus();
 				return false;
 			}
 
-			this.attrs.onFolderAdd(folderName);
+			let payload = {
+				name: folderName,
+				CloneID: clonedId,
+				copyTemplate: this.get('copyTemplate'),
+				copyPermission: this.get('copyPermission'),
+				copyDocument: this.get('copyDocument'),
+			}
 
+			this.attrs.onAddSpace(payload);
+			this.set('showSpace', false);
 			this.set('newFolder', '');
+
 			return true;
 		}
 	}
