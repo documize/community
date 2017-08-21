@@ -23,6 +23,10 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, AuthMixin, {
 	hasProtectedFolders: false,
 	hasPrivateFolders: false,
 	newFolder: '',
+	copyTemplate: true,
+	copyBlock: true,
+	copyPermission: true,
+	copyDocument: false,
 
 	didReceiveAttrs() {
 		let folders = this.get('folders');
