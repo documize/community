@@ -19,6 +19,7 @@ const {
 export default Ember.Component.extend(NotifierMixin, {
 	localStorage: Ember.inject.service(),
 	appMeta: Ember.inject.service(),
+	templateService: Ember.inject.service('template'),
 	canEditTemplate: "",
 	importedDocuments: [],
 	savedTemplates: [],
