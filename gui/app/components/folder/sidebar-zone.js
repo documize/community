@@ -51,13 +51,13 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, AuthMixin, {
 			let folder = this.get('folder');
 			this.set('pinState.pinId', this.get('pinned').isSpacePinned(folder.get('id')));
 			this.set('pinState.isPinned', this.get('pinState.pinId') !== '');
-			this.set('pinState.newName', folder.get('name').substring(0,3).toUpperCase());		
+			this.set('pinState.newName', folder.get('name').substring(0,3).toUpperCase());
 		}
 	},
 
 	actions: {
-		onFolderAdd(folderName) {
-			this.attrs.onFolderAdd(folderName);
+		onAddSpace(m) {
+			this.attrs.onAddSpace(m);
 			return true;
 		},
 

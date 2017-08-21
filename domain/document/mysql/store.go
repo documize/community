@@ -12,6 +12,7 @@
 package mysql
 
 import (
+	"database/sql"
 	"fmt"
 	"time"
 
@@ -199,6 +200,11 @@ func (s Scope) TemplatesBySpace(ctx domain.RequestContext, spaceID string) (docu
 		ctx.OrgID,
 		ctx.UserID)
 
+	if err == sql.ErrNoRows {
+		err = nil
+		documents = []doc.Document{}
+	}
+
 	if err != nil {
 		err = errors.Wrap(err, "select space document templates")
 		return
@@ -240,6 +246,11 @@ func (s Scope) DocumentList(ctx domain.RequestContext) (documents []doc.Document
 		ctx.OrgID,
 		ctx.OrgID,
 		ctx.UserID)
+
+	if err == sql.ErrNoRows {
+		err = nil
+		documents = []doc.Document{}
+	}
 
 	if err != nil {
 		err = errors.Wrap(err, "select documents list")

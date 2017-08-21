@@ -62,11 +62,11 @@ export default Ember.Controller.extend(NotifierMixin, {
 			});
 		},
 
-		onFolderAdd(folder) {
+		onAddSpace(payload) {
 			let self = this;
 			this.showNotification("Added");
 
-			this.get('folderService').add({ name: folder }).then(function (newFolder) {
+			this.get('folderService').add(payload).then(function (newFolder) {
 				self.get('folderService').setCurrentFolder(newFolder);
 				self.transitionToRoute('folder', newFolder.get('id'), newFolder.get('slug'));
 			});

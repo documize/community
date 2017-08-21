@@ -29,7 +29,7 @@
 						<li class="item" {{action 'onUnpin'}}>Unpin</li>
 					{{else}}
 						<li class="item" id="pin-space-button">Pin</li>
-					{{/if}}        
+					{{/if}}
 				</ul>
 			{{/dropdown-menu}}
 
@@ -54,14 +54,14 @@
 
 <div class="sidebar-wrapper">
     {{#if (is-equal tab 'index')}}
-		{{folder/sidebar-folders-list folders=folders folder=folder isFolderOwner=isFolderOwner onFolderAdd=(action 'onFolderAdd')}}	
+		{{folder/sidebar-folders-list folders=folders folder=folder isFolderOwner=isFolderOwner onAddSpace=(action 'onAddSpace')}}
     {{/if}}
 
     {{#if (is-equal tab 'share')}}
-		{{folder/sidebar-share folders=folders folder=folder}}	
+		{{folder/sidebar-share folders=folders folder=folder}}
     {{/if}}
 
     {{#if (is-equal tab 'permissions')}}
-		{{folder/sidebar-permissions folders=folders folder=folder}}	
+		{{folder/sidebar-permissions folders=folders folder=folder}}
     {{/if}}
 </div>

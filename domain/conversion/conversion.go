@@ -171,8 +171,6 @@ func processDocument(ctx domain.RequestContext, r *env.Runtime, store *domain.St
 		return
 	}
 
-	//err = processPage(documentID, fileResult.PageFiles, fileResult.Pages.Children[0], 1, p)
-
 	for k, v := range fileResult.Pages {
 		var p page.Page
 		p.OrgID = ctx.OrgID
@@ -196,7 +194,6 @@ func processDocument(ctx domain.RequestContext, r *env.Runtime, store *domain.St
 		model.Meta = meta
 
 		err = store.Page.Add(ctx, model)
-
 		if err != nil {
 			ctx.Transaction.Rollback()
 			err = errors.Wrap(err, "cannot insert new page for new document")
@@ -216,7 +213,6 @@ func processDocument(ctx domain.RequestContext, r *env.Runtime, store *domain.St
 		a.RefID = refID
 
 		err = store.Attachment.Add(ctx, a)
-
 		if err != nil {
 			ctx.Transaction.Rollback()
 			err = errors.Wrap(err, "cannot insert attachment for new document")
@@ -224,7 +220,17 @@ func processDocument(ctx domain.RequestContext, r *env.Runtime, store *domain.St
 		}
 	}
 
-	ctx.Transaction.Commit()
+	store.Activity.RecordUserActivity(ctx, activity.UserActivity{
+		LabelID:      newDocument.LabelID,
+		SourceID:     newDocument.RefID,
+		SourceType:   activity.SourceTypeDocument,
+		ActivityType: activity.TypeCreated})
+
+	err = ctx.Transaction.Commit()
+	if err != nil {
+		err = errors.Wrap(err, "cannot commit new document import")
+		return
+	}
 
 	newDocument, err = store.Document.Get(ctx, documentID)
 	if err != nil {
@@ -232,19 +238,6 @@ func processDocument(ctx domain.RequestContext, r *env.Runtime, store *domain.St
 		err = errors.Wrap(err, "cannot fetch new document")
 		return
 	}
-
-	// err = store.Document.Update(ctx, newDocument) // TODO review - this seems to write-back an unaltered record from that read above, but within that it calls searches.UpdateDocument() to reindex the doc.
-	// if err != nil {
-	// 	ctx.Transaction.Rollback()
-	// 	err = errors.Wrap(err, "cannot updater new document")
-	// 	return
-	// }
-
-	store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-		LabelID:      newDocument.LabelID,
-		SourceID:     newDocument.RefID,
-		SourceType:   activity.SourceTypeDocument,
-		ActivityType: activity.TypeCreated})
 
 	store.Audit.Record(ctx, audit.EventTypeDocumentUpload)
 
