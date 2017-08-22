@@ -35,10 +35,7 @@ type migrationsT []string
 
 // migrations returns a list of the migrations to update the database as required for this version of the code.
 func migrations(lastMigration string) (migrationsT, error) {
-
 	lastMigration = strings.TrimPrefix(strings.TrimSuffix(lastMigration, `"`), `"`)
-
-	//fmt.Println(`DEBUG Migrations("`+lastMigration+`")`)
 
 	files, err := web.AssetDir(migrationsDir)
 	if err != nil {

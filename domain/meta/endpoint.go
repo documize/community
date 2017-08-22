@@ -69,7 +69,7 @@ func (h *Handler) RobotsTxt(w http.ResponseWriter, r *http.Request) {
 	ctx := domain.GetRequestContext(r)
 
 	dom := organization.GetSubdomainFromHost(r)
-	org, err := h.Store.Organization.GetOrganizationByDomain(dom)
+	o, err := h.Store.Organization.GetOrganizationByDomain(dom)
 
 	// default is to deny
 	robots :=
@@ -78,29 +78,31 @@ func (h *Handler) RobotsTxt(w http.ResponseWriter, r *http.Request) {
 		`
 
 	if err != nil {
-		h.Runtime.Log.Error(fmt.Sprintf("%s failed to get Organization for domain %s", method, dom), err)
+		h.Runtime.Log.Info(fmt.Sprintf("%s failed to get Organization for domain %s", method, dom))
+		o = org.Organization{}
+		o.AllowAnonymousAccess = false
 	}
 
 	// Anonymous access would mean we allow bots to crawl.
-	if org.AllowAnonymousAccess {
+	if o.AllowAnonymousAccess {
 		sitemap := ctx.GetAppURL("sitemap.xml")
 		robots = fmt.Sprintf(
 			`User-agent: *
-Disallow: /settings/
-Disallow: /settings/*
-Disallow: /profile/
-Disallow: /profile/*
-Disallow: /auth/login/
-Disallow: /auth/login/
-Disallow: /auth/logout/
-Disallow: /auth/logout/*
-Disallow: /auth/reset/*
-Disallow: /auth/reset/*
-Disallow: /auth/sso/
-Disallow: /auth/sso/*
-Disallow: /share
-Disallow: /share/*
-Sitemap: %s`, sitemap)
+			Disallow: /settings/
+			Disallow: /settings/*
+			Disallow: /profile/
+			Disallow: /profile/*
+			Disallow: /auth/login/
+			Disallow: /auth/login/
+			Disallow: /auth/logout/
+			Disallow: /auth/logout/*
+			Disallow: /auth/reset/*
+			Disallow: /auth/reset/*
+			Disallow: /auth/sso/
+			Disallow: /auth/sso/*
+			Disallow: /share
+			Disallow: /share/*
+			Sitemap: %s`, sitemap)
 	}
 
 	response.WriteBytes(w, []byte(robots))
@@ -113,10 +115,12 @@ func (h *Handler) Sitemap(w http.ResponseWriter, r *http.Request) {
 	ctx := domain.GetRequestContext(r)
 
 	dom := organization.GetSubdomainFromHost(r)
-	org, err := h.Store.Organization.GetOrganizationByDomain(dom)
+	o, err := h.Store.Organization.GetOrganizationByDomain(dom)
 
 	if err != nil {
-		h.Runtime.Log.Error(fmt.Sprintf("%s failed to get Organization for domain %s", method, dom), err)
+		h.Runtime.Log.Info(fmt.Sprintf("%s failed to get Organization for domain %s", method, dom))
+		o = org.Organization{}
+		o.AllowAnonymousAccess = false
 	}
 
 	sitemap :=
@@ -131,9 +135,9 @@ func (h *Handler) Sitemap(w http.ResponseWriter, r *http.Request) {
 	var items []sitemapItem
 
 	// Anonymous access means we announce folders/documents shared with 'Everyone'.
-	if org.AllowAnonymousAccess {
+	if o.AllowAnonymousAccess {
 		// Grab shared folders
-		folders, err := h.Store.Space.PublicSpaces(ctx, org.RefID)
+		folders, err := h.Store.Space.PublicSpaces(ctx, o.RefID)
 		if err != nil {
 			folders = []space.Space{}
 			h.Runtime.Log.Error(fmt.Sprintf("%s failed to get folders for domain %s", method, dom), err)
@@ -148,7 +152,7 @@ func (h *Handler) Sitemap(w http.ResponseWriter, r *http.Request) {
 
 		// Grab documents from shared folders
 		var documents []doc.SitemapDocument
-		documents, err = h.Store.Document.PublicDocuments(ctx, org.RefID)
+		documents, err = h.Store.Document.PublicDocuments(ctx, o.RefID)
 		if err != nil {
 			documents = []doc.SitemapDocument{}
 			h.Runtime.Log.Error(fmt.Sprintf("%s failed to get documents for domain %s", method, dom), err)
