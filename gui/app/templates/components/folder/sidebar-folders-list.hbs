@@ -13,12 +13,20 @@
 						<label>New Space</label>
 						<div class="tip">Every space contains related documents</div>
 						{{input type='text' id="new-folder-name" class="mousetrap" value=newFolder}}
-						<p class="margin-top-30">Optionally, clone existing space</p>
-						{{ui-select id="owners-dropdown" content=folders prompt="select space" action=(action 'onCloneSpaceSelect') optionValuePath="id" optionLabelPath="name" selection=cloneSpace}}
-						<div class="margin-top-20" />
-						{{#ui/ui-checkbox selected=copyTemplate}}Templates{{/ui/ui-checkbox}}
-						{{#ui/ui-checkbox selected=copyPermission}}Permissions{{/ui/ui-checkbox}}
-						{{#ui/ui-checkbox selected=copyDocument}}Documents{{/ui/ui-checkbox}}
+						{{#unless showClone}}
+							<div class="margin-top-30">
+								<a {{action "onToggleCloneOptions"}} >Clone existing space &rarr;</a>
+							</div>
+						{{else}}
+							<div class="margin-top-30">
+								<p>Clone existing space</p>
+								{{ui-select id="owners-dropdown" content=folders prompt="select space" action=(action 'onCloneSpaceSelect') optionValuePath="id" optionLabelPath="name" selection=cloneSpace}}
+								<div class="margin-top-20" />
+								{{#ui/ui-checkbox selected=copyTemplate}}Templates{{/ui/ui-checkbox}}
+								{{#ui/ui-checkbox selected=copyPermission}}Permissions{{/ui/ui-checkbox}}
+								{{#ui/ui-checkbox selected=copyDocument}}Documents{{/ui/ui-checkbox}}
+							</div>
+						{{/unless}}
 					</div>
 					<div class="regular-button button-blue" {{action "onAdd"}}>Add</div>
 					<div class="flat-button flat-gray" {{action "onToggleNewSpace"}}>Cancel</div>

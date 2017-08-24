@@ -28,6 +28,7 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, AuthMixin, {
 	copyDocument: false,
 	clonedSpace: { id: "" },
 	showSpace: false,
+	showClone: false,
 
 	didReceiveAttrs() {
 		let folders = this.get('folders');
@@ -61,6 +62,10 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, AuthMixin, {
 	},
 
 	actions: {
+		onToggleCloneOptions() {
+			this.set('showClone', !this.get('showClone'));
+		},
+
 		onToggleNewSpace() {
 			let val = !this.get('showSpace');
 			this.set('showSpace', val);
