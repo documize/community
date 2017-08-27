@@ -16,6 +16,10 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	folderService: Ember.inject.service('folder'),
 
 	model() {
+		// if (this.get('appMeta.setupMode')) {
+		// 	localStorage.clearAll();
+		// 	return;
+		// }
 		return this.get('folderService').getAll();
 	}
 });

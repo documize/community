@@ -12,6 +12,7 @@
 import Ember from 'ember';
 import NotifierMixin from "../../mixins/notifier";
 import Encoding from "../../utils/encoding";
+import netUtil from '../../utils/net';
 
 export default Ember.Controller.extend(NotifierMixin, {
 
@@ -24,7 +25,8 @@ export default Ember.Controller.extend(NotifierMixin, {
 				data: this.model,
 				dataType: "text",
 			}).then(() => {
-				var credentials = Encoding.Base64.encode(":" + this.model.email + ":" + this.model.password);
+				let dom = netUtil.getSubdomain();
+				var credentials = Encoding.Base64.encode(dom + ":" + this.model.email + ":" + this.model.password);
 				window.location.href = "/auth/sso/" + encodeURIComponent(credentials);
 			}).catch((error) => { // eslint-disable-line no-unused-vars
 				// TODO notify user of the error within the GUI

@@ -99,7 +99,8 @@ func Setup(s *domain.Store) error {
 
 	var json = make([]byte, 0)
 	if PluginFile == "DB" {
-		json = []byte(s.Setting.Get("FILEPLUGINS", ""))
+		c, _ := s.Setting.Get("FILEPLUGINS", "")
+		json = []byte(c)
 		if len(bytes.TrimSpace(json)) == 0 {
 			return nil // don't fail if the DB does not exist yet
 		}

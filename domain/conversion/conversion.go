@@ -96,8 +96,8 @@ func (h *Handler) convert(w http.ResponseWriter, r *http.Request, job, folderID 
 	method := "conversion.upload"
 	ctx := domain.GetRequestContext(r)
 
-	licenseKey := h.Store.Setting.Get("EDITION-LICENSE", "key")
-	licenseSignature := h.Store.Setting.Get("EDITION-LICENSE", "signature")
+	licenseKey, _ := h.Store.Setting.Get("EDITION-LICENSE", "key")
+	licenseSignature, _ := h.Store.Setting.Get("EDITION-LICENSE", "signature")
 	k, _ := hex.DecodeString(licenseKey)
 	s, _ := hex.DecodeString(licenseSignature)
 

@@ -68,9 +68,11 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	dom := strings.TrimSpace(strings.ToLower(credentials[0]))
-	dom = h.Store.Organization.CheckDomain(ctx, dom) // TODO optimize by removing this once js allows empty domains
 	email := strings.TrimSpace(strings.ToLower(credentials[1]))
 	password := credentials[2]
+
+	dom = h.Store.Organization.CheckDomain(ctx, dom) // TODO optimize by removing this once js allows empty domains
+
 	h.Runtime.Log.Info("logon attempt " + email + " @ " + dom)
 
 	u, err := h.Store.User.GetByDomain(ctx, dom, email)
@@ -107,6 +109,8 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		h.Runtime.Log.Error("bad auth accounts", err)
 		return
 	}
+
+	h.Runtime.Log.Info("login " + email + " @ " + dom)
 
 	authModel := auth.AuthenticationModel{}
 	authModel.Token = GenerateJWT(h.Runtime, u.RefID, org.RefID, dom)

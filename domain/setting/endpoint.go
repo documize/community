@@ -41,7 +41,7 @@ func (h *Handler) SMTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	config := h.Store.Setting.Get("SMTP", "")
+	config, _ := h.Store.Setting.Get("SMTP", "")
 
 	var y map[string]interface{}
 	json.Unmarshal([]byte(config), &y)
@@ -101,7 +101,7 @@ func (h *Handler) License(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	config := h.Store.Setting.Get("EDITION-LICENSE", "")
+	config, _ := h.Store.Setting.Get("EDITION-LICENSE", "")
 	if len(config) == 0 {
 		config = "{}"
 	}

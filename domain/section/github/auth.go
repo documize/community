@@ -25,16 +25,19 @@ import (
 )
 
 func clientID(ctx domain.RequestContext, s *domain.Store) string {
-	return s.Setting.Get(meta.ConfigHandle(), "clientID")
+	c, _ := s.Setting.Get(meta.ConfigHandle(), "clientID")
+	return c
 }
 
 func clientSecret(ctx domain.RequestContext, s *domain.Store) string {
-	return s.Setting.Get(meta.ConfigHandle(), "clientSecret")
+	c, _ := s.Setting.Get(meta.ConfigHandle(), "clientSecret")
+	return c
 }
 
 func authorizationCallbackURL(ctx domain.RequestContext, s *domain.Store) string {
 	// NOTE: URL value must have the path and query "/api/public/validate?section=github"
-	return s.Setting.Get(meta.ConfigHandle(), "authorizationCallbackURL")
+	c, _ := s.Setting.Get(meta.ConfigHandle(), "authorizationCallbackURL")
+	return c
 }
 
 func validateToken(ctx provider.Context, s *domain.Store, ptoken string) error {

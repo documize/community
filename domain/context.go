@@ -64,5 +64,9 @@ func GetRequestContext(r *http.Request) (ctx RequestContext) {
 		return
 	}
 
-	return RequestContext{}
+	ctx = RequestContext{}
+	ctx.AppURL = r.Host
+	ctx.SSL = r.TLS != nil
+
+	return
 }

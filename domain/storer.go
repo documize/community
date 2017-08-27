@@ -145,9 +145,9 @@ type DocumentStorer interface {
 
 // SettingStorer defines required methods for persisting global and user level settings
 type SettingStorer interface {
-	Get(area, path string) string
+	Get(area, path string) (val string, err error)
 	Set(area, value string) error
-	GetUser(orgID, userID, area, path string) string
+	GetUser(orgID, userID, area, path string) (val string, err error)
 	SetUser(orgID, userID, area, json string) error
 }
 

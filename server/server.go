@@ -100,7 +100,7 @@ func Start(rt *env.Runtime, s *domain.Store, ready chan struct{}) {
 		n.Run(testHost + ":" + rt.Flags.HTTPPort)
 	} else {
 		if rt.Flags.ForceHTTPPort2SSL != "" {
-			rt.Log.Info("Starting non-SSL server on " + rt.Flags.ForceHTTPPort2SSL + " and redirecting to SSL server on  " + rt.Flags.HTTPPort)
+			rt.Log.Info("Starting non-SSL server on " + rt.Flags.ForceHTTPPort2SSL + " and redirecting to SSL server on " + rt.Flags.HTTPPort)
 
 			go func() {
 				err := http.ListenAndServe(":"+rt.Flags.ForceHTTPPort2SSL, http.HandlerFunc(

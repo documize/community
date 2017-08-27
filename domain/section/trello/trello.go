@@ -69,7 +69,7 @@ func (p *Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http
 	}
 
 	config.Clean()
-	config.AppKey = p.Store.Setting.Get(meta.ConfigHandle(), "appKey")
+	config.AppKey, _ = p.Store.Setting.Get(meta.ConfigHandle(), "appKey")
 
 	if len(config.AppKey) == 0 {
 		p.Runtime.Log.Info("missing trello App Key")

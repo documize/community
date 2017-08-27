@@ -32,6 +32,7 @@ import (
 	"github.com/documize/community/core/uniqueid"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/mail"
+	"github.com/documize/community/domain/organization"
 	"github.com/documize/community/model/account"
 	"github.com/documize/community/model/audit"
 	"github.com/documize/community/model/space"
@@ -566,6 +567,7 @@ func (h *Handler) UserSpacePermissions(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) ForgotPassword(w http.ResponseWriter, r *http.Request) {
 	method := "user.ForgotPassword"
 	ctx := domain.GetRequestContext(r)
+	ctx.Subdomain = organization.GetSubdomainFromHost(r)
 
 	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
@@ -619,6 +621,7 @@ func (h *Handler) ForgotPassword(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) ResetPassword(w http.ResponseWriter, r *http.Request) {
 	method := "user.ForgotUserPassword"
 	ctx := domain.GetRequestContext(r)
+	ctx.Subdomain = organization.GetSubdomainFromHost(r)
 
 	token := request.Param(r, "token")
 	if len(token) == 0 {

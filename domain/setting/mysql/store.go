@@ -14,7 +14,6 @@ package mysql
 import (
 	"bytes"
 	"database/sql"
-	"fmt"
 
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/streamutil"
@@ -27,7 +26,7 @@ type Scope struct {
 }
 
 // Get fetches a configuration JSON element from the config table.
-func (s Scope) Get(area, path string) (value string) {
+func (s Scope) Get(area, path string) (value string, err error) {
 	if path != "" {
 		path = "." + path
 	}
@@ -37,16 +36,14 @@ func (s Scope) Get(area, path string) (value string) {
 	defer streamutil.Close(stmt)
 
 	if err != nil {
-		s.Runtime.Log.Error(fmt.Sprintf("setting.Get %s %s", area, path), err)
-		return ""
+		return "", err
 	}
 
 	var item = make([]uint8, 0)
 
 	err = stmt.Get(&item)
 	if err != nil {
-		s.Runtime.Log.Error(fmt.Sprintf("setting.Get %s %s", area, path), err)
-		return ""
+		return "", err
 	}
 
 	if len(item) > 1 {
@@ -54,7 +51,7 @@ func (s Scope) Get(area, path string) (value string) {
 		value = string(bytes.TrimPrefix(bytes.TrimSuffix(item, q), q))
 	}
 
-	return value
+	return value, nil
 }
 
 // Set writes a configuration JSON element to the config table.
@@ -81,7 +78,7 @@ func (s Scope) Set(area, json string) error {
 
 // GetUser fetches a configuration JSON element from the userconfig table for a given orgid/userid combination.
 // Errors return the empty string. A blank path returns the whole JSON object, as JSON.
-func (s Scope) GetUser(orgID, userID, area, path string) (value string) {
+func (s Scope) GetUser(orgID, userID, area, path string) (value string, err error) {
 	if path != "" {
 		path = "." + path
 	}
@@ -93,15 +90,14 @@ func (s Scope) GetUser(orgID, userID, area, path string) (value string) {
 	defer streamutil.Close(stmt)
 
 	if err != nil {
-		return ""
+		return "", err
 	}
 
 	var item = make([]uint8, 0)
 
 	err = stmt.Get(&item)
 	if err != nil && err != sql.ErrNoRows {
-		s.Runtime.Log.Error(fmt.Sprintf("setting.GetUser for user %s %s %s", userID, area, path), err)
-		return ""
+		return "", err
 	}
 
 	if len(item) > 1 {
@@ -109,7 +105,7 @@ func (s Scope) GetUser(orgID, userID, area, path string) (value string) {
 		value = string(bytes.TrimPrefix(bytes.TrimSuffix(item, q), q))
 	}
 
-	return value
+	return value, nil
 }
 
 // SetUser writes a configuration JSON element to the userconfig table for the current user.

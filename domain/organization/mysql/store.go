@@ -80,7 +80,7 @@ func (s Scope) GetOrganization(ctx domain.RequestContext, id string) (org org.Or
 // No context is required because user might no be authenticated yet.
 func (s Scope) GetOrganizationByDomain(subdomain string) (org org.Organization, err error) {
 	err = nil
-	subdomain = strings.ToLower(subdomain)
+	subdomain = strings.TrimSpace(strings.ToLower(subdomain))
 
 	if s.Runtime.Flags.SiteMode == env.SiteModeNormal { // only return an organization when running normally
 		var stmt *sqlx.Stmt

@@ -33,6 +33,8 @@ export default Ember.Route.extend(ApplicationRouteMixin, TooltipMixin, {
 			if (sa !== "authenticator:documize" && sa !== "authenticator:keycloak" && data.allowAnonymousAccess) {
 				if (!this.get('appMeta.setupMode')) {
 					return this.get('session').authenticate('authenticator:anonymous', data);
+				// } else {
+				// 	this.get('localStorage').clearAll();
 				}
 			}
 
@@ -42,6 +44,7 @@ export default Ember.Route.extend(ApplicationRouteMixin, TooltipMixin, {
 
 	sessionAuthenticated() {
 		if (this.get('appMeta.setupMode')) {
+			this.get('localStorage').clearAll();
 			return;
 		}
 
@@ -68,7 +71,7 @@ export default Ember.Route.extend(ApplicationRouteMixin, TooltipMixin, {
 				console.log(transition); // eslint-disable-line no-console
 
 				if (netUtil.isAjaxAccessError(error) && !this.get('appMeta.setupMode')) {
-					localStorage.clear();
+					localStorage.clearAll();
 					return this.transitionTo('auth.login');
 				}
 			}

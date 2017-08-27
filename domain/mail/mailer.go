@@ -291,9 +291,18 @@ func (m *Mailer) GetHost() string {
 
 // LoadCredentials loads up SMTP details from database
 func (m *Mailer) LoadCredentials() {
-	m.Credentials.SMTPuserid = strings.TrimSpace(m.Store.Setting.Get("SMTP", "userid"))
-	m.Credentials.SMTPpassword = strings.TrimSpace(m.Store.Setting.Get("SMTP", "password"))
-	m.Credentials.SMTPhost = strings.TrimSpace(m.Store.Setting.Get("SMTP", "host"))
-	m.Credentials.SMTPport = strings.TrimSpace(m.Store.Setting.Get("SMTP", "port"))
-	m.Credentials.SMTPsender = strings.TrimSpace(m.Store.Setting.Get("SMTP", "sender"))
+	userID, _ := m.Store.Setting.Get("SMTP", "userid")
+	m.Credentials.SMTPuserid = strings.TrimSpace(userID)
+
+	pwd, _ := m.Store.Setting.Get("SMTP", "password")
+	m.Credentials.SMTPpassword = strings.TrimSpace(pwd)
+
+	host, _ := m.Store.Setting.Get("SMTP", "host")
+	m.Credentials.SMTPhost = strings.TrimSpace(host)
+
+	port, _ := m.Store.Setting.Get("SMTP", "port")
+	m.Credentials.SMTPport = strings.TrimSpace(port)
+
+	sender, _ := m.Store.Setting.Get("SMTP", "sender")
+	m.Credentials.SMTPsender = strings.TrimSpace(sender)
 }

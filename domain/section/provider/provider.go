@@ -222,7 +222,9 @@ func (c *Context) MarshalSecrets(sec interface{}, s *domain.Store) error {
 // Errors return the empty string.
 func (c *Context) GetSecrets(JSONpath string, s *domain.Store) string {
 	m := c.prov.Meta()
-	return s.Setting.GetUser(c.OrgID, c.UserID, m.ContentType, JSONpath)
+	v, _ := s.Setting.GetUser(c.OrgID, c.UserID, m.ContentType, JSONpath)
+
+	return v
 }
 
 // ErrNoSecrets is returned if no secret is found in the database.
