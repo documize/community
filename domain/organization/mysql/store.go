@@ -78,7 +78,7 @@ func (s Scope) GetOrganization(ctx domain.RequestContext, id string) (org org.Or
 
 // GetOrganizationByDomain returns the organization matching a given URL subdomain.
 // No context is required because user might no be authenticated yet.
-func (s Scope) GetOrganizationByDomain(subdomain string) (org org.Organization, err error) {
+func (s Scope) GetOrganizationByDomain(subdomain string) (o org.Organization, err error) {
 	err = nil
 	subdomain = strings.TrimSpace(strings.ToLower(subdomain))
 
@@ -93,8 +93,7 @@ func (s Scope) GetOrganizationByDomain(subdomain string) (org org.Organization, 
 			return
 		}
 
-		err = stmt.Get(&org, subdomain)
-
+		err = stmt.Get(&o, subdomain)
 		if err != nil && err != sql.ErrNoRows {
 			err = errors.Wrap(err, fmt.Sprintf("unable to execute select for subdomain %s", subdomain))
 			return

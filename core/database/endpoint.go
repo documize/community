@@ -18,6 +18,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/documize/community/core/api/plugins"
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/secrets"
 	"github.com/documize/community/core/stringutil"
@@ -32,8 +33,8 @@ type Handler struct {
 	Store   *domain.Store
 }
 
-// Create the tables in a blank database
-func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
+// Setup the tables in a blank database
+func (h *Handler) Setup(w http.ResponseWriter, r *http.Request) {
 	defer func() {
 		target := "/setup"
 		status := http.StatusBadRequest
@@ -45,7 +46,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 
 		req, err := http.NewRequest("GET", target, nil)
 		if err != nil {
-			h.Runtime.Log.Error("database.Create()'s error in defer ", err)
+			h.Runtime.Log.Error("database.Setup error in defer ", err)
 		}
 
 		http.Redirect(w, req, target, status)
@@ -53,7 +54,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 
 	err := r.ParseForm()
 	if err != nil {
-		h.Runtime.Log.Error("database.Create()'s r.ParseForm()", err)
+		h.Runtime.Log.Error("database.Setup r.ParseForm()", err)
 		return
 	}
 
@@ -61,7 +62,7 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	dbhash := r.Form.Get("dbhash")
 
 	if dbname != web.SiteInfo.DBname || dbhash != web.SiteInfo.DBhash {
-		h.Runtime.Log.Error("database.Create()'s security credentials error ", errors.New("bad db name or validation code"))
+		h.Runtime.Log.Error("database.Setup security credentials error ", errors.New("bad db name or validation code"))
 		return
 	}
 
@@ -84,22 +85,27 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 		details.Password == "" ||
 		details.Firstname == "" ||
 		details.Lastname == "" {
-		h.Runtime.Log.Error("database.Create() error ", errors.New("required field in database set-up form blank"))
+		h.Runtime.Log.Error("database.Setup error ", errors.New("required field in database set-up form blank"))
 		return
 	}
 
 	if err = Migrate(h.Runtime, false /* no tables exist yet */); err != nil {
-		h.Runtime.Log.Error("database.Create()", err)
+		h.Runtime.Log.Error("database.Setup migrate", err)
 		return
 	}
 
 	err = setupAccount(h.Runtime, details, secrets.GenerateSalt())
 	if err != nil {
-		h.Runtime.Log.Error("database.Create()", err)
+		h.Runtime.Log.Error("database.Setup setup account ", err)
 		return
 	}
 
 	h.Runtime.Flags.SiteMode = env.SiteModeNormal
+
+	err = plugins.Setup(h.Store)
+	if err != nil {
+		h.Runtime.Log.Error("database.Setup plugin setup failed", err)
+	}
 }
 
 // The result of completing the onboarding process.

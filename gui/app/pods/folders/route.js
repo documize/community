@@ -12,14 +12,23 @@
 import Ember from 'ember';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 
+const {
+	inject: { service }
+} = Ember;
+
 export default Ember.Route.extend(AuthenticatedRouteMixin, {
-	folderService: Ember.inject.service('folder'),
+	appMeta: service(),
+	folderService: service('folder'),
+	localStorage: service(),
+
+	beforeModel() {
+		if (this.get('appMeta.setupMode')) {
+			this.get('localStorage').clearAll();
+			this.transitionTo('setup');
+		}
+	},
 
 	model() {
-		// if (this.get('appMeta.setupMode')) {
-		// 	localStorage.clearAll();
-		// 	return;
-		// }
 		return this.get('folderService').getAll();
 	}
 });

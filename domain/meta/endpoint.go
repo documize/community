@@ -175,8 +175,6 @@ func (h *Handler) Sitemap(w http.ResponseWriter, r *http.Request) {
 	response.WriteBytes(w, buffer.Bytes())
 }
 
-// sitemapItem provides a means to teleport somewhere else for free.
-// What did you think it did?
 type sitemapItem struct {
 	URL  string
 	Date string

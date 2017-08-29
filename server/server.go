@@ -14,7 +14,6 @@ package server
 import (
 	"fmt"
 	"net/http"
-	"os"
 	"strings"
 
 	"github.com/codegangsta/negroni"
@@ -38,16 +37,15 @@ func Start(rt *env.Runtime, s *domain.Store, ready chan struct{}) {
 	case env.SiteModeOffline:
 		rt.Log.Info("Serving OFFLINE web server")
 	case env.SiteModeSetup:
-		dbHandler := database.Handler{Runtime: rt, Store: s}
-		routing.Add(rt, routing.RoutePrefixPrivate, "setup", []string{"POST", "OPTIONS"}, nil, dbHandler.Create)
 		rt.Log.Info("Serving SETUP web server")
+		dbHandler := database.Handler{Runtime: rt, Store: s}
+		routing.Add(rt, routing.RoutePrefixPrivate, "setup", []string{"POST", "OPTIONS"}, nil, dbHandler.Setup)
 	case env.SiteModeBadDB:
 		rt.Log.Info("Serving BAD DATABASE web server")
 	default:
 		err := plugins.Setup(s)
 		if err != nil {
-			rt.Log.Error("Terminating before running - invalid plugin.json", err)
-			os.Exit(1)
+			rt.Log.Error("plugin setup failed", err)
 		}
 		rt.Log.Info("Starting web server")
 	}

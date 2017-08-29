@@ -268,6 +268,7 @@ func getStatements(bytes []byte) []string {
 	stripped := regexp.MustCompile("(?s)--.*?\n|/\\*.*?\\*/").ReplaceAll(bytes, []byte("\n"))
 	sqls := strings.Split(string(stripped), ";")
 	ret := make([]string, 0, len(sqls))
+
 	for _, v := range sqls {
 		trimmed := strings.TrimSpace(v)
 		if len(trimmed) > 0 &&
@@ -275,5 +276,6 @@ func getStatements(bytes []byte) []string {
 			ret = append(ret, trimmed+";")
 		}
 	}
+
 	return ret
 }

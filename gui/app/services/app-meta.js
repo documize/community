@@ -36,6 +36,7 @@ export default Ember.Service.extend({
 	authProvider: constants.AuthProvider.Documize,
 	authConfig: null,
 	setupMode: false,
+	secureMode: false,
 
 	invalidLicense() {
 		return this.valid === false;
@@ -68,7 +69,7 @@ export default Ember.Service.extend({
 			this.setProperties({
 				title: htmlSafe("Secure document viewing"),
 				allowAnonymousAccess: true,
-				setupMode: true
+				secureMode: true
 			});
 
 			this.get('localStorage').clearAll();

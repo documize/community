@@ -31,19 +31,15 @@ export default Ember.Route.extend(ApplicationRouteMixin, TooltipMixin, {
 
 		return this.get('appMeta').boot(transition.targetName, window.location.href).then(data => {
 			if (sa !== "authenticator:documize" && sa !== "authenticator:keycloak" && data.allowAnonymousAccess) {
-				if (!this.get('appMeta.setupMode')) {
+				if (!this.get('appMeta.setupMode') && !this.get('appMeta.secureMode')) {
 					return this.get('session').authenticate('authenticator:anonymous', data);
-				// } else {
-				// 	this.get('localStorage').clearAll();
 				}
 			}
-
-			return;
 		});
 	},
 
 	sessionAuthenticated() {
-		if (this.get('appMeta.setupMode')) {
+		if (this.get('appMeta.setupMode') || this.get('appMeta.secureMode')) {
 			this.get('localStorage').clearAll();
 			return;
 		}
