@@ -125,7 +125,7 @@ func lockDB(runtime *env.Runtime) (bool, error) {
 	if err != nil {
 		// good error would be "Error 1062: Duplicate entry 'DBLOCK' for key 'idx_config_area'"
 		if strings.HasPrefix(err.Error(), "Error 1062:") {
-			runtime.Log.Info("Database locked by annother Documize instance")
+			runtime.Log.Info("Database locked by another Documize instance")
 			return false, nil
 		}
 		return false, err

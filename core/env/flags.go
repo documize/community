@@ -25,6 +25,7 @@ import (
 type Flags struct {
 	DBConn            string // database connection string
 	Salt              string // the salt string used to encode JWT tokens
+	DBType            string // (optional) database type
 	SSLCertFile       string // (optional) name of SSL certificate PEM file
 	SSLKeyFile        string // (optional) name of SSL key PEM file
 	HTTPPort          string // (optional) HTTP or HTTPS port
@@ -71,7 +72,7 @@ var loadMutex sync.Mutex
 
 // ParseFlags loads command line and OS environment variables required by the program to function.
 func ParseFlags() (f Flags) {
-	var dbConn, jwtKey, siteMode, port, certFile, keyFile, forcePort2SSL string
+	var dbConn, dbType, jwtKey, siteMode, port, certFile, keyFile, forcePort2SSL string
 
 	register(&jwtKey, "salt", false, "the salt string used to encode JWT tokens, if not set a random value will be generated")
 	register(&certFile, "cert", false, "the cert.pem file used for https")
@@ -79,6 +80,7 @@ func ParseFlags() (f Flags) {
 	register(&port, "port", false, "http/https port number")
 	register(&forcePort2SSL, "forcesslport", false, "redirect given http port number to TLS")
 	register(&siteMode, "offline", false, "set to '1' for OFFLINE mode")
+	register(&dbType, "dbtype", false, "set to database type mysql|percona|mariadb")
 	register(&dbConn, "db", true, `'username:password@protocol(hostname:port)/databasename" for example "fred:bloggs@tcp(localhost:3306)/documize"`)
 
 	parse("db")
@@ -90,6 +92,7 @@ func ParseFlags() (f Flags) {
 	f.SiteMode = siteMode
 	f.SSLCertFile = certFile
 	f.SSLKeyFile = keyFile
+	f.DBType = dbType
 
 	return f
 }

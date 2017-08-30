@@ -34,7 +34,7 @@ func Check(runtime *env.Runtime) bool {
 		web.SiteInfo.DBname = strings.Split(csBits[len(csBits)-1], "?")[0]
 	}
 
-	rows, err := runtime.Db.Query("SELECT VERSION() AS version, @@version_comment as comment, @@character_set_database AS charset, @@collation_database AS collation;")
+	rows, err := runtime.Db.Query("SELECT VERSION() AS version, @@version_comment as comment, @@character_set_database AS charset, @@collation_database AS collation")
 	if err != nil {
 		runtime.Log.Error("Can't get MySQL configuration", err)
 		web.SiteInfo.Issue = "Can't get MySQL configuration: " + err.Error()
@@ -61,7 +61,7 @@ func Check(runtime *env.Runtime) bool {
 	// Get SQL variant as this affects minimum version checking logic.
 	// MySQL and Percona share same version scheme (e..g 5.7.10).
 	// MariaDB starts at 10.2.x
-	runtime.DbVariant = GetSQLVariant(dbComment)
+	runtime.DbVariant = GetSQLVariant(runtime.Flags.DBType, dbComment)
 	runtime.Log.Info(fmt.Sprintf("Database checks: SQL variant %v", runtime.DbVariant))
 	runtime.Log.Info("Database checks: SQL version " + version)
 
@@ -142,9 +142,11 @@ func Check(runtime *env.Runtime) bool {
 }
 
 // GetSQLVariant uses database value form @@version_comment to deduce MySQL variant.
-func GetSQLVariant(vc string) env.DbVariant {
+func GetSQLVariant(dbType, vc string) env.DbVariant {
 	vc = strings.ToLower(vc)
+	dbType = strings.ToLower(dbType)
 
+	// determine type from database
 	if strings.Contains(vc, "mariadb") {
 		return env.DBVariantMariaDB
 	} else if strings.Contains(vc, "percona") {
@@ -153,7 +155,17 @@ func GetSQLVariant(vc string) env.DbVariant {
 		return env.DbVariantMySQL
 	}
 
-	return "UNKNOWN"
+	// now determine type from command line switch
+	if strings.Contains(dbType, "mariadb") {
+		return env.DBVariantMariaDB
+	} else if strings.Contains(dbType, "percona") {
+		return env.DBVariantPercona
+	} else if strings.Contains(dbType, "mysql") {
+		return env.DbVariantMySQL
+	}
+
+	// horrid default could cause app to crash
+	return env.DbVariantMySQL
 }
 
 // GetSQLVersion returns SQL version as major,minor,patch numerics.

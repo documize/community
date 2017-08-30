@@ -67,7 +67,7 @@ export default Ember.Route.extend(ApplicationRouteMixin, TooltipMixin, {
 				console.log(transition); // eslint-disable-line no-console
 
 				if (netUtil.isAjaxAccessError(error) && !this.get('appMeta.setupMode')) {
-					localStorage.clearAll();
+					this.get('localStorage').clearAll();
 					return this.transitionTo('auth.login');
 				}
 			}
