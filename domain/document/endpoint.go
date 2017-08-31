@@ -205,10 +205,10 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !ctx.Editor {
-		response.WriteForbiddenError(w)
-		return
-	}
+	// if !ctx.Editor {
+	// 	response.WriteForbiddenError(w)
+	// 	return
+	// }
 
 	if !CanChangeDocument(ctx, *h.Store, documentID) {
 		response.WriteForbiddenError(w)

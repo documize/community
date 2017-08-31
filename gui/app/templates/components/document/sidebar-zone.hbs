@@ -10,7 +10,7 @@
     <div class="round-button-mono {{if (is-equal tab 'attachments') 'selected'}}" {{action 'onChangeTab' 'attachments'}}>
         <i class="material-icons">attach_file</i>
     </div>
-    {{#if session.authenticated}}
+    {{#if isEditor}}
         <div class="margin-top-20"></div>
         <div class="round-button-mono {{if (is-equal tab 'activity') 'selected'}}" {{action 'onChangeTab' 'activity'}}>
             <i class="material-icons">timeline</i>
@@ -55,10 +55,12 @@
             {{else}}
                 <li class="item" id="pin-document-button">Pin</li>
             {{/if}}
-            <li class="item" id="pin-document-button">
-                {{#link-to 'document.history'}}History{{/link-to}}
-            </li>
-            <li class="divider"></li>
+			{{#if isEditor}}
+				<li class="item">
+					{{#link-to 'document.history'}}History{{/link-to}}
+				</li>
+				<li class="divider"></li>
+	        {{/if}}
         {{/if}}
 
         {{#if isEditor}}

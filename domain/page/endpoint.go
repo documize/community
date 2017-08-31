@@ -454,10 +454,10 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !ctx.Editor {
-		response.WriteForbiddenError(w)
-		return
-	}
+	// if !ctx.Editor {
+	// 	response.WriteForbiddenError(w)
+	// 	return
+	// }
 
 	documentID := request.Param(r, "documentID")
 	if len(documentID) == 0 {
@@ -468,6 +468,11 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	pageID := request.Param(r, "pageID")
 	if len(pageID) == 0 {
 		response.WriteMissingDataError(w, method, "pageID")
+		return
+	}
+
+	if !document.CanChangeDocument(ctx, *h.Store, documentID) {
+		response.WriteForbiddenError(w)
 		return
 	}
 

@@ -26,6 +26,7 @@ import (
 	"github.com/documize/community/core/uniqueid"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/document"
+	"github.com/documize/community/domain/organization"
 	indexer "github.com/documize/community/domain/search"
 	"github.com/documize/community/model/attachment"
 	"github.com/documize/community/model/audit"
@@ -44,6 +45,7 @@ type Handler struct {
 func (h *Handler) Download(w http.ResponseWriter, r *http.Request) {
 	method := "attachment.Download"
 	ctx := domain.GetRequestContext(r)
+	ctx.Subdomain = organization.GetSubdomainFromHost(r)
 
 	a, err := h.Store.Attachment.GetAttachment(ctx, request.Param(r, "orgID"), request.Param(r, "attachmentID"))
 

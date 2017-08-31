@@ -504,7 +504,7 @@ func (h *Handler) ChangePassword(w http.ResponseWriter, r *http.Request) {
 	newPassword := string(body)
 
 	// can only update your own account unless you are an admin
-	if userID != ctx.UserID || !ctx.Administrator {
+	if !ctx.Administrator || (!ctx.Administrator && userID != ctx.UserID) {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -526,12 +526,13 @@ func (h *Handler) ChangePassword(w http.ResponseWriter, r *http.Request) {
 
 	err = h.Store.User.UpdateUserPassword(ctx, userID, u.Salt, secrets.GeneratePassword(newPassword, u.Salt))
 	if err != nil {
+		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
 		return
 	}
 
-	ctx.Transaction.Rollback()
+	ctx.Transaction.Commit()
 
 	response.WriteEmpty(w)
 }

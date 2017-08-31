@@ -13,7 +13,9 @@
         border: none;
         padding: 0;
         margin: 0 0 30px 0;
-        width: 100%;
+		table-layout: fixed;
+		width: 100%;
+		white-space: nowrap;
 
         > thead {
             > tr {
@@ -21,13 +23,28 @@
                     font-weight: bold;
                     text-align: center;
                 }
-            }
+
+				> th:nth-child(1) {
+					width: 70%;
+                }
+
+                > th:nth-child(2), td:nth-child(3) {
+					width: 20%;
+                }
+			}
         }
 
         > tbody {
+			width: 300px;
+
             > tr {
                 > td {
                     padding: 8px 0;
+					@extend .truncate;
+                }
+
+				> td:nth-child(1) {
+					text-align: left;
                 }
 
                 > td:nth-child(2), td:nth-child(3) {

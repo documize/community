@@ -30,6 +30,7 @@ import (
 	"github.com/documize/community/core/uniqueid"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/mail"
+	"github.com/documize/community/domain/organization"
 	"github.com/documize/community/model/account"
 	"github.com/documize/community/model/audit"
 	"github.com/documize/community/model/doc"
@@ -745,7 +746,8 @@ func (h *Handler) GetPermissions(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) AcceptInvitation(w http.ResponseWriter, r *http.Request) {
 	method := "space.AcceptInvitation"
 	ctx := domain.GetRequestContext(r)
-
+	ctx.Subdomain = organization.GetSubdomainFromHost(r)
+	
 	folderID := request.Param(r, "folderID")
 	if len(folderID) == 0 {
 		response.WriteMissingDataError(w, method, "folderID")

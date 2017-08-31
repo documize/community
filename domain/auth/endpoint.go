@@ -80,7 +80,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		response.WriteUnauthorizedError(w)
 		return
 	}
-	if err != nil {
+	if err != nil && err != sql.ErrNoRows {
 		response.WriteServerError(w, method, err)
 		return
 	}
