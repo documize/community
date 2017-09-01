@@ -39,6 +39,32 @@ func TestSpace(t *testing.T) {
 		}
 	})
 
+	t.Run("Update Space", func(t *testing.T) {
+		ctx.Transaction, err = rt.Db.Beginx()
+
+		sp, err := s.Space.Get(ctx, spaceID)
+		if err != nil {
+			ctx.Transaction.Rollback()
+			t.Error("failed to get space")
+			return
+		}
+
+		sp.Name = "test update"
+		err = s.Space.Update(ctx, sp)
+		if err != nil {
+			ctx.Transaction.Rollback()
+			t.Error("failed to update space")
+			return
+		}
+
+		ctx.Transaction.Commit()
+
+		sp, err = s.Space.Get(ctx, spaceID)
+		if err != nil || sp.Name != "test update" {
+			t.Error("failed to update space")
+		}
+	})
+
 	t.Run("Delete Space", func(t *testing.T) {
 		ctx.Transaction, err = rt.Db.Beginx()
 
