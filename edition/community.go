@@ -20,8 +20,10 @@ import (
 	"github.com/documize/community/domain/section"
 	"github.com/documize/community/edition/boot"
 	"github.com/documize/community/edition/logging"
-	_ "github.com/documize/community/embed" // the compressed front-end code and static data
+	"github.com/documize/community/embed"
+	// _"github.com/documize/community/embed" // the compressed front-end code and static data
 	"github.com/documize/community/server"
+	"github.com/documize/community/server/web"
 	_ "github.com/go-sql-driver/mysql" // the mysql driver is required behind the scenes
 )
 
@@ -33,6 +35,9 @@ func main() {
 
 	// wire up logging implementation
 	rt.Log = logging.NewLogger()
+
+	// wire up embedded web assets handler
+	web.Embed = embed.NewEmbedder()
 
 	// product details
 	rt.Product = env.ProdInfo{}

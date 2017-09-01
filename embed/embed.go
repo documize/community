@@ -17,7 +17,6 @@ package embed
 import (
 	"net/http"
 
-	"github.com/documize/community/server/web"
 	assetfs "github.com/elazarl/go-bindata-assetfs"
 )
 
@@ -38,6 +37,12 @@ func (embedderT) StaticAssetsFileSystem() http.FileSystem {
 
 var embedder embedderT
 
-func init() {
-	web.Embed = embedder
+// NewEmbedder returns embed assets handler instance
+func NewEmbedder() embedderT {
+	return embedder
 }
+
+// func init() {
+// 	fmt.Println("firing embed init()")
+// 	web.Embed = embedder
+// }

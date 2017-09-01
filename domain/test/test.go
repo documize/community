@@ -7,6 +7,8 @@ import (
 	"github.com/documize/community/domain"
 	"github.com/documize/community/edition/boot"
 	"github.com/documize/community/edition/logging"
+	"github.com/documize/community/embed"
+	"github.com/documize/community/server/web"
 	_ "github.com/go-sql-driver/mysql" // testing
 )
 
@@ -20,7 +22,9 @@ func SetupTest() (rt *env.Runtime, s *domain.Store, ctx domain.RequestContext) {
 func startRuntime() (rt *env.Runtime, s *domain.Store) {
 	rt = new(env.Runtime)
 	s = new(domain.Store)
+
 	rt.Log = logging.NewLogger()
+	web.Embed = embed.NewEmbedder()
 
 	rt.Product = env.ProdInfo{}
 	rt.Product.Major = "0"
@@ -53,7 +57,7 @@ func setupContext() domain.RequestContext {
 	ctx.Guest = false
 	ctx.Editor = true
 	ctx.Global = true
-	ctx.UserID = "1"
-	ctx.OrgID = "1"
+	ctx.UserID = "test"
+	ctx.OrgID = "test"
 	return ctx
 }

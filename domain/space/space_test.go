@@ -38,7 +38,7 @@ func TestAddSpace(t *testing.T) {
 		return
 	}
 
-	if sp != sp2 {
+	if sp.Name != sp2.Name {
 		t.Errorf("Test Failed, space one (%v) does not match space 2(%v)", sp, sp2)
 	}
 }
