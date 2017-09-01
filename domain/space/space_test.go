@@ -77,4 +77,6 @@ func TestSpace(t *testing.T) {
 
 		ctx.Transaction.Commit()
 	})
+
+	// teardown code goes here
 }
