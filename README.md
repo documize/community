@@ -18,8 +18,8 @@ v1.53.5
 
 ## Tech stack
 
-- EmberJS (v2.14.0)
-- Go (v1.8.3)
+- EmberJS (v2.15.0)
+- Go (v1.9.0)
 - MySQL (v5.7.10+) or Percona (v5.7.16-10+) or MariaDB (10.3.0+)
 
 ## Documentation
