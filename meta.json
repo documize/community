@@ -1,16 +1,16 @@
 {
     "community":
     {
-        "version": "1.53.4",
+        "version": "1.53.5",
         "major": 1,
         "minor": 53,
-        "patch": 4
+        "patch": 5
     },
     "enterprise":
     {
-        "version": "1.55.4",
+        "version": "1.55.5",
         "major": 1,
         "minor": 55,
-        "patch": 4
+        "patch": 5
     }
 }

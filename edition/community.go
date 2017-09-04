@@ -21,7 +21,6 @@ import (
 	"github.com/documize/community/edition/boot"
 	"github.com/documize/community/edition/logging"
 	"github.com/documize/community/embed"
-	// _"github.com/documize/community/embed" // the compressed front-end code and static data
 	"github.com/documize/community/server"
 	"github.com/documize/community/server/web"
 	_ "github.com/go-sql-driver/mysql" // the mysql driver is required behind the scenes
@@ -43,7 +42,7 @@ func main() {
 	rt.Product = env.ProdInfo{}
 	rt.Product.Major = "1"
 	rt.Product.Minor = "53"
-	rt.Product.Patch = "4"
+	rt.Product.Patch = "5"
 	rt.Product.Version = fmt.Sprintf("%s.%s.%s", rt.Product.Major, rt.Product.Minor, rt.Product.Patch)
 	rt.Product.Edition = "Community"
 	rt.Product.Title = fmt.Sprintf("%s Edition", rt.Product.Edition)

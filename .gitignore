@@ -63,3 +63,9 @@ Dockerfile
 container.sh
 make.sh
 jsconfig.json
+yarn-error.log
+testem.log
+# ember-try
+.node_modules.ember-try/
+bower.json.ember-try
+package.json.ember-try
