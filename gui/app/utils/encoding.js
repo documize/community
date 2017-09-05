@@ -1,11 +1,11 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
@@ -41,7 +41,7 @@ var Base64 = {
         var n, r, i;
         var s, o, u, a;
         var f = 0;
-        e = e.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+        e = e.replace(/[^A-Za-z0-9+/=]/g, "");
         while (f < e.length) {
             s = this._keyStr.indexOf(e.charAt(f++));
             o = this._keyStr.indexOf(e.charAt(f++));
