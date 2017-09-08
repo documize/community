@@ -82,22 +82,39 @@ func (s Scope) GetOrganizationByDomain(subdomain string) (o org.Organization, er
 	err = nil
 	subdomain = strings.TrimSpace(strings.ToLower(subdomain))
 
-	if s.Runtime.Flags.SiteMode == env.SiteModeNormal { // only return an organization when running normally
-		var stmt *sqlx.Stmt
+	// only return an organization when running normally
+	if s.Runtime.Flags.SiteMode != env.SiteModeNormal {
+		err = errors.New("database not in normal mode so cannot fetch meta for " + subdomain)
+		return
+	}
 
-		stmt, err = s.Runtime.Db.Preparex("SELECT id, refid, company, title, message, url, domain, service as conversionendpoint, email, serial, active, allowanonymousaccess, authprovider, coalesce(authconfig,JSON_UNQUOTE('{}')) as authconfig, created, revised FROM organization WHERE domain=? AND active=1")
-		defer streamutil.Close(stmt)
+	var stmt *sqlx.Stmt
+	stmt, err = s.Runtime.Db.Preparex("SELECT id, refid, company, title, message, url, domain, service as conversionendpoint, email, serial, active, allowanonymousaccess, authprovider, coalesce(authconfig,JSON_UNQUOTE('{}')) as authconfig, created, revised FROM organization WHERE domain=? AND active=1")
+	defer streamutil.Close(stmt)
 
-		if err != nil {
-			err = errors.Wrap(err, fmt.Sprintf("unable to prepare select for subdomain %s", subdomain))
-			return
-		}
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("unable to prepare select for subdomain %s", subdomain))
+		return
+	}
 
-		err = stmt.Get(&o, subdomain)
-		if err != nil && err != sql.ErrNoRows {
-			err = errors.Wrap(err, fmt.Sprintf("unable to execute select for subdomain %s", subdomain))
-			return
-		}
+	err = stmt.Get(&o, subdomain)
+	if err == nil {
+		return
+	}
+
+	// we try to match on empty domain as last resort
+	stmt, err = s.Runtime.Db.Preparex("SELECT id, refid, company, title, message, url, domain, service as conversionendpoint, email, serial, active, allowanonymousaccess, authprovider, coalesce(authconfig,JSON_UNQUOTE('{}')) as authconfig, created, revised FROM organization WHERE domain='' AND active=1")
+	defer streamutil.Close(stmt)
+
+	if err != nil {
+		err = errors.Wrap(err, "unable to prepare select for empty subdomain")
+		return
+	}
+
+	err = stmt.Get(&o)
+	if err != nil && err != sql.ErrNoRows {
+		err = errors.Wrap(err, "unable to execute select for empty subdomain")
+		return
 	}
 
 	return
