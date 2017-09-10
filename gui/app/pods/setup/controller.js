@@ -12,10 +12,8 @@
 import Ember from 'ember';
 import NotifierMixin from "../../mixins/notifier";
 import Encoding from "../../utils/encoding";
-import netUtil from '../../utils/net';
 
 export default Ember.Controller.extend(NotifierMixin, {
-
 	ajax: Ember.inject.service(),
 
 	actions: {
@@ -25,7 +23,7 @@ export default Ember.Controller.extend(NotifierMixin, {
 				data: this.model,
 				dataType: "text",
 			}).then(() => {
-				let dom = netUtil.getSubdomain();
+				let dom = ""; // supports http://localhost:5001 installations (which is the default for all self-installs)
 				var credentials = Encoding.Base64.encode(dom + ":" + this.model.email + ":" + this.model.password);
 				window.location.href = "/auth/sso/" + encodeURIComponent(credentials);
 			}).catch((error) => { // eslint-disable-line no-unused-vars
