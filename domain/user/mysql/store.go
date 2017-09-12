@@ -240,29 +240,6 @@ func (s Scope) GetVisibleUsers(ctx domain.RequestContext) (u []user.User, err er
 	return
 }
 
-/*
-
-`SELECT
-	id, refid, firstname, lastname, email, initials, password, salt, reset, created, revised
-FROM
-	user
-WHERE
-	refid IN (SELECT userid FROM account where orgid = '4Tec34w8')
-	AND refid IN
-		(SELECT userid FROM labelrole where userid != '' AND orgid='4Tec34w8'
-			AND labelid IN (
-				SELECT refid FROM label WHERE orgid='4Tec34w8' AND type=2 AND userid='iJdf6qUW'
-				UNION ALL
-				SELECT refid FROM label a WHERE orgid='4Tec34w8' AND type=1 AND refid IN (SELECT labelid FROM labelrole WHERE orgid='4Tec34w8' AND userid='' AND (canedit=1 OR canview=1))
-				UNION ALL
-				SELECT refid FROM label a WHERE orgid='4Tec34w8' AND type=3 AND refid IN (SELECT labelid FROM labelrole WHERE orgid='4Tec34w8' AND userid='iJdf6qUW' AND (canedit=1 OR canview=1))
-			)
-	 	GROUP BY userid)
-ORDER BY
-	firstname, lastname`
-
-*/
-
 // UpdateUser updates the user table using the given replacement user record.
 func (s Scope) UpdateUser(ctx domain.RequestContext, u user.User) (err error) {
 	u.Revised = time.Now().UTC()

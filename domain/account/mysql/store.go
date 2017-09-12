@@ -34,7 +34,7 @@ func (s Scope) Add(ctx domain.RequestContext, account account.Account) (err erro
 	account.Created = time.Now().UTC()
 	account.Revised = time.Now().UTC()
 
-	stmt, err := ctx.Transaction.Preparex("INSERT INTO account (refid, orgid, userid, admin, editor, active, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+	stmt, err := ctx.Transaction.Preparex("INSERT INTO account (refid, orgid, userid, admin, editor, users, active, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
 	defer streamutil.Close(stmt)
 
 	if err != nil {
@@ -42,7 +42,7 @@ func (s Scope) Add(ctx domain.RequestContext, account account.Account) (err erro
 		return
 	}
 
-	_, err = stmt.Exec(account.RefID, account.OrgID, account.UserID, account.Admin, account.Editor, account.Active, account.Created, account.Revised)
+	_, err = stmt.Exec(account.RefID, account.OrgID, account.UserID, account.Admin, account.Editor, account.Users, account.Active, account.Created, account.Revised)
 
 	if err != nil {
 		err = errors.Wrap(err, "unable to execute insert for account")
@@ -115,7 +115,7 @@ func (s Scope) CountOrgAccounts(ctx domain.RequestContext) (c int) {
 func (s Scope) UpdateAccount(ctx domain.RequestContext, account account.Account) (err error) {
 	account.Revised = time.Now().UTC()
 
-	stmt, err := ctx.Transaction.PrepareNamed("UPDATE account SET userid=:userid, admin=:admin, editor=:editor, active=:active, revised=:revised WHERE orgid=:orgid AND refid=:refid")
+	stmt, err := ctx.Transaction.PrepareNamed("UPDATE account SET userid=:userid, admin=:admin, editor=:editor, users=:users, active=:active, revised=:revised WHERE orgid=:orgid AND refid=:refid")
 	defer streamutil.Close(stmt)
 
 	if err != nil {

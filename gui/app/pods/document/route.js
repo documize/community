@@ -17,7 +17,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	documentService: Ember.inject.service('document'),
 	folderService: Ember.inject.service('folder'),
 	linkService: Ember.inject.service('link'),
-	
+
 	beforeModel(transition) {
 		this.set('pageId', is.not.undefined(transition.queryParams.page) ? transition.queryParams.page : "");
 		this.set('folderId', this.paramsFor('document').folder_id);

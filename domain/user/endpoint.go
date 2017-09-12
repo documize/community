@@ -467,6 +467,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	a.Editor = u.Editor
 	a.Admin = u.Admin
 	a.Active = u.Active
+	a.Users = u.ViewUsers
 
 	err = h.Store.Account.UpdateAccount(ctx, a)
 	if err != nil {

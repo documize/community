@@ -120,8 +120,8 @@ func Check(runtime *env.Runtime) bool {
 
 	{ // check all the required tables exist
 		var tables = []string{`account`,
-			`attachment`, `audit`, `document`,
-			`label`, `labelrole`, `organization`,
+			`attachment`, `document`,
+			`label`, `organization`,
 			`page`, `revision`, `search`, `user`}
 
 		for _, table := range tables {

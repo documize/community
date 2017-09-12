@@ -12,9 +12,10 @@
                         {{focus-input type="text" placeholder="< type here to filter users >" value=filter}}
                     </div>
                 </th>
-                <th class="no-width">Create spaces</th>
-                <th class="no-width">Is administrator</th>
-                <th class="no-width">Is active</th>
+                <th class="no-width">Add Space</th>
+                <th class="no-width">View Users</th>
+                <th class="no-width">Admin</th>
+                <th class="no-width">Active</th>
                 <th class="no-width">
                     {{#if hasSelectedUsers}}
                         <div class="round-button round-button-small button-red" id="bulk-delete-users">
@@ -50,6 +51,15 @@
                             <i class="material-icons checkbox" {{action 'toggleEditor' user.id}}>check_box</i>
                         {{else}}
                             <i class="material-icons checkbox" {{action 'toggleEditor' user.id}}>check_box_outline_blank</i>
+                        {{/if}}
+                    </td>
+                    <td class="no-width text-center">
+                        {{#if user.me}}
+                            <i class="material-icons color-gray">check_box</i>
+                        {{else if user.viewUsers}}
+                            <i class="material-icons checkbox" {{action 'toggleUsers' user.id}}>check_box</i>
+                        {{else}}
+                            <i class="material-icons checkbox" {{action 'toggleUsers' user.id}}>check_box_outline_blank</i>
                         {{/if}}
                     </td>
                     <td class="no-width text-center">

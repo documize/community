@@ -71,7 +71,7 @@ export default Ember.Component.extend(AuthProvider, {
 			this.set('selectedUsers', su);
 			this.set('hasSelectedUsers', su.length > 0);
 		},
-		
+
 		toggleActive(id) {
 			let user = this.users.findBy("id", id);
 			user.set('active', !user.get('active'));
@@ -90,11 +90,17 @@ export default Ember.Component.extend(AuthProvider, {
 			this.attrs.onSave(user);
 		},
 
+		toggleUsers(id) {
+			let user = this.users.findBy("id", id);
+			user.set('viewUsers', !user.get('viewUsers'));
+			this.attrs.onSave(user);
+		},
+
 		edit(id) {
 			let self = this;
 
 			let user = this.users.findBy("id", id);
-			let userCopy = user.getProperties('id', 'created', 'revised', 'firstname', 'lastname', 'email', 'initials', 'active', 'editor', 'admin', 'accounts');
+			let userCopy = user.getProperties('id', 'created', 'revised', 'firstname', 'lastname', 'email', 'initials', 'active', 'editor', 'admin', 'viewUsers', 'accounts');
 			this.set('editUser', userCopy);
 			this.set('password', {
 				password: "",
@@ -188,14 +194,14 @@ export default Ember.Component.extend(AuthProvider, {
 
 		onBulkDelete() {
 			let su = this.get('selectedUsers');
-			
+
 			su.forEach(userId => {
 				this.attrs.onDelete(userId);
 			});
 
 			this.set('selectedUsers', []);
 			this.set('hasSelectedUsers', false);
-			
+
 			return true;
 		}
 	}
