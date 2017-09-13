@@ -77,7 +77,7 @@ func (s Scope) GetOrganization(ctx domain.RequestContext, id string) (org org.Or
 }
 
 // GetOrganizationByDomain returns the organization matching a given URL subdomain.
-// No context is required because user might no be authenticated yet.
+// No context is required because user might not be authenticated yet.
 func (s Scope) GetOrganizationByDomain(subdomain string) (o org.Organization, err error) {
 	err = nil
 	subdomain = strings.TrimSpace(strings.ToLower(subdomain))
