@@ -1,0 +1,36 @@
+{{#layout/zone-container}}
+
+	{{#layout/zone-sidebar}}
+		<div class="sidebar-toolbar"></div>
+		<div class="sidebar-common">
+			{{layout/sidebar-intro title="Space Settings" message="Invite users and configure space permissions. Set up categories to sub-divide the space."}}
+		</div>
+		<div class="sidebar-wrapper">
+			<div class="sidebar-menu">
+				<ul class="options">
+					<div class="option selected">Users</div>
+					<div class="option ">Categories</div>
+				</ul>
+			</div>
+		</div>
+	{{/layout/zone-sidebar}}
+
+	{{#layout/zone-content}}
+		<div class="folder-heading">
+			<h1 class="folder-title">{{model.folder.name}}</h1>
+		</div>
+		{{#link-to 'folder' model.folder.id model.folder.slug class="vertical-top"}}
+			<i class="material-icons">arrow_back</i>&nbsp;back to space
+		{{/link-to}}
+		<div class="margin-top-30" />
+
+		{{#if isAuthProviderDocumize}}
+			{{folder/invite-user folders=model.folders folder=model.folder}}
+			<div class="margin-top-50" />
+		{{/if}}
+
+		{{folder/permission-admin folders=model.folders folder=model.folder}}
+		<div class="margin-top-50" />
+{{/layout/zone-content}}
+
+{{/layout/zone-container}}

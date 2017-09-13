@@ -184,109 +184,98 @@ func (s Scope) Delete(ctx domain.RequestContext, id string) (rows int64, err err
 	return b.DeleteConstrained(ctx.Transaction, "label", ctx.OrgID, id)
 }
 
-// AddRole inserts the given record into the labelrole database table.
-func (s Scope) AddRole(ctx domain.RequestContext, r space.Role) (err error) {
+// AddPermission inserts the given record into the labelrole database table.
+func (s Scope) AddPermission(ctx domain.RequestContext, r space.Permission) (err error) {
 	r.Created = time.Now().UTC()
-	r.Revised = time.Now().UTC()
 
-	stmt, err := ctx.Transaction.Preparex("INSERT INTO labelrole (refid, labelid, orgid, userid, canview, canedit, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+	stmt, err := ctx.Transaction.Preparex("INSERT INTO labelrole (orgid, who, whoid, action, scope, location, refid, created) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
 	defer streamutil.Close(stmt)
 
 	if err != nil {
-		err = errors.Wrap(err, "unable to prepare insert for space role")
+		err = errors.Wrap(err, "unable to prepare insert for space permission")
 		return
 	}
 
-	_, err = stmt.Exec(r.RefID, r.LabelID, r.OrgID, r.UserID, r.CanView, r.CanEdit, r.Created, r.Revised)
+	_, err = stmt.Exec(r.OrgID, r.Who, r.WhoID, r.Action, r.Scope, r.Location, r.RefID, r.Created)
 	if err != nil {
-		err = errors.Wrap(err, "unable to execute insert for space role")
+		err = errors.Wrap(err, "unable to execute insert for space permission")
 		return
 	}
 
 	return
 }
 
-// GetRoles returns a slice of labelrole records, for the given labelID in the client's organization, grouped by user.
-func (s Scope) GetRoles(ctx domain.RequestContext, labelID string) (r []space.Role, err error) {
-	query := `SELECT id, refid, labelid, orgid, userid, canview, canedit, created, revised FROM labelrole WHERE orgid=? AND labelid=?` // was + "GROUP BY userid"
-
-	err = s.Runtime.Db.Select(&r, query, ctx.OrgID, labelID)
-
-	if err == sql.ErrNoRows {
-		err = nil
-	}
-
-	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("unable to execute select for space roles %s", labelID))
-		return
+// AddPermissions inserts records into permission database table, one per action.
+func (s Scope) AddPermissions(ctx domain.RequestContext, r space.Permission, actions ...space.PermissionAction) (err error) {
+	for _, a := range actions {
+		r.Action = string(a)
+		s.AddPermission(ctx, r)
 	}
 
 	return
 }
 
-// GetUserRoles returns a slice of role records, for both the client's user and organization, and
-// those space roles that exist for all users in the client's organization.
-func (s Scope) GetUserRoles(ctx domain.RequestContext) (r []space.Role, err error) {
+// GetUserPermissions returns space permissions for user.
+// Context is used to for user ID.
+func (s Scope) GetUserPermissions(ctx domain.RequestContext, spaceID string) (r []space.Permission, err error) {
 	err = s.Runtime.Db.Select(&r, `
-		SELECT id, refid, labelid, orgid, userid, canview, canedit, created, revised FROM labelrole WHERE orgid=? and userid=?
+		SELECT id, orgid, who, whoid, action, scope, location, refid
+			FROM permission WHERE orgid=? AND location='space' AND refid=? AND who='user' AND (whoid=? OR whoid='')
 		UNION ALL
-		SELECT id, refid, labelid, orgid, userid, canview, canedit, created, revised FROM labelrole WHERE orgid=? AND userid=''`,
-		ctx.OrgID, ctx.UserID, ctx.OrgID)
+		SELECT p.id, p.orgid, p.who, p.whoid, p.action, p.scope, p.location, p.refid
+			FROM permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.location='space' AND refid=?
+			AND p.who='role' AND (r.userid=? OR r.userid='')`,
+		ctx.OrgID, spaceID, ctx.UserID, ctx.OrgID, spaceID, ctx.OrgID)
 
 	if err == sql.ErrNoRows {
 		err = nil
 	}
-
 	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("unable to execute select for user space roles %s", ctx.UserID))
+		err = errors.Wrap(err, fmt.Sprintf("unable to execute select user permissions %s", ctx.UserID))
 		return
 	}
 
 	return
 }
 
-// DeleteRole deletes the labelRoleID record from the labelrole table.
-func (s Scope) DeleteRole(ctx domain.RequestContext, roleID string) (rows int64, err error) {
+// GetPermissions returns space permissions for all users.
+func (s Scope) GetPermissions(ctx domain.RequestContext, spaceID string) (r []space.Permission, err error) {
+	err = s.Runtime.Db.Select(&r, `
+		SELECT id, orgid, who, whoid, action, scope, location, refid
+			FROM permission WHERE orgid=? AND location='space' AND refid=? AND who='user' AND (whoid=? OR whoid='')
+		UNION ALL
+		SELECT p.id, p.orgid, p.who, p.whoid, p.action, p.scope, p.location, p.refid
+			FROM permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.location='space' AND p.refid=? 
+			AND p.who='role' AND (r.userid=? OR r.userid='')`,
+		ctx.OrgID, spaceID, ctx.UserID, ctx.OrgID, spaceID, ctx.OrgID)
+
+	if err == sql.ErrNoRows {
+		err = nil
+	}
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("unable to execute select space permissions %s", ctx.UserID))
+		return
+	}
+
+	return
+}
+
+// DeletePermissions removes records from permissions table for given space ID.
+func (s Scope) DeletePermissions(ctx domain.RequestContext, spaceID string) (rows int64, err error) {
 	b := mysql.BaseQuery{}
 
-	sql := fmt.Sprintf("DELETE FROM labelrole WHERE orgid='%s' AND refid='%s'", ctx.OrgID, roleID)
+	sql := fmt.Sprintf("DELETE FROM permission WHERE orgid='%s' AND location='space' AND refid='%s'",
+		ctx.OrgID, spaceID)
 
 	return b.DeleteWhere(ctx.Transaction, sql)
 }
 
-// DeleteSpaceRoles deletes records from the labelrole table which have the given space ID.
-func (s Scope) DeleteSpaceRoles(ctx domain.RequestContext, spaceID string) (rows int64, err error) {
+// DeleteUserPermissions removes all roles for the specified user, for the specified space.
+func (s Scope) DeleteUserPermissions(ctx domain.RequestContext, spaceID, userID string) (rows int64, err error) {
 	b := mysql.BaseQuery{}
 
-	sql := fmt.Sprintf("DELETE FROM labelrole WHERE orgid='%s' AND labelid='%s'", ctx.OrgID, spaceID)
-
-	return b.DeleteWhere(ctx.Transaction, sql)
-}
-
-// DeleteUserSpaceRoles removes all roles for the specified user, for the specified space.
-func (s Scope) DeleteUserSpaceRoles(ctx domain.RequestContext, spaceID, userID string) (rows int64, err error) {
-	b := mysql.BaseQuery{}
-
-	sql := fmt.Sprintf("DELETE FROM labelrole WHERE orgid='%s' AND labelid='%s' AND userid='%s'",
+	sql := fmt.Sprintf("DELETE FROM permission WHERE orgid='%s' AND location='space' AND refid='%s' who='user' AND whoid='%s'",
 		ctx.OrgID, spaceID, userID)
 
 	return b.DeleteWhere(ctx.Transaction, sql)
-}
-
-// MoveSpaceRoles changes the space ID for space role records from previousLabel to newLabel.
-func (s Scope) MoveSpaceRoles(ctx domain.RequestContext, previousLabel, newLabel string) (err error) {
-	stmt, err := ctx.Transaction.Preparex("UPDATE labelrole SET labelid=? WHERE labelid=? AND orgid=?")
-	defer streamutil.Close(stmt)
-
-	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("unable to prepare move space roles for label  %s", previousLabel))
-		return
-	}
-
-	_, err = stmt.Exec(newLabel, previousLabel, ctx.OrgID)
-	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("unable to execute move space roles for label  %s", previousLabel))
-	}
-
-	return
 }

@@ -15,12 +15,12 @@ import (
 	"database/sql"
 
 	"github.com/documize/community/domain"
+	sp "github.com/documize/community/model/space"
 )
 
 // CanViewDocumentInFolder returns if the user has permission to view a document within the specified folder.
-func CanViewDocumentInFolder(ctx domain.RequestContext, s domain.Store, labelID string) (hasPermission bool) {
-	roles, err := s.Space.GetUserRoles(ctx)
-
+func CanViewDocumentInFolder(ctx domain.RequestContext, s domain.Store, labelID string) bool {
+	roles, err := s.Space.GetUserPermissions(ctx, labelID)
 	if err == sql.ErrNoRows {
 		err = nil
 	}
@@ -29,7 +29,8 @@ func CanViewDocumentInFolder(ctx domain.RequestContext, s domain.Store, labelID 
 	}
 
 	for _, role := range roles {
-		if role.LabelID == labelID && (role.CanView || role.CanEdit) {
+		if role.RefID == labelID && role.Location == "space" && role.Scope == "object" &&
+			sp.HasPermission(role.Action, sp.SpaceView, sp.SpaceManage, sp.SpaceOwner) {
 			return true
 		}
 	}
@@ -37,10 +38,9 @@ func CanViewDocumentInFolder(ctx domain.RequestContext, s domain.Store, labelID 
 	return false
 }
 
-// CanViewDocument returns if the clinet has permission to view a given document.
-func CanViewDocument(ctx domain.RequestContext, s domain.Store, documentID string) (hasPermission bool) {
+// CanViewDocument returns if the client has permission to view a given document.
+func CanViewDocument(ctx domain.RequestContext, s domain.Store, documentID string) bool {
 	document, err := s.Document.Get(ctx, documentID)
-
 	if err == sql.ErrNoRows {
 		err = nil
 	}
@@ -48,8 +48,7 @@ func CanViewDocument(ctx domain.RequestContext, s domain.Store, documentID strin
 		return false
 	}
 
-	roles, err := s.Space.GetUserRoles(ctx)
-
+	roles, err := s.Space.GetUserPermissions(ctx, document.LabelID)
 	if err == sql.ErrNoRows {
 		err = nil
 	}
@@ -58,7 +57,8 @@ func CanViewDocument(ctx domain.RequestContext, s domain.Store, documentID strin
 	}
 
 	for _, role := range roles {
-		if role.LabelID == document.LabelID && (role.CanView || role.CanEdit) {
+		if role.RefID == document.LabelID && role.Location == "space" && role.Scope == "object" &&
+			sp.HasPermission(role.Action, sp.SpaceView, sp.SpaceManage, sp.SpaceOwner) {
 			return true
 		}
 	}
@@ -67,7 +67,7 @@ func CanViewDocument(ctx domain.RequestContext, s domain.Store, documentID strin
 }
 
 // CanChangeDocument returns if the clinet has permission to change a given document.
-func CanChangeDocument(ctx domain.RequestContext, s domain.Store, documentID string) (hasPermission bool) {
+func CanChangeDocument(ctx domain.RequestContext, s domain.Store, documentID string) bool {
 	document, err := s.Document.Get(ctx, documentID)
 
 	if err == sql.ErrNoRows {
@@ -77,7 +77,7 @@ func CanChangeDocument(ctx domain.RequestContext, s domain.Store, documentID str
 		return false
 	}
 
-	roles, err := s.Space.GetUserRoles(ctx)
+	roles, err := s.Space.GetUserPermissions(ctx, document.LabelID)
 
 	if err == sql.ErrNoRows {
 		err = nil
@@ -87,7 +87,8 @@ func CanChangeDocument(ctx domain.RequestContext, s domain.Store, documentID str
 	}
 
 	for _, role := range roles {
-		if role.LabelID == document.LabelID && role.CanEdit {
+		if role.RefID == document.LabelID && role.Location == "space" && role.Scope == "object" &&
+			sp.HasPermission(role.Action, sp.DocumentEdit) {
 			return true
 		}
 	}
@@ -95,10 +96,9 @@ func CanChangeDocument(ctx domain.RequestContext, s domain.Store, documentID str
 	return false
 }
 
-// CanUploadDocument returns if the client has permission to upload documents to the given folderID.
-func CanUploadDocument(ctx domain.RequestContext, s domain.Store, folderID string) (hasPermission bool) {
-	roles, err := s.Space.GetUserRoles(ctx)
-
+// CanUploadDocument returns if the client has permission to upload documents to the given space.
+func CanUploadDocument(ctx domain.RequestContext, s domain.Store, spaceID string) bool {
+	roles, err := s.Space.GetUserPermissions(ctx, spaceID)
 	if err == sql.ErrNoRows {
 		err = nil
 	}
@@ -107,7 +107,8 @@ func CanUploadDocument(ctx domain.RequestContext, s domain.Store, folderID strin
 	}
 
 	for _, role := range roles {
-		if role.LabelID == folderID && role.CanEdit {
+		if role.RefID == spaceID && role.Location == "space" && role.Scope == "object" &&
+			sp.HasPermission(role.Action, sp.DocumentAdd) {
 			return true
 		}
 	}

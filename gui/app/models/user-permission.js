@@ -9,7 +9,16 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import Model from 'ember-data/model';
+import attr from 'ember-data/attr';
+// import { belongsTo, hasMany } from 'ember-data/relationships';
 
-export default Ember.Controller.extend({
+export default Model.extend({
+	orgId: attr('string'),
+	who: attr('string'),
+	whoId: attr('string'),
+	action: attr('string'),
+	scope: attr('string'),
+	location: attr('string'),
+	refId: attr('string')
 });

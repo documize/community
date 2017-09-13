@@ -11,7 +11,11 @@
 
 package space
 
-import "github.com/documize/community/model"
+import (
+	"time"
+
+	"github.com/documize/community/model"
+)
 
 // Space defines a container for documents.
 type Space struct {
@@ -51,6 +55,44 @@ func (l *Space) IsRestricted() bool {
 	return l.Type == ScopeRestricted
 }
 
+// Permission represents a permission for a space and is persisted to the database.
+type Permission struct {
+	ID       uint64    `json:"id"`
+	OrgID    string    `json:"-"`
+	Who      string    `json:"who"`      // user, role
+	WhoID    string    `json:"whoId"`    // either a user or role ID
+	Action   string    `json:"action"`   // view, edit, delete
+	Scope    string    `json:"scope"`    // object, table
+	Location string    `json:"location"` // table name
+	RefID    string    `json:"refId"`    // id of row in table / blank when scope=table
+	Created  time.Time `json:"created"`
+}
+
+// PermissionAction details type of action
+type PermissionAction string
+
+const (
+	// SpaceView action means you can view a space and documents therein
+	SpaceView PermissionAction = "view"
+	// SpaceManage action means you can add, remove users, set permissions, but not delete that space
+	SpaceManage PermissionAction = "manage"
+	// SpaceOwner action means you can delete a space and do all SpaceManage functions
+	SpaceOwner PermissionAction = "owner"
+
+	// DocumentAdd action means you can create/upload documents to a space
+	DocumentAdd PermissionAction = "doc-add"
+	// DocumentEdit action means you can edit documents in a space
+	DocumentEdit PermissionAction = "doc-edit"
+	// DocumentDelete means you can delete documents in a space
+	DocumentDelete PermissionAction = "doc-delete"
+	// DocumentMove means you can move documents between spaces
+	DocumentMove PermissionAction = "doc-move"
+	// DocumentCopy means you can copy documents within and between spaces
+	DocumentCopy PermissionAction = "doc-copy"
+	// DocumentTemplate means you can create, edit and delete document templates and content blocks
+	DocumentTemplate PermissionAction = "doc-template"
+)
+
 // Role determines user permissions for a folder.
 type Role struct {
 	model.BaseEntityObfuscated
@@ -74,8 +116,8 @@ type Viewer struct {
 
 // RolesModel details which users have what permissions on a given space.
 type RolesModel struct {
-	Message string
-	Roles   []Role
+	Message     string
+	Permissions []Permission
 }
 
 // AcceptShareModel is used to setup a user who has accepted a shared space.
@@ -99,4 +141,15 @@ type NewSpaceRequest struct {
 	CopyTemplate   bool   `json:"copyTemplate"`   // copy templates and reusable content blocks
 	CopyPermission bool   `json:"copyPermission"` // copy uer permissions
 	CopyDocument   bool   `json:"copyDocument"`   // copy all documents!
+}
+
+// HasPermission checks if action matches one of the required actions?
+func HasPermission(action string, actions ...PermissionAction) bool {
+	for _, a := range actions {
+		if action == string(a) {
+			return true
+		}
+	}
+
+	return false
 }

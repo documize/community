@@ -17,11 +17,12 @@ import (
 	"database/sql"
 
 	"github.com/documize/community/domain"
+	"github.com/documize/community/model/space"
 )
 
 // CanViewSpace returns if the user has permission to view the given spaceID.
-func CanViewSpace(ctx domain.RequestContext, s domain.Store, spaceID string) (hasPermission bool) {
-	roles, err := s.Space.GetRoles(ctx, spaceID)
+func CanViewSpace(ctx domain.RequestContext, s domain.Store, spaceID string) bool {
+	roles, err := s.Space.GetUserPermissions(ctx, spaceID)
 	if err == sql.ErrNoRows {
 		err = nil
 	}
@@ -30,27 +31,8 @@ func CanViewSpace(ctx domain.RequestContext, s domain.Store, spaceID string) (ha
 	}
 
 	for _, role := range roles {
-		if role.LabelID == spaceID && (role.CanView || role.CanEdit) {
-			return true
-		}
-	}
-
-	return false
-}
-
-// CanViewSpaceDocuments returns if the user has permission to view a document within the specified space.
-func CanViewSpaceDocuments(ctx domain.RequestContext, s domain.Store, spaceID string) (hasPermission bool) {
-	roles, err := s.Space.GetRoles(ctx, spaceID)
-	if err == sql.ErrNoRows {
-		err = nil
-	}
-
-	if err != nil {
-		return false
-	}
-
-	for _, role := range roles {
-		if role.LabelID == spaceID && (role.CanView || role.CanEdit) {
+		if role.RefID == spaceID && role.Location == "space" && role.Scope == "object" &&
+			space.HasPermission(role.Action, space.SpaceView, space.SpaceManage, space.SpaceOwner) {
 			return true
 		}
 	}

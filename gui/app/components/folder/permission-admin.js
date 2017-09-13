@@ -32,13 +32,22 @@ export default Ember.Component.extend(NotifierMixin, {
 				let isActive = user.get('active');
 
 				let u = {
-					userId: user.get('id'),
 					fullname: user.get('fullname'),
 					orgId: this.get('folder.orgId'),
-					folderId: this.get('folder.id'),
-					canEdit: false,
-					canView: false,
-					canViewPrevious: false
+					who: 'user',
+					whoId: user.get('id'),
+					location: 'space',
+					scope: 'object',
+					refId: this.get('folder.id'),
+					spaceView: false,
+					spaceManage: false,
+					spaceOwner: false,
+					docAdd: false,
+					docEdit: false,
+					docDelete: false,
+					docMove: false,
+					docCopy: false,
+					docTemplate: false,
 				};
 
 				if (isActive) {
@@ -47,13 +56,23 @@ export default Ember.Component.extend(NotifierMixin, {
 			});
 
 			var u = {
-				userId: "",
 				fullname: " Everyone",
 				orgId: this.get('folder.orgId'),
-				folderId: this.get('folder.id'),
-				canEdit: false,
-				canView: false
-			};
+				who: 'user',
+				whoId: '',
+				location: 'space',
+				scope: 'object',
+				refId: this.get('folder.id'),
+				spaceView: false,
+				spaceManage: false,
+				spaceOwner: false,
+				docAdd: false,
+				docEdit: false,
+				docDelete: false,
+				docMove: false,
+				docCopy: false,
+				docTemplate: false,
+		};
 
 			folderPermissions.pushObject(u);
 
@@ -111,6 +130,7 @@ export default Ember.Component.extend(NotifierMixin, {
 			var payload = { Message: message, Roles: data };
 
 			this.get('folderService').savePermissions(folder.get('id'), payload).then(() => {
+				this.showNotification('Saved permissions');
 			});
 
 			var hasEveryone = _.find(data, function (permission) {
@@ -128,7 +148,6 @@ export default Ember.Component.extend(NotifierMixin, {
 			}
 
 			this.get('folderService').save(folder).then(function () {
-				// window.location.href = "/folder/" + folder.get('id') + "/" + folder.get('slug');
 			});
 		}
 	}

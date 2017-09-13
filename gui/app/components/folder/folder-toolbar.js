@@ -48,8 +48,8 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 			this.addTooltip(document.getElementById("delete-documents-button"));
 		} else {
 			if (this.get('isFolderOwner')) {
-				this.addTooltip(document.getElementById("folder-share-button"));
-				this.addTooltip(document.getElementById("folder-settings-button"));
+				this.addTooltip(document.getElementById("space-delete-button"));
+				this.addTooltip(document.getElementById("space-settings-button"));
 			}
 		}
 	},

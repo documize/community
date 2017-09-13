@@ -56,13 +56,13 @@ type SpaceStorer interface {
 	ChangeOwner(ctx RequestContext, currentOwner, newOwner string) (err error)
 	Viewers(ctx RequestContext) (v []space.Viewer, err error)
 	Delete(ctx RequestContext, id string) (rows int64, err error)
-	AddRole(ctx RequestContext, r space.Role) (err error)
-	GetRoles(ctx RequestContext, labelID string) (r []space.Role, err error)
-	GetUserRoles(ctx RequestContext) (r []space.Role, err error)
-	DeleteRole(ctx RequestContext, roleID string) (rows int64, err error)
-	DeleteSpaceRoles(ctx RequestContext, spaceID string) (rows int64, err error)
-	DeleteUserSpaceRoles(ctx RequestContext, spaceID, userID string) (rows int64, err error)
-	MoveSpaceRoles(ctx RequestContext, previousLabel, newLabel string) (err error)
+
+	AddPermission(ctx RequestContext, r space.Permission) (err error)
+	AddPermissions(ctx RequestContext, r space.Permission, actions ...space.PermissionAction) (err error)
+	GetUserPermissions(ctx RequestContext, spaceID string) (r []space.Permission, err error)
+	GetPermissions(ctx RequestContext, spaceID string) (r []space.Permission, err error)
+	DeleteUserPermissions(ctx RequestContext, spaceID, userID string) (rows int64, err error)
+	DeletePermissions(ctx RequestContext, spaceID string) (rows int64, err error)
 }
 
 // UserStorer defines required methods for user management

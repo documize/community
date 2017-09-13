@@ -1,0 +1,42 @@
+.space-settings {
+	> .panel {
+		@include content-container();
+		@include ease-in();
+		@extend .transition-all;
+	}
+
+	.permissions-table {
+        padding: 0;
+        margin: 0 0 30px 0;
+		width: 100%;
+
+		> .row {
+			padding: 8px 0;
+
+			> .permission-name-cell {
+				padding: 10px 5px;
+				font-size: 1.1rem;
+			}
+
+			> .permission-roles-cell {
+				background-color: $color-off-white;
+				margin-top: 10px;
+				margin-left: 40px;
+				padding: 10px 10px;
+				display: inline-block;
+
+				> .role-category {
+					color: $color-gray;
+					font-weight: bold;
+					display: inline-block;
+				}
+
+				> label {
+					color: $color-gray;
+					font-weight: normal;
+				}
+			}
+		}
+    }
+}
+

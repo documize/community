@@ -538,31 +538,6 @@ func (h *Handler) ChangePassword(w http.ResponseWriter, r *http.Request) {
 	response.WriteEmpty(w)
 }
 
-// UserSpacePermissions returns folder permission for authenticated user.
-func (h *Handler) UserSpacePermissions(w http.ResponseWriter, r *http.Request) {
-	method := "user.UserSpacePermissions"
-	ctx := domain.GetRequestContext(r)
-
-	userID := request.Param(r, "userID")
-	if userID != ctx.UserID {
-		response.WriteForbiddenError(w)
-		return
-	}
-
-	roles, err := h.Store.Space.GetUserRoles(ctx)
-	if err == sql.ErrNoRows {
-		err = nil
-		roles = []space.Role{}
-	}
-	if err != nil {
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	response.WriteJSON(w, roles)
-}
-
 // ForgotPassword initiates the change password procedure.
 // Generates a reset token and sends email to the user.
 // User has to click link in email and then provide a new password.

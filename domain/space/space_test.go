@@ -1,7 +1,6 @@
 package space
 
 import (
-	"database/sql"
 	"testing"
 
 	"github.com/documize/community/core/uniqueid"
@@ -39,17 +38,19 @@ func TestSpace(t *testing.T) {
 			t.Error("failed to add sp space")
 		}
 
-		r.RefID = uniqueid.Generate()
-		r.LabelID = spaceID
-		r.OrgID = ctx.OrgID
-		r.UserID = "testAddSpace"
-		r.CanView = true
-		r.CanEdit = true
+		perm := space.Permission{}
+		perm.OrgID = ctx.OrgID
+		perm.Who = "user"
+		perm.WhoID = ctx.UserID
+		perm.Scope = "object"
+		perm.Location = "space"
+		perm.RefID = spaceID
+		perm.Action = "" // we send array for actions below
 
-		err = s.Space.AddRole(ctx, r)
+		err = s.Space.AddPermissions(ctx, perm, space.SpaceOwner, space.SpaceManage, space.SpaceView)
 		if err != nil {
 			ctx.Transaction.Rollback()
-			t.Error("failed to add role r")
+			t.Error("failed to add permission")
 		}
 
 		ctx.Transaction.Commit()
@@ -104,17 +105,19 @@ func TestSpace(t *testing.T) {
 			t.Error("failed to add sp2")
 		}
 
-		r2.RefID = uniqueid.Generate()
-		r2.LabelID = spaceID2
-		r2.OrgID = ctx.OrgID
-		r2.UserID = ctx.UserID
-		r2.CanView = true
-		r2.CanEdit = true
+		perm := space.Permission{}
+		perm.OrgID = ctx.OrgID
+		perm.Who = "user"
+		perm.WhoID = ctx.UserID
+		perm.Scope = "object"
+		perm.Location = "space"
+		perm.RefID = spaceID2
+		perm.Action = "" // we send array for actions below
 
-		err = s.Space.AddRole(ctx, r2)
+		err = s.Space.AddPermissions(ctx, perm, space.SpaceOwner, space.SpaceManage, space.SpaceView)
 		if err != nil {
 			ctx.Transaction.Rollback()
-			t.Error("failed to add role")
+			t.Error("failed to add permission")
 		}
 
 		ctx.Transaction.Commit()
@@ -171,22 +174,24 @@ func TestSpace(t *testing.T) {
 	t.Run("Add Role", func(t *testing.T) {
 		ctx.Transaction, err = rt.Db.Beginx()
 
-		r3.CanView = true
-		r3.CanEdit = true
-		r3.RefID = uniqueid.Generate()
-		r3.LabelID = spaceID
-		r3.OrgID = ctx.OrgID
-		r3.UserID = "testAddRole"
+		perm := space.Permission{}
+		perm.OrgID = ctx.OrgID
+		perm.Who = "user"
+		perm.WhoID = ctx.UserID
+		perm.Scope = "object"
+		perm.Location = "space"
+		perm.RefID = spaceID
+		perm.Action = "" // we send array for actions below
 
-		err = s.Space.AddRole(ctx, r3)
+		err = s.Space.AddPermissions(ctx, perm, space.DocumentAdd, space.DocumentDelete, space.DocumentMove)
 		if err != nil {
 			ctx.Transaction.Rollback()
-			t.Error("failed to add role")
-			return
+			t.Error("failed to add permission")
 		}
+
 		ctx.Transaction.Commit()
 
-		roles, err := s.Space.GetRoles(ctx, spaceID)
+		roles, err := s.Space.GetUserPermissions(ctx, spaceID)
 		if err != nil || roles == nil {
 			t.Error("Could not get any roles")
 			return
@@ -194,61 +199,16 @@ func TestSpace(t *testing.T) {
 		// TODO: could we Verify the role was added with the if r3.UserID == Returned.UserID?
 	})
 
-	t.Run("Get User Roles", func(t *testing.T) {
-		userRoles, err := s.Space.GetUserRoles(ctx)
+	t.Run("Get User Permissions", func(t *testing.T) {
+		userRoles, err := s.Space.GetUserPermissions(ctx, spaceID)
 		if err != nil || userRoles == nil {
 			t.Error("failed to get user roles")
 			return
 		}
 	})
 
-	t.Run("Move space Roles", func(t *testing.T) {
-		ctx.Transaction, err = rt.Db.Beginx()
-		err := s.Space.MoveSpaceRoles(ctx, spaceID, spaceID2)
-		if err != nil {
-			ctx.Transaction.Rollback()
-			t.Error("failed to move space roles")
-			return
-		}
-		ctx.Transaction.Commit()
-	})
-
-	t.Run("Delete Role", func(t *testing.T) {
-		ctx.Transaction, err = rt.Db.Beginx()
-		rowsDeleted, err := s.Space.DeleteRole(ctx, r3.RefID)
-		if err != nil || rowsDeleted == 0 {
-			ctx.Transaction.Rollback()
-			t.Error("failed to delete roles")
-			return
-		}
-		ctx.Transaction.Commit()
-	})
-
-	t.Run("Delete space Roles", func(t *testing.T) {
-		ctx.Transaction, err = rt.Db.Beginx()
-		_, err := s.Space.DeleteSpaceRoles(ctx, spaceID)
-		if err != nil && err != sql.ErrNoRows {
-			ctx.Transaction.Rollback()
-			t.Error("failed to delete space roles")
-			return
-		}
-		ctx.Transaction.Commit()
-	})
-
-	t.Run("Delete user space Roles", func(t *testing.T) {
-		ctx.Transaction, err = rt.Db.Beginx()
-		_, err := s.Space.DeleteUserSpaceRoles(ctx, spaceID2, ctx.UserID)
-		if err != nil && err != sql.ErrNoRows {
-			ctx.Transaction.Rollback()
-			t.Error("failed to delete user space roles")
-			return
-		}
-		ctx.Transaction.Commit()
-	})
-
-	//Delete spaces last, otherwise tests may fail
-
-	t.Run("Delete Space", func(t *testing.T) {
+	// teardown
+	t.Run("Delete space", func(t *testing.T) {
 		ctx.Transaction, err = rt.Db.Beginx()
 
 		_, err = s.Space.Delete(ctx, spaceID)
@@ -261,11 +221,7 @@ func TestSpace(t *testing.T) {
 		ctx.Transaction.Commit()
 	})
 
-	//
-	// teardown code goes here
-	//
-
-	t.Run("Delete sp2 Space", func(t *testing.T) {
+	t.Run("Delete space 2", func(t *testing.T) {
 		ctx.Transaction, err = rt.Db.Beginx()
 
 		_, err = s.Space.Delete(ctx, spaceID2)
@@ -275,17 +231,6 @@ func TestSpace(t *testing.T) {
 			return
 		}
 
-		ctx.Transaction.Commit()
-	})
-
-	t.Run("Delete r Role", func(t *testing.T) {
-		ctx.Transaction, err = rt.Db.Beginx()
-		rowsDeleted, err := s.Space.DeleteRole(ctx, r.RefID)
-		if err != nil || rowsDeleted == 0 {
-			ctx.Transaction.Rollback()
-			t.Error("failed to delete role r in teardown")
-			return
-		}
 		ctx.Transaction.Commit()
 	})
 }

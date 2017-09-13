@@ -47,11 +47,6 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 		});
 	},
 
-	setupController(controller, model) {
-		controller.set('model', model);
-		this.browser.setTitle(model.folder.get('name'));
-	},
-
 	actions: {
 		error(error /*, transition*/ ) {
 			console.log(error); // eslint-disable-line no-console

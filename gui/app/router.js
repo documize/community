@@ -23,6 +23,10 @@ export default Router.map(function () {
 
     this.route('folder', {
 		path: 's/:folder_id/:folder_slug'
+	}, function() {
+		this.route('settings', {
+			path: 'settings'
+		});
 	});
 
 	this.route('document', {

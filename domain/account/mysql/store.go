@@ -34,7 +34,7 @@ func (s Scope) Add(ctx domain.RequestContext, account account.Account) (err erro
 	account.Created = time.Now().UTC()
 	account.Revised = time.Now().UTC()
 
-	stmt, err := ctx.Transaction.Preparex("INSERT INTO account (refid, orgid, userid, admin, editor, users, active, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+	stmt, err := ctx.Transaction.Preparex("INSERT INTO account (refid, orgid, userid, admin, editor, users, active, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
 	defer streamutil.Close(stmt)
 
 	if err != nil {

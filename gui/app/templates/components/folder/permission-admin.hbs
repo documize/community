@@ -1,0 +1,42 @@
+<div class="space-settings">
+	<div class="panel">
+		<div class="form-header">
+			<div class="title">Permissions</div>
+			<div class="tip">Define who can do what in this space</div>
+		</div>
+		<div class="input-control">
+			<div class="permissions-table">
+				{{#each permissions key="@index" as |permission|}}
+					<div class="row">
+						<div class="permission-name-cell">{{permission.fullname}}</div>
+						<div class="permission-roles-cell">
+							<span class="role-category">Space:&nbsp;</span>
+							<input type="checkbox" id="space-role-view-{{permission.userId}}" checked={{permission.canView}} />
+							<label for="space-role-view-{{permission.userId}}">view</label>&nbsp;&nbsp;
+							<input type="checkbox" id="space-role-manage-{{permission.userId}}" checked={{permission.canView}} />
+							<label for="space-role-manage-{{permission.userId}}">manage</label>&nbsp;&nbsp;
+							<input type="checkbox" id="space-role-owner-{{permission.userId}}" checked={{permission.canView}} />
+							<label for="space-role-owner-{{permission.userId}}">owner</label>&nbsp;&nbsp;
+							&nbsp;&nbsp;&nbsp;&nbsp;
+							<span class="role-category">Document:&nbsp;</span>
+							<input type="checkbox" id="doc-role-add-{{permission.userId}}" checked={{permission.canView}} />
+							<label for="doc-role-add-{{permission.userId}}">create</label>&nbsp;&nbsp;
+							<input type="checkbox" id="doc-role-edit-{{permission.userId}}" checked={{permission.canView}} />
+							<label for="doc-role-edit-{{permission.userId}}">edit</label>&nbsp;&nbsp;
+							<input type="checkbox" id="doc-role-delete-{{permission.userId}}" checked={{permission.canView}} />
+							<label for="doc-role-delete-{{permission.userId}}">delete</label>&nbsp;&nbsp;
+							<input type="checkbox" id="doc-role-move-{{permission.userId}}" checked={{permission.canView}} />
+							<label for="doc-role-move-{{permission.userId}}">move</label>&nbsp;&nbsp;
+							<input type="checkbox" id="doc-role-copy-{{permission.userId}}" checked={{permission.canView}} />
+							<label for="doc-role-copy-{{permission.userId}}">copy</label>&nbsp;&nbsp;
+							<input type="checkbox" id="doc-role-template-{{permission.userId}}" checked={{permission.canView}} />
+							<label for="doc-role-template-{{permission.userId}}">templates</label>&nbsp;&nbsp;
+						</div>
+					</div>
+				{{/each}}
+			</div>
+		</div>
+
+		<div class="regular-button button-blue" {{action 'setPermissions'}}>GRANT</div>
+	</div>
+</div>

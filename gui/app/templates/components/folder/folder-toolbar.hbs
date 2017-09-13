@@ -28,7 +28,19 @@
 				</ul>
 			{{/dropdown-dialog}}
 		{{else}}
-			<div class="margin-top-35"></div>
+			{{#if isFolderOwner}}
+				{{#link-to 'folder.settings' folder.id folder.slug}}{{model.document.name}}
+					<div class="round-button button-gray" id="space-settings-button" data-tooltip="Manage permissions" data-tooltip-position="top center">
+						<i class="material-icons">settings</i>
+					</div>
+				{{/link-to}}
+				<div class="button-gap"></div>
+				<div class="round-button button-gray" id="space-delete-button" data-tooltip="Delete everything" data-tooltip-position="top center">
+					<i class="material-icons">delete</i>
+				</div>
+			{{else}}
+				<div class="margin-top-35"></div>
+			{{/if}}
 	    {{/if}}
 	</div>
 {{/if}}

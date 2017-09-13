@@ -23,7 +23,7 @@ export default Ember.Component.extend(NotifierMixin, {
 	inviteMessage: '',
 
 	getDefaultInvitationMessage() {
-		return "Hey there, I am sharing the " + this.folder.get('name') + " space (in " + this.get("appMeta.title") + ") with you so we can both access the same documents.";
+		return "Hey there, I am sharing the " + this.folder.get('name') + " space (in " + this.get("appMeta.title") + ") with you so we can both collaborate on documents.";
 	},
 
 	willRender() {
@@ -67,7 +67,8 @@ export default Ember.Component.extend(NotifierMixin, {
 			this.set('inviteEmail', '');
 
 			this.get('folderService').share(this.folder.get('id'), result).then(() => {
-				this.showNotification('Shared');
+				this.showNotification('Invietd co-workers');
+				$('#inviteEmail').removeClass('error');
 			});
 		}
 	}
