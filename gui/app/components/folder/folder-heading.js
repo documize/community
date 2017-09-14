@@ -22,7 +22,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	folderName: '',
 	hasNameError: computed.empty('folderName'),
 	editMode: false,
-    isEditor: false,
 
 	keyUp(e) {
 		if (e.keyCode === 27) { // escape key

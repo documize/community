@@ -10,7 +10,7 @@
     <div class="round-button-mono {{if (is-equal tab 'attachments') 'selected'}}" {{action 'onChangeTab' 'attachments'}}>
         <i class="material-icons">attach_file</i>
     </div>
-    {{#if isEditor}}
+    {{#if permissions.documentEdit}}
         <div class="margin-top-20"></div>
         <div class="round-button-mono {{if (is-equal tab 'activity') 'selected'}}" {{action 'onChangeTab' 'activity'}}>
             <i class="material-icons">timeline</i>
@@ -22,21 +22,21 @@
     {{#if document.template}}
         <div class="template-header">Template</div>
     {{/if}}
-    {{document/tag-editor documentTags=document.tags isEditor=isEditor onChange=(action 'onTagChange')}}
+    {{document/tag-editor documentTags=document.tags permissions=permissions onChange=(action 'onTagChange')}}
 </div>
 
 <div class="sidebar-wrapper">
     {{#if (is-equal tab 'index')}}
-		{{document/sidebar-view-index document=document folder=folder pages=pages page=page isEditor=isEditor
+		{{document/sidebar-view-index document=document folder=folder pages=pages page=page permissions=permissions
 			onPageSequenceChange=(action 'onPageSequenceChange') onPageLevelChange=(action 'onPageLevelChange') onGotoPage=(action 'onGotoPage')}}
     {{/if}}
 
     {{#if (is-equal tab 'attachments')}}
-        {{document/sidebar-view-attachments document=document isEditor=isEditor}}
+        {{document/sidebar-view-attachments document=document permissions=permissions}}
     {{/if}}
 
     {{#if (is-equal tab 'activity')}}
-        {{document/sidebar-view-activity document=document pages=pages isEditor=isEditor}}
+        {{document/sidebar-view-activity document=document pages=pages permissions=permissions}}
     {{/if}}
 </div>
 
@@ -55,7 +55,7 @@
             {{else}}
                 <li class="item" id="pin-document-button">Pin</li>
             {{/if}}
-			{{#if isEditor}}
+			{{#if permissions.documentEdit}}
 				<li class="item">
 					{{#link-to 'document.history'}}History{{/link-to}}
 				</li>
@@ -63,14 +63,14 @@
 	        {{/if}}
         {{/if}}
 
-        {{#if isEditor}}
+        {{#if permissions.documentTemplate}}
             <li class="item" id="save-template-button">Template</li>
             <li class="divider"></li>
         {{/if}}
 
         <li class="item" id="print-document-button" {{action 'onPrintDocument'}}>Print</li>
 
-        {{#if isEditor}}
+        {{#if permissions.documentDelete}}
             <li class="divider"></li>
             <li class="item danger" id="delete-document-button">Delete</li>
         {{/if}}
@@ -90,13 +90,17 @@
         {{/unless}}
     {{/if}}
 
-    {{#if isEditor}}
+    {{#if permissions.documentDelete}}
         {{#if menuOpen}}
             {{#dropdown-dialog target="delete-document-button" position="bottom left" button="Delete" color="flat-red" onAction=(action 'onDeleteDocument')}}
                 <p>Are you sure you want to delete this document?</p>
                 <p>There is no undo, so be careful.</p>
             {{/dropdown-dialog}}
+        {{/if}}
+    {{/if}}
 
+    {{#if permissions.documentTemplate}}
+        {{#if menuOpen}}
             {{#dropdown-dialog target="save-template-button" position="bottom left" button="Save as Template" color="flat-green" onAction=(action 'onSaveTemplate') focusOn="new-template-name" }}
                 <div class="input-control">
                     <label>Name</label>

@@ -16,7 +16,7 @@
 		<ul class="template-list">
 			{{#each savedTemplates key="id" as |template|}}
 				<li class="item">
-					{{#if isEditor}}
+					{{#if permissions.documentTemplate}}
 						{{#unless template.locked}}
 							<div class="template-actions">
 								<i class="material-icons" {{action 'editTemplate' template}}>mode_edit</i>

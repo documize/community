@@ -14,10 +14,6 @@ import NotifierMixin from '../../mixins/notifier';
 import TooltipMixin from '../../mixins/tooltip';
 import AuthMixin from '../../mixins/auth';
 
-const {
-	computed
-} = Ember;
-
 export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 	folderService: Ember.inject.service('folder'),
 	session: Ember.inject.service(),
@@ -25,16 +21,11 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 	showToolbar: false,
 	folder: {},
 	busy: false,
-	isFolderOwner: computed.equal('folder.userId', 'session.user.id'),
 	moveFolderId: "",
 	drop: null,
 
 	didReceiveAttrs() {
-		this.set('isFolderOwner', this.get('folder.userId') === this.get("session.user.id"));
-
-		let show = this.get('session.authenticated') || this.get('isFolderOwner') || this.get('hasSelectedDocuments') || this.get('folderService').get('canEditCurrentFolder');
-		this.set('showToolbar', show);
-
+		console.log(this.get('permissions'));
 		let targets = _.reject(this.get('folders'), {
 			id: this.get('folder').get('id')
 		});
@@ -44,11 +35,17 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 
 	didRender() {
 		if (this.get('hasSelectedDocuments')) {
-			this.addTooltip(document.getElementById("move-documents-button"));
-			this.addTooltip(document.getElementById("delete-documents-button"));
+			if (this.get('permissions.documentMove')) {
+				this.addTooltip(document.getElementById("move-documents-button"));
+			}
+			if (this.get('permissions.documentDelete')) {
+				this.addTooltip(document.getElementById("delete-documents-button"));
+			}
 		} else {
-			if (this.get('isFolderOwner')) {
+			if (this.get('permissions.spaceOwner')) {
 				this.addTooltip(document.getElementById("space-delete-button"));
+			}
+			if (this.get('permissions.spaceManage')) {
 				this.addTooltip(document.getElementById("space-settings-button"));
 			}
 		}

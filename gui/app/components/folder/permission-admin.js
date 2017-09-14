@@ -26,73 +26,60 @@ export default Ember.Component.extend(NotifierMixin, {
 		this.get('userService').getAll().then((users) => {
 			this.set('users', users);
 
-			var folderPermissions = [];
+			// set up users
+			let folderPermissions = [];
 
 			users.forEach((user) => {
 				let isActive = user.get('active');
 
 				let u = {
-					fullname: user.get('fullname'),
 					orgId: this.get('folder.orgId'),
-					who: 'user',
-					whoId: user.get('id'),
-					location: 'space',
-					scope: 'object',
-					refId: this.get('folder.id'),
+					folderId: this.get('folder.id'),
+					userId: user.get('id'),
+					fullname: user.get('fullname'),
 					spaceView: false,
 					spaceManage: false,
 					spaceOwner: false,
-					docAdd: false,
-					docEdit: false,
-					docDelete: false,
-					docMove: false,
-					docCopy: false,
-					docTemplate: false,
+					documentAdd: false,
+					documentEdit: false,
+					documentDelete: false,
+					documentMove: false,
+					documentCopy: false,
+					documentTemplate: false
 				};
 
 				if (isActive) {
-					folderPermissions.pushObject(u);
+					let data = this.get('store').normalize('space-permission', u)
+					folderPermissions.pushObject(this.get('store').push(data));
 				}
 			});
 
-			var u = {
-				fullname: " Everyone",
+			// set up Everyone user
+			let u = {
 				orgId: this.get('folder.orgId'),
-				who: 'user',
-				whoId: '',
-				location: 'space',
-				scope: 'object',
-				refId: this.get('folder.id'),
+				folderId: this.get('folder.id'),
+				userId: '',
+				fullname: ' Everyone',
 				spaceView: false,
 				spaceManage: false,
 				spaceOwner: false,
-				docAdd: false,
-				docEdit: false,
-				docDelete: false,
-				docMove: false,
-				docCopy: false,
-				docTemplate: false,
+				documentAdd: false,
+				documentEdit: false,
+				documentDelete: false,
+				documentMove: false,
+				documentCopy: false,
+				documentTemplate: false
 		};
 
-			folderPermissions.pushObject(u);
+			let data = this.get('store').normalize('space-permission', u)
+			folderPermissions.pushObject(this.get('store').push(data));
 
 			this.get('folderService').getPermissions(this.get('folder.id')).then((permissions) => {
 				permissions.forEach((permission, index) => { // eslint-disable-line no-unused-vars
-					var folderPermission = folderPermissions.findBy('userId', permission.get('userId'));
-					if (is.not.undefined(folderPermission)) {
-						Ember.setProperties(folderPermission, {
-							orgId: permission.get('orgId'),
-							folderId: permission.get('folderId'),
-							canEdit: permission.get('canEdit'),
-							canView: permission.get('canView'),
-							canViewPrevious: permission.get('canView')
-						});
+					let user = folderPermissions.findBy('userId', permission.get('userId'));
+					if (is.not.undefined(user)) {
+						Ember.setProperties(user, permission);
 					}
-				});
-
-				folderPermissions.map((permission) => {
-					let data = this.get('store').normalize('folder-permission', permission);
-					return this.get('store').push(data);
 				});
 
 				this.set('permissions', folderPermissions.sortBy('fullname'));
@@ -107,48 +94,44 @@ export default Ember.Component.extend(NotifierMixin, {
 	actions: {
 		setPermissions() {
 			let message = this.getDefaultInvitationMessage();
-			let folder = this.get('folder');
+			// let folder = this.get('folder');
 			let permissions = this.get('permissions');
 
-			this.get('permissions').forEach((permission, index) => { // eslint-disable-line no-unused-vars
-				Ember.set(permission, 'canView', $("#canView-" + permission.userId).prop('checked'));
-				Ember.set(permission, 'canEdit', $("#canEdit-" + permission.userId).prop('checked'));
+			permissions.forEach((permission, index) => { // eslint-disable-line no-unused-vars
+				Ember.set(permission, 'spaceView', $("#space-role-view-" + permission.get('userId')).prop('checked'));
+				Ember.set(permission, 'spaceManage', $("#space-role-manage-" + permission.get('userId')).prop('checked'));
+				Ember.set(permission, 'spaceOwner', $("#space-role-owner-" + permission.get('userId')).prop('checked'));
+				Ember.set(permission, 'documentAdd', $("#doc-role-add-" + permission.get('userId')).prop('checked'));
+				Ember.set(permission, 'documentEdit', $("#doc-role-edit-" + permission.get('userId')).prop('checked'));
+				Ember.set(permission, 'documentDelete', $("#doc-role-delete-" + permission.get('userId')).prop('checked'));
+				Ember.set(permission, 'documentMove', $("#doc-role-move-" + permission.get('userId')).prop('checked'));
+				Ember.set(permission, 'documentCopy', $("#doc-role-copy-" + permission.get('userId')).prop('checked'));
+				Ember.set(permission, 'documentTemplate', $("#doc-role-template-" + permission.get('userId')).prop('checked'));
 			});
 
-			var data = permissions.map((obj) => {
-				let permission = {
-					'orgId': obj.orgId,
-					'folderId': obj.folderId,
-					'userId': obj.userId,
-					'canEdit': obj.canEdit,
-					'canView': obj.canView
-				};
+			let payload = { Message: message, Permissions: permissions };
+			console.log(payload);
 
-				return permission;
-			});
+			// this.get('folderService').savePermissions(folder.get('id'), payload).then(() => {
+			// 	this.showNotification('Saved permissions');
+			// });
 
-			var payload = { Message: message, Roles: data };
+			// var hasEveryone = _.find(data, function (permission) {
+			// 	return permission.userId === "" && (permission.canView || permission.canEdit);
+			// });
 
-			this.get('folderService').savePermissions(folder.get('id'), payload).then(() => {
-				this.showNotification('Saved permissions');
-			});
+			// if (is.not.undefined(hasEveryone)) {
+			// 	folder.markAsPublic();
+			// } else {
+			// 	if (data.length > 1) {
+			// 		folder.markAsRestricted();
+			// 	} else {
+			// 		folder.markAsPrivate();
+			// 	}
+			// }
 
-			var hasEveryone = _.find(data, function (permission) {
-				return permission.userId === "" && (permission.canView || permission.canEdit);
-			});
-
-			if (is.not.undefined(hasEveryone)) {
-				folder.markAsPublic();
-			} else {
-				if (data.length > 1) {
-					folder.markAsRestricted();
-				} else {
-					folder.markAsPrivate();
-				}
-			}
-
-			this.get('folderService').save(folder).then(function () {
-			});
+			// this.get('folderService').save(folder).then(function () {
+			// });
 		}
 	}
 });

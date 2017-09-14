@@ -1,19 +1,12 @@
-{{#if showToolbar}}
-	<div class="pull-right hidden-xs hidden-sm">
-	    {{#if hasSelectedDocuments}}
+<div class="pull-right hidden-xs hidden-sm">
+	{{#if hasSelectedDocuments}}
+
+		{{#if permissions.documentMove}}
 			<div class="round-button button-blue" id="move-documents-button" data-tooltip="Move documents" data-tooltip-position="top center">
-			    <i class="material-icons">folder</i>
+				<i class="material-icons">folder</i>
 			</div>
-			<div class="button-gap"></div>
-			<div class="round-button button-red" id="delete-documents-button" data-tooltip="Delete documents" data-tooltip-position="top center">
-			    <i class="material-icons">delete</i>
-			</div>
-			{{#dropdown-dialog target="delete-documents-button" position="bottom right" button="Delete" color="flat-red" onAction=(action 'deleteDocuments')}}
-			    <p>Are you sure you want to delete selected documents?</p>
-			    <p>There is no undo!</p>
-			{{/dropdown-dialog}}
 			{{#dropdown-dialog target="move-documents-button" position="bottom right" button="Move" color="flat-blue" onAction=(action 'moveDocuments')}}
-			    <p class="heading">Select destination space</p>
+				<p class="heading">Select destination space</p>
 				<ul class="move-document-options">
 					{{#each movedFolderOptions as |folder|}}
 						<li class="option {{if folder.selected "selected"}}" {{action 'setMoveFolder' folder.id}}>
@@ -27,22 +20,38 @@
 					{{/each}}
 				</ul>
 			{{/dropdown-dialog}}
-		{{else}}
-			{{#if isFolderOwner}}
-				{{#link-to 'folder.settings' folder.id folder.slug}}{{model.document.name}}
-					<div class="round-button button-gray" id="space-settings-button" data-tooltip="Manage permissions" data-tooltip-position="top center">
-						<i class="material-icons">settings</i>
-					</div>
-				{{/link-to}}
-				<div class="button-gap"></div>
-				<div class="round-button button-gray" id="space-delete-button" data-tooltip="Delete everything" data-tooltip-position="top center">
-					<i class="material-icons">delete</i>
-				</div>
-			{{else}}
-				<div class="margin-top-35"></div>
-			{{/if}}
-	    {{/if}}
-	</div>
-{{/if}}
+		{{/if}}
 
+		{{#if permissions.documentDelete}}
+			<div class="button-gap"></div>
+			<div class="round-button button-red" id="delete-documents-button" data-tooltip="Delete documents" data-tooltip-position="top center">
+				<i class="material-icons">delete</i>
+			</div>
+			{{#dropdown-dialog target="delete-documents-button" position="bottom right" button="Delete" color="flat-red" onAction=(action 'deleteDocuments')}}
+				<p>Are you sure you want to delete selected documents?</p>
+				<p>There is no undo!</p>
+			{{/dropdown-dialog}}
+		{{/if}}
+
+	{{else}}
+
+		{{#if permissions.spaceManage}}
+			{{#link-to 'folder.settings' folder.id folder.slug}}{{model.document.name}}
+				<div class="round-button button-gray" id="space-settings-button" data-tooltip="Manage permissions" data-tooltip-position="top center">
+					<i class="material-icons">settings</i>
+				</div>
+			{{/link-to}}
+		{{/if}}
+
+		{{#if permissions.spaceOwner}}
+			<div class="button-gap"></div>
+			<div class="round-button button-gray" id="space-delete-button" data-tooltip="Delete everything" data-tooltip-position="top center">
+				<i class="material-icons">delete</i>
+			</div>
+		{{/if}}
+
+	{{/if}}
+</div>
+
+<div class="margin-top-35" />
 <div class="margin-bottom-20 clearfix" />

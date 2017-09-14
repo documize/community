@@ -33,11 +33,11 @@ export default Ember.Component.extend({
         }
 
         this.set('tagz', tagz);
-        this.set('canAdd', this.get('isEditor') && this.get('tagz').get('length') < 3);
+        this.set('canAdd', this.get('permissions.documentEdit') && this.get('tagz').get('length') < 3);
     },
 
     didUpdateAttrs() {
-        this.set('canAdd', this.get('isEditor') && this.get('tagz').get('length') < 3);
+        this.set('canAdd', this.get('permissions.documentEdit') && this.get('tagz').get('length') < 3);
     },
 
     didInsertElement() {

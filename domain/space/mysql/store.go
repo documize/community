@@ -208,7 +208,7 @@ func (s Scope) AddPermission(ctx domain.RequestContext, r space.Permission) (err
 // AddPermissions inserts records into permission database table, one per action.
 func (s Scope) AddPermissions(ctx domain.RequestContext, r space.Permission, actions ...space.PermissionAction) (err error) {
 	for _, a := range actions {
-		r.Action = string(a)
+		r.Action = a
 		s.AddPermission(ctx, r)
 	}
 
@@ -242,12 +242,12 @@ func (s Scope) GetUserPermissions(ctx domain.RequestContext, spaceID string) (r 
 func (s Scope) GetPermissions(ctx domain.RequestContext, spaceID string) (r []space.Permission, err error) {
 	err = s.Runtime.Db.Select(&r, `
 		SELECT id, orgid, who, whoid, action, scope, location, refid
-			FROM permission WHERE orgid=? AND location='space' AND refid=? AND who='user' AND (whoid=? OR whoid='')
+			FROM permission WHERE orgid=? AND location='space' AND refid=? AND who='user'
 		UNION ALL
 		SELECT p.id, p.orgid, p.who, p.whoid, p.action, p.scope, p.location, p.refid
 			FROM permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.location='space' AND p.refid=? 
-			AND p.who='role' AND (r.userid=? OR r.userid='')`,
-		ctx.OrgID, spaceID, ctx.UserID, ctx.OrgID, spaceID, ctx.OrgID)
+			AND p.who='role'`,
+		ctx.OrgID, spaceID, ctx.OrgID, spaceID)
 
 	if err == sql.ErrNoRows {
 		err = nil

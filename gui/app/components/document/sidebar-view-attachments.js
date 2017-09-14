@@ -32,7 +32,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	didInsertElement() {
 		this._super(...arguments);
 
-		if (!this.get('isEditor')) {
+		if (!this.get('permissions.documentEdit')) {
 			return;
 		}
 

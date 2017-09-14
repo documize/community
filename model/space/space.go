@@ -57,15 +57,15 @@ func (l *Space) IsRestricted() bool {
 
 // Permission represents a permission for a space and is persisted to the database.
 type Permission struct {
-	ID       uint64    `json:"id"`
-	OrgID    string    `json:"-"`
-	Who      string    `json:"who"`      // user, role
-	WhoID    string    `json:"whoId"`    // either a user or role ID
-	Action   string    `json:"action"`   // view, edit, delete
-	Scope    string    `json:"scope"`    // object, table
-	Location string    `json:"location"` // table name
-	RefID    string    `json:"refId"`    // id of row in table / blank when scope=table
-	Created  time.Time `json:"created"`
+	ID       uint64           `json:"id"`
+	OrgID    string           `json:"-"`
+	Who      string           `json:"who"`      // user, role
+	WhoID    string           `json:"whoId"`    // either a user or role ID
+	Action   PermissionAction `json:"action"`   // view, edit, delete
+	Scope    string           `json:"scope"`    // object, table
+	Location string           `json:"location"` // table name
+	RefID    string           `json:"refId"`    // id of row in table / blank when scope=table
+	Created  time.Time        `json:"created"`
 }
 
 // PermissionAction details type of action
@@ -77,7 +77,7 @@ const (
 	// SpaceManage action means you can add, remove users, set permissions, but not delete that space
 	SpaceManage PermissionAction = "manage"
 	// SpaceOwner action means you can delete a space and do all SpaceManage functions
-	SpaceOwner PermissionAction = "owner"
+	SpaceOwner PermissionAction = "own"
 
 	// DocumentAdd action means you can create/upload documents to a space
 	DocumentAdd PermissionAction = "doc-add"
@@ -92,16 +92,6 @@ const (
 	// DocumentTemplate means you can create, edit and delete document templates and content blocks
 	DocumentTemplate PermissionAction = "doc-template"
 )
-
-// Role determines user permissions for a folder.
-type Role struct {
-	model.BaseEntityObfuscated
-	OrgID   string `json:"-"`
-	LabelID string `json:"folderId"`
-	UserID  string `json:"userId"`
-	CanView bool   `json:"canView"`
-	CanEdit bool   `json:"canEdit"`
-}
 
 // Viewer details who can see a particular space
 type Viewer struct {
@@ -144,9 +134,9 @@ type NewSpaceRequest struct {
 }
 
 // HasPermission checks if action matches one of the required actions?
-func HasPermission(action string, actions ...PermissionAction) bool {
+func HasPermission(action PermissionAction, actions ...PermissionAction) bool {
 	for _, a := range actions {
-		if action == string(a) {
+		if action == a {
 			return true
 		}
 	}

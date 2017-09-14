@@ -25,7 +25,7 @@ export default BaseService.extend({
 
 	// selected folder
 	currentFolder: null,
-	canEditCurrentFolder: false,
+	permissions: {},
 
 	// Add a new folder.
 	add(payload) {
@@ -114,7 +114,6 @@ export default BaseService.extend({
 
 	// reloads and caches folders.
 	reload() {
-
 		return this.get('ajax').request(`space`, {
 			method: "GET"
 		}).then((response) => {
@@ -137,7 +136,7 @@ export default BaseService.extend({
 			let data = [];
 
 			data = response.map((obj) => {
-				let data = this.get('store').normalize('user-permission', obj);
+				let data = this.get('store').normalize('space-permission', obj);
 				return this.get('store').push(data);
 			});
 
@@ -171,7 +170,6 @@ export default BaseService.extend({
 		let folderId = folder.get('id');
 		this.set('currentFolder', folder);
 		this.get('localStorage').storeSessionItem("folder", folderId);
-		this.set('canEditCurrentFolder', false);
 
 		let userId = this.get('sessionService.user.id');
 		if (userId === "") {
@@ -180,37 +178,11 @@ export default BaseService.extend({
 
 		let url = `space/${folderId}/permissions/user`;
 
-		return this.get('ajax').request(url).then((folderPermissions) => {
-			// safety check
-			this.set('canEditCurrentFolder', false);
-
-			if (folderPermissions.length === 0) {
-				return;
-			}
-
-			let result = [];
-
-			folderPermissions.forEach((item) => {
-				if (item.folderId === folderId) {
-					result.push(item);
-				}
-			});
-
-			let canEdit = false;
-
-			result.forEach((permission) => {
-				if (permission.userId === userId) {
-					canEdit = permission.canEdit;
-				}
-
-				if (permission.userId === "" && !canEdit) {
-					canEdit = permission.canEdit;
-				}
-			});
-
-			Ember.run(() => {
-				this.set('canEditCurrentFolder', canEdit && this.get('sessionService.authenticated'));
-			});
+		return this.get('ajax').request(url).then((response) => {
+			let data = this.get('store').normalize('space-permission', response);
+			let data2 = this.get('store').push(data);
+			this.set('permissions', data2);
+			return data2;
 		});
 	},
 });

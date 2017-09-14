@@ -26,10 +26,8 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 			this.get('folderService').getFolder(this.get('folderId')).then((folder) => {
 				this.set('folder', folder);
 
-				this.get('folderService').setCurrentFolder(folder).then(() => {
-					this.set('isEditor', this.get('folderService').get('canEditCurrentFolder'));
-					this.set('isFolderOwner', this.get('session.user.id') === folder.get('userId'));
-
+				this.get('folderService').setCurrentFolder(folder).then((data) => {
+					this.set('permissions', data);
 					resolve();
 				});
 			});
@@ -39,8 +37,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	model(params) {
 		return Ember.RSVP.hash({
 			folder: this.get('folder'),
-			isEditor: this.get('isEditor'),
-			isFolderOwner: this.get('isFolderOwner'),
+			permissions: this.get('permissions'),
 			folders: this.get('folderService').getAll(),
 			documents: this.get('documentService').getAllByFolder(params.folder_id),
 			templates: this.get('templateService').getSavedTemplates(params.folder_id)

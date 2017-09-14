@@ -1,5 +1,5 @@
 {{#unless editMode}}
-	<div class="folder-heading {{if isFolderOwner 'cursor-pointer'}}" onclick={{if isFolderOwner (action 'toggleEdit')}}>
+	<div class="folder-heading {{if permissions.spaceOwner 'cursor-pointer'}}" onclick={{if permissions.spaceOwner (action 'toggleEdit')}}>
 		<h1 class="folder-title">{{folder.name}}</h1>
 	</div>
 {{else}}

@@ -13,7 +13,7 @@
 					<a href="{{ appMeta.endpoint }}/public/attachments/{{ appMeta.orgId }}/{{ a.id }}">
 						<span class="file">{{ a.filename }}</span>
 					</a>
-					{{#if isEditor}}
+					{{#if permissions.documentEdit}}
 						<div class="action round-button-mono">
 							<i class="material-icons color-gray delete-attachment-{{a.id}}" title="Delete" {{action 'onConfirmDelete' a.id a.filename}}>delete</i>
 						</div>

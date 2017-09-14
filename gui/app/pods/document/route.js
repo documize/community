@@ -34,7 +34,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 						this.set('folder', folder);
 
 						this.get('folderService').setCurrentFolder(folder).then(() => {
-							this.set('isEditor', this.get('folderService').get('canEditCurrentFolder'));
+							this.set('permissions', this.get('folderService').get('permissions'));
 							resolve();
 						});
 					});
@@ -49,7 +49,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 			folder: this.get('folder'),
 			document: this.get('document'),
 			page: this.get('pageId'),
-			isEditor: this.get('isEditor'),
+			permissions: this.get('permissions'),
 			links: this.get('linkService').getDocumentLinks(this.get('documentId')),
 			sections: this.get('sectionService').getAll()
 		});

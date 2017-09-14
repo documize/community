@@ -30,7 +30,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 			pages: this.get('documentService').getPages(this.modelFor('document').document.get('id')),
 			links: this.modelFor('document').links,
 			sections: this.modelFor('document').sections,
-			isEditor: this.get('folderService').get('canEditCurrentFolder')
+			permissions: this.get('folderService').get('permissions')
 		});
 	}
 });

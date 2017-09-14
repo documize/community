@@ -18,8 +18,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 
 		return Ember.RSVP.hash({
 			folder: this.modelFor('folder').folder,
-			isEditor: this.modelFor('folder').isEditor,
-			isFolderOwner: this.modelFor('folder').isFolderOwner,
+			permissions: this.modelFor('folder').permissions,
 			folders: this.modelFor('folder').folders
 		});
 	}

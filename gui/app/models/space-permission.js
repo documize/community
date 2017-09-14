@@ -15,10 +15,17 @@ import attr from 'ember-data/attr';
 
 export default Model.extend({
 	orgId: attr('string'),
-	who: attr('string'),
-	whoId: attr('string'),
-	action: attr('string'),
-	scope: attr('string'),
-	location: attr('string'),
-	refId: attr('string')
+	folderId: attr('string'),
+	userId: attr('string'),
+	fullname: attr('string'), // client-side usage only, not from API
+
+	spaceView: attr('boolean'),
+	spaceManage: attr('boolean'),
+	spaceOwner: attr('boolean'),
+	documentAdd: attr('boolean'),
+	documentEdit: attr('boolean'),
+	documentDelete: attr('boolean'),
+	documentMove: attr('boolean'),
+	documentCopy: attr('boolean'),
+	documentTemplate: attr('boolean')
 });

@@ -1,14 +1,17 @@
 {{#layout/zone-container}}
 	{{#layout/zone-sidebar}}
-		{{folder/sidebar-zone folders=model.folders folder=model.folder isFolderOwner=model.isFolderOwner isEditor=model.isEditor tab=tab
-		onAddSpace=(action 'onAddSpace')}}
+		{{folder/sidebar-zone folders=model.folders folder=model.folder
+		permissions=model.permissions tab=tab onAddSpace=(action 'onAddSpace')}}
 	{{/layout/zone-sidebar}}
 	{{#layout/zone-content}}
-		{{folder/folder-heading folder=model.folder isFolderOwner=model.isFolderOwner isEditor=model.isEditor}}
-		{{folder/folder-toolbar folders=model.folders isFolderOwner=model.isFolderOwner folder=model.folder hasSelectedDocuments=hasSelectedDocuments
+		{{folder/folder-heading folder=model.folder permissions=model.permissions}}
+
+		{{folder/folder-toolbar folders=model.folders folder=model.folder
+			permissions=model.permissions hasSelectedDocuments=hasSelectedDocuments
 			onDeleteDocument=(action 'onDeleteDocument') onMoveDocument=(action 'onMoveDocument')}}
+
 		{{folder/documents-list documents=model.documents folders=model.folders folder=model.folder templates=model.templates
-			isFolderOwner=model.isFolderOwner isEditor=model.isEditor selectedDocuments=(mut selectedDocuments)
+			permissions=model.permissions selectedDocuments=(mut selectedDocuments)
 			onDeleteSpace=(action 'onDeleteSpace') onImport=(action 'onImport')}}
 	{{/layout/zone-content}}
 {{/layout/zone-container}}

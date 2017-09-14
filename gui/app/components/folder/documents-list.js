@@ -21,7 +21,7 @@ export default Ember.Component.extend({
     didReceiveAttrs() {
 		this._super(...arguments);
 
-        this.set('canCreate', this.get('folderService').get('canEditCurrentFolder'));
+        this.set('canCreate', this.get('permissions.documentAdd'));
         this.set('deleteTargets', this.get('folders').rejectBy('id', this.get('folder.id')));
     },
 

@@ -714,7 +714,7 @@ func (h *Handler) SetPermissions(w http.ResponseWriter, r *http.Request) {
 	response.WriteEmpty(w)
 }
 
-// GetPermissions returns permissions for the requested space, for all users.
+// GetPermissions returns permissions for alll users for given space.
 func (h *Handler) GetPermissions(w http.ResponseWriter, r *http.Request) {
 	method := "space.GetPermissions"
 	ctx := domain.GetRequestContext(r)
@@ -730,12 +730,21 @@ func (h *Handler) GetPermissions(w http.ResponseWriter, r *http.Request) {
 		response.WriteServerError(w, method, err)
 		return
 	}
-
 	if len(perms) == 0 {
 		perms = []space.Permission{}
 	}
 
-	response.WriteJSON(w, perms)
+	userPerms := make(map[string][]space.Permission)
+	for _, p := range perms {
+		userPerms[p.WhoID] = append(userPerms[p.WhoID], p)
+	}
+
+	records := []space.PermissionRecord{}
+	for _, up := range userPerms {
+		records = append(records, space.DecodeUserPermissions(up))
+	}
+
+	response.WriteJSON(w, records)
 }
 
 // GetUserPermissions returns permissions for the requested space, for current user.
@@ -754,12 +763,12 @@ func (h *Handler) GetUserPermissions(w http.ResponseWriter, r *http.Request) {
 		response.WriteServerError(w, method, err)
 		return
 	}
-
 	if len(perms) == 0 {
 		perms = []space.Permission{}
 	}
 
-	response.WriteJSON(w, perms)
+	record := space.DecodeUserPermissions(perms)
+	response.WriteJSON(w, record)
 }
 
 // AcceptInvitation records the fact that a user has completed space onboard process.
