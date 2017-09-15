@@ -71,39 +71,45 @@ func DecodeUserPermissions(perm []Permission) (r PermissionRecord) {
 // for a given space, using flat permission summary record.
 func EncodeUserPermissions(r PermissionRecord) (perm []Permission) {
 	if r.SpaceView {
-		perm = append(perm, encodeRecord(r, SpaceView))
+		perm = append(perm, EncodeRecord(r, SpaceView))
 	}
 	if r.SpaceManage {
-		perm = append(perm, encodeRecord(r, SpaceManage))
+		perm = append(perm, EncodeRecord(r, SpaceManage))
 	}
 	if r.SpaceOwner {
-		perm = append(perm, encodeRecord(r, SpaceOwner))
+		perm = append(perm, EncodeRecord(r, SpaceOwner))
 	}
 
 	if r.DocumentAdd {
-		perm = append(perm, encodeRecord(r, DocumentAdd))
+		perm = append(perm, EncodeRecord(r, DocumentAdd))
 	}
 	if r.DocumentEdit {
-		perm = append(perm, encodeRecord(r, DocumentEdit))
+		perm = append(perm, EncodeRecord(r, DocumentEdit))
 	}
 	if r.DocumentDelete {
-		perm = append(perm, encodeRecord(r, DocumentDelete))
+		perm = append(perm, EncodeRecord(r, DocumentDelete))
 	}
 	if r.DocumentMove {
-		perm = append(perm, encodeRecord(r, DocumentMove))
+		perm = append(perm, EncodeRecord(r, DocumentMove))
 	}
 	if r.DocumentCopy {
-		perm = append(perm, encodeRecord(r, DocumentCopy))
+		perm = append(perm, EncodeRecord(r, DocumentCopy))
 	}
 	if r.DocumentTemplate {
-		perm = append(perm, encodeRecord(r, DocumentTemplate))
+		perm = append(perm, EncodeRecord(r, DocumentTemplate))
 	}
 
 	return
 }
 
-// creates standard permission record representing user permissions for a space.
-func encodeRecord(r PermissionRecord, a PermissionAction) (p Permission) {
+// HasAnyPermission returns true if user has at least one permission.
+func HasAnyPermission(p PermissionRecord) bool {
+	return p.SpaceView || p.SpaceManage || p.SpaceOwner || p.DocumentAdd || p.DocumentEdit ||
+		p.DocumentDelete || p.DocumentMove || p.DocumentCopy || p.DocumentTemplate
+}
+
+// EncodeRecord creates standard permission record representing user permissions for a space.
+func EncodeRecord(r PermissionRecord, a PermissionAction) (p Permission) {
 	p = Permission{}
 	p.OrgID = r.OrgID
 	p.Who = "user"

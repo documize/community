@@ -53,7 +53,6 @@ type SpaceStorer interface {
 	PublicSpaces(ctx RequestContext, orgID string) (sp []space.Space, err error)
 	GetAll(ctx RequestContext) (sp []space.Space, err error)
 	Update(ctx RequestContext, sp space.Space) (err error)
-	ChangeOwner(ctx RequestContext, currentOwner, newOwner string) (err error)
 	Viewers(ctx RequestContext) (v []space.Viewer, err error)
 	Delete(ctx RequestContext, id string) (rows int64, err error)
 
@@ -61,8 +60,9 @@ type SpaceStorer interface {
 	AddPermissions(ctx RequestContext, r space.Permission, actions ...space.PermissionAction) (err error)
 	GetUserPermissions(ctx RequestContext, spaceID string) (r []space.Permission, err error)
 	GetPermissions(ctx RequestContext, spaceID string) (r []space.Permission, err error)
-	DeleteUserPermissions(ctx RequestContext, spaceID, userID string) (rows int64, err error)
 	DeletePermissions(ctx RequestContext, spaceID string) (rows int64, err error)
+	DeleteUserPermissions(ctx RequestContext, spaceID, userID string) (rows int64, err error)
+	DeleteAllUserPermissions(ctx RequestContext, userID string) (rows int64, err error)
 }
 
 // UserStorer defines required methods for user management

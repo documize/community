@@ -161,7 +161,7 @@ func setupAccount(rt *env.Runtime, completion onboardRequest, serial string) (er
 		return err
 	}
 
-	// Set up default labels for main collection.
+	// create space
 	labelID := uniqueid.Generate()
 	sql = fmt.Sprintf("insert into label (refid, orgid, label, type, userid) values (\"%s\", \"%s\", \"My Project\", 2, \"%s\")", labelID, orgID, userID)
 	_, err = runSQL(rt, sql)
@@ -170,12 +170,14 @@ func setupAccount(rt *env.Runtime, completion onboardRequest, serial string) (er
 		rt.Log.Error("insert into label failed", err)
 	}
 
-	labelRoleID := uniqueid.Generate()
-	sql = fmt.Sprintf("insert into labelrole (refid, labelid, orgid, userid, canview, canedit) values (\"%s\", \"%s\", \"%s\", \"%s\", 1, 1)", labelRoleID, labelID, orgID, userID)
-	_, err = runSQL(rt, sql)
-
-	if err != nil {
-		rt.Log.Error("insert into labelrole failed", err)
+	// assign permissions to space
+	perms := []string{"view", "manage", "own", "doc-add", "doc-edit", "doc-delete", "doc-move", "doc-copy", "doc-template"}
+	for _, p := range perms {
+		sql = fmt.Sprintf("insert into permissions (orgid, who, whoid, action, scope, location, refid) values (\"%s\", 'who', \"%s\", \"%s\", 'object', 'space', \"%s\")", orgID, userID, p, labelID)
+		_, err = runSQL(rt, sql)
+		if err != nil {
+			rt.Log.Error("insert into permission failed", err)
+		}
 	}
 
 	return

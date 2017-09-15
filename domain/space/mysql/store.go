@@ -90,26 +90,25 @@ func (s Scope) PublicSpaces(ctx domain.RequestContext, orgID string) (sp []space
 // Also handles which spaces can be seen by anonymous users.
 func (s Scope) GetAll(ctx domain.RequestContext) (sp []space.Space, err error) {
 	sql := `
-	(SELECT id,refid,label as name,orgid,userid,type,created,revised from label WHERE orgid=? AND type=2 AND userid=?)
-	UNION ALL
-	(SELECT id,refid,label as name,orgid,userid,type,created,revised FROM label a where orgid=? AND type=1 AND refid in
-		(SELECT labelid from labelrole WHERE orgid=? AND userid='' AND (canedit=1 OR canview=1)))
-	UNION ALL
-	(SELECT id,refid,label as name,orgid,userid,type,created,revised FROM label a where orgid=? AND type=3 AND refid in
-		(SELECT labelid from labelrole WHERE orgid=? AND userid=? AND (canedit=1 OR canview=1)))
+	SELECT id,refid,label as name,orgid,userid,type,created,revised FROM label
+	WHERE orgid=?
+		AND refid IN (SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid IN (
+		SELECT refid from permission WHERE orgid=? AND who='user' AND whoid=? AND location='space' UNION ALL
+		SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' 
+		AND p.location='space' AND p.action='view' AND r.userid=?
+	))
 	ORDER BY name`
 
 	err = s.Runtime.Db.Select(&sp, sql,
 		ctx.OrgID,
+		ctx.OrgID,
+		ctx.OrgID,
 		ctx.UserID,
-		ctx.OrgID,
-		ctx.OrgID,
-		ctx.OrgID,
 		ctx.OrgID,
 		ctx.UserID)
 
 	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("Unable to execute select labels for org %s", ctx.OrgID))
+		err = errors.Wrap(err, fmt.Sprintf("failed space.GetAll org %s", ctx.OrgID))
 		return
 	}
 
@@ -131,25 +130,6 @@ func (s Scope) Update(ctx domain.RequestContext, sp space.Space) (err error) {
 	_, err = stmt.Exec(&sp)
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to execute update for label %s", sp.RefID))
-		return
-	}
-
-	return
-}
-
-// ChangeOwner transfer space ownership.
-func (s Scope) ChangeOwner(ctx domain.RequestContext, currentOwner, newOwner string) (err error) {
-	stmt, err := ctx.Transaction.Preparex("UPDATE label SET userid=? WHERE userid=? AND orgid=?")
-	defer streamutil.Close(stmt)
-
-	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("unable to prepare change space owner for  %s", currentOwner))
-		return
-	}
-
-	_, err = stmt.Exec(newOwner, currentOwner, ctx.OrgID)
-	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("unable to execute change space owner for  %s", currentOwner))
 		return
 	}
 
@@ -184,11 +164,11 @@ func (s Scope) Delete(ctx domain.RequestContext, id string) (rows int64, err err
 	return b.DeleteConstrained(ctx.Transaction, "label", ctx.OrgID, id)
 }
 
-// AddPermission inserts the given record into the labelrole database table.
+// AddPermission inserts the given record into the permisssion table.
 func (s Scope) AddPermission(ctx domain.RequestContext, r space.Permission) (err error) {
 	r.Created = time.Now().UTC()
 
-	stmt, err := ctx.Transaction.Preparex("INSERT INTO labelrole (orgid, who, whoid, action, scope, location, refid, created) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+	stmt, err := ctx.Transaction.Preparex("INSERT INTO permission (orgid, who, whoid, action, scope, location, refid, created) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
 	defer streamutil.Close(stmt)
 
 	if err != nil {
@@ -196,7 +176,7 @@ func (s Scope) AddPermission(ctx domain.RequestContext, r space.Permission) (err
 		return
 	}
 
-	_, err = stmt.Exec(r.OrgID, r.Who, r.WhoID, r.Action, r.Scope, r.Location, r.RefID, r.Created)
+	_, err = stmt.Exec(r.OrgID, r.Who, r.WhoID, string(r.Action), r.Scope, r.Location, r.RefID, r.Created)
 	if err != nil {
 		err = errors.Wrap(err, "unable to execute insert for space permission")
 		return
@@ -276,6 +256,16 @@ func (s Scope) DeleteUserPermissions(ctx domain.RequestContext, spaceID, userID 
 
 	sql := fmt.Sprintf("DELETE FROM permission WHERE orgid='%s' AND location='space' AND refid='%s' who='user' AND whoid='%s'",
 		ctx.OrgID, spaceID, userID)
+
+	return b.DeleteWhere(ctx.Transaction, sql)
+}
+
+// DeleteAllUserPermissions removes all roles for the specified user, for the specified space.
+func (s Scope) DeleteAllUserPermissions(ctx domain.RequestContext, userID string) (rows int64, err error) {
+	b := mysql.BaseQuery{}
+
+	sql := fmt.Sprintf("DELETE FROM permission WHERE orgid='%s' AND who='user' AND whoid='%s'",
+		ctx.OrgID, userID)
 
 	return b.DeleteWhere(ctx.Transaction, sql)
 }

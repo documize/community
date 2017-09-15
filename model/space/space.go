@@ -104,10 +104,10 @@ type Viewer struct {
 	Email     string `json:"email"`
 }
 
-// RolesModel details which users have what permissions on a given space.
-type RolesModel struct {
+// PermissionsModel details which users have what permissions on a given space.
+type PermissionsModel struct {
 	Message     string
-	Permissions []Permission
+	Permissions []PermissionRecord
 }
 
 // AcceptShareModel is used to setup a user who has accepted a shared space.

@@ -6,37 +6,36 @@
 		</div>
 		<div class="input-control">
 			<div class="permissions-table">
-				{{#each permissions key="@index" as |permission|}}
+				{{#each permissions as |permission|}}
 					<div class="row">
 						<div class="permission-name-cell">{{permission.fullname}}</div>
 						<div class="permission-roles-cell">
 							<span class="role-category">Space:&nbsp;</span>
-							<input type="checkbox" id="space-role-view-{{permission.userId}}" checked={{permission.spaceView}} />
+							{{input type="checkbox" id=(concat 'space-role-view-' permission.userId) checked=permission.spaceView}}
 							<label for="space-role-view-{{permission.userId}}">view</label>&nbsp;&nbsp;
-							<input type="checkbox" id="space-role-manage-{{permission.userId}}" checked={{permission.spaceManage}} />
+							{{input type="checkbox" id=(concat 'space-role-manage-' permission.userId) checked=permission.spaceManage}}
 							<label for="space-role-manage-{{permission.userId}}">manage</label>&nbsp;&nbsp;
-							<input type="checkbox" id="space-role-owner-{{permission.userId}}" checked={{permission.spaceOwner}} />
+							{{input type="checkbox" id=(concat 'space-role-owner-' permission.userId) checked=permission.spaceOwner}}
 							<label for="space-role-owner-{{permission.userId}}">owner</label>&nbsp;&nbsp;
 							&nbsp;&nbsp;&nbsp;&nbsp;
 							<span class="role-category">Document:&nbsp;</span>
-							<input type="checkbox" id="doc-role-add-{{permission.userId}}" checked={{permission.documentAdd}} />
+							{{input type="checkbox" id=(concat 'doc-role-add-' permission.userId) checked=permission.documentAdd}}
 							<label for="doc-role-add-{{permission.userId}}">create</label>&nbsp;&nbsp;
-							<input type="checkbox" id="doc-role-edit-{{permission.userId}}" checked={{permission.documentEdit}} />
+							{{input type="checkbox" id=(concat 'doc-role-edit-' permission.userId) checked=permission.documentEdit}}
 							<label for="doc-role-edit-{{permission.userId}}">edit</label>&nbsp;&nbsp;
-							<input type="checkbox" id="doc-role-delete-{{permission.userId}}" checked={{permission.documentDelete}} />
+							{{input type="checkbox" id=(concat 'doc-role-delete-' permission.userId) checked=permission.documentDelete}}
 							<label for="doc-role-delete-{{permission.userId}}">delete</label>&nbsp;&nbsp;
-							<input type="checkbox" id="doc-role-move-{{permission.userId}}" checked={{permission.documentMove}} />
+							{{input type="checkbox" id=(concat 'doc-role-move-' permission.userId) checked=permission.documentMove}}
 							<label for="doc-role-move-{{permission.userId}}">move</label>&nbsp;&nbsp;
-							<input type="checkbox" id="doc-role-copy-{{permission.userId}}" checked={{permission.documentCopy}} />
+							{{input type="checkbox" id=(concat 'doc-role-copy-' permission.userId) checked=permission.documentCopy}}
 							<label for="doc-role-copy-{{permission.userId}}">copy</label>&nbsp;&nbsp;
-							<input type="checkbox" id="doc-role-template-{{permission.userId}}" checked={{permission.documentTemplate}} />
+							{{input type="checkbox" id=(concat 'doc-role-template-' permission.userId) checked=permission.documentTemplate}}
 							<label for="doc-role-template-{{permission.userId}}">templates</label>&nbsp;&nbsp;
 						</div>
 					</div>
 				{{/each}}
 			</div>
 		</div>
-
 		<div class="regular-button button-blue" {{action 'setPermissions'}}>GRANT</div>
 	</div>
 </div>

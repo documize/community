@@ -36,7 +36,6 @@ import (
 	"github.com/documize/community/model/doc"
 	"github.com/documize/community/model/page"
 	"github.com/documize/community/model/space"
-	"github.com/documize/community/model/user"
 	uuid "github.com/nu7hatch/gouuid"
 )
 
@@ -553,7 +552,7 @@ func (h *Handler) SetPermissions(w http.ResponseWriter, r *http.Request) {
 
 	sp, err := h.Store.Space.Get(ctx, id)
 	if err != nil {
-		response.WriteNotFoundError(w, method, "No such space")
+		response.WriteNotFoundError(w, method, "space not found")
 		return
 	}
 
@@ -570,7 +569,7 @@ func (h *Handler) SetPermissions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var model = space.RolesModel{}
+	var model = space.PermissionsModel{}
 	err = json.Unmarshal(body, &model)
 	if err != nil {
 		response.WriteServerError(w, method, err)
@@ -597,7 +596,6 @@ func (h *Handler) SetPermissions(w http.ResponseWriter, r *http.Request) {
 
 	// Store all previous roles as map for easy querying
 	previousRoleUsers := make(map[string]bool)
-
 	for _, v := range previousRoles {
 		previousRoleUsers[v.WhoID] = true
 	}
@@ -628,42 +626,45 @@ func (h *Handler) SetPermissions(w http.ResponseWriter, r *http.Request) {
 
 	for _, perm := range model.Permissions {
 		perm.OrgID = ctx.OrgID
-		perm.RefID = id
+		perm.SpaceID = id
 
 		// Ensure the space owner always has access!
-		if perm.WhoID == ctx.UserID {
+		if perm.UserID == ctx.UserID {
 			me = true
 		}
 
-		if len(perm.WhoID) == 0 {
+		if len(perm.UserID) == 0 {
 			hasEveryoneRole = true
 		}
 
 		// Only persist if there is a role!
-		if perm.Action == "TBC" {
-			err = h.Store.Space.AddPermission(ctx, perm)
-			if err != nil {
-				h.Runtime.Log.Error("add role", err)
-			}
+		if space.HasAnyPermission(perm) {
+			r := space.EncodeUserPermissions(perm)
 
-			roleCount++
+			for _, p := range r {
+				err = h.Store.Space.AddPermission(ctx, p)
+				if err != nil {
+					h.Runtime.Log.Error("set permission", err)
+				}
+
+				roleCount++
+			}
 
 			// We send out space invitation emails to those users
 			// that have *just* been given permissions.
-			if _, isExisting := previousRoleUsers[perm.WhoID]; !isExisting {
+			if _, isExisting := previousRoleUsers[perm.UserID]; !isExisting {
 
 				// we skip 'everyone' (user id != empty string)
-				if len(perm.WhoID) > 0 {
-					var existingUser user.User
-					existingUser, err = h.Store.User.Get(ctx, perm.WhoID)
-
-					if err == nil {
-						mailer := mail.Mailer{Runtime: h.Runtime, Store: h.Store, Context: ctx}
-						go mailer.ShareSpaceExistingUser(existingUser.Email, inviter.Fullname(), url, sp.Name, model.Message)
-						h.Runtime.Log.Info(fmt.Sprintf("%s is sharing space %s with existing user %s", inviter.Email, sp.Name, existingUser.Email))
-					} else {
+				if len(perm.UserID) > 0 {
+					existingUser, err := h.Store.User.Get(ctx, perm.UserID)
+					if err != nil {
 						response.WriteServerError(w, method, err)
+						break
 					}
+
+					mailer := mail.Mailer{Runtime: h.Runtime, Store: h.Store, Context: ctx}
+					go mailer.ShareSpaceExistingUser(existingUser.Email, inviter.Fullname(), url, sp.Name, model.Message)
+					h.Runtime.Log.Info(fmt.Sprintf("%s is sharing space %s with existing user %s", inviter.Email, sp.Name, existingUser.Email))
 				}
 			}
 		}
@@ -680,7 +681,7 @@ func (h *Handler) SetPermissions(w http.ResponseWriter, r *http.Request) {
 		perm.RefID = id
 		perm.Action = "" // we send array for actions below
 
-		err = h.Store.Space.AddPermission(ctx, perm)
+		err = h.Store.Space.AddPermissions(ctx, perm, space.SpaceView, space.SpaceManage)
 		if err != nil {
 			ctx.Transaction.Rollback()
 			response.WriteServerError(w, method, err)
