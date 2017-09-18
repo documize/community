@@ -1,0 +1,278 @@
+// Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
+//
+// This software (Documize Community Edition) is licensed under
+// GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
+//
+// You can operate outside the AGPL restrictions by purchasing
+// Documize Enterprise Edition and obtaining a commercial license
+// by contacting <sales@documize.com>.
+//
+// https://documize.com
+
+// Package permission handles API calls and persistence for spaces.
+// Spaces in Documize contain documents.
+package permission
+
+import (
+	"database/sql"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"net/http"
+
+	"github.com/documize/community/core/env"
+	"github.com/documize/community/core/request"
+	"github.com/documize/community/core/response"
+	"github.com/documize/community/core/streamutil"
+	"github.com/documize/community/core/stringutil"
+	"github.com/documize/community/domain"
+	"github.com/documize/community/domain/mail"
+	"github.com/documize/community/model/audit"
+	"github.com/documize/community/model/permission"
+	"github.com/documize/community/model/space"
+)
+
+// Handler contains the runtime information such as logging and database.
+type Handler struct {
+	Runtime *env.Runtime
+	Store   *domain.Store
+}
+
+// SetSpacePermissions persists specified space permissions
+func (h *Handler) SetSpacePermissions(w http.ResponseWriter, r *http.Request) {
+	method := "space.SetPermissions"
+	ctx := domain.GetRequestContext(r)
+
+	if !ctx.Editor {
+		response.WriteForbiddenError(w)
+		return
+	}
+
+	id := request.Param(r, "spaceID")
+	if len(id) == 0 {
+		response.WriteMissingDataError(w, method, "spaceID")
+		return
+	}
+
+	sp, err := h.Store.Space.Get(ctx, id)
+	if err != nil {
+		response.WriteNotFoundError(w, method, "space not found")
+		return
+	}
+
+	if sp.UserID != ctx.UserID {
+		response.WriteForbiddenError(w)
+		return
+	}
+
+	defer streamutil.Close(r.Body)
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	var model = permission.PermissionsModel{}
+	err = json.Unmarshal(body, &model)
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	ctx.Transaction, err = h.Runtime.Db.Beginx()
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	// We compare new permisions to what we had before.
+	// Why? So we can send out space invitation emails.
+	previousRoles, err := h.Store.Permission.GetSpacePermissions(ctx, id)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	// Store all previous roles as map for easy querying
+	previousRoleUsers := make(map[string]bool)
+	for _, v := range previousRoles {
+		previousRoleUsers[v.WhoID] = true
+	}
+
+	// Who is sharing this space?
+	inviter, err := h.Store.User.Get(ctx, ctx.UserID)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	// Nuke all previous permissions for this space
+	_, err = h.Store.Permission.DeleteSpacePermissions(ctx, id)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	me := false
+	hasEveryoneRole := false
+	roleCount := 0
+
+	url := ctx.GetAppURL(fmt.Sprintf("s/%s/%s", sp.RefID, stringutil.MakeSlug(sp.Name)))
+
+	for _, perm := range model.Permissions {
+		perm.OrgID = ctx.OrgID
+		perm.SpaceID = id
+
+		// Ensure the space owner always has access!
+		if perm.UserID == ctx.UserID {
+			me = true
+		}
+
+		// Only persist if there is a role!
+		if permission.HasAnyPermission(perm) {
+			// identify publically shared spaces
+			if len(perm.UserID) == 0 {
+				hasEveryoneRole = true
+			}
+
+			r := permission.EncodeUserPermissions(perm)
+
+			for _, p := range r {
+				err = h.Store.Permission.AddPermission(ctx, p)
+				if err != nil {
+					h.Runtime.Log.Error("set permission", err)
+				}
+
+				roleCount++
+			}
+
+			// We send out space invitation emails to those users
+			// that have *just* been given permissions.
+			if _, isExisting := previousRoleUsers[perm.UserID]; !isExisting {
+
+				// we skip 'everyone' (user id != empty string)
+				if len(perm.UserID) > 0 {
+					existingUser, err := h.Store.User.Get(ctx, perm.UserID)
+					if err != nil {
+						response.WriteServerError(w, method, err)
+						break
+					}
+
+					mailer := mail.Mailer{Runtime: h.Runtime, Store: h.Store, Context: ctx}
+					go mailer.ShareSpaceExistingUser(existingUser.Email, inviter.Fullname(), url, sp.Name, model.Message)
+					h.Runtime.Log.Info(fmt.Sprintf("%s is sharing space %s with existing user %s", inviter.Email, sp.Name, existingUser.Email))
+				}
+			}
+		}
+	}
+
+	// Do we need to ensure permissions for space owner when shared?
+	if !me {
+		perm := permission.Permission{}
+		perm.OrgID = ctx.OrgID
+		perm.Who = "user"
+		perm.WhoID = ctx.UserID
+		perm.Scope = "object"
+		perm.Location = "space"
+		perm.RefID = id
+		perm.Action = "" // we send array for actions below
+
+		err = h.Store.Permission.AddPermissions(ctx, perm, permission.SpaceView, permission.SpaceManage)
+		if err != nil {
+			ctx.Transaction.Rollback()
+			response.WriteServerError(w, method, err)
+			return
+		}
+	}
+
+	// Mark up space type as either public, private or restricted access.
+	if hasEveryoneRole {
+		sp.Type = space.ScopePublic
+	} else {
+		if roleCount > 1 {
+			sp.Type = space.ScopeRestricted
+		} else {
+			sp.Type = space.ScopePrivate
+		}
+	}
+
+	err = h.Store.Space.Update(ctx, sp)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	h.Store.Audit.Record(ctx, audit.EventTypeSpacePermission)
+
+	ctx.Transaction.Commit()
+
+	response.WriteEmpty(w)
+}
+
+// GetSpacePermissions returns permissions for alll users for given space.
+func (h *Handler) GetSpacePermissions(w http.ResponseWriter, r *http.Request) {
+	method := "space.GetPermissions"
+	ctx := domain.GetRequestContext(r)
+
+	spaceID := request.Param(r, "spaceID")
+	if len(spaceID) == 0 {
+		response.WriteMissingDataError(w, method, "spaceID")
+		return
+	}
+
+	perms, err := h.Store.Permission.GetSpacePermissions(ctx, spaceID)
+	if err != nil && err != sql.ErrNoRows {
+		response.WriteServerError(w, method, err)
+		return
+	}
+	if len(perms) == 0 {
+		perms = []permission.Permission{}
+	}
+
+	userPerms := make(map[string][]permission.Permission)
+	for _, p := range perms {
+		userPerms[p.WhoID] = append(userPerms[p.WhoID], p)
+	}
+
+	records := []permission.Record{}
+	for _, up := range userPerms {
+		records = append(records, permission.DecodeUserPermissions(up))
+	}
+
+	response.WriteJSON(w, records)
+}
+
+// GetUserSpacePermissions returns permissions for the requested space, for current user.
+func (h *Handler) GetUserSpacePermissions(w http.ResponseWriter, r *http.Request) {
+	method := "space.GetUserSpacePermissions"
+	ctx := domain.GetRequestContext(r)
+
+	spaceID := request.Param(r, "spaceID")
+	if len(spaceID) == 0 {
+		response.WriteMissingDataError(w, method, "spaceID")
+		return
+	}
+
+	perms, err := h.Store.Permission.GetUserSpacePermissions(ctx, spaceID)
+	if err != nil && err != sql.ErrNoRows {
+		response.WriteServerError(w, method, err)
+		return
+	}
+	if len(perms) == 0 {
+		perms = []permission.Permission{}
+	}
+
+	record := permission.DecodeUserPermissions(perms)
+	response.WriteJSON(w, record)
+}

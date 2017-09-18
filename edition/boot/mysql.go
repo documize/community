@@ -24,6 +24,7 @@ import (
 	link "github.com/documize/community/domain/link/mysql"
 	org "github.com/documize/community/domain/organization/mysql"
 	page "github.com/documize/community/domain/page/mysql"
+	permission "github.com/documize/community/domain/permission/mysql"
 	pin "github.com/documize/community/domain/pin/mysql"
 	search "github.com/documize/community/domain/search/mysql"
 	setting "github.com/documize/community/domain/setting/mysql"
@@ -43,6 +44,7 @@ func StoreMySQL(r *env.Runtime, s *domain.Store) {
 	s.Organization = org.Scope{Runtime: r}
 	s.Page = page.Scope{Runtime: r}
 	s.Pin = pin.Scope{Runtime: r}
+	s.Permission = permission.Scope{Runtime: r}
 	s.Search = search.Scope{Runtime: r}
 	s.Setting = setting.Scope{Runtime: r}
 	s.Space = space.Scope{Runtime: r}

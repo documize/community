@@ -19,6 +19,12 @@
 					<div class="round-button-mono" id="page-menu-{{page.id}}">
 						<i class="material-icons color-gray">more_vert</i>
 					</div>
+				{{/if}}
+				<div class="round-button-mono" {{action 'toggleExpand'}}>
+					<i class="material-icons color-gray">expand_less</i>
+				</div>
+
+				{{#if hasMenuPermissions}}
 					{{#dropdown-menu target=menuTarget position="top right" open="click" onOpenCallback=(action 'onMenuOpen') onCloseCallback=(action 'onMenuOpen')}}
 						<ul class="menu">
 							{{#if permissions.documentCopy}}
@@ -36,9 +42,6 @@
 						</ul>
 					{{/dropdown-menu}}
 				{{/if}}
-				<div class="round-button-mono" {{action 'toggleExpand'}}>
-					<i class="material-icons color-gray">expand_less</i>
-				</div>
 
 				{{#if menuOpen}}
 					{{#if permissions.documentDelete}}

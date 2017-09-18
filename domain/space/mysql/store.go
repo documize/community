@@ -13,7 +13,6 @@
 package mysql
 
 import (
-	"database/sql"
 	"fmt"
 	"time"
 
@@ -162,109 +161,4 @@ func (s Scope) Viewers(ctx domain.RequestContext) (v []space.Viewer, err error) 
 func (s Scope) Delete(ctx domain.RequestContext, id string) (rows int64, err error) {
 	b := mysql.BaseQuery{}
 	return b.DeleteConstrained(ctx.Transaction, "label", ctx.OrgID, id)
-}
-
-// AddPermission inserts the given record into the permisssion table.
-func (s Scope) AddPermission(ctx domain.RequestContext, r space.Permission) (err error) {
-	r.Created = time.Now().UTC()
-
-	stmt, err := ctx.Transaction.Preparex("INSERT INTO permission (orgid, who, whoid, action, scope, location, refid, created) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
-	defer streamutil.Close(stmt)
-
-	if err != nil {
-		err = errors.Wrap(err, "unable to prepare insert for space permission")
-		return
-	}
-
-	_, err = stmt.Exec(r.OrgID, r.Who, r.WhoID, string(r.Action), r.Scope, r.Location, r.RefID, r.Created)
-	if err != nil {
-		err = errors.Wrap(err, "unable to execute insert for space permission")
-		return
-	}
-
-	return
-}
-
-// AddPermissions inserts records into permission database table, one per action.
-func (s Scope) AddPermissions(ctx domain.RequestContext, r space.Permission, actions ...space.PermissionAction) (err error) {
-	for _, a := range actions {
-		r.Action = a
-		s.AddPermission(ctx, r)
-	}
-
-	return
-}
-
-// GetUserPermissions returns space permissions for user.
-// Context is used to for user ID.
-func (s Scope) GetUserPermissions(ctx domain.RequestContext, spaceID string) (r []space.Permission, err error) {
-	err = s.Runtime.Db.Select(&r, `
-		SELECT id, orgid, who, whoid, action, scope, location, refid
-			FROM permission WHERE orgid=? AND location='space' AND refid=? AND who='user' AND (whoid=? OR whoid='')
-		UNION ALL
-		SELECT p.id, p.orgid, p.who, p.whoid, p.action, p.scope, p.location, p.refid
-			FROM permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.location='space' AND refid=?
-			AND p.who='role' AND (r.userid=? OR r.userid='')`,
-		ctx.OrgID, spaceID, ctx.UserID, ctx.OrgID, spaceID, ctx.OrgID)
-
-	if err == sql.ErrNoRows {
-		err = nil
-	}
-	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("unable to execute select user permissions %s", ctx.UserID))
-		return
-	}
-
-	return
-}
-
-// GetPermissions returns space permissions for all users.
-func (s Scope) GetPermissions(ctx domain.RequestContext, spaceID string) (r []space.Permission, err error) {
-	err = s.Runtime.Db.Select(&r, `
-		SELECT id, orgid, who, whoid, action, scope, location, refid
-			FROM permission WHERE orgid=? AND location='space' AND refid=? AND who='user'
-		UNION ALL
-		SELECT p.id, p.orgid, p.who, p.whoid, p.action, p.scope, p.location, p.refid
-			FROM permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.location='space' AND p.refid=? 
-			AND p.who='role'`,
-		ctx.OrgID, spaceID, ctx.OrgID, spaceID)
-
-	if err == sql.ErrNoRows {
-		err = nil
-	}
-	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("unable to execute select space permissions %s", ctx.UserID))
-		return
-	}
-
-	return
-}
-
-// DeletePermissions removes records from permissions table for given space ID.
-func (s Scope) DeletePermissions(ctx domain.RequestContext, spaceID string) (rows int64, err error) {
-	b := mysql.BaseQuery{}
-
-	sql := fmt.Sprintf("DELETE FROM permission WHERE orgid='%s' AND location='space' AND refid='%s'", ctx.OrgID, spaceID)
-
-	return b.DeleteWhere(ctx.Transaction, sql)
-}
-
-// DeleteUserPermissions removes all roles for the specified user, for the specified space.
-func (s Scope) DeleteUserPermissions(ctx domain.RequestContext, spaceID, userID string) (rows int64, err error) {
-	b := mysql.BaseQuery{}
-
-	sql := fmt.Sprintf("DELETE FROM permission WHERE orgid='%s' AND location='space' AND refid='%s' who='user' AND whoid='%s'",
-		ctx.OrgID, spaceID, userID)
-
-	return b.DeleteWhere(ctx.Transaction, sql)
-}
-
-// DeleteAllUserPermissions removes all roles for the specified user, for the specified space.
-func (s Scope) DeleteAllUserPermissions(ctx domain.RequestContext, userID string) (rows int64, err error) {
-	b := mysql.BaseQuery{}
-
-	sql := fmt.Sprintf("DELETE FROM permission WHERE orgid='%s' AND who='user' AND whoid='%s'",
-		ctx.OrgID, userID)
-
-	return b.DeleteWhere(ctx.Transaction, sql)
 }

@@ -22,7 +22,7 @@ import (
 	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/core/uniqueid"
 	"github.com/documize/community/domain"
-	"github.com/documize/community/domain/document"
+	"github.com/documize/community/domain/permission"
 	"github.com/documize/community/model/audit"
 	"github.com/documize/community/model/block"
 )
@@ -57,7 +57,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !document.CanUploadDocument(ctx, *h.Store, b.LabelID) {
+	if !permission.CanUploadDocument(ctx, *h.Store, b.LabelID) {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -165,7 +165,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 	b.RefID = blockID
 
-	if !document.CanUploadDocument(ctx, *h.Store, b.LabelID) {
+	if !permission.CanUploadDocument(ctx, *h.Store, b.LabelID) {
 		response.WriteForbiddenError(w)
 		return
 	}

@@ -23,8 +23,8 @@ import (
 	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/core/stringutil"
 	"github.com/documize/community/domain"
+	"github.com/documize/community/domain/permission"
 	indexer "github.com/documize/community/domain/search"
-	"github.com/documize/community/domain/space"
 	"github.com/documize/community/model/activity"
 	"github.com/documize/community/model/audit"
 	"github.com/documize/community/model/doc"
@@ -61,7 +61,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !CanViewDocumentInFolder(ctx, *h.Store, document.LabelID) {
+	if !permission.CanViewSpaceDocument(ctx, *h.Store, document.LabelID) {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -147,7 +147,7 @@ func (h *Handler) BySpace(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !space.CanViewSpace(ctx, *h.Store, spaceID) {
+	if !permission.CanViewSpace(ctx, *h.Store, spaceID) {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -210,7 +210,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	// 	return
 	// }
 
-	if !CanChangeDocument(ctx, *h.Store, documentID) {
+	if !permission.CanChangeDocument(ctx, *h.Store, documentID) {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -269,7 +269,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !CanChangeDocument(ctx, *h.Store, documentID) {
+	if !permission.CanDeleteDocument(ctx, *h.Store, documentID) {
 		response.WriteForbiddenError(w)
 		return
 	}

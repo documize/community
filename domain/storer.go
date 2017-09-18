@@ -22,6 +22,7 @@ import (
 	"github.com/documize/community/model/link"
 	"github.com/documize/community/model/org"
 	"github.com/documize/community/model/page"
+	"github.com/documize/community/model/permission"
 	"github.com/documize/community/model/pin"
 	"github.com/documize/community/model/search"
 	"github.com/documize/community/model/space"
@@ -40,6 +41,7 @@ type Store struct {
 	Organization OrganizationStorer
 	Page         PageStorer
 	Pin          PinStorer
+	Permission   PermissionStorer
 	Search       SearchStorer
 	Setting      SettingStorer
 	Space        SpaceStorer
@@ -55,14 +57,17 @@ type SpaceStorer interface {
 	Update(ctx RequestContext, sp space.Space) (err error)
 	Viewers(ctx RequestContext) (v []space.Viewer, err error)
 	Delete(ctx RequestContext, id string) (rows int64, err error)
+}
 
-	AddPermission(ctx RequestContext, r space.Permission) (err error)
-	AddPermissions(ctx RequestContext, r space.Permission, actions ...space.PermissionAction) (err error)
-	GetUserPermissions(ctx RequestContext, spaceID string) (r []space.Permission, err error)
-	GetPermissions(ctx RequestContext, spaceID string) (r []space.Permission, err error)
-	DeletePermissions(ctx RequestContext, spaceID string) (rows int64, err error)
-	DeleteUserPermissions(ctx RequestContext, spaceID, userID string) (rows int64, err error)
-	DeleteAllUserPermissions(ctx RequestContext, userID string) (rows int64, err error)
+// PermissionStorer defines required methods for space/document permission management
+type PermissionStorer interface {
+	AddPermission(ctx RequestContext, r permission.Permission) (err error)
+	AddPermissions(ctx RequestContext, r permission.Permission, actions ...permission.Action) (err error)
+	GetUserSpacePermissions(ctx RequestContext, spaceID string) (r []permission.Permission, err error)
+	GetSpacePermissions(ctx RequestContext, spaceID string) (r []permission.Permission, err error)
+	DeleteSpacePermissions(ctx RequestContext, spaceID string) (rows int64, err error)
+	DeleteUserSpacePermissions(ctx RequestContext, spaceID, userID string) (rows int64, err error)
+	DeleteUserPermissions(ctx RequestContext, userID string) (rows int64, err error)
 }
 
 // UserStorer defines required methods for user management

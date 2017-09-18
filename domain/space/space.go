@@ -20,6 +20,7 @@ import (
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/mail"
 	"github.com/documize/community/model/account"
+	"github.com/documize/community/model/permission"
 	"github.com/documize/community/model/space"
 	"github.com/documize/community/model/user"
 )
@@ -61,7 +62,7 @@ func inviteNewUserToSharedSpace(ctx domain.RequestContext, rt *env.Runtime, s *d
 		return
 	}
 
-	perm := space.Permission{}
+	perm := permission.Permission{}
 	perm.OrgID = sp.OrgID
 	perm.Who = "user"
 	perm.WhoID = userID
@@ -70,7 +71,7 @@ func inviteNewUserToSharedSpace(ctx domain.RequestContext, rt *env.Runtime, s *d
 	perm.RefID = sp.RefID
 	perm.Action = "" // we send array for actions below
 
-	err = s.Space.AddPermissions(ctx, perm, space.SpaceView)
+	err = s.Permission.AddPermissions(ctx, perm, permission.SpaceView)
 	if err != nil {
 		return
 	}

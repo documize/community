@@ -26,6 +26,7 @@ import (
 	"github.com/documize/community/domain/meta"
 	"github.com/documize/community/domain/organization"
 	"github.com/documize/community/domain/page"
+	"github.com/documize/community/domain/permission"
 	"github.com/documize/community/domain/pin"
 	"github.com/documize/community/domain/search"
 	"github.com/documize/community/domain/section"
@@ -58,6 +59,7 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	document := document.Handler{Runtime: rt, Store: s, Indexer: indexer}
 	attachment := attachment.Handler{Runtime: rt, Store: s, Indexer: indexer}
 	conversion := conversion.Handler{Runtime: rt, Store: s, Indexer: indexer}
+	permission := permission.Handler{Runtime: rt, Store: s}
 	organization := organization.Handler{Runtime: rt, Store: s}
 
 	//**************************************************
@@ -113,9 +115,9 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 
 	Add(rt, RoutePrefixPrivate, "space/{spaceID}", []string{"DELETE", "OPTIONS"}, nil, space.Delete)
 	Add(rt, RoutePrefixPrivate, "space/{spaceID}/move/{moveToId}", []string{"DELETE", "OPTIONS"}, nil, space.Remove)
-	Add(rt, RoutePrefixPrivate, "space/{spaceID}/permissions", []string{"PUT", "OPTIONS"}, nil, space.SetPermissions)
-	Add(rt, RoutePrefixPrivate, "space/{spaceID}/permissions/user", []string{"GET", "OPTIONS"}, nil, space.GetUserPermissions)
-	Add(rt, RoutePrefixPrivate, "space/{spaceID}/permissions", []string{"GET", "OPTIONS"}, nil, space.GetPermissions)
+	Add(rt, RoutePrefixPrivate, "space/{spaceID}/permissions", []string{"PUT", "OPTIONS"}, nil, permission.SetSpacePermissions)
+	Add(rt, RoutePrefixPrivate, "space/{spaceID}/permissions/user", []string{"GET", "OPTIONS"}, nil, permission.GetUserSpacePermissions)
+	Add(rt, RoutePrefixPrivate, "space/{spaceID}/permissions", []string{"GET", "OPTIONS"}, nil, permission.GetSpacePermissions)
 	Add(rt, RoutePrefixPrivate, "space/{spaceID}/invitation", []string{"POST", "OPTIONS"}, nil, space.Invite)
 	Add(rt, RoutePrefixPrivate, "space", []string{"GET", "OPTIONS"}, []string{"filter", "viewers"}, space.GetSpaceViewers)
 	Add(rt, RoutePrefixPrivate, "space", []string{"POST", "OPTIONS"}, nil, space.Add)

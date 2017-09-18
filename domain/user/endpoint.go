@@ -378,7 +378,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// remove all associated roles for this user
-	_, err = h.Store.Space.DeleteAllUserPermissions(ctx, userID)
+	_, err = h.Store.Permission.DeleteUserPermissions(ctx, userID)
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)

@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS `permission` (
 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 ENGINE = MyISAM;
 
--- category represents "folder/label" assignment to document (1:M)
+-- category represents "folder/label/category" assignment to document (1:M)
 DROP TABLE IF EXISTS `category`;
 
 CREATE TABLE IF NOT EXISTS `category` (
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `category` (
 	`refid` CHAR(16) NOT NULL COLLATE utf8_bin,
 	`orgid` CHAR(16) NOT NULL COLLATE utf8_bin,
 	`labelid` CHAR(16) NOT NULL COLLATE utf8_bin,
-	`label` VARCHAR(30) NOT NULL,
+	`category` VARCHAR(30) NOT NULL,
 	`created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	UNIQUE INDEX `idx_category_id` (`id` ASC),
 	INDEX `idx_category_refid` (`refid` ASC),
@@ -45,6 +45,7 @@ DROP TABLE IF EXISTS `categorymember`;
 
 CREATE TABLE IF NOT EXISTS `categorymember` (
 	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	`refid` CHAR(16) NOT NULL COLLATE utf8_bin,
 	`orgid` CHAR(16) NOT NULL COLLATE utf8_bin,
 	`categoryid` CHAR(16) NOT NULL COLLATE utf8_bin,
 	`documentid` CHAR(16) NOT NULL COLLATE utf8_bin,

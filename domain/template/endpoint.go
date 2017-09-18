@@ -27,12 +27,13 @@ import (
 	"github.com/documize/community/core/stringutil"
 	"github.com/documize/community/core/uniqueid"
 	"github.com/documize/community/domain"
-	"github.com/documize/community/domain/document"
+	"github.com/documize/community/domain/permission"
 	indexer "github.com/documize/community/domain/search"
 	"github.com/documize/community/model/attachment"
 	"github.com/documize/community/model/audit"
 	"github.com/documize/community/model/doc"
 	"github.com/documize/community/model/page"
+	pm "github.com/documize/community/model/permission"
 	"github.com/documize/community/model/template"
 	uuid "github.com/nu7hatch/gouuid"
 )
@@ -112,7 +113,7 @@ func (h *Handler) SaveAs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !document.CanChangeDocument(ctx, *h.Store, model.DocumentID) {
+	if !permission.HasDocumentAction(ctx, *h.Store, model.DocumentID, pm.DocumentTemplate) {
 		response.WriteForbiddenError(w)
 		return
 	}

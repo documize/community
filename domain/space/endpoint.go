@@ -35,6 +35,7 @@ import (
 	"github.com/documize/community/model/audit"
 	"github.com/documize/community/model/doc"
 	"github.com/documize/community/model/page"
+	"github.com/documize/community/model/permission"
 	"github.com/documize/community/model/space"
 	uuid "github.com/nu7hatch/gouuid"
 )
@@ -105,7 +106,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	perm := space.Permission{}
+	perm := permission.Permission{}
 	perm.OrgID = sp.OrgID
 	perm.Who = "user"
 	perm.WhoID = ctx.UserID
@@ -114,7 +115,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	perm.RefID = sp.RefID
 	perm.Action = "" // we send array for actions below
 
-	err = h.Store.Space.AddPermissions(ctx, perm, space.SpaceOwner, space.SpaceManage, space.SpaceView)
+	err = h.Store.Permission.AddPermissions(ctx, perm, permission.SpaceOwner, permission.SpaceManage, permission.SpaceView)
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
@@ -138,7 +139,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		spCloneRoles, err := h.Store.Space.GetPermissions(ctx, model.CloneID)
+		spCloneRoles, err := h.Store.Permission.GetSpacePermissions(ctx, model.CloneID)
 		if err != nil {
 			response.WriteServerError(w, method, err)
 			h.Runtime.Log.Error(method, err)
@@ -149,7 +150,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 			for _, r := range spCloneRoles {
 				r.RefID = sp.RefID
 
-				err = h.Store.Space.AddPermission(ctx, r)
+				err = h.Store.Permission.AddPermission(ctx, r)
 				if err != nil {
 					ctx.Transaction.Rollback()
 					response.WriteServerError(w, method, err)
@@ -451,7 +452,7 @@ func (h *Handler) Remove(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = h.Store.Space.DeletePermissions(ctx, id)
+	_, err = h.Store.Permission.DeleteSpacePermissions(ctx, id)
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
@@ -519,7 +520,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = h.Store.Space.DeletePermissions(ctx, id)
+	_, err = h.Store.Permission.DeleteSpacePermissions(ctx, id)
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
@@ -540,245 +541,6 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	ctx.Transaction.Commit()
 
 	response.WriteEmpty(w)
-}
-
-// SetPermissions persists specified spac3 permissions
-func (h *Handler) SetPermissions(w http.ResponseWriter, r *http.Request) {
-	method := "space.SetPermissions"
-	ctx := domain.GetRequestContext(r)
-
-	if !ctx.Editor {
-		response.WriteForbiddenError(w)
-		return
-	}
-
-	id := request.Param(r, "spaceID")
-	if len(id) == 0 {
-		response.WriteMissingDataError(w, method, "spaceID")
-		return
-	}
-
-	sp, err := h.Store.Space.Get(ctx, id)
-	if err != nil {
-		response.WriteNotFoundError(w, method, "space not found")
-		return
-	}
-
-	if sp.UserID != ctx.UserID {
-		response.WriteForbiddenError(w)
-		return
-	}
-
-	defer streamutil.Close(r.Body)
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		response.WriteBadRequestError(w, method, err.Error())
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	var model = space.PermissionsModel{}
-	err = json.Unmarshal(body, &model)
-	if err != nil {
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	ctx.Transaction, err = h.Runtime.Db.Beginx()
-	if err != nil {
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	// We compare new permisions to what we had before.
-	// Why? So we can send out space invitation emails.
-	previousRoles, err := h.Store.Space.GetPermissions(ctx, id)
-	if err != nil {
-		ctx.Transaction.Rollback()
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	// Store all previous roles as map for easy querying
-	previousRoleUsers := make(map[string]bool)
-	for _, v := range previousRoles {
-		previousRoleUsers[v.WhoID] = true
-	}
-
-	// Who is sharing this space?
-	inviter, err := h.Store.User.Get(ctx, ctx.UserID)
-	if err != nil {
-		ctx.Transaction.Rollback()
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	// Nuke all previous permissions for this space
-	_, err = h.Store.Space.DeletePermissions(ctx, id)
-	if err != nil {
-		ctx.Transaction.Rollback()
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	me := false
-	hasEveryoneRole := false
-	roleCount := 0
-
-	url := ctx.GetAppURL(fmt.Sprintf("s/%s/%s", sp.RefID, stringutil.MakeSlug(sp.Name)))
-
-	for _, perm := range model.Permissions {
-		perm.OrgID = ctx.OrgID
-		perm.SpaceID = id
-
-		// Ensure the space owner always has access!
-		if perm.UserID == ctx.UserID {
-			me = true
-		}
-
-		// Only persist if there is a role!
-		if space.HasAnyPermission(perm) {
-			// identify publically shared spaces
-			if len(perm.UserID) == 0 {
-				hasEveryoneRole = true
-			}
-
-			r := space.EncodeUserPermissions(perm)
-
-			for _, p := range r {
-				err = h.Store.Space.AddPermission(ctx, p)
-				if err != nil {
-					h.Runtime.Log.Error("set permission", err)
-				}
-
-				roleCount++
-			}
-
-			// We send out space invitation emails to those users
-			// that have *just* been given permissions.
-			if _, isExisting := previousRoleUsers[perm.UserID]; !isExisting {
-
-				// we skip 'everyone' (user id != empty string)
-				if len(perm.UserID) > 0 {
-					existingUser, err := h.Store.User.Get(ctx, perm.UserID)
-					if err != nil {
-						response.WriteServerError(w, method, err)
-						break
-					}
-
-					mailer := mail.Mailer{Runtime: h.Runtime, Store: h.Store, Context: ctx}
-					go mailer.ShareSpaceExistingUser(existingUser.Email, inviter.Fullname(), url, sp.Name, model.Message)
-					h.Runtime.Log.Info(fmt.Sprintf("%s is sharing space %s with existing user %s", inviter.Email, sp.Name, existingUser.Email))
-				}
-			}
-		}
-	}
-
-	// Do we need to ensure permissions for space owner when shared?
-	if !me {
-		perm := space.Permission{}
-		perm.OrgID = ctx.OrgID
-		perm.Who = "user"
-		perm.WhoID = ctx.UserID
-		perm.Scope = "object"
-		perm.Location = "space"
-		perm.RefID = id
-		perm.Action = "" // we send array for actions below
-
-		err = h.Store.Space.AddPermissions(ctx, perm, space.SpaceView, space.SpaceManage)
-		if err != nil {
-			ctx.Transaction.Rollback()
-			response.WriteServerError(w, method, err)
-			return
-		}
-	}
-
-	// Mark up space type as either public, private or restricted access.
-	if hasEveryoneRole {
-		sp.Type = space.ScopePublic
-	} else {
-		if roleCount > 1 {
-			sp.Type = space.ScopeRestricted
-		} else {
-			sp.Type = space.ScopePrivate
-		}
-	}
-
-	err = h.Store.Space.Update(ctx, sp)
-	if err != nil {
-		ctx.Transaction.Rollback()
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	h.Store.Audit.Record(ctx, audit.EventTypeSpacePermission)
-
-	ctx.Transaction.Commit()
-
-	response.WriteEmpty(w)
-}
-
-// GetPermissions returns permissions for alll users for given space.
-func (h *Handler) GetPermissions(w http.ResponseWriter, r *http.Request) {
-	method := "space.GetPermissions"
-	ctx := domain.GetRequestContext(r)
-
-	spaceID := request.Param(r, "spaceID")
-	if len(spaceID) == 0 {
-		response.WriteMissingDataError(w, method, "spaceID")
-		return
-	}
-
-	perms, err := h.Store.Space.GetPermissions(ctx, spaceID)
-	if err != nil && err != sql.ErrNoRows {
-		response.WriteServerError(w, method, err)
-		return
-	}
-	if len(perms) == 0 {
-		perms = []space.Permission{}
-	}
-
-	userPerms := make(map[string][]space.Permission)
-	for _, p := range perms {
-		userPerms[p.WhoID] = append(userPerms[p.WhoID], p)
-	}
-
-	records := []space.PermissionRecord{}
-	for _, up := range userPerms {
-		records = append(records, space.DecodeUserPermissions(up))
-	}
-
-	response.WriteJSON(w, records)
-}
-
-// GetUserPermissions returns permissions for the requested space, for current user.
-func (h *Handler) GetUserPermissions(w http.ResponseWriter, r *http.Request) {
-	method := "space.GetUserPermissions"
-	ctx := domain.GetRequestContext(r)
-
-	spaceID := request.Param(r, "spaceID")
-	if len(spaceID) == 0 {
-		response.WriteMissingDataError(w, method, "spaceID")
-		return
-	}
-
-	perms, err := h.Store.Space.GetUserPermissions(ctx, spaceID)
-	if err != nil && err != sql.ErrNoRows {
-		response.WriteServerError(w, method, err)
-		return
-	}
-	if len(perms) == 0 {
-		perms = []space.Permission{}
-	}
-
-	record := space.DecodeUserPermissions(perms)
-	response.WriteJSON(w, record)
 }
 
 // AcceptInvitation records the fact that a user has completed space onboard process.
@@ -971,9 +733,9 @@ func (h *Handler) Invite(w http.ResponseWriter, r *http.Request) {
 			}
 
 			// Ensure they have space roles
-			h.Store.Space.DeleteUserPermissions(ctx, sp.RefID, u.RefID)
+			h.Store.Permission.DeleteUserSpacePermissions(ctx, sp.RefID, u.RefID)
 
-			perm := space.Permission{}
+			perm := permission.Permission{}
 			perm.OrgID = sp.OrgID
 			perm.Who = "user"
 			perm.WhoID = u.RefID
@@ -982,7 +744,7 @@ func (h *Handler) Invite(w http.ResponseWriter, r *http.Request) {
 			perm.RefID = sp.RefID
 			perm.Action = "" // we send array for actions below
 
-			err = h.Store.Space.AddPermissions(ctx, perm, space.SpaceView)
+			err = h.Store.Permission.AddPermissions(ctx, perm, permission.SpaceView)
 			if err != nil {
 				ctx.Transaction.Rollback()
 				response.WriteServerError(w, method, err)
