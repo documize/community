@@ -141,6 +141,7 @@ type DocumentStorer interface {
 	ChangeDocumentSpace(ctx RequestContext, document, space string) (err error)
 	MoveDocumentSpace(ctx RequestContext, id, move string) (err error)
 	Delete(ctx RequestContext, documentID string) (rows int64, err error)
+	DeleteBySpace(ctx RequestContext, spaceID string) (rows int64, err error)
 }
 
 // SettingStorer defines required methods for persisting global and user level settings

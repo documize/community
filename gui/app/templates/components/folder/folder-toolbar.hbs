@@ -35,7 +35,18 @@
 
 	{{else}}
 
+		{{#if pinState.isPinned}}
+			<div class="round-button button-gray" id="space-unpin-button" data-tooltip="Unpin space" data-tooltip-position="top center" {{action 'onUnpin'}}>
+				<i class="material-icons">favorite</i>
+			</div>
+		{{else}}
+			<div class="round-button button-gray" id="space-pin-button" data-tooltip="Pin space" data-tooltip-position="top center">
+				<i class="material-icons">favorite_border</i>
+			</div>
+		{{/if}}
+
 		{{#if permissions.spaceManage}}
+			<div class="button-gap"></div>
 			{{#link-to 'folder.settings' folder.id folder.slug}}{{model.document.name}}
 				<div class="round-button button-blue" id="space-settings-button" data-tooltip="Manage permissions" data-tooltip-position="top center">
 					<i class="material-icons">settings</i>
@@ -50,21 +61,22 @@
 			</div>
 		{{/if}}
 
-		{{#if pinState.isPinned}}
-			<div class="button-gap"></div>
-			<div class="round-button button-gray" id="space-unpin-button" data-tooltip="Pin space" data-tooltip-position="top center" {{action 'onUnpin'}}>
-				<i class="material-icons">favorite</i>
-			</div>
-		{{else}}
-			<div class="button-gap"></div>
-			<div class="round-button button-gray" id="space-pin-button" data-tooltip="Pin space" data-tooltip-position="top center">
-				<i class="material-icons">favorite_border</i>
-			</div>
+		{{#unless pinState.isPinned}}
 			{{#dropdown-dialog target="space-pin-button" position="bottom right" button="Pin" color="flat-green" onAction=(action 'onPin') focusOn="pin-space-name" }}
 				<div class="input-control">
 					<label>Pin Space</label>
 					<div class="tip">A 3 or 4 character name</div>
 					{{input type='text' id="pin-space-name" value=pinState.newName}}
+				</div>
+			{{/dropdown-dialog}}
+		{{/unless}}
+
+		{{#if permissions.spaceOwner}}
+			{{#dropdown-dialog target="space-delete-button" position="bottom right" button="Delete" color="flat-red" onAction=(action 'deleteSpace')}}
+				<p>Are you sure you want this space and all associated documents?</p>
+				<div class="input-control">
+					<div class="tip">Please type the space name to confirm</div>
+					{{input type='text' id="delete-space-name" value=deleteSpaceName}}
 				</div>
 			{{/dropdown-dialog}}
 		{{/if}}

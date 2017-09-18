@@ -33,6 +33,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 		pinId: '',
 		newName: '',
 	},
+	deleteSpaceName: '',
 
 	didReceiveAttrs() {
 		let targets = _.reject(this.get('folders'), {
@@ -106,6 +107,23 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 
 		deleteDocuments() {
 			this.attrs.onDeleteDocument();
+		},
+
+		deleteSpace() {
+			let spaceName = this.get('folder').get('name');
+			let spaceNameTyped = this.get('deleteSpaceName');
+
+			if (spaceNameTyped !== spaceName || spaceNameTyped === '' || spaceName === '') {
+				$("#delete-space-name").addClass("error").focus();
+				return false;
+			}
+
+			this.set('deleteSpaceName', '');
+			$("#delete-space-name").removeClass("error");
+
+			this.attrs.onDeleteSpace();
+
+			return true;
 		},
 
 		setMoveFolder(folderId) {

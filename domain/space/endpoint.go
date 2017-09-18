@@ -474,7 +474,7 @@ func (h *Handler) Remove(w http.ResponseWriter, r *http.Request) {
 	response.WriteEmpty(w)
 }
 
-// Delete deletes empty space.
+// Delete removes space.
 func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	method := "space.Delete"
 	ctx := domain.GetRequestContext(r)
@@ -498,6 +498,14 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	var err error
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	_, err = h.Store.Document.DeleteBySpace(ctx, id)
+	if err != nil {
+		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
 		return

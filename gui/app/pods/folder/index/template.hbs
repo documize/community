@@ -8,7 +8,8 @@
 
 		{{folder/folder-toolbar folders=model.folders folder=model.folder
 			permissions=model.permissions hasSelectedDocuments=hasSelectedDocuments
-			onDeleteDocument=(action 'onDeleteDocument') onMoveDocument=(action 'onMoveDocument')}}
+			onDeleteDocument=(action 'onDeleteDocument') onMoveDocument=(action 'onMoveDocument')
+			onDeleteSpace=(action 'onDeleteSpace')}}
 
 		{{folder/documents-list documents=model.documents folders=model.folders folder=model.folder templates=model.templates
 			permissions=model.permissions selectedDocuments=(mut selectedDocuments)

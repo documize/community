@@ -315,8 +315,8 @@ func (s Scope) MoveDocumentSpace(ctx domain.RequestContext, id, move string) (er
 	return
 }
 
-// Delete delete the document pages in the database, updates the search subsystem, deletes the associated revisions and attachments,
-// audits the deletion, then finally deletes the document itself.
+// Delete removes the specified document.
+// Remove document pages, revisions, attachments, updates the search subsystem.
 func (s Scope) Delete(ctx domain.RequestContext, documentID string) (rows int64, err error) {
 	b := mysql.BaseQuery{}
 	rows, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE from page WHERE documentid=\"%s\" AND orgid=\"%s\"", documentID, ctx.OrgID))
@@ -336,4 +336,27 @@ func (s Scope) Delete(ctx domain.RequestContext, documentID string) (rows int64,
 	}
 
 	return b.DeleteConstrained(ctx.Transaction, "document", ctx.OrgID, documentID)
+}
+
+// Delete removes all documents for given space.
+// Remove document pages, revisions, attachments, updates the search subsystem.
+func (s Scope) DeleteBySpace(ctx domain.RequestContext, spaceID string) (rows int64, err error) {
+	b := mysql.BaseQuery{}
+	rows, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE from page WHERE labelid=\"%s\" AND orgid=\"%s\"", spaceID, ctx.OrgID))
+
+	if err != nil {
+		return
+	}
+
+	_, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE from revision WHERE labelid=\"%s\" AND orgid=\"%s\"", spaceID, ctx.OrgID))
+	if err != nil {
+		return
+	}
+
+	_, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE from attachment WHERE labelid=\"%s\" AND orgid=\"%s\"", spaceID, ctx.OrgID))
+	if err != nil {
+		return
+	}
+
+	return b.DeleteConstrained(ctx.Transaction, "document", ctx.OrgID, spaceID)
 }

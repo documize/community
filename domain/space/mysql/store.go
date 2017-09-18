@@ -244,8 +244,7 @@ func (s Scope) GetPermissions(ctx domain.RequestContext, spaceID string) (r []sp
 func (s Scope) DeletePermissions(ctx domain.RequestContext, spaceID string) (rows int64, err error) {
 	b := mysql.BaseQuery{}
 
-	sql := fmt.Sprintf("DELETE FROM permission WHERE orgid='%s' AND location='space' AND refid='%s'",
-		ctx.OrgID, spaceID)
+	sql := fmt.Sprintf("DELETE FROM permission WHERE orgid='%s' AND location='space' AND refid='%s'", ctx.OrgID, spaceID)
 
 	return b.DeleteWhere(ctx.Transaction, sql)
 }
