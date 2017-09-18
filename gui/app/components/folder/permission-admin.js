@@ -120,8 +120,6 @@ export default Ember.Component.extend(NotifierMixin, {
 					this.showNotification('Marked space as private');
 				}
 			}
-
-			// this.get('folderService').save(folder).then(function () {});
 		}
 	}
 });

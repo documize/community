@@ -641,12 +641,13 @@ func (h *Handler) SetPermissions(w http.ResponseWriter, r *http.Request) {
 			me = true
 		}
 
-		if len(perm.UserID) == 0 {
-			hasEveryoneRole = true
-		}
-
 		// Only persist if there is a role!
 		if space.HasAnyPermission(perm) {
+			// identify publically shared spaces
+			if len(perm.UserID) == 0 {
+				hasEveryoneRole = true
+			}
+
 			r := space.EncodeUserPermissions(perm)
 
 			for _, p := range r {
