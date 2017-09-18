@@ -4,12 +4,15 @@
 		permissions=model.permissions tab=tab onAddSpace=(action 'onAddSpace')}}
 	{{/layout/zone-sidebar}}
 	{{#layout/zone-content}}
+
 		{{folder/folder-heading folder=model.folder permissions=model.permissions}}
 
 		{{folder/folder-toolbar folders=model.folders folder=model.folder
 			permissions=model.permissions hasSelectedDocuments=hasSelectedDocuments
 			onDeleteDocument=(action 'onDeleteDocument') onMoveDocument=(action 'onMoveDocument')
 			onDeleteSpace=(action 'onDeleteSpace')}}
+
+		<div class="margin-bottom-20 clearfix" />
 
 		{{folder/documents-list documents=model.documents folders=model.folders folder=model.folder templates=model.templates
 			permissions=model.permissions selectedDocuments=(mut selectedDocuments)
