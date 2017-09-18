@@ -32,7 +32,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
 	didReceiveAttrs: function () {
 		this._super(...arguments);
-		
+
 		this.set('showToc', is.not.undefined(this.get('pages')) && this.get('pages').get('length') > 0);
 
 		if (is.not.null(this.get('currentPageId'))) {
@@ -42,7 +42,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
 	didRender: function () {
 		this._super(...arguments);
-		
+
 		if (this.session.authenticated) {
 			this.addTooltip(document.getElementById("toc-up-button"));
 			this.addTooltip(document.getElementById("toc-down-button"));
@@ -53,13 +53,13 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
 	didInsertElement() {
 		this._super(...arguments);
-		
+
 		this.eventBus.subscribe('documentPageAdded', this, 'onDocumentPageAdded');
 	},
 
 	willDestroyElement() {
 		this._super(...arguments);
-		
+
 		this.eventBus.unsubscribe('documentPageAdded');
 		this.destroyTooltips();
 	},
@@ -77,7 +77,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		let page = _.findWhere(toc, { id: pageId });
 		let state = tocUtil.getState(toc, page);
 
-		if (!this.get('isEditor') || is.empty(pageId)) {
+		if (!this.get('permissions.documentEdit') || is.empty(pageId)) {
 			state.actionablePage = false;
 			state.upDisabled = state.downDisabled = state.indentDisabled = state.outdentDisabled = true;
 		}

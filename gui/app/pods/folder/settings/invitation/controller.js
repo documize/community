@@ -10,12 +10,6 @@
 // https://documize.com
 
 import Ember from 'ember';
-import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 
-export default Ember.Route.extend(AuthenticatedRouteMixin, {
-	beforeModel: function (transition) {
-		if (is.equal(transition.targetName, 'customize.index')) {
-			this.transitionTo('customize.general');
-		}
-	},
+export default Ember.Controller.extend({
 });

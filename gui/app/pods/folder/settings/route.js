@@ -13,6 +13,12 @@ import Ember from 'ember';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 
 export default Ember.Route.extend(AuthenticatedRouteMixin, {
+	beforeModel: function (transition) {
+		if (is.equal(transition.targetName, 'folder.settings.index')) {
+			this.transitionTo('folder.settings.security');
+		}
+	},
+
 	model() {
 		this.get('browser').setTitle(this.modelFor('folder').folder.get('name'));
 

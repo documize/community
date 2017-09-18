@@ -7,7 +7,7 @@
 						<i class="material-icons">arrow_back</i>&nbsp;{{model.document.name}}
 					{{/link-to}}
 				</div>
-				{{document/document-heading document=model.document isEditor=false}}
+				{{document/document-heading document=model.document}}
 				{{document/block-editor document=model.document folder=model.folder block=model.block onCancel=(action 'onCancel') onAction=(action 'onAction')}}
 			</div>
 		</div>

@@ -184,14 +184,16 @@ func (s Scope) GetUsersForOrganization(ctx domain.RequestContext) (u []user.User
 }
 
 // GetSpaceUsers returns a slice containing all user records for given folder.
-func (s Scope) GetSpaceUsers(ctx domain.RequestContext, folderID string) (u []user.User, err error) {
-	err = s.Runtime.Db.Select(&u,
-		`SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.password, u.salt, u.reset, u.created, u.revised
+func (s Scope) GetSpaceUsers(ctx domain.RequestContext, spaceID string) (u []user.User, err error) {
+	err = s.Runtime.Db.Select(&u, `
+		SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.password, u.salt, u.reset, u.created, u.revised
 		FROM user u, account a
-		WHERE u.refid IN (SELECT userid from labelrole WHERE orgid=? AND labelid=?)
-		AND a.orgid=? AND u.refid = a.userid AND a.active=1
-		ORDER BY u.firstname, u.lastname`,
-		ctx.OrgID, folderID, ctx.OrgID)
+		WHERE a.orgid=? AND u.refid = a.userid AND a.active=1 AND u.refid IN (
+			SELECT whoid from permission WHERE orgid=? AND who='user' AND scope='object' AND location='space' AND refid=? UNION ALL
+			SELECT r.userid from rolemember r LEFT JOIN permission p ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.scope='object' AND p.location='space' AND p.refid=?
+		)
+		ORDER BY u.firstname, u.lastname;
+		`, ctx.OrgID, ctx.OrgID, spaceID, ctx.OrgID, spaceID)
 
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("get space users for org %s", ctx.OrgID))

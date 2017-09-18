@@ -10,6 +10,7 @@ $sidebar-width: 400px;
 }
 
 #sidebar-wrapper {
+	background-color: $color-off-white;
 	z-index: 888;
     position: fixed;
     overflow-x: hidden;
@@ -105,11 +106,11 @@ $sidebar-width: 400px;
 	display: inline-block;
 	width: 340px;
 	padding: 40px 20px 0px 20px;
-	margin-left: 60px;
+	margin-left: 20px;
 
     > .pinner {
         cursor: pointer;
-    
+
         > .material-icons {
             color: $color-primary;
         }
@@ -138,7 +139,7 @@ $sidebar-width: 400px;
 
 .sidebar-wrapper {
 	padding: 40px 20px 40px 20px;
-    margin-left: 60px;
+    margin-left: 20px;
 
     .sidebar-panel {
         width: 300px;

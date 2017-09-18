@@ -134,20 +134,19 @@ func (s Scope) GetBySpace(ctx domain.RequestContext, folderID string) (documents
 func (s Scope) GetByTag(ctx domain.RequestContext, tag string) (documents []doc.Document, err error) {
 	tagQuery := "tags LIKE '%#" + tag + "#%'"
 
-	err = s.Runtime.Db.Select(&documents,
-		`SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, layout, created, revised FROM document WHERE orgid=? AND template=0 AND `+tagQuery+` AND labelid IN
-		(SELECT refid from label WHERE orgid=? AND type=2 AND userid=?
-    	UNION ALL SELECT refid FROM label a where orgid=? AND type=1 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid='' AND (canedit=1 OR canview=1))
-		UNION ALL SELECT refid FROM label a where orgid=? AND type=3 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid=? AND (canedit=1 OR canview=1)))
-		ORDER BY title`,
-		ctx.OrgID,
-		ctx.OrgID,
-		ctx.UserID,
-		ctx.OrgID,
-		ctx.OrgID,
-		ctx.OrgID,
-		ctx.OrgID,
-		ctx.UserID)
+	err = s.Runtime.Db.Select(&documents, `
+		SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, layout, created, revised FROM document WHERE orgid=? AND template=0 AND `+tagQuery+` 
+		AND labelid IN
+			(
+				SELECT refid FROM label WHERE orgid=?
+				AND refid IN (SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid IN (
+					SELECT refid from permission WHERE orgid=? AND who='user' AND whoid=? AND location='space'
+					UNION ALL
+					SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.location='space' AND p.action='view' AND r.userid=?
+				))
+			)
+		ORDER BY title
+		`, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.UserID, ctx.OrgID, ctx.UserID)
 
 	if err != nil {
 		err = errors.Wrap(err, "select documents by tag")
@@ -160,19 +159,17 @@ func (s Scope) GetByTag(ctx domain.RequestContext, tag string) (documents []doc.
 // Templates returns a slice containing the documents available as templates to the client's organisation, in title order.
 func (s Scope) Templates(ctx domain.RequestContext) (documents []doc.Document, err error) {
 	err = s.Runtime.Db.Select(&documents,
-		`SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, layout, created, revised FROM document WHERE orgid=? AND template=1 AND labelid IN
-		(SELECT refid from label WHERE orgid=? AND type=2 AND userid=?
-    	UNION ALL SELECT refid FROM label a where orgid=? AND type=1 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid='' AND (canedit=1 OR canview=1))
-		UNION ALL SELECT refid FROM label a where orgid=? AND type=3 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid=? AND (canedit=1 OR canview=1)))
-		ORDER BY title`,
-		ctx.OrgID,
-		ctx.OrgID,
-		ctx.UserID,
-		ctx.OrgID,
-		ctx.OrgID,
-		ctx.OrgID,
-		ctx.OrgID,
-		ctx.UserID)
+		`SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, layout, created, revised FROM document WHERE orgid=? AND template=1
+		AND labelid IN
+			(
+				SELECT refid FROM label WHERE orgid=?
+            	AND refid IN (SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid IN (
+					SELECT refid from permission WHERE orgid=? AND who='user' AND whoid=? AND location='space'
+					UNION ALL
+                	SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.location='space' AND p.action='view' AND r.userid=?
+				))
+			)
+		ORDER BY title`, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.UserID, ctx.OrgID, ctx.UserID)
 
 	if err != nil {
 		err = errors.Wrap(err, "select document templates")
@@ -185,20 +182,17 @@ func (s Scope) Templates(ctx domain.RequestContext) (documents []doc.Document, e
 // TemplatesBySpace returns a slice containing the documents available as templates for given space.
 func (s Scope) TemplatesBySpace(ctx domain.RequestContext, spaceID string) (documents []doc.Document, err error) {
 	err = s.Runtime.Db.Select(&documents,
-		`SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, layout, created, revised FROM document WHERE orgid=? AND labelid=? AND template=1 AND labelid IN
-		(SELECT refid from label WHERE orgid=? AND type=2 AND userid=?
-    	UNION ALL SELECT refid FROM label a where orgid=? AND type=1 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid='' AND (canedit=1 OR canview=1))
-		UNION ALL SELECT refid FROM label a where orgid=? AND type=3 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid=? AND (canedit=1 OR canview=1)))
-		ORDER BY title`,
-		ctx.OrgID,
-		spaceID,
-		ctx.OrgID,
-		ctx.UserID,
-		ctx.OrgID,
-		ctx.OrgID,
-		ctx.OrgID,
-		ctx.OrgID,
-		ctx.UserID)
+		`SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, layout, created, revised FROM document WHERE orgid=? AND labelid=? AND template=1
+		AND labelid IN
+			(
+				SELECT refid FROM label WHERE orgid=?
+            	AND refid IN (SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid IN (
+					SELECT refid from permission WHERE orgid=? AND who='user' AND whoid=? AND location='space'
+					UNION ALL
+                	SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.location='space' AND p.action='view' AND r.userid=?
+				))
+			)
+		ORDER BY title`, ctx.OrgID, spaceID, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.UserID, ctx.OrgID, ctx.UserID)
 
 	if err == sql.ErrNoRows {
 		err = nil
@@ -233,19 +227,17 @@ func (s Scope) PublicDocuments(ctx domain.RequestContext, orgID string) (documen
 // DocumentList returns a slice containing the documents available as templates to the client's organisation, in title order.
 func (s Scope) DocumentList(ctx domain.RequestContext) (documents []doc.Document, err error) {
 	err = s.Runtime.Db.Select(&documents,
-		`SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, layout, created, revised FROM document WHERE orgid=? AND template=0 AND labelid IN
-		(SELECT refid from label WHERE orgid=? AND type=2 AND userid=?
-    	UNION ALL SELECT refid FROM label a where orgid=? AND type=1 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid='' AND (canedit=1 OR canview=1))
-		UNION ALL SELECT refid FROM label a where orgid=? AND type=3 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid=? AND (canedit=1 OR canview=1)))
-		ORDER BY title`,
-		ctx.OrgID,
-		ctx.OrgID,
-		ctx.UserID,
-		ctx.OrgID,
-		ctx.OrgID,
-		ctx.OrgID,
-		ctx.OrgID,
-		ctx.UserID)
+		`SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, layout, created, revised FROM document WHERE orgid=? AND template=0
+		AND labelid IN
+			(
+				SELECT refid FROM label WHERE orgid=?
+				AND refid IN (SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid IN (
+					SELECT refid from permission WHERE orgid=? AND who='user' AND whoid=? AND location='space'
+					UNION ALL
+					SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.location='space' AND p.action='view' AND r.userid=?
+				))
+			)
+		ORDER BY title`, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.UserID, ctx.OrgID, ctx.UserID)
 
 	if err == sql.ErrNoRows {
 		err = nil

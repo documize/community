@@ -33,9 +33,9 @@ export default Ember.Service.extend({
 		});
 	},
 
-	// Returns all documents for specified folder.
-	getAllByFolder(folderId) {
-		return this.get('ajax').request(`documents?folder=${folderId}`, {
+	// Returns all documents for specified space.
+	getAllBySpace(spaceId) {
+		return this.get('ajax').request(`documents?space=${spaceId}`, {
 			method: "GET"
 		}).then((response) => {
 			let documents = Ember.ArrayProxy.create({

@@ -26,7 +26,17 @@ export default Router.map(function () {
 	}, function() {
 		this.route('settings', {
 			path: 'settings'
-		});
+		}, function () {
+			this.route('security', {
+				path: 'security'
+			});
+			this.route('invitation', {
+				path: 'invitation'
+			});
+			this.route('category', {
+				path: 'category'
+			});
+		})
 	});
 
 	this.route('document', {

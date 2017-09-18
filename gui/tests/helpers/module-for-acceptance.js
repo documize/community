@@ -16,7 +16,7 @@ export default function(name, options = {}) {
 			server.createList('user', 2);
 			server.createList('document', 2);
 			server.createList('permission', 4);
-			server.createList('folder-permission', 2);
+			// server.createList('folder-permission', 2);
 			server.createList('organization', 1);
 
 			if (options.beforeEach) {

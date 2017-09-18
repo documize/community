@@ -75,7 +75,7 @@ type UserStorer interface {
 	GetBySerial(ctx RequestContext, serial string) (u user.User, err error)
 	GetActiveUsersForOrganization(ctx RequestContext) (u []user.User, err error)
 	GetUsersForOrganization(ctx RequestContext) (u []user.User, err error)
-	GetSpaceUsers(ctx RequestContext, folderID string) (u []user.User, err error)
+	GetSpaceUsers(ctx RequestContext, spaceID string) (u []user.User, err error)
 	GetVisibleUsers(ctx RequestContext) (u []user.User, err error)
 	UpdateUser(ctx RequestContext, u user.User) (err error)
 	UpdateUserPassword(ctx RequestContext, userID, salt, password string) (err error)

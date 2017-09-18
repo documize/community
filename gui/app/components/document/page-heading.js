@@ -72,6 +72,13 @@ export default Ember.Component.extend(TooltipMixin, {
 		return `move-dialog-${id}`;
 	}),
 
+	hasMenuPermissions: computed('permissions', function() {
+		let permissions = this.get('permissions');
+
+		return permissions.get('documentDelete') || permissions.get('documentCopy') ||
+			permissions.get('documentMove') || permissions.get('documentTemplate');;
+	}),
+
 	didRender() {
 		$("#" + this.get('blockTitleId')).removeClass('error');
 		$("#" + this.get('blockExcerptId')).removeClass('error');
@@ -131,7 +138,7 @@ export default Ember.Component.extend(TooltipMixin, {
 				};
 
 				this.attrs.onSavePageAsBlock(block);
-				
+
 				this.set('menuOpen', false);
 				this.set('blockTitle', '');
 				this.set('blockExcerpt', '');

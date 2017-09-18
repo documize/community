@@ -14,28 +14,7 @@ import TooltipMixin from '../../mixins/tooltip';
 import NotifierMixin from '../../mixins/notifier';
 import AuthMixin from '../../mixins/auth';
 
-const {
-	inject: { service }
-} = Ember;
-
 export default Ember.Component.extend(TooltipMixin, NotifierMixin, AuthMixin, {
-	folderService: service('folder'),
-	templateService: service('template'),
-	appMeta: service(),
-	pinned: service(),
-	publicFolders: [],
-	protectedFolders: [],
-	privateFolders: [],
-	hasPublicFolders: false,
-	hasProtectedFolders: false,
-	hasPrivateFolders: false,
-	newFolder: "",
-	menuOpen: false,
-	pinState : {
-		isPinned: false,
-		pinId: '',
-		newName: '',
-	},
 	tab: '',
 
 	init() {
@@ -43,15 +22,6 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, AuthMixin, {
 
 		if (is.empty(this.get('tab')) || is.undefined(this.get('tab'))) {
 			this.set('tab', 'index');
-		}
-	},
-
-	didReceiveAttrs() {
-		if (!this.get('noFolder')) {
-			let folder = this.get('folder');
-			this.set('pinState.pinId', this.get('pinned').isSpacePinned(folder.get('id')));
-			this.set('pinState.isPinned', this.get('pinState.pinId') !== '');
-			this.set('pinState.newName', folder.get('name').substring(0,3).toUpperCase());
 		}
 	},
 
@@ -63,39 +33,6 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, AuthMixin, {
 
 		onChangeTab(tab) {
 			this.set('tab', tab);
-		},
-
-		onMenuOpen() {
-			this.set('menuOpen', !this.get('menuOpen'));
-		},
-
-		onUnpin() {
-			this.get('pinned').unpinItem(this.get('pinState.pinId')).then(() => {
-				this.set('pinState.isPinned', false);
-				this.set('pinState.pinId', '');
-				this.eventBus.publish('pinChange');
-			});
-		},
-
-		onPin() {
-			let pin = {
-				pin: this.get('pinState.newName'),
-				documentId: '',
-				folderId: this.get('folder.id')
-			};
-
-			if (is.empty(pin.pin)) {
-				$('#pin-space-name').addClass('error').focus();
-				return false;
-			}
-
-			this.get('pinned').pinItem(pin).then((pin) => {
-				this.set('pinState.isPinned', true);
-				this.set('pinState.pinId', pin.get('id'));
-				this.eventBus.publish('pinChange');
-			});
-
-			return true;
 		},
 	}
 });

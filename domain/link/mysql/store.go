@@ -169,21 +169,19 @@ func (s Scope) SearchCandidates(ctx domain.RequestContext, keywords string) (doc
 	keywords = strings.TrimSpace(strings.ToLower(keywords))
 	likeQuery := "LOWER(title) LIKE '%" + keywords + "%'"
 
-	err = s.Runtime.Db.Select(&temp,
-		`SELECT d.refid as documentid, d. labelid as folderid, d.title, l.label as context
-		FROM document d LEFT JOIN label l ON d.labelid=l.refid WHERE l.orgid=? AND `+likeQuery+` AND d.labelid IN
-		(SELECT refid FROM label WHERE orgid=? AND type=2 AND userid=?
-    	UNION ALL SELECT refid FROM label a WHERE orgid=? AND type=1 AND refid IN (SELECT labelid FROM labelrole WHERE orgid=? AND userid='' AND (canedit=1 OR canview=1))
-		UNION ALL SELECT refid FROM label a WHERE orgid=? AND type=3 AND refid IN (SELECT labelid FROM labelrole WHERE orgid=? AND userid=? AND (canedit=1 OR canview=1)))
-		ORDER BY title`,
-		ctx.OrgID,
-		ctx.OrgID,
-		ctx.UserID,
-		ctx.OrgID,
-		ctx.OrgID,
-		ctx.OrgID,
-		ctx.OrgID,
-		ctx.UserID)
+	err = s.Runtime.Db.Select(&temp, `
+		SELECT d.refid as documentid, d. labelid as folderid, d.title, l.label as context
+		FROM document d LEFT JOIN label l ON d.labelid=l.refid WHERE l.orgid=? AND `+likeQuery+` 
+		AND d.labelid IN
+		(
+			SELECT refid FROM label WHERE orgid=?
+			AND refid IN (SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid IN (
+				SELECT refid from permission WHERE orgid=? AND who='user' AND whoid=? AND location='space'
+				UNION ALL
+				SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.location='space' AND p.action='view' AND r.userid=?
+			))
+		)
+		ORDER BY title`, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.UserID, ctx.OrgID, ctx.UserID)
 
 	if err != nil {
 		err = errors.Wrap(err, "execute search links 1")
@@ -210,19 +208,17 @@ func (s Scope) SearchCandidates(ctx domain.RequestContext, keywords string) (doc
 
 	err = s.Runtime.Db.Select(&temp,
 		`SELECT p.refid as targetid, p.documentid as documentid, p.title as title, p.pagetype as linktype, d.title as context, d.labelid as folderid
-		FROM page p LEFT JOIN document d ON d.refid=p.documentid WHERE p.orgid=? AND `+likeQuery+` AND d.labelid IN
-		(SELECT refid FROM label WHERE orgid=? AND type=2 AND userid=?
-    	UNION ALL SELECT refid FROM label a WHERE orgid=? AND type=1 AND refid IN (SELECT labelid FROM labelrole WHERE orgid=? AND userid='' AND (canedit=1 OR canview=1))
-		UNION ALL SELECT refid FROM label a WHERE orgid=? AND type=3 AND refid IN (SELECT labelid FROM labelrole WHERE orgid=? AND userid=? AND (canedit=1 OR canview=1)))
-		ORDER BY p.title`,
-		ctx.OrgID,
-		ctx.OrgID,
-		ctx.UserID,
-		ctx.OrgID,
-		ctx.OrgID,
-		ctx.OrgID,
-		ctx.OrgID,
-		ctx.UserID)
+		FROM page p LEFT JOIN document d ON d.refid=p.documentid WHERE p.orgid=? AND `+likeQuery+` 
+		AND d.labelid IN
+		(
+			SELECT refid FROM label WHERE orgid=?
+			AND refid IN (SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid IN (
+				SELECT refid from permission WHERE orgid=? AND who='user' AND whoid=? AND location='space'
+				UNION ALL
+				SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.location='space' AND p.action='view' AND r.userid=?
+			))
+		)
+		ORDER BY p.title`, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.UserID, ctx.OrgID, ctx.UserID)
 
 	if err != nil {
 		err = errors.Wrap(err, "execute search links 2")
@@ -249,19 +245,17 @@ func (s Scope) SearchCandidates(ctx domain.RequestContext, keywords string) (doc
 
 	err = s.Runtime.Db.Select(&temp,
 		`SELECT a.refid as targetid, a.documentid as documentid, a.filename as title, a.extension as context, d.labelid as folderid
-		FROM attachment a LEFT JOIN document d ON d.refid=a.documentid WHERE a.orgid=? AND `+likeQuery+` AND d.labelid IN
-		(SELECT refid FROM label WHERE orgid=? AND type=2 AND userid=?
-    	UNION ALL SELECT refid FROM label a WHERE orgid=? AND type=1 AND refid IN (SELECT labelid FROM labelrole WHERE orgid=? AND userid='' AND (canedit=1 OR canview=1))
-		UNION ALL SELECT refid FROM label a WHERE orgid=? AND type=3 AND refid IN (SELECT labelid FROM labelrole WHERE orgid=? AND userid=? AND (canedit=1 OR canview=1)))
-		ORDER BY a.filename`,
-		ctx.OrgID,
-		ctx.OrgID,
-		ctx.UserID,
-		ctx.OrgID,
-		ctx.OrgID,
-		ctx.OrgID,
-		ctx.OrgID,
-		ctx.UserID)
+		FROM attachment a LEFT JOIN document d ON d.refid=a.documentid WHERE a.orgid=? AND `+likeQuery+` 
+		AND d.labelid IN
+		(
+			SELECT refid FROM label WHERE orgid=?
+			AND refid IN (SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid IN (
+				SELECT refid from permission WHERE orgid=? AND who='user' AND whoid=? AND location='space'
+				UNION ALL
+				SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.location='space' AND p.action='view' AND r.userid=?
+			))
+		)
+		ORDER BY a.filename`, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.UserID, ctx.OrgID, ctx.UserID)
 
 	if err != nil {
 		err = errors.Wrap(err, "execute search links 3")

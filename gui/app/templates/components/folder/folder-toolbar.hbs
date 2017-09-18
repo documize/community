@@ -37,7 +37,7 @@
 
 		{{#if permissions.spaceManage}}
 			{{#link-to 'folder.settings' folder.id folder.slug}}{{model.document.name}}
-				<div class="round-button button-gray" id="space-settings-button" data-tooltip="Manage permissions" data-tooltip-position="top center">
+				<div class="round-button button-blue" id="space-settings-button" data-tooltip="Manage permissions" data-tooltip-position="top center">
 					<i class="material-icons">settings</i>
 				</div>
 			{{/link-to}}
@@ -45,9 +45,28 @@
 
 		{{#if permissions.spaceOwner}}
 			<div class="button-gap"></div>
-			<div class="round-button button-gray" id="space-delete-button" data-tooltip="Delete everything" data-tooltip-position="top center">
+			<div class="round-button button-red" id="space-delete-button" data-tooltip="Delete everything" data-tooltip-position="top center">
 				<i class="material-icons">delete</i>
 			</div>
+		{{/if}}
+
+		{{#if pinState.isPinned}}
+			<div class="button-gap"></div>
+			<div class="round-button button-gray" id="space-unpin-button" data-tooltip="Pin space" data-tooltip-position="top center" {{action 'onUnpin'}}>
+				<i class="material-icons">favorite</i>
+			</div>
+		{{else}}
+			<div class="button-gap"></div>
+			<div class="round-button button-gray" id="space-pin-button" data-tooltip="Pin space" data-tooltip-position="top center">
+				<i class="material-icons">favorite_border</i>
+			</div>
+			{{#dropdown-dialog target="space-pin-button" position="bottom right" button="Pin" color="flat-green" onAction=(action 'onPin') focusOn="pin-space-name" }}
+				<div class="input-control">
+					<label>Pin Space</label>
+					<div class="tip">A 3 or 4 character name</div>
+					{{input type='text' id="pin-space-name" value=pinState.newName}}
+				</div>
+			{{/dropdown-dialog}}
 		{{/if}}
 
 	{{/if}}

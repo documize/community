@@ -135,24 +135,24 @@ func (h *Handler) DocumentLinks(w http.ResponseWriter, r *http.Request) {
 	response.WriteJSON(w, l)
 }
 
-// BySpace is an endpoint that returns the documents in a given folder.
+// BySpace is an endpoint that returns the documents for given space.
 func (h *Handler) BySpace(w http.ResponseWriter, r *http.Request) {
 	method := "document.space"
 	ctx := domain.GetRequestContext(r)
 
-	folderID := request.Query(r, "folder")
+	spaceID := request.Query(r, "space")
 
-	if len(folderID) == 0 {
-		response.WriteMissingDataError(w, method, "folder")
+	if len(spaceID) == 0 {
+		response.WriteMissingDataError(w, method, "space")
 		return
 	}
 
-	if !space.CanViewSpace(ctx, *h.Store, folderID) {
+	if !space.CanViewSpace(ctx, *h.Store, spaceID) {
 		response.WriteForbiddenError(w)
 		return
 	}
 
-	documents, err := h.Store.Document.GetBySpace(ctx, folderID)
+	documents, err := h.Store.Document.GetBySpace(ctx, spaceID)
 
 	if len(documents) == 0 {
 		documents = []doc.Document{}

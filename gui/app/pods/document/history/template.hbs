@@ -7,7 +7,7 @@
 						<i class="material-icons">arrow_back</i>&nbsp;{{model.document.name}}
 					{{/link-to}}
 				</div>
-				{{document/document-heading document=model.document isEditor=false}}
+				{{document/document-heading document=model.document}}
 				{{#if hasRevisions}}
 					{{document/document-history document=model.document folder=model.folder pages=model.pages
 					revisions=model.revisions diff=model.diff onFetchDiff=(action 'onFetchDiff') onRollback=(action 'onRollback')}}

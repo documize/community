@@ -14,21 +14,35 @@ import NotifierMixin from '../../mixins/notifier';
 import TooltipMixin from '../../mixins/tooltip';
 import AuthMixin from '../../mixins/auth';
 
+const {
+	inject: { service }
+} = Ember;
+
 export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
-	folderService: Ember.inject.service('folder'),
-	session: Ember.inject.service(),
-	appMeta: Ember.inject.service(),
+	folderService: service('folder'),
+	session: service(),
+	appMeta: service(),
+	pinned: service(),
 	showToolbar: false,
 	folder: {},
 	busy: false,
 	moveFolderId: "",
 	drop: null,
+	pinState : {
+		isPinned: false,
+		pinId: '',
+		newName: '',
+	},
 
 	didReceiveAttrs() {
-		console.log(this.get('permissions'));
 		let targets = _.reject(this.get('folders'), {
 			id: this.get('folder').get('id')
 		});
+
+		let folder = this.get('folder');
+		this.set('pinState.pinId', this.get('pinned').isSpacePinned(folder.get('id')));
+		this.set('pinState.isPinned', this.get('pinState.pinId') !== '');
+		this.set('pinState.newName', folder.get('name').substring(0,3).toUpperCase());
 
 		this.set('movedFolderOptions', targets);
 	},
@@ -61,6 +75,35 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 	},
 
 	actions: {
+		onUnpin() {
+			this.get('pinned').unpinItem(this.get('pinState.pinId')).then(() => {
+				this.set('pinState.isPinned', false);
+				this.set('pinState.pinId', '');
+				this.eventBus.publish('pinChange');
+			});
+		},
+
+		onPin() {
+			let pin = {
+				pin: this.get('pinState.newName'),
+				documentId: '',
+				folderId: this.get('folder.id')
+			};
+
+			if (is.empty(pin.pin)) {
+				$('#pin-space-name').addClass('error').focus();
+				return false;
+			}
+
+			this.get('pinned').pinItem(pin).then((pin) => {
+				this.set('pinState.isPinned', true);
+				this.set('pinState.pinId', pin.get('id'));
+				this.eventBus.publish('pinChange');
+			});
+
+			return true;
+		},
+
 		deleteDocuments() {
 			this.attrs.onDeleteDocument();
 		},

@@ -1,17 +1,4 @@
 .zone-document-content {
-	> .back-to-space {
-		margin: 10px 0;
-
-		> a {
-			> .regular-button {
-				> .name {
-					// max-width: 150px;
-					// @extend .truncate;
-				}
-			}
-		}
-	}
-
 	.doc-title {
 		font-size: 2rem;
 		margin: 30px 0 10px;

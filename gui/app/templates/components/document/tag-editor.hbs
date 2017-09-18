@@ -2,7 +2,7 @@
     {{#each tagz as |tg|}}
         <div class="chip">
 			<span class="chip-text">#{{tg}}</span>
-            {{#if isEditor}}
+            {{#if permissions.documentEdit}}
                 <i class="material-icons pull-right" {{action 'removeTag' tg}}>close</i>
             {{/if}}
         </div>

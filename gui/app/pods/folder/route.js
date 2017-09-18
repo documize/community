@@ -39,7 +39,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 			folder: this.get('folder'),
 			permissions: this.get('permissions'),
 			folders: this.get('folderService').getAll(),
-			documents: this.get('documentService').getAllByFolder(params.folder_id),
+			documents: this.get('documentService').getAllBySpace(params.folder_id),
 			templates: this.get('templateService').getSavedTemplates(params.folder_id)
 		});
 	},

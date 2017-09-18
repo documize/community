@@ -14,7 +14,6 @@ import Ember from 'ember';
 export default Ember.Component.extend({
     documentTags: [],
     tagz: [],
-    isEditor: false,
     newTag: "",
     maxTags: 3,
     canAdd: false,

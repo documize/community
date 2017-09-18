@@ -33,7 +33,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 			}
 
 			this.set('meta', meta);
-			if (this.get('toEdit') === this.get('page.id') && this.get('isEditor')) {
+			if (this.get('toEdit') === this.get('page.id') && this.get('permissions.documentEdit')) {
 				this.send('onEdit');
 			}
 		});

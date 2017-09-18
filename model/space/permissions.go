@@ -117,6 +117,7 @@ func EncodeRecord(r PermissionRecord, a PermissionAction) (p Permission) {
 	p.Location = "space"
 	p.RefID = r.SpaceID
 	p.Action = a
+	p.Scope = "object" // default to row level permission
 
 	return
 }

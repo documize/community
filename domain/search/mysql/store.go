@@ -265,20 +265,25 @@ func (s Scope) matchFullText(ctx domain.RequestContext, keywords, itemType strin
 		AND s.itemtype = ?
 		AND s.documentid = d.refid 
 		-- AND d.template = 0
-		AND d.labelid IN (SELECT refid from label WHERE orgid=? AND type=2 AND userid=?
-			UNION ALL SELECT refid FROM label a where orgid=? AND type=1 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid='' AND (canedit=1 OR canview=1))
-			UNION ALL SELECT refid FROM label a where orgid=? AND type=3 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid=? AND (canedit=1 OR canview=1)))
-		AND MATCH(s.content) AGAINST(? IN BOOLEAN MODE)`
+		AND d.labelid IN 
+		(
+			SELECT refid FROM label WHERE orgid=?
+			AND refid IN (SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid IN (
+				SELECT refid from permission WHERE orgid=? AND who='user' AND whoid=? AND location='space'
+				UNION ALL
+				SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.location='space' AND p.action='view' AND r.userid=?
+			))
+		)
+	AND MATCH(s.content) AGAINST(? IN BOOLEAN MODE)`
 
 	err = s.Runtime.Db.Select(&r,
 		sql1,
 		ctx.OrgID,
 		itemType,
 		ctx.OrgID,
+		ctx.OrgID,
+		ctx.OrgID,
 		ctx.UserID,
-		ctx.OrgID,
-		ctx.OrgID,
-		ctx.OrgID,
 		ctx.OrgID,
 		ctx.UserID,
 		keywords)
@@ -318,9 +323,15 @@ func (s Scope) matchLike(ctx domain.RequestContext, keywords, itemType string) (
 		AND s.itemtype = ?
 		AND s.documentid = d.refid 
 		-- AND d.template = 0
-		AND d.labelid IN (SELECT refid from label WHERE orgid=? AND type=2 AND userid=?
-			UNION ALL SELECT refid FROM label a where orgid=? AND type=1 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid='' AND (canedit=1 OR canview=1))
-			UNION ALL SELECT refid FROM label a where orgid=? AND type=3 AND refid IN (SELECT labelid from labelrole WHERE orgid=? AND userid=? AND (canedit=1 OR canview=1)))
+		AND d.labelid IN 
+		(
+			SELECT refid FROM label WHERE orgid=?
+			AND refid IN (SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid IN (
+				SELECT refid from permission WHERE orgid=? AND who='user' AND whoid=? AND location='space'
+				UNION ALL
+				SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.location='space' AND p.action='view' AND r.userid=?
+			))
+		)
 		AND s.content LIKE ?`
 
 	err = s.Runtime.Db.Select(&r,
@@ -328,10 +339,9 @@ func (s Scope) matchLike(ctx domain.RequestContext, keywords, itemType string) (
 		ctx.OrgID,
 		itemType,
 		ctx.OrgID,
+		ctx.OrgID,
+		ctx.OrgID,
 		ctx.UserID,
-		ctx.OrgID,
-		ctx.OrgID,
-		ctx.OrgID,
 		ctx.OrgID,
 		ctx.UserID,
 		keywords)

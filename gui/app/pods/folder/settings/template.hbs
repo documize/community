@@ -1,36 +1,33 @@
 {{#layout/zone-container}}
-
 	{{#layout/zone-sidebar}}
-		<div class="sidebar-toolbar"></div>
 		<div class="sidebar-common">
-			{{layout/sidebar-intro title="Space Settings" message="Invite users and configure space permissions. Set up categories to sub-divide the space."}}
+			{{layout/sidebar-intro title="Space Settings" message="Invite users, configure space permissions, and set up categories to sub-divide the space."}}
 		</div>
 		<div class="sidebar-wrapper">
 			<div class="sidebar-menu">
 				<ul class="options">
-					<div class="option selected">Users</div>
-					<div class="option ">Categories</div>
+					{{#if isAuthProviderDocumize}}
+						{{#link-to 'folder.settings.invitation' activeClass='selected' class="option" tagName="li"}}Invite{{/link-to}}
+					{{/if}}
+					{{#link-to 'folder.settings.security' activeClass='selected' class="option" tagName="li"}}Secure{{/link-to}}
+					{{#link-to 'folder.settings.category' activeClass='selected' class="option" tagName="li"}}Organize{{/link-to}}
 				</ul>
 			</div>
 		</div>
 	{{/layout/zone-sidebar}}
-
 	{{#layout/zone-content}}
-		<div class="folder-heading">
-			<h1 class="folder-title">{{model.folder.name}}</h1>
+		<div class="back-to-space">
+			{{#link-to 'folder' model.folder.id model.folder.slug}}
+				<div class="regular-button button-gray">
+					<i class="material-icons">arrow_back</i>
+					<div class="name">{{model.folder.name}}</div>
+				</div>
+			{{/link-to}}
 		</div>
-		{{#link-to 'folder' model.folder.id model.folder.slug class="vertical-top"}}
-			<i class="material-icons">arrow_back</i>&nbsp;back to space
-		{{/link-to}}
 		<div class="margin-top-30" />
 
-		{{#if isAuthProviderDocumize}}
-			{{folder/invite-user folders=model.folders folder=model.folder}}
-			<div class="margin-top-50" />
-		{{/if}}
+		{{outlet}}
 
-		{{folder/permission-admin folders=model.folders folder=model.folder}}
 		<div class="margin-top-50" />
-{{/layout/zone-content}}
-
+	{{/layout/zone-content}}
 {{/layout/zone-container}}

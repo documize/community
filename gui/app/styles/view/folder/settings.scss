@@ -14,16 +14,13 @@
 			padding: 8px 0;
 
 			> .permission-name-cell {
-				padding: 10px 5px;
 				font-size: 1.1rem;
+				background-color: $color-off-white;
+				padding: 10px 10px;
 			}
 
 			> .permission-roles-cell {
-				background-color: $color-off-white;
-				margin-top: 10px;
-				margin-left: 40px;
-				padding: 10px 10px;
-				display: inline-block;
+				margin: 15px 0 20px 40px;
 
 				> .role-category {
 					color: $color-gray;

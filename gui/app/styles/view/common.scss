@@ -13,3 +13,16 @@
 		color: $color-gray;
 	}
 }
+
+.back-to-space {
+	margin: 10px 0;
+
+	> a {
+		> .regular-button {
+			> .name {
+				// max-width: 150px;
+				// @extend .truncate;
+			}
+		}
+	}
+}
