@@ -279,7 +279,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 }
 
 /*
-	6. add category view permission !!!
 	7. link/unlink document to category
+	6. add category view permission !!!
 	8. filter space documents by category -- URL param? nested route?
 */

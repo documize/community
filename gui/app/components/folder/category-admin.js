@@ -78,10 +78,18 @@ export default Ember.Component.extend(NotifierMixin, {
 
 		onCancel(id) {
 			this.setEdit(id, false);
+			this.load();
 		},
 
 		onSave(id) {
-			let cat = this.setEdit(id, false);
+			let cat = this.setEdit(id, true);
+			if (cat.get('category') === '') {
+				$('#edit-category-' + cat.get('id')).addClass('error').focus();
+				return;
+			}
+
+			cat = this.setEdit(id, false);
+			$('#edit-category-' + cat.get('id')).removeClass('error');
 
 			this.get('categoryService').save(cat).then(() => {
 				this.load();
