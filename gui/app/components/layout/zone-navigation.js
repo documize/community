@@ -99,6 +99,15 @@ export default Ember.Component.extend(TooltipMixin, {
 		} else {
 			this.addTooltip(document.getElementById("workspace-login"));
 		}
+		if (this.get("session.authenticated")) {
+			this.addTooltip(document.getElementById("user-profile-button"));
+		}
+		if (this.get('session.hasAccounts')) {
+			this.addTooltip(document.getElementById("accounts-button"));
+		}
+
+		this.addTooltip(document.getElementById("home-button"));
+		this.addTooltip(document.getElementById("search-button"));
 	},
 
 	setupPins() {

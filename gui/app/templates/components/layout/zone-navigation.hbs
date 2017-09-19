@@ -1,26 +1,18 @@
 <div id="zone-navigation" class="zone-navigation">
 	<ul id="top-zone" class="top-zone">
         {{#if session.hasAccounts}}
-			<li>
+			<li id="accounts-button" data-tooltip="Switch team" data-tooltip-position="right center">
 				<div id="accounts-button" class="round-button-mono button-white">
 	                <i class="material-icons">apps</i>
 	            </div>
 			</li>
-        {{else}}
-			<li>
-	            {{#link-to 'folders' class='title'}}
-	                <div class="round-button-mono button-white" title={{appMeta.title}}>
-	                    <i class="material-icons">apps</i>
-	                </div>
-	            {{/link-to}}
-			</li>
         {{/if}}
-		<li class="{{if view.folder 'selected'}}">
+		<li id="home-button" class="{{if view.folder 'selected'}}" data-tooltip="Home" data-tooltip-position="right center">
             {{#link-to 'folders' tagName="div" class="round-button-mono button-white"}}
                 <i class="material-icons">home</i>
             {{/link-to}}
 		</li>
-		<li class="{{if view.search 'selected'}}">
+		<li id="search-button" class="{{if view.search 'selected'}}" data-tooltip="Search" data-tooltip-position="right center">
             {{#link-to 'search' tagName="div" class="round-button-mono button-white"}}
                 <i class="material-icons icon-tool">search</i>
             {{/link-to}}
@@ -44,7 +36,7 @@
 			</li>
 		{{/if}}
         {{#if session.authenticated}}
-			<li class="{{if view.profile 'selected'}}">
+			<li id="user-profile-button" class="{{if view.profile 'selected'}}" data-tooltip="Profile" data-tooltip-position="right center">
 				{{#link-to 'profile'}}
 					<div class="round-button-mono button-white">
 						<i class="material-icons profile-link">{{session.user.initials}}</i>

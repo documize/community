@@ -32,6 +32,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 		isPinned: false,
 		pinId: '',
 		newName: '',
+		tip: null
 	},
 	deleteSpaceName: '',
 
@@ -62,6 +63,18 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 			}
 			if (this.get('permissions.spaceManage')) {
 				this.addTooltip(document.getElementById("space-settings-button"));
+			}
+			if (this.get('session.authenticated')) {
+				let t = this.get('pinState.tip');
+				if (is.not.null(t)) {
+					t.destroy();
+				}
+
+				if (this.get('pinState.isPinned')) {
+					this.set('pinState.tip', this.addTooltip(document.getElementById("space-unpin-button")))
+				} else {
+					this.set('pinState.tip', this.addTooltip(document.getElementById("space-pin-button")))
+				}
 			}
 		}
 	},

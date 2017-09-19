@@ -15,7 +15,7 @@ export default Ember.Mixin.create({
     tooltips: [],
 
     addTooltip(elem) {
-        
+
         if(elem == null) {
             return;
         }
@@ -25,7 +25,13 @@ export default Ember.Mixin.create({
         });
 
         let tt = this.get('tooltips');
-        tt.push(t);
+		tt.push(t);
+
+		return t;
+    },
+
+	destroyTooltip(t) {
+		t.destroy();
     },
 
     destroyTooltips() {
