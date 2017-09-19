@@ -30,7 +30,7 @@ func CanViewSpaceDocument(ctx domain.RequestContext, s domain.Store, labelID str
 
 	for _, role := range roles {
 		if role.RefID == labelID && role.Location == "space" && role.Scope == "object" &&
-			pm.HasPermission(role.Action, pm.SpaceView, pm.SpaceManage, pm.SpaceOwner) {
+			pm.ContainsPermission(role.Action, pm.SpaceView, pm.SpaceManage, pm.SpaceOwner) {
 			return true
 		}
 	}
@@ -58,7 +58,7 @@ func CanViewDocument(ctx domain.RequestContext, s domain.Store, documentID strin
 
 	for _, role := range roles {
 		if role.RefID == document.LabelID && role.Location == "space" && role.Scope == "object" &&
-			pm.HasPermission(role.Action, pm.SpaceView, pm.SpaceManage, pm.SpaceOwner) {
+			pm.ContainsPermission(role.Action, pm.SpaceView, pm.SpaceManage, pm.SpaceOwner) {
 			return true
 		}
 	}
@@ -136,7 +136,7 @@ func CanUploadDocument(ctx domain.RequestContext, s domain.Store, spaceID string
 
 	for _, role := range roles {
 		if role.RefID == spaceID && role.Location == "space" && role.Scope == "object" &&
-			pm.HasPermission(role.Action, pm.DocumentAdd) {
+			pm.ContainsPermission(role.Action, pm.DocumentAdd) {
 			return true
 		}
 	}
@@ -156,7 +156,7 @@ func CanViewSpace(ctx domain.RequestContext, s domain.Store, spaceID string) boo
 
 	for _, role := range roles {
 		if role.RefID == spaceID && role.Location == "space" && role.Scope == "object" &&
-			pm.HasPermission(role.Action, pm.SpaceView, pm.SpaceManage, pm.SpaceOwner) {
+			pm.ContainsPermission(role.Action, pm.SpaceView, pm.SpaceManage, pm.SpaceOwner) {
 			return true
 		}
 	}
@@ -164,18 +164,9 @@ func CanViewSpace(ctx domain.RequestContext, s domain.Store, spaceID string) boo
 	return false
 }
 
-// HasDocumentAction returns if user can perform specified action.
-func HasDocumentAction(ctx domain.RequestContext, s domain.Store, documentID string, a pm.Action) bool {
-	document, err := s.Document.Get(ctx, documentID)
-
-	if err == sql.ErrNoRows {
-		err = nil
-	}
-	if err != nil {
-		return false
-	}
-
-	roles, err := s.Permission.GetUserSpacePermissions(ctx, document.LabelID)
+// HasPermission returns if user can perform specified actions.
+func HasPermission(ctx domain.RequestContext, s domain.Store, spaceID string, actions ...pm.Action) bool {
+	roles, err := s.Permission.GetUserSpacePermissions(ctx, spaceID)
 
 	if err == sql.ErrNoRows {
 		err = nil
@@ -185,8 +176,12 @@ func HasDocumentAction(ctx domain.RequestContext, s domain.Store, documentID str
 	}
 
 	for _, role := range roles {
-		if role.RefID == document.LabelID && role.Location == "space" && role.Scope == "object" && role.Action == a {
-			return true
+		if role.RefID == spaceID && role.Location == "space" && role.Scope == "object" {
+			for _, a := range actions {
+				if role.Action == a {
+					return true
+				}
+			}
 		}
 	}
 

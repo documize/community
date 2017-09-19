@@ -113,21 +113,21 @@ func (h *Handler) SaveAs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !permission.HasDocumentAction(ctx, *h.Store, model.DocumentID, pm.DocumentTemplate) {
-		response.WriteForbiddenError(w)
-		return
-	}
-
-	// DB transaction
-	ctx.Transaction, err = h.Runtime.Db.Beginx()
+	// Duplicate document
+	doc, err := h.Store.Document.Get(ctx, model.DocumentID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
 		return
 	}
 
-	// Duplicate document
-	doc, err := h.Store.Document.Get(ctx, model.DocumentID)
+	if !permission.HasPermission(ctx, *h.Store, doc.LabelID, pm.DocumentTemplate) {
+		response.WriteForbiddenError(w)
+		return
+	}
+
+	// DB transaction
+	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)

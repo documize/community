@@ -48,7 +48,7 @@ type Handler struct {
 
 // Add creates a new space.
 func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
-	method := "space.Add"
+	method := "space.add"
 	ctx := domain.GetRequestContext(r)
 
 	if !h.Runtime.Product.License.IsValid() {
@@ -276,7 +276,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 
 // Get returns the requested space.
 func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
-	method := "Get"
+	method := "space.get"
 	ctx := domain.GetRequestContext(r)
 
 	id := request.Param(r, "spaceID")
@@ -302,7 +302,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 
 // GetAll returns spaces the user can see.
 func (h *Handler) GetAll(w http.ResponseWriter, r *http.Request) {
-	method := "GetAll"
+	method := "space.getAll"
 	ctx := domain.GetRequestContext(r)
 
 	sp, err := h.Store.Space.GetAll(ctx)
@@ -322,7 +322,7 @@ func (h *Handler) GetAll(w http.ResponseWriter, r *http.Request) {
 
 // GetSpaceViewers returns the users that can see the shared spaces.
 func (h *Handler) GetSpaceViewers(w http.ResponseWriter, r *http.Request) {
-	method := "space.Viewers"
+	method := "space.viewers"
 	ctx := domain.GetRequestContext(r)
 
 	v, err := h.Store.Space.Viewers(ctx)
@@ -341,7 +341,7 @@ func (h *Handler) GetSpaceViewers(w http.ResponseWriter, r *http.Request) {
 
 // Update processes request to save space object to the database
 func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
-	method := "space.Update"
+	method := "space.update"
 	ctx := domain.GetRequestContext(r)
 
 	if !ctx.Editor {
@@ -403,7 +403,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 // Remove moves documents to another space before deleting it
 func (h *Handler) Remove(w http.ResponseWriter, r *http.Request) {
-	method := "space.Remove"
+	method := "space.remove"
 	ctx := domain.GetRequestContext(r)
 
 	if !h.Runtime.Product.License.IsValid() {
@@ -477,7 +477,7 @@ func (h *Handler) Remove(w http.ResponseWriter, r *http.Request) {
 
 // Delete removes space.
 func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
-	method := "space.Delete"
+	method := "space.delete"
 	ctx := domain.GetRequestContext(r)
 
 	if !h.Runtime.Product.License.IsValid() {
@@ -512,7 +512,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = h.Store.Space.Delete(ctx, id)
+	_, err = h.Store.Permission.DeleteSpacePermissions(ctx, id)
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
@@ -520,7 +520,8 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = h.Store.Permission.DeleteSpacePermissions(ctx, id)
+	// remove category permissions
+	_, err = h.Store.Permission.DeleteSpaceCategoryPermissions(ctx, id)
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
@@ -530,6 +531,23 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	_, err = h.Store.Pin.DeletePinnedSpace(ctx, id)
 	if err != nil && err != sql.ErrNoRows {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	// remove category and members for space
+	_, err = h.Store.Category.DeleteBySpace(ctx, id)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	_, err = h.Store.Space.Delete(ctx, id)
+	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)

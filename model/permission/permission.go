@@ -113,8 +113,8 @@ type PermissionsModel struct {
 	Permissions []Record
 }
 
-// HasPermission checks if action matches one of the required actions?
-func HasPermission(action Action, actions ...Action) bool {
+// ContainsPermission checks if action matches one of the required actions?
+func ContainsPermission(action Action, actions ...Action) bool {
 	for _, a := range actions {
 		if action == a {
 			return true

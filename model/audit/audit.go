@@ -67,4 +67,9 @@ const (
 	EventTypeSystemSMTP         EventType = "changed-system-smtp"
 	EventTypeSessionStart       EventType = "started-session"
 	EventTypeSearch             EventType = "searched"
+	EventTypeCategoryAdd        EventType = "added-category"
+	EventTypeCategoryDelete     EventType = "removed-category"
+	EventTypeCategoryUpdate     EventType = "updated-category"
+	EventTypeCategoryLink       EventType = "linked-category"
+	EventTypeCategoryUnlink     EventType = "unlinked-category"
 )

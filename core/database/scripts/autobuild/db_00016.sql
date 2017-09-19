@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS `category` (
 	`labelid` CHAR(16) NOT NULL COLLATE utf8_bin,
 	`category` VARCHAR(30) NOT NULL,
 	`created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	`revised` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	UNIQUE INDEX `idx_category_id` (`id` ASC),
 	INDEX `idx_category_refid` (`refid` ASC),
 	INDEX `idx_category_orgid` (`orgid` ASC))
@@ -47,8 +48,11 @@ CREATE TABLE IF NOT EXISTS `categorymember` (
 	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
 	`refid` CHAR(16) NOT NULL COLLATE utf8_bin,
 	`orgid` CHAR(16) NOT NULL COLLATE utf8_bin,
+	`labelid` CHAR(16) NOT NULL COLLATE utf8_bin,
 	`categoryid` CHAR(16) NOT NULL COLLATE utf8_bin,
 	`documentid` CHAR(16) NOT NULL COLLATE utf8_bin,
+	`created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	`revised` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	UNIQUE INDEX `idx_categorymember_id` (`id` ASC),
 	INDEX `idx_category_documentid` (`documentid`))
     DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci

@@ -134,3 +134,24 @@ func (s Scope) DeleteUserPermissions(ctx domain.RequestContext, userID string) (
 
 	return b.DeleteWhere(ctx.Transaction, sql)
 }
+
+// DeleteCategoryPermissions removes records from permissions table for given category ID.
+func (s Scope) DeleteCategoryPermissions(ctx domain.RequestContext, categoryID string) (rows int64, err error) {
+	b := mysql.BaseQuery{}
+
+	sql := fmt.Sprintf("DELETE FROM permission WHERE orgid='%s' AND location='category' AND refid='%s'", ctx.OrgID, categoryID)
+
+	return b.DeleteWhere(ctx.Transaction, sql)
+}
+
+// DeleteSpaceCategoryPermissions removes all category permission for for given space.
+func (s Scope) DeleteSpaceCategoryPermissions(ctx domain.RequestContext, spaceID string) (rows int64, err error) {
+	b := mysql.BaseQuery{}
+
+	sql := fmt.Sprintf(`
+		DELETE FROM permission WHERE orgid='%s' AND location='category' 
+			AND refid IN (SELECT refid FROM category WHERE orgid='%s' AND labelid='%s')`,
+		ctx.OrgID, ctx.OrgID, spaceID)
+
+	return b.DeleteWhere(ctx.Transaction, sql)
+}

@@ -1,0 +1,53 @@
+<div class="space-settings">
+	<div class="panel">
+		<div class="form-header">
+			<div class="title">Categories</div>
+			<div class="tip">Organize and secure document access with optional categories</div>
+		</div>
+		<form id="category-form" {{action 'onAdd' on='submit'}}>
+			<div class="input-control">
+				<div class="category-table">
+					{{#each category as |cat|}}
+						<div class="row">
+							{{#if cat.editMode}}
+								<div class="input-control input-transparent width-60">
+									{{focus-input id=(concat 'edit-category-' cat.id) type="text" value=cat.category class="input-inline"}}
+								</div>
+							{{else}}
+								<div class="category">{{cat.category}}</div>
+							{{/if}}
+							<div class="pull-right">
+								{{#if cat.editMode}}
+									<button type="submit" class="round-button-mono" {{action 'onSave' cat.id}}>
+										<i class="material-icons color-green">check</i>
+									</button>
+									<div class="round-button-mono" {{action 'onCancel' cat.id}}>
+										<i class="material-icons color-gray">close</i>
+									</div>
+								{{else}}
+									<div {{action 'onEdit' cat.id}} class="action round-button-mono button-white">
+										<i class="material-icons">edit</i>
+									</div>
+									<div id="{{concat 'delete-category-' cat.id}}" class="action round-button-mono button-white">
+										<i class="material-icons">delete</i>
+									</div>
+									{{#dropdown-dialog target=(concat 'delete-category-' cat.id) position="bottom right" button="Delete" color="flat-red" onAction=(action 'onDelete' cat.id)}}
+										<p>Are you sure you want to delete category <b>{{cat.category}}?</b></p>
+									{{/dropdown-dialog}}
+								{{/if}}
+							</div>
+						</div>
+					{{else}}
+						<div class="margin-top-30"><i>No categories defined yet</i></div>
+					{{/each}}
+				</div>
+				<div class="input-control margin-top-50">
+					<label>Add Category</label>
+					<div class="tip">Provide a short name</div>
+					{{focus-input id="new-category-name" type="text" value=newCategory}}
+				</div>
+			</div>
+			<div class="regular-button button-blue" {{action 'onAdd'}}>add</div>
+		</form>
+	</div>
+</div>

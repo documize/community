@@ -20,6 +20,7 @@ import (
 	"github.com/documize/community/domain/auth"
 	"github.com/documize/community/domain/auth/keycloak"
 	"github.com/documize/community/domain/block"
+	"github.com/documize/community/domain/category"
 	"github.com/documize/community/domain/conversion"
 	"github.com/documize/community/domain/document"
 	"github.com/documize/community/domain/link"
@@ -54,6 +55,7 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	block := block.Handler{Runtime: rt, Store: s}
 	section := section.Handler{Runtime: rt, Store: s}
 	setting := setting.Handler{Runtime: rt, Store: s}
+	category := category.Handler{Runtime: rt, Store: s}
 	keycloak := keycloak.Handler{Runtime: rt, Store: s}
 	template := template.Handler{Runtime: rt, Store: s, Indexer: indexer}
 	document := document.Handler{Runtime: rt, Store: s, Indexer: indexer}
@@ -124,6 +126,12 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	Add(rt, RoutePrefixPrivate, "space", []string{"GET", "OPTIONS"}, nil, space.GetAll)
 	Add(rt, RoutePrefixPrivate, "space/{spaceID}", []string{"GET", "OPTIONS"}, nil, space.Get)
 	Add(rt, RoutePrefixPrivate, "space/{spaceID}", []string{"PUT", "OPTIONS"}, nil, space.Update)
+
+	Add(rt, RoutePrefixPrivate, "category/space/{spaceID}", []string{"GET", "OPTIONS"}, []string{"filter", "all"}, category.GetAll)
+	Add(rt, RoutePrefixPrivate, "category/space/{spaceID}", []string{"GET", "OPTIONS"}, nil, category.Get)
+	Add(rt, RoutePrefixPrivate, "category", []string{"POST", "OPTIONS"}, nil, category.Add)
+	Add(rt, RoutePrefixPrivate, "category/{categoryID}", []string{"PUT", "OPTIONS"}, nil, category.Update)
+	Add(rt, RoutePrefixPrivate, "category/{categoryID}", []string{"DELETE", "OPTIONS"}, nil, category.Delete)
 
 	Add(rt, RoutePrefixPrivate, "users/{userID}/password", []string{"POST", "OPTIONS"}, nil, user.ChangePassword)
 	Add(rt, RoutePrefixPrivate, "users", []string{"POST", "OPTIONS"}, nil, user.Add)

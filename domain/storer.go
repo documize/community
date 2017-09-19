@@ -18,6 +18,7 @@ import (
 	"github.com/documize/community/model/attachment"
 	"github.com/documize/community/model/audit"
 	"github.com/documize/community/model/block"
+	"github.com/documize/community/model/category"
 	"github.com/documize/community/model/doc"
 	"github.com/documize/community/model/link"
 	"github.com/documize/community/model/org"
@@ -36,6 +37,7 @@ type Store struct {
 	Attachment   AttachmentStorer
 	Audit        AuditStorer
 	Block        BlockStorer
+	Category     CategoryStorer
 	Document     DocumentStorer
 	Link         LinkStorer
 	Organization OrganizationStorer
@@ -59,6 +61,20 @@ type SpaceStorer interface {
 	Delete(ctx RequestContext, id string) (rows int64, err error)
 }
 
+// CategoryStorer defines required methods for category and category membership management
+type CategoryStorer interface {
+	Add(ctx RequestContext, c category.Category) (err error)
+	Update(ctx RequestContext, c category.Category) (err error)
+	Get(ctx RequestContext, id string) (c category.Category, err error)
+	GetBySpace(ctx RequestContext, spaceID string) (c []category.Category, err error)
+	GetAllBySpace(ctx RequestContext, spaceID string) (c []category.Category, err error)
+	Delete(ctx RequestContext, id string) (rows int64, err error)
+	AssociateDocument(ctx RequestContext, m category.Member) (err error)
+	DisassociateDocument(ctx RequestContext, categoryID, documentID string) (rows int64, err error)
+	RemoveCategoryMembership(ctx RequestContext, categoryID string) (rows int64, err error)
+	DeleteBySpace(ctx RequestContext, spaceID string) (rows int64, err error)
+}
+
 // PermissionStorer defines required methods for space/document permission management
 type PermissionStorer interface {
 	AddPermission(ctx RequestContext, r permission.Permission) (err error)
@@ -68,6 +84,8 @@ type PermissionStorer interface {
 	DeleteSpacePermissions(ctx RequestContext, spaceID string) (rows int64, err error)
 	DeleteUserSpacePermissions(ctx RequestContext, spaceID, userID string) (rows int64, err error)
 	DeleteUserPermissions(ctx RequestContext, userID string) (rows int64, err error)
+	DeleteCategoryPermissions(ctx RequestContext, categoryID string) (rows int64, err error)
+	DeleteSpaceCategoryPermissions(ctx RequestContext, spaceID string) (rows int64, err error)
 }
 
 // UserStorer defines required methods for user management

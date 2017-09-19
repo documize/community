@@ -20,6 +20,7 @@ import (
 	attachment "github.com/documize/community/domain/attachment/mysql"
 	audit "github.com/documize/community/domain/audit/mysql"
 	block "github.com/documize/community/domain/block/mysql"
+	category "github.com/documize/community/domain/category/mysql"
 	doc "github.com/documize/community/domain/document/mysql"
 	link "github.com/documize/community/domain/link/mysql"
 	org "github.com/documize/community/domain/organization/mysql"
@@ -39,6 +40,7 @@ func StoreMySQL(r *env.Runtime, s *domain.Store) {
 	s.Attachment = attachment.Scope{Runtime: r}
 	s.Audit = audit.Scope{Runtime: r}
 	s.Block = block.Scope{Runtime: r}
+	s.Category = category.Scope{Runtime: r}
 	s.Document = doc.Scope{Runtime: r}
 	s.Link = link.Scope{Runtime: r}
 	s.Organization = org.Scope{Runtime: r}
