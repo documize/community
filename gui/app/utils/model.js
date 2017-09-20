@@ -202,7 +202,6 @@ export default {
 	AttachmentModel,
 	DocumentModel,
 	FolderModel,
-	FolderPermissionModel,
 	OrganizationModel,
 	PageModel,
 	PageMetaModel,
