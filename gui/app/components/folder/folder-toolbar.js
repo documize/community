@@ -44,12 +44,18 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 		let folder = this.get('folder');
 		this.set('pinState.pinId', this.get('pinned').isSpacePinned(folder.get('id')));
 		this.set('pinState.isPinned', this.get('pinState.pinId') !== '');
-		this.set('pinState.newName', folder.get('name').substring(0,3).toUpperCase());
+		this.set('pinState.newName', folder.get('name'));
 
 		this.set('movedFolderOptions', targets);
 	},
 
 	didRender() {
+		this.renderTooltips();
+	},
+
+	renderTooltips() {
+		this.destroyTooltips();
+
 		if (this.get('hasSelectedDocuments')) {
 			if (this.get('permissions.documentMove')) {
 				this.addTooltip(document.getElementById("move-documents-button"));
@@ -65,21 +71,18 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 				this.addTooltip(document.getElementById("space-settings-button"));
 			}
 			if (this.get('session.authenticated')) {
-				let t = this.get('pinState.tip');
-				if (is.not.null(t)) {
-					t.destroy();
-				}
-
-				if (this.get('pinState.isPinned')) {
-					this.set('pinState.tip', this.addTooltip(document.getElementById("space-unpin-button")))
-				} else {
-					this.set('pinState.tip', this.addTooltip(document.getElementById("space-pin-button")))
-				}
+					this.addTooltip(document.getElementById("space-unpin-button"));
+			} else {
+				this.addTooltip(document.getElementById("space-pin-button"));
 			}
 		}
 	},
 
 	willDestroyElement() {
+		if (this.get('isDestroyed') || this.get('isDestroying')) {
+			return;
+		}
+
 		if (is.not.null(this.get('drop'))) {
 			this.get('drop').destroy();
 			this.set('drop', null);
@@ -94,6 +97,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 				this.set('pinState.isPinned', false);
 				this.set('pinState.pinId', '');
 				this.eventBus.publish('pinChange');
+				this.renderTooltips();
 			});
 		},
 
@@ -113,6 +117,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 				this.set('pinState.isPinned', true);
 				this.set('pinState.pinId', pin.get('id'));
 				this.eventBus.publish('pinChange');
+				this.renderTooltips();
 			});
 
 			return true;

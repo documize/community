@@ -35,10 +35,14 @@ export default Ember.Mixin.create({
     },
 
     destroyTooltips() {
-        let tt = this.get('tooltips');
+		if (this.get('isDestroyed') || this.get('isDestroying')) {
+			return;
+		}
+
+		let tt = this.get('tooltips');
 
         tt.forEach(t => {
-            t.destroy();
+			t.destroy();
         });
 
         tt.length = 0;

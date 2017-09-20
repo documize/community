@@ -42,11 +42,11 @@
 	{{else}}
 
 		{{#if pinState.isPinned}}
-			<div class="round-button button-gray" id="space-unpin-button" data-tooltip="Unpin space" data-tooltip-position="top center" {{action 'onUnpin'}}>
+			<div class="round-button button-gray" id="space-unpin-button" data-tooltip="Remove favorite" data-tooltip-position="top center" {{action 'onUnpin'}}>
 				<i class="material-icons">favorite</i>
 			</div>
 		{{else}}
-			<div class="round-button button-gray" id="space-pin-button" data-tooltip="Pin space" data-tooltip-position="top center">
+			<div class="round-button button-gray" id="space-pin-button" data-tooltip="Mark favorite" data-tooltip-position="top center">
 				<i class="material-icons">favorite_border</i>
 			</div>
 		{{/if}}
@@ -68,10 +68,10 @@
 		{{/if}}
 
 		{{#unless pinState.isPinned}}
-			{{#dropdown-dialog target="space-pin-button" position="bottom right" button="Pin" color="flat-green" onAction=(action 'onPin') focusOn="pin-space-name" }}
+			{{#dropdown-dialog target="space-pin-button" position="bottom right" button="Pin" color="flat-green" onAction=(action 'onPin') focusOn="pin-space-name"}}
 				<div class="input-control">
-					<label>Pin Space</label>
-					<div class="tip">A 3 or 4 character name</div>
+					<label>Favorite Space</label>
+					<div class="tip">Provide short name</div>
 					{{input type='text' id="pin-space-name" value=pinState.newName}}
 				</div>
 			{{/dropdown-dialog}}
