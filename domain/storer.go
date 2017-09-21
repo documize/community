@@ -86,6 +86,8 @@ type PermissionStorer interface {
 	DeleteUserPermissions(ctx RequestContext, userID string) (rows int64, err error)
 	DeleteCategoryPermissions(ctx RequestContext, categoryID string) (rows int64, err error)
 	DeleteSpaceCategoryPermissions(ctx RequestContext, spaceID string) (rows int64, err error)
+	GetCategoryPermissions(ctx RequestContext, catID string) (r []permission.Permission, err error)
+	GetCategoryUsers(ctx RequestContext, catID string) (u []user.User, err error)
 }
 
 // UserStorer defines required methods for user management

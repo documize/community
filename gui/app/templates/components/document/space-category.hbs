@@ -1,0 +1,14 @@
+<div class="back-to-space">
+	{{#link-to 'folder' folder.id folder.slug}}
+		<div class="regular-button button-gray">
+			<i class="material-icons">arrow_back</i>
+			<div class="name">{{folder.name}}</div>
+		</div>
+	{{/link-to}}
+</div>
+
+<div class="document-category hide">
+	<div class="chip chip-action">
+		<span id="upload-document-files" class="chip-text">+ category</span>
+	</div>
+</div>

@@ -1,0 +1,41 @@
+.widget-list-picker {
+	margin: 10px 0;
+
+	> .options {
+		width: 300px;
+		max-height: 400px;
+		overflow: auto;
+
+		> .option {
+			margin: 0 0 5px 0;
+			padding: 10px 15px;
+			color: $color-gray;
+			background-color: $color-off-white;
+			cursor: pointer;
+			position: relative;
+
+			&:hover {
+				color: $color-white;
+				background-color: $color-gray;
+			}
+
+			> .text {
+				width: 220px;
+				overflow: hidden;
+				font-weight: bold;
+			}
+
+			> .material-icons {
+				position: absolute;
+				top: 10px;
+				right: 10px;
+				color: $color-white;
+			}
+		}
+
+		> .selected {
+			color: $color-white !important;
+			background-color: $color-link !important;
+		}
+	}
+}

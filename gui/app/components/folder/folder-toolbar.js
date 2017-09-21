@@ -60,6 +60,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 			if (this.get('permissions.documentMove')) {
 				this.addTooltip(document.getElementById("move-documents-button"));
 			}
+
 			if (this.get('permissions.documentDelete')) {
 				this.addTooltip(document.getElementById("delete-documents-button"));
 			}
@@ -67,11 +68,13 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 			if (this.get('permissions.spaceOwner')) {
 				this.addTooltip(document.getElementById("space-delete-button"));
 			}
+
 			if (this.get('permissions.spaceManage')) {
 				this.addTooltip(document.getElementById("space-settings-button"));
 			}
-			if (this.get('session.authenticated')) {
-					this.addTooltip(document.getElementById("space-unpin-button"));
+
+			if (this.get('pinState.isPinned')) {
+				this.addTooltip(document.getElementById("space-unpin-button"));
 			} else {
 				this.addTooltip(document.getElementById("space-pin-button"));
 			}

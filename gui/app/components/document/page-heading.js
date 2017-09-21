@@ -76,7 +76,7 @@ export default Ember.Component.extend(TooltipMixin, {
 		let permissions = this.get('permissions');
 
 		return permissions.get('documentDelete') || permissions.get('documentCopy') ||
-			permissions.get('documentMove') || permissions.get('documentTemplate');;
+			permissions.get('documentMove') || permissions.get('documentTemplate');
 	}),
 
 	didRender() {

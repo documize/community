@@ -15,10 +15,9 @@ export default Ember.Mixin.create({
     tooltips: [],
 
     addTooltip(elem) {
-
-        if(elem == null) {
+        if (elem == null) {
             return;
-        }
+		}
 
         let t = new Tooltip({
             target: elem

@@ -1,31 +1,17 @@
-.document-sidebar-view-attachments {
+.document-attachments {
 	margin: 0;
 
 	> .upload-document-files {
-		width: 100%;
-		padding: 20px;
-		margin-bottom: 20px;
-		text-align: center;
-		color: $color-gray;
-		border: 1px solid $color-stroke;
-		cursor: pointer;
-		font-size: 0.9rem;
-		line-height: 1.7rem;
+		margin: 10px 0 0 0;
 		@include ease-in();
 
-		&:hover {
-			border-color: $color-link;
-			color: $color-link;
-		}
-
-		 > .dz-preview,
-		.dz-processing {
+		> .dz-preview, .dz-processing {
 			display: none !important;
 		}
 	}
 
 	> .list {
-		margin: 0 0 50px;
+		margin: 20px 0 0 0;
 		padding: 7px 0;
 
 		> .item {
@@ -45,7 +31,7 @@
 
 			> a {
 				@extend .truncate;
-				width: 200px;
+				width: 80%;
 				color: $color-gray;
 
 				&:hover {
@@ -56,7 +42,8 @@
 					@extend .truncate;
 					display: inline-block;
 					font-size: 0.9rem;
-					width: 200px;
+					width: 80%;
+					vertical-align: text-top;
 				}
 			}
 

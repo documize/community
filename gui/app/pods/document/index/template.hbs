@@ -1,27 +1,44 @@
 {{#layout/zone-container}}
+
 	{{#layout/zone-sidebar}}
-		{{document/sidebar-zone folders=model.folders folder=model.folder document=model.document
-			pages=model.pages sections=model.section links=model.links permissions=model.permissions tab=tab
-			onDocumentDelete=(action 'onDocumentDelete') onSaveTemplate=(action 'onSaveTemplate')
+		{{document/document-index
+			document=model.document folder=model.folder pages=model.pages page=model.page permissions=model.permissions
 			onPageSequenceChange=(action 'onPageSequenceChange') onPageLevelChange=(action 'onPageLevelChange')
 			onGotoPage=(action 'onGotoPage')}}
 	{{/layout/zone-sidebar}}
+
 	{{#layout/zone-content}}
 		<div id="zone-document-content" class="zone-document-content">
-			<div class="back-to-space">
-				{{#link-to 'folder' model.folder.id model.folder.slug}}
-					<div class="regular-button button-gray">
-						<i class="material-icons">arrow_back</i>
-						<div class="name">{{model.folder.name}}</div>
-					</div>
-				{{/link-to}}
+
+			<div class="pull-left">
+				{{document/space-category document=model.document folder=model.folder folders=model.folders permissions=model.permissions}}
 			</div>
+
+			<div class="pull-right">
+				{{document/document-toolbar
+					document=model.document folder=model.folder folders=model.folders permissions=model.permissions
+					onDocumentDelete=(action 'onDocumentDelete') onSaveTemplate=(action 'onSaveTemplate')
+					onPageSequenceChange=(action 'onPageSequenceChange') onPageLevelChange=(action 'onPageLevelChange')
+					onGotoPage=(action 'onGotoPage')}}
+			</div>
+			<div class="clearfix"/>
+
+			{{#if model.document.template}}
+				<div class="document-template-header">Template</div>
+			{{/if}}
+
 			{{document/document-heading document=model.document permissions=model.permissions onSaveDocument=(action 'onSaveDocument')}}
-			{{document/document-view document=model.document links=model.links pages=model.pages
+
+			{{document/tag-editor documentTags=model.document.tags permissions=model.permissions onChange=(action 'onTagChange')}}
+
+			{{document/document-view
+				document=model.document links=model.links pages=model.pages
 				folder=model.folder folders=model.folders sections=model.sections permissions=model.permissions pageId=pageId
 				onSavePage=(action 'onSavePage') onInsertSection=(action 'onInsertSection')
 				onSavePageAsBlock=(action 'onSavePageAsBlock') onDeleteBlock=(action 'onDeleteBlock') onGotoPage=(action 'onGotoPage')
 				onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onPageDeleted')}}
+
 		</div>
 	{{/layout/zone-content}}
+
 {{/layout/zone-container}}

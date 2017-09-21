@@ -58,48 +58,6 @@ $sidebar-width: 400px;
     #sidebar-wrapper {
         width: $sidebar-width;
     }
-
-    // #page-content-wrapper {
-    //     padding: 30px;
-    //     position: relative;
-    // }
-}
-
-.sidebar-toolbar {
-	display: inline-block;
-    width: 60px;
-    background-color: $color-primary;
-    text-align: center;
-    position: fixed;
-    left: 0;
-    top: 0;
-    height: 100%;
-	padding: 40px 0 0 0;
-
-    > .selected {
-        background-color: $color-link !important;
-        border: 1px solid $color-link !important;
-
-        > .material-icons {
-			color: $color-white !important;
-        }
-    }
-
-    > .round-button-mono {
-        background-color: $color-off-white;
-        border: 1px solid $color-off-white;
-
-        > .material-icons {
-			@include ease-in();
-			color: $color-gray;
-        }
-
-		&:hover {
-			> .material-icons {
-				color: $color-link;
-			}
-		}
-    }
 }
 
 .sidebar-common {
@@ -107,20 +65,6 @@ $sidebar-width: 400px;
 	width: 340px;
 	padding: 40px 20px 0px 20px;
 	margin-left: 20px;
-
-    > .pinner {
-        cursor: pointer;
-
-        > .material-icons {
-            color: $color-primary;
-        }
-    }
-
-	> .template-header {
-		color: $color-goldy;
-		font-size: 1.5em;
-		margin-bottom: 20px;
-	}
 
     .zone-sidebar-page-title {
         color: $color-primary;
@@ -150,7 +94,7 @@ $sidebar-width: 400px;
             margin-bottom: 30px;
         }
 
-        .folder-sidebar-form-wrapper, .document-sidebar-form-wrapper {
+        .document-sidebar-form-wrapper {
             padding: 20px;
             border: 1px solid $color-stroke;
             @include border-radius(3px);

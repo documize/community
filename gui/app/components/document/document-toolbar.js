@@ -31,38 +31,31 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 		name: "",
 		description: ""
 	},
-	tab: '',
 
 	init() {
 		this._super(...arguments);
-
-		if (is.empty(this.get('tab')) || is.undefined(this.get('tab'))) {
-			this.set('tab', 'index');
-		}
 	},
 
 	didReceiveAttrs() {
 		this._super(...arguments);
-		
+
 		this.set('saveTemplate.name', this.get('document.name'));
 		this.set('saveTemplate.description', this.get('document.excerpt'));
-		
+
 		this.set('pinState.pinId', this.get('pinned').isDocumentPinned(this.get('document.id')));
 		this.set('pinState.isPinned', this.get('pinState.pinId') !== '');
-		this.set('pinState.newName', this.get('document.name').substring(0,3).toUpperCase());	
+		this.set('pinState.newName', this.get('document.name'));
+	},
+
+	didRender() {
+		this.destroyTooltips();
+
+		if (this.get('permissions.documentEdit')) {
+			this.addTooltip(document.getElementById("document-activity-button"));
+		}
 	},
 
     actions: {
-		onChangeTab(tab) {
-			this.set('tab', tab);
-		},
-
-		onTagChange(tags) {
-			let doc = this.get('document');
-			doc.set('tags', tags);
-			this.get('documentService').save(doc);
-		},
-
 		onMenuOpen() {
 			this.set('menuOpen', !this.get('menuOpen'));
 		},
@@ -78,15 +71,15 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 
 		onPageSequenceChange(changes) {
 			this.get('onPageSequenceChange')(changes);
-		},	
+		},
 
 		onPageLevelChange(changes) {
 			this.get('onPageLevelChange')(changes);
-		},	
+		},
 
 		onGotoPage(id) {
 			this.get('onGotoPage')(id);
-		},	
+		},
 
 		onUnpin() {
 			this.get('pinned').unpinItem(this.get('pinState.pinId')).then(() => {
@@ -136,12 +129,15 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 
 			return true;
 		},
-		
+
 		onLayoutChange(layout) {
 			let doc = this.get('document');
 			doc.set('layout', layout);
-			this.get('documentService').save(doc);
-			
+
+			if (this.get('permissions.documentEdit')) {
+				this.get('documentService').save(doc);
+			}
+
 			return true;
 		}
     }

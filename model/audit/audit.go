@@ -40,6 +40,7 @@ const (
 	EventTypeSpacePermission    EventType = "changed-space-permissions"
 	EventTypeSpaceJoin          EventType = "joined-space"
 	EventTypeSpaceInvite        EventType = "invited-space"
+	EventTypeCategoryPermission EventType = "changed-category-permissions"
 	EventTypeSectionAdd         EventType = "added-document-section"
 	EventTypeSectionUpdate      EventType = "updated-document-section"
 	EventTypeSectionDelete      EventType = "removed-document-section"

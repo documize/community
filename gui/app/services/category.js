@@ -83,5 +83,30 @@ export default BaseService.extend({
 		return this.get('ajax').request(`category/${categoryId}`, {
 			method: 'DELETE'
 		});
-	}
+	},
+
+	// Get list of users who can see given category
+	getViewers(categoryId) {
+		return this.get('ajax').request(`category/${categoryId}/permission`, {
+			method: 'GET'
+		}).then((response) => {
+			let data = [];
+
+			data = response.map((obj) => {
+				let data = this.get('store').normalize('user', obj);
+				return this.get('store').push(data);
+			});
+
+			return data;
+		});
+	},
+
+	// Save list of users who can see given category
+	setViewers(categoryId, viewers) {
+		return this.get('ajax').request(`category/${categoryId}/permission`, {
+			method: 'PUT',
+			contentType: 'json',
+			data: JSON.stringify(viewers)
+		});
+	},
 });

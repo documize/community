@@ -9,7 +9,7 @@
     {{/each}}
     {{#if canAdd}}
 		<div class="chip-action">
-			<span id="add-tag-button" class="chip-text">add tag</span>
+			<span id="add-tag-button" class="chip-text">+ tag</span>
 		</div>
 		{{#dropdown-dialog target="add-tag-button" position="bottom left" button="Add" color="flat-green" onAction=(action 'addTag') focusOn="add-tag-field" onOpenCallback=(action 'onTagEditor') targetOffset="20px 0"}}
 			<div class="input-control">

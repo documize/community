@@ -69,7 +69,7 @@ export default Ember.Component.extend(NotifierMixin, {
 				documentMove: false,
 				documentCopy: false,
 				documentTemplate: false
-		};
+			};
 
 			let data = this.get('store').normalize('space-permission', u)
 			folderPermissions.pushObject(this.get('store').push(data));

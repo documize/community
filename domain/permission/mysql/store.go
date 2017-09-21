@@ -22,6 +22,7 @@ import (
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/store/mysql"
 	"github.com/documize/community/model/permission"
+	"github.com/documize/community/model/user"
 	"github.com/pkg/errors"
 )
 
@@ -154,4 +155,51 @@ func (s Scope) DeleteSpaceCategoryPermissions(ctx domain.RequestContext, spaceID
 		ctx.OrgID, ctx.OrgID, spaceID)
 
 	return b.DeleteWhere(ctx.Transaction, sql)
+}
+
+// GetCategoryPermissions returns category permissions for all users.
+func (s Scope) GetCategoryPermissions(ctx domain.RequestContext, catID string) (r []permission.Permission, err error) {
+	err = s.Runtime.Db.Select(&r, `
+		SELECT id, orgid, who, whoid, action, scope, location, refid
+			FROM permission WHERE orgid=? AND location='category' AND refid=? AND who='user'
+		UNION ALL
+		SELECT p.id, p.orgid, p.who, p.whoid, p.action, p.scope, p.location, p.refid
+			FROM permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.location='space' AND p.refid=? 
+			AND p.who='role'`,
+		ctx.OrgID, catID, ctx.OrgID, catID)
+
+	if err == sql.ErrNoRows {
+		err = nil
+	}
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("unable to execute select category permissions %s", catID))
+		return
+	}
+
+	return
+}
+
+// GetCategoryUsers returns space permissions for all users.
+func (s Scope) GetCategoryUsers(ctx domain.RequestContext, catID string) (u []user.User, err error) {
+	err = s.Runtime.Db.Select(&u, `
+		SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.password, u.salt, u.reset, u.created, u.revised
+		FROM user u, account a
+		WHERE a.orgid=? AND u.refid = a.userid AND a.active=1 AND u.refid IN (
+			SELECT whoid from permission WHERE orgid=? AND who='user' AND location='category' AND refid=? UNION ALL
+			SELECT r.userid from rolemember r LEFT JOIN permission p ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' 
+				AND p.location='category' AND p.refid=?
+		)
+		GROUP by u.id
+		ORDER BY firstname, lastname`,
+		ctx.OrgID, ctx.OrgID, catID, ctx.OrgID, catID)
+
+	if err == sql.ErrNoRows {
+		err = nil
+	}
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("unable to execute select category user %s", catID))
+		return
+	}
+
+	return
 }

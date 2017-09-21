@@ -30,6 +30,7 @@ import (
 	"github.com/documize/community/model/audit"
 	"github.com/documize/community/model/permission"
 	"github.com/documize/community/model/space"
+	"github.com/documize/community/model/user"
 )
 
 // Handler contains the runtime information such as logging and database.
@@ -43,25 +44,20 @@ func (h *Handler) SetSpacePermissions(w http.ResponseWriter, r *http.Request) {
 	method := "space.SetPermissions"
 	ctx := domain.GetRequestContext(r)
 
-	if !ctx.Editor {
-		response.WriteForbiddenError(w)
-		return
-	}
-
 	id := request.Param(r, "spaceID")
 	if len(id) == 0 {
 		response.WriteMissingDataError(w, method, "spaceID")
 		return
 	}
 
-	sp, err := h.Store.Space.Get(ctx, id)
-	if err != nil {
-		response.WriteNotFoundError(w, method, "space not found")
+	if !HasPermission(ctx, *h.Store, id, permission.SpaceManage, permission.SpaceOwner) {
+		response.WriteForbiddenError(w)
 		return
 	}
 
-	if sp.UserID != ctx.UserID {
-		response.WriteForbiddenError(w)
+	sp, err := h.Store.Space.Get(ctx, id)
+	if err != nil {
+		response.WriteNotFoundError(w, method, "space not found")
 		return
 	}
 
@@ -220,7 +216,7 @@ func (h *Handler) SetSpacePermissions(w http.ResponseWriter, r *http.Request) {
 	response.WriteEmpty(w)
 }
 
-// GetSpacePermissions returns permissions for alll users for given space.
+// GetSpacePermissions returns permissions for all users for given space.
 func (h *Handler) GetSpacePermissions(w http.ResponseWriter, r *http.Request) {
 	method := "space.GetPermissions"
 	ctx := domain.GetRequestContext(r)
@@ -275,4 +271,106 @@ func (h *Handler) GetUserSpacePermissions(w http.ResponseWriter, r *http.Request
 
 	record := permission.DecodeUserPermissions(perms)
 	response.WriteJSON(w, record)
+}
+
+// GetCategoryPermissions returns user permissions for given category.
+func (h *Handler) GetCategoryPermissions(w http.ResponseWriter, r *http.Request) {
+	method := "space.GetCategoryPermissions"
+	ctx := domain.GetRequestContext(r)
+
+	categoryID := request.Param(r, "categoryID")
+	if len(categoryID) == 0 {
+		response.WriteMissingDataError(w, method, "categoryID")
+		return
+	}
+
+	u, err := h.Store.Permission.GetCategoryUsers(ctx, categoryID)
+	if err != nil && err != sql.ErrNoRows {
+		response.WriteServerError(w, method, err)
+		return
+	}
+	if len(u) == 0 {
+		u = []user.User{}
+	}
+
+	response.WriteJSON(w, u)
+}
+
+// SetCategoryPermissions persists specified category permissions
+func (h *Handler) SetCategoryPermissions(w http.ResponseWriter, r *http.Request) {
+	method := "permission.SetCategoryPermissions"
+	ctx := domain.GetRequestContext(r)
+
+	id := request.Param(r, "categoryID")
+	if len(id) == 0 {
+		response.WriteMissingDataError(w, method, "categoryID")
+		return
+	}
+
+	defer streamutil.Close(r.Body)
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	var model = []permission.CategoryViewRequestModel{}
+	err = json.Unmarshal(body, &model)
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	if len(model) == 0 {
+		response.WriteEmpty(w)
+		return
+	}
+
+	spaceID := model[0].SpaceID
+	if !HasPermission(ctx, *h.Store, spaceID, permission.SpaceManage, permission.SpaceOwner) {
+		response.WriteForbiddenError(w)
+		return
+	}
+
+	ctx.Transaction, err = h.Runtime.Db.Beginx()
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	// Nuke all previous permissions for this category
+	_, err = h.Store.Permission.DeleteCategoryPermissions(ctx, id)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	for _, m := range model {
+		perm := permission.Permission{}
+		perm.OrgID = ctx.OrgID
+		perm.Who = "user"
+		perm.WhoID = m.UserID
+		perm.Scope = "object"
+		perm.Location = "category"
+		perm.RefID = m.CategoryID
+		perm.Action = permission.CategoryView
+
+		err = h.Store.Permission.AddPermission(ctx, perm)
+		if err != nil {
+			ctx.Transaction.Rollback()
+			response.WriteServerError(w, method, err)
+			return
+		}
+	}
+
+	h.Store.Audit.Record(ctx, audit.EventTypeCategoryPermission)
+
+	ctx.Transaction.Commit()
+
+	response.WriteEmpty(w)
 }

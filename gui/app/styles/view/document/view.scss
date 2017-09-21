@@ -8,7 +8,7 @@
 	.doc-excerpt {
 		font-size: 1rem;
 		color: $color-gray;
-		margin: 0 0 45px;
+		margin: 0 0 60px;
 	}
 
 	.edit-document-heading {
@@ -340,4 +340,26 @@
 
 .dropdown-page-toolbar {
 	width: 300px;
+}
+
+.document-toolbar {
+	> .round-button-mono {
+		background-color: $color-white;
+		border: 1px solid $color-gray;
+
+		> .material-icons {
+			@include ease-in();
+			color: $color-gray;
+		}
+	}
+}
+
+.document-template-header {
+	color: $color-goldy;
+	font-size: 1.5em;
+	margin-bottom: 20px;
+}
+
+.document-tags {
+	margin-top: 15px;
 }

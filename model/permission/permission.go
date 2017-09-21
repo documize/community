@@ -16,7 +16,7 @@ import "time"
 // Permission represents a permission for a space and is persisted to the database.
 type Permission struct {
 	ID       uint64    `json:"id"`
-	OrgID    string    `json:"-"`
+	OrgID    string    `json:"orgId"`
 	Who      string    `json:"who"`      // user, role
 	WhoID    string    `json:"whoId"`    // either a user or role ID
 	Action   Action    `json:"action"`   // view, edit, delete
@@ -49,6 +49,9 @@ const (
 	DocumentCopy Action = "doc-copy"
 	// DocumentTemplate means you can create, edit and delete document templates and content blocks
 	DocumentTemplate Action = "doc-template"
+
+	// CategoryView action means you can view a category and documents therein
+	CategoryView Action = "view"
 )
 
 // Record represents space permissions for a user on a space.
@@ -177,4 +180,12 @@ func EncodeRecord(r Record, a Action) (p Permission) {
 	p.Scope = "object" // default to row level permission
 
 	return
+}
+
+// CategoryViewRequestModel represents who should be allowed to see a category.
+type CategoryViewRequestModel struct {
+	OrgID      string `json:"orgId"`
+	SpaceID    string `json:"folderId"`
+	CategoryID string `json:"categoryID"`
+	UserID     string `json:"userId"`
 }

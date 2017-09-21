@@ -226,6 +226,12 @@ export default Ember.Controller.extend(NotifierMixin, {
 			if (this.get('pageId') !== id && id !== '') {
 				this.set('pageId', id);
 			}
+		},
+
+		onTagChange(tags) {
+			let doc = this.get('model.document');
+			doc.set('tags', tags);
+			this.get('documentService').save(doc);
 		}
 	}
 });

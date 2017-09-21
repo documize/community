@@ -17,7 +17,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	documentService: Ember.inject.service('document'),
 	appMeta: Ember.inject.service(),
 	drop: null,
-	emptyState: Ember.computed.empty('files'),
+	hasAttachments: Ember.computed.notEmpty('files'),
 	deleteAttachment: {
 		id: "",
 		name: "",
@@ -104,7 +104,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 				target: $(".delete-attachment-" + id)[0],
 				content: $(".delete-attachment-dialog")[0],
 				classes: 'drop-theme-basic',
-				position: "bottom left",
+				position: "bottom right",
 				openOn: "always",
 				tetherOptions: {
 					offset: "5px 0",

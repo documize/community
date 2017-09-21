@@ -15,7 +15,7 @@ import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-rout
 export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	beforeModel: function (transition) {
 		if (is.equal(transition.targetName, 'folder.settings.index')) {
-			this.transitionTo('folder.settings.security');
+			this.transitionTo('folder.settings.invitation');
 		}
 	},
 

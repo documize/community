@@ -43,15 +43,26 @@
 
 		> .row {
 			margin: 15px 0;
-			padding: 8px 10px;
+			padding: 15px;
 			background-color: $color-off-white;
 			@include border-radius(2px);
 
 			> .category {
-				font-size: 1.2rem;
-				vertical-align: bottom;
 				display: inline-block;
-				margin-top: 8px;
+
+				> .name {
+					font-size: 1.2rem;
+				}
+
+				> .info {
+					font-size: 0.9rem;
+					margin-top: 8px;
+					color: $color-gray;
+				}
+			}
+
+			> .buttons {
+				margin-top: 5px;
 			}
 
 			> .action {
@@ -63,7 +74,7 @@
 				display: inline-block;
 
 				> input {
-					margin: 0;
+					margin: 0 0 8px 0;
 					padding: 0;
 					font-size: 1.2rem;
 				}
@@ -72,3 +83,6 @@
 	}
 }
 
+.category-access-dialog {
+	display: none;
+}
