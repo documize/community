@@ -40,11 +40,12 @@
 				.content {
 					> p {
 	                    margin: 7px 0;
-	                    font-size: 0.9em;
+	                    font-size: 1rem;
 	                }
 
 					> .heading {
-						font-weight: bold;
+						line-height: 3rem;
+						font-size: 1.2rem;
 					}
 				}
 

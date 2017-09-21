@@ -12,18 +12,19 @@
 import Ember from 'ember';
 import NotifierMixin from '../../mixins/notifier';
 import TooltipMixin from '../../mixins/tooltip';
+import DropdownMixin from '../../mixins/dropdown';
 
 const {
 	inject: { service }
 } = Ember;
 
-export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
+export default Ember.Component.extend(NotifierMixin, TooltipMixin, DropdownMixin, {
 	userService: service('user'),
 	categoryService: service('category'),
 	appMeta: service(),
 	store: service(),
 	newCategory: '',
-	drop: null,
+	dropdown: null,
 	users: [],
 
 	didReceiveAttrs() {
@@ -35,11 +36,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	},
 
 	willDestroyElement() {
-		let drop = this.get('drop');
-
-		if (is.not.null(drop)) {
-			drop.destroy();
-		}
+		this.destroyDropdown();
 	},
 
 	load() {
@@ -131,13 +128,13 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		},
 
 		onShowAccessPicker(catId) {
+			this.closeDropdown();
 			let users = this.get('users');
 			let category = this.get('category').findBy('id', catId);
 
 			this.get('categoryService').getViewers(category.get('id')).then((viewers) => {
 				// mark those users as selected that have already been given permission
 				// to see the current category;
-				console.log(viewers);
 
 				users.forEach((user) => {
 					let selected = viewers.isAny('id', user.get('id'));
@@ -162,13 +159,12 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 					remove: false
 				});
 
-				this.set('drop', drop);
+				this.set('dropdown', drop);
 			});
 		},
 
 		onGrantCancel() {
-			let drop = this.get('drop');
-			drop.close();
+			this.closeDropdown();
 		},
 
 		onGrantAccess() {
@@ -189,8 +185,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
 			this.get('categoryService').setViewers(category.get('id'), viewers).then( () => {});
 
-			let drop = this.get('drop');
-			drop.close();
+			this.closeDropdown();
 		}
 	}
 });
