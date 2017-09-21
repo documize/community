@@ -273,9 +273,9 @@ func (h *Handler) GetUserSpacePermissions(w http.ResponseWriter, r *http.Request
 	response.WriteJSON(w, record)
 }
 
-// GetCategoryPermissions returns user permissions for given category.
-func (h *Handler) GetCategoryPermissions(w http.ResponseWriter, r *http.Request) {
-	method := "space.GetCategoryPermissions"
+// GetCategoryViewers returns user permissions for given category.
+func (h *Handler) GetCategoryViewers(w http.ResponseWriter, r *http.Request) {
+	method := "space.GetCategoryViewers"
 	ctx := domain.GetRequestContext(r)
 
 	categoryID := request.Param(r, "categoryID")
@@ -291,6 +291,29 @@ func (h *Handler) GetCategoryPermissions(w http.ResponseWriter, r *http.Request)
 	}
 	if len(u) == 0 {
 		u = []user.User{}
+	}
+
+	response.WriteJSON(w, u)
+}
+
+// GetCategoryPermissions returns user permissions for given category.
+func (h *Handler) GetCategoryPermissions(w http.ResponseWriter, r *http.Request) {
+	method := "space.GetCategoryPermissions"
+	ctx := domain.GetRequestContext(r)
+
+	categoryID := request.Param(r, "categoryID")
+	if len(categoryID) == 0 {
+		response.WriteMissingDataError(w, method, "categoryID")
+		return
+	}
+
+	u, err := h.Store.Permission.GetCategoryPermissions(ctx, categoryID)
+	if err != nil && err != sql.ErrNoRows {
+		response.WriteServerError(w, method, err)
+		return
+	}
+	if len(u) == 0 {
+		u = []permission.Permission{}
 	}
 
 	response.WriteJSON(w, u)

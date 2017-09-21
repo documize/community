@@ -29,3 +29,10 @@ type Member struct {
 	LabelID    string `json:"folderId"`
 	DocumentID string `json:"documentId"`
 }
+
+// SummaryModel holds number of documents and users for space categories.
+type SummaryModel struct {
+	Type       string `json:"type"` // documents or users
+	CategoryID string `json:"categoryId"`
+	Count      int64  `json:"count"`
+}

@@ -68,6 +68,7 @@ type CategoryStorer interface {
 	Get(ctx RequestContext, id string) (c category.Category, err error)
 	GetBySpace(ctx RequestContext, spaceID string) (c []category.Category, err error)
 	GetAllBySpace(ctx RequestContext, spaceID string) (c []category.Category, err error)
+	GetSpaceCategorySummary(ctx RequestContext, spaceID string) (c []category.SummaryModel, err error)
 	Delete(ctx RequestContext, id string) (rows int64, err error)
 	AssociateDocument(ctx RequestContext, m category.Member) (err error)
 	DisassociateDocument(ctx RequestContext, categoryID, documentID string) (rows int64, err error)

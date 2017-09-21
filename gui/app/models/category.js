@@ -17,5 +17,9 @@ export default Model.extend({
 	folderId: attr('string'),
 	category: attr('string'),
 	created: attr(),
-	revised: attr()
+	revised: attr(),
+
+	// fields used by UI only
+	documents: attr(),
+	users: attr(),
 });

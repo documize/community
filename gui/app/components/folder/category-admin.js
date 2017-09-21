@@ -44,6 +44,20 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, DropdownMixin
 		this.get('categoryService').getAll(this.get('folder.id')).then((c) => {
 			this.set('category', c);
 
+			// get summary of documents and users for each category in space
+			this.get('categoryService').getSummary(this.get('folder.id')).then((s) => {
+				c.forEach((cat) => {
+					let docs = _.findWhere(s, {categoryId: cat.get('id'), type: 'documents'});
+					let docCount = is.not.undefined(docs) ? docs.count : 0;
+
+					let users = _.findWhere(s, {categoryId: cat.get('id'), type: 'users'});
+					let userCount = is.not.undefined(users) ? users.count : 0;
+
+					cat.set('documents', docCount);
+					cat.set('users', userCount);
+				});
+			});
+
 			// get users that this space admin user can see
 			this.get('userService').getAll().then((users) => {
 				// set up Everyone user
@@ -132,12 +146,12 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, DropdownMixin
 			let users = this.get('users');
 			let category = this.get('category').findBy('id', catId);
 
-			this.get('categoryService').getViewers(category.get('id')).then((viewers) => {
+			this.get('categoryService').getPermissions(category.get('id')).then((viewers) => {
 				// mark those users as selected that have already been given permission
 				// to see the current category;
-
 				users.forEach((user) => {
-					let selected = viewers.isAny('id', user.get('id'));
+					let userId = user.get('id') === '0' ? '' : user.get('id');
+					let selected = viewers.isAny('whoId', userId);
 					user.set('selected', selected);
 				});
 
@@ -173,17 +187,22 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, DropdownMixin
 			let viewers = [];
 
 			users.forEach((user) => {
+				let userId = user.get('id');
+				if (userId === "0") userId = '';
+
 				let v = {
 					orgId: this.get('folder.orgId'),
 					folderId: this.get('folder.id'),
 					categoryId: category.get('id'),
-					userId: user.get('id')
+					userId: userId
 				};
 
 				viewers.push(v);
 			});
 
-			this.get('categoryService').setViewers(category.get('id'), viewers).then( () => {});
+			this.get('categoryService').setViewers(category.get('id'), viewers).then(() => {
+				this.load();
+			});
 
 			this.closeDropdown();
 		}

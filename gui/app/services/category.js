@@ -85,9 +85,18 @@ export default BaseService.extend({
 		});
 	},
 
-	// Get list of users who can see given category
-	getViewers(categoryId) {
+	// Get viewer permission records for given category
+	getPermissions(categoryId) {
 		return this.get('ajax').request(`category/${categoryId}/permission`, {
+			method: 'GET'
+		}).then((response) => {
+			return response;
+		});
+	},
+
+	// Get list of users who can see given category
+	getUsers(categoryId) {
+		return this.get('ajax').request(`category/${categoryId}/user`, {
 			method: 'GET'
 		}).then((response) => {
 			let data = [];
@@ -109,4 +118,13 @@ export default BaseService.extend({
 			data: JSON.stringify(viewers)
 		});
 	},
+
+	// Get count of documents and users associated with each category in given space.
+	getSummary(spaceId) {
+		return this.get('ajax').request(`category/space/${spaceId}/summary`, {
+			method: 'GET'
+		}).then((response) => {
+			return response;
+		});
+	}
 });

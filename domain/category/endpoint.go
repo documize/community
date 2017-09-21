@@ -278,6 +278,37 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	response.WriteEmpty(w)
 }
 
+// GetSummary returns number of documents and users for space categories.
+func (h *Handler) GetSummary(w http.ResponseWriter, r *http.Request) {
+	method := "category.GetSummary"
+	ctx := domain.GetRequestContext(r)
+
+	spaceID := request.Param(r, "spaceID")
+	if len(spaceID) == 0 {
+		response.WriteMissingDataError(w, method, "spaceID")
+		return
+	}
+
+	ok := permission.HasPermission(ctx, *h.Store, spaceID, pm.SpaceManage, pm.SpaceOwner)
+	if !ok || !ctx.Authenticated {
+		response.WriteForbiddenError(w)
+		return
+	}
+
+	s, err := h.Store.Category.GetSpaceCategorySummary(ctx, spaceID)
+	if err != nil {
+		h.Runtime.Log.Error("get space category summary failed", err)
+		response.WriteServerError(w, method, err)
+		return
+	}
+
+	if len(s) == 0 {
+		s = []category.SummaryModel{}
+	}
+
+	response.WriteJSON(w, s)
+}
+
 /*
 	- category view permission handling
 	- filter users using new permission

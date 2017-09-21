@@ -132,8 +132,10 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	Add(rt, RoutePrefixPrivate, "category", []string{"POST", "OPTIONS"}, nil, category.Add)
 	Add(rt, RoutePrefixPrivate, "category/{categoryID}", []string{"PUT", "OPTIONS"}, nil, category.Update)
 	Add(rt, RoutePrefixPrivate, "category/{categoryID}", []string{"DELETE", "OPTIONS"}, nil, category.Delete)
+	Add(rt, RoutePrefixPrivate, "category/space/{spaceID}/summary", []string{"GET", "OPTIONS"}, nil, category.GetSummary)
 	Add(rt, RoutePrefixPrivate, "category/{categoryID}/permission", []string{"PUT", "OPTIONS"}, nil, permission.SetCategoryPermissions)
 	Add(rt, RoutePrefixPrivate, "category/{categoryID}/permission", []string{"GET", "OPTIONS"}, nil, permission.GetCategoryPermissions)
+	Add(rt, RoutePrefixPrivate, "category/{categoryID}/user", []string{"GET", "OPTIONS"}, nil, permission.GetCategoryViewers)
 
 	Add(rt, RoutePrefixPrivate, "users/{userID}/password", []string{"POST", "OPTIONS"}, nil, user.ChangePassword)
 	Add(rt, RoutePrefixPrivate, "users", []string{"POST", "OPTIONS"}, nil, user.Add)

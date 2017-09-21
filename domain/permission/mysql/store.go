@@ -182,9 +182,9 @@ func (s Scope) GetCategoryPermissions(ctx domain.RequestContext, catID string) (
 // GetCategoryUsers returns space permissions for all users.
 func (s Scope) GetCategoryUsers(ctx domain.RequestContext, catID string) (u []user.User, err error) {
 	err = s.Runtime.Db.Select(&u, `
-		SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.password, u.salt, u.reset, u.created, u.revised
-		FROM user u, account a
-		WHERE a.orgid=? AND u.refid = a.userid AND a.active=1 AND u.refid IN (
+		SELECT u.id, IFNULL(u.refid, '') AS refid, IFNULL(u.firstname, '') AS firstname, IFNULL(u.lastname, '') as lastname, u.email, u.initials, u.password, u.salt, u.reset, u.created, u.revised
+		FROM user u LEFT JOIN account a ON u.refid = a.userid 
+		WHERE a.orgid=? AND a.active=1 AND u.refid IN (
 			SELECT whoid from permission WHERE orgid=? AND who='user' AND location='category' AND refid=? UNION ALL
 			SELECT r.userid from rolemember r LEFT JOIN permission p ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' 
 				AND p.location='category' AND p.refid=?
@@ -197,7 +197,7 @@ func (s Scope) GetCategoryUsers(ctx domain.RequestContext, catID string) (u []us
 		err = nil
 	}
 	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("unable to execute select category user %s", catID))
+		err = errors.Wrap(err, fmt.Sprintf("unable to execute select users for category %s", catID))
 		return
 	}
 

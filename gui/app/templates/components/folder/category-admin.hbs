@@ -16,7 +16,7 @@
 							{{else}}
 								<div class="category">
 									<div class="name">{{cat.category}}</div>
-									<div class="info">7 documents, 14 people</div>
+									<div class="info">{{cat.documents}} documents, {{cat.users}} people</div>
 								</div>
 							{{/if}}
 							<div class="pull-right buttons">
@@ -66,12 +66,8 @@
 		{{ui/ui-list-picker items=categoryUsers nameField='fullname'}}
 	</div>
 	<div class="actions">
-		<div class="flat-button" {{action 'onGrantCancel'}}>
-			cancel
-		</div>
-		<div class="flat-button flat-blue" {{action 'onGrantAccess'}}>
-			grant access
-		</div>
+		<div class="flat-button" {{action 'onGrantCancel'}}>cancel</div>
+		<div class="flat-button flat-blue" {{action 'onGrantAccess'}}>grant access</div>
 	</div>
 	<div class="clearfix"></div>
 </div>
