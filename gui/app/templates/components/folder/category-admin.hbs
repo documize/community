@@ -16,7 +16,8 @@
 							{{else}}
 								<div class="category">
 									<div class="name">{{cat.category}}</div>
-									<div class="info">{{cat.documents}} documents, {{cat.users}} people</div>
+									<div class="info">
+										{{cat.documents}} {{if (eq cat.documents 1) 'document' 'documents' }}, {{cat.users}} {{if (eq cat.users 1) 'person' 'people' }}</div>
 								</div>
 							{{/if}}
 							<div class="pull-right buttons">

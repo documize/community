@@ -111,8 +111,8 @@ export default BaseService.extend({
 	},
 
 	// Save list of users who can see given category
-	setViewers(categoryId, viewers) {
-		return this.get('ajax').request(`category/${categoryId}/permission`, {
+	setViewers(spaceId, categoryId, viewers) {
+		return this.get('ajax').request(`category/${categoryId}/permission?space=${spaceId}`, {
 			method: 'PUT',
 			contentType: 'json',
 			data: JSON.stringify(viewers)

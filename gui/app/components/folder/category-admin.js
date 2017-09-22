@@ -182,6 +182,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, DropdownMixin
 		},
 
 		onGrantAccess() {
+			let folder = this.get('folder');
 			let category = this.get('currentCategory');
 			let users = this.get('categoryUsers').filterBy('selected', true);
 			let viewers = [];
@@ -200,7 +201,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, DropdownMixin
 				viewers.push(v);
 			});
 
-			this.get('categoryService').setViewers(category.get('id'), viewers).then(() => {
+			this.get('categoryService').setViewers(folder.get('id'), category.get('id'), viewers).then(() => {
 				this.load();
 			});
 

@@ -310,8 +310,7 @@ func (h *Handler) GetSummary(w http.ResponseWriter, r *http.Request) {
 }
 
 /*
-	- category view permission handling
-	- filter users using new permission
+	- filter users using account.users = true/false
 	- link/unlink document to category
 	- check print/pdf
 	- filter space documents by category -- URL param? nested route?

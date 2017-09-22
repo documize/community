@@ -330,6 +330,12 @@ func (h *Handler) SetCategoryPermissions(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	spaceID := request.Query(r, "space")
+	if len(id) == 0 {
+		response.WriteMissingDataError(w, method, "space")
+		return
+	}
+
 	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -346,12 +352,6 @@ func (h *Handler) SetCategoryPermissions(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	if len(model) == 0 {
-		response.WriteEmpty(w)
-		return
-	}
-
-	spaceID := model[0].SpaceID
 	if !HasPermission(ctx, *h.Store, spaceID, permission.SpaceManage, permission.SpaceOwner) {
 		response.WriteForbiddenError(w)
 		return
