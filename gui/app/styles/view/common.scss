@@ -6,7 +6,6 @@
 		font-size: 1.2rem;
 		color: $color-gray;
 	}
-
 	> .normal-state {
 		margin: 10px;
 		font-size: 1.2rem;
@@ -17,13 +16,4 @@
 .back-to-space {
 	margin: 0 0 10px 0;
 	display: inline-block;
-
-	> a {
-		> .regular-button {
-			> .name {
-				// max-width: 150px;
-				// @extend .truncate;
-			}
-		}
-	}
 }

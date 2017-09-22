@@ -74,6 +74,7 @@ type CategoryStorer interface {
 	DisassociateDocument(ctx RequestContext, categoryID, documentID string) (rows int64, err error)
 	RemoveCategoryMembership(ctx RequestContext, categoryID string) (rows int64, err error)
 	DeleteBySpace(ctx RequestContext, spaceID string) (rows int64, err error)
+	GetDocumentCategoryMembership(ctx RequestContext, documentID string) (c []category.Category, err error)
 }
 
 // PermissionStorer defines required methods for space/document permission management

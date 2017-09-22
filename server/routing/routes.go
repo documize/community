@@ -127,6 +127,7 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	Add(rt, RoutePrefixPrivate, "space/{spaceID}", []string{"GET", "OPTIONS"}, nil, space.Get)
 	Add(rt, RoutePrefixPrivate, "space/{spaceID}", []string{"PUT", "OPTIONS"}, nil, space.Update)
 
+	Add(rt, RoutePrefixPrivate, "category/document/{documentID}", []string{"GET", "OPTIONS"}, nil, category.GetDocumentCategoryMembership)
 	Add(rt, RoutePrefixPrivate, "category/space/{spaceID}", []string{"GET", "OPTIONS"}, []string{"filter", "all"}, category.GetAll)
 	Add(rt, RoutePrefixPrivate, "category/space/{spaceID}", []string{"GET", "OPTIONS"}, nil, category.Get)
 	Add(rt, RoutePrefixPrivate, "category", []string{"POST", "OPTIONS"}, nil, category.Add)
@@ -136,6 +137,7 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	Add(rt, RoutePrefixPrivate, "category/{categoryID}/permission", []string{"PUT", "OPTIONS"}, nil, permission.SetCategoryPermissions)
 	Add(rt, RoutePrefixPrivate, "category/{categoryID}/permission", []string{"GET", "OPTIONS"}, nil, permission.GetCategoryPermissions)
 	Add(rt, RoutePrefixPrivate, "category/{categoryID}/user", []string{"GET", "OPTIONS"}, nil, permission.GetCategoryViewers)
+	Add(rt, RoutePrefixPrivate, "category/member", []string{"POST", "OPTIONS"}, nil, category.SetDocumentCategoryMembership)
 
 	Add(rt, RoutePrefixPrivate, "users/{userID}/password", []string{"POST", "OPTIONS"}, nil, user.ChangePassword)
 	Add(rt, RoutePrefixPrivate, "users", []string{"POST", "OPTIONS"}, nil, user.Add)

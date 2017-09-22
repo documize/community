@@ -1,18 +1,25 @@
 .zone-document-content {
+	> .document-header-zone {
+		padding: 20px 30px;
+		border: 1px solid $color-stroke;
+		@include border-radius(3px);
+		background-color: $color-off-white;
+	}
+
 	.doc-title {
 		font-size: 2rem;
-		margin: 30px 0 10px;
+		margin: 50px 0 10px;
 		font-weight: normal;
 	}
 
 	.doc-excerpt {
 		font-size: 1rem;
 		color: $color-gray;
-		margin: 0 0 60px;
+		margin: 0 0 45px;
 	}
 
 	.edit-document-heading {
-		margin: 30px 0 0 0;
+		margin: 50px 0 0 0;
 
 		.edit-doc-title {
 			> input {
@@ -32,7 +39,7 @@
 }
 
 .document-view {
-	margin: 0 0 50px 0;
+	margin: 0 0 0 0;
 
 	.is-a-page {
 		@include content-container();
@@ -358,8 +365,4 @@
 	color: $color-goldy;
 	font-size: 1.5em;
 	margin-bottom: 20px;
-}
-
-.document-tags {
-	margin-top: 15px;
 }

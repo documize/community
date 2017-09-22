@@ -61,8 +61,7 @@ func (s Scope) GetBySpace(ctx domain.RequestContext, spaceID string) (c []catego
 		WHERE orgid=? AND labelid=?
 			  AND refid IN (SELECT refid FROM permission WHERE orgid=? AND location='category' AND refid IN (
 				SELECT refid from permission WHERE orgid=? AND who='user' AND whoid=? AND location='category' UNION ALL
-				SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.location='category' 
-					AND p.action='view' AND r.userid=?
+				SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.location='category' AND r.userid=?
 		))
 	  ORDER BY category`, ctx.OrgID, spaceID, ctx.OrgID, ctx.OrgID, ctx.UserID, ctx.OrgID, ctx.UserID)
 
@@ -220,6 +219,23 @@ func (s Scope) GetSpaceCategorySummary(ctx domain.RequestContext, spaceID string
 	}
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to execute select category summary for space %s", spaceID))
+		return
+	}
+
+	return
+}
+
+// GetDocumentCategoryMembership returns all space categories associated with given document.
+func (s Scope) GetDocumentCategoryMembership(ctx domain.RequestContext, documentID string) (c []category.Category, err error) {
+	err = s.Runtime.Db.Select(&c, `
+		SELECT id, refid, orgid, labelid, category, created, revised FROM category
+		WHERE orgid=? AND refid IN (SELECT categoryid FROM categorymember WHERE orgid=? AND documentid=?)`, ctx.OrgID, ctx.OrgID, documentID)
+
+	if err == sql.ErrNoRows {
+		err = nil
+	}
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("unable to execute select categories for document %s", documentID))
 		return
 	}
 

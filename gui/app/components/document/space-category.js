@@ -15,11 +15,15 @@ import NotifierMixin from '../../mixins/notifier';
 
 export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
     documentService: Ember.inject.service('document'),
-	sectionService: Ember.inject.service('section'),
+	categoryService: Ember.inject.service('category'),
 	sessionService: Ember.inject.service('session'),
-	appMeta: Ember.inject.service(),
-	userService: Ember.inject.service('user'),
-	localStorage: Ember.inject.service(),
+	categories: [],
+	hasCategories: Ember.computed('categories', function() {
+		return this.get('categories').length > 0;
+	}),
+	canAdd: Ember.computed('categories', function() {
+		return this.get('categories').length > 0 && this.get('permissions.documentEdit');
+	}),
 
 	init() {
 		this._super(...arguments);
@@ -27,8 +31,62 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 
 	didReceiveAttrs() {
 		this._super(...arguments);
+		this.load();
+	},
+
+	load() {
+		this.get('categoryService').getUserVisible(this.get('folder.id')).then((categories) => {
+			this.set('categories', categories);
+			this.get('categoryService').getDocumentCategories(this.get('document.id')).then((selected) => {
+				this.set('selectedCategories', selected);
+				selected.forEach((s) => {
+					let cats = this.set('categories', categories);
+					let cat = categories.findBy('id', s.id);
+					cat.set('selected', true);
+					this.set('categories', cats);
+				});
+			});
+		});
 	},
 
     actions: {
+		onSave() {
+			let docId = this.get('document.id');
+			let folderId = this.get('folder.id');
+			let link = this.get('categories').filterBy('selected', true);
+			let unlink = this.get('categories').filterBy('selected', false);
+			let toLink = [];
+			let toUnlink = [];
+
+			// prepare links associated with document
+			link.forEach((l) => {
+				let t = {
+					folderId: folderId,
+					documentId: docId,
+					categoryId: l.get('id')
+				}
+
+				toLink.push(t);
+			});
+
+			// prepare links no longer associated with document
+			unlink.forEach((l) => {
+				let t = {
+					folderId: folderId,
+					documentId: docId,
+					categoryId: l.get('id')
+				}
+
+				toUnlink.pushObject(t);
+			});
+
+			this.get('categoryService').setCategoryMembership(toUnlink, 'unlink').then(() => {
+				this.get('categoryService').setCategoryMembership(toLink, 'link').then(() => {
+					this.load();
+				});
+			});
+
+			return true;
+		}
     }
 });

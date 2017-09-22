@@ -309,7 +309,112 @@ func (h *Handler) GetSummary(w http.ResponseWriter, r *http.Request) {
 	response.WriteJSON(w, s)
 }
 
+// SetDocumentCategoryMembership will link/unlink document from categories (query string switch mode=link or mode=unlink).
+func (h *Handler) SetDocumentCategoryMembership(w http.ResponseWriter, r *http.Request) {
+	method := "category.addMember"
+	ctx := domain.GetRequestContext(r)
+
+	mode := request.Query(r, "mode")
+	if len(mode) == 0 {
+		response.WriteMissingDataError(w, method, "mode")
+		return
+	}
+
+	defer r.Body.Close()
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		response.WriteBadRequestError(w, method, "body")
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	var cats []category.Member
+	err = json.Unmarshal(body, &cats)
+	if err != nil {
+		response.WriteBadRequestError(w, method, "category")
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	if len(cats) == 0 {
+		response.WriteEmpty(w)
+		return
+	}
+
+	if !permission.HasPermission(ctx, *h.Store, cats[0].LabelID, pm.DocumentAdd, pm.DocumentEdit) {
+		response.WriteForbiddenError(w)
+		return
+	}
+
+	ctx.Transaction, err = h.Runtime.Db.Beginx()
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	for _, c := range cats {
+		if mode == "link" {
+			c.OrgID = ctx.OrgID
+			c.RefID = uniqueid.Generate()
+			_, err = h.Store.Category.DisassociateDocument(ctx, c.CategoryID, c.DocumentID)
+			err = h.Store.Category.AssociateDocument(ctx, c)
+		} else {
+			_, err = h.Store.Category.DisassociateDocument(ctx, c.CategoryID, c.DocumentID)
+		}
+
+		if err != nil {
+			ctx.Transaction.Rollback()
+			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
+			return
+		}
+	}
+
+	h.Store.Audit.Record(ctx, audit.EventTypeCategoryLink)
+
+	ctx.Transaction.Commit()
+
+	response.WriteEmpty(w)
+}
+
+// GetDocumentCategoryMembership returns categories associated with given document.
+func (h *Handler) GetDocumentCategoryMembership(w http.ResponseWriter, r *http.Request) {
+	method := "category.GetDocumentCategoryMembership"
+	ctx := domain.GetRequestContext(r)
+
+	documentID := request.Param(r, "documentID")
+	if len(documentID) == 0 {
+		response.WriteMissingDataError(w, method, "documentID")
+		return
+	}
+
+	doc, err := h.Store.Document.Get(ctx, documentID)
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error("no document for category", err)
+		return
+	}
+
+	if !permission.HasPermission(ctx, *h.Store, doc.LabelID, pm.DocumentAdd, pm.DocumentEdit) {
+		response.WriteForbiddenError(w)
+		return
+	}
+
+	cat, err := h.Store.Category.GetDocumentCategoryMembership(ctx, doc.RefID)
+	if err != nil && err != sql.ErrNoRows {
+		h.Runtime.Log.Error("get document category membership", err)
+		response.WriteServerError(w, method, err)
+		return
+	}
+
+	if len(cat) == 0 {
+		cat = []category.Category{}
+	}
+
+	response.WriteJSON(w, cat)
+}
+
 /*
-	- link/unlink document to category
 	- filter space documents by category -- URL param? nested route?
 */

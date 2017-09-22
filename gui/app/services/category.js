@@ -126,5 +126,22 @@ export default BaseService.extend({
 		}).then((response) => {
 			return response;
 		});
+	},
+
+	setCategoryMembership(categories, mode) {
+		return this.get('ajax').request(`category/member?mode=${mode}`, {
+			method: 'POST',
+			contentType: 'json',
+			data: JSON.stringify(categories)
+		});
+	},
+
+	// Get categories associated with a document.
+	getDocumentCategories(documentId) {
+		return this.get('ajax').request(`category/document/${documentId}`, {
+			method: 'GET'
+		}).then((response) => {
+			return response;
+		});
 	}
 });

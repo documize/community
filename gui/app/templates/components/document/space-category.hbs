@@ -1,4 +1,5 @@
-<div class="back-to-space">
+<div class="back-to-space document-space">
+	<div class="caption">Space</div>
 	{{#link-to 'folder' folder.id folder.slug}}
 		<div class="regular-button button-gray">
 			<i class="material-icons">arrow_back</i>
@@ -7,8 +8,23 @@
 	{{/link-to}}
 </div>
 
-<div class="document-category hide">
-	<div class="chip chip-action">
-		<span id="upload-document-files" class="chip-text">+ category</span>
-	</div>
+<div class="document-category">
+	<div class="caption">Category</div>
+
+	{{#each selectedCategories as |cat|}}
+		<div class="regular-button button-blue">{{cat.category}}</div>
+	{{/each}}
+
+	{{#if hasCategories}}
+		<div class="regular-button button-white" id="document-category-button">
+			<i class="material-icons">add</i>
+		</div>
+
+		{{#dropdown-dialog target="document-category-button" position="bottom left" button="set" color="flat-green" onAction=(action 'onSave')}}
+			<p class="heading">Select categories for document</p>
+			{{ui/ui-list-picker items=categories nameField='category'}}
+		{{/dropdown-dialog}}
+	{{else}}
+		<p>&nbsp;</p>
+	{{/if}}
 </div>
