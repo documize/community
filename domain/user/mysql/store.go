@@ -173,7 +173,9 @@ func (s Scope) GetActiveUsersForOrganization(ctx domain.RequestContext) (u []use
 // identified in the Persister.
 func (s Scope) GetUsersForOrganization(ctx domain.RequestContext) (u []user.User, err error) {
 	err = s.Runtime.Db.Select(&u,
-		"SELECT id, refid, firstname, lastname, email, initials, password, salt, reset, created, revised FROM user WHERE refid IN (SELECT userid FROM account where orgid = ?) ORDER BY firstname,lastname", ctx.OrgID)
+		`SELECT id, refid, firstname, lastname, email, initials, password, salt, reset, created, revised 
+		FROM user WHERE refid IN (SELECT userid FROM account where orgid = ?)
+		ORDER BY firstname,lastname`, ctx.OrgID)
 
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf(" get users for org %s", ctx.OrgID))
@@ -186,7 +188,8 @@ func (s Scope) GetUsersForOrganization(ctx domain.RequestContext) (u []user.User
 // GetSpaceUsers returns a slice containing all user records for given folder.
 func (s Scope) GetSpaceUsers(ctx domain.RequestContext, spaceID string) (u []user.User, err error) {
 	err = s.Runtime.Db.Select(&u, `
-		SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.password, u.salt, u.reset, u.created, u.revised
+		SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.password, u.salt, u.reset, u.created, u.revised, u.global
+		a.active, a.users AS viewusers, a.editor, a.admin
 		FROM user u, account a
 		WHERE a.orgid=? AND u.refid = a.userid AND a.active=1 AND u.refid IN (
 			SELECT whoid from permission WHERE orgid=? AND who='user' AND scope='object' AND location='space' AND refid=? UNION ALL

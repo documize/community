@@ -23,15 +23,13 @@ export default Ember.Component.extend(NotifierMixin, {
 	store: service(),
 
 	didReceiveAttrs() {
-		this.get('userService').getAll().then((users) => {
+		this.get('userService').getSpaceUsers(this.get('folder.id')).then((users) => {
 			this.set('users', users);
 
 			// set up users
 			let folderPermissions = [];
 
 			users.forEach((user) => {
-				let isActive = user.get('active');
-
 				let u = {
 					orgId: this.get('folder.orgId'),
 					folderId: this.get('folder.id'),
@@ -48,10 +46,8 @@ export default Ember.Component.extend(NotifierMixin, {
 					documentTemplate: false
 				};
 
-				if (isActive) {
-					let data = this.get('store').normalize('space-permission', u)
-					folderPermissions.pushObject(this.get('store').push(data));
-				}
+				let data = this.get('store').normalize('space-permission', u)
+				folderPermissions.pushObject(this.get('store').push(data));
 			});
 
 			// set up Everyone user

@@ -35,7 +35,6 @@ import (
 	"github.com/documize/community/domain/organization"
 	"github.com/documize/community/model/account"
 	"github.com/documize/community/model/audit"
-	"github.com/documize/community/model/space"
 	"github.com/documize/community/model/user"
 )
 
@@ -244,7 +243,6 @@ func (h *Handler) GetOrganizationUsers(w http.ResponseWriter, r *http.Request) {
 			h.Runtime.Log.Error(method, err)
 			return
 		}
-
 	} else {
 		u, err = h.Store.User.GetUsersForOrganization(ctx)
 		if err != nil && err != sql.ErrNoRows {
@@ -273,43 +271,41 @@ func (h *Handler) GetSpaceUsers(w http.ResponseWriter, r *http.Request) {
 	var u []user.User
 	var err error
 
-	folderID := request.Param(r, "folderID")
-	if len(folderID) == 0 {
-		response.WriteMissingDataError(w, method, "folderID")
+	spaceID := request.Param(r, "spaceID")
+	if len(spaceID) == 0 {
+		response.WriteMissingDataError(w, method, "spaceID")
 		return
 	}
 
-	// check to see space type as it determines user selection criteria
-	folder, err := h.Store.Space.Get(ctx, folderID)
+	// Get user account as we need to know if user can see all users.
+	// account.users == false means we restrict viewing to just space users
+	account, err := h.Store.Account.GetUserAccount(ctx, ctx.UserID)
 	if err != nil && err != sql.ErrNoRows {
 		response.WriteJSON(w, u)
 		h.Runtime.Log.Error(method, err)
 		return
 	}
 
-	switch folder.Type {
-	case space.ScopePublic:
+	if account.Users {
+		// can see all users
 		u, err = h.Store.User.GetActiveUsersForOrganization(ctx)
-		break
-	case space.ScopePrivate:
-		// just me
-		var me user.User
-		me, err = h.Store.User.Get(ctx, ctx.UserID)
-		u = append(u, me)
-		break
-	case space.ScopeRestricted:
-		u, err = h.Store.User.GetSpaceUsers(ctx, folderID)
-		break
+		if err != nil && err != sql.ErrNoRows {
+			response.WriteJSON(w, u)
+			h.Runtime.Log.Error(method, err)
+			return
+		}
+	} else {
+		// send back existing space users
+		u, err = h.Store.User.GetSpaceUsers(ctx, spaceID)
+		if err != nil && err != sql.ErrNoRows {
+			response.WriteJSON(w, u)
+			h.Runtime.Log.Error(method, err)
+			return
+		}
 	}
 
 	if len(u) == 0 {
 		u = []user.User{}
-	}
-
-	if err != nil && err != sql.ErrNoRows {
-		response.WriteJSON(w, u)
-		h.Runtime.Log.Error(method, err)
-		return
 	}
 
 	response.WriteJSON(w, u)

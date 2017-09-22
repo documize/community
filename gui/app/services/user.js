@@ -66,9 +66,9 @@ export default Ember.Service.extend({
 		});
 	},
 
-	// Returns all users that can see folder.
-	getFolderUsers(folderId) {
-		let url = `users/folder/${folderId}`;
+	// Returns all users that can see space.
+	getSpaceUsers(spaceId) {
+		let url = `users/space/${spaceId}`;
 
 		return this.get('ajax').request(url, {
 			method: "GET"

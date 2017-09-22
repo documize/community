@@ -310,8 +310,6 @@ func (h *Handler) GetSummary(w http.ResponseWriter, r *http.Request) {
 }
 
 /*
-	- filter users using account.users = true/false
 	- link/unlink document to category
-	- check print/pdf
 	- filter space documents by category -- URL param? nested route?
 */

@@ -59,7 +59,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, DropdownMixin
 			});
 
 			// get users that this space admin user can see
-			this.get('userService').getAll().then((users) => {
+			this.get('userService').getSpaceUsers(this.get('folder.id')).then((users) => {
 				// set up Everyone user
 				let u = {
 					orgId: this.get('folder.orgId'),
