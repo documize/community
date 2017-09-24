@@ -15,7 +15,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -101,14 +100,14 @@ func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http
 		}
 
 		rc.Subdomain = org.Domain
-		dom := organization.GetSubdomainFromHost(r)
-		dom2 := organization.GetRequestSubdomain(r)
+		// dom := organization.GetSubdomainFromHost(r)
+		// dom2 := organization.GetRequestSubdomain(r)
 
-		if org.Domain != dom && org.Domain != dom2 {
-			m.Runtime.Log.Info(fmt.Sprintf("domain mismatch %s vs. %s vs. %s", dom, dom2, org.Domain))
-			response.WriteUnauthorizedError(w)
-			return
-		}
+		// if org.Domain != dom && org.Domain != dom2 {
+		// 	m.Runtime.Log.Info(fmt.Sprintf("domain mismatch %s vs. %s vs. %s", dom, dom2, org.Domain))
+		// 	response.WriteUnauthorizedError(w)
+		// 	return
+		// }
 
 		// If we have bad auth token and the domain allows anon access
 		// then we generate guest context.
