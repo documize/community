@@ -14,54 +14,66 @@ import NotifierMixin from '../../mixins/notifier';
 
 const {
 	computed,
+	inject: { service }
 } = Ember;
 
 export default Ember.Component.extend(NotifierMixin, {
-	localStorage: Ember.inject.service(),
-	appMeta: Ember.inject.service(),
-	templateService: Ember.inject.service('template'),
-	canEditTemplate: "",
+	localStorage: service(),
+	appMeta: service(),
+	templateService: service('template'),
 	importedDocuments: [],
 	savedTemplates: [],
-	drop: null,
-	newDocumentName: 'New Document',
+	dropzone: null,
+	newDocumentName: '',
 	newDocumentNameMissing: computed.empty('newDocumentName'),
 
-	didInsertElement() {
-		this.setupImport();
-	},
-
 	didReceiveAttrs() {
+		this._super(...arguments);
+
 		this.setupTemplates();
+
+		Ember.run.schedule('afterRender', ()=> {
+			this.setupImport();
+		});
 	},
 
 	willDestroyElement() {
-		if (is.not.null(this.get('drop'))) {
-			this.get('drop').destroy();
-			this.set('drop', null);
+		this._super(...arguments);
+
+		if (is.not.null(this.get('dropzone'))) {
+			this.get('dropzone').destroy();
+			this.set('dropzone', null);
 		}
 	},
 
 	setupTemplates() {
 		let templates = this.get('templates');
 
-		let emptyTemplate = {
-			id: "0",
-			title: "Empty",
-			description: "An empty canvas for your words",
-			layout: "doc",
-			locked: true
-		};
+		if (is.undefined(templates.findBy('id', '0'))) {
+			let emptyTemplate = {
+				id: "0",
+				title: "Blank",
+				description: "An empty canvas for your words",
+				layout: "doc",
+				locked: true
+			};
 
-		templates.unshiftObject(emptyTemplate);
+			templates.unshiftObject(emptyTemplate);
+		}
+
 		this.set('savedTemplates', templates);
+
+		Ember.run.schedule('afterRender', () => {
+			$('#new-document-name').select();
+		});
 	},
 
 	setupImport() {
+		console.log("setting up import");
 		// already done init?
-		if (is.not.null(this.get('drop'))) {
-			this.get('drop').destroy();
-			this.set('drop', null);
+		if (is.not.null(this.get('dropzone'))) {
+			this.get('dropzone').destroy();
+			this.set('dropzone', null);
 		}
 
 		let self = this;
@@ -70,9 +82,7 @@ export default Ember.Component.extend(NotifierMixin, {
 		let importUrl = `${url}/import/folder/${folderId}`;
 
 		let dzone = new Dropzone("#import-document-button", {
-			headers: {
-				'Authorization': 'Bearer ' + self.get('session.session.content.authenticated.token')
-			},
+			headers: { 'Authorization': 'Bearer ' + self.get('session.session.content.authenticated.token') },
 			url: importUrl,
 			method: "post",
 			paramName: 'attachment',
@@ -90,7 +100,7 @@ export default Ember.Component.extend(NotifierMixin, {
 				});
 
 				this.on("error", function (x) {
-					console.log("Conversion failed for ", x.name, " obj ", x); // eslint-disable-line no-console
+					console.log("Conversion failed for", x.name, x); // eslint-disable-line no-console
 				});
 
 				this.on("queuecomplete", function () {});
@@ -105,12 +115,12 @@ export default Ember.Component.extend(NotifierMixin, {
 			dzone.removeFile(file);
 		});
 
-		this.set('drop', dzone);
+		this.set('dropzone', dzone);
 	},
 
 	actions: {
-		onHideDocumentWizard() {
-			this.get('onHideDocumentWizard')();
+		onHideStartDocument() {
+			this.get('onHideStartDocument')();
 		},
 
 		editTemplate(template) {
@@ -120,7 +130,13 @@ export default Ember.Component.extend(NotifierMixin, {
 		},
 
 		startDocument(template) {
-            this.send("showNotification", "Creating");
+			if (this.get('newDocumentNameMissing')) {
+				this.$("#new-document-name").addClass('error').focus();
+				return;
+			}
+
+			this.$("#new-document-name").removeClass('error');
+			this.send("showNotification", "Creating");
 
             this.get('templateService').importSavedTemplate(this.folder.get('id'), template.id, this.get('newDocumentName')).then((document) => {
 				this.get('router').transitionTo('document', this.get('folder.id'), this.get('folder.slug'), document.get('id'), document.get('slug'));
@@ -130,26 +146,30 @@ export default Ember.Component.extend(NotifierMixin, {
 		},
 
 		onDocumentImporting(filename) {
+			if (this.isDestroyed) { return; }
+
 			this.send("showNotification", `Importing ${filename}`);
-			this.get('onHideDocumentWizard')();
+			this.get('onHideStartDocument')();
 
 			let documents = this.get('importedDocuments');
 			documents.push(filename);
+
+			if (this.isDestroyed) { return; }
 			this.set('importedDocuments', documents);
 		},
 
 		onDocumentImported(filename /*, document*/ ) {
+			if (this.isDestroyed) { return; }
+
 			this.send("showNotification", `${filename} ready`);
 
 			let documents = this.get('importedDocuments');
 			documents.pop(filename);
+
+			if (this.isDestroyed) { return; }
+
 			this.set('importedDocuments', documents);
-
 			this.get('onImport')();
-
-			if (documents.length === 0) {
-				// this.get('showDocument')(this.get('folder'), document);
-			}
 		},
 	}
 });

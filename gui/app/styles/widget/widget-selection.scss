@@ -21,7 +21,7 @@
 	}
 
 	> .selected {
-		background-color: $color-card-active !important;
+		background-color: $color-selected-item !important;
 		color: $color-primary !important;
 
 		> i.material-icons {

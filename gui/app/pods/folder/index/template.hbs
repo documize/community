@@ -1,21 +1,20 @@
 {{#layout/zone-container}}
+
 	{{#layout/zone-sidebar}}
 		{{folder/sidebar-zone folders=model.folders folder=model.folder
 		permissions=model.permissions tab=tab onAddSpace=(action 'onAddSpace')}}
 	{{/layout/zone-sidebar}}
+
 	{{#layout/zone-content}}
 
-		{{folder/folder-heading folder=model.folder permissions=model.permissions}}
+	{{folder/space-view
+		folders=model.folders
+		folder=model.folder
+		templates=model.templates
+		permissions=model.permissions
+		documents=model.documents
+		onRefresh=(action 'onRefresh')}}
 
-		{{folder/folder-toolbar folders=model.folders folder=model.folder
-			permissions=model.permissions hasSelectedDocuments=hasSelectedDocuments
-			onDeleteDocument=(action 'onDeleteDocument') onMoveDocument=(action 'onMoveDocument')
-			onDeleteSpace=(action 'onDeleteSpace')}}
-
-		<div class="margin-bottom-20 clearfix" />
-
-		{{folder/documents-list documents=model.documents folders=model.folders folder=model.folder templates=model.templates
-			permissions=model.permissions selectedDocuments=(mut selectedDocuments)
-			onDeleteSpace=(action 'onDeleteSpace') onImport=(action 'onImport')}}
 	{{/layout/zone-content}}
+
 {{/layout/zone-container}}

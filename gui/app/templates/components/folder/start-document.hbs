@@ -1,35 +1,42 @@
 <div id="new-document-wizard" class="new-document-wizard">
 
-	<div class="input-inline input-transparent pull-left width-80">
-		{{input type="text" id="new-document-name" value=newDocumentName class=(if newDocumentNameMissing 'document-name error-inline' 'document-name mousetrap') placeholder="Name" autocomplete="off"}}
+	<div class="input-control pull-left width-80">
+		<label>Document Name</label>
+		<div class="tip">Provide a concise name for the new document</div>
+		{{focus-input type="text" id="new-document-name" value=newDocumentName class=(if newDocumentNameMissing 'document-name error-inline' 'document-name mousetrap') autocomplete="off"}}
 	</div>
-	<div class="round-button-mono pull-right" {{action 'onHideDocumentWizard'}}>
+	<div class="round-button-mono pull-right" {{action 'onHideStartDocument'}}>
 		<i class="material-icons color-gray">close</i>
 	</div>
 	<div class="clearfix" />
 
-	<div id="import-document-button" class="import-document-button">
-		Drag-drop or click to select .doc, .docx, .md, .markdown files
+	<div class="input-control">
+		<label>Select Template</label>
+		<div class="tip">Start a blank document or pick a template</div>
+
+		<div class="list-wrapper">
+			<ul class="template-list">
+				{{#each savedTemplates key="id" as |template|}}
+					<li class="item">
+						{{#if permissions.documentTemplate}}
+							{{#unless template.locked}}
+								<div class="template-actions">
+									<i class="material-icons" {{action 'editTemplate' template}}>mode_edit</i>
+								</div>
+							{{/unless}}
+						{{/if}}
+						<div class="details" {{action 'startDocument' template}}>
+							<div class='title'>{{template.title}}</div>
+							<div class='desc'>{{template.description}}</div>
+						</div>
+					</li>
+				{{/each}}
+			</ul>
+		</div>
 	</div>
 
-	<div class="list-wrapper">
-		<ul class="template-list">
-			{{#each savedTemplates key="id" as |template|}}
-				<li class="item">
-					{{#if permissions.documentTemplate}}
-						{{#unless template.locked}}
-							<div class="template-actions">
-								<i class="material-icons" {{action 'editTemplate' template}}>mode_edit</i>
-							</div>
-						{{/unless}}
-					{{/if}}
-					<div class="details" {{action 'startDocument' template}}>
-						<div class='title'>{{template.title}}</div>
-						<div class='desc'>{{template.description}}</div>
-					</div>
-				</li>
-			{{/each}}
-		</ul>
+	<div id="import-document-button" class="import-document-button">
+		Alternatively, click to select or drag-drop files <br/>(doc, docx, md, markdown)
 	</div>
 
 </div>

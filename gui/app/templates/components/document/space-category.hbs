@@ -12,7 +12,7 @@
 	<div class="caption">Category</div>
 
 	{{#each selectedCategories as |cat|}}
-		<div class="regular-button button-nav">{{cat.category}}</div>
+		<div class="regular-button button-blue">{{cat.category}}</div>
 	{{else}}
 		{{#if canAddCategory}}
 			{{#link-to 'folder.settings.category' folder.id folder.slug}}Manage{{/link-to}}

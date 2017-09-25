@@ -22,9 +22,11 @@
 }
 
 .documents-list {
+	@include content-container();
+
 	.document-item {
-		@include content-container();
 		margin: 0;
+		padding: 25px 15px;
 		position: relative;
 		transition: 0.3s;
 
@@ -48,7 +50,7 @@
 			position: absolute;
 			display: none;
 			top: 10px;
-			right: 20px;
+			right: 10px;
 			cursor: pointer;
 
 			> .material-icons {
@@ -82,18 +84,8 @@
 		}
 	}
 
-	.wizard-item {
-		margin: 0;
-		padding: 0;
-	}
-
-	.no-wizard-item {
-		margin: 50px 0;
-		padding: 0;
-	}
-
 	.selected-card {
-		background-color: $color-card-active !important;
+		background-color: $color-selected-item !important;
 
 		> .checkbox {
 			display: block;
@@ -101,8 +93,7 @@
 	}
 }
 
-.move-document-options,
-.start-document-options {
+.move-document-options {
 	height: 200px;
 	overflow-y: auto;
 	margin: 0;

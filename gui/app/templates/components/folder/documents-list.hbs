@@ -17,39 +17,6 @@
 					</div>
 				{{/if}}
 			</div>
-			{{#if canCreate}}
-				<div class="wizard-item start-document" {{action 'onShowDocumentWizard' document.id}}>
-					<div class="start-button">
-						<div class="round-button round-button-small button-green">
-							<i class="material-icons">add</i>
-						</div>
-						<div class="label">document</div>
-					</div>
-				</div>
-			{{else}}
-				<div class="no-wizard-item" />
-			{{/if}}
 		</div>
 	{{/each}}
 </div>
-
-{{folder/start-document folder=folder templates=templates permissions=permissions onImport=(action 'onImport') onHideDocumentWizard=(action 'onHideDocumentWizard')}}
-
-{{#if emptyState}}
-	{{#if canCreate}}
-		<div class="start-document start-document-empty-state" {{action 'onShowDocumentWizard' ''}}>
-			<div class="start-button">
-				<div class="round-button round-button-small button-green">
-					<i class="material-icons">add</i>
-				</div>
-				<div class="label">document</div>
-			</div>
-		</div>
-	{{/if}}
-{{/if}}
-
-<div id="wizard-placeholder" class="hide" />
-
-{{#if emptyState}}
-	<div class="regular-button button-red margin-top-50" {{action 'onDelete'}}>delete space</div>
-{{/if}}

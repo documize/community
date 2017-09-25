@@ -21,7 +21,12 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 			permissions: this.modelFor('folder').permissions,
 			folders: this.modelFor('folder').folders,
 			documents: this.modelFor('folder').documents,
-			templates: this.modelFor('folder').templates
+			templates: this.modelFor('folder').templates,
+			showStartDocument: false,
 		});
+	},
+
+	activate() {
+		this.set('model.showStartDocument', false);
 	}
 });

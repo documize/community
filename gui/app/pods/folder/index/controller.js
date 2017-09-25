@@ -10,58 +10,19 @@
 // https://documize.com
 
 import Ember from 'ember';
-import NotifierMixin from '../../../mixins/notifier';
 
-export default Ember.Controller.extend(NotifierMixin, {
-	documentService: Ember.inject.service('document'),
-	folderService: Ember.inject.service('folder'),
-	localStorage: Ember.inject.service('localStorage'),
-	selectedDocuments: [],
-	hasSelectedDocuments: Ember.computed.gt('selectedDocuments.length', 0),
+const {
+	inject: { service }
+} = Ember;
+
+export default Ember.Controller.extend({
+	documentService: service('document'),
+	folderService: service('folder'),
+	localStorage: service('localStorage'),
 	queryParams: ['tab'],
 	tab: 'index',
 
 	actions: {
-		onMoveDocument(folder) {
-			let self = this;
-			let documents = this.get('selectedDocuments');
-
-			documents.forEach(function (documentId) {
-				self.get('documentService').getDocument(documentId).then(function (doc) {
-					doc.set('folderId', folder);
-					doc.set('selected', !doc.get('selected'));
-					self.get('documentService').save(doc).then(function () {
-						self.get('target._routerMicrolib').refresh();
-					});
-				});
-			});
-
-			this.set('selectedDocuments', []);
-			this.send("showNotification", "Moved");
-		},
-
-		onDeleteDocument() {
-			let documents = this.get('selectedDocuments');
-			let self = this;
-			let promises = [];
-
-			documents.forEach(function (document, index) {
-				promises[index] = self.get('documentService').deleteDocument(document);
-			});
-
-			Ember.RSVP.all(promises).then(() => {
-				let documents = this.get('model.documents');
-				documents.forEach(function (document) {
-					document.set('selected', false);
-				});
-				this.set('model.documents', documents);
-
-				this.set('selectedDocuments', []);
-				this.send("showNotification", "Deleted");
-				this.get('target._routerMicrolib').refresh();
-			});
-		},
-
 		onAddSpace(payload) {
 			let self = this;
 			this.showNotification("Added");
@@ -72,15 +33,7 @@ export default Ember.Controller.extend(NotifierMixin, {
 			});
 		},
 
-		onDeleteSpace() {
-			this.get('folderService').delete(this.get('model.folder.id')).then(() => { /* jshint ignore:line */
-				this.showNotification("Deleted");
-				this.get('localStorage').clearSessionItem('folder');
-				this.transitionToRoute('application');
-			});
-		},
-
-		onImport() {
+		onRefresh() {
 			this.get('target._routerMicrolib').refresh();
 		}
 	}

@@ -37,16 +37,15 @@ $color-link: #0092d3;
 $color-border: #f3f5f8;
 
 $color-checkbox: #0092d3;
-$color-card-active: #f7fcff;
-
-$color-nav-button: #f2faff;
-$color-nav-button-text: #2667af;
-$color-nav-button-border: #dff0f9;
 
 $color-sidebar: #f2faff;
 $color-sidebar-border: #dff0f9;
 $color-sidebar-text: $color-off-black;
 $color-sidebar-link: $color-link;
+$color-selected-item: $color-sidebar;
+$color-nav-button: $color-sidebar;
+$color-nav-button-text: #2667af;
+$color-nav-button-border: #dff0f9;
 
 // Color utility classes for direct usage in HTML
 .color-white {

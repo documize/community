@@ -41,6 +41,13 @@
 
 	{{else}}
 
+		{{#if permissions.documentAdd}}
+			<div class="round-button button-green" id="document-add-button" data-tooltip="Create document" data-tooltip-position="top center" {{action 'onStartDocument'}}>
+				<i class="material-icons">add</i>
+			</div>
+			<div class="button-gap"></div>
+		{{/if}}
+
 		{{#if pinState.isPinned}}
 			<div class="round-button button-gray" id="space-unpin-button" data-tooltip="Remove favorite" data-tooltip-position="top center" {{action 'onUnpin'}}>
 				<i class="material-icons">favorite</i>
@@ -62,7 +69,7 @@
 
 		{{#if permissions.spaceOwner}}
 			<div class="button-gap"></div>
-			<div class="round-button button-red" id="space-delete-button" data-tooltip="Delete everything" data-tooltip-position="top center">
+			<div class="round-button button-gray" id="space-delete-button" data-tooltip="Delete everything" data-tooltip-position="top center">
 				<i class="material-icons">delete</i>
 			</div>
 		{{/if}}

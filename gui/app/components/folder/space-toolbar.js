@@ -81,6 +81,10 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 			} else {
 				this.addTooltip(document.getElementById("space-pin-button"));
 			}
+
+			if (this.get('permissions.documentAdd')) {
+				this.addTooltip(document.getElementById("document-add-button"));
+			}
 		}
 	},
 
@@ -170,6 +174,10 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 			this.attrs.onMoveDocument(this.get('moveFolderId'));
 
 			return true;
+		},
+
+		onStartDocument() {
+			this.attrs.onStartDocument();
 		}
 	}
 });

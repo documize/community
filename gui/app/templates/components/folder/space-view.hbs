@@ -1,0 +1,17 @@
+{{folder/space-heading folder=folder permissions=permissions}}
+
+{{folder/space-toolbar folders=folders folder=folder
+	permissions=permissions hasSelectedDocuments=hasSelectedDocuments
+	onDeleteDocument=(action 'onDeleteDocument') onMoveDocument=(action 'onMoveDocument')
+	onDeleteSpace=(action 'onDeleteSpace') onStartDocument=(action 'onStartDocument')}}
+
+<div class="margin-bottom-20 clearfix" />
+
+{{#if showStartDocument}}
+	{{folder/start-document folder=folder templates=templates permissions=permissions
+		onImport=(action 'onImport') onHideStartDocument=(action 'onHideStartDocument')}}
+{{else}}
+	{{folder/documents-list documents=documents folders=folders folder=folder
+		templates=templates permissions=permissions selectedDocuments=(mut selectedDocuments)
+		onImport=(action 'onImport')}}
+{{/if}}
