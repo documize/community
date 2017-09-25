@@ -54,7 +54,10 @@ func (s Scope) Add(ctx domain.RequestContext, account account.Account) (err erro
 
 // GetUserAccount returns the database account record corresponding to the given userID, using the client's current organizaion.
 func (s Scope) GetUserAccount(ctx domain.RequestContext, userID string) (account account.Account, err error) {
-	stmt, err := s.Runtime.Db.Preparex("SELECT a.*, b.company, b.title, b.message, b.domain FROM account a, organization b WHERE b.refid=a.orgid and a.orgid=? and a.userid=?")
+	stmt, err := s.Runtime.Db.Preparex(`
+        SELECT a.id, a.refid, a.orgid, a.userid, a.editor, a.admin, a.active, a.created, a.revised, b.company, b.title, b.message, b.domain
+        FROM account a, organization b
+        WHERE b.refid=a.orgid and a.orgid=? and a.userid=?`)
 	defer streamutil.Close(stmt)
 
 	if err != nil {
@@ -73,7 +76,11 @@ func (s Scope) GetUserAccount(ctx domain.RequestContext, userID string) (account
 
 // GetUserAccounts returns a slice of database account records, for all organizations that the userID is a member of, in organization title order.
 func (s Scope) GetUserAccounts(ctx domain.RequestContext, userID string) (t []account.Account, err error) {
-	err = s.Runtime.Db.Select(&t, "SELECT a.*, b.company, b.title, b.message, b.domain FROM account a, organization b WHERE a.userid=? AND a.orgid=b.refid AND a.active=1 ORDER BY b.title", userID)
+	err = s.Runtime.Db.Select(&t, `
+		SELECT a.id, a.refid, a.orgid, a.userid, a.editor, a.admin, a.active, a.created, a.revised,
+		b.company, b.title, b.message, b.domain 
+		FROM account a, organization b
+		WHERE a.userid=? AND a.orgid=b.refid AND a.active=1 ORDER BY b.title`, userID)
 
 	if err != sql.ErrNoRows && err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("Unable to execute select account for user %s", userID))
@@ -84,7 +91,10 @@ func (s Scope) GetUserAccounts(ctx domain.RequestContext, userID string) (t []ac
 
 // GetAccountsByOrg returns a slice of database account records, for all users in the client's organization.
 func (s Scope) GetAccountsByOrg(ctx domain.RequestContext) (t []account.Account, err error) {
-	err = s.Runtime.Db.Select(&t, "SELECT a.*, b.company, b.title, b.message, b.domain FROM account a, organization b WHERE a.orgid=b.refid AND a.orgid=? AND a.active=1", ctx.OrgID)
+	err = s.Runtime.Db.Select(&t,
+		`SELECT a.id, a.refid, a.orgid, a.userid, a.editor, a.admin, a.active, a.created, a.revised, b.company, b.title, b.message, b.domain
+		FROM account a, organization b
+		WHERE a.orgid=b.refid AND a.orgid=? AND a.active=1`, ctx.OrgID)
 
 	if err != sql.ErrNoRows && err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("execute select account for org %s", ctx.OrgID))
