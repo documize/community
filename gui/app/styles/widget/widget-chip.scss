@@ -5,45 +5,17 @@
     height: 25px;
     line-height: 0;
     margin: 0 5px 10px 0;
-    border: 1px solid $color-chip-border;
-	background-color: $color-chip;
-	color: $color-chip-text;
-
-    &:hover {
-		> i.material-icons {
-			visibility: visible;
-		}
-    }
+    border: 1px solid $color-gray;
+	background-color: $color-gray;
+	color: $color-white;
 
     > .chip-text {
         display: inline-block;
         font-weight: 400;
         font-size: 1rem;
-        color: $color-chip-text;
+        color: $color-white;
         padding: 11px 10px 0 10px;
         letter-spacing: 0.7px;
         line-height: 0;
     }
-
-    > i.material-icons {
-		visibility: hidden;
-		color: $color-chip-text;
-        font-size: 13px;
-        margin: 13px 8px 0 0;
-        padding: 0;
-        line-height: 0;
-    }
-}
-
-.chip-action {
-	@extend .chip;
-	background-color: $color-white;
-
-	&:hover {
-        cursor: pointer;
-    }
-
-	> .chip-text {
-		color: $color-chip-text;
-	}
 }

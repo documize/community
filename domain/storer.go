@@ -242,7 +242,6 @@ type PageStorer interface {
 	Add(ctx RequestContext, model page.NewPage) (err error)
 	Get(ctx RequestContext, pageID string) (p page.Page, err error)
 	GetPages(ctx RequestContext, documentID string) (p []page.Page, err error)
-	GetPagesWhereIn(ctx RequestContext, documentID, inPages string) (p []page.Page, err error)
 	GetPagesWithoutContent(ctx RequestContext, documentID string) (pages []page.Page, err error)
 	Update(ctx RequestContext, page page.Page, refID, userID string, skipRevision bool) (err error)
 	UpdateMeta(ctx RequestContext, meta page.Meta, updateUserID bool) (err error)

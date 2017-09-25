@@ -20,7 +20,6 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/documize/community/core/env"
-	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/model/attachment"
 )
 
@@ -37,18 +36,11 @@ func (s Scope) Add(ctx domain.RequestContext, a attachment.Attachment) (err erro
 	bits := strings.Split(a.Filename, ".")
 	a.Extension = bits[len(bits)-1]
 
-	stmt, err := ctx.Transaction.Preparex("INSERT INTO attachment (refid, orgid, documentid, job, fileid, filename, data, extension, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
-	defer streamutil.Close(stmt)
+	_, err = ctx.Transaction.Exec("INSERT INTO attachment (refid, orgid, documentid, job, fileid, filename, data, extension, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		a.RefID, a.OrgID, a.DocumentID, a.Job, a.FileID, a.Filename, a.Data, a.Extension, a.Created, a.Revised)
 
-	if err != nil {
-		err = errors.Wrap(err, "prepare insert attachment")
-		return
-	}
-
-	_, err = stmt.Exec(a.RefID, a.OrgID, a.DocumentID, a.Job, a.FileID, a.Filename, a.Data, a.Extension, a.Created, a.Revised)
 	if err != nil {
 		err = errors.Wrap(err, "execute insert attachment")
-		return
 	}
 
 	return
@@ -56,18 +48,11 @@ func (s Scope) Add(ctx domain.RequestContext, a attachment.Attachment) (err erro
 
 // GetAttachment returns the database attachment record specified by the parameters.
 func (s Scope) GetAttachment(ctx domain.RequestContext, orgID, attachmentID string) (a attachment.Attachment, err error) {
-	stmt, err := s.Runtime.Db.Preparex("SELECT id, refid, orgid, documentid, job, fileid, filename, data, extension, created, revised FROM attachment WHERE orgid=? and refid=?")
-	defer streamutil.Close(stmt)
+	err = s.Runtime.Db.Get(&a, "SELECT id, refid, orgid, documentid, job, fileid, filename, data, extension, created, revised FROM attachment WHERE orgid=? and refid=?",
+		orgID, attachmentID)
 
-	if err != nil {
-		err = errors.Wrap(err, "prepare select attachment")
-		return
-	}
-
-	err = stmt.Get(&a, orgID, attachmentID)
 	if err != nil {
 		err = errors.Wrap(err, "execute select attachment")
-		return
 	}
 
 	return
@@ -79,7 +64,6 @@ func (s Scope) GetAttachments(ctx domain.RequestContext, docID string) (a []atta
 
 	if err != nil {
 		err = errors.Wrap(err, "execute select attachments")
-		return
 	}
 
 	return
@@ -91,7 +75,6 @@ func (s Scope) GetAttachmentsWithData(ctx domain.RequestContext, docID string) (
 
 	if err != nil {
 		err = errors.Wrap(err, "execute select attachments with data")
-		return
 	}
 
 	return

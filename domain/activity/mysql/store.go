@@ -16,7 +16,6 @@ import (
 	"time"
 
 	"github.com/documize/community/core/env"
-	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/model/activity"
 	"github.com/pkg/errors"
@@ -33,19 +32,11 @@ func (s Scope) RecordUserActivity(ctx domain.RequestContext, activity activity.U
 	activity.UserID = ctx.UserID
 	activity.Created = time.Now().UTC()
 
-	stmt, err := ctx.Transaction.Preparex("INSERT INTO useractivity (orgid, userid, labelid, sourceid, sourcetype, activitytype, created) VALUES (?, ?, ?, ?, ?, ?, ?)")
-	defer streamutil.Close(stmt)
-
-	if err != nil {
-		err = errors.Wrap(err, "prepare record user activity")
-		return
-	}
-
-	_, err = stmt.Exec(activity.OrgID, activity.UserID, activity.LabelID, activity.SourceID, activity.SourceType, activity.ActivityType, activity.Created)
+	_, err = ctx.Transaction.Exec("INSERT INTO useractivity (orgid, userid, labelid, sourceid, sourcetype, activitytype, created) VALUES (?, ?, ?, ?, ?, ?, ?)",
+		activity.OrgID, activity.UserID, activity.LabelID, activity.SourceID, activity.SourceType, activity.ActivityType, activity.Created)
 
 	if err != nil {
 		err = errors.Wrap(err, "execute record user activity")
-		return
 	}
 
 	return

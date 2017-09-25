@@ -242,11 +242,10 @@
     border: 1px solid $color-gray;
 }
 
-.button-chip {
-	background-color: $color-chip;
-	color: $color-chip-text;
-    border: 1px solid $color-chip-border;
-    @include button-hover-state($color-chip);
+.button-nav {
+	background-color: $color-nav-button;
+	color: $color-nav-button-text;
+    border: 1px solid $color-nav-button;
 }
 
 .flat-button {

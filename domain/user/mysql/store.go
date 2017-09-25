@@ -18,7 +18,6 @@ import (
 	"time"
 
 	"github.com/documize/community/core/env"
-	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/model/user"
 	"github.com/pkg/errors"
@@ -34,18 +33,11 @@ func (s Scope) Add(ctx domain.RequestContext, u user.User) (err error) {
 	u.Created = time.Now().UTC()
 	u.Revised = time.Now().UTC()
 
-	stmt, err := ctx.Transaction.Preparex("INSERT INTO user (refid, firstname, lastname, email, initials, password, salt, reset, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
-	defer streamutil.Close(stmt)
+	_, err = ctx.Transaction.Exec("INSERT INTO user (refid, firstname, lastname, email, initials, password, salt, reset, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		u.RefID, u.Firstname, u.Lastname, strings.ToLower(u.Email), u.Initials, u.Password, u.Salt, "", u.Created, u.Revised)
 
-	if err != nil {
-		err = errors.Wrap(err, "prepare user insert")
-		return
-	}
-
-	_, err = stmt.Exec(u.RefID, u.Firstname, u.Lastname, strings.ToLower(u.Email), u.Initials, u.Password, u.Salt, "", u.Created, u.Revised)
 	if err != nil {
 		err = errors.Wrap(err, "execute user insert")
-		return
 	}
 
 	return
@@ -53,18 +45,10 @@ func (s Scope) Add(ctx domain.RequestContext, u user.User) (err error) {
 
 // Get returns the user record for the given id.
 func (s Scope) Get(ctx domain.RequestContext, id string) (u user.User, err error) {
-	stmt, err := s.Runtime.Db.Preparex("SELECT id, refid, firstname, lastname, email, initials, global, password, salt, reset, created, revised FROM user WHERE refid=?")
-	defer streamutil.Close(stmt)
+	err = s.Runtime.Db.Get(&u, "SELECT id, refid, firstname, lastname, email, initials, global, password, salt, reset, created, revised FROM user WHERE refid=?", id)
 
-	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("unable to prepare select for user %s", id))
-		return
-	}
-
-	err = stmt.Get(&u, id)
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to execute select for user %s", id))
-		return
 	}
 
 	return
@@ -74,18 +58,11 @@ func (s Scope) Get(ctx domain.RequestContext, id string) (u user.User, err error
 func (s Scope) GetByDomain(ctx domain.RequestContext, domain, email string) (u user.User, err error) {
 	email = strings.TrimSpace(strings.ToLower(email))
 
-	stmt, err := s.Runtime.Db.Preparex("SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.global, u.password, u.salt, u.reset, u.created, u.revised FROM user u, account a, organization o WHERE TRIM(LOWER(u.email))=? AND u.refid=a.userid AND a.orgid=o.refid AND TRIM(LOWER(o.domain))=?")
-	defer streamutil.Close(stmt)
+	err = s.Runtime.Db.Get(&u, "SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.global, u.password, u.salt, u.reset, u.created, u.revised FROM user u, account a, organization o WHERE TRIM(LOWER(u.email))=? AND u.refid=a.userid AND a.orgid=o.refid AND TRIM(LOWER(o.domain))=?",
+		email, domain)
 
-	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("Unable to prepare GetUserByDomain %s %s", domain, email))
-		return
-	}
-
-	err = stmt.Get(&u, email, domain)
 	if err != nil && err != sql.ErrNoRows {
 		err = errors.Wrap(err, fmt.Sprintf("Unable to execute GetUserByDomain %s %s", domain, email))
-		return
 	}
 
 	return
@@ -95,18 +72,10 @@ func (s Scope) GetByDomain(ctx domain.RequestContext, domain, email string) (u u
 func (s Scope) GetByEmail(ctx domain.RequestContext, email string) (u user.User, err error) {
 	email = strings.TrimSpace(strings.ToLower(email))
 
-	stmt, err := s.Runtime.Db.Preparex("SELECT id, refid, firstname, lastname, email, initials, global, password, salt, reset, created, revised FROM user WHERE TRIM(LOWER(email))=?")
-	defer streamutil.Close(stmt)
+	err = s.Runtime.Db.Get(&u, "SELECT id, refid, firstname, lastname, email, initials, global, password, salt, reset, created, revised FROM user WHERE TRIM(LOWER(email))=?", email)
 
-	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("prepare select user by email %s", email))
-		return
-	}
-
-	err = stmt.Get(&u, email)
 	if err != nil && err != sql.ErrNoRows {
 		err = errors.Wrap(err, fmt.Sprintf("execute select user by email %s", email))
-		return
 	}
 
 	return
@@ -114,18 +83,10 @@ func (s Scope) GetByEmail(ctx domain.RequestContext, email string) (u user.User,
 
 // GetByToken returns a user record given a reset token value.
 func (s Scope) GetByToken(ctx domain.RequestContext, token string) (u user.User, err error) {
-	stmt, err := s.Runtime.Db.Preparex("SELECT  id, refid, firstname, lastname, email, initials, global, password, salt, reset, created, revised FROM user WHERE reset=?")
-	defer streamutil.Close(stmt)
+	err = s.Runtime.Db.Get(&u, "SELECT id, refid, firstname, lastname, email, initials, global, password, salt, reset, created, revised FROM user WHERE reset=?", token)
 
-	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("prepare user select by token %s", token))
-		return
-	}
-
-	err = stmt.Get(&u, token)
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("execute user select by token %s", token))
-		return
 	}
 
 	return
@@ -135,18 +96,10 @@ func (s Scope) GetByToken(ctx domain.RequestContext, token string) (u user.User,
 // This occurs when we you share a folder with a new user and they have to complete
 // the onboarding process.
 func (s Scope) GetBySerial(ctx domain.RequestContext, serial string) (u user.User, err error) {
-	stmt, err := s.Runtime.Db.Preparex("SELECT id, refid, firstname, lastname, email, initials, global, password, salt, reset, created, revised FROM user WHERE salt=?")
-	defer streamutil.Close(stmt)
+	err = s.Runtime.Db.Get("SELECT id, refid, firstname, lastname, email, initials, global, password, salt, reset, created, revised FROM user WHERE salt=?", serial)
 
-	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("prepare user select by serial %s", serial))
-		return
-	}
-
-	err = stmt.Get(&u, serial)
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("execute user select by serial %s", serial))
-		return
 	}
 
 	return
@@ -163,7 +116,6 @@ func (s Scope) GetActiveUsersForOrganization(ctx domain.RequestContext) (u []use
 
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("get active users by org %s", ctx.OrgID))
-		return
 	}
 
 	return
@@ -179,7 +131,6 @@ func (s Scope) GetUsersForOrganization(ctx domain.RequestContext) (u []user.User
 
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf(" get users for org %s", ctx.OrgID))
-		return
 	}
 
 	return
@@ -200,7 +151,6 @@ func (s Scope) GetSpaceUsers(ctx domain.RequestContext, spaceID string) (u []use
 
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("get space users for org %s", ctx.OrgID))
-		return
 	}
 
 	return
@@ -239,7 +189,6 @@ func (s Scope) GetVisibleUsers(ctx domain.RequestContext) (u []user.User, err er
 
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("get visible users for org %s user %s", ctx.OrgID, ctx.UserID))
-		return
 	}
 
 	return
@@ -250,19 +199,11 @@ func (s Scope) UpdateUser(ctx domain.RequestContext, u user.User) (err error) {
 	u.Revised = time.Now().UTC()
 	u.Email = strings.ToLower(u.Email)
 
-	stmt, err := ctx.Transaction.PrepareNamed(
-		"UPDATE user SET firstname=:firstname, lastname=:lastname, email=:email, revised=:revised, initials=:initials WHERE refid=:refid")
-	defer streamutil.Close(stmt)
+	_, err = ctx.Transaction.NamedExec(
+		"UPDATE user SET firstname=:firstname, lastname=:lastname, email=:email, revised=:revised, initials=:initials WHERE refid=:refid", &u)
 
-	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("prepare user update %s", u.RefID))
-		return
-	}
-
-	_, err = stmt.Exec(&u)
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("execute user update %s", u.RefID))
-		return
 	}
 
 	return
@@ -270,18 +211,11 @@ func (s Scope) UpdateUser(ctx domain.RequestContext, u user.User) (err error) {
 
 // UpdateUserPassword updates a user record with new password and salt values.
 func (s Scope) UpdateUserPassword(ctx domain.RequestContext, userID, salt, password string) (err error) {
-	stmt, err := ctx.Transaction.Preparex("UPDATE user SET salt=?, password=?, reset='' WHERE refid=?")
-	defer streamutil.Close(stmt)
+	_, err = ctx.Transaction.Exec("UPDATE user SET salt=?, password=?, reset='' WHERE refid=?",
+		salt, password, userID)
 
-	if err != nil {
-		err = errors.Wrap(err, "prepare user update")
-		return
-	}
-
-	_, err = stmt.Exec(salt, password, userID)
 	if err != nil {
 		err = errors.Wrap(err, "execute user update")
-		return
 	}
 
 	return
@@ -289,19 +223,10 @@ func (s Scope) UpdateUserPassword(ctx domain.RequestContext, userID, salt, passw
 
 // DeactiveUser deletes the account record for the given userID and persister.Context.OrgID.
 func (s Scope) DeactiveUser(ctx domain.RequestContext, userID string) (err error) {
-	stmt, err := ctx.Transaction.Preparex("DELETE FROM account WHERE userid=? and orgid=?")
-	defer streamutil.Close(stmt)
-
-	if err != nil {
-		err = errors.Wrap(err, "prepare user deactivation")
-		return
-	}
-
-	_, err = stmt.Exec(userID, ctx.OrgID)
+	_, err = ctx.Transaction.Exec("DELETE FROM account WHERE userid=? and orgid=?", userID, ctx.OrgID)
 
 	if err != nil {
 		err = errors.Wrap(err, "execute user deactivation")
-		return
 	}
 
 	return
@@ -309,18 +234,10 @@ func (s Scope) DeactiveUser(ctx domain.RequestContext, userID string) (err error
 
 // ForgotUserPassword sets the password to '' and the reset field to token, for a user identified by email.
 func (s Scope) ForgotUserPassword(ctx domain.RequestContext, email, token string) (err error) {
-	stmt, err := ctx.Transaction.Preparex("UPDATE user SET reset=?, password='' WHERE LOWER(email)=?")
-	defer streamutil.Close(stmt)
+	_, err = ctx.Transaction.Exec("UPDATE user SET reset=?, password='' WHERE LOWER(email)=?", token, strings.ToLower(email))
 
-	if err != nil {
-		err = errors.Wrap(err, "prepare password reset")
-		return
-	}
-
-	_, err = stmt.Exec(token, strings.ToLower(email))
 	if err != nil {
 		err = errors.Wrap(err, "execute password reset")
-		return
 	}
 
 	return

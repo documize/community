@@ -10,7 +10,6 @@ $sidebar-width: 400px;
 }
 
 #sidebar-wrapper {
-	background-color: $color-off-white;
 	z-index: 888;
     position: fixed;
     overflow-x: hidden;
@@ -19,12 +18,13 @@ $sidebar-width: 400px;
     width: 0;
     height: 100%;
     margin-left: -$sidebar-width;
-	border-right: 1px solid $color-stroke;
     overflow-y: auto;
     -webkit-transition: all 0.5s ease;
     -moz-transition: all 0.5s ease;
     -o-transition: all 0.5s ease;
     transition: all 0.5s ease;
+	background-color: $color-sidebar;
+	border-right: 1px solid $color-sidebar-border;
 }
 
 .page-container {
@@ -68,22 +68,30 @@ $sidebar-width: 400px;
 
     .zone-sidebar-page-title {
         color: $color-primary;
-        font-size: 1.3rem;
+        font-size: 1.5rem;
         font-weight: bold;
         margin-bottom: 20px;
     }
 
     .zone-sidebar-page-info {
-        color: $color-gray;
+        color: $color-black;
         font-size: 1rem;
         line-height: 1.5rem;
         margin-bottom: 30px;
     }
+
+	color: $color-sidebar-text !important;
+
+	a, a:visited {
+		&:hover {
+			color: $color-sidebar-link !important;
+		}
+	}
 }
 
 .sidebar-wrapper {
 	padding: 40px 20px 40px 20px;
-    margin-left: 20px;
+    margin: 0 20px;
 
     .sidebar-panel {
         width: 300px;
@@ -100,7 +108,15 @@ $sidebar-width: 400px;
             @include border-radius(3px);
             background-color: $color-white;
         }
-    }
+	}
+
+	color: $color-sidebar-text !important;
+
+	a, a:visited {
+		&:hover {
+			color: $color-sidebar-link !important;
+		}
+	}
 }
 
 .navigation {

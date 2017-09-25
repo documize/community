@@ -1,7 +1,7 @@
 <div class="document-tags">
 	<div class="caption">Tag</div>
     {{#each tagz as |t index|}}
-		<div class="regular-button button-chip" id="{{concat 'delete-tag-' index}}">{{concat '#' t}}</div>
+		<div class="regular-button button-gray" id="{{concat 'delete-tag-' index}}">{{concat '#' t}}</div>
     {{/each}}
     {{#if canAdd}}
 		<div class="regular-button button-white" id="document-tag-button">

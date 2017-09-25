@@ -17,7 +17,6 @@ import (
 	"time"
 
 	"github.com/documize/community/core/env"
-	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/store/mysql"
 	"github.com/documize/community/model/space"
@@ -35,18 +34,11 @@ func (s Scope) Add(ctx domain.RequestContext, sp space.Space) (err error) {
 	sp.Created = time.Now().UTC()
 	sp.Revised = time.Now().UTC()
 
-	stmt, err := ctx.Transaction.Preparex("INSERT INTO label (refid, label, orgid, userid, type, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?)")
-	defer streamutil.Close(stmt)
+	_, err = ctx.Transaction.Exec("INSERT INTO label (refid, label, orgid, userid, type, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?)",
+		sp.RefID, sp.Name, sp.OrgID, sp.UserID, sp.Type, sp.Created, sp.Revised)
 
-	if err != nil {
-		err = errors.Wrap(err, "unable to prepare insert for label")
-		return
-	}
-
-	_, err = stmt.Exec(sp.RefID, sp.Name, sp.OrgID, sp.UserID, sp.Type, sp.Created, sp.Revised)
 	if err != nil {
 		err = errors.Wrap(err, "unable to execute insert for label")
-		return
 	}
 
 	return
@@ -54,18 +46,11 @@ func (s Scope) Add(ctx domain.RequestContext, sp space.Space) (err error) {
 
 // Get returns a space from the store.
 func (s Scope) Get(ctx domain.RequestContext, id string) (sp space.Space, err error) {
-	stmt, err := s.Runtime.Db.Preparex("SELECT id,refid,label as name,orgid,userid,type,created,revised FROM label WHERE orgid=? and refid=?")
-	defer streamutil.Close(stmt)
+	err = s.Runtime.Db.Get(&sp, "SELECT id,refid,label as name,orgid,userid,type,created,revised FROM label WHERE orgid=? and refid=?",
+		ctx.OrgID, id)
 
-	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("unable to prepare select for label %s", id))
-		return
-	}
-
-	err = stmt.Get(&sp, ctx.OrgID, id)
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to execute select for label %s", id))
-		return
 	}
 
 	return
@@ -79,7 +64,6 @@ func (s Scope) PublicSpaces(ctx domain.RequestContext, orgID string) (sp []space
 
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("Unable to execute GetPublicFolders for org %s", orgID))
-		return
 	}
 
 	return
@@ -108,7 +92,6 @@ func (s Scope) GetAll(ctx domain.RequestContext) (sp []space.Space, err error) {
 
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("failed space.GetAll org %s", ctx.OrgID))
-		return
 	}
 
 	return
@@ -118,18 +101,10 @@ func (s Scope) GetAll(ctx domain.RequestContext) (sp []space.Space, err error) {
 func (s Scope) Update(ctx domain.RequestContext, sp space.Space) (err error) {
 	sp.Revised = time.Now().UTC()
 
-	stmt, err := ctx.Transaction.PrepareNamed("UPDATE label SET label=:name, type=:type, userid=:userid, revised=:revised WHERE orgid=:orgid AND refid=:refid")
-	defer streamutil.Close(stmt)
+	_, err = ctx.Transaction.NamedExec("UPDATE label SET label=:name, type=:type, userid=:userid, revised=:revised WHERE orgid=:orgid AND refid=:refid", &sp)
 
-	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("unable to prepare update for label %s", sp.RefID))
-		return
-	}
-
-	_, err = stmt.Exec(&sp)
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to execute update for label %s", sp.RefID))
-		return
 	}
 
 	return

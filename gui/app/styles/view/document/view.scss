@@ -1,19 +1,20 @@
 .zone-document-content {
 	> .document-header-zone {
-		padding: 20px 30px;
-		border: 1px solid $color-stroke;
-		@include border-radius(3px);
-		background-color: $color-off-white;
+		// padding: 20px 30px;
+		// @include border-radius(3px);
+		// border: 1px solid $color-stroke;
+		// background-color: $color-off-white;
 	}
 
 	.doc-title {
 		font-size: 2rem;
 		margin: 50px 0 10px;
 		font-weight: normal;
+		// color: $color-primary;
 	}
 
 	.doc-excerpt {
-		font-size: 1rem;
+		font-size: 1.2rem;
 		color: $color-gray;
 		margin: 0 0 45px;
 	}
@@ -31,7 +32,7 @@
 		}
 
 		.edit-doc-excerpt {
-			font-size: 1rem;
+			font-size: 1.2rem;
 			margin: 0 0 10px;
 			color: $color-gray;
 		}

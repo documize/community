@@ -16,11 +16,9 @@ import (
 	"time"
 
 	"github.com/documize/community/core/env"
-	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/store/mysql"
 	"github.com/documize/community/model/pin"
-	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 )
 
@@ -43,18 +41,11 @@ func (s Scope) Add(ctx domain.RequestContext, pin pin.Pin) (err error) {
 	pin.Revised = time.Now().UTC()
 	pin.Sequence = maxSeq + 1
 
-	stmt, err := ctx.Transaction.Preparex("INSERT INTO pin (refid, orgid, userid, labelid, documentid, pin, sequence, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
-	defer streamutil.Close(stmt)
+	_, err = ctx.Transaction.Exec("INSERT INTO pin (refid, orgid, userid, labelid, documentid, pin, sequence, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		pin.RefID, pin.OrgID, pin.UserID, pin.FolderID, pin.DocumentID, pin.Pin, pin.Sequence, pin.Created, pin.Revised)
 
-	if err != nil {
-		err = errors.Wrap(err, "prepare pin insert")
-		return
-	}
-
-	_, err = stmt.Exec(pin.RefID, pin.OrgID, pin.UserID, pin.FolderID, pin.DocumentID, pin.Pin, pin.Sequence, pin.Created, pin.Revised)
 	if err != nil {
 		err = errors.Wrap(err, "execute pin insert")
-		return
 	}
 
 	return
@@ -62,18 +53,11 @@ func (s Scope) Add(ctx domain.RequestContext, pin pin.Pin) (err error) {
 
 // GetPin returns requested pinned item.
 func (s Scope) GetPin(ctx domain.RequestContext, id string) (pin pin.Pin, err error) {
-	stmt, err := s.Runtime.Db.Preparex("SELECT id, refid, orgid, userid, labelid as folderid, documentid, pin, sequence, created, revised FROM pin WHERE orgid=? AND refid=?")
-	defer streamutil.Close(stmt)
+	err = s.Runtime.Db.Get(&pin, "SELECT id, refid, orgid, userid, labelid as folderid, documentid, pin, sequence, created, revised FROM pin WHERE orgid=? AND refid=?",
+		ctx.OrgID, id)
 
-	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("prepare select for pin %s", id))
-		return
-	}
-
-	err = stmt.Get(&pin, ctx.OrgID, id)
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("execute select for pin %s", id))
-		return
 	}
 
 	return
@@ -85,7 +69,6 @@ func (s Scope) GetUserPins(ctx domain.RequestContext, userID string) (pins []pin
 
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("execute select pins for org %s and user %s", ctx.OrgID, userID))
-		return
 	}
 
 	return
@@ -95,19 +78,11 @@ func (s Scope) GetUserPins(ctx domain.RequestContext, userID string) (pins []pin
 func (s Scope) UpdatePin(ctx domain.RequestContext, pin pin.Pin) (err error) {
 	pin.Revised = time.Now().UTC()
 
-	var stmt *sqlx.NamedStmt
-	stmt, err = ctx.Transaction.PrepareNamed("UPDATE pin SET labelid=:folderid, documentid=:documentid, pin=:pin, sequence=:sequence, revised=:revised WHERE orgid=:orgid AND refid=:refid")
-	defer streamutil.Close(stmt)
+	_, err = ctx.Transaction.NamedExec("UPDATE pin SET labelid=:folderid, documentid=:documentid, pin=:pin, sequence=:sequence, revised=:revised WHERE orgid=:orgid AND refid=:refid",
+		&pin)
 
-	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("prepare pin update %s", pin.RefID))
-		return
-	}
-
-	_, err = stmt.Exec(&pin)
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("execute pin update %s", pin.RefID))
-		return
 	}
 
 	return
@@ -115,18 +90,11 @@ func (s Scope) UpdatePin(ctx domain.RequestContext, pin pin.Pin) (err error) {
 
 // UpdatePinSequence updates existing pinned item sequence number
 func (s Scope) UpdatePinSequence(ctx domain.RequestContext, pinID string, sequence int) (err error) {
-	stmt, err := ctx.Transaction.Preparex("UPDATE pin SET sequence=?, revised=? WHERE orgid=? AND userid=? AND refid=?")
-	defer streamutil.Close(stmt)
+	_, err = ctx.Transaction.Exec("UPDATE pin SET sequence=?, revised=? WHERE orgid=? AND userid=? AND refid=?",
+		sequence, time.Now().UTC(), ctx.OrgID, ctx.UserID, pinID)
 
-	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("prepare pin sequence update %s", pinID))
-		return
-	}
-
-	_, err = stmt.Exec(sequence, time.Now().UTC(), ctx.OrgID, ctx.UserID, pinID)
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("execute pin sequence update %s", pinID))
-		return
 	}
 
 	return

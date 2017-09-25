@@ -17,7 +17,6 @@ import (
 	"time"
 
 	"github.com/documize/community/core/env"
-	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/store/mysql"
 	"github.com/documize/community/model/account"
@@ -34,19 +33,11 @@ func (s Scope) Add(ctx domain.RequestContext, account account.Account) (err erro
 	account.Created = time.Now().UTC()
 	account.Revised = time.Now().UTC()
 
-	stmt, err := ctx.Transaction.Preparex("INSERT INTO account (refid, orgid, userid, admin, editor, users, active, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
-	defer streamutil.Close(stmt)
-
-	if err != nil {
-		err = errors.Wrap(err, "unable to prepare insert for account")
-		return
-	}
-
-	_, err = stmt.Exec(account.RefID, account.OrgID, account.UserID, account.Admin, account.Editor, account.Users, account.Active, account.Created, account.Revised)
+	_, err = ctx.Transaction.Exec("INSERT INTO account (refid, orgid, userid, admin, editor, users, active, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		account.RefID, account.OrgID, account.UserID, account.Admin, account.Editor, account.Users, account.Active, account.Created, account.Revised)
 
 	if err != nil {
 		err = errors.Wrap(err, "unable to execute insert for account")
-		return
 	}
 
 	return
@@ -106,7 +97,6 @@ func (s Scope) CountOrgAccounts(ctx domain.RequestContext) (c int) {
 	if err == sql.ErrNoRows {
 		return 0
 	}
-
 	if err != nil {
 		err = errors.Wrap(err, "count org accounts")
 		return 0
@@ -119,18 +109,10 @@ func (s Scope) CountOrgAccounts(ctx domain.RequestContext) (c int) {
 func (s Scope) UpdateAccount(ctx domain.RequestContext, account account.Account) (err error) {
 	account.Revised = time.Now().UTC()
 
-	stmt, err := ctx.Transaction.PrepareNamed("UPDATE account SET userid=:userid, admin=:admin, editor=:editor, users=:users, active=:active, revised=:revised WHERE orgid=:orgid AND refid=:refid")
-	defer streamutil.Close(stmt)
+	_, err = ctx.Transaction.NamedExec("UPDATE account SET userid=:userid, admin=:admin, editor=:editor, users=:users, active=:active, revised=:revised WHERE orgid=:orgid AND refid=:refid", &account)
 
-	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("prepare update for account %s", account.RefID))
-		return
-	}
-
-	_, err = stmt.Exec(&account)
 	if err != sql.ErrNoRows && err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("execute update for account %s", account.RefID))
-		return
 	}
 
 	return

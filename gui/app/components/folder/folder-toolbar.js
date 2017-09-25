@@ -37,6 +37,8 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 	deleteSpaceName: '',
 
 	didReceiveAttrs() {
+		this._super(...arguments);
+
 		let targets = _.reject(this.get('folders'), {
 			id: this.get('folder').get('id')
 		});
@@ -50,6 +52,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 	},
 
 	didRender() {
+		this._super(...arguments);
 		this.renderTooltips();
 	},
 
@@ -82,6 +85,8 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 	},
 
 	willDestroyElement() {
+		this._super(...arguments);
+
 		if (this.get('isDestroyed') || this.get('isDestroying')) {
 			return;
 		}

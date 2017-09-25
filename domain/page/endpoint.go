@@ -227,47 +227,6 @@ func (h *Handler) GetPages(w http.ResponseWriter, r *http.Request) {
 	response.WriteJSON(w, pages)
 }
 
-// GetPagesBatch gets specified pages for document.
-func (h *Handler) GetPagesBatch(w http.ResponseWriter, r *http.Request) {
-	method := "page.batch"
-	ctx := domain.GetRequestContext(r)
-
-	documentID := request.Param(r, "documentID")
-	if len(documentID) == 0 {
-		response.WriteMissingDataError(w, method, "documentID")
-		return
-	}
-
-	if !permission.CanViewDocument(ctx, *h.Store, documentID) {
-		response.WriteForbiddenError(w)
-		return
-	}
-
-	defer streamutil.Close(r.Body)
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		response.WriteBadRequestError(w, method, err.Error())
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	requestedPages := string(body)
-
-	pages, err := h.Store.Page.GetPagesWhereIn(ctx, documentID, requestedPages)
-	if err == sql.ErrNoRows {
-		response.WriteNotFoundError(w, method, documentID)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-	if err != nil {
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	response.WriteJSON(w, pages)
-}
-
 // Delete deletes a page.
 func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	method := "page.delete"

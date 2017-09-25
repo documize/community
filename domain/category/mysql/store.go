@@ -19,7 +19,6 @@ import (
 	"time"
 
 	"github.com/documize/community/core/env"
-	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/store/mysql"
 	"github.com/documize/community/model/category"
@@ -36,18 +35,11 @@ func (s Scope) Add(ctx domain.RequestContext, c category.Category) (err error) {
 	c.Created = time.Now().UTC()
 	c.Revised = time.Now().UTC()
 
-	stmt, err := ctx.Transaction.Preparex("INSERT INTO category (refid, orgid, labelid, category, created, revised) VALUES (?, ?, ?, ?, ?, ?)")
-	defer streamutil.Close(stmt)
+	_, err = ctx.Transaction.Exec("INSERT INTO category (refid, orgid, labelid, category, created, revised) VALUES (?, ?, ?, ?, ?, ?)",
+		c.RefID, c.OrgID, c.LabelID, c.Category, c.Created, c.Revised)
 
-	if err != nil {
-		err = errors.Wrap(err, "unable to prepare insert category")
-		return
-	}
-
-	_, err = stmt.Exec(c.RefID, c.OrgID, c.LabelID, c.Category, c.Created, c.Revised)
 	if err != nil {
 		err = errors.Wrap(err, "unable to execute insert category")
-		return
 	}
 
 	return
@@ -70,7 +62,6 @@ func (s Scope) GetBySpace(ctx domain.RequestContext, spaceID string) (c []catego
 	}
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to execute select categories for space %s", spaceID))
-		return
 	}
 
 	return
@@ -93,7 +84,6 @@ func (s Scope) GetAllBySpace(ctx domain.RequestContext, spaceID string) (c []cat
 	}
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to execute select all categories for space %s", spaceID))
-		return
 	}
 
 	return
@@ -103,18 +93,10 @@ func (s Scope) GetAllBySpace(ctx domain.RequestContext, spaceID string) (c []cat
 func (s Scope) Update(ctx domain.RequestContext, c category.Category) (err error) {
 	c.Revised = time.Now().UTC()
 
-	stmt, err := ctx.Transaction.PrepareNamed("UPDATE category SET category=:category, revised=:revised WHERE orgid=:orgid AND refid=:refid")
-	defer streamutil.Close(stmt)
+	_, err = ctx.Transaction.NamedExec("UPDATE category SET category=:category, revised=:revised WHERE orgid=:orgid AND refid=:refid", c)
 
-	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("unable to prepare update for category %s", c.RefID))
-		return
-	}
-
-	_, err = stmt.Exec(&c)
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to execute update for category %s", c.RefID))
-		return
 	}
 
 	return
@@ -122,19 +104,11 @@ func (s Scope) Update(ctx domain.RequestContext, c category.Category) (err error
 
 // Get returns specified category
 func (s Scope) Get(ctx domain.RequestContext, id string) (c category.Category, err error) {
-	stmt, err := s.Runtime.Db.Preparex("SELECT id, refid, orgid, labelid, category, created, revised FROM category WHERE orgid=? AND refid=?")
-	defer streamutil.Close(stmt)
-
-	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("unable to prepare select for category %s", id))
-		return
-	}
-
-	err = stmt.Get(&c, ctx.OrgID, id)
+	err = s.Runtime.Db.Get(&c, "SELECT id, refid, orgid, labelid, category, created, revised FROM category WHERE orgid=? AND refid=?",
+		ctx.OrgID, id)
 
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to get category %s", id))
-		return
 	}
 
 	return
@@ -151,18 +125,11 @@ func (s Scope) AssociateDocument(ctx domain.RequestContext, m category.Member) (
 	m.Created = time.Now().UTC()
 	m.Revised = time.Now().UTC()
 
-	stmt, err := ctx.Transaction.Preparex("INSERT INTO categorymember (refid, orgid, categoryid, labelid, documentid, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?)")
-	defer streamutil.Close(stmt)
+	_, err = ctx.Transaction.Exec("INSERT INTO categorymember (refid, orgid, categoryid, labelid, documentid, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?)",
+		m.RefID, m.OrgID, m.CategoryID, m.LabelID, m.DocumentID, m.Created, m.Revised)
 
-	if err != nil {
-		err = errors.Wrap(err, "unable to prepare insert categorymember")
-		return
-	}
-
-	_, err = stmt.Exec(m.RefID, m.OrgID, m.CategoryID, m.LabelID, m.DocumentID, m.Created, m.Revised)
 	if err != nil {
 		err = errors.Wrap(err, "unable to execute insert categorymember")
-		return
 	}
 
 	return
@@ -219,7 +186,6 @@ func (s Scope) GetSpaceCategorySummary(ctx domain.RequestContext, spaceID string
 	}
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to execute select category summary for space %s", spaceID))
-		return
 	}
 
 	return
@@ -236,7 +202,6 @@ func (s Scope) GetDocumentCategoryMembership(ctx domain.RequestContext, document
 	}
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to execute select categories for document %s", documentID))
-		return
 	}
 
 	return

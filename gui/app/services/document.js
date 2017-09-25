@@ -79,21 +79,6 @@ export default Ember.Service.extend({
 		});
 	},
 
-	getBatchedPages: function (documentId, payload) {
-		let url = `documents/${documentId}/pages/batch`;
-
-		return this.get('ajax').request(url, {
-			method: 'POST',
-			data: payload
-		}).then((pages) => {
-			if (is.not.array(pages)) {
-				pages = [];
-			}
-
-			return pages;
-		});
-	},
-
 	changePageSequence: function (documentId, payload) {
 		let url = `documents/${documentId}/pages/sequence`;
 

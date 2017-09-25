@@ -37,33 +37,18 @@ type Scope struct {
 // searchable items. Any existing document entries are removed.
 func (s Scope) IndexDocument(ctx domain.RequestContext, doc doc.Document, a []attachment.Attachment) (err error) {
 	// remove previous search entries
-	var stmt1 *sqlx.Stmt
-	stmt1, err = ctx.Transaction.Preparex("DELETE FROM search WHERE orgid=? AND documentid=? AND (itemtype='doc' OR itemtype='file' OR itemtype='tag')")
-	defer streamutil.Close(stmt1)
-	if err != nil {
-		err = errors.Wrap(err, "prepare delete document index entries")
-		return
-	}
+	_, err = ctx.Transaction.Exec("DELETE FROM search WHERE orgid=? AND documentid=? AND (itemtype='doc' OR itemtype='file' OR itemtype='tag')",
+		ctx.OrgID, doc.RefID)
 
-	_, err = stmt1.Exec(ctx.OrgID, doc.RefID)
 	if err != nil {
 		err = errors.Wrap(err, "execute delete document index entries")
-		return
 	}
 
 	// insert doc title
-	var stmt2 *sqlx.Stmt
-	stmt2, err = ctx.Transaction.Preparex("INSERT INTO search (orgid, documentid, itemid, itemtype, content) VALUES (?, ?, ?, ?, ?)")
-	defer streamutil.Close(stmt2)
-	if err != nil {
-		err = errors.Wrap(err, "prepare insert document title entry")
-		return
-	}
-
-	_, err = stmt2.Exec(ctx.OrgID, doc.RefID, "", "doc", doc.Title)
+	_, err = ctx.Transaction.Exec("INSERT INTO search (orgid, documentid, itemid, itemtype, content) VALUES (?, ?, ?, ?, ?)",
+		ctx.OrgID, doc.RefID, "", "doc", doc.Title)
 	if err != nil {
 		err = errors.Wrap(err, "execute insert document title entry")
-		return
 	}
 
 	// insert doc tags
@@ -73,15 +58,9 @@ func (s Scope) IndexDocument(ctx domain.RequestContext, doc doc.Document, a []at
 			continue
 		}
 
-		var stmt3 *sqlx.Stmt
-		stmt3, err = ctx.Transaction.Preparex("INSERT INTO search (orgid, documentid, itemid, itemtype, content) VALUES (?, ?, ?, ?, ?)")
-		defer streamutil.Close(stmt3)
-		if err != nil {
-			err = errors.Wrap(err, "prepare insert document tag entry")
-			return
-		}
+		_, err = ctx.Transaction.Exec("INSERT INTO search (orgid, documentid, itemid, itemtype, content) VALUES (?, ?, ?, ?, ?)",
+			ctx.OrgID, doc.RefID, "", "tag", t)
 
-		_, err = stmt3.Exec(ctx.OrgID, doc.RefID, "", "tag", t)
 		if err != nil {
 			err = errors.Wrap(err, "execute insert document tag entry")
 			return
@@ -89,18 +68,11 @@ func (s Scope) IndexDocument(ctx domain.RequestContext, doc doc.Document, a []at
 	}
 
 	for _, file := range a {
-		var stmt4 *sqlx.Stmt
-		stmt4, err = ctx.Transaction.Preparex("INSERT INTO search (orgid, documentid, itemid, itemtype, content) VALUES (?, ?, ?, ?, ?)")
-		defer streamutil.Close(stmt4)
-		if err != nil {
-			err = errors.Wrap(err, "prepare insert document file entry")
-			return
-		}
+		_, err = ctx.Transaction.Exec("INSERT INTO search (orgid, documentid, itemid, itemtype, content) VALUES (?, ?, ?, ?, ?)",
+			ctx.OrgID, doc.RefID, file.RefID, "file", file.Filename)
 
-		_, err = stmt4.Exec(ctx.OrgID, doc.RefID, file.RefID, "file", file.Filename)
 		if err != nil {
 			err = errors.Wrap(err, "execute insert document file entry")
-			return
 		}
 	}
 
@@ -109,19 +81,10 @@ func (s Scope) IndexDocument(ctx domain.RequestContext, doc doc.Document, a []at
 
 // DeleteDocument removes all search entries for document.
 func (s Scope) DeleteDocument(ctx domain.RequestContext, ID string) (err error) {
-	// remove all search entries
-	var stmt1 *sqlx.Stmt
-	stmt1, err = ctx.Transaction.Preparex("DELETE FROM search WHERE orgid=? AND documentid=?")
-	defer streamutil.Close(stmt1)
-	if err != nil {
-		err = errors.Wrap(err, "prepare delete document entries")
-		return
-	}
+	_, err = ctx.Transaction.Exec("DELETE FROM search WHERE orgid=? AND documentid=?", ctx.OrgID, ID)
 
-	_, err = stmt1.Exec(ctx.OrgID, ID)
 	if err != nil {
 		err = errors.Wrap(err, "execute delete document entries")
-		return
 	}
 
 	return
@@ -131,27 +94,11 @@ func (s Scope) DeleteDocument(ctx domain.RequestContext, ID string) (err error) 
 // Any existing document entries are removed.
 func (s Scope) IndexContent(ctx domain.RequestContext, p page.Page) (err error) {
 	// remove previous search entries
-	var stmt1 *sqlx.Stmt
-	stmt1, err = ctx.Transaction.Preparex("DELETE FROM search WHERE orgid=? AND documentid=? AND itemid=? AND itemtype='page'")
-	defer streamutil.Close(stmt1)
-	if err != nil {
-		err = errors.Wrap(err, "prepare delete document content entry")
-		return
-	}
+	_, err = ctx.Transaction.Exec("DELETE FROM search WHERE orgid=? AND documentid=? AND itemid=? AND itemtype='page'",
+		ctx.OrgID, p.DocumentID, p.RefID)
 
-	_, err = stmt1.Exec(ctx.OrgID, p.DocumentID, p.RefID)
 	if err != nil {
 		err = errors.Wrap(err, "execute delete document content entry")
-		return
-	}
-
-	// insert doc title
-	var stmt2 *sqlx.Stmt
-	stmt2, err = ctx.Transaction.Preparex("INSERT INTO search (orgid, documentid, itemid, itemtype, content) VALUES (?, ?, ?, ?, ?)")
-	defer streamutil.Close(stmt2)
-	if err != nil {
-		err = errors.Wrap(err, "prepare insert document content entry")
-		return
 	}
 
 	// prepare content
@@ -162,10 +109,10 @@ func (s Scope) IndexContent(ctx domain.RequestContext, p page.Page) (err error) 
 	}
 	content = strings.TrimSpace(content)
 
-	_, err = stmt2.Exec(ctx.OrgID, p.DocumentID, p.RefID, "page", content)
+	_, err = ctx.Transaction.Exec("INSERT INTO search (orgid, documentid, itemid, itemtype, content) VALUES (?, ?, ?, ?, ?)",
+		ctx.OrgID, p.DocumentID, p.RefID, "page", content)
 	if err != nil {
 		err = errors.Wrap(err, "execute insert document content entry")
-		return
 	}
 
 	return nil
@@ -295,7 +242,6 @@ func (s Scope) matchFullText(ctx domain.RequestContext, keywords, itemType strin
 
 	if err != nil {
 		err = errors.Wrap(err, "search document "+itemType)
-		return
 	}
 
 	return
@@ -353,7 +299,6 @@ func (s Scope) matchLike(ctx domain.RequestContext, keywords, itemType string) (
 
 	if err != nil {
 		err = errors.Wrap(err, "search document "+itemType)
-		return
 	}
 
 	return

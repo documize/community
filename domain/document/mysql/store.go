@@ -17,7 +17,6 @@ import (
 	"time"
 
 	"github.com/documize/community/core/env"
-	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/store/mysql"
 	"github.com/documize/community/model/doc"
@@ -35,19 +34,11 @@ func (s Scope) Add(ctx domain.RequestContext, document doc.Document) (err error)
 	document.Created = time.Now().UTC()
 	document.Revised = document.Created // put same time in both fields
 
-	stmt, err := ctx.Transaction.Preparex("INSERT INTO document (refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
-	defer streamutil.Close(stmt)
-
-	if err != nil {
-		err = errors.Wrap(err, "prepare insert document")
-		return
-	}
-
-	_, err = stmt.Exec(document.RefID, document.OrgID, document.LabelID, document.UserID, document.Job, document.Location, document.Title, document.Excerpt, document.Slug, document.Tags, document.Template, document.Created, document.Revised)
+	_, err = ctx.Transaction.Exec("INSERT INTO document (refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		document.RefID, document.OrgID, document.LabelID, document.UserID, document.Job, document.Location, document.Title, document.Excerpt, document.Slug, document.Tags, document.Template, document.Created, document.Revised)
 
 	if err != nil {
 		err = errors.Wrap(err, "execuet insert document")
-		return
 	}
 
 	return
@@ -55,18 +46,11 @@ func (s Scope) Add(ctx domain.RequestContext, document doc.Document) (err error)
 
 // Get fetches the document record with the given id fromt the document table and audits that it has been got.
 func (s Scope) Get(ctx domain.RequestContext, id string) (document doc.Document, err error) {
-	stmt, err := s.Runtime.Db.Preparex("SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, layout, created, revised FROM document WHERE orgid=? and refid=?")
-	defer streamutil.Close(stmt)
+	err = s.Runtime.Db.Get(&document, "SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, layout, created, revised FROM document WHERE orgid=? and refid=?",
+		ctx.OrgID, id)
 
-	if err != nil {
-		err = errors.Wrap(err, "prepare select document")
-		return
-	}
-
-	err = stmt.Get(&document, ctx.OrgID, id)
 	if err != nil {
 		err = errors.Wrap(err, "execute select document")
-		return
 	}
 
 	return
@@ -112,7 +96,6 @@ func (s Scope) GetAll() (ctx domain.RequestContext, documents []doc.Document, er
 
 	if err != nil {
 		err = errors.Wrap(err, "select documents")
-		return
 	}
 
 	return
@@ -124,7 +107,6 @@ func (s Scope) GetBySpace(ctx domain.RequestContext, folderID string) (documents
 
 	if err != nil {
 		err = errors.Wrap(err, "select documents by space")
-		return
 	}
 
 	return
@@ -150,7 +132,6 @@ func (s Scope) GetByTag(ctx domain.RequestContext, tag string) (documents []doc.
 
 	if err != nil {
 		err = errors.Wrap(err, "select documents by tag")
-		return
 	}
 
 	return
@@ -173,7 +154,6 @@ func (s Scope) Templates(ctx domain.RequestContext) (documents []doc.Document, e
 
 	if err != nil {
 		err = errors.Wrap(err, "select document templates")
-		return
 	}
 
 	return
@@ -201,7 +181,6 @@ func (s Scope) TemplatesBySpace(ctx domain.RequestContext, spaceID string) (docu
 
 	if err != nil {
 		err = errors.Wrap(err, "select space document templates")
-		return
 	}
 
 	return
@@ -218,7 +197,6 @@ func (s Scope) PublicDocuments(ctx domain.RequestContext, orgID string) (documen
 
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("execute GetPublicDocuments for org %s%s", orgID))
-		return
 	}
 
 	return
@@ -246,7 +224,6 @@ func (s Scope) DocumentList(ctx domain.RequestContext) (documents []doc.Document
 
 	if err != nil {
 		err = errors.Wrap(err, "select documents list")
-		return
 	}
 
 	return
@@ -256,19 +233,11 @@ func (s Scope) DocumentList(ctx domain.RequestContext) (documents []doc.Document
 func (s Scope) Update(ctx domain.RequestContext, document doc.Document) (err error) {
 	document.Revised = time.Now().UTC()
 
-	stmt, err := ctx.Transaction.PrepareNamed("UPDATE document SET labelid=:labelid, userid=:userid, job=:job, location=:location, title=:title, excerpt=:excerpt, slug=:slug, tags=:tags, template=:template, layout=:layout, revised=:revised WHERE orgid=:orgid AND refid=:refid")
-	defer streamutil.Close(stmt)
-
-	if err != nil {
-		err = errors.Wrap(err, "prepare update document")
-		return
-	}
-
-	_, err = stmt.Exec(&document)
+	_, err = ctx.Transaction.NamedExec("UPDATE document SET labelid=:labelid, userid=:userid, job=:job, location=:location, title=:title, excerpt=:excerpt, slug=:slug, tags=:tags, template=:template, layout=:layout, revised=:revised WHERE orgid=:orgid AND refid=:refid",
+		&document)
 
 	if err != nil {
 		err = errors.Wrap(err, "execute update document")
-		return
 	}
 
 	return
@@ -278,19 +247,11 @@ func (s Scope) Update(ctx domain.RequestContext, document doc.Document) (err err
 func (s Scope) ChangeDocumentSpace(ctx domain.RequestContext, document, space string) (err error) {
 	revised := time.Now().UTC()
 
-	stmt, err := ctx.Transaction.Preparex("UPDATE document SET labelid=?, revised=? WHERE orgid=? AND refid=?")
-	defer streamutil.Close(stmt)
-
-	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("prepare change document space %s", document))
-		return
-	}
-
-	_, err = stmt.Exec(space, revised, ctx.OrgID, document)
+	_, err = ctx.Transaction.Exec("UPDATE document SET labelid=?, revised=? WHERE orgid=? AND refid=?",
+		space, revised, ctx.OrgID, document)
 
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("execute change document space %s", document))
-		return
 	}
 
 	return
@@ -298,18 +259,11 @@ func (s Scope) ChangeDocumentSpace(ctx domain.RequestContext, document, space st
 
 // MoveDocumentSpace changes the space for client's organization's documents which have space "id", to "move".
 func (s Scope) MoveDocumentSpace(ctx domain.RequestContext, id, move string) (err error) {
-	stmt, err := ctx.Transaction.Preparex("UPDATE document SET labelid=? WHERE orgid=? AND labelid=?")
-	defer streamutil.Close(stmt)
+	_, err = ctx.Transaction.Exec("UPDATE document SET labelid=? WHERE orgid=? AND labelid=?",
+		move, ctx.OrgID, id)
 
-	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("prepare document space move %s", id))
-		return
-	}
-
-	_, err = stmt.Exec(move, ctx.OrgID, id)
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("execute document space move %s", id))
-		return
 	}
 
 	return
@@ -338,7 +292,7 @@ func (s Scope) Delete(ctx domain.RequestContext, documentID string) (rows int64,
 	return b.DeleteConstrained(ctx.Transaction, "document", ctx.OrgID, documentID)
 }
 
-// Delete removes all documents for given space.
+// DeleteBySpace removes all documents for given space.
 // Remove document pages, revisions, attachments, updates the search subsystem.
 func (s Scope) DeleteBySpace(ctx domain.RequestContext, spaceID string) (rows int64, err error) {
 	b := mysql.BaseQuery{}
