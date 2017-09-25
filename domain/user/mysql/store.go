@@ -188,7 +188,7 @@ func (s Scope) GetUsersForOrganization(ctx domain.RequestContext) (u []user.User
 // GetSpaceUsers returns a slice containing all user records for given folder.
 func (s Scope) GetSpaceUsers(ctx domain.RequestContext, spaceID string) (u []user.User, err error) {
 	err = s.Runtime.Db.Select(&u, `
-		SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.password, u.salt, u.reset, u.created, u.revised, u.global
+		SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.password, u.salt, u.reset, u.created, u.revised, u.global,
 		a.active, a.users AS viewusers, a.editor, a.admin
 		FROM user u, account a
 		WHERE a.orgid=? AND u.refid = a.userid AND a.active=1 AND u.refid IN (

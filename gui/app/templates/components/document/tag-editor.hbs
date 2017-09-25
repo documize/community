@@ -1,18 +1,28 @@
 <div class="document-tags">
 	<div class="caption">Tag</div>
-    {{#each tagz as |tg|}}
-		<div class="regular-button button-chip">{{concat '#' tg}}</div>
+    {{#each tagz as |t index|}}
+		<div class="regular-button button-chip" id="{{concat 'delete-tag-' index}}">{{concat '#' t}}</div>
     {{/each}}
     {{#if canAdd}}
-		<div class="chip-action">
-			<span id="add-tag-button" class="chip-text">+</span>
+		<div class="regular-button button-white" id="document-tag-button">
+			<i class="material-icons">add</i>
 		</div>
-		{{#dropdown-dialog target="add-tag-button" position="bottom left" button="Add" color="flat-green" onAction=(action 'addTag') focusOn="add-tag-field" onOpenCallback=(action 'onTagEditor') targetOffset="20px 0"}}
+		{{#dropdown-dialog tagName="span" target="document-tag-button" position="bottom left" button="Add" color="flat-green" onAction=(action 'addTag') focusOn="add-tag-field" onOpenCallback=(action 'onTagEditor') targetOffset="20px 0"}}
 			<div class="input-control">
 				<label>Tag</label>
 				<div class="tip">Lowercase letters, numbers, dashes</div>
                 {{focus-input id="add-tag-field" value=newTag type="text"}}
             </div>
 		{{/dropdown-dialog}}
+	{{/if}}
+	{{#if permissions.documentEdit}}
+    	{{#each tagz as |t index|}}
+			{{#dropdown-dialog target=(concat 'delete-tag-' index) position="bottom left" button="Delete" color="flat-red" onAction=(action 'removeTag' t)}}
+				<p>Are you sure you want delete this tag?</p>
+			{{/dropdown-dialog}}
+	    {{/each}}
+	{{/if}}
+	{{#if emptyState}}
+		<div class="none">none</div>
 	{{/if}}
 </div>

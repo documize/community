@@ -35,7 +35,7 @@
             line-height: 1.5em;
 
             > .dropdown-dialog {
-                @extend .clearfix;
+				@extend .clearfix;
 
 				.content {
 					> p {

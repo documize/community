@@ -5,7 +5,7 @@
 		text-transform: uppercase;
 		color: $color-gray;
 		font-weight: bold;
-		font-size: 1rem;
+		font-size: 1.2rem;
 		margin: 0 0 10px 0;
 	}
 }
@@ -22,7 +22,7 @@
 		text-transform: uppercase;
 		color: $color-gray;
 		font-weight: bold;
-		font-size: 1rem;
+		font-size: 1.2rem;
 		margin: 0 0 10px 0;
 	}
 }
@@ -34,20 +34,16 @@
 		text-transform: uppercase;
 		color: $color-gray;
 		font-weight: bold;
-		font-size: 1rem;
+		font-size: 1.2rem;
 		margin: 0 0 10px 0;
 	}
 
 	> .regular-button {
 		margin-right: 10px;
+	}
 
-		&:hover {
-			visibility: visible;
-		}
-
-		> .material-icons {
-			visibility: hidden;
-		}
+	> .none {
+		color: $color-gray;
+		font-size: 0.9rem;
 	}
 }
-

@@ -16,7 +16,10 @@ export default Ember.Component.extend({
     tagz: [],
     newTag: "",
     maxTags: 3,
-    canAdd: false,
+	canAdd: false,
+	emptyState: Ember.computed('tagz', function() {
+		return (this.get('tagz').length === 0 && !this.get('permissions.documentEdit'));
+	}),
 
     init() {
 		this._super(...arguments);
@@ -36,15 +39,14 @@ export default Ember.Component.extend({
     },
 
     didUpdateAttrs() {
+		this._super(...arguments);
         this.set('canAdd', this.get('permissions.documentEdit') && this.get('tagz').get('length') < 3);
     },
 
-    didInsertElement() {
-
-    },
 
     willDestroyElement() {
-        $("#add-tag-field").off("keydown");
+		this._super(...arguments);
+		$("#add-tag-field").off("keydown");
     },
 
     actions: {

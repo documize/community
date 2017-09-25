@@ -21,8 +21,11 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 	hasCategories: Ember.computed('categories', function() {
 		return this.get('categories').length > 0;
 	}),
-	canAdd: Ember.computed('categories', function() {
-		return this.get('categories').length > 0 && this.get('permissions.documentEdit');
+	canSelectCategory: Ember.computed('categories', function() {
+		return (this.get('categories').length > 0 && this.get('permissions.documentEdit'));
+	}),
+	canAddCategory: Ember.computed('categories', function() {
+		return this.get('permissions.spaceOwner') || this.get('permissions.spaceManage');
 	}),
 
 	init() {

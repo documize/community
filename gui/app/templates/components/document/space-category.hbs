@@ -13,18 +13,24 @@
 
 	{{#each selectedCategories as |cat|}}
 		<div class="regular-button button-blue">{{cat.category}}</div>
+	{{else}}
+		{{#if canAddCategory}}
+			{{#link-to 'folder.settings.category' folder.id folder.slug}}Manage{{/link-to}}
+		{{else}}
+			<p>&nbsp;</p>
+		{{/if}}
 	{{/each}}
 
-	{{#if hasCategories}}
+	{{#if canSelectCategory}}
 		<div class="regular-button button-white" id="document-category-button">
 			<i class="material-icons">add</i>
 		</div>
-
 		{{#dropdown-dialog target="document-category-button" position="bottom left" button="set" color="flat-green" onAction=(action 'onSave')}}
-			<p class="heading">Select categories for document</p>
+			<p class="heading">Set document categories</p>
 			{{ui/ui-list-picker items=categories nameField='category'}}
+			{{#if canAddCategory}}
+				{{#link-to 'folder.settings.category' folder.id folder.slug}}Manage{{/link-to}}
+			{{/if}}
 		{{/dropdown-dialog}}
-	{{else}}
-		<p>&nbsp;</p>
 	{{/if}}
 </div>
