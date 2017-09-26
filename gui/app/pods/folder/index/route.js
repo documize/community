@@ -13,6 +13,8 @@ import Ember from 'ember';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 
 export default Ember.Route.extend(AuthenticatedRouteMixin, {
+	categoryService: Ember.inject.service('category'),
+
 	model() {
 		this.get('browser').setTitle(this.modelFor('folder').folder.get('name'));
 
@@ -23,7 +25,27 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 			documents: this.modelFor('folder').documents,
 			templates: this.modelFor('folder').templates,
 			showStartDocument: false,
+			categories: this.get('categoryService').getUserVisible(this.modelFor('folder').folder.get('id')),
+			categorySummary: this.get('categoryService').getSummary(this.modelFor('folder').folder.get('id')),
+			categoryMembers: this.get('categoryService').getSpaceCategoryMembership(this.modelFor('folder').folder.get('id')),
+			rootDocCount: 0
 		});
+	},
+
+	afterModel(model, transition) { // eslint-disable-line no-unused-vars
+		let docs = model.documents;
+		let categoryMembers = model.categoryMembers;
+		let rootDocCount = 0;
+
+		// get documentId's from category members
+		let withCat = _.pluck(categoryMembers, 'documentId');
+
+		// calculate documents without category;
+		docs.forEach((d) => {
+			if (!withCat.includes(d.get('id'))) rootDocCount+=1;
+		});
+
+		model.rootDocCount = rootDocCount;
 	},
 
 	activate() {

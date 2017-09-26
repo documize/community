@@ -1,21 +1,28 @@
-.folder-heading {
+.space-heading {
 	margin: 0 0 55px 0;
 
-	.folder-title {
+	.space-name {
 		font-size: 2rem;
 		margin: 0 0 10px 0;
 		font-weight: normal;
+		// color: $color-primary;
+	}
+
+	.space-summary {
+		font-size: 1.2rem;
+		color: $color-gray;
+		margin: 0 0 45px;
 	}
 }
 
-.edit-folder-heading {
+.edit-space-heading {
 	margin: 0 0 10px 0;
 
-	.edit-folder-title {
+	.edit-space-name {
 		> input {
 			font-size: 2rem;
 			font-weight: normal;
-			margin: 0 0 10px;
+			margin: 0 0 40px 0;
 			color: $color-wysiwyg;
 		}
 	}
@@ -23,6 +30,7 @@
 
 .documents-list {
 	@include content-container();
+	margin-bottom: 50px;
 
 	.document-item {
 		margin: 0;
@@ -68,7 +76,15 @@
 
 			&:hover {
 				text-decoration: none;
-				color: $color-off-black;
+				color: $color-link;
+
+				> .title {
+					color: $color-link;
+				}
+
+				> .snippet {
+					color: $color-link;
+				}
 			}
 
 			> .title {
@@ -114,5 +130,13 @@
 
 	> .selected {
 		color: $color-link;
+	}
+}
+
+.category-filter {
+	margin-bottom: 30px;
+
+	> .selected {
+		@extend .button-nav;
 	}
 }

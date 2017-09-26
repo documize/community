@@ -143,5 +143,13 @@ export default BaseService.extend({
 		}).then((response) => {
 			return response;
 		});
+	},
+
+	getSpaceCategoryMembership(spaceId) {
+		return this.get('ajax').request(`category/member/space/${spaceId}`, {
+			method: 'GET'
+		}).then((response) => {
+			return response;
+		});
 	}
 });

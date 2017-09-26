@@ -38,14 +38,25 @@ $color-border: #f3f5f8;
 
 $color-checkbox: #0092d3;
 
+// lightblue sidebar
 $color-sidebar: #f2faff;
 $color-sidebar-border: #dff0f9;
-$color-sidebar-text: $color-off-black;
+$color-sidebar-text: $color-black;
 $color-sidebar-link: $color-link;
-$color-selected-item: $color-sidebar;
 $color-nav-button: $color-sidebar;
 $color-nav-button-text: #2667af;
 $color-nav-button-border: #dff0f9;
+$color-selected-item: $color-sidebar;
+
+// black sidebar
+// $color-sidebar: $color-off-black;
+// $color-sidebar-border: $color-black;
+// $color-sidebar-text: $color-white;
+// $color-sidebar-link: orange;
+// $color-nav-button: orange;
+// $color-nav-button-text: $color-off-black;
+// $color-nav-button-border: $color-black;
+// $color-selected-item: orange;
 
 // Color utility classes for direct usage in HTML
 .color-white {

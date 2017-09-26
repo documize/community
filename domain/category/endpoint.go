@@ -415,6 +415,32 @@ func (h *Handler) GetDocumentCategoryMembership(w http.ResponseWriter, r *http.R
 	response.WriteJSON(w, cat)
 }
 
-/*
-	- filter space documents by category -- URL param? nested route?
-*/
+// GetSpaceCategoryMembers returns category/document associations within space.
+func (h *Handler) GetSpaceCategoryMembers(w http.ResponseWriter, r *http.Request) {
+	method := "category.GetSpaceCategoryMembers"
+	ctx := domain.GetRequestContext(r)
+
+	spaceID := request.Param(r, "spaceID")
+	if len(spaceID) == 0 {
+		response.WriteMissingDataError(w, method, "spaceID")
+		return
+	}
+
+	if !permission.HasPermission(ctx, *h.Store, spaceID, pm.SpaceView) {
+		response.WriteForbiddenError(w)
+		return
+	}
+
+	cat, err := h.Store.Category.GetSpaceCategoryMembership(ctx, spaceID)
+	if err != nil && err != sql.ErrNoRows {
+		h.Runtime.Log.Error("get document category membership for space", err)
+		response.WriteServerError(w, method, err)
+		return
+	}
+
+	if len(cat) == 0 {
+		cat = []category.Member{}
+	}
+
+	response.WriteJSON(w, cat)
+}

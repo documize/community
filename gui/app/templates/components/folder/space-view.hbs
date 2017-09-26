@@ -1,17 +1,36 @@
-{{folder/space-heading folder=folder permissions=permissions}}
+<div class="margin-bottom-20">
+	{{folder/space-heading folder=folder permissions=permissions documents=documents categories=categories}}
 
-{{folder/space-toolbar folders=folders folder=folder
-	permissions=permissions hasSelectedDocuments=hasSelectedDocuments
-	onDeleteDocument=(action 'onDeleteDocument') onMoveDocument=(action 'onMoveDocument')
-	onDeleteSpace=(action 'onDeleteSpace') onStartDocument=(action 'onStartDocument')}}
-
-<div class="margin-bottom-20 clearfix" />
+	{{folder/space-toolbar folders=folders folder=folder
+		permissions=permissions hasSelectedDocuments=hasSelectedDocuments
+		onDeleteDocument=(action 'onDeleteDocument') onMoveDocument=(action 'onMoveDocument')
+		onDeleteSpace=(action 'onDeleteSpace') onStartDocument=(action 'onStartDocument')}}
+</div>
+<div class="clearfix" />
 
 {{#if showStartDocument}}
 	{{folder/start-document folder=folder templates=templates permissions=permissions
 		onImport=(action 'onImport') onHideStartDocument=(action 'onHideStartDocument')}}
 {{else}}
-	{{folder/documents-list documents=documents folders=folders folder=folder
+
+	{{#if (gt categories.length 0)}}
+		<div class="category-filter">
+			{{#if (gt rootDocCount 0)}}
+				<div class="regular-button button-white {{if (eq folder.id selectedCategory) 'selected'}}" id="uncategorized-button" data-tooltip="Documents without category" data-tooltip-position="top center" {{action 'onDocumentFilter' 'space' folder.id}}>
+					{{folder.name}} ({{rootDocCount}})
+				</div>
+			{{/if}}
+			{{#each categories as |cat index|}}
+				<div class="button-gap"/>
+				<div class="regular-button button-white {{if (eq cat.id selectedCategory) 'selected'}}" {{action 'onDocumentFilter' 'category' cat.id}}>
+					{{cat.category}} ({{cat.docCount}})
+				</div>
+			{{/each}}
+		</div>
+	{{/if}}
+
+	{{folder/documents-list documents=filteredDocs folders=folders folder=folder
 		templates=templates permissions=permissions selectedDocuments=(mut selectedDocuments)
 		onImport=(action 'onImport')}}
+
 {{/if}}

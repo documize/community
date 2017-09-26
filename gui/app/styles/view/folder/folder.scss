@@ -21,11 +21,11 @@
 
 			> .link {
 				font-size: 1rem;
-				color: $color-off-black;
+				color: $color-sidebar-text;
 				text-decoration: none;
 
 				&:hover {
-					color: $color-link;
+					color: $color-sidebar-link;
 				}
 
 				> .item {
@@ -37,7 +37,7 @@
 			}
 
 			> .selected {
-				color: $color-link;
+				color: $color-sidebar-link;
 				font-weight: bold;
 			}
 		}

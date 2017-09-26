@@ -12,15 +12,6 @@
 import Ember from 'ember';
 
 export default Ember.Component.extend({
-    folderService: Ember.inject.service('folder'),
-	moveTarget: null,
-
-    didReceiveAttrs() {
-		this._super(...arguments);
-
-        this.set('deleteTargets', this.get('folders').rejectBy('id', this.get('folder.id')));
-    },
-
     actions: {
         selectDocument(documentId) {
             let doc = this.get('documents').findBy('id', documentId);

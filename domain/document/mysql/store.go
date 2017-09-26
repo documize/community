@@ -101,37 +101,25 @@ func (s Scope) GetAll() (ctx domain.RequestContext, documents []doc.Document, er
 	return
 }
 
-// GetBySpace returns a slice containing the documents for a given space, most recient first.
-func (s Scope) GetBySpace(ctx domain.RequestContext, folderID string) (documents []doc.Document, err error) {
-	err = s.Runtime.Db.Select(&documents, "SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, layout, created, revised FROM document WHERE orgid=? AND template=0 AND labelid=? ORDER BY revised DESC", ctx.OrgID, folderID)
+// GetBySpace returns a slice containing the documents for a given space.
+// No attempt is made to hide documents that are protected
+// by category permissions -- caller must filter as required.
+func (s Scope) GetBySpace(ctx domain.RequestContext, spaceID string) (documents []doc.Document, err error) {
+	err = s.Runtime.Db.Select(&documents, `
+		SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, layout, created, revised
+		FROM document
+		WHERE orgid=? AND template=0 AND labelid IN (
+			SELECT refid FROM label WHERE orgid=? AND refid IN 
+				(SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid=? AND refid IN (
+						SELECT refid from permission WHERE orgid=? AND who='user' AND whoid=? AND location='space' UNION ALL
+						SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? 
+						AND p.who='role' AND p.location='space' AND p.refid=? AND p.action='view' AND r.userid=?
+				))
+		)
+		ORDER BY title`, ctx.OrgID, ctx.OrgID, ctx.OrgID, spaceID, ctx.OrgID, ctx.UserID, ctx.OrgID, spaceID, ctx.UserID)
 
 	if err != nil {
 		err = errors.Wrap(err, "select documents by space")
-	}
-
-	return
-}
-
-// GetByTag returns a slice containing the documents with the specified tag, in title order.
-func (s Scope) GetByTag(ctx domain.RequestContext, tag string) (documents []doc.Document, err error) {
-	tagQuery := "tags LIKE '%#" + tag + "#%'"
-
-	err = s.Runtime.Db.Select(&documents, `
-		SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, layout, created, revised FROM document WHERE orgid=? AND template=0 AND `+tagQuery+` 
-		AND labelid IN
-			(
-				SELECT refid FROM label WHERE orgid=?
-				AND refid IN (SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid IN (
-					SELECT refid from permission WHERE orgid=? AND who='user' AND whoid=? AND location='space'
-					UNION ALL
-					SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.location='space' AND p.action='view' AND r.userid=?
-				))
-			)
-		ORDER BY title
-		`, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.UserID, ctx.OrgID, ctx.UserID)
-
-	if err != nil {
-		err = errors.Wrap(err, "select documents by tag")
 	}
 
 	return

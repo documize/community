@@ -1,12 +1,15 @@
 <div class="pull-left width-80">
 	{{#unless editMode}}
-		<div class="folder-heading {{if permissions.spaceOwner 'cursor-pointer'}}" onclick={{if permissions.spaceOwner (action 'toggleEdit')}}>
-			<h1 class="folder-title">{{folder.name}}</h1>
+		<div class="space-heading {{if permissions.spaceOwner 'cursor-pointer'}}" onclick={{if permissions.spaceOwner (action 'toggleEdit')}}>
+			<h1 class="space-name">{{folder.name}}</h1>
+			<div class="space-summary">
+				This space contains {{documents.length}} {{if (eq rootDocCount.length 1) 'document' 'documents'}} across {{categories.length}} {{if (eq categories.length 1) 'category' 'categories'}}
+			</div>
 		</div>
 	{{else}}
 		<form {{action "onSave" on="submit"}}>
-			<div class="edit-folder-heading">
-				<div class="input-inline input-transparent edit-folder-title">
+			<div class="edit-space-heading">
+				<div class="input-inline input-transparent edit-space-name">
 					{{focus-input id="folder-name" type="text" value=folderName class=(if hasNameError 'error-inline') placeholder="Name" autocomplete="off"}}
 				</div>
 				<div>

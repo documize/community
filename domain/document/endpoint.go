@@ -137,11 +137,10 @@ func (h *Handler) DocumentLinks(w http.ResponseWriter, r *http.Request) {
 
 // BySpace is an endpoint that returns the documents for given space.
 func (h *Handler) BySpace(w http.ResponseWriter, r *http.Request) {
-	method := "document.space"
+	method := "document.BySpace"
 	ctx := domain.GetRequestContext(r)
 
 	spaceID := request.Query(r, "space")
-
 	if len(spaceID) == 0 {
 		response.WriteMissingDataError(w, method, "space")
 		return
@@ -152,45 +151,47 @@ func (h *Handler) BySpace(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// get complete list of documents
 	documents, err := h.Store.Document.GetBySpace(ctx, spaceID)
-
-	if len(documents) == 0 {
-		documents = []doc.Document{}
-	}
-
 	if err != nil && err != sql.ErrNoRows {
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
 		return
 	}
-
-	response.WriteJSON(w, documents)
-}
-
-// ByTag is an endpoint that returns the documents with a given tag.
-func (h *Handler) ByTag(w http.ResponseWriter, r *http.Request) {
-	method := "document.space"
-	ctx := domain.GetRequestContext(r)
-
-	tag := request.Query(r, "tag")
-	if len(tag) == 0 {
-		response.WriteMissingDataError(w, method, "tag")
-		return
-	}
-
-	documents, err := h.Store.Document.GetByTag(ctx, tag)
-
 	if len(documents) == 0 {
 		documents = []doc.Document{}
 	}
 
-	if err != nil && err != sql.ErrNoRows {
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
+	// remove documents that cannot be seen due to lack of
+	// category view/access permission
+	filtered := []doc.Document{}
+	cats, err := h.Store.Category.GetBySpace(ctx, spaceID)
+	members, err := h.Store.Category.GetSpaceCategoryMembership(ctx, spaceID)
+
+	for _, doc := range documents {
+		hasCategory := false
+		canSeeCategory := false
+
+	OUTER:
+
+		for _, m := range members {
+			if m.DocumentID == doc.RefID {
+				hasCategory = true
+				for _, cat := range cats {
+					if cat.RefID == m.CategoryID {
+						canSeeCategory = true
+						continue OUTER
+					}
+				}
+			}
+		}
+
+		if !hasCategory || canSeeCategory {
+			filtered = append(filtered, doc)
+		}
 	}
 
-	response.WriteJSON(w, documents)
+	response.WriteJSON(w, filtered)
 }
 
 // Update updates an existing document using the

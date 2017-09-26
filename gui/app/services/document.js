@@ -51,24 +51,6 @@ export default Ember.Service.extend({
 		});
 	},
 
-	// getDocumentsByTag returns all documents for specified tag (not folder!).
-	getAllByTag(tag) {
-		return this.get('ajax').request(`documents?filter=tag&tag=${tag}`, {
-			method: "GET"
-		}).then((response) => {
-			let documents = Ember.ArrayProxy.create({
-				content: Ember.A([])
-			});
-
-			documents = response.map((doc) => {
-				let data = this.get('store').normalize('document', doc);
-				return this.get('store').push(data);
-			});
-
-			return documents;
-		});
-	},
-
 	// saveDocument updates an existing document record.
 	save(doc) {
 		let id = doc.get('id');
@@ -79,7 +61,7 @@ export default Ember.Service.extend({
 		});
 	},
 
-	changePageSequence: function (documentId, payload) {
+	changePageSequence(documentId, payload) {
 		let url = `documents/${documentId}/pages/sequence`;
 
 		return this.get('ajax').post(url, {
@@ -97,7 +79,7 @@ export default Ember.Service.extend({
 		});
 	},
 
-	deleteDocument: function (documentId) {
+	deleteDocument(documentId) {
 		let url = `documents/${documentId}`;
 
 		return this.get('ajax').request(url, {
@@ -122,7 +104,7 @@ export default Ember.Service.extend({
 	},
 
 	// addPage inserts new page to an existing document.
-	addPage: function (documentId, payload) {
+	addPage(documentId, payload) {
 		let url = `documents/${documentId}/pages`;
 
 		return this.get('ajax').post(url, {
@@ -132,7 +114,7 @@ export default Ember.Service.extend({
 	},
 
 	// Nukes multiple pages from the document.
-	deletePages: function (documentId, pageId, payload) {
+	deletePages(documentId, pageId, payload) {
 		let url = `documents/${documentId}/pages`;
 
 		return this.get('ajax').request(url, {
@@ -143,7 +125,7 @@ export default Ember.Service.extend({
 	},
 
 	// Nukes a single page from the document.
-	deletePage: function (documentId, pageId) {
+	deletePage(documentId, pageId) {
 		let url = `documents/${documentId}/pages/${pageId}`;
 
 		return this.get('ajax').request(url, {

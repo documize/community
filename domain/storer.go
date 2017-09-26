@@ -75,6 +75,7 @@ type CategoryStorer interface {
 	RemoveCategoryMembership(ctx RequestContext, categoryID string) (rows int64, err error)
 	DeleteBySpace(ctx RequestContext, spaceID string) (rows int64, err error)
 	GetDocumentCategoryMembership(ctx RequestContext, documentID string) (c []category.Category, err error)
+	GetSpaceCategoryMembership(ctx RequestContext, spaceID string) (c []category.Member, err error)
 }
 
 // PermissionStorer defines required methods for space/document permission management
@@ -157,8 +158,7 @@ type DocumentStorer interface {
 	Add(ctx RequestContext, document doc.Document) (err error)
 	Get(ctx RequestContext, id string) (document doc.Document, err error)
 	GetAll() (ctx RequestContext, documents []doc.Document, err error)
-	GetBySpace(ctx RequestContext, folderID string) (documents []doc.Document, err error)
-	GetByTag(ctx RequestContext, tag string) (documents []doc.Document, err error)
+	GetBySpace(ctx RequestContext, spaceID string) (documents []doc.Document, err error)
 	DocumentList(ctx RequestContext) (documents []doc.Document, err error)
 	Templates(ctx RequestContext) (documents []doc.Document, err error)
 	TemplatesBySpace(ctx RequestContext, spaceID string) (documents []doc.Document, err error)

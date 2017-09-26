@@ -1,22 +1,24 @@
-<div class="documents-list">
-	{{#each documents key="id" as |document|}}
-		<div id="document-{{document.id}}">
-			<div class="document-item {{if document.selected "selected-card"}}">
-				{{#link-to 'document.index' folder.id folder.slug document.id document.slug class="link"}}
-					<div class="title">{{ document.name }}</div>
-					<div class="snippet">{{ document.excerpt }}</div>
-					<div class="chips">{{folder/document-tags documentTags=document.tags}}</div>
-				{{/link-to}}
-				{{#if session.authenticated}}
-					<div class="checkbox" {{action 'selectDocument' document.id}}>
-						{{#if document.selected}}
-							<i class="material-icons">check_box</i>
-						{{else}}
-							<i class="material-icons">check_box_outline_blank</i>
-						{{/if}}
-					</div>
-				{{/if}}
+{{#if (gt documents.length 0)}}
+	<div class="documents-list">
+		{{#each documents key="id" as |document|}}
+			<div id="document-{{document.id}}">
+				<div class="document-item {{if document.selected "selected-card"}}">
+					{{#link-to 'document.index' folder.id folder.slug document.id document.slug class="link"}}
+						<div class="title">{{ document.name }}</div>
+						<div class="snippet">{{ document.excerpt }}</div>
+						<div class="chips">{{folder/document-tags documentTags=document.tags}}</div>
+					{{/link-to}}
+					{{#if session.authenticated}}
+						<div class="checkbox" {{action 'selectDocument' document.id}}>
+							{{#if document.selected}}
+								<i class="material-icons">check_box</i>
+							{{else}}
+								<i class="material-icons">check_box_outline_blank</i>
+							{{/if}}
+						</div>
+					{{/if}}
+				</div>
 			</div>
-		</div>
-	{{/each}}
-</div>
+		{{/each}}
+	</div>
+{{/if}}
