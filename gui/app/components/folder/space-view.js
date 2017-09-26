@@ -77,7 +77,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 		},
 
 		onImport() {
-			// this.attrs.onRefresh();
+			this.attrs.onRefresh();
 		},
 
 		onStartDocument() {

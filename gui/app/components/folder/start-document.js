@@ -23,6 +23,7 @@ export default Ember.Component.extend(NotifierMixin, {
 	templateService: service('template'),
 	importedDocuments: [],
 	savedTemplates: [],
+	importStatus: [],
 	dropzone: null,
 	newDocumentName: '',
 	newDocumentNameMissing: computed.empty('newDocumentName'),
@@ -69,7 +70,6 @@ export default Ember.Component.extend(NotifierMixin, {
 	},
 
 	setupImport() {
-		console.log("setting up import");
 		// already done init?
 		if (is.not.null(this.get('dropzone'))) {
 			this.get('dropzone').destroy();
@@ -103,7 +103,7 @@ export default Ember.Component.extend(NotifierMixin, {
 					console.log("Conversion failed for", x.name, x); // eslint-disable-line no-console
 				});
 
-				this.on("queuecomplete", function () {});
+				// this.on("queuecomplete", function () {});
 
 				this.on("addedfile", function (file) {
 					self.send('onDocumentImporting', file.name);
@@ -146,30 +146,30 @@ export default Ember.Component.extend(NotifierMixin, {
 		},
 
 		onDocumentImporting(filename) {
-			if (this.isDestroyed) { return; }
-
-			this.send("showNotification", `Importing ${filename}`);
-			this.get('onHideStartDocument')();
-
+			let status = this.get('importStatus');
 			let documents = this.get('importedDocuments');
+
+			status.pushObject(`Converting ${filename}...`);
 			documents.push(filename);
 
-			if (this.isDestroyed) { return; }
+			this.set('importStatus', status);
 			this.set('importedDocuments', documents);
 		},
 
 		onDocumentImported(filename /*, document*/ ) {
-			if (this.isDestroyed) { return; }
-
-			this.send("showNotification", `${filename} ready`);
-
+			let status = this.get('importStatus');
 			let documents = this.get('importedDocuments');
+
+			status.pushObject(`Successfully converted ${filename}`);
 			documents.pop(filename);
 
-			if (this.isDestroyed) { return; }
-
+			this.set('importStatus', status);
 			this.set('importedDocuments', documents);
-			this.get('onImport')();
+
+			if (documents.length === 0) {
+				this.get('onHideStartDocument')();
+				this.get('onImport')();
+			}
 		},
 	}
 });
