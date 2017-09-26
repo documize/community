@@ -206,11 +206,6 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// if !ctx.Editor {
-	// 	response.WriteForbiddenError(w)
-	// 	return
-	// }
-
 	if !permission.CanChangeDocument(ctx, *h.Store, documentID) {
 		response.WriteForbiddenError(w)
 		return
@@ -239,6 +234,18 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
 		return
+	}
+
+	// if space changed for document, remove document categories
+	oldDoc, err := h.Store.Document.Get(ctx, documentID)
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	if oldDoc.LabelID != d.LabelID {
+		h.Store.Category.RemoveDocumentCategories(ctx, d.RefID)
 	}
 
 	err = h.Store.Document.Update(ctx, d)

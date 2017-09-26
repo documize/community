@@ -301,11 +301,11 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetAll returns spaces the user can see.
-func (h *Handler) GetAll(w http.ResponseWriter, r *http.Request) {
-	method := "space.getAll"
+func (h *Handler) GetViewable(w http.ResponseWriter, r *http.Request) {
+	method := "space.GetViewable"
 	ctx := domain.GetRequestContext(r)
 
-	sp, err := h.Store.Space.GetAll(ctx)
+	sp, err := h.Store.Space.GetViewable(ctx)
 
 	if err != nil && err != sql.ErrNoRows {
 		response.WriteServerError(w, method, err)
@@ -320,23 +320,31 @@ func (h *Handler) GetAll(w http.ResponseWriter, r *http.Request) {
 	response.WriteJSON(w, sp)
 }
 
-// GetSpaceViewers returns the users that can see the shared spaces.
-func (h *Handler) GetSpaceViewers(w http.ResponseWriter, r *http.Request) {
-	method := "space.viewers"
+
+// GetAll returns every space for documize admin users to manage
+func (h *Handler) GetAll(w http.ResponseWriter, r *http.Request) {
+	method := "space.getAll"
 	ctx := domain.GetRequestContext(r)
 
-	v, err := h.Store.Space.Viewers(ctx)
+	if !ctx.Administrator {
+		response.WriteForbiddenError(w)
+		h.Runtime.Log.Info("rejected non-admin user request for all spaces")
+		return		
+	}
+
+	sp, err := h.Store.Space.GetAll(ctx)
+
 	if err != nil && err != sql.ErrNoRows {
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
 		return
 	}
 
-	if len(v) == 0 {
-		v = []space.Viewer{}
+	if len(sp) == 0 {
+		sp = []space.Space{}
 	}
 
-	response.WriteJSON(w, v)
+	response.WriteJSON(w, sp)
 }
 
 // Update processes request to save space object to the database
@@ -437,6 +445,14 @@ func (h *Handler) Remove(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = h.Store.Document.MoveDocumentSpace(ctx, id, move)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	_, err = h.Store.Category.RemoveSpaceCategoryMemberships(ctx, id)
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)

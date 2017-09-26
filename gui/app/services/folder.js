@@ -96,22 +96,6 @@ export default BaseService.extend({
 		});
 	},
 
-	// getProtectedFolderInfo returns non-private folders and who has access to them.
-	getProtectedFolderInfo() {
-		return this.get('ajax').request(`space?filter=viewers`, {
-			method: "GET"
-		}).then((response) => {
-			let data = [];
-
-			data = response.map((obj) => {
-				let data = this.get('store').normalize('protected-folder-participant', obj);
-				return this.get('store').push(data);
-			});
-
-			return data;
-		});
-	},
-
 	// reloads and caches folders.
 	reload() {
 		return this.get('ajax').request(`space`, {
@@ -185,4 +169,20 @@ export default BaseService.extend({
 			return data2;
 		});
 	},
+
+	// returns all spaces -- for use by documize admin user
+	adminList() {
+		return this.get('ajax').request(`space/manage`, {
+			method: "GET"
+		}).then((response) => {
+			let data = [];
+
+			data = response.map((obj) => {
+				let data = this.get('store').normalize('folder', obj);
+				return this.get('store').push(data);
+			});
+
+			return data;
+		});
+	}
 });

@@ -163,14 +163,6 @@ func TestSpace(t *testing.T) {
 		}
 	})
 
-	t.Run("Viewers", func(t *testing.T) {
-		viewers, err := s.Space.Viewers(ctx)
-		if err != nil || viewers == nil {
-			t.Error("failed to get viewers")
-			return
-		}
-	})
-
 	t.Run("Add Role", func(t *testing.T) {
 		ctx.Transaction, err = rt.Db.Beginx()
 

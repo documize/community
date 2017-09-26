@@ -55,9 +55,9 @@ type SpaceStorer interface {
 	Add(ctx RequestContext, sp space.Space) (err error)
 	Get(ctx RequestContext, id string) (sp space.Space, err error)
 	PublicSpaces(ctx RequestContext, orgID string) (sp []space.Space, err error)
+	GetViewable(ctx RequestContext) (sp []space.Space, err error)
 	GetAll(ctx RequestContext) (sp []space.Space, err error)
 	Update(ctx RequestContext, sp space.Space) (err error)
-	Viewers(ctx RequestContext) (v []space.Viewer, err error)
 	Delete(ctx RequestContext, id string) (rows int64, err error)
 }
 
@@ -76,6 +76,8 @@ type CategoryStorer interface {
 	DeleteBySpace(ctx RequestContext, spaceID string) (rows int64, err error)
 	GetDocumentCategoryMembership(ctx RequestContext, documentID string) (c []category.Category, err error)
 	GetSpaceCategoryMembership(ctx RequestContext, spaceID string) (c []category.Member, err error)
+	RemoveDocumentCategories(ctx RequestContext, documentID string) (rows int64, err error)
+	RemoveSpaceCategoryMemberships(ctx RequestContext, spaceID string) (rows int64, err error)
 }
 
 // PermissionStorer defines required methods for space/document permission management

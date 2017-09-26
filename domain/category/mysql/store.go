@@ -155,6 +155,26 @@ func (s Scope) RemoveCategoryMembership(ctx domain.RequestContext, categoryID st
 	return b.DeleteWhere(ctx.Transaction, sql)
 }
 
+// RemoveSpaceCategoryMemberships removes all category associations from the store for the space.
+func (s Scope) RemoveSpaceCategoryMemberships(ctx domain.RequestContext, spaceID string) (rows int64, err error) {
+	b := mysql.BaseQuery{}
+
+	sql := fmt.Sprintf("DELETE FROM categorymember WHERE orgid='%s' AND labelid='%s'",
+		ctx.OrgID, spaceID)
+
+	return b.DeleteWhere(ctx.Transaction, sql)
+}
+
+// RemoveDocumentCategories removes all document category associations from the store.
+func (s Scope) RemoveDocumentCategories(ctx domain.RequestContext, documentID string) (rows int64, err error) {
+	b := mysql.BaseQuery{}
+
+	sql := fmt.Sprintf("DELETE FROM categorymember WHERE orgid='%s' AND documentid='%s'",
+		ctx.OrgID, documentID)
+
+	return b.DeleteWhere(ctx.Transaction, sql)
+}
+
 // DeleteBySpace removes all category and category associations for given space.
 func (s Scope) DeleteBySpace(ctx domain.RequestContext, spaceID string) (rows int64, err error) {
 	b := mysql.BaseQuery{}

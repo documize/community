@@ -69,9 +69,9 @@ func (s Scope) PublicSpaces(ctx domain.RequestContext, orgID string) (sp []space
 	return
 }
 
-// GetAll returns spaces that the user can see.
+// GetViewable returns spaces that the user can see.
 // Also handles which spaces can be seen by anonymous users.
-func (s Scope) GetAll(ctx domain.RequestContext) (sp []space.Space, err error) {
+func (s Scope) GetViewable(ctx domain.RequestContext) (sp []space.Space, err error) {
 	sql := `
 	SELECT id,refid,label as name,orgid,userid,type,created,revised FROM label
 	WHERE orgid=?
@@ -91,6 +91,22 @@ func (s Scope) GetAll(ctx domain.RequestContext) (sp []space.Space, err error) {
 		ctx.UserID)
 
 	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("failed space.GetViewable org %s", ctx.OrgID))
+	}
+
+	return
+}
+
+// GetAll for admin users!
+func (s Scope) GetAll(ctx domain.RequestContext) (sp []space.Space, err error) {
+	sql := `
+	SELECT id,refid,label as name,orgid,userid,type,created,revised FROM label
+	WHERE orgid=?
+	ORDER BY name`
+
+	err = s.Runtime.Db.Select(&sp, sql, ctx.OrgID)
+
+	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("failed space.GetAll org %s", ctx.OrgID))
 	}
 
@@ -106,28 +122,6 @@ func (s Scope) Update(ctx domain.RequestContext, sp space.Space) (err error) {
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to execute update for label %s", sp.RefID))
 	}
-
-	return
-}
-
-// Viewers returns the list of people who can see shared spaces.
-func (s Scope) Viewers(ctx domain.RequestContext) (v []space.Viewer, err error) {
-	sql := `
-	SELECT a.userid,
-		COALESCE(u.firstname, '') as firstname,
-		COALESCE(u.lastname, '') as lastname,
-		COALESCE(u.email, '') as email,
-		a.labelid,
-		b.label as name,
-		b.type
-	FROM labelrole a
-	LEFT JOIN label b ON b.refid=a.labelid
-	LEFT JOIN user u ON u.refid=a.userid
-	WHERE a.orgid=? AND b.type != 2
-	GROUP BY a.labelid,a.userid
-	ORDER BY u.firstname,u.lastname`
-
-	err = s.Runtime.Db.Select(&v, sql, ctx.OrgID)
 
 	return
 }

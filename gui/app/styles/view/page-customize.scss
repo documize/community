@@ -89,4 +89,10 @@
 	.edit-user-dialog, .delete-user-dialog {
 		display: none;
 	}
+
+	.manage-space-list {
+		> .space {
+			margin: 10px 0;
+		}
+	}
 }
