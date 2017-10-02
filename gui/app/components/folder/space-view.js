@@ -25,13 +25,27 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 	localStorage: service('localStorage'),
 	selectedDocuments: [],
 	hasSelectedDocuments: Ember.computed.gt('selectedDocuments.length', 0),
+	hasCategories: Ember.computed.gt('categories.length', 0),
 	showStartDocument: false,
 	filteredDocs: [],
-	selectedCategory: '',
 
 	didReceiveAttrs() {
 		this._super(...arguments);
+		this.setup();
+	},
 
+	didUpdateAttrs() {
+		this._super(...arguments);
+		this.set('selectedDocuments', []);
+	},
+
+	willDestroyElement() {
+		this._super(...arguments);
+
+		this.destroyTooltips();
+	},
+
+	setup() {
 		let categories = this.get('categories');
 		let categorySummary = this.get('categorySummary');
 		let selectedCategory = '';
@@ -40,39 +54,20 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 			let summary = _.findWhere(categorySummary, {type: "documents", categoryId: cat.get('id')});
 			let docCount =  is.not.undefined(summary) ? summary.count : 0;
 			cat.set('docCount', docCount);
-			if (docCount > 0 && selectedCategory === '') selectedCategory = cat.get('id');
+			if (docCount > 0 && selectedCategory === '') {
+				selectedCategory = cat.get('id');
+			}
 		});
 
 		this.set('categories', categories);
-		this.set('selectedCategory', selectedCategory);
 
-		// Default document view logic:
-		//
-		// 1. show space root documents if we have any
-		// 2. show category documents for first category that has documents
-		if (this.get('rootDocCount') > 0) {
-			this.send('onDocumentFilter', 'space', this.get('folder.id'));
-		} else {
-			if (selectedCategory !== '') {
+		Ember.run.schedule('afterRender', () => {
+			if (this.get('rootDocCount') > 0) {
+				this.send('onDocumentFilter', 'space', this.get('folder.id'));
+			} else if (selectedCategory !== '') {
 				this.send('onDocumentFilter', 'category', selectedCategory);
 			}
-		}
-	},
-
-	didRender() {
-		this._super(...arguments);
-
-		if (this.get('categories.length') > 0) {
-			this.addTooltip(document.getElementById("uncategorized-button"));
-		}
-	},
-
-	willDestroyElement() {
-		this._super(...arguments);
-
-		if (this.get('isDestroyed') || this.get('isDestroying')) return;
-
-		this.destroyTooltips();
+		});
 	},
 
 	actions: {
@@ -138,32 +133,39 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 
 		onDocumentFilter(filter, id) {
 			let docs = this.get('documents');
+			let categories = this.get('categories');
 			let categoryMembers = this.get('categoryMembers');
 			let filtered = [];
+			let allowed = [];
 
-			// filter doc list by category
-			if (filter === 'category') {
-				let allowed = _.pluck(_.where(categoryMembers, {'categoryId': id}), 'documentId');
-				docs.forEach((d) => {
-					if (_.contains(allowed, d.get('id'))) {
-						filtered.pushObject(d);
-					}
-				});
+			switch (filter) {
+				case 'category':
+					allowed = _.pluck(_.where(categoryMembers, {'categoryId': id}), 'documentId');
+					docs.forEach((d) => {
+						if (_.contains(allowed, d.get('id'))) {
+							filtered.pushObject(d);
+						}
+					});
+					this.set('spaceSelected', false);
+					break;
+
+				case 'space':
+					this.set('spaceSelected', true);
+					allowed = _.pluck(categoryMembers, 'documentId');
+					docs.forEach((d) => {
+						if (!_.contains(allowed, d.get('id'))) {
+							filtered.pushObject(d);
+						}
+					});
+					break;
 			}
 
-			// filter doc list by space (i.e. have no category)
-			if (filter === 'space') {
-				this.set('selectedCategory', id);
-				let allowed = _.pluck(categoryMembers, 'documentId');
-				docs.forEach((d) => {
-					if (!_.contains(allowed, d.get('id'))) {
-						filtered.pushObject(d);
-					}
-				});
-			}
+			categories.forEach((cat)=> {
+				cat.set('selected', cat.get('id') === id);
+			});
 
+			this.set('categories', categories);
 			this.set('filteredDocs', filtered);
-			this.set('selectedCategory', id);
 		}
 	}
 });

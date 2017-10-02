@@ -46,9 +46,8 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 		});
 
 		model.rootDocCount = rootDocCount;
-	},
 
-	activate() {
-		this.set('model.showStartDocument', false);
+		console.log('afterModel');
+
 	}
 });

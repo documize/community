@@ -31,22 +31,21 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 	pinState : {
 		isPinned: false,
 		pinId: '',
-		newName: '',
-		tip: null
+		newName: ''
 	},
 	deleteSpaceName: '',
 
 	didReceiveAttrs() {
 		this._super(...arguments);
 
-		let targets = _.reject(this.get('folders'), {
-			id: this.get('folder').get('id')
-		});
-
 		let folder = this.get('folder');
-		this.set('pinState.pinId', this.get('pinned').isSpacePinned(folder.get('id')));
-		this.set('pinState.isPinned', this.get('pinState.pinId') !== '');
-		this.set('pinState.newName', folder.get('name'));
+		let targets = _.reject(this.get('folders'), {id: folder.get('id')});
+
+		this.get('pinned').isSpacePinned(folder.get('id')).then((pinId) => {
+			this.set('pinState.pinId', pinId);
+			this.set('pinState.isPinned', pinId !== '');
+			this.set('pinState.newName', folder.get('name'));
+		});
 
 		this.set('movedFolderOptions', targets);
 	},
@@ -91,9 +90,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 	willDestroyElement() {
 		this._super(...arguments);
 
-		if (this.get('isDestroyed') || this.get('isDestroying')) {
-			return;
-		}
+		if (this.get('isDestroyed') || this.get('isDestroying')) return;
 
 		if (is.not.null(this.get('drop'))) {
 			this.get('drop').destroy();

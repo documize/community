@@ -13,16 +13,18 @@
 		onImport=(action 'onImport') onHideStartDocument=(action 'onHideStartDocument')}}
 {{else}}
 
-	{{#if (gt categories.length 0)}}
+	{{#if hasCategories}}
 		<div class="category-filter">
 			{{#if (gt rootDocCount 0)}}
-				<div class="regular-button button-white {{if (eq folder.id selectedCategory) 'selected'}}" id="uncategorized-button" data-tooltip="Documents without category" data-tooltip-position="top center" {{action 'onDocumentFilter' 'space' folder.id}}>
+				<div class="regular-button button-white {{if spaceSelected 'selected'}}"
+					id="uncategorized-button" data-tooltip="Documents without category" data-tooltip-position="top center"
+					{{action 'onDocumentFilter' 'space' folder.id}}>
 					{{folder.name}} ({{rootDocCount}})
 				</div>
 			{{/if}}
 			{{#each categories as |cat index|}}
 				<div class="button-gap"/>
-				<div class="regular-button button-white {{if (eq cat.id selectedCategory) 'selected'}}" {{action 'onDocumentFilter' 'category' cat.id}}>
+				<div class="regular-button button-white {{if cat.selected 'selected'}}" {{action 'onDocumentFilter' 'category' cat.id}}>
 					{{cat.category}} ({{cat.docCount}})
 				</div>
 			{{/each}}
@@ -30,7 +32,6 @@
 	{{/if}}
 
 	{{folder/documents-list documents=filteredDocs folders=folders folder=folder
-		templates=templates permissions=permissions selectedDocuments=(mut selectedDocuments)
-		onImport=(action 'onImport')}}
+		templates=templates permissions=permissions selectedDocuments=(mut selectedDocuments)}}
 
 {{/if}}
