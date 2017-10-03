@@ -1,15 +1,15 @@
 {{#layout/zone-container}}
 
 	{{#layout/zone-sidebar}}
-		{{document/document-index
+		{{document/document-sidebar tab=tab
 			document=model.document folder=model.folder pages=model.pages page=model.page permissions=model.permissions
 			onPageSequenceChange=(action 'onPageSequenceChange') onPageLevelChange=(action 'onPageLevelChange')
 			onGotoPage=(action 'onGotoPage')}}
 	{{/layout/zone-sidebar}}
 
 	{{#layout/zone-content}}
-		<div id="zone-document-content" class="zone-document-content">
 
+		<div id="zone-document-content" class="zone-document-content">
 			<div class="document-header-zone">
 				<div class="pull-left">
 					{{document/space-category document=model.document folder=model.folder folders=model.folders permissions=model.permissions}}
@@ -39,8 +39,8 @@
 				onSavePage=(action 'onSavePage') onInsertSection=(action 'onInsertSection')
 				onSavePageAsBlock=(action 'onSavePageAsBlock') onDeleteBlock=(action 'onDeleteBlock') onGotoPage=(action 'onGotoPage')
 				onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onPageDeleted')}}
-
 		</div>
+
 	{{/layout/zone-content}}
 
 {{/layout/zone-container}}

@@ -1,11 +1,11 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
@@ -18,7 +18,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	global: Ember.inject.service('global'),
 	appMeta: Ember.inject.service(),
 
-	beforeModel: function () {
+	beforeModel () {
 		if (!this.session.isAdmin) {
 			this.transitionTo('auth.login');
 		}
@@ -33,14 +33,14 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 					});
 				});
 			} else {
-				this.get('userService').getComplete().then((users) =>{
+				this.get('userService').getComplete().then((users) => {
 					resolve(users);
 				});
 			}
 		});
 	},
 
-	activate: function () {
+	activate() {
 		document.title = "Users | Documize";
 	}
 });

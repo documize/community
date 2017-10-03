@@ -29,34 +29,30 @@
             </tr>
         </thead>
         <tbody>
-            {{#each filteredUsers as |user|}}
+            {{#each users as |user|}}
                 <tr>
                     <td class="{{unless user.active 'inactive-user'}} {{if user.admin 'admin-user'}}">
                         <div class="selector pull-left">
-                            {{#unless user.me}}
-                                {{#if user.selected}}
-                                    <i class="material-icons checkbox" {{action 'toggleSelect' user}}>check_box</i>
-                                {{else}}
-                                    <i class="material-icons checkbox" {{action 'toggleSelect' user}}>check_box_outline_blank</i>
-                                {{/if}}
-                            {{/unless}}
+							{{#if user.selected}}
+								<i class="material-icons checkbox" {{action 'toggleSelect' user}}>check_box</i>
+							{{else if user.me}}
+								<i class="material-icons color-gray">check_box_outline_blank</i>
+							{{else}}
+								<i class="material-icons checkbox" {{action 'toggleSelect' user}}>check_box_outline_blank</i>
+							{{/if}}
                         </div>
                         <div class="name">{{ user.fullname }}</div>
                         <div class="email">{{ user.email }}</div>
                     </td>
                     <td class="no-width text-center">
-                        {{#if user.me}}
-                            <i class="material-icons color-gray">check_box</i>
-                        {{else if user.editor}}
+                        {{#if user.editor}}
                             <i class="material-icons checkbox" {{action 'toggleEditor' user.id}}>check_box</i>
                         {{else}}
                             <i class="material-icons checkbox" {{action 'toggleEditor' user.id}}>check_box_outline_blank</i>
                         {{/if}}
                     </td>
                     <td class="no-width text-center">
-                        {{#if user.me}}
-                            <i class="material-icons color-gray">check_box</i>
-                        {{else if user.viewUsers}}
+                      	{{#if user.viewUsers}}
                             <i class="material-icons checkbox" {{action 'toggleUsers' user.id}}>check_box</i>
                         {{else}}
                             <i class="material-icons checkbox" {{action 'toggleUsers' user.id}}>check_box_outline_blank</i>

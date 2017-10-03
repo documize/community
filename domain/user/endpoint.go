@@ -278,7 +278,6 @@ func (h *Handler) GetSpaceUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get user account as we need to know if user can see all users.
-	// account.users == false means we restrict viewing to just space users
 	account, err := h.Store.Account.GetUserAccount(ctx, ctx.UserID)
 	if err != nil && err != sql.ErrNoRows {
 		response.WriteJSON(w, u)
@@ -286,6 +285,7 @@ func (h *Handler) GetSpaceUsers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// account.users == false means we restrict viewing to just space users
 	if account.Users {
 		// can see all users
 		u, err = h.Store.User.GetActiveUsersForOrganization(ctx)

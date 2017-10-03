@@ -54,7 +54,7 @@ export default Ember.Component.extend(NotifierMixin, {
 			let u = {
 				orgId: this.get('folder.orgId'),
 				folderId: this.get('folder.id'),
-				userId: '',
+				userId: '0',
 				fullname: ' Everyone',
 				spaceView: false,
 				spaceManage: false,
@@ -95,7 +95,7 @@ export default Ember.Component.extend(NotifierMixin, {
 			let payload = { Message: message, Permissions: permissions };
 
 			let hasEveryone = _.find(permissions, function (permission) {
-				return permission.get('userId') === "" &&
+				return permission.get('userId') === "0" &&
 					(permission.get('spaceView') || permission.get('documentAdd') || permission.get('documentEdit') || permission.get('documentDelete') ||
 					permission.get('documentMove') || permission.get('documentCopy') || permission.get('documentTemplate'));
 			});

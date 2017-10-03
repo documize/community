@@ -136,7 +136,7 @@ func (h *Handler) SetSpacePermissions(w http.ResponseWriter, r *http.Request) {
 		// Only persist if there is a role!
 		if permission.HasAnyPermission(perm) {
 			// identify publically shared spaces
-			if len(perm.UserID) == 0 {
+			if perm.UserID == "0" {
 				hasEveryoneRole = true
 			}
 
@@ -156,7 +156,7 @@ func (h *Handler) SetSpacePermissions(w http.ResponseWriter, r *http.Request) {
 			if _, isExisting := previousRoleUsers[perm.UserID]; !isExisting {
 
 				// we skip 'everyone' (user id != empty string)
-				if len(perm.UserID) > 0 {
+				if perm.UserID != "0" {
 					existingUser, err := h.Store.User.Get(ctx, perm.UserID)
 					if err != nil {
 						response.WriteServerError(w, method, err)

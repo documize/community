@@ -11,11 +11,12 @@
 
 import Ember from 'ember';
 import AuthProvider from '../../mixins/auth';
+import DropdownMixin from '../../mixins/dropdown';
 
-export default Ember.Component.extend(AuthProvider, {
+export default Ember.Component.extend(AuthProvider, DropdownMixin, {
 	editUser: null,
 	deleteUser: null,
-	drop: null,
+	dropdown: null,
 	password: {},
 	filter: '',
 	filteredUsers: [],
@@ -23,20 +24,22 @@ export default Ember.Component.extend(AuthProvider, {
 	hasSelectedUsers: false,
 
 	didReceiveAttrs() {
-		this.users.forEach(user => {
+		this._super(...arguments);
+
+		let users = this.get('users');
+
+		users.forEach(user => {
 			user.set('me', user.get('id') === this.get('session.session.authenticated.user.id'));
 			user.set('selected', false);
 		});
 
-		this.set('filteredUsers', this.users);
+		this.set('users', users);
+		this.set('filteredUsers', users);
 	},
 
 	willDestroyElement() {
-		let drop = this.get('drop');
-
-		if (is.not.null(drop)) {
-			drop.destroy();
-		}
+		this._super(...arguments);
+		this.destroyDropdown();
 	},
 
 	onKeywordChange: function () {
@@ -109,6 +112,8 @@ export default Ember.Component.extend(AuthProvider, {
 			$(".edit-user-dialog").css("display", "block");
 			$("input").removeClass("error");
 
+			this.closeDropdown();
+
 			let drop = new Drop({
 				target: $(".edit-button-" + id)[0],
 				content: $(".edit-user-dialog")[0],
@@ -122,7 +127,7 @@ export default Ember.Component.extend(AuthProvider, {
 				remove: false
 			});
 
-			self.set('drop', drop);
+			self.set('dropdown', drop);
 
 			drop.on('open', function () {
 				self.$("#edit-firstname").focus();
@@ -133,6 +138,8 @@ export default Ember.Component.extend(AuthProvider, {
 			let user = this.users.findBy("id", id);
 			this.set('deleteUser', user);
 			$(".delete-user-dialog").css("display", "block");
+
+			this.closeDropdown();
 
 			let drop = new Drop({
 				target: $(".delete-button-" + id)[0],
@@ -147,12 +154,11 @@ export default Ember.Component.extend(AuthProvider, {
 				remove: false
 			});
 
-			this.set('drop', drop);
+			this.set('dropdown', drop);
 		},
 
 		cancel() {
-			let drop = this.get('drop');
-			drop.close();
+			this.closeDropdown();
 		},
 
 		save() {
@@ -172,8 +178,7 @@ export default Ember.Component.extend(AuthProvider, {
 				return;
 			}
 
-			let drop = this.get('drop');
-			drop.close();
+			this.closeDropdown();
 
 			this.attrs.onSave(user);
 

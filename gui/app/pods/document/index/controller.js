@@ -11,8 +11,9 @@
 
 import Ember from 'ember';
 import NotifierMixin from '../../../mixins/notifier';
+import TooltipMixin from '../../../mixins/tooltip';
 
-export default Ember.Controller.extend(NotifierMixin, {
+export default Ember.Controller.extend(NotifierMixin, TooltipMixin, {
 	documentService: Ember.inject.service('document'),
 	templateService: Ember.inject.service('template'),
 	sectionService: Ember.inject.service('section'),
@@ -25,10 +26,6 @@ export default Ember.Controller.extend(NotifierMixin, {
 	tab: 'index',
 
 	actions: {
-		toggleSidebar() {
-			this.set('toggled', !this.get('toggled'));
-		},
-
 		onSaveDocument(doc) {
 			this.get('documentService').save(doc);
 			this.showNotification('Saved');

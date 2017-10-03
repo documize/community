@@ -109,9 +109,11 @@ func (s Scope) GetBySerial(ctx domain.RequestContext, serial string) (u user.Use
 // identified in the Persister.
 func (s Scope) GetActiveUsersForOrganization(ctx domain.RequestContext) (u []user.User, err error) {
 	err = s.Runtime.Db.Select(&u,
-		`SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.password, u.salt, u.reset, u.created, u.revised
-		FROM user u
-		WHERE u.refid IN (SELECT userid FROM account WHERE orgid = ? AND active=1) ORDER BY u.firstname,u.lastname`,
+		`SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.password, u.salt, u.reset, u.created, u.revised,
+		u.global, a.active, a.editor, a.admin, a.users as viewusers
+		FROM user u, account a
+		WHERE u.refid=a.userid AND a.orgid=? AND a.active=1
+		ORDER BY u.firstname,u.lastname`,
 		ctx.OrgID)
 
 	if err != nil {
@@ -125,9 +127,11 @@ func (s Scope) GetActiveUsersForOrganization(ctx domain.RequestContext) (u []use
 // identified in the Persister.
 func (s Scope) GetUsersForOrganization(ctx domain.RequestContext) (u []user.User, err error) {
 	err = s.Runtime.Db.Select(&u,
-		`SELECT id, refid, firstname, lastname, email, initials, password, salt, reset, created, revised 
-		FROM user WHERE refid IN (SELECT userid FROM account where orgid = ?)
-		ORDER BY firstname,lastname`, ctx.OrgID)
+		`SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.password, u.salt, u.reset, u.created, u.revised,
+		u.global, a.active, a.editor, a.admin, a.users as viewusers
+		FROM user u, account a
+		WHERE u.refid=a.userid AND a.orgid=?
+		ORDER BY u.firstname, u.lastname`, ctx.OrgID)
 
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf(" get users for org %s", ctx.OrgID))

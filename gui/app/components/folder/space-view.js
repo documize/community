@@ -39,6 +39,14 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 		this.set('selectedDocuments', []);
 	},
 
+	didRender() {
+		this._super(...arguments);
+
+		if (this.get('rootDocCount') > 0) {
+			this.addTooltip(document.getElementById("uncategorized-button"));
+		}
+	},
+
 	willDestroyElement() {
 		this._super(...arguments);
 

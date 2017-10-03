@@ -10,9 +10,9 @@
 // https://documize.com
 
 import Ember from 'ember';
+import tocUtil from '../../utils/toc';
 import NotifierMixin from '../../mixins/notifier';
 import TooltipMixin from '../../mixins/tooltip';
-import tocUtil from '../../utils/toc';
 
 export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	document: {},
@@ -30,7 +30,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		return this.get('pages.length') === 0;
 	}),
 
-	didReceiveAttrs: function () {
+	didReceiveAttrs() {
 		this._super(...arguments);
 
 		this.set('showToc', is.not.undefined(this.get('pages')) && this.get('pages').get('length') > 0);
@@ -40,7 +40,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		}
 	},
 
-	didRender: function () {
+	didRender() {
 		this._super(...arguments);
 
 		if (this.session.authenticated) {
