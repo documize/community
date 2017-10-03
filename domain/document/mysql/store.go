@@ -284,18 +284,18 @@ func (s Scope) Delete(ctx domain.RequestContext, documentID string) (rows int64,
 // Remove document pages, revisions, attachments, updates the search subsystem.
 func (s Scope) DeleteBySpace(ctx domain.RequestContext, spaceID string) (rows int64, err error) {
 	b := mysql.BaseQuery{}
-	rows, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE from page WHERE labelid=\"%s\" AND orgid=\"%s\"", spaceID, ctx.OrgID))
+	rows, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE from page WHERE documentid IN (SELECT refid FROM document WHERE labelid=\"%s\" AND orgid=\"%s\")", spaceID, ctx.OrgID))
 
 	if err != nil {
 		return
 	}
 
-	_, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE from revision WHERE labelid=\"%s\" AND orgid=\"%s\"", spaceID, ctx.OrgID))
+	_, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE from revision WHERE documentid IN (SELECT refid FROM document WHERE labelid=\"%s\" AND orgid=\"%s\")", spaceID, ctx.OrgID))
 	if err != nil {
 		return
 	}
 
-	_, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE from attachment WHERE labelid=\"%s\" AND orgid=\"%s\"", spaceID, ctx.OrgID))
+	_, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE from attachment WHERE documentid IN (SELECT refid FROM document WHERE labelid=\"%s\" AND orgid=\"%s\")", spaceID, ctx.OrgID))
 	if err != nil {
 		return
 	}

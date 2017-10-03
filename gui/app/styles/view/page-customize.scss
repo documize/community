@@ -86,13 +86,13 @@
 		}
 	}
 
-	.edit-user-dialog, .delete-user-dialog {
+	.edit-user-dialog, .delete-user-dialog, .delete-space-dialog {
 		display: none;
 	}
 
 	.manage-space-list {
 		> .space {
-			margin: 10px 0;
+			margin: 20px 0;
 		}
 	}
 }
