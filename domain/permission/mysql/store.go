@@ -191,3 +191,24 @@ func (s Scope) GetCategoryUsers(ctx domain.RequestContext, catID string) (u []us
 
 	return
 }
+
+// GetUserCategoryPermissions returns category permissions for given user.
+func (s Scope) GetUserCategoryPermissions(ctx domain.RequestContext, userID string) (r []permission.Permission, err error) {
+	err = s.Runtime.Db.Select(&r, `
+		SELECT id, orgid, who, whoid, action, scope, location, refid
+			FROM permission WHERE orgid=? AND location='category' AND who='user' AND (whoid=? OR whoid='0')
+		UNION ALL
+		SELECT p.id, p.orgid, p.who, p.whoid, p.action, p.scope, p.location, p.refid
+			FROM permission p LEFT JOIN rolemember r ON p.whoid=r.roleid
+			WHERE p.orgid=? AND p.location='category'  AND p.who='role'`,
+		ctx.OrgID, userID, ctx.OrgID)
+
+	if err == sql.ErrNoRows {
+		err = nil
+	}
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("unable to execute select category permissions for user %s", userID))
+	}
+
+	return
+}

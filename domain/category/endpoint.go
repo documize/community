@@ -378,7 +378,7 @@ func (h *Handler) SetDocumentCategoryMembership(w http.ResponseWriter, r *http.R
 	response.WriteEmpty(w)
 }
 
-// GetDocumentCategoryMembership returns categories associated with given document.
+// GetDocumentCategoryMembership returns user viewable categories associated with a given document.
 func (h *Handler) GetDocumentCategoryMembership(w http.ResponseWriter, r *http.Request) {
 	method := "category.GetDocumentCategoryMembership"
 	ctx := domain.GetRequestContext(r)
@@ -412,7 +412,24 @@ func (h *Handler) GetDocumentCategoryMembership(w http.ResponseWriter, r *http.R
 		cat = []category.Category{}
 	}
 
-	response.WriteJSON(w, cat)
+	perm, err := h.Store.Permission.GetUserCategoryPermissions(ctx, ctx.UserID)
+	if err != nil {
+		h.Runtime.Log.Error("get user category permissions", err)
+		response.WriteServerError(w, method, err)
+		return
+	}
+
+	see := []category.Category{}
+	for _, c := range cat {
+		for _, p := range perm {
+			if p.RefID == c.RefID {
+				see = append(see, c)
+				break
+			}
+		}
+	}
+
+	response.WriteJSON(w, see)
 }
 
 // GetSpaceCategoryMembers returns category/document associations within space.
