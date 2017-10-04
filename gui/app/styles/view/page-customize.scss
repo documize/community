@@ -1,7 +1,16 @@
 .page-customize {
-	@include content-container();
 
-	.user-admin {
+	> .auth-admin, > .general-admin, > .license-admin, > .smtp-admin, > .space-admin {
+		@include content-container();
+	}
+
+	> .add-user {
+		@include content-container();
+		margin-bottom: 50px;
+	}
+
+	> .user-admin {
+		@include content-container();
 		margin: 30px 0;
 
 		> .heading {

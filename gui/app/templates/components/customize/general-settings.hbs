@@ -1,30 +1,34 @@
-<form>
-    <div class="form-header">
-        <div class="title">Instance Settings</div>
-        <div class="tip">Settings applicable to your Documize instance</div>
-    </div>
-    <div class="input-control">
-        <label>Title</label>
-        <div class="tip">Describe the title of this Documize instance</div>
-        {{focus-input id="siteTitle" type="text" value=model.general.title class=(if hasTitleInputError 'error')}}
-    </div>
-    <div class="input-control">
-        <label>Message</label>
-        <div class="tip">Describe the purpose of this Documize instance</div>
-        {{textarea id="siteMessage" rows="3" value=model.general.message class=(if hasMessageInputError 'error')}}
-    </div>
-    <div class="input-control">
-        <label>Anonymous Access</label>
-        <div class="tip">Content within "Everyone" will be made available to anonymous users</div>
-        <div class="checkbox">
-            <input type="checkbox" id="allowAnonymousAccess" checked={{model.general.allowAnonymousAccess}} />
-            <label for="allowAnonymousAccess">Allow anyone to access this Documize instance</label>
-        </div>
-    </div>
-	<div class="input-control">
-		<label>Conversion Service URL</label>
-		<div class="tip">Endpoint for handling import/export (e.g. https://api.documize.com, <a href="https://docs.documize.com/s/WNEpptWJ9AABRnha/administration-guides/d/WO0pt_MXigAB6sJ7/general-options">view documentation</a>)</div>
-		{{focus-input id="conversionEndpoint" type="text" value=model.general.conversionEndpoint class=(if hasConversionEndpointInputError 'error')}}
+<div class="page-customize">
+	<div class="general-admin">
+		<form>
+			<div class="form-header">
+				<div class="title">Instance Settings</div>
+				<div class="tip">Settings applicable to your Documize instance</div>
+			</div>
+			<div class="input-control">
+				<label>Title</label>
+				<div class="tip">Describe the title of this Documize instance</div>
+				{{focus-input id="siteTitle" type="text" value=model.general.title class=(if hasTitleInputError 'error')}}
+			</div>
+			<div class="input-control">
+				<label>Message</label>
+				<div class="tip">Describe the purpose of this Documize instance</div>
+				{{textarea id="siteMessage" rows="3" value=model.general.message class=(if hasMessageInputError 'error')}}
+			</div>
+			<div class="input-control">
+				<label>Anonymous Access</label>
+				<div class="tip">Content within "Everyone" will be made available to anonymous users</div>
+				<div class="checkbox">
+					<input type="checkbox" id="allowAnonymousAccess" checked={{model.general.allowAnonymousAccess}} />
+					<label for="allowAnonymousAccess">Allow anyone to access this Documize instance</label>
+				</div>
+			</div>
+			<div class="input-control">
+				<label>Conversion Service URL</label>
+				<div class="tip">Endpoint for handling import/export (e.g. https://api.documize.com, <a href="https://docs.documize.com/s/WNEpptWJ9AABRnha/administration-guides/d/WO0pt_MXigAB6sJ7/general-options">view documentation</a>)</div>
+				{{focus-input id="conversionEndpoint" type="text" value=model.general.conversionEndpoint class=(if hasConversionEndpointInputError 'error')}}
+			</div>
+			<div class="regular-button button-blue" {{ action 'save' }}>save</div>
+		</form>
 	</div>
-    <div class="regular-button button-blue" {{ action 'save' }}>save</div>
-</form>
+</div>
