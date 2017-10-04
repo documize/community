@@ -12,6 +12,7 @@
 import Ember from 'ember';
 
 const {
+	RSVP,
 	inject: { service }
 } = Ember;
 
@@ -25,6 +26,10 @@ export default Ember.Service.extend({
 
 	getUserPins() {
 		let userId = this.get('session.user.id');
+
+		if (!this.get('session.authenticated')) {
+			return new RSVP.resolve([]);
+		}
 
 		return this.get('ajax').request(`pin/${userId}`, {
 			method: 'GET'

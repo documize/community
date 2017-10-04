@@ -52,7 +52,7 @@
 			<div class="round-button button-gray" id="space-unpin-button" data-tooltip="Remove favorite" data-tooltip-position="top center" {{action 'onUnpin'}}>
 				<i class="material-icons">favorite</i>
 			</div>
-		{{else}}
+		{{else if session.authenticated}}
 			<div class="round-button button-gray" id="space-pin-button" data-tooltip="Mark favorite" data-tooltip-position="top center">
 				<i class="material-icons">favorite_border</i>
 			</div>
@@ -74,15 +74,17 @@
 			</div>
 		{{/if}}
 
-		{{#unless pinState.isPinned}}
-			{{#dropdown-dialog target="space-pin-button" position="bottom right" button="Pin" color="flat-green" onAction=(action 'onPin') focusOn="pin-space-name"}}
-				<div class="input-control">
-					<label>Favorite Space</label>
-					<div class="tip">Provide short name</div>
-					{{input type='text' id="pin-space-name" value=pinState.newName}}
-				</div>
-			{{/dropdown-dialog}}
-		{{/unless}}
+		{{#if session.authenticated}}
+			{{#unless pinState.isPinned}}
+				{{#dropdown-dialog target="space-pin-button" position="bottom right" button="Pin" color="flat-green" onAction=(action 'onPin') focusOn="pin-space-name"}}
+					<div class="input-control">
+						<label>Favorite Space</label>
+						<div class="tip">Provide short name</div>
+						{{input type='text' id="pin-space-name" value=pinState.newName}}
+					</div>
+				{{/dropdown-dialog}}
+			{{/unless}}
+		{{/if}}
 
 		{{#if permissions.spaceOwner}}
 			{{#dropdown-dialog target="space-delete-button" position="bottom right" button="Delete" color="flat-red" onAction=(action 'deleteSpace')}}

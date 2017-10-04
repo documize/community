@@ -20,11 +20,12 @@
 			{{#if permissions.documentEdit}}
 				<li class="item">{{#link-to 'document.history'}}History{{/link-to}}</li>
 	        {{/if}}
+			<li class="divider"/>
         {{/if}}
         {{#if permissions.documentTemplate}}
             <li class="item" id="save-template-button">Template</li>
+			<li class="divider"/>
         {{/if}}
-		<li class="divider"/>
         <li class="item" id="print-document-button" {{action 'onPrintDocument'}}>Print</li>
         {{#if permissions.documentDelete}}
             <li class="item danger" id="delete-document-button">Delete</li>

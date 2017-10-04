@@ -16,7 +16,6 @@ package category
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -281,11 +280,8 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 
 // GetSummary returns number of documents and users for space categories.
 func (h *Handler) GetSummary(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("ctx.UserID")
-
 	method := "category.GetSummary"
 	ctx := domain.GetRequestContext(r)
-
 
 	spaceID := request.Param(r, "spaceID")
 	if len(spaceID) == 0 {
@@ -293,8 +289,8 @@ func (h *Handler) GetSummary(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ok := permission.HasPermission(ctx, *h.Store, spaceID, pm.SpaceManage, pm.SpaceOwner)
-	if !ok || !ctx.Authenticated {
+	ok := permission.HasPermission(ctx, *h.Store, spaceID, pm.SpaceManage, pm.SpaceOwner, pm.SpaceView)
+	if !ok {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -400,7 +396,7 @@ func (h *Handler) GetDocumentCategoryMembership(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	if !permission.HasPermission(ctx, *h.Store, doc.LabelID, pm.DocumentAdd, pm.DocumentEdit) {
+	if !permission.HasPermission(ctx, *h.Store, doc.LabelID, pm.SpaceView, pm.DocumentAdd, pm.DocumentEdit) {
 		response.WriteForbiddenError(w)
 		return
 	}

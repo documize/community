@@ -37,6 +37,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 	didUpdateAttrs() {
 		this._super(...arguments);
 		this.set('selectedDocuments', []);
+		this.set('filteredDocs', []);
 	},
 
 	didRender() {

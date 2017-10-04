@@ -45,8 +45,10 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 				selected.forEach((s) => {
 					let cats = this.set('categories', categories);
 					let cat = categories.findBy('id', s.id);
-					cat.set('selected', true);
-					this.set('categories', cats);
+					if (is.not.undefined(cat)) {
+						cat.set('selected', true);
+						this.set('categories', cats);
+					}
 				});
 			});
 		});
