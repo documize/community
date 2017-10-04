@@ -27,7 +27,7 @@
 
 				<ul class="index-list">
 					{{#each pages key="id" as |p index|}}
-						{{document/index-entry page=p index=index onClick=(action 'onEntryClick')}}
+						{{document/index-entry page=p currentPageId=currentPageId index=index onClick=(action 'onEntryClick')}}
 					{{/each}}
 				</ul>
 			</div>
