@@ -28,14 +28,14 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, DropdownMixin
 	users: [],
 
 	didReceiveAttrs() {
+		this._super(...arguments);
+
 		this.load();
 	},
 
-	didRender() {
-		// this.addTooltip(this.$(".action"));
-	},
-
 	willDestroyElement() {
+		this._super(...arguments);
+
 		this.destroyDropdown();
 	},
 
@@ -150,7 +150,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, DropdownMixin
 				// mark those users as selected that have already been given permission
 				// to see the current category;
 				users.forEach((user) => {
-					let userId = user.get('id') === '0' ? '' : user.get('id');
+					let userId = user.get('id');
 					let selected = viewers.isAny('whoId', userId);
 					user.set('selected', selected);
 				});
@@ -189,7 +189,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, DropdownMixin
 
 			users.forEach((user) => {
 				let userId = user.get('id');
-				if (userId === "0") userId = '';
 
 				let v = {
 					orgId: this.get('folder.orgId'),

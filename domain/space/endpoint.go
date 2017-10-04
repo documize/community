@@ -300,7 +300,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	response.WriteJSON(w, sp)
 }
 
-// GetAll returns spaces the user can see.
+// GetAlGetViewablel returns spaces the user can see.
 func (h *Handler) GetViewable(w http.ResponseWriter, r *http.Request) {
 	method := "space.GetViewable"
 	ctx := domain.GetRequestContext(r)
@@ -312,14 +312,12 @@ func (h *Handler) GetViewable(w http.ResponseWriter, r *http.Request) {
 		h.Runtime.Log.Error(method, err)
 		return
 	}
-
 	if len(sp) == 0 {
 		sp = []space.Space{}
 	}
 
 	response.WriteJSON(w, sp)
 }
-
 
 // GetAll returns every space for documize admin users to manage
 func (h *Handler) GetAll(w http.ResponseWriter, r *http.Request) {
@@ -329,7 +327,7 @@ func (h *Handler) GetAll(w http.ResponseWriter, r *http.Request) {
 	if !ctx.Administrator {
 		response.WriteForbiddenError(w)
 		h.Runtime.Log.Info("rejected non-admin user request for all spaces")
-		return		
+		return
 	}
 
 	sp, err := h.Store.Space.GetAll(ctx)

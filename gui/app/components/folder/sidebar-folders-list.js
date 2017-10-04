@@ -32,30 +32,25 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, AuthMixin, {
 
 	didReceiveAttrs() {
 		let folders = this.get('folders');
-
-		// clear out state
-		this.set('publicFolders', []);
-		this.set('protectedFolders', []);
-		this.set('privateFolders', []);
+		let publicFolders = [];
+		let protectedFolders = [];
+		let privateFolders = [];
 
 		_.each(folders, folder => {
 			if (folder.get('folderType') === constants.FolderType.Public) {
-				let folders = this.get('publicFolders');
-				folders.pushObject(folder);
-				this.set('publicFolders', folders);
+				publicFolders.pushObject(folder);
 			}
 			if (folder.get('folderType') === constants.FolderType.Private) {
-				let folders = this.get('privateFolders');
-				folders.pushObject(folder);
-				this.set('privateFolders', folders);
+				protectedFolders.pushObject(folder);
 			}
 			if (folder.get('folderType') === constants.FolderType.Protected) {
-				let folders = this.get('protectedFolders');
-				folders.pushObject(folder);
-				this.set('protectedFolders', folders);
+				privateFolders.pushObject(folder);
 			}
 		});
 
+		this.set('publicFolders', publicFolders);
+		this.set('protectedFolders', protectedFolders);
+		this.set('privateFolders', privateFolders);
 		this.set('hasPublicFolders', this.get('publicFolders.length') > 0);
 		this.set('hasPrivateFolders', this.get('privateFolders.length') > 0);
 		this.set('hasProtectedFolders', this.get('protectedFolders.length') > 0);

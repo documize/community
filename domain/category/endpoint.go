@@ -16,6 +16,7 @@ package category
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -280,8 +281,11 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 
 // GetSummary returns number of documents and users for space categories.
 func (h *Handler) GetSummary(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("ctx.UserID")
+
 	method := "category.GetSummary"
 	ctx := domain.GetRequestContext(r)
+
 
 	spaceID := request.Param(r, "spaceID")
 	if len(spaceID) == 0 {
