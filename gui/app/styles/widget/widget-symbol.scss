@@ -1,0 +1,17 @@
+.symbol {
+    display: inline-block;
+    border-radius: 2px;
+    height: 40px;
+    width: 40px;
+    padding: 0;
+    line-height: 0;
+    margin: 0;
+    text-align: center;
+	background-color: $color-symbol-box;
+
+    > .material-icons {
+        font-size: 22px;
+        margin-top: 20px;
+        color: $color-symbol-icon;
+    }
+}

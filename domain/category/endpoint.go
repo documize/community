@@ -104,8 +104,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ok := permission.HasPermission(ctx, *h.Store, spaceID,
-		pm.SpaceManage, pm.SpaceOwner, pm.SpaceView)
+	ok := permission.HasPermission(ctx, *h.Store, spaceID, pm.SpaceManage, pm.SpaceOwner, pm.SpaceView)
 	if !ok {
 		response.WriteForbiddenError(w)
 		return

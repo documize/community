@@ -54,6 +54,9 @@
 	.start-section,
 	.start-button,
 	.is-a-tab,
+	.document-toolbar,
+	#document-category-button,
+	#document-tag-button,
 	.new-section-wizard {
 		float: none !important;
 		display: none !important;
@@ -61,6 +64,10 @@
 		padding: 0 !important;
 		width: 0 !important;
 		z-index: 0 !important;
+	}
+
+	.document-category {
+		margin-left: 0 !important;
 	}
 
 	.non-printable-message,
