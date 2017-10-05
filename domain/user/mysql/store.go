@@ -20,6 +20,7 @@ import (
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/model/user"
+	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 )
 
@@ -140,7 +141,7 @@ func (s Scope) GetUsersForOrganization(ctx domain.RequestContext) (u []user.User
 	return
 }
 
-// GetSpaceUsers returns a slice containing all user records for given folder.
+// GetSpaceUsers returns a slice containing all user records for given space.
 func (s Scope) GetSpaceUsers(ctx domain.RequestContext, spaceID string) (u []user.User, err error) {
 	err = s.Runtime.Db.Select(&u, `
 		SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.password, u.salt, u.reset, u.created, u.revised, u.global,
@@ -150,7 +151,7 @@ func (s Scope) GetSpaceUsers(ctx domain.RequestContext, spaceID string) (u []use
 			SELECT whoid from permission WHERE orgid=? AND who='user' AND scope='object' AND location='space' AND refid=? UNION ALL
 			SELECT r.userid from rolemember r LEFT JOIN permission p ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.scope='object' AND p.location='space' AND p.refid=?
 		)
-		ORDER BY u.firstname, u.lastname;
+		ORDER BY u.firstname, u.lastname
 		`, ctx.OrgID, ctx.OrgID, spaceID, ctx.OrgID, spaceID)
 
 	if err != nil {
@@ -160,39 +161,24 @@ func (s Scope) GetSpaceUsers(ctx domain.RequestContext, spaceID string) (u []use
 	return
 }
 
-// GetVisibleUsers returns all users that can be "seen" by a user.
-// "Seen" means users who share at least one space in common.
-// Explicit access must be provided to a user in order to associate them
-// as having access to a space. Simply marking a space as vieewable by "everyone" is not enough.
-func (s Scope) GetVisibleUsers(ctx domain.RequestContext) (u []user.User, err error) {
-	err = s.Runtime.Db.Select(&u,
-		`SELECT id, refid, firstname, lastname, email, initials, password, salt, reset, created, revised
-		FROM user 
-		WHERE 
-			refid IN (SELECT userid FROM account WHERE orgid = ?)
-			AND refid IN 
-				(SELECT userid FROM labelrole where userid != '' AND orgid=?
-					AND labelid IN (
-						SELECT refid FROM label WHERE orgid=? AND type=2 AND userid=?
-						UNION ALL
-						SELECT refid FROM label a WHERE orgid=? AND type=1 AND refid IN (SELECT labelid FROM labelrole WHERE orgid=? AND userid='' AND (canedit=1 OR canview=1))
-						UNION ALL
-						SELECT refid FROM label a WHERE orgid=? AND type=3 AND refid IN (SELECT labelid FROM labelrole WHERE orgid=? AND userid=? AND (canedit=1 OR canview=1))
-					)
-				GROUP BY userid)
-		ORDER BY firstname, lastname`,
-		ctx.OrgID,
-		ctx.OrgID,
-		ctx.OrgID,
-		ctx.UserID,
-		ctx.OrgID,
-		ctx.OrgID,
-		ctx.OrgID,
-		ctx.OrgID,
-		ctx.UserID)
+// GetUsersForSpaces returns users with access to specified spaces.
+func (s Scope) GetUsersForSpaces(ctx domain.RequestContext, spaces []string) (u []user.User, err error) {
+	query, args, err := sqlx.In(`
+		SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.password, u.salt, u.reset, u.created, u.revised, u.global,
+		a.active, a.users AS viewusers, a.editor, a.admin
+		FROM user u, account a
+		WHERE a.orgid=? AND u.refid = a.userid AND a.active=1 AND u.refid IN (
+			SELECT whoid from permission WHERE orgid=? AND who='user' AND scope='object' AND location='space' AND refid IN(?) UNION ALL
+			SELECT r.userid from rolemember r LEFT JOIN permission p ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.scope='object' AND p.location='space' AND p.refid IN(?) 
+		)
+		ORDER BY u.firstname, u.lastname
+		`, ctx.OrgID, ctx.OrgID, spaces, ctx.OrgID, spaces)
+
+	query = s.Runtime.Db.Rebind(query)
+	err = s.Runtime.Db.Select(&u, query, args...)
 
 	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("get visible users for org %s user %s", ctx.OrgID, ctx.UserID))
+		err = errors.Wrap(err, fmt.Sprintf("get users for spaces for user %s", ctx.UserID))
 	}
 
 	return
