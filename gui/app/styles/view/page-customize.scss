@@ -1,5 +1,4 @@
 .page-customize {
-
 	> .auth-admin, > .general-admin, > .license-admin, > .smtp-admin, > .space-admin {
 		@include content-container();
 	}

@@ -16,7 +16,7 @@
 	{{else}}
 		{{#if canAddCategory}}
 			{{#unless canSelectCategory}}
-				{{#link-to 'folder.settings.category' folder.id folder.slug}}Manage{{/link-to}}
+				{{#link-to 'folder.settings.category' folder.id folder.slug class='non-printable'}}Manage{{/link-to}}
 			{{/unless}}
 		{{else}}
 			<p>&nbsp;</p>
