@@ -3,7 +3,9 @@
 		<div class="space-heading {{if permissions.spaceOwner 'cursor-pointer'}}" onclick={{if permissions.spaceOwner (action 'toggleEdit')}}>
 			<h1 class="space-name">{{folder.name}}</h1>
 			<div class="space-summary">
-				This space contains {{documents.length}} {{if (eq rootDocCount.length 1) 'document' 'documents'}} across {{categories.length}} {{if (eq categories.length 1) 'category' 'categories'}}
+				This space contains {{documents.length}} {{if (eq rootDocCount.length 1) 'document' 'documents'}}
+				{{if (eq categories.length 1) (concat 'and ' categories.length ' category')}}
+				{{if (gt categories.length 1) (concat 'and ' categories.length ' categories')}}
 			</div>
 		</div>
 	{{else}}

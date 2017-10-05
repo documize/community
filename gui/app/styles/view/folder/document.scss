@@ -31,6 +31,14 @@
 .documents-list {
 	margin-bottom: 50px;
 
+	> .caption {
+		text-transform: uppercase;
+		color: $color-gray;
+		font-weight: bold;
+		font-size: 1.0rem;
+		margin: 0 0 10px 0;
+	}
+
 	.document-item {
 		margin: 0 0 25px 0;
 		padding: 25px 15px;
@@ -133,10 +141,39 @@
 	}
 }
 
-.category-filter {
-	margin-bottom: 30px;
 
-	> .selected {
-		@extend .button-nav;
+.space-filter {
+	display: inline-block;
+	margin: 0 30px 30px 0;
+
+	> .caption {
+		text-transform: uppercase;
+		color: $color-gray;
+		font-weight: bold;
+		font-size: 1.0rem;
+		margin: 0 0 10px 0;
 	}
 }
+
+.category-filter {
+	display: inline-block;
+	margin: 0 0 30px 0;
+
+	> .regular-button {
+		margin-right: 10px;
+	}
+
+	> .caption {
+		text-transform: uppercase;
+		color: $color-gray;
+		font-weight: bold;
+		font-size: 1.0rem;
+		margin: 0 0 10px 0;
+	}
+}
+
+// .category-filter {
+// 	> .selected {
+// 		// @extend .button-nav;
+// 	}
+// }

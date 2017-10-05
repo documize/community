@@ -1,5 +1,6 @@
 {{#if (gt documents.length 0)}}
 	<div class="documents-list">
+		<div class="caption">Documents</div>
 		{{#each documents key="id" as |document|}}
 			<div id="document-{{document.id}}">
 				<div class="document-item {{if document.selected "selected-card"}}">

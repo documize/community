@@ -14,21 +14,25 @@
 {{else}}
 
 	{{#if hasCategories}}
-		<div class="category-filter">
-			{{#if (gt rootDocCount 0)}}
-				<div class="regular-button button-white {{if spaceSelected 'selected'}}"
-					id="uncategorized-button" data-tooltip="Documents without category" data-tooltip-position="top center"
-					{{action 'onDocumentFilter' 'space' folder.id}}>
-					{{folder.name}} ({{rootDocCount}})
+		{{#if (gt rootDocCount 0)}}
+			<div class="space-filter">
+				<div class="caption">Space</div>
+				<div class="regular-button button-nav {{if spaceSelected 'selected'}}" {{action 'onDocumentFilter' 'space' folder.id}} id="uncategorized-button" data-tooltip="Documents without category" data-tooltip-position="top center">
+					<div class="name">{{folder.name}} ({{rootDocCount}})</div>
 				</div>
-			{{/if}}
-			{{#each categories as |cat index|}}
-				<div class="button-gap"/>
-				<div class="regular-button button-white {{if cat.selected 'selected'}}" {{action 'onDocumentFilter' 'category' cat.id}}>
-					{{cat.category}} ({{cat.docCount}})
-				</div>
-			{{/each}}
-		</div>
+			</div>
+		{{/if}}
+		{{#if (gt categories.length 0)}}
+			<div class="category-filter">
+				<div class="caption">Category</div>
+				{{#each categories as |cat index|}}
+					<div class="regular-button button-blue {{if cat.selected 'selected'}}" {{action 'onDocumentFilter' 'category' cat.id}}>
+						{{cat.category}} ({{cat.docCount}})
+					</div>
+					<div class="button-gap"/>
+				{{/each}}
+			</div>
+		{{/if}}
 	{{/if}}
 
 	{{folder/documents-list documents=filteredDocs folders=folders folder=folder

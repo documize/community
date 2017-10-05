@@ -69,7 +69,7 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 					folderId: folderId,
 					documentId: docId,
 					categoryId: l.get('id')
-				}
+				};
 
 				toLink.push(t);
 			});
@@ -80,7 +80,7 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 					folderId: folderId,
 					documentId: docId,
 					categoryId: l.get('id')
-				}
+				};
 
 				toUnlink.pushObject(t);
 			});
