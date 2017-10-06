@@ -158,13 +158,21 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 					this.set('spaceSelected', false);
 					break;
 
-				case 'space':
-					this.set('spaceSelected', true);
+				case 'uncategorized':
+					this.set('uncategorizedSelected', true);
 					allowed = _.pluck(categoryMembers, 'documentId');
 					docs.forEach((d) => {
 						if (!_.contains(allowed, d.get('id'))) {
 							filtered.pushObject(d);
 						}
+					});
+					break;
+
+				case 'space':
+					this.set('spaceSelected', true);
+					allowed = _.pluck(categoryMembers, 'documentId');
+					docs.forEach((d) => {
+						filtered.pushObject(d);
 					});
 					break;
 			}
