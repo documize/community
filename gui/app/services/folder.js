@@ -139,7 +139,7 @@ export default BaseService.extend({
 
 	// share this folder with new users!
 	share(folderId, invitation) {
-		return this.get('ajax').post(`folders/${folderId}/invitation`, {
+		return this.get('ajax').post(`space/${folderId}/invitation`, {
 			contentType: 'json',
 			data: JSON.stringify(invitation)
 		});
