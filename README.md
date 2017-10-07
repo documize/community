@@ -1,32 +1,71 @@
 # Documize Community Edition
 
-Documize is an Integrated Document Environment (IDE) unifying documents, wiki, reporting and dashboards -- one tool to power the enterprise-wide knowledge backbone.
+## What is it?
 
-![Alt text](screenshot.png "Documize")
+Documize is an intelligent document environment (IDE) for creating, securing and sharing documents -- everything yoyu need in one place.
 
-The mission is to bring software dev inspired features (refactoring, testing, linting, metrics, PRs) to those poor souls stuck writing docs in the dark ages.
+## Why should I care?
+
+Because maybe like us you are:
+
+* juggling WYSIWYG editors and wiki software 
+* playing email tennis with document feedback and versions
+* sharing not-so-secure folders with external participants
+
+Sound familiar? Read on.
+
+## Who is it for?
+
+Anyone who wants one place for every kind of document.
+
+Anyone who wants to loop in external participants without leaking information.
+
+Anyone who wants to do to documents what agile did to software development.
+
+## Features
+
+Sane organization through personal, team and public spaces.
+
+Granular document access control via categories.
+
+Section based approach to document construction.
+
+Documnentation tasking and delegation.
+
+Integrations for embedding SaaS data within documents.
 
 ## Latest version
 
 v1.54.0
 
-## OS Support
+## OS support
 
-- Windows
+Documize runs on the following:
+
 - Linux
+- Windows
 - macOS
 
-## Tech stack
+## Technology stack
+
+Documize is built with the following technologies:
 
 - EmberJS (v2.15.0)
 - Go (v1.9.0)
-- MySQL (v5.7.10+) or Percona (v5.7.16-10+) or MariaDB (10.3.0+)
 
-## Documentation
+...and supports the following databases:
 
-<https://docs.documize.com>
+- MySQL (v5.7.10+)
+- Percona (v5.7.16-10+)
+- MariaDB (10.3.0+)
 
-## Keycloak Integration
+Coming soon, PostgreSQL and Microsoft SQL Server support.
+
+## Authentication options
+
+Besides email/password login, you can also leverage the following options.
+
+### Keycloak Integration
 
 Documize provides out-of-the-box integration with [Redhat Keycloak](http://www.keycloak.org) for open source identity and access management.
 
@@ -34,7 +73,7 @@ Connect and authenticate with LDAP, Active Directory and more.
 
 <https://docs.documize.com>
 
-## Auth0 Compatible
+### Auth0 Compatible
 
 Documize is compatible with Auth0 identity as a service.
 
@@ -42,7 +81,11 @@ Documize is compatible with Auth0 identity as a service.
 
 Open Source Identity and Access Management
 
-## Legal
+## The mission
+
+To bring software development inspired features to the world of documenting -- refactoring, testing, linting, metrics, PRs, versioning....
+
+## The legal bit at the end
 
 <https://documize.com>
 
