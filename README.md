@@ -6,23 +6,23 @@ Documize is an intelligent document environment (IDE) for creating, securing and
 
 ## Why should I care?
 
-Because maybe like us you are:
+Because maybe like us you are tired of:
 
-* juggling WYSIWYG editors and wiki software 
-* playing email tennis with document feedback and versions
+* juggling WYSIWYG editors, wiki software and various document related solutions
+* playing email tennis with document versions, contributions and feedback
 * sharing not-so-secure folders with external participants
 
 Sound familiar? Read on.
 
 ## Who is it for?
 
-Anyone who wants one place for every kind of document.
+Anyone who wants a single place for any kind of document.
 
 Anyone who wants to loop in external participants without leaking information.
 
-Anyone who wants to do to documents what agile did to software development.
+Anyone who wishes documentation and knowledge capture worked like agile software development.
 
-## Features
+## What's different about Documize?
 
 Sane organization through personal, team and public spaces.
 
@@ -30,7 +30,9 @@ Granular document access control via categories.
 
 Section based approach to document construction.
 
-Documnentation tasking and delegation.
+Reusable templates and content blocks.
+
+Documentation related tasking and delegation.
 
 Integrations for embedding SaaS data within documents.
 
