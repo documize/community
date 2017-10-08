@@ -24,6 +24,11 @@ CREATE TABLE IF NOT EXISTS `permission` (
 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 ENGINE = MyISAM;
 
+CREATE INDEX idx_permission_1 ON permission(orgid,who,whoid,location);
+CREATE INDEX idx_permission_2 ON permission(orgid,who,whoid,location,action);
+CREATE INDEX idx_permission_3 ON permission(orgid,location,refid);
+CREATE INDEX idx_permission_4 ON permission(orgid,who,location,action);
+
 -- category represents "folder/label/category" assignment to document (1:M)
 DROP TABLE IF EXISTS `category`;
 
@@ -41,6 +46,8 @@ CREATE TABLE IF NOT EXISTS `category` (
 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 ENGINE = MyISAM;
 
+CREATE INDEX idx_category_1 ON category(orgid,labelid);
+
 -- category member records who can see a category and the documents within
 DROP TABLE IF EXISTS `categorymember`;
 
@@ -57,6 +64,9 @@ CREATE TABLE IF NOT EXISTS `categorymember` (
 	INDEX `idx_category_documentid` (`documentid`))
     DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 ENGINE = MyISAM;
+
+CREATE INDEX idx_categorymember_1 ON categorymember(orgid,documentid);
+CREATE INDEX idx_categorymember_2 ON categorymember(orgid,labelid);
 
 -- rolee represent user groups 
 DROP TABLE IF EXISTS `role`;
@@ -84,6 +94,9 @@ CREATE TABLE IF NOT EXISTS `rolemember` (
 	UNIQUE INDEX `idx_category_id` (`id` ASC))
 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 ENGINE = MyISAM;
+
+CREATE INDEX idx_rolemember_1 ON rolemember(roleid,userid);
+CREATE INDEX idx_rolemember_2 ON rolemember(orgid,roleid,userid);
 
 -- user account can have global permssion to state if user can see all other users
 -- provides granular control for external users 
@@ -126,3 +139,5 @@ INSERT INTO permission (orgid, who, whoid, `action`, scope, location, refid)
 	SELECT orgid, 'user' as who, userid as whois, 'doc-template' as `action`, 'object' as scope, 'space' as location, labelid as refid
 	FROM labelrole WHERE canedit=1;
 
+-- everyone users ID changed to 0
+UPDATE permission SET whoid='0' WHERE whoid='';
