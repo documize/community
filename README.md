@@ -1,15 +1,19 @@
 # Documize Community Edition
 
+## The mission
+
+To bring software development inspired features to the world of documenting -- refactoring, importing, testing, linting, metrics, PRs, versioning....
+
 ## What is it?
 
-Documize is an intelligent document environment (IDE) for creating, securing and sharing documents -- everything yoyu need in one place.
+Documize is an intelligent document environment (IDE) for creating, securing and sharing documents -- everything you need in one place.
 
 ## Why should I care?
 
-Because maybe like us you are tired of:
+Because maybe like us, you might be tired of:
 
 * juggling WYSIWYG editors, wiki software and various document related solutions
-* playing email tennis with document versions, contributions and feedback
+* playing document related email tennis with contributions, versions and feedback
 * sharing not-so-secure folders with external participants
 
 Sound familiar? Read on.
@@ -18,10 +22,10 @@ Sound familiar? Read on.
 
 Anyone who wants a single place for any kind of document.
 
-Anyone who wants to loop in external participants without leaking information.
+Anyone who wants to loop in external participants complete security.
 
 Anyone who wishes documentation and knowledge capture worked like agile software development.
-
+ 
 ## What's different about Documize?
 
 Sane organization through personal, team and public spaces.
@@ -82,10 +86,6 @@ Documize is compatible with Auth0 identity as a service.
 [![JWT Auth for open source projects](https://cdn.auth0.com/oss/badges/a0-badge-dark.png)](https://auth0.com/?utm_source=oss&utm_medium=gp&utm_campaign=oss)
 
 Open Source Identity and Access Management
-
-## The mission
-
-To bring software development inspired features to the world of documenting -- refactoring, testing, linting, metrics, PRs, versioning....
 
 ## The legal bit at the end
 

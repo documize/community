@@ -36,3 +36,11 @@ type SummaryModel struct {
 	CategoryID string `json:"categoryId"`
 	Count      int64  `json:"count"`
 }
+
+// FetchSpaceModel represents categories, summary and membership in a single payload.
+// Designed to speed up front-end app.
+type FetchSpaceModel struct {
+	Category   []Category     `json:"category"`
+	Summary    []SummaryModel `json:"summary"`
+	Membership []Member       `json:"membership"`
+}

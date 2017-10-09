@@ -112,6 +112,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 
 	cat, err := h.Store.Category.GetBySpace(ctx, spaceID)
 	if err != nil && err != sql.ErrNoRows {
+		h.Runtime.Log.Error("get space categories visible to user failed", err)
 		response.WriteServerError(w, method, err)
 		return
 	}
@@ -459,4 +460,67 @@ func (h *Handler) GetSpaceCategoryMembers(w http.ResponseWriter, r *http.Request
 	}
 
 	response.WriteJSON(w, cat)
+}
+
+// FetchSpaceData returns:
+// 1. categories that user can see for given space
+// 2. summary data for each category
+// 3. category viewing membership records
+func (h *Handler) FetchSpaceData(w http.ResponseWriter, r *http.Request) {
+	method := "category.FetchSpaceData"
+	ctx := domain.GetRequestContext(r)
+
+	spaceID := request.Param(r, "spaceID")
+	if len(spaceID) == 0 {
+		response.WriteMissingDataError(w, method, "spaceID")
+		return
+	}
+
+	ok := permission.HasPermission(ctx, *h.Store, spaceID, pm.SpaceManage, pm.SpaceOwner, pm.SpaceView)
+	if !ok {
+		response.WriteForbiddenError(w)
+		return
+	}
+
+	fetch := category.FetchSpaceModel{}
+
+	// get space categories visible to user
+	cat, err := h.Store.Category.GetBySpace(ctx, spaceID)
+	if err != nil && err != sql.ErrNoRows {
+		h.Runtime.Log.Error("get space categories visible to user failed", err)
+		response.WriteServerError(w, method, err)
+		return
+	}
+	if len(cat) == 0 {
+		cat = []category.Category{}
+	}
+
+	// summary of space category usage
+	summary, err := h.Store.Category.GetSpaceCategorySummary(ctx, spaceID)
+	if err != nil {
+		h.Runtime.Log.Error("get space category summary failed", err)
+		response.WriteServerError(w, method, err)
+		return
+	}
+	if len(summary) == 0 {
+		summary = []category.SummaryModel{}
+	}
+
+	// get category membership records
+	member, err := h.Store.Category.GetSpaceCategoryMembership(ctx, spaceID)
+	if err != nil && err != sql.ErrNoRows {
+		h.Runtime.Log.Error("get document category membership for space", err)
+		response.WriteServerError(w, method, err)
+		return
+	}
+
+	if len(member) == 0 {
+		member = []category.Member{}
+	}
+
+	fetch.Category = cat
+	fetch.Summary = summary
+	fetch.Membership = member
+
+	response.WriteJSON(w, fetch)
 }

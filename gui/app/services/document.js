@@ -17,6 +17,7 @@ const {
 
 export default Ember.Service.extend({
 	sessionService: service('session'),
+	folderService: service('folder'),
 	ajax: service(),
 	store: service(),
 
@@ -308,6 +309,51 @@ export default Ember.Service.extend({
 			let data = this.get('store').normalize('page', response);
 			return this.get('store').push(data);
 		});
+	},
+
+	//**************************************************
+	// Fetch bulk data
+	//**************************************************
+
+	// fetchXXX represents UI specific bulk data loading designed to
+	// reduce network traffic and boost app performance.
+	// This method that returns:
+	// 1. getUserVisible()
+	// 2. getSummary()
+	// 3. getSpaceCategoryMembership()
+	fetchDocumentData(documentId) {
+		return this.get('ajax').request(`fetch/document/${documentId}`, {
+			method: 'GET'
+		}).then((response) => {
+			let data = {
+				document: {},
+				permissions: {},
+				folders: [],
+				folder: {},
+				links: [],
+			};
+
+			let doc = this.get('store').normalize('document', response.document);
+			doc = this.get('store').push(doc);
+
+			let perms = this.get('store').normalize('space-permission', response);
+			perms= this.get('store').push(perms);
+			this.get('folderService').set('permissions', perms);
+
+			let folders = response.folders.map((obj) => {
+				let data = this.get('store').normalize('folder', obj);
+				return this.get('store').push(data);
+			});
+
+			data.document = doc;
+			data.permissions = perms;
+			data.folders = folders;
+			data.folder = folders.findBy('id', doc.get('folderId'));
+			data.links = response.links;
+
+			return data;
+		});
+
 	}
 });
 

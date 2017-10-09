@@ -24,22 +24,31 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 		this.set('documentId', this.paramsFor('document').document_id);
 
 		return new Ember.RSVP.Promise((resolve) => {
-			this.get('documentService').getDocument(this.get('documentId')).then((document) => {
-				this.set('document', document);
-
-				this.get('folderService').getAll().then((folders) => {
-					this.set('folders', folders);
-
-					this.get('folderService').getFolder(this.get('folderId')).then((folder) => {
-						this.set('folder', folder);
-
-						this.get('folderService').setCurrentFolder(folder).then(() => {
-							this.set('permissions', this.get('folderService').get('permissions'));
-							resolve();
-						});
-					});
-				});
+			this.get('documentService').fetchDocumentData(this.get('documentId')).then((data) => {
+				this.set('document', data.document);
+				this.set('folders', data.folders);
+				this.set('folder', data.folder);
+				this.set('permissions', data.permissions);
+				this.set('links', data.links);
+				resolve();
 			});
+
+			// this.get('documentService').getDocument(this.get('documentId')).then((document) => {
+			// 	this.set('document', document);
+
+			// 	this.get('folderService').getAll().then((folders) => {
+			// 		this.set('folders', folders);
+
+			// 		this.get('folderService').getFolder(this.get('folderId')).then((folder) => {
+			// 			this.set('folder', folder);
+
+			// 			this.get('folderService').setCurrentFolder(folder).then(() => {
+			// 				this.set('permissions', this.get('folderService').get('permissions'));
+			// 				resolve();
+			// 			});
+			// 		});
+			// 	});
+			// });
 		});
 	},
 
@@ -50,7 +59,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 			document: this.get('document'),
 			page: this.get('pageId'),
 			permissions: this.get('permissions'),
-			links: this.get('linkService').getDocumentLinks(this.get('documentId')),
+			links: this.get('links'),
 			sections: this.get('sectionService').getAll()
 		});
 	},

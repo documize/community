@@ -29,7 +29,9 @@ import (
 	"github.com/documize/community/model/audit"
 	"github.com/documize/community/model/doc"
 	"github.com/documize/community/model/link"
+	pm "github.com/documize/community/model/permission"
 	"github.com/documize/community/model/search"
+	"github.com/documize/community/model/space"
 )
 
 // Handler contains the runtime information such as logging and database.
@@ -370,4 +372,105 @@ func (h *Handler) SearchDocuments(w http.ResponseWriter, r *http.Request) {
 	h.Store.Audit.Record(ctx, audit.EventTypeSearch)
 
 	response.WriteJSON(w, results)
+}
+
+// FetchDocumentData returns all document data in single API call.
+func (h *Handler) FetchDocumentData(w http.ResponseWriter, r *http.Request) {
+	method := "document.FetchDocumentData"
+	ctx := domain.GetRequestContext(r)
+
+	id := request.Param(r, "documentID")
+	if len(id) == 0 {
+		response.WriteMissingDataError(w, method, "documentID")
+		return
+	}
+
+	// document
+	document, err := h.Store.Document.Get(ctx, id)
+	if err == sql.ErrNoRows {
+		response.WriteNotFoundError(w, method, id)
+		return
+	}
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	if !permission.CanViewSpaceDocument(ctx, *h.Store, document.LabelID) {
+		response.WriteForbiddenError(w)
+		return
+	}
+
+	// permissions
+	perms, err := h.Store.Permission.GetUserSpacePermissions(ctx, document.LabelID)
+	if err != nil && err != sql.ErrNoRows {
+		response.WriteServerError(w, method, err)
+		return
+	}
+	if len(perms) == 0 {
+		perms = []pm.Permission{}
+	}
+
+	record := pm.DecodeUserPermissions(perms)
+
+	// links
+	l, err := h.Store.Link.GetDocumentOutboundLinks(ctx, id)
+	if len(l) == 0 {
+		l = []link.Link{}
+	}
+	if err != nil && err != sql.ErrNoRows {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	// spaces
+	sp, err := h.Store.Space.GetViewable(ctx)
+	if err != nil && err != sql.ErrNoRows {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+	if len(sp) == 0 {
+		sp = []space.Space{}
+	}
+
+	data := documentData{}
+	data.Document = document
+	data.Permissions = record
+	data.Links = l
+	data.Spaces = sp
+
+	ctx.Transaction, err = h.Runtime.Db.Beginx()
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
+		LabelID:      document.LabelID,
+		SourceID:     document.RefID,
+		SourceType:   activity.SourceTypeDocument,
+		ActivityType: activity.TypeRead})
+
+	if err != nil {
+		h.Runtime.Log.Error(method, err)
+	}
+
+	h.Store.Audit.Record(ctx, audit.EventTypeDocumentView)
+
+	ctx.Transaction.Commit()
+
+	response.WriteJSON(w, data)
+}
+
+// documentData represents all data associated for a single document.
+// Used by FetchDocumentData() bulk data load call.
+type documentData struct {
+	Document    doc.Document  `json:"document"`
+	Permissions pm.Record     `json:"permissions"`
+	Spaces      []space.Space `json:"folders"`
+	Links       []link.Link   `json:"link"`
 }

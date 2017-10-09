@@ -151,5 +151,34 @@ export default BaseService.extend({
 		}).then((response) => {
 			return response;
 		});
+	},
+
+	// fetchXXX represents UI specific bulk data loading designed to
+	// reduce network traffic and boost app performance.
+	// This method that returns:
+	// 1. getUserVisible()
+	// 2. getSummary()
+	// 3. getSpaceCategoryMembership()
+	fetchSpaceData(spaceId) {
+		return this.get('ajax').request(`fetch/category/space/${spaceId}`, {
+			method: 'GET'
+		}).then((response) => {
+			let data = {
+				category: [],
+				membership: [],
+				summary: []
+			};
+
+			let cats = response.category.map((obj) => {
+				let data = this.get('store').normalize('category', obj);
+				return this.get('store').push(data);
+			});
+
+			data.category = cats;
+			data.membership = response.membership;
+			data.summary = response.summary;
+
+			return data;
+		});
 	}
 });

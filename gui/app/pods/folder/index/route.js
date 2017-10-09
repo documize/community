@@ -15,6 +15,18 @@ import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-rout
 export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	categoryService: Ember.inject.service('category'),
 
+	beforeModel() {
+		return new Ember.RSVP.Promise((resolve) => {
+			this.get('categoryService').fetchSpaceData(this.modelFor('folder').folder.get('id')).then((data) => {
+				this.set('categories', data.category);
+				this.set('categorySummary', data.summary);
+				this.set('categoryMembers', data.membership);
+
+				resolve(data);
+			});
+		});
+	},
+
 	model() {
 		this.get('browser').setTitle(this.modelFor('folder').folder.get('name'));
 
@@ -25,14 +37,25 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 			documents: this.modelFor('folder').documents,
 			templates: this.modelFor('folder').templates,
 			showStartDocument: false,
-			categories: this.get('categoryService').getUserVisible(this.modelFor('folder').folder.get('id')),
-			categorySummary: this.get('categoryService').getSummary(this.modelFor('folder').folder.get('id')),
-			categoryMembers: this.get('categoryService').getSpaceCategoryMembership(this.modelFor('folder').folder.get('id')),
-			rootDocCount: 0
+			rootDocCount: 0,
+			categories: this.get('categories'),
+			categorySummary: this.get('categorySummary'),
+			categoryMembers: this.get('categoryMembers'),
+			// categories: this.get('categoryService').getUserVisible(this.modelFor('folder').folder.get('id')),
+			// categorySummary: this.get('categoryService').getSummary(this.modelFor('folder').folder.get('id')),
+			// categoryMembers: this.get('categoryService').getSpaceCategoryMembership(this.modelFor('folder').folder.get('id')),
 		});
 	},
 
 	afterModel(model, transition) { // eslint-disable-line no-unused-vars
+		// model.folder = this.modelFor('folder').folder;
+		// model.permissions = this.modelFor('folder').permissions;
+		// model.folders =  this.modelFor('folder').folders;
+		// model.documents = this.modelFor('folder').documents;
+		// model.templates =  this.modelFor('folder').templates;
+		// model.showStartDocument = false;
+		// model.rootDocCount =  0;
+
 		let docs = model.documents;
 		let categoryMembers = model.categoryMembers;
 		let rootDocCount = 0;
