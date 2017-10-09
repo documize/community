@@ -10,12 +10,13 @@
 // https://documize.com
 
 import Ember from 'ember';
+import NotifierMixin from '../../../mixins/notifier';
 
 const {
 	inject: { service }
 } = Ember;
 
-export default Ember.Controller.extend({
+export default Ember.Controller.extend(NotifierMixin, {
 	documentService: service('document'),
 	folderService: service('folder'),
 	localStorage: service('localStorage'),

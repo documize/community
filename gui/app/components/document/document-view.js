@@ -31,7 +31,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
 	didReceiveAttrs() {
 		this._super(...arguments);
-		
 		this.loadBlocks();
 
 		Ember.run.schedule('afterRender', () => {
@@ -44,13 +43,11 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
 	didRender() {
 		this._super(...arguments);
-
 		this.contentLinkHandler();
 	},
 
 	didInsertElement() {
 		this._super(...arguments);
-		
 		this.setupAddWizard();
 
 		let self = this;
@@ -61,9 +58,8 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
 	willDestroyElement() {
 		this._super(...arguments);
-
 		$('.start-section:not(.start-section-empty-state)').off('.hoverIntent');
-		
+
 		this.destroyTooltips();
 	},
 
@@ -112,7 +108,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 				// out
 				$(this).find('.start-button').velocity("transition.slideUpOut", {duration: 300});
 			} });
-		});		
+		});
 	},
 
 	addSection(model) {
@@ -261,7 +257,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 					this.set('toEdit', '');
 				}
 
-				this.setupAddWizard();		
+				this.setupAddWizard();
 			});
 		},
 
@@ -298,8 +294,8 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 			const promise = this.addSection(model);
 			promise.then((id) => {
 				this.set('pageId', id);
-				
-				this.setupAddWizard();		
+
+				this.setupAddWizard();
 			});
 		},
 
@@ -311,6 +307,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 			});
 
 			return true;
-		}		
+		}
 	}
 });

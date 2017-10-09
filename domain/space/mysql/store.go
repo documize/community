@@ -13,6 +13,7 @@
 package mysql
 
 import (
+	"database/sql"
 	"fmt"
 	"time"
 
@@ -72,7 +73,7 @@ func (s Scope) PublicSpaces(ctx domain.RequestContext, orgID string) (sp []space
 // GetViewable returns spaces that the user can see.
 // Also handles which spaces can be seen by anonymous users.
 func (s Scope) GetViewable(ctx domain.RequestContext) (sp []space.Space, err error) {
-	sql := `
+	q := `
 	SELECT id,refid,label as name,orgid,userid,type,created,revised FROM label
 	WHERE orgid=?
 		AND refid IN (SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid IN (
@@ -82,7 +83,7 @@ func (s Scope) GetViewable(ctx domain.RequestContext) (sp []space.Space, err err
 	))
 	ORDER BY name`
 
-	err = s.Runtime.Db.Select(&sp, sql,
+	err = s.Runtime.Db.Select(&sp, q,
 		ctx.OrgID,
 		ctx.OrgID,
 		ctx.OrgID,
@@ -90,6 +91,10 @@ func (s Scope) GetViewable(ctx domain.RequestContext) (sp []space.Space, err err
 		ctx.OrgID,
 		ctx.UserID)
 
+	if err == sql.ErrNoRows {
+		err = nil
+		sp = []space.Space{}
+	}
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("failed space.GetViewable org %s", ctx.OrgID))
 	}

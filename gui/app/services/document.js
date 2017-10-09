@@ -336,7 +336,7 @@ export default Ember.Service.extend({
 			let doc = this.get('store').normalize('document', response.document);
 			doc = this.get('store').push(doc);
 
-			let perms = this.get('store').normalize('space-permission', response);
+			let perms = this.get('store').normalize('space-permission', response.permissions);
 			perms= this.get('store').push(perms);
 			this.get('folderService').set('permissions', perms);
 

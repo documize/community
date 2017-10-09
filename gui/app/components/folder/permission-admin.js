@@ -100,6 +100,16 @@ export default Ember.Component.extend(NotifierMixin, {
 					permission.get('documentMove') || permission.get('documentCopy') || permission.get('documentTemplate'));
 			});
 
+			// see if more than oen user is granted access to space (excluding everyone)
+			let roleCount = 0;
+			permissions.forEach((permission) => {
+				if (permission.get('userId') !== "0" &&
+					(permission.get('spaceView') || permission.get('documentAdd') || permission.get('documentEdit') || permission.get('documentDelete') ||
+					permission.get('documentMove') || permission.get('documentCopy') || permission.get('documentTemplate'))) {
+						roleCount += 1;
+				}
+			});
+
 			this.get('folderService').savePermissions(folder.get('id'), payload).then(() => {
 				this.showNotification('Saved permissions');
 			});
@@ -108,7 +118,7 @@ export default Ember.Component.extend(NotifierMixin, {
 				folder.markAsPublic();
 				this.showNotification('Marked space as public');
 			} else {
-				if (permissions.length > 1) {
+				if (roleCount > 1) {
 					folder.markAsRestricted();
 					this.showNotification('Marked space as protected');
 				} else {

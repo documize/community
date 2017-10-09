@@ -41,10 +41,10 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, AuthMixin, {
 				publicFolders.pushObject(folder);
 			}
 			if (folder.get('folderType') === constants.FolderType.Private) {
-				protectedFolders.pushObject(folder);
+				privateFolders.pushObject(folder);
 			}
 			if (folder.get('folderType') === constants.FolderType.Protected) {
-				privateFolders.pushObject(folder);
+				protectedFolders.pushObject(folder);
 			}
 		});
 

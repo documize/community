@@ -97,6 +97,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	sp.OrgID = ctx.OrgID
 	sp.Type = space.ScopePrivate
 	sp.UserID = ctx.UserID
+	sp.Type = space.ScopePrivate
 
 	err = h.Store.Space.Add(ctx, sp)
 	if err != nil {
@@ -268,6 +269,25 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
+		// update space to reflect it's type (public/protected/private)
+		toClone, err := h.Store.Space.Get(ctx, model.CloneID)
+		if err != nil {
+			ctx.Transaction.Rollback()
+			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
+			return
+		}
+
+		sp.Type = toClone.Type
+
+		err = h.Store.Space.Update(ctx, sp)
+		if err != nil {
+			ctx.Transaction.Rollback()
+			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
+			return
+		}
+
 		ctx.Transaction.Commit()
 	}
 
@@ -300,7 +320,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	response.WriteJSON(w, sp)
 }
 
-// GetAlGetViewablel returns spaces the user can see.
+// GetViewable returns spaces the user can see.
 func (h *Handler) GetViewable(w http.ResponseWriter, r *http.Request) {
 	method := "space.GetViewable"
 	ctx := domain.GetRequestContext(r)

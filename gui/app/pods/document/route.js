@@ -32,23 +32,6 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 				this.set('links', data.links);
 				resolve();
 			});
-
-			// this.get('documentService').getDocument(this.get('documentId')).then((document) => {
-			// 	this.set('document', document);
-
-			// 	this.get('folderService').getAll().then((folders) => {
-			// 		this.set('folders', folders);
-
-			// 		this.get('folderService').getFolder(this.get('folderId')).then((folder) => {
-			// 			this.set('folder', folder);
-
-			// 			this.get('folderService').setCurrentFolder(folder).then(() => {
-			// 				this.set('permissions', this.get('folderService').get('permissions'));
-			// 				resolve();
-			// 			});
-			// 		});
-			// 	});
-			// });
 		});
 	},
 

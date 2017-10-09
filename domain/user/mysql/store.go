@@ -163,6 +163,11 @@ func (s Scope) GetSpaceUsers(ctx domain.RequestContext, spaceID string) (u []use
 
 // GetUsersForSpaces returns users with access to specified spaces.
 func (s Scope) GetUsersForSpaces(ctx domain.RequestContext, spaces []string) (u []user.User, err error) {
+	if len(spaces) == 0 {
+		u = []user.User{}
+		return
+	}
+
 	query, args, err := sqlx.In(`
 		SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.password, u.salt, u.reset, u.created, u.revised, u.global,
 		a.active, a.users AS viewusers, a.editor, a.admin
