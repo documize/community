@@ -20,37 +20,15 @@ import (
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/mail"
 	"github.com/documize/community/model/account"
+	"github.com/documize/community/model/permission"
 	"github.com/documize/community/model/space"
 	"github.com/documize/community/model/user"
 )
 
-// addSpace prepares and creates space record.
-func addSpace(ctx domain.RequestContext, s *domain.Store, sp space.Space) (err error) {
-	sp.Type = space.ScopePrivate
-	sp.UserID = ctx.UserID
-
-	err = s.Space.Add(ctx, sp)
-	if err != nil {
-		return
-	}
-
-	role := space.Role{}
-	role.LabelID = sp.RefID
-	role.OrgID = sp.OrgID
-	role.UserID = ctx.UserID
-	role.CanEdit = true
-	role.CanView = true
-	role.RefID = uniqueid.Generate()
-
-	err = s.Space.AddRole(ctx, role)
-
-	return
-}
-
-// Invite new user to a folder that someone has shared with them.
+// Invite new user to a space that someone has shared with them.
 // We create the user account with default values and then take them
 // through a welcome process designed to capture profile data.
-// We add them to the organization and grant them view-only folder access.
+// We add them to the organization and grant them view-only space access.
 func inviteNewUserToSharedSpace(ctx domain.RequestContext, rt *env.Runtime, s *domain.Store, email string, invitedBy user.User,
 	baseURL string, sp space.Space, invitationMessage string) (err error) {
 
@@ -75,25 +53,25 @@ func inviteNewUserToSharedSpace(ctx domain.RequestContext, rt *env.Runtime, s *d
 	a.OrgID = ctx.OrgID
 	a.Admin = false
 	a.Editor = false
+	a.Users = false
 	a.Active = true
-	accountID := uniqueid.Generate()
-	a.RefID = accountID
+	a.RefID = uniqueid.Generate()
 
 	err = s.Account.Add(ctx, a)
 	if err != nil {
 		return
 	}
 
-	role := space.Role{}
-	role.LabelID = sp.RefID
-	role.OrgID = ctx.OrgID
-	role.UserID = userID
-	role.CanEdit = false
-	role.CanView = true
-	roleID := uniqueid.Generate()
-	role.RefID = roleID
+	perm := permission.Permission{}
+	perm.OrgID = sp.OrgID
+	perm.Who = "user"
+	perm.WhoID = userID
+	perm.Scope = "object"
+	perm.Location = "space"
+	perm.RefID = sp.RefID
+	perm.Action = "" // we send array for actions below
 
-	err = s.Space.AddRole(ctx, role)
+	err = s.Permission.AddPermissions(ctx, perm, permission.SpaceView)
 	if err != nil {
 		return
 	}
@@ -101,7 +79,7 @@ func inviteNewUserToSharedSpace(ctx domain.RequestContext, rt *env.Runtime, s *d
 	mailer := mail.Mailer{Runtime: rt, Store: s, Context: ctx}
 
 	url := fmt.Sprintf("%s/%s", baseURL, u.Salt)
-	go mailer.ShareFolderNewUser(u.Email, invitedBy.Fullname(), url, sp.Name, invitationMessage)
+	go mailer.ShareSpaceNewUser(u.Email, invitedBy.Fullname(), url, sp.Name, invitationMessage)
 
 	return
 }

@@ -14,7 +14,6 @@ package mysql
 import (
 	"fmt"
 
-	"github.com/documize/community/core/streamutil"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 )
@@ -25,15 +24,8 @@ type BaseQuery struct {
 
 // Delete record.
 func (m *BaseQuery) Delete(tx *sqlx.Tx, table string, id string) (rows int64, err error) {
-	stmt, err := tx.Preparex("DELETE FROM " + table + " WHERE refid=?")
-	defer streamutil.Close(stmt)
+	result, err := tx.Exec("DELETE FROM "+table+" WHERE refid=?", id)
 
-	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("unable to prepare delete of row in table %s", table))
-		return
-	}
-
-	result, err := stmt.Exec(id)
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to delete row in table %s", table))
 		return
@@ -46,15 +38,8 @@ func (m *BaseQuery) Delete(tx *sqlx.Tx, table string, id string) (rows int64, er
 
 // DeleteConstrained record constrained to Organization using refid.
 func (m *BaseQuery) DeleteConstrained(tx *sqlx.Tx, table string, orgID, id string) (rows int64, err error) {
-	stmt, err := tx.Preparex("DELETE FROM " + table + " WHERE orgid=? AND refid=?")
-	defer streamutil.Close(stmt)
+	result, err := tx.Exec("DELETE FROM "+table+" WHERE orgid=? AND refid=?", orgID, id)
 
-	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("unable to prepare constrained delete of row in table %s", table))
-		return
-	}
-
-	result, err := stmt.Exec(orgID, id)
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to delete row in table %s", table))
 		return
@@ -67,15 +52,8 @@ func (m *BaseQuery) DeleteConstrained(tx *sqlx.Tx, table string, orgID, id strin
 
 // DeleteConstrainedWithID record constrained to Organization using non refid.
 func (m *BaseQuery) DeleteConstrainedWithID(tx *sqlx.Tx, table string, orgID, id string) (rows int64, err error) {
-	stmt, err := tx.Preparex("DELETE FROM " + table + " WHERE orgid=? AND id=?")
-	defer streamutil.Close(stmt)
+	result, err := tx.Exec("DELETE FROM "+table+" WHERE orgid=? AND id=?", orgID, id)
 
-	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("unable to prepare ConstrainedWithID delete of row in table %s", table))
-		return
-	}
-
-	result, err := stmt.Exec(orgID, id)
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to delete row in table %s", table))
 		return
@@ -89,6 +67,7 @@ func (m *BaseQuery) DeleteConstrainedWithID(tx *sqlx.Tx, table string, orgID, id
 // DeleteWhere free form query.
 func (m *BaseQuery) DeleteWhere(tx *sqlx.Tx, statement string) (rows int64, err error) {
 	result, err := tx.Exec(statement)
+
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to delete rows: %s", statement))
 		return

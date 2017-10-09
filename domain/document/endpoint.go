@@ -23,13 +23,15 @@ import (
 	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/core/stringutil"
 	"github.com/documize/community/domain"
+	"github.com/documize/community/domain/permission"
 	indexer "github.com/documize/community/domain/search"
-	"github.com/documize/community/domain/space"
 	"github.com/documize/community/model/activity"
 	"github.com/documize/community/model/audit"
 	"github.com/documize/community/model/doc"
 	"github.com/documize/community/model/link"
+	pm "github.com/documize/community/model/permission"
 	"github.com/documize/community/model/search"
+	"github.com/documize/community/model/space"
 )
 
 // Handler contains the runtime information such as logging and database.
@@ -61,7 +63,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !CanViewDocumentInFolder(ctx, *h.Store, document.LabelID) {
+	if !permission.CanViewSpaceDocument(ctx, *h.Store, document.LabelID) {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -135,62 +137,63 @@ func (h *Handler) DocumentLinks(w http.ResponseWriter, r *http.Request) {
 	response.WriteJSON(w, l)
 }
 
-// BySpace is an endpoint that returns the documents in a given folder.
+// BySpace is an endpoint that returns the documents for given space.
 func (h *Handler) BySpace(w http.ResponseWriter, r *http.Request) {
-	method := "document.space"
+	method := "document.BySpace"
 	ctx := domain.GetRequestContext(r)
 
-	folderID := request.Query(r, "folder")
-
-	if len(folderID) == 0 {
-		response.WriteMissingDataError(w, method, "folder")
+	spaceID := request.Query(r, "space")
+	if len(spaceID) == 0 {
+		response.WriteMissingDataError(w, method, "space")
 		return
 	}
 
-	if !space.CanViewSpace(ctx, *h.Store, folderID) {
+	if !permission.CanViewSpace(ctx, *h.Store, spaceID) {
 		response.WriteForbiddenError(w)
 		return
 	}
 
-	documents, err := h.Store.Document.GetBySpace(ctx, folderID)
-
-	if len(documents) == 0 {
-		documents = []doc.Document{}
-	}
-
+	// get complete list of documents
+	documents, err := h.Store.Document.GetBySpace(ctx, spaceID)
 	if err != nil && err != sql.ErrNoRows {
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
 		return
 	}
-
-	response.WriteJSON(w, documents)
-}
-
-// ByTag is an endpoint that returns the documents with a given tag.
-func (h *Handler) ByTag(w http.ResponseWriter, r *http.Request) {
-	method := "document.space"
-	ctx := domain.GetRequestContext(r)
-
-	tag := request.Query(r, "tag")
-	if len(tag) == 0 {
-		response.WriteMissingDataError(w, method, "tag")
-		return
-	}
-
-	documents, err := h.Store.Document.GetByTag(ctx, tag)
-
 	if len(documents) == 0 {
 		documents = []doc.Document{}
 	}
 
-	if err != nil && err != sql.ErrNoRows {
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
+	// remove documents that cannot be seen due to lack of
+	// category view/access permission
+	filtered := []doc.Document{}
+	cats, err := h.Store.Category.GetBySpace(ctx, spaceID)
+	members, err := h.Store.Category.GetSpaceCategoryMembership(ctx, spaceID)
+
+	for _, doc := range documents {
+		hasCategory := false
+		canSeeCategory := false
+
+	OUTER:
+
+		for _, m := range members {
+			if m.DocumentID == doc.RefID {
+				hasCategory = true
+				for _, cat := range cats {
+					if cat.RefID == m.CategoryID {
+						canSeeCategory = true
+						continue OUTER
+					}
+				}
+			}
+		}
+
+		if !hasCategory || canSeeCategory {
+			filtered = append(filtered, doc)
+		}
 	}
 
-	response.WriteJSON(w, documents)
+	response.WriteJSON(w, filtered)
 }
 
 // Update updates an existing document using the
@@ -205,12 +208,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// if !ctx.Editor {
-	// 	response.WriteForbiddenError(w)
-	// 	return
-	// }
-
-	if !CanChangeDocument(ctx, *h.Store, documentID) {
+	if !permission.CanChangeDocument(ctx, *h.Store, documentID) {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -238,6 +236,18 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
 		return
+	}
+
+	// if space changed for document, remove document categories
+	oldDoc, err := h.Store.Document.Get(ctx, documentID)
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	if oldDoc.LabelID != d.LabelID {
+		h.Store.Category.RemoveDocumentCategories(ctx, d.RefID)
 	}
 
 	err = h.Store.Document.Update(ctx, d)
@@ -269,7 +279,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !CanChangeDocument(ctx, *h.Store, documentID) {
+	if !permission.CanDeleteDocument(ctx, *h.Store, documentID) {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -362,4 +372,105 @@ func (h *Handler) SearchDocuments(w http.ResponseWriter, r *http.Request) {
 	h.Store.Audit.Record(ctx, audit.EventTypeSearch)
 
 	response.WriteJSON(w, results)
+}
+
+// FetchDocumentData returns all document data in single API call.
+func (h *Handler) FetchDocumentData(w http.ResponseWriter, r *http.Request) {
+	method := "document.FetchDocumentData"
+	ctx := domain.GetRequestContext(r)
+
+	id := request.Param(r, "documentID")
+	if len(id) == 0 {
+		response.WriteMissingDataError(w, method, "documentID")
+		return
+	}
+
+	// document
+	document, err := h.Store.Document.Get(ctx, id)
+	if err == sql.ErrNoRows {
+		response.WriteNotFoundError(w, method, id)
+		return
+	}
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	if !permission.CanViewSpaceDocument(ctx, *h.Store, document.LabelID) {
+		response.WriteForbiddenError(w)
+		return
+	}
+
+	// permissions
+	perms, err := h.Store.Permission.GetUserSpacePermissions(ctx, document.LabelID)
+	if err != nil && err != sql.ErrNoRows {
+		response.WriteServerError(w, method, err)
+		return
+	}
+	if len(perms) == 0 {
+		perms = []pm.Permission{}
+	}
+
+	record := pm.DecodeUserPermissions(perms)
+
+	// links
+	l, err := h.Store.Link.GetDocumentOutboundLinks(ctx, id)
+	if len(l) == 0 {
+		l = []link.Link{}
+	}
+	if err != nil && err != sql.ErrNoRows {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	// spaces
+	sp, err := h.Store.Space.GetViewable(ctx)
+	if err != nil && err != sql.ErrNoRows {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+	if len(sp) == 0 {
+		sp = []space.Space{}
+	}
+
+	data := documentData{}
+	data.Document = document
+	data.Permissions = record
+	data.Links = l
+	data.Spaces = sp
+
+	ctx.Transaction, err = h.Runtime.Db.Beginx()
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
+		LabelID:      document.LabelID,
+		SourceID:     document.RefID,
+		SourceType:   activity.SourceTypeDocument,
+		ActivityType: activity.TypeRead})
+
+	if err != nil {
+		h.Runtime.Log.Error(method, err)
+	}
+
+	h.Store.Audit.Record(ctx, audit.EventTypeDocumentView)
+
+	ctx.Transaction.Commit()
+
+	response.WriteJSON(w, data)
+}
+
+// documentData represents all data associated for a single document.
+// Used by FetchDocumentData() bulk data load call.
+type documentData struct {
+	Document    doc.Document  `json:"document"`
+	Permissions pm.Record     `json:"permissions"`
+	Spaces      []space.Space `json:"folders"`
+	Links       []link.Link   `json:"link"`
 }

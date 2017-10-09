@@ -1,50 +1,51 @@
-{{#if folders}}
-	<div class="global-folder-settings">
-		<div class="form-header">
-			<div class="title">{{folders.length}} shared {{label}}</div>
-			<div class="tip">View and change shared space ownership</div>
-		</div>
-		<div class="input-control">
-			<table class="basic-table">
-				<thead>
-					<tr>
-						<th class="bordered">Space</th>
-						<th class="bordered">Participants</th>
-					</tr>
-				</thead>
-				<tbody>
-					{{#each folders as |folder|}}
-						<tr>
-							<td class="bordered">
-								{{#link-to 'folder' folder.id folder.slug class="alt"}}{{folder.name}}{{/link-to}}
-							</td>
-							<td class="bordered">
-								{{#each folder.sharedWith as |person|}}
-									{{#if person.isEveryone}}
-										Everyone
-									{{else}}
+<div class="page-customize">
+	<div class="space-admin">
 
-										{{#if person.isOwner}}
-											<span class="bold">{{person.firstname}} {{person.lastname}} (owner)</span>
-										{{else}}
-											{{person.firstname}} {{person.lastname}}
-											<a class="action-link" {{action "changeOwner" folder.id person.userId}}>make owner</a>
-										{{/if}}
-									{{/if}}
-									<br/>
-								{{/each}}
-							</td>
-						</tr>
-					{{/each}}
-				</tbody>
-			</table>
-		</div>
+		{{#if folders}}
+			<div class="form-header">
+				<div class="title">{{folders.length}} shared {{label}}</div>
+				<div class="tip">View and change shared space ownership</div>
+			</div>
+			<div class="input-control manage-space-list">
+				{{#each folders as |folder|}}
+					<div class="space pull-left width-80">
+						{{#link-to 'folder' folder.id folder.slug class="alt"}}{{folder.name}}{{/link-to}}
+					</div>
+					<div class="pull-right">
+						<div id="delete-space-button-{{folder.id}}" class="round-button-mono" title="Delete" {{action "onShow" folder.id}}>
+							<i class="material-icons">delete</i>
+						</div>
+					</div>
+					<div class="clearfix" />
+				{{/each}}
+			</div>
+
+			<div class="dropdown-dialog delete-space-dialog">
+				<div class="content">
+					<p>Are you sure you want to delete this space and all associated documents?</p>
+					<div class="input-control">
+						<div class="tip">Please type the space name to confirm</div>
+						{{input type='text' id="delete-space-name" value=deleteSpace.name}}
+					</div>
+				</div>
+				<div class="actions">
+					<div class="flat-button" {{action 'onCancel'}}>
+						cancel
+					</div>
+					<div class="flat-button flat-red" {{action 'onDelete'}}>
+						delete
+					</div>
+				</div>
+				<div class="clearfix"></div>
+			</div>
+
+		{{else}}
+
+			<div class="form-header">
+				<div class="title">{{folders.length}} shared {{label}}</div>
+				<div class="tip">There are no spaces to maintain</div>
+			</div>
+
+		{{/if}}
 	</div>
-{{else}}
-	<div class="global-folder-settings">
-		<div class="form-header">
-			<div class="title">{{folders.length}} shared {{label}}</div>
-			<div class="tip">There are no spaces to maintain</div>
-		</div>
-	</div>
-{{/if}}
+</div>

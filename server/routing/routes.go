@@ -20,12 +20,14 @@ import (
 	"github.com/documize/community/domain/auth"
 	"github.com/documize/community/domain/auth/keycloak"
 	"github.com/documize/community/domain/block"
+	"github.com/documize/community/domain/category"
 	"github.com/documize/community/domain/conversion"
 	"github.com/documize/community/domain/document"
 	"github.com/documize/community/domain/link"
 	"github.com/documize/community/domain/meta"
 	"github.com/documize/community/domain/organization"
 	"github.com/documize/community/domain/page"
+	"github.com/documize/community/domain/permission"
 	"github.com/documize/community/domain/pin"
 	"github.com/documize/community/domain/search"
 	"github.com/documize/community/domain/section"
@@ -53,11 +55,13 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	block := block.Handler{Runtime: rt, Store: s}
 	section := section.Handler{Runtime: rt, Store: s}
 	setting := setting.Handler{Runtime: rt, Store: s}
+	category := category.Handler{Runtime: rt, Store: s}
 	keycloak := keycloak.Handler{Runtime: rt, Store: s}
 	template := template.Handler{Runtime: rt, Store: s, Indexer: indexer}
 	document := document.Handler{Runtime: rt, Store: s, Indexer: indexer}
 	attachment := attachment.Handler{Runtime: rt, Store: s, Indexer: indexer}
 	conversion := conversion.Handler{Runtime: rt, Store: s, Indexer: indexer}
+	permission := permission.Handler{Runtime: rt, Store: s}
 	organization := organization.Handler{Runtime: rt, Store: s}
 
 	//**************************************************
@@ -81,7 +85,6 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 
 	Add(rt, RoutePrefixPrivate, "import/folder/{folderID}", []string{"POST", "OPTIONS"}, nil, conversion.UploadConvert)
 
-	Add(rt, RoutePrefixPrivate, "documents", []string{"GET", "OPTIONS"}, []string{"filter", "tag"}, document.ByTag)
 	Add(rt, RoutePrefixPrivate, "documents", []string{"GET", "OPTIONS"}, nil, document.BySpace)
 	Add(rt, RoutePrefixPrivate, "documents/{documentID}", []string{"GET", "OPTIONS"}, nil, document.Get)
 	Add(rt, RoutePrefixPrivate, "documents/{documentID}", []string{"PUT", "OPTIONS"}, nil, document.Update)
@@ -90,7 +93,6 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 
 	Add(rt, RoutePrefixPrivate, "documents/{documentID}/pages/level", []string{"POST", "OPTIONS"}, nil, page.ChangePageLevel)
 	Add(rt, RoutePrefixPrivate, "documents/{documentID}/pages/sequence", []string{"POST", "OPTIONS"}, nil, page.ChangePageSequence)
-	Add(rt, RoutePrefixPrivate, "documents/{documentID}/pages/batch", []string{"POST", "OPTIONS"}, nil, page.GetPagesBatch)
 	Add(rt, RoutePrefixPrivate, "documents/{documentID}/pages/{pageID}/revisions", []string{"GET", "OPTIONS"}, nil, page.GetRevisions)
 	Add(rt, RoutePrefixPrivate, "documents/{documentID}/pages/{pageID}/revisions/{revisionID}", []string{"GET", "OPTIONS"}, nil, page.GetDiff)
 	Add(rt, RoutePrefixPrivate, "documents/{documentID}/pages/{pageID}/revisions/{revisionID}", []string{"POST", "OPTIONS"}, nil, page.Rollback)
@@ -111,21 +113,34 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	Add(rt, RoutePrefixPrivate, "organizations/{orgID}", []string{"GET", "OPTIONS"}, nil, organization.Get)
 	Add(rt, RoutePrefixPrivate, "organizations/{orgID}", []string{"PUT", "OPTIONS"}, nil, organization.Update)
 
-	Add(rt, RoutePrefixPrivate, "folders/{folderID}", []string{"DELETE", "OPTIONS"}, nil, space.Delete)
-	Add(rt, RoutePrefixPrivate, "folders/{folderID}/move/{moveToId}", []string{"DELETE", "OPTIONS"}, nil, space.Remove)
-	Add(rt, RoutePrefixPrivate, "folders/{folderID}/permissions", []string{"PUT", "OPTIONS"}, nil, space.SetPermissions)
-	Add(rt, RoutePrefixPrivate, "folders/{folderID}/permissions", []string{"GET", "OPTIONS"}, nil, space.GetPermissions)
-	Add(rt, RoutePrefixPrivate, "folders/{folderID}/invitation", []string{"POST", "OPTIONS"}, nil, space.Invite)
-	Add(rt, RoutePrefixPrivate, "folders", []string{"GET", "OPTIONS"}, []string{"filter", "viewers"}, space.GetSpaceViewers)
-	Add(rt, RoutePrefixPrivate, "folders", []string{"POST", "OPTIONS"}, nil, space.Add)
-	Add(rt, RoutePrefixPrivate, "folders", []string{"GET", "OPTIONS"}, nil, space.GetAll)
-	Add(rt, RoutePrefixPrivate, "folders/{folderID}", []string{"GET", "OPTIONS"}, nil, space.Get)
-	Add(rt, RoutePrefixPrivate, "folders/{folderID}", []string{"PUT", "OPTIONS"}, nil, space.Update)
+	Add(rt, RoutePrefixPrivate, "space/{spaceID}", []string{"DELETE", "OPTIONS"}, nil, space.Delete)
+	Add(rt, RoutePrefixPrivate, "space/{spaceID}/move/{moveToId}", []string{"DELETE", "OPTIONS"}, nil, space.Remove)
+	Add(rt, RoutePrefixPrivate, "space/{spaceID}/permissions", []string{"PUT", "OPTIONS"}, nil, permission.SetSpacePermissions)
+	Add(rt, RoutePrefixPrivate, "space/{spaceID}/permissions/user", []string{"GET", "OPTIONS"}, nil, permission.GetUserSpacePermissions)
+	Add(rt, RoutePrefixPrivate, "space/{spaceID}/permissions", []string{"GET", "OPTIONS"}, nil, permission.GetSpacePermissions)
+	Add(rt, RoutePrefixPrivate, "space/{spaceID}/invitation", []string{"POST", "OPTIONS"}, nil, space.Invite)
+	Add(rt, RoutePrefixPrivate, "space/manage", []string{"GET", "OPTIONS"}, nil, space.GetAll)
+	Add(rt, RoutePrefixPrivate, "space/{spaceID}", []string{"GET", "OPTIONS"}, nil, space.Get)
+	Add(rt, RoutePrefixPrivate, "space", []string{"GET", "OPTIONS"}, nil, space.GetViewable)
+	Add(rt, RoutePrefixPrivate, "space/{spaceID}", []string{"PUT", "OPTIONS"}, nil, space.Update)
+	Add(rt, RoutePrefixPrivate, "space", []string{"POST", "OPTIONS"}, nil, space.Add)
+
+	Add(rt, RoutePrefixPrivate, "category/space/{spaceID}/summary", []string{"GET", "OPTIONS"}, nil, category.GetSummary)
+	Add(rt, RoutePrefixPrivate, "category/document/{documentID}", []string{"GET", "OPTIONS"}, nil, category.GetDocumentCategoryMembership)
+	Add(rt, RoutePrefixPrivate, "category/{categoryID}/permission", []string{"PUT", "OPTIONS"}, nil, permission.SetCategoryPermissions)
+	Add(rt, RoutePrefixPrivate, "category/{categoryID}/permission", []string{"GET", "OPTIONS"}, nil, permission.GetCategoryPermissions)
+	Add(rt, RoutePrefixPrivate, "category/space/{spaceID}", []string{"GET", "OPTIONS"}, []string{"filter", "all"}, category.GetAll)
+	Add(rt, RoutePrefixPrivate, "category/space/{spaceID}", []string{"GET", "OPTIONS"}, nil, category.Get)
+	Add(rt, RoutePrefixPrivate, "category/{categoryID}/user", []string{"GET", "OPTIONS"}, nil, permission.GetCategoryViewers)
+	Add(rt, RoutePrefixPrivate, "category/member/space/{spaceID}", []string{"GET", "OPTIONS"}, nil, category.GetSpaceCategoryMembers)
+	Add(rt, RoutePrefixPrivate, "category/member", []string{"POST", "OPTIONS"}, nil, category.SetDocumentCategoryMembership)
+	Add(rt, RoutePrefixPrivate, "category/{categoryID}", []string{"PUT", "OPTIONS"}, nil, category.Update)
+	Add(rt, RoutePrefixPrivate, "category/{categoryID}", []string{"DELETE", "OPTIONS"}, nil, category.Delete)
+	Add(rt, RoutePrefixPrivate, "category", []string{"POST", "OPTIONS"}, nil, category.Add)
 
 	Add(rt, RoutePrefixPrivate, "users/{userID}/password", []string{"POST", "OPTIONS"}, nil, user.ChangePassword)
-	Add(rt, RoutePrefixPrivate, "users/{userID}/permissions", []string{"GET", "OPTIONS"}, nil, user.UserSpacePermissions)
 	Add(rt, RoutePrefixPrivate, "users", []string{"POST", "OPTIONS"}, nil, user.Add)
-	Add(rt, RoutePrefixPrivate, "users/folder/{folderID}", []string{"GET", "OPTIONS"}, nil, user.GetSpaceUsers)
+	Add(rt, RoutePrefixPrivate, "users/space/{spaceID}", []string{"GET", "OPTIONS"}, nil, user.GetSpaceUsers)
 	Add(rt, RoutePrefixPrivate, "users", []string{"GET", "OPTIONS"}, nil, user.GetOrganizationUsers)
 	Add(rt, RoutePrefixPrivate, "users/{userID}", []string{"GET", "OPTIONS"}, nil, user.Get)
 	Add(rt, RoutePrefixPrivate, "users/{userID}", []string{"PUT", "OPTIONS"}, nil, user.Update)
@@ -163,6 +178,10 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	Add(rt, RoutePrefixPrivate, "pin/{userID}", []string{"GET", "OPTIONS"}, nil, pin.GetUserPins)
 	Add(rt, RoutePrefixPrivate, "pin/{userID}/sequence", []string{"POST", "OPTIONS"}, nil, pin.UpdatePinSequence)
 	Add(rt, RoutePrefixPrivate, "pin/{userID}/{pinID}", []string{"DELETE", "OPTIONS"}, nil, pin.DeleteUserPin)
+
+	// fetch methods exist to speed up UI rendering by returning data in bulk
+	Add(rt, RoutePrefixPrivate, "fetch/category/space/{spaceID}", []string{"GET", "OPTIONS"}, nil, category.FetchSpaceData)
+	Add(rt, RoutePrefixPrivate, "fetch/document/{documentID}", []string{"GET", "OPTIONS"}, nil, document.FetchDocumentData)
 
 	Add(rt, RoutePrefixRoot, "robots.txt", []string{"GET", "OPTIONS"}, nil, meta.RobotsTxt)
 	Add(rt, RoutePrefixRoot, "sitemap.xml", []string{"GET", "OPTIONS"}, nil, meta.Sitemap)

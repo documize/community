@@ -16,7 +16,6 @@ import (
 	"database/sql"
 
 	"github.com/documize/community/core/env"
-	"github.com/documize/community/core/streamutil"
 	"github.com/pkg/errors"
 )
 
@@ -30,18 +29,13 @@ func (s Scope) Get(area, path string) (value string, err error) {
 	if path != "" {
 		path = "." + path
 	}
+
 	sql := "SELECT JSON_EXTRACT(`config`,'$" + path + "') FROM `config` WHERE `key` = '" + area + "';"
-
-	stmt, err := s.Runtime.Db.Preparex(sql)
-	defer streamutil.Close(stmt)
-
-	if err != nil {
-		return "", err
-	}
 
 	var item = make([]uint8, 0)
 
-	err = stmt.Get(&item)
+	err = s.Runtime.Db.Get(&item, sql)
+
 	if err != nil {
 		return "", err
 	}
@@ -55,7 +49,7 @@ func (s Scope) Get(area, path string) (value string, err error) {
 }
 
 // Set writes a configuration JSON element to the config table.
-func (s Scope) Set(area, json string) error {
+func (s Scope) Set(area, json string) (err error) {
 	if area == "" {
 		return errors.New("no area")
 	}
@@ -64,15 +58,8 @@ func (s Scope) Set(area, json string) error {
 		"VALUES ('" + area + "','" + json +
 		"') ON DUPLICATE KEY UPDATE `config`='" + json + "';"
 
-	stmt, err := s.Runtime.Db.Preparex(sql)
-	defer streamutil.Close(stmt)
+	_, err = s.Runtime.Db.Exec(sql)
 
-	if err != nil {
-		err = errors.Wrap(err, "failed to save global config value")
-		return err
-	}
-
-	_, err = stmt.Exec()
 	return err
 }
 
@@ -86,16 +73,10 @@ func (s Scope) GetUser(orgID, userID, area, path string) (value string, err erro
 	qry := "SELECT JSON_EXTRACT(`config`,'$" + path + "') FROM `userconfig` WHERE `key` = '" + area +
 		"' AND `orgid` = '" + orgID + "' AND `userid` = '" + userID + "';"
 
-	stmt, err := s.Runtime.Db.Preparex(qry)
-	defer streamutil.Close(stmt)
-
-	if err != nil {
-		return "", err
-	}
-
 	var item = make([]uint8, 0)
 
-	err = stmt.Get(&item)
+	err = s.Runtime.Db.Get(&item, qry)
+
 	if err != nil && err != sql.ErrNoRows {
 		return "", err
 	}
@@ -109,7 +90,7 @@ func (s Scope) GetUser(orgID, userID, area, path string) (value string, err erro
 }
 
 // SetUser writes a configuration JSON element to the userconfig table for the current user.
-func (s Scope) SetUser(orgID, userID, area, json string) error {
+func (s Scope) SetUser(orgID, userID, area, json string) (err error) {
 	if area == "" {
 		return errors.New("no area")
 	}
@@ -118,14 +99,7 @@ func (s Scope) SetUser(orgID, userID, area, json string) error {
 		"VALUES ('" + orgID + "','" + userID + "','" + area + "','" + json +
 		"') ON DUPLICATE KEY UPDATE `config`='" + json + "';"
 
-	stmt, err := s.Runtime.Db.Preparex(sql)
-	defer streamutil.Close(stmt)
-
-	if err != nil {
-		return err
-	}
-
-	_, err = stmt.Exec()
+	_, err = s.Runtime.Db.Exec(sql)
 
 	return err
 }

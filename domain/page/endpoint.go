@@ -25,8 +25,8 @@ import (
 	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/core/uniqueid"
 	"github.com/documize/community/domain"
-	"github.com/documize/community/domain/document"
 	"github.com/documize/community/domain/link"
+	"github.com/documize/community/domain/permission"
 	indexer "github.com/documize/community/domain/search"
 	"github.com/documize/community/domain/section/provider"
 	"github.com/documize/community/model/activity"
@@ -59,7 +59,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !document.CanChangeDocument(ctx, *h.Store, documentID) {
+	if !permission.CanChangeDocument(ctx, *h.Store, documentID) {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -165,7 +165,7 @@ func (h *Handler) GetPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !document.CanViewDocument(ctx, *h.Store, documentID) {
+	if !permission.CanViewDocument(ctx, *h.Store, documentID) {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -200,7 +200,7 @@ func (h *Handler) GetPages(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !document.CanViewDocument(ctx, *h.Store, documentID) {
+	if !permission.CanViewDocument(ctx, *h.Store, documentID) {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -222,47 +222,6 @@ func (h *Handler) GetPages(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
-	}
-
-	response.WriteJSON(w, pages)
-}
-
-// GetPagesBatch gets specified pages for document.
-func (h *Handler) GetPagesBatch(w http.ResponseWriter, r *http.Request) {
-	method := "page.batch"
-	ctx := domain.GetRequestContext(r)
-
-	documentID := request.Param(r, "documentID")
-	if len(documentID) == 0 {
-		response.WriteMissingDataError(w, method, "documentID")
-		return
-	}
-
-	if !document.CanViewDocument(ctx, *h.Store, documentID) {
-		response.WriteForbiddenError(w)
-		return
-	}
-
-	defer streamutil.Close(r.Body)
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		response.WriteBadRequestError(w, method, err.Error())
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	requestedPages := string(body)
-
-	pages, err := h.Store.Page.GetPagesWhereIn(ctx, documentID, requestedPages)
-	if err == sql.ErrNoRows {
-		response.WriteNotFoundError(w, method, documentID)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-	if err != nil {
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
 	}
 
 	response.WriteJSON(w, pages)
@@ -290,7 +249,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !document.CanChangeDocument(ctx, *h.Store, documentID) {
+	if !permission.CanChangeDocument(ctx, *h.Store, documentID) {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -366,7 +325,7 @@ func (h *Handler) DeletePages(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !document.CanChangeDocument(ctx, *h.Store, documentID) {
+	if !permission.CanChangeDocument(ctx, *h.Store, documentID) {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -471,7 +430,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !document.CanChangeDocument(ctx, *h.Store, documentID) {
+	if !permission.CanChangeDocument(ctx, *h.Store, documentID) {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -617,7 +576,7 @@ func (h *Handler) ChangePageSequence(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !document.CanChangeDocument(ctx, *h.Store, documentID) {
+	if !permission.CanChangeDocument(ctx, *h.Store, documentID) {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -678,7 +637,7 @@ func (h *Handler) ChangePageLevel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !document.CanChangeDocument(ctx, *h.Store, documentID) {
+	if !permission.CanChangeDocument(ctx, *h.Store, documentID) {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -740,7 +699,7 @@ func (h *Handler) GetMeta(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !document.CanViewDocument(ctx, *h.Store, documentID) {
+	if !permission.CanViewDocument(ctx, *h.Store, documentID) {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -816,7 +775,7 @@ func (h *Handler) Copy(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// permission
-	if !document.CanViewDocument(ctx, *h.Store, documentID) {
+	if !permission.CanViewDocument(ctx, *h.Store, documentID) {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -922,7 +881,7 @@ func (h *Handler) GetDocumentRevisions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !document.CanViewDocument(ctx, *h.Store, documentID) {
+	if !permission.CanViewDocument(ctx, *h.Store, documentID) {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -953,7 +912,7 @@ func (h *Handler) GetRevisions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !document.CanViewDocument(ctx, *h.Store, documentID) {
+	if !permission.CanViewDocument(ctx, *h.Store, documentID) {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -1000,7 +959,7 @@ func (h *Handler) GetDiff(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !document.CanViewDocument(ctx, *h.Store, documentID) {
+	if !permission.CanViewDocument(ctx, *h.Store, documentID) {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -1064,7 +1023,7 @@ func (h *Handler) Rollback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !document.CanChangeDocument(ctx, *h.Store, documentID) {
+	if !permission.CanChangeDocument(ctx, *h.Store, documentID) {
 		response.WriteForbiddenError(w)
 		return
 	}

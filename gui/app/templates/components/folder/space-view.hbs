@@ -1,0 +1,48 @@
+<div class="margin-bottom-20">
+	{{folder/space-heading folder=folder permissions=permissions documents=documents categories=categories}}
+
+	{{folder/space-toolbar folders=folders folder=folder
+		permissions=permissions hasSelectedDocuments=hasSelectedDocuments
+		onDeleteDocument=(action 'onDeleteDocument') onMoveDocument=(action 'onMoveDocument')
+		onDeleteSpace=(action 'onDeleteSpace') onStartDocument=(action 'onStartDocument')}}
+</div>
+<div class="clearfix" />
+
+{{#if showStartDocument}}
+
+	{{folder/start-document folder=folder templates=templates permissions=permissions
+		onImport=(action 'onImport') onHideStartDocument=(action 'onHideStartDocument')}}
+
+{{else}}
+
+	{{#if hasCategories}}
+		{{#if (gt categories.length 0)}}
+			<div class="space-filter">
+				<div class="caption">Space</div>
+				<div class="regular-button button-nav {{if spaceSelected 'selected'}}" {{action 'onDocumentFilter' 'space' folder.id}}>
+					<div class="name">all ({{documents.length}})</div>
+				</div>
+			</div>
+
+			<div class="category-filter">
+				<div class="caption">Category</div>
+				{{#if (gt rootDocCount 0)}}
+					<div class="regular-button button-blue {{if uncategorizedSelected 'selected'}}" {{action 'onDocumentFilter' 'uncategorized' folder.id}}>
+						<div class="name">uncategorized ({{rootDocCount}})</div>
+					</div>
+					<div class="button-gap"/>
+				{{/if}}
+				{{#each categories as |cat index|}}
+					<div class="regular-button button-blue {{if cat.selected 'selected'}}" {{action 'onDocumentFilter' 'category' cat.id}}>
+						{{cat.category}} ({{cat.docCount}})
+					</div>
+					<div class="button-gap"/>
+				{{/each}}
+			</div>
+		{{/if}}
+	{{/if}}
+
+	{{folder/documents-list documents=filteredDocs folders=folders folder=folder
+		templates=templates permissions=permissions selectedDocuments=(mut selectedDocuments)}}
+
+{{/if}}

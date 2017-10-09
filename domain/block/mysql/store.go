@@ -16,11 +16,9 @@ import (
 	"time"
 
 	"github.com/documize/community/core/env"
-	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/store/mysql"
 	"github.com/documize/community/model/block"
-	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 )
 
@@ -36,18 +34,11 @@ func (s Scope) Add(ctx domain.RequestContext, b block.Block) (err error) {
 	b.Created = time.Now().UTC()
 	b.Revised = time.Now().UTC()
 
-	stmt, err := ctx.Transaction.Preparex("INSERT INTO block (refid, orgid, labelid, userid, contenttype, pagetype, title, body, excerpt, rawbody, config, externalsource, used, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
-	defer streamutil.Close(stmt)
+	_, err = ctx.Transaction.Exec("INSERT INTO block (refid, orgid, labelid, userid, contenttype, pagetype, title, body, excerpt, rawbody, config, externalsource, used, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		b.RefID, b.OrgID, b.LabelID, b.UserID, b.ContentType, b.PageType, b.Title, b.Body, b.Excerpt, b.RawBody, b.Config, b.ExternalSource, b.Used, b.Created, b.Revised)
 
-	if err != nil {
-		err = errors.Wrap(err, "prepare insert block")
-		return
-	}
-
-	_, err = stmt.Exec(b.RefID, b.OrgID, b.LabelID, b.UserID, b.ContentType, b.PageType, b.Title, b.Body, b.Excerpt, b.RawBody, b.Config, b.ExternalSource, b.Used, b.Created, b.Revised)
 	if err != nil {
 		err = errors.Wrap(err, "execute insert block")
-		return
 	}
 
 	return
@@ -55,18 +46,11 @@ func (s Scope) Add(ctx domain.RequestContext, b block.Block) (err error) {
 
 // Get returns requested reusable content block.
 func (s Scope) Get(ctx domain.RequestContext, id string) (b block.Block, err error) {
-	stmt, err := s.Runtime.Db.Preparex("SELECT a.id, a.refid, a.orgid, a.labelid, a.userid, a.contenttype, a.pagetype, a.title, a.body, a.excerpt, a.rawbody, a.config, a.externalsource, a.used, a.created, a.revised, b.firstname, b.lastname FROM block a LEFT JOIN user b ON a.userid = b.refid WHERE a.orgid=? AND a.refid=?")
-	defer streamutil.Close(stmt)
+	err = s.Runtime.Db.Get(&b, "SELECT a.id, a.refid, a.orgid, a.labelid, a.userid, a.contenttype, a.pagetype, a.title, a.body, a.excerpt, a.rawbody, a.config, a.externalsource, a.used, a.created, a.revised, b.firstname, b.lastname FROM block a LEFT JOIN user b ON a.userid = b.refid WHERE a.orgid=? AND a.refid=?",
+		ctx.OrgID, id)
 
-	if err != nil {
-		err = errors.Wrap(err, "prepare select block")
-		return
-	}
-
-	err = stmt.Get(&b, ctx.OrgID, id)
 	if err != nil {
 		err = errors.Wrap(err, "execute select block")
-		return
 	}
 
 	return
@@ -78,7 +62,6 @@ func (s Scope) GetBySpace(ctx domain.RequestContext, spaceID string) (b []block.
 
 	if err != nil {
 		err = errors.Wrap(err, "select space blocks")
-		return
 	}
 
 	return
@@ -86,18 +69,10 @@ func (s Scope) GetBySpace(ctx domain.RequestContext, spaceID string) (b []block.
 
 // IncrementUsage increments usage counter for content block.
 func (s Scope) IncrementUsage(ctx domain.RequestContext, id string) (err error) {
-	stmt, err := ctx.Transaction.Preparex("UPDATE block SET used=used+1, revised=? WHERE orgid=? AND refid=?")
-	defer streamutil.Close(stmt)
+	_, err = ctx.Transaction.Exec("UPDATE block SET used=used+1, revised=? WHERE orgid=? AND refid=?", time.Now().UTC(), ctx.OrgID, id)
 
-	if err != nil {
-		err = errors.Wrap(err, "prepare increment block usage")
-		return
-	}
-
-	_, err = stmt.Exec(time.Now().UTC(), ctx.OrgID, id)
 	if err != nil {
 		err = errors.Wrap(err, "execute increment block usage")
-		return
 	}
 
 	return
@@ -105,18 +80,10 @@ func (s Scope) IncrementUsage(ctx domain.RequestContext, id string) (err error) 
 
 // DecrementUsage decrements usage counter for content block.
 func (s Scope) DecrementUsage(ctx domain.RequestContext, id string) (err error) {
-	stmt, err := ctx.Transaction.Preparex("UPDATE block SET used=used-1, revised=? WHERE orgid=? AND refid=?")
-	defer streamutil.Close(stmt)
+	_, err = ctx.Transaction.Exec("UPDATE block SET used=used-1, revised=? WHERE orgid=? AND refid=?", time.Now().UTC(), ctx.OrgID, id)
 
-	if err != nil {
-		err = errors.Wrap(err, "prepare decrement block usage")
-		return
-	}
-
-	_, err = stmt.Exec(time.Now().UTC(), ctx.OrgID, id)
 	if err != nil {
 		err = errors.Wrap(err, "execute decrement block usage")
-		return
 	}
 
 	return
@@ -124,23 +91,13 @@ func (s Scope) DecrementUsage(ctx domain.RequestContext, id string) (err error) 
 
 // RemoveReference clears page.blockid for given blockID.
 func (s Scope) RemoveReference(ctx domain.RequestContext, id string) (err error) {
-	stmt, err := ctx.Transaction.Preparex("UPDATE page SET blockid='', revised=? WHERE orgid=? AND blockid=?")
-	defer streamutil.Close(stmt)
-
-	if err != nil {
-		err = errors.Wrap(err, "prepare remove block ref")
-		return
-	}
-
-	_, err = stmt.Exec(time.Now().UTC(), ctx.OrgID, id)
+	_, err = ctx.Transaction.Exec("UPDATE page SET blockid='', revised=? WHERE orgid=? AND blockid=?", time.Now().UTC(), ctx.OrgID, id)
 
 	if err == sql.ErrNoRows {
 		err = nil
 	}
-
 	if err != nil {
 		err = errors.Wrap(err, "execute remove block ref")
-		return
 	}
 
 	return
@@ -150,19 +107,10 @@ func (s Scope) RemoveReference(ctx domain.RequestContext, id string) (err error)
 func (s Scope) Update(ctx domain.RequestContext, b block.Block) (err error) {
 	b.Revised = time.Now().UTC()
 
-	var stmt *sqlx.NamedStmt
-	stmt, err = ctx.Transaction.PrepareNamed("UPDATE block SET title=:title, body=:body, excerpt=:excerpt, rawbody=:rawbody, config=:config, revised=:revised WHERE orgid=:orgid AND refid=:refid")
-	defer streamutil.Close(stmt)
+	_, err = ctx.Transaction.NamedExec("UPDATE block SET title=:title, body=:body, excerpt=:excerpt, rawbody=:rawbody, config=:config, revised=:revised WHERE orgid=:orgid AND refid=:refid", b)
 
-	if err != nil {
-		err = errors.Wrap(err, "prepare update block")
-		return
-	}
-
-	_, err = stmt.Exec(&b)
 	if err != nil {
 		err = errors.Wrap(err, "execute update block")
-		return
 	}
 
 	return

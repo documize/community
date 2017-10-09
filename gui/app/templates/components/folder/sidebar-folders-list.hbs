@@ -42,7 +42,7 @@
 				{{/unless}}
 				<ul class="list">
 					{{#each publicFolders as |folder|}}
-						{{#link-to 'folder' folder.id folder.slug class="link" activeClass='selected' }}
+						{{#link-to 'folder.index' folder.id folder.slug class="link" activeClass='selected' }}
 							<li class="item">{{ folder.name }}</li>
 						{{/link-to}}
 					{{/each}}
@@ -57,7 +57,7 @@
 					{{/unless}}
 					<ul class="list">
 						{{#each protectedFolders as |folder|}}
-							{{#link-to 'folder' folder.id folder.slug class="link" activeClass='selected' }}
+							{{#link-to 'folder.index' folder.id folder.slug class="link" activeClass='selected' }}
 								<li class="item">{{ folder.name }}</li>
 							{{/link-to}}
 						{{/each}}
@@ -71,7 +71,7 @@
 					{{/unless}}
 					<ul class="list">
 						{{#each privateFolders as |folder|}}
-							{{#link-to 'folder' folder.id folder.slug class="link" activeClass='selected' }}
+							{{#link-to 'folder.index' folder.id folder.slug class="link" activeClass='selected' }}
 								<li class="item">{{ folder.name }}</li>
 							{{/link-to}}
 						{{/each}}

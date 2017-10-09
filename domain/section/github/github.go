@@ -153,7 +153,6 @@ func (p *Provider) Refresh(ctx *provider.Context, configJSON, data string) strin
 
 	err := json.Unmarshal([]byte(configJSON), &c)
 	if err != nil {
-		p.Runtime.Log.Error("unable to unmarshall github config", err)
 		return "internal configuration error '" + err.Error() + "'"
 	}
 
@@ -164,7 +163,6 @@ func (p *Provider) Refresh(ctx *provider.Context, configJSON, data string) strin
 
 	byts, err := json.Marshal(refreshReportData(&c, client))
 	if err != nil {
-		p.Runtime.Log.Error("unable to marshall github data", err)
 		return "internal configuration error '" + err.Error() + "'"
 	}
 
@@ -188,9 +186,7 @@ func (p *Provider) Render(ctx *provider.Context, config, data string) string {
 	var c = githubConfig{}
 
 	err = json.Unmarshal([]byte(config), &c)
-
 	if err != nil {
-		p.Runtime.Log.Error("unable to unmarshall github config", err)
 		return "Please delete and recreate this Github section."
 	}
 
@@ -206,7 +202,6 @@ func (p *Provider) Render(ctx *provider.Context, config, data string) string {
 
 	err = json.Unmarshal([]byte(data), &payload)
 	if err != nil {
-		p.Runtime.Log.Error("unable to unmarshall github data", err)
 		return "Please delete and recreate this Github section."
 	}
 

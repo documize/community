@@ -1,66 +1,5 @@
-.start-document {
-	@extend .no-select;
-	height: 60px;
-	background-color: transparent;
-	position: relative;
-	cursor: pointer;
-
-	> .start-button {
-		display: none;
-		text-align: center;
-		padding-top: 20px;
-		color: $color-green;
-		font-size: 1rem;
-		position: relative;
-
-		> .round-button {
-			opacity: 0.6 !important;
-		}
-
-		> .label {
-			display: inline-block;
-			margin-left: 10px;
-		}
-
-		> .line {
-			display: inline-block;
-			height: 1px;
-			border: 1px solid $color-green;
-			width: 100px;
-			margin: 0 20px 0 20px;
-			opacity: 0.2;
-		}
-	}
-
-	&:first-of-type {
-		height: 30px;
-
-		> .start-button {
-			padding-top: 0;
-		}
-	}
-}
-
-.start-document-empty-state {
-	> .start-button {
-		display: block;
-	}
-}
-
 .new-document-wizard {
-	@include border-radius(2px);
-	margin: 0 0 30px 0;
-	padding: 30px;
-	border: 1px solid $color-stroke;
-	background-color: $color-off-white;
-	display: none;
-
-	.document-name {
-		font-weight: bold;
-		font-size: 1.5rem;
-		margin: 0 0 30px 0;
-		color: $color-black;
-	}
+	@include content-container();
 
 	.import-document-button {
 		width: 100%;
@@ -68,11 +7,13 @@
 		margin: 0 0 30px 0;
 		text-align: center;
 		color: $color-gray;
-		border: 1px solid $color-stroke;
 		cursor: pointer;
-		font-size: 1rem;
+		font-size: 1.2rem;
 		line-height: 1.7rem;
 		@include ease-in();
+		@extend .no-select;
+		border: 1px solid $color-stroke;
+		background-color: $color-off-white;
 
 		&:hover {
 			border-color: $color-link;
@@ -85,74 +26,72 @@
 		}
 	}
 
-	> .list-wrapper {
-		// height: 440px;
-		// overflow-y: auto;
+	> .input-control {
+		> .list-wrapper {
+			> .template-list {
+				margin: 0;
+				padding: 0;
 
-		> .template-list {
-			margin: 0;
-			padding: 0;
-
-			> .item {
-				@include ease-in();
-				@include border-radius(4px);
-				list-style: none;
-				cursor: pointer;
-				display: inline-block;
-				border: 1px solid $color-stroke;
-				background-color: $color-white;
-				margin: 0 20px 20px 0;
-				padding: 12px 0 0 20px;
-				width: 423px;
-				height: 60px;
-				position: relative;
-
-				&:hover {
+				.item {
 					@include ease-in();
-					border-color: $color-link;
+					@include border-radius(4px);
+					list-style: none;
+					cursor: pointer;
+					display: inline-block;
+					background-color: $color-blue;
+					margin: 0 20px 20px 0;
+					padding: 12px 0 0 20px;
+					width: 423px;
+					height: 60px;
+					position: relative;
+
+					&:hover {
+						@include ease-in();
+						border-color: $color-link;
+
+						> .template-actions {
+							display: block;
+						}
+					}
 
 					> .template-actions {
-						display: block;
+						@include ease-in();
+						display: none;
+						position: absolute;
+						top: 10px;
+						right: 8px;
+
+						.material-icons {
+							color: $color-stroke;
+							font-size: 1rem;
+						}
 					}
-				}
 
-				> .template-actions {
-					@include ease-in();
-					display: none;
-					position: absolute;
-					top: 10px;
-					right: 8px;
-
-					.material-icons {
-						color: $color-stroke;
-						font-size: 1rem;
-					}
-				}
-
-				> .details {
-					width: 350px;
-					overflow: hidden;
-					text-overflow: ellipsis;
-					white-space: nowrap;
-
-					> .title {
-						font-size: 1rem;
-						font-weight: normal;
-						color: $color-off-black;
-						letter-spacing: 0.5px;
-						margin-top: 0;
+					> .details {
+						width: 350px;
 						overflow: hidden;
 						text-overflow: ellipsis;
 						white-space: nowrap;
-					}
 
-					> .desc {
-						color: $color-gray;
-						font-size: 0.8rem;
-						margin-top: 5px;
-						overflow: hidden;
-						text-overflow: ellipsis;
-						white-space: nowrap;
+						> .title {
+							font-size: 1rem;
+							font-weight: normal;
+							color: $color-white;
+							letter-spacing: 0.5px;
+							margin-top: 0;
+							overflow: hidden;
+							text-overflow: ellipsis;
+							white-space: nowrap;
+						}
+
+						> .desc {
+							color: $color-white;
+							font-size: 0.8rem;
+							margin-top: 5px;
+							overflow: hidden;
+							text-overflow: ellipsis;
+							white-space: nowrap;
+						}
 					}
 				}
 			}

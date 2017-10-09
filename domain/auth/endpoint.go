@@ -110,7 +110,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.Runtime.Log.Info("login " + email + " @ " + dom)
+	h.Runtime.Log.Info("logged in " + email + " @ " + dom)
 
 	authModel := auth.AuthenticationModel{}
 	authModel.Token = GenerateJWT(h.Runtime, u.RefID, org.RefID, dom)

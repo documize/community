@@ -17,29 +17,38 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	documentService: Ember.inject.service('document'),
 	folderService: Ember.inject.service('folder'),
 	linkService: Ember.inject.service('link'),
-	
+
 	beforeModel(transition) {
 		this.set('pageId', is.not.undefined(transition.queryParams.page) ? transition.queryParams.page : "");
 		this.set('folderId', this.paramsFor('document').folder_id);
 		this.set('documentId', this.paramsFor('document').document_id);
 
 		return new Ember.RSVP.Promise((resolve) => {
-			this.get('documentService').getDocument(this.get('documentId')).then((document) => {
-				this.set('document', document);
-
-				this.get('folderService').getAll().then((folders) => {
-					this.set('folders', folders);
-
-					this.get('folderService').getFolder(this.get('folderId')).then((folder) => {
-						this.set('folder', folder);
-
-						this.get('folderService').setCurrentFolder(folder).then(() => {
-							this.set('isEditor', this.get('folderService').get('canEditCurrentFolder'));
-							resolve();
-						});
-					});
-				});
+			this.get('documentService').fetchDocumentData(this.get('documentId')).then((data) => {
+				this.set('document', data.document);
+				this.set('folders', data.folders);
+				this.set('folder', data.folder);
+				this.set('permissions', data.permissions);
+				this.set('links', data.links);
+				resolve();
 			});
+
+			// this.get('documentService').getDocument(this.get('documentId')).then((document) => {
+			// 	this.set('document', document);
+
+			// 	this.get('folderService').getAll().then((folders) => {
+			// 		this.set('folders', folders);
+
+			// 		this.get('folderService').getFolder(this.get('folderId')).then((folder) => {
+			// 			this.set('folder', folder);
+
+			// 			this.get('folderService').setCurrentFolder(folder).then(() => {
+			// 				this.set('permissions', this.get('folderService').get('permissions'));
+			// 				resolve();
+			// 			});
+			// 		});
+			// 	});
+			// });
 		});
 	},
 
@@ -49,8 +58,8 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 			folder: this.get('folder'),
 			document: this.get('document'),
 			page: this.get('pageId'),
-			isEditor: this.get('isEditor'),
-			links: this.get('linkService').getDocumentLinks(this.get('documentId')),
+			permissions: this.get('permissions'),
+			links: this.get('links'),
 			sections: this.get('sectionService').getAll()
 		});
 	},

@@ -22,7 +22,6 @@ import (
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/store/mysql"
 	"github.com/documize/community/model/org"
-	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 )
 
@@ -32,25 +31,17 @@ type Scope struct {
 }
 
 // AddOrganization inserts the passed organization record into the organization table.
-func (s Scope) AddOrganization(ctx domain.RequestContext, org org.Organization) error {
+func (s Scope) AddOrganization(ctx domain.RequestContext, org org.Organization) (err error) {
 	org.Created = time.Now().UTC()
 	org.Revised = time.Now().UTC()
 
-	stmt, err := ctx.Transaction.Preparex(
-		"INSERT INTO organization (refid, company, title, message, url, domain, email, allowanonymousaccess, serial, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
-	defer streamutil.Close(stmt)
-
-	if err != nil {
-		err = errors.Wrap(err, "unable to prepare insert for org")
-		return err
-	}
-
-	_, err = stmt.Exec(org.RefID, org.Company, org.Title, org.Message, strings.ToLower(org.URL), strings.ToLower(org.Domain),
+	_, err = ctx.Transaction.Exec(
+		"INSERT INTO organization (refid, company, title, message, url, domain, email, allowanonymousaccess, serial, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		org.RefID, org.Company, org.Title, org.Message, strings.ToLower(org.URL), strings.ToLower(org.Domain),
 		strings.ToLower(org.Email), org.AllowAnonymousAccess, org.Serial, org.Created, org.Revised)
 
 	if err != nil {
 		err = errors.Wrap(err, "unable to execute insert for org")
-		return err
 	}
 
 	return nil
@@ -88,33 +79,18 @@ func (s Scope) GetOrganizationByDomain(subdomain string) (o org.Organization, er
 		return
 	}
 
-	var stmt *sqlx.Stmt
-	stmt, err = s.Runtime.Db.Preparex("SELECT id, refid, company, title, message, url, domain, service as conversionendpoint, email, serial, active, allowanonymousaccess, authprovider, coalesce(authconfig,JSON_UNQUOTE('{}')) as authconfig, created, revised FROM organization WHERE domain=? AND active=1")
-	defer streamutil.Close(stmt)
+	err = s.Runtime.Db.Get(&o, "SELECT id, refid, company, title, message, url, domain, service as conversionendpoint, email, serial, active, allowanonymousaccess, authprovider, coalesce(authconfig,JSON_UNQUOTE('{}')) as authconfig, created, revised FROM organization WHERE domain=? AND active=1",
+		subdomain)
 
-	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("unable to prepare select for subdomain %s", subdomain))
-		return
-	}
-
-	err = stmt.Get(&o, subdomain)
 	if err == nil {
 		return
 	}
 
 	// we try to match on empty domain as last resort
-	stmt, err = s.Runtime.Db.Preparex("SELECT id, refid, company, title, message, url, domain, service as conversionendpoint, email, serial, active, allowanonymousaccess, authprovider, coalesce(authconfig,JSON_UNQUOTE('{}')) as authconfig, created, revised FROM organization WHERE domain='' AND active=1")
-	defer streamutil.Close(stmt)
+	err = s.Runtime.Db.Get(&o, "SELECT id, refid, company, title, message, url, domain, service as conversionendpoint, email, serial, active, allowanonymousaccess, authprovider, coalesce(authconfig,JSON_UNQUOTE('{}')) as authconfig, created, revised FROM organization WHERE domain='' AND active=1")
 
-	if err != nil {
-		err = errors.Wrap(err, "unable to prepare select for empty subdomain")
-		return
-	}
-
-	err = stmt.Get(&o)
 	if err != nil && err != sql.ErrNoRows {
 		err = errors.Wrap(err, "unable to execute select for empty subdomain")
-		return
 	}
 
 	return
@@ -124,18 +100,11 @@ func (s Scope) GetOrganizationByDomain(subdomain string) (o org.Organization, er
 func (s Scope) UpdateOrganization(ctx domain.RequestContext, org org.Organization) (err error) {
 	org.Revised = time.Now().UTC()
 
-	stmt, err := ctx.Transaction.PrepareNamed("UPDATE organization SET title=:title, message=:message, service=:conversionendpoint, email=:email, allowanonymousaccess=:allowanonymousaccess, revised=:revised WHERE refid=:refid")
-	defer streamutil.Close(stmt)
+	_, err = ctx.Transaction.NamedExec("UPDATE organization SET title=:title, message=:message, service=:conversionendpoint, email=:email, allowanonymousaccess=:allowanonymousaccess, revised=:revised WHERE refid=:refid",
+		&org)
 
-	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("unable to prepare update for org %s", org.RefID))
-		return
-	}
-
-	_, err = stmt.Exec(&org)
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to execute update for org %s", org.RefID))
-		return
 	}
 
 	return
@@ -149,18 +118,10 @@ func (s Scope) DeleteOrganization(ctx domain.RequestContext, orgID string) (rows
 
 // RemoveOrganization sets the orgID organization to be inactive, thus executing a "soft delete" operation.
 func (s Scope) RemoveOrganization(ctx domain.RequestContext, orgID string) (err error) {
-	stmt, err := ctx.Transaction.Preparex("UPDATE organization SET active=0 WHERE refid=?")
-	defer streamutil.Close(stmt)
+	_, err = ctx.Transaction.Exec("UPDATE organization SET active=0 WHERE refid=?", orgID)
 
-	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("unable to prepare soft delete for org %s", orgID))
-		return
-	}
-
-	_, err = stmt.Exec(orgID)
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to execute soft delete for org %s", orgID))
-		return
 	}
 
 	return
@@ -170,18 +131,11 @@ func (s Scope) RemoveOrganization(ctx domain.RequestContext, orgID string) (err 
 func (s Scope) UpdateAuthConfig(ctx domain.RequestContext, org org.Organization) (err error) {
 	org.Revised = time.Now().UTC()
 
-	stmt, err := ctx.Transaction.PrepareNamed("UPDATE organization SET allowanonymousaccess=:allowanonymousaccess, authprovider=:authprovider, authconfig=:authconfig, revised=:revised WHERE refid=:refid")
-	defer streamutil.Close(stmt)
+	_, err = ctx.Transaction.NamedExec("UPDATE organization SET allowanonymousaccess=:allowanonymousaccess, authprovider=:authprovider, authconfig=:authconfig, revised=:revised WHERE refid=:refid",
+		&org)
 
-	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("unable to prepare UpdateAuthConfig %s", org.RefID))
-		return
-	}
-
-	_, err = stmt.Exec(&org)
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to execute UpdateAuthConfig %s", org.RefID))
-		return
 	}
 
 	return

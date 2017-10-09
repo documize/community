@@ -42,7 +42,7 @@ export default AjaxService.extend({
 			if (is.not.empty(userUpdate)) {
 				let latest = JSON.parse(userUpdate);
 
-				if (!latest.active || user.editor !== latest.editor || user.admin !== latest.admin) {
+				if (!latest.active || user.editor !== latest.editor || user.admin !== latest.admin || user.viewUsers !== latest.viewUsers) {
 					window.location.href = 'auth/login';
 				}
 			}

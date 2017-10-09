@@ -242,6 +242,12 @@
     border: 1px solid $color-gray;
 }
 
+.button-nav {
+	background-color: $color-nav-button;
+	color: $color-nav-button-text;
+    border: 1px solid $color-sidebar-border;
+}
+
 .flat-button {
     box-shadow: none;
     background-color: transparent;

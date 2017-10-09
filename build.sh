@@ -1,5 +1,8 @@
 #! /bin/bash
 
+# ember s apiHost=https://demo1.dev:5001
+# go run edition/community.go -port=5001 -forcesslport=5002 -cert selfcert/cert.pem -key selfcert/key.pem -salt=tsu3Acndky8cdTNx3
+
 NOW=$(date)
 echo "Build process started $NOW"
 

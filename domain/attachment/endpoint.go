@@ -25,8 +25,8 @@ import (
 	"github.com/documize/community/core/secrets"
 	"github.com/documize/community/core/uniqueid"
 	"github.com/documize/community/domain"
-	"github.com/documize/community/domain/document"
 	"github.com/documize/community/domain/organization"
+	"github.com/documize/community/domain/permission"
 	indexer "github.com/documize/community/domain/search"
 	"github.com/documize/community/model/attachment"
 	"github.com/documize/community/model/audit"
@@ -89,7 +89,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !document.CanViewDocument(ctx, *h.Store, documentID) {
+	if !permission.CanViewDocument(ctx, *h.Store, documentID) {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -125,7 +125,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !document.CanChangeDocument(ctx, *h.Store, documentID) {
+	if !permission.CanChangeDocument(ctx, *h.Store, documentID) {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -177,7 +177,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !document.CanChangeDocument(ctx, *h.Store, documentID) {
+	if !permission.CanChangeDocument(ctx, *h.Store, documentID) {
 		response.WriteForbiddenError(w)
 		return
 	}

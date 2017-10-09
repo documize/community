@@ -40,21 +40,15 @@ func (s Scope) Record(ctx domain.RequestContext, t audit.EventType) {
 		return
 	}
 
-	stmt, err := tx.Preparex("INSERT INTO userevent (orgid, userid, eventtype, ip, created) VALUES (?, ?, ?, ?, ?)")
+	_, err = tx.Exec("INSERT INTO userevent (orgid, userid, eventtype, ip, created) VALUES (?, ?, ?, ?, ?)",
+		e.OrgID, e.UserID, e.Type, e.IP, e.Created)
+
 	if err != nil {
 		tx.Rollback()
 		s.Runtime.Log.Error("prepare audit insert", err)
 		return
 	}
 
-	_, err = stmt.Exec(e.OrgID, e.UserID, e.Type, e.IP, e.Created)
-	if err != nil {
-		tx.Rollback()
-		s.Runtime.Log.Error("execute audit insert", err)
-		return
-	}
-
-	stmt.Close()
 	tx.Commit()
 
 	return

@@ -16,13 +16,13 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	documentService: Ember.inject.service('document'),
 	folderService: Ember.inject.service('folder'),
 	userService: Ember.inject.service('user'),
-	
+
 	model(params) {
 		return Ember.RSVP.hash({
 			folders: this.modelFor('document').folders,
 			folder: this.modelFor('document').folder,
 			document: this.modelFor('document').document,
-			isEditor: this.get('folderService').get('canEditCurrentFolder'),
+			permissions: this.get('folderService').get('permissions'),
 			links: this.modelFor('document').links,
 			sections: this.modelFor('document').sections,
 			page: this.get('documentService').getPage(this.modelFor('document').document.get('id'), params.page_id),

@@ -6,8 +6,8 @@
 
     &:hover {
         @extend .z-depth-half;
-        background-color: $color-card-active;
-        border-color: $color-card-active;
+        background-color: $color-selected-item;
+        border-color: $color-selected-item;
         transition: 0.2s all ease;
     }
 }

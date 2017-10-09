@@ -1,8 +1,6 @@
-{{layout/zone-navigation}}
 {{#layout/zone-container}}
 	{{#layout/zone-sidebar}}
-		{{folder/sidebar-zone folders=model noFolder=true isFolderOwner=false isEditor=false
-		onAddSpace=(action 'onAddSpace')}}
+		{{folder/sidebar-zone folders=model noFolder=true onAddSpace=(action 'onAddSpace')}}
 	{{/layout/zone-sidebar}}
 	{{#layout/zone-content}}
 	{{/layout/zone-content}}

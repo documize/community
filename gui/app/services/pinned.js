@@ -12,6 +12,7 @@
 import Ember from 'ember';
 
 const {
+	RSVP,
 	inject: { service }
 } = Ember;
 
@@ -25,6 +26,10 @@ export default Ember.Service.extend({
 
 	getUserPins() {
 		let userId = this.get('session.user.id');
+
+		if (!this.get('session.authenticated')) {
+			return new RSVP.resolve([]);
+		}
 
 		return this.get('ajax').request(`pin/${userId}`, {
 			method: 'GET'
@@ -104,45 +109,51 @@ export default Ember.Service.extend({
 
 	isDocumentPinned(documentId) {
 		let userId = this.get('session.user.id');
+		let pins = this.get('pins');
 
-		if (this.get('initialized') === false) {
-			this.getUserPins().then(() => {
-				let pins = this.get('pins');
-				let pinId = '';
-
+		return new Ember.RSVP.Promise((resolve) => {
+			if (this.get('initialized') === false) {
+				this.getUserPins().then((pins) => {
+					pins.forEach((pin) => {
+						if (pin.get('userId') === userId && pin.get('documentId') === documentId) {
+							resolve(pin.get('id'));
+						}
+					});
+				});
+			} else {
 				pins.forEach((pin) => {
 					if (pin.get('userId') === userId && pin.get('documentId') === documentId) {
-						pinId = pin.get('id');
+						resolve(pin.get('id'));
 					}
 				});
+			}
 
-				return pinId;
-			});
-		} else {
-			let pins = this.get('pins');
-			let pinId = '';
-
-			pins.forEach((pin) => {
-				if (pin.get('userId') === userId && pin.get('documentId') === documentId) {
-					pinId = pin.get('id');
-				}
-			});
-
-			return pinId;
-		}
+			resolve('');
+		});
 	},
 
 	isSpacePinned(spaceId) {
 		let userId = this.get('session.user.id');
 		let pins = this.get('pins');
-		let pinId = '';
 
-		pins.forEach((pin) => {
-			if (pin.get('userId') === userId && pin.get('documentId') === '' && pin.get('folderId') === spaceId) {
-				pinId = pin.get('id');
+		return new Ember.RSVP.Promise((resolve) => {
+			if (!this.get('initialized')) {
+			this.getUserPins().then((pins) => {
+				pins.forEach((pin) => {
+					if (pin.get('userId') === userId && pin.get('documentId') === '' && pin.get('folderId') === spaceId) {
+						resolve(pin.get('id'));
+					}
+				});
+			});
+			} else {
+				pins.forEach((pin) => {
+					if (pin.get('userId') === userId && pin.get('documentId') === '' && pin.get('folderId') === spaceId) {
+						resolve(pin.get('id'));
+					}
+				});
 			}
-		});
 
-		return pinId;
+			resolve('');
+		});
 	}
 });

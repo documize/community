@@ -23,15 +23,6 @@ let BaseModel = Ember.Object.extend({
 	}
 });
 
-let FolderPermissionModel = Ember.Object.extend({
-	orgId: "",
-	folderId: "",
-	userId: "",
-	fullname: "",
-	canView: false,
-	canEdit: false
-});
-
 // ProtectedFolderParticipant used to display folder participants that can
 // then be marked as folder owner.
 let ProtectedFolderParticipant = Ember.Object.extend({
@@ -211,7 +202,6 @@ export default {
 	AttachmentModel,
 	DocumentModel,
 	FolderModel,
-	FolderPermissionModel,
 	OrganizationModel,
 	PageModel,
 	PageMetaModel,

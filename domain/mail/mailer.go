@@ -168,12 +168,12 @@ func (m *Mailer) PasswordReset(recipient, url string) {
 	}
 }
 
-// ShareFolderExistingUser provides an existing user with a link to a newly shared folder.
-func (m *Mailer) ShareFolderExistingUser(recipient, inviter, url, folder, intro string) {
-	method := "ShareFolderExistingUser"
+// ShareSpaceExistingUser provides an existing user with a link to a newly shared space.
+func (m *Mailer) ShareSpaceExistingUser(recipient, inviter, url, folder, intro string) {
+	method := "ShareSpaceExistingUser"
 	m.LoadCredentials()
 
-	file, err := web.ReadFile("mail/share-folder-existing-user.html")
+	file, err := web.ReadFile("mail/share-space-existing-user.html")
 	if err != nil {
 		m.Runtime.Log.Error(fmt.Sprintf("%s - unable to load email template", method), err)
 		return
@@ -218,12 +218,12 @@ func (m *Mailer) ShareFolderExistingUser(recipient, inviter, url, folder, intro 
 	}
 }
 
-// ShareFolderNewUser invites new user providing Credentials, explaining the product and stating who is inviting them.
-func (m *Mailer) ShareFolderNewUser(recipient, inviter, url, folder, invitationMessage string) {
-	method := "ShareFolderNewUser"
+// ShareSpaceNewUser invites new user providing Credentials, explaining the product and stating who is inviting them.
+func (m *Mailer) ShareSpaceNewUser(recipient, inviter, url, space, invitationMessage string) {
+	method := "ShareSpaceNewUser"
 	m.LoadCredentials()
 
-	file, err := web.ReadFile("mail/share-folder-new-user.html")
+	file, err := web.ReadFile("mail/share-space-new-user.html")
 	if err != nil {
 		m.Runtime.Log.Error(fmt.Sprintf("%s - unable to load email template", method), err)
 		return
@@ -236,7 +236,7 @@ func (m *Mailer) ShareFolderNewUser(recipient, inviter, url, folder, invitationM
 		inviter = "Your colleague"
 	}
 
-	subject := fmt.Sprintf("%s has shared %s with you on Documize", inviter, folder)
+	subject := fmt.Sprintf("%s has shared %s with you on Documize", inviter, space)
 
 	e := NewEmail()
 	e.From = m.Credentials.SMTPsender
@@ -254,7 +254,7 @@ func (m *Mailer) ShareFolderNewUser(recipient, inviter, url, folder, invitationM
 		inviter,
 		url,
 		invitationMessage,
-		folder,
+		space,
 	}
 
 	buffer := new(bytes.Buffer)

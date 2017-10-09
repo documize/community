@@ -35,7 +35,6 @@ import (
 	"github.com/documize/community/domain/organization"
 	"github.com/documize/community/model/account"
 	"github.com/documize/community/model/audit"
-	"github.com/documize/community/model/space"
 	"github.com/documize/community/model/user"
 )
 
@@ -244,7 +243,6 @@ func (h *Handler) GetOrganizationUsers(w http.ResponseWriter, r *http.Request) {
 			h.Runtime.Log.Error(method, err)
 			return
 		}
-
 	} else {
 		u, err = h.Store.User.GetUsersForOrganization(ctx)
 		if err != nil && err != sql.ErrNoRows {
@@ -273,43 +271,41 @@ func (h *Handler) GetSpaceUsers(w http.ResponseWriter, r *http.Request) {
 	var u []user.User
 	var err error
 
-	folderID := request.Param(r, "folderID")
-	if len(folderID) == 0 {
-		response.WriteMissingDataError(w, method, "folderID")
+	spaceID := request.Param(r, "spaceID")
+	if len(spaceID) == 0 {
+		response.WriteMissingDataError(w, method, "spaceID")
 		return
 	}
 
-	// check to see space type as it determines user selection criteria
-	folder, err := h.Store.Space.Get(ctx, folderID)
+	// Get user account as we need to know if user can see all users.
+	account, err := h.Store.Account.GetUserAccount(ctx, ctx.UserID)
 	if err != nil && err != sql.ErrNoRows {
 		response.WriteJSON(w, u)
 		h.Runtime.Log.Error(method, err)
 		return
 	}
 
-	switch folder.Type {
-	case space.ScopePublic:
+	// account.users == false means we restrict viewing to just space users
+	if account.Users {
+		// can see all users
 		u, err = h.Store.User.GetActiveUsersForOrganization(ctx)
-		break
-	case space.ScopePrivate:
-		// just me
-		var me user.User
-		me, err = h.Store.User.Get(ctx, ctx.UserID)
-		u = append(u, me)
-		break
-	case space.ScopeRestricted:
-		u, err = h.Store.User.GetSpaceUsers(ctx, folderID)
-		break
+		if err != nil && err != sql.ErrNoRows {
+			response.WriteJSON(w, u)
+			h.Runtime.Log.Error(method, err)
+			return
+		}
+	} else {
+		// send back existing space users
+		u, err = h.Store.User.GetSpaceUsers(ctx, spaceID)
+		if err != nil && err != sql.ErrNoRows {
+			response.WriteJSON(w, u)
+			h.Runtime.Log.Error(method, err)
+			return
+		}
 	}
 
 	if len(u) == 0 {
 		u = []user.User{}
-	}
-
-	if err != nil && err != sql.ErrNoRows {
-		response.WriteJSON(w, u)
-		h.Runtime.Log.Error(method, err)
-		return
 	}
 
 	response.WriteJSON(w, u)
@@ -377,7 +373,8 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.Store.Space.ChangeOwner(ctx, userID, ctx.UserID)
+	// remove all associated roles for this user
+	_, err = h.Store.Permission.DeleteUserPermissions(ctx, userID)
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
@@ -467,6 +464,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	a.Editor = u.Editor
 	a.Admin = u.Admin
 	a.Active = u.Active
+	a.Users = u.ViewUsers
 
 	err = h.Store.Account.UpdateAccount(ctx, a)
 	if err != nil {
@@ -535,31 +533,6 @@ func (h *Handler) ChangePassword(w http.ResponseWriter, r *http.Request) {
 	ctx.Transaction.Commit()
 
 	response.WriteEmpty(w)
-}
-
-// UserSpacePermissions returns folder permission for authenticated user.
-func (h *Handler) UserSpacePermissions(w http.ResponseWriter, r *http.Request) {
-	method := "user.UserSpacePermissions"
-	ctx := domain.GetRequestContext(r)
-
-	userID := request.Param(r, "userID")
-	if userID != ctx.UserID {
-		response.WriteForbiddenError(w)
-		return
-	}
-
-	roles, err := h.Store.Space.GetUserRoles(ctx)
-	if err == sql.ErrNoRows {
-		err = nil
-		roles = []space.Role{}
-	}
-	if err != nil {
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	response.WriteJSON(w, roles)
 }
 
 // ForgotPassword initiates the change password procedure.

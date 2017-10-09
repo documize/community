@@ -18,10 +18,12 @@ import (
 	"github.com/documize/community/model/attachment"
 	"github.com/documize/community/model/audit"
 	"github.com/documize/community/model/block"
+	"github.com/documize/community/model/category"
 	"github.com/documize/community/model/doc"
 	"github.com/documize/community/model/link"
 	"github.com/documize/community/model/org"
 	"github.com/documize/community/model/page"
+	"github.com/documize/community/model/permission"
 	"github.com/documize/community/model/pin"
 	"github.com/documize/community/model/search"
 	"github.com/documize/community/model/space"
@@ -35,11 +37,13 @@ type Store struct {
 	Attachment   AttachmentStorer
 	Audit        AuditStorer
 	Block        BlockStorer
+	Category     CategoryStorer
 	Document     DocumentStorer
 	Link         LinkStorer
 	Organization OrganizationStorer
 	Page         PageStorer
 	Pin          PinStorer
+	Permission   PermissionStorer
 	Search       SearchStorer
 	Setting      SettingStorer
 	Space        SpaceStorer
@@ -51,18 +55,45 @@ type SpaceStorer interface {
 	Add(ctx RequestContext, sp space.Space) (err error)
 	Get(ctx RequestContext, id string) (sp space.Space, err error)
 	PublicSpaces(ctx RequestContext, orgID string) (sp []space.Space, err error)
+	GetViewable(ctx RequestContext) (sp []space.Space, err error)
 	GetAll(ctx RequestContext) (sp []space.Space, err error)
 	Update(ctx RequestContext, sp space.Space) (err error)
-	ChangeOwner(ctx RequestContext, currentOwner, newOwner string) (err error)
-	Viewers(ctx RequestContext) (v []space.Viewer, err error)
 	Delete(ctx RequestContext, id string) (rows int64, err error)
-	AddRole(ctx RequestContext, r space.Role) (err error)
-	GetRoles(ctx RequestContext, labelID string) (r []space.Role, err error)
-	GetUserRoles(ctx RequestContext) (r []space.Role, err error)
-	DeleteRole(ctx RequestContext, roleID string) (rows int64, err error)
-	DeleteSpaceRoles(ctx RequestContext, spaceID string) (rows int64, err error)
-	DeleteUserSpaceRoles(ctx RequestContext, spaceID, userID string) (rows int64, err error)
-	MoveSpaceRoles(ctx RequestContext, previousLabel, newLabel string) (err error)
+}
+
+// CategoryStorer defines required methods for category and category membership management
+type CategoryStorer interface {
+	Add(ctx RequestContext, c category.Category) (err error)
+	Update(ctx RequestContext, c category.Category) (err error)
+	Get(ctx RequestContext, id string) (c category.Category, err error)
+	GetBySpace(ctx RequestContext, spaceID string) (c []category.Category, err error)
+	GetAllBySpace(ctx RequestContext, spaceID string) (c []category.Category, err error)
+	GetSpaceCategorySummary(ctx RequestContext, spaceID string) (c []category.SummaryModel, err error)
+	Delete(ctx RequestContext, id string) (rows int64, err error)
+	AssociateDocument(ctx RequestContext, m category.Member) (err error)
+	DisassociateDocument(ctx RequestContext, categoryID, documentID string) (rows int64, err error)
+	RemoveCategoryMembership(ctx RequestContext, categoryID string) (rows int64, err error)
+	DeleteBySpace(ctx RequestContext, spaceID string) (rows int64, err error)
+	GetDocumentCategoryMembership(ctx RequestContext, documentID string) (c []category.Category, err error)
+	GetSpaceCategoryMembership(ctx RequestContext, spaceID string) (c []category.Member, err error)
+	RemoveDocumentCategories(ctx RequestContext, documentID string) (rows int64, err error)
+	RemoveSpaceCategoryMemberships(ctx RequestContext, spaceID string) (rows int64, err error)
+}
+
+// PermissionStorer defines required methods for space/document permission management
+type PermissionStorer interface {
+	AddPermission(ctx RequestContext, r permission.Permission) (err error)
+	AddPermissions(ctx RequestContext, r permission.Permission, actions ...permission.Action) (err error)
+	GetUserSpacePermissions(ctx RequestContext, spaceID string) (r []permission.Permission, err error)
+	GetSpacePermissions(ctx RequestContext, spaceID string) (r []permission.Permission, err error)
+	DeleteSpacePermissions(ctx RequestContext, spaceID string) (rows int64, err error)
+	DeleteUserSpacePermissions(ctx RequestContext, spaceID, userID string) (rows int64, err error)
+	DeleteUserPermissions(ctx RequestContext, userID string) (rows int64, err error)
+	DeleteCategoryPermissions(ctx RequestContext, categoryID string) (rows int64, err error)
+	DeleteSpaceCategoryPermissions(ctx RequestContext, spaceID string) (rows int64, err error)
+	GetCategoryPermissions(ctx RequestContext, catID string) (r []permission.Permission, err error)
+	GetCategoryUsers(ctx RequestContext, catID string) (u []user.User, err error)
+	GetUserCategoryPermissions(ctx RequestContext, userID string) (r []permission.Permission, err error)
 }
 
 // UserStorer defines required methods for user management
@@ -75,8 +106,8 @@ type UserStorer interface {
 	GetBySerial(ctx RequestContext, serial string) (u user.User, err error)
 	GetActiveUsersForOrganization(ctx RequestContext) (u []user.User, err error)
 	GetUsersForOrganization(ctx RequestContext) (u []user.User, err error)
-	GetSpaceUsers(ctx RequestContext, folderID string) (u []user.User, err error)
-	GetVisibleUsers(ctx RequestContext) (u []user.User, err error)
+	GetSpaceUsers(ctx RequestContext, spaceID string) (u []user.User, err error)
+	GetUsersForSpaces(ctx RequestContext, spaces []string) (u []user.User, err error)
 	UpdateUser(ctx RequestContext, u user.User) (err error)
 	UpdateUserPassword(ctx RequestContext, userID, salt, password string) (err error)
 	DeactiveUser(ctx RequestContext, userID string) (err error)
@@ -130,8 +161,7 @@ type DocumentStorer interface {
 	Add(ctx RequestContext, document doc.Document) (err error)
 	Get(ctx RequestContext, id string) (document doc.Document, err error)
 	GetAll() (ctx RequestContext, documents []doc.Document, err error)
-	GetBySpace(ctx RequestContext, folderID string) (documents []doc.Document, err error)
-	GetByTag(ctx RequestContext, tag string) (documents []doc.Document, err error)
+	GetBySpace(ctx RequestContext, spaceID string) (documents []doc.Document, err error)
 	DocumentList(ctx RequestContext) (documents []doc.Document, err error)
 	Templates(ctx RequestContext) (documents []doc.Document, err error)
 	TemplatesBySpace(ctx RequestContext, spaceID string) (documents []doc.Document, err error)
@@ -141,6 +171,7 @@ type DocumentStorer interface {
 	ChangeDocumentSpace(ctx RequestContext, document, space string) (err error)
 	MoveDocumentSpace(ctx RequestContext, id, move string) (err error)
 	Delete(ctx RequestContext, documentID string) (rows int64, err error)
+	DeleteBySpace(ctx RequestContext, spaceID string) (rows int64, err error)
 }
 
 // SettingStorer defines required methods for persisting global and user level settings
@@ -214,7 +245,6 @@ type PageStorer interface {
 	Add(ctx RequestContext, model page.NewPage) (err error)
 	Get(ctx RequestContext, pageID string) (p page.Page, err error)
 	GetPages(ctx RequestContext, documentID string) (p []page.Page, err error)
-	GetPagesWhereIn(ctx RequestContext, documentID, inPages string) (p []page.Page, err error)
 	GetPagesWithoutContent(ctx RequestContext, documentID string) (pages []page.Page, err error)
 	Update(ctx RequestContext, page page.Page, refID, userID string, skipRevision bool) (err error)
 	UpdateMeta(ctx RequestContext, meta page.Meta, updateUserID bool) (err error)

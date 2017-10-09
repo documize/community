@@ -13,7 +13,6 @@ import Ember from 'ember';
 import BaseService from '../services/base';
 
 const {
-	get,
 	RSVP,
 	inject: { service }
 } = Ember;
@@ -26,11 +25,11 @@ export default BaseService.extend({
 
 	// selected folder
 	currentFolder: null,
-	canEditCurrentFolder: false,
+	permissions: {},
 
 	// Add a new folder.
 	add(payload) {
-		return this.get('ajax').post(`folders`, {
+		return this.get('ajax').post(`space`, {
 			contentType: 'json',
 			data: JSON.stringify(payload)
 		}).then((folder) => {
@@ -41,7 +40,7 @@ export default BaseService.extend({
 
 	// Returns folder model for specified folder id.
 	getFolder(id) {
-		return this.get('ajax').request(`folders/${id}`, {
+		return this.get('ajax').request(`space/${id}`, {
 			method: 'GET'
 		}).then((folder) => {
 			let data = this.get('store').normalize('folder', folder);
@@ -54,7 +53,7 @@ export default BaseService.extend({
 
 	// Returns all folders that user can see.
 	getAll() {
-		let folders = this.get('folders');
+		let folders = this.get('space');
 
 		if (folders != null) {
 			return new RSVP.resolve(folders);
@@ -67,7 +66,7 @@ export default BaseService.extend({
 	save(folder) {
 		let id = folder.get('id');
 
-		return this.get('ajax').request(`folders/${id}`, {
+		return this.get('ajax').request(`space/${id}`, {
 			method: 'PUT',
 			contentType: 'json',
 			data: JSON.stringify(folder)
@@ -75,7 +74,7 @@ export default BaseService.extend({
 	},
 
 	remove(folderId, moveToId) {
-		let url = `folders/${folderId}/move/${moveToId}`;
+		let url = `space/${folderId}/move/${moveToId}`;
 
 		return this.get('ajax').request(url, {
 			method: 'DELETE'
@@ -83,7 +82,7 @@ export default BaseService.extend({
 	},
 
 	delete(folderId) {
-		return this.get('ajax').request(`folders/${folderId}`, {
+		return this.get('ajax').request(`space/${folderId}`, {
 			method: 'DELETE'
 		});
 	},
@@ -97,26 +96,9 @@ export default BaseService.extend({
 		});
 	},
 
-	// getProtectedFolderInfo returns non-private folders and who has access to them.
-	getProtectedFolderInfo() {
-		return this.get('ajax').request(`folders?filter=viewers`, {
-			method: "GET"
-		}).then((response) => {
-			let data = [];
-
-			data = response.map((obj) => {
-				let data = this.get('store').normalize('protected-folder-participant', obj);
-				return this.get('store').push(data);
-			});
-
-			return data;
-		});
-	},
-
 	// reloads and caches folders.
 	reload() {
-
-		return this.get('ajax').request(`folders`, {
+		return this.get('ajax').request(`space`, {
 			method: "GET"
 		}).then((response) => {
 			let data = [];
@@ -132,14 +114,13 @@ export default BaseService.extend({
 
 	// so who can see/edit this folder?
 	getPermissions(folderId) {
-
-		return this.get('ajax').request(`folders/${folderId}/permissions`, {
+		return this.get('ajax').request(`space/${folderId}/permissions`, {
 			method: "GET"
 		}).then((response) => {
 			let data = [];
 
 			data = response.map((obj) => {
-				let data = this.get('store').normalize('folder-permission', obj);
+				let data = this.get('store').normalize('space-permission', obj);
 				return this.get('store').push(data);
 			});
 
@@ -149,7 +130,7 @@ export default BaseService.extend({
 
 	// persist folder permissions
 	savePermissions(folderId, payload) {
-		return this.get('ajax').request(`folders/${folderId}/permissions`, {
+		return this.get('ajax').request(`space/${folderId}/permissions`, {
 			method: 'PUT',
 			contentType: 'json',
 			data: JSON.stringify(payload)
@@ -158,8 +139,7 @@ export default BaseService.extend({
 
 	// share this folder with new users!
 	share(folderId, invitation) {
-
-		return this.get('ajax').post(`folders/${folderId}/invitation`, {
+		return this.get('ajax').post(`space/${folderId}/invitation`, {
 			contentType: 'json',
 			data: JSON.stringify(invitation)
 		});
@@ -171,49 +151,38 @@ export default BaseService.extend({
 			return;
 		}
 
+		let folderId = folder.get('id');
 		this.set('currentFolder', folder);
-		this.get('localStorage').storeSessionItem("folder", get(folder, 'id'));
-		this.set('canEditCurrentFolder', false);
+		this.get('localStorage').storeSessionItem("folder", folderId);
 
 		let userId = this.get('sessionService.user.id');
 		if (userId === "") {
 			userId = "0";
 		}
 
-		let url = `users/${userId}/permissions`;
+		let url = `space/${folderId}/permissions/user`;
 
-		return this.get('ajax').request(url).then((folderPermissions) => {
-			// safety check
-			this.set('canEditCurrentFolder', false);
-
-			if (folderPermissions.length === 0) {
-				return;
-			}
-
-			let result = [];
-			let folderId = folder.get('id');
-
-			folderPermissions.forEach((item) => {
-				if (item.folderId === folderId) {
-					result.push(item);
-				}
-			});
-
-			let canEdit = false;
-
-			result.forEach((permission) => {
-				if (permission.userId === userId) {
-					canEdit = permission.canEdit;
-				}
-
-				if (permission.userId === "" && !canEdit) {
-					canEdit = permission.canEdit;
-				}
-			});
-
-			Ember.run(() => {
-				this.set('canEditCurrentFolder', canEdit && this.get('sessionService.authenticated'));
-			});
+		return this.get('ajax').request(url).then((response) => {
+			let data = this.get('store').normalize('space-permission', response);
+			let data2 = this.get('store').push(data);
+			this.set('permissions', data2);
+			return data2;
 		});
 	},
+
+	// returns all spaces -- for use by documize admin user
+	adminList() {
+		return this.get('ajax').request(`space/manage`, {
+			method: "GET"
+		}).then((response) => {
+			let data = [];
+
+			data = response.map((obj) => {
+				let data = this.get('store').normalize('folder', obj);
+				return this.get('store').push(data);
+			});
+
+			return data;
+		});
+	}
 });

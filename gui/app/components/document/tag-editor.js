@@ -14,10 +14,12 @@ import Ember from 'ember';
 export default Ember.Component.extend({
     documentTags: [],
     tagz: [],
-    isEditor: false,
     newTag: "",
     maxTags: 3,
-    canAdd: false,
+	canAdd: false,
+	emptyState: Ember.computed('tagz', function() {
+		return (this.get('tagz').length === 0 && !this.get('permissions.documentEdit'));
+	}),
 
     init() {
 		this._super(...arguments);
@@ -33,19 +35,18 @@ export default Ember.Component.extend({
         }
 
         this.set('tagz', tagz);
-        this.set('canAdd', this.get('isEditor') && this.get('tagz').get('length') < 3);
+        this.set('canAdd', this.get('permissions.documentEdit') && this.get('tagz').get('length') < 3);
     },
 
     didUpdateAttrs() {
-        this.set('canAdd', this.get('isEditor') && this.get('tagz').get('length') < 3);
+		this._super(...arguments);
+        this.set('canAdd', this.get('permissions.documentEdit') && this.get('tagz').get('length') < 3);
     },
 
-    didInsertElement() {
-
-    },
 
     willDestroyElement() {
-        $("#add-tag-field").off("keydown");
+		this._super(...arguments);
+		$("#add-tag-field").off("keydown");
     },
 
     actions: {

@@ -166,14 +166,16 @@ func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http
 			// user state. This helps client-side applications to detect changes in
 			// user state/privileges.
 			var state struct {
-				Active bool `json:"active"`
-				Admin  bool `json:"admin"`
-				Editor bool `json:"editor"`
+				Active    bool `json:"active"`
+				Admin     bool `json:"admin"`
+				Editor    bool `json:"editor"`
+				ViewUsers bool `json:"viewUsers"`
 			}
 
 			state.Active = u.Active
 			state.Admin = u.Admin
 			state.Editor = u.Editor
+			state.ViewUsers = u.ViewUsers
 			sb, err := json.Marshal(state)
 
 			w.Header().Add("X-Documize-Status", string(sb))

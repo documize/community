@@ -1,0 +1,28 @@
+<div class="pull-left width-80">
+	{{#unless editMode}}
+		<div class="space-heading {{if permissions.spaceOwner 'cursor-pointer'}}" onclick={{if permissions.spaceOwner (action 'toggleEdit')}}>
+			<h1 class="space-name">{{folder.name}}</h1>
+			<div class="space-summary">
+				This space contains {{documents.length}} {{if (eq rootDocCount.length 1) 'document' 'documents'}}
+				{{if (eq categories.length 1) (concat 'and ' categories.length ' category')}}
+				{{if (gt categories.length 1) (concat 'and ' categories.length ' categories')}}
+			</div>
+		</div>
+	{{else}}
+		<form {{action "onSave" on="submit"}}>
+			<div class="edit-space-heading">
+				<div class="input-inline input-transparent edit-space-name">
+					{{focus-input id="folder-name" type="text" value=folderName class=(if hasNameError 'error-inline') placeholder="Name" autocomplete="off"}}
+				</div>
+				<div>
+					<button type="submit" class="round-button-mono" {{action 'onSave'}}>
+						<i class="material-icons color-green">check</i>
+					</button>
+					<div class="round-button-mono" {{action 'onCancel'}}>
+						<i class="material-icons color-gray">close</i>
+					</div>
+				</div>
+			</div>
+		</form>
+	{{/unless}}
+</div>

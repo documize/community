@@ -40,6 +40,7 @@ const (
 	EventTypeSpacePermission    EventType = "changed-space-permissions"
 	EventTypeSpaceJoin          EventType = "joined-space"
 	EventTypeSpaceInvite        EventType = "invited-space"
+	EventTypeCategoryPermission EventType = "changed-category-permissions"
 	EventTypeSectionAdd         EventType = "added-document-section"
 	EventTypeSectionUpdate      EventType = "updated-document-section"
 	EventTypeSectionDelete      EventType = "removed-document-section"
@@ -67,4 +68,9 @@ const (
 	EventTypeSystemSMTP         EventType = "changed-system-smtp"
 	EventTypeSessionStart       EventType = "started-session"
 	EventTypeSearch             EventType = "searched"
+	EventTypeCategoryAdd        EventType = "added-category"
+	EventTypeCategoryDelete     EventType = "removed-category"
+	EventTypeCategoryUpdate     EventType = "updated-category"
+	EventTypeCategoryLink       EventType = "linked-category"
+	EventTypeCategoryUnlink     EventType = "unlinked-category"
 )

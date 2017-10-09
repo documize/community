@@ -17,7 +17,6 @@ import (
 	"time"
 
 	"github.com/documize/community/core/env"
-	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/store/mysql"
 	"github.com/documize/community/model/account"
@@ -34,19 +33,11 @@ func (s Scope) Add(ctx domain.RequestContext, account account.Account) (err erro
 	account.Created = time.Now().UTC()
 	account.Revised = time.Now().UTC()
 
-	stmt, err := ctx.Transaction.Preparex("INSERT INTO account (refid, orgid, userid, admin, editor, active, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
-	defer streamutil.Close(stmt)
-
-	if err != nil {
-		err = errors.Wrap(err, "unable to prepare insert for account")
-		return
-	}
-
-	_, err = stmt.Exec(account.RefID, account.OrgID, account.UserID, account.Admin, account.Editor, account.Active, account.Created, account.Revised)
+	_, err = ctx.Transaction.Exec("INSERT INTO account (refid, orgid, userid, admin, editor, users, active, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		account.RefID, account.OrgID, account.UserID, account.Admin, account.Editor, account.Users, account.Active, account.Created, account.Revised)
 
 	if err != nil {
 		err = errors.Wrap(err, "unable to execute insert for account")
-		return
 	}
 
 	return
@@ -54,21 +45,14 @@ func (s Scope) Add(ctx domain.RequestContext, account account.Account) (err erro
 
 // GetUserAccount returns the database account record corresponding to the given userID, using the client's current organizaion.
 func (s Scope) GetUserAccount(ctx domain.RequestContext, userID string) (account account.Account, err error) {
-	stmt, err := s.Runtime.Db.Preparex(`
-		SELECT a.id, a.refid, a.orgid, a.userid, a.editor, a.admin, a.active, a.created, a.revised, b.company, b.title, b.message, b.domain
+	err = s.Runtime.Db.Get(&account, `
+		SELECT a.id, a.refid, a.orgid, a.userid, a.editor, a.admin, a.users, a.active, a.created, a.revised, 
+		b.company, b.title, b.message, b.domain
 		FROM account a, organization b
-		WHERE b.refid=a.orgid and a.orgid=? and a.userid=?`)
-	defer streamutil.Close(stmt)
+		WHERE b.refid=a.orgid AND a.orgid=? AND a.userid=?`, ctx.OrgID, userID)
 
-	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("prepare select for account by user %s", userID))
-		return
-	}
-
-	err = stmt.Get(&account, ctx.OrgID, userID)
 	if err != sql.ErrNoRows && err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("execute select for account by user %s", userID))
-		return
 	}
 
 	return
@@ -76,8 +60,8 @@ func (s Scope) GetUserAccount(ctx domain.RequestContext, userID string) (account
 
 // GetUserAccounts returns a slice of database account records, for all organizations that the userID is a member of, in organization title order.
 func (s Scope) GetUserAccounts(ctx domain.RequestContext, userID string) (t []account.Account, err error) {
-	err = s.Runtime.Db.Select(&t,
-		`SELECT a.id, a.refid, a.orgid, a.userid, a.editor, a.admin, a.active, a.created, a.revised,
+	err = s.Runtime.Db.Select(&t, `
+		SELECT a.id, a.refid, a.orgid, a.userid, a.editor, a.admin, a.users, a.active, a.created, a.revised,
 		b.company, b.title, b.message, b.domain 
 		FROM account a, organization b
 		WHERE a.userid=? AND a.orgid=b.refid AND a.active=1 ORDER BY b.title`, userID)
@@ -92,7 +76,8 @@ func (s Scope) GetUserAccounts(ctx domain.RequestContext, userID string) (t []ac
 // GetAccountsByOrg returns a slice of database account records, for all users in the client's organization.
 func (s Scope) GetAccountsByOrg(ctx domain.RequestContext) (t []account.Account, err error) {
 	err = s.Runtime.Db.Select(&t,
-		`SELECT a.id, a.refid, a.orgid, a.userid, a.editor, a.admin, a.active, a.created, a.revised, b.company, b.title, b.message, b.domain
+		`SELECT a.id, a.refid, a.orgid, a.userid, a.editor, a.admin, a.users, a.active, a.created, a.revised, 
+		b.company, b.title, b.message, b.domain
 		FROM account a, organization b
 		WHERE a.orgid=b.refid AND a.orgid=? AND a.active=1`, ctx.OrgID)
 
@@ -112,7 +97,6 @@ func (s Scope) CountOrgAccounts(ctx domain.RequestContext) (c int) {
 	if err == sql.ErrNoRows {
 		return 0
 	}
-
 	if err != nil {
 		err = errors.Wrap(err, "count org accounts")
 		return 0
@@ -125,18 +109,10 @@ func (s Scope) CountOrgAccounts(ctx domain.RequestContext) (c int) {
 func (s Scope) UpdateAccount(ctx domain.RequestContext, account account.Account) (err error) {
 	account.Revised = time.Now().UTC()
 
-	stmt, err := ctx.Transaction.PrepareNamed("UPDATE account SET userid=:userid, admin=:admin, editor=:editor, active=:active, revised=:revised WHERE orgid=:orgid AND refid=:refid")
-	defer streamutil.Close(stmt)
+	_, err = ctx.Transaction.NamedExec("UPDATE account SET userid=:userid, admin=:admin, editor=:editor, users=:users, active=:active, revised=:revised WHERE orgid=:orgid AND refid=:refid", &account)
 
-	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("prepare update for account %s", account.RefID))
-		return
-	}
-
-	_, err = stmt.Exec(&account)
 	if err != sql.ErrNoRows && err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("execute update for account %s", account.RefID))
-		return
 	}
 
 	return

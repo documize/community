@@ -35,8 +35,8 @@ import (
 	"github.com/documize/community/model/audit"
 	"github.com/documize/community/model/doc"
 	"github.com/documize/community/model/page"
+	"github.com/documize/community/model/permission"
 	"github.com/documize/community/model/space"
-	"github.com/documize/community/model/user"
 	uuid "github.com/nu7hatch/gouuid"
 )
 
@@ -48,7 +48,7 @@ type Handler struct {
 
 // Add creates a new space.
 func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
-	method := "space.Add"
+	method := "space.add"
 	ctx := domain.GetRequestContext(r)
 
 	if !h.Runtime.Product.License.IsValid() {
@@ -106,15 +106,16 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	role := space.Role{}
-	role.LabelID = sp.RefID
-	role.OrgID = sp.OrgID
-	role.UserID = ctx.UserID
-	role.CanEdit = true
-	role.CanView = true
-	role.RefID = uniqueid.Generate()
+	perm := permission.Permission{}
+	perm.OrgID = sp.OrgID
+	perm.Who = "user"
+	perm.WhoID = ctx.UserID
+	perm.Scope = "object"
+	perm.Location = "space"
+	perm.RefID = sp.RefID
+	perm.Action = "" // we send array for actions below
 
-	err = h.Store.Space.AddRole(ctx, role)
+	err = h.Store.Permission.AddPermissions(ctx, perm, permission.SpaceOwner, permission.SpaceManage, permission.SpaceView)
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
@@ -138,7 +139,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		spCloneRoles, err := h.Store.Space.GetRoles(ctx, model.CloneID)
+		spCloneRoles, err := h.Store.Permission.GetSpacePermissions(ctx, model.CloneID)
 		if err != nil {
 			response.WriteServerError(w, method, err)
 			h.Runtime.Log.Error(method, err)
@@ -147,10 +148,9 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 
 		if model.CopyPermission {
 			for _, r := range spCloneRoles {
-				r.RefID = uniqueid.Generate()
-				r.LabelID = sp.RefID
+				r.RefID = sp.RefID
 
-				err = h.Store.Space.AddRole(ctx, r)
+				err = h.Store.Permission.AddPermission(ctx, r)
 				if err != nil {
 					ctx.Transaction.Rollback()
 					response.WriteServerError(w, method, err)
@@ -276,12 +276,12 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 
 // Get returns the requested space.
 func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
-	method := "Get"
+	method := "space.get"
 	ctx := domain.GetRequestContext(r)
 
-	id := request.Param(r, "folderID")
+	id := request.Param(r, "spaceID")
 	if len(id) == 0 {
-		response.WriteMissingDataError(w, method, "folderID")
+		response.WriteMissingDataError(w, method, "spaceID")
 		return
 	}
 
@@ -300,10 +300,35 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	response.WriteJSON(w, sp)
 }
 
-// GetAll returns spaces the user can see.
-func (h *Handler) GetAll(w http.ResponseWriter, r *http.Request) {
-	method := "GetAll"
+// GetAlGetViewablel returns spaces the user can see.
+func (h *Handler) GetViewable(w http.ResponseWriter, r *http.Request) {
+	method := "space.GetViewable"
 	ctx := domain.GetRequestContext(r)
+
+	sp, err := h.Store.Space.GetViewable(ctx)
+
+	if err != nil && err != sql.ErrNoRows {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+	if len(sp) == 0 {
+		sp = []space.Space{}
+	}
+
+	response.WriteJSON(w, sp)
+}
+
+// GetAll returns every space for documize admin users to manage
+func (h *Handler) GetAll(w http.ResponseWriter, r *http.Request) {
+	method := "space.getAll"
+	ctx := domain.GetRequestContext(r)
+
+	if !ctx.Administrator {
+		response.WriteForbiddenError(w)
+		h.Runtime.Log.Info("rejected non-admin user request for all spaces")
+		return
+	}
 
 	sp, err := h.Store.Space.GetAll(ctx)
 
@@ -320,28 +345,9 @@ func (h *Handler) GetAll(w http.ResponseWriter, r *http.Request) {
 	response.WriteJSON(w, sp)
 }
 
-// GetSpaceViewers returns the users that can see the shared spaces.
-func (h *Handler) GetSpaceViewers(w http.ResponseWriter, r *http.Request) {
-	method := "space.Viewers"
-	ctx := domain.GetRequestContext(r)
-
-	v, err := h.Store.Space.Viewers(ctx)
-	if err != nil && err != sql.ErrNoRows {
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	if len(v) == 0 {
-		v = []space.Viewer{}
-	}
-
-	response.WriteJSON(w, v)
-}
-
 // Update processes request to save space object to the database
 func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
-	method := "space.Update"
+	method := "space.update"
 	ctx := domain.GetRequestContext(r)
 
 	if !ctx.Editor {
@@ -349,9 +355,9 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	folderID := request.Param(r, "folderID")
-	if len(folderID) == 0 {
-		response.WriteMissingDataError(w, method, "folderID")
+	spaceID := request.Param(r, "spaceID")
+	if len(spaceID) == 0 {
+		response.WriteMissingDataError(w, method, "spaceID")
 		return
 	}
 
@@ -377,7 +383,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sp.RefID = folderID
+	sp.RefID = spaceID
 
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
@@ -401,9 +407,9 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	response.WriteJSON(w, sp)
 }
 
-// Remove moves documents to another folder before deleting it
+// Remove moves documents to another space before deleting it
 func (h *Handler) Remove(w http.ResponseWriter, r *http.Request) {
-	method := "space.Remove"
+	method := "space.remove"
 	ctx := domain.GetRequestContext(r)
 
 	if !h.Runtime.Product.License.IsValid() {
@@ -416,9 +422,9 @@ func (h *Handler) Remove(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id := request.Param(r, "folderID")
+	id := request.Param(r, "spaceID")
 	if len(id) == 0 {
-		response.WriteMissingDataError(w, method, "folderID")
+		response.WriteMissingDataError(w, method, "spaceID")
 		return
 	}
 
@@ -436,14 +442,6 @@ func (h *Handler) Remove(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = h.Store.Space.Delete(ctx, id)
-	if err != nil {
-		ctx.Transaction.Rollback()
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
 	err = h.Store.Document.MoveDocumentSpace(ctx, id, move)
 	if err != nil {
 		ctx.Transaction.Rollback()
@@ -452,7 +450,23 @@ func (h *Handler) Remove(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.Store.Space.MoveSpaceRoles(ctx, id, move)
+	_, err = h.Store.Category.RemoveSpaceCategoryMemberships(ctx, id)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	_, err = h.Store.Space.Delete(ctx, id)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	_, err = h.Store.Permission.DeleteSpacePermissions(ctx, id)
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
@@ -475,9 +489,9 @@ func (h *Handler) Remove(w http.ResponseWriter, r *http.Request) {
 	response.WriteEmpty(w)
 }
 
-// Delete deletes empty space.
+// Delete removes space.
 func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
-	method := "space.Delete"
+	method := "space.delete"
 	ctx := domain.GetRequestContext(r)
 
 	if !h.Runtime.Product.License.IsValid() {
@@ -490,9 +504,9 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id := request.Param(r, "folderID")
+	id := request.Param(r, "spaceID")
 	if len(id) == 0 {
-		response.WriteMissingDataError(w, method, "folderID")
+		response.WriteMissingDataError(w, method, "spaceID")
 		return
 	}
 
@@ -504,7 +518,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = h.Store.Space.Delete(ctx, id)
+	_, err = h.Store.Document.DeleteBySpace(ctx, id)
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
@@ -512,7 +526,16 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = h.Store.Space.DeleteSpaceRoles(ctx, id)
+	_, err = h.Store.Permission.DeleteSpacePermissions(ctx, id)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	// remove category permissions
+	_, err = h.Store.Permission.DeleteSpaceCategoryPermissions(ctx, id)
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
@@ -528,6 +551,23 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// remove category and members for space
+	_, err = h.Store.Category.DeleteBySpace(ctx, id)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	_, err = h.Store.Space.Delete(ctx, id)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
 	h.Store.Audit.Record(ctx, audit.EventTypeSpaceDelete)
 
 	ctx.Transaction.Commit()
@@ -535,222 +575,15 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	response.WriteEmpty(w)
 }
 
-// SetPermissions persists specified spac3 permissions
-func (h *Handler) SetPermissions(w http.ResponseWriter, r *http.Request) {
-	method := "space.SetPermissions"
-	ctx := domain.GetRequestContext(r)
-
-	if !ctx.Editor {
-		response.WriteForbiddenError(w)
-		return
-	}
-
-	id := request.Param(r, "folderID")
-	if len(id) == 0 {
-		response.WriteMissingDataError(w, method, "folderID")
-		return
-	}
-
-	sp, err := h.Store.Space.Get(ctx, id)
-	if err != nil {
-		response.WriteNotFoundError(w, method, "No such space")
-		return
-	}
-
-	if sp.UserID != ctx.UserID {
-		response.WriteForbiddenError(w)
-		return
-	}
-
-	defer streamutil.Close(r.Body)
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		response.WriteBadRequestError(w, method, err.Error())
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	var model = space.RolesModel{}
-	err = json.Unmarshal(body, &model)
-	if err != nil {
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	ctx.Transaction, err = h.Runtime.Db.Beginx()
-	if err != nil {
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	// We compare new permisions to what we had before.
-	// Why? So we can send out folder invitation emails.
-	previousRoles, err := h.Store.Space.GetRoles(ctx, id)
-	if err != nil {
-		ctx.Transaction.Rollback()
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	// Store all previous roles as map for easy querying
-	previousRoleUsers := make(map[string]bool)
-
-	for _, v := range previousRoles {
-		previousRoleUsers[v.UserID] = true
-	}
-
-	// Who is sharing this folder?
-	inviter, err := h.Store.User.Get(ctx, ctx.UserID)
-	if err != nil {
-		ctx.Transaction.Rollback()
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	// Nuke all previous permissions for this folder
-	_, err = h.Store.Space.DeleteSpaceRoles(ctx, id)
-	if err != nil {
-		ctx.Transaction.Rollback()
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	me := false
-	hasEveryoneRole := false
-	roleCount := 0
-
-	url := ctx.GetAppURL(fmt.Sprintf("s/%s/%s", sp.RefID, stringutil.MakeSlug(sp.Name)))
-
-	for _, role := range model.Roles {
-		role.OrgID = ctx.OrgID
-		role.LabelID = id
-
-		// Ensure the folder owner always has access!
-		if role.UserID == ctx.UserID {
-			me = true
-			role.CanView = true
-			role.CanEdit = true
-		}
-
-		if len(role.UserID) == 0 && (role.CanView || role.CanEdit) {
-			hasEveryoneRole = true
-		}
-
-		// Only persist if there is a role!
-		if role.CanView || role.CanEdit {
-			roleID := uniqueid.Generate()
-			role.RefID = roleID
-			err = h.Store.Space.AddRole(ctx, role)
-			if err != nil {
-				h.Runtime.Log.Error("add role", err)
-			}
-
-			roleCount++
-
-			// We send out folder invitation emails to those users
-			// that have *just* been given permissions.
-			if _, isExisting := previousRoleUsers[role.UserID]; !isExisting {
-
-				// we skip 'everyone' (user id != empty string)
-				if len(role.UserID) > 0 {
-					var existingUser user.User
-					existingUser, err = h.Store.User.Get(ctx, role.UserID)
-
-					if err == nil {
-						mailer := mail.Mailer{Runtime: h.Runtime, Store: h.Store, Context: ctx}
-						go mailer.ShareFolderExistingUser(existingUser.Email, inviter.Fullname(), url, sp.Name, model.Message)
-						h.Runtime.Log.Info(fmt.Sprintf("%s is sharing space %s with existing user %s", inviter.Email, sp.Name, existingUser.Email))
-					} else {
-						response.WriteServerError(w, method, err)
-					}
-				}
-			}
-		}
-	}
-
-	// Do we need to ensure permissions for space owner when shared?
-	if !me {
-		role := space.Role{}
-		role.LabelID = id
-		role.OrgID = ctx.OrgID
-		role.UserID = ctx.UserID
-		role.CanEdit = true
-		role.CanView = true
-		roleID := uniqueid.Generate()
-		role.RefID = roleID
-
-		err = h.Store.Space.AddRole(ctx, role)
-		if err != nil {
-			ctx.Transaction.Rollback()
-			response.WriteServerError(w, method, err)
-			return
-		}
-	}
-
-	// Mark up folder type as either public, private or restricted access.
-	if hasEveryoneRole {
-		sp.Type = space.ScopePublic
-	} else {
-		if roleCount > 1 {
-			sp.Type = space.ScopeRestricted
-		} else {
-			sp.Type = space.ScopePrivate
-		}
-	}
-
-	err = h.Store.Space.Update(ctx, sp)
-	if err != nil {
-		ctx.Transaction.Rollback()
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	h.Store.Audit.Record(ctx, audit.EventTypeSpacePermission)
-
-	ctx.Transaction.Commit()
-
-	response.WriteEmpty(w)
-}
-
-// GetPermissions returns user permissions for the requested folder.
-func (h *Handler) GetPermissions(w http.ResponseWriter, r *http.Request) {
-	method := "space.GetPermissions"
-	ctx := domain.GetRequestContext(r)
-
-	folderID := request.Param(r, "folderID")
-	if len(folderID) == 0 {
-		response.WriteMissingDataError(w, method, "folderID")
-		return
-	}
-
-	roles, err := h.Store.Space.GetRoles(ctx, folderID)
-	if err != nil && err != sql.ErrNoRows {
-		response.WriteServerError(w, method, err)
-		return
-	}
-
-	if len(roles) == 0 {
-		roles = []space.Role{}
-	}
-
-	response.WriteJSON(w, roles)
-}
-
 // AcceptInvitation records the fact that a user has completed space onboard process.
 func (h *Handler) AcceptInvitation(w http.ResponseWriter, r *http.Request) {
 	method := "space.AcceptInvitation"
 	ctx := domain.GetRequestContext(r)
 	ctx.Subdomain = organization.GetSubdomainFromHost(r)
-	
-	folderID := request.Param(r, "folderID")
-	if len(folderID) == 0 {
-		response.WriteMissingDataError(w, method, "folderID")
+
+	spaceID := request.Param(r, "spaceID")
+	if len(spaceID) == 0 {
+		response.WriteMissingDataError(w, method, "spaceID")
 		return
 	}
 
@@ -831,14 +664,14 @@ func (h *Handler) AcceptInvitation(w http.ResponseWriter, r *http.Request) {
 	response.WriteJSON(w, u)
 }
 
-// Invite sends users folder invitation emails.
+// Invite sends users space invitation emails.
 func (h *Handler) Invite(w http.ResponseWriter, r *http.Request) {
 	method := "space.Invite"
 	ctx := domain.GetRequestContext(r)
 
-	id := request.Param(r, "folderID")
+	id := request.Param(r, "spaceID")
 	if len(id) == 0 {
-		response.WriteMissingDataError(w, method, "folderID")
+		response.WriteMissingDataError(w, method, "spaceID")
 		return
 	}
 
@@ -917,6 +750,7 @@ func (h *Handler) Invite(w http.ResponseWriter, r *http.Request) {
 				a.OrgID = ctx.OrgID
 				a.Admin = false
 				a.Editor = false
+				a.Users = false
 				a.Active = true
 				accountID := uniqueid.Generate()
 				a.RefID = accountID
@@ -931,18 +765,18 @@ func (h *Handler) Invite(w http.ResponseWriter, r *http.Request) {
 			}
 
 			// Ensure they have space roles
-			h.Store.Space.DeleteUserSpaceRoles(ctx, sp.RefID, u.RefID)
+			h.Store.Permission.DeleteUserSpacePermissions(ctx, sp.RefID, u.RefID)
 
-			role := space.Role{}
-			role.LabelID = sp.RefID
-			role.OrgID = ctx.OrgID
-			role.UserID = u.RefID
-			role.CanEdit = false
-			role.CanView = true
-			roleID := uniqueid.Generate()
-			role.RefID = roleID
+			perm := permission.Permission{}
+			perm.OrgID = sp.OrgID
+			perm.Who = "user"
+			perm.WhoID = u.RefID
+			perm.Scope = "object"
+			perm.Location = "space"
+			perm.RefID = sp.RefID
+			perm.Action = "" // we send array for actions below
 
-			err = h.Store.Space.AddRole(ctx, role)
+			err = h.Store.Permission.AddPermissions(ctx, perm, permission.SpaceView)
 			if err != nil {
 				ctx.Transaction.Rollback()
 				response.WriteServerError(w, method, err)
@@ -952,7 +786,7 @@ func (h *Handler) Invite(w http.ResponseWriter, r *http.Request) {
 
 			url := ctx.GetAppURL(fmt.Sprintf("s/%s/%s", sp.RefID, stringutil.MakeSlug(sp.Name)))
 			mailer := mail.Mailer{Runtime: h.Runtime, Store: h.Store, Context: ctx}
-			go mailer.ShareFolderExistingUser(email, inviter.Fullname(), url, sp.Name, model.Message)
+			go mailer.ShareSpaceExistingUser(email, inviter.Fullname(), url, sp.Name, model.Message)
 
 			h.Runtime.Log.Info(fmt.Sprintf("%s is sharing space %s with existing user %s", inviter.Email, sp.Name, email))
 		} else {
@@ -973,7 +807,7 @@ func (h *Handler) Invite(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// We ensure that the folder is marked as restricted as a minimum!
+	// We ensure that the space is marked as restricted as a minimum!
 	if len(model.Recipients) > 0 && sp.Type == space.ScopePrivate {
 		sp.Type = space.ScopeRestricted
 

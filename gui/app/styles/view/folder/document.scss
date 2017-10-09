@@ -1,32 +1,50 @@
-.folder-heading {
+.space-heading {
 	margin: 0 0 55px 0;
 
-	.folder-title {
+	.space-name {
 		font-size: 2rem;
 		margin: 0 0 10px 0;
 		font-weight: normal;
+		// color: $color-primary;
+	}
+
+	.space-summary {
+		font-size: 1.2rem;
+		color: $color-gray;
+		margin: 0 0 45px;
 	}
 }
 
-.edit-folder-heading {
+.edit-space-heading {
 	margin: 0 0 10px 0;
 
-	.edit-folder-title {
+	.edit-space-name {
 		> input {
 			font-size: 2rem;
 			font-weight: normal;
-			margin: 0 0 10px;
+			margin: 0 0 40px 0;
 			color: $color-wysiwyg;
 		}
 	}
 }
 
 .documents-list {
+	margin-bottom: 50px;
+
+	> .caption {
+		text-transform: uppercase;
+		color: $color-gray;
+		font-weight: bold;
+		font-size: 1.0rem;
+		margin: 0 0 10px 0;
+	}
+
 	.document-item {
-		@include content-container();
-		margin: 0;
+		margin: 0 0 25px 0;
+		padding: 25px 15px;
 		position: relative;
 		transition: 0.3s;
+		@include content-container();
 
 		&:hover {
 			> .link {
@@ -66,7 +84,15 @@
 
 			&:hover {
 				text-decoration: none;
-				color: $color-off-black;
+				color: $color-link;
+
+				> .title {
+					color: $color-link;
+				}
+
+				> .snippet {
+					color: $color-link;
+				}
 			}
 
 			> .title {
@@ -82,18 +108,8 @@
 		}
 	}
 
-	.wizard-item {
-		margin: 0;
-		padding: 0;
-	}
-
-	.no-wizard-item {
-		margin: 50px 0;
-		padding: 0;
-	}
-
 	.selected-card {
-		background-color: $color-card-active !important;
+		background-color: $color-selected-item !important;
 
 		> .checkbox {
 			display: block;
@@ -101,8 +117,7 @@
 	}
 }
 
-.move-document-options,
-.start-document-options {
+.move-document-options {
 	height: 200px;
 	overflow-y: auto;
 	margin: 0;
@@ -125,3 +140,40 @@
 		color: $color-link;
 	}
 }
+
+
+.space-filter {
+	display: inline-block;
+	margin: 0 30px 30px 0;
+
+	> .caption {
+		text-transform: uppercase;
+		color: $color-gray;
+		font-weight: bold;
+		font-size: 1.0rem;
+		margin: 0 0 10px 0;
+	}
+}
+
+.category-filter {
+	display: inline-block;
+	margin: 0 0 30px 0;
+
+	> .regular-button {
+		margin-right: 10px;
+	}
+
+	> .caption {
+		text-transform: uppercase;
+		color: $color-gray;
+		font-weight: bold;
+		font-size: 1.0rem;
+		margin: 0 0 10px 0;
+	}
+}
+
+// .category-filter {
+// 	> .selected {
+// 		// @extend .button-nav;
+// 	}
+// }

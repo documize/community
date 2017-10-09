@@ -28,7 +28,7 @@ import (
 	"github.com/documize/community/core/uniqueid"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/conversion/store"
-	"github.com/documize/community/domain/document"
+	"github.com/documize/community/domain/permission"
 	"github.com/documize/community/model/activity"
 	"github.com/documize/community/model/attachment"
 	"github.com/documize/community/model/audit"
@@ -50,7 +50,7 @@ func (h *Handler) upload(w http.ResponseWriter, r *http.Request) (string, string
 
 	folderID := request.Param(r, "folderID")
 
-	if !document.CanUploadDocument(ctx, *h.Store, folderID) {
+	if !permission.CanUploadDocument(ctx, *h.Store, folderID) {
 		response.WriteForbiddenError(w)
 		return "", "", ""
 	}

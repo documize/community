@@ -18,6 +18,7 @@ type Account struct {
 	model.BaseEntity
 	Admin   bool   `json:"admin"`
 	Editor  bool   `json:"editor"`
+	Users   bool   `json:"viewUsers"` // either view all users or just users in your space
 	UserID  string `json:"userId"`
 	OrgID   string `json:"orgId"`
 	Company string `json:"company"`

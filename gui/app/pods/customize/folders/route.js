@@ -22,7 +22,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	},
 
 	model() {
-		return this.get('folderService').getAll();
+		return this.get('folderService').adminList();
 	},
 
 	setupController(controller, model) {
@@ -30,33 +30,12 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 		if (is.empty(nonPrivateFolders) || is.null(model) || is.undefined(model)) {
 			nonPrivateFolders = [];
 		}
+
 		controller.set('folders', nonPrivateFolders);
 
-		this.get('folderService').getProtectedFolderInfo().then((people) => {
-			people.forEach((person) => {
-				person.set('isEveryone', person.get('userId') === '');
-				person.set('isOwner', false);
-			});
-
-			nonPrivateFolders.forEach(function (folder) {
-				let shared = people.filterBy('folderId', folder.get('id'));
-				let person = shared.findBy('userId', folder.get('userId'));
-				if (is.not.undefined(person)) {
-					person.set('isOwner', true);
-				}
-
-				folder.set('sharedWith', shared);
-			});
-		});
 	},
 
 	activate() {
 		document.title = "Spaces | Documize";
-	},
-
-	actions: {
-		onChangeOwner() {
-			this.refresh();
-		}
 	}
 });

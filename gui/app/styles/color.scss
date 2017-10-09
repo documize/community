@@ -9,41 +9,72 @@
 //
 // https://documize.com
 
+// Theme colors
+$color-primary: #2667af;
+$color-link: #0092d3;
+$color-border: #f3f5f8;
+
+// Theme-neutral colors
 $color-off-white: #f5f5f5;
 $color-off-black: #393939;
 $color-black: #000000;
 $color-white: #ffffff;
-$color-primary: #2667af;
+
 $color-red: #d04134;
 $color-green: #4caf50;
 $color-blue: #2667af;
 $color-gray: #8b9096;
 $color-goldy: #cc9933;
 
-$color-sidebar: #f3f5f8;
-$color-link: #0092d3;
-$color-border: #f3f5f8;
-
-$color-input: #5a5a5a;
-$color-stroke: #e1e1e1;
-
-$color-tooltip: #a1a1a1;
-$color-toast: #4c4c4c;
-$color-checkbox: #2667af;
-$color-card-active: #f7fcff;
-
-$color-chip: #dff0f9;
-$color-chip-border: #daeaf3;
-$color-chip-text: #1b88e3;
-
-$color-symbol-box: #dce5e8;
-$color-symbol-icon: #a4b8be;
-
 $color-table-border: #e1e1e1;
 $color-table-header: #f5f5f5;
 $color-toolbar: #eeeeee;
 $color-wysiwyg: #3c3c3c;
 
+$color-input: #5a5a5a;
+$color-stroke: #e1e1e1;
+$color-tooltip: #a1a1a1;
+$color-toast: #4c4c4c;
+$color-symbol-box: #dce5e8;
+$color-symbol-icon: #a4b8be;
+$color-checkbox: #0092d3;
+
+// gray sidebar
+$color-sidebar: #f5f5f5;
+$color-sidebar-border: #e1e1e1;
+$color-sidebar-text: $color-black;
+$color-sidebar-link: $color-link;
+$color-nav-button: #f2faff;
+$color-nav-button-text: #2667af;
+$color-nav-button-border: #dff0f9;
+$color-selected-item: $color-sidebar;
+$color-sidebar-navigation: #f2faff;
+$color-sidebar-navigation-border: #dff0f9;
+$color-sidebar-toolbar: $color-sidebar-border;
+
+// lightblue sidebar
+// $color-sidebar: #f2faff;
+// $color-sidebar-border: #dff0f9;
+// $color-sidebar-text: $color-black;
+// $color-sidebar-link: $color-link;
+// $color-nav-button: $color-sidebar;
+// $color-nav-button-text: #2667af;
+// $color-nav-button-border: #dff0f9;
+// $color-selected-item: $color-sidebar;
+// $color-sidebar-navigation: $color-gray;
+// $color-sidebar-toolbar: $color-sidebar-border;
+
+// black sidebar
+// $color-sidebar: $color-off-black;
+// $color-sidebar-border: $color-black;
+// $color-sidebar-text: $color-white;
+// $color-sidebar-link: orange;
+// $color-nav-button: orange;
+// $color-nav-button-text: $color-off-black;
+// $color-nav-button-border: $color-black;
+// $color-selected-item: orange;
+
+// Color utility classes for direct usage in HTML
 .color-white {
 	color: $color-white !important;
 }

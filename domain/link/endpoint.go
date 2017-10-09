@@ -21,7 +21,7 @@ import (
 	"github.com/documize/community/core/response"
 	"github.com/documize/community/core/uniqueid"
 	"github.com/documize/community/domain"
-	"github.com/documize/community/domain/document"
+	"github.com/documize/community/domain/permission"
 	"github.com/documize/community/model/attachment"
 	"github.com/documize/community/model/link"
 	"github.com/documize/community/model/page"
@@ -57,7 +57,7 @@ func (h *Handler) GetLinkCandidates(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// permission check
-	if !document.CanViewDocument(ctx, *h.Store, documentID) {
+	if !permission.CanViewDocument(ctx, *h.Store, documentID) {
 		response.WriteForbiddenError(w)
 		return
 	}

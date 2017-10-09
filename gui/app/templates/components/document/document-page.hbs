@@ -2,7 +2,7 @@
 	{{#if editMode}}
 		{{document/document-editor document=document folder=folder page=page meta=meta onCancel=(action 'onCancelEdit') onAction=(action 'onSavePage')}}
 	{{else}}
-		{{document/page-heading tagName=page.tagName document=document folder=folder page=page isEditor=isEditor tabMode=tabMode
+		{{document/page-heading tagName=page.tagName document=document folder=folder page=page permissions=permissions tabMode=tabMode
 			onEdit=(action 'onEdit') onSavePageAsBlock=(action 'onSavePageAsBlock')
 			onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onDeletePage')}}
 		{{section/base-renderer page=page}}

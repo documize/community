@@ -1,0 +1,19 @@
+<div class="space-settings">
+	<div class="panel">
+		<div class="form-header">
+			<div class="title">Invite</div>
+			<div class="tip">Share this space with co-workers</div>
+		</div>
+		<div class="input-control">
+			<label>Email</label>
+			<div class="tip">Comma separate multiple email addresses</div>
+			{{focus-input id="inviteEmail" type="text" class="input-transparent" value=inviteEmail}}
+		</div>
+		<div class="input-control">
+			<label>Message</label>
+			<div class="tip">Explain why they are being invited to this space</div>
+			{{textarea id="explainInvite" value=inviteMessage class="input-transparent" rows="5"}}
+		</div>
+		<div class="regular-button button-blue" {{ action 'onShare' }}>Invite</div>
+	</div>
+</div>

@@ -11,7 +11,9 @@
 
 package space
 
-import "github.com/documize/community/model"
+import (
+	"github.com/documize/community/model"
+)
 
 // Space defines a container for documents.
 type Space struct {
@@ -51,16 +53,6 @@ func (l *Space) IsRestricted() bool {
 	return l.Type == ScopeRestricted
 }
 
-// Role determines user permissions for a folder.
-type Role struct {
-	model.BaseEntityObfuscated
-	OrgID   string `json:"-"`
-	LabelID string `json:"folderId"`
-	UserID  string `json:"userId"`
-	CanView bool   `json:"canView"`
-	CanEdit bool   `json:"canEdit"`
-}
-
 // Viewer details who can see a particular space
 type Viewer struct {
 	Name      string `json:"name"`
@@ -70,12 +62,6 @@ type Viewer struct {
 	Firstname string `json:"firstname"`
 	Lastname  string `json:"lastname"`
 	Email     string `json:"email"`
-}
-
-// RolesModel details which users have what permissions on a given space.
-type RolesModel struct {
-	Message string
-	Roles   []Role
 }
 
 // AcceptShareModel is used to setup a user who has accepted a shared space.

@@ -17,6 +17,7 @@ const {
 
 export default Ember.Service.extend({
 	sessionService: service('session'),
+	folderService: service('folder'),
 	ajax: service(),
 	store: service(),
 
@@ -33,27 +34,9 @@ export default Ember.Service.extend({
 		});
 	},
 
-	// Returns all documents for specified folder.
-	getAllByFolder(folderId) {
-		return this.get('ajax').request(`documents?folder=${folderId}`, {
-			method: "GET"
-		}).then((response) => {
-			let documents = Ember.ArrayProxy.create({
-				content: Ember.A([])
-			});
-
-			documents = response.map((doc) => {
-				let data = this.get('store').normalize('document', doc);
-				return this.get('store').push(data);
-			});
-
-			return documents;
-		});
-	},
-
-	// getDocumentsByTag returns all documents for specified tag (not folder!).
-	getAllByTag(tag) {
-		return this.get('ajax').request(`documents?filter=tag&tag=${tag}`, {
+	// Returns all documents for specified space.
+	getAllBySpace(spaceId) {
+		return this.get('ajax').request(`documents?space=${spaceId}`, {
 			method: "GET"
 		}).then((response) => {
 			let documents = Ember.ArrayProxy.create({
@@ -79,22 +62,7 @@ export default Ember.Service.extend({
 		});
 	},
 
-	getBatchedPages: function (documentId, payload) {
-		let url = `documents/${documentId}/pages/batch`;
-
-		return this.get('ajax').request(url, {
-			method: 'POST',
-			data: payload
-		}).then((pages) => {
-			if (is.not.array(pages)) {
-				pages = [];
-			}
-
-			return pages;
-		});
-	},
-
-	changePageSequence: function (documentId, payload) {
+	changePageSequence(documentId, payload) {
 		let url = `documents/${documentId}/pages/sequence`;
 
 		return this.get('ajax').post(url, {
@@ -112,7 +80,7 @@ export default Ember.Service.extend({
 		});
 	},
 
-	deleteDocument: function (documentId) {
+	deleteDocument(documentId) {
 		let url = `documents/${documentId}`;
 
 		return this.get('ajax').request(url, {
@@ -137,7 +105,7 @@ export default Ember.Service.extend({
 	},
 
 	// addPage inserts new page to an existing document.
-	addPage: function (documentId, payload) {
+	addPage(documentId, payload) {
 		let url = `documents/${documentId}/pages`;
 
 		return this.get('ajax').post(url, {
@@ -147,7 +115,7 @@ export default Ember.Service.extend({
 	},
 
 	// Nukes multiple pages from the document.
-	deletePages: function (documentId, pageId, payload) {
+	deletePages(documentId, pageId, payload) {
 		let url = `documents/${documentId}/pages`;
 
 		return this.get('ajax').request(url, {
@@ -158,7 +126,7 @@ export default Ember.Service.extend({
 	},
 
 	// Nukes a single page from the document.
-	deletePage: function (documentId, pageId) {
+	deletePage(documentId, pageId) {
 		let url = `documents/${documentId}/pages/${pageId}`;
 
 		return this.get('ajax').request(url, {
@@ -341,6 +309,51 @@ export default Ember.Service.extend({
 			let data = this.get('store').normalize('page', response);
 			return this.get('store').push(data);
 		});
+	},
+
+	//**************************************************
+	// Fetch bulk data
+	//**************************************************
+
+	// fetchXXX represents UI specific bulk data loading designed to
+	// reduce network traffic and boost app performance.
+	// This method that returns:
+	// 1. getUserVisible()
+	// 2. getSummary()
+	// 3. getSpaceCategoryMembership()
+	fetchDocumentData(documentId) {
+		return this.get('ajax').request(`fetch/document/${documentId}`, {
+			method: 'GET'
+		}).then((response) => {
+			let data = {
+				document: {},
+				permissions: {},
+				folders: [],
+				folder: {},
+				links: [],
+			};
+
+			let doc = this.get('store').normalize('document', response.document);
+			doc = this.get('store').push(doc);
+
+			let perms = this.get('store').normalize('space-permission', response);
+			perms= this.get('store').push(perms);
+			this.get('folderService').set('permissions', perms);
+
+			let folders = response.folders.map((obj) => {
+				let data = this.get('store').normalize('folder', obj);
+				return this.get('store').push(data);
+			});
+
+			data.document = doc;
+			data.permissions = perms;
+			data.folders = folders;
+			data.folder = folders.findBy('id', doc.get('folderId'));
+			data.links = response.links;
+
+			return data;
+		});
+
 	}
 });
 

@@ -20,7 +20,7 @@ import (
 	"github.com/documize/community/core/response"
 	"github.com/documize/community/core/uniqueid"
 	"github.com/documize/community/domain"
-	"github.com/documize/community/domain/document"
+	"github.com/documize/community/domain/permission"
 	"github.com/documize/community/domain/section/provider"
 	"github.com/documize/community/model/page"
 )
@@ -59,7 +59,7 @@ func (h *Handler) RunSectionCommand(w http.ResponseWriter, r *http.Request) {
 	// it's up to the section handler to parse if required.
 
 	// Permission checks
-	if !document.CanChangeDocument(ctx, *h.Store, documentID) {
+	if !permission.CanChangeDocument(ctx, *h.Store, documentID) {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -86,7 +86,7 @@ func (h *Handler) RefreshSections(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !document.CanViewDocument(ctx, *h.Store, documentID) {
+	if !permission.CanViewDocument(ctx, *h.Store, documentID) {
 		response.WriteForbiddenError(w)
 		return
 	}

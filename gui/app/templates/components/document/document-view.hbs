@@ -2,7 +2,7 @@
 
 	{{#if hasPages}}
 		{{#each pages key="id" as |page index|}}
-			{{#if isEditor}}
+			{{#if permissions.documentEdit}}
 				<div class="start-section" data-index={{index}} data-before-id={{page.id}} id="add-section-button-{{page.id}}" {{action 'onShowSectionWizard' page}}>
 					<div class="start-button">
 						<div class="round-button round-button-small button-green">
@@ -15,19 +15,19 @@
 				<div class="section-divider" />
 			{{/if}}
 			{{#if (is-equal page.pageType 'section')}}
-				{{#document/document-page document=document folder=folder page=page isEditor=isEditor toEdit=toEdit pageId=pageId
+				{{#document/document-page document=document folder=folder page=page permissions=permissions toEdit=toEdit pageId=pageId
 					onSavePage=(action 'onSavePage') onSavePageAsBlock=(action 'onSavePageAsBlock')
 					onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onDeletePage')}}
 				{{/document/document-page}}
 			{{/if}}
 			{{#if (is-equal page.pageType 'tab')}}
-				{{#document/document-tab document=document folder=folder page=page isEditor=isEditor pageId=pageId
+				{{#document/document-tab document=document folder=folder page=page permissions=permissions pageId=pageId
 					onSavePage=(action 'onSavePage') onSavePageAsBlock=(action 'onSavePageAsBlock')
 					onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onDeletePage')}}
 				{{/document/document-tab}}
 			{{/if}}
 		{{/each}}
-		{{#if isEditor}}
+		{{#if permissions.documentEdit}}
 			<div class="start-section" data-index="0" data-before-id="0" id="add-section-button-0" {{action 'onShowSectionWizard'}}>
 				<div class="start-button">
 					<div class="round-button round-button-small button-green">
@@ -38,7 +38,7 @@
 			</div>
 		{{/if}}
 	{{else}}
-		{{#if isEditor}}
+		{{#if permissions.documentEdit}}
 			<div class="start-section start-section-empty-state" data-index="-1" data-before-id="0" id="add-section-button-0" {{action 'onShowSectionWizard'}}>
 				<div class="start-button">
 					<div class="round-button round-button-small button-green">
@@ -101,3 +101,5 @@
 	</div>
 
 </div>
+
+{{document/document-attachments document=document permissions=permissions}}
