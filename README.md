@@ -42,7 +42,7 @@ Integrations for embedding SaaS data within documents.
 
 ## Latest version
 
-v1.54.0
+v1.54.1
 
 ## OS support
 

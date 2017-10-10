@@ -114,19 +114,14 @@ export default Ember.Component.extend(AuthProvider, DropdownMixin, {
 
 			this.closeDropdown();
 
-			let drop = new Drop({
+			let dropOptions = Object.assign(this.get('dropDefaults'), {
 				target: $(".edit-button-" + id)[0],
 				content: $(".edit-user-dialog")[0],
 				classes: 'drop-theme-basic',
 				position: "bottom right",
-				openOn: "always",
-				tetherOptions: {
-					offset: "5px 0",
-					targetOffset: "10px 0"
-				},
-				remove: false
-			});
+				remove: false});
 
+			let drop = new Drop(dropOptions);
 			self.set('dropdown', drop);
 
 			drop.on('open', function () {
@@ -141,19 +136,14 @@ export default Ember.Component.extend(AuthProvider, DropdownMixin, {
 
 			this.closeDropdown();
 
-			let drop = new Drop({
+			let dropOptions = Object.assign(this.get('dropDefaults'), {
 				target: $(".delete-button-" + id)[0],
 				content: $(".delete-user-dialog")[0],
 				classes: 'drop-theme-basic',
 				position: "bottom right",
-				openOn: "always",
-				tetherOptions: {
-					offset: "5px 0",
-					targetOffset: "10px 0"
-				},
-				remove: false
-			});
+				remove: false});
 
+			let drop = new Drop(dropOptions);
 			this.set('dropdown', drop);
 		},
 

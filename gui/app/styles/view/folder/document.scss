@@ -153,6 +153,10 @@
 		font-size: 1.0rem;
 		margin: 0 0 10px 0;
 	}
+
+	> .regular-button {
+		margin-bottom: 10px;
+	}
 }
 
 .category-filter {
@@ -161,6 +165,7 @@
 
 	> .regular-button {
 		margin-right: 10px;
+		margin-bottom: 10px;
 	}
 
 	> .caption {

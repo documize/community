@@ -160,19 +160,14 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, DropdownMixin
 
 				$(".category-access-dialog").css("display", "block");
 
-				let drop = new Drop({
+				let dropOptions = Object.assign(this.get('dropDefaults'), {
 					target: $("#category-access-button-" + catId)[0],
 					content: $(".category-access-dialog")[0],
 					classes: 'drop-theme-basic',
 					position: "bottom right",
-					openOn: "always",
-					tetherOptions: {
-						offset: "5px 0",
-						targetOffset: "10px 0"
-					},
-					remove: false
-				});
+					remove: false});
 
+				let drop = new Drop(dropOptions);
 				this.set('dropdown', drop);
 			});
 		},

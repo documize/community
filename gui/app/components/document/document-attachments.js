@@ -12,11 +12,12 @@
 import Ember from 'ember';
 import NotifierMixin from '../../mixins/notifier';
 import TooltipMixin from '../../mixins/tooltip';
+import DropdownMixin from '../../mixins/dropdown';
 
-export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
+export default Ember.Component.extend(NotifierMixin, TooltipMixin, DropdownMixin, {
 	documentService: Ember.inject.service('document'),
 	appMeta: Ember.inject.service(),
-	drop: null,
+	dropdown: null,
 	hasAttachments: Ember.computed.notEmpty('files'),
 	deleteAttachment: {
 		id: "",
@@ -78,11 +79,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
 	willDestroyElement() {
 		this._super(...arguments);
-
-		let drop = this.get('drop');
-		if (is.not.null(drop)) {
-			drop.destroy();
-		}
+		this.destroyDropdown();
 	},
 
 	getAttachments() {
@@ -100,25 +97,21 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
 			$(".delete-attachment-dialog").css("display", "block");
 
-			let drop = new Drop({
+			this.closeDropdown();
+
+			let dropOptions = Object.assign(this.get('dropDefaults'), {
 				target: $(".delete-attachment-" + id)[0],
 				content: $(".delete-attachment-dialog")[0],
 				classes: 'drop-theme-basic',
 				position: "bottom right",
-				openOn: "always",
-				tetherOptions: {
-					offset: "5px 0",
-					targetOffset: "10px 0"
-				},
-				remove: false
-			});
+				remove: false});
 
-			this.set('drop', drop);
+			let drop = new Drop(dropOptions);
+			this.set('dropdown', drop);
 		},
 
 		onCancel() {
-			let drop = this.get('drop');
-			drop.close();
+			this.closeDropdown();
 
 			this.set('deleteAttachment', {
 				id: "",
@@ -127,9 +120,9 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		},
 
 		onDelete() {
+			this.closeDropdown();
+
 			let attachment = this.get('deleteAttachment');
-			let drop = this.get('drop');
-			drop.close();
 
 			this.showNotification(`Deleted ${name}`);
 

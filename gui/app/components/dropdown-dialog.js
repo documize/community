@@ -62,7 +62,13 @@ export default Ember.Component.extend({
 			tetherOptions: {
 				offset: self.offset,
 				targetOffset: self.targetOffset,
-				targetModifier: 'scroll-handle'
+				// targetModifier: 'scroll-handle',
+				constraints: [
+					{
+						to: 'scrollParent',
+						attachment: 'together'
+					}
+				],
 			},
 			remove: true
 		});

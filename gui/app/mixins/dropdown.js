@@ -26,5 +26,27 @@ export default Ember.Mixin.create({
 		if (is.not.null(drop) && is.not.null(drop.drop)) {
 			drop.destroy();
 		}
+	},
+
+	dropDefaults: {
+		// position: "bottom right",
+		openOn: "always",
+		tetherOptions: {
+			offset: "5px 0",
+			targetOffset: "10px 0",
+			// targetModifier: 'visible',
+			// attachment: 'middle right',
+			// targetAttachment: 'middle right',
+			constraints: [
+				{
+					to: 'scrollParent',
+					attachment: 'together'
+				}
+			],
+			// optimizations: {
+			// 	moveElement: false,
+			// 	gpu: false
+			// },
+		},
 	}
 });

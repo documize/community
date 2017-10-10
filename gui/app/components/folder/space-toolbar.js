@@ -34,6 +34,9 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 		newName: ''
 	},
 	deleteSpaceName: '',
+	spaceSettings: Ember.computed('permissions', function() {
+		return this.get('permissions.spaceOwner') || this.get('permissions.spaceManage');
+	}),
 
 	didReceiveAttrs() {
 		this._super(...arguments);

@@ -23,3 +23,11 @@
 		{{/each}}
 	</div>
 {{/if}}
+
+{{#if showAdd}}
+	{{empty-state message="You can create new documents via the green + button"}}
+{{/if}}
+
+{{#if showLockout}}
+	{{empty-state message="It looks like space permissions are preventing you from viewing and creating documents"}}
+{{/if}}

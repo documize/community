@@ -12,6 +12,13 @@
 import Ember from 'ember';
 
 export default Ember.Component.extend({
+	showAdd: Ember.computed('permissions', 'documents', function() {
+		return this.get('documents.length') === 0 && this.get('permissions.documentAdd');
+	}),
+	showLockout: Ember.computed('permissions', 'documents', function() {
+		return this.get('documents.length') === 0 && !this.get('permissions.documentAdd');
+	}),
+
     actions: {
         selectDocument(documentId) {
             let doc = this.get('documents').findBy('id', documentId);

@@ -22,10 +22,16 @@
 			> .permission-roles-cell {
 				margin: 15px 0 20px 40px;
 
-				> .role-category {
-					color: $color-gray;
-					font-weight: bold;
+				> .role-container {
+					white-space: nowrap;
 					display: inline-block;
+					margin-bottom: 10px;
+
+					> .role-category {
+						color: $color-gray;
+						font-weight: bold;
+						display: inline-block;
+					}
 				}
 
 				> label {

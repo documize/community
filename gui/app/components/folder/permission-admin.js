@@ -112,6 +112,7 @@ export default Ember.Component.extend(NotifierMixin, {
 
 			this.get('folderService').savePermissions(folder.get('id'), payload).then(() => {
 				this.showNotification('Saved permissions');
+				this.get('router').transitionTo('folder', folder.get('id'), folder.get('slug'));
 			});
 
 			if (is.not.undefined(hasEveryone)) {

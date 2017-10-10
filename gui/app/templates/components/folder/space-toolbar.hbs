@@ -58,7 +58,7 @@
 			</div>
 		{{/if}}
 
-		{{#if permissions.spaceManage}}
+		{{#if spaceSettings}}
 			<div class="button-gap"></div>
 			{{#link-to 'folder.settings' folder.id folder.slug}}{{model.document.name}}
 				<div class="round-button button-gray" id="space-settings-button" data-tooltip="Manage permissions" data-tooltip-position="top center">

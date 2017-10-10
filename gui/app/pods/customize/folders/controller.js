@@ -33,6 +33,7 @@ export default Ember.Controller.extend(NotifierMixin, DropdownMixin, {
 
 
 	willDestroyElement() {
+		this._super(...arguments);
 		this.destroyDropdown();
 	},
 
@@ -43,19 +44,16 @@ export default Ember.Controller.extend(NotifierMixin, DropdownMixin, {
 			$(".delete-space-dialog").css("display", "block");
 			$('#delete-space-name').removeClass('error');
 
-			let drop = new Drop({
+			this.closeDropdown();
+
+			let dropOptions = Object.assign(this.get('dropDefaults'), {
 				target: $("#delete-space-button-" + spaceId)[0],
 				content: $(".delete-space-dialog")[0],
 				classes: 'drop-theme-basic',
 				position: "bottom right",
-				openOn: "always",
-				tetherOptions: {
-					offset: "5px 0",
-					targetOffset: "10px 0"
-				},
-				remove: false
-			});
+				remove: false});
 
+			let drop = new Drop(dropOptions);
 			this.set('dropdown', drop);
 		},
 
