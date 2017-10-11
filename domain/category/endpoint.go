@@ -82,11 +82,27 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 
 	h.Store.Audit.Record(ctx, audit.EventTypeCategoryAdd)
 
-	ctx.Transaction.Commit()
+	perm := pm.Permission{}
+	perm.OrgID = ctx.OrgID
+	perm.Who = "user"
+	perm.WhoID = ctx.UserID
+	perm.Scope = "object"
+	perm.Location = "category"
+	perm.RefID = cat.RefID
+	perm.Action = pm.CategoryView
+
+	err = h.Store.Permission.AddPermission(ctx, perm)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
 
 	cat, err = h.Store.Category.Get(ctx, cat.RefID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 

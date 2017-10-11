@@ -19,7 +19,7 @@
 		{{#if (gt categories.length 0)}}
 			<div class="space-filter">
 				<div class="caption">Space</div>
-				<div class="regular-button button-nav {{if spaceSelected 'selected'}}" {{action 'onDocumentFilter' 'space' folder.id}}>
+				<div class="regular-button {{if spaceSelected 'button-blue' 'button-nav'}}" {{action 'onDocumentFilter' 'space' folder.id}}>
 					<div class="name">all ({{documents.length}})</div>
 				</div>
 			</div>
@@ -27,13 +27,13 @@
 			<div class="category-filter">
 				<div class="caption">Category</div>
 				{{#if (gt rootDocCount 0)}}
-					<div class="regular-button button-blue {{if uncategorizedSelected 'selected'}}" {{action 'onDocumentFilter' 'uncategorized' folder.id}}>
+					<div class="regular-button {{if uncategorizedSelected 'button-blue' 'button-gray'}}" {{action 'onDocumentFilter' 'uncategorized' folder.id}}>
 						<div class="name">uncategorized ({{rootDocCount}})</div>
 					</div>
 					<div class="button-gap"/>
 				{{/if}}
 				{{#each categories as |cat index|}}
-					<div class="regular-button button-blue {{if cat.selected 'selected'}}" {{action 'onDocumentFilter' 'category' cat.id}}>
+					<div class="regular-button {{if cat.selected 'button-blue' 'button-gray'}}" {{action 'onDocumentFilter' 'category' cat.id}}>
 						{{cat.category}} ({{cat.docCount}})
 					</div>
 					<div class="button-gap"/>

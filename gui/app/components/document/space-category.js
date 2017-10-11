@@ -17,6 +17,7 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
     documentService: Ember.inject.service('document'),
 	categoryService: Ember.inject.service('category'),
 	sessionService: Ember.inject.service('session'),
+	newCategory: '',
 	categories: [],
 	hasCategories: Ember.computed('categories', function() {
 		return this.get('categories').length > 0;

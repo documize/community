@@ -27,6 +27,22 @@
 	}
 }
 
+.document-category-dialog {
+	height: 200px;
+	overflow-y: auto;
+	margin: 0;
+	padding: 0;
+
+	// // Medium devices (tablets, 768px and up)
+	// @media (min-width: 768px) { height: 300px; }
+
+	// // Large devices (desktops, 992px and up)
+	// @media (min-width: 992px) { height: 400px; }
+
+	// // Extra large devices (large desktops, 1200px and up)
+	// @media (min-width: 1200px) { height: 500px; }
+}
+
 .document-tags {
 	margin: 20px 0 0 0;
 

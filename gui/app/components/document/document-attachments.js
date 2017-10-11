@@ -23,6 +23,9 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, DropdownMixin
 		id: "",
 		name: "",
 	},
+	canShow: Ember.computed('permissions', 'files', function() {
+		return this.get('files.length') > 0 || this.get('permissions.documentEdit');
+	}),
 
 	init() {
 		this._super(...arguments);

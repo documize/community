@@ -1,9 +1,15 @@
 <div class="space-settings">
 	<div class="panel">
-		<div class="form-header">
-			<div class="title">Permissions</div>
-			<div class="tip">Define who can do what in this space</div>
+		<div class="form-header-sticky">
+			<div class="left-zone">
+				<div class="title">Permissions</div>
+				<div class="tip">Define who can do what in this space</div>
+			</div>
+			<div class="right-zone">
+				<div class="regular-button button-blue" {{action 'setPermissions'}}>GRANT</div>
+			</div>
 		</div>
+		<div class="clearfix" />
 		<div class="input-control">
 			<div class="permissions-table">
 				{{#each permissions as |permission|}}
@@ -40,6 +46,5 @@
 				{{/each}}
 			</div>
 		</div>
-		<div class="regular-button button-blue" {{action 'setPermissions'}}>GRANT</div>
 	</div>
 </div>

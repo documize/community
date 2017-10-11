@@ -27,12 +27,14 @@
 		<div class="regular-button button-white" id="document-category-button">
 			<i class="material-icons">add</i>
 		</div>
-		{{#dropdown-dialog target="document-category-button" position="bottom left" button="set" color="flat-green" onAction=(action 'onSave')}}
+		{{#dropdown-dialog target="document-category-button" position="bottom right" button="set" color="flat-green" onAction=(action 'onSave')}}
 			<p class="heading">Set document categories</p>
-			{{ui/ui-list-picker items=categories nameField='category'}}
-			{{#if canAddCategory}}
-				{{#link-to 'folder.settings.category' folder.id folder.slug}}Manage{{/link-to}}
-			{{/if}}
+			<div class="document-category-dialog">
+				{{ui/ui-list-picker items=categories nameField='category'}}
+				{{#if canAddCategory}}
+					{{#link-to 'folder.settings.category' folder.id folder.slug}}Manage{{/link-to}}
+				{{/if}}
+			</div>
 		{{/dropdown-dialog}}
 	{{/if}}
 </div>

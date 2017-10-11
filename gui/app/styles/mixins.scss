@@ -1,3 +1,15 @@
+@mixin sticky()
+{
+	position: -webkit-sticky;
+	position: -moz-sticky;
+	position: -ms-sticky;
+	position: -o-sticky;
+	position: -webkit-sticky;
+	position: sticky;
+	display: flex;
+	z-index: 999;
+	width: 100%;
+}
 @mixin box-shadow($spec)
 {
     -webkit-box-shadow: $spec;

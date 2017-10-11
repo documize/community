@@ -32,6 +32,7 @@ export default Ember.Component.extend({
 	targetOffset: "10px 0",
 	constrainToWindow: true,
 	constrainToScrollParent: true,
+	cssClass: '',
 	tether: Ember.inject.service(),
 
 	hasSecondButton: Ember.computed('button2', 'color2', function () {

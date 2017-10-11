@@ -155,25 +155,31 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 							filtered.pushObject(d);
 						}
 					});
+
 					this.set('spaceSelected', false);
+					this.set('uncategorizedSelected', false);
 					break;
 
 				case 'uncategorized':
-					this.set('uncategorizedSelected', true);
 					allowed = _.pluck(categoryMembers, 'documentId');
 					docs.forEach((d) => {
 						if (!_.contains(allowed, d.get('id'))) {
 							filtered.pushObject(d);
 						}
 					});
+
+					this.set('uncategorizedSelected', true);
+					this.set('spaceSelected', false);
 					break;
 
 				case 'space':
-					this.set('spaceSelected', true);
 					allowed = _.pluck(categoryMembers, 'documentId');
 					docs.forEach((d) => {
 						filtered.pushObject(d);
 					});
+
+					this.set('spaceSelected', true);
+					this.set('uncategorizedSelected', false);
 					break;
 			}
 

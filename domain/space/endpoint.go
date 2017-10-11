@@ -116,7 +116,9 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	perm.RefID = sp.RefID
 	perm.Action = "" // we send array for actions below
 
-	err = h.Store.Permission.AddPermissions(ctx, perm, permission.SpaceOwner, permission.SpaceManage, permission.SpaceView)
+	err = h.Store.Permission.AddPermissions(ctx, perm, permission.SpaceOwner, permission.SpaceManage, permission.SpaceView,
+		permission.DocumentAdd, permission.DocumentCopy, permission.DocumentDelete, permission.DocumentEdit, permission.DocumentMove,
+		permission.DocumentTemplate)
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
