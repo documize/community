@@ -39,6 +39,7 @@
 		position: relative !important;
 		height: initial !important;
 		min-height: initial !important;
+		-webkit-print-color-adjust: exact;
 	}
 
 	.non-printable,
@@ -55,8 +56,9 @@
 	.start-button,
 	.is-a-tab,
 	.document-toolbar,
-	#document-category-button,
-	#document-tag-button,
+	.document-space,
+	.document-category,
+	.document-tags,
 	.new-section-wizard {
 		float: none !important;
 		display: none !important;
@@ -66,13 +68,28 @@
 		z-index: 0 !important;
 	}
 
-	.document-category {
-		margin-left: 0 !important;
-	}
-
 	.non-printable-message,
 	.print-title {
 		display: block !important;
+	}
+
+	.document-heading {
+		text-align: center !important;
+		padding: 20px 20px 20px 20px !important;
+		margin-bottom: 40px !important;
+		border: 3px solid #eeeeee !important;
+		background-color: $color-off-white !important;
+	}
+	.doc-title {
+		margin: 20px 0 10px 0 !important;
+	}
+	.doc-excerpt {
+		margin: 0 !important;
+	}
+	.wysiwyg {
+		font-size: 15px;
+		line-height: 25px;
+		color: $color-black;
 	}
 
 	#wrapper {
@@ -118,12 +135,6 @@
 					float: initial !important;
 					overflow-x: initial !important;
 
-					.document-heading {
-						.doc-title {
-							margin: 20px 0 10px 0 !important;
-						}
-					}
-
 					.document-view {
 						padding: 0 !important;
 						margin: 0 !important;
@@ -150,11 +161,5 @@
 				}
 			}
 		}
-	}
-
-	.wysiwyg {
-		font-size: 15px;
-		line-height: 25px;
-		color: $color-black;
 	}
 }
