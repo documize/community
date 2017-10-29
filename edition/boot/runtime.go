@@ -84,7 +84,7 @@ func InitRuntime(r *env.Runtime, s *domain.Store) bool {
 var stdParams = map[string]string{
 	"charset":          "utf8mb4",
 	"parseTime":        "True",
-	"maxAllowedPacket": "4194304", // 4194304 // 16777216 = 16MB
+	"maxAllowedPacket": "104857600", // 4194304 // 16777216 = 16MB // 104857600 = 100MB
 }
 
 func stdConn(cs string) string {
