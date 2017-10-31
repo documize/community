@@ -42,8 +42,11 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
 		this.set('saveTemplate.name', this.get('document.name'));
 		this.set('saveTemplate.description', this.get('document.excerpt'));
 
-		this.set('pinState.pinId', this.get('pinned').isDocumentPinned(this.get('document.id')));
-		this.set('pinState.isPinned', this.get('pinState.pinId') !== '');
+		this.get('pinned').isDocumentPinned(this.get('document.id')).then( (pinId) => {
+			this.set('pinState.pinId', pinId);
+			this.set('pinState.isPinned', pinId !== '');
+		});
+
 		this.set('pinState.newName', this.get('document.name'));
 	},
 
