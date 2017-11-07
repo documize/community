@@ -179,8 +179,7 @@ export default Ember.Component.extend(AuthProvider, DropdownMixin, {
 		},
 
 		delete() {
-			let drop = this.get('drop');
-			drop.close();
+			this.closeDropdown();
 
 			this.set('selectedUsers', []);
 			this.set('hasSelectedUsers', false);
