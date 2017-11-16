@@ -9,10 +9,10 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import Service, { inject as service } from '@ember/service';
 
-export default Ember.Service.extend({
-    sessionService: Ember.inject.service('session'),
+export default Service.extend({
+    sessionService: service('session'),
 
     init() {
         this.setMetaDescription();

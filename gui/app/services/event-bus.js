@@ -9,9 +9,11 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import Evented from '@ember/object/evented';
 
-export default Ember.Service.extend(Ember.Evented, {
+import Service from '@ember/service';
+
+export default Service.extend(Evented, {
 	init() {
 		this._super(...arguments);
 		let _this = this;

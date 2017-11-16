@@ -9,13 +9,15 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { schedule } from '@ember/runloop';
+
+import Component from '@ember/component';
 import constants from '../../utils/constants';
 import TooltipMixin from '../../mixins/tooltip';
 import NotifierMixin from '../../mixins/notifier';
 import AuthMixin from '../../mixins/auth';
 
-export default Ember.Component.extend(TooltipMixin, NotifierMixin, AuthMixin, {
+export default Component.extend(TooltipMixin, NotifierMixin, AuthMixin, {
 	publicFolders: [],
 	protectedFolders: [],
 	privateFolders: [],
@@ -66,7 +68,7 @@ export default Ember.Component.extend(TooltipMixin, NotifierMixin, AuthMixin, {
 			this.set('showSpace', val);
 
 			if (val) {
-				Ember.run.schedule('afterRender', () => {
+				schedule('afterRender', () => {
 					$("#new-folder-name").focus();
 				});
 			}

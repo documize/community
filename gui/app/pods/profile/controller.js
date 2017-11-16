@@ -9,15 +9,14 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { inject as service } from '@ember/service';
 
-const {
-	isPresent
-} = Ember;
+import Controller from '@ember/controller';
+import { isPresent } from '@ember/utils';
 
-export default Ember.Controller.extend({
-	userService: Ember.inject.service('user'),
-	session: Ember.inject.service(),
+export default Controller.extend({
+	userService: service('user'),
+	session: service(),
 
 	actions: {
 		save(passwords) {

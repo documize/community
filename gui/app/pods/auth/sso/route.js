@@ -9,11 +9,13 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { inject as service } from '@ember/service';
 
-export default Ember.Route.extend({
-	session: Ember.inject.service(),
-	localStorage: Ember.inject.service(),
+import Route from '@ember/routing/route';
+
+export default Route.extend({
+	session: service(),
+	localStorage: service(),
 
 	beforeModel() {
 		this.get('localStorage').clearAll();

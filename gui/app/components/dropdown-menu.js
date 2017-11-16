@@ -9,10 +9,12 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { inject as service } from '@ember/service';
+
+import Component from '@ember/component';
 import stringUtil from '../utils/string';
 
-export default Ember.Component.extend({
+export default Component.extend({
 	target: null,
 	open: "click",
 	position: 'bottom right',
@@ -20,7 +22,7 @@ export default Ember.Component.extend({
 	drop: null,
 	onOpenCallback: null, // callback when opened
 	onCloseCallback: null, // callback when closed
-	tether: Ember.inject.service(),
+	tether: service(),
 
 	didReceiveAttrs() {
 		this.set("contentId", 'dropdown-menu-' + stringUtil.makeId(10));

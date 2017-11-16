@@ -9,26 +9,24 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { empty, and } from '@ember/object/computed';
 
-const {
-	isEmpty,
-	computed,
-	set
+import $ from 'jquery';
+import Component from '@ember/component';
+import { isEmpty } from '@ember/utils';
+import { set } from '@ember/object';
 
-} = Ember;
-
-export default Ember.Component.extend({
-	titleEmpty: computed.empty('model.title'),
-	firstnameEmpty: computed.empty('model.firstname'),
-	lastnameEmpty: computed.empty('model.lastname'),
-	emailEmpty: computed.empty('model.email'),
-	passwordEmpty: computed.empty('model.password'),
-	hasEmptyTitleError: computed.and('titleEmpty', 'titleError'),
-	hasEmptyFirstnameError: computed.and('firstnameEmpty', 'adminFirstnameError'),
-	hasEmptyLastnameError: computed.and('lastnameEmpty', 'adminLastnameError'),
-	hasEmptyEmailError: computed.and('emailEmpty', 'adminEmailError'),
-	hasEmptyPasswordError: computed.and('passwordEmpty', 'adminPasswordError'),
+export default Component.extend({
+	titleEmpty: empty('model.title'),
+	firstnameEmpty: empty('model.firstname'),
+	lastnameEmpty: empty('model.lastname'),
+	emailEmpty: empty('model.email'),
+	passwordEmpty: empty('model.password'),
+	hasEmptyTitleError: and('titleEmpty', 'titleError'),
+	hasEmptyFirstnameError: and('firstnameEmpty', 'adminFirstnameError'),
+	hasEmptyLastnameError: and('lastnameEmpty', 'adminLastnameError'),
+	hasEmptyEmailError: and('emailEmpty', 'adminEmailError'),
+	hasEmptyPasswordError: and('passwordEmpty', 'adminPasswordError'),
 
 	actions: {
 		save() {
@@ -57,7 +55,7 @@ export default Ember.Component.extend({
 				return $("#adminPassword").focus();
 			}
 
-			this.model.allowAnonymousAccess = Ember.$("#allowAnonymousAccess").prop('checked');
+			this.model.allowAnonymousAccess = $("#allowAnonymousAccess").prop('checked');
 
 			this.get('save')().then(() => {
 				set(this, 'titleError', false);

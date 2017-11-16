@@ -20,7 +20,7 @@
 				font-size: 0.9rem;
 				color: $color-gray;
 				width: 200px;
-				@extend .truncate;
+				@extend .text-truncate;
 			}
 
 			> .detail {
@@ -29,7 +29,7 @@
 				color: $color-off-black;
 				margin-left: 50px;
 				width: 200px;
-				@extend .truncate;
+				@extend .text-truncate;
 
 				.viewed {
 					color: $color-goldy;

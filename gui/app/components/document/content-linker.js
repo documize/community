@@ -9,14 +9,14 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { debounce } from '@ember/runloop';
+
+import { computed, set } from '@ember/object';
+import Component from '@ember/component';
+import { inject as service } from '@ember/service';
 import TooltipMixin from '../../mixins/tooltip';
 
-const {
-	inject: { service }
-} = Ember;
-
-export default Ember.Component.extend(TooltipMixin, {
+export default Component.extend(TooltipMixin, {
 	link: service(),
 	linkName: '',
 	keywords: '',
@@ -31,21 +31,21 @@ export default Ember.Component.extend(TooltipMixin, {
 		{ label: 'Attachment', selected: false },
 		{ label: 'Search', selected: false }
 	],
-	contentLinkerButtonId: Ember.computed('page', function () {
+	contentLinkerButtonId: computed('page', function () {
 		let page = this.get('page');
 		return `content-linker-button-${page.id}`;
 	}),
 
-	showSections: Ember.computed('tabs.@each.selected', function () {
+	showSections: computed('tabs.@each.selected', function () {
 		return this.get('tabs').findBy('label', 'Section').selected;
 	}),
-	showAttachments: Ember.computed('tabs.@each.selected', function () {
+	showAttachments: computed('tabs.@each.selected', function () {
 		return this.get('tabs').findBy('label', 'Attachment').selected;
 	}),
-	showSearch: Ember.computed('tabs.@each.selected', function () {
+	showSearch: computed('tabs.@each.selected', function () {
 		return this.get('tabs').findBy('label', 'Search').selected;
 	}),
-	hasMatches: Ember.computed('matches', function () {
+	hasMatches: computed('matches', function () {
 		let m = this.get('matches');
 		return m.documents.length || m.pages.length || m.attachments.length;
 	}),
@@ -75,7 +75,7 @@ export default Ember.Component.extend(TooltipMixin, {
 	},
 
 	onKeywordChange: function () {
-		Ember.run.debounce(this, this.fetch, 750);
+		debounce(this, this.fetch, 750);
 	}.observes('keywords'),
 
 	fetch() {
@@ -100,23 +100,23 @@ export default Ember.Component.extend(TooltipMixin, {
 			this.set('selection', i);
 
 			candidates.pages.forEach(c => {
-				Ember.set(c, 'selected', c.id === i.id);
+				set(c, 'selected', c.id === i.id);
 			});
 
 			candidates.attachments.forEach(c => {
-				Ember.set(c, 'selected', c.id === i.id);
+				set(c, 'selected', c.id === i.id);
 			});
 
 			matches.documents.forEach(c => {
-				Ember.set(c, 'selected', c.id === i.id);
+				set(c, 'selected', c.id === i.id);
 			});
 
 			matches.pages.forEach(c => {
-				Ember.set(c, 'selected', c.id === i.id);
+				set(c, 'selected', c.id === i.id);
 			});
 
 			matches.attachments.forEach(c => {
-				Ember.set(c, 'selected', c.id === i.id);
+				set(c, 'selected', c.id === i.id);
 			});
 		},
 

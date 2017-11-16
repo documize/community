@@ -9,15 +9,17 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { computed } from '@ember/object';
 
-export default Ember.Component.extend({
+import Component from '@ember/component';
+
+export default Component.extend({
 	drop: null,
 	cancelLabel: "Close",
 	actionLabel: "Save",
 	tip: "Short and concise title",
 	busy: false,
-	hasExcerpt: Ember.computed('page', function () {
+	hasExcerpt: computed('page', function () {
 		return is.not.undefined(this.get('page.excerpt'));
 	}),
 

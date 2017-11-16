@@ -9,12 +9,14 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { inject as service } from '@ember/service';
+
+import Controller from '@ember/controller';
 import AuthProvider from '../../../mixins/auth';
 
-export default Ember.Controller.extend(AuthProvider, {
-	appMeta: Ember.inject.service('app-meta'),
-	session: Ember.inject.service('session'),
+export default Controller.extend(AuthProvider, {
+	appMeta: service('app-meta'),
+	session: service('session'),
 	invalidCredentials: false,
 
 	reset() {

@@ -9,14 +9,12 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { Promise as EmberPromise } from 'rsvp';
+
+import Service, { inject as service } from '@ember/service';
 import netUtil from '../utils/net';
 
-const {
-	inject: { service }
-} = Ember;
-
-export default Ember.Service.extend({
+export default Service.extend({
 	sessionService: service('session'),
 	ajax: service(),
 	appMeta: service(),
@@ -24,7 +22,7 @@ export default Ember.Service.extend({
     config: {},
 
 	boot() {
-        return new Ember.RSVP.Promise((resolve, reject) => {
+        return new EmberPromise((resolve, reject) => {
             if (is.not.undefined(this.get('keycloak')) && is.not.null(this.get('keycloak')) ) {
                 resolve(this.get('keycloak'));
                 return;
@@ -50,7 +48,7 @@ export default Ember.Service.extend({
     },
 
 	login() {
-        return new Ember.RSVP.Promise((resolve, reject) => {
+        return new EmberPromise((resolve, reject) => {
             this.boot().then((keycloak) => {
                 let url = netUtil.getAppUrl(netUtil.getSubdomain()) + '/auth/keycloak?mode=login';
 
@@ -64,7 +62,7 @@ export default Ember.Service.extend({
     },
 
     logout() {
-        return new Ember.RSVP.Promise((resolve, reject) => {
+        return new EmberPromise((resolve, reject) => {
             this.boot().then((keycloak) => {
                 keycloak.logout(JSON.parse(this.get('appMeta.authConfig'))).success(() => {
                     this.get('keycloak').clearToken();
@@ -78,7 +76,7 @@ export default Ember.Service.extend({
     },
 
 	fetchProfile() {
-        return new Ember.RSVP.Promise((resolve, reject) => {
+        return new EmberPromise((resolve, reject) => {
             this.boot().then((keycloak) => {
                 keycloak.loadUserProfile().success((profile) => {
                     resolve(profile);

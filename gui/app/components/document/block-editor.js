@@ -9,10 +9,12 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { inject as service } from '@ember/service';
 
-export default Ember.Component.extend({
-	store: Ember.inject.service(),
+import Component from '@ember/component';
+
+export default Component.extend({
+	store: service(),
 
     didReceiveAttrs() {
 		let p = this.get('store').createRecord('page');

@@ -9,21 +9,24 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { Promise as EmberPromise, hash } from 'rsvp';
+
+import { inject as service } from '@ember/service';
+import Route from '@ember/routing/route';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 
-export default Ember.Route.extend(AuthenticatedRouteMixin, {
-	sectionService: Ember.inject.service('section'),
-	documentService: Ember.inject.service('document'),
-	folderService: Ember.inject.service('folder'),
-	linkService: Ember.inject.service('link'),
+export default Route.extend(AuthenticatedRouteMixin, {
+	sectionService: service('section'),
+	documentService: service('document'),
+	folderService: service('folder'),
+	linkService: service('link'),
 
 	beforeModel(transition) {
 		this.set('pageId', is.not.undefined(transition.queryParams.page) ? transition.queryParams.page : "");
 		this.set('folderId', this.paramsFor('document').folder_id);
 		this.set('documentId', this.paramsFor('document').document_id);
 
-		return new Ember.RSVP.Promise((resolve) => {
+		return new EmberPromise((resolve) => {
 			this.get('documentService').fetchDocumentData(this.get('documentId')).then((data) => {
 				this.set('document', data.document);
 				this.set('folders', data.folders);
@@ -36,7 +39,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	},
 
 	model() {
-		return Ember.RSVP.hash({
+		return hash({
 			folders: this.get('folders'),
 			folder: this.get('folder'),
 			document: this.get('document'),

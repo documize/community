@@ -13,7 +13,7 @@
 			}
 
 			> .disabled {
-				@extend .cursor-not-allowed;
+				cursor: not-allowed !important;
 				color: $color-stroke;
 				border-color: $color-stroke;
 

@@ -9,12 +9,14 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { inject as service } from '@ember/service';
+
+import Controller from '@ember/controller';
 import NotifierMixin from '../../../mixins/notifier';
 import AuthProvider from '../../../mixins/auth';
 
-export default Ember.Controller.extend(AuthProvider, NotifierMixin, {
-	documentService: Ember.inject.service('document'),
-	folderService: Ember.inject.service('folder'),
-	localStorage: Ember.inject.service('localStorage'),
+export default Controller.extend(AuthProvider, NotifierMixin, {
+	documentService: service('document'),
+	folderService: service('folder'),
+	localStorage: service('localStorage'),
 });

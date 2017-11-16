@@ -9,20 +9,22 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { computed } from '@ember/object';
+
+import Component from '@ember/component';
 import TooltipMixin from '../../../mixins/tooltip';
 
-export default Ember.Component.extend(TooltipMixin, {
+export default Component.extend(TooltipMixin, {
     isDirty: false,
     pageBody: "",
     syntaxOptions: [],
     codeSyntax: null,
 	codeEditor: null,
-	editorId: Ember.computed('page', function () {
+	editorId: computed('page', function () {
 		let page = this.get('page');
 		return `code-editor-${page.id}`;
 	}),
-	syntaxId: Ember.computed('page', function () {
+	syntaxId: computed('page', function () {
 		let page = this.get('page');
 		return `code-editor-syntax-${page.id}`;
 	}),

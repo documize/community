@@ -9,18 +9,16 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { empty } from '@ember/object/computed';
 
-const {
-	computed
-} = Ember;
+import Component from '@ember/component';
 
-export default Ember.Component.extend({
-	SMTPHostEmptyError: computed.empty('model.smtp.host'),
-	SMTPPortEmptyError: computed.empty('model.smtp.port'),
-	SMTPSenderEmptyError: computed.empty('model.smtp.sender'),
-	SMTPUserIdEmptyError: computed.empty('model.smtp.userid'),
-	SMTPPasswordEmptyError: computed.empty('model.smtp.password'),
+export default Component.extend({
+	SMTPHostEmptyError: empty('model.smtp.host'),
+	SMTPPortEmptyError: empty('model.smtp.port'),
+	SMTPSenderEmptyError: empty('model.smtp.sender'),
+	SMTPUserIdEmptyError: empty('model.smtp.userid'),
+	SMTPPasswordEmptyError: empty('model.smtp.password'),
 
 	actions: {
 		saveSMTP() {

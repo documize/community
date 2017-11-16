@@ -9,18 +9,18 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { empty } from '@ember/object/computed';
+
+import { schedule } from '@ember/runloop';
+import { inject as service } from '@ember/service';
+import Component from '@ember/component';
 import NotifierMixin from '../../mixins/notifier';
 import TooltipMixin from '../../mixins/tooltip';
 
-const {
-	computed,
-} = Ember;
-
-export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
-	folderService: Ember.inject.service('folder'),
+export default Component.extend(NotifierMixin, TooltipMixin, {
+	folderService: service('folder'),
 	folderName: '',
-	hasNameError: computed.empty('folderName'),
+	hasNameError: empty('folderName'),
 	editMode: false,
 
 	keyUp(e) {
@@ -34,7 +34,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 			this.set('folderName', this.get('folder.name'));
 			this.set('editMode', true);
 
-			Ember.run.schedule('afterRender', () => {
+			schedule('afterRender', () => {
 				$('#folder-name').select();
 			});
 		},

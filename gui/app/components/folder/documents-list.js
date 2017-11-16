@@ -9,13 +9,15 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { computed } from '@ember/object';
 
-export default Ember.Component.extend({
-	showAdd: Ember.computed('permissions', 'documents', function() {
+import Component from '@ember/component';
+
+export default Component.extend({
+	showAdd: computed('permissions', 'documents', function() {
 		return this.get('documents.length') === 0 && this.get('permissions.documentAdd');
 	}),
-	showLockout: Ember.computed('permissions', 'documents', function() {
+	showLockout: computed('permissions', 'documents', function() {
 		return this.get('documents.length') === 0 && !this.get('permissions.documentAdd');
 	}),
 

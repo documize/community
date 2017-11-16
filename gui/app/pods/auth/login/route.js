@@ -9,17 +9,20 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { Promise as EmberPromise } from 'rsvp';
+
+import { inject as service } from '@ember/service';
+import Route from '@ember/routing/route';
 import constants from '../../../utils/constants';
 
-export default Ember.Route.extend({
-    appMeta: Ember.inject.service(),
-	kcAuth: Ember.inject.service(),
-	localStorage: Ember.inject.service(),
+export default Route.extend({
+    appMeta: service(),
+	kcAuth: service(),
+	localStorage: service(),
 	showLogin: false,
 
 	beforeModel(transition) {
-		return new Ember.RSVP.Promise((resolve) => {
+		return new EmberPromise((resolve) => {
 			let authProvider = this.get('appMeta.authProvider');
 
 			switch (authProvider) {

@@ -9,14 +9,16 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { hash } from 'rsvp';
+
+import Route from '@ember/routing/route';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 
-export default Ember.Route.extend(AuthenticatedRouteMixin, {
+export default Route.extend(AuthenticatedRouteMixin, {
 	model() {
 		this.get('browser').setTitle(this.modelFor('folder').folder.get('name'));
 
-		return Ember.RSVP.hash({
+		return hash({
 			folder: this.modelFor('folder').folder,
 			permissions: this.modelFor('folder').permissions,
 			folders: this.modelFor('folder').folders

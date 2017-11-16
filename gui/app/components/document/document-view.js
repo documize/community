@@ -9,22 +9,22 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { notEmpty, empty } from '@ember/object/computed';
+
+import { schedule } from '@ember/runloop';
+import { inject as service } from '@ember/service';
+import Component from '@ember/component';
 import NotifierMixin from '../../mixins/notifier';
 import TooltipMixin from '../../mixins/tooltip';
 
-const {
-	computed,
-} = Ember;
-
-export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
-	documentService: Ember.inject.service('document'),
-	sectionService: Ember.inject.service('section'),
-	appMeta: Ember.inject.service(),
-	link: Ember.inject.service(),
-	hasPages: computed.notEmpty('pages'),
+export default Component.extend(NotifierMixin, TooltipMixin, {
+	documentService: service('document'),
+	sectionService: service('section'),
+	appMeta: service(),
+	link: service(),
+	hasPages: notEmpty('pages'),
 	newSectionName: 'Section',
-	newSectionNameMissing: computed.empty('newSectionName'),
+	newSectionNameMissing: empty('newSectionName'),
 	newSectionLocation: '',
 	beforePage: '',
 	toEdit: '',
@@ -33,7 +33,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		this._super(...arguments);
 		this.loadBlocks();
 
-		Ember.run.schedule('afterRender', () => {
+		schedule('afterRender', () => {
 			let jumpTo = "#page-" + this.get('pageId');
 			if (!$(jumpTo).inView()) {
 				$(jumpTo).velocity("scroll", { duration: 250, offset: -100 });
@@ -98,7 +98,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 	},
 
 	setupAddWizard() {
-		Ember.run.schedule('afterRender', () => {
+		schedule('afterRender', () => {
 			$('.start-section:not(.start-section-empty-state)').off('.hoverIntent');
 
 			$('.start-section:not(.start-section-empty-state)').hoverIntent({interval: 100, over: function() {

@@ -9,16 +9,19 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { set } from '@ember/object';
+
+import { inject as service } from '@ember/service';
+import Controller from '@ember/controller';
 import NotifierMixin from '../../../mixins/notifier';
 
-export default Ember.Controller.extend(NotifierMixin, {
-	userService: Ember.inject.service('user'),
+export default Controller.extend(NotifierMixin, {
+	userService: service('user'),
 	newUser: { firstname: "", lastname: "", email: "", active: true },
 
 	actions: {
 		add(user) {
-			Ember.set(this, 'newUser', user);
+			set(this, 'newUser', user);
 
 			return this.get('userService')
 				.add(this.get('newUser'))

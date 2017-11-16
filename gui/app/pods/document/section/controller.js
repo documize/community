@@ -9,11 +9,13 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { inject as service } from '@ember/service';
+
+import Controller from '@ember/controller';
 import NotifierMixin from '../../../mixins/notifier';
 
-export default Ember.Controller.extend(NotifierMixin, {
-	documentService: Ember.inject.service('document'),
+export default Controller.extend(NotifierMixin, {
+	documentService: service('document'),
 
 	actions: {
 		onCancel() {

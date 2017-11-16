@@ -1,7 +1,122 @@
-<div class="basic-card">
-    Hello
+<button type="button" class="btn btn-primary" id="test-button">Save</button>
+<button type="button" class="btn btn-success" id="test-button2" data-toggle="tooltip" data-placement="top" title="Tooltip on top">+ Document</button>
+<button type="button" class="btn btn-secondary" id="test-button3" data-toggle="tooltip" data-placement="bottom" title="Tooltip on top">+ Document</button>
+
+<button type="button" class="btn btn-danger" id="test-button4" data-toggle="modal" data-target="#exampleModal" data-backdrop="static">Delete</button>
+<div class="modal" tabindex="-1" role="dialog" id="exampleModal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">Modal title</div>
+      <div class="modal-body">
+        <p>Modal body text goes here.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
 </div>
-<div class="clearfix" />
+
+<div class="btn-group">
+	<i id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="material-icons">arrow_drop_down_circle</i>
+	<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+		<a class="dropdown-item" href="#">Action</a>
+		<a class="dropdown-item" href="#">Another action</a>
+		<div class="dropdown-divider"></div>
+		<a class="dropdown-item" href="#">Something else here</a>
+	</div>
+</div>
+
+<div class="btn-group">
+	<div class="round-button-mono" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+		<i class="material-icons">settings</i>
+	</div>
+	<div class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+		<a class="dropdown-item" href="#">Action</a>
+		<div class="dropdown-divider"></div>
+		<a class="dropdown-item" href="#">Another action</a>
+		<a class="dropdown-item" href="#">Something else here</a>
+	</div>
+</div>
+
+<br/>
+<br/>
+<br/>
+
+<button type="button" class="btn btn-primary">Primary</button>
+<button type="button" class="btn btn-secondary">Secondary</button>
+<button type="button" class="btn btn-success">Success</button>
+<button type="button" class="btn btn-danger">Danger</button>
+<button type="button" class="btn btn-warning">Warning</button>
+<button type="button" class="btn btn-info">Info</button>
+<button type="button" class="btn btn-light">Light</button>
+<button type="button" class="btn btn-dark">Dark</button>
+<button type="button" class="btn btn-link">Link</button>
+
+<br/>
+<br/>
+<br/>
+
+<div class="btn-group" role="group" aria-label="Basic example">
+  <button type="button" class="btn btn-secondary">Left</button>
+  <button type="button" class="btn btn-secondary">Middle</button>
+  <button type="button" class="btn btn-secondary">Right</button>
+</div>
+
+<br/>
+<br/>
+<br/>
+
+<div class="container">
+	<div class="row">
+		<div class="col">
+			<form>
+				<div class="input-group">
+					<span class="input-group-addon" id="basic-addon1">@</span>
+					<input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+				</div>
+				<br>
+				<div class="form-group">
+					<label for="exampleFormControlInput1">Email address</label>
+					<input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
+				</div>
+				<div class="form-group">
+					<label for="exampleFormControlInput2">Email address</label>
+					<input type="email" class="form-control is-invalid" id="exampleFormControlInput2" placeholder="name@example.com">
+				</div>
+				<div class="form-group">
+					<label for="exampleFormControlSelect1">Example select</label>
+					<select class="form-control" id="exampleFormControlSelect1">
+					<option>1</option>
+					<option>2</option>
+					<option>3</option>
+					<option>4</option>
+					<option>5</option>
+					</select>
+				</div>
+				<div class="form-group">
+					<label for="exampleFormControlSelect2">Example multiple select</label>
+					<select multiple class="form-control" id="exampleFormControlSelect2">
+					<option>1</option>
+					<option>2</option>
+					<option>3</option>
+					<option>4</option>
+					<option>5</option>
+					</select>
+				</div>
+				<div class="form-group">
+					<label for="exampleFormControlTextarea1">Example textarea</label>
+					<textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+
+<br/>
+<br/>
 <br/>
 
 
@@ -87,19 +202,6 @@
 <div class="clearfix" />
 <br/>
 
-
-<div class="chip">
-  <span class="chip-text">#finance</span>
-    <i class="material-icons right">clear</i>
-</div>
-<div class="chip">
-  <span class="chip-text">#records</span>
-</div>
-<div class="clearfix" />
-<br/>
-<br/>
-
-
 <div class="margin-left-50" style="width: 300px;">
     <div class="input-control">
         <label>Name</label>
@@ -123,37 +225,3 @@
 <br/>
 <br/>
 
-
-<div id="sample-dropdown-content-1" class="dropdown-dialog">
-    <div class="content">
-        <p>Are you sure you want to delete this folder?</p>
-    </div>
-    <div class="actions">
-        <div class="flat-button" {{action 'dropClose'}}>
-            cancel
-        </div>
-        <div class="flat-button flat-red">
-            delete
-        </div>
-    </div>
-    <div class="clearfix"></div>
-</div>
-
-{{#dropdown-dialog target="delete-folder" position="bottom left" button="Add" color="flat-red" onAction=(action 'addFolder')}}
-    <p>Are you sure you want to delete this folder?</p>
-    <p>There is no undo!</p>
-{{/dropdown-dialog}}
-
-{{#dropdown-dialog target="help-dropdown" position="bottom left" button="Got it" color="flat-blue" showCancel=false callback=false}}
-    <p>Some text here to help you.</p>
-    <p>That you can read.</p>
-{{/dropdown-dialog}}
-
-{{#dropdown-menu target="dropdown-menu-1" position="bottom right"}}
-    <ul class="menu">
-        <li class="item" {{action 'showNotification' 'Yes, yes.'}}>Profile</li>
-        <li class="item" {{action 'showNotification' 'Saved profile'}}>Settings</li>
-        <li class="divider"></li>
-        <li class="item">Sign out</li>
-    </ul>
-{{/dropdown-menu}}

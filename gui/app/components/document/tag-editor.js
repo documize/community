@@ -9,15 +9,17 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { computed } from '@ember/object';
 
-export default Ember.Component.extend({
+import Component from '@ember/component';
+
+export default Component.extend({
     documentTags: [],
     tagz: [],
     newTag: "",
     maxTags: 3,
 	canAdd: false,
-	emptyState: Ember.computed('tagz', function() {
+	emptyState: computed('tagz', function() {
 		return (this.get('tagz').length === 0 && !this.get('permissions.documentEdit'));
 	}),
 

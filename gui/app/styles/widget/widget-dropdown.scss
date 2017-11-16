@@ -120,7 +120,7 @@
 					> li.disabled {
 						color: $color-stroke !important;
 						font-weight: normal !important;
-						@extend .cursor-not-allowed;
+						cursor: not-allowed !important;
 
 						a, a:visited {
 							color: $color-stroke !important;

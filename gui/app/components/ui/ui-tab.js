@@ -9,22 +9,25 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { htmlSafe } from '@ember/string';
 
-export default Ember.Component.extend({
-	myWidth: Ember.computed('tabs', function() {
+import { computed, set } from '@ember/object';
+import Component from '@ember/component';
+
+export default Component.extend({
+	myWidth: computed('tabs', function() {
 		let count = this.get('tabs.length');
 		let width = 95 / count;
-		return Ember.String.htmlSafe("width: " + `${width}%;`);
+		return htmlSafe("width: " + `${width}%;`);
 	}),
 
 	actions: {
 		onTabSelect(tab) {
 			this.get('tabs').forEach(t => {
-				Ember.set(t, 'selected', false);
+				set(t, 'selected', false);
 			});
 
-			Ember.set(tab, 'selected', true);
+			set(tab, 'selected', true);
 
 			this.attrs.onTabSelect(this.get('tabs'));
 		}

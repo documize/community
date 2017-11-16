@@ -9,13 +9,16 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { set } from '@ember/object';
+
+import { inject as service } from '@ember/service';
+import Component from '@ember/component';
 import NotifierMixin from '../../../mixins/notifier';
 import TooltipMixin from '../../../mixins/tooltip';
 import SectionMixin from '../../../mixins/section';
 
-export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin, {
-	sectionService: Ember.inject.service('section'),
+export default Component.extend(SectionMixin, NotifierMixin, TooltipMixin, {
+	sectionService: service('section'),
 	isDirty: false,
 	busy: false,
 	authenticated: false,
@@ -182,11 +185,11 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 			let list = lists.findBy('id', id);
 
 			lists.forEach(function (entry) {
-				Ember.set(entry, 'included', false);
+				set(entry, 'included', false);
 			});
 
 			if (list !== null) {
-				Ember.set(list, 'included', true);
+				set(list, 'included', true);
 			}
 		},
 

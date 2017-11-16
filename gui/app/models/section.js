@@ -9,9 +9,9 @@
 //
 // https://documize.com
 
+import { computed } from '@ember/object';
 import Model from 'ember-data/model';
 import attr from 'ember-data/attr';
-import Ember from 'ember';
 // import { belongsTo, hasMany } from 'ember-data/relationships';
 
 export default Model.extend({
@@ -22,7 +22,7 @@ export default Model.extend({
 	iconFont: attr('string'),
 	iconFile: attr('string'),
 
-	hasImage: Ember.computed('iconFont', 'iconFile', function () {
+	hasImage: computed('iconFont', 'iconFile', function () {
 		return this.get('iconFile').length > 0;
 	}),
 

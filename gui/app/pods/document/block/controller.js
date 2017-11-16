@@ -9,10 +9,12 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { inject as service } from '@ember/service';
 
-export default Ember.Controller.extend({
-	sectionService: Ember.inject.service('section'),
+import Controller from '@ember/controller';
+
+export default Controller.extend({
+	sectionService: service('section'),
 
 	actions: {
 		onCancel( /*page*/ ) {

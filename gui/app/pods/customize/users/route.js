@@ -9,14 +9,17 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { Promise as EmberPromise } from 'rsvp';
+
+import { inject as service } from '@ember/service';
+import Route from '@ember/routing/route';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 import constants from '../../../utils/constants';
 
-export default Ember.Route.extend(AuthenticatedRouteMixin, {
-	userService: Ember.inject.service('user'),
-	global: Ember.inject.service('global'),
-	appMeta: Ember.inject.service(),
+export default Route.extend(AuthenticatedRouteMixin, {
+	userService: service('user'),
+	global: service('global'),
+	appMeta: service(),
 
 	beforeModel () {
 		if (!this.session.isAdmin) {
@@ -25,7 +28,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	},
 
 	model() {
-		return new Ember.RSVP.Promise((resolve) => {
+		return new EmberPromise((resolve) => {
 			if (this.get('appMeta.authProvider') == constants.AuthProvider.Keycloak) {
 				this.get('global').syncExternalUsers().then(() => {
 					this.get('userService').getComplete().then((users) =>{

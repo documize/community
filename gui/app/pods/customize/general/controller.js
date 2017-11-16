@@ -9,11 +9,13 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { inject as service } from '@ember/service';
+
+import Controller from '@ember/controller';
 import NotifierMixin from "../../../mixins/notifier";
 
-export default Ember.Controller.extend(NotifierMixin, {
-	orgService: Ember.inject.service('organization'),
+export default Controller.extend(NotifierMixin, {
+	orgService: service('organization'),
 
 	actions: {
 		save() {

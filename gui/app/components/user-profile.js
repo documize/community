@@ -9,21 +9,18 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { empty } from '@ember/object/computed';
+
+import Component from '@ember/component';
+import { computed, set } from '@ember/object';
+import { isPresent, isEqual, isEmpty } from '@ember/utils';
 import AuthProvider from '../mixins/auth';
 
-const {
-	computed,
-	isEmpty,
-	isEqual,
-	isPresent
-} = Ember;
-
-export default Ember.Component.extend(AuthProvider, {
+export default Component.extend(AuthProvider, {
 	password: { password: "", confirmation: "" },
-	hasFirstnameError: computed.empty('model.firstname'),
-	hasLastnameError: computed.empty('model.lastname'),
-	hasEmailError: computed.empty('model.email'),
+	hasFirstnameError: empty('model.firstname'),
+	hasLastnameError: empty('model.lastname'),
+	hasEmailError: empty('model.email'),
 	hasPasswordError: computed('passwordError', 'password.password', {
 		get() {
 			if (isPresent(this.get('passwordError'))) {
@@ -61,23 +58,23 @@ export default Ember.Component.extend(AuthProvider, {
 			}
 
 			if (isPresent(password) && isEmpty(confirmation)) {
-				Ember.set(this, 'confirmPasswordError', 'error');
+				set(this, 'confirmPasswordError', 'error');
 				return $("#confirmPassword").focus();
 			}
 			if (isEmpty(password) && isPresent(confirmation)) {
-				Ember.set(this, 'passwordError', 'error');
+				set(this, 'passwordError', 'error');
 				return $("#password").focus();
 			}
 			if (!isEqual(password, confirmation)) {
-				Ember.set(this, 'passwordError', 'error');
+				set(this, 'passwordError', 'error');
 				return $("#password").focus();
 			}
 
 			let passwords = this.get('password');
 
 			this.get('save')(passwords).finally(() => {
-				Ember.set(this, 'password.password', '');
-				Ember.set(this, 'password.confirmation', '');
+				set(this, 'password.password', '');
+				set(this, 'password.confirmation', '');
 			});
 		}
 	}

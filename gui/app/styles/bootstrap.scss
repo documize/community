@@ -1,0 +1,96 @@
+// Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
+//
+// This software (Documize Community Edition) is licensed under
+// GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
+//
+// You can operate outside the AGPL restrictions by purchasing
+// Documize Enterprise Edition and obtaining a commercial license
+// by contacting <sales@documize.com>.
+//
+// https://documize.com
+
+
+//
+// Variable overrides
+//
+
+// colors
+$blue: 			$color-primary;
+$red: 			$color-red;
+$green: 		$color-green;
+$secondary:		$color-gray;
+$light: 		$color-white;
+$dark:			$color-off-black;
+
+// popover
+$popover-bg: 			$color-off-white;
+$popover-header-bg: 	$color-off-white;
+$popover-header-color:	$color-off-black;
+
+// tooltip
+$tooltip-bg:	$color-off-white;
+$tooltip-color:	$color-off-black;
+
+// modal
+$modal-backdrop-opacity: 		0.7;
+$modal-header-border-color:		$color-white;
+$modal-footer-border-color: 	$color-white;
+.modal-header {
+	background-color: $color-gray;
+	color: $color-off-white;
+	font-size: 1.2rem;
+}
+
+// rounded corners
+// $border-radius:		0rem;
+// $border-radius-lg:  0rem;
+// $border-radius-sm:  0rem;
+$border-radius:		.125rem;
+$border-radius-lg:  .15rem;
+$border-radius-sm:  .1rem;
+
+// dropdown
+$dropdown-link-color:               $color-off-black;
+$dropdown-link-hover-color:         $color-primary;
+$dropdown-link-hover-bg:          	$color-white;
+$dropdown-link-active-color:        $color-primary;
+$dropdown-link-active-bg:           $color-white;
+
+// form
+$input-color:               $color-off-black;
+$input-border-color:        $color-stroke;
+$input-focus-bg:            $color-white;
+$input-focus-border-color:  $color-gray;
+$input-focus-color:         $color-off-black;
+$input-placeholder-color:   $color-gray;
+$input-focus-border-color:	$color-stroke;
+$input-btn-focus-width:     .2rem;
+$input-btn-focus-color:     rgba($color-gray, .25);
+
+// font
+// $font-family-sans-serif: "Helvetica", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+
+
+//
+// Bootstrap includes
+//
+
+// Required
+@import "node_modules/bootstrap/scss/functions";
+@import "node_modules/bootstrap/scss/variables";
+@import "node_modules/bootstrap/scss/mixins";
+
+// Optional
+@import "node_modules/bootstrap/scss/reboot";
+@import "node_modules/bootstrap/scss/grid";
+@import "node_modules/bootstrap/scss/buttons";
+@import "node_modules/bootstrap/scss/button-group";
+@import "node_modules/bootstrap/scss/dropdown";
+@import "node_modules/bootstrap/scss/forms";
+@import "node_modules/bootstrap/scss/input-group";
+@import "node_modules/bootstrap/scss/modal";
+@import "node_modules/bootstrap/scss/utilities";
+@import "node_modules/bootstrap/scss/popover";
+@import "node_modules/bootstrap/scss/tooltip";
+// @import "node_modules/bootstrap/scss/images";
+// @import "node_modules/bootstrap/scss/navbar";

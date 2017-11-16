@@ -9,14 +9,13 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { A } from '@ember/array';
 
-const {
-	RSVP,
-	inject: { service }
-} = Ember;
+import ArrayProxy from '@ember/array/proxy';
+import RSVP, { Promise as EmberPromise } from 'rsvp';
+import Service, { inject as service } from '@ember/service';
 
-export default Ember.Service.extend({
+export default Service.extend({
 	session: service('session'),
 	ajax: service(),
 	appMeta: service(),
@@ -37,8 +36,8 @@ export default Ember.Service.extend({
 			if (is.not.array(response)) {
 				response = [];
 			}
-			let pins = Ember.ArrayProxy.create({
-				content: Ember.A([])
+			let pins = ArrayProxy.create({
+				content: A([])
 			});
 
 			pins = response.map((pin) => {
@@ -91,8 +90,8 @@ export default Ember.Service.extend({
 				if (is.not.array(response)) {
 					response = [];
 				}
-				let pins = Ember.ArrayProxy.create({
-					content: Ember.A([])
+				let pins = ArrayProxy.create({
+					content: A([])
 				});
 
 				pins = response.map((pin) => {
@@ -111,7 +110,7 @@ export default Ember.Service.extend({
 		let userId = this.get('session.user.id');
 		let pins = this.get('pins');
 
-		return new Ember.RSVP.Promise((resolve) => {
+		return new EmberPromise((resolve) => {
 			if (this.get('initialized') === false) {
 				this.getUserPins().then((pins) => {
 					pins.forEach((pin) => {
@@ -136,7 +135,7 @@ export default Ember.Service.extend({
 		let userId = this.get('session.user.id');
 		let pins = this.get('pins');
 
-		return new Ember.RSVP.Promise((resolve) => {
+		return new EmberPromise((resolve) => {
 			if (!this.get('initialized')) {
 			this.getUserPins().then((pins) => {
 				pins.forEach((pin) => {

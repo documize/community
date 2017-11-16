@@ -9,7 +9,10 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { Promise as EmberPromise } from 'rsvp';
+
+import { registerAsyncHelper } from '@ember/test';
+import { later } from '@ember/runloop';
 
 function isVisible(selector) {
 	return $(selector).length > 0;
@@ -19,14 +22,14 @@ function checkVisibility(selector, interval, resolve, visibility) {
 	if (isVisible(selector) === visibility) {
 		resolve($(selector));
 	} else {
-		Ember.run.later(null, function () {
+		later(null, function () {
 			checkVisibility(selector, interval, resolve, visibility);
 		}, interval);
 	}
 }
 
-export default Ember.Test.registerAsyncHelper('waitToAppear', function (app, selector, interval = 200) {
-	return new Ember.RSVP.Promise(function (resolve) {
+export default registerAsyncHelper('waitToAppear', function (app, selector, interval = 200) {
+	return new EmberPromise(function (resolve) {
 		checkVisibility(selector, interval, resolve, true);
 	});
 });

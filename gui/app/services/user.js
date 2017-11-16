@@ -9,15 +9,12 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { isEmpty } from '@ember/utils';
 
-const {
-	isEmpty,
-	RSVP,
-	inject: { service }
-} = Ember;
+import RSVP from 'rsvp';
+import Service, { inject as service } from '@ember/service';
 
-export default Ember.Service.extend({
+export default Service.extend({
 	sessionService: service('session'),
 	ajax: service(),
 	store: service(),

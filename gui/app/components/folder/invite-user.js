@@ -9,14 +9,12 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import Component from '@ember/component';
+
+import { inject as service } from '@ember/service';
 import NotifierMixin from '../../mixins/notifier';
 
-const {
-	inject: { service }
-} = Ember;
-
-export default Ember.Component.extend(NotifierMixin, {
+export default Component.extend(NotifierMixin, {
 	folderService: service('folder'),
 	appMeta: service(),
 	inviteEmail: '',

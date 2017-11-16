@@ -9,23 +9,26 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { computed } from '@ember/object';
+
+import { inject as service } from '@ember/service';
+import Component from '@ember/component';
 import TooltipMixin from '../../mixins/tooltip';
 import NotifierMixin from '../../mixins/notifier';
 
-export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
-    documentService: Ember.inject.service('document'),
-	categoryService: Ember.inject.service('category'),
-	sessionService: Ember.inject.service('session'),
+export default Component.extend(TooltipMixin, NotifierMixin, {
+    documentService: service('document'),
+	categoryService: service('category'),
+	sessionService: service('session'),
 	newCategory: '',
 	categories: [],
-	hasCategories: Ember.computed('categories', function() {
+	hasCategories: computed('categories', function() {
 		return this.get('categories').length > 0;
 	}),
-	canSelectCategory: Ember.computed('categories', function() {
+	canSelectCategory: computed('categories', function() {
 		return (this.get('categories').length > 0 && this.get('permissions.documentEdit'));
 	}),
-	canAddCategory: Ember.computed('categories', function() {
+	canAddCategory: computed('categories', function() {
 		return this.get('permissions.spaceOwner') || this.get('permissions.spaceManage');
 	}),
 

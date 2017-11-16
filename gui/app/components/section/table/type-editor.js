@@ -9,12 +9,14 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { computed } from '@ember/object';
 
-export default Ember.Component.extend({
+import Component from '@ember/component';
+
+export default Component.extend({
 	isDirty: false,
 	pageBody: "",
-	editorId: Ember.computed('page', function () {
+	editorId: computed('page', function () {
 		let page = this.get('page');
 		return `table-editor-${page.id}`;
 	}),

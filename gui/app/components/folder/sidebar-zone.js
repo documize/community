@@ -9,12 +9,12 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import Component from '@ember/component';
 import TooltipMixin from '../../mixins/tooltip';
 import NotifierMixin from '../../mixins/notifier';
 import AuthMixin from '../../mixins/auth';
 
-export default Ember.Component.extend(TooltipMixin, NotifierMixin, AuthMixin, {
+export default Component.extend(TooltipMixin, NotifierMixin, AuthMixin, {
 	tab: '',
 
 	init() {

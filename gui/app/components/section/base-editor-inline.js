@@ -9,39 +9,38 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { empty } from '@ember/object/computed';
 
-const {
-	computed,
-} = Ember;
+import { computed } from '@ember/object';
+import Component from '@ember/component';
 
 
-export default Ember.Component.extend({
+export default Component.extend({
 	drop: null,
 	busy: false,
 	mousetrap: null,
-	hasNameError: computed.empty('page.title'),
-	containerId: Ember.computed('page', function () {
+	hasNameError: empty('page.title'),
+	containerId: computed('page', function () {
 		let page = this.get('page');
 		return `base-editor-inline-container-${page.id}`;
 	}),
-	pageId: Ember.computed('page', function () {
+	pageId: computed('page', function () {
 		let page = this.get('page');
 		return `page-editor-${page.id}`;
 	}),
-	cancelId: Ember.computed('page', function () {
+	cancelId: computed('page', function () {
 		let page = this.get('page');
 		return `cancel-edits-button-${page.id}`;
 	}),
-	dialogId: Ember.computed('page', function () {
+	dialogId: computed('page', function () {
 		let page = this.get('page');
 		return `discard-edits-dialog-${page.id}`;
 	}),
-	contentLinkerButtonId: Ember.computed('page', function () {
+	contentLinkerButtonId: computed('page', function () {
 		let page = this.get('page');
 		return `content-linker-button-${page.id}`;
 	}),
-	previewButtonId: Ember.computed('page', function () {
+	previewButtonId: computed('page', function () {
 		let page = this.get('page');
 		return `content-preview-button-${page.id}`;
 	}),

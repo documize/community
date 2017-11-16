@@ -9,16 +9,15 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { computed } from '@ember/object';
+
+import Component from '@ember/component';
+import { inject as service } from '@ember/service';
 import NotifierMixin from '../../mixins/notifier';
 import TooltipMixin from '../../mixins/tooltip';
 import AuthMixin from '../../mixins/auth';
 
-const {
-	inject: { service }
-} = Ember;
-
-export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
+export default Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 	folderService: service('folder'),
 	session: service(),
 	appMeta: service(),
@@ -34,7 +33,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 		newName: ''
 	},
 	deleteSpaceName: '',
-	spaceSettings: Ember.computed('permissions', function() {
+	spaceSettings: computed('permissions', function() {
 		return this.get('permissions.spaceOwner') || this.get('permissions.spaceManage');
 	}),
 

@@ -9,14 +9,11 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { computed } from '@ember/object';
+
+import { inject as service } from '@ember/service';
 import AjaxService from 'ember-ajax/services/ajax';
 import config from '../config/environment';
-
-const {
-	computed,
-	inject: { service }
-} = Ember;
 
 export default AjaxService.extend({
 	session: service(),

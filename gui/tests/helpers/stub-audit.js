@@ -9,11 +9,13 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { registerAsyncHelper } from '@ember/test';
+
+import Service, { inject as service } from '@ember/service';
 // import netUtil from 'documize/utils/net';
 
-const Audit = Ember.Service.extend({
-	sessionService: Ember.inject.service('session'),
+const Audit = Service.extend({
+	sessionService: service('session'),
 	ready: false,
 	enabled: true,
 
@@ -47,6 +49,6 @@ const Audit = Ember.Service.extend({
 	},
 });
 
-export default Ember.Test.registerAsyncHelper('stubAudit', function (app, test, attrs = {}) {
+export default registerAsyncHelper('stubAudit', function (app, test, attrs = {}) {
 	test.register('service:audit', Audit.extend(attrs));
 });

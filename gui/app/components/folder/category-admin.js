@@ -9,16 +9,14 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import Component from '@ember/component';
+
+import { inject as service } from '@ember/service';
 import NotifierMixin from '../../mixins/notifier';
 import TooltipMixin from '../../mixins/tooltip';
 import DropdownMixin from '../../mixins/dropdown';
 
-const {
-	inject: { service }
-} = Ember;
-
-export default Ember.Component.extend(NotifierMixin, TooltipMixin, DropdownMixin, {
+export default Component.extend(NotifierMixin, TooltipMixin, DropdownMixin, {
 	userService: service('user'),
 	categoryService: service('category'),
 	appMeta: service(),

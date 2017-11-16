@@ -9,17 +9,14 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { htmlSafe } from '@ember/string';
+
+import { resolve } from 'rsvp';
+import Service, { inject as service } from '@ember/service';
 import config from '../config/environment';
 import constants from '../utils/constants';
 
-const {
-	String: { htmlSafe },
-	RSVP: { resolve },
-	inject: { service }
-} = Ember;
-
-export default Ember.Service.extend({
+export default Service.extend({
 	ajax: service(),
 	localStorage: service(),
 	kcAuth: service(),

@@ -9,9 +9,9 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { helper } from '@ember/component/helper';
 
 // Usage: {{is-not selection}}
-export default Ember.Helper.helper(function([value]) {
+export default helper(function([value]) {
     return !value;
 });

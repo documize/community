@@ -9,23 +9,24 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { all } from 'rsvp';
+
+import { schedule } from '@ember/runloop';
+import { gt } from '@ember/object/computed';
+import Component from '@ember/component';
+import { inject as service } from '@ember/service';
 import NotifierMixin from '../../mixins/notifier';
 import TooltipMixin from '../../mixins/tooltip';
 import AuthMixin from '../../mixins/auth';
 
-const {
-	inject: { service }
-} = Ember;
-
-export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
+export default Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 	router: service(),
 	documentService: service('document'),
 	folderService: service('folder'),
 	localStorage: service('localStorage'),
 	selectedDocuments: [],
-	hasSelectedDocuments: Ember.computed.gt('selectedDocuments.length', 0),
-	hasCategories: Ember.computed.gt('categories.length', 0),
+	hasSelectedDocuments: gt('selectedDocuments.length', 0),
+	hasCategories: gt('categories.length', 0),
 	showStartDocument: false,
 	filteredDocs: [],
 
@@ -70,7 +71,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 
 		this.set('categories', categories);
 
-		Ember.run.schedule('afterRender', () => {
+		schedule('afterRender', () => {
 			if (this.get('rootDocCount') > 0) {
 				this.send('onDocumentFilter', 'space', this.get('folder.id'));
 			} else if (selectedCategory !== '') {
@@ -107,7 +108,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 				promises[index] = self.get('documentService').deleteDocument(document);
 			});
 
-			Ember.RSVP.all(promises).then(() => {
+			all(promises).then(() => {
 				let documents = this.get('documents');
 				documents.forEach(function (document) {
 					document.set('selected', false);

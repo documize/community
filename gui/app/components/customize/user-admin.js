@@ -9,11 +9,13 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { debounce } from '@ember/runloop';
+
+import Component from '@ember/component';
 import AuthProvider from '../../mixins/auth';
 import DropdownMixin from '../../mixins/dropdown';
 
-export default Ember.Component.extend(AuthProvider, DropdownMixin, {
+export default Component.extend(AuthProvider, DropdownMixin, {
 	editUser: null,
 	deleteUser: null,
 	dropdown: null,
@@ -43,7 +45,7 @@ export default Ember.Component.extend(AuthProvider, DropdownMixin, {
 	},
 
 	onKeywordChange: function () {
-		Ember.run.debounce(this, this.filterUsers, 350);
+		debounce(this, this.filterUsers, 350);
 	}.observes('filter'),
 
 	filterUsers() {

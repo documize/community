@@ -30,7 +30,7 @@
 			{{#if menuOpen}}
 				{{#if permissions.documentDelete}}
 					{{#dropdown-dialog target=deleteButtonId position="bottom right" button="Delete" color="flat-red" onAction=(action 'deletePage')}}
-						<p>Are you sure you want to delete <span class="bold">{{page.title}}?</span></p>
+						<p>Are you sure you want to delete <span class="font-weight-bold">{{page.title}}?</span></p>
 						<p>
 							{{input type="checkbox" id=checkId class="margin-left-20" checked=deleteChildren}}
 							<label for="{{checkId}}">&nbsp;Delete child sections</label>
@@ -41,7 +41,7 @@
 					{{#dropdown-dialog id=publishDialogId target=publishButtonId position="bottom right" button="Publish" color="flat-green" focusOn=blockTitleId onAction=(action 'onSavePageAsBlock')}}
 						<div class="form-header">
 							<div class="tip">
-								<span class="bold">{{folder.name}}:</span> Content Block
+								<span class="font-weight-bold">{{folder.name}}:</span> Content Block
 							</div>
 						</div>
 						<div class="input-control">
@@ -60,7 +60,7 @@
 					{{#dropdown-dialog id=copyDialogId target=copyButtonId position="bottom right" button="Copy" color="flat-green" onOpenCallback=(action 'onCopyDialogOpen') onAction=(action 'onCopyPage')}}
 						<div class="form-header">
 							<div class="tip">
-								<span class="bold">Copy:</span> {{page.title}}
+								<span class="font-weight-bold">Copy:</span> {{page.title}}
 							</div>
 						</div>
 						<div class="input-control">
@@ -74,7 +74,7 @@
 					{{#dropdown-dialog id=moveDialogId target=moveButtonId position="bottom right" button="Move" color="flat-green" onOpenCallback=(action 'onCopyDialogOpen') onAction=(action 'onMovePage')}}
 						<div class="form-header">
 							<div class="tip">
-								<span class="bold">Move:</span> {{page.title}}
+								<span class="font-weight-bold">Move:</span> {{page.title}}
 							</div>
 						</div>
 						<div class="input-control">

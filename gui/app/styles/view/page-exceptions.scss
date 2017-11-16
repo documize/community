@@ -1,7 +1,7 @@
 .documize-base-exception
 {
 	background-color: $color-off-white;
-	@include border(1px);
+	border: 1px solid $color-border !important;
 	margin: 20px;
 	padding: 20px;
 	text-align: left;

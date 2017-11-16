@@ -9,14 +9,13 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { setProperties } from '@ember/object';
+
+import Component from '@ember/component';
+import { inject as service } from '@ember/service';
 import NotifierMixin from '../../mixins/notifier';
 
-const {
-	inject: { service }
-} = Ember;
-
-export default Ember.Component.extend(NotifierMixin, {
+export default Component.extend(NotifierMixin, {
 	folderService: service('folder'),
 	userService: service('user'),
 	appMeta: service(),
@@ -74,7 +73,7 @@ export default Ember.Component.extend(NotifierMixin, {
 				permissions.forEach((permission, index) => { // eslint-disable-line no-unused-vars
 					let record = folderPermissions.findBy('userId', permission.get('userId'));
 					if (is.not.undefined(record)) {
-						record = Ember.setProperties(record, permission);
+						record = setProperties(record, permission);
 					}
 				});
 

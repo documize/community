@@ -9,12 +9,14 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { inject as service } from '@ember/service';
+
+import Route from '@ember/routing/route';
 import config from 'documize/config/environment';
 
-export default Ember.Route.extend({
-	session: Ember.inject.service(),
-	appMeta: Ember.inject.service(),
+export default Route.extend({
+	session: service(),
+	appMeta: service(),
 
 	activate: function () {
 		this.get('session').invalidate().then(() => { 

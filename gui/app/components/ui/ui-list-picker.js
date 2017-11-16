@@ -9,15 +9,17 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { set } from '@ember/object';
 
-export default Ember.Component.extend({
+import Component from '@ember/component';
+
+export default Component.extend({
 	nameField: 'category',
 	items: [],
 
 	actions: {
 		onToggle(item) {
-			Ember.set(item, 'selected', !item.get('selected'));
+			set(item, 'selected', !item.get('selected'));
 		}
 	}
 });

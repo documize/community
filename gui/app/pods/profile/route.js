@@ -9,13 +9,15 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { inject as service } from '@ember/service';
+
+import Route from '@ember/routing/route';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 
-export default Ember.Route.extend(AuthenticatedRouteMixin, {
-	userService: Ember.inject.service('user'),
-	folderService: Ember.inject.service('folder'),
-	session: Ember.inject.service(),
+export default Route.extend(AuthenticatedRouteMixin, {
+	userService: service('user'),
+	folderService: service('folder'),
+	session: service(),
 
 	beforeModel: function () {
 		if (!this.get("session.authenticated")) {

@@ -9,9 +9,9 @@
 //
 // https://documize.com
 
+import { computed } from '@ember/object';
 import Model from 'ember-data/model';
 import attr from 'ember-data/attr';
-import Ember from 'ember';
 // import { hasMany } from 'ember-data/relationships';
 
 export default Model.extend({
@@ -28,21 +28,21 @@ export default Model.extend({
 	rawBody: attr('string'),
 	meta: attr(),
 
-	tagName: Ember.computed('level', function () {
+	tagName: computed('level', function () {
 		return "h2";
 		// return "h" + (this.get('level') + 1);
 	}),
 
-	tocIndent: Ember.computed('level', function () {
+	tocIndent: computed('level', function () {
 		return (this.get('level') - 1) * 20;
 	}),
 
-	tocIndentCss: Ember.computed('tocIndent', function () {
+	tocIndentCss: computed('tocIndent', function () {
 		let tocIndent = this.get('tocIndent');
 		return `margin-left-${tocIndent}`;
 	}),
 
-	hasRevisions: Ember.computed('revisions', function () {
+	hasRevisions: computed('revisions', function () {
 		return this.get('revisions') > 0;
 	}),
 

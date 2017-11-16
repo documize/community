@@ -9,12 +9,9 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
-import Base from 'ember-simple-auth/authenticators/base';
+import { resolve } from 'rsvp';
 
-const {
-	RSVP: { resolve }
-} = Ember;
+import Base from 'ember-simple-auth/authenticators/base';
 
 export default Base.extend({
 	restore(data) {

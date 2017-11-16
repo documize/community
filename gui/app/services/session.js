@@ -9,13 +9,10 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
-import SimpleAuthSession from 'ember-simple-auth/services/session';
+import { inject as service } from '@ember/service';
 
-const {
-	inject: { service },
-	computed
-} = Ember;
+import { computed } from '@ember/object';
+import SimpleAuthSession from 'ember-simple-auth/services/session';
 
 export default SimpleAuthSession.extend({
 	ajax: service(),

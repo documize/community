@@ -9,9 +9,9 @@
 //
 // https://documize.com
 
+import { computed } from '@ember/object';
 import Model from 'ember-data/model';
 import attr from 'ember-data/attr';
-import Ember from 'ember';
 import stringUtil from '../utils/string';
 // import { belongsTo, hasMany } from 'ember-data/relationships';
 
@@ -29,7 +29,7 @@ export default Model.extend({
 
 	// client-side property
 	selected: attr('boolean', { defaultValue: false }),
-	slug: Ember.computed('name', function () {
+	slug: computed('name', function () {
 		return stringUtil.makeSlug(this.get('name'));
 	}),
 	created: attr(),

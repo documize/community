@@ -9,11 +9,13 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { inject as service } from '@ember/service';
+
+import Controller from '@ember/controller';
 import NotifierMixin from '../../mixins/notifier';
 
-export default Ember.Controller.extend(NotifierMixin, {
-	folderService: Ember.inject.service('folder'),
+export default Controller.extend(NotifierMixin, {
+	folderService: service('folder'),
 
 	actions: {
 		onAddSpace(m) {

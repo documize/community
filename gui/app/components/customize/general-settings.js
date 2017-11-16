@@ -9,21 +9,20 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { empty, and } from '@ember/object/computed';
 
-const {
-	isEmpty,
-	computed,
-	set
-} = Ember;
+import $ from 'jquery';
+import Component from '@ember/component';
+import { isEmpty } from '@ember/utils';
+import { set } from '@ember/object';
 
-export default Ember.Component.extend({
-	titleEmpty: computed.empty('model.general.title'),
-	messageEmpty: computed.empty('model.general.message'),
-	conversionEndpointEmpty: computed.empty('model.general.conversionEndpoint'),
-	hasTitleInputError: computed.and('titleEmpty', 'titleError'),
-	hasMessageInputError: computed.and('messageEmpty', 'messageError'),
-	hasConversionEndpointInputError: computed.and('conversionEndpointEmpty', 'conversionEndpointError'),
+export default Component.extend({
+	titleEmpty: empty('model.general.title'),
+	messageEmpty: empty('model.general.message'),
+	conversionEndpointEmpty: empty('model.general.conversionEndpoint'),
+	hasTitleInputError: and('titleEmpty', 'titleError'),
+	hasMessageInputError: and('messageEmpty', 'messageError'),
+	hasConversionEndpointInputError: and('conversionEndpointEmpty', 'conversionEndpointError'),
 
 	actions: {
 		save() {
@@ -47,7 +46,7 @@ export default Ember.Component.extend({
 				this.set('model.general.conversionEndpoint', e.substring(0, e.length-1));
 			}
 
-			this.model.general.set('allowAnonymousAccess', Ember.$("#allowAnonymousAccess").prop('checked'));
+			this.model.general.set('allowAnonymousAccess', $("#allowAnonymousAccess").prop('checked'));
 
 			this.get('save')().then(() => {
 				set(this, 'titleError', false);

@@ -9,21 +9,21 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { empty } from '@ember/object/computed';
+
+import { schedule } from '@ember/runloop';
+import { inject as service } from '@ember/service';
+import Component from '@ember/component';
 import NotifierMixin from '../../mixins/notifier';
 import TooltipMixin from '../../mixins/tooltip';
 
-const {
-	computed,
-} = Ember;
-
-export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
-	documentService: Ember.inject.service('document'),
+export default Component.extend(NotifierMixin, TooltipMixin, {
+	documentService: service('document'),
 	editMode: false,
 	docName: '',
 	docExcerpt: '',
-	hasNameError: computed.empty('docName'),
-	hasExcerptError: computed.empty('docExcerpt'),
+	hasNameError: empty('docName'),
+	hasExcerptError: empty('docExcerpt'),
 
 	keyUp(e) {
 		if (e.keyCode === 27) { // escape key
@@ -37,7 +37,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 			this.set('docExcerpt', this.get('document.excerpt'));
 			this.set('editMode', true);
 
-			Ember.run.schedule('afterRender', () => {
+			schedule('afterRender', () => {
 				$('#document-name').select();
 			});
 		},

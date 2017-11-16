@@ -9,10 +9,13 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { computed } from '@ember/object';
+
+import { inject as service } from '@ember/service';
+import Component from '@ember/component';
 import stringUtil from '../utils/string';
 
-export default Ember.Component.extend({
+export default Component.extend({
 	drop: null,
 	target: null,
 	button: "Delete",
@@ -33,9 +36,9 @@ export default Ember.Component.extend({
 	constrainToWindow: true,
 	constrainToScrollParent: true,
 	cssClass: '',
-	tether: Ember.inject.service(),
+	tether: service(),
 
-	hasSecondButton: Ember.computed('button2', 'color2', function () {
+	hasSecondButton: computed('button2', 'color2', function () {
 		return is.not.empty(this.get('button2')) && is.not.empty(this.get('color2'));
 	}),
 

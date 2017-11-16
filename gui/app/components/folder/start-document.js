@@ -9,15 +9,14 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { empty } from '@ember/object/computed';
+
+import { schedule } from '@ember/runloop';
+import Component from '@ember/component';
+import { inject as service } from '@ember/service';
 import NotifierMixin from '../../mixins/notifier';
 
-const {
-	computed,
-	inject: { service }
-} = Ember;
-
-export default Ember.Component.extend(NotifierMixin, {
+export default Component.extend(NotifierMixin, {
 	localStorage: service(),
 	appMeta: service(),
 	templateService: service('template'),
@@ -26,14 +25,14 @@ export default Ember.Component.extend(NotifierMixin, {
 	importStatus: [],
 	dropzone: null,
 	newDocumentName: '',
-	newDocumentNameMissing: computed.empty('newDocumentName'),
+	newDocumentNameMissing: empty('newDocumentName'),
 
 	didReceiveAttrs() {
 		this._super(...arguments);
 
 		this.setupTemplates();
 
-		Ember.run.schedule('afterRender', ()=> {
+		schedule('afterRender', ()=> {
 			this.setupImport();
 		});
 	},
@@ -64,7 +63,7 @@ export default Ember.Component.extend(NotifierMixin, {
 
 		this.set('savedTemplates', templates);
 
-		Ember.run.schedule('afterRender', () => {
+		schedule('afterRender', () => {
 			$('#new-document-name').select();
 		});
 	},

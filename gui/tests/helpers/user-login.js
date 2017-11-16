@@ -9,9 +9,9 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { registerAsyncHelper } from '@ember/test';
 
-export default Ember.Test.registerAsyncHelper('userLogin', function () {
+export default registerAsyncHelper('userLogin', function () {
 	visit('/auth/login');
 
 	fillIn('#authEmail', 'brizdigital@gmail.com');

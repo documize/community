@@ -9,9 +9,9 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import Route from '@ember/routing/route';
 
-export default Ember.Route.extend({
+export default Route.extend({
 	beforeModel() {
 		let pwd = document.head.querySelector("[property=dbhash]").content;
 		if (pwd.length === 0 || pwd === "{{.DBhash}}") {

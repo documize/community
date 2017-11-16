@@ -9,15 +9,12 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { isPresent } from '@ember/utils';
+
+import { reject, resolve } from 'rsvp';
+import { inject as service } from '@ember/service';
 import Base from 'ember-simple-auth/authenticators/base';
 import netUtil from '../utils/net';
-
-const {
-	isPresent,
-	RSVP: { resolve, reject },
-	inject: { service }
-} = Ember;
 
 export default Base.extend({
 	ajax: service(),
@@ -38,7 +35,7 @@ export default Base.extend({
 		data.domain = netUtil.getSubdomain();
 
 		if (!isPresent(data.token) || !isPresent(data.email)) {
-			return Ember.RSVP.reject("invalid");
+			return reject("invalid");
 		}
 
 		return this.get('ajax').post('public/authenticate/keycloak', {

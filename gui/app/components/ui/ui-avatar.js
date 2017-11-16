@@ -9,10 +9,10 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import Component from '@ember/component';
 import TooltipMixin from '../../mixins/tooltip';
 
-export default Ember.Component.extend(TooltipMixin, {
+export default Component.extend(TooltipMixin, {
 	didRender() {
 		let refId = this.get('refId');
 		this.addTooltip(document.getElementById(`avatar-${refId}`));

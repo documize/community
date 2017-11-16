@@ -9,11 +9,13 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { inject as service } from '@ember/service';
+
+import Route from '@ember/routing/route';
 import constants from '../../../utils/constants';
 
-export default Ember.Route.extend({
-    appMeta: Ember.inject.service(),
+export default Route.extend({
+    appMeta: service(),
 
 	beforeModel() {
 		if (this.get('appMeta.authProvider') === constants.AuthProvider.Keycloak) {

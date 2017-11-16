@@ -35,7 +35,7 @@
 			}
 
 			> a {
-				@extend .truncate;
+				@extend .text-truncate;
 				width: 80%;
 				color: $color-gray;
 
@@ -44,7 +44,7 @@
 				}
 
 				> .file {
-					@extend .truncate;
+					@extend .text-truncate;
 					display: inline-block;
 					font-size: 0.9rem;
 					width: 80%;

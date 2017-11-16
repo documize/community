@@ -9,12 +9,14 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { inject as service } from '@ember/service';
+
+import Route from '@ember/routing/route';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 
-export default Ember.Route.extend(AuthenticatedRouteMixin, {
-	session: Ember.inject.service(),
-	localStorage: Ember.inject.service(),
+export default Route.extend(AuthenticatedRouteMixin, {
+	session: service(),
+	localStorage: service(),
 
 	beforeModel() {
 		this.get('localStorage').clearAll();

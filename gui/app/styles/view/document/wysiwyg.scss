@@ -4,11 +4,11 @@
 	color: $color-wysiwyg;
 
 	table {
-		@include border(1px);
+		border: 1px solid $color-border !important;
 
 		td {
 			padding: 5px 7px !important;
-			@include border(1px);
+			border: 1px solid $color-border !important;
 
 			p {
 				margin: 0 !important;

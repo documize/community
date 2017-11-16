@@ -9,21 +9,25 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { computed } from '@ember/object';
+
+import { notEmpty } from '@ember/object/computed';
+import { inject as service } from '@ember/service';
+import Component from '@ember/component';
 import NotifierMixin from '../../mixins/notifier';
 import TooltipMixin from '../../mixins/tooltip';
 import DropdownMixin from '../../mixins/dropdown';
 
-export default Ember.Component.extend(NotifierMixin, TooltipMixin, DropdownMixin, {
-	documentService: Ember.inject.service('document'),
-	appMeta: Ember.inject.service(),
+export default Component.extend(NotifierMixin, TooltipMixin, DropdownMixin, {
+	documentService: service('document'),
+	appMeta: service(),
 	dropdown: null,
-	hasAttachments: Ember.computed.notEmpty('files'),
+	hasAttachments: notEmpty('files'),
 	deleteAttachment: {
 		id: "",
 		name: "",
 	},
-	canShow: Ember.computed('permissions', 'files', function() {
+	canShow: computed('permissions', 'files', function() {
 		return this.get('files.length') > 0 || this.get('permissions.documentEdit');
 	}),
 

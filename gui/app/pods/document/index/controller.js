@@ -9,15 +9,18 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { Promise as EmberPromise } from 'rsvp';
+
+import { inject as service } from '@ember/service';
+import Controller from '@ember/controller';
 import NotifierMixin from '../../../mixins/notifier';
 import TooltipMixin from '../../../mixins/tooltip';
 
-export default Ember.Controller.extend(NotifierMixin, TooltipMixin, {
-	documentService: Ember.inject.service('document'),
-	templateService: Ember.inject.service('template'),
-	sectionService: Ember.inject.service('section'),
-	linkService: Ember.inject.service('link'),
+export default Controller.extend(NotifierMixin, TooltipMixin, {
+	documentService: service('document'),
+	templateService: service('template'),
+	sectionService: service('section'),
+	linkService: service('link'),
 	folder: {},
 	pages: [],
 	toggled: false,
@@ -129,7 +132,7 @@ export default Ember.Controller.extend(NotifierMixin, TooltipMixin, {
 		},
 
 		onInsertSection(data) {
-			return new Ember.RSVP.Promise((resolve) => {
+			return new EmberPromise((resolve) => {
 				this.get('documentService').addPage(this.get('model.document.id'), data).then((newPage) => {
 					let data = this.get('store').normalize('page', newPage);
 					this.get('store').push(data);
@@ -154,7 +157,7 @@ export default Ember.Controller.extend(NotifierMixin, TooltipMixin, {
 		},
 
 		onDeleteBlock(blockId) {
-			return new Ember.RSVP.Promise((resolve) => {
+			return new EmberPromise((resolve) => {
 				this.get('sectionService').deleteBlock(blockId).then(() => {
 					this.send("showNotification", "Deleted");
 					resolve();
@@ -163,7 +166,7 @@ export default Ember.Controller.extend(NotifierMixin, TooltipMixin, {
 		},
 
 		onSavePageAsBlock(block) {
-			return new Ember.RSVP.Promise((resolve) => {
+			return new EmberPromise((resolve) => {
 				this.get('sectionService').addBlock(block).then(() => {
 					this.showNotification("Published");
 					resolve();

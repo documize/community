@@ -1,12 +1,14 @@
-import Ember from 'ember';
+import { hash } from 'rsvp';
+import { inject as service } from '@ember/service';
+import Route from '@ember/routing/route';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 
-export default Ember.Route.extend(AuthenticatedRouteMixin, {
-	documentService: Ember.inject.service('document'),
-	folderService: Ember.inject.service('folder'),
+export default Route.extend(AuthenticatedRouteMixin, {
+	documentService: service('document'),
+	folderService: service('folder'),
 
 	model() {
-		return Ember.RSVP.hash({
+		return hash({
 			folders: this.modelFor('document').folders,
 			folder: this.modelFor('document').folder,
 			document: this.modelFor('document').document,

@@ -9,13 +9,17 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { set } from '@ember/object';
+
+import { schedule } from '@ember/runloop';
+import { inject as service } from '@ember/service';
+import Component from '@ember/component';
 import NotifierMixin from '../../../mixins/notifier';
 import TooltipMixin from '../../../mixins/tooltip';
 import SectionMixin from '../../../mixins/section';
 
-export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin, {
-	sectionService: Ember.inject.service('section'),
+export default Component.extend(SectionMixin, NotifierMixin, TooltipMixin, {
+	sectionService: service('section'),
 	isDirty: false,
 	waiting: false,
 	authenticated: false,
@@ -87,7 +91,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 				self.set('workspaces', response);
 				self.selectWorkspace(workspaceId);
 
-				Ember.run.schedule('afterRender', function () {
+				schedule('afterRender', function () {
 					window.scrollTo(0, document.body.scrollHeight);
 
 					response.forEach(function (workspace) {
@@ -129,7 +133,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 		let w = this.get('workspaces');
 
 		w.forEach(function (w) {
-			Ember.set(w, 'selected', w.Id === id);
+			set(w, 'selected', w.Id === id);
 
 			if (w.Id === id) {
 				self.set("config.filter", w.Filter);

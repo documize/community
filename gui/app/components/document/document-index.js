@@ -9,12 +9,14 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { computed } from '@ember/object';
+
+import Component from '@ember/component';
 import tocUtil from '../../utils/toc';
 import NotifierMixin from '../../mixins/notifier';
 import TooltipMixin from '../../mixins/tooltip';
 
-export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
+export default Component.extend(NotifierMixin, TooltipMixin, {
 	document: {},
 	folder: {},
 	pages: [],
@@ -26,7 +28,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 		indentDisabled: true,
 		outdentDisabled: true
 	},
-	emptyState: Ember.computed('pages', function () {
+	emptyState: computed('pages', function () {
 		return this.get('pages.length') === 0;
 	}),
 

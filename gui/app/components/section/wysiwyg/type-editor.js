@@ -9,17 +9,16 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { computed, set } from '@ember/object';
 
-const {
-	inject: { service }
-} = Ember;
+import Component from '@ember/component';
+import { inject as service } from '@ember/service';
 
-export default Ember.Component.extend({
+export default Component.extend({
 	appMeta: service(),
 	link: service(),
 	pageBody: "",
-	editorId: Ember.computed('page', function () {
+	editorId: computed('page', function () {
 		let page = this.get('page');
 		return `wysiwyg-editor-${page.id}`;
 	}),
@@ -102,7 +101,7 @@ export default Ember.Component.extend({
 			let userSelection = editor.selection.getContent();
 
 			if (is.not.empty(userSelection)) {
-				Ember.set(link, 'title', userSelection);
+				set(link, 'title', userSelection);
 			}
 
 			let linkHTML = this.get('link').buildLink(link);

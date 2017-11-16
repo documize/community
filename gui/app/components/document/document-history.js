@@ -9,11 +9,13 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { computed, set } from '@ember/object';
 
-export default Ember.Component.extend({
+import Component from '@ember/component';
+
+export default Component.extend({
 	revision: null,
-	hasDiff: Ember.computed('diff', function () {
+	hasDiff: computed('diff', function () {
 		return this.get('diff').length > 0;
 	}),
 
@@ -21,8 +23,8 @@ export default Ember.Component.extend({
 		let revisions = this.get('revisions');
 
 		revisions.forEach((r) => {
-			Ember.set(r, 'deleted', r.revisions === 0);
-			Ember.set(r, 'label', `${r.created} - ${r.firstname} ${r.lastname} - ${r.title}`);
+			set(r, 'deleted', r.revisions === 0);
+			set(r, 'label', `${r.created} - ${r.firstname} ${r.lastname} - ${r.title}`);
 		});
 
 		if (revisions.length > 0 && is.null(this.get('revision'))) {

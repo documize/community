@@ -9,18 +9,20 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { inject as service } from '@ember/service';
+
+import Component from '@ember/component';
 import TooltipMixin from '../../mixins/tooltip';
 import NotifierMixin from '../../mixins/notifier';
 
-export default Ember.Component.extend(TooltipMixin, NotifierMixin, {
-    documentService: Ember.inject.service('document'),
-	sectionService: Ember.inject.service('section'),
-	sessionService: Ember.inject.service('session'),
-	appMeta: Ember.inject.service(),
-	userService: Ember.inject.service('user'),
-	localStorage: Ember.inject.service(),
-	pinned: Ember.inject.service(),
+export default Component.extend(TooltipMixin, NotifierMixin, {
+    documentService: service('document'),
+	sectionService: service('section'),
+	sessionService: service('session'),
+	appMeta: service(),
+	userService: service('user'),
+	localStorage: service(),
+	pinned: service(),
 	menuOpen: false,
 	pinState : {
 		isPinned: false,

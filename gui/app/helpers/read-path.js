@@ -9,8 +9,10 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { get } from '@ember/object';
 
-export default Ember.Helper.helper(function([object, path]) {
-    return Ember.get(object, path);
+import { helper } from '@ember/component/helper';
+
+export default helper(function([object, path]) {
+    return get(object, path);
 });

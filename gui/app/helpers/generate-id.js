@@ -9,10 +9,10 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { helper } from '@ember/component/helper';
 
 // Usage: {{generate-id 'admin-' 123}}
-export default Ember.Helper.helper(function(params) {
+export default helper(function(params) {
     let prefix = params[0];
     let id = params[1];
     return prefix + "-" + id;

@@ -9,7 +9,7 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { helper } from '@ember/component/helper';
 import dateUtil from '../utils/date';
 
 // {{time-ago createdAt}}
@@ -23,4 +23,4 @@ export function timeAgo(params) {
 	return d;
 }
 
-export default Ember.Helper.helper(timeAgo);
+export default helper(timeAgo);

@@ -9,14 +9,16 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { inject as service } from '@ember/service';
+
+import Route from '@ember/routing/route';
 import RSVP from 'rsvp';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 
-export default Ember.Route.extend(AuthenticatedRouteMixin, {
-	appMeta: Ember.inject.service(),
-	session: Ember.inject.service(),
-	global: Ember.inject.service(),
+export default Route.extend(AuthenticatedRouteMixin, {
+	appMeta: service(),
+	session: service(),
+	global: service(),
 
 	beforeModel() {
 		if (!this.get("session.isGlobalAdmin")) {

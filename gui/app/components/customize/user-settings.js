@@ -9,24 +9,21 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { empty, and } from '@ember/object/computed';
+
+import Component from '@ember/component';
+import { isEmpty } from '@ember/utils';
+import { get, set } from '@ember/object';
 import AuthProvider from '../../mixins/auth';
 
-const {
-	isEmpty,
-	computed,
-	set,
-	get
-} = Ember;
-
-export default Ember.Component.extend(AuthProvider, {
+export default Component.extend(AuthProvider, {
 	newUser: { firstname: "", lastname: "", email: "", active: true },
-	firstnameEmpty: computed.empty('newUser.firstname'),
-	lastnameEmpty: computed.empty('newUser.lastname'),
-	emailEmpty: computed.empty('newUser.email'),
-	hasFirstnameEmptyError: computed.and('firstnameEmpty', 'firstnameError'),
-	hasLastnameEmptyError: computed.and('lastnameEmpty', 'lastnameError'),
-	hasEmailEmptyError: computed.and('emailEmpty', 'emailError'),
+	firstnameEmpty: empty('newUser.firstname'),
+	lastnameEmpty: empty('newUser.lastname'),
+	emailEmpty: empty('newUser.email'),
+	hasFirstnameEmptyError: and('firstnameEmpty', 'firstnameError'),
+	hasLastnameEmptyError: and('lastnameEmpty', 'lastnameError'),
+	hasEmailEmptyError: and('emailEmpty', 'emailError'),
 
 	actions: {
 		add() {

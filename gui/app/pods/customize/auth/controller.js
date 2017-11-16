@@ -9,18 +9,21 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { Promise as EmberPromise } from 'rsvp';
+
+import { inject as service } from '@ember/service';
+import Controller from '@ember/controller';
 import NotifierMixin from "../../../mixins/notifier";
 // import constants from '../../../utils/constants';
 
-export default Ember.Controller.extend(NotifierMixin, {
-	global: Ember.inject.service(),
-    appMeta: Ember.inject.service(),
-	session: Ember.inject.service(),
+export default Controller.extend(NotifierMixin, {
+	global: service(),
+    appMeta: service(),
+	session: service(),
 
 	actions: {
 		onSave(data) {
-			return new Ember.RSVP.Promise((resolve) => {
+			return new EmberPromise((resolve) => {
 				if(!this.get('session.isGlobalAdmin')) {
 					resolve();
 				} else {
@@ -32,7 +35,7 @@ export default Ember.Controller.extend(NotifierMixin, {
 		},
 
 		onSync() {
-			return new Ember.RSVP.Promise((resolve) => {
+			return new EmberPromise((resolve) => {
 				this.get('global').syncExternalUsers().then((response) => {
 					resolve(response);
 				});

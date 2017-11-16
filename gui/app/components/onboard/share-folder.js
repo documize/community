@@ -9,10 +9,12 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { inject as service } from '@ember/service';
 
-export default Ember.Component.extend({
-    folderService: Ember.inject.service('folder'),
+import Component from '@ember/component';
+
+export default Component.extend({
+    folderService: service('folder'),
     serial: "",
     folderId: "",
     slug: "",

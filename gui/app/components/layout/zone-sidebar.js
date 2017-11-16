@@ -9,15 +9,13 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { notEmpty } from '@ember/object/computed';
+
+import Component from '@ember/component';
+import { inject as service } from '@ember/service';
 import constants from '../../utils/constants';
 
-const {
-	computed,
-	inject: { service }
-} = Ember;
-
-export default Ember.Component.extend({
+export default Component.extend({
 	folderService: service('folder'),
 	appMeta: service(),
 	session: service(),
@@ -25,7 +23,7 @@ export default Ember.Component.extend({
 	pinned: service(),
 	enableLogout: true,
 	pins: [],
-	hasPins: computed.notEmpty('pins'),
+	hasPins: notEmpty('pins'),
 
 	init() {
 		this._super(...arguments);

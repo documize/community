@@ -9,9 +9,11 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { registerAsyncHelper } from '@ember/test';
 
-const userNotification = Ember.Component.extend({
+import Component from '@ember/component';
+
+const userNotification = Component.extend({
 	notifications: [],
 
 	didInsertElement() {
@@ -27,6 +29,6 @@ const userNotification = Ember.Component.extend({
 	}
 });
 
-export default Ember.Test.registerAsyncHelper('stubUserNotification', function (app, test, attrs = {}) {
+export default registerAsyncHelper('stubUserNotification', function (app, test, attrs = {}) {
 	test.register('component:userNotification', userNotification.extend(attrs));
 });

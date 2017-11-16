@@ -9,8 +9,8 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import Controller from '@ember/controller';
 import NotifierMixin from '../../mixins/notifier';
 
-export default Ember.Controller.extend(NotifierMixin, {
+export default Controller.extend(NotifierMixin, {
 });

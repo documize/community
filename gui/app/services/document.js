@@ -9,13 +9,13 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { set } from '@ember/object';
 
-const {
-	inject: { service }
-} = Ember;
+import { A } from '@ember/array';
+import ArrayProxy from '@ember/array/proxy';
+import Service, { inject as service } from '@ember/service';
 
-export default Ember.Service.extend({
+export default Service.extend({
 	sessionService: service('session'),
 	folderService: service('folder'),
 	ajax: service(),
@@ -39,8 +39,8 @@ export default Ember.Service.extend({
 		return this.get('ajax').request(`documents?space=${spaceId}`, {
 			method: "GET"
 		}).then((response) => {
-			let documents = Ember.ArrayProxy.create({
-				content: Ember.A([])
+			let documents = ArrayProxy.create({
+				content: A([])
 			});
 
 			documents = response.map((doc) => {
@@ -92,7 +92,7 @@ export default Ember.Service.extend({
 		var revision = skipRevision ? "?r=true" : "?r=false";
 		let url = `documents/${documentId}/pages/${pageId}${revision}`;
 
-		Ember.set(payload.meta, 'id', parseInt(payload.meta.id));
+		set(payload.meta, 'id', parseInt(payload.meta.id));
 
 		return this.get('ajax').request(url, {
 			method: 'PUT',
