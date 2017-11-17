@@ -42,7 +42,7 @@ Integrations for embedding SaaS data within documents.
 
 ## Latest version
 
-v1.54.1
+v1.55.0
 
 ## OS support
 
@@ -56,8 +56,8 @@ Documize runs on the following:
 
 Documize is built with the following technologies:
 
-- EmberJS (v2.15.0)
-- Go (v1.9.0)
+- EmberJS (v2.16.2)
+- Go (v1.9.2)
 
 ...and supports the following databases:
 

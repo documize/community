@@ -320,3 +320,46 @@
 	display: inline-block;
 	@extend .no-select;
 }
+
+.button-icon-white {
+	display: inline-block;
+	cursor: default;
+	@include ease-in();
+
+	> i {
+		color: $color-white;
+		font-size: 2rem;
+		@include ease-in();
+	}
+
+	&:hover {
+		> i {
+			color: darken($color-white, 15%);
+		}
+	}
+}
+
+.button-icon-gap {
+	display: inline-block;
+	margin-left: 5px;
+}
+
+.button-gravatar-white {
+    display: inline-block;
+	cursor: default;
+    position: relative;
+    overflow: hidden;
+    width: 35px;
+    height: 35px;
+    line-height: 34px;
+    padding: 0;
+	border-radius: 50%;
+	text-align: center;
+	color: $color-primary;
+	background-color: $color-white;
+	@include ease-in();
+
+	&:hover {
+		background-color: darken($color-white, 15%);
+	}
+}

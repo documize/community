@@ -33,3 +33,13 @@
     box-shadow: 0 0 0 0.75pt $color-stroke,0 0 3pt 0.75pt $color-stroke;
     background-color: $color-white;
 }
+
+@mixin card() {
+	background-color: $color-card;
+	box-shadow: 1px 1px 3px 0px rgba(211,211,211,1);
+
+	&:hover {
+		background-color: darken($color-card, 3%);
+		color: $color-link;
+	}
+}

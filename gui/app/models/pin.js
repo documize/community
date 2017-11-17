@@ -11,6 +11,7 @@
 
 import Model from 'ember-data/model';
 import attr from 'ember-data/attr';
+import { computed } from '@ember/object';
 
 export default Model.extend({
 	orgId: attr('string'),
@@ -20,5 +21,12 @@ export default Model.extend({
 	sequence: attr('number', { defaultValue: 99 }),
 	pin: attr('string'),
 	created: attr(),
-	revised: attr()
+	revised: attr(),
+
+	isSpace:  computed('documentId', function() {
+		return this.get('documentId') === '';
+	}),
+	isDocument:  computed('documentId', function() {
+		return this.get('documentId') !== '';
+	})
 });

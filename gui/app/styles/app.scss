@@ -14,7 +14,7 @@
 @import "base.scss";
 @import "bootstrap.scss";
 @import "widget/widget.scss";
-@import "view/layout-sidebar.scss";
+@import "view/layout.scss";
 @import "view/page-search.scss";
 @import "view/page-profile.scss";
 @import "view/page-customize.scss";
@@ -24,6 +24,9 @@
 @import "view/folder/all.scss";
 @import "view/document/all.scss";
 @import "view/common.scss";
+
+@import "view/views.scss";
+
 @import "vendor.scss";
 @import "responsive.scss";
 @import "print.scss";

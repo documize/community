@@ -1,0 +1,68 @@
+<div id="nav-bar" class="nav-bar clearfix">
+	<div class="row no-gutters">
+		<div class="col col-sm-9">
+			{{#link-to "profile" class='nav-link'}}
+				<div class="nav-title">{{appMeta.title}}</div>
+				<div class="nav-msg text-truncate">{{appMeta.message}}</div>
+			{{/link-to}}
+		</div>
+		<div class="col col-sm-3">
+			<div class="nav-right">
+				<div class="btn-group">
+					{{#link-to "search" class="button-icon-white"}}
+						<i class="material-icons">search</i>
+					{{/link-to}}
+				</div>
+
+				{{#if session.authenticated}}
+					{{#if hasPins}}
+						<div class="button-icon-gap" />
+						<div class="btn-group">
+							<div class="button-icon-white" id="user-pins-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								<i class="material-icons">star</i>
+							</div>
+							<div class="dropdown-menu dropdown-menu-right" aria-labelledby="user-pins-button">
+								{{#if hasSpacePins}}
+									<h6 class="dropdown-header">Spaces</h6>
+									{{#each spacePins as |pin|}}
+										<a class="dropdown-item" href="#" {{action 'jumpToPin' pin}} data-id={{pin.id}} id="pin-{{pin.id}}">{{pin.pin}}</a>
+									{{/each}}
+								{{/if}}
+								{{#if hasDocumentPins}}
+									<h6 class="dropdown-header">Documents</h6>
+									{{#each documentPins as |pin|}}
+										<a class="dropdown-item" href="#" {{action 'jumpToPin' pin}} data-id={{pin.id}} id="pin-{{pin.id}}">{{pin.pin}}</a>
+									{{/each}}
+								{{/if}}
+							</div>
+						</div>
+					{{/if}}
+
+					<div class="button-icon-gap" />
+					<div class="btn-group">
+						<div class="button-gravatar-white align-text-bottom" id="profile-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							{{session.user.initials}}
+						</div>
+						<div class="dropdown-menu dropdown-menu-right" aria-labelledby="profile-button">
+							{{#link-to 'profile' class="dropdown-item"}}Profile{{/link-to}}
+							{{#if session.isAdmin}}
+								{{#link-to 'customize.general' class="dropdown-item"}}Settings{{/link-to}}
+							{{/if}}
+							{{#if enableLogout}}
+								<div class="dropdown-divider"></div>
+								{{#link-to 'auth.logout' class="dropdown-item"}}Logout{{/link-to}}
+							{{/if}}
+						</div>
+					</div>
+				{{else}}
+					<div class="button-icon-gap" />
+					<div class="btn-group">
+						{{#link-to 'auth.login' class="button-icon-white "}}
+							<i class="material-icons">lock_open</i>
+						{{/link-to}}
+					</div>
+				{{/if}}
+			</div>
+		</div>
+	</div>
+</div>
