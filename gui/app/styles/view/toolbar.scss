@@ -1,0 +1,28 @@
+.toolbar {
+	margin: 30px 0 0 0;
+
+	> .links {
+		display: inlne-block;
+
+		> .link {
+			color: $color-gray;
+			font-size: 1.1rem;
+			font-weight: bold;
+			display: inline-block;
+			margin-right: 30px;
+			cursor: pointer;
+
+			&:hover {
+				color: $color-link;
+			}
+		}
+
+		> .selected {
+			color: $color-link;
+		}
+	}
+
+	> .buttons {
+		float: right;
+	}
+}

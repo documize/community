@@ -1,22 +1,6 @@
 {{layout/nav-bar}}
 
 <div class="container">
-	<div class="row">
-		<div class="col-12">
-			<div class="mt-5 mb-5">
-				{{spaces/space-list spaces=model}}
-			</div>
-		</div>
-	</div>
-</div>
-
-<div class="d-none">
-{{#layout/zone-container}}
-
-	{{#layout/zone-sidebar}}
-		{{folder/sidebar-zone folders=model noFolder=true onAddSpace=(action 'onAddSpace')}}
-	{{/layout/zone-sidebar}}
-	{{#layout/zone-content}}
-	{{/layout/zone-content}}
-{{/layout/zone-container}}
+	{{toolbar/for-spaces spaces=model onAddSpace=(action 'onAddSpace')}}
+	{{spaces/space-list spaces=model}}
 </div>

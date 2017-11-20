@@ -10,21 +10,16 @@
 // https://documize.com
 
 import { inject as service } from '@ember/service';
-
 import Controller from '@ember/controller';
-import NotifierMixin from '../../mixins/notifier';
 
-export default Controller.extend(NotifierMixin, {
+export default Controller.extend({
 	folderService: service('folder'),
 
 	actions: {
 		onAddSpace(m) {
-			let self = this;
-			this.showNotification("Added");
-
-			this.get('folderService').add(m).then(function (newFolder) {
-				self.get('folderService').setCurrentFolder(newFolder);
-				self.transitionToRoute('folder', newFolder.get('id'), newFolder.get('slug'));
+			this.get('folderService').add(m).then((sp) => {
+				this.get('folderService').setCurrentFolder(sp);
+				this.transitionToRoute('folder', sp.get('id'), sp.get('slug'));
 			});
 		}
 	}

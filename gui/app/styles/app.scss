@@ -13,8 +13,9 @@
 @import "mixins.scss";
 @import "base.scss";
 @import "bootstrap.scss";
+
 @import "widget/widget.scss";
-@import "view/layout.scss";
+@import "view/layout.scss"; // junk?
 @import "view/page-search.scss";
 @import "view/page-profile.scss";
 @import "view/page-customize.scss";
@@ -25,10 +26,11 @@
 @import "view/document/all.scss";
 @import "view/common.scss";
 
+@import "view/navigation.scss";
+@import "view/toolbar.scss";
 @import "view/views.scss";
 
 @import "vendor.scss";
-@import "responsive.scss";
 @import "print.scss";
 @import "section/trello.scss";
 @import "section/gemini.scss";
