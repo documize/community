@@ -18,6 +18,18 @@
 	border-radius: $radius;
 }
 
+@mixin border-radius-left($radius)
+{
+	border-top-left-radius: $radius;
+	border-bottom-left-radius: $radius;
+}
+
+@mixin border-radius-right($radius)
+{
+	border-top-right-radius: $radius;
+	border-bottom-right-radius: $radius;
+}
+
 @mixin ease-in()
 {
 	-webkit-transition: all 0.30s ease-in-out;

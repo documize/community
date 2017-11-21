@@ -1,0 +1,35 @@
+.tabnav-control {
+	padding: 0;
+	margin: 0;
+
+	> .tab {
+		@include ease-in();
+		display: inline-block;
+		margin: 0;
+		padding: 5px 15px;
+		background-color: $color-white;
+		color: $color-primary;
+		font-weight: bold;
+		font-size: 1.1rem;
+		text-align: center;
+		cursor: pointer;
+		border: 1px solid $color-border;
+		margin: -1px 0 0 -5px;				// handles border overlap when tabs wrap onto 2nd line
+
+		&:first-of-type {
+			@include border-radius-left(3px);
+		}
+
+		&:last-of-type {
+			@include border-radius-right(3px);
+		}
+
+		&:hover {
+			background-color: $color-primary-light;
+		}
+	}
+
+	> .selected {
+		background-color: $color-primary-light;
+	}
+}

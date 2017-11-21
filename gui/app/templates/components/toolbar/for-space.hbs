@@ -1,10 +1,10 @@
 {{#toolbar/t-toolbar}}
 	{{#toolbar/t-links}}
-		{{#link-to "folders" class="link selected" tagName="li"}}SPACES{{/link-to}}
+		{{#link-to "folders" class="link" tagName="li"}}SPACES{{/link-to}}
 	{{/toolbar/t-links}}
 	{{#toolbar/t-actions}}
 		{{#if session.isEditor}}
-			<button type="button" class="btn btn-success font-weight-bold" data-toggle="modal" data-target="#add-space-modal" data-backdrop="static">+ SPACE</button>
+			<button type="button" class="btn btn-success font-weight-bold" data-toggle="modal" data-target="#add-space-modal" data-backdrop="static">+ DOCUMENT</button>
 			<div class="modal" tabindex="-1" role="dialog" id="add-space-modal">
 				<div class="modal-dialog" role="document">
 					<div class="modal-content">

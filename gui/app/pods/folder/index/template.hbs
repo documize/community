@@ -1,26 +1,17 @@
-{{#layout/zone-container}}
+{{layout/nav-bar}}
 
-	{{#layout/zone-sidebar}}
-		{{folder/sidebar-zone
-			folders=model.folders
-			folder=model.folder
-			permissions=model.permissions
-			tab=tab
-			onAddSpace=(action 'onAddSpace')}}
-	{{/layout/zone-sidebar}}
+<div class="container">
+	{{toolbar/for-space spaces=model.folders space=model.folder permissions=model.permissions}}
 
-	{{#layout/zone-content}}
-		{{folder/space-view
-			folders=model.folders
-			folder=model.folder
-			templates=model.templates
-			permissions=model.permissions
-			documents=model.documents
-			categories=model.categories
-			categorySummary=model.categorySummary
-			categoryMembers=model.categoryMembers
-			rootDocCount=model.rootDocCount
-			onRefresh=(action 'onRefresh')}}
-	{{/layout/zone-content}}
-
-{{/layout/zone-container}}
+	{{folder/space-view
+		folders=model.folders
+		folder=model.folder
+		templates=model.templates
+		permissions=model.permissions
+		documents=model.documents
+		categories=model.categories
+		categorySummary=model.categorySummary
+		categoryMembers=model.categoryMembers
+		rootDocCount=model.rootDocCount
+		onRefresh=(action 'onRefresh')}}
+</div>
