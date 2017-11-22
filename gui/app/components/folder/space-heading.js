@@ -19,8 +19,8 @@ import TooltipMixin from '../../mixins/tooltip';
 
 export default Component.extend(NotifierMixin, TooltipMixin, {
 	folderService: service('folder'),
-	folderName: '',
-	hasNameError: empty('folderName'),
+	spaceName: '',
+	hasNameError: empty('spaceName'),
 	editMode: false,
 
 	keyUp(e) {
@@ -31,7 +31,7 @@ export default Component.extend(NotifierMixin, TooltipMixin, {
 
 	actions: {
 		toggleEdit() {
-			this.set('folderName', this.get('folder.name'));
+			this.set('spaceName', this.get('space.name'));
 			this.set('editMode', true);
 
 			schedule('afterRender', () => {
@@ -44,11 +44,8 @@ export default Component.extend(NotifierMixin, TooltipMixin, {
 				return;
 			}
 
-			this.set('folder.name', this.get('folderName'));
-
-			this.get('folderService').save(this.get('folder'));
-			this.showNotification('Saved');
-
+			this.set('space.name', this.get('spaceName'));
+			this.get('folderService').save(this.get('space'));
 			this.set('editMode', false);
 		},
 

@@ -99,8 +99,7 @@ export default Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 			this.send("showNotification", "Moved");
 		},
 
-		onDeleteDocument() {
-			let documents = this.get('selectedDocuments');
+		onDeleteDocument(documents) {
 			let self = this;
 			let promises = [];
 
@@ -113,10 +112,9 @@ export default Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 				documents.forEach(function (document) {
 					document.set('selected', false);
 				});
-				this.set('documents', documents);
 
+				this.set('documents', documents);
 				this.set('selectedDocuments', []);
-				this.send("showNotification", "Deleted");
 				this.attrs.onRefresh();
 			});
 		},

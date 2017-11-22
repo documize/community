@@ -1,4 +1,4 @@
-{{folder/space-heading folder=folder permissions=permissions}}
+{{folder/space-heading space=space permissions=permissions}}
 
 {{#if hasCategories}}
 	<div class="clearfix">
@@ -6,9 +6,9 @@
 			<div class="view-space">
 				<div class="filter-caption mt-4">{{documents.length}} documents</div>
 				<ul class="tabnav-control">
-					<li class="tab {{if spaceSelected 'selected'}}" {{action 'onDocumentFilter' 'space' folder.id}}>All ({{documents.length}})</li>
+					<li class="tab {{if spaceSelected 'selected'}}" {{action 'onDocumentFilter' 'space' space.id}}>All ({{documents.length}})</li>
 					{{#if (gt rootDocCount 0)}}
-						<li class="tab {{if uncategorizedSelected 'selected'}}" {{action 'onDocumentFilter' 'uncategorized' folder.id}}>Uncategorized ({{rootDocCount}})</li>
+						<li class="tab {{if uncategorizedSelected 'selected'}}" {{action 'onDocumentFilter' 'uncategorized' space.id}}>Uncategorized ({{rootDocCount}})</li>
 					{{/if}}
 				</ul>
 			</div>
@@ -26,8 +26,9 @@
 	</div>
 {{/if}}
 
-{{folder/documents-list documents=filteredDocs folders=folders folder=folder
-	templates=templates permissions=permissions selectedDocuments=(mut selectedDocuments)}}
+{{folder/documents-list documents=filteredDocs spaces=spaces space=space
+	templates=templates permissions=permissions
+	onDeleteDocument=(action 'onDeleteDocument')}}
 
 {{#if showStartDocument}}
 	{{folder/start-document folder=folder templates=templates permissions=permissions
@@ -35,7 +36,7 @@
 {{/if}}
 
 {{folder/space-toolbar folders=folders folder=folder
-	permissions=permissions hasSelectedDocuments=hasSelectedDocuments
-	onDeleteDocument=(action 'onDeleteDocument') onMoveDocument=(action 'onMoveDocument')
+	permissions=permissions
+	onMoveDocument=(action 'onMoveDocument')
 	onStartDocument=(action 'onStartDocument')}}
 

@@ -42,12 +42,6 @@ export default Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 		let folder = this.get('folder');
 		let targets = _.reject(this.get('folders'), {id: folder.get('id')});
 
-		this.get('pinned').isSpacePinned(folder.get('id')).then((pinId) => {
-			this.set('pinState.pinId', pinId);
-			this.set('pinState.isPinned', pinId !== '');
-			this.set('pinState.newName', folder.get('name'));
-		});
-
 		this.set('movedFolderOptions', targets);
 	},
 
@@ -74,41 +68,6 @@ export default Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 	},
 
 	actions: {
-		onUnpin() {
-			this.get('pinned').unpinItem(this.get('pinState.pinId')).then(() => {
-				this.set('pinState.isPinned', false);
-				this.set('pinState.pinId', '');
-				this.eventBus.publish('pinChange');
-				this.renderTooltips();
-			});
-		},
-
-		onPin() {
-			let pin = {
-				pin: this.get('pinState.newName'),
-				documentId: '',
-				folderId: this.get('folder.id')
-			};
-
-			if (is.empty(pin.pin)) {
-				$('#pin-space-name').addClass('error').focus();
-				return false;
-			}
-
-			this.get('pinned').pinItem(pin).then((pin) => {
-				this.set('pinState.isPinned', true);
-				this.set('pinState.pinId', pin.get('id'));
-				this.eventBus.publish('pinChange');
-				this.renderTooltips();
-			});
-
-			return true;
-		},
-
-		deleteDocuments() {
-			this.attrs.onDeleteDocument();
-		},
-
 		setMoveFolder(folderId) {
 			this.set('moveFolderId', folderId);
 

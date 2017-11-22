@@ -398,6 +398,48 @@
 	}
 }
 
+.button-icon-blue {
+	display: inline-block;
+	cursor: default;
+	@include ease-in();
+
+	> i {
+		color: $color-blue;
+		font-size: 2rem;
+		@include ease-in();
+	}
+
+	&:hover {
+		> i {
+			color: darken($color-blue, 5%);
+		}
+	}
+}
+
+.button-icon-red {
+	display: inline-block;
+	cursor: default;
+	@include ease-in();
+
+	> i {
+		color: $color-red;
+		font-size: 2rem;
+		@include ease-in();
+	}
+
+	&:hover {
+		> i {
+			color: darken($color-red, 5%);
+		}
+	}
+}
+
+.button-icon-small {
+	> i {
+		font-size: 1.3rem;
+	}
+}
+
 .button-icon-gap {
 	display: inline-block;
 	margin-left: 5px;

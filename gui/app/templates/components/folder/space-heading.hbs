@@ -6,7 +6,7 @@
 				<div class="view-space">
 					<div class="heading">
 						<h1 class="view-heading {{if permissions.spaceOwner 'cursor-pointer'}}" onclick={{if permissions.spaceOwner (action 'toggleEdit')}}>
-							{{folder.name}}
+							{{space.name}}
 						</h1>
 					</div>
 				</div>
@@ -15,7 +15,7 @@
 					<div class="view-space">
 						<div class="heading">
 							<div class="form-group">
-								{{input id="folder-name" type="text" value=folderName class=(if hasNameError 'form-control is-invalid' 'form-control') placeholder="Space name" autocomplete="off"}}
+								{{input id="space-name" type="text" value=spaceName class=(if hasNameError 'form-control is-invalid' 'form-control') placeholder="Space name" autocomplete="off"}}
 								<small class="form-text text-muted">Press Enter to save or Escape to cancel</small>
 							</div>
 						</div>

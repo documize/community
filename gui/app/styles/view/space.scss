@@ -80,12 +80,24 @@
 					color: $color-checkbox;
 				}
 			}
+
+			> .actions {
+				position: absolute;
+				display: none;
+				bottom: 2px;
+				right: 12px;
+				cursor: pointer;
+			}
 		}
 
 		> .selected {
 			background-color: $color-primary-light !important;
 
 			> .checkbox {
+				display: block;
+			}
+
+			> .actions {
 				display: block;
 			}
 		}

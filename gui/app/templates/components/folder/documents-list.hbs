@@ -2,12 +2,12 @@
 	<ul class="documents">
 		{{#each documents key="id" as |document|}}
 			<li class="document {{if document.selected "selected"}}" id="document-{{document.id}}">
-				{{#link-to 'document.index' folder.id folder.slug document.id document.slug}}
+				{{#link-to 'document.index' space.id space.slug document.id document.slug}}
 					<div class="title">{{ document.name }}</div>
 					<div class="snippet">{{ document.excerpt }}</div>
 					{{folder/document-tags documentTags=document.tags}}
 				{{/link-to}}
-				{{#if session.authenticated}}
+				{{#if hasDocumentActions}}
 					<div class="checkbox" {{action 'selectDocument' document.id}}>
 						{{#if document.selected}}
 							<i class="material-icons">check_box</i>
@@ -15,11 +15,31 @@
 							<i class="material-icons">check_box_outline_blank</i>
 						{{/if}}
 					</div>
+
+					{{#if document.selected}}
+						<div class="actions">
+							{{#if permissions.documentMove}}
+								<div class="move-documents-button button-icon-blue button-icon-small align-middle">
+									<i class="material-icons">compare_arrows</i>
+								</div>
+								<div class="button-icon-gap" />
+							{{/if}}
+							{{#if permissions.documentDelete}}
+								<div class="delete-documents-button button-icon-red button-icon-small align-middle" {{action 'onConfirmDeleteDocuments'}}>
+									<i class="material-icons">delete</i>
+								</div>
+							{{/if}}
+						</div>
+					{{/if}}
 				{{/if}}
 			</li>
 		{{/each}}
 	</ul>
 </div>
+
+{{#ui/ui-confirm-dialog title="Delete Documents" confirmCaption="Delete" show=showDeleteDialog onAction=(action 'onDeleteDocuments')}}
+	<p>Are you sure you want to delete the {{selectedDocuments.length}} selected documents?</p>
+{{/ui/ui-confirm-dialog}}
 
 {{#if showAdd}}
 	{{empty-state icon="direct" message="You can create new documents via the green + button"}}

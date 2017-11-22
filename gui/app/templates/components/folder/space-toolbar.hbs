@@ -1,20 +1,7 @@
 <div class="pull-right hidden-xs hidden-sm">
 	{{#if hasSelectedDocuments}}
 
-		{{#if permissions.documentMove}}
-			<div class="round-button button-blue" id="move-documents-button" data-tooltip="Move documents" data-tooltip-position="top center">
-				<i class="material-icons">folder</i>
-			</div>
-		{{/if}}
-
-		{{#if permissions.documentDelete}}
-			<div class="button-gap"></div>
-			<div class="round-button button-red" id="delete-documents-button" data-tooltip="Delete documents" data-tooltip-position="top center">
-				<i class="material-icons">delete</i>
-			</div>
-		{{/if}}
-
-		{{#if permissions.documentMove}}
+		{{#if xxx}}
 			{{#dropdown-dialog target="move-documents-button" position="bottom right" button="Move" color="flat-blue" onAction=(action 'moveDocuments')}}
 				<p class="heading">Select destination space</p>
 				<ul class="move-document-options">
@@ -32,7 +19,7 @@
 			{{/dropdown-dialog}}
 		{{/if}}
 
-		{{#if permissions.documentDelete}}
+		{{#if xxx}}
 			{{#dropdown-dialog target="delete-documents-button" position="bottom right" button="Delete" color="flat-red" onAction=(action 'deleteDocuments')}}
 				<p>Are you sure you want to delete selected documents?</p>
 				<p>There is no undo!</p>
@@ -48,14 +35,6 @@
 			<div class="button-gap"></div>
 		{{/if}}
 
-		{{#if spaceSettings}}
-			<div class="button-gap"></div>
-			{{#link-to 'folder.settings' folder.id folder.slug}}{{model.document.name}}
-				<div class="round-button button-gray" id="space-settings-button" data-tooltip="Manage permissions" data-tooltip-position="top center">
-					<i class="material-icons">settings</i>
-				</div>
-			{{/link-to}}
-		{{/if}}
 
 	{{/if}}
 </div>

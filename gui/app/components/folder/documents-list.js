@@ -10,18 +10,43 @@
 // https://documize.com
 
 import { computed } from '@ember/object';
-
 import Component from '@ember/component';
 
 export default Component.extend({
+	showDeleteDialog: false,
+	selectedDocuments: [],
+
 	showAdd: computed('permissions', 'documents', function() {
 		return this.get('documents.length') === 0 && this.get('permissions.documentAdd');
 	}),
 	showLockout: computed('permissions', 'documents', function() {
 		return this.get('documents.length') === 0 && !this.get('permissions.documentAdd');
 	}),
+	hasDocumentActions: computed('permissions', function() {
+		return this.get('permissions.documentDelete') || this.get('permissions.documentMove');
+	}),
 
     actions: {
+		onConfirmDeleteDocuments() {
+			this.set('showDeleteDialog', true);
+		},
+
+		onDeleteDocuments() {
+			this.set('showDeleteDialog', false);
+			let list = this.get('selectedDocuments');
+
+			// list.forEach(d => {
+			// 	let doc = this.get('documents').findBy('id', d);
+			// 	doc.set('selected', false);
+			// });
+
+			this.attrs.onDeleteDocument(list);
+
+			this.set('selectedDocuments', []);
+
+			return true;
+		},
+
         selectDocument(documentId) {
             let doc = this.get('documents').findBy('id', documentId);
             let list = this.get('selectedDocuments');
