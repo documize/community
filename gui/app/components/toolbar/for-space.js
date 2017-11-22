@@ -56,7 +56,7 @@ export default Component.extend(NotifierMixin, AuthMixin, {
 
 		$('#add-space-modal').on('show.bs.modal', function(event) { // eslint-disable-line no-unused-vars
 			schedule('afterRender', () => {
-				$("#new-space-name").focus();
+				$("#new-document-name").focus();
 			});
 		});
 	},
@@ -85,11 +85,6 @@ export default Component.extend(NotifierMixin, AuthMixin, {
 				documentId: '',
 				folderId: this.get('space.id')
 			};
-
-			if (is.empty(pin.pin)) {
-				$('#pin-space-name').addClass('error').focus();
-				return false;
-			}
 
 			this.get('pinned').pinItem(pin).then((pin) => {
 				$('#pin-space-button').tooltip('dispose');
@@ -149,6 +144,14 @@ export default Component.extend(NotifierMixin, AuthMixin, {
 			$('#add-space-modal').modal('dispose');
 
 			this.attrs.onAddSpace(payload);
+		},
+
+		onImport() {
+			this.attrs.onRefresh();
+		},
+
+		onHideStartDocument() {
+			// this.set('showStartDocument', false);
 		}
 	}
 });

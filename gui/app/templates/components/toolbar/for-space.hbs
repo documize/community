@@ -57,14 +57,11 @@
 		<div class="modal" tabindex="-1" role="dialog" id="add-space-modal">
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
-					<div class="modal-header">Add Space</div>
+					<div class="modal-header">New Document</div>
 					<div class="modal-body">
 						<form onsubmit={{action 'onAddSpace'}}>
-							<div class="form-group">
-									<label for="new-space-name">Space Name</label>
-								{{input type='text' id="new-space-name" class="form-control mousetrap" placeholder="Space name" value=spaceName}}
-								<small id="emailHelp" class="form-text text-muted">Characters and numbers only</small>
-							</div>
+							{{folder/start-document folder=space templates=templates permissions=permissions
+								onImport=(action 'onImport') onHideStartDocument=(action 'onHideStartDocument')}}
 						</form>
 					</div>
 					<div class="modal-footer">

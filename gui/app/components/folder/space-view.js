@@ -118,18 +118,6 @@ export default Component.extend(AuthMixin, {
 			});
 		},
 
-		onImport() {
-			this.attrs.onRefresh();
-		},
-
-		onStartDocument() {
-			this.set('showStartDocument', !this.get('showStartDocument'));
-		},
-
-		onHideStartDocument() {
-			this.set('showStartDocument', false);
-		},
-
 		onDocumentFilter(filter, id) {
 			let docs = this.get('documents');
 			let categories = this.get('categories');

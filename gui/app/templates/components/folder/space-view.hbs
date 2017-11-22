@@ -1,4 +1,4 @@
-{{folder/space-heading space=space permissions=permissions}}
+{{folder/space-heading space=space permissions=permissions }}
 
 {{#if hasCategories}}
 	<div class="clearfix">
@@ -33,6 +33,3 @@
 {{folder/documents-list documents=filteredDocs spaces=spaces space=space
 	templates=templates permissions=permissions
 	onDeleteDocument=(action 'onDeleteDocument') onMoveDocument=(action 'onMoveDocument')}}
-
-{{folder/start-document folder=space templates=templates permissions=permissions
-	onImport=(action 'onImport') onHideStartDocument=(action 'onHideStartDocument')}}
