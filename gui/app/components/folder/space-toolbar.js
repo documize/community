@@ -10,7 +10,6 @@
 // https://documize.com
 
 import { computed } from '@ember/object';
-
 import Component from '@ember/component';
 import { inject as service } from '@ember/service';
 import NotifierMixin from '../../mixins/notifier';
@@ -59,34 +58,6 @@ export default Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 
 	renderTooltips() {
 		this.destroyTooltips();
-
-		if (this.get('hasSelectedDocuments')) {
-			if (this.get('permissions.documentMove')) {
-				this.addTooltip(document.getElementById("move-documents-button"));
-			}
-
-			if (this.get('permissions.documentDelete')) {
-				this.addTooltip(document.getElementById("delete-documents-button"));
-			}
-		} else {
-			if (this.get('permissions.spaceOwner')) {
-				this.addTooltip(document.getElementById("space-delete-button"));
-			}
-
-			if (this.get('permissions.spaceManage')) {
-				this.addTooltip(document.getElementById("space-settings-button"));
-			}
-
-			if (this.get('pinState.isPinned')) {
-				this.addTooltip(document.getElementById("space-unpin-button"));
-			} else {
-				this.addTooltip(document.getElementById("space-pin-button"));
-			}
-
-			if (this.get('permissions.documentAdd')) {
-				this.addTooltip(document.getElementById("document-add-button"));
-			}
-		}
 	},
 
 	willDestroyElement() {
@@ -136,23 +107,6 @@ export default Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 
 		deleteDocuments() {
 			this.attrs.onDeleteDocument();
-		},
-
-		deleteSpace() {
-			let spaceName = this.get('folder').get('name');
-			let spaceNameTyped = this.get('deleteSpaceName');
-
-			if (spaceNameTyped !== spaceName || spaceNameTyped === '' || spaceName === '') {
-				$("#delete-space-name").addClass("error").focus();
-				return false;
-			}
-
-			this.set('deleteSpaceName', '');
-			$("#delete-space-name").removeClass("error");
-
-			this.attrs.onDeleteSpace();
-
-			return true;
 		},
 
 		setMoveFolder(folderId) {

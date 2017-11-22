@@ -18,8 +18,6 @@ export default Controller.extend(NotifierMixin, {
 	documentService: service('document'),
 	folderService: service('folder'),
 	localStorage: service('localStorage'),
-	queryParams: ['tab'],
-	tab: 'index',
 
 	actions: {
 		onAddSpace(payload) {
@@ -29,6 +27,14 @@ export default Controller.extend(NotifierMixin, {
 			this.get('folderService').add(payload).then(function (newFolder) {
 				self.get('folderService').setCurrentFolder(newFolder);
 				self.transitionToRoute('folder', newFolder.get('id'), newFolder.get('slug'));
+			});
+		},
+
+		onDeleteSpace(id) {
+			this.get('folderService').delete(id).then(() => { /* jshint ignore:line */
+				this.showNotification("Deleted");
+				this.get('localStorage').clearSessionItem('folder');
+				this.transitionToRoute('folders');
 			});
 		},
 

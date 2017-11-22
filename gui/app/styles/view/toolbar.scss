@@ -12,6 +12,7 @@
 			margin-right: 30px;
 			cursor: pointer;
 			@include ease-in();
+			border-bottom: 2px solid $color-gray-light;
 
 			&:hover {
 				color: $color-link;

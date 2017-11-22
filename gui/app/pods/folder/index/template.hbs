@@ -1,7 +1,7 @@
 {{layout/nav-bar}}
 
 <div class="container">
-	{{toolbar/for-space spaces=model.folders space=model.folder permissions=model.permissions}}
+	{{toolbar/for-space spaces=model.folders space=model.folder permissions=model.permissions onDeleteSpace=(action 'onDeleteSpace')}}
 
 	{{folder/space-view
 		folders=model.folders

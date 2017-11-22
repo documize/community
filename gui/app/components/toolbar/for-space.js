@@ -11,17 +11,45 @@
 
 import Component from '@ember/component';
 import { schedule } from '@ember/runloop';
-import { notEmpty } from '@ember/object/computed';
+import { computed } from '@ember/object';
+import { inject as service } from '@ember/service';
 import NotifierMixin from '../../mixins/notifier';
 import AuthMixin from '../../mixins/auth';
 
 export default Component.extend(NotifierMixin, AuthMixin, {
+	session: service(),
+	appMeta: service(),
+	pinned: service(),
 	spaceName: '',
 	copyTemplate: true,
 	copyPermission: true,
 	copyDocument: false,
 	clonedSpace: { id: '' },
-	hasClone: notEmpty('clonedSpace.id'),
+	pinState : {
+		isPinned: false,
+		pinId: '',
+		newName: ''
+	},
+	spaceSettings: computed('permissions', function() {
+		return this.get('permissions.spaceOwner') || this.get('permissions.spaceManage');
+	}),
+	deleteSpaceName: '',
+
+	didReceiveAttrs() {
+		this._super(...arguments);
+
+		let folder = this.get('space');
+		let targets = _.reject(this.get('spaces'), {id: folder.get('id')});
+
+		this.get('pinned').isSpacePinned(folder.get('id')).then((pinId) => {
+			this.set('pinState.pinId', pinId);
+			this.set('pinState.isPinned', pinId !== '');
+			this.set('pinState.newName', folder.get('name'));
+			this.renderTooltips();
+		});
+
+		this.set('movedFolderOptions', targets);
+	},
 
 	didInsertElement() {
 		this._super(...arguments);
@@ -33,9 +61,65 @@ export default Component.extend(NotifierMixin, AuthMixin, {
 		});
 	},
 
+	renderTooltips() {
+		schedule('afterRender', () => {
+			$('#pin-space-button').tooltip('dispose');
+			$('body').tooltip({selector: '#pin-space-button'});
+		});
+	},
+
 	actions: {
-		onCloneSpaceSelect(sp) {
-			this.set('clonedSpace', sp)
+		onUnpin() {
+			this.get('pinned').unpinItem(this.get('pinState.pinId')).then(() => {
+				$('#pin-space-button').tooltip('dispose');
+				this.set('pinState.isPinned', false);
+				this.set('pinState.pinId', '');
+				this.eventBus.publish('pinChange');
+				this.renderTooltips();
+			});
+		},
+
+		onPin() {
+			let pin = {
+				pin: this.get('pinState.newName'),
+				documentId: '',
+				folderId: this.get('space.id')
+			};
+
+			if (is.empty(pin.pin)) {
+				$('#pin-space-name').addClass('error').focus();
+				return false;
+			}
+
+			this.get('pinned').pinItem(pin).then((pin) => {
+				$('#pin-space-button').tooltip('dispose');
+				this.set('pinState.isPinned', true);
+				this.set('pinState.pinId', pin.get('id'));
+				this.eventBus.publish('pinChange');
+				this.renderTooltips();
+			});
+
+			return true;
+		},
+
+		onDeleteSpace(e) {
+			e.preventDefault();
+
+			let spaceName = this.get('space').get('name');
+			let spaceNameTyped = this.get('deleteSpaceName');
+
+			if (spaceNameTyped !== spaceName || spaceNameTyped === '' || spaceName === '') {
+				$("#delete-space-name").addClass("is-invalid").focus();
+				return;
+			}
+
+			this.set('deleteSpaceName', '');
+			$("#delete-space-name").removeClass("is-invalid");
+
+			this.attrs.onDeleteSpace(this.get('space.id'));
+
+			$('#delete-space-modal').modal('hide');
+			$('#delete-space-modal').modal('dispose');
 		},
 
 		onAddSpace(e) {

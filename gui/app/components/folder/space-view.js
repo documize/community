@@ -121,14 +121,6 @@ export default Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 			});
 		},
 
-		onDeleteSpace() {
-			this.get('folderService').delete(this.get('folder.id')).then(() => { /* jshint ignore:line */
-				this.showNotification("Deleted");
-				this.get('localStorage').clearSessionItem('folder');
-				this.get('router').transitionTo('application');
-			});
-		},
-
 		onImport() {
 			this.attrs.onRefresh();
 		},
