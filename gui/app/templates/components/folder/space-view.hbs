@@ -24,19 +24,15 @@
 			</div>
 		</div>
 	</div>
+{{else}}
+	<div class="view-space">
+		<div class="filter-caption">{{documents.length}} documents</div>
+	</div>
 {{/if}}
 
 {{folder/documents-list documents=filteredDocs spaces=spaces space=space
 	templates=templates permissions=permissions
-	onDeleteDocument=(action 'onDeleteDocument')}}
+	onDeleteDocument=(action 'onDeleteDocument') onMoveDocument=(action 'onMoveDocument')}}
 
-{{#if showStartDocument}}
-	{{folder/start-document folder=folder templates=templates permissions=permissions
-		onImport=(action 'onImport') onHideStartDocument=(action 'onHideStartDocument')}}
-{{/if}}
-
-{{folder/space-toolbar folders=folders folder=folder
-	permissions=permissions
-	onMoveDocument=(action 'onMoveDocument')
-	onStartDocument=(action 'onStartDocument')}}
-
+{{folder/start-document folder=space templates=templates permissions=permissions
+	onImport=(action 'onImport') onHideStartDocument=(action 'onHideStartDocument')}}

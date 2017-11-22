@@ -33,11 +33,21 @@ export default Route.extend(AuthenticatedRouteMixin, {
 	model() {
 		this.get('browser').setTitle(this.modelFor('folder').folder.get('name'));
 
+		let folders = this.modelFor('folder').folders;
+		folders.forEach(f => {
+			f.set('selected', false);
+		})
+
+		let documents = this.modelFor('folder').documents;
+		documents.forEach(d => {
+			d.set('selected', false);
+		})
+
 		return hash({
 			folder: this.modelFor('folder').folder,
 			permissions: this.modelFor('folder').permissions,
-			folders: this.modelFor('folder').folders,
-			documents: this.modelFor('folder').documents,
+			folders: folders,
+			documents: documents,
 			templates: this.modelFor('folder').templates,
 			showStartDocument: false,
 			rootDocCount: 0,

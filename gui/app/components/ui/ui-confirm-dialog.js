@@ -18,6 +18,7 @@ export default Component.extend({
 	confirmCaption: 'OK',
 	title: 'Confirm',
 	show: false,
+	buttonType: 'btn-secondary',
 
 	didInsertElement() {
 		this._super(...arguments);
@@ -54,7 +55,8 @@ export default Component.extend({
 				return;
 			}
 
-			if (this.attrs.onAction()) {
+			let result = this.attrs.onAction();
+			if (result) {
 				this.set('show', false);
 			}
 		}

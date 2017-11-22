@@ -9,25 +9,19 @@
 //
 // https://documize.com
 
-import { all } from 'rsvp';
-
-import { schedule } from '@ember/runloop';
-import { gt } from '@ember/object/computed';
 import Component from '@ember/component';
 import { inject as service } from '@ember/service';
-import NotifierMixin from '../../mixins/notifier';
-import TooltipMixin from '../../mixins/tooltip';
+import { all } from 'rsvp';
+import { schedule } from '@ember/runloop';
+import { gt } from '@ember/object/computed';
 import AuthMixin from '../../mixins/auth';
 
-export default Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
+export default Component.extend(AuthMixin, {
 	router: service(),
 	documentService: service('document'),
 	folderService: service('folder'),
 	localStorage: service('localStorage'),
-	selectedDocuments: [],
-	hasSelectedDocuments: gt('selectedDocuments.length', 0),
 	hasCategories: gt('categories.length', 0),
-	showStartDocument: false,
 	filteredDocs: [],
 
 	didReceiveAttrs() {
@@ -39,20 +33,6 @@ export default Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 		this._super(...arguments);
 		this.set('selectedDocuments', []);
 		this.set('filteredDocs', []);
-	},
-
-	didRender() {
-		this._super(...arguments);
-
-		if (this.get('rootDocCount') > 0) {
-			this.addTooltip(document.getElementById("uncategorized-button"));
-		}
-	},
-
-	willDestroyElement() {
-		this._super(...arguments);
-
-		this.destroyTooltips();
 	},
 
 	setup() {
@@ -81,22 +61,42 @@ export default Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 	},
 
 	actions: {
-		onMoveDocument(folder) {
+		zonMoveDocumentz(documents, targetSpaceId) {
 			let self = this;
-			let documents = this.get('selectedDocuments');
 
 			documents.forEach(function (documentId) {
 				self.get('documentService').getDocument(documentId).then(function (doc) {
-					doc.set('folderId', folder);
-					doc.set('selected', !doc.get('selected'));
+					doc.set('folderId', targetSpaceId);
+					doc.set('selected', false);
 					self.get('documentService').save(doc).then(function () {
 						self.attrs.onRefresh();
 					});
 				});
 			});
+		},
 
-			this.set('selectedDocuments', []);
-			this.send("showNotification", "Moved");
+		onMoveDocument(documents, targetSpaceId) {
+			let self = this;
+			let promises1 = [];
+			let promises2 = [];
+
+			documents.forEach(function(documentId, index) {
+				promises1[index] = self.get('documentService').getDocument(documentId);
+			});
+
+			all(promises1).then(() => {
+				promises1.forEach(function(doc, index) {
+					doc.then((d) => {
+						d.set('folderId', targetSpaceId);
+						d.set('selected', false);
+						promises2[index] = self.get('documentService').save(d);
+					});
+				});
+
+				all(promises2).then(() => {
+					self.attrs.onRefresh();
+				});
+			});
 		},
 
 		onDeleteDocument(documents) {
@@ -114,7 +114,6 @@ export default Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 				});
 
 				this.set('documents', documents);
-				this.set('selectedDocuments', []);
 				this.attrs.onRefresh();
 			});
 		},

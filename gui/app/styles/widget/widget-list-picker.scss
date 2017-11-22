@@ -2,12 +2,11 @@
 	margin: 10px 0;
 
 	> .options {
-		width: 300px;
-		max-height: 400px;
+		width: 100%;
 		margin: 0 auto;
-		overflow: auto;
 
 		> .option {
+			@include ease-in();
 			margin: 0 0 5px 0;
 			padding: 10px 15px;
 			color: $color-gray;
@@ -16,13 +15,12 @@
 			position: relative;
 
 			&:hover {
-				color: $color-white;
-				background-color: $color-gray;
+				color: $color-black;
+				// background-color: $color-primary-light;
 			}
 
 			> .text {
-				width: 220px;
-				overflow: hidden;
+				width: 80%;
 				font-weight: bold;
 			}
 

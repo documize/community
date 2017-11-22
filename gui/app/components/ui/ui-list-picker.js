@@ -15,10 +15,19 @@ import Component from '@ember/component';
 
 export default Component.extend({
 	nameField: 'category',
+	singleSelect: false,
 	items: [],
 
 	actions: {
 		onToggle(item) {
+			if (this.get('singleSelect')) {
+				let items = this.get('items');
+				items.forEach(item => {
+					set(item, 'selected', false);
+				});
+				this.set('items', items);
+			}
+
 			set(item, 'selected', !item.get('selected'));
 		}
 	}

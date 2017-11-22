@@ -2,7 +2,7 @@
 	<ul class="options">
 		{{#each items as |item|}}
 			<li class="option {{if item.selected 'selected'}}" {{action 'onToggle' item}}>
-				<div class="text">{{get item nameField}}</div>
+				<div class="text text-truncate">{{get item nameField}}</div>
 				{{#if item.selected}}
 					<i class="material-icons">check</i>
 				{{/if}}
