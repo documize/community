@@ -10,7 +10,6 @@
 // https://documize.com
 
 import { A } from '@ember/array';
-
 import ArrayProxy from '@ember/array/proxy';
 import RSVP, { Promise as EmberPromise } from 'rsvp';
 import Service, { inject as service } from '@ember/service';
@@ -27,26 +26,25 @@ export default Service.extend({
 		let userId = this.get('session.user.id');
 
 		if (!this.get('session.authenticated')) {
-			return new RSVP.resolve([]);
+			return new RSVP.resolve(A([]));
+		}
+		if (this.get('initialized')) {
+			return new RSVP.resolve(this.get('pins'));
 		}
 
 		return this.get('ajax').request(`pin/${userId}`, {
 			method: 'GET'
 		}).then((response) => {
-			if (is.not.array(response)) {
-				response = [];
-			}
-			let pins = ArrayProxy.create({
-				content: A([])
-			});
+			if (is.not.array(response)) response = [];
+			let pins = ArrayProxy.create({ content: A([]) });
 
 			pins = response.map((pin) => {
 				let data = this.get('store').normalize('pin', pin);
 				return this.get('store').push(data);
 			});
 
-			this.set('pins', pins);
 			this.set('initialized', true);
+			this.set('pins', pins);
 
 			return pins;
 		});
@@ -55,6 +53,8 @@ export default Service.extend({
 	// Pin an item.
 	pinItem(data) {
 		let userId = this.get('session.user.id');
+
+		this.set('initialized', false);
 
 		if(this.get('session.authenticated')) {
 			return this.get('ajax').request(`pin/${userId}`, {
@@ -70,6 +70,8 @@ export default Service.extend({
 	// Unpin an item.
 	unpinItem(pinId) {
 		let userId = this.get('session.user.id');
+
+		this.set('initialized', false);
 
 		if(this.get('session.authenticated')) {
 			return this.get('ajax').request(`pin/${userId}/${pinId}`, {
@@ -107,52 +109,34 @@ export default Service.extend({
 	},
 
 	isDocumentPinned(documentId) {
-		let userId = this.get('session.user.id');
-		let pins = this.get('pins');
+		return new EmberPromise((resolve, reject) => { // eslint-disable-line no-unused-vars
+			let userId = this.get('session.user.id');
 
-		return new EmberPromise((resolve) => {
-			if (this.get('initialized') === false) {
-				this.getUserPins().then((pins) => {
-					pins.forEach((pin) => {
-						if (pin.get('userId') === userId && pin.get('documentId') === documentId) {
-							resolve(pin.get('id'));
-						}
-					});
-				});
-			} else {
+			return this.getUserPins().then((pins) => {
 				pins.forEach((pin) => {
 					if (pin.get('userId') === userId && pin.get('documentId') === documentId) {
 						resolve(pin.get('id'));
 					}
 				});
-			}
 
-			resolve('');
+				resolve('');
+			});
 		});
 	},
 
 	isSpacePinned(spaceId) {
-		let userId = this.get('session.user.id');
-		let pins = this.get('pins');
+		return new EmberPromise((resolve, reject) => { // eslint-disable-line no-unused-vars
+			let userId = this.get('session.user.id');
 
-		return new EmberPromise((resolve) => {
-			if (!this.get('initialized')) {
-			this.getUserPins().then((pins) => {
+			return this.getUserPins().then((pins) => {
 				pins.forEach((pin) => {
 					if (pin.get('userId') === userId && pin.get('documentId') === '' && pin.get('folderId') === spaceId) {
 						resolve(pin.get('id'));
 					}
 				});
+
+				resolve('');
 			});
-			} else {
-				pins.forEach((pin) => {
-					if (pin.get('userId') === userId && pin.get('documentId') === '' && pin.get('folderId') === spaceId) {
-						resolve(pin.get('id'));
-					}
-				});
-			}
-
-			resolve('');
 		});
 	}
 });

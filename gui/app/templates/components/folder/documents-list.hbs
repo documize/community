@@ -39,14 +39,14 @@
 	</ul>
 </div>
 
-{{#ui/ui-confirm-dialog title="Delete Documents" confirmCaption="Delete" buttonType="btn-danger" show=showDeleteDialog onAction=(action 'onDeleteDocuments')}}
+{{#ui/ui-dialog title="Delete Documents" confirmCaption="Delete" buttonType="btn-danger" show=showDeleteDialog onAction=(action 'onDeleteDocuments')}}
 	<p>Are you sure you want to delete {{selectedDocuments.length}} {{selectedCaption}}?</p>
-{{/ui/ui-confirm-dialog}}
+{{/ui/ui-dialog}}
 
-{{#ui/ui-confirm-dialog title="Move Documents" confirmCaption="Move" buttonType="btn-success" show=showMoveDialog onAction=(action 'onMoveDocuments')}}
+{{#ui/ui-dialog title="Move Documents" confirmCaption="Move" buttonType="btn-outline-success" show=showMoveDialog onAction=(action 'onMoveDocuments')}}
 	<p>Select space for {{selectedDocuments.length}} {{selectedCaption}}</p>
 	{{ui/ui-list-picker items=moveOptions nameField='name' singleSelect=true}}
-{{/ui/ui-confirm-dialog}}
+{{/ui/ui-dialog}}
 
 {{#if showAdd}}
 	{{empty-state icon="direct" message="You can create new documents via the green + button"}}

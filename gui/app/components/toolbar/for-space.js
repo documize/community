@@ -17,6 +17,7 @@ import NotifierMixin from '../../mixins/notifier';
 import AuthMixin from '../../mixins/auth';
 
 export default Component.extend(NotifierMixin, AuthMixin, {
+	spaceService: service('folder'),
 	session: service(),
 	appMeta: service(),
 	pinned: service(),
@@ -34,6 +35,8 @@ export default Component.extend(NotifierMixin, AuthMixin, {
 		return this.get('permissions.spaceOwner') || this.get('permissions.spaceManage');
 	}),
 	deleteSpaceName: '',
+	inviteEmail: '',
+	inviteMessage: '',
 
 	didReceiveAttrs() {
 		this._super(...arguments);
@@ -54,24 +57,43 @@ export default Component.extend(NotifierMixin, AuthMixin, {
 	didInsertElement() {
 		this._super(...arguments);
 
-		$('#add-space-modal').on('show.bs.modal', function(event) { // eslint-disable-line no-unused-vars
+		$('#space-delete-modal').on('show.bs.modal', function(event) { // eslint-disable-line no-unused-vars
 			schedule('afterRender', () => {
-				$("#new-document-name").focus();
+				$("#delete-space-name").focus();
+			});
+		});
+
+		$('#space-invite-modal').on('show.bs.modal', () => { // eslint-disable-line no-unused-vars
+			schedule('afterRender', () => {
+				$("#space-invite-email").focus();
+				if (this.get('inviteMessage').length === 0) {
+					this.set('inviteMessage', this.getDefaultInvitationMessage());
+				}
 			});
 		});
 	},
 
+	willDestroyElement() {
+		this._super(...arguments);
+
+		$('[data-toggle="tooltip"]').tooltip('dispose');
+	},
+
 	renderTooltips() {
 		schedule('afterRender', () => {
-			$('#pin-space-button').tooltip('dispose');
-			$('body').tooltip({selector: '#pin-space-button'});
+			$('[data-toggle="tooltip"]').tooltip('dispose');
+			$('body').tooltip({selector: '[data-toggle="tooltip"]', delay: 250});
 		});
+	},
+
+	getDefaultInvitationMessage() {
+		return "Hey there, I am sharing the " + this.get('space.name') + " space (in " + this.get("appMeta.title") + ") with you so we can both collaborate on documents.";
 	},
 
 	actions: {
 		onUnpin() {
 			this.get('pinned').unpinItem(this.get('pinState.pinId')).then(() => {
-				$('#pin-space-button').tooltip('dispose');
+				$('#space-pin-button').tooltip('dispose');
 				this.set('pinState.isPinned', false);
 				this.set('pinState.pinId', '');
 				this.eventBus.publish('pinChange');
@@ -87,7 +109,7 @@ export default Component.extend(NotifierMixin, AuthMixin, {
 			};
 
 			this.get('pinned').pinItem(pin).then((pin) => {
-				$('#pin-space-button').tooltip('dispose');
+				$('#space-pin-button').tooltip('dispose');
 				this.set('pinState.isPinned', true);
 				this.set('pinState.pinId', pin.get('id'));
 				this.eventBus.publish('pinChange');
@@ -97,7 +119,50 @@ export default Component.extend(NotifierMixin, AuthMixin, {
 			return true;
 		},
 
-		onDeleteSpace(e) {
+		onSpaceInvite(e) {
+			e.preventDefault();
+
+			var email = this.get('inviteEmail').trim().replace(/ /g, '');
+			var message = this.get('inviteMessage').trim();
+
+			if (message.length === 0) {
+				message = this.getDefaultInvitationMessage();
+			}
+
+			if (email.length === 0) {
+				$('#space-invite-email').addClass('is-invalid').focus();
+				return;
+			}
+
+			var result = {
+				Message: message,
+				Recipients: []
+			};
+
+			// Check for multiple email addresses
+			if (email.indexOf(",") > -1) {
+				result.Recipients = email.split(',');
+			}
+			if (email.indexOf(";") > -1 && result.Recipients.length === 0) {
+				result.Recipients = email.split(';');
+			}
+
+			// Handle just one email address
+			if (result.Recipients.length === 0 && email.length > 0) {
+				result.Recipients.push(email);
+			}
+
+			this.set('inviteEmail', '');
+
+			this.get('spaceService').share(this.get('space.id'), result).then(() => {
+				$('#space-invite-email').removeClass('is-invalid');
+			});
+
+			$('#space-invite-modal').modal('hide');
+			$('#space-invite-modal').modal('dispose');
+		},
+
+		onSpaceDelete(e) {
 			e.preventDefault();
 
 			let spaceName = this.get('space').get('name');
@@ -113,37 +178,12 @@ export default Component.extend(NotifierMixin, AuthMixin, {
 
 			this.attrs.onDeleteSpace(this.get('space.id'));
 
-			$('#delete-space-modal').modal('hide');
-			$('#delete-space-modal').modal('dispose');
+			$('#space-delete-modal').modal('hide');
+			$('#space-delete-modal').modal('dispose');
 		},
 
 		onAddSpace(e) {
 			e.preventDefault();
-
-			let spaceName = this.get('spaceName');
-			let clonedId = this.get('clonedSpace.id');
-
-			if (is.empty(spaceName)) {
-				$("#new-space-name").addClass("is-invalid").focus();
-				return false;
-			}
-
-			let payload = {
-				name: spaceName,
-				CloneID: clonedId,
-				copyTemplate: this.get('copyTemplate'),
-				copyPermission: this.get('copyPermission'),
-				copyDocument: this.get('copyDocument'),
-			}
-
-			this.set('spaceName', '');
-			this.set('clonedSpace.id', '');
-			$("#new-space-name").removeClass("is-invalid");
-
-			$('#add-space-modal').modal('hide');
-			$('#add-space-modal').modal('dispose');
-
-			this.attrs.onAddSpace(payload);
 		},
 
 		onImport() {
