@@ -1,49 +1,71 @@
-<div class="space-settings">
-	<div class="panel">
-		<div class="form-header-sticky">
-			<div class="left-zone">
-				<div class="title">Permissions</div>
-				<div class="tip">Define who can do what in this space</div>
+<div id="space-permission-modal" class="modal" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-80">
+		<div class="modal-content">
+			<div class="modal-header">Space Permissions</div>
+			<div class="modal-body" style="overflow-x: auto;">
+
+				<div class="space-admin">
+					<table class="table table-hover table-responsive permission-table">
+						<thead>
+							<tr>
+								<th></th>
+								<th colspan="3">Spaces</th>
+								<th colspan="6" class="text-info">Documents</th>
+							</tr>
+							<tr>
+								<th></th>
+								<th>View</th>
+								<th>Manage</th>
+								<th>Owner</th>
+								<th class="text-info">Create</th>
+								<th class="text-info">Edit</th>
+								<th class="text-info">Delete</th>
+								<th class="text-info">Move</th>
+								<th class="text-info">Copy</th>
+								<th class="text-info">Templates</th>
+							</tr>
+						</thead>
+						<tbody>
+							{{#each permissions as |permission|}}
+								<tr>
+									<td>{{permission.fullname}} {{if (eq permission.userId session.user.id) '(you)'}}</td>
+									<td>
+										{{input type="checkbox" id=(concat 'space-role-view-' permission.userId) checked=permission.spaceView}}
+									</td>
+									<td>
+										{{input type="checkbox" id=(concat 'space-role-manage-' permission.userId) checked=permission.spaceManage}}
+									</td>
+									<td>
+										{{input type="checkbox" id=(concat 'space-role-owner-' permission.userId) checked=permission.spaceOwner}}
+									</td>
+									<td>
+										{{input type="checkbox" id=(concat 'doc-role-add-' permission.userId) checked=permission.documentAdd}}
+									</td>
+									<td>
+										{{input type="checkbox" id=(concat 'doc-role-edit-' permission.userId) checked=permission.documentEdit}}
+									</td>
+									<td>
+										{{input type="checkbox" id=(concat 'doc-role-delete-' permission.userId) checked=permission.documentDelete}}
+									</td>
+									<td>
+										{{input type="checkbox" id=(concat 'doc-role-move-' permission.userId) checked=permission.documentMove}}
+									</td>
+									<td>
+										{{input type="checkbox" id=(concat 'doc-role-copy-' permission.userId) checked=permission.documentCopy}}
+									</td>
+									<td>
+										{{input type="checkbox" id=(concat 'doc-role-template-' permission.userId) checked=permission.documentTemplate}}
+									</td>
+								</tr>
+							{{/each}}
+						</tbody>
+					</table>
+				</div>
+
 			</div>
-			<div class="right-zone">
-				<div class="regular-button button-blue" {{action 'setPermissions'}}>GRANT</div>
-			</div>
-		</div>
-		<div class="clearfix" />
-		<div class="input-control">
-			<div class="permissions-table">
-				{{#each permissions as |permission|}}
-					<div class="row">
-						<div class="permission-name-cell">{{permission.fullname}} {{if (eq permission.userId session.user.id) '(you)'}}</div>
-						<div class="permission-roles-cell">
-							<div class="role-container">
-								<span class="role-category">Space:&nbsp;</span>
-								{{input type="checkbox" id=(concat 'space-role-view-' permission.userId) checked=permission.spaceView}}
-								<label for="space-role-view-{{permission.userId}}">view</label>&nbsp;&nbsp;
-								{{input type="checkbox" id=(concat 'space-role-manage-' permission.userId) checked=permission.spaceManage}}
-								<label for="space-role-manage-{{permission.userId}}">manage</label>&nbsp;&nbsp;
-								{{input type="checkbox" id=(concat 'space-role-owner-' permission.userId) checked=permission.spaceOwner}}
-								<label for="space-role-owner-{{permission.userId}}">owner</label>&nbsp;&nbsp;
-							</div>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							<div class="role-container">
-								<span class="role-category">Document:&nbsp;</span>
-								{{input type="checkbox" id=(concat 'doc-role-add-' permission.userId) checked=permission.documentAdd}}
-								<label for="doc-role-add-{{permission.userId}}">create</label>&nbsp;&nbsp;
-								{{input type="checkbox" id=(concat 'doc-role-edit-' permission.userId) checked=permission.documentEdit}}
-								<label for="doc-role-edit-{{permission.userId}}">edit</label>&nbsp;&nbsp;
-								{{input type="checkbox" id=(concat 'doc-role-delete-' permission.userId) checked=permission.documentDelete}}
-								<label for="doc-role-delete-{{permission.userId}}">delete</label>&nbsp;&nbsp;
-								{{input type="checkbox" id=(concat 'doc-role-move-' permission.userId) checked=permission.documentMove}}
-								<label for="doc-role-move-{{permission.userId}}">move</label>&nbsp;&nbsp;
-								{{input type="checkbox" id=(concat 'doc-role-copy-' permission.userId) checked=permission.documentCopy}}
-								<label for="doc-role-copy-{{permission.userId}}">copy</label>&nbsp;&nbsp;
-								{{input type="checkbox" id=(concat 'doc-role-template-' permission.userId) checked=permission.documentTemplate}}
-								<label for="doc-role-template-{{permission.userId}}">templates</label>&nbsp;&nbsp;
-							</div>
-						</div>
-					</div>
-				{{/each}}
+			<div class="modal-footer">
+				<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-outline-success" onclick={{action 'setPermissions'}}>Save</button>
 			</div>
 		</div>
 	</div>

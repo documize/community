@@ -16,12 +16,10 @@
 		{{/if}}
 
 		{{#if spaceSettings}}
-			{{#link-to 'folder.settings' space.id space.slug}}
-				<div id="space-settings-button" class="button-icon-gray align-middle" data-toggle="tooltip" data-placement="top" title="User permissions">
-					<i class="material-icons">security</i>
-				</div>
-				<div class="button-icon-gap" />
-			{{/link-to}}
+			<div id="space-settings-button" class="button-icon-gray align-middle" data-toggle="tooltip" data-placement="top" title="Set permissions">
+				<i class="material-icons" data-toggle="modal" data-target="#space-permission-modal" data-backdrop="static">security</i>
+			</div>
+			<div class="button-icon-gap" />
 
 			<div id="space-invite-button" class="button-icon-gray align-middle" data-toggle="tooltip" data-placement="top" title="Invite to space">
 				<i class="material-icons" data-toggle="modal" data-target="#space-invite-modal" data-backdrop="static">person_add</i>
@@ -104,3 +102,5 @@
 
 	{{/toolbar/t-actions}}
 {{/toolbar/t-toolbar}}
+
+{{folder/permission-admin folders=spaces folder=space}}

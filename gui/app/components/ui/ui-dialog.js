@@ -19,6 +19,7 @@ export default Component.extend({
 	title: 'Confirm',
 	show: false,
 	buttonType: 'btn-secondary',
+	size: '', // modal-lg, modal-sm
 
 	didInsertElement() {
 		this._super(...arguments);

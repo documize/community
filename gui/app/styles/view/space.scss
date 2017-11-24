@@ -118,4 +118,37 @@
 	}
 }
 
+.space-admin {
+	> .permission-table {
+		// width: 100%;
+		// overflow-x: auto;
 
+		> tbody, > thead {
+			> tr, > th {
+				> td, > th {
+					margin: 0;
+					padding: 10px 15px;
+					text-align: center;
+				}
+
+				> td:first-child {
+					text-align: left;
+				}
+			}
+		}
+
+		> thead {
+			> tr {
+				> th {
+					background-color: $color-off-white;
+					color: $color-gray;
+				}
+
+				> th:first-child {
+					background-color: $color-white !important;
+					border: none !important;
+				}
+			}
+		}
+	}
+}

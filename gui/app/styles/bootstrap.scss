@@ -98,5 +98,11 @@ $link-hover-decoration:     none;
 @import "node_modules/bootstrap/scss/utilities";
 @import "node_modules/bootstrap/scss/popover";
 @import "node_modules/bootstrap/scss/tooltip";
-// @import "node_modules/bootstrap/scss/images";
+@import "node_modules/bootstrap/scss/tables";
 // @import "node_modules/bootstrap/scss/navbar";
+// @import "node_modules/bootstrap/scss/images";
+
+
+.modal-80 {
+	max-width: 80% !important;
+}
