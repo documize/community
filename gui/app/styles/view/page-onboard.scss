@@ -2,7 +2,8 @@
     width: 100%;
     text-align: left;
     color: $color-off-black;
-    letter-spacing: 1px;
+	letter-spacing: 1px;
+	margin: 50px 0;
 
     .stage-1
     {
@@ -16,7 +17,7 @@
 
         img
         {
-            margin: 100px 0 0 200px;
+            // margin: 100px 0 0 200px;
         }
     }
 
@@ -39,7 +40,7 @@
 
         img
         {
-            margin: 100px 0 0 200px;
+            // margin: 100px 0 0 200px;
         }
     }
 
@@ -144,10 +145,6 @@
 
     .sidebar
     {
-        margin-left: -15px;
-        padding: 100px 50px 50px 50px;
-        overflow: auto;
-
         .logo
         {
             height: 62px;
@@ -177,9 +174,8 @@
     .rightbar
     {
         @extend .absolute-center;
-        height: 400px;
-        width: 500px;
-        margin-top: 200px;
+		height: 400px;
+        max-width: 500px;
         background-color: #f6f9fc;
         position: relative;
         border-radius: 10px;
