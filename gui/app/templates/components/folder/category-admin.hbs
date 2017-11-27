@@ -42,14 +42,14 @@
 									<i class="material-icons">edit</i>
 								</div>
 								<div class="button-icon-gap" />
-								<div id="{{concat 'delete-category-' cat.id}}" class="button-icon-gray align-middle" data-toggle="tooltip" data-placement="top" title="Delete" {{action 'onShowDelete' cat.id}}>
+								<div id="{{concat 'delete-category-' cat.id}}" class="button-icon-red align-middle" data-toggle="tooltip" data-placement="top" title="Delete" {{action 'onShowDelete' cat.id}}>
 									<i class="material-icons">delete</i>
 								</div>
 							{{/if}}
 						</div>
 					</div>
 				{{else}}
-					<div class="margin-top-30"><i>No categories defined yet</i></div>
+					<div class="margin-top-30"><i>No categories</i></div>
 				{{/each}}
 			</div>
 		</div>

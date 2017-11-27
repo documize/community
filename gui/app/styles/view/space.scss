@@ -167,7 +167,7 @@
 		> .item {
 			margin: 15px 0;
 			padding: 15px;
-			@include card-theme();
+			@include card();
 			@include ease-in();
 
 			> .category {

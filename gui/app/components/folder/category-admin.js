@@ -130,11 +130,13 @@ export default Component.extend(NotifierMixin, TooltipMixin, DropdownMixin, {
 
 		onEdit(id) {
 			this.setEdit(id, true);
+			this.removeTooltips();
 		},
 
 		onEditCancel(id) {
 			this.setEdit(id, false);
 			this.load();
+			this.renderTooltips();
 		},
 
 		onSave(id) {
@@ -150,6 +152,8 @@ export default Component.extend(NotifierMixin, TooltipMixin, DropdownMixin, {
 			this.get('categoryService').save(cat).then(() => {
 				this.load();
 			});
+
+			this.renderTooltips();
 		},
 
 		onShowAccessPicker(catId) {

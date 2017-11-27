@@ -470,6 +470,41 @@
 	}
 }
 
+.button-icon-theme {
+	display: inline-block;
+	cursor: default;
+	@include ease-in();
+
+	> i {
+		color: $color-primary;
+		font-size: 2rem;
+		@include ease-in();
+	}
+
+	&:hover {
+		> i {
+			color: darken($color-primary, 5%);
+		}
+	}
+}
+
+.button-icon-theme-light {
+	display: inline-block;
+	cursor: default;
+	@include ease-in();
+
+	> i {
+		color: $color-primary-light;
+		font-size: 2rem;
+		@include ease-in();
+	}
+
+	&:hover {
+		> i {
+			color: darken($color-primary-light, 5%);
+		}
+	}
+}
 .button-icon-small {
 	> i {
 		font-size: 1.3rem;
