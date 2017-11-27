@@ -1,13 +1,13 @@
 .auth-box {
+    display: inline-block;
 	height: 500px;
 	width: 500px;
-	background-color: $color-white;
-	border: 1px solid $color-border;
-    display: inline-block;
-    border-radius : 3px;
-	color: $color-off-black;
 	padding: 20px 50px;
+	background-color: $color-white;
+	color: $color-off-black;
 	@extend .absolute-center;
+	@include border-radius(3px);
+	@include shadow();
 
 	.logo {
 		text-align: center;

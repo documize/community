@@ -65,3 +65,8 @@
 		color: $color-primary;
 	}
 }
+
+@mixin shadow() {
+	box-shadow: 1px 1px 3px 0px rgba(211,211,211,1);
+}
+

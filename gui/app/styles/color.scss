@@ -105,9 +105,15 @@ $color-sidebar-toolbar: $color-sidebar-border;
 .background-color-off-white {
 	background-color: $color-off-white !important;
 }
-.background-color-primary {
-	background-color: $color-primary !important;
+.background-color-off-black {
+	background-color: $color-off-black !important;
 }
 .background-color-green {
 	background-color: $color-green !important;
+}
+.background-color-theme {
+	background-color: $color-primary !important;
+}
+.background-color-theme-light {
+	background-color: $color-primary-light !important;
 }

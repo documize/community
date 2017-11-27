@@ -100,9 +100,11 @@ export default Router.map(function () {
 	this.route('profile', {
 		path: 'profile'
 	});
+
 	this.route('search', {
 		path: 'search'
 	});
+
 	this.route('accounts', {
 		path: 'accounts'
 	});
@@ -114,6 +116,4 @@ export default Router.map(function () {
 	this.route('not-found', {
 		path: '/*wildcard'
 	});
-
-	// this.route('pods', function () {});
 });
