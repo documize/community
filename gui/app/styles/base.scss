@@ -25,12 +25,24 @@ body {
 }
 
 a {
+	@include ease-in();
 	color: $color-link;
 	text-decoration: none;
 	cursor: pointer;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
-	text-shadow: 1px 1px 1px rgba(0,0,0,0.004);
+	// text-shadow: 1px 1px 1px rgba(0,0,0,0.004);
+
+	a:focus,
+	a:hover {
+		text-decoration: none;
+	}
+}
+
+a.admin-link {
+	// color: $color-gray;
+	text-decoration: none;
+	font-weight: bold;
 
 	a:focus,
 	a:hover {

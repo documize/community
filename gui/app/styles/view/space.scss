@@ -119,10 +119,18 @@
 }
 
 .space-admin {
-	> .permission-table {
-		// width: 100%;
-		// overflow-x: auto;
+	> .title {
+		font-size: 1.5rem;
+		font-weight: bold;
+		color: $color-dark;
+	}
 
+	> .sub-title {
+		font-size: 1.1rem;
+		color: $color-gray;
+	}
+
+	> .permission-table {
 		> tbody, > thead {
 			> tr, > th {
 				> td, > th {
@@ -147,6 +155,52 @@
 				> th:first-child {
 					background-color: $color-white !important;
 					border: none !important;
+				}
+			}
+		}
+	}
+
+	> .categories {
+        padding: 0;
+        margin: 0;
+
+		> .item {
+			margin: 15px 0;
+			padding: 15px;
+			@include card-theme();
+			@include ease-in();
+
+			> .category {
+				display: inline-block;
+
+				> .name {
+					font-size: 1.2rem;
+					color: $color-primary;
+				}
+
+				> .info {
+					font-size: 0.9rem;
+					margin-top: 8px;
+					color: $color-gray;
+				}
+			}
+
+			> .buttons {
+				margin-top: 5px;
+			}
+
+			> .action {
+				display: inline-block;
+			}
+
+			> .input-control {
+				margin: 0;
+				display: inline-block;
+
+				> input {
+					margin: 0 0 8px 0;
+					padding: 0;
+					font-size: 1.2rem;
 				}
 			}
 		}

@@ -14,6 +14,7 @@ import { inject as service } from '@ember/service';
 import { all } from 'rsvp';
 import { schedule } from '@ember/runloop';
 import { gt } from '@ember/object/computed';
+import { computed } from '@ember/object';
 import AuthMixin from '../../mixins/auth';
 
 export default Component.extend(AuthMixin, {
@@ -23,6 +24,10 @@ export default Component.extend(AuthMixin, {
 	localStorage: service('localStorage'),
 	hasCategories: gt('categories.length', 0),
 	filteredDocs: [],
+	categoryLinkName: 'Manage',
+	spaceSettings: computed('permissions', function() {
+		return this.get('permissions.spaceOwner') || this.get('permissions.spaceManage');
+	}),
 
 	didReceiveAttrs() {
 		this._super(...arguments);
@@ -50,6 +55,7 @@ export default Component.extend(AuthMixin, {
 		});
 
 		this.set('categories', categories);
+		this.set('categoryLinkName', categories.length > 0 ? 'manage' : 'add');
 
 		schedule('afterRender', () => {
 			if (this.get('rootDocCount') > 0) {

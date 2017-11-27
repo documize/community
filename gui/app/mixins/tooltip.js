@@ -10,9 +10,21 @@
 // https://documize.com
 
 import Mixin from '@ember/object/mixin';
+import { schedule } from '@ember/runloop';
 
 export default Mixin.create({
-    tooltips: [],
+	tooltips: [],
+
+	renderTooltips() {
+		schedule('afterRender', () => {
+			$('[data-toggle="tooltip"]').tooltip('dispose');
+			$('body').tooltip({selector: '[data-toggle="tooltip"]', delay: 250});
+		});
+	},
+
+	removeTooltips() {
+		$('[data-toggle="tooltip"]').tooltip('dispose');
+	},
 
     addTooltip(elem) {
         if (elem == null) {

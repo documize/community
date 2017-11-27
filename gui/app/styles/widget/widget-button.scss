@@ -452,6 +452,24 @@
 	}
 }
 
+.button-icon-black {
+	display: inline-block;
+	cursor: default;
+	@include ease-in();
+
+	> i {
+		color: $color-off-black;
+		font-size: 2rem;
+		@include ease-in();
+	}
+
+	&:hover {
+		> i {
+			color: darken($color-off-black, 5%);
+		}
+	}
+}
+
 .button-icon-small {
 	> i {
 		font-size: 1.3rem;

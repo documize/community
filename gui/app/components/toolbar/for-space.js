@@ -14,9 +14,10 @@ import { schedule } from '@ember/runloop';
 import { computed } from '@ember/object';
 import { inject as service } from '@ember/service';
 import NotifierMixin from '../../mixins/notifier';
+import TooltipMixin from '../../mixins/tooltip';
 import AuthMixin from '../../mixins/auth';
 
-export default Component.extend(NotifierMixin, AuthMixin, {
+export default Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 	spaceService: service('folder'),
 	session: service(),
 	appMeta: service(),
@@ -75,15 +76,7 @@ export default Component.extend(NotifierMixin, AuthMixin, {
 
 	willDestroyElement() {
 		this._super(...arguments);
-
-		$('[data-toggle="tooltip"]').tooltip('dispose');
-	},
-
-	renderTooltips() {
-		schedule('afterRender', () => {
-			$('[data-toggle="tooltip"]').tooltip('dispose');
-			$('body').tooltip({selector: '[data-toggle="tooltip"]', delay: 250});
-		});
+		this.removeTooltips();
 	},
 
 	getDefaultInvitationMessage() {

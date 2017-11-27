@@ -1,34 +1,43 @@
 {{folder/space-heading space=space permissions=permissions }}
 
-{{#if hasCategories}}
-	<div class="clearfix">
-		<div class="float-left mr-5">
-			<div class="view-space">
-				<div class="filter-caption mt-4">{{documents.length}} documents</div>
-				<ul class="tabnav-control">
-					<li class="tab {{if spaceSelected 'selected'}}" {{action 'onDocumentFilter' 'space' space.id}}>All ({{documents.length}})</li>
+<div class="clearfix">
+	<div class="float-left mr-5">
+		<div class="view-space">
+			<div class="filter-caption mt-4">{{documents.length}} documents</div>
+			<ul class="tabnav-control">
+				<li class="tab {{if spaceSelected 'selected'}}" {{action 'onDocumentFilter' 'space' space.id}}>All ({{documents.length}})</li>
+				{{#if hasCategories}}
 					{{#if (gt rootDocCount 0)}}
 						<li class="tab {{if uncategorizedSelected 'selected'}}" {{action 'onDocumentFilter' 'uncategorized' space.id}}>Uncategorized ({{rootDocCount}})</li>
 					{{/if}}
-				</ul>
-			</div>
-		</div>
-		<div class="float-left">
-			<div class="view-space">
-				<div class="filter-caption mt-4">{{categories.length}} categories</div>
-				<ul class="tabnav-control">
-					{{#each categories as |cat index|}}
-						<li class="tab {{if cat.selected 'selected'}}" {{action 'onDocumentFilter' 'category' cat.id}}>{{cat.category}} ({{cat.docCount}})</li>
-					{{/each}}
-				</ul>
-			</div>
+				{{/if}}
+			</ul>
 		</div>
 	</div>
-{{else}}
-	<div class="view-space">
-		<div class="filter-caption">{{documents.length}} documents</div>
+	<div class="float-left">
+		<div class="view-space">
+			<div class="filter-caption mt-4">
+				{{categories.length}} categories
+				{{#if hasCategories}}
+					{{#if spaceSettings}}
+						&nbsp;&nbsp;{{#link-to 'folder.category' space.id space.slug class="admin-link margin-top-5"}}{{categoryLinkName}}&nbsp;&rarr;{{/link-to}}
+					{{/if}}
+				{{/if}}
+			</div>
+			<ul class="tabnav-control">
+				{{#each categories as |cat index|}}
+					<li class="tab {{if cat.selected 'selected'}}" {{action 'onDocumentFilter' 'category' cat.id}}>{{cat.category}} ({{cat.docCount}})</li>
+				{{/each}}
+			</ul>
+
+			{{#unless hasCategories}}
+				{{#if spaceSettings}}
+					{{#link-to 'folder.category' space.id space.slug class="admin-link margin-top-5"}}{{categoryLinkName}}&nbsp;&rarr;{{/link-to}}
+				{{/if}}
+			{{/unless}}
+		</div>
 	</div>
-{{/if}}
+</div>
 
 {{folder/documents-list documents=filteredDocs spaces=spaces space=space
 	templates=templates permissions=permissions
