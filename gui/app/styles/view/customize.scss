@@ -1,15 +1,11 @@
-.page-customize {
-	> .auth-admin, > .general-admin, > .license-admin, > .smtp-admin, > .space-admin {
-		@include content-container();
-	}
-
-	> .add-user {
-		@include content-container();
-		margin-bottom: 50px;
+.view-customize {
+	.admin-heading {
+		font-size: 1.5rem;
+		font-weight: bold;
+		color: $color-black;
 	}
 
 	> .user-admin {
-		@include content-container();
 		margin: 30px 0;
 
 		> .heading {
@@ -94,13 +90,21 @@
 		}
 	}
 
-	.edit-user-dialog, .delete-user-dialog, .delete-space-dialog {
+	.edit-user-dialog, .delete-user-dialog {
 		display: none;
 	}
 
-	.manage-space-list {
+	> .space-list {
+        padding: 0;
+        margin: 0;
+
 		> .space {
-			margin: 20px 0;
+			margin: 15px 0;
+			padding: 15px;
+			@include card();
+			@include ease-in();
+			font-size: 1.2rem;
+			color: $color-primary;
 		}
 	}
 }

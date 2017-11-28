@@ -14,16 +14,13 @@
 @import "base.scss";
 @import "bootstrap.scss";
 
-@import "widget/widget.scss";
-@import "view/layout.scss"; // junk?
-@import "view/page-search.scss";
-@import "view/page-customize.scss";
-@import "view/page-auth.scss";
-@import "view/page-onboard.scss";
-@import "view/page-exceptions.scss";
-@import "view/document/all.scss";
-@import "view/common.scss";
 
+@import "view/layout.scss"; // junk?
+@import "view/document/all.scss";
+
+
+@import "view/common.scss";
+@import "widget/widget.scss";
 @import "view/navigation.scss";
 @import "view/toolbar.scss";
 @import "view/views.scss";

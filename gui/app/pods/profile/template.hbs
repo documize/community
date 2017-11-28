@@ -1,5 +1,13 @@
 {{layout/nav-bar}}
 
 <div class="container">
+	{{#toolbar/t-toolbar}}
+		{{#toolbar/t-links}}
+			{{#link-to "folders" class="link" tagName="li"}}SPACES{{/link-to}}
+		{{/toolbar/t-links}}
+		{{#toolbar/t-actions}}
+		{{/toolbar/t-actions}}
+	{{/toolbar/t-toolbar}}
+
 	{{user-profile model=model save=(action 'save')}}
 </div>

@@ -31,7 +31,6 @@ export default Component.extend(NotifierMixin, TooltipMixin, DropdownMixin, {
 		this.load();
 	},
 
-
 	willDestroyElement() {
 		this._super(...arguments);
 		this.removeTooltips();

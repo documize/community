@@ -55,17 +55,6 @@ a.broken-link {
 	text-decoration: line-through;
 }
 
-a.alt {
-	color: $color-blue;
-	text-decoration: none;
-	cursor: pointer;
-
-	a:focus,
-	a:hover {
-		text-decoration: underline;
-	}
-}
-
 .no-outline {
 	outline: none !important;
 	border: none !important;

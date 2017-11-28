@@ -10,12 +10,10 @@
 // https://documize.com
 
 import { inject as service } from '@ember/service';
-
 import Controller from '@ember/controller';
-import NotifierMixin from '../../../mixins/notifier';
-import DropdownMixin from '../../../mixins/dropdown';
+import TooltipMixin from '../../../mixins/tooltip';
 
-export default Controller.extend(NotifierMixin, DropdownMixin, {
+export default Controller.extend(TooltipMixin, {
 	folderService: service('folder'),
 	folders: [],
 	dropdown: null,
@@ -33,34 +31,9 @@ export default Controller.extend(NotifierMixin, DropdownMixin, {
 		}
 	}.property('folders'),
 
-
-	willDestroyElement() {
-		this._super(...arguments);
-		this.destroyDropdown();
-	},
-
 	actions: {
-		onShow(spaceId) {
-			this.set('deleteSpace.id', spaceId);
-			this.set('deleteSpace.name', '');
-			$(".delete-space-dialog").css("display", "block");
-			$('#delete-space-name').removeClass('error');
-
-			this.closeDropdown();
-
-			let dropOptions = Object.assign(this.get('dropDefaults'), {
-				target: $("#delete-space-button-" + spaceId)[0],
-				content: $(".delete-space-dialog")[0],
-				classes: 'drop-theme-basic',
-				position: "bottom right",
-				remove: false});
-
-			let drop = new Drop(dropOptions);
-			this.set('dropdown', drop);
-		},
-
-		onCancel() {
-			this.closeDropdown();
+		onShow(id) {
+			this.set('deleteSpace.id', id);
 		},
 
 		onDelete() {
@@ -71,16 +44,16 @@ export default Controller.extend(NotifierMixin, DropdownMixin, {
 			let spaceName = space.get('name');
 
 			if (spaceNameTyped !== spaceName || spaceNameTyped === '' || spaceName === '') {
-				$('#delete-space-name').addClass('error').focus();
+				$('#delete-space-name').addClass('is-invalid').focus();
 				return;
 			}
 
-			this.closeDropdown();
+			$('#space-delete-modal').modal('hide');
+			$('#space-delete-modal').modal('dispose');
 
 			this.get('folderService').delete(spaceId).then(() => { /* jshint ignore:line */
 				this.set('deleteSpace.id', '');
 				this.set('deleteSpace.name', '');
-				this.showNotification("Deleted");
 
 				this.get('folderService').adminList().then((folders) => {
 					let nonPrivateFolders = folders.rejectBy('folderType', 2);
