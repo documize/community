@@ -20,7 +20,10 @@ export default Component.extend(AuthProvider, {
 	password: { password: "", confirmation: "" },
 	hasFirstnameError: empty('model.firstname'),
 	hasLastnameError: empty('model.lastname'),
-	hasEmailError: empty('model.email'),
+	hasEmailError: computed('model.email', function() {
+		let email = this.get('model.email');
+		return isEmpty(email) || is.not.email(email);
+	}),
 	hasPasswordError: computed('passwordError', 'password.password', {
 		get() {
 			if (isPresent(this.get('passwordError'))) {
@@ -35,10 +38,10 @@ export default Component.extend(AuthProvider, {
 	hasConfirmPasswordError: computed('confirmPasswordError', {
 		get() {
 			if (isPresent(this.get("confirmPasswordError"))) {
-				return `error`;
+				return `is-invalid`;
 			}
 
-			return;
+			return '';
 		}
 	}),
 
