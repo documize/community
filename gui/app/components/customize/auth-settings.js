@@ -10,16 +10,14 @@
 // https://documize.com
 
 import { equal, empty } from '@ember/object/computed';
-
 import { set } from '@ember/object';
 import { copy } from '@ember/object/internals';
 import { inject as service } from '@ember/service';
 import Component from '@ember/component';
 import constants from '../../utils/constants';
 import encoding from '../../utils/encoding';
-import NotifierMixin from "../../mixins/notifier";
 
-export default Component.extend(NotifierMixin, {
+export default Component.extend({
 	appMeta: service(),
 	isDocumizeProvider: equal('authProvider', constants.AuthProvider.Documize),
 	isKeycloakProvider: equal('authProvider', constants.AuthProvider.Keycloak),
@@ -29,7 +27,7 @@ export default Component.extend(NotifierMixin, {
 	KeycloakPublicKeyError: empty('keycloakConfig.publicKey'),
 	KeycloakAdminUserError: empty('keycloakConfig.adminUser'),
 	KeycloakAdminPasswordError: empty('keycloakConfig.adminPassword'),
-	keycloakConfig: { 
+	keycloakConfig: {
 		url: '',
 		realm: '',
 		clientId: '',
@@ -128,7 +126,7 @@ export default Component.extend(NotifierMixin, {
 					set(config, 'publicKey', encoding.Base64.encode(this.get('keycloakConfig.publicKey')));
 					break;
 			}
-			
+
 			let data = { authProvider: provider, authConfig: JSON.stringify(config) };
 
 			this.get('onSave')(data).then(() => {
@@ -138,18 +136,15 @@ export default Component.extend(NotifierMixin, {
 							this.showNotification(response.message);
 							data.authProvider = constants.AuthProvider.Documize;
 							this.get('onSave')(data).then(() => {
-								this.showNotification('Reverted back to Documize');
 							});
 						} else {
 							if (data.authProvider === this.get('appMeta.authProvider')) {
-								this.showNotification(response.message);
+								// this.showNotification(response.message);
 							} else {
 								this.get('onChange')(data);
 							}
 						}
 					});
-				} else {
-					this.showNotification('Saved');
 				}
 			});
 		}
