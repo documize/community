@@ -1,8 +1,13 @@
 .view-customize {
-	.admin-heading {
+	> .admin-heading {
 		font-size: 1.5rem;
 		font-weight: bold;
 		color: $color-black;
+	}
+
+	> .sub-heading {
+		font-size: 1.1rem;
+		color: $color-gray;
 	}
 
 	> .user-admin {

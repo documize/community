@@ -10,26 +10,15 @@
 // https://documize.com
 
 import { inject as service } from '@ember/service';
-
 import Controller from '@ember/controller';
-import NotifierMixin from "../../../mixins/notifier";
 
-export default Controller.extend(NotifierMixin, {
+export default Controller.extend({
 	global: service(),
 
 	actions: {
 		saveSMTP() {
 			if(this.get('session.isGlobalAdmin')) {
 				return this.get('global').saveSMTPConfig(this.model.smtp).then(() => {
-					this.showNotification('Saved');
-				});
-			}
-		},
-
-		saveLicense() {
-			if(this.get('session.isGlobalAdmin')) {
-				return this.get('global').saveLicense(this.model.license).then(() => {
-					this.showNotification('Saved');
 				});
 			}
 		}

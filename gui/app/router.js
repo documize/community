@@ -55,8 +55,11 @@ export default Router.map(function () {
 		this.route('folders', {
 			path: 'folders'
 		});
-		this.route('global', {
-			path: 'global'
+		this.route('smtp', {
+			path: 'smtp'
+		});
+		this.route('license', {
+			path: 'license'
 		});
 		this.route('auth', {
 			path: 'auth'

@@ -10,7 +10,6 @@
 // https://documize.com
 
 import { inject as service } from '@ember/service';
-
 import Route from '@ember/routing/route';
 import RSVP from 'rsvp';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
@@ -28,12 +27,11 @@ export default Route.extend(AuthenticatedRouteMixin, {
 
 	model() {
 		return RSVP.hash({
-			smtp: this.get('global').getSMTPConfig(),
-			license: this.get('global').getLicense()
+			smtp: this.get('global').getSMTPConfig()
 		});
 	},
 
 	activate() {
-		document.title = "Settings | Documize";
+		document.title = "SMTP | Documize";
 	}
 });

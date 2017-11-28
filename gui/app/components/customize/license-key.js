@@ -9,15 +9,16 @@
 //
 // https://documize.com
 
-import { inject as service } from '@ember/service';
-import Controller from '@ember/controller';
+import { empty } from '@ember/object/computed';
+import Component from '@ember/component';
 
-export default Controller.extend({
-	orgService: service('organization'),
+export default Component.extend({
+	LicenseError: empty('model.license'),
 
 	actions: {
-		save() {
-			return this.get('orgService').save(this.model.general).then(() => {
+		saveLicense() {
+			this.get('saveLicense')().then(() => {
+				window.location.reload();
 			});
 		}
 	}

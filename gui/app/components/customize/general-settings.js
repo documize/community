@@ -9,9 +9,8 @@
 //
 // https://documize.com
 
-import { empty, and } from '@ember/object/computed';
-
 import $ from 'jquery';
+import { empty, and } from '@ember/object/computed';
 import Component from '@ember/component';
 import { isEmpty } from '@ember/utils';
 import { set } from '@ember/object';

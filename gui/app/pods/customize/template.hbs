@@ -16,7 +16,8 @@
 				{{#link-to 'customize.folders' activeClass='selected' class="tab" tagName="li"}}Spaces{{/link-to}}
 				{{#link-to 'customize.users' activeClass='selected' class="tab" tagName="li"}}Users{{/link-to}}
 				{{#if session.isGlobalAdmin}}
-					{{#link-to 'customize.global' activeClass='selected' class="tab" tagName="li"}}Global{{/link-to}}
+					{{#link-to 'customize.smtp' activeClass='selected' class="tab" tagName="li"}}SMTP{{/link-to}}
+					{{#link-to 'customize.license' activeClass='selected' class="tab" tagName="li"}}License{{/link-to}}
 					{{#link-to 'customize.auth' activeClass='selected' class="tab" tagName="li"}}Authentication{{/link-to}}
 				{{/if}}
 			</ul>

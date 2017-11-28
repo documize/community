@@ -10,7 +10,6 @@
 // https://documize.com
 
 import { empty } from '@ember/object/computed';
-
 import Component from '@ember/component';
 
 export default Component.extend({
@@ -44,12 +43,6 @@ export default Component.extend({
 			}
 
 			this.get('saveSMTP')().then(() => {
-			});
-		},
-
-		saveLicense() {
-			this.get('saveLicense')().then(() => {
-				window.location.reload();
 			});
 		}
 	}
