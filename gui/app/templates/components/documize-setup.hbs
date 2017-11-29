@@ -1,36 +1,32 @@
 <div class="col-lg-9 col-md-9 col-sm-9">
-	<form {{action "save" on="submit"}}>
-		<div class="form-bordered">
-			<div class="form-header">
-				<div class="title">Let's setup Documize</div>
-				<div class="tip">Database: <b>{{model.dbname}}</b></div>
-			</div>
-			<div class="input-control input-transparent">
-				<label>Team</label>
-				<div class="tip">What's your tribe called?</div>
-				{{focus-input id="siteTitle" type="text" value=model.title class=(if hasEmptyTitleError 'error')}}
-			</div>
-			<div class="input-control input-transparent">
-				<label>Firstname</label>
-				<div class="tip">What do people call you?</div>
-				{{input id="adminFirstname" type="text" value=model.firstname class=(if hasEmptyFirstnameError 'error')}}
-			</div>
-			<div class="input-control input-transparent">
-				<label>Lastname</label>
-				<div class="tip">How the government refers to you</div>
-				{{input id="adminLastname" type="text" value=model.lastname class=(if hasEmptyLastnameError 'error')}}
-			</div>
-			<div class="input-control input-transparent">
-				<label>Email</label>
-				<div class="tip">No spam. Ever!</div>
-				{{input id="adminEmail" type="email" value=model.email class=(if hasEmptyEmailError 'error')}}
-			</div>
-			<div class="input-control input-transparent">
-				<label>Password</label>
-				<div class="tip">Something you can remember without writing it down.</div>
-				{{input id="adminPassword" type="text" value=model.password class=(if hasEmptyPasswordError 'error')}}
-			</div>
-			<button type="submit" class="regular-button button-green" {{action 'save'}}>Setup</button>
+	<h1>Let's setup Documize</h1>
+	<h3>Database: {{model.dbname}}</h3>
+	<form class="my-5" {{action "save" on="submit"}}>
+		<div class="form-group">
+			<label>Team</label>
+			{{focus-input id="siteTitle" type="text" value=model.title class=(if hasEmptyTitleError 'form-control error' 'form-control')}}
+			<small class="form-text text-muted">What's your tribe called?</small>
 		</div>
+		<div class="form-group">
+			<label for="adminFirstname">Firstname</label>
+			{{input id="adminFirstname" type="text" value=model.firstname class=(if hasEmptyFirstnameError 'form-control error' 'form-control')}}
+			<small class="form-text text-muted">What do people call you?</small>
+		</div>
+		<div class="form-group">
+			<label for="adminLastname">Lastname</label>
+			{{input id="adminLastname" type="text" value=model.lastname class=(if hasEmptyLastnameError 'form-control error' 'form-control')}}
+			<small class="form-text text-muted">How the government refers to you</small>
+		</div>
+		<div class="form-group">
+			<label for="adminEmail">Email</label>
+			{{input id="adminEmail" type="email" value=model.email class=(if hasEmptyEmailError 'form-control error' 'form-control')}}
+			<small class="form-text text-muted">No spam. Ever.</small>
+		</div>
+		<div class="form-group">
+			<label for="adminPassword">Password</label>
+			{{input id="adminPassword" type="password" value=model.password class=(if hasEmptyPasswordError 'form-control error' 'form-control')}}
+			<small class="form-text text-muted">Something you can remember without writing it down</small>
+		</div>
+		<button type="submit" class="btn bt-success mt-5" {{action 'save'}}>Setup</button>
 	</form>
 </div>

@@ -36,6 +36,11 @@ export default Route.extend({
 	},
 
 	activate() {
+		$('body').addClass('background-color-theme-light');
 		document.title = "Documize Setup";
+	},
+
+	deactivate() {
+		$('body').removeClass('background-color-theme-light');
 	}
 });

@@ -10,12 +10,10 @@
 // https://documize.com
 
 import { inject as service } from '@ember/service';
-
 import Controller from '@ember/controller';
-import NotifierMixin from "../../mixins/notifier";
 import Encoding from "../../utils/encoding";
 
-export default Controller.extend(NotifierMixin, {
+export default Controller.extend({
 	ajax: service(),
 
 	actions: {
