@@ -10,12 +10,10 @@
 // https://documize.com
 
 import { set } from '@ember/object';
-
 import { inject as service } from '@ember/service';
 import Controller from '@ember/controller';
-import NotifierMixin from '../../../mixins/notifier';
 
-export default Controller.extend(NotifierMixin, {
+export default Controller.extend({
 	userService: service('user'),
 	newUser: { firstname: "", lastname: "", email: "", active: true },
 
@@ -26,7 +24,6 @@ export default Controller.extend(NotifierMixin, {
 			return this.get('userService')
 				.add(this.get('newUser'))
 				.then((user) => {
-					this.showNotification('Added');
 					this.get('model').pushObject(user);
 				})
 				.catch(function (error) {
@@ -38,8 +35,6 @@ export default Controller.extend(NotifierMixin, {
 		onDelete(userId) {
 			let self = this;
 			this.get('userService').remove(userId).then(function () {
-				self.showNotification('Deleted');
-
 				self.get('userService').getComplete().then(function (users) {
 					self.set('model', users);
 				});
@@ -49,7 +44,6 @@ export default Controller.extend(NotifierMixin, {
 		onSave(user) {
 			let self = this;
 			this.get('userService').save(user).then(function () {
-				self.showNotification('Saved');
 
 				self.get('userService').getComplete().then(function (users) {
 					self.set('model', users);
@@ -59,7 +53,6 @@ export default Controller.extend(NotifierMixin, {
 
 		onPassword(user, password) {
 			this.get('userService').updatePassword(user.id, password);
-			this.showNotification('Password changed');
 		}
 	}
 });

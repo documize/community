@@ -10,70 +10,17 @@
 		color: $color-gray;
 	}
 
-	> .user-admin {
-		margin: 30px 0;
-
-		> .heading {
-			font-size: 1.2rem;
-			color: $color-off-black;
-			font-weight: bold;
-			margin: 0 0 20px 0;
-		}
-
-		> .basic-table {
-			background-color: $color-white;
-			border: none !important;
+	.user-table {
+		.name {
 			font-size: 1rem;
 			color: $color-off-black;
+			margin: 0 0 0 30px;
+		}
 
-			> thead {
-				> tr {
-					> th {
-						height: 40px;
-						font-weight: bold;
-						color: $color-gray;
-					}
-
-					> th:first-child {
-						font-weight: normal;
-					}
-
-					> th:last-child {
-						text-align: center;
-					}
-				}
-			}
-
-			> tbody {
-				> tr {
-					> td {
-						vertical-align: middle;
-						text-align: center;
-
-						> .selector {
-							> i {
-								color: $color-off-black;
-							}
-						}
-
-						> .name {
-							font-size: 1rem;
-							color: $color-off-black;
-							margin: 0 0 0 30px;
-						}
-
-						> .email {
-							font-size: 0.9rem;
-							color: $color-gray;
-							margin: 0 0 0 30px;
-						}
-					}
-
-					> td:first-child, td:last-child {
-						text-align: left;
-					}
-				}
-			}
+		.email {
+			font-size: 0.9rem;
+			color: $color-gray;
+			margin: 0 0 0 30px;
 		}
 
 		.inactive-user
@@ -93,10 +40,6 @@
 			color: $color-checkbox;
 			cursor: pointer;
 		}
-	}
-
-	.edit-user-dialog, .delete-user-dialog {
-		display: none;
 	}
 
 	> .space-list {

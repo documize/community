@@ -10,7 +10,6 @@
 // https://documize.com
 
 import { empty, and } from '@ember/object/computed';
-
 import Component from '@ember/component';
 import { isEmpty } from '@ember/utils';
 import { get, set } from '@ember/object';

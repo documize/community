@@ -9,9 +9,8 @@
 //
 // https://documize.com
 
-import { debounce } from '@ember/runloop';
-
 import Component from '@ember/component';
+import { schedule, debounce } from '@ember/runloop';
 import AuthProvider from '../../mixins/auth';
 import DropdownMixin from '../../mixins/dropdown';
 
@@ -24,6 +23,7 @@ export default Component.extend(AuthProvider, DropdownMixin, {
 	filteredUsers: [],
 	selectedUsers: [],
 	hasSelectedUsers: false,
+	showDeleteDialog: false,
 
 	didReceiveAttrs() {
 		this._super(...arguments);
@@ -37,11 +37,6 @@ export default Component.extend(AuthProvider, DropdownMixin, {
 
 		this.set('users', users);
 		this.set('filteredUsers', users);
-	},
-
-	willDestroyElement() {
-		this._super(...arguments);
-		this.destroyDropdown();
 	},
 
 	onKeywordChange: function () {
@@ -101,76 +96,45 @@ export default Component.extend(AuthProvider, DropdownMixin, {
 			this.attrs.onSave(user);
 		},
 
-		edit(id) {
-			let self = this;
-
+		onShowEdit(id) {
 			let user = this.users.findBy("id", id);
 			let userCopy = user.getProperties('id', 'created', 'revised', 'firstname', 'lastname', 'email', 'initials', 'active', 'editor', 'admin', 'viewUsers', 'accounts');
+
 			this.set('editUser', userCopy);
 			this.set('password', {
 				password: "",
 				confirmation: ""
 			});
-			$(".edit-user-dialog").css("display", "block");
-			$("input").removeClass("error");
 
-			this.closeDropdown();
-
-			let dropOptions = Object.assign(this.get('dropDefaults'), {
-				target: $(".edit-button-" + id)[0],
-				content: $(".edit-user-dialog")[0],
-				classes: 'drop-theme-basic',
-				position: "bottom right",
-				remove: false});
-
-			let drop = new Drop(dropOptions);
-			self.set('dropdown', drop);
-
-			drop.on('open', function () {
-				self.$("#edit-firstname").focus();
+			$('#edit-user-modal').on('show.bs.modal', function(event) { // eslint-disable-line no-unused-vars
+				schedule('afterRender', () => {
+					$("#edit-firstname").focus();
+				});
 			});
+
+			$('#edit-user-modal').modal('dispose');
+			$('#edit-user-modal').modal({show: true});
 		},
 
-		confirmDelete(id) {
-			let user = this.users.findBy("id", id);
-			this.set('deleteUser', user);
-			$(".delete-user-dialog").css("display", "block");
-
-			this.closeDropdown();
-
-			let dropOptions = Object.assign(this.get('dropDefaults'), {
-				target: $(".delete-button-" + id)[0],
-				content: $(".delete-user-dialog")[0],
-				classes: 'drop-theme-basic',
-				position: "bottom right",
-				remove: false});
-
-			let drop = new Drop(dropOptions);
-			this.set('dropdown', drop);
-		},
-
-		cancel() {
-			this.closeDropdown();
-		},
-
-		save() {
+		onUpdate() {
 			let user = this.get('editUser');
 			let password = this.get('password');
 
 			if (is.empty(user.firstname)) {
-				$("#edit-firstname").addClass("error").focus();
+				$("#edit-firstname").addClass("is-invalid").focus();
 				return;
 			}
 			if (is.empty(user.lastname)) {
-				$("#edit-lastname").addClass("error").focus();
+				$("#edit-lastname").addClass("is-invalid").focus();
 				return;
 			}
-			if (is.empty(user.email)) {
-				$("#edit-email").addClass("error").focus();
+			if (is.empty(user.email) || is.not.email(user.email)) {
+				$("#edit-email").addClass("is-invalid").focus();
 				return;
 			}
 
-			this.closeDropdown();
+			$('#edit-user-modal').modal('hide');
+			$('#edit-user-modal').modal('dispose');
 
 			this.attrs.onSave(user);
 
@@ -180,12 +144,19 @@ export default Component.extend(AuthProvider, DropdownMixin, {
 			}
 		},
 
-		delete() {
-			this.closeDropdown();
+		onShowDelete(id) {
+			this.set('deleteUser', this.users.findBy("id", id));
+			this.set('showDeleteDialog', true);
+		},
+
+		onDelete() {
+			this.set('showDeleteDialog', false);
 
 			this.set('selectedUsers', []);
 			this.set('hasSelectedUsers', false);
 			this.attrs.onDelete(this.get('deleteUser.id'));
+
+			return true;
 		},
 
 		onBulkDelete() {
