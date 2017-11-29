@@ -1,29 +1,40 @@
-{{#layout/zone-container}}
-	{{#layout/zone-sidebar}}
-		<div class="sidebar-common">
-			{{layout/sidebar-intro title="Search" message='Search across document name, contents, tags and attachment filenames'}}
-		</div>
-		<div class="sidebar-wrapper">
-			<div class="page-search">
-				<div class="input-control">
-					{{focus-input type="text" value=filter placeholder='type search phrase'}}
-					{{#ui/ui-checkbox selected=matchDoc}}document name{{/ui/ui-checkbox}}
-					{{#ui/ui-checkbox selected=matchContent}}content{{/ui/ui-checkbox}}
-					{{#ui/ui-checkbox selected=matchTag}}tag{{/ui/ui-checkbox}}
-					{{#ui/ui-checkbox selected=matchFile}}attachment name{{/ui/ui-checkbox}}
-				</div>
-				<div class="examples">
-					<p>a OR b</p>
-					<p>x AND y</p>
-					<p>"phrase match"</p>
-					<p>* for wildcard match</p>
-				</div>
+{{layout/nav-bar}}
+
+<div class="container">
+	{{#toolbar/t-toolbar}}
+		{{#toolbar/t-links}}
+			{{#link-to "folders" class="link" tagName="li"}}SPACES{{/link-to}}
+		{{/toolbar/t-links}}
+		{{#toolbar/t-actions}}
+		{{/toolbar/t-actions}}
+	{{/toolbar/t-toolbar}}
+
+	<div class="view-search mt-5">
+		<div class="heading">Search</div>
+		<div class="form-group mt-4">
+			{{focus-input type="text" value=filter class="form-control mb-4" placeholder='a OR b, x AND y, "phrase mat*"'}}
+			<div class="form-check form-check-inline">
+				<label class="form-check-label">
+					{{input type="checkbox" id=checkId class="form-check-input" checked=matchDoc}} document title
+				</label>
+			</div>
+			<div class="form-check form-check-inline">
+				<label class="form-check-label">
+					{{input type="checkbox" id=checkId class="form-check-input" checked=matchContent}} content
+				</label>
+			</div>
+			<div class="form-check form-check-inline">
+				<label class="form-check-label">
+					{{input type="checkbox" id=checkId class="form-check-input" checked=matchTag}} tag name
+				</label>
+			</div>
+			<div class="form-check form-check-inline">
+				<label class="form-check-label">
+					{{input type="checkbox" id=checkId class="form-check-input" checked=matchFile}} attachment name
+				</label>
 			</div>
 		</div>
-	{{/layout/zone-sidebar}}
-	{{#layout/zone-content}}
-		<div class="page-search">
-			{{search/search-results results=results}}
-		</div>
-	{{/layout/zone-content}}
-{{/layout/zone-container}}
+
+		{{search/search-results results=results}}
+	</div>
+</div>
