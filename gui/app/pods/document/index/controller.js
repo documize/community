@@ -31,7 +31,9 @@ export default Controller.extend(NotifierMixin, TooltipMixin, {
 	actions: {
 		onSaveDocument(doc) {
 			this.get('documentService').save(doc);
-			this.showNotification('Saved');
+
+			this.get('browser').setTitle(doc.get('name'));
+			this.get('browser').setMetaDescription(doc.get('excerpt'));
 		},
 
 		onCopyPage(pageId, targetDocumentId) {

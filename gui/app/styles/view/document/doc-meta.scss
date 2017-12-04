@@ -1,12 +1,41 @@
-.document-space {
-	display: inline-block;
+.view-document {
+	> .document-heading {
+		margin-top: 3rem;
 
-	> .caption {
-		text-transform: uppercase;
-		color: $color-gray;
-		font-weight: bold;
-		font-size: 1.0rem;
-		margin: 0 0 10px 0;
+		.doc-title {
+			font-size: 2rem;
+			margin: 50px 0 10px;
+			font-weight: normal;
+		}
+
+		.doc-excerpt {
+			font-size: 1.2rem;
+			color: $color-gray;
+			margin: 0 0 45px;
+		}
+	}
+
+	> .document-heading-edit {
+		margin-top: 5.5rem;
+		margin-bottom: 3rem;
+	}
+
+	> .document-customfields {
+		margin-bottom: 4rem;
+
+		.heading {
+			font-size: 1.1rem;
+			font-weight: bold;
+			color: $color-gray;
+			text-align: left;
+		}
+
+		.value {
+			font-size: 1.1rem;
+			font-weight: normal;
+			color: $color-black;
+			text-align: left;
+		}
 	}
 }
 
@@ -32,15 +61,6 @@
 	overflow-y: auto;
 	margin: 0;
 	padding: 0;
-
-	// // Medium devices (tablets, 768px and up)
-	// @media (min-width: 768px) { height: 300px; }
-
-	// // Large devices (desktops, 992px and up)
-	// @media (min-width: 992px) { height: 400px; }
-
-	// // Extra large devices (large desktops, 1200px and up)
-	// @media (min-width: 1200px) { height: 500px; }
 }
 
 .document-tags {

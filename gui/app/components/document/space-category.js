@@ -13,6 +13,7 @@ import { computed } from '@ember/object';
 
 import { inject as service } from '@ember/service';
 import Component from '@ember/component';
+import { A } from "@ember/array"
 import TooltipMixin from '../../mixins/tooltip';
 import NotifierMixin from '../../mixins/notifier';
 
@@ -21,7 +22,7 @@ export default Component.extend(TooltipMixin, NotifierMixin, {
 	categoryService: service('category'),
 	sessionService: service('session'),
 	newCategory: '',
-	categories: [],
+	categories: A([]),
 	hasCategories: computed('categories', function() {
 		return this.get('categories').length > 0;
 	}),
@@ -32,10 +33,6 @@ export default Component.extend(TooltipMixin, NotifierMixin, {
 		return this.get('permissions.spaceOwner') || this.get('permissions.spaceManage');
 	}),
 
-	init() {
-		this._super(...arguments);
-	},
-
 	didReceiveAttrs() {
 		this._super(...arguments);
 		this.load();
@@ -43,12 +40,12 @@ export default Component.extend(TooltipMixin, NotifierMixin, {
 
 	load() {
 		this.get('categoryService').getUserVisible(this.get('folder.id')).then((categories) => {
-			this.set('categories', categories);
+			let cats = A(categories);
+			this.set('categories', cats);
 			this.get('categoryService').getDocumentCategories(this.get('document.id')).then((selected) => {
 				this.set('selectedCategories', selected);
 				selected.forEach((s) => {
-					let cats = this.set('categories', categories);
-					let cat = categories.findBy('id', s.id);
+					let cat = cats.findBy('id', s.id);
 					if (is.not.undefined(cat)) {
 						cat.set('selected', true);
 						this.set('categories', cats);

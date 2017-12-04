@@ -10,14 +10,11 @@
 // https://documize.com
 
 import { empty } from '@ember/object/computed';
-
 import { schedule } from '@ember/runloop';
 import { inject as service } from '@ember/service';
 import Component from '@ember/component';
-import NotifierMixin from '../../mixins/notifier';
-import TooltipMixin from '../../mixins/tooltip';
 
-export default Component.extend(NotifierMixin, TooltipMixin, {
+export default Component.extend({
 	folderService: service('folder'),
 	spaceName: '',
 	hasNameError: empty('spaceName'),

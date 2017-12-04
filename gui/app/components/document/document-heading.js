@@ -10,14 +10,11 @@
 // https://documize.com
 
 import { empty } from '@ember/object/computed';
-
 import { schedule } from '@ember/runloop';
 import { inject as service } from '@ember/service';
 import Component from '@ember/component';
-import NotifierMixin from '../../mixins/notifier';
-import TooltipMixin from '../../mixins/tooltip';
 
-export default Component.extend(NotifierMixin, TooltipMixin, {
+export default Component.extend({
 	documentService: service('document'),
 	editMode: false,
 	docName: '',
@@ -49,14 +46,9 @@ export default Component.extend(NotifierMixin, TooltipMixin, {
 
 			this.set('document.name', this.get('docName'));
 			this.set('document.excerpt', this.get('docExcerpt'));
-
-			this.showNotification('Saved');
-			this.get('browser').setTitle(this.get('document.name'));
-			this.get('browser').setMetaDescription(this.get('document.excerpt'));
-			
-			this.get('documentService').save(this.get('document'));
-
 			this.set('editMode', false);
+
+			this.attrs.onSaveDocument(this.get('document'));
 		},
 
 		onCancel() {
