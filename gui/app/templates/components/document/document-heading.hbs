@@ -1,7 +1,12 @@
 {{#unless editMode}}
 	<div class="view-document">
 		<div class="document-heading {{if permissions.documentEdit 'cursor-pointer'}}" onclick={{if permissions.documentEdit (action 'toggleEdit')}}>
-			<h1 class="doc-title">{{document.name}}</h1>
+			<h1 class="doc-title">
+				{{#if document.template}}
+					<span class="bg-warning p-1 pr-2 pl-2">Template</span>&nbsp;&nbsp;
+				{{/if}}
+				{{document.name}}
+			</h1>
 			<div class="doc-excerpt">{{document.excerpt}}</div>
 		</div>
 	</div>

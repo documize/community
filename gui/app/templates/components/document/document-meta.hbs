@@ -1,0 +1,48 @@
+<div class="view-document">
+	<div class="document-customfields">
+
+		<div class="row">
+			<div class="col-2 heading">Categories
+				{{#if canSelectCategory}}
+					<div class="action-button button-icon-green button-icon-small align-middle" {{action 'onShowCategoryModal'}}>
+						<i class="material-icons align-middle">edit</i>
+					</div>
+				{{/if}}
+			</div>
+			<div class="col-10 value">
+				{{#each selectedCategories as |cat|}}
+					{{#link-to 'folder' folder.id folder.slug (query-params category=cat.id)}}
+						{{cat.category}}
+					{{/link-to}}
+					&nbsp;
+				{{else}}
+					{{#if canAddCategory}}
+						{{#if canSelectCategory}}
+							<a href="#" {{action 'onShowCategoryModal'}}>&lt;select&gt;</a>
+						{{else}}
+							{{#link-to 'folder.category' folder.id folder.slug class='non-printable'}}Manage{{/link-to}}
+						{{/if}}
+					{{/if}}
+				{{/each}}
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-2 heading">Tags</div>
+			<div class="col-10 value">
+				{{#each tagz as |t index|}}
+					<a href="/search?tag={{t}}">{{concat '#' t}}</a>&nbsp;&nbsp;
+				{{/each}}
+			</div>
+		</div>
+
+	</div>
+</div>
+
+{{#if permissions.documentEdit}}
+	{{#ui/ui-dialog title="Set Document Cateogories" confirmCaption="Select" buttonType="btn-outline-success" show=showCategoryModal onAction=(action 'onSaveCategory')}}
+		<p>Select who can view documents within category</p>
+		{{ui/ui-list-picker items=categories nameField='category' singleSelect=false}}
+	{{/ui/ui-dialog}}
+{{/if}}
+

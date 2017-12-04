@@ -10,19 +10,17 @@
 // https://documize.com
 
 import { computed } from '@ember/object';
-
 import { inject as service } from '@ember/service';
 import Component from '@ember/component';
 import { A } from "@ember/array"
-import TooltipMixin from '../../mixins/tooltip';
-import NotifierMixin from '../../mixins/notifier';
 
-export default Component.extend(TooltipMixin, NotifierMixin, {
+export default Component.extend({
     documentService: service('document'),
 	categoryService: service('category'),
 	sessionService: service('session'),
 	newCategory: '',
 	categories: A([]),
+	showCategoryModal: false,
 	hasCategories: computed('categories', function() {
 		return this.get('categories').length > 0;
 	}),
@@ -53,10 +51,26 @@ export default Component.extend(TooltipMixin, NotifierMixin, {
 				});
 			});
 		});
+
+		let tagz = [];
+        if (!_.isUndefined(this.get('document.tags')) && this.get('document.tags').length > 1) {
+            let tags = this.get('document.tags').split('#');
+            _.each(tags, function(tag) {
+                if (tag.length > 0) {
+                    tagz.pushObject(tag);
+                }
+            });
+        }
+
+        this.set('tagz', A(tagz));
 	},
 
     actions: {
-		onSave() {
+		onShowCategoryModal() {
+			this.set('showCategoryModal', true);
+		},
+
+		onSaveCategory() {
 			let docId = this.get('document.id');
 			let folderId = this.get('folder.id');
 			let link = this.get('categories').filterBy('selected', true);
@@ -85,6 +99,8 @@ export default Component.extend(TooltipMixin, NotifierMixin, {
 
 				toUnlink.pushObject(t);
 			});
+
+			this.set('showCategoryModal', false);
 
 			this.get('categoryService').setCategoryMembership(toUnlink, 'unlink').then(() => {
 				this.get('categoryService').setCategoryMembership(toLink, 'link').then(() => {

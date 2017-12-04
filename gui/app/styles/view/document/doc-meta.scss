@@ -23,18 +23,34 @@
 	> .document-customfields {
 		margin-bottom: 4rem;
 
-		.heading {
-			font-size: 1.1rem;
-			font-weight: bold;
-			color: $color-gray;
-			text-align: left;
-		}
+		.row {
+			padding: 5px 0;
+			margin-bottom: 10px;
 
-		.value {
-			font-size: 1.1rem;
-			font-weight: normal;
-			color: $color-black;
-			text-align: left;
+			&:hover {
+				.action-button {
+					visibility: visible;
+				}
+			}
+
+			.heading {
+				font-size: 1.1rem;
+				font-weight: bold;
+				color: $color-gray;
+				text-align: left;
+			}
+
+			.action-button {
+				visibility: hidden;
+				margin-left: 15px;
+			}
+
+			.value {
+				font-size: 1.1rem;
+				font-weight: normal;
+				color: $color-black;
+				text-align: left;
+			}
 		}
 	}
 }
