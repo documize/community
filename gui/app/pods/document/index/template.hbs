@@ -1,13 +1,7 @@
 {{layout/nav-bar}}
 
 <div class="container">
-	{{#toolbar/t-toolbar}}
-		{{#toolbar/t-links}}
-			{{#link-to "folders" class="link" tagName="li"}}Spaces{{/link-to}}
-			{{#link-to "folder" model.folder.id model.folder.slug class="link" tagName="li"}}{{model.folder.name}}{{/link-to}}
-		{{/toolbar/t-links}}
-	{{/toolbar/t-toolbar}}
-
+	{{toolbar/for-document document=model.document spaces=model.folders space=model.folder permissions=model.permissions}}
 	{{document/document-heading document=model.document permissions=model.permissions onSaveDocument=(action 'onSaveDocument')}}
 	{{document/document-meta document=model.document folder=model.folder folders=model.folders permissions=model.permissions onSaveDocument=(action 'onSaveDocument')}}
 

@@ -1,0 +1,27 @@
+{{#toolbar/t-toolbar}}
+
+	{{#toolbar/t-links}}
+		{{#link-to "folders" class="link" tagName="li"}}Spaces{{/link-to}}
+		{{#link-to "folder" space.id space.slug class="link" tagName="li"}}{{space.name}}{{/link-to}}
+	{{/toolbar/t-links}}
+
+	{{#toolbar/t-actions}}
+		<div id="document-print-button" class="button-icon-gray align-middle" data-toggle="tooltip" data-placement="top" title="Print" {{action 'onPrintDocument'}}>
+			<i class="material-icons">print</i>
+		</div>
+		<div class="button-icon-gap" />
+
+		{{#if pinState.isPinned}}
+			<div id="document-pin-button" class="button-icon-gold align-middle" data-toggle="tooltip" data-placement="top" title="Remove favorite" {{action 'onUnpin'}}>
+				<i class="material-icons">star</i>
+			</div>
+			{{!-- <div class="button-icon-gap" /> --}}
+		{{else if session.authenticated}}
+			<div id="document-pin-button" class="button-icon-gray align-middle" data-toggle="tooltip" data-placement="top" title="Save favorite" {{action 'onPin'}}>
+				<i class="material-icons">star</i>
+			</div>
+			{{!-- <div class="button-icon-gap" /> --}}
+		{{/if}}
+	{{/toolbar/t-actions}}
+
+{{/toolbar/t-toolbar}}
