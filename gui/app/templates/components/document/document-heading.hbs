@@ -17,7 +17,7 @@
 				{{focus-input id="document-name" type="text" value=docName class=(if hasNameError 'form-control mousetrap is-invalid' 'form-control mousetrap') placeholder="Title" autocomplete="off"}}
 			</div>
 			<div class="form-group">
-				{{input id="document-excerpt" type="text" value=docExcerpt class=(if hasExcerptError 'form-control mousetrap is-invalid' 'form-control mousetrap') placeholder="Excerpt" autocomplete="off"}}
+				{{textarea id="document-excerpt" rows="2" value=docExcerpt class=(if hasExcerptError 'form-control mousetrap is-invalid' 'form-control mousetrap') placeholder="Excerpt" autocomplete="off"}}
 			</div>
 			<button type="submit" class="btn btn-outline-secondary" {{action "onCancel"}}>Cancel</button>
 			<button type="submit" class="btn btn-success" {{action "onSave"}}>Save</button>

@@ -58,7 +58,9 @@ export default Component.extend(AuthMixin, {
 		this.set('categoryLinkName', categories.length > 0 ? 'manage' : 'add');
 
 		schedule('afterRender', () => {
-			if (this.get('rootDocCount') > 0) {
+			if (this.get('categoryFilter') !== '') {
+				this.send('onDocumentFilter', 'category', this.get('categoryFilter'));
+			} else if (this.get('rootDocCount') > 0) {
 				this.send('onDocumentFilter', 'space', this.get('folder.id'));
 			} else if (selectedCategory !== '') {
 				this.send('onDocumentFilter', 'category', selectedCategory);
@@ -67,20 +69,6 @@ export default Component.extend(AuthMixin, {
 	},
 
 	actions: {
-		zonMoveDocumentz(documents, targetSpaceId) {
-			let self = this;
-
-			documents.forEach(function (documentId) {
-				self.get('documentService').getDocument(documentId).then(function (doc) {
-					doc.set('folderId', targetSpaceId);
-					doc.set('selected', false);
-					self.get('documentService').save(doc).then(function () {
-						self.attrs.onRefresh();
-					});
-				});
-			});
-		},
-
 		onMoveDocument(documents, targetSpaceId) {
 			let self = this;
 			let promises1 = [];
@@ -140,6 +128,7 @@ export default Component.extend(AuthMixin, {
 						}
 					});
 
+					this.set('categoryFilter', id);
 					this.set('spaceSelected', false);
 					this.set('uncategorizedSelected', false);
 					break;
@@ -152,6 +141,7 @@ export default Component.extend(AuthMixin, {
 						}
 					});
 
+					this.set('categoryFilter', '');
 					this.set('uncategorizedSelected', true);
 					this.set('spaceSelected', false);
 					break;
@@ -162,6 +152,7 @@ export default Component.extend(AuthMixin, {
 						filtered.pushObject(d);
 					});
 
+					this.set('categoryFilter', '');
 					this.set('spaceSelected', true);
 					this.set('uncategorizedSelected', false);
 					break;

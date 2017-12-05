@@ -18,6 +18,8 @@ export default Controller.extend(NotifierMixin, {
 	documentService: service('document'),
 	folderService: service('folder'),
 	localStorage: service('localStorage'),
+	queryParams: ['category'],
+	category: '',
 
 	actions: {
 		onAddSpace(payload) {

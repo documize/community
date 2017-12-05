@@ -30,7 +30,9 @@
 			<div class="col-2 heading">Tags</div>
 			<div class="col-10 value">
 				{{#each tagz as |t index|}}
-					<a href="/search?tag={{t}}">{{concat '#' t}}</a>&nbsp;&nbsp;
+					{{#link-to 'search' (query-params filter=t matchTag=true)}}
+						{{concat '#' t}}
+					{{/link-to}}&nbsp;&nbsp;
 				{{/each}}
 				{{#if canSelectCategory}}
 					<div class="action-button button-icon-gray button-icon-small align-middle" data-toggle="modal" data-target="#document-tags-modal" data-backdrop="static">
