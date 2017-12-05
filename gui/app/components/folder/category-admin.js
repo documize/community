@@ -11,11 +11,10 @@
 
 import Component from '@ember/component';
 import { inject as service } from '@ember/service';
-import NotifierMixin from '../../mixins/notifier';
 import TooltipMixin from '../../mixins/tooltip';
-import DropdownMixin from '../../mixins/dropdown';
+import ModalMixin from '../../mixins/modal';
 
-export default Component.extend(NotifierMixin, TooltipMixin, DropdownMixin, {
+export default Component.extend(ModalMixin, TooltipMixin, {
 	userService: service('user'),
 	categoryService: service('category'),
 	appMeta: service(),
@@ -114,13 +113,11 @@ export default Component.extend(NotifierMixin, TooltipMixin, DropdownMixin, {
 			let cat = this.get('category').findBy('id', id);
 			this.set('deleteId', cat.get('id'));
 
-			$('#category-delete-modal').modal('dispose');
-			$('#category-delete-modal').modal({show: true});
+			this.modalOpen('#category-delete-modal', {show: true});
 		},
 
 		onDelete() {
-			$('#category-delete-modal').modal('hide');
-			$('#category-delete-modal').modal('dispose');
+			this.modalClose('#category-delete-modal');
 
 			this.get('categoryService').delete(this.get('deleteId')).then(() => {
 				this.load();

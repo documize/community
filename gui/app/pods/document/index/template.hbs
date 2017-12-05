@@ -1,29 +1,31 @@
 {{layout/nav-bar}}
 
 <div class="container">
-	{{toolbar/for-document document=model.document spaces=model.folders space=model.folder permissions=model.permissions}}
+	{{toolbar/for-document document=model.document spaces=model.folders space=model.folder permissions=model.permissions onDocumentDelete=(action 'onDocumentDelete') onSaveTemplate=(action 'onSaveTemplate')}}
+
 	{{document/document-heading document=model.document permissions=model.permissions onSaveDocument=(action 'onSaveDocument')}}
+
 	{{document/document-meta document=model.document folder=model.folder folders=model.folders permissions=model.permissions onSaveDocument=(action 'onSaveDocument')}}
 
-	<div id="zone-document-content" class="zone-document-content">
-		<div class="document-header-zone">
-			{{document/document-toolbar
-				document=model.document folder=model.folder folders=model.folders permissions=model.permissions
-				onDocumentDelete=(action 'onDocumentDelete') onSaveTemplate=(action 'onSaveTemplate')
-				onPageSequenceChange=(action 'onPageSequenceChange') onPageLevelChange=(action 'onPageLevelChange')
-				onGotoPage=(action 'onGotoPage')}}
-		</div>
+	<ul class="tabnav-control">
+		<li class="tab selected">Content</li>
+		<li class="tab {{if contentSelected 'selected'}}">Attachments</li>
+		<li class="tab {{if contentSelected 'selected'}}">Activity</li>
+		<li class="tab {{if contentSelected 'selected'}}">Revisions</li>
+	</ul>
 
+	{{document/document-view
+		document=model.document links=model.links pages=model.pages
+		folder=model.folder folders=model.folders sections=model.sections permissions=model.permissions pageId=pageId
+		onSavePage=(action 'onSavePage') onInsertSection=(action 'onInsertSection')
+		onSavePageAsBlock=(action 'onSavePageAsBlock') onDeleteBlock=(action 'onDeleteBlock') onGotoPage=(action 'onGotoPage')
+		onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onPageDeleted')}}
+
+	<div id="zone-document-content" class="zone-document-content">
 		{{document/document-sidebar tab=tab
 			document=model.document folder=model.folder pages=model.pages page=model.page permissions=model.permissions
 			onPageSequenceChange=(action 'onPageSequenceChange') onPageLevelChange=(action 'onPageLevelChange')
 			onGotoPage=(action 'onGotoPage')}}
-
-		{{document/document-view
-			document=model.document links=model.links pages=model.pages
-			folder=model.folder folders=model.folders sections=model.sections permissions=model.permissions pageId=pageId
-			onSavePage=(action 'onSavePage') onInsertSection=(action 'onInsertSection')
-			onSavePageAsBlock=(action 'onSavePageAsBlock') onDeleteBlock=(action 'onDeleteBlock') onGotoPage=(action 'onGotoPage')
-			onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onPageDeleted')}}
 	</div>
+
 </div>

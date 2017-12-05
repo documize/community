@@ -1,0 +1,26 @@
+.document-structure {
+	margin: 0 0 0 0;
+
+	.page-toolbar {
+		text-align: right;
+	}
+
+	.page-header {
+		margin: 0 0 0.7rem 0;
+
+		> .page-number {
+			color: $color-dark;
+			background-color: $color-gray-light2;
+			padding: 0.4rem 1rem;
+			font-size: 1.8rem;
+			margin: 0 1.5rem 0 0;
+			font-weight: normal;
+			text-align: center;
+			display: inline-block;
+		}
+
+		> .page-title {
+			display: inline-block;
+		}
+	}
+}

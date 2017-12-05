@@ -1,4 +1,4 @@
-<div id="page-{{ page.id }}" class="is-a-page wysiwyg" data-id="{{ page.id }}" data-type="{{ page.contentType }}">
+<div id="page-{{page.id}}" class="is-a-page wysiwyg" data-id="{{ page.id }}" data-type="{{page.contentType}}">
 	{{#if editMode}}
 		{{document/document-editor document=document folder=folder page=page meta=meta onCancel=(action 'onCancelEdit') onAction=(action 'onSavePage')}}
 	{{else}}

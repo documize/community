@@ -10,12 +10,12 @@
 // https://documize.com
 
 import Component from '@ember/component';
-// import { schedule } from '@ember/runloop';
 import { inject as service } from '@ember/service';
 import AuthMixin from '../../mixins/auth';
 import TooltipMixin from '../../mixins/tooltip';
+import ModalMixin from '../../mixins/modal';
 
-export default Component.extend(TooltipMixin, AuthMixin, {
+export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 	spaceService: service('folder'),
 	session: service(),
 	appMeta: service(),
@@ -24,6 +24,10 @@ export default Component.extend(TooltipMixin, AuthMixin, {
 		isPinned: false,
 		pinId: '',
 		newName: ''
+	},
+	saveTemplate: {
+		name: '',
+		description: ''
 	},
 
 	didReceiveAttrs() {
@@ -37,10 +41,15 @@ export default Component.extend(TooltipMixin, AuthMixin, {
 			this.set('pinState.newName', doc.get('name'));
 			this.renderTooltips();
 		});
+
+		this.set('saveTemplate.name', this.get('document.name'));
+		this.set('saveTemplate.description', this.get('document.excerpt'));
 	},
 
 	didInsertElement() {
 		this._super(...arguments);
+
+		this.modalInputFocus('#document-template-modal', '#new-template-name');
 	},
 
 	willDestroyElement() {
@@ -49,6 +58,10 @@ export default Component.extend(TooltipMixin, AuthMixin, {
 	},
 
 	actions: {
+		onDocumentDelete() {
+			this.attrs.onDocumentDelete();
+		},
+
 		onPrintDocument() {
 			window.print();
 		},
@@ -77,6 +90,33 @@ export default Component.extend(TooltipMixin, AuthMixin, {
 				this.eventBus.publish('pinChange');
 				this.renderTooltips();
 			});
+
+			return true;
+		},
+
+		onSaveTemplate() {
+			let name = this.get('saveTemplate.name');
+			let excerpt = this.get('saveTemplate.description');
+
+			if (is.empty(name)) {
+				$("#new-template-name").addClass("is-invalid").focus();
+				return;
+			}
+
+			if (is.empty(excerpt)) {
+				$("#new-template-desc").addClass("is-invalid").focus();
+				return;
+			}
+
+			$("#new-template-name").removeClass("is-invalid");
+			$("#new-template-desc").removeClass("is-invalid");
+
+			this.set('saveTemplate.name', '');
+			this.set('saveTemplate.description', '');
+
+			this.attrs.onSaveTemplate(name, excerpt);
+
+			this.modalClose('#document-template-modal');
 
 			return true;
 		},

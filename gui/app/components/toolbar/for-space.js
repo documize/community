@@ -10,14 +10,14 @@
 // https://documize.com
 
 import Component from '@ember/component';
-import { schedule } from '@ember/runloop';
 import { computed } from '@ember/object';
 import { inject as service } from '@ember/service';
 import NotifierMixin from '../../mixins/notifier';
 import TooltipMixin from '../../mixins/tooltip';
+import ModalMixin from '../../mixins/modal';
 import AuthMixin from '../../mixins/auth';
 
-export default Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
+export default Component.extend(NotifierMixin, ModalMixin, TooltipMixin, AuthMixin, {
 	spaceService: service('folder'),
 	session: service(),
 	appMeta: service(),
@@ -53,25 +53,17 @@ export default Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 		});
 
 		this.set('movedFolderOptions', targets);
+
+		if (this.get('inviteMessage').length === 0) {
+			this.set('inviteMessage', this.getDefaultInvitationMessage());
+		}
 	},
 
 	didInsertElement() {
 		this._super(...arguments);
 
-		$('#space-delete-modal').on('show.bs.modal', function(event) { // eslint-disable-line no-unused-vars
-			schedule('afterRender', () => {
-				$("#delete-space-name").focus();
-			});
-		});
-
-		$('#space-invite-modal').on('show.bs.modal', () => { // eslint-disable-line no-unused-vars
-			schedule('afterRender', () => {
-				$("#space-invite-email").focus();
-				if (this.get('inviteMessage').length === 0) {
-					this.set('inviteMessage', this.getDefaultInvitationMessage());
-				}
-			});
-		});
+		this.modalInputFocus('#space-delete-modal', '#delete-space-name');
+		this.modalInputFocus('#space-invite-modal', '#space-invite-email');
 	},
 
 	willDestroyElement() {
@@ -151,8 +143,7 @@ export default Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 				$('#space-invite-email').removeClass('is-invalid');
 			});
 
-			$('#space-invite-modal').modal('hide');
-			$('#space-invite-modal').modal('dispose');
+			this.modalClose('#space-invite-modal');
 		},
 
 		onSpaceDelete(e) {
@@ -171,8 +162,8 @@ export default Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 
 			this.attrs.onDeleteSpace(this.get('space.id'));
 
-			$('#space-delete-modal').modal('hide');
-			$('#space-delete-modal').modal('dispose');
+
+			this.modalClose('#space-delete-modal');
 		},
 
 		onAddSpace(e) {

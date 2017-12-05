@@ -38,35 +38,7 @@
 		}
 	}
 
-	h1 {
-		font-size: 1.7rem;
-		font-weight: bold;
-		margin: 16px 0;
-	}
-
-	h2 {
-		font-size: 1.5rem;
-		font-weight: bold;
-		margin: 16px 0;
-	}
-
-	h3 {
-		font-size: 1.3rem;
-		font-weight: bold;
-		margin: 16px 0;
-	}
-
-	h4,
-	h5,
-	h6,
-	h7,
-	h8,
-	h9 {
-		font-size: 1.1rem;
-		font-weight: bold;
-		margin: 16px 0;
-	}
-
+	h1,
 	h2,
 	h3,
 	h4,
@@ -75,9 +47,10 @@
 	h7,
 	h8,
 	h9 {
-		.page-title {
-			color: $color-off-black;
-		}
+		font-size: 1.8rem;
+		font-weight: bold;
+		margin: 16px 0;
+		color: $color-dark;
 	}
 
 	pre {

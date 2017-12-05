@@ -1,6 +1,11 @@
-<div class="page-title">
-    <span id="page-title-{{ page.id }}">{{ page.title }}</span>
-    <div id="page-toolbar-{{ page.id }}" class="pull-right page-toolbar hidden-xs hidden-sm">
+<div class="row no-gutters document-structure">
+
+	<div id="page-title-{{ page.id }}" class="col-10 page-header">
+		<span class="page-number">1</span>
+		<span class="page-title">{{page.title}}</span>
+	</div>
+
+    <div id="page-toolbar-{{ page.id }}" class="col-2 page-toolbar">
         {{#if permissions.documentEdit}}
             <div class="round-button-mono" {{action 'onEdit'}}>
                 <i class="material-icons color-gray">mode_edit</i>
