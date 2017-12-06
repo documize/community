@@ -46,7 +46,7 @@
 </div>
 
 {{#if permissions.documentEdit}}
-	{{#ui/ui-dialog title="Document Categories" confirmCaption="Select" buttonType="btn-outline-success" show=showCategoryModal onAction=(action 'onSaveCategory')}}
+	{{#ui/ui-dialog title="Document Categories" confirmCaption="Select" buttonType="btn-success" show=showCategoryModal onAction=(action 'onSaveCategory')}}
 		<p>Select who can view documents within category</p>
 		{{ui/ui-list-picker items=categories nameField='category' singleSelect=false}}
 	{{/ui/ui-dialog}}
@@ -74,7 +74,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-					<button type="button" class="btn btn-outline-success" onclick={{action 'onSaveTags'}}>Save</button>
+					<button type="button" class="btn btn-success" onclick={{action 'onSaveTags'}}>Save</button>
 				</div>
 			</div>
 		</div>

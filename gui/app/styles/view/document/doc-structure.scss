@@ -1,11 +1,7 @@
 .document-structure {
 	margin: 0 0 0 0;
 
-	.page-toolbar {
-		text-align: right;
-	}
-
-	.page-header {
+	> .page-header {
 		margin: 0 0 0.7rem 0;
 
 		> .page-number {
@@ -21,6 +17,10 @@
 
 		> .page-title {
 			display: inline-block;
+			font-size: 1.8rem;
+			font-weight: bold;
+			margin: 16px 0;
+			color: $color-dark;
 		}
 	}
 }

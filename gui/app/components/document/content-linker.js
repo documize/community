@@ -10,7 +10,6 @@
 // https://documize.com
 
 import { debounce } from '@ember/runloop';
-
 import { computed, set } from '@ember/object';
 import Component from '@ember/component';
 import { inject as service } from '@ember/service';

@@ -10,65 +10,18 @@
 // https://documize.com
 
 import Component from '@ember/component';
-
 import { computed } from '@ember/object';
 import { inject as service } from '@ember/service';
-import TooltipMixin from '../../mixins/tooltip';
+import { A } from "@ember/array"
+import ModalMixin from '../../mixins/modal';
 
-export default Component.extend(TooltipMixin, {
+export default Component.extend(ModalMixin, {
 	documentService: service('document'),
 	deleteChildren: false,
-	menuOpen: false,
 	blockTitle: "",
 	blockExcerpt: "",
-	documentList: [], 		//includes the current document
-	documentListOthers: [], //excludes the current document
-	selectedDocument: null,
-
-	checkId: computed('page', function () {
-		let id = this.get('page.id');
-		return `delete-check-button-${id}`;
-	}),
-	menuTarget: computed('page', function () {
-		let id = this.get('page.id');
-		return `page-menu-${id}`;
-	}),
-	deleteButtonId: computed('page', function () {
-		let id = this.get('page.id');
-		return `delete-page-button-${id}`;
-	}),
-	publishButtonId: computed('page', function () {
-		let id = this.get('page.id');
-		return `publish-button-${id}`;
-	}),
-	publishDialogId: computed('page', function () {
-		let id = this.get('page.id');
-		return `publish-dialog-${id}`;
-	}),
-	blockTitleId: computed('page', function () {
-		let id = this.get('page.id');
-		return `block-title-${id}`;
-	}),
-	blockExcerptId: computed('page', function () {
-		let id = this.get('page.id');
-		return `block-excerpt-${id}`;
-	}),
-	copyButtonId: computed('page', function () {
-		let id = this.get('page.id');
-		return `copy-page-button-${id}`;
-	}),
-	copyDialogId: computed('page', function () {
-		let id = this.get('page.id');
-		return `copy-dialog-${id}`;
-	}),
-	moveButtonId: computed('page', function () {
-		let id = this.get('page.id');
-		return `move-page-button-${id}`;
-	}),
-	moveDialogId: computed('page', function () {
-		let id = this.get('page.id');
-		return `move-dialog-${id}`;
-	}),
+	documentList: A([]), 		//includes the current document
+	documentListOthers: A([]), 	//excludes the current document
 
 	hasMenuPermissions: computed('permissions', function() {
 		let permissions = this.get('permissions');
@@ -77,48 +30,57 @@ export default Component.extend(TooltipMixin, {
 			permissions.get('documentMove') || permissions.get('documentTemplate');
 	}),
 
-	didRender() {
-		$("#" + this.get('blockTitleId')).removeClass('error');
-		$("#" + this.get('blockExcerptId')).removeClass('error');
+	didReceiveAttrs() {
+		this._super(...arguments);
+
+		// Fetch document targets once
+		if (this.get('documentList').length > 0) {
+			return;
+		}
+
+		this.load();
+	},
+
+	load() {
+		this.get('documentService').getPageMoveCopyTargets().then((d) => {
+			let me = this.get('document');
+
+			d.forEach((i) => {
+				i.set('selected', false);
+			});
+
+			this.set('documentList', A(d));
+			this.set('documentListOthers', A(d.filter((item) => item.get('id') !== me.get('id'))));
+		});
 	},
 
 	actions: {
-		onMenuOpen() {
-			if ($('#' + this.get('publishDialogId')).is( ":visible" )) {
-				return;
-			}
-			if ($('#' + this.get('copyDialogId')).is( ":visible" )) {
-				return;
-			}
-			if ($('#' + this.get('moveDialogId')).is( ":visible" )) {
-				return;
-			}
-
-			this.set('menuOpen', !this.get('menuOpen'));
-		},
-
 		onEdit() {
 			this.attrs.onEdit();
 		},
 
-		deletePage() {
+		onDeletePage() {
 			this.attrs.onDeletePage(this.get('deleteChildren'));
+
+			this.load();
+
+			this.modalClose('#delete-page-modal-' + this.get('page.id'));
 		},
 
 		onSavePageAsBlock() {
 			let page = this.get('page');
-			let titleElem = '#' + this.get('blockTitleId');
+			let titleElem = '#block-title-' + page.get('id');
 			let blockTitle = this.get('blockTitle');
 			if (is.empty(blockTitle)) {
-				$(titleElem).addClass('error');
+				$(titleElem).addClass('is-invalid');
 				return;
 			}
 
-			let excerptElem = '#' + this.get('blockExcerptId');
+			let excerptElem = '#block-desc-' + page.get('id');
 			let blockExcerpt = this.get('blockExcerpt');
 			blockExcerpt = blockExcerpt.replace(/\n/g, "");
 			if (is.empty(blockExcerpt)) {
-				$(excerptElem).addClass('error');
+				$(excerptElem).addClass('is-invalid');
 				return;
 			}
 
@@ -140,29 +102,13 @@ export default Component.extend(TooltipMixin, {
 				this.set('menuOpen', false);
 				this.set('blockTitle', '');
 				this.set('blockExcerpt', '');
-				$(titleElem).removeClass('error');
-				$(excerptElem).removeClass('error');
+				$(titleElem).removeClass('is-invalid');
+				$(excerptElem).removeClass('is-invalid');
 
-				return true;
+				this.load();
+
+				this.modalClose('#publish-page-modal-' + this.get('page.id'));
 			});
-		},
-
-		// Copy/move actions
-		onCopyDialogOpen() {
-			// Fetch document targets once.
-			if (this.get('documentList').length > 0) {
-				return;
-			}
-
-			this.get('documentService').getPageMoveCopyTargets().then((d) => {
-				let me = this.get('document');
-				this.set('documentList', d);
-				this.set('documentListOthers', d.filter((item) => item.get('id') !== me.get('id')));
-			});
-		},
-
-		onTargetChange(d) {
-			this.set('selectedDocument', d);
 		},
 
 		onCopyPage() {
@@ -171,13 +117,18 @@ export default Component.extend(TooltipMixin, {
 				return;
 			}
 
-			let targetDocumentId = this.get('document.id');
-			if (is.not.null(this.get('selectedDocument'))) {
-				targetDocumentId = this.get('selectedDocument.id');
+			let targetDocumentId = this.get('documentList').findBy('selected', true).get('id');
+
+			// fall back to self
+			if (is.null(targetDocumentId)) {
+				targetDocumentId = this.get('document.id');
 			}
 
 			this.attrs.onCopyPage(targetDocumentId);
-			return true;
+
+			this.load();
+
+			this.modalClose('#copy-page-modal-' + this.get('page.id'));
 		},
 
 		onMovePage() {
@@ -186,14 +137,18 @@ export default Component.extend(TooltipMixin, {
 				return;
 			}
 
-			if (is.null(this.get('selectedDocument'))) {
-				this.set('selectedDocument', this.get('documentListOthers')[0]);
+			let targetDocumentId = this.get('documentListOthers').findBy('selected', true).get('id');
+
+			// fall back to first document
+			if (is.null(targetDocumentId)) {
+				targetDocumentId = this.get('documentListOthers')[0].get('id');
 			}
 
-			let targetDocumentId = this.get('selectedDocument.id');
-
 			this.attrs.onMovePage(targetDocumentId);
-			return true;
+
+			this.load();
+
+			this.modalClose('#move-page-modal-' + this.get('page.id'));
 		}
 	}
 });

@@ -10,13 +10,23 @@
 // https://documize.com
 
 import { set } from '@ember/object';
-
 import Component from '@ember/component';
+import { computed } from '@ember/object';
 
 export default Component.extend({
 	nameField: 'category',
 	singleSelect: false,
 	items: [],
+	maxHeight: 0,
+	styleCss: computed('maxHeight', function () {
+		let height = this.get('maxHeight');
+
+		if (height > 0) {
+			return `overflow-y: scroll; max-height: ${height}px;`;
+		} else {
+			return '';
+		}
+	}),
 
 	actions: {
 		onToggle(item) {
