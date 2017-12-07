@@ -7,7 +7,7 @@
 				<div class="container">
 
 					<div class="row">
-						<div class="col">
+						<div class="col mt-3 mb-5">
 							<ul class="tabnav-control text-center">
 								<li class="tab {{if tab1Selected 'selected'}}" {{action 'onTabSelect' 1}}>Section</li>
 								<li class="tab {{if tab2Selected 'selected'}}" {{action 'onTabSelect' 2}}>Attachment</li>
@@ -19,15 +19,8 @@
 					{{#if showSections}}
 						<div class="row">
 							<div class="col content-linker-modal-container">
-								<ul class="link-list">
-									{{#each candidates.pages as |p|}}
-										<li class="link-item" {{ action 'setSelection' p }}>
-											{{#ui/ui-selection selected=p.selected}}
-												{{p.title}}
-											{{/ui/ui-selection}}
-										</li>
-									{{/each}}
-								</ul>
+								<p>Link to content within this document</p>
+								{{ui/ui-list-picker items=candidates.pages nameField='title' singleSelect=true onSelect=(action 'setSelection')}}
 							</div>
 						</div>
 					{{/if}}
@@ -35,16 +28,22 @@
 					{{#if showAttachments}}
 						<div class="row">
 							<div class="col content-linker-modal-container">
-								<ul class="link-list">
-									{{#each candidates.attachments as |a|}}
-										<li class="link-item" {{ action 'setSelection' a }}>
-											{{#ui/ui-selection selected=a.selected}}
-												<img class="icon" src="/assets/img/attachments/{{document/file-icon a.context}}" />
-												{{ a.title }}
-											{{/ui/ui-selection}}
-										</li>
-									{{/each}}
-								</ul>
+								<p>Link to an attachment within this document</p>
+								<div class="widget-list-picker">
+									<ul class="options">
+										{{#each candidates.attachments as |item|}}
+											<li class="option {{if item.selected 'selected'}}" {{action 'setSelection' item}}>
+												<div class="text text-truncate">
+													<img class="icon" src="/assets/img/attachments/{{document/file-icon item.context}}" />
+													{{item.title}}
+												</div>
+												{{#if item.selected}}
+													<i class="material-icons">check</i>
+												{{/if}}
+											</li>
+										{{/each}}
+									</ul>
+								</div>
 							</div>
 						</div>
 					{{/if}}
@@ -60,30 +59,41 @@
 								{{#unless hasMatches}}
 								Nothing found.
 								{{/unless}}
-								<ul class="link-list">
-									{{#each matches.documents as |m|}}
-										<li class="link-item" {{ action 'setSelection' m }}>
-											{{#ui/ui-selection selected=m.selected}}
-												{{m.title}}<br/><span class="color-gray">{{m.context}}</span>
-											{{/ui/ui-selection}}
-										</li>
-									{{/each}}
-									{{#each matches.pages as |m|}}
-										<li class="link-item" {{ action 'setSelection' m }}>
-											{{#ui/ui-selection selected=m.selected}}
-												{{m.title}}<br/><span class="color-gray">{{m.context}}</span>
-											{{/ui/ui-selection}}
-										</li>
-									{{/each}}
-									{{#each matches.attachments as |a|}}
-										<li class="link-item" {{ action 'setSelection' a }}>
-											{{#ui/ui-selection selected=a.selected}}
-												<img class="icon" src="/assets/img/attachments/{{document/file-icon a.context}}" />
-												{{ a.title }}
-											{{/ui/ui-selection}}
-										</li>
-									{{/each}}
-								</ul>
+								<div class="widget-list-picker">
+									<ul class="options">
+										{{#each matches.documents as |item|}}
+											<li class="option {{if item.selected 'selected'}}" {{action 'setSelection' item}}>
+												<div class="text text-truncate">
+													{{item.title}}<br/>{{item.context}}
+												</div>
+												{{#if item.selected}}
+													<i class="material-icons">check</i>
+												{{/if}}
+											</li>
+										{{/each}}
+										{{#each matches.pages as |item|}}
+											<li class="option {{if item.selected 'selected'}}" {{action 'setSelection' item}}>
+												<div class="text text-truncate">
+													{{item.title}}<br/>{{item.context}}
+												</div>
+												{{#if item.selected}}
+													<i class="material-icons">check</i>
+												{{/if}}
+											</li>
+										{{/each}}
+										{{#each matches.attachments as |item|}}
+											<li class="option {{if item.selected 'selected'}}" {{action 'setSelection' item}}>
+												<div class="text text-truncate">
+													<img class="icon" src="/assets/img/attachments/{{document/file-icon item.context}}" />
+													{{item.title}}
+												</div>
+												{{#if item.selected}}
+													<i class="material-icons">check</i>
+												{{/if}}
+											</li>
+										{{/each}}
+									</ul>
+								</div>
 							</div>
 						</div>
 					{{/if}}

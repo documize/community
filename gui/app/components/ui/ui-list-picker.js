@@ -18,6 +18,7 @@ export default Component.extend({
 	singleSelect: false,
 	items: [],
 	maxHeight: 0,
+	onSelect: null,
 	styleCss: computed('maxHeight', function () {
 		let height = this.get('maxHeight');
 
@@ -30,6 +31,15 @@ export default Component.extend({
 
 	actions: {
 		onToggle(item) {
+			// callback takes precedence
+			// caller sets item to 'selected'
+			let cb = this.get('onSelect');
+			if (cb !== null) {
+				this.attrs.onSelect(item);
+				return;
+			}
+
+			// no callback, we mark item as selected
 			if (this.get('singleSelect')) {
 				let items = this.get('items');
 				items.forEach(item => {

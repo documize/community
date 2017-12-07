@@ -4,6 +4,7 @@
 	> .options {
 		width: 100%;
 		margin: 0 auto;
+		padding: 0;
 
 		> .option {
 			@include ease-in();
@@ -13,6 +14,8 @@
 			background-color: $color-off-white;
 			cursor: pointer;
 			position: relative;
+			list-style-type: none;
+		    line-height: 26px;
 
 			&:hover {
 				color: $color-black;
