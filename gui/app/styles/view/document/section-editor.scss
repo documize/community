@@ -1,3 +1,50 @@
+.section-editor {
+	> .edit-title {
+		margin: 16px 0;
+	}
+
+	> .canvas {
+		margin: 34px 0 0 0;
+	}
+}
+
+.content-linker-modal-container {
+	height: 500px;
+	overflow-y: auto;
+
+	.link-list {
+		margin: 0;
+		padding: 0;
+
+		.link-item {
+			margin: 0;
+			padding: 0;
+			font-size: 0.9rem;
+			color: $color-gray;
+			cursor: pointer;
+
+			.icon {
+				margin-right: 5px;
+				height: 15px;
+				width: 15px;
+			}
+		}
+	}
+}
+
+
+
+
+.section-editor-fullscreen {
+	@extend .transition-all;
+	@include border-radius(2px);
+	@include ease-in();
+	position: relative;
+	padding: 25px 50px;
+	box-shadow: 0 0 0 0.75pt $color-stroke,0 0 3pt 0.75pt $color-stroke;
+	background-color: $color-white;
+}
+
 .zone-section-editor {
 	margin-left: 60px;
 	padding: 20px 60px;
@@ -16,10 +63,6 @@
 		> .buttons {
 			margin-top: 17px;
 			float: right;
-		}
-
-		> .canvas {
-			padding: 0;
 		}
 
 		.cancel-edits-dialog {

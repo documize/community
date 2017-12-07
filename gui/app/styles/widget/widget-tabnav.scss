@@ -1,6 +1,7 @@
 .tabnav-control {
-	padding: 0;
-	margin: 0;
+	padding: 0 !important;
+	margin: 0 !important;
+	font-size: 0;
 
 	> .tab {
 		@include ease-in();
@@ -9,12 +10,15 @@
 		padding: 5px 15px;
 		background-color: $color-white;
 		color: $color-primary;
+		border: 1px solid $color-border;
 		font-weight: bold;
 		font-size: 1.1rem;
 		text-align: center;
 		cursor: pointer;
-		border: 1px solid $color-border;
-		margin: -1px 0 0 -5px;				// handles border overlap when tabs wrap onto 2nd line
+		line-height: 26px;
+		list-style-type: none;
+		// margin: -1px 0 0 -5px;		// handles border overlap when tabs wrap onto 2nd line
+		margin-left: -4px;				// remove whitespace inline block
 
 		&:first-of-type {
 			@include border-radius-left(3px);

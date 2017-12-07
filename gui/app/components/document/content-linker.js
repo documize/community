@@ -11,48 +11,45 @@
 
 import { debounce } from '@ember/runloop';
 import { computed, set } from '@ember/object';
-import Component from '@ember/component';
 import { inject as service } from '@ember/service';
+import Component from '@ember/component';
 import TooltipMixin from '../../mixins/tooltip';
+import ModalMixin from '../../mixins/modal';
 
-export default Component.extend(TooltipMixin, {
+export default Component.extend(ModalMixin, TooltipMixin, {
 	link: service(),
 	linkName: '',
-	keywords: '',
 	selection: null,
+
+	tab1Selected: true,
+	tab2Selected: false,
+	tab3Selected: false,
+	showSections: computed('tab1Selected', function() { return this.get('tab1Selected'); }),
+	showAttachments: computed('tab2Selected', function() { return this.get('tab2Selected'); }),
+	showSearch: computed('tab3Selected', function() { return this.get('tab3Selected'); }),
+
+	keywords: '',
 	matches: {
 		documents: [],
 		pages: [],
 		attachments: []
 	},
-	tabs: [
-		{ label: 'Section', selected: true },
-		{ label: 'Attachment', selected: false },
-		{ label: 'Search', selected: false }
-	],
-	contentLinkerButtonId: computed('page', function () {
-		let page = this.get('page');
-		return `content-linker-button-${page.id}`;
-	}),
-
-	showSections: computed('tabs.@each.selected', function () {
-		return this.get('tabs').findBy('label', 'Section').selected;
-	}),
-	showAttachments: computed('tabs.@each.selected', function () {
-		return this.get('tabs').findBy('label', 'Attachment').selected;
-	}),
-	showSearch: computed('tabs.@each.selected', function () {
-		return this.get('tabs').findBy('label', 'Search').selected;
-	}),
 	hasMatches: computed('matches', function () {
 		let m = this.get('matches');
 		return m.documents.length || m.pages.length || m.attachments.length;
 	}),
 
-	init() {
-		this._super(...arguments);
-		let self = this;
+	modalId: computed('page', function() { return '#content-linker-modal-' + this.get('page.id'); }),
+	showModal: false,
+	onToggle: function() {
+		let modalId = this.get('modalId');
 
+		if (!this.get('showModal')) {
+			this.modalClose(modalId);
+			return;
+		}
+
+		let self = this;
 		let folderId = this.get('folder.id');
 		let documentId = this.get('document.id');
 		let pageId = this.get('page.id');
@@ -62,18 +59,25 @@ export default Component.extend(TooltipMixin, {
 			self.set('hasSections', is.not.null(candidates.pages) && candidates.pages.length);
 			self.set('hasAttachments', is.not.null(candidates.attachments) && candidates.attachments.length);
 		});
-	},
+
+		this.modalOpen(modalId, {show: true});
+	}.observes('showModal'),
 
 	didRender() {
-		this.addTooltip(document.getElementById("content-linker-button"));
-		this.addTooltip(document.getElementById("content-counter-button"));
+		this._super(...arguments);
+
+		this.renderTooltips();
 	},
 
 	willDestroyElement() {
-		this.destroyTooltips();
+		this._super(...arguments);
+
+		this.removeTooltips();
+
+		this.modalClose(this.get('modalId'));
 	},
 
-	onKeywordChange: function () {
+	onKeywordChange: function() {
 		debounce(this, this.fetch, 750);
 	}.observes('keywords'),
 
@@ -98,25 +102,15 @@ export default Component.extend(TooltipMixin, {
 
 			this.set('selection', i);
 
-			candidates.pages.forEach(c => {
-				set(c, 'selected', c.id === i.id);
-			});
+			candidates.pages.forEach(c => { set(c, 'selected', c.id === i.id); });
+			candidates.attachments.forEach(c => { set(c, 'selected', c.id === i.id); });
+			matches.documents.forEach(c => { set(c, 'selected', c.id === i.id); });
+			matches.pages.forEach(c => { set(c, 'selected', c.id === i.id); });
+			matches.attachments.forEach(c => { set(c, 'selected', c.id === i.id); });
+		},
 
-			candidates.attachments.forEach(c => {
-				set(c, 'selected', c.id === i.id);
-			});
-
-			matches.documents.forEach(c => {
-				set(c, 'selected', c.id === i.id);
-			});
-
-			matches.pages.forEach(c => {
-				set(c, 'selected', c.id === i.id);
-			});
-
-			matches.attachments.forEach(c => {
-				set(c, 'selected', c.id === i.id);
-			});
+		onCancel() {
+			this.set('showModal', false);
 		},
 
 		onInsertLink() {
@@ -126,11 +120,13 @@ export default Component.extend(TooltipMixin, {
 				return;
 			}
 
-			return this.get('onInsertLink')(selection);
+			this.get('onInsertLink')(selection);
 		},
 
-		onTabSelect(tabs) {
-			this.set('tabs', tabs);
+		onTabSelect(id) {
+			this.set('tab1Selected', id === 1);
+			this.set('tab2Selected', id === 2);
+			this.set('tab3Selected', id === 3);
 		}
 	}
 });
