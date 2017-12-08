@@ -10,7 +10,6 @@
 // https://documize.com
 
 import { computed } from '@ember/object';
-
 import { inject as service } from '@ember/service';
 import AjaxService from 'ember-ajax/services/ajax';
 import config from '../config/environment';
@@ -36,6 +35,13 @@ export default AjaxService.extend({
 		try {
 			let user = this.get('session.session.content.authenticated.user');
 			let userUpdate = headers['x-documize-status'];
+			let appVersion = headers['x-documize-version'];
+
+			// when unauthorized on local API AJAX calls, redirect to app root
+			if (status === 401 && is.not.undefined(appVersion)) {
+				window.location.href = 'auth/login';
+			}
+
 			if (is.not.empty(userUpdate)) {
 				let latest = JSON.parse(userUpdate);
 
