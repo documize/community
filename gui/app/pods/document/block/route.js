@@ -10,7 +10,6 @@
 // https://documize.com
 
 import { hash } from 'rsvp';
-
 import { inject as service } from '@ember/service';
 import Route from '@ember/routing/route';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
@@ -29,12 +28,4 @@ export default Route.extend(AuthenticatedRouteMixin, {
 			block: self.get('sectionService').getBlock(params.block_id),
 		});
 	},
-
-	activate() {
-		$('body').addClass('background-color-off-white');
-	},
-
-	deactivate() {
-		$('body').removeClass('background-color-off-white');
-	}	
 });

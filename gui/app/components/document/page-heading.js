@@ -38,6 +38,8 @@ export default Component.extend(ModalMixin, {
 			return;
 		}
 
+		this.modalInputFocus('#publish-page-modal-' + this.get('page.id'), '#block-title-' + this.get('page.id'));
+
 		this.load();
 	},
 
@@ -48,6 +50,10 @@ export default Component.extend(ModalMixin, {
 			d.forEach((i) => {
 				i.set('selected', false);
 			});
+
+			if (this.get('isDestroyed') || this.get('isDestroying')) {
+				return;
+			}
 
 			this.set('documentList', A(d));
 			this.set('documentListOthers', A(d.filter((item) => item.get('id') !== me.get('id'))));

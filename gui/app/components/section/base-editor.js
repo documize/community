@@ -9,19 +9,16 @@
 //
 // https://documize.com
 
-import { computed } from '@ember/object';
-
+import { empty } from '@ember/object/computed';
 import Component from '@ember/component';
+import ModalMixin from '../../mixins/modal';
 
-export default Component.extend({
-	drop: null,
+export default Component.extend(ModalMixin, {
 	cancelLabel: "Close",
 	actionLabel: "Save",
-	tip: "Short and concise title",
 	busy: false,
-	hasExcerpt: computed('page', function () {
-		return is.not.undefined(this.get('page.excerpt'));
-	}),
+	hasNameError: empty('page.title'),
+	hasDescError: empty('page.excerpt'),
 
 	didRender() {
 		let self = this;
@@ -34,8 +31,8 @@ export default Component.extend({
 			return false;
 		});
 
-		$("#page-title").removeClass("error");
-		$("#page-excerpt").removeClass("error");
+		$("#page-title").removeClass("is-invalid");
+		$("#page-excerpt").removeClass("is-invalid");
 
 		$("#page-title").focus(function() {
 			$(this).select();
@@ -45,39 +42,21 @@ export default Component.extend({
 		});
 	},
 
-	willDestroyElement() {
-		let drop = this.get('drop');
-
-		if (is.not.null(drop)) {
-			drop.destroy();
-		}
-	},
-
 	actions: {
 		onCancel() {
 			if (this.attrs.isDirty() !== null && this.attrs.isDirty()) {
-				$(".discard-edits-dialog").css("display", "block");
-
-				let drop = new Drop({
-					target: $("#editor-cancel")[0],
-					content: $(".cancel-edits-dialog")[0],
-					classes: 'drop-theme-basic',
-					position: "bottom right",
-					openOn: "always",
-					tetherOptions: {
-						offset: "5px 0",
-						targetOffset: "10px 0"
-					},
-					remove: false
-				});
-
-				this.set('drop', drop);
-
+				this.modalOpen('#discard-modal', {show: true});
 				return;
 			}
 
 			this.attrs.onCancel();
 		},
+
+		onDiscard() {
+			this.modalClose('#discard-modal');
+			this.attrs.onCancel();
+		},
+
 
 		onAction() {
 			if (this.get('busy')) {
@@ -85,25 +64,16 @@ export default Component.extend({
 			}
 
 			if (is.empty(this.get('page.title'))) {
-				$("#page-title").addClass("error").focus();
+				$("#page-title").addClass("is-invalid").focus();
 				return;
 			}
 
 			if (this.get('hasExcerpt') && is.empty(this.get('page.excerpt'))) {
-				$("#page-excerpt").addClass("error").focus();
+				$("#page-excerpt").addClass("is-invalid").focus();
 				return;
 			}
 
 			this.attrs.onAction(this.get('page.title'));
-		},
-
-		keepEditing() {
-			let drop = this.get('drop');
-			drop.close();
-		},
-
-		discardEdits() {
-			this.attrs.onCancel();
 		}
 	}
 });

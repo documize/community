@@ -1,45 +1,50 @@
-<div class="section-editor">
-	<div class="buttons">
-		{{#if busy}}
-			<img src="/assets/img/busy-gray.gif" class="busy-indicator" />
-		{{/if}}
-		<div id="editor-cancel" class="flat-button flat-gray" {{action 'onCancel'}}>{{cancelLabel}}</div>
-		<div class="button-gap" />
-		<div class="regular-button button-green" {{action 'onAction'}}>{{actionLabel}}</div>
-	</div>
-	<div class="clearfix"></div>
-	<div class="title">
-		<div class="input-control">
-			<label>Title</label>
-			<div class="tip">{{tip}}</div>
-			{{focus-input type='text' id="page-title" value=page.title class="mousetrap"}}
-		</div>
-		{{#if hasExcerpt}}
-			<div class="margin-top-30">
-				<div class="input-control">
-					<label>Excerpt</label>
-					<div class="tip">Short description</div>
-					{{textarea rows="3" id="page-excerpt" value=page.excerpt class="mousetrap"}}
-				</div>
+<div id="section-editor-{{pageId}}">
+
+    <div class="row">
+		<div class="col-8 section-editor">
+			<div class="form-group">
+				{{focus-input type="text" id="page-title" value=page.title class=(if hasNameError 'form-control mousetrap form-control-lg edit-title is-invalid' 'form-control form-control-lg edit-title mousetrap') placeholder="Enter name"}}
 			</div>
-		{{/if}}		
-	</div>
-	<div class="dropdown-dialog cancel-edits-dialog">
-		<div class="content">
-			<p>Do you want to cancel editing and lose unsaved changes?</p>
-		</div>
-		<div class="actions">
-			<div class="flat-button" {{action 'keepEditing'}}>
-				no
+            {{#if hasExcerpt}}
+                <div class="form-group">
+                    {{textarea id="page-excerpt" value=page.excerpt rows="2" class=(if hasDescError 'form-control mousetrap form-control-lg edit-title is-invalid' 'form-control form-control-lg edit-title mousetrap') placeholder="Enter description"}}
+                </div>
+            {{/if}}
+        </div>
+
+		<div class="col-4">
+			<div class="float-right">
+				{{#if busy}}
+					<img src="/assets/img/busy-gray.gif" class="busy-indicator" />
+				{{/if}}
+
+				<div class="btn btn-success" {{action 'onAction'}}>{{actionLabel}}</div>
+				<div class="btn btn-outline-secondary" id="section-editor-cancel-button-{{pageId}}" {{action 'onCancel'}}>{{cancelLabel}}</div>
 			</div>
-			<div class="flat-button flat-red" {{action 'discardEdits'}}>
-				yes
+        </div>
+    </div>
+
+	<div class="row">
+        <div class="col section-editor">
+            <div class="canvas rounded">
+                {{yield}}
+            </div>
+        </div>
+	</div>
+
+</div>
+
+<div id={{concat "discard-modal"}} class="modal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">Discard Changes</div>
+			<div class="modal-body">
+				<p>You have made changes - continue editing or discard changes?</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Continue editing</button>
+				<button type="button" class="btn btn-danger" onclick={{action 'onDiscard'}}>Discard changes</button>
 			</div>
 		</div>
-		<div class="clearfix"></div>
 	</div>
-	<div class="canvas">
-		{{yield}}
-	</div>
-	<div class="clearfix"></div>
 </div>

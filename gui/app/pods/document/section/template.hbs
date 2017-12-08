@@ -1,15 +1,9 @@
-<div class="zone-section-editor">
-	<div class="page-container">
-		<div id="page-content-wrapper">
-			<div id="zone-document-content" class="zone-document-content">
-				<div class="back-to-space">
-					{{#link-to 'document.index' model.folder.id model.folder.slug model.document.id model.document.slug}}
-						<i class="material-icons">arrow_back</i>&nbsp;{{model.document.name}}
-					{{/link-to}}
-				</div>
-				{{document/document-heading document=model.document permissions=model.permissions}}
-				{{document/document-editor document=model.document folder=model.folder page=model.page meta=model.meta onCancel=(action 'onCancel') onAction=(action 'onAction')}}
-			</div>
-		</div>
+{{layout/nav-bar}}
+
+<div class="container">
+	{{toolbar/for-document document=model.document spaces=model.folders space=model.folder permissions=model.permissions showTools=false showDocumentLink=true}}
+
+	<div class="mt-5">
+		{{document/document-editor document=model.document folder=model.folder page=model.page meta=model.meta onCancel=(action 'onCancel') onAction=(action 'onAction')}}
 	</div>
 </div>

@@ -10,11 +10,9 @@
 // https://documize.com
 
 import { inject as service } from '@ember/service';
-
 import Controller from '@ember/controller';
-import NotifierMixin from '../../../mixins/notifier';
 
-export default Controller.extend(NotifierMixin, {
+export default Controller.extend({
 	documentService: service('document'),
 
 	actions: {
@@ -28,8 +26,6 @@ export default Controller.extend(NotifierMixin, {
 		},
 
 		onAction(page, meta) {
-			this.showNotification("Saved");
-
 			let model = {
 				page: page.toJSON({ includeId: true }),
 				meta: meta.toJSON({ includeId: true })
@@ -43,7 +39,7 @@ export default Controller.extend(NotifierMixin, {
 					this.get('model.folder.id'),
 					this.get('model.folder.slug'),
 					this.get('model.document.id'),
-					this.get('model.document.slug'), 
+					this.get('model.document.slug'),
 					{ queryParams: { pageId: page.get('id')}});
 			});
 		},

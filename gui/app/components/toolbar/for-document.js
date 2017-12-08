@@ -29,6 +29,8 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 		name: '',
 		description: ''
 	},
+	showTools: true, 			// show document related tools? favourite, delete, make template...
+	showDocumentLink: false, 	// show link to document in breadcrumbs
 
 	didReceiveAttrs() {
 		this._super(...arguments);

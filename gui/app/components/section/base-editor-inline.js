@@ -20,10 +20,12 @@ export default Component.extend(TooltipMixin, ModalMixin, {
 	mousetrap: null,
 	showLinkModal: false,
 	hasNameError: empty('page.title'),
+	hasDescError: empty('page.excerpt'),
 	pageId: computed('page', function () {
 		let page = this.get('page');
 		return `page-editor-${page.id}`;
 	}),
+	previewText: 'Preview',
 
 	didRender() {
 		let msContainer = document.getElementById('section-editor-' + this.get('containerId'));
@@ -91,6 +93,8 @@ export default Component.extend(TooltipMixin, ModalMixin, {
 		},
 
 		onPreview() {
+			let pt = this.get('previewText');
+			this.set('previewText', pt === 'Preview' ? 'Edit Mode' : 'Preview');
 			return this.get('onPreview')();
 		},
 

@@ -31,13 +31,5 @@ export default Route.extend(AuthenticatedRouteMixin, {
 			page: this.get('documentService').getPage(this.modelFor('document').document.get('id'), params.page_id),
 			meta: this.get('documentService').getPageMeta(this.modelFor('document').document.get('id'), params.page_id)
 		});
-	},
-
-	activate() {
-		$('body').addClass('background-color-off-white');
-	},
-
-	deactivate() {
-		$('body').removeClass('background-color-off-white');
 	}
 });

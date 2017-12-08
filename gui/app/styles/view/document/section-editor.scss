@@ -4,7 +4,9 @@
 	}
 
 	> .canvas {
-		margin: 34px 0 0 0;
+		// margin: 34px 0 0 0;
+		padding: 30px 20px;
+		box-shadow: 0 0 0 0.75pt $color-stroke,0 0 3pt 0.75pt $color-stroke;
 	}
 }
 
@@ -19,41 +21,7 @@
 	}
 }
 
-
-
-
-.section-editor-fullscreen {
-	@extend .transition-all;
-	@include border-radius(2px);
-	@include ease-in();
-	position: relative;
-	padding: 25px 50px;
-	box-shadow: 0 0 0 0.75pt $color-stroke,0 0 3pt 0.75pt $color-stroke;
-	background-color: $color-white;
+.block-editor {
+	margin-top: 3rem;
 }
 
-.zone-section-editor {
-	margin-left: 60px;
-	padding: 20px 60px;
-	z-index: 777;
-    position: relative;
-
-	.section-editor {
-		@extend .transition-all;
-		@include border-radius(2px);
-		@include ease-in();
-		position: relative;
-		padding: 25px 50px;
-		box-shadow: 0 0 0 0.75pt $color-stroke,0 0 3pt 0.75pt $color-stroke;
-		background-color: $color-white;
-
-		> .buttons {
-			margin-top: 17px;
-			float: right;
-		}
-
-		.cancel-edits-dialog {
-			display: none;
-		}
-	}
-}

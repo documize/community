@@ -1,8 +1,7 @@
-{{#section/base-editor document=document folder=folder page=page isDirty=(action 'isDirty') onCancel=(action 'onCancel')
-	onAction=(action 'onAction')}}
-	<div class="input-control">
-		<label>Airtable embed code</label>
-		<div class="tip">Paste the Airtable embed code snippet</div>
-		{{textarea value=data rows="3" id="airtable-embed-code" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"}}
+{{#section/base-editor document=document folder=folder page=page isDirty=(action 'isDirty') onCancel=(action 'onCancel') onAction=(action 'onAction')}}
+	<div class="form-group">
+		<label for="airtable-embed-code">Airtable embed code</label>
+		{{textarea value=data rows="3" id="airtable-embed-code" class="form-control mousetrap" placeholder="Enter code" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"}}
+		<small class="form-text text-muted">Paste the Airtable embed code snippet</small>
 	</div>
 {{/section/base-editor}}

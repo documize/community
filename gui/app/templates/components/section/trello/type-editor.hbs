@@ -3,51 +3,33 @@
 	isDirty=(action 'isDirty') onCancel=(action 'onCancel') onAction=(action 'onAction')}}
 
 	{{#if authenticated}}
-
-		<div class="pull-left width-50">
-			{{#if noBoards}}
-				<div class="input-control">
-					<div class="color-error">You have no team boards to share - personal boards are never shown.</div>
+		{{#if noBoards}}
+			<p>You have no team boards to share - personal boards are never shown</p>
+		{{else}}
+			<div class="form-group">
+				<label>Select Board</label>
+				{{ui-select id="boards-dropdown" content=boards action=(action 'onBoardChange') optionValuePath="id" optionLabelPath="name" selection=config.board}}
+			</div>
+			<div class="form-group">
+				<label for="airtable-embed-cod">Select Lists</label>
+				<div class="section-trello-board" style= {{boardStyle}}>
+					<div class="section-trello-board-title">{{config.board.name}}</div>
+					{{#each config.lists as |list|}}
+						<div class="section-trello-list" {{action 'onListCheckbox' list.id}}>
+							{{#if list.included}}
+								<i class="material-icons widget-checkbox checkbox-gray section-trello-list-checkbox">check_box</i>
+							{{else}}
+								<i class="material-icons widget-checkbox checkbox-gray section-trello-list-checkbox">check_box_outline_blank</i>
+							{{/if}}
+							<span class="trello-list-title">{{list.name}}</span>
+						</div>
+					{{/each}}
+					<div class="clearfix" />
 				</div>
-			{{else}}
-				<div class="input-control">
-					<label>Select Board</label>
-					<div class="tip">Choose lists to include from board</div>
-					{{ui-select id="boards-dropdown" content=boards action=(action 'onBoardChange') optionValuePath="id" optionLabelPath="name" selection=config.board}}
-				</div>
-				<div class="input-control">
-					<label>Lists</label>
-					<div class="tip">Select lists to include</div>
-					<div class="section-trello-board" style= {{boardStyle}}>
-						<div class="section-trello-board-title">{{config.board.name}}</div>
-						{{#each config.lists as |list|}}
-							<div class="section-trello-list" {{action 'onListCheckbox' list.id}}>
-								{{#if list.included}}
-									<i class="material-icons widget-checkbox checkbox-gray section-trello-list-checkbox">check_box</i>
-								{{else}}
-									<i class="material-icons widget-checkbox checkbox-gray section-trello-list-checkbox">check_box_outline_blank</i>
-								{{/if}}
-								<span class="trello-list-title">{{list.name}}</span>
-							</div>
-						{{/each}}
-						<div class="clearfix" />
-					</div>
-				</div>
-			{{/if}}
-		</div>
-
+			</div>
+		{{/if}}
 	{{else}}
-
-		<div class="pull-left width-50">
-			<form>
-				<div class="form-header">
-					<div class="title">Authentication</div>
-					<div class="tip">Click to authenticate with Trello</div>
-				</div>
-				<div class="regular-button button-blue" {{ action 'auth' }}>Authenticate</div>
-			</form>
-		</div>
-
+		<div class="btn btn-success" {{action 'auth'}}>Authenticate</div>
 	{{/if}}
 
 {{/section/base-editor}}
