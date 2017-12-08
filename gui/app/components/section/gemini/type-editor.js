@@ -10,15 +10,12 @@
 // https://documize.com
 
 import { set } from '@ember/object';
-
 import { schedule } from '@ember/runloop';
 import { inject as service } from '@ember/service';
 import Component from '@ember/component';
-import NotifierMixin from '../../../mixins/notifier';
-import TooltipMixin from '../../../mixins/tooltip';
 import SectionMixin from '../../../mixins/section';
 
-export default Component.extend(SectionMixin, NotifierMixin, TooltipMixin, {
+export default Component.extend(SectionMixin, {
 	sectionService: service('section'),
 	isDirty: false,
 	waiting: false,
@@ -67,10 +64,6 @@ export default Component.extend(SectionMixin, NotifierMixin, TooltipMixin, {
 					self.send('auth');
 				}
 			});
-	},
-
-	willDestroyElement() {
-		this.destroyTooltips();
 	},
 
 	getWorkspaces() {
@@ -155,15 +148,15 @@ export default Component.extend(SectionMixin, NotifierMixin, TooltipMixin, {
 		auth() {
 			// missing data?
 			if (is.empty(this.get('config.url'))) {
-				$("#gemini-url").addClass("error").focus();
+				$("#gemini-url").addClass("is-invalid").focus();
 				return;
 			}
 			if (is.empty(this.get('config.username'))) {
-				$("#gemini-username").addClass("error").focus();
+				$("#gemini-username").addClass("is-invalid").focus();
 				return;
 			}
 			if (is.empty(this.get('config.APIKey'))) {
-				$("#gemini-apikey").addClass("error").focus();
+				$("#gemini-apikey").addClass("is-invalid").focus();
 				return;
 			}
 
@@ -195,17 +188,6 @@ export default Component.extend(SectionMixin, NotifierMixin, TooltipMixin, {
 					self.set('user', null);
 					self.set('config.userId', 0);
 					self.set('waiting', false);
-
-					switch (reason.status) {
-					case 400:
-						self.showNotification(`Unable to connect to Gemini URL`);
-						break;
-					case 403:
-						self.showNotification(`Unable to authenticate`);
-						break;
-					default:
-						self.showNotification(`Something went wrong, try again!`);
-					}
 				});
 		},
 

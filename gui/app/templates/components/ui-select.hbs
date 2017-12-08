@@ -1,4 +1,4 @@
-<select {{action 'change' on='change'}} class={{cssClass}} readonly={{readonly}}>
+<select {{action 'change' on='change'}} class="form-control {{cssClass}}" readonly={{readonly}}>
     {{#if prompt}}
         <option disabled selected={{is-not selection}}>
             {{prompt}}
