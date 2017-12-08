@@ -9,15 +9,14 @@
 //
 // https://documize.com
 
-import { set } from '@ember/object';
-
+import EmberObject from '@ember/object';
+import { A } from '@ember/array';
 import { inject as service } from '@ember/service';
 import Component from '@ember/component';
 import NotifierMixin from '../../../mixins/notifier';
-import TooltipMixin from '../../../mixins/tooltip';
 import SectionMixin from '../../../mixins/section';
 
-export default Component.extend(SectionMixin, NotifierMixin, TooltipMixin, {
+export default Component.extend(SectionMixin, NotifierMixin, {
 	sectionService: service('section'),
 	isDirty: false,
 	busy: false,
@@ -90,19 +89,15 @@ export default Component.extend(SectionMixin, NotifierMixin, TooltipMixin, {
 					self.get('sectionService').fetch(page, "checkAuth", self.get('config'))
 						.then(function () {
 							self.send('authStage2');
-						}, function (error) { 
+						}, function (error) {
 							console.log(error); // eslint-disable-line no-console
 							self.send('auth'); // require auth if the db token is invalid
 						});
 				}
-			}, function (error) { 
+			}, function (error) {
 				console.log(error); // eslint-disable-line no-console
 			});
 		}
-	},
-
-	willDestroyElement() {
-		this.destroyTooltips();
 	},
 
 	getOwnerLists() {
@@ -138,59 +133,53 @@ export default Component.extend(SectionMixin, NotifierMixin, TooltipMixin, {
 		let page = this.get('page');
 
 		this.get('sectionService').fetch(page, "orgrepos", self.get('config'))
-		.then(function (lists) {
-			let savedLists = self.get('config.lists');
-			if (savedLists === null) {
-				savedLists = [];
-			}
+			.then(function (lists) {
 
-			if (lists.length > 0) {
-				let noIncluded = true;
+				let lists2 = A([]);
 
-				lists.forEach(function (list) {
-					let included = false;
-					var saved;
-					if (is.not.undefined(savedLists)) {
-						saved = savedLists.findBy("id", list.id);
-					}
-					if (is.not.undefined(saved)) {
-						included = saved.included;
-						noIncluded = false;
-					}
-					list.included = included;
+				lists.forEach((i) => {
+					lists2.pushObject(EmberObject.create(i));
 				});
 
-				if (noIncluded) {
-					lists[0].included = true; // make the first entry the default
+				let savedLists = self.get('config.lists');
+				if (savedLists === null) {
+					savedLists = [];
 				}
-			}
 
-			self.set('config.lists', lists);
-			self.set('busy', false);
-		}, function (error) { 
-			self.set('busy', false);
-			self.set('authenticated', false);
-			self.showNotification("Unable to fetch repositories");
-			console.log(error); // eslint-disable-line no-console
-		});
+				if (lists2.length > 0) {
+					let noIncluded = true;
+
+					lists2.forEach(function (list) {
+						let included = false;
+						var saved;
+						if (is.not.undefined(savedLists)) {
+							saved = savedLists.findBy("id", list.id);
+						}
+						if (is.not.undefined(saved)) {
+							included = saved.selected;
+							noIncluded = false;
+						}
+						list.selected = included;
+					});
+
+					if (noIncluded) {
+						lists2[0].selected = true; // make the first entry the default
+					}
+				}
+
+				self.set('config.lists', lists2);
+				self.set('busy', false);
+			}, function (error) {
+				self.set('busy', false);
+				self.set('authenticated', false);
+				self.showNotification("Unable to fetch repositories");
+				console.log(error); // eslint-disable-line no-console
+			});
 	},
 
 	actions: {
 		isDirty() {
 			return this.get('isDirty');
-		},
-
-		onListCheckbox(id) { // select one repository only
-			let lists = this.get('config.lists');
-			let list = lists.findBy('id', id);
-
-			lists.forEach(function (entry) {
-				set(entry, 'included', false);
-			});
-
-			if (list !== null) {
-				set(list, 'included', true);
-			}
 		},
 
 		authStage2() {
@@ -205,7 +194,7 @@ export default Component.extend(SectionMixin, NotifierMixin, TooltipMixin, {
 					self.set('busy', false);
 					self.set('owners', owners);
 					self.getOwnerLists();
-				}, function (error) { 
+				}, function (error) {
 					self.set('busy', false);
 					self.set('authenticated', false);
 					self.showNotification("Unable to fetch owners");
