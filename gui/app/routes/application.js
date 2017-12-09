@@ -56,7 +56,7 @@ export default Route.extend(ApplicationRouteMixin, TooltipMixin, {
 	actions: {
 		willTransition: function( /*transition*/ ) {
 			Mousetrap.reset();
-			this.destroyTooltips();
+			this.removeTooltips();
 		},
 
 		error(error, transition) {

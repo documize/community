@@ -10,25 +10,9 @@
 // https://documize.com
 
 import Component from '@ember/component';
-import NotifierMixin from '../../mixins/notifier';
-import TooltipMixin from '../../mixins/tooltip';
 
-export default Component.extend(NotifierMixin, TooltipMixin, {
+export default Component.extend({
 	tab: 'index',
-
-	didRender() {
-		this._super(...arguments);
-
-		if (this.get('permissions.documentEdit')) {
-			this.addTooltip(document.getElementById("document-index-button"));
-			this.addTooltip(document.getElementById("document-activity-button"));
-		}
-	},
-
-	willDestroyElement() {
-		this._super(...arguments);
-		this.destroyTooltips();
-	},
 
 	actions: {
 		onTabSwitch(tab) {

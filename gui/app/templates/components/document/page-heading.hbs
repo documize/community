@@ -14,9 +14,17 @@
 			<div class="page-toolbar" id="page-toolbar-{{ page.id }}">
 				{{#if permissions.documentEdit}}
 					<div class="float-right">
-						<div id="page-edit-button-{{page.id}}" class="button-icon-gray align-middle" {{action 'onEdit'}}>
-							<i class="material-icons">mode_edit</i>
-						</div>
+						{{#if (is-equal page.pageType 'tab')}}
+							{{#link-to 'document.section' page.id}}
+								<div id="page-edit-button-{{page.id}}" class="button-icon-gray align-middle">
+									<i class="material-icons">mode_edit</i>
+								</div>
+							{{/link-to}}
+						{{else}}
+							<div id="page-edit-button-{{page.id}}" class="button-icon-gray align-middle" {{action 'onEdit'}}>
+								<i class="material-icons">mode_edit</i>
+							</div>
+						{{/if}}
 						{{#if hasMenuPermissions}}
 							<div class="button-icon-gap" />
 							<div id="page-menu-button-{{page.id}}" class="button-icon-gray align-middle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

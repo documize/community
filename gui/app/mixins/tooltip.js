@@ -24,40 +24,5 @@ export default Mixin.create({
 
 	removeTooltips() {
 		$('[data-toggle="tooltip"]').tooltip('dispose');
-	},
-
-    addTooltip(elem) {
-        if (elem == null) {
-            return;
-		}
-
-        let t = new Tooltip({
-            target: elem
-        });
-
-        let tt = this.get('tooltips');
-		tt.push(t);
-
-		return t;
-    },
-
-	destroyTooltip(t) {
-		t.destroy();
-    },
-
-    destroyTooltips() {
-		if (this.get('isDestroyed') || this.get('isDestroying')) {
-			return;
-		}
-
-		let tt = this.get('tooltips');
-
-        tt.forEach(t => {
-			t.destroy();
-        });
-
-        tt.length = 0;
-
-        this.set('tooltips', tt);
-    }
+	}
 });

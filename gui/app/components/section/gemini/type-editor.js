@@ -14,8 +14,9 @@ import { schedule } from '@ember/runloop';
 import { inject as service } from '@ember/service';
 import Component from '@ember/component';
 import SectionMixin from '../../../mixins/section';
+import TooltipMixin from '../../../mixins/tooltip';
 
-export default Component.extend(SectionMixin, {
+export default Component.extend(SectionMixin, TooltipMixin, {
 	sectionService: service('section'),
 	isDirty: false,
 	waiting: false,
@@ -84,12 +85,9 @@ export default Component.extend(SectionMixin, {
 				self.set('workspaces', response);
 				self.selectWorkspace(workspaceId);
 
-				schedule('afterRender', function () {
+				schedule('afterRender', () => {
 					window.scrollTo(0, document.body.scrollHeight);
-
-					response.forEach(function (workspace) {
-						self.addTooltip(document.getElementById("gemini-workspace-" + workspace.Id));
-					});
+					self.renderTooltips();
 				});
 				self.set('waiting', false);
 			}, function (reason) { // eslint-disable-line no-unused-vars

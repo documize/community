@@ -49,17 +49,14 @@ export default Component.extend(NotifierMixin, TooltipMixin, {
 		this._super(...arguments);
 		this.setupAddWizard();
 
-		let self = this;
-		$(".tooltipped").each(function(i, el) {
-			self.addTooltip(el);
-		});
+		this.renderTooltips();
 	},
 
 	willDestroyElement() {
 		this._super(...arguments);
 		$('.start-section:not(.start-section-empty-state)').off('.hoverIntent');
 
-		this.destroyTooltips();
+		this.removeTooltips();
 	},
 
 	contentLinkHandler() {

@@ -10,13 +10,11 @@
 // https://documize.com
 
 import { computed } from '@ember/object';
-
 import Component from '@ember/component';
 import tocUtil from '../../utils/toc';
 import NotifierMixin from '../../mixins/notifier';
-import TooltipMixin from '../../mixins/tooltip';
 
-export default Component.extend(NotifierMixin, TooltipMixin, {
+export default Component.extend(NotifierMixin, {
 	document: {},
 	folder: {},
 	pages: [],
@@ -42,17 +40,6 @@ export default Component.extend(NotifierMixin, TooltipMixin, {
 		}
 	},
 
-	didRender() {
-		this._super(...arguments);
-
-		if (this.session.authenticated) {
-			this.addTooltip(document.getElementById("toc-up-button"));
-			this.addTooltip(document.getElementById("toc-down-button"));
-			this.addTooltip(document.getElementById("toc-outdent-button"));
-			this.addTooltip(document.getElementById("toc-indent-button"));
-		}
-	},
-
 	didInsertElement() {
 		this._super(...arguments);
 
@@ -63,7 +50,6 @@ export default Component.extend(NotifierMixin, TooltipMixin, {
 		this._super(...arguments);
 
 		this.eventBus.unsubscribe('documentPageAdded');
-		this.destroyTooltips();
 	},
 
 	onDocumentPageAdded(pageId) {

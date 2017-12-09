@@ -14,7 +14,6 @@ import TooltipMixin from '../../mixins/tooltip';
 
 export default Component.extend(TooltipMixin, {
 	didRender() {
-		let refId = this.get('refId');
-		this.addTooltip(document.getElementById(`avatar-${refId}`));
+		this.renderTooltips();
 	},
 });

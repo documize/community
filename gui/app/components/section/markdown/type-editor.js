@@ -10,13 +10,11 @@
 // https://documize.com
 
 import { schedule } from '@ember/runloop';
-
 import { computed } from '@ember/object';
 import Component from '@ember/component';
 import { inject as service } from '@ember/service';
-import TooltipMixin from '../../../mixins/tooltip';
 
-export default Component.extend(TooltipMixin, {
+export default Component.extend({
 	link: service(),
 	pageBody: "",
 	pagePreview: "",
@@ -39,7 +37,6 @@ export default Component.extend(TooltipMixin, {
 
 	didInsertElement() {
 		this.attachEditor();
-		this.addTooltip(document.getElementById(this.get('tooltipId')));
     },
 
     willDestroyElement() {
@@ -51,7 +48,6 @@ export default Component.extend(TooltipMixin, {
 		}
 
 		this.set('codeEditor', null);
-		this.destroyTooltips();
     },
 
 	getBody() {
