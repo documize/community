@@ -10,7 +10,6 @@
 // https://documize.com
 
 import { computed } from '@ember/object';
-
 import Component from '@ember/component';
 import TooltipMixin from '../../../mixins/tooltip';
 
@@ -102,7 +101,7 @@ export default Component.extend(TooltipMixin, {
 			this.set('codeEditor', null);
 		}
 
-		this.destroyTooltips();
+		this.removeT0oltips();
 
     },
 

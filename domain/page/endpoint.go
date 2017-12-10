@@ -191,7 +191,7 @@ func (h *Handler) GetPage(w http.ResponseWriter, r *http.Request) {
 
 // GetPages gets all pages for document.
 func (h *Handler) GetPages(w http.ResponseWriter, r *http.Request) {
-	method := "page.GetPage"
+	method := "page.GetPages"
 	ctx := domain.GetRequestContext(r)
 
 	documentID := request.Param(r, "documentID")
@@ -218,6 +218,8 @@ func (h *Handler) GetPages(w http.ResponseWriter, r *http.Request) {
 	if len(pages) == 0 {
 		pages = []page.Page{}
 	}
+
+	page.Numberize(pages)
 
 	if err != nil {
 		response.WriteServerError(w, method, err)

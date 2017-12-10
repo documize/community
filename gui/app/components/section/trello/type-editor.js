@@ -88,7 +88,7 @@ export default Component.extend(SectionMixin, NotifierMixin, TooltipMixin, {
 	},
 
 	willDestroyElement() {
-		this.destroyTooltips();
+		this.removeTooltips();
 	},
 
 	getBoardLists() {

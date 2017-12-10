@@ -29,6 +29,7 @@ type Page struct {
 	BlockID     string  `json:"blockId"`
 	Level       uint64  `json:"level"`
 	Sequence    float64 `json:"sequence"`
+	Numbering   string  `json:"numbering"`
 	Title       string  `json:"title"`
 	Body        string  `json:"body"`
 	Revisions   uint64  `json:"revisions"`
@@ -101,7 +102,6 @@ type NewPage struct {
 	Page Page `json:"page"`
 	Meta Meta `json:"meta"`
 }
-
 
 // PageSequenceRequest details a page ID and its sequence within the document.
 type PageSequenceRequest struct {

@@ -21,13 +21,14 @@ export default Model.extend({
 	pageType: attr('string'),
 	level: attr('number', { defaultValue: 1 }),
 	sequence: attr('number', { defaultValue: 0 }),
+	numbering: attr('string'),
 	revisions: attr('number', { defaultValue: 0 }),
 	blockId: attr('string'),
 	title: attr('string'),
 	body: attr('string'),
 	rawBody: attr('string'),
 	meta: attr(),
-
+	
 	tagName: computed('level', function () {
 		return "h2";
 		// return "h" + (this.get('level') + 1);
