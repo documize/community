@@ -27,6 +27,10 @@
 		{{document/view-attachment document=model.document permissions=model.permissions}}
 	{{/if}}
 
+	{{#if (eq tab 'activity')}}
+		{{document/view-activity document=model.document pages=model.pages permissions=model.permissions}}
+	{{/if}}
+	
 	<div id="zone-document-content" class="zone-document-content">
 		{{document/document-sidebar tab=tab
 			document=model.document folder=model.folder pages=model.pages page=model.page permissions=model.permissions

@@ -12,12 +12,7 @@
 import Component from '@ember/component';
 
 export default Component.extend({
-	tab: 'index',
-
 	actions: {
-		onTabSwitch(tab) {
-			this.set('tab', tab);
-		},
 
 		onPageSequenceChange(changes) {
 			this.attrs.onPageSequenceChange(changes);
