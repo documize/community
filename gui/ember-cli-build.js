@@ -41,14 +41,9 @@ module.exports = function (defaults) {
 		}
 	});
 
-	// dropdown/popup/dialog
-	app.import('vendor/tether.js');
-	app.import('vendor/drop.js');
-
 	app.import('vendor/datetimepicker.min.js');
 	app.import('vendor/documize.js');
 	app.import('vendor/dropzone.js');
-	app.import('vendor/hoverIntent.js');
 	app.import('vendor/is.js');
 	app.import('vendor/keycloak.js');
 	app.import('vendor/markdown-it.min.js');
@@ -58,12 +53,8 @@ module.exports = function (defaults) {
 	app.import('vendor/slug.js');
 	app.import('vendor/sortable.js');
 	app.import('vendor/table-editor.min.js');
-	app.import('vendor/tooltip.js');
 	app.import('vendor/underscore.js');
-	app.import('vendor/velocity.js');
-	app.import('vendor/velocity.ui.js');
 	app.import('vendor/waypoints.js');
-
 	app.import('vendor/bootstrap.bundle.min.js');
 
 	return app.toTree();

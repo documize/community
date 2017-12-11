@@ -60,7 +60,7 @@ export default Component.extend({
 			autoProcessQueue: true,
 
 			init: function () {
-				this.on("success", function (file /*, response*/ ) {
+				this.on("success", function (/*file, response*/ ) {
 				});
 
 				this.on("queuecomplete", function () {

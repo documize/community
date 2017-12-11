@@ -10,7 +10,6 @@
 // https://documize.com
 
 import { helper } from '@ember/component/helper';
-import dateUtil from '../utils/date';
 
 export function formattedDate(params) {
     let format = params[1];
