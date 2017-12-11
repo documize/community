@@ -1,0 +1,36 @@
+<div class="document-toc">
+    <div class="title">Table of contents</div>
+    {{#if session.authenticated}}
+		{{#if permissions.documentEdit}}
+            {{#unless emptyState}}
+                <div id="tocToolbar" class="hidden-xs hidden-sm toc-controls {{if state.actionablePage 'current-page' ''}}">
+                    <div id="toc-up-button" class="button-icon-green button-icon-small {{if state.upDisabled 'disabled'}}" {{action 'pageUp'}}>
+                        <i class="material-icons">arrow_upward</i>
+                    </div>
+                    <div class="button-icon-gap" />
+                    <div id="toc-down-button" class="button-icon-green button-icon-small {{if state.downDisabled 'disabled'}}" {{action 'pageDown'}}>
+                        <i class="material-icons">arrow_downward</i>
+                    </div>
+                    <div class="button-icon-gap" />
+                    <div id="toc-outdent-button" class="button-icon-green button-icon-small {{if state.outdentDisabled 'disabled'}}" {{action 'pageOutdent'}}>
+                        <i class="material-icons">arrow_back</i>
+                    </div>
+                    <div class="button-icon-gap" />
+                    <div id="toc-indent-button" class="button-icon-green button-icon-small {{if state.indentDisabled 'disabled'}}" {{action 'pageIndent'}}>
+                        <i class="material-icons">arrow_forward</i>
+                    </div>
+                </div>
+            {{/unless}}
+        {{/if}}
+    {{/if}}
+
+    <ul class="index-list">
+        {{#each pages key="id" as |page index|}}
+            <li class="item">
+                <a id="index-{{page.id}}" {{action 'onEntryClick' page.id}} class="link toc-index-item {{page.tocIndentCss}} {{if (eq page.id currentPageId) 'selected'}}">
+                    {{page.numbering}}. {{page.title}}
+                </a>
+            </li>
+        {{/each}}
+    </ul>
+</div>

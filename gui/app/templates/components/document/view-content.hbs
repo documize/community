@@ -46,10 +46,10 @@
 
 	<div id="wizard-placeholder" class="hide margin-top-50" />
 	<div id="new-section-wizard" class="new-section-wizard">
-		<div class="input-inline input-transparent pull-left width-80">
+		<div class="">
 			{{input type="text" id="new-section-name" value=newSectionName class=(if newSectionNameMissing 'section-name error-inline' 'section-name') placeholder="Name" autocomplete="off"}}
 		</div>
-		<div class="round-button-mono pull-right" {{action 'onHideSectionWizard'}}>
+		<div class="button-icon-gray" {{action 'onHideSectionWizard'}}>
 			<i class="material-icons color-gray">close</i>
 		</div>
 		<div class="clearfix" />

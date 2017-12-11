@@ -1,98 +1,67 @@
-.document-sidebar-view-index {
-	margin: 0;
+.document-toc {
+    @include border-radius(3px);
+	margin: 20px 0;
+    padding: 10px 20px;
+    background-color: $color-off-white;
+    border: 1px solid $color-border;
+    display: inline-block;
+    position: fixed;
+    left: 20px;
+    z-index: 777;
 
-	>.structure {
-		> .toc-controls {
-			margin: 0;
-			color: $color-gray;
+    > .title {
+        color: $color-off-black;
+        font-weight: bold;
+        font-size: 1rem;
+        margin-bottom: 10px;
+        text-align: center;
+    }
 
-			> .round-button-mono {
-				> .material-icons {
-					color: $color-link;
-				}
-			}
+    > .toc-controls {
+        margin: 0;
+        text-align: center;
+        
+        > .disabled {
+            cursor: not-allowed !important;
 
-			> .disabled {
-				cursor: not-allowed !important;
-				color: $color-stroke;
-				border-color: $color-stroke;
+            > .material-icons {
+                color: $color-gray-light;
+            }
+        }
+    }
 
-				> .material-icons {
-					color: $color-stroke;
-				}
-			}
-		}
+    > .index-list {
+        padding: 0;
+        list-style: none;
+        font-size: 0.9rem;
+        overflow-x: hidden;
+        list-style-type: none;
+        margin: 20px 0 0;
 
-		> .index-list {
-			padding: 0;
-			list-style: none;
-			font-size: 13px;
-			overflow-x: hidden;
-			list-style-type: none;
-			margin: 20px 0 0;
+        .item {
+            @extend .no-select;
+            padding: 4px 0;
+            text-overflow: ellipsis;
+            word-wrap: break-word;
+            white-space: nowrap;
+            overflow: hidden;
+            
+            > .link {
+                color: $color-dark;
+                font-weight: bold;
+                
+                &:hover {
+                    color: $color-link;
+                }
+            }
 
-			.item {
-				padding: 4px 0;
-				text-overflow: ellipsis;
-				word-wrap: break-word;
-				white-space: nowrap;
-				overflow: hidden;
-				@extend .no-select;
-
-				> .link {
-					color: $color-off-black;
-
-					&:hover {
-						color: $color-link;
-					}
-				}
-
-				> .selected {
-					color: $color-link;
-					font-weight: bold;
-				}
-			}
-		}
-	}
+            > .selected {
+                color: $color-link;
+                // font-weight: bold;
+            }
+        }
+    }
 }
 
 
 
-.document-sidebar-toolbar {
-	margin: 10px 0 0 0;
-    padding: 10px 0;
-    text-align: center;
-	// background-color: $color-sidebar-toolbar;
-
-	> .round-button-mono {
-		background-color: $color-white;
-		border-color: $color-sidebar-border;
-
-		> .material-icons {
-			color: $color-gray;
-			@include ease-in();
-		}
-
-		&:hover {
-			> .material-icons {
-				color: $color-link;
-			}
-		}
-	}
-
-	> .selected {
-		background-color: $color-primary;
-		border-color: $color-primary;
-
-		> .material-icons {
-			color: $color-off-white;
-			@include ease-in();
-		}
-
-		&:hover {
-			> .material-icons {
-				color: $color-white;
-			}
-		}
-	}
-}

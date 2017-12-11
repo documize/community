@@ -31,3 +31,12 @@
 .ui-checkbox-selected {
 	color: $color-link;
 }
+
+.widget-checkbox {
+	color: $color-link;
+	cursor: pointer;
+}
+
+.checkbox-gray {
+	color: $color-gray !important;
+}
