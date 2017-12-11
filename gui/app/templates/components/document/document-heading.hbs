@@ -19,7 +19,7 @@
 			<div class="form-group">
 				{{textarea id="document-excerpt" rows="2" value=docExcerpt class=(if hasExcerptError 'form-control mousetrap is-invalid' 'form-control mousetrap') placeholder="Excerpt" autocomplete="off"}}
 			</div>
-			<button type="submit" class="btn btn-outline-secondary" {{action "onCancel"}}>Cancel</button>
+			<button type="button" class="btn btn-outline-secondary" {{action "onCancel"}}>Cancel</button>
 			<button type="submit" class="btn btn-success" {{action "onSave"}}>Save</button>
 		</div>
 	</form>
