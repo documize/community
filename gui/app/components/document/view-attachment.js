@@ -13,14 +13,11 @@ import { computed } from '@ember/object';
 import { notEmpty } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import Component from '@ember/component';
-import NotifierMixin from '../../mixins/notifier';
-import TooltipMixin from '../../mixins/tooltip';
 import DropdownMixin from '../../mixins/dropdown';
 
-export default Component.extend(NotifierMixin, TooltipMixin, DropdownMixin, {
+export default Component.extend(DropdownMixin, {
 	documentService: service('document'),
 	appMeta: service(),
-	dropdown: null,
 	hasAttachments: notEmpty('files'),
 	deleteAttachment: {
 		id: "",
@@ -29,7 +26,8 @@ export default Component.extend(NotifierMixin, TooltipMixin, DropdownMixin, {
 	canShow: computed('permissions', 'files', function() {
 		return this.get('files.length') > 0 || this.get('permissions.documentEdit');
 	}),
-
+	showDialog: false,
+	
 	init() {
 		this._super(...arguments);
 
@@ -64,7 +62,6 @@ export default Component.extend(NotifierMixin, TooltipMixin, DropdownMixin, {
 
 			init: function () {
 				this.on("success", function (file /*, response*/ ) {
-					self.showNotification(`Attached ${file.name}`);
 				});
 
 				this.on("queuecomplete", function () {
@@ -85,7 +82,6 @@ export default Component.extend(NotifierMixin, TooltipMixin, DropdownMixin, {
 
 	willDestroyElement() {
 		this._super(...arguments);
-		this.destroyDropdown();
 	},
 
 	getAttachments() {
@@ -95,43 +91,17 @@ export default Component.extend(NotifierMixin, TooltipMixin, DropdownMixin, {
 	},
 
 	actions: {
-		onConfirmDelete(id, name) {
-			this.set('deleteAttachment', {
-				id: id,
-				name: name
-			});
+		onShowDialog(id, name) {
+			this.set('deleteAttachment', { id: id, name: name });
 
-			$(".delete-attachment-dialog").css("display", "block");
-
-			this.closeDropdown();
-
-			let dropOptions = Object.assign(this.get('dropDefaults'), {
-				target: $(".delete-attachment-" + id)[0],
-				content: $(".delete-attachment-dialog")[0],
-				classes: 'drop-theme-basic',
-				position: "bottom right",
-				remove: false});
-
-			let drop = new Drop(dropOptions);
-			this.set('dropdown', drop);
-		},
-
-		onCancel() {
-			this.closeDropdown();
-
-			this.set('deleteAttachment', {
-				id: "",
-				name: ""
-			});
+			this.set('showDialog', true);
 		},
 
 		onDelete() {
-			this.closeDropdown();
+			this.set('showDialog', false);
 
 			let attachment = this.get('deleteAttachment');
-
-			this.showNotification(`Deleted ${name}`);
-
+			
 			this.get('documentService').deleteAttachment(this.get('document.id'), attachment.id).then(() => {
 				this.getAttachments();
 				this.set('deleteAttachment', {

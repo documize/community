@@ -26,9 +26,13 @@ export default Controller.extend(NotifierMixin, TooltipMixin, {
 	toggled: false,
 	queryParams: ['pageId', 'tab'],
 	pageId: '',
-	tab: 'index',
+	tab: 'content',
 
 	actions: {
+		onTabChange(tab) {
+			this.set('tab', tab);
+		},
+
 		onSaveDocument(doc) {
 			this.get('documentService').save(doc);
 
