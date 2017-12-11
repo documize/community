@@ -238,6 +238,13 @@ export default Controller.extend(NotifierMixin, TooltipMixin, {
 			let doc = this.get('model.document');
 			doc.set('tags', tags);
 			this.get('documentService').save(doc);
-		}
+		},
+
+		onRollback(pageId, revisionId) {
+			this.get('documentService').rollbackPage(this.get('model.document.id'), pageId, revisionId).then(() => {
+				this.set('tab', 'content');
+				this.get('target._routerMicrolib').refresh();
+			});
+		}		
 	}
 });

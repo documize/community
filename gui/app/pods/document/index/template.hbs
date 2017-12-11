@@ -30,6 +30,10 @@
 	{{#if (eq tab 'activity')}}
 		{{document/view-activity document=model.document pages=model.pages permissions=model.permissions}}
 	{{/if}}
+
+	{{#if (eq tab 'revision')}}
+		{{document/view-revision document=model.document folder=model.folder pages=model.pages onRollback=(action 'onRollback')}}
+	{{/if}}	
 	
 	<div id="zone-document-content" class="zone-document-content">
 		{{document/document-sidebar tab=tab
