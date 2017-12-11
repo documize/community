@@ -100,20 +100,18 @@
 </head>
 
 <body>
-    <div id="wrapper">
-        <div class="container">
-            <div class="logo">
-                <img src="/assets/img/setup/logo.png" alt="Documize">
+    <div class="container">
+        <div class="logo">
+            <img src="/assets/img/setup/logo.png" alt="Documize">
+        </div>
+        <div class="content clearfix">
+            <div class="image">
+                <img style="-webkit-user-select: none;" src="/assets/img/setup/error.png" width="184" height="159" alt="Database error">
             </div>
-            <div class="content clearfix">
-                <div class="image">
-                    <img style="-webkit-user-select: none;" src="/assets/img/setup/error.png" width="184" height="159" alt="Database error">
-                </div>
-                <div class="text">
-                    <h1>Database Error</h1>
-                    <p>There seems to be a problem with the Documize database: <strong>{{.DBname}}</strong></p>
-                    <p><em>{{.Issue}}</em></p>
-                </div>
+            <div class="text">
+                <h1>Database Error</h1>
+                <p>There seems to be a problem with the Documize database: <strong>{{.DBname}}</strong></p>
+                <p><em>{{.Issue}}</em></p>
             </div>
         </div>
     </div>

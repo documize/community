@@ -12,12 +12,11 @@
 import Component from '@ember/component';
 import { schedule, debounce } from '@ember/runloop';
 import AuthProvider from '../../mixins/auth';
-import DropdownMixin from '../../mixins/dropdown';
+import ModalMixin from '../../mixins/modal';
 
-export default Component.extend(AuthProvider, DropdownMixin, {
+export default Component.extend(AuthProvider, ModalMixin, {
 	editUser: null,
 	deleteUser: null,
-	dropdown: null,
 	password: {},
 	filter: '',
 	filteredUsers: [],
@@ -169,7 +168,7 @@ export default Component.extend(AuthProvider, DropdownMixin, {
 			this.set('selectedUsers', []);
 			this.set('hasSelectedUsers', false);
 
-			return true;
+			this.modalClose('#admin-user-delete-modal');
 		}
 	}
 });

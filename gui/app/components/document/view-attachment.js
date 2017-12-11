@@ -13,9 +13,8 @@ import { computed } from '@ember/object';
 import { notEmpty } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import Component from '@ember/component';
-import DropdownMixin from '../../mixins/dropdown';
 
-export default Component.extend(DropdownMixin, {
+export default Component.extend({
 	documentService: service('document'),
 	appMeta: service(),
 	hasAttachments: notEmpty('files'),

@@ -10,10 +10,22 @@
 				<th class="no-width">Active</th>
 				<th class="no-width">
 					{{#if hasSelectedUsers}}
-						<button  id="bulk-delete-users" type="button" class="btn btn-danger btn-sm">Delete</button>
-						{{#dropdown-dialog target="bulk-delete-users" position="bottom right" button="Delete" color="flat-red" onAction=(action 'onBulkDelete')}}
-							<p>Are you sure you want to delete selected users?</p>
-						{{/dropdown-dialog}}
+						<button  id="bulk-delete-users" type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#admin-user-delete-modal" data-backdrop="static">Delete</button>
+
+						<div id="admin-user-delete-modal" class="modal" tabindex="-1" role="dialog">
+							<div class="modal-dialog" role="document">
+								<div class="modal-content">
+									<div class="modal-header">Delete Users</div>
+									<div class="modal-body">
+										<p>Are you sure you want to delete selected users?</p>
+									</div>
+									<div class="modal-footer">
+										<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+										<button type="button" class="btn btn-success" onclick={{action 'onBulkDelete'}}>Delete</button>
+									</div>
+								</div>
+							</div>
+						</div>
 					{{/if}}
 				</th>
 			</tr>
