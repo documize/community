@@ -339,7 +339,7 @@ func (h *Handler) DeletePages(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	model := new([]page.PageLevelRequest)
+	model := new([]page.LevelRequest)
 	err = json.Unmarshal(body, &model)
 	if err != nil {
 		response.WriteBadRequestError(w, method, "JSON marshal")
@@ -591,7 +591,7 @@ func (h *Handler) ChangePageSequence(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	model := new([]page.PageSequenceRequest)
+	model := new([]page.SequenceRequest)
 	err = json.Unmarshal(body, &model)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())
@@ -652,7 +652,7 @@ func (h *Handler) ChangePageLevel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	model := new([]page.PageLevelRequest)
+	model := new([]page.LevelRequest)
 	err = json.Unmarshal(body, &model)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())

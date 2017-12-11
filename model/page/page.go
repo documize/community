@@ -103,14 +103,14 @@ type NewPage struct {
 	Meta Meta `json:"meta"`
 }
 
-// PageSequenceRequest details a page ID and its sequence within the document.
-type PageSequenceRequest struct {
+// SequenceRequest details a page ID and its sequence within the document.
+type SequenceRequest struct {
 	PageID   string  `json:"pageId"`
 	Sequence float64 `json:"sequence"`
 }
 
-// PageLevelRequest details a page ID and level.
-type PageLevelRequest struct {
+// LevelRequest details a page ID and level.
+type LevelRequest struct {
 	PageID string `json:"pageId"`
 	Level  int    `json:"level"`
 }

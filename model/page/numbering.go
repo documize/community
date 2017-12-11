@@ -16,10 +16,8 @@ import (
 )
 
 // Numberize calculates numbers for pages, e.g. 1, 1.1, 2.2.1
-// that form a document's Table of Contents.
-//
+// for the document's Table of Contents.
 func Numberize(pages []Page) {
-	// index := 1
 	var prevPageLevel uint64
 	parts := []int{1} // we store 1, 1, 2, and then generate numbering as "1.1.2"
 
@@ -28,14 +26,6 @@ func Numberize(pages []Page) {
 		if p.Level == 0 {
 			p.Level = 1
 		}
-
-		// increment level numbers each time we encounter age level of 1
-		// if p.Level == 1 {
-		// 	index++
-		// 	parts = []int{index}
-		// } else if p.Level == prevPageLevel {
-		// 	parts[len(parts)-1]++
-		// }
 
 		if i != 0 {
 			// we ...
