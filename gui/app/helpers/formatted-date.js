@@ -13,7 +13,10 @@ import { helper } from '@ember/component/helper';
 import dateUtil from '../utils/date';
 
 export function formattedDate(params) {
-    return dateUtil.toIsoDate(params[0], params[1]);
+    let format = params[1];
+    if (is.undefined(format)) format = 'Do MMMM YYYY, HH:mm';
+
+    return moment(params[0]).format(format);
 }
 
 export default helper(formattedDate);

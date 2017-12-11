@@ -4,8 +4,8 @@
 			<li class="item">
 				<div class="avatar-box">{{user-initials a.firstname a.lastname}}</div>
 				<div class="activity">
-					<div class="name">{{a.firstname}} {{a.lastname}}</div>
-					<div class="detail {{a.activityColor}}">{{a.activityLabel}}, {{time-ago a.created}}</div>
+					<div class="name">{{a.firstname}} {{a.lastname}}&nbsp;&nbsp;</div>
+					<div class="detail {{a.activityColor}}">{{a.activityLabel}} on {{formatted-date a.created}}</div>
 				</div>
 			</li>
 		{{/each}}
