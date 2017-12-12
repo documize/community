@@ -1,9 +1,9 @@
-<div class="document-toc">
+<div id="doc-toc" class="document-toc {{if isDesktop 'document-toc-desktop' 'document-toc-small'}}">
     <div class="title">Table of contents</div>
     {{#if session.authenticated}}
 		{{#if permissions.documentEdit}}
             {{#unless emptyState}}
-                <div id="tocToolbar" class="hidden-xs hidden-sm toc-controls {{if state.actionablePage 'current-page' ''}}">
+                <div id="tocToolbar" class="toc-controls {{if state.actionablePage 'current-page' ''}}">
                     <div id="toc-up-button" class="button-icon-green button-icon-small {{if state.upDisabled 'disabled'}}" {{action 'pageUp'}}>
                         <i class="material-icons">arrow_upward</i>
                     </div>
@@ -28,7 +28,7 @@
         {{#each pages key="id" as |page index|}}
             <li class="item">
                 <a id="index-{{page.id}}" {{action 'onEntryClick' page.id}} class="link toc-index-item {{page.tocIndentCss}} {{if (eq page.id currentPageId) 'selected'}}">
-                    {{page.numbering}}. {{page.title}}
+                    <span class="numbering">{{page.numbering}}</span>{{page.title}}
                 </a>
             </li>
         {{/each}}

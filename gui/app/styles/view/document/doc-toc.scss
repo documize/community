@@ -1,24 +1,22 @@
 .document-toc {
     @include border-radius(3px);
-	margin: 20px 0;
-    padding: 10px 20px;
+	margin: 30px 0 30px 0;
+    padding: 20px 20px;
     background-color: $color-off-white;
+    // background-color: $color-primary-light;
     border: 1px solid $color-border;
-    display: inline-block;
-    position: fixed;
-    left: 20px;
-    z-index: 777;
+    overflow: scroll;
 
     > .title {
-        color: $color-off-black;
+        color: $color-gray;
         font-weight: bold;
-        font-size: 1rem;
-        margin-bottom: 10px;
+        font-size: 1.1rem;
+        margin-bottom: 20px;
         text-align: center;
     }
 
     > .toc-controls {
-        margin: 0;
+        margin: 10px 0 0 0;
         text-align: center;
         
         > .disabled {
@@ -36,7 +34,7 @@
         font-size: 0.9rem;
         overflow-x: hidden;
         list-style-type: none;
-        margin: 20px 0 0;
+        margin: 0 0 0 0;
 
         .item {
             @extend .no-select;
@@ -53,15 +51,29 @@
                 &:hover {
                     color: $color-link;
                 }
+
+                > .numbering {
+                    color: $color-gray;
+                    font-weight: bold;
+                    display: inline-block;
+                    margin-right: 10px;
+                }
             }
 
             > .selected {
                 color: $color-link;
-                // font-weight: bold;
             }
         }
     }
 }
 
+.document-toc-desktop {
+    display: inline-block;
+    position: fixed;
+    left: 20px;
+    z-index: 777;    
+}
 
-
+.document-toc-small {
+    display: block;
+}

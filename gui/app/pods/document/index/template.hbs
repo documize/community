@@ -1,17 +1,13 @@
 {{toolbar/nav-bar}}
 
-<div class="container-fluid">
+<div class="d-none d-xl-block">
+	{{document/document-toc document=model.document folder=model.folder pages=model.pages page=model.page permissions=model.permissions
+		onPageSequenceChange=(action 'onPageSequenceChange') onPageLevelChange=(action 'onPageLevelChange') onGotoPage=(action 'onGotoPage')}}
+</div>
 
+<div id="doc-view" class="container">
 	<div class="row">
-
-		<div class="col-12 col-md-4">
-
-			{{document/document-toc document=model.document folder=model.folder pages=model.pages page=model.page permissions=model.permissions
-				onPageSequenceChange=(action 'onPageSequenceChange') onPageLevelChange=(action 'onPageLevelChange') onGotoPage=(action 'onGotoPage')}}
-
-		</div>
-
-		<div class="col-12 col-md-8">
+		<div class="col-12">
 
 			{{toolbar/for-document document=model.document spaces=model.folders space=model.folder permissions=model.permissions
 				onDocumentDelete=(action 'onDocumentDelete') onSaveTemplate=(action 'onSaveTemplate')}}
@@ -22,12 +18,14 @@
 			{{document/document-meta document=model.document folder=model.folder folders=model.folders permissions=model.permissions
 				onSaveDocument=(action 'onSaveDocument')}}
 
-			<ul class="tabnav-control">
-				<li class="tab {{if (eq tab 'content') 'selected'}}" {{action 'onTabChange' 'content'}}>Content</li>
-				<li class="tab {{if (eq tab 'attachment') 'selected'}}" {{action 'onTabChange' 'attachment'}}>Attachments</li>
-				<li class="tab {{if (eq tab 'activity') 'selected'}}" {{action 'onTabChange' 'activity'}}>Activity</li>
-				<li class="tab {{if (eq tab 'revision') 'selected'}}" {{action 'onTabChange' 'revision'}}>Revisions</li>
-			</ul>
+			<div class="mb-5 text-center">
+				<ul class="tabnav-control">
+					<li class="tab {{if (eq tab 'content') 'selected'}}" {{action 'onTabChange' 'content'}}>Content</li>
+					<li class="tab {{if (eq tab 'attachment') 'selected'}}" {{action 'onTabChange' 'attachment'}}>Attachments</li>
+					<li class="tab {{if (eq tab 'activity') 'selected'}}" {{action 'onTabChange' 'activity'}}>Activity</li>
+					<li class="tab {{if (eq tab 'revision') 'selected'}}" {{action 'onTabChange' 'revision'}}>Revisions</li>
+				</ul>
+			</div>
 
 			{{#if (eq tab 'content')}}
 				{{document/view-content
