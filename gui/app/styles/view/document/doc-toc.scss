@@ -1,32 +1,41 @@
 .document-toc {
     @include border-radius(3px);
 	margin: 30px 0 30px 0;
-    padding: 20px 20px;
+    padding: 0 20px 20px 20px;
     background-color: $color-off-white;
-    // background-color: $color-primary-light;
     border: 1px solid $color-border;
     overflow: scroll;
 
-    > .title {
-        color: $color-gray;
-        font-weight: bold;
-        font-size: 1.1rem;
-        margin-bottom: 20px;
-        text-align: center;
-    }
+    > .header {
+        @include sticky();
+        flex-direction: column;
+        top: 0;
+        padding-top: 20px;
+        margin: 0;
+        background-color: $color-off-white;
 
-    > .toc-controls {
-        margin: 10px 0 0 0;
-        text-align: center;
-        
-        > .disabled {
-            cursor: not-allowed !important;
+        > .title {
+            color: $color-gray;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
 
-            > .material-icons {
-                color: $color-gray-light;
+        > .toc-controls {
+            margin: 0 0 0 0;
+            text-align: center;
+            
+            > .disabled {
+                cursor: not-allowed !important;
+
+                > .material-icons {
+                    color: $color-gray-light;
+                }
             }
         }
     }
+
 
     > .index-list {
         padding: 0;
@@ -70,7 +79,7 @@
 .document-toc-desktop {
     display: inline-block;
     position: fixed;
-    left: 20px;
+    right: 30px;
     z-index: 777;    
 }
 

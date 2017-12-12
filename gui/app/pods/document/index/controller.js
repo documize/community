@@ -10,13 +10,11 @@
 // https://documize.com
 
 import { Promise as EmberPromise } from 'rsvp';
-
 import { inject as service } from '@ember/service';
 import Controller from '@ember/controller';
-import NotifierMixin from '../../../mixins/notifier';
 import TooltipMixin from '../../../mixins/tooltip';
 
-export default Controller.extend(NotifierMixin, TooltipMixin, {
+export default Controller.extend(TooltipMixin, {
 	documentService: service('document'),
 	templateService: service('template'),
 	sectionService: service('section'),
@@ -43,7 +41,6 @@ export default Controller.extend(NotifierMixin, TooltipMixin, {
 		onCopyPage(pageId, targetDocumentId) {
 			let documentId = this.get('model.document.id');
 			this.get('documentService').copyPage(documentId, pageId, targetDocumentId).then(() => {
-				this.showNotification("Copied");
 
 				// refresh data if copied to same document
 				if (documentId === targetDocumentId) {
@@ -61,7 +58,6 @@ export default Controller.extend(NotifierMixin, TooltipMixin, {
 			let documentId = this.get('model.document.id');
 
 			this.get('documentService').copyPage(documentId, pageId, targetDocumentId).then(() => {
-				this.showNotification("Moved");
 				this.send('onPageDeleted', { id: pageId, children: false });
 			});
 		},
@@ -165,7 +161,6 @@ export default Controller.extend(NotifierMixin, TooltipMixin, {
 		onDeleteBlock(blockId) {
 			return new EmberPromise((resolve) => {
 				this.get('sectionService').deleteBlock(blockId).then(() => {
-					this.send("showNotification", "Deleted");
 					resolve();
 				});
 			});
@@ -174,7 +169,6 @@ export default Controller.extend(NotifierMixin, TooltipMixin, {
 		onSavePageAsBlock(block) {
 			return new EmberPromise((resolve) => {
 				this.get('sectionService').addBlock(block).then(() => {
-					this.showNotification("Published");
 					resolve();
 				});
 			});
@@ -182,7 +176,6 @@ export default Controller.extend(NotifierMixin, TooltipMixin, {
 
 		onDocumentDelete() {
 			this.get('documentService').deleteDocument(this.get('model.document.id')).then(() => {
-				this.send("showNotification", "Deleted");
 				this.transitionToRoute('folder', this.get('model.folder.id'), this.get('model.folder.slug'));
 			});
 		},
