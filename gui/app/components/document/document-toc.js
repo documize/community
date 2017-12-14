@@ -14,9 +14,8 @@ import { schedule } from '@ember/runloop'
 import { inject as service } from '@ember/service';
 import Component from '@ember/component';
 import tocUtil from '../../utils/toc';
-import NotifierMixin from '../../mixins/notifier';
 
-export default Component.extend(NotifierMixin, {
+export default Component.extend({
 	documentService: service('document'),
 	document: {},
 	folder: {},
@@ -36,12 +35,6 @@ export default Component.extend(NotifierMixin, {
 
 	didReceiveAttrs() {
 		this._super(...arguments);
-
-		this.set('showToc', is.not.undefined(this.get('pages')) && this.get('pages').get('length') > 0);
-
-		// if (is.not.null(this.get('currentPageId'))) {
-		// 	this.send('onEntryClick', this.get('currentPageId'));
-		// }
 
 		this.setState(this.get('currentPageId'));
 	},
@@ -173,9 +166,6 @@ export default Component.extend(NotifierMixin, {
 			target.setAttribute('data-y', y);
 			target.style.position = 'fixed';
 		}
-
-		// this is used later in the resizing and gesture demos
-		// window.dragMoveListener = dragMoveListener;
 	},
 
 	// Controls what user can do with the toc (left sidebar)
