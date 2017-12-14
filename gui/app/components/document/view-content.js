@@ -49,7 +49,6 @@ export default Component.extend(NotifierMixin, TooltipMixin, {
 		this._super(...arguments);
 		this.setupAddWizard();
 
-		console.log(this.get('pageId'));
 		this.attrs.onGotoPage(this.get('pageId'));
 
 		this.renderTooltips();
