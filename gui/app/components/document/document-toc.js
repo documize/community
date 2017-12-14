@@ -61,6 +61,11 @@ export default Component.extend(NotifierMixin, {
 
 		this.eventBus.unsubscribe('documentPageAdded');
 		this.eventBus.unsubscribe('resized');
+
+		let t = '#doc-toc';
+		if (interact.isSet(t)) {
+			interact(t).unset();
+		}
 	},
 
 	onDocumentPageAdded(pageId) {
