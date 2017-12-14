@@ -10,16 +10,18 @@
 // https://documize.com
 
 import { computed } from '@ember/object';
-import { schedule } from '@ember/runloop';
+import { schedule } from '@ember/runloop'
+import { inject as service } from '@ember/service';
 import Component from '@ember/component';
 import tocUtil from '../../utils/toc';
 import NotifierMixin from '../../mixins/notifier';
 
 export default Component.extend(NotifierMixin, {
+	documentService: service('document'),
 	document: {},
 	folder: {},
 	pages: [],
-	currentPageId: "",
+	currentPageId: '',
 	state: {
 		actionablePage: false,
 		upDisabled: true,
@@ -40,6 +42,8 @@ export default Component.extend(NotifierMixin, {
 		if (is.not.null(this.get('currentPageId'))) {
 			this.send('onEntryClick', this.get('currentPageId'));
 		}
+
+		this.setState(this.get('currentPageId'));
 	},
 
 	didInsertElement() {
@@ -49,11 +53,6 @@ export default Component.extend(NotifierMixin, {
 
 		this.eventBus.subscribe('documentPageAdded', this, 'onDocumentPageAdded');
 		this.eventBus.subscribe('resized', this, 'onResize');
-
-		schedule('afterRender', () => {
-			// let dg = $('#doc-toc').draggabilly({});
-			// this.set('dg', dg);
-		});
 	},
 
 	willDestroyElement() {
@@ -190,9 +189,6 @@ export default Component.extend(NotifierMixin, {
 
 			if (pendingChanges.length > 0) {
 				this.attrs.onPageSequenceChange(pendingChanges);
-
-				this.send('onEntryClick', this.get('currentPageId'));
-				this.showNotification("Moved up");
 			}
 		},
 
@@ -209,9 +205,6 @@ export default Component.extend(NotifierMixin, {
 
 			if (pendingChanges.length > 0) {
 				this.attrs.onPageSequenceChange(pendingChanges);
-
-				this.send('onEntryClick', this.get('currentPageId'));
-				this.showNotification("Moved down");
 			}
 		},
 
@@ -228,9 +221,6 @@ export default Component.extend(NotifierMixin, {
 
 			if (pendingChanges.length > 0) {
 				this.attrs.onPageLevelChange(pendingChanges);
-
-				this.showNotification("Indent");
-				this.send('onEntryClick', this.get('currentPageId'));
 			}
 		},
 
@@ -247,15 +237,18 @@ export default Component.extend(NotifierMixin, {
 
 			if (pendingChanges.length > 0) {
 				this.attrs.onPageLevelChange(pendingChanges);
-
-				this.showNotification("Outdent");
-				this.send('onEntryClick', this.get('currentPageId'));
 			}
 		},
 
 		onEntryClick(id) {
-			this.setState(id);
-			this.attrs.onGotoPage(id);
+			if (id !== '') {
+				let jumpTo = "#page-" + id;
+
+				if (!$(jumpTo).inView()) {
+					$(jumpTo).velocity("scroll", { duration: 250, offset: -100 });
+				}
+				this.setState(id);
+			}
 		}
 	}
 });

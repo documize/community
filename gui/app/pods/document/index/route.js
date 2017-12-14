@@ -34,5 +34,15 @@ export default Route.extend(AuthenticatedRouteMixin, {
 			sections: this.modelFor('document').sections,
 			permissions: this.modelFor('document').permissions
 		});
+	},
+
+	setupController(controller, model) {
+		controller.set('folders', model.folders);
+		controller.set('folder', model.folder);
+		controller.set('document', model.document);
+		controller.set('pages', model.pages);
+		controller.set('links', model.links);
+		controller.set('sections', model.sections);
+		controller.set('permissions', model.permissions);
 	}
 });

@@ -32,12 +32,12 @@ export default Component.extend(NotifierMixin, TooltipMixin, {
 		this._super(...arguments);
 		this.loadBlocks();
 
-		schedule('afterRender', () => {
-			let jumpTo = "#page-" + this.get('pageId');
-			if (!$(jumpTo).inView()) {
-				$(jumpTo).velocity("scroll", { duration: 250, offset: -100 });
-			}
-		});
+		// schedule('afterRender', () => {
+		// 	let jumpTo = "#page-" + this.get('pageId');
+		// 	if (!$(jumpTo).inView()) {
+		// 		$(jumpTo).velocity("scroll", { duration: 250, offset: -100 });
+		// 	}
+		// });
 	},
 
 	didRender() {
@@ -48,6 +48,9 @@ export default Component.extend(NotifierMixin, TooltipMixin, {
 	didInsertElement() {
 		this._super(...arguments);
 		this.setupAddWizard();
+
+		console.log(this.get('pageId'));
+		this.attrs.onGotoPage(this.get('pageId'));
 
 		this.renderTooltips();
 	},
