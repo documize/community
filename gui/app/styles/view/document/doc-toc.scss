@@ -1,11 +1,14 @@
 .document-toc {
     @include border-radius(3px);
-	margin: 30px 0 30px 0;
+    @include ease-in();
+    margin: 0;
     padding: 0 20px 20px 20px;
     background-color: $color-off-white;
     border: 1px solid $color-border;
     overflow: scroll;
-
+    box-sizing: border-box; // ensures width/height properties (and min/max properties) includes content, padding and border
+    z-index: 777;
+    
     > .header {
         @include sticky();
         flex-direction: column;
@@ -35,7 +38,6 @@
             }
         }
     }
-
 
     > .index-list {
         padding: 0;
@@ -77,12 +79,20 @@
 }
 
 .document-toc-desktop {
+	margin: 30px 0 30px 0;
     display: inline-block;
     position: fixed;
+    top: 100px;
     right: 30px;
-    z-index: 777;    
+    -webkit-transform: translate(0px, 0px);
+    transform: translate(0px, 0px);
 }
 
 .document-toc-small {
-    display: block;
+    display: inline-block;
+    position: relative !important;
+    margin: 0;
+    width: 100% !important;
+    height: 500px;
+    transform: none !important;
 }

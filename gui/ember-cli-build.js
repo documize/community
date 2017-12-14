@@ -45,6 +45,7 @@ module.exports = function (defaults) {
 	app.import('vendor/documize.js');
 	app.import('vendor/dropzone.js');
 	app.import('vendor/hoverIntent.min.js');
+	app.import('vendor/interact.min.js');
 	app.import('vendor/is.js');
 	app.import('vendor/keycloak.js');
 	app.import('vendor/markdown-it.min.js');

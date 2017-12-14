@@ -1,24 +1,33 @@
 {{toolbar/nav-bar}}
 
-<div class="d-none d-xl-block">
-	{{document/document-toc document=model.document folder=model.folder pages=model.pages page=model.page permissions=model.permissions
-		onPageSequenceChange=(action 'onPageSequenceChange') onPageLevelChange=(action 'onPageLevelChange') onGotoPage=(action 'onGotoPage')}}
-</div>
-
 <div id="doc-view" class="container">
-	<div class="row">
-		<div class="col-12">
 
+	<div class="row">
+		<div class="col-12 mb-5">
 			{{toolbar/for-document document=model.document spaces=model.folders space=model.folder permissions=model.permissions
 				onDocumentDelete=(action 'onDocumentDelete') onSaveTemplate=(action 'onSaveTemplate')}}
+		</div>
+	</div>
 
+	<div class="row">
+		<div class="col-12">
 			{{document/document-heading document=model.document permissions=model.permissions
 				onSaveDocument=(action 'onSaveDocument')}}
 
 			{{document/document-meta document=model.document folder=model.folder folders=model.folders permissions=model.permissions
 				onSaveDocument=(action 'onSaveDocument')}}
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-12">
+			{{document/document-toc document=model.document folder=model.folder pages=model.pages page=model.page permissions=model.permissions
+				onPageSequenceChange=(action 'onPageSequenceChange') onPageLevelChange=(action 'onPageLevelChange') onGotoPage=(action 'onGotoPage')}}
+		</div>
+	</div>
 
-			<div class="mb-5 text-center">
+	<div class="row no-gutters">
+		<div class="col-12">
+			<div class="mt-5 mb-5 text-center">
 				<ul class="tabnav-control">
 					<li class="tab {{if (eq tab 'content') 'selected'}}" {{action 'onTabChange' 'content'}}>Content</li>
 					<li class="tab {{if (eq tab 'attachment') 'selected'}}" {{action 'onTabChange' 'attachment'}}>Attachments</li>
@@ -47,9 +56,7 @@
 			{{#if (eq tab 'revision')}}
 				{{document/view-revision document=model.document folder=model.folder pages=model.pages onRollback=(action 'onRollback')}}
 			{{/if}}
-
 		</div>
-
 	</div>
 
 </div>

@@ -1,11 +1,17 @@
 <div class="mt-5">
 	{{#if hasRevisions}}
 		<div class="row">
-			<div class="col-10">
-				{{ui-select tagName="span" class="revision-picker" content=revisions action=(action 'onSelectRevision') optionValuePath="id" optionLabelPath="label"}}
+			<div class="col-12">
+				<div class="form-group">
+					{{ui-select tagName="span" class="revision-picker" content=revisions action=(action 'onSelectRevision') optionValuePath="id" optionLabelPath="label"}}
+				</div>
 			</div>
-			<div class="col-2">
-				<div id="restore-history-button" class="btn btn-success" data-toggle="modal" data-target="#document-rollback-modal" data-backdrop="static">Restore</div>
+		</div>
+		<div class="row">
+			<div class="col-12">
+				<div class="form-group">
+					<div id="restore-history-button" class="btn btn-success" data-toggle="modal" data-target="#document-rollback-modal" data-backdrop="static">Restore</div>
+				</div>
 			</div>
 		</div>
 		<div class="row">

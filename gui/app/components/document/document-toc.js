@@ -10,6 +10,7 @@
 // https://documize.com
 
 import { computed } from '@ember/object';
+import { schedule } from '@ember/runloop';
 import Component from '@ember/component';
 import tocUtil from '../../utils/toc';
 import NotifierMixin from '../../mixins/notifier';
@@ -29,7 +30,7 @@ export default Component.extend(NotifierMixin, {
 	emptyState: computed('pages', function () {
 		return this.get('pages.length') === 0;
 	}),
-	isDesktop: true,
+	isDesktop: false,
 
 	didReceiveAttrs() {
 		this._super(...arguments);
@@ -48,6 +49,11 @@ export default Component.extend(NotifierMixin, {
 
 		this.eventBus.subscribe('documentPageAdded', this, 'onDocumentPageAdded');
 		this.eventBus.subscribe('resized', this, 'onResize');
+
+		schedule('afterRender', () => {
+			// let dg = $('#doc-toc').draggabilly({});
+			// this.set('dg', dg);
+		});
 	},
 
 	willDestroyElement() {
@@ -67,18 +73,85 @@ export default Component.extend(NotifierMixin, {
 	},
 
 	setSize() {
-		this.set('isDesktop', $(window).width() >= 1800);
+		let isDesktop = $(window).width() >= 1800;
+		this.set('isDesktop', isDesktop);
 
-		let h = $(window).height() - $("#nav-bar").height() - 140;
-		$("#doc-toc").css('max-height', h);
-
-		let i = $("#doc-view").offset();
-
-		if (is.not.undefined(i)) {
-			let l = i.left - 100;
-			if (l > 350) l = 350;
-			$("#doc-toc").width(l);
+		if (isDesktop) {
+			let h = $(window).height() - $("#nav-bar").height() - 140;
+			$("#doc-toc").css('max-height', h);
+	
+			let i = $("#doc-view").offset();
+	
+			if (is.not.undefined(i)) {
+				let l = i.left - 100;
+				if (l > 350) l = 350;
+				$("#doc-toc").width(l);
+			}
 		}
+
+		schedule('afterRender', () => {
+			interact('#doc-toc')
+				.draggable({
+					autoScroll: true,
+					onmove: dragMoveListener,
+					// inertia: true,
+					restrict: {
+						// restriction: ".body",
+						// endOnly: true,
+						// elementRect: { top: 0, left: 0, bottom: 1, right: 1 }
+					}
+				})
+				.resizable({
+					// resize from all edges and corners
+					edges: { left: true, right: true, bottom: true, top: true },
+					// keep the edges inside the parent
+					// restrictEdges: {
+					// 	outer: 'parent',
+					// 	endOnly: true,
+					// },
+					// minimum size
+					restrictSize: {
+						min: { width: 250, height: 65 },
+					}
+				})
+				.on('resizemove', function (event) {
+					var target = event.target,
+						x = (parseFloat(target.getAttribute('data-x')) || 0),
+						y = (parseFloat(target.getAttribute('data-y')) || 0);
+
+					// update the element's style
+					target.style.width  = event.rect.width + 'px';
+					target.style.height = event.rect.height + 'px';
+
+					// translate when resizing from top or left edges
+					x += event.deltaRect.left;
+					y += event.deltaRect.top;
+
+					target.style.webkitTransform = target.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+
+					target.setAttribute('data-x', x);
+					target.setAttribute('data-y', y);
+					target.style.position = 'fixed';
+				});
+		});
+
+		function dragMoveListener (event) {
+			var target = event.target,
+			// keep the dragged position in the data-x/data-y attributes
+			x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
+			y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+			// translate the element
+			target.style.webkitTransform = target.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+
+			// update the posiion attributes
+			target.setAttribute('data-x', x);
+			target.setAttribute('data-y', y);
+			target.style.position = 'fixed';
+		}
+
+		// this is used later in the resizing and gesture demos
+		window.dragMoveListener = dragMoveListener;
 	},
 
 	// Controls what user can do with the toc (left sidebar)
@@ -181,44 +254,3 @@ export default Component.extend(NotifierMixin, {
 		}
 	}
 });
-
-/*
-	Specs
-	-----
-
-	1. Must max max height to prevent off screen problems
-	2. Must be usable on mobile and desktop
-	3. Must be sticky and always visible (at least desktop)
-	4. Must set width or leave to grid system
-
-	Solution
-	--------
-
-	1. max-height calc on insert/repaint
-	1. overflow: scroll
-
-	2. on mobile/sm/md/lg we can put in little box to side of doc meta
-	   and then set to fixed height based on screen size
-	2. on xl we can put into sidebar
-
-	3. sticky on xl desktop is fine as sidebar uses fixed position
-	   and content has max-height with overflow
-	3. sticky on col/sm/md/lg is not available
-
-	Notes
-	-----
-
-	We could go with container-fluid and use full width of screen.
-	This would work on all devices and take more space on 
-
-	$(window).width() needs to be 1800 or more for sticky sidebar...
-	$("#nav-bar").height()
-	$(window).height() - $("#nav-bar").height() - 100
-
-	Two choices:
-
-	if width >= 1800 then sidebar sticky outside container
-	if widht < 1800 then switch to container-fluid?
-		...but what about height?
-		...put next to doc--meta
-*/

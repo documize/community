@@ -32,10 +32,10 @@
 @import "section/wysiwyg.scss";
 
 // Bootstrap override that removes gutter space on smaller screens
-@media (max-width: 1200px) {
-    .container {
-        width: 100%;
-        max-width: none;
-    }
-}
+// @media (max-width: 1200px) {
+//     .container {
+//         width: 100%;
+//         max-width: none;
+//     }
+// }
 
