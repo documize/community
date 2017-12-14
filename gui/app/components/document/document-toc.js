@@ -39,9 +39,9 @@ export default Component.extend(NotifierMixin, {
 
 		this.set('showToc', is.not.undefined(this.get('pages')) && this.get('pages').get('length') > 0);
 
-		if (is.not.null(this.get('currentPageId'))) {
-			this.send('onEntryClick', this.get('currentPageId'));
-		}
+		// if (is.not.null(this.get('currentPageId'))) {
+		// 	this.send('onEntryClick', this.get('currentPageId'));
+		// }
 
 		this.setState(this.get('currentPageId'));
 	},
