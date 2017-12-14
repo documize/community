@@ -53,6 +53,8 @@ export default Component.extend(NotifierMixin, {
 
 		this.eventBus.subscribe('documentPageAdded', this, 'onDocumentPageAdded');
 		this.eventBus.subscribe('resized', this, 'onResize');
+
+		this.attachResizer();
 	},
 
 	willDestroyElement() {
@@ -90,20 +92,38 @@ export default Component.extend(NotifierMixin, {
 				let l = i.left - 100;
 				if (l > 350) l = 350;
 				$("#doc-toc").width(l);
-			}
-		}
 
+				$("#doc-toc").css({
+					'display': 'inline-block',
+					'position': 'fixed',
+					'width': l+'px',
+					'height': 'auto',
+					'transform': '',
+				});
+			}
+		} else {
+			$("#doc-toc").css({
+				'display': 'block',
+				'position': 'relative',
+				'width': '100%',
+				'height': '500px',
+				'transform': 'none',
+			});
+		}
+	},
+
+	attachResizer() {
 		schedule('afterRender', () => {
 			interact('#doc-toc')
 				.draggable({
 					autoScroll: true,
+					inertia: false,
 					onmove: dragMoveListener,
-					// inertia: true,
-					restrict: {
-						// restriction: ".body",
-						// endOnly: true,
-						// elementRect: { top: 0, left: 0, bottom: 1, right: 1 }
-					}
+					// restrict: {
+					// 	restriction: "body",
+					// 	endOnly: true,
+					// 	elementRect: { top: 0, left: 0, bottom: 1, right: 1 }
+					// }
 				})
 				.resizable({
 					// resize from all edges and corners
@@ -114,9 +134,9 @@ export default Component.extend(NotifierMixin, {
 					// 	endOnly: true,
 					// },
 					// minimum size
-					restrictSize: {
-						min: { width: 250, height: 65 },
-					}
+					// restrictSize: {
+					// 	min: { width: 250, height: 65 },
+					// }
 				})
 				.on('resizemove', function (event) {
 					var target = event.target,
@@ -155,7 +175,7 @@ export default Component.extend(NotifierMixin, {
 		}
 
 		// this is used later in the resizing and gesture demos
-		window.dragMoveListener = dragMoveListener;
+		// window.dragMoveListener = dragMoveListener;
 	},
 
 	// Controls what user can do with the toc (left sidebar)

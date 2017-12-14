@@ -8,7 +8,12 @@
     overflow: scroll;
     box-sizing: border-box; // ensures width/height properties (and min/max properties) includes content, padding and border
     z-index: 777;
-    
+    display: block;
+    position: relative; //
+    width: 100%; //
+    height: 500px;
+    transform: none; //
+
     > .header {
         @include sticky();
         flex-direction: column;
@@ -86,13 +91,4 @@
     right: 30px;
     -webkit-transform: translate(0px, 0px);
     transform: translate(0px, 0px);
-}
-
-.document-toc-small {
-    display: inline-block;
-    position: relative !important;
-    margin: 0;
-    width: 100% !important;
-    height: 500px;
-    transform: none !important;
 }
