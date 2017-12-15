@@ -39,7 +39,6 @@ export default Component.extend(ModalMixin, {
 		}
 
 		this.modalInputFocus('#publish-page-modal-' + this.get('page.id'), '#block-title-' + this.get('page.id'));
-
 		this.load();
 	},
 

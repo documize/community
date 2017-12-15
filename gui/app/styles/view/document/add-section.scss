@@ -116,17 +116,11 @@
 				}
 			}
 
-			> .block-actions {
+			> .actions {
 				@include ease-in();
-				display: none;
 				position: absolute;
 				top: 10px;
 				right: 8px;
-
-				.material-icons {
-					color: $color-stroke;
-					font-size: 1rem;
-				}
 			}
 
 			> .details {

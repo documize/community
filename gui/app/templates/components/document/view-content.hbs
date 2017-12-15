@@ -78,11 +78,16 @@
 					<ul class="block-list">
 						{{#each blocks as |block|}}
 							<li class="item" title="{{block.firstname}} {{block.lastname}}, {{time-ago block.created}}, used: {{ block.used }}" data-toggle="tooltip" data-placement="top">
-								<div class="block-actions">
-									{{#link-to 'document.block' folder.id folder.slug document.id document.slug block.id}}
-										<i class="material-icons">mode_edit</i>
-									{{/link-to}}
-									<i class="material-icons" id={{block.deleteId}}>delete</i>
+								<div class="actions">
+									{{#if permissions.documentTemplate}}
+										{{#link-to 'document.block' folder.id folder.slug document.id document.slug block.id class="button-icon-green button-icon-small align-middle"}}
+											<i class="material-icons">edit</i>
+										{{/link-to}}
+										<div class="button-icon-gap" />
+										<div id={{concat 'delete-block-button-' block.id}} class="button-icon-red button-icon-small align-middle" {{action 'onShowDeleteBlockModal' block.id}}>
+											<i class="material-icons">delete</i>
+										</div>
+									{{/if}}
 								</div>
 								<div class="details" {{action 'onInsertBlock' block}}>
 									<div class="title text-truncate">{{block.title}}</div>
@@ -98,3 +103,7 @@
 		</div>
 	</div>
 </div>
+
+{{#ui/ui-dialog title="Delete Content Block" confirmCaption="Delete" buttonType="btn-danger" show=showDeleteBlockDialog onAction=(action 'onDeleteBlock')}}
+	<p>Are you sure you want to delete this re-usable content block?</p>
+{{/ui/ui-dialog}}

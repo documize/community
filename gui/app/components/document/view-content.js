@@ -26,6 +26,8 @@ export default Component.extend(TooltipMixin, {
 	newSectionLocation: '',
 	beforePage: null,
 	toEdit: '',
+	showDeleteBlockDialog: false,
+	deleteBlockId: '',
 
 	didReceiveAttrs() {
 		this._super(...arguments);
@@ -139,10 +141,6 @@ export default Component.extend(TooltipMixin, {
 
 			this.set('blocks', blocks);
 			this.set('hasBlocks', blocks.get('length') > 0);
-
-			blocks.forEach((b) => {
-				b.set('deleteId', `delete-block-button-${b.id}`);
-			});
 		});
 	},
 
@@ -288,10 +286,19 @@ export default Component.extend(TooltipMixin, {
 			});
 		},
 
-		onDeleteBlock(id) {
+		onShowDeleteBlockModal(id) {
+			this.set('deleteBlockId', id);
+			this.set('showDeleteBlockDialog', true);
+		},
+
+		onDeleteBlock() {
+			this.set('showDeleteBlockDialog', false);
+
+			let id = this.get('deleteBlockId');
 			const promise = this.attrs.onDeleteBlock(id);
 
 			promise.then(() => {
+				this.set('deleteBlockId', '');
 				this.loadBlocks();
 			});
 

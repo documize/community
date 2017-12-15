@@ -186,18 +186,6 @@ export default Controller.extend(TooltipMixin, {
 				this.get('documentService').getPages(this.get('document.id')).then( (pages) => {
 					this.set('pages', pages);				
 				});
-				// _.each(changes, (change) => {
-				// 	let pageContent = _.findWhere(this.get('pages'), {
-				// 		id: change.pageId
-				// 	});
-
-				// 	if (is.not.undefined(pageContent)) {
-				// 		pageContent.set('sequence', change.sequence);
-				// 	}
-				// });
-
-				// this.set('pages', this.get('pages').sortBy('sequence'));
-				// this.get('target._routerMicrolib').refresh();
 			});
 		},
 
@@ -206,22 +194,6 @@ export default Controller.extend(TooltipMixin, {
 				this.get('documentService').getPages(this.get('document.id')).then( (pages) => {
 					this.set('pages', pages);				
 				});
-				// _.each(changes, (change) => {
-				// 	let pageContent = _.findWhere(this.get('pages'), {
-				// 		id: change.pageId
-				// 	});
-
-				// 	if (is.not.undefined(pageContent)) {
-				// 		pageContent.set('level', change.level);
-				// 	}
-				// });
-
-				// let pages = this.get('pages');
-				// pages = pages.sortBy('sequence');
-
-				// this.set('pages', []);
-				// this.set('pages', pages);
-				// this.get('target._routerMicrolib').refresh();
 			});
 		},
 
@@ -233,7 +205,7 @@ export default Controller.extend(TooltipMixin, {
 				if (!$(jumpTo).inView()) {
 					$(jumpTo).velocity("scroll", { duration: 250, offset: -100 });
 				}
-		}
+			}
 		},
 
 		onTagChange(tags) {
