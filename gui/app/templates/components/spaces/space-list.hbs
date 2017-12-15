@@ -1,48 +1,49 @@
-<div class="row">
-	<div class="col">
-		<div class="mt-4 mb-5">
+<div class="container">
+	<div class="row">
+		<div class="col">
+			<div class="mt-4 mb-5">
 
-			<div class="view-spaces">
-				<div class="heading">EVERYONE <div class="counter">({{publicFolders.length}})</div></div>
-				{{#unless hasPublicFolders}}
-					<p>No global spaces</p>
-				{{/unless}}
-				<ul class="list clearfix">
-					{{#each publicFolders as |folder|}}
-						{{#link-to 'folder.index' folder.id folder.slug}}
-							<li class="item">{{ folder.name }}</li>
-						{{/link-to}}
-					{{/each}}
-				</ul>
-
-				{{#if session.authenticated}}
-					<div class="heading">TEAM <div class="counter">({{protectedFolders.length}})</div></div>
-					{{#unless hasProtectedFolders}}
-						<p>No team spaces</p>
+				<div class="view-spaces">
+					<div class="heading">EVERYONE <div class="counter">({{publicFolders.length}})</div></div>
+					{{#unless hasPublicFolders}}
+						<p>No global spaces</p>
 					{{/unless}}
 					<ul class="list clearfix">
-						{{#each protectedFolders as |folder|}}
+						{{#each publicFolders as |folder|}}
 							{{#link-to 'folder.index' folder.id folder.slug}}
 								<li class="item">{{ folder.name }}</li>
 							{{/link-to}}
 						{{/each}}
 					</ul>
 
-					<div class="heading">PERSONAL <div class="counter">({{privateFolders.length}})</div></div>
-					{{#unless hasPrivateFolders}}
-						<p>No personal spaces</p>
-					{{/unless}}
-					<ul class="list clearfix">
-						{{#each privateFolders as |folder|}}
-							{{#link-to 'folder.index' folder.id folder.slug}}
-								<li class="item">{{ folder.name }}</li>
-							{{/link-to}}
-						{{/each}}
-					</ul>
-				{{/if}}
+					{{#if session.authenticated}}
+						<div class="heading">TEAM <div class="counter">({{protectedFolders.length}})</div></div>
+						{{#unless hasProtectedFolders}}
+							<p>No team spaces</p>
+						{{/unless}}
+						<ul class="list clearfix">
+							{{#each protectedFolders as |folder|}}
+								{{#link-to 'folder.index' folder.id folder.slug}}
+									<li class="item">{{ folder.name }}</li>
+								{{/link-to}}
+							{{/each}}
+						</ul>
+
+						<div class="heading">PERSONAL <div class="counter">({{privateFolders.length}})</div></div>
+						{{#unless hasPrivateFolders}}
+							<p>No personal spaces</p>
+						{{/unless}}
+						<ul class="list clearfix">
+							{{#each privateFolders as |folder|}}
+								{{#link-to 'folder.index' folder.id folder.slug}}
+									<li class="item">{{ folder.name }}</li>
+								{{/link-to}}
+							{{/each}}
+						</ul>
+					{{/if}}
+				</div>
+
 			</div>
-
 		</div>
 	</div>
 </div>
-

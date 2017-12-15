@@ -11,14 +11,16 @@
 
 import Component from '@ember/component';
 import { computed } from '@ember/object';
+import { schedule } from '@ember/runloop';
 import { inject as service } from '@ember/service';
-import NotifierMixin from '../../mixins/notifier';
 import TooltipMixin from '../../mixins/tooltip';
 import ModalMixin from '../../mixins/modal';
 import AuthMixin from '../../mixins/auth';
 
-export default Component.extend(NotifierMixin, ModalMixin, TooltipMixin, AuthMixin, {
+export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 	spaceService: service('folder'),
+	localStorage: service(),
+	templateService: service('template'),
 	session: service(),
 	appMeta: service(),
 	pinned: service(),
@@ -38,12 +40,24 @@ export default Component.extend(NotifierMixin, ModalMixin, TooltipMixin, AuthMix
 	deleteSpaceName: '',
 	inviteEmail: '',
 	inviteMessage: '',
+	hasTemplates: computed('templates', function() {
+		return this.get('templates.length') > 0;
+	}),
+	emptyDocName: '',
+	emptyDocNameError: false,
+	templateDocName: '',
+	templateDocNameError: false,
+	selectedTemplate: '',
+	importedDocuments: [],
+	importStatus: [],
+	dropzone: null,
 
 	didReceiveAttrs() {
 		this._super(...arguments);
 
 		let folder = this.get('space');
 		let targets = _.reject(this.get('spaces'), {id: folder.get('id')});
+		this.set('movedFolderOptions', targets);
 
 		this.get('pinned').isSpacePinned(folder.get('id')).then((pinId) => {
 			this.set('pinState.pinId', pinId);
@@ -52,8 +66,6 @@ export default Component.extend(NotifierMixin, ModalMixin, TooltipMixin, AuthMix
 			this.renderTooltips();
 		});
 
-		this.set('movedFolderOptions', targets);
-
 		if (this.get('inviteMessage').length === 0) {
 			this.set('inviteMessage', this.getDefaultInvitationMessage());
 		}
@@ -61,7 +73,6 @@ export default Component.extend(NotifierMixin, ModalMixin, TooltipMixin, AuthMix
 
 	didInsertElement() {
 		this._super(...arguments);
-
 		this.modalInputFocus('#space-delete-modal', '#delete-space-name');
 		this.modalInputFocus('#space-invite-modal', '#space-invite-email');
 	},
@@ -69,10 +80,64 @@ export default Component.extend(NotifierMixin, ModalMixin, TooltipMixin, AuthMix
 	willDestroyElement() {
 		this._super(...arguments);
 		this.removeTooltips();
+
+		if (is.not.null(this.get('dropzone'))) {
+			this.get('dropzone').destroy();
+			this.set('dropzone', null);
+		}		
 	},
 
 	getDefaultInvitationMessage() {
 		return "Hey there, I am sharing the " + this.get('space.name') + " space (in " + this.get("appMeta.title") + ") with you so we can both collaborate on documents.";
+	},
+
+	setupImport() {
+		// already done init?
+		if (is.not.null(this.get('dropzone'))) {
+			this.get('dropzone').destroy();
+			this.set('dropzone', null);
+		}
+
+		let self = this;
+		let folderId = this.get('space.id');
+		let url = this.get('appMeta.endpoint');
+		let importUrl = `${url}/import/folder/${folderId}`;
+
+		let dzone = new Dropzone("#import-document-button", {
+			headers: { 'Authorization': 'Bearer ' + self.get('session.session.content.authenticated.token') },
+			url: importUrl,
+			method: "post",
+			paramName: 'attachment',
+			acceptedFiles: ".doc,.docx,.md,.markdown,.htm,.html",
+			clickable: true,
+			maxFilesize: 10,
+			parallelUploads: 3,
+			uploadMultiple: false,
+			addRemoveLinks: false,
+			autoProcessQueue: true,
+
+			init: function () {
+				this.on("success", function (document) {
+					self.send('onDocumentImported', document.name, document);
+				});
+
+				this.on("error", function (x) {
+					console.log("Conversion failed for", x.name, x); // eslint-disable-line no-console
+				});
+
+				// this.on("queuecomplete", function () {});
+
+				this.on("addedfile", function (file) {
+					self.send('onDocumentImporting', file.name);
+				});
+			}
+		});
+
+		dzone.on("complete", function (file) {
+			dzone.removeFile(file);
+		});
+
+		this.set('dropzone', dzone);
 	},
 
 	actions: {
@@ -166,16 +231,107 @@ export default Component.extend(NotifierMixin, ModalMixin, TooltipMixin, AuthMix
 			this.modalClose('#space-delete-modal');
 		},
 
-		onAddSpace(e) {
+		onShowEmptyDocModal() {
+			this.modalOpen("#empty-doc-modal", {"show": true}, '#empty-doc-name');
+		},
+
+		onAddEmptyDoc(e) {
 			e.preventDefault();
+			let docName = this.get('emptyDocName');
+
+			if (is.empty(docName)) {
+				this.set('emptyDocNameError', true);
+				$('#empty-doc-name').focus();
+				return;
+			} else {
+				this.set('emptyDocNameError', false);
+				this.set('emptyDocName', '');
+			}
+
+			this.modalClose("#empty-doc-modal");
+
+			this.get('templateService').importSavedTemplate(this.get('space.id'), '0', docName).then((document) => {
+				this.get('router').transitionTo('document', this.get('space.id'), this.get('space.slug'), document.get('id'), document.get('slug'));
+			});
 		},
 
-		onImport() {
-			this.attrs.onRefresh();
+		onShowTemplateDocModal() {
+			let t = this.get('templates');
+			if (t.length > 0) {
+				t[0].set('selected', true);
+				this.modalOpen("#template-doc-modal", {"show": true}, '#template-doc-name');
+			}
 		},
 
-		onHideStartDocument() {
-			// this.set('showStartDocument', false);
+		onSelectTemplate(i) {
+			let t = this.get('templates');
+			t.forEach((t) => {
+				t.set('selected', false);
+			})
+			i.set('selected', true);
+			this.set('selectedTemplate', i.id);
+		},
+
+		onAddTemplateDoc(e) {
+			e.preventDefault();
+			let docName = this.get('templateDocName');
+
+			if (is.empty(docName)) {
+				this.set('templateDocNameError', true);
+				$('#template-doc-name').focus();
+				return;
+			} else {
+				this.set('templateDocNameError', false);
+				this.set('templateDocName', '');
+			}
+
+			let id = this.get('selectedTemplate');
+			if (is.empty(id)) {
+				return;
+			}
+
+			this.modalClose("#template-doc-modal");
+
+			this.get('templateService').importSavedTemplate(this.get('space.id'), id, docName).then((document) => {
+				this.get('router').transitionTo('document', this.get('space.id'), this.get('space.slug'), document.get('id'), document.get('slug'));
+			});
+		},
+
+		onShowImportDocModal() {
+			this.modalOpen("#import-doc-modal", {"show": true});
+
+			this.setupImport();
+			this.modalOnShown('#import-doc-modal', function() {
+				schedule('afterRender', ()=> {
+				});
+			});
+		},
+
+		onDocumentImporting(filename) {
+			let status = this.get('importStatus');
+			let documents = this.get('importedDocuments');
+
+			status.pushObject(`Converting ${filename}...`);
+			documents.push(filename);
+
+			this.set('importStatus', status);
+			this.set('importedDocuments', documents);
+		},
+
+		onDocumentImported(filename /*, document*/ ) {
+			let status = this.get('importStatus');
+			let documents = this.get('importedDocuments');
+
+			status.pushObject(`Successfully converted ${filename}`);
+			documents.pop(filename);
+
+			this.set('importStatus', status);
+			this.set('importedDocuments', documents);
+
+			if (documents.length === 0) {
+				this.modalClose("#import-doc-modal");				
+				this.attrs.onRefresh();
+			}
 		}
 	}
 });

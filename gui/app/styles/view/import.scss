@@ -1,0 +1,19 @@
+.import-zone {
+	margin: 3rem 1rem;
+
+	> .import-document-button {
+		> .dz-preview, .dz-processing {
+			display: none !important;
+		}
+	}
+
+	> .import-status {
+		margin-top: 30px;
+
+		> p {
+			font-size: 1.1rem;
+			color: $color-off-black;
+		}
+	}
+}
+

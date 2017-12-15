@@ -10,7 +10,6 @@
 // https://documize.com
 
 import { empty } from '@ember/object/computed';
-
 import { schedule } from '@ember/runloop';
 import Component from '@ember/component';
 import { inject as service } from '@ember/service';

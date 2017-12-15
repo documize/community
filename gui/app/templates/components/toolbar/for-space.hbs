@@ -1,7 +1,9 @@
 {{#toolbar/t-toolbar}}
+	
 	{{#toolbar/t-links}}
 		{{#link-to "folders" class="link" tagName="li"}}Spaces{{/link-to}}
 	{{/toolbar/t-links}}
+
 	{{#toolbar/t-actions}}
 		{{#if spaceSettings}}
 			<div id="space-invite-button" class="button-icon-gray align-middle" data-toggle="tooltip" data-placement="top" title="Invite to space">
@@ -80,27 +82,97 @@
 		{{/if}}
 
 		{{#if permissions.documentAdd}}
-			<button type="button" class="btn btn-success font-weight-bold" data-toggle="modal" data-target="#add-space-modal" data-backdrop="static">+ DOCUMENT</button>
-			<div id="add-space-modal" class="modal" tabindex="-1" role="dialog">
+			<div class="btn-group" role="group">
+				<button id="btnGroupDocument" type="button" class="btn btn-success font-weight-bold dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">+ DOCUMENT</button>
+				<div class="dropdown-menu dropdown-menu-right" aria-labelledby="btnGroupDocument">
+					<a class="dropdown-item" href="#" {{action 'onShowEmptyDocModal'}}>Empty document</a>
+					{{#if hasTemplates}}
+						<a class="dropdown-item" href="#" {{action 'onShowTemplateDocModal'}}>From template</a>
+					{{/if}}
+					<a class="dropdown-item" href="#" {{action 'onShowImportDocModal'}}>Import files</a>
+				</div>
+			</div>
+			<div id="empty-doc-modal" class="modal" tabindex="-1" role="dialog">
 				<div class="modal-dialog" role="document">
 					<div class="modal-content">
-						<div class="modal-header">New Document</div>
+						<div class="modal-header">Empty Document</div>
 						<div class="modal-body">
-							<form onsubmit={{action 'onAddSpace'}}>
-								{{folder/start-document folder=space templates=templates permissions=permissions
-									onImport=(action 'onImport') onHideStartDocument=(action 'onHideStartDocument')}}
+							<form onsubmit={{action 'onAddEmptyDoc'}}>
+								<div class="form-group">
+									<label for="empty-doc-name">Document Name</label>
+									{{input id="empty-doc-name" type="text" value=emptyDocName placeholder="Enter name" class=(if emptyDocNameError 'form-control mousetrap is-invalid' 'form-control mousetrap') autocomplete="off"}}
+								</div>
 							</form>
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-							<button type="button" class="btn btn-success" onclick={{action 'onAddSpace'}}>Add</button>
+							<button type="button" class="btn btn-success" onclick={{action 'onAddEmptyDoc'}}>Add</button>
 						</div>
 					</div>
 				</div>
 			</div>
+			<div id="template-doc-modal" class="modal" tabindex="-1" role="dialog">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">Document From Template</div>
+						<div class="modal-body">
+							<form onsubmit={{action 'onAddTemplateDoc'}}>
+								<div class="form-group">
+									<label for="template-doc-name">Document Name</label>
+									{{input id="template-doc-name" type="text" value=templateDocName placeholder="Enter name" class=(if templateDocNameError 'form-control mousetrap is-invalid' 'form-control mousetrap') autocomplete="off"}}
+								</div>
+								<div class="widget-list-picker">
+									<ul class="options">
+										{{#each templates as |item|}}
+											<li class="option {{if item.selected 'selected'}}" {{action 'onSelectTemplate' item}}>
+												<div class="text text-truncate">
+													{{item.title}}<br/>{{item.description}}
+												</div>
+												{{#if item.selected}}
+													<i class="material-icons">check</i>
+												{{/if}}
+											</li>
+										{{/each}}
+									</ul>
+								</div>
+							</form>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+							<button type="button" class="btn btn-success" onclick={{action 'onAddTemplateDoc'}}>Add</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id="import-doc-modal" class="modal" tabindex="-1" role="dialog">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">Import Documents</div>
+						<div class="modal-body">
+							<div class="import-zone">
+								<button id="import-document-button" type="button" class="btn btn-outline-secondary btn-lg btn-block">
+									<br/>
+									Click to select files or drag-drop files 
+									<br/><br/>
+									<span class="font-italic">.doc, .docx, .md, .markdown</span>
+									<br/><br/>
+								</button>
+								<div class="import-status">
+									{{#each importStatus as |status|}}
+										<p>{{status}}</p>
+									{{/each}}
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						</div>
+					</div>
+				</div>
+			</div>			
 		{{/if}}
-
 	{{/toolbar/t-actions}}
+
 {{/toolbar/t-toolbar}}
 
 {{folder/permission-admin folders=spaces folder=space}}

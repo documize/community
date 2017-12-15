@@ -35,7 +35,6 @@ export default Component.extend({
 
 	didReceiveAttrs() {
 		this._super(...arguments);
-
 		this.setState(this.get('currentPageId'));
 	},
 
@@ -43,10 +42,8 @@ export default Component.extend({
 		this._super(...arguments);
 
 		this.setSize();
-
 		this.eventBus.subscribe('documentPageAdded', this, 'onDocumentPageAdded');
 		this.eventBus.subscribe('resized', this, 'onResize');
-
 		this.attachResizer();
 	},
 

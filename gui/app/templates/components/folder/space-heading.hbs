@@ -1,28 +1,30 @@
-<div class="row">
-	<div class="col">
-		<div class="mt-4 mb-5">
+<div class="container">
+	<div class="row">
+		<div class="col">
+			<div class="mt-4 mb-5">
 
-			{{#unless editMode}}
-				<div class="view-space">
-					<div class="heading">
-						<h1 class="view-heading {{if permissions.spaceOwner 'cursor-pointer'}}" onclick={{if permissions.spaceOwner (action 'toggleEdit')}}>
-							{{space.name}}
-						</h1>
-					</div>
-				</div>
-			{{else}}
-				<form {{action "onSave" on="submit"}}>
+				{{#unless editMode}}
 					<div class="view-space">
 						<div class="heading">
-							<div class="form-group">
-								{{input id="space-name" type="text" value=spaceName class=(if hasNameError 'form-control is-invalid' 'form-control') placeholder="Space name" autocomplete="off"}}
-								<small class="form-text text-muted">Press Enter to save or Escape to cancel</small>
-							</div>
+							<h1 class="view-heading {{if permissions.spaceOwner 'cursor-pointer'}}" onclick={{if permissions.spaceOwner (action 'toggleEdit')}}>
+								{{space.name}}
+							</h1>
 						</div>
 					</div>
-				</form>
-			{{/unless}}
+				{{else}}
+					<form {{action "onSave" on="submit"}}>
+						<div class="view-space">
+							<div class="heading">
+								<div class="form-group">
+									{{input id="space-name" type="text" value=spaceName class=(if hasNameError 'form-control is-invalid' 'form-control') placeholder="Space name" autocomplete="off"}}
+									<small class="form-text text-muted">Press Enter to save or Escape to cancel</small>
+								</div>
+							</div>
+						</div>
+					</form>
+				{{/unless}}
 
+			</div>
 		</div>
 	</div>
 </div>

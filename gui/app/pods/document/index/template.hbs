@@ -1,14 +1,9 @@
 {{toolbar/nav-bar}}
 
+{{toolbar/for-document document=document spaces=folders space=folder permissions=permissions
+	onDocumentDelete=(action 'onDocumentDelete') onSaveTemplate=(action 'onSaveTemplate')}}
+
 <div id="doc-view" class="container">
-
-	<div class="row">
-		<div class="col-12 mb-5">
-			{{toolbar/for-document document=document spaces=folders space=folder permissions=permissions
-				onDocumentDelete=(action 'onDocumentDelete') onSaveTemplate=(action 'onSaveTemplate')}}
-		</div>
-	</div>
-
 	<div class="row">
 		<div class="col-12">
 			{{document/document-heading document=document permissions=permissions
@@ -58,5 +53,4 @@
 			{{/if}}
 		</div>
 	</div>
-
 </div>

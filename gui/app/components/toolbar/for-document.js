@@ -61,6 +61,8 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 
 	actions: {
 		onDocumentDelete() {
+			this.modalClose('#document-delete-modal');
+			
 			this.attrs.onDocumentDelete();
 		},
 

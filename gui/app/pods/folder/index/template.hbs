@@ -1,24 +1,22 @@
 {{toolbar/nav-bar}}
 
-<div class="container">
-	{{toolbar/for-space
-		spaces=model.folders
-		space=model.folder
-		permissions=model.permissions
-		templates=model.templates
-		onRefresh=(action 'onRefresh')
-		onDeleteSpace=(action 'onDeleteSpace')}}
+{{toolbar/for-space
+	spaces=model.folders
+	space=model.folder
+	permissions=model.permissions
+	templates=model.templates
+	onRefresh=(action 'onRefresh')
+	onDeleteSpace=(action 'onDeleteSpace')}}
 
-	{{folder/space-view
-		spaces=model.folders
-		space=model.folder
-		templates=model.templates
-		permissions=model.permissions
-		documents=model.documents
-		categories=model.categories
-		categorySummary=model.categorySummary
-		categoryMembers=model.categoryMembers
-		rootDocCount=model.rootDocCount
-		categoryFilter=category
-		onRefresh=(action 'onRefresh')}}
-</div>
+{{folder/space-view
+	spaces=model.folders
+	space=model.folder
+	templates=model.templates
+	permissions=model.permissions
+	documents=model.documents
+	categories=model.categories
+	categorySummary=model.categorySummary
+	categoryMembers=model.categoryMembers
+	rootDocCount=model.rootDocCount
+	categoryFilter=category
+	onRefresh=(action 'onRefresh')}}

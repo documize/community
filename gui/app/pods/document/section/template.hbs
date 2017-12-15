@@ -1,9 +1,13 @@
 {{toolbar/nav-bar}}
 
-<div class="container">
-	{{toolbar/for-document document=model.document spaces=model.folders space=model.folder permissions=model.permissions showTools=false showDocumentLink=true}}
+{{toolbar/for-document document=model.document spaces=model.folders space=model.folder permissions=model.permissions showTools=false showDocumentLink=true}}
 
-	<div class="mt-5">
-		{{document/document-editor document=model.document folder=model.folder page=model.page meta=model.meta onCancel=(action 'onCancel') onAction=(action 'onAction')}}
+<div class="container">
+	<div class="row">
+		<div class="col-12">
+			<div class="mt-5">
+				{{document/document-editor document=model.document folder=model.folder page=model.page meta=model.meta onCancel=(action 'onCancel') onAction=(action 'onAction')}}
+			</div>
+		</div>
 	</div>
 </div>

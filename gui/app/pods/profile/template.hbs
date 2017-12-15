@@ -1,13 +1,13 @@
 {{toolbar/nav-bar}}
 
-<div class="container">
-	{{#toolbar/t-toolbar}}
-		{{#toolbar/t-links}}
-			{{#link-to "folders" class="link" tagName="li"}}Spaces{{/link-to}}
-		{{/toolbar/t-links}}
-		{{#toolbar/t-actions}}
-		{{/toolbar/t-actions}}
-	{{/toolbar/t-toolbar}}
+{{#toolbar/t-toolbar}}
+	{{#toolbar/t-links}}
+		{{#link-to "folders" class="link" tagName="li"}}Spaces{{/link-to}}
+	{{/toolbar/t-links}}
+	{{#toolbar/t-actions}}
+	{{/toolbar/t-actions}}
+{{/toolbar/t-toolbar}}
 
+<div class="container">
 	{{user-profile model=model save=(action 'save')}}
 </div>

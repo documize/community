@@ -17,16 +17,18 @@ import { schedule } from '@ember/runloop';
 // 		element: #new-template-name
 // See https://getbootstrap.com/docs/4.0/components/modal/#via-javascript
 export default Mixin.create({
-	modalOpen(modalId, options) {
+	modalOpen(modalId, options, focusId) {
 		$(modalId).modal('dispose');
 		$(modalId).modal(options);
+
+		if (is.not.undefined(focusId)) {
+			$(focusId).trigger('focus');
+		}
 	},
 
 	modalInputFocus(modalId, inputId) {
-		$(modalId).on('show.bs.modal', function(event) { // eslint-disable-line no-unused-vars
-			schedule('afterRender', () => {
-				$(inputId).focus();
-			});
+		$(modalId).on('shown.bs.modal', function(event) { // eslint-disable-line no-unused-vars
+			$(inputId).trigger('focus');
 		});
 	},
 

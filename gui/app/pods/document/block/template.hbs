@@ -1,7 +1,5 @@
 {{toolbar/nav-bar}}
 
-<div class="container">
-	{{toolbar/for-document document=model.document spaces=model.folders space=model.folder permissions=model.permissions showTools=false showDocumentLink=true}}
+{{toolbar/for-document document=model.document spaces=model.folders space=model.folder permissions=model.permissions showTools=false showDocumentLink=true}}
 
-	{{document/block-editor document=model.document folder=model.folder block=model.block onCancel=(action 'onCancel') onAction=(action 'onAction')}}
-</div>
+{{document/block-editor document=model.document folder=model.folder block=model.block onCancel=(action 'onCancel') onAction=(action 'onAction')}}
