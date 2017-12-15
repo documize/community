@@ -1,10 +1,8 @@
 .import-zone {
 	margin: 3rem 1rem;
 
-	> .import-document-button {
-		> .dz-preview, .dz-processing {
-			display: none !important;
-		}
+	.dz-preview, .dz-processing {
+		display: none !important;
 	}
 
 	> .import-status {
