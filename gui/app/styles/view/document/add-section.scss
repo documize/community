@@ -8,7 +8,7 @@
 	> .start-button {
 		display: none;
 		text-align: center;
-		padding-top: 20px;
+		padding-top: 10px;
 		position: relative;
 	}
 
@@ -16,7 +16,7 @@
 		height: 30px;
 
 		> .start-button {
-			padding-top: 0;
+			padding: 0;
 		}
 	}
 }
