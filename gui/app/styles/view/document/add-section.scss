@@ -9,27 +9,7 @@
 		display: none;
 		text-align: center;
 		padding-top: 20px;
-		color: $color-green;
-		font-size: 1rem;
 		position: relative;
-
-		> .round-button {
-			opacity: 0.6 !important;
-		}
-
-		> .label {
-			display: inline-block;
-			margin-left: 10px;
-		}
-
-		> .line {
-			display: inline-block;
-			height: 1px;
-			border: 1px solid $color-green;
-			width: 100px;
-			margin: 0 20px 0 20px;
-			opacity: 0.2;
-		}
 	}
 
 	&:first-of-type {
@@ -48,143 +28,120 @@
 }
 
 .new-section-wizard {
+	display: none;
 	@include border-radius(2px);
-	margin: 0 0 30px 0;
+	margin: 0 0 60px 0;
 	padding: 30px;
 	border: 1px solid $color-stroke;
-	background-color: $color-off-white;
-	display: none;
+	background-color: $color-primary-light;
 
-	.section-name {
+	.new-section-caption {
+		margin: 20px 0 10px 0;
+		color: $color-primary;
+		font-size: 1.4rem;
 		font-weight: bold;
-		font-size: 1.5rem;
-		margin: 0 0 30px 0;
-		color: $color-black;
 	}
 
-	.template-caption {
-		color: $color-gray;
-		margin: 10px 0 10px 0;
-		font-size: 1.2rem;
-	}
+	 .preset-list {
+		margin: 20px 0 0 0;
+		padding: 0;
 
-	> .list-wrapper {
-		height: 440px;
-		overflow-y: auto;
+		> .item {
+			@include ease-in();
+			@include border-radius(3px);
+			list-style: none;
+			cursor: pointer;
+			display: inline-block;
+			border: 1px solid $color-border;
+			background-color: $color-white;
+			margin: 0 20px 20px 0;
+			padding: 12px 0 0 20px;
+			width: 250px;
+			height: 60px;
 
-		> .preset-list {
-			margin: 0;
-			padding: 0;
-
-			> .item {
+			&:hover {
 				@include ease-in();
-				@include border-radius(4px);
-				list-style: none;
-				cursor: pointer;
+				border-color: $color-link;
+			}
+
+			.icon {
+				text-align: center;
 				display: inline-block;
-				border: 1px solid $color-stroke;
-				background-color: $color-white;
-				margin: 0 20px 20px 0;
-				padding: 15px 0 0 20px;
-				width: 200px;
-				height: 60px;
+				width: 40px;
+				margin-right: 10px;
 
-				&:hover {
-					@include ease-in();
-					border-color: $color-link;
-				}
-
-				.icon {
+				> .img {
 					text-align: center;
 					display: inline-block;
-					width: 40px;
-					margin-right: 10px;
-					float: left;
-
-					> .img {
-						text-align: center;
-						display: inline-block;
-						height: 30px;
-						width: 30px;
-						float: left;
-					}
-				}
-
-				> .title {
-					font-size: 1rem;
-					font-weight: normal;
-					color: $color-off-black;
-					letter-spacing: 0.5px;
-					margin-top: 6px;
+					height: 30px;
+					width: 30px;
 				}
 			}
-		}
 
-		> .block-list {
-			margin: 0;
-			padding: 0;
-
-			> .item {
-				@include ease-in();
-				@include border-radius(4px);
-				list-style: none;
-				cursor: pointer;
+			> .title {
 				display: inline-block;
-				border: 1px solid $color-stroke;
-				background-color: $color-white;
-				margin: 0 20px 20px 0;
-				padding: 12px 0 0 20px;
-				width: 423px;
-				height: 60px;
-				position: relative;
+				font-size: 1rem;
+				font-weight: normal;
+				color: $color-off-black;
+				letter-spacing: 0.5px;
+				margin-top: 6px;
+			}
+		}
+	}
 
-				&:hover {
-					@include ease-in();
-					border-color: $color-link;
+	 .block-list {
+		margin: 20px 0 0 0;
+		padding: 0;
 
-					> .block-actions {
-						display: block;
-					}
-				}
+		> .item {
+			@include ease-in();
+			@include border-radius(3px);
+			list-style: none;
+			cursor: pointer;
+			display: block;
+			border: 1px solid $color-border;
+			background-color: $color-white;
+			margin: 0 20px 20px 0;
+			padding: 20px;
+			height: 90px;
+			width: 100%;
+			position: relative;
+
+			&:hover {
+				@include ease-in();
+				border-color: $color-link;
 
 				> .block-actions {
-					@include ease-in();
-					display: none;
-					position: absolute;
-					top: 10px;
-					right: 8px;
+					display: block;
+				}
+			}
 
-					.material-icons {
-						color: $color-stroke;
-						font-size: 1rem;
-					}
+			> .block-actions {
+				@include ease-in();
+				display: none;
+				position: absolute;
+				top: 10px;
+				right: 8px;
+
+				.material-icons {
+					color: $color-stroke;
+					font-size: 1rem;
+				}
+			}
+
+			> .details {
+				> .title {
+					font-size: 1.1rem;
+					font-weight: bold;
+					color: $color-off-black;
+					letter-spacing: 0.5px;
+					margin-top: 0;
 				}
 
-				> .details {
-					width: 350px;
-					overflow: hidden;
-					text-overflow: ellipsis;
-					white-space: nowrap;
-
-					> .title {
-						font-size: 1rem;
-						font-weight: normal;
-						color: $color-off-black;
-						letter-spacing: 0.5px;
-						margin-top: 0;
-						overflow: hidden;
-						text-overflow: ellipsis;
-						white-space: nowrap;
-					}
-
-					> .desc {
-						color: $color-gray;
-						font-size: 0.8rem;
-						margin-top: 5px;
-						overflow: hidden;
-						text-overflow: ellipsis;
-						white-space: nowrap;
-					}
+				> .desc {
+					color: $color-off-black;
+					font-size: 1rem;
+					margin-top: 5px;
 				}
 			}
 		}

@@ -13,31 +13,23 @@ import { notEmpty, empty } from '@ember/object/computed';
 import { schedule } from '@ember/runloop';
 import { inject as service } from '@ember/service';
 import Component from '@ember/component';
-import NotifierMixin from '../../mixins/notifier';
 import TooltipMixin from '../../mixins/tooltip';
 
-export default Component.extend(NotifierMixin, TooltipMixin, {
+export default Component.extend(TooltipMixin, {
 	documentService: service('document'),
 	sectionService: service('section'),
 	appMeta: service(),
 	link: service(),
 	hasPages: notEmpty('pages'),
-	newSectionName: 'Section',
+	newSectionName: '',
 	newSectionNameMissing: empty('newSectionName'),
 	newSectionLocation: '',
-	beforePage: '',
+	beforePage: null,
 	toEdit: '',
 
 	didReceiveAttrs() {
 		this._super(...arguments);
 		this.loadBlocks();
-
-		// schedule('afterRender', () => {
-		// 	let jumpTo = "#page-" + this.get('pageId');
-		// 	if (!$(jumpTo).inView()) {
-		// 		$(jumpTo).velocity("scroll", { duration: 250, offset: -100 });
-		// 	}
-		// });
 	},
 
 	didRender() {
@@ -84,7 +76,6 @@ export default Component.extend(NotifierMixin, TooltipMixin, {
 
 			if (link.orphan) {
 				$(this).addClass('broken-link');
-				self.showNotification('Broken link!');
 				e.preventDefault();
 				e.stopPropagation();
 				return false;
