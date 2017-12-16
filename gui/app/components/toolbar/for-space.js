@@ -16,6 +16,7 @@ import { inject as service } from '@ember/service';
 import TooltipMixin from '../../mixins/tooltip';
 import ModalMixin from '../../mixins/modal';
 import AuthMixin from '../../mixins/auth';
+import stringUtil from '../../utils/string';
 
 export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 	spaceService: service('folder'),
@@ -332,6 +333,21 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 				this.modalClose("#import-doc-modal");				
 				this.attrs.onRefresh();
 			}
+		},
+
+		onOpenTemplate(e) {
+			e.preventDefault();
+
+			let id = this.get('selectedTemplate');
+			if (is.empty(id)) {
+				return;
+			}
+			let template = this.get('templates').findBy('id', id)
+
+			this.modalClose("#space-template-modal");
+			
+			let slug = stringUtil.makeSlug(template.get('title'));
+			this.get('router').transitionTo('document', this.get('space.id'), this.get('space.slug'), id, slug);
 		}
 	}
 });

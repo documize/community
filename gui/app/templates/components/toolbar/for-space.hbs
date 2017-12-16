@@ -41,6 +41,40 @@
 			<div class="button-icon-gap" />
 		{{/if}}
 
+		{{#if permissions.documentTemplate}}
+			<div id="space-template-button" class="button-icon-gray align-middle" data-toggle="tooltip" data-placement="top" title="Manage templates">
+				<i class="material-icons" data-toggle="modal" data-target="#space-template-modal" data-backdrop="static">content_copy</i>
+			</div>
+			<div class="button-icon-gap" />
+			<div id="space-template-modal" class="modal" tabindex="-1" role="dialog">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">Manage Templates</div>
+						<div class="modal-body">
+							<div class="widget-list-picker">
+								<ul class="options">
+									{{#each templates as |item|}}
+										<li class="option {{if item.selected 'selected'}}" {{action 'onSelectTemplate' item}}>
+											<div class="text text-truncate">
+												{{item.title}}<br/>{{item.description}}
+											</div>
+											{{#if item.selected}}
+												<i class="material-icons">check</i>
+											{{/if}}
+										</li>
+									{{/each}}
+								</ul>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+							<button type="button" class="btn btn-success" onclick={{action 'onOpenTemplate'}}>Open</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		{{/if}}
+
 		{{#if permissions.spaceOwner}}
 			<div id="space-delete-button" class="button-icon-danger align-middle" data-toggle="tooltip" data-placement="top" title="Delete space">
 				<i class="material-icons" data-toggle="modal" data-target="#space-delete-modal" data-backdrop="static">delete</i>
