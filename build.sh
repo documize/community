@@ -50,3 +50,8 @@ for arch in amd64 ; do
 done
 
 echo "Finished."
+
+
+# CGO_ENABLED=0 GOOS=linux go build -a -ldflags="-s -w" -installsuffix cgo
+# go build -ldflags '-d -s -w' -a -tags netgo -installsuffix netgo test.go
+# ldd test 

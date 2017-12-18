@@ -67,10 +67,14 @@ export default Controller.extend(TooltipMixin, {
 			};
 
 			this.get('documentService').updatePage(documentId, page.get('id'), model).then((up) => {
-				page = up;
-				this.set('pageId', page.get('id'));
-				this.get('linkService').getDocumentLinks(this.get('document.id')).then((links) => {
-					this.set('links', links);
+				this.set('pageId', up.get('id'));
+
+				this.get('documentService').getPages(this.get('document.id')).then((pages) => {
+					this.set('pages', pages);
+
+					this.get('linkService').getDocumentLinks(this.get('document.id')).then((links) => {
+						this.set('links', links);
+					});
 				});
 			});
 		},

@@ -22,10 +22,8 @@ export default Component.extend(ModalMixin, {
 	blockExcerpt: "",
 	documentList: A([]), 		//includes the current document
 	documentListOthers: A([]), 	//excludes the current document
-
 	hasMenuPermissions: computed('permissions', function() {
 		let permissions = this.get('permissions');
-
 		return permissions.get('documentDelete') || permissions.get('documentCopy') ||
 			permissions.get('documentMove') || permissions.get('documentTemplate');
 	}),

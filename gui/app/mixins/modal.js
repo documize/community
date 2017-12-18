@@ -10,7 +10,6 @@
 // https://documize.com
 
 import Mixin from '@ember/object/mixin';
-import { schedule } from '@ember/runloop';
 
 // ID values expected format:
 // 		modal: #document-template-modal
