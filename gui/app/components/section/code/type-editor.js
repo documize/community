@@ -101,7 +101,7 @@ export default Component.extend(TooltipMixin, {
 			this.set('codeEditor', null);
 		}
 
-		this.removeT0oltips();
+		this.removeTooltips();
 
     },
 
