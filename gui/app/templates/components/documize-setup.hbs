@@ -1,32 +1,32 @@
-<div class="col-lg-9 col-md-9 col-sm-9">
+<div class="col-9">
 	<h1>Let's setup Documize</h1>
 	<h3>Database: {{model.dbname}}</h3>
 	<form class="my-5" {{action "save" on="submit"}}>
 		<div class="form-group">
 			<label>Team</label>
-			{{focus-input id="siteTitle" type="text" value=model.title class=(if hasEmptyTitleError 'form-control error' 'form-control')}}
+			{{focus-input id="siteTitle" type="text" value=model.title class=(if hasEmptyTitleError 'form-control is-invalid' 'form-control')}}
 			<small class="form-text text-muted">What's your tribe called?</small>
 		</div>
 		<div class="form-group">
 			<label for="adminFirstname">Firstname</label>
-			{{input id="adminFirstname" type="text" value=model.firstname class=(if hasEmptyFirstnameError 'form-control error' 'form-control')}}
+			{{input id="adminFirstname" type="text" value=model.firstname class=(if hasEmptyFirstnameError 'form-control is-invalid' 'form-control')}}
 			<small class="form-text text-muted">What do people call you?</small>
 		</div>
 		<div class="form-group">
 			<label for="adminLastname">Lastname</label>
-			{{input id="adminLastname" type="text" value=model.lastname class=(if hasEmptyLastnameError 'form-control error' 'form-control')}}
+			{{input id="adminLastname" type="text" value=model.lastname class=(if hasEmptyLastnameError 'form-control is-invalid' 'form-control')}}
 			<small class="form-text text-muted">How the government refers to you</small>
 		</div>
 		<div class="form-group">
 			<label for="adminEmail">Email</label>
-			{{input id="adminEmail" type="email" value=model.email class=(if hasEmptyEmailError 'form-control error' 'form-control')}}
+			{{input id="adminEmail" type="email" value=model.email class=(if hasEmptyEmailError 'form-control is-invalid' 'form-control')}}
 			<small class="form-text text-muted">No spam. Ever.</small>
 		</div>
 		<div class="form-group">
 			<label for="adminPassword">Password</label>
-			{{input id="adminPassword" type="password" value=model.password class=(if hasEmptyPasswordError 'form-control error' 'form-control')}}
+			{{input id="adminPassword" type="password" value=model.password class=(if hasEmptyPasswordError 'form-control is-invalid' 'form-control')}}
 			<small class="form-text text-muted">Something you can remember without writing it down</small>
 		</div>
-		<button type="submit" class="btn bt-success mt-5" {{action 'save'}}>Setup</button>
+		<button type="submit" class="btn btn-success mt-5" {{action 'save'}}>Setup</button>
 	</form>
 </div>

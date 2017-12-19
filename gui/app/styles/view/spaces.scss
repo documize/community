@@ -14,6 +14,13 @@
 		}
 	}
 
+	> .empty {
+		font-size: 1.2rem;
+		color: $color-gray;
+		font-weight: normal;
+		margin: 20px 0 50px 0;
+	}
+
 	> .list {
 		margin: 30px 0;
 		padding: 0;
