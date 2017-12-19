@@ -204,6 +204,7 @@ export default Controller.extend(TooltipMixin, {
 		onGotoPage(id) {
 			if (id !== '') {
 				this.set('pageId', id);
+				this.set('tab', 'content');
 
 				let jumpTo = "#page-" + id;
 				if (!$(jumpTo).inView()) {

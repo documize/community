@@ -102,7 +102,6 @@ export default Component.extend(ModalMixin, {
 
 				this.attrs.onSavePageAsBlock(block);
 
-				this.set('menuOpen', false);
 				this.set('blockTitle', '');
 				this.set('blockExcerpt', '');
 				$(titleElem).removeClass('is-invalid');

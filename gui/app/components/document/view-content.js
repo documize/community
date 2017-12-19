@@ -43,7 +43,9 @@ export default Component.extend(TooltipMixin, {
 		this._super(...arguments);
 		this.setupAddWizard();
 
-		this.attrs.onGotoPage(this.get('pageId'));
+		if (this.attrs.onGotoPage !== null) {
+			this.attrs.onGotoPage(this.get('pageId'));
+		}
 
 		this.renderTooltips();
 	},

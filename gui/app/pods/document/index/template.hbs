@@ -15,7 +15,7 @@
 	</div>
 	<div class="row">
 		<div class="col-12">
-			{{document/document-toc document=document folder=folder pages=pages page=page permissions=permissions currentPageId=pageId
+			{{document/document-toc document=document folder=folder pages=pages page=page permissions=permissions currentPageId=pageId tab=tab
 				onPageSequenceChange=(action 'onPageSequenceChange') onPageLevelChange=(action 'onPageLevelChange') onGotoPage=(action 'onGotoPage')}}
 		</div>
 	</div>
@@ -26,8 +26,10 @@
 				<ul class="tabnav-control">
 					<li class="tab {{if (eq tab 'content') 'selected'}}" {{action 'onTabChange' 'content'}}>Content</li>
 					<li class="tab {{if (eq tab 'attachment') 'selected'}}" {{action 'onTabChange' 'attachment'}}>Attachments</li>
-					<li class="tab {{if (eq tab 'activity') 'selected'}}" {{action 'onTabChange' 'activity'}}>Activity</li>
-					<li class="tab {{if (eq tab 'revision') 'selected'}}" {{action 'onTabChange' 'revision'}}>Revisions</li>
+					{{#if session.authenticated}}
+						<li class="tab {{if (eq tab 'activity') 'selected'}}" {{action 'onTabChange' 'activity'}}>Activity</li>
+						<li class="tab {{if (eq tab 'revision') 'selected'}}" {{action 'onTabChange' 'revision'}}>Revisions</li>
+					{{/if}}
 				</ul>
 			</div>
 
