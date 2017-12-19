@@ -43,11 +43,10 @@
 	}
 
 	.non-printable,
-	.dropdown-menu,
 	.document-toolbar,
-	.document-space,
-	.document-category,
-	.document-tags,
+	.document-toc,
+	.tabnav-control,
+	#nav-bar,
 	.new-section-wizard {
 		float: none !important;
 		display: none !important;
@@ -78,77 +77,6 @@
 	.wysiwyg {
 		font-size: 15px;
 		line-height: 25px;
-		color: $color-black;
-	}
-
-	#wrapper {
-		padding: 0 !important;
-		margin: 0 !important;
-		position: relative !important;
-		box-shadow: initial !important;
-		border-radius: initial !important;
-		float: none !important;
-		overflow-x: initial !important;
-        padding-left: 0 !important;
-
-		.page-container {
-			padding: 0 !important;
-			margin: 0 !important;
-			position: initial !important;
-			box-shadow: initial !important;
-			border-radius: initial !important;
-			width: initial !important;
-			max-width: initial !important;
-			float: initial !important;
-			overflow-x: initial !important;
-
-			#page-content-wrapper {
-				padding: 0 !important;
-				margin: 0 !important;
-				position: initial !important;
-				box-shadow: initial !important;
-				border-radius: initial !important;
-				width: initial !important;
-				max-width: initial !important;
-				float: initial !important;
-				overflow-x: initial !important;
-
-				#zone-document-content {
-					padding: 0 !important;
-					margin: 0 !important;
-					position: initial !important;
-					box-shadow: initial !important;
-					border-radius: initial !important;
-					width: initial !important;
-					max-width: initial !important;
-					float: initial !important;
-					overflow-x: initial !important;
-
-					.document-view {
-						padding: 0 !important;
-						margin: 0 !important;
-						position: initial !important;
-						box-shadow: initial !important;
-						border-radius: initial !important;
-						width: initial !important;
-						max-width: initial !important;
-						float: initial !important;
-						overflow-x: initial !important;
-
-						.is-a-page /*, .is-a-tab */ {
-							padding: 0 !important;
-							margin: 30px 0 20px 0 !important;
-							position: initial !important;
-							box-shadow: initial !important;
-							border-radius: initial !important;
-							width: initial !important;
-							max-width: initial !important;
-							float: initial !important;
-							overflow-x: initial !important;
-						}
-					}
-				}
-			}
-		}
+		color: #000000;
 	}
 }

@@ -22,8 +22,8 @@
 
 	<div class="row no-gutters">
 		<div class="col-12">
-			<div class="mt-5 mb-5 text-center">
-				<ul class="tabnav-control">
+			<div class="text-center">
+				<ul class="tabnav-control mt-5 mb-5">
 					<li class="tab {{if (eq tab 'content') 'selected'}}" {{action 'onTabChange' 'content'}}>Content</li>
 					<li class="tab {{if (eq tab 'attachment') 'selected'}}" {{action 'onTabChange' 'attachment'}}>Attachments</li>
 					{{#if session.authenticated}}
