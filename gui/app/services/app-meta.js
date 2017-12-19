@@ -62,22 +62,18 @@ export default Service.extend({
 			return resolve(this);
 		}
 
-		if (requestedRoute === 'secure') {
-			this.setProperties({
-				title: htmlSafe("Secure document viewing"),
-				allowAnonymousAccess: true,
-				secureMode: true
-			});
-
-			this.get('localStorage').clearAll();
-
-			return resolve(this);
-		}
-
 		return this.get('ajax').request('public/meta').then((response) => {
 			this.setProperties(response);
 
-			if (is.not.include(requestedUrl, '/auth/')) {
+			if (requestedRoute === 'secure') {
+				this.setProperties({
+					title: htmlSafe("Secure document viewing"),
+					allowAnonymousAccess: true,
+					secureMode: true
+				});
+	
+				this.get('localStorage').clearAll();
+			} else if (is.not.include(requestedUrl, '/auth/')) {
 				this.get('localStorage').storeSessionItem('entryUrl', requestedUrl);
 			}
 

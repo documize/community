@@ -41,20 +41,23 @@ export default Component.extend(ModalMixin, {
 	},
 
 	load() {
-		this.get('documentService').getPageMoveCopyTargets().then((d) => {
-			let me = this.get('document');
-
-			d.forEach((i) => {
-				i.set('selected', false);
+		let permissions = this.get('permissions');
+		if (permissions.get('documentMove') || permissions.get('documentCopy')) {
+			this.get('documentService').getPageMoveCopyTargets().then((d) => {
+				let me = this.get('document');
+	
+				d.forEach((i) => {
+					i.set('selected', false);
+				});
+	
+				if (this.get('isDestroyed') || this.get('isDestroying')) {
+					return;
+				}
+	
+				this.set('documentList', A(d));
+				this.set('documentListOthers', A(d.filter((item) => item.get('id') !== me.get('id'))));
 			});
-
-			if (this.get('isDestroyed') || this.get('isDestroying')) {
-				return;
-			}
-
-			this.set('documentList', A(d));
-			this.set('documentListOthers', A(d.filter((item) => item.get('id') !== me.get('id'))));
-		});
+		}
 	},
 
 	actions: {

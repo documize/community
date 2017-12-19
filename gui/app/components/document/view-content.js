@@ -136,14 +136,16 @@ export default Component.extend(TooltipMixin, {
 	},
 
 	loadBlocks() {
-		this.get('sectionService').getSpaceBlocks(this.get('folder.id')).then((blocks) => {
-			if (this.get('isDestroyed') || this.get('isDestroying')) {
-				return;
-			}
-
-			this.set('blocks', blocks);
-			this.set('hasBlocks', blocks.get('length') > 0);
-		});
+		if (is.not.undefined(this.get('folder'))) {
+			this.get('sectionService').getSpaceBlocks(this.get('folder.id')).then((blocks) => {
+				if (this.get('isDestroyed') || this.get('isDestroying')) {
+					return;
+				}
+	
+				this.set('blocks', blocks);
+				this.set('hasBlocks', blocks.get('length') > 0);
+			});
+		}
 	},
 
 	actions: {

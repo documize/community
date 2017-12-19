@@ -19,7 +19,7 @@
 	"author": "Documize Inc.",
 	"license": "AGPL",
 	"devDependencies": {
-		"broccoli-asset-rev": "^2.4.5",
+		"broccoli-asset-rev": "^2.6.0",
 		"ember-ajax": "^3.0.0",
 		"ember-cli": "^2.17.1",
 		"ember-cli-app-version": "^3.0.0",
