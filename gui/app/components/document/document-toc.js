@@ -251,7 +251,6 @@ export default Component.extend({
 			if (id !== '') {
 				let jumpTo = "#page-" + id;
 				this.set('tab', 'content');
-				
 				if (!$(jumpTo).inView()) {
 					$(jumpTo).velocity("scroll", { duration: 250, offset: -100 });
 				}
