@@ -42,6 +42,8 @@ Integrations for embedding SaaS data within documents.
 
 ## What does it look like?
 
+Here is the home screen showing all spaces.
+
 ![Documize](screenshot.png "Documize")
 
 ## Latest version
