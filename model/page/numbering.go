@@ -43,7 +43,12 @@ func Numberize(pages []Page) {
 					end = uint64(len(parts))
 				}
 				parts = parts[0 : len(parts)-int(end)]
-				parts[len(parts)-1]++
+
+				i := len(parts) - 1
+				if i < 0 {
+					i = 0
+				}
+				parts[i]++
 			}
 		}
 
