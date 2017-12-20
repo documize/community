@@ -34,7 +34,7 @@
 						{{concat '#' t}}
 					{{/link-to}}&nbsp;&nbsp;
 				{{/each}}
-				{{#if canSelectCategory}}
+				{{#if permissions.documentEdit}}
 					<div class="action-button button-icon-gray button-icon-small align-middle" data-toggle="modal" data-target="#document-tags-modal" data-backdrop="static">
 						<i class="material-icons align-middle">edit</i>
 					</div>
