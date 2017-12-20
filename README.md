@@ -40,6 +40,10 @@ Documentation related tasking and delegation.
 
 Integrations for embedding SaaS data within documents.
 
+## What does it look like?
+
+![Documize](screenshot.png "Documize")
+
 ## Latest version
 
 v1.55.0
