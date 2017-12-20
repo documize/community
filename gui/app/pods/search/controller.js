@@ -9,11 +9,14 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { debounce } from '@ember/runloop';
+import { inject as service } from '@ember/service';
+import Controller from '@ember/controller';
 
-export default Ember.Controller.extend({
-	searchService: Ember.inject.service('search'),
-	filter: "",
+export default Controller.extend({
+	searchService: service('search'),
+	queryParams: ['filter', 'matchDoc', 'matchContent', 'matchTag', 'matchFile'],
+	filter: '',
 	results: [],
 	matchDoc: true,
 	matchContent: true,
@@ -21,20 +24,23 @@ export default Ember.Controller.extend({
 	matchTag: false,
 
 	onKeywordChange: function () {
-		Ember.run.debounce(this, this.fetch, 750);
+		debounce(this, this.fetch, 750);
 	}.observes('filter'),
 
 	onMatchDoc: function () {
-		Ember.run.debounce(this, this.fetch, 750);
+		debounce(this, this.fetch, 750);
 	}.observes('matchDoc'),
+
 	onMatchContent: function () {
-		Ember.run.debounce(this, this.fetch, 750);
+		debounce(this, this.fetch, 750);
 	}.observes('matchContent'),
+
 	onMatchTag: function () {
-		Ember.run.debounce(this, this.fetch, 750);
+		debounce(this, this.fetch, 750);
 	}.observes('matchTag'),
+
 	onMatchFile: function () {
-		Ember.run.debounce(this, this.fetch, 750);
+		debounce(this, this.fetch, 750);
 	}.observes('matchFile'),
 
 	fetch() {

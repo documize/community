@@ -9,23 +9,27 @@
 //
 // https://documize.com
 
+import { htmlSafe } from '@ember/string';
+
+import EmberObject, { computed } from '@ember/object';
+
 import Ember from 'ember';
 import stringUtil from '../utils/string';
 import constants from '../utils/constants';
 
-let BaseModel = Ember.Object.extend({
+let BaseModel = EmberObject.extend({
 	id: "",
 	created: null,
 	revised: null,
 
 	setSafe(attr, value) {
-		this.set(attr, Ember.String.htmlSafe(Ember.Handlebars.Utils.escapeExpression(value)));
+		this.set(attr, htmlSafe(Ember.Handlebars.Utils.escapeExpression(value)));
 	}
 });
 
 // ProtectedFolderParticipant used to display folder participants that can
 // then be marked as folder owner.
-let ProtectedFolderParticipant = Ember.Object.extend({
+let ProtectedFolderParticipant = EmberObject.extend({
 	userId: "",
 	email: "",
 	firstname: "",
@@ -34,7 +38,7 @@ let ProtectedFolderParticipant = Ember.Object.extend({
 	folderId: "",
 	folderType: 0,
 
-	fullname: Ember.computed('firstname', 'lastname', function () {
+	fullname: computed('firstname', 'lastname', function () {
 		return `${this.get('firstname')} ${this.get('lastname')}`;
 	})
 });
@@ -49,7 +53,7 @@ let UserModel = BaseModel.extend({
 	admin: false,
 	accounts: [],
 
-	fullname: Ember.computed('firstname', 'lastname', function () {
+	fullname: computed('firstname', 'lastname', function () {
 		return `${this.get('firstname')} ${this.get('lastname')}`;
 	}),
 
@@ -95,7 +99,7 @@ let DocumentModel = BaseModel.extend({
 	tags: "",
 	template: "",
 
-	slug: Ember.computed('name', function () {
+	slug: computed('name', function () {
 		return stringUtil.makeSlug(this.get('name'));
 	}),
 
@@ -110,7 +114,7 @@ let TemplateModel = BaseModel.extend({
 	title: "",
 	type: 0,
 
-	slug: Ember.computed('title', function () {
+	slug: computed('title', function () {
 		return stringUtil.makeSlug(this.get('title'));
 	}),
 });
@@ -121,7 +125,7 @@ let FolderModel = BaseModel.extend({
 	userId: "",
 	folderType: constants.FolderType.Private,
 
-	slug: Ember.computed('name', function () {
+	slug: computed('name', function () {
 		return stringUtil.makeSlug(this.get('name'));
 	}),
 
@@ -162,15 +166,15 @@ let PageModel = BaseModel.extend({
 	rawBody: "",
 	meta: {},
 
-	tagName: Ember.computed('level', function () {
+	tagName: computed('level', function () {
 		return "h" + this.get('level');
 	}),
 
-	tocIndent: Ember.computed('level', function () {
+	tocIndent: computed('level', function () {
 		return (this.get('level') - 1) * 20;
 	}),
 
-	tocIndentCss: Ember.computed('tocIndent', function () {
+	tocIndentCss: computed('tocIndent', function () {
 		let tocIndent = this.get('tocIndent');
 		return `margin-left-${tocIndent}`;
 	}),
@@ -192,7 +196,7 @@ let SectionModel = BaseModel.extend({
 	iconFont: "",
 	iconFile: "",
 
-	hasImage: Ember.computed('iconFont', 'iconFile', function () {
+	hasImage: computed('iconFont', 'iconFile', function () {
 		return this.get('iconFile').length > 0;
 	}),
 });

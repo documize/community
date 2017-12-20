@@ -9,19 +9,17 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import Controller from '@ember/controller';
+
+import { inject as service } from '@ember/service';
 import NotifierMixin from '../../../mixins/notifier';
 
-const {
-	inject: { service }
-} = Ember;
-
-export default Ember.Controller.extend(NotifierMixin, {
+export default Controller.extend(NotifierMixin, {
 	documentService: service('document'),
 	folderService: service('folder'),
 	localStorage: service('localStorage'),
-	queryParams: ['tab'],
-	tab: 'index',
+	queryParams: ['category'],
+	category: '',
 
 	actions: {
 		onAddSpace(payload) {
@@ -31,6 +29,14 @@ export default Ember.Controller.extend(NotifierMixin, {
 			this.get('folderService').add(payload).then(function (newFolder) {
 				self.get('folderService').setCurrentFolder(newFolder);
 				self.transitionToRoute('folder', newFolder.get('id'), newFolder.get('slug'));
+			});
+		},
+
+		onDeleteSpace(id) {
+			this.get('folderService').delete(id).then(() => { /* jshint ignore:line */
+				this.showNotification("Deleted");
+				this.get('localStorage').clearSessionItem('folder');
+				this.transitionToRoute('folders');
 			});
 		},
 

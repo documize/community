@@ -9,17 +9,14 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { htmlSafe } from '@ember/string';
+
+import { resolve } from 'rsvp';
+import Service, { inject as service } from '@ember/service';
 import config from '../config/environment';
 import constants from '../utils/constants';
 
-const {
-	String: { htmlSafe },
-	RSVP: { resolve },
-	inject: { service }
-} = Ember;
-
-export default Ember.Service.extend({
+export default Service.extend({
 	ajax: service(),
 	localStorage: service(),
 	kcAuth: service(),
@@ -65,22 +62,18 @@ export default Ember.Service.extend({
 			return resolve(this);
 		}
 
-		if (requestedRoute === 'secure') {
-			this.setProperties({
-				title: htmlSafe("Secure document viewing"),
-				allowAnonymousAccess: true,
-				secureMode: true
-			});
-
-			this.get('localStorage').clearAll();
-
-			return resolve(this);
-		}
-
 		return this.get('ajax').request('public/meta').then((response) => {
 			this.setProperties(response);
 
-			if (is.not.include(requestedUrl, '/auth/')) {
+			if (requestedRoute === 'secure') {
+				this.setProperties({
+					title: htmlSafe("Secure document viewing"),
+					allowAnonymousAccess: true,
+					secureMode: true
+				});
+	
+				this.get('localStorage').clearAll();
+			} else if (is.not.include(requestedUrl, '/auth/')) {
 				this.get('localStorage').storeSessionItem('entryUrl', requestedUrl);
 			}
 

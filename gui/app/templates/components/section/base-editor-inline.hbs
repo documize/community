@@ -1,64 +1,64 @@
-<div id={{containerId}} class="document-editor {{if blockMode 'document-editor-full'}}">
-	<div class="toolbar">
-		<div class="buttons pull-right">
-			{{#if busy}}
-				<img src="/assets/img/busy-gray.gif" class="busy-indicator" />
-			{{/if}}
+<div id="section-editor-{{pageId}}">
 
-			{{#if contentLinkerButton}}
-				{{document/content-linker tagName="span" document=document folder=folder page=page onInsertLink=(action 'onInsertLink')}}
-				<div class="round-button-mono" id={{contentLinkerButtonId}} data-tooltip="Reference link" data-tooltip-position="top center">
-					<i class="material-icons color-blue">link</i>
-				</div>
-			{{/if}}
+    <div class="row">
+		<div class="col-8 section-editor">
+            {{#if blockMode}}
+                <div class="form-group">
+                    {{focus-input id="page-id-{{pageId}}" value=page.title class=(if hasNameError 'form-control mousetrap form-control-lg edit-title is-invalid' 'form-control form-control-lg edit-title mousetrap') placeholder="Enter name"}}
+                </div>
+                <div class="form-group">
+                    {{textarea id="page-excerpt-{{pageId}}" value=page.excerpt rows="2" class=(if hasDescError 'form-control mousetrap form-control-lg edit-title is-invalid' 'form-control form-control-lg edit-title mousetrap') placeholder="Enter description"}}
+                </div>
+            {{else}}
+                <div class="form-group">
+                    {{focus-input type="text" id=pageId value=page.title class=(if hasNameError 'form-control mousetrap form-control-lg edit-title is-invalid' 'form-control form-control-lg edit-title mousetrap') placeholder="Enter name"}}
+                </div>
+            {{/if}}
+        </div>
 
-			{{#if previewButton}}
-				<div class="round-button-mono" {{action 'onPreview'}}  id={{previewButtonId}} data-tooltip="Toggle Preview" data-tooltip-position="top center">
-					<i class="material-icons color-gray">visibility</i>
-				</div>
-			{{/if}}
+		<div class="col-4">
+			<div class="float-right">
+				{{#if busy}}
+					<img src="/assets/img/busy-gray.gif" class="busy-indicator" />
+				{{/if}}
 
-			<div class="round-button-mono" {{action 'onAction'}}>
-				<i class="material-icons color-green">check</i>
-			</div>
-			<div class="round-button-mono" {{action 'onCancel'}} id={{cancelId}}>
-				<i class="material-icons color-gray">close</i>
-			</div>
-		</div>
-		{{#if blockMode}}
-			<div class="clearfix"></div>
-			<div class="input-control">
-				<label>Name</label>
-				{{focus-input id="page-id-{{pageId}}" value=page.title class="mousetrap"}}
-			</div>
-			<div class="input-control">
-				<label>Description</label>
-				{{textarea id="page-excerpt-{{pageId}}" value=page.excerpt class="mousetrap" rows="3"}}
-			</div>
-		{{else}}
-			<div class="input-inline input-transparent edit-title pull-left">
-				{{focus-input type="text" id=pageId value=page.title class=(if hasNameError 'error-inline') placeholder="Name" class="mousetrap"}}
-			</div>
-		{{/if}}		
-		<div class="clearfix"></div>
+				{{#if contentLinkerButton}}
+					<div class="btn btn-primary" id="section-editor-link-button-{{pageId}}" data-toggle="tooltip" data-placement="top" title="Insert link" {{action 'onShowLinkModal'}}>Link</div>
+				{{/if}}
 
-		<div class="dropdown-dialog cancel-edits-dialog" id={{dialogId}}>
-			<div class="content">
-				<p>Do you want to cancel editing and lose unsaved changes?</p>
+				{{#if previewButton}}
+                    <div class="btn btn-primary" id="section-editor-preview-button-{{pageId}}" {{action 'onPreview'}}>{{previewText}}</div>
+				{{/if}}
+
+				<div class="btn btn-success" {{action 'onAction'}}>Save</div>
+				<div class="btn btn-outline-secondary" id="section-editor-cancel-button-{{pageId}}" {{action 'onCancel'}}>Cancel</div>
 			</div>
-			<div class="actions">
-				<div class="flat-button" {{action 'keepEditing'}}>
-					no
-				</div>
-				<div class="flat-button flat-red" {{action 'discardEdits'}}>
-					yes
-				</div>
-			</div>
-			<div class="clearfix"></div>
-		</div>
+        </div>
+    </div>
+
+	<div class="row">
+        <div class="col section-editor">
+            <div class="canvas rounded">
+                {{yield}}
+            </div>
+        </div>
 	</div>
-	<div class="canvas">
-		{{yield}}
-	</div>
-	<div class="clearfix"></div>
+
 </div>
+
+<div id={{concat "discard-modal-" page.id}} class="modal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">Discard Changes</div>
+			<div class="modal-body">
+				<p>You have made changes to the section - continue editing or discard changes?</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Continue editing</button>
+				<button type="button" class="btn btn-danger" onclick={{action 'onDiscard'}}>Discard changes</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+{{document/content-linker document=document folder=folder page=page showModal=showLinkModal onInsertLink=(action 'onInsertLink')}}

@@ -9,21 +9,21 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
-import NotifierMixin from '../../../mixins/notifier';
+import { set } from '@ember/object';
+import { inject as service } from '@ember/service';
+import Controller from '@ember/controller';
 
-export default Ember.Controller.extend(NotifierMixin, {
-	userService: Ember.inject.service('user'),
+export default Controller.extend({
+	userService: service('user'),
 	newUser: { firstname: "", lastname: "", email: "", active: true },
 
 	actions: {
 		add(user) {
-			Ember.set(this, 'newUser', user);
+			set(this, 'newUser', user);
 
 			return this.get('userService')
 				.add(this.get('newUser'))
 				.then((user) => {
-					this.showNotification('Added');
 					this.get('model').pushObject(user);
 				})
 				.catch(function (error) {
@@ -35,8 +35,6 @@ export default Ember.Controller.extend(NotifierMixin, {
 		onDelete(userId) {
 			let self = this;
 			this.get('userService').remove(userId).then(function () {
-				self.showNotification('Deleted');
-
 				self.get('userService').getComplete().then(function (users) {
 					self.set('model', users);
 				});
@@ -46,7 +44,6 @@ export default Ember.Controller.extend(NotifierMixin, {
 		onSave(user) {
 			let self = this;
 			this.get('userService').save(user).then(function () {
-				self.showNotification('Saved');
 
 				self.get('userService').getComplete().then(function (users) {
 					self.set('model', users);
@@ -56,7 +53,6 @@ export default Ember.Controller.extend(NotifierMixin, {
 
 		onPassword(user, password) {
 			this.get('userService').updatePassword(user.id, password);
-			this.showNotification('Password changed');
 		}
 	}
 });

@@ -9,16 +9,14 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import Route from '@ember/routing/route';
+
+import { inject as service } from '@ember/service';
 import ApplicationRouteMixin from 'ember-simple-auth/mixins/application-route-mixin';
 import netUtil from '../utils/net';
 import TooltipMixin from '../mixins/tooltip';
 
-const {
-	inject: { service }
-} = Ember;
-
-export default Ember.Route.extend(ApplicationRouteMixin, TooltipMixin, {
+export default Route.extend(ApplicationRouteMixin, TooltipMixin, {
 	appMeta: service(),
 	session: service(),
 	pinned: service(),
@@ -58,7 +56,7 @@ export default Ember.Route.extend(ApplicationRouteMixin, TooltipMixin, {
 	actions: {
 		willTransition: function( /*transition*/ ) {
 			Mousetrap.reset();
-			this.destroyTooltips();
+			this.removeTooltips();
 		},
 
 		error(error, transition) {

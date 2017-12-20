@@ -9,11 +9,11 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
-import NotifierMixin from '../../../mixins/notifier';
+import { inject as service } from '@ember/service';
+import Controller from '@ember/controller';
 
-export default Ember.Controller.extend(NotifierMixin, {
-	documentService: Ember.inject.service('document'),
+export default Controller.extend({
+	documentService: service('document'),
 
 	actions: {
 		onCancel() {
@@ -26,8 +26,6 @@ export default Ember.Controller.extend(NotifierMixin, {
 		},
 
 		onAction(page, meta) {
-			this.showNotification("Saved");
-
 			let model = {
 				page: page.toJSON({ includeId: true }),
 				meta: meta.toJSON({ includeId: true })
@@ -41,7 +39,7 @@ export default Ember.Controller.extend(NotifierMixin, {
 					this.get('model.folder.id'),
 					this.get('model.folder.slug'),
 					this.get('model.document.id'),
-					this.get('model.document.slug'), 
+					this.get('model.document.slug'),
 					{ queryParams: { pageId: page.get('id')}});
 			});
 		},

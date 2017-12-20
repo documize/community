@@ -10,13 +10,18 @@
 // https://documize.com
 
 /*global Trello*/
-import Ember from 'ember';
+import $ from 'jquery';
+
+import { htmlSafe } from '@ember/string';
+import { computed, set } from '@ember/object';
+import { inject as service } from '@ember/service';
+import Component from '@ember/component';
 import NotifierMixin from '../../../mixins/notifier';
 import TooltipMixin from '../../../mixins/tooltip';
 import SectionMixin from '../../../mixins/section';
 
-export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin, {
-	sectionService: Ember.inject.service('section'),
+export default Component.extend(SectionMixin, NotifierMixin, TooltipMixin, {
+	sectionService: service('section'),
 	isDirty: false,
 	busy: false,
 	authenticated: false,
@@ -25,7 +30,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 	noBoards: false,
 	appKey: "",
 
-	boardStyle: Ember.computed('config.board', function () {
+	boardStyle: computed('config.board', function () {
 		let board = this.get('config.board');
 
 		if (is.null(board) || is.undefined(board)) {
@@ -33,7 +38,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 		}
 
 		let color = board.prefs.backgroundColor;
-		return Ember.String.htmlSafe("background-color: " + color);
+		return htmlSafe("background-color: " + color);
 	}),
 
 	didReceiveAttrs() {
@@ -73,7 +78,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 				if (self.get('appKey') !== "" && self.get('config.token') !== "") {
 					self.send('auth');
 				} else {
-					Ember.$.getScript("https://api.trello.com/1/client.js?key=" + self.get('appKey'), function () {
+					$.getScript("https://api.trello.com/1/client.js?key=" + self.get('appKey'), function () {
 						Trello.deauthorize();
 					});
 				}
@@ -83,7 +88,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 	},
 
 	willDestroyElement() {
-		this.destroyTooltips();
+		this.removeTooltips();
 	},
 
 	getBoardLists() {
@@ -146,7 +151,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 			let list = lists.findBy('id', id);
 
 			if (list !== null) {
-				Ember.set(list, 'included', !list.included);
+				set(list, 'included', !list.included);
 			}
 		},
 
@@ -162,7 +167,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 
 			self.set('busy', true);
 
-			Ember.$.getScript("https://api.trello.com/1/client.js?key=" + this.get('appKey'), function () {
+			$.getScript("https://api.trello.com/1/client.js?key=" + this.get('appKey'), function () {
 				Trello.authorize({
 					type: "redirect",
 					interactive: true,

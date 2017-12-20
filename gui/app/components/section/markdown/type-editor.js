@@ -9,25 +9,23 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
-import TooltipMixin from '../../../mixins/tooltip';
+import { schedule } from '@ember/runloop';
+import { computed } from '@ember/object';
+import Component from '@ember/component';
+import { inject as service } from '@ember/service';
 
-const {
-	inject: { service }
-} = Ember;
-
-export default Ember.Component.extend(TooltipMixin, {
+export default Component.extend({
 	link: service(),
 	pageBody: "",
 	pagePreview: "",
 	editMode: true,
 	codeSyntax: null,
 	codeEditor: null,
-	editorId: Ember.computed('page', function () {
+	editorId: computed('page', function () {
 		let page = this.get('page');
 		return `markdown-editor-${page.id}`;
 	}),
-	previewId: Ember.computed('page', function () {
+	previewId: computed('page', function () {
 		let page = this.get('page');
 		return `markdown-preview-${page.id}`;
 	}),
@@ -39,7 +37,6 @@ export default Ember.Component.extend(TooltipMixin, {
 
 	didInsertElement() {
 		this.attachEditor();
-		this.addTooltip(document.getElementById(this.get('tooltipId')));
     },
 
     willDestroyElement() {
@@ -51,7 +48,6 @@ export default Ember.Component.extend(TooltipMixin, {
 		}
 
 		this.set('codeEditor', null);
-		this.destroyTooltips();
     },
 
 	getBody() {
@@ -89,7 +85,7 @@ export default Ember.Component.extend(TooltipMixin, {
 		onPreview() {
 			this.set('editMode', !this.get('editMode'));
 
-			Ember.run.schedule('afterRender', () => {
+			schedule('afterRender', () => {
 				if (this.get('editMode')) {
 					this.attachEditor();
 				} else {

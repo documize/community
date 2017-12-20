@@ -9,32 +9,31 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { empty, and } from '@ember/object/computed';
 
-const {
-	computed,
-	isEmpty
-} = Ember;
+import { set } from '@ember/object';
+import Component from '@ember/component';
+import { isEmpty } from '@ember/utils';
 
-export default Ember.Component.extend({
+export default Component.extend({
 	email: "",
 	sayThanks: false,
-	emailEmpty: computed.empty('email'),
-	hasEmptyEmailError: computed.and('emailEmpty', 'emailIsEmpty'),
+	emailEmpty: empty('email'),
+	hasEmptyEmailError: and('emailEmpty', 'emailIsEmpty'),
 
 	actions: {
 		forgot() {
 			let email = this.get('email');
 
 			if (isEmpty(email)) {
-				Ember.set(this, 'emailIsEmpty', true);
+				set(this, 'emailIsEmpty', true);
 				return $("#email").focus();
 			}
 
 			this.get('forgot')(email).then(() => {
-				Ember.set(this, 'sayThanks', true);
-				Ember.set(this, 'email', '');
-				Ember.set(this, 'emailIsEmpty', false);
+				set(this, 'sayThanks', true);
+				set(this, 'email', '');
+				set(this, 'emailIsEmpty', false);
 			});
 		}
 	}

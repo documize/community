@@ -1,34 +1,46 @@
-<div class="page-customize">
-	<div class="general-admin">
-		<form>
-			<div class="form-header">
-				<div class="title">Instance Settings</div>
-				<div class="tip">Settings applicable to your Documize instance</div>
-			</div>
-			<div class="input-control">
-				<label>Title</label>
-				<div class="tip">Describe the title of this Documize instance</div>
-				{{focus-input id="siteTitle" type="text" value=model.general.title class=(if hasTitleInputError 'error')}}
-			</div>
-			<div class="input-control">
-				<label>Message</label>
-				<div class="tip">Describe the purpose of this Documize instance</div>
-				{{textarea id="siteMessage" rows="3" value=model.general.message class=(if hasMessageInputError 'error')}}
-			</div>
-			<div class="input-control">
-				<label>Anonymous Access</label>
-				<div class="tip">Content within "Everyone" will be made available to anonymous users</div>
-				<div class="checkbox">
-					<input type="checkbox" id="allowAnonymousAccess" checked={{model.general.allowAnonymousAccess}} />
-					<label for="allowAnonymousAccess">Allow anyone to access this Documize instance</label>
-				</div>
-			</div>
-			<div class="input-control">
-				<label>Conversion Service URL</label>
-				<div class="tip">Endpoint for handling import/export (e.g. https://api.documize.com, <a href="https://docs.documize.com/s/WNEpptWJ9AABRnha/administration-guides/d/WO0pt_MXigAB6sJ7/general-options">view documentation</a>)</div>
-				{{focus-input id="conversionEndpoint" type="text" value=model.general.conversionEndpoint class=(if hasConversionEndpointInputError 'error')}}
-			</div>
-			<div class="regular-button button-blue" {{ action 'save' }}>save</div>
-		</form>
+<div class="row">
+	<div class="col">
+		<div class="view-customize">
+			<h1 class="admin-heading">Instance Settings</h1>
+			<h2 class="sub-heading">Settings applicable to the Documize instance</h2>
+		</div>
 	</div>
+</div>
+
+<div class="view-customize">
+	<form class="mt-5">
+		<div class="form-group row">
+			<label for="siteTitle" class="col-sm-2 col-form-label">Instance Name</label>
+			<div class="col-sm-10">
+				{{focus-input id="siteTitle" type="text" value=model.general.title class=(if hasTitleInputError 'form-control is-invalid' 'form-control')}}
+				<small class="form-text text-muted">Provide short title for this Documize instance</small>
+			</div>
+		</div>
+		<div class="form-group row">
+			<label id="siteMessage" class="col-sm-2 col-form-label">Message</label>
+			<div class="col-sm-10">
+				{{textarea id="siteMessage" rows="3" value=model.general.message class=(if hasMessageInputError 'form-control is-invalid' 'form-control')}}
+				<small class="form-text text-muted">Provide short message explaining this Documize instance</small>
+			</div>
+		</div>
+		<div class="form-group row">
+			<label class="col-sm-2 col-form-label">Anonymous Access</label>
+			<div class="col-sm-10">
+				<label class="form-check-label">
+					<input type="checkbox" class="form-check-input" id="allowAnonymousAccess" checked={{model.general.allowAnonymousAccess}} />
+					Make content marked as "Everyone" available to anonymous users
+				</label>
+			</div>
+		</div>
+		<div class="form-group row">
+			<label for="conversionEndpoint" class="col-sm-2 col-form-label">Conversion Service URL</label>
+			<div class="col-sm-10">
+				{{input id="conversionEndpoint" type="text" value=model.general.conversionEndpoint class=(if hasConversionEndpointInputError 'form-control is-invalid' 'form-control')}}
+				<small class="form-text text-muted">
+					Endpoint for handling import/export (e.g. https://api.documize.com, <a href="https://docs.documize.com/s/WNEpptWJ9AABRnha/administration-guides/d/WO0pt_MXigAB6sJ7/general-options">view documentation</a>)
+				</small>
+			</div>
+		</div>
+		<div class="btn btn-success mt-4" {{action 'save'}}>Save</div>
+	</form>
 </div>

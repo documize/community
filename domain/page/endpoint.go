@@ -191,7 +191,7 @@ func (h *Handler) GetPage(w http.ResponseWriter, r *http.Request) {
 
 // GetPages gets all pages for document.
 func (h *Handler) GetPages(w http.ResponseWriter, r *http.Request) {
-	method := "page.GetPage"
+	method := "page.GetPages"
 	ctx := domain.GetRequestContext(r)
 
 	documentID := request.Param(r, "documentID")
@@ -218,6 +218,8 @@ func (h *Handler) GetPages(w http.ResponseWriter, r *http.Request) {
 	if len(pages) == 0 {
 		pages = []page.Page{}
 	}
+
+	page.Numberize(pages)
 
 	if err != nil {
 		response.WriteServerError(w, method, err)
@@ -337,7 +339,7 @@ func (h *Handler) DeletePages(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	model := new([]page.PageLevelRequest)
+	model := new([]page.LevelRequest)
 	err = json.Unmarshal(body, &model)
 	if err != nil {
 		response.WriteBadRequestError(w, method, "JSON marshal")
@@ -589,7 +591,7 @@ func (h *Handler) ChangePageSequence(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	model := new([]page.PageSequenceRequest)
+	model := new([]page.SequenceRequest)
 	err = json.Unmarshal(body, &model)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())
@@ -650,7 +652,7 @@ func (h *Handler) ChangePageLevel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	model := new([]page.PageLevelRequest)
+	model := new([]page.LevelRequest)
 	err = json.Unmarshal(body, &model)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())

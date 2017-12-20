@@ -9,10 +9,10 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import EmberRouter from '@ember/routing/router';
 import config from './config/environment';
 
-var Router = Ember.Router.extend({
+var Router = EmberRouter.extend({
 	location: config.locationType
 });
 
@@ -24,18 +24,8 @@ export default Router.map(function () {
     this.route('folder', {
 		path: 's/:folder_id/:folder_slug'
 	}, function() {
-		this.route('settings', {
-			path: 'settings'
-		}, function () {
-			this.route('security', {
-				path: 'security'
-			});
-			this.route('invitation', {
-				path: 'invitation'
-			});
-			this.route('category', {
-				path: 'category'
-			});
+		this.route('category', {
+			path: 'category'
 		})
 	});
 
@@ -47,9 +37,6 @@ export default Router.map(function () {
 		});
 		this.route('block', {
 			path: 'block/:block_id'
-		});
-		this.route('history', {
-			path: 'history'
 		});
 	});
 
@@ -65,8 +52,11 @@ export default Router.map(function () {
 		this.route('folders', {
 			path: 'folders'
 		});
-		this.route('global', {
-			path: 'global'
+		this.route('smtp', {
+			path: 'smtp'
+		});
+		this.route('license', {
+			path: 'license'
 		});
 		this.route('auth', {
 			path: 'auth'
@@ -110,20 +100,16 @@ export default Router.map(function () {
 	this.route('profile', {
 		path: 'profile'
 	});
+
 	this.route('search', {
 		path: 'search'
 	});
+
 	this.route('accounts', {
 		path: 'accounts'
-	});
-
-	this.route('widgets', {
-		path: 'widgets'
 	});
 
 	this.route('not-found', {
 		path: '/*wildcard'
 	});
-
-	// this.route('pods', function () {});
 });

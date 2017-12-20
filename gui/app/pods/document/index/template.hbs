@@ -1,46 +1,58 @@
-{{#layout/zone-container}}
+{{toolbar/nav-bar}}
 
-	{{#layout/zone-sidebar}}
-		{{document/document-sidebar tab=tab
-			document=model.document folder=model.folder pages=model.pages page=model.page permissions=model.permissions
-			onPageSequenceChange=(action 'onPageSequenceChange') onPageLevelChange=(action 'onPageLevelChange')
-			onGotoPage=(action 'onGotoPage')}}
-	{{/layout/zone-sidebar}}
+{{toolbar/for-document document=document spaces=folders space=folder permissions=permissions
+	onDocumentDelete=(action 'onDocumentDelete') onSaveTemplate=(action 'onSaveTemplate')}}
 
-	{{#layout/zone-content}}
+<div id="doc-view" class="container">
+	<div class="row">
+		<div class="col-12">
+			{{document/document-heading document=document permissions=permissions
+				onSaveDocument=(action 'onSaveDocument')}}
 
-		<div id="zone-document-content" class="zone-document-content">
-			<div class="document-header-zone">
-				<div class="pull-left">
-					{{document/space-category document=model.document folder=model.folder folders=model.folders permissions=model.permissions}}
-				</div>
+			{{document/document-meta document=document folder=folder folders=folders permissions=permissions
+				onSaveDocument=(action 'onSaveDocument')}}
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-12">
+			{{document/document-toc document=document folder=folder pages=pages page=page permissions=permissions currentPageId=pageId tab=tab
+				onPageSequenceChange=(action 'onPageSequenceChange') onPageLevelChange=(action 'onPageLevelChange') onGotoPage=(action 'onGotoPage')}}
+		</div>
+	</div>
 
-				<div class="pull-right">
-					{{document/document-toolbar
-						document=model.document folder=model.folder folders=model.folders permissions=model.permissions
-						onDocumentDelete=(action 'onDocumentDelete') onSaveTemplate=(action 'onSaveTemplate')
-						onPageSequenceChange=(action 'onPageSequenceChange') onPageLevelChange=(action 'onPageLevelChange')
-						onGotoPage=(action 'onGotoPage')}}
-				</div>
-				<div class="clearfix"/>
-
-				{{document/tag-editor documentTags=model.document.tags permissions=model.permissions onChange=(action 'onTagChange')}}
+	<div class="row no-gutters">
+		<div class="col-12">
+			<div class="text-center mt-5 mb-5 non-printable">
+				<ul class="tabnav-control">
+					<li class="tab {{if (eq tab 'content') 'selected'}}" {{action 'onTabChange' 'content'}}>Content</li>
+					<li class="tab {{if (eq tab 'attachment') 'selected'}}" {{action 'onTabChange' 'attachment'}}>Attachments</li>
+					{{#if session.authenticated}}
+						<li class="tab {{if (eq tab 'activity') 'selected'}}" {{action 'onTabChange' 'activity'}}>Activity</li>
+						<li class="tab {{if (eq tab 'revision') 'selected'}}" {{action 'onTabChange' 'revision'}}>Revisions</li>
+					{{/if}}
+				</ul>
 			</div>
 
-			{{document/document-heading document=model.document permissions=model.permissions onSaveDocument=(action 'onSaveDocument')}}
-
-			{{#if model.document.template}}
-				<div class="document-template-header">Template</div>
+			{{#if (eq tab 'content')}}
+				{{document/view-content
+					document=document links=links pages=pages
+					folder=folder folders=folders sections=sections permissions=permissions pageId=pageId
+					onSavePage=(action 'onSavePage') onInsertSection=(action 'onInsertSection')
+					onSavePageAsBlock=(action 'onSavePageAsBlock') onDeleteBlock=(action 'onDeleteBlock') onGotoPage=(action 'onGotoPage')
+					onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onPageDeleted')}}
 			{{/if}}
 
-			{{document/document-view
-				document=model.document links=model.links pages=model.pages
-				folder=model.folder folders=model.folders sections=model.sections permissions=model.permissions pageId=pageId
-				onSavePage=(action 'onSavePage') onInsertSection=(action 'onInsertSection')
-				onSavePageAsBlock=(action 'onSavePageAsBlock') onDeleteBlock=(action 'onDeleteBlock') onGotoPage=(action 'onGotoPage')
-				onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onPageDeleted')}}
+			{{#if (eq tab 'attachment')}}
+				{{document/view-attachment document=document permissions=permissions}}
+			{{/if}}
+
+			{{#if (eq tab 'activity')}}
+				{{document/view-activity document=document pages=pages permissions=permissions}}
+			{{/if}}
+
+			{{#if (eq tab 'revision')}}
+				{{document/view-revision document=document folder=folder pages=pages onRollback=(action 'onRollback')}}
+			{{/if}}
 		</div>
-
-	{{/layout/zone-content}}
-
-{{/layout/zone-container}}
+	</div>
+</div>

@@ -1,0 +1,31 @@
+{{#if canShow}}
+	<div class="view-attachment mt-5">
+		{{#if hasAttachments}}
+			<ul class="list">
+				{{#each files key="id" as |a index|}}
+					<li class="item">
+						<img class="icon" src="/assets/img/attachments/{{document/file-icon a.extension}}" />
+						<a href="{{appMeta.endpoint}}/public/attachments/{{appMeta.orgId}}/{{a.id}}">
+							<span class="file">{{ a.filename }}</span>
+						</a>
+						{{#if permissions.documentEdit}}
+							<div class="button-icon-danger align-middle action" {{action 'onShowDialog' a.id a.filename}}>
+								<i class="material-icons">delete</i>
+							</div>
+						{{/if}}
+					</li>
+				{{/each}}
+			</ul>
+		{{/if}}
+		{{#if permissions.documentEdit}}
+			<div class="upload-document-files">
+				<div id="upload-document-files" class="btn btn-secondary">Upload</div>
+			</div>
+		{{/if}}
+	</div>
+
+	{{#ui/ui-dialog title="Delete Attachment" confirmCaption="Delete" buttonType="btn-danger" show=showDialog onAction=(action 'onDelete')}}
+		<p>Are you sure you want to delete {{deleteAttachment.name}}?</p>
+	{{/ui/ui-dialog}}
+
+{{/if}}

@@ -9,15 +9,46 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { set } from '@ember/object';
+import Component from '@ember/component';
+import { computed } from '@ember/object';
 
-export default Ember.Component.extend({
+export default Component.extend({
 	nameField: 'category',
+	singleSelect: false,
 	items: [],
+	maxHeight: 0,
+	onSelect: null,
+	styleCss: computed('maxHeight', function () {
+		let height = this.get('maxHeight');
+
+		if (height > 0) {
+			return `overflow-y: scroll; max-height: ${height}px;`;
+		} else {
+			return '';
+		}
+	}),
 
 	actions: {
 		onToggle(item) {
-			Ember.set(item, 'selected', !item.get('selected'));
+			// callback takes precedence
+			// caller sets item to 'selected'
+			let cb = this.get('onSelect');
+			if (cb !== null) {
+				this.attrs.onSelect(item);
+				return;
+			}
+
+			// no callback, we mark item as selected
+			if (this.get('singleSelect')) {
+				let items = this.get('items');
+				items.forEach(item => {
+					set(item, 'selected', false);
+				});
+				this.set('items', items);
+			}
+
+			set(item, 'selected', !item.get('selected'));
 		}
 	}
 });

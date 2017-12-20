@@ -9,34 +9,30 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
-import NotifierMixin from '../../mixins/notifier';
+import Component from '@ember/component';
+import { inject as service } from '@ember/service';
 import TooltipMixin from '../../mixins/tooltip';
-import DropdownMixin from '../../mixins/dropdown';
+import ModalMixin from '../../mixins/modal';
 
-const {
-	inject: { service }
-} = Ember;
-
-export default Ember.Component.extend(NotifierMixin, TooltipMixin, DropdownMixin, {
+export default Component.extend(ModalMixin, TooltipMixin, {
 	userService: service('user'),
 	categoryService: service('category'),
 	appMeta: service(),
 	store: service(),
 	newCategory: '',
+	deleteId: '',
 	dropdown: null,
 	users: [],
 
 	didReceiveAttrs() {
 		this._super(...arguments);
-
+		this.renderTooltips();
 		this.load();
 	},
 
 	willDestroyElement() {
 		this._super(...arguments);
-
-		this.destroyDropdown();
+		this.removeTooltips();
 	},
 
 	load() {
@@ -90,15 +86,17 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, DropdownMixin
 	},
 
 	actions: {
-		onAdd() {
+		onAdd(e) {
+			e.preventDefault();
+
 			let cat = this.get('newCategory');
 
 			if (cat === '') {
-				$('#new-category-name').addClass('error').focus();
+				$('#new-category-name').addClass('is-invalid').focus();
 				return;
 			}
 
-			$('#new-category-name').removeClass('error').focus();
+			$('#new-category-name').removeClass('is-invalid').focus();
 			this.set('newCategory', '');
 
 			let c = {
@@ -111,38 +109,52 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, DropdownMixin
 			});
 		},
 
-		onDelete(id) {
-			this.get('categoryService').delete(id).then(() => {
+		onShowDelete(id) {
+			let cat = this.get('category').findBy('id', id);
+			this.set('deleteId', cat.get('id'));
+
+			this.modalOpen('#category-delete-modal', {show: true});
+		},
+
+		onDelete() {
+			this.modalClose('#category-delete-modal');
+
+			this.get('categoryService').delete(this.get('deleteId')).then(() => {
 				this.load();
 			});
 		},
 
 		onEdit(id) {
 			this.setEdit(id, true);
+			this.removeTooltips();
 		},
 
 		onEditCancel(id) {
 			this.setEdit(id, false);
 			this.load();
+			this.renderTooltips();
 		},
 
 		onSave(id) {
 			let cat = this.setEdit(id, true);
 			if (cat.get('category') === '') {
-				$('#edit-category-' + cat.get('id')).addClass('error').focus();
-				return;
+				$('#edit-category-' + cat.get('id')).addClass('is-invalid').focus();
+				return false;
 			}
 
 			cat = this.setEdit(id, false);
-			$('#edit-category-' + cat.get('id')).removeClass('error');
+			$('#edit-category-' + cat.get('id')).removeClass('is-invalid');
 
 			this.get('categoryService').save(cat).then(() => {
 				this.load();
 			});
+
+			this.renderTooltips();
 		},
 
 		onShowAccessPicker(catId) {
-			this.closeDropdown();
+			this.set('showCategoryAccess', true);
+
 			let users = this.get('users');
 			let category = this.get('category').findBy('id', catId);
 
@@ -157,26 +169,12 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, DropdownMixin
 
 				this.set('categoryUsers', users);
 				this.set('currentCategory', category);
-
-				$(".category-access-dialog").css("display", "block");
-
-				let dropOptions = Object.assign(this.get('dropDefaults'), {
-					target: $("#category-access-button-" + catId)[0],
-					content: $(".category-access-dialog")[0],
-					classes: 'drop-theme-basic',
-					position: "bottom right",
-					remove: false});
-
-				let drop = new Drop(dropOptions);
-				this.set('dropdown', drop);
 			});
 		},
 
-		onGrantCancel() {
-			this.closeDropdown();
-		},
-
 		onGrantAccess() {
+			this.set('showCategoryAccess', false);
+
 			let folder = this.get('folder');
 			let category = this.get('currentCategory');
 			let users = this.get('categoryUsers').filterBy('selected', true);
@@ -198,8 +196,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, DropdownMixin
 			this.get('categoryService').setViewers(folder.get('id'), category.get('id'), viewers).then(() => {
 				this.load();
 			});
-
-			this.closeDropdown();
 		}
 	}
 });

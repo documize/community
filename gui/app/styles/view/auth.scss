@@ -1,0 +1,28 @@
+.auth-box {
+    display: inline-block;
+	height: 500px;
+	max-width: 500px;
+	padding: 20px 50px;
+	background-color: $color-white;
+	color: $color-off-black;
+	@extend .absolute-center;
+	@include border-radius(3px);
+	@include shadow();
+
+	.logo {
+		text-align: center;
+		margin: 0 auto;
+
+		> img {
+			height: 60px;
+			margin: 40px 0;
+		}
+	}
+}
+
+.sso-box {
+	text-align: center;
+	margin-top: 150px;
+	font-size: 3rem;
+	color: $color-gray;
+}

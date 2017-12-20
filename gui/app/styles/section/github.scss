@@ -23,11 +23,12 @@
 	.github-list-title {
 		color: #4c4c4c;
 		font-size: 14px;
-		margin: 5px;
+		vertical-align: text-top;
 	}
 
 	.github-list-checkbox {
-		vertical-align: text-bottom;
+		vertical-align: text-top;
+		margin-right: 10px;
 	}
 
 	.github-issue-label {

@@ -1,81 +1,56 @@
-<div class="col-lg-4 col-md-4 col-sm-4">
-    <div class="sidebar">
+<div class="onboarding-container">
+    <div class="container">
+        <div class="row">
 
-        <img class="logo" src="/assets/img/logo-color.png"/>
+			<div class="col col-sm-6">
+				<div class="sidebar">
 
-        <div class="stage-1">
-            <p>Let's set up your account</p>
-            <div class="input-control">
-                <label>Firstname</label>
-                <div class="tip">Nickname or otherwise</div>
-                <input id="stage-1-firstname" type="text" value="" />
-            </div>
-            <div class="input-control">
-                <label>Lastname</label>
-                <div class="tip">What the government calls you</div>
-                <input id="stage-1-lastname" type="text" value="" />
-            </div>
-            <div class="input-control">
-                <div id="stage-1-next" class="regular-button button-green">Next &rarr;</div>
-            </div>
+					<img class="logo img-responsive" src="/assets/img/logo-color.png"/>
+
+					<div class="stage-1">
+						<p>Let's set up your account</p>
+						<div class="form-group">
+							<label for="stage-1-firstname">Firstname</label>
+							<input id="stage-1-firstname" type="text" value="" class="form-control" />
+							<small class="form-text text-muted">Nickname or otherwise</small>
+						</div>
+						<div class="form-group">
+							<label for="stage-1-lastname">Lastname</label>
+							<input id="stage-1-lastname" type="text" value="" class="form-control" />
+							<small class="form-text text-muted">Usually not the same as your firstname</small>
+						</div>
+						<div class="form-group mt-5">
+							<div id="stage-1-next" class="btn btn-success">Next &rarr;</div>
+						</div>
+					</div>
+
+					<div class="stage-2">
+						<h2>Password</h2>
+						<div class="form-group">
+							<label for="stage-2-password">Choose Password</label>
+							<input id="stage-2-password" type="password" value="" class="form-control" />
+							<small class="form-text text-muted">Between 6 and 50 characters</small>
+
+						</div>
+						<div class="form-group">
+							<label for="stage-2-password-confirm">Confirm Password</label>
+							<input id="stage-2-password-confirm" type="password" value="" class="form-control" />
+							<small class="form-text text-muted">Re-type your chosen password</small>
+						</div>
+						<div class="form-group mt-5">
+							<div id="stage-2-next" class="btn btn-success">Sign In &rarr;</div>
+						</div>
+					</div>
+
+					<div class="stage-3">
+						<h1>Please Wait</h1>
+						<p>Signing you in...</p>
+					</div>
+
+				</div>
+			</div>
+
         </div>
-
-        <div class="stage-2">
-            <h2>Password</h2>
-            <div class="input-control">
-                <label>Password</label>
-                <div class="tip">Between 6 and 50 characters</div>
-                <input id="stage-2-password" type="password" value="" />
-            </div>
-            <div class="input-control">
-                <label>Confirm Password</label>
-                <div class="tip">Re-type your chosen password</div>
-                <input id="stage-2-password-confirm" type="password" value="" />
-            </div>
-            <div class="input-control">
-                <div id="stage-2-next" class="regular-button button-green">Sign In &rarr;</div>
-            </div>
-        </div>
-
-        <div class="stage-3">
-            <h1>Please Wait</h1>
-            <p>Signing you in...</p>
-        </div>
-
     </div>
 </div>
 
-<div class="col-lg-8 col-md-8 col-sm-8">
-    <div class="rightbar">
-        <div class="stage-1">
-            <div class="account-name-preview">
-                <div class="nav-icon"></div>
-                <div class="title">DOCUMIZE</div>
-                <img class="name-status" src="/assets/img/onboard/person.png" />
-            </div>
-        </div>
-
-        <div class="stage-2">
-            <div class="account-name-preview">
-                <div class="nav-icon"></div>
-                <div class="title">DOCUMIZE</div>
-                <img class="password-status" src="/assets/img/onboard/lock.png" />
-            </div>
-        </div>
-
-        <div class="stage-3">
-            <div class="account-name-preview">
-                <div class="nav-icon"></div>
-                <div class="title"></div>
-                <div id="spinner-1" class="sk-spinner sk-spinner-wave">
-                    <div class="sk-rect1"></div>
-                    <div class="sk-rect2"></div>
-                    <div class="sk-rect3"></div>
-                    <div class="sk-rect4"></div>
-                    <div class="sk-rect5"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-</div>

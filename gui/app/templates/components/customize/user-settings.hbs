@@ -1,25 +1,17 @@
 {{#if isAuthProviderDocumize}}
-	<div class="page-customize">
-		<div class="add-user">
-			<form>
-				<div class="form-header">
-					<div class="title">New User</div>
-					<div class="tip">Newly added users receive an invitation email with a random password</div>
-				</div>
-				<div class="input-control">
-					<label>Firstname</label>
-					{{focus-input id="newUserFirstname" type="text" value=newUser.firstname class=(if hasFirstnameEmptyError 'error')}}
-				</div>
-				<div class="input-control">
-					<label>Lastname</label>
-					{{input id="newUserLastname" type="text" value=newUser.lastname class=(if hasLastnameEmptyError 'error')}}
-				</div>
-				<div class="input-control">
-					<label>Email</label>
-					{{input id="newUserEmail" type="text" value=newUser.email class=(if hasEmailEmptyError 'error')}}
-				</div>
-				<div class="regular-button button-blue" {{ action 'add' }}>Add</div>
-			</form>
-		</div>
+	<div class="view-customize mt-5 mb-5">
+		<h3>Add User</h3>
+		<form class="form-inline">
+			<label class="sr-only" for="newUserFirstname">Firstname</label>
+			{{focus-input id="newUserFirstname" type="text" value=newUser.firstname placeholder="Firstname" class=(if hasFirstnameEmptyError 'form-control mb-2 mr-sm-4 mb-sm-0 is-invalid' 'form-control mb-2 mr-sm-4 mb-sm-0')}}
+
+			<label class="sr-only" for="newUserLastname">Lastname</label>
+			{{input id="newUserLastname" type="text" value=newUser.lastname placeholder="Lastname" class=(if hasLastnameEmptyError 'form-control mb-2 mr-sm-4 mb-sm-0 is-invalid' 'form-control mb-2 mr-sm-4 mb-sm-0')}}
+
+			<label class="sr-only" for="newEmail">Email</label>
+			{{input id="newEmail" type="email" value=newUser.email placeholder="Email" class=(if hasEmailEmptyError 'form-control mb-2 mr-sm-4 mb-sm-0 is-invalid' 'form-control mb-2 mr-sm-4 mb-sm-0')}}
+
+			<button type="submit" class="btn btn-success" {{action 'add'}}>Add</button>
+		</form>
 	</div>
 {{/if}}

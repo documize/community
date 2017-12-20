@@ -9,14 +9,17 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { Promise as EmberPromise, hash } from 'rsvp';
+
+import { inject as service } from '@ember/service';
+import Route from '@ember/routing/route';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 
-export default Ember.Route.extend(AuthenticatedRouteMixin, {
-	categoryService: Ember.inject.service('category'),
+export default Route.extend(AuthenticatedRouteMixin, {
+	categoryService: service('category'),
 
 	beforeModel() {
-		return new Ember.RSVP.Promise((resolve) => {
+		return new EmberPromise((resolve) => {
 			this.get('categoryService').fetchSpaceData(this.modelFor('folder').folder.get('id')).then((data) => {
 				this.set('categories', data.category);
 				this.set('categorySummary', data.summary);
@@ -30,11 +33,21 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	model() {
 		this.get('browser').setTitle(this.modelFor('folder').folder.get('name'));
 
-		return Ember.RSVP.hash({
+		let folders = this.modelFor('folder').folders;
+		folders.forEach(f => {
+			f.set('selected', false);
+		})
+
+		let documents = this.modelFor('folder').documents;
+		documents.forEach(d => {
+			d.set('selected', false);
+		})
+
+		return hash({
 			folder: this.modelFor('folder').folder,
 			permissions: this.modelFor('folder').permissions,
-			folders: this.modelFor('folder').folders,
-			documents: this.modelFor('folder').documents,
+			folders: folders,
+			documents: documents,
 			templates: this.modelFor('folder').templates,
 			showStartDocument: false,
 			rootDocCount: 0,

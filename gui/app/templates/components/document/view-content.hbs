@@ -1,0 +1,109 @@
+{{#if hasPages}}
+	{{#each pages key="id" as |page index|}}
+		{{#if permissions.documentEdit}}
+			<div class="start-section" data-index={{index}} data-before-id={{page.id}} id="add-section-button-{{page.id}}" {{action 'onShowSectionWizard' page}}>
+				<div class="start-button">
+					<div class="btn btn-success font-weight-bold">+ SECTION</div>
+				</div>
+			</div>
+		{{else}}
+			<div class="section-divider" />
+		{{/if}}
+
+		{{#document/document-page document=document folder=folder page=page permissions=permissions toEdit=toEdit pageId=pageId
+			onSavePage=(action 'onSavePage') onSavePageAsBlock=(action 'onSavePageAsBlock')
+			onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onDeletePage')}}
+		{{/document/document-page}}
+	{{/each}}
+
+	{{#if permissions.documentEdit}}
+		<div class="start-section" data-index="0" data-before-id="0" id="add-section-button-0" {{action 'onShowSectionWizard'}}>
+			<div class="start-button">
+				<div class="btn btn-success font-weight-bold">+ SECTION</div>
+			</div>
+		</div>
+	{{/if}}
+{{/if}}
+
+{{#unless hasPages}}
+	{{#if permissions.documentEdit}}
+		<div class="start-section start-section-empty-state" data-index="-1" data-before-id="0" id="add-section-button-0" {{action 'onShowSectionWizard'}}>
+			<div class="start-button">
+				<div class="btn btn-success font-weight-bold">+ SECTION</div>
+			</div>
+		</div>
+	{{/if}}
+{{/unless}}
+
+<div id="wizard-placeholder" class="hide margin-top-50" />
+<div id="new-section-wizard" class="new-section-wizard">
+	<div class="container box">
+		<div class="row clearfix">
+			<div class="col-12 clearfix">
+				<div class="float-right mb-5">
+					<button type="button" class="btn btn-secondary" {{action 'onHideSectionWizard'}}>Cancel</button>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-12">
+				<div class="form-group">
+					{{input type="text" id="new-section-name" value=newSectionName class=(if newSectionNameMissing 'form-control form-control-lg is-invalid' 'form-control form-control-lg') placeholder="Enter section name" autocomplete="off"}}
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-12">
+				<div class="form-group">
+					<div class="new-section-caption">Insert section type</div>
+					<ul class="preset-list">
+						{{#each sections as |section|}}
+							<li class="item" {{action 'onInsertSection' section}}>
+								<div class="icon">
+									<img class="img" src="/sections/{{section.contentType}}.png" srcset="/sections/{{section.contentType}}@2x.png" />
+								</div>
+								<div class='title'>{{section.title}}</div>
+							</li>
+						{{/each}}
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-12">
+				{{#if hasBlocks}}
+					<div class="new-section-caption">Insert re-usable content</div>
+					<ul class="block-list">
+						{{#each blocks as |block|}}
+							<li class="item" title="{{block.firstname}} {{block.lastname}}, {{time-ago block.created}}, used: {{ block.used }}" data-toggle="tooltip" data-placement="top">
+								<div class="actions">
+									{{#if permissions.documentTemplate}}
+										{{#link-to 'document.block' folder.id folder.slug document.id document.slug block.id class="button-icon-green button-icon-small align-middle"}}
+											<i class="material-icons">edit</i>
+										{{/link-to}}
+										<div class="button-icon-gap" />
+										<div id={{concat 'delete-block-button-' block.id}} class="button-icon-red button-icon-small align-middle" {{action 'onShowDeleteBlockModal' block.id}}>
+											<i class="material-icons">delete</i>
+										</div>
+									{{/if}}
+								</div>
+								<div class="details" {{action 'onInsertBlock' block}}>
+									<div class="title text-truncate">{{block.title}}</div>
+									<div class="desc text-truncate">{{block.excerpt}}</div>
+								</div>
+							</li>
+						{{/each}}
+					</ul>
+				{{else}}
+					<div class="template-caption">Reusable content appears below</div>
+				{{/if}}
+			</div>
+		</div>
+	</div>
+</div>
+
+{{#ui/ui-dialog title="Delete Content Block" confirmCaption="Delete" buttonType="btn-danger" show=showDeleteBlockDialog onAction=(action 'onDeleteBlock')}}
+	<p>Are you sure you want to delete this re-usable content block?</p>
+{{/ui/ui-dialog}}

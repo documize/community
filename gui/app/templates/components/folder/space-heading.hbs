@@ -1,28 +1,30 @@
-<div class="pull-left width-60">
-	{{#unless editMode}}
-		<div class="space-heading {{if permissions.spaceOwner 'cursor-pointer'}}" onclick={{if permissions.spaceOwner (action 'toggleEdit')}}>
-			<h1 class="space-name">{{folder.name}}</h1>
-			<div class="space-summary">
-				This space contains {{documents.length}} {{if (eq documents.length 1) 'document' 'documents'}}
-				{{if (eq categories.length 1) (concat 'and ' categories.length ' category')}}
-				{{if (gt categories.length 1) (concat 'and ' categories.length ' categories')}}
+<div class="container">
+	<div class="row">
+		<div class="col">
+			<div class="mt-4 mb-5">
+
+				{{#unless editMode}}
+					<div class="view-space">
+						<div class="heading">
+							<h1 class="view-heading {{if permissions.spaceOwner 'cursor-pointer'}}" onclick={{if permissions.spaceOwner (action 'toggleEdit')}}>
+								{{space.name}}
+							</h1>
+						</div>
+					</div>
+				{{else}}
+					<form {{action "onSave" on="submit"}}>
+						<div class="view-space">
+							<div class="heading">
+								<div class="form-group">
+									{{input id="space-name" type="text" value=spaceName class=(if hasNameError 'form-control is-invalid' 'form-control') placeholder="Space name" autocomplete="off"}}
+									<small class="form-text text-muted">Press Enter to save or Escape to cancel</small>
+								</div>
+							</div>
+						</div>
+					</form>
+				{{/unless}}
+
 			</div>
 		</div>
-	{{else}}
-		<form {{action "onSave" on="submit"}}>
-			<div class="edit-space-heading">
-				<div class="input-inline input-transparent edit-space-name">
-					{{focus-input id="folder-name" type="text" value=folderName class=(if hasNameError 'error-inline') placeholder="Name" autocomplete="off"}}
-				</div>
-				<div>
-					<button type="submit" class="round-button-mono" {{action 'onSave'}}>
-						<i class="material-icons color-green">check</i>
-					</button>
-					<div class="round-button-mono" {{action 'onCancel'}}>
-						<i class="material-icons color-gray">close</i>
-					</div>
-				</div>
-			</div>
-		</form>
-	{{/unless}}
+	</div>
 </div>

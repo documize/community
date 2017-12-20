@@ -9,13 +9,15 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { inject as service } from '@ember/service';
+
+import Component from '@ember/component';
 import NotifierMixin from '../../mixins/notifier';
 import TooltipMixin from '../../mixins/tooltip';
 
-export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
-	documentService: Ember.inject.service('document'),
-	sectionService: Ember.inject.service('section'),
+export default Component.extend(NotifierMixin, TooltipMixin, {
+	documentService: service('document'),
+	sectionService: service('section'),
 	editMode: false,
 
 	didReceiveAttrs() {

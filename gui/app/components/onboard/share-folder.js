@@ -9,10 +9,12 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { inject as service } from '@ember/service';
 
-export default Ember.Component.extend({
-    folderService: Ember.inject.service('folder'),
+import Component from '@ember/component';
+
+export default Component.extend({
+    folderService: service('folder'),
     serial: "",
     folderId: "",
     slug: "",
@@ -36,17 +38,21 @@ export default Ember.Component.extend({
         $("#stage-1-next").off('click').on('click', function() {
             if (!$("#stage-1-firstname").val()) {
                 $("#stage-1-firstname").focus();
-                $("#stage-1-firstname").addClass("error");
+                $("#stage-1-firstname").addClass("is-invalid");
                 $(".name-status").attr("src", "/assets/img/onboard/person-red.png");
                 return;
             }
 
+			$("#stage-1-firstname").removeClass("is-invalid");
+
             if (!$("#stage-1-lastname").val()) {
                 $("#stage-1-lastname").focus();
-                $("#stage-1-lastname").addClass("error");
+                $("#stage-1-lastname").addClass("is-invalid");
                 $(".name-status").attr("src", "/assets/img/onboard/person-red.png");
                 return;
             }
+
+			$("#stage-1-lastname").removeClass("is-invalid");
 
             self.set('processing', false);
 
@@ -64,9 +70,9 @@ export default Ember.Component.extend({
                 $("#stage-2-password-confirm").keyup(function() {
                     if ($("#stage-2-password").val().length < 6 || $("#stage-2-password").val().length > 50 ||
                         ($("#stage-2-password").val() !== $("#stage-2-password-confirm").val())) {
-                        $(".password-status").attr("src", "/assets/img/onboard/lock-red.png");
+                        // $(".password-status").attr("src", "/assets/img/onboard/lock-red.png");
                     } else {
-                        $(".password-status").attr("src", "/assets/img/onboard/lock-green.png");
+                        // $(".password-status").attr("src", "/assets/img/onboard/lock-green.png");
                     }
                 });
             });
@@ -76,21 +82,25 @@ export default Ember.Component.extend({
         $("#stage-2-next").off('click').on('click', function() {
             if (!$("#stage-2-password").val() || $("#stage-2-password").val().length < 6 || $("#stage-2-password").val().length > 50) {
                 $("#stage-2-password").focus();
-                $("#stage-2-password").addClass("error");
+                $("#stage-2-password").addClass("is-invalid");
                 return;
             }
 
+			$("#stage-2-password").removeClass("is-invalid");
+
             if (!$("#stage-2-password-confirm").val()) {
                 $("#stage-2-password-confirm").focus();
-                $("#stage-2-password-confirm").addClass("error");
+                $("#stage-2-password-confirm").addClass("is-invalid");
                 return;
             }
 
             if ($("#stage-2-password-confirm").val() !== $("#stage-2-password").val()) {
                 $(".mismatch").show();
-                $(".password-status").attr("src", "/assets/img/onboard/lock-red.png");
+                // $(".password-status").attr("src", "/assets/img/onboard/lock-red.png");
                 return;
             }
+
+			$("#stage-2-password-confirm").removeClass("is-invalid");
 
             self.set('processing', false);
 
@@ -102,7 +112,7 @@ export default Ember.Component.extend({
                 self.set('processing', true);
 
                 $(".stage-3").fadeIn();
-                $("#spinner-1").show();
+                // $("#spinner-1").show();
 
                 var payload = '{ "Password": "' + $("#stage-2-password").val() + '", "Serial": "' + self.serial + '", "Firstname": "' + $("#stage-1-firstname").val() + '", "Lastname": "' + $("#stage-1-lastname").val() + '" }';
                 var password = $("#stage-2-password").val();

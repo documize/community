@@ -1,9 +1,0 @@
-<div class="sidebar-common">
-		{{layout/sidebar-intro title=appMeta.title message=appMeta.message}}
-</div>
-
-<div class="sidebar-wrapper">
-    {{#if (is-equal tab 'index')}}
-		{{folder/sidebar-folders-list folders=folders folder=folder permissions=permissions onAddSpace=(action 'onAddSpace')}}
-    {{/if}}
-</div>

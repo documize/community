@@ -1,28 +1,52 @@
-{{#if (gt documents.length 0)}}
-	<div class="documents-list">
-		<div class="caption">Documents</div>
+<div class="view-space">
+	<ul class="documents">
 		{{#each documents key="id" as |document|}}
-			<div id="document-{{document.id}}">
-				<div class="document-item {{if document.selected "selected-card"}}">
-					{{#link-to 'document.index' folder.id folder.slug document.id document.slug class="link"}}
-						<div class="title">{{ document.name }}</div>
-						<div class="snippet">{{ document.excerpt }}</div>
-						<div class="chips">{{folder/document-tags documentTags=document.tags}}</div>
-					{{/link-to}}
-					{{#if session.authenticated}}
-						<div class="checkbox" {{action 'selectDocument' document.id}}>
-							{{#if document.selected}}
-								<i class="material-icons">check_box</i>
-							{{else}}
-								<i class="material-icons">check_box_outline_blank</i>
+			<li class="document {{if document.selected "selected"}}" id="document-{{document.id}}">
+
+				{{#link-to 'document.index' space.id space.slug document.id document.slug}}
+					<div class="title">{{ document.name }}</div>
+					<div class="snippet">{{ document.excerpt }}</div>
+					{{folder/document-tags documentTags=document.tags}}
+				{{/link-to}}
+
+				{{#if hasDocumentActions}}
+					<div class="checkbox" {{action 'selectDocument' document.id}}>
+						{{#if document.selected}}
+							<i class="material-icons">check_box</i>
+						{{else}}
+							<i class="material-icons">check_box_outline_blank</i>
+						{{/if}}
+					</div>
+					{{#if document.selected}}
+						<div class="actions">
+							{{#if permissions.documentMove}}
+								<div class="move-documents-button button-icon-green button-icon-small align-middle" {{action 'onShowMoveDocuments'}}>
+									<i class="material-icons">compare_arrows</i>
+								</div>
+								<div class="button-icon-gap" />
+							{{/if}}
+							{{#if permissions.documentDelete}}
+								<div class="delete-documents-button button-icon-red button-icon-small align-middle" {{action 'onShowDeleteDocuments'}}>
+									<i class="material-icons">delete</i>
+								</div>
 							{{/if}}
 						</div>
 					{{/if}}
-				</div>
-			</div>
+				{{/if}}
+
+			</li>
 		{{/each}}
-	</div>
-{{/if}}
+	</ul>
+</div>
+
+{{#ui/ui-dialog title="Delete Documents" confirmCaption="Delete" buttonType="btn-danger" show=showDeleteDialog onAction=(action 'onDeleteDocuments')}}
+	<p>Are you sure you want to delete {{selectedDocuments.length}} {{selectedCaption}}?</p>
+{{/ui/ui-dialog}}
+
+{{#ui/ui-dialog title="Move Documents" confirmCaption="Move" buttonType="btn-outline-success" show=showMoveDialog onAction=(action 'onMoveDocuments')}}
+	<p>Select space for {{selectedDocuments.length}} {{selectedCaption}}</p>
+	{{ui/ui-list-picker items=moveOptions nameField='name' singleSelect=true}}
+{{/ui/ui-dialog}}
 
 {{#if showAdd}}
 	{{empty-state icon="direct" message="You can create new documents via the green + button"}}

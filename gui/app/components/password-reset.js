@@ -9,24 +9,20 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { empty, and } from '@ember/object/computed';
 
-const {
-	isEmpty,
-	isEqual,
-	computed,
-	set
+import Component from '@ember/component';
+import { isEqual, isEmpty } from '@ember/utils';
+import { set } from '@ember/object';
 
-} = Ember;
-
-export default Ember.Component.extend({
+export default Component.extend({
 	password: "",
 	passwordConfirm: "",
 	mustMatch: false,
-	passwordEmpty: computed.empty('password'),
-	confirmEmpty: computed.empty('passwordConfirm'),
-	hasPasswordError: computed.and('passwordEmpty', 'passwordIsEmpty'),
-	hasConfirmError: computed.and('confirmEmpty', 'passwordConfirmIsEmpty'),
+	passwordEmpty: empty('password'),
+	confirmEmpty: empty('passwordConfirm'),
+	hasPasswordError: and('passwordEmpty', 'passwordIsEmpty'),
+	hasConfirmError: and('confirmEmpty', 'passwordConfirmIsEmpty'),
 
 	actions: {
 		reset() {

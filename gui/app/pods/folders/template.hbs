@@ -1,7 +1,5 @@
-{{#layout/zone-container}}
-	{{#layout/zone-sidebar}}
-		{{folder/sidebar-zone folders=model noFolder=true onAddSpace=(action 'onAddSpace')}}
-	{{/layout/zone-sidebar}}
-	{{#layout/zone-content}}
-	{{/layout/zone-content}}
-{{/layout/zone-container}}
+{{toolbar/nav-bar}}
+
+{{toolbar/for-spaces spaces=model onAddSpace=(action 'onAddSpace')}}
+
+{{spaces/space-list spaces=model}}

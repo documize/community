@@ -9,21 +9,23 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { hash } from 'rsvp';
+import { inject as service } from '@ember/service';
+import Route from '@ember/routing/route';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 
-export default Ember.Route.extend(AuthenticatedRouteMixin, {
-	documentService: Ember.inject.service('document'),
-	linkService: Ember.inject.service('link'),
-	folderService: Ember.inject.service('folder'),
-	userService: Ember.inject.service('user'),
+export default Route.extend(AuthenticatedRouteMixin, {
+	documentService: service('document'),
+	linkService: service('link'),
+	folderService: service('folder'),
+	userService: service('user'),
 
 	model() {
 		let document = this.modelFor('document').document;
 		this.browser.setTitle(document.get('name'));
 		this.browser.setMetaDescription(document.get('excerpt'));
 
-		return Ember.RSVP.hash({
+		return hash({
 			folders: this.modelFor('document').folders,
 			folder: this.modelFor('document').folder,
 			document: this.modelFor('document').document,
@@ -32,5 +34,15 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 			sections: this.modelFor('document').sections,
 			permissions: this.modelFor('document').permissions
 		});
+	},
+
+	setupController(controller, model) {
+		controller.set('folders', model.folders);
+		controller.set('folder', model.folder);
+		controller.set('document', model.document);
+		controller.set('pages', model.pages);
+		controller.set('links', model.links);
+		controller.set('sections', model.sections);
+		controller.set('permissions', model.permissions);
 	}
 });

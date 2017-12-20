@@ -9,7 +9,9 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { helper } from '@ember/component/helper';
+
+import { htmlSafe } from '@ember/string';
 
 export function documentFileIcon(params) {
     let fileExtension = params[0].toLowerCase();
@@ -106,7 +108,7 @@ export function documentFileIcon(params) {
         case "xslt":
     }
 
-    return new Ember.String.htmlSafe(html);
+    return new htmlSafe(html);
 }
 
-export default Ember.Helper.helper(documentFileIcon);
+export default helper(documentFileIcon);

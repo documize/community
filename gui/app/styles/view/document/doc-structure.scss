@@ -1,0 +1,30 @@
+.document-structure {
+	margin: 0 0 0 0;
+
+	> .page-header {
+		margin: 0 0 0.7rem 0;
+
+		> .page-number {
+			color: $color-gray;
+			background-color: $color-gray-light2;
+			padding: 0.2rem 1rem;
+			font-size: 1.8rem;
+			margin: 0 1.5rem 0 0;
+			font-weight: normal;
+			text-align: center;
+			display: inline-block;
+		}
+
+		> .page-title {
+			display: inline-block;
+			font-size: 1.8rem;
+			font-weight: bold;
+			margin: 16px 0;
+			color: $color-dark;
+		}
+	}
+}
+
+.section-divider {
+	margin-top: 70px;
+}

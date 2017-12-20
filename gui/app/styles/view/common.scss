@@ -1,3 +1,7 @@
+.modal-content {
+	border: none !important;
+}
+
 .empty-state {
 	text-align: center;
 	margin: 0 auto;
@@ -20,9 +24,4 @@
 		font-size: 5rem;
 		color: $color-stroke;
 	}
-}
-
-.back-to-space {
-	margin: 0 0 10px 0;
-	display: inline-block;
 }

@@ -9,14 +9,15 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { set } from '@ember/object';
+import { inject as service } from '@ember/service';
+import Component from '@ember/component';
 import NotifierMixin from '../../../mixins/notifier';
-import TooltipMixin from '../../../mixins/tooltip';
 import SectionMixin from '../../../mixins/section';
 import netUtil from '../../../utils/net';
 
-export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin, {
-	sectionService: Ember.inject.service('section'),
+export default Component.extend(SectionMixin, NotifierMixin, {
+	sectionService: service('section'),
 	isDirty: false,
 	waiting: false,
 	authenticated: false,
@@ -43,10 +44,6 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 		this.set('config', config);
 
 		this.send('auth');
-	},
-
-	willDestroyElement() {
-		this.destroyTooltips();
 	},
 
 	displayError(reason) {
@@ -88,19 +85,19 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 								group = options.groups[0];
 							}
 							if (is.not.undefined(group)) {
-								Ember.set(config, 'group', group);
+								set(config, 'group', group);
 							}
-						}, function (reason) { 
+						}, function (reason) {
 							self.set('authenticated', false);
 							self.set('waiting', false);
-							self.set('config.APIToken', ''); // clear the api token 
+							self.set('config.APIToken', ''); // clear the api token
 							self.displayError(reason);
 							console.log("get options call failed"); // eslint-disable-line no-console
 						});
-				}, function (reason) { 
+				}, function (reason) {
 					self.set('authenticated', false);
 					self.set('waiting', false);
-					self.set('config.APIToken', ''); // clear the api token 
+					self.set('config.APIToken', ''); // clear the api token
 					self.displayError(reason);
 					console.log("auth token invalid"); // eslint-disable-line no-console
 				});
@@ -159,7 +156,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 				max = parseInt(config.max);
 			}
 
-			Ember.set(config, 'max', max);
+			set(config, 'max', max);
 			this.set('waiting', true);
 
 			this.get('sectionService').fetch(page, "auth", this.get('config'))

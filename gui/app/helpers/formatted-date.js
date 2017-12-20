@@ -9,11 +9,13 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
-import dateUtil from '../utils/date';
+import { helper } from '@ember/component/helper';
 
 export function formattedDate(params) {
-    return dateUtil.toIsoDate(params[0], params[1]);
+    let format = params[1];
+    if (is.undefined(format)) format = 'Do MMMM YYYY, HH:mm';
+
+    return moment(params[0]).format(format);
 }
 
-export default Ember.Helper.helper(formattedDate);
+export default helper(formattedDate);

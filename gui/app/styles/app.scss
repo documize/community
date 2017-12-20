@@ -12,19 +12,15 @@
 @import "font.scss";
 @import "mixins.scss";
 @import "base.scss";
-@import "widget/widget.scss";
-@import "view/layout-sidebar.scss";
-@import "view/page-search.scss";
-@import "view/page-profile.scss";
-@import "view/page-customize.scss";
-@import "view/page-auth.scss";
-@import "view/page-onboard.scss";
-@import "view/page-exceptions.scss";
-@import "view/folder/all.scss";
-@import "view/document/all.scss";
+@import "bootstrap.scss";
+
 @import "view/common.scss";
+@import "widget/widget.scss";
+@import "view/navigation.scss";
+@import "view/toolbar.scss";
+@import "view/views.scss";
+
 @import "vendor.scss";
-@import "responsive.scss";
 @import "print.scss";
 @import "section/trello.scss";
 @import "section/gemini.scss";
@@ -34,3 +30,12 @@
 @import "section/code.scss";
 @import "section/papertrail.scss";
 @import "section/wysiwyg.scss";
+
+// Bootstrap override that removes gutter space on smaller screens
+// @media (max-width: 1200px) {
+//     .container {
+//         width: 100%;
+//         max-width: none;
+//     }
+// }
+

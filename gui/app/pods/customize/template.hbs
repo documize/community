@@ -1,25 +1,29 @@
-{{#layout/zone-container}}
-	{{#layout/zone-sidebar}}
-		<div class="sidebar-common">
-			{{layout/sidebar-intro title='Settings' message='Documize application settings'}}
+{{toolbar/nav-bar}}
+
+{{#toolbar/t-toolbar}}
+	{{#toolbar/t-links}}
+		{{#link-to "folders" class="link" tagName="li"}}Spaces{{/link-to}}
+	{{/toolbar/t-links}}
+	{{#toolbar/t-actions}}
+	{{/toolbar/t-actions}}
+{{/toolbar/t-toolbar}}
+
+<div class="container">
+	<div class="row">
+		<div class="col my-5">
+			<ul class="tabnav-control">
+				{{#link-to 'customize.general' activeClass='selected' class="tab" tagName="li"}}General{{/link-to}}
+				{{#link-to 'customize.folders' activeClass='selected' class="tab" tagName="li"}}Spaces{{/link-to}}
+				{{#link-to 'customize.users' activeClass='selected' class="tab" tagName="li"}}Users{{/link-to}}
+				{{#if session.isGlobalAdmin}}
+					{{#link-to 'customize.smtp' activeClass='selected' class="tab" tagName="li"}}SMTP{{/link-to}}
+					{{#link-to 'customize.license' activeClass='selected' class="tab" tagName="li"}}License{{/link-to}}
+					{{#link-to 'customize.auth' activeClass='selected' class="tab" tagName="li"}}Authentication{{/link-to}}
+				{{/if}}
+			</ul>
 		</div>
-		<div class="sidebar-wrapper">
-			<div class="sidebar-menu">
-				<ul class="options">
-					{{#link-to 'customize.general' activeClass='selected' class="option" tagName="li"}}General{{/link-to}}
-					{{#link-to 'customize.folders' activeClass='selected' class="option" tagName="li"}}Spaces{{/link-to}}
-					{{#link-to 'customize.users' activeClass='selected' class="option" tagName="li"}}Users{{/link-to}}
-					{{#if session.isGlobalAdmin}}
-						{{#link-to 'customize.global' activeClass='selected' class="option" tagName="li"}}Global{{/link-to}}
-						{{#link-to 'customize.auth' activeClass='selected' class="option" tagName="li"}}Authentication{{/link-to}}
-					{{/if}}
-				</ul>
-			</div>
-		</div>
-	{{/layout/zone-sidebar}}
-	{{#layout/zone-content}}
-		<div class="page-customize">
-			{{outlet}}
-		</div>
-	{{/layout/zone-content}}
-{{/layout/zone-container}}
+	</div>
+	<div class="mt-4 margin-bottom-100">
+		{{outlet}}
+	</div>
+</div>

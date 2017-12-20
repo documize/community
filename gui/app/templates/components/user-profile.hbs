@@ -1,31 +1,27 @@
-<div class="page-profile">
-	<div class="form-header">
-		<div class="title">About You</div>
-		<div class="tip"></div>
-	</div>
-    <div class="input-control">
-        <label>Firstname</label>
-        {{focus-input id="firstname" type="text" value=model.firstname class=(if hasFirstnameError 'error')}}
+<div class="view-profile my-5">
+	<div class="avatar-large">{{session.user.initials}}</div>
+
+    <div class="form-group">
+        <label for="firstname">Firstname</label>
+        {{focus-input id="firstname" type="text" value=model.firstname class=(if hasFirstnameError 'form-control is-invalid' 'form-control')}}
     </div>
-    <div class="input-control">
-        <label>Lastname</label>
-        {{input id="lastname" type="text" value=model.lastname class=(if hasLastnameError 'error')}}
+    <div class="form-group">
+        <label for="lastname">Lastname</label>
+        {{input id="lastname" type="text" value=model.lastname class=(if hasLastnameError 'form-control is-invalid' 'form-control')}}
     </div>
-    <div class="input-control">
-        <label>Email</label>
-        {{input id="email" type="text" value=model.email class=(if hasEmailError 'error')}}
+    <div class="form-group">
+        <label for="email">Email</label>
+        {{input id="email" type="email" value=model.email class=(if hasEmailError 'form-control is-invalid' 'form-control')}}
     </div>
     {{#if isAuthProviderDocumize}}
-        <div class="input-control">
-            <label>Password</label>
-            <div class="tip">New password</div>
-            {{input id="password" type="password" value=password.password class=hasPasswordError}}
+        <div class="form-group">
+            <label for="password">Password</label>
+            {{input id="password" type="password" value=password.password class=(if hasPasswordError 'form-control is-invalid' 'form-control')}}
         </div>
-        <div class="input-control">
-            <label>Confirm Password</label>
-            <div class="tip">Confirm your new password</div>
-            {{input id="confirmPassword" type="password" value=password.confirmation class=hasConfirmPasswordError}}
+        <div class="form-group">
+            <label for="confirmPassword">Confirm Password</label>
+            {{input id="confirmPassword" type="password" value=password.confirmation class=(if hasConfirmPasswordError 'form-control is-invalid' 'form-control')}}
         </div>
     {{/if}}
-    <div class="regular-button button-blue" {{ action 'save' }}>save</div>
+    <div class="btn btn-success" {{ action 'save' }}>save</div>
 </div>

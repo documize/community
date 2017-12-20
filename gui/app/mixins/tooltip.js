@@ -9,43 +9,20 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import Mixin from '@ember/object/mixin';
+import { schedule } from '@ember/runloop';
 
-export default Ember.Mixin.create({
-    tooltips: [],
+export default Mixin.create({
+	tooltips: [],
 
-    addTooltip(elem) {
-        if (elem == null) {
-            return;
-		}
+	renderTooltips() {
+		schedule('afterRender', () => {
+			$('[data-toggle="tooltip"]').tooltip('dispose');
+			$('body').tooltip({selector: '[data-toggle="tooltip"]', delay: 250});
+		});
+	},
 
-        let t = new Tooltip({
-            target: elem
-        });
-
-        let tt = this.get('tooltips');
-		tt.push(t);
-
-		return t;
-    },
-
-	destroyTooltip(t) {
-		t.destroy();
-    },
-
-    destroyTooltips() {
-		if (this.get('isDestroyed') || this.get('isDestroying')) {
-			return;
-		}
-
-		let tt = this.get('tooltips');
-
-        tt.forEach(t => {
-			t.destroy();
-        });
-
-        tt.length = 0;
-
-        this.set('tooltips', tt);
-    }
+	removeTooltips() {
+		$('[data-toggle="tooltip"]').tooltip('dispose');
+	}
 });

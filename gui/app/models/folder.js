@@ -9,11 +9,11 @@
 //
 // https://documize.com
 
+import { computed } from '@ember/object';
 import Model from 'ember-data/model';
 import attr from 'ember-data/attr';
 import constants from '../utils/constants';
 import stringUtil from '../utils/string';
-import Ember from 'ember';
 // import { belongsTo, hasMany } from 'ember-data/relationships';
 
 export default Model.extend({
@@ -22,7 +22,7 @@ export default Model.extend({
 	userId: attr('string'),
 	folderType: attr('number', { defaultValue: 2 }),
 
-	slug: Ember.computed('name', function () {
+	slug: computed('name', function () {
 		return stringUtil.makeSlug(this.get('name'));
 	}),
 

@@ -9,13 +9,12 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { A } from '@ember/array';
 
-const {
-	inject: { service }
-} = Ember;
+import ArrayProxy from '@ember/array/proxy';
+import Service, { inject as service } from '@ember/service';
 
-export default Ember.Service.extend({
+export default Service.extend({
 	sessionService: service('session'),
 	ajax: service(),
 	store: service(),
@@ -39,8 +38,8 @@ export default Ember.Service.extend({
 			if (is.not.array(response)) {
 				response = [];
 			}
-			let templates = Ember.ArrayProxy.create({
-				content: Ember.A([])
+			let templates = ArrayProxy.create({
+				content: A([])
 			});
 
 			templates = response.map((template) => {

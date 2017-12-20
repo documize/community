@@ -9,10 +9,12 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { inject as service } from '@ember/service';
 
-export default Ember.Controller.extend({
-	userService: Ember.inject.service('user'),
+import Controller from '@ember/controller';
+
+export default Controller.extend({
+	userService: service('user'),
 	password: "",
 	passwordConfirm: "",
 	mustMatch: false,

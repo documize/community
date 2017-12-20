@@ -9,13 +9,9 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import Service, { inject as service } from '@ember/service';
 
-const {
-	inject: { service }
-} = Ember;
-
-export default Ember.Service.extend({
+export default Service.extend({
 	sessionService: service('session'),
 	ajax: service(),
 	appMeta: service(),

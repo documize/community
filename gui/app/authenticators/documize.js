@@ -9,16 +9,13 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { isPresent } from '@ember/utils';
+
+import { reject, resolve } from 'rsvp';
+import { inject as service } from '@ember/service';
 import Base from 'ember-simple-auth/authenticators/base';
 import encodingUtil from '../utils/encoding';
 import netUtil from '../utils/net';
-
-const {
-	isPresent,
-	RSVP: { resolve, reject },
-	inject: { service }
-} = Ember;
 
 export default Base.extend({
 	ajax: service(),
@@ -42,14 +39,14 @@ export default Base.extend({
 			let { password, email } = credentials;
 
 			if (!isPresent(password) || !isPresent(email)) {
-				return Ember.RSVP.reject("invalid");
+				return reject("invalid");
 			}
 
 			encoded = encodingUtil.Base64.encode(`${domain}:${email}:${password}`);
 		} else if (typeof credentials === 'string') {
 			encoded = credentials;
 		} else {
-			return Ember.RSVP.reject("invalid");
+			return reject("invalid");
 		}
 
 		let headers = { 'Authorization': 'Basic ' + encoded };

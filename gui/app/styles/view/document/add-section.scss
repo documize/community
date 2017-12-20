@@ -1,0 +1,143 @@
+.start-section {
+	@extend .no-select;
+	height: 60px;
+	background-color: transparent;
+	position: relative;
+	cursor: pointer;
+
+	> .start-button {
+		display: none;
+		text-align: center;
+		padding-top: 10px;
+		position: relative;
+	}
+
+	&:first-of-type {
+		height: 30px;
+
+		> .start-button {
+			padding: 0;
+		}
+	}
+}
+
+.start-section-empty-state {
+	> .start-button {
+		display: block;
+	}
+}
+
+.new-section-wizard {
+	display: none;
+	@include border-radius(2px);
+	margin: 0 0 60px 0;
+	padding: 30px;
+	border: 1px solid $color-stroke;
+	background-color: $color-primary-light;
+
+	.new-section-caption {
+		margin: 20px 0 10px 0;
+		color: $color-primary;
+		font-size: 1.4rem;
+		font-weight: bold;
+	}
+
+	 .preset-list {
+		margin: 20px 0 0 0;
+		padding: 0;
+
+		> .item {
+			@include ease-in();
+			@include border-radius(3px);
+			list-style: none;
+			cursor: pointer;
+			display: inline-block;
+			border: 1px solid $color-border;
+			background-color: $color-white;
+			margin: 0 20px 20px 0;
+			padding: 12px 0 0 20px;
+			width: 250px;
+			height: 60px;
+
+			&:hover {
+				@include ease-in();
+				border-color: $color-link;
+			}
+
+			.icon {
+				text-align: center;
+				display: inline-block;
+				width: 40px;
+				margin-right: 10px;
+
+				> .img {
+					text-align: center;
+					display: inline-block;
+					height: 30px;
+					width: 30px;
+				}
+			}
+
+			> .title {
+				display: inline-block;
+				font-size: 1rem;
+				font-weight: normal;
+				color: $color-off-black;
+				letter-spacing: 0.5px;
+				margin-top: 6px;
+			}
+		}
+	}
+
+	 .block-list {
+		margin: 20px 0 0 0;
+		padding: 0;
+
+		> .item {
+			@include ease-in();
+			@include border-radius(3px);
+			list-style: none;
+			cursor: pointer;
+			display: block;
+			border: 1px solid $color-border;
+			background-color: $color-white;
+			margin: 0 20px 20px 0;
+			padding: 20px;
+			height: 90px;
+			width: 100%;
+			position: relative;
+
+			&:hover {
+				@include ease-in();
+				border-color: $color-link;
+
+				> .block-actions {
+					display: block;
+				}
+			}
+
+			> .actions {
+				@include ease-in();
+				position: absolute;
+				top: 10px;
+				right: 8px;
+			}
+
+			> .details {
+				> .title {
+					font-size: 1.1rem;
+					font-weight: bold;
+					color: $color-off-black;
+					letter-spacing: 0.5px;
+					margin-top: 0;
+				}
+
+				> .desc {
+					color: $color-off-black;
+					font-size: 1rem;
+					margin-top: 5px;
+				}
+			}
+		}
+	}
+}

@@ -9,9 +9,9 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import TextArea from '@ember/component/text-area';
 
-export default Ember.TextArea.extend({
+export default TextArea.extend({
     becomeFocused: function() {
         this.$().focus();
     }.on('didInsertElement')

@@ -1,0 +1,82 @@
+<div class="view-document">
+	<div class="document-customfields">
+
+		<div class="row">
+			<div class="col-2 heading">Categories</div>
+			<div class="col-10 value">
+				{{#each selectedCategories as |cat|}}
+					{{#link-to 'folder' folder.id folder.slug (query-params category=cat.id)}}
+						{{cat.category}}
+					{{/link-to}}
+					&nbsp;
+				{{else}}
+					{{#if canAddCategory}}
+						{{#if canSelectCategory}}
+							<a href="#" {{action 'onShowCategoryModal'}}>&lt;select&gt;</a>
+						{{else}}
+							{{#link-to 'folder.category' folder.id folder.slug class='non-printable'}}&lt;manage&gt;{{/link-to}}
+						{{/if}}
+					{{/if}}
+				{{/each}}
+				{{#if canSelectCategory}}
+					<div class="action-button button-icon-gray button-icon-small align-middle" {{action 'onShowCategoryModal'}}>
+						<i class="material-icons align-middle">edit</i>
+					</div>
+				{{/if}}
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-2 heading">Tags</div>
+			<div class="col-10 value">
+				{{#each tagz as |t index|}}
+					{{#link-to 'search' (query-params filter=t matchTag=true)}}
+						{{concat '#' t}}
+					{{/link-to}}&nbsp;&nbsp;
+				{{/each}}
+				{{#if canSelectCategory}}
+					<div class="action-button button-icon-gray button-icon-small align-middle" data-toggle="modal" data-target="#document-tags-modal" data-backdrop="static">
+						<i class="material-icons align-middle">edit</i>
+					</div>
+				{{/if}}
+			</div>
+		</div>
+
+	</div>
+</div>
+
+{{#if permissions.documentEdit}}
+	{{#ui/ui-dialog title="Document Categories" confirmCaption="Select" buttonType="btn-success" show=showCategoryModal onAction=(action 'onSaveCategory')}}
+		<p>Select who can view documents within category</p>
+		{{ui/ui-list-picker items=categories nameField='category' singleSelect=false}}
+	{{/ui/ui-dialog}}
+
+	<div id="document-tags-modal" class="modal" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">Document Tags</div>
+				<div class="modal-body">
+					<form onsubmit={{action 'onAddTag'}}>
+						<div class="form-group">
+							<label for="add-tag-field">Specify up to three tags per document</label>
+							{{#each tagzEdit as |t|}}
+								<div class="m-3 text-secondary">
+									<div class="button-icon-danger button-icon-small align-middle" {{action 'onRemoveTag' t}}>
+										<i class="material-icons">clear</i>
+									</div>
+									{{concat '#' t}}
+								</div>
+							{{/each}}
+							{{focus-input type='text' id="add-tag-field" class="form-control mousetrap" placeholder="Tag name" value=newTag}}
+							<small class="form-text text-muted">Lowercase, characters, numbers, hyphens only</small>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+					<button type="button" class="btn btn-success" onclick={{action 'onSaveTags'}}>Save</button>
+				</div>
+			</div>
+		</div>
+	</div>
+{{/if}}

@@ -9,13 +9,15 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
-import NotifierMixin from '../../../mixins/notifier';
-import TooltipMixin from '../../../mixins/tooltip';
+import { set } from '@ember/object';
+import { schedule } from '@ember/runloop';
+import { inject as service } from '@ember/service';
+import Component from '@ember/component';
 import SectionMixin from '../../../mixins/section';
+import TooltipMixin from '../../../mixins/tooltip';
 
-export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin, {
-	sectionService: Ember.inject.service('section'),
+export default Component.extend(SectionMixin, TooltipMixin, {
+	sectionService: service('section'),
 	isDirty: false,
 	waiting: false,
 	authenticated: false,
@@ -65,10 +67,6 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 			});
 	},
 
-	willDestroyElement() {
-		this.destroyTooltips();
-	},
-
 	getWorkspaces() {
 		let page = this.get('page');
 		let self = this;
@@ -87,12 +85,9 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 				self.set('workspaces', response);
 				self.selectWorkspace(workspaceId);
 
-				Ember.run.schedule('afterRender', function () {
+				schedule('afterRender', () => {
 					window.scrollTo(0, document.body.scrollHeight);
-
-					response.forEach(function (workspace) {
-						self.addTooltip(document.getElementById("gemini-workspace-" + workspace.Id));
-					});
+					self.renderTooltips();
 				});
 				self.set('waiting', false);
 			}, function (reason) { // eslint-disable-line no-unused-vars
@@ -129,7 +124,7 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 		let w = this.get('workspaces');
 
 		w.forEach(function (w) {
-			Ember.set(w, 'selected', w.Id === id);
+			set(w, 'selected', w.Id === id);
 
 			if (w.Id === id) {
 				self.set("config.filter", w.Filter);
@@ -151,15 +146,15 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 		auth() {
 			// missing data?
 			if (is.empty(this.get('config.url'))) {
-				$("#gemini-url").addClass("error").focus();
+				$("#gemini-url").addClass("is-invalid").focus();
 				return;
 			}
 			if (is.empty(this.get('config.username'))) {
-				$("#gemini-username").addClass("error").focus();
+				$("#gemini-username").addClass("is-invalid").focus();
 				return;
 			}
 			if (is.empty(this.get('config.APIKey'))) {
-				$("#gemini-apikey").addClass("error").focus();
+				$("#gemini-apikey").addClass("is-invalid").focus();
 				return;
 			}
 
@@ -191,17 +186,6 @@ export default Ember.Component.extend(SectionMixin, NotifierMixin, TooltipMixin,
 					self.set('user', null);
 					self.set('config.userId', 0);
 					self.set('waiting', false);
-
-					switch (reason.status) {
-					case 400:
-						self.showNotification(`Unable to connect to Gemini URL`);
-						break;
-					case 403:
-						self.showNotification(`Unable to authenticate`);
-						break;
-					default:
-						self.showNotification(`Something went wrong, try again!`);
-					}
 				});
 		},
 

@@ -9,45 +9,26 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { empty } from '@ember/object/computed';
+import { computed } from '@ember/object';
+import TooltipMixin from '../../mixins/tooltip';
+import ModalMixin from '../../mixins/modal';
+import Component from '@ember/component';
 
-const {
-	computed,
-} = Ember;
-
-
-export default Ember.Component.extend({
-	drop: null,
+export default Component.extend(TooltipMixin, ModalMixin, {
 	busy: false,
 	mousetrap: null,
-	hasNameError: computed.empty('page.title'),
-	containerId: Ember.computed('page', function () {
-		let page = this.get('page');
-		return `base-editor-inline-container-${page.id}`;
-	}),
-	pageId: Ember.computed('page', function () {
+	showLinkModal: false,
+	hasNameError: empty('page.title'),
+	hasDescError: empty('page.excerpt'),
+	pageId: computed('page', function () {
 		let page = this.get('page');
 		return `page-editor-${page.id}`;
 	}),
-	cancelId: Ember.computed('page', function () {
-		let page = this.get('page');
-		return `cancel-edits-button-${page.id}`;
-	}),
-	dialogId: Ember.computed('page', function () {
-		let page = this.get('page');
-		return `discard-edits-dialog-${page.id}`;
-	}),
-	contentLinkerButtonId: Ember.computed('page', function () {
-		let page = this.get('page');
-		return `content-linker-button-${page.id}`;
-	}),
-	previewButtonId: Ember.computed('page', function () {
-		let page = this.get('page');
-		return `content-preview-button-${page.id}`;
-	}),
+	previewText: 'Preview',
 
 	didRender() {
-		let msContainer = document.getElementById(this.get('containerId'));
+		let msContainer = document.getElementById('section-editor-' + this.get('containerId'));
 		let mousetrap = this.get('mousetrap');
 
 		if (is.null(mousetrap)) {
@@ -68,13 +49,14 @@ export default Ember.Component.extend({
 		$('#' + this.get('pageId')).focus(function() {
 			$(this).select();
 		});
+
+		this.renderTooltips();
 	},
 
 	willDestroyElement() {
-		let drop = this.get('drop');
-		if (is.not.null(drop)) {
-			drop.destroy();
-		}
+		this._super(...arguments);
+
+		this.removeTooltips();
 
 		let mousetrap = this.get('mousetrap');
 		if (is.not.null(mousetrap)) {
@@ -84,33 +66,6 @@ export default Ember.Component.extend({
 	},
 
 	actions: {
-		onCancel() {
-			if (this.attrs.isDirty() !== null && this.attrs.isDirty()) {
-				$('#' + this.get('dialogId')).css("display", "block");
-
-				let drop = new Drop({
-					target: $('#' + this.get('cancelId'))[0],
-					content: $('#' + this.get('dialogId'))[0],
-					classes: 'drop-theme-basic',
-					position: "bottom right",
-					openOn: "always",
-					constrainToWindow: true,
-					constrainToScrollParent: false,
-					tetherOptions: {
-						offset: "5px 0",
-						targetOffset: "10px 0"
-					},
-					remove: false
-				});
-
-				this.set('drop', drop);
-
-				return;
-			}
-
-			this.attrs.onCancel();
-		},
-
 		onAction() {
 			if (this.get('busy') || is.empty(this.get('page.title'))) {
 				return;
@@ -123,21 +78,33 @@ export default Ember.Component.extend({
 			this.attrs.onAction(this.get('page.title'));
 		},
 
-		keepEditing() {
-			let drop = this.get('drop');
-			drop.close();
-		},
+		onCancel() {
+			if (this.attrs.isDirty() !== null && this.attrs.isDirty()) {
+				this.modalOpen('#discard-modal-' + this.get('page.id'), {show: true});
+				return;
+			}
 
-		discardEdits() {
 			this.attrs.onCancel();
 		},
 
-		onInsertLink(selection) {
-			return this.get('onInsertLink')(selection);
-		},		
+		onDiscard() {
+			this.modalClose('#discard-modal-' + this.get('page.id'));
+			this.attrs.onCancel();
+		},
 
 		onPreview() {
+			let pt = this.get('previewText');
+			this.set('previewText', pt === 'Preview' ? 'Edit Mode' : 'Preview');
 			return this.get('onPreview')();
-		},		
+		},
+
+		onShowLinkModal() {
+			this.set('showLinkModal', true);
+		},
+
+		onInsertLink(selection) {
+			this.set('showLinkModal', false);
+			return this.get('onInsertLink')(selection);
+		}
 	}
 });

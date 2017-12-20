@@ -9,13 +9,10 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
-import BaseService from '../services/base';
+import RSVP from 'rsvp';
 
-const {
-	RSVP,
-	inject: { service }
-} = Ember;
+import { inject as service } from '@ember/service';
+import BaseService from '../services/base';
 
 export default BaseService.extend({
 	sessionService: service('session'),

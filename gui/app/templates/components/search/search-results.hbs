@@ -1,13 +1,13 @@
-<div class="search-results">
+<div class="view-search my-5">
     <div class="heading">{{resultPhrase}}</div>
-    <ul class="list">
+    <ul class="documents">
         {{#each documents key="id" as |result index|}}
-            <li class="item">
+			<li class="document">
                 <a class="link" href="s/{{result.spaceId}}/{{result.spaceSlug}}/d/{{ result.documentId }}/{{result.documentSlug}}?page={{ result.itemId }}">
-                    <div class="title">{{ result.document }}</div>
-					<div class="folder">{{ result.space }}</div>
-					<div class="excerpt">{{ result.excerpt }}</div>
-					<div class="chips">{{search/tag-list documentTags=result.tags}}</div>
+					<div class="title">{{result.document}}</div>
+					<div class="snippet">{{result.excerpt}}</div>
+					<div class="snippet">({{result.space}})</div>
+					{{folder/document-tags documentTags=result.tags}}
                 </a>
             </li>
         {{/each}}

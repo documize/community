@@ -23,13 +23,14 @@
     font-weight: bold;
     color: #4c4c4c;
     font-size: 14px;
-    margin: 5px;
+	display: inline-block;
+	vertical-align: text-top;
 }
 
 .section-trello-list-checkbox {
-    vertical-align: text-bottom;
+	vertical-align: text-top;
+	margin-right: 10px;
 }
-
 
 .section-trello-render {
 	> .trello-board {
@@ -44,7 +45,7 @@
                 font-weight: bold;
                 color: #fff;
                 font-size: 16px;
-            }            
+            }
         }
 
         > .trello-list {
@@ -65,7 +66,7 @@
                 font-size: 14px;
                 margin: 0 10px 10px 0;
             }
-            
+
             > a {
                 > .trello-card {
                     color: #4c4c4c;
@@ -82,7 +83,7 @@
                     white-space: normal;
                     cursor: pointer;
                     vertical-align: top;
-                }    
+                }
             }
         }
 	}

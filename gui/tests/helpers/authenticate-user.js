@@ -9,14 +9,12 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { registerAsyncHelper } from '@ember/test';
+
+import { merge } from '@ember/polyfills';
 import { authenticateSession } from 'documize/tests/helpers/ember-simple-auth';
 
-const {
-	merge
-} = Ember;
-
-export default Ember.Test.registerAsyncHelper('authenticateUser', function (app, attrs = {}) {
+export default registerAsyncHelper('authenticateUser', function (app, attrs = {}) {
 	authenticateSession(app, merge({
 		token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkb21haW4iOiIiLCJleHAiOjE0NjQwMjM2NjcsImlzcyI6IkRvY3VtaXplIiwib3JnIjoiVnpNdXlFd18zV3FpYWZjRCIsInN1YiI6IndlYmFwcCIsInVzZXIiOiJWek11eUV3XzNXcWlhZmNFIn0.NXZ6bo8mtvdZF_b9HavbidVUJqhmBA1zr0fSAPvbah0",
 		user: {

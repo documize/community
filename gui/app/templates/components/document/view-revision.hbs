@@ -1,0 +1,47 @@
+<div class="mt-5">
+	{{#if hasRevisions}}
+		<div class="row">
+			<div class="col-12">
+				<div class="form-group">
+					{{ui-select tagName="span" class="revision-picker" content=revisions action=(action 'onSelectRevision') optionValuePath="id" optionLabelPath="label"}}
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-12">
+				<div class="form-group">
+					<div id="restore-history-button" class="btn btn-success" data-toggle="modal" data-target="#document-rollback-modal" data-backdrop="static">Restore</div>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-12 view-revision">
+				<div class="diff-zone">
+					{{#if hasDiff}}
+						<div class="wysiwyg">
+							{{{diff}}}
+						</div>
+					{{/if}}
+				</div>
+			</div>
+		</div>
+
+		<div id="document-rollback-modal" class="modal" tabindex="-1" role="dialog">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">Rollback Document Section</div>
+					<div class="modal-body">
+						<p>AAre you sure you want to roll back to this revision?</p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+						<button type="button" class="btn btn-success" onclick={{action 'onRollback'}}>Rollback</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	{{else}}
+		<p>No revisions made</p>
+	{{/if}}
+</div>
+

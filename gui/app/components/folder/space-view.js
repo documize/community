@@ -9,25 +9,25 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
-import NotifierMixin from '../../mixins/notifier';
-import TooltipMixin from '../../mixins/tooltip';
+import Component from '@ember/component';
+import { inject as service } from '@ember/service';
+import { all } from 'rsvp';
+import { schedule } from '@ember/runloop';
+import { gt } from '@ember/object/computed';
+import { computed } from '@ember/object';
 import AuthMixin from '../../mixins/auth';
 
-const {
-	inject: { service }
-} = Ember;
-
-export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
+export default Component.extend(AuthMixin, {
 	router: service(),
 	documentService: service('document'),
 	folderService: service('folder'),
 	localStorage: service('localStorage'),
-	selectedDocuments: [],
-	hasSelectedDocuments: Ember.computed.gt('selectedDocuments.length', 0),
-	hasCategories: Ember.computed.gt('categories.length', 0),
-	showStartDocument: false,
+	hasCategories: gt('categories.length', 0),
 	filteredDocs: [],
+	categoryLinkName: 'Manage',
+	spaceSettings: computed('permissions', function() {
+		return this.get('permissions.spaceOwner') || this.get('permissions.spaceManage');
+	}),
 
 	didReceiveAttrs() {
 		this._super(...arguments);
@@ -38,20 +38,6 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 		this._super(...arguments);
 		this.set('selectedDocuments', []);
 		this.set('filteredDocs', []);
-	},
-
-	didRender() {
-		this._super(...arguments);
-
-		if (this.get('rootDocCount') > 0) {
-			this.addTooltip(document.getElementById("uncategorized-button"));
-		}
-	},
-
-	willDestroyElement() {
-		this._super(...arguments);
-
-		this.destroyTooltips();
 	},
 
 	setup() {
@@ -69,9 +55,12 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 		});
 
 		this.set('categories', categories);
+		this.set('categoryLinkName', categories.length > 0 ? 'manage' : 'add');
 
-		Ember.run.schedule('afterRender', () => {
-			if (this.get('rootDocCount') > 0) {
+		schedule('afterRender', () => {
+			if (this.get('categoryFilter') !== '') {
+				this.send('onDocumentFilter', 'category', this.get('categoryFilter'));
+			} else if (this.get('rootDocCount') > 0) {
 				this.send('onDocumentFilter', 'space', this.get('folder.id'));
 			} else if (selectedCategory !== '') {
 				this.send('onDocumentFilter', 'category', selectedCategory);
@@ -80,26 +69,31 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 	},
 
 	actions: {
-		onMoveDocument(folder) {
+		onMoveDocument(documents, targetSpaceId) {
 			let self = this;
-			let documents = this.get('selectedDocuments');
+			let promises1 = [];
+			let promises2 = [];
 
-			documents.forEach(function (documentId) {
-				self.get('documentService').getDocument(documentId).then(function (doc) {
-					doc.set('folderId', folder);
-					doc.set('selected', !doc.get('selected'));
-					self.get('documentService').save(doc).then(function () {
-						self.attrs.onRefresh();
-					});
-				});
+			documents.forEach(function(documentId, index) {
+				promises1[index] = self.get('documentService').getDocument(documentId);
 			});
 
-			this.set('selectedDocuments', []);
-			this.send("showNotification", "Moved");
+			all(promises1).then(() => {
+				promises1.forEach(function(doc, index) {
+					doc.then((d) => {
+						d.set('folderId', targetSpaceId);
+						d.set('selected', false);
+						promises2[index] = self.get('documentService').save(d);
+					});
+				});
+
+				all(promises2).then(() => {
+					self.attrs.onRefresh();
+				});
+			});
 		},
 
-		onDeleteDocument() {
-			let documents = this.get('selectedDocuments');
+		onDeleteDocument(documents) {
 			let self = this;
 			let promises = [];
 
@@ -107,37 +101,15 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 				promises[index] = self.get('documentService').deleteDocument(document);
 			});
 
-			Ember.RSVP.all(promises).then(() => {
+			all(promises).then(() => {
 				let documents = this.get('documents');
 				documents.forEach(function (document) {
 					document.set('selected', false);
 				});
-				this.set('documents', documents);
 
-				this.set('selectedDocuments', []);
-				this.send("showNotification", "Deleted");
+				this.set('documents', documents);
 				this.attrs.onRefresh();
 			});
-		},
-
-		onDeleteSpace() {
-			this.get('folderService').delete(this.get('folder.id')).then(() => { /* jshint ignore:line */
-				this.showNotification("Deleted");
-				this.get('localStorage').clearSessionItem('folder');
-				this.get('router').transitionTo('application');
-			});
-		},
-
-		onImport() {
-			this.attrs.onRefresh();
-		},
-
-		onStartDocument() {
-			this.set('showStartDocument', !this.get('showStartDocument'));
-		},
-
-		onHideStartDocument() {
-			this.set('showStartDocument', false);
 		},
 
 		onDocumentFilter(filter, id) {
@@ -156,6 +128,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 						}
 					});
 
+					this.set('categoryFilter', id);
 					this.set('spaceSelected', false);
 					this.set('uncategorizedSelected', false);
 					break;
@@ -168,6 +141,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 						}
 					});
 
+					this.set('categoryFilter', '');
 					this.set('uncategorizedSelected', true);
 					this.set('spaceSelected', false);
 					break;
@@ -178,6 +152,7 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, AuthMixin, {
 						filtered.pushObject(d);
 					});
 
+					this.set('categoryFilter', '');
 					this.set('spaceSelected', true);
 					this.set('uncategorizedSelected', false);
 					break;

@@ -9,9 +9,9 @@
 //
 // https://documize.com
 
+import { computed } from '@ember/object';
 import Model from 'ember-data/model';
 import attr from 'ember-data/attr';
-import Ember from 'ember';
 import constants from '../utils/constants'; 
 
 export default Model.extend({
@@ -24,7 +24,7 @@ export default Model.extend({
 	activityType: attr('number'),
 	created: attr(),
 
-	activityLabel: Ember.computed('activityType', function() {
+	activityLabel: computed('activityType', function() {
 		let label = '';
 
 		switch (this.get('activityType')) {
@@ -62,7 +62,7 @@ export default Model.extend({
 		return label;
 	}),
 
-	activityColor: Ember.computed('activityType', function() {
+	activityColor: computed('activityType', function() {
 		let color = '';
 
 		switch (this.get('activityType')) {

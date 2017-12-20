@@ -1,25 +1,26 @@
 {{#unless editMode}}
-	<div class="document-heading {{if permissions.documentEdit 'cursor-pointer'}}" onclick={{if permissions.documentEdit (action 'toggleEdit')}}>
-		<h1 class="doc-title">{{document.name}}</h1>
-		<div class="doc-excerpt">{{document.excerpt}}</div>
+	<div class="view-document">
+		<div class="document-heading {{if permissions.documentEdit 'cursor-pointer'}}" onclick={{if permissions.documentEdit (action 'toggleEdit')}}>
+			<h1 class="doc-title">
+				{{#if document.template}}
+					<span class="bg-warning p-1 pr-2 pl-2">Template</span>&nbsp;&nbsp;
+				{{/if}}
+				{{document.name}}
+			</h1>
+			<div class="doc-excerpt">{{document.excerpt}}</div>
+		</div>
 	</div>
 {{else}}
-	<form {{action "onSave" on="submit"}}>
-		<div class="edit-document-heading">
-			<div class="input-inline input-transparent edit-doc-title">
-				{{focus-input id="document-name" type="text" value=docName class=(if hasNameError 'error-inline') placeholder="Name" autocomplete="off"}}
+	<form class="view-document" {{action "onSave" on="submit"}}>
+		<div class="document-heading-edit">
+			<div class="form-group">
+				{{focus-input id="document-name" type="text" value=docName class=(if hasNameError 'form-control mousetrap is-invalid' 'form-control mousetrap') placeholder="Title" autocomplete="off"}}
 			</div>
-			<div class="input-inline input-transparent edit-doc-excerpt">
-				{{input id="document-excerpt" type="text" value=docExcerpt class=(if hasExcerptError 'error-inline') placeholder="Excerpt" autocomplete="off"}}
+			<div class="form-group">
+				{{textarea id="document-excerpt" rows="2" value=docExcerpt class=(if hasExcerptError 'form-control mousetrap is-invalid' 'form-control mousetrap') placeholder="Excerpt" autocomplete="off"}}
 			</div>
-			<div>
-				<button type="submit" class="round-button-mono" {{action 'onSave'}}>
-					<i class="material-icons color-green">check</i>
-				</button>
-				<div class="round-button-mono" {{action 'onCancel'}}>
-					<i class="material-icons color-gray">close</i>
-				</div>
-			</div>
+			<button type="button" class="btn btn-outline-secondary" {{action "onCancel"}}>Cancel</button>
+			<button type="submit" class="btn btn-success" {{action "onSave"}}>Save</button>
 		</div>
 	</form>
 {{/unless}}

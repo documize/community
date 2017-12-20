@@ -9,14 +9,17 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { Promise as EmberPromise } from 'rsvp';
+
+import { inject as service } from '@ember/service';
+import Route from '@ember/routing/route';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 import constants from '../../../utils/constants';
 
-export default Ember.Route.extend(AuthenticatedRouteMixin, {
-	appMeta: Ember.inject.service(),
-	session: Ember.inject.service(),
-	global: Ember.inject.service(),
+export default Route.extend(AuthenticatedRouteMixin, {
+	appMeta: service(),
+	session: service(),
+	global: service(),
 
 	beforeModel() {
 		if (!this.get("session.isGlobalAdmin")) {
@@ -30,7 +33,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 			authConfig: null,
 		};
 
-		return new Ember.RSVP.Promise((resolve) => {
+		return new EmberPromise((resolve) => {
 			this.get('global').getAuthConfig().then((config) => {
 				switch (data.authProvider) {
 					case constants.AuthProvider.Keycloak:

@@ -1,0 +1,58 @@
+.view-customize {
+	> .admin-heading {
+		font-size: 1.5rem;
+		font-weight: bold;
+		color: $color-black;
+	}
+
+	> .sub-heading {
+		font-size: 1.1rem;
+		color: $color-gray;
+	}
+
+	.user-table {
+		.name {
+			font-size: 1rem;
+			color: $color-off-black;
+			margin: 0 0 0 30px;
+		}
+
+		.email {
+			font-size: 0.9rem;
+			color: $color-gray;
+			margin: 0 0 0 30px;
+		}
+
+		.inactive-user
+		{
+			@extend .color-red;
+			font-weight: normal;
+			text-decoration: line-through;
+		}
+
+		.admin-user
+		{
+			@extend .color-primary;
+			font-weight: normal;
+		}
+
+		.checkbox {
+			color: $color-checkbox;
+			cursor: pointer;
+		}
+	}
+
+	> .space-list {
+        padding: 0;
+        margin: 0;
+
+		> .space {
+			margin: 15px 0;
+			padding: 15px;
+			@include card();
+			@include ease-in();
+			font-size: 1.2rem;
+			color: $color-primary;
+		}
+	}
+}

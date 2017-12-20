@@ -9,10 +9,12 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { run } from '@ember/runloop';
+
+import Component from '@ember/component';
 import miscUtil from '../utils/misc';
 
-export default Ember.Component.extend({
+export default Component.extend({
     notifications: [],
 
     didInsertElement() {
@@ -31,7 +33,7 @@ export default Ember.Component.extend({
 
         let elem = this.$(".user-notification")[0];
 
-        Ember.run(() => {
+        run(() => {
             self.$(elem).show();
 
             // FIXME: need a more robust solution

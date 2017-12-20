@@ -9,9 +9,9 @@
 //
 // https://documize.com
 
+import { computed } from '@ember/object';
 import Model from 'ember-data/model';
 import attr from 'ember-data/attr';
-import Ember from 'ember';
 
 export default Model.extend({
 	documentName: attr('string'),
@@ -20,13 +20,13 @@ export default Model.extend({
 	viewed: attr('string'),
 	created: attr('string'),
 
-	hasContributed: Ember.computed('contributed', function () {
+	hasContributed: computed('contributed', function () {
 		return this.get('contributed').length > 0;
 	}),
-	hasViewed: Ember.computed('viewed', function () {
+	hasViewed: computed('viewed', function () {
 		return this.get('viewed').length > 0;
 	}),
-	hasCreated: Ember.computed('created', function () {
+	hasCreated: computed('created', function () {
 		return this.get('created').length > 0;
 	})
 });

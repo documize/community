@@ -24,34 +24,3 @@
     margin: 0 auto;
 }
 
-.avatar-picker {
-    background-color: $color-off-white;
-    @include border-radius(20px);
-	@include ease-in();
-    padding: 7px 0 0 0;
-    letter-spacing: 1px;
-    text-align: center;
-    height: 35px;
-    width: 35px;
-	cursor: pointer;
-
-	&:hover {
-		> i {
-			color: $color-link;
-		}
-	}
-
-	> i {
-		color: $color-gray;
-		font-size: 1.4rem;
-		@include ease-in();
-	}
-}
-
-.avatar-remover {
-	&:hover {
-		color: $color-white;
-	    background-color: $color-red;
-		cursor: pointer;
-	}
-}

@@ -9,9 +9,9 @@
 //
 // https://documize.com
 
+import { computed } from '@ember/object';
 import Model from 'ember-data/model';
 import attr from 'ember-data/attr';
-import Ember from 'ember';
 // import { belongsTo, hasMany } from 'ember-data/relationships';
 
 export default Model.extend({
@@ -23,7 +23,7 @@ export default Model.extend({
 	folderId: attr('string'),
 	folderType: attr('number', { defaultValue: 0 }),
 
-	fullname: Ember.computed('firstname', 'lastname', function () {
+	fullname: computed('firstname', 'lastname', function () {
 		return `${this.get('firstname')} ${this.get('lastname')}`;
 	})
 });

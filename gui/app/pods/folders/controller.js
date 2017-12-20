@@ -9,20 +9,17 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
-import NotifierMixin from '../../mixins/notifier';
+import { inject as service } from '@ember/service';
+import Controller from '@ember/controller';
 
-export default Ember.Controller.extend(NotifierMixin, {
-	folderService: Ember.inject.service('folder'),
+export default Controller.extend({
+	folderService: service('folder'),
 
 	actions: {
 		onAddSpace(m) {
-			let self = this;
-			this.showNotification("Added");
-
-			this.get('folderService').add(m).then(function (newFolder) {
-				self.get('folderService').setCurrentFolder(newFolder);
-				self.transitionToRoute('folder', newFolder.get('id'), newFolder.get('slug'));
+			this.get('folderService').add(m).then((sp) => {
+				this.get('folderService').setCurrentFolder(sp);
+				this.transitionToRoute('folder', sp.get('id'), sp.get('slug'));
 			});
 		}
 	}

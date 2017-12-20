@@ -9,7 +9,7 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { helper } from '@ember/component/helper';
 
 // {{user-initials firstname lastname}}
 export function userInitials(params) {
@@ -26,4 +26,4 @@ export function userInitials(params) {
     return (firstname.substring(0, 1) + lastname.substring(0, 1)).toUpperCase();
 }
 
-export default Ember.Helper.helper(userInitials);
+export default helper(userInitials);

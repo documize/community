@@ -9,16 +9,19 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { hash } from 'rsvp';
+
+import { inject as service } from '@ember/service';
+import Route from '@ember/routing/route';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 
-export default Ember.Route.extend(AuthenticatedRouteMixin, {
-	documentService: Ember.inject.service('document'),
-	folderService: Ember.inject.service('folder'),
-	userService: Ember.inject.service('user'),
+export default Route.extend(AuthenticatedRouteMixin, {
+	documentService: service('document'),
+	folderService: service('folder'),
+	userService: service('user'),
 
 	model(params) {
-		return Ember.RSVP.hash({
+		return hash({
 			folders: this.modelFor('document').folders,
 			folder: this.modelFor('document').folder,
 			document: this.modelFor('document').document,
@@ -28,13 +31,5 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 			page: this.get('documentService').getPage(this.modelFor('document').document.get('id'), params.page_id),
 			meta: this.get('documentService').getPageMeta(this.modelFor('document').document.get('id'), params.page_id)
 		});
-	},
-
-	activate() {
-		$('body').addClass('background-color-off-white');
-	},
-
-	deactivate() {
-		$('body').removeClass('background-color-off-white');
 	}
 });

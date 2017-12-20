@@ -1,27 +1,24 @@
 {{#if model.showLogin}}
     <div class="auth-box">
         <div class="logo">
-            <img src="/assets/img/logo-color.png" title="Documize" alt="Documize" class="responsive-img" />
+            <img src="/assets/img/logo-color.png" title="Documize" alt="Documize" class="img-fluid" />
         </div>
-        <div class="login-form">
-            <form id="login-form" {{action 'login' on="submit"}}>
-                <div class="input-control">
-                    <label>Email</label>
-                    {{focus-input type="email" value=email id="authEmail"}}
-                </div>
-                <div class="input-control">
-                    <label>Password</label>
-                    {{input type="password" value=password id="authPassword"}}
-                </div>
-                <div class="clearfix" />
-                <div class="margin-top-10 margin-bottom-20">
-                    <button type="submit" class="regular-button button-blue">Sign in</button>
-                    <span class="{{unless invalidCredentials "hide"}} color-red margin-left-20">Invalid credentials</span>
-                </div>
-                {{#if isAuthProviderDocumize}}
-                    {{#link-to 'auth.forgot'}}Forgot your password?{{/link-to}}
-                {{/if}}
-            </form>
-        </div>
+		<form {{action 'login' on="submit"}}>
+			<div class="form-group">
+				<label for="authEmail">Email</label>
+				{{focus-input type="email" value=email id="authEmail" class="form-control mousetrap" placeholder=""}}
+			</div>
+			<div class="form-group">
+				<label for="authPassword">Password</label>
+				{{input type="password" value=password id="authPassword" class="form-control"}}
+			</div>
+			<button type="submit" class="btn btn-primary mt-4">Sign in</button>
+			<div class="{{unless invalidCredentials "invisible"}} color-red mt-3">Invalid credentials</div>
+			{{#if isAuthProviderDocumize}}
+				<div class="mt-5">
+					{{#link-to 'auth.forgot'}}Forgot your password?{{/link-to}}
+				</div>
+			{{/if}}
+		</form>
     </div>
 {{/if}}

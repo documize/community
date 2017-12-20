@@ -10,12 +10,6 @@
 	z-index: 999;
 	width: 100%;
 }
-@mixin box-shadow($spec)
-{
-    -webkit-box-shadow: $spec;
-	-moz-box-shadow: $spec;
-    box-shadow: $spec;
-}
 
 @mixin border-radius($radius)
 {
@@ -24,66 +18,16 @@
 	border-radius: $radius;
 }
 
-@mixin border-radius-top-right($radius)
+@mixin border-radius-left($radius)
 {
-	-webkit-border-top-right-radius: $radius;
-	-moz-border-radius-topright: $radius;
-	border-top-right-radius: $radius;
-}
-
-@mixin border-radius-top-left($radius)
-{
-	-webkit-border-top-left-radius: $radius;
-	-moz-border-radius-topleft: $radius;
 	border-top-left-radius: $radius;
-}
-
-@mixin border-radius-bottom-right($radius)
-{
-	-webkit-border-bottom-right-radius: $radius;
-	-moz-border-radius-bottomright: $radius;
-	border-bottom-right-radius: $radius;
-}
-
-@mixin border-radius-bottom-left($radius)
-{
-	-webkit-border-bottom-left-radius: $radius;
-	-moz-border-radius-bottomleft: $radius;
 	border-bottom-left-radius: $radius;
 }
 
-@mixin border-radius-none()
+@mixin border-radius-right($radius)
 {
-	-webkit-border-radius: none;
-	-moz-border-radius: none;
-	border-radius: none;
-	-webkit-border-top-right-radius: none;
-	-moz-border-radius-topright: none;
-	border-top-right-radius: none;
-	-webkit-border-top-left-radius: none;
-	-moz-border-radius-topleft: none;
-	border-top-left-radius: none;
-}
-
-@mixin border($width)
-{
-	border: $width solid $color-border !important;
-}
-@mixin border-left($width)
-{
-	border-left: $width solid $color-border;
-}
-@mixin border-right($width)
-{
-	border-right: $width solid $color-border;
-}
-@mixin border-top($width)
-{
-	border-top: $width solid $color-border;
-}
-@mixin border-bottom($width)
-{
-	border-bottom: $width solid $color-border;
+	border-top-right-radius: $radius;
+	border-bottom-right-radius: $radius;
 }
 
 @mixin ease-in()
@@ -95,15 +39,6 @@
 	transition: all 0.30s ease-in-out;
 }
 
-@mixin arrow-down($color, $size)
-{
-	width: 0;
-	height: 0;
-	border-left: $size solid transparent;
-	border-right: $size solid transparent;
-	border-top: $size solid $color;
-}
-
 @mixin content-container($pad-tb: 25px, $pad-lr: 50px) {
     @include border-radius(2px);
     padding: $pad-tb $pad-lr;
@@ -111,91 +46,27 @@
     background-color: $color-white;
 }
 
-.dotted
-{
-    border-bottom: 1px dotted $color-gray;
+@mixin card() {
+	background-color: $color-card;
+	box-shadow: 1px 1px 3px 0px rgba(211,211,211,1);
+
+	&:hover {
+		background-color: darken($color-card, 5%);
+		color: $color-link;
+	}
 }
 
-// Mixins from http://zerosixthree.se/8-sass-mixins-you-must-have-in-your-toolbox/
-@function calculateRem($size) {
-    $remSize: $size / 16px;
-    @return $remSize * 1rem;
+@mixin card-theme() {
+	background-color: $color-primary-light;
+	box-shadow: 1px 1px 3px 0px rgba(211,211,211,1);
+
+	&:hover {
+		background-color: darken($color-primary-light, 5%);
+		color: $color-primary;
+	}
 }
 
-@mixin font-size($size) {
-    font-size: $size;
-    font-size: calculateRem($size);
+@mixin shadow() {
+	box-shadow: 1px 1px 3px 0px rgba(211,211,211,1);
 }
 
-@mixin keyframes($animation-name) {
-    @-webkit-keyframes #{$animation-name} {
-        @content;
-    }
-
-    @-moz-keyframes #{$animation-name} {
-        @content;
-    }
-
-    @-ms-keyframes #{$animation-name} {
-        @content;
-    }
-
-    @-o-keyframes #{$animation-name} {
-        @content;
-    }
-
-    @keyframes #{$animation-name} {
-        @content;
-    }
-}
-
-@mixin animation($str) {
-    -webkit-animation: #{$str};
-    -moz-animation   : #{$str};
-    -ms-animation    : #{$str};
-    -o-animation     : #{$str};
-    animation        : #{$str};
-}
-
-@mixin transition($args...) {
-    -webkit-transition: $args;
-    -moz-transition   : $args;
-    -ms-transition    : $args;
-    -o-transition     : $args;
-    transition        : $args;
-}
-
-@mixin opacity($opacity) {
-    opacity: $opacity;
-    $opacity-ie: $opacity * 100;
-    filter: alpha(opacity=$opacity-ie); //IE8
-}
-
-@keyframes fadein {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-}
-
-/* Firefox < 16 */
-@-moz-keyframes fadein {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-}
-
-/* Safari, Chrome and Opera > 12.1 */
-@-webkit-keyframes fadein {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-}
-
-/* Internet Explorer */
-@-ms-keyframes fadein {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-}
-
-/* Opera < 12.1 */
-@-o-keyframes fadein {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-}

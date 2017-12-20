@@ -1,0 +1,54 @@
+.view-document {
+	> .document-heading {
+		.doc-title {
+			margin: 50px 0 10px;
+			font-size: 2rem;
+			font-weight: bold;
+		}
+
+		.doc-excerpt {
+			font-size: 1.2rem;
+			color: $color-gray;
+			margin: 0 0 45px;
+		}
+	}
+
+	> .document-heading-edit {
+		margin-top: 3.5rem;
+		margin-bottom: 3rem;
+	}
+
+	> .document-customfields {
+		margin-bottom: 4rem;
+
+		.row {
+			padding: 5px 0;
+			margin-bottom: 10px;
+
+			&:hover {
+				.action-button {
+					visibility: visible;
+				}
+			}
+
+			.heading {
+				font-size: 1.1rem;
+				font-weight: bold;
+				color: $color-gray;
+				text-align: left;
+			}
+
+			.action-button {
+				visibility: hidden;
+				margin-left: 15px;
+			}
+
+			.value {
+				font-size: 1.1rem;
+				font-weight: normal;
+				color: $color-black;
+				text-align: left;
+			}
+		}
+	}
+}

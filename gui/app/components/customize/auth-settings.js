@@ -9,26 +9,25 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { equal, empty } from '@ember/object/computed';
+import { set } from '@ember/object';
+import { copy } from '@ember/object/internals';
+import { inject as service } from '@ember/service';
+import Component from '@ember/component';
 import constants from '../../utils/constants';
 import encoding from '../../utils/encoding';
-import NotifierMixin from "../../mixins/notifier";
 
-const {
-	computed
-} = Ember;
-
-export default Ember.Component.extend(NotifierMixin, {
-	appMeta: Ember.inject.service(),
-	isDocumizeProvider: computed.equal('authProvider', constants.AuthProvider.Documize),
-	isKeycloakProvider: computed.equal('authProvider', constants.AuthProvider.Keycloak),
-	KeycloakUrlError: computed.empty('keycloakConfig.url'),
-	KeycloakRealmError: computed.empty('keycloakConfig.realm'),
-	KeycloakClientIdError: computed.empty('keycloakConfig.clientId'),
-	KeycloakPublicKeyError: computed.empty('keycloakConfig.publicKey'),
-	KeycloakAdminUserError: computed.empty('keycloakConfig.adminUser'),
-	KeycloakAdminPasswordError: computed.empty('keycloakConfig.adminPassword'),
-	keycloakConfig: { 
+export default Component.extend({
+	appMeta: service(),
+	isDocumizeProvider: equal('authProvider', constants.AuthProvider.Documize),
+	isKeycloakProvider: equal('authProvider', constants.AuthProvider.Keycloak),
+	KeycloakUrlError: empty('keycloakConfig.url'),
+	KeycloakRealmError: empty('keycloakConfig.realm'),
+	KeycloakClientIdError: empty('keycloakConfig.clientId'),
+	KeycloakPublicKeyError: empty('keycloakConfig.publicKey'),
+	KeycloakAdminUserError: empty('keycloakConfig.adminUser'),
+	KeycloakAdminPasswordError: empty('keycloakConfig.adminPassword'),
+	keycloakConfig: {
 		url: '',
 		realm: '',
 		clientId: '',
@@ -109,7 +108,7 @@ export default Ember.Component.extend(NotifierMixin, {
 						return;
 					}
 
-					config = Ember.copy(this.get('keycloakConfig'));
+					config = copy(this.get('keycloakConfig'));
 					config.url = config.url.trim();
 					config.realm = config.realm.trim();
 					config.clientId = config.clientId.trim();
@@ -124,10 +123,10 @@ export default Ember.Component.extend(NotifierMixin, {
 						config.url = config.url.substring(0, config.url.length-1);
 					}
 
-					Ember.set(config, 'publicKey', encoding.Base64.encode(this.get('keycloakConfig.publicKey')));
+					set(config, 'publicKey', encoding.Base64.encode(this.get('keycloakConfig.publicKey')));
 					break;
 			}
-			
+
 			let data = { authProvider: provider, authConfig: JSON.stringify(config) };
 
 			this.get('onSave')(data).then(() => {
@@ -137,18 +136,15 @@ export default Ember.Component.extend(NotifierMixin, {
 							this.showNotification(response.message);
 							data.authProvider = constants.AuthProvider.Documize;
 							this.get('onSave')(data).then(() => {
-								this.showNotification('Reverted back to Documize');
 							});
 						} else {
 							if (data.authProvider === this.get('appMeta.authProvider')) {
-								this.showNotification(response.message);
+								// this.showNotification(response.message);
 							} else {
 								this.get('onChange')(data);
 							}
 						}
 					});
-				} else {
-					this.showNotification('Saved');
 				}
 			});
 		}

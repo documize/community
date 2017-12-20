@@ -1,9 +1,5 @@
-<div class="margin-top-10">
+<div class="hashtags">
 	{{#each tagz as |tg|}}
-		{{#link-to "search" (query-params filter=tg)}}
-			<div class="chip">
-				<span class="chip-text">{{tg}}</span>
-			</div>
-		{{/link-to}}
+		{{#link-to "search" (query-params filter=tg) class="hashtag"}}{{tg}}{{/link-to}}
 	{{/each}}
 </div>

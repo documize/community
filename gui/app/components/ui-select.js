@@ -9,9 +9,11 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
+import { reads } from '@ember/object/computed';
 
-export default Ember.Component.extend({
+import Component from '@ember/component';
+
+export default Component.extend({
     cssClass: "",
     content: [],
     prompt: null,
@@ -22,7 +24,7 @@ export default Ember.Component.extend({
 
     // shadow the passed-in `selection` to avoid
     // leaking changes to it via a 2-way binding
-    _selection: Ember.computed.reads('selection'),
+    _selection: reads('selection'),
 
     actions: {
         change() {

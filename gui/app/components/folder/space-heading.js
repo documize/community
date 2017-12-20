@@ -9,18 +9,15 @@
 //
 // https://documize.com
 
-import Ember from 'ember';
-import NotifierMixin from '../../mixins/notifier';
-import TooltipMixin from '../../mixins/tooltip';
+import { empty } from '@ember/object/computed';
+import { schedule } from '@ember/runloop';
+import { inject as service } from '@ember/service';
+import Component from '@ember/component';
 
-const {
-	computed,
-} = Ember;
-
-export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
-	folderService: Ember.inject.service('folder'),
-	folderName: '',
-	hasNameError: computed.empty('folderName'),
+export default Component.extend({
+	folderService: service('folder'),
+	spaceName: '',
+	hasNameError: empty('spaceName'),
 	editMode: false,
 
 	keyUp(e) {
@@ -31,10 +28,10 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 
 	actions: {
 		toggleEdit() {
-			this.set('folderName', this.get('folder.name'));
+			this.set('spaceName', this.get('space.name'));
 			this.set('editMode', true);
 
-			Ember.run.schedule('afterRender', () => {
+			schedule('afterRender', () => {
 				$('#folder-name').select();
 			});
 		},
@@ -44,11 +41,8 @@ export default Ember.Component.extend(NotifierMixin, TooltipMixin, {
 				return;
 			}
 
-			this.set('folder.name', this.get('folderName'));
-
-			this.get('folderService').save(this.get('folder'));
-			this.showNotification('Saved');
-
+			this.set('space.name', this.get('spaceName'));
+			this.get('folderService').save(this.get('space'));
 			this.set('editMode', false);
 		},
 
