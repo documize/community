@@ -32,7 +32,8 @@ export default Component.extend({
 
 	init() {
 		this._super(...arguments);
-        this.set('pageBody', this.get('meta.rawBody').trim());
+		let body = (is.not.undefined(this.get('meta'))) ? this.get('meta.rawBody').trim() : '';
+        this.set('pageBody', body);
     },
 
 	didInsertElement() {
