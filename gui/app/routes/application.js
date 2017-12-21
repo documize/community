@@ -10,7 +10,6 @@
 // https://documize.com
 
 import Route from '@ember/routing/route';
-
 import { inject as service } from '@ember/service';
 import ApplicationRouteMixin from 'ember-simple-auth/mixins/application-route-mixin';
 import netUtil from '../utils/net';

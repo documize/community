@@ -10,7 +10,6 @@
 // https://documize.com
 
 import { Promise as EmberPromise } from 'rsvp';
-
 import { inject as service } from '@ember/service';
 import Route from '@ember/routing/route';
 import constants from '../../../utils/constants';
