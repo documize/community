@@ -2,8 +2,8 @@
 	<div class="document-customfields">
 
 		<div class="row">
-			<div class="col-2 heading">Categories</div>
-			<div class="col-10 value">
+			<div class="col-3 heading">Categories</div>
+			<div class="col-9 value">
 				{{#each selectedCategories as |cat|}}
 					{{#link-to 'folder' folder.id folder.slug (query-params category=cat.id)}}
 						{{cat.category}}
@@ -27,8 +27,8 @@
 		</div>
 
 		<div class="row">
-			<div class="col-2 heading">Tags</div>
-			<div class="col-10 value">
+			<div class="col-3 heading">Tags</div>
+			<div class="col-9 value">
 				{{#each tagz as |t index|}}
 					{{#link-to 'search' (query-params filter=t matchTag=true)}}
 						{{concat '#' t}}
