@@ -5,7 +5,9 @@
     padding: 0 20px 20px 20px;
     background-color: $color-off-white;
     border: 1px solid $color-border;
-    overflow: scroll;
+    // overflow: scroll;
+    overflow-y: scroll;
+    overflow-x: hidden;
     box-sizing: border-box; // ensures width/height properties (and min/max properties) includes content, padding and border
     z-index: 777;
     display: block;
