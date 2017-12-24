@@ -10,7 +10,6 @@
 // https://documize.com
 
 import Controller from '@ember/controller';
-
 import { inject as service } from '@ember/service';
 import NotifierMixin from '../../../mixins/notifier';
 
@@ -24,8 +23,6 @@ export default Controller.extend(NotifierMixin, {
 	actions: {
 		onAddSpace(payload) {
 			let self = this;
-			this.showNotification("Added");
-
 			this.get('folderService').add(payload).then(function (newFolder) {
 				self.get('folderService').setCurrentFolder(newFolder);
 				self.transitionToRoute('folder', newFolder.get('id'), newFolder.get('slug'));
@@ -34,7 +31,6 @@ export default Controller.extend(NotifierMixin, {
 
 		onDeleteSpace(id) {
 			this.get('folderService').delete(id).then(() => { /* jshint ignore:line */
-				this.showNotification("Deleted");
 				this.get('localStorage').clearSessionItem('folder');
 				this.transitionToRoute('folders');
 			});

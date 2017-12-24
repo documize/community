@@ -32,23 +32,33 @@ type Action string
 const (
 	// SpaceView action means you can view a space and documents therein
 	SpaceView Action = "view"
+
 	// SpaceManage action means you can add, remove users, set permissions, but not delete that space
 	SpaceManage Action = "manage"
+
 	// SpaceOwner action means you can delete a space and do all SpaceManage functions
 	SpaceOwner Action = "own"
 
 	// DocumentAdd action means you can create/upload documents to a space
 	DocumentAdd Action = "doc-add"
+
 	// DocumentEdit action means you can edit documents in a space
 	DocumentEdit Action = "doc-edit"
+
 	// DocumentDelete means you can delete documents in a space
 	DocumentDelete Action = "doc-delete"
+
 	// DocumentMove means you can move documents between spaces
 	DocumentMove Action = "doc-move"
+
 	// DocumentCopy means you can copy documents within and between spaces
 	DocumentCopy Action = "doc-copy"
+
 	// DocumentTemplate means you can create, edit and delete document templates and content blocks
 	DocumentTemplate Action = "doc-template"
+
+	// DocumentApprove means you can approve a change to a document
+	DocumentApprove Action = "doc-approve"
 
 	// CategoryView action means you can view a category and documents therein
 	CategoryView Action = "view"
@@ -70,6 +80,7 @@ type Record struct {
 	DocumentMove     bool   `json:"documentMove"`
 	DocumentCopy     bool   `json:"documentCopy"`
 	DocumentTemplate bool   `json:"documentTemplate"`
+	DocumentApprove  bool   `json:"documentApprove"`
 }
 
 // DecodeUserPermissions returns a flat, usable permission summary record
@@ -104,6 +115,8 @@ func DecodeUserPermissions(perm []Permission) (r Record) {
 			r.DocumentCopy = true
 		case DocumentTemplate:
 			r.DocumentTemplate = true
+		case DocumentApprove:
+			r.DocumentApprove = true
 		}
 	}
 
@@ -158,6 +171,9 @@ func EncodeUserPermissions(r Record) (perm []Permission) {
 	if r.DocumentTemplate {
 		perm = append(perm, EncodeRecord(r, DocumentTemplate))
 	}
+	if r.DocumentApprove {
+		perm = append(perm, EncodeRecord(r, DocumentApprove))
+	}
 
 	return
 }
@@ -165,7 +181,7 @@ func EncodeUserPermissions(r Record) (perm []Permission) {
 // HasAnyPermission returns true if user has at least one permission.
 func HasAnyPermission(p Record) bool {
 	return p.SpaceView || p.SpaceManage || p.SpaceOwner || p.DocumentAdd || p.DocumentEdit ||
-		p.DocumentDelete || p.DocumentMove || p.DocumentCopy || p.DocumentTemplate
+		p.DocumentDelete || p.DocumentMove || p.DocumentCopy || p.DocumentTemplate || p.DocumentApprove
 }
 
 // EncodeRecord creates standard permission record representing user permissions for a space.

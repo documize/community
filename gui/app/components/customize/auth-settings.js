@@ -139,7 +139,7 @@ export default Component.extend({
 							});
 						} else {
 							if (data.authProvider === this.get('appMeta.authProvider')) {
-								// this.showNotification(response.message);
+								this.showNotification(response.message);
 							} else {
 								this.get('onChange')(data);
 							}

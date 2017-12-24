@@ -27,5 +27,6 @@ export default Model.extend({
 	documentDelete: attr('boolean'),
 	documentMove: attr('boolean'),
 	documentCopy: attr('boolean'),
-	documentTemplate: attr('boolean')
+	documentTemplate: attr('boolean'),
+	documentApprove: attr('boolean')
 });

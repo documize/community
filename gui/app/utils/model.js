@@ -10,9 +10,7 @@
 // https://documize.com
 
 import { htmlSafe } from '@ember/string';
-
 import EmberObject, { computed } from '@ember/object';
-
 import Ember from 'ember';
 import stringUtil from '../utils/string';
 import constants from '../utils/constants';
@@ -98,6 +96,8 @@ let DocumentModel = BaseModel.extend({
 	userId: "",
 	tags: "",
 	template: "",
+	protection: constants.ProtectionType.None,
+	approval: constants.ApprovalType.None,
 
 	slug: computed('name', function () {
 		return stringUtil.makeSlug(this.get('name'));
@@ -164,6 +164,8 @@ let PageModel = BaseModel.extend({
 	title: "",
 	body: "",
 	rawBody: "",
+	protection: constants.ProtectionType.None,
+	approval: constants.ApprovalType.None,
 	meta: {},
 
 	tagName: computed('level', function () {
@@ -202,7 +204,6 @@ let SectionModel = BaseModel.extend({
 });
 
 export default {
-	TemplateModel,
 	AttachmentModel,
 	DocumentModel,
 	FolderModel,
@@ -210,6 +211,7 @@ export default {
 	PageModel,
 	PageMetaModel,
 	ProtectedFolderParticipant,
-	UserModel,
-	SectionModel
+	SectionModel,
+	TemplateModel,
+	UserModel
 };

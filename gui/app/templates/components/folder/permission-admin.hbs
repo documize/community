@@ -10,7 +10,7 @@
 							<tr>
 								<th></th>
 								<th colspan="3">Spaces</th>
-								<th colspan="6" class="text-info">Documents</th>
+								<th colspan="7" class="text-info">Documents</th>
 							</tr>
 							<tr>
 								<th></th>
@@ -23,6 +23,7 @@
 								<th class="text-info">Move</th>
 								<th class="text-info">Copy</th>
 								<th class="text-info">Templates</th>
+								<th class="text-info">Approval</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -55,6 +56,9 @@
 									</td>
 									<td>
 										{{input type="checkbox" id=(concat 'doc-role-template-' permission.userId) checked=permission.documentTemplate}}
+									</td>
+									<td>
+										{{input type="checkbox" id=(concat 'doc-role-approve-' permission.userId) checked=permission.documentApprove}}
 									</td>
 								</tr>
 							{{/each}}

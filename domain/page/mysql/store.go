@@ -54,8 +54,8 @@ func (s Scope) Add(ctx domain.RequestContext, model page.NewPage) (err error) {
 		model.Page.Sequence = maxSeq * 2
 	}
 
-	_, err = ctx.Transaction.Exec("INSERT INTO page (refid, orgid, documentid, userid, contenttype, pagetype, level, title, body, revisions, sequence, blockid, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-		model.Page.RefID, model.Page.OrgID, model.Page.DocumentID, model.Page.UserID, model.Page.ContentType, model.Page.PageType, model.Page.Level, model.Page.Title, model.Page.Body, model.Page.Revisions, model.Page.Sequence, model.Page.BlockID, model.Page.Created, model.Page.Revised)
+	_, err = ctx.Transaction.Exec("INSERT INTO page (refid, orgid, documentid, userid, contenttype, pagetype, level, title, body, revisions, sequence, blockid, protected, approval, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		model.Page.RefID, model.Page.OrgID, model.Page.DocumentID, model.Page.UserID, model.Page.ContentType, model.Page.PageType, model.Page.Level, model.Page.Title, model.Page.Body, model.Page.Revisions, model.Page.Sequence, model.Page.BlockID, model.Page.Protection, model.Page.Approval, model.Page.Created, model.Page.Revised)
 
 	_, err = ctx.Transaction.Exec("INSERT INTO pagemeta (pageid, orgid, userid, documentid, rawbody, config, externalsource, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
 		model.Meta.PageID, model.Meta.OrgID, model.Meta.UserID, model.Meta.DocumentID, model.Meta.RawBody, model.Meta.Config, model.Meta.ExternalSource, model.Meta.Created, model.Meta.Revised)
@@ -69,7 +69,7 @@ func (s Scope) Add(ctx domain.RequestContext, model page.NewPage) (err error) {
 
 // Get returns the pageID page record from the page table.
 func (s Scope) Get(ctx domain.RequestContext, pageID string) (p page.Page, err error) {
-	err = s.Runtime.Db.Get(&p, "SELECT a.id, a.refid, a.orgid, a.documentid, a.userid, a.contenttype, a.pagetype, a.level, a.sequence, a.title, a.body, a.revisions, a.blockid, a.created, a.revised FROM page a WHERE a.orgid=? AND a.refid=?",
+	err = s.Runtime.Db.Get(&p, "SELECT a.id, a.refid, a.orgid, a.documentid, a.userid, a.contenttype, a.pagetype, a.level, a.sequence, a.title, a.body, a.revisions, a.blockid, a.protection, a.approval, a.created, a.revised FROM page a WHERE a.orgid=? AND a.refid=?",
 		ctx.OrgID, pageID)
 
 	if err != nil {
@@ -81,7 +81,7 @@ func (s Scope) Get(ctx domain.RequestContext, pageID string) (p page.Page, err e
 
 // GetPages returns a slice containing all the page records for a given documentID, in presentation sequence.
 func (s Scope) GetPages(ctx domain.RequestContext, documentID string) (p []page.Page, err error) {
-	err = s.Runtime.Db.Select(&p, "SELECT a.id, a.refid, a.orgid, a.documentid, a.userid, a.contenttype, a.pagetype, a.level, a.sequence, a.title, a.body, a.revisions, a.blockid, a.created, a.revised FROM page a WHERE a.orgid=? AND a.documentid=? ORDER BY a.sequence", ctx.OrgID, documentID)
+	err = s.Runtime.Db.Select(&p, "SELECT a.id, a.refid, a.orgid, a.documentid, a.userid, a.contenttype, a.pagetype, a.level, a.sequence, a.title, a.body, a.revisions, a.blockid, a.protection, a.approval, a.created, a.revised FROM page a WHERE a.orgid=? AND a.documentid=? ORDER BY a.sequence", ctx.OrgID, documentID)
 
 	if err != nil {
 		err = errors.Wrap(err, "execute get pages")
@@ -93,7 +93,7 @@ func (s Scope) GetPages(ctx domain.RequestContext, documentID string) (p []page.
 // GetPagesWithoutContent returns a slice containing all the page records for a given documentID, in presentation sequence,
 // but without the body field (which holds the HTML content).
 func (s Scope) GetPagesWithoutContent(ctx domain.RequestContext, documentID string) (pages []page.Page, err error) {
-	err = s.Runtime.Db.Select(&pages, "SELECT id, refid, orgid, documentid, userid, contenttype, pagetype, sequence, level, title, revisions, blockid, created, revised FROM page WHERE orgid=? AND documentid=? ORDER BY sequence", ctx.OrgID, documentID)
+	err = s.Runtime.Db.Select(&pages, "SELECT id, refid, orgid, documentid, userid, contenttype, pagetype, sequence, level, title, revisions, blockid, protection, approval, created, revised FROM page WHERE orgid=? AND documentid=? ORDER BY sequence", ctx.OrgID, documentID)
 
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("Unable to execute select pages for org %s and document %s", ctx.OrgID, documentID))
@@ -119,7 +119,7 @@ func (s Scope) Update(ctx domain.RequestContext, page page.Page, refID, userID s
 	}
 
 	// Update page
-	_, err = ctx.Transaction.NamedExec("UPDATE page SET documentid=:documentid, level=:level, title=:title, body=:body, revisions=:revisions, sequence=:sequence, revised=:revised WHERE orgid=:orgid AND refid=:refid",
+	_, err = ctx.Transaction.NamedExec("UPDATE page SET documentid=:documentid, level=:level, title=:title, body=:body, revisions=:revisions, sequence=:sequence, protection=:protection, approval=:approval, revised=:revised WHERE orgid=:orgid AND refid=:refid",
 		&page)
 
 	if err != nil {

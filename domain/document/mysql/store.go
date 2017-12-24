@@ -34,8 +34,8 @@ func (s Scope) Add(ctx domain.RequestContext, document doc.Document) (err error)
 	document.Created = time.Now().UTC()
 	document.Revised = document.Created // put same time in both fields
 
-	_, err = ctx.Transaction.Exec("INSERT INTO document (refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-		document.RefID, document.OrgID, document.LabelID, document.UserID, document.Job, document.Location, document.Title, document.Excerpt, document.Slug, document.Tags, document.Template, document.Created, document.Revised)
+	_, err = ctx.Transaction.Exec("INSERT INTO document (refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, protection, approval, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		document.RefID, document.OrgID, document.LabelID, document.UserID, document.Job, document.Location, document.Title, document.Excerpt, document.Slug, document.Tags, document.Template, document.Protection, document.Approval, document.Created, document.Revised)
 
 	if err != nil {
 		err = errors.Wrap(err, "execuet insert document")
@@ -46,7 +46,7 @@ func (s Scope) Add(ctx domain.RequestContext, document doc.Document) (err error)
 
 // Get fetches the document record with the given id fromt the document table and audits that it has been got.
 func (s Scope) Get(ctx domain.RequestContext, id string) (document doc.Document, err error) {
-	err = s.Runtime.Db.Get(&document, "SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, layout, created, revised FROM document WHERE orgid=? and refid=?",
+	err = s.Runtime.Db.Get(&document, "SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, protection, approval, created, revised FROM document WHERE orgid=? and refid=?",
 		ctx.OrgID, id)
 
 	if err != nil {
@@ -92,7 +92,7 @@ func (s Scope) DocumentMeta(ctx domain.RequestContext, id string) (meta doc.Docu
 
 // GetAll returns a slice containg all of the the documents for the client's organisation, with the most recient first.
 func (s Scope) GetAll() (ctx domain.RequestContext, documents []doc.Document, err error) {
-	err = s.Runtime.Db.Select(&documents, "SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, layout, created, revised FROM document WHERE orgid=? AND template=0 ORDER BY revised DESC", ctx.OrgID)
+	err = s.Runtime.Db.Select(&documents, "SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, protection, approval, created, revised FROM document WHERE orgid=? AND template=0 ORDER BY revised DESC", ctx.OrgID)
 
 	if err != nil {
 		err = errors.Wrap(err, "select documents")
@@ -106,7 +106,7 @@ func (s Scope) GetAll() (ctx domain.RequestContext, documents []doc.Document, er
 // by category permissions -- caller must filter as required.
 func (s Scope) GetBySpace(ctx domain.RequestContext, spaceID string) (documents []doc.Document, err error) {
 	err = s.Runtime.Db.Select(&documents, `
-		SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, layout, created, revised
+		SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, protection, approval, created, revised
 		FROM document
 		WHERE orgid=? AND template=0 AND labelid IN (
 			SELECT refid FROM label WHERE orgid=? AND refid IN 
@@ -128,7 +128,7 @@ func (s Scope) GetBySpace(ctx domain.RequestContext, spaceID string) (documents 
 // Templates returns a slice containing the documents available as templates to the client's organisation, in title order.
 func (s Scope) Templates(ctx domain.RequestContext) (documents []doc.Document, err error) {
 	err = s.Runtime.Db.Select(&documents,
-		`SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, layout, created, revised FROM document WHERE orgid=? AND template=1
+		`SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, protection, approval, created, revised FROM document WHERE orgid=? AND template=1
 		AND labelid IN
 			(
 				SELECT refid FROM label WHERE orgid=?
@@ -150,7 +150,7 @@ func (s Scope) Templates(ctx domain.RequestContext) (documents []doc.Document, e
 // TemplatesBySpace returns a slice containing the documents available as templates for given space.
 func (s Scope) TemplatesBySpace(ctx domain.RequestContext, spaceID string) (documents []doc.Document, err error) {
 	err = s.Runtime.Db.Select(&documents,
-		`SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, layout, created, revised FROM document WHERE orgid=? AND labelid=? AND template=1
+		`SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, protection, approval, created, revised FROM document WHERE orgid=? AND labelid=? AND template=1
 		AND labelid IN
 			(
 				SELECT refid FROM label WHERE orgid=?
@@ -193,7 +193,7 @@ func (s Scope) PublicDocuments(ctx domain.RequestContext, orgID string) (documen
 // DocumentList returns a slice containing the documents available as templates to the client's organisation, in title order.
 func (s Scope) DocumentList(ctx domain.RequestContext) (documents []doc.Document, err error) {
 	err = s.Runtime.Db.Select(&documents,
-		`SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, layout, created, revised FROM document WHERE orgid=? AND template=0
+		`SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, protection, approval, created, revised FROM document WHERE orgid=? AND template=0
 		AND labelid IN
 			(
 				SELECT refid FROM label WHERE orgid=?
@@ -221,7 +221,7 @@ func (s Scope) DocumentList(ctx domain.RequestContext) (documents []doc.Document
 func (s Scope) Update(ctx domain.RequestContext, document doc.Document) (err error) {
 	document.Revised = time.Now().UTC()
 
-	_, err = ctx.Transaction.NamedExec("UPDATE document SET labelid=:labelid, userid=:userid, job=:job, location=:location, title=:title, excerpt=:excerpt, slug=:slug, tags=:tags, template=:template, layout=:layout, revised=:revised WHERE orgid=:orgid AND refid=:refid",
+	_, err = ctx.Transaction.NamedExec("UPDATE document SET labelid=:labelid, userid=:userid, job=:job, location=:location, title=:title, excerpt=:excerpt, slug=:slug, tags=:tags, template=:template, protection=:protection, approval=:approval, revised=:revised WHERE orgid=:orgid AND refid=:refid",
 		&document)
 
 	if err != nil {

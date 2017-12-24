@@ -25,7 +25,8 @@ export default Model.extend({
 	userId: attr('string'),
 	tags: attr('string'),
 	template: attr('boolean'),
-	layout: attr('string'),
+	protection: attr('number', { defaultValue: 0 }),
+	approval: attr('number', { defaultValue: 0 }),
 
 	// client-side property
 	selected: attr('boolean', { defaultValue: false }),

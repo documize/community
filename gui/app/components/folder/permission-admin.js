@@ -10,12 +10,10 @@
 // https://documize.com
 
 import { setProperties } from '@ember/object';
-
 import Component from '@ember/component';
 import { inject as service } from '@ember/service';
-import NotifierMixin from '../../mixins/notifier';
 
-export default Component.extend(NotifierMixin, {
+export default Component.extend({
 	folderService: service('folder'),
 	userService: service('user'),
 	appMeta: service(),
@@ -42,7 +40,8 @@ export default Component.extend(NotifierMixin, {
 					documentDelete: false,
 					documentMove: false,
 					documentCopy: false,
-					documentTemplate: false
+					documentTemplate: false,
+					documentApprove: false,
 				};
 
 				let data = this.get('store').normalize('space-permission', u)
@@ -63,8 +62,9 @@ export default Component.extend(NotifierMixin, {
 				documentDelete: false,
 				documentMove: false,
 				documentCopy: false,
-				documentTemplate: false
-			};
+				documentTemplate: false,
+				documentApprove: false,
+		};
 
 			let data = this.get('store').normalize('space-permission', u)
 			folderPermissions.pushObject(this.get('store').push(data));
@@ -96,7 +96,7 @@ export default Component.extend(NotifierMixin, {
 			let hasEveryone = _.find(permissions, function (permission) {
 				return permission.get('userId') === "0" &&
 					(permission.get('spaceView') || permission.get('documentAdd') || permission.get('documentEdit') || permission.get('documentDelete') ||
-					permission.get('documentMove') || permission.get('documentCopy') || permission.get('documentTemplate'));
+					permission.get('documentMove') || permission.get('documentCopy') || permission.get('documentTemplate') || permission.get('documentApprove'));
 			});
 
 			// see if more than oen user is granted access to space (excluding everyone)
@@ -104,26 +104,22 @@ export default Component.extend(NotifierMixin, {
 			permissions.forEach((permission) => {
 				if (permission.get('userId') !== "0" &&
 					(permission.get('spaceView') || permission.get('documentAdd') || permission.get('documentEdit') || permission.get('documentDelete') ||
-					permission.get('documentMove') || permission.get('documentCopy') || permission.get('documentTemplate'))) {
+					permission.get('documentMove') || permission.get('documentCopy') || permission.get('documentTemplate') || permission.get('documentApprove'))) {
 						roleCount += 1;
 				}
 			});
 
 			if (is.not.undefined(hasEveryone)) {
 				folder.markAsPublic();
-				this.showNotification('Marked space as public');
 			} else {
 				if (roleCount > 1) {
 					folder.markAsRestricted();
-					this.showNotification('Marked space as protected');
 				} else {
 					folder.markAsPrivate();
-					this.showNotification('Marked space as private');
 				}
 			}
 
 			this.get('folderService').savePermissions(folder.get('id'), payload).then(() => {
-				this.showNotification('Saved permissions');
 				$('#space-permission-modal').modal('hide');
 				$('#space-permission-modal').modal('dispose');
 			});

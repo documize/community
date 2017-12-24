@@ -16,23 +16,26 @@ import (
 	"time"
 
 	"github.com/documize/community/model"
+	"github.com/documize/community/model/workflow"
 )
 
 // Page represents a section within a document.
 type Page struct {
 	model.BaseEntity
-	OrgID       string  `json:"orgId"`
-	DocumentID  string  `json:"documentId"`
-	UserID      string  `json:"userId"`
-	ContentType string  `json:"contentType"`
-	PageType    string  `json:"pageType"`
-	BlockID     string  `json:"blockId"`
-	Level       uint64  `json:"level"`
-	Sequence    float64 `json:"sequence"`
-	Numbering   string  `json:"numbering"`
-	Title       string  `json:"title"`
-	Body        string  `json:"body"`
-	Revisions   uint64  `json:"revisions"`
+	OrgID       string              `json:"orgId"`
+	DocumentID  string              `json:"documentId"`
+	UserID      string              `json:"userId"`
+	ContentType string              `json:"contentType"`
+	PageType    string              `json:"pageType"`
+	BlockID     string              `json:"blockId"`
+	Level       uint64              `json:"level"`
+	Sequence    float64             `json:"sequence"`
+	Numbering   string              `json:"numbering"`
+	Title       string              `json:"title"`
+	Body        string              `json:"body"`
+	Revisions   uint64              `json:"revisions"`
+	Protection  workflow.Protection `json:"protection"`
+	Approval    workflow.Approval   `json:"approval"`
 }
 
 // SetDefaults ensures no blank values.
