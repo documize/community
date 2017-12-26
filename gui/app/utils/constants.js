@@ -39,18 +39,5 @@ export default {
         PublishedTemplate: 8,
         PublishedBlock: 9,
         Feedback: 10
-    },
-
-    ProtectionType: {
-        None: 0,
-        Lock: 1,
-        Review: 2
-    },
-
-    ApprovalType: {
-        None: 0,
-        Anybody: 1,
-        Majority: 2,
-        Unanimous: 3
     }
 };

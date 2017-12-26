@@ -34,7 +34,7 @@
 			.heading {
 				font-size: 1.1rem;
 				font-weight: bold;
-				color: $color-gray;
+				color: $color-off-black;
 				text-align: left;
 			}
 
@@ -47,6 +47,13 @@
 				font-size: 1.1rem;
 				font-weight: normal;
 				color: $color-black;
+				text-align: left;
+			}
+
+			.value-static {
+				font-size: 1.1rem;
+				font-weight: bold;
+				color: $color-gray;
 				text-align: left;
 			}
 		}
