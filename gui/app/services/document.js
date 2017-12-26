@@ -328,6 +328,7 @@ export default Service.extend({
 			let data = {
 				document: {},
 				permissions: {},
+				roles: {},
 				folders: [],
 				folder: {},
 				links: [],
@@ -337,8 +338,11 @@ export default Service.extend({
 			doc = this.get('store').push(doc);
 
 			let perms = this.get('store').normalize('space-permission', response.permissions);
-			perms= this.get('store').push(perms);
+			perms = this.get('store').push(perms);
 			this.get('folderService').set('permissions', perms);
+
+			let roles = this.get('store').normalize('document-role', response.roles);
+			roles = this.get('store').push(roles);
 
 			let folders = response.folders.map((obj) => {
 				let data = this.get('store').normalize('folder', obj);
@@ -347,6 +351,7 @@ export default Service.extend({
 
 			data.document = doc;
 			data.permissions = perms;
+			data.roles = roles;
 			data.folders = folders;
 			data.folder = folders.findBy('id', doc.get('folderId'));
 			data.links = response.links;

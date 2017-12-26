@@ -414,6 +414,17 @@ func (h *Handler) FetchDocumentData(w http.ResponseWriter, r *http.Request) {
 
 	record := pm.DecodeUserPermissions(perms)
 
+	roles, err := h.Store.Permission.GetUserDocumentPermissions(ctx, document.RefID)
+	if err != nil && err != sql.ErrNoRows {
+		response.WriteServerError(w, method, err)
+		return
+	}
+	if len(roles) == 0 {
+		roles = []pm.Permission{}
+	}
+
+	rolesRecord := pm.DecodeUserDocumentPermissions(roles)
+
 	// links
 	l, err := h.Store.Link.GetDocumentOutboundLinks(ctx, id)
 	if len(l) == 0 {
@@ -439,6 +450,7 @@ func (h *Handler) FetchDocumentData(w http.ResponseWriter, r *http.Request) {
 	data := documentData{}
 	data.Document = document
 	data.Permissions = record
+	data.Roles = rolesRecord
 	data.Links = l
 	data.Spaces = sp
 
@@ -469,8 +481,9 @@ func (h *Handler) FetchDocumentData(w http.ResponseWriter, r *http.Request) {
 // documentData represents all data associated for a single document.
 // Used by FetchDocumentData() bulk data load call.
 type documentData struct {
-	Document    doc.Document  `json:"document"`
-	Permissions pm.Record     `json:"permissions"`
-	Spaces      []space.Space `json:"folders"`
-	Links       []link.Link   `json:"link"`
+	Document    doc.Document      `json:"document"`
+	Permissions pm.Record         `json:"permissions"`
+	Roles       pm.DocumentRecord `json:"roles"`
+	Spaces      []space.Space     `json:"folders"`
+	Links       []link.Link       `json:"link"`
 }

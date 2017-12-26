@@ -31,6 +31,7 @@ export default Route.extend(AuthenticatedRouteMixin, {
 				this.set('folders', data.folders);
 				this.set('folder', data.folder);
 				this.set('permissions', data.permissions);
+				this.set('roles', data.roles);
 				this.set('links', data.links);
 				resolve();
 			});
@@ -44,6 +45,7 @@ export default Route.extend(AuthenticatedRouteMixin, {
 			document: this.get('document'),
 			page: this.get('pageId'),
 			permissions: this.get('permissions'),
+			roles: this.get('roles'),
 			links: this.get('links'),
 			sections: this.get('sectionService').getAll()
 		});

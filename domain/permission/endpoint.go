@@ -69,7 +69,7 @@ func (h *Handler) SetSpacePermissions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var model = permission.PermissionsModel{}
+	var model = permission.SpaceRequestModel{}
 	err = json.Unmarshal(body, &model)
 	if err != nil {
 		response.WriteServerError(w, method, err)
@@ -393,6 +393,195 @@ func (h *Handler) SetCategoryPermissions(w http.ResponseWriter, r *http.Request)
 	}
 
 	h.Store.Audit.Record(ctx, audit.EventTypeCategoryPermission)
+
+	ctx.Transaction.Commit()
+
+	response.WriteEmpty(w)
+}
+
+// GetDocumentPermissions returns permissions for all users for given document.
+func (h *Handler) GetDocumentPermissions(w http.ResponseWriter, r *http.Request) {
+	method := "space.GetDocumentPermissions"
+	ctx := domain.GetRequestContext(r)
+
+	documentID := request.Param(r, "documentID")
+	if len(documentID) == 0 {
+		response.WriteMissingDataError(w, method, "documentID")
+		return
+	}
+
+	perms, err := h.Store.Permission.GetDocumentPermissions(ctx, documentID)
+	if err != nil && err != sql.ErrNoRows {
+		response.WriteServerError(w, method, err)
+		return
+	}
+	if len(perms) == 0 {
+		perms = []permission.Permission{}
+	}
+
+	userPerms := make(map[string][]permission.Permission)
+	for _, p := range perms {
+		userPerms[p.WhoID] = append(userPerms[p.WhoID], p)
+	}
+
+	records := []permission.DocumentRecord{}
+	for _, up := range userPerms {
+		records = append(records, permission.DecodeUserDocumentPermissions(up))
+	}
+
+	response.WriteJSON(w, records)
+}
+
+// GetUserDocumentPermissions returns permissions for the requested space, for current user.
+func (h *Handler) GetUserDocumentPermissions(w http.ResponseWriter, r *http.Request) {
+	method := "space.GetUserDocumentPermissions"
+	ctx := domain.GetRequestContext(r)
+
+	documentID := request.Param(r, "documentID")
+	if len(documentID) == 0 {
+		response.WriteMissingDataError(w, method, "documentID")
+		return
+	}
+
+	perms, err := h.Store.Permission.GetUserDocumentPermissions(ctx, documentID)
+	if err != nil && err != sql.ErrNoRows {
+		response.WriteServerError(w, method, err)
+		return
+	}
+	if len(perms) == 0 {
+		perms = []permission.Permission{}
+	}
+
+	record := permission.DecodeUserDocumentPermissions(perms)
+	response.WriteJSON(w, record)
+}
+
+// SetDocumentPermissions persists specified document permissions
+// These permissions override document permissions
+func (h *Handler) SetDocumentPermissions(w http.ResponseWriter, r *http.Request) {
+	method := "space.SetDocumentPermissions"
+	ctx := domain.GetRequestContext(r)
+
+	id := request.Param(r, "documentID")
+	if len(id) == 0 {
+		response.WriteMissingDataError(w, method, "documentID")
+		return
+	}
+
+	doc, err := h.Store.Document.Get(ctx, id)
+	if err != nil {
+		response.WriteNotFoundError(w, method, "document not found")
+		return
+	}
+
+	sp, err := h.Store.Space.Get(ctx, doc.LabelID)
+	if err != nil {
+		response.WriteNotFoundError(w, method, "space not found")
+		return
+	}
+
+	// if !HasPermission(ctx, *h.Store, doc.LabelID, permission.SpaceManage, permission.SpaceOwner) {
+	// 	response.WriteForbiddenError(w)
+	// 	return
+	// }
+
+	defer streamutil.Close(r.Body)
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	var model = []permission.DocumentRecord{}
+	err = json.Unmarshal(body, &model)
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	ctx.Transaction, err = h.Runtime.Db.Beginx()
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	// We compare new permisions to what we had before.
+	// Why? So we can send out space invitation emails.
+	previousRoles, err := h.Store.Permission.GetDocumentPermissions(ctx, id)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	// Store all previous approval roles as map for easy querying
+	previousRoleUsers := make(map[string]bool)
+	for _, v := range previousRoles {
+		if v.Action == permission.DocumentApprove {
+			previousRoleUsers[v.WhoID] = true
+		}
+	}
+
+	// Get user who is setting document permissions so we can send out emails with context
+	inviter, err := h.Store.User.Get(ctx, ctx.UserID)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	// Nuke all previous permissions for this document
+	_, err = h.Store.Permission.DeleteDocumentPermissions(ctx, id)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	url := ctx.GetAppURL(fmt.Sprintf("s/%s/%s/d/%s/%s",
+		sp.RefID, stringutil.MakeSlug(sp.Name), doc.RefID, stringutil.MakeSlug(doc.Title)))
+
+	for _, perm := range model {
+		perm.OrgID = ctx.OrgID
+		perm.DocumentID = id
+
+		// Only persist if there is a role!
+		if permission.HasAnyDocumentPermission(perm) {
+			r := permission.EncodeUserDocumentPermissions(perm)
+
+			for _, p := range r {
+				err = h.Store.Permission.AddPermission(ctx, p)
+				if err != nil {
+					h.Runtime.Log.Error("set document permission", err)
+				}
+			}
+
+			// Send email notification to users who have been given document approver role
+			if _, isExisting := previousRoleUsers[perm.UserID]; !isExisting {
+
+				// we skip 'everyone' (user id != empty string)
+				if perm.UserID != "0" && perm.UserID != "" && perm.DocumentRoleApprove {
+					existingUser, err := h.Store.User.Get(ctx, perm.UserID)
+					if err != nil {
+						response.WriteServerError(w, method, err)
+						break
+					}
+
+					mailer := mail.Mailer{Runtime: h.Runtime, Store: h.Store, Context: ctx}
+					go mailer.DocumentApprover(existingUser.Email, inviter.Fullname(), url, doc.Title)
+					h.Runtime.Log.Info(fmt.Sprintf("%s has made %s document approver for: %s", inviter.Email, existingUser.Email, doc.Title))
+				}
+			}
+		}
+	}
+
+	h.Store.Audit.Record(ctx, audit.EventTypeDocumentPermission)
 
 	ctx.Transaction.Commit()
 

@@ -89,6 +89,9 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	Add(rt, RoutePrefixPrivate, "documents/{documentID}", []string{"GET", "OPTIONS"}, nil, document.Get)
 	Add(rt, RoutePrefixPrivate, "documents/{documentID}", []string{"PUT", "OPTIONS"}, nil, document.Update)
 	Add(rt, RoutePrefixPrivate, "documents/{documentID}", []string{"DELETE", "OPTIONS"}, nil, document.Delete)
+	Add(rt, RoutePrefixPrivate, "documents/{documentID}/permissions", []string{"GET", "OPTIONS"}, nil, permission.GetDocumentPermissions)
+	Add(rt, RoutePrefixPrivate, "documents/{documentID}/permissions", []string{"PUT", "OPTIONS"}, nil, permission.SetDocumentPermissions)
+	Add(rt, RoutePrefixPrivate, "documents/{documentID}/permissions/user", []string{"GET", "OPTIONS"}, nil, permission.GetUserDocumentPermissions)
 	Add(rt, RoutePrefixPrivate, "documents/{documentID}/activity", []string{"GET", "OPTIONS"}, nil, document.Activity)
 
 	Add(rt, RoutePrefixPrivate, "documents/{documentID}/pages/level", []string{"POST", "OPTIONS"}, nil, page.ChangePageLevel)

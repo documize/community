@@ -34,6 +34,7 @@ const (
 	EventTypeDocumentUpdate     EventType = "updated-document"
 	EventTypeDocumentDelete     EventType = "removed-document"
 	EventTypeDocumentRevisions  EventType = "viewed-document-revisions"
+	EventTypeDocumentPermission EventType = "changed-document-permissions"
 	EventTypeSpaceAdd           EventType = "added-space"
 	EventTypeSpaceUpdate        EventType = "updated-space"
 	EventTypeSpaceDelete        EventType = "removed-space"

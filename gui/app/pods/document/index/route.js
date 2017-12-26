@@ -32,7 +32,8 @@ export default Route.extend(AuthenticatedRouteMixin, {
 			pages: this.get('documentService').getPages(this.modelFor('document').document.get('id')),
 			links: this.modelFor('document').links,
 			sections: this.modelFor('document').sections,
-			permissions: this.modelFor('document').permissions
+			permissions: this.modelFor('document').permissions,
+			roles: this.modelFor('document').roles
 		});
 	},
 
@@ -44,5 +45,6 @@ export default Route.extend(AuthenticatedRouteMixin, {
 		controller.set('links', model.links);
 		controller.set('sections', model.sections);
 		controller.set('permissions', model.permissions);
+		controller.set('roles', model.roles);
 	}
 });

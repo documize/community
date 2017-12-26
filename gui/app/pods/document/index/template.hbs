@@ -1,7 +1,9 @@
 {{toolbar/nav-bar}}
 
-{{toolbar/for-document document=document spaces=folders space=folder permissions=permissions
-	onDocumentDelete=(action 'onDocumentDelete') onSaveTemplate=(action 'onSaveTemplate')}}
+{{toolbar/for-document document=document spaces=folders space=folder permissions=permissions roles=roles 
+	onDocumentDelete=(action 'onDocumentDelete')
+	onSaveTemplate=(action 'onSaveTemplate')
+	onSaveDocument=(action 'onSaveDocument')}}
 
 <div id="doc-view" class="container">
 	<div class="row">
@@ -15,7 +17,8 @@
 	</div>
 	<div class="row">
 		<div class="col-12">
-			{{document/document-toc document=document folder=folder pages=pages page=page permissions=permissions currentPageId=pageId tab=tab
+			{{document/document-toc document=document folder=folder pages=pages page=page
+				permissions=permissions roles=roles currentPageId=pageId tab=tab
 				onPageSequenceChange=(action 'onPageSequenceChange') onPageLevelChange=(action 'onPageLevelChange') onGotoPage=(action 'onGotoPage')}}
 		</div>
 	</div>

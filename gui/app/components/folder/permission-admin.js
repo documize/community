@@ -12,8 +12,9 @@
 import { setProperties } from '@ember/object';
 import Component from '@ember/component';
 import { inject as service } from '@ember/service';
+import ModalMixin from '../../mixins/modal';
 
-export default Component.extend({
+export default Component.extend(ModalMixin, {
 	folderService: service('folder'),
 	userService: service('user'),
 	appMeta: service(),
@@ -120,8 +121,7 @@ export default Component.extend({
 			}
 
 			this.get('folderService').savePermissions(folder.get('id'), payload).then(() => {
-				$('#space-permission-modal').modal('hide');
-				$('#space-permission-modal').modal('dispose');
+				this.modalClose('#space-permission-modal');
 			});
 		}
 	}

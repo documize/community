@@ -94,6 +94,9 @@ type PermissionStorer interface {
 	GetCategoryPermissions(ctx RequestContext, catID string) (r []permission.Permission, err error)
 	GetCategoryUsers(ctx RequestContext, catID string) (u []user.User, err error)
 	GetUserCategoryPermissions(ctx RequestContext, userID string) (r []permission.Permission, err error)
+	GetUserDocumentPermissions(ctx RequestContext, documentID string) (r []permission.Permission, err error)
+	GetDocumentPermissions(ctx RequestContext, documentID string) (r []permission.Permission, err error)
+	DeleteDocumentPermissions(ctx RequestContext, documentID string) (rows int64, err error)
 }
 
 // UserStorer defines required methods for user management

@@ -28,8 +28,6 @@ export default Model.extend({
 	body: attr('string'),
 	rawBody: attr('string'),
 	meta: attr(),
-	protection: attr('number', { defaultValue: 0 }),
-	approval: attr('number', { defaultValue: 0 }),
 
 	tagName: computed('level', function () {
 		return "h2";

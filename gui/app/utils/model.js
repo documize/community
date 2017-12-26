@@ -164,8 +164,6 @@ let PageModel = BaseModel.extend({
 	title: "",
 	body: "",
 	rawBody: "",
-	protection: constants.ProtectionType.None,
-	approval: constants.ApprovalType.None,
 	meta: {},
 
 	tagName: computed('level', function () {
