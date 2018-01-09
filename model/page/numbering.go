@@ -34,7 +34,10 @@ func Numberize(pages []Page) {
 			}
 
 			if p.Level == prevPageLevel {
-				parts[len(parts)-1]++
+				j := len(parts) - 1
+				if j >= 0 {
+					parts[j]++
+				}
 			}
 
 			if p.Level < prevPageLevel {
@@ -48,7 +51,9 @@ func Numberize(pages []Page) {
 				if i < 0 {
 					i = 0
 				}
-				parts[i]++
+				if i >= 0 && i < len(parts) {
+					parts[i]++
+				}
 			}
 		}
 
