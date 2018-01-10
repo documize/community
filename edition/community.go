@@ -33,7 +33,7 @@ func main() {
 	rt := env.Runtime{}
 
 	// wire up logging implementation
-	rt.Log = logging.NewLogger()
+	rt.Log = logging.NewLogger(false)
 
 	// wire up embedded web assets handler
 	web.Embed = embed.NewEmbedder()

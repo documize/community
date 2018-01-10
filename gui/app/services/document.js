@@ -10,7 +10,6 @@
 // https://documize.com
 
 import { set } from '@ember/object';
-
 import { A } from '@ember/array';
 import ArrayProxy from '@ember/array/proxy';
 import Service, { inject as service } from '@ember/service';
@@ -20,6 +19,10 @@ export default Service.extend({
 	folderService: service('folder'),
 	ajax: service(),
 	store: service(),
+
+	//**************************************************
+	// Document
+	//**************************************************
 
 	// Returns document model for specified document id.
 	getDocument(documentId) {
@@ -62,29 +65,25 @@ export default Service.extend({
 		});
 	},
 
-	changePageSequence(documentId, payload) {
-		let url = `documents/${documentId}/pages/sequence`;
-
-		return this.get('ajax').post(url, {
-			data: JSON.stringify(payload),
-			contentType: 'json'
-		});
-	},
-
-	changePageLevel(documentId, payload) {
-		let url = `documents/${documentId}/pages/level`;
-
-		return this.get('ajax').post(url, {
-			data: JSON.stringify(payload),
-			contentType: 'json'
-		});
-	},
-
 	deleteDocument(documentId) {
 		let url = `documents/${documentId}`;
 
 		return this.get('ajax').request(url, {
 			method: 'DELETE'
+		});
+	},
+
+	//**************************************************
+	// Page
+	//**************************************************
+
+	// addPage inserts new page to an existing document.
+	addPage(documentId, payload) {
+		let url = `documents/${documentId}/pages`;
+
+		return this.get('ajax').post(url, {
+			data: JSON.stringify(payload),
+			contentType: 'json'
 		});
 	},
 
@@ -101,106 +100,6 @@ export default Service.extend({
 		}).then((response) => {
 			let data = this.get('store').normalize('page', response);
 			return this.get('store').push(data);
-		});
-	},
-
-	// addPage inserts new page to an existing document.
-	addPage(documentId, payload) {
-		let url = `documents/${documentId}/pages`;
-
-		return this.get('ajax').post(url, {
-			data: JSON.stringify(payload),
-			contentType: 'json'
-		});
-	},
-
-	// Nukes multiple pages from the document.
-	deletePages(documentId, pageId, payload) {
-		let url = `documents/${documentId}/pages`;
-
-		return this.get('ajax').request(url, {
-			data: JSON.stringify(payload),
-			contentType: 'json',
-			method: 'DELETE'
-		});
-	},
-
-	// Nukes a single page from the document.
-	deletePage(documentId, pageId) {
-		let url = `documents/${documentId}/pages/${pageId}`;
-
-		return this.get('ajax').request(url, {
-			method: 'DELETE'
-		});
-	},
-
-	getDocumentRevisions(documentId) {
-		let url = `documents/${documentId}/revisions`;
-
-		return this.get('ajax').request(url, {
-			method: "GET"
-		});
-	},
-
-	getPageRevisions(documentId, pageId) {
-		let url = `documents/${documentId}/pages/${pageId}/revisions`;
-
-		return this.get('ajax').request(url, {
-			method: "GET"
-		});
-	},
-
-	getPageRevisionDiff(documentId, pageId, revisionId) {
-		let url = `documents/${documentId}/pages/${pageId}/revisions/${revisionId}`;
-
-		return this.get('ajax').request(url, {
-			method: "GET",
-			dataType: 'text'
-		}).then((response) => {
-			return response;
-		}).catch(() => {
-			return "";
-		});
-	},
-
-	rollbackPage(documentId, pageId, revisionId) {
-		let url = `documents/${documentId}/pages/${pageId}/revisions/${revisionId}`;
-
-		return this.get('ajax').request(url, {
-			method: "POST"
-		});
-	},
-
-	// document meta referes to number of views, edits, approvals, etc.
-	getActivity(documentId) {
-		return this.get('ajax').request(`documents/${documentId}/activity`, {
-			method: "GET"
-		}).then((response) => {
-			let data = [];
-			data = response.map((obj) => {
-				let data = this.get('store').normalize('documentActivity', obj);
-				return this.get('store').push(data);
-			});
-
-			return data;
-		}).catch(() => {
-			return [];
-		});
-	},
-
-	// Returns all pages without the content
-	getTableOfContents(documentId) {
-
-		return this.get('ajax').request(`documents/${documentId}/pages?content=0`, {
-			method: 'GET'
-		}).then((response) => {
-			let data = [];
-			data = response.map((obj) => {
-				let data = this.get('store').normalize('page', obj);
-				return this.get('store').push(data);
-			});
-
-			return data;
 		});
 	},
 
@@ -242,6 +141,130 @@ export default Service.extend({
 		}).catch(() => {
 		});
 	},
+
+	// Nukes multiple pages from the document.
+	deletePages(documentId, pageId, payload) {
+		let url = `documents/${documentId}/pages`;
+
+		return this.get('ajax').request(url, {
+			data: JSON.stringify(payload),
+			contentType: 'json',
+			method: 'DELETE'
+		});
+	},
+
+	// Nukes a single page from the document.
+	deletePage(documentId, pageId) {
+		let url = `documents/${documentId}/pages/${pageId}`;
+
+		return this.get('ajax').request(url, {
+			method: 'DELETE'
+		});
+	},
+
+	//**************************************************
+	// Page Revisions
+	//**************************************************
+
+	getDocumentRevisions(documentId) {
+		let url = `documents/${documentId}/revisions`;
+
+		return this.get('ajax').request(url, {
+			method: "GET"
+		});
+	},
+
+	getPageRevisions(documentId, pageId) {
+		let url = `documents/${documentId}/pages/${pageId}/revisions`;
+
+		return this.get('ajax').request(url, {
+			method: "GET"
+		});
+	},
+
+	getPageRevisionDiff(documentId, pageId, revisionId) {
+		let url = `documents/${documentId}/pages/${pageId}/revisions/${revisionId}`;
+
+		return this.get('ajax').request(url, {
+			method: "GET",
+			dataType: 'text'
+		}).then((response) => {
+			return response;
+		}).catch(() => {
+			return "";
+		});
+	},
+
+	rollbackPage(documentId, pageId, revisionId) {
+		let url = `documents/${documentId}/pages/${pageId}/revisions/${revisionId}`;
+
+		return this.get('ajax').request(url, {
+			method: "POST"
+		});
+	},
+
+	//**************************************************
+	// Activity
+	//**************************************************
+	
+	// document meta referes to number of views, edits, approvals, etc.
+	getActivity(documentId) {
+		return this.get('ajax').request(`documents/${documentId}/activity`, {
+			method: "GET"
+		}).then((response) => {
+			let data = [];
+			data = response.map((obj) => {
+				let data = this.get('store').normalize('documentActivity', obj);
+				return this.get('store').push(data);
+			});
+
+			return data;
+		}).catch(() => {
+			return [];
+		});
+	},
+
+	//**************************************************
+	// Table of contents
+	//**************************************************
+
+	// Returns all pages without the content
+	getTableOfContents(documentId) {
+
+		return this.get('ajax').request(`documents/${documentId}/pages?content=0`, {
+			method: 'GET'
+		}).then((response) => {
+			let data = [];
+			data = response.map((obj) => {
+				let data = this.get('store').normalize('page', obj);
+				return this.get('store').push(data);
+			});
+
+			return data;
+		});
+	},
+
+	changePageSequence(documentId, payload) {
+		let url = `documents/${documentId}/pages/sequence`;
+
+		return this.get('ajax').post(url, {
+			data: JSON.stringify(payload),
+			contentType: 'json'
+		});
+	},
+
+	changePageLevel(documentId, payload) {
+		let url = `documents/${documentId}/pages/level`;
+
+		return this.get('ajax').post(url, {
+			data: JSON.stringify(payload),
+			contentType: 'json'
+		});
+	},
+
+	//**************************************************
+	// Attachments
+	//**************************************************
 
 	// document attachments without the actual content
 	getAttachments(documentId) {

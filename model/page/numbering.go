@@ -72,3 +72,71 @@ func Numberize(pages []Page) {
 		prevPageLevel = p.Level
 	}
 }
+
+// Levelize ensure page level increments are consistent
+// after a page is inserted or removed.
+//
+// Valid: 1, 2, 3, 4, 4, 4, 2, 1
+// Invalid: 1, 2, 4, 4, 2, 1 (note the jump from 2 --> 4)
+//
+// Rules:
+// 1. levels can increase by 1 only (e.g. from 1 to 2 to 3 to 4)
+// 2. levels can decrease by any amount (e.g. drop from 4 to 1)
+func Levelize(pages []Page) {
+	var prevLevel uint64
+	prevLevel = 1
+
+	for i := 0; i < len(pages); i++ {
+		currLevel := pages[i].Level
+
+		// handle deprecated level value of 0
+		if pages[i].Level == 0 {
+			pages[i].Level = 1
+		}
+
+		// first time thru
+		if i == 0 {
+			// first time thru
+			pages[i].Level = 1
+			prevLevel = 1
+			continue
+		}
+
+		if currLevel == prevLevel {
+			// nothing doing
+			continue
+		}
+
+		if currLevel > prevLevel+1 {
+			// bad data detected e.g. prevLevel=1 and pages[i].Level=3
+			// so we re-level to pages[i].Level=2 and all child pages
+			// and then increment i to correct point
+			prevLevel++
+			pages[i].Level = prevLevel
+
+			// safety check before entering loop and renumbering child pages
+			if i+1 <= len(pages) {
+
+				for j := i + 1; j < len(pages); j++ {
+					if pages[j].Level < prevLevel {
+						i = j
+						break
+					}
+
+					if pages[j].Level == currLevel {
+						pages[j].Level = prevLevel
+					} else if (pages[j].Level - prevLevel) > 1 {
+						currLevel = pages[j].Level
+						prevLevel++
+						pages[j].Level = prevLevel
+					}
+
+					i = j
+				}
+			}
+			continue
+		}
+
+		prevLevel = currLevel
+	}
+}

@@ -25,13 +25,21 @@ import (
 
 // Logger is how we log.
 type Logger struct {
-	db  *sqlx.DB
-	log *log.Logger
+	db    *sqlx.DB
+	log   *log.Logger
+	trace bool // shows Info() entries
 }
 
 // Info logs message.
 func (l Logger) Info(message string) {
 	l.log.Println(message)
+}
+
+// Trace logs message if tracing enabled.
+func (l Logger) Trace(message string) {
+	if l.trace {
+		l.log.Println(message)
+	}
 }
 
 // Error logs error with message.
@@ -56,13 +64,14 @@ func (l Logger) SetDB(logger env.Logger, db *sqlx.DB) env.Logger {
 }
 
 // NewLogger returns initialized logging instance.
-func NewLogger() env.Logger {
+func NewLogger(trace bool) env.Logger {
 	l := log.New(os.Stdout, "", 0)
 	l.SetOutput(os.Stdout)
 	// log.SetOutput(os.Stdout)
 
 	var logger Logger
 	logger.log = l
+	logger.trace = trace
 
 	return logger
 }

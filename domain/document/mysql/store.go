@@ -90,9 +90,9 @@ func (s Scope) DocumentMeta(ctx domain.RequestContext, id string) (meta doc.Docu
 	return
 }
 
-// GetAll returns a slice containg all of the the documents for the client's organisation, with the most recient first.
+// GetAll returns a slice containg all of the the documents for the client's organisation.
 func (s Scope) GetAll() (ctx domain.RequestContext, documents []doc.Document, err error) {
-	err = s.Runtime.Db.Select(&documents, "SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, protection, approval, created, revised FROM document WHERE orgid=? AND template=0 ORDER BY revised DESC", ctx.OrgID)
+	err = s.Runtime.Db.Select(&documents, "SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, protection, approval, created, revised FROM document WHERE orgid=? AND template=0 ORDER BY title", ctx.OrgID)
 
 	if err != nil {
 		err = errors.Wrap(err, "select documents")
@@ -118,6 +118,9 @@ func (s Scope) GetBySpace(ctx domain.RequestContext, spaceID string) (documents 
 		)
 		ORDER BY title`, ctx.OrgID, ctx.OrgID, ctx.OrgID, spaceID, ctx.OrgID, ctx.UserID, ctx.OrgID, spaceID, ctx.UserID)
 
+	if err == sql.ErrNoRows {
+		err = nil
+	}
 	if err != nil {
 		err = errors.Wrap(err, "select documents by space")
 	}
@@ -273,6 +276,11 @@ func (s Scope) Delete(ctx domain.RequestContext, documentID string) (rows int64,
 	}
 
 	_, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE from attachment WHERE documentid=\"%s\" AND orgid=\"%s\"", documentID, ctx.OrgID))
+	if err != nil {
+		return
+	}
+
+	_, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE from categorymember WHERE documentid=\"%s\" AND orgid=\"%s\"", documentID, ctx.OrgID))
 	if err != nil {
 		return
 	}

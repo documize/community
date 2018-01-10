@@ -16,6 +16,7 @@ import (
 
 	"github.com/documize/community/domain"
 	pm "github.com/documize/community/model/permission"
+	u "github.com/documize/community/model/user"
 )
 
 // CanViewSpaceDocument returns if the user has permission to view a document within the specified folder.
@@ -153,7 +154,6 @@ func CanViewSpace(ctx domain.RequestContext, s domain.Store, spaceID string) boo
 	if err != nil {
 		return false
 	}
-
 	for _, role := range roles {
 		if role.RefID == spaceID && role.Location == "space" && role.Scope == "object" &&
 			pm.ContainsPermission(role.Action, pm.SpaceView, pm.SpaceManage, pm.SpaceOwner) {
@@ -186,4 +186,41 @@ func HasPermission(ctx domain.RequestContext, s domain.Store, spaceID string, ac
 	}
 
 	return false
+}
+
+// GetDocumentApprovers returns list of users who can approve given document in given space
+func GetDocumentApprovers(ctx domain.RequestContext, s domain.Store, spaceID, documentID string) (users []u.User, err error) {
+	users = []u.User{}
+	prev := make(map[string]bool) // used to ensure we only process user once
+
+	// check space permissions
+	sp, err := s.Permission.GetSpacePermissions(ctx, spaceID)
+	for _, p := range sp {
+		if p.Action == pm.DocumentApprove {
+			user, err := s.User.Get(ctx, p.WhoID)
+			if err == nil {
+				prev[user.RefID] = true
+				users = append(users, user)
+			} else {
+				return users, err
+			}
+		}
+	}
+
+	// check document permissions
+	dp, err := s.Permission.GetDocumentPermissions(ctx, documentID)
+	for _, p := range dp {
+		if p.Action == pm.DocumentApprove {
+			user, err := s.User.Get(ctx, p.WhoID)
+			if err == nil {
+				if _, isExisting := prev[user.RefID]; !isExisting {
+					users = append(users, user)
+				}
+			} else {
+				return users, err
+			}
+		}
+	}
+
+	return
 }

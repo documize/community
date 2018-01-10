@@ -16,6 +16,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"sort"
 
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/request"
@@ -155,7 +156,7 @@ func (h *Handler) BySpace(w http.ResponseWriter, r *http.Request) {
 
 	// get complete list of documents
 	documents, err := h.Store.Document.GetBySpace(ctx, spaceID)
-	if err != nil && err != sql.ErrNoRows {
+	if err != nil {
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
 		return
@@ -163,6 +164,8 @@ func (h *Handler) BySpace(w http.ResponseWriter, r *http.Request) {
 	if len(documents) == 0 {
 		documents = []doc.Document{}
 	}
+
+	sort.Sort(doc.ByTitle(documents))
 
 	// remove documents that cannot be seen due to lack of
 	// category view/access permission
@@ -411,7 +414,6 @@ func (h *Handler) FetchDocumentData(w http.ResponseWriter, r *http.Request) {
 	if len(perms) == 0 {
 		perms = []pm.Permission{}
 	}
-
 	record := pm.DecodeUserPermissions(perms)
 
 	roles, err := h.Store.Permission.GetUserDocumentPermissions(ctx, document.RefID)
@@ -422,7 +424,6 @@ func (h *Handler) FetchDocumentData(w http.ResponseWriter, r *http.Request) {
 	if len(roles) == 0 {
 		roles = []pm.Permission{}
 	}
-
 	rolesRecord := pm.DecodeUserDocumentPermissions(roles)
 
 	// links

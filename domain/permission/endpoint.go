@@ -432,7 +432,7 @@ func (h *Handler) GetDocumentPermissions(w http.ResponseWriter, r *http.Request)
 	response.WriteJSON(w, records)
 }
 
-// GetUserDocumentPermissions returns permissions for the requested space, for current user.
+// GetUserDocumentPermissions returns permissions for the requested document, for current user.
 func (h *Handler) GetUserDocumentPermissions(w http.ResponseWriter, r *http.Request) {
 	method := "space.GetUserDocumentPermissions"
 	ctx := domain.GetRequestContext(r)

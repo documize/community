@@ -15,6 +15,7 @@ package env
 // Logger provides the interface for Documize compatible loggers.
 type Logger interface {
 	Info(message string)
+	Trace(message string)
 	Error(message string, err error)
 	// SetDB(l Logger, db *sqlx.DB) Logger
 }

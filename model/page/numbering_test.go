@@ -111,4 +111,124 @@ func TestNumberize3(t *testing.T) {
 	}
 }
 
-// go test github.com/documize/community/core/model -run TestNumberize
+// Tests that numbering does not crash because of bad data
+func TestNumberize4(t *testing.T) {
+	pages := []Page{}
+
+	pages = append(pages, Page{Level: 0, Sequence: 1000})
+	pages = append(pages, Page{Level: 1, Sequence: 2000})
+	pages = append(pages, Page{Level: 1, Sequence: 3000})
+
+	// corruption starts here with Level=3 instead of Level=2
+	pages = append(pages, Page{Level: 3, Sequence: 4000})
+	pages = append(pages, Page{Level: 4, Sequence: 4000})
+	pages = append(pages, Page{Level: 1, Sequence: 5000})
+	pages = append(pages, Page{Level: 2, Sequence: 6000})
+
+	Numberize(pages)
+
+	expecting := []string{
+		"1",
+		"2",
+		"3",
+		"3.1",
+		"3.1.1",
+		// data below cannot be processed due to corruption
+		"",  // should be 4
+		"1", // should be 5
+	}
+
+	for i, p := range pages {
+		if p.Numbering != expecting[i] {
+			t.Errorf("(Test 4) Position %d: expecting %s got %s\n", i, expecting[i], p.Numbering)
+		}
+	}
+}
+
+// Tests that good level data is not messed with
+func TestLevelize1(t *testing.T) {
+	pages := []Page{}
+
+	pages = append(pages, Page{Level: 1, Sequence: 1000})
+	pages = append(pages, Page{Level: 1, Sequence: 2000})
+	pages = append(pages, Page{Level: 2, Sequence: 3000})
+	pages = append(pages, Page{Level: 3, Sequence: 4000})
+	pages = append(pages, Page{Level: 4, Sequence: 5000})
+	pages = append(pages, Page{Level: 1, Sequence: 6000})
+	pages = append(pages, Page{Level: 2, Sequence: 7000})
+
+	Levelize(pages)
+
+	expecting := []uint64{1, 1, 2, 3, 4, 1, 2}
+
+	for i, p := range pages {
+		if p.Level != expecting[i] {
+			t.Errorf("(TestLevelize1) Position %d: expecting %d got %d (sequence: %f)\n", i+1, expecting[i], p.Level, p.Sequence)
+		}
+	}
+}
+
+// Tests that bad level data
+func TestLevelize2(t *testing.T) {
+	pages := []Page{}
+
+	pages = append(pages, Page{Level: 1, Sequence: 1000})
+	pages = append(pages, Page{Level: 1, Sequence: 2000})
+	pages = append(pages, Page{Level: 3, Sequence: 3000})
+	pages = append(pages, Page{Level: 3, Sequence: 4000})
+	pages = append(pages, Page{Level: 4, Sequence: 5000})
+	pages = append(pages, Page{Level: 1, Sequence: 6000})
+	pages = append(pages, Page{Level: 2, Sequence: 7000})
+
+	Levelize(pages)
+
+	expecting := []uint64{1, 1, 2, 2, 3, 1, 2}
+
+	for i, p := range pages {
+		if p.Level != expecting[i] {
+			t.Errorf("(TestLevelize2) Position %d: expecting %d got %d (sequence: %f)\n", i+1, expecting[i], p.Level, p.Sequence)
+		}
+	}
+}
+
+func TestLevelize3(t *testing.T) {
+	pages := []Page{}
+
+	pages = append(pages, Page{Level: 1, Sequence: 1000})
+	pages = append(pages, Page{Level: 4, Sequence: 2000})
+	pages = append(pages, Page{Level: 5, Sequence: 3000})
+
+	Levelize(pages)
+
+	expecting := []uint64{1, 2, 3}
+
+	for i, p := range pages {
+		if p.Level != expecting[i] {
+			t.Errorf("(TestLevelize3) Position %d: expecting %d got %d (sequence: %f)\n", i+1, expecting[i], p.Level, p.Sequence)
+		}
+	}
+}
+
+func TestLevelize4(t *testing.T) {
+	pages := []Page{}
+
+	pages = append(pages, Page{Level: 1, Sequence: 1000})
+	pages = append(pages, Page{Level: 4, Sequence: 2000})
+	pages = append(pages, Page{Level: 5, Sequence: 3000})
+	pages = append(pages, Page{Level: 5, Sequence: 4000})
+	pages = append(pages, Page{Level: 6, Sequence: 5000})
+	pages = append(pages, Page{Level: 6, Sequence: 6000})
+	pages = append(pages, Page{Level: 2, Sequence: 7000})
+
+	Levelize(pages)
+
+	expecting := []uint64{1, 2, 3, 3, 4, 4, 2}
+
+	for i, p := range pages {
+		if p.Level != expecting[i] {
+			t.Errorf("(TestLevelize4) Position %d: expecting %d got %d (sequence: %f)\n", i+1, expecting[i], p.Level, p.Sequence)
+		}
+	}
+}
+
+// go test github.com/documize/community/core/model -run TestNumberiz, 3, 4, 4, 2e

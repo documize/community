@@ -57,7 +57,6 @@ export default Component.extend(ModalMixin, {
 			this.attrs.onCancel();
 		},
 
-
 		onAction() {
 			if (this.get('busy')) {
 				return;

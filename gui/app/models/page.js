@@ -12,7 +12,6 @@
 import { computed } from '@ember/object';
 import Model from 'ember-data/model';
 import attr from 'ember-data/attr';
-// import { hasMany } from 'ember-data/relationships';
 
 export default Model.extend({
 	documentId: attr('string'),
@@ -28,10 +27,11 @@ export default Model.extend({
 	body: attr('string'),
 	rawBody: attr('string'),
 	meta: attr(),
+	approval: attr('number', { defaultValue: 0 }),
+	relativeId: attr('string'),
 
 	tagName: computed('level', function () {
 		return "h2";
-		// return "h" + (this.get('level') + 1);
 	}),
 
 	tocIndent: computed('level', function () {

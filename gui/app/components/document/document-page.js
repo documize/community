@@ -10,12 +10,10 @@
 // https://documize.com
 
 import { inject as service } from '@ember/service';
-
 import Component from '@ember/component';
-import NotifierMixin from '../../mixins/notifier';
 import TooltipMixin from '../../mixins/tooltip';
 
-export default Component.extend(NotifierMixin, TooltipMixin, {
+export default Component.extend(TooltipMixin, {
 	documentService: service('document'),
 	sectionService: service('section'),
 	editMode: false,

@@ -38,6 +38,9 @@ const (
 
 	// SourceTypeDocument indicates activity against a document.
 	SourceTypeDocument SourceType = 2
+
+	// SourceTypePage indicates activity against a document page.
+	SourceTypePage SourceType = 3
 )
 
 const (
@@ -70,6 +73,9 @@ const (
 
 	// TypeFeedback records user providing document feedback
 	TypeFeedback Type = 10
+
+	// TypeRejected records user rejecting document
+	TypeRejected Type = 11
 )
 
 // DocumentActivity represents an activity taken against a document.

@@ -10,7 +10,7 @@
 // https://documize.com
 
 import { computed } from '@ember/object';
-import { schedule } from '@ember/runloop'
+import { schedule } from '@ember/runloop';
 import { inject as service } from '@ember/service';
 import Component from '@ember/component';
 import tocUtil from '../../utils/toc';

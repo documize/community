@@ -15,29 +15,51 @@ package workflow
 type Protection int
 
 const (
-	// NoProtection means no protection so data item changes are permitted
-	NoProtection Protection = 0
+	// ProtectionNone means no protection so data item changes are permitted
+	ProtectionNone Protection = 0
 
-	// Lock means no data itme changes
-	Lock Protection = 1
+	// ProtectionLock means no data itme changes
+	ProtectionLock Protection = 1
 
-	// Review means changes must be reviewed and approved
-	Review Protection = 2
+	// ProtectionReview means changes must be reviewed and approved
+	ProtectionReview Protection = 2
 )
 
 // Approval tells us how some data item change is to be approved
 type Approval int
 
 const (
-	// NoApproval means no approval necessary
-	NoApproval Approval = 0
+	// ApprovalNone means no approval necessary
+	ApprovalNone Approval = 0
 
-	// Anybody can approve data item change
-	Anybody Approval = 1
+	// ApprovalAnybody can approve data item change
+	ApprovalAnybody Approval = 1
 
-	// Majority must approve data item change
-	Majority Approval = 2
+	// ApprovalMajority must approve data item change
+	ApprovalMajority Approval = 2
 
-	// Unanimous approval must be given for data item change
-	Unanimous Approval = 3
+	// ApprovalUnanimous approval must be given for data item change
+	ApprovalUnanimous Approval = 3
+)
+
+// ChangeStatus tells us the state of a data item
+type ChangeStatus int
+
+const (
+	// ChangePublished means data item is visible all
+	ChangePublished ChangeStatus = 0
+
+	// ChangePending means data item is still being edited and not yet requesting review
+	ChangePending ChangeStatus = 1
+
+	// ChangeUnderReview means data item is being reviewed
+	// Next step would be to mark data item as either
+	// Published or Rejected
+	ChangeUnderReview ChangeStatus = 2
+
+	// ChangeRejected means data item was not approved for publication
+	ChangeRejected ChangeStatus = 3
+
+	// ChangePendingNew means a new section to a document is pending review
+	ChangePendingNew ChangeStatus = 4
 )

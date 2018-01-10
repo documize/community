@@ -45,6 +45,13 @@ func (d *Document) SetDefaults() {
 	}
 }
 
+// ByTitle sorts a collection of documents by document title.
+type ByTitle []Document
+
+func (a ByTitle) Len() int           { return len(a) }
+func (a ByTitle) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByTitle) Less(i, j int) bool { return strings.ToLower(a[i].Title) < strings.ToLower(a[j].Title) }
+
 // DocumentMeta details who viewed the document.
 type DocumentMeta struct {
 	Viewers []DocumentMetaViewer `json:"viewers"`

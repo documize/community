@@ -24,6 +24,7 @@ import (
 	"github.com/documize/community/model/doc"
 	"github.com/documize/community/model/page"
 	"github.com/documize/community/model/search"
+	"github.com/documize/community/model/workflow"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 )
@@ -93,6 +94,11 @@ func (s Scope) DeleteDocument(ctx domain.RequestContext, ID string) (err error) 
 // IndexContent adds search index entry for document context.
 // Any existing document entries are removed.
 func (s Scope) IndexContent(ctx domain.RequestContext, p page.Page) (err error) {
+	// we do not index pending pages
+	if p.Status == workflow.ChangePending || p.Status == workflow.ChangePendingNew {
+		return
+	}
+
 	// remove previous search entries
 	_, err = ctx.Transaction.Exec("DELETE FROM search WHERE orgid=? AND documentid=? AND itemid=? AND itemtype='page'",
 		ctx.OrgID, p.DocumentID, p.RefID)
