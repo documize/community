@@ -1265,6 +1265,7 @@ func (h *Handler) FetchPages(w http.ResponseWriter, r *http.Request) {
 
 		if process {
 			d := page.BulkRequest{}
+			d.ID = fmt.Sprintf("container-%s", p.RefID)
 			d.Page = p
 
 			for _, m := range meta {

@@ -125,6 +125,7 @@ type LevelRequest struct {
 // BulkRequest details page, it's meta, pending page changes.
 // Used to bulk load data by GUI so as to reduce network requests.
 type BulkRequest struct {
+	ID      string        `json:"id"`
 	Page    Page          `json:"page"`
 	Meta    Meta          `json:"meta"`
 	Pending []PendingPage `json:"pending"`
