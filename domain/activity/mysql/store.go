@@ -32,8 +32,8 @@ func (s Scope) RecordUserActivity(ctx domain.RequestContext, activity activity.U
 	activity.UserID = ctx.UserID
 	activity.Created = time.Now().UTC()
 
-	_, err = ctx.Transaction.Exec("INSERT INTO useractivity (orgid, userid, labelid, sourceid, sourcetype, activitytype, created) VALUES (?, ?, ?, ?, ?, ?, ?)",
-		activity.OrgID, activity.UserID, activity.LabelID, activity.SourceID, activity.SourceType, activity.ActivityType, activity.Created)
+	_, err = ctx.Transaction.Exec("INSERT INTO useractivity (orgid, userid, labelid, documentid, pageid, sourcetype, activitytype, created) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+		activity.OrgID, activity.UserID, activity.LabelID, activity.DocumentID, activity.PageID, activity.SourceType, activity.ActivityType, activity.Created)
 
 	if err != nil {
 		err = errors.Wrap(err, "execute record user activity")
@@ -44,23 +44,27 @@ func (s Scope) RecordUserActivity(ctx domain.RequestContext, activity activity.U
 
 // GetDocumentActivity returns the metadata for a specified document.
 func (s Scope) GetDocumentActivity(ctx domain.RequestContext, id string) (a []activity.DocumentActivity, err error) {
-	qry := `SELECT a.id, a.created, a.orgid, IFNULL(a.userid, '') AS userid, a.labelid, a.sourceid as documentid, a.activitytype,
-		IFNULL(u.firstname, 'Anonymous') AS firstname, IFNULL(u.lastname, 'Viewer') AS lastname
+	qry := `SELECT a.id, DATE(a.created) as created, a.orgid, IFNULL(a.userid, '') AS userid, a.labelid, a.documentid, a.pageid, a.activitytype,
+		IFNULL(u.firstname, 'Anonymous') AS firstname, IFNULL(u.lastname, 'Viewer') AS lastname,
+		IFNULL(p.title, '') as pagetitle
 		FROM useractivity a
 		LEFT JOIN user u ON a.userid=u.refid
-		WHERE a.orgid=? AND a.sourceid=? AND a.sourcetype=2
+		LEFT JOIN page p ON a.pageid=p.refid
+		WHERE a.orgid=? AND a.documentid=?
 		AND a.userid != '0' AND a.userid != ''
 		ORDER BY a.created DESC`
 
 	err = s.Runtime.Db.Select(&a, qry, ctx.OrgID, id)
 
-	if len(a) == 0 {
-		a = []activity.DocumentActivity{}
+	if err == sql.ErrNoRows {
+		err = nil
+	}
+	if err != nil {
+		err = errors.Wrap(err, "select document user activity")
 	}
 
-	if err != nil && err != sql.ErrNoRows {
-		err = errors.Wrap(err, "select document user activity")
-		return
+	if len(a) == 0 {
+		a = []activity.DocumentActivity{}
 	}
 
 	return

@@ -18,7 +18,7 @@ export default Component.extend({
 	didReceiveAttrs() {
 		this._super(...arguments);
 
-		this.get('documentService').getActivity(this.get('document.id')).then((activity) => {
+		this.get('documentService').getActivity(this.get('document.id'), 7).then((activity) => {
 			this.set('activity', activity);
 		});	
 	}

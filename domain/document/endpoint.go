@@ -78,7 +78,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 
 	err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
 		LabelID:      document.LabelID,
-		SourceID:     document.RefID,
+		DocumentID:   document.RefID,
 		SourceType:   activity.SourceTypeDocument,
 		ActivityType: activity.TypeRead})
 
@@ -91,27 +91,6 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	ctx.Transaction.Commit()
 
 	response.WriteJSON(w, document)
-}
-
-// Activity is an endpoint returning the activity logs for specified document.
-func (h *Handler) Activity(w http.ResponseWriter, r *http.Request) {
-	method := "document.activity"
-	ctx := domain.GetRequestContext(r)
-
-	id := request.Param(r, "documentID")
-	if len(id) == 0 {
-		response.WriteMissingDataError(w, method, "documentID")
-		return
-	}
-
-	a, err := h.Store.Activity.GetDocumentActivity(ctx, id)
-	if err != nil && err != sql.ErrNoRows {
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	response.WriteJSON(w, a)
 }
 
 // DocumentLinks is an endpoint returning the links for a document.
@@ -322,7 +301,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
 		LabelID:      doc.LabelID,
-		SourceID:     documentID,
+		DocumentID:   documentID,
 		SourceType:   activity.SourceTypeDocument,
 		ActivityType: activity.TypeDeleted})
 
@@ -464,7 +443,7 @@ func (h *Handler) FetchDocumentData(w http.ResponseWriter, r *http.Request) {
 
 	err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
 		LabelID:      document.LabelID,
-		SourceID:     document.RefID,
+		DocumentID:   document.RefID,
 		SourceType:   activity.SourceTypeDocument,
 		ActivityType: activity.TypeRead})
 

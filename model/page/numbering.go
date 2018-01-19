@@ -140,3 +140,13 @@ func Levelize(pages []Page) {
 		prevLevel = currLevel
 	}
 }
+
+// Sequenize will re-generate page sequence numbers for a document
+func Sequenize(p []Page) {
+	var seq float64
+	seq = 2048
+	for i := range p {
+		p[i].Sequence = seq
+		seq = seq * 2
+	}
+}

@@ -249,6 +249,18 @@ func (s Scope) UpdateLevel(ctx domain.RequestContext, documentID, pageID string,
 	return
 }
 
+// UpdateLevelSequence changes page level and sequence numbers.
+func (s Scope) UpdateLevelSequence(ctx domain.RequestContext, documentID, pageID string, level int, sequence float64) (err error) {
+	_, err = ctx.Transaction.Exec("UPDATE page SET level=?, sequence=? WHERE orgid=? AND refid=?",
+		level, sequence, ctx.OrgID, pageID)
+
+	if err != nil {
+		err = errors.Wrap(err, "execute page level/sequence update")
+	}
+
+	return
+}
+
 // GetNextPageSequence returns the next sequence numbner to use for a page in given document.
 func (s Scope) GetNextPageSequence(ctx domain.RequestContext, documentID string) (maxSeq float64, err error) {
 	row := s.Runtime.Db.QueryRow("SELECT max(sequence) FROM page WHERE orgid=? AND documentid=?", ctx.OrgID, documentID)

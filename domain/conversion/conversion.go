@@ -222,7 +222,7 @@ func processDocument(ctx domain.RequestContext, r *env.Runtime, store *domain.St
 
 	store.Activity.RecordUserActivity(ctx, activity.UserActivity{
 		LabelID:      newDocument.LabelID,
-		SourceID:     newDocument.RefID,
+		DocumentID:   newDocument.RefID,
 		SourceType:   activity.SourceTypeDocument,
 		ActivityType: activity.TypeCreated})
 

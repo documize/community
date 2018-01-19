@@ -18,6 +18,7 @@ export default Model.extend({
 	orgId: attr('string'),
 	folderId: attr('string'),
 	documentId: attr('string'),
+	pageId: attr('string'),
 	userId: attr('string'),
 	firstname: attr('string'),
 	lastname: attr('string'),

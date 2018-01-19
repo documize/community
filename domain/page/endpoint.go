@@ -163,8 +163,9 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 
 	h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
 		LabelID:      doc.LabelID,
-		SourceID:     model.Page.DocumentID,
-		SourceType:   activity.SourceTypeDocument,
+		DocumentID:   model.Page.DocumentID,
+		PageID:       model.Page.RefID,
+		SourceType:   activity.SourceTypePage,
 		ActivityType: activity.TypeCreated})
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSectionAdd)
@@ -419,8 +420,9 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 	h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
 		LabelID:      doc.LabelID,
-		SourceID:     model.Page.DocumentID,
-		SourceType:   activity.SourceTypeDocument,
+		DocumentID:   model.Page.DocumentID,
+		PageID:       model.Page.RefID,
+		SourceType:   activity.SourceTypePage,
 		ActivityType: activity.TypeEdited})
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSectionUpdate)
@@ -541,11 +543,10 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
 		LabelID:      doc.LabelID,
-		SourceID:     documentID,
-		SourceType:   activity.SourceTypeDocument,
+		DocumentID:   documentID,
+		PageID:       pageID,
+		SourceType:   activity.SourceTypePage,
 		ActivityType: activity.TypeDeleted})
-
-	h.Store.Audit.Record(ctx, audit.EventTypeSectionDelete)
 
 	go h.Indexer.DeleteContent(ctx, pageID)
 
@@ -557,35 +558,10 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	ctx.Transaction.Commit()
 
+	h.Store.Audit.Record(ctx, audit.EventTypeSectionDelete)
+
 	// Re-level all pages in document
-	ctx.Transaction, err = h.Runtime.Db.Beginx()
-	if err != nil {
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	p2, err := h.Store.Page.GetPages(ctx, documentID)
-	if err != nil {
-		ctx.Transaction.Rollback()
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	page.Levelize(p2)
-
-	for _, i := range p2 {
-		err = h.Store.Page.UpdateLevel(ctx, documentID, i.RefID, int(i.Level))
-		if err != nil {
-			ctx.Transaction.Rollback()
-			response.WriteServerError(w, method, err)
-			h.Runtime.Log.Error(method, err)
-			return
-		}
-	}
-
-	ctx.Transaction.Commit()
+	h.LevelizeDocument(ctx, documentID)
 
 	response.WriteEmpty(w)
 }
@@ -674,47 +650,21 @@ func (h *Handler) DeletePages(w http.ResponseWriter, r *http.Request) {
 		h.Store.Link.MarkOrphanPageLink(ctx, page.PageID)
 
 		h.Store.Page.DeletePageRevisions(ctx, page.PageID)
+
+		h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
+			LabelID:      doc.LabelID,
+			DocumentID:   documentID,
+			PageID:       page.PageID,
+			SourceType:   activity.SourceTypePage,
+			ActivityType: activity.TypeDeleted})
 	}
 
-	h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-		LabelID:      doc.LabelID,
-		SourceID:     documentID,
-		SourceType:   activity.SourceTypeDocument,
-		ActivityType: activity.TypeDeleted})
+	ctx.Transaction.Commit()
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSectionDelete)
 
-	ctx.Transaction.Commit()
-
 	// Re-level all pages in document
-	ctx.Transaction, err = h.Runtime.Db.Beginx()
-	if err != nil {
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	p2, err := h.Store.Page.GetPages(ctx, documentID)
-	if err != nil {
-		ctx.Transaction.Rollback()
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	page.Levelize(p2)
-
-	for _, i := range p2 {
-		err = h.Store.Page.UpdateLevel(ctx, documentID, i.RefID, int(i.Level))
-		if err != nil {
-			ctx.Transaction.Rollback()
-			response.WriteServerError(w, method, err)
-			h.Runtime.Log.Error(method, err)
-			return
-		}
-	}
-
-	ctx.Transaction.Commit()
+	h.LevelizeDocument(ctx, documentID)
 
 	response.WriteEmpty(w)
 }
@@ -952,9 +902,10 @@ func (h *Handler) Copy(w http.ResponseWriter, r *http.Request) {
 	// Log action against target document
 	h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
 		LabelID:      doc.LabelID,
-		SourceID:     targetID,
-		SourceType:   activity.SourceTypeDocument,
-		ActivityType: activity.TypeEdited})
+		DocumentID:   targetID,
+		PageID:       newPageID,
+		SourceType:   activity.SourceTypePage,
+		ActivityType: activity.TypeCreated})
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSectionCopy)
 
@@ -1095,6 +1046,7 @@ func (h *Handler) GetDiff(w http.ResponseWriter, r *http.Request) {
 	}
 
 	res, err := cfg.HTMLdiff([]string{latestHTML, previousHTML})
+	// res, err := cfg.HTMLdiff([]string{previousHTML, latestHTML})
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		return
@@ -1193,8 +1145,9 @@ func (h *Handler) Rollback(w http.ResponseWriter, r *http.Request) {
 
 	h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
 		LabelID:      doc.LabelID,
-		SourceID:     p.DocumentID,
-		SourceType:   activity.SourceTypeDocument,
+		DocumentID:   p.DocumentID,
+		PageID:       p.RefID,
+		SourceType:   activity.SourceTypePage,
 		ActivityType: activity.TypeReverted})
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSectionRollback)

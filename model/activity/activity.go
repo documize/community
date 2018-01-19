@@ -15,15 +15,31 @@ import "time"
 
 // UserActivity represents an activity undertaken by a user.
 type UserActivity struct {
-	ID           uint64     `json:"-"`
+	ID           uint64     `json:"id"`
 	OrgID        string     `json:"orgId"`
 	UserID       string     `json:"userId"`
 	LabelID      string     `json:"folderId"`
-	SourceID     string     `json:"sourceId"`
-	SourceName   string     `json:"sourceName"` // e.g. Document or Space name
-	SourceType   SourceType `json:"sourceType"`
+	DocumentID   string     `json:"documentId"`
+	PageID       string     `json:"pageId"`
 	ActivityType Type       `json:"activityType"`
+	SourceType   SourceType `json:"sourceType"`
+	SourceName   string     `json:"sourceName"`
 	Created      time.Time  `json:"created"`
+}
+
+// DocumentActivity represents an activity taken against a document.
+type DocumentActivity struct {
+	ID           uint64    `json:"id"`
+	OrgID        string    `json:"orgId"`
+	LabelID      string    `json:"folderId"`
+	DocumentID   string    `json:"documentId"`
+	PageID       string    `json:"pageId"`
+	PageTitle    string    `json:"pageTitle"`
+	UserID       string    `json:"userId"`
+	Firstname    string    `json:"firstname"`
+	Lastname     string    `json:"lastname"`
+	ActivityType int       `json:"activityType"`
+	Created      time.Time `json:"created"`
 }
 
 // SourceType details where the activity occured.
@@ -71,22 +87,44 @@ const (
 	// TypePublishedBlock records user creating reusable content block
 	TypePublishedBlock Type = 9
 
-	// TypeFeedback records user providing document feedback
-	TypeFeedback Type = 10
+	// TypeCommented records user providing document feedback
+	TypeCommented Type = 10
 
 	// TypeRejected records user rejecting document
 	TypeRejected Type = 11
+
+	// TypeSentSecureLink records user sending secure document link to email address(es)
+	TypeSentSecureLink Type = 12
 )
 
-// DocumentActivity represents an activity taken against a document.
-type DocumentActivity struct {
-	ID           int       `json:"id"`
-	OrgID        string    `json:"orgId"`
-	LabelID      string    `json:"folderId"`
-	DocumentID   string    `json:"documentId"`
-	UserID       string    `json:"userId"`
-	Firstname    string    `json:"firstname"`
-	Lastname     string    `json:"lastname"`
-	ActivityType int       `json:"activityType"`
-	Created      time.Time `json:"created"`
+// TypeName returns one-work descriptor for activity type
+func TypeName(t Type) string {
+	switch t {
+	case TypeCreated:
+		return "Add"
+	case TypeRead:
+		return "View"
+	case TypeEdited:
+		return "Edit"
+	case TypeDeleted:
+		return "Delete"
+	case TypeArchived:
+		return "Archive"
+	case TypeApproved:
+		return "Approve"
+	case TypeReverted:
+		return "Revert"
+	case TypePublishedTemplate:
+		return "Publish"
+	case TypePublishedBlock:
+		return "Publish"
+	case TypeCommented:
+		return "Comment"
+	case TypeRejected:
+		return "Reject"
+	case TypeSentSecureLink:
+		return "Share"
+	}
+
+	return ""
 }

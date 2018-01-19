@@ -257,6 +257,7 @@ type PageStorer interface {
 	UpdateMeta(ctx RequestContext, meta page.Meta, updateUserID bool) (err error)
 	UpdateSequence(ctx RequestContext, documentID, pageID string, sequence float64) (err error)
 	UpdateLevel(ctx RequestContext, documentID, pageID string, level int) (err error)
+	UpdateLevelSequence(ctx RequestContext, documentID, pageID string, level int, sequence float64) (err error)
 	GetNextPageSequence(ctx RequestContext, documentID string) (maxSeq float64, err error)
 	GetPageRevision(ctx RequestContext, revisionID string) (revision page.Revision, err error)
 	GetPageRevisions(ctx RequestContext, pageID string) (revisions []page.Revision, err error)

@@ -208,8 +208,8 @@ export default Service.extend({
 	//**************************************************
 	
 	// document meta referes to number of views, edits, approvals, etc.
-	getActivity(documentId) {
-		return this.get('ajax').request(`documents/${documentId}/activity`, {
+	getActivity(documentId, days) {
+		return this.get('ajax').request(`documents/${documentId}/activity?days=${days}`, {
 			method: "GET"
 		}).then((response) => {
 			let data = [];
