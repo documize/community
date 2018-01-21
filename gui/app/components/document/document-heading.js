@@ -10,6 +10,7 @@
 // https://documize.com
 
 import { empty } from '@ember/object/computed';
+import { computed } from '@ember/object';
 import { schedule } from '@ember/runloop';
 import { inject as service } from '@ember/service';
 import Component from '@ember/component';
@@ -21,6 +22,19 @@ export default Component.extend({
 	docExcerpt: '',
 	hasNameError: empty('docName'),
 	hasExcerptError: empty('docExcerpt'),
+
+	canEdit: computed('permssions', 'document', function() {
+		let constants = this.get('constants');
+		let permissions = this.get('permissions');
+
+		if (permissions.get('documentEdit') && this.get('document.protection') === constants.ProtectionType.None) {
+			return true;
+		} else if (permissions.get('documentApprove') && this.get('document.protection') === constants.ProtectionType.Review) {
+			return true;
+		}
+
+		return false;
+	}),
 
 	keyUp(e) {
 		if (e.keyCode === 27) { // escape key
