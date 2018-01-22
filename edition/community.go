@@ -41,7 +41,7 @@ func main() {
 	// product details
 	rt.Product = env.ProdInfo{}
 	rt.Product.Major = "1"
-	rt.Product.Minor = "55"
+	rt.Product.Minor = "56"
 	rt.Product.Patch = "0"
 	rt.Product.Version = fmt.Sprintf("%s.%s.%s", rt.Product.Major, rt.Product.Minor, rt.Product.Patch)
 	rt.Product.Edition = "Community"

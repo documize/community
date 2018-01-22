@@ -48,7 +48,7 @@ Here is the home screen showing all spaces.
 
 ## Latest version
 
-v1.55.0
+v1.56.0
 
 ## OS support
 
@@ -62,7 +62,7 @@ Documize runs on the following:
 
 Documize is built with the following technologies:
 
-- EmberJS (v2.17.0)
+- EmberJS (v2.18.0)
 - Go (v1.9.2)
 
 ...and supports the following databases:
