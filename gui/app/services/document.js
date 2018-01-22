@@ -52,6 +52,8 @@ export default Service.extend({
 			});
 
 			return documents;
+		}).catch((error) => {
+			return error;
 		});
 	},
 
@@ -100,6 +102,8 @@ export default Service.extend({
 		}).then((response) => {
 			let data = this.get('store').normalize('page', response);
 			return this.get('store').push(data);
+		}).catch((error) => {
+			return error;
 		});
 	},
 
@@ -121,7 +125,6 @@ export default Service.extend({
 
 	// Returns document page with content
 	getPage(documentId, pageId) {
-
 		return this.get('ajax').request(`documents/${documentId}/pages/${pageId}`, {
 			method: 'GET'
 		}).then((response) => {
@@ -132,7 +135,6 @@ export default Service.extend({
 
 	// Returns document page meta object
 	getPageMeta(documentId, pageId) {
-
 		return this.get('ajax').request(`documents/${documentId}/pages/${pageId}/meta`, {
 			method: 'GET'
 		}).then((response) => {
@@ -204,33 +206,11 @@ export default Service.extend({
 	},
 
 	//**************************************************
-	// Activity
-	//**************************************************
-	
-	// document meta referes to number of views, edits, approvals, etc.
-	getActivity(documentId, days) {
-		return this.get('ajax').request(`documents/${documentId}/activity?days=${days}`, {
-			method: "GET"
-		}).then((response) => {
-			let data = [];
-			data = response.map((obj) => {
-				let data = this.get('store').normalize('documentActivity', obj);
-				return this.get('store').push(data);
-			});
-
-			return data;
-		}).catch(() => {
-			return [];
-		});
-	},
-
-	//**************************************************
 	// Table of contents
 	//**************************************************
 
 	// Returns all pages without the content
 	getTableOfContents(documentId) {
-
 		return this.get('ajax').request(`documents/${documentId}/pages?content=0`, {
 			method: 'GET'
 		}).then((response) => {
@@ -268,7 +248,6 @@ export default Service.extend({
 
 	// document attachments without the actual content
 	getAttachments(documentId) {
-
 		return this.get('ajax').request(`documents/${documentId}/attachments`, {
 			method: 'GET'
 		}).then((response) => {
@@ -380,8 +359,108 @@ export default Service.extend({
 			data.links = response.links;
 
 			return data;
+		}).catch((error) => {
+			return error;
 		});
+	},
 
+	// fetchPages returns all pages, page meta and pending changes for document.
+	// This method bulk fetches data to reduce network chatter.
+	// We produce a bunch of calculated boolean's for UI display purposes 
+	// that can tell us quickly about pending changes for UI display.
+	fetchPages(documentId, currentUserId) {
+		let constants = this.get('constants');
+		let changePending = false;
+		let changeAwaitingReview = false;
+		let changeRejected = false;
+		let userHasChangePending = false;
+		let userHasChangeAwaitingReview = false;
+		let userHasChangeRejected = false;
+
+		return this.get('ajax').request(`fetch/page/${documentId}`, {
+			method: 'GET'
+		}).then((response) => {
+			let data = A([]);
+
+			response.forEach((page) => {
+				changePending = false;
+				changeAwaitingReview = false;
+				changeRejected = false;
+				userHasChangePending = false;
+				userHasChangeAwaitingReview = false;
+				userHasChangeRejected = false;
+
+				let p = this.get('store').normalize('page', page.page);
+				p = this.get('store').push(p);
+
+				let m = this.get('store').normalize('page-meta', page.meta);
+				m = this.get('store').push(m);
+
+				let pending = A([]);
+				page.pending.forEach((i) => {
+					let p = this.get('store').normalize('page', i.page);
+					p = this.get('store').push(p);
+	
+					let m = this.get('store').normalize('page-meta', i.meta);
+					m = this.get('store').push(m);
+
+					let belongsToMe = p.get('userId') === currentUserId;
+					let pageStatus = p.get('status');
+
+					let pi = {
+						id: p.get('id'),
+						page: p,
+						meta: m,
+						owner: i.owner,
+						changePending: pageStatus === constants.ChangeState.Pending || pageStatus === constants.ChangeState.PendingNew,
+						changeAwaitingReview: pageStatus === constants.ChangeState.UnderReview,
+						changeRejected: pageStatus === constants.ChangeState.Rejected,
+						userHasChangePending: belongsToMe && (pageStatus === constants.ChangeState.Pending || pageStatus === constants.ChangeState.PendingNew),
+						userHasChangeAwaitingReview: belongsToMe && pageStatus === constants.ChangeState.UnderReview,
+						userHasChangeRejected: belongsToMe && pageStatus === constants.ChangeState.Rejected
+					};
+
+					let pim = this.get('store').normalize('page-pending', pi);
+					pim = this.get('store').push(pim);
+					pending.pushObject(pim);
+
+					if (p.get('status') === constants.ChangeState.Pending || p.get('status') === constants.ChangeState.PendingNew) {
+						changePending = true;
+						userHasChangePending = belongsToMe;
+					}
+					if (p.get('status') === constants.ChangeState.UnderReview) {
+						changeAwaitingReview = true;
+						userHasChangeAwaitingReview = belongsToMe;
+					}
+					if (p.get('status') === constants.ChangeState.Rejected) {
+						changeRejected = p.get('status') === constants.ChangeState.Rejected;
+						userHasChangeRejected = changeRejected && belongsToMe;
+					}
+				});
+
+				let pi = {
+					id: p.get('id'),
+					page: p,
+					meta: m,
+					pending: pending,
+					changePending: changePending,
+					changeAwaitingReview: changeAwaitingReview,
+					changeRejected: changeRejected,
+					userHasChangePending: userHasChangePending,
+					userHasChangeAwaitingReview: userHasChangeAwaitingReview,
+					userHasChangeRejected: userHasChangeRejected,
+					userHasNewPagePending: p.isNewPageUserPending(this.get('sessionService.user.id'))
+				};
+			
+				let pim = this.get('store').normalize('page-container', pi);
+				pim = this.get('store').push(pim);
+				data.pushObject(pim);
+			});
+
+			return data;
+		}).catch((error) => {
+			return error;
+		});
 	}
 });
 

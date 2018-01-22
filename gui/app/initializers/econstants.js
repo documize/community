@@ -10,16 +10,15 @@
 // https://documize.com
 
 export function initialize(application) {
-    application.inject('route', 'constants', 'constants:main');
-    application.inject('controller', 'constants', 'constants:main');
-    application.inject('component', 'constants', 'constants:main');
-    application.inject('template', 'constants', 'constants:main');
-    application.inject('service', 'constants', 'constants:main');
-    application.inject('model', 'constants', 'constants:main');
+    application.inject('route', 'econstants', 'econstants:main');
+    application.inject('controller', 'econstants', 'econstants:main');
+    application.inject('component', 'econstants', 'econstants:main');
+    application.inject('template', 'econstants', 'econstants:main');
+    application.inject('service', 'econstants', 'econstants:main');
 }
 
 export default {
-    name: 'constants',
+    name: 'econstants',
     after: "application",
     initialize: initialize
 };

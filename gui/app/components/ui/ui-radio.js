@@ -19,7 +19,8 @@ export default Component.extend({
 	actions: {
 		onCheck() {
 			if (this.get('onClick') !== null) {
-				this.attrs.onClick(this.get('value'));
+				let cb = this.get('onClick');
+				cb(this.get('value'));
 			} else {
 				this.set('selected', !this.get('selected'));
 			}

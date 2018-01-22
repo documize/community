@@ -24,7 +24,8 @@ export default Component.extend({
 		},
 
 		onCancel() {
-			this.attrs.onCancel();
+			let cb = this.get('onCancel');
+			cb();
 		},
 
 		onAction(title) {
@@ -33,7 +34,8 @@ export default Component.extend({
 			page.set('title', title);
 			meta.set('rawBody', this.get("data"));
 
-			this.attrs.onAction(page, meta);
+			let cb = this.get('onAction');
+			cb(page, meta);
 		}
 	}
 });

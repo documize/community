@@ -9,6 +9,7 @@
 //
 // https://documize.com
 
+import $ from 'jquery';
 import { empty } from '@ember/object/computed';
 import { computed } from '@ember/object';
 import TooltipMixin from '../../mixins/tooltip';
@@ -75,21 +76,25 @@ export default Component.extend(TooltipMixin, ModalMixin, {
 				return;
 			}
 
-			this.attrs.onAction(this.get('page.title'));
+			let cb = this.get('onAction');
+			cb(this.get('page.title'));
 		},
 
 		onCancel() {
-			if (this.attrs.isDirty() !== null && this.attrs.isDirty()) {
+			let isDirty = this.get('isDirty');
+			if (isDirty() !== null && isDirty()) {
 				this.modalOpen('#discard-modal-' + this.get('page.id'), {show: true});
 				return;
 			}
 
-			this.attrs.onCancel();
+			let cb = this.get('onCancel');
+			cb();
 		},
 
 		onDiscard() {
 			this.modalClose('#discard-modal-' + this.get('page.id'));
-			this.attrs.onCancel();
+			let cb = this.get('onCancel');
+			cb();
 		},
 
 		onPreview() {

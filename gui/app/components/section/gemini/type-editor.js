@@ -9,6 +9,7 @@
 //
 // https://documize.com
 
+import $ from 'jquery';
 import { set } from '@ember/object';
 import { schedule } from '@ember/runloop';
 import { inject as service } from '@ember/service';
@@ -21,9 +22,13 @@ export default Component.extend(SectionMixin, TooltipMixin, {
 	isDirty: false,
 	waiting: false,
 	authenticated: false,
-	user: {},
-	workspaces: [],
-	config: {},
+
+	init() {
+		this._super(...arguments);
+		this.user = {};
+		this.workspaces = [];
+		this.config = {};			
+	},
 
 	didReceiveAttrs() {
 		let config = {};
@@ -195,7 +200,8 @@ export default Component.extend(SectionMixin, TooltipMixin, {
 		},
 
 		onCancel() {
-			this.attrs.onCancel();
+			let cb = this.get('onCancel');
+			cb();
 		},
 
 		onAction(title) {
@@ -206,7 +212,8 @@ export default Component.extend(SectionMixin, TooltipMixin, {
 			meta.set('config', JSON.stringify(this.get('config')));
 			meta.set('externalSource', true);
 
-			this.attrs.onAction(page, meta);
+			let cb = this.get('onAction');
+			cb(page, meta);
 		}
 	}
 });

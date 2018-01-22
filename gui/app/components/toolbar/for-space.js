@@ -9,6 +9,7 @@
 //
 // https://documize.com
 
+import $ from 'jquery';
 import Component from '@ember/component';
 import { computed } from '@ember/object';
 import { schedule } from '@ember/runloop';
@@ -29,12 +30,7 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 	copyTemplate: true,
 	copyPermission: true,
 	copyDocument: false,
-	clonedSpace: { id: '' },
-	pinState : {
-		isPinned: false,
-		pinId: '',
-		newName: ''
-	},
+
 	spaceSettings: computed('permissions', function() {
 		return this.get('permissions.spaceOwner') || this.get('permissions.spaceManage');
 	}),
@@ -49,9 +45,20 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 	templateDocName: '',
 	templateDocNameError: false,
 	selectedTemplate: '',
-	importedDocuments: [],
-	importStatus: [],
+
 	dropzone: null,
+
+	init() {
+		this._super(...arguments);
+		this.importedDocuments = [];
+		this.importStatus = [];
+		this.clonedSpace = { id: '' };
+		this.pinState = {
+			isPinned: false,
+			pinId: '',
+			newName: ''
+		};
+	},
 
 	didReceiveAttrs() {
 		this._super(...arguments);
@@ -226,8 +233,8 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 			this.set('deleteSpaceName', '');
 			$("#delete-space-name").removeClass("is-invalid");
 
-			this.attrs.onDeleteSpace(this.get('space.id'));
-
+			let cb = this.get('onDeleteSpace');
+			cb(this.get('space.id'));
 
 			this.modalClose('#space-delete-modal');
 		},
@@ -330,8 +337,9 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 			this.set('importedDocuments', documents);
 
 			if (documents.length === 0) {
-				this.modalClose("#import-doc-modal");				
-				this.attrs.onRefresh();
+				this.modalClose("#import-doc-modal");
+				let cb = this.get('onRefresh');
+				cb();
 			}
 		},
 

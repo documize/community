@@ -48,7 +48,8 @@ export default Component.extend({
 			this.set('selectedDocuments', A([]));
 			this.set('showDeleteDialog', false);
 
-			this.attrs.onDeleteDocument(list);
+			let cb = this.get('onDeleteDocument');
+			cb(list);
 
 			return true;
 		},
@@ -72,7 +73,9 @@ export default Component.extend({
 
 			this.set('showMoveDialog', false);
 			this.set('selectedDocuments', A([]));
-			this.attrs.onMoveDocument(list, moveSpaceId);
+
+			let cb = this.get('onMoveDocument');
+			cb(list, moveSpaceId);
 
 			return true;
 		},

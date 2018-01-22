@@ -9,6 +9,7 @@
 //
 // https://documize.com
 
+import $ from 'jquery';
 import Component from '@ember/component';
 import { inject as service } from '@ember/service';
 import TooltipMixin from '../../mixins/tooltip';
@@ -22,7 +23,11 @@ export default Component.extend(ModalMixin, TooltipMixin, {
 	newCategory: '',
 	deleteId: '',
 	dropdown: null,
-	users: [],
+
+	init() {
+		this._super(...arguments);
+		this.users = [];
+	},
 
 	didReceiveAttrs() {
 		this._super(...arguments);

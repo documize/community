@@ -14,7 +14,10 @@ import Component from '@ember/component';
 import miscUtil from '../utils/misc';
 
 export default Component.extend({
-    notifications: [],
+    init() {
+        this._super(...arguments);
+        this.notifications = [];
+    },
 
     didInsertElement() {
         this.eventBus.subscribe('notifyUser', this, 'showNotification');

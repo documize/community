@@ -49,11 +49,15 @@ let UserModel = BaseModel.extend({
 	active: false,
 	editor: false,
 	admin: false,
-	accounts: [],
 
 	fullname: computed('firstname', 'lastname', function () {
 		return `${this.get('firstname')} ${this.get('lastname')}`;
 	}),
+
+	init() {
+		this._super(...arguments);
+		this.accounts =  [];
+	},
 
 	generateInitials() {
 		let first = this.get('firstname').trim();
@@ -96,8 +100,8 @@ let DocumentModel = BaseModel.extend({
 	userId: "",
 	tags: "",
 	template: "",
-	protection: constants.ProtectionType.None,
-	approval: constants.ApprovalType.None,
+	protection: 0,
+	approval: 0,
 
 	slug: computed('name', function () {
 		return stringUtil.makeSlug(this.get('name'));
@@ -142,7 +146,10 @@ let FolderModel = BaseModel.extend({
 	},
 
 	// client-side prop that holds who can see this folder
-	sharedWith: [],
+	init() {
+		this._super(...arguments);
+		this.sharedWith =  [];
+	}
 });
 
 let AttachmentModel = BaseModel.extend({
@@ -159,12 +166,13 @@ let PageModel = BaseModel.extend({
 	orgId: "",
 	contentType: "",
 	level: 1,
-	sequence: 0,
+	sequence: 1004,
 	revisions: 0,
 	title: "",
 	body: "",
 	rawBody: "",
-	meta: {},
+	status: 0,
+	relativeId: '',
 
 	tagName: computed('level', function () {
 		return "h" + this.get('level');
@@ -178,6 +186,11 @@ let PageModel = BaseModel.extend({
 		let tocIndent = this.get('tocIndent');
 		return `margin-left-${tocIndent}`;
 	}),
+
+	init() {
+		this._super(...arguments);
+		this.meta =  {};
+	}
 });
 
 let PageMetaModel = BaseModel.extend({
@@ -185,8 +198,12 @@ let PageMetaModel = BaseModel.extend({
 	documentId: "",
 	orgId: "",
 	rawBody: "",
-	config: {},
 	externalSource: false,
+
+	init() {
+		this._super(...arguments);
+		this.config =  {};
+	}
 });
 
 let SectionModel = BaseModel.extend({

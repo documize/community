@@ -21,8 +21,12 @@ export default Component.extend(SectionMixin, NotifierMixin, {
 	isDirty: false,
 	waiting: false,
 	authenticated: false,
-	config: {},
-	items: {},
+
+	init() {
+		this._super(...arguments);
+		this.config = {};
+		this.items = {};
+	},
 
 	didReceiveAttrs() {
 		let config = {};
@@ -140,7 +144,8 @@ export default Component.extend(SectionMixin, NotifierMixin, {
 		},
 
 		onCancel() {
-			this.attrs.onCancel();
+			let cb = this.get('onCancel');
+			cb();
 		},
 
 		onAction(title) {

@@ -12,9 +12,6 @@
 import Component from '@ember/component';
 
 export default Component.extend({
-    documentTags: [],
-    tagz: [],
-
 	init() {
 		this._super(...arguments);
         let tagz = [];

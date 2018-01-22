@@ -12,7 +12,8 @@
 import TextField from '@ember/component/text-field';
 
 export default TextField.extend({
-    becomeFocused: function() {
-        this.$().focus();
-    }.on('didInsertElement')
+    didInsertElement() {
+        this._super(...arguments);
+        this.$().focus();        
+    }
 });

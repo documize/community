@@ -9,8 +9,8 @@
 //
 // https://documize.com
 
+import $ from 'jquery';
 import { computed, set } from '@ember/object';
-
 import Component from '@ember/component';
 import { inject as service } from '@ember/service';
 
@@ -116,7 +116,8 @@ export default Component.extend({
 		},
 
 		onCancel() {
-			this.attrs.onCancel();
+			let cb = this.get('onCancel');
+			cb();
 		},
 
 		onAction(title) {
@@ -127,7 +128,8 @@ export default Component.extend({
 			page.set('title', title);
 			meta.set('rawBody', editor.getContent());
 
-			this.attrs.onAction(page, meta);
+			let cb = this.get('onAction');
+			cb(page, meta);
 		}
 	}
 });

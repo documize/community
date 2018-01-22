@@ -8,7 +8,7 @@
 						<a href="{{appMeta.endpoint}}/public/attachments/{{appMeta.orgId}}/{{a.id}}">
 							<span class="file">{{ a.filename }}</span>
 						</a>
-						{{#if permissions.documentEdit}}
+						{{#if canEdit}}
 							<div class="button-icon-danger align-middle action" {{action 'onShowDialog' a.id a.filename}}>
 								<i class="material-icons">delete</i>
 							</div>
@@ -17,7 +17,7 @@
 				{{/each}}
 			</ul>
 		{{/if}}
-		{{#if permissions.documentEdit}}
+		{{#if canEdit}}
 			<div class="upload-document-files">
 				<div id="upload-document-files" class="btn btn-secondary">Upload</div>
 			</div>
@@ -27,5 +27,4 @@
 	{{#ui/ui-dialog title="Delete Attachment" confirmCaption="Delete" buttonType="btn-danger" show=showDialog onAction=(action 'onDelete')}}
 		<p>Are you sure you want to delete {{deleteAttachment.name}}?</p>
 	{{/ui/ui-dialog}}
-
 {{/if}}

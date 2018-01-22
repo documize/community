@@ -23,20 +23,23 @@ function getState(toc, page) {
 		downDisabled: true,
 		indentDisabled: true,
 		outdentDisabled: true,
+		pageId: ''
 	};
 
 	if (is.undefined(page)) {
 		return state;
 	}
 
-	var index = _.indexOf(toc, page, false);
+	state.pageId = page.get('id');
+
+	var index = _.findIndex(toc, function(i) { return i.get('page.id') === page.get('id'); });
 
 	if (index === -1) {
 		return state;
 	}
 
-	var upPage = toc[index - 1];
-	var downPage = toc[index + 1];
+	var upPage = _.isUndefined(toc[index - 1]) ? toc[index - 1] : toc[index - 1].get('page');
+	var downPage = _.isUndefined(toc[index + 1]) ? toc[index + 1] : toc[index + 1].get('page');
 
 	if (_.isUndefined(upPage)) {
 		state.tocTools.upTarget = '';
@@ -50,17 +53,17 @@ function getState(toc, page) {
 	// can we indent?
 	if (!_.isUndefined(upPage)) {
 		// can only go up if someone is same or higher level?
-		var index2 = _.indexOf(toc, upPage, false);
+		var index2 = _.findIndex(toc, function(i) { return i.get('page.id') === upPage.get('id'); });
 
 		if (index2 !== -1) {
 			// up
 			for (var i = index2; i >= 0; i--) {
-				if (page.get('level') > toc[i].get('level')) {
+				if (page.get('level') > toc[i].get('page.level')) {
 					break;
 				}
 
-				if (page.get('level') === toc[i].get('level')) {
-					state.tocTools.upTarget = toc[i].id;
+				if (page.get('level') === toc[i].get('page.level')) {
+					state.tocTools.upTarget = toc[i].get('page.id');
 					break;
 				}
 			}
@@ -78,16 +81,16 @@ function getState(toc, page) {
 	// can we go down?
 	if (!_.isUndefined(downPage)) {
 		// can only go down if someone below is at our level or higher
-		var index3 = _.indexOf(toc, downPage, false);
+		var index3 = _.findIndex(toc, function(i) { return i.get('page.id') === downPage.get('id'); });
 
 		if (index3 !== -1) {
 			for (var i3 = index3; i3 < toc.length; i3++) {
-				if (toc[i3].get('level') < page.get('level')) {
+				if (toc[i3].get('page.level') < page.get('level')) {
 					break;
 				}
 
-				if (page.get('level') === toc[i3].get('level')) {
-					state.tocTools.downTarget = toc[i3].get('id');
+				if (page.get('level') === toc[i3].get('page.level')) {
+					state.tocTools.downTarget = toc[i3].get('page.id');
 					break;
 				}
 			}
@@ -115,23 +118,25 @@ function getState(toc, page) {
 
 // move up page and any associated kids
 function moveUp(state, pages, current) {
-	var page1 = _.findWhere(pages, { id: state.tocTools.upTarget });
+	var page1 = _.find(pages, function(i) { return i.get('page.id') === state.tocTools.upTarget });
 	var page2 = null;
 	var pendingChanges = [];
+
+	if (is.not.undefined(page1)) page1 = page1.get('page');
 
 	if (is.undefined(current) || is.undefined(page1)) {
 		return pendingChanges;
 	}
 
-	var index1 = _.indexOf(pages, page1, false);
+	var index1 = _.findIndex(pages, function(i) { return i.get('page.id') === page1.get('id'); });
 
 	if (index1 !== -1) {
-		page2 = pages[index1 - 1];
+		if (is.not.undefined(pages[index1 - 1])) page2 = pages[index1 - 1].get('page');
 	}
 
 	var sequence1 = page1.get('sequence');
 	var sequence2 = is.not.null(page2) && is.not.undefined(page2) ? page2.get('sequence') : 0;
-	var index = _.indexOf(pages, current, false);
+	var index = _.findIndex(pages, function(i) { return i.get('page.id') === current.get('id'); });
 
 	if (index !== -1) {
 		var sequence = (sequence1 + sequence2) / 2;
@@ -142,14 +147,14 @@ function moveUp(state, pages, current) {
 		});
 
 		for (var i = index + 1; i < pages.length; i++) {
-			if (pages[i].get('level') <= current.get('level')) {
+			if (pages[i].get('page.level') <= current.get('level')) {
 				break;
 			}
 
 			sequence = (sequence + page1.get('sequence')) / 2;
 
 			pendingChanges.push({
-				pageId: pages[i].get('id'),
+				pageId: pages[i].get('page.id'),
 				sequence: sequence
 			});
 		}
@@ -160,9 +165,11 @@ function moveUp(state, pages, current) {
 
 // move down page and any associated kids
 function moveDown(state, pages, current) {
-	var pageIndex = _.indexOf(pages, current, false);
-	var downTarget = _.findWhere(pages, { id: state.tocTools.downTarget });
-	var downTargetIndex = _.indexOf(pages, downTarget, false);
+	var pageIndex = _.findIndex(pages, function(i) { return i.get('page.id') === current.get('id'); });
+	var downTarget = _.find(pages, function(i) { return i.get('page.id') === state.tocTools.downTarget; });
+	if (is.not.undefined(downTarget)) downTarget = downTarget.get('page');
+
+	var downTargetIndex = _.findIndex(pages, function(i) { return i.get('page.id')  === downTarget.get('id'); });
 	var pendingChanges = [];
 
 	if (pageIndex === -1 || downTargetIndex === -1) {
@@ -173,25 +180,28 @@ function moveDown(state, pages, current) {
 	var upperSequence = 0;
 	var cutOff = _.rest(pages, downTargetIndex);
 	var siblings = _.reject(cutOff, function (p) {
-		return p.get('level') !== current.get('level') || p.get('id') === current.get('id') || p.get('id') === downTarget.get('id');
+		return p.get('page.level') !== current.get('level') || p.get('page.id') === current.get('id') || p.get('page.id') === downTarget.get('id');
 	});
 
 	if (siblings.length > 0) {
-		var aboveThisGuy = siblings[0];
-		var belowThisGuy = pages[_.indexOf(pages, aboveThisGuy, false) - 1];
+		var aboveThisGuy = siblings[0].get('page');
+		var belowThisGuyIndex = _.findIndex(pages, function(i) { return i.get('page.id') === aboveThisGuy.get('id'); })
+		var belowThisGuy = pages[belowThisGuyIndex - 1];
+
+		if (is.not.null(belowThisGuy)) belowThisGuy = belowThisGuy.get('page');
 
 		if (is.not.null(belowThisGuy) && belowThisGuy.get('level') > current.get('level')) {
 			startingSequence = (aboveThisGuy.get('sequence') + belowThisGuy.get('sequence')) / 2;
 			upperSequence = aboveThisGuy.get('sequence');
 		} else {
-			var otherGuy = pages[downTargetIndex + 1];
+			var otherGuy = pages[downTargetIndex + 1].get('page');
 
 			startingSequence = (otherGuy.get('sequence') + downTarget.get('sequence')) / 2;
 			upperSequence = otherGuy.get('sequence');
 		}
 	} else {
 		// startingSequence = downTarget.sequence * 2;
-		startingSequence = cutOff[cutOff.length - 1].get('sequence') * 2;
+		startingSequence = cutOff[cutOff.length - 1].get('page.sequence') * 2;
 		upperSequence = startingSequence * 2;
 	}
 
@@ -203,14 +213,14 @@ function moveDown(state, pages, current) {
 	var sequence = (startingSequence + upperSequence) / 2;
 
 	for (var i = pageIndex + 1; i < pages.length; i++) {
-		if (pages[i].get('level') <= current.get('level')) {
+		if (pages[i].get('page.level') <= current.get('level')) {
 			break;
 		}
 
 		var sequence2 = (sequence + upperSequence) / 2;
 
 		pendingChanges.push({
-			pageId: pages[i].get('id'),
+			pageId: pages[i].get('page.id'),
 			sequence: sequence2
 		});
 	}
@@ -220,7 +230,7 @@ function moveDown(state, pages, current) {
 
 // indent page and any associated kisds
 function indent(state, pages, current) {
-	var pageIndex = _.indexOf(pages, current, false);
+	var pageIndex = _.findIndex(pages, function(i) { return i.get('page.id') === current.get('id'); });
 	var pendingChanges = [];
 
 	pendingChanges.push({
@@ -229,13 +239,13 @@ function indent(state, pages, current) {
 	});
 
 	for (var i = pageIndex + 1; i < pages.length; i++) {
-		if (pages[i].get('level') <= current.get('level')) {
+		if (pages[i].get('page.level') <= current.get('level')) {
 			break;
 		}
 
 		pendingChanges.push({
-			pageId: pages[i].get('id'),
-			level: pages[i].get('level') + state.tocTools.indentIncrement
+			pageId: pages[i].get('page.id'),
+			level: pages[i].get('page.level') + state.tocTools.indentIncrement
 		});
 	}
 
@@ -243,7 +253,7 @@ function indent(state, pages, current) {
 }
 
 function outdent(state, pages, current) {
-	var pageIndex = _.indexOf(pages, current, false);
+	var pageIndex = _.findIndex(pages, function(i) { return i.get('page.id') === current.get('id'); });
 	var pendingChanges = [];
 
 	pendingChanges.push({
@@ -252,13 +262,13 @@ function outdent(state, pages, current) {
 	});
 
 	for (var i = pageIndex + 1; i < pages.length; i++) {
-		if (pages[i].get('level') <= current.get('level')) {
+		if (pages[i].get('page.level') <= current.get('level')) {
 			break;
 		}
 
 		pendingChanges.push({
-			pageId: pages[i].get('id'),
-			level: pages[i].get('level') - 1
+			pageId: pages[i].get('page.id'),
+			level: pages[i].get('page.level') - 1
 		});
 	}
 

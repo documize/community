@@ -9,6 +9,7 @@
 //
 // https://documize.com
 
+import $ from 'jquery';
 import EmberObject from '@ember/object';
 import { A } from '@ember/array';
 import { inject as service } from '@ember/service';
@@ -21,8 +22,12 @@ export default Component.extend(SectionMixin, NotifierMixin, {
 	isDirty: false,
 	busy: false,
 	authenticated: false,
-	config: {},
 	owners: null,
+
+	init() {
+		this._super(...arguments);
+		this.config = {};
+	},
 
 	didReceiveAttrs() {
 		let self = this;
@@ -227,7 +232,8 @@ export default Component.extend(SectionMixin, NotifierMixin, {
 		},
 
 		onCancel() {
-			this.attrs.onCancel();
+			let cb = this.get('onCancel');
+			cb();
 		},
 
 		onAction(title) {

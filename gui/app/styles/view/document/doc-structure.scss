@@ -1,3 +1,7 @@
+.document-tabnav {
+	margin: 50px 0 100px 0;
+}
+
 .document-structure {
 	margin: 0 0 0 0;
 
@@ -13,6 +17,14 @@
 			font-weight: normal;
 			text-align: center;
 			display: inline-block;
+		}
+
+		> .page-state-pending {
+			color: $color-red;
+		}
+
+		> .page-state-review {
+			color: $color-green;
 		}
 
 		> .page-title {

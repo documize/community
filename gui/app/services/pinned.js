@@ -19,9 +19,13 @@ export default Service.extend({
 	ajax: service(),
 	appMeta: service(),
 	store: service(),
-	pins: [],
 	initialized: false,
 
+	init() {
+		this._super(...arguments);
+		this.pins = [];
+	},
+	
 	getUserPins() {
 		let userId = this.get('session.user.id');
 

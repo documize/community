@@ -9,6 +9,7 @@
 //
 // https://documize.com
 
+import $ from 'jquery';
 import { empty } from '@ember/object/computed';
 import { computed } from '@ember/object';
 import { schedule } from '@ember/runloop';
@@ -62,7 +63,8 @@ export default Component.extend({
 			this.set('document.excerpt', this.get('docExcerpt'));
 			this.set('editMode', false);
 
-			this.attrs.onSaveDocument(this.get('document'));
+			let cb = this.get('onSaveDocument');
+			cb(this.get('document'));
 		},
 
 		onCancel() {

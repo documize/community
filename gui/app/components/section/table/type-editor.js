@@ -9,8 +9,9 @@
 //
 // https://documize.com
 
+import $ from 'jquery';
+import { schedule } from 'ember/runloop';
 import { computed } from '@ember/object';
-
 import Component from '@ember/component';
 
 export default Component.extend({
@@ -38,8 +39,10 @@ export default Component.extend({
 			tableResizerOffset: 10
 		});
 
-		$(id).on('froalaEditor.contentChanged', () => {
-			this.set('isDirty', true);
+		schedule('afterRender', function() {
+			$(id).on('froalaEditor.contentChanged', () => {
+				this.set('isDirty', true);  // eslint-disable-line ember/jquery-ember-run
+			});
 		});
 	},
 
@@ -53,7 +56,8 @@ export default Component.extend({
 		},
 
 		onCancel() {
-			this.attrs.onCancel();
+			let cb = this.get('onCancel');
+			cb();
 		},
 
 		onAction(title) {
@@ -69,7 +73,8 @@ export default Component.extend({
 
 			meta.set('rawBody', body);
 
-			this.attrs.onAction(page, meta);
+			let cb = this.get('onAction');
+			cb(page, meta);
 		}
 	}
 });

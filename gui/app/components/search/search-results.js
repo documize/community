@@ -12,8 +12,12 @@
 import Component from '@ember/component';
 
 export default Component.extend({
-	results: [],
 	resultPhrase: "",
+
+	init() {
+		this._super(...arguments);
+		this.results = [];
+	},
 
 	didReceiveAttrs() {
 		let docs = this.get('results');

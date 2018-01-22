@@ -9,27 +9,33 @@
 //
 // https://documize.com
 
+import $ from 'jquery';
+import { computed } from '@ember/computed';
 import { inject as service } from '@ember/service';
 import Controller from '@ember/controller';
 import TooltipMixin from '../../../mixins/tooltip';
 
 export default Controller.extend(TooltipMixin, {
 	folderService: service('folder'),
-	folders: [],
 	dropdown: null,
-	deleteSpace: {
-		id: '',
-		name: ''
+
+	init() {
+		this._super(...arguments);
+		this.folders = [];
+		this.deleteSpace = {
+			id: '',
+			name: ''
+		};
 	},
 
-	label: function () {
+	label: computed('folders', function() {
 		switch (this.get('folders').length) {
 		case 1:
 			return "space";
 		default:
 			return "spaces";
 		}
-	}.property('folders'),
+	}),
 
 	actions: {
 		onShow(id) {

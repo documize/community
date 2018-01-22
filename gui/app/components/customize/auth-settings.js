@@ -27,16 +27,20 @@ export default Component.extend({
 	KeycloakPublicKeyError: empty('keycloakConfig.publicKey'),
 	KeycloakAdminUserError: empty('keycloakConfig.adminUser'),
 	KeycloakAdminPasswordError: empty('keycloakConfig.adminPassword'),
-	keycloakConfig: {
-		url: '',
-		realm: '',
-		clientId: '',
-		publicKey: '',
-		adminUser: '',
-		adminPassword: '',
-		group: '',
-		disableLogout: false,
-		defaultPermissionAddSpace: false
+
+	init() {
+		this._super(...arguments);
+		this.keycloakConfig = {
+			url: '',
+			realm: '',
+			clientId: '',
+			publicKey: '',
+			adminUser: '',
+			adminPassword: '',
+			group: '',
+			disableLogout: false,
+			defaultPermissionAddSpace: false
+		};
 	},
 
 	didReceiveAttrs() {

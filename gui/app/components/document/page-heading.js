@@ -9,66 +9,72 @@
 //
 // https://documize.com
 
-import Component from '@ember/component';
+import $ from 'jquery';
 import { computed } from '@ember/object';
+import { debounce } from '@ember/runloop';
 import { inject as service } from '@ember/service';
-import { A } from "@ember/array"
 import ModalMixin from '../../mixins/modal';
+import Component from '@ember/component';
 
 export default Component.extend(ModalMixin, {
 	documentService: service('document'),
+	searchService: service('search'),
+	router: service(),
 	deleteChildren: false,
 	blockTitle: "",
 	blockExcerpt: "",
-	documentList: A([]), 		//includes the current document
-	documentListOthers: A([]), 	//excludes the current document
-	hasMenuPermissions: computed('permissions', function() {
-		let permissions = this.get('permissions');
-		return permissions.get('documentDelete') || permissions.get('documentCopy') ||
-			permissions.get('documentMove') || permissions.get('documentTemplate');
+	canEdit: false,
+	canDelete: false,
+	canMove: false,
+	docSearchFilter: '',
+	onKeywordChange: function () {
+		debounce(this, this.searchDocs, 750);
+	}.observes('docSearchFilter'),
+	emptySearch: computed('docSearchResults', function() {
+		return this.get('docSearchResults.length') === 0;
 	}),
+	hasMenuPermissions: computed('permissions', 'userPendingItem', 'canEdit', 'canMove', 'canDelete', function() {
+		let permissions = this.get('permissions');
+
+		return permissions.get('documentCopy') || permissions.get('documentTemplate') ||
+			this.get('canEdit') || this.get('canMove') || this.get('canDelete');
+	}),
+
+	init() {
+		this._super(...arguments);
+		this.docSearchResults = [];
+	},
 
 	didReceiveAttrs() {
 		this._super(...arguments);
-
-		// Fetch document targets once
-		if (this.get('documentList').length > 0) {
-			return;
-		}
-
 		this.modalInputFocus('#publish-page-modal-' + this.get('page.id'), '#block-title-' + this.get('page.id'));
-		this.load();
-	},
 
-	load() {
-		let permissions = this.get('permissions');
-		if (permissions.get('documentMove') || permissions.get('documentCopy')) {
-			this.get('documentService').getPageMoveCopyTargets().then((d) => {
-				let me = this.get('document');
+	},
 	
-				d.forEach((i) => {
-					i.set('selected', false);
-				});
-	
-				if (this.get('isDestroyed') || this.get('isDestroying')) {
-					return;
-				}
-	
-				this.set('documentList', A(d));
-				this.set('documentListOthers', A(d.filter((item) => item.get('id') !== me.get('id'))));
-			});
-		}
+	searchDocs() {
+		let payload = { keywords: this.get('docSearchFilter').trim(), doc: true };
+		if (payload.keywords.length == 0) return;
+
+		this.get('searchService').find(payload).then((response)=> {
+			this.set('docSearchResults', response);
+		});
 	},
 
 	actions: {
 		onEdit() {
-			this.attrs.onEdit();
+			let page = this.get('page');
+
+			if (page.get('pageType') == this.get('constants').PageType.Tab) {
+				this.get('router').transitionTo('document.section', page.get('id'));
+			} else {
+				let cb = this.get('onEdit');
+				cb();
+			}
 		},
 
 		onDeletePage() {
-			this.attrs.onDeletePage(this.get('deleteChildren'));
-
-			this.load();
+			let cb = this.get('onDeletePage');
+			cb(this.get('deleteChildren'));
 
 			this.modalClose('#delete-page-modal-' + this.get('page.id'));
 		},
@@ -103,57 +109,60 @@ export default Component.extend(ModalMixin, {
 					externalSource: pm.get('externalSource')
 				};
 
-				this.attrs.onSavePageAsBlock(block);
+				let cb = this.get('onSavePageAsBlock');
+				cb(block);
 
 				this.set('blockTitle', '');
 				this.set('blockExcerpt', '');
 				$(titleElem).removeClass('is-invalid');
 				$(excerptElem).removeClass('is-invalid');
 
-				this.load();
-
 				this.modalClose('#publish-page-modal-' + this.get('page.id'));
+
+				let refresh = this.get('refresh');
+				refresh();
 			});
 		},
 
+		onSelectSearchResult(documentId) {
+			let results = this.get('docSearchResults');
+			results.forEach((d) => {
+				d.set('selected', d.get('documentId') === documentId);
+			});
+			this.set('docSearchResults', results);
+		},
+
 		onCopyPage() {
-			// can't proceed if no data
-			if (this.get('documentList.length') === 0) {
-				return;
-			}
+			let item = this.get('docSearchResults').findBy('selected', true);
+			let documentId = is.not.undefined(item) ? item.get('documentId') : '';
 
-			let targetDocumentId = this.get('documentList').findBy('selected', true).get('id');
-
-			// fall back to self
-			if (is.null(targetDocumentId)) {
-				targetDocumentId = this.get('document.id');
-			}
-
-			this.attrs.onCopyPage(targetDocumentId);
-
-			this.load();
+			if (is.empty(documentId)) return;
 
 			this.modalClose('#copy-page-modal-' + this.get('page.id'));
+
+			let cb = this.get('onCopyPage');
+			cb(documentId);
+
+			let refresh = this.get('refresh');
+			refresh();
 		},
 
 		onMovePage() {
-			// can't proceed if no data
-			if (this.get('documentListOthers.length') === 0) {
-				return;
-			}
+			let item = this.get('docSearchResults').findBy('selected', true);
+			let documentId = is.not.undefined(item) ? item.get('documentId') : '';
 
-			let targetDocumentId = this.get('documentListOthers').findBy('selected', true).get('id');
+			if (is.empty(documentId)) return;
 
-			// fall back to first document
-			if (is.null(targetDocumentId)) {
-				targetDocumentId = this.get('documentListOthers')[0].get('id');
-			}
-
-			this.attrs.onMovePage(targetDocumentId);
-
-			this.load();
+			// can't move into self
+			if (documentId === this.get('document.id')) return;
 
 			this.modalClose('#move-page-modal-' + this.get('page.id'));
-		}
+
+			let cb = this.get('onMovePage');
+			cb(documentId);
+
+			let refresh = this.get('refresh');
+			refresh();
+		},
 	}
 });

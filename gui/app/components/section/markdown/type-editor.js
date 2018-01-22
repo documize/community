@@ -111,7 +111,8 @@ export default Component.extend({
 		},
 
 		onCancel() {
-			this.attrs.onCancel();
+			let cb = this.get('onCancel');
+			cb();
 		},
 
 		onAction(title) {
@@ -120,7 +121,8 @@ export default Component.extend({
 			page.set('title', title);
 			meta.set('rawBody', this.getBody());
 
-			this.attrs.onAction(page, meta);
+			let cb = this.get('onCancel');
+			cb(page, meta);
 		}
 	}
 });

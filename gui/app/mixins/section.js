@@ -12,15 +12,15 @@
 import Mixin from '@ember/object/mixin';
 
 export default Mixin.create({
-	isReadonly: function () {
-		if (this.get('page.userId') === this.get('session.session.authenticated.user.id')) {
-			return undefined;
-		} else {
-			return "readonly";
-		}
-	}.property('page'),
+	// isReadonly() {
+	// 	if (this.get('page.userId') === this.get('session.session.authenticated.user.id')) {
+	// 		return undefined;
+	// 	} else {
+	// 		return "readonly";
+	// 	}
+	// }.property('page'),
 
-	isMine: function () {
-		return this.get('page.userId') === this.get('session.session.authenticated.user.id');
-	}.property('page')
+	// isMine() {
+	// 	return this.get('page.userId') === this.get('session.session.authenticated.user.id');
+	// }.property('page')
 });

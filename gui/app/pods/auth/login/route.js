@@ -9,6 +9,7 @@
 //
 // https://documize.com
 
+import $ from 'jquery';
 import { Promise as EmberPromise } from 'rsvp';
 import { inject as service } from '@ember/service';
 import Route from '@ember/routing/route';

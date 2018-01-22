@@ -19,10 +19,12 @@ export default BaseService.extend({
 	ajax: service(),
 	localStorage: service(),
 	store: service(),
-
-	// selected folder
 	currentFolder: null,
-	permissions: {},
+
+	init() {
+		this._super(...arguments);
+		this.permissions = {};
+	},
 
 	// Add a new folder.
 	add(payload) {

@@ -9,6 +9,7 @@
 //
 // https://documize.com
 
+import $ from 'jquery';
 import Component from '@ember/component';
 import { schedule } from '@ember/runloop';
 import { notEmpty } from '@ember/object/computed';
@@ -20,8 +21,12 @@ export default Component.extend(NotifierMixin, AuthMixin, {
 	copyTemplate: true,
 	copyPermission: true,
 	copyDocument: false,
-	clonedSpace: { id: '' },
 	hasClone: notEmpty('clonedSpace.id'),
+
+	init() {
+		this._super(...arguments);
+		this.clonedSpace = { id: '' };
+	},
 
 	didInsertElement() {
 		this._super(...arguments);
@@ -64,7 +69,8 @@ export default Component.extend(NotifierMixin, AuthMixin, {
 			$('#add-space-modal').modal('hide');
 			$('#add-space-modal').modal('dispose');
 
-			this.attrs.onAddSpace(payload);
+			let cb = this.get('onAddSpace');
+			cb(payload);
 		}
 	}
 });

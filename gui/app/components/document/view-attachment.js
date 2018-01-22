@@ -18,24 +18,28 @@ export default Component.extend({
 	documentService: service('document'),
 	appMeta: service(),
 	hasAttachments: notEmpty('files'),
-	deleteAttachment: {
-		id: "",
-		name: "",
-	},
 	canShow: computed('permissions', 'files', function() {
 		return this.get('files.length') > 0 || this.get('permissions.documentEdit');
+	}),
+	canEdit: computed('permissions', 'document.protection', function() {
+		return this.get('document.protection') !== this.get('constants').ProtectionType.Lock && this.get('permissions.documentEdit');
 	}),
 	showDialog: false,
 	
 	init() {
 		this._super(...arguments);
 		this.getAttachments();
+
+		this.deleteAttachment = {
+			id: "",
+			name: "",
+		};
 	},
 
 	didInsertElement() {
 		this._super(...arguments);
 
-		if (!this.get('permissions.documentEdit')) {
+		if (!this.get('permissions.documentEdit') || this.get('document.protection') === this.get('constants').ProtectionType.Lock) {
 			return;
 		}
 
@@ -76,10 +80,6 @@ export default Component.extend({
 		});
 
 		this.set('drop', dzone);
-	},
-
-	willDestroyElement() {
-		this._super(...arguments);
 	},
 
 	getAttachments() {

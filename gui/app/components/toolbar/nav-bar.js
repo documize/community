@@ -21,13 +21,13 @@ export default Component.extend({
 	store: service(),
 	pinned: service(),
 	enableLogout: true,
-	pins: [],
 	hasPins: notEmpty('pins'),
 	hasSpacePins: notEmpty('spacePins'),
 	hasDocumentPins: notEmpty('documentPins'),
 
 	init() {
 		this._super(...arguments);
+		this.pins = [];
 
 		if (this.get('appMeta.authProvider') === constants.AuthProvider.Keycloak) {
 			let config = this.get('appMeta.authConfig');

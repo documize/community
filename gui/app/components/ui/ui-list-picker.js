@@ -16,7 +16,6 @@ import { computed } from '@ember/object';
 export default Component.extend({
 	nameField: 'category',
 	singleSelect: false,
-	items: [],
 	maxHeight: 0,
 	onSelect: null,
 	styleCss: computed('maxHeight', function () {
@@ -29,13 +28,19 @@ export default Component.extend({
 		}
 	}),
 
+	init() {
+		this._super(...arguments);
+		this.items = [];	
+	},
+
 	actions: {
 		onToggle(item) {
 			// callback takes precedence
 			// caller sets item to 'selected'
 			let cb = this.get('onSelect');
 			if (cb !== null) {
-				this.attrs.onSelect(item);
+				let cb = this.get('onSelect');
+				cb(item);
 				return;
 			}
 

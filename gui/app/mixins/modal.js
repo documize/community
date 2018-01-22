@@ -9,6 +9,7 @@
 //
 // https://documize.com
 
+import $ from 'jquery';
 import Mixin from '@ember/object/mixin';
 
 // ID values expected format:

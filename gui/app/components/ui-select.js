@@ -15,7 +15,6 @@ import Component from '@ember/component';
 
 export default Component.extend({
     cssClass: "",
-    content: [],
     prompt: null,
     optionValuePath: 'id',
     optionLabelPath: 'name',
@@ -25,6 +24,11 @@ export default Component.extend({
     // shadow the passed-in `selection` to avoid
     // leaking changes to it via a 2-way binding
     _selection: reads('selection'),
+
+    init() {
+        this._super(...arguments);
+        this.content = [];
+    },
 
     actions: {
         change() {

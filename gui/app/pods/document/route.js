@@ -20,8 +20,7 @@ export default Route.extend(AuthenticatedRouteMixin, {
 	folderService: service('folder'),
 	linkService: service('link'),
 
-	beforeModel(transition) {
-		this.set('pageId', is.not.undefined(transition.queryParams.page) ? transition.queryParams.page : "");
+	beforeModel() {
 		this.set('folderId', this.paramsFor('document').folder_id);
 		this.set('documentId', this.paramsFor('document').document_id);
 
@@ -43,11 +42,11 @@ export default Route.extend(AuthenticatedRouteMixin, {
 			folders: this.get('folders'),
 			folder: this.get('folder'),
 			document: this.get('document'),
-			page: this.get('pageId'),
 			permissions: this.get('permissions'),
 			roles: this.get('roles'),
 			links: this.get('links'),
-			sections: this.get('sectionService').getAll()
+			sections: this.get('sectionService').getAll(),
+			blocks: this.get('sectionService').getSpaceBlocks(this.get('folder.id'))
 		});
 	},
 

@@ -20,25 +20,17 @@ export default Component.extend(ModalMixin, TooltipMixin, {
 	link: service(),
 	linkName: '',
 	selection: null,
-
 	tab1Selected: true,
 	tab2Selected: false,
 	tab3Selected: false,
 	showSections: computed('tab1Selected', function() { return this.get('tab1Selected'); }),
 	showAttachments: computed('tab2Selected', function() { return this.get('tab2Selected'); }),
 	showSearch: computed('tab3Selected', function() { return this.get('tab3Selected'); }),
-
 	keywords: '',
-	matches: {
-		documents: [],
-		pages: [],
-		attachments: []
-	},
 	hasMatches: computed('matches', function () {
 		let m = this.get('matches');
 		return m.documents.length || m.pages.length || m.attachments.length;
 	}),
-
 	modalId: computed('page', function() { return '#content-linker-modal-' + this.get('page.id'); }),
 	showModal: false,
 	onToggle: function() {
@@ -63,17 +55,23 @@ export default Component.extend(ModalMixin, TooltipMixin, {
 		this.modalOpen(modalId, {show: true});
 	}.observes('showModal'),
 
+	init() {
+		this._super(...arguments);
+		this.matches = {
+			documents: [],
+			pages: [],
+			attachments: []
+		};
+	},
+
 	didRender() {
 		this._super(...arguments);
-
 		this.renderTooltips();
 	},
 
 	willDestroyElement() {
 		this._super(...arguments);
-
 		this.removeTooltips();
-
 		this.modalClose(this.get('modalId'));
 	},
 

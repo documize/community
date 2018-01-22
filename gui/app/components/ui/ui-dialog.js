@@ -9,6 +9,7 @@
 //
 // https://documize.com
 
+import $ from 'jquery';
 import Component from '@ember/component';
 import stringUtil from '../../utils/string';
 
@@ -56,7 +57,8 @@ export default Component.extend({
 				return;
 			}
 
-			let result = this.attrs.onAction();
+			let cb = this.get('onAction');
+			let result = cb();
 			if (result) {
 				this.set('show', false);
 			}

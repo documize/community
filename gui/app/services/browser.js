@@ -9,7 +9,9 @@
 //
 // https://documize.com
 
+import $ from 'jquery';
 import Service, { inject as service } from '@ember/service';
+import { schedule } from '@ember/runloop';
 
 export default Service.extend({
     sessionService: service('session'),
@@ -42,5 +44,17 @@ export default Service.extend({
         }
 
         $('head').append('<meta name="description" content="' + description + '">');
+    },
+
+    scrollTo(id) {
+        schedule('afterRender', () => {
+            let elem = $(id).offset();
+
+            if (is.undefined(elem)) return;
+    
+            $('html, body').animate({
+                scrollTop: elem.top
+            }, 250);
+        });
     }
 });

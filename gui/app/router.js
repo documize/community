@@ -21,6 +21,10 @@ export default Router.map(function () {
 		path: '/'
 	});
 
+	this.route('dashboard', {
+		path: 'dashboard'
+	});
+
     this.route('folder', {
 		path: 's/:folder_id/:folder_slug'
 	}, function() {
@@ -60,6 +64,9 @@ export default Router.map(function () {
 		});
 		this.route('auth', {
 			path: 'auth'
+		});
+		this.route('audit', {
+			path: 'audit'
 		});
 	});
 
