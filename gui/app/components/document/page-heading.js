@@ -49,6 +49,10 @@ export default Component.extend(ModalMixin, {
 		this._super(...arguments);
 		this.modalInputFocus('#publish-page-modal-' + this.get('page.id'), '#block-title-' + this.get('page.id'));
 
+		let permissions = this.get('permissions');
+		this.set('canEdit', permissions.get('documentEdit'));
+		this.set('canDelete', permissions.get('documentDelete'));
+		this.set('canMove', permissions.get('documentMove'));
 	},
 	
 	searchDocs() {

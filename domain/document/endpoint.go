@@ -14,6 +14,7 @@ package document
 import (
 	"database/sql"
 	"encoding/json"
+	"github.com/documize/community/model/user"
 	"io/ioutil"
 	"net/http"
 	"sort"
@@ -33,6 +34,7 @@ import (
 	pm "github.com/documize/community/model/permission"
 	"github.com/documize/community/model/search"
 	"github.com/documize/community/model/space"
+	"github.com/documize/community/model/workflow"
 )
 
 // Handler contains the runtime information such as logging and database.
@@ -261,15 +263,39 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !permission.CanDeleteDocument(ctx, *h.Store, documentID) {
-		response.WriteForbiddenError(w)
-		return
-	}
-
 	doc, err := h.Store.Document.Get(ctx, documentID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	// If locked document then no can do
+	if doc.Protection == workflow.ProtectionLock {
+		response.WriteForbiddenError(w)
+		h.Runtime.Log.Info("attempted action on locked document")
+		return
+	}
+
+	// If approval workflow then only approvers can delete page
+	if doc.Protection == workflow.ProtectionReview {
+		approvers, err := permission.GetDocumentApprovers(ctx, *h.Store, doc.LabelID, doc.RefID)
+		if err != nil {
+			response.WriteForbiddenError(w)
+			h.Runtime.Log.Error(method, err)
+			return
+		}
+
+		if !user.Exists(approvers, ctx.UserID) {
+			response.WriteForbiddenError(w)
+			h.Runtime.Log.Info("attempted action on document when not approver")
+			return
+		}
+	}
+
+	// permission check
+	if !permission.CanDeleteDocument(ctx, *h.Store, documentID) {
+		response.WriteForbiddenError(w)
 		return
 	}
 
@@ -427,7 +453,7 @@ func (h *Handler) FetchDocumentData(w http.ResponseWriter, r *http.Request) {
 		sp = []space.Space{}
 	}
 
-	data := documentData{}
+	data := BulkDocumentData{}
 	data.Document = document
 	data.Permissions = record
 	data.Roles = rolesRecord
@@ -458,9 +484,9 @@ func (h *Handler) FetchDocumentData(w http.ResponseWriter, r *http.Request) {
 	response.WriteJSON(w, data)
 }
 
-// documentData represents all data associated for a single document.
+// BulkDocumentData represents all data associated for a single document.
 // Used by FetchDocumentData() bulk data load call.
-type documentData struct {
+type BulkDocumentData struct {
 	Document    doc.Document      `json:"document"`
 	Permissions pm.Record         `json:"permissions"`
 	Roles       pm.DocumentRecord `json:"roles"`

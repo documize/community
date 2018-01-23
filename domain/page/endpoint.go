@@ -31,8 +31,10 @@ import (
 	"github.com/documize/community/domain/section/provider"
 	"github.com/documize/community/model/activity"
 	"github.com/documize/community/model/audit"
+	dm "github.com/documize/community/model/doc"
 	"github.com/documize/community/model/page"
 	pm "github.com/documize/community/model/permission"
+	"github.com/documize/community/model/user"
 	"github.com/documize/community/model/workflow"
 	htmldiff "github.com/documize/html-diff"
 )
@@ -473,7 +475,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	response.WriteJSON(w, updatedPage)
 }
 
-// Delete deletes a page.
+// Delete a page.
 func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	method := "page.delete"
 	ctx := domain.GetRequestContext(r)
@@ -495,11 +497,6 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !permission.CanChangeDocument(ctx, *h.Store, documentID) {
-		response.WriteForbiddenError(w)
-		return
-	}
-
 	doc, err := h.Store.Document.Get(ctx, documentID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
@@ -507,11 +504,34 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Protect locked
+	ok, err := h.workflowPermitsChange(doc, ctx)
+	if !ok {
+		response.WriteForbiddenError(w)
+		h.Runtime.Log.Info("attempted delete section on locked document")
+		return
+	}
+
+	// If locked document then no can do
 	if doc.Protection == workflow.ProtectionLock {
 		response.WriteForbiddenError(w)
 		h.Runtime.Log.Info("attempted delete section on locked document")
 		return
+	}
+
+	// If approval workflow then only approvers can delete page
+	if doc.Protection == workflow.ProtectionReview {
+		approvers, err := permission.GetDocumentApprovers(ctx, *h.Store, doc.LabelID, doc.RefID)
+		if err != nil {
+			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
+			return
+		}
+
+		if !user.Exists(approvers, ctx.UserID) {
+			response.WriteForbiddenError(w)
+			h.Runtime.Log.Info("attempted delete document section when not approver")
+			return
+		}
 	}
 
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
@@ -582,11 +602,6 @@ func (h *Handler) DeletePages(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !permission.CanChangeDocument(ctx, *h.Store, documentID) {
-		response.WriteForbiddenError(w)
-		return
-	}
-
 	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -608,10 +623,10 @@ func (h *Handler) DeletePages(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Protect locked
-	if doc.Protection == workflow.ProtectionLock {
+	ok, err := h.workflowPermitsChange(doc, ctx)
+	if !ok {
 		response.WriteForbiddenError(w)
-		h.Runtime.Log.Info("attempted delete sections on locked document")
+		h.Runtime.Log.Info("attempted delete section on locked document")
 		return
 	}
 
@@ -689,8 +704,17 @@ func (h *Handler) ChangePageSequence(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !permission.CanChangeDocument(ctx, *h.Store, documentID) {
+	doc, err := h.Store.Document.Get(ctx, documentID)
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	ok, err := h.workflowPermitsChange(doc, ctx)
+	if !ok {
 		response.WriteForbiddenError(w)
+		h.Runtime.Log.Info("attempted to chaneg page sequence on protected document")
 		return
 	}
 
@@ -749,9 +773,17 @@ func (h *Handler) ChangePageLevel(w http.ResponseWriter, r *http.Request) {
 		response.WriteMissingDataError(w, method, "documentID")
 		return
 	}
+	doc, err := h.Store.Document.Get(ctx, documentID)
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
 
-	if !permission.CanChangeDocument(ctx, *h.Store, documentID) {
+	ok, err := h.workflowPermitsChange(doc, ctx)
+	if !ok {
 		response.WriteForbiddenError(w)
+		h.Runtime.Log.Info("attempted to chaneg page level on protected document")
 		return
 	}
 
@@ -1079,12 +1111,20 @@ func (h *Handler) Rollback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !permission.CanChangeDocument(ctx, *h.Store, documentID) {
-		response.WriteForbiddenError(w)
+	doc, err := h.Store.Document.Get(ctx, documentID)
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
-	var err error
+	ok, err := h.workflowPermitsChange(doc, ctx)
+	if !ok {
+		response.WriteForbiddenError(w)
+		h.Runtime.Log.Info("attempted to chaneg page sequence on protected document")
+		return
+	}
+
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
@@ -1106,13 +1146,6 @@ func (h *Handler) Rollback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	revision, err := h.Store.Page.GetPageRevision(ctx, revisionID)
-	if err != nil {
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	doc, err := h.Store.Document.Get(ctx, documentID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
@@ -1329,4 +1362,39 @@ func (h *Handler) FetchPages(w http.ResponseWriter, r *http.Request) {
 
 	// deliver payload
 	response.WriteJSON(w, model)
+}
+
+func (h *Handler) workflowPermitsChange(doc dm.Document, ctx domain.RequestContext) (ok bool, err error) {
+	if doc.Protection == workflow.ProtectionNone {
+		if !permission.CanChangeDocument(ctx, *h.Store, doc.RefID) {
+			h.Runtime.Log.Info("attempted forbidden action on document")
+			return false, nil
+		}
+
+		return true, nil
+	}
+
+	// If locked document then no can do
+	if doc.Protection == workflow.ProtectionLock {
+		h.Runtime.Log.Info("attempted action on locked document")
+		return false, err
+	}
+
+	// If approval workflow then only approvers can delete page
+	if doc.Protection == workflow.ProtectionReview {
+		approvers, err := permission.GetDocumentApprovers(ctx, *h.Store, doc.LabelID, doc.RefID)
+		if err != nil {
+			h.Runtime.Log.Error("workflowAllowsChange", err)
+			return false, err
+		}
+
+		if user.Exists(approvers, ctx.UserID) {
+			h.Runtime.Log.Info("attempted action on document when not approver")
+			return true, nil
+		}
+
+		return false, nil
+	}
+
+	return true, nil
 }
