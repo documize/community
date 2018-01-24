@@ -280,16 +280,13 @@ export default Component.extend(TooltipMixin, {
 				return;
 			}
 
-			let page = {
-				documentId: this.get('document.id'),
-				title: `${block.get('title')}`,
-				level: 1,
-				sequence: 1024,
-				body: block.get('body'),
-				contentType: block.get('contentType'),
-				pageType: block.get('pageType'),
-				blockId: block.get('id')
-			};
+			let page = models.PageModel.create();
+			page.set('documentId', this.get('document.id'));
+			page.set('title', `${block.get('title')}`);
+			page.set('body', block.get('body'));
+			page.set('contentType', block.get('contentType'));
+			page.set('pageType', block.get('pageType'));
+			page.set('blockId', block.get('id'));
 
 			let meta = {
 				documentId: this.get('document.id'),

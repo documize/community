@@ -119,6 +119,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 			model.Page.Status = workflow.ChangePending
 		}
 	} else {
+		model.Page.RelativeID = ""
 		model.Page.Status = workflow.ChangePublished
 	}
 

@@ -10,7 +10,7 @@
 // https://documize.com
 
 import $ from 'jquery';
-import { schedule } from 'ember/runloop';
+import { schedule } from '@ember/runloop';
 import { computed } from '@ember/object';
 import Component from '@ember/component';
 

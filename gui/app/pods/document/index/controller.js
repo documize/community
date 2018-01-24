@@ -10,6 +10,7 @@
 // https://documize.com
 
 import { Promise as EmberPromise } from 'rsvp';
+import { schedule } from '@ember/runloop';
 import { inject as service } from '@ember/service';
 import Controller from '@ember/controller';
 import TooltipMixin from '../../../mixins/tooltip';
@@ -143,7 +144,10 @@ export default Controller.extend(TooltipMixin, {
 								this.get('document.slug'),
 								newPage.id);
 						} else {
-							resolve(newPage.id);
+							schedule('afterRender', () => {
+								this.set('currentPageId', newPage.id);
+								resolve(newPage.id);
+							});
 						}
 					});
 				});

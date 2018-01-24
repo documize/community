@@ -121,7 +121,7 @@ export default Component.extend({
 			page.set('title', title);
 			meta.set('rawBody', this.getBody());
 
-			let cb = this.get('onCancel');
+			let cb = this.get('onAction');
 			cb(page, meta);
 		}
 	}
