@@ -9,17 +9,19 @@
 //
 // https://documize.com
 
-import Model from 'ember-data/model';
-import attr from 'ember-data/attr';
+import { helper } from '@ember/component/helper';
 
-export default Model.extend({
-	page: attr(),
-	meta: attr(),
-	owner: attr('string'),
-	changePending: attr('boolean'),
-	changeAwaitingReview: attr('boolean'),
-	changeRejected: attr('boolean'),
-	userHasChangePending: attr('boolean'),
-	userHasChangeAwaitingReview: attr('boolean'),
-	userHasChangeRejected: attr('boolean')
-});
+export function isOneOf(params/*, hash*/) {
+	if (is.not.undefined(params) || is.not.null(params)) {
+		if (params.length >= 2) {
+			let value = params[0];
+			for (let i=1; i < params.length; i++) {
+				if (params[i] == value) return true;
+			}
+		}
+	}
+	
+	return false;
+}
+
+export default helper(isOneOf);

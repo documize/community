@@ -19,13 +19,13 @@ export default Component.extend({
 	selectedDocuments: A([]),
 	selectedCaption: 'document',
 
-	showAdd: computed('permissions', 'documents', function() {
+	showAdd: computed('permissions.documentAdd', 'documents', function() {
 		return this.get('documents.length') === 0 && this.get('permissions.documentAdd');
 	}),
-	showLockout: computed('permissions', 'documents', function() {
+	showLockout: computed('permissions.documentAdd', 'documents', function() {
 		return this.get('documents.length') === 0 && !this.get('permissions.documentAdd');
 	}),
-	hasDocumentActions: computed('permissions', function() {
+	hasDocumentActions: computed('permissions.{documentDelete,documentMove}', function() {
 		return this.get('permissions.documentDelete') || this.get('permissions.documentMove');
 	}),
 

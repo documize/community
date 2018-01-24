@@ -62,13 +62,17 @@
 												<i class="material-icons">check</i>
 											{{/if}}
 										</li>
+									{{else}}
+										No document templates
 									{{/each}}
 								</ul>
 							</div>
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
-							<button type="button" class="btn btn-success" onclick={{action 'onOpenTemplate'}}>Open</button>
+							{{#if templates}}
+								<button type="button" class="btn btn-success" onclick={{action 'onOpenTemplate'}}>Open</button>
+							{{/if}}
 						</div>
 					</div>
 				</div>

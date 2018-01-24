@@ -16,7 +16,6 @@ import miscUtil from '../utils/misc';
 export default Component.extend({
     init() {
         this._super(...arguments);
-        this.notifications = [];
     },
 
     didInsertElement() {

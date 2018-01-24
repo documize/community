@@ -30,7 +30,6 @@ export default Component.extend({
 
 	init() {
 		this._super(...arguments);
-		this.items = [];	
 	},
 
 	actions: {

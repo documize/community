@@ -26,7 +26,7 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 	showTools: true, 			// show document related tools? favourite, delete, make template...
 	showDocumentLink: false, 	// show link to document in breadcrumbs
 
-init() {
+	init() {
 		this._super(...arguments);
 		this.pinState = {
 			isPinned: false,
@@ -38,7 +38,7 @@ init() {
 			description: ''
 		};
 	},
-	
+
 	didReceiveAttrs() {
 		this._super(...arguments);
 

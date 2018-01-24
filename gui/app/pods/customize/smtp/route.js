@@ -32,6 +32,6 @@ export default Route.extend(AuthenticatedRouteMixin, {
 	},
 
 	activate() {
-		document.title = "SMTP | Documize";
+		this.get('browser').setTitle('SMTP Settings');
 	}
 });

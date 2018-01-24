@@ -265,17 +265,17 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 
 		onShowTemplateDocModal() {
 			let t = this.get('templates');
-			if (t.length > 0) {
-				t[0].set('selected', true);
-				this.modalOpen("#template-doc-modal", {"show": true}, '#template-doc-name');
-			}
+			t.forEach((t) => {
+				t.set('selected', false);
+			});
+			this.modalOpen("#template-doc-modal", {"show": true}, '#template-doc-name');
 		},
 
 		onSelectTemplate(i) {
 			let t = this.get('templates');
 			t.forEach((t) => {
 				t.set('selected', false);
-			})
+			});
 			i.set('selected', true);
 			this.set('selectedTemplate', i.id);
 		},
@@ -288,15 +288,16 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 				this.set('templateDocNameError', true);
 				$('#template-doc-name').focus();
 				return;
-			} else {
-				this.set('templateDocNameError', false);
-				this.set('templateDocName', '');
 			}
 
 			let id = this.get('selectedTemplate');
 			if (is.empty(id)) {
+				$('#widget-list-picker').addClass('is-invalid');
 				return;
 			}
+
+			this.set('templateDocNameError', false);
+			this.set('templateDocName', '');
 
 			this.modalClose("#template-doc-modal");
 

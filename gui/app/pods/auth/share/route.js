@@ -36,6 +36,7 @@ export default Route.extend(AuthenticatedRouteMixin, {
 	},
 
 	activate() {
+		this.get('browser').setTitle('Share Space');
 		$('body').addClass('background-color-off-white');
 	},
 

@@ -10,7 +10,6 @@
 // https://documize.com
 
 import { Promise as EmberPromise } from 'rsvp';
-
 import { inject as service } from '@ember/service';
 import Route from '@ember/routing/route';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
@@ -44,6 +43,6 @@ export default Route.extend(AuthenticatedRouteMixin, {
 	},
 
 	activate() {
-		document.title = "Users | Documize";
+		this.get('browser').setTitle('Users');
 	}
 });

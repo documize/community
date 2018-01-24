@@ -10,7 +10,7 @@
 // https://documize.com
 
 import $ from 'jquery';
-import { computed } from '@ember/computed';
+import { computed } from '@ember/object';
 import { inject as service } from '@ember/service';
 import Controller from '@ember/controller';
 import TooltipMixin from '../../../mixins/tooltip';

@@ -57,10 +57,10 @@ export default Route.extend({
 	setupController: function (controller, model) {
 		controller.set('model', model);
 		controller.reset();
-		this.browser.setTitleAsPhrase("Login");
 	},
 
 	activate() {
+		this.get('browser').setTitleAsPhrase('Login');
 		$('body').addClass('background-color-theme-light');
 	},
 

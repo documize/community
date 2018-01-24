@@ -111,7 +111,6 @@ export default Controller.extend(TooltipMixin, {
 				pendingChanges.push({ pageId: deleteId });
 
 				this.get('documentService').deletePages(documentId, deleteId, pendingChanges).then(() => {
-					// this.send('onPageLevelChange', '', pendingChanges);		
 					this.get('documentService').fetchPages(this.get('document.id'), this.get('session.user.id')).then((pages) => {
 						this.set('pages', pages);				
 					});
@@ -119,7 +118,6 @@ export default Controller.extend(TooltipMixin, {
 			} else {
 				// page delete followed by re-leveling child pages
 				this.get('documentService').deletePage(documentId, deleteId).then(() => {
-					// this.send('onPageLevelChange', '', pendingChanges);		
 					this.get('documentService').fetchPages(this.get('document.id'), this.get('session.user.id')).then((pages) => {
 						this.set('pages', pages);
 					});

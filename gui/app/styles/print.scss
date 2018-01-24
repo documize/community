@@ -40,6 +40,7 @@
 		height: initial !important;
 		min-height: initial !important;
 		-webkit-print-color-adjust: exact;
+		overflow: hidden;
 	}
 
 	.non-printable,
@@ -47,6 +48,7 @@
 	.document-toc,
 	.tabnav-control,
 	#nav-bar,
+	.page-toolbar,
 	.new-section-wizard {
 		float: none !important;
 		display: none !important;

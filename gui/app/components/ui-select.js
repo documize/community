@@ -25,11 +25,6 @@ export default Component.extend({
     // leaking changes to it via a 2-way binding
     _selection: reads('selection'),
 
-    init() {
-        this._super(...arguments);
-        this.content = [];
-    },
-
     actions: {
         change() {
             const selectEl = this.$('select')[0];

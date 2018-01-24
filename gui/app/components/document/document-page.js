@@ -23,11 +23,12 @@ export default Component.extend(TooltipMixin, {
 	didReceiveAttrs() {
 		this._super(...arguments);
 		if (this.get('isDestroyed') || this.get('isDestroying')) return;
-		if (this.get('toEdit') === this.get('page.id') && this.get('permissions.documentEdit')) this.send('onEdit');
 
 		if (this.get('session.authenticated')) {
 			this.workflow();
 		}
+
+		if (this.get('toEdit') === this.get('page.id') && this.get('permissions.documentEdit')) this.send('onEdit');
 	},
 
 	workflow() {

@@ -113,7 +113,7 @@ export default Component.extend(AuthMixin, {
 
 				this.set('documents', documents);
 				let cb = this.get('onRefresh');
-				cb.onRefresh();
+				cb();
 			});
 		},
 

@@ -490,7 +490,6 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		response.WriteMissingDataError(w, method, "documentID")
 		return
 	}
-
 	pageID := request.Param(r, "pageID")
 	if len(pageID) == 0 {
 		response.WriteMissingDataError(w, method, "pageID")
@@ -504,46 +503,31 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ok, err := h.workflowPermitsChange(doc, ctx)
-	if !ok {
-		response.WriteForbiddenError(w)
-		h.Runtime.Log.Info("attempted delete section on locked document")
-		return
-	}
-
-	// If locked document then no can do
-	if doc.Protection == workflow.ProtectionLock {
-		response.WriteForbiddenError(w)
-		h.Runtime.Log.Info("attempted delete section on locked document")
-		return
-	}
-
-	// If approval workflow then only approvers can delete page
-	if doc.Protection == workflow.ProtectionReview {
-		approvers, err := permission.GetDocumentApprovers(ctx, *h.Store, doc.LabelID, doc.RefID)
-		if err != nil {
-			response.WriteServerError(w, method, err)
-			h.Runtime.Log.Error(method, err)
-			return
-		}
-
-		if !user.Exists(approvers, ctx.UserID) {
-			response.WriteForbiddenError(w)
-			h.Runtime.Log.Info("attempted delete document section when not approver")
-			return
-		}
-	}
-
-	ctx.Transaction, err = h.Runtime.Db.Beginx()
+	p, err := h.Store.Page.Get(ctx, pageID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
 		return
 	}
 
-	p, err := h.Store.Page.Get(ctx, pageID)
+	// you can delete your own pending page
+	ownPending := false
+	if (p.Status == workflow.ChangePending || p.Status == workflow.ChangePendingNew) && p.UserID == ctx.UserID {
+		ownPending = true
+	}
+
+	// if not own page then check permission
+	if !ownPending {
+		ok, _ := h.workflowPermitsChange(doc, ctx)
+		if !ok {
+			response.WriteForbiddenError(w)
+			h.Runtime.Log.Info("attempted delete section on locked document")
+			return
+		}
+	}
+
+	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
-		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
 		return
@@ -623,13 +607,6 @@ func (h *Handler) DeletePages(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ok, err := h.workflowPermitsChange(doc, ctx)
-	if !ok {
-		response.WriteForbiddenError(w)
-		h.Runtime.Log.Info("attempted delete section on locked document")
-		return
-	}
-
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
@@ -646,6 +623,21 @@ func (h *Handler) DeletePages(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		ownPending := false
+		if (pageData.Status == workflow.ChangePending || pageData.Status == workflow.ChangePendingNew) && pageData.UserID == ctx.UserID {
+			ownPending = true
+		}
+
+		// if not own page then check permission
+		if !ownPending {
+			ok, _ := h.workflowPermitsChange(doc, ctx)
+			if !ok {
+				ctx.Transaction.Rollback()
+				response.WriteForbiddenError(w)
+				h.Runtime.Log.Info("attempted delete section on locked document")
+				return
+			}
+		}
 		if len(pageData.BlockID) > 0 {
 			h.Store.Block.DecrementUsage(ctx, pageData.BlockID)
 		}
@@ -1358,6 +1350,10 @@ func (h *Handler) FetchPages(w http.ResponseWriter, r *http.Request) {
 	page.Numberize(t)
 	for i, j := range t {
 		model[i].Page = j
+		// pending pages get same numbering
+		for k := range model[i].Pending {
+			model[i].Pending[k].Page.Numbering = j.Numbering
+		}
 	}
 
 	// deliver payload

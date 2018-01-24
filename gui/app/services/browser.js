@@ -17,15 +17,12 @@ export default Service.extend({
     sessionService: service('session'),
 
     init() {
+        this._super(...arguments);
         this.setMetaDescription();
     },
 
     setTitle(title) {
         document.title = title + " | " + this.get('sessionService.appMeta.title');
-    },
-
-    setTitleReverse(title) {
-        document.title = this.get('sessionService.appMeta.title') + " | " + title;
     },
 
     setTitleAsPhrase(title) {
@@ -49,7 +46,6 @@ export default Service.extend({
     scrollTo(id) {
         schedule('afterRender', () => {
             let elem = $(id).offset();
-
             if (is.undefined(elem)) return;
     
             $('html, body').animate({

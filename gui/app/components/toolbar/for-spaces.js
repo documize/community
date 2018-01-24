@@ -22,10 +22,11 @@ export default Component.extend(NotifierMixin, AuthMixin, {
 	copyPermission: true,
 	copyDocument: false,
 	hasClone: notEmpty('clonedSpace.id'),
+	clonedSpace: null,
 
 	init() {
 		this._super(...arguments);
-		this.clonedSpace = { id: '' };
+		// this.clonedSpace = { id: '' };
 	},
 
 	didInsertElement() {
@@ -63,9 +64,8 @@ export default Component.extend(NotifierMixin, AuthMixin, {
 			}
 
 			this.set('spaceName', '');
-			this.set('clonedSpace.id', '');
+			this.set('clonedSpace', null);
 			$("#new-space-name").removeClass("is-invalid");
-
 			$('#add-space-modal').modal('hide');
 			$('#add-space-modal').modal('dispose');
 

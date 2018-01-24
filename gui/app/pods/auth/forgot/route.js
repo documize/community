@@ -29,6 +29,7 @@ export default Route.extend({
 	},
 
 	activate() {
+		this.get('browser').setTitleAsPhrase('Forgot Password');
 		$('body').addClass('background-color-theme-light');
 	},
 
