@@ -31,8 +31,8 @@ export default Component.extend({
 		let options = {
 			selector: "#" + this.get('editorId'),
 			relative_urls: false,
-			cache_suffix: "?v=443",
-			browser_spellcheck: false,
+			cache_suffix: "?v=475",
+			browser_spellcheck: true,
 			gecko_spellcheck: false,
 			theme: "modern",
 			skin: 'documize',
