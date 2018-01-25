@@ -40,7 +40,7 @@ export default Controller.extend({
 					this.get('model.folder.slug'),
 					this.get('model.document.id'),
 					this.get('model.document.slug'),
-					{ queryParams: { pageId: page.get('id')}});
+					{ queryParams: { currentPageId: page.get('id')}});
 			});
 		},
 	}

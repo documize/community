@@ -10,7 +10,6 @@
 // https://documize.com
 
 import { Promise as EmberPromise } from 'rsvp';
-import { schedule } from '@ember/runloop';
 import { inject as service } from '@ember/service';
 import Controller from '@ember/controller';
 import TooltipMixin from '../../../mixins/tooltip';
@@ -20,8 +19,9 @@ export default Controller.extend(TooltipMixin, {
 	templateService: service('template'),
 	sectionService: service('section'),
 	linkService: service('link'),
-	currentPageId: '',
+	// currentPageId: '',
 	tab: 'content',
+	queryParams: ['currentPageId'],
 
 	actions: {
 		onTabChange(tab) {
@@ -108,6 +108,8 @@ export default Controller.extend(TooltipMixin, {
 				pendingChanges.push({ pageId: pages[i].get('page.id'), level: pages[i].get('page.level') - 1 });
 			}
 
+			this.set('currentPageId', null);
+
 			if (deleteChildren) {
 				pendingChanges.push({ pageId: deleteId });
 
@@ -117,7 +119,6 @@ export default Controller.extend(TooltipMixin, {
 					});
 				});
 			} else {
-				// page delete followed by re-leveling child pages
 				this.get('documentService').deletePage(documentId, deleteId).then(() => {
 					this.get('documentService').fetchPages(this.get('document.id'), this.get('session.user.id')).then((pages) => {
 						this.set('pages', pages);
@@ -144,10 +145,8 @@ export default Controller.extend(TooltipMixin, {
 								this.get('document.slug'),
 								newPage.id);
 						} else {
-							schedule('afterRender', () => {
-								this.set('currentPageId', newPage.id);
-								resolve(newPage.id);
-							});
+							this.set('currentPageId', newPage.id);
+							resolve(newPage.id);
 						}
 					});
 				});

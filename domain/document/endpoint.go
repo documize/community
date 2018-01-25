@@ -491,5 +491,5 @@ type BulkDocumentData struct {
 	Permissions pm.Record         `json:"permissions"`
 	Roles       pm.DocumentRecord `json:"roles"`
 	Spaces      []space.Space     `json:"folders"`
-	Links       []link.Link       `json:"link"`
+	Links       []link.Link       `json:"links"`
 }

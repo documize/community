@@ -38,11 +38,12 @@
 
 			{{#if (eq tab 'content')}}
 				{{document/view-content
-					document=document links=links pages=pages blocks=blocks
+					document=document links=links pages=pages blocks=blocks currentPageId=currentPageId 
 					folder=folder folders=folders sections=sections permissions=permissions roles=roles 
 					onSavePage=(action 'onSavePage') onInsertSection=(action 'onInsertSection')
 					onSavePageAsBlock=(action 'onSavePageAsBlock') onDeleteBlock=(action 'onDeleteBlock')
-					onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onPageDeleted') refresh=(action 'refresh')}}
+					onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onPageDeleted')
+					refresh=(action 'refresh')}}
 			{{/if}}
 
 			{{#if (eq tab 'attachment')}}

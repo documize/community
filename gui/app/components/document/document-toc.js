@@ -72,9 +72,8 @@ export default Component.extend(TooltipMixin, {
 		this.removeTooltips();
 	},
 
-	onDocumentPageAdded(pageId) {
+	onDocumentPageAdded(pageId) { // eslint-disable-line no-unused-vars
 		this.setSize();
-		this.send('onGotoPage', pageId);
 	},
 
 	setSize() {

@@ -57,5 +57,10 @@ export default Route.extend(AuthenticatedRouteMixin, {
 		controller.set('permissions', model.permissions);
 		controller.set('roles', model.roles);
 		controller.set('blocks', model.blocks);
+	},
+
+	activate: function() {
+		this._super(...arguments);
+		window.scrollTo(0,0);
 	}
 });
