@@ -24,23 +24,23 @@ var anchor = (function () {
       editor.execCommand('mceInsertContent', false, editor.dom.createHTML('a', { id: id }));
     }
   };
-  var $_4mui147njcg89bxw = {
+  var $_5139kp7ojcun3xei = {
     isValidId: isValidId,
     getId: getId,
     insert: insert
   };
 
   var insertAnchor = function (editor, newId) {
-    if (!$_4mui147njcg89bxw.isValidId(newId)) {
+    if (!$_5139kp7ojcun3xei.isValidId(newId)) {
       editor.windowManager.alert('Id should start with a letter, followed only by letters, numbers, dashes, dots, colons or underscores.');
       return true;
     } else {
-      $_4mui147njcg89bxw.insert(editor, newId);
+      $_5139kp7ojcun3xei.insert(editor, newId);
       return false;
     }
   };
   var open = function (editor) {
-    var currentId = $_4mui147njcg89bxw.getId(editor);
+    var currentId = $_5139kp7ojcun3xei.getId(editor);
     editor.windowManager.open({
       title: 'Anchor',
       body: {
@@ -58,14 +58,14 @@ var anchor = (function () {
       }
     });
   };
-  var $_dtiibp7mjcg89bxu = { open: open };
+  var $_e5jh8y7njcun3xeg = { open: open };
 
   var register = function (editor) {
     editor.addCommand('mceAnchor', function () {
-      $_dtiibp7mjcg89bxu.open(editor);
+      $_e5jh8y7njcun3xeg.open(editor);
     });
   };
-  var $_bylci57ljcg89bxt = { register: register };
+  var $_fj9xwz7mjcun3xef = { register: register };
 
   var isAnchorNode = function (node) {
     return !node.attr('href') && (node.attr('id') || node.attr('name')) && !node.firstChild;
@@ -85,7 +85,7 @@ var anchor = (function () {
       editor.serializer.addNodeFilter('a', setContentEditable(null));
     });
   };
-  var $_g5546r7ojcg89bxx = { setup: setup };
+  var $_bobs7v7pjcun3xej = { setup: setup };
 
   var register$1 = function (editor) {
     editor.addButton('anchor', {
@@ -101,12 +101,12 @@ var anchor = (function () {
       cmd: 'mceAnchor'
     });
   };
-  var $_acrnau7pjcg89bxy = { register: register$1 };
+  var $_5nkljq7qjcun3xel = { register: register$1 };
 
   PluginManager.add('anchor', function (editor) {
-    $_g5546r7ojcg89bxx.setup(editor);
-    $_bylci57ljcg89bxt.register(editor);
-    $_acrnau7pjcg89bxy.register(editor);
+    $_bobs7v7pjcun3xej.setup(editor);
+    $_fj9xwz7mjcun3xef.register(editor);
+    $_5nkljq7qjcun3xel.register(editor);
   });
   var Plugin = function () {
   };

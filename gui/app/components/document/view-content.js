@@ -312,7 +312,7 @@ export default Component.extend(TooltipMixin, {
 			};
 
 			const promise = this.addSection(model);
-			promise.then((/*id*/) => {
+			promise.then((id) => { // eslint-disable-line no-unused-vars
 				this.setupAddWizard();
 			});
 		},

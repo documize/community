@@ -57,7 +57,7 @@ var help = (function () {
   };
   var never$1 = constant(false);
   var always$1 = constant(true);
-  var $_9lmei1agjcg89c92 = {
+  var $_6vgsrhahjcun3xqe = {
     noop: noop,
     noarg: noarg,
     compose: compose,
@@ -73,8 +73,8 @@ var help = (function () {
     always: always$1
   };
 
-  var never = $_9lmei1agjcg89c92.never;
-  var always = $_9lmei1agjcg89c92.always;
+  var never = $_6vgsrhahjcun3xqe.never;
+  var always = $_6vgsrhahjcun3xqe.always;
   var none = function () {
     return NONE;
   };
@@ -117,7 +117,7 @@ var help = (function () {
       toArray: function () {
         return [];
       },
-      toString: $_9lmei1agjcg89c92.constant('none()')
+      toString: $_6vgsrhahjcun3xqe.constant('none()')
     };
     if (Object.freeze)
       Object.freeze(me);
@@ -186,7 +186,7 @@ var help = (function () {
   var from = function (value) {
     return value === null || value === undefined ? NONE : some(value);
   };
-  var $_9sng15afjcg89c8z = {
+  var $_6xi2g4agjcun3xqa = {
     some: some,
     none: none,
     from: from
@@ -204,7 +204,7 @@ var help = (function () {
   }();
   var indexOf = function (xs, x) {
     var r = rawIndexOf(xs, x);
-    return r === -1 ? $_9sng15afjcg89c8z.none() : $_9sng15afjcg89c8z.some(r);
+    return r === -1 ? $_6xi2g4agjcun3xqa.none() : $_6xi2g4agjcun3xqa.some(r);
   };
   var contains = function (xs, x) {
     return rawIndexOf(xs, x) > -1;
@@ -310,19 +310,19 @@ var help = (function () {
     for (var i = 0, len = xs.length; i < len; i++) {
       var x = xs[i];
       if (pred(x, i, xs)) {
-        return $_9sng15afjcg89c8z.some(x);
+        return $_6xi2g4agjcun3xqa.some(x);
       }
     }
-    return $_9sng15afjcg89c8z.none();
+    return $_6xi2g4agjcun3xqa.none();
   };
   var findIndex = function (xs, pred) {
     for (var i = 0, len = xs.length; i < len; i++) {
       var x = xs[i];
       if (pred(x, i, xs)) {
-        return $_9sng15afjcg89c8z.some(i);
+        return $_6xi2g4agjcun3xqa.some(i);
       }
     }
-    return $_9sng15afjcg89c8z.none();
+    return $_6xi2g4agjcun3xqa.none();
   };
   var slowIndexOf = function (xs, x) {
     for (var i = 0, len = xs.length; i < len; ++i) {
@@ -388,12 +388,12 @@ var help = (function () {
     return copy;
   };
   var head = function (xs) {
-    return xs.length === 0 ? $_9sng15afjcg89c8z.none() : $_9sng15afjcg89c8z.some(xs[0]);
+    return xs.length === 0 ? $_6xi2g4agjcun3xqa.none() : $_6xi2g4agjcun3xqa.some(xs[0]);
   };
   var last = function (xs) {
-    return xs.length === 0 ? $_9sng15afjcg89c8z.none() : $_9sng15afjcg89c8z.some(xs[xs.length - 1]);
+    return xs.length === 0 ? $_6xi2g4agjcun3xqa.none() : $_6xi2g4agjcun3xqa.some(xs[xs.length - 1]);
   };
-  var $_8dzivkaejcg89c8o = {
+  var $_d1bks8afjcun3xq0 = {
     map: map,
     each: each,
     eachr: eachr,
@@ -518,13 +518,13 @@ var help = (function () {
       action: 'Find (if searchreplace plugin activated)'
     }
   ];
-  var $_5lm08waijcg89c94 = { shortcuts: shortcuts };
+  var $_e2an6lajjcun3xqi = { shortcuts: shortcuts };
 
   var makeTab = function () {
     var makeAriaLabel = function (shortcut) {
       return 'aria-label="Action: ' + shortcut.action + ', Shortcut: ' + shortcut.shortcut.replace(/Ctrl/g, 'Control') + '"';
     };
-    var shortcutLisString = $_8dzivkaejcg89c8o.map($_5lm08waijcg89c94.shortcuts, function (shortcut) {
+    var shortcutLisString = $_d1bks8afjcun3xq0.map($_e2an6lajjcun3xqi.shortcuts, function (shortcut) {
       return '<tr data-mce-tabstop="1" tabindex="-1" ' + makeAriaLabel(shortcut) + '>' + '<td>' + I18n.translate(shortcut.action) + '</td>' + '<td>' + shortcut.shortcut + '</td>' + '</tr>';
     }).join('');
     return {
@@ -537,7 +537,7 @@ var help = (function () {
         }]
     };
   };
-  var $_g1ixseadjcg89c8f = { makeTab: makeTab };
+  var $_73rw5baejcun3xpt = { makeTab: makeTab };
 
   var keys = function () {
     var fastKeys = Object.keys;
@@ -601,10 +601,10 @@ var help = (function () {
       var i = props[k];
       var x = obj[i];
       if (pred(x, i, obj)) {
-        return $_9sng15afjcg89c8z.some(x);
+        return $_6xi2g4agjcun3xqa.some(x);
       }
     }
-    return $_9sng15afjcg89c8z.none();
+    return $_6xi2g4agjcun3xqa.none();
   };
   var values = function (obj) {
     return mapToArray(obj, function (v) {
@@ -614,7 +614,7 @@ var help = (function () {
   var size = function (obj) {
     return values(obj).length;
   };
-  var $_47qslaaljcg89c9d = {
+  var $_3fyje7amjcun3xqu = {
     bifilter: bifilter,
     each: each$1,
     map: objectMap,
@@ -638,7 +638,7 @@ var help = (function () {
   var removeFromEnd = function (str, numChars) {
     return str.substring(0, str.length - numChars);
   };
-  var $_fnn27oanjcg89c9p = {
+  var $_atglhxaojcun3xr3 = {
     addToStart: addToStart,
     addToEnd: addToEnd,
     removeFromStart: removeFromStart,
@@ -652,12 +652,12 @@ var help = (function () {
     return str.substr(str.length - count, str.length);
   };
   var head$1 = function (str) {
-    return str === '' ? $_9sng15afjcg89c8z.none() : $_9sng15afjcg89c8z.some(str.substr(0, 1));
+    return str === '' ? $_6xi2g4agjcun3xqa.none() : $_6xi2g4agjcun3xqa.some(str.substr(0, 1));
   };
   var tail = function (str) {
-    return str === '' ? $_9sng15afjcg89c8z.none() : $_9sng15afjcg89c8z.some(str.substring(1));
+    return str === '' ? $_6xi2g4agjcun3xqa.none() : $_6xi2g4agjcun3xqa.some(str.substring(1));
   };
-  var $_dc80gbaojcg89c9r = {
+  var $_fh4hycapjcun3xr5 = {
     first: first,
     last: last$1,
     head: head$1,
@@ -683,23 +683,23 @@ var help = (function () {
     });
   };
   var removeLeading = function (str, prefix) {
-    return startsWith(str, prefix) ? $_fnn27oanjcg89c9p.removeFromStart(str, prefix.length) : str;
+    return startsWith(str, prefix) ? $_atglhxaojcun3xr3.removeFromStart(str, prefix.length) : str;
   };
   var removeTrailing = function (str, prefix) {
-    return endsWith(str, prefix) ? $_fnn27oanjcg89c9p.removeFromEnd(str, prefix.length) : str;
+    return endsWith(str, prefix) ? $_atglhxaojcun3xr3.removeFromEnd(str, prefix.length) : str;
   };
   var ensureLeading = function (str, prefix) {
-    return startsWith(str, prefix) ? str : $_fnn27oanjcg89c9p.addToStart(str, prefix);
+    return startsWith(str, prefix) ? str : $_atglhxaojcun3xr3.addToStart(str, prefix);
   };
   var ensureTrailing = function (str, prefix) {
-    return endsWith(str, prefix) ? str : $_fnn27oanjcg89c9p.addToEnd(str, prefix);
+    return endsWith(str, prefix) ? str : $_atglhxaojcun3xr3.addToEnd(str, prefix);
   };
   var contains$1 = function (str, substr) {
     return str.indexOf(substr) !== -1;
   };
   var capitalize = function (str) {
-    return $_dc80gbaojcg89c9r.head(str).bind(function (head) {
-      return $_dc80gbaojcg89c9r.tail(str).map(function (tail) {
+    return $_fh4hycapjcun3xr5.head(str).bind(function (head) {
+      return $_fh4hycapjcun3xr5.tail(str).map(function (tail) {
         return head.toUpperCase() + tail;
       });
     }).getOr(str);
@@ -719,7 +719,7 @@ var help = (function () {
   var rTrim = function (str) {
     return str.replace(/\s+$/g, '');
   };
-  var $_rerqwamjcg89c9l = {
+  var $_5p5nu3anjcun3xqz = {
     supplant: supplant,
     startsWith: startsWith,
     removeLeading: removeLeading,
@@ -912,11 +912,11 @@ var help = (function () {
       name: 'Word Count'
     }
   ];
-  var $_bu4fp9apjcg89c9t = { urls: urls };
+  var $_37t9bhaqjcun3xr7 = { urls: urls };
 
-  var makeLink = $_9lmei1agjcg89c92.curry($_rerqwamjcg89c9l.supplant, '<a href="${url}" target="_blank" rel="noopener">${name}</a>');
+  var makeLink = $_6vgsrhahjcun3xqe.curry($_5p5nu3anjcun3xqz.supplant, '<a href="${url}" target="_blank" rel="noopener">${name}</a>');
   var maybeUrlize = function (editor, key) {
-    return $_8dzivkaejcg89c8o.find($_bu4fp9apjcg89c9t.urls, function (x) {
+    return $_d1bks8afjcun3xq0.find($_37t9bhaqjcun3xr7.urls, function (x) {
       return x.key === key;
     }).fold(function () {
       var getMetadata = editor.plugins[key].getMetadata;
@@ -929,12 +929,12 @@ var help = (function () {
     });
   };
   var getPluginKeys = function (editor) {
-    var keys = $_47qslaaljcg89c9d.keys(editor.plugins);
-    return editor.settings.forced_plugins === undefined ? keys : $_8dzivkaejcg89c8o.filter(keys, $_9lmei1agjcg89c92.not($_9lmei1agjcg89c92.curry($_8dzivkaejcg89c8o.contains, editor.settings.forced_plugins)));
+    var keys = $_3fyje7amjcun3xqu.keys(editor.plugins);
+    return editor.settings.forced_plugins === undefined ? keys : $_d1bks8afjcun3xq0.filter(keys, $_6vgsrhahjcun3xqe.not($_6vgsrhahjcun3xqe.curry($_d1bks8afjcun3xq0.contains, editor.settings.forced_plugins)));
   };
   var pluginLister = function (editor) {
     var pluginKeys = getPluginKeys(editor);
-    var pluginLis = $_8dzivkaejcg89c8o.map(pluginKeys, function (key) {
+    var pluginLis = $_d1bks8afjcun3xq0.map(pluginKeys, function (key) {
       return '<li>' + maybeUrlize(editor, key) + '</li>';
     });
     var count = pluginLis.length;
@@ -972,7 +972,7 @@ var help = (function () {
       ]
     };
   };
-  var $_anmy82akjcg89c97 = { makeTab: makeTab$1 };
+  var $_flmuq2aljcun3xqm = { makeTab: makeTab$1 };
 
   var EditorManager = tinymce.util.Tools.resolve('tinymce.EditorManager');
 
@@ -1002,7 +1002,7 @@ var help = (function () {
       }
     ];
   };
-  var $_6jzdosaqjcg89c9w = { makeRow: makeRow };
+  var $_4cmp7earjcun3xra = { makeRow: makeRow };
 
   var open = function (editor, pluginUrl) {
     return function () {
@@ -1011,10 +1011,10 @@ var help = (function () {
         bodyType: 'tabpanel',
         layout: 'flex',
         body: [
-          $_g1ixseadjcg89c8f.makeTab(),
-          $_anmy82akjcg89c97.makeTab(editor)
+          $_73rw5baejcun3xpt.makeTab(),
+          $_flmuq2aljcun3xqm.makeTab(editor)
         ],
-        buttons: $_6jzdosaqjcg89c9w.makeRow(),
+        buttons: $_4cmp7earjcun3xra.makeRow(),
         onPostRender: function () {
           var title = this.getEl('title');
           title.innerHTML = '<img src="' + pluginUrl + '/img/logo.png" alt="TinyMCE Logo" style="display: inline-block; width: 200px; height: 50px">';
@@ -1022,30 +1022,30 @@ var help = (function () {
       });
     };
   };
-  var $_d4d5y1acjcg89c8d = { open: open };
+  var $_ajxxbhadjcun3xpr = { open: open };
 
   var register = function (editor, pluginUrl) {
-    editor.addCommand('mceHelp', $_d4d5y1acjcg89c8d.open(editor, pluginUrl));
+    editor.addCommand('mceHelp', $_ajxxbhadjcun3xpr.open(editor, pluginUrl));
   };
-  var $_5nhvpuabjcg89c8b = { register: register };
+  var $_9b28e6acjcun3xpp = { register: register };
 
   var register$1 = function (editor, pluginUrl) {
     editor.addButton('help', {
       icon: 'help',
-      onclick: $_d4d5y1acjcg89c8d.open(editor, pluginUrl)
+      onclick: $_ajxxbhadjcun3xpr.open(editor, pluginUrl)
     });
     editor.addMenuItem('Help', {
       text: 'Help',
       icon: 'help',
       context: 'help',
-      onclick: $_d4d5y1acjcg89c8d.open(editor, pluginUrl)
+      onclick: $_ajxxbhadjcun3xpr.open(editor, pluginUrl)
     });
   };
-  var $_azjhqeasjcg89c9z = { register: register$1 };
+  var $_b9n7asatjcun3xrd = { register: register$1 };
 
   PluginManager.add('help', function (editor, pluginUrl) {
-    $_azjhqeasjcg89c9z.register(editor, pluginUrl);
-    $_5nhvpuabjcg89c8b.register(editor, pluginUrl);
+    $_b9n7asatjcun3xrd.register(editor, pluginUrl);
+    $_9b28e6acjcun3xpp.register(editor, pluginUrl);
     editor.shortcuts.add('Alt+0', 'Open help dialog', 'mceHelp');
   });
   var Plugin = function () {
