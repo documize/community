@@ -111,9 +111,9 @@ func (s Scope) GetBySpace(ctx domain.RequestContext, spaceID string) (documents 
 		WHERE orgid=? AND template=0 AND labelid IN (
 			SELECT refid FROM label WHERE orgid=? AND refid IN 
 				(SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid=? AND refid IN (
-						SELECT refid from permission WHERE orgid=? AND who='user' AND whoid=? AND location='space' UNION ALL
+						SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space' UNION ALL
 						SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? 
-						AND p.who='role' AND p.location='space' AND p.refid=? AND p.action='view' AND r.userid=?
+						AND p.who='role' AND p.location='space' AND p.refid=? AND p.action='view' AND (r.userid=? OR r.userid='0')
 				))
 		)
 		ORDER BY title`, ctx.OrgID, ctx.OrgID, ctx.OrgID, spaceID, ctx.OrgID, ctx.UserID, ctx.OrgID, spaceID, ctx.UserID)
@@ -136,9 +136,9 @@ func (s Scope) Templates(ctx domain.RequestContext) (documents []doc.Document, e
 			(
 				SELECT refid FROM label WHERE orgid=?
             	AND refid IN (SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid IN (
-					SELECT refid from permission WHERE orgid=? AND who='user' AND whoid=? AND location='space'
+					SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space'
 					UNION ALL
-                	SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.location='space' AND p.action='view' AND r.userid=?
+                	SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.location='space' AND p.action='view' AND (r.userid=? OR r.userid='0')
 				))
 			)
 		ORDER BY title`, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.UserID, ctx.OrgID, ctx.UserID)
@@ -158,9 +158,9 @@ func (s Scope) TemplatesBySpace(ctx domain.RequestContext, spaceID string) (docu
 			(
 				SELECT refid FROM label WHERE orgid=?
             	AND refid IN (SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid IN (
-					SELECT refid from permission WHERE orgid=? AND who='user' AND whoid=? AND location='space'
+					SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space'
 					UNION ALL
-                	SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.location='space' AND p.action='view' AND r.userid=?
+                	SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.location='space' AND p.action='view' AND (r.userid=? OR r.userid='0')
 				))
 			)
 		ORDER BY title`, ctx.OrgID, spaceID, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.UserID, ctx.OrgID, ctx.UserID)
@@ -201,9 +201,9 @@ func (s Scope) DocumentList(ctx domain.RequestContext) (documents []doc.Document
 			(
 				SELECT refid FROM label WHERE orgid=?
 				AND refid IN (SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid IN (
-					SELECT refid from permission WHERE orgid=? AND who='user' AND whoid=? AND location='space'
+					SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space'
 					UNION ALL
-					SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.location='space' AND p.action='view' AND r.userid=?
+					SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.location='space' AND p.action='view' AND (r.userid=? OR r.userid='0')
 				))
 			)
 		ORDER BY title`, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.UserID, ctx.OrgID, ctx.UserID)

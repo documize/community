@@ -57,7 +57,6 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 
 	didInsertElement() {
 		this._super(...arguments);
-
 		this.modalInputFocus('#document-template-modal', '#new-template-name');
 	},
 

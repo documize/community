@@ -114,7 +114,7 @@ export default Component.extend({
                 $(".stage-3").fadeIn();
                 // $("#spinner-1").show();
 
-                var payload = '{ "Password": "' + $("#stage-2-password").val() + '", "Serial": "' + self.serial + '", "Firstname": "' + $("#stage-1-firstname").val() + '", "Lastname": "' + $("#stage-1-lastname").val() + '" }';
+                var payload = '{ "password": "' + $("#stage-2-password").val() + '", "serial": "' + self.serial + '", "firstname": "' + $("#stage-1-firstname").val() + '", "lastname": "' + $("#stage-1-lastname").val() + '" }';
                 var password = $("#stage-2-password").val();
 
                 self.get('folderService').onboard(self.folderId, payload).then(function(user) {

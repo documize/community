@@ -18,9 +18,6 @@ export default Component.extend({
 	documentService: service('document'),
 	appMeta: service(),
 	hasAttachments: notEmpty('files'),
-	canShow: computed('permissions', 'files', function() {
-		return this.get('files.length') > 0 || this.get('permissions.documentEdit');
-	}),
 	canEdit: computed('permissions', 'document.protection', function() {
 		return this.get('document.protection') !== this.get('constants').ProtectionType.Lock && this.get('permissions.documentEdit');
 	}),

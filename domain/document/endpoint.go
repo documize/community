@@ -14,7 +14,6 @@ package document
 import (
 	"database/sql"
 	"encoding/json"
-	"github.com/documize/community/model/user"
 	"io/ioutil"
 	"net/http"
 	"sort"
@@ -34,6 +33,7 @@ import (
 	pm "github.com/documize/community/model/permission"
 	"github.com/documize/community/model/search"
 	"github.com/documize/community/model/space"
+	"github.com/documize/community/model/user"
 	"github.com/documize/community/model/workflow"
 )
 

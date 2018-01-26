@@ -95,7 +95,7 @@ export default BaseService.extend({
 		});
 	},
 
-	// reloads and caches folders.
+	// reloads and caches folders
 	reload() {
 		return this.get('ajax').request(`space`, {
 			method: "GET"

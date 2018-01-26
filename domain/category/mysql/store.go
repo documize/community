@@ -234,9 +234,9 @@ func (s Scope) GetSpaceCategoryMembership(ctx domain.RequestContext, spaceID str
 		SELECT id, refid, orgid, labelid, categoryid, documentid, created, revised FROM categorymember
 		WHERE orgid=? AND labelid=?
 			  AND labelid IN (SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid IN (
-				SELECT refid from permission WHERE orgid=? AND who='user' AND whoid=? AND location='space' UNION ALL
+				SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space' UNION ALL
 				SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.location='space' 
-					AND p.action='view' AND r.userid=?
+					AND p.action='view' AND (r.userid=? OR r.userid='0')
 		))
 	  ORDER BY documentid`, ctx.OrgID, spaceID, ctx.OrgID, ctx.OrgID, ctx.UserID, ctx.OrgID, ctx.UserID)
 

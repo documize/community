@@ -642,7 +642,7 @@ func (h *Handler) AcceptInvitation(w http.ResponseWriter, r *http.Request) {
 
 	u, err := h.Store.User.GetBySerial(ctx, model.Serial)
 	if err != nil && err == sql.ErrNoRows {
-		response.WriteDuplicateError(w, method, "user")
+		response.WriteNotFoundError(w, method, "user")
 		h.Runtime.Log.Error(method, err)
 		return
 	}
@@ -650,6 +650,7 @@ func (h *Handler) AcceptInvitation(w http.ResponseWriter, r *http.Request) {
 	// AcceptShare does not authenticate the user hence the context needs to set up
 	ctx.UserID = u.RefID
 
+	// Prepare user data
 	u.Firstname = model.Firstname
 	u.Lastname = model.Lastname
 	u.Initials = stringutil.MakeInitials(u.Firstname, u.Lastname)
@@ -670,7 +671,6 @@ func (h *Handler) AcceptInvitation(w http.ResponseWriter, r *http.Request) {
 	}
 
 	salt := secrets.GenerateSalt()
-
 	err = h.Store.User.UpdateUserPassword(ctx, u.RefID, salt, secrets.GeneratePassword(model.Password, salt))
 	if err != nil {
 		ctx.Transaction.Rollback()
@@ -679,10 +679,12 @@ func (h *Handler) AcceptInvitation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.Store.Audit.Record(ctx, audit.EventTypeSpaceJoin)
-
 	ctx.Transaction.Commit()
 
+	h.Store.Audit.Record(ctx, audit.EventTypeSpaceJoin)
+
+	// We send back POJO and not fully authenticated user object as
+	// SSO should take place thereafter
 	response.WriteJSON(w, u)
 }
 
@@ -704,10 +706,10 @@ func (h *Handler) Invite(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if sp.UserID != ctx.UserID {
-		response.WriteForbiddenError(w)
-		return
-	}
+	// if sp.UserID != ctx.UserID {
+	// 	response.WriteForbiddenError(w)
+	// 	return
+	// }
 
 	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)

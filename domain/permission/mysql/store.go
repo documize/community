@@ -64,7 +64,7 @@ func (s Scope) GetUserSpacePermissions(ctx domain.RequestContext, spaceID string
 		SELECT p.id, p.orgid, p.who, p.whoid, p.action, p.scope, p.location, p.refid
 			FROM permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.location='space' AND refid=?
 			AND p.who='role' AND (r.userid=? OR r.userid='0')`,
-		ctx.OrgID, spaceID, ctx.UserID, ctx.OrgID, spaceID, ctx.OrgID)
+		ctx.OrgID, spaceID, ctx.UserID, ctx.OrgID, spaceID, ctx.UserID)
 
 	if err == sql.ErrNoRows {
 		err = nil
@@ -200,7 +200,7 @@ func (s Scope) GetUserCategoryPermissions(ctx domain.RequestContext, userID stri
 		UNION ALL
 		SELECT p.id, p.orgid, p.who, p.whoid, p.action, p.scope, p.location, p.refid
 			FROM permission p LEFT JOIN rolemember r ON p.whoid=r.roleid
-			WHERE p.orgid=? AND p.location='category'  AND p.who='role'`,
+			WHERE p.orgid=? AND p.location='category' AND p.who='role'`,
 		ctx.OrgID, userID, ctx.OrgID)
 
 	if err == sql.ErrNoRows {
