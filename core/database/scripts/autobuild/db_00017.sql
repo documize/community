@@ -8,7 +8,7 @@ ALTER TABLE document ADD COLUMN `approval` INT NOT NULL DEFAULT 0 AFTER `protect
 ALTER TABLE page ADD COLUMN `status` INT NOT NULL DEFAULT 0 AFTER `revisions`;
 
 -- links pending changes to another page
-ALTER TABLE page ADD COLUMN `relativeid` CHAR(16) DEFAULT '' NOT NULL COLLATE utf8_bin AFTER `approval`;
+ALTER TABLE page ADD COLUMN `relativeid` CHAR(16) DEFAULT '' NOT NULL COLLATE utf8_bin AFTER `status`;
 
 -- useraction captures what is being actioned 
 ALTER TABLE useraction ADD COLUMN `reftype` CHAR(1) DEFAULT 'D' NOT NULL COLLATE utf8_bin AFTER `iscomplete`;
