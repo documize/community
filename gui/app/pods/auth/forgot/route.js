@@ -9,8 +9,8 @@
 //
 // https://documize.com
 
+import $ from 'jquery';
 import { inject as service } from '@ember/service';
-
 import Route from '@ember/routing/route';
 import constants from '../../../utils/constants';
 
@@ -29,6 +29,7 @@ export default Route.extend({
 	},
 
 	activate() {
+		this.get('browser').setTitleAsPhrase('Forgot Password');
 		$('body').addClass('background-color-theme-light');
 	},
 

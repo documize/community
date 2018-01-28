@@ -1,66 +1,64 @@
 .view-activity {
-	> .items {
-		list-style-type: none;
-		margin: 0;
+	margin: 50px;
+
+	.title {
+		font-size: 1.8rem;
+		font-weight: bold;
+		margin: 0 0 30px 0;
+		color: $color-gray;		
+	}
+
+	> .list {
+		margin: 0 0 50px 0;
 		padding: 0;
-		white-space: nowrap;
+		width: 100%;
 
 		> .item {
-			margin: 0;
-			padding: 15px 0;
-			width: 100%;
+			@include ease-in();
+			list-style: none;
+			padding: 10px 0;
+			margin: 5px 0;
+			white-space: nowrap;
+			position: relative;
 
-			> .avatar-box {
-				display: inline-block;
-				cursor: default;
-				position: relative;
-				overflow: hidden;
-				width: 35px;
-				height: 35px;
-				line-height: 34px;
-				padding: 0;
-				border-radius: 50%;
-				text-align: center;
-				font-weight: bold;
-				background-color: $color-gray;
-				color: $color-white;
-				vertical-align: middle;
-				
-				margin: 0 20px 0 0;
+			> .dash {
+				position: absolute;
+				top: 19px;
+				left: -20px;
+				background-color: $color-border;
+				height: 3px;
+				width: 10px;
 			}
 
-			> .activity {
+			> .spacer {
+				display: inline-block;
+				padding-left: 10px;
+			}
+
+			> .details {
+				@include ease-in();
+				vertical-align: top;
 				display: inline-block;
 
-				> .name {
-					display: inline-block;
+				> .doc {
 					font-size: 1.2rem;
+					font-weight: normal;
 					color: $color-off-black;
-					font-weight: bold;
+					letter-spacing: 0.5px;
 				}
-	
-				> .detail {
-					display: inline-block;
-					font-size: 1rem;
+
+				> .note {
 					color: $color-gray;
-	
-					.viewed {
-						color: $color-goldy;
-					}
-	
-					.added {
-						color: $color-green;
-					}
-	
-					.changed {
-						color: $color-blue;
-					}
-	
-					.deleted {
-						color: $color-red;
-					}
+					font-size: 1rem;
+					margin-top: 2px;
 				}
 			}
 		}
+	}
+	
+	> .list-timeline {
+		border-left: 5px solid $color-border;
+		padding-left: 20px;
+		margin-left: 30px;
 	}
 }

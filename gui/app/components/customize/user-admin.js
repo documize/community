@@ -9,6 +9,7 @@
 //
 // https://documize.com
 
+import $ from 'jquery';
 import Component from '@ember/component';
 import { schedule, debounce } from '@ember/runloop';
 import AuthProvider from '../../mixins/auth';
@@ -17,12 +18,16 @@ import ModalMixin from '../../mixins/modal';
 export default Component.extend(AuthProvider, ModalMixin, {
 	editUser: null,
 	deleteUser: null,
-	password: {},
 	filter: '',
-	filteredUsers: [],
-	selectedUsers: [],
 	hasSelectedUsers: false,
 	showDeleteDialog: false,
+
+	init() {
+		this._super(...arguments);
+		this.password = {};
+		this.filteredUsers = [];
+		this.selectedUsers = [];	
+	},
 
 	didReceiveAttrs() {
 		this._super(...arguments);
@@ -74,25 +79,29 @@ export default Component.extend(AuthProvider, ModalMixin, {
 		toggleActive(id) {
 			let user = this.users.findBy("id", id);
 			user.set('active', !user.get('active'));
-			this.attrs.onSave(user);
+			let cb = this.get('onSave');
+			cb(user);
 		},
 
 		toggleEditor(id) {
 			let user = this.users.findBy("id", id);
 			user.set('editor', !user.get('editor'));
-			this.attrs.onSave(user);
+			let cb = this.get('onSave');
+			cb(user);
 		},
 
 		toggleAdmin(id) {
 			let user = this.users.findBy("id", id);
 			user.set('admin', !user.get('admin'));
-			this.attrs.onSave(user);
+			let cb = this.get('onSave');
+			cb(user);
 		},
 
 		toggleUsers(id) {
 			let user = this.users.findBy("id", id);
 			user.set('viewUsers', !user.get('viewUsers'));
-			this.attrs.onSave(user);
+			let cb = this.get('onSave');
+			cb(user);
 		},
 
 		onShowEdit(id) {
@@ -135,11 +144,14 @@ export default Component.extend(AuthProvider, ModalMixin, {
 			$('#edit-user-modal').modal('hide');
 			$('#edit-user-modal').modal('dispose');
 
-			this.attrs.onSave(user);
+			let cb = this.get('onSave');
+			cb(user);
 
 			if (is.not.empty(password.password) && is.not.empty(password.confirmation) &&
 				password.password === password.confirmation) {
-				this.attrs.onPassword(user, password.password);
+
+				let pw = this.get('onPassword');
+				pw(user, password.password);
 			}
 		},
 
@@ -153,7 +165,9 @@ export default Component.extend(AuthProvider, ModalMixin, {
 
 			this.set('selectedUsers', []);
 			this.set('hasSelectedUsers', false);
-			this.attrs.onDelete(this.get('deleteUser.id'));
+
+			let cb = this.get('onDelete');
+			cb(this.get('deleteUser.id'));
 
 			return true;
 		},
@@ -162,7 +176,8 @@ export default Component.extend(AuthProvider, ModalMixin, {
 			let su = this.get('selectedUsers');
 
 			su.forEach(userId => {
-				this.attrs.onDelete(userId);
+				let cb = this.get('onDelete');
+				cb(userId);
 			});
 
 			this.set('selectedUsers', []);

@@ -16,12 +16,16 @@ import NotifierMixin from '../../mixins/notifier';
 import AuthMixin from '../../mixins/auth';
 
 export default Component.extend(TooltipMixin, NotifierMixin, AuthMixin, {
-	publicFolders: [],
-	protectedFolders: [],
-	privateFolders: [],
 	hasPublicFolders: false,
 	hasProtectedFolders: false,
 	hasPrivateFolders: false,
+
+	init() {
+		this._super(...arguments);
+		this.publicFolders = [];
+		this.protectedFolders = [];
+		this.privateFolders = [];			
+	},
 
 	didReceiveAttrs() {
 		let folders = this.get('spaces');

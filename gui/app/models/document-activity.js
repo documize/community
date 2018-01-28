@@ -18,6 +18,8 @@ export default Model.extend({
 	orgId: attr('string'),
 	folderId: attr('string'),
 	documentId: attr('string'),
+	pageId: attr('string'),
+	pageTitle: attr('string'),
 	userId: attr('string'),
 	firstname: attr('string'),
 	lastname: attr('string'),
@@ -54,6 +56,9 @@ export default Model.extend({
 				break;
 			case constants.UserActivityType.PublishedBlock:
 				label = 'Published Block';
+				break;
+			case constants.UserActivityType.Rejected:
+				label = 'Rejected';
 				break;
 			default:
 				break;
@@ -93,11 +98,13 @@ export default Model.extend({
 			case constants.UserActivityType.PublishedBlock:
 				color = 'color-blue';
 				break;
+			case constants.UserActivityType.Rejected:
+				color = 'color-red';
+				break;
 			default:
 				break;
 		}
 
 		return color;
 	})
-
 });

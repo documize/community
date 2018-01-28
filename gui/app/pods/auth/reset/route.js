@@ -9,6 +9,7 @@
 //
 // https://documize.com
 
+import $ from 'jquery';
 import Route from '@ember/routing/route';
 
 export default Route.extend({
@@ -17,6 +18,7 @@ export default Route.extend({
 	},
 
 	activate() {
+		this.get('browser').setTitleAsPhrase('Reset Password');
 		$('body').addClass('background-color-theme-light');
 	},
 

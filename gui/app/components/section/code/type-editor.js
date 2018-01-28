@@ -16,7 +16,7 @@ import TooltipMixin from '../../../mixins/tooltip';
 export default Component.extend(TooltipMixin, {
     isDirty: false,
     pageBody: "",
-    syntaxOptions: [],
+
     codeSyntax: null,
 	codeEditor: null,
 	editorId: computed('page', function () {
@@ -29,7 +29,8 @@ export default Component.extend(TooltipMixin, {
 	}),
 
 	init() {
-		this._super(...arguments);
+        this._super(...arguments);
+        this.syntaxOptions = [];
 
         let self = this;
         let rawBody = this.get('meta.rawBody');
@@ -128,7 +129,8 @@ export default Component.extend(TooltipMixin, {
         },
 
         onCancel() {
-            this.attrs.onCancel();
+            let cb = this.get('onCancel');
+            cb();
         },
 
         onAction(title) {
@@ -138,7 +140,8 @@ export default Component.extend(TooltipMixin, {
             page.set('title', title);
             page.set('body', meta.get('rawBody'));
 
-            this.attrs.onAction(page, meta);
+            let cb = this.get('onAction');
+            cb(page, meta);
         }
     }
 });

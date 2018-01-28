@@ -17,31 +17,34 @@ export default Controller.extend({
 	searchService: service('search'),
 	queryParams: ['filter', 'matchDoc', 'matchContent', 'matchTag', 'matchFile'],
 	filter: '',
-	results: [],
-	matchDoc: true,
-	matchContent: true,
-	matchFile: false,
-	matchTag: false,
-
 	onKeywordChange: function () {
 		debounce(this, this.fetch, 750);
 	}.observes('filter'),
 
+	matchDoc: true,
 	onMatchDoc: function () {
 		debounce(this, this.fetch, 750);
 	}.observes('matchDoc'),
 
+	matchContent: true,
 	onMatchContent: function () {
 		debounce(this, this.fetch, 750);
 	}.observes('matchContent'),
 
+	matchTag: false,
 	onMatchTag: function () {
 		debounce(this, this.fetch, 750);
 	}.observes('matchTag'),
 
+	matchFile: false,
 	onMatchFile: function () {
 		debounce(this, this.fetch, 750);
 	}.observes('matchFile'),
+
+	init() {
+		this._super(...arguments);
+		this.results = [];
+	},
 
 	fetch() {
 		let self = this;

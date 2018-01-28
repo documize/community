@@ -94,6 +94,9 @@ type PermissionStorer interface {
 	GetCategoryPermissions(ctx RequestContext, catID string) (r []permission.Permission, err error)
 	GetCategoryUsers(ctx RequestContext, catID string) (u []user.User, err error)
 	GetUserCategoryPermissions(ctx RequestContext, userID string) (r []permission.Permission, err error)
+	GetUserDocumentPermissions(ctx RequestContext, documentID string) (r []permission.Permission, err error)
+	GetDocumentPermissions(ctx RequestContext, documentID string) (r []permission.Permission, err error)
+	DeleteDocumentPermissions(ctx RequestContext, documentID string) (rows int64, err error)
 }
 
 // UserStorer defines required methods for user management
@@ -245,17 +248,19 @@ type PageStorer interface {
 	Add(ctx RequestContext, model page.NewPage) (err error)
 	Get(ctx RequestContext, pageID string) (p page.Page, err error)
 	GetPages(ctx RequestContext, documentID string) (p []page.Page, err error)
+	GetUnpublishedPages(ctx RequestContext, documentID string) (p []page.Page, err error)
 	GetPagesWithoutContent(ctx RequestContext, documentID string) (pages []page.Page, err error)
 	Update(ctx RequestContext, page page.Page, refID, userID string, skipRevision bool) (err error)
+	Delete(ctx RequestContext, documentID, pageID string) (rows int64, err error)
+	GetPageMeta(ctx RequestContext, pageID string) (meta page.Meta, err error)
+	GetDocumentPageMeta(ctx RequestContext, documentID string, externalSourceOnly bool) (meta []page.Meta, err error)
 	UpdateMeta(ctx RequestContext, meta page.Meta, updateUserID bool) (err error)
 	UpdateSequence(ctx RequestContext, documentID, pageID string, sequence float64) (err error)
 	UpdateLevel(ctx RequestContext, documentID, pageID string, level int) (err error)
-	Delete(ctx RequestContext, documentID, pageID string) (rows int64, err error)
-	GetPageMeta(ctx RequestContext, pageID string) (meta page.Meta, err error)
+	UpdateLevelSequence(ctx RequestContext, documentID, pageID string, level int, sequence float64) (err error)
+	GetNextPageSequence(ctx RequestContext, documentID string) (maxSeq float64, err error)
 	GetPageRevision(ctx RequestContext, revisionID string) (revision page.Revision, err error)
 	GetPageRevisions(ctx RequestContext, pageID string) (revisions []page.Revision, err error)
 	GetDocumentRevisions(ctx RequestContext, documentID string) (revisions []page.Revision, err error)
-	GetDocumentPageMeta(ctx RequestContext, documentID string, externalSourceOnly bool) (meta []page.Meta, err error)
 	DeletePageRevisions(ctx RequestContext, pageID string) (rows int64, err error)
-	GetNextPageSequence(ctx RequestContext, documentID string) (maxSeq float64, err error)
 }

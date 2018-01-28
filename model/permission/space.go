@@ -11,49 +11,6 @@
 
 package permission
 
-import "time"
-
-// Permission represents a permission for a space and is persisted to the database.
-type Permission struct {
-	ID       uint64    `json:"id"`
-	OrgID    string    `json:"orgId"`
-	Who      string    `json:"who"`      // user, role
-	WhoID    string    `json:"whoId"`    // either a user or role ID
-	Action   Action    `json:"action"`   // view, edit, delete
-	Scope    string    `json:"scope"`    // object, table
-	Location string    `json:"location"` // table name
-	RefID    string    `json:"refId"`    // id of row in table / blank when scope=table
-	Created  time.Time `json:"created"`
-}
-
-// Action details type of action
-type Action string
-
-const (
-	// SpaceView action means you can view a space and documents therein
-	SpaceView Action = "view"
-	// SpaceManage action means you can add, remove users, set permissions, but not delete that space
-	SpaceManage Action = "manage"
-	// SpaceOwner action means you can delete a space and do all SpaceManage functions
-	SpaceOwner Action = "own"
-
-	// DocumentAdd action means you can create/upload documents to a space
-	DocumentAdd Action = "doc-add"
-	// DocumentEdit action means you can edit documents in a space
-	DocumentEdit Action = "doc-edit"
-	// DocumentDelete means you can delete documents in a space
-	DocumentDelete Action = "doc-delete"
-	// DocumentMove means you can move documents between spaces
-	DocumentMove Action = "doc-move"
-	// DocumentCopy means you can copy documents within and between spaces
-	DocumentCopy Action = "doc-copy"
-	// DocumentTemplate means you can create, edit and delete document templates and content blocks
-	DocumentTemplate Action = "doc-template"
-
-	// CategoryView action means you can view a category and documents therein
-	CategoryView Action = "view"
-)
-
 // Record represents space permissions for a user on a space.
 // This data structure is made from database permission records for the space,
 // and it is designed to be sent to HTTP clients (web, mobile).
@@ -70,6 +27,7 @@ type Record struct {
 	DocumentMove     bool   `json:"documentMove"`
 	DocumentCopy     bool   `json:"documentCopy"`
 	DocumentTemplate bool   `json:"documentTemplate"`
+	DocumentApprove  bool   `json:"documentApprove"`
 }
 
 // DecodeUserPermissions returns a flat, usable permission summary record
@@ -104,27 +62,12 @@ func DecodeUserPermissions(perm []Permission) (r Record) {
 			r.DocumentCopy = true
 		case DocumentTemplate:
 			r.DocumentTemplate = true
+		case DocumentApprove:
+			r.DocumentApprove = true
 		}
 	}
 
 	return
-}
-
-// PermissionsModel details which users have what permissions on a given space.
-type PermissionsModel struct {
-	Message     string
-	Permissions []Record
-}
-
-// ContainsPermission checks if action matches one of the required actions?
-func ContainsPermission(action Action, actions ...Action) bool {
-	for _, a := range actions {
-		if action == a {
-			return true
-		}
-	}
-
-	return false
 }
 
 // EncodeUserPermissions returns multiple user permission records
@@ -158,6 +101,9 @@ func EncodeUserPermissions(r Record) (perm []Permission) {
 	if r.DocumentTemplate {
 		perm = append(perm, EncodeRecord(r, DocumentTemplate))
 	}
+	if r.DocumentApprove {
+		perm = append(perm, EncodeRecord(r, DocumentApprove))
+	}
 
 	return
 }
@@ -165,7 +111,7 @@ func EncodeUserPermissions(r Record) (perm []Permission) {
 // HasAnyPermission returns true if user has at least one permission.
 func HasAnyPermission(p Record) bool {
 	return p.SpaceView || p.SpaceManage || p.SpaceOwner || p.DocumentAdd || p.DocumentEdit ||
-		p.DocumentDelete || p.DocumentMove || p.DocumentCopy || p.DocumentTemplate
+		p.DocumentDelete || p.DocumentMove || p.DocumentCopy || p.DocumentTemplate || p.DocumentApprove
 }
 
 // EncodeRecord creates standard permission record representing user permissions for a space.
@@ -188,4 +134,10 @@ type CategoryViewRequestModel struct {
 	SpaceID    string `json:"folderId"`
 	CategoryID string `json:"categoryID"`
 	UserID     string `json:"userId"`
+}
+
+// SpaceRequestModel details which users have what permissions on a given space.
+type SpaceRequestModel struct {
+	Message     string
+	Permissions []Record
 }

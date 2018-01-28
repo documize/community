@@ -9,12 +9,11 @@
 //
 // https://documize.com
 
+import $ from 'jquery';
 import Mixin from '@ember/object/mixin';
 import { schedule } from '@ember/runloop';
 
 export default Mixin.create({
-	tooltips: [],
-
 	renderTooltips() {
 		schedule('afterRender', () => {
 			$('[data-toggle="tooltip"]').tooltip('dispose');
@@ -24,5 +23,17 @@ export default Mixin.create({
 
 	removeTooltips() {
 		$('[data-toggle="tooltip"]').tooltip('dispose');
+	},
+
+	renderPopovers() {
+		schedule('afterRender', () => {
+			$('[data-toggle="popover"]').popover('dispose');
+			$('body').popover({selector: '[data-toggle="popover"]', delay: 250});
+		});
+	},
+
+	removePopovers() {
+		$('[data-toggle="tooltip"]').popover('dispose');
 	}
+
 });

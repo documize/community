@@ -58,6 +58,7 @@ $dropdown-link-hover-color:         $color-link;
 $dropdown-link-hover-bg:          	$color-white;
 $dropdown-link-active-color:        $color-link;
 $dropdown-link-active-bg:           $color-white;
+$dropdown-header-color:				$color-black;
 
 // form
 $input-color:               $color-off-black;
@@ -101,7 +102,6 @@ $link-hover-decoration:     none;
 @import "node_modules/bootstrap/scss/tables";
 // @import "node_modules/bootstrap/scss/navbar";
 // @import "node_modules/bootstrap/scss/images";
-
 
 .modal-80 {
 	max-width: 80% !important;

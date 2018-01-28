@@ -9,6 +9,7 @@
 //
 // https://documize.com
 
+import $ from 'jquery';
 import { empty, and } from '@ember/object/computed';
 import Component from '@ember/component';
 import { isEmpty } from '@ember/utils';
@@ -16,7 +17,6 @@ import { get, set } from '@ember/object';
 import AuthProvider from '../../mixins/auth';
 
 export default Component.extend(AuthProvider, {
-	newUser: { firstname: "", lastname: "", email: "", active: true },
 	firstnameEmpty: empty('newUser.firstname'),
 	lastnameEmpty: empty('newUser.lastname'),
 	emailEmpty: empty('newUser.email'),
@@ -24,6 +24,11 @@ export default Component.extend(AuthProvider, {
 	hasLastnameEmptyError: and('lastnameEmpty', 'lastnameError'),
 	hasEmailEmptyError: and('emailEmpty', 'emailError'),
 
+	init() {
+		this._super(...arguments);
+		this.newUser = { firstname: "", lastname: "", email: "", active: true };
+	},
+	
 	actions: {
 		add() {
 			if (isEmpty(this.get('newUser.firstname'))) {

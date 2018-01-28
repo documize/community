@@ -9,7 +9,11 @@
 //
 // https://documize.com
 
-export function initialize( /*application*/ ) {
+import $ from 'jquery';
+import constants from '../constants/constants';
+import econstants from '../constants/econstants';
+
+export function initialize(application) {
     // address insecure jquery defaults (kudos: @nathanhammond)
     $.globalEval = function() {};
     $.ajaxSetup({
@@ -18,6 +22,11 @@ export function initialize( /*application*/ ) {
             'text script': text => text
         }
     });
+
+    let cs = constants.constants;
+    let ec = econstants.econstants;
+    application.register('constants:main', cs);
+    application.register('econstants:main', ec);
 
     Dropzone.autoDiscover = false;
     CodeMirror.modeURL = "/codemirror/mode/%N/%N.js";

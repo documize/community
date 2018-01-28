@@ -9,11 +9,14 @@
 //
 // https://documize.com
 
+import $ from 'jquery';
 import { notEmpty, empty } from '@ember/object/computed';
 import { schedule } from '@ember/runloop';
 import { inject as service } from '@ember/service';
+import { computed } from '@ember/object';
 import Component from '@ember/component';
 import TooltipMixin from '../../mixins/tooltip';
+import models from '../../utils/model';
 
 export default Component.extend(TooltipMixin, {
 	documentService: service('document'),
@@ -28,11 +31,15 @@ export default Component.extend(TooltipMixin, {
 	toEdit: '',
 	showDeleteBlockDialog: false,
 	deleteBlockId: '',
+	canEdit: computed('permissions', 'document.protection', function() {
+		let canEdit = this.get('document.protection') !== this.get('constants').ProtectionType.Lock && this.get('permissions.documentEdit');
 
-	didReceiveAttrs() {
-		this._super(...arguments);
-		this.loadBlocks();
-	},
+		if (canEdit) this.setupAddWizard();
+		return canEdit;
+	}),
+	hasBlocks: computed('blocks', function() {
+		return this.get('blocks.length') > 0;
+	}),
 
 	didRender() {
 		this._super(...arguments);
@@ -41,20 +48,22 @@ export default Component.extend(TooltipMixin, {
 
 	didInsertElement() {
 		this._super(...arguments);
-		this.setupAddWizard();
 
-		if (this.attrs.onGotoPage !== null) {
-			this.attrs.onGotoPage(this.get('pageId'));
+		if (this.get('session.authenticated')) {
+			this.setupAddWizard();
+			this.renderTooltips();
 		}
 
-		this.renderTooltips();
+		this.jumpToSection();
 	},
 
 	willDestroyElement() {
 		this._super(...arguments);
-		$('.start-section:not(.start-section-empty-state)').off('.hoverIntent');
 
-		this.removeTooltips();
+		if (this.get('session.authenticated')) {
+			$('.start-section:not(.start-section-empty-state)').off('.hoverIntent');
+			this.removeTooltips();
+		}
 	},
 
 	contentLinkHandler() {
@@ -73,7 +82,9 @@ export default Component.extend(TooltipMixin, {
 					link.orphan = true;
 				} else {
 					if (link.linkType === "section") {
-						self.attrs.onGotoPage(link.targetId);
+						self.get('currentPageId', link.targetId)
+						self.jumpToSection();
+						// self.get('browser').scrollTo(`#page-${link.targetId}`);
 					}
 				}
 			}
@@ -105,80 +116,112 @@ export default Component.extend(TooltipMixin, {
 	},
 
 	addSection(model) {
-		// calculate sequence of page (position in document)
 		let sequence = 0;
 		let level = 1;
 		let beforePage = this.get('beforePage');
+		let constants = this.get('constants');
 
+		// calculate sequence of page (position in document)
 		if (is.not.null(beforePage)) {
 			level = beforePage.get('level');
 
 			// get any page before the beforePage so we can insert this new section between them
-			let index = _.findIndex(this.get('pages'), function(p) { return p.get('id') === beforePage.get('id'); });
+			let index = _.findIndex(this.get('pages'), function(item) { return item.get('page.id') === beforePage.get('id'); });
 
 			if (index !== -1) {
 				let beforeBeforePage = this.get('pages')[index-1];
 
 				if (is.not.undefined(beforeBeforePage)) {
-					sequence = (beforePage.get('sequence') + beforeBeforePage.get('sequence')) / 2;
+					sequence = (beforePage.get('sequence') + beforeBeforePage.get('page.sequence')) / 2;
 				} else {
 					sequence = beforePage.get('sequence') / 2;
 				}
+
+				model.page.set('sequence', sequence);
+				model.page.set('level', level);
 			}
 		}
 
-		model.page.sequence = sequence;
-		model.page.level = level;
+		if (this.get('document.protection') === constants.ProtectionType.Review) {
+			model.page.set('status', model.page.get('relativeId') === '' ? constants.ChangeState.PendingNew : constants.ChangeState.Pending);
+		}
 
 		this.send('onHideSectionWizard');
 
 		return this.get('onInsertSection')(model);
 	},
 
-	loadBlocks() {
-		if (is.not.undefined(this.get('folder'))) {
-			this.get('sectionService').getSpaceBlocks(this.get('folder.id')).then((blocks) => {
-				if (this.get('isDestroyed') || this.get('isDestroying')) {
-					return;
-				}
-	
-				this.set('blocks', blocks);
-				this.set('hasBlocks', blocks.get('length') > 0);
-			});
+	jumpToSection() {
+		let cp = this.get('currentPageId');
+		if (is.not.empty(cp) && is.not.undefined(cp) && is.not.null(cp)) {
+			this.get('browser').scrollTo(`#page-${cp}`)
 		}
 	},
 
 	actions: {
 		onSavePageAsBlock(block) {
-			const promise = this.attrs.onSavePageAsBlock(block);
+			let cb = this.get('onSavePageAsBlock');
+			const promise = cb(block);
+
 			promise.then(() => {
-				this.loadBlocks();
+				let refresh = this.get('refresh');
+				refresh();
 			});
 		},
 
 		onCopyPage(pageId, documentId) {
-			this.attrs.onCopyPage(pageId, documentId);
+			let cb = this.get('onCopyPage');
+			cb(pageId, documentId);
 		},
 
 		onMovePage(pageId, documentId) {
-			this.attrs.onMovePage(pageId, documentId);
+			let cb = this.get('onMovePage');
+			cb(pageId, documentId);
 		},
 
 		onDeletePage(params) {
-			this.attrs.onDeletePage(params);
+			let cb = this.get('onDeletePage');
+			cb(params);
 		},
 
 		onSavePage(page, meta) {
-			this.set('toEdit', '');
-			this.attrs.onSavePage(page, meta);
+			let document = this.get('document');
+			let constants = this.get('constants');
+
+			switch (document.get('protection')) {
+				case constants.ProtectionType.Lock:
+					break;
+				case constants.ProtectionType.Review:
+					// detect edits to newly created pending page
+					if (page.get('relativeId') === '' && page.get('status') === constants.ChangeState.PendingNew) {
+						// new page, edits
+						this.set('toEdit', '');
+						let cb = this.get('onSavePage');
+						cb(page, meta);
+					} else if (page.get('relativeId') !== '' && page.get('status') === constants.ChangeState.Published) {
+						// existing page, first edit
+						const promise = this.addSection({ page: page, meta: meta });
+						promise.then((/*id*/) => { this.set('toEdit', ''); });
+					} else if (page.get('relativeId') !== '' && page.get('status') === constants.ChangeState.Pending) {
+						// existing page, subsequent edits
+						this.set('toEdit', '');
+						let cb = this.get('onSavePage');
+						cb(page, meta);
+					}
+					break;
+				case constants.ProtectionType.None:
+					// for un-protected documents, edits welcome!
+					this.set('toEdit', '');
+					// let cb2 = this.get('onSavePage');
+					// cb2(page, meta);
+					this.attrs.onSavePage(page, meta); // eslint-disable-line ember/no-attrs-in-components
+					
+					break;
+			}
 		},
 
 		onShowSectionWizard(page) {
-			if (is.undefined(page)) {
-				page = { id: '0' };
-			}
-
-			this.set('pageId', '');
+			if (is.undefined(page)) page = { id: '0' };
 
 			let beforePage = this.get('beforePage');
 			if (is.not.null(beforePage) && $("#new-section-wizard").is(':visible') && beforePage.get('id') === page.id) {
@@ -217,15 +260,11 @@ export default Component.extend(TooltipMixin, {
 				return;
 			}
 
-			let page = {
-				documentId: this.get('document.id'),
-				title: sectionName,
-				level: 1,
-				sequence: 0, // calculated elsewhere
-				body: "",
-				contentType: section.get('contentType'),
-				pageType: section.get('pageType')
-			};
+			let page = models.PageModel.create();
+			page.set('documentId', this.get('document.id'));
+			page.set('title', sectionName);
+			page.set('contentType', section.get('contentType'));
+			page.set('pageType', section.get('pageType'));
 
 			let meta = {
 				documentId: this.get('document.id'),
@@ -240,14 +279,7 @@ export default Component.extend(TooltipMixin, {
 
 			const promise = this.addSection(model);
 			promise.then((id) => {
-				this.set('pageId', id);
-
-				if (model.page.pageType === 'section') {
-					this.set('toEdit', id);
-				} else {
-					this.set('toEdit', '');
-				}
-
+				this.set('toEdit', model.page.pageType === 'section' ? id: '');
 				this.setupAddWizard();
 			});
 		},
@@ -259,16 +291,13 @@ export default Component.extend(TooltipMixin, {
 				return;
 			}
 
-			let page = {
-				documentId: this.get('document.id'),
-				title: `${block.get('title')}`,
-				level: 1,
-				sequence: 0, // calculated elsewhere
-				body: block.get('body'),
-				contentType: block.get('contentType'),
-				pageType: block.get('pageType'),
-				blockId: block.get('id')
-			};
+			let page = models.PageModel.create();
+			page.set('documentId', this.get('document.id'));
+			page.set('title', `${block.get('title')}`);
+			page.set('body', block.get('body'));
+			page.set('contentType', block.get('contentType'));
+			page.set('pageType', block.get('pageType'));
+			page.set('blockId', block.get('id'));
 
 			let meta = {
 				documentId: this.get('document.id'),
@@ -283,9 +312,7 @@ export default Component.extend(TooltipMixin, {
 			};
 
 			const promise = this.addSection(model);
-			promise.then((id) => {
-				this.set('pageId', id);
-
+			promise.then((id) => { // eslint-disable-line no-unused-vars
 				this.setupAddWizard();
 			});
 		},
@@ -299,11 +326,14 @@ export default Component.extend(TooltipMixin, {
 			this.set('showDeleteBlockDialog', false);
 
 			let id = this.get('deleteBlockId');
-			const promise = this.attrs.onDeleteBlock(id);
+
+			let cb = this.get('onDeleteBlock');
+			let promise = cb(id);
 
 			promise.then(() => {
 				this.set('deleteBlockId', '');
-				this.loadBlocks();
+				let refresh = this.get('refresh');
+				refresh();
 			});
 
 			return true;

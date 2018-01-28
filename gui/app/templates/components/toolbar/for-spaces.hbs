@@ -12,13 +12,13 @@
 						<div class="modal-body">
 							<form onsubmit={{action 'onAddSpace'}}>
 								<div class="form-group">
-										<label for="new-space-name">Space Name</label>
+									<label for="new-space-name">Space Name</label>
 									{{input type='text' id="new-space-name" class="form-control mousetrap" placeholder="Space name" value=spaceName}}
 									<small id="emailHelp" class="form-text text-muted">Characters and numbers only</small>
 								</div>
 								<div class="form-group">
-										<label for="clone-space-dropdown">Clone Space</label>
-									{{ui-select id="clone-space-dropdown" content=spaces prompt="select space" action=(action 'onCloneSpaceSelect') optionValuePath="id" optionLabelPath="name" selection=cloneSpace}}
+									<label for="clone-space-dropdown">Clone Space</label>
+									{{ui-select id="clone-space-dropdown" content=spaces prompt="select space" action=(action 'onCloneSpaceSelect') optionValuePath="id" optionLabelPath="name" selection=clonedSpace}}
 									<small id="emailHelp" class="form-text text-muted">Copy templates, permissions, documents from existing space</small>
 									<div class="margin-top-10" />
 									{{#if hasClone}}

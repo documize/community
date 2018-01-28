@@ -9,17 +9,20 @@
 //
 // https://documize.com
 
-import { inject as service } from '@ember/service';
-import Component from '@ember/component';
+import Model from 'ember-data/model';
+import attr from 'ember-data/attr';
 
-export default Component.extend({
-	documentService: service('document'),
-
-	didReceiveAttrs() {
-		this._super(...arguments);
-
-		this.get('documentService').getActivity(this.get('document.id')).then((activity) => {
-			this.set('activity', activity);
-		});	
-	}
+export default Model.extend({
+	orgId: attr(),
+	document: attr(),
+	documentId: attr(),
+	documentSlug: attr(),
+	tags: attr(),
+	excerpt: attr(),
+	itemId: attr(),
+	itemType: attr(),
+	space: attr(),
+	spaceId: attr(),
+	spaceSlug: attr(),
+	selected: attr()
 });

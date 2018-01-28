@@ -19,10 +19,12 @@ export default BaseService.extend({
 	ajax: service(),
 	localStorage: service(),
 	store: service(),
-
-	// selected folder
 	currentFolder: null,
-	permissions: {},
+
+	init() {
+		this._super(...arguments);
+		this.permissions = {};
+	},
 
 	// Add a new folder.
 	add(payload) {
@@ -93,7 +95,7 @@ export default BaseService.extend({
 		});
 	},
 
-	// reloads and caches folders.
+	// reloads and caches folders
 	reload() {
 		return this.get('ajax').request(`space`, {
 			method: "GET"

@@ -9,15 +9,14 @@
 //
 // https://documize.com
 
+import $ from 'jquery';
 import { empty } from '@ember/object/computed';
-
 import Component from '@ember/component';
 import { computed, set } from '@ember/object';
 import { isPresent, isEqual, isEmpty } from '@ember/utils';
 import AuthProvider from '../mixins/auth';
 
 export default Component.extend(AuthProvider, {
-	password: { password: "", confirmation: "" },
 	hasFirstnameError: empty('model.firstname'),
 	hasLastnameError: empty('model.lastname'),
 	hasEmailError: computed('model.email', function() {
@@ -44,6 +43,11 @@ export default Component.extend(AuthProvider, {
 			return '';
 		}
 	}),
+
+	init() {
+		this._super(...arguments);
+		this.password = { password: "", confirmation: "" };
+	},
 
 	actions: {
 		save() {

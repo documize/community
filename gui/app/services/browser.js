@@ -9,21 +9,20 @@
 //
 // https://documize.com
 
+import $ from 'jquery';
 import Service, { inject as service } from '@ember/service';
+import { schedule } from '@ember/runloop';
 
 export default Service.extend({
     sessionService: service('session'),
 
     init() {
+        this._super(...arguments);
         this.setMetaDescription();
     },
 
     setTitle(title) {
         document.title = title + " | " + this.get('sessionService.appMeta.title');
-    },
-
-    setTitleReverse(title) {
-        document.title = this.get('sessionService.appMeta.title') + " | " + title;
     },
 
     setTitleAsPhrase(title) {
@@ -42,5 +41,16 @@ export default Service.extend({
         }
 
         $('head').append('<meta name="description" content="' + description + '">');
+    },
+
+    scrollTo(id) {
+        schedule('afterRender', () => {
+            let elem = $(id).offset();
+            if (is.undefined(elem)) return;
+    
+            $('html, body').animate({
+                scrollTop: elem.top
+            }, 250);
+        });
     }
 });

@@ -53,8 +53,8 @@
 							<div class="col content-linker-modal-container">
 								<div class="form-group">
 									<label>Search</label>
-									<div class="tip">For content or attachments</div>
-									{{focus-input id="content-linker-search" type="input" value=keywords placeholder="keyword search" autocomplete="off"}}
+									{{focus-input id="content-linker-search" type="input" class="form-control" value=keywords placeholder="keyword search" autocomplete="off"}}
+									<small class="form-text text-muted">Document name, content, attachment name</small>
 								</div>
 								{{#unless hasMatches}}
 								Nothing found.

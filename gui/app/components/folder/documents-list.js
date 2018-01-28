@@ -19,13 +19,13 @@ export default Component.extend({
 	selectedDocuments: A([]),
 	selectedCaption: 'document',
 
-	showAdd: computed('permissions', 'documents', function() {
+	showAdd: computed('permissions.documentAdd', 'documents', function() {
 		return this.get('documents.length') === 0 && this.get('permissions.documentAdd');
 	}),
-	showLockout: computed('permissions', 'documents', function() {
+	showLockout: computed('permissions.documentAdd', 'documents', function() {
 		return this.get('documents.length') === 0 && !this.get('permissions.documentAdd');
 	}),
-	hasDocumentActions: computed('permissions', function() {
+	hasDocumentActions: computed('permissions.{documentDelete,documentMove}', function() {
 		return this.get('permissions.documentDelete') || this.get('permissions.documentMove');
 	}),
 
@@ -48,7 +48,8 @@ export default Component.extend({
 			this.set('selectedDocuments', A([]));
 			this.set('showDeleteDialog', false);
 
-			this.attrs.onDeleteDocument(list);
+			let cb = this.get('onDeleteDocument');
+			cb(list);
 
 			return true;
 		},
@@ -72,7 +73,9 @@ export default Component.extend({
 
 			this.set('showMoveDialog', false);
 			this.set('selectedDocuments', A([]));
-			this.attrs.onMoveDocument(list, moveSpaceId);
+
+			let cb = this.get('onMoveDocument');
+			cb(list, moveSpaceId);
 
 			return true;
 		},

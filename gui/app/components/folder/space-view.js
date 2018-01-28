@@ -23,11 +23,15 @@ export default Component.extend(AuthMixin, {
 	folderService: service('folder'),
 	localStorage: service('localStorage'),
 	hasCategories: gt('categories.length', 0),
-	filteredDocs: [],
 	categoryLinkName: 'Manage',
 	spaceSettings: computed('permissions', function() {
 		return this.get('permissions.spaceOwner') || this.get('permissions.spaceManage');
 	}),
+
+	init() {
+		this._super(...arguments);
+		this.filteredDocs = [];	
+	},
 
 	didReceiveAttrs() {
 		this._super(...arguments);
@@ -108,7 +112,8 @@ export default Component.extend(AuthMixin, {
 				});
 
 				this.set('documents', documents);
-				this.attrs.onRefresh();
+				let cb = this.get('onRefresh');
+				cb();
 			});
 		},
 

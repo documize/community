@@ -16,29 +16,36 @@ import (
 	"time"
 
 	"github.com/documize/community/model"
+	"github.com/documize/community/model/workflow"
 )
 
 // Page represents a section within a document.
 type Page struct {
 	model.BaseEntity
-	OrgID       string  `json:"orgId"`
-	DocumentID  string  `json:"documentId"`
-	UserID      string  `json:"userId"`
-	ContentType string  `json:"contentType"`
-	PageType    string  `json:"pageType"`
-	BlockID     string  `json:"blockId"`
-	Level       uint64  `json:"level"`
-	Sequence    float64 `json:"sequence"`
-	Numbering   string  `json:"numbering"`
-	Title       string  `json:"title"`
-	Body        string  `json:"body"`
-	Revisions   uint64  `json:"revisions"`
+	OrgID       string                `json:"orgId"`
+	DocumentID  string                `json:"documentId"`
+	UserID      string                `json:"userId"`
+	ContentType string                `json:"contentType"`
+	PageType    string                `json:"pageType"`
+	BlockID     string                `json:"blockId"`
+	Level       uint64                `json:"level"`
+	Sequence    float64               `json:"sequence"`
+	Numbering   string                `json:"numbering"`
+	Title       string                `json:"title"`
+	Body        string                `json:"body"`
+	Revisions   uint64                `json:"revisions"`
+	Status      workflow.ChangeStatus `json:"status"`
+	RelativeID  string                `json:"relativeId"` // links page to pending page edits
 }
 
 // SetDefaults ensures no blank values.
 func (p *Page) SetDefaults() {
 	if len(p.ContentType) == 0 {
 		p.ContentType = "wysiwyg"
+	}
+
+	if p.Level == 0 {
+		p.Level = 1
 	}
 
 	p.Title = strings.TrimSpace(p.Title)
@@ -113,4 +120,20 @@ type SequenceRequest struct {
 type LevelRequest struct {
 	PageID string `json:"pageId"`
 	Level  int    `json:"level"`
+}
+
+// BulkRequest details page, it's meta, pending page changes.
+// Used to bulk load data by GUI so as to reduce network requests.
+type BulkRequest struct {
+	ID      string        `json:"id"`
+	Page    Page          `json:"page"`
+	Meta    Meta          `json:"meta"`
+	Pending []PendingPage `json:"pending"`
+}
+
+// PendingPage details page that is yet to be published
+type PendingPage struct {
+	Page  Page   `json:"page"`
+	Meta  Meta   `json:"meta"`
+	Owner string `json:"owner"`
 }

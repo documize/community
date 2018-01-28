@@ -97,7 +97,7 @@ func (s Scope) GetByToken(ctx domain.RequestContext, token string) (u user.User,
 // This occurs when we you share a folder with a new user and they have to complete
 // the onboarding process.
 func (s Scope) GetBySerial(ctx domain.RequestContext, serial string) (u user.User, err error) {
-	err = s.Runtime.Db.Get("SELECT id, refid, firstname, lastname, email, initials, global, password, salt, reset, created, revised FROM user WHERE salt=?", serial)
+	err = s.Runtime.Db.Get(&u, "SELECT id, refid, firstname, lastname, email, initials, global, password, salt, reset, created, revised FROM user WHERE salt=?", serial)
 
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("execute user select by serial %s", serial))

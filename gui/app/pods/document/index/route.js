@@ -9,7 +9,7 @@
 //
 // https://documize.com
 
-import { hash } from 'rsvp';
+import { Promise as EmberPromise, hash } from 'rsvp';
 import { inject as service } from '@ember/service';
 import Route from '@ember/routing/route';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
@@ -20,6 +20,15 @@ export default Route.extend(AuthenticatedRouteMixin, {
 	folderService: service('folder'),
 	userService: service('user'),
 
+	beforeModel() {
+		return new EmberPromise((resolve) => {
+			this.get('documentService').fetchPages(this.paramsFor('document').document_id, this.get('session.user.id')).then((data) => {
+				this.set('pages', data);
+				resolve();
+			});
+		});
+	},
+
 	model() {
 		let document = this.modelFor('document').document;
 		this.browser.setTitle(document.get('name'));
@@ -29,10 +38,12 @@ export default Route.extend(AuthenticatedRouteMixin, {
 			folders: this.modelFor('document').folders,
 			folder: this.modelFor('document').folder,
 			document: this.modelFor('document').document,
-			pages: this.get('documentService').getPages(this.modelFor('document').document.get('id')),
+			pages: this.get('pages'),
 			links: this.modelFor('document').links,
 			sections: this.modelFor('document').sections,
-			permissions: this.modelFor('document').permissions
+			permissions: this.modelFor('document').permissions,
+			roles: this.modelFor('document').roles,
+			blocks: this.modelFor('document').blocks
 		});
 	},
 
@@ -44,5 +55,12 @@ export default Route.extend(AuthenticatedRouteMixin, {
 		controller.set('links', model.links);
 		controller.set('sections', model.sections);
 		controller.set('permissions', model.permissions);
+		controller.set('roles', model.roles);
+		controller.set('blocks', model.blocks);
+	},
+
+	activate: function() {
+		this._super(...arguments);
+		window.scrollTo(0,0);
 	}
 });

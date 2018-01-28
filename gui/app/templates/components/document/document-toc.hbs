@@ -1,38 +1,46 @@
-<div id="doc-toc" class="document-toc {{if isDesktop 'document-toc-desktop'}}">
-    <div class="header">
-        <div class="title">Table of contents</div>
-        {{#if session.authenticated}}
-            {{#if permissions.documentEdit}}
-                {{#unless emptyState}}
-                    <div id="tocToolbar" class="toc-controls {{if state.actionablePage 'current-page' ''}}">
-                        <div id="toc-up-button" class="button-icon-green button-icon-small {{if state.upDisabled 'disabled'}}" {{action 'pageUp'}}>
-                            <i class="material-icons">arrow_upward</i>
-                        </div>
-                        <div class="button-icon-gap" />
-                        <div id="toc-down-button" class="button-icon-green button-icon-small {{if state.downDisabled 'disabled'}}" {{action 'pageDown'}}>
-                            <i class="material-icons">arrow_downward</i>
-                        </div>
-                        <div class="button-icon-gap" />
-                        <div id="toc-outdent-button" class="button-icon-green button-icon-small {{if state.outdentDisabled 'disabled'}}" {{action 'pageOutdent'}}>
-                            <i class="material-icons">arrow_back</i>
-                        </div>
-                        <div class="button-icon-gap" />
-                        <div id="toc-indent-button" class="button-icon-green button-icon-small {{if state.indentDisabled 'disabled'}}" {{action 'pageIndent'}}>
-                            <i class="material-icons">arrow_forward</i>
-                        </div>
+{{#unless emptyState}}
+    <div id="doc-toc" class="document-toc {{if isDesktop 'document-toc-desktop'}}">
+        <div class="header">
+            <div class="title">Table of contents</div>
+            {{#if canEdit}}
+                <div id="tocToolbar" class="toc-controls {{if state.actionablePage 'current-page'}}">
+                    <div id="toc-up-button" class="button-icon-green button-icon-small {{if state.upDisabled 'disabled'}}" {{action 'pageUp'}}>
+                        <i class="material-icons">arrow_upward</i>
                     </div>
-                {{/unless}}
+                    <div class="button-icon-gap" />
+                    <div id="toc-down-button" class="button-icon-green button-icon-small {{if state.downDisabled 'disabled'}}" {{action 'pageDown'}}>
+                        <i class="material-icons">arrow_downward</i>
+                    </div>
+                    <div class="button-icon-gap" />
+                    <div id="toc-outdent-button" class="button-icon-green button-icon-small {{if state.outdentDisabled 'disabled'}}" {{action 'pageOutdent'}}>
+                        <i class="material-icons">arrow_back</i>
+                    </div>
+                    <div class="button-icon-gap" />
+                    <div id="toc-indent-button" class="button-icon-green button-icon-small {{if state.indentDisabled 'disabled'}}" {{action 'pageIndent'}}>
+                        <i class="material-icons">arrow_forward</i>
+                    </div>
+                </div>
             {{/if}}
-        {{/if}}
-    </div>
+        </div>
 
-    <ul class="index-list">
-        {{#each pages key="id" as |page index|}}
-            <li class="item">
-                <a id="index-{{page.id}}" {{action 'onEntryClick' page.id}} class="link toc-index-item {{page.tocIndentCss}} {{if (eq page.id currentPageId) 'selected'}}">
-                    <span class="numbering">{{page.numbering}}</span>{{page.title}}
-                </a>
-            </li>
-        {{/each}}
-    </ul>
-</div>
+        <ul class="index-list">
+            {{#each pages key="id" as |item index|}}
+                <li class="item">
+                    <a id="index-{{item.page.id}}" {{action 'onGotoPage' item.page.id}}
+                        class="link toc-index-item {{item.page.tocIndentCss}} {{if (eq item.page.id state.pageId) 'selected'}}">
+                        <span class="numbering">{{item.page.numbering}}</span>
+                        {{#if (or item.userHasChangePending userHasNewPagePending)}}
+                            <span class="color-red" title="Pending approval" data-toggle="tooltip" data-placement="top">[*]&nbsp;</span>
+                        {{/if}}
+                        {{#if (or permissions.documentApprove roles.documentApprove)}}
+                            {{#if item.changeAwaitingReview}}
+                                <span class="color-green" title="Awaiting approval" data-toggle="tooltip" data-placement="top">[*]&nbsp;</span>
+                            {{/if}}
+                        {{/if}}
+                        {{item.page.title}}
+                    </a>
+                </li>
+            {{/each}}
+        </ul>
+    </div>
+{{/unless}}

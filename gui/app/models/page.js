@@ -12,7 +12,6 @@
 import { computed } from '@ember/object';
 import Model from 'ember-data/model';
 import attr from 'ember-data/attr';
-// import { hasMany } from 'ember-data/relationships';
 
 export default Model.extend({
 	documentId: attr('string'),
@@ -20,7 +19,7 @@ export default Model.extend({
 	contentType: attr('string'),
 	pageType: attr('string'),
 	level: attr('number', { defaultValue: 1 }),
-	sequence: attr('number', { defaultValue: 0 }),
+	sequence: attr('number', { defaultValue: 1024 }),
 	numbering: attr('string'),
 	revisions: attr('number', { defaultValue: 0 }),
 	blockId: attr('string'),
@@ -28,10 +27,12 @@ export default Model.extend({
 	body: attr('string'),
 	rawBody: attr('string'),
 	meta: attr(),
-	
+	status: attr('number', { defaultValue: 0 }),
+	relativeId: attr('string'),
+	userId: attr('string'),
+
 	tagName: computed('level', function () {
 		return "h2";
-		// return "h" + (this.get('level') + 1);
 	}),
 
 	tocIndent: computed('level', function () {
@@ -48,5 +49,16 @@ export default Model.extend({
 	}),
 
 	created: attr(),
-	revised: attr()
+	revised: attr(),
+
+	// is this a new page that is pending and belongs to the user?
+	isNewPageUserPending(userId) {
+		return this.get('relativeId') === '' && this.get('userId') === userId && (
+			this.get('status') === this.get('constants').ChangeState.PendingNew || this.get('status') === this.get('constants').ChangeState.UnderReview);
+	},
+
+	// is this new page ready for review?
+	isNewPageReviewReady() {
+		return this.get('relativeId') === '' && this.get('status') === this.get('constants').ChangeState.UnderReview;
+	}
 });

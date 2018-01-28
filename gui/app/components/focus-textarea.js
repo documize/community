@@ -12,7 +12,8 @@
 import TextArea from '@ember/component/text-area';
 
 export default TextArea.extend({
-    becomeFocused: function() {
+    didInsertElement() {
+        this._super(...arguments);
         this.$().focus();
-    }.on('didInsertElement')
+    }
 });

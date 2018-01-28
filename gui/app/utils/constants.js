@@ -25,7 +25,9 @@ export default {
 		Read: 1,
 		Feedback: 2,
 		Contribute: 3,
-		Approve: 4
+        Approve: 4,
+        Approved: 5,
+        Rejected: 6,
 	},
 
     UserActivityType: {
@@ -38,6 +40,7 @@ export default {
         Reverted: 7,
         PublishedTemplate: 8,
         PublishedBlock: 9,
-        Feedback: 10
+        Feedback: 10,
+        Rejected: 11,
     }
 };

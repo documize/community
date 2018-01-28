@@ -31,8 +31,11 @@ import (
 	"github.com/documize/community/domain/section/provider"
 	"github.com/documize/community/model/activity"
 	"github.com/documize/community/model/audit"
-	"github.com/documize/community/model/doc"
+	dm "github.com/documize/community/model/doc"
 	"github.com/documize/community/model/page"
+	pm "github.com/documize/community/model/permission"
+	"github.com/documize/community/model/user"
+	"github.com/documize/community/model/workflow"
 	htmldiff "github.com/documize/html-diff"
 )
 
@@ -53,17 +56,14 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// check param
 	documentID := request.Param(r, "documentID")
 	if len(documentID) == 0 {
 		response.WriteMissingDataError(w, method, "documentID")
 		return
 	}
 
-	if !permission.CanChangeDocument(ctx, *h.Store, documentID) {
-		response.WriteForbiddenError(w)
-		return
-	}
-
+	// read payload
 	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -90,6 +90,39 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Check protection and approval process
+	document, err := h.Store.Document.Get(ctx, documentID)
+	if err != nil {
+		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	// Protect locked
+	if document.Protection == workflow.ProtectionLock {
+		response.WriteForbiddenError(w)
+		h.Runtime.Log.Info("attempted write to locked document")
+		return
+	}
+
+	// Check edit permission
+	if !permission.CanChangeDocument(ctx, *h.Store, documentID) {
+		response.WriteForbiddenError(w)
+		return
+	}
+
+	// if document review process then we must mark page as pending
+	if document.Protection == workflow.ProtectionReview {
+		if model.Page.RelativeID == "" {
+			model.Page.Status = workflow.ChangePendingNew
+		} else {
+			model.Page.Status = workflow.ChangePending
+		}
+	} else {
+		model.Page.RelativeID = ""
+		model.Page.Status = workflow.ChangePublished
+	}
+
 	pageID := uniqueid.Generate()
 	model.Page.RefID = pageID
 	model.Meta.PageID = pageID
@@ -97,7 +130,6 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	model.Meta.UserID = ctx.UserID // required for Render call below
 	model.Page.SetDefaults()
 	model.Meta.SetDefaults()
-	// page.Title = template.HTMLEscapeString(page.Title)
 
 	doc, err := h.Store.Document.Get(ctx, documentID)
 	if err != nil {
@@ -134,8 +166,9 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 
 	h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
 		LabelID:      doc.LabelID,
-		SourceID:     model.Page.DocumentID,
-		SourceType:   activity.SourceTypeDocument,
+		DocumentID:   model.Page.DocumentID,
+		PageID:       model.Page.RefID,
+		SourceType:   activity.SourceTypePage,
 		ActivityType: activity.TypeCreated})
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSectionAdd)
@@ -229,15 +262,10 @@ func (h *Handler) GetPages(w http.ResponseWriter, r *http.Request) {
 	response.WriteJSON(w, pages)
 }
 
-// Delete deletes a page.
-func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
-	method := "page.delete"
+// GetMeta gets page meta data for specified document page.
+func (h *Handler) GetMeta(w http.ResponseWriter, r *http.Request) {
+	method := "page.meta"
 	ctx := domain.GetRequestContext(r)
-
-	if !h.Runtime.Product.License.IsValid() {
-		response.WriteBadLicense(w)
-		return
-	}
 
 	documentID := request.Param(r, "documentID")
 	if len(documentID) == 0 {
@@ -251,156 +279,31 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !permission.CanChangeDocument(ctx, *h.Store, documentID) {
+	if !permission.CanViewDocument(ctx, *h.Store, documentID) {
 		response.WriteForbiddenError(w)
 		return
 	}
 
-	doc, err := h.Store.Document.Get(ctx, documentID)
+	meta, err := h.Store.Page.GetPageMeta(ctx, pageID)
+	if err == sql.ErrNoRows {
+		response.WriteNotFoundError(w, method, pageID)
+		h.Runtime.Log.Info(method + " no record")
+		meta = page.Meta{}
+		response.WriteJSON(w, meta)
+		return
+	}
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
 		return
 	}
-
-	ctx.Transaction, err = h.Runtime.Db.Beginx()
-	if err != nil {
-		response.WriteServerError(w, method, err)
+	if meta.DocumentID != documentID {
+		response.WriteBadRequestError(w, method, "documentID mismatch")
 		h.Runtime.Log.Error(method, err)
 		return
 	}
 
-	page, err := h.Store.Page.Get(ctx, pageID)
-	if err != nil {
-		ctx.Transaction.Rollback()
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	if len(page.BlockID) > 0 {
-		h.Store.Block.DecrementUsage(ctx, page.BlockID)
-	}
-
-	_, err = h.Store.Page.Delete(ctx, documentID, pageID)
-	if err != nil {
-		ctx.Transaction.Rollback()
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-		LabelID:      doc.LabelID,
-		SourceID:     documentID,
-		SourceType:   activity.SourceTypeDocument,
-		ActivityType: activity.TypeDeleted})
-
-	h.Store.Audit.Record(ctx, audit.EventTypeSectionDelete)
-
-	go h.Indexer.DeleteContent(ctx, pageID)
-
-	h.Store.Link.DeleteSourcePageLinks(ctx, pageID)
-
-	h.Store.Link.MarkOrphanPageLink(ctx, pageID)
-
-	h.Store.Page.DeletePageRevisions(ctx, pageID)
-
-	ctx.Transaction.Commit()
-
-	response.WriteEmpty(w)
-}
-
-// DeletePages batch deletes pages.
-func (h *Handler) DeletePages(w http.ResponseWriter, r *http.Request) {
-	method := "page.delete.pages"
-	ctx := domain.GetRequestContext(r)
-
-	if !h.Runtime.Product.License.IsValid() {
-		response.WriteBadLicense(w)
-		return
-	}
-
-	documentID := request.Param(r, "documentID")
-	if len(documentID) == 0 {
-		response.WriteMissingDataError(w, method, "documentID")
-		return
-	}
-
-	if !permission.CanChangeDocument(ctx, *h.Store, documentID) {
-		response.WriteForbiddenError(w)
-		return
-	}
-
-	defer streamutil.Close(r.Body)
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		response.WriteBadRequestError(w, method, "Bad body")
-		return
-	}
-
-	model := new([]page.LevelRequest)
-	err = json.Unmarshal(body, &model)
-	if err != nil {
-		response.WriteBadRequestError(w, method, "JSON marshal")
-		return
-	}
-
-	doc, err := h.Store.Document.Get(ctx, documentID)
-	if err != nil {
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	ctx.Transaction, err = h.Runtime.Db.Beginx()
-	if err != nil {
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	for _, page := range *model {
-		pageData, err := h.Store.Page.Get(ctx, page.PageID)
-		if err != nil {
-			ctx.Transaction.Rollback()
-			response.WriteServerError(w, method, err)
-			h.Runtime.Log.Error(method, err)
-			return
-		}
-
-		if len(pageData.BlockID) > 0 {
-			h.Store.Block.DecrementUsage(ctx, pageData.BlockID)
-		}
-
-		_, err = h.Store.Page.Delete(ctx, documentID, page.PageID)
-		if err != nil {
-			ctx.Transaction.Rollback()
-			response.WriteServerError(w, method, err)
-			h.Runtime.Log.Error(method, err)
-			return
-		}
-
-		go h.Indexer.DeleteContent(ctx, page.PageID)
-
-		h.Store.Link.DeleteSourcePageLinks(ctx, page.PageID)
-
-		h.Store.Link.MarkOrphanPageLink(ctx, page.PageID)
-
-		h.Store.Page.DeletePageRevisions(ctx, page.PageID)
-	}
-
-	h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-		LabelID:      doc.LabelID,
-		SourceID:     documentID,
-		SourceType:   activity.SourceTypeDocument,
-		ActivityType: activity.TypeDeleted})
-
-	h.Store.Audit.Record(ctx, audit.EventTypeSectionDelete)
-
-	ctx.Transaction.Commit()
-
-	response.WriteEmpty(w)
+	response.WriteJSON(w, meta)
 }
 
 // Update will persist changed page and note the fact
@@ -415,11 +318,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// if !ctx.Editor {
-	// 	response.WriteForbiddenError(w)
-	// 	return
-	// }
-
+	// Check params
 	documentID := request.Param(r, "documentID")
 	if len(documentID) == 0 {
 		response.WriteMissingDataError(w, method, "documentID")
@@ -432,11 +331,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !permission.CanChangeDocument(ctx, *h.Store, documentID) {
-		response.WriteForbiddenError(w)
-		return
-	}
-
+	// Read payload
 	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -458,10 +353,23 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Check protection and approval process
 	doc, err := h.Store.Document.Get(ctx, documentID)
 	if err != nil {
-		response.WriteServerError(w, method, err)
+		response.WriteBadRequestError(w, method, err.Error())
 		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	if doc.Protection == workflow.ProtectionLock {
+		response.WriteForbiddenError(w)
+		h.Runtime.Log.Info("attempted write to locked document")
+		return
+	}
+
+	// Check edit permission
+	if !permission.CanChangeDocument(ctx, *h.Store, documentID) {
+		response.WriteForbiddenError(w)
 		return
 	}
 
@@ -492,6 +400,11 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	skipRevision := false
 	skipRevision, err = strconv.ParseBool(request.Query(r, "r"))
 
+	// We don't track revisions for non-published pages
+	if model.Page.Status != workflow.ChangePublished {
+		skipRevision = true
+	}
+
 	err = h.Store.Page.Update(ctx, model.Page, refID, ctx.UserID, skipRevision)
 	if err != nil {
 		response.WriteServerError(w, method, err)
@@ -510,8 +423,9 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 	h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
 		LabelID:      doc.LabelID,
-		SourceID:     model.Page.DocumentID,
-		SourceType:   activity.SourceTypeDocument,
+		DocumentID:   model.Page.DocumentID,
+		PageID:       model.Page.RefID,
+		SourceType:   activity.SourceTypePage,
 		ActivityType: activity.TypeEdited})
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSectionUpdate)
@@ -562,6 +476,211 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	response.WriteJSON(w, updatedPage)
 }
 
+// Delete a page.
+func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
+	method := "page.delete"
+	ctx := domain.GetRequestContext(r)
+
+	if !h.Runtime.Product.License.IsValid() {
+		response.WriteBadLicense(w)
+		return
+	}
+
+	documentID := request.Param(r, "documentID")
+	if len(documentID) == 0 {
+		response.WriteMissingDataError(w, method, "documentID")
+		return
+	}
+	pageID := request.Param(r, "pageID")
+	if len(pageID) == 0 {
+		response.WriteMissingDataError(w, method, "pageID")
+		return
+	}
+
+	doc, err := h.Store.Document.Get(ctx, documentID)
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	p, err := h.Store.Page.Get(ctx, pageID)
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	// you can delete your own pending page
+	ownPending := false
+	if (p.Status == workflow.ChangePending || p.Status == workflow.ChangePendingNew) && p.UserID == ctx.UserID {
+		ownPending = true
+	}
+
+	// if not own page then check permission
+	if !ownPending {
+		ok, _ := h.workflowPermitsChange(doc, ctx)
+		if !ok {
+			response.WriteForbiddenError(w)
+			h.Runtime.Log.Info("attempted delete section on locked document")
+			return
+		}
+	}
+
+	ctx.Transaction, err = h.Runtime.Db.Beginx()
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	if len(p.BlockID) > 0 {
+		h.Store.Block.DecrementUsage(ctx, p.BlockID)
+	}
+
+	_, err = h.Store.Page.Delete(ctx, documentID, pageID)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
+		LabelID:      doc.LabelID,
+		DocumentID:   documentID,
+		PageID:       pageID,
+		SourceType:   activity.SourceTypePage,
+		ActivityType: activity.TypeDeleted})
+
+	go h.Indexer.DeleteContent(ctx, pageID)
+
+	h.Store.Link.DeleteSourcePageLinks(ctx, pageID)
+
+	h.Store.Link.MarkOrphanPageLink(ctx, pageID)
+
+	h.Store.Page.DeletePageRevisions(ctx, pageID)
+
+	ctx.Transaction.Commit()
+
+	h.Store.Audit.Record(ctx, audit.EventTypeSectionDelete)
+
+	// Re-level all pages in document
+	h.LevelizeDocument(ctx, documentID)
+
+	response.WriteEmpty(w)
+}
+
+// DeletePages batch deletes pages.
+func (h *Handler) DeletePages(w http.ResponseWriter, r *http.Request) {
+	method := "page.delete.pages"
+	ctx := domain.GetRequestContext(r)
+
+	if !h.Runtime.Product.License.IsValid() {
+		response.WriteBadLicense(w)
+		return
+	}
+
+	documentID := request.Param(r, "documentID")
+	if len(documentID) == 0 {
+		response.WriteMissingDataError(w, method, "documentID")
+		return
+	}
+
+	defer streamutil.Close(r.Body)
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		response.WriteBadRequestError(w, method, "Bad body")
+		return
+	}
+
+	model := new([]page.LevelRequest)
+	err = json.Unmarshal(body, &model)
+	if err != nil {
+		response.WriteBadRequestError(w, method, "JSON marshal")
+		return
+	}
+
+	doc, err := h.Store.Document.Get(ctx, documentID)
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	ctx.Transaction, err = h.Runtime.Db.Beginx()
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	for _, page := range *model {
+		pageData, err := h.Store.Page.Get(ctx, page.PageID)
+		if err != nil {
+			ctx.Transaction.Rollback()
+			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
+			return
+		}
+
+		ownPending := false
+		if (pageData.Status == workflow.ChangePending || pageData.Status == workflow.ChangePendingNew) && pageData.UserID == ctx.UserID {
+			ownPending = true
+		}
+
+		// if not own page then check permission
+		if !ownPending {
+			ok, _ := h.workflowPermitsChange(doc, ctx)
+			if !ok {
+				ctx.Transaction.Rollback()
+				response.WriteForbiddenError(w)
+				h.Runtime.Log.Info("attempted delete section on locked document")
+				return
+			}
+		}
+		if len(pageData.BlockID) > 0 {
+			h.Store.Block.DecrementUsage(ctx, pageData.BlockID)
+		}
+
+		_, err = h.Store.Page.Delete(ctx, documentID, page.PageID)
+		if err != nil {
+			ctx.Transaction.Rollback()
+			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
+			return
+		}
+
+		go h.Indexer.DeleteContent(ctx, page.PageID)
+
+		h.Store.Link.DeleteSourcePageLinks(ctx, page.PageID)
+
+		h.Store.Link.MarkOrphanPageLink(ctx, page.PageID)
+
+		h.Store.Page.DeletePageRevisions(ctx, page.PageID)
+
+		h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
+			LabelID:      doc.LabelID,
+			DocumentID:   documentID,
+			PageID:       page.PageID,
+			SourceType:   activity.SourceTypePage,
+			ActivityType: activity.TypeDeleted})
+	}
+
+	ctx.Transaction.Commit()
+
+	h.Store.Audit.Record(ctx, audit.EventTypeSectionDelete)
+
+	// Re-level all pages in document
+	h.LevelizeDocument(ctx, documentID)
+
+	response.WriteEmpty(w)
+}
+
+//**************************************************
+// Table of Contents
+//**************************************************
+
 // ChangePageSequence will swap page sequence for a given number of pages.
 func (h *Handler) ChangePageSequence(w http.ResponseWriter, r *http.Request) {
 	method := "page.sequence"
@@ -578,8 +697,17 @@ func (h *Handler) ChangePageSequence(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !permission.CanChangeDocument(ctx, *h.Store, documentID) {
+	doc, err := h.Store.Document.Get(ctx, documentID)
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	ok, err := h.workflowPermitsChange(doc, ctx)
+	if !ok {
 		response.WriteForbiddenError(w)
+		h.Runtime.Log.Info("attempted to chaneg page sequence on protected document")
 		return
 	}
 
@@ -638,9 +766,17 @@ func (h *Handler) ChangePageLevel(w http.ResponseWriter, r *http.Request) {
 		response.WriteMissingDataError(w, method, "documentID")
 		return
 	}
+	doc, err := h.Store.Document.Get(ctx, documentID)
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
 
-	if !permission.CanChangeDocument(ctx, *h.Store, documentID) {
+	ok, err := h.workflowPermitsChange(doc, ctx)
+	if !ok {
 		response.WriteForbiddenError(w)
+		h.Runtime.Log.Info("attempted to chaneg page level on protected document")
 		return
 	}
 
@@ -684,74 +820,9 @@ func (h *Handler) ChangePageLevel(w http.ResponseWriter, r *http.Request) {
 	response.WriteEmpty(w)
 }
 
-// GetMeta gets page meta data for specified document page.
-func (h *Handler) GetMeta(w http.ResponseWriter, r *http.Request) {
-	method := "page.meta"
-	ctx := domain.GetRequestContext(r)
-
-	documentID := request.Param(r, "documentID")
-	if len(documentID) == 0 {
-		response.WriteMissingDataError(w, method, "documentID")
-		return
-	}
-
-	pageID := request.Param(r, "pageID")
-	if len(pageID) == 0 {
-		response.WriteMissingDataError(w, method, "pageID")
-		return
-	}
-
-	if !permission.CanViewDocument(ctx, *h.Store, documentID) {
-		response.WriteForbiddenError(w)
-		return
-	}
-
-	meta, err := h.Store.Page.GetPageMeta(ctx, pageID)
-	if err == sql.ErrNoRows {
-		response.WriteNotFoundError(w, method, pageID)
-		h.Runtime.Log.Info(method + " no record")
-		meta = page.Meta{}
-		response.WriteJSON(w, meta)
-		return
-	}
-	if err != nil {
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-	if meta.DocumentID != documentID {
-		response.WriteBadRequestError(w, method, "documentID mismatch")
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	response.WriteJSON(w, meta)
-}
-
 //**************************************************
 // Copy Move Page
 //**************************************************
-
-// GetMoveCopyTargets returns available documents for page copy/move axction.
-func (h *Handler) GetMoveCopyTargets(w http.ResponseWriter, r *http.Request) {
-	method := "page.targets"
-	ctx := domain.GetRequestContext(r)
-
-	var d []doc.Document
-	var err error
-
-	d, err = h.Store.Document.DocumentList(ctx)
-	if len(d) == 0 {
-		d = []doc.Document{}
-	}
-	if err != nil {
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	response.WriteJSON(w, d)
-}
 
 // Copy copies page to either same or different document.
 func (h *Handler) Copy(w http.ResponseWriter, r *http.Request) {
@@ -787,6 +858,12 @@ func (h *Handler) Copy(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	// workflow check
+	if doc.Protection == workflow.ProtectionLock || doc.Protection == workflow.ProtectionReview {
+		response.WriteForbiddenError(w)
 		return
 	}
 
@@ -850,9 +927,10 @@ func (h *Handler) Copy(w http.ResponseWriter, r *http.Request) {
 	// Log action against target document
 	h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
 		LabelID:      doc.LabelID,
-		SourceID:     targetID,
-		SourceType:   activity.SourceTypeDocument,
-		ActivityType: activity.TypeEdited})
+		DocumentID:   targetID,
+		PageID:       newPageID,
+		SourceType:   activity.SourceTypePage,
+		ActivityType: activity.TypeCreated})
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSectionCopy)
 
@@ -993,6 +1071,7 @@ func (h *Handler) GetDiff(w http.ResponseWriter, r *http.Request) {
 	}
 
 	res, err := cfg.HTMLdiff([]string{latestHTML, previousHTML})
+	// res, err := cfg.HTMLdiff([]string{previousHTML, latestHTML})
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		return
@@ -1025,12 +1104,20 @@ func (h *Handler) Rollback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !permission.CanChangeDocument(ctx, *h.Store, documentID) {
-		response.WriteForbiddenError(w)
+	doc, err := h.Store.Document.Get(ctx, documentID)
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
-	var err error
+	ok, err := h.workflowPermitsChange(doc, ctx)
+	if !ok {
+		response.WriteForbiddenError(w)
+		h.Runtime.Log.Info("attempted to chaneg page sequence on protected document")
+		return
+	}
+
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
@@ -1052,13 +1139,6 @@ func (h *Handler) Rollback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	revision, err := h.Store.Page.GetPageRevision(ctx, revisionID)
-	if err != nil {
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	doc, err := h.Store.Document.Get(ctx, documentID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
@@ -1091,8 +1171,9 @@ func (h *Handler) Rollback(w http.ResponseWriter, r *http.Request) {
 
 	h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
 		LabelID:      doc.LabelID,
-		SourceID:     p.DocumentID,
-		SourceType:   activity.SourceTypeDocument,
+		DocumentID:   p.DocumentID,
+		PageID:       p.RefID,
+		SourceType:   activity.SourceTypePage,
 		ActivityType: activity.TypeReverted})
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSectionRollback)
@@ -1100,4 +1181,217 @@ func (h *Handler) Rollback(w http.ResponseWriter, r *http.Request) {
 	ctx.Transaction.Commit()
 
 	response.WriteJSON(w, p)
+}
+
+//**************************************************
+// Bulk data fetching (reduce network traffic)
+//**************************************************
+
+// FetchPages returns all page data for given document: page, meta data, pending changes.
+func (h *Handler) FetchPages(w http.ResponseWriter, r *http.Request) {
+	method := "page.FetchPages"
+	ctx := domain.GetRequestContext(r)
+	model := []page.BulkRequest{}
+
+	// check params
+	documentID := request.Param(r, "documentID")
+	if len(documentID) == 0 {
+		response.WriteMissingDataError(w, method, "documentID")
+		return
+	}
+
+	doc, err := h.Store.Document.Get(ctx, documentID)
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	// published pages and new pages awaiting approval
+	pages, err := h.Store.Page.GetPages(ctx, documentID)
+	if err != nil && err != sql.ErrNoRows {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+	if len(pages) == 0 {
+		pages = []page.Page{}
+	}
+
+	// unpublished pages
+	unpublished, err := h.Store.Page.GetUnpublishedPages(ctx, documentID)
+	if err != nil && err != sql.ErrNoRows {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+	if len(unpublished) == 0 {
+		unpublished = []page.Page{}
+	}
+
+	// meta for all pages
+	meta, err := h.Store.Page.GetDocumentPageMeta(ctx, documentID, false)
+	if err != nil && err != sql.ErrNoRows {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+	if len(meta) == 0 {
+		meta = []page.Meta{}
+	}
+
+	// permissions
+	perms, err := h.Store.Permission.GetUserSpacePermissions(ctx, doc.LabelID)
+	if err != nil && err != sql.ErrNoRows {
+		response.WriteServerError(w, method, err)
+		return
+	}
+	if len(perms) == 0 {
+		perms = []pm.Permission{}
+	}
+	permissions := pm.DecodeUserPermissions(perms)
+
+	roles, err := h.Store.Permission.GetUserDocumentPermissions(ctx, doc.RefID)
+	if err != nil && err != sql.ErrNoRows {
+		response.WriteServerError(w, method, err)
+		return
+	}
+	if len(roles) == 0 {
+		roles = []pm.Permission{}
+	}
+	docRoles := pm.DecodeUserDocumentPermissions(roles)
+
+	// check document view permissions
+	if !permissions.SpaceView && !permissions.SpaceManage && !permissions.SpaceOwner {
+		response.WriteForbiddenError(w)
+		return
+	}
+
+	// process published pages
+	for _, p := range pages {
+		// only send back pages that user can see
+		process := false
+		forcePending := false
+
+		if process == false && p.Status == workflow.ChangePublished {
+			process = true
+		}
+		if process == false && p.Status == workflow.ChangePendingNew && p.RelativeID == "" && p.UserID == ctx.UserID {
+			process = true
+			forcePending = true // user has newly created page which should be treated as pending
+		}
+		if process == false && p.Status == workflow.ChangeUnderReview && p.RelativeID == "" && p.UserID == ctx.UserID {
+			process = true
+			forcePending = true // user has newly created page which should be treated as pending
+		}
+		if process == false && p.Status == workflow.ChangeUnderReview && p.RelativeID == "" && (permissions.DocumentApprove || docRoles.DocumentRoleApprove) {
+			process = true
+			forcePending = true // user has newly created page which should be treated as pending
+		}
+
+		if process {
+			d := page.BulkRequest{}
+			d.ID = fmt.Sprintf("container-%s", p.RefID)
+			d.Page = p
+
+			for _, m := range meta {
+				if p.RefID == m.PageID {
+					d.Meta = m
+					break
+				}
+			}
+
+			d.Pending = []page.PendingPage{}
+
+			// process pending pages
+			for _, up := range unpublished {
+				if up.RelativeID == p.RefID {
+					ud := page.PendingPage{}
+					ud.Page = up
+
+					for _, m := range meta {
+						if up.RefID == m.PageID {
+							ud.Meta = m
+							break
+						}
+					}
+
+					owner, err := h.Store.User.Get(ctx, up.UserID)
+					if err == nil {
+						ud.Owner = owner.Fullname()
+					}
+
+					d.Pending = append(d.Pending, ud)
+				}
+			}
+
+			// Handle situation where we need approval, and user has created new page
+			if forcePending && len(d.Pending) == 0 && doc.Protection == workflow.ProtectionReview {
+				ud := page.PendingPage{}
+				ud.Page = d.Page
+				ud.Meta = d.Meta
+
+				owner, err := h.Store.User.Get(ctx, d.Page.UserID)
+				if err == nil {
+					ud.Owner = owner.Fullname()
+				}
+
+				d.Pending = append(d.Pending, ud)
+			}
+
+			model = append(model, d)
+		}
+	}
+
+	// Attach numbers to pages, 1.1, 2.1.1 etc.
+	t := []page.Page{}
+	for _, i := range model {
+		t = append(t, i.Page)
+	}
+	page.Numberize(t)
+	for i, j := range t {
+		model[i].Page = j
+		// pending pages get same numbering
+		for k := range model[i].Pending {
+			model[i].Pending[k].Page.Numbering = j.Numbering
+		}
+	}
+
+	// deliver payload
+	response.WriteJSON(w, model)
+}
+
+func (h *Handler) workflowPermitsChange(doc dm.Document, ctx domain.RequestContext) (ok bool, err error) {
+	if doc.Protection == workflow.ProtectionNone {
+		if !permission.CanChangeDocument(ctx, *h.Store, doc.RefID) {
+			h.Runtime.Log.Info("attempted forbidden action on document")
+			return false, nil
+		}
+
+		return true, nil
+	}
+
+	// If locked document then no can do
+	if doc.Protection == workflow.ProtectionLock {
+		h.Runtime.Log.Info("attempted action on locked document")
+		return false, err
+	}
+
+	// If approval workflow then only approvers can delete page
+	if doc.Protection == workflow.ProtectionReview {
+		approvers, err := permission.GetDocumentApprovers(ctx, *h.Store, doc.LabelID, doc.RefID)
+		if err != nil {
+			h.Runtime.Log.Error("workflowAllowsChange", err)
+			return false, err
+		}
+
+		if user.Exists(approvers, ctx.UserID) {
+			h.Runtime.Log.Info("attempted action on document when not approver")
+			return true, nil
+		}
+
+		return false, nil
+	}
+
+	return true, nil
 }

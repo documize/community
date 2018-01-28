@@ -64,7 +64,7 @@ func (s Scope) GetUserSpacePermissions(ctx domain.RequestContext, spaceID string
 		SELECT p.id, p.orgid, p.who, p.whoid, p.action, p.scope, p.location, p.refid
 			FROM permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.location='space' AND refid=?
 			AND p.who='role' AND (r.userid=? OR r.userid='0')`,
-		ctx.OrgID, spaceID, ctx.UserID, ctx.OrgID, spaceID, ctx.OrgID)
+		ctx.OrgID, spaceID, ctx.UserID, ctx.OrgID, spaceID, ctx.UserID)
 
 	if err == sql.ErrNoRows {
 		err = nil
@@ -200,7 +200,7 @@ func (s Scope) GetUserCategoryPermissions(ctx domain.RequestContext, userID stri
 		UNION ALL
 		SELECT p.id, p.orgid, p.who, p.whoid, p.action, p.scope, p.location, p.refid
 			FROM permission p LEFT JOIN rolemember r ON p.whoid=r.roleid
-			WHERE p.orgid=? AND p.location='category'  AND p.who='role'`,
+			WHERE p.orgid=? AND p.location='category' AND p.who='role'`,
 		ctx.OrgID, userID, ctx.OrgID)
 
 	if err == sql.ErrNoRows {
@@ -211,4 +211,56 @@ func (s Scope) GetUserCategoryPermissions(ctx domain.RequestContext, userID stri
 	}
 
 	return
+}
+
+// GetUserDocumentPermissions returns document permissions for user.
+// Context is used to for user ID.
+func (s Scope) GetUserDocumentPermissions(ctx domain.RequestContext, documentID string) (r []permission.Permission, err error) {
+	err = s.Runtime.Db.Select(&r, `
+		SELECT id, orgid, who, whoid, action, scope, location, refid
+			FROM permission WHERE orgid=? AND location='document' AND refid=? AND who='user' AND (whoid=? OR whoid='0')
+		UNION ALL
+		SELECT p.id, p.orgid, p.who, p.whoid, p.action, p.scope, p.location, p.refid
+			FROM permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.location='document' AND refid=?
+			AND p.who='role' AND (r.userid=? OR r.userid='0')`,
+		ctx.OrgID, documentID, ctx.UserID, ctx.OrgID, documentID, ctx.OrgID)
+
+	if err == sql.ErrNoRows {
+		err = nil
+	}
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("unable to execute select user document permissions %s", ctx.UserID))
+	}
+
+	return
+}
+
+// GetDocumentPermissions returns documents permissions for all users.
+func (s Scope) GetDocumentPermissions(ctx domain.RequestContext, documentID string) (r []permission.Permission, err error) {
+	err = s.Runtime.Db.Select(&r, `
+		SELECT id, orgid, who, whoid, action, scope, location, refid
+			FROM permission WHERE orgid=? AND location='document' AND refid=? AND who='user'
+		UNION ALL
+		SELECT p.id, p.orgid, p.who, p.whoid, p.action, p.scope, p.location, p.refid
+			FROM permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.location='document' AND p.refid=? 
+			AND p.who='role'`,
+		ctx.OrgID, documentID, ctx.OrgID, documentID)
+
+	if err == sql.ErrNoRows {
+		err = nil
+	}
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("unable to execute select document permissions %s", ctx.UserID))
+	}
+
+	return
+}
+
+// DeleteDocumentPermissions removes records from permissions table for given document.
+func (s Scope) DeleteDocumentPermissions(ctx domain.RequestContext, documentID string) (rows int64, err error) {
+	b := mysql.BaseQuery{}
+
+	sql := fmt.Sprintf("DELETE FROM permission WHERE orgid='%s' AND location='document' AND refid='%s'", ctx.OrgID, documentID)
+
+	return b.DeleteWhere(ctx.Transaction, sql)
 }

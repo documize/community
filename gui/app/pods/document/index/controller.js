@@ -19,18 +19,22 @@ export default Controller.extend(TooltipMixin, {
 	templateService: service('template'),
 	sectionService: service('section'),
 	linkService: service('link'),
-	queryParams: ['pageId', 'tab'],
-	pageId: '',
+	// currentPageId: '',
 	tab: 'content',
+	queryParams: ['currentPageId'],
 
 	actions: {
 		onTabChange(tab) {
 			this.set('tab', tab);
 		},
 
+		onShowPage(pageId) {
+			this.set('tab', 'content');
+			this.get('browser').scrollTo(`#page-${pageId}`);		
+		},
+
 		onSaveDocument(doc) {
 			this.get('documentService').save(doc);
-
 			this.get('browser').setTitle(doc.get('name'));
 			this.get('browser').setMetaDescription(doc.get('excerpt'));
 		},
@@ -60,19 +64,26 @@ export default Controller.extend(TooltipMixin, {
 		},
 
 		onSavePage(page, meta) {
-			let documentId = this.get('document.id');
+			let document = this.get('document');
+			let documentId = document.get('id');
+			let constants = this.get('constants');
+
+			// if document approval mode is locked return 
+			if (document.get('protection') == constants.ProtectionType.Lock) {
+				// should not really happen
+				return;
+			}
+
+			// Go ahead and save edits as normal
 			let model = {
 				page: page.toJSON({ includeId: true }),
 				meta: meta.toJSON({ includeId: true })
 			};
 
-			this.get('documentService').updatePage(documentId, page.get('id'), model).then((up) => {
-				this.set('pageId', up.get('id'));
-
-				this.get('documentService').getPages(this.get('document.id')).then((pages) => {
+			this.get('documentService').updatePage(documentId, page.get('id'), model).then((/*up*/) => {
+				this.get('documentService').fetchPages(documentId, this.get('session.user.id')).then((pages) => {
 					this.set('pages', pages);
-
-					this.get('linkService').getDocumentLinks(this.get('document.id')).then((links) => {
+					this.get('linkService').getDocumentLinks(documentId).then((links) => {
 						this.set('links', links);
 					});
 				});
@@ -81,55 +92,37 @@ export default Controller.extend(TooltipMixin, {
 
 		onPageDeleted(deletePage) {
 			let documentId = this.get('document.id');
-			let pages = this.get('pages');
 			let deleteId = deletePage.id;
 			let deleteChildren = deletePage.children;
-			let page = _.findWhere(pages, {
-				id: deleteId
-			});
-			let pageIndex = _.indexOf(pages, page, false);
 			let pendingChanges = [];
+			
+			let pages = this.get('pages');
+			let pageIndex = _.findIndex(pages, function(i) { return i.get('page.id') === deleteId; });
+			let item = pages[pageIndex];
 
 			// select affected pages
 			for (var i = pageIndex + 1; i < pages.get('length'); i++) {
-				if (pages[i].get('level') <= page.get('level')) {
-					break;
-				}
+				if (i === pageIndex + 1 && pages[i].get('page.level') === item.get('page.level')) break;
+				if (pages[i].get('page.level') <= item.get('page.level')) break;
 
-				pendingChanges.push({
-					pageId: pages[i].get('id'),
-					level: pages[i].get('level') - 1
-				});
+				pendingChanges.push({ pageId: pages[i].get('page.id'), level: pages[i].get('page.level') - 1 });
 			}
 
-			this.set('pageId', '');
+			this.set('currentPageId', null);
 
 			if (deleteChildren) {
-				// nuke of page tree
-				pendingChanges.push({
-					pageId: deleteId
-				});
+				pendingChanges.push({ pageId: deleteId });
 
 				this.get('documentService').deletePages(documentId, deleteId, pendingChanges).then(() => {
-					// update our models so we don't have to reload from db
-					for (var i = 0; i < pendingChanges.length; i++) {
-						let pageId = pendingChanges[i].pageId;
-						this.set('pages', _.reject(pages, function (p) { //jshint ignore: line
-							return p.get('id') === pageId;
-						}));
-					}
-
-					this.set('pages', _.sortBy(pages, "sequence"));
-					this.get('target._routerMicrolib').refresh();
+					this.get('documentService').fetchPages(this.get('document.id'), this.get('session.user.id')).then((pages) => {
+						this.set('pages', pages);				
+					});
 				});
 			} else {
-				// page delete followed by re-leveling child pages
 				this.get('documentService').deletePage(documentId, deleteId).then(() => {
-					this.set('pages', _.reject(pages, function (p) {
-						return p.get('id') === deleteId;
-					}));
-
-					this.send('onPageLevelChange', pendingChanges);
+					this.get('documentService').fetchPages(this.get('document.id'), this.get('session.user.id')).then((pages) => {
+						this.set('pages', pages);
+					});
 				});
 			}
 		},
@@ -139,10 +132,10 @@ export default Controller.extend(TooltipMixin, {
 				this.get('documentService').addPage(this.get('document.id'), data).then((newPage) => {
 					let data = this.get('store').normalize('page', newPage);
 					this.get('store').push(data);
-					this.set('pageId', newPage.id);
 
-					this.get('documentService').getPages(this.get('document.id')).then((pages) => {
+					this.get('documentService').fetchPages(this.get('document.id'), this.get('session.user.id')).then((pages) => {
 						this.set('pages', pages);
+						this.eventBus.publish('documentPageAdded', newPage.id);
 
 						if (newPage.pageType === 'tab') {
 							this.transitionToRoute('document.section',
@@ -152,6 +145,7 @@ export default Controller.extend(TooltipMixin, {
 								this.get('document.slug'),
 								newPage.id);
 						} else {
+							this.set('currentPageId', newPage.id);
 							resolve(newPage.id);
 						}
 					});
@@ -185,32 +179,22 @@ export default Controller.extend(TooltipMixin, {
 			this.get('templateService').saveAsTemplate(this.get('document.id'), name, desc).then(function () {});
 		},
 
-		onPageSequenceChange(changes) {
+		onPageSequenceChange(currentPageId, changes) {
+			this.set('currentPageId', currentPageId);
 			this.get('documentService').changePageSequence(this.get('document.id'), changes).then(() => {
-				this.get('documentService').getPages(this.get('document.id')).then( (pages) => {
+				this.get('documentService').fetchPages(this.get('document.id'), this.get('session.user.id')).then( (pages) => {
 					this.set('pages', pages);				
 				});
 			});
 		},
 
-		onPageLevelChange(changes) {
+		onPageLevelChange(currentPageId, changes) {
+			this.set('currentPageId', currentPageId);
 			this.get('documentService').changePageLevel(this.get('document.id'), changes).then(() => {
-				this.get('documentService').getPages(this.get('document.id')).then( (pages) => {
+				this.get('documentService').fetchPages(this.get('document.id'), this.get('session.user.id')).then( (pages) => {
 					this.set('pages', pages);				
 				});
 			});
-		},
-
-		onGotoPage(id) {
-			if (id !== '') {
-				this.set('pageId', id);
-				this.set('tab', 'content');
-
-				let jumpTo = "#page-" + id;
-				if (!$(jumpTo).inView()) {
-					$(jumpTo).velocity("scroll", { duration: 250, offset: -100 });
-				}
-			}
 		},
 
 		onTagChange(tags) {
@@ -224,6 +208,16 @@ export default Controller.extend(TooltipMixin, {
 				this.set('tab', 'content');
 				this.get('target._routerMicrolib').refresh();
 			});
-		}		
+		},
+
+		refresh() {
+			this.get('documentService').fetchPages(this.get('document.id'), this.get('session.user.id')).then((data) => {
+				this.set('pages', data);
+			});
+
+			this.get('sectionService').getSpaceBlocks(this.get('folder.id')).then((data) => {
+				this.set('blocks', data);
+			});
+		}
 	}
 });

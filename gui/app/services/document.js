@@ -10,7 +10,6 @@
 // https://documize.com
 
 import { set } from '@ember/object';
-
 import { A } from '@ember/array';
 import ArrayProxy from '@ember/array/proxy';
 import Service, { inject as service } from '@ember/service';
@@ -20,6 +19,10 @@ export default Service.extend({
 	folderService: service('folder'),
 	ajax: service(),
 	store: service(),
+
+	//**************************************************
+	// Document
+	//**************************************************
 
 	// Returns document model for specified document id.
 	getDocument(documentId) {
@@ -49,6 +52,8 @@ export default Service.extend({
 			});
 
 			return documents;
+		}).catch((error) => {
+			return error;
 		});
 	},
 
@@ -62,29 +67,25 @@ export default Service.extend({
 		});
 	},
 
-	changePageSequence(documentId, payload) {
-		let url = `documents/${documentId}/pages/sequence`;
-
-		return this.get('ajax').post(url, {
-			data: JSON.stringify(payload),
-			contentType: 'json'
-		});
-	},
-
-	changePageLevel(documentId, payload) {
-		let url = `documents/${documentId}/pages/level`;
-
-		return this.get('ajax').post(url, {
-			data: JSON.stringify(payload),
-			contentType: 'json'
-		});
-	},
-
 	deleteDocument(documentId) {
 		let url = `documents/${documentId}`;
 
 		return this.get('ajax').request(url, {
 			method: 'DELETE'
+		});
+	},
+
+	//**************************************************
+	// Page
+	//**************************************************
+
+	// addPage inserts new page to an existing document.
+	addPage(documentId, payload) {
+		let url = `documents/${documentId}/pages`;
+
+		return this.get('ajax').post(url, {
+			data: JSON.stringify(payload),
+			contentType: 'json'
 		});
 	},
 
@@ -101,16 +102,45 @@ export default Service.extend({
 		}).then((response) => {
 			let data = this.get('store').normalize('page', response);
 			return this.get('store').push(data);
+		}).catch((error) => {
+			return error;
 		});
 	},
 
-	// addPage inserts new page to an existing document.
-	addPage(documentId, payload) {
-		let url = `documents/${documentId}/pages`;
+	// Returns all document pages with content
+	getPages(documentId) {
+		return this.get('ajax').request(`documents/${documentId}/pages`, {
+			method: 'GET'
+		}).then((response) => {
+			let pages = [];
 
-		return this.get('ajax').post(url, {
-			data: JSON.stringify(payload),
-			contentType: 'json'
+			pages = response.map((page) => {
+				let data = this.get('store').normalize('page', page);
+				return this.get('store').push(data);
+			});
+
+			return pages;
+		});
+	},
+
+	// Returns document page with content
+	getPage(documentId, pageId) {
+		return this.get('ajax').request(`documents/${documentId}/pages/${pageId}`, {
+			method: 'GET'
+		}).then((response) => {
+			let data = this.get('store').normalize('page', response);
+			return this.get('store').push(data);
+		});
+	},
+
+	// Returns document page meta object
+	getPageMeta(documentId, pageId) {
+		return this.get('ajax').request(`documents/${documentId}/pages/${pageId}/meta`, {
+			method: 'GET'
+		}).then((response) => {
+			let data = this.get('store').normalize('page-meta', response);
+			return this.get('store').push(data);
+		}).catch(() => {
 		});
 	},
 
@@ -133,6 +163,10 @@ export default Service.extend({
 			method: 'DELETE'
 		});
 	},
+
+	//**************************************************
+	// Page Revisions
+	//**************************************************
 
 	getDocumentRevisions(documentId) {
 		let url = `documents/${documentId}/revisions`;
@@ -171,26 +205,12 @@ export default Service.extend({
 		});
 	},
 
-	// document meta referes to number of views, edits, approvals, etc.
-	getActivity(documentId) {
-		return this.get('ajax').request(`documents/${documentId}/activity`, {
-			method: "GET"
-		}).then((response) => {
-			let data = [];
-			data = response.map((obj) => {
-				let data = this.get('store').normalize('documentActivity', obj);
-				return this.get('store').push(data);
-			});
-
-			return data;
-		}).catch(() => {
-			return [];
-		});
-	},
+	//**************************************************
+	// Table of contents
+	//**************************************************
 
 	// Returns all pages without the content
 	getTableOfContents(documentId) {
-
 		return this.get('ajax').request(`documents/${documentId}/pages?content=0`, {
 			method: 'GET'
 		}).then((response) => {
@@ -204,48 +224,30 @@ export default Service.extend({
 		});
 	},
 
-	// Returns all document pages with content
-	getPages(documentId) {
-		return this.get('ajax').request(`documents/${documentId}/pages`, {
-			method: 'GET'
-		}).then((response) => {
-			let pages = [];
+	changePageSequence(documentId, payload) {
+		let url = `documents/${documentId}/pages/sequence`;
 
-			pages = response.map((page) => {
-				let data = this.get('store').normalize('page', page);
-				return this.get('store').push(data);
-			});
-
-			return pages;
+		return this.get('ajax').post(url, {
+			data: JSON.stringify(payload),
+			contentType: 'json'
 		});
 	},
 
-	// Returns document page with content
-	getPage(documentId, pageId) {
+	changePageLevel(documentId, payload) {
+		let url = `documents/${documentId}/pages/level`;
 
-		return this.get('ajax').request(`documents/${documentId}/pages/${pageId}`, {
-			method: 'GET'
-		}).then((response) => {
-			let data = this.get('store').normalize('page', response);
-			return this.get('store').push(data);
+		return this.get('ajax').post(url, {
+			data: JSON.stringify(payload),
+			contentType: 'json'
 		});
 	},
 
-	// Returns document page meta object
-	getPageMeta(documentId, pageId) {
-
-		return this.get('ajax').request(`documents/${documentId}/pages/${pageId}/meta`, {
-			method: 'GET'
-		}).then((response) => {
-			let data = this.get('store').normalize('page-meta', response);
-			return this.get('store').push(data);
-		}).catch(() => {
-		});
-	},
+	//**************************************************
+	// Attachments
+	//**************************************************
 
 	// document attachments without the actual content
 	getAttachments(documentId) {
-
 		return this.get('ajax').request(`documents/${documentId}/attachments`, {
 			method: 'GET'
 		}).then((response) => {
@@ -328,6 +330,7 @@ export default Service.extend({
 			let data = {
 				document: {},
 				permissions: {},
+				roles: {},
 				folders: [],
 				folder: {},
 				links: [],
@@ -337,8 +340,11 @@ export default Service.extend({
 			doc = this.get('store').push(doc);
 
 			let perms = this.get('store').normalize('space-permission', response.permissions);
-			perms= this.get('store').push(perms);
+			perms = this.get('store').push(perms);
 			this.get('folderService').set('permissions', perms);
+
+			let roles = this.get('store').normalize('document-role', response.roles);
+			roles = this.get('store').push(roles);
 
 			let folders = response.folders.map((obj) => {
 				let data = this.get('store').normalize('folder', obj);
@@ -347,13 +353,114 @@ export default Service.extend({
 
 			data.document = doc;
 			data.permissions = perms;
+			data.roles = roles;
 			data.folders = folders;
 			data.folder = folders.findBy('id', doc.get('folderId'));
 			data.links = response.links;
 
 			return data;
+		}).catch((error) => {
+			return error;
 		});
+	},
 
+	// fetchPages returns all pages, page meta and pending changes for document.
+	// This method bulk fetches data to reduce network chatter.
+	// We produce a bunch of calculated boolean's for UI display purposes 
+	// that can tell us quickly about pending changes for UI display.
+	fetchPages(documentId, currentUserId) {
+		let constants = this.get('constants');
+		let changePending = false;
+		let changeAwaitingReview = false;
+		let changeRejected = false;
+		let userHasChangePending = false;
+		let userHasChangeAwaitingReview = false;
+		let userHasChangeRejected = false;
+
+		return this.get('ajax').request(`fetch/page/${documentId}`, {
+			method: 'GET'
+		}).then((response) => {
+			let data = A([]);
+
+			response.forEach((page) => {
+				changePending = false;
+				changeAwaitingReview = false;
+				changeRejected = false;
+				userHasChangePending = false;
+				userHasChangeAwaitingReview = false;
+				userHasChangeRejected = false;
+
+				let p = this.get('store').normalize('page', page.page);
+				p = this.get('store').push(p);
+
+				let m = this.get('store').normalize('page-meta', page.meta);
+				m = this.get('store').push(m);
+
+				let pending = A([]);
+				page.pending.forEach((i) => {
+					let p = this.get('store').normalize('page', i.page);
+					p = this.get('store').push(p);
+	
+					let m = this.get('store').normalize('page-meta', i.meta);
+					m = this.get('store').push(m);
+
+					let belongsToMe = p.get('userId') === currentUserId;
+					let pageStatus = p.get('status');
+
+					let pi = {
+						id: p.get('id'),
+						page: p,
+						meta: m,
+						owner: i.owner,
+						changePending: pageStatus === constants.ChangeState.Pending || pageStatus === constants.ChangeState.PendingNew,
+						changeAwaitingReview: pageStatus === constants.ChangeState.UnderReview,
+						changeRejected: pageStatus === constants.ChangeState.Rejected,
+						userHasChangePending: belongsToMe && (pageStatus === constants.ChangeState.Pending || pageStatus === constants.ChangeState.PendingNew),
+						userHasChangeAwaitingReview: belongsToMe && pageStatus === constants.ChangeState.UnderReview,
+						userHasChangeRejected: belongsToMe && pageStatus === constants.ChangeState.Rejected
+					};
+
+					let pim = this.get('store').normalize('page-pending', pi);
+					pim = this.get('store').push(pim);
+					pending.pushObject(pim);
+
+					if (p.get('status') === constants.ChangeState.Pending || p.get('status') === constants.ChangeState.PendingNew) {
+						changePending = true;
+						userHasChangePending = belongsToMe;
+					}
+					if (p.get('status') === constants.ChangeState.UnderReview) {
+						changeAwaitingReview = true;
+						userHasChangeAwaitingReview = belongsToMe;
+					}
+					if (p.get('status') === constants.ChangeState.Rejected) {
+						changeRejected = p.get('status') === constants.ChangeState.Rejected;
+						userHasChangeRejected = changeRejected && belongsToMe;
+					}
+				});
+
+				let pi = {
+					id: p.get('id'),
+					page: p,
+					meta: m,
+					pending: pending,
+					changePending: changePending,
+					changeAwaitingReview: changeAwaitingReview,
+					changeRejected: changeRejected,
+					userHasChangePending: userHasChangePending,
+					userHasChangeAwaitingReview: userHasChangeAwaitingReview,
+					userHasChangeRejected: userHasChangeRejected,
+					userHasNewPagePending: p.isNewPageUserPending(this.get('sessionService.user.id'))
+				};
+			
+				let pim = this.get('store').normalize('page-container', pi);
+				pim = this.get('store').push(pim);
+				data.pushObject(pim);
+			});
+
+			return data;
+		}).catch((error) => {
+			return error;
+		});
 	}
 });
 

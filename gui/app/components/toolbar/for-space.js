@@ -9,6 +9,7 @@
 //
 // https://documize.com
 
+import $ from 'jquery';
 import Component from '@ember/component';
 import { computed } from '@ember/object';
 import { schedule } from '@ember/runloop';
@@ -29,12 +30,7 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 	copyTemplate: true,
 	copyPermission: true,
 	copyDocument: false,
-	clonedSpace: { id: '' },
-	pinState : {
-		isPinned: false,
-		pinId: '',
-		newName: ''
-	},
+
 	spaceSettings: computed('permissions', function() {
 		return this.get('permissions.spaceOwner') || this.get('permissions.spaceManage');
 	}),
@@ -49,9 +45,20 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 	templateDocName: '',
 	templateDocNameError: false,
 	selectedTemplate: '',
-	importedDocuments: [],
-	importStatus: [],
+
 	dropzone: null,
+
+	init() {
+		this._super(...arguments);
+		this.importedDocuments = [];
+		this.importStatus = [];
+		this.clonedSpace = { id: '' };
+		this.pinState = {
+			isPinned: false,
+			pinId: '',
+			newName: ''
+		};
+	},
 
 	didReceiveAttrs() {
 		this._super(...arguments);
@@ -226,8 +233,8 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 			this.set('deleteSpaceName', '');
 			$("#delete-space-name").removeClass("is-invalid");
 
-			this.attrs.onDeleteSpace(this.get('space.id'));
-
+			let cb = this.get('onDeleteSpace');
+			cb(this.get('space.id'));
 
 			this.modalClose('#space-delete-modal');
 		},
@@ -258,17 +265,17 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 
 		onShowTemplateDocModal() {
 			let t = this.get('templates');
-			if (t.length > 0) {
-				t[0].set('selected', true);
-				this.modalOpen("#template-doc-modal", {"show": true}, '#template-doc-name');
-			}
+			t.forEach((t) => {
+				t.set('selected', false);
+			});
+			this.modalOpen("#template-doc-modal", {"show": true}, '#template-doc-name');
 		},
 
 		onSelectTemplate(i) {
 			let t = this.get('templates');
 			t.forEach((t) => {
 				t.set('selected', false);
-			})
+			});
 			i.set('selected', true);
 			this.set('selectedTemplate', i.id);
 		},
@@ -281,15 +288,16 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 				this.set('templateDocNameError', true);
 				$('#template-doc-name').focus();
 				return;
-			} else {
-				this.set('templateDocNameError', false);
-				this.set('templateDocName', '');
 			}
 
 			let id = this.get('selectedTemplate');
 			if (is.empty(id)) {
+				$('#widget-list-picker').addClass('is-invalid');
 				return;
 			}
+
+			this.set('templateDocNameError', false);
+			this.set('templateDocName', '');
 
 			this.modalClose("#template-doc-modal");
 
@@ -330,8 +338,9 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 			this.set('importedDocuments', documents);
 
 			if (documents.length === 0) {
-				this.modalClose("#import-doc-modal");				
-				this.attrs.onRefresh();
+				this.modalClose("#import-doc-modal");
+				let cb = this.get('onRefresh');
+				cb();
 			}
 		},
 

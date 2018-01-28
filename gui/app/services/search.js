@@ -10,17 +10,33 @@
 // https://documize.com
 
 import Service, { inject as service } from '@ember/service';
+import { A } from '@ember/array';
+import ArrayProxy from '@ember/array/proxy';
 
 export default Service.extend({
 	sessionService: service('session'),
 	ajax: service(),
+	store: service(),
 
-	// find all matching documents.
+	// find all matching documents
 	find(payload) {
 		return this.get('ajax').request("search", {
 			method: "POST",
 			data: JSON.stringify(payload),
 			contentType: 'json'
+		}).then((response) => {
+			let results = ArrayProxy.create({
+				content: A([])
+			});
+
+			results = response.map((doc) => {
+				let data = this.get('store').normalize('doc-search-result', doc);
+				return this.get('store').push(data);
+			});
+
+			return results;
+		}).catch((error) => {
+			return error;
 		});
 	},
 });

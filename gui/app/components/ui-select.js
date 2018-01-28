@@ -15,7 +15,6 @@ import Component from '@ember/component';
 
 export default Component.extend({
     cssClass: "",
-    content: [],
     prompt: null,
     optionValuePath: 'id',
     optionLabelPath: 'name',

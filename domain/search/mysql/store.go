@@ -24,6 +24,7 @@ import (
 	"github.com/documize/community/model/doc"
 	"github.com/documize/community/model/page"
 	"github.com/documize/community/model/search"
+	"github.com/documize/community/model/workflow"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 )
@@ -93,6 +94,11 @@ func (s Scope) DeleteDocument(ctx domain.RequestContext, ID string) (err error) 
 // IndexContent adds search index entry for document context.
 // Any existing document entries are removed.
 func (s Scope) IndexContent(ctx domain.RequestContext, p page.Page) (err error) {
+	// we do not index pending pages
+	if p.Status == workflow.ChangePending || p.Status == workflow.ChangePendingNew {
+		return
+	}
+
 	// remove previous search entries
 	_, err = ctx.Transaction.Exec("DELETE FROM search WHERE orgid=? AND documentid=? AND itemid=? AND itemtype='page'",
 		ctx.OrgID, p.DocumentID, p.RefID)
@@ -216,7 +222,7 @@ func (s Scope) matchFullText(ctx domain.RequestContext, keywords, itemType strin
 		(
 			SELECT refid FROM label WHERE orgid=?
 			AND refid IN (SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid IN (
-				SELECT refid from permission WHERE orgid=? AND who='user' AND whoid=? AND location='space'
+				SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space'
 				UNION ALL
 				SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.location='space' AND p.action='view' AND r.userid=?
 			))
@@ -273,9 +279,10 @@ func (s Scope) matchLike(ctx domain.RequestContext, keywords, itemType string) (
 		(
 			SELECT refid FROM label WHERE orgid=?
 			AND refid IN (SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid IN (
-				SELECT refid from permission WHERE orgid=? AND who='user' AND whoid=? AND location='space'
+				SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space'
 				UNION ALL
-				SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.location='space' AND p.action='view' AND r.userid=?
+				SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role'
+				AND p.location='space' AND p.action='view' AND (r.userid=? OR r.userid='0')
 			))
 		)
 		AND s.content LIKE ?`

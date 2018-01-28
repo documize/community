@@ -40,6 +40,7 @@ export default SimpleAuthSession.extend({
 	}),
 
 	authenticated: computed('session.content.authenticated.user', function () {
+		if (is.null(this.get('session.authenticator'))) return false;
 		return this.get('session.authenticator') !== 'authenticator:anonymous' && this.get('session.content.authenticated.user.id') !== '0';
 	}),
 

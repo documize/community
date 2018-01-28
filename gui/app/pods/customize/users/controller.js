@@ -15,7 +15,11 @@ import Controller from '@ember/controller';
 
 export default Controller.extend({
 	userService: service('user'),
-	newUser: { firstname: "", lastname: "", email: "", active: true },
+
+	init() {
+		this._super(...arguments);
+		this.newUser = { firstname: "", lastname: "", email: "", active: true };
+	},
 
 	actions: {
 		add(user) {

@@ -10,7 +10,6 @@
 // https://documize.com
 
 import { Promise as EmberPromise } from 'rsvp';
-
 import Service, { inject as service } from '@ember/service';
 import netUtil from '../utils/net';
 
@@ -19,7 +18,11 @@ export default Service.extend({
 	ajax: service(),
 	appMeta: service(),
 	keycloak: null,
-    config: {},
+
+    init() {
+        this._super(...arguments);
+        this.config = {};
+    },
 
 	boot() {
         return new EmberPromise((resolve, reject) => {

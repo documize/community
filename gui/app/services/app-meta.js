@@ -10,7 +10,6 @@
 // https://documize.com
 
 import { htmlSafe } from '@ember/string';
-
 import { resolve } from 'rsvp';
 import Service, { inject as service } from '@ember/service';
 import config from '../config/environment';

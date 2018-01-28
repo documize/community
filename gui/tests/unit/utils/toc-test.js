@@ -18,10 +18,10 @@ module('Unit | Utility | toc');
 test('toc can only move down', function (assert) {
 	let pages = [];
 
-	pages.pushObject(models.PageModel.create({ id: "1", level: 1, sequence: 1024 })); //testing
-	pages.pushObject(models.PageModel.create({ id: "2", level: 1, sequence: 1024 * 2 }));
+	pages.pushObject({page: models.PageModel.create({ id: "1", level: 1, sequence: 1024 })}); //testing
+	pages.pushObject({page: models.PageModel.create({ id: "2", level: 1, sequence: 1024 * 2 })});
 
-	let state = toc.getState(pages, pages[0]);
+	let state = toc.getState(pages, pages[0].page);
 	assert.equal(state.tocTools.upTarget, '', 'Has no up target');
 	assert.equal(state.tocTools.downTarget, '2', 'Has down target');
 	assert.equal(state.tocTools.allowIndent, false, 'Cannot indent');
@@ -31,10 +31,10 @@ test('toc can only move down', function (assert) {
 test('toc can move up or indent', function (assert) {
 	let pages = [];
 
-	pages.pushObject(models.PageModel.create({ id: "1", level: 1, sequence: 1024 }));
-	pages.pushObject(models.PageModel.create({ id: "2", level: 1, sequence: 1024 * 2 })); //testing
+	pages.pushObject({page: models.PageModel.create({ id: "1", level: 1, sequence: 1024 })});
+	pages.pushObject({page: models.PageModel.create({ id: "2", level: 1, sequence: 1024 * 2 })}); //testing
 
-	let state = toc.getState(pages, pages[1]);
+	let state = toc.getState(pages, pages[1].page);
 	assert.equal(state.tocTools.upTarget, '1', 'Has up target');
 	assert.equal(state.tocTools.downTarget, '', 'Has no down target');
 	assert.equal(state.tocTools.allowIndent, true, 'Can indent');
@@ -44,12 +44,12 @@ test('toc can move up or indent', function (assert) {
 test('toc can only outdent', function (assert) {
 	let pages = [];
 
-	pages.pushObject(models.PageModel.create({ id: "1", level: 1, sequence: 1024 }));
-	pages.pushObject(models.PageModel.create({ id: "2", level: 1, sequence: 1024 * 2 }));
-	pages.pushObject(models.PageModel.create({ id: "3", level: 2, sequence: 1024 * 3 })); // testing
-	pages.pushObject(models.PageModel.create({ id: "4", level: 1, sequence: 1024 * 4 }));
+	pages.pushObject({page: models.PageModel.create({ id: "1", level: 1, sequence: 1024 })});
+	pages.pushObject({page: models.PageModel.create({ id: "2", level: 1, sequence: 1024 * 2 })});
+	pages.pushObject({page: models.PageModel.create({ id: "3", level: 2, sequence: 1024 * 3 })}); // testing
+	pages.pushObject({page: models.PageModel.create({ id: "4", level: 1, sequence: 1024 * 4 })});
 
-	let state = toc.getState(pages, pages[2]);
+	let state = toc.getState(pages, pages[2].page);
 	assert.equal(state.tocTools.upTarget, '', 'Has no up target');
 	assert.equal(state.tocTools.downTarget, '', 'Has no down target');
 	assert.equal(state.tocTools.allowIndent, false, 'Cannot indent');
@@ -59,12 +59,12 @@ test('toc can only outdent', function (assert) {
 test('toc child can move up or indent', function (assert) {
 	let pages = [];
 
-	pages.pushObject(models.PageModel.create({ id: "1", level: 1, sequence: 1024 }));
-	pages.pushObject(models.PageModel.create({ id: "2", level: 1, sequence: 1024 * 2 }));
-	pages.pushObject(models.PageModel.create({ id: "3", level: 2, sequence: 1024 * 3 })); // testing
-	pages.pushObject(models.PageModel.create({ id: "4", level: 1, sequence: 1024 * 4 }));
+	pages.pushObject({page: models.PageModel.create({ id: "1", level: 1, sequence: 1024 })});
+	pages.pushObject({page: models.PageModel.create({ id: "2", level: 1, sequence: 1024 * 2 })});
+	pages.pushObject({page: models.PageModel.create({ id: "3", level: 2, sequence: 1024 * 3 })}); // testing
+	pages.pushObject({page: models.PageModel.create({ id: "4", level: 1, sequence: 1024 * 4 })});
 
-	let page = pages[3];
+	let page = pages[3].page;
 	let state = toc.getState(pages, page);
 	assert.equal(state.tocTools.upTarget, '2', 'Has up target');
 	assert.equal(state.tocTools.downTarget, '', 'Has no down target');
@@ -80,13 +80,13 @@ test('toc child can move up or indent', function (assert) {
 test('toc top node can indent two places', function (assert) {
 	let pages = [];
 
-	pages.pushObject(models.PageModel.create({ id: "1", level: 1, sequence: 1024 }));
-	pages.pushObject(models.PageModel.create({ id: "2", level: 1, sequence: 1024 * 2 }));
-	pages.pushObject(models.PageModel.create({ id: "3", level: 2, sequence: 1024 * 3 }));
-	pages.pushObject(models.PageModel.create({ id: "4", level: 3, sequence: 1024 * 4 }));
-	pages.pushObject(models.PageModel.create({ id: "5", level: 1, sequence: 1024 * 5 })); // testing
+	pages.pushObject({page: models.PageModel.create({ id: "1", level: 1, sequence: 1024 })});
+	pages.pushObject({page: models.PageModel.create({ id: "2", level: 1, sequence: 1024 * 2 })});
+	pages.pushObject({page: models.PageModel.create({ id: "3", level: 2, sequence: 1024 * 3 })});
+	pages.pushObject({page: models.PageModel.create({ id: "4", level: 3, sequence: 1024 * 4 })});
+	pages.pushObject({page: models.PageModel.create({ id: "5", level: 1, sequence: 1024 * 5 })}); // testing
 
-	let page = pages[4];
+	let page = pages[4].page;
 	let state = toc.getState(pages, page);
 	assert.equal(state.tocTools.upTarget, '2', 'Has up target');
 	assert.equal(state.tocTools.downTarget, '', 'Has no down target');
@@ -102,15 +102,15 @@ test('toc top node can indent two places', function (assert) {
 test('toc top node with kids can indent two places', function (assert) {
 	let pages = [];
 
-	pages.pushObject(models.PageModel.create({ id: "1", level: 1, sequence: 1024 }));
-	pages.pushObject(models.PageModel.create({ id: "2", level: 1, sequence: 1024 * 2 }));
-	pages.pushObject(models.PageModel.create({ id: "3", level: 2, sequence: 1024 * 3 }));
-	pages.pushObject(models.PageModel.create({ id: "4", level: 3, sequence: 1024 * 4 }));
-	pages.pushObject(models.PageModel.create({ id: "5", level: 1, sequence: 1024 * 5 })); // testing
-	pages.pushObject(models.PageModel.create({ id: "6", level: 2, sequence: 1024 * 6 })); // testing
-	pages.pushObject(models.PageModel.create({ id: "7", level: 3, sequence: 1024 * 7 })); // testing
+	pages.pushObject({page: models.PageModel.create({ id: "1", level: 1, sequence: 1024 })});
+	pages.pushObject({page: models.PageModel.create({ id: "2", level: 1, sequence: 1024 * 2 })});
+	pages.pushObject({page: models.PageModel.create({ id: "3", level: 2, sequence: 1024 * 3 })});
+	pages.pushObject({page: models.PageModel.create({ id: "4", level: 3, sequence: 1024 * 4 })});
+	pages.pushObject({page: models.PageModel.create({ id: "5", level: 1, sequence: 1024 * 5 })}); // testing
+	pages.pushObject({page: models.PageModel.create({ id: "6", level: 2, sequence: 1024 * 6 })}); // testing
+	pages.pushObject({page: models.PageModel.create({ id: "7", level: 3, sequence: 1024 * 7 })}); // testing
 
-	let page = pages[4];
+	let page = pages[4].page;
 	let state = toc.getState(pages, page);
 	assert.equal(state.tocTools.upTarget, '2', 'Has up target');
 	assert.equal(state.tocTools.downTarget, '', 'Has no down target');
@@ -130,15 +130,15 @@ test('toc top node with kids can indent two places', function (assert) {
 test('toc same level node with kids can indent one place', function (assert) {
 	let pages = [];
 
-	pages.pushObject(models.PageModel.create({ id: "1", level: 1, sequence: 1024 }));
-	pages.pushObject(models.PageModel.create({ id: "2", level: 1, sequence: 1024 * 2 }));
-	pages.pushObject(models.PageModel.create({ id: "3", level: 2, sequence: 1024 * 3 }));
-	pages.pushObject(models.PageModel.create({ id: "4", level: 2, sequence: 1024 * 4 })); // testing
-	pages.pushObject(models.PageModel.create({ id: "5", level: 3, sequence: 1024 * 5 }));
-	pages.pushObject(models.PageModel.create({ id: "6", level: 1, sequence: 1024 * 6 }));
-	pages.pushObject(models.PageModel.create({ id: "7", level: 2, sequence: 1024 * 7 }));
+	pages.pushObject({page: models.PageModel.create({ id: "1", level: 1, sequence: 1024 })});
+	pages.pushObject({page: models.PageModel.create({ id: "2", level: 1, sequence: 1024 * 2 })});
+	pages.pushObject({page: models.PageModel.create({ id: "3", level: 2, sequence: 1024 * 3 })});
+	pages.pushObject({page: models.PageModel.create({ id: "4", level: 2, sequence: 1024 * 4 })}); // testing
+	pages.pushObject({page: models.PageModel.create({ id: "5", level: 3, sequence: 1024 * 5 })});
+	pages.pushObject({page: models.PageModel.create({ id: "6", level: 1, sequence: 1024 * 6 })});
+	pages.pushObject({page: models.PageModel.create({ id: "7", level: 2, sequence: 1024 * 7 })});
 
-	let page = pages[3];
+	let page = pages[3].page;
 	let state = toc.getState(pages, page);
 	assert.equal(state.tocTools.upTarget, '3', 'Has up target');
 	assert.equal(state.tocTools.downTarget, '', 'Has no down target');
@@ -156,17 +156,17 @@ test('toc same level node with kids can indent one place', function (assert) {
 test('toc child with deep tree moves correctly', function (assert) {
 	let pages = [];
 
-	pages.pushObject(models.PageModel.create({ id: "1", level: 1, sequence: 1024 }));
-	pages.pushObject(models.PageModel.create({ id: "2", level: 1, sequence: 1024 * 2 }));
-	pages.pushObject(models.PageModel.create({ id: "3", level: 2, sequence: 1024 * 4 })); // testing
-	pages.pushObject(models.PageModel.create({ id: "4", level: 3, sequence: 1024 * 5 })); // testing
-	pages.pushObject(models.PageModel.create({ id: "5", level: 3, sequence: 1024 * 6 })); // testing
-	pages.pushObject(models.PageModel.create({ id: "6", level: 3, sequence: 1024 * 7 })); // testing
-	pages.pushObject(models.PageModel.create({ id: "7", level: 1, sequence: 1024 * 8 }));
-	pages.pushObject(models.PageModel.create({ id: "8", level: 1, sequence: 1024 * 9 }));
-	pages.pushObject(models.PageModel.create({ id: "9", level: 1, sequence: 1024 * 10 }));
+	pages.pushObject({page: models.PageModel.create({ id: "1", level: 1, sequence: 1024 })});
+	pages.pushObject({page: models.PageModel.create({ id: "2", level: 1, sequence: 1024 * 2 })});
+	pages.pushObject({page: models.PageModel.create({ id: "3", level: 2, sequence: 1024 * 4 })}); // testing
+	pages.pushObject({page: models.PageModel.create({ id: "4", level: 3, sequence: 1024 * 5 })}); // testing
+	pages.pushObject({page: models.PageModel.create({ id: "5", level: 3, sequence: 1024 * 6 })}); // testing
+	pages.pushObject({page: models.PageModel.create({ id: "6", level: 3, sequence: 1024 * 7 })}); // testing
+	pages.pushObject({page: models.PageModel.create({ id: "7", level: 1, sequence: 1024 * 8 })});
+	pages.pushObject({page: models.PageModel.create({ id: "8", level: 1, sequence: 1024 * 9 })});
+	pages.pushObject({page: models.PageModel.create({ id: "9", level: 1, sequence: 1024 * 10 })});
 
-	let page = pages[2];
+	let page = pages[2].page;
 	let state = toc.getState(pages, page);
 
 	assert.equal(state.tocTools.upTarget, '', 'Has no up target');
@@ -190,17 +190,17 @@ test('toc child with deep tree moves correctly', function (assert) {
 test('toc top level node skips down some', function (assert) {
 	let pages = [];
 
-	pages.pushObject(models.PageModel.create({ id: "1", level: 1, sequence: 110 })); // testing
-	pages.pushObject(models.PageModel.create({ id: "2", level: 1, sequence: 220 }));
-	pages.pushObject(models.PageModel.create({ id: "3", level: 2, sequence: 330 }));
-	pages.pushObject(models.PageModel.create({ id: "4", level: 3, sequence: 440 }));
-	pages.pushObject(models.PageModel.create({ id: "5", level: 3, sequence: 550 }));
-	pages.pushObject(models.PageModel.create({ id: "6", level: 3, sequence: 660 }));
-	pages.pushObject(models.PageModel.create({ id: "7", level: 1, sequence: 770 }));
-	pages.pushObject(models.PageModel.create({ id: "8", level: 1, sequence: 880 }));
-	pages.pushObject(models.PageModel.create({ id: "9", level: 1, sequence: 990 }));
+	pages.pushObject({page: models.PageModel.create({ id: "1", level: 1, sequence: 110 })}); // testing
+	pages.pushObject({page: models.PageModel.create({ id: "2", level: 1, sequence: 220 })});
+	pages.pushObject({page: models.PageModel.create({ id: "3", level: 2, sequence: 330 })});
+	pages.pushObject({page: models.PageModel.create({ id: "4", level: 3, sequence: 440 })});
+	pages.pushObject({page: models.PageModel.create({ id: "5", level: 3, sequence: 550 })});
+	pages.pushObject({page: models.PageModel.create({ id: "6", level: 3, sequence: 660 })});
+	pages.pushObject({page: models.PageModel.create({ id: "7", level: 1, sequence: 770 })});
+	pages.pushObject({page: models.PageModel.create({ id: "8", level: 1, sequence: 880 })});
+	pages.pushObject({page: models.PageModel.create({ id: "9", level: 1, sequence: 990 })});
 
-	let page = pages[0];
+	let page = pages[0].page;
 	let state = toc.getState(pages, page);
 
 	assert.equal(state.tocTools.upTarget, '', 'Has no up target');
@@ -218,17 +218,17 @@ test('toc top level node skips down some', function (assert) {
 test('toc top level node skips up some', function (assert) {
 	let pages = [];
 
-	pages.pushObject(models.PageModel.create({ id: "1", level: 1, sequence: 110 }));
-	pages.pushObject(models.PageModel.create({ id: "2", level: 1, sequence: 220 }));
-	pages.pushObject(models.PageModel.create({ id: "3", level: 2, sequence: 330 }));
-	pages.pushObject(models.PageModel.create({ id: "4", level: 3, sequence: 440 }));
-	pages.pushObject(models.PageModel.create({ id: "5", level: 3, sequence: 550 }));
-	pages.pushObject(models.PageModel.create({ id: "6", level: 3, sequence: 660 }));
-	pages.pushObject(models.PageModel.create({ id: "7", level: 1, sequence: 770 })); // testing
-	pages.pushObject(models.PageModel.create({ id: "8", level: 1, sequence: 880 }));
-	pages.pushObject(models.PageModel.create({ id: "9", level: 1, sequence: 990 }));
+	pages.pushObject({page: models.PageModel.create({ id: "1", level: 1, sequence: 110 })});
+	pages.pushObject({page: models.PageModel.create({ id: "2", level: 1, sequence: 220 })});
+	pages.pushObject({page: models.PageModel.create({ id: "3", level: 2, sequence: 330 })});
+	pages.pushObject({page: models.PageModel.create({ id: "4", level: 3, sequence: 440 })});
+	pages.pushObject({page: models.PageModel.create({ id: "5", level: 3, sequence: 550 })});
+	pages.pushObject({page: models.PageModel.create({ id: "6", level: 3, sequence: 660 })});
+	pages.pushObject({page: models.PageModel.create({ id: "7", level: 1, sequence: 770 })}); // testing
+	pages.pushObject({page: models.PageModel.create({ id: "8", level: 1, sequence: 880 })});
+	pages.pushObject({page: models.PageModel.create({ id: "9", level: 1, sequence: 990 })});
 
-	let page = pages[6];
+	let page = pages[6].page;
 	let state = toc.getState(pages, page);
 	assert.equal(state.tocTools.upTarget, '2', 'Has up target');
 	assert.equal(state.tocTools.downTarget, '8', 'Has down target');
@@ -244,9 +244,9 @@ test('toc top level node skips up some', function (assert) {
 test('toc move down top node to bottom', function (assert) {
 	let pages = [];
 
-	pages.pushObject(models.PageModel.create({ id: "1", level: 1, sequence: 110 }));
-	pages.pushObject(models.PageModel.create({ id: "2", level: 1, sequence: 220 }));
-	pages.pushObject(models.PageModel.create({ id: "3", level: 2, sequence: 330 }));
+	pages.pushObject({page: models.PageModel.create({ id: "1", level: 1, sequence: 110 })});
+	pages.pushObject({page: models.PageModel.create({ id: "2", level: 1, sequence: 220 })});
+	pages.pushObject({page: models.PageModel.create({ id: "3", level: 2, sequence: 330 })});
 
 	let page = pages[0];
 	let state = toc.getState(pages, page);

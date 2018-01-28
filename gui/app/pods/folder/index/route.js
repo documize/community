@@ -10,7 +10,6 @@
 // https://documize.com
 
 import { Promise as EmberPromise, hash } from 'rsvp';
-
 import { inject as service } from '@ember/service';
 import Route from '@ember/routing/route';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
@@ -54,21 +53,10 @@ export default Route.extend(AuthenticatedRouteMixin, {
 			categories: this.get('categories'),
 			categorySummary: this.get('categorySummary'),
 			categoryMembers: this.get('categoryMembers'),
-			// categories: this.get('categoryService').getUserVisible(this.modelFor('folder').folder.get('id')),
-			// categorySummary: this.get('categoryService').getSummary(this.modelFor('folder').folder.get('id')),
-			// categoryMembers: this.get('categoryService').getSpaceCategoryMembership(this.modelFor('folder').folder.get('id')),
 		});
 	},
 
 	afterModel(model, transition) { // eslint-disable-line no-unused-vars
-		// model.folder = this.modelFor('folder').folder;
-		// model.permissions = this.modelFor('folder').permissions;
-		// model.folders =  this.modelFor('folder').folders;
-		// model.documents = this.modelFor('folder').documents;
-		// model.templates =  this.modelFor('folder').templates;
-		// model.showStartDocument = false;
-		// model.rootDocCount =  0;
-
 		let docs = model.documents;
 		let categoryMembers = model.categoryMembers;
 		let rootDocCount = 0;

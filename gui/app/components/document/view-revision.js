@@ -16,7 +16,6 @@ import ModalMixin from '../../mixins/modal';
 
 export default Component.extend(ModalMixin, {
 	documentService: service('document'),
-	revisions: [],
 	revision: null,
 	diff: '',
 	hasRevisions: computed('revisions', function() {
@@ -25,6 +24,11 @@ export default Component.extend(ModalMixin, {
 	hasDiff: computed('diff', function() {
 		return this.get('diff').length > 0;
 	}),
+
+	init() {
+		this._super(...arguments);
+		this.revisions = [];
+	},
 
 	didReceiveAttrs() {
 		this._super(...arguments);
@@ -65,7 +69,8 @@ export default Component.extend(ModalMixin, {
 
 		onRollback() {
 			let revision = this.get('revision');
-			this.attrs.onRollback(revision.pageId, revision.id);
+			let cb = this.get('onRollback');
+			cb(revision.pageId, revision.id);
 
 			this.modalClose('#document-rollback-modal');
 		}

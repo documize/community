@@ -56,7 +56,7 @@ module.exports = function (defaults) {
 	app.import('vendor/sortable.js');
 	app.import('vendor/table-editor.min.js');
 	app.import('vendor/underscore.js');
-	app.import('vendor/velocity.min.js');
+	app.import('vendor/velocity.js');
 	app.import('vendor/velocity.ui.js');
 	app.import('vendor/waypoints.js');
 

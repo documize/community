@@ -18,11 +18,13 @@ export default Component.extend({
 
     actions: {
         onCancel() {
-            this.attrs.onCancel();
+            let cb = this.get('onCancel');
+            cb();
         },
 
         onAction(page, meta) {
-            this.attrs.onAction(page, meta);
+            let cb = this.get('onAction');
+            cb(page, meta);
         }
     }
 });

@@ -11,7 +11,6 @@
 
 /*global Trello*/
 import $ from 'jquery';
-
 import { htmlSafe } from '@ember/string';
 import { computed, set } from '@ember/object';
 import { inject as service } from '@ember/service';
@@ -25,11 +24,9 @@ export default Component.extend(SectionMixin, NotifierMixin, TooltipMixin, {
 	isDirty: false,
 	busy: false,
 	authenticated: false,
-	config: {},
 	boards: null,
 	noBoards: false,
 	appKey: "",
-
 	boardStyle: computed('config.board', function () {
 		let board = this.get('config.board');
 
@@ -40,6 +37,11 @@ export default Component.extend(SectionMixin, NotifierMixin, TooltipMixin, {
 		let color = board.prefs.backgroundColor;
 		return htmlSafe("background-color: " + color);
 	}),
+
+	init() {
+		this._super(...arguments);
+		this.config = {};
+	},
 
 	didReceiveAttrs() {
 		let page = this.get('page');
@@ -219,7 +221,8 @@ export default Component.extend(SectionMixin, NotifierMixin, TooltipMixin, {
 		},
 
 		onCancel() {
-			this.attrs.onCancel();
+			let cb = this.get('onCancel');
+			cb();
 		},
 
 		onAction(title) {

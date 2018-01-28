@@ -2,8 +2,8 @@
 	<div class="document-customfields">
 
 		<div class="row">
-			<div class="col-3 heading">Categories</div>
-			<div class="col-9 value">
+			<div class="col-12 col-sm-3 heading">Categories</div>
+			<div class="col-12 col-sm-9 value">
 				{{#each selectedCategories as |cat|}}
 					{{#link-to 'folder' folder.id folder.slug (query-params category=cat.id)}}
 						{{cat.category}}
@@ -27,8 +27,8 @@
 		</div>
 
 		<div class="row">
-			<div class="col-3 heading">Tags</div>
-			<div class="col-9 value">
+			<div class="col-12 col-sm-3 heading">Tags</div>
+			<div class="col-12 col-sm-9 value">
 				{{#each tagz as |t index|}}
 					{{#link-to 'search' (query-params filter=t matchTag=true)}}
 						{{concat '#' t}}
@@ -42,6 +42,39 @@
 			</div>
 		</div>
 
+		<div class="row">
+			<div class="col-12 col-sm-3 heading">Change Control</div>
+			<div class="col-12 col-sm-9 value-static">
+				<span>{{changeControlMsg}}</span>
+			</div>
+		</div>
+
+		{{#if (eq document.protection constants.ProtectionType.Review)}}
+			<div class="row">
+				<div class="col-12 col-sm-3 heading">Approval Process</div>
+				<div class="col-12 col-sm-9 value-static">
+					<span>{{approvalMsg}}</span>
+				</div>
+			</div>
+
+			{{#if userChanges}}
+				<div class="row">
+					<div class="col-12 col-sm-3 heading">Your Contributions</div>
+					<div class="col-12 col-sm-9 value-static">
+						<span>{{contributorMsg}}</span>
+					</div>
+				</div>
+			{{/if}}
+
+			{{#if isApprover}}
+				<div class="row">
+					<div class="col-12 col-sm-3 heading">Approver Status</div>
+					<div class="col-12 col-sm-9 value-static">
+						<span>{{approverMsg}}</span>
+					</div>
+				</div>
+			{{/if}}
+		{{/if}}
 	</div>
 </div>
 
@@ -68,6 +101,7 @@
 								</div>
 							{{/each}}
 							{{focus-input type='text' id="add-tag-field" class="form-control mousetrap" placeholder="Tag name" value=newTag}}
+							<small class="form-text text-success">Press ENTER to add tag</small>
 							<small class="form-text text-muted">Lowercase, characters, numbers, hyphens only</small>
 						</div>
 					</form>

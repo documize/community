@@ -1,7 +1,10 @@
 {{toolbar/nav-bar}}
 
-{{toolbar/for-document document=document spaces=folders space=folder permissions=permissions
-	onDocumentDelete=(action 'onDocumentDelete') onSaveTemplate=(action 'onSaveTemplate')}}
+{{toolbar/for-document document=document spaces=folders space=folder permissions=permissions roles=roles tab=tab 
+	onDocumentDelete=(action 'onDocumentDelete')
+	onSaveTemplate=(action 'onSaveTemplate')
+	onSaveDocument=(action 'onSaveDocument')
+	refresh=(action 'refresh')}}
 
 <div id="doc-view" class="container">
 	<div class="row">
@@ -9,25 +12,25 @@
 			{{document/document-heading document=document permissions=permissions
 				onSaveDocument=(action 'onSaveDocument')}}
 
-			{{document/document-meta document=document folder=folder folders=folders permissions=permissions
+			{{document/document-meta document=document folder=folder folders=folders permissions=permissions pages=pages
 				onSaveDocument=(action 'onSaveDocument')}}
 		</div>
 	</div>
 	<div class="row">
 		<div class="col-12">
-			{{document/document-toc document=document folder=folder pages=pages page=page permissions=permissions currentPageId=pageId tab=tab
-				onPageSequenceChange=(action 'onPageSequenceChange') onPageLevelChange=(action 'onPageLevelChange') onGotoPage=(action 'onGotoPage')}}
+			{{document/document-toc document=document folder=folder pages=pages page=page
+				permissions=permissions roles=roles tab=tab currentPageId=currentPageId onShowPage=(action 'onShowPage')
+				onPageSequenceChange=(action 'onPageSequenceChange') onPageLevelChange=(action 'onPageLevelChange')}}
 		</div>
 	</div>
 
-	<div class="row no-gutters">
+	<div class="row no-gutters mb-5">
 		<div class="col-12">
-			<div class="text-center mt-5 mb-5 non-printable">
+			<div class="text-center non-printable document-tabnav">
 				<ul class="tabnav-control">
 					<li class="tab {{if (eq tab 'content') 'selected'}}" {{action 'onTabChange' 'content'}}>Content</li>
 					<li class="tab {{if (eq tab 'attachment') 'selected'}}" {{action 'onTabChange' 'attachment'}}>Attachments</li>
 					{{#if session.authenticated}}
-						<li class="tab {{if (eq tab 'activity') 'selected'}}" {{action 'onTabChange' 'activity'}}>Activity</li>
 						<li class="tab {{if (eq tab 'revision') 'selected'}}" {{action 'onTabChange' 'revision'}}>Revisions</li>
 					{{/if}}
 				</ul>
@@ -35,20 +38,18 @@
 
 			{{#if (eq tab 'content')}}
 				{{document/view-content
-					document=document links=links pages=pages
-					folder=folder folders=folders sections=sections permissions=permissions pageId=pageId
+					document=document links=links pages=pages blocks=blocks currentPageId=currentPageId 
+					folder=folder folders=folders sections=sections permissions=permissions roles=roles 
 					onSavePage=(action 'onSavePage') onInsertSection=(action 'onInsertSection')
-					onSavePageAsBlock=(action 'onSavePageAsBlock') onDeleteBlock=(action 'onDeleteBlock') onGotoPage=(action 'onGotoPage')
-					onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onPageDeleted')}}
+					onSavePageAsBlock=(action 'onSavePageAsBlock') onDeleteBlock=(action 'onDeleteBlock')
+					onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onPageDeleted')
+					refresh=(action 'refresh')}}
 			{{/if}}
 
 			{{#if (eq tab 'attachment')}}
 				{{document/view-attachment document=document permissions=permissions}}
 			{{/if}}
 
-			{{#if (eq tab 'activity')}}
-				{{document/view-activity document=document pages=pages permissions=permissions}}
-			{{/if}}
 
 			{{#if (eq tab 'revision')}}
 				{{document/view-revision document=document folder=folder pages=pages onRollback=(action 'onRollback')}}

@@ -9,7 +9,9 @@
 //
 // https://documize.com
 
+import $ from 'jquery';
 import { computed } from '@ember/object';
+import { notEmpty } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import Component from '@ember/component';
 import { A } from "@ember/array"
@@ -19,12 +21,9 @@ export default Component.extend({
     documentService: service('document'),
 	categoryService: service('category'),
 	sessionService: service('session'),
-	maxTags: 3,
+
 	categories: A([]),
 	newCategory: '',
-	tagz: A([]),
-	tagzModal: A([]),
-	newTag: '',
 	showCategoryModal: false,
 	hasCategories: computed('categories', function() {
 		return this.get('categories').length > 0;
@@ -36,9 +35,63 @@ export default Component.extend({
 		return this.get('permissions.spaceOwner') || this.get('permissions.spaceManage');
 	}),
 
+	maxTags: 3,
+	tagz: A([]),
+	tagzModal: A([]),
+	newTag: '',
+
+	contributorMsg: '',
+	approverMsg: '',
+	userChanges: notEmpty('contributorMsg'),
+	isApprover: computed('permissions', function() {
+		return this.get('permissions.documentApprove');
+	}),
+	changeControlMsg: computed('document.protection', function() {
+		let p = this.get('document.protection');
+		let constants = this.get('constants');
+		let msg = '';
+		
+		switch (p) {
+			case constants.ProtectionType.None:
+				msg = constants.ProtectionType.NoneLabel;
+				break;
+			case constants.ProtectionType.Lock:
+				msg = constants.ProtectionType.LockLabel;
+				break;
+			case constants.ProtectionType.Review:
+				msg = constants.ProtectionType.ReviewLabel;
+				break;
+		}
+
+		return msg;
+	}),
+	approvalMsg: computed('document.{protection,approval}', function() {
+		let p = this.get('document.protection');
+		let a = this.get('document.approval');
+		let constants = this.get('constants');
+		let msg = '';
+
+		if (p === constants.ProtectionType.Review) {
+			switch (a) {
+				case constants.ApprovalType.Anybody:
+					msg = constants.ApprovalType.AnybodyLabel;
+					break;
+				case constants.ApprovalType.Majority:
+					msg = constants.ApprovalType.MajorityLabel;
+					break;
+				case constants.ApprovalType.Unanimous:
+					msg = constants.ApprovalType.UnanimousLabel;
+					break;
+			}
+		}
+
+		return msg;
+	}),	
+
 	didReceiveAttrs() {
 		this._super(...arguments);
 		this.load();
+		this.workflowStatus();
 	},
 
 	didInsertElement() {
@@ -98,6 +151,39 @@ export default Component.extend({
         }
 
         this.set('tagz', A(tagz));
+	},
+
+	workflowStatus() {
+		let pages = this.get('pages');
+		let contributorMsg = '';
+		let userPendingCount = 0;
+		let userReviewCount = 0;
+		let userRejectedCount = 0;
+		let approverMsg = '';
+		let approverPendingCount = 0;
+		let approverReviewCount = 0;
+		let approverRejectedCount = 0;
+
+		pages.forEach((item) => {
+			if (item.get('userHasChangePending')) userPendingCount+=1;
+			if (item.get('userHasChangeAwaitingReview')) userReviewCount+=1;
+			if (item.get('userHasChangeRejected')) userRejectedCount+=1;
+			if (item.get('changePending')) approverPendingCount+=1;
+			if (item.get('changeAwaitingReview')) approverReviewCount+=1;
+			if (item.get('changeRejected')) approverRejectedCount+=1;
+		});
+
+		if (userPendingCount > 0 || userReviewCount > 0 || userRejectedCount > 0) {
+			let label = userPendingCount === 1 ? 'change' : 'changes';
+			contributorMsg = `${userPendingCount} ${label} progressing, ${userReviewCount} awaiting review, ${userRejectedCount} rejected`;
+		}
+		this.set('contributorMsg', contributorMsg);
+
+		if (approverPendingCount > 0 || approverReviewCount > 0 || approverRejectedCount > 0) {
+			let label = approverPendingCount === 1 ? 'change' : 'changes';
+			approverMsg = `${approverPendingCount} ${label} progressing, ${approverReviewCount} awaiting review, ${approverRejectedCount} rejected`;
+		}
+		this.set('approverMsg', approverMsg);
 	},
 
     actions: {
@@ -179,13 +265,15 @@ export default Component.extend({
 
 			let doc = this.get('document');
 			doc.set('tags', save);
-			this.attrs.onSaveDocument(doc);
+
+			let cb = this.get('onSaveDocument');
+			cb(doc);
 
 			this.load();
 			this.set('newTag', '');
 
 			$('#document-tags-modal').modal('hide');
 			$('#document-tags-modal').modal('dispose');
-		},
+		}
 	}
 });

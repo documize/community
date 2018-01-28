@@ -58,3 +58,14 @@ func (user *User) GetAccount(orgID string) (a account.Account, found bool) {
 
 	return a, false
 }
+
+// Exists ehecks if user is in array.
+func Exists(users []User, userID string) bool {
+	for _, u := range users {
+		if u.RefID == userID {
+			return true
+		}
+	}
+
+	return false
+}

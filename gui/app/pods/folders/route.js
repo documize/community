@@ -27,5 +27,9 @@ export default Route.extend(AuthenticatedRouteMixin, {
 
 	model() {
 		return this.get('folderService').getAll();
-	}
+	},
+
+	activate() {
+		this.get('browser').setTitle('Spaces');
+	}	
 });

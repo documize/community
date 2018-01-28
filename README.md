@@ -10,10 +10,10 @@ Documize is an intelligent document environment (IDE) for creating, securing and
 
 ## Why should I care?
 
-Because maybe like us, you might be tired of:
+Because maybe like us, you're tired of:
 
-* juggling WYSIWYG editors, wiki software and various document related solutions
-* playing document related email tennis with contributions, versions and feedback
+* juggling WYSIWYG editors, wiki software and other document related solutions
+* playing email tennis with documents, contributions, versions and feedback
 * sharing not-so-secure folders with external participants
 
 Sound familiar? Read on.
@@ -38,17 +38,21 @@ Reusable templates and content blocks.
 
 Documentation related tasking and delegation.
 
-Integrations for embedding SaaS data within documents.
+Integrations for embedding SaaS data within documents, zero add-on/marketplace fees.
 
 ## What does it look like?
 
-Here is the home screen showing all spaces.
+All spaces.
 
-![Documize](screenshot.png "Documize")
+![Documize](screenshot-1.png "Documize")
+
+Space view.
+
+![Documize](screenshot-2.png "Documize")
 
 ## Latest version
 
-v1.55.0
+v1.56.0
 
 ## OS support
 
@@ -62,8 +66,8 @@ Documize runs on the following:
 
 Documize is built with the following technologies:
 
-- EmberJS (v2.17.0)
-- Go (v1.9.2)
+- EmberJS (v2.18.0)
+- Go (v1.9.3)
 
 ...and supports the following databases:
 

@@ -43,15 +43,15 @@
 	<p>Are you sure you want to delete {{selectedDocuments.length}} {{selectedCaption}}?</p>
 {{/ui/ui-dialog}}
 
-{{#ui/ui-dialog title="Move Documents" confirmCaption="Move" buttonType="btn-outline-success" show=showMoveDialog onAction=(action 'onMoveDocuments')}}
+{{#ui/ui-dialog title="Move Documents" confirmCaption="Move" buttonType="btn-success" show=showMoveDialog onAction=(action 'onMoveDocuments')}}
 	<p>Select space for {{selectedDocuments.length}} {{selectedCaption}}</p>
 	{{ui/ui-list-picker items=moveOptions nameField='name' singleSelect=true}}
 {{/ui/ui-dialog}}
 
 {{#if showAdd}}
-	{{empty-state icon="direct" message="You can create new documents via the green + button"}}
+	{{empty-state icon="direct" message="Add documents via + DOCUMENT"}}
 {{/if}}
 
 {{#if showLockout}}
-	{{empty-state icon="visibility" message="It looks like space permissions are preventing you from viewing and creating documents"}}
+	{{empty-state icon="visibility" message="Space permissions are preventing you from viewing and creating documents"}}
 {{/if}}

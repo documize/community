@@ -15,10 +15,13 @@ import attr from 'ember-data/attr';
 
 export default Model.extend({
 	documentName: attr('string'),
+	documentId: attr('string'),
 	folderId: attr('string'),
 	contributed: attr('string'),
 	viewed: attr('string'),
 	created: attr('string'),
+	approved: attr('string'),
+	rejected: attr('string'),
 
 	hasContributed: computed('contributed', function () {
 		return this.get('contributed').length > 0;
@@ -28,5 +31,11 @@ export default Model.extend({
 	}),
 	hasCreated: computed('created', function () {
 		return this.get('created').length > 0;
-	})
+	}),
+	hasApproved: computed('approved', function () {
+		return this.get('approved').length > 0;
+	}),
+	hasRejected: computed('rejected', function () {
+		return this.get('rejected').length > 0;
+	})	
 });

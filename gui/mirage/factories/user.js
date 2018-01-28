@@ -22,7 +22,7 @@ export default Factory.extend({
 	"active": true,
 	"editor": true,
 	"admin": faker.list.cycle(false, true),
-	"accounts": [{
+	"accounts": [{ // eslint-disable-line ember/avoid-leaking-state-in-ember-objects
 		"id": faker.list.cycle("VzMyp0w_3WrtFztr", "VzMuyEw_3WqiafcF"),
 		"created": faker.list.cycle("2016-05-11T13:24:55Z", "2016-05-11T15:08:24Z"),
 		"revised": faker.list.cycle("2016-05-11T13:24:55Z", "2016-05-11T15:08:24Z"),
@@ -34,5 +34,5 @@ export default Factory.extend({
 		"title": "EmberSherpa",
 		"message": "This Documize instance contains all our team documentation",
 		"domain": ""
-	}]
+	}] 
 });

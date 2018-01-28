@@ -502,7 +502,7 @@ func (h *Handler) ChangePassword(w http.ResponseWriter, r *http.Request) {
 	newPassword := string(body)
 
 	// can only update your own account unless you are an admin
-	if !ctx.Administrator || (!ctx.Administrator && userID != ctx.UserID) {
+	if !ctx.Administrator && userID != ctx.UserID {
 		response.WriteForbiddenError(w)
 		return
 	}

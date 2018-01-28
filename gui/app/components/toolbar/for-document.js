@@ -9,28 +9,35 @@
 //
 // https://documize.com
 
-import Component from '@ember/component';
+import $ from 'jquery';
 import { inject as service } from '@ember/service';
+import Component from '@ember/component';
 import AuthMixin from '../../mixins/auth';
 import TooltipMixin from '../../mixins/tooltip';
 import ModalMixin from '../../mixins/modal';
 
 export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
-	spaceService: service('folder'),
+	userSvc: service('user'),
+	store: service(),
+	spaceSvc: service('folder'),
 	session: service(),
 	appMeta: service(),
 	pinned: service(),
-	pinState : {
-		isPinned: false,
-		pinId: '',
-		newName: ''
-	},
-	saveTemplate: {
-		name: '',
-		description: ''
-	},
 	showTools: true, 			// show document related tools? favourite, delete, make template...
 	showDocumentLink: false, 	// show link to document in breadcrumbs
+
+	init() {
+		this._super(...arguments);
+		this.pinState = {
+			isPinned: false,
+			pinId: '',
+			newName: ''
+		};
+		this.saveTemplate = {
+			name: '',
+			description: ''
+		};
+	},
 
 	didReceiveAttrs() {
 		this._super(...arguments);
@@ -50,7 +57,6 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 
 	didInsertElement() {
 		this._super(...arguments);
-
 		this.modalInputFocus('#document-template-modal', '#new-template-name');
 	},
 
@@ -62,8 +68,9 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 	actions: {
 		onDocumentDelete() {
 			this.modalClose('#document-delete-modal');
-			
-			this.attrs.onDocumentDelete();
+
+			let cb = this.get('onDocumentDelete');
+			cb();
 		},
 
 		onPrintDocument() {
@@ -118,7 +125,8 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 			this.set('saveTemplate.name', '');
 			this.set('saveTemplate.description', '');
 
-			this.attrs.onSaveTemplate(name, excerpt);
+			let cb = this.get('onSaveTemplate');
+			cb(name, excerpt);
 
 			this.modalClose('#document-template-modal');
 

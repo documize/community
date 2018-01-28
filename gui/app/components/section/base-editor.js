@@ -9,6 +9,7 @@
 //
 // https://documize.com
 
+import $ from 'jquery';
 import { empty } from '@ember/object/computed';
 import Component from '@ember/component';
 import ModalMixin from '../../mixins/modal';
@@ -44,19 +45,22 @@ export default Component.extend(ModalMixin, {
 
 	actions: {
 		onCancel() {
-			if (this.attrs.isDirty() !== null && this.attrs.isDirty()) {
+			let isDirty = this.get('isDirty');
+			if (isDirty() !== null && isDirty()) {
 				this.modalOpen('#discard-modal', {show: true});
 				return;
 			}
 
-			this.attrs.onCancel();
+			let cb = this.get('onCancel');
+			cb();
 		},
 
 		onDiscard() {
 			this.modalClose('#discard-modal');
-			this.attrs.onCancel();
-		},
 
+			let cb = this.get('onCancel');
+			cb();
+		},
 
 		onAction() {
 			if (this.get('busy')) {
@@ -73,7 +77,8 @@ export default Component.extend(ModalMixin, {
 				return;
 			}
 
-			this.attrs.onAction(this.get('page.title'));
+			let cb = this.get('onAction');
+			cb(this.get('page.title'));
 		}
 	}
 });

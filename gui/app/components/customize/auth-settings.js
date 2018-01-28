@@ -27,16 +27,20 @@ export default Component.extend({
 	KeycloakPublicKeyError: empty('keycloakConfig.publicKey'),
 	KeycloakAdminUserError: empty('keycloakConfig.adminUser'),
 	KeycloakAdminPasswordError: empty('keycloakConfig.adminPassword'),
-	keycloakConfig: {
-		url: '',
-		realm: '',
-		clientId: '',
-		publicKey: '',
-		adminUser: '',
-		adminPassword: '',
-		group: '',
-		disableLogout: false,
-		defaultPermissionAddSpace: false
+
+	init() {
+		this._super(...arguments);
+		this.keycloakConfig = {
+			url: '',
+			realm: '',
+			clientId: '',
+			publicKey: '',
+			adminUser: '',
+			adminPassword: '',
+			group: '',
+			disableLogout: false,
+			defaultPermissionAddSpace: false
+		};
 	},
 
 	didReceiveAttrs() {
@@ -139,7 +143,7 @@ export default Component.extend({
 							});
 						} else {
 							if (data.authProvider === this.get('appMeta.authProvider')) {
-								// this.showNotification(response.message);
+								this.showNotification(response.message);
 							} else {
 								this.get('onChange')(data);
 							}

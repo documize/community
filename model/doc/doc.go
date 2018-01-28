@@ -16,22 +16,24 @@ import (
 	"time"
 
 	"github.com/documize/community/model"
+	"github.com/documize/community/model/workflow"
 )
 
 // Document represents the purpose of Documize.
 type Document struct {
 	model.BaseEntity
-	OrgID    string `json:"orgId"`
-	LabelID  string `json:"folderId"`
-	UserID   string `json:"userId"`
-	Job      string `json:"job"`
-	Location string `json:"location"`
-	Title    string `json:"name"`
-	Excerpt  string `json:"excerpt"`
-	Slug     string `json:"-"`
-	Tags     string `json:"tags"`
-	Template bool   `json:"template"`
-	Layout   string `json:"layout"`
+	OrgID      string              `json:"orgId"`
+	LabelID    string              `json:"folderId"`
+	UserID     string              `json:"userId"`
+	Job        string              `json:"job"`
+	Location   string              `json:"location"`
+	Title      string              `json:"name"`
+	Excerpt    string              `json:"excerpt"`
+	Slug       string              `json:"-"`
+	Tags       string              `json:"tags"`
+	Template   bool                `json:"template"`
+	Protection workflow.Protection `json:"protection"`
+	Approval   workflow.Approval   `json:"approval"`
 }
 
 // SetDefaults ensures on blanks and cleans.
@@ -42,6 +44,13 @@ func (d *Document) SetDefaults() {
 		d.Title = "Document"
 	}
 }
+
+// ByTitle sorts a collection of documents by document title.
+type ByTitle []Document
+
+func (a ByTitle) Len() int           { return len(a) }
+func (a ByTitle) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByTitle) Less(i, j int) bool { return strings.ToLower(a[i].Title) < strings.ToLower(a[j].Title) }
 
 // DocumentMeta details who viewed the document.
 type DocumentMeta struct {

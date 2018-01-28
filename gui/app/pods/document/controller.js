@@ -10,7 +10,6 @@
 // https://documize.com
 
 import Controller from '@ember/controller';
-import NotifierMixin from '../../mixins/notifier';
 
-export default Controller.extend(NotifierMixin, {
+export default Controller.extend({
 });

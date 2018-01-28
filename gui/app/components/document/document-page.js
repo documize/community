@@ -10,55 +10,63 @@
 // https://documize.com
 
 import { inject as service } from '@ember/service';
-
 import Component from '@ember/component';
-import NotifierMixin from '../../mixins/notifier';
 import TooltipMixin from '../../mixins/tooltip';
 
-export default Component.extend(NotifierMixin, TooltipMixin, {
+export default Component.extend(TooltipMixin, {
 	documentService: service('document'),
 	sectionService: service('section'),
 	editMode: false,
+	editPage: null,
+	editMeta: null,
 
 	didReceiveAttrs() {
 		this._super(...arguments);
+		if (this.get('isDestroyed') || this.get('isDestroying')) return;
 
-		if (this.get('isDestroyed') || this.get('isDestroying')) {
-			return;
+		if (this.get('session.authenticated')) {
+			this.workflow();
 		}
 
-		let page = this.get('page');
+		if (this.get('toEdit') === this.get('page.id') && this.get('permissions.documentEdit')) this.send('onEdit');
+	},
 
-		this.get('documentService').getPageMeta(page.get('documentId'), page.get('id')).then((meta) => {
-			if (this.get('isDestroyed') || this.get('isDestroying')) {
-				return;
-			}
-
-			this.set('meta', meta);
-			if (this.get('toEdit') === this.get('page.id') && this.get('permissions.documentEdit')) {
-				this.send('onEdit');
-			}
-		});
+	workflow() {
+		this.set('editPage', this.get('page'));
+        this.set('editMeta', this.get('meta'));
 	},
 
 	actions: {
 		onSavePage(page, meta) {
-			this.set('page', page);
-			this.set('meta', meta);
+			let constants = this.get('constants');
+
+			if (this.get('document.protection') === constants.ProtectionType.Review) {			
+				if (this.get('page.status') === constants.ChangeState.Published) {
+					page.set('relativeId', this.get('page.id'));
+				}
+				if (this.get('page.status') === constants.ChangeState.PendingNew) {
+					page.set('relativeId', '');
+				}
+			}
+
 			this.set('editMode', false);
-			this.get('onSavePage')(page, meta);
+			let cb = this.get('onSavePage');
+			cb(page, meta);
 		},
 
 		onSavePageAsBlock(block) {
-			this.attrs.onSavePageAsBlock(block);
+			let cb = this.get('onSavePageAsBlock');
+			cb(block);
 		},
 
 		onCopyPage(documentId) {
-			this.attrs.onCopyPage(this.get('page.id'), documentId);
+			let cb = this.get('onCopyPage');
+			cb(this.get('page.id'), documentId);
 		},
 
 		onMovePage(documentId) {
-			this.attrs.onMovePage(this.get('page.id'), documentId);
+			let cb = this.get('onMovePage');
+			cb(this.get('page.id'), documentId);
 		},
 
 		onDeletePage(deleteChildren) {
@@ -74,16 +82,14 @@ export default Component.extend(NotifierMixin, TooltipMixin, {
 				children: deleteChildren
 			};
 
-			this.attrs.onDeletePage(params);
+			let cb = this.get('onDeletePage');
+			cb(params);
 		},
 
+		// Calculate if user is editing page or a pending change as per approval process
 		onEdit() {
-			if (this.get('editMode')) {
-				return;
-			}
-
+			if (this.get('editMode')) return;
 			this.get('toEdit', '');
-			// this.set('pageId', this.get('page.id'));
 			this.set('editMode', true);
 		},
 

@@ -1,12 +1,12 @@
-<div id="page-{{page.id}}" class="is-a-page" data-id="{{ page.id }}" data-type="{{page.contentType}}">
+<div id="page-{{page.id}}" data-id="{{page.id}}" data-type="{{page.contentType}}">
 	{{#if editMode}}
 		<div class="wysiwyg">
-			{{document/document-editor document=document folder=folder page=page meta=meta onCancel=(action 'onCancelEdit') onAction=(action 'onSavePage')}}
+			{{document/document-editor document=document folder=folder page=editPage meta=editMeta onCancel=(action 'onCancelEdit') onAction=(action 'onSavePage')}}
 		</div>
 	{{else}}
-		{{document/page-heading document=document folder=folder page=page permissions=permissions tabMode=tabMode
+		{{document/page-heading document=document folder=folder page=page meta=meta pending=pending permissions=permissions tabMode=tabMode roles=roles blocks=blocks
 			onEdit=(action 'onEdit') onSavePageAsBlock=(action 'onSavePageAsBlock')
-			onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onDeletePage')}}
+			onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onDeletePage') refresh=(action refresh)}}
 		<div class="wysiwyg">
 			{{section/base-renderer page=page}}
 		</div>

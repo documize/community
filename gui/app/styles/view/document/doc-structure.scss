@@ -1,3 +1,7 @@
+.document-tabnav {
+	margin: 50px 0 100px 0;
+}
+
 .document-structure {
 	margin: 0 0 0 0;
 
@@ -15,12 +19,50 @@
 			display: inline-block;
 		}
 
+		> .page-state-pending {
+			color: $color-red;
+		}
+
+		> .page-state-review {
+			color: $color-green;
+		}
+
 		> .page-title {
 			display: inline-block;
 			font-size: 1.8rem;
 			font-weight: bold;
 			margin: 16px 0;
 			color: $color-dark;
+		}
+	}
+
+	> .protection-table {
+		> tbody, > thead {
+			> tr, > th {
+				> td, > th {
+					margin: 0;
+					padding: 10px 15px;
+					text-align: center;
+				}
+
+				> td:first-child {
+					text-align: left;
+				}
+			}
+		}
+
+		> thead {
+			> tr {
+				> th {
+					background-color: $color-off-white;
+					color: $color-gray;
+				}
+
+				> th:first-child {
+					background-color: $color-white !important;
+					border: none !important;
+				}
+			}
 		}
 	}
 }

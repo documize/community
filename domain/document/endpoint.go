@@ -16,6 +16,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"sort"
 
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/request"
@@ -32,6 +33,8 @@ import (
 	pm "github.com/documize/community/model/permission"
 	"github.com/documize/community/model/search"
 	"github.com/documize/community/model/space"
+	"github.com/documize/community/model/user"
+	"github.com/documize/community/model/workflow"
 )
 
 // Handler contains the runtime information such as logging and database.
@@ -77,7 +80,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 
 	err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
 		LabelID:      document.LabelID,
-		SourceID:     document.RefID,
+		DocumentID:   document.RefID,
 		SourceType:   activity.SourceTypeDocument,
 		ActivityType: activity.TypeRead})
 
@@ -90,27 +93,6 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	ctx.Transaction.Commit()
 
 	response.WriteJSON(w, document)
-}
-
-// Activity is an endpoint returning the activity logs for specified document.
-func (h *Handler) Activity(w http.ResponseWriter, r *http.Request) {
-	method := "document.activity"
-	ctx := domain.GetRequestContext(r)
-
-	id := request.Param(r, "documentID")
-	if len(id) == 0 {
-		response.WriteMissingDataError(w, method, "documentID")
-		return
-	}
-
-	a, err := h.Store.Activity.GetDocumentActivity(ctx, id)
-	if err != nil && err != sql.ErrNoRows {
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	response.WriteJSON(w, a)
 }
 
 // DocumentLinks is an endpoint returning the links for a document.
@@ -155,7 +137,7 @@ func (h *Handler) BySpace(w http.ResponseWriter, r *http.Request) {
 
 	// get complete list of documents
 	documents, err := h.Store.Document.GetBySpace(ctx, spaceID)
-	if err != nil && err != sql.ErrNoRows {
+	if err != nil {
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
 		return
@@ -163,6 +145,8 @@ func (h *Handler) BySpace(w http.ResponseWriter, r *http.Request) {
 	if len(documents) == 0 {
 		documents = []doc.Document{}
 	}
+
+	sort.Sort(doc.ByTitle(documents))
 
 	// remove documents that cannot be seen due to lack of
 	// category view/access permission
@@ -279,15 +263,39 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !permission.CanDeleteDocument(ctx, *h.Store, documentID) {
-		response.WriteForbiddenError(w)
-		return
-	}
-
 	doc, err := h.Store.Document.Get(ctx, documentID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	// If locked document then no can do
+	if doc.Protection == workflow.ProtectionLock {
+		response.WriteForbiddenError(w)
+		h.Runtime.Log.Info("attempted action on locked document")
+		return
+	}
+
+	// If approval workflow then only approvers can delete page
+	if doc.Protection == workflow.ProtectionReview {
+		approvers, err := permission.GetDocumentApprovers(ctx, *h.Store, doc.LabelID, doc.RefID)
+		if err != nil {
+			response.WriteForbiddenError(w)
+			h.Runtime.Log.Error(method, err)
+			return
+		}
+
+		if !user.Exists(approvers, ctx.UserID) {
+			response.WriteForbiddenError(w)
+			h.Runtime.Log.Info("attempted action on document when not approver")
+			return
+		}
+	}
+
+	// permission check
+	if !permission.CanDeleteDocument(ctx, *h.Store, documentID) {
+		response.WriteForbiddenError(w)
 		return
 	}
 
@@ -319,7 +327,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
 		LabelID:      doc.LabelID,
-		SourceID:     documentID,
+		DocumentID:   documentID,
 		SourceType:   activity.SourceTypeDocument,
 		ActivityType: activity.TypeDeleted})
 
@@ -411,8 +419,17 @@ func (h *Handler) FetchDocumentData(w http.ResponseWriter, r *http.Request) {
 	if len(perms) == 0 {
 		perms = []pm.Permission{}
 	}
-
 	record := pm.DecodeUserPermissions(perms)
+
+	roles, err := h.Store.Permission.GetUserDocumentPermissions(ctx, document.RefID)
+	if err != nil && err != sql.ErrNoRows {
+		response.WriteServerError(w, method, err)
+		return
+	}
+	if len(roles) == 0 {
+		roles = []pm.Permission{}
+	}
+	rolesRecord := pm.DecodeUserDocumentPermissions(roles)
 
 	// links
 	l, err := h.Store.Link.GetDocumentOutboundLinks(ctx, id)
@@ -436,9 +453,10 @@ func (h *Handler) FetchDocumentData(w http.ResponseWriter, r *http.Request) {
 		sp = []space.Space{}
 	}
 
-	data := documentData{}
+	data := BulkDocumentData{}
 	data.Document = document
 	data.Permissions = record
+	data.Roles = rolesRecord
 	data.Links = l
 	data.Spaces = sp
 
@@ -451,7 +469,7 @@ func (h *Handler) FetchDocumentData(w http.ResponseWriter, r *http.Request) {
 
 	err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
 		LabelID:      document.LabelID,
-		SourceID:     document.RefID,
+		DocumentID:   document.RefID,
 		SourceType:   activity.SourceTypeDocument,
 		ActivityType: activity.TypeRead})
 
@@ -466,11 +484,12 @@ func (h *Handler) FetchDocumentData(w http.ResponseWriter, r *http.Request) {
 	response.WriteJSON(w, data)
 }
 
-// documentData represents all data associated for a single document.
+// BulkDocumentData represents all data associated for a single document.
 // Used by FetchDocumentData() bulk data load call.
-type documentData struct {
-	Document    doc.Document  `json:"document"`
-	Permissions pm.Record     `json:"permissions"`
-	Spaces      []space.Space `json:"folders"`
-	Links       []link.Link   `json:"link"`
+type BulkDocumentData struct {
+	Document    doc.Document      `json:"document"`
+	Permissions pm.Record         `json:"permissions"`
+	Roles       pm.DocumentRecord `json:"roles"`
+	Spaces      []space.Space     `json:"folders"`
+	Links       []link.Link       `json:"links"`
 }
