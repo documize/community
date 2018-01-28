@@ -42,9 +42,13 @@ Integrations for embedding SaaS data within documents, zero add-on/marketplace f
 
 ## What does it look like?
 
-Here is the home screen showing all spaces.
+All spaces.
 
-![Documize](screenshot.png "Documize")
+![Documize](screenshot-1.png "Documize")
+
+Space view.
+
+![Documize](screenshot-2.png "Documize")
 
 ## Latest version
 
