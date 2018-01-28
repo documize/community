@@ -72,7 +72,7 @@
 		</div>
 	</div>
 
-	{{#ui/ui-dialog title="Set Cateogory Access" confirmCaption="Save" buttonType="btn-outline-success" show=showCategoryAccess onAction=(action 'onGrantAccess')}}
+	{{#ui/ui-dialog title="Set Cateogory Access" confirmCaption="Save" buttonType="btn-success" show=showCategoryAccess onAction=(action 'onGrantAccess')}}
 		<p>Select who can view documents within category</p>
 		{{ui/ui-list-picker items=categoryUsers nameField='fullname' singleSelect=false}}
 	{{/ui/ui-dialog}}
