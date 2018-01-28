@@ -118,7 +118,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 
 	err = h.Store.Permission.AddPermissions(ctx, perm, permission.SpaceOwner, permission.SpaceManage, permission.SpaceView,
 		permission.DocumentAdd, permission.DocumentCopy, permission.DocumentDelete, permission.DocumentEdit, permission.DocumentMove,
-		permission.DocumentTemplate)
+		permission.DocumentTemplate, permission.DocumentApprove)
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
