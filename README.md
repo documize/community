@@ -97,6 +97,12 @@ Documize is compatible with Auth0 identity as a service.
 
 Open Source Identity and Access Management
 
+## Developer's Note
+
+We try to follow sound advice when writing commit messages:
+
+https://chris.beams.io/posts/git-commit/
+
 ## The legal bit at the end
 
 <https://documize.com>
