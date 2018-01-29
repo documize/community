@@ -1,3 +1,6 @@
+
+/* START PrismJS */
+
 /* PrismJS 1.10.0
 http://prismjs.com/download.html?themes=prism-solarizedlight&languages=markup+css+clike+javascript+c+cpp+csharp+coffeescript+ruby+docker+elixir+erlang+fsharp+git+go+handlebars+haskell+http+java+json+less+makefile+markdown+nginx+objectivec+perl+php+powershell+python+jsx+rust+scss+sql+swift+typescript+yaml&plugins=line-numbers+toolbar+copy-to-clipboard */
 /*
@@ -248,3 +251,4 @@ pre.code-toolbar > .toolbar span:focus {
 	text-decoration: none;
 }
 
+/* FINISH PrismJS */
