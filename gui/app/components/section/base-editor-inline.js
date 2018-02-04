@@ -29,6 +29,8 @@ export default Component.extend(TooltipMixin, ModalMixin, {
 	previewText: 'Preview',
 
 	didRender() {
+		this._super(...arguments);
+		
 		let msContainer = document.getElementById('section-editor-' + this.get('containerId'));
 		let mousetrap = this.get('mousetrap');
 

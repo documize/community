@@ -18,7 +18,7 @@ export default Component.extend({
 	documentService: service('document'),
 	appMeta: service(),
 	hasAttachments: notEmpty('files'),
-	canEdit: computed('permissions', 'document.protection', function() {
+	canEdit: computed('permissions.documentEdit', 'document.protection', function() {
 		return this.get('document.protection') !== this.get('constants').ProtectionType.Lock && this.get('permissions.documentEdit');
 	}),
 	showDialog: false,

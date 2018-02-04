@@ -52,7 +52,7 @@ Space view.
 
 ## Latest version
 
-v1.56.0
+v1.56.1
 
 ## OS support
 

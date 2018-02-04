@@ -22,6 +22,7 @@ export default Component.extend(TooltipMixin, {
 
 	didReceiveAttrs() {
 		this._super(...arguments);
+
 		if (this.get('isDestroyed') || this.get('isDestroying')) return;
 
 		if (this.get('session.authenticated')) {
