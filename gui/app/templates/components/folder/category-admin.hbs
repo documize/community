@@ -33,7 +33,7 @@
 							<div class="col-4 buttons text-right">
 								{{#if cat.editMode}}
 									<button type="button" class="btn btn-outline-secondary" {{action 'onEditCancel' cat.id}}>Cancel</button>
-									<button type="button" class="btn btn-outline-success"  {{action 'onSave' cat.id}}>Save</button>
+									<button type="button" class="btn btn-success"  {{action 'onSave' cat.id}}>Save</button>
 								{{else}}
 									<div id="category-access-button-{{cat.id}}" class="button-icon-gray align-middle" data-toggle="tooltip" data-placement="top" title="Category access" {{action 'onShowAccessPicker' cat.id}}>
 										<i class="material-icons">security</i>
