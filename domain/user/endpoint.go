@@ -170,6 +170,8 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	ctx.Transaction.Commit()
+
 	if addUser {
 		event.Handler().Publish(string(event.TypeAddUser))
 		h.Store.Audit.Record(ctx, audit.EventTypeUserAdd)
@@ -179,8 +181,6 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		event.Handler().Publish(string(event.TypeAddAccount))
 		h.Store.Audit.Record(ctx, audit.EventTypeAccountAdd)
 	}
-
-	ctx.Transaction.Commit()
 
 	// If we did not add user or give them access (account) then we error back
 	if !addUser && !addAccount {
@@ -382,11 +382,11 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	ctx.Transaction.Commit()
+
 	h.Store.Audit.Record(ctx, audit.EventTypeUserDelete)
 
 	event.Handler().Publish(string(event.TypeRemoveUser))
-
-	ctx.Transaction.Commit()
 
 	response.WriteEmpty(w)
 }
@@ -474,9 +474,9 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.Store.Audit.Record(ctx, audit.EventTypeUserUpdate)
-
 	ctx.Transaction.Commit()
+
+	h.Store.Audit.Record(ctx, audit.EventTypeUserUpdate)
 
 	response.WriteEmpty(w)
 }
@@ -515,6 +515,7 @@ func (h *Handler) ChangePassword(w http.ResponseWriter, r *http.Request) {
 
 	u, err := h.Store.User.Get(ctx, userID)
 	if err != nil {
+		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
 		return
@@ -577,8 +578,9 @@ func (h *Handler) ForgotPassword(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err == sql.ErrNoRows {
-		response.WriteEmpty(w)
+		ctx.Transaction.Rollback()
 		h.Runtime.Log.Info(fmt.Sprintf("User %s not found for password reset process", u.Email))
+		response.WriteEmpty(w)
 		return
 	}
 
@@ -621,6 +623,7 @@ func (h *Handler) ResetPassword(w http.ResponseWriter, r *http.Request) {
 
 	u, err := h.Store.User.GetByToken(ctx, token)
 	if err != nil {
+		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
 		return
@@ -636,9 +639,9 @@ func (h *Handler) ResetPassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.Store.Audit.Record(ctx, audit.EventTypeUserPasswordReset)
-
 	ctx.Transaction.Commit()
+
+	h.Store.Audit.Record(ctx, audit.EventTypeUserPasswordReset)
 
 	response.WriteEmpty(w)
 }

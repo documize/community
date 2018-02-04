@@ -77,9 +77,9 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.Store.Audit.Record(ctx, audit.EventTypeBlockAdd)
-
 	ctx.Transaction.Commit()
+
+	h.Store.Audit.Record(ctx, audit.EventTypeBlockAdd)
 
 	b, err = h.Store.Block.Get(ctx, b.RefID)
 	if err != nil {
@@ -183,9 +183,9 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.Store.Audit.Record(ctx, audit.EventTypeBlockUpdate)
-
 	ctx.Transaction.Commit()
+
+	h.Store.Audit.Record(ctx, audit.EventTypeBlockUpdate)
 
 	response.WriteEmpty(w)
 }
@@ -222,9 +222,9 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.Store.Audit.Record(ctx, audit.EventTypeBlockDelete)
-
 	ctx.Transaction.Commit()
+
+	h.Store.Audit.Record(ctx, audit.EventTypeBlockDelete)
 
 	response.WriteEmpty(w)
 }

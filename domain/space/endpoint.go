@@ -144,6 +144,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 
 		spCloneRoles, err := h.Store.Permission.GetSpacePermissions(ctx, model.CloneID)
 		if err != nil {
+			ctx.Transaction.Rollback()
 			response.WriteServerError(w, method, err)
 			h.Runtime.Log.Error(method, err)
 			return
@@ -166,6 +167,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		toCopy := []doc.Document{}
 		spCloneTemplates, err := h.Store.Document.TemplatesBySpace(ctx, model.CloneID)
 		if err != nil {
+			ctx.Transaction.Rollback()
 			response.WriteServerError(w, method, err)
 			h.Runtime.Log.Error(method, err)
 			return
@@ -422,9 +424,9 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.Store.Audit.Record(ctx, audit.EventTypeSpaceUpdate)
-
 	ctx.Transaction.Commit()
+
+	h.Store.Audit.Record(ctx, audit.EventTypeSpaceUpdate)
 
 	response.WriteJSON(w, sp)
 }
@@ -504,9 +506,9 @@ func (h *Handler) Remove(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.Store.Audit.Record(ctx, audit.EventTypeSpaceDelete)
-
 	ctx.Transaction.Commit()
+
+	h.Store.Audit.Record(ctx, audit.EventTypeSpaceDelete)
 
 	response.WriteEmpty(w)
 }
@@ -590,9 +592,9 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.Store.Audit.Record(ctx, audit.EventTypeSpaceDelete)
-
 	ctx.Transaction.Commit()
+
+	h.Store.Audit.Record(ctx, audit.EventTypeSpaceDelete)
 
 	response.WriteEmpty(w)
 }
@@ -736,6 +738,7 @@ func (h *Handler) Invite(w http.ResponseWriter, r *http.Request) {
 
 	inviter, err := h.Store.User.Get(ctx, ctx.UserID)
 	if err != nil {
+		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
 		return
@@ -844,9 +847,9 @@ func (h *Handler) Invite(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	h.Store.Audit.Record(ctx, audit.EventTypeSpaceInvite)
-
 	ctx.Transaction.Commit()
+
+	h.Store.Audit.Record(ctx, audit.EventTypeSpaceInvite)
 
 	response.WriteEmpty(w)
 }

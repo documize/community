@@ -85,12 +85,13 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 		ActivityType: activity.TypeRead})
 
 	if err != nil {
+		ctx.Transaction.Rollback()
 		h.Runtime.Log.Error(method, err)
 	}
 
-	h.Store.Audit.Record(ctx, audit.EventTypeDocumentView)
-
 	ctx.Transaction.Commit()
+
+	h.Store.Audit.Record(ctx, audit.EventTypeDocumentView)
 
 	response.WriteJSON(w, document)
 }
@@ -225,6 +226,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	// if space changed for document, remove document categories
 	oldDoc, err := h.Store.Document.Get(ctx, documentID)
 	if err != nil {
+		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
 		return
@@ -242,9 +244,9 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.Store.Audit.Record(ctx, audit.EventTypeDocumentUpdate)
-
 	ctx.Transaction.Commit()
+
+	h.Store.Audit.Record(ctx, audit.EventTypeDocumentUpdate)
 
 	a, _ := h.Store.Attachment.GetAttachments(ctx, documentID)
 	go h.Indexer.IndexDocument(ctx, d, a)
@@ -331,9 +333,9 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		SourceType:   activity.SourceTypeDocument,
 		ActivityType: activity.TypeDeleted})
 
-	h.Store.Audit.Record(ctx, audit.EventTypeDocumentDelete)
-
 	ctx.Transaction.Commit()
+
+	h.Store.Audit.Record(ctx, audit.EventTypeDocumentDelete)
 
 	go h.Indexer.DeleteDocument(ctx, documentID)
 
@@ -474,12 +476,13 @@ func (h *Handler) FetchDocumentData(w http.ResponseWriter, r *http.Request) {
 		ActivityType: activity.TypeRead})
 
 	if err != nil {
+		ctx.Transaction.Rollback()
 		h.Runtime.Log.Error(method, err)
 	}
 
-	h.Store.Audit.Record(ctx, audit.EventTypeDocumentView)
-
 	ctx.Transaction.Commit()
+
+	h.Store.Audit.Record(ctx, audit.EventTypeDocumentView)
 
 	response.WriteJSON(w, data)
 }

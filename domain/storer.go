@@ -156,6 +156,7 @@ type PinStorer interface {
 
 // AuditStorer defines required methods for audit trails
 type AuditStorer interface {
+	// Record logs audit entry using own DB Transaction
 	Record(ctx RequestContext, t audit.EventType)
 }
 

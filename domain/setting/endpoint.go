@@ -87,6 +87,8 @@ func (h *Handler) SetSMTP(w http.ResponseWriter, r *http.Request) {
 
 	h.Store.Setting.Set("SMTP", config)
 
+	ctx.Transaction.Commit()
+
 	h.Store.Audit.Record(ctx, audit.EventTypeSystemSMTP)
 
 	response.WriteEmpty(w)
@@ -253,9 +255,9 @@ func (h *Handler) SetAuthConfig(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.Store.Audit.Record(ctx, audit.EventTypeSystemAuth)
-
 	ctx.Transaction.Commit()
+
+	h.Store.Audit.Record(ctx, audit.EventTypeSystemAuth)
 
 	response.WriteEmpty(w)
 }

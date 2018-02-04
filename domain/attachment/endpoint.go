@@ -155,9 +155,9 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.Store.Audit.Record(ctx, audit.EventTypeAttachmentDelete)
-
 	ctx.Transaction.Commit()
+
+	h.Store.Audit.Record(ctx, audit.EventTypeAttachmentDelete)
 
 	a, _ := h.Store.Attachment.GetAttachments(ctx, documentID)
 	d, _ := h.Store.Document.Get(ctx, documentID)
@@ -230,9 +230,9 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.Store.Audit.Record(ctx, audit.EventTypeAttachmentAdd)
-
 	ctx.Transaction.Commit()
+
+	h.Store.Audit.Record(ctx, audit.EventTypeAttachmentAdd)
 
 	all, _ := h.Store.Attachment.GetAttachments(ctx, documentID)
 	d, _ := h.Store.Document.Get(ctx, documentID)

@@ -143,6 +143,7 @@ func (h *Handler) convert(w http.ResponseWriter, r *http.Request, job, folderID 
 
 	nd, err := processDocument(ctx, h.Runtime, h.Store, filename, job, folderID, fileResult)
 	if err != nil {
+		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
 		return
@@ -227,6 +228,7 @@ func processDocument(ctx domain.RequestContext, r *env.Runtime, store *domain.St
 		ActivityType: activity.TypeCreated})
 
 	err = ctx.Transaction.Commit()
+
 	if err != nil {
 		err = errors.Wrap(err, "cannot commit new document import")
 		return

@@ -210,9 +210,9 @@ func (h *Handler) SetSpacePermissions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.Store.Audit.Record(ctx, audit.EventTypeSpacePermission)
-
 	ctx.Transaction.Commit()
+
+	h.Store.Audit.Record(ctx, audit.EventTypeSpacePermission)
 
 	response.WriteEmpty(w)
 }
@@ -392,9 +392,9 @@ func (h *Handler) SetCategoryPermissions(w http.ResponseWriter, r *http.Request)
 		}
 	}
 
-	h.Store.Audit.Record(ctx, audit.EventTypeCategoryPermission)
-
 	ctx.Transaction.Commit()
+
+	h.Store.Audit.Record(ctx, audit.EventTypeCategoryPermission)
 
 	response.WriteEmpty(w)
 }
@@ -581,9 +581,9 @@ func (h *Handler) SetDocumentPermissions(w http.ResponseWriter, r *http.Request)
 		}
 	}
 
-	h.Store.Audit.Record(ctx, audit.EventTypeDocumentPermission)
-
 	ctx.Transaction.Commit()
+
+	h.Store.Audit.Record(ctx, audit.EventTypeDocumentPermission)
 
 	response.WriteEmpty(w)
 }

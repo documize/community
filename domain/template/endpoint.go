@@ -147,6 +147,7 @@ func (h *Handler) SaveAs(w http.ResponseWriter, r *http.Request) {
 	var pageModel []page.NewPage
 
 	if err != nil {
+		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
 		return
@@ -158,6 +159,7 @@ func (h *Handler) SaveAs(w http.ResponseWriter, r *http.Request) {
 
 		meta, err2 := h.Store.Page.GetPageMeta(ctx, p.RefID)
 		if err2 != nil {
+			ctx.Transaction.Rollback()
 			response.WriteServerError(w, method, err2)
 			h.Runtime.Log.Error(method, err)
 			return
@@ -215,10 +217,10 @@ func (h *Handler) SaveAs(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	h.Store.Audit.Record(ctx, audit.EventTypeTemplateAdd)
-
 	// Commit and return new document template
 	ctx.Transaction.Commit()
+
+	h.Store.Audit.Record(ctx, audit.EventTypeTemplateAdd)
 
 	doc, err = h.Store.Document.Get(ctx, docID)
 	if err != nil {
@@ -362,9 +364,9 @@ func (h *Handler) Use(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	h.Store.Audit.Record(ctx, audit.EventTypeTemplateUse)
-
 	ctx.Transaction.Commit()
+
+	h.Store.Audit.Record(ctx, audit.EventTypeTemplateUse)
 
 	nd, err := h.Store.Document.Get(ctx, documentID)
 	if err != nil {

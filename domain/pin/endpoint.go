@@ -93,9 +93,9 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.Store.Audit.Record(ctx, audit.EventTypePinAdd)
-
 	ctx.Transaction.Commit()
+
+	h.Store.Audit.Record(ctx, audit.EventTypePinAdd)
 
 	newPin, err := h.Store.Pin.GetPin(ctx, pin.RefID)
 	if err != nil {
@@ -179,9 +179,9 @@ func (h *Handler) DeleteUserPin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.Store.Audit.Record(ctx, audit.EventTypePinDelete)
-
 	ctx.Transaction.Commit()
+
+	h.Store.Audit.Record(ctx, audit.EventTypePinDelete)
 
 	response.WriteEmpty(w)
 }
@@ -241,9 +241,9 @@ func (h *Handler) UpdatePinSequence(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	h.Store.Audit.Record(ctx, audit.EventTypePinResequence)
-
 	ctx.Transaction.Commit()
+
+	h.Store.Audit.Record(ctx, audit.EventTypePinResequence)
 
 	newPins, err := h.Store.Pin.GetUserPins(ctx, userID)
 	if err != nil {

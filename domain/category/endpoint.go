@@ -80,8 +80,6 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.Store.Audit.Record(ctx, audit.EventTypeCategoryAdd)
-
 	perm := pm.Permission{}
 	perm.OrgID = ctx.OrgID
 	perm.Who = "user"
@@ -99,12 +97,16 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	ctx.Transaction.Commit()
+
 	cat, err = h.Store.Category.Get(ctx, cat.RefID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
 		return
 	}
+
+	h.Store.Audit.Record(ctx, audit.EventTypeCategoryAdd)
 
 	response.WriteJSON(w, cat)
 }
@@ -216,9 +218,9 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.Store.Audit.Record(ctx, audit.EventTypeCategoryUpdate)
-
 	ctx.Transaction.Commit()
+
+	h.Store.Audit.Record(ctx, audit.EventTypeCategoryUpdate)
 
 	cat, err = h.Store.Category.Get(ctx, cat.RefID)
 	if err != nil {
@@ -287,9 +289,9 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.Store.Audit.Record(ctx, audit.EventTypeCategoryDelete)
-
 	ctx.Transaction.Commit()
+
+	h.Store.Audit.Record(ctx, audit.EventTypeCategoryDelete)
 
 	response.WriteEmpty(w)
 }
@@ -387,9 +389,9 @@ func (h *Handler) SetDocumentCategoryMembership(w http.ResponseWriter, r *http.R
 		}
 	}
 
-	h.Store.Audit.Record(ctx, audit.EventTypeCategoryLink)
-
 	ctx.Transaction.Commit()
+
+	h.Store.Audit.Record(ctx, audit.EventTypeCategoryLink)
 
 	response.WriteEmpty(w)
 }

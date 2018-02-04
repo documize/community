@@ -171,9 +171,9 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		SourceType:   activity.SourceTypePage,
 		ActivityType: activity.TypeCreated})
 
-	h.Store.Audit.Record(ctx, audit.EventTypeSectionAdd)
-
 	ctx.Transaction.Commit()
+
+	h.Store.Audit.Record(ctx, audit.EventTypeSectionAdd)
 
 	np, _ := h.Store.Page.Get(ctx, pageID)
 	go h.Indexer.IndexContent(ctx, np)
@@ -385,6 +385,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 	oldPageMeta, err := h.Store.Page.GetPageMeta(ctx, pageID)
 	if err != nil {
+		ctx.Transaction.Rollback()
 		response.WriteBadRequestError(w, method, err.Error())
 		h.Runtime.Log.Error(method, err)
 		return
@@ -407,16 +408,16 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 	err = h.Store.Page.Update(ctx, model.Page, refID, ctx.UserID, skipRevision)
 	if err != nil {
-		response.WriteServerError(w, method, err)
 		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
 		return
 	}
 
 	err = h.Store.Page.UpdateMeta(ctx, model.Meta, true) // change the UserID to the current one
 	if err != nil {
-		response.WriteServerError(w, method, err)
 		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
 		return
 	}
@@ -744,9 +745,9 @@ func (h *Handler) ChangePageSequence(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	h.Store.Audit.Record(ctx, audit.EventTypeSectionResequence)
-
 	ctx.Transaction.Commit()
+
+	h.Store.Audit.Record(ctx, audit.EventTypeSectionResequence)
 
 	response.WriteEmpty(w)
 }
@@ -813,9 +814,9 @@ func (h *Handler) ChangePageLevel(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	h.Store.Audit.Record(ctx, audit.EventTypeSectionResequence)
-
 	ctx.Transaction.Commit()
+
+	h.Store.Audit.Record(ctx, audit.EventTypeSectionResequence)
 
 	response.WriteEmpty(w)
 }
@@ -932,9 +933,9 @@ func (h *Handler) Copy(w http.ResponseWriter, r *http.Request) {
 		SourceType:   activity.SourceTypePage,
 		ActivityType: activity.TypeCreated})
 
-	h.Store.Audit.Record(ctx, audit.EventTypeSectionCopy)
-
 	ctx.Transaction.Commit()
+
+	h.Store.Audit.Record(ctx, audit.EventTypeSectionCopy)
 
 	np, _ := h.Store.Page.Get(ctx, pageID)
 
@@ -1127,12 +1128,15 @@ func (h *Handler) Rollback(w http.ResponseWriter, r *http.Request) {
 
 	p, err := h.Store.Page.Get(ctx, pageID)
 	if err != nil {
+		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
 	meta, err := h.Store.Page.GetPageMeta(ctx, pageID)
 	if err != nil {
+		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
 		return
@@ -1140,6 +1144,7 @@ func (h *Handler) Rollback(w http.ResponseWriter, r *http.Request) {
 
 	revision, err := h.Store.Page.GetPageRevision(ctx, revisionID)
 	if err != nil {
+		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
 		return
@@ -1176,9 +1181,9 @@ func (h *Handler) Rollback(w http.ResponseWriter, r *http.Request) {
 		SourceType:   activity.SourceTypePage,
 		ActivityType: activity.TypeReverted})
 
-	h.Store.Audit.Record(ctx, audit.EventTypeSectionRollback)
-
 	ctx.Transaction.Commit()
+
+	h.Store.Audit.Record(ctx, audit.EventTypeSectionRollback)
 
 	response.WriteJSON(w, p)
 }

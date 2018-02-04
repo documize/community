@@ -25,7 +25,7 @@ type Scope struct {
 	Runtime *env.Runtime
 }
 
-// Record adds event entry for specified user.
+// Record adds event entry for specified user using own DB TX.
 func (s Scope) Record(ctx domain.RequestContext, t audit.EventType) {
 	e := audit.AppEvent{}
 	e.OrgID = ctx.OrgID

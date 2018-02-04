@@ -116,9 +116,9 @@ func (h *Handler) RefreshSections(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		if err2 != nil {
+			ctx.Transaction.Rollback()
 			h.Runtime.Log.Error(method, err)
 			response.WriteServerError(w, method, err)
-			ctx.Transaction.Rollback()
 			return
 		}
 
