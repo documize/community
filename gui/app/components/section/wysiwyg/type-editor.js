@@ -31,7 +31,7 @@ export default Component.extend({
 
 	didInsertElement() {
 		this._super(...arguments);
-		
+	
 		schedule('afterRender', () => {
 			let options = {
 				cache_suffix: "?v=454",
@@ -49,7 +49,7 @@ export default Component.extend({
 				theme: "modern",
 				skin: 'lightgray-gradient',
 				entity_encoding: "raw",
-				extended_valid_elements: "b,i,b/strong,i/em",			
+				extended_valid_elements: "b,i,b/strong,i/em",		
 				fontsize_formats: "8px 10px 12px 14px 17px 18px 24px 36px 40px 50px 60px",
 				formats: {
 					bold: {

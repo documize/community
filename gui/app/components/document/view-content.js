@@ -34,23 +34,33 @@ export default Component.extend(TooltipMixin, {
 	canEdit: computed('permissions', 'document.protection', function() {
 		let canEdit = this.get('document.protection') !== this.get('constants').ProtectionType.Lock && this.get('permissions.documentEdit');
 
-		if (canEdit) this.setupAddWizard();
+		// if (canEdit) this.setupAddWizard();
 		return canEdit;
 	}),
 	hasBlocks: computed('blocks', function() {
 		return this.get('blocks.length') > 0;
 	}),
+	mousetrap: null,
 
 	didRender() {
 		this._super(...arguments);
 		this.contentLinkHandler();
+
+		let mousetrap = this.get('mousetrap');
+		let msContainer = document.getElementById('new-section-wizard');
+		if (is.null(mousetrap)) mousetrap = new Mousetrap(msContainer);
+
+		mousetrap.bind('esc', () => {
+			this.send('onHideSectionWizard');
+			return false;
+		});
 	},
 
 	didInsertElement() {
 		this._super(...arguments);
 
 		if (this.get('session.authenticated')) {
-			this.setupAddWizard();
+			// this.setupAddWizard();
 			this.renderTooltips();
 		}
 
@@ -64,6 +74,11 @@ export default Component.extend(TooltipMixin, {
 			$('.start-section:not(.start-section-empty-state)').off('.hoverIntent');
 			this.removeTooltips();
 		}
+
+		let mousetrap = this.get('mousetrap');
+		if (is.not.null(mousetrap)) {
+			mousetrap.unbind('esc');
+		}		
 	},
 
 	contentLinkHandler() {
@@ -101,19 +116,19 @@ export default Component.extend(TooltipMixin, {
 		});
 	},
 
-	setupAddWizard() {
-		schedule('afterRender', () => {
-			$('.start-section:not(.start-section-empty-state)').off('.hoverIntent');
+	// setupAddWizard() {
+	// 	schedule('afterRender', () => {
+	// 		$('.start-section:not(.start-section-empty-state)').off('.hoverIntent');
 
-			$('.start-section:not(.start-section-empty-state)').hoverIntent({interval: 100, over: function() {
-				// in
-				$(this).find('.start-button').velocity("transition.slideDownIn", {duration: 300});
-			}, out: function() {
-				// out
-				$(this).find('.start-button').velocity("transition.slideUpOut", {duration: 300});
-			} });
-		});
-	},
+	// 		$('.start-section:not(.start-section-empty-state)').hoverIntent({interval: 100, over: function() {
+	// 			// in
+	// 			$(this).find('.start-button').velocity("transition.slideDownIn", {duration: 300});
+	// 		}, out: function() {
+	// 			// out
+	// 			$(this).find('.start-button').velocity("transition.slideUpOut", {duration: 300});
+	// 		} });
+	// 	});
+	// },
 
 	addSection(model) {
 		let sequence = 0;
@@ -280,7 +295,7 @@ export default Component.extend(TooltipMixin, {
 			const promise = this.addSection(model);
 			promise.then((id) => {
 				this.set('toEdit', model.page.pageType === 'section' ? id: '');
-				this.setupAddWizard();
+				// this.setupAddWizard();
 			});
 		},
 
@@ -313,7 +328,7 @@ export default Component.extend(TooltipMixin, {
 
 			const promise = this.addSection(model);
 			promise.then((id) => { // eslint-disable-line no-unused-vars
-				this.setupAddWizard();
+				// this.setupAddWizard();
 			});
 		},
 

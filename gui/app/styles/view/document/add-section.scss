@@ -1,29 +1,25 @@
 .start-section {
 	@extend .no-select;
-	height: 60px;
 	background-color: transparent;
 	position: relative;
 	cursor: pointer;
+	font-size: 1.3rem;
 
 	> .start-button {
-		display: none;
 		text-align: center;
-		padding-top: 10px;
+		margin: 60px 0;
 		position: relative;
-	}
+		color: $color-gray-light;
 
-	&:first-of-type {
-		height: 30px;
+		> .cta {
+			@include ease-in();
+			font-weight: bold;
+			letter-spacing: 0.22rem;
 
-		> .start-button {
-			padding: 0;
+			&:hover {
+				color: $color-green;
+			}
 		}
-	}
-}
-
-.start-section-empty-state {
-	> .start-button {
-		display: block;
 	}
 }
 

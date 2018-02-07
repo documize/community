@@ -1,7 +1,6 @@
-{{#section/base-editor-inline document=document folder=folder page=page 
+{{#section/base-editor-inline document=document folder=folder page=page
 	blockMode=blockMode contentLinkerButton=true onInsertLink=(action 'onInsertLink')
 	isDirty=(action 'isDirty') onCancel=(action 'onCancel') onAction=(action 'onAction')}}
-	<div id='#mytoolbar'></div>
 	<div id={{editorId}} class="mousetrap wysiwyg wysiwyg-editor">
 		{{{pageBody}}}
 	</div>

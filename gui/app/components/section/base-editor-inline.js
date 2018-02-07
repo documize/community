@@ -33,7 +33,6 @@ export default Component.extend(TooltipMixin, ModalMixin, {
 		
 		let msContainer = document.getElementById('section-editor-' + this.get('containerId'));
 		let mousetrap = this.get('mousetrap');
-
 		if (is.null(mousetrap)) {
 			mousetrap = new Mousetrap(msContainer);
 		}
