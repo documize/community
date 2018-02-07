@@ -21,8 +21,8 @@ import (
 	"github.com/documize/community/domain/section/gemini"
 	"github.com/documize/community/domain/section/github"
 	"github.com/documize/community/domain/section/markdown"
-	// "github.com/documize/community/domain/section/mermaid"
 	"github.com/documize/community/domain/section/papertrail"
+	"github.com/documize/community/domain/section/plantuml"
 	"github.com/documize/community/domain/section/provider"
 	"github.com/documize/community/domain/section/table"
 	"github.com/documize/community/domain/section/trello"
@@ -41,7 +41,7 @@ func Register(rt *env.Runtime, s *domain.Store) {
 	provider.Register("trello", &trello.Provider{Runtime: rt, Store: s})
 	provider.Register("wysiwyg", &wysiwyg.Provider{Runtime: rt, Store: s})
 	provider.Register("airtable", &airtable.Provider{Runtime: rt, Store: s})
-	// provider.Register("mermaid", &mermaid.Provider{Runtime: rt, Store: s})
+	provider.Register("plantuml", &plantuml.Provider{Runtime: rt, Store: s})
 
 	p := provider.List()
 	rt.Log.Info(fmt.Sprintf("Registered %d sections", len(p)))

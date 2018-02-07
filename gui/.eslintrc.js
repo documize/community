@@ -44,22 +44,23 @@ module.exports = {
     }
   ],
   globals: {
-    "is": true,
-    "mermaid": true,
-    "_": true,
-    "tinymce": true,
-    "CodeMirror": true,
-    "Mousetrap": true,
-    "Sortable": true,
-    "moment": true,
-    "Dropzone": true,
-    "server": true,
-    "authenticateUser": true,
-    "stubAudit": true,
-    "stubUserNotification": true,
-    "userLogin": true,
-    "Keycloak": true,
-    "slug": true,
-    "interact": true
-  } 
+	  "is": true,
+	  "mermaid": true,
+	  "_": true,
+	  "tinymce": true,
+	  "CodeMirror": true,
+	  "Mousetrap": true,
+	  "Sortable": true,
+	  "moment": true,
+	  "Dropzone": true,
+	  "server": true,
+	  "authenticateUser": true,
+	  "stubAudit": true,
+	  "stubUserNotification": true,
+	  "userLogin": true,
+	  "Keycloak": true,
+	  "slug": true,
+	  "interact": true,
+	  "velocity": true
+  }
 };

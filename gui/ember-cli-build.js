@@ -50,7 +50,6 @@ module.exports = function (defaults) {
 	app.import('vendor/keycloak.js');
 	app.import('vendor/markdown-it.min.js');
 	app.import('vendor/md5.js');
-	app.import('vendor/mermaid.min.js');
 	app.import('vendor/moment.js');
 	app.import('vendor/mousetrap.js');
 	app.import('vendor/prism.js');
