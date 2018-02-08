@@ -27,7 +27,7 @@ func GenerateJWT(rt *env.Runtime, user, org, domain string) string {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"iss":    "Documize",
 		"sub":    "webapp",
-		"exp":    time.Now().Add(time.Hour * 168).Unix(),
+		"exp":    time.Now().Add(time.Hour * 8760).Unix(),
 		"user":   user,
 		"org":    org,
 		"domain": domain,
