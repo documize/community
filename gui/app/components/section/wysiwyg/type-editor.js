@@ -23,6 +23,10 @@ export default Component.extend({
 		let page = this.get('page');
 		return `wysiwyg-editor-${page.id}`;
 	}),
+	toolbarId: computed('page', function () {
+		let page = this.get('page');
+		return `wysiwyg-editor-toolbar-${page.id}`;
+	}),
 
 	didReceiveAttrs() {
 		this._super(...arguments);
@@ -41,7 +45,7 @@ export default Component.extend({
 				gecko_spellcheck: false,
 				statusbar: false,
 				inline: true,
-				// fixed_toolbar_container: '#mytoolbar',
+				// fixed_toolbar_container: '#' + this.get('toolbarId'),
 				paste_data_images: true,
 				image_advtab: true,
 				image_caption: true,

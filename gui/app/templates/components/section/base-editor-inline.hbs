@@ -1,5 +1,4 @@
 <div id="section-editor-{{pageId}}">
-
     <div class="row">
 		<div class="col-8 section-editor">
             {{#if blockMode}}
@@ -15,7 +14,6 @@
                 </div>
             {{/if}}
         </div>
-
 		<div class="col-4">
 			<div class="float-right">
 				{{#if busy}}
@@ -35,15 +33,13 @@
 			</div>
         </div>
     </div>
-
 	<div class="row">
         <div class="col section-editor">
-            <div class="canvas rounded">
+            <div class="canvas rounded mt-5">
                 {{yield}}
             </div>
         </div>
 	</div>
-
 </div>
 
 <div id={{concat "discard-modal-" page.id}} class="modal" tabindex="-1" role="dialog">
