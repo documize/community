@@ -11,7 +11,6 @@
 
 import $ from 'jquery';
 import { notEmpty, empty } from '@ember/object/computed';
-import { schedule } from '@ember/runloop';
 import { inject as service } from '@ember/service';
 import { computed } from '@ember/object';
 import Component from '@ember/component';

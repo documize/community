@@ -11,7 +11,7 @@
 
 import { schedule } from '@ember/runloop';
 import { inject as service } from '@ember/service';
-import { computed, observer } from '@ember/object';
+import { computed } from '@ember/object';
 import Component from '@ember/component';
 
 export default Component.extend({
@@ -22,7 +22,6 @@ export default Component.extend({
     diagramText: '',
     diagramPreview: null,
     previewButtonCaption: 'Preview',
-
 	editorId: computed('page', function () {
 		let page = this.get('page');
 		return `plantuml-editor-${page.id}`;
