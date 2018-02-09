@@ -47,7 +47,7 @@ func (*Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http.R
 
 // Render converts markdown data into HTML suitable for browser rendering.
 func (*Provider) Render(ctx *provider.Context, config, data string) string {
-	result := blackfriday.MarkdownCommon([]byte(data))
+	result := blackfriday.Run([]byte(data))
 
 	return string(result)
 }

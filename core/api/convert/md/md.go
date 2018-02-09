@@ -24,5 +24,5 @@ import (
 // PagesHTML set to the given (*api.DocumentConversionRequest).Filedata converted by the blackfriday lib.
 func Convert(ctx context.Context, in interface{}) (interface{}, error) {
 	return &api.DocumentConversionResponse{
-		PagesHTML: blackfriday.MarkdownCommon(in.(*api.DocumentConversionRequest).Filedata)}, nil
+		PagesHTML: blackfriday.Run(in.(*api.DocumentConversionRequest).Filedata)}, nil
 }
