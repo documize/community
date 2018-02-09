@@ -67,7 +67,7 @@ Documize runs on the following:
 Documize is built with the following technologies:
 
 - EmberJS (v2.18.0)
-- Go (v1.9.3)
+- Go (v1.9.4)
 
 ...and supports the following databases:
 
