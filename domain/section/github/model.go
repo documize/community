@@ -12,6 +12,7 @@
 package github
 
 import (
+	"context"
 	"sort"
 	"strings"
 	"time"
@@ -181,7 +182,7 @@ func getUserName(client *gogithub.Client, config *githubConfig, login string) (f
 			an = content
 		}
 	} else {
-		usr, _, err := client.Users.Get(login)
+		usr, _, err := client.Users.Get(context.Background(), login)
 		if err == nil {
 			if usr.Name != nil {
 				if len(*usr.Name) > 0 {

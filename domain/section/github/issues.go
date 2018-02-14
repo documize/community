@@ -12,6 +12,7 @@
 package github
 
 import (
+	"context"
 	"html/template"
 	"sort"
 	"time"
@@ -128,7 +129,7 @@ func getIssues(client *gogithub.Client, config *githubConfig) ([]githubIssue, er
 						opts.Since = *config.SincePtr
 					}
 
-					guff, _, err := client.Issues.ListByRepo(orb.Owner, orb.Repo, opts)
+					guff, _, err := client.Issues.ListByRepo(context.Background(), orb.Owner, orb.Repo, opts)
 
 					if err != nil {
 						return ret, err

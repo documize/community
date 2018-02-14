@@ -12,6 +12,7 @@
 package github
 
 import (
+	"context"
 	"fmt"
 	"html/template"
 	"sort"
@@ -96,7 +97,7 @@ func getCommits(client *gogithub.Client, config *githubConfig) ([]githubCommit, 
 	for _, orb := range config.Lists {
 		if orb.Included {
 
-			branches, _, err := client.Repositories.ListBranches(orb.Owner, orb.Repo,
+			branches, _, err := client.Repositories.ListBranches(context.Background(), orb.Owner, orb.Repo,
 				&gogithub.ListOptions{PerPage: 100})
 			if err == nil {
 				render := make([]githubBranch, len(branches))
@@ -141,7 +142,7 @@ func getCommits(client *gogithub.Client, config *githubConfig) ([]githubCommit, 
 				opts.Since = *config.SincePtr
 			}
 
-			guff, _, err := client.Repositories.ListCommits(orb.Owner, orb.Repo, opts)
+			guff, _, err := client.Repositories.ListCommits(context.Background(), orb.Owner, orb.Repo, opts)
 
 			if err != nil {
 				return nil, nil, err

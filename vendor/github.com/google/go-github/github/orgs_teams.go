@@ -5,22 +5,23 @@
 
 package github
 
-import "fmt"
+import (
+	"context"
+	"fmt"
+	"strings"
+	"time"
+)
 
-// Team represents a team within a GitHub organization.  Teams are used to
+// Team represents a team within a GitHub organization. Teams are used to
 // manage access to an organization's repositories.
 type Team struct {
-	ID          *int    `json:"id,omitempty"`
+	ID          *int64  `json:"id,omitempty"`
 	Name        *string `json:"name,omitempty"`
 	Description *string `json:"description,omitempty"`
 	URL         *string `json:"url,omitempty"`
 	Slug        *string `json:"slug,omitempty"`
 
-	// Permission is deprecated when creating or editing a team in an org
-	// using the new GitHub permission model.  It no longer identifies the
-	// permission a team has on its repos, but only specifies the default
-	// permission a repo is initially added with.  Avoid confusion by
-	// specifying a permission value when calling AddTeamRepo.
+	// Permission specifies the default permission for repositories owned by the team.
 	Permission *string `json:"permission,omitempty"`
 
 	// Privacy identifies the level of privacy this team should have.
@@ -35,16 +36,36 @@ type Team struct {
 	Organization    *Organization `json:"organization,omitempty"`
 	MembersURL      *string       `json:"members_url,omitempty"`
 	RepositoriesURL *string       `json:"repositories_url,omitempty"`
+	Parent          *Team         `json:"parent,omitempty"`
+
+	// LDAPDN is only available in GitHub Enterprise and when the team
+	// membership is synchronized with LDAP.
+	LDAPDN *string `json:"ldap_dn,omitempty"`
 }
 
 func (t Team) String() string {
 	return Stringify(t)
 }
 
+// Invitation represents a team member's invitation status.
+type Invitation struct {
+	ID    *int64  `json:"id,omitempty"`
+	Login *string `json:"login,omitempty"`
+	Email *string `json:"email,omitempty"`
+	// Role can be one of the values - 'direct_member', 'admin', 'billing_manager', 'hiring_manager', or 'reinstate'.
+	Role      *string    `json:"role,omitempty"`
+	CreatedAt *time.Time `json:"created_at,omitempty"`
+	Inviter   *User      `json:"inviter,omitempty"`
+}
+
+func (i Invitation) String() string {
+	return Stringify(i)
+}
+
 // ListTeams lists all of the teams for an organization.
 //
-// GitHub API docs: http://developer.github.com/v3/orgs/teams/#list-teams
-func (s *OrganizationsService) ListTeams(org string, opt *ListOptions) ([]*Team, *Response, error) {
+// GitHub API docs: https://developer.github.com/v3/orgs/teams/#list-teams
+func (s *OrganizationsService) ListTeams(ctx context.Context, org string, opt *ListOptions) ([]*Team, *Response, error) {
 	u := fmt.Sprintf("orgs/%v/teams", org)
 	u, err := addOptions(u, opt)
 	if err != nil {
@@ -56,100 +77,171 @@ func (s *OrganizationsService) ListTeams(org string, opt *ListOptions) ([]*Team,
 		return nil, nil, err
 	}
 
-	teams := new([]*Team)
-	resp, err := s.client.Do(req, teams)
+	// TODO: remove custom Accept header when this API fully launches.
+	req.Header.Set("Accept", mediaTypeNestedTeamsPreview)
+
+	var teams []*Team
+	resp, err := s.client.Do(ctx, req, &teams)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return *teams, resp, err
+	return teams, resp, nil
 }
 
 // GetTeam fetches a team by ID.
 //
-// GitHub API docs: http://developer.github.com/v3/orgs/teams/#get-team
-func (s *OrganizationsService) GetTeam(team int) (*Team, *Response, error) {
+// GitHub API docs: https://developer.github.com/v3/orgs/teams/#get-team
+func (s *OrganizationsService) GetTeam(ctx context.Context, team int64) (*Team, *Response, error) {
 	u := fmt.Sprintf("teams/%v", team)
 	req, err := s.client.NewRequest("GET", u, nil)
 	if err != nil {
 		return nil, nil, err
 	}
 
+	// TODO: remove custom Accept header when this API fully launches.
+	req.Header.Set("Accept", mediaTypeNestedTeamsPreview)
+
 	t := new(Team)
-	resp, err := s.client.Do(req, t)
+	resp, err := s.client.Do(ctx, req, t)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return t, resp, err
+	return t, resp, nil
+}
+
+// NewTeam represents a team to be created or modified.
+type NewTeam struct {
+	Name         string   `json:"name"` // Name of the team. (Required.)
+	Description  *string  `json:"description,omitempty"`
+	Maintainers  []string `json:"maintainers,omitempty"`
+	RepoNames    []string `json:"repo_names,omitempty"`
+	ParentTeamID *int64   `json:"parent_team_id,omitempty"`
+
+	// Deprecated: Permission is deprecated when creating or editing a team in an org
+	// using the new GitHub permission model. It no longer identifies the
+	// permission a team has on its repos, but only specifies the default
+	// permission a repo is initially added with. Avoid confusion by
+	// specifying a permission value when calling AddTeamRepo.
+	Permission *string `json:"permission,omitempty"`
+
+	// Privacy identifies the level of privacy this team should have.
+	// Possible values are:
+	//     secret - only visible to organization owners and members of this team
+	//     closed - visible to all members of this organization
+	// Default is "secret".
+	Privacy *string `json:"privacy,omitempty"`
+
+	// LDAPDN may be used in GitHub Enterprise when the team membership
+	// is synchronized with LDAP.
+	LDAPDN *string `json:"ldap_dn,omitempty"`
+}
+
+func (s NewTeam) String() string {
+	return Stringify(s)
 }
 
 // CreateTeam creates a new team within an organization.
 //
-// GitHub API docs: http://developer.github.com/v3/orgs/teams/#create-team
-func (s *OrganizationsService) CreateTeam(org string, team *Team) (*Team, *Response, error) {
+// GitHub API docs: https://developer.github.com/v3/orgs/teams/#create-team
+func (s *OrganizationsService) CreateTeam(ctx context.Context, org string, team *NewTeam) (*Team, *Response, error) {
 	u := fmt.Sprintf("orgs/%v/teams", org)
 	req, err := s.client.NewRequest("POST", u, team)
 	if err != nil {
 		return nil, nil, err
 	}
 
+	// TODO: remove custom Accept header when this API fully launches.
+	req.Header.Set("Accept", mediaTypeNestedTeamsPreview)
+
 	t := new(Team)
-	resp, err := s.client.Do(req, t)
+	resp, err := s.client.Do(ctx, req, t)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return t, resp, err
+	return t, resp, nil
 }
 
 // EditTeam edits a team.
 //
-// GitHub API docs: http://developer.github.com/v3/orgs/teams/#edit-team
-func (s *OrganizationsService) EditTeam(id int, team *Team) (*Team, *Response, error) {
+// GitHub API docs: https://developer.github.com/v3/orgs/teams/#edit-team
+func (s *OrganizationsService) EditTeam(ctx context.Context, id int64, team *NewTeam) (*Team, *Response, error) {
 	u := fmt.Sprintf("teams/%v", id)
 	req, err := s.client.NewRequest("PATCH", u, team)
 	if err != nil {
 		return nil, nil, err
 	}
 
+	// TODO: remove custom Accept header when this API fully launches.
+	req.Header.Set("Accept", mediaTypeNestedTeamsPreview)
+
 	t := new(Team)
-	resp, err := s.client.Do(req, t)
+	resp, err := s.client.Do(ctx, req, t)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return t, resp, err
+	return t, resp, nil
 }
 
 // DeleteTeam deletes a team.
 //
-// GitHub API docs: http://developer.github.com/v3/orgs/teams/#delete-team
-func (s *OrganizationsService) DeleteTeam(team int) (*Response, error) {
+// GitHub API docs: https://developer.github.com/v3/orgs/teams/#delete-team
+func (s *OrganizationsService) DeleteTeam(ctx context.Context, team int64) (*Response, error) {
 	u := fmt.Sprintf("teams/%v", team)
 	req, err := s.client.NewRequest("DELETE", u, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	return s.client.Do(req, nil)
+	req.Header.Set("Accept", mediaTypeNestedTeamsPreview)
+
+	return s.client.Do(ctx, req, nil)
 }
 
 // OrganizationListTeamMembersOptions specifies the optional parameters to the
 // OrganizationsService.ListTeamMembers method.
 type OrganizationListTeamMembersOptions struct {
-	// Role filters members returned by their role in the team.  Possible
-	// values are "all", "member", "maintainer".  Default is "all".
+	// Role filters members returned by their role in the team. Possible
+	// values are "all", "member", "maintainer". Default is "all".
 	Role string `url:"role,omitempty"`
 
 	ListOptions
 }
 
+// ListChildTeams lists child teams for a team.
+//
+// GitHub API docs: https://developer.github.com/v3/orgs/teams/#list-child-teams
+func (s *OrganizationsService) ListChildTeams(ctx context.Context, teamID int64, opt *ListOptions) ([]*Team, *Response, error) {
+	u := fmt.Sprintf("teams/%v/teams", teamID)
+	u, err := addOptions(u, opt)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req, err := s.client.NewRequest("GET", u, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req.Header.Set("Accept", mediaTypeNestedTeamsPreview)
+
+	var teams []*Team
+	resp, err := s.client.Do(ctx, req, &teams)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return teams, resp, nil
+}
+
 // ListTeamMembers lists all of the users who are members of the specified
 // team.
 //
-// GitHub API docs: http://developer.github.com/v3/orgs/teams/#list-team-members
-func (s *OrganizationsService) ListTeamMembers(team int, opt *OrganizationListTeamMembersOptions) ([]*User, *Response, error) {
+// GitHub API docs: https://developer.github.com/v3/orgs/teams/#list-team-members
+func (s *OrganizationsService) ListTeamMembers(ctx context.Context, team int64, opt *OrganizationListTeamMembersOptions) ([]*User, *Response, error) {
 	u := fmt.Sprintf("teams/%v/members", team)
 	u, err := addOptions(u, opt)
 	if err != nil {
@@ -161,34 +253,39 @@ func (s *OrganizationsService) ListTeamMembers(team int, opt *OrganizationListTe
 		return nil, nil, err
 	}
 
-	members := new([]*User)
-	resp, err := s.client.Do(req, members)
+	req.Header.Set("Accept", mediaTypeNestedTeamsPreview)
+
+	var members []*User
+	resp, err := s.client.Do(ctx, req, &members)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return *members, resp, err
+	return members, resp, nil
 }
 
 // IsTeamMember checks if a user is a member of the specified team.
 //
-// GitHub API docs: http://developer.github.com/v3/orgs/teams/#get-team-member
-func (s *OrganizationsService) IsTeamMember(team int, user string) (bool, *Response, error) {
+// GitHub API docs: https://developer.github.com/v3/orgs/teams/#get-team-member
+//
+// Deprecated: This API has been marked as deprecated in the Github API docs,
+// OrganizationsService.GetTeamMembership method should be used instead.
+func (s *OrganizationsService) IsTeamMember(ctx context.Context, team int64, user string) (bool, *Response, error) {
 	u := fmt.Sprintf("teams/%v/members/%v", team, user)
 	req, err := s.client.NewRequest("GET", u, nil)
 	if err != nil {
 		return false, nil, err
 	}
 
-	resp, err := s.client.Do(req, nil)
+	resp, err := s.client.Do(ctx, req, nil)
 	member, err := parseBoolResponse(err)
 	return member, resp, err
 }
 
 // ListTeamRepos lists the repositories that the specified team has access to.
 //
-// GitHub API docs: http://developer.github.com/v3/orgs/teams/#list-team-repos
-func (s *OrganizationsService) ListTeamRepos(team int, opt *ListOptions) ([]*Repository, *Response, error) {
+// GitHub API docs: https://developer.github.com/v3/orgs/teams/#list-team-repos
+func (s *OrganizationsService) ListTeamRepos(ctx context.Context, team int64, opt *ListOptions) ([]*Repository, *Response, error) {
 	u := fmt.Sprintf("teams/%v/repos", team)
 	u, err := addOptions(u, opt)
 	if err != nil {
@@ -200,36 +297,41 @@ func (s *OrganizationsService) ListTeamRepos(team int, opt *ListOptions) ([]*Rep
 		return nil, nil, err
 	}
 
-	repos := new([]*Repository)
-	resp, err := s.client.Do(req, repos)
+	// TODO: remove custom Accept header when topics API fully launches.
+	headers := []string{mediaTypeTopicsPreview, mediaTypeNestedTeamsPreview}
+	req.Header.Set("Accept", strings.Join(headers, ", "))
+
+	var repos []*Repository
+	resp, err := s.client.Do(ctx, req, &repos)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return *repos, resp, err
+	return repos, resp, nil
 }
 
-// IsTeamRepo checks if a team manages the specified repository.  If the
+// IsTeamRepo checks if a team manages the specified repository. If the
 // repository is managed by team, a Repository is returned which includes the
 // permissions team has for that repo.
 //
 // GitHub API docs: https://developer.github.com/v3/orgs/teams/#check-if-a-team-manages-a-repository
-func (s *OrganizationsService) IsTeamRepo(team int, owner string, repo string) (*Repository, *Response, error) {
+func (s *OrganizationsService) IsTeamRepo(ctx context.Context, team int64, owner string, repo string) (*Repository, *Response, error) {
 	u := fmt.Sprintf("teams/%v/repos/%v/%v", team, owner, repo)
 	req, err := s.client.NewRequest("GET", u, nil)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	req.Header.Set("Accept", mediaTypeOrgPermissionRepo)
+	headers := []string{mediaTypeOrgPermissionRepo, mediaTypeNestedTeamsPreview}
+	req.Header.Set("Accept", strings.Join(headers, ", "))
 
 	repository := new(Repository)
-	resp, err := s.client.Do(req, repository)
+	resp, err := s.client.Do(ctx, req, repository)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return repository, resp, err
+	return repository, resp, nil
 }
 
 // OrganizationAddTeamRepoOptions specifies the optional parameters to the
@@ -245,39 +347,39 @@ type OrganizationAddTeamRepoOptions struct {
 	Permission string `json:"permission,omitempty"`
 }
 
-// AddTeamRepo adds a repository to be managed by the specified team.  The
+// AddTeamRepo adds a repository to be managed by the specified team. The
 // specified repository must be owned by the organization to which the team
 // belongs, or a direct fork of a repository owned by the organization.
 //
-// GitHub API docs: http://developer.github.com/v3/orgs/teams/#add-team-repo
-func (s *OrganizationsService) AddTeamRepo(team int, owner string, repo string, opt *OrganizationAddTeamRepoOptions) (*Response, error) {
+// GitHub API docs: https://developer.github.com/v3/orgs/teams/#add-team-repo
+func (s *OrganizationsService) AddTeamRepo(ctx context.Context, team int64, owner string, repo string, opt *OrganizationAddTeamRepoOptions) (*Response, error) {
 	u := fmt.Sprintf("teams/%v/repos/%v/%v", team, owner, repo)
 	req, err := s.client.NewRequest("PUT", u, opt)
 	if err != nil {
 		return nil, err
 	}
 
-	return s.client.Do(req, nil)
+	return s.client.Do(ctx, req, nil)
 }
 
 // RemoveTeamRepo removes a repository from being managed by the specified
-// team.  Note that this does not delete the repository, it just removes it
+// team. Note that this does not delete the repository, it just removes it
 // from the team.
 //
-// GitHub API docs: http://developer.github.com/v3/orgs/teams/#remove-team-repo
-func (s *OrganizationsService) RemoveTeamRepo(team int, owner string, repo string) (*Response, error) {
+// GitHub API docs: https://developer.github.com/v3/orgs/teams/#remove-team-repo
+func (s *OrganizationsService) RemoveTeamRepo(ctx context.Context, team int64, owner string, repo string) (*Response, error) {
 	u := fmt.Sprintf("teams/%v/repos/%v/%v", team, owner, repo)
 	req, err := s.client.NewRequest("DELETE", u, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	return s.client.Do(req, nil)
+	return s.client.Do(ctx, req, nil)
 }
 
 // ListUserTeams lists a user's teams
 // GitHub API docs: https://developer.github.com/v3/orgs/teams/#list-user-teams
-func (s *OrganizationsService) ListUserTeams(opt *ListOptions) ([]*Team, *Response, error) {
+func (s *OrganizationsService) ListUserTeams(ctx context.Context, opt *ListOptions) ([]*Team, *Response, error) {
 	u := "user/teams"
 	u, err := addOptions(u, opt)
 	if err != nil {
@@ -289,38 +391,43 @@ func (s *OrganizationsService) ListUserTeams(opt *ListOptions) ([]*Team, *Respon
 		return nil, nil, err
 	}
 
-	teams := new([]*Team)
-	resp, err := s.client.Do(req, teams)
+	// TODO: remove custom Accept header when this API fully launches.
+	req.Header.Set("Accept", mediaTypeNestedTeamsPreview)
+
+	var teams []*Team
+	resp, err := s.client.Do(ctx, req, &teams)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return *teams, resp, err
+	return teams, resp, nil
 }
 
 // GetTeamMembership returns the membership status for a user in a team.
 //
 // GitHub API docs: https://developer.github.com/v3/orgs/teams/#get-team-membership
-func (s *OrganizationsService) GetTeamMembership(team int, user string) (*Membership, *Response, error) {
+func (s *OrganizationsService) GetTeamMembership(ctx context.Context, team int64, user string) (*Membership, *Response, error) {
 	u := fmt.Sprintf("teams/%v/memberships/%v", team, user)
 	req, err := s.client.NewRequest("GET", u, nil)
 	if err != nil {
 		return nil, nil, err
 	}
 
+	req.Header.Set("Accept", mediaTypeNestedTeamsPreview)
+
 	t := new(Membership)
-	resp, err := s.client.Do(req, t)
+	resp, err := s.client.Do(ctx, req, t)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return t, resp, err
+	return t, resp, nil
 }
 
 // OrganizationAddTeamMembershipOptions does stuff specifies the optional
 // parameters to the OrganizationsService.AddTeamMembership method.
 type OrganizationAddTeamMembershipOptions struct {
-	// Role specifies the role the user should have in the team.  Possible
+	// Role specifies the role the user should have in the team. Possible
 	// values are:
 	//     member - a normal member of the team
 	//     maintainer - a team maintainer. Able to add/remove other team
@@ -349,7 +456,7 @@ type OrganizationAddTeamMembershipOptions struct {
 // added as a member of the team.
 //
 // GitHub API docs: https://developer.github.com/v3/orgs/teams/#add-team-membership
-func (s *OrganizationsService) AddTeamMembership(team int, user string, opt *OrganizationAddTeamMembershipOptions) (*Membership, *Response, error) {
+func (s *OrganizationsService) AddTeamMembership(ctx context.Context, team int64, user string, opt *OrganizationAddTeamMembershipOptions) (*Membership, *Response, error) {
 	u := fmt.Sprintf("teams/%v/memberships/%v", team, user)
 	req, err := s.client.NewRequest("PUT", u, opt)
 	if err != nil {
@@ -357,23 +464,49 @@ func (s *OrganizationsService) AddTeamMembership(team int, user string, opt *Org
 	}
 
 	t := new(Membership)
-	resp, err := s.client.Do(req, t)
+	resp, err := s.client.Do(ctx, req, t)
 	if err != nil {
 		return nil, resp, err
 	}
 
-	return t, resp, err
+	return t, resp, nil
 }
 
 // RemoveTeamMembership removes a user from a team.
 //
 // GitHub API docs: https://developer.github.com/v3/orgs/teams/#remove-team-membership
-func (s *OrganizationsService) RemoveTeamMembership(team int, user string) (*Response, error) {
+func (s *OrganizationsService) RemoveTeamMembership(ctx context.Context, team int64, user string) (*Response, error) {
 	u := fmt.Sprintf("teams/%v/memberships/%v", team, user)
 	req, err := s.client.NewRequest("DELETE", u, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	return s.client.Do(req, nil)
+	return s.client.Do(ctx, req, nil)
+}
+
+// ListPendingTeamInvitations get pending invitaion list in team.
+// Warning: The API may change without advance notice during the preview period.
+// Preview features are not supported for production use.
+//
+// GitHub API docs: https://developer.github.com/v3/orgs/teams/#list-pending-team-invitations
+func (s *OrganizationsService) ListPendingTeamInvitations(ctx context.Context, team int64, opt *ListOptions) ([]*Invitation, *Response, error) {
+	u := fmt.Sprintf("teams/%v/invitations", team)
+	u, err := addOptions(u, opt)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req, err := s.client.NewRequest("GET", u, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var pendingInvitations []*Invitation
+	resp, err := s.client.Do(ctx, req, &pendingInvitations)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return pendingInvitations, resp, nil
 }
