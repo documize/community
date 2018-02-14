@@ -49,18 +49,18 @@ call to Next. For example, to extract an HTML page's anchor text:
 	for {
 		tt := z.Next()
 		switch tt {
-		case ErrorToken:
+		case html.ErrorToken:
 			return z.Err()
-		case TextToken:
+		case html.TextToken:
 			if depth > 0 {
 				// emitBytes should copy the []byte it receives,
 				// if it doesn't process it immediately.
 				emitBytes(z.Text())
 			}
-		case StartTagToken, EndTagToken:
+		case html.StartTagToken, html.EndTagToken:
 			tn, _ := z.TagName()
 			if len(tn) == 1 && tn[0] == 'a' {
-				if tt == StartTagToken {
+				if tt == html.StartTagToken {
 					depth++
 				} else {
 					depth--
@@ -90,10 +90,10 @@ example, to process each anchor node in depth-first order:
 	f(doc)
 
 The relevant specifications include:
-http://www.whatwg.org/specs/web-apps/current-work/multipage/syntax.html and
-http://www.whatwg.org/specs/web-apps/current-work/multipage/tokenization.html
+https://html.spec.whatwg.org/multipage/syntax.html and
+https://html.spec.whatwg.org/multipage/syntax.html#tokenization
 */
-package html
+package html // import "golang.org/x/net/html"
 
 // The tokenization algorithm implemented by this package is not a line-by-line
 // transliteration of the relatively verbose state-machine in the WHATWG

@@ -12,6 +12,7 @@
 package github
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"net/url"
@@ -46,7 +47,7 @@ func validateToken(ctx provider.Context, s *domain.Store, ptoken string) error {
 		Username: clientID(ctx.Request, s),
 		Password: clientSecret(ctx.Request, s),
 	}).Client())
-	_, _, err := authClient.Authorizations.Check(clientID(ctx.Request, s), ptoken)
+	_, _, err := authClient.Authorizations.Check(context.Background(), clientID(ctx.Request, s), ptoken)
 	return err
 }
 

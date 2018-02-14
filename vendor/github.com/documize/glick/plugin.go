@@ -130,7 +130,7 @@ func (l *Library) RegPlugin(api, action string, handler Plugin, cfg *Config) err
 		return errNoAPI(api)
 	}
 	if handler == nil {
-		return errNoPlug("nil handler for api "+api)
+		return errNoPlug("nil handler for api " + api)
 	}
 	l.pim[plugkey{api, action}] = plugval{handler, cfg}
 	return nil
@@ -196,7 +196,7 @@ func (l *Library) Run(ctx context.Context, api, action string, in interface{}) (
 
 func (l *Library) run(ctx context.Context, api string, found bool, handler Plugin, def apidef, in interface{}) (out interface{}, err error) {
 	if !found || handler == nil {
-		return nil, errNoPlug("api "+api)
+		return nil, errNoPlug("api " + api)
 	}
 	reply := make(chan plugOut)
 	ctxWT, cancel := context.WithTimeout(ctx, l.apim[api].timeout)

@@ -39,6 +39,11 @@ func PluginRPC(useJSON bool, serviceMethod, endPoint string, ppo ProtoPlugOut) P
 	return func(ctx context.Context, in interface{}) (out interface{}, err error) {
 		var client *rpc.Client
 		var conn *tls.Conn
+		var connClose = func() {
+			if e := conn.Close(); err == nil {
+				err = e
+			}
+		}
 		var errDial error
 		var cfg = &tls.Config{
 			InsecureSkipVerify: InsecureSkipVerifyTLS,
@@ -47,7 +52,7 @@ func PluginRPC(useJSON bool, serviceMethod, endPoint string, ppo ProtoPlugOut) P
 			if useTLS {
 				conn, errDial = tls.Dial("tcp", endPoint, cfg)
 				if errDial == nil {
-					defer conn.Close()
+					defer connClose()
 					client = jsonrpc.NewClient(conn)
 				}
 			} else {
@@ -57,7 +62,7 @@ func PluginRPC(useJSON bool, serviceMethod, endPoint string, ppo ProtoPlugOut) P
 			if useTLS {
 				conn, errDial = tls.Dial("tcp", endPoint, cfg)
 				if errDial == nil {
-					defer conn.Close()
+					defer connClose()
 					client = rpc.NewClient(conn)
 				}
 			} else {

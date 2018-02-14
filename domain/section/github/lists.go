@@ -12,6 +12,7 @@
 package github
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
@@ -25,14 +26,14 @@ func listFailed(rt *env.Runtime, method string, config githubConfig, client *gog
 
 	case "owners":
 
-		me, _, err := client.Users.Get("")
+		me, _, err := client.Users.Get(context.Background(), "")
 		if err != nil {
 			rt.Log.Error("github get user details:", err)
 			provider.WriteError(w, "github", err)
 			return
 		}
 
-		orgs, _, err := client.Organizations.List("", nil)
+		orgs, _, err := client.Organizations.List(context.Background(), "", nil)
 		if err != nil {
 			rt.Log.Error("github get user's organisations:", err)
 			provider.WriteError(w, "github", err)
@@ -56,7 +57,7 @@ func listFailed(rt *env.Runtime, method string, config githubConfig, client *gog
 		var render []githubBranch
 		if config.Owner != "" {
 
-			me, _, err := client.Users.Get("")
+			me, _, err := client.Users.Get(context.Background(), "")
 			if err != nil {
 				rt.Log.Error("github get user details:", err)
 				provider.WriteError(w, "github", err)
@@ -65,12 +66,12 @@ func listFailed(rt *env.Runtime, method string, config githubConfig, client *gog
 
 			var repos []*gogithub.Repository
 			if config.Owner == *me.Login {
-				repos, _, err = client.Repositories.List(config.Owner, nil)
+				repos, _, err = client.Repositories.List(context.Background(), config.Owner, nil)
 			} else {
 				opt := &gogithub.RepositoryListByOrgOptions{
 					ListOptions: gogithub.ListOptions{PerPage: 100},
 				}
-				repos, _, err = client.Repositories.ListByOrg(config.Owner, opt)
+				repos, _, err = client.Repositories.ListByOrg(context.Background(), config.Owner, opt)
 			}
 			if err != nil {
 				rt.Log.Error("github get user/org repositories:", err)

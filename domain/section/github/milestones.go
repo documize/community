@@ -12,6 +12,7 @@
 package github
 
 import (
+	"context"
 	"fmt"
 	"html/template"
 	"sort"
@@ -98,7 +99,7 @@ func getMilestones(client *gogithub.Client, config *githubConfig) ([]githubMiles
 						State:       state,
 						ListOptions: gogithub.ListOptions{PerPage: config.BranchLines}}
 
-					guff, _, err := client.Issues.ListMilestones(orb.Owner, orb.Repo, opts)
+					guff, _, err := client.Issues.ListMilestones(context.Background(), orb.Owner, orb.Repo, opts)
 
 					if err != nil {
 						return ret, err
