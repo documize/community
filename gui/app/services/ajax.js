@@ -16,6 +16,7 @@ import config from '../config/environment';
 
 export default AjaxService.extend({
 	session: service(),
+	localStorage: service(),
 	host: config.apiHost,
 	namespace: config.apiNamespace,
 
@@ -39,6 +40,7 @@ export default AjaxService.extend({
 
 			// when unauthorized on local API AJAX calls, redirect to app root
 			if (status === 401 && is.not.undefined(appVersion) && is.not.includes(window.location.href, '/auth')) {
+				this.get('localStorage').clearAll();	
 				window.location.href = 'auth/login';
 			}
 
@@ -46,6 +48,7 @@ export default AjaxService.extend({
 				let latest = JSON.parse(userUpdate);
 
 				if (!latest.active || user.editor !== latest.editor || user.admin !== latest.admin || user.viewUsers !== latest.viewUsers) {
+					this.get('localStorage').clearAll();	
 					window.location.href = 'auth/login';
 				}
 			}
