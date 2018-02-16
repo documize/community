@@ -222,7 +222,7 @@ func (s Scope) matchFullText(ctx domain.RequestContext, keywords, itemType strin
 		(
 			SELECT refid FROM label WHERE orgid=?
 			AND refid IN (SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid IN (
-				SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space'
+				SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space' AND action='view' 
 				UNION ALL
 				SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.location='space' AND p.action='view' AND r.userid=?
 			))
@@ -279,7 +279,7 @@ func (s Scope) matchLike(ctx domain.RequestContext, keywords, itemType string) (
 		(
 			SELECT refid FROM label WHERE orgid=?
 			AND refid IN (SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid IN (
-				SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space'
+				SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space' AND action='view' 
 				UNION ALL
 				SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role'
 				AND p.location='space' AND p.action='view' AND (r.userid=? OR r.userid='0')
