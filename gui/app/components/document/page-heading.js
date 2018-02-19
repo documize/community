@@ -33,7 +33,7 @@ export default Component.extend(ModalMixin, {
 	emptySearch: computed('docSearchResults', function() {
 		return this.get('docSearchResults.length') === 0;
 	}),
-	hasMenuPermissions: computed('permissions', 'userPendingItem', 'canEdit', 'canMove', 'canDelete', function() {
+	hasMenuPermissions: computed('permissions.{documentCopy,documentTemplate}', 'userPendingItem', 'canEdit', 'canMove', 'canDelete', function() {
 		let permissions = this.get('permissions');
 
 		return permissions.get('documentCopy') || permissions.get('documentTemplate') ||

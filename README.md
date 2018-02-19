@@ -52,7 +52,7 @@ Space view.
 
 ## Latest version
 
-v1.57.0
+Community edition: v1.57.1
 
 ## OS support
 
@@ -67,7 +67,7 @@ Documize runs on the following:
 Documize is built with the following technologies:
 
 - EmberJS (v2.18.0)
-- Go (v1.9.4)
+- Go (v1.10)
 
 ...and supports the following databases:
 
