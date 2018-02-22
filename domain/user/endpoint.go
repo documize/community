@@ -18,9 +18,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"strings"
-
 	"strconv"
+	"strings"
 
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/event"
