@@ -22,6 +22,7 @@ import (
 	"strings"
 
 	"github.com/documize/community/core/env"
+	"github.com/documize/community/core/event"
 	"github.com/documize/community/core/request"
 	"github.com/documize/community/core/response"
 	"github.com/documize/community/core/secrets"
@@ -295,6 +296,8 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		ctx.Transaction.Commit()
 	}
 
+	event.Handler().Publish(string(event.TypeAddSpace))
+
 	response.WriteJSON(w, sp)
 }
 
@@ -510,6 +513,8 @@ func (h *Handler) Remove(w http.ResponseWriter, r *http.Request) {
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSpaceDelete)
 
+	event.Handler().Publish(string(event.TypeRemoveSpace))
+
 	response.WriteEmpty(w)
 }
 
@@ -595,6 +600,8 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	ctx.Transaction.Commit()
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSpaceDelete)
+
+	event.Handler().Publish(string(event.TypeRemoveSpace))
 
 	response.WriteEmpty(w)
 }

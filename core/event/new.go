@@ -25,6 +25,10 @@ const (
 	TypeRemoveUser Type = "USER_DELETE"
 	// TypeAddDocument for when document created
 	TypeAddDocument Type = "DOCUMENT_ADD"
-	// TypeSystemLicenseChange for when adin updates license
+	// TypeSystemLicenseChange for when global admin user updates license
 	TypeSystemLicenseChange Type = "LICENSE_CHANGE"
+	// TypeAddSpace for when space created
+	TypeAddSpace Type = "SPACE_ADD"
+	// TypeRemoveSpace for when space removed
+	TypeRemoveSpace Type = "SPACE_REMOVE"
 )
