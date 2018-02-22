@@ -42,7 +42,7 @@
 			</div>
 		</div>
 
-		<div class="row">
+		<div class="row d-print-none">
 			<div class="col-12 col-sm-3 heading">Change Control</div>
 			<div class="col-12 col-sm-9 value-static">
 				<span>{{changeControlMsg}}</span>
@@ -50,7 +50,7 @@
 		</div>
 
 		{{#if (eq document.protection constants.ProtectionType.Review)}}
-			<div class="row">
+			<div class="row d-print-none">
 				<div class="col-12 col-sm-3 heading">Approval Process</div>
 				<div class="col-12 col-sm-9 value-static">
 					<span>{{approvalMsg}}</span>
@@ -58,7 +58,7 @@
 			</div>
 
 			{{#if userChanges}}
-				<div class="row">
+				<div class="row d-print-none">
 					<div class="col-12 col-sm-3 heading">Your Contributions</div>
 					<div class="col-12 col-sm-9 value-static">
 						<span>{{contributorMsg}}</span>
@@ -67,7 +67,7 @@
 			{{/if}}
 
 			{{#if isApprover}}
-				<div class="row">
+				<div class="row d-print-none">
 					<div class="col-12 col-sm-3 heading">Approver Status</div>
 					<div class="col-12 col-sm-9 value-static">
 						<span>{{approverMsg}}</span>
