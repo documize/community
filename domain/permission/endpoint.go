@@ -118,11 +118,10 @@ func (h *Handler) SetSpacePermissions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	url := ctx.GetAppURL(fmt.Sprintf("s/%s/%s", sp.RefID, stringutil.MakeSlug(sp.Name)))
 	me := false
 	hasEveryoneRole := false
 	roleCount := 0
-
-	url := ctx.GetAppURL(fmt.Sprintf("s/%s/%s", sp.RefID, stringutil.MakeSlug(sp.Name)))
 
 	for _, perm := range model.Permissions {
 		perm.OrgID = ctx.OrgID
@@ -136,20 +135,22 @@ func (h *Handler) SetSpacePermissions(w http.ResponseWriter, r *http.Request) {
 		// Only persist if there is a role!
 		if permission.HasAnyPermission(perm) {
 			// identify publically shared spaces
-			if perm.UserID == "0" || perm.UserID == "" {
+			if perm.UserID == "" {
 				perm.UserID = "0"
+			}
+
+			if perm.UserID == "0" {
 				hasEveryoneRole = true
 			}
 
 			r := permission.EncodeUserPermissions(perm)
+			roleCount++
 
 			for _, p := range r {
 				err = h.Store.Permission.AddPermission(ctx, p)
 				if err != nil {
 					h.Runtime.Log.Error("set permission", err)
 				}
-
-				roleCount++
 			}
 
 			// We send out space invitation emails to those users
@@ -161,6 +162,7 @@ func (h *Handler) SetSpacePermissions(w http.ResponseWriter, r *http.Request) {
 					existingUser, err := h.Store.User.Get(ctx, perm.UserID)
 					if err != nil {
 						response.WriteServerError(w, method, err)
+						h.Runtime.Log.Error(method, err)
 						break
 					}
 
@@ -187,6 +189,7 @@ func (h *Handler) SetSpacePermissions(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			ctx.Transaction.Rollback()
 			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
 			return
 		}
 	}
