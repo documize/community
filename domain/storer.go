@@ -20,6 +20,7 @@ import (
 	"github.com/documize/community/model/block"
 	"github.com/documize/community/model/category"
 	"github.com/documize/community/model/doc"
+	"github.com/documize/community/model/group"
 	"github.com/documize/community/model/link"
 	"github.com/documize/community/model/org"
 	"github.com/documize/community/model/page"
@@ -39,6 +40,7 @@ type Store struct {
 	Block        BlockStorer
 	Category     CategoryStorer
 	Document     DocumentStorer
+	Group        GroupStorer
 	Link         LinkStorer
 	Organization OrganizationStorer
 	Page         PageStorer
@@ -264,4 +266,13 @@ type PageStorer interface {
 	GetPageRevisions(ctx RequestContext, pageID string) (revisions []page.Revision, err error)
 	GetDocumentRevisions(ctx RequestContext, documentID string) (revisions []page.Revision, err error)
 	DeletePageRevisions(ctx RequestContext, pageID string) (rows int64, err error)
+}
+
+// GroupStorer defines required methods for persisting user groups and memberships
+type GroupStorer interface {
+	Add(ctx RequestContext, g group.Group) (err error)
+	Get(ctx RequestContext, refID string) (g group.Group, err error)
+	GetAll(ctx RequestContext) (g []group.Group, err error)
+	Update(ctx RequestContext, g group.Group) (err error)
+	Delete(ctx RequestContext, refID string) (rows int64, err error)
 }

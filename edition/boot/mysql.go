@@ -22,6 +22,7 @@ import (
 	block "github.com/documize/community/domain/block/mysql"
 	category "github.com/documize/community/domain/category/mysql"
 	doc "github.com/documize/community/domain/document/mysql"
+	group "github.com/documize/community/domain/group/mysql"
 	link "github.com/documize/community/domain/link/mysql"
 	org "github.com/documize/community/domain/organization/mysql"
 	page "github.com/documize/community/domain/page/mysql"
@@ -42,6 +43,7 @@ func StoreMySQL(r *env.Runtime, s *domain.Store) {
 	s.Block = block.Scope{Runtime: r}
 	s.Category = category.Scope{Runtime: r}
 	s.Document = doc.Scope{Runtime: r}
+	s.Group = group.Scope{Runtime: r}
 	s.Link = link.Scope{Runtime: r}
 	s.Organization = org.Scope{Runtime: r}
 	s.Page = page.Scope{Runtime: r}

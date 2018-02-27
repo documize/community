@@ -50,6 +50,9 @@ export default Router.map(function () {
 		this.route('general', {
 			path: 'general'
 		});
+		this.route('groups', {
+			path: 'groups'
+		});
 		this.route('users', {
 			path: 'users'
 		});

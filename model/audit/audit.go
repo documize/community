@@ -74,4 +74,7 @@ const (
 	EventTypeCategoryUpdate     EventType = "updated-category"
 	EventTypeCategoryLink       EventType = "linked-category"
 	EventTypeCategoryUnlink     EventType = "unlinked-category"
+	EventTypeGroupAdd           EventType = "added-group"
+	EventTypeGroupDelete        EventType = "removed-group"
+	EventTypeGroupUpdate        EventType = "updated-group"
 )

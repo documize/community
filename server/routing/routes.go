@@ -23,6 +23,7 @@ import (
 	"github.com/documize/community/domain/category"
 	"github.com/documize/community/domain/conversion"
 	"github.com/documize/community/domain/document"
+	"github.com/documize/community/domain/group"
 	"github.com/documize/community/domain/link"
 	"github.com/documize/community/domain/meta"
 	"github.com/documize/community/domain/organization"
@@ -53,6 +54,7 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	page := page.Handler{Runtime: rt, Store: s, Indexer: indexer}
 	space := space.Handler{Runtime: rt, Store: s}
 	block := block.Handler{Runtime: rt, Store: s}
+	group := group.Handler{Runtime: rt, Store: s}
 	section := section.Handler{Runtime: rt, Store: s}
 	setting := setting.Handler{Runtime: rt, Store: s}
 	category := category.Handler{Runtime: rt, Store: s}
@@ -179,6 +181,11 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	Add(rt, RoutePrefixPrivate, "pin/{userID}", []string{"GET", "OPTIONS"}, nil, pin.GetUserPins)
 	Add(rt, RoutePrefixPrivate, "pin/{userID}/sequence", []string{"POST", "OPTIONS"}, nil, pin.UpdatePinSequence)
 	Add(rt, RoutePrefixPrivate, "pin/{userID}/{pinID}", []string{"DELETE", "OPTIONS"}, nil, pin.DeleteUserPin)
+
+	Add(rt, RoutePrefixPrivate, "group", []string{"POST", "OPTIONS"}, nil, group.Add)
+	Add(rt, RoutePrefixPrivate, "group", []string{"GET", "OPTIONS"}, nil, group.Groups)
+	Add(rt, RoutePrefixPrivate, "group/{groupID}", []string{"PUT", "OPTIONS"}, nil, group.Update)
+	Add(rt, RoutePrefixPrivate, "group/{groupID}", []string{"DELETE", "OPTIONS"}, nil, group.Delete)
 
 	// fetch methods exist to speed up UI rendering by returning data in bulk
 	Add(rt, RoutePrefixPrivate, "fetch/category/space/{spaceID}", []string{"GET", "OPTIONS"}, nil, category.FetchSpaceData)

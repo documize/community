@@ -1,0 +1,113 @@
+<div class="row">
+	<div class="col">
+		<div class="view-customize">
+
+			<h1 class="admin-heading">Groups</h1>
+			<h2 class="sub-heading">Create groups for easier user management &mdash; assign users to groups</h2>
+			<div class="btn btn-success mt-3 mb-3" {{action 'onOpenGroupModal'}}>Add group</div>
+			<div id="add-group-modal" class="modal" tabindex="-1" role="dialog">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">Add Group</div>
+						<div class="modal-body">
+							<form onsubmit={{action 'onAddGroup'}}>
+								<div class="form-group">
+									<label for="new-group-name">Name</label>
+									{{focus-input id="new-group-name" type="text" class="form-control mousetrap" placeholder="Enter group name" value=newGroup.name}}
+									<small class="form-text text-muted">e.g. Managers, Developers, Acme Team</small>
+								</div>
+								<div class="form-group">
+									<label for="space-invite-msg">Description (optional)</label>
+									{{textarea id="new-group-desc" value=newGroup.purpose class="form-control" rows="3"}}
+								</div>
+							</form>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+							<button type="button" class="btn btn-success" onclick={{action 'onAddGroup'}}>Add</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="groups-list">
+				{{#each groups as |group|}}
+					<div class="item row">
+						<div class="group col-8">
+							<div class="name">{{group.name}}</div>
+							<div class="purpose">{{group.purpose}}&nbsp;</div>
+							<div class="info">
+								{{#if (eq group.members 0)}}
+									no members assigned yet
+								{{else if (eq group.members 1)}}
+									1 member
+								{{else}}
+									{{group.members}} members
+								{{/if}}
+							</div>
+						</div>
+						<div class="col-4 buttons text-right">
+							<div class="button-icon-gray align-middle" data-toggle="tooltip" data-placement="top" title="Rename" {{action 'onShowEditModal' group.id}} >
+								<i class="material-icons">edit</i>
+							</div>
+							<div class="button-icon-gap" />
+							<div class="button-icon-danger align-middle" data-toggle="tooltip" data-placement="top" title="Delete" {{action 'onShowDeleteModal' group.id}}>
+								<i class="material-icons">delete</i>
+							</div>
+						</div>
+					</div>
+				{{else}}
+					<div class="margin-top-30"><i>No groups</i></div>
+				{{/each}}
+			</div>
+
+			<div id="delete-group-modal" class="modal" tabindex="-1" role="dialog">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">Delete Group</div>
+						<div class="modal-body">
+							<form onsubmit={{action 'onDeleteGroup'}}>
+								<p>Are you sure you want to delete this group?</p>
+								<div class="form-group">
+									<label for="delete-space-name">Please type group name to confirm</label>
+									{{input id="delete-group-name" type="text" class="form-control mousetrap" placeholder="Group name" value=deleteGroup.name}}
+									<small class="form-text text-muted">This will remove group membership information and associated permissions!</small>
+								</div>
+							</form>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+							<button type="button" class="btn btn-danger" onclick={{action 'onDeleteGroup'}}>Delete</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div id="edit-group-modal" class="modal" tabindex="-1" role="dialog">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">Edit Group</div>
+						<div class="modal-body">
+							<form onsubmit={{action 'onEditGroup'}}>
+								<div class="form-group">
+									<label for="edit-group-name">Name</label>
+									{{input id="edit-group-name" type="text" class="form-control mousetrap" placeholder="Enter group name" value=editGroup.name}}
+									<small class="form-text text-muted">e.g. Managers, Developers, Acme Team</small>
+								</div>
+								<div class="form-group">
+									<label for="space-invite-msg">Description (optional)</label>
+									{{textarea id="edit-group-desc" value=editGroup.purpose class="form-control" rows="3"}}
+								</div>
+							</form>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+							<button type="button" class="btn btn-success" onclick={{action 'onEditGroup'}}>Save</button>
+						</div>
+					</div>
+				</div>
+			</div>			
+
+		</div>
+	</div>
+</div>

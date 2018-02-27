@@ -55,4 +55,44 @@
 			color: $color-primary;
 		}
 	}
+
+	> .groups-list {
+        padding: 0;
+        margin: 0;
+
+		> .item {
+			margin: 15px 0;
+			padding: 15px;
+			@include card();
+			@include ease-in();
+
+			> .group {
+				display: inline-block;
+
+				> .name {
+					font-size: 1.2rem;
+					color: $color-primary;
+				}
+
+				> .purpose {
+					font-size: 1rem;
+					color: $color-off-black;
+				}
+
+				> .info {
+					font-size: 0.9rem;
+					margin-top: 8px;
+					color: $color-gray;
+				}
+			}
+
+			> .buttons {
+				margin-top: 5px;
+			}
+
+			> .action {
+				display: inline-block;
+			}
+		}
+	}	
 }
