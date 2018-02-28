@@ -81,7 +81,7 @@ export default Component.extend(AuthProvider, ModalMixin, {
 			}
 
 			this.get('groupSvc').add(newGroup).then(() => {
-				this.load();
+				this.loadGroups();
 			});
 
 			this.modalClose("#add-group-modal");
@@ -105,7 +105,7 @@ export default Component.extend(AuthProvider, ModalMixin, {
 			}
 
 			this.get('groupSvc').delete(deleteGroup.id).then(() => {
-				this.load();
+				this.loadGroups();
 			});
 
 			this.modalClose("#delete-group-modal");
