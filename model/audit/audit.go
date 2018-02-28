@@ -77,4 +77,6 @@ const (
 	EventTypeGroupAdd           EventType = "added-group"
 	EventTypeGroupDelete        EventType = "removed-group"
 	EventTypeGroupUpdate        EventType = "updated-group"
+	EventTypeGroupJoin          EventType = "joined-group"
+	EventTypeGroupLeave         EventType = "left-group"
 )

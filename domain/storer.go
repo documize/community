@@ -277,4 +277,6 @@ type GroupStorer interface {
 	Update(ctx RequestContext, g group.Group) (err error)
 	Delete(ctx RequestContext, refID string) (rows int64, err error)
 	GetGroupMembers(ctx RequestContext, groupID string) (m []group.Member, err error)
+	JoinGroup(ctx RequestContext, groupID, userID string) (err error)
+	LeaveGroup(ctx RequestContext, groupID, userID string) (err error)
 }

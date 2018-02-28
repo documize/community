@@ -243,3 +243,107 @@ func (h *Handler) GetGroupMembers(w http.ResponseWriter, r *http.Request) {
 
 	response.WriteJSON(w, m)
 }
+
+// JoinGroup adds user to group.
+func (h *Handler) JoinGroup(w http.ResponseWriter, r *http.Request) {
+	method := "group.JoinGroup"
+	ctx := domain.GetRequestContext(r)
+
+	// Should be no reason for non-admin to see members
+	if !ctx.Administrator {
+		response.WriteForbiddenError(w)
+		return
+	}
+
+	groupID := request.Param(r, "groupID")
+	if len(groupID) == 0 {
+		response.WriteMissingDataError(w, method, "groupID")
+		return
+	}
+
+	userID := request.Param(r, "userID")
+	if len(userID) == 0 {
+		response.WriteMissingDataError(w, method, "userID")
+		return
+	}
+
+	var err error
+
+	ctx.Transaction, err = h.Runtime.Db.Beginx()
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	// safety first
+	err = h.Store.Group.LeaveGroup(ctx, groupID, userID)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	// now we can join group
+	err = h.Store.Group.JoinGroup(ctx, groupID, userID)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	ctx.Transaction.Commit()
+
+	h.Store.Audit.Record(ctx, audit.EventTypeGroupJoin)
+
+	response.WriteEmpty(w)
+}
+
+// LeaveGroup removes user to group.
+func (h *Handler) LeaveGroup(w http.ResponseWriter, r *http.Request) {
+	method := "group.LeaveGroup"
+	ctx := domain.GetRequestContext(r)
+
+	// Should be no reason for non-admin to see members
+	if !ctx.Administrator {
+		response.WriteForbiddenError(w)
+		return
+	}
+
+	groupID := request.Param(r, "groupID")
+	if len(groupID) == 0 {
+		response.WriteMissingDataError(w, method, "groupID")
+		return
+	}
+
+	userID := request.Param(r, "userID")
+	if len(userID) == 0 {
+		response.WriteMissingDataError(w, method, "userID")
+		return
+	}
+
+	var err error
+
+	ctx.Transaction, err = h.Runtime.Db.Beginx()
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	err = h.Store.Group.LeaveGroup(ctx, groupID, userID)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	ctx.Transaction.Commit()
+
+	h.Store.Audit.Record(ctx, audit.EventTypeGroupLeave)
+
+	response.WriteEmpty(w)
+}

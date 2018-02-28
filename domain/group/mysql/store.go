@@ -120,3 +120,24 @@ func (s Scope) GetGroupMembers(ctx domain.RequestContext, groupID string) (membe
 
 	return
 }
+
+// JoinGroup adds user to group.
+func (s Scope) JoinGroup(ctx domain.RequestContext, groupID, userID string) (err error) {
+	_, err = ctx.Transaction.Exec("INSERT INTO rolemember (orgid, roleid, userid) VALUES (?, ?, ?)", ctx.OrgID, groupID, userID)
+	if err != nil {
+		err = errors.Wrap(err, "insert group member")
+	}
+
+	return
+}
+
+// LeaveGroup removes user from group.
+func (s Scope) LeaveGroup(ctx domain.RequestContext, groupID, userID string) (err error) {
+	b := mysql.BaseQuery{}
+	_, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM rolemember WHERE orgid=\"%s\" AND roleid=\"%s\" AND userid=\"%s\"", ctx.OrgID, groupID, userID))
+	if err != nil {
+		err = errors.Wrap(err, "clear group member")
+	}
+
+	return
+}

@@ -28,11 +28,11 @@ export default Component.extend(AuthProvider, ModalMixin, {
 
 	didReceiveAttrs() {
 		this._super(...arguments);
-		this.load();
+		this.loadGroups();
 		this.setDefaults();
 	},
 
-	load() {
+	loadGroups() {
 		this.get('groupSvc').getAll().then((groups) => {
 			this.set('groups', groups);
 		});
@@ -42,34 +42,26 @@ export default Component.extend(AuthProvider, ModalMixin, {
 		this.set('newGroup', { name: '', purpose: '' });
 	},
 
-	loadUsers(searchText) {
-		this.get('userSvc').matchUsers(searchText).then((users) => {
-			let members = this.get('members');
-			
-			if (members.length > 0) {
+	loadGroupInfo() {
+		let groupId = this.get('membersGroup.id');	
+		let searchText = this.get('searchText');
+
+		this.get('groupSvc').getGroupMembers(groupId).then((members) => {
+			this.set('members', members);
+
+			this.get('userSvc').matchUsers(searchText).then((users) => {
 				users.forEach((user) => {
 					let m = members.findBy('userId', user.get('id'));
 					user.set('isMember', is.not.undefined(m));
 				})
-			}
 
-			this.set('users', users);
-		});		
-	},
-
-	loadMembers(groupId) {
-		this.get('groupSvc').getGroupMembers(groupId).then((members) => {
-			this.set('members', members);
-
-			// if we have no members, then prefetch users (server should limit to top 100 users)
-			if (members.length === 0) {
-				this.loadUsers('');
-				this.set('showMembers', false);
-				this.set('showUsers', true);
-			} else {
-				this.set('showMembers', true);
-				this.set('showUsers', false);
-			}
+				if (this.get('showMembers') && members.length === 0) {
+					this.set('showMembers', false);
+					this.set('showUsers', true);					
+				}
+	
+				this.set('users', users);
+			});
 		});
 	},
 
@@ -148,20 +140,20 @@ export default Component.extend(AuthProvider, ModalMixin, {
 			this.modalOpen("#group-members-modal", {"show": true}, '#group-members-search');
 			this.set('members', null);
 			this.set('users', null);
-			this.loadMembers(groupId);
+			this.set('showMembers', true);
+			this.set('showUsers', false);
+			this.loadGroupInfo();
 		},
 
 		onSearch() {
 			debounce(this, function() {
 				let searchText = this.get('searchText');
-				let groupId = this.get('membersGroup.id');
+				this.loadGroupInfo();
 
 				if (is.not.empty(searchText)) {
-					this.loadUsers(searchText);
 					this.set('showMembers', false);
 					this.set('showUsers', true);
 				} else {
-					this.loadMembers(groupId);
 					this.set('showMembers', true);
 					this.set('showUsers', false);
 				}
@@ -169,14 +161,20 @@ export default Component.extend(AuthProvider, ModalMixin, {
 		},
 
 		onLeaveGroup(userId) {
-			this.get('groupSvc').leave(this.get('membersGroup.id'), userId).then(() => {
-				this.load();
+			let groupId = this.get('membersGroup.id');
+
+			this.get('groupSvc').leave(groupId, userId).then(() => {
+				this.loadGroupInfo();
+				this.loadGroups();
 			});			
 		},
 
 		onJoinGroup(userId) {
-			this.get('groupSvc').join(this.get('membersGroup.id'), userId).then(() => {
-				this.load();
+			let groupId = this.get('membersGroup.id');
+
+			this.get('groupSvc').join(groupId, userId).then(() => {
+				this.loadGroupInfo();
+				this.loadGroups();
 			});			
 		}
 	}
