@@ -644,3 +644,28 @@ func (h *Handler) ResetPassword(w http.ResponseWriter, r *http.Request) {
 
 	response.WriteEmpty(w)
 }
+
+// MatchUsers returns users where provided text
+// matches firstname, lastname, email
+func (h *Handler) MatchUsers(w http.ResponseWriter, r *http.Request) {
+	method := "user.MatchUsers"
+	ctx := domain.GetRequestContext(r)
+
+	defer streamutil.Close(r.Body)
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		response.WriteBadRequestError(w, method, "text")
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+	searchText := string(body)
+
+	u, err := h.Store.User.MatchUsers(ctx, searchText, 100)
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	response.WriteJSON(w, u)
+}

@@ -64,5 +64,35 @@ export default BaseService.extend({
 		return this.get('ajax').request(`group/${groupId}`, {
 			method: 'DELETE'
 		});
-	}
+	},
+
+	// Returns users associated with given group
+	getGroupMembers(groupId) {
+		return this.get('ajax').request(`group/${groupId}/members`, {
+			method: 'GET'
+		}).then((response) => {
+			let data = [];
+
+			data = response.map((obj) => {
+				let data = this.get('store').normalize('group-member', obj);
+				return this.get('store').push(data);
+			});
+
+			return data;
+		});
+	},
+	
+	// join adds user to group.
+	join(groupId, userId) {
+		return this.get('ajax').request(`group/${groupId}/join/${userId}`, {
+			method: 'POST'
+		});
+	},
+
+	// leave removes user from group.
+	leave(groupId, userId) {
+		return this.get('ajax').request(`group/${groupId}/leave/${userId}`, {
+			method: 'DELETE'
+		});
+	},
 });

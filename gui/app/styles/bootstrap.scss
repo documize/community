@@ -106,3 +106,7 @@ $link-hover-decoration:     none;
 .modal-80 {
 	max-width: 80% !important;
 }
+
+body.modal-open {
+	padding-right: 0 !important;
+}

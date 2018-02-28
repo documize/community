@@ -9,17 +9,9 @@
 //
 // https://documize.com
 
-import { inject as service } from '@ember/service';
 import Controller from '@ember/controller';
 
 export default Controller.extend({
-	userService: service('user'),
-
-	init() {
-		this._super(...arguments);
-		// this.newUser = { firstname: "", lastname: "", email: "", active: true };
-	},
-
 	actions: {
 	}
 });

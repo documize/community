@@ -14,6 +14,7 @@ package mysql
 import (
 	"database/sql"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -251,6 +252,34 @@ func (s Scope) CountActiveUsers() (c int) {
 	if err != nil && err != sql.ErrNoRows {
 		s.Runtime.Log.Error("CountActiveUsers", err)
 		return 0
+	}
+
+	return
+}
+
+// MatchUsers returns users that have match to either firstname, lastname or email.
+func (s Scope) MatchUsers(ctx domain.RequestContext, text string, maxMatches int) (u []user.User, err error) {
+	text = strings.TrimSpace(strings.ToLower(text))
+	likeQuery := ""
+	if len(text) > 0 {
+		likeQuery = " AND (LOWER(firstname) LIKE '%" + text + "%' OR LOWER(lastname) LIKE '%" + text + "%' OR LOWER(email) LIKE '%" + text + "%') "
+	}
+
+	err = s.Runtime.Db.Select(&u,
+		`SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.password, u.salt, u.reset, u.created, u.revised,
+		u.global, a.active, a.editor, a.admin, a.users as viewusers
+		FROM user u, account a
+		WHERE a.orgid=? AND u.refid=a.userid AND a.active=1 `+likeQuery+
+			`ORDER BY u.firstname,u.lastname LIMIT `+strconv.Itoa(maxMatches),
+		ctx.OrgID)
+
+	if err == sql.ErrNoRows || len(u) == 0 {
+		err = nil
+		u = []user.User{}
+	}
+
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("matching users for org %s", ctx.OrgID))
 	}
 
 	return

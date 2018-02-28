@@ -216,3 +216,30 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	response.WriteEmpty(w)
 }
+
+// GetGroupMembers returns all users associated with given group.
+func (h *Handler) GetGroupMembers(w http.ResponseWriter, r *http.Request) {
+	method := "group.GetGroupMembers"
+	ctx := domain.GetRequestContext(r)
+
+	// Should be no reason for non-admin to see members
+	if !ctx.Administrator {
+		response.WriteForbiddenError(w)
+		return
+	}
+
+	groupID := request.Param(r, "groupID")
+	if len(groupID) == 0 {
+		response.WriteMissingDataError(w, method, "groupID")
+		return
+	}
+
+	m, err := h.Store.Group.GetGroupMembers(ctx, groupID)
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	response.WriteJSON(w, m)
+}

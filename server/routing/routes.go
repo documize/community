@@ -150,6 +150,7 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	Add(rt, RoutePrefixPrivate, "users/{userID}", []string{"PUT", "OPTIONS"}, nil, user.Update)
 	Add(rt, RoutePrefixPrivate, "users/{userID}", []string{"DELETE", "OPTIONS"}, nil, user.Delete)
 	Add(rt, RoutePrefixPrivate, "users/sync", []string{"GET", "OPTIONS"}, nil, keycloak.Sync)
+	Add(rt, RoutePrefixPrivate, "users/match", []string{"POST", "OPTIONS"}, nil, user.MatchUsers)
 
 	Add(rt, RoutePrefixPrivate, "search", []string{"POST", "OPTIONS"}, nil, document.SearchDocuments)
 
@@ -182,10 +183,13 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	Add(rt, RoutePrefixPrivate, "pin/{userID}/sequence", []string{"POST", "OPTIONS"}, nil, pin.UpdatePinSequence)
 	Add(rt, RoutePrefixPrivate, "pin/{userID}/{pinID}", []string{"DELETE", "OPTIONS"}, nil, pin.DeleteUserPin)
 
+	Add(rt, RoutePrefixPrivate, "group/{groupID}/members", []string{"GET", "OPTIONS"}, nil, group.GetGroupMembers)
 	Add(rt, RoutePrefixPrivate, "group", []string{"POST", "OPTIONS"}, nil, group.Add)
 	Add(rt, RoutePrefixPrivate, "group", []string{"GET", "OPTIONS"}, nil, group.Groups)
 	Add(rt, RoutePrefixPrivate, "group/{groupID}", []string{"PUT", "OPTIONS"}, nil, group.Update)
 	Add(rt, RoutePrefixPrivate, "group/{groupID}", []string{"DELETE", "OPTIONS"}, nil, group.Delete)
+	Add(rt, RoutePrefixPrivate, "group/{groupID}/join/{userID}", []string{"POST", "OPTIONS"}, nil, group.JoinGroup)
+	Add(rt, RoutePrefixPrivate, "group/{groupID}/leave/{userID}", []string{"DELETE", "OPTIONS"}, nil, group.LeaveGroup)
 
 	// fetch methods exist to speed up UI rendering by returning data in bulk
 	Add(rt, RoutePrefixPrivate, "fetch/category/space/{spaceID}", []string{"GET", "OPTIONS"}, nil, category.FetchSpaceData)

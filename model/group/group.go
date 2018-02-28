@@ -19,12 +19,15 @@ type Group struct {
 	OrgID   string `json:"orgId"`
 	Name    string `json:"name"`
 	Purpose string `json:"purpose"`
-	Members int    `json:"members"`
+	Members int    `json:"members"` // read-only info
 }
 
 // Member defines user membership of a user group.
 type Member struct {
-	OrgID  string `json:"orgId"`
-	RoleID string `json:"roleId"`
-	UserID string `json:"userId"`
+	ID        uint64 `json:"id"`
+	OrgID     string `json:"orgId"`
+	RoleID    string `json:"roleId"`
+	UserID    string `json:"userId"`
+	Firstname string `json:"firstname"` //read-only info
+	Lastname  string `json:"lastname"`  //read-only info
 }

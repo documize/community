@@ -59,12 +59,17 @@ func (s Scope) Get(ctx domain.RequestContext, refID string) (g group.Group, err 
 // GetAll returns all user groups for current orgID.
 func (s Scope) GetAll(ctx domain.RequestContext) (groups []group.Group, err error) {
 	err = s.Runtime.Db.Select(&groups,
-		`select id, refid, orgid, role as name, purpose, created, revised FROM role WHERE orgid=? ORDER BY role`,
+		`SELECT a.id, a.refid, a.orgid, a.role as name, a.purpose, a.created, a.revised, COUNT(b.roleid) AS members
+		FROM role a
+		LEFT JOIN rolemember b ON a.refid=b.roleid
+		WHERE a.orgid=?
+		GROUP BY a.id, a.refid, a.orgid, a.role, a.purpose, a.created, a.revised
+		ORDER BY a.role`,
 		ctx.OrgID)
 
 	if err == sql.ErrNoRows || len(groups) == 0 {
-		groups = []group.Group{}
 		err = nil
+		groups = []group.Group{}
 	}
 	if err != nil {
 		err = errors.Wrap(err, "select groups")
@@ -92,4 +97,26 @@ func (s Scope) Delete(ctx domain.RequestContext, refID string) (rows int64, err 
 	b := mysql.BaseQuery{}
 	b.DeleteConstrained(ctx.Transaction, "role", ctx.OrgID, refID)
 	return b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM rolemember WHERE orgid=\"%s\" AND roleid=\"%s\"", ctx.OrgID, refID))
+}
+
+// GetGroupMembers returns all user associated with given group.
+func (s Scope) GetGroupMembers(ctx domain.RequestContext, groupID string) (members []group.Member, err error) {
+	err = s.Runtime.Db.Select(&members,
+		`SELECT a.id, a.orgid, a.roleid, a.userid, 
+		IFNULL(b.firstname, '') as firstname, IFNULL(b.lastname, '') as lastname
+		FROM rolemember a
+		LEFT JOIN user b ON b.refid=a.userid
+		WHERE a.orgid=? AND a.roleid=?
+		ORDER BY b.firstname, b.lastname`,
+		ctx.OrgID, groupID)
+
+	if err == sql.ErrNoRows || len(members) == 0 {
+		err = nil
+		members = []group.Member{}
+	}
+	if err != nil {
+		err = errors.Wrap(err, "select members")
+	}
+
+	return
 }

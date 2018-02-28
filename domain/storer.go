@@ -118,6 +118,7 @@ type UserStorer interface {
 	DeactiveUser(ctx RequestContext, userID string) (err error)
 	ForgotUserPassword(ctx RequestContext, email, token string) (err error)
 	CountActiveUsers() (c int)
+	MatchUsers(ctx RequestContext, text string, maxMatches int) (u []user.User, err error)
 }
 
 // AccountStorer defines required methods for account management
@@ -275,4 +276,5 @@ type GroupStorer interface {
 	GetAll(ctx RequestContext) (g []group.Group, err error)
 	Update(ctx RequestContext, g group.Group) (err error)
 	Delete(ctx RequestContext, refID string) (rows int64, err error)
+	GetGroupMembers(ctx RequestContext, groupID string) (m []group.Member, err error)
 }

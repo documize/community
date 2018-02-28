@@ -5,6 +5,7 @@
 			<h1 class="admin-heading">Groups</h1>
 			<h2 class="sub-heading">Create groups for easier user management &mdash; assign users to groups</h2>
 			<div class="btn btn-success mt-3 mb-3" {{action 'onOpenGroupModal'}}>Add group</div>
+
 			<div id="add-group-modal" class="modal" tabindex="-1" role="dialog">
 				<div class="modal-dialog" role="document">
 					<div class="modal-content">
@@ -17,7 +18,7 @@
 									<small class="form-text text-muted">e.g. Managers, Developers, Acme Team</small>
 								</div>
 								<div class="form-group">
-									<label for="space-invite-msg">Description (optional)</label>
+									<label for="new-group-desc">Description (optional)</label>
 									{{textarea id="new-group-desc" value=newGroup.purpose class="form-control" rows="3"}}
 								</div>
 							</form>
@@ -32,22 +33,20 @@
 
 			<div class="groups-list">
 				{{#each groups as |group|}}
-					<div class="item row">
-						<div class="group col-8">
-							<div class="name">{{group.name}}</div>
-							<div class="purpose">{{group.purpose}}&nbsp;</div>
-							<div class="info">
-								{{#if (eq group.members 0)}}
-									no members assigned yet
-								{{else if (eq group.members 1)}}
-									1 member
-								{{else}}
-									{{group.members}} members
+					<div class="row group">
+						<div class="col-8">
+							<div class="name">
+								{{group.name}}
+								{{#if group.purpose}}
+									<div class="purpose">&nbsp;&nbsp;&mdash;&nbsp;{{group.purpose}}</div>
 								{{/if}}
 							</div>
+
 						</div>
 						<div class="col-4 buttons text-right">
-							<div class="button-icon-gray align-middle" data-toggle="tooltip" data-placement="top" title="Rename" {{action 'onShowEditModal' group.id}} >
+							<button class="btn btn-sm btn-secondary" {{action 'onShowMembersModal' group.id}}>{{group.members}} members</button>
+							<div class="button-icon-gap" />
+							<div class="button-icon-gray align-middle" data-toggle="tooltip" data-placement="top" title="Rename" {{action 'onShowEditModal' group.id}}>
 								<i class="material-icons">edit</i>
 							</div>
 							<div class="button-icon-gap" />
@@ -69,7 +68,7 @@
 							<form onsubmit={{action 'onDeleteGroup'}}>
 								<p>Are you sure you want to delete this group?</p>
 								<div class="form-group">
-									<label for="delete-space-name">Please type group name to confirm</label>
+									<label for="delete-group-name">Please type group name to confirm</label>
 									{{input id="delete-group-name" type="text" class="form-control mousetrap" placeholder="Group name" value=deleteGroup.name}}
 									<small class="form-text text-muted">This will remove group membership information and associated permissions!</small>
 								</div>
@@ -95,7 +94,7 @@
 									<small class="form-text text-muted">e.g. Managers, Developers, Acme Team</small>
 								</div>
 								<div class="form-group">
-									<label for="space-invite-msg">Description (optional)</label>
+									<label for="edit-group-desc">Description (optional)</label>
 									{{textarea id="edit-group-desc" value=editGroup.purpose class="form-control" rows="3"}}
 								</div>
 							</form>
@@ -106,7 +105,53 @@
 						</div>
 					</div>
 				</div>
-			</div>			
+			</div>
+
+			<div id="group-members-modal" class="modal" tabindex="-1" role="dialog">
+				<div class="modal-dialog modal-lg" role="document">
+					<div class="modal-content">
+						<div class="modal-header">{{membersGroup.name}}</div>
+						<div class="modal-body">
+							<div class="form-group">
+								<label for="group-members-search">Search for group members, non-members</label>
+								{{input id="group-members-search" type="text" class="form-control mousetrap" placeholder="Search members and users..." value=searchText key-up=(action 'onSearch')}}
+								<small class="form-text text-muted">matches firstname, lastname, email</small>
+							</div>
+							<div class="view-customize">
+								<div class="group-users-members my-5">
+									{{#if showMembers}}
+										{{#each members as |member|}}
+											<div class="row item">
+												<div class="col-10 fullname">{{member.fullname}}</div>
+												<div class="col-2 text-right">
+													<button class="btn btn-danger" {{action 'onLeaveGroup' member.userId}}>Leave</button>
+												</div>
+											</div>
+										{{/each}}
+									{{/if}}
+									{{#if showUsers}}
+										{{#each users as |user|}}
+											<div class="row item">
+												<div class="col-10 fullname">{{user.firstname}} {{user.lastname}}</div>
+												<div class="col-2 text-right">
+													{{#if user.isMember}}
+														<button class="btn btn-danger" {{action 'onLeaveGroup' user.id}}>Leave</button>
+													{{else}}
+														<button class="btn btn-success" {{action 'onJoinGroup' user.id}}>Join</button>
+													{{/if}}
+												</div>
+											</div>
+										{{/each}}
+									{{/if}}
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+						</div>
+					</div>
+				</div>
+			</div>
 
 		</div>
 	</div>

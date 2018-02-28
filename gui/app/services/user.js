@@ -145,5 +145,24 @@ export default Service.extend({
 			method: "POST",
 			data: password
 		});
-	}
+	},
+
+	// matchUsers on firstname, lastname, email
+	matchUsers(text) {
+		return this.get('ajax').request('users/match', {
+			method: 'POST',
+			dataType: 'json',
+			contentType: 'text',			
+			data: text
+		}).then((response) => {
+			let data = [];
+
+			data = response.map((obj) => {
+				let data = this.get('store').normalize('user', obj);
+				return this.get('store').push(data);
+			});
+
+			return data;
+		});
+	}	
 });
