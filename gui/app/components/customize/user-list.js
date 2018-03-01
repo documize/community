@@ -189,7 +189,6 @@ export default Component.extend(AuthProvider, ModalMixin, {
 			// mark up groups user belongs to...
 			let groups = this.get('groups');
 			groups.forEach((g) => {
-				console.log(userGroups);
 				let hasGroup = userGroups.findBy('roleId', g.get('id'));
 				g.set('isMember', is.not.undefined(hasGroup));
 			})
