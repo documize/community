@@ -1,12 +1,8 @@
-<div class="row">
-	<div class="col">
-		<div class="view-customize">
-			<h1 class="admin-heading">Users</h1>
-			<h2 class="sub-heading">Set basic information, passwords and permissions for {{model.length}} users</h2>
-		</div>
-	</div>
-</div>
+{{customize/user-admin 
+	onAddUser=(action 'onAddUser')
+	onAddUsers=(action 'onAddUsers')}}
 
-{{customize/user-settings add=(action 'add')}}
-
-{{customize/user-admin users=model onDelete=(action "onDelete") onSave=(action "onSave") onPassword=(action "onPassword")}}
+{{customize/user-list users=model
+	onDelete=(action "onDelete")
+	onSave=(action "onSave")
+	onPassword=(action "onPassword")}}

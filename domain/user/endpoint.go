@@ -13,6 +13,7 @@ package user
 
 import (
 	"database/sql"
+	"encoding/csv"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -207,7 +208,6 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		go mailer.InviteNewUser(userModel.Email, inviter.Fullname(), url, userModel.Email, requestedPassword)
 
 		h.Runtime.Log.Info(fmt.Sprintf("%s invited by %s on %s", userModel.Email, inviter.Email, ctx.AppURL))
-
 	} else {
 		mailer := mail.Mailer{Runtime: h.Runtime, Store: h.Store, Context: ctx}
 		go mailer.InviteExistingUser(userModel.Email, inviter.Fullname(), ctx.GetAppURL(""))
@@ -594,7 +594,7 @@ func (h *Handler) ForgotPassword(w http.ResponseWriter, r *http.Request) {
 
 // ResetPassword stores the newly chosen password for the user.
 func (h *Handler) ResetPassword(w http.ResponseWriter, r *http.Request) {
-	method := "user.ForgotUserPassword"
+	method := "user.ResetPassword"
 	ctx := domain.GetRequestContext(r)
 	ctx.Subdomain = organization.GetSubdomainFromHost(r)
 
@@ -668,4 +668,167 @@ func (h *Handler) MatchUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response.WriteJSON(w, u)
+}
+
+// BulkImport imports comma-delimited list of users:
+// firstname, lastname, email
+func (h *Handler) BulkImport(w http.ResponseWriter, r *http.Request) {
+	method := "user.BulkImport"
+	ctx := domain.GetRequestContext(r)
+
+	if !ctx.Administrator {
+		response.WriteForbiddenError(w)
+		return
+	}
+
+	defer streamutil.Close(r.Body)
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		response.WriteBadRequestError(w, method, "text")
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+	usersList := string(body)
+
+	cr := csv.NewReader(strings.NewReader(usersList))
+	cr.TrimLeadingSpace = true
+	cr.FieldsPerRecord = 3
+
+	records, err := cr.ReadAll()
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	ctx.Transaction, err = h.Runtime.Db.Beginx()
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	inviter, err := h.Store.User.Get(ctx, ctx.UserID)
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	for _, v := range records {
+		userModel := user.User{}
+		userModel.Firstname = strings.TrimSpace(v[0])
+		userModel.Lastname = strings.TrimSpace(v[1])
+		userModel.Email = strings.ToLower(strings.TrimSpace(v[2]))
+
+		if len(userModel.Email) == 0 || len(userModel.Firstname) == 0 || len(userModel.Lastname) == 0 {
+			h.Runtime.Log.Info(method + " missing firstname, lastname, or email")
+			continue
+		}
+
+		userModel.Initials = stringutil.MakeInitials(userModel.Firstname, userModel.Lastname)
+		requestedPassword := secrets.GenerateRandomPassword()
+		userModel.Salt = secrets.GenerateSalt()
+		userModel.Password = secrets.GeneratePassword(requestedPassword, userModel.Salt)
+
+		// only create account if not dupe
+		addUser := true
+		addAccount := true
+		var userID string
+
+		userDupe, err := h.Store.User.GetByEmail(ctx, userModel.Email)
+		if err != nil && err != sql.ErrNoRows {
+			h.Runtime.Log.Error(method, err)
+			continue
+		}
+
+		if userModel.Email == userDupe.Email {
+			addUser = false
+			userID = userDupe.RefID
+			h.Runtime.Log.Info("Dupe user found, will not add " + userModel.Email)
+		}
+
+		if addUser {
+			userID = uniqueid.Generate()
+			userModel.RefID = userID
+
+			err = h.Store.User.Add(ctx, userModel)
+			if err != nil {
+				ctx.Transaction.Rollback()
+				response.WriteServerError(w, method, err)
+				h.Runtime.Log.Error(method, err)
+				return
+			}
+
+			h.Runtime.Log.Info("Adding user")
+		} else {
+			AttachUserAccounts(ctx, *h.Store, ctx.OrgID, &userDupe)
+
+			for _, a := range userDupe.Accounts {
+				if a.OrgID == ctx.OrgID {
+					addAccount = false
+					h.Runtime.Log.Info("Dupe account found, will not add")
+					break
+				}
+			}
+		}
+
+		// set up user account for the org
+		if addAccount {
+			var a account.Account
+			a.RefID = uniqueid.Generate()
+			a.UserID = userID
+			a.OrgID = ctx.OrgID
+			a.Editor = true
+			a.Admin = false
+			a.Active = true
+
+			err = h.Store.Account.Add(ctx, a)
+			if err != nil {
+				ctx.Transaction.Rollback()
+				response.WriteServerError(w, method, err)
+				h.Runtime.Log.Error(method, err)
+				return
+			}
+		}
+
+		if addUser {
+			event.Handler().Publish(string(event.TypeAddUser))
+			h.Store.Audit.Record(ctx, audit.EventTypeUserAdd)
+		}
+
+		if addAccount {
+			event.Handler().Publish(string(event.TypeAddAccount))
+			h.Store.Audit.Record(ctx, audit.EventTypeAccountAdd)
+		}
+
+		// If we did not add user or give them access (account) then we error back
+		if !addUser && !addAccount {
+			h.Runtime.Log.Info(method + " duplicate user not added")
+			continue
+		}
+
+		// Invite new user and prepare invitation email (that contains SSO link)
+		if addUser && addAccount {
+			size := len(requestedPassword)
+
+			auth := fmt.Sprintf("%s:%s:%s", ctx.AppURL, userModel.Email, requestedPassword[:size])
+			encrypted := secrets.EncodeBase64([]byte(auth))
+
+			url := fmt.Sprintf("%s/%s", ctx.GetAppURL("auth/sso"), url.QueryEscape(string(encrypted)))
+			mailer := mail.Mailer{Runtime: h.Runtime, Store: h.Store, Context: ctx}
+			go mailer.InviteNewUser(userModel.Email, inviter.Fullname(), url, userModel.Email, requestedPassword)
+
+			h.Runtime.Log.Info(fmt.Sprintf("%s invited by %s on %s", userModel.Email, inviter.Email, ctx.AppURL))
+		} else {
+			mailer := mail.Mailer{Runtime: h.Runtime, Store: h.Store, Context: ctx}
+			go mailer.InviteExistingUser(userModel.Email, inviter.Fullname(), ctx.GetAppURL(""))
+
+			h.Runtime.Log.Info(fmt.Sprintf("%s is giving access to an existing user %s", inviter.Email, userModel.Email))
+		}
+	}
+
+	ctx.Transaction.Commit()
+
+	response.WriteEmpty(w)
 }

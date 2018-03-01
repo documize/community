@@ -1,0 +1,153 @@
+<div class="view-customize mb-5">
+	<h3>Users</h3>
+	<table class="table table-hover table-responsive user-table">
+		<thead>
+			<tr>
+				<th>{{input type="text" class="form-control" placeholder="filter users" value=filter}}</th>
+				<th class="no-width">Add Space</th>
+				<th class="no-width">View Users</th>
+				<th class="no-width">Admin</th>
+				<th class="no-width">Active</th>
+				<th class="no-width">
+					{{#if hasSelectedUsers}}
+						<button  id="bulk-delete-users" type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#admin-user-delete-modal" data-backdrop="static">Delete</button>
+
+						<div id="admin-user-delete-modal" class="modal" tabindex="-1" role="dialog">
+							<div class="modal-dialog" role="document">
+								<div class="modal-content">
+									<div class="modal-header">Delete Users</div>
+									<div class="modal-body">
+										<p>Are you sure you want to delete selected users?</p>
+									</div>
+									<div class="modal-footer">
+										<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+										<button type="button" class="btn btn-success" onclick={{action 'onBulkDelete'}}>Delete</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					{{/if}}
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			{{#each filteredUsers key="id" as |user|}}
+				<tr>
+					<td class="{{unless user.active 'inactive-user'}} {{if user.admin 'admin-user'}}">
+						<div class="d-inline-block align-top">
+							{{#if user.me}}
+								<i class="material-icons color-gray">check_box_outline_blank</i>
+							{{else if user.selected}}
+								<i class="material-icons checkbox" {{action 'toggleSelect' user}}>check_box</i>
+							{{else}}
+								<i class="material-icons checkbox" {{action 'toggleSelect' user}}>check_box_outline_blank</i>
+							{{/if}}
+						</div>
+						<div class="d-inline-block">
+							<div class="name d-inline-block">{{ user.fullname }}</div>
+							<div class="email">{{ user.email }}</div>
+						</div>
+					</td>
+					<td class="no-width text-center">
+						{{#if user.editor}}
+							<i class="material-icons checkbox" {{action 'toggleEditor' user.id}}>check_box</i>
+						{{else}}
+							<i class="material-icons checkbox" {{action 'toggleEditor' user.id}}>check_box_outline_blank</i>
+						{{/if}}
+					</td>
+					<td class="no-width text-center">
+						{{#if user.viewUsers}}
+							<i class="material-icons checkbox" {{action 'toggleUsers' user.id}}>check_box</i>
+						{{else}}
+							<i class="material-icons checkbox" {{action 'toggleUsers' user.id}}>check_box_outline_blank</i>
+						{{/if}}
+					</td>
+					<td class="no-width text-center">
+						{{#if user.me}}
+							<i class="material-icons color-gray">check_box</i>
+						{{else if user.admin}}
+							<i class="material-icons checkbox" {{action 'toggleAdmin' user.id}}>check_box</i>
+						{{else}}
+							<i class="material-icons checkbox" {{action 'toggleAdmin' user.id}}>check_box_outline_blank</i>
+						{{/if}}
+					</td>
+					<td class="no-width text-center">
+						{{#if user.me}}
+							<i class="material-icons color-gray">check_box</i>
+						{{else if user.active}}
+							<i class="material-icons checkbox" {{action 'toggleActive' user.id}}>check_box</i>
+						{{else}}
+							<i class="material-icons checkbox" {{action 'toggleActive' user.id}}>check_box_outline_blank</i>
+						{{/if}}
+					</td>
+					<td class="no-width text-center">
+						{{#if user.me}}
+							<div class="edit-button-{{user.id}} button-icon-gray" title="Edit" {{action "onShowEdit" user.id}}>
+								<i class="material-icons">edit</i>
+							</div>
+						{{else}}
+							<div class="edit-button-{{user.id}} button-icon-gray" title="Edit" {{action "onShowEdit" user.id}}>
+								<i class="material-icons">edit</i>
+							</div>
+							<div class="button-icon-gap"></div>
+							<div class="delete-button-{{user.id}} button-icon-danger" title="Delete" {{action "onShowDelete" user.id}}>
+								<i class="material-icons">delete</i>
+							</div>
+						{{/if}}
+					</td>
+				</tr>
+			{{/each}}
+		</tbody>
+	</table>
+</div>
+
+<div id="edit-user-modal" class="modal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">User {{editUser.firstname}} {{editUser.lastname}}</div>
+			<div class="modal-body">
+				<form>
+					<div class="form-group">
+						<label for="edit-firstname">Firstname</label>
+						{{input id="edit-firstname" class="form-control" type="text" value=editUser.firstname}}
+					</div>
+					<div class="form-group">
+						<label for="edit-lastname">Lastname</label>
+						{{input id="edit-lastname" type="text" class="form-control" value=editUser.lastname}}
+					</div>
+					<div class="form-group">
+						<label for="edit-email">Email</label>
+						{{input id="edit-email" type="text" class="form-control" value=editUser.email}}
+					</div>
+					{{#if isAuthProviderDocumize}}
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="edit-password">Password</label>
+									<div class="tip">Optional new password</div>
+									{{input id="edit-password" type="password" class="form-control" value=password.password}}
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="edit-confirmPassword">Confirm Password</label>
+									<div class="tip">Confirm new password</div>
+									{{input id="edit-confirmPassword" type="password" class="form-control" value=password.confirmation}}
+								</div>
+							</div>
+						</div>
+					{{/if}}
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-success" onclick={{action 'onUpdate'}}>Save</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+{{#ui/ui-dialog title="Delete User" confirmCaption="Delete" buttonType="btn-danger" show=showDeleteDialog onAction=(action 'onDelete')}}
+	<p>Are you sure you want to delete {{deleteUser.fullname}}?</p>
+{{/ui/ui-dialog}}
+

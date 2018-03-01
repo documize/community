@@ -151,6 +151,7 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	Add(rt, RoutePrefixPrivate, "users/{userID}", []string{"DELETE", "OPTIONS"}, nil, user.Delete)
 	Add(rt, RoutePrefixPrivate, "users/sync", []string{"GET", "OPTIONS"}, nil, keycloak.Sync)
 	Add(rt, RoutePrefixPrivate, "users/match", []string{"POST", "OPTIONS"}, nil, user.MatchUsers)
+	Add(rt, RoutePrefixPrivate, "users/import", []string{"POST", "OPTIONS"}, nil, user.BulkImport)
 
 	Add(rt, RoutePrefixPrivate, "search", []string{"POST", "OPTIONS"}, nil, document.SearchDocuments)
 

@@ -31,6 +31,16 @@ export default Service.extend({
 		});
 	},
 
+	// Adds comma-delim list of users (firstname, lastname, email).
+	addBulk(list) {
+		return this.get('ajax').request(`users/import`, {
+				type: 'POST',
+				data: list,
+				contentType: 'text'
+			}).then(() => {
+		});
+	},
+
 	// Returns user model for specified user id.
 	getUser(userId) {
 		let url = `users/${userId}`;
