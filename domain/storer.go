@@ -110,7 +110,7 @@ type UserStorer interface {
 	GetByToken(ctx RequestContext, token string) (u user.User, err error)
 	GetBySerial(ctx RequestContext, serial string) (u user.User, err error)
 	GetActiveUsersForOrganization(ctx RequestContext) (u []user.User, err error)
-	GetUsersForOrganization(ctx RequestContext) (u []user.User, err error)
+	GetUsersForOrganization(ctx RequestContext, filter string) (u []user.User, err error)
 	GetSpaceUsers(ctx RequestContext, spaceID string) (u []user.User, err error)
 	GetUsersForSpaces(ctx RequestContext, spaces []string) (u []user.User, err error)
 	UpdateUser(ctx RequestContext, u user.User) (err error)
@@ -277,6 +277,7 @@ type GroupStorer interface {
 	Update(ctx RequestContext, g group.Group) (err error)
 	Delete(ctx RequestContext, refID string) (rows int64, err error)
 	GetGroupMembers(ctx RequestContext, groupID string) (m []group.Member, err error)
+	GetMembers(ctx RequestContext) (r []group.Record, err error)
 	JoinGroup(ctx RequestContext, groupID, userID string) (err error)
 	LeaveGroup(ctx RequestContext, groupID, userID string) (err error)
 }

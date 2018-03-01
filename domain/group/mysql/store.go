@@ -141,3 +141,25 @@ func (s Scope) LeaveGroup(ctx domain.RequestContext, groupID, userID string) (er
 
 	return
 }
+
+// GetMembers returns members for every group.
+// Useful when you need to bulk fetch membership records
+// for subsequent processing.
+func (s Scope) GetMembers(ctx domain.RequestContext) (r []group.Record, err error) {
+	err = s.Runtime.Db.Select(&r,
+		`SELECT a.id, a.orgid, a.roleid, a.userid, b.role as name, b.purpose
+		FROM rolemember a, role b
+		WHERE a.orgid=? AND a.roleid=b.refid 
+		ORDER BY a.userid`,
+		ctx.OrgID)
+
+	if err == sql.ErrNoRows || len(r) == 0 {
+		err = nil
+		r = []group.Record{}
+	}
+	if err != nil {
+		err = errors.Wrap(err, "select group members")
+	}
+
+	return
+}

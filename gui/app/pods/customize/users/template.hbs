@@ -1,8 +1,9 @@
-{{customize/user-admin 
+{{customize/user-admin users=model
 	onAddUser=(action 'onAddUser')
 	onAddUsers=(action 'onAddUsers')}}
 
 {{customize/user-list users=model
+	onFilter=(action "onFilter")
 	onDelete=(action "onDelete")
 	onSave=(action "onSave")
 	onPassword=(action "onPassword")}}

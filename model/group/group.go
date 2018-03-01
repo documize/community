@@ -31,3 +31,13 @@ type Member struct {
 	Firstname string `json:"firstname"` //read-only info
 	Lastname  string `json:"lastname"`  //read-only info
 }
+
+// Record details user membership of a user group.
+type Record struct {
+	ID      uint64 `json:"id"`
+	OrgID   string `json:"orgId"`
+	RoleID  string `json:"roleId"`
+	UserID  string `json:"userId"`
+	Name    string `json:"name"`
+	Purpose string `json:"purpose"`
+}

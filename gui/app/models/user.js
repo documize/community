@@ -12,7 +12,6 @@
 import { computed } from '@ember/object';
 import Model from 'ember-data/model';
 import attr from 'ember-data/attr';
-// import { belongsTo, hasMany } from 'ember-data/relationships';
 
 export default Model.extend({
 	firstname: attr('string'),
@@ -25,6 +24,7 @@ export default Model.extend({
 	viewUsers: attr('boolean', { defaultValue: false }),
 	global: attr('boolean', { defaultValue: false }),
 	accounts: attr(),
+	groups: attr(),
 	created: attr(),
 	revised: attr(),
 

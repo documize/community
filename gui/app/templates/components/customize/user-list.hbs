@@ -1,37 +1,45 @@
-<div class="view-customize mb-5">
-	<h3>Users</h3>
-	<table class="table table-hover table-responsive user-table">
+<div class="view-customize my-5">
+	
+	<div class="my-2">
+		<span class="font-weight-bold">Spaces</span>
+		<span class="text-muted">&nbsp;&nbsp;&mdash;&nbsp;can add spaces, both personal and shared with others</span>
+	</div>
+	<div class="my-2">
+		<span class="font-weight-bold">Visible</span>
+		<span class="text-muted">&nbsp;&nbsp;&mdash;&nbsp;can see names of users and groups, can disable for external users like customers/partners</span>
+	</div>
+	<div class="my-2">
+		<span class="font-weight-bold">Admin</span>
+		<span class="text-muted">&nbsp;&nbsp;&mdash;&nbsp;can manage all aspects of Documize, like this screen</span>
+	</div>
+	<div class="mt-2 mb-4">
+		<span class="font-weight-bold">Active</span>
+		<span class="text-muted">&nbsp;&nbsp;&mdash;&nbsp;can login and use Documize</span>
+	</div>
+
+	<div class="form-group mt-5 mb-3">
+		{{focus-input type="text" class="form-control" placeholder="filter users" value=filter}}
+		<small class="form-text text-muted">search firstname, lastname, email</small>
+	</div>
+
+	<table class="table table-responsive table-borderless user-table">
 		<thead>
 			<tr>
-				<th>{{input type="text" class="form-control" placeholder="filter users" value=filter}}</th>
-				<th class="no-width">Add Space</th>
-				<th class="no-width">View Users</th>
+				<th class="text-muted">
+					{{#if hasSelectedUsers}}
+						<button id="bulk-delete-users" type="button" class="btn btn-danger" data-toggle="modal" data-target="#admin-user-delete-modal" data-backdrop="static">Delete selected users</button>
+					{{/if}}					
+				</th>
+				<th class="no-width">Spaces</th>
+				<th class="no-width">Visible</th>
 				<th class="no-width">Admin</th>
 				<th class="no-width">Active</th>
 				<th class="no-width">
-					{{#if hasSelectedUsers}}
-						<button  id="bulk-delete-users" type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#admin-user-delete-modal" data-backdrop="static">Delete</button>
-
-						<div id="admin-user-delete-modal" class="modal" tabindex="-1" role="dialog">
-							<div class="modal-dialog" role="document">
-								<div class="modal-content">
-									<div class="modal-header">Delete Users</div>
-									<div class="modal-body">
-										<p>Are you sure you want to delete selected users?</p>
-									</div>
-									<div class="modal-footer">
-										<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-										<button type="button" class="btn btn-success" onclick={{action 'onBulkDelete'}}>Delete</button>
-									</div>
-								</div>
-							</div>
-						</div>
-					{{/if}}
 				</th>
 			</tr>
 		</thead>
 		<tbody>
-			{{#each filteredUsers key="id" as |user|}}
+			{{#each users key="id" as |user|}}
 				<tr>
 					<td class="{{unless user.active 'inactive-user'}} {{if user.admin 'admin-user'}}">
 						<div class="d-inline-block align-top">
@@ -44,8 +52,16 @@
 							{{/if}}
 						</div>
 						<div class="d-inline-block">
-							<div class="name d-inline-block">{{ user.fullname }}</div>
-							<div class="email">{{ user.email }}</div>
+							<div class="name" {{action "onShowEdit" user.id}}>{{user.fullname}}<div class="email">&nbsp;&nbsp;({{user.email}})</div></div>
+							<div class="groups" {{action "onShowGroupsModal" user.id}}>
+								{{#each user.groups as |group|}}
+									<span class="group">
+										{{group.name}}{{#if (not-eq group user.groups.lastObject)}}, {{/if}}
+									</span>
+								{{else}}
+									<span class="group">&lt;no groups&gt;</span>
+								{{/each}}
+							</div>
 						</div>
 					</td>
 					<td class="no-width text-center">
@@ -81,19 +97,11 @@
 						{{/if}}
 					</td>
 					<td class="no-width text-center">
-						{{#if user.me}}
-							<div class="edit-button-{{user.id}} button-icon-gray" title="Edit" {{action "onShowEdit" user.id}}>
-								<i class="material-icons">edit</i>
-							</div>
-						{{else}}
-							<div class="edit-button-{{user.id}} button-icon-gray" title="Edit" {{action "onShowEdit" user.id}}>
-								<i class="material-icons">edit</i>
-							</div>
-							<div class="button-icon-gap"></div>
-							<div class="delete-button-{{user.id}} button-icon-danger" title="Delete" {{action "onShowDelete" user.id}}>
+						{{#unless user.me}}
+							<div class="delete-button-{{user.id}} button-icon-red button-icon-small" title="Delete" {{action "onShowDelete" user.id}}>
 								<i class="material-icons">delete</i>
 							</div>
-						{{/if}}
+						{{/unless}}
 					</td>
 				</tr>
 			{{/each}}
@@ -151,3 +159,50 @@
 	<p>Are you sure you want to delete {{deleteUser.fullname}}?</p>
 {{/ui/ui-dialog}}
 
+<div id="admin-user-delete-modal" class="modal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">Delete Users</div>
+			<div class="modal-body">
+				<p>Are you sure you want to delete selected users?</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-success" onclick={{action 'onBulkDelete'}}>Delete</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="group-member-modal" class="modal" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">{{selectedUser.fullname}}</div>
+			<div class="modal-body">
+				<div class="view-customize">
+					<div class="group-membership my-5">
+						{{#each groups as |group|}}
+							<div class="row item">
+								<div class="col-10 group-name">{{group.name}}
+									{{#if group.purpose}}
+										<span class="text-muted group-purpose">&nbsp;&nbsp;&mdash;&nbsp;{{group.purpose}}</span>
+									{{/if}}
+								</div>
+								<div class="col-2 text-right">
+									{{#if group.isMember}}
+										<button class="btn btn-danger" {{action 'onLeaveGroup' group.id}}>Leave</button>
+									{{else}}
+										<button class="btn btn-success" {{action 'onJoinGroup' group.id}}>Join</button>
+									{{/if}}
+								</div>
+							</div>
+						{{/each}}
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>

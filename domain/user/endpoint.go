@@ -35,6 +35,7 @@ import (
 	"github.com/documize/community/domain/organization"
 	"github.com/documize/community/model/account"
 	"github.com/documize/community/model/audit"
+	"github.com/documize/community/model/group"
 	"github.com/documize/community/model/user"
 )
 
@@ -228,6 +229,8 @@ func (h *Handler) GetOrganizationUsers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	filter := request.Query(r, "filter")
+
 	active, err := strconv.ParseBool(request.Query(r, "active"))
 	if err != nil {
 		active = false
@@ -243,20 +246,33 @@ func (h *Handler) GetOrganizationUsers(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	} else {
-		u, err = h.Store.User.GetUsersForOrganization(ctx)
+		u, err = h.Store.User.GetUsersForOrganization(ctx, filter)
 		if err != nil && err != sql.ErrNoRows {
 			response.WriteServerError(w, method, err)
 			h.Runtime.Log.Error(method, err)
 			return
 		}
 	}
-
-	if len(u) == 0 {
-		u = []user.User{}
+	// prefetch all group membership records
+	groups, err := h.Store.Group.GetMembers(ctx)
+	if err != nil && err != sql.ErrNoRows {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
 	}
 
+	// for each user...
 	for i := range u {
+		// 1. attach user accounts
 		AttachUserAccounts(ctx, *h.Store, ctx.OrgID, &u[i])
+
+		// 2. attach user groups
+		u[i].Groups = []group.Record{}
+		for j := range groups {
+			if groups[j].UserID == u[i].RefID {
+				u[i].Groups = append(u[i].Groups, groups[j])
+			}
+		}
 	}
 
 	response.WriteJSON(w, u)

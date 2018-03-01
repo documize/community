@@ -115,7 +115,7 @@
 							<div class="form-group">
 								<label for="group-members-search">Search for group members, non-members</label>
 								{{input id="group-members-search" type="text" class="form-control mousetrap" placeholder="Search members and users..." value=searchText key-up=(action 'onSearch')}}
-								<small class="form-text text-muted">matches firstname, lastname, email</small>
+								<small class="form-text text-muted">search firstname, lastname, email</small>
 							</div>
 							<div class="view-customize">
 								<div class="group-users-members my-5">
@@ -124,7 +124,7 @@
 											<div class="row item">
 												<div class="col-10 fullname">{{member.fullname}}</div>
 												<div class="col-2 text-right">
-													<button class="btn btn-danger" {{action 'onLeaveGroup' member.userId}}>Leave</button>
+													<button class="btn btn-danger" {{action 'onLeaveGroup' member.userId}}>Remove</button>
 												</div>
 											</div>
 										{{/each}}
@@ -135,9 +135,9 @@
 												<div class="col-10 fullname">{{user.firstname}} {{user.lastname}}</div>
 												<div class="col-2 text-right">
 													{{#if user.isMember}}
-														<button class="btn btn-danger" {{action 'onLeaveGroup' user.id}}>Leave</button>
+														<button class="btn btn-danger" {{action 'onLeaveGroup' user.id}}>Remove</button>
 													{{else}}
-														<button class="btn btn-success" {{action 'onJoinGroup' user.id}}>Join</button>
+														<button class="btn btn-success" {{action 'onJoinGroup' user.id}}>Add</button>
 													{{/if}}
 												</div>
 											</div>

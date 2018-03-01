@@ -10,12 +10,14 @@
 // https://documize.com
 
 import $ from 'jquery';
-import Component from '@ember/component';
+import { inject as service } from '@ember/service';
 import { schedule, debounce } from '@ember/runloop';
+import Component from '@ember/component';
 import AuthProvider from '../../mixins/auth';
 import ModalMixin from '../../mixins/modal';
 
 export default Component.extend(AuthProvider, ModalMixin, {
+	groupSvc: service('group'),
 	editUser: null,
 	deleteUser: null,
 	filter: '',
@@ -25,12 +27,15 @@ export default Component.extend(AuthProvider, ModalMixin, {
 	init() {
 		this._super(...arguments);
 		this.password = {};
-		this.filteredUsers = [];
 		this.selectedUsers = [];	
 	},
 
 	didReceiveAttrs() {
 		this._super(...arguments);
+
+		this.get('groupSvc').getAll().then((groups) => {
+			this.set('groups', groups);
+		});
 
 		let users = this.get('users');
 
@@ -40,7 +45,6 @@ export default Component.extend(AuthProvider, ModalMixin, {
 		});
 
 		this.set('users', users);
-		this.set('filteredUsers', users);
 	},
 
 	onKeywordChange: function () {
@@ -48,17 +52,7 @@ export default Component.extend(AuthProvider, ModalMixin, {
 	}.observes('filter'),
 
 	filterUsers() {
-		let users = this.get('users');
-		let filteredUsers = [];
-		let filter = this.get('filter').toLowerCase();
-
-		users.forEach(user => {
-			if (user.get('fullname').toLowerCase().includes(filter) || user.get('email').toLowerCase().includes(filter)) {
-				filteredUsers.pushObject(user);
-			}
-		});
-
-		this.set('filteredUsers', filteredUsers);
+		this.get('onFilter')(this.get('filter'));
 	},
 
 	actions: {
@@ -184,6 +178,44 @@ export default Component.extend(AuthProvider, ModalMixin, {
 			this.set('hasSelectedUsers', false);
 
 			this.modalClose('#admin-user-delete-modal');
-		}
+		},
+
+		onShowGroupsModal(userId) {
+			let user = this.get('users').findBy('id', userId);
+			this.set('selectedUser', user);
+
+			let userGroups = user.get('groups');
+
+			// mark up groups user belongs to...
+			let groups = this.get('groups');
+			groups.forEach((g) => {
+				console.log(userGroups);
+				let hasGroup = userGroups.findBy('roleId', g.get('id'));
+				g.set('isMember', is.not.undefined(hasGroup));
+			})
+			this.set('groups', groups);
+
+			this.modalOpen("#group-member-modal", {"show": true});
+		},
+
+		onLeaveGroup(groupId) {
+			let userId = this.get('selectedUser.id');
+			let group = this.get('groups').findBy('id', groupId);
+			group.set('isMember', false);
+
+			this.get('groupSvc').leave(groupId, userId).then(() => {
+				this.filterUsers();
+			});			
+		},
+
+		onJoinGroup(groupId) {
+			let userId = this.get('selectedUser.id');
+			let group = this.get('groups').findBy('id', groupId);
+			group.set('isMember', true);
+
+			this.get('groupSvc').join(groupId, userId).then(() => {
+				this.filterUsers();
+			});			
+		}		
 	}
 });

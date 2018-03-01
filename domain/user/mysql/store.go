@@ -118,6 +118,11 @@ func (s Scope) GetActiveUsersForOrganization(ctx domain.RequestContext) (u []use
 		ORDER BY u.firstname,u.lastname`,
 		ctx.OrgID)
 
+	if err == sql.ErrNoRows || len(u) == 0 {
+		err = nil
+		u = []user.User{}
+	}
+
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("get active users by org %s", ctx.OrgID))
 	}
@@ -127,13 +132,24 @@ func (s Scope) GetActiveUsersForOrganization(ctx domain.RequestContext) (u []use
 
 // GetUsersForOrganization returns a slice containing all of the user records for the organizaiton
 // identified in the Persister.
-func (s Scope) GetUsersForOrganization(ctx domain.RequestContext) (u []user.User, err error) {
+func (s Scope) GetUsersForOrganization(ctx domain.RequestContext, filter string) (u []user.User, err error) {
+	filter = strings.TrimSpace(strings.ToLower(filter))
+	likeQuery := ""
+	if len(filter) > 0 {
+		likeQuery = " AND (LOWER(u.firstname) LIKE '%" + filter + "%' OR LOWER(u.lastname) LIKE '%" + filter + "%' OR LOWER(u.email) LIKE '%" + filter + "%') "
+	}
+
 	err = s.Runtime.Db.Select(&u,
 		`SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.password, u.salt, u.reset, u.created, u.revised,
 		u.global, a.active, a.editor, a.admin, a.users as viewusers
 		FROM user u, account a
-		WHERE u.refid=a.userid AND a.orgid=?
-		ORDER BY u.firstname, u.lastname`, ctx.OrgID)
+		WHERE u.refid=a.userid AND a.orgid=? `+likeQuery+
+			`ORDER BY u.firstname, u.lastname LIMIT 100`, ctx.OrgID)
+
+	if err == sql.ErrNoRows || len(u) == 0 {
+		err = nil
+		u = []user.User{}
+	}
 
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf(" get users for org %s", ctx.OrgID))

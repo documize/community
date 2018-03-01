@@ -11,16 +11,37 @@
 	}
 
 	.user-table {
-		.name {
-			font-size: 1rem;
-			color: $color-off-black;
-			margin: 0 0 0 30px;
+		tbody tr td, thead tr th {
+			border-top: none !important;
+			border-bottom: none !important;
 		}
 
-		.email {
-			font-size: 0.9rem;
+		.name {
+			font-size: 1.2rem;
+			font-weight: bold;
+			color: $color-link;
+			margin: 0 0 0 10px;
+			display: inline-block;
+			cursor: pointer;
+
+			> .email {
+				font-size: 0.9rem;
+				color: $color-off-black;
+				margin: 0;
+				display: inline-block;
+				font-weight: normal;
+			}
+		}
+
+		.groups {
+			cursor: pointer;
+			margin: 5px 0 0 10px;
+			font-size: 1rem;
 			color: $color-gray;
-			margin: 0 0 0 30px;
+
+			&:hover {
+				color: $color-link;
+			}
 		}
 
 		.inactive-user
@@ -76,6 +97,7 @@
 		}
 	}
 
+	// used for group admin
 	> .group-users-members {
 		> .item {
 			margin: 10px 0;
@@ -83,6 +105,22 @@
 			> .fullname {
 				color: $color-primary;
 				font-size: 1.2rem;
+			}
+		}
+	}
+
+	// used for user admin
+	> .group-membership {
+		> .item {
+			margin: 10px 0;
+
+			> .group-name {
+				color: $color-primary;
+				font-size: 1.2rem;
+
+				> .group-purpose {
+					font-size: 0.9rem;
+				}
 			}
 		}
 	}

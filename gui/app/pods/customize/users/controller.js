@@ -15,8 +15,8 @@ import Controller from '@ember/controller';
 export default Controller.extend({
 	userService: service('user'),
 
-	loadUsers() {
-		this.get('userService').getComplete().then((users) => {
+	loadUsers(filter) {
+		this.get('userService').getComplete(filter).then((users) => {
 			this.set('model', users);
 		});
 	},
@@ -30,26 +30,28 @@ export default Controller.extend({
 		
 		onAddUsers(list) {
 			return this.get('userService').addBulk(list).then(() => {
-				this.loadUsers();
+				this.loadUsers('');
 			});
 		},
 
 		onDelete(userId) {
 			this.get('userService').remove(userId).then( () => {
-				this.loadUsers();
+				this.loadUsers('');
 			});
 		},
 
 		onSave(user) {
 			this.get('userService').save(user).then(() => {
-				this.get('userService').getComplete().then((users) => {
-					this.set('model', users);
-				});
+				this.loadUsers('');
 			});
 		},
 
 		onPassword(user, password) {
 			this.get('userService').updatePassword(user.id, password);
+		},
+
+		onFilter(filter) {
+			this.loadUsers(filter);
 		}
 	}
 });
