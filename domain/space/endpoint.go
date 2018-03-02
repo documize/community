@@ -110,10 +110,10 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 
 	perm := permission.Permission{}
 	perm.OrgID = sp.OrgID
-	perm.Who = "user"
+	perm.Who = permission.UserPermission
 	perm.WhoID = ctx.UserID
-	perm.Scope = "object"
-	perm.Location = "space"
+	perm.Scope = permission.ScopeRow
+	perm.Location = permission.LocationSpace
 	perm.RefID = sp.RefID
 	perm.Action = "" // we send array for actions below
 
@@ -800,10 +800,10 @@ func (h *Handler) Invite(w http.ResponseWriter, r *http.Request) {
 
 			perm := permission.Permission{}
 			perm.OrgID = sp.OrgID
-			perm.Who = "user"
+			perm.Who = permission.UserPermission
 			perm.WhoID = u.RefID
-			perm.Scope = "object"
-			perm.Location = "space"
+			perm.Scope = permission.ScopeRow
+			perm.Location = permission.LocationSpace
 			perm.RefID = sp.RefID
 			perm.Action = "" // we send array for actions below
 

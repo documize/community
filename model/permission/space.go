@@ -118,12 +118,12 @@ func HasAnyPermission(p Record) bool {
 func EncodeRecord(r Record, a Action) (p Permission) {
 	p = Permission{}
 	p.OrgID = r.OrgID
-	p.Who = "user"
+	p.Who = UserPermission
 	p.WhoID = r.UserID
-	p.Location = "space"
+	p.Location = LocationSpace
 	p.RefID = r.SpaceID
 	p.Action = a
-	p.Scope = "object" // default to row level permission
+	p.Scope = ScopeRow
 
 	return
 }

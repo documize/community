@@ -42,8 +42,8 @@ func TestSpace(t *testing.T) {
 		perm.OrgID = ctx.OrgID
 		perm.Who = "user"
 		perm.WhoID = ctx.UserID
-		perm.Scope = "object"
-		perm.Location = "space"
+		perm.Scope = permission.ScopeRow
+		perm.Location = permission.LocationSpace
 		perm.RefID = spaceID
 		perm.Action = "" // we send array for actions below
 
@@ -109,8 +109,8 @@ func TestSpace(t *testing.T) {
 		perm.OrgID = ctx.OrgID
 		perm.Who = "user"
 		perm.WhoID = ctx.UserID
-		perm.Scope = "object"
-		perm.Location = "space"
+		perm.Scope = permission.ScopeRow
+		perm.Location = permission.LocationSpace
 		perm.RefID = spaceID2
 		perm.Action = "" // we send array for actions below
 
@@ -170,8 +170,8 @@ func TestSpace(t *testing.T) {
 		perm.OrgID = ctx.OrgID
 		perm.Who = "user"
 		perm.WhoID = ctx.UserID
-		perm.Scope = "object"
-		perm.Location = "space"
+		perm.Scope = permission.ScopeRow
+		perm.Location = permission.LocationSpace
 		perm.RefID = spaceID
 		perm.Action = "" // we send array for actions below
 

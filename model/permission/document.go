@@ -67,12 +67,12 @@ func HasAnyDocumentPermission(p DocumentRecord) bool {
 func EncodeDocumentRecord(r DocumentRecord, a Action) (p Permission) {
 	p = Permission{}
 	p.OrgID = r.OrgID
-	p.Who = "user"
+	p.Who = UserPermission
 	p.WhoID = r.UserID
-	p.Location = "document"
+	p.Location = LocationDocument
 	p.RefID = r.DocumentID
 	p.Action = a
-	p.Scope = "object" // default to row level permission
+	p.Scope = ScopeRow
 
 	return
 }

@@ -30,7 +30,6 @@ import (
 	"github.com/documize/community/model/audit"
 	"github.com/documize/community/model/permission"
 	"github.com/documize/community/model/space"
-	"github.com/documize/community/model/user"
 )
 
 // Handler contains the runtime information such as logging and database.
@@ -178,10 +177,10 @@ func (h *Handler) SetSpacePermissions(w http.ResponseWriter, r *http.Request) {
 	if !me {
 		perm := permission.Permission{}
 		perm.OrgID = ctx.OrgID
-		perm.Who = "user"
+		perm.Who = permission.UserPermission
 		perm.WhoID = ctx.UserID
-		perm.Scope = "object"
-		perm.Location = "space"
+		perm.Scope = permission.ScopeRow
+		perm.Location = permission.LocationSpace
 		perm.RefID = id
 		perm.Action = "" // we send array for actions below
 
@@ -236,9 +235,6 @@ func (h *Handler) GetSpacePermissions(w http.ResponseWriter, r *http.Request) {
 		response.WriteServerError(w, method, err)
 		return
 	}
-	if len(perms) == 0 {
-		perms = []permission.Permission{}
-	}
 
 	userPerms := make(map[string][]permission.Permission)
 	for _, p := range perms {
@@ -269,9 +265,6 @@ func (h *Handler) GetUserSpacePermissions(w http.ResponseWriter, r *http.Request
 		response.WriteServerError(w, method, err)
 		return
 	}
-	if len(perms) == 0 {
-		perms = []permission.Permission{}
-	}
 
 	record := permission.DecodeUserPermissions(perms)
 	response.WriteJSON(w, record)
@@ -293,9 +286,6 @@ func (h *Handler) GetCategoryViewers(w http.ResponseWriter, r *http.Request) {
 		response.WriteServerError(w, method, err)
 		return
 	}
-	if len(u) == 0 {
-		u = []user.User{}
-	}
 
 	response.WriteJSON(w, u)
 }
@@ -315,9 +305,6 @@ func (h *Handler) GetCategoryPermissions(w http.ResponseWriter, r *http.Request)
 	if err != nil && err != sql.ErrNoRows {
 		response.WriteServerError(w, method, err)
 		return
-	}
-	if len(u) == 0 {
-		u = []permission.Permission{}
 	}
 
 	response.WriteJSON(w, u)
@@ -380,10 +367,10 @@ func (h *Handler) SetCategoryPermissions(w http.ResponseWriter, r *http.Request)
 	for _, m := range model {
 		perm := permission.Permission{}
 		perm.OrgID = ctx.OrgID
-		perm.Who = "user"
+		perm.Who = permission.UserPermission
 		perm.WhoID = m.UserID
-		perm.Scope = "object"
-		perm.Location = "category"
+		perm.Scope = permission.ScopeRow
+		perm.Location = permission.LocationCategory
 		perm.RefID = m.CategoryID
 		perm.Action = permission.CategoryView
 
@@ -418,9 +405,6 @@ func (h *Handler) GetDocumentPermissions(w http.ResponseWriter, r *http.Request)
 		response.WriteServerError(w, method, err)
 		return
 	}
-	if len(perms) == 0 {
-		perms = []permission.Permission{}
-	}
 
 	userPerms := make(map[string][]permission.Permission)
 	for _, p := range perms {
@@ -450,9 +434,6 @@ func (h *Handler) GetUserDocumentPermissions(w http.ResponseWriter, r *http.Requ
 	if err != nil && err != sql.ErrNoRows {
 		response.WriteServerError(w, method, err)
 		return
-	}
-	if len(perms) == 0 {
-		perms = []permission.Permission{}
 	}
 
 	record := permission.DecodeUserDocumentPermissions(perms)

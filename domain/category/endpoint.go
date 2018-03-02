@@ -82,10 +82,10 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 
 	perm := pm.Permission{}
 	perm.OrgID = ctx.OrgID
-	perm.Who = "user"
+	perm.Who = pm.UserPermission
 	perm.WhoID = ctx.UserID
-	perm.Scope = "object"
-	perm.Location = "category"
+	perm.Scope = pm.ScopeRow
+	perm.Location = pm.LocationCategory
 	perm.RefID = cat.RefID
 	perm.Action = pm.CategoryView
 
