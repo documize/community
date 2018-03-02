@@ -202,6 +202,11 @@ export default Component.extend(AuthProvider, ModalMixin, {
 			let group = this.get('groups').findBy('id', groupId);
 			group.set('isMember', false);
 
+			if (is.undefined(groupId) || is.undefined(userId)) {
+				console.log(groupId, userId);
+				return;
+			}
+
 			this.get('groupSvc').leave(groupId, userId).then(() => {
 				this.filterUsers();
 			});			
@@ -211,6 +216,11 @@ export default Component.extend(AuthProvider, ModalMixin, {
 			let userId = this.get('selectedUser.id');
 			let group = this.get('groups').findBy('id', groupId);
 			group.set('isMember', true);
+
+			if (is.undefined(groupId) || is.undefined(userId)) {
+				console.log(groupId, userId);
+				return;
+			}
 
 			this.get('groupSvc').join(groupId, userId).then(() => {
 				this.filterUsers();

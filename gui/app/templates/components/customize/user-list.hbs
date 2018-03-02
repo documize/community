@@ -97,7 +97,11 @@
 						{{/if}}
 					</td>
 					<td class="no-width text-center">
+						<div class="user-button-{{user.id}} button-icon-gray button-icon-small" title="Edit" {{action "onShowEdit" user.id}}>
+							<i class="material-icons">mode_edit</i>
+						</div>
 						{{#unless user.me}}
+							<div class="button-icon-gap" />
 							<div class="delete-button-{{user.id}} button-icon-red button-icon-small" title="Delete" {{action "onShowDelete" user.id}}>
 								<i class="material-icons">delete</i>
 							</div>
@@ -132,15 +136,15 @@
 							<div class="col-md-6">
 								<div class="form-group">
 									<label for="edit-password">Password</label>
-									<div class="tip">Optional new password</div>
 									{{input id="edit-password" type="password" class="form-control" value=password.password}}
+									<small class="form-text text-muted">Optional new password</small>
 								</div>
 							</div>
 							<div class="col-md-6">
 								<div class="form-group">
 									<label for="edit-confirmPassword">Confirm Password</label>
-									<div class="tip">Confirm new password</div>
 									{{input id="edit-confirmPassword" type="password" class="form-control" value=password.confirmation}}
+									<small class="form-text text-muted">Confirm new password</small>
 								</div>
 							</div>
 						</div>
