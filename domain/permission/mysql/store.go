@@ -35,7 +35,7 @@ func (s Scope) AddPermission(ctx domain.RequestContext, r permission.Permission)
 	r.Created = time.Now().UTC()
 
 	_, err = ctx.Transaction.Exec("INSERT INTO permission (orgid, who, whoid, action, scope, location, refid, created) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-		r.OrgID, r.Who, r.WhoID, string(r.Action), r.Scope, r.Location, r.RefID, r.Created)
+		r.OrgID, string(r.Who), r.WhoID, string(r.Action), string(r.Scope), string(r.Location), r.RefID, r.Created)
 
 	if err != nil {
 		err = errors.Wrap(err, "unable to execute insert permission")
@@ -64,7 +64,8 @@ func (s Scope) AddPermissions(ctx domain.RequestContext, r permission.Permission
 func (s Scope) GetUserSpacePermissions(ctx domain.RequestContext, spaceID string) (r []permission.Permission, err error) {
 	err = s.Runtime.Db.Select(&r, `
 		SELECT id, orgid, who, whoid, action, scope, location, refid
-			FROM permission WHERE orgid=? AND location='space' AND refid=? AND who='user' AND (whoid=? OR whoid='0')
+			FROM permission
+			WHERE orgid=? AND location='space' AND refid=? AND who='user' AND (whoid=? OR whoid='0')
 		UNION ALL
 		SELECT p.id, p.orgid, p.who, p.whoid, p.action, p.scope, p.location, p.refid
 			FROM permission p

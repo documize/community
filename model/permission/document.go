@@ -15,11 +15,12 @@ package permission
 // This data structure is made from database permission records for the document,
 // and it is designed to be sent to HTTP clients (web, mobile).
 type DocumentRecord struct {
-	OrgID               string `json:"orgId"`
-	DocumentID          string `json:"documentId"`
-	UserID              string `json:"userId"`
-	DocumentRoleEdit    bool   `json:"documentRoleEdit"`
-	DocumentRoleApprove bool   `json:"documentRoleApprove"`
+	OrgID               string  `json:"orgId"`
+	DocumentID          string  `json:"documentId"`
+	WhoID               string  `json:"whoId"`
+	Who                 WhoType `json:"who"`
+	DocumentRoleEdit    bool    `json:"documentRoleEdit"`
+	DocumentRoleApprove bool    `json:"documentRoleApprove"`
 }
 
 // DecodeUserDocumentPermissions returns a flat, usable permission summary record
@@ -29,7 +30,8 @@ func DecodeUserDocumentPermissions(perm []Permission) (r DocumentRecord) {
 
 	if len(perm) > 0 {
 		r.OrgID = perm[0].OrgID
-		r.UserID = perm[0].WhoID
+		r.WhoID = perm[0].WhoID
+		r.Who = perm[0].Who
 		r.DocumentID = perm[0].RefID
 	}
 
@@ -67,8 +69,8 @@ func HasAnyDocumentPermission(p DocumentRecord) bool {
 func EncodeDocumentRecord(r DocumentRecord, a Action) (p Permission) {
 	p = Permission{}
 	p.OrgID = r.OrgID
-	p.Who = UserPermission
-	p.WhoID = r.UserID
+	p.WhoID = r.WhoID
+	p.Who = r.Who
 	p.Location = LocationDocument
 	p.RefID = r.DocumentID
 	p.Action = a

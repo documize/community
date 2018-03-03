@@ -10,7 +10,6 @@
 // https://documize.com
 
 import $ from 'jquery';
-import Component from '@ember/component';
 import { computed } from '@ember/object';
 import { schedule } from '@ember/runloop';
 import { inject as service } from '@ember/service';
@@ -18,6 +17,7 @@ import TooltipMixin from '../../mixins/tooltip';
 import ModalMixin from '../../mixins/modal';
 import AuthMixin from '../../mixins/auth';
 import stringUtil from '../../utils/string';
+import Component from '@ember/component';
 
 export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 	spaceService: service('folder'),

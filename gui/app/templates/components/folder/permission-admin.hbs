@@ -27,38 +27,50 @@
 							</tr>
 						</thead>
 						<tbody>
-							{{#each permissions as |permission|}}
+							{{#each spacePermissions as |permission|}}
 								<tr>
-									<td>{{permission.fullname}} {{if (eq permission.userId session.user.id) '(you)'}}</td>
 									<td>
-										{{input type="checkbox" id=(concat 'space-role-view-' permission.userId) checked=permission.spaceView}}
+										{{#if (eq permission.who "role")}}
+											<span class="button-icon-gray button-icon-small align-middle">
+												<i class="material-icons">people</i>
+											</span>
+											&nbsp;<b>{{permission.name}}</b>
+										{{else}}
+											<span class="button-icon-gray button-icon-small align-middle">
+												<i class="material-icons">person</i>
+											</span>
+											&nbsp;<b>{{permission.name}}</b> {{if (eq permission.whoId session.user.id) '(you)'}}
+										{{/if}}
 									</td>
 									<td>
-										{{input type="checkbox" id=(concat 'space-role-manage-' permission.userId) checked=permission.spaceManage}}
+										{{input type="checkbox" id=(concat 'space-role-view-' permission.whoId) checked=permission.spaceView}}
 									</td>
 									<td>
-										{{input type="checkbox" id=(concat 'space-role-owner-' permission.userId) checked=permission.spaceOwner}}
+										{{input type="checkbox" id=(concat 'space-role-manage-' permission.whoId) checked=permission.spaceManage}}
 									</td>
 									<td>
-										{{input type="checkbox" id=(concat 'doc-role-add-' permission.userId) checked=permission.documentAdd}}
+										{{input type="checkbox" id=(concat 'space-role-owner-' permission.whoId) checked=permission.spaceOwner}}
 									</td>
 									<td>
-										{{input type="checkbox" id=(concat 'doc-role-edit-' permission.userId) checked=permission.documentEdit}}
+										{{input type="checkbox" id=(concat 'doc-role-add-' permission.whoId) checked=permission.documentAdd}}
 									</td>
 									<td>
-										{{input type="checkbox" id=(concat 'doc-role-delete-' permission.userId) checked=permission.documentDelete}}
+										{{input type="checkbox" id=(concat 'doc-role-edit-' permission.whoId) checked=permission.documentEdit}}
 									</td>
 									<td>
-										{{input type="checkbox" id=(concat 'doc-role-move-' permission.userId) checked=permission.documentMove}}
+										{{input type="checkbox" id=(concat 'doc-role-delete-' permission.whoId) checked=permission.documentDelete}}
 									</td>
 									<td>
-										{{input type="checkbox" id=(concat 'doc-role-copy-' permission.userId) checked=permission.documentCopy}}
+										{{input type="checkbox" id=(concat 'doc-role-move-' permission.whoId) checked=permission.documentMove}}
 									</td>
 									<td>
-										{{input type="checkbox" id=(concat 'doc-role-template-' permission.userId) checked=permission.documentTemplate}}
+										{{input type="checkbox" id=(concat 'doc-role-copy-' permission.whoId) checked=permission.documentCopy}}
 									</td>
 									<td>
-										{{input type="checkbox" id=(concat 'doc-role-approve-' permission.userId) checked=permission.documentApprove}}
+										{{input type="checkbox" id=(concat 'doc-role-template-' permission.whoId) checked=permission.documentTemplate}}
+									</td>
+									<td>
+										{{input type="checkbox" id=(concat 'doc-role-approve-' permission.whoId) checked=permission.documentApprove}}
 									</td>
 								</tr>
 							{{/each}}

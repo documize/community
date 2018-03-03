@@ -41,3 +41,27 @@ type Record struct {
 	Name    string `json:"name"`
 	Purpose string `json:"purpose"`
 }
+
+// UserHasGroupMembership returns true if user belongs to specified group.
+func UserHasGroupMembership(r []Record, groupID, userID string) bool {
+	for i := range r {
+		if r[i].RoleID == groupID && r[i].UserID == userID {
+			return true
+		}
+	}
+
+	return false
+}
+
+// FilterGroupRecords returns only those records matching group ID.
+func FilterGroupRecords(r []Record, groupID string) (m []Record) {
+	m = []Record{}
+
+	for i := range r {
+		if r[i].RoleID == groupID {
+			m = append(m, r[i])
+		}
+	}
+
+	return
+}

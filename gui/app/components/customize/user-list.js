@@ -203,7 +203,6 @@ export default Component.extend(AuthProvider, ModalMixin, {
 			group.set('isMember', false);
 
 			if (is.undefined(groupId) || is.undefined(userId)) {
-				console.log(groupId, userId);
 				return;
 			}
 
@@ -218,7 +217,6 @@ export default Component.extend(AuthProvider, ModalMixin, {
 			group.set('isMember', true);
 
 			if (is.undefined(groupId) || is.undefined(userId)) {
-				console.log(groupId, userId);
 				return;
 			}
 

@@ -4,7 +4,7 @@ export default ApplicationSerializer.extend({
 	normalize(modelClass, resourceHash) {
 		return {
 			data: {
-				id: resourceHash.userId ? resourceHash.userId : 0,
+				id: resourceHash.whoId ? resourceHash.whoId : 0,
 				type: modelClass.modelName,
 				attributes: resourceHash
 			}

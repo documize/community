@@ -20,6 +20,7 @@ export default BaseService.extend({
 	localStorage: service(),
 	store: service(),
 	currentFolder: null,
+	permissions: null,
 
 	init() {
 		this._super(...arguments);

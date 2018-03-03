@@ -9,78 +9,76 @@
 //
 // https://documize.com
 
-import { setProperties } from '@ember/object';
-import Component from '@ember/component';
 import { inject as service } from '@ember/service';
+import { A } from "@ember/array"
 import ModalMixin from '../../mixins/modal';
+import Component from '@ember/component';
 
 export default Component.extend(ModalMixin, {
-	folderService: service('folder'),
-	userService: service('user'),
-	appMeta: service(),
+	groupSvc: service('group'),
+	spaceSvc: service('folder'),
+	userSvc: service('user'),
+	appMeta: service(), 
 	store: service(),
+	spacePermissions: null,
 
 	didReceiveAttrs() {
-		this.get('userService').getSpaceUsers(this.get('folder.id')).then((users) => {
-			this.set('users', users);
+		let spacePermissions = A([]);
+		let constants = this.get('constants');
 
-			// set up users
-			let folderPermissions = [];
+		// get groups
+		this.get('groupSvc').getAll().then((groups) => {
+			this.set('groups', groups);
 
-			users.forEach((user) => {
-				let u = {
-					orgId: this.get('folder.orgId'),
-					folderId: this.get('folder.id'),
-					userId: user.get('id'),
-					fullname: user.get('fullname'),
-					spaceView: false,
-					spaceManage: false,
-					spaceOwner: false,
-					documentAdd: false,
-					documentEdit: false,
-					documentDelete: false,
-					documentMove: false,
-					documentCopy: false,
-					documentTemplate: false,
-					documentApprove: false,
-				};
-
-				let data = this.get('store').normalize('space-permission', u)
-				folderPermissions.pushObject(this.get('store').push(data));
+			groups.forEach((g) => {
+				let pr = this.permissionRecord(constants.WhoType.Group, g.get('id'), g.get('name'));
+				spacePermissions.pushObject(pr);
 			});
 
-			// set up Everyone user
-			let u = {
-				orgId: this.get('folder.orgId'),
-				folderId: this.get('folder.id'),
-				userId: '0',
-				fullname: ' Everyone',
-				spaceView: false,
-				spaceManage: false,
-				spaceOwner: false,
-				documentAdd: false,
-				documentEdit: false,
-				documentDelete: false,
-				documentMove: false,
-				documentCopy: false,
-				documentTemplate: false,
-				documentApprove: false,
-		};
-
-			let data = this.get('store').normalize('space-permission', u)
-			folderPermissions.pushObject(this.get('store').push(data));
-
-			this.get('folderService').getPermissions(this.get('folder.id')).then((permissions) => {
-				permissions.forEach((permission, index) => { // eslint-disable-line no-unused-vars
-					let record = folderPermissions.findBy('userId', permission.get('userId'));
-					if (is.not.undefined(record)) {
-						record = setProperties(record, permission);
+			// get space permissions
+			this.get('spaceSvc').getPermissions(this.get('folder.id')).then((permissions) => {
+				permissions.forEach((perm, index) => { // eslint-disable-line no-unused-vars
+					// is this permission for group or user?
+					if (perm.get('who') === constants.WhoType.Group) {
+						// group permission
+						spacePermissions.forEach((sp) => {
+							if (sp.get('whoId') == perm.get('whoId')) {
+								sp.setProperties(perm);
+							}
+						});
+					} else {
+						// user permission
+						spacePermissions.pushObject(perm);
 					}
 				});
 
-				this.set('permissions', folderPermissions.sortBy('fullname'));
+				this.set('spacePermissions', spacePermissions.sortBy('who', 'name'));
 			});
 		});
+	},
+
+	permissionRecord(who, whoId, name) {
+		let raw = {
+			id: whoId,
+			orgId: this.get('folder.orgId'),
+			folderId: this.get('folder.id'),
+			whoId: whoId,
+			who: who,
+			name: name,
+			spaceView: false,
+			spaceManage: false,
+			spaceOwner: false,
+			documentAdd: false,
+			documentEdit: false,
+			documentDelete: false,
+			documentMove: false,
+			documentCopy: false,
+			documentTemplate: false,
+			documentApprove: false,
+		};
+
+		let rec = this.get('store').normalize('space-permission', raw);
+		return this.get('store').push(rec);
 	},
 
 	getDefaultInvitationMessage() {
@@ -90,12 +88,13 @@ export default Component.extend(ModalMixin, {
 	actions: {
 		setPermissions() {
 			let message = this.getDefaultInvitationMessage();
-			let permissions = this.get('permissions');
+			let permissions = this.get('spacePermissions');
 			let folder = this.get('folder');
 			let payload = { Message: message, Permissions: permissions };
+			let constants = this.get('constants');
 
-			let hasEveryone = _.find(permissions, function (permission) {
-				return permission.get('userId') === "0" &&
+			let hasEveryone = _.find(permissions, (permission) => {
+				return permission.get('whoId') === constants.EveryoneUserId &&
 					(permission.get('spaceView') || permission.get('documentAdd') || permission.get('documentEdit') || permission.get('documentDelete') ||
 					permission.get('documentMove') || permission.get('documentCopy') || permission.get('documentTemplate') || permission.get('documentApprove'));
 			});
@@ -103,7 +102,7 @@ export default Component.extend(ModalMixin, {
 			// see if more than oen user is granted access to space (excluding everyone)
 			let roleCount = 0;
 			permissions.forEach((permission) => {
-				if (permission.get('userId') !== "0" &&
+				if (permission.get('whoId') !== constants.EveryoneUserId &&
 					(permission.get('spaceView') || permission.get('documentAdd') || permission.get('documentEdit') || permission.get('documentDelete') ||
 					permission.get('documentMove') || permission.get('documentCopy') || permission.get('documentTemplate') || permission.get('documentApprove'))) {
 						roleCount += 1;
@@ -120,7 +119,7 @@ export default Component.extend(ModalMixin, {
 				}
 			}
 
-			this.get('folderService').savePermissions(folder.get('id'), payload).then(() => {
+			this.get('spaceSvc').savePermissions(folder.get('id'), payload).then(() => {
 				this.modalClose('#space-permission-modal');
 			});
 		}

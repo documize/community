@@ -11,14 +11,12 @@
 
 import Model from 'ember-data/model';
 import attr from 'ember-data/attr';
-// import { belongsTo, hasMany } from 'ember-data/relationships';
 
 export default Model.extend({
 	orgId: attr('string'),
 	folderId: attr('string'),
-	userId: attr('string'),
-	fullname: attr('string'), // client-side usage only, not from API
-
+	whoId: attr('string'),
+	who: attr('string'),
 	spaceView: attr('boolean'),
 	spaceManage: attr('boolean'),
 	spaceOwner: attr('boolean'),
@@ -28,5 +26,6 @@ export default Model.extend({
 	documentMove: attr('boolean'),
 	documentCopy: attr('boolean'),
 	documentTemplate: attr('boolean'),
-	documentApprove: attr('boolean')
+	documentApprove: attr('boolean'),
+	name: attr('string') // read-only
 });

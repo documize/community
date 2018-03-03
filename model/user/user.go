@@ -71,3 +71,8 @@ func Exists(users []User, userID string) bool {
 
 	return false
 }
+
+const (
+	// EveryoneUserID provides a shortcut to state "all authenticated users".
+	EveryoneUserID string = "0"
+)
