@@ -3,9 +3,9 @@
 		<div class="modal-content">
 			<div class="modal-header">Space Permissions</div>
 			<div class="modal-body" style="overflow-x: auto;">
-
 				<div class="space-admin table-responsive">
-					<table class="table table-hover permission-table">
+					
+					<table class="table table-hover permission-table mb-3">
 						<thead>
 							<tr>
 								<th></th>
@@ -31,15 +31,28 @@
 								<tr>
 									<td>
 										{{#if (eq permission.who "role")}}
-											<span class="button-icon-gray button-icon-small align-middle">
+											<span class="button-icon-blue button-icon-small align-middle">
 												<i class="material-icons">people</i>
 											</span>
-											&nbsp;<b>{{permission.name}}</b>
-										{{else}}
-											<span class="button-icon-gray button-icon-small align-middle">
-												<i class="material-icons">person</i>
+											<span class="color-blue">&nbsp;{{permission.name}}
+												<small class="form-text text-muted d-inline-block">({{permission.members}})</small>
 											</span>
-											&nbsp;<b>{{permission.name}}</b> {{if (eq permission.whoId session.user.id) '(you)'}}
+										{{else}}
+												{{#if (eq permission.whoId constants.EveryoneUserId)}}
+													<span class="button-icon-green button-icon-small align-middle">
+														<i class="material-icons">language</i>
+													</span>
+													<span class="color-green">&nbsp;{{permission.name}}</span>
+												{{else}}
+													<span class="button-icon-gray button-icon-small align-middle">
+														<i class="material-icons">person</i>
+													</span>
+													<span class="">&nbsp;{{permission.name}} 
+														{{#if (eq permission.whoId session.user.id)}}
+															<small class="form-text text-muted d-inline-block">(you)</small>
+														{{/if}}
+													</span>
+												{{/if}}
 										{{/if}}
 									</td>
 									<td>
@@ -76,8 +89,27 @@
 							{{/each}}
 						</tbody>
 					</table>
-				</div>
 
+					<div class="container-fluid">
+						<div class="row justify-content-center">
+							<div class="col-6">
+								<div class="form-group">
+									{{focus-input id="user-search" type="text" class="form-control mousetrap" placeholder="Search users..." value=searchText key-up=(action 'onSearch')}}
+									<small class="form-text text-muted">firstname, lastname, email</small>
+								</div>
+								{{#each filteredUsers as |user|}}
+									<div class="row my-3">
+										<div class="col-10">{{user.fullname}}</div>
+										<div class="col-2 text-right">
+											<button class="btn btn-primary" {{action 'onAdd' user}}>Add</button>
+										</div>
+									</div>
+								{{/each}}
+							</div>
+						</div>
+					</div>
+				
+				</div>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>

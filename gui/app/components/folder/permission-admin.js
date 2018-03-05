@@ -11,6 +11,7 @@
 
 import { inject as service } from '@ember/service';
 import { A } from "@ember/array"
+import { debounce } from '@ember/runloop';
 import ModalMixin from '../../mixins/modal';
 import Component from '@ember/component';
 
@@ -21,7 +22,9 @@ export default Component.extend(ModalMixin, {
 	appMeta: service(), 
 	store: service(),
 	spacePermissions: null,
-
+	users: null,
+	searchText: '',
+	
 	didReceiveAttrs() {
 		let spacePermissions = A([]);
 		let constants = this.get('constants');
@@ -32,8 +35,11 @@ export default Component.extend(ModalMixin, {
 
 			groups.forEach((g) => {
 				let pr = this.permissionRecord(constants.WhoType.Group, g.get('id'), g.get('name'));
+				pr.set('members', g.get('members'));
 				spacePermissions.pushObject(pr);
 			});
+
+			let hasEveryoneId = false;
 
 			// get space permissions
 			this.get('spaceSvc').getPermissions(this.get('folder.id')).then((permissions) => {
@@ -48,13 +54,25 @@ export default Component.extend(ModalMixin, {
 						});
 					} else {
 						// user permission
+						if (perm.get('whoId') === constants.EveryoneUserId) {
+							perm.set('name', ' ' + perm.get('name'));
+							hasEveryoneId = true;
+						}
 						spacePermissions.pushObject(perm);
 					}
 				});
 
+				// always show everyone
+				if (!hasEveryoneId) {
+					let pr = this.permissionRecord(constants.WhoType.User, constants.EveryoneUserId, ' ' + constants.EveryoneUserName);
+					spacePermissions.pushObject(pr);					
+				}
+
 				this.set('spacePermissions', spacePermissions.sortBy('who', 'name'));
 			});
 		});
+
+		this.set('searchText', '');
 	},
 
 	permissionRecord(who, whoId, name) {
@@ -83,6 +101,24 @@ export default Component.extend(ModalMixin, {
 
 	getDefaultInvitationMessage() {
 		return "Hey there, I am sharing the " + this.get('folder.name') + " space (in " + this.get("appMeta.title") + ") with you so we can both collaborate on documents.";
+	},
+
+	matchUsers(s) {
+		let spacePermissions = this.get('spacePermissions');
+		let filteredUsers = A([]);
+
+		this.get('userSvc').matchUsers(s).then((users) => {
+
+			users.forEach((user) => {
+				let exists = spacePermissions.findBy('whoId', user.get('id'));
+
+				if (is.undefined(exists)) {
+					filteredUsers.pushObject(user);
+				}
+			});
+
+			this.set('filteredUsers', filteredUsers);
+		});
 	},
 
 	actions: {
@@ -122,6 +158,31 @@ export default Component.extend(ModalMixin, {
 			this.get('spaceSvc').savePermissions(folder.get('id'), payload).then(() => {
 				this.modalClose('#space-permission-modal');
 			});
-		}
+		},
+
+		onSearch() {
+			debounce(this, function() {
+				let searchText = this.get('searchText').trim();
+
+				if (searchText.length === 0) {
+					this.set('filteredUsers', A([]));
+					return;
+				}
+
+				this.matchUsers(searchText);
+			}, 250);
+		},
+
+		onAdd(user) {
+			let spacePermissions = this.get('spacePermissions');
+			let constants = this.get('constants');
+
+			let exists = spacePermissions.findBy('whoId', user.get('id'));
+			if (is.undefined(exists)) {
+				spacePermissions.pushObject(this.permissionRecord(constants.WhoType.User, user.get('id'), user.get('fullname')));
+				this.set('spacePermissions', spacePermissions);
+				// this.set('spacePermissions', spacePermissions.sortBy('who', 'name'));
+			}
+		},
 	}
 });

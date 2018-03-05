@@ -59,7 +59,8 @@ let constants = EmberObject.extend({
         Group:          'role'
     },
 
-    EveryoneUserId: "0"
+    EveryoneUserId: "0",
+    EveryoneUserName: "Everyone"
 });
 
 export default { constants }
