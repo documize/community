@@ -51,12 +51,6 @@ export default Component.extend(ModalMixin, TooltipMixin, {
 			// get summary of documents and users for each category in space
 			this.get('categorySvc').getSummary(this.get('folder.id')).then((s) => {
 				c.forEach((cat) => {
-					// let docs = _.findWhere(s, {categoryId: cat.get('id'), type: 'documents'});
-					// let docCount = is.not.undefined(docs) ? docs.count : 0;
-
-					// let users = _.findWhere(s, {categoryId: cat.get('id'), type: 'users'});
-					// let userCount = is.not.undefined(users) ? users.count : 0;
-
 					let docs = _.where(s, {categoryId: cat.get('id'), type: 'documents'});
 					let docCount = 0;
 					docs.forEach((d) => { docCount = docCount + d.count });
@@ -188,8 +182,7 @@ export default Component.extend(ModalMixin, TooltipMixin, {
 						let c = categoryPermissions.findBy('whoId', perm.get('whoId'));
 						if (is.not.undefined(c)) {
 							c.set('selected', true);
-						} 
-						console.log(perm.get('whoId'));
+						}
 					});
 	
 					this.set('categoryPermissions', categoryPermissions.sortBy('who', 'name'));
