@@ -656,11 +656,10 @@ func (h *Handler) SetDocumentPermissions(w http.ResponseWriter, r *http.Request)
 		perm.OrgID = ctx.OrgID
 		perm.DocumentID = id
 
+		// get group records for just this group
 		isGroup := perm.Who == permission.GroupPermission
 		groupRecords := []group.Record{}
-
 		if isGroup {
-			// get group records for just this group
 			groupRecords = group.FilterGroupRecords(groupMembers, perm.WhoID)
 		}
 
