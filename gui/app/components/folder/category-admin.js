@@ -17,7 +17,6 @@ import ModalMixin from '../../mixins/modal';
 import Component from '@ember/component';
 
 export default Component.extend(ModalMixin, TooltipMixin, {
-	// userService: service('user'),
 	spaceSvc: service('folder'),
 	groupSvc: service('group'),
 	categorySvc: service('category'),

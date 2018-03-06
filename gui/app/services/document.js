@@ -343,7 +343,7 @@ export default Service.extend({
 			perms = this.get('store').push(perms);
 			this.get('folderService').set('permissions', perms);
 
-			let roles = this.get('store').normalize('document-role', response.roles);
+			let roles = this.get('store').normalize('document-permission', response.roles);
 			roles = this.get('store').push(roles);
 
 			let folders = response.folders.map((obj) => {
