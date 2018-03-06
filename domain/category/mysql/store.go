@@ -80,8 +80,9 @@ func (s Scope) GetAllBySpace(ctx domain.RequestContext, spaceID string) (c []cat
 		))
 	  ORDER BY category`, ctx.OrgID, spaceID, ctx.OrgID, ctx.OrgID, ctx.UserID, ctx.OrgID, ctx.UserID)
 
-	if err == sql.ErrNoRows {
+	if err == sql.ErrNoRows || len(c) == 0 {
 		err = nil
+		c = []category.Category{}
 	}
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to execute select all categories for space %s", spaceID))
@@ -190,20 +191,20 @@ func (s Scope) DeleteBySpace(ctx domain.RequestContext, spaceID string) (rows in
 // GetSpaceCategorySummary returns number of documents and users for space categories.
 func (s Scope) GetSpaceCategorySummary(ctx domain.RequestContext, spaceID string) (c []category.SummaryModel, err error) {
 	err = s.Runtime.Db.Select(&c, `
-		SELECT 'documents' as type, categoryid, COUNT(*) as count FROM categorymember WHERE orgid=? AND labelid=? GROUP BY categoryid, type
+		SELECT 'documents' as type, categoryid, COUNT(*) as count
+			FROM categorymember
+			WHERE orgid=? AND labelid=? GROUP BY categoryid, type
 		UNION ALL
-		SELECT 'users' as type, refid AS categoryid, count(*) AS count FROM permission WHERE orgid=? AND who='user' AND location='category'
-			AND refid IN (SELECT refid FROM category WHERE orgid=? AND labelid=?)
-			GROUP BY refid, type
-		UNION ALL
-		SELECT 'users' as type, p.refid AS categoryid, count(*) AS count FROM rolemember r LEFT JOIN permission p ON p.whoid=r.roleid
-			WHERE p.orgid=? AND p.who='role' AND p.location='category'
-			AND p.refid IN (SELECT refid FROM category WHERE orgid=? AND labelid=?)
-			GROUP BY p.refid, type`,
-		ctx.OrgID, spaceID, ctx.OrgID, ctx.OrgID, spaceID, ctx.OrgID, ctx.OrgID, spaceID)
+		SELECT 'users' as type, refid AS categoryid, count(*) AS count
+			FROM permission
+			WHERE orgid=? AND location='category' 
+				AND refid IN (SELECT refid FROM category WHERE orgid=? AND labelid=?)
+			GROUP BY refid, type`,
+		ctx.OrgID, spaceID, ctx.OrgID, ctx.OrgID, spaceID /*, ctx.OrgID, ctx.OrgID, spaceID*/)
 
-	if err == sql.ErrNoRows {
+	if err == sql.ErrNoRows || len(c) == 0 {
 		err = nil
+		c = []category.SummaryModel{}
 	}
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("select category summary for space %s", spaceID))

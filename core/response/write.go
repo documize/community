@@ -35,6 +35,11 @@ func WriteNotFoundError(w http.ResponseWriter, method string, id string) {
 	w.Write([]byte("{Error: 'Not found'}"))
 }
 
+// WriteNotFound notifies HTTP client of 'record not found' error.
+func WriteNotFound(w http.ResponseWriter) {
+	w.WriteHeader(http.StatusNotFound)
+}
+
 // WriteServerError notifies HTTP client of general application error.
 func WriteServerError(w http.ResponseWriter, method string, err error) {
 	writeStatus(w, http.StatusBadRequest)

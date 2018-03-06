@@ -133,10 +133,12 @@ func EncodeRecord(r Record, a Action) (p Permission) {
 
 // CategoryViewRequestModel represents who should be allowed to see a category.
 type CategoryViewRequestModel struct {
-	OrgID      string `json:"orgId"`
-	SpaceID    string `json:"folderId"`
-	CategoryID string `json:"categoryID"`
-	UserID     string `json:"userId"`
+	OrgID      string  `json:"orgId"`
+	SpaceID    string  `json:"folderId"`
+	CategoryID string  `json:"categoryID"`
+	WhoID      string  `json:"whoId"`
+	Who        WhoType `json:"who"`
+	// UserID     string `json:"userId"`
 }
 
 // SpaceRequestModel details which users have what permissions on a given space.

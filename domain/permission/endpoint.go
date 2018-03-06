@@ -266,7 +266,7 @@ func (h *Handler) GetSpacePermissions(w http.ResponseWriter, r *http.Request) {
 	}
 
 	perms, err := h.Store.Permission.GetSpacePermissions(ctx, spaceID)
-	if err != nil && err != sql.ErrNoRows {
+	if err != nil {
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
 		return
@@ -302,7 +302,7 @@ func (h *Handler) GetSpacePermissions(w http.ResponseWriter, r *http.Request) {
 
 		if records[i].Who == permission.UserPermission {
 			if records[i].WhoID == user.EveryoneUserID {
-				records[i].Name = "Everyone"
+				records[i].Name = user.EveryoneUserName
 			} else {
 				u, err := h.Store.User.Get(ctx, records[i].WhoID)
 				if err != nil {
@@ -371,13 +371,58 @@ func (h *Handler) GetCategoryPermissions(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	u, err := h.Store.Permission.GetCategoryPermissions(ctx, categoryID)
-	if err != nil && err != sql.ErrNoRows {
+	perms, err := h.Store.Permission.GetCategoryPermissions(ctx, categoryID)
+	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
-	response.WriteJSON(w, u)
+	userPerms := make(map[string][]permission.Permission)
+	for _, p := range perms {
+		userPerms[p.WhoID] = append(userPerms[p.WhoID], p)
+	}
+
+	records := []permission.CategoryRecord{}
+	for _, up := range userPerms {
+		records = append(records, permission.DecodeUserCategoryPermissions(up))
+	}
+
+	// populate user/group name for thing that has permission record
+	groups, err := h.Store.Group.GetAll(ctx)
+	if err != nil && err != sql.ErrNoRows {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	for i := range records {
+		if records[i].Who == permission.GroupPermission {
+			for j := range groups {
+				if records[i].WhoID == groups[j].RefID {
+					records[i].Name = groups[j].Name
+					break
+				}
+			}
+		}
+
+		if records[i].Who == permission.UserPermission {
+			if records[i].WhoID == user.EveryoneUserID {
+				records[i].Name = user.EveryoneUserName
+			} else {
+				u, err := h.Store.User.Get(ctx, records[i].WhoID)
+				if err != nil {
+					h.Runtime.Log.Info(fmt.Sprintf("user not found %s", records[i].WhoID))
+					h.Runtime.Log.Error(method, err)
+					continue
+				}
+
+				records[i].Name = u.Fullname()
+			}
+		}
+	}
+
+	response.WriteJSON(w, records)
 }
 
 // SetCategoryPermissions persists specified category permissions
@@ -405,7 +450,7 @@ func (h *Handler) SetCategoryPermissions(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	var model = []permission.CategoryViewRequestModel{}
+	var model = []permission.CategoryRecord{}
 	err = json.Unmarshal(body, &model)
 	if err != nil {
 		response.WriteServerError(w, method, err)
@@ -415,6 +460,7 @@ func (h *Handler) SetCategoryPermissions(w http.ResponseWriter, r *http.Request)
 
 	if !HasPermission(ctx, *h.Store, spaceID, permission.SpaceManage, permission.SpaceOwner) {
 		response.WriteForbiddenError(w)
+		h.Runtime.Log.Info("no permission to set category permissions")
 		return
 	}
 
@@ -437,8 +483,8 @@ func (h *Handler) SetCategoryPermissions(w http.ResponseWriter, r *http.Request)
 	for _, m := range model {
 		perm := permission.Permission{}
 		perm.OrgID = ctx.OrgID
-		perm.Who = permission.UserPermission
-		perm.WhoID = m.UserID
+		perm.Who = m.Who
+		perm.WhoID = m.WhoID
 		perm.Scope = permission.ScopeRow
 		perm.Location = permission.LocationCategory
 		perm.RefID = m.CategoryID

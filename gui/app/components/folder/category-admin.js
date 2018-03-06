@@ -10,14 +10,17 @@
 // https://documize.com
 
 import $ from 'jquery';
-import Component from '@ember/component';
+import { A } from "@ember/array"
 import { inject as service } from '@ember/service';
 import TooltipMixin from '../../mixins/tooltip';
 import ModalMixin from '../../mixins/modal';
+import Component from '@ember/component';
 
 export default Component.extend(ModalMixin, TooltipMixin, {
-	userService: service('user'),
-	categoryService: service('category'),
+	// userService: service('user'),
+	spaceSvc: service('folder'),
+	groupSvc: service('group'),
+	categorySvc: service('category'),
 	appMeta: service(),
 	store: service(),
 	newCategory: '',
@@ -42,41 +45,46 @@ export default Component.extend(ModalMixin, TooltipMixin, {
 
 	load() {
 		// get categories
-		this.get('categoryService').getAll(this.get('folder.id')).then((c) => {
+		this.get('categorySvc').getAll(this.get('folder.id')).then((c) => {
 			this.set('category', c);
 
 			// get summary of documents and users for each category in space
-			this.get('categoryService').getSummary(this.get('folder.id')).then((s) => {
+			this.get('categorySvc').getSummary(this.get('folder.id')).then((s) => {
 				c.forEach((cat) => {
-					let docs = _.findWhere(s, {categoryId: cat.get('id'), type: 'documents'});
-					let docCount = is.not.undefined(docs) ? docs.count : 0;
+					// let docs = _.findWhere(s, {categoryId: cat.get('id'), type: 'documents'});
+					// let docCount = is.not.undefined(docs) ? docs.count : 0;
 
-					let users = _.findWhere(s, {categoryId: cat.get('id'), type: 'users'});
-					let userCount = is.not.undefined(users) ? users.count : 0;
+					// let users = _.findWhere(s, {categoryId: cat.get('id'), type: 'users'});
+					// let userCount = is.not.undefined(users) ? users.count : 0;
 
+					let docs = _.where(s, {categoryId: cat.get('id'), type: 'documents'});
+					let docCount = 0;
+					docs.forEach((d) => { docCount = docCount + d.count });
+
+					let users = _.where(s, {categoryId: cat.get('id'), type: 'users'});
+					let userCount = 0;
+					users.forEach((u) => { userCount = userCount + u.count });
+					
 					cat.set('documents', docCount);
 					cat.set('users', userCount);
 				});
 			});
-
-			// get users that this space admin user can see
-			this.get('userService').getSpaceUsers(this.get('folder.id')).then((users) => {
-				// set up Everyone user
-				let u = {
-					orgId: this.get('folder.orgId'),
-					folderId: this.get('folder.id'),
-					userId: '',
-					firstname: 'Everyone',
-					lastname: '',
-				};
-
-				let data = this.get('store').normalize('user', u)
-				users.pushObject(this.get('store').push(data));
-
-				users = users.sortBy('firstname', 'lastname');
-				this.set('users', users);
-			});
 		});
+	},
+
+	permissionRecord(who, whoId, name) {
+		let raw = {
+			id: whoId,
+			orgId: this.get('folder.orgId'),
+			categoryId: this.get('currentCategory.id'),
+			whoId: whoId,
+			who: who,
+			name: name,
+			categoryView: false,
+		};
+
+		let rec = this.get('store').normalize('category-permission', raw);
+		return this.get('store').push(rec);
 	},
 
 	setEdit(id, val) {
@@ -109,7 +117,7 @@ export default Component.extend(ModalMixin, TooltipMixin, {
 				folderId: this.get('folder.id')
 			};
 
-			this.get('categoryService').add(c).then(() => {
+			this.get('categorySvc').add(c).then(() => {
 				this.load();
 			});
 		},
@@ -124,7 +132,7 @@ export default Component.extend(ModalMixin, TooltipMixin, {
 		onDelete() {
 			this.modalClose('#category-delete-modal');
 
-			this.get('categoryService').delete(this.get('deleteId')).then(() => {
+			this.get('categorySvc').delete(this.get('deleteId')).then(() => {
 				this.load();
 			});
 		},
@@ -150,7 +158,7 @@ export default Component.extend(ModalMixin, TooltipMixin, {
 			cat = this.setEdit(id, false);
 			$('#edit-category-' + cat.get('id')).removeClass('is-invalid');
 
-			this.get('categoryService').save(cat).then(() => {
+			this.get('categorySvc').save(cat).then(() => {
 				this.load();
 			});
 
@@ -160,21 +168,37 @@ export default Component.extend(ModalMixin, TooltipMixin, {
 		onShowAccessPicker(catId) {
 			this.set('showCategoryAccess', true);
 
-			let users = this.get('users');
+			let categoryPermissions = A([]);
 			let category = this.get('category').findBy('id', catId);
 
-			this.get('categoryService').getPermissions(category.get('id')).then((viewers) => {
-				// mark those users as selected that have already been given permission
-				// to see the current category;
-				users.forEach((user) => {
-					let userId = user.get('id');
-					let selected = viewers.isAny('whoId', userId);
-					user.set('selected', selected);
+			this.set('currentCategory', category);
+			this.set('categoryPermissions', categoryPermissions);
+
+			// get space permissions
+			this.get('spaceSvc').getPermissions(this.get('folder.id')).then((spacePermissions) => {
+				spacePermissions.forEach((sp) => {
+					let cp  = this.permissionRecord(sp.get('who'), sp.get('whoId'), sp.get('name'));
+					cp.set('selected', false);
+					categoryPermissions.pushObject(cp);
 				});
 
-				this.set('categoryUsers', users);
-				this.set('currentCategory', category);
+				this.get('categorySvc').getPermissions(category.get('id')).then((perms) => {
+					// mark those users as selected that have permission to see the current category
+					perms.forEach((perm) => {
+						let c = categoryPermissions.findBy('whoId', perm.get('whoId'));
+						if (is.not.undefined(c)) {
+							c.set('selected', true);
+						} 
+						console.log(perm.get('whoId'));
+					});
+	
+					this.set('categoryPermissions', categoryPermissions.sortBy('who', 'name'));
+				});
 			});
+		},
+
+		onToggle(item) {
+			item.set('selected', !item.get('selected'));
 		},
 
 		onGrantAccess() {
@@ -182,23 +206,9 @@ export default Component.extend(ModalMixin, TooltipMixin, {
 
 			let folder = this.get('folder');
 			let category = this.get('currentCategory');
-			let users = this.get('categoryUsers').filterBy('selected', true);
-			let viewers = [];
+			let perms = this.get('categoryPermissions').filterBy('selected', true);
 
-			users.forEach((user) => {
-				let userId = user.get('id');
-
-				let v = {
-					orgId: this.get('folder.orgId'),
-					folderId: this.get('folder.id'),
-					categoryId: category.get('id'),
-					userId: userId
-				};
-
-				viewers.push(v);
-			});
-
-			this.get('categoryService').setViewers(folder.get('id'), category.get('id'), viewers).then(() => {
+			this.get('categorySvc').setViewers(folder.get('id'), category.get('id'), perms).then(() => {
 				this.load();
 			});
 		}

@@ -75,4 +75,7 @@ func Exists(users []User, userID string) bool {
 const (
 	// EveryoneUserID provides a shortcut to state "all authenticated users".
 	EveryoneUserID string = "0"
+
+	// EveryoneUserName provides the descriptor for this type of user/group.
+	EveryoneUserName string = "Everyone"
 )

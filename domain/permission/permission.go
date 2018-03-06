@@ -30,7 +30,7 @@ func CanViewSpaceDocument(ctx domain.RequestContext, s domain.Store, labelID str
 	}
 
 	for _, role := range roles {
-		if role.RefID == labelID && role.Location == "space" && role.Scope == "object" &&
+		if role.RefID == labelID && role.Location == pm.LocationSpace && role.Scope == pm.ScopeRow &&
 			pm.ContainsPermission(role.Action, pm.SpaceView, pm.SpaceManage, pm.SpaceOwner) {
 			return true
 		}
@@ -58,7 +58,7 @@ func CanViewDocument(ctx domain.RequestContext, s domain.Store, documentID strin
 	}
 
 	for _, role := range roles {
-		if role.RefID == document.LabelID && role.Location == "space" && role.Scope == "object" &&
+		if role.RefID == document.LabelID && role.Location == pm.LocationSpace && role.Scope == pm.ScopeRow &&
 			pm.ContainsPermission(role.Action, pm.SpaceView, pm.SpaceManage, pm.SpaceOwner) {
 			return true
 		}
@@ -88,7 +88,7 @@ func CanChangeDocument(ctx domain.RequestContext, s domain.Store, documentID str
 	}
 
 	for _, role := range roles {
-		if role.RefID == document.LabelID && role.Location == "space" && role.Scope == "object" && role.Action == pm.DocumentEdit {
+		if role.RefID == document.LabelID && role.Location == pm.LocationSpace && role.Scope == pm.ScopeRow && role.Action == pm.DocumentEdit {
 			return true
 		}
 	}
@@ -136,7 +136,7 @@ func CanUploadDocument(ctx domain.RequestContext, s domain.Store, spaceID string
 	}
 
 	for _, role := range roles {
-		if role.RefID == spaceID && role.Location == "space" && role.Scope == "object" &&
+		if role.RefID == spaceID && role.Location == pm.LocationSpace && role.Scope == pm.ScopeRow &&
 			pm.ContainsPermission(role.Action, pm.DocumentAdd) {
 			return true
 		}
@@ -155,7 +155,7 @@ func CanViewSpace(ctx domain.RequestContext, s domain.Store, spaceID string) boo
 		return false
 	}
 	for _, role := range roles {
-		if role.RefID == spaceID && role.Location == "space" && role.Scope == "object" &&
+		if role.RefID == spaceID && role.Location == pm.LocationSpace && role.Scope == pm.ScopeRow &&
 			pm.ContainsPermission(role.Action, pm.SpaceView, pm.SpaceManage, pm.SpaceOwner) {
 			return true
 		}
@@ -176,7 +176,7 @@ func HasPermission(ctx domain.RequestContext, s domain.Store, spaceID string, ac
 	}
 
 	for _, role := range roles {
-		if role.RefID == spaceID && role.Location == "space" && role.Scope == "object" {
+		if role.RefID == spaceID && role.Location == pm.LocationSpace && role.Scope == pm.ScopeRow {
 			for _, a := range actions {
 				if role.Action == a {
 					return true

@@ -112,15 +112,16 @@ func (s Scope) GetSpacePermissions(ctx domain.RequestContext, spaceID string) (r
 func (s Scope) GetCategoryPermissions(ctx domain.RequestContext, catID string) (r []permission.Permission, err error) {
 	err = s.Runtime.Db.Select(&r, `
 		SELECT id, orgid, who, whoid, action, scope, location, refid
-			FROM permission WHERE orgid=? AND location='category' AND refid=? AND who='user'
+			FROM permission
+			WHERE orgid=? AND location='category' AND who='user' AND (refid=? OR refid='0')
 		UNION ALL
 		SELECT p.id, p.orgid, p.who, p.whoid, p.action, p.scope, p.location, p.refid
 			FROM permission p
 			LEFT JOIN rolemember r ON p.whoid=r.roleid
-			WHERE p.orgid=? AND p.location='space' AND p.refid=? AND p.who='role'`,
+			WHERE p.orgid=? AND p.location='category' AND p.who='role' AND (p.refid=? OR p.refid='0')`,
 		ctx.OrgID, catID, ctx.OrgID, catID)
 
-	if err == sql.ErrNoRows {
+	if err == sql.ErrNoRows || len(r) == 0 {
 		err = nil
 		r = []permission.Permission{}
 	}
@@ -137,7 +138,8 @@ func (s Scope) GetCategoryUsers(ctx domain.RequestContext, catID string) (u []us
 		SELECT u.id, IFNULL(u.refid, '') AS refid, IFNULL(u.firstname, '') AS firstname, IFNULL(u.lastname, '') as lastname, u.email, u.initials, u.password, u.salt, u.reset, u.created, u.revised
 		FROM user u LEFT JOIN account a ON u.refid = a.userid 
 		WHERE a.orgid=? AND a.active=1 AND u.refid IN (
-			SELECT whoid from permission WHERE orgid=? AND who='user' AND location='category' AND refid=?
+			SELECT whoid from permission 
+			WHERE orgid=? AND who='user' AND location='category' AND refid=?
 			UNION ALL
 			SELECT r.userid from rolemember r
 				LEFT JOIN permission p ON p.whoid=r.roleid
@@ -147,7 +149,7 @@ func (s Scope) GetCategoryUsers(ctx domain.RequestContext, catID string) (u []us
 		ORDER BY firstname, lastname`,
 		ctx.OrgID, ctx.OrgID, catID, ctx.OrgID, catID)
 
-	if err == sql.ErrNoRows {
+	if err == sql.ErrNoRows || len(u) == 0 {
 		err = nil
 		u = []user.User{}
 	}
@@ -170,7 +172,7 @@ func (s Scope) GetUserCategoryPermissions(ctx domain.RequestContext, userID stri
 			WHERE p.orgid=? AND p.location='category' AND p.who='role' AND (r.userid=? OR r.userid='0')`,
 		ctx.OrgID, userID, ctx.OrgID, userID)
 
-	if err == sql.ErrNoRows {
+	if err == sql.ErrNoRows || len(r) == 0 {
 		err = nil
 		r = []permission.Permission{}
 	}

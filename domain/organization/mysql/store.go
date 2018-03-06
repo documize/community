@@ -79,16 +79,15 @@ func (s Scope) GetOrganizationByDomain(subdomain string) (o org.Organization, er
 		return
 	}
 
-	err = s.Runtime.Db.Get(&o, "SELECT id, refid, company, title, message, url, domain, service as conversionendpoint, email, serial, active, allowanonymousaccess, authprovider, coalesce(authconfig,JSON_UNQUOTE('{}')) as authconfig, created, revised FROM organization WHERE domain=? AND active=1",
-		subdomain)
-
+	// match on given domain name
+	err = s.Runtime.Db.Get(&o, "SELECT id, refid, company, title, message, url, domain, service as conversionendpoint, email, serial, active, allowanonymousaccess, authprovider, coalesce(authconfig,JSON_UNQUOTE('{}')) as authconfig, created, revised FROM organization WHERE domain=? AND active=1", subdomain)
 	if err == nil {
 		return
 	}
+	err = nil
 
-	// we try to match on empty domain as last resort
+	// match on empty domain as last resort
 	err = s.Runtime.Db.Get(&o, "SELECT id, refid, company, title, message, url, domain, service as conversionendpoint, email, serial, active, allowanonymousaccess, authprovider, coalesce(authconfig,JSON_UNQUOTE('{}')) as authconfig, created, revised FROM organization WHERE domain='' AND active=1")
-
 	if err != nil && err != sql.ErrNoRows {
 		err = errors.Wrap(err, "unable to execute select for empty subdomain")
 	}

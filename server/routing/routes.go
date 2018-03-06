@@ -67,9 +67,18 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	organization := organization.Handler{Runtime: rt, Store: s}
 
 	//**************************************************
-	// Non-secure routes
+	// Non-secure public info routes
 	//**************************************************
+
 	Add(rt, RoutePrefixPublic, "meta", []string{"GET", "OPTIONS"}, nil, meta.Meta)
+	Add(rt, RoutePrefixPublic, "version", []string{"GET", "OPTIONS"}, nil, func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(rt.Product.Version))
+	})
+
+	//**************************************************
+	// Non-secure public service routes
+	//**************************************************
+
 	Add(rt, RoutePrefixPublic, "authenticate/keycloak", []string{"POST", "OPTIONS"}, nil, keycloak.Authenticate)
 	Add(rt, RoutePrefixPublic, "authenticate", []string{"POST", "OPTIONS"}, nil, auth.Login)
 	Add(rt, RoutePrefixPublic, "validate", []string{"GET", "OPTIONS"}, nil, auth.ValidateToken)
@@ -77,12 +86,9 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	Add(rt, RoutePrefixPublic, "reset/{token}", []string{"POST", "OPTIONS"}, nil, user.ResetPassword)
 	Add(rt, RoutePrefixPublic, "share/{spaceID}", []string{"POST", "OPTIONS"}, nil, space.AcceptInvitation)
 	Add(rt, RoutePrefixPublic, "attachments/{orgID}/{attachmentID}", []string{"GET", "OPTIONS"}, nil, attachment.Download)
-	Add(rt, RoutePrefixPublic, "version", []string{"GET", "OPTIONS"}, nil, func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte(rt.Product.Version))
-	})
 
 	//**************************************************
-	// Secure routes
+	// Secured private routes (require authentication)
 	//**************************************************
 
 	Add(rt, RoutePrefixPrivate, "import/folder/{folderID}", []string{"POST", "OPTIONS"}, nil, conversion.UploadConvert)
@@ -119,9 +125,6 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 
 	Add(rt, RoutePrefixPrivate, "space/{spaceID}", []string{"DELETE", "OPTIONS"}, nil, space.Delete)
 	Add(rt, RoutePrefixPrivate, "space/{spaceID}/move/{moveToId}", []string{"DELETE", "OPTIONS"}, nil, space.Remove)
-	// Add(rt, RoutePrefixPrivate, "space/{spaceID}/permissions", []string{"PUT", "OPTIONS"}, nil, permission.SetSpacePermissions)
-	// Add(rt, RoutePrefixPrivate, "space/{spaceID}/permissions/user", []string{"GET", "OPTIONS"}, nil, permission.GetUserSpacePermissions)
-	// Add(rt, RoutePrefixPrivate, "space/{spaceID}/permissions", []string{"GET", "OPTIONS"}, nil, permission.GetSpacePermissions)
 	Add(rt, RoutePrefixPrivate, "space/{spaceID}/invitation", []string{"POST", "OPTIONS"}, nil, space.Invite)
 	Add(rt, RoutePrefixPrivate, "space/manage", []string{"GET", "OPTIONS"}, nil, space.GetAll)
 	Add(rt, RoutePrefixPrivate, "space/{spaceID}", []string{"GET", "OPTIONS"}, nil, space.Get)
@@ -131,11 +134,8 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 
 	Add(rt, RoutePrefixPrivate, "category/space/{spaceID}/summary", []string{"GET", "OPTIONS"}, nil, category.GetSummary)
 	Add(rt, RoutePrefixPrivate, "category/document/{documentID}", []string{"GET", "OPTIONS"}, nil, category.GetDocumentCategoryMembership)
-	// Add(rt, RoutePrefixPrivate, "category/{categoryID}/permission", []string{"PUT", "OPTIONS"}, nil, permission.SetCategoryPermissions)
-	// Add(rt, RoutePrefixPrivate, "category/{categoryID}/permission", []string{"GET", "OPTIONS"}, nil, permission.GetCategoryPermissions)
 	Add(rt, RoutePrefixPrivate, "category/space/{spaceID}", []string{"GET", "OPTIONS"}, []string{"filter", "all"}, category.GetAll)
 	Add(rt, RoutePrefixPrivate, "category/space/{spaceID}", []string{"GET", "OPTIONS"}, nil, category.Get)
-	// Add(rt, RoutePrefixPrivate, "category/{categoryID}/user", []string{"GET", "OPTIONS"}, nil, permission.GetCategoryViewers)
 	Add(rt, RoutePrefixPrivate, "category/member/space/{spaceID}", []string{"GET", "OPTIONS"}, nil, category.GetSpaceCategoryMembers)
 	Add(rt, RoutePrefixPrivate, "category/member", []string{"POST", "OPTIONS"}, nil, category.SetDocumentCategoryMembership)
 	Add(rt, RoutePrefixPrivate, "category/{categoryID}", []string{"PUT", "OPTIONS"}, nil, category.Update)
