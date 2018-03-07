@@ -15,6 +15,7 @@ package setting
 import (
 	"encoding/json"
 	"encoding/xml"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -22,6 +23,7 @@ import (
 	"github.com/documize/community/core/event"
 	"github.com/documize/community/core/response"
 	"github.com/documize/community/domain"
+	"github.com/documize/community/domain/smtp"
 	"github.com/documize/community/model/audit"
 )
 
@@ -91,7 +93,37 @@ func (h *Handler) SetSMTP(w http.ResponseWriter, r *http.Request) {
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSystemSMTP)
 
-	response.WriteEmpty(w)
+	// test connection
+	var result struct {
+		Success bool   `json:"success"`
+		Message string `json:"message"`
+	}
+
+	result.Message = "Email sent successfully!"
+
+	u, err := h.Store.User.Get(ctx, ctx.UserID)
+	if err != nil {
+		result.Success = false
+		result.Message = err.Error()
+		h.Runtime.Log.Error(method, err)
+		response.WriteJSON(w, result)
+		return
+	}
+
+	cfg := GetSMTPConfig(h.Store)
+	dialer, err := smtp.Connect(cfg)
+	em := smtp.EmailMessage{}
+	em.Subject = "Documize SMTP Test"
+	em.BodyHTML = "<p>This is a test email from Documize using current SMTP settings.</p>"
+	em.ToEmail = u.Email
+	em.ToName = u.Fullname()
+
+	result.Success, err = smtp.SendMessage(dialer, cfg, em)
+	if !result.Success {
+		result.Message = fmt.Sprintf("Unable to send test email: %s", err.Error())
+	}
+
+	response.WriteJSON(w, result)
 }
 
 // License returns product license

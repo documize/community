@@ -149,9 +149,15 @@
   revision = "150dc57a1b433e64154302bdc40b6bb8aefa313a"
   version = "v1.0.0"
 
+[[projects]]
+  branch = "v3"
+  name = "gopkg.in/alexcesaro/quotedprintable.v3"
+  packages = ["."]
+  revision = "2caba252f4dc53eaf6b553000885530023f54623"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "98ebdf85207168f55b51629c6c21eb1459881fa58c280503054994887cbde045"
+  inputs-digest = "56eea54cf0b9e18b3e456199ee01aedeeb07b55073ca3d10345e0c178689aee2"
   solver-name = "gps-cdcl"
   solver-version = 1

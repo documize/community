@@ -124,4 +124,16 @@
 			}
 		}
 	}
+	
+	> .smtp-failure {
+		font-size: 1.2rem;
+		font-weight: bold;
+		color: $color-red;
+	}
+
+	> .smtp-success {
+		font-size: 1.2rem;
+		font-weight: bold;
+		color: $color-green;
+	}
 }

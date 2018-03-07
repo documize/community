@@ -14,57 +14,50 @@
 package mail
 
 import (
-	"bytes"
 	"fmt"
-	"html/template"
 
-	"github.com/documize/community/server/web"
+	"github.com/documize/community/domain/smtp"
 )
 
 // DocumentApprover notifies user who has just been granted document approval rights.
 func (m *Mailer) DocumentApprover(recipient, inviter, url, document string) {
 	method := "DocumentApprover"
-	m.LoadCredentials()
-
-	file, err := web.ReadFile("mail/document-approver.html")
-	if err != nil {
-		m.Runtime.Log.Error(fmt.Sprintf("%s - unable to load email template", method), err)
-		return
-	}
-
-	emailTemplate := string(file)
+	m.Initialize()
 
 	// check inviter name
 	if inviter == "Hello You" || len(inviter) == 0 {
 		inviter = "Your colleague"
 	}
 
-	subject := fmt.Sprintf("%s has granted you document approval", inviter)
-
-	e := NewEmail()
-	e.From = m.Credentials.SMTPsender
-	e.To = []string{recipient}
-	e.Subject = subject
+	em := smtp.EmailMessage{}
+	em.Subject = fmt.Sprintf("%s has granted you document approval", inviter)
+	em.ToEmail = recipient
+	em.ToName = recipient
 
 	parameters := struct {
 		Subject  string
 		Inviter  string
-		Url      string
+		URL      string
 		Document string
 	}{
-		subject,
+		em.Subject,
 		inviter,
 		url,
 		document,
 	}
 
-	buffer := new(bytes.Buffer)
-	t := template.Must(template.New("emailTemplate").Parse(emailTemplate))
-	t.Execute(buffer, &parameters)
-	e.HTML = buffer.Bytes()
+	html, err := m.ParseTemplate("mail/document-approver.html", parameters)
+	if err != nil {
+		m.Runtime.Log.Error(fmt.Sprintf("%s - unable to load email template", method), err)
+		return
+	}
+	em.BodyHTML = html
 
-	err = e.Send(m.GetHost(), m.GetAuth())
+	ok, err := smtp.SendMessage(m.Dialer, m.Config, em)
 	if err != nil {
 		m.Runtime.Log.Error(fmt.Sprintf("%s - unable to send email", method), err)
+	}
+	if !ok {
+		m.Runtime.Log.Info(fmt.Sprintf("%s unable to send email"))
 	}
 }

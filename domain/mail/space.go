@@ -9,114 +9,100 @@
 //
 // https://documize.com
 
-// jshint ignore:start
-
 package mail
 
 import (
-	"bytes"
 	"fmt"
-	"html/template"
 
-	"github.com/documize/community/server/web"
+	"github.com/documize/community/domain/smtp"
 )
 
 // ShareSpaceExistingUser provides an existing user with a link to a newly shared space.
 func (m *Mailer) ShareSpaceExistingUser(recipient, inviter, url, folder, intro string) {
 	method := "ShareSpaceExistingUser"
-	m.LoadCredentials()
-
-	file, err := web.ReadFile("mail/share-space-existing-user.html")
-	if err != nil {
-		m.Runtime.Log.Error(fmt.Sprintf("%s - unable to load email template", method), err)
-		return
-	}
-
-	emailTemplate := string(file)
+	m.Initialize()
 
 	// check inviter name
 	if inviter == "Hello You" || len(inviter) == 0 {
 		inviter = "Your colleague"
 	}
 
-	subject := fmt.Sprintf("%s has shared %s with you", inviter, folder)
-
-	e := NewEmail()
-	e.From = m.Credentials.SMTPsender
-	e.To = []string{recipient}
-	e.Subject = subject
+	em := smtp.EmailMessage{}
+	em.Subject = fmt.Sprintf("%s has shared %s with you", inviter, folder)
+	em.ToEmail = recipient
+	em.ToName = recipient
 
 	parameters := struct {
 		Subject string
 		Inviter string
-		Url     string
+		URL     string
 		Folder  string
 		Intro   string
 	}{
-		subject,
+		em.Subject,
 		inviter,
 		url,
 		folder,
 		intro,
 	}
 
-	buffer := new(bytes.Buffer)
-	t := template.Must(template.New("emailTemplate").Parse(emailTemplate))
-	t.Execute(buffer, &parameters)
-	e.HTML = buffer.Bytes()
+	html, err := m.ParseTemplate("mail/share-space-existing-user.html", parameters)
+	if err != nil {
+		m.Runtime.Log.Error(fmt.Sprintf("%s - unable to load email template", method), err)
+		return
+	}
+	em.BodyHTML = html
 
-	err = e.Send(m.GetHost(), m.GetAuth())
+	ok, err := smtp.SendMessage(m.Dialer, m.Config, em)
 	if err != nil {
 		m.Runtime.Log.Error(fmt.Sprintf("%s - unable to send email", method), err)
+	}
+	if !ok {
+		m.Runtime.Log.Info(fmt.Sprintf("%s unable to send email"))
 	}
 }
 
 // ShareSpaceNewUser invites new user providing Credentials, explaining the product and stating who is inviting them.
 func (m *Mailer) ShareSpaceNewUser(recipient, inviter, url, space, invitationMessage string) {
 	method := "ShareSpaceNewUser"
-	m.LoadCredentials()
-
-	file, err := web.ReadFile("mail/share-space-new-user.html")
-	if err != nil {
-		m.Runtime.Log.Error(fmt.Sprintf("%s - unable to load email template", method), err)
-		return
-	}
-
-	emailTemplate := string(file)
+	m.Initialize()
 
 	// check inviter name
 	if inviter == "Hello You" || len(inviter) == 0 {
 		inviter = "Your colleague"
 	}
 
-	subject := fmt.Sprintf("%s has shared %s with you on Documize", inviter, space)
-
-	e := NewEmail()
-	e.From = m.Credentials.SMTPsender
-	e.To = []string{recipient}
-	e.Subject = subject
+	em := smtp.EmailMessage{}
+	em.Subject = fmt.Sprintf("%s has shared %s with you on Documize", inviter, space)
+	em.ToEmail = recipient
+	em.ToName = recipient
 
 	parameters := struct {
 		Subject    string
 		Inviter    string
-		Url        string
+		URL        string
 		Invitation string
 		Folder     string
 	}{
-		subject,
+		em.Subject,
 		inviter,
 		url,
 		invitationMessage,
 		space,
 	}
 
-	buffer := new(bytes.Buffer)
-	t := template.Must(template.New("emailTemplate").Parse(emailTemplate))
-	t.Execute(buffer, &parameters)
-	e.HTML = buffer.Bytes()
+	html, err := m.ParseTemplate("mail/share-space-new-user.html", parameters)
+	if err != nil {
+		m.Runtime.Log.Error(fmt.Sprintf("%s - unable to load email template", method), err)
+		return
+	}
+	em.BodyHTML = html
 
-	err = e.Send(m.GetHost(), m.GetAuth())
+	ok, err := smtp.SendMessage(m.Dialer, m.Config, em)
 	if err != nil {
 		m.Runtime.Log.Error(fmt.Sprintf("%s - unable to send email", method), err)
+	}
+	if !ok {
+		m.Runtime.Log.Info(fmt.Sprintf("%s unable to send email"))
 	}
 }
