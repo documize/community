@@ -122,7 +122,6 @@ func (s Scope) GetActiveUsersForOrganization(ctx domain.RequestContext) (u []use
 		err = nil
 		u = []user.User{}
 	}
-
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("get active users by org %s", ctx.OrgID))
 	}
@@ -171,6 +170,10 @@ func (s Scope) GetSpaceUsers(ctx domain.RequestContext, spaceID string) (u []use
 		ORDER BY u.firstname, u.lastname
 		`, ctx.OrgID, ctx.OrgID, spaceID, ctx.OrgID, spaceID)
 
+	if err == sql.ErrNoRows || len(u) == 0 {
+		err = nil
+		u = []user.User{}
+	}
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("get space users for org %s", ctx.OrgID))
 	}
@@ -199,6 +202,10 @@ func (s Scope) GetUsersForSpaces(ctx domain.RequestContext, spaces []string) (u 
 	query = s.Runtime.Db.Rebind(query)
 	err = s.Runtime.Db.Select(&u, query, args...)
 
+	if err == sql.ErrNoRows || len(u) == 0 {
+		err = nil
+		u = []user.User{}
+	}
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("get users for spaces for user %s", ctx.UserID))
 	}
@@ -293,7 +300,6 @@ func (s Scope) MatchUsers(ctx domain.RequestContext, text string, maxMatches int
 		err = nil
 		u = []user.User{}
 	}
-
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("matching users for org %s", ctx.OrgID))
 	}
