@@ -82,10 +82,10 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 
 	perm := pm.Permission{}
 	perm.OrgID = ctx.OrgID
-	perm.Who = "user"
+	perm.Who = pm.UserPermission
 	perm.WhoID = ctx.UserID
-	perm.Scope = "object"
-	perm.Location = "category"
+	perm.Scope = pm.ScopeRow
+	perm.Location = pm.LocationCategory
 	perm.RefID = cat.RefID
 	perm.Action = pm.CategoryView
 
@@ -155,13 +155,9 @@ func (h *Handler) GetAll(w http.ResponseWriter, r *http.Request) {
 	}
 
 	cat, err := h.Store.Category.GetAllBySpace(ctx, spaceID)
-	if err != nil && err != sql.ErrNoRows {
+	if err != nil {
 		response.WriteServerError(w, method, err)
 		return
-	}
-
-	if len(cat) == 0 {
-		cat = []category.Category{}
 	}
 
 	response.WriteJSON(w, cat)
@@ -318,10 +314,6 @@ func (h *Handler) GetSummary(w http.ResponseWriter, r *http.Request) {
 		h.Runtime.Log.Error("get space category summary failed", err)
 		response.WriteServerError(w, method, err)
 		return
-	}
-
-	if len(s) == 0 {
-		s = []category.SummaryModel{}
 	}
 
 	response.WriteJSON(w, s)

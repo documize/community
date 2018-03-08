@@ -16,7 +16,8 @@ export default Route.extend({
 	beforeModel() {
 		let pwd = document.head.querySelector("[property=dbhash]").content;
 		if (pwd.length === 0 || pwd === "{{.DBhash}}") {
-			this.transitionTo('auth.login'); // don't allow access to this page if we are not in setup mode, kick them out altogether
+			// don't allow access to this page if we are not in setup mode
+			this.transitionTo('auth.login');
 		}
 	},
 

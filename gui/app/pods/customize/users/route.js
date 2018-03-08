@@ -30,12 +30,12 @@ export default Route.extend(AuthenticatedRouteMixin, {
 		return new EmberPromise((resolve) => {
 			if (this.get('appMeta.authProvider') == constants.AuthProvider.Keycloak) {
 				this.get('global').syncExternalUsers().then(() => {
-					this.get('userService').getComplete().then((users) =>{
+					this.get('userService').getComplete('').then((users) =>{
 						resolve(users);
 					});
 				});
 			} else {
-				this.get('userService').getComplete().then((users) => {
+				this.get('userService').getComplete('').then((users) => {
 					resolve(users);
 				});
 			}

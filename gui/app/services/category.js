@@ -87,7 +87,15 @@ export default BaseService.extend({
 		return this.get('ajax').request(`category/${categoryId}/permission`, {
 			method: 'GET'
 		}).then((response) => {
-			return response;
+			// return response;
+			let data = [];
+
+			data = response.map((obj) => {
+				let data = this.get('store').normalize('category-permission', obj);
+				return this.get('store').push(data);
+			});
+
+			return data;
 		});
 	},
 

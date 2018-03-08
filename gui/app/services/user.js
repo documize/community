@@ -31,6 +31,16 @@ export default Service.extend({
 		});
 	},
 
+	// Adds comma-delim list of users (firstname, lastname, email).
+	addBulk(list) {
+		return this.get('ajax').request(`users/import`, {
+				type: 'POST',
+				data: list,
+				contentType: 'text'
+			}).then(() => {
+		});
+	},
+
 	// Returns user model for specified user id.
 	getUser(userId) {
 		let url = `users/${userId}`;
@@ -54,8 +64,13 @@ export default Service.extend({
 	},
 
 	// Returns all active and inactive users for organization.
-	getComplete() {
-		return this.get('ajax').request(`users?active=0`).then((response) => {
+	// Only available for admins and limits results to max. 100 users.
+	// Takes filter for user search criteria.
+	getComplete(filter) {
+		filter = filter.trim();
+		if (filter.length > 0) filter = encodeURIComponent(filter);
+
+		return this.get('ajax').request(`users?active=0&filter=${filter}`).then((response) => {
 			return response.map((obj) => {
 				let data = this.get('store').normalize('user', obj);
 				return this.get('store').push(data);
@@ -145,5 +160,24 @@ export default Service.extend({
 			method: "POST",
 			data: password
 		});
-	}
+	},
+
+	// matchUsers on firstname, lastname, email
+	matchUsers(text) {
+		return this.get('ajax').request('users/match', {
+			method: 'POST',
+			dataType: 'json',
+			contentType: 'text',			
+			data: text
+		}).then((response) => {
+			let data = [];
+
+			data = response.map((obj) => {
+				let data = this.get('store').normalize('user', obj);
+				return this.get('store').push(data);
+			});
+
+			return data;
+		});
+	}	
 });

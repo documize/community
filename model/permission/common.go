@@ -15,16 +15,49 @@ import "time"
 
 // Permission represents a permission for a space and is persisted to the database.
 type Permission struct {
-	ID       uint64    `json:"id"`
-	OrgID    string    `json:"orgId"`
-	Who      string    `json:"who"`      // user, role
-	WhoID    string    `json:"whoId"`    // either a user or role ID
-	Action   Action    `json:"action"`   // view, edit, delete
-	Scope    string    `json:"scope"`    // object, table
-	Location string    `json:"location"` // table name
-	RefID    string    `json:"refId"`    // id of row in table / blank when scope=table
-	Created  time.Time `json:"created"`
+	ID       uint64       `json:"id"`
+	OrgID    string       `json:"orgId"`
+	Who      WhoType      `json:"who"`      // user, role
+	WhoID    string       `json:"whoId"`    // either a user or role ID
+	Action   Action       `json:"action"`   // view, edit, delete
+	Scope    ScopeType    `json:"scope"`    // object, table
+	Location LocationType `json:"location"` // table name
+	RefID    string       `json:"refId"`    // id of row in table / blank when scope=table
+	Created  time.Time    `json:"created"`
 }
+
+// WhoType tell us if permission record represents user or group
+type WhoType string
+
+const (
+	// GroupPermission means permission is assigned to a group
+	GroupPermission WhoType = "role"
+
+	// UserPermission means permission is assigned to a user
+	UserPermission WhoType = "user"
+)
+
+// LocationType tells us the entity being permissioned
+type LocationType string
+
+const (
+	// LocationSpace means space is being permissioned
+	LocationSpace LocationType = "space"
+
+	// LocationCategory means category is being permissioned
+	LocationCategory LocationType = "category"
+
+	// LocationDocument means document is being permissioned
+	LocationDocument LocationType = "document"
+)
+
+// ScopeType details at what level data is being protected, e.g. table, row
+type ScopeType string
+
+const (
+	// ScopeRow identifies row in table is being protected
+	ScopeRow ScopeType = "object"
+)
 
 // Action details type of action
 type Action string

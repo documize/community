@@ -15,6 +15,7 @@ import (
 	"database/sql"
 
 	"github.com/documize/community/domain"
+	group "github.com/documize/community/model/group"
 	pm "github.com/documize/community/model/permission"
 	u "github.com/documize/community/model/user"
 )
@@ -30,7 +31,7 @@ func CanViewSpaceDocument(ctx domain.RequestContext, s domain.Store, labelID str
 	}
 
 	for _, role := range roles {
-		if role.RefID == labelID && role.Location == "space" && role.Scope == "object" &&
+		if role.RefID == labelID && role.Location == pm.LocationSpace && role.Scope == pm.ScopeRow &&
 			pm.ContainsPermission(role.Action, pm.SpaceView, pm.SpaceManage, pm.SpaceOwner) {
 			return true
 		}
@@ -58,7 +59,7 @@ func CanViewDocument(ctx domain.RequestContext, s domain.Store, documentID strin
 	}
 
 	for _, role := range roles {
-		if role.RefID == document.LabelID && role.Location == "space" && role.Scope == "object" &&
+		if role.RefID == document.LabelID && role.Location == pm.LocationSpace && role.Scope == pm.ScopeRow &&
 			pm.ContainsPermission(role.Action, pm.SpaceView, pm.SpaceManage, pm.SpaceOwner) {
 			return true
 		}
@@ -88,7 +89,7 @@ func CanChangeDocument(ctx domain.RequestContext, s domain.Store, documentID str
 	}
 
 	for _, role := range roles {
-		if role.RefID == document.LabelID && role.Location == "space" && role.Scope == "object" && role.Action == pm.DocumentEdit {
+		if role.RefID == document.LabelID && role.Location == pm.LocationSpace && role.Scope == pm.ScopeRow && role.Action == pm.DocumentEdit {
 			return true
 		}
 	}
@@ -136,7 +137,7 @@ func CanUploadDocument(ctx domain.RequestContext, s domain.Store, spaceID string
 	}
 
 	for _, role := range roles {
-		if role.RefID == spaceID && role.Location == "space" && role.Scope == "object" &&
+		if role.RefID == spaceID && role.Location == pm.LocationSpace && role.Scope == pm.ScopeRow &&
 			pm.ContainsPermission(role.Action, pm.DocumentAdd) {
 			return true
 		}
@@ -155,7 +156,7 @@ func CanViewSpace(ctx domain.RequestContext, s domain.Store, spaceID string) boo
 		return false
 	}
 	for _, role := range roles {
-		if role.RefID == spaceID && role.Location == "space" && role.Scope == "object" &&
+		if role.RefID == spaceID && role.Location == pm.LocationSpace && role.Scope == pm.ScopeRow &&
 			pm.ContainsPermission(role.Action, pm.SpaceView, pm.SpaceManage, pm.SpaceOwner) {
 			return true
 		}
@@ -176,7 +177,7 @@ func HasPermission(ctx domain.RequestContext, s domain.Store, spaceID string, ac
 	}
 
 	for _, role := range roles {
-		if role.RefID == spaceID && role.Location == "space" && role.Scope == "object" {
+		if role.RefID == spaceID && role.Location == pm.LocationSpace && role.Scope == pm.ScopeRow {
 			for _, a := range actions {
 				if role.Action == a {
 					return true
@@ -193,34 +194,63 @@ func GetDocumentApprovers(ctx domain.RequestContext, s domain.Store, spaceID, do
 	users = []u.User{}
 	prev := make(map[string]bool) // used to ensure we only process user once
 
-	// check space permissions
-	sp, err := s.Permission.GetSpacePermissions(ctx, spaceID)
-	for _, p := range sp {
-		if p.Action == pm.DocumentApprove {
-			user, err := s.User.Get(ctx, p.WhoID)
-			if err == nil {
-				prev[user.RefID] = true
-				users = append(users, user)
-			} else {
-				return users, err
-			}
-		}
+	// Permissions can be assigned to both groups and individual users.
+	// Pre-fetch users with group membership to help us work out
+	// if user belongs to a group with permissions.
+	groupMembers, err := s.Group.GetMembers(ctx)
+	if err != nil {
+		return users, err
 	}
 
-	// check document permissions
+	// space permissions
+	sp, err := s.Permission.GetSpacePermissions(ctx, spaceID)
+	if err != nil {
+		return users, err
+	}
+	// document permissions
 	dp, err := s.Permission.GetDocumentPermissions(ctx, documentID)
-	for _, p := range dp {
-		if p.Action == pm.DocumentApprove {
-			user, err := s.User.Get(ctx, p.WhoID)
-			if err == nil {
+	if err != nil {
+		return users, err
+	}
+
+	// all permissions
+	all := sp
+	all = append(all, dp...)
+
+	for _, p := range all {
+		// only approvers
+		if p.Action != pm.DocumentApprove {
+			continue
+		}
+
+		if p.Who == pm.GroupPermission {
+			// get group records for just this group
+			groupRecords := group.FilterGroupRecords(groupMembers, p.WhoID)
+
+			for i := range groupRecords {
+				user, err := s.User.Get(ctx, groupRecords[i].UserID)
+				if err != nil {
+					return users, err
+				}
 				if _, isExisting := prev[user.RefID]; !isExisting {
 					users = append(users, user)
+					prev[user.RefID] = true
 				}
-			} else {
+			}
+		}
+
+		if p.Who == pm.UserPermission {
+			user, err := s.User.Get(ctx, p.WhoID)
+			if err != nil {
 				return users, err
+			}
+
+			if _, isExisting := prev[user.RefID]; !isExisting {
+				users = append(users, user)
+				prev[user.RefID] = true
 			}
 		}
 	}
 
-	return
+	return users, err
 }

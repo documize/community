@@ -15,19 +15,21 @@ package permission
 // This data structure is made from database permission records for the space,
 // and it is designed to be sent to HTTP clients (web, mobile).
 type Record struct {
-	OrgID            string `json:"orgId"`
-	SpaceID          string `json:"folderId"`
-	UserID           string `json:"userId"`
-	SpaceView        bool   `json:"spaceView"`
-	SpaceManage      bool   `json:"spaceManage"`
-	SpaceOwner       bool   `json:"spaceOwner"`
-	DocumentAdd      bool   `json:"documentAdd"`
-	DocumentEdit     bool   `json:"documentEdit"`
-	DocumentDelete   bool   `json:"documentDelete"`
-	DocumentMove     bool   `json:"documentMove"`
-	DocumentCopy     bool   `json:"documentCopy"`
-	DocumentTemplate bool   `json:"documentTemplate"`
-	DocumentApprove  bool   `json:"documentApprove"`
+	OrgID            string  `json:"orgId"`
+	SpaceID          string  `json:"folderId"`
+	WhoID            string  `json:"whoId"`
+	Who              WhoType `json:"who"`
+	SpaceView        bool    `json:"spaceView"`
+	SpaceManage      bool    `json:"spaceManage"`
+	SpaceOwner       bool    `json:"spaceOwner"`
+	DocumentAdd      bool    `json:"documentAdd"`
+	DocumentEdit     bool    `json:"documentEdit"`
+	DocumentDelete   bool    `json:"documentDelete"`
+	DocumentMove     bool    `json:"documentMove"`
+	DocumentCopy     bool    `json:"documentCopy"`
+	DocumentTemplate bool    `json:"documentTemplate"`
+	DocumentApprove  bool    `json:"documentApprove"`
+	Name             string  `json:"name"` // read-only, user or group name
 }
 
 // DecodeUserPermissions returns a flat, usable permission summary record
@@ -37,7 +39,8 @@ func DecodeUserPermissions(perm []Permission) (r Record) {
 
 	if len(perm) > 0 {
 		r.OrgID = perm[0].OrgID
-		r.UserID = perm[0].WhoID
+		r.WhoID = perm[0].WhoID
+		r.Who = perm[0].Who
 		r.SpaceID = perm[0].RefID
 	}
 
@@ -118,22 +121,24 @@ func HasAnyPermission(p Record) bool {
 func EncodeRecord(r Record, a Action) (p Permission) {
 	p = Permission{}
 	p.OrgID = r.OrgID
-	p.Who = "user"
-	p.WhoID = r.UserID
-	p.Location = "space"
+	p.Who = r.Who
+	p.WhoID = r.WhoID
+	p.Location = LocationSpace
 	p.RefID = r.SpaceID
 	p.Action = a
-	p.Scope = "object" // default to row level permission
+	p.Scope = ScopeRow
 
 	return
 }
 
 // CategoryViewRequestModel represents who should be allowed to see a category.
 type CategoryViewRequestModel struct {
-	OrgID      string `json:"orgId"`
-	SpaceID    string `json:"folderId"`
-	CategoryID string `json:"categoryID"`
-	UserID     string `json:"userId"`
+	OrgID      string  `json:"orgId"`
+	SpaceID    string  `json:"folderId"`
+	CategoryID string  `json:"categoryID"`
+	WhoID      string  `json:"whoId"`
+	Who        WhoType `json:"who"`
+	// UserID     string `json:"userId"`
 }
 
 // SpaceRequestModel details which users have what permissions on a given space.

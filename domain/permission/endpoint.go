@@ -28,6 +28,7 @@ import (
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/mail"
 	"github.com/documize/community/model/audit"
+	"github.com/documize/community/model/group"
 	"github.com/documize/community/model/permission"
 	"github.com/documize/community/model/space"
 	"github.com/documize/community/model/user"
@@ -123,52 +124,85 @@ func (h *Handler) SetSpacePermissions(w http.ResponseWriter, r *http.Request) {
 	hasEveryoneRole := false
 	roleCount := 0
 
+	// Permissions can be assigned to both groups and individual users.
+	// Pre-fetch users with group membership to help us work out
+	// if user belongs to a group with permissions.
+	groupMembers, err := h.Store.Group.GetMembers(ctx)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
 	for _, perm := range model.Permissions {
 		perm.OrgID = ctx.OrgID
 		perm.SpaceID = id
 
+		isGroup := perm.Who == permission.GroupPermission
+		groupRecords := []group.Record{}
+
+		if isGroup {
+			// get group records for just this group
+			groupRecords = group.FilterGroupRecords(groupMembers, perm.WhoID)
+		}
+
 		// Ensure the space owner always has access!
-		if perm.UserID == ctx.UserID {
+		if (!isGroup && perm.WhoID == ctx.UserID) ||
+			(isGroup && group.UserHasGroupMembership(groupMembers, perm.WhoID, ctx.UserID)) {
 			me = true
 		}
 
 		// Only persist if there is a role!
 		if permission.HasAnyPermission(perm) {
 			// identify publically shared spaces
-			if perm.UserID == "" {
-				perm.UserID = "0"
+			if perm.WhoID == "" {
+				perm.WhoID = user.EveryoneUserID
 			}
-
-			if perm.UserID == "0" {
+			if perm.WhoID == user.EveryoneUserID {
 				hasEveryoneRole = true
 			}
 
+			// Encode group/user permission and save to store.
 			r := permission.EncodeUserPermissions(perm)
 			roleCount++
-
 			for _, p := range r {
 				err = h.Store.Permission.AddPermission(ctx, p)
 				if err != nil {
-					h.Runtime.Log.Error("set permission", err)
+					ctx.Transaction.Rollback()
+					response.WriteServerError(w, method, err)
+					h.Runtime.Log.Error(method, err)
 				}
 			}
 
 			// We send out space invitation emails to those users
 			// that have *just* been given permissions.
-			if _, isExisting := previousRoleUsers[perm.UserID]; !isExisting {
+			if _, isExisting := previousRoleUsers[perm.WhoID]; !isExisting {
+				// we skip 'everyone'
+				if perm.WhoID != user.EveryoneUserID {
+					whoToEmail := []string{}
 
-				// we skip 'everyone' (user id != empty string)
-				if perm.UserID != "0" && perm.UserID != "" {
-					existingUser, err := h.Store.User.Get(ctx, perm.UserID)
-					if err != nil {
-						response.WriteServerError(w, method, err)
-						h.Runtime.Log.Error(method, err)
-						break
+					if isGroup {
+						// send email to each group member
+						for i := range groupRecords {
+							whoToEmail = append(whoToEmail, groupRecords[i].UserID)
+						}
+					} else {
+						// send email to individual user
+						whoToEmail = append(whoToEmail, perm.WhoID)
 					}
 
-					mailer := mail.Mailer{Runtime: h.Runtime, Store: h.Store, Context: ctx}
-					go mailer.ShareSpaceExistingUser(existingUser.Email, inviter.Fullname(), url, sp.Name, model.Message)
-					h.Runtime.Log.Info(fmt.Sprintf("%s is sharing space %s with existing user %s", inviter.Email, sp.Name, existingUser.Email))
+					for i := range whoToEmail {
+						existingUser, err := h.Store.User.Get(ctx, whoToEmail[i])
+						if err != nil {
+							h.Runtime.Log.Error(method, err)
+							continue
+						}
+
+						mailer := mail.Mailer{Runtime: h.Runtime, Store: h.Store, Context: ctx}
+						go mailer.ShareSpaceExistingUser(existingUser.Email, inviter.Fullname(), url, sp.Name, model.Message)
+						h.Runtime.Log.Info(fmt.Sprintf("%s is sharing space %s with existing user %s", inviter.Email, sp.Name, existingUser.Email))
+					}
 				}
 			}
 		}
@@ -178,10 +212,10 @@ func (h *Handler) SetSpacePermissions(w http.ResponseWriter, r *http.Request) {
 	if !me {
 		perm := permission.Permission{}
 		perm.OrgID = ctx.OrgID
-		perm.Who = "user"
+		perm.Who = permission.UserPermission
 		perm.WhoID = ctx.UserID
-		perm.Scope = "object"
-		perm.Location = "space"
+		perm.Scope = permission.ScopeRow
+		perm.Location = permission.LocationSpace
 		perm.RefID = id
 		perm.Action = "" // we send array for actions below
 
@@ -232,12 +266,10 @@ func (h *Handler) GetSpacePermissions(w http.ResponseWriter, r *http.Request) {
 	}
 
 	perms, err := h.Store.Permission.GetSpacePermissions(ctx, spaceID)
-	if err != nil && err != sql.ErrNoRows {
+	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
-	}
-	if len(perms) == 0 {
-		perms = []permission.Permission{}
 	}
 
 	userPerms := make(map[string][]permission.Permission)
@@ -248,6 +280,40 @@ func (h *Handler) GetSpacePermissions(w http.ResponseWriter, r *http.Request) {
 	records := []permission.Record{}
 	for _, up := range userPerms {
 		records = append(records, permission.DecodeUserPermissions(up))
+	}
+
+	// populate user/group name for thing that has permission record
+	groups, err := h.Store.Group.GetAll(ctx)
+	if err != nil && err != sql.ErrNoRows {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	for i := range records {
+		if records[i].Who == permission.GroupPermission {
+			for j := range groups {
+				if records[i].WhoID == groups[j].RefID {
+					records[i].Name = groups[j].Name
+					break
+				}
+			}
+		}
+
+		if records[i].Who == permission.UserPermission {
+			if records[i].WhoID == user.EveryoneUserID {
+				records[i].Name = user.EveryoneUserName
+			} else {
+				u, err := h.Store.User.Get(ctx, records[i].WhoID)
+				if err != nil {
+					h.Runtime.Log.Info(fmt.Sprintf("user not found %s", records[i].WhoID))
+					h.Runtime.Log.Error(method, err)
+					continue
+				}
+
+				records[i].Name = u.Fullname()
+			}
+		}
 	}
 
 	response.WriteJSON(w, records)
@@ -265,12 +331,9 @@ func (h *Handler) GetUserSpacePermissions(w http.ResponseWriter, r *http.Request
 	}
 
 	perms, err := h.Store.Permission.GetUserSpacePermissions(ctx, spaceID)
-	if err != nil && err != sql.ErrNoRows {
+	if err != nil {
 		response.WriteServerError(w, method, err)
 		return
-	}
-	if len(perms) == 0 {
-		perms = []permission.Permission{}
 	}
 
 	record := permission.DecodeUserPermissions(perms)
@@ -293,9 +356,6 @@ func (h *Handler) GetCategoryViewers(w http.ResponseWriter, r *http.Request) {
 		response.WriteServerError(w, method, err)
 		return
 	}
-	if len(u) == 0 {
-		u = []user.User{}
-	}
 
 	response.WriteJSON(w, u)
 }
@@ -311,16 +371,58 @@ func (h *Handler) GetCategoryPermissions(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	u, err := h.Store.Permission.GetCategoryPermissions(ctx, categoryID)
-	if err != nil && err != sql.ErrNoRows {
+	perms, err := h.Store.Permission.GetCategoryPermissions(ctx, categoryID)
+	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
-	if len(u) == 0 {
-		u = []permission.Permission{}
+
+	userPerms := make(map[string][]permission.Permission)
+	for _, p := range perms {
+		userPerms[p.WhoID] = append(userPerms[p.WhoID], p)
 	}
 
-	response.WriteJSON(w, u)
+	records := []permission.CategoryRecord{}
+	for _, up := range userPerms {
+		records = append(records, permission.DecodeUserCategoryPermissions(up))
+	}
+
+	// populate user/group name for thing that has permission record
+	groups, err := h.Store.Group.GetAll(ctx)
+	if err != nil && err != sql.ErrNoRows {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	for i := range records {
+		if records[i].Who == permission.GroupPermission {
+			for j := range groups {
+				if records[i].WhoID == groups[j].RefID {
+					records[i].Name = groups[j].Name
+					break
+				}
+			}
+		}
+
+		if records[i].Who == permission.UserPermission {
+			if records[i].WhoID == user.EveryoneUserID {
+				records[i].Name = user.EveryoneUserName
+			} else {
+				u, err := h.Store.User.Get(ctx, records[i].WhoID)
+				if err != nil {
+					h.Runtime.Log.Info(fmt.Sprintf("user not found %s", records[i].WhoID))
+					h.Runtime.Log.Error(method, err)
+					continue
+				}
+
+				records[i].Name = u.Fullname()
+			}
+		}
+	}
+
+	response.WriteJSON(w, records)
 }
 
 // SetCategoryPermissions persists specified category permissions
@@ -348,7 +450,7 @@ func (h *Handler) SetCategoryPermissions(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	var model = []permission.CategoryViewRequestModel{}
+	var model = []permission.CategoryRecord{}
 	err = json.Unmarshal(body, &model)
 	if err != nil {
 		response.WriteServerError(w, method, err)
@@ -358,6 +460,7 @@ func (h *Handler) SetCategoryPermissions(w http.ResponseWriter, r *http.Request)
 
 	if !HasPermission(ctx, *h.Store, spaceID, permission.SpaceManage, permission.SpaceOwner) {
 		response.WriteForbiddenError(w)
+		h.Runtime.Log.Info("no permission to set category permissions")
 		return
 	}
 
@@ -380,10 +483,10 @@ func (h *Handler) SetCategoryPermissions(w http.ResponseWriter, r *http.Request)
 	for _, m := range model {
 		perm := permission.Permission{}
 		perm.OrgID = ctx.OrgID
-		perm.Who = "user"
-		perm.WhoID = m.UserID
-		perm.Scope = "object"
-		perm.Location = "category"
+		perm.Who = m.Who
+		perm.WhoID = m.WhoID
+		perm.Scope = permission.ScopeRow
+		perm.Location = permission.LocationCategory
 		perm.RefID = m.CategoryID
 		perm.Action = permission.CategoryView
 
@@ -418,9 +521,6 @@ func (h *Handler) GetDocumentPermissions(w http.ResponseWriter, r *http.Request)
 		response.WriteServerError(w, method, err)
 		return
 	}
-	if len(perms) == 0 {
-		perms = []permission.Permission{}
-	}
 
 	userPerms := make(map[string][]permission.Permission)
 	for _, p := range perms {
@@ -451,9 +551,6 @@ func (h *Handler) GetUserDocumentPermissions(w http.ResponseWriter, r *http.Requ
 		response.WriteServerError(w, method, err)
 		return
 	}
-	if len(perms) == 0 {
-		perms = []permission.Permission{}
-	}
 
 	record := permission.DecodeUserDocumentPermissions(perms)
 	response.WriteJSON(w, record)
@@ -482,11 +579,6 @@ func (h *Handler) SetDocumentPermissions(w http.ResponseWriter, r *http.Request)
 		response.WriteNotFoundError(w, method, "space not found")
 		return
 	}
-
-	// if !HasPermission(ctx, *h.Store, doc.LabelID, permission.SpaceManage, permission.SpaceOwner) {
-	// 	response.WriteForbiddenError(w)
-	// 	return
-	// }
 
 	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
@@ -547,17 +639,37 @@ func (h *Handler) SetDocumentPermissions(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	url := ctx.GetAppURL(fmt.Sprintf("s/%s/%s/d/%s/%s",
-		sp.RefID, stringutil.MakeSlug(sp.Name), doc.RefID, stringutil.MakeSlug(doc.Title)))
+	url := ctx.GetAppURL(fmt.Sprintf("s/%s/%s/d/%s/%s", sp.RefID, stringutil.MakeSlug(sp.Name), doc.RefID, stringutil.MakeSlug(doc.Title)))
+
+	// Permissions can be assigned to both groups and individual users.
+	// Pre-fetch users with group membership to help us work out
+	// if user belongs to a group with permissions.
+	groupMembers, err := h.Store.Group.GetMembers(ctx)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
 
 	for _, perm := range model {
 		perm.OrgID = ctx.OrgID
 		perm.DocumentID = id
 
+		// get group records for just this group
+		isGroup := perm.Who == permission.GroupPermission
+		groupRecords := []group.Record{}
+		if isGroup {
+			groupRecords = group.FilterGroupRecords(groupMembers, perm.WhoID)
+		}
+
 		// Only persist if there is a role!
 		if permission.HasAnyDocumentPermission(perm) {
-			r := permission.EncodeUserDocumentPermissions(perm)
+			if perm.WhoID == "" {
+				perm.WhoID = user.EveryoneUserID
+			}
 
+			r := permission.EncodeUserDocumentPermissions(perm)
 			for _, p := range r {
 				err = h.Store.Permission.AddPermission(ctx, p)
 				if err != nil {
@@ -566,19 +678,32 @@ func (h *Handler) SetDocumentPermissions(w http.ResponseWriter, r *http.Request)
 			}
 
 			// Send email notification to users who have been given document approver role
-			if _, isExisting := previousRoleUsers[perm.UserID]; !isExisting {
+			if _, isExisting := previousRoleUsers[perm.WhoID]; !isExisting {
+				// we skip 'everyone' as it has no email address!
+				if perm.WhoID != user.EveryoneUserID && perm.DocumentRoleApprove {
+					whoToEmail := []string{}
 
-				// we skip 'everyone' (user id != empty string)
-				if perm.UserID != "0" && perm.UserID != "" && perm.DocumentRoleApprove {
-					existingUser, err := h.Store.User.Get(ctx, perm.UserID)
-					if err != nil {
-						response.WriteServerError(w, method, err)
-						break
+					if isGroup {
+						// send email to each group member
+						for i := range groupRecords {
+							whoToEmail = append(whoToEmail, groupRecords[i].UserID)
+						}
+					} else {
+						// send email to individual user
+						whoToEmail = append(whoToEmail, perm.WhoID)
 					}
 
-					mailer := mail.Mailer{Runtime: h.Runtime, Store: h.Store, Context: ctx}
-					go mailer.DocumentApprover(existingUser.Email, inviter.Fullname(), url, doc.Title)
-					h.Runtime.Log.Info(fmt.Sprintf("%s has made %s document approver for: %s", inviter.Email, existingUser.Email, doc.Title))
+					for i := range whoToEmail {
+						existingUser, err := h.Store.User.Get(ctx, whoToEmail[i])
+						if err != nil {
+							h.Runtime.Log.Error(method, err)
+							continue
+						}
+
+						mailer := mail.Mailer{Runtime: h.Runtime, Store: h.Store, Context: ctx}
+						go mailer.DocumentApprover(existingUser.Email, inviter.Fullname(), url, doc.Title)
+						h.Runtime.Log.Info(fmt.Sprintf("%s has made %s document approver for: %s", inviter.Email, existingUser.Email, doc.Title))
+					}
 				}
 			}
 		}

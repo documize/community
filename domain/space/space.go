@@ -64,10 +64,10 @@ func inviteNewUserToSharedSpace(ctx domain.RequestContext, rt *env.Runtime, s *d
 
 	perm := permission.Permission{}
 	perm.OrgID = sp.OrgID
-	perm.Who = "user"
+	perm.Who = permission.UserPermission
 	perm.WhoID = userID
-	perm.Scope = "object"
-	perm.Location = "space"
+	perm.Scope = permission.ScopeRow
+	perm.Location = permission.LocationSpace
 	perm.RefID = sp.RefID
 	perm.Action = "" // we send array for actions below
 

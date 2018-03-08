@@ -15,11 +15,11 @@ import attr from 'ember-data/attr';
 export default Model.extend({
 	orgId: attr('string'),
 	documentId: attr('string'),
-	userId: attr('string'),
-	fullname: attr('string'), // client-side usage only, not from API
-
-	documentEdit: attr('boolean'), 			// space level setting
-	documentApprove: attr('boolean'),		// space level setting
-	documentRoleEdit: attr('boolean'),		// document level setting
-	documentRoleApprove: attr('boolean')	// document level setting
+	whoId: attr('string'),
+	who: attr('string'),
+	name: attr('string'),
+	documentEdit: attr('boolean'),
+	documentApprove: attr('boolean'),
+	documentRoleEdit: attr('boolean'),
+	documentRoleApprove: attr('boolean')
 });

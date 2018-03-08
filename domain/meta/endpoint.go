@@ -41,8 +41,8 @@ func (h *Handler) Meta(w http.ResponseWriter, r *http.Request) {
 
 	org, err := h.Store.Organization.GetOrganizationByDomain(data.URL)
 	if err != nil {
-		h.Runtime.Log.Error("unable to fetch request meta for "+data.URL, err)
-		response.WriteForbiddenError(w)
+		h.Runtime.Log.Info("unable to fetch request meta for " + data.URL)
+		response.WriteNotFound(w)
 		return
 	}
 

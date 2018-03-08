@@ -9,149 +9,130 @@
 //
 // https://documize.com
 
-// jshint ignore:start
-
 package mail
 
 import (
-	"bytes"
 	"fmt"
-	"html/template"
 
-	"github.com/documize/community/server/web"
+	"github.com/documize/community/domain/smtp"
 )
 
 // InviteNewUser invites someone new providing credentials, explaining the product and stating who is inviting them.
 func (m *Mailer) InviteNewUser(recipient, inviter, url, username, password string) {
 	method := "InviteNewUser"
-	m.LoadCredentials()
-
-	file, err := web.ReadFile("mail/invite-new-user.html")
-	if err != nil {
-		m.Runtime.Log.Error(fmt.Sprintf("%s - unable to load email template", method), err)
-		return
-	}
-
-	emailTemplate := string(file)
+	m.Initialize()
 
 	// check inviter name
 	if inviter == "Hello You" || len(inviter) == 0 {
 		inviter = "Your colleague"
 	}
 
-	subject := fmt.Sprintf("%s has invited you to Documize", inviter)
-
-	e := NewEmail()
-	e.From = m.Credentials.SMTPsender
-	e.To = []string{recipient}
-	e.Subject = subject
+	em := smtp.EmailMessage{}
+	em.Subject = fmt.Sprintf("%s has invited you to Documize", inviter)
+	em.ToEmail = recipient
+	em.ToName = recipient
 
 	parameters := struct {
 		Subject  string
 		Inviter  string
-		Url      string
+		URL      string
 		Username string
 		Password string
 	}{
-		subject,
+		em.Subject,
 		inviter,
 		url,
 		recipient,
 		password,
 	}
 
-	buffer := new(bytes.Buffer)
-	t := template.Must(template.New("emailTemplate").Parse(emailTemplate))
-	t.Execute(buffer, &parameters)
-	e.HTML = buffer.Bytes()
+	html, err := m.ParseTemplate("mail/invite-new-user.html", parameters)
+	if err != nil {
+		m.Runtime.Log.Error(fmt.Sprintf("%s - unable to load email template", method), err)
+		return
+	}
+	em.BodyHTML = html
 
-	err = e.Send(m.GetHost(), m.GetAuth())
+	ok, err := smtp.SendMessage(m.Dialer, m.Config, em)
 	if err != nil {
 		m.Runtime.Log.Error(fmt.Sprintf("%s - unable to send email", method), err)
+	}
+	if !ok {
+		m.Runtime.Log.Info(fmt.Sprintf("%s unable to send email"))
 	}
 }
 
 // InviteExistingUser invites a known user to an organization.
 func (m *Mailer) InviteExistingUser(recipient, inviter, url string) {
 	method := "InviteExistingUser"
-	m.LoadCredentials()
-
-	file, err := web.ReadFile("mail/invite-existing-user.html")
-	if err != nil {
-		m.Runtime.Log.Error(fmt.Sprintf("%s - unable to load email template", method), err)
-		return
-	}
-
-	emailTemplate := string(file)
+	m.Initialize()
 
 	// check inviter name
 	if inviter == "Hello You" || len(inviter) == 0 {
 		inviter = "Your colleague"
 	}
 
-	subject := fmt.Sprintf("%s has invited you to their Documize account", inviter)
-
-	e := NewEmail()
-	e.From = m.Credentials.SMTPsender
-	e.To = []string{recipient}
-	e.Subject = subject
+	em := smtp.EmailMessage{}
+	em.Subject = fmt.Sprintf("%s has invited you to their Documize account", inviter)
+	em.ToEmail = recipient
+	em.ToName = recipient
 
 	parameters := struct {
 		Subject string
 		Inviter string
-		Url     string
+		URL     string
 	}{
-		subject,
+		em.Subject,
 		inviter,
 		url,
 	}
 
-	buffer := new(bytes.Buffer)
-	t := template.Must(template.New("emailTemplate").Parse(emailTemplate))
-	t.Execute(buffer, &parameters)
-	e.HTML = buffer.Bytes()
+	html, err := m.ParseTemplate("mail/invite-existing-user.html", parameters)
+	if err != nil {
+		m.Runtime.Log.Error(fmt.Sprintf("%s - unable to load email template", method), err)
+		return
+	}
+	em.BodyHTML = html
 
-	err = e.Send(m.GetHost(), m.GetAuth())
+	ok, err := smtp.SendMessage(m.Dialer, m.Config, em)
 	if err != nil {
 		m.Runtime.Log.Error(fmt.Sprintf("%s - unable to send email", method), err)
+	}
+	if !ok {
+		m.Runtime.Log.Info(fmt.Sprintf("%s unable to send email"))
 	}
 }
 
 // PasswordReset sends a reset email with an embedded token.
 func (m *Mailer) PasswordReset(recipient, url string) {
 	method := "PasswordReset"
-	m.LoadCredentials()
+	m.Initialize()
 
-	file, err := web.ReadFile("mail/password-reset.html")
+	em := smtp.EmailMessage{}
+	em.Subject = "Documize password reset request"
+	em.ToEmail = recipient
+	em.ToName = recipient
+
+	parameters := struct {
+		Subject string
+		URL     string
+	}{
+		em.Subject,
+		url,
+	}
+
+	html, err := m.ParseTemplate("mail/password-reset.html", parameters)
 	if err != nil {
 		m.Runtime.Log.Error(fmt.Sprintf("%s - unable to load email template", method), err)
 		return
 	}
+	em.BodyHTML = html
 
-	emailTemplate := string(file)
-
-	subject := "Documize password reset request"
-
-	e := NewEmail()
-	e.From = m.Credentials.SMTPsender //e.g. "Documize <hello@documize.com>"
-	e.To = []string{recipient}
-	e.Subject = subject
-
-	parameters := struct {
-		Subject string
-		Url     string
-	}{
-		subject,
-		url,
-	}
-
-	buffer := new(bytes.Buffer)
-	t := template.Must(template.New("emailTemplate").Parse(emailTemplate))
-	t.Execute(buffer, &parameters)
-	e.HTML = buffer.Bytes()
-
-	err = e.Send(m.GetHost(), m.GetAuth())
+	ok, err := smtp.SendMessage(m.Dialer, m.Config, em)
 	if err != nil {
 		m.Runtime.Log.Error(fmt.Sprintf("%s - unable to send email", method), err)
+	}
+	if !ok {
+		m.Runtime.Log.Info(fmt.Sprintf("%s unable to send email"))
 	}
 }

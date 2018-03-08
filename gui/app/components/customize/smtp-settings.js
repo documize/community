@@ -17,8 +17,10 @@ export default Component.extend({
 	SMTPHostEmptyError: empty('model.smtp.host'),
 	SMTPPortEmptyError: empty('model.smtp.port'),
 	SMTPSenderEmptyError: empty('model.smtp.sender'),
-	SMTPUserIdEmptyError: empty('model.smtp.userid'),
-	SMTPPasswordEmptyError: empty('model.smtp.password'),
+	senderNameError: empty('model.smtp.senderName'),
+
+	buttonText: 'Save & Test',
+	testSMTP: null,
 
 	actions: {
 		saveSMTP() {
@@ -34,16 +36,22 @@ export default Component.extend({
 				$("#smtp-sender").focus();
 				return;
 			}
-			if (this.get('SMTPUserIdEmptyError')) {
-				$("#smtp-userid").focus();
-				return;
-			}
-			if (this.get('SMTPPasswordEmptyError')) {
-				$("#smtp-password").focus();
+			if (this.get('senderNameError')) {
+				$("#smtp-senderName").focus();
 				return;
 			}
 
-			this.get('saveSMTP')().then(() => {
+			this.set('testSMTP',  {
+					success: true,
+					message: ''
+				},
+			);
+
+			this.set('buttonText', 'Please wait...');
+
+			this.get('saveSMTP')().then((result) => {
+				this.set('buttonText', 'Save & Test');
+				this.set('testSMTP', result);
 			});
 		}
 	}

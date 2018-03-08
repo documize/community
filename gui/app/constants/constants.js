@@ -11,6 +11,9 @@
 
 import EmberObject from "@ember/object";
 
+// access like so:
+//      let constants = this.get('constants');
+
 let constants = EmberObject.extend({
     // Document
     ProtectionType: { // eslint-disable-line ember/avoid-leaking-state-in-ember-objects
@@ -48,7 +51,16 @@ let constants = EmberObject.extend({
     PageType: { // eslint-disable-line ember/avoid-leaking-state-in-ember-objects
         Tab:            'tab',
         Section:        'section'
-    }
+    },
+
+    // Who a permission record relates to
+    WhoType: { // eslint-disable-line ember/avoid-leaking-state-in-ember-objects
+        User:           'user',
+        Group:          'role'
+    },
+
+    EveryoneUserId: "0",
+    EveryoneUserName: "Everyone"
 });
 
 export default { constants }

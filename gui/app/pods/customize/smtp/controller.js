@@ -18,7 +18,8 @@ export default Controller.extend({
 	actions: {
 		saveSMTP() {
 			if(this.get('session.isGlobalAdmin')) {
-				return this.get('global').saveSMTPConfig(this.model.smtp).then(() => {
+				return this.get('global').saveSMTPConfig(this.model.smtp).then((response) => {
+					return response;
 				});
 			}
 		}

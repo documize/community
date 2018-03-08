@@ -26,6 +26,9 @@ export default Controller.extend(TooltipMixin, {
 	actions: {
 		onTabChange(tab) {
 			this.set('tab', tab);
+			if (tab === 'content') {
+				this.send('refresh');
+			} 
 		},
 
 		onShowPage(pageId) {

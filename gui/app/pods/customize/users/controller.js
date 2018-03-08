@@ -9,54 +9,49 @@
 //
 // https://documize.com
 
-import { set } from '@ember/object';
 import { inject as service } from '@ember/service';
 import Controller from '@ember/controller';
 
 export default Controller.extend({
 	userService: service('user'),
 
-	init() {
-		this._super(...arguments);
-		this.newUser = { firstname: "", lastname: "", email: "", active: true };
+	loadUsers(filter) {
+		this.get('userService').getComplete(filter).then((users) => {
+			this.set('model', users);
+		});
 	},
 
 	actions: {
-		add(user) {
-			set(this, 'newUser', user);
-
-			return this.get('userService')
-				.add(this.get('newUser'))
-				.then((user) => {
-					this.get('model').pushObject(user);
-				})
-				.catch(function (error) {
-					let msg = error.status === 409 ? 'Unable to add duplicate user' : 'Unable to add user';
-					this.showNotification(msg);
-				});
+		onAddUser(user) {
+			return this.get('userService').add(user).then((user) => {
+				this.get('model').pushObject(user);
+			});
+		},
+		
+		onAddUsers(list) {
+			return this.get('userService').addBulk(list).then(() => {
+				this.loadUsers('');
+			});
 		},
 
 		onDelete(userId) {
-			let self = this;
-			this.get('userService').remove(userId).then(function () {
-				self.get('userService').getComplete().then(function (users) {
-					self.set('model', users);
-				});
+			this.get('userService').remove(userId).then( () => {
+				this.loadUsers('');
 			});
 		},
 
 		onSave(user) {
-			let self = this;
-			this.get('userService').save(user).then(function () {
-
-				self.get('userService').getComplete().then(function (users) {
-					self.set('model', users);
-				});
+			this.get('userService').save(user).then(() => {
+				this.loadUsers('');
 			});
 		},
 
 		onPassword(user, password) {
 			this.get('userService').updatePassword(user.id, password);
+		},
+
+		onFilter(filter) {
+			this.loadUsers(filter);
 		}
 	}
 });

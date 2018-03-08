@@ -16,6 +16,7 @@ import (
 
 	"github.com/documize/community/model"
 	"github.com/documize/community/model/account"
+	"github.com/documize/community/model/group"
 )
 
 // User defines a login.
@@ -34,6 +35,7 @@ type User struct {
 	Salt      string            `json:"-"`
 	Reset     string            `json:"-"`
 	Accounts  []account.Account `json:"accounts"`
+	Groups    []group.Record    `json:"groups"`
 }
 
 // ProtectSecrets blanks sensitive data.
@@ -69,3 +71,11 @@ func Exists(users []User, userID string) bool {
 
 	return false
 }
+
+const (
+	// EveryoneUserID provides a shortcut to state "all authenticated users".
+	EveryoneUserID string = "0"
+
+	// EveryoneUserName provides the descriptor for this type of user/group.
+	EveryoneUserName string = "Everyone"
+)

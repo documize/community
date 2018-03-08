@@ -6,7 +6,7 @@
 				<p class="sub-title">Sub-divide spaces into categories which can contain documents with restricted access.</p>
 				<form class="form-inline" onsubmit={{action 'onAdd'}}>
 					<div class="form-group mr-3">
-						{{input id="new-category-name" type='text' class="form-control mousetrap" placeholder="Category name" value=newCategory}}
+						{{focus-input id="new-category-name" type='text' class="form-control mousetrap" placeholder="Category name" value=newCategory}}
 					</div>
 					<button type="button" class="btn btn-success" onclick={{action 'onAdd'}}>Add</button>
 				</form>
@@ -27,7 +27,7 @@
 							{{else}}
 								<div class="category col-8">
 									<div class="name">{{cat.category}}</div>
-									<div class="info">{{cat.documents}} {{if (eq cat.documents 1) 'document' 'documents' }}, {{cat.users}} {{if (eq cat.users 1) 'person' 'people' }}</div>
+									<div class="info">{{cat.documents}} {{if (eq cat.documents 1) 'document' 'documents' }} &middot; {{cat.users}} users/groups</div>
 								</div>
 							{{/if}}
 							<div class="col-4 buttons text-right">
@@ -72,8 +72,40 @@
 		</div>
 	</div>
 
-	{{#ui/ui-dialog title="Set Cateogory Access" confirmCaption="Save" buttonType="btn-success" show=showCategoryAccess onAction=(action 'onGrantAccess')}}
+	{{#ui/ui-dialog title="Set Category Access" confirmCaption="Save" buttonType="btn-success" show=showCategoryAccess onAction=(action 'onGrantAccess')}}
 		<p>Select who can view documents within category</p>
-		{{ui/ui-list-picker items=categoryUsers nameField='fullname' singleSelect=false}}
+
+		<div class="widget-list-picker">
+			<ul class="options">
+				{{#each categoryPermissions as |permission|}}
+					<li class="option {{if permission.selected 'selected'}}" {{action 'onToggle' permission}}>
+						<div class="text text-truncate">
+							{{#if (eq permission.who "role")}}
+								<span class="button-icon-gray button-icon-small align-middle">
+									<i class="material-icons">people</i>
+								</span>
+							{{else}}
+								{{#if (eq permission.whoId constants.EveryoneUserId)}}
+									<span class="button-icon-gray button-icon-small align-middle">
+										<i class="material-icons">language</i>
+									</span>
+								{{else}}
+									<span class="button-icon-gray button-icon-small align-middle">
+										<i class="material-icons">person</i>
+									</span>
+								{{/if}}
+							{{/if}}
+							&nbsp;{{permission.name}} 
+							{{#if (eq permission.whoId session.user.id)}}
+								<small class="form-text text-muted d-inline-block">(you)</small>
+							{{/if}}
+						</div>
+						{{#if permission.selected}}
+							<i class="material-icons">check</i>
+						{{/if}}
+					</li>
+				{{/each}}
+			</ul>
+		</div>
 	{{/ui/ui-dialog}}
 </div>

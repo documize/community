@@ -20,6 +20,7 @@ import (
 	"github.com/documize/community/model/block"
 	"github.com/documize/community/model/category"
 	"github.com/documize/community/model/doc"
+	"github.com/documize/community/model/group"
 	"github.com/documize/community/model/link"
 	"github.com/documize/community/model/org"
 	"github.com/documize/community/model/page"
@@ -39,6 +40,7 @@ type Store struct {
 	Block        BlockStorer
 	Category     CategoryStorer
 	Document     DocumentStorer
+	Group        GroupStorer
 	Link         LinkStorer
 	Organization OrganizationStorer
 	Page         PageStorer
@@ -108,7 +110,7 @@ type UserStorer interface {
 	GetByToken(ctx RequestContext, token string) (u user.User, err error)
 	GetBySerial(ctx RequestContext, serial string) (u user.User, err error)
 	GetActiveUsersForOrganization(ctx RequestContext) (u []user.User, err error)
-	GetUsersForOrganization(ctx RequestContext) (u []user.User, err error)
+	GetUsersForOrganization(ctx RequestContext, filter string) (u []user.User, err error)
 	GetSpaceUsers(ctx RequestContext, spaceID string) (u []user.User, err error)
 	GetUsersForSpaces(ctx RequestContext, spaces []string) (u []user.User, err error)
 	UpdateUser(ctx RequestContext, u user.User) (err error)
@@ -116,6 +118,7 @@ type UserStorer interface {
 	DeactiveUser(ctx RequestContext, userID string) (err error)
 	ForgotUserPassword(ctx RequestContext, email, token string) (err error)
 	CountActiveUsers() (c int)
+	MatchUsers(ctx RequestContext, text string, maxMatches int) (u []user.User, err error)
 }
 
 // AccountStorer defines required methods for account management
@@ -264,4 +267,17 @@ type PageStorer interface {
 	GetPageRevisions(ctx RequestContext, pageID string) (revisions []page.Revision, err error)
 	GetDocumentRevisions(ctx RequestContext, documentID string) (revisions []page.Revision, err error)
 	DeletePageRevisions(ctx RequestContext, pageID string) (rows int64, err error)
+}
+
+// GroupStorer defines required methods for persisting user groups and memberships
+type GroupStorer interface {
+	Add(ctx RequestContext, g group.Group) (err error)
+	Get(ctx RequestContext, refID string) (g group.Group, err error)
+	GetAll(ctx RequestContext) (g []group.Group, err error)
+	Update(ctx RequestContext, g group.Group) (err error)
+	Delete(ctx RequestContext, refID string) (rows int64, err error)
+	GetGroupMembers(ctx RequestContext, groupID string) (m []group.Member, err error)
+	GetMembers(ctx RequestContext) (r []group.Record, err error)
+	JoinGroup(ctx RequestContext, groupID, userID string) (err error)
+	LeaveGroup(ctx RequestContext, groupID, userID string) (err error)
 }

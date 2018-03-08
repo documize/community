@@ -94,7 +94,7 @@ func (h *Handler) Sync(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// User list from Documize
-	dmzUsers, err := h.Store.User.GetUsersForOrganization(ctx)
+	dmzUsers, err := h.Store.User.GetUsersForOrganization(ctx, "")
 	if err != nil {
 		result.Message = "Error: unable to fetch Documize users"
 		result.IsError = true

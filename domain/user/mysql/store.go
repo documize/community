@@ -14,6 +14,7 @@ package mysql
 import (
 	"database/sql"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -117,6 +118,10 @@ func (s Scope) GetActiveUsersForOrganization(ctx domain.RequestContext) (u []use
 		ORDER BY u.firstname,u.lastname`,
 		ctx.OrgID)
 
+	if err == sql.ErrNoRows || len(u) == 0 {
+		err = nil
+		u = []user.User{}
+	}
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("get active users by org %s", ctx.OrgID))
 	}
@@ -126,13 +131,24 @@ func (s Scope) GetActiveUsersForOrganization(ctx domain.RequestContext) (u []use
 
 // GetUsersForOrganization returns a slice containing all of the user records for the organizaiton
 // identified in the Persister.
-func (s Scope) GetUsersForOrganization(ctx domain.RequestContext) (u []user.User, err error) {
+func (s Scope) GetUsersForOrganization(ctx domain.RequestContext, filter string) (u []user.User, err error) {
+	filter = strings.TrimSpace(strings.ToLower(filter))
+	likeQuery := ""
+	if len(filter) > 0 {
+		likeQuery = " AND (LOWER(u.firstname) LIKE '%" + filter + "%' OR LOWER(u.lastname) LIKE '%" + filter + "%' OR LOWER(u.email) LIKE '%" + filter + "%') "
+	}
+
 	err = s.Runtime.Db.Select(&u,
 		`SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.password, u.salt, u.reset, u.created, u.revised,
 		u.global, a.active, a.editor, a.admin, a.users as viewusers
 		FROM user u, account a
-		WHERE u.refid=a.userid AND a.orgid=?
-		ORDER BY u.firstname, u.lastname`, ctx.OrgID)
+		WHERE u.refid=a.userid AND a.orgid=? `+likeQuery+
+			`ORDER BY u.firstname, u.lastname LIMIT 100`, ctx.OrgID)
+
+	if err == sql.ErrNoRows || len(u) == 0 {
+		err = nil
+		u = []user.User{}
+	}
 
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf(" get users for org %s", ctx.OrgID))
@@ -154,6 +170,10 @@ func (s Scope) GetSpaceUsers(ctx domain.RequestContext, spaceID string) (u []use
 		ORDER BY u.firstname, u.lastname
 		`, ctx.OrgID, ctx.OrgID, spaceID, ctx.OrgID, spaceID)
 
+	if err == sql.ErrNoRows || len(u) == 0 {
+		err = nil
+		u = []user.User{}
+	}
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("get space users for org %s", ctx.OrgID))
 	}
@@ -182,6 +202,10 @@ func (s Scope) GetUsersForSpaces(ctx domain.RequestContext, spaces []string) (u 
 	query = s.Runtime.Db.Rebind(query)
 	err = s.Runtime.Db.Select(&u, query, args...)
 
+	if err == sql.ErrNoRows || len(u) == 0 {
+		err = nil
+		u = []user.User{}
+	}
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("get users for spaces for user %s", ctx.UserID))
 	}
@@ -251,6 +275,33 @@ func (s Scope) CountActiveUsers() (c int) {
 	if err != nil && err != sql.ErrNoRows {
 		s.Runtime.Log.Error("CountActiveUsers", err)
 		return 0
+	}
+
+	return
+}
+
+// MatchUsers returns users that have match to either firstname, lastname or email.
+func (s Scope) MatchUsers(ctx domain.RequestContext, text string, maxMatches int) (u []user.User, err error) {
+	text = strings.TrimSpace(strings.ToLower(text))
+	likeQuery := ""
+	if len(text) > 0 {
+		likeQuery = " AND (LOWER(firstname) LIKE '%" + text + "%' OR LOWER(lastname) LIKE '%" + text + "%' OR LOWER(email) LIKE '%" + text + "%') "
+	}
+
+	err = s.Runtime.Db.Select(&u,
+		`SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.password, u.salt, u.reset, u.created, u.revised,
+		u.global, a.active, a.editor, a.admin, a.users as viewusers
+		FROM user u, account a
+		WHERE a.orgid=? AND u.refid=a.userid AND a.active=1 `+likeQuery+
+			`ORDER BY u.firstname,u.lastname LIMIT `+strconv.Itoa(maxMatches),
+		ctx.OrgID)
+
+	if err == sql.ErrNoRows || len(u) == 0 {
+		err = nil
+		u = []user.User{}
+	}
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("matching users for org %s", ctx.OrgID))
 	}
 
 	return
