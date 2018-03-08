@@ -165,7 +165,6 @@ func setupAccount(rt *env.Runtime, completion onboardRequest, serial string) (er
 	labelID := uniqueid.Generate()
 	sql = fmt.Sprintf("insert into label (refid, orgid, label, type, userid) values (\"%s\", \"%s\", \"My Project\", 2, \"%s\")", labelID, orgID, userID)
 	_, err = runSQL(rt, sql)
-
 	if err != nil {
 		rt.Log.Error("insert into label failed", err)
 	}
@@ -178,6 +177,45 @@ func setupAccount(rt *env.Runtime, completion onboardRequest, serial string) (er
 		if err != nil {
 			rt.Log.Error("insert into permission failed", err)
 		}
+	}
+
+	// Create some user groups
+	groupDevID := uniqueid.Generate()
+	sql = fmt.Sprintf("INSERT INTO role (refid, orgid, role, purpose) VALUES (\"%s\", \"%s\", \"Technology\", \"On-site and remote development teams\")", groupDevID, orgID)
+	_, err = runSQL(rt, sql)
+	if err != nil {
+		rt.Log.Error("insert into role failed", err)
+	}
+
+	groupProjectID := uniqueid.Generate()
+	sql = fmt.Sprintf("INSERT INTO role (refid, orgid, role, purpose) VALUES (\"%s\", \"%s\", \"Project Management\", \"HQ project management\")", groupProjectID, orgID)
+	_, err = runSQL(rt, sql)
+	if err != nil {
+		rt.Log.Error("insert into role failed", err)
+	}
+
+	groupBackofficeID := uniqueid.Generate()
+	sql = fmt.Sprintf("INSERT INTO role (refid, orgid, role, purpose) VALUES (\"%s\", \"%s\", \"Back Office\", \"Non-IT and PMO personnel\")", groupBackofficeID, orgID)
+	_, err = runSQL(rt, sql)
+	if err != nil {
+		rt.Log.Error("insert into role failed", err)
+	}
+
+	// Join some groups
+	sql = fmt.Sprintf("INSERT INTO rolemember (orgid, roleid, userid) VALUES (\"%s\", \"%s\", \"%s\")", orgID, groupDevID, userID)
+	_, err = runSQL(rt, sql)
+	if err != nil {
+		rt.Log.Error("insert into rolemember failed", err)
+	}
+	sql = fmt.Sprintf("INSERT INTO rolemember (orgid, roleid, userid) VALUES (\"%s\", \"%s\", \"%s\")", orgID, groupProjectID, userID)
+	_, err = runSQL(rt, sql)
+	if err != nil {
+		rt.Log.Error("insert into rolemember failed", err)
+	}
+	sql = fmt.Sprintf("INSERT INTO rolemember (orgid, roleid, userid) VALUES (\"%s\", \"%s\", \"%s\")", orgID, groupBackofficeID, userID)
+	_, err = runSQL(rt, sql)
+	if err != nil {
+		rt.Log.Error("insert into rolemember failed", err)
 	}
 
 	return
