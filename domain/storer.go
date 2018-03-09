@@ -88,17 +88,18 @@ type PermissionStorer interface {
 	AddPermissions(ctx RequestContext, r permission.Permission, actions ...permission.Action) (err error)
 	GetUserSpacePermissions(ctx RequestContext, spaceID string) (r []permission.Permission, err error)
 	GetSpacePermissions(ctx RequestContext, spaceID string) (r []permission.Permission, err error)
-	DeleteSpacePermissions(ctx RequestContext, spaceID string) (rows int64, err error)
-	DeleteUserSpacePermissions(ctx RequestContext, spaceID, userID string) (rows int64, err error)
-	DeleteUserPermissions(ctx RequestContext, userID string) (rows int64, err error)
-	DeleteCategoryPermissions(ctx RequestContext, categoryID string) (rows int64, err error)
-	DeleteSpaceCategoryPermissions(ctx RequestContext, spaceID string) (rows int64, err error)
 	GetCategoryPermissions(ctx RequestContext, catID string) (r []permission.Permission, err error)
 	GetCategoryUsers(ctx RequestContext, catID string) (u []user.User, err error)
 	GetUserCategoryPermissions(ctx RequestContext, userID string) (r []permission.Permission, err error)
 	GetUserDocumentPermissions(ctx RequestContext, documentID string) (r []permission.Permission, err error)
 	GetDocumentPermissions(ctx RequestContext, documentID string) (r []permission.Permission, err error)
 	DeleteDocumentPermissions(ctx RequestContext, documentID string) (rows int64, err error)
+	DeleteSpacePermissions(ctx RequestContext, spaceID string) (rows int64, err error)
+	DeleteUserSpacePermissions(ctx RequestContext, spaceID, userID string) (rows int64, err error)
+	DeleteUserPermissions(ctx RequestContext, userID string) (rows int64, err error)
+	DeleteCategoryPermissions(ctx RequestContext, categoryID string) (rows int64, err error)
+	DeleteSpaceCategoryPermissions(ctx RequestContext, spaceID string) (rows int64, err error)
+	DeleteGroupPermissions(ctx RequestContext, groupID string) (rows int64, err error)
 }
 
 // UserStorer defines required methods for user management

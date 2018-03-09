@@ -202,7 +202,17 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Delete group and associated membership data
 	_, err = h.Store.Group.Delete(ctx, g.RefID)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	// Delete permissions associated with group
+	_, err = h.Store.Permission.DeleteGroupPermissions(ctx, groupID)
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)

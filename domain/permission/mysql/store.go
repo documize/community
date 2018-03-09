@@ -289,3 +289,13 @@ func (s Scope) DeleteSpaceCategoryPermissions(ctx domain.RequestContext, spaceID
 
 	return b.DeleteWhere(ctx.Transaction, sql)
 }
+
+// DeleteGroupPermissions removes all roles for the specified group
+func (s Scope) DeleteGroupPermissions(ctx domain.RequestContext, groupID string) (rows int64, err error) {
+	b := mysql.BaseQuery{}
+
+	sql := fmt.Sprintf("DELETE FROM permission WHERE orgid='%s' AND who='role' AND whoid='%s'",
+		ctx.OrgID, groupID)
+
+	return b.DeleteWhere(ctx.Transaction, sql)
+}

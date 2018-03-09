@@ -16,7 +16,7 @@ var Router = EmberRouter.extend({
 	location: config.locationType
 });
 
-export default Router.map(function () {
+export default Router.map(function() {
 	this.route('folders', {
 		path: '/'
 	});
@@ -25,53 +25,65 @@ export default Router.map(function () {
 		path: 'dashboard'
 	});
 
-    this.route('folder', {
-		path: 's/:folder_id/:folder_slug'
-	}, function() {
-		this.route('category', {
-			path: 'category'
-		})
-	});
+	this.route(
+		'folder',
+		{
+			path: 's/:folder_id/:folder_slug'
+		},
+		function() {
+			this.route('category', {
+				path: 'category'
+			});
+		}
+	);
 
-	this.route('document', {
-		path: 's/:folder_id/:folder_slug/d/:document_id/:document_slug'
-	}, function () {
-		this.route('section', {
-			path: 'section/:page_id'
-		});
-		this.route('block', {
-			path: 'block/:block_id'
-		});
-	});
+	this.route(
+		'document',
+		{
+			path: 's/:folder_id/:folder_slug/d/:document_id/:document_slug'
+		},
+		function() {
+			this.route('section', {
+				path: 'section/:page_id'
+			});
+			this.route('block', {
+				path: 'block/:block_id'
+			});
+		}
+	);
 
-	this.route('customize', {
-		path: 'settings'
-	}, function () {
-		this.route('general', {
-			path: 'general'
-		});
-		this.route('groups', {
-			path: 'groups'
-		});
-		this.route('users', {
-			path: 'users'
-		});
-		this.route('folders', {
-			path: 'folders'
-		});
-		this.route('smtp', {
-			path: 'smtp'
-		});
-		this.route('license', {
-			path: 'license'
-		});
-		this.route('auth', {
-			path: 'auth'
-		});
-		this.route('audit', {
-			path: 'audit'
-		});
-	});
+	this.route(
+		'customize',
+		{
+			path: 'settings'
+		},
+		function() {
+			this.route('general', {
+				path: 'general'
+			});
+			this.route('groups', {
+				path: 'groups'
+			});
+			this.route('users', {
+				path: 'users'
+			});
+			this.route('folders', {
+				path: 'folders'
+			});
+			this.route('smtp', {
+				path: 'smtp'
+			});
+			this.route('license', {
+				path: 'license'
+			});
+			this.route('auth', {
+				path: 'auth'
+			});
+			this.route('audit', {
+				path: 'audit'
+			});
+		}
+	);
 
 	this.route('setup', {
 		path: 'setup'
@@ -81,31 +93,35 @@ export default Router.map(function () {
 		path: 'secure/:token'
 	});
 
-	this.route('auth', {
-		path: 'auth'
-	}, function () {
-		this.route('sso', {
-			path: 'sso/:token'
-		});
-		this.route('keycloak', {
-			path: 'keycloak'
-		});
-		this.route('login', {
-			path: 'login'
-		});
-		this.route('forgot', {
-			path: 'forgot'
-		});
-		this.route('reset', {
-			path: 'reset/:token'
-		});
-		this.route('logout', {
-			path: 'logout'
-		});
-		this.route('share', {
-			path: 'share/:id/:slug/:serial'
-		});
-	});
+	this.route(
+		'auth',
+		{
+			path: 'auth'
+		},
+		function() {
+			this.route('sso', {
+				path: 'sso/:token'
+			});
+			this.route('keycloak', {
+				path: 'keycloak'
+			});
+			this.route('login', {
+				path: 'login'
+			});
+			this.route('forgot', {
+				path: 'forgot'
+			});
+			this.route('reset', {
+				path: 'reset/:token'
+			});
+			this.route('logout', {
+				path: 'logout'
+			});
+			this.route('share', {
+				path: 'share/:id/:slug/:serial'
+			});
+		}
+	);
 
 	this.route('profile', {
 		path: 'profile'
