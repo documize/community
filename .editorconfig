@@ -1,5 +1,3 @@
- sample EditorConfig file
-# indicate this is the root of the project
 root = true
 
 [*]
@@ -8,3 +6,4 @@ end_of_line = lf
 charset = utf-8
 trim_trailing_whitespace = true
 indent_size = 4
+insert_final_newline = true
