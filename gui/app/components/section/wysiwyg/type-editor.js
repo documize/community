@@ -12,13 +12,13 @@
 import $ from 'jquery';
 import { computed, set } from '@ember/object';
 import { schedule } from '@ember/runloop';
-import Component from '@ember/component';
 import { inject as service } from '@ember/service';
+import Component from '@ember/component';
 
 export default Component.extend({
 	appMeta: service(),
 	link: service(),
-	pageBody: "",
+	pageBody: '',
 	editorId: computed('page', function () {
 		let page = this.get('page');
 		return `wysiwyg-editor-${page.id}`;
@@ -35,11 +35,11 @@ export default Component.extend({
 
 	didInsertElement() {
 		this._super(...arguments);
-	
+
 		schedule('afterRender', () => {
 			let options = {
-				cache_suffix: "?v=454",
-				selector: "#" + this.get('editorId'),
+				cache_suffix: '?v=476',
+				selector: '#' + this.get('editorId'),
 				relative_urls: false,
 				browser_spellcheck: true,
 				gecko_spellcheck: false,
@@ -50,11 +50,12 @@ export default Component.extend({
 				image_advtab: true,
 				image_caption: true,
 				media_live_embeds: true,
-				theme: "modern",
+				theme: 'modern',
 				skin: 'lightgray-gradient',
-				entity_encoding: "raw",
-				extended_valid_elements: "b,i,b/strong,i/em",		
-				fontsize_formats: "8px 10px 12px 14px 17px 18px 24px 36px 40px 50px 60px",
+				entity_encoding: 'raw',
+				extended_valid_elements: 'b,i,b/strong,i/em',
+				fontsize_formats:
+					'8px 10px 12px 14px 16px 18px 20px 22px 24px 26px 28px 30px 32px 34px 36px 38px 40px 42px 44px 46px 48px 50px 52px 54px 56px 58px 60px 70px 80px 90px 100px',
 				formats: {
 					bold: {
 						inline: 'b'
@@ -64,39 +65,39 @@ export default Component.extend({
 					}
 				},
 				codesample_languages: [
-					{text: 'C', value: 'c'},
-					{text: 'C#', value: 'csharp'},
-					{text: 'C++', value: 'cpp'},
-					{text: 'CSS', value: 'css'},
-					{text: 'Docker', value: 'docker'},
-					{text: 'Elixir', value: 'elixir'},
-					{text: 'Erlang', value: 'erlang'},
-					{text: 'Fsharp', value: 'fsharp'},
-					{text: 'Git', value: 'git'},
-					{text: 'Go', value: 'go'},
-					{text: 'Haskell', value: 'haskell'},
-					{text: 'HTML', value: 'markup'},
-					{text: 'HTTP', value: 'http'},
-					{text: 'Java', value: 'java'},
-					{text: 'JavaScript', value: 'javascript'},
-					{text: 'JSON', value: 'json'},
-					{text: 'Less', value: 'less'},
-					{text: 'Makefile', value: 'makefile'},
-					{text: 'Markdown', value: 'markdown'},
-					{text: 'nginx', value: 'nginx'},
-					{text: 'Objective C', value: 'objectivec'},
-					{text: 'Perl', value: 'perl'},
-					{text: 'PHP', value: 'php'},
-					{text: 'Powershell', value: 'powershell'},
-					{text: 'Python', value: 'python'},
-					{text: 'Ruby', value: 'ruby'},
-					{text: 'Rust', value: 'rust'},
-					{text: 'Sass SCSS', value: 'scss'},
-					{text: 'SQL', value: 'sql'},
-					{text: 'Swift', value: 'swift'},
-					{text: 'TypeScript', value: 'typescript'},
-					{text: 'XML', value: 'markup'},
-					{text: 'YAML', value: 'yaml'},
+					{ text: 'C', value: 'c' },
+					{ text: 'C#', value: 'csharp' },
+					{ text: 'C++', value: 'cpp' },
+					{ text: 'CSS', value: 'css' },
+					{ text: 'Docker', value: 'docker' },
+					{ text: 'Elixir', value: 'elixir' },
+					{ text: 'Erlang', value: 'erlang' },
+					{ text: 'Fsharp', value: 'fsharp' },
+					{ text: 'Git', value: 'git' },
+					{ text: 'Go', value: 'go' },
+					{ text: 'Haskell', value: 'haskell' },
+					{ text: 'HTML', value: 'markup' },
+					{ text: 'HTTP', value: 'http' },
+					{ text: 'Java', value: 'java' },
+					{ text: 'JavaScript', value: 'javascript' },
+					{ text: 'JSON', value: 'json' },
+					{ text: 'Less', value: 'less' },
+					{ text: 'Makefile', value: 'makefile' },
+					{ text: 'Markdown', value: 'markdown' },
+					{ text: 'nginx', value: 'nginx' },
+					{ text: 'Objective C', value: 'objectivec' },
+					{ text: 'Perl', value: 'perl' },
+					{ text: 'PHP', value: 'php' },
+					{ text: 'Powershell', value: 'powershell' },
+					{ text: 'Python', value: 'python' },
+					{ text: 'Ruby', value: 'ruby' },
+					{ text: 'Rust', value: 'rust' },
+					{ text: 'Sass SCSS', value: 'scss' },
+					{ text: 'SQL', value: 'sql' },
+					{ text: 'Swift', value: 'swift' },
+					{ text: 'TypeScript', value: 'typescript' },
+					{ text: 'XML', value: 'markup' },
+					{ text: 'YAML', value: 'yaml' }
 				],
 				plugins: [
 					'advlist autolink lists link image charmap print hr anchor pagebreak',
@@ -106,18 +107,20 @@ export default Component.extend({
 				],
 				menu: {},
 				menubar: false,
-				toolbar1: "formatselect fontsizeselect | bold italic underline strikethrough superscript subscript | forecolor backcolor link unlink",
-				toolbar2: "outdent indent bullist numlist | alignleft aligncenter alignright alignjustify | table image media codesample",
+				toolbar1:
+					'formatselect fontsizeselect | bold italic underline strikethrough superscript subscript | forecolor backcolor link unlink',
+				toolbar2:
+					'outdent indent bullist numlist | alignleft aligncenter alignright alignjustify | table image media codesample',
 				save_onsavecallback: function () {
 					Mousetrap.trigger('ctrl+s');
 				}
 			};
-	
+
 			if (typeof tinymce === 'undefined') {
-				$.getScript("/tinymce/tinymce.min.js?v=454", function () {
+				$.getScript('/tinymce/tinymce.min.js?v=476', function () {
 					window.tinymce.dom.Event.domLoaded = true;
-					tinymce.baseURL = "//" + window.location.host + "/tinymce";
-					tinymce.suffix = ".min";
+					tinymce.baseURL = '//' + window.location.host + '/tinymce';
+					tinymce.suffix = '.min';
 					tinymce.init(options);
 				});
 			} else {
@@ -128,7 +131,11 @@ export default Component.extend({
 
 	willDestroyElement() {
 		this._super(...arguments);
-		tinymce.EditorManager.execCommand('mceRemoveEditor', true, this.get('editorId'));
+		tinymce.EditorManager.execCommand(
+			'mceRemoveEditor',
+			true,
+			this.get('editorId')
+		);
 	},
 
 	actions: {
@@ -148,7 +155,11 @@ export default Component.extend({
 
 		isDirty() {
 			let editor = tinymce.EditorManager.get(this.get('editorId'));
-			return is.not.undefined(tinymce) && is.not.undefined(editor) && editor.isDirty();
+			return (
+				is.not.undefined(tinymce) &&
+				is.not.undefined(editor) &&
+				editor.isDirty()
+			);
 		},
 
 		onCancel() {
