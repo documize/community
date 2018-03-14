@@ -25,7 +25,7 @@ Anyone who wants a single place for any kind of document.
 Anyone who wants to loop in external participants complete security.
 
 Anyone who wishes documentation and knowledge capture worked like agile software development.
- 
+
 ## What's different about Documize?
 
 Sane organization through personal, team and public spaces.
@@ -52,7 +52,7 @@ Space view.
 
 ## Latest version
 
-Community edition: v1.58.0
+Community edition: v1.59.0
 
 ## OS support
 

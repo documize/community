@@ -27,6 +27,8 @@ export default Model.extend({
 	documentCopy: attr('boolean'),
 	documentTemplate: attr('boolean'),
 	documentApprove: attr('boolean'),
+	documentLifecycle: attr('boolean'),
+	documentVersion: attr('boolean'),
 	name: attr('string'), 	// read-only
 	members: attr('number') // read-only
 });

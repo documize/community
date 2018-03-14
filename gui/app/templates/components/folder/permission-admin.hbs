@@ -4,7 +4,7 @@
 			<div class="modal-header">Space Permissions</div>
 			<div class="modal-body" style="overflow-x: auto;">
 				<div class="space-admin table-responsive">
-					
+
 					<table class="table table-hover permission-table mb-3">
 						<thead>
 							<tr>
@@ -24,6 +24,8 @@
 								<th class="text-info">Copy</th>
 								<th class="text-info">Templates</th>
 								<th class="text-info">Approval</th>
+								<th class="text-info">Lifecycle</th>
+								<th class="text-info">Versions</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -38,53 +40,35 @@
 												<small class="form-text text-muted d-inline-block">({{permission.members}})</small>
 											</span>
 										{{else}}
-												{{#if (eq permission.whoId constants.EveryoneUserId)}}
-													<span class="button-icon-green button-icon-small align-middle">
-														<i class="material-icons">language</i>
-													</span>
-													<span class="color-green">&nbsp;{{permission.name}}</span>
-												{{else}}
-													<span class="button-icon-gray button-icon-small align-middle">
-														<i class="material-icons">person</i>
-													</span>
-													<span class="">&nbsp;{{permission.name}} 
-														{{#if (eq permission.whoId session.user.id)}}
-															<small class="form-text text-muted d-inline-block">(you)</small>
-														{{/if}}
-													</span>
-												{{/if}}
+											{{#if (eq permission.whoId constants.EveryoneUserId)}}
+												<span class="button-icon-green button-icon-small align-middle">
+													<i class="material-icons">language</i>
+												</span>
+												<span class="color-green">&nbsp;{{permission.name}}</span>
+											{{else}}
+												<span class="button-icon-gray button-icon-small align-middle">
+													<i class="material-icons">person</i>
+												</span>
+												<span class="">&nbsp;{{permission.name}}
+													{{#if (eq permission.whoId session.user.id)}}
+														<small class="form-text text-muted d-inline-block">(you)</small>
+													{{/if}}
+												</span>
+											{{/if}}
 										{{/if}}
 									</td>
-									<td>
-										{{input type="checkbox" id=(concat 'space-role-view-' permission.whoId) checked=permission.spaceView}}
-									</td>
-									<td>
-										{{input type="checkbox" id=(concat 'space-role-manage-' permission.whoId) checked=permission.spaceManage}}
-									</td>
-									<td>
-										{{input type="checkbox" id=(concat 'space-role-owner-' permission.whoId) checked=permission.spaceOwner}}
-									</td>
-									<td>
-										{{input type="checkbox" id=(concat 'doc-role-add-' permission.whoId) checked=permission.documentAdd}}
-									</td>
-									<td>
-										{{input type="checkbox" id=(concat 'doc-role-edit-' permission.whoId) checked=permission.documentEdit}}
-									</td>
-									<td>
-										{{input type="checkbox" id=(concat 'doc-role-delete-' permission.whoId) checked=permission.documentDelete}}
-									</td>
-									<td>
-										{{input type="checkbox" id=(concat 'doc-role-move-' permission.whoId) checked=permission.documentMove}}
-									</td>
-									<td>
-										{{input type="checkbox" id=(concat 'doc-role-copy-' permission.whoId) checked=permission.documentCopy}}
-									</td>
-									<td>
-										{{input type="checkbox" id=(concat 'doc-role-template-' permission.whoId) checked=permission.documentTemplate}}
-									</td>
-									<td>
-										{{input type="checkbox" id=(concat 'doc-role-approve-' permission.whoId) checked=permission.documentApprove}}
-									</td>
+									<td>{{input type="checkbox" id=(concat 'space-role-view-' permission.whoId) checked=permission.spaceView}}</td>
+									<td>{{input type="checkbox" id=(concat 'space-role-manage-' permission.whoId) checked=permission.spaceManage}}</td>
+									<td>{{input type="checkbox" id=(concat 'space-role-owner-' permission.whoId) checked=permission.spaceOwner}}</td>
+									<td>{{input type="checkbox" id=(concat 'doc-role-add-' permission.whoId) checked=permission.documentAdd}}</td>
+									<td>{{input type="checkbox" id=(concat 'doc-role-edit-' permission.whoId) checked=permission.documentEdit}}</td>
+									<td>{{input type="checkbox" id=(concat 'doc-role-delete-' permission.whoId) checked=permission.documentDelete}}</td>
+									<td>{{input type="checkbox" id=(concat 'doc-role-move-' permission.whoId) checked=permission.documentMove}}</td>
+									<td>{{input type="checkbox" id=(concat 'doc-role-copy-' permission.whoId) checked=permission.documentCopy}}</td>
+									<td>{{input type="checkbox" id=(concat 'doc-role-template-' permission.whoId) checked=permission.documentTemplate}}</td>
+									<td>{{input type="checkbox" id=(concat 'doc-role-approve-' permission.whoId) checked=permission.documentApprove}}</td>
+									<td>{{input type="checkbox" id=(concat 'doc-role-lifecycle-' permission.whoId) checked=permission.documentLifecycle}}</td>
+									<td>{{input type="checkbox" id=(concat 'doc-role-version-' permission.whoId) checked=permission.documentVersion}}</td>
 								</tr>
 							{{/each}}
 						</tbody>
@@ -108,12 +92,12 @@
 							</div>
 						</div>
 					</div>
-				
+
 				</div>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-				<button type="button" class="btn btn-success" onclick={{action 'setPermissions'}}>Save</button>
+				<button type="button" class="btn btn-success" onclick= {{action 'setPermissions'}}>Save</button>
 			</div>
 		</div>
 	</div>

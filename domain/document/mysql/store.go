@@ -29,13 +29,16 @@ type Scope struct {
 }
 
 // Add inserts the given document record into the document table and audits that it has been done.
-func (s Scope) Add(ctx domain.RequestContext, document doc.Document) (err error) {
-	document.OrgID = ctx.OrgID
-	document.Created = time.Now().UTC()
-	document.Revised = document.Created // put same time in both fields
+func (s Scope) Add(ctx domain.RequestContext, d doc.Document) (err error) {
+	d.OrgID = ctx.OrgID
+	d.Created = time.Now().UTC()
+	d.Revised = d.Created // put same time in both fields
 
-	_, err = ctx.Transaction.Exec("INSERT INTO document (refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, protection, approval, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-		document.RefID, document.OrgID, document.LabelID, document.UserID, document.Job, document.Location, document.Title, document.Excerpt, document.Slug, document.Tags, document.Template, document.Protection, document.Approval, document.Created, document.Revised)
+	_, err = ctx.Transaction.Exec(`
+        INSERT INTO document (refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, protection, approval, lifecycle, versioned, versionid, versionorder, groupid, created, revised)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		d.RefID, d.OrgID, d.LabelID, d.UserID, d.Job, d.Location, d.Title, d.Excerpt, d.Slug, d.Tags,
+		d.Template, d.Protection, d.Approval, d.Lifecycle, d.Versioned, d.VersionID, d.VersionOrder, d.GroupID, d.Created, d.Revised)
 
 	if err != nil {
 		err = errors.Wrap(err, "execuet insert document")
@@ -46,7 +49,11 @@ func (s Scope) Add(ctx domain.RequestContext, document doc.Document) (err error)
 
 // Get fetches the document record with the given id fromt the document table and audits that it has been got.
 func (s Scope) Get(ctx domain.RequestContext, id string) (document doc.Document, err error) {
-	err = s.Runtime.Db.Get(&document, "SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, protection, approval, created, revised FROM document WHERE orgid=? and refid=?",
+	err = s.Runtime.Db.Get(&document, `
+        SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template,
+            protection, approval, lifecycle, versioned, versionid, versionorder, groupid, created, revised
+        FROM document
+        WHERE orgid=? and refid=?`,
 		ctx.OrgID, id)
 
 	if err != nil {
@@ -106,21 +113,23 @@ func (s Scope) GetAll() (ctx domain.RequestContext, documents []doc.Document, er
 // by category permissions -- caller must filter as required.
 func (s Scope) GetBySpace(ctx domain.RequestContext, spaceID string) (documents []doc.Document, err error) {
 	err = s.Runtime.Db.Select(&documents, `
-		SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, protection, approval, created, revised
+        SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template,
+            protection, approval, lifecycle, versioned, versionid, versionorder, groupid, created, revised
 		FROM document
 		WHERE orgid=? AND template=0 AND labelid IN (
-			SELECT refid FROM label WHERE orgid=? AND refid IN 
+			SELECT refid FROM label WHERE orgid=? AND refid IN
 				(SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid=? AND refid IN (
-						SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space' AND action='view' 
+						SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space' AND action='view'
 						UNION ALL
-						SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? 
+						SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=?
 						AND p.who='role' AND p.location='space' AND p.refid=? AND p.action='view' AND (r.userid=? OR r.userid='0')
 				))
 		)
 		ORDER BY title`, ctx.OrgID, ctx.OrgID, ctx.OrgID, spaceID, ctx.OrgID, ctx.UserID, ctx.OrgID, spaceID, ctx.UserID)
 
-	if err == sql.ErrNoRows {
+	if err == sql.ErrNoRows || len(documents) == 0 {
 		err = nil
+		documents = []doc.Document{}
 	}
 	if err != nil {
 		err = errors.Wrap(err, "select documents by space")
@@ -132,18 +141,25 @@ func (s Scope) GetBySpace(ctx domain.RequestContext, spaceID string) (documents 
 // Templates returns a slice containing the documents available as templates to the client's organisation, in title order.
 func (s Scope) Templates(ctx domain.RequestContext) (documents []doc.Document, err error) {
 	err = s.Runtime.Db.Select(&documents,
-		`SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, protection, approval, created, revised FROM document WHERE orgid=? AND template=1
+		`SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template,
+            protection, approval, lifecycle, versioned, versionid, versionorder, groupid, created, revised
+        FROM document
+        WHERE orgid=? AND template=1 AND lifecycle=1
 		AND labelid IN
 			(
 				SELECT refid FROM label WHERE orgid=?
             	AND refid IN (SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid IN (
-					SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space' AND action='view' 
+					SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space' AND action='view'
 					UNION ALL
                 	SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.location='space' AND p.action='view' AND (r.userid=? OR r.userid='0')
 				))
 			)
 		ORDER BY title`, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.UserID, ctx.OrgID, ctx.UserID)
 
+	if err == sql.ErrNoRows || len(documents) == 0 {
+		err = nil
+		documents = []doc.Document{}
+	}
 	if err != nil {
 		err = errors.Wrap(err, "select document templates")
 	}
@@ -154,12 +170,15 @@ func (s Scope) Templates(ctx domain.RequestContext) (documents []doc.Document, e
 // TemplatesBySpace returns a slice containing the documents available as templates for given space.
 func (s Scope) TemplatesBySpace(ctx domain.RequestContext, spaceID string) (documents []doc.Document, err error) {
 	err = s.Runtime.Db.Select(&documents,
-		`SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, protection, approval, created, revised FROM document WHERE orgid=? AND labelid=? AND template=1
+		`SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template,
+            protection, approval, lifecycle, versioned, versionid, versionorder, groupid, created, revised
+        FROM document
+        WHERE orgid=? AND labelid=? AND template=1 ANd lifecycle=1
 		AND labelid IN
 			(
 				SELECT refid FROM label WHERE orgid=?
             	AND refid IN (SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid IN (
-					SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space' AND action='view' 
+					SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space' AND action='view'
 					UNION ALL
                 	SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.location='space' AND p.action='view' AND (r.userid=? OR r.userid='0')
 				))
@@ -170,7 +189,6 @@ func (s Scope) TemplatesBySpace(ctx domain.RequestContext, spaceID string) (docu
 		err = nil
 		documents = []doc.Document{}
 	}
-
 	if err != nil {
 		err = errors.Wrap(err, "select space document templates")
 	}
@@ -184,9 +202,14 @@ func (s Scope) PublicDocuments(ctx domain.RequestContext, orgID string) (documen
 		`SELECT d.refid as documentid, d.title as document, d.revised as revised, l.refid as folderid, l.label as folder
 		FROM document d LEFT JOIN label l ON l.refid=d.labelid
 		WHERE d.orgid=?
-		AND l.type=1
-		AND d.template=0`, orgID)
+        AND l.type=1
+        AND d.lifecycle=1
+        AND d.template=0`, orgID)
 
+	if err == sql.ErrNoRows {
+		err = nil
+		documents = []doc.SitemapDocument{}
+	}
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("execute GetPublicDocuments for org %s%s", orgID))
 	}
@@ -197,12 +220,15 @@ func (s Scope) PublicDocuments(ctx domain.RequestContext, orgID string) (documen
 // DocumentList returns a slice containing the documents available as templates to the client's organisation, in title order.
 func (s Scope) DocumentList(ctx domain.RequestContext) (documents []doc.Document, err error) {
 	err = s.Runtime.Db.Select(&documents,
-		`SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, protection, approval, created, revised FROM document WHERE orgid=? AND template=0
+		`SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template,
+        protection, approval, lifecycle, versioned, versionid, versionorder, groupid, created, revised
+        FROM document
+        WHERE orgid=? AND template=0 AND lifecycle=1
 		AND labelid IN
 			(
 				SELECT refid FROM label WHERE orgid=?
 				AND refid IN (SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid IN (
-					SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space' AND action='view' 
+					SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space' AND action='view'
 					UNION ALL
 					SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.location='space' AND p.action='view' AND (r.userid=? OR r.userid='0')
 				))
@@ -213,7 +239,6 @@ func (s Scope) DocumentList(ctx domain.RequestContext) (documents []doc.Document
 		err = nil
 		documents = []doc.Document{}
 	}
-
 	if err != nil {
 		err = errors.Wrap(err, "select documents list")
 	}
@@ -225,7 +250,12 @@ func (s Scope) DocumentList(ctx domain.RequestContext) (documents []doc.Document
 func (s Scope) Update(ctx domain.RequestContext, document doc.Document) (err error) {
 	document.Revised = time.Now().UTC()
 
-	_, err = ctx.Transaction.NamedExec("UPDATE document SET labelid=:labelid, userid=:userid, job=:job, location=:location, title=:title, excerpt=:excerpt, slug=:slug, tags=:tags, template=:template, protection=:protection, approval=:approval, revised=:revised WHERE orgid=:orgid AND refid=:refid",
+	_, err = ctx.Transaction.NamedExec(`
+        UPDATE document
+        SET
+            labelid=:labelid, userid=:userid, job=:job, location=:location, title=:title, excerpt=:excerpt, slug=:slug, tags=:tags, template=:template,
+            protection=:protection, approval=:approval, lifecycle=:lifecycle, versioned=:versioned, versionid=:versionid, versionorder=:versionorder, groupid=:groupid, revised=:revised
+            WHERE orgid=:orgid AND refid=:refid`,
 		&document)
 
 	if err != nil {

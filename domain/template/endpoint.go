@@ -35,6 +35,7 @@ import (
 	"github.com/documize/community/model/page"
 	pm "github.com/documize/community/model/permission"
 	"github.com/documize/community/model/template"
+	"github.com/documize/community/model/workflow"
 	uuid "github.com/nu7hatch/gouuid"
 )
 
@@ -377,7 +378,12 @@ func (h *Handler) Use(w http.ResponseWriter, r *http.Request) {
 	event.Handler().Publish(string(event.TypeAddDocument), nd.Title)
 
 	a, _ := h.Store.Attachment.GetAttachments(ctx, documentID)
-	go h.Indexer.IndexDocument(ctx, nd, a)
+
+	if nd.Lifecycle == workflow.LifecycleLive {
+		go h.Indexer.IndexDocument(ctx, nd, a)
+	} else {
+		go h.Indexer.DeleteDocument(ctx, d.RefID)
+	}
 
 	response.WriteJSON(w, nd)
 }

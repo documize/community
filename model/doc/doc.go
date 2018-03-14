@@ -22,18 +22,23 @@ import (
 // Document represents the purpose of Documize.
 type Document struct {
 	model.BaseEntity
-	OrgID      string              `json:"orgId"`
-	LabelID    string              `json:"folderId"`
-	UserID     string              `json:"userId"`
-	Job        string              `json:"job"`
-	Location   string              `json:"location"`
-	Title      string              `json:"name"`
-	Excerpt    string              `json:"excerpt"`
-	Slug       string              `json:"-"`
-	Tags       string              `json:"tags"`
-	Template   bool                `json:"template"`
-	Protection workflow.Protection `json:"protection"`
-	Approval   workflow.Approval   `json:"approval"`
+	OrgID        string              `json:"orgId"`
+	LabelID      string              `json:"folderId"`
+	UserID       string              `json:"userId"`
+	Job          string              `json:"job"`
+	Location     string              `json:"location"`
+	Title        string              `json:"name"`
+	Excerpt      string              `json:"excerpt"`
+	Slug         string              `json:"-"`
+	Tags         string              `json:"tags"`
+	Template     bool                `json:"template"`
+	Protection   workflow.Protection `json:"protection"`
+	Approval     workflow.Approval   `json:"approval"`
+	Lifecycle    workflow.Lifecycle  `json:"lifecycle"`
+	Versioned    bool                `json:"versioned"`
+	VersionID    string              `json:"versionId"`
+	VersionOrder int                 `json:"versionOrder"`
+	GroupID      string              `json:"groupId"`
 }
 
 // SetDefaults ensures on blanks and cleans.

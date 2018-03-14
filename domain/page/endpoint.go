@@ -176,7 +176,12 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	h.Store.Audit.Record(ctx, audit.EventTypeSectionAdd)
 
 	np, _ := h.Store.Page.Get(ctx, pageID)
-	go h.Indexer.IndexContent(ctx, np)
+
+	if doc.Lifecycle == workflow.LifecycleLive {
+		go h.Indexer.IndexContent(ctx, np)
+	} else {
+		go h.Indexer.DeleteDocument(ctx, doc.RefID)
+	}
 
 	response.WriteJSON(w, np)
 }
@@ -309,6 +314,7 @@ func (h *Handler) GetMeta(w http.ResponseWriter, r *http.Request) {
 // Update will persist changed page and note the fact
 // that this is a new revision. If the page is the first in a document
 // then the corresponding document title will also be changed.
+// Draft documents do not get revision entry.
 func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	method := "page.update"
 	ctx := domain.GetRequestContext(r)
@@ -406,6 +412,11 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		skipRevision = true
 	}
 
+	// We only track revisions for live documents
+	if doc.Lifecycle != workflow.LifecycleLive {
+		skipRevision = true
+	}
+
 	err = h.Store.Page.Update(ctx, model.Page, refID, ctx.UserID, skipRevision)
 	if err != nil {
 		ctx.Transaction.Rollback()
@@ -470,7 +481,11 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 	ctx.Transaction.Commit()
 
-	go h.Indexer.IndexContent(ctx, model.Page)
+	if doc.Lifecycle == workflow.LifecycleLive {
+		go h.Indexer.IndexContent(ctx, model.Page)
+	} else {
+		go h.Indexer.DeleteDocument(ctx, doc.RefID)
+	}
 
 	updatedPage, err := h.Store.Page.Get(ctx, pageID)
 

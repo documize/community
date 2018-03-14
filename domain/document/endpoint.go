@@ -249,7 +249,12 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	h.Store.Audit.Record(ctx, audit.EventTypeDocumentUpdate)
 
 	a, _ := h.Store.Attachment.GetAttachments(ctx, documentID)
-	go h.Indexer.IndexDocument(ctx, d, a)
+
+	if d.Lifecycle == workflow.LifecycleLive {
+		go h.Indexer.IndexDocument(ctx, d, a)
+	} else {
+		go h.Indexer.DeleteDocument(ctx, d.RefID)
+	}
 
 	response.WriteEmpty(w)
 }
