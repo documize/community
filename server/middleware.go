@@ -13,8 +13,10 @@ package server
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -77,9 +79,10 @@ func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http
 
 		var org = org.Organization{}
 		var err = errors.New("")
+		var dom string
 
 		if len(rc.OrgID) == 0 {
-			dom := organization.GetRequestSubdomain(r)
+			dom = organization.GetRequestSubdomain(r)
 			dom = m.Store.Organization.CheckDomain(rc, dom)
 			org, err = m.Store.Organization.GetOrganizationByDomain(dom)
 		} else {
@@ -88,6 +91,12 @@ func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http
 
 		// Inability to find org record spells the end of this request.
 		if err != nil {
+			if err == sql.ErrNoRows {
+				response.WriteForbiddenError(w)
+				m.Runtime.Log.Info(fmt.Sprintf("unable to find org (domain: %s, orgID: %s)", dom, rc.OrgID))
+				return
+			}
+
 			response.WriteForbiddenError(w)
 			m.Runtime.Log.Error(method, err)
 			return
