@@ -11,10 +11,10 @@
 
 import $ from 'jquery';
 import { inject as service } from '@ember/service';
-import Component from '@ember/component';
 import AuthMixin from '../../mixins/auth';
 import TooltipMixin from '../../mixins/tooltip';
 import ModalMixin from '../../mixins/modal';
+import Component from '@ember/component';
 
 export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 	userSvc: service('user'),

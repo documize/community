@@ -165,6 +165,25 @@ func CanViewSpace(ctx domain.RequestContext, s domain.Store, spaceID string) boo
 	return false
 }
 
+// CanViewDrafts returns if the user has permission to view drafts in space.
+func CanViewDrafts(ctx domain.RequestContext, s domain.Store, spaceID string) bool {
+	roles, err := s.Permission.GetUserSpacePermissions(ctx, spaceID)
+	if err == sql.ErrNoRows {
+		err = nil
+	}
+	if err != nil {
+		return false
+	}
+	for _, role := range roles {
+		if role.RefID == spaceID && role.Location == pm.LocationSpace && role.Scope == pm.ScopeRow &&
+			pm.ContainsPermission(role.Action, pm.DocumentLifecycle) {
+			return true
+		}
+	}
+
+	return false
+}
+
 // HasPermission returns if user can perform specified actions.
 func HasPermission(ctx domain.RequestContext, s domain.Store, spaceID string, actions ...pm.Action) bool {
 	roles, err := s.Permission.GetUserSpacePermissions(ctx, spaceID)

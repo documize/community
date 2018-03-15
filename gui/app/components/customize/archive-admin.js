@@ -9,18 +9,16 @@
 //
 // https://documize.com
 
-import Service, { inject as service } from '@ember/service';
+import AuthProvider from '../../mixins/auth';
+import ModalMixin from '../../mixins/modal';
+import Component from '@ember/component';
 
-export default Service.extend({
-	ajax: service(),
+export default Component.extend(AuthProvider, ModalMixin, {
 
-	getDocumentSummary(documentId) {
-		return this.get('ajax').request(`activity/document/${documentId}`, {
-			method: "GET"
-		}).then((response) => {
-			return response;
-		}).catch(() => {
-			return [];
-		});
+	init() {
+		this._super(...arguments);
+	},
+
+	actions: {
 	}
 });

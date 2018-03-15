@@ -217,6 +217,7 @@ type LinkStorer interface {
 type ActivityStorer interface {
 	RecordUserActivity(ctx RequestContext, activity activity.UserActivity) (err error)
 	GetDocumentActivity(ctx RequestContext, id string) (a []activity.DocumentActivity, err error)
+	DeleteDocumentChangeActivity(ctx RequestContext, id string) (rows int64, err error)
 }
 
 // SearchStorer defines required methods for persisting search queries

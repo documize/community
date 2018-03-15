@@ -16,7 +16,7 @@ var Router = EmberRouter.extend({
 	location: config.locationType
 });
 
-export default Router.map(function() {
+export default Router.map(function () {
 	this.route('folders', {
 		path: '/'
 	});
@@ -30,7 +30,7 @@ export default Router.map(function() {
 		{
 			path: 's/:folder_id/:folder_slug'
 		},
-		function() {
+		function () {
 			this.route('category', {
 				path: 'category'
 			});
@@ -42,7 +42,7 @@ export default Router.map(function() {
 		{
 			path: 's/:folder_id/:folder_slug/d/:document_id/:document_slug'
 		},
-		function() {
+		function () {
 			this.route('section', {
 				path: 'section/:page_id'
 			});
@@ -57,7 +57,7 @@ export default Router.map(function() {
 		{
 			path: 'settings'
 		},
-		function() {
+		function () {
 			this.route('general', {
 				path: 'general'
 			});
@@ -82,6 +82,9 @@ export default Router.map(function() {
 			this.route('audit', {
 				path: 'audit'
 			});
+			this.route('archive', {
+				path: 'archive'
+			});
 		}
 	);
 
@@ -98,7 +101,7 @@ export default Router.map(function() {
 		{
 			path: 'auth'
 		},
-		function() {
+		function () {
 			this.route('sso', {
 				path: 'sso/:token'
 			});

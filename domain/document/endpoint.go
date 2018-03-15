@@ -78,15 +78,18 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-		LabelID:      document.LabelID,
-		DocumentID:   document.RefID,
-		SourceType:   activity.SourceTypeDocument,
-		ActivityType: activity.TypeRead})
+	// draft mode does not record document views
+	if document.Lifecycle == workflow.LifecycleLive {
+		err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
+			LabelID:      document.LabelID,
+			DocumentID:   document.RefID,
+			SourceType:   activity.SourceTypeDocument,
+			ActivityType: activity.TypeRead})
 
-	if err != nil {
-		ctx.Transaction.Rollback()
-		h.Runtime.Log.Error(method, err)
+		if err != nil {
+			ctx.Transaction.Rollback()
+			h.Runtime.Log.Error(method, err)
+		}
 	}
 
 	ctx.Transaction.Commit()
@@ -136,6 +139,9 @@ func (h *Handler) BySpace(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// get user permissions
+	viewDrafts := permission.CanViewDrafts(ctx, *h.Store, spaceID)
+
 	// get complete list of documents
 	documents, err := h.Store.Document.GetBySpace(ctx, spaceID)
 	if err != nil {
@@ -143,10 +149,8 @@ func (h *Handler) BySpace(w http.ResponseWriter, r *http.Request) {
 		h.Runtime.Log.Error(method, err)
 		return
 	}
-	if len(documents) == 0 {
-		documents = []doc.Document{}
-	}
 
+	// sort by title
 	sort.Sort(doc.ByTitle(documents))
 
 	// remove documents that cannot be seen due to lack of
@@ -158,6 +162,17 @@ func (h *Handler) BySpace(w http.ResponseWriter, r *http.Request) {
 	for _, doc := range documents {
 		hasCategory := false
 		canSeeCategory := false
+		skip := false
+
+		// drafts included if user can see them
+		if doc.Lifecycle == workflow.LifecycleDraft && !viewDrafts {
+			skip = true
+		}
+
+		// archived never included
+		if doc.Lifecycle == workflow.LifecycleArchived {
+			skip = true
+		}
 
 	OUTER:
 
@@ -173,7 +188,7 @@ func (h *Handler) BySpace(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		if !hasCategory || canSeeCategory {
+		if !skip && (!hasCategory || canSeeCategory) {
 			filtered = append(filtered, doc)
 		}
 	}
@@ -248,9 +263,9 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 	h.Store.Audit.Record(ctx, audit.EventTypeDocumentUpdate)
 
-	a, _ := h.Store.Attachment.GetAttachments(ctx, documentID)
-
+	// Live document indexed for search
 	if d.Lifecycle == workflow.LifecycleLive {
+		a, _ := h.Store.Attachment.GetAttachments(ctx, documentID)
 		go h.Indexer.IndexDocument(ctx, d, a)
 	} else {
 		go h.Indexer.DeleteDocument(ctx, d.RefID)
@@ -332,11 +347,14 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	h.Store.Link.MarkOrphanDocumentLink(ctx, documentID)
 	h.Store.Link.DeleteSourceDocumentLinks(ctx, documentID)
 
-	h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-		LabelID:      doc.LabelID,
-		DocumentID:   documentID,
-		SourceType:   activity.SourceTypeDocument,
-		ActivityType: activity.TypeDeleted})
+	// Draft actions are not logged
+	if doc.Lifecycle == workflow.LifecycleLive {
+		h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
+			LabelID:      doc.LabelID,
+			DocumentID:   documentID,
+			SourceType:   activity.SourceTypeDocument,
+			ActivityType: activity.TypeDeleted})
+	}
 
 	ctx.Transaction.Commit()
 
@@ -417,6 +435,12 @@ func (h *Handler) FetchDocumentData(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Don't serve archived document
+	if document.Lifecycle == workflow.LifecycleArchived {
+		response.WriteForbiddenError(w)
+		return
+	}
+
 	// permissions
 	perms, err := h.Store.Permission.GetUserSpacePermissions(ctx, document.LabelID)
 	if err != nil && err != sql.ErrNoRows {
@@ -474,15 +498,17 @@ func (h *Handler) FetchDocumentData(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-		LabelID:      document.LabelID,
-		DocumentID:   document.RefID,
-		SourceType:   activity.SourceTypeDocument,
-		ActivityType: activity.TypeRead})
+	if document.Lifecycle == workflow.LifecycleLive {
+		err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
+			LabelID:      document.LabelID,
+			DocumentID:   document.RefID,
+			SourceType:   activity.SourceTypeDocument,
+			ActivityType: activity.TypeRead})
 
-	if err != nil {
-		ctx.Transaction.Rollback()
-		h.Runtime.Log.Error(method, err)
+		if err != nil {
+			ctx.Transaction.Rollback()
+			h.Runtime.Log.Error(method, err)
+		}
 	}
 
 	ctx.Transaction.Commit()

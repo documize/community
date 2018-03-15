@@ -13,11 +13,12 @@ import $ from 'jquery';
 import { computed } from '@ember/object';
 import { notEmpty } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
-import Component from '@ember/component';
 import { A } from "@ember/array"
 import { schedule } from '@ember/runloop';
+import ModalMixin from '../../mixins/modal';
+import Component from '@ember/component';
 
-export default Component.extend({
+export default Component.extend(ModalMixin, {
     documentService: service('document'),
 	categoryService: service('category'),
 	sessionService: service('session'),
