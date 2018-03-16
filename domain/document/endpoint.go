@@ -153,45 +153,10 @@ func (h *Handler) BySpace(w http.ResponseWriter, r *http.Request) {
 	// sort by title
 	sort.Sort(doc.ByTitle(documents))
 
-	// remove documents that cannot be seen due to lack of
-	// category view/access permission
-	filtered := []doc.Document{}
+	// remove documents that cannot be seen due to lack of category view/access permission
 	cats, err := h.Store.Category.GetBySpace(ctx, spaceID)
 	members, err := h.Store.Category.GetSpaceCategoryMembership(ctx, spaceID)
-
-	for _, doc := range documents {
-		hasCategory := false
-		canSeeCategory := false
-		skip := false
-
-		// drafts included if user can see them
-		if doc.Lifecycle == workflow.LifecycleDraft && !viewDrafts {
-			skip = true
-		}
-
-		// archived never included
-		if doc.Lifecycle == workflow.LifecycleArchived {
-			skip = true
-		}
-
-	OUTER:
-
-		for _, m := range members {
-			if m.DocumentID == doc.RefID {
-				hasCategory = true
-				for _, cat := range cats {
-					if cat.RefID == m.CategoryID {
-						canSeeCategory = true
-						continue OUTER
-					}
-				}
-			}
-		}
-
-		if !skip && (!hasCategory || canSeeCategory) {
-			filtered = append(filtered, doc)
-		}
-	}
+	filtered := FilterCategoryProtected(documents, cats, members, viewDrafts)
 
 	response.WriteJSON(w, filtered)
 }
@@ -257,6 +222,24 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
 		return
+	}
+
+	// Record document being marked as archived
+	if d.Lifecycle != oldDoc.Lifecycle && d.Lifecycle == workflow.LifecycleArchived {
+		h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
+			LabelID:      d.LabelID,
+			DocumentID:   documentID,
+			SourceType:   activity.SourceTypeDocument,
+			ActivityType: activity.TypeArchived})
+	}
+
+	// Record document being marked as draft
+	if d.Lifecycle != oldDoc.Lifecycle && d.Lifecycle == workflow.LifecycleDraft {
+		h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
+			LabelID:      d.LabelID,
+			DocumentID:   documentID,
+			SourceType:   activity.SourceTypeDocument,
+			ActivityType: activity.TypeDraft})
 	}
 
 	ctx.Transaction.Commit()

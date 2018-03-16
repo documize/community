@@ -28,9 +28,9 @@ export default Model.extend({
 	approval: attr('number', { defaultValue: 0 }),
 	lifecycle: attr('number', { defaultValue: 1 }),
 	versioned: attr('boolean'),
-	versionID: attr('string'),
+	versionId: attr('string'),
 	versionOrder: attr('number', { defaultValue: 0 }),
-	groupID: attr('string'),
+	groupId: attr('string'),
 
 	// client-side property
 	selected: attr('boolean', { defaultValue: false }),

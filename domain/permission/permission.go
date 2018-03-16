@@ -175,8 +175,27 @@ func CanViewDrafts(ctx domain.RequestContext, s domain.Store, spaceID string) bo
 		return false
 	}
 	for _, role := range roles {
-		if role.RefID == spaceID && role.Location == pm.LocationSpace && role.Scope == pm.ScopeRow &&
+		if role.OrgID == ctx.OrgID && role.RefID == spaceID && role.Location == pm.LocationSpace && role.Scope == pm.ScopeRow &&
 			pm.ContainsPermission(role.Action, pm.DocumentLifecycle) {
+			return true
+		}
+	}
+
+	return false
+}
+
+// CanManageVersion returns if the user has permission to manage versions in space.
+func CanManageVersion(ctx domain.RequestContext, s domain.Store, spaceID string) bool {
+	roles, err := s.Permission.GetUserSpacePermissions(ctx, spaceID)
+	if err == sql.ErrNoRows {
+		err = nil
+	}
+	if err != nil {
+		return false
+	}
+	for _, role := range roles {
+		if role.OrgID == ctx.OrgID && role.RefID == spaceID && role.Location == pm.LocationSpace && role.Scope == pm.ScopeRow &&
+			pm.ContainsPermission(role.Action, pm.DocumentVersion) {
 			return true
 		}
 	}
