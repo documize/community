@@ -59,7 +59,7 @@ let constants = EmberObject.extend({
 		Group: 'role'
 	},
 
-	EveryoneUserId: "0",
+	EveryoneUserId: '0',
 	EveryoneUserName: "Everyone",
 
 	// Document
@@ -71,6 +71,13 @@ let constants = EmberObject.extend({
 		DraftLabel: 'Draft',
 		LiveLabel: 'Live',
 		ArchivedLabel: 'Archived',
+	},
+
+	// Document Version -- document.groupId links different versions of documents together
+	VersionCreateMode: { // eslint-disable-line ember/avoid-leaking-state-in-ember-objects
+		Unversioned: 1,  	// turn unversioned into versioned document
+		Cloned: 2,			// create versioned document by cloning existing versioned document
+		Linked: 3			// link existing unversion document into this version group
 	}
 });
 
