@@ -94,3 +94,9 @@ type SitemapDocument struct {
 	Folder     string
 	Revised    time.Time
 }
+
+// Version points to a version of a document.
+type Version struct {
+	VersionID  string `json:"versionId"`
+	DocumentID string `json:"documentId"`
+}

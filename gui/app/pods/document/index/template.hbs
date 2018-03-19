@@ -1,6 +1,5 @@
-{{toolbar/nav-bar}}
-
-{{toolbar/for-document document=document spaces=folders space=folder permissions=permissions roles=roles tab=tab 
+{{toolbar/nav-bar}} {{toolbar/for-document document=document spaces=folders space=folder
+	permissions=permissions roles=roles tab=tab versions=versions
 	onDocumentDelete=(action 'onDocumentDelete')
 	onSaveTemplate=(action 'onSaveTemplate')
 	onSaveDocument=(action 'onSaveDocument')
@@ -10,9 +9,10 @@
 	<div class="row">
 		<div class="col-12">
 			{{document/document-heading document=document permissions=permissions
+				versions=versions
 				onSaveDocument=(action 'onSaveDocument')}}
-
-			{{document/document-meta document=document folder=folder folders=folders permissions=permissions pages=pages
+			{{document/document-meta document=document folder=folder folders=folders
+				permissions=permissions pages=pages versions=versions
 				onSaveDocument=(action 'onSaveDocument')}}
 		</div>
 	</div>
@@ -38,8 +38,8 @@
 
 			{{#if (eq tab 'content')}}
 				{{document/view-content
-					document=document links=links pages=pages blocks=blocks currentPageId=currentPageId 
-					folder=folder folders=folders sections=sections permissions=permissions roles=roles 
+					document=document links=links pages=pages blocks=blocks currentPageId=currentPageId
+					folder=folder folders=folders sections=sections permissions=permissions roles=roles
 					onSavePage=(action 'onSavePage') onInsertSection=(action 'onInsertSection')
 					onSavePageAsBlock=(action 'onSavePageAsBlock') onDeleteBlock=(action 'onDeleteBlock')
 					onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onPageDeleted')

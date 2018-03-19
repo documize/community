@@ -65,7 +65,6 @@ func FilterCategoryProtected(docs []doc.Document, cats []category.Category, memb
 
 // CopyDocument clones an existing document
 func CopyDocument(ctx domain.RequestContext, s domain.Store, documentID string) (newDocumentID string, err error) {
-
 	doc, err := s.Document.Get(ctx, documentID)
 	if err != nil {
 		err = errors.Wrap(err, "unable to fetch existing document")
@@ -140,6 +139,35 @@ func CopyDocument(ctx domain.RequestContext, s domain.Store, documentID string) 
 		if err != nil {
 			err = errors.Wrap(err, "unable to add copied page")
 			return
+		}
+	}
+
+	return
+}
+
+// FilterLastVersion returns the latest version of each document
+// by removing all previous versions.
+// If a document is not versioned, it is returned as-is.
+func FilterLastVersion(docs []doc.Document) (filtered []doc.Document) {
+	filtered = []doc.Document{}
+	prev := make(map[string]bool)
+
+	for _, doc := range docs {
+		add := false
+
+		if doc.GroupID == "" {
+			add = true
+		} else {
+			if _, isExisting := prev[doc.GroupID]; !isExisting {
+				add = true
+				prev[doc.GroupID] = true
+			} else {
+				add = false
+			}
+		}
+
+		if add {
+			filtered = append(filtered, doc)
 		}
 	}
 

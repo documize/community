@@ -97,20 +97,13 @@ func (s Scope) DocumentMeta(ctx domain.RequestContext, id string) (meta doc.Docu
 	return
 }
 
-// GetAll returns a slice containg all of the the documents for the client's organisation.
-func (s Scope) GetAll() (ctx domain.RequestContext, documents []doc.Document, err error) {
-	err = s.Runtime.Db.Select(&documents, "SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template, protection, approval, created, revised FROM document WHERE orgid=? AND template=0 ORDER BY title", ctx.OrgID)
-
-	if err != nil {
-		err = errors.Wrap(err, "select documents")
-	}
-
-	return
-}
-
 // GetBySpace returns a slice containing the documents for a given space.
-// No attempt is made to hide documents that are protected
-// by category permissions -- caller must filter as required.
+//
+// No attempt is made to hide documents that are protected by category
+// permissions hence caller must filter as required.
+//
+// All versions of a document are returned, hence caller must
+// decide what to do with them.
 func (s Scope) GetBySpace(ctx domain.RequestContext, spaceID string) (documents []doc.Document, err error) {
 	err = s.Runtime.Db.Select(&documents, `
         SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template,
@@ -125,7 +118,7 @@ func (s Scope) GetBySpace(ctx domain.RequestContext, spaceID string) (documents 
 						AND p.who='role' AND p.location='space' AND p.refid=? AND p.action='view' AND (r.userid=? OR r.userid='0')
 				))
 		)
-		ORDER BY title`, ctx.OrgID, ctx.OrgID, ctx.OrgID, spaceID, ctx.OrgID, ctx.UserID, ctx.OrgID, spaceID, ctx.UserID)
+		ORDER BY title, versionorder`, ctx.OrgID, ctx.OrgID, ctx.OrgID, spaceID, ctx.OrgID, ctx.UserID, ctx.OrgID, spaceID, ctx.UserID)
 
 	if err == sql.ErrNoRows || len(documents) == 0 {
 		err = nil
@@ -133,35 +126,6 @@ func (s Scope) GetBySpace(ctx domain.RequestContext, spaceID string) (documents 
 	}
 	if err != nil {
 		err = errors.Wrap(err, "select documents by space")
-	}
-
-	return
-}
-
-// Templates returns a slice containing the documents available as templates to the client's organisation, in title order.
-func (s Scope) Templates(ctx domain.RequestContext) (documents []doc.Document, err error) {
-	err = s.Runtime.Db.Select(&documents,
-		`SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template,
-            protection, approval, lifecycle, versioned, versionid, versionorder, groupid, created, revised
-        FROM document
-        WHERE orgid=? AND template=1 AND lifecycle=1
-		AND labelid IN
-			(
-				SELECT refid FROM label WHERE orgid=?
-            	AND refid IN (SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid IN (
-					SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space' AND action='view'
-					UNION ALL
-                	SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.location='space' AND p.action='view' AND (r.userid=? OR r.userid='0')
-				))
-			)
-		ORDER BY title`, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.UserID, ctx.OrgID, ctx.UserID)
-
-	if err == sql.ErrNoRows || len(documents) == 0 {
-		err = nil
-		documents = []doc.Document{}
-	}
-	if err != nil {
-		err = errors.Wrap(err, "select document templates")
 	}
 
 	return
@@ -196,7 +160,9 @@ func (s Scope) TemplatesBySpace(ctx domain.RequestContext, spaceID string) (docu
 	return
 }
 
-// PublicDocuments returns a slice of SitemapDocument records, holding documents in folders of type 1 (entity.TemplateTypePublic).
+// PublicDocuments returns a slice of SitemapDocument records
+// linking to documents in public spaces.
+// These documents can then be seen by search crawlers.
 func (s Scope) PublicDocuments(ctx domain.RequestContext, orgID string) (documents []doc.SitemapDocument, err error) {
 	err = s.Runtime.Db.Select(&documents,
 		`SELECT d.refid as documentid, d.title as document, d.revised as revised, l.refid as folderid, l.label as folder
@@ -217,35 +183,6 @@ func (s Scope) PublicDocuments(ctx domain.RequestContext, orgID string) (documen
 	return
 }
 
-// DocumentList returns a slice containing the documents available as templates to the client's organisation, in title order.
-func (s Scope) DocumentList(ctx domain.RequestContext) (documents []doc.Document, err error) {
-	err = s.Runtime.Db.Select(&documents,
-		`SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template,
-        protection, approval, lifecycle, versioned, versionid, versionorder, groupid, created, revised
-        FROM document
-        WHERE orgid=? AND template=0 AND lifecycle=1
-		AND labelid IN
-			(
-				SELECT refid FROM label WHERE orgid=?
-				AND refid IN (SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid IN (
-					SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space' AND action='view'
-					UNION ALL
-					SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.location='space' AND p.action='view' AND (r.userid=? OR r.userid='0')
-				))
-			)
-		ORDER BY title`, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.UserID, ctx.OrgID, ctx.UserID)
-
-	if err == sql.ErrNoRows {
-		err = nil
-		documents = []doc.Document{}
-	}
-	if err != nil {
-		err = errors.Wrap(err, "select documents list")
-	}
-
-	return
-}
-
 // Update changes the given document record to the new values, updates search information and audits the action.
 func (s Scope) Update(ctx domain.RequestContext, document doc.Document) (err error) {
 	document.Revised = time.Now().UTC()
@@ -255,11 +192,27 @@ func (s Scope) Update(ctx domain.RequestContext, document doc.Document) (err err
         SET
             labelid=:labelid, userid=:userid, job=:job, location=:location, title=:title, excerpt=:excerpt, slug=:slug, tags=:tags, template=:template,
             protection=:protection, approval=:approval, lifecycle=:lifecycle, versioned=:versioned, versionid=:versionid, versionorder=:versionorder, groupid=:groupid, revised=:revised
-            WHERE orgid=:orgid AND refid=:refid`,
+        WHERE orgid=:orgid AND refid=:refid`,
 		&document)
 
 	if err != nil {
-		err = errors.Wrap(err, "execute update document")
+		err = errors.Wrap(err, "document.store.Update")
+	}
+
+	return
+}
+
+// UpdateGroup applies same values to all documents
+// with the same group ID.
+func (s Scope) UpdateGroup(ctx domain.RequestContext, d doc.Document) (err error) {
+	_, err = ctx.Transaction.Exec(`UPDATE document SET title=?, excerpt=? WHERE orgid=? AND groupid=?`,
+		d.Title, d.Excerpt, ctx.OrgID, d.GroupID)
+
+	if err == sql.ErrNoRows {
+		err = nil
+	}
+	if err != nil {
+		err = errors.Wrap(err, "document.store.UpdateTitle")
 	}
 
 	return
@@ -340,4 +293,29 @@ func (s Scope) DeleteBySpace(ctx domain.RequestContext, spaceID string) (rows in
 	}
 
 	return b.DeleteConstrained(ctx.Transaction, "document", ctx.OrgID, spaceID)
+}
+
+// GetVersions returns a slice containing the documents for a given space.
+//
+// No attempt is made to hide documents that are protected by category
+// permissions hence caller must filter as required.
+//
+// All versions of a document are returned, hence caller must
+// decide what to do with them.
+func (s Scope) GetVersions(ctx domain.RequestContext, groupID string) (v []doc.Version, err error) {
+	err = s.Runtime.Db.Select(&v, `
+        SELECT versionid, refid as documentid
+		FROM document
+		WHERE orgid=? AND groupid=?
+		ORDER BY versionorder`, ctx.OrgID, groupID)
+
+	if err == sql.ErrNoRows || len(v) == 0 {
+		err = nil
+		v = []doc.Version{}
+	}
+	if err != nil {
+		err = errors.Wrap(err, "document.store.GetVersions")
+	}
+
+	return
 }

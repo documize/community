@@ -44,9 +44,10 @@ type Handler struct {
 	Indexer indexer.Indexer
 }
 
-// Get is an endpoint that returns the document-level information for a given documentID.
+// Get is an endpoint that returns the document-level information for a
+// given documentID.
 func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
-	method := "document.get"
+	method := "document.Get"
 	ctx := domain.GetRequestContext(r)
 
 	id := request.Param(r, "documentID")
@@ -101,7 +102,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 
 // DocumentLinks is an endpoint returning the links for a document.
 func (h *Handler) DocumentLinks(w http.ResponseWriter, r *http.Request) {
-	method := "document.links"
+	method := "document.DocumentLinks"
 	ctx := domain.GetRequestContext(r)
 
 	id := request.Param(r, "documentID")
@@ -142,7 +143,8 @@ func (h *Handler) BySpace(w http.ResponseWriter, r *http.Request) {
 	// get user permissions
 	viewDrafts := permission.CanViewDrafts(ctx, *h.Store, spaceID)
 
-	// get complete list of documents
+	// Get complete list of documents regardless of category permission
+	// and versioning.
 	documents, err := h.Store.Document.GetBySpace(ctx, spaceID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
@@ -150,21 +152,25 @@ func (h *Handler) BySpace(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// sort by title
+	// Sort by title.
 	sort.Sort(doc.ByTitle(documents))
 
-	// remove documents that cannot be seen due to lack of category view/access permission
+	// Remove documents that cannot be seen due to lack of
+	// category view/access permission.
 	cats, err := h.Store.Category.GetBySpace(ctx, spaceID)
 	members, err := h.Store.Category.GetSpaceCategoryMembership(ctx, spaceID)
 	filtered := FilterCategoryProtected(documents, cats, members, viewDrafts)
 
+	// Keep the latest version when faced with multiple versions.
+	filtered = FilterLastVersion(filtered)
+
 	response.WriteJSON(w, filtered)
 }
 
-// Update updates an existing document using the
-// format described in NewDocumentModel() encoded as JSON in the request.
+// Update updates an existing document using the format described
+// in NewDocumentModel() encoded as JSON in the request.
 func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
-	method := "document.space"
+	method := "document.Update"
 	ctx := domain.GetRequestContext(r)
 
 	documentID := request.Param(r, "documentID")
@@ -203,7 +209,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// if space changed for document, remove document categories
+	// If space changed for document, remove document categories.
 	oldDoc, err := h.Store.Document.Get(ctx, documentID)
 	if err != nil {
 		ctx.Transaction.Rollback()
@@ -224,7 +230,20 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Record document being marked as archived
+	// If document part of versioned document group
+	// then document name must be applied to all documents
+	// in the group.
+	if len(d.GroupID) > 0 {
+		err = h.Store.Document.UpdateGroup(ctx, d)
+		if err != nil {
+			ctx.Transaction.Rollback()
+			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
+			return
+		}
+	}
+
+	// Record document being marked as archived.
 	if d.Lifecycle != oldDoc.Lifecycle && d.Lifecycle == workflow.LifecycleArchived {
 		h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
 			LabelID:      d.LabelID,
@@ -233,7 +252,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 			ActivityType: activity.TypeArchived})
 	}
 
-	// Record document being marked as draft
+	// Record document being marked as draft.
 	if d.Lifecycle != oldDoc.Lifecycle && d.Lifecycle == workflow.LifecycleDraft {
 		h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
 			LabelID:      d.LabelID,
@@ -246,7 +265,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 	h.Store.Audit.Record(ctx, audit.EventTypeDocumentUpdate)
 
-	// Live document indexed for search
+	// Live document indexed for search.
 	if d.Lifecycle == workflow.LifecycleLive {
 		a, _ := h.Store.Attachment.GetAttachments(ctx, documentID)
 		go h.Indexer.IndexDocument(ctx, d, a)
@@ -259,7 +278,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 // Delete is an endpoint that deletes a document specified by documentID.
 func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
-	method := "document.delete"
+	method := "document.Delete"
 	ctx := domain.GetRequestContext(r)
 
 	documentID := request.Param(r, "documentID")
@@ -348,9 +367,10 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	response.WriteEmpty(w)
 }
 
-// SearchDocuments endpoint takes a list of keywords and returns a list of document references matching those keywords.
+// SearchDocuments endpoint takes a list of keywords and returns a list of
+// document references matching those keywords.
 func (h *Handler) SearchDocuments(w http.ResponseWriter, r *http.Request) {
-	method := "document.search"
+	method := "document.SearchDocuments"
 	ctx := domain.GetRequestContext(r)
 
 	defer streamutil.Close(r.Body)
@@ -467,12 +487,22 @@ func (h *Handler) FetchDocumentData(w http.ResponseWriter, r *http.Request) {
 		sp = []space.Space{}
 	}
 
+	// Get version information for this document.
+	v, err := h.Store.Document.GetVersions(ctx, document.GroupID)
+	if err != nil && err != sql.ErrNoRows {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	// Prepare response.
 	data := BulkDocumentData{}
 	data.Document = document
 	data.Permissions = record
 	data.Roles = rolesRecord
 	data.Links = l
 	data.Spaces = sp
+	data.Versions = v
 
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
@@ -509,4 +539,5 @@ type BulkDocumentData struct {
 	Roles       pm.DocumentRecord `json:"roles"`
 	Spaces      []space.Space     `json:"folders"`
 	Links       []link.Link       `json:"links"`
+	Versions    []doc.Version     `json:"versions"`
 }
