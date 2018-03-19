@@ -269,6 +269,11 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	if d.Lifecycle == workflow.LifecycleLive {
 		a, _ := h.Store.Attachment.GetAttachments(ctx, documentID)
 		go h.Indexer.IndexDocument(ctx, d, a)
+
+		pages, _ := h.Store.Page.GetPages(ctx, d.RefID)
+		for i := range pages {
+			go h.Indexer.IndexContent(ctx, pages[i])
+		}
 	} else {
 		go h.Indexer.DeleteDocument(ctx, d.RefID)
 	}

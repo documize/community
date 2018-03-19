@@ -1,15 +1,23 @@
 <div class="view-search my-5">
-    <div class="heading">{{resultPhrase}}</div>
-    <ul class="documents">
-        {{#each documents key="id" as |result index|}}
+	<div class="heading">{{resultPhrase}}</div>
+	<ul class="documents">
+		{{#each documents key="id" as |result index|}}
 			<li class="document">
-                <a class="link" href="s/{{result.spaceId}}/{{result.spaceSlug}}/d/{{ result.documentId }}/{{result.documentSlug}}?page={{ result.itemId }}">
-					<div class="title">{{result.document}}</div>
+				<a class="link" href="s/{{result.spaceId}}/{{result.spaceSlug}}/d/{{ result.documentId }}/{{result.documentSlug}}?page={{ result.itemId }}">
+					<div class="title">
+						{{result.document}}
+						{{#if (gt result.versionId.length 0)}}
+							<span class="version">&nbsp;&nbsp;{{result.versionId}}</span>
+						{{/if}}
+					</div>
+					<div class="space">{{result.space}}</div>
 					<div class="snippet">{{result.excerpt}}</div>
-					<div class="snippet">({{result.space}})</div>
 					{{folder/document-tags documentTags=result.tags}}
-                </a>
-            </li>
-        {{/each}}
-    </ul>
+					{{#if result.template}}
+						<button type="button" class="mt-3 btn btn-warning text-uppercase font-weight-bold">TEMPLATE</button>
+					{{/if}}
+				</a>
+			</li>
+		{{/each}}
+	</ul>
 </div>

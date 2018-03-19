@@ -121,6 +121,12 @@ func (s Scope) IndexContent(ctx domain.RequestContext, p page.Page) (err error) 
 		err = errors.Wrap(err, "execute insert document content entry")
 	}
 
+	_, err = ctx.Transaction.Exec("INSERT INTO search (orgid, documentid, itemid, itemtype, content) VALUES (?, ?, ?, ?, ?)",
+		ctx.OrgID, p.DocumentID, p.RefID, "page", p.Title)
+	if err != nil {
+		err = errors.Wrap(err, "execute insert document page title entry")
+	}
+
 	return nil
 }
 
@@ -148,7 +154,6 @@ func (s Scope) DeleteContent(ctx domain.RequestContext, pageID string) (err erro
 // Visible documents include both those in the client's own organisation and those that are public, or whose visibility includes the client.
 func (s Scope) Documents(ctx domain.RequestContext, q search.QueryOptions) (results []search.QueryResult, err error) {
 	q.Keywords = strings.TrimSpace(q.Keywords)
-
 	if len(q.Keywords) == 0 {
 		return
 	}
@@ -204,36 +209,35 @@ func (s Scope) Documents(ctx domain.RequestContext, q search.QueryOptions) (resu
 
 func (s Scope) matchFullText(ctx domain.RequestContext, keywords, itemType string) (r []search.QueryResult, err error) {
 	sql1 := `
-	SELECT 
-		s.id, s.orgid, s.documentid, s.itemid, s.itemtype, 
-		d.labelid as spaceid, COALESCE(d.title,'Unknown') AS document, d.tags, d.excerpt, 
+	SELECT
+		s.id, s.orgid, s.documentid, s.itemid, s.itemtype,
+        d.labelid as spaceid, COALESCE(d.title,'Unknown') AS document, d.tags,
+        d.excerpt, d.template, d.versionid,
 		COALESCE(l.label,'Unknown') AS space
 	FROM
 		search s,
 		document d
-	LEFT JOIN 
+	LEFT JOIN
 		label l ON l.orgid=d.orgid AND l.refid = d.labelid
 	WHERE
 		s.orgid = ?
 		AND s.itemtype = ?
-		AND s.documentid = d.refid 
-		-- AND d.template = 0
-		AND d.labelid IN 
+		AND s.documentid = d.refid
+		AND d.labelid IN
 		(
-			SELECT refid FROM label WHERE orgid=?
-			AND refid IN (SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid IN (
-				SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space' AND action='view' 
+            SELECT refid FROM label WHERE orgid=? AND refid IN
+            (
+				SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space' AND action='view'
 				UNION ALL
-				SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.location='space' AND p.action='view' AND r.userid=?
-			))
-		)
+				SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.location='space' AND r.userid=?
+            )
+        )
 	AND MATCH(s.content) AGAINST(? IN BOOLEAN MODE)`
 
 	err = s.Runtime.Db.Select(&r,
 		sql1,
 		ctx.OrgID,
 		itemType,
-		ctx.OrgID,
 		ctx.OrgID,
 		ctx.OrgID,
 		ctx.UserID,
@@ -245,7 +249,6 @@ func (s Scope) matchFullText(ctx domain.RequestContext, keywords, itemType strin
 		err = nil
 		r = []search.QueryResult{}
 	}
-
 	if err != nil {
 		err = errors.Wrap(err, "search document "+itemType)
 	}
@@ -261,25 +264,25 @@ func (s Scope) matchLike(ctx domain.RequestContext, keywords, itemType string) (
 	keywords = fmt.Sprintf("%%%s%%", keywords)
 
 	sql1 := `
-	SELECT 
-		s.id, s.orgid, s.documentid, s.itemid, s.itemtype, 
-		d.labelid as spaceid, COALESCE(d.title,'Unknown') AS document, d.tags, d.excerpt, 
+	SELECT
+		s.id, s.orgid, s.documentid, s.itemid, s.itemtype,
+		d.labelid as spaceid, COALESCE(d.title,'Unknown') AS document, d.tags, d.excerpt,
 		COALESCE(l.label,'Unknown') AS space
 	FROM
 		search s,
 		document d
-	LEFT JOIN 
+	LEFT JOIN
 		label l ON l.orgid=d.orgid AND l.refid = d.labelid
 	WHERE
 		s.orgid = ?
 		AND s.itemtype = ?
-		AND s.documentid = d.refid 
+		AND s.documentid = d.refid
 		-- AND d.template = 0
-		AND d.labelid IN 
+		AND d.labelid IN
 		(
 			SELECT refid FROM label WHERE orgid=?
 			AND refid IN (SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid IN (
-				SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space' AND action='view' 
+				SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space' AND action='view'
 				UNION ALL
 				SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role'
 				AND p.location='space' AND p.action='view' AND (r.userid=? OR r.userid='0')

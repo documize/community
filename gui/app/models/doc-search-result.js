@@ -24,5 +24,7 @@ export default Model.extend({
 	space: attr(),
 	spaceId: attr(),
 	spaceSlug: attr(),
+	template: attr(),
+	versionId: attr(),
 	selected: attr()
 });
