@@ -22,6 +22,9 @@ export default Model.extend({
 	created: attr('string'),
 	approved: attr('string'),
 	rejected: attr('string'),
+	versioned: attr('string'),
+	drafted: attr('string'),
+	archived: attr('string'),
 
 	hasContributed: computed('contributed', function () {
 		return this.get('contributed').length > 0;
@@ -37,5 +40,14 @@ export default Model.extend({
 	}),
 	hasRejected: computed('rejected', function () {
 		return this.get('rejected').length > 0;
-	})	
+	}),
+	hasVersioned: computed('versioned', function () {
+		return this.get('versioned').length > 0;
+	}),
+	hasDrafted: computed('drafted', function () {
+		return this.get('drafted').length > 0;
+	}),
+	hasArchived: computed('archived', function () {
+		return this.get('archived').length > 0;
+	})
 });
