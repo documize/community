@@ -88,6 +88,16 @@ func Add(rt *env.Runtime, prefix, path string, methods, queries []string, endPtF
 	return nil
 }
 
+// AddPrivate endpoint
+func AddPrivate(rt *env.Runtime, path string, methods, queries []string, endPtFn RouteFunc) error {
+	return Add(rt, RoutePrefixPrivate, path, methods, queries, endPtFn)
+}
+
+// AddPublic endpoint
+func AddPublic(rt *env.Runtime, path string, methods, queries []string, endPtFn RouteFunc) error {
+	return Add(rt, RoutePrefixPublic, path, methods, queries, endPtFn)
+}
+
 // Remove an endpoint.
 func Remove(rt *env.Runtime, prefix, path string, methods, queries []string) error {
 	k, e := routesKey(rt, prefix, path, methods, queries)
