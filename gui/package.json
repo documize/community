@@ -51,6 +51,7 @@
 		"bootstrap": "^4.0.0",
 		"mermaid": "^7.1.2",
 		"node-sass": "^4.7.2",
+		"npm": "^5.7.1",
 		"popper.js": "^1.12.9"
 	}
 }
