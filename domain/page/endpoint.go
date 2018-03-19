@@ -164,19 +164,27 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		h.Store.Block.IncrementUsage(ctx, model.Page.BlockID)
 	}
 
-	h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-		LabelID:      doc.LabelID,
-		DocumentID:   model.Page.DocumentID,
-		PageID:       model.Page.RefID,
-		SourceType:   activity.SourceTypePage,
-		ActivityType: activity.TypeCreated})
+	// Draft actions are not logged
+	if doc.Lifecycle == workflow.LifecycleLive {
+		h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
+			LabelID:      doc.LabelID,
+			DocumentID:   model.Page.DocumentID,
+			PageID:       model.Page.RefID,
+			SourceType:   activity.SourceTypePage,
+			ActivityType: activity.TypeCreated})
+	}
 
 	ctx.Transaction.Commit()
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSectionAdd)
 
 	np, _ := h.Store.Page.Get(ctx, pageID)
-	go h.Indexer.IndexContent(ctx, np)
+
+	if doc.Lifecycle == workflow.LifecycleLive {
+		go h.Indexer.IndexContent(ctx, np)
+	} else {
+		go h.Indexer.DeleteDocument(ctx, doc.RefID)
+	}
 
 	response.WriteJSON(w, np)
 }
@@ -309,6 +317,7 @@ func (h *Handler) GetMeta(w http.ResponseWriter, r *http.Request) {
 // Update will persist changed page and note the fact
 // that this is a new revision. If the page is the first in a document
 // then the corresponding document title will also be changed.
+// Draft documents do not get revision entry.
 func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	method := "page.update"
 	ctx := domain.GetRequestContext(r)
@@ -406,6 +415,11 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		skipRevision = true
 	}
 
+	// We only track revisions for live documents
+	if doc.Lifecycle != workflow.LifecycleLive {
+		skipRevision = true
+	}
+
 	err = h.Store.Page.Update(ctx, model.Page, refID, ctx.UserID, skipRevision)
 	if err != nil {
 		ctx.Transaction.Rollback()
@@ -422,12 +436,15 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-		LabelID:      doc.LabelID,
-		DocumentID:   model.Page.DocumentID,
-		PageID:       model.Page.RefID,
-		SourceType:   activity.SourceTypePage,
-		ActivityType: activity.TypeEdited})
+	// Draft edits are not logged
+	if doc.Lifecycle == workflow.LifecycleLive {
+		h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
+			LabelID:      doc.LabelID,
+			DocumentID:   model.Page.DocumentID,
+			PageID:       model.Page.RefID,
+			SourceType:   activity.SourceTypePage,
+			ActivityType: activity.TypeEdited})
+	}
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSectionUpdate)
 
@@ -470,7 +487,11 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 	ctx.Transaction.Commit()
 
-	go h.Indexer.IndexContent(ctx, model.Page)
+	if doc.Lifecycle == workflow.LifecycleLive {
+		go h.Indexer.IndexContent(ctx, model.Page)
+	} else {
+		go h.Indexer.DeleteDocument(ctx, doc.RefID)
+	}
 
 	updatedPage, err := h.Store.Page.Get(ctx, pageID)
 
@@ -547,12 +568,15 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-		LabelID:      doc.LabelID,
-		DocumentID:   documentID,
-		PageID:       pageID,
-		SourceType:   activity.SourceTypePage,
-		ActivityType: activity.TypeDeleted})
+	// Draft actions are not logged
+	if doc.Lifecycle == workflow.LifecycleLive {
+		h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
+			LabelID:      doc.LabelID,
+			DocumentID:   documentID,
+			PageID:       pageID,
+			SourceType:   activity.SourceTypePage,
+			ActivityType: activity.TypeDeleted})
+	}
 
 	go h.Indexer.DeleteContent(ctx, pageID)
 
@@ -660,12 +684,15 @@ func (h *Handler) DeletePages(w http.ResponseWriter, r *http.Request) {
 
 		h.Store.Page.DeletePageRevisions(ctx, page.PageID)
 
-		h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-			LabelID:      doc.LabelID,
-			DocumentID:   documentID,
-			PageID:       page.PageID,
-			SourceType:   activity.SourceTypePage,
-			ActivityType: activity.TypeDeleted})
+		// Draft actions are not logged
+		if doc.Lifecycle == workflow.LifecycleLive {
+			h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
+				LabelID:      doc.LabelID,
+				DocumentID:   documentID,
+				PageID:       page.PageID,
+				SourceType:   activity.SourceTypePage,
+				ActivityType: activity.TypeDeleted})
+		}
 	}
 
 	ctx.Transaction.Commit()
@@ -925,13 +952,15 @@ func (h *Handler) Copy(w http.ResponseWriter, r *http.Request) {
 		h.Store.Block.IncrementUsage(ctx, model.Page.BlockID)
 	}
 
-	// Log action against target document
-	h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-		LabelID:      doc.LabelID,
-		DocumentID:   targetID,
-		PageID:       newPageID,
-		SourceType:   activity.SourceTypePage,
-		ActivityType: activity.TypeCreated})
+	// Log t actions are not logged
+	if doc.Lifecycle == workflow.LifecycleLive {
+		h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
+			LabelID:      doc.LabelID,
+			DocumentID:   targetID,
+			PageID:       newPageID,
+			SourceType:   activity.SourceTypePage,
+			ActivityType: activity.TypeCreated})
+	}
 
 	ctx.Transaction.Commit()
 
@@ -1174,12 +1203,15 @@ func (h *Handler) Rollback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-		LabelID:      doc.LabelID,
-		DocumentID:   p.DocumentID,
-		PageID:       p.RefID,
-		SourceType:   activity.SourceTypePage,
-		ActivityType: activity.TypeReverted})
+	// Draft actions are not logged
+	if doc.Lifecycle == workflow.LifecycleLive {
+		h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
+			LabelID:      doc.LabelID,
+			DocumentID:   p.DocumentID,
+			PageID:       p.RefID,
+			SourceType:   activity.SourceTypePage,
+			ActivityType: activity.TypeReverted})
+	}
 
 	ctx.Transaction.Commit()
 

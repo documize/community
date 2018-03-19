@@ -93,6 +93,12 @@ const (
 	// DocumentApprove means you can approve a change to a document
 	DocumentApprove Action = "doc-approve"
 
+	// DocumentLifecycle means you can move a document between DRAFT/LIVE/ARCHIVE states
+	DocumentLifecycle Action = "doc-lifecycle"
+
+	// DocumentVersion means you can manage document versions
+	DocumentVersion Action = "doc-version"
+
 	// CategoryView action means you can view a category and documents therein
 	CategoryView Action = "view"
 )

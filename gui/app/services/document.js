@@ -334,6 +334,7 @@ export default Service.extend({
 				folders: [],
 				folder: {},
 				links: [],
+				versions: [],
 			};
 
 			let doc = this.get('store').normalize('document', response.document);
@@ -357,6 +358,7 @@ export default Service.extend({
 			data.folders = folders;
 			data.folder = folders.findBy('id', doc.get('folderId'));
 			data.links = response.links;
+			data.versions = response.versions;
 
 			return data;
 		}).catch((error) => {
@@ -366,7 +368,7 @@ export default Service.extend({
 
 	// fetchPages returns all pages, page meta and pending changes for document.
 	// This method bulk fetches data to reduce network chatter.
-	// We produce a bunch of calculated boolean's for UI display purposes 
+	// We produce a bunch of calculated boolean's for UI display purposes
 	// that can tell us quickly about pending changes for UI display.
 	fetchPages(documentId, currentUserId) {
 		let constants = this.get('constants');
@@ -400,7 +402,7 @@ export default Service.extend({
 				page.pending.forEach((i) => {
 					let p = this.get('store').normalize('page', i.page);
 					p = this.get('store').push(p);
-	
+
 					let m = this.get('store').normalize('page-meta', i.meta);
 					m = this.get('store').push(m);
 
@@ -451,7 +453,7 @@ export default Service.extend({
 					userHasChangeRejected: userHasChangeRejected,
 					userHasNewPagePending: p.isNewPageUserPending(this.get('sessionService.user.id'))
 				};
-			
+
 				let pim = this.get('store').normalize('page-container', pi);
 				pim = this.get('store').push(pim);
 				data.pushObject(pim);

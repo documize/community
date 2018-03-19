@@ -43,7 +43,8 @@ export default Route.extend(AuthenticatedRouteMixin, {
 			sections: this.modelFor('document').sections,
 			permissions: this.modelFor('document').permissions,
 			roles: this.modelFor('document').roles,
-			blocks: this.modelFor('document').blocks
+			blocks: this.modelFor('document').blocks,
+			versions: this.modelFor('document').versions
 		});
 	},
 
@@ -57,10 +58,11 @@ export default Route.extend(AuthenticatedRouteMixin, {
 		controller.set('permissions', model.permissions);
 		controller.set('roles', model.roles);
 		controller.set('blocks', model.blocks);
+		controller.set('versions', model.versions);
 	},
 
-	activate: function() {
+	activate: function () {
 		this._super(...arguments);
-		window.scrollTo(0,0);
+		window.scrollTo(0, 0);
 	}
 });

@@ -30,6 +30,7 @@ import (
 	indexer "github.com/documize/community/domain/search"
 	"github.com/documize/community/model/attachment"
 	"github.com/documize/community/model/audit"
+	"github.com/documize/community/model/workflow"
 	uuid "github.com/nu7hatch/gouuid"
 )
 
@@ -161,7 +162,12 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	a, _ := h.Store.Attachment.GetAttachments(ctx, documentID)
 	d, _ := h.Store.Document.Get(ctx, documentID)
-	go h.Indexer.IndexDocument(ctx, d, a)
+
+	if d.Lifecycle == workflow.LifecycleLive {
+		go h.Indexer.IndexDocument(ctx, d, a)
+	} else {
+		go h.Indexer.DeleteDocument(ctx, d.RefID)
+	}
 
 	response.WriteEmpty(w)
 }
@@ -236,7 +242,12 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 
 	all, _ := h.Store.Attachment.GetAttachments(ctx, documentID)
 	d, _ := h.Store.Document.Get(ctx, documentID)
-	go h.Indexer.IndexDocument(ctx, d, all)
+
+	if d.Lifecycle == workflow.LifecycleLive {
+		go h.Indexer.IndexDocument(ctx, d, all)
+	} else {
+		go h.Indexer.DeleteDocument(ctx, d.RefID)
+	}
 
 	response.WriteEmpty(w)
 }

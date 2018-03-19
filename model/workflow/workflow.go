@@ -63,3 +63,17 @@ const (
 	// ChangePendingNew means a new section to a document is pending review
 	ChangePendingNew ChangeStatus = 4
 )
+
+// Lifecycle tells us if document is in Draft, Live, Archived
+type Lifecycle int
+
+const (
+	// LifecycleDraft means document is in draft mode with restricted viewing
+	LifecycleDraft Lifecycle = 0
+
+	// LifecycleLive means document can be seen by all
+	LifecycleLive Lifecycle = 1
+
+	// LifecycleArchived means document has been archived
+	LifecycleArchived Lifecycle = 2
+)

@@ -12,21 +12,18 @@
 import Component from '@ember/component';
 
 export default Component.extend({
-	resultPhrase: "",
-
-	init() {
-		this._super(...arguments);
-		this.results = [];
-	},
+	resultPhrase: '',
 
 	didReceiveAttrs() {
+		this._super(...arguments);
+
 		let docs = this.get('results');
 		let duped = [];
 		let phrase = 'Nothing found';
 
 		if (docs.length > 0) {
 			duped = _.uniq(docs, function (item) {
-				return item.documentId;
+				return item.get('documentId');
 			});
 
 			let references = docs.length === 1 ? "reference" : "references";

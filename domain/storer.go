@@ -168,18 +168,17 @@ type AuditStorer interface {
 type DocumentStorer interface {
 	Add(ctx RequestContext, document doc.Document) (err error)
 	Get(ctx RequestContext, id string) (document doc.Document, err error)
-	GetAll() (ctx RequestContext, documents []doc.Document, err error)
 	GetBySpace(ctx RequestContext, spaceID string) (documents []doc.Document, err error)
-	DocumentList(ctx RequestContext) (documents []doc.Document, err error)
-	Templates(ctx RequestContext) (documents []doc.Document, err error)
 	TemplatesBySpace(ctx RequestContext, spaceID string) (documents []doc.Document, err error)
 	DocumentMeta(ctx RequestContext, id string) (meta doc.DocumentMeta, err error)
 	PublicDocuments(ctx RequestContext, orgID string) (documents []doc.SitemapDocument, err error)
 	Update(ctx RequestContext, document doc.Document) (err error)
+	UpdateGroup(ctx RequestContext, document doc.Document) (err error)
 	ChangeDocumentSpace(ctx RequestContext, document, space string) (err error)
 	MoveDocumentSpace(ctx RequestContext, id, move string) (err error)
 	Delete(ctx RequestContext, documentID string) (rows int64, err error)
 	DeleteBySpace(ctx RequestContext, spaceID string) (rows int64, err error)
+	GetVersions(ctx RequestContext, groupID string) (v []doc.Version, err error)
 }
 
 // SettingStorer defines required methods for persisting global and user level settings
@@ -217,6 +216,7 @@ type LinkStorer interface {
 type ActivityStorer interface {
 	RecordUserActivity(ctx RequestContext, activity activity.UserActivity) (err error)
 	GetDocumentActivity(ctx RequestContext, id string) (a []activity.DocumentActivity, err error)
+	DeleteDocumentChangeActivity(ctx RequestContext, id string) (rows int64, err error)
 }
 
 // SearchStorer defines required methods for persisting search queries

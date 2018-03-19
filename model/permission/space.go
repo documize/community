@@ -15,21 +15,23 @@ package permission
 // This data structure is made from database permission records for the space,
 // and it is designed to be sent to HTTP clients (web, mobile).
 type Record struct {
-	OrgID            string  `json:"orgId"`
-	SpaceID          string  `json:"folderId"`
-	WhoID            string  `json:"whoId"`
-	Who              WhoType `json:"who"`
-	SpaceView        bool    `json:"spaceView"`
-	SpaceManage      bool    `json:"spaceManage"`
-	SpaceOwner       bool    `json:"spaceOwner"`
-	DocumentAdd      bool    `json:"documentAdd"`
-	DocumentEdit     bool    `json:"documentEdit"`
-	DocumentDelete   bool    `json:"documentDelete"`
-	DocumentMove     bool    `json:"documentMove"`
-	DocumentCopy     bool    `json:"documentCopy"`
-	DocumentTemplate bool    `json:"documentTemplate"`
-	DocumentApprove  bool    `json:"documentApprove"`
-	Name             string  `json:"name"` // read-only, user or group name
+	OrgID             string  `json:"orgId"`
+	SpaceID           string  `json:"folderId"`
+	WhoID             string  `json:"whoId"`
+	Who               WhoType `json:"who"`
+	SpaceView         bool    `json:"spaceView"`
+	SpaceManage       bool    `json:"spaceManage"`
+	SpaceOwner        bool    `json:"spaceOwner"`
+	DocumentAdd       bool    `json:"documentAdd"`
+	DocumentEdit      bool    `json:"documentEdit"`
+	DocumentDelete    bool    `json:"documentDelete"`
+	DocumentMove      bool    `json:"documentMove"`
+	DocumentCopy      bool    `json:"documentCopy"`
+	DocumentTemplate  bool    `json:"documentTemplate"`
+	DocumentApprove   bool    `json:"documentApprove"`
+	DocumentLifecycle bool    `json:"documentLifecycle"`
+	DocumentVersion   bool    `json:"documentVersion"`
+	Name              string  `json:"name"` // read-only, user or group name
 }
 
 // DecodeUserPermissions returns a flat, usable permission summary record
@@ -67,6 +69,10 @@ func DecodeUserPermissions(perm []Permission) (r Record) {
 			r.DocumentTemplate = true
 		case DocumentApprove:
 			r.DocumentApprove = true
+		case DocumentLifecycle:
+			r.DocumentLifecycle = true
+		case DocumentVersion:
+			r.DocumentVersion = true
 		}
 	}
 
@@ -107,6 +113,12 @@ func EncodeUserPermissions(r Record) (perm []Permission) {
 	if r.DocumentApprove {
 		perm = append(perm, EncodeRecord(r, DocumentApprove))
 	}
+	if r.DocumentVersion {
+		perm = append(perm, EncodeRecord(r, DocumentVersion))
+	}
+	if r.DocumentLifecycle {
+		perm = append(perm, EncodeRecord(r, DocumentLifecycle))
+	}
 
 	return
 }
@@ -114,7 +126,8 @@ func EncodeUserPermissions(r Record) (perm []Permission) {
 // HasAnyPermission returns true if user has at least one permission.
 func HasAnyPermission(p Record) bool {
 	return p.SpaceView || p.SpaceManage || p.SpaceOwner || p.DocumentAdd || p.DocumentEdit ||
-		p.DocumentDelete || p.DocumentMove || p.DocumentCopy || p.DocumentTemplate || p.DocumentApprove
+		p.DocumentDelete || p.DocumentMove || p.DocumentCopy || p.DocumentTemplate || p.DocumentApprove ||
+		p.DocumentLifecycle || p.DocumentVersion
 }
 
 // EncodeRecord creates standard permission record representing user permissions for a space.
@@ -138,7 +151,6 @@ type CategoryViewRequestModel struct {
 	CategoryID string  `json:"categoryID"`
 	WhoID      string  `json:"whoId"`
 	Who        WhoType `json:"who"`
-	// UserID     string `json:"userId"`
 }
 
 // SpaceRequestModel details which users have what permissions on a given space.

@@ -23,7 +23,7 @@
 			margin: 0 0 0 10px;
 			display: inline-block;
 			cursor: pointer;
-			
+
             > .email {
 				font-size: 0.9rem;
 				color: $color-off-black;
@@ -124,7 +124,7 @@
 			}
 		}
 	}
-	
+
 	> .smtp-failure {
 		font-size: 1.2rem;
 		font-weight: bold;
@@ -135,5 +135,17 @@
 		font-size: 1.2rem;
 		font-weight: bold;
 		color: $color-green;
+	}
+
+	> .archive-admin {
+		> .list {
+			> .item {
+				margin: 15px 0;
+				padding: 15px;
+				@include ease-in();
+				font-size: 1.2rem;
+				color: $color-primary;
+			}
+		}
 	}
 }

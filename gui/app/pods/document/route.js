@@ -32,6 +32,7 @@ export default Route.extend(AuthenticatedRouteMixin, {
 				this.set('permissions', data.permissions);
 				this.set('roles', data.roles);
 				this.set('links', data.links);
+				this.set('versions', data.versions);
 				resolve();
 			});
 		});
@@ -45,13 +46,14 @@ export default Route.extend(AuthenticatedRouteMixin, {
 			permissions: this.get('permissions'),
 			roles: this.get('roles'),
 			links: this.get('links'),
+			versions: this.get('versions'),
 			sections: this.get('sectionService').getAll(),
 			blocks: this.get('sectionService').getSpaceBlocks(this.get('folder.id'))
 		});
 	},
 
 	actions: {
-		error(error /*, transition*/ ) {
+		error(error /*, transition*/) {
 			if (error) {
 				this.transitionTo('/not-found');
 				return false;

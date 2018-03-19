@@ -1,0 +1,25 @@
+<div class="row">
+	<div class="col">
+		<div class="view-customize">
+			<h1 class="admin-heading">Archive</h1>
+			<h2 class="sub-heading">Mark as live documents currently marked as archived</h2>
+
+			<div class="archive-admin my-5">
+				<ul class="list">
+					{{#each docs as |doc|}}
+						<li class="item row">
+							<div class="col-12 col-sm-10">{{doc.name}}</div>
+							<div class="col-12 col-sm-2 float-right">
+								<button class="btn btn-success" {{action 'onMarkLive' doc.id}}>Unarchive</button>
+							</div>
+						</li>
+					{{/each}}
+				</ul>
+				{{#if (eq docs.length 0)}}
+					<p>Nothing found</p>
+				{{/if}}
+			</div>
+
+		</div>
+	</div>
+</div>

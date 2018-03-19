@@ -95,6 +95,12 @@ const (
 
 	// TypeSentSecureLink records user sending secure document link to email address(es)
 	TypeSentSecureLink Type = 12
+
+	// TypeDraft records user marking space/document as draft
+	TypeDraft Type = 13
+
+	// TypeVersioned records user creating new document version
+	TypeVersioned Type = 14
 )
 
 // TypeName returns one-work descriptor for activity type

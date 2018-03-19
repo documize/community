@@ -1,3 +1,65 @@
+/**
+ * jQuery plugin for Sortable
+ * @author	RubaXa   <trash@rubaxa.org>
+ * @license MIT
+ */
+(function (factory) {
+	"use strict";
+
+	if (typeof define === "function" && define.amd) {
+		define(["jquery"], factory);
+	}
+	else {
+		/* jshint sub:true */
+		factory(jQuery);
+	}
+})(function ($) {
+	"use strict";
+
+
+	/* CODE */
+
+
+	/**
+	 * jQuery plugin for Sortable
+	 * @param   {Object|String} options
+	 * @param   {..*}           [args]
+	 * @returns {jQuery|*}
+	 */
+	$.fn.sortable = function (options) {
+		var retVal,
+			args = arguments;
+
+		this.each(function () {
+			var $el = $(this),
+				sortable = $el.data('sortable');
+
+			if (!sortable && (options instanceof Object || !options)) {
+				sortable = new Sortable(this, options);
+				$el.data('sortable', sortable);
+			}
+
+			if (sortable) {
+				if (options === 'widget') {
+					retVal = sortable;
+				}
+				else if (options === 'destroy') {
+					sortable.destroy();
+					$el.removeData('sortable');
+				}
+				else if (typeof sortable[options] === 'function') {
+					retVal = sortable[options].apply(sortable, [].slice.call(args, 1));
+				}
+				else if (options in sortable.options) {
+					retVal = sortable.option.apply(sortable, args);
+				}
+			}
+		});
+
+		return (retVal === void 0) ? this : retVal;
+	};
+});
+
 /**!
  * Sortable
  * @author	RubaXa   <trash@rubaxa.org>
@@ -109,7 +171,7 @@
 
 					scrollOffsetX,
 					scrollOffsetY
-				;
+					;
 
 				// Delect scrollEl
 				if (scrollParentEl !== rootEl) {
@@ -160,7 +222,7 @@
 							scrollOffsetY = vy ? vy * speed : 0;
 							scrollOffsetX = vx ? vx * speed : 0;
 
-							if ('function' === typeof(scrollCustomFn)) {
+							if ('function' === typeof (scrollCustomFn)) {
 								return scrollCustomFn.call(_this, scrollOffsetX, scrollOffsetY, evt);
 							}
 
@@ -202,7 +264,7 @@
 			var originalGroup = options.group;
 
 			if (!originalGroup || typeof originalGroup != 'object') {
-				originalGroup = {name: originalGroup};
+				originalGroup = { name: originalGroup };
 			}
 
 			group.name = originalGroup.name;
@@ -212,7 +274,7 @@
 
 			options.group = group;
 		}
-	;
+		;
 
 
 	/**
@@ -261,7 +323,7 @@
 			fallbackClass: 'sortable-fallback',
 			fallbackOnBody: false,
 			fallbackTolerance: 0,
-			fallbackOffset: {x: 0, y: 0}
+			fallbackOffset: { x: 0, y: 0 }
 		};
 
 
@@ -555,7 +617,7 @@
 
 		_onTouchMove: function (/**TouchEvent*/evt) {
 			if (tapEvt) {
-				var	options = this.options,
+				var options = this.options,
 					fallbackTolerance = options.fallbackTolerance,
 					fallbackOffset = options.fallbackOffset,
 					touch = evt.touches ? evt.touches[0] : evt,
@@ -781,7 +843,7 @@
 						halfway = (floating ? (evt.clientX - targetRect.left) / width : (evt.clientY - targetRect.top) / height) > 0.5,
 						nextSibling = target.nextElementSibling,
 						after = false
-					;
+						;
 
 					if (floating) {
 						var elTop = dragEl.offsetTop,
@@ -795,7 +857,7 @@
 						} else {
 							after = tgTop > elTop;
 						}
-						} else if (!isMovingBetweenSortable) {
+					} else if (!isMovingBetweenSortable) {
 						after = (nextSibling !== dragEl) && !isLong || halfway && isLong;
 					}
 
@@ -963,30 +1025,30 @@
 			this._nulling();
 		},
 
-		_nulling: function() {
+		_nulling: function () {
 			rootEl =
-			dragEl =
-			parentEl =
-			ghostEl =
-			nextEl =
-			cloneEl =
-			lastDownEl =
+				dragEl =
+				parentEl =
+				ghostEl =
+				nextEl =
+				cloneEl =
+				lastDownEl =
 
-			scrollEl =
-			scrollParentEl =
+				scrollEl =
+				scrollParentEl =
 
-			tapEvt =
-			touchEvt =
+				tapEvt =
+				touchEvt =
 
-			moved =
-			newIndex =
+				moved =
+				newIndex =
 
-			lastEl =
-			lastCSS =
+				lastEl =
+				lastCSS =
 
-			putSortable =
-			activeGroup =
-			Sortable.active = null;
+				putSortable =
+				activeGroup =
+				Sortable.active = null;
 
 			savedInputChecked.forEach(function (el) {
 				el.checked = true;
@@ -1455,7 +1517,7 @@
 				};
 			}
 		}));
-	} catch (err) {}
+	} catch (err) { }
 
 	// Export utils
 	Sortable.utils = {

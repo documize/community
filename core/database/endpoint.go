@@ -170,7 +170,7 @@ func setupAccount(rt *env.Runtime, completion onboardRequest, serial string) (er
 	}
 
 	// assign permissions to space
-	perms := []string{"view", "manage", "own", "doc-add", "doc-edit", "doc-delete", "doc-move", "doc-copy", "doc-template", "doc-approve"}
+	perms := []string{"view", "manage", "own", "doc-add", "doc-edit", "doc-delete", "doc-move", "doc-copy", "doc-template", "doc-approve", "doc-version", "doc-lifecycle"}
 	for _, p := range perms {
 		sql = fmt.Sprintf("insert into permission (orgid, who, whoid, action, scope, location, refid) values (\"%s\", 'user', \"%s\", \"%s\", 'object', 'space', \"%s\")", orgID, userID, p, labelID)
 		_, err = runSQL(rt, sql)

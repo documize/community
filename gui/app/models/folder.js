@@ -10,11 +10,10 @@
 // https://documize.com
 
 import { computed } from '@ember/object';
-import Model from 'ember-data/model';
 import attr from 'ember-data/attr';
 import constants from '../utils/constants';
 import stringUtil from '../utils/string';
-// import { belongsTo, hasMany } from 'ember-data/relationships';
+import Model from 'ember-data/model';
 
 export default Model.extend({
 	name: attr('string'),

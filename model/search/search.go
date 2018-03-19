@@ -34,4 +34,6 @@ type QueryResult struct {
 	SpaceID      string `json:"spaceId"`
 	Space        string `json:"space"`
 	SpaceSlug    string `json:"spaceSlug"`
+	Template     bool   `json:"template"`
+	VersionID    string `json:"versionId"`
 }

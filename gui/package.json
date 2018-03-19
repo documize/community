@@ -1,6 +1,6 @@
 {
 	"name": "documize",
-	"version": "1.58.0",
+	"version": "1.59.0",
 	"description": "The Document IDE",
 	"private": true,
 	"repository": "",
@@ -51,6 +51,7 @@
 		"bootstrap": "^4.0.0",
 		"mermaid": "^7.1.2",
 		"node-sass": "^4.7.2",
+		"npm": "^5.7.1",
 		"popper.js": "^1.12.9"
 	}
 }

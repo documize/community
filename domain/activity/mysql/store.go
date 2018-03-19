@@ -13,10 +13,12 @@ package mysql
 
 import (
 	"database/sql"
+	"fmt"
 	"time"
 
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/domain"
+	"github.com/documize/community/domain/store/mysql"
 	"github.com/documize/community/model/activity"
 	"github.com/pkg/errors"
 )
@@ -66,6 +68,15 @@ func (s Scope) GetDocumentActivity(ctx domain.RequestContext, id string) (a []ac
 	if len(a) == 0 {
 		a = []activity.DocumentActivity{}
 	}
+
+	return
+}
+
+// DeleteDocumentChangeActivity removes all entries for document changes (add, remove, update).
+func (s Scope) DeleteDocumentChangeActivity(ctx domain.RequestContext, documentID string) (rows int64, err error) {
+	b := mysql.BaseQuery{}
+	rows, err = b.DeleteWhere(ctx.Transaction,
+		fmt.Sprintf("DELETE FROM useractivity WHERE orgid='%s' AND documentid='%s' AND (activitytype=1 OR activitytype=2 OR activitytype=3 OR activitytype=4 OR activitytype=7)", ctx.OrgID, documentID))
 
 	return
 }

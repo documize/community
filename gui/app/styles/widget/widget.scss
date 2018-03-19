@@ -61,6 +61,27 @@
 	box-shadow: 0 27px 24px 0 rgba(0, 0, 0, 0.2), 0 40px 77px 0 rgba(0, 0, 0, 0.22);
 }
 
+.drag-handle {
+	font-size: 1.5rem;
+	color: $color-gray-light;
+	cursor: pointer;
+}
+
+.drag-indicator-dropzone {
+	opacity: 1 !important;
+	border: 2px dotted $color-border;
+}
+
+.drag-indicator-chosen {
+	opacity: 1 !important;
+	background: $color-off-white;
+}
+
+.drag-indicator-dragged {
+	opacity: 1 !important;
+	@include card();
+}
+
 @import "widget-avatar";
 @import "widget-button";
 @import "widget-checkbox";

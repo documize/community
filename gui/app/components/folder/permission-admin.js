@@ -19,12 +19,12 @@ export default Component.extend(ModalMixin, {
 	groupSvc: service('group'),
 	spaceSvc: service('folder'),
 	userSvc: service('user'),
-	appMeta: service(), 
+	appMeta: service(),
 	store: service(),
 	spacePermissions: null,
 	users: null,
 	searchText: '',
-	
+
 	didReceiveAttrs() {
 		let spacePermissions = A([]);
 		let constants = this.get('constants');
@@ -65,7 +65,7 @@ export default Component.extend(ModalMixin, {
 				// always show everyone
 				if (!hasEveryoneId) {
 					let pr = this.permissionRecord(constants.WhoType.User, constants.EveryoneUserId, ' ' + constants.EveryoneUserName);
-					spacePermissions.pushObject(pr);					
+					spacePermissions.pushObject(pr);
 				}
 
 				this.set('spacePermissions', spacePermissions.sortBy('who', 'name'));
@@ -93,6 +93,8 @@ export default Component.extend(ModalMixin, {
 			documentCopy: false,
 			documentTemplate: false,
 			documentApprove: false,
+			documentLifecycle: false,
+			documentVersion: false,
 		};
 
 		let rec = this.get('store').normalize('space-permission', raw);
@@ -132,7 +134,8 @@ export default Component.extend(ModalMixin, {
 			let hasEveryone = _.find(permissions, (permission) => {
 				return permission.get('whoId') === constants.EveryoneUserId &&
 					(permission.get('spaceView') || permission.get('documentAdd') || permission.get('documentEdit') || permission.get('documentDelete') ||
-					permission.get('documentMove') || permission.get('documentCopy') || permission.get('documentTemplate') || permission.get('documentApprove'));
+						permission.get('documentMove') || permission.get('documentCopy') || permission.get('documentTemplate') ||
+						permission.get('documentApprove') || permission.get('documentLifecycle') || permission.get('documentVersion'));
 			});
 
 			// see if more than oen user is granted access to space (excluding everyone)
@@ -140,8 +143,9 @@ export default Component.extend(ModalMixin, {
 			permissions.forEach((permission) => {
 				if (permission.get('whoId') !== constants.EveryoneUserId &&
 					(permission.get('spaceView') || permission.get('documentAdd') || permission.get('documentEdit') || permission.get('documentDelete') ||
-					permission.get('documentMove') || permission.get('documentCopy') || permission.get('documentTemplate') || permission.get('documentApprove'))) {
-						roleCount += 1;
+						permission.get('documentMove') || permission.get('documentCopy') || permission.get('documentTemplate') ||
+						permission.get('documentApprove') || permission.get('documentLifecycle') || permission.get('documentVersion'))) {
+					roleCount += 1;
 				}
 			});
 
@@ -161,7 +165,7 @@ export default Component.extend(ModalMixin, {
 		},
 
 		onSearch() {
-			debounce(this, function() {
+			debounce(this, function () {
 				let searchText = this.get('searchText').trim();
 
 				if (searchText.length === 0) {
@@ -181,7 +185,6 @@ export default Component.extend(ModalMixin, {
 			if (is.undefined(exists)) {
 				spacePermissions.pushObject(this.permissionRecord(constants.WhoType.User, user.get('id'), user.get('fullname')));
 				this.set('spacePermissions', spacePermissions);
-				// this.set('spacePermissions', spacePermissions.sortBy('who', 'name'));
 			}
 		},
 	}
