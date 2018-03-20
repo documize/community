@@ -493,11 +493,15 @@ func (h *Handler) FetchDocumentData(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get version information for this document.
-	v, err := h.Store.Document.GetVersions(ctx, document.GroupID)
-	if err != nil && err != sql.ErrNoRows {
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
+	v := []doc.Version{}
+
+	if len(document.GroupID) > 0 {
+		v, err = h.Store.Document.GetVersions(ctx, document.GroupID)
+		if err != nil && err != sql.ErrNoRows {
+			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
+			return
+		}
 	}
 
 	// Prepare response.
