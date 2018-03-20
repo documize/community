@@ -142,6 +142,7 @@ func (h *Handler) SaveAs(w http.ResponseWriter, r *http.Request) {
 	doc.RefID = docID
 	doc.ID = 0
 	doc.Template = true
+	doc.Lifecycle = workflow.LifecycleLive
 
 	// Duplicate pages and associated meta
 	pages, err := h.Store.Page.GetPages(ctx, model.DocumentID)
@@ -307,6 +308,7 @@ func (h *Handler) Use(w http.ResponseWriter, r *http.Request) {
 	d.LabelID = folderID
 	d.UserID = ctx.UserID
 	d.Title = docTitle
+	d.Lifecycle = workflow.LifecycleLive
 
 	err = h.Store.Document.Add(ctx, d)
 	if err != nil {

@@ -137,7 +137,7 @@ func (s Scope) TemplatesBySpace(ctx domain.RequestContext, spaceID string) (docu
 		`SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template,
             protection, approval, lifecycle, versioned, versionid, versionorder, groupid, created, revised
         FROM document
-        WHERE orgid=? AND labelid=? AND template=1 ANd lifecycle=1
+        WHERE orgid=? AND labelid=? AND template=1 AND lifecycle=1
 		AND labelid IN
 			(
 				SELECT refid FROM label WHERE orgid=?

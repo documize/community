@@ -119,7 +119,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 
 	err = h.Store.Permission.AddPermissions(ctx, perm, permission.SpaceOwner, permission.SpaceManage, permission.SpaceView,
 		permission.DocumentAdd, permission.DocumentCopy, permission.DocumentDelete, permission.DocumentEdit, permission.DocumentMove,
-		permission.DocumentTemplate, permission.DocumentApprove)
+		permission.DocumentTemplate, permission.DocumentApprove, permission.DocumentVersion, permission.DocumentVersion)
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
@@ -177,7 +177,6 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 
 		if model.CopyDocument {
 			docs, err := h.Store.Document.GetBySpace(ctx, model.CloneID)
-
 			if err != nil {
 				ctx.Transaction.Rollback()
 				response.WriteServerError(w, method, err)
@@ -188,6 +187,11 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 			toCopy = append(toCopy, docs...)
 		}
 
+		// documemt.GroupID groups versioned documents together
+		// and must be reassigned a new value when being copied
+		// to avoid conflicts.
+		groupChange := make(map[string]string)
+
 		if len(toCopy) > 0 {
 			for _, t := range toCopy {
 				origID := t.RefID
@@ -195,6 +199,16 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 				documentID := uniqueid.Generate()
 				t.RefID = documentID
 				t.LabelID = sp.RefID
+
+				// Reassign group ID
+				if len(t.GroupID) > 0 {
+					if len(groupChange[t.GroupID]) > 0 {
+						t.GroupID = groupChange[t.GroupID]
+					} else {
+						groupChange[t.GroupID] = uniqueid.Generate()
+						t.GroupID = groupChange[t.GroupID]
+					}
+				}
 
 				err = h.Store.Document.Add(ctx, t)
 				if err != nil {

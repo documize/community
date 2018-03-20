@@ -19,6 +19,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/documize/community/model/workflow"
+
 	"github.com/documize/community/core/env"
 
 	api "github.com/documize/community/core/convapi"
@@ -164,6 +166,7 @@ func processDocument(ctx domain.RequestContext, r *env.Runtime, store *domain.St
 	document.UserID = ctx.UserID
 	documentID := uniqueid.Generate()
 	document.RefID = documentID
+	document.Lifecycle = workflow.LifecycleLive
 
 	err = store.Document.Add(ctx, document)
 	if err != nil {
