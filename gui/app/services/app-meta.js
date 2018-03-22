@@ -9,6 +9,7 @@
 //
 // https://documize.com
 
+import $ from 'jquery';
 import { htmlSafe } from '@ember/string';
 import { resolve } from 'rsvp';
 import Service, { inject as service } from '@ember/service';
@@ -63,6 +64,7 @@ export default Service.extend({
 
 		return this.get('ajax').request('public/meta').then((response) => {
 			this.setProperties(response);
+			this.set('version', 'v' + this.get('version'));
 
 			if (requestedRoute === 'secure') {
 				this.setProperties({
@@ -70,11 +72,31 @@ export default Service.extend({
 					allowAnonymousAccess: true,
 					secureMode: true
 				});
-	
+
 				this.get('localStorage').clearAll();
 			} else if (is.not.include(requestedUrl, '/auth/')) {
 				this.get('localStorage').storeSessionItem('entryUrl', requestedUrl);
 			}
+
+			let self = this;
+			let cacheBuster = + new Date();
+			$.getJSON(`https://storage.googleapis.com/documize/downloads/updates/meta.json?cb=${cacheBuster}`, function (versions) {
+				let cv = 'v' + versions.community.version;
+				let ev = 'v' + versions.enterprise.version;
+				let re = self.get('edition');
+				let rv = self.get('version');
+
+				self.set('communityLatest', cv);
+				self.set('enterpriseLatest', ev);
+				self.set('updateAvailable', false); // set to true for testing
+
+				if (re === 'Community' && rv < cv) {
+					self.set('updateAvailable', true);
+				}
+				if (re === 'Enterprise' && rv < ev) {
+					self.set('updateAvailable', true);
+				}
+			});
 
 			return response;
 		});

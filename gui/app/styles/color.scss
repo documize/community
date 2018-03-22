@@ -33,6 +33,7 @@ $color-red: #9E0D1F;
 $color-green: #348A37;
 $color-blue: #2667af;
 $color-goldy: #FFD700;
+$color-orange: #FFAD15;
 
 // widgets
 $color-checkbox: #2667af;
@@ -40,6 +41,7 @@ $color-symbol-box: #dce5e8;
 $color-symbol-icon: #a4b8be;
 $color-card: #F9F9F9;
 $color-stroke: #e1e1e1;
+$color-whats-new: #fc1530;
 
 // Color utility classes for direct usage in HTML
 .color-white {
@@ -74,6 +76,12 @@ $color-stroke: #e1e1e1;
 }
 .color-gold {
 	color: $color-goldy !important;
+}
+.color-orange {
+	color: $color-orange !important;
+}
+.color-whats-new {
+	color: $color-whats-new !important;
 }
 
 .background-color-white {

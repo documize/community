@@ -35,8 +35,8 @@ func (s Scope) Add(ctx domain.RequestContext, u user.User) (err error) {
 	u.Created = time.Now().UTC()
 	u.Revised = time.Now().UTC()
 
-	_, err = ctx.Transaction.Exec("INSERT INTO user (refid, firstname, lastname, email, initials, password, salt, reset, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-		u.RefID, u.Firstname, u.Lastname, strings.ToLower(u.Email), u.Initials, u.Password, u.Salt, "", u.Created, u.Revised)
+	_, err = ctx.Transaction.Exec("INSERT INTO user (refid, firstname, lastname, email, initials, password, salt, reset, lastversion, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		u.RefID, u.Firstname, u.Lastname, strings.ToLower(u.Email), u.Initials, u.Password, u.Salt, "", u.LastVersion, u.Created, u.Revised)
 
 	if err != nil {
 		err = errors.Wrap(err, "execute user insert")
@@ -47,7 +47,7 @@ func (s Scope) Add(ctx domain.RequestContext, u user.User) (err error) {
 
 // Get returns the user record for the given id.
 func (s Scope) Get(ctx domain.RequestContext, id string) (u user.User, err error) {
-	err = s.Runtime.Db.Get(&u, "SELECT id, refid, firstname, lastname, email, initials, global, password, salt, reset, created, revised FROM user WHERE refid=?", id)
+	err = s.Runtime.Db.Get(&u, "SELECT id, refid, firstname, lastname, email, initials, global, password, salt, reset, lastversion, created, revised FROM user WHERE refid=?", id)
 
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to execute select for user %s", id))
@@ -60,7 +60,7 @@ func (s Scope) Get(ctx domain.RequestContext, id string) (u user.User, err error
 func (s Scope) GetByDomain(ctx domain.RequestContext, domain, email string) (u user.User, err error) {
 	email = strings.TrimSpace(strings.ToLower(email))
 
-	err = s.Runtime.Db.Get(&u, "SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.global, u.password, u.salt, u.reset, u.created, u.revised FROM user u, account a, organization o WHERE TRIM(LOWER(u.email))=? AND u.refid=a.userid AND a.orgid=o.refid AND TRIM(LOWER(o.domain))=?",
+	err = s.Runtime.Db.Get(&u, "SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.global, u.password, u.salt, u.reset, u.lastversion,  u.created, u.revised FROM user u, account a, organization o WHERE TRIM(LOWER(u.email))=? AND u.refid=a.userid AND a.orgid=o.refid AND TRIM(LOWER(o.domain))=?",
 		email, domain)
 
 	if err != nil && err != sql.ErrNoRows {
@@ -74,7 +74,7 @@ func (s Scope) GetByDomain(ctx domain.RequestContext, domain, email string) (u u
 func (s Scope) GetByEmail(ctx domain.RequestContext, email string) (u user.User, err error) {
 	email = strings.TrimSpace(strings.ToLower(email))
 
-	err = s.Runtime.Db.Get(&u, "SELECT id, refid, firstname, lastname, email, initials, global, password, salt, reset, created, revised FROM user WHERE TRIM(LOWER(email))=?", email)
+	err = s.Runtime.Db.Get(&u, "SELECT id, refid, firstname, lastname, email, initials, global, password, salt, reset, lastversion, created, revised FROM user WHERE TRIM(LOWER(email))=?", email)
 
 	if err != nil && err != sql.ErrNoRows {
 		err = errors.Wrap(err, fmt.Sprintf("execute select user by email %s", email))
@@ -85,7 +85,7 @@ func (s Scope) GetByEmail(ctx domain.RequestContext, email string) (u user.User,
 
 // GetByToken returns a user record given a reset token value.
 func (s Scope) GetByToken(ctx domain.RequestContext, token string) (u user.User, err error) {
-	err = s.Runtime.Db.Get(&u, "SELECT id, refid, firstname, lastname, email, initials, global, password, salt, reset, created, revised FROM user WHERE reset=?", token)
+	err = s.Runtime.Db.Get(&u, "SELECT id, refid, firstname, lastname, email, initials, global, password, salt, reset, lastversion, created, revised FROM user WHERE reset=?", token)
 
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("execute user select by token %s", token))
@@ -98,7 +98,7 @@ func (s Scope) GetByToken(ctx domain.RequestContext, token string) (u user.User,
 // This occurs when we you share a folder with a new user and they have to complete
 // the onboarding process.
 func (s Scope) GetBySerial(ctx domain.RequestContext, serial string) (u user.User, err error) {
-	err = s.Runtime.Db.Get(&u, "SELECT id, refid, firstname, lastname, email, initials, global, password, salt, reset, created, revised FROM user WHERE salt=?", serial)
+	err = s.Runtime.Db.Get(&u, "SELECT id, refid, firstname, lastname, email, initials, global, password, salt, reset, lastversion, created, revised FROM user WHERE salt=?", serial)
 
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("execute user select by serial %s", serial))
@@ -111,7 +111,7 @@ func (s Scope) GetBySerial(ctx domain.RequestContext, serial string) (u user.Use
 // identified in the Persister.
 func (s Scope) GetActiveUsersForOrganization(ctx domain.RequestContext) (u []user.User, err error) {
 	err = s.Runtime.Db.Select(&u,
-		`SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.password, u.salt, u.reset, u.created, u.revised,
+		`SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.password, u.salt, u.reset, u.lastversion, u.created, u.revised,
 		u.global, a.active, a.editor, a.admin, a.users as viewusers
 		FROM user u, account a
 		WHERE u.refid=a.userid AND a.orgid=? AND a.active=1
@@ -139,7 +139,7 @@ func (s Scope) GetUsersForOrganization(ctx domain.RequestContext, filter string)
 	}
 
 	err = s.Runtime.Db.Select(&u,
-		`SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.password, u.salt, u.reset, u.created, u.revised,
+		`SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.password, u.salt, u.reset, u.lastversion, u.created, u.revised,
 		u.global, a.active, a.editor, a.admin, a.users as viewusers
 		FROM user u, account a
 		WHERE u.refid=a.userid AND a.orgid=? `+likeQuery+
@@ -160,7 +160,7 @@ func (s Scope) GetUsersForOrganization(ctx domain.RequestContext, filter string)
 // GetSpaceUsers returns a slice containing all user records for given space.
 func (s Scope) GetSpaceUsers(ctx domain.RequestContext, spaceID string) (u []user.User, err error) {
 	err = s.Runtime.Db.Select(&u, `
-		SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.password, u.salt, u.reset, u.created, u.revised, u.global,
+		SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.password, u.salt, u.reset, u.created, u.lastversion, u.revised, u.global,
 		a.active, a.users AS viewusers, a.editor, a.admin
 		FROM user u, account a
 		WHERE a.orgid=? AND u.refid = a.userid AND a.active=1 AND u.refid IN (
@@ -189,12 +189,12 @@ func (s Scope) GetUsersForSpaces(ctx domain.RequestContext, spaces []string) (u 
 	}
 
 	query, args, err := sqlx.In(`
-		SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.password, u.salt, u.reset, u.created, u.revised, u.global,
+		SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.password, u.salt, u.reset, u.lastversion, u.created, u.revised, u.global,
 		a.active, a.users AS viewusers, a.editor, a.admin
 		FROM user u, account a
 		WHERE a.orgid=? AND u.refid = a.userid AND a.active=1 AND u.refid IN (
 			SELECT whoid from permission WHERE orgid=? AND who='user' AND scope='object' AND location='space' AND refid IN(?) UNION ALL
-			SELECT r.userid from rolemember r LEFT JOIN permission p ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.scope='object' AND p.location='space' AND p.refid IN(?) 
+			SELECT r.userid from rolemember r LEFT JOIN permission p ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.scope='object' AND p.location='space' AND p.refid IN(?)
 		)
 		ORDER BY u.firstname, u.lastname
 		`, ctx.OrgID, ctx.OrgID, spaces, ctx.OrgID, spaces)
@@ -219,7 +219,7 @@ func (s Scope) UpdateUser(ctx domain.RequestContext, u user.User) (err error) {
 	u.Email = strings.ToLower(u.Email)
 
 	_, err = ctx.Transaction.NamedExec(
-		"UPDATE user SET firstname=:firstname, lastname=:lastname, email=:email, revised=:revised, initials=:initials WHERE refid=:refid", &u)
+		"UPDATE user SET firstname=:firstname, lastname=:lastname, email=:email, revised=:revised, initials=:initials, lastversion=:lastversion WHERE refid=:refid", &u)
 
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("execute user update %s", u.RefID))
@@ -289,7 +289,7 @@ func (s Scope) MatchUsers(ctx domain.RequestContext, text string, maxMatches int
 	}
 
 	err = s.Runtime.Db.Select(&u,
-		`SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.password, u.salt, u.reset, u.created, u.revised,
+		`SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.password, u.salt, u.reset, u.lastversion, u.created, u.revised,
 		u.global, a.active, a.editor, a.admin, a.users as viewusers
 		FROM user u, account a
 		WHERE a.orgid=? AND u.refid=a.userid AND a.active=1 `+likeQuery+

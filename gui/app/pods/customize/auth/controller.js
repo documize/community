@@ -10,7 +10,6 @@
 // https://documize.com
 
 import { Promise as EmberPromise } from 'rsvp';
-
 import { inject as service } from '@ember/service';
 import Controller from '@ember/controller';
 import NotifierMixin from "../../../mixins/notifier";
@@ -18,13 +17,13 @@ import NotifierMixin from "../../../mixins/notifier";
 
 export default Controller.extend(NotifierMixin, {
 	global: service(),
-    appMeta: service(),
+	appMeta: service(),
 	session: service(),
 
 	actions: {
 		onSave(data) {
 			return new EmberPromise((resolve) => {
-				if(!this.get('session.isGlobalAdmin')) {
+				if (!this.get('session.isGlobalAdmin')) {
 					resolve();
 				} else {
 					this.get('global').saveAuthConfig(data).then(() => {
@@ -39,14 +38,14 @@ export default Controller.extend(NotifierMixin, {
 				this.get('global').syncExternalUsers().then((response) => {
 					resolve(response);
 				});
-			});			
+			});
 		},
 
 		onChange(data) {
 			this.get('session').logout();
 			this.set('appMeta.authProvider', data.authProvider);
 			this.set('appMeta.authConfig', data.authConfig);
-			window.location.href= '/';			
+			window.location.href = '/';
 		}
 	}
 });

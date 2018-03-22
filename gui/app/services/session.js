@@ -11,11 +11,13 @@
 
 import { inject as service } from '@ember/service';
 import { computed } from '@ember/object';
+import { Promise as EmberPromise } from 'rsvp';
 import SimpleAuthSession from 'ember-simple-auth/services/session';
 
 export default SimpleAuthSession.extend({
 	ajax: service(),
 	appMeta: service(),
+	userSvc: service('user'),
 	store: service(),
 	localStorage: service(),
 	folderPermissions: null,
@@ -23,11 +25,11 @@ export default SimpleAuthSession.extend({
 	isMac: false,
 	isMobile: false,
 
-	hasAccounts: computed('isAuthenticated', 'session.content.authenticated.user', function() {
+	hasAccounts: computed('isAuthenticated', 'session.content.authenticated.user', function () {
 		return this.get('session.authenticator') !== 'authenticator:anonymous' && this.get('session.content.authenticated.user.accounts').length > 0;
 	}),
 
-	accounts: computed('hasAccounts', function() {
+	accounts: computed('hasAccounts', function () {
 		return this.get('session.content.authenticated.user.accounts');
 	}),
 
@@ -35,7 +37,9 @@ export default SimpleAuthSession.extend({
 		if (this.get('isAuthenticated')) {
 			let user = this.get('session.content.authenticated.user') || { id: '0' };
 			let data = this.get('store').normalize('user', user);
-			return this.get('store').push(data);
+			let um = this.get('store').push(data)
+
+			return um;
 		}
 	}),
 
@@ -71,5 +75,21 @@ export default SimpleAuthSession.extend({
 
 	logout() {
 		this.get('localStorage').clearAll();
+	},
+
+	seenNewVersion() {
+		this.get('userSvc').getUser(this.get('user.id')).then((user) => {
+			user.set('lastVersion', this.get('appMeta.version'));
+			this.get('userSvc').save(user);
+		});
+	},
+
+	// set what's new indicator
+	hasWhatsNew() {
+		return new EmberPromise((resolve) => {
+			return this.get('userSvc').getUser(this.get('user.id')).then((user) => {
+				resolve(user.get('lastVersion') !== this.get('appMeta.version'));
+			});
+		});
 	}
 });

@@ -201,7 +201,7 @@
     display: inline-block;
 	cursor: default;
     position: relative;
-    overflow: hidden;
+    // overflow: hidden; // kills update dots
     width: 35px;
     height: 35px;
     line-height: 34px;

@@ -22,20 +22,21 @@ import (
 // User defines a login.
 type User struct {
 	model.BaseEntity
-	Firstname string            `json:"firstname"`
-	Lastname  string            `json:"lastname"`
-	Email     string            `json:"email"`
-	Initials  string            `json:"initials"`
-	Active    bool              `json:"active"`
-	Editor    bool              `json:"editor"`
-	Admin     bool              `json:"admin"`
-	ViewUsers bool              `json:"viewUsers"`
-	Global    bool              `json:"global"`
-	Password  string            `json:"-"`
-	Salt      string            `json:"-"`
-	Reset     string            `json:"-"`
-	Accounts  []account.Account `json:"accounts"`
-	Groups    []group.Record    `json:"groups"`
+	Firstname   string            `json:"firstname"`
+	Lastname    string            `json:"lastname"`
+	Email       string            `json:"email"`
+	Initials    string            `json:"initials"`
+	Active      bool              `json:"active"`
+	Editor      bool              `json:"editor"`
+	Admin       bool              `json:"admin"`
+	ViewUsers   bool              `json:"viewUsers"`
+	Global      bool              `json:"global"`
+	Password    string            `json:"-"`
+	Salt        string            `json:"-"`
+	Reset       string            `json:"-"`
+	LastVersion string            `json:"lastVersion"`
+	Accounts    []account.Account `json:"accounts"`
+	Groups      []group.Record    `json:"groups"`
 }
 
 // ProtectSecrets blanks sensitive data.

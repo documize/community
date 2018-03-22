@@ -9,11 +9,30 @@
 //
 // https://documize.com
 
+import $ from 'jquery';
 import { empty } from '@ember/object/computed';
+import { inject as service } from '@ember/service';
 import Component from '@ember/component';
 
 export default Component.extend({
+	appMeta: service(),
 	LicenseError: empty('model.license'),
+	changelog: '',
+
+	init() {
+		this._super(...arguments);
+
+		let self = this;
+		let cacheBuster = + new Date();
+		$.ajax({
+			url: `https://storage.googleapis.com/documize/downloads/updates/summary.html?cb=${cacheBuster}`,
+			type: 'GET',
+			dataType: 'html',
+			success: function (response) {
+				self.set('changelog', response);
+			}
+		});
+	},
 
 	actions: {
 		saveLicense() {

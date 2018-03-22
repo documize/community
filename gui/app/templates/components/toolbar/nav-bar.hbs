@@ -1,7 +1,7 @@
 <div id="nav-bar" class="nav-bar clearfix container-fluid">
 	<div class="row no-gutters">
 		<div class="col col-sm-9">
-			{{#link-to "folders" class='nav-link'}}
+			{{#link-to "folders" class='nav-link' }}
 				<div class="nav-title">{{appMeta.title}}</div>
 				<div class="nav-msg text-truncate">{{appMeta.message}}</div>
 			{{/link-to}}
@@ -9,7 +9,7 @@
 		<div class="col col-sm-3">
 			<div class="nav-right">
 				<div class="btn-group">
-					{{#link-to "search" class="button-icon-white"}}
+					{{#link-to "search" class="button-icon-white" }}
 						<i class="material-icons">search</i>
 					{{/link-to}}
 				</div>
@@ -25,13 +25,13 @@
 								{{#if hasSpacePins}}
 									<h6 class="dropdown-header">Spaces</h6>
 									{{#each spacePins as |pin|}}
-										<a class="dropdown-item" href="#" {{action 'jumpToPin' pin}} data-id={{pin.id}} id="pin-{{pin.id}}">{{pin.pin}}</a>
+										<a class="dropdown-item" href="#" {{action 'jumpToPin' pin}} data-id= {{pin.id}} id="pin-{{pin.id}}">{{pin.pin}}</a>
 									{{/each}}
 								{{/if}}
 								{{#if hasDocumentPins}}
 									<h6 class="dropdown-header">Documents</h6>
 									{{#each documentPins as |pin|}}
-										<a class="dropdown-item" href="#" {{action 'jumpToPin' pin}} data-id={{pin.id}} id="pin-{{pin.id}}">{{pin.pin}}</a>
+										<a class="dropdown-item" href="#" {{action 'jumpToPin' pin}} data-id= {{pin.id}} id="pin-{{pin.id}}">{{pin.pin}}</a>
 									{{/each}}
 								{{/if}}
 							</div>
@@ -42,22 +42,38 @@
 					<div class="btn-group">
 						<div class="button-gravatar-white align-text-bottom" id="profile-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 							{{session.user.initials}}
+							{{#if hasWhatsNew}}
+								<div class="whats-new-dot" />
+							{{/if}}
+							{{#if session.isAdmin}}
+								{{#if appMeta.updateAvailable}}
+									<div class="update-available-dot" />
+								{{/if}}
+							{{/if}}
 						</div>
 						<div class="dropdown-menu dropdown-menu-right" aria-labelledby="profile-button">
-							{{#link-to 'profile' class="dropdown-item"}}Profile{{/link-to}}
+							{{#link-to 'profile' class="dropdown-item" }}Profile{{/link-to}}
 							{{#if session.isAdmin}}
-								{{#link-to 'customize.general' class="dropdown-item"}}Settings{{/link-to}}
+								{{#link-to 'customize.general' class="dropdown-item" }}Settings{{/link-to}}
 							{{/if}}
+							<div class="dropdown-divider"></div>
+							{{#if session.isAdmin}}
+								{{#if appMeta.updateAvailable}}
+									{{#link-to 'customize.license' class="dropdown-item font-weight-bold color-orange" }}Update available{{/link-to}}
+								{{/if}}
+							{{/if}}
+							<a href="#" class="dropdown-item {{if hasWhatsNew 'color-whats-new font-weight-bold'}}" {{action 'onShowWhatsNewModal'}}>What's New</a>
+							<a href="#" class="dropdown-item" data-toggle="modal" data-target="#about-documize-modal" data-backdrop="static">About Documize</a>
 							{{#if enableLogout}}
 								<div class="dropdown-divider"></div>
-								{{#link-to 'auth.logout' class="dropdown-item"}}Logout{{/link-to}}
+								{{#link-to 'auth.logout' class="dropdown-item" }}Logout{{/link-to}}
 							{{/if}}
 						</div>
 					</div>
 				{{else}}
 					<div class="button-icon-gap" />
 					<div class="btn-group">
-						{{#link-to 'auth.login' class="button-icon-white "}}
+						{{#link-to 'auth.login' class="button-icon-white " }}
 							<i class="material-icons">lock_open</i>
 						{{/link-to}}
 					</div>
@@ -66,3 +82,67 @@
 		</div>
 	</div>
 </div>
+
+{{#if session.authenticated}}
+	<div id="whats-new-modal" class="modal" tabindex="-1" role="dialog">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-header modal-header-white">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true" data-dismiss="modal" aria-label="Close">&times;</span>
+				</button>
+			</div>
+			<div class="modal-content">
+				<div class="modal-body">
+					<div class="product-news">
+						<h2>What's New</h2>
+
+						{{{newsContent}}}
+
+						<div class="action">
+							Have an idea? Suggestion or feedback? <a href="mailto:support@documize.com">Get in touch!</a>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="about-documize-modal" class="modal" tabindex="-1" role="dialog">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-body">
+					<div class="product-about">
+						<div class="edition">
+							Documize {{appMeta.edition}} Edition
+						</div>
+						<div class="version">
+							{{appMeta.version}}
+						</div>
+						<div class="dotcom">
+							<a href="https://documize.com">https://documize.com</a>
+						</div>
+						{{#if (eq appMeta.edition 'Community')}}
+							<div class="copyright">
+								&copy; Documize Inc. All rights reserved.
+							</div>
+							<div class="license">
+								<br/>
+								<br/> This software (Documize Community Edition) is licensed under
+								<a href="http://www.gnu.org/licenses/agpl-3.0.en.html">GNU AGPL v3</a>
+								You can operate outside the AGPL restrictions by purchasing Documize Enterprise Edition and obtaining a commercial licenseby
+								contacting
+								<a href="mailto:sales@documize.com">sales@documize.com</a>
+							</div>
+						{{/if}}
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+{{/if}}

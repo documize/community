@@ -144,6 +144,7 @@ func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http
 		rc.AppURL = r.Host
 		rc.Subdomain = organization.GetSubdomainFromHost(r)
 		rc.SSL = r.TLS != nil
+		rc.AppVersion = fmt.Sprintf("v%s", m.Runtime.Product.Version)
 
 		// get user IP from request
 		i := strings.LastIndex(r.RemoteAddr, ":")

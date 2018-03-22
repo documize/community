@@ -25,6 +25,7 @@ export default Model.extend({
 	global: attr('boolean', { defaultValue: false }),
 	accounts: attr(),
 	groups: attr(),
+	lastVersion: attr('string'),
 	created: attr(),
 	revised: attr(),
 

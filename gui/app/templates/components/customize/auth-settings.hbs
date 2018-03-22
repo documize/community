@@ -8,9 +8,7 @@
 </div>
 
 <div class="view-customize">
-
 	<form class="mt-5">
-
 		<div class="form-group row">
 			<label class="col-sm-2 col-form-label">Provider</label>
 			<div class="col-sm-10">
@@ -62,7 +60,8 @@
 				<label for="keycloak-admin-user" class="col-sm-2 col-form-label">Keycloak Username</label>
 				<div class="col-sm-10">
 					{{input id="keycloak-admin-user" type="text" value=keycloakConfig.adminUser class=(if KeycloakAdminUserError 'form-control is-invalid' 'form-control')}}
-					<small class="form-text text-muted">Used to connect with Keycloak and sync users with Documize (create user under Master Realm and assign 'view-users' role against Realm specified above)</small>
+					<small class="form-text text-muted">Used to connect with Keycloak and sync users with Documize (create user under Master Realm and assign 'view-users' role
+						against Realm specified above)</small>
 				</div>
 			</div>
 			<div class="form-group row">
@@ -75,24 +74,26 @@
 			<div class="form-group row">
 				<label for="keycloak-admin-password" class="col-sm-2 col-form-label">Logout</label>
 				<div class="col-sm-10">
-					<label class="form-check-label">
-						{{input type="checkbox" class="form-check-input" checked=keycloakConfig.disableLogout}}
-						Hide the logout button for Keycloak users
-					</label>
+					<div class="form-check">
+						{{input type="checkbox" class="form-check-input" id="keycloak-logout" checked=keycloakConfig.disableLogout}}
+						<label class="form-check-label" for="keycloak-logout">
+							Hide the logout button for Keycloak users
+						</label>
+					</div>
 				</div>
 			</div>
 			<div class="form-group row">
 				<label for="keycloak-admin-password" class="col-sm-2 col-form-label">Space Permission</label>
 				<div class="col-sm-10">
-					<label class="form-check-label">
-						{{input type="checkbox" class="form-check-input" checked=keycloakConfig.defaultPermissionAddSpace}}
-						Can add spaces
-					</label>
+					<div class="form-check">
+						{{input type="checkbox" class="form-check-input" id="keycloak-perm" checked=keycloakConfig.defaultPermissionAddSpace}}
+						<label class="form-check-label" for="keycloak-perm">
+							Can add spaces
+						</label>
+					</div>
 				</div>
 			</div>
 		{{/if}}
-
 		<div class="btn btn-success mt-4" {{action 'onSave'}}>Save</div>
 	</form>
-
 </div>

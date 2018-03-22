@@ -39,6 +39,7 @@ type RequestContext struct {
 	Expires              time.Time
 	Fullname             string
 	Transaction          *sqlx.Tx
+	AppVersion           string
 }
 
 //GetAppURL returns full HTTP url for the app

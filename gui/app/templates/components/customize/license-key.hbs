@@ -1,21 +1,55 @@
 <div class="row">
 	<div class="col">
 		<div class="view-customize">
-			<h1 class="admin-heading">Product License</h1>
-			<h2 class="sub-heading">Optional Enterprise Edition license</h2>
+			<h1 class="admin-heading">{{appMeta.edition}} Edition {{appMeta.version}}</h1>
+			<h2 class="sub-heading">Enterprise Edition unlocks
+				<a class="" href="https://documize.com/pricing">premium capabilities and product support</a>
+			</h2>
 		</div>
 	</div>
 </div>
 
 <div class="view-customize">
-	<form class="mt-5">
+	<form class="mt-5 ">
 		<div class="form-group row">
-			<label for="smtp-host" class="col-sm-2 col-form-label">License Key</label>
-			<div class="col-sm-10">
-				{{textarea value=model.license rows="15" class=(if LicenseError 'form-control is-invalid' 'form-control')}}
-				<small class="form-text text-muted">XML format</small>
+			<label for="smtp-host " class="col-sm-2 col-form-label ">Enterprise Edition License Key</label>
+			<div class="col-sm-10 ">
+				{{textarea value=model.license rows="10" class=(if LicenseError 'form-control is-invalid' 'form-control')}}
+				<small class="form-text text-muted ">XML format</small>
+				{{#if appMeta.valid}}
+					<p class="mt-2 color-green">Valid</p>
+				{{else}}
+					<p class="mt-2 color-red">Invalid</p>
+				{{/if}}
+				<div class="btn btn-success mt-3" {{action 'saveLicense'}}>Save</div>
 			</div>
 		</div>
-		<div class="btn btn-success mt-4" {{action 'saveLicense'}}>Save</div>
 	</form>
+</div>
+
+<div class="product-update">
+	<div class="update-summary">
+		{{#if appMeta.updateAvailable}}
+			<a href="https://documize.com/downloads" class="caption">New version available</a>
+			<p class="instructions">
+				To upgrade, replace existing binary and restart Documize. Migrate between Community and Enterprise editions seamlessly.
+			</p>
+		{{else}}
+			<div class="caption">Release Summary</div>
+		{{/if}}
+		<p>
+			<span class="color-off-black">Community Edition {{appMeta.communityLatest}}</span>&nbsp;&nbsp;&nbsp;
+			<a href="https://storage.googleapis.com/documize/downloads/documize-community-windows-amd64.exe" class="font-weight-bold">Windows</a>&nbsp;&middot;
+			<a href="https://storage.googleapis.com/documize/downloads/documize-community-linux-amd64" class="font-weight-bold">Linux</a>&nbsp;&middot;
+			<a href="https://storage.googleapis.com/documize/downloads/documize-community-darwin-amd64" class="font-weight-bold">macOS</a>&nbsp;
+		</p>
+		<p>
+			<span class="color-off-black">Enterprise Edition {{appMeta.enterpriseLatest}}</span>&nbsp;&nbsp;&nbsp;
+			<a href="https://storage.googleapis.com/documize/downloads/documize-enterprise-windows-amd64.exe" class="font-weight-bold color-blue">Windows</a>&nbsp;&middot;
+			<a href="https://storage.googleapis.com/documize/downloads/documize-enterprise-linux-amd64" class="font-weight-bold color-blue">Linux</a>&nbsp;&middot;
+			<a href="https://storage.googleapis.com/documize/downloads/documize-enterprise-darwin-amd64" class="font-weight-bold color-blue">macOS</a>&nbsp;
+		</p>
+		<div class="my-5" />
+		{{{changelog}}}
+	</div>
 </div>

@@ -100,6 +100,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	requestedPassword := secrets.GenerateRandomPassword()
 	userModel.Salt = secrets.GenerateSalt()
 	userModel.Password = secrets.GeneratePassword(requestedPassword, userModel.Salt)
+	userModel.LastVersion = ctx.AppVersion
 
 	// only create account if not dupe
 	addUser := true

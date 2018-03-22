@@ -101,8 +101,7 @@ $link-hover-decoration:     none;
 @import "node_modules/bootstrap/scss/tooltip";
 @import "node_modules/bootstrap/scss/tables";
 @import "node_modules/bootstrap/scss/badge";
-// @import "node_modules/bootstrap/scss/navbar";
-// @import "node_modules/bootstrap/scss/images";
+
 
 .modal-80 {
 	max-width: 80% !important;
@@ -110,4 +109,19 @@ $link-hover-decoration:     none;
 
 body.modal-open {
 	padding-right: 0 !important;
+}
+
+.modal-header-white {
+	background-color: $color-white !important;
+	border: none !important;
+
+	> .close {
+		background-color: $color-white !important;
+		border: none !important;
+
+		> span {
+			color: $color-gray;
+			font-size: 2rem;
+		}
+	}
 }

@@ -9,12 +9,14 @@
 //
 // https://documize.com
 
-import Component from '@ember/component';
+import $ from 'jquery';
 import { notEmpty } from '@ember/object/computed';
-import { inject as service } from '@ember/service';
+import { inject as service } from '@ember/service'
+import ModalMixin from '../../mixins/modal';
 import constants from '../../utils/constants';
+import Component from '@ember/component';
 
-export default Component.extend({
+export default Component.extend(ModalMixin, {
 	folderService: service('folder'),
 	appMeta: service(),
 	session: service(),
@@ -24,6 +26,8 @@ export default Component.extend({
 	hasPins: notEmpty('pins'),
 	hasSpacePins: notEmpty('spacePins'),
 	hasDocumentPins: notEmpty('documentPins'),
+	hasWhatsNew: false,
+	newsContent: '',
 
 	init() {
 		this._super(...arguments);
@@ -34,6 +38,23 @@ export default Component.extend({
 			config = JSON.parse(config);
 			this.set('enableLogout', !config.disableLogout);
 		}
+
+		this.get('session').hasWhatsNew().then((v) => {
+			this.set('hasWhatsNew', v);
+		});
+
+		let version = this.get('appMeta.version');
+
+		let self = this;
+		let cacheBuster = + new Date();
+		$.ajax({
+			url: `https://storage.googleapis.com/documize/downloads/updates/${version}.html?cb=${cacheBuster}`,
+			type: 'GET',
+			dataType: 'html',
+			success: function (response) {
+				self.set('newsContent', response);
+			}
+		});
 	},
 
 	didInsertElement() {
@@ -80,6 +101,12 @@ export default Component.extend({
 				let folder = this.get('store').peekRecord('folder', folderId);
 				this.get('router').transitionTo('document', folderId, folder.get('slug'), documentId, 'document');
 			}
+		},
+
+		onShowWhatsNewModal() {
+			this.modalOpen("#whats-new-modal", { "show": true });
+			this.get('session').seenNewVersion();
+			this.set('hasWhatsNew', false);
 		}
 	}
 });
