@@ -102,6 +102,7 @@ export default BaseService.extend({
 			method: "GET"
 		}).then((response) => {
 			let data = [];
+			if (is.not.array(response)) response = [];
 
 			data = response.map((obj) => {
 				let data = this.get('store').normalize('folder', obj);
@@ -118,6 +119,7 @@ export default BaseService.extend({
 			method: "GET"
 		}).then((response) => {
 			let data = [];
+			if (is.not.array(response)) response = [];
 
 			data = response.map((obj) => {
 				let data = this.get('store').normalize('space-permission', obj);
@@ -176,6 +178,7 @@ export default BaseService.extend({
 			method: "GET"
 		}).then((response) => {
 			let data = [];
+			if (is.not.array(response)) response = [];
 
 			data = response.map((obj) => {
 				let data = this.get('store').normalize('folder', obj);

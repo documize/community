@@ -36,6 +36,7 @@ export default BaseService.extend({
 			method: 'GET'
 		}).then((response) => {
 			let data = [];
+			if (is.not.array(response)) response = [];
 
 			data = response.map((obj) => {
 				let data = this.get('store').normalize('category', obj);
@@ -52,6 +53,7 @@ export default BaseService.extend({
 			method: 'GET'
 		}).then((response) => {
 			let data = [];
+			if (is.not.array(response)) response = [];
 
 			data = response.map((obj) => {
 				let data = this.get('store').normalize('category', obj);
@@ -89,6 +91,7 @@ export default BaseService.extend({
 		}).then((response) => {
 			// return response;
 			let data = [];
+			if (is.not.array(response)) response = [];
 
 			data = response.map((obj) => {
 				let data = this.get('store').normalize('category-permission', obj);
@@ -105,6 +108,7 @@ export default BaseService.extend({
 			method: 'GET'
 		}).then((response) => {
 			let data = [];
+			if (is.not.array(response)) response = [];
 
 			data = response.map((obj) => {
 				let data = this.get('store').normalize('user', obj);
@@ -173,6 +177,7 @@ export default BaseService.extend({
 				membership: [],
 				summary: []
 			};
+			if (is.not.array(response)) response = [];
 
 			let cats = response.category.map((obj) => {
 				let data = this.get('store').normalize('category', obj);

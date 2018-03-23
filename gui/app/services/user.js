@@ -56,6 +56,8 @@ export default Service.extend({
 	// Returns all active users for organization.
 	getAll() {
 		return this.get('ajax').request(`users?active=1`).then((response) => {
+			if (is.not.array(response)) response = [];
+
 			return response.map((obj) => {
 				let data = this.get('store').normalize('user', obj);
 				return this.get('store').push(data);
@@ -71,6 +73,8 @@ export default Service.extend({
 		if (filter.length > 0) filter = encodeURIComponent(filter);
 
 		return this.get('ajax').request(`users?active=0&filter=${filter}`).then((response) => {
+			if (is.not.array(response)) response = [];
+
 			return response.map((obj) => {
 				let data = this.get('store').normalize('user', obj);
 				return this.get('store').push(data);
@@ -86,6 +90,7 @@ export default Service.extend({
 			method: "GET"
 		}).then((response) => {
 			let data = [];
+			if (is.not.array(response)) response = [];
 
 			data = response.map((obj) => {
 				let data = this.get('store').normalize('user', obj);
@@ -167,10 +172,11 @@ export default Service.extend({
 		return this.get('ajax').request('users/match', {
 			method: 'POST',
 			dataType: 'json',
-			contentType: 'text',			
+			contentType: 'text',
 			data: text
 		}).then((response) => {
 			let data = [];
+			if (is.not.array(response)) response = [];
 
 			data = response.map((obj) => {
 				let data = this.get('store').normalize('user', obj);
@@ -179,5 +185,5 @@ export default Service.extend({
 
 			return data;
 		});
-	}	
+	}
 });

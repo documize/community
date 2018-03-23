@@ -25,7 +25,7 @@ export default Service.extend({
 		this._super(...arguments);
 		this.pins = [];
 	},
-	
+
 	getUserPins() {
 		let userId = this.get('session.user.id');
 
@@ -93,9 +93,8 @@ export default Service.extend({
 				method: 'POST',
 				data: JSON.stringify(data)
 			}).then((response) => {
-				if (is.not.array(response)) {
-					response = [];
-				}
+				if (is.not.array(response)) response = [];
+
 				let pins = ArrayProxy.create({
 					content: A([])
 				});

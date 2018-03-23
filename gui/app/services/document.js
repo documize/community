@@ -45,6 +45,7 @@ export default Service.extend({
 			let documents = ArrayProxy.create({
 				content: A([])
 			});
+			if (is.not.array(response)) response = [];
 
 			documents = response.map((doc) => {
 				let data = this.get('store').normalize('document', doc);
@@ -112,6 +113,7 @@ export default Service.extend({
 		return this.get('ajax').request(`documents/${documentId}/pages`, {
 			method: 'GET'
 		}).then((response) => {
+			if (is.not.array(response)) response = [];
 			let pages = [];
 
 			pages = response.map((page) => {
@@ -214,6 +216,8 @@ export default Service.extend({
 		return this.get('ajax').request(`documents/${documentId}/pages?content=0`, {
 			method: 'GET'
 		}).then((response) => {
+			if (is.not.array(response)) response = [];
+
 			let data = [];
 			data = response.map((obj) => {
 				let data = this.get('store').normalize('page', obj);
@@ -282,6 +286,7 @@ export default Service.extend({
 		return this.get('ajax').request(`sections/targets`, {
 			method: 'GET'
 		}).then((response) => {
+			if (is.not.array(response)) response = [];
 			let data = [];
 
 			data = response.map((obj) => {

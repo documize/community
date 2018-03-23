@@ -35,9 +35,8 @@ export default Service.extend({
 		return this.get('ajax').request(`templates/${folderId}`, {
 			method: 'GET'
 		}).then((response) => {
-			if (is.not.array(response)) {
-				response = [];
-			}
+			if (is.not.array(response)) response = [];
+
 			let templates = ArrayProxy.create({
 				content: A([])
 			});

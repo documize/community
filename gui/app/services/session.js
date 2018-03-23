@@ -12,6 +12,7 @@
 import { inject as service } from '@ember/service';
 import { computed } from '@ember/object';
 import { Promise as EmberPromise } from 'rsvp';
+import miscUtil from '../utils/misc';
 import SimpleAuthSession from 'ember-simple-auth/services/session';
 
 export default SimpleAuthSession.extend({
@@ -88,7 +89,8 @@ export default SimpleAuthSession.extend({
 	hasWhatsNew() {
 		return new EmberPromise((resolve) => {
 			return this.get('userSvc').getUser(this.get('user.id')).then((user) => {
-				resolve(user.get('lastVersion') !== this.get('appMeta.version'));
+				let isNew = miscUtil.isNewVersion(user.get('lastVersion'), this.get('appMeta.version'), false);
+				resolve(isNew);
 			});
 		});
 	}

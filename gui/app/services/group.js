@@ -35,6 +35,7 @@ export default BaseService.extend({
 			method: 'GET'
 		}).then((response) => {
 			let data = [];
+			if (is.not.array(response)) response = [];
 
 			data = response.map((obj) => {
 				let data = this.get('store').normalize('group', obj);
@@ -81,7 +82,7 @@ export default BaseService.extend({
 			return data;
 		});
 	},
-	
+
 	// join adds user to group.
 	join(groupId, userId) {
 		return this.get('ajax').request(`group/${groupId}/join/${userId}`, {

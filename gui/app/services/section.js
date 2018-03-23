@@ -24,6 +24,7 @@ export default BaseService.extend({
 			method: 'GET'
 		}).then((response) => {
 			let data = [];
+			if (is.not.array(response)) response = [];
 
 			data = response.map((obj) => {
 				let data = this.get('store').normalize('section', obj);
@@ -55,6 +56,7 @@ export default BaseService.extend({
 			method: 'GET'
 		}).then((response) => {
 			let pages = [];
+			if (is.not.array(response)) response = [];
 
 			if (is.not.null(response) && is.array(response) && response.length > 0) {
 				pages = response.map((page) => {
@@ -103,6 +105,7 @@ export default BaseService.extend({
 			method: 'GET'
 		}).then((response) => {
 			let data = [];
+			if (is.not.array(response)) response = [];
 
 			data = response.map((obj) => {
 				let data = this.get('store').normalize('block', obj);
