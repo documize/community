@@ -67,6 +67,8 @@ module.exports = function (environment) {
 			enabled: true
 		};
 
+		ENV.APP.autoboot = false;
+
 		ENV.apiHost = "https://localhost:5001";
 	}
 
