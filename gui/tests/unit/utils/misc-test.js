@@ -21,6 +21,11 @@ module('Unit | Utility | Version', function (hooks) {
 		assert.equal(result, false, 'version cleaned and same');
 	});
 
+	test('version migration', function (assert) {
+		let result = misc.isNewVersion('', 'v1.0.0', false);
+		assert.equal(result, true, 'version migration');
+	});
+
 	test('version same', function (assert) {
 		let result = misc.isNewVersion('v1.0.0', 'v1.0.0', false);
 		assert.equal(result, false, 'version same');

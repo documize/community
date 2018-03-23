@@ -177,7 +177,6 @@ export default BaseService.extend({
 				membership: [],
 				summary: []
 			};
-			if (is.not.array(response)) response = [];
 
 			let cats = response.category.map((obj) => {
 				let data = this.get('store').normalize('category', obj);

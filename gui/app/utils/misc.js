@@ -71,6 +71,9 @@ function isNewVersion(v1, v2, compareRevision) {
 	v1 = v1.trim().toLowerCase();
 	v2 = v2.trim().toLowerCase();
 
+	// Handle edge case of no prior version.
+	if (v1 === '' && v2 !== '') return true;
+
 	// Format expected is "1.2.3".
 	let v1parts = v1.split('.');
 	let v2parts = v2.split('.');
