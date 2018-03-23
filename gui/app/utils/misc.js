@@ -61,8 +61,41 @@ function insertAtCursor(myField, myValue) {
 	}
 }
 
+// Expects to receive semver version strings like "1.2.3" or "v1.2.3".
+function isNewVersion(v1, v2, compareRevision) {
+	// Remove any "v" from version strings.
+	v1 = v1.replace('v', '');
+	v2 = v2.replace('v', '');
+
+	// Clean up strings.
+	v1 = v1.trim().toLowerCase();
+	v2 = v2.trim().toLowerCase();
+
+	// Format expected is "1.2.3".
+	let v1parts = v1.split('.');
+	let v2parts = v2.split('.');
+
+	// Must be 3+ parts per version string supporting
+	// v1.2.3 and v.1.2.3.beta1
+	if (v1parts.length < 3) return false;
+	if (v2parts.length < 3) return false;
+
+	// Compare Major and Minor verson parts.
+	if (v2parts[0] > v1parts[0]) return true;
+	if (v2parts[0] === v1parts[0] && v2parts[1] > v1parts[1]) return true;
+
+	if (compareRevision) {
+		if (v2parts[0] === v1parts[0] &&
+			v2parts[1] === v1parts[1] &&
+			v2parts[2] > v1parts[2]) return true;
+	}
+
+	return false;
+}
+
 export default {
 	interval,
 	wrapFunction,
-	insertAtCursor
+	insertAtCursor,
+	isNewVersion
 };

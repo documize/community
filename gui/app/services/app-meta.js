@@ -13,6 +13,7 @@ import $ from 'jquery';
 import { htmlSafe } from '@ember/string';
 import { resolve } from 'rsvp';
 import Service, { inject as service } from '@ember/service';
+import miscUtil from '../utils/misc';
 import config from '../config/environment';
 import constants from '../utils/constants';
 
@@ -28,6 +29,9 @@ export default Service.extend({
 	version: '',
 	message: '',
 	edition: 'Community',
+	// for major.minor semver release detection
+	// for bugfix releases, only admin is made aware of new release and end users see no Whats New messaging
+	updateAvailable: false,
 	valid: true,
 	allowAnonymousAccess: false,
 	authProvider: constants.AuthProvider.Documize,
@@ -80,7 +84,7 @@ export default Service.extend({
 
 			let self = this;
 			let cacheBuster = + new Date();
-			$.getJSON(`https://storage.googleapis.com/documize/downloads/updates/meta.json?cb=${cacheBuster}`, function (versions) {
+			$.getJSON(`https://storage.googleapis.com/documize/news/meta.json?cb=${cacheBuster}`, function (versions) {
 				let cv = 'v' + versions.community.version;
 				let ev = 'v' + versions.enterprise.version;
 				let re = self.get('edition');
@@ -90,12 +94,11 @@ export default Service.extend({
 				self.set('enterpriseLatest', ev);
 				self.set('updateAvailable', false); // set to true for testing
 
-				if (re === 'Community' && rv < cv) {
-					self.set('updateAvailable', true);
-				}
-				if (re === 'Enterprise' && rv < ev) {
-					self.set('updateAvailable', true);
-				}
+				let isNewCommunity = miscUtil.isNewVersion(rv, cv, true);
+				let isNewEnterprise = miscUtil.isNewVersion(rv, ev, true);
+
+				if (re === 'Community' && isNewCommunity) self.set('updateAvailable', true);
+				if (re === 'Enterprise' && isNewEnterprise) self.set('updateAvailable', true);
 			});
 
 			return response;

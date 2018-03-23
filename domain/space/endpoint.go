@@ -347,11 +347,8 @@ func (h *Handler) GetViewable(w http.ResponseWriter, r *http.Request) {
 	ctx := domain.GetRequestContext(r)
 
 	sp, err := h.Store.Space.GetViewable(ctx)
-
 	if err != nil {
-		// response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
-		return
 	}
 
 	response.WriteJSON(w, sp)
@@ -369,15 +366,8 @@ func (h *Handler) GetAll(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sp, err := h.Store.Space.GetAll(ctx)
-
-	if err != nil && err != sql.ErrNoRows {
-		response.WriteServerError(w, method, err)
+	if err != nil {
 		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	if len(sp) == 0 {
-		sp = []space.Space{}
 	}
 
 	response.WriteJSON(w, sp)

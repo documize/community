@@ -35,7 +35,7 @@ func (s Scope) Add(ctx domain.RequestContext, u user.User) (err error) {
 	u.Created = time.Now().UTC()
 	u.Revised = time.Now().UTC()
 
-	_, err = ctx.Transaction.Exec("INSERT INTO user (refid, firstname, lastname, email, initials, password, salt, reset, lastversion, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+	_, err = ctx.Transaction.Exec("INSERT INTO user (refid, firstname, lastname, email, initials, password, salt, reset, lastversion, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 		u.RefID, u.Firstname, u.Lastname, strings.ToLower(u.Email), u.Initials, u.Password, u.Salt, "", u.LastVersion, u.Created, u.Revised)
 
 	if err != nil {
