@@ -44,7 +44,7 @@ export default Component.extend(TooltipMixin, {
 			indentDisabled: true,
 			outdentDisabled: true,
 			pageId: ''
-		};		
+		};
 	},
 
 	didReceiveAttrs() {
@@ -57,7 +57,7 @@ export default Component.extend(TooltipMixin, {
 		this._super(...arguments);
 		this.eventBus.subscribe('documentPageAdded', this, 'onDocumentPageAdded');
 		this.eventBus.subscribe('resized', this, 'setSize');
-	
+
 		this.setSize();
 		this.renderTooltips();
 	},
@@ -78,15 +78,15 @@ export default Component.extend(TooltipMixin, {
 
 	setSize() {
 		schedule('afterRender', () => {
-			let isDesktop = $(window).width() >= 1800;
+			let isDesktop = $(window).width() >= 1600;
 			this.set('isDesktop', isDesktop);
 
 			if (isDesktop) {
 				let h = $(window).height() - $("#nav-bar").height() - 140;
 				$("#doc-toc").css('max-height', h);
-		
+
 				let i = $("#doc-view").offset();
-		
+
 				if (is.not.undefined(i)) {
 					let l = i.left - 100;
 					if (l > 350) l = 350;
@@ -251,7 +251,7 @@ export default Component.extend(TooltipMixin, {
 		// Outdent -- changes a page from H3 to H2, etc.
 		pageOutdent() {
 			if (!this.get('canEdit')) return;
-			
+
 			let state = this.get('state');
 			let pages = this.get('pages');
 			let page = _.find(pages, function(i) { return i.get('page.id') === state.pageId; });
