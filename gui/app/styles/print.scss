@@ -41,6 +41,9 @@
 		min-height: initial !important;
 		-webkit-print-color-adjust: exact;
 		overflow: hidden;
+		margin: 0 !important;
+		padding: 0 !important;
+		min-width: 768px !important;
 	}
 
 	.non-printable,
@@ -66,21 +69,51 @@
 	}
 
 	.document-heading {
-		text-align: center !important;
-		padding: 20px 20px 20px 20px !important;
+		text-align: left !important;
+		padding: 0 !important;
 		margin-bottom: 40px !important;
-		border: 3px solid #eeeeee !important;
-		background-color: $color-off-white !important;
+		color: #000000;
 	}
 	.doc-title {
-		margin: 20px 0 10px 0 !important;
+		margin: 0 !important;
+		padding: 0 !important;
+		font-size: 18px !important;
+		color: #000000 !important;
 	}
 	.doc-excerpt {
 		margin: 0 !important;
+		padding: 0 !important;
+		color: #464545 !important;
 	}
+
 	.wysiwyg {
-		font-size: 15px;
-		line-height: 25px;
-		color: #000000;
+		font-size: 15px !important;
+		line-height: 22px !important;
+		color: #000000 !important;
+
+		h1 { font-size: 22px; color: #000000 !important; }
+		h2 { font-size: 20px; color: #000000 !important; }
+		h3 { font-size: 18px; color: #000000 !important; }
+		h4 { font-size: 17px; color: #000000 !important; }
+		h5 { font-size: 16px; color: #000000 !important; }
+		h6 { font-size: 16px; color: #000000 !important; }
+	}
+
+	.page-title {
+		font-size: 20px !important;
+		color: #000000 !important;
+	}
+
+	.container {
+		width: auto !important;
+		min-width: 100% !important;
+		margin: 0 !important;
+		padding: 0 !important;
+	  }
+
+
+	[class*="col-"] {
+		float: left !important;
+		width: 100% !important;
 	}
 }

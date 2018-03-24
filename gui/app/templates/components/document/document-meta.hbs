@@ -1,7 +1,7 @@
 <div class="view-document">
 	<div class="document-customfields">
 
-		<div class="row">
+	     <div class="row {{if (eq selectedCategories.length 0) 'd-print-none'}}">
 			<div class="col-12 col-sm-3 heading">Categories</div>
 			<div class="col-12 col-sm-9 value">
 				{{#each selectedCategories as |cat|}}
@@ -12,21 +12,21 @@
 				{{else}}
 					{{#if canAddCategory}}
 						{{#if canSelectCategory}}
-							<a href="#" {{action 'onShowCategoryModal'}}>&lt;select&gt;</a>
+							<a href="#" class="d-print-none" {{action 'onShowCategoryModal'}}>&lt;select&gt;</a>
 						{{else}}
-							{{#link-to 'folder.category' folder.id folder.slug class='non-printable'}}&lt;manage&gt;{{/link-to}}
+							{{#link-to 'folder.category' folder.id folder.slug class='d-print-none'}}&lt;manage&gt;{{/link-to}}
 						{{/if}}
 					{{/if}}
 				{{/each}}
 				{{#if canSelectCategory}}
-					<div class="action-button button-icon-gray button-icon-small align-middle" {{action 'onShowCategoryModal'}}>
+					<div class="action-button button-icon-gray button-icon-small align-middle d-print-none" {{action 'onShowCategoryModal'}}>
 						<i class="material-icons align-middle">edit</i>
 					</div>
 				{{/if}}
 			</div>
 		</div>
 
-		<div class="row">
+		<div class="row {{if (eq tagz.length 0) 'd-print-none'}}">
 			<div class="col-12 col-sm-3 heading">Tags</div>
 			<div class="col-12 col-sm-9 value">
 				{{#each tagz as |t index|}}
@@ -35,7 +35,7 @@
 					{{/link-to}}&nbsp;&nbsp;
 				{{/each}}
 				{{#if permissions.documentEdit}}
-					<div class="action-button button-icon-gray button-icon-small align-middle" data-toggle="modal" data-target="#document-tags-modal" data-backdrop="static">
+					<div class="action-button button-icon-gray button-icon-small align-middle d-print-none" data-toggle="modal" data-target="#document-tags-modal" data-backdrop="static">
 						<i class="material-icons align-middle">edit</i>
 					</div>
 				{{/if}}

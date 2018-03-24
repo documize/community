@@ -77,7 +77,6 @@ $link-decoration:           none;
 $link-hover-color:          darken($link-color, 15%) !default;
 $link-hover-decoration:     none;
 
-
 //
 // Bootstrap includes
 //
@@ -102,6 +101,7 @@ $link-hover-decoration:     none;
 @import "node_modules/bootstrap/scss/tables";
 @import "node_modules/bootstrap/scss/badge";
 
+// Boostrap overrides
 
 .modal-80 {
 	max-width: 80% !important;
