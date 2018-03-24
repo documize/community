@@ -79,6 +79,9 @@ export default SimpleAuthSession.extend({
 	},
 
 	seenNewVersion() {
+		// Anonymous users are not shown "What's New" notifications.
+		if (!this.get('authenticated') || this.get('user.id') === this.get('constants.EveryoneUserId')) return;
+
 		this.get('userSvc').getUser(this.get('user.id')).then((user) => {
 			user.set('lastVersion', this.get('appMeta.version'));
 			this.get('userSvc').save(user);
@@ -88,6 +91,9 @@ export default SimpleAuthSession.extend({
 	// set what's new indicator
 	hasWhatsNew() {
 		return new EmberPromise((resolve) => {
+			// Anonymous users are not shown "What's New" notifications.
+			if (!this.get('authenticated') || this.get('user.id') === this.get('constants.EveryoneUserId')) return false;
+
 			return this.get('userSvc').getUser(this.get('user.id')).then((user) => {
 				let isNew = miscUtil.isNewVersion(user.get('lastVersion'), this.get('appMeta.version'), false);
 				resolve(isNew);
