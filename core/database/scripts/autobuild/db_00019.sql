@@ -22,7 +22,7 @@ INSERT INTO permission(orgid, who, whoid, action, scope, location, refid, create
 -- implement document section name search indexing
 INSERT INTO search (orgid, documentid, itemid, itemtype, content)
 	SELECT orgid, documentid, refid as itemid, "page" as itemtype, title as content
-    FROM page WHERE status=0
+    FROM page WHERE status=0;
 
 -- whats new support
 ALTER TABLE user ADD COLUMN `lastversion` CHAR(16) NOT NULL DEFAULT '' AFTER `active`;
