@@ -15,6 +15,7 @@ package permission
 // This data structure is made from database permission records for the space,
 // and it is designed to be sent to HTTP clients (web, mobile).
 type Record struct {
+	ID                uint64  `json:"id"`
 	OrgID             string  `json:"orgId"`
 	SpaceID           string  `json:"folderId"`
 	WhoID             string  `json:"whoId"`
@@ -40,6 +41,7 @@ func DecodeUserPermissions(perm []Permission) (r Record) {
 	r = Record{}
 
 	if len(perm) > 0 {
+		r.ID = perm[0].ID
 		r.OrgID = perm[0].OrgID
 		r.WhoID = perm[0].WhoID
 		r.Who = perm[0].Who

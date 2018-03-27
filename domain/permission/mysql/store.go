@@ -73,7 +73,7 @@ func (s Scope) GetUserSpacePermissions(ctx domain.RequestContext, spaceID string
 			WHERE p.orgid=? AND p.location='space' AND refid=? AND p.who='role' AND (r.userid=? OR r.userid='0')`,
 		ctx.OrgID, spaceID, ctx.UserID, ctx.OrgID, spaceID, ctx.UserID)
 
-	if err == sql.ErrNoRows {
+	if err == sql.ErrNoRows || len(r) == 0 {
 		err = nil
 		r = []permission.Permission{}
 	}
@@ -136,9 +136,9 @@ func (s Scope) GetCategoryPermissions(ctx domain.RequestContext, catID string) (
 func (s Scope) GetCategoryUsers(ctx domain.RequestContext, catID string) (u []user.User, err error) {
 	err = s.Runtime.Db.Select(&u, `
 		SELECT u.id, IFNULL(u.refid, '') AS refid, IFNULL(u.firstname, '') AS firstname, IFNULL(u.lastname, '') as lastname, u.email, u.initials, u.password, u.salt, u.reset, u.created, u.revised
-		FROM user u LEFT JOIN account a ON u.refid = a.userid 
+		FROM user u LEFT JOIN account a ON u.refid = a.userid
 		WHERE a.orgid=? AND a.active=1 AND u.refid IN (
-			SELECT whoid from permission 
+			SELECT whoid from permission
 			WHERE orgid=? AND who='user' AND location='category' AND refid=?
 			UNION ALL
 			SELECT r.userid from rolemember r
@@ -283,7 +283,7 @@ func (s Scope) DeleteSpaceCategoryPermissions(ctx domain.RequestContext, spaceID
 	b := mysql.BaseQuery{}
 
 	sql := fmt.Sprintf(`
-		DELETE FROM permission WHERE orgid='%s' AND location='category' 
+		DELETE FROM permission WHERE orgid='%s' AND location='category'
 			AND refid IN (SELECT refid FROM category WHERE orgid='%s' AND labelid='%s')`,
 		ctx.OrgID, ctx.OrgID, spaceID)
 

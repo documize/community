@@ -122,6 +122,7 @@ export default BaseService.extend({
 			if (is.not.array(response)) response = [];
 
 			data = response.map((obj) => {
+				obj.id = 'sp-' + obj.id;
 				let data = this.get('store').normalize('space-permission', obj);
 				return this.get('store').push(data);
 			});
@@ -165,6 +166,7 @@ export default BaseService.extend({
 		let url = `space/${folderId}/permissions/user`;
 
 		return this.get('ajax').request(url).then((response) => {
+			response.id = 'u-' + response.id;
 			let data = this.get('store').normalize('space-permission', response);
 			let data2 = this.get('store').push(data);
 			this.set('permissions', data2);

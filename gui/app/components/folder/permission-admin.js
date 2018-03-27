@@ -19,6 +19,7 @@ export default Component.extend(ModalMixin, {
 	groupSvc: service('group'),
 	spaceSvc: service('folder'),
 	userSvc: service('user'),
+	router: service(),
 	appMeta: service(),
 	store: service(),
 	spacePermissions: null,
@@ -26,6 +27,8 @@ export default Component.extend(ModalMixin, {
 	searchText: '',
 
 	didReceiveAttrs() {
+		this._super(...arguments);
+
 		let spacePermissions = A([]);
 		let constants = this.get('constants');
 
@@ -77,7 +80,6 @@ export default Component.extend(ModalMixin, {
 
 	permissionRecord(who, whoId, name) {
 		let raw = {
-			id: whoId,
 			orgId: this.get('folder.orgId'),
 			folderId: this.get('folder.id'),
 			whoId: whoId,
@@ -161,6 +163,7 @@ export default Component.extend(ModalMixin, {
 
 			this.get('spaceSvc').savePermissions(folder.get('id'), payload).then(() => {
 				this.modalClose('#space-permission-modal');
+				this.get('onRefresh')();
 			});
 		},
 

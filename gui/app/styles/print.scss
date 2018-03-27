@@ -15,20 +15,20 @@
 
 		@top-right {
 			font-size: 12px;
-			content: string(doctitle);
 			color: $color-off-black;
+			// content: string(doctitle);
 		}
 
 		@bottom-left {
 			font-size: 12px;
-			content: 'Exported from Documize';
 			color: $color-off-black;
+			// content: 'Exported from Documize';
 		}
 
 		@bottom-right {
-			content: counter(page);
 			font-size: 12px;
 			color: $color-off-black;
+			// content: counter(page);
 		}
 	}
 

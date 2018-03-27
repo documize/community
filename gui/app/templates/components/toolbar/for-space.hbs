@@ -1,5 +1,5 @@
 {{#toolbar/t-toolbar}}
-	
+
 	{{#toolbar/t-links}}
 		{{#link-to "folders" class="link" tagName="li"}}Spaces{{/link-to}}
 	{{/toolbar/t-links}}
@@ -189,7 +189,7 @@
 							<div class="import-zone">
 								<button id="import-document-button" type="button" class="btn btn-outline-secondary btn-lg btn-block">
 									<br/>
-									Click to select files or drag-drop files 
+									Click to select files or drag-drop files
 									<br/><br/>
 									.doc, .docx, .md, .markdown
 									<br/><br/>
@@ -206,10 +206,10 @@
 						</div>
 					</div>
 				</div>
-			</div>			
+			</div>
 		{{/if}}
 	{{/toolbar/t-actions}}
 
 {{/toolbar/t-toolbar}}
 
-{{folder/permission-admin folders=spaces folder=space}}
+{{folder/permission-admin folders=spaces folder=space onRefresh=onRefresh}}

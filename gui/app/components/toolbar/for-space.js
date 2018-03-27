@@ -92,7 +92,7 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 		if (is.not.null(this.get('dropzone'))) {
 			this.get('dropzone').destroy();
 			this.set('dropzone', null);
-		}		
+		}
 	},
 
 	getDefaultInvitationMessage() {
@@ -354,7 +354,7 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 			let template = this.get('templates').findBy('id', id)
 
 			this.modalClose("#space-template-modal");
-			
+
 			let slug = stringUtil.makeSlug(template.get('title'));
 			this.get('router').transitionTo('document', this.get('space.id'), this.get('space.slug'), id, slug);
 		}
