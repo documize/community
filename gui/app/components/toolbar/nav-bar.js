@@ -105,8 +105,11 @@ export default Component.extend(ModalMixin, {
 
 		onShowWhatsNewModal() {
 			this.modalOpen("#whats-new-modal", { "show": true });
-			this.get('session').seenNewVersion();
-			this.set('hasWhatsNew', false);
+
+			if (this.get('newsContent.length') > 0) {
+				this.get('session').seenNewVersion();
+				this.set('hasWhatsNew', false);
+			}
 		}
 	}
 });

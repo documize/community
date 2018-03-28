@@ -78,7 +78,7 @@ export default Component.extend(TooltipMixin, {
 
 	setSize() {
 		schedule('afterRender', () => {
-			let isDesktop = $(window).width() >= 1600;
+			let isDesktop = $(window).width() >= 1800;
 			this.set('isDesktop', isDesktop);
 
 			if (isDesktop) {

@@ -31,6 +31,7 @@ import (
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/conversion/store"
 	"github.com/documize/community/domain/permission"
+	indexer "github.com/documize/community/domain/search"
 	"github.com/documize/community/model/activity"
 	"github.com/documize/community/model/attachment"
 	"github.com/documize/community/model/audit"
@@ -143,7 +144,7 @@ func (h *Handler) convert(w http.ResponseWriter, r *http.Request, job, folderID 
 		return
 	}
 
-	nd, err := processDocument(ctx, h.Runtime, h.Store, filename, job, folderID, fileResult)
+	nd, err := processDocument(ctx, h.Runtime, h.Store, h.Indexer, filename, job, folderID, fileResult)
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
@@ -157,7 +158,7 @@ func (h *Handler) convert(w http.ResponseWriter, r *http.Request, job, folderID 
 	response.WriteJSON(w, nd)
 }
 
-func processDocument(ctx domain.RequestContext, r *env.Runtime, store *domain.Store, filename, job, folderID string, fileResult *api.DocumentConversionResponse) (newDocument doc.Document, err error) {
+func processDocument(ctx domain.RequestContext, r *env.Runtime, store *domain.Store, indexer indexer.Indexer, filename, job, folderID string, fileResult *api.DocumentConversionResponse) (newDocument doc.Document, err error) {
 	// Convert into database objects
 	document := convertFileResult(filename, fileResult)
 	document.Job = job
@@ -203,7 +204,12 @@ func processDocument(ctx domain.RequestContext, r *env.Runtime, store *domain.St
 			err = errors.Wrap(err, "cannot insert new page for new document")
 			return
 		}
+
+		// pp, _ := store.Page.Get(ctx, pageID)
+		go indexer.IndexContent(ctx, p)
 	}
+
+	da := []attachment.Attachment{}
 
 	for _, e := range fileResult.EmbeddedFiles {
 		//fmt.Println("DEBUG embedded file info", document.OrgId, document.Job, e.Name, len(e.Data), e.ID)
@@ -222,6 +228,8 @@ func processDocument(ctx domain.RequestContext, r *env.Runtime, store *domain.St
 			err = errors.Wrap(err, "cannot insert attachment for new document")
 			return
 		}
+
+		da = append(da, a)
 	}
 
 	store.Activity.RecordUserActivity(ctx, activity.UserActivity{
@@ -243,6 +251,8 @@ func processDocument(ctx domain.RequestContext, r *env.Runtime, store *domain.St
 		err = errors.Wrap(err, "cannot fetch new document")
 		return
 	}
+
+	indexer.IndexDocument(ctx, newDocument, da)
 
 	store.Audit.Record(ctx, audit.EventTypeDocumentUpload)
 
