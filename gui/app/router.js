@@ -85,6 +85,9 @@ export default Router.map(function () {
 			this.route('archive', {
 				path: 'archive'
 			});
+			this.route('search', {
+				path: 'search'
+			});
 		}
 	);
 

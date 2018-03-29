@@ -52,9 +52,9 @@ Space view.
 
 ## Latest version
 
-[Community edition: v1.59.2](https://github.com/documize/community/releases)
+[Community edition: v1.60.0](https://github.com/documize/community/releases)
 
-[Enterprise edition: v1.61.2](https://documize.com/downloads)
+[Enterprise edition: v1.62.0](https://documize.com/downloads)
 
 ## OS support
 

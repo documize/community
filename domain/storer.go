@@ -42,6 +42,7 @@ type Store struct {
 	Document     DocumentStorer
 	Group        GroupStorer
 	Link         LinkStorer
+	Meta         MetaStorer
 	Organization OrganizationStorer
 	Page         PageStorer
 	Pin          PinStorer
@@ -281,4 +282,11 @@ type GroupStorer interface {
 	GetMembers(ctx RequestContext) (r []group.Record, err error)
 	JoinGroup(ctx RequestContext, groupID, userID string) (err error)
 	LeaveGroup(ctx RequestContext, groupID, userID string) (err error)
+}
+
+// MetaStorer provide specialist methods for global administrators.
+type MetaStorer interface {
+	GetDocumentsID(ctx RequestContext) (documents []string, err error)
+	GetDocumentPages(ctx RequestContext, documentID string) (p []page.Page, err error)
+	SearchIndexCount(ctx RequestContext) (c int, err error)
 }

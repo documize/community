@@ -48,7 +48,7 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	// DO NOT pass in per request context (that is done by auth middleware per request)
 	pin := pin.Handler{Runtime: rt, Store: s}
 	auth := auth.Handler{Runtime: rt, Store: s}
-	meta := meta.Handler{Runtime: rt, Store: s}
+	meta := meta.Handler{Runtime: rt, Store: s, Indexer: indexer}
 	user := user.Handler{Runtime: rt, Store: s}
 	link := link.Handler{Runtime: rt, Store: s}
 	page := page.Handler{Runtime: rt, Store: s, Indexer: indexer}
@@ -168,13 +168,6 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	AddPrivate(rt, "links", []string{"GET", "OPTIONS"}, nil, link.SearchLinkCandidates)
 	AddPrivate(rt, "documents/{documentID}/links", []string{"GET", "OPTIONS"}, nil, document.DocumentLinks)
 
-	AddPrivate(rt, "global/smtp", []string{"GET", "OPTIONS"}, nil, setting.SMTP)
-	AddPrivate(rt, "global/smtp", []string{"PUT", "OPTIONS"}, nil, setting.SetSMTP)
-	AddPrivate(rt, "global/license", []string{"GET", "OPTIONS"}, nil, setting.License)
-	AddPrivate(rt, "global/license", []string{"PUT", "OPTIONS"}, nil, setting.SetLicense)
-	AddPrivate(rt, "global/auth", []string{"GET", "OPTIONS"}, nil, setting.AuthConfig)
-	AddPrivate(rt, "global/auth", []string{"PUT", "OPTIONS"}, nil, setting.SetAuthConfig)
-
 	AddPrivate(rt, "pin/{userID}", []string{"POST", "OPTIONS"}, nil, pin.Add)
 	AddPrivate(rt, "pin/{userID}", []string{"GET", "OPTIONS"}, nil, pin.GetUserPins)
 	AddPrivate(rt, "pin/{userID}/sequence", []string{"POST", "OPTIONS"}, nil, pin.UpdatePinSequence)
@@ -202,6 +195,16 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	AddPrivate(rt, "fetch/category/space/{spaceID}", []string{"GET", "OPTIONS"}, nil, category.FetchSpaceData)
 	AddPrivate(rt, "fetch/document/{documentID}", []string{"GET", "OPTIONS"}, nil, document.FetchDocumentData)
 	AddPrivate(rt, "fetch/page/{documentID}", []string{"GET", "OPTIONS"}, nil, page.FetchPages)
+
+	// global admin routes
+	AddPrivate(rt, "global/smtp", []string{"GET", "OPTIONS"}, nil, setting.SMTP)
+	AddPrivate(rt, "global/smtp", []string{"PUT", "OPTIONS"}, nil, setting.SetSMTP)
+	AddPrivate(rt, "global/license", []string{"GET", "OPTIONS"}, nil, setting.License)
+	AddPrivate(rt, "global/license", []string{"PUT", "OPTIONS"}, nil, setting.SetLicense)
+	AddPrivate(rt, "global/auth", []string{"GET", "OPTIONS"}, nil, setting.AuthConfig)
+	AddPrivate(rt, "global/auth", []string{"PUT", "OPTIONS"}, nil, setting.SetAuthConfig)
+	AddPrivate(rt, "global/search/status", []string{"GET", "OPTIONS"}, nil, meta.SearchStatus)
+	AddPrivate(rt, "global/search/reindex", []string{"POST", "OPTIONS"}, nil, meta.Reindex)
 
 	Add(rt, RoutePrefixRoot, "robots.txt", []string{"GET", "OPTIONS"}, nil, meta.RobotsTxt)
 	Add(rt, RoutePrefixRoot, "sitemap.xml", []string{"GET", "OPTIONS"}, nil, meta.Sitemap)

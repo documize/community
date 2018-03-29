@@ -70,7 +70,7 @@ export default Service.extend({
 				return response;
 			});
 		}
-	},	
+	},
 
 	// Saves auth config for Documize instance.
 	saveAuthConfig(config) {
@@ -93,4 +93,24 @@ export default Service.extend({
 			});
 		}
 	},
+
+	// Returns product license.
+	searchStatus() {
+		if (this.get('sessionService.isGlobalAdmin')) {
+			return this.get('ajax').request(`global/search/status`, {
+				method: 'GET',
+			}).then((response) => {
+				return response;
+			});
+		}
+	},
+
+	// Saves product license.
+	reindex() {
+		if (this.get('sessionService.isGlobalAdmin')) {
+			return this.get('ajax').request(`global/search/reindex`, {
+				method: 'POST',
+			});
+		}
+	}
 });

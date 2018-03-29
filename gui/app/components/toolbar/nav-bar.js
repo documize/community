@@ -44,11 +44,12 @@ export default Component.extend(ModalMixin, {
 		});
 
 		let version = this.get('appMeta.version');
+		let edition = this.get('appMeta.edition').toLowerCase();
 
 		let self = this;
 		let cacheBuster = + new Date();
 		$.ajax({
-			url: `https://storage.googleapis.com/documize/news/${version}.html?cb=${cacheBuster}`,
+			url: `https://storage.googleapis.com/documize/news/${edition}/${version}.html?cb=${cacheBuster}`,
 			type: 'GET',
 			dataType: 'html',
 			success: function (response) {
