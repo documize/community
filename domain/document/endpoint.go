@@ -72,15 +72,15 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctx.Transaction, err = h.Runtime.Db.Beginx()
-	if err != nil {
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
 	// draft mode does not record document views
 	if document.Lifecycle == workflow.LifecycleLive {
+		ctx.Transaction, err = h.Runtime.Db.Beginx()
+		if err != nil {
+			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
+			return
+		}
+
 		err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
 			LabelID:      document.LabelID,
 			DocumentID:   document.RefID,
@@ -91,9 +91,9 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 			ctx.Transaction.Rollback()
 			h.Runtime.Log.Error(method, err)
 		}
-	}
 
-	ctx.Transaction.Commit()
+		ctx.Transaction.Commit()
+	}
 
 	h.Store.Audit.Record(ctx, audit.EventTypeDocumentView)
 
