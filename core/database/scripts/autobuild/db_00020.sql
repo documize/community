@@ -1,5 +1,13 @@
 /* enterprise edition */
 
+-- consistency of table engines
+ALTER TABLE config ENGINE = InnoDB;
+ALTER TABLE permission ENGINE = InnoDB;
+ALTER TABLE category ENGINE = InnoDB;
+ALTER TABLE categorymember ENGINE = InnoDB;
+ALTER TABLE role ENGINE = InnoDB;
+ALTER TABLE rolemember ENGINE = InnoDB;
+
 -- content analytics
 ALTER TABLE useractivity ADD COLUMN `metadata` VARCHAR(1000) NOT NULL DEFAULT '' AFTER `activitytype`;
 
@@ -21,7 +29,7 @@ ALTER TABLE useractivity ADD COLUMN `metadata` VARCHAR(1000) NOT NULL DEFAULT ''
 -- 	INDEX `idx_vote_documentid` (`documentid` ASC),
 -- 	INDEX `idx_vote_orgid` (`orgid` ASC))
 -- DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
--- ENGINE = MyISAM;
+-- ENGINE = InnoDB;
 
 -- CREATE INDEX idx_vote_1 ON vaote(orgid,documentid);
 

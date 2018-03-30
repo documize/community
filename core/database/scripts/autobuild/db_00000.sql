@@ -227,6 +227,8 @@ CREATE TABLE IF NOT EXISTS `search` (
 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin
 ENGINE = MyISAM;
 
+-- FULLTEXT search requires MyISAM and NOT InnoDB
+
 DROP TABLE IF EXISTS `revision`;
 
 CREATE TABLE IF NOT EXISTS `revision` (
@@ -258,7 +260,8 @@ CREATE TABLE IF NOT EXISTS `config` (
 	`key` CHAR(255) NOT NULL,
 	`config` JSON,
 	UNIQUE INDEX `idx_config_area` (`key` ASC))
-DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
+DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin
+ENGINE = InnoDB;
 
 INSERT INTO `config` VALUES ('SMTP','{\"userid\": \"\",\"password\": \"\",\"host\": \"\",\"port\": \"\",\"sender\": \"\"}');
 INSERT INTO `config` VALUES ('FILEPLUGINS',
