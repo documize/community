@@ -16,6 +16,8 @@ import (
 	"unicode"
 )
 
+// TODO" replace with https://github.com/mcmatts/slug
+
 // MakeSlug creates a slug, suitable for use in a URL, from a string
 func MakeSlug(str string) string {
 	slg := strings.Map(

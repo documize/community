@@ -13,8 +13,12 @@ package stringutil
 
 import "testing"
 
+// go test github.com/documize/community/core/stringutil -run TestSlug
 func TestSlug(t *testing.T) {
+	st(t, "Hello World", "hello-world")
 	st(t, " Zip--up ", "zip-up")
+	st(t, "Общее", "obshee")
+	st(t, "哈威", "哈威")
 }
 
 func st(t *testing.T, in, out string) {
