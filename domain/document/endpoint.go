@@ -401,18 +401,42 @@ func (h *Handler) SearchDocuments(w http.ResponseWriter, r *http.Request) {
 
 	// Put in slugs for easy UI display of search URL
 	for key, result := range results {
-		result.DocumentSlug = stringutil.MakeSlug(result.Document)
-		result.SpaceSlug = stringutil.MakeSlug(result.Space)
-		results[key] = result
+		results[key].DocumentSlug = stringutil.MakeSlug(result.Document)
+		results[key].SpaceSlug = stringutil.MakeSlug(result.Space)
 	}
 
-	if len(results) == 0 {
-		results = []search.QueryResult{}
-	}
+	// Record user search history
+	go h.recordSearchActivity(ctx, results)
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSearch)
 
 	response.WriteJSON(w, results)
+}
+
+func (h *Handler) recordSearchActivity(ctx domain.RequestContext, q []search.QueryResult) {
+	method := "recordSearchActivity"
+	var err error
+
+	ctx.Transaction, err = h.Runtime.Db.Beginx()
+	if err != nil {
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	for i := range q {
+		err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
+			LabelID:      q[i].SpaceID,
+			DocumentID:   q[i].DocumentID,
+			SourceType:   activity.SourceTypeSearch,
+			ActivityType: activity.TypeSearched})
+
+		if err != nil {
+			ctx.Transaction.Rollback()
+			h.Runtime.Log.Error(method, err)
+		}
+	}
+
+	ctx.Transaction.Commit()
 }
 
 // FetchDocumentData returns all document data in single API call.
