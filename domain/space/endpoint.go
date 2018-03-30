@@ -33,6 +33,7 @@ import (
 	"github.com/documize/community/domain/mail"
 	"github.com/documize/community/domain/organization"
 	"github.com/documize/community/model/account"
+	"github.com/documize/community/model/activity"
 	"github.com/documize/community/model/audit"
 	"github.com/documize/community/model/doc"
 	"github.com/documize/community/model/page"
@@ -125,6 +126,15 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
 		return
+	}
+
+	err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
+		LabelID:      sp.RefID,
+		SourceType:   activity.SourceTypeSpace,
+		ActivityType: activity.TypeCreated})
+	if err != nil {
+		ctx.Transaction.Rollback()
+		h.Runtime.Log.Error(method, err)
 	}
 
 	ctx.Transaction.Commit()
@@ -338,6 +348,25 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	ctx.Transaction, err = h.Runtime.Db.Beginx()
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
+		LabelID:      sp.RefID,
+		SourceType:   activity.SourceTypeSpace,
+		ActivityType: activity.TypeRead})
+
+	if err != nil {
+		ctx.Transaction.Rollback()
+		h.Runtime.Log.Error(method, err)
+	}
+
+	ctx.Transaction.Commit()
+
 	response.WriteJSON(w, sp)
 }
 
@@ -510,6 +539,15 @@ func (h *Handler) Remove(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
+		LabelID:      id,
+		SourceType:   activity.SourceTypeSpace,
+		ActivityType: activity.TypeDeleted})
+	if err != nil {
+		ctx.Transaction.Rollback()
+		h.Runtime.Log.Error(method, err)
+	}
+
 	ctx.Transaction.Commit()
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSpaceDelete)
@@ -596,6 +634,15 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
 		return
+	}
+
+	err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
+		LabelID:      id,
+		SourceType:   activity.SourceTypeSpace,
+		ActivityType: activity.TypeDeleted})
+	if err != nil {
+		ctx.Transaction.Rollback()
+		h.Runtime.Log.Error(method, err)
 	}
 
 	ctx.Transaction.Commit()
