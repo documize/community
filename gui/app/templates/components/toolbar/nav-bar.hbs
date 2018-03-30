@@ -45,7 +45,7 @@
 							{{#if hasWhatsNew}}
 								<div class="whats-new-dot" />
 							{{/if}}
-							{{#if session.isAdmin}}
+							{{#if session.isGlobalAdmin}}
 								{{#if appMeta.updateAvailable}}
 									<div class="update-available-dot" />
 								{{/if}}
@@ -57,7 +57,7 @@
 								{{#link-to 'customize.general' class="dropdown-item" }}Settings{{/link-to}}
 							{{/if}}
 							<div class="dropdown-divider"></div>
-							{{#if session.isAdmin}}
+							{{#if session.isGlobalAdmin}}
 								{{#if appMeta.updateAvailable}}
 									{{#link-to 'customize.license' class="dropdown-item font-weight-bold color-orange" }}Update available{{/link-to}}
 								{{/if}}
