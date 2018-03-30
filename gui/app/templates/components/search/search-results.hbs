@@ -3,7 +3,7 @@
 	<ul class="documents">
 		{{#each documents key="id" as |result index|}}
 			<li class="document">
-				<a class="link" href="s/{{result.spaceId}}/{{result.spaceSlug}}/d/{{ result.documentId }}/{{result.documentSlug}}?page={{ result.itemId }}">
+				<a class="link" href="s/{{result.spaceId}}/{{result.spaceSlug}}/d/{{ result.documentId }}/{{result.documentSlug}}?currentPageId={{result.itemId}}">
 					<div class="title">
 						{{result.document}}
 						{{#if (gt result.versionId.length 0)}}
