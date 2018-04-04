@@ -142,6 +142,25 @@ func CopyDocument(ctx domain.RequestContext, s domain.Store, documentID string) 
 		}
 	}
 
+	cats, err := s.Category.GetDocumentCategoryMembership(ctx, documentID)
+	if err != nil {
+		err = errors.Wrap(err, "unable to add copied page")
+		return
+	}
+
+	for ci := range cats {
+		cm := category.Member{}
+		cm.DocumentID = newDocumentID
+		cm.CategoryID = cats[ci].RefID
+		cm.OrgID = ctx.OrgID
+		cm.RefID = uniqueid.Generate()
+		s.Category.AssociateDocument(ctx, cm)
+		if err != nil {
+			err = errors.Wrap(err, "unable to add copied page")
+			return
+		}
+	}
+
 	return
 }
 
