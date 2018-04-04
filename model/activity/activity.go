@@ -42,6 +42,7 @@ type DocumentActivity struct {
 	Firstname    string    `json:"firstname"`
 	Lastname     string    `json:"lastname"`
 	ActivityType int       `json:"activityType"`
+	Metadata     string    `json:"metadata"`
 	Created      time.Time `json:"created"`
 }
 
