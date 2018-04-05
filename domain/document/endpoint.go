@@ -439,6 +439,7 @@ func (h *Handler) SearchDocuments(w http.ResponseWriter, r *http.Request) {
 }
 
 // Record search request once per document.
+// But only if document is partof shared space at the time of the search.
 func (h *Handler) recordSearchActivity(ctx domain.RequestContext, q []search.QueryResult, keywords string) {
 	method := "recordSearchActivity"
 	var err error
@@ -451,6 +452,16 @@ func (h *Handler) recordSearchActivity(ctx domain.RequestContext, q []search.Que
 	}
 
 	for i := range q {
+		// Empty space ID usually signals private document
+		// hence search activity should not be visible to others.
+		if len(q[i].SpaceID) == 0 {
+			continue
+		}
+		sp, err := h.Store.Space.Get(ctx, q[i].SpaceID)
+		if err != nil || len(sp.RefID) == 0 || sp.Type == space.ScopePrivate {
+			continue
+		}
+
 		if _, isExisting := prev[q[i].DocumentID]; !isExisting {
 			err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
 				LabelID:      q[i].SpaceID,
@@ -466,7 +477,6 @@ func (h *Handler) recordSearchActivity(ctx domain.RequestContext, q []search.Que
 
 			prev[q[i].DocumentID] = true
 		}
-
 	}
 
 	ctx.Transaction.Commit()
