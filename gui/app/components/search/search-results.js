@@ -9,10 +9,14 @@
 //
 // https://documize.com
 
+import { computed } from '@ember/object';
 import Component from '@ember/component';
 
 export default Component.extend({
 	resultPhrase: '',
+	searchQuery: computed('keywords', function() {
+		return encodeURIComponent(this.get('keywords'));
+	}),
 
 	didReceiveAttrs() {
 		this._super(...arguments);
