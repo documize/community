@@ -238,8 +238,23 @@ func (s Scope) MoveDocumentSpace(ctx domain.RequestContext, id, move string) (er
 	_, err = ctx.Transaction.Exec("UPDATE document SET labelid=? WHERE orgid=? AND labelid=?",
 		move, ctx.OrgID, id)
 
+	if err == sql.ErrNoRows {
+		err = nil
+	}
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("execute document space move %s", id))
+	}
+
+	return
+}
+
+// MoveActivity changes the space for all document activity records.
+func (s Scope) MoveActivity(ctx domain.RequestContext, documentID, oldSpaceID, newSpaceID string) (err error) {
+	_, err = ctx.Transaction.Exec("UPDATE useractivity SET labelid=? WHERE orgid=? AND labelid=? AND documentid=?",
+		newSpaceID, ctx.OrgID, oldSpaceID, documentID)
+
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("execute document activity move %s", documentID))
 	}
 
 	return

@@ -180,6 +180,7 @@ type DocumentStorer interface {
 	Delete(ctx RequestContext, documentID string) (rows int64, err error)
 	DeleteBySpace(ctx RequestContext, spaceID string) (rows int64, err error)
 	GetVersions(ctx RequestContext, groupID string) (v []doc.Version, err error)
+	MoveActivity(ctx RequestContext, documentID, oldSpaceID, newSpaceID string) (err error)
 }
 
 // SettingStorer defines required methods for persisting global and user level settings

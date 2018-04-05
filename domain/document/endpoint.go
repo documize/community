@@ -221,6 +221,13 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 	if oldDoc.LabelID != d.LabelID {
 		h.Store.Category.RemoveDocumentCategories(ctx, d.RefID)
+		err = h.Store.Document.MoveActivity(ctx, documentID, oldDoc.LabelID, d.LabelID)
+		if err != nil {
+			ctx.Transaction.Rollback()
+			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
+			return
+		}
 	}
 
 	err = h.Store.Document.Update(ctx, d)
