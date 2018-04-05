@@ -2,8 +2,7 @@
 
 {{#toolbar/t-toolbar}}
 	{{#toolbar/t-links}}
-		{{#link-to "folders" class="link" tagName="li"}}Spaces{{/link-to}}
-		{{#link-to "folder" model.folder.id model.folder.slug class="link" tagName="li"}}{{model.folder.name}}{{/link-to}}
+		{{#link-to "folder" model.folder.id model.folder.slug class="link selected" tagName="li"}}{{model.folder.name}}{{/link-to}}
 	{{/toolbar/t-links}}
 {{/toolbar/t-toolbar}}
 
