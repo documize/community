@@ -70,6 +70,8 @@ func (s Scope) GetBySpace(ctx domain.RequestContext, spaceID string) (c []catego
 
 // GetAllBySpace returns all space categories.
 func (s Scope) GetAllBySpace(ctx domain.RequestContext, spaceID string) (c []category.Category, err error) {
+	c = []category.Category{}
+
 	err = s.Runtime.Db.Select(&c, `
 		SELECT id, refid, orgid, labelid, category, created, revised FROM category
 		WHERE orgid=? AND labelid=?
@@ -80,9 +82,8 @@ func (s Scope) GetAllBySpace(ctx domain.RequestContext, spaceID string) (c []cat
 		))
 	  ORDER BY category`, ctx.OrgID, spaceID, ctx.OrgID, ctx.OrgID, ctx.UserID, ctx.OrgID, ctx.UserID)
 
-	if err == sql.ErrNoRows || len(c) == 0 {
+	if err == sql.ErrNoRows {
 		err = nil
-		c = []category.Category{}
 	}
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to execute select all categories for space %s", spaceID))
@@ -190,6 +191,8 @@ func (s Scope) DeleteBySpace(ctx domain.RequestContext, spaceID string) (rows in
 
 // GetSpaceCategorySummary returns number of documents and users for space categories.
 func (s Scope) GetSpaceCategorySummary(ctx domain.RequestContext, spaceID string) (c []category.SummaryModel, err error) {
+	c = []category.SummaryModel{}
+
 	err = s.Runtime.Db.Select(&c, `
 		SELECT 'documents' as type, categoryid, COUNT(*) as count
 			FROM categorymember
@@ -202,9 +205,8 @@ func (s Scope) GetSpaceCategorySummary(ctx domain.RequestContext, spaceID string
 			GROUP BY refid, type`,
 		ctx.OrgID, spaceID, ctx.OrgID, ctx.OrgID, spaceID /*, ctx.OrgID, ctx.OrgID, spaceID*/)
 
-	if err == sql.ErrNoRows || len(c) == 0 {
+	if err == sql.ErrNoRows {
 		err = nil
-		c = []category.SummaryModel{}
 	}
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("select category summary for space %s", spaceID))
@@ -215,12 +217,13 @@ func (s Scope) GetSpaceCategorySummary(ctx domain.RequestContext, spaceID string
 
 // GetDocumentCategoryMembership returns all space categories associated with given document.
 func (s Scope) GetDocumentCategoryMembership(ctx domain.RequestContext, documentID string) (c []category.Category, err error) {
+	c = []category.Category{}
+
 	err = s.Runtime.Db.Select(&c, `
 		SELECT id, refid, orgid, labelid, category, created, revised FROM category
 		WHERE orgid=? AND refid IN (SELECT categoryid FROM categorymember WHERE orgid=? AND documentid=?)`, ctx.OrgID, ctx.OrgID, documentID)
 
-	if err == sql.ErrNoRows || len(c) == 0 {
-		c = []category.Category{}
+	if err == sql.ErrNoRows {
 		err = nil
 	}
 	if err != nil {

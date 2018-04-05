@@ -105,6 +105,8 @@ func (s Scope) DocumentMeta(ctx domain.RequestContext, id string) (meta doc.Docu
 // All versions of a document are returned, hence caller must
 // decide what to do with them.
 func (s Scope) GetBySpace(ctx domain.RequestContext, spaceID string) (documents []doc.Document, err error) {
+	documents = []doc.Document{}
+
 	err = s.Runtime.Db.Select(&documents, `
         SELECT id, refid, orgid, labelid, userid, job, location, title, excerpt, slug, tags, template,
             protection, approval, lifecycle, versioned, versionid, versionorder, groupid, created, revised
@@ -120,9 +122,8 @@ func (s Scope) GetBySpace(ctx domain.RequestContext, spaceID string) (documents 
 		)
 		ORDER BY title, versionorder`, ctx.OrgID, ctx.OrgID, ctx.OrgID, spaceID, ctx.OrgID, ctx.UserID, ctx.OrgID, spaceID, ctx.UserID)
 
-	if err == sql.ErrNoRows || len(documents) == 0 {
+	if err == sql.ErrNoRows {
 		err = nil
-		documents = []doc.Document{}
 	}
 	if err != nil {
 		err = errors.Wrap(err, "select documents by space")
@@ -303,15 +304,16 @@ func (s Scope) DeleteBySpace(ctx domain.RequestContext, spaceID string) (rows in
 // All versions of a document are returned, hence caller must
 // decide what to do with them.
 func (s Scope) GetVersions(ctx domain.RequestContext, groupID string) (v []doc.Version, err error) {
+	v = []doc.Version{}
+
 	err = s.Runtime.Db.Select(&v, `
         SELECT versionid, refid as documentid
 		FROM document
 		WHERE orgid=? AND groupid=?
 		ORDER BY versionorder`, ctx.OrgID, groupID)
 
-	if err == sql.ErrNoRows || len(v) == 0 {
+	if err == sql.ErrNoRows {
 		err = nil
-		v = []doc.Version{}
 	}
 	if err != nil {
 		err = errors.Wrap(err, "document.store.GetVersions")
