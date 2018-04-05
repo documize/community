@@ -11,6 +11,10 @@ ALTER TABLE rolemember ENGINE = InnoDB;
 -- content analytics
 ALTER TABLE useractivity ADD COLUMN `metadata` VARCHAR(1000) NOT NULL DEFAULT '' AFTER `activitytype`;
 
+-- new role for viewing content analytics
+ALTER TABLE account ADD COLUMN `analytics` BOOL NOT NULL DEFAULT 0 AFTER `users`;
+UPDATE account SET analytics=1 WHERE admin=1;
+
 -- content likes/feedback
 -- DROP TABLE IF EXISTS `vote`;
 
@@ -31,6 +35,6 @@ ALTER TABLE useractivity ADD COLUMN `metadata` VARCHAR(1000) NOT NULL DEFAULT ''
 -- DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 -- ENGINE = InnoDB;
 
--- CREATE INDEX idx_vote_1 ON vaote(orgid,documentid);
+-- CREATE INDEX idx_vote_1 ON vote(orgid,documentid);
 
 -- deprecations

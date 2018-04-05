@@ -22,6 +22,7 @@ export default Model.extend({
 	editor: attr('boolean', { defaultValue: false }),
 	admin: attr('boolean', { defaultValue: false }),
 	viewUsers: attr('boolean', { defaultValue: false }),
+	analytics: attr('boolean', { defaultValue: false }),
 	global: attr('boolean', { defaultValue: false }),
 	accounts: attr(),
 	groups: attr(),

@@ -16,14 +16,15 @@ import "github.com/documize/community/model"
 // Account links a User to an Organization.
 type Account struct {
 	model.BaseEntity
-	Admin   bool   `json:"admin"`
-	Editor  bool   `json:"editor"`
-	Users   bool   `json:"viewUsers"` // either view all users or just users in your space
-	UserID  string `json:"userId"`
-	OrgID   string `json:"orgId"`
-	Company string `json:"company"`
-	Title   string `json:"title"`
-	Message string `json:"message"`
-	Domain  string `json:"domain"`
-	Active  bool   `json:"active"`
+	Admin     bool   `json:"admin"`
+	Editor    bool   `json:"editor"`
+	Users     bool   `json:"viewUsers"` // either view all users or just users in your space
+	Analytics bool   `json:"analytics"` // view content analytics
+	UserID    string `json:"userId"`
+	OrgID     string `json:"orgId"`
+	Company   string `json:"company"`
+	Title     string `json:"title"`
+	Message   string `json:"message"`
+	Domain    string `json:"domain"`
+	Active    bool   `json:"active"`
 }

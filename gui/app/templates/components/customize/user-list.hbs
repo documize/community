@@ -1,5 +1,5 @@
 <div class="view-customize my-5">
-	
+
 	<div class="my-2">
 		<span class="font-weight-bold">Spaces</span>
 		<span class="text-muted">&nbsp;&nbsp;&mdash;&nbsp;can add spaces, both personal and shared with others</span>
@@ -11,6 +11,10 @@
 	<div class="my-2">
 		<span class="font-weight-bold">Admin</span>
 		<span class="text-muted">&nbsp;&nbsp;&mdash;&nbsp;can manage all aspects of Documize, like this screen</span>
+	</div>
+	<div class="my-2">
+		<span class="font-weight-bold">Analytics</span>
+		<span class="text-muted">&nbsp;&nbsp;&mdash;&nbsp;can view analytical reports</span>
 	</div>
 	<div class="mt-2 mb-4">
 		<span class="font-weight-bold">Active</span>
@@ -28,11 +32,12 @@
 				<th class="text-muted">
 					{{#if hasSelectedUsers}}
 						<button id="bulk-delete-users" type="button" class="btn btn-danger" data-toggle="modal" data-target="#admin-user-delete-modal" data-backdrop="static">Delete selected users</button>
-					{{/if}}					
+					{{/if}}
 				</th>
 				<th class="no-width">Spaces</th>
 				<th class="no-width">Visible</th>
 				<th class="no-width">Admin</th>
+				<th class="no-width">Analytics</th>
 				<th class="no-width">Active</th>
 				<th class="no-width">
 				</th>
@@ -85,6 +90,13 @@
 							<i class="material-icons checkbox" {{action 'toggleAdmin' user.id}}>check_box</i>
 						{{else}}
 							<i class="material-icons checkbox" {{action 'toggleAdmin' user.id}}>check_box_outline_blank</i>
+						{{/if}}
+					</td>
+					<td class="no-width text-center">
+						{{#if user.analytics}}
+							<i class="material-icons checkbox" {{action 'toggleAnalytics' user.id}}>check_box</i>
+						{{else}}
+							<i class="material-icons checkbox" {{action 'toggleAnalytics' user.id}}>check_box_outline_blank</i>
 						{{/if}}
 					</td>
 					<td class="no-width text-center">

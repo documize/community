@@ -386,6 +386,8 @@ export default Service.extend({
 		let userHasChangeAwaitingReview = false;
 		let userHasChangeRejected = false;
 
+		if (is.null(source) || is.undefined(source)) source = "";
+
 		return this.get('ajax').request(`fetch/page/${documentId}?source=${source}`, {
 			method: 'GET'
 		}).then((response) => {
