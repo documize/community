@@ -214,12 +214,16 @@ export default Controller.extend(TooltipMixin, {
 		},
 
 		refresh() {
+			return new EmberPromise((resolve) => {
 			this.get('documentService').fetchPages(this.get('document.id'), this.get('session.user.id')).then((data) => {
 				this.set('pages', data);
-			});
 
 			this.get('sectionService').getSpaceBlocks(this.get('folder.id')).then((data) => {
 				this.set('blocks', data);
+			});
+
+					resolve();
+				});
 			});
 		}
 	}
