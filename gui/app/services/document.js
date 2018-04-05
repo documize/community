@@ -375,7 +375,9 @@ export default Service.extend({
 	// This method bulk fetches data to reduce network chatter.
 	// We produce a bunch of calculated boolean's for UI display purposes
 	// that can tell us quickly about pending changes for UI display.
-	fetchPages(documentId, currentUserId) {
+
+	// Source - optional identifier of (document) referrer.
+	fetchPages(documentId, currentUserId, source) {
 		let constants = this.get('constants');
 		let changePending = false;
 		let changeAwaitingReview = false;
@@ -384,7 +386,7 @@ export default Service.extend({
 		let userHasChangeAwaitingReview = false;
 		let userHasChangeRejected = false;
 
-		return this.get('ajax').request(`fetch/page/${documentId}`, {
+		return this.get('ajax').request(`fetch/page/${documentId}?source=${source}`, {
 			method: 'GET'
 		}).then((response) => {
 			let data = A([]);
