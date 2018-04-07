@@ -18,6 +18,7 @@ type QueryOptions struct {
 	Tag        bool   `json:"tag"`
 	Attachment bool   `json:"attachment"`
 	Content    bool   `json:"content"`
+	SkipLog    bool   `json:"slog"`
 }
 
 // QueryResult represents 'presentable' search results.

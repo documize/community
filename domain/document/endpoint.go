@@ -416,28 +416,30 @@ func (h *Handler) SearchDocuments(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Record user search history
-	if len(results) > 0 {
-		go h.recordSearchActivity(ctx, results, options.Keywords)
-	} else {
-		ctx.Transaction, err = h.Runtime.Db.Beginx()
-		if err != nil {
-			h.Runtime.Log.Error(method, err)
-			return
+	if !options.SkipLog {
+		if len(results) > 0 {
+			go h.recordSearchActivity(ctx, results, options.Keywords)
+		} else {
+			ctx.Transaction, err = h.Runtime.Db.Beginx()
+			if err != nil {
+				h.Runtime.Log.Error(method, err)
+				return
+			}
+
+			err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
+				LabelID:      "",
+				DocumentID:   "",
+				Metadata:     options.Keywords,
+				SourceType:   activity.SourceTypeSearch,
+				ActivityType: activity.TypeSearched})
+
+			if err != nil {
+				ctx.Transaction.Rollback()
+				h.Runtime.Log.Error(method, err)
+			}
+
+			ctx.Transaction.Commit()
 		}
-
-		err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-			LabelID:      "",
-			DocumentID:   "",
-			Metadata:     options.Keywords,
-			SourceType:   activity.SourceTypeSearch,
-			ActivityType: activity.TypeSearched})
-
-		if err != nil {
-			ctx.Transaction.Rollback()
-			h.Runtime.Log.Error(method, err)
-		}
-
-		ctx.Transaction.Commit()
 	}
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSearch)
