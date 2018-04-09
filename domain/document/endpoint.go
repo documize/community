@@ -17,6 +17,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"sort"
+	"strings"
 
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/request"
@@ -72,15 +73,15 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctx.Transaction, err = h.Runtime.Db.Beginx()
-	if err != nil {
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
 	// draft mode does not record document views
 	if document.Lifecycle == workflow.LifecycleLive {
+		ctx.Transaction, err = h.Runtime.Db.Beginx()
+		if err != nil {
+			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
+			return
+		}
+
 		err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
 			LabelID:      document.LabelID,
 			DocumentID:   document.RefID,
@@ -91,9 +92,9 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 			ctx.Transaction.Rollback()
 			h.Runtime.Log.Error(method, err)
 		}
-	}
 
-	ctx.Transaction.Commit()
+		ctx.Transaction.Commit()
+	}
 
 	h.Store.Audit.Record(ctx, audit.EventTypeDocumentView)
 
@@ -220,6 +221,13 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 	if oldDoc.LabelID != d.LabelID {
 		h.Store.Category.RemoveDocumentCategories(ctx, d.RefID)
+		err = h.Store.Document.MoveActivity(ctx, documentID, oldDoc.LabelID, d.LabelID)
+		if err != nil {
+			ctx.Transaction.Rollback()
+			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
+			return
+		}
 	}
 
 	err = h.Store.Document.Update(ctx, d)
@@ -394,6 +402,8 @@ func (h *Handler) SearchDocuments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	options.Keywords = strings.TrimSpace(options.Keywords)
+
 	results, err := h.Store.Search.Documents(ctx, options)
 	if err != nil {
 		h.Runtime.Log.Error(method, err)
@@ -401,18 +411,84 @@ func (h *Handler) SearchDocuments(w http.ResponseWriter, r *http.Request) {
 
 	// Put in slugs for easy UI display of search URL
 	for key, result := range results {
-		result.DocumentSlug = stringutil.MakeSlug(result.Document)
-		result.SpaceSlug = stringutil.MakeSlug(result.Space)
-		results[key] = result
+		results[key].DocumentSlug = stringutil.MakeSlug(result.Document)
+		results[key].SpaceSlug = stringutil.MakeSlug(result.Space)
 	}
 
-	if len(results) == 0 {
-		results = []search.QueryResult{}
+	// Record user search history
+	if !options.SkipLog {
+		if len(results) > 0 {
+			go h.recordSearchActivity(ctx, results, options.Keywords)
+		} else {
+			ctx.Transaction, err = h.Runtime.Db.Beginx()
+			if err != nil {
+				h.Runtime.Log.Error(method, err)
+				return
+			}
+
+			err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
+				LabelID:      "",
+				DocumentID:   "",
+				Metadata:     options.Keywords,
+				SourceType:   activity.SourceTypeSearch,
+				ActivityType: activity.TypeSearched})
+
+			if err != nil {
+				ctx.Transaction.Rollback()
+				h.Runtime.Log.Error(method, err)
+			}
+
+			ctx.Transaction.Commit()
+		}
 	}
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSearch)
 
 	response.WriteJSON(w, results)
+}
+
+// Record search request once per document.
+// But only if document is partof shared space at the time of the search.
+func (h *Handler) recordSearchActivity(ctx domain.RequestContext, q []search.QueryResult, keywords string) {
+	method := "recordSearchActivity"
+	var err error
+	prev := make(map[string]bool)
+
+	ctx.Transaction, err = h.Runtime.Db.Beginx()
+	if err != nil {
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	for i := range q {
+		// Empty space ID usually signals private document
+		// hence search activity should not be visible to others.
+		if len(q[i].SpaceID) == 0 {
+			continue
+		}
+		sp, err := h.Store.Space.Get(ctx, q[i].SpaceID)
+		if err != nil || len(sp.RefID) == 0 || sp.Type == space.ScopePrivate {
+			continue
+		}
+
+		if _, isExisting := prev[q[i].DocumentID]; !isExisting {
+			err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
+				LabelID:      q[i].SpaceID,
+				DocumentID:   q[i].DocumentID,
+				Metadata:     keywords,
+				SourceType:   activity.SourceTypeSearch,
+				ActivityType: activity.TypeSearched})
+
+			if err != nil {
+				ctx.Transaction.Rollback()
+				h.Runtime.Log.Error(method, err)
+			}
+
+			prev[q[i].DocumentID] = true
+		}
+	}
+
+	ctx.Transaction.Commit()
 }
 
 // FetchDocumentData returns all document data in single API call.

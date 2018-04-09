@@ -52,9 +52,9 @@ Space view.
 
 ## Latest version
 
-[Community edition: v1.60.0](https://github.com/documize/community/releases)
+[Community edition: v1.61.0](https://github.com/documize/community/releases)
 
-[Enterprise edition: v1.62.0](https://documize.com/downloads)
+[Enterprise edition: v1.63.0](https://documize.com/downloads)
 
 ## OS support
 
@@ -69,7 +69,7 @@ Documize runs on the following:
 Documize is built with the following technologies:
 
 - EmberJS (v2.18.0)
-- Go (v1.10)
+- Go (v1.10.1)
 
 ...and supports the following databases:
 
@@ -77,7 +77,7 @@ Documize is built with the following technologies:
 - Percona (v5.7.16-10+)
 - MariaDB (10.3.0+)
 
-Coming soon, PostgreSQL and Microsoft SQL Server support.
+Coming soon, PostgreSQL and Microsoft SQL Server database support.
 
 ## Authentication options
 

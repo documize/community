@@ -141,6 +141,7 @@ func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http
 		rc.Administrator = false
 		rc.Editor = false
 		rc.Global = false
+		rc.Analytics = false
 		rc.AppURL = r.Host
 		rc.Subdomain = organization.GetSubdomainFromHost(r)
 		rc.SSL = r.TLS != nil
@@ -170,6 +171,7 @@ func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http
 			rc.Administrator = u.Admin
 			rc.Editor = u.Editor
 			rc.Global = u.Global
+			rc.Analytics = u.Analytics
 			rc.Fullname = u.Fullname()
 
 			// We send back with every HTTP request/response cycle the latest
@@ -179,12 +181,14 @@ func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http
 				Active    bool `json:"active"`
 				Admin     bool `json:"admin"`
 				Editor    bool `json:"editor"`
+				Analytics bool `json:"analytics"`
 				ViewUsers bool `json:"viewUsers"`
 			}
 
 			state.Active = u.Active
 			state.Admin = u.Admin
 			state.Editor = u.Editor
+			state.Analytics = u.Analytics
 			state.ViewUsers = u.ViewUsers
 			sb, err := json.Marshal(state)
 
@@ -234,6 +238,7 @@ func (m *middleware) preAuthorizeStaticAssets(rt *env.Runtime, r *http.Request) 
 		ctx.OrgName = org.Title
 		ctx.Administrator = false
 		ctx.Editor = false
+		ctx.Analytics = false
 		ctx.Global = false
 		ctx.AppURL = r.Host
 		ctx.SSL = r.TLS != nil

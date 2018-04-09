@@ -62,6 +62,8 @@ func (s Scope) AddPermissions(ctx domain.RequestContext, r permission.Permission
 // Context is used to for userID because must match by userID
 // or everyone ID of 0.
 func (s Scope) GetUserSpacePermissions(ctx domain.RequestContext, spaceID string) (r []permission.Permission, err error) {
+	r = []permission.Permission{}
+
 	err = s.Runtime.Db.Select(&r, `
 		SELECT id, orgid, who, whoid, action, scope, location, refid
 			FROM permission
@@ -73,9 +75,8 @@ func (s Scope) GetUserSpacePermissions(ctx domain.RequestContext, spaceID string
 			WHERE p.orgid=? AND p.location='space' AND refid=? AND p.who='role' AND (r.userid=? OR r.userid='0')`,
 		ctx.OrgID, spaceID, ctx.UserID, ctx.OrgID, spaceID, ctx.UserID)
 
-	if err == sql.ErrNoRows || len(r) == 0 {
+	if err == sql.ErrNoRows {
 		err = nil
-		r = []permission.Permission{}
 	}
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to execute select user permissions %s", ctx.UserID))
@@ -87,6 +88,8 @@ func (s Scope) GetUserSpacePermissions(ctx domain.RequestContext, spaceID string
 // GetSpacePermissions returns space permissions for all users.
 // We do not filter by userID because we return permissions for all users.
 func (s Scope) GetSpacePermissions(ctx domain.RequestContext, spaceID string) (r []permission.Permission, err error) {
+	r = []permission.Permission{}
+
 	err = s.Runtime.Db.Select(&r, `
 		SELECT id, orgid, who, whoid, action, scope, location, refid
 			FROM permission WHERE orgid=? AND location='space' AND refid=? AND who='user'
@@ -99,7 +102,6 @@ func (s Scope) GetSpacePermissions(ctx domain.RequestContext, spaceID string) (r
 
 	if err == sql.ErrNoRows {
 		err = nil
-		r = []permission.Permission{}
 	}
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to execute select space permissions %s", ctx.UserID))
@@ -110,6 +112,8 @@ func (s Scope) GetSpacePermissions(ctx domain.RequestContext, spaceID string) (r
 
 // GetCategoryPermissions returns category permissions for all users.
 func (s Scope) GetCategoryPermissions(ctx domain.RequestContext, catID string) (r []permission.Permission, err error) {
+	r = []permission.Permission{}
+
 	err = s.Runtime.Db.Select(&r, `
 		SELECT id, orgid, who, whoid, action, scope, location, refid
 			FROM permission
@@ -121,9 +125,8 @@ func (s Scope) GetCategoryPermissions(ctx domain.RequestContext, catID string) (
 			WHERE p.orgid=? AND p.location='category' AND p.who='role' AND (p.refid=? OR p.refid='0')`,
 		ctx.OrgID, catID, ctx.OrgID, catID)
 
-	if err == sql.ErrNoRows || len(r) == 0 {
+	if err == sql.ErrNoRows {
 		err = nil
-		r = []permission.Permission{}
 	}
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to execute select category permissions %s", catID))
@@ -134,6 +137,8 @@ func (s Scope) GetCategoryPermissions(ctx domain.RequestContext, catID string) (
 
 // GetCategoryUsers returns space permissions for all users.
 func (s Scope) GetCategoryUsers(ctx domain.RequestContext, catID string) (u []user.User, err error) {
+	u = []user.User{}
+
 	err = s.Runtime.Db.Select(&u, `
 		SELECT u.id, IFNULL(u.refid, '') AS refid, IFNULL(u.firstname, '') AS firstname, IFNULL(u.lastname, '') as lastname, u.email, u.initials, u.password, u.salt, u.reset, u.created, u.revised
 		FROM user u LEFT JOIN account a ON u.refid = a.userid
@@ -149,7 +154,7 @@ func (s Scope) GetCategoryUsers(ctx domain.RequestContext, catID string) (u []us
 		ORDER BY firstname, lastname`,
 		ctx.OrgID, ctx.OrgID, catID, ctx.OrgID, catID)
 
-	if err == sql.ErrNoRows || len(u) == 0 {
+	if err == sql.ErrNoRows {
 		err = nil
 		u = []user.User{}
 	}
@@ -162,6 +167,8 @@ func (s Scope) GetCategoryUsers(ctx domain.RequestContext, catID string) (u []us
 
 // GetUserCategoryPermissions returns category permissions for given user.
 func (s Scope) GetUserCategoryPermissions(ctx domain.RequestContext, userID string) (r []permission.Permission, err error) {
+	r = []permission.Permission{}
+
 	err = s.Runtime.Db.Select(&r, `
 		SELECT id, orgid, who, whoid, action, scope, location, refid
 			FROM permission WHERE orgid=? AND location='category' AND who='user' AND (whoid=? OR whoid='0')
@@ -172,9 +179,8 @@ func (s Scope) GetUserCategoryPermissions(ctx domain.RequestContext, userID stri
 			WHERE p.orgid=? AND p.location='category' AND p.who='role' AND (r.userid=? OR r.userid='0')`,
 		ctx.OrgID, userID, ctx.OrgID, userID)
 
-	if err == sql.ErrNoRows || len(r) == 0 {
+	if err == sql.ErrNoRows {
 		err = nil
-		r = []permission.Permission{}
 	}
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to execute select category permissions for user %s", userID))

@@ -30,7 +30,7 @@
 			<div class="col-12 col-sm-3 heading">Tags</div>
 			<div class="col-12 col-sm-9 value">
 				{{#each tagz as |t index|}}
-					{{#link-to 'search' (query-params filter=t matchTag=true)}}
+					{{#link-to 'search' (query-params filter=t matchTag=true matchDoc=false matchContent=false matchFile=false)}}
 						{{concat '#' t}}
 					{{/link-to}}&nbsp;&nbsp;
 				{{/each}}

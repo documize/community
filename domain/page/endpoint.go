@@ -1236,6 +1236,9 @@ func (h *Handler) FetchPages(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Who referred user this document (e.g. search page).
+	source := request.Query(r, "source")
+
 	doc, err := h.Store.Document.Get(ctx, documentID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
@@ -1390,6 +1393,28 @@ func (h *Handler) FetchPages(w http.ResponseWriter, r *http.Request) {
 		// pending pages get same numbering
 		for k := range model[i].Pending {
 			model[i].Pending[k].Page.Numbering = j.Numbering
+		}
+	}
+
+	// If we have source, record document access via source.
+	if len(source) > 0 {
+		ctx.Transaction, err = h.Runtime.Db.Beginx()
+		if err != nil {
+			h.Runtime.Log.Error(method, err)
+		} else {
+			err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
+				LabelID:      doc.LabelID,
+				DocumentID:   doc.RefID,
+				Metadata:     source,                    // deliberate
+				SourceType:   activity.SourceTypeSearch, // deliberate
+				ActivityType: activity.TypeRead})
+
+			if err != nil {
+				ctx.Transaction.Rollback()
+				h.Runtime.Log.Error(method, err)
+			}
+
+			ctx.Transaction.Commit()
 		}
 	}
 

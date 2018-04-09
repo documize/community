@@ -204,6 +204,10 @@ func (s Scope) Documents(ctx domain.RequestContext, q search.QueryOptions) (resu
 		results = append(results, r4...)
 	}
 
+	if len(results) == 0 {
+		results = []search.QueryResult{}
+	}
+
 	return
 }
 
@@ -227,9 +231,10 @@ func (s Scope) matchFullText(ctx domain.RequestContext, keywords, itemType strin
 		(
             SELECT refid FROM label WHERE orgid=? AND refid IN
             (
-				SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space' AND action='view'
+				SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space'
 				UNION ALL
-				SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.location='space' AND r.userid=?
+                SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role'
+                AND p.location='space' AND (r.userid=? OR r.userid='0')
             )
         )
 	AND MATCH(s.content) AGAINST(? IN BOOLEAN MODE)`
@@ -280,13 +285,13 @@ func (s Scope) matchLike(ctx domain.RequestContext, keywords, itemType string) (
 		-- AND d.template = 0
 		AND d.labelid IN
 		(
-			SELECT refid FROM label WHERE orgid=?
-			AND refid IN (SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid IN (
-				SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space' AND action='view'
+            SELECT refid FROM label WHERE orgid=? AND refid IN
+            (
+				SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space'
 				UNION ALL
 				SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role'
-				AND p.location='space' AND p.action='view' AND (r.userid=? OR r.userid='0')
-			))
+				AND p.location='space' AND (r.userid=? OR r.userid='0')
+			)
 		)
 		AND s.content LIKE ?`
 

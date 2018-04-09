@@ -4,13 +4,14 @@
 	> .links {
 		display: inlne-block;
 
-		> .link {
+		> .link, div > .link {
 			color: $color-gray;
 			font-size: 1.1rem;
 			font-weight: bold;
 			display: inline-block;
 			margin-right: 30px;
 			cursor: pointer;
+			text-transform: uppercase;
 			@include ease-in();
 			// border-bottom: 2px solid $color-gray-light;
 
@@ -19,7 +20,7 @@
 			}
 		}
 
-		> .selected {
+		> .selected, div > .link {
 			color: $color-link;
 		}
 	}

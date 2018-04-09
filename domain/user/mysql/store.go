@@ -110,17 +110,18 @@ func (s Scope) GetBySerial(ctx domain.RequestContext, serial string) (u user.Use
 // GetActiveUsersForOrganization returns a slice containing of active user records for the organization
 // identified in the Persister.
 func (s Scope) GetActiveUsersForOrganization(ctx domain.RequestContext) (u []user.User, err error) {
+	u = []user.User{}
+
 	err = s.Runtime.Db.Select(&u,
 		`SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.password, u.salt, u.reset, u.lastversion, u.created, u.revised,
-		u.global, a.active, a.editor, a.admin, a.users as viewusers
+		u.global, a.active, a.editor, a.admin, a.users as viewusers, a.analytics
 		FROM user u, account a
 		WHERE u.refid=a.userid AND a.orgid=? AND a.active=1
 		ORDER BY u.firstname,u.lastname`,
 		ctx.OrgID)
 
-	if err == sql.ErrNoRows || len(u) == 0 {
+	if err == sql.ErrNoRows {
 		err = nil
-		u = []user.User{}
 	}
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("get active users by org %s", ctx.OrgID))
@@ -132,6 +133,8 @@ func (s Scope) GetActiveUsersForOrganization(ctx domain.RequestContext) (u []use
 // GetUsersForOrganization returns a slice containing all of the user records for the organizaiton
 // identified in the Persister.
 func (s Scope) GetUsersForOrganization(ctx domain.RequestContext, filter string) (u []user.User, err error) {
+	u = []user.User{}
+
 	filter = strings.TrimSpace(strings.ToLower(filter))
 	likeQuery := ""
 	if len(filter) > 0 {
@@ -140,14 +143,13 @@ func (s Scope) GetUsersForOrganization(ctx domain.RequestContext, filter string)
 
 	err = s.Runtime.Db.Select(&u,
 		`SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.password, u.salt, u.reset, u.lastversion, u.created, u.revised,
-		u.global, a.active, a.editor, a.admin, a.users as viewusers
+		u.global, a.active, a.editor, a.admin, a.users as viewusers, a.analytics
 		FROM user u, account a
 		WHERE u.refid=a.userid AND a.orgid=? `+likeQuery+
 			`ORDER BY u.firstname, u.lastname LIMIT 100`, ctx.OrgID)
 
-	if err == sql.ErrNoRows || len(u) == 0 {
+	if err == sql.ErrNoRows {
 		err = nil
-		u = []user.User{}
 	}
 
 	if err != nil {
@@ -159,9 +161,11 @@ func (s Scope) GetUsersForOrganization(ctx domain.RequestContext, filter string)
 
 // GetSpaceUsers returns a slice containing all user records for given space.
 func (s Scope) GetSpaceUsers(ctx domain.RequestContext, spaceID string) (u []user.User, err error) {
+	u = []user.User{}
+
 	err = s.Runtime.Db.Select(&u, `
 		SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.password, u.salt, u.reset, u.created, u.lastversion, u.revised, u.global,
-		a.active, a.users AS viewusers, a.editor, a.admin
+		a.active, a.users AS viewusers, a.editor, a.admin, a.analytics
 		FROM user u, account a
 		WHERE a.orgid=? AND u.refid = a.userid AND a.active=1 AND u.refid IN (
 			SELECT whoid from permission WHERE orgid=? AND who='user' AND scope='object' AND location='space' AND refid=? UNION ALL
@@ -170,9 +174,8 @@ func (s Scope) GetSpaceUsers(ctx domain.RequestContext, spaceID string) (u []use
 		ORDER BY u.firstname, u.lastname
 		`, ctx.OrgID, ctx.OrgID, spaceID, ctx.OrgID, spaceID)
 
-	if err == sql.ErrNoRows || len(u) == 0 {
+	if err == sql.ErrNoRows {
 		err = nil
-		u = []user.User{}
 	}
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("get space users for org %s", ctx.OrgID))
@@ -183,14 +186,15 @@ func (s Scope) GetSpaceUsers(ctx domain.RequestContext, spaceID string) (u []use
 
 // GetUsersForSpaces returns users with access to specified spaces.
 func (s Scope) GetUsersForSpaces(ctx domain.RequestContext, spaces []string) (u []user.User, err error) {
+	u = []user.User{}
+
 	if len(spaces) == 0 {
-		u = []user.User{}
 		return
 	}
 
 	query, args, err := sqlx.In(`
 		SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.password, u.salt, u.reset, u.lastversion, u.created, u.revised, u.global,
-		a.active, a.users AS viewusers, a.editor, a.admin
+		a.active, a.users AS viewusers, a.editor, a.admin, a.analytics
 		FROM user u, account a
 		WHERE a.orgid=? AND u.refid = a.userid AND a.active=1 AND u.refid IN (
 			SELECT whoid from permission WHERE orgid=? AND who='user' AND scope='object' AND location='space' AND refid IN(?) UNION ALL
@@ -202,9 +206,8 @@ func (s Scope) GetUsersForSpaces(ctx domain.RequestContext, spaces []string) (u 
 	query = s.Runtime.Db.Rebind(query)
 	err = s.Runtime.Db.Select(&u, query, args...)
 
-	if err == sql.ErrNoRows || len(u) == 0 {
+	if err == sql.ErrNoRows {
 		err = nil
-		u = []user.User{}
 	}
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("get users for spaces for user %s", ctx.UserID))
@@ -282,6 +285,8 @@ func (s Scope) CountActiveUsers() (c int) {
 
 // MatchUsers returns users that have match to either firstname, lastname or email.
 func (s Scope) MatchUsers(ctx domain.RequestContext, text string, maxMatches int) (u []user.User, err error) {
+	u = []user.User{}
+
 	text = strings.TrimSpace(strings.ToLower(text))
 	likeQuery := ""
 	if len(text) > 0 {
@@ -290,15 +295,14 @@ func (s Scope) MatchUsers(ctx domain.RequestContext, text string, maxMatches int
 
 	err = s.Runtime.Db.Select(&u,
 		`SELECT u.id, u.refid, u.firstname, u.lastname, u.email, u.initials, u.password, u.salt, u.reset, u.lastversion, u.created, u.revised,
-		u.global, a.active, a.editor, a.admin, a.users as viewusers
+		u.global, a.active, a.editor, a.admin, a.users as viewusers, a.analytics
 		FROM user u, account a
 		WHERE a.orgid=? AND u.refid=a.userid AND a.active=1 `+likeQuery+
 			`ORDER BY u.firstname,u.lastname LIMIT `+strconv.Itoa(maxMatches),
 		ctx.OrgID)
 
-	if err == sql.ErrNoRows || len(u) == 0 {
+	if err == sql.ErrNoRows {
 		err = nil
-		u = []user.User{}
 	}
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("matching users for org %s", ctx.OrgID))

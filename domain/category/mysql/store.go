@@ -53,7 +53,7 @@ func (s Scope) GetBySpace(ctx domain.RequestContext, spaceID string) (c []catego
 		WHERE orgid=? AND labelid=?
 			  AND refid IN (SELECT refid FROM permission WHERE orgid=? AND location='category' AND refid IN (
 				SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='category' UNION ALL
-				SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid 
+				SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid
 					WHERE p.orgid=? AND p.who='role' AND p.location='category' AND (r.userid=? OR r.userid='0')
 		))
 	  ORDER BY category`, ctx.OrgID, spaceID, ctx.OrgID, ctx.OrgID, ctx.UserID, ctx.OrgID, ctx.UserID)
@@ -70,19 +70,20 @@ func (s Scope) GetBySpace(ctx domain.RequestContext, spaceID string) (c []catego
 
 // GetAllBySpace returns all space categories.
 func (s Scope) GetAllBySpace(ctx domain.RequestContext, spaceID string) (c []category.Category, err error) {
+	c = []category.Category{}
+
 	err = s.Runtime.Db.Select(&c, `
 		SELECT id, refid, orgid, labelid, category, created, revised FROM category
 		WHERE orgid=? AND labelid=?
 			  AND labelid IN (SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid IN (
 				SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space' AND action='view' UNION ALL
-				SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.location='space' 
+				SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.location='space'
 					AND p.action='view' AND (r.userid=? OR r.userid='0')
 		))
 	  ORDER BY category`, ctx.OrgID, spaceID, ctx.OrgID, ctx.OrgID, ctx.UserID, ctx.OrgID, ctx.UserID)
 
-	if err == sql.ErrNoRows || len(c) == 0 {
+	if err == sql.ErrNoRows {
 		err = nil
-		c = []category.Category{}
 	}
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to execute select all categories for space %s", spaceID))
@@ -190,6 +191,8 @@ func (s Scope) DeleteBySpace(ctx domain.RequestContext, spaceID string) (rows in
 
 // GetSpaceCategorySummary returns number of documents and users for space categories.
 func (s Scope) GetSpaceCategorySummary(ctx domain.RequestContext, spaceID string) (c []category.SummaryModel, err error) {
+	c = []category.SummaryModel{}
+
 	err = s.Runtime.Db.Select(&c, `
 		SELECT 'documents' as type, categoryid, COUNT(*) as count
 			FROM categorymember
@@ -197,14 +200,13 @@ func (s Scope) GetSpaceCategorySummary(ctx domain.RequestContext, spaceID string
 		UNION ALL
 		SELECT 'users' as type, refid AS categoryid, count(*) AS count
 			FROM permission
-			WHERE orgid=? AND location='category' 
+			WHERE orgid=? AND location='category'
 				AND refid IN (SELECT refid FROM category WHERE orgid=? AND labelid=?)
 			GROUP BY refid, type`,
 		ctx.OrgID, spaceID, ctx.OrgID, ctx.OrgID, spaceID /*, ctx.OrgID, ctx.OrgID, spaceID*/)
 
-	if err == sql.ErrNoRows || len(c) == 0 {
+	if err == sql.ErrNoRows {
 		err = nil
-		c = []category.SummaryModel{}
 	}
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("select category summary for space %s", spaceID))
@@ -215,6 +217,8 @@ func (s Scope) GetSpaceCategorySummary(ctx domain.RequestContext, spaceID string
 
 // GetDocumentCategoryMembership returns all space categories associated with given document.
 func (s Scope) GetDocumentCategoryMembership(ctx domain.RequestContext, documentID string) (c []category.Category, err error) {
+	c = []category.Category{}
+
 	err = s.Runtime.Db.Select(&c, `
 		SELECT id, refid, orgid, labelid, category, created, revised FROM category
 		WHERE orgid=? AND refid IN (SELECT categoryid FROM categorymember WHERE orgid=? AND documentid=?)`, ctx.OrgID, ctx.OrgID, documentID)
@@ -236,7 +240,7 @@ func (s Scope) GetSpaceCategoryMembership(ctx domain.RequestContext, spaceID str
 		WHERE orgid=? AND labelid=?
 			  AND labelid IN (SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid IN (
 				SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space' AND action='view' UNION ALL
-				SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.location='space' 
+				SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role' AND p.location='space'
 					AND p.action='view' AND (r.userid=? OR r.userid='0')
 		))
 	  ORDER BY documentid`, ctx.OrgID, spaceID, ctx.OrgID, ctx.OrgID, ctx.UserID, ctx.OrgID, ctx.UserID)

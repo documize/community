@@ -20,9 +20,13 @@ export default Route.extend(AuthenticatedRouteMixin, {
 	folderService: service('folder'),
 	userService: service('user'),
 
-	beforeModel() {
+	beforeModel(transition) {
+		// Note the source that sent user to this document.
+		let source = transition.queryParams.source;
+		if (is.null(source) || is.undefined(source)) source = "";
+
 		return new EmberPromise((resolve) => {
-			this.get('documentService').fetchPages(this.paramsFor('document').document_id, this.get('session.user.id')).then((data) => {
+			this.get('documentService').fetchPages(this.paramsFor('document').document_id, this.get('session.user.id'), source).then((data) => {
 				this.set('pages', data);
 				resolve();
 			});

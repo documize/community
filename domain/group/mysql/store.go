@@ -58,6 +58,8 @@ func (s Scope) Get(ctx domain.RequestContext, refID string) (g group.Group, err 
 
 // GetAll returns all user groups for current orgID.
 func (s Scope) GetAll(ctx domain.RequestContext) (groups []group.Group, err error) {
+	groups = []group.Group{}
+
 	err = s.Runtime.Db.Select(&groups,
 		`SELECT a.id, a.refid, a.orgid, a.role as name, a.purpose, a.created, a.revised, COUNT(b.roleid) AS members
 		FROM role a
@@ -67,9 +69,8 @@ func (s Scope) GetAll(ctx domain.RequestContext) (groups []group.Group, err erro
 		ORDER BY a.role`,
 		ctx.OrgID)
 
-	if err == sql.ErrNoRows || len(groups) == 0 {
+	if err == sql.ErrNoRows {
 		err = nil
-		groups = []group.Group{}
 	}
 	if err != nil {
 		err = errors.Wrap(err, "select groups")
@@ -101,8 +102,10 @@ func (s Scope) Delete(ctx domain.RequestContext, refID string) (rows int64, err 
 
 // GetGroupMembers returns all user associated with given group.
 func (s Scope) GetGroupMembers(ctx domain.RequestContext, groupID string) (members []group.Member, err error) {
+	members = []group.Member{}
+
 	err = s.Runtime.Db.Select(&members,
-		`SELECT a.id, a.orgid, a.roleid, a.userid, 
+		`SELECT a.id, a.orgid, a.roleid, a.userid,
 		IFNULL(b.firstname, '') as firstname, IFNULL(b.lastname, '') as lastname
 		FROM rolemember a
 		LEFT JOIN user b ON b.refid=a.userid
@@ -110,9 +113,8 @@ func (s Scope) GetGroupMembers(ctx domain.RequestContext, groupID string) (membe
 		ORDER BY b.firstname, b.lastname`,
 		ctx.OrgID, groupID)
 
-	if err == sql.ErrNoRows || len(members) == 0 {
+	if err == sql.ErrNoRows {
 		err = nil
-		members = []group.Member{}
 	}
 	if err != nil {
 		err = errors.Wrap(err, "select members")
@@ -146,16 +148,17 @@ func (s Scope) LeaveGroup(ctx domain.RequestContext, groupID, userID string) (er
 // Useful when you need to bulk fetch membership records
 // for subsequent processing.
 func (s Scope) GetMembers(ctx domain.RequestContext) (r []group.Record, err error) {
+	r = []group.Record{}
+
 	err = s.Runtime.Db.Select(&r,
 		`SELECT a.id, a.orgid, a.roleid, a.userid, b.role as name, b.purpose
 		FROM rolemember a, role b
-		WHERE a.orgid=? AND a.roleid=b.refid 
+		WHERE a.orgid=? AND a.roleid=b.refid
 		ORDER BY a.userid`,
 		ctx.OrgID)
 
-	if err == sql.ErrNoRows || len(r) == 0 {
+	if err == sql.ErrNoRows {
 		err = nil
-		r = []group.Record{}
 	}
 	if err != nil {
 		err = errors.Wrap(err, "select group members")

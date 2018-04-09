@@ -25,6 +25,10 @@ export default Router.map(function () {
 		path: 'dashboard'
 	});
 
+	this.route('analytics', {
+		path: 'analytics'
+	});
+
 	this.route(
 		'folder',
 		{

@@ -1,8 +1,7 @@
 {{#toolbar/t-toolbar}}
 
 	{{#toolbar/t-links}}
-		{{#link-to "folders" class="link" tagName="li"}}Spaces{{/link-to}}
-		{{#link-to "folder" space.id space.slug class="link" tagName="li"}}{{space.name}}{{/link-to}}
+		{{#link-to "folder" space.id space.slug class="link selected" tagName="li"}}{{space.name}}{{/link-to}}
 		{{#if showDocumentLink}}
 			{{#link-to 'document.index' space.id space.slug document.id document.slug class="link"}}{{document.name}}{{/link-to}}
 		{{/if}}

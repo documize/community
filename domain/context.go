@@ -29,6 +29,7 @@ type RequestContext struct {
 	Guest                bool
 	Editor               bool
 	Global               bool
+	Analytics            bool
 	UserID               string
 	OrgID                string
 	OrgName              string

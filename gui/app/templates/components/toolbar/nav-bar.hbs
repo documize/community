@@ -63,7 +63,8 @@
 								{{/if}}
 							{{/if}}
 							<a href="#" class="dropdown-item {{if hasWhatsNew 'color-whats-new font-weight-bold'}}" {{action 'onShowWhatsNewModal'}}>What's New</a>
-							<a href="#" class="dropdown-item" data-toggle="modal" data-target="#about-documize-modal" data-backdrop="static">About Documize</a>
+							<a href="https://docs.documize.com" target="_blank" class="dropdown-item">Help</a>
+							<a href="#" class="dropdown-item" data-toggle="modal" data-target="#about-documize-modal" data-backdrop="static">About</a>
 							{{#if enableLogout}}
 								<div class="dropdown-divider"></div>
 								{{#link-to 'auth.logout' class="dropdown-item" }}Logout{{/link-to}}
@@ -140,7 +141,7 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
 				</div>
 			</div>
 		</div>

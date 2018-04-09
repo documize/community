@@ -27,7 +27,7 @@ export default Component.extend(AuthProvider, ModalMixin, {
 	init() {
 		this._super(...arguments);
 		this.password = {};
-		this.selectedUsers = [];	
+		this.selectedUsers = [];
 	},
 
 	didReceiveAttrs() {
@@ -87,6 +87,13 @@ export default Component.extend(AuthProvider, ModalMixin, {
 		toggleAdmin(id) {
 			let user = this.users.findBy("id", id);
 			user.set('admin', !user.get('admin'));
+			let cb = this.get('onSave');
+			cb(user);
+		},
+
+		toggleAnalytics(id) {
+			let user = this.users.findBy("id", id);
+			user.set('analytics', !user.get('analytics'));
 			let cb = this.get('onSave');
 			cb(user);
 		},
@@ -208,7 +215,7 @@ export default Component.extend(AuthProvider, ModalMixin, {
 
 			this.get('groupSvc').leave(groupId, userId).then(() => {
 				this.filterUsers();
-			});			
+			});
 		},
 
 		onJoinGroup(groupId) {
@@ -222,7 +229,7 @@ export default Component.extend(AuthProvider, ModalMixin, {
 
 			this.get('groupSvc').join(groupId, userId).then(() => {
 				this.filterUsers();
-			});			
-		}		
+			});
+		}
 	}
 });

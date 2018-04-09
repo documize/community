@@ -9,64 +9,14 @@
 //
 // https://documize.com
 
-import { debounce } from '@ember/runloop';
-import { inject as service } from '@ember/service';
 import Controller from '@ember/controller';
 
 export default Controller.extend({
-	searchService: service('search'),
-	queryParams: ['filter', 'matchDoc', 'matchContent', 'matchTag', 'matchFile'],
+	queryParams: ['filter', 'matchDoc', 'matchContent', 'matchTag', 'matchFile', 'slog'],
 	filter: '',
-	onKeywordChange: function () {
-		debounce(this, this.fetch, 750);
-	}.observes('filter'),
-
 	matchDoc: true,
-	onMatchDoc: function () {
-		debounce(this, this.fetch, 750);
-	}.observes('matchDoc'),
-
 	matchContent: true,
-	onMatchContent: function () {
-		debounce(this, this.fetch, 750);
-	}.observes('matchContent'),
-
 	matchTag: false,
-	onMatchTag: function () {
-		debounce(this, this.fetch, 750);
-	}.observes('matchTag'),
-
 	matchFile: false,
-	onMatchFile: function () {
-		debounce(this, this.fetch, 750);
-	}.observes('matchFile'),
-
-	init() {
-		this._super(...arguments);
-		this.results = [];
-	},
-
-	fetch() {
-		let self = this;
-		let payload = {
-			keywords: this.get('filter'),
-			doc: this.get('matchDoc'),
-			attachment: this.get('matchFile'),
-			tag: this.get('matchTag'),
-			content: this.get('matchContent')
-		};
-
-		payload.keywords = payload.keywords.trim();
-
-		if (payload.keywords.length == 0) {
-			return;
-		}
-		if (!payload.doc && !payload.tag && !payload.content && !payload.attachment) {
-			return;
-		}
-
-		this.get('searchService').find(payload).then(function(response) {
-			self.set('results', response);
-		});
-	},
+	slog: false,
 });

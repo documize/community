@@ -23,8 +23,11 @@ type UserActivity struct {
 	PageID       string     `json:"pageId"`
 	ActivityType Type       `json:"activityType"`
 	SourceType   SourceType `json:"sourceType"`
-	SourceName   string     `json:"sourceName"`
+	Metadata     string     `json:"metadata"`
 	Created      time.Time  `json:"created"`
+
+	// Read-only outbound fields (e.g. for UI display)
+	SourceName string `json:"sourceName"`
 }
 
 // DocumentActivity represents an activity taken against a document.
@@ -39,6 +42,7 @@ type DocumentActivity struct {
 	Firstname    string    `json:"firstname"`
 	Lastname     string    `json:"lastname"`
 	ActivityType int       `json:"activityType"`
+	Metadata     string    `json:"metadata"`
 	Created      time.Time `json:"created"`
 }
 
@@ -57,50 +61,57 @@ const (
 
 	// SourceTypePage indicates activity against a document page.
 	SourceTypePage SourceType = 3
+
+	// SourceTypeSearch indicates activity on search page.
+	SourceTypeSearch SourceType = 4
 )
 
 const (
-	// TypeCreated records user document creation
+	// TypeCreated records user object creation (document or space).
 	TypeCreated Type = 1
 
-	// TypeRead states user has read document
+	// TypeRead states user has consumed object (document or space).
 	TypeRead Type = 2
 
-	// TypeEdited states user has editing document
+	// TypeEdited states user has editing document.
 	TypeEdited Type = 3
 
-	// TypeDeleted records user deleting space/document
+	// TypeDeleted records user deleting space/document.
 	TypeDeleted Type = 4
 
-	// TypeArchived records user archiving space/document
+	// TypeArchived records user archiving space/document.
 	TypeArchived Type = 5
 
-	// TypeApproved records user approval of document
+	// TypeApproved records user approval of document.
 	TypeApproved Type = 6
 
-	// TypeReverted records user content roll-back to previous version
+	// TypeReverted records user content roll-back to previous document version.
 	TypeReverted Type = 7
 
-	// TypePublishedTemplate records user creating new document template
+	// TypePublishedTemplate records user creating new document template.
 	TypePublishedTemplate Type = 8
 
-	// TypePublishedBlock records user creating reusable content block
+	// TypePublishedBlock records user creating reusable content block.
 	TypePublishedBlock Type = 9
 
-	// TypeCommented records user providing document feedback
+	// TypeCommented records user providing document feedback.
 	TypeCommented Type = 10
 
-	// TypeRejected records user rejecting document
+	// TypeRejected records user rejecting document.
 	TypeRejected Type = 11
 
-	// TypeSentSecureLink records user sending secure document link to email address(es)
+	// TypeSentSecureLink records user sending secure document link via email.
 	TypeSentSecureLink Type = 12
 
-	// TypeDraft records user marking space/document as draft
+	// TypeDraft records user marking space/document as draft.
 	TypeDraft Type = 13
 
-	// TypeVersioned records user creating new document version
+	// TypeVersioned records user creating new document version.
 	TypeVersioned Type = 14
+
+	// TypeSearched records user performing document keyword search.
+	// Metadata field should contain search terms.
+	TypeSearched Type = 15
 )
 
 // TypeName returns one-work descriptor for activity type
@@ -130,6 +141,12 @@ func TypeName(t Type) string {
 		return "Reject"
 	case TypeSentSecureLink:
 		return "Share"
+	case TypeDraft:
+		return "Draft"
+	case TypeVersioned:
+		return "Version"
+	case TypeSearched:
+		return "Search"
 	}
 
 	return ""

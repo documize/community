@@ -3,7 +3,7 @@
 	<ul class="documents">
 		{{#each documents key="id" as |result index|}}
 			<li class="document">
-				<a class="link" href="s/{{result.spaceId}}/{{result.spaceSlug}}/d/{{ result.documentId }}/{{result.documentSlug}}?page={{ result.itemId }}">
+				{{#link-to 'document.index' result.spaceId result.spaceSlug result.documentId result.documentSlug (query-params currentPageId=result.itemId source=searchQuery) class="link"}}
 					<div class="title">
 						{{result.document}}
 						{{#if (gt result.versionId.length 0)}}
@@ -16,7 +16,7 @@
 					{{#if result.template}}
 						<button type="button" class="mt-3 btn btn-warning text-uppercase font-weight-bold">TEMPLATE</button>
 					{{/if}}
-				</a>
+				{{/link-to}}
 			</li>
 		{{/each}}
 	</ul>

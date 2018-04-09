@@ -1,5 +1,15 @@
 <div class="toolbar">
 	<ul class="links">
+		{{#if (eq appMeta.edition 'Community')}}
+			{{#link-to "folders" class=(if (eq selectItem 'spaces') 'link selected' 'link') tagName="li"}}Spaces{{/link-to}}
+		{{/if}}
+		{{#if (eq appMeta.edition 'Enterprise')}}
+			{{#if session.isEditor}}
+				{{#link-to "dashboard" class=(if (eq selectItem 'dashboard') 'link selected' 'link') tagName="li"}}Actions{{/link-to}}
+				{{#link-to "analytics" class=(if (eq selectItem 'analytics') 'link selected' 'link') tagName="li"}}Insights{{/link-to}}
+			{{/if}}
+			{{#link-to "folders" class=(if (eq selectItem 'spaces') 'link selected' 'link') tagName="li"}}Spaces{{/link-to}}
+		{{/if}}
 		{{yield}}
 	</ul>
 </div>

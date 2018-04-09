@@ -34,8 +34,8 @@ func (s Scope) RecordUserActivity(ctx domain.RequestContext, activity activity.U
 	activity.UserID = ctx.UserID
 	activity.Created = time.Now().UTC()
 
-	_, err = ctx.Transaction.Exec("INSERT INTO useractivity (orgid, userid, labelid, documentid, pageid, sourcetype, activitytype, created) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-		activity.OrgID, activity.UserID, activity.LabelID, activity.DocumentID, activity.PageID, activity.SourceType, activity.ActivityType, activity.Created)
+	_, err = ctx.Transaction.Exec("INSERT INTO useractivity (orgid, userid, labelid, documentid, pageid, sourcetype, activitytype, metadata, created) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		activity.OrgID, activity.UserID, activity.LabelID, activity.DocumentID, activity.PageID, activity.SourceType, activity.ActivityType, activity.Metadata, activity.Created)
 
 	if err != nil {
 		err = errors.Wrap(err, "execute record user activity")
@@ -46,7 +46,7 @@ func (s Scope) RecordUserActivity(ctx domain.RequestContext, activity activity.U
 
 // GetDocumentActivity returns the metadata for a specified document.
 func (s Scope) GetDocumentActivity(ctx domain.RequestContext, id string) (a []activity.DocumentActivity, err error) {
-	qry := `SELECT a.id, DATE(a.created) as created, a.orgid, IFNULL(a.userid, '') AS userid, a.labelid, a.documentid, a.pageid, a.activitytype,
+	qry := `SELECT a.id, DATE(a.created) as created, a.orgid, IFNULL(a.userid, '') AS userid, a.labelid, a.documentid, a.pageid, a.activitytype, a.metadata,
 		IFNULL(u.firstname, 'Anonymous') AS firstname, IFNULL(u.lastname, 'Viewer') AS lastname,
 		IFNULL(p.title, '') as pagetitle
 		FROM useractivity a

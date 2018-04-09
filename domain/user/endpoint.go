@@ -162,6 +162,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		a.Editor = true
 		a.Admin = false
 		a.Active = true
+		a.Analytics = false
 
 		err = h.Store.Account.Add(ctx, a)
 		if err != nil {
@@ -481,6 +482,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	a.Admin = u.Admin
 	a.Active = u.Active
 	a.Users = u.ViewUsers
+	a.Analytics = u.Analytics
 
 	err = h.Store.Account.UpdateAccount(ctx, a)
 	if err != nil {
@@ -799,6 +801,7 @@ func (h *Handler) BulkImport(w http.ResponseWriter, r *http.Request) {
 			a.Editor = true
 			a.Admin = false
 			a.Active = true
+			a.Analytics = false
 
 			err = h.Store.Account.Add(ctx, a)
 			if err != nil {
