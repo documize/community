@@ -1,4 +1,4 @@
-# Documize Community Edition
+# Documize - author, track and deliver documentation
 
 ## The mission
 
@@ -6,11 +6,11 @@ To bring software development inspired features to the world of documenting -- r
 
 ## What is it?
 
-Documize is an intelligent document environment (IDE) for creating, securing and sharing documents -- everything you need in one place.
+Documize is an intelligent document environment (IDE) for authoring, tracking and delivering documentation -- everything you need in one place.
 
 ## Why should I care?
 
-Because maybe like us, you're tired of:
+Because maybe like us you're tired of:
 
 * juggling WYSIWYG editors, wiki software and other document related solutions
 * playing email tennis with documents, contributions, versions and feedback
