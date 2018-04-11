@@ -35,7 +35,7 @@ export default Route.extend(AuthenticatedRouteMixin, {
 
 	model() {
 		let document = this.modelFor('document').document;
-		this.browser.setTitle(document.get('name'));
+		this.browser.setTitleWithoutSuffix(document.get('name'));
 		this.browser.setMetaDescription(document.get('excerpt'));
 
 		return hash({
