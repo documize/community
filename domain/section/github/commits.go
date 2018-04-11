@@ -145,6 +145,7 @@ func getCommits(client *gogithub.Client, config *githubConfig) ([]githubCommit, 
 			guff, _, err := client.Repositories.ListCommits(context.Background(), orb.Owner, orb.Repo, opts)
 
 			if err != nil {
+				fmt.Println(err)
 				return nil, nil, err
 			}
 

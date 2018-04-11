@@ -11,15 +11,13 @@
 
 package github
 
-import (
-	gogithub "github.com/google/go-github/github"
-)
+import gogithub "github.com/google/go-github/github"
 
 const (
 	tagSummaryData = "summaryData"
 )
 
-// sort branches in order that that should be presented.
+// sort branches in order that they should be presented.
 
 type branchesToSort []githubBranch
 

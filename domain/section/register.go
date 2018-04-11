@@ -19,7 +19,6 @@ import (
 	"github.com/documize/community/domain/section/airtable"
 	"github.com/documize/community/domain/section/code"
 	"github.com/documize/community/domain/section/gemini"
-	"github.com/documize/community/domain/section/github"
 	"github.com/documize/community/domain/section/markdown"
 	"github.com/documize/community/domain/section/papertrail"
 	"github.com/documize/community/domain/section/plantuml"
@@ -33,7 +32,7 @@ import (
 func Register(rt *env.Runtime, s *domain.Store) {
 	provider.Register("code", &code.Provider{Runtime: rt, Store: s})
 	provider.Register("gemini", &gemini.Provider{Runtime: rt, Store: s})
-	provider.Register("github", &github.Provider{Runtime: rt, Store: s})
+	// provider.Register("github", &github.Provider{Runtime: rt, Store: s})
 	provider.Register("markdown", &markdown.Provider{Runtime: rt, Store: s})
 	provider.Register("papertrail", &papertrail.Provider{Runtime: rt, Store: s})
 	provider.Register("table", &table.Provider{Runtime: rt, Store: s})

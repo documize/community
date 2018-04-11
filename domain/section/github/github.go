@@ -153,6 +153,7 @@ func (p *Provider) Refresh(ctx *provider.Context, configJSON, data string) strin
 
 	err := json.Unmarshal([]byte(configJSON), &c)
 	if err != nil {
+		p.Runtime.Log.Error("github.Refresh unmarshal", err)
 		return "internal configuration error '" + err.Error() + "'"
 	}
 
@@ -163,6 +164,7 @@ func (p *Provider) Refresh(ctx *provider.Context, configJSON, data string) strin
 
 	byts, err := json.Marshal(refreshReportData(&c, client))
 	if err != nil {
+		p.Runtime.Log.Error("github.Refresh marshal", err)
 		return "internal configuration error '" + err.Error() + "'"
 	}
 
@@ -195,6 +197,7 @@ func (p *Provider) Render(ctx *provider.Context, config, data string) string {
 
 	data = strings.TrimSpace(data)
 	if len(data) == 0 {
+		p.Runtime.Log.Info("GitHub connector received empty data for rendering")
 		// TODO review why this error occurs & if it should be reported - seems to occur for new sections
 		// log.ErrorString(fmt.Sprintf("Rendered empty github JSON payload as '' for owner %s repos %#v", c.Owner, c.Lists))
 		return ""
@@ -225,9 +228,7 @@ func (p *Provider) Render(ctx *provider.Context, config, data string) string {
 		}
 
 		t := template.New("github")
-
 		t, err = t.Parse(rep.template)
-
 		if err != nil {
 			p.Runtime.Log.Error("github render template.Parse error:", err)
 			//for k, v := range strings.Split(rep.template, "\n") {
@@ -246,5 +247,6 @@ func (p *Provider) Render(ctx *provider.Context, config, data string) string {
 		ret += buffer.String()
 
 	}
+
 	return ret
 }
