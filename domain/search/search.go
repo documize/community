@@ -24,7 +24,7 @@ func (m *Indexer) IndexDocument(ctx domain.RequestContext, d doc.Document, a []a
 	method := "search.IndexDocument"
 	var err error
 
-	tx, err := m.runtime.Db.Beginx()
+	ctx.Transaction, err = m.runtime.Db.Beginx()
 	if err != nil {
 		m.runtime.Log.Error(method, err)
 		return
@@ -32,12 +32,12 @@ func (m *Indexer) IndexDocument(ctx domain.RequestContext, d doc.Document, a []a
 
 	err = m.store.Search.IndexDocument(ctx, d, a)
 	if err != nil {
-		tx.Rollback()
+		ctx.Transaction.Rollback()
 		m.runtime.Log.Error(method, err)
 		return
 	}
 
-	tx.Commit()
+	ctx.Transaction.Commit()
 }
 
 // DeleteDocument removes all search entries for document.
@@ -45,7 +45,7 @@ func (m *Indexer) DeleteDocument(ctx domain.RequestContext, ID string) {
 	method := "search.DeleteDocument"
 	var err error
 
-	tx, err := m.runtime.Db.Beginx()
+	ctx.Transaction, err = m.runtime.Db.Beginx()
 	if err != nil {
 		m.runtime.Log.Error(method, err)
 		return
@@ -53,12 +53,12 @@ func (m *Indexer) DeleteDocument(ctx domain.RequestContext, ID string) {
 
 	err = m.store.Search.DeleteDocument(ctx, ID)
 	if err != nil {
-		tx.Rollback()
+		ctx.Transaction.Rollback()
 		m.runtime.Log.Error(method, err)
 		return
 	}
 
-	tx.Commit()
+	ctx.Transaction.Commit()
 }
 
 // IndexContent adds search index entry for document context.
@@ -67,7 +67,7 @@ func (m *Indexer) IndexContent(ctx domain.RequestContext, p page.Page) {
 	method := "search.IndexContent"
 	var err error
 
-	tx, err := m.runtime.Db.Beginx()
+	ctx.Transaction, err = m.runtime.Db.Beginx()
 	if err != nil {
 		m.runtime.Log.Error(method, err)
 		return
@@ -75,12 +75,12 @@ func (m *Indexer) IndexContent(ctx domain.RequestContext, p page.Page) {
 
 	err = m.store.Search.IndexContent(ctx, p)
 	if err != nil {
-		tx.Rollback()
+		ctx.Transaction.Rollback()
 		m.runtime.Log.Error(method, err)
 		return
 	}
 
-	tx.Commit()
+	ctx.Transaction.Commit()
 }
 
 // DeleteContent removes all search entries for specific document content.
@@ -88,7 +88,7 @@ func (m *Indexer) DeleteContent(ctx domain.RequestContext, pageID string) {
 	method := "search.DeleteContent"
 	var err error
 
-	tx, err := m.runtime.Db.Beginx()
+	ctx.Transaction, err = m.runtime.Db.Beginx()
 	if err != nil {
 		m.runtime.Log.Error(method, err)
 		return
@@ -96,10 +96,10 @@ func (m *Indexer) DeleteContent(ctx domain.RequestContext, pageID string) {
 
 	err = m.store.Search.DeleteContent(ctx, pageID)
 	if err != nil {
-		tx.Rollback()
+		ctx.Transaction.Rollback()
 		m.runtime.Log.Error(method, err)
 		return
 	}
 
-	tx.Commit()
+	ctx.Transaction.Commit()
 }
