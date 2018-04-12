@@ -11,9 +11,10 @@
 
 import { computed } from '@ember/object';
 import { A } from "@ember/array"
+import TooltipMixin from '../../mixins/tooltip';
 import Component from '@ember/component';
 
-export default Component.extend({
+export default Component.extend(TooltipMixin, {
 	showDeleteDialog: false,
 	showMoveDialog: false,
 	selectedDocuments: A([]),
@@ -94,6 +95,7 @@ export default Component.extend({
 
 			this.set('selectedCaption', list.length > 1 ? 'documents' : 'document');
 			this.set('selectedDocuments', A(list));
+			this.renderTooltips();
         }
     }
 });

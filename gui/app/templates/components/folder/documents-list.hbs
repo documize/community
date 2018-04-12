@@ -23,13 +23,13 @@
 					{{#if document.selected}}
 						<div class="actions">
 							{{#if permissions.documentMove}}
-								<div class="move-documents-button button-icon-green button-icon-small align-middle" {{action 'onShowMoveDocuments'}}>
+								<div class="move-documents-button button-icon-green button-icon-small align-middle" {{action 'onShowMoveDocuments'}} data-toggle="tooltip" data-placement="top" title="Move">
 									<i class="material-icons">compare_arrows</i>
 								</div>
 								<div class="button-icon-gap" />
 							{{/if}}
 							{{#if permissions.documentDelete}}
-								<div class="delete-documents-button button-icon-red button-icon-small align-middle" {{action 'onShowDeleteDocuments'}}>
+								<div class="delete-documents-button button-icon-red button-icon-small align-middle" {{action 'onShowDeleteDocuments'}} data-toggle="tooltip" data-placement="top" title="Delete">
 									<i class="material-icons">delete</i>
 								</div>
 							{{/if}}
