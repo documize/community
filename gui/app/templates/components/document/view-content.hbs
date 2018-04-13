@@ -10,7 +10,7 @@
 			<div class="section-divider" />
 		{{/if}}
 
-		{{document/document-page document=document folder=folder page=item.page meta=item.meta pending=item.pending 
+		{{document/document-page document=document folder=folder page=item.page meta=item.meta pending=item.pending
 			permissions=permissions toEdit=toEdit roles=roles blocks=blocks
 			onSavePage=(action 'onSavePage') onSavePageAsBlock=(action 'onSavePageAsBlock')
 			onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onDeletePage') refresh=(action refresh)}}
@@ -22,6 +22,24 @@
 				<div class="cta">+ SECTION</div>
 			</div>
 		</div>
+	{{/if}}
+
+	{{#if folder.allowLikes}}
+	<div class=" d-flex justify-content-center">
+	<div class="vote-box">
+		{{#unless voteThanks}}
+			<div class="prompt">
+				{{folder.likes}}
+			</div>
+			<div class="buttons">
+				<button type="button" class="btn btn-outline-success font-weight-bold" {{action 'onVote' 1}}>Yes, thanks!</button>&nbsp;&nbsp;
+				<button type="button" class="btn btn-outline-secondary font-weight-bold" {{action 'onVote' 2}}>Not really</button>
+			</div>
+		{{else}}
+			<div class="ack">Thanks for the feedback!</div>
+		{{/unless}}
+	</div>
+	</div>
 	{{/if}}
 {{/if}}
 

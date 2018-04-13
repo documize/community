@@ -24,7 +24,9 @@ import (
 	"github.com/documize/community/core/response"
 	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/core/stringutil"
+	"github.com/documize/community/core/uniqueid"
 	"github.com/documize/community/domain"
+	"github.com/documize/community/domain/organization"
 	"github.com/documize/community/domain/permission"
 	indexer "github.com/documize/community/domain/search"
 	"github.com/documize/community/model/activity"
@@ -625,4 +627,73 @@ type BulkDocumentData struct {
 	Spaces      []space.Space     `json:"folders"`
 	Links       []link.Link       `json:"links"`
 	Versions    []doc.Version     `json:"versions"`
+}
+
+// Vote records document content vote, Yes, No.
+// Anonymous users should be assigned a temporary ID
+func (h *Handler) Vote(w http.ResponseWriter, r *http.Request) {
+	method := "document.Vote"
+	ctx := domain.GetRequestContext(r)
+
+	// Deduce ORG because public API call.
+	ctx.Subdomain = organization.GetSubdomainFromHost(r)
+	org, err := h.Store.Organization.GetOrganizationByDomain(ctx.Subdomain)
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+	ctx.OrgID = org.RefID
+
+	documentID := request.Param(r, "documentID")
+	if len(documentID) == 0 {
+		response.WriteMissingDataError(w, method, "documentID")
+		return
+	}
+
+	defer streamutil.Close(r.Body)
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	var payload struct {
+		UserID string `json:"userId"`
+		Vote   int    `json:"vote"`
+	}
+
+	err = json.Unmarshal(body, &payload)
+	if err != nil {
+		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	ctx.Transaction, err = h.Runtime.Db.Beginx()
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	doc, err := h.Store.Document.Get(ctx, documentID)
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	err = h.Store.Document.Vote(ctx, uniqueid.Generate(), doc.OrgID, documentID, payload.UserID, payload.Vote)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	ctx.Transaction.Commit()
+
+	response.WriteEmpty(w)
 }

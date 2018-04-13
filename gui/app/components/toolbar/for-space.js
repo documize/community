@@ -12,7 +12,9 @@
 import $ from 'jquery';
 import { computed } from '@ember/object';
 import { schedule } from '@ember/runloop';
+import { A } from '@ember/array';
 import { inject as service } from '@ember/service';
+import constants from '../../utils/constants';
 import TooltipMixin from '../../mixins/tooltip';
 import ModalMixin from '../../mixins/modal';
 import AuthMixin from '../../mixins/auth';
@@ -48,6 +50,11 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 
 	dropzone: null,
 
+	spaceTypeOptions: A([]),
+	spaceType: constants.FolderType.Private,
+	likes: '',
+	allowLikes: false,
+
 	init() {
 		this._super(...arguments);
 		this.importedDocuments = [];
@@ -77,6 +84,16 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 		if (this.get('inviteMessage').length === 0) {
 			this.set('inviteMessage', this.getDefaultInvitationMessage());
 		}
+
+		let spaceTypeOptions = A([]);
+		spaceTypeOptions.pushObject({id: constants.FolderType.Private, label: 'Private - viewable only by me'});
+		spaceTypeOptions.pushObject({id: constants.FolderType.Protected, label: 'Protected - access is restricted to selected users'});
+		spaceTypeOptions.pushObject({id: constants.FolderType.Public, label: 'Public - can be seen by everyone'});
+		this.set('spaceTypeOptions', spaceTypeOptions);
+		this.set('spaceType', spaceTypeOptions.findBy('id', folder.get('folderType')));
+
+		this.set('likes', folder.get('likes'));
+		this.set('allowLikes', folder.get('allowLikes'));
 	},
 
 	didInsertElement() {
@@ -357,6 +374,31 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 
 			let slug = stringUtil.makeSlug(template.get('title'));
 			this.get('router').transitionTo('document', this.get('space.id'), this.get('space.slug'), id, slug);
+		},
+
+		onSetSpaceType(t) {
+			this.set('spaceType', t);
+		},
+
+		onSetLikes(l) {
+			this.set('allowLikes', l);
+			schedule('afterRender', () => {
+				if (l) $('#space-likes-prompt').focus();
+			});
+
+		},
+
+		onSpaceSettings() {
+			let space = this.get('space');
+			space.set('folderType', this.get('spaceType.id'));
+
+			let allowLikes = this.get('allowLikes');
+			space.set('likes', allowLikes ? this.get('likes') : '');
+
+			this.get('spaceService').save(space).then(() => {
+			});
+
+			this.modalClose("#space-settings-modal");
 		}
 	}
 });

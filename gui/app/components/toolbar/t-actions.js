@@ -12,5 +12,5 @@
 import Component from '@ember/component';
 
 export default Component.extend({
-	classNames: ['col', 'col-sm-4']
+	classNames: ['col', 'col-sm-5']
 });

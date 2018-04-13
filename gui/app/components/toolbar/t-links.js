@@ -14,6 +14,6 @@ import Component from '@ember/component';
 
 export default Component.extend({
 	appMeta: service(),
-	classNames: ['col', 'col-sm-8'],
+	classNames: ['col', 'col-sm-7'],
 	selectItem: '',
 });

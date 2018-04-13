@@ -40,6 +40,7 @@ export default Component.extend(TooltipMixin, {
 		return this.get('blocks.length') > 0;
 	}),
 	mousetrap: null,
+	voteThanks: false,
 
 	didRender() {
 		this._super(...arguments);
@@ -77,7 +78,7 @@ export default Component.extend(TooltipMixin, {
 		let mousetrap = this.get('mousetrap');
 		if (is.not.null(mousetrap)) {
 			mousetrap.unbind('esc');
-		}		
+		}
 	},
 
 	contentLinkHandler() {
@@ -229,7 +230,7 @@ export default Component.extend(TooltipMixin, {
 					// let cb2 = this.get('onSavePage');
 					// cb2(page, meta);
 					this.attrs.onSavePage(page, meta); // eslint-disable-line ember/no-attrs-in-components
-					
+
 					break;
 			}
 		},
@@ -351,6 +352,11 @@ export default Component.extend(TooltipMixin, {
 			});
 
 			return true;
+		},
+
+		onVote(vote) {
+			this.get('documentService').vote(this.get('document.id'), vote);
+			this.set('voteThanks', true);
 		}
 	}
 });

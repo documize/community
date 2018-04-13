@@ -41,7 +41,7 @@ func (s Scope) Add(ctx domain.RequestContext, d doc.Document) (err error) {
 		d.Template, d.Protection, d.Approval, d.Lifecycle, d.Versioned, d.VersionID, d.VersionOrder, d.GroupID, d.Created, d.Revised)
 
 	if err != nil {
-		err = errors.Wrap(err, "execuet insert document")
+		err = errors.Wrap(err, "execute insert document")
 	}
 
 	return
@@ -264,23 +264,28 @@ func (s Scope) MoveActivity(ctx domain.RequestContext, documentID, oldSpaceID, n
 // Remove document pages, revisions, attachments, updates the search subsystem.
 func (s Scope) Delete(ctx domain.RequestContext, documentID string) (rows int64, err error) {
 	b := mysql.BaseQuery{}
-	rows, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE from page WHERE documentid=\"%s\" AND orgid=\"%s\"", documentID, ctx.OrgID))
+	rows, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM page WHERE documentid=\"%s\" AND orgid=\"%s\"", documentID, ctx.OrgID))
 
 	if err != nil {
 		return
 	}
 
-	_, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE from revision WHERE documentid=\"%s\" AND orgid=\"%s\"", documentID, ctx.OrgID))
+	_, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM revision WHERE documentid=\"%s\" AND orgid=\"%s\"", documentID, ctx.OrgID))
 	if err != nil {
 		return
 	}
 
-	_, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE from attachment WHERE documentid=\"%s\" AND orgid=\"%s\"", documentID, ctx.OrgID))
+	_, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM attachment WHERE documentid=\"%s\" AND orgid=\"%s\"", documentID, ctx.OrgID))
 	if err != nil {
 		return
 	}
 
-	_, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE from categorymember WHERE documentid=\"%s\" AND orgid=\"%s\"", documentID, ctx.OrgID))
+	_, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM categorymember WHERE documentid=\"%s\" AND orgid=\"%s\"", documentID, ctx.OrgID))
+	if err != nil {
+		return
+	}
+
+	_, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM vote WHERE documentid=\"%s\" AND orgid=\"%s\"", documentID, ctx.OrgID))
 	if err != nil {
 		return
 	}
@@ -292,18 +297,23 @@ func (s Scope) Delete(ctx domain.RequestContext, documentID string) (rows int64,
 // Remove document pages, revisions, attachments, updates the search subsystem.
 func (s Scope) DeleteBySpace(ctx domain.RequestContext, spaceID string) (rows int64, err error) {
 	b := mysql.BaseQuery{}
-	rows, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE from page WHERE documentid IN (SELECT refid FROM document WHERE labelid=\"%s\" AND orgid=\"%s\")", spaceID, ctx.OrgID))
+	rows, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM page WHERE documentid IN (SELECT refid FROM document WHERE labelid=\"%s\" AND orgid=\"%s\")", spaceID, ctx.OrgID))
 
 	if err != nil {
 		return
 	}
 
-	_, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE from revision WHERE documentid IN (SELECT refid FROM document WHERE labelid=\"%s\" AND orgid=\"%s\")", spaceID, ctx.OrgID))
+	_, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM revision WHERE documentid IN (SELECT refid FROM document WHERE labelid=\"%s\" AND orgid=\"%s\")", spaceID, ctx.OrgID))
 	if err != nil {
 		return
 	}
 
-	_, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE from attachment WHERE documentid IN (SELECT refid FROM document WHERE labelid=\"%s\" AND orgid=\"%s\")", spaceID, ctx.OrgID))
+	_, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM attachment WHERE documentid IN (SELECT refid FROM document WHERE labelid=\"%s\" AND orgid=\"%s\")", spaceID, ctx.OrgID))
+	if err != nil {
+		return
+	}
+
+	_, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM vote WHERE documentid IN (SELECT refid FROM document WHERE labelid=\"%s\" AND orgid=\"%s\")", spaceID, ctx.OrgID))
 	if err != nil {
 		return
 	}
@@ -332,6 +342,27 @@ func (s Scope) GetVersions(ctx domain.RequestContext, groupID string) (v []doc.V
 	}
 	if err != nil {
 		err = errors.Wrap(err, "document.store.GetVersions")
+	}
+
+	return
+}
+
+// Vote records document content vote.
+// Any existing vote by the user is replaced.
+func (s Scope) Vote(ctx domain.RequestContext, refID, orgID, documentID, userID string, vote int) (err error) {
+	b := mysql.BaseQuery{}
+
+	_, err = b.DeleteWhere(ctx.Transaction,
+		fmt.Sprintf("DELETE FROM vote WHERE orgid=\"%s\" AND documentid=\"%s\" AND voter=\"%s\"",
+			orgID, documentID, userID))
+	if err != nil {
+		s.Runtime.Log.Error("store.Vote", err)
+	}
+
+	_, err = ctx.Transaction.Exec(`INSERT INTO vote (refid, orgid, documentid, voter, vote) VALUES (?, ?, ?, ?, ?)`,
+		refID, orgID, documentID, userID, vote)
+	if err != nil {
+		err = errors.Wrap(err, "execute insert vote")
 	}
 
 	return

@@ -36,9 +36,14 @@ function endsWith(str, suffix) {
     return str.indexOf(suffix, str.length - suffix.length) !== -1;
 }
 
+function anonUserId() {
+	return 'anon_' + makeId(11);
+}
+
 export default {
     makeSlug,
     makeId,
-    endsWith
+	endsWith,
+	anonUserId
 };
 

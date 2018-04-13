@@ -20,6 +20,11 @@ export default Model.extend({
 	orgId: attr('string'),
 	userId: attr('string'),
 	folderType: attr('number', { defaultValue: 2 }),
+	likes: attr('string'),
+
+	allowLikes: computed('likes', function () {
+		return is.not.empty(this.get('likes')) && is.not.undefined(this.get('likes'));
+	}),
 
 	slug: computed('name', function () {
 		return stringUtil.makeSlug(this.get('name'));

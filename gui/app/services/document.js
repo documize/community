@@ -11,11 +11,13 @@
 
 import { set } from '@ember/object';
 import { A } from '@ember/array';
+import stringUtil from '../utils/string';
 import ArrayProxy from '@ember/array/proxy';
 import Service, { inject as service } from '@ember/service';
 
 export default Service.extend({
 	sessionService: service('session'),
+	storageSvc: service('localStorage'),
 	folderService: service('folder'),
 	ajax: service(),
 	store: service(),
@@ -315,6 +317,41 @@ export default Service.extend({
 		}).then((response) => {
 			let data = this.get('store').normalize('page', response);
 			return this.get('store').push(data);
+		});
+	},
+
+	//**************************************************
+	// Voting / Liking
+	//**************************************************
+
+	// Vote records content vote from user.
+	// Anonymous users can vote to and are assigned temp id that is stored
+	// client-side in browser local storage.
+	vote(documentId, vote) {
+		let userId = '';
+
+		if (this.get('sessionService.authenticated')) {
+			userId = this.get('sessionService.user.id');
+		} else {
+			let id = this.get('storageSvc').getSessionItem('anonId');
+
+			if (is.not.null(id) && is.not.undefined(id) && id.length === 16) {
+				userId = id;
+			} else {
+				userId = stringUtil.anonUserId();
+			}
+
+			this.get('storageSvc').storeSessionItem('anonId', userId);
+		}
+
+		let payload = {
+			userId: userId,
+			vote: vote
+		};
+
+		return this.get('ajax').post(`public/document/${documentId}/vote`, {
+			data: JSON.stringify(payload),
+			contentType: 'json'
 		});
 	},
 

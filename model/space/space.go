@@ -22,6 +22,9 @@ type Space struct {
 	OrgID  string `json:"orgId"`
 	UserID string `json:"userId"`
 	Type   Scope  `json:"folderType"`
+	// Likes stores the question to ask the user such as 'Did this help you?'.
+	// An empty value tells us liking is not allowed.
+	Likes string `json:"likes"`
 }
 
 // Scope determines folder visibility.
