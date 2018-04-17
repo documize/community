@@ -30,18 +30,19 @@ export default Component.extend(AuthMixin, {
 
 	init() {
 		this._super(...arguments);
-		this.filteredDocs = [];	
+		this.filteredDocs = [];
+		this.setup();
 	},
 
 	didReceiveAttrs() {
 		this._super(...arguments);
-		this.setup();
+		// this.setup();
 	},
 
 	didUpdateAttrs() {
 		this._super(...arguments);
-		this.set('selectedDocuments', []);
-		this.set('filteredDocs', []);
+		// this.set('selectedDocuments', []);
+		// this.set('filteredDocs', []);
 	},
 
 	setup() {
