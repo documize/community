@@ -23,7 +23,7 @@ export default Component.extend(TooltipMixin, {
 	emptyState: computed('pages', function () {
 		return this.get('pages.length') === 0;
 	}),
-	canEdit: computed('permssions', 'document', function() {
+	canEdit: computed('permissions', 'document', 'pages', function() {
 		let constants = this.get('constants');
 		let permissions = this.get('permissions');
 		let authenticated = this.get('session.authenticated');
@@ -74,6 +74,9 @@ export default Component.extend(TooltipMixin, {
 
 	onDocumentPageAdded(pageId) { // eslint-disable-line no-unused-vars
 		this.setSize();
+		schedule('afterRender', () => {
+			this.setState(pageId);
+		});
 	},
 
 	setSize() {
