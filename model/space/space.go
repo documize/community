@@ -84,7 +84,7 @@ type InvitationModel struct {
 // NewSpaceRequest details the new space to create.
 type NewSpaceRequest struct {
 	Name           string `json:"name"`
-	CloneID        string `json:"cloneID"`        // existing space to clone, empty = no cloning
+	CloneID        string `json:"cloneId"`        // existing space to clone, empty = no cloning
 	CopyTemplate   bool   `json:"copyTemplate"`   // copy templates and reusable content blocks
 	CopyPermission bool   `json:"copyPermission"` // copy uer permissions
 	CopyDocument   bool   `json:"copyDocument"`   // copy all documents!

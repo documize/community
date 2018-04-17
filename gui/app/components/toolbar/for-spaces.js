@@ -57,7 +57,7 @@ export default Component.extend(NotifierMixin, AuthMixin, {
 
 			let payload = {
 				name: spaceName,
-				CloneID: clonedId,
+				cloneId: clonedId,
 				copyTemplate: this.get('copyTemplate'),
 				copyPermission: this.get('copyPermission'),
 				copyDocument: this.get('copyDocument'),
