@@ -45,6 +45,11 @@ export default Model.extend({
 		return this.get('lifecycle') == constants.Lifecycle.Draft;
 	}),
 
+	isLive: computed('lifecycle', function () {
+		let constants = this.get('constants');
+		return this.get('lifecycle') == constants.Lifecycle.Live;
+	}),
+
 	lifecycleLabel: computed('lifecycle', function () {
 		let constants = this.get('constants');
 		switch (this.get('lifecycle')) {

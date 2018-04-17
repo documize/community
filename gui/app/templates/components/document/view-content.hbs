@@ -24,22 +24,22 @@
 		</div>
 	{{/if}}
 
-	{{#if folder.allowLikes}}
-	<div class=" d-flex justify-content-center">
-	<div class="vote-box">
-		{{#unless voteThanks}}
-			<div class="prompt">
-				{{folder.likes}}
-			</div>
-			<div class="buttons">
-				<button type="button" class="btn btn-outline-success font-weight-bold" {{action 'onVote' 1}}>Yes, thanks!</button>&nbsp;&nbsp;
-				<button type="button" class="btn btn-outline-secondary font-weight-bold" {{action 'onVote' 2}}>Not really</button>
-			</div>
-		{{else}}
-			<div class="ack">Thanks for the feedback!</div>
-		{{/unless}}
-	</div>
-	</div>
+	{{#if showLikes}}
+		<div class=" d-flex justify-content-center">
+		<div class="vote-box">
+			{{#unless voteThanks}}
+				<div class="prompt">
+					{{folder.likes}}
+				</div>
+				<div class="buttons">
+					<button type="button" class="btn btn-outline-success font-weight-bold" {{action 'onVote' 1}}>Yes, thanks!</button>&nbsp;&nbsp;
+					<button type="button" class="btn btn-outline-secondary font-weight-bold" {{action 'onVote' 2}}>Not really</button>
+				</div>
+			{{else}}
+				<div class="ack">Thanks for the feedback!</div>
+			{{/unless}}
+		</div>
+		</div>
 	{{/if}}
 {{/if}}
 

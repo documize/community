@@ -32,8 +32,6 @@ export default Component.extend(TooltipMixin, {
 	deleteBlockId: '',
 	canEdit: computed('permissions', 'document.protection', function() {
 		let canEdit = this.get('document.protection') !== this.get('constants').ProtectionType.Lock && this.get('permissions.documentEdit');
-
-		// if (canEdit) this.setupAddWizard();
 		return canEdit;
 	}),
 	hasBlocks: computed('blocks', function() {
@@ -41,6 +39,12 @@ export default Component.extend(TooltipMixin, {
 	}),
 	mousetrap: null,
 	voteThanks: false,
+	showLikes: false,
+
+	didReceiveAttrs() {
+		this._super(...arguments);
+		this.set('showLikes', this.get('folder.allowLikes') && this.get('document.isLive'));
+	},
 
 	didRender() {
 		this._super(...arguments);
@@ -115,20 +119,6 @@ export default Component.extend(TooltipMixin, {
 			return false;
 		});
 	},
-
-	// setupAddWizard() {
-	// 	schedule('afterRender', () => {
-	// 		$('.start-section:not(.start-section-empty-state)').off('.hoverIntent');
-
-	// 		$('.start-section:not(.start-section-empty-state)').hoverIntent({interval: 100, over: function() {
-	// 			// in
-	// 			$(this).find('.start-button').velocity("transition.slideDownIn", {duration: 300});
-	// 		}, out: function() {
-	// 			// out
-	// 			$(this).find('.start-button').velocity("transition.slideUpOut", {duration: 300});
-	// 		} });
-	// 	});
-	// },
 
 	addSection(model) {
 		let sequence = 0;
