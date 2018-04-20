@@ -11,7 +11,6 @@
 
 import { computed } from '@ember/object';
 import attr from 'ember-data/attr';
-import constants from '../utils/constants';
 import stringUtil from '../utils/string';
 import Model from 'ember-data/model';
 
@@ -20,6 +19,7 @@ export default Model.extend({
 	orgId: attr('string'),
 	userId: attr('string'),
 	folderType: attr('number', { defaultValue: 2 }),
+	lifecycle: attr('number', { defaultValue: 1 }),
 	likes: attr('string'),
 
 	allowLikes: computed('likes', function () {
@@ -31,14 +31,17 @@ export default Model.extend({
 	}),
 
 	markAsRestricted() {
+		let constants = this.get('constants');
 		this.set('folderType', constants.FolderType.Protected);
 	},
 
 	markAsPrivate() {
+		let constants = this.get('constants');
 		this.set('folderType', constants.FolderType.Private);
 	},
 
 	markAsPublic() {
+		let constants = this.get('constants');
 		this.set('folderType', constants.FolderType.Public);
 	},
 

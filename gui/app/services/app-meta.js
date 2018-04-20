@@ -15,7 +15,6 @@ import { resolve } from 'rsvp';
 import Service, { inject as service } from '@ember/service';
 import miscUtil from '../utils/misc';
 import config from '../config/environment';
-import constants from '../utils/constants';
 
 export default Service.extend({
 	ajax: service(),
@@ -34,7 +33,7 @@ export default Service.extend({
 	updateAvailable: false,
 	valid: true,
 	allowAnonymousAccess: false,
-	authProvider: constants.AuthProvider.Documize,
+	authProvider: null,
 	authConfig: null,
 	setupMode: false,
 	secureMode: false,
@@ -48,6 +47,9 @@ export default Service.extend({
 	},
 
 	boot(requestedRoute, requestedUrl) { // eslint-disable-line no-unused-vars
+		let constants = this.get('constants');
+		this.set('authProvider', constants.AuthProvider.Documize);
+
 		let dbhash;
 		if (is.not.null(document.head.querySelector("[property=dbhash]"))) {
 			dbhash = document.head.querySelector("[property=dbhash]").content;
@@ -84,6 +86,7 @@ export default Service.extend({
 
 			let self = this;
 			let cacheBuster = + new Date();
+
 			$.getJSON(`https://storage.googleapis.com/documize/news/meta.json?cb=${cacheBuster}`, function (versions) {
 				let cv = 'v' + versions.community.version;
 				let ev = 'v' + versions.enterprise.version;

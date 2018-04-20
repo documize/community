@@ -15,11 +15,11 @@ import { inject as service } from '@ember/service';
 import { computed } from '@ember/object';
 import Component from '@ember/component';
 import TooltipMixin from '../../mixins/tooltip';
-import models from '../../utils/model';
 
 export default Component.extend(TooltipMixin, {
 	documentService: service('document'),
 	sectionService: service('section'),
+	store: service(),
 	appMeta: service(),
 	link: service(),
 	hasPages: notEmpty('pages'),
@@ -265,7 +265,7 @@ export default Component.extend(TooltipMixin, {
 				return;
 			}
 
-			let page = models.PageModel.create();
+			let page = this.get('store').createRecord('page');
 			page.set('documentId', this.get('document.id'));
 			page.set('title', sectionName);
 			page.set('contentType', section.get('contentType'));
@@ -296,7 +296,7 @@ export default Component.extend(TooltipMixin, {
 				return;
 			}
 
-			let page = models.PageModel.create();
+			let page = this.get('store').createRecord('page');
 			page.set('documentId', this.get('document.id'));
 			page.set('title', `${block.get('title')}`);
 			page.set('body', block.get('body'));

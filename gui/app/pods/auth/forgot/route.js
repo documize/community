@@ -12,12 +12,13 @@
 import $ from 'jquery';
 import { inject as service } from '@ember/service';
 import Route from '@ember/routing/route';
-import constants from '../../../utils/constants';
 
 export default Route.extend({
     appMeta: service(),
 
 	beforeModel() {
+		let constants = this.get('constants');
+
 		if (this.get('appMeta.authProvider') === constants.AuthProvider.Keycloak) {
 			this.transitionTo('auth.login');
 		}

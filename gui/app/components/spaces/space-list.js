@@ -10,7 +10,6 @@
 // https://documize.com
 
 import Component from '@ember/component';
-import constants from '../../utils/constants';
 import TooltipMixin from '../../mixins/tooltip';
 import NotifierMixin from '../../mixins/notifier';
 import AuthMixin from '../../mixins/auth';
@@ -24,10 +23,13 @@ export default Component.extend(TooltipMixin, NotifierMixin, AuthMixin, {
 		this._super(...arguments);
 		this.publicFolders = [];
 		this.protectedFolders = [];
-		this.privateFolders = [];			
+		this.privateFolders = [];
 	},
 
 	didReceiveAttrs() {
+		this._super(...arguments);
+
+		let constants = this.get('constants');
 		let folders = this.get('spaces');
 		let publicFolders = [];
 		let protectedFolders = [];

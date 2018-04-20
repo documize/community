@@ -36,13 +36,12 @@ export default Component.extend(AuthMixin, {
 
 	didReceiveAttrs() {
 		this._super(...arguments);
-		// this.setup();
+		this.setup();
 	},
 
 	didUpdateAttrs() {
 		this._super(...arguments);
-		// this.set('selectedDocuments', []);
-		// this.set('filteredDocs', []);
+		// this.setup();
 	},
 
 	setup() {
@@ -65,10 +64,12 @@ export default Component.extend(AuthMixin, {
 		schedule('afterRender', () => {
 			if (this.get('categoryFilter') !== '') {
 				this.send('onDocumentFilter', 'category', this.get('categoryFilter'));
-			} else if (this.get('rootDocCount') > 0) {
+			} else {
 				this.send('onDocumentFilter', 'space', this.get('folder.id'));
-			} else if (selectedCategory !== '') {
-				this.send('onDocumentFilter', 'category', selectedCategory);
+			// } else if (this.get('rootDocCount') > 0) {
+			// 	this.send('onDocumentFilter', 'space', this.get('folder.id'));
+			// } else if (selectedCategory !== '') {
+			// 	this.send('onDocumentFilter', 'category', selectedCategory);
 			}
 		});
 	},
@@ -148,8 +149,8 @@ export default Component.extend(AuthMixin, {
 					});
 
 					this.set('categoryFilter', '');
-					this.set('uncategorizedSelected', true);
 					this.set('spaceSelected', false);
+					this.set('uncategorizedSelected', true);
 					break;
 
 				case 'space':

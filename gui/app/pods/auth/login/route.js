@@ -13,7 +13,6 @@ import $ from 'jquery';
 import { Promise as EmberPromise } from 'rsvp';
 import { inject as service } from '@ember/service';
 import Route from '@ember/routing/route';
-import constants from '../../../utils/constants';
 
 export default Route.extend({
     appMeta: service(),
@@ -23,6 +22,8 @@ export default Route.extend({
 
 	beforeModel(transition) {
 		return new EmberPromise((resolve) => {
+			let constants = this.get('constants');
+
 			let authProvider = this.get('appMeta.authProvider');
 
 			switch (authProvider) {

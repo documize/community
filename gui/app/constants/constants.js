@@ -12,9 +12,49 @@
 import EmberObject from "@ember/object";
 
 // access like so:
-//      let constants = this.get('constants');
+// let constants = this.get('constants');
 
 let constants = EmberObject.extend({
+    FolderType: { // eslint-disable-line ember/avoid-leaking-state-in-ember-objects
+        Public: 1,
+        Private: 2,
+        Protected: 3
+    },
+
+    AuthProvider: { // eslint-disable-line ember/avoid-leaking-state-in-ember-objects
+        Documize: 'documize',
+        Keycloak: 'keycloak'
+    },
+
+	DocumentActionType: { // eslint-disable-line ember/avoid-leaking-state-in-ember-objects
+		Read: 1,
+		Feedback: 2,
+		Contribute: 3,
+        Approve: 4,
+        Approved: 5,
+        Rejected: 6,
+        Publish: 7,
+	},
+
+    UserActivityType: { // eslint-disable-line ember/avoid-leaking-state-in-ember-objects
+        Created: 1,
+        Read: 2,
+        Edited: 3,
+        Deleted: 4,
+        Archived: 5,
+        Approved: 6,
+        Reverted: 7,
+        PublishedTemplate: 8,
+        PublishedBlock: 9,
+        Feedback: 10,
+		Rejected: 11,
+		SentSecureLink: 12,
+		Draft: 13,
+		Versioned: 14,
+		Searched: 15,
+		Published: 16
+    },
+
 	// Document
 	ProtectionType: { // eslint-disable-line ember/avoid-leaking-state-in-ember-objects
 		None: 0,
@@ -78,7 +118,18 @@ let constants = EmberObject.extend({
 		Unversioned: 1,  	// turn unversioned into versioned document
 		Cloned: 2,			// create versioned document by cloning existing versioned document
 		Linked: 3			// link existing unversion document into this version group
-	}
+	},
+
+	// Document
+	ActionType: { // eslint-disable-line ember/avoid-leaking-state-in-ember-objects
+		Read:               1,
+		Feedback:           2,
+		Contribute:         3,
+		ApprovalRequest:    4,
+		Approved:           5,
+		Rejected:           6,
+		Publish:			7,
+	},
 });
 
 export default { constants }

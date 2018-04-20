@@ -10,9 +10,7 @@
 // https://documize.com
 
 import { inject as service } from '@ember/service';
-
 import Mixin from '@ember/object/mixin';
-import constants from '../utils/constants';
 
 export default Mixin.create({
 	appMeta: service(),
@@ -21,6 +19,8 @@ export default Mixin.create({
 
 	init() {
 		this._super(...arguments);
+		let constants = this.get('constants');
+
 		this.set('isAuthProviderDocumize', this.get('appMeta.authProvider') === constants.AuthProvider.Documize);
 		this.set('isAuthProviderKeycloak', this.get('appMeta.authProvider') === constants.AuthProvider.Keycloak);
 	}

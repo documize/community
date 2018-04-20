@@ -25,6 +25,7 @@ export default Model.extend({
 	versioned: attr('string'),
 	drafted: attr('string'),
 	archived: attr('string'),
+	published: attr('string'),
 
 	hasContributed: computed('contributed', function () {
 		return this.get('contributed').length > 0;
@@ -49,5 +50,8 @@ export default Model.extend({
 	}),
 	hasArchived: computed('archived', function () {
 		return this.get('archived').length > 0;
+	}),
+	hasPublished: computed('published', function () {
+		return this.get('published').length > 0;
 	})
 });

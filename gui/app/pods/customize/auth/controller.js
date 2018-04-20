@@ -13,7 +13,6 @@ import { Promise as EmberPromise } from 'rsvp';
 import { inject as service } from '@ember/service';
 import Controller from '@ember/controller';
 import NotifierMixin from "../../../mixins/notifier";
-// import constants from '../../../utils/constants';
 
 export default Controller.extend(NotifierMixin, {
 	global: service(),

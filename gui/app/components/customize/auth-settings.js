@@ -9,18 +9,22 @@
 //
 // https://documize.com
 
-import { equal, empty } from '@ember/object/computed';
+import { computed } from '@ember/object';
+import { empty } from '@ember/object/computed';
 import { set } from '@ember/object';
 import { copy } from '@ember/object/internals';
 import { inject as service } from '@ember/service';
 import Component from '@ember/component';
-import constants from '../../utils/constants';
 import encoding from '../../utils/encoding';
 
 export default Component.extend({
 	appMeta: service(),
-	isDocumizeProvider: equal('authProvider', constants.AuthProvider.Documize),
-	isKeycloakProvider: equal('authProvider', constants.AuthProvider.Keycloak),
+	isDocumizeProvider: computed('authProvider', function() {
+		return this.get('authProvider') === this.get('constants').AuthProvider.Documize;
+	}),
+	isKeycloakProvider: computed('authProvider', function() {
+		return this.get('authProvider') === this.get('constants').AuthProvider.Keycloak;
+	}),
 	KeycloakUrlError: empty('keycloakConfig.url'),
 	KeycloakRealmError: empty('keycloakConfig.realm'),
 	KeycloakClientIdError: empty('keycloakConfig.clientId'),
@@ -47,6 +51,7 @@ export default Component.extend({
 		this._super(...arguments);
 
 		let provider = this.get('authProvider');
+		let constants = this.get('constants');
 
 		switch (provider) {
 			case constants.AuthProvider.Documize:
@@ -71,14 +76,17 @@ export default Component.extend({
 
 	actions: {
 		onDocumize() {
+			let constants = this.get('constants');
 			this.set('authProvider', constants.AuthProvider.Documize);
 		},
 
 		onKeycloak() {
+			let constants = this.get('constants');
 			this.set('authProvider', constants.AuthProvider.Keycloak);
 		},
 
 		onSave() {
+			let constants = this.get('constants');
 			let provider = this.get('authProvider');
 			let config = this.get('authConfig');
 

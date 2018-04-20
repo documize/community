@@ -13,7 +13,6 @@ import $ from 'jquery';
 import { notEmpty } from '@ember/object/computed';
 import { inject as service } from '@ember/service'
 import ModalMixin from '../../mixins/modal';
-import constants from '../../utils/constants';
 import Component from '@ember/component';
 
 export default Component.extend(ModalMixin, {
@@ -31,6 +30,8 @@ export default Component.extend(ModalMixin, {
 
 	init() {
 		this._super(...arguments);
+		let constants = this.get('constants');
+
 		this.pins = [];
 
 		if (this.get('appMeta.authProvider') === constants.AuthProvider.Keycloak) {

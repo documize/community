@@ -14,7 +14,6 @@ import { computed } from '@ember/object';
 import { schedule } from '@ember/runloop';
 import { A } from '@ember/array';
 import { inject as service } from '@ember/service';
-import constants from '../../utils/constants';
 import TooltipMixin from '../../mixins/tooltip';
 import ModalMixin from '../../mixins/modal';
 import AuthMixin from '../../mixins/auth';
@@ -51,7 +50,7 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 	dropzone: null,
 
 	spaceTypeOptions: A([]),
-	spaceType: constants.FolderType.Private,
+	spaceType: 0,
 	likes: '',
 	allowLikes: false,
 
@@ -69,6 +68,7 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 
 	didReceiveAttrs() {
 		this._super(...arguments);
+		let constants = this.get('constants');
 
 		let folder = this.get('space');
 		let targets = _.reject(this.get('spaces'), {id: folder.get('id')});

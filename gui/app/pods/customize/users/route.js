@@ -13,7 +13,6 @@ import { Promise as EmberPromise } from 'rsvp';
 import { inject as service } from '@ember/service';
 import Route from '@ember/routing/route';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
-import constants from '../../../utils/constants';
 
 export default Route.extend(AuthenticatedRouteMixin, {
 	userService: service('user'),
@@ -28,6 +27,8 @@ export default Route.extend(AuthenticatedRouteMixin, {
 
 	model() {
 		return new EmberPromise((resolve) => {
+			let constants = this.get('constants');
+
 			if (this.get('appMeta.authProvider') == constants.AuthProvider.Keycloak) {
 				this.get('global').syncExternalUsers().then(() => {
 					this.get('userService').getComplete('').then((users) =>{

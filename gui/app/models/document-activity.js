@@ -12,7 +12,6 @@
 import { computed } from '@ember/object';
 import Model from 'ember-data/model';
 import attr from 'ember-data/attr';
-import constants from '../utils/constants'; 
 
 export default Model.extend({
 	orgId: attr('string'),
@@ -28,6 +27,7 @@ export default Model.extend({
 
 	activityLabel: computed('activityType', function() {
 		let label = '';
+		let constants = this.get('constants');
 
 		switch (this.get('activityType')) {
 			case constants.UserActivityType.Created:
@@ -60,6 +60,9 @@ export default Model.extend({
 			case constants.UserActivityType.Rejected:
 				label = 'Rejected';
 				break;
+			case constants.UserActivityType.Published:
+				label = 'Published';
+				break;
 			default:
 				break;
 		}
@@ -69,6 +72,7 @@ export default Model.extend({
 
 	activityColor: computed('activityType', function() {
 		let color = '';
+		let constants = this.get('constants');
 
 		switch (this.get('activityType')) {
 			case constants.UserActivityType.Created:
@@ -100,6 +104,9 @@ export default Model.extend({
 				break;
 			case constants.UserActivityType.Rejected:
 				color = 'color-red';
+				break;
+			case constants.UserActivityType.Published:
+				color = 'color-green';
 				break;
 			default:
 				break;
