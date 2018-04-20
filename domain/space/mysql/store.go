@@ -35,8 +35,8 @@ func (s Scope) Add(ctx domain.RequestContext, sp space.Space) (err error) {
 	sp.Created = time.Now().UTC()
 	sp.Revised = time.Now().UTC()
 
-	_, err = ctx.Transaction.Exec("INSERT INTO label (refid, label, orgid, userid, type, likes, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-		sp.RefID, sp.Name, sp.OrgID, sp.UserID, sp.Type, sp.Likes, sp.Created, sp.Revised)
+	_, err = ctx.Transaction.Exec("INSERT INTO label (refid, label, orgid, userid, type, lifecycle, likes, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		sp.RefID, sp.Name, sp.OrgID, sp.UserID, sp.Type, sp.Lifecycle, sp.Likes, sp.Created, sp.Revised)
 
 	if err != nil {
 		err = errors.Wrap(err, "unable to execute insert for label")
@@ -47,7 +47,7 @@ func (s Scope) Add(ctx domain.RequestContext, sp space.Space) (err error) {
 
 // Get returns a space from the store.
 func (s Scope) Get(ctx domain.RequestContext, id string) (sp space.Space, err error) {
-	err = s.Runtime.Db.Get(&sp, "SELECT id,refid,label as name,orgid,userid,type,likes,created,revised FROM label WHERE orgid=? and refid=?",
+	err = s.Runtime.Db.Get(&sp, "SELECT id,refid,label as name,orgid,userid,type,lifecycle,likes,created,revised FROM label WHERE orgid=? and refid=?",
 		ctx.OrgID, id)
 
 	if err != nil {
@@ -59,7 +59,7 @@ func (s Scope) Get(ctx domain.RequestContext, id string) (sp space.Space, err er
 
 // PublicSpaces returns spaces that anyone can see.
 func (s Scope) PublicSpaces(ctx domain.RequestContext, orgID string) (sp []space.Space, err error) {
-	qry := "SELECT id,refid,label as name,orgid,userid,type,likes,created,revised FROM label a where orgid=? AND type=1"
+	qry := "SELECT id,refid,label as name,orgid,userid,type,lifecycle,likes,created,revised FROM label a where orgid=? AND type=1"
 
 	err = s.Runtime.Db.Select(&sp, qry, orgID)
 
@@ -78,7 +78,7 @@ func (s Scope) PublicSpaces(ctx domain.RequestContext, orgID string) (sp []space
 // Also handles which spaces can be seen by anonymous users.
 func (s Scope) GetViewable(ctx domain.RequestContext) (sp []space.Space, err error) {
 	q := `
-	SELECT id,refid,label as name,orgid,userid,type,likes,created,revised FROM label
+	SELECT id,refid,label as name,orgid,userid,type,lifecycle,likes,created,revised FROM label
 	WHERE orgid=?
 		AND refid IN (SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid IN (
 		SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space' AND action='view' UNION ALL
@@ -109,7 +109,7 @@ func (s Scope) GetViewable(ctx domain.RequestContext) (sp []space.Space, err err
 // GetAll for admin users!
 func (s Scope) GetAll(ctx domain.RequestContext) (sp []space.Space, err error) {
 	qry := `
-	SELECT id,refid,label as name,orgid,userid,type,likes,created,revised FROM label
+	SELECT id,refid,label as name,orgid,userid,type,lifecycle,likes,created,revised FROM label
 	WHERE orgid=?
 	ORDER BY name`
 
@@ -130,7 +130,7 @@ func (s Scope) GetAll(ctx domain.RequestContext) (sp []space.Space, err error) {
 func (s Scope) Update(ctx domain.RequestContext, sp space.Space) (err error) {
 	sp.Revised = time.Now().UTC()
 
-	_, err = ctx.Transaction.NamedExec("UPDATE label SET label=:name, type=:type, userid=:userid, likes=:likes, revised=:revised WHERE orgid=:orgid AND refid=:refid", &sp)
+	_, err = ctx.Transaction.NamedExec("UPDATE label SET label=:name, type=:type, lifecycle=:lifecycle, userid=:userid, likes=:likes, revised=:revised WHERE orgid=:orgid AND refid=:refid", &sp)
 
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to execute update for label %s", sp.RefID))

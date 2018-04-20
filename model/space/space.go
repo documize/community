@@ -13,6 +13,7 @@ package space
 
 import (
 	"github.com/documize/community/model"
+	"github.com/documize/community/model/workflow"
 )
 
 // Space defines a container for documents.
@@ -22,6 +23,10 @@ type Space struct {
 	OrgID  string `json:"orgId"`
 	UserID string `json:"userId"`
 	Type   Scope  `json:"folderType"`
+
+	// Lifecycle stores the default value all new documents are given upon creation.
+	Lifecycle workflow.Lifecycle `json:"lifecycle"`
+
 	// Likes stores the question to ask the user such as 'Did this help you?'.
 	// An empty value tells us liking is not allowed.
 	Likes string `json:"likes"`

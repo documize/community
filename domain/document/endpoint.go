@@ -253,22 +253,34 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Record document being marked as archived.
-	if d.Lifecycle != oldDoc.Lifecycle && d.Lifecycle == workflow.LifecycleArchived {
-		h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-			LabelID:      d.LabelID,
-			DocumentID:   documentID,
-			SourceType:   activity.SourceTypeDocument,
-			ActivityType: activity.TypeArchived})
-	}
+	// Detect change in document status/lifecycle.
+	if d.Lifecycle != oldDoc.Lifecycle {
+		// Record document being marked as archived.
+		if d.Lifecycle == workflow.LifecycleArchived {
+			h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
+				LabelID:      d.LabelID,
+				DocumentID:   documentID,
+				SourceType:   activity.SourceTypeDocument,
+				ActivityType: activity.TypeArchived})
+		}
 
-	// Record document being marked as draft.
-	if d.Lifecycle != oldDoc.Lifecycle && d.Lifecycle == workflow.LifecycleDraft {
-		h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-			LabelID:      d.LabelID,
-			DocumentID:   documentID,
-			SourceType:   activity.SourceTypeDocument,
-			ActivityType: activity.TypeDraft})
+		// Record document being marked as draft.
+		if d.Lifecycle == workflow.LifecycleDraft {
+			h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
+				LabelID:      d.LabelID,
+				DocumentID:   documentID,
+				SourceType:   activity.SourceTypeDocument,
+				ActivityType: activity.TypeDraft})
+		}
+
+		// Record document being marked as live.
+		if d.Lifecycle == workflow.LifecycleLive {
+			h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
+				LabelID:      d.LabelID,
+				DocumentID:   documentID,
+				SourceType:   activity.SourceTypeDocument,
+				ActivityType: activity.TypePublished})
+		}
 	}
 
 	ctx.Transaction.Commit()
@@ -318,7 +330,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	// If approval workflow then only approvers can delete page
 	if doc.Protection == workflow.ProtectionReview {
-		approvers, err := permission.GetDocumentApprovers(ctx, *h.Store, doc.LabelID, doc.RefID)
+		approvers, err := permission.GetUsersWithDocumentPermission(ctx, *h.Store, doc.LabelID, doc.RefID, pm.DocumentApprove)
 		if err != nil {
 			response.WriteForbiddenError(w)
 			h.Runtime.Log.Error(method, err)

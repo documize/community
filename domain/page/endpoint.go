@@ -1440,7 +1440,7 @@ func (h *Handler) workflowPermitsChange(doc dm.Document, ctx domain.RequestConte
 
 	// If approval workflow then only approvers can delete page
 	if doc.Protection == workflow.ProtectionReview {
-		approvers, err := permission.GetDocumentApprovers(ctx, *h.Store, doc.LabelID, doc.RefID)
+		approvers, err := permission.GetUsersWithDocumentPermission(ctx, *h.Store, doc.LabelID, doc.RefID, pm.DocumentApprove)
 		if err != nil {
 			h.Runtime.Log.Error("workflowAllowsChange", err)
 			return false, err

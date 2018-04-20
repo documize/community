@@ -19,11 +19,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/documize/community/model/workflow"
-
-	"github.com/documize/community/core/env"
-
 	api "github.com/documize/community/core/convapi"
+	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/request"
 	"github.com/documize/community/core/response"
 	"github.com/documize/community/core/stringutil"
@@ -37,6 +34,7 @@ import (
 	"github.com/documize/community/model/audit"
 	"github.com/documize/community/model/doc"
 	"github.com/documize/community/model/page"
+	"github.com/documize/community/model/space"
 	uuid "github.com/nu7hatch/gouuid"
 	"github.com/pkg/errors"
 )
@@ -144,7 +142,16 @@ func (h *Handler) convert(w http.ResponseWriter, r *http.Request, job, folderID 
 		return
 	}
 
-	nd, err := processDocument(ctx, h.Runtime, h.Store, h.Indexer, filename, job, folderID, fileResult)
+	// Fetch space where document resides.
+	sp, err := h.Store.Space.Get(ctx, folderID)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	nd, err := processDocument(ctx, h.Runtime, h.Store, h.Indexer, filename, job, sp, fileResult)
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
@@ -158,16 +165,16 @@ func (h *Handler) convert(w http.ResponseWriter, r *http.Request, job, folderID 
 	response.WriteJSON(w, nd)
 }
 
-func processDocument(ctx domain.RequestContext, r *env.Runtime, store *domain.Store, indexer indexer.Indexer, filename, job, folderID string, fileResult *api.DocumentConversionResponse) (newDocument doc.Document, err error) {
+func processDocument(ctx domain.RequestContext, r *env.Runtime, store *domain.Store, indexer indexer.Indexer, filename, job string, sp space.Space, fileResult *api.DocumentConversionResponse) (newDocument doc.Document, err error) {
 	// Convert into database objects
 	document := convertFileResult(filename, fileResult)
 	document.Job = job
 	document.OrgID = ctx.OrgID
-	document.LabelID = folderID
+	document.LabelID = sp.RefID
 	document.UserID = ctx.UserID
 	documentID := uniqueid.Generate()
 	document.RefID = documentID
-	document.Lifecycle = workflow.LifecycleLive
+	document.Lifecycle = sp.Lifecycle
 
 	err = store.Document.Add(ctx, document)
 	if err != nil {

@@ -18,7 +18,6 @@ Convert test to support i.get() as per toc.js
 // import { module, test } from 'qunit';
 // import { setupTest } from 'ember-qunit';
 // import toc from 'documize/utils/toc';
-// import models from 'documize/utils/model';
 
 // module('Unit | Utility | TOC', function (hooks) {
 // 	setupTest(hooks);

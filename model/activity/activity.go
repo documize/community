@@ -112,6 +112,9 @@ const (
 	// TypeSearched records user performing document keyword search.
 	// Metadata field should contain search terms.
 	TypeSearched Type = 15
+
+	// TypePublished happens when a document is moved from Draft to Live.
+	TypePublished Type = 16
 )
 
 // TypeName returns one-work descriptor for activity type
@@ -147,6 +150,8 @@ func TypeName(t Type) string {
 		return "Version"
 	case TypeSearched:
 		return "Search"
+	case TypePublished:
+		return "Publish"
 	}
 
 	return ""

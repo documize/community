@@ -227,8 +227,74 @@ func HasPermission(ctx domain.RequestContext, s domain.Store, spaceID string, ac
 	return false
 }
 
-// GetDocumentApprovers returns list of users who can approve given document in given space
-func GetDocumentApprovers(ctx domain.RequestContext, s domain.Store, spaceID, documentID string) (users []u.User, err error) {
+// // GetDocumentApprovers returns list of users who can approve given document in given space
+// func GetDocumentApprovers(ctx domain.RequestContext, s domain.Store, spaceID, documentID string) (users []u.User, err error) {
+// 	users = []u.User{}
+// 	prev := make(map[string]bool) // used to ensure we only process user once
+
+// 	// Permissions can be assigned to both groups and individual users.
+// 	// Pre-fetch users with group membership to help us work out
+// 	// if user belongs to a group with permissions.
+// 	groupMembers, err := s.Group.GetMembers(ctx)
+// 	if err != nil {
+// 		return users, err
+// 	}
+
+// 	// space permissions
+// 	sp, err := s.Permission.GetSpacePermissions(ctx, spaceID)
+// 	if err != nil {
+// 		return users, err
+// 	}
+// 	// document permissions
+// 	dp, err := s.Permission.GetDocumentPermissions(ctx, documentID)
+// 	if err != nil {
+// 		return users, err
+// 	}
+
+// 	// all permissions
+// 	all := sp
+// 	all = append(all, dp...)
+
+// 	for _, p := range all {
+// 		// only approvers
+// 		if p.Action != pm.DocumentApprove {
+// 			continue
+// 		}
+
+// 		if p.Who == pm.GroupPermission {
+// 			// get group records for just this group
+// 			groupRecords := group.FilterGroupRecords(groupMembers, p.WhoID)
+
+// 			for i := range groupRecords {
+// 				user, err := s.User.Get(ctx, groupRecords[i].UserID)
+// 				if err != nil {
+// 					return users, err
+// 				}
+// 				if _, isExisting := prev[user.RefID]; !isExisting {
+// 					users = append(users, user)
+// 					prev[user.RefID] = true
+// 				}
+// 			}
+// 		}
+
+// 		if p.Who == pm.UserPermission {
+// 			user, err := s.User.Get(ctx, p.WhoID)
+// 			if err != nil {
+// 				return users, err
+// 			}
+
+// 			if _, isExisting := prev[user.RefID]; !isExisting {
+// 				users = append(users, user)
+// 				prev[user.RefID] = true
+// 			}
+// 		}
+// 	}
+
+// 	return users, err
+// }
+
+// GetUsersWithDocumentPermission returns list of users who have specified document permission in given space
+func GetUsersWithDocumentPermission(ctx domain.RequestContext, s domain.Store, spaceID, documentID string, permissionRequired pm.Action) (users []u.User, err error) {
 	users = []u.User{}
 	prev := make(map[string]bool) // used to ensure we only process user once
 
@@ -257,7 +323,7 @@ func GetDocumentApprovers(ctx domain.RequestContext, s domain.Store, spaceID, do
 
 	for _, p := range all {
 		// only approvers
-		if p.Action != pm.DocumentApprove {
+		if p.Action != permissionRequired {
 			continue
 		}
 

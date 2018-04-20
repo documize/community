@@ -294,6 +294,14 @@ func (h *Handler) Use(w http.ResponseWriter, r *http.Request) {
 		attachments, _ = h.Store.Attachment.GetAttachmentsWithData(ctx, templateID)
 	}
 
+	// Fetch space where document resides.
+	sp, err := h.Store.Space.Get(ctx, folderID)
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
@@ -308,7 +316,7 @@ func (h *Handler) Use(w http.ResponseWriter, r *http.Request) {
 	d.LabelID = folderID
 	d.UserID = ctx.UserID
 	d.Title = docTitle
-	d.Lifecycle = workflow.LifecycleLive
+	d.Lifecycle = sp.Lifecycle
 
 	err = h.Store.Document.Add(ctx, d)
 	if err != nil {
