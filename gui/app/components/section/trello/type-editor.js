@@ -84,7 +84,7 @@ export default Component.extend(SectionMixin, NotifierMixin, TooltipMixin, {
 						Trello.deauthorize();
 					});
 				}
-			}, function (error) { 
+			}, function (error) {
 				console.log(error); // eslint-disable-line no-console
 			});
 	},
@@ -138,7 +138,7 @@ export default Component.extend(SectionMixin, NotifierMixin, TooltipMixin, {
 			}, function (error) { //jshint ignore: line
 				self.set('busy', false);
 				self.set('authenticated', false);
-				self.showNotification("Unable to fetch board lists");
+				console.log("Unable to fetch board lists"); // eslint-disable-line no-console
 				console.log(error); // eslint-disable-line no-console
 			});
 	},
@@ -199,14 +199,13 @@ export default Component.extend(SectionMixin, NotifierMixin, TooltipMixin, {
 							}, function (error) { //jshint ignore: line
 								self.set('busy', false);
 								self.set('authenticated', false);
-								self.showNotification("Unable to fetch boards");
+								console.log("Unable to fetch boards"); // eslint-disable-line no-console
 								console.log(error); // eslint-disable-line no-console
 							});
 					},
 					error: function (error) {
 						self.set('busy', false);
 						self.set('authenticated', false);
-						self.showNotification("Unable to authenticate");
 						console.log(error); // eslint-disable-line no-console
 					}
 				});

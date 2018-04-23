@@ -177,7 +177,6 @@ export default Component.extend(SectionMixin, NotifierMixin, {
 			}, function (error) {
 				self.set('busy', false);
 				self.set('authenticated', false);
-				self.showNotification("Unable to fetch repositories");
 				console.log(error); // eslint-disable-line no-console
 			});
 	},
@@ -202,7 +201,7 @@ export default Component.extend(SectionMixin, NotifierMixin, {
 				}, function (error) {
 					self.set('busy', false);
 					self.set('authenticated', false);
-					self.showNotification("Unable to fetch owners");
+					console.log("Unable to fetch owners"); // eslint-disable-line no-console
 					console.log(error); // eslint-disable-line no-console
 				});
 

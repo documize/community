@@ -51,11 +51,7 @@ export default Component.extend(SectionMixin, NotifierMixin, {
 	},
 
 	displayError(reason) {
-		if (netUtil.isAjaxAccessError(reason)) {
-			// this.showNotification(`Unable to authenticate`);
-		} else {
-			// this.showNotification(`Something went wrong, try again!`);
-		}
+		console.log(reason); // eslint-disable-line no-console
 	},
 
 	actions: {
@@ -181,7 +177,7 @@ export default Component.extend(SectionMixin, NotifierMixin, {
 				}, function (reason) { // eslint-disable-line no-unused-vars
 					self.set('authenticated', false);
 					self.set('waiting', false);
-					// self.showNotification(`Something went wrong, try again!`);
+					console.log(reason); // eslint-disable-line no-console
 				});
 		}
 	}

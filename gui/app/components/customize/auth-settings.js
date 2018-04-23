@@ -145,13 +145,13 @@ export default Component.extend({
 				if (data.authProvider === constants.AuthProvider.Keycloak) {
 					this.get('onSync')().then((response) => {
 						if (response.isError) {
-							this.showNotification(response.message);
+							console.log(response.message); // eslint-disable-line no-console
 							data.authProvider = constants.AuthProvider.Documize;
 							this.get('onSave')(data).then(() => {
 							});
 						} else {
 							if (data.authProvider === this.get('appMeta.authProvider')) {
-								this.showNotification(response.message);
+								console.log(response.message); // eslint-disable-line no-console
 							} else {
 								this.get('onChange')(data);
 							}
