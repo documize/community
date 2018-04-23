@@ -121,13 +121,21 @@ func (h *Handler) Sync(w http.ResponseWriter, r *http.Request) {
 			insert = append(insert, k)
 		}
 	}
+	// Track the number of Keycloak users with missing data.
+	missing := 0
 
 	// Insert new users into Documize
 	for _, u := range insert {
-		err = addUser(ctx, h.Runtime, h.Store, u, c.DefaultPermissionAddSpace)
+		if len(u.Email) == 0 {
+			missing++
+		} else {
+			err = addUser(ctx, h.Runtime, h.Store, u, c.DefaultPermissionAddSpace)
+		}
 	}
 
-	result.Message = fmt.Sprintf("Keycloak sync'ed %d users, %d new additions", len(kcUsers), len(insert))
+	result.Message = fmt.Sprintf("Keycloak sync found %d users, %d new users added, %d users with missing data ignored",
+		len(kcUsers), len(insert), missing)
+
 	response.WriteJSON(w, result)
 	h.Runtime.Log.Info(result.Message)
 }
@@ -201,9 +209,12 @@ func (h *Handler) Authenticate(w http.ResponseWriter, r *http.Request) {
 
 	// Compare the contents from JWT with what we have.
 	// Guards against MITM token tampering.
-	if a.Email != claims["email"].(string) || claims["sub"].(string) != a.RemoteID {
+	if a.Email != claims["email"].(string) {
 		response.WriteUnauthorizedError(w)
-		h.Runtime.Log.Error(method, err)
+		h.Runtime.Log.Info(">> Start Keycloak debug")
+		h.Runtime.Log.Info(a.Email)
+		h.Runtime.Log.Info(claims["email"].(string))
+		h.Runtime.Log.Info(">> End Keycloak debug")
 		return
 	}
 
