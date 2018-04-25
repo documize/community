@@ -301,7 +301,6 @@ func (s Scope) matchLike(ctx domain.RequestContext, keywords, itemType string) (
 		itemType,
 		ctx.OrgID,
 		ctx.OrgID,
-		ctx.OrgID,
 		ctx.UserID,
 		ctx.OrgID,
 		ctx.UserID,
