@@ -44,7 +44,6 @@ CREATE TABLE IF NOT EXISTS `search` (
 	FULLTEXT INDEX `idx_search_content` (`content`))
 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 ENGINE = MyISAM;
--- FULLTEXT search requires MyISAM and NOT InnoDB
 
 -- migrate page content
 INSERT INTO search (orgid, documentid, itemid, itemtype, content) SELECT orgid, documentid, id AS itemid, 'page' AS itemtype, TRIM(body) AS content FROM search_old;
