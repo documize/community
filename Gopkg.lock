@@ -32,6 +32,12 @@
   revision = "f61c192c7796644259832ef705c49259797e7fff"
 
 [[projects]]
+  name = "github.com/documize/slug"
+  packages = ["."]
+  revision = "e9f42fa127660e552d0ad2b589868d403a9be7c6"
+  version = "v1.1.1"
+
+[[projects]]
   name = "github.com/elazarl/go-bindata-assetfs"
   packages = ["."]
   revision = "30f82fa23fd844bd5bb1e5f216db87fd77b5eb43"
@@ -102,6 +108,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/rainycape/unidecode"
+  packages = ["."]
+  revision = "cb7f23ec59bec0d61b19c56cd88cee3d0cc1870c"
+
+[[projects]]
+  branch = "master"
   name = "github.com/shurcooL/sanitized_anchor_name"
   packages = ["."]
   revision = "86672fcb3f950f35f2e675df2240550f2a50762f"
@@ -158,6 +170,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "56eea54cf0b9e18b3e456199ee01aedeeb07b55073ca3d10345e0c178689aee2"
+  inputs-digest = "a21753e8c217630ea2893ea4a4ee682749e28d4eb6acf70b9b5982ab8c521a20"
   solver-name = "gps-cdcl"
   solver-version = 1
