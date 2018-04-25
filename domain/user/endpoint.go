@@ -45,7 +45,7 @@ type Handler struct {
 	Store   *domain.Store
 }
 
-// Add is the endpoint that enables an administrator to add a new user for their orgaisation.
+// Add is the endpoint that enables an administrator to add a new user for their organization.
 func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	method := "user.Add"
 	ctx := domain.GetRequestContext(r)
@@ -159,10 +159,11 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		a.RefID = uniqueid.Generate()
 		a.UserID = userID
 		a.OrgID = ctx.OrgID
-		a.Editor = true
+		a.Editor = userModel.Editor
 		a.Admin = false
 		a.Active = true
-		a.Analytics = false
+		a.Analytics = userModel.Analytics
+		a.Users = userModel.ViewUsers
 
 		err = h.Store.Account.Add(ctx, a)
 		if err != nil {
@@ -191,6 +192,15 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get back newly created user.
+	newUser, err := h.Store.User.Get(ctx, userID)
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+	AttachUserAccounts(ctx, *h.Store, ctx.OrgID, &newUser)
+
 	// Invite new user
 	inviter, err := h.Store.User.Get(ctx, ctx.UserID)
 	if err != nil {
@@ -218,10 +228,10 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		h.Runtime.Log.Info(fmt.Sprintf("%s is giving access to an existing user %s", inviter.Email, userModel.Email))
 	}
 
-	response.WriteJSON(w, userModel)
+	response.WriteJSON(w, newUser)
 }
 
-// GetOrganizationUsers is the endpoint that allows administrators to view the users in their organisation.
+// GetOrganizationUsers is the endpoint that allows administrators to view the users in their organization.
 func (h *Handler) GetOrganizationUsers(w http.ResponseWriter, r *http.Request) {
 	method := "user.GetOrganizationUsers"
 	ctx := domain.GetRequestContext(r)

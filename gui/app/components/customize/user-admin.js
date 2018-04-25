@@ -20,9 +20,9 @@ export default Component.extend(AuthProvider, ModalMixin, {
 
 	init() {
 		this._super(...arguments);
-		this.set('newUser', { firstname: '', lastname: '', email: '', active: true });
+		this.set('newUser', { firstname: '', lastname: '', email: '', editor: true, viewUsers: true, active: true });
 	},
-	
+
 	actions: {
 		onOpenUserModal() {
 			this.modalOpen("#add-user-modal", {"show": true}, '#newUserFirstname');
