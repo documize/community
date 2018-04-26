@@ -27,10 +27,16 @@ export default Component.extend(TooltipMixin, ModalMixin, {
 		return `page-editor-${page.id}`;
 	}),
 	previewText: 'Preview',
+	pageTitle: '',
+
+	didReceiveAttrs() {
+		this._super(...arguments);
+		this.set('pageTitle', this.get('page.title'));
+	},
 
 	didRender() {
 		this._super(...arguments);
-		
+
 		let msContainer = document.getElementById('section-editor-' + this.get('containerId'));
 		let mousetrap = this.get('mousetrap');
 		if (is.null(mousetrap)) {
@@ -69,7 +75,7 @@ export default Component.extend(TooltipMixin, ModalMixin, {
 
 	actions: {
 		onAction() {
-			if (this.get('busy') || is.empty(this.get('page.title'))) {
+			if (this.get('busy') || is.empty(this.get('pageTitle'))) {
 				return;
 			}
 
@@ -78,7 +84,7 @@ export default Component.extend(TooltipMixin, ModalMixin, {
 			}
 
 			let cb = this.get('onAction');
-			cb(this.get('page.title'));
+			cb(this.get('pageTitle'));
 		},
 
 		onCancel() {

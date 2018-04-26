@@ -3,14 +3,14 @@
 		<div class="col-8 section-editor">
             {{#if blockMode}}
                 <div class="form-group">
-                    {{focus-input id="page-id-{{pageId}}" value=page.title class=(if hasNameError 'form-control mousetrap form-control-lg edit-title is-invalid' 'form-control form-control-lg edit-title mousetrap') placeholder="Enter name"}}
+                    {{focus-input id="page-id-{{pageId}}" value=pageTitle class=(if hasNameError 'form-control mousetrap form-control-lg edit-title is-invalid' 'form-control form-control-lg edit-title mousetrap') placeholder="Enter name"}}
                 </div>
                 <div class="form-group">
                     {{textarea id="page-excerpt-{{pageId}}" value=page.excerpt rows="2" class=(if hasDescError 'form-control mousetrap form-control-lg edit-title is-invalid' 'form-control form-control-lg edit-title mousetrap') placeholder="Enter description"}}
                 </div>
             {{else}}
                 <div class="form-group">
-                    {{focus-input type="text" id=pageId value=page.title class=(if hasNameError 'form-control mousetrap form-control-lg edit-title is-invalid' 'form-control form-control-lg edit-title mousetrap') placeholder="Enter name"}}
+                    {{focus-input type="text" id=pageId value=pageTitle class=(if hasNameError 'form-control mousetrap form-control-lg edit-title is-invalid' 'form-control form-control-lg edit-title mousetrap') placeholder="Enter name"}}
                 </div>
             {{/if}}
         </div>
