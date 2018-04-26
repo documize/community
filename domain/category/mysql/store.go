@@ -194,16 +194,17 @@ func (s Scope) GetSpaceCategorySummary(ctx domain.RequestContext, spaceID string
 	c = []category.SummaryModel{}
 
 	err = s.Runtime.Db.Select(&c, `
-		SELECT 'documents' as type, categoryid, COUNT(*) as count
+		SELECT 'documents' as type, categoryid, COUNT(*) AS count
 			FROM categorymember
-			WHERE orgid=? AND labelid=? GROUP BY categoryid, type
+            WHERE orgid=? AND labelid=?
+            GROUP BY categoryid, type
 		UNION ALL
 		SELECT 'users' as type, refid AS categoryid, count(*) AS count
 			FROM permission
 			WHERE orgid=? AND location='category'
 				AND refid IN (SELECT refid FROM category WHERE orgid=? AND labelid=?)
 			GROUP BY refid, type`,
-		ctx.OrgID, spaceID, ctx.OrgID, ctx.OrgID, spaceID /*, ctx.OrgID, ctx.OrgID, spaceID*/)
+		ctx.OrgID, spaceID, ctx.OrgID, ctx.OrgID, spaceID)
 
 	if err == sql.ErrNoRows {
 		err = nil
