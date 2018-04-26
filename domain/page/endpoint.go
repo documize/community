@@ -1093,14 +1093,17 @@ func (h *Handler) GetDiff(w http.ResponseWriter, r *http.Request) {
 
 	var cfg = &htmldiff.Config{
 		Granularity:  5,
-		InsertedSpan: []htmldiff.Attribute{{Key: "style", Val: "background-color: palegreen;"}},
-		DeletedSpan:  []htmldiff.Attribute{{Key: "style", Val: "background-color: lightpink; text-decoration: line-through;"}},
+		DeletedSpan:  []htmldiff.Attribute{{Key: "style", Val: "background-color: palegreen;"}},
+		InsertedSpan: []htmldiff.Attribute{{Key: "style", Val: "background-color: lightpink; text-decoration: line-through;"}},
 		ReplacedSpan: []htmldiff.Attribute{{Key: "style", Val: "background-color: lightskyblue;"}},
 		CleanTags:    []string{"documize"},
 	}
+	// InsertedSpan: []htmldiff.Attribute{{Key: "style", Val: "background-color: palegreen;"}},
+	// DeletedSpan:  []htmldiff.Attribute{{Key: "style", Val: "background-color: lightpink; text-decoration: line-through;"}},
+	// ReplacedSpan: []htmldiff.Attribute{{Key: "style", Val: "background-color: lightskyblue;"}},
 
-	res, err := cfg.HTMLdiff([]string{latestHTML, previousHTML})
-	// res, err := cfg.HTMLdiff([]string{previousHTML, latestHTML})
+	// res, err := cfg.HTMLdiff([]string{latestHTML, previousHTML})
+	res, err := cfg.HTMLdiff([]string{previousHTML, latestHTML})
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		return

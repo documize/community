@@ -45,7 +45,7 @@ export default Component.extend(ModalMixin, {
 			});
 
 			this.set('revisions', revisions);
-			
+
 			if (revisions.length > 0 && is.null(this.get('revision'))) {
 				this.send('onSelectRevision', revisions[0]);
 			}

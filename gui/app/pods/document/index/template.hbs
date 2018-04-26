@@ -47,14 +47,11 @@
 					onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onPageDeleted')
 					refresh=(action 'refresh')}}
 			{{/if}}
-
 			{{#if (eq tab 'attachment')}}
 				{{document/view-attachment document=document permissions=permissions}}
 			{{/if}}
-
-
 			{{#if (eq tab 'revision')}}
-				{{document/view-revision document=document folder=folder pages=pages onRollback=(action 'onRollback')}}
+				{{document/view-revision document=document folder=folder pages=pages permissions=permissions onRollback=(action 'onRollback')}}
 			{{/if}}
 		</div>
 	</div>
