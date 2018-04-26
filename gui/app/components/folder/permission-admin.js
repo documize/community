@@ -13,6 +13,7 @@ import { inject as service } from '@ember/service';
 import { A } from "@ember/array"
 import { debounce } from '@ember/runloop';
 import ModalMixin from '../../mixins/modal';
+import stringUtil from '../../utils/string';
 import Component from '@ember/component';
 
 export default Component.extend(ModalMixin, {
@@ -80,6 +81,7 @@ export default Component.extend(ModalMixin, {
 
 	permissionRecord(who, whoId, name) {
 		let raw = {
+			id: stringUtil.makeId(16),
 			orgId: this.get('folder.orgId'),
 			folderId: this.get('folder.id'),
 			whoId: whoId,
