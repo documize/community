@@ -74,8 +74,13 @@ func (p *Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http
 			return
 		}
 
-		diagram := p.generateDiagram(ctx, payload.Data)
+		// Generate diagram if we have data.
+		var diagram string
+		if len(payload.Data) > 0 {
+			diagram = p.generateDiagram(ctx, payload.Data)
+		}
 		payload.Data = diagram
+
 		provider.WriteJSON(w, payload)
 		return
 	}
