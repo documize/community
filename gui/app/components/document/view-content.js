@@ -252,6 +252,8 @@ export default Component.extend(TooltipMixin, {
 		},
 
 		onHideSectionWizard() {
+			if (this.get('isDestroyed') || this.get('isDestroying')) return;
+
 			this.set('newSectionLocation', '');
 			this.set('beforePage', null);
 			$("#new-section-wizard").insertAfter('#wizard-placeholder');

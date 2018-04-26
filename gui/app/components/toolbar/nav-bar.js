@@ -69,9 +69,7 @@ export default Component.extend(ModalMixin, {
 	},
 
 	setupPins() {
-		if (this.get('isDestroyed') || this.get('isDestroying')) {
-			return;
-		}
+		if (this.get('isDestroyed') || this.get('isDestroying')) return;
 
 		this.get('pinned').getUserPins().then((pins) => {
 			if (this.get('isDestroyed') || this.get('isDestroying')) {
