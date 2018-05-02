@@ -13,11 +13,13 @@ package stringutil
 
 import "testing"
 
+// go test github.com/documize/community/core/stringutil -run TestInitials
 func TestInitials(t *testing.T) {
 	in(t, "Harvey", "Kandola", "HK")
 	in(t, "Harvey", "", "H")
 	in(t, "", "Kandola", "K")
 	in(t, "", "", "")
+	in(t, "Иванов", "Иванов", "ИИ")
 }
 
 func in(t *testing.T, firstname, lastname, expecting string) {
