@@ -9,17 +9,7 @@
 //
 // https://documize.com
 
-import attr from 'ember-data/attr';
-import Model from 'ember-data/model';
+import Component from '@ember/component';
 
-export default Model.extend({
-	pageId: attr('string'),
-	documentId: attr('string'),
-	orgId: attr('string'),
-	userId: attr('string'),
-	rawBody: attr(),
-	config: attr(),
-	externalSource: attr('boolean', { defaultValue: false }),
-	created: attr(),
-	revised: attr(),
+export default Component.extend({
 });

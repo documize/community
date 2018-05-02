@@ -1,0 +1,14 @@
+{{#section/base-editor document=document folder=folder page=page busy=waiting tip="Concise name that describes the diagram" isDirty=(action 'isDirty') onCancel=(action 'onCancel') onAction=(action 'onAction')}}
+	<div class="section-flowchart-diagram">
+		<div class="container">
+			<div class="row">
+				<div class="col-12">
+					<iframe id={{editorId}}
+						src="https://www.draw.io/?embed=1&ui=Kennedy&spin=0&proto=json&splash=0"
+						style="frameborder:0; border: 0; width: 100%; height: 1000px;">
+					</iframe>
+				</div>
+			</div>
+		</div>
+	</div>
+{{/section/base-editor}}

@@ -26,7 +26,6 @@ export function initialize(application) {
     application.register('constants:main', cs);
 
     Dropzone.autoDiscover = false;
-    CodeMirror.modeURL = "/codemirror/mode/%N/%N.js";
 }
 
 export default {
