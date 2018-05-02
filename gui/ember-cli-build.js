@@ -18,20 +18,20 @@ module.exports = function (defaults) {
 		fingerprint: {
 			enabled: true,
 			extensions: ['js', 'css'],
-			exclude: ['tinymce/**', 'codemirror/**']
+			exclude: ['tinymce/**', 'codemirror/**', 'flowchart/**']
 		},
 
 		minifyJS: {
 			enabled: !isDevelopment,
 			options: {
-				exclude: ['tinymce/**', 'codemirror/**']
+				exclude: ['tinymce/**', 'codemirror/**', 'flowchart/**']
 			}
 		},
 
 		minifyCSS: {
 			enabled: !isDevelopment,
 			options: {
-				exclude: ['tinymce/**', 'codemirror/**']
+				exclude: ['tinymce/**', 'codemirror/**', 'flowchart/**']
 			}
 		},
 
@@ -60,6 +60,7 @@ module.exports = function (defaults) {
 	app.import('vendor/velocity.js');
 	app.import('vendor/velocity.ui.js');
 	app.import('vendor/waypoints.js');
+	app.import('vendor/codemirror.js'); // boot-up files
 
 	app.import('vendor/bootstrap.bundle.min.js');
 
