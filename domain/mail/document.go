@@ -20,19 +20,21 @@ import (
 )
 
 // DocumentApprover notifies user who has just been granted document approval rights.
-func (m *Mailer) DocumentApprover(recipient, inviter, url, document string) {
+func (m *Mailer) DocumentApprover(recipient, inviterName, inviterEmail, url, document string) {
 	method := "DocumentApprover"
 	m.Initialize()
 
 	// check inviter name
-	if inviter == "Hello You" || len(inviter) == 0 {
-		inviter = "Your colleague"
+	if inviterName == "Hello You" || len(inviterName) == 0 {
+		inviterName = "Your colleague"
 	}
 
 	em := smtp.EmailMessage{}
-	em.Subject = fmt.Sprintf("%s has granted you document approval", inviter)
+	em.Subject = fmt.Sprintf("%s has granted you document approval", inviterName)
 	em.ToEmail = recipient
 	em.ToName = recipient
+	em.ReplyTo = inviterEmail
+	em.ReplyName = inviterName
 
 	parameters := struct {
 		Subject  string
@@ -41,7 +43,7 @@ func (m *Mailer) DocumentApprover(recipient, inviter, url, document string) {
 		Document string
 	}{
 		em.Subject,
-		inviter,
+		inviterName,
 		url,
 		document,
 	}

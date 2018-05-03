@@ -200,7 +200,7 @@ func (h *Handler) SetSpacePermissions(w http.ResponseWriter, r *http.Request) {
 						}
 
 						mailer := mail.Mailer{Runtime: h.Runtime, Store: h.Store, Context: ctx}
-						go mailer.ShareSpaceExistingUser(existingUser.Email, inviter.Fullname(), url, sp.Name, model.Message)
+						go mailer.ShareSpaceExistingUser(existingUser.Email, inviter.Fullname(), inviter.Email, url, sp.Name, model.Message)
 						h.Runtime.Log.Info(fmt.Sprintf("%s is sharing space %s with existing user %s", inviter.Email, sp.Name, existingUser.Email))
 					}
 				}
@@ -701,7 +701,7 @@ func (h *Handler) SetDocumentPermissions(w http.ResponseWriter, r *http.Request)
 						}
 
 						mailer := mail.Mailer{Runtime: h.Runtime, Store: h.Store, Context: ctx}
-						go mailer.DocumentApprover(existingUser.Email, inviter.Fullname(), url, doc.Title)
+						go mailer.DocumentApprover(existingUser.Email, inviter.Fullname(), inviter.Email, url, doc.Title)
 						h.Runtime.Log.Info(fmt.Sprintf("%s has made %s document approver for: %s", inviter.Email, existingUser.Email, doc.Title))
 					}
 				}

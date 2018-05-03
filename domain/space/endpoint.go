@@ -868,7 +868,7 @@ func (h *Handler) Invite(w http.ResponseWriter, r *http.Request) {
 
 			url := ctx.GetAppURL(fmt.Sprintf("s/%s/%s", sp.RefID, stringutil.MakeSlug(sp.Name)))
 			mailer := mail.Mailer{Runtime: h.Runtime, Store: h.Store, Context: ctx}
-			go mailer.ShareSpaceExistingUser(email, inviter.Fullname(), url, sp.Name, model.Message)
+			go mailer.ShareSpaceExistingUser(email, inviter.Fullname(), inviter.Email, url, sp.Name, model.Message)
 
 			h.Runtime.Log.Info(fmt.Sprintf("%s is sharing space %s with existing user %s", inviter.Email, sp.Name, email))
 		} else {
