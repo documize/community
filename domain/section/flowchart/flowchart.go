@@ -30,7 +30,7 @@ func (*Provider) Meta() provider.TypeMeta {
 	section := provider.TypeMeta{}
 
 	section.ID = "d46a18f6-49fb-11e8-842f-0ed5f89f718b"
-	section.Title = "Graphical Diagram"
+	section.Title = "Draw.io Diagram"
 	section.Description = "Draw.io powered flowcharts and diagrams"
 	section.ContentType = "flowchart"
 	section.PageType = "tab"

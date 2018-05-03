@@ -67,9 +67,18 @@ export default Component.extend({
 		let self = this;
 
 		let flowCallback = function(evt) {
-			if (self.get('isDestroyed') || self.get('isDestroying')) return;
-			if (evt.origin !== 'https://www.draw.io') return;
-			if (evt.data.length === 0) return;
+			if (self.get('isDestroyed') || self.get('isDestroying')) {
+				console.log('draw.io component destroyed'); // eslint-disable-line no-console
+				return;
+			}
+			// if (evt.origin !== 'https://www.draw.io') {
+			// 	console.log('draw.io incorrect message source: ' + evt.source); // eslint-disable-line no-console
+			// 	return;
+			// }
+			if (evt.data.length === 0) {
+				console.log('draw.io no event data'); // eslint-disable-line no-console
+				return;
+			}
 
 			let editorFrame = document.getElementById(self.get('editorId'));
 			var msg = JSON.parse(evt.data);
@@ -127,7 +136,9 @@ export default Component.extend({
 			this.set('title', title);
 
 			let editorFrame = document.getElementById(this.get('editorId'));
-			editorFrame.contentWindow.postMessage(JSON.stringify({action: 'export', format: 'xmlpng', xml: this.get('diagramXML'), spin: 'Updating'}), '*');
+			editorFrame.contentWindow.postMessage(
+				JSON.stringify({action: 'export', format: 'xmlpng',
+				xml: this.get('diagramXML'), spin: 'Updating'}), '*');
 		}
     }
 });
