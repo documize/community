@@ -142,10 +142,18 @@ export default Component.extend(TooltipMixin, {
 					sequence = beforePage.get('sequence') / 2;
 				}
 
-				model.page.set('sequence', sequence);
-				model.page.set('level', level);
+			}
+		} else {
+			let pages = this.get('pages');
+			if (pages.get('length') > 0 ) {
+				let p = pages.get('lastObject');
+				sequence = p.get('page.sequence') * 2;
+				level = p.get('page.level');
 			}
 		}
+
+		model.page.set('sequence', sequence);
+		model.page.set('level', level);
 
 		if (this.get('document.protection') === constants.ProtectionType.Review) {
 			model.page.set('status', model.page.get('relativeId') === '' ? constants.ChangeState.PendingNew : constants.ChangeState.Pending);
@@ -226,7 +234,9 @@ export default Component.extend(TooltipMixin, {
 		},
 
 		onShowSectionWizard(page) {
-			if (is.undefined(page)) page = { id: '0' };
+			if (is.undefined(page)) {
+				page = { id: '0' };
+			}
 
 			let beforePage = this.get('beforePage');
 			if (is.not.null(beforePage) && $("#new-section-wizard").is(':visible') && beforePage.get('id') === page.id) {
