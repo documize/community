@@ -107,6 +107,15 @@
 				font-size: 1.2rem;
 			}
 		}
+
+		> hr {
+			height: 1px;
+			color: $color-border;
+			background: $color-border;
+			font-size: 0;
+			border: 0;
+			margin: 5px 10px;
+		}
 	}
 
 	// used for user admin

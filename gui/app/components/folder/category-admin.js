@@ -10,7 +10,7 @@
 // https://documize.com
 
 import $ from 'jquery';
-import { A } from "@ember/array"
+import { A } from '@ember/array';
 import { inject as service } from '@ember/service';
 import TooltipMixin from '../../mixins/tooltip';
 import ModalMixin from '../../mixins/modal';
@@ -57,7 +57,7 @@ export default Component.extend(ModalMixin, TooltipMixin, {
 					let users = _.where(s, {categoryId: cat.get('id'), type: 'users'});
 					let userCount = 0;
 					users.forEach((u) => { userCount = userCount + u.count });
-					
+
 					cat.set('documents', docCount);
 					cat.set('users', userCount);
 				});
@@ -183,7 +183,7 @@ export default Component.extend(ModalMixin, TooltipMixin, {
 							c.set('selected', true);
 						}
 					});
-	
+
 					this.set('categoryPermissions', categoryPermissions.sortBy('who', 'name'));
 				});
 			});

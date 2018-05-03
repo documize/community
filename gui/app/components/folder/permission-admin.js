@@ -10,7 +10,7 @@
 // https://documize.com
 
 import { inject as service } from '@ember/service';
-import { A } from "@ember/array"
+import { A } from '@ember/array';
 import { debounce } from '@ember/runloop';
 import ModalMixin from '../../mixins/modal';
 import stringUtil from '../../utils/string';

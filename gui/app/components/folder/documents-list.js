@@ -10,7 +10,7 @@
 // https://documize.com
 
 import { computed } from '@ember/object';
-import { A } from "@ember/array"
+import { A } from '@ember/array';
 import TooltipMixin from '../../mixins/tooltip';
 import Component from '@ember/component';
 
