@@ -88,10 +88,12 @@ func Connect(c Config) (d *mail.Dialer, err error) {
 
 // EmailMessage represents email to be sent.
 type EmailMessage struct {
-	ToEmail  string
-	ToName   string
-	Subject  string
-	BodyHTML string
+	ToEmail   string
+	ToName    string
+	Subject   string
+	BodyHTML  string
+	ReplyTo   string
+	ReplyName string
 }
 
 // SendMessage sends email using specified SMTP connection
@@ -101,6 +103,17 @@ func SendMessage(d *mail.Dialer, c Config, em EmailMessage) (b bool, err error) 
 	// participants
 	m.SetHeader("From", m.FormatAddress(c.SenderEmail, c.SenderName))
 	m.SetHeader("To", m.FormatAddress(em.ToEmail, em.ToName))
+
+	// Where do replies go?
+	reply := c.SenderEmail
+	replyName := c.SenderName
+	if len(em.ReplyTo) > 0 {
+		reply = em.ReplyTo
+	}
+	if len(em.ReplyName) > 0 {
+		replyName = em.ReplyName
+	}
+	m.SetAddressHeader("Reply-To", reply, replyName)
 
 	// content
 	m.SetHeader("Subject", em.Subject)

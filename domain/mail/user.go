@@ -18,19 +18,21 @@ import (
 )
 
 // InviteNewUser invites someone new providing credentials, explaining the product and stating who is inviting them.
-func (m *Mailer) InviteNewUser(recipient, inviter, url, username, password string) {
+func (m *Mailer) InviteNewUser(recipient, inviterName, inviterEmail, url, username, password string) {
 	method := "InviteNewUser"
 	m.Initialize()
 
 	// check inviter name
-	if inviter == "Hello You" || len(inviter) == 0 {
-		inviter = "Your colleague"
+	if inviterName == "Hello You" || len(inviterName) == 0 {
+		inviterName = "Your colleague"
 	}
 
 	em := smtp.EmailMessage{}
-	em.Subject = fmt.Sprintf("%s has invited you to Documize", inviter)
+	em.Subject = fmt.Sprintf("%s has invited you to Documize", inviterName)
 	em.ToEmail = recipient
 	em.ToName = recipient
+	em.ReplyTo = inviterEmail
+	em.ReplyName = inviterName
 
 	parameters := struct {
 		Subject  string
@@ -40,7 +42,7 @@ func (m *Mailer) InviteNewUser(recipient, inviter, url, username, password strin
 		Password string
 	}{
 		em.Subject,
-		inviter,
+		inviterName,
 		url,
 		recipient,
 		password,
@@ -63,19 +65,21 @@ func (m *Mailer) InviteNewUser(recipient, inviter, url, username, password strin
 }
 
 // InviteExistingUser invites a known user to an organization.
-func (m *Mailer) InviteExistingUser(recipient, inviter, url string) {
+func (m *Mailer) InviteExistingUser(recipient, inviterName, inviterEmail, url string) {
 	method := "InviteExistingUser"
 	m.Initialize()
 
 	// check inviter name
-	if inviter == "Hello You" || len(inviter) == 0 {
-		inviter = "Your colleague"
+	if inviterName == "Hello You" || len(inviterName) == 0 {
+		inviterName = "Your colleague"
 	}
 
 	em := smtp.EmailMessage{}
-	em.Subject = fmt.Sprintf("%s has invited you to their Documize account", inviter)
+	em.Subject = fmt.Sprintf("%s has invited you to their Documize account", inviterName)
 	em.ToEmail = recipient
 	em.ToName = recipient
+	em.ReplyTo = inviterEmail
+	em.ReplyName = inviterName
 
 	parameters := struct {
 		Subject string
@@ -83,7 +87,7 @@ func (m *Mailer) InviteExistingUser(recipient, inviter, url string) {
 		URL     string
 	}{
 		em.Subject,
-		inviter,
+		inviterName,
 		url,
 	}
 

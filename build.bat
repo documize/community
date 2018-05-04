@@ -13,11 +13,11 @@ cd ..
 rd /s /q embed\bindata\public
 mkdir embed\bindata\public
 echo "Copying Ember assets folder"
-robocopy /e /NFL /NDL /NJH gui\dist-prod\assets embed\bindata\public\assets 
+robocopy /e /NFL /NDL /NJH gui\dist-prod\assets embed\bindata\public\assets
 echo "Copying Ember codemirror folder"
 robocopy /e /NFL /NDL /NJH gui\dist-prod\codemirror embed\bindata\public\codemirror
 echo "Copying Ember tinymce folder"
-robocopy /e /NFL /NDL /NJH gui\dist-prod\tinymce embed\bindata\public\tinymce 
+robocopy /e /NFL /NDL /NJH gui\dist-prod\tinymce embed\bindata\public\tinymce
 echo "Copying Ember sections folder"
 robocopy /e /NFL /NDL /NJH gui\dist-prod\sections embed\bindata\public\sections
 
@@ -40,7 +40,7 @@ echo "Generating in-memory static assets..."
 go get -u github.com/jteeuwen/go-bindata/...
 go get -u github.com/elazarl/go-bindata-assetfs/...
 cd embed
-go generate 
+go generate
 cd ..
 
 echo "Compiling Windows"

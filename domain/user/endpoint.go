@@ -218,12 +218,12 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 
 		url := fmt.Sprintf("%s/%s", ctx.GetAppURL("auth/sso"), url.QueryEscape(string(encrypted)))
 		mailer := mail.Mailer{Runtime: h.Runtime, Store: h.Store, Context: ctx}
-		go mailer.InviteNewUser(userModel.Email, inviter.Fullname(), url, userModel.Email, requestedPassword)
+		go mailer.InviteNewUser(userModel.Email, inviter.Fullname(), inviter.Email, url, userModel.Email, requestedPassword)
 
 		h.Runtime.Log.Info(fmt.Sprintf("%s invited by %s on %s", userModel.Email, inviter.Email, ctx.AppURL))
 	} else {
 		mailer := mail.Mailer{Runtime: h.Runtime, Store: h.Store, Context: ctx}
-		go mailer.InviteExistingUser(userModel.Email, inviter.Fullname(), ctx.GetAppURL(""))
+		go mailer.InviteExistingUser(userModel.Email, inviter.Fullname(), inviter.Email, ctx.GetAppURL(""))
 
 		h.Runtime.Log.Info(fmt.Sprintf("%s is giving access to an existing user %s", inviter.Email, userModel.Email))
 	}
@@ -847,12 +847,12 @@ func (h *Handler) BulkImport(w http.ResponseWriter, r *http.Request) {
 
 			url := fmt.Sprintf("%s/%s", ctx.GetAppURL("auth/sso"), url.QueryEscape(string(encrypted)))
 			mailer := mail.Mailer{Runtime: h.Runtime, Store: h.Store, Context: ctx}
-			go mailer.InviteNewUser(userModel.Email, inviter.Fullname(), url, userModel.Email, requestedPassword)
+			go mailer.InviteNewUser(userModel.Email, inviter.Fullname(), inviter.Email, url, userModel.Email, requestedPassword)
 
 			h.Runtime.Log.Info(fmt.Sprintf("%s invited by %s on %s", userModel.Email, inviter.Email, ctx.AppURL))
 		} else {
 			mailer := mail.Mailer{Runtime: h.Runtime, Store: h.Store, Context: ctx}
-			go mailer.InviteExistingUser(userModel.Email, inviter.Fullname(), ctx.GetAppURL(""))
+			go mailer.InviteExistingUser(userModel.Email, inviter.Fullname(), inviter.Email, ctx.GetAppURL(""))
 
 			h.Runtime.Log.Info(fmt.Sprintf("%s is giving access to an existing user %s", inviter.Email, userModel.Email))
 		}

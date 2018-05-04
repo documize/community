@@ -18,6 +18,7 @@ import (
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/section/airtable"
 	"github.com/documize/community/domain/section/code"
+	"github.com/documize/community/domain/section/flowchart"
 	"github.com/documize/community/domain/section/gemini"
 	"github.com/documize/community/domain/section/markdown"
 	"github.com/documize/community/domain/section/papertrail"
@@ -41,6 +42,7 @@ func Register(rt *env.Runtime, s *domain.Store) {
 	provider.Register("wysiwyg", &wysiwyg.Provider{Runtime: rt, Store: s})
 	provider.Register("airtable", &airtable.Provider{Runtime: rt, Store: s})
 	provider.Register("plantuml", &plantuml.Provider{Runtime: rt, Store: s})
+	provider.Register("flowchart", &flowchart.Provider{Runtime: rt, Store: s})
 
 	p := provider.List()
 	rt.Log.Info(fmt.Sprintf("Registered %d sections", len(p)))

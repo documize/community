@@ -1,4 +1,3 @@
-# Documize - author, track and deliver documentation
 
 ## The mission
 
@@ -52,9 +51,9 @@ Space view.
 
 ## Latest version
 
-[Community edition: v1.63.1](https://github.com/documize/community/releases)
+[Community edition: v1.64.0](https://github.com/documize/community/releases)
 
-[Enterprise edition: v1.65.1](https://documize.com/downloads)
+[Enterprise edition: v1.66.0](https://documize.com/downloads)
 
 ## OS support
 

@@ -12,6 +12,7 @@
 import $ from 'jquery';
 import { inject as service } from '@ember/service';
 import { debounce } from '@ember/runloop';
+import { A } from '@ember/array';
 import Component from '@ember/component';
 import AuthProvider from '../../mixins/auth';
 import ModalMixin from '../../mixins/modal';
@@ -56,9 +57,11 @@ export default Component.extend(AuthProvider, ModalMixin, {
 				this.get('userSvc')
 					.matchUsers(searchText)
 					.then(users => {
+						let filteredUsers = A([]);
 						users.forEach(user => {
 							let m = members.findBy('userId', user.get('id'));
-							user.set('isMember', is.not.undefined(m));
+							if (is.undefined(m)) filteredUsers.pushObject(user);
+							// user.set('isMember', is.not.undefined(m));
 						});
 
 						if (this.get('showMembers') && members.length === 0) {
@@ -66,7 +69,7 @@ export default Component.extend(AuthProvider, ModalMixin, {
 							this.set('showUsers', true);
 						}
 
-						this.set('users', users);
+						this.set('users', filteredUsers);
 					});
 			});
 	},
@@ -179,6 +182,7 @@ export default Component.extend(AuthProvider, ModalMixin, {
 			this.set('users', null);
 			this.set('showMembers', true);
 			this.set('showUsers', false);
+			this.set('searchText', '');
 			this.loadGroupInfo();
 		},
 
@@ -197,7 +201,7 @@ export default Component.extend(AuthProvider, ModalMixin, {
 						this.set('showUsers', false);
 					}
 				},
-				250
+				450
 			);
 		},
 

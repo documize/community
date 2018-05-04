@@ -23,11 +23,11 @@ func MakeInitials(firstname, lastname string) string {
 	b := ""
 
 	if len(firstname) > 0 {
-		a = firstname[:1]
+		a = string([]rune(firstname)[:1])
 	}
 
 	if len(lastname) > 0 {
-		b = lastname[:1]
+		b = string([]rune(lastname)[:1])
 	}
 
 	return strings.ToUpper(a + b)

@@ -121,17 +121,16 @@
 							</div>
 							<div class="view-customize">
 								<div class="group-users-members my-5">
-									{{#if showMembers}}
-										{{#each members as |member|}}
-											<div class="row item">
-												<div class="col-10 fullname">{{member.fullname}}</div>
-												<div class="col-2 text-right">
-													<button class="btn btn-danger" {{action 'onLeaveGroup' member.userId}}>Remove</button>
-												</div>
+									{{#each members as |member|}}
+										<div class="row item">
+											<div class="col-10 fullname">{{member.fullname}}</div>
+											<div class="col-2 text-right">
+												<button class="btn btn-danger" {{action 'onLeaveGroup' member.userId}}>Remove</button>
 											</div>
-										{{/each}}
-									{{/if}}
+										</div>
+									{{/each}}
 									{{#if showUsers}}
+										<hr />
 										{{#each users as |user|}}
 											<div class="row item">
 												<div class="col-10 fullname">{{user.firstname}} {{user.lastname}}</div>

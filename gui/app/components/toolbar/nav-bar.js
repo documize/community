@@ -54,6 +54,7 @@ export default Component.extend(ModalMixin, {
 			type: 'GET',
 			dataType: 'html',
 			success: function (response) {
+				if (self.get('isDestroyed') || self.get('isDestroying')) return;
 				self.set('newsContent', response);
 			}
 		});

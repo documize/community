@@ -10,7 +10,6 @@
 // https://documize.com
 
 import { A } from '@ember/array';
-
 import ArrayProxy from '@ember/array/proxy';
 import Service, { inject as service } from '@ember/service';
 

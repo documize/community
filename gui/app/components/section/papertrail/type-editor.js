@@ -14,7 +14,6 @@ import { inject as service } from '@ember/service';
 import Component from '@ember/component';
 import NotifierMixin from '../../../mixins/notifier';
 import SectionMixin from '../../../mixins/section';
-import netUtil from '../../../utils/net';
 
 export default Component.extend(SectionMixin, NotifierMixin, {
 	sectionService: service('section'),

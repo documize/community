@@ -9,14 +9,14 @@
 //
 // https://documize.com
 
-import Model from 'ember-data/model';
 import attr from 'ember-data/attr';
-// import { belongsTo } from 'ember-data/relationships';
+import Model from 'ember-data/model';
 
 export default Model.extend({
 	pageId: attr('string'),
 	documentId: attr('string'),
 	orgId: attr('string'),
+	userId: attr('string'),
 	rawBody: attr(),
 	config: attr(),
 	externalSource: attr('boolean', { defaultValue: false }),

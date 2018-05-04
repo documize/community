@@ -79,7 +79,7 @@ func inviteNewUserToSharedSpace(ctx domain.RequestContext, rt *env.Runtime, s *d
 	mailer := mail.Mailer{Runtime: rt, Store: s, Context: ctx}
 
 	url := fmt.Sprintf("%s/%s", baseURL, u.Salt)
-	go mailer.ShareSpaceNewUser(u.Email, invitedBy.Fullname(), url, sp.Name, invitationMessage)
+	go mailer.ShareSpaceNewUser(u.Email, invitedBy.Fullname(), invitedBy.Email, url, sp.Name, invitationMessage)
 
 	return
 }

@@ -13,7 +13,7 @@ import $ from 'jquery';
 import { computed } from '@ember/object';
 import { notEmpty } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
-import { A } from "@ember/array"
+import { A } from '@ember/array';
 import { schedule } from '@ember/runloop';
 import ModalMixin from '../../mixins/modal';
 import Component from '@ember/component';
@@ -51,7 +51,7 @@ export default Component.extend(ModalMixin, {
 		let p = this.get('document.protection');
 		let constants = this.get('constants');
 		let msg = '';
-		
+
 		switch (p) {
 			case constants.ProtectionType.None:
 				msg = constants.ProtectionType.NoneLabel;
@@ -87,7 +87,7 @@ export default Component.extend(ModalMixin, {
 		}
 
 		return msg;
-	}),	
+	}),
 
 	didReceiveAttrs() {
 		this._super(...arguments);

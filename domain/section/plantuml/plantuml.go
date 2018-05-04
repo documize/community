@@ -25,7 +25,7 @@ import (
 	"github.com/documize/community/domain/section/provider"
 )
 
-// Provider represents Mermaid Diagram
+// Provider represents PlantUML Text Diagram
 type Provider struct {
 	Runtime *env.Runtime
 	Store   *domain.Store

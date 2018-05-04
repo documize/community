@@ -18,19 +18,21 @@ import (
 )
 
 // ShareSpaceExistingUser provides an existing user with a link to a newly shared space.
-func (m *Mailer) ShareSpaceExistingUser(recipient, inviter, url, folder, intro string) {
+func (m *Mailer) ShareSpaceExistingUser(recipient, inviterName, inviterEmail, url, folder, intro string) {
 	method := "ShareSpaceExistingUser"
 	m.Initialize()
 
 	// check inviter name
-	if inviter == "Hello You" || len(inviter) == 0 {
-		inviter = "Your colleague"
+	if inviterName == "Hello You" || len(inviterName) == 0 {
+		inviterName = "Your colleague"
 	}
 
 	em := smtp.EmailMessage{}
-	em.Subject = fmt.Sprintf("%s has shared %s with you", inviter, folder)
+	em.Subject = fmt.Sprintf("%s has shared %s with you", inviterName, folder)
 	em.ToEmail = recipient
 	em.ToName = recipient
+	em.ReplyTo = inviterEmail
+	em.ReplyName = inviterName
 
 	parameters := struct {
 		Subject string
@@ -40,7 +42,7 @@ func (m *Mailer) ShareSpaceExistingUser(recipient, inviter, url, folder, intro s
 		Intro   string
 	}{
 		em.Subject,
-		inviter,
+		inviterName,
 		url,
 		folder,
 		intro,
@@ -63,19 +65,21 @@ func (m *Mailer) ShareSpaceExistingUser(recipient, inviter, url, folder, intro s
 }
 
 // ShareSpaceNewUser invites new user providing Credentials, explaining the product and stating who is inviting them.
-func (m *Mailer) ShareSpaceNewUser(recipient, inviter, url, space, invitationMessage string) {
+func (m *Mailer) ShareSpaceNewUser(recipient, inviterName, inviterEmail, url, space, invitationMessage string) {
 	method := "ShareSpaceNewUser"
 	m.Initialize()
 
 	// check inviter name
-	if inviter == "Hello You" || len(inviter) == 0 {
-		inviter = "Your colleague"
+	if inviterName == "Hello You" || len(inviterName) == 0 {
+		inviterName = "Your colleague"
 	}
 
 	em := smtp.EmailMessage{}
-	em.Subject = fmt.Sprintf("%s has shared %s with you on Documize", inviter, space)
+	em.Subject = fmt.Sprintf("%s has shared %s with you on Documize", inviterName, space)
 	em.ToEmail = recipient
 	em.ToName = recipient
+	em.ReplyTo = inviterEmail
+	em.ReplyName = inviterName
 
 	parameters := struct {
 		Subject    string
@@ -85,7 +89,7 @@ func (m *Mailer) ShareSpaceNewUser(recipient, inviter, url, space, invitationMes
 		Folder     string
 	}{
 		em.Subject,
-		inviter,
+		inviterName,
 		url,
 		invitationMessage,
 		space,
