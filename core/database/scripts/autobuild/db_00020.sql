@@ -13,6 +13,6 @@ ALTER TABLE useractivity ADD COLUMN `metadata` VARCHAR(1000) NOT NULL DEFAULT ''
 
 -- new role for viewing content analytics
 ALTER TABLE account ADD COLUMN `analytics` BOOL NOT NULL DEFAULT 0 AFTER `users`;
-UPDATE account SET analytics=1 WHERE admin=1;
+UPDATE account SET analytics=1 WHERE `admin`=1;
 
 -- deprecations

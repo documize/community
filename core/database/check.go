@@ -77,6 +77,10 @@ func Check(runtime *env.Runtime) bool {
 	}
 
 	for k, v := range verInts {
+		// If major release is higher then skip minor/patch checks (e.g. 8.x.x > 5.x.x)
+		if k == 0 && len(verNums) > 0 && verNums[0] > verInts[0] {
+			break
+		}
 		if verNums[k] < v {
 			want := fmt.Sprintf("%d.%d.%d", verInts[0], verInts[1], verInts[2])
 			runtime.Log.Error("MySQL version element "+strconv.Itoa(k+1)+" of '"+version+"' not high enough, need at least version "+want, errors.New("bad MySQL version"))
