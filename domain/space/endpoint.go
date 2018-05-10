@@ -39,6 +39,7 @@ import (
 	"github.com/documize/community/model/page"
 	"github.com/documize/community/model/permission"
 	"github.com/documize/community/model/space"
+	wf "github.com/documize/community/model/workflow"
 	uuid "github.com/nu7hatch/gouuid"
 )
 
@@ -97,9 +98,9 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	sp.Name = model.Name
 	sp.RefID = uniqueid.Generate()
 	sp.OrgID = ctx.OrgID
-	sp.Type = space.ScopePrivate
 	sp.UserID = ctx.UserID
 	sp.Type = space.ScopePrivate
+	sp.Lifecycle = wf.LifecycleLive
 
 	err = h.Store.Space.Add(ctx, sp)
 	if err != nil {
