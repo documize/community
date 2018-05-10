@@ -50,3 +50,10 @@ const (
 	// DBVariantPostgreSQL is PostgreSQL
 	DBVariantPostgreSQL DbVariant = "PostgreSQL"
 )
+
+const (
+	// CommunityEdition is AGPL product variant
+	CommunityEdition = "Community"
+	// EnterpriseEdition is commercial licensed product variant
+	EnterpriseEdition = "Enterprise"
+)

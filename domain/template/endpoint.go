@@ -316,7 +316,12 @@ func (h *Handler) Use(w http.ResponseWriter, r *http.Request) {
 	d.LabelID = folderID
 	d.UserID = ctx.UserID
 	d.Title = docTitle
-	d.Lifecycle = sp.Lifecycle
+
+	if h.Runtime.Product.Edition == env.CommunityEdition {
+		d.Lifecycle = workflow.LifecycleLive
+	} else {
+		d.Lifecycle = sp.Lifecycle
+	}
 
 	err = h.Store.Document.Add(ctx, d)
 	if err != nil {

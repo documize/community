@@ -35,6 +35,7 @@ import (
 	"github.com/documize/community/model/doc"
 	"github.com/documize/community/model/page"
 	"github.com/documize/community/model/space"
+	"github.com/documize/community/model/workflow"
 	uuid "github.com/nu7hatch/gouuid"
 	"github.com/pkg/errors"
 )
@@ -174,8 +175,12 @@ func processDocument(ctx domain.RequestContext, r *env.Runtime, store *domain.St
 	document.UserID = ctx.UserID
 	documentID := uniqueid.Generate()
 	document.RefID = documentID
-	document.Lifecycle = sp.Lifecycle
 
+	if r.Product.Edition == env.CommunityEdition {
+		document.Lifecycle = workflow.LifecycleLive
+	} else {
+		document.Lifecycle = sp.Lifecycle
+	}
 	err = store.Document.Add(ctx, document)
 	if err != nil {
 		ctx.Transaction.Rollback()
