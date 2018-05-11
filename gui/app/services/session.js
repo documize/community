@@ -67,6 +67,18 @@ export default SimpleAuthSession.extend({
 			this.get('session.content.authenticated.user.global') === true;
 	}),
 
+	viewAnalytics: computed('session.content.authenticated.user', function () {
+		return this.get('session.authenticator') !== 'authenticator:anonymous' &&
+			this.get('session.content.authenticated.user.id') !== '0' &&
+			this.get('session.content.authenticated.user.analytics') === true;
+	}),
+
+	viewDashboard: computed('session.content.authenticated.user', function () {
+		return this.get('session.authenticator') !== 'authenticator:anonymous' &&
+			this.get('session.content.authenticated.user.id') !== '0' &&
+			this.get('session.content.authenticated.user.viewUsers') === true;
+	}),
+
 	init() {
 		this._super(...arguments);
 

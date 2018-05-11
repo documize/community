@@ -4,8 +4,10 @@
 			{{#link-to "folders" class=(if (eq selectItem 'spaces') 'link selected' 'link') tagName="li"}}Spaces{{/link-to}}
 		{{/if}}
 		{{#if (eq appMeta.edition 'Enterprise')}}
-			{{#if session.isEditor}}
+			{{#if session.viewDashboard}}
 				{{#link-to "dashboard" class=(if (eq selectItem 'dashboard') 'link selected' 'link') tagName="li"}}Actions{{/link-to}}
+			{{/if}}
+			{{#if session.viewAnalytics}}
 				{{#link-to "analytics" class=(if (eq selectItem 'analytics') 'link selected' 'link') tagName="li"}}Insights{{/link-to}}
 			{{/if}}
 			{{#link-to "folders" class=(if (eq selectItem 'spaces') 'link selected' 'link') tagName="li"}}Spaces{{/link-to}}
