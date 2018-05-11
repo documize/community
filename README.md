@@ -1,3 +1,4 @@
+**NOTE: Expect frequent product releases as we ensure self-host customers enjoy the same product version as our Cloud/SaaS platform.**
 
 ## The mission
 
@@ -54,8 +55,6 @@ Space view.
 [Community edition: v1.64.3](https://github.com/documize/community/releases)
 
 [Enterprise edition: v1.66.3](https://documize.com/downloads)
-
-**NOTE: we do frequent product releases to ensure self-host customers enjoy the same product version as our Cloud/SaaS platform.**
 
 ## OS support
 
