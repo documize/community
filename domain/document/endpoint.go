@@ -143,8 +143,18 @@ func (h *Handler) BySpace(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// get user permissions
+	// Get the space as we need to check settings.
+	space, err := h.Store.Space.Get(ctx, spaceID)
+
+	// Can user view drafts?
 	viewDrafts := permission.CanViewDrafts(ctx, *h.Store, spaceID)
+
+	// If space defaults to drfat documents, then this means
+	// user can view drafts as long as they have edit rights.
+	canEdit := permission.HasPermission(ctx, *h.Store, spaceID, pm.DocumentEdit)
+	if space.Lifecycle == workflow.LifecycleDraft && canEdit {
+		viewDrafts = true
+	}
 
 	// Get complete list of documents regardless of category permission
 	// and versioning.
