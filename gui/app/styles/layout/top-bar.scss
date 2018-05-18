@@ -1,0 +1,85 @@
+#top-bar {
+	padding: 0 !important;
+}
+
+.top-bar {
+	background-color: $color-primary;
+	color: $color-white;
+	padding: 0 30px;
+	font-size: 1rem;
+	height: 50px;
+
+	> .items {
+		margin: 0;
+		padding: 0;
+		height: 50px;
+
+		> .item {
+			list-style: none;
+			display: inline-block;
+			margin: 0 30px 0 0;
+			padding: 0;
+			font-size: 1.2rem;
+			letter-spacing: 0.1rem;
+			font-weight: 700;
+			white-space: nowrap;
+			cursor: pointer;
+
+			> .logo {
+				height: 35px;
+				width: 35px;
+			}
+
+			> .link, .link:visited {
+				@include ease-in();
+				color: $color-white;
+
+				&:hover {
+					color: darken($color-white, 15%);
+				}
+			}
+
+			> .selected {
+				background-color: $color-primary-light !important;
+				color: $color-primary !important;
+				padding: 5px 10px !important;
+
+				&:hover {
+					color: darken($color-primary, 15%) !important;
+				}
+			}
+		}
+	}
+
+	> .buttons {
+		height: 50px;
+		float: right;
+
+		> .button-icon-gap {
+			margin-left: 20px;
+		}
+	}
+
+	> .hamburger {
+		@include ease-in();
+		@include border-radius(3px);
+		background-color: $color-primary;
+		border: 1px solid $color-primary-light;
+
+		> i {
+			font-size: 1.8rem;
+			line-height: 2.1rem;
+			padding: 3px 5px 0 5px;
+			color: $color-primary-light;
+			cursor: pointer;
+		}
+
+		&:hover {
+			background-color: $color-primary-light;
+
+			> i {
+				color: $color-primary;
+			}
+		}
+	}
+}

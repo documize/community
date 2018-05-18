@@ -145,6 +145,10 @@ export default Router.map(function () {
 		path: 'accounts'
 	});
 
+	this.route('theming', {
+		path: 'theming'
+	});
+
 	this.route('not-found', {
 		path: '/*wildcard'
 	});
