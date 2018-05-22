@@ -1,9 +1,20 @@
-.footer {
+footer {
 	background-color: $color-off-white;
 	background-color: $color-primary-light;
-	// border-top: 1px solid $color-gray-light2;
-	color: $color-gray;
+	color: $color-dark;
 	font-weight: 500;
 	font-size: 0.9rem;
 	padding: 10px 2rem;
+}
+
+.footer {
+	a, a:visited {
+		@include ease-in();
+		color: $color-primary;
+		text-decoration: none;
+
+		&:hover {
+			text-decoration: underline;
+		}
+	}
 }

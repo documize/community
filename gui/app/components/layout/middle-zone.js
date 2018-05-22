@@ -9,11 +9,10 @@
 //
 // https://documize.com
 
-import { inject as service } from '@ember/service';
+// import $ from 'jquery';
 import Component from '@ember/component';
 
 export default Component.extend({
-	classNames: ['layout-footer'],
-	tagName: 'footer',
-	appMeta: service()
+	classNames: ['layout-body'],
+	tagName: 'main'
 });
