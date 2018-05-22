@@ -13,6 +13,6 @@
 import Component from '@ember/component';
 
 export default Component.extend({
-	classNames: ['layout-sidebar'],
-	tagName: 'nav'
+	classNames: ['layout-content'],
+	tagName: 'article'
 });

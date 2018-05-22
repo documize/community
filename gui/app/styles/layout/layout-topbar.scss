@@ -5,7 +5,7 @@
 .top-bar {
 	background-color: $color-primary;
 	color: $color-white;
-	padding: 0 30px;
+	padding: 0 2rem;
 	font-size: 1rem;
 	height: 50px;
 
@@ -69,9 +69,10 @@
 		> i {
 			font-size: 1.8rem;
 			line-height: 2.1rem;
-			padding: 3px 5px 0 5px;
+			padding: 0px 3px 0px 3px;
 			color: $color-primary-light;
 			cursor: pointer;
+			vertical-align: sub;
 		}
 
 		&:hover {

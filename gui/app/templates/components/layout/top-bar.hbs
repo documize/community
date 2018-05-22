@@ -1,9 +1,9 @@
 <div id="top-bar" class="clearfix container-fluid">
 	<div class="row no-gutters">
 
-		<div class="col col-4 col-md-9">
+		<div class="col col-6 col-md-9">
 			<div class="top-bar d-none d-md-block">
-				<ul class="items d-flex flex-wrap align-items-center">
+				<ul class="items d-flex align-items-center">
 					<li class="item"><img class="logo" src="/assets/img/icon-white-64x64.png" /></li>
 					{{#if (eq appMeta.edition 'Community')}}
 						<li class="item">
@@ -29,9 +29,9 @@
 				</ul>
 			</div>
 
-			<div class="top-bar d-md-none dropdown d-flex flex-wrap align-items-center">
+			<div class="top-bar d-md-none dropdown d-flex align-items-center">
 				<div class="hamburger" id="top-nav-hamburger" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-					<i class="material-icons">view_headline</i>
+					<i class="material-icons">menu</i>
 				</div>
 				<div class="dropdown-menu" aria-labelledby="top-nav-hamburger">
 					{{#if (eq appMeta.edition 'Community')}}
@@ -52,7 +52,7 @@
 			</div>
 		</div>
 
-		<div class="col col-8 col-md-3">
+		<div class="col col-6 col-md-3">
 			<div class="top-bar">
 				<div class="buttons d-flex flex-wrap align-items-center">
 					<div class="btn-group">
@@ -132,7 +132,6 @@
 
 	</div>
 </div>
-
 
 {{#if session.authenticated}}
 	<div id="whats-new-modal" class="modal" tabindex="-1" role="dialog">
