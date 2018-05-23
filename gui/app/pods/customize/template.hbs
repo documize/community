@@ -26,7 +26,9 @@
 				{{#if (eq appMeta.edition 'Enterprise')}}
 					{{#link-to 'customize.archive' activeClass='selected' class="tab tab-vertical" tagName="li" }}Archive{{/link-to}}
 				{{/if}}
-				{{#link-to 'customize.license' activeClass='selected' class="tab tab-vertical" tagName="li" }}Product{{/link-to}}
+				{{#if session.isGlobalAdmin}}
+					{{#link-to 'customize.license' activeClass='selected' class="tab tab-vertical" tagName="li" }}Product{{/link-to}}
+				{{/if}}
 			</ul>
 		</div>
 	{{/layout/middle-zone-sidebar}}

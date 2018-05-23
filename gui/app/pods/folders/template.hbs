@@ -1,5 +1,19 @@
-{{toolbar/nav-bar}}
+{{#layout/top-bar}}
+{{/layout/top-bar}}
 
-{{toolbar/for-spaces spaces=model onAddSpace=(action 'onAddSpace')}}
+{{#layout/middle-zone}}
+	{{#layout/middle-zone-content}}
+		{{spaces/space-list spaces=model}}
+	{{/layout/middle-zone-content}}
 
-{{spaces/space-list spaces=model}}
+	{{#layout/middle-zone-sidebar}}
+		<div id="sidebar" class="sidebar">
+			<h1>{{appMeta.title}}</h1>
+			<p>{{appMeta.message}}</p>
+			{{toolbar/for-spaces spaces=model onAddSpace=(action 'onAddSpace')}}
+		</div>
+	{{/layout/middle-zone-sidebar}}
+{{/layout/middle-zone}}
+
+{{#layout/bottom-bar}}
+{{/layout/bottom-bar}}

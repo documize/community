@@ -10,11 +10,11 @@
 // https://documize.com
 
 import $ from 'jquery';
-import Component from '@ember/component';
 import { schedule } from '@ember/runloop';
 import { notEmpty } from '@ember/object/computed';
 import NotifierMixin from '../../mixins/notifier';
 import AuthMixin from '../../mixins/auth';
+import Component from '@ember/component';
 
 export default Component.extend(NotifierMixin, AuthMixin, {
 	spaceName: '',
@@ -23,11 +23,6 @@ export default Component.extend(NotifierMixin, AuthMixin, {
 	copyDocument: false,
 	hasClone: notEmpty('clonedSpace.id'),
 	clonedSpace: null,
-
-	init() {
-		this._super(...arguments);
-		// this.clonedSpace = { id: '' };
-	},
 
 	didInsertElement() {
 		this._super(...arguments);
