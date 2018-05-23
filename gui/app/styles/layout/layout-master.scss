@@ -1,6 +1,7 @@
 .layout-header,
 .layout-footer {
 	flex: 0 0 auto;
+	width: 100%;
 }
 
 .layout-body {
@@ -45,8 +46,8 @@ footer {
 	.layout-sidebar {
 		flex: 0 0 20rem;
 		// height: calc(100vh - 145px);
-		overflow-x: hidden;
-		overflow-y: auto;
+		// overflow-x: hidden;
+		// overflow-y: auto;
 	}
 }
 
