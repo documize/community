@@ -32,16 +32,21 @@ footer {
 	}
 
 	.layout-content {
-		flex: 1;
+		// Content area cannot exceed 1200px
+		// but can shrink as required
+		// (was flex: 1;).
+		flex: 0 1 1000px;
+		// flex: 1;
+
 		padding: 0 2rem;
 		margin: 0;
 	}
 
 	.layout-sidebar {
 		flex: 0 0 20rem;
-		height: calc(100vh - 145px);
+		// height: calc(100vh - 145px);
 		overflow-x: hidden;
-		overflow-y: scroll;
+		overflow-y: auto;
 	}
 }
 
