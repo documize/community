@@ -1,52 +1,35 @@
-{{folder/space-heading space=space permissions=permissions }}
-
-<div class="container">
-	<div class="row">
-		<div class="col-12 clearfix">
-			<div class="float-left mr-5">
-				<div class="view-space">
-					<div class="filter-caption mt-4">{{documents.length}} documents</div>
-					<ul class="tabnav-control">
-						<li class="tab {{if spaceSelected 'selected'}}" {{action 'onDocumentFilter' 'space' space.id}}>All ({{documents.length}})</li>
-						{{#if hasCategories}}
-							{{#if (gt rootDocCount 0)}}
-								<li class="tab {{if uncategorizedSelected 'selected'}}" {{action 'onDocumentFilter' 'uncategorized' space.id}}>Uncategorized ({{rootDocCount}})</li>
-							{{/if}}
-						{{/if}}
-					</ul>
-				</div>
-			</div>
-			<div class="float-left">
-				<div class="view-space">
-					<div class="filter-caption mt-4">
-						{{categories.length}} categories
-						{{#if hasCategories}}
-							{{#if spaceSettings}}
-								&nbsp;&nbsp;{{#link-to 'folder.category' space.id space.slug class="admin-link margin-top-5"}}{{categoryLinkName}}&nbsp;&rarr;{{/link-to}}
-							{{/if}}
-						{{/if}}
-					</div>
-					<ul class="tabnav-control">
-						{{#each categories as |cat index|}}
-							<li class="tab {{if cat.selected 'selected'}}" {{action 'onDocumentFilter' 'category' cat.id}}>{{cat.category}} ({{cat.docCount}})</li>
-						{{/each}}
-					</ul>
-
-					{{#unless hasCategories}}
-						{{#if spaceSettings}}
-							{{#link-to 'folder.category' space.id space.slug class="admin-link margin-top-5"}}{{categoryLinkName}}&nbsp;&rarr;{{/link-to}}
-						{{/if}}
-					{{/unless}}
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-12">
-			{{folder/documents-list documents=filteredDocs spaces=spaces space=space
-				templates=templates permissions=permissions
-				onDeleteDocument=(action 'onDeleteDocument') onMoveDocument=(action 'onMoveDocument')}}
-		</div>
-	</div>
+<div class="view-space">
+	<div class="filter-caption mt-4">{{documents.length}} documents</div>
+	<ul class="tabnav-control tabnav-control-centered w-75">
+		<li class="tab tab-vertical {{if spaceSelected 'selected'}}" {{action 'onDocumentFilter' 'space' space.id}}>All ({{documents.length}})</li>
+		{{#if hasCategories}}
+			{{#if (gt rootDocCount 0)}}
+				<li class="tab tab-vertical {{if uncategorizedSelected 'selected'}}" {{action 'onDocumentFilter' 'uncategorized' space.id}}>Uncategorized ({{rootDocCount}})</li>
+			{{/if}}
+		{{/if}}
+	</ul>
 </div>
 
+<div class="view-space">
+	<div class="filter-caption mt-5">
+		{{categories.length}}
+		{{#if (gt categories.length 1) }}
+			categories
+		{{else if (eq categories.length 0) }}
+			categories
+		{{else}}
+			category
+		{{/if}}
+	</div>
+	<ul class="tabnav-control tabnav-control-centered w-75">
+		{{#each categories as |cat index|}}
+			<li class="tab tab-vertical {{if cat.selected 'selected'}}" {{action 'onDocumentFilter' 'category' cat.id}}>{{cat.category}} ({{cat.docCount}})</li>
+		{{/each}}
+	</ul>
+
+	{{#if spaceSettings}}
+		<div class="text-center {{if (gt categories.length 0) 'mt-4'}}">
+			{{#link-to 'folder.category' space.id space.slug class="btn btn-secondary font-weight-bold"}}{{categoryLinkName}}{{/link-to}}
+		</div>
+	{{/if}}
+</div>

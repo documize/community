@@ -9,13 +9,12 @@
 //
 // https://documize.com
 
-import Component from '@ember/component';
 import { inject as service } from '@ember/service';
-import { all } from 'rsvp';
 import { schedule } from '@ember/runloop';
 import { gt } from '@ember/object/computed';
 import { computed } from '@ember/object';
 import AuthMixin from '../../mixins/auth';
+import Component from '@ember/component';
 
 export default Component.extend(AuthMixin, {
 	router: service(),
@@ -30,18 +29,13 @@ export default Component.extend(AuthMixin, {
 
 	init() {
 		this._super(...arguments);
-		this.filteredDocs = [];
+		// this.filteredDocs = [];
 		this.setup();
 	},
 
 	didReceiveAttrs() {
 		this._super(...arguments);
 		this.setup();
-	},
-
-	didUpdateAttrs() {
-		this._super(...arguments);
-		// this.setup();
 	},
 
 	setup() {
@@ -59,7 +53,7 @@ export default Component.extend(AuthMixin, {
 		});
 
 		this.set('categories', categories);
-		this.set('categoryLinkName', categories.length > 0 ? 'manage' : 'add');
+		this.set('categoryLinkName', categories.length > 0 ? 'Manage' : 'Add');
 
 		schedule('afterRender', () => {
 			if (this.get('categoryFilter') !== '') {
@@ -75,50 +69,6 @@ export default Component.extend(AuthMixin, {
 	},
 
 	actions: {
-		onMoveDocument(documents, targetSpaceId) {
-			let self = this;
-			let promises1 = [];
-			let promises2 = [];
-
-			documents.forEach(function(documentId, index) {
-				promises1[index] = self.get('documentService').getDocument(documentId);
-			});
-
-			all(promises1).then(() => {
-				promises1.forEach(function(doc, index) {
-					doc.then((d) => {
-						d.set('folderId', targetSpaceId);
-						d.set('selected', false);
-						promises2[index] = self.get('documentService').save(d);
-					});
-				});
-
-				all(promises2).then(() => {
-					self.attrs.onRefresh();
-				});
-			});
-		},
-
-		onDeleteDocument(documents) {
-			let self = this;
-			let promises = [];
-
-			documents.forEach(function (document, index) {
-				promises[index] = self.get('documentService').deleteDocument(document);
-			});
-
-			all(promises).then(() => {
-				let documents = this.get('documents');
-				documents.forEach(function (document) {
-					document.set('selected', false);
-				});
-
-				this.set('documents', documents);
-				let cb = this.get('onRefresh');
-				cb();
-			});
-		},
-
 		onDocumentFilter(filter, id) {
 			let docs = this.get('documents');
 			let categories = this.get('categories');
@@ -170,7 +120,7 @@ export default Component.extend(AuthMixin, {
 			});
 
 			this.set('categories', categories);
-			this.set('filteredDocs', filtered);
+			this.get('onFiltered')(filtered);
 		}
 	}
 });

@@ -22,7 +22,6 @@ export default Component.extend(ModalMixin, TooltipMixin, {
 	categorySvc: service('category'),
 	appMeta: service(),
 	store: service(),
-	newCategory: '',
 	deleteId: '',
 	dropdown: null,
 
@@ -92,29 +91,6 @@ export default Component.extend(ModalMixin, TooltipMixin, {
 	},
 
 	actions: {
-		onAdd(e) {
-			e.preventDefault();
-
-			let cat = this.get('newCategory');
-
-			if (cat === '') {
-				$('#new-category-name').addClass('is-invalid').focus();
-				return;
-			}
-
-			$('#new-category-name').removeClass('is-invalid').focus();
-			this.set('newCategory', '');
-
-			let c = {
-				category: cat,
-				folderId: this.get('folder.id')
-			};
-
-			this.get('categorySvc').add(c).then(() => {
-				this.load();
-			});
-		},
-
 		onShowDelete(id) {
 			let cat = this.get('category').findBy('id', id);
 			this.set('deleteId', cat.get('id'));

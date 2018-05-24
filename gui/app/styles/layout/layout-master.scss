@@ -23,8 +23,13 @@
 
 footer {
 	margin: auto auto 0 auto;
-	position: sticky;
     bottom: 0;
+	position: -webkit-sticky;
+	position: -moz-sticky;
+	position: -ms-sticky;
+	position: -o-sticky;
+	position: -webkit-sticky;
+	position: sticky;
 }
 
 @media (min-width: 720px) {

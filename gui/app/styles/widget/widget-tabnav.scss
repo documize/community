@@ -11,7 +11,7 @@
 		background-color: $color-white;
 		color: $color-primary;
 		border: 1px solid $color-border;
-		font-weight: bold;
+		font-weight: 500;
 		font-size: 1.1rem;
 		text-align: center;
 		cursor: pointer;
@@ -48,6 +48,7 @@
 
 	> .selected {
 		background-color: $color-primary-light;
+		font-weight: 700;
 	}
 }
 
