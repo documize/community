@@ -4,7 +4,7 @@
 		{{#if permissions.documentAdd}}
 			<div class="btn-group" role="group">
 				<button id="btnGroupDocument" type="button" class="btn btn-success font-weight-bold dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">+ CONTENT</button>
-				<div class="dropdown-menu dropdown-menu-right" aria-labelledby="btnGroupDocument">
+				<div class="dropdown-menu" aria-labelledby="btnGroupDocument">
 					<a class="dropdown-item" href="#" {{action 'onShowEmptyDocModal'}}>Blank canvas</a>
 					{{#if hasTemplates}}
 						<a class="dropdown-item" href="#" {{action 'onShowTemplateDocModal'}}>From template</a>
