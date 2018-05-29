@@ -38,7 +38,7 @@ export default Component.extend({
 
 		schedule('afterRender', () => {
 			let options = {
-				cache_suffix: '?v=476',
+				cache_suffix: '?v=4713',
 				selector: '#' + this.get('editorId'),
 				relative_urls: false,
 				browser_spellcheck: true,
@@ -117,7 +117,7 @@ export default Component.extend({
 			};
 
 			if (typeof tinymce === 'undefined') {
-				$.getScript('/tinymce/tinymce.min.js?v=476', function () {
+				$.getScript('/tinymce/tinymce.min.js?v=4713', function () {
 					window.tinymce.dom.Event.domLoaded = true;
 					tinymce.baseURL = '//' + window.location.host + '/tinymce';
 					tinymce.suffix = '.min';

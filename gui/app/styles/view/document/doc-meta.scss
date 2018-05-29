@@ -20,6 +20,10 @@
 
 	> .document-customfields {
 		margin-bottom: 4rem;
+		background-color: $color-off-white;
+		border: 1px solid $color-border;
+		padding: 20px 40px;
+		@include border-radius(3px);
 
 		.row {
 			padding: 5px 0;
@@ -33,8 +37,8 @@
 
 			.heading {
 				font-size: 1.1rem;
-				font-weight: bold;
-				color: $color-off-black;
+				font-weight: 700;
+				color: $color-dark;
 				text-align: left;
 			}
 

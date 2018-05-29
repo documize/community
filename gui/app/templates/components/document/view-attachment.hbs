@@ -8,8 +8,10 @@
 						<span class="file">{{ a.filename }}</span>
 					</a>
 					{{#if canEdit}}
-						<div class="button-icon-danger align-middle action" {{action 'onShowDialog' a.id a.filename}}>
-							<i class="material-icons">delete</i>
+						<div class="delete">
+							<div class="button-icon-danger align-middle action" {{action 'onShowDialog' a.id a.filename}}>
+								<i class="material-icons">delete</i>
+							</div>
 						</div>
 					{{/if}}
 				</li>

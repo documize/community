@@ -32,46 +32,82 @@ footer {
 	position: sticky;
 }
 
-@media (min-width: 720px) {
+@media (min-width: 900px) {
 	.layout-body {
 		flex-direction: row;
 	}
 
-	.layout-content {
-		// Content area cannot exceed 1200px
-		// but can shrink as required
-		// (was flex: 1;).
-		flex: 0 1 1000px;
-		// flex: 1;
-
-		padding: 0 2rem;
-		margin: 0;
+	.layout-sidebar {
+		flex: 0 0 200px;
 	}
 
-	.layout-sidebar {
-		flex: 0 0 20rem;
-		// height: calc(100vh - 145px);
-		// overflow-x: hidden;
-		// overflow-y: auto;
+	.layout-content {
+		flex: 0 1 700px;
+		padding: 0 2rem;
+		margin: 0;
 	}
 }
 
 @media (min-width: 1200px) {
+	.layout-body {
+		flex-direction: row;
+	}
+
 	.layout-sidebar {
-		flex: 0 0 30rem;
+		flex: 0 0 300px;
 	}
 
 	.layout-content {
+		flex: 0 1 1000px;
+		margin: 0;
+		padding: 0 2rem 0 3rem;
+	}
+}
+
+@media (min-width: 1400px) {
+	.layout-body {
+		flex-direction: row;
+	}
+
+	.layout-sidebar {
+		flex: 0 0 400px;
+	}
+
+	.layout-content {
+		flex: 0 1 1000px;
+		margin: 0;
+		padding: 0 2rem 0 3rem;
+	}
+}
+
+@media (min-width: 1600px) {
+	.layout-body {
+		flex-direction: row;
+	}
+
+	.layout-sidebar {
+		flex: 0 0 450px;
+	}
+
+	.layout-content {
+		flex: 0 1 1200px;
+		margin: 0;
 		padding: 0 2rem 0 3rem;
 	}
 }
 
 @media (min-width: 1800px) {
+	.layout-body {
+		flex-direction: row;
+	}
+
 	.layout-sidebar {
-		flex: 0 0 35rem;
+		flex: 0 0 500px;
 	}
 
 	.layout-content {
+		flex: 0 1 1300px;
+		margin: 0;
 		padding: 0 2rem 0 4rem;
 	}
 }

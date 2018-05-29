@@ -1,11 +1,19 @@
-<div class="row no-gutters">
-	<div class="col">
-		<div class="d-flex justify-content-start">
-			{{yield}}
+<div class="row no-gutters d-flex align-items-center">
+	<div class="col d-flex justify-content-start">
+		<div class="footer">
+			{{#if showWait}}
+				<div class="progress progress-wait">
+					<img src="/assets/img/busy-gray.gif" />
+				</div>
+			{{/if}}
+			{{#if showDone}}
+				<div class="progress progress-done animated zoomIn">&check;</div>
+			{{/if}}
 		</div>
+		{{yield}}
 	</div>
-	<div class="col">
-		<div class="footer d-flex justify-content-end">
+	<div class="col d-flex justify-content-end">
+		<div class="footer">
 			<a href="https://documize.com?ref=af">Documize {{appMeta.version}}</a>
 		</div>
 	</div>

@@ -22,7 +22,7 @@ export default Component.extend({
 		return this.get('document.protection') !== this.get('constants').ProtectionType.Lock && this.get('permissions.documentEdit');
 	}),
 	showDialog: false,
-	
+
 	init() {
 		this._super(...arguments);
 		this.getAttachments();
@@ -82,6 +82,7 @@ export default Component.extend({
 	getAttachments() {
 		this.get('documentService').getAttachments(this.get('document.id')).then((files) => {
 			this.set('files', files);
+			this.get('onReady')(files.length);
 		});
 	},
 
@@ -96,7 +97,7 @@ export default Component.extend({
 			this.set('showDialog', false);
 
 			let attachment = this.get('deleteAttachment');
-			
+
 			this.get('documentService').deleteAttachment(this.get('document.id'), attachment.id).then(() => {
 				this.getAttachments();
 				this.set('deleteAttachment', {
