@@ -1,6 +1,15 @@
-{{toolbar/nav-bar}}
-
-{{toolbar/for-document document=model.document spaces=model.folders space=model.folder permissions=model.permissions showTools=false showDocumentLink=true}}
+{{#layout/top-bar}}
+	<li class="item">
+		{{#link-to "folder.index" model.folder.id model.folder.slug class='link'}}
+			{{model.folder.name}}
+		{{/link-to}}
+	</li>
+	<li class="item">
+		{{#link-to 'document.index' model.folder.id model.folder.slug model.document.id model.document.slug class="link selected"}}
+			{{model.document.name}}
+		{{/link-to}}
+	</li>
+{{/layout/top-bar}}
 
 <div class="container">
 	<div class="row">
@@ -11,3 +20,6 @@
 		</div>
 	</div>
 </div>
+
+{{#layout/bottom-bar}}
+{{/layout/bottom-bar}}
