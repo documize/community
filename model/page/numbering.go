@@ -68,6 +68,12 @@ func Numberize(pages []Page) {
 		}
 		pages[i].Numbering = numbering
 
+		// Troubleshooting help
+		if len(numbering) == 0 {
+			fmt.Printf("No number allocated to page %s ('%s')",
+				pages[i].RefID, pages[i].Title)
+		}
+
 		// update state
 		prevPageLevel = p.Level
 	}

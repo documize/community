@@ -27,6 +27,15 @@
 			onSaveDocument=(action 'onSaveDocument')
 			refresh=(action 'refresh')}}
 
+		<div class="text-center non-printable document-tabnav">
+			<ul class="tabnav-control">
+				<li class="tab {{if (eq tab 'content') 'selected'}}" {{action 'onTabChange' 'content'}}>Content</li>
+				{{#if session.authenticated}}
+					<li class="tab {{if (eq tab 'revision') 'selected'}}" {{action 'onTabChange' 'revision'}}>Revisions</li>
+				{{/if}}
+			</ul>
+		</div>
+
 		{{document/document-heading
 			document=document
 			permissions=permissions
@@ -42,19 +51,6 @@
 			versions=versions
 			onSaveDocument=(action 'onSaveDocument')}}
 
-		<div class="text-center non-printable document-tabnav">
-			<ul class="tabnav-control">
-				<li class="tab {{if (eq tab 'content') 'selected'}}" {{action 'onTabChange' 'content'}}>Content</li>
-				<li class="tab {{if (eq tab 'attachment') 'selected'}}" {{action 'onTabChange' 'attachment'}}>
-					Attachments
-					({{tabCount}})
-				</li>
-				{{#if session.authenticated}}
-					<li class="tab {{if (eq tab 'revision') 'selected'}}" {{action 'onTabChange' 'revision'}}>Revisions</li>
-				{{/if}}
-			</ul>
-		</div>
-
 		{{#if (eq tab 'content')}}
 			{{document/view-content
 				document=document links=links pages=pages blocks=blocks currentPageId=currentPageId
@@ -63,9 +59,6 @@
 				onSavePageAsBlock=(action 'onSavePageAsBlock') onDeleteBlock=(action 'onDeleteBlock')
 				onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onPageDeleted')
 				refresh=(action 'refresh')}}
-		{{/if}}
-		{{#if (eq tab 'attachment')}}
-			{{document/view-attachment document=document permissions=permissions onReady=(action 'onReady')}}
 		{{/if}}
 		{{#if (eq tab 'revision')}}
 			{{document/view-revision document=document folder=folder pages=pages permissions=permissions onRollback=(action 'onRollback')}}

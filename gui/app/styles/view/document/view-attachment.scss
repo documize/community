@@ -1,6 +1,4 @@
 .view-attachment {
-	margin: 0 0 50px 0;
-
 	> .upload-document-files {
 		margin: 10px 0 0 0;
 		@include ease-in();
@@ -11,40 +9,32 @@
 	}
 
 	> .list {
-		margin: 20px 0 0 0;
-		padding: 7px 0;
+		margin: 0;
+		padding: 0;
 
 		> .item {
 			color: $color-off-black;
 			margin: 0;
-			padding: 10px 0;
+			padding: 0;
 			font-size: 1rem;
 			list-style-type: none;
 
-			> .icon {
+			> a {
+				display: inline-block;
+				font-size: 1rem;
+				vertical-align: text-top;
 				margin-right: 10px;
 			}
 
-			> a {
-				@extend .text-truncate;
-				width: 80%;
-				color: $color-gray;
-
-				&:hover {
-					color: $color-link;
-				}
-
-				> .file {
-					@extend .text-truncate;
-					display: inline-block;
-					font-size: 0.9rem;
-					width: 80%;
-					vertical-align: text-top;
-				}
+			> .delete {
+				display: inline-block;
+				visibility: hidden;
 			}
 
-			> .delete {
-				text-align: right;
+			&:hover {
+				> .delete {
+					visibility: visible;
+				}
 			}
 		}
 	}

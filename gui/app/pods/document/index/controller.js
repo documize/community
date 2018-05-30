@@ -20,9 +20,7 @@ export default Controller.extend(Tooltips, Notifier, {
 	templateService: service('template'),
 	sectionService: service('section'),
 	linkService: service('link'),
-	// currentPageId: '',
 	tab: 'content',
-	tabCount: 0, // how many items inside the tab?
 	queryParams: ['currentPageId'],
 
 	actions: {
@@ -246,9 +244,5 @@ export default Controller.extend(Tooltips, Notifier, {
 				});
 			});
 		},
-
-		onReady(count) {
-			this.set('tabCount', count);
-		}
 	}
 });

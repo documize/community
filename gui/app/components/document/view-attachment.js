@@ -15,6 +15,7 @@ import { inject as service } from '@ember/service';
 import Component from '@ember/component';
 
 export default Component.extend({
+	classNames: ['row d-print-none'],
 	documentService: service('document'),
 	appMeta: service(),
 	hasAttachments: notEmpty('files'),
@@ -82,7 +83,6 @@ export default Component.extend({
 	getAttachments() {
 		this.get('documentService').getAttachments(this.get('document.id')).then((files) => {
 			this.set('files', files);
-			this.get('onReady')(files.length);
 		});
 	},
 
