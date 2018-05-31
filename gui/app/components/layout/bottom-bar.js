@@ -24,6 +24,8 @@ export default Component.extend({
 	},
 
 	handleEvent(msg) {
+		if (this.get('isDestroyed') || this.get('isDestroying')) return;
+
 		if (msg === 'wait') {
 			this.set('showWait', true);
 			this.set('showDone', false);
