@@ -70,7 +70,6 @@ export default Controller.extend(Tooltips, Notifier, {
 		},
 
 		onSavePage(page, meta) {
-			this.showWait();
 
 			let document = this.get('document');
 			let documentId = document.get('id');
@@ -87,6 +86,8 @@ export default Controller.extend(Tooltips, Notifier, {
 				page: page.toJSON({ includeId: true }),
 				meta: meta.toJSON({ includeId: true })
 			};
+
+			this.showWait();
 
 			this.get('documentService').updatePage(documentId, page.get('id'), model).then((/*up*/) => {
 				this.showDone();
