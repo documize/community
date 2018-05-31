@@ -2,10 +2,35 @@
 	padding: 1rem;
 }
 
-.sidebar-white {
-	background-color: $color-white;
-}
-
 .sidebar-center {
 	text-align: center;
+}
+
+.sidebar-scroll {
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+
+.sidebar-white {
+	background-color: $color-white;
+	margin: 10px 10px;
+
+	@media (min-width: $break-1) {
+		margin: 10px 10px;
+		height: calc(100vh - 204px);
+		overflow-x: hidden;
+		overflow-y: auto;
+	}
+	@media (min-width: $break-2) {
+		margin: 10px 10px;
+	}
+	@media (min-width: $break-3) {
+		margin: 20px 20px;
+	}
+	@media (min-width: $break-4) {
+		margin: 20px 20px;
+	}
+	@media (min-width: $break-5) {
+		margin: 20px 20px;
+	}
 }

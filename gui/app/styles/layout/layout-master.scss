@@ -1,5 +1,10 @@
-.layout-header,
-.layout-footer {
+$break-1: 900px;
+$break-2: 1200px;
+$break-3: 1400px;
+$break-4: 1600px;
+$break-5: 1800px;
+
+.layout-header, .layout-footer {
 	flex: 0 0 auto;
 	width: 100%;
 }
@@ -24,21 +29,20 @@
 footer {
 	margin: auto auto 0 auto;
     bottom: 0;
-	position: -webkit-sticky;
-	position: -moz-sticky;
-	position: -ms-sticky;
-	position: -o-sticky;
-	position: -webkit-sticky;
-	position: sticky;
+	z-index: 888;
+	@include sticky();
 }
 
-@media (min-width: 900px) {
+@media (min-width: $break-1) {
 	.layout-body {
 		flex-direction: row;
 	}
 
 	.layout-sidebar {
 		flex: 0 0 200px;
+		height: calc(100vh - 140px);
+		@include sticky();
+		top: 2rem;
 	}
 
 	.layout-content {
@@ -48,7 +52,7 @@ footer {
 	}
 }
 
-@media (min-width: 1200px) {
+@media (min-width: $break-2) {
 	.layout-body {
 		flex-direction: row;
 	}
@@ -64,7 +68,7 @@ footer {
 	}
 }
 
-@media (min-width: 1400px) {
+@media (min-width: $break-3) {
 	.layout-body {
 		flex-direction: row;
 	}
@@ -80,7 +84,7 @@ footer {
 	}
 }
 
-@media (min-width: 1600px) {
+@media (min-width: $break-4) {
 	.layout-body {
 		flex-direction: row;
 	}
@@ -96,7 +100,7 @@ footer {
 	}
 }
 
-@media (min-width: 1800px) {
+@media (min-width: $break-5) {
 	.layout-body {
 		flex-direction: row;
 	}
