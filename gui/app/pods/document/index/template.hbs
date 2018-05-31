@@ -12,6 +12,7 @@
 {{/layout/top-bar}}
 
 {{#layout/middle-zone}}
+
 	{{#layout/middle-zone-content}}
 
 		{{toolbar/for-document
@@ -67,6 +68,7 @@
 	{{/layout/middle-zone-content}}
 
 	{{#layout/middle-zone-sidebar}}
+
 		{{document/document-toc
 			document=document
 			folder=folder
@@ -79,7 +81,9 @@
 			onShowPage=(action 'onShowPage')
 			onPageSequenceChange=(action 'onPageSequenceChange')
 			onPageLevelChange=(action 'onPageLevelChange')}}
+
 	{{/layout/middle-zone-sidebar}}
+
 {{/layout/middle-zone}}
 
 {{#layout/bottom-bar}}

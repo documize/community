@@ -34,3 +34,25 @@
 		margin: 20px 20px;
 	}
 }
+
+.sidebar-view-switcher {
+	color: $color-primary;
+	background-color: $color-primary-light;
+	padding: 5px 20px;
+	text-align: center;
+	height: 50px;
+
+	> i {
+		font-size: 2rem;
+		cursor: pointer;
+		@include ease-in();
+
+		&:hover {
+			color: $color-link;
+		}
+	}
+
+	> .divider {
+		margin: 0 10px;
+	}
+}
