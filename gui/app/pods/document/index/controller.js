@@ -198,19 +198,25 @@ export default Controller.extend(Tooltips, Notifier, {
 		},
 
 		onPageSequenceChange(currentPageId, changes) {
+			this.showWait();
 			this.set('currentPageId', currentPageId);
+
 			this.get('documentService').changePageSequence(this.get('document.id'), changes).then(() => {
 				this.get('documentService').fetchPages(this.get('document.id'), this.get('session.user.id')).then( (pages) => {
 					this.set('pages', pages);
+					this.showDone();
 				});
 			});
 		},
 
 		onPageLevelChange(currentPageId, changes) {
+			this.showWait();
 			this.set('currentPageId', currentPageId);
+
 			this.get('documentService').changePageLevel(this.get('document.id'), changes).then(() => {
 				this.get('documentService').fetchPages(this.get('document.id'), this.get('session.user.id')).then( (pages) => {
 					this.set('pages', pages);
+					this.showDone();
 				});
 			});
 		},

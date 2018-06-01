@@ -16,17 +16,17 @@
 	{{#layout/middle-zone-content}}
 
 		{{toolbar/for-document
-			document=document
-			spaces=folders
-			space=folder
-			permissions=permissions
-			roles=roles
 			tab=tab
+			roles=roles
+			space=folder
+			spaces=folders
+			document=document
 			versions=versions
-			onDocumentDelete=(action 'onDocumentDelete')
+			permissions=permissions
+			refresh=(action 'refresh')
 			onSaveTemplate=(action 'onSaveTemplate')
 			onSaveDocument=(action 'onSaveDocument')
-			refresh=(action 'refresh')}}
+			onDocumentDelete=(action 'onDocumentDelete')}}
 
 		<div class="text-center non-printable document-tabnav">
 			<ul class="tabnav-control">
@@ -39,30 +39,50 @@
 
 		{{document/document-heading
 			document=document
-			permissions=permissions
 			versions=versions
+			permissions=permissions
 			onSaveDocument=(action 'onSaveDocument')}}
 
 		{{document/document-meta
-			document=document
+			pages=pages
 			folder=folder
 			folders=folders
-			permissions=permissions
-			pages=pages
+			document=document
 			versions=versions
+			permissions=permissions
 			onSaveDocument=(action 'onSaveDocument')}}
 
 		{{#if (eq tab 'content')}}
 			{{document/view-content
-				document=document links=links pages=pages blocks=blocks currentPageId=currentPageId
-				folder=folder folders=folders sections=sections permissions=permissions roles=roles
-				onSavePage=(action 'onSavePage') onInsertSection=(action 'onInsertSection')
-				onSavePageAsBlock=(action 'onSavePageAsBlock') onDeleteBlock=(action 'onDeleteBlock')
-				onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onPageDeleted')
-				refresh=(action 'refresh')}}
+				roles=roles
+				links=links
+				pages=pages
+				blocks=blocks
+				folder=folder
+				folders=folders
+				sections=sections
+				document=document
+				permissions=permissions
+				currentPageId=currentPageId
+				refresh=(action 'refresh')
+				onSavePage=(action 'onSavePage')
+				onCopyPage=(action 'onCopyPage')
+				onMovePage=(action 'onMovePage')
+				onDeletePage=(action 'onPageDeleted')
+				onDeleteBlock=(action 'onDeleteBlock')
+				onInsertSection=(action 'onInsertSection')
+				onSavePageAsBlock=(action 'onSavePageAsBlock')
+				onPageLevelChange=(action 'onPageLevelChange')
+				onPageSequenceChange=(action 'onPageSequenceChange')}}
 		{{/if}}
+
 		{{#if (eq tab 'revision')}}
-			{{document/view-revision document=document folder=folder pages=pages permissions=permissions onRollback=(action 'onRollback')}}
+			{{document/view-revision
+				pages=pages
+				folder=folder
+				document=document
+				permissions=permissions
+				onRollback=(action 'onRollback')}}
 		{{/if}}
 
 	{{/layout/middle-zone-content}}
@@ -70,17 +90,17 @@
 	{{#layout/middle-zone-sidebar}}
 
 		{{document/document-toc
-			document=document
-			folder=folder
-			pages=pages
-			page=page
-			permissions=permissions
-			roles=roles
 			tab=tab
+			page=page
+			roles=roles
+			pages=pages
+			folder=folder
+			document=document
+			permissions=permissions
 			currentPageId=currentPageId
 			onShowPage=(action 'onShowPage')
-			onPageSequenceChange=(action 'onPageSequenceChange')
-			onPageLevelChange=(action 'onPageLevelChange')}}
+			onPageLevelChange=(action 'onPageLevelChange')
+			onPageSequenceChange=(action 'onPageSequenceChange')}}
 
 	{{/layout/middle-zone-sidebar}}
 

@@ -63,7 +63,7 @@ export default Component.extend(TooltipMixin, {
 		this.removeTooltips();
 	},
 
-	onDocumentPageAdded(pageId) { // eslint-disable-line no-unused-vars
+	onDocumentPageAdded(pageId) {
 		schedule('afterRender', () => {
 			this.setState(pageId);
 		});

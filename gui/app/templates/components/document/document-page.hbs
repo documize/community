@@ -1,14 +1,43 @@
 <div id="page-{{page.id}}" data-id="{{page.id}}" data-type="{{page.contentType}}">
+
 	{{#if editMode}}
+
 		<div class="wysiwyg">
-			{{document/document-editor document=document folder=folder page=editPage meta=editMeta onCancel=(action 'onCancelEdit') onAction=(action 'onSavePage')}}
+			{{document/document-editor
+				document=document
+				folder=folder
+				page=editPage
+				meta=editMeta
+				onCancel=(action 'onCancelEdit')
+				onAction=(action 'onSavePage')}}
 		</div>
+
 	{{else}}
-		{{document/page-heading document=document folder=folder page=page meta=meta pending=pending permissions=permissions tabMode=tabMode roles=roles blocks=blocks
-			onEdit=(action 'onEdit') onSavePageAsBlock=(action 'onSavePageAsBlock')
-			onCopyPage=(action 'onCopyPage') onMovePage=(action 'onMovePage') onDeletePage=(action 'onDeletePage') refresh=(action refresh)}}
+
+		{{document/page-heading
+			page=page
+			meta=meta
+			pages=pages
+			roles=roles
+			folder=folder
+			blocks=blocks
+			tabMode=tabMode
+			pending=pending
+			document=document
+			permissions=permissions
+			onEdit=(action 'onEdit')
+			refresh=(action refresh)
+			onCopyPage=(action 'onCopyPage')
+			onMovePage=(action 'onMovePage')
+			onDeletePage=(action 'onDeletePage')
+			onSavePageAsBlock=(action 'onSavePageAsBlock')
+			onPageLevelChange=(action onPageLevelChange)
+			onPageSequenceChange=(action onPageSequenceChange)}}
+
 		<div class="wysiwyg">
 			{{section/base-renderer page=page}}
 		</div>
+
 	{{/if}}
+
 </div>
