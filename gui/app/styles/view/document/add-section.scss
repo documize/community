@@ -24,12 +24,8 @@
 }
 
 .new-section-wizard {
-	display: none;
-	@include border-radius(2px);
-	margin: 0 0 60px 0;
-	padding: 30px;
-	border: 1px solid $color-stroke;
-	background-color: $color-primary-light;
+	margin: 0;
+	padding: 0;
 
 	.new-section-caption {
 		margin: 20px 0 10px 0;
@@ -39,7 +35,7 @@
 	}
 
 	 .preset-list {
-		margin: 20px 0 0 0;
+		margin: 0;
 		padding: 0;
 
 		> .item {
@@ -47,17 +43,16 @@
 			@include border-radius(3px);
 			list-style: none;
 			cursor: pointer;
-			display: inline-block;
-			border: 1px solid $color-border;
-			background-color: $color-white;
+			display: block;
 			margin: 0 20px 20px 0;
 			padding: 12px 0 0 20px;
-			width: 250px;
 			height: 60px;
+			border: 1px solid $color-border;
+			background-color: $color-off-white;
 
 			&:hover {
-				@include ease-in();
-				border-color: $color-link;
+				border-color: $color-primary;
+				background-color: $color-primary-light;
 			}
 
 			.icon {
@@ -76,8 +71,8 @@
 
 			> .title {
 				display: inline-block;
-				font-size: 1rem;
-				font-weight: normal;
+				font-size: 1.1rem;
+				font-weight: 500;
 				color: $color-off-black;
 				letter-spacing: 0.5px;
 				margin-top: 6px;
@@ -86,7 +81,7 @@
 	}
 
 	 .block-list {
-		margin: 20px 0 0 0;
+		margin: 0;
 		padding: 0;
 
 		> .item {
@@ -95,21 +90,16 @@
 			list-style: none;
 			cursor: pointer;
 			display: block;
-			border: 1px solid $color-border;
-			background-color: $color-white;
 			margin: 0 20px 20px 0;
-			padding: 20px;
-			height: 90px;
+			padding: 12px 20px;
 			width: 100%;
 			position: relative;
+			border: 1px solid $color-border;
+			background-color: $color-off-white;
 
 			&:hover {
-				@include ease-in();
-				border-color: $color-link;
-
-				> .block-actions {
-					display: block;
-				}
+				border-color: $color-primary;
+				background-color: $color-primary-light;
 			}
 
 			> .actions {
@@ -122,16 +112,14 @@
 			> .details {
 				> .title {
 					font-size: 1.1rem;
-					font-weight: bold;
+					font-weight: 500;
 					color: $color-off-black;
 					letter-spacing: 0.5px;
-					margin-top: 0;
 				}
 
 				> .desc {
 					color: $color-off-black;
 					font-size: 1rem;
-					margin-top: 5px;
 				}
 			}
 		}

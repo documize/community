@@ -10,36 +10,32 @@
 // https://documize.com
 
 import $ from 'jquery';
-import { notEmpty, empty } from '@ember/object/computed';
+import { notEmpty } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import { computed } from '@ember/object';
-import Component from '@ember/component';
 import TooltipMixin from '../../mixins/tooltip';
+import Notifier from '../../mixins/notifier';
+import Component from '@ember/component';
 
-export default Component.extend(TooltipMixin, {
+export default Component.extend(TooltipMixin, Notifier, {
 	documentService: service('document'),
 	sectionService: service('section'),
 	store: service(),
 	appMeta: service(),
 	link: service(),
 	hasPages: notEmpty('pages'),
-	newSectionName: '',
-	newSectionNameMissing: empty('newSectionName'),
+	showInsertSectionModal: false,
 	newSectionLocation: '',
-	beforePage: null,
 	toEdit: '',
-	showDeleteBlockDialog: false,
-	deleteBlockId: '',
 	canEdit: computed('permissions', 'document.protection', function() {
 		let canEdit = this.get('document.protection') !== this.get('constants').ProtectionType.Lock && this.get('permissions.documentEdit');
 		return canEdit;
 	}),
-	hasBlocks: computed('blocks', function() {
-		return this.get('blocks.length') > 0;
-	}),
-	mousetrap: null,
 	voteThanks: false,
 	showLikes: false,
+
+	showDeleteBlockDialog: false,
+	deleteBlockId: '',
 
 	didReceiveAttrs() {
 		this._super(...arguments);
@@ -49,22 +45,12 @@ export default Component.extend(TooltipMixin, {
 	didRender() {
 		this._super(...arguments);
 		this.contentLinkHandler();
-
-		let mousetrap = this.get('mousetrap');
-		let msContainer = document.getElementById('new-section-wizard');
-		if (is.null(mousetrap)) mousetrap = new Mousetrap(msContainer);
-
-		mousetrap.bind('esc', () => {
-			this.send('onHideSectionWizard');
-			return false;
-		});
 	},
 
 	didInsertElement() {
 		this._super(...arguments);
 
 		if (this.get('session.authenticated')) {
-			// this.setupAddWizard();
 			this.renderTooltips();
 		}
 
@@ -75,13 +61,7 @@ export default Component.extend(TooltipMixin, {
 		this._super(...arguments);
 
 		if (this.get('session.authenticated')) {
-			$('.start-section:not(.start-section-empty-state)').off('.hoverIntent');
 			this.removeTooltips();
-		}
-
-		let mousetrap = this.get('mousetrap');
-		if (is.not.null(mousetrap)) {
-			mousetrap.unbind('esc');
 		}
 	},
 
@@ -118,50 +98,6 @@ export default Component.extend(TooltipMixin, {
 			links.linkClick(doc, link);
 			return false;
 		});
-	},
-
-	addSection(model) {
-		let sequence = 0;
-		let level = 1;
-		let beforePage = this.get('beforePage');
-		let constants = this.get('constants');
-
-		// calculate sequence of page (position in document)
-		if (is.not.null(beforePage)) {
-			level = beforePage.get('level');
-
-			// get any page before the beforePage so we can insert this new section between them
-			let index = _.findIndex(this.get('pages'), function(item) { return item.get('page.id') === beforePage.get('id'); });
-
-			if (index !== -1) {
-				let beforeBeforePage = this.get('pages')[index-1];
-
-				if (is.not.undefined(beforeBeforePage)) {
-					sequence = (beforePage.get('sequence') + beforeBeforePage.get('page.sequence')) / 2;
-				} else {
-					sequence = beforePage.get('sequence') / 2;
-				}
-
-			}
-		} else {
-			let pages = this.get('pages');
-			if (pages.get('length') > 0 ) {
-				let p = pages.get('lastObject');
-				sequence = p.get('page.sequence') * 2;
-				level = p.get('page.level');
-			}
-		}
-
-		model.page.set('sequence', sequence);
-		model.page.set('level', level);
-
-		if (this.get('document.protection') === constants.ProtectionType.Review) {
-			model.page.set('status', model.page.get('relativeId') === '' ? constants.ChangeState.PendingNew : constants.ChangeState.Pending);
-		}
-
-		this.send('onHideSectionWizard');
-
-		return this.get('onInsertSection')(model);
 	},
 
 	jumpToSection() {
@@ -209,8 +145,7 @@ export default Component.extend(TooltipMixin, {
 					if (page.get('relativeId') === '' && page.get('status') === constants.ChangeState.PendingNew) {
 						// new page, edits
 						this.set('toEdit', '');
-						let cb = this.get('onSavePage');
-						cb(page, meta);
+						this.get('onSavePage')(page, meta);
 					} else if (page.get('relativeId') !== '' && page.get('status') === constants.ChangeState.Published) {
 						// existing page, first edit
 						const promise = this.addSection({ page: page, meta: meta });
@@ -218,120 +153,21 @@ export default Component.extend(TooltipMixin, {
 					} else if (page.get('relativeId') !== '' && page.get('status') === constants.ChangeState.Pending) {
 						// existing page, subsequent edits
 						this.set('toEdit', '');
-						let cb = this.get('onSavePage');
-						cb(page, meta);
+						this.get('onSavePage')(page, meta);
 					}
 					break;
 				case constants.ProtectionType.None:
 					// for un-protected documents, edits welcome!
 					this.set('toEdit', '');
-					// let cb2 = this.get('onSavePage');
-					// cb2(page, meta);
-					this.attrs.onSavePage(page, meta); // eslint-disable-line ember/no-attrs-in-components
+					this.get('onSavePage')(page, meta);
 
 					break;
 			}
 		},
 
-		onShowSectionWizard(page) {
-			if (is.undefined(page)) {
-				page = { id: '0' };
-			}
-
-			let beforePage = this.get('beforePage');
-			if (is.not.null(beforePage) && $("#new-section-wizard").is(':visible') && beforePage.get('id') === page.id) {
-				this.send('onHideSectionWizard');
-				return;
-			}
-
-			this.set('newSectionLocation', page.id);
-
-			if (page.id === '0') {
-				// this handles add section at the end of the document
-				// because we are not before another page
-				this.set('beforePage', null);
-			} else {
-				this.set('beforePage', page);
-			}
-
-			$("#new-section-wizard").insertAfter(`#add-section-button-${page.id}`);
-			$("#new-section-wizard").velocity("transition.slideDownIn", { duration: 300, complete:
-				function() {
-					$("#new-section-name").focus();
-				}});
-		},
-
-		onHideSectionWizard() {
-			if (this.get('isDestroyed') || this.get('isDestroying')) return;
-
-			this.set('newSectionLocation', '');
-			this.set('beforePage', null);
-			$("#new-section-wizard").insertAfter('#wizard-placeholder');
-			$("#new-section-wizard").velocity("transition.slideUpOut", { duration: 300 });
-		},
-
-		onInsertSection(section) {
-			let sectionName = this.get('newSectionName');
-			if (is.empty(sectionName)) {
-				$("#new-section-name").focus();
-				return;
-			}
-
-			let page = this.get('store').createRecord('page');
-			page.set('documentId', this.get('document.id'));
-			page.set('title', sectionName);
-			page.set('contentType', section.get('contentType'));
-			page.set('pageType', section.get('pageType'));
-
-			let meta = {
-				documentId: this.get('document.id'),
-				rawBody: "",
-				config: ""
-			};
-
-			let model = {
-				page: page,
-				meta: meta
-			};
-
-			const promise = this.addSection(model);
-			promise.then((id) => {
-				this.set('toEdit', model.page.pageType === 'section' ? id: '');
-				// this.setupAddWizard();
-			});
-		},
-
-		onInsertBlock(block) {
-			let sectionName = this.get('newSectionName');
-			if (is.empty(sectionName)) {
-				$("#new-section-name").focus();
-				return;
-			}
-
-			let page = this.get('store').createRecord('page');
-			page.set('documentId', this.get('document.id'));
-			page.set('title', `${block.get('title')}`);
-			page.set('body', block.get('body'));
-			page.set('contentType', block.get('contentType'));
-			page.set('pageType', block.get('pageType'));
-			page.set('blockId', block.get('id'));
-
-			let meta = {
-				documentId: this.get('document.id'),
-				rawBody: block.get('rawBody'),
-				config: block.get('config'),
-				externalSource: block.get('externalSource')
-			};
-
-			let model = {
-				page: page,
-				meta: meta
-			};
-
-			const promise = this.addSection(model);
-			promise.then((id) => { // eslint-disable-line no-unused-vars
-				// this.setupAddWizard();
-			});
+		onShowSectionWizard(beforePage) {
+			this.set('newSectionLocation', beforePage);
+			this.set('showInsertSectionModal', true)
 		},
 
 		onShowDeleteBlockModal(id) {
