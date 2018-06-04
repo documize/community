@@ -27,7 +27,7 @@ export default Mixin.create({
 	},
 
 	modalInputFocus(modalId, inputId) {
-		$(modalId).on('shown.bs.modal', function(event) { // eslint-disable-line no-unused-vars
+		$(modalId).one('shown.bs.modal', function(event) { // eslint-disable-line no-unused-vars
 			$(inputId).trigger('focus');
 		});
 	},
@@ -55,7 +55,7 @@ export default Mixin.create({
 	// If caused by a click, the clicked element is available as the relatedTarget
 	// property of the event.
 	modalOnShow(modalId, callback) {
-		$(modalId).on('show.bs.modal', function(e) {
+		$(modalId).one('show.bs.modal', function(e) {
 			callback(e);
 		});
 	},
@@ -64,14 +64,14 @@ export default Mixin.create({
 	// (will wait for CSS transitions to complete). If caused by a click,
 	// the clicked element is available as the relatedTarget property of the event.
 	modalOnShown(modalId, callback) {
-		$(modalId).on('shown.bs.modal', function(e) {
+		$(modalId).one('shown.bs.modal', function(e) {
 			callback(e);
 		});
 	},
 
 	// This event is fired immediately when the hide instance method has been called.
 	modalOnHide(modalId, callback) {
-		$(modalId).on('hide.bs.modal', function(e) {
+		$(modalId).one('hide.bs.modal', function(e) {
 			callback(e);
 		});
 	},
@@ -79,7 +79,7 @@ export default Mixin.create({
 	// This event is fired when the modal has finished being hidden from the user
 	// (will wait for CSS transitions to complete).
 	modalOnHidden(modalId, callback) {
-		$(modalId).on('hidden.bs.modal', function(e) {
+		$(modalId).one('hidden.bs.modal', function(e) {
 			callback(e);
 		});
 	}
