@@ -16,7 +16,7 @@ export default Controller.extend({
 	filter: '',
 	matchDoc: true,
 	matchContent: true,
-	matchTag: false,
-	matchFile: false,
+	matchTag: true,
+	matchFile: true,
 	slog: false,
 });
