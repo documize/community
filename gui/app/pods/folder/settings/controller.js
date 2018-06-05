@@ -14,6 +14,7 @@ import NotifierMixin from '../../../mixins/notifier';
 import Controller from '@ember/controller';
 
 export default Controller.extend(NotifierMixin, {
+	router: service(),
 	folderService: service('folder'),
 	localStorage: service('localStorage'),
 	tab: 'general',
@@ -21,6 +22,10 @@ export default Controller.extend(NotifierMixin, {
 	actions: {
 		onTab(view) {
 			this.set('tab', view);
+		},
+
+		onCategories() {
+			this.get('router').transitionTo('folder.category');
 		},
 
 		onRefresh() {

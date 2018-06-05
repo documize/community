@@ -36,16 +36,14 @@
 
 	{{#layout/middle-zone-sidebar}}
 		<div id="sidebar" class="sidebar">
-			<h1>{{model.folder.name}}</h1>
-			<div class="margin-top-50">
-				<ul class="tabnav-control tabnav-control-centered w-75">
-					<li class="tab tab-vertical {{if (eq tab 'general') 'selected'}}" {{action 'onTab' 'general'}}>Options</li>
-					<li class="tab tab-vertical {{if (eq tab 'permissions') 'selected'}}" {{action 'onTab' 'permissions'}}>Permissions</li>
-					<li class="tab tab-vertical {{if (eq tab 'invitations') 'selected'}}" {{action 'onTab' 'invitations'}}>Invite Users</li>
-					<li class="tab tab-vertical {{if (eq tab 'templates') 'selected'}}" {{action 'onTab' 'templates'}}>Document Templates</li>
-					<li class="tab tab-vertical {{if (eq tab 'blocks') 'selected'}}" {{action 'onTab' 'blocks'}}>Content Blocks</li>
-				</ul>
-			</div>
+			<ul class="tabnav-control tabnav-control-centered w-75">
+				<li class="tab tab-vertical {{if (eq tab 'general') 'selected'}}" {{action 'onTab' 'general'}}>Options</li>
+				<li class="tab tab-vertical {{if (eq tab 'permissions') 'selected'}}" {{action 'onTab' 'permissions'}}>Permissions</li>
+				<li class="tab tab-vertical {{if (eq tab 'invitations') 'selected'}}" {{action 'onTab' 'invitations'}}>Invite Users</li>
+				<li class="tab tab-vertical {{if (eq tab 'templates') 'selected'}}" {{action 'onTab' 'templates'}}>Document Templates</li>
+				<li class="tab tab-vertical {{if (eq tab 'blocks') 'selected'}}" {{action 'onTab' 'blocks'}}>Content Blocks</li>
+				<li class="tab tab-vertical" {{action 'onCategories'}}>Categories</li>
+			</ul>
 		</div>
 	{{/layout/middle-zone-sidebar}}
 {{/layout/middle-zone}}
