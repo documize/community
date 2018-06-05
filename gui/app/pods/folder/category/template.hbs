@@ -1,7 +1,12 @@
 {{#layout/top-bar}}
 	<li class="item">
-		{{#link-to "folder.index" model.folder.id model.folder.slug class='link selected'}}
+		{{#link-to "folder.index" model.folder.id model.folder.slug class='link'}}
 			{{model.folder.name}}
+		{{/link-to}}
+	</li>
+	<li class="item">
+		{{#link-to "folder.category" model.folder.id model.folder.slug class='link selected'}}
+			Categories
 		{{/link-to}}
 	</li>
 {{/layout/top-bar}}
