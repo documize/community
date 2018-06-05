@@ -14,10 +14,11 @@ import { empty } from '@ember/object/computed';
 import { set } from '@ember/object';
 import { copy } from '@ember/object/internals';
 import { inject as service } from '@ember/service';
-import Component from '@ember/component';
+import Notifier from '../../mixins/notifier';
 import encoding from '../../utils/encoding';
+import Component from '@ember/component';
 
-export default Component.extend({
+export default Component.extend(Notifier, {
 	appMeta: service(),
 	isDocumizeProvider: computed('authProvider', function() {
 		return this.get('authProvider') === this.get('constants').AuthProvider.Documize;
@@ -139,6 +140,8 @@ export default Component.extend({
 					break;
 			}
 
+			this.showWait();
+
 			let data = { authProvider: provider, authConfig: JSON.stringify(config) };
 
 			this.get('onSave')(data).then(() => {
@@ -158,6 +161,7 @@ export default Component.extend({
 						}
 					});
 				}
+				this.showDone();
 			});
 		}
 	}

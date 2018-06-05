@@ -94,40 +94,10 @@
 	</div>
 
 	<div class="col-6 text-right">
-		{{#if spaceSettings}}
-			<div id="space-permissions-button" class="button-icon-gray align-middle" data-toggle="tooltip" data-placement="top" title="Set permissions">
-				<i class="material-icons" data-toggle="modal" data-target="#space-permission-modal" data-backdrop="static">security</i>
-			</div>
-			<div class="button-icon-gap" />
-			<div id="space-invite-button" class="button-icon-gray align-middle" data-toggle="tooltip" data-placement="top" title="Invite to space">
-				<i class="material-icons" data-toggle="modal" data-target="#space-invite-modal" data-backdrop="static">person_add</i>
-			</div>
-			<div class="button-icon-gap" />
-		{{/if}}
-
-		{{#if permissions.documentTemplate}}
-			<div id="space-template-button" class="button-icon-gray align-middle" data-toggle="tooltip" data-placement="top" title="Manage templates">
-				<i class="material-icons" data-toggle="modal" data-target="#space-template-modal" data-backdrop="static">content_copy</i>
-			</div>
-			<div class="button-icon-gap" />
-		{{/if}}
-
 		{{#if (or permissions.spaceOwner permissions.spaceManage)}}
-			<div id="space-settings-button" class="button-icon-gray align-middle" data-toggle="tooltip" data-placement="top" title="Settings">
-				<i class="material-icons" data-toggle="modal" data-target="#space-settings-modal" data-backdrop="static">settings</i>
-			</div>
-			<div class="button-icon-gap" />
-		{{/if}}
-
-		{{#if pinState.isPinned}}
-			<div id="space-pin-button" class="button-icon-gold align-middle" data-toggle="tooltip" data-placement="top" title="Remove favorite" {{action 'onUnpin'}}>
-				<i class="material-icons">star</i>
-			</div>
-			<div class="button-icon-gap" />
-		{{else if session.authenticated}}
-			<div id="space-pin-button" class="button-icon-gray align-middle" data-toggle="tooltip" data-placement="top" title="Save favorite" {{action 'onPin'}}>
-				<i class="material-icons">star</i>
-			</div>
+			{{#link-to 'folder.settings' space.id space.slug class="button-icon-gray align-middle"}}
+				<i class="material-icons" data-toggle="tooltip" data-placement="top" title="Settings, users, permissions, templates">settings</i>
+			{{/link-to}}
 			<div class="button-icon-gap" />
 		{{/if}}
 
@@ -137,43 +107,18 @@
 			</div>
 			<div class="button-icon-gap" />
 		{{/if}}
+
+		{{#if pinState.isPinned}}
+			<div id="space-pin-button" class="button-icon-gold align-middle" data-toggle="tooltip" data-placement="top" title="Remove favorite" {{action 'onUnpin'}}>
+				<i class="material-icons">star</i>
+			</div>
+		{{else if session.authenticated}}
+			<div id="space-pin-button" class="button-icon-gray align-middle" data-toggle="tooltip" data-placement="top" title="Save favorite" {{action 'onPin'}}>
+				<i class="material-icons">star</i>
+			</div>
+		{{/if}}
 	</div>
 
-</div>
-
-<div id="space-settings-modal" class="modal" tabindex="-1" role="dialog">
-	<div class="modal-dialog" role="document">
-		<div class="modal-content">
-			<div class="modal-header">Space Settings</div>
-			<div class="modal-body">
-				<form>
-					<div class="form-group">
-						<label>Space Type</label>
-						{{ui-select id="group-dropdown" content=spaceTypeOptions optionValuePath="id" optionLabelPath="label" selection=spaceType action=(action 'onSetSpaceType')}}
-					</div>
-
-					<div class="form-group">
-						<label>Content Liking</label>
-						{{#if allowLikes}}
-							{{input type='text' id="space-likes-prompt" class="form-control" placeholder="Did this help you?" value=likes}}
-							<small class="form-text text-muted">Specify the prompt, e.g. Did this help you? Was this helpful? Did you find what you needed?</small>
-							<div class="mt-4">
-								<button type="button" class="btn btn-secondary" onclick={{action 'onSetLikes' false}}>Do not allow users to like content</button>
-							</div>
-						{{else}}
-							<div>
-								<button type="button" class="btn btn-outline-success" onclick={{action 'onSetLikes' true}}>Allow users to like content</button>
-							</div>
-						{{/if}}
-					</div>
-				</form>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-				<button type="button" class="btn btn-success" onclick={{action 'onSpaceSettings'}}>Save</button>
-			</div>
-		</div>
-	</div>
 </div>
 
 <div id="space-delete-modal" class="modal" tabindex="-1" role="dialog">
@@ -197,63 +142,3 @@
 		</div>
 	</div>
 </div>
-
-<div id="space-template-modal" class="modal" tabindex="-1" role="dialog">
-	<div class="modal-dialog" role="document">
-		<div class="modal-content">
-			<div class="modal-header">Manage Templates</div>
-			<div class="modal-body">
-				<div class="widget-list-picker">
-					<ul class="options">
-						{{#each templates as |item|}}
-							<li class="option {{if item.selected 'selected'}}" {{action 'onSelectTemplate' item}}>
-								<div class="text text-truncate">
-									{{item.title}}<br/>{{item.description}}
-								</div>
-								{{#if item.selected}}
-									<i class="material-icons">check</i>
-								{{/if}}
-							</li>
-						{{else}}
-							No document templates
-						{{/each}}
-					</ul>
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
-				{{#if templates}}
-					<button type="button" class="btn btn-success" onclick={{action 'onOpenTemplate'}}>Open</button>
-				{{/if}}
-			</div>
-		</div>
-	</div>
-</div>
-
-<div id="space-invite-modal" class="modal" tabindex="-1" role="dialog">
-	<div class="modal-dialog" role="document">
-		<div class="modal-content">
-			<div class="modal-header">Space Invitation</div>
-			<div class="modal-body">
-				<form onsubmit={{action 'onSpaceInvite'}}>
-					<div class="form-group">
-						<label for="space-invite-email">Email for space invitation</label>
-						{{input id="space-invite-email" type='email' class="form-control mousetrap" placeholder="Enter email" value=inviteEmail}}
-						<small class="form-text text-muted">Comma separate multiple email addresses</small>
-					</div>
-					<div class="form-group">
-						<label for="space-invite-msg">Message explaining space invitation</label>
-						{{textarea id="space-invite-msg" value=inviteMessage class="form-control" rows="5"}}
-					</div>
-				</form>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-				<button type="button" class="btn btn-success" onclick={{action 'onSpaceInvite'}}>Invite</button>
-			</div>
-		</div>
-	</div>
-</div>
-
-
-{{folder/permission-admin folders=spaces folder=space onRefresh=onRefresh}}

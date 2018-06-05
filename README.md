@@ -1,4 +1,4 @@
-> We provide frequent product releases to ensure self-host customers enjoy the same product as our Cloud/SaaS platform customers.
+> We're committed to providing frequent product releases to ensure self-host customers enjoy the same product as our cloud/SaaS customers.
 >
 > Harvey Kandola, CEO & Founder, Documize Inc.
 

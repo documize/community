@@ -1,0 +1,25 @@
+<div class="content-zone">
+	<div class="explainer-header explainer-gap">General options for this space</div>
+	<form>
+		<div class="form-group">
+			<label>Space Type</label>
+			{{ui-select id="spacetypes-dropdown" content=spaceTypeOptions optionValuePath="id" optionLabelPath="label" selection=spaceType action=(action 'onSetSpaceType')}}
+		</div>
+
+		<div class="form-group">
+			<label>Content Liking</label>
+			{{#if allowLikes}}
+				{{input type='text' id="space-likes-prompt" class="form-control" placeholder="Did this help you?" value=likes}}
+				<small class="form-text text-muted">Specify the prompt, e.g. Did this help you? Was this helpful? Did you find what you needed?</small>
+				<div class="mt-4">
+					<button type="button" class="btn btn-outline-danger" onclick={{action 'onSetLikes' false}}>Do not allow users to like content</button>
+				</div>
+			{{else}}
+				<div>
+					<button type="button" class="btn btn-outline-success" onclick={{action 'onSetLikes' true}}>Allow users to like content</button>
+				</div>
+			{{/if}}
+		</div>
+	</form>
+	<button type="button" class="btn btn-success mt-3" onclick={{action 'onSave'}}>Save</button>
+</div>

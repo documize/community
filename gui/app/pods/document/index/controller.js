@@ -167,14 +167,6 @@ export default Controller.extend(Tooltips, Notifier, {
 			});
 		},
 
-		onDeleteBlock(blockId) {
-			return new EmberPromise((resolve) => {
-				this.get('sectionService').deleteBlock(blockId).then(() => {
-					resolve();
-				});
-			});
-		},
-
 		onSavePageAsBlock(block) {
 			return new EmberPromise((resolve) => {
 				this.get('sectionService').addBlock(block).then(() => {

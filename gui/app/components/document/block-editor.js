@@ -21,7 +21,7 @@ export default Component.extend({
 
 		p.set('id', this.get('block.id'));
 		p.set('orgId', this.get('block.orgId'));
-		p.set('documentId', this.get('document.id'));
+		p.set('documentId', 'dummy');
 		p.set('contentType', this.get('block.contentType'));
 		p.set('pageType', this.get('block.pageType'));
 		p.set('title', this.get('block.title'));
@@ -31,7 +31,7 @@ export default Component.extend({
 
 		m.set('pageId', this.get('block.id'));
 		m.set('orgId', this.get('block.orgId'));
-		m.set('documentId', this.get('document.id'));
+		m.set('documentId', 'dummy');
 		m.set('rawBody', this.get('block.rawBody'));
 		m.set('config', this.get('block.config'));
 		m.set('externalSource', this.get('block.externalSource'));

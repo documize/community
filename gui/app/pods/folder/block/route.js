@@ -11,21 +11,19 @@
 
 import { hash } from 'rsvp';
 import { inject as service } from '@ember/service';
-import Route from '@ember/routing/route';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
+import Route from '@ember/routing/route';
 
 export default Route.extend(AuthenticatedRouteMixin, {
-	documentService: service('document'),
-	folderService: service('folder'),
-	sectionService: service('section'),
+	sectionSvc: service('section'),
 
 	model(params) {
 		let self = this;
 
 		return hash({
-			folder: self.modelFor('document').folder,
-			document: self.modelFor('document').document,
-			block: self.get('sectionService').getBlock(params.block_id),
+			space: this.modelFor('folder').folder,
+			permissions: this.modelFor('folder').permissions,
+			block: self.get('sectionSvc').getBlock(params.block_id),
 		});
 	},
 });

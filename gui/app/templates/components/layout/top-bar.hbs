@@ -4,7 +4,9 @@
 		<div class="col col-6 col-md-9">
 			<div class="top-bar d-none d-md-block">
 				<ul class="items d-flex align-items-center">
-					<li class="item"><img class="logo" src="/assets/img/icon-white-64x64.png" /></li>
+					<li class="item cursor-auto">
+						<img class="logo" src="/assets/img/icon-white-64x64.png" />
+					</li>
 					{{#if (eq appMeta.edition 'Community')}}
 						<li class="item">
 							{{#link-to "folders" class=(if (eq selectItem 'spaces') 'link selected' 'link')}}SPACES{{/link-to}}

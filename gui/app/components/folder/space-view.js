@@ -60,10 +60,6 @@ export default Component.extend(AuthMixin, {
 				this.send('onDocumentFilter', 'category', this.get('categoryFilter'));
 			} else {
 				this.send('onDocumentFilter', 'space', this.get('folder.id'));
-			// } else if (this.get('rootDocCount') > 0) {
-			// 	this.send('onDocumentFilter', 'space', this.get('folder.id'));
-			// } else if (selectedCategory !== '') {
-			// 	this.send('onDocumentFilter', 'category', selectedCategory);
 			}
 		});
 	},

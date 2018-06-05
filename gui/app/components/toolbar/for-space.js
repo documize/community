@@ -12,12 +12,10 @@
 import $ from 'jquery';
 import { computed } from '@ember/object';
 import { schedule } from '@ember/runloop';
-import { A } from '@ember/array';
 import { inject as service } from '@ember/service';
 import TooltipMixin from '../../mixins/tooltip';
 import ModalMixin from '../../mixins/modal';
 import AuthMixin from '../../mixins/auth';
-import stringUtil from '../../utils/string';
 import Component from '@ember/component';
 
 export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
@@ -36,8 +34,7 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 		return this.get('permissions.spaceOwner') || this.get('permissions.spaceManage');
 	}),
 	deleteSpaceName: '',
-	inviteEmail: '',
-	inviteMessage: '',
+
 	hasTemplates: computed('templates', function() {
 		return this.get('templates.length') > 0;
 	}),
@@ -48,11 +45,6 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 	selectedTemplate: '',
 
 	dropzone: null,
-
-	spaceTypeOptions: A([]),
-	spaceType: 0,
-	likes: '',
-	allowLikes: false,
 
 	init() {
 		this._super(...arguments);
@@ -68,7 +60,6 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 
 	didReceiveAttrs() {
 		this._super(...arguments);
-		let constants = this.get('constants');
 
 		let folder = this.get('space');
 		let targets = _.reject(this.get('spaces'), {id: folder.get('id')});
@@ -80,20 +71,6 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 			this.set('pinState.newName', folder.get('name'));
 			this.renderTooltips();
 		});
-
-		if (this.get('inviteMessage').length === 0) {
-			this.set('inviteMessage', this.getDefaultInvitationMessage());
-		}
-
-		let spaceTypeOptions = A([]);
-		spaceTypeOptions.pushObject({id: constants.FolderType.Private, label: 'Private - viewable only by me'});
-		spaceTypeOptions.pushObject({id: constants.FolderType.Protected, label: 'Protected - access is restricted to selected users'});
-		spaceTypeOptions.pushObject({id: constants.FolderType.Public, label: 'Public - can be seen by everyone'});
-		this.set('spaceTypeOptions', spaceTypeOptions);
-		this.set('spaceType', spaceTypeOptions.findBy('id', folder.get('folderType')));
-
-		this.set('likes', folder.get('likes'));
-		this.set('allowLikes', folder.get('allowLikes'));
 	},
 
 	didInsertElement() {
@@ -110,10 +87,6 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 			this.get('dropzone').destroy();
 			this.set('dropzone', null);
 		}
-	},
-
-	getDefaultInvitationMessage() {
-		return "Hey there, I am sharing the " + this.get('space.name') + " space (in " + this.get("appMeta.title") + ") with you so we can both collaborate on documents.";
 	},
 
 	setupImport() {
@@ -192,48 +165,6 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 			});
 
 			return true;
-		},
-
-		onSpaceInvite(e) {
-			e.preventDefault();
-
-			var email = this.get('inviteEmail').trim().replace(/ /g, '');
-			var message = this.get('inviteMessage').trim();
-
-			if (message.length === 0) {
-				message = this.getDefaultInvitationMessage();
-			}
-
-			if (email.length === 0) {
-				$('#space-invite-email').addClass('is-invalid').focus();
-				return;
-			}
-
-			var result = {
-				Message: message,
-				Recipients: []
-			};
-
-			// Check for multiple email addresses
-			if (email.indexOf(",") > -1) {
-				result.Recipients = email.split(',');
-			}
-			if (email.indexOf(";") > -1 && result.Recipients.length === 0) {
-				result.Recipients = email.split(';');
-			}
-
-			// Handle just one email address
-			if (result.Recipients.length === 0 && email.length > 0) {
-				result.Recipients.push(email);
-			}
-
-			this.set('inviteEmail', '');
-
-			this.get('spaceService').share(this.get('space.id'), result).then(() => {
-				$('#space-invite-email').removeClass('is-invalid');
-			});
-
-			this.modalClose('#space-invite-modal');
 		},
 
 		onSpaceDelete(e) {
@@ -359,46 +290,6 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 				let cb = this.get('onRefresh');
 				cb();
 			}
-		},
-
-		onOpenTemplate(e) {
-			e.preventDefault();
-
-			let id = this.get('selectedTemplate');
-			if (is.empty(id)) {
-				return;
-			}
-			let template = this.get('templates').findBy('id', id)
-
-			this.modalClose("#space-template-modal");
-
-			let slug = stringUtil.makeSlug(template.get('title'));
-			this.get('router').transitionTo('document', this.get('space.id'), this.get('space.slug'), id, slug);
-		},
-
-		onSetSpaceType(t) {
-			this.set('spaceType', t);
-		},
-
-		onSetLikes(l) {
-			this.set('allowLikes', l);
-			schedule('afterRender', () => {
-				if (l) $('#space-likes-prompt').focus();
-			});
-
-		},
-
-		onSpaceSettings() {
-			let space = this.get('space');
-			space.set('folderType', this.get('spaceType.id'));
-
-			let allowLikes = this.get('allowLikes');
-			space.set('likes', allowLikes ? this.get('likes') : '');
-
-			this.get('spaceService').save(space).then(() => {
-			});
-
-			this.modalClose("#space-settings-modal");
 		}
 	}
 });

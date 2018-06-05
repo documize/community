@@ -175,23 +175,6 @@ export default Component.extend(TooltipMixin, Notifier, {
 			this.set('showDeleteBlockDialog', true);
 		},
 
-		onDeleteBlock() {
-			this.set('showDeleteBlockDialog', false);
-
-			let id = this.get('deleteBlockId');
-
-			let cb = this.get('onDeleteBlock');
-			let promise = cb(id);
-
-			promise.then(() => {
-				this.set('deleteBlockId', '');
-				let refresh = this.get('refresh');
-				refresh();
-			});
-
-			return true;
-		},
-
 		onVote(vote) {
 			this.get('documentService').vote(this.get('document.id'), vote);
 			this.set('voteThanks', true);

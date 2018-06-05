@@ -11,9 +11,10 @@
 
 import $ from 'jquery';
 import { empty } from '@ember/object/computed';
+import Notifier from '../../mixins/notifier';
 import Component from '@ember/component';
 
-export default Component.extend({
+export default Component.extend(Notifier, {
 	SMTPHostEmptyError: empty('model.smtp.host'),
 	SMTPPortEmptyError: empty('model.smtp.port'),
 	SMTPSenderEmptyError: empty('model.smtp.sender'),
@@ -47,9 +48,11 @@ export default Component.extend({
 				},
 			);
 
+			this.showWait();
 			this.set('buttonText', 'Please wait...');
 
 			this.get('saveSMTP')().then((result) => {
+				this.showDone();
 				this.set('buttonText', 'Save & Test');
 				this.set('testSMTP', result);
 			});
