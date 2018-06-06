@@ -2,9 +2,9 @@
 # yarn lockfile v1
 
 
-"@ember/optional-features@^0.6.0":
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/@ember/optional-features/-/optional-features-0.6.0.tgz#61f13c739cb1791c0323b258e37c8beb216e1ff2"
+"@ember/optional-features@^0.6.1":
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/@ember/optional-features/-/optional-features-0.6.1.tgz#c5163c11bdd11ed8d69d4e273b114b95af16e5a9"
   dependencies:
     chalk "^2.3.0"
     co "^4.6.0"

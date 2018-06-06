@@ -23,8 +23,6 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 	session: service(),
 	appMeta: service(),
 	pinned: service(),
-	showTools: true, 			// show document related tools? favourite, delete, make template...
-	showDocumentLink: false, 	// show link to document in breadcrumbs
 
 	init() {
 		this._super(...arguments);

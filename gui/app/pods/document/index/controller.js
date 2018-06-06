@@ -70,7 +70,6 @@ export default Controller.extend(Tooltips, Notifier, {
 		},
 
 		onSavePage(page, meta) {
-
 			let document = this.get('document');
 			let documentId = document.get('id');
 			let constants = this.get('constants');
@@ -232,16 +231,26 @@ export default Controller.extend(Tooltips, Notifier, {
 
 		refresh() {
 			return new EmberPromise((resolve) => {
-			this.get('documentService').fetchPages(this.get('document.id'), this.get('session.user.id')).then((data) => {
-				this.set('pages', data);
+				this.get('documentService').fetchDocumentData(this.get('document.id')).then((data) => {
+					this.set('document', data.document);
+					this.set('folders', data.folders);
+					this.set('folder', data.folder);
+					this.set('permissions', data.permissions);
+					this.set('roles', data.roles);
+					this.set('links', data.links);
+					this.set('versions', data.versions);
 
-			this.get('sectionService').getSpaceBlocks(this.get('folder.id')).then((data) => {
-				this.set('blocks', data);
-			});
+					this.get('documentService').fetchPages(this.get('document.id'), this.get('session.user.id')).then((data) => {
+						this.set('pages', data);
 
-					resolve();
+						this.get('sectionService').getSpaceBlocks(this.get('folder.id')).then((data) => {
+							this.set('blocks', data);
+						});
+
+						resolve();
+					});
 				});
 			});
-		},
+		}
 	}
 });

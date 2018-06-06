@@ -23,14 +23,6 @@ export default Controller.extend(NotifierMixin, {
 	filteredDocs: null,
 
 	actions: {
-		onAddSpace(payload) {
-			let self = this;
-			this.get('folderService').add(payload).then(function (newFolder) {
-				self.get('folderService').setCurrentFolder(newFolder);
-				self.transitionToRoute('folder', newFolder.get('id'), newFolder.get('slug'));
-			});
-		},
-
 		onDeleteSpace(id) {
 			this.get('folderService').delete(id).then(() => { /* jshint ignore:line */
 				this.get('localStorage').clearSessionItem('folder');

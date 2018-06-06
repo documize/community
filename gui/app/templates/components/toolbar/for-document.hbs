@@ -1,36 +1,34 @@
 <div class="text-right">
-	{{#if showTools}}
-		{{#if session.authenticated}}
-			{{#if permissions.documentAdd}}
-				<div id="document-template-button" class="button-icon-gray align-middle" data-toggle="tooltip" data-placement="top" title="Save as template">
-					<i class="material-icons" data-toggle="modal" data-target="#document-template-modal" data-backdrop="static">content_copy</i>
-				</div>
-				<div class="button-icon-gap" />
-			{{/if}}
+	{{#if session.authenticated}}
+		{{#if permissions.documentAdd}}
+			<div id="document-template-button" class="button-icon-gray align-middle" data-toggle="tooltip" data-placement="top" title="Save as template">
+				<i class="material-icons" data-toggle="modal" data-target="#document-template-modal" data-backdrop="static">content_copy</i>
+			</div>
+			<div class="button-icon-gap" />
 		{{/if}}
+	{{/if}}
 
-		<div id="document-print-button" class="button-icon-gray align-middle" data-toggle="tooltip" data-placement="top" title="Print" {{action 'onPrintDocument'}}>
-			<i class="material-icons">print</i>
+	<div id="document-print-button" class="button-icon-gray align-middle" data-toggle="tooltip" data-placement="top" title="Print" {{action 'onPrintDocument'}}>
+		<i class="material-icons">print</i>
+	</div>
+	<div class="button-icon-gap" />
+
+	{{#if pinState.isPinned}}
+		<div id="document-pin-button" class="button-icon-gold align-middle" data-toggle="tooltip" data-placement="top" title="Remove favorite" {{action 'onUnpin'}}>
+			<i class="material-icons">star</i>
 		</div>
 		<div class="button-icon-gap" />
+	{{else if session.authenticated}}
+		<div id="document-pin-button" class="button-icon-gray align-middle" data-toggle="tooltip" data-placement="top" title="Save favorite" {{action 'onPin'}}>
+			<i class="material-icons">star</i>
+		</div>
+		<div class="button-icon-gap" />
+	{{/if}}
 
-		{{#if pinState.isPinned}}
-			<div id="document-pin-button" class="button-icon-gold align-middle" data-toggle="tooltip" data-placement="top" title="Remove favorite" {{action 'onUnpin'}}>
-				<i class="material-icons">star</i>
-			</div>
-			<div class="button-icon-gap" />
-		{{else if session.authenticated}}
-			<div id="document-pin-button" class="button-icon-gray align-middle" data-toggle="tooltip" data-placement="top" title="Save favorite" {{action 'onPin'}}>
-				<i class="material-icons">star</i>
-			</div>
-			<div class="button-icon-gap" />
-		{{/if}}
-
-		{{#if permissions.documentDelete}}
-			<div id="document-delete-button" class="button-icon-danger align-middle" data-toggle="tooltip" data-placement="top" title="Delete document">
-				<i class="material-icons" data-toggle="modal" data-target="#document-delete-modal" data-backdrop="static">delete</i>
-			</div>
-		{{/if}}
+	{{#if permissions.documentDelete}}
+		<div id="document-delete-button" class="button-icon-danger align-middle" data-toggle="tooltip" data-placement="top" title="Delete document">
+			<i class="material-icons" data-toggle="modal" data-target="#document-delete-modal" data-backdrop="static">delete</i>
+		</div>
 	{{/if}}
 </div>
 
