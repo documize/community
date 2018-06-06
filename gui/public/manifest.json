@@ -2,24 +2,24 @@
 	"name": "Documize",
 	"short_name": "Documize",
 	"display": "standalone",
-	"background_color": "#375061",
-	"theme_color": "#375061",
+	"background_color": "#280A42",
+	"theme_color": "#280A42",
 	"description": "Organized documents",
 	"start_url": "/?utm_source=homescreen",
 	"icons": [{
-		"src": "assets/img/icon-blue-64x64.png",
+		"src": "assets/img/icon-purple-64x64.png",
 		"sizes": "64x64",
 		"type": "image/png"
 	}, {
-		"src": "assets/img/icon-blue-128x128.png",
+		"src": "assets/img/icon-purple-128x128.png",
 		"sizes": "128x128",
 		"type": "image/png"
 	}, {
-		"src": "assets/img/icon-blue-256x256.png",
+		"src": "assets/img/icon-purple-256x256.png",
 		"sizes": "256x256",
 		"type": "image/png"
 	}, {
-		"src": "assets/img/icon-blue-1024x1024.png",
+		"src": "assets/img/icon-purple-1024x1024.png",
 		"sizes": "1024x1024",
 		"type": "image/png"
 	}]
