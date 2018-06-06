@@ -42,6 +42,9 @@ export default Component.extend({
 				statusbar: false,
 				inline: true,
 				paste_data_images: true,
+				images_upload_handler: function (blobInfo, success, failure) { // eslint-disable-line no-unused-vars
+					success("data:" + blobInfo.blob().type + ";base64," + blobInfo.base64());
+				},
 				image_advtab: true,
 				image_caption: true,
 				media_live_embeds: true,
@@ -98,14 +101,14 @@ export default Component.extend({
 					'advlist autolink lists link image charmap print hr anchor pagebreak',
 					'searchreplace wordcount visualblocks visualchars code codesample fullscreen',
 					'insertdatetime media nonbreaking save table directionality',
-					'template paste textcolor colorpicker textpattern imagetools'
+					'template paste textcolor colorpicker textpattern imagetools uploadimage'
 				],
 				menu: {},
 				menubar: false,
 				toolbar1:
 					'formatselect fontsizeselect | bold italic underline strikethrough superscript subscript | forecolor backcolor link unlink',
 				toolbar2:
-					'outdent indent bullist numlist | alignleft aligncenter alignright alignjustify | table image media codesample',
+					'outdent indent bullist numlist | alignleft aligncenter alignright alignjustify | table uploadimage image media codesample',
 				save_onsavecallback: function () {
 					Mousetrap.trigger('ctrl+s');
 				}
