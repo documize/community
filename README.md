@@ -24,9 +24,13 @@ Sound familiar? Read on.
 
 Anyone who wants a single place for any kind of document.
 
-Anyone who wants to loop in external participants complete security.
+Anyone who wants to loop in external participants with complete security.
 
 Anyone who wishes documentation and knowledge capture worked like agile software development.
+
+Anyone who knows that nested folders fail miserably.
+
+Anyone who wants to move on from wiki software.
 
 ## What's different about Documize?
 
@@ -70,8 +74,8 @@ Documize runs on the following:
 
 Documize is built with the following technologies:
 
-- EmberJS (v2.18.0)
-- Go (v1.10.1)
+- EmberJS (v3.1.2)
+- Go (v1.10.2)
 
 ...and supports the following databases:
 
@@ -107,7 +111,7 @@ We try to follow sound advice when writing commit messages:
 
 https://chris.beams.io/posts/git-commit/
 
-## The legal bit at the end
+## The legal bit
 
 <https://documize.com>
 
