@@ -34,8 +34,8 @@
 								</div>
 							</div>
 							<div class="col-12 col-md-6">
+								<div class="new-section-caption">Select Re-usable Content</div>
 								{{#if hasBlocks}}
-									<div class="new-section-caption">Select Re-usable Content</div>
 									<ul class="block-list">
 										{{#each blocks as |block|}}
 											<li class="item" title="{{block.firstname}} {{block.lastname}}, {{time-ago block.created}}, used: {{ block.used }}" data-toggle="tooltip" data-placement="top">
@@ -47,7 +47,7 @@
 										{{/each}}
 									</ul>
 								{{else}}
-									<div class="template-caption">You have no reusable content &mdash; publish any section as a template</div>
+									<div class="new-section-empty">You have no reusable content &mdash; publish any document section as a template for others to reuse</div>
 								{{/if}}
 							</div>
 						</div>
