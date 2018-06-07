@@ -17,7 +17,7 @@ export default Component.extend({
 
     didReceiveAttrs() {
         this._super(...arguments);
-        
+
         if (this.get('isDestroyed') || this.get('isDestroying')) {
             return;
         }
@@ -43,7 +43,7 @@ export default Component.extend({
 
     didInsertElement() {
         this._super(...arguments);
-        
+
         if (this.get('isDestroyed') || this.get('isDestroying')) {
             return;
         }
@@ -62,14 +62,14 @@ export default Component.extend({
             readOnly: true
         });
 
-        this.set('codeEditor', editor);
-
         let syntax = this.get("codeSyntax");
         if (is.not.undefined(syntax)) {
             CodeMirror.autoLoadMode(editor, syntax.mode);
             editor.setOption("mode", syntax.mode);
         }
-    },
+
+        this.set('codeEditor', editor);
+	},
 
     willDestroyElement() {
         this._super(...arguments);

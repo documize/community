@@ -83,13 +83,13 @@ export default Component.extend(TooltipMixin, {
 			Mousetrap.trigger('ctrl+s');
 		};
 
-        this.set('codeEditor', editor);
-
         let syntax = this.get("codeSyntax");
         if (is.not.undefined(syntax)) {
             CodeMirror.autoLoadMode(editor, syntax.mode);
             editor.setOption("mode", syntax.mode);
         }
+
+		this.set('codeEditor', editor);
     },
 
     willDestroyElement() {
