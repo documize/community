@@ -28,12 +28,8 @@ export default Component.extend(AuthMixin, Notifier, {
 
 	spaceTypeOptions: A([]),
 	spaceType: 0,
-	likes: 'Did this help you?',
+	likes: '',
 	allowLikes: false,
-
-	init() {
-		this._super(...arguments);
-	},
 
 	didReceiveAttrs() {
 		this._super(...arguments);
@@ -48,8 +44,13 @@ export default Component.extend(AuthMixin, Notifier, {
 		this.set('spaceTypeOptions', spaceTypeOptions);
 		this.set('spaceType', spaceTypeOptions.findBy('id', folder.get('folderType')));
 
-		this.set('likes', folder.get('likes'));
 		this.set('allowLikes', folder.get('allowLikes'));
+
+		if (this.get('allowLikes')) {
+			this.set('likes', folder.get('likes'));
+		} else {
+			this.set('likes', 'Did this help you?');
+		}
 	},
 
 	actions: {

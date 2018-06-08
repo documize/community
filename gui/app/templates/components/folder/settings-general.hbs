@@ -9,7 +9,7 @@
 		<div class="form-group">
 			<label>Content Liking</label>
 			{{#if allowLikes}}
-				{{input type='text' id="space-likes-prompt" class="form-control" placeholder="Did this help you?" value=likes}}
+				{{input type='text' id="space-likes-prompt" class="form-control" placeholder="Enter prompt asking for user feedback" value=likes}}
 				<small class="form-text text-muted">Specify the prompt, e.g. Did this help you? Was this helpful? Did you find what you needed?</small>
 				<div class="mt-4">
 					<button type="button" class="btn btn-outline-danger" onclick={{action 'onSetLikes' false}}>Do not allow users to like content</button>
