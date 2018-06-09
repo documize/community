@@ -23,7 +23,7 @@ func Numberize(pages []Page) {
 
 	for i, p := range pages {
 		// handle bad data
-		if p.Level == 0 {
+		if p.Level == 0 || (i == 0 && p.Level > 1) {
 			p.Level = 1
 		}
 

@@ -18,7 +18,7 @@ import (
 
 // LevelizeDocument generates level and sequence numbers for all document sections
 func (h *Handler) LevelizeDocument(ctx domain.RequestContext, documentID string) {
-	method := "page.Levelize"
+	method := "page.LevelizeDocument"
 	var err error
 	ctx.Transaction.Commit()
 
