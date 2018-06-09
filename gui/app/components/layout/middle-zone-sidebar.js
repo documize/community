@@ -12,7 +12,7 @@
 import Component from '@ember/component';
 
 export default Component.extend({
-	classNames: ['layout-sidebar'],
+	classNames: ['layout-sidebar', 'non-printable'],
 	tagName: 'nav',
 
 	didInsertElement() {

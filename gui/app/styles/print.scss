@@ -47,6 +47,9 @@
 	}
 
 	.non-printable,
+	header,
+	footer,
+	.tabnav-control,
 	.document-toolbar,
 	.document-toc,
 	.tabnav-control,
@@ -80,13 +83,14 @@
 	.doc-title {
 		margin: 0 !important;
 		padding: 0 !important;
-		font-size: 18px !important;
+		font-size: 1.5rem !important;
 		color: #000000 !important;
 	}
 	.doc-excerpt {
 		margin: 0 !important;
 		padding: 0 !important;
 		color: #464545 !important;
+		font-size: 1.2rem !important;
 	}
 
 	.wysiwyg {
@@ -118,5 +122,12 @@
 	[class*="col-"] {
 		float: left !important;
 		width: 100% !important;
+	}
+
+	.layout-body, .layout-content {
+		padding: 0 !important;
+		margin: 0 !important;
+		display: block !important;
+		flex: none !important;
 	}
 }
