@@ -9,11 +9,10 @@
 //
 // https://documize.com
 
-import { inject as service } from '@ember/service';
+// import $ from 'jquery';
 import Component from '@ember/component';
 
 export default Component.extend({
-	appMeta: service(),
-	classNames: ['col', 'col-sm-7'],
-	selectItem: '',
+	classNames: ['layout-content'],
+	tagName: 'article'
 });

@@ -10,18 +10,20 @@
 // https://documize.com
 
 import { inject as service } from '@ember/service';
+import Notifier from '../../../mixins/notifier';
 import Controller from '@ember/controller';
 
-export default Controller.extend({
-	sectionService: service('section'),
+export default Controller.extend(Notifier, {
+	router: service(),
+	sectionSvc: service('section'),
 
 	actions: {
 		onCancel( /*page*/ ) {
-			this.transitionToRoute('document');
+			this.get('router').transitionTo('folder.settings', {queryParams: {tab: 'blocks'}});
 		},
 
 		onAction(page, meta) {
-			let self = this;
+			this.showWait();
 
 			let b = this.get('model.block');
 			b.set('title', page.get('title'));
@@ -31,8 +33,9 @@ export default Controller.extend({
 			b.set('config', meta.get('config'));
 			b.set('externalSource', meta.get('externalSource'));
 
-			this.get('sectionService').updateBlock(b).then(function () {
-				self.transitionToRoute('document');
+			this.get('sectionSvc').updateBlock(b).then(() => {
+				this.showDone();
+				this.get('router').transitionTo('folder.settings', {queryParams: {tab: 'blocks'}});
 			});
 		}
 	}

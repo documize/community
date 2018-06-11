@@ -12,11 +12,12 @@
 import { inject as service } from '@ember/service';
 import { A } from '@ember/array';
 import { debounce } from '@ember/runloop';
-import ModalMixin from '../../mixins/modal';
+import { computed } from '@ember/object';
+import Notifier from '../../mixins/notifier';
 import stringUtil from '../../utils/string';
 import Component from '@ember/component';
 
-export default Component.extend(ModalMixin, {
+export default Component.extend(Notifier, {
 	groupSvc: service('group'),
 	spaceSvc: service('folder'),
 	userSvc: service('user'),
@@ -26,6 +27,10 @@ export default Component.extend(ModalMixin, {
 	spacePermissions: null,
 	users: null,
 	searchText: '',
+
+	isSpaceAdmin: computed('permissions', function() {
+		return this.get('permissions.spaceOwner') || this.get('permissions.spaceManage');
+	}),
 
 	didReceiveAttrs() {
 		this._super(...arguments);
@@ -128,7 +133,11 @@ export default Component.extend(ModalMixin, {
 	},
 
 	actions: {
-		setPermissions() {
+		onSave() {
+			if (!this.get('isSpaceAdmin')) return;
+
+			this.showWait();
+
 			let message = this.getDefaultInvitationMessage();
 			let permissions = this.get('spacePermissions');
 			let folder = this.get('folder');
@@ -164,7 +173,7 @@ export default Component.extend(ModalMixin, {
 			}
 
 			this.get('spaceSvc').savePermissions(folder.get('id'), payload).then(() => {
-				this.modalClose('#space-permission-modal');
+				this.showDone();
 				this.get('onRefresh')();
 			});
 		},

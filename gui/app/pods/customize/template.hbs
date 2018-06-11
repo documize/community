@@ -1,36 +1,38 @@
-{{toolbar/nav-bar}}
+{{#layout/top-bar}}
+{{/layout/top-bar}}
 
-{{#toolbar/t-toolbar}}
-	{{#toolbar/t-links}}
-	{{/toolbar/t-links}}
-	{{#toolbar/t-actions}}
-	{{/toolbar/t-actions}}
-{{/toolbar/t-toolbar}}
+{{#layout/middle-zone}}
+	{{#layout/middle-zone-content}}
+		{{outlet}}
+	{{/layout/middle-zone-content}}
 
-<div class="container">
-	<div class="row">
-		<div class="col my-5 text-center">
-			<ul class="tabnav-control">
-				{{#link-to 'customize.general' activeClass='selected' class="tab" tagName="li" }}General{{/link-to}}
-				{{#link-to 'customize.folders' activeClass='selected' class="tab" tagName="li" }}Spaces{{/link-to}}
-				{{#link-to 'customize.groups' activeClass='selected' class="tab" tagName="li" }}Groups{{/link-to}}
-				{{#link-to 'customize.users' activeClass='selected' class="tab" tagName="li" }}Users{{/link-to}}
+	{{#layout/middle-zone-sidebar}}
+		<div id="sidebar" class="sidebar">
+			<h1>Settings</h1>
+			<p>Configure authentication, SMTP, licensing and manage user accounts</p>
+			<ul class="tabnav-control tabnav-control-centered w-75">
+				{{#link-to 'customize.general' activeClass='selected' class="tab tab-vertical" tagName="li" }}General{{/link-to}}
+				{{#link-to 'customize.folders' activeClass='selected' class="tab tab-vertical" tagName="li" }}Spaces{{/link-to}}
+				{{#link-to 'customize.groups' activeClass='selected' class="tab tab-vertical" tagName="li" }}Groups{{/link-to}}
+				{{#link-to 'customize.users' activeClass='selected' class="tab tab-vertical" tagName="li" }}Users{{/link-to}}
 				{{#if session.isGlobalAdmin}}
-					{{#link-to 'customize.smtp' activeClass='selected' class="tab" tagName="li" }}SMTP{{/link-to}}
-					{{#link-to 'customize.license' activeClass='selected' class="tab" tagName="li" }}License{{/link-to}}
-					{{#link-to 'customize.auth' activeClass='selected' class="tab" tagName="li" }}Authentication{{/link-to}}
-					{{#link-to 'customize.search' activeClass='selected' class="tab" tagName="li" }}Search{{/link-to}}
+					{{#link-to 'customize.smtp' activeClass='selected' class="tab tab-vertical" tagName="li" }}SMTP{{/link-to}}
+					{{#link-to 'customize.auth' activeClass='selected' class="tab tab-vertical" tagName="li" }}Authentication{{/link-to}}
+					{{#link-to 'customize.search' activeClass='selected' class="tab tab-vertical" tagName="li" }}Search{{/link-to}}
 					{{#if (eq appMeta.edition 'Enterprise')}}
-						{{#link-to 'customize.audit' activeClass='selected' class="tab" tagName="li" }}Audit{{/link-to}}
+						{{#link-to 'customize.audit' activeClass='selected' class="tab tab-vertical" tagName="li" }}Audit{{/link-to}}
 					{{/if}}
 				{{/if}}
 				{{#if (eq appMeta.edition 'Enterprise')}}
-					{{#link-to 'customize.archive' activeClass='selected' class="tab" tagName="li" }}Archive{{/link-to}}
+					{{#link-to 'customize.archive' activeClass='selected' class="tab tab-vertical" tagName="li" }}Archive{{/link-to}}
+				{{/if}}
+				{{#if session.isGlobalAdmin}}
+					{{#link-to 'customize.license' activeClass='selected' class="tab tab-vertical" tagName="li" }}Product{{/link-to}}
 				{{/if}}
 			</ul>
 		</div>
-	</div>
-	<div class="mt-4 margin-bottom-100">
-		{{outlet}}
-	</div>
-</div>
+	{{/layout/middle-zone-sidebar}}
+{{/layout/middle-zone}}
+
+{{#layout/bottom-bar}}
+{{/layout/bottom-bar}}

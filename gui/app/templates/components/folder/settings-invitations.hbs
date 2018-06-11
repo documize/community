@@ -1,0 +1,16 @@
+<div class="content-zone">
+	<div class="explainer-header">Invite new users to this space</div>
+	<p class="explainer-text explainer-gap">Email invite leads to a smooth onboarding process</p>
+	<form onsubmit={{action 'onSpaceInvite'}}>
+		<div class="form-group">
+			<label for="space-invite-email">Email for space invitation</label>
+			{{input id="space-invite-email" type='email' class="form-control mousetrap" placeholder="Enter email" value=inviteEmail}}
+			<small class="form-text text-muted">Comma separate multiple email addresses</small>
+		</div>
+		<div class="form-group">
+			<label for="space-invite-msg">Message explaining space invitation</label>
+			{{textarea id="space-invite-msg" value=inviteMessage class="form-control" rows="5"}}
+		</div>
+	</form>
+	<button type="button" class="btn btn-success mt-3" onclick={{action 'onSpaceInvite'}}>Invite</button>
+</div>

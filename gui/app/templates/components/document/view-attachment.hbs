@@ -1,26 +1,26 @@
-<div class="view-attachment mt-5">
+<div class="col-12 col-sm-3 heading">Attachments</div>
+<div class="col-12 col-sm-9 view-attachment">
 	{{#if hasAttachments}}
 		<ul class="list">
 			{{#each files key="id" as |a index|}}
 				<li class="item">
-					<img class="icon" src="/assets/img/attachments/{{document/file-icon a.extension}}" />
 					<a href="{{appMeta.endpoint}}/public/attachments/{{appMeta.orgId}}/{{a.id}}">
-						<span class="file">{{ a.filename }}</span>
+						{{a.filename}}
 					</a>
 					{{#if canEdit}}
-						<div class="button-icon-danger align-middle action" {{action 'onShowDialog' a.id a.filename}}>
-							<i class="material-icons">delete</i>
+						<div class="delete">
+							<div class="button-icon-danger button-icon-small align-middle" {{action 'onShowDialog' a.id a.filename}}>
+								<i class="material-icons">delete</i>
+							</div>
 						</div>
 					{{/if}}
 				</li>
 			{{/each}}
 		</ul>
-	{{else}}
-		<p>No attachments found</p>
 	{{/if}}
 	{{#if canEdit}}
 		<div class="upload-document-files">
-			<div id="upload-document-files" class="btn btn-secondary">Upload</div>
+			<div id="upload-document-files" class="btn btn-outline-secondary">Upload</div>
 		</div>
 	{{/if}}
 </div>

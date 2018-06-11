@@ -1,0 +1,17 @@
+{{#layout/top-bar}}
+	<li class="item">
+		{{#link-to "folder.index" model.folder.id model.folder.slug class='link'}}
+			{{model.folder.name}}
+		{{/link-to}}
+	</li>
+	<li class="item">
+		{{#link-to 'document.index' model.folder.id model.folder.slug model.document.id model.document.slug class="link selected"}}
+			{{model.document.name}}
+		{{/link-to}}
+	</li>
+{{/layout/top-bar}}
+
+{{document/block-editor document=model.document folder=model.folder block=model.block onCancel=(action 'onCancel') onAction=(action 'onAction')}}
+
+{{#layout/bottom-bar}}
+{{/layout/bottom-bar}}

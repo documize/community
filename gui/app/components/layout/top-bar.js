@@ -16,6 +16,8 @@ import ModalMixin from '../../mixins/modal';
 import Component from '@ember/component';
 
 export default Component.extend(ModalMixin, {
+	classNames: ['layout-header', 'non-printable'],
+	tagName: 'header',
 	folderService: service('folder'),
 	appMeta: service(),
 	session: service(),

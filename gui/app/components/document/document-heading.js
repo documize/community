@@ -22,7 +22,6 @@ export default Component.extend({
 	docName: '',
 	docExcerpt: '',
 	hasNameError: empty('docName'),
-	hasExcerptError: empty('docExcerpt'),
 
 	canEdit: computed('permssions', 'document', function() {
 		let constants = this.get('constants');
@@ -55,12 +54,10 @@ export default Component.extend({
 		},
 
 		onSave() {
-			if (this.get('hasNameError') || this.get('hasExcerptError')) {
-				return;
-			}
+			if (this.get('hasNameError')) return;
 
 			this.set('document.name', this.get('docName'));
-			this.set('document.excerpt', this.get('docExcerpt'));
+			this.set('document.excerpt', this.get('docExcerpt').trim());
 			this.set('editMode', false);
 
 			let cb = this.get('onSaveDocument');

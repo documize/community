@@ -12,9 +12,10 @@
 import $ from 'jquery';
 import { empty } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
+import Notifier from '../../mixins/notifier';
 import Component from '@ember/component';
 
-export default Component.extend({
+export default Component.extend(Notifier, {
 	appMeta: service(),
 	LicenseError: empty('model.license'),
 	changelog: '',
@@ -36,7 +37,9 @@ export default Component.extend({
 
 	actions: {
 		saveLicense() {
+			this.showWait();
 			this.get('saveLicense')().then(() => {
+				this.showDone();
 				window.location.reload();
 			});
 		}

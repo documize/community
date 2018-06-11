@@ -1,5 +1,53 @@
-{{toolbar/nav-bar}}
+{{#layout/top-bar selectItem="spaces"}}
+{{/layout/top-bar}}
 
-{{toolbar/for-spaces spaces=model onAddSpace=(action 'onAddSpace')}}
+{{#layout/middle-zone}}
+	{{#layout/middle-zone-content}}
+		{{spaces/space-list spaces=model}}
+	{{/layout/middle-zone-content}}
 
-{{spaces/space-list spaces=model}}
+	{{#layout/middle-zone-sidebar}}
+		<div id="sidebar" class="sidebar">
+			<h1>{{appMeta.title}}</h1>
+			<p>{{appMeta.message}}</p>
+			{{#if session.isEditor}}
+				<button type="button" class="btn btn-success font-weight-bold my-3" {{action 'onShowModal'}}>+ SPACE</button>
+			{{/if}}
+		</div>
+	{{/layout/middle-zone-sidebar}}
+
+	<div class="modal" tabindex="-1" role="dialog" id="add-space-modal">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">Add Space</div>
+				<div class="modal-body">
+					<form onsubmit={{action 'onAddSpace'}}>
+						<div class="form-group">
+							<label for="new-space-name">Space Name</label>
+							{{input type='text' id="new-space-name" class="form-control mousetrap" placeholder="Space name" value=spaceName}}
+							<small id="emailHelp" class="form-text text-muted">Characters and numbers only</small>
+						</div>
+						<div class="form-group">
+							<label for="clone-space-dropdown">Clone Space</label>
+							{{ui-select id="clone-space-dropdown" content=model prompt="select space" action=(action 'onCloneSpaceSelect') optionValuePath="id" optionLabelPath="name" selection=clonedSpace}}
+							<small id="emailHelp" class="form-text text-muted">Copy templates, permissions, documents from existing space</small>
+							<div class="margin-top-10" />
+							{{#if hasClone}}
+								{{#ui/ui-checkbox selected=copyTemplate}}Copy templates{{/ui/ui-checkbox}}
+								{{#ui/ui-checkbox selected=copyPermission}}Copy permissions{{/ui/ui-checkbox}}
+								{{#ui/ui-checkbox selected=copyDocument}}Copy documents{{/ui/ui-checkbox}}
+							{{/if}}
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+					<button type="button" class="btn btn-success" onclick={{action 'onAddSpace'}}>Add</button>
+				</div>
+			</div>
+		</div>
+	</div>
+{{/layout/middle-zone}}
+
+{{#layout/bottom-bar}}
+{{/layout/bottom-bar}}

@@ -12,5 +12,19 @@
 import Component from '@ember/component';
 
 export default Component.extend({
-	classNames: ['col', 'col-sm-5']
+	classNames: ['layout-sidebar', 'non-printable'],
+	tagName: 'nav',
+
+	didInsertElement() {
+		this._super(...arguments);
+		// let sb = this.$().overlayScrollbars({ scrollbars: { autoHide: 'leave' }});
+		// this.set('scrollbars', sb);
+	},
+
+	willDestroyElement() {
+		this._super(...arguments);
+
+		// let sb = this.get('scrollbars');
+		// sb.destroy();
+	}
 });

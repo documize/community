@@ -11,7 +11,7 @@
 		background-color: $color-white;
 		color: $color-primary;
 		border: 1px solid $color-border;
-		font-weight: bold;
+		font-weight: 500;
 		font-size: 1.1rem;
 		text-align: center;
 		cursor: pointer;
@@ -33,7 +33,25 @@
 		}
 	}
 
+	> .tab-vertical {
+		display: block;
+		margin-left: 0;
+
+		&:first-of-type {
+			@include border-radius-top(3px);
+		}
+
+		&:last-of-type {
+			@include border-radius-bottom(3px);
+		}
+	}
+
 	> .selected {
 		background-color: $color-primary-light;
+		font-weight: 700;
 	}
+}
+
+.tabnav-control-centered {
+	margin: 0 auto !important;
 }

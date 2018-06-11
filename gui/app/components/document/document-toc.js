@@ -9,17 +9,15 @@
 //
 // https://documize.com
 
-import $ from 'jquery';
 import { computed } from '@ember/object';
 import { schedule } from '@ember/runloop';
 import { inject as service } from '@ember/service';
-import Component from '@ember/component';
 import tocUtil from '../../utils/toc';
 import TooltipMixin from '../../mixins/tooltip';
+import Component from '@ember/component';
 
 export default Component.extend(TooltipMixin, {
 	documentService: service('document'),
-	isDesktop: false,
 	emptyState: computed('pages', function () {
 		return this.get('pages.length') === 0;
 	}),
@@ -56,133 +54,19 @@ export default Component.extend(TooltipMixin, {
 	didInsertElement() {
 		this._super(...arguments);
 		this.eventBus.subscribe('documentPageAdded', this, 'onDocumentPageAdded');
-		this.eventBus.subscribe('resized', this, 'setSize');
-
-		this.setSize();
 		this.renderTooltips();
 	},
 
 	willDestroyElement() {
 		this._super(...arguments);
 		this.eventBus.unsubscribe('documentPageAdded');
-		this.eventBus.unsubscribe('resized');
-
-		let t = '#doc-toc';
-		if (interact.isSet(t)) interact(t).unset();
 		this.removeTooltips();
 	},
 
-	onDocumentPageAdded(pageId) { // eslint-disable-line no-unused-vars
-		this.setSize();
+	onDocumentPageAdded(pageId) {
 		schedule('afterRender', () => {
 			this.setState(pageId);
 		});
-	},
-
-	setSize() {
-		schedule('afterRender', () => {
-			let isDesktop = $(window).width() >= 1800;
-			this.set('isDesktop', isDesktop);
-
-			if (isDesktop) {
-				let h = $(window).height() - $("#nav-bar").height() - 140;
-				$("#doc-toc").css('max-height', h);
-
-				let i = $("#doc-view").offset();
-
-				if (is.not.undefined(i)) {
-					let l = i.left - 100;
-					if (l > 350) l = 350;
-					$("#doc-toc").width(l);
-
-					$("#doc-toc").css({
-						'display': 'inline-block',
-						'position': 'fixed',
-						'width': l+'px',
-						'height': 'auto',
-						'transform': '',
-					});
-
-					this.attachResizer();
-				}
-			} else {
-				$("#doc-toc").css({
-					'display': 'block',
-					'position': 'relative',
-					'width': '100%',
-					'height': '500px',
-					'transform': 'none',
-				});
-			}
-		});
-	},
-
-	attachResizer() {
-		schedule('afterRender', () => {
-			let t = '#doc-toc';
-			if (interact.isSet(t)) {
-				interact(t).unset();
-			}
-
-			interact('#doc-toc')
-				.draggable({
-					autoScroll: true,
-					inertia: false,
-					onmove: dragMoveListener,
-					// restrict: {
-					// 	restriction: "body",
-					// 	endOnly: true,
-					// 	elementRect: { top: 0, left: 0, bottom: 1, right: 1 }
-					// }
-				})
-				.resizable({
-					// resize from all edges and corners
-					edges: { left: true, right: true, bottom: true, top: true },
-					// keep the edges inside the parent
-					// restrictEdges: {
-					// 	outer: 'parent',
-					// 	endOnly: true,
-					// },
-					// minimum size
-					// restrictSize: {
-					// 	min: { width: 250, height: 65 },
-					// }
-				})
-				.on('resizemove', function (event) {
-					var target = event.target,
-						x = (parseFloat(target.getAttribute('data-x')) || 0),
-						y = (parseFloat(target.getAttribute('data-y')) || 0);
-
-					// update the element's style
-					target.style.width  = event.rect.width + 'px';
-					target.style.height = event.rect.height + 'px';
-
-					// translate when resizing from top or left edges
-					x += event.deltaRect.left;
-					y += event.deltaRect.top;
-
-					target.style.webkitTransform = target.style.transform = 'translate(' + x + 'px,' + y + 'px)';
-
-					target.setAttribute('data-x', x);
-					target.setAttribute('data-y', y);
-					target.style.position = 'fixed';
-				});
-		});
-
-		function dragMoveListener (event) {
-			var target = event.target,
-			// keep the dragged position in the data-x/data-y attributes
-			x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
-			y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
-
-			// translate the element
-			target.style.webkitTransform = target.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
-
-			// update the posiion attributes
-			target.setAttribute('data-x', x);
-			target.setAttribute('data-y', y);
-			target.style.position = 'fixed';
-		}
 	},
 
 	// Controls what user can do with the toc (left sidebar)

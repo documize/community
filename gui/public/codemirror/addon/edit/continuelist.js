@@ -39,13 +39,11 @@
         replacements[i] = "\n";
       } else {
         var indent = match[1], after = match[5];
-        var bullet = unorderedListRE.test(match[2]) || match[2].indexOf(">") >= 0
-          ? match[2].replace("x", " ")
-          : (parseInt(match[3], 10) + 1) + match[4];
-
+        var numbered = !(unorderedListRE.test(match[2]) || match[2].indexOf(">") >= 0);
+        var bullet = numbered ? (parseInt(match[3], 10) + 1) + match[4] : match[2].replace("x", " ");
         replacements[i] = "\n" + indent + bullet + after;
 
-        incrementRemainingMarkdownListNumbers(cm, pos);
+        if (numbered) incrementRemainingMarkdownListNumbers(cm, pos);
       }
     }
 
@@ -68,7 +66,7 @@
         var newNumber = (parseInt(startItem[3], 10) + lookAhead - skipCount);
         var nextNumber = (parseInt(nextItem[3], 10)), itemNumber = nextNumber;
 
-        if (startIndent === nextIndent) {
+        if (startIndent === nextIndent && !isNaN(nextNumber)) {
           if (newNumber === nextNumber) itemNumber = nextNumber + 1;
           if (newNumber > nextNumber) itemNumber = newNumber + 1;
           cm.replaceRange(

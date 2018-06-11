@@ -1,0 +1,43 @@
+footer {
+	background-color: $color-primary-light;
+	color: $color-gray;
+	font-weight: 500;
+	font-size: 1rem;
+	padding: 5px 2rem;
+}
+
+.footer {
+	display: flex;
+	overflow: hidden;
+
+	a, a:visited {
+		@include ease-in();
+		color: $color-gray;
+		text-decoration: none;
+
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+
+	> .progress {
+		display: inline-block;
+
+		> img {
+			padding: 0;
+			margin: 0;
+			height: 20px;
+			width: 20px;
+		}
+	}
+
+	> .progress-done {
+		background-color: $color-green;
+		color: $color-white;
+		text-align: center;
+		font-size: 1rem;
+		height: 20px;
+		width: 20px;
+		@include border-radius(20px);
+	}
+}

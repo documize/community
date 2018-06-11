@@ -109,6 +109,10 @@ $link-hover-decoration:     none;
 
 body.modal-open {
 	padding-right: 0 !important;
+
+	// Do not scroll body to top.
+	// See: https://stackoverflow.com/questions/21604674/bootstrap-modal-background-jumps-to-top-on-toggle/21881894
+	overflow: visible;
 }
 
 .modal-header-white {
@@ -125,3 +129,11 @@ body.modal-open {
 		}
 	}
 }
+
+// Bootstrap override that removes gutter space on smaller screens
+// @media (max-width: 1200px) {
+//     .container {
+//         width: 100%;
+//         max-width: none;
+//     }
+// }

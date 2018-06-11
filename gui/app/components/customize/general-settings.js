@@ -11,11 +11,12 @@
 
 import $ from 'jquery';
 import { empty, and } from '@ember/object/computed';
-import Component from '@ember/component';
 import { isEmpty } from '@ember/utils';
 import { set } from '@ember/object';
+import Notifier from '../../mixins/notifier';
+import Component from '@ember/component';
 
-export default Component.extend({
+export default Component.extend(Notifier, {
 	titleEmpty: empty('model.general.title'),
 	messageEmpty: empty('model.general.message'),
 	conversionEndpointEmpty: empty('model.general.conversionEndpoint'),
@@ -47,7 +48,10 @@ export default Component.extend({
 
 			this.model.general.set('allowAnonymousAccess', $("#allowAnonymousAccess").prop('checked'));
 
+			this.showWait();
+
 			this.get('save')().then(() => {
+				this.showDone();
 				set(this, 'titleError', false);
 				set(this, 'messageError', false);
 				set(this, 'conversionEndpointError', false);

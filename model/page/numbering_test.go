@@ -145,6 +145,34 @@ func TestNumberize4(t *testing.T) {
 	}
 }
 
+// Tests that numbering does not crash because of bad data
+func TestNumberize5(t *testing.T) {
+	pages := []Page{}
+
+	// corruption starts at the top with sequence 0
+	pages = append(pages, Page{Level: 2, Sequence: 0})
+	pages = append(pages, Page{Level: 1, Sequence: 1})
+	pages = append(pages, Page{Level: 2, Sequence: 4})
+	pages = append(pages, Page{Level: 2, Sequence: 8})
+	pages = append(pages, Page{Level: 2, Sequence: 16})
+
+	Numberize(pages)
+
+	expecting := []string{
+		"1",
+		"2",
+		"2.1",
+		"2.2",
+		"2.3",
+	}
+
+	for i, p := range pages {
+		if p.Numbering != expecting[i] {
+			t.Errorf("(Test 4) Position %d: expecting %s got %s\n", i, expecting[i], p.Numbering)
+		}
+	}
+}
+
 // Tests that good level data is not messed with
 func TestLevelize1(t *testing.T) {
 	pages := []Page{}

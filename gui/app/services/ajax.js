@@ -11,8 +11,8 @@
 
 import { computed } from '@ember/object';
 import { inject as service } from '@ember/service';
-import AjaxService from 'ember-ajax/services/ajax';
 import config from '../config/environment';
+import AjaxService from 'ember-ajax/services/ajax';
 
 export default AjaxService.extend({
 	session: service(),
@@ -44,7 +44,7 @@ export default AjaxService.extend({
 				window.location.href = 'auth/login';
 			}
 
-			if (is.not.empty(userUpdate)) {
+			if (this.get('session.authenticated') && is.not.empty(userUpdate)  && is.not.undefined(userUpdate)) {
 				let latest = JSON.parse(userUpdate);
 
 				if (!latest.active || user.editor !== latest.editor || user.admin !== latest.admin || user.analytics !== latest.analytics || user.viewUsers !== latest.viewUsers) {
@@ -52,7 +52,9 @@ export default AjaxService.extend({
 					window.location.href = 'auth/login';
 				}
 			}
-		} catch(e){} // eslint-disable-line no-empty
+		} catch(e) {
+			console.log(e); // eslint-disable-line no-console
+		} // eslint-disable-line no-empty
 
 		return this._super(...arguments);
 	}

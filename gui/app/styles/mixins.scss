@@ -1,14 +1,10 @@
 @mixin sticky()
 {
-	position: -webkit-sticky;
 	position: -moz-sticky;
 	position: -ms-sticky;
 	position: -o-sticky;
 	position: -webkit-sticky;
 	position: sticky;
-	display: flex;
-	z-index: 999;
-	width: 100%;
 }
 
 @mixin border-radius($radius)
@@ -27,6 +23,18 @@
 @mixin border-radius-right($radius)
 {
 	border-top-right-radius: $radius;
+	border-bottom-right-radius: $radius;
+}
+
+@mixin border-radius-top($radius)
+{
+	border-top-left-radius: $radius;
+	border-top-right-radius: $radius;
+}
+
+@mixin border-radius-bottom($radius)
+{
+	border-bottom-left-radius: $radius;
 	border-bottom-right-radius: $radius;
 }
 

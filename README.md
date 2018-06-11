@@ -1,4 +1,4 @@
-> We provide frequent product releases to ensure self-host customers enjoy the same product as our Cloud/SaaS platform customers.
+> We're committed to providing frequent product releases to ensure self-host customers enjoy the same product as our cloud/SaaS customers.
 >
 > Harvey Kandola, CEO & Founder, Documize Inc.
 
@@ -24,9 +24,13 @@ Sound familiar? Read on.
 
 Anyone who wants a single place for any kind of document.
 
-Anyone who wants to loop in external participants complete security.
+Anyone who wants to loop in external participants with complete security.
 
 Anyone who wishes documentation and knowledge capture worked like agile software development.
+
+Anyone who knows that nested folders fail miserably.
+
+Anyone who wants to move on from wiki software.
 
 ## What's different about Documize?
 
@@ -54,9 +58,9 @@ Space view.
 
 ## Latest version
 
-[Community edition: v1.64.4](https://github.com/documize/community/releases)
+[Community edition: v1.65.0](https://github.com/documize/community/releases)
 
-[Enterprise edition: v1.66.5](https://documize.com/downloads)
+[Enterprise edition: v1.67.0](https://documize.com/downloads)
 
 ## OS support
 
@@ -70,8 +74,8 @@ Documize runs on the following:
 
 Documize is built with the following technologies:
 
-- EmberJS (v2.18.0)
-- Go (v1.10.1)
+- EmberJS (v3.1.2)
+- Go (v1.10.3)
 
 ...and supports the following databases:
 
@@ -107,7 +111,7 @@ We try to follow sound advice when writing commit messages:
 
 https://chris.beams.io/posts/git-commit/
 
-## The legal bit at the end
+## The legal bit
 
 <https://documize.com>
 

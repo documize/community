@@ -10,13 +10,12 @@
 // https://documize.com
 
 import { computed } from '@ember/object';
-import Component from '@ember/component';
 import TooltipMixin from '../../../mixins/tooltip';
+import Component from '@ember/component';
 
 export default Component.extend(TooltipMixin, {
     isDirty: false,
     pageBody: "",
-
     codeSyntax: null,
 	codeEditor: null,
 	editorId: computed('page', function () {
@@ -84,13 +83,13 @@ export default Component.extend(TooltipMixin, {
 			Mousetrap.trigger('ctrl+s');
 		};
 
-        this.set('codeEditor', editor);
-
         let syntax = this.get("codeSyntax");
         if (is.not.undefined(syntax)) {
             CodeMirror.autoLoadMode(editor, syntax.mode);
             editor.setOption("mode", syntax.mode);
         }
+
+		this.set('codeEditor', editor);
     },
 
     willDestroyElement() {

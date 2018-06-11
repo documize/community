@@ -1,10 +1,20 @@
-{{toolbar/nav-bar}}
+{{#layout/top-bar}}
+{{/layout/top-bar}}
 
-{{#toolbar/t-toolbar}}
-	{{#toolbar/t-links}}
-	{{/toolbar/t-links}}
-	{{#toolbar/t-actions}}
-	{{/toolbar/t-actions}}
-{{/toolbar/t-toolbar}}
+{{#layout/middle-zone}}
+	{{#layout/middle-zone-content}}
+		{{search/search-view filter=filter matchDoc=matchDoc matchContent=matchContent matchTag=matchTag matchFile=matchFile slog=slog}}
+	{{/layout/middle-zone-content}}
 
-{{search/search-view filter=filter matchDoc=matchDoc matchContent=matchContent matchTag=matchTag matchFile=matchFile slog=slog}}
+	{{#layout/middle-zone-sidebar}}
+		<div id="sidebar" class="sidebar">
+			<h1>Search</h1>
+			<p>a OR b</p>
+			<p>x AND y</p>
+			<p>"phrase mat*"</p>
+		</div>
+	{{/layout/middle-zone-sidebar}}
+{{/layout/middle-zone}}
+
+{{#layout/bottom-bar}}
+{{/layout/bottom-bar}}

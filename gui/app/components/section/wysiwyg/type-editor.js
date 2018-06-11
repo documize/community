@@ -23,10 +23,6 @@ export default Component.extend({
 		let page = this.get('page');
 		return `wysiwyg-editor-${page.id}`;
 	}),
-	toolbarId: computed('page', function () {
-		let page = this.get('page');
-		return `wysiwyg-editor-toolbar-${page.id}`;
-	}),
 
 	didReceiveAttrs() {
 		this._super(...arguments);
@@ -38,15 +34,17 @@ export default Component.extend({
 
 		schedule('afterRender', () => {
 			let options = {
-				cache_suffix: '?v=476',
+				cache_suffix: '?v=4713',
 				selector: '#' + this.get('editorId'),
 				relative_urls: false,
 				browser_spellcheck: true,
 				gecko_spellcheck: false,
 				statusbar: false,
 				inline: true,
-				// fixed_toolbar_container: '#' + this.get('toolbarId'),
 				paste_data_images: true,
+				images_upload_handler: function (blobInfo, success, failure) { // eslint-disable-line no-unused-vars
+					success("data:" + blobInfo.blob().type + ";base64," + blobInfo.base64());
+				},
 				image_advtab: true,
 				image_caption: true,
 				media_live_embeds: true,
@@ -103,21 +101,21 @@ export default Component.extend({
 					'advlist autolink lists link image charmap print hr anchor pagebreak',
 					'searchreplace wordcount visualblocks visualchars code codesample fullscreen',
 					'insertdatetime media nonbreaking save table directionality',
-					'template paste textcolor colorpicker textpattern imagetools'
+					'template paste textcolor colorpicker textpattern imagetools uploadimage'
 				],
 				menu: {},
 				menubar: false,
 				toolbar1:
 					'formatselect fontsizeselect | bold italic underline strikethrough superscript subscript | forecolor backcolor link unlink',
 				toolbar2:
-					'outdent indent bullist numlist | alignleft aligncenter alignright alignjustify | table image media codesample',
+					'outdent indent bullist numlist | alignleft aligncenter alignright alignjustify | table uploadimage image media codesample',
 				save_onsavecallback: function () {
 					Mousetrap.trigger('ctrl+s');
 				}
 			};
 
 			if (typeof tinymce === 'undefined') {
-				$.getScript('/tinymce/tinymce.min.js?v=476', function () {
+				$.getScript('/tinymce/tinymce.min.js?v=4713', function () {
 					window.tinymce.dom.Event.domLoaded = true;
 					tinymce.baseURL = '//' + window.location.host + '/tinymce';
 					tinymce.suffix = '.min';

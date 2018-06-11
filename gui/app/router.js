@@ -38,6 +38,12 @@ export default Router.map(function () {
 			this.route('category', {
 				path: 'category'
 			});
+			this.route('settings', {
+				path: 'settings'
+			});
+			this.route('block', {
+				path: 'block/:block_id'
+			});
 		}
 	);
 
@@ -49,9 +55,6 @@ export default Router.map(function () {
 		function () {
 			this.route('section', {
 				path: 'section/:page_id'
-			});
-			this.route('block', {
-				path: 'block/:block_id'
 			});
 		}
 	);
@@ -143,6 +146,10 @@ export default Router.map(function () {
 
 	this.route('accounts', {
 		path: 'accounts'
+	});
+
+	this.route('theming', {
+		path: 'theming'
 	});
 
 	this.route('not-found', {

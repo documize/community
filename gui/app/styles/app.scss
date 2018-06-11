@@ -16,20 +16,12 @@
 
 @import "view/common.scss";
 @import "widget/widget.scss";
-@import "view/navigation.scss";
 @import "view/toolbar.scss";
 @import "view/views.scss";
+@import "layout/all.scss";
 
 @import "vendor.scss";
 @import "print.scss";
 @import "news.scss";
 @import "section/all.scss";
 @import "enterprise/all.scss";
-
-// Bootstrap override that removes gutter space on smaller screens
-// @media (max-width: 1200px) {
-//     .container {
-//         width: 100%;
-//         max-width: none;
-//     }
-// }

@@ -1,12 +1,39 @@
 .view-search {
+	margin-top: 30px;
+
 	> .heading {
 		font-size: 1.5rem;
 		font-weight: bold;
 		color: $color-dark;
+		margin-top: 30px;
+	}
+
+	.search-box {
+		width: 300px;
+	}
+	@media (min-width: 900px) {
+		.search-box {
+			width: 400px;
+		}
+	}
+	@media (min-width: 1200px) {
+		.search-box {
+			width: 600px;
+		}
+	}
+	@media (min-width: 1400px) {
+		.search-box {
+			width: 700px;
+		}
+	}
+	@media (min-width: 1800px) {
+		.search-box {
+			width: 900px;
+		}
 	}
 
 	> .documents {
-		margin: 60px 0;
+		margin: 20px 0;
 		padding: 0;
 
 		> .document {

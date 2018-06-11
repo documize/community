@@ -15,6 +15,7 @@ import { inject as service } from '@ember/service';
 import Component from '@ember/component';
 
 export default Component.extend({
+	classNames: ['row d-print-none'],
 	documentService: service('document'),
 	appMeta: service(),
 	hasAttachments: notEmpty('files'),
@@ -22,7 +23,7 @@ export default Component.extend({
 		return this.get('document.protection') !== this.get('constants').ProtectionType.Lock && this.get('permissions.documentEdit');
 	}),
 	showDialog: false,
-	
+
 	init() {
 		this._super(...arguments);
 		this.getAttachments();
@@ -96,7 +97,7 @@ export default Component.extend({
 			this.set('showDialog', false);
 
 			let attachment = this.get('deleteAttachment');
-			
+
 			this.get('documentService').deleteAttachment(this.get('document.id'), attachment.id).then(() => {
 				this.getAttachments();
 				this.set('deleteAttachment', {

@@ -9,15 +9,59 @@
 //
 // https://documize.com
 
+import $ from 'jquery';
 import { inject as service } from '@ember/service';
+import { notEmpty } from '@ember/object/computed';
+import AuthMixin from '../../mixins/auth';
+import Modals from '../../mixins/modal';
 import Controller from '@ember/controller';
 
-export default Controller.extend({
+export default Controller.extend(AuthMixin, Modals, {
+	appMeta: service(),
 	folderService: service('folder'),
 
+	spaceName: '',
+	copyTemplate: true,
+	copyPermission: true,
+	copyDocument: false,
+	hasClone: notEmpty('clonedSpace.id'),
+	clonedSpace: null,
+
 	actions: {
-		onAddSpace(m) {
-			this.get('folderService').add(m).then((sp) => {
+		onShowModal() {
+			this.modalOpen('#add-space-modal', {'show': true}, '#new-space-name');
+		},
+
+		onCloneSpaceSelect(sp) {
+			this.set('clonedSpace', sp)
+		},
+
+		onAddSpace(e) {
+			e.preventDefault();
+
+			let spaceName = this.get('spaceName');
+			let clonedId = this.get('clonedSpace.id');
+
+			if (is.empty(spaceName)) {
+				$("#new-space-name").addClass("is-invalid").focus();
+				return false;
+			}
+
+			let payload = {
+				name: spaceName,
+				cloneId: clonedId,
+				copyTemplate: this.get('copyTemplate'),
+				copyPermission: this.get('copyPermission'),
+				copyDocument: this.get('copyDocument'),
+			}
+
+			this.set('spaceName', '');
+			this.set('clonedSpace', null);
+			$("#new-space-name").removeClass("is-invalid");
+
+			this.modalClose('#add-space-modal');
+
+			this.get('folderService').add(payload).then((sp) => {
 				this.get('folderService').setCurrentFolder(sp);
 				this.transitionToRoute('folder', sp.get('id'), sp.get('slug'));
 			});

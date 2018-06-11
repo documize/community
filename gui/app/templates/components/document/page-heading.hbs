@@ -1,4 +1,4 @@
-<div class="row no-gutters align-items-center">
+<div class="row no-gutters align-items-top">
 	<div class="col-10">
 		<div class="document-structure">
 			<div class="page-header">
@@ -38,6 +38,21 @@
 								{{#if canDelete}}
 									<a class="dropdown-item text-danger" href="#" id={{concat 'delete-page-button-' page.id}} data-toggle="modal" data-target={{concat '#delete-page-modal-' page.id}} data-backdrop="static">Delete</a>
 								{{/if}}
+								{{#if (and canEdit state.actionablePage)}}
+									<div class="dropdown-divider"></div>
+									{{#unless state.indentDisabled}}
+										<a class="dropdown-item" href="#" id={{concat 'toc-indent-button-' page.id}} {{action 'pageIndent'}}>Indent</a>
+									{{/unless}}
+									{{#unless state.outdentDisabled}}
+										<a class="dropdown-item" href="#" id={{concat 'toc-outdent-button-' page.id}} {{action 'pageOutdent'}}>Outdent</a>
+									{{/unless}}
+									{{#unless state.upDisabled}}
+										<a class="dropdown-item" href="#" id={{concat 'toc-up-button-' page.id}} {{action 'pageUp'}}>Move up</a>
+									{{/unless}}
+									{{#unless state.downDisabled}}
+										<a class="dropdown-item" href="#" id={{concat 'toc-down-button-' page.id}} {{action 'pageDown'}}>Move down</a>
+									{{/unless}}
+								{{/if}}
 							</div>
 						{{/if}}
 					</div>
@@ -55,7 +70,7 @@
 				<div class="modal-body">
 					<div class="form-group">
 						<label>Destination Document</label>
-						{{focus-input type="text" value=docSearchFilter class="form-control mb-4" placeholder='a OR b, x AND y, "phrase mat*"'}}				
+						{{focus-input type="text" value=docSearchFilter class="form-control mb-4" placeholder='a OR b, x AND y, "phrase mat*"'}}
 					</div>
 					<div class="my-5 document-copy-move">
 						{{#if emptySearch}}
@@ -92,7 +107,7 @@
 				<div class="modal-body">
 					<div class="form-group">
 						<label>Destination Document</label>
-						{{focus-input type="text" value=docSearchFilter class="form-control mb-4" placeholder='a OR b, x AND y, "phrase mat*"'}}				
+						{{focus-input type="text" value=docSearchFilter class="form-control mb-4" placeholder='a OR b, x AND y, "phrase mat*"'}}
 					</div>
 					<div class="my-5 document-copy-move">
 						{{#if emptySearch}}

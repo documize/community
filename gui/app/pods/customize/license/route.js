@@ -32,6 +32,6 @@ export default Route.extend(AuthenticatedRouteMixin, {
 	},
 
 	activate() {
-		this.get('browser').setTitle('License');
+		this.get('browser').setTitle('Product Licensing & Updates');
 	}
 });

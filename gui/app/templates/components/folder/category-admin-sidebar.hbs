@@ -1,0 +1,10 @@
+<div class="space-admin">
+	<h1>Categories</h1>
+	<p>Sub-divide spaces into categories which can contain documents with restricted access.</p>
+	<form class="form-inline" onsubmit={{action 'onAdd'}}>
+		<div class="form-group mr-3">
+			{{focus-input id="new-category-name" type='text' class="form-control mousetrap" placeholder="Category name" value=newCategory}}
+		</div>
+		<button type="button" class="btn btn-success font-weight-bold" onclick={{action 'onAdd'}}>Add</button>
+	</form>
+</div>

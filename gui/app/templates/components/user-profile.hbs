@@ -1,6 +1,4 @@
-<div class="view-profile my-5">
-	<div class="avatar-large">{{session.user.initials}}</div>
-
+<div class="view-profile">
     <div class="form-group">
         <label for="firstname">Firstname</label>
         {{focus-input id="firstname" type="text" value=model.firstname class=(if hasFirstnameError 'form-control is-invalid' 'form-control')}}

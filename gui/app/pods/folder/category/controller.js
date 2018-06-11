@@ -9,7 +9,18 @@
 //
 // https://documize.com
 
+import { inject as service } from '@ember/service';
 import Controller from '@ember/controller';
 
 export default Controller.extend({
+	categorySvc: service('category'),
+	refresh: 0,
+
+	actions: {
+		onAdd(c) {
+			this.get('categorySvc').add(c).then(() => {
+				this.set('refresh', this.get('refresh')+1);
+			});
+		}
+	}
 });

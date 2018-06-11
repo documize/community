@@ -153,7 +153,7 @@ func setupAccount(rt *env.Runtime, completion onboardRequest, serial string) (er
 
 	// Link user to organization.
 	accountID := uniqueid.Generate()
-	sql = fmt.Sprintf("insert into account (refid, userid, orgid, `admin`, editor) values (\"%s\", \"%s\", \"%s\",1, 1)", accountID, userID, orgID)
+	sql = fmt.Sprintf("insert into account (refid, userid, orgid, `admin`, editor, users, analytics) values (\"%s\", \"%s\", \"%s\", 1, 1, 1, 1)", accountID, userID, orgID)
 	_, err = runSQL(rt, sql)
 
 	if err != nil {

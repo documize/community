@@ -9,7 +9,7 @@
 //
 // https://documize.com
 
-import Component from '@ember/component';
+import Route from '@ember/routing/route';
 
-export default Component.extend({
+export default Route.extend({
 });

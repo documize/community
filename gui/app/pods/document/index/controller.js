@@ -11,15 +11,15 @@
 
 import { Promise as EmberPromise } from 'rsvp';
 import { inject as service } from '@ember/service';
+import Tooltips from '../../../mixins/tooltip';
+import Notifier from '../../../mixins/notifier';
 import Controller from '@ember/controller';
-import TooltipMixin from '../../../mixins/tooltip';
 
-export default Controller.extend(TooltipMixin, {
+export default Controller.extend(Tooltips, Notifier, {
 	documentService: service('document'),
 	templateService: service('template'),
 	sectionService: service('section'),
 	linkService: service('link'),
-	// currentPageId: '',
 	tab: 'content',
 	queryParams: ['currentPageId'],
 
@@ -28,16 +28,19 @@ export default Controller.extend(TooltipMixin, {
 			this.set('tab', tab);
 			if (tab === 'content') {
 				this.send('refresh');
-			} 
+			}
 		},
 
 		onShowPage(pageId) {
 			this.set('tab', 'content');
-			this.get('browser').scrollTo(`#page-${pageId}`);		
+			this.get('browser').scrollTo(`#page-${pageId}`);
 		},
 
 		onSaveDocument(doc) {
-			this.get('documentService').save(doc);
+			this.showWait();
+			this.get('documentService').save(doc).then(() => {
+				this.showDone();
+			});
 			this.get('browser').setTitle(doc.get('name'));
 			this.get('browser').setMetaDescription(doc.get('excerpt'));
 		},
@@ -71,7 +74,7 @@ export default Controller.extend(TooltipMixin, {
 			let documentId = document.get('id');
 			let constants = this.get('constants');
 
-			// if document approval mode is locked return 
+			// if document approval mode is locked return
 			if (document.get('protection') == constants.ProtectionType.Lock) {
 				// should not really happen
 				return;
@@ -83,7 +86,11 @@ export default Controller.extend(TooltipMixin, {
 				meta: meta.toJSON({ includeId: true })
 			};
 
+			this.showWait();
+
 			this.get('documentService').updatePage(documentId, page.get('id'), model).then((/*up*/) => {
+				this.showDone();
+
 				this.get('documentService').fetchPages(documentId, this.get('session.user.id')).then((pages) => {
 					this.set('pages', pages);
 					this.get('linkService').getDocumentLinks(documentId).then((links) => {
@@ -98,7 +105,7 @@ export default Controller.extend(TooltipMixin, {
 			let deleteId = deletePage.id;
 			let deleteChildren = deletePage.children;
 			let pendingChanges = [];
-			
+
 			let pages = this.get('pages');
 			let pageIndex = _.findIndex(pages, function(i) { return i.get('page.id') === deleteId; });
 			let item = pages[pageIndex];
@@ -118,7 +125,7 @@ export default Controller.extend(TooltipMixin, {
 
 				this.get('documentService').deletePages(documentId, deleteId, pendingChanges).then(() => {
 					this.get('documentService').fetchPages(this.get('document.id'), this.get('session.user.id')).then((pages) => {
-						this.set('pages', pages);				
+						this.set('pages', pages);
 					});
 				});
 			} else {
@@ -131,10 +138,13 @@ export default Controller.extend(TooltipMixin, {
 		},
 
 		onInsertSection(data) {
+			this.showWait();
+
 			return new EmberPromise((resolve) => {
 				this.get('documentService').addPage(this.get('document.id'), data).then((newPage) => {
 					let data = this.get('store').normalize('page', newPage);
 					this.get('store').push(data);
+					this.showDone();
 
 					this.get('documentService').fetchPages(this.get('document.id'), this.get('session.user.id')).then((pages) => {
 						this.set('pages', pages);
@@ -156,14 +166,6 @@ export default Controller.extend(TooltipMixin, {
 			});
 		},
 
-		onDeleteBlock(blockId) {
-			return new EmberPromise((resolve) => {
-				this.get('sectionService').deleteBlock(blockId).then(() => {
-					resolve();
-				});
-			});
-		},
-
 		onSavePageAsBlock(block) {
 			return new EmberPromise((resolve) => {
 				this.get('sectionService').addBlock(block).then(() => {
@@ -179,31 +181,45 @@ export default Controller.extend(TooltipMixin, {
 		},
 
 		onSaveTemplate(name, desc) {
-			this.get('templateService').saveAsTemplate(this.get('document.id'), name, desc).then(function () {});
+			this.showWait();
+
+			this.get('templateService').saveAsTemplate(this.get('document.id'), name, desc).then(function () {
+				this.showDone();
+			});
 		},
 
 		onPageSequenceChange(currentPageId, changes) {
+			this.showWait();
 			this.set('currentPageId', currentPageId);
+
 			this.get('documentService').changePageSequence(this.get('document.id'), changes).then(() => {
 				this.get('documentService').fetchPages(this.get('document.id'), this.get('session.user.id')).then( (pages) => {
-					this.set('pages', pages);				
+					this.set('pages', pages);
+					this.showDone();
 				});
 			});
 		},
 
 		onPageLevelChange(currentPageId, changes) {
+			this.showWait();
 			this.set('currentPageId', currentPageId);
+
 			this.get('documentService').changePageLevel(this.get('document.id'), changes).then(() => {
 				this.get('documentService').fetchPages(this.get('document.id'), this.get('session.user.id')).then( (pages) => {
-					this.set('pages', pages);				
+					this.set('pages', pages);
+					this.showDone();
 				});
 			});
 		},
 
 		onTagChange(tags) {
+			this.showDone();
+
 			let doc = this.get('document');
 			doc.set('tags', tags);
-			this.get('documentService').save(doc);
+			this.get('documentService').save(doc).then(()=> {
+				this.showWait();
+			});
 		},
 
 		onRollback(pageId, revisionId) {
@@ -215,14 +231,24 @@ export default Controller.extend(TooltipMixin, {
 
 		refresh() {
 			return new EmberPromise((resolve) => {
-			this.get('documentService').fetchPages(this.get('document.id'), this.get('session.user.id')).then((data) => {
-				this.set('pages', data);
+				this.get('documentService').fetchDocumentData(this.get('document.id')).then((data) => {
+					this.set('document', data.document);
+					this.set('folders', data.folders);
+					this.set('folder', data.folder);
+					this.set('permissions', data.permissions);
+					this.set('roles', data.roles);
+					this.set('links', data.links);
+					this.set('versions', data.versions);
 
-			this.get('sectionService').getSpaceBlocks(this.get('folder.id')).then((data) => {
-				this.set('blocks', data);
-			});
+					this.get('documentService').fetchPages(this.get('document.id'), this.get('session.user.id')).then((data) => {
+						this.set('pages', data);
 
-					resolve();
+						this.get('sectionService').getSpaceBlocks(this.get('folder.id')).then((data) => {
+							this.set('blocks', data);
+						});
+
+						resolve();
+					});
 				});
 			});
 		}

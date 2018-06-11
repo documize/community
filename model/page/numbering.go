@@ -23,7 +23,7 @@ func Numberize(pages []Page) {
 
 	for i, p := range pages {
 		// handle bad data
-		if p.Level == 0 {
+		if p.Level == 0 || (i == 0 && p.Level > 1) {
 			p.Level = 1
 		}
 
@@ -67,6 +67,12 @@ func Numberize(pages []Page) {
 			numbering = fmt.Sprintf("%s%d%s", numbering, v, dot)
 		}
 		pages[i].Numbering = numbering
+
+		// Troubleshooting help
+		if len(numbering) == 0 {
+			fmt.Println(fmt.Sprintf("No number allocated to page %s ('%s')",
+				pages[i].RefID, pages[i].Title))
+		}
 
 		// update state
 		prevPageLevel = p.Level

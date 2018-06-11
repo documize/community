@@ -13,17 +13,19 @@ import $ from 'jquery';
 import { computed } from '@ember/object';
 import { debounce } from '@ember/runloop';
 import { inject as service } from '@ember/service';
+import Tooltips from '../../mixins/tooltip';
 import ModalMixin from '../../mixins/modal';
+import tocUtil from '../../utils/toc';
 import Component from '@ember/component';
 
-export default Component.extend(ModalMixin, {
+export default Component.extend(ModalMixin, Tooltips, {
 	documentService: service('document'),
 	searchService: service('search'),
 	router: service(),
 	deleteChildren: false,
 	blockTitle: "",
 	blockExcerpt: "",
-	canEdit: false,
+	// canEdit: false,
 	canDelete: false,
 	canMove: false,
 	docSearchFilter: '',
@@ -39,10 +41,29 @@ export default Component.extend(ModalMixin, {
 		return permissions.get('documentCopy') || permissions.get('documentTemplate') ||
 			this.get('canEdit') || this.get('canMove') || this.get('canDelete');
 	}),
+	canEdit: computed('permissions', 'document', 'pages', function() {
+		let constants = this.get('constants');
+		let permissions = this.get('permissions');
+		let authenticated = this.get('session.authenticated');
+		let notEmpty = this.get('pages.length') > 0;
+
+		if (notEmpty && authenticated && permissions.get('documentEdit') && this.get('document.protection') === constants.ProtectionType.None) return true;
+		if (notEmpty && authenticated && permissions.get('documentApprove') && this.get('document.protection') === constants.ProtectionType.Review) return true;
+
+		return false;
+	}),
 
 	init() {
 		this._super(...arguments);
 		this.docSearchResults = [];
+		this.state = {
+			actionablePage: false,
+			upDisabled: true,
+			downDisabled: true,
+			indentDisabled: true,
+			outdentDisabled: true,
+			pageId: ''
+		};
 	},
 
 	didReceiveAttrs() {
@@ -50,11 +71,21 @@ export default Component.extend(ModalMixin, {
 		this.modalInputFocus('#publish-page-modal-' + this.get('page.id'), '#block-title-' + this.get('page.id'));
 
 		let permissions = this.get('permissions');
-		this.set('canEdit', permissions.get('documentEdit'));
+		// this.set('canEdit', permissions.get('documentEdit'));
 		this.set('canDelete', permissions.get('documentDelete'));
 		this.set('canMove', permissions.get('documentMove'));
+
+		this.setState(this.get('page.id'));
 	},
-	
+
+	didInsertElement() {
+		this._super(...arguments);
+
+		if (this.get('session.authenticated')) {
+			this.renderTooltips();
+		}
+	},
+
 	searchDocs() {
 		let payload = { keywords: this.get('docSearchFilter').trim(), doc: true };
 		if (payload.keywords.length == 0) return;
@@ -62,6 +93,20 @@ export default Component.extend(ModalMixin, {
 		this.get('searchService').find(payload).then((response)=> {
 			this.set('docSearchResults', response);
 		});
+	},
+
+	// Controls what user can do with the toc enty for this page
+	setState(pageId) {
+		let toc = this.get('pages');
+		let page = _.find(toc, function(i) { return i.get('page.id') === pageId; });
+		let state = tocUtil.getState(toc, page.get('page'));
+
+		if (!this.get('canEdit')) {
+			state.actionablePage = false;
+			state.upDisabled = state.downDisabled = state.indentDisabled = state.outdentDisabled = true;
+		}
+
+		this.set('state', state);
 	},
 
 	actions: {
@@ -168,5 +213,72 @@ export default Component.extend(ModalMixin, {
 			let refresh = this.get('refresh');
 			refresh();
 		},
+
+		// Page up -- above pages shunt down
+		pageUp() {
+			let state = this.get('state');
+
+			if (state.upDisabled || this.get('document.protection') !== this.get('constants').ProtectionType.None) {
+				return;
+			}
+
+			let pages = this.get('pages');
+			let page = _.find(pages, function(i) { return i.get('page.id') === state.pageId; });
+			if (is.not.undefined(page)) page = page.get('page');
+
+			let pendingChanges = tocUtil.moveUp(state, pages, page);
+			if (pendingChanges.length > 0) {
+				let cb = this.get('onPageSequenceChange');
+				cb(state.pageId, pendingChanges);
+			}
+		},
+
+		// Move down -- pages below shift up
+		pageDown() {
+			if (!this.get('canEdit')) return;
+
+			let state = this.get('state');
+			let pages = this.get('pages');
+			let page = _.find(pages, function(i) { return i.get('page.id') === state.pageId; });
+			if (is.not.undefined(page)) page = page.get('page');
+
+			let pendingChanges = tocUtil.moveDown(state, pages, page);
+			if (pendingChanges.length > 0) {
+				let cb = this.get('onPageSequenceChange');
+				cb(state.pageId, pendingChanges);
+			}
+		},
+
+		// Indent -- changes a page from H2 to H3, etc.
+		pageIndent() {
+			if (!this.get('canEdit')) return;
+
+			let state = this.get('state');
+			let pages = this.get('pages');
+			let page = _.find(pages, function(i) { return i.get('page.id') === state.pageId; });
+			if (is.not.undefined(page)) page = page.get('page');
+
+			let pendingChanges = tocUtil.indent(state, pages, page);
+			if (pendingChanges.length > 0) {
+				let cb = this.get('onPageLevelChange');
+				cb(state.pageId, pendingChanges);
+			}
+		},
+
+		// Outdent -- changes a page from H3 to H2, etc.
+		pageOutdent() {
+			if (!this.get('canEdit')) return;
+
+			let state = this.get('state');
+			let pages = this.get('pages');
+			let page = _.find(pages, function(i) { return i.get('page.id') === state.pageId; });
+			if (is.not.undefined(page)) page = page.get('page');
+
+			let pendingChanges = tocUtil.outdent(state, pages, page);
+			if (pendingChanges.length > 0) {
+				let cb = this.get('onPageLevelChange');
+				cb(state.pageId, pendingChanges);
+			}
+		}
 	}
 });
