@@ -18,8 +18,8 @@ import (
 )
 
 // GetSecuredUser contain associated accounts but credentials are wiped.
-func GetSecuredUser(ctx domain.RequestContext, s domain.Store, orgID, q string) (u user.User, err error) {
-	u, err = s.User.Get(ctx, q)
+func GetSecuredUser(ctx domain.RequestContext, s domain.Store, orgID, id string) (u user.User, err error) {
+	u, err = s.User.Get(ctx, id)
 	AttachUserAccounts(ctx, s, orgID, &u)
 
 	return

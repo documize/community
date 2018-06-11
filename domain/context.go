@@ -25,11 +25,7 @@ import (
 type RequestContext struct {
 	AllowAnonymousAccess bool
 	Authenticated        bool
-	Administrator        bool
 	Guest                bool
-	Editor               bool
-	Global               bool
-	Analytics            bool
 	UserID               string
 	OrgID                string
 	OrgName              string
@@ -41,6 +37,13 @@ type RequestContext struct {
 	Fullname             string
 	Transaction          *sqlx.Tx
 	AppVersion           string
+
+	Administrator bool
+	Analytics     bool
+	Active        bool
+	Editor        bool
+	Global        bool
+	ViewUsers     bool
 }
 
 //GetAppURL returns full HTTP url for the app

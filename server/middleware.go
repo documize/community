@@ -138,10 +138,12 @@ func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http
 
 		rc.AllowAnonymousAccess = org.AllowAnonymousAccess
 		rc.OrgName = org.Title
+		rc.Active = false
 		rc.Administrator = false
+		rc.Analytics = false
 		rc.Editor = false
 		rc.Global = false
-		rc.Analytics = false
+		rc.ViewUsers = false
 		rc.AppURL = r.Host
 		rc.Subdomain = organization.GetSubdomainFromHost(r)
 		rc.SSL = r.TLS != nil
@@ -169,9 +171,11 @@ func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http
 			}
 
 			rc.Administrator = u.Admin
+			rc.Active = u.Active
+			rc.Analytics = u.Analytics
 			rc.Editor = u.Editor
 			rc.Global = u.Global
-			rc.Analytics = u.Analytics
+			rc.ViewUsers = u.ViewUsers
 			rc.Fullname = u.Fullname()
 
 			// We send back with every HTTP request/response cycle the latest
@@ -195,7 +199,9 @@ func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http
 			w.Header().Add("X-Documize-Status", string(sb))
 		}
 
+		// Debug context output
 		// m.Runtime.Log.Info(fmt.Sprintf("%v", rc))
+
 		ctx := context.WithValue(r.Context(), domain.DocumizeContextKey, rc)
 		r = r.WithContext(ctx)
 
