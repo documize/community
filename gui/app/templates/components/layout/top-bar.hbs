@@ -13,9 +13,6 @@
 						</li>
 					{{/if}}
 					{{#if (eq appMeta.edition 'Enterprise')}}
-						<li class="item">
-							{{#link-to "folders" class=(if (eq selectItem 'spaces') 'link selected' 'link')}}SPACES{{/link-to}}
-						</li>
 						{{#if session.viewDashboard}}
 							<li class="item">
 								{{#link-to "dashboard" class=(if (eq selectItem 'dashboard') 'link selected' 'link')}}ACTIONS{{/link-to}}
@@ -26,6 +23,9 @@
 								{{#link-to "analytics" class=(if (eq selectItem 'analytics') 'link selected' 'link')}}ANALYTICS{{/link-to}}
 							</li>
 						{{/if}}
+						<li class="item">
+							{{#link-to "folders" class=(if (eq selectItem 'spaces') 'link selected' 'link')}}SPACES{{/link-to}}
+						</li>
 					{{/if}}
 					{{yield}}
 				</ul>
