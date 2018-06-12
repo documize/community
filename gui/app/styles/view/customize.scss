@@ -134,13 +134,13 @@
 		}
 	}
 
-	> .smtp-failure {
+	> .smtp-failure, .admin-setting-failure {
 		font-size: 1.2rem;
 		font-weight: bold;
 		color: $color-red;
 	}
 
-	> .smtp-success {
+	> .smtp-success, .admin-setting-success {
 		font-size: 1.2rem;
 		font-weight: bold;
 		color: $color-green;
