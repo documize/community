@@ -32,6 +32,7 @@ export default Component.extend(Notifier, {
 	KeycloakPublicKeyError: empty('keycloakConfig.publicKey'),
 	KeycloakAdminUserError: empty('keycloakConfig.adminUser'),
 	KeycloakAdminPasswordError: empty('keycloakConfig.adminPassword'),
+	keycloakFailure: '',
 
 	init() {
 		this._super(...arguments);
@@ -91,6 +92,8 @@ export default Component.extend(Notifier, {
 			let provider = this.get('authProvider');
 			let config = this.get('authConfig');
 
+			this.set('keycloakFailure', '');
+
 			switch (provider) {
 				case constants.AuthProvider.Documize:
 					config = {};
@@ -148,10 +151,10 @@ export default Component.extend(Notifier, {
 				if (data.authProvider === constants.AuthProvider.Keycloak) {
 					this.get('onSync')().then((response) => {
 						if (response.isError) {
+							this.set('keycloakFailure', response.message);
 							console.log(response.message); // eslint-disable-line no-console
 							data.authProvider = constants.AuthProvider.Documize;
-							this.get('onSave')(data).then(() => {
-							});
+							this.get('onSave')(data).then(() => {});
 						} else {
 							if (data.authProvider === this.get('appMeta.authProvider')) {
 								console.log(response.message); // eslint-disable-line no-console

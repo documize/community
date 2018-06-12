@@ -31,7 +31,7 @@
 			<div class="form-group row">
 				<label for="keycloak-realm" class="col-sm-2 col-form-label">Keycloak Realm</label>
 				<div class="col-sm-10">
-					{{input id="keycloak-realm" type="text" value=keycloakConfig.realm class=(if keycloakRealmError 'form-control is-invalid' 'form-control')}}
+					{{input id="keycloak-realm" type="text" value=keycloakConfig.realm class=(if KeycloakRealmError 'form-control is-invalid' 'form-control')}}
 					<small class="form-text text-muted">e.g. main</small>
 				</div>
 			</div>
@@ -96,4 +96,8 @@
 		{{/if}}
 		<div class="btn btn-success mt-4" {{action 'onSave'}}>Save</div>
 	</form>
+
+	{{#if (gt keycloakFailure.length 0)}}
+		<p class="admin-setting-failure my-3">Keycloak connection failed: {{keycloakFailure}}</p>
+	{{/if}}
 </div>
