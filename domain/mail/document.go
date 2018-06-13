@@ -37,15 +37,17 @@ func (m *Mailer) DocumentApprover(recipient, inviterName, inviterEmail, url, doc
 	em.ReplyName = inviterName
 
 	parameters := struct {
-		Subject  string
-		Inviter  string
-		URL      string
-		Document string
+		Subject     string
+		Inviter     string
+		URL         string
+		Document    string
+		SenderEmail string
 	}{
 		em.Subject,
 		inviterName,
 		url,
 		document,
+		m.Config.SenderEmail,
 	}
 
 	html, err := m.ParseTemplate("mail/document-approver.html", parameters)

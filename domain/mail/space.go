@@ -35,17 +35,19 @@ func (m *Mailer) ShareSpaceExistingUser(recipient, inviterName, inviterEmail, ur
 	em.ReplyName = inviterName
 
 	parameters := struct {
-		Subject string
-		Inviter string
-		URL     string
-		Folder  string
-		Intro   string
+		Subject     string
+		Inviter     string
+		URL         string
+		Folder      string
+		Intro       string
+		SenderEmail string
 	}{
 		em.Subject,
 		inviterName,
 		url,
 		folder,
 		intro,
+		m.Config.SenderEmail,
 	}
 
 	html, err := m.ParseTemplate("mail/share-space-existing-user.html", parameters)
@@ -82,17 +84,19 @@ func (m *Mailer) ShareSpaceNewUser(recipient, inviterName, inviterEmail, url, sp
 	em.ReplyName = inviterName
 
 	parameters := struct {
-		Subject    string
-		Inviter    string
-		URL        string
-		Invitation string
-		Folder     string
+		Subject     string
+		Inviter     string
+		URL         string
+		Invitation  string
+		Folder      string
+		SenderEmail string
 	}{
 		em.Subject,
 		inviterName,
 		url,
 		invitationMessage,
 		space,
+		m.Config.SenderEmail,
 	}
 
 	html, err := m.ParseTemplate("mail/share-space-new-user.html", parameters)

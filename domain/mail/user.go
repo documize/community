@@ -35,17 +35,19 @@ func (m *Mailer) InviteNewUser(recipient, inviterName, inviterEmail, url, userna
 	em.ReplyName = inviterName
 
 	parameters := struct {
-		Subject  string
-		Inviter  string
-		URL      string
-		Username string
-		Password string
+		Subject     string
+		Inviter     string
+		URL         string
+		Username    string
+		Password    string
+		SenderEmail string
 	}{
 		em.Subject,
 		inviterName,
 		url,
 		recipient,
 		password,
+		m.Config.SenderEmail,
 	}
 
 	html, err := m.ParseTemplate("mail/invite-new-user.html", parameters)
@@ -82,13 +84,15 @@ func (m *Mailer) InviteExistingUser(recipient, inviterName, inviterEmail, url st
 	em.ReplyName = inviterName
 
 	parameters := struct {
-		Subject string
-		Inviter string
-		URL     string
+		Subject     string
+		Inviter     string
+		URL         string
+		SenderEmail string
 	}{
 		em.Subject,
 		inviterName,
 		url,
+		m.Config.SenderEmail,
 	}
 
 	html, err := m.ParseTemplate("mail/invite-existing-user.html", parameters)
@@ -118,11 +122,13 @@ func (m *Mailer) PasswordReset(recipient, url string) {
 	em.ToName = recipient
 
 	parameters := struct {
-		Subject string
-		URL     string
+		Subject     string
+		URL         string
+		SenderEmail string
 	}{
 		em.Subject,
 		url,
+		m.Config.SenderEmail,
 	}
 
 	html, err := m.ParseTemplate("mail/password-reset.html", parameters)
