@@ -39,6 +39,7 @@ import (
 	"github.com/documize/community/model/page"
 	"github.com/documize/community/model/permission"
 	"github.com/documize/community/model/space"
+	"github.com/documize/community/model/user"
 	wf "github.com/documize/community/model/workflow"
 	uuid "github.com/nu7hatch/gouuid"
 )
@@ -443,6 +444,14 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 	sp.RefID = spaceID
 
+	// Retreive previous record for comparison later.
+	prev, err := h.Store.Space.Get(ctx, spaceID)
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
@@ -456,6 +465,28 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
 		return
+	}
+
+	// If newly marked Everyone space, ensure everyone has permission
+	if prev.Type != space.ScopePublic && sp.Type == space.ScopePublic {
+		h.Store.Permission.DeleteUserSpacePermissions(ctx, sp.RefID, user.EveryoneUserID)
+
+		perm := permission.Permission{}
+		perm.OrgID = sp.OrgID
+		perm.Who = permission.UserPermission
+		perm.WhoID = user.EveryoneUserID
+		perm.Scope = permission.ScopeRow
+		perm.Location = permission.LocationSpace
+		perm.RefID = sp.RefID
+		perm.Action = "" // we send array for actions below
+
+		err = h.Store.Permission.AddPermissions(ctx, perm, permission.SpaceView)
+		if err != nil {
+			ctx.Transaction.Rollback()
+			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
+			return
+		}
 	}
 
 	ctx.Transaction.Commit()
