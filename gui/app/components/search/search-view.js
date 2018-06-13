@@ -16,6 +16,7 @@ import Component from '@ember/component';
 export default Component.extend({
 	searchSvc: service('search'),
 	results: A([]),
+	validSearch: true,
 
 	init() {
 		this._super(...arguments);
@@ -50,6 +51,12 @@ export default Component.extend({
 
 	actions: {
 		onSearch() {
+			if (this.get('filter').trim().length < 3) {
+				this.set('validSearch', false);
+				return;
+			}
+
+			this.set('validSearch', true);
 			this.fetch();
 		}
 	}

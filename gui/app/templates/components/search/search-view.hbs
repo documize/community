@@ -26,5 +26,9 @@
 		</div>
 	</div>
 
-	{{search/search-results results=results keywords=filter}}
+	{{#if validSearch}}
+		{{search/search-results results=results keywords=filter}}
+	{{else}}
+		<p class="text-danger my-5">Your search term is too short</p>
+	{{/if}}
 </div>
