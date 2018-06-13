@@ -67,12 +67,6 @@ export default Controller.extend(NotifierMixin, {
 			});
 
 			all(promises).then(() => {
-				let documents = this.get('documents');
-				documents.forEach(function (document) {
-					document.set('selected', false);
-				});
-
-				this.set('documents', documents);
 				this.send('onRefresh');
 			});
 		},
