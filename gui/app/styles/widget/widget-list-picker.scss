@@ -41,3 +41,25 @@
 		}
 	}
 }
+
+.widget-list-choice {
+	text-align: left;
+	margin: 0;
+	padding: 0;
+	display: inline-block;
+
+	> li {
+		margin: 0 20px 0 0;
+		padding: 0;
+		display: inline-block;
+		font-size: 1.3rem;
+		font-weight: 700;
+		color: $color-gray;
+		cursor: pointer;
+	}
+
+	> .selected {
+		color: $color-green;
+		border-bottom: 1px solid $color-green;
+	}
+}

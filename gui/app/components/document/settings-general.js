@@ -9,31 +9,29 @@
 //
 // https://documize.com
 
-import $ from 'jquery';
 import { empty } from '@ember/object/computed';
 import { computed } from '@ember/object';
-import { schedule } from '@ember/runloop';
 import { inject as service } from '@ember/service';
+import Notifier from '../../mixins/notifier';
 import Component from '@ember/component';
 
-export default Component.extend({
-	documentService: service('document'),
-	editMode: false,
+export default Component.extend(Notifier, {
+	documentSvc: service('document'),
 	docName: '',
 	docExcerpt: '',
 	hasNameError: empty('docName'),
 
-	canEdit: computed('permssions', 'document', function() {
+	noEdits: computed('permssions', 'document', function() {
 		let constants = this.get('constants');
 		let permissions = this.get('permissions');
 
-		if (permissions.get('documentEdit') && this.get('document.protection') === constants.ProtectionType.None) {
-			return true;
+		if (permissions.get('documentEdit') && this.get('document.protection') !== constants.ProtectionType.None) {
+			return false;
 		} else if (permissions.get('documentApprove') && this.get('document.protection') === constants.ProtectionType.Review) {
-			return true;
+			return false;
 		}
 
-		return false;
+		return true;
 	}),
 
 	keyUp(e) {
@@ -42,30 +40,31 @@ export default Component.extend({
 		}
 	},
 
+	didReceiveAttrs() {
+		this._super(...arguments);
+
+		this.set('docName', this.get('document.name'));
+		this.set('docExcerpt', this.get('document.excerpt'));
+	},
+
 	actions: {
-		toggleEdit() {
-			this.set('docName', this.get('document.name'));
-			this.set('docExcerpt', this.get('document.excerpt'));
-			this.set('editMode', true);
-
-			schedule('afterRender', () => {
-				$('#document-name').select();
-			});
-		},
-
 		onSave() {
 			if (this.get('hasNameError')) return;
 
+			let constants = this.get('constants');
+
 			this.set('document.name', this.get('docName'));
 			this.set('document.excerpt', this.get('docExcerpt').trim());
-			this.set('editMode', false);
+
+			let lifecycle = this.get('lifecycle.selected');
+			this.set('document.lifecycle', lifecycle);
 
 			let cb = this.get('onSaveDocument');
 			cb(this.get('document'));
-		},
 
-		onCancel() {
-			this.set('editMode', false);
+			if (lifecycle === constants.Lifecycle.Draft) {
+				this.get('activitySvc').clearChangeHistory(this.get('document.id'));
+			}
 		}
 	}
 });

@@ -10,36 +10,18 @@
 // https://documize.com
 
 import $ from 'jquery';
+import { A } from '@ember/array';
 import { computed } from '@ember/object';
 import { notEmpty } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
-import { A } from '@ember/array';
-import { schedule } from '@ember/runloop';
-import ModalMixin from '../../mixins/modal';
+import Modals from '../../mixins/modal';
+import Tooltips from '../../mixins/tooltip';
 import Component from '@ember/component';
 
-export default Component.extend(ModalMixin, {
-    documentService: service('document'),
-	categoryService: service('category'),
+export default Component.extend(Modals, Tooltips, {
+	documentService: service('document'),
 	sessionService: service('session'),
-
-	categories: A([]),
-	newCategory: '',
-	showCategoryModal: false,
-	hasCategories: computed('categories', function() {
-		return this.get('categories').length > 0;
-	}),
-	canSelectCategory: computed('categories', function() {
-		return (this.get('categories').length > 0 && this.get('permissions.documentEdit'));
-	}),
-	canAddCategory: computed('categories', function() {
-		return this.get('permissions.spaceOwner') || this.get('permissions.spaceManage');
-	}),
-
-	maxTags: 3,
-	tagz: A([]),
-	tagzModal: A([]),
-	newTag: '',
+	categoryService: service('category'),
 
 	contributorMsg: '',
 	approverMsg: '',
@@ -91,67 +73,56 @@ export default Component.extend(ModalMixin, {
 
 	didReceiveAttrs() {
 		this._super(...arguments);
-		this.load();
+
 		this.workflowStatus();
+		this.popovers();
+		this.load();
 	},
 
 	didInsertElement() {
 		this._super(...arguments);
 
-		$('#document-tags-modal').on('show.bs.modal', (event) => { // eslint-disable-line no-unused-vars
-			schedule('afterRender', () => {
-				$("#add-tag-field").focus();
-
-				$("#add-tag-field").off("keydown").on("keydown", function(e) {
-					if (e.shiftKey) {
-						return false;
-					}
-
-					if (e.which === 13 || e.which === 45 || e.which === 189 || e.which === 8 || e.which === 127 || (e.which >= 65 && e.which <= 90) || (e.which >= 97 && e.which <= 122) || (e.which >= 48 && e.which <= 57)) {
-						return true;
-					}
-
-					return false;
-				});
-
-				// make copy of tags for editing
-				this.set('tagzEdit', this.get('tagz'));
-			});
-		});
+		this.popovers();
+		this.renderTooltips();
 	},
 
-    willDestroyElement() {
+	willDestroyElement() {
 		this._super(...arguments);
-		$("#add-tag-field").off("keydown");
-    },
 
-	load() {
-		this.get('categoryService').getUserVisible(this.get('folder.id')).then((categories) => {
-			let cats = A(categories);
-			this.set('categories', cats);
-			this.get('categoryService').getDocumentCategories(this.get('document.id')).then((selected) => {
-				this.set('selectedCategories', selected);
-				selected.forEach((s) => {
-					let cat = cats.findBy('id', s.id);
-					if (is.not.undefined(cat)) {
-						cat.set('selected', true);
-						this.set('categories', cats);
-					}
-				});
-			});
+		$('#document-lifecycle-popover').popover('dispose');
+		$('#document-protection-popover').popover('dispose');
+		this.removeTooltips();
+	},
+
+	popovers() {
+		let constants = this.get('constants');
+
+		$('#document-lifecycle-popover').popover('dispose');
+		$('#document-protection-popover').popover('dispose');
+
+		$('#document-lifecycle-popover').popover({
+			html: true,
+			title: 'Lifecycle',
+			content: "<p>Draft &mdash; restricted visiblity and not searchable</p><p>Live &mdash; document visible to all</p><p>Archived &mdash; not visible or searchable</p>",
+			placement: 'top'
 		});
 
-		let tagz = [];
-        if (!_.isUndefined(this.get('document.tags')) && this.get('document.tags').length > 1) {
-            let tags = this.get('document.tags').split('#');
-            _.each(tags, function(tag) {
-                if (tag.length > 0) {
-                    tagz.pushObject(tag);
-                }
-            });
-        }
+		let ccMsg = `<p>${this.changeControlMsg}</p>`;
 
-        this.set('tagz', A(tagz));
+		if (this.get('document.protection') ===  constants.ProtectionType.Review) {
+			ccMsg += '<ul>'
+			ccMsg += `<li>${this.approvalMsg}</li>`;
+			if (this.get('userChanges')) ccMsg += `<li>Your contributions: ${this.contributorMsg}</li>`;
+			if (this.get('isApprover') && this.get('approverMsg.length') > 0) ccMsg += `<li>${this.approverMsg}</li>`;
+			ccMsg += '</ul>'
+		}
+
+		$('#document-protection-popover').popover({
+			html: true,
+			title: 'Change Control',
+			content: ccMsg,
+			placement: 'top'
+		});
 	},
 
 	workflowStatus() {
@@ -184,97 +155,38 @@ export default Component.extend(ModalMixin, {
 			let label = approverPendingCount === 1 ? 'change' : 'changes';
 			approverMsg = `${approverPendingCount} ${label} progressing, ${approverReviewCount} awaiting review, ${approverRejectedCount} rejected`;
 		}
+
 		this.set('approverMsg', approverMsg);
+		this.set('selectedVersion', this.get('versions').findBy('documentId', this.get('document.id')));
+
+		this.popovers();
 	},
 
-    actions: {
-		onShowCategoryModal() {
-			this.set('showCategoryModal', true);
-		},
+	load() {
+		this.get('categoryService').getDocumentCategories(this.get('document.id')).then((selected) => {
+			this.set('selectedCategories', selected);
+		});
 
-		onSaveCategory() {
-			let docId = this.get('document.id');
-			let folderId = this.get('folder.id');
-			let link = this.get('categories').filterBy('selected', true);
-			let unlink = this.get('categories').filterBy('selected', false);
-			let toLink = [];
-			let toUnlink = [];
-
-			// prepare links associated with document
-			link.forEach((l) => {
-				let t = {
-					folderId: folderId,
-					documentId: docId,
-					categoryId: l.get('id')
-				};
-
-				toLink.push(t);
-			});
-
-			// prepare links no longer associated with document
-			unlink.forEach((l) => {
-				let t = {
-					folderId: folderId,
-					documentId: docId,
-					categoryId: l.get('id')
-				};
-
-				toUnlink.pushObject(t);
-			});
-
-			this.set('showCategoryModal', false);
-
-			this.get('categoryService').setCategoryMembership(toUnlink, 'unlink').then(() => {
-				this.get('categoryService').setCategoryMembership(toLink, 'link').then(() => {
-					this.load();
-				});
-			});
-
-			return true;
-		},
-
-		onAddTag(e) {
-			e.preventDefault();
-
-            let tags = this.get("tagzEdit");
-            let tag = this.get('newTag');
-            tag = tag.toLowerCase().trim();
-
-            // empty or dupe?
-            if (tag.length === 0 || _.contains(tags, tag) || tags.length >= this.get('maxTags') || tag.startsWith('-')) {
-				$('#add-tag-field').addClass('is-invalid');
-                return;
-            }
-
-            tags.pushObject(tag);
-            this.set('tagzEdit', tags);
-            this.set('newTag', '');
-			$('#add-tag-field').removeClass('is-invalid');
-		},
-
-        onRemoveTag(tagToRemove) {
-            this.set('tagzEdit', _.without(this.get("tagzEdit"), tagToRemove));
-        },
-
-        onSaveTags() {
-            let tags = this.get("tagzEdit");
-
-			let save = "#";
+		let tagz = [];
+		if (!_.isUndefined(this.get('document.tags')) && this.get('document.tags').length > 1) {
+			let tags = this.get('document.tags').split('#');
             _.each(tags, function(tag) {
-                save = save + tag + "#";
-            });
+				if (tag.length > 0) {
+					tagz.pushObject(tag);
+				}
+			});
+		}
 
-			let doc = this.get('document');
-			doc.set('tags', save);
+		this.set('tagz', A(tagz));
+	},
 
-			let cb = this.get('onSaveDocument');
-			cb(doc);
+	actions: {
+		onSelectVersion(version) {
+			let space = this.get('folder');
 
-			this.load();
-			this.set('newTag', '');
-
-			$('#document-tags-modal').modal('hide');
-			$('#document-tags-modal').modal('dispose');
+			this.get('router').transitionTo('document',
+				space.get('id'), space.get('slug'),
+				version.documentId, this.get('document.slug'));
 		}
 	}
 });

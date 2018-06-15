@@ -9,57 +9,90 @@
 		.doc-excerpt {
 			font-size: 1.2rem;
 			color: $color-gray;
-			margin: 0 0 45px;
+			margin: 0 0 20px;
 		}
 	}
+}
 
-	> .document-heading-edit {
-		margin-top: 3.5rem;
-		margin-bottom: 3rem;
+.document-lifecycle-live {
+	@include border-radius(3px);
+	@include ease-in();
+	display: inline-block;
+	border: 2px solid $color-green;
+	padding: 2px 10px;
+	color: $color-gray;
+	background-color: $color-off-white;
+	font-weight: 800;
+	font-size: 1rem;
+	cursor: pointer;
+
+	&:hover {
+		color: $color-green;
 	}
+}
 
-	> .document-customfields {
-		margin-bottom: 4rem;
-		background-color: $color-off-white;
-		border: 1px solid $color-border;
-		padding: 20px 40px;
-		@include border-radius(3px);
+.document-lifecycle-draft {
+	@extend .document-lifecycle-live;
+	border: 2px solid $color-orange;
 
-		.row {
-			padding: 5px 0;
-			margin-bottom: 10px;
-
-			&:hover {
-				.action-button {
-					visibility: visible;
-				}
-			}
-
-			.heading {
-				font-size: 1.1rem;
-				font-weight: 700;
-				color: $color-dark;
-				text-align: left;
-			}
-
-			.action-button {
-				visibility: hidden;
-				margin-left: 15px;
-			}
-
-			.value {
-				font-size: 1.1rem;
-				font-weight: normal;
-				color: $color-black;
-				text-align: left;
-			}
-
-			.value-static {
-				font-size: 1.1rem;
-				font-weight: bold;
-				color: $color-gray;
-				text-align: left;
-			}
-		}
+	&:hover {
+		color: $color-orange;
 	}
+}
+
+.document-protection-unlocked {
+	@include border-radius(3px);
+	@include ease-in();
+	display: inline-block;
+	padding: 2px 10px;
+	font-weight: 800;
+	font-size: 1rem;
+	color: $color-gray;
+	background-color: $color-off-white;
+	border: 2px solid $color-gray;
+	cursor: pointer;
+
+	&:hover {
+		color: $color-dark;
+	}
+}
+
+.document-protection-review {
+	@extend .document-protection-unlocked;
+	border: 2px solid $color-orange;
+
+	&:hover {
+		color: $color-orange;
+	}
+}
+
+.document-protection-locked {
+	@extend .document-protection-unlocked;
+	border: 2px solid $color-red;
+
+	&:hover {
+		color: $color-red;
+	}
+}
+
+.document-category {
+	display: inline-block;
+	padding: 2px 10px;
+	font-weight: 600;
+	font-size: 1rem;
+	color: $color-gray;
+	background-color: $color-off-white;
+	border: 2px solid $color-gray;
+	border-left: 13px solid $color-gray;
+	margin-right: 20px;
+}
+
+.document-tag {
+	display: inline-block;
+	padding: 2px 0;
+	font-size: 1.1rem;
+	font-weight: 600;
+	font-style: italic;
+	color: $color-gray;
+	margin-right: 20px;
 }

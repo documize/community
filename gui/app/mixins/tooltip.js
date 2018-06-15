@@ -35,5 +35,4 @@ export default Mixin.create({
 	removePopovers() {
 		$('[data-toggle="tooltip"]').popover('dispose');
 	}
-
 });

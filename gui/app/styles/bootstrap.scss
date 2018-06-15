@@ -26,18 +26,19 @@ $light: 		$color-white;
 $dark:			$color-off-black;
 
 // popover
-$popover-bg: 			$color-off-white;
-$popover-header-bg: 	$color-off-white;
-$popover-header-color:	$color-off-black;
+$popover-bg: 			$color-white;
+$popover-header-bg: 	$color-dark;
+$popover-header-color:	$color-white;
 
 // tooltip
-$tooltip-bg:	$color-off-white;
-$tooltip-color:	$color-off-black;
+$tooltip-bg:	$color-dark;
+$tooltip-color:	$color-white;
 
 // modal
 $modal-backdrop-opacity: 		0.7;
 $modal-header-border-color:		$color-white;
 $modal-footer-border-color: 	$color-white;
+
 .modal-header {
 	background-color: $color-primary;
 	color: $color-off-white;
@@ -102,11 +103,9 @@ $link-hover-decoration:     none;
 @import "node_modules/bootstrap/scss/badge";
 
 // Boostrap overrides
-
 .modal-80 {
 	max-width: 80% !important;
 }
-
 body.modal-open {
 	padding-right: 0 !important;
 
@@ -114,7 +113,6 @@ body.modal-open {
 	// See: https://stackoverflow.com/questions/21604674/bootstrap-modal-background-jumps-to-top-on-toggle/21881894
 	overflow: visible;
 }
-
 .modal-header-white {
 	background-color: $color-white !important;
 	border: none !important;
@@ -126,6 +124,25 @@ body.modal-open {
 		> span {
 			color: $color-gray;
 			font-size: 2rem;
+		}
+	}
+}
+
+.popover-header {
+	font-size: 1.2rem;
+}
+.popover-body {
+	font-size: 1rem;
+
+	> p {
+		margin: 0.5rem 0;
+	}
+
+	> ul {
+		margin: 10px 0 10px 25px;
+
+		> li {
+			list-style: square;
 		}
 	}
 }

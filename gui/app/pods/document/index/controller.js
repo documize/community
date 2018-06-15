@@ -11,6 +11,7 @@
 
 import { Promise as EmberPromise } from 'rsvp';
 import { inject as service } from '@ember/service';
+import { computed } from '@ember/object';
 import Tooltips from '../../../mixins/tooltip';
 import Notifier from '../../../mixins/notifier';
 import Controller from '@ember/controller';
@@ -22,6 +23,12 @@ export default Controller.extend(Tooltips, Notifier, {
 	linkService: service('link'),
 	tab: 'content',
 	queryParams: ['currentPageId'],
+	showRevisions: computed('permissions', 'document.protection', function() {
+		if (this.get('document.protection') === this.get('constants').ProtectionType.None) return true;
+		if (this.get('document.protection') === this.get('constants').ProtectionType.Review && this.get('permissions.documentApprove')) return true;
+
+		return false;
+	}),
 
 	actions: {
 		onTabChange(tab) {
@@ -229,7 +236,7 @@ export default Controller.extend(Tooltips, Notifier, {
 			});
 		},
 
-		refresh() {
+		refresh(reloadPage) {
 			return new EmberPromise((resolve) => {
 				this.get('documentService').fetchDocumentData(this.get('document.id')).then((data) => {
 					this.set('document', data.document);
@@ -247,7 +254,11 @@ export default Controller.extend(Tooltips, Notifier, {
 							this.set('blocks', data);
 						});
 
+						if (reloadPage) {
+							window.location.reload();
+						} else {
 						resolve();
+						}
 					});
 				});
 			});

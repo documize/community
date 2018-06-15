@@ -17,7 +17,6 @@ import ModalMixin from '../../mixins/modal';
 import Component from '@ember/component';
 
 export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
-	userSvc: service('user'),
 	store: service(),
 	spaceSvc: service('folder'),
 	session: service(),
@@ -26,6 +25,7 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 
 	init() {
 		this._super(...arguments);
+
 		this.pinState = {
 			isPinned: false,
 			pinId: '',

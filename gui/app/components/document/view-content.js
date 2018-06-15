@@ -33,7 +33,6 @@ export default Component.extend(TooltipMixin, Notifier, {
 	}),
 	voteThanks: false,
 	showLikes: false,
-
 	showDeleteBlockDialog: false,
 	deleteBlockId: '',
 
@@ -105,6 +104,16 @@ export default Component.extend(TooltipMixin, Notifier, {
 		if (is.not.empty(cp) && is.not.undefined(cp) && is.not.null(cp)) {
 			this.get('browser').scrollTo(`#page-${cp}`)
 		}
+	},
+
+	addSection(model) {
+		let constants = this.get('constants');
+
+		if (this.get('document.protection') === constants.ProtectionType.Review) {
+			model.page.set('status', model.page.get('relativeId') === '' ? constants.ChangeState.PendingNew : constants.ChangeState.Pending);
+		}
+
+		return this.get('onInsertSection')(model);
 	},
 
 	actions: {

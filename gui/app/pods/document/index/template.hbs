@@ -32,16 +32,24 @@
 			<ul class="tabnav-control">
 				<li class="tab {{if (eq tab 'content') 'selected'}}" {{action 'onTabChange' 'content'}}>Content</li>
 				{{#if session.authenticated}}
-					<li class="tab {{if (eq tab 'revision') 'selected'}}" {{action 'onTabChange' 'revision'}}>Revisions</li>
+					{{#if showRevisions}}
+						<li class="tab {{if (eq tab 'revision') 'selected'}}" {{action 'onTabChange' 'revision'}}>Revisions</li>
+					{{/if}}
 				{{/if}}
 			</ul>
 		</div>
 
-		{{document/document-heading
-			document=document
-			versions=versions
-			permissions=permissions
-			onSaveDocument=(action 'onSaveDocument')}}
+		<div class="view-document">
+			<div class="document-heading">
+				<h1 class="doc-title">
+					{{#if document.template}}
+						<span class="bg-warning p-1 pr-2 pl-2">Template</span>&nbsp;&nbsp;
+					{{/if}}
+					{{document.name}}
+				</h1>
+				<div class="doc-excerpt">{{document.excerpt}}</div>
+			</div>
+		</div>
 
 		{{document/document-meta
 			pages=pages
@@ -76,12 +84,14 @@
 		{{/if}}
 
 		{{#if (eq tab 'revision')}}
-			{{document/view-revision
-				pages=pages
-				folder=folder
-				document=document
-				permissions=permissions
-				onRollback=(action 'onRollback')}}
+			{{#if showRevisions}}
+				{{document/view-revision
+					pages=pages
+					folder=folder
+					document=document
+					permissions=permissions
+					onRollback=(action 'onRollback')}}
+			{{/if}}
 		{{/if}}
 
 	{{/layout/middle-zone-content}}

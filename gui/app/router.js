@@ -56,6 +56,9 @@ export default Router.map(function () {
 			this.route('section', {
 				path: 'section/:page_id'
 			});
+			this.route('settings', {
+				path: 'settings'
+			});
 		}
 	);
 

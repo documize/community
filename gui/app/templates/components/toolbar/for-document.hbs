@@ -1,5 +1,11 @@
 <div class="text-right non-printable">
 	{{#if session.authenticated}}
+		{{#if permissions.documentEdit}}
+			{{#link-to 'document.settings' space.id space.slug document.id document.slug class="button-icon-gray align-middle"}}
+				<i class="material-icons" data-toggle="tooltip" data-placement="top" title="Meta, Lifecycle, Change Control">settings</i>
+			{{/link-to}}
+			<div class="button-icon-gap" />
+		{{/if}}
 		{{#if permissions.documentAdd}}
 			<div id="document-template-button" class="button-icon-gray align-middle" data-toggle="tooltip" data-placement="top" title="Save as template">
 				<i class="material-icons" data-toggle="modal" data-target="#document-template-modal" data-backdrop="static">content_copy</i>

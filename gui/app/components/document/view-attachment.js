@@ -15,7 +15,6 @@ import { inject as service } from '@ember/service';
 import Component from '@ember/component';
 
 export default Component.extend({
-	classNames: ['row d-print-none'],
 	documentService: service('document'),
 	appMeta: service(),
 	hasAttachments: notEmpty('files'),
@@ -26,12 +25,12 @@ export default Component.extend({
 
 	init() {
 		this._super(...arguments);
-		this.getAttachments();
+		this.deleteAttachment = { id: '', name: '' };
+	},
 
-		this.deleteAttachment = {
-			id: "",
-			name: "",
-		};
+	didReceiveAttrs() {
+		this._super(...arguments);
+		this.getAttachments();
 	},
 
 	didInsertElement() {
