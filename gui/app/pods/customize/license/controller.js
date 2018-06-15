@@ -9,18 +9,7 @@
 //
 // https://documize.com
 
-import { inject as service } from '@ember/service';
 import Controller from '@ember/controller';
 
 export default Controller.extend({
-	global: service(),
-
-	actions: {
-		saveLicense() {
-			if(this.get('session.isGlobalAdmin')) {
-				return this.get('global').saveLicense(this.model.license).then(() => {
-				});
-			}
-		}
-	}
 });

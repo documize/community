@@ -11,7 +11,6 @@
 
 import { inject as service } from '@ember/service';
 import Route from '@ember/routing/route';
-import RSVP from 'rsvp';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 
 export default Route.extend(AuthenticatedRouteMixin, {
@@ -26,9 +25,7 @@ export default Route.extend(AuthenticatedRouteMixin, {
 	},
 
 	model() {
-		return RSVP.hash({
-			license: this.get('global').getLicense()
-		});
+		return this.get('global').getLicense();
 	},
 
 	activate() {

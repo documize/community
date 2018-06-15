@@ -13,7 +13,7 @@
 	<form class="mt-5 ">
 		<div class="form-group">
 			<label for="product-license-xml">Enterprise Edition license (optional)</label>
-			<textarea id="product-license-xml" rows=18 value={{model.license}} class={{if LicenseError 'form-control is-invalid' 'form-control'}}></textarea>
+			{{textarea id="product-license-xml" value=license rows="18" class=(if LicenseError 'form-control is-invalid' 'form-control')}}
 			<small class="form-text text-muted ">XML format</small>
 			{{#if appMeta.valid}}
 				<p class="mt-2 color-green">Valid</p>

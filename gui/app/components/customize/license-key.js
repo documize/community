@@ -17,7 +17,8 @@ import Component from '@ember/component';
 
 export default Component.extend(Notifier, {
 	appMeta: service(),
-	LicenseError: empty('model.license'),
+	global: service(),
+	LicenseError: empty('license'),
 	changelog: '',
 
 	init() {
@@ -38,7 +39,8 @@ export default Component.extend(Notifier, {
 	actions: {
 		saveLicense() {
 			this.showWait();
-			this.get('saveLicense')().then(() => {
+
+			this.get('global').saveLicense(this.get('license')).then(() => {
 				this.showDone();
 				window.location.reload();
 			});

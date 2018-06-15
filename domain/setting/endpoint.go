@@ -200,15 +200,16 @@ func (h *Handler) SetLicense(w http.ResponseWriter, r *http.Request) {
 
 	h.Store.Setting.Set("EDITION-LICENSE", js)
 
-	ctx.Transaction, err = h.Runtime.Db.Beginx()
-	if err != nil {
-		response.WriteServerError(w, method, err)
-		return
-	}
+	/* ctx.Transaction, err = h.Runtime.Db.Beginx()*/
+	//if err != nil {
+	//response.WriteServerError(w, method, err)
+	//return
+	//}
 
-	ctx.Transaction.Commit()
+	/*ctx.Transaction.Commit()*/
 
 	h.Runtime.Log.Info("License changed")
+
 	event.Handler().Publish(string(event.TypeSystemLicenseChange))
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSystemLicense)
