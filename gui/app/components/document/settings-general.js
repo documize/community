@@ -25,13 +25,19 @@ export default Component.extend(Notifier, {
 		let constants = this.get('constants');
 		let permissions = this.get('permissions');
 
-		if (permissions.get('documentEdit') && this.get('document.protection') !== constants.ProtectionType.None) {
-			return false;
-		} else if (permissions.get('documentApprove') && this.get('document.protection') === constants.ProtectionType.Review) {
-			return false;
+		if (!permissions.get('documentEdit')) {
+			return true;
 		}
 
-		return true;
+		if (!permissions.get('documentApprove') && this.get('document.protection') === constants.ProtectionType.Review) {
+			return true;
+		}
+
+		if (this.get('document.protection') === constants.ProtectionType.Lock) {
+			return true;
+		}
+
+		return false;
 	}),
 
 	keyUp(e) {
