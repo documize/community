@@ -35,9 +35,6 @@ export default Router.map(function () {
 			path: 's/:folder_id/:folder_slug'
 		},
 		function () {
-			this.route('category', {
-				path: 'category'
-			});
 			this.route('settings', {
 				path: 'settings'
 			});

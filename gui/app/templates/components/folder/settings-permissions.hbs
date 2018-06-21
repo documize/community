@@ -20,6 +20,24 @@
 	</ul>
 </div>
 
+<div class="container-fluid my-5">
+	<div class="row justify-content-center">
+		<div class="col-6">
+			<div class="form-group">
+				{{focus-input id="user-search" type="text" class="form-control mousetrap" placeholder="Search for users by firstname, lastname, email" value=searchText key-up=(action 'onSearch')}}
+			</div>
+			{{#each filteredUsers as |user|}}
+				<div class="row my-3">
+					<div class="col-10">{{user.fullname}}</div>
+					<div class="col-2 text-right">
+						<button class="btn btn-primary" {{action 'onAdd' user}}>Add</button>
+					</div>
+				</div>
+			{{/each}}
+		</div>
+	</div>
+</div>
+
 <div class="space-admin table-responsive">
 	<table class="table table-hover permission-table mb-3">
 		<thead>
@@ -92,22 +110,3 @@
 </div>
 
 <button type="button" class="btn btn-success my-3" onclick= {{action 'onSave'}}>Save</button>
-
-<div class="container-fluid mt-5">
-	<div class="row justify-content-center">
-		<div class="col-6">
-			<div class="form-group">
-				{{focus-input id="user-search" type="text" class="form-control mousetrap" placeholder="Search for users by firstname, lastname, email" value=searchText key-up=(action 'onSearch')}}
-				<small class="form-text text-muted">Find and add users to this space</small>
-			</div>
-			{{#each filteredUsers as |user|}}
-				<div class="row my-3">
-					<div class="col-10">{{user.fullname}}</div>
-					<div class="col-2 text-right">
-						<button class="btn btn-primary" {{action 'onAdd' user}}>Add</button>
-					</div>
-				</div>
-			{{/each}}
-		</div>
-	</div>
-</div>

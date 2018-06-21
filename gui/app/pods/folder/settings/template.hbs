@@ -32,6 +32,10 @@
 		{{#if (eq tab 'blocks')}}
 			{{folder/settings-blocks permissions=model.permissions space=model.folder}}
 		{{/if}}
+
+		{{#if (eq tab 'categories')}}
+			{{folder/settings-category permissions=model.permissions spaces=model.folder space=model.folder}}
+		{{/if}}
 	{{/layout/middle-zone-content}}
 
 	{{#layout/middle-zone-sidebar}}
@@ -42,7 +46,7 @@
 				<li class="tab tab-vertical {{if (eq tab 'invitations') 'selected'}}" {{action 'onTab' 'invitations'}}>Invite Users</li>
 				<li class="tab tab-vertical {{if (eq tab 'templates') 'selected'}}" {{action 'onTab' 'templates'}}>Document Templates</li>
 				<li class="tab tab-vertical {{if (eq tab 'blocks') 'selected'}}" {{action 'onTab' 'blocks'}}>Content Blocks</li>
-				<li class="tab tab-vertical" {{action 'onCategories'}}>Categories</li>
+				<li class="tab tab-vertical {{if (eq tab 'categories') 'selected'}}" {{action 'onTab' 'categories'}}>Categories</li>
 			</ul>
 		</div>
 	{{/layout/middle-zone-sidebar}}

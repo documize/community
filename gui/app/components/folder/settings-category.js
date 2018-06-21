@@ -14,9 +14,10 @@ import { A } from '@ember/array';
 import { inject as service } from '@ember/service';
 import TooltipMixin from '../../mixins/tooltip';
 import ModalMixin from '../../mixins/modal';
+import Notifer from '../../mixins/notifier';
 import Component from '@ember/component';
 
-export default Component.extend(ModalMixin, TooltipMixin, {
+export default Component.extend(ModalMixin, TooltipMixin, Notifer, {
 	spaceSvc: service('folder'),
 	groupSvc: service('group'),
 	categorySvc: service('category'),
@@ -24,6 +25,7 @@ export default Component.extend(ModalMixin, TooltipMixin, {
 	store: service(),
 	deleteId: '',
 	dropdown: null,
+	newCategory: '',
 
 	init() {
 		this._super(...arguments);
@@ -43,11 +45,11 @@ export default Component.extend(ModalMixin, TooltipMixin, {
 
 	load() {
 		// get categories
-		this.get('categorySvc').getAll(this.get('folder.id')).then((c) => {
+		this.get('categorySvc').getAll(this.get('space.id')).then((c) => {
 			this.set('category', c);
 
 			// get summary of documents and users for each category in space
-			this.get('categorySvc').getSummary(this.get('folder.id')).then((s) => {
+			this.get('categorySvc').getSummary(this.get('space.id')).then((s) => {
 				c.forEach((cat) => {
 					let docs = _.where(s, {categoryId: cat.get('id'), type: 'documents'});
 					let docCount = 0;
@@ -67,7 +69,7 @@ export default Component.extend(ModalMixin, TooltipMixin, {
 	permissionRecord(who, whoId, name) {
 		let raw = {
 			id: whoId,
-			orgId: this.get('folder.orgId'),
+			orgId: this.get('space.orgId'),
 			categoryId: this.get('currentCategory.id'),
 			whoId: whoId,
 			who: who,
@@ -91,6 +93,31 @@ export default Component.extend(ModalMixin, TooltipMixin, {
 	},
 
 	actions: {
+		onAdd(e) {
+			e.preventDefault();
+
+			let cat = this.get('newCategory');
+
+			if (cat === '') {
+				$('#new-category-name').addClass('is-invalid').focus();
+				return;
+			}
+
+			$('#new-category-name').removeClass('is-invalid').focus();
+			this.set('newCategory', '');
+
+			let c = {
+				category: cat,
+				folderId: this.get('space.id')
+			};
+
+			this.showWait();
+			this.get('categorySvc').add(c).then(() => {
+				this.load();
+				this.showDone();
+			});
+		},
+
 		onShowDelete(id) {
 			let cat = this.get('category').findBy('id', id);
 			this.set('deleteId', cat.get('id'));
@@ -144,7 +171,7 @@ export default Component.extend(ModalMixin, TooltipMixin, {
 			this.set('categoryPermissions', categoryPermissions);
 
 			// get space permissions
-			this.get('spaceSvc').getPermissions(this.get('folder.id')).then((spacePermissions) => {
+			this.get('spaceSvc').getPermissions(this.get('space.id')).then((spacePermissions) => {
 				spacePermissions.forEach((sp) => {
 					let cp  = this.permissionRecord(sp.get('who'), sp.get('whoId'), sp.get('name'));
 					cp.set('selected', false);
@@ -172,11 +199,11 @@ export default Component.extend(ModalMixin, TooltipMixin, {
 		onGrantAccess() {
 			this.set('showCategoryAccess', false);
 
-			let folder = this.get('folder');
+			let space = this.get('space');
 			let category = this.get('currentCategory');
 			let perms = this.get('categoryPermissions').filterBy('selected', true);
 
-			this.get('categorySvc').setViewers(folder.get('id'), category.get('id'), perms).then(() => {
+			this.get('categorySvc').setViewers(space.get('id'), category.get('id'), perms).then(() => {
 				this.load();
 			});
 		}

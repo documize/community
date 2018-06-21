@@ -2,8 +2,14 @@
 	<div class="explainer-header explainer-gap">General options for this space</div>
 	<form>
 		<div class="form-group">
+			<label>Space Name</label>
+			{{focus-input id="space-name" type="text" value=spaceName class=(if hasNameError 'form-control is-invalid' 'form-control') placeholder="Space name" autocomplete="off"}}
+		</div>
+
+		<div class="form-group">
 			<label>Space Type</label>
 			{{ui-select id="spacetypes-dropdown" content=spaceTypeOptions optionValuePath="id" optionLabelPath="label" selection=spaceType action=(action 'onSetSpaceType')}}
+			<small class="form-text text-muted">Who can see this space?</small>
 		</div>
 
 		<div class="form-group">

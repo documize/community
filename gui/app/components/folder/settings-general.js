@@ -13,6 +13,7 @@ import { A } from '@ember/array';
 import { inject as service } from '@ember/service';
 import { schedule } from '@ember/runloop';
 import { computed } from '@ember/object';
+import { empty } from '@ember/object/computed';
 import AuthMixin from '../../mixins/auth';
 import Notifier from '../../mixins/notifier';
 import Component from '@ember/component';
@@ -26,6 +27,8 @@ export default Component.extend(AuthMixin, Notifier, {
 		return this.get('permissions.spaceOwner') || this.get('permissions.spaceManage');
 	}),
 
+	spaceName: '',
+	hasNameError: empty('spaceName'),
 	spaceTypeOptions: A([]),
 	spaceType: 0,
 	likes: '',
@@ -51,6 +54,8 @@ export default Component.extend(AuthMixin, Notifier, {
 		} else {
 			this.set('likes', 'Did this help you?');
 		}
+
+		this.set('spaceName', this.get('space.name'));
 	},
 
 	actions: {
@@ -74,6 +79,10 @@ export default Component.extend(AuthMixin, Notifier, {
 
 			let allowLikes = this.get('allowLikes');
 			space.set('likes', allowLikes ? this.get('likes') : '');
+
+			let spaceName = this.get('spaceName').trim();
+			if (spaceName.length === 0) return;
+			space.set('name', spaceName);
 
 			this.showWait();
 
