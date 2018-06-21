@@ -33,11 +33,6 @@
 	{{ui/ui-list-picker items=categories nameField='category' singleSelect=false}}
 	{{#unless selectedCategories}}
 		<p class="text-danger">This space has no categories defined yet.</p>
-		{{#if canAddCategory}}
-			<p>
-				{{#link-to 'folder.category' space.id space.slug class="btn btn-secondary font-weight-bold"}}Manage categories{{/link-to}}
-			</p>
-		{{/if}}
 	{{/unless}}
 
 	<button type="submit" class="btn btn-success text-uppercase font-weight-bold mt-5" {{action "onSave"}}>Save</button>

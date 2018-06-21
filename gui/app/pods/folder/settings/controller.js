@@ -24,10 +24,6 @@ export default Controller.extend(NotifierMixin, {
 			this.set('tab', view);
 		},
 
-		onCategories() {
-			this.get('router').transitionTo('folder.category');
-		},
-
 		onRefresh() {
 			this.get('target._routerMicrolib').refresh();
 		}
