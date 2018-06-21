@@ -1,6 +1,6 @@
 {
 	"name": "documize",
-	"version": "1.65.2",
+	"version": "1.65.3",
 	"description": "The Document IDE",
 	"private": true,
 	"repository": "",
@@ -45,6 +45,7 @@
 		"ember-simple-auth": "^1.4.0",
 		"ember-source": "3.1.2",
 		"ember-truth-helpers": "^2.0.0",
+		"eslint": "^4.19.1",
 		"eslint-plugin-ember": "^5.0.0",
 		"loader.js": "^4.2.3"
 	},

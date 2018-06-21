@@ -72,6 +72,19 @@ $input-focus-border-color:	$color-stroke;
 $input-btn-focus-width:     .2rem;
 $input-btn-focus-color:     rgba($color-primary, .25);
 
+// form labels
+.form-group {
+	> label {
+		color: $color-dark;
+		font-size: 1.2rem;
+		font-weight: 500;
+	}
+
+	> small {
+		font-size: 1rem;
+	}
+}
+
 // links
 $link-color:                $color-link;
 $link-decoration:           none;
