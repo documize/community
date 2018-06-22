@@ -151,7 +151,7 @@ func (s Scope) DeleteContent(ctx domain.RequestContext, pageID string) (err erro
 }
 
 // Documents searches the documents that the client is allowed to see, using the keywords search string, then audits that search.
-// Visible documents include both those in the client's own organisation and those that are public, or whose visibility includes the client.
+// Visible documents include both those in the client's own organization and those that are public, or whose visibility includes the client.
 func (s Scope) Documents(ctx domain.RequestContext, q search.QueryOptions) (results []search.QueryResult, err error) {
 	q.Keywords = strings.TrimSpace(q.Keywords)
 	if len(q.Keywords) == 0 {

@@ -418,6 +418,7 @@ func (h *Handler) SearchDocuments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get search criteria.
 	options := search.QueryOptions{}
 	err = json.Unmarshal(body, &options)
 	if err != nil {
@@ -425,24 +426,30 @@ func (h *Handler) SearchDocuments(w http.ResponseWriter, r *http.Request) {
 		h.Runtime.Log.Error(method, err)
 		return
 	}
-
 	options.Keywords = strings.TrimSpace(options.Keywords)
 
+	// Get documents for search criteria.
 	results, err := h.Store.Search.Documents(ctx, options)
 	if err != nil {
 		h.Runtime.Log.Error(method, err)
 	}
 
-	// Put in slugs for easy UI display of search URL
+	// Generate slugs for search URL.
 	for key, result := range results {
 		results[key].DocumentSlug = stringutil.MakeSlug(result.Document)
 		results[key].SpaceSlug = stringutil.MakeSlug(result.Space)
 	}
 
-	// Record user search history
+	// Remove documents that cannot be seen due to lack of
+	// category view/access permission.
+	cats, err := h.Store.Category.GetByOrg(ctx, ctx.UserID)
+	members, err := h.Store.Category.GetOrgCategoryMembership(ctx, ctx.UserID)
+	filtered := indexer.FilterCategoryProtected(results, cats, members)
+
+	// Record user search history.
 	if !options.SkipLog {
-		if len(results) > 0 {
-			go h.recordSearchActivity(ctx, results, options.Keywords)
+		if len(filtered) > 0 {
+			go h.recordSearchActivity(ctx, filtered, options.Keywords)
 		} else {
 			ctx.Transaction, err = h.Runtime.Db.Beginx()
 			if err != nil {
@@ -468,7 +475,7 @@ func (h *Handler) SearchDocuments(w http.ResponseWriter, r *http.Request) {
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSearch)
 
-	response.WriteJSON(w, results)
+	response.WriteJSON(w, filtered)
 }
 
 // Record search request once per document.
