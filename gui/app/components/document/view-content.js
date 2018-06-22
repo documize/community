@@ -53,7 +53,7 @@ export default Component.extend(TooltipMixin, Notifier, {
 			this.renderTooltips();
 		}
 
-		this.jumpToSection();
+		this.jumpToSection(this.get('currentPageId'));
 	},
 
 	willDestroyElement() {
@@ -80,9 +80,7 @@ export default Component.extend(TooltipMixin, Notifier, {
 					link.orphan = true;
 				} else {
 					if (link.linkType === "section") {
-						self.get('currentPageId', link.targetId)
-						self.jumpToSection();
-						// self.get('browser').scrollTo(`#page-${link.targetId}`);
+						self.jumpToSection(link.targetId);
 					}
 				}
 			}
@@ -99,8 +97,7 @@ export default Component.extend(TooltipMixin, Notifier, {
 		});
 	},
 
-	jumpToSection() {
-		let cp = this.get('currentPageId');
+	jumpToSection(cp) {
 		if (is.not.empty(cp) && is.not.undefined(cp) && is.not.null(cp)) {
 			this.get('browser').scrollTo(`#page-${cp}`)
 		}
