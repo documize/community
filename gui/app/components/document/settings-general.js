@@ -10,7 +10,6 @@
 // https://documize.com
 
 import { empty } from '@ember/object/computed';
-import { computed } from '@ember/object';
 import { inject as service } from '@ember/service';
 import Notifier from '../../mixins/notifier';
 import Component from '@ember/component';
@@ -20,31 +19,6 @@ export default Component.extend(Notifier, {
 	docName: '',
 	docExcerpt: '',
 	hasNameError: empty('docName'),
-
-	noEdits: computed('permssions', 'document', function() {
-		let constants = this.get('constants');
-		let permissions = this.get('permissions');
-
-		if (!permissions.get('documentEdit')) {
-			return true;
-		}
-
-		if (!permissions.get('documentApprove') && this.get('document.protection') === constants.ProtectionType.Review) {
-			return true;
-		}
-
-		if (this.get('document.protection') === constants.ProtectionType.Lock) {
-			return true;
-		}
-
-		return false;
-	}),
-
-	keyUp(e) {
-		if (e.keyCode === 27) { // escape key
-			this.send('onCancel');
-		}
-	},
 
 	didReceiveAttrs() {
 		this._super(...arguments);
