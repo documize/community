@@ -14,8 +14,10 @@ package search
 import (
 	"github.com/documize/community/domain"
 	"github.com/documize/community/model/attachment"
+	"github.com/documize/community/model/category"
 	"github.com/documize/community/model/doc"
 	"github.com/documize/community/model/page"
+	sm "github.com/documize/community/model/search"
 )
 
 // IndexDocument adds search indesd entries for document inserting title, tags and attachments as
@@ -102,4 +104,35 @@ func (m *Indexer) DeleteContent(ctx domain.RequestContext, pageID string) {
 	}
 
 	ctx.Transaction.Commit()
+}
+
+// FilterCategoryProtected removes search results that cannot be seen by user
+// due to document cateogory viewing permissions.
+func FilterCategoryProtected(results []sm.QueryResult, cats []category.Category, members []category.Member) (filtered []sm.QueryResult) {
+	filtered = []sm.QueryResult{}
+
+	for _, result := range results {
+		hasCategory := false
+		canSeeCategory := false
+
+	OUTER:
+
+		for _, m := range members {
+			if m.DocumentID == result.DocumentID {
+				hasCategory = true
+				for _, cat := range cats {
+					if cat.RefID == m.CategoryID {
+						canSeeCategory = true
+						continue OUTER
+					}
+				}
+			}
+		}
+
+		if !hasCategory || canSeeCategory {
+			filtered = append(filtered, result)
+		}
+	}
+
+	return
 }

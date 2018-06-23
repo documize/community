@@ -81,6 +81,8 @@ type CategoryStorer interface {
 	GetSpaceCategoryMembership(ctx RequestContext, spaceID string) (c []category.Member, err error)
 	RemoveDocumentCategories(ctx RequestContext, documentID string) (rows int64, err error)
 	RemoveSpaceCategoryMemberships(ctx RequestContext, spaceID string) (rows int64, err error)
+	GetByOrg(ctx RequestContext, userID string) (c []category.Category, err error)
+	GetOrgCategoryMembership(ctx RequestContext, userID string) (c []category.Member, err error)
 }
 
 // PermissionStorer defines required methods for space/document permission management
