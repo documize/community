@@ -1,23 +1,5 @@
 <div class="content-zone">
-	<div class="explainer-header">Space and document permissions for both users and groups</div>
-	<p class="explainer-text">Space level permissions:</p>
-	<ul class="explainer-list">
-		<li>View &mdash; see content within this space</li>
-		<li>Manage &mdash; manage all aspects of space except deletion</li>
-		<li>Owner &mdash; manage and delete space</li>
-	</ul>
-	<p class="explainer-text">Document level permissions:</p>
-	<ul class="explainer-list explainer-gap">
-		<li>Create &mdash; create new documents</li>
-		<li>Edit &mdash; edit documents</li>
-		<li>Delete &mdash; delete documents</li>
-		<li>Move &mdash; move content between documents</li>
-		<li>Copy &mdash; copy content between documents</li>
-		<li>Templates &mdash; create, edit, delete document templates and content blocks</li>
-		<li>Approval &mdash; approve or reject content changes</li>
-		<li>Lifecycle &mdash; mark documents as Draft, Live or Archived</li>
-		<li>Versions &mdash; create versions of documents (baselining)</li>
-	</ul>
+	<div class="explainer-header">Space and document permissions</div>
 </div>
 
 <div class="container-fluid my-5">
@@ -110,3 +92,32 @@
 </div>
 
 <button type="button" class="btn btn-success my-3" onclick= {{action 'onSave'}}>Save</button>
+
+<div class="row my-3">
+	<div class="col-12 col-md-6">
+		<div class="content-zone">
+			<p class="explainer-text">Space permissions:</p>
+			<ul class="explainer-list">
+				<li>View &mdash; see content within this space</li>
+				<li>Manage &mdash; manage all aspects of space except deletion</li>
+				<li>Owner &mdash; manage and delete space</li>
+			</ul>
+		</div>
+	</div>
+	<div class="col-12 col-md-6">
+		<div class="content-zone">
+			<p class="explainer-text">Document permissions:</p>
+			<ul class="explainer-list explainer-gap">
+				<li>Create &mdash; create new documents</li>
+				<li>Edit &mdash; edit documents</li>
+				<li>Delete &mdash; delete documents</li>
+				<li>Move &mdash; move content between documents</li>
+				<li>Copy &mdash; copy content between documents</li>
+				<li>Templates &mdash; create, edit, delete document templates and content blocks</li>
+				<li>Approval &mdash; approve or reject content changes</li>
+				<li>Lifecycle &mdash; mark documents as Draft, Live or Archived</li>
+				<li>Versions &mdash; create versions of documents (baselining)</li>
+			</ul>
+		</div>
+	</div>
+</div>
