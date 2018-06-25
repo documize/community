@@ -30,21 +30,13 @@ export default Component.extend(Notifier, {
 	actions: {
 		onSave() {
 			if (this.get('hasNameError')) return;
-
-			let constants = this.get('constants');
+			if (!this.get('permissions.documentEdit')) return;
 
 			this.set('document.name', this.get('docName'));
 			this.set('document.excerpt', this.get('docExcerpt').trim());
 
-			let lifecycle = this.get('lifecycle.selected');
-			this.set('document.lifecycle', lifecycle);
-
 			let cb = this.get('onSaveDocument');
 			cb(this.get('document'));
-
-			if (lifecycle === constants.Lifecycle.Draft) {
-				this.get('activitySvc').clearChangeHistory(this.get('document.id'));
-			}
 		}
 	}
 });
