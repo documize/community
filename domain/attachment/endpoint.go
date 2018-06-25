@@ -41,8 +41,7 @@ type Handler struct {
 	Indexer indexer.Indexer
 }
 
-// Download is the end-point that responds to a request for a particular attachment
-// by sending the requested file to the client.
+// Download sends requested file to the client/browser.
 func (h *Handler) Download(w http.ResponseWriter, r *http.Request) {
 	method := "attachment.Download"
 	ctx := domain.GetRequestContext(r)
