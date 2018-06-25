@@ -22,12 +22,16 @@ export default Component.extend(Modals, Tooltips, {
 	documentService: service('document'),
 	sessionService: service('session'),
 	categoryService: service('category'),
+	router: service(),
 
 	contributorMsg: '',
 	approverMsg: '',
 	userChanges: notEmpty('contributorMsg'),
 	isApprover: computed('permissions', function() {
 		return this.get('permissions.documentApprove');
+	}),
+	isSpaceAdmin: computed('permissions', function() {
+		return this.get('permissions.spaceOwner') || this.get('permissions.spaceManage');
 	}),
 	changeControlMsg: computed('document.protection', function() {
 		let p = this.get('document.protection');
@@ -97,32 +101,45 @@ export default Component.extend(Modals, Tooltips, {
 	popovers() {
 		let constants = this.get('constants');
 
-		$('#document-lifecycle-popover').popover('dispose');
-		$('#document-protection-popover').popover('dispose');
+		if (this.get('permissions.documentLifecycle')) {
+			$('#document-lifecycle-popover').addClass('cursor-pointer');
+		} else {
+			$('#document-lifecycle-popover').popover('dispose');
+			$('#document-lifecycle-popover').removeClass('cursor-pointer');
 
-		$('#document-lifecycle-popover').popover({
-			html: true,
-			title: 'Lifecycle',
-			content: "<p>Draft &mdash; restricted visiblity and not searchable</p><p>Live &mdash; document visible to all</p><p>Archived &mdash; not visible or searchable</p>",
-			placement: 'top'
-		});
-
-		let ccMsg = `<p>${this.changeControlMsg}</p>`;
-
-		if (this.get('document.protection') ===  constants.ProtectionType.Review) {
-			ccMsg += '<ul>'
-			ccMsg += `<li>${this.approvalMsg}</li>`;
-			if (this.get('userChanges')) ccMsg += `<li>Your contributions: ${this.contributorMsg}</li>`;
-			if (this.get('isApprover') && this.get('approverMsg.length') > 0) ccMsg += `<li>${this.approverMsg}</li>`;
-			ccMsg += '</ul>'
+			$('#document-lifecycle-popover').popover({
+				html: true,
+				title: 'Lifecycle',
+				content: "<p>Draft &mdash; restricted visiblity and not searchable</p><p>Live &mdash; document visible to all</p><p>Archived &mdash; not visible or searchable</p>",
+				placement: 'top',
+				trigger: 'hover click'
+			});
 		}
 
-		$('#document-protection-popover').popover({
-			html: true,
-			title: 'Change Control',
-			content: ccMsg,
-			placement: 'top'
-		});
+		if (this.get('permissions.documentApprove')) {
+			$('#document-protection-popover').addClass('cursor-pointer');
+		} else {
+			$('#document-protection-popover').popover('dispose');
+			$('#document-protection-popover').removeClass('cursor-pointer');
+
+			let ccMsg = `<p>${this.changeControlMsg}</p>`;
+
+			if (this.get('document.protection') ===  constants.ProtectionType.Review) {
+				ccMsg += '<ul>'
+				ccMsg += `<li>${this.approvalMsg}</li>`;
+				if (this.get('userChanges')) ccMsg += `<li>Your contributions: ${this.contributorMsg}</li>`;
+				if (this.get('isApprover') && this.get('approverMsg.length') > 0) ccMsg += `<li>${this.approverMsg}</li>`;
+				ccMsg += '</ul>'
+			}
+
+			$('#document-protection-popover').popover({
+				html: true,
+				title: 'Change Control',
+				content: ccMsg,
+				placement: 'top',
+				trigger: 'hover click'
+			});
+		}
 	},
 
 	workflowStatus() {
@@ -187,6 +204,20 @@ export default Component.extend(Modals, Tooltips, {
 			this.get('router').transitionTo('document',
 				space.get('id'), space.get('slug'),
 				version.documentId, this.get('document.slug'));
+		},
+
+		onEditLifecycle() {
+			//no op
+		},
+
+		onEditProtection() {
+			//no op
+		},
+
+		onEditCategory() {
+			if (!this.get('permissions.spaceManage')) return;
+
+			this.get('router').transitionTo('document.settings', {queryParams: {tab: 'meta'}});
 		}
 	}
 });

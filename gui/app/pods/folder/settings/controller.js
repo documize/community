@@ -17,6 +17,7 @@ export default Controller.extend(NotifierMixin, {
 	router: service(),
 	folderService: service('folder'),
 	localStorage: service('localStorage'),
+	queryParams: ['tab'],
 	tab: 'general',
 
 	actions: {

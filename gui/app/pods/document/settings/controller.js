@@ -18,6 +18,7 @@ export default Controller.extend(Notifier, {
 	folderService: service('folder'),
 	documentService: service('document'),
 	localStorage: service('localStorage'),
+	queryParams: ['tab'],
 	tab: 'general',
 
 	actions: {

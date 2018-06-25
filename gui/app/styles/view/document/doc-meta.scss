@@ -24,7 +24,6 @@
 	background-color: $color-off-white;
 	font-weight: 800;
 	font-size: 1rem;
-	cursor: pointer;
 
 	&:hover {
 		color: $color-green;
@@ -50,7 +49,6 @@
 	color: $color-gray;
 	background-color: $color-off-white;
 	border: 2px solid $color-gray;
-	cursor: pointer;
 
 	&:hover {
 		color: $color-dark;
