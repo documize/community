@@ -90,6 +90,7 @@ type PermissionStorer interface {
 	AddPermission(ctx RequestContext, r permission.Permission) (err error)
 	AddPermissions(ctx RequestContext, r permission.Permission, actions ...permission.Action) (err error)
 	GetUserSpacePermissions(ctx RequestContext, spaceID string) (r []permission.Permission, err error)
+	GetSpacePermissionsForUser(ctx RequestContext, spaceID, userID string) (r []permission.Permission, err error)
 	GetSpacePermissions(ctx RequestContext, spaceID string) (r []permission.Permission, err error)
 	GetCategoryPermissions(ctx RequestContext, catID string) (r []permission.Permission, err error)
 	GetCategoryUsers(ctx RequestContext, catID string) (u []user.User, err error)

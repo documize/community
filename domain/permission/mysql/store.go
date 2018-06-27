@@ -85,6 +85,31 @@ func (s Scope) GetUserSpacePermissions(ctx domain.RequestContext, spaceID string
 	return
 }
 
+// GetSpacePermissionsForUser returns space permissions for specified user.
+func (s Scope) GetSpacePermissionsForUser(ctx domain.RequestContext, spaceID, userID string) (r []permission.Permission, err error) {
+	r = []permission.Permission{}
+
+	err = s.Runtime.Db.Select(&r, `
+		SELECT id, orgid, who, whoid, action, scope, location, refid
+			FROM permission
+			WHERE orgid=? AND location='space' AND refid=? AND who='user' AND (whoid=? OR whoid='0')
+		UNION ALL
+		SELECT p.id, p.orgid, p.who, p.whoid, p.action, p.scope, p.location, p.refid
+			FROM permission p
+			LEFT JOIN rolemember r ON p.whoid=r.roleid
+			WHERE p.orgid=? AND p.location='space' AND refid=? AND p.who='role' AND (r.userid=? OR r.userid='0')`,
+		ctx.OrgID, spaceID, userID, ctx.OrgID, spaceID, userID)
+
+	if err == sql.ErrNoRows {
+		err = nil
+	}
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("unable to execute select user permissions %s", userID))
+	}
+
+	return
+}
+
 // GetSpacePermissions returns space permissions for all users.
 // We do not filter by userID because we return permissions for all users.
 func (s Scope) GetSpacePermissions(ctx domain.RequestContext, spaceID string) (r []permission.Permission, err error) {

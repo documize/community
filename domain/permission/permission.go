@@ -203,9 +203,33 @@ func CanManageVersion(ctx domain.RequestContext, s domain.Store, spaceID string)
 	return false
 }
 
-// HasPermission returns if user can perform specified actions.
+// HasPermission returns if current user can perform specified actions.
 func HasPermission(ctx domain.RequestContext, s domain.Store, spaceID string, actions ...pm.Action) bool {
 	roles, err := s.Permission.GetUserSpacePermissions(ctx, spaceID)
+
+	if err == sql.ErrNoRows {
+		err = nil
+	}
+	if err != nil {
+		return false
+	}
+
+	for _, role := range roles {
+		if role.RefID == spaceID && role.Location == pm.LocationSpace && role.Scope == pm.ScopeRow {
+			for _, a := range actions {
+				if role.Action == a {
+					return true
+				}
+			}
+		}
+	}
+
+	return false
+}
+
+// CheckPermission returns if specified user can perform specified actions.
+func CheckPermission(ctx domain.RequestContext, s domain.Store, spaceID string, userID string, actions ...pm.Action) bool {
+	roles, err := s.Permission.GetSpacePermissionsForUser(ctx, spaceID, userID)
 
 	if err == sql.ErrNoRows {
 		err = nil
