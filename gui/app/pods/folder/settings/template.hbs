@@ -21,10 +21,6 @@
 			{{folder/settings-permissions permissions=model.permissions folders=model.folders folder=model.folder onRefresh=(action 'onRefresh')}}
 		{{/if}}
 
-		{{#if (eq tab 'invitations')}}
-			{{folder/settings-invitations permissions=model.permissions space=model.folder}}
-		{{/if}}
-
 		{{#if (eq tab 'templates')}}
 			{{folder/settings-templates permissions=model.permissions space=model.folder templates=model.templates}}
 		{{/if}}
@@ -42,8 +38,7 @@
 		<div id="sidebar" class="sidebar">
 			<ul class="tabnav-control tabnav-control-centered w-75">
 				<li class="tab tab-vertical {{if (eq tab 'general') 'selected'}}" {{action 'onTab' 'general'}}>Options</li>
-				<li class="tab tab-vertical {{if (eq tab 'permissions') 'selected'}}" {{action 'onTab' 'permissions'}}>Permissions</li>
-				<li class="tab tab-vertical {{if (eq tab 'invitations') 'selected'}}" {{action 'onTab' 'invitations'}}>Invite Users</li>
+				<li class="tab tab-vertical {{if (eq tab 'permissions') 'selected'}}" {{action 'onTab' 'permissions'}}>User Permissions</li>
 				<li class="tab tab-vertical {{if (eq tab 'templates') 'selected'}}" {{action 'onTab' 'templates'}}>Document Templates</li>
 				<li class="tab tab-vertical {{if (eq tab 'blocks') 'selected'}}" {{action 'onTab' 'blocks'}}>Content Blocks</li>
 				<li class="tab tab-vertical {{if (eq tab 'categories') 'selected'}}" {{action 'onTab' 'categories'}}>Categories</li>

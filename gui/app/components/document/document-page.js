@@ -41,7 +41,7 @@ export default Component.extend(TooltipMixin, {
 		onSavePage(page, meta) {
 			let constants = this.get('constants');
 
-			if (this.get('document.protection') === constants.ProtectionType.Review) {			
+			if (this.get('document.protection') === constants.ProtectionType.Review) {
 				if (this.get('page.status') === constants.ChangeState.Published) {
 					page.set('relativeId', this.get('page.id'));
 				}

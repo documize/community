@@ -1,22 +1,12 @@
 <div class="content-zone">
-	<div class="explainer-header">Space and document permissions</div>
+	<div class="explainer-header">Who can see this space and perform actions</div>
 </div>
 
-<div class="container-fluid my-5">
+<div class="container-fluid my-3">
 	<div class="row justify-content-center">
-		<div class="col-6">
-			<div class="form-group">
-				{{focus-input id="user-search" type="text" class="form-control mousetrap" placeholder="Search for users by firstname, lastname, email" value=searchText key-up=(action 'onSearch')}}
-			</div>
-			{{#each filteredUsers as |user|}}
-				<div class="row my-3">
-					<div class="col-10">{{user.fullname}}</div>
-					<div class="col-2 text-right">
-						<button class="btn btn-primary" {{action 'onAdd' user}}>Add</button>
-					</div>
-				</div>
-			{{/each}}
-		</div>
+		<button type="button" class="btn btn-info font-weight-bold text-uppercase my-3" onclick={{action 'onShowAddModal'}}>Add existing users</button>
+		&nbsp;&nbsp;
+		<button type="button" class="btn btn-info font-weight-bold text-uppercase my-3" onclick={{action 'onShowInviteModal'}}>Invite new users</button>
 	</div>
 </div>
 
@@ -25,14 +15,14 @@
 		<thead>
 			<tr>
 				<th></th>
-				<th colspan="3">Spaces</th>
+				<th colspan="3" class="text-warning">Spaces</th>
 				<th colspan="9" class="text-info">Documents</th>
 			</tr>
 			<tr>
 				<th></th>
-				<th>View</th>
-				<th>Manage</th>
-				<th>Owner</th>
+				<th class="text-warning">View</th>
+				<th class="text-warning">Manage</th>
+				<th class="text-warning">Owner</th>
 				<th class="text-info">Create</th>
 				<th class="text-info">Edit</th>
 				<th class="text-info">Delete</th>
@@ -47,7 +37,16 @@
 		<tbody>
 			{{#each spacePermissions as |permission|}}
 				<tr>
-					<td>
+					<td class="no-wrap no-width">
+						<i class="material-icons align-top text-secondary cursor-pointer" data-toggle="dropdown" aria-haspopup="true"
+							 aria-expanded="false">
+							 more_vert
+						</i>
+						<div class="dropdown-menu dropdown-menu-left" aria-labelledby="permission-dropdown-{{permission.whoId}}">
+							<a class="dropdown-item" href="#" {{action 'onBulkPermission' permission true}}>Grant all</a>
+							<a class="dropdown-item" href="#" {{action 'onBulkPermission' permission false}}>Revoke all</a>
+						</div>
+
 						{{#if (eq permission.who "role")}}
 							<span class="button-icon-blue button-icon-small align-middle">
 								<i class="material-icons">people</i>
@@ -73,25 +72,25 @@
 							{{/if}}
 						{{/if}}
 					</td>
-					<td>{{input type="checkbox" id=(concat 'space-role-view-' permission.whoId) checked=permission.spaceView}}</td>
-					<td>{{input type="checkbox" id=(concat 'space-role-manage-' permission.whoId) checked=permission.spaceManage}}</td>
-					<td>{{input type="checkbox" id=(concat 'space-role-owner-' permission.whoId) checked=permission.spaceOwner}}</td>
-					<td>{{input type="checkbox" id=(concat 'doc-role-add-' permission.whoId) checked=permission.documentAdd}}</td>
-					<td>{{input type="checkbox" id=(concat 'doc-role-edit-' permission.whoId) checked=permission.documentEdit}}</td>
-					<td>{{input type="checkbox" id=(concat 'doc-role-delete-' permission.whoId) checked=permission.documentDelete}}</td>
-					<td>{{input type="checkbox" id=(concat 'doc-role-move-' permission.whoId) checked=permission.documentMove}}</td>
-					<td>{{input type="checkbox" id=(concat 'doc-role-copy-' permission.whoId) checked=permission.documentCopy}}</td>
-					<td>{{input type="checkbox" id=(concat 'doc-role-template-' permission.whoId) checked=permission.documentTemplate}}</td>
-					<td>{{input type="checkbox" id=(concat 'doc-role-approve-' permission.whoId) checked=permission.documentApprove}}</td>
-					<td>{{input type="checkbox" id=(concat 'doc-role-lifecycle-' permission.whoId) checked=permission.documentLifecycle}}</td>
-					<td>{{input type="checkbox" id=(concat 'doc-role-version-' permission.whoId) checked=permission.documentVersion}}</td>
+					<td>{{x-toggle value=permission.spaceView onToggle=(action (mut permission.spaceView))}}</td>
+					<td>{{x-toggle value=permission.spaceManage onToggle=(action (mut permission.spaceManage))}}</td>
+					<td>{{x-toggle value=permission.spaceOwner onToggle=(action (mut permission.spaceOwner))}}</td>
+					<td>{{x-toggle value=permission.documentAdd onToggle=(action (mut permission.spacdocumentAddView))}}</td>
+					<td>{{x-toggle value=permission.documentEdit onToggle=(action (mut permission.documentEdit))}}</td>
+					<td>{{x-toggle value=permission.documentDelete onToggle=(action (mut permission.documentDelete))}}</td>
+					<td>{{x-toggle value=permission.documentMove onToggle=(action (mut permission.documentMove))}}</td>
+					<td>{{x-toggle value=permission.documentCopy onToggle=(action (mut permission.documentCopy))}}</td>
+					<td>{{x-toggle value=permission.documentTemplate onToggle=(action (mut permission.documentTemplate))}}</td>
+					<td>{{x-toggle value=permission.documentApprove onToggle=(action (mut permission.documentApprove))}}</td>
+					<td>{{x-toggle value=permission.documentLifecycle onToggle=(action (mut permission.documentLifecycle))}}</td>
+					<td>{{x-toggle value=permission.documentVersion onToggle=(action (mut permission.documentVersion))}}</td>
 				</tr>
 			{{/each}}
 		</tbody>
 	</table>
 </div>
 
-<button type="button" class="btn btn-success my-3" onclick= {{action 'onSave'}}>Save</button>
+<button type="button" class="btn btn-success font-weight-bold text-uppercase my-3" onclick={{action 'onSave'}}>SAVE</button>
 
 <div class="row my-3">
 	<div class="col-12 col-md-6">
@@ -118,6 +117,54 @@
 				<li>Lifecycle &mdash; mark documents as Draft, Live or Archived</li>
 				<li>Versions &mdash; create versions of documents (baselining)</li>
 			</ul>
+		</div>
+	</div>
+</div>
+
+<div id="space-add-user-modal" class="modal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">Space Deletion</div>
+			<div class="modal-body">
+				{{input id="user-search" type="text" class="form-control mousetrap" placeholder="Search for users by firstname, lastname, email" value=searchText key-up=(action 'onSearch')}}
+				{{#each filteredUsers as |user|}}
+					<div class="row my-3">
+						<div class="col-10">{{user.fullname}}</div>
+						<div class="col-2 text-right">
+							<button class="btn btn-success" {{action 'onAdd' user}}>Add</button>
+						</div>
+					</div>
+				{{/each}}
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="space-invite-user-modal" class="modal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">Invite Users to Space</div>
+			<div class="modal-body">
+				<p>Email invite leads to a smooth onboarding process</p>
+				<form onsubmit={{action 'onSpaceInvite'}}>
+					<div class="form-group">
+						<label for="space-invite-email">Email</label>
+						{{input id="space-invite-email" type='email' class="form-control mousetrap" placeholder="Enter email" value=inviteEmail}}
+						<small class="form-text text-muted">Comma separate multiple email addresses</small>
+					</div>
+					<div class="form-group">
+						<label for="space-invite-msg">Message</label>
+						{{textarea id="space-invite-msg" value=inviteMessage class="form-control" rows="5"}}
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-success" onclick={{action 'onSpaceInvite'}}>Invite</button>
+			</div>
 		</div>
 	</div>
 </div>

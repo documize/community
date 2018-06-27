@@ -22,7 +22,7 @@
 <div class="d-sm-inline-block margin-left-20" />
 
 {{#each selectedCategories as |cat|}}
-	<div class="document-category {{if isSpaceAdmin 'cursor-pointer'}}" data-toggle="tooltip" data-placement="top" title="Category">
+	<div class="document-category {{if isSpaceAdmin 'cursor-pointer'}}" data-toggle="tooltip" data-placement="top" title="Category" {{action 'onEditCategory'}}>
 		{{cat.category}}
 	</div>
 {{/each}}
@@ -36,7 +36,7 @@
 {{/each}}
 
 <div class="document-meta">
-	{{document/view-attachment document=document permissions=permissions {{action 'onEditCategory'}}}}
+	{{document/view-attachment document=document permissions=permissions}}
 </div>
 
 <div class="margin-top-70" />

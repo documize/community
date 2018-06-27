@@ -35,6 +35,16 @@ module.exports = function (environment) {
 			routeAfterAuthentication: 'folders',
 			routeIfAlreadyAuthenticated: 'folders'
 		},
+		'ember-toggle': {
+			includedThemes: ['light', 'ios', 'flip'],
+			excludedThemes: ['skewed'],
+			excludeBaseStyles: false,
+			defaultShowLabels: false,
+			defaultTheme: 'ios',
+			defaultSize: 'small',
+			defaultOffLabel: 'Off',
+			defaultOnLabel: 'On'
+		},
 		APP: {
 		}
 	};

@@ -14,10 +14,11 @@ import { A } from '@ember/array';
 import { debounce } from '@ember/runloop';
 import { computed } from '@ember/object';
 import Notifier from '../../mixins/notifier';
+import Modals from '../../mixins/modal';
 import stringUtil from '../../utils/string';
 import Component from '@ember/component';
 
-export default Component.extend(Notifier, {
+export default Component.extend(Notifier, Modals, {
 	groupSvc: service('group'),
 	spaceSvc: service('folder'),
 	userSvc: service('user'),
@@ -27,6 +28,8 @@ export default Component.extend(Notifier, {
 	spacePermissions: null,
 	users: null,
 	searchText: '',
+	inviteEmail: '',
+	inviteMessage: '',
 
 	isSpaceAdmin: computed('permissions', function() {
 		return this.get('permissions.spaceOwner') || this.get('permissions.spaceManage');
@@ -82,6 +85,10 @@ export default Component.extend(Notifier, {
 		});
 
 		this.set('searchText', '');
+
+		if (this.get('inviteMessage').length === 0) {
+			this.set('inviteMessage', this.getDefaultInvitationMessage());
+		}
 	},
 
 	permissionRecord(who, whoId, name) {
@@ -118,8 +125,9 @@ export default Component.extend(Notifier, {
 		let spacePermissions = this.get('spacePermissions');
 		let filteredUsers = A([]);
 
-		this.get('userSvc').matchUsers(s).then((users) => {
+		this.showWait();
 
+		this.get('userSvc').matchUsers(s).then((users) => {
 			users.forEach((user) => {
 				let exists = spacePermissions.findBy('whoId', user.get('id'));
 
@@ -129,10 +137,19 @@ export default Component.extend(Notifier, {
 			});
 
 			this.set('filteredUsers', filteredUsers);
+			this.showDone();
 		});
 	},
 
 	actions: {
+		onShowInviteModal() {
+			this.modalOpen("#space-invite-user-modal", {"show": true}, '#space-invite-email');
+		},
+
+		onShowAddModal() {
+			this.modalOpen("#space-add-user-modal", {"show": true}, '#user-search');
+		},
+
 		onSave() {
 			if (!this.get('isSpaceAdmin')) return;
 
@@ -195,11 +212,77 @@ export default Component.extend(Notifier, {
 			let spacePermissions = this.get('spacePermissions');
 			let constants = this.get('constants');
 
+			this.showWait();
+
 			let exists = spacePermissions.findBy('whoId', user.get('id'));
+
 			if (is.undefined(exists)) {
 				spacePermissions.pushObject(this.permissionRecord(constants.WhoType.User, user.get('id'), user.get('fullname')));
 				this.set('spacePermissions', spacePermissions);
+				this.send('onSearch');
 			}
+
+			this.showDone();
 		},
+
+		onSpaceInvite(e) {
+			e.preventDefault();
+
+			var email = this.get('inviteEmail').trim().replace(/ /g, '');
+			var message = this.get('inviteMessage').trim();
+
+			if (message.length === 0) {
+				this.set('inviteMessage', this.getDefaultInvitationMessage());
+				message = this.getDefaultInvitationMessage();
+			}
+
+			if (email.length === 0) {
+				this.$('#space-invite-email').addClass('is-invalid').focus();
+				return;
+			}
+
+			this.showWait();
+
+			var result = {
+				Message: message,
+				Recipients: []
+			};
+
+			// Check for multiple email addresses
+			if (email.indexOf(",") > -1) {
+				result.Recipients = email.split(',');
+			}
+			if (email.indexOf(";") > -1 && result.Recipients.length === 0) {
+				result.Recipients = email.split(';');
+			}
+
+			// Handle just one email address
+			if (result.Recipients.length === 0 && email.length > 0) {
+				result.Recipients.push(email);
+			}
+
+			this.set('inviteEmail', '');
+
+			this.get('spaceSvc').share(this.get('folder.id'), result).then(() => {
+				this.showDone();
+				this.$('#space-invite-email').removeClass('is-invalid');
+				this.modalClose("#space-invite-user-modal");
+			});
+		},
+
+		onBulkPermission(p, state) {
+			p.set('spaceView', state);
+			p.set('spaceManage', state);
+			p.set('spaceOwner', state);
+			p.set('documentAdd', state);
+			p.set('documentEdit', state);
+			p.set('documentDelete', state);
+			p.set('documentMove', state);
+			p.set('documentCopy', state);
+			p.set('documentTemplate', state);
+			p.set('documentApprove', state);
+			p.set('documentLifecycle', state);
+			p.set('documentVersion', state);
+		}
 	}
 });
