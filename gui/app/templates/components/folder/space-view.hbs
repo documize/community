@@ -4,7 +4,7 @@
 		<li class="tab tab-vertical {{if spaceSelected 'selected'}}" {{action 'onDocumentFilter' 'space' space.id}}>All ({{documents.length}})</li>
 		{{#if hasCategories}}
 			{{#if (gt rootDocCount 0)}}
-				<li class="tab tab-vertical {{if uncategorizedSelected 'selected'}}" {{action 'onDocumentFilter' 'uncategorized' space.id}}>Uncategorized ({{rootDocCount}})</li>
+				<li class="tab tab-vertical text-truncate {{if uncategorizedSelected 'selected'}}" {{action 'onDocumentFilter' 'uncategorized' space.id}}>Uncategorized ({{rootDocCount}})</li>
 			{{/if}}
 		{{/if}}
 	</ul>
@@ -23,7 +23,7 @@
 	</div>
 	<ul class="tabnav-control tabnav-control-centered w-75">
 		{{#each categories as |cat index|}}
-			<li class="tab tab-vertical {{if cat.selected 'selected'}}" {{action 'onDocumentFilter' 'category' cat.id}}>{{cat.category}} ({{cat.docCount}})</li>
+			<li class="tab tab-vertical text-truncate {{if cat.selected 'selected'}}" {{action 'onDocumentFilter' 'category' cat.id}}>{{cat.category}} ({{cat.docCount}})</li>
 		{{/each}}
 	</ul>
 

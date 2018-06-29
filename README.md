@@ -58,9 +58,9 @@ Space view.
 
 ## Latest version
 
-[Community edition: v1.65.4](https://github.com/documize/community/releases)
+[Community edition: v1.66.0](https://github.com/documize/community/releases)
 
-[Enterprise edition: v1.67.4](https://documize.com/downloads)
+[Enterprise edition: v1.68.0](https://documize.com/downloads)
 
 ## OS support
 
@@ -69,6 +69,16 @@ Documize runs on the following:
 - Linux
 - Windows
 - macOS
+
+# Browser support
+
+Documize supports the following (evergreen) browsers:
+
+- Chrome
+- Firefox
+- Safari
+- Brave
+- MS Edge (16+)
 
 ## Technology stack
 
