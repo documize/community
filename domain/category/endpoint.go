@@ -18,6 +18,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"strings"
 
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/request"
@@ -70,6 +71,12 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
 		return
+	}
+
+	// Category max length 30.
+	cat.Category = strings.TrimSpace(cat.Category)
+	if len(cat.Category) > 30 {
+		cat.Category = cat.Category[:30]
 	}
 
 	err = h.Store.Category.Add(ctx, cat)
