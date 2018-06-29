@@ -207,11 +207,9 @@ export default Component.extend(Modals, Tooltips, {
 		},
 
 		onEditLifecycle() {
-			//no op
 		},
 
 		onEditProtection() {
-			//no op
 		},
 
 		onEditCategory() {

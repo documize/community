@@ -132,3 +132,22 @@ footer {
 		bottom: auto;
 	}
 }
+
+/**
+ * Conditional CSS for Edge 12+.
+ * @link: https://jeffclayton.wordpress.com/2015/04/07/css-hacks-for-windows-10-and-spartan-browser-preview/
+ */
+ @supports (-ms-ime-align:auto) {
+	// For IE/Edge footer must be at bottom as sticky/flex is not quite supported.
+	.layout-footer, footer {
+		position: relative !important;
+	}
+}
+
+/**
+ * Conditional CSS for IE 8+ (and old Firefox 1.x).
+ * @link: https://jeffclayton.wordpress.com/2015/04/07/css-hacks-for-windows-10-and-spartan-browser-preview/
+ */
+@media screen\0 {
+	/* Conditional IE styles */
+}
