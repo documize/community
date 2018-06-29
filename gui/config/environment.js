@@ -12,7 +12,6 @@
 /* jshint node: true */
 
 module.exports = function (environment) {
-
 	var ENV = {
 		modulePrefix: 'documize',
 		podModulePrefix: 'documize/pods',
@@ -94,7 +93,7 @@ module.exports = function (environment) {
 
 	process.argv.forEach(function (element) {
 		if (element !== undefined) {
-			if (element.startsWith("apiHost=")) {
+			if (element.indexOf('apiHost=') === 0) {
 				element = element.replace("apiHost=", "");
 				ENV.apiHost = element;
 			}

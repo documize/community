@@ -39,7 +39,7 @@ export default AjaxService.extend({
 			let appVersion = headers['x-documize-version'];
 
 			// when unauthorized on local API AJAX calls, redirect to app root
-			if (status === 401 && is.not.undefined(appVersion) && is.not.includes(window.location.href, '/auth')) {
+			if (status === 401 && is.not.undefined(appVersion) && is.not.include(window.location.href, '/auth')) {
 				this.get('localStorage').clearAll();
 				window.location.href = 'auth/login';
 			}

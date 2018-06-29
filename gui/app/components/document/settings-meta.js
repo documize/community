@@ -147,15 +147,15 @@ export default Component.extend(Notifier, {
 			let tag3 = this.get("tag3").toLowerCase().trim();
 			let save = "#";
 
-			if (tag1.startsWith('-')) {
+			if (is.startWith(tag1, '-')) {
 				$('#add-tag-field1').addClass('is-invalid');
 				return;
 			}
-			if (tag2.startsWith('-')) {
+			if (is.startWith(tag2, '-')) {
 				$('#add-tag-field2').addClass('is-invalid');
 				return;
 			}
-			if (tag3.startsWith('-')) {
+			if (is.startWith(tag3, '-')) {
 				$('#add-tag-field3').addClass('is-invalid');
 				return;
 			}
