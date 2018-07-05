@@ -11,7 +11,6 @@
 
 import Model from 'ember-data/model';
 import attr from 'ember-data/attr';
-// import { belongsTo, hasMany } from 'ember-data/relationships';
 
 export default Model.extend({
 	title: attr('string'),
@@ -19,6 +18,7 @@ export default Model.extend({
 	email: attr('string'),
 	conversionEndpoint: attr('string'),
 	allowAnonymousAccess: attr('boolean', { defaultValue: false }),
+	maxTags: attr('number', {defaultValue: 3}),
 	created: attr(),
 	revised: attr()
 });

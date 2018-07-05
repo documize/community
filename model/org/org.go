@@ -26,6 +26,7 @@ type Organization struct {
 	AuthProvider         string `json:"authProvider"`
 	AuthConfig           string `json:"authConfig"`
 	ConversionEndpoint   string `json:"conversionEndpoint"`
+	MaxTags              int    `json:"maxTags"`
 	Serial               string `json:"-"`
 	Active               bool   `json:"-"`
 }

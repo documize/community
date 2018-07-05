@@ -32,6 +32,7 @@ type SiteMeta struct {
 	AuthProvider         string `json:"authProvider"`
 	AuthConfig           string `json:"authConfig"`
 	Version              string `json:"version"`
+	MaxTags              int    `json:"maxTags"`
 	Edition              string `json:"edition"`
 	Valid                bool   `json:"valid"`
 	ConversionEndpoint   string `json:"conversionEndpoint"`

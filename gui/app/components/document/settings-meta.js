@@ -18,9 +18,11 @@ import Notifier from '../../mixins/notifier';
 import Component from '@ember/component';
 
 export default Component.extend(Notifier, {
+	appMeta: service(),
 	documentSvc: service('document'),
 	categoryService: service('category'),
 
+	tagz: A([]),
 	categories: A([]),
 	newCategory: '',
 	showCategoryModal: false,
@@ -34,11 +36,6 @@ export default Component.extend(Notifier, {
 		return this.get('permissions.spaceOwner') || this.get('permissions.spaceManage');
 	}),
 
-	maxTags: 3,
-	tag1: '',
-	tag2: '',
-	tag3: '',
-
 	didReceiveAttrs() {
 		this._super(...arguments);
 		this.load();
@@ -48,7 +45,7 @@ export default Component.extend(Notifier, {
 		this._super(...arguments);
 
 		schedule('afterRender', () => {
-			$("#add-tag-field0").focus();
+			$("#add-tag-field-1").focus();
 
 			$(".tag-input").off("keydown").on("keydown", function(e) {
 				if (e.shiftKey && e.which === 9) {
@@ -59,7 +56,20 @@ export default Component.extend(Notifier, {
 					return false;
 				}
 
-				if (e.which === 9 || e.which === 13 || e.which === 16 || e.which === 45 || e.which === 189 || e.which === 8 || e.which === 127 || (e.which >= 65 && e.which <= 90) || (e.which >= 97 && e.which <= 122) || (e.which >= 48 && e.which <= 57)) {
+				if (e.which === 9 ||
+					e.which === 13 ||
+					e.which === 16 ||
+					e.which === 37 ||
+					e.which === 38 ||
+					e.which === 39 ||
+					e.which === 40 ||
+					e.which === 45 ||
+					e.which === 189 ||
+					e.which === 8 ||
+					e.which === 127 ||
+					(e.which >= 65 && e.which <= 90) ||
+					(e.which >= 97 && e.which <= 122) ||
+					(e.which >= 48 && e.which <= 57)) {
 					return true;
 				}
 
@@ -90,17 +100,27 @@ export default Component.extend(Notifier, {
 			});
 		});
 
+		let counter = 1;
+		let tagz = A([]);
+		let maxTags = this.get('appMeta.maxTags');
+
 		if (!_.isUndefined(this.get('document.tags')) && this.get('document.tags').length > 1) {
 			let tags = this.get('document.tags').split('#');
-			let counter = 1;
+
             _.each(tags, (tag) => {
 				tag = tag.trim();
-				if (tag.length > 0) {
-					this.set('tag' + counter, tag);
+				if (tag.length > 0 && counter <= maxTags) {
+					tagz.pushObject({number: counter, value: tag});
 					counter++;
 				}
 			});
 		}
+
+		for (let index = counter; index <= maxTags; index++) {
+			tagz.pushObject({number: index, value: ''});
+		}
+
+		this.set('tagz', tagz);
 	},
 
 	actions: {
@@ -142,27 +162,26 @@ export default Component.extend(Notifier, {
 				});
 			});
 
-			let tag1 = this.get("tag1").toLowerCase().trim();
-			let tag2 = this.get("tag2").toLowerCase().trim();
-			let tag3 = this.get("tag3").toLowerCase().trim();
+			let tagz = this.get('tagz');
+			let tagzToSave = [];
+
+			_.each(tagz, (t) => {
+				let tag = t.value.toLowerCase().trim();
+				if (tag.length> 0) {
+					if (!_.contains(tagzToSave, tag) && is.not.startWith(tag, '-')) {
+						tagzToSave.push(tag);
+						this.$('#add-tag-field-' + t.number).removeClass('is-invalid');
+					} else {
+						this.$('#add-tag-field-' + t.number).addClass('is-invalid');
+					}
+				}
+			});
+
 			let save = "#";
-
-			if (is.startWith(tag1, '-')) {
-				$('#add-tag-field1').addClass('is-invalid');
-				return;
-			}
-			if (is.startWith(tag2, '-')) {
-				$('#add-tag-field2').addClass('is-invalid');
-				return;
-			}
-			if (is.startWith(tag3, '-')) {
-				$('#add-tag-field3').addClass('is-invalid');
-				return;
-			}
-
-			(tag1.length > 0 ) ? save += (tag1 + "#") : this.set('tag1', '');
-			(tag2.length > 0 && tag2 !== tag1) ? save += (tag2 + "#") : this.set('tag2', '');
-			(tag3.length > 0 && tag3 !== tag1 && tag3 !== tag2) ? save += (tag3 + "#") : this.set('tag3', '');
+			_.each(tagzToSave, (t) => {
+				save += t;
+				save += '#';
+			});
 
 			let doc = this.get('document');
 			doc.set('tags', save);

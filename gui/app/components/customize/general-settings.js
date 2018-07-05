@@ -17,6 +17,7 @@ import Notifier from '../../mixins/notifier';
 import Component from '@ember/component';
 
 export default Component.extend(Notifier, {
+	maxTags: 3,
 	titleEmpty: empty('model.general.title'),
 	messageEmpty: empty('model.general.message'),
 	conversionEndpointEmpty: empty('model.general.conversionEndpoint'),
@@ -24,7 +25,19 @@ export default Component.extend(Notifier, {
 	hasMessageInputError: and('messageEmpty', 'messageError'),
 	hasConversionEndpointInputError: and('conversionEndpointEmpty', 'conversionEndpointError'),
 
+	didReceiveAttrs() {
+		this._super(...arguments);
+		this.set('maxTags', this.get('model.general.maxTags'));
+	},
+
 	actions: {
+		change() {
+            const selectEl = this.$('#maxTags')[0];
+            const selection = selectEl.selectedOptions[0].value;
+
+			this.set('maxTags', parseInt(selection));
+        },
+
 		save() {
 			if (isEmpty(this.get('model.general.title'))) {
 				set(this, 'titleError', true);
@@ -46,6 +59,7 @@ export default Component.extend(Notifier, {
 				this.set('model.general.conversionEndpoint', e.substring(0, e.length-1));
 			}
 
+			this.set('model.general.maxTags', this.get('maxTags'));
 			this.model.general.set('allowAnonymousAccess', $("#allowAnonymousAccess").prop('checked'));
 
 			this.showWait();

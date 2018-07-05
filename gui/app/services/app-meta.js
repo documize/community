@@ -29,7 +29,7 @@ export default Service.extend({
 	message: '',
 	edition: 'Community',
 	// for major.minor semver release detection
-	// for bugfix releases, only admin is made aware of new release and end users see no Whats New messaging
+	// for bugfix releases, only admin is made aware of new release and end users see no What's New messaging
 	updateAvailable: false,
 	valid: true,
 	allowAnonymousAccess: false,
@@ -37,6 +37,7 @@ export default Service.extend({
 	authConfig: null,
 	setupMode: false,
 	secureMode: false,
+	maxTags: 3,
 
 	invalidLicense() {
 		return this.valid === false;

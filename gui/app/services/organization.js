@@ -34,6 +34,7 @@ export default Service.extend({
 		this.get('appMeta').setProperties({
 			message: org.get('message'),
 			title: org.get('title'),
+			maxTags: org.get('maxTags'),
 			conversionEndpoint: org.get('conversionEndpoint')
 		});
 

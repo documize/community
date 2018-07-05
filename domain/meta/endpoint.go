@@ -54,6 +54,7 @@ func (h *Handler) Meta(w http.ResponseWriter, r *http.Request) {
 	data.AllowAnonymousAccess = org.AllowAnonymousAccess
 	data.AuthProvider = org.AuthProvider
 	data.AuthConfig = org.AuthConfig
+	data.MaxTags = org.MaxTags
 	data.Version = h.Runtime.Product.Version
 	data.Edition = h.Runtime.Product.License.Edition
 	data.Valid = h.Runtime.Product.License.Valid
