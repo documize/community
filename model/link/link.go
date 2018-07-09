@@ -24,6 +24,7 @@ type Link struct {
 	SourcePageID     string `json:"sourcePageId"`
 	TargetDocumentID string `json:"targetDocumentId"`
 	TargetID         string `json:"targetId"`
+	ExternalID       string `json:"externalId"`
 	Orphan           bool   `json:"orphan"`
 }
 

@@ -36,8 +36,8 @@ func (s Scope) Add(ctx domain.RequestContext, l link.Link) (err error) {
 	l.Created = time.Now().UTC()
 	l.Revised = time.Now().UTC()
 
-	_, err = ctx.Transaction.Exec("INSERT INTO link (refid, orgid, folderid, userid, sourcedocumentid, sourcepageid, targetdocumentid, targetid, linktype, orphan, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-		l.RefID, l.OrgID, l.FolderID, l.UserID, l.SourceDocumentID, l.SourcePageID, l.TargetDocumentID, l.TargetID, l.LinkType, l.Orphan, l.Created, l.Revised)
+	_, err = ctx.Transaction.Exec("INSERT INTO link (refid, orgid, folderid, userid, sourcedocumentid, sourcepageid, targetdocumentid, targetid, externalid, linktype, orphan, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		l.RefID, l.OrgID, l.FolderID, l.UserID, l.SourceDocumentID, l.SourcePageID, l.TargetDocumentID, l.TargetID, l.ExternalID, l.LinkType, l.Orphan, l.Created, l.Revised)
 
 	if err != nil {
 		err = errors.Wrap(err, "execute link insert")
@@ -49,7 +49,7 @@ func (s Scope) Add(ctx domain.RequestContext, l link.Link) (err error) {
 // GetDocumentOutboundLinks returns outbound links for specified document.
 func (s Scope) GetDocumentOutboundLinks(ctx domain.RequestContext, documentID string) (links []link.Link, err error) {
 	err = s.Runtime.Db.Select(&links,
-		`select l.refid, l.orgid, l.folderid, l.userid, l.sourcedocumentid, l.sourcepageid, l.targetdocumentid, l.targetid, l.linktype, l.orphan, l.created, l.revised
+		`select l.refid, l.orgid, l.folderid, l.userid, l.sourcedocumentid, l.sourcepageid, l.targetdocumentid, l.targetid, l.externalid, l.linktype, l.orphan, l.created, l.revised
 		FROM link l
 		WHERE l.orgid=? AND l.sourcedocumentid=?`,
 		ctx.OrgID,
@@ -70,7 +70,7 @@ func (s Scope) GetDocumentOutboundLinks(ctx domain.RequestContext, documentID st
 // GetPageLinks returns outbound links for specified page in document.
 func (s Scope) GetPageLinks(ctx domain.RequestContext, documentID, pageID string) (links []link.Link, err error) {
 	err = s.Runtime.Db.Select(&links,
-		`select l.refid, l.orgid, l.folderid, l.userid, l.sourcedocumentid, l.sourcepageid, l.targetdocumentid, l.targetid, l.linktype, l.orphan, l.created, l.revised
+		`select l.refid, l.orgid, l.folderid, l.userid, l.sourcedocumentid, l.sourcepageid, l.targetdocumentid, l.targetid, l.externalid, l.linktype, l.orphan, l.created, l.revised
 		FROM link l
 		WHERE l.orgid=? AND l.sourcedocumentid=? AND l.sourcepageid=?`,
 		ctx.OrgID,
@@ -159,12 +159,12 @@ func (s Scope) SearchCandidates(ctx domain.RequestContext, keywords string) (doc
 
 	err = s.Runtime.Db.Select(&temp, `
 		SELECT d.refid as documentid, d. labelid as folderid, d.title, l.label as context
-		FROM document d LEFT JOIN label l ON d.labelid=l.refid WHERE l.orgid=? AND `+likeQuery+` 
+		FROM document d LEFT JOIN label l ON d.labelid=l.refid WHERE l.orgid=? AND `+likeQuery+`
 		AND d.labelid IN
 		(
 			SELECT refid FROM label WHERE orgid=?
 			AND refid IN (SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid IN (
-				SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space' AND action='view' 
+				SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space' AND action='view'
 				UNION ALL
 				SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role'
 				AND p.location='space' AND p.action='view' AND (r.userid=? OR r.userid='0')
@@ -197,12 +197,12 @@ func (s Scope) SearchCandidates(ctx domain.RequestContext, keywords string) (doc
 
 	err = s.Runtime.Db.Select(&temp,
 		`SELECT p.refid as targetid, p.documentid as documentid, p.title as title, p.pagetype as linktype, d.title as context, d.labelid as folderid
-		FROM page p LEFT JOIN document d ON d.refid=p.documentid WHERE p.orgid=? AND `+likeQuery+` 
+		FROM page p LEFT JOIN document d ON d.refid=p.documentid WHERE p.orgid=? AND `+likeQuery+`
 		AND d.labelid IN
 		(
 			SELECT refid FROM label WHERE orgid=?
 			AND refid IN (SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid IN (
-				SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space' AND action='view' 
+				SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space' AND action='view'
 				UNION ALL
 				SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role'
 				AND p.location='space' AND p.action='view' AND (r.userid=? OR r.userid='0')
@@ -235,12 +235,12 @@ func (s Scope) SearchCandidates(ctx domain.RequestContext, keywords string) (doc
 
 	err = s.Runtime.Db.Select(&temp,
 		`SELECT a.refid as targetid, a.documentid as documentid, a.filename as title, a.extension as context, d.labelid as folderid
-		FROM attachment a LEFT JOIN document d ON d.refid=a.documentid WHERE a.orgid=? AND `+likeQuery+` 
+		FROM attachment a LEFT JOIN document d ON d.refid=a.documentid WHERE a.orgid=? AND `+likeQuery+`
 		AND d.labelid IN
 		(
 			SELECT refid FROM label WHERE orgid=?
 			AND refid IN (SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid IN (
-				SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space' AND action='view' 
+				SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space' AND action='view'
 				UNION ALL
 				SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role'
 				AND p.location='space' AND p.action='view' AND (r.userid=? OR r.userid='0')

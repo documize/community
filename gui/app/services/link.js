@@ -10,12 +10,14 @@
 // https://documize.com
 
 import Service, { inject as service } from '@ember/service';
+import Notifier from '../mixins/notifier';
 
-export default Service.extend({
+export default Service.extend(Notifier, {
 	sessionService: service('session'),
 	ajax: service(),
 	appMeta: service(),
 	store: service(),
+	eventBus: service(),
 
 	// Returns links within specified document
 	getDocumentLinks(documentId) {
@@ -67,6 +69,10 @@ export default Service.extend({
 			href = `${endpoint}/public/attachments/${orgId}/${link.targetId}`;
 			result = `<a data-documize='true' data-link-space-id='${link.folderId}' data-link-id='${link.id}' data-link-target-document-id='${link.documentId}' data-link-target-id='${link.targetId}' data-link-type='${link.linkType}' href='${href}'>${link.title}</a>`;
 		}
+		if (link.linkType === "network") {
+			href = `fileto://${link.externalId}`;
+			result = `<a data-documize='true' data-link-space-id='${link.folderId}' data-link-id='${link.id}' data-link-target-document-id='${link.documentId}' data-link-target-id='${link.targetId}' data-link-external-id='${link.externalId}' data-link-type='${link.linkType}' href='${href}'>${link.title}</a>`;
+		}
 
 		return result;
 	},
@@ -78,11 +84,12 @@ export default Service.extend({
 			documentId: a.attributes["data-link-target-document-id"].value,
 			folderId: a.attributes["data-link-space-id"].value,
 			targetId: a.attributes["data-link-target-id"].value,
+			externalId: a.attributes["data-link-external-id"].value,
 			url: a.attributes["href"].value,
 			orphan: false
 		};
 
-		link.orphan = _.isEmpty(link.linkId) || _.isEmpty(link.documentId) || _.isEmpty(link.folderId) || _.isEmpty(link.targetId);
+		link.orphan = _.isEmpty(link.linkId) || _.isEmpty(link.documentId) || _.isEmpty(link.folderId) || (_.isEmpty(link.targetId) && _.isEmpty(link.externalId));
 
 		// we check latest state of link using database data
 		let existing = outboundLinks.findBy('id', link.linkId);
@@ -124,6 +131,24 @@ export default Service.extend({
 		// handle attachment links
 		if (link.linkType === "file") {
 			window.location.href = link.url;
+			return;
+		}
+
+		// handle network share/drive links
+		if (link.linkType === "network") {
+			// window.location.href = link.externalId;
+			const el = document.createElement('textarea');
+			el.value = link.externalId;
+			el.setAttribute('readonly', '');
+			el.style.position = 'absolute';
+			el.style.left = '-9999px';
+			document.body.appendChild(el);
+			el.select();
+			document.execCommand('copy');
+			document.body.removeChild(el);
+
+			this.showNotification('Copied location to clipboard');
+
 			return;
 		}
 	}

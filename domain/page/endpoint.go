@@ -464,14 +464,21 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		link.SourceDocumentID = model.Page.DocumentID
 		link.SourcePageID = model.Page.RefID
 
-		if link.LinkType == "document" {
+		if link.LinkType == "document" || link.LinkType == "network" {
 			link.TargetID = ""
+		}
+		if link.LinkType != "network" {
+			link.ExternalID = ""
 		}
 
 		// We check if there was a previously saved version of this link.
 		// If we find one, we carry forward the orphan flag.
 		for _, p := range previousLinks {
-			if link.TargetID == p.TargetID && link.LinkType == p.LinkType {
+			if link.LinkType == p.LinkType && link.TargetID == p.TargetID && link.LinkType != "network" {
+				link.Orphan = p.Orphan
+				break
+			}
+			if link.LinkType == p.LinkType && link.ExternalID == p.ExternalID && link.LinkType == "network" {
 				link.Orphan = p.Orphan
 				break
 			}

@@ -36,8 +36,8 @@ func (s Scope) AddOrganization(ctx domain.RequestContext, org org.Organization) 
 	org.Revised = time.Now().UTC()
 
 	_, err = ctx.Transaction.Exec(
-		"INSERT INTO organization (refid, company, title, message, url, domain, email, allowanonymousaccess, serial, maxtags, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-		org.RefID, org.Company, org.Title, org.Message, strings.ToLower(org.URL), strings.ToLower(org.Domain),
+		"INSERT INTO organization (refid, company, title, message, domain, email, allowanonymousaccess, serial, maxtags, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		org.RefID, org.Company, org.Title, org.Message, strings.ToLower(org.Domain),
 		strings.ToLower(org.Email), org.AllowAnonymousAccess, org.Serial, org.MaxTags, org.Created, org.Revised)
 
 	if err != nil {
@@ -49,7 +49,7 @@ func (s Scope) AddOrganization(ctx domain.RequestContext, org org.Organization) 
 
 // GetOrganization returns the Organization reocrod from the organization database table with the given id.
 func (s Scope) GetOrganization(ctx domain.RequestContext, id string) (org org.Organization, err error) {
-	stmt, err := s.Runtime.Db.Preparex("SELECT id, refid, company, title, message, url, domain, service as conversionendpoint, email, serial, active, allowanonymousaccess, authprovider, coalesce(authconfig,JSON_UNQUOTE('{}')) as authconfig, maxtags, created, revised FROM organization WHERE refid=?")
+	stmt, err := s.Runtime.Db.Preparex("SELECT id, refid, company, title, message, domain, service as conversionendpoint, email, serial, active, allowanonymousaccess, authprovider, coalesce(authconfig,JSON_UNQUOTE('{}')) as authconfig, maxtags, created, revised FROM organization WHERE refid=?")
 	defer streamutil.Close(stmt)
 
 	if err != nil {
@@ -80,14 +80,14 @@ func (s Scope) GetOrganizationByDomain(subdomain string) (o org.Organization, er
 	}
 
 	// match on given domain name
-	err = s.Runtime.Db.Get(&o, "SELECT id, refid, company, title, message, url, domain, service as conversionendpoint, email, serial, active, allowanonymousaccess, authprovider, coalesce(authconfig,JSON_UNQUOTE('{}')) as authconfig, maxtags, created, revised FROM organization WHERE domain=? AND active=1", subdomain)
+	err = s.Runtime.Db.Get(&o, "SELECT id, refid, company, title, message, domain, service as conversionendpoint, email, serial, active, allowanonymousaccess, authprovider, coalesce(authconfig,JSON_UNQUOTE('{}')) as authconfig, maxtags, created, revised FROM organization WHERE domain=? AND active=1", subdomain)
 	if err == nil {
 		return
 	}
 	err = nil
 
 	// match on empty domain as last resort
-	err = s.Runtime.Db.Get(&o, "SELECT id, refid, company, title, message, url, domain, service as conversionendpoint, email, serial, active, allowanonymousaccess, authprovider, coalesce(authconfig,JSON_UNQUOTE('{}')) as authconfig, maxtags, created, revised FROM organization WHERE domain='' AND active=1")
+	err = s.Runtime.Db.Get(&o, "SELECT id, refid, company, title, message, domain, service as conversionendpoint, email, serial, active, allowanonymousaccess, authprovider, coalesce(authconfig,JSON_UNQUOTE('{}')) as authconfig, maxtags, created, revised FROM organization WHERE domain='' AND active=1")
 	if err != nil && err != sql.ErrNoRows {
 		err = errors.Wrap(err, "unable to execute select for empty subdomain")
 	}

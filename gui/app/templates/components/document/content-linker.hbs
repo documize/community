@@ -3,15 +3,14 @@
 		<div class="modal-content">
 			<div class="modal-header">Insert Link</div>
 			<div class="modal-body">
-
 				<div class="container">
-
 					<div class="row">
 						<div class="col mt-3 mb-5">
 							<ul class="tabnav-control text-center">
 								<li class="tab {{if tab1Selected 'selected'}}" {{action 'onTabSelect' 1}}>Section</li>
 								<li class="tab {{if tab2Selected 'selected'}}" {{action 'onTabSelect' 2}}>Attachment</li>
 								<li class="tab {{if tab3Selected 'selected'}}" {{action 'onTabSelect' 3}}>Search</li>
+								<li class="tab {{if tab4Selected 'selected'}}" {{action 'onTabSelect' 4}}>Network</li>
 							</ul>
 						</div>
 					</div>
@@ -98,8 +97,19 @@
 						</div>
 					{{/if}}
 
-				</div>
+					{{#if showNetwork}}
+						<div class="row">
+							<div class="col content-linker-modal-container">
+								<p>Specify network drive/share/folder location</p>
+								<div class="form-group">
+									{{focus-input id="content-linker-networklocation" type="input" class="form-control" value=networkLocation placeholder="e.g. //share/folder" autocomplete="off"}}
+									<small class="form-text text-muted"></small>
+								</div>
+							</div>
+						</div>
+					{{/if}}
 
+				</div>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-outline-secondary" {{action 'onCancel'}}>Cancel</button>

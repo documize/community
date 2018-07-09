@@ -12,9 +12,10 @@
 import { debounce } from '@ember/runloop';
 import { computed, set } from '@ember/object';
 import { inject as service } from '@ember/service';
-import Component from '@ember/component';
+import stringUtil from '../../utils/string';
 import TooltipMixin from '../../mixins/tooltip';
 import ModalMixin from '../../mixins/modal';
+import Component from '@ember/component';
 
 export default Component.extend(ModalMixin, TooltipMixin, {
 	link: service(),
@@ -26,6 +27,8 @@ export default Component.extend(ModalMixin, TooltipMixin, {
 	showSections: computed('tab1Selected', function() { return this.get('tab1Selected'); }),
 	showAttachments: computed('tab2Selected', function() { return this.get('tab2Selected'); }),
 	showSearch: computed('tab3Selected', function() { return this.get('tab3Selected'); }),
+	showNetwork: computed('tab4Selected', function() { return this.get('tab4Selected'); }),
+	networkLocation: '',
 	keywords: '',
 	hasMatches: computed('matches', function () {
 		let m = this.get('matches');
@@ -66,6 +69,8 @@ export default Component.extend(ModalMixin, TooltipMixin, {
 
 	didRender() {
 		this._super(...arguments);
+
+		this.$('#content-linker-networklocation').removeClass('is-invalid');
 		this.renderTooltips();
 	},
 
@@ -114,7 +119,25 @@ export default Component.extend(ModalMixin, TooltipMixin, {
 		onInsertLink() {
 			let selection = this.get('selection');
 
+			if (this.get('tab4Selected')) {
+				let loc = this.get('networkLocation').trim();
+				let folderId = this.get('folder.id');
+				let documentId = this.get('document.id');
+
+				selection = {
+					context: '',
+					documentId: documentId,
+					folderId: folderId,
+					id: stringUtil.makeId(16),
+					linkType: 'network',
+					targetId: '',
+					externalId: loc,
+					title: loc
+				}
+			}
+
 			if (is.null(selection)) {
+				if (this.get('tab4Selected')) this.$('#content-linker-networklocation').addClass('is-invalid').focus();
 				return;
 			}
 
@@ -125,6 +148,7 @@ export default Component.extend(ModalMixin, TooltipMixin, {
 			this.set('tab1Selected', id === 1);
 			this.set('tab2Selected', id === 2);
 			this.set('tab3Selected', id === 3);
+			this.set('tab4Selected', id === 4);
 		}
 	}
 });

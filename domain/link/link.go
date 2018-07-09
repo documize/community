@@ -67,6 +67,8 @@ func getLink(t html.Token) (ok bool, link link.Link) {
 			link.TargetID = strings.TrimSpace(a.Val)
 		case "data-link-type":
 			link.LinkType = strings.TrimSpace(a.Val)
+		case "data-external-id":
+			link.ExternalID = strings.TrimSpace(a.Val)
 		}
 	}
 

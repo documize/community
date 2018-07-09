@@ -19,7 +19,6 @@ type Organization struct {
 	Company              string `json:"-"`
 	Title                string `json:"title"`
 	Message              string `json:"message"`
-	URL                  string `json:"url"`
 	Domain               string `json:"domain"`
 	Email                string `json:"email"`
 	AllowAnonymousAccess bool   `json:"allowAnonymousAccess"`

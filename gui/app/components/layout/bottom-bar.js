@@ -17,6 +17,10 @@ export default Component.extend({
 	classNames: ['layout-footer', 'non-printable'],
 	tagName: 'footer',
 	appMeta: service(),
+	showWait: false,
+	showDone: false,
+	showMessage: false,
+	message: '',
 
 	init() {
 		this._super(...arguments);
@@ -38,6 +42,18 @@ export default Component.extend({
 
 			setTimeout(function() {
 				$('.progress-done').removeClass('zoomIn').addClass('zoomOut');
+			}, 3000);
+		}
+
+		if (msg !== 'done' && msg !== 'wait') {
+			$('.progress-notification').removeClass('zoomOut').addClass('zoomIn');
+			this.set('showWait', false);
+			this.set('showDone', false);
+			this.set('showMessage', true);
+			this.set('message', msg);
+
+			setTimeout(function() {
+				$('.progress-notification').removeClass('zoomIn').addClass('zoomOut');
 			}, 3000);
 		}
 	}
