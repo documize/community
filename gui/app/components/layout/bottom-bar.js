@@ -24,20 +24,22 @@ export default Component.extend({
 
 	init() {
 		this._super(...arguments);
-		this.eventBus.subscribe('notifyUser', this, 'handleEvent');
+		this.eventBus.subscribe('notifyUser', this, 'processNotification');
 	},
 
-	handleEvent(msg) {
+	processNotification(msg) {
 		if (this.get('isDestroyed') || this.get('isDestroying')) return;
 
 		if (msg === 'wait') {
 			this.set('showWait', true);
+			this.set('showMessage', false);
 			this.set('showDone', false);
 		}
 
 		if (msg === 'done') {
 			$('.progress-done').removeClass('zoomOut').addClass('zoomIn');
 			this.set('showWait', false);
+			this.set('showMessage', false);
 			this.set('showDone', true);
 
 			setTimeout(function() {
