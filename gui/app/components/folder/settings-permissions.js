@@ -38,6 +38,16 @@ export default Component.extend(Notifier, Modals, {
 	didReceiveAttrs() {
 		this._super(...arguments);
 
+		this.set('searchText', '');
+
+		if (this.get('inviteMessage').length === 0) {
+			this.set('inviteMessage', this.getDefaultInvitationMessage());
+		}
+
+		this.load();
+	},
+
+	load() {
 		let spacePermissions = A([]);
 		let constants = this.get('constants');
 
@@ -83,12 +93,6 @@ export default Component.extend(Notifier, Modals, {
 				this.set('spacePermissions', spacePermissions.sortBy('who', 'name'));
 			});
 		});
-
-		this.set('searchText', '');
-
-		if (this.get('inviteMessage').length === 0) {
-			this.set('inviteMessage', this.getDefaultInvitationMessage());
-		}
 	},
 
 	permissionRecord(who, whoId, name) {
@@ -267,6 +271,7 @@ export default Component.extend(Notifier, Modals, {
 				this.showDone();
 				this.$('#space-invite-email').removeClass('is-invalid');
 				this.modalClose("#space-invite-user-modal");
+				this.load();
 			});
 		},
 
