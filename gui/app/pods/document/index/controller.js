@@ -24,6 +24,7 @@ export default Controller.extend(Tooltips, Notifier, {
 	tab: 'content',
 	queryParams: ['currentPageId'],
 	showRevisions: computed('permissions', 'document.protection', function() {
+		if (!this.get('session.viewUsers')) return false;
 		if (this.get('document.protection') === this.get('constants').ProtectionType.None) return true;
 		if (this.get('document.protection') === this.get('constants').ProtectionType.Review && this.get('permissions.documentApprove')) return true;
 
