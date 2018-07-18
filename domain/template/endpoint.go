@@ -15,6 +15,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"github.com/documize/community/model/category"
 	"io/ioutil"
 	"net/http"
 
@@ -197,6 +198,7 @@ func (h *Handler) SaveAs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Clone attachments.
 	for _, a := range attachments {
 		err = h.Store.Attachment.Add(ctx, a)
 
@@ -208,11 +210,34 @@ func (h *Handler) SaveAs(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// Clone sections.
 	for _, m := range pageModel {
 		err = h.Store.Page.Add(ctx, m)
 
 		if err != nil {
 			ctx.Transaction.Rollback()
+			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
+			return
+		}
+	}
+
+	// Clone categories.
+	cats, err := h.Store.Category.GetDocumentCategoryMembership(ctx, model.DocumentID)
+	if err != nil && err != sql.ErrNoRows {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+	for _, c := range cats {
+		var cc category.Member
+		cc.OrgID = c.OrgID
+		cc.CategoryID = c.RefID
+		cc.RefID = uniqueid.Generate()
+		cc.DocumentID = docID
+		cc.LabelID = doc.LabelID
+		err = h.Store.Category.AssociateDocument(ctx, cc)
+		if err != nil && err != sql.ErrNoRows {
 			response.WriteServerError(w, method, err)
 			h.Runtime.Log.Error(method, err)
 			return
@@ -374,6 +399,28 @@ func (h *Handler) Use(w http.ResponseWriter, r *http.Request) {
 		err = h.Store.Attachment.Add(ctx, a)
 		if err != nil {
 			ctx.Transaction.Rollback()
+			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
+			return
+		}
+	}
+
+	// Clone categories.
+	cats, err := h.Store.Category.GetDocumentCategoryMembership(ctx, templateID)
+	if err != nil && err != sql.ErrNoRows {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+	for _, c := range cats {
+		var cc category.Member
+		cc.OrgID = c.OrgID
+		cc.CategoryID = c.RefID
+		cc.RefID = uniqueid.Generate()
+		cc.DocumentID = d.RefID
+		cc.LabelID = d.LabelID
+		err = h.Store.Category.AssociateDocument(ctx, cc)
+		if err != nil && err != sql.ErrNoRows {
 			response.WriteServerError(w, method, err)
 			h.Runtime.Log.Error(method, err)
 			return

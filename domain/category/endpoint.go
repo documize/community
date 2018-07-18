@@ -424,7 +424,6 @@ func (h *Handler) GetDocumentCategoryMembership(w http.ResponseWriter, r *http.R
 		response.WriteServerError(w, method, err)
 		return
 	}
-
 	if len(cat) == 0 {
 		cat = []category.Category{}
 	}
