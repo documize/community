@@ -14,13 +14,14 @@ package document
 import (
 	"database/sql"
 	"fmt"
-	"github.com/documize/community/domain/permission"
-	"github.com/documize/community/model/page"
-	"github.com/documize/community/model/workflow"
 	"strings"
 	"time"
 
 	"github.com/documize/community/domain"
+	"github.com/documize/community/domain/permission"
+	"github.com/documize/community/model/doc"
+	"github.com/documize/community/model/page"
+	"github.com/documize/community/model/workflow"
 )
 
 // exportSpec details what is being exported.
@@ -55,7 +56,19 @@ func BuildExport(ctx domain.RequestContext, s domain.Store, spec exportSpec) (ht
 
 	case "category":
 
+		t, c, e := exportCategory(ctx, s, spec.SpaceID, spec.Data)
+		if e == nil {
+			content.WriteString(c)
+			toc = append(toc, t...)
+		}
+
 	case "document":
+
+		t, c, e := exportDocument(ctx, s, spec.SpaceID, spec.Data)
+		if e == nil {
+			content.WriteString(c)
+			toc = append(toc, t...)
+		}
 	}
 
 	// Generate export file header.
@@ -82,11 +95,15 @@ func BuildExport(ctx domain.RequestContext, s domain.Store, spec exportSpec) (ht
 	export.WriteString(fmt.Sprintf("<div class='export-stamp'>%v</div>", generated))
 
 	// Spit out table of contents.
-	export.WriteString("<div class='export-toc'>")
-	for i, t := range toc {
-		export.WriteString(fmt.Sprintf("<a class='export-toc-entry' href='#%s'>%d. %s</a>", t.ID, i+1, t.Entry))
+	if len(toc) > 0 {
+		export.WriteString("<div class='export-toc'>")
+		for i, t := range toc {
+			export.WriteString(fmt.Sprintf("<a class='export-toc-entry' href='#%s'>%d. %s</a>", t.ID, i+1, t.Entry))
+		}
+		export.WriteString("</div>")
+	} else {
+		export.WriteString("<p>No documents found</p>")
 	}
-	export.WriteString("</div>")
 
 	// Write out content.
 	export.WriteString(content.String())
@@ -123,7 +140,7 @@ func exportSpace(ctx domain.RequestContext, s domain.Store, spaceID string) (toc
 	b := strings.Builder{}
 	for _, d := range docs {
 		if d.Lifecycle == workflow.LifecycleLive {
-			docHTML, e := exportDocument(ctx, s, d.RefID)
+			docHTML, e := processDocument(ctx, s, d.RefID)
 			if e == nil && len(docHTML) > 0 {
 				toc = append(toc, exportTOC{ID: d.RefID, Entry: d.Title})
 				b.WriteString(docHTML)
@@ -136,8 +153,104 @@ func exportSpace(ctx domain.RequestContext, s domain.Store, spaceID string) (toc
 	return toc, b.String(), nil
 }
 
-// exportDocument writes out document as HTML content
-func exportDocument(ctx domain.RequestContext, s domain.Store, documentID string) (export string, err error) {
+// exportCategory returns documents exported for selected categories.
+func exportCategory(ctx domain.RequestContext, s domain.Store, spaceID string, category []string) (toc []exportTOC, export string, err error) {
+	// Permission check.
+	if !permission.CanViewSpace(ctx, s, spaceID) {
+		return toc, "", nil
+	}
+
+	// Get all documents for space.
+	docs, err := s.Document.GetBySpace(ctx, spaceID)
+	if err != nil && err != sql.ErrNoRows {
+		return toc, export, err
+	}
+
+	// Remove documents that cannot be seen due to lack of category view/access permission.
+	cats, err := s.Category.GetBySpace(ctx, spaceID)
+	members, err := s.Category.GetSpaceCategoryMembership(ctx, spaceID)
+	docs = FilterCategoryProtected(docs, cats, members, false)
+
+	// Keep the latest version when faced with multiple versions.
+	docs = FilterLastVersion(docs)
+
+	exportDocs := []doc.Document{}
+
+	// Process each requested category.
+	for _, categoryID := range category {
+		// Check to see if any documents has this category
+		for _, cm := range members {
+			// Save the document for export if it is in list of visible docs.
+			if cm.CategoryID == categoryID {
+				for _, d := range docs {
+					if d.RefID == cm.DocumentID {
+						exportDocs = append(exportDocs, d)
+						break
+					}
+				}
+			}
+		}
+	}
+
+	// Turn each document into TOC entry and HTML content export
+	b := strings.Builder{}
+	for _, d := range exportDocs {
+		if d.Lifecycle == workflow.LifecycleLive {
+			docHTML, e := processDocument(ctx, s, d.RefID)
+			if e == nil && len(docHTML) > 0 {
+				toc = append(toc, exportTOC{ID: d.RefID, Entry: d.Title})
+				b.WriteString(docHTML)
+			} else {
+				return toc, b.String(), err
+			}
+		}
+	}
+
+	return toc, b.String(), nil
+}
+
+// exportDocument returns documents for export.
+func exportDocument(ctx domain.RequestContext, s domain.Store, spaceID string, document []string) (toc []exportTOC, export string, err error) {
+	// Permission check.
+	if !permission.CanViewSpace(ctx, s, spaceID) {
+		return toc, "", nil
+	}
+
+	// Get all documents for space.
+	docs, err := s.Document.GetBySpace(ctx, spaceID)
+	if err != nil && err != sql.ErrNoRows {
+		return toc, export, err
+	}
+
+	// Remove documents that cannot be seen due to lack of category view/access permission.
+	cats, err := s.Category.GetBySpace(ctx, spaceID)
+	members, err := s.Category.GetSpaceCategoryMembership(ctx, spaceID)
+	docs = FilterCategoryProtected(docs, cats, members, false)
+
+	// Keep the latest version when faced with multiple versions.
+	docs = FilterLastVersion(docs)
+
+	// Turn each document into TOC entry and HTML content export
+	b := strings.Builder{}
+	for _, documentID := range document {
+		for _, d := range docs {
+			if d.RefID == documentID && d.Lifecycle == workflow.LifecycleLive {
+				docHTML, e := processDocument(ctx, s, d.RefID)
+				if e == nil && len(docHTML) > 0 {
+					toc = append(toc, exportTOC{ID: d.RefID, Entry: d.Title})
+					b.WriteString(docHTML)
+				} else {
+					return toc, b.String(), err
+				}
+			}
+		}
+	}
+
+	return toc, b.String(), nil
+}
+
+// processDocument writes out document as HTML content
+func processDocument(ctx domain.RequestContext, s domain.Store, documentID string) (export string, err error) {
 	b := strings.Builder{}
 
 	// Permission check.
