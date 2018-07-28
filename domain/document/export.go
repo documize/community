@@ -333,7 +333,7 @@ const (
         padding: 0;
     }
     .export-stamp {
-        color: #dddddd;
+        color: #8b9096;
         font-size: 1.2rem;
         font-weight: normal;
         margin: 0 0 20px 0;
