@@ -732,6 +732,18 @@ func (h *Handler) Export(w http.ResponseWriter, r *http.Request) {
 	method := "document.Export"
 	ctx := domain.GetRequestContext(r)
 
+	// Deduce ORG if anon user.
+	if len(ctx.OrgID) == 0 {
+		ctx.Subdomain = organization.GetSubdomainFromHost(r)
+		org, err := h.Store.Organization.GetOrganizationByDomain(ctx.Subdomain)
+		if err != nil {
+			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
+			return
+		}
+		ctx.OrgID = org.RefID
+	}
+
 	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -756,6 +768,6 @@ func (h *Handler) Export(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.Write([]byte(export))
 	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(export))
 }

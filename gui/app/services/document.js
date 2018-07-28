@@ -363,7 +363,7 @@ export default Service.extend({
 		return this.get('ajax').post('export', {
 			data: JSON.stringify(spec),
 			contentType: 'json',
-			dataType: 'text/html'
+			dataType: 'html'
 		});
 	},
 
