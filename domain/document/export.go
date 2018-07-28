@@ -45,16 +45,12 @@ func BuildExport(ctx domain.RequestContext, s domain.Store, spec exportSpec) (ht
 	switch spec.FilterType {
 	case "space":
 
-		content := strings.Builder{}
-
 		for _, spaceID := range spec.Data {
 			t, c, e := exportSpace(ctx, s, spaceID)
-			if e != nil {
-				return "", err
+			if e == nil {
+				content.WriteString(c)
+				toc = append(toc, t...)
 			}
-
-			content.WriteString(c)
-			toc = append(toc, t...)
 		}
 
 	case "category":
@@ -181,14 +177,14 @@ func exportDocument(ctx domain.RequestContext, s domain.Store, documentID string
 	page.Numberize(p)
 
 	// Put out document name.
-	b.WriteString("<div class='doc-header'")
-	b.WriteString("<div class='doc-title'")
+	b.WriteString(fmt.Sprintf("<div class='export-doc-header' id='%s'>", doc.RefID))
+	b.WriteString("<div class='export-doc-title'>")
 	b.WriteString(doc.Title)
-	b.WriteString("</div")
-	b.WriteString("<div class='doc-excerpt'")
+	b.WriteString("</div>")
+	b.WriteString("<div class='export-doc-excerpt'>")
 	b.WriteString(doc.Excerpt)
-	b.WriteString("</div")
-	b.WriteString("</div")
+	b.WriteString("</div>")
+	b.WriteString("</div>")
 
 	// Construct HMTL.
 	for _, page := range p {
@@ -246,25 +242,27 @@ const (
     .export-toc .export-toc-entry:hover {
         text-decoration: underline;
     }
-    .doc-header {
+    .export-doc-header {
         padding: 20px 30px;
-        margin: 10px 0;
+        margin: 70px 0 30px 0;
         background-color: #F7F2FF;
         border: 2px solid #280A42;
         border-radius: 3px;
     }
-    .doc-header .doc-title {
+    .export-doc-title {
         color: #280A42;
         font-size: 2rem;
         font-weight; bold;
         margin: 0 0 5px 0;
     }
-    .doc-header .doc-excerpt {
+    .export-doc-excerpt {
         color: #280A42;
         font-size: 1.1rem;
         font-weight; normal;
     }
-
+    .document-structure {
+        margin: 20px 0 !important;
+    }
     `
 
 	// Styles copied from minified production CSS assets.
