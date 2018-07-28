@@ -192,6 +192,8 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	AddPrivate(rt, "category/{categoryID}/permission", []string{"GET", "OPTIONS"}, nil, permission.GetCategoryPermissions)
 	AddPrivate(rt, "category/{categoryID}/user", []string{"GET", "OPTIONS"}, nil, permission.GetCategoryViewers)
 
+	AddPrivate(rt, "export", []string{"POST", "OPTIONS"}, nil, document.Export)
+
 	// fetch methods exist to speed up UI rendering by returning data in bulk
 	AddPrivate(rt, "fetch/category/space/{spaceID}", []string{"GET", "OPTIONS"}, nil, category.FetchSpaceData)
 	AddPrivate(rt, "fetch/document/{documentID}", []string{"GET", "OPTIONS"}, nil, document.FetchDocumentData)

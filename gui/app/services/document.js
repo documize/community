@@ -356,6 +356,18 @@ export default Service.extend({
 	},
 
 	//**************************************************
+	// Export
+	//**************************************************
+
+	export(spec) {
+		return this.get('ajax').post('export', {
+			data: JSON.stringify(spec),
+			contentType: 'json',
+			dataType: 'text/html'
+		});
+	},
+
+	//**************************************************
 	// Fetch bulk data
 	//**************************************************
 

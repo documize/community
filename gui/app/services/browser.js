@@ -1,11 +1,11 @@
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
-// This software (Documize Community Edition) is licensed under 
+// This software (Documize Community Edition) is licensed under
 // GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
 //
 // You can operate outside the AGPL restrictions by purchasing
 // Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>. 
+// by contacting <sales@documize.com>.
 //
 // https://documize.com
 
@@ -47,10 +47,25 @@ export default Service.extend({
         schedule('afterRender', () => {
             let elem = $(id).offset();
             if (is.undefined(elem)) return;
-    
+
             $('html, body').animate({
                 scrollTop: elem.top
             }, 250);
         });
-    }
+	},
+
+	downloadFile(content, filename) {
+		let b = new Blob([content], {
+			type: 'text/html'
+		});
+
+		const data = window.URL.createObjectURL(b);
+		var link = document.createElement('a');
+		link.href = data;
+		link.download = filename;
+		link.click();
+
+		// For Firefox it is necessary to delay revoking the ObjectURL
+		setTimeout(function() { window.URL.revokeObjectURL(data), 100});
+	}
 });
