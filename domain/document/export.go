@@ -230,7 +230,6 @@ func exportDocument(ctx domain.RequestContext, s domain.Store, spaceID string, d
 	// Turn each document into TOC entry and HTML content export
 	b := strings.Builder{}
 	for _, documentID := range document {
-		fmt.Println(documentID)
 		for _, d := range docs {
 			if d.RefID == documentID {
 				if permission.CanViewDocument(ctx, s, d.RefID) {
@@ -309,9 +308,15 @@ func processDocument(ctx domain.RequestContext, s domain.Store, documentID strin
 		b.WriteString("</div>")
 		b.WriteString("</div>")
 
+		// Process seciton content before writing out as HTML.
+		section := page.Body
+		if page.ContentType == "plantuml" {
+			section = fmt.Sprintf(`<img src="%s" />`, page.Body)
+		}
+
 		// Write out section content
 		b.WriteString(`<div class="wysiwyg">`)
-		b.WriteString(page.Body)
+		b.WriteString(section)
 		b.WriteString("</div>")
 	}
 
