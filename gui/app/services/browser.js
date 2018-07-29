@@ -55,17 +55,19 @@ export default Service.extend({
 	},
 
 	downloadFile(content, filename) {
-		let b = new Blob([content], {
-			type: 'text/html'
-		});
+		let b = new Blob([content], { type: 'text/html' });
 
-		const data = window.URL.createObjectURL(b);
-		var link = document.createElement('a');
-		link.href = data;
-		link.download = filename;
-		link.click();
+		let a = document.createElement("a");
+		a.style = "display: none";
+		document.body.appendChild(a);
 
-		// For Firefox it is necessary to delay revoking the ObjectURL
-		setTimeout(function() { window.URL.revokeObjectURL(data), 100});
+		let url = window.URL.createObjectURL(b);
+
+		a.href = url;
+		a.download = filename;
+		a.click();
+
+		window.URL.revokeObjectURL(url);
+		document.body.removeChild(a);
 	}
 });
