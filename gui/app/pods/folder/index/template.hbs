@@ -13,6 +13,9 @@
 			space=model.folder
 			permissions=model.permissions
 			templates=model.templates
+			category=category
+			categories=model.categories
+			documents=filteredDocs
 			onRefresh=(action 'onRefresh')
 			onDeleteSpace=(action 'onDeleteSpace')}}
 
@@ -22,6 +25,7 @@
 			space=model.folder
 			templates=model.templates
 			permissions=model.permissions
+			onExportDocument=(action 'onExportDocument')
 			onDeleteDocument=(action 'onDeleteDocument')
 			onMoveDocument=(action 'onMoveDocument')}}
 	{{/layout/middle-zone-content}}

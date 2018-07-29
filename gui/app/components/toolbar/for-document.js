@@ -14,14 +14,17 @@ import { inject as service } from '@ember/service';
 import AuthMixin from '../../mixins/auth';
 import TooltipMixin from '../../mixins/tooltip';
 import ModalMixin from '../../mixins/modal';
+import Notifier from '../../mixins/notifier';
 import Component from '@ember/component';
 
-export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
+export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, Notifier, {
 	store: service(),
 	spaceSvc: service('folder'),
 	session: service(),
 	appMeta: service(),
 	pinned: service(),
+	browserSvc: service('browser'),
+	documentSvc: service('document'),
 
 	init() {
 		this._super(...arguments);
@@ -130,5 +133,22 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 
 			return true;
 		},
+
+		onExport() {
+			this.showWait();
+
+			let spec = {
+				spaceId: this.get('document.folderId'),
+				data: [],
+				filterType: 'document',
+			};
+
+			spec.data.push(this.get('document.id'));
+
+			this.get('documentSvc').export(spec).then((htmlExport) => {
+				this.get('browserSvc').downloadFile(htmlExport, this.get('document.slug') + '.html');
+				this.showDone();
+			});
+		}
 	}
 });

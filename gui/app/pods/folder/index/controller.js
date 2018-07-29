@@ -18,6 +18,8 @@ export default Controller.extend(NotifierMixin, {
 	documentService: service('document'),
 	folderService: service('folder'),
 	localStorage: service('localStorage'),
+	browserSvc: service('browser'),
+	documentSvc: service('document'),
 	queryParams: ['category'],
 	category: '',
 	filteredDocs: null,
@@ -68,6 +70,21 @@ export default Controller.extend(NotifierMixin, {
 
 			all(promises).then(() => {
 				this.send('onRefresh');
+			});
+		},
+
+		onExportDocument(documents) {
+			this.showWait();
+
+			let spec = {
+				spaceId: this.get('model.folder.id'),
+				data: documents,
+				filterType: 'document',
+			};
+
+			this.get('documentSvc').export(spec).then((htmlExport) => {
+				this.get('browserSvc').downloadFile(htmlExport, this.get('model.folder.slug') + '.html');
+				this.showDone();
 			});
 		},
 

@@ -726,3 +726,48 @@ func (h *Handler) Vote(w http.ResponseWriter, r *http.Request) {
 
 	response.WriteEmpty(w)
 }
+
+// Export returns content as self-enclosed HTML file.
+func (h *Handler) Export(w http.ResponseWriter, r *http.Request) {
+	method := "document.Export"
+	ctx := domain.GetRequestContext(r)
+
+	// Deduce ORG if anon user.
+	if len(ctx.OrgID) == 0 {
+		ctx.Subdomain = organization.GetSubdomainFromHost(r)
+		org, err := h.Store.Organization.GetOrganizationByDomain(ctx.Subdomain)
+		if err != nil {
+			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
+			return
+		}
+		ctx.OrgID = org.RefID
+	}
+
+	defer streamutil.Close(r.Body)
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	spec := exportSpec{}
+	err = json.Unmarshal(body, &spec)
+	if err != nil {
+		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	export, err := BuildExport(ctx, *h.Store, spec)
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(export))
+}

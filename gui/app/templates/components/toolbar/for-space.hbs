@@ -101,6 +101,13 @@
 			<div class="button-icon-gap" />
 		{{/if}}
 
+		{{#if hasDocuments}}
+			<div id="space-export-button" class="button-icon-danger align-middle" data-toggle="tooltip" data-placement="top" title="Export as HTML" {{action 'onShowExport'}}>
+				<i class="material-icons">import_export</i>
+			</div>
+			<div class="button-icon-gap" />
+		{{/if}}
+
 		{{#if permissions.spaceOwner}}
 			<div id="space-delete-button" class="button-icon-danger align-middle" data-toggle="tooltip" data-placement="top" title="Delete space">
 				<i class="material-icons" data-toggle="modal" data-target="#space-delete-modal" data-backdrop="static">delete</i>
@@ -138,6 +145,28 @@
 			<div class="modal-footer">
 				<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
 				<button type="button" class="btn btn-danger" onclick={{action 'onSpaceDelete'}}>Delete</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="space-export-modal" class="modal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">Export as HTML</div>
+			<div class="modal-body">
+				{{#if hasCategories}}
+					<p>Export all space content as HTML or select categories.</p>
+					{{#each categories as |cat|}}
+						{{#ui/ui-checkbox selected=cat.exportSelected}}{{cat.category}}{{/ui/ui-checkbox}}
+					{{/each}}
+				{{else}}
+					<p>All space content will be exported as a single self-enclosed HTML file.</p>
+				{{/if}}
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-success" onclick={{action 'onExport'}}>Export</button>
 			</div>
 		</div>
 	</div>

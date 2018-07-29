@@ -12,11 +12,14 @@
 import $ from 'jquery';
 import { computed } from '@ember/object';
 import { inject as service } from '@ember/service';
-import Controller from '@ember/controller';
+import Notifier from '../../../mixins/notifier';
 import TooltipMixin from '../../../mixins/tooltip';
+import Controller from '@ember/controller';
 
-export default Controller.extend(TooltipMixin, {
+export default Controller.extend(TooltipMixin, Notifier, {
 	folderService: service('folder'),
+	browserSvc: service('browser'),
+	documentSvc: service('document'),
 	dropdown: null,
 
 	init() {
@@ -69,6 +72,21 @@ export default Controller.extend(TooltipMixin, {
 
 					this.set('folders', nonPrivateFolders);
 				});
+			});
+		},
+
+		onExport() {
+			this.showWait();
+
+			let spec = {
+				spaceId: '',
+				data: _.pluck(this.get('folders'), 'id'),
+				filterType: 'space',
+			};
+
+			this.get('documentSvc').export(spec).then((htmlExport) => {
+				this.get('browserSvc').downloadFile(htmlExport, 'documize.html');
+				this.showDone();
 			});
 		}
 	}

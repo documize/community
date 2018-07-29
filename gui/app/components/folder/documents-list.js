@@ -81,6 +81,16 @@ export default Component.extend(TooltipMixin, {
 			return true;
 		},
 
+		onExport() {
+			let list = this.get('selectedDocuments');
+			this.set('selectedDocuments', A([]));
+
+			let cb = this.get('onExportDocument');
+			cb(list);
+
+			return true;
+		},
+
         selectDocument(documentId) {
             let doc = this.get('documents').findBy('id', documentId);
             let list = this.get('selectedDocuments');

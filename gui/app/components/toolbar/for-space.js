@@ -16,12 +16,15 @@ import { inject as service } from '@ember/service';
 import TooltipMixin from '../../mixins/tooltip';
 import ModalMixin from '../../mixins/modal';
 import AuthMixin from '../../mixins/auth';
+import Notifier from '../../mixins/notifier';
 import Component from '@ember/component';
 
-export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
+export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, Notifier, {
 	spaceService: service('folder'),
 	localStorage: service(),
 	templateService: service('template'),
+	browserSvc: service('browser'),
+	documentSvc: service('document'),
 	session: service(),
 	appMeta: service(),
 	pinned: service(),
@@ -29,21 +32,24 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 	copyTemplate: true,
 	copyPermission: true,
 	copyDocument: false,
-
 	spaceSettings: computed('permissions', function() {
 		return this.get('permissions.spaceOwner') || this.get('permissions.spaceManage');
 	}),
 	deleteSpaceName: '',
-
 	hasTemplates: computed('templates', function() {
 		return this.get('templates.length') > 0;
+	}),
+	hasCategories: computed('categories', function() {
+		return this.get('categories.length') > 0;
+	}),
+	hasDocuments: computed('documents', function() {
+		return this.get('documents.length') > 0;
 	}),
 	emptyDocName: '',
 	emptyDocNameError: false,
 	templateDocName: '',
 	templateDocNameError: false,
 	selectedTemplate: '',
-
 	dropzone: null,
 
 	init() {
@@ -71,6 +77,11 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 			this.set('pinState.newName', folder.get('name'));
 			this.renderTooltips();
 		});
+
+		let cats = this.get('categories');
+		cats.forEach((cat) => {
+			cat.set('exportSelected', false);
+		})
 	},
 
 	didInsertElement() {
@@ -290,6 +301,39 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 				let cb = this.get('onRefresh');
 				cb();
 			}
+		},
+
+		onShowExport() {
+			this.modalOpen("#space-export-modal", {"show": true});
+		},
+
+		onExport() {
+			this.showWait();
+
+			let spec = {
+				spaceId: this.get('space.id'),
+				data: [],
+				filterType: '',
+			};
+
+			let cats = this.get('categories');
+			cats.forEach((cat) => {
+				if (cat.get('exportSelected')) spec.data.push(cat.get('id'));
+			});
+
+			if (spec.data.length > 0) {
+				spec.filterType = 'category';
+			} else {
+				spec.filterType = 'space';
+				spec.data.push(this.get('space.id'));
+			}
+
+			this.get('documentSvc').export(spec).then((htmlExport) => {
+				this.get('browserSvc').downloadFile(htmlExport, this.get('space.slug') + '.html');
+				this.showDone();
+			});
+
+			this.modalClose("#space-export-modal");
 		}
 	}
 });
