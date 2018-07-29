@@ -21,6 +21,7 @@ import (
 	"github.com/documize/community/domain/permission"
 	"github.com/documize/community/model/doc"
 	"github.com/documize/community/model/page"
+	pm "github.com/documize/community/model/permission"
 	"github.com/documize/community/model/workflow"
 )
 
@@ -119,16 +120,30 @@ func exportSpace(ctx domain.RequestContext, s domain.Store, spaceID string) (toc
 		return toc, "", nil
 	}
 
+	// Get space.
+	space, err := s.Space.Get(ctx, spaceID)
+	if err != nil && err != sql.ErrNoRows {
+		return toc, export, err
+	}
+
 	// Get all documents for space.
 	docs, err := s.Document.GetBySpace(ctx, spaceID)
 	if err != nil && err != sql.ErrNoRows {
 		return toc, export, err
 	}
 
+	// Can user view drafts?
+	// If space defaults to draft documents, then this means
+	// user can view drafts as long as they have edit rights.
+	viewDrafts := permission.CanViewDrafts(ctx, s, spaceID)
+	if space.Lifecycle == workflow.LifecycleDraft && permission.HasPermission(ctx, s, spaceID, pm.DocumentEdit) {
+		viewDrafts = true
+	}
+
 	// Remove documents that cannot be seen due to lack of category view/access permission.
 	cats, err := s.Category.GetBySpace(ctx, spaceID)
 	members, err := s.Category.GetSpaceCategoryMembership(ctx, spaceID)
-	docs = FilterCategoryProtected(docs, cats, members, false)
+	docs = FilterCategoryProtected(docs, cats, members, viewDrafts)
 
 	// Keep the latest version when faced with multiple versions.
 	docs = FilterLastVersion(docs)
@@ -136,14 +151,12 @@ func exportSpace(ctx domain.RequestContext, s domain.Store, spaceID string) (toc
 	// Turn each document into TOC entry and HTML content export
 	b := strings.Builder{}
 	for _, d := range docs {
-		if d.Lifecycle == workflow.LifecycleLive {
-			docHTML, e := processDocument(ctx, s, d.RefID)
-			if e == nil && len(docHTML) > 0 {
-				toc = append(toc, exportTOC{ID: d.RefID, Entry: d.Title})
-				b.WriteString(docHTML)
-			} else {
-				return toc, b.String(), err
-			}
+		docHTML, e := processDocument(ctx, s, d.RefID)
+		if e == nil && len(docHTML) > 0 {
+			toc = append(toc, exportTOC{ID: d.RefID, Entry: d.Title})
+			b.WriteString(docHTML)
+		} else {
+			return toc, b.String(), err
 		}
 	}
 
@@ -157,16 +170,30 @@ func exportCategory(ctx domain.RequestContext, s domain.Store, spaceID string, c
 		return toc, "", nil
 	}
 
+	// Get space.
+	space, err := s.Space.Get(ctx, spaceID)
+	if err != nil && err != sql.ErrNoRows {
+		return toc, export, err
+	}
+
 	// Get all documents for space.
 	docs, err := s.Document.GetBySpace(ctx, spaceID)
 	if err != nil && err != sql.ErrNoRows {
 		return toc, export, err
 	}
 
+	// Can user view drafts?
+	// If space defaults to draft documents, then this means
+	// user can view drafts as long as they have edit rights.
+	viewDrafts := permission.CanViewDrafts(ctx, s, spaceID)
+	if space.Lifecycle == workflow.LifecycleDraft && permission.HasPermission(ctx, s, spaceID, pm.DocumentEdit) {
+		viewDrafts = true
+	}
+
 	// Remove documents that cannot be seen due to lack of category view/access permission.
 	cats, err := s.Category.GetBySpace(ctx, spaceID)
 	members, err := s.Category.GetSpaceCategoryMembership(ctx, spaceID)
-	docs = FilterCategoryProtected(docs, cats, members, false)
+	docs = FilterCategoryProtected(docs, cats, members, viewDrafts)
 
 	// Keep the latest version when faced with multiple versions.
 	docs = FilterLastVersion(docs)
@@ -192,14 +219,12 @@ func exportCategory(ctx domain.RequestContext, s domain.Store, spaceID string, c
 	// Turn each document into TOC entry and HTML content export
 	b := strings.Builder{}
 	for _, d := range exportDocs {
-		if d.Lifecycle == workflow.LifecycleLive {
-			docHTML, e := processDocument(ctx, s, d.RefID)
-			if e == nil && len(docHTML) > 0 {
-				toc = append(toc, exportTOC{ID: d.RefID, Entry: d.Title})
-				b.WriteString(docHTML)
-			} else {
-				return toc, b.String(), err
-			}
+		docHTML, e := processDocument(ctx, s, d.RefID)
+		if e == nil && len(docHTML) > 0 {
+			toc = append(toc, exportTOC{ID: d.RefID, Entry: d.Title})
+			b.WriteString(docHTML)
+		} else {
+			return toc, b.String(), err
 		}
 	}
 
@@ -213,16 +238,30 @@ func exportDocument(ctx domain.RequestContext, s domain.Store, spaceID string, d
 		return toc, "", nil
 	}
 
+	// Get space.
+	space, err := s.Space.Get(ctx, spaceID)
+	if err != nil && err != sql.ErrNoRows {
+		return toc, export, err
+	}
+
 	// Get all documents for space.
 	docs, err := s.Document.GetBySpace(ctx, spaceID)
 	if err != nil && err != sql.ErrNoRows {
 		return toc, export, err
 	}
 
+	// Can user view drafts?
+	// If space defaults to draft documents, then this means
+	// user can view drafts as long as they have edit rights.
+	viewDrafts := permission.CanViewDrafts(ctx, s, spaceID)
+	if space.Lifecycle == workflow.LifecycleDraft && permission.HasPermission(ctx, s, spaceID, pm.DocumentEdit) {
+		viewDrafts = true
+	}
+
 	// Remove documents that cannot be seen due to lack of category view/access permission.
 	cats, err := s.Category.GetBySpace(ctx, spaceID)
 	members, err := s.Category.GetSpaceCategoryMembership(ctx, spaceID)
-	docs = FilterCategoryProtected(docs, cats, members, false)
+	docs = FilterCategoryProtected(docs, cats, members, viewDrafts)
 
 	// Keep the latest version when faced with multiple versions.
 	docs = FilterLastVersion(docs)
@@ -261,11 +300,6 @@ func processDocument(ctx domain.RequestContext, s domain.Store, documentID strin
 	doc, err := s.Document.Get(ctx, documentID)
 	if err != nil && err != sql.ErrNoRows {
 		return export, err
-	}
-
-	// Skip any document that is not live and published.
-	if doc.Lifecycle != workflow.LifecycleLive {
-		return export, nil
 	}
 
 	// Get published pages and new pages awaiting approval.
@@ -310,7 +344,7 @@ func processDocument(ctx domain.RequestContext, s domain.Store, documentID strin
 
 		// Process seciton content before writing out as HTML.
 		section := page.Body
-		if page.ContentType == "plantuml" {
+		if page.ContentType == "plantuml" || page.ContentType == "flowchart" {
 			section = fmt.Sprintf(`<img src="%s" />`, page.Body)
 		}
 
