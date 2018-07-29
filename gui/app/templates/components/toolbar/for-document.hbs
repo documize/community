@@ -19,6 +19,11 @@
 	</div>
 	<div class="button-icon-gap" />
 
+	<div id="space-export-button" class="button-icon-danger align-middle" data-toggle="tooltip" data-placement="top" title="Export as HTML" {{action 'onExport'}}>
+		<i class="material-icons">import_export</i>
+	</div>
+	<div class="button-icon-gap" />
+
 	{{#if pinState.isPinned}}
 		<div id="document-pin-button" class="button-icon-gold align-middle" data-toggle="tooltip" data-placement="top" title="Remove favorite" {{action 'onUnpin'}}>
 			<i class="material-icons">star</i>

@@ -16,9 +16,10 @@ import { inject as service } from '@ember/service';
 import TooltipMixin from '../../mixins/tooltip';
 import ModalMixin from '../../mixins/modal';
 import AuthMixin from '../../mixins/auth';
+import Notifier from '../../mixins/notifier';
 import Component from '@ember/component';
 
-export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
+export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, Notifier, {
 	spaceService: service('folder'),
 	localStorage: service(),
 	templateService: service('template'),
@@ -307,11 +308,13 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 		},
 
 		onExport() {
+			this.showWait();
+
 			let spec = {
 				spaceId: this.get('space.id'),
 				data: [],
 				filterType: '',
-			}
+			};
 
 			let cats = this.get('categories');
 			cats.forEach((cat) => {
@@ -327,6 +330,7 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, {
 
 			this.get('documentSvc').export(spec).then((htmlExport) => {
 				this.get('browserSvc').downloadFile(htmlExport, this.get('space.slug') + '.html');
+				this.showDone();
 			});
 
 			this.modalClose("#space-export-modal");

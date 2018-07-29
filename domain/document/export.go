@@ -45,7 +45,6 @@ func BuildExport(ctx domain.RequestContext, s domain.Store, spec exportSpec) (ht
 
 	switch spec.FilterType {
 	case "space":
-
 		for _, spaceID := range spec.Data {
 			t, c, e := exportSpace(ctx, s, spaceID)
 			if e == nil {
@@ -55,7 +54,6 @@ func BuildExport(ctx domain.RequestContext, s domain.Store, spec exportSpec) (ht
 		}
 
 	case "category":
-
 		t, c, e := exportCategory(ctx, s, spec.SpaceID, spec.Data)
 		if e == nil {
 			content.WriteString(c)
@@ -63,7 +61,6 @@ func BuildExport(ctx domain.RequestContext, s domain.Store, spec exportSpec) (ht
 		}
 
 	case "document":
-
 		t, c, e := exportDocument(ctx, s, spec.SpaceID, spec.Data)
 		if e == nil {
 			content.WriteString(c)
@@ -233,14 +230,17 @@ func exportDocument(ctx domain.RequestContext, s domain.Store, spaceID string, d
 	// Turn each document into TOC entry and HTML content export
 	b := strings.Builder{}
 	for _, documentID := range document {
+		fmt.Println(documentID)
 		for _, d := range docs {
-			if d.RefID == documentID && d.Lifecycle == workflow.LifecycleLive {
-				docHTML, e := processDocument(ctx, s, d.RefID)
-				if e == nil && len(docHTML) > 0 {
-					toc = append(toc, exportTOC{ID: d.RefID, Entry: d.Title})
-					b.WriteString(docHTML)
-				} else {
-					return toc, b.String(), err
+			if d.RefID == documentID {
+				if permission.CanViewDocument(ctx, s, d.RefID) {
+					docHTML, e := processDocument(ctx, s, d.RefID)
+					if e == nil && len(docHTML) > 0 {
+						toc = append(toc, exportTOC{ID: d.RefID, Entry: d.Title})
+						b.WriteString(docHTML)
+					} else {
+						return toc, b.String(), err
+					}
 				}
 			}
 		}
