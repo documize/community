@@ -12,8 +12,10 @@
 import Component from '@ember/component';
 
 export default Component.extend({
-	classNames: ['layout-sidebar', 'non-printable'],
 	tagName: 'nav',
+	classNames: ['layout-sidebar', 'non-printable'],
+	classNameBindings: ['scrollable:sidebar-scroll'],
+	scrollable: false,
 
 	didInsertElement() {
 		this._super(...arguments);
