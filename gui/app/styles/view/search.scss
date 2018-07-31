@@ -104,4 +104,23 @@
 			}
 		}
 	}
+
+
+	> .syntax {
+		margin: 20px;
+
+		> .example {
+			margin-top: 10px;
+			font-weight: 600;
+			font-size: 1.1rem;
+			font-style: italic;
+			color: $color-dark;
+		}
+
+		> .explain {
+			margin: 10px 0 20px 0px;
+			font-size: 1.2rem;
+			color: $color-gray;
+		}
+	}
 }
