@@ -30,19 +30,6 @@ export default Component.extend({
 		return `flowchart-editor-${page.id}`;
 	}),
 
-	goSave: observer('readyToSave', function() {
-		if (this.get('readyToSave')) {
-			let page = this.get('page');
-			let meta = this.get('meta');
-			meta.set('rawBody', this.get('diagram'));
-			page.set('title', this.get('title'));
-
-			this.set('waiting', false);
-			this.teardownEditor();
-			this.get('onAction')(page, meta);
-		}
-	}),
-
 	didReceiveAttrs() {
 		this._super(...arguments);
 
@@ -71,10 +58,12 @@ export default Component.extend({
 				console.log('draw.io component destroyed'); // eslint-disable-line no-console
 				return;
 			}
+
 			// if (evt.origin !== 'https://www.draw.io') {
 			// 	console.log('draw.io incorrect message source: ' + evt.source); // eslint-disable-line no-console
 			// 	return;
 			// }
+
 			if (evt.data.length === 0) {
 				console.log('draw.io no event data'); // eslint-disable-line no-console
 				return;
@@ -91,13 +80,12 @@ export default Component.extend({
 
 				case 'save':
 					self.set('diagramXML', msg.xml);
-					// Trigger onAction() callback using sneaky trick.
-					Mousetrap.trigger('ctrl+s');
-				break;
+					self.invokeExport();
+					break;
 
 				case 'autosave':
 					self.set('diagramXML', msg.xml);
-				break;
+					break;
 
 				case 'load':
 					break;
@@ -121,6 +109,31 @@ export default Component.extend({
 		window.removeEventListener('message', this.get('flowCallback'));
 	},
 
+	invokeExport() {
+		let editorFrame = document.getElementById(this.get('editorId'));
+		editorFrame.contentWindow.postMessage(
+			JSON.stringify(
+				{
+					action: 'export',
+					format: 'xmlpng',
+					xml: this.get('diagramXML'),
+					spin: 'Updating'
+				}
+			), '*');
+	},
+
+	goSave: observer('readyToSave', function() {
+		if (this.get('readyToSave')) {
+			let page = this.get('page');
+			let meta = this.get('meta');
+			meta.set('rawBody', this.get('diagram'));
+			page.set('title', this.get('title'));
+
+			this.set('waiting', false);
+			this.get('onAction')(page, meta);
+		}
+	}),
+
     actions: {
         isDirty() {
             return this.get('isDirty') || (this.get('diagram') !== this.get('meta.rawBody'));
@@ -134,11 +147,7 @@ export default Component.extend({
         onAction(title) {
 			this.set('waiting', true);
 			this.set('title', title);
-
-			let editorFrame = document.getElementById(this.get('editorId'));
-			editorFrame.contentWindow.postMessage(
-				JSON.stringify({action: 'export', format: 'xmlpng',
-				xml: this.get('diagramXML'), spin: 'Updating'}), '*');
+			this.invokeExport();
 		}
     }
 });
