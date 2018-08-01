@@ -219,6 +219,19 @@ func (s Scope) GetSpaceCategorySummary(ctx domain.RequestContext, spaceID string
 		SELECT 'documents' as type, categoryid, COUNT(*) AS count
 			FROM categorymember
             WHERE orgid=? AND labelid=?
+            AND documentid IN (
+                SELECT refid FROM document
+                WHERE orgid=? AND labelid=?
+                AND lifecycle!=2 AND template=0 AND groupid=''
+                UNION ALL
+                SELECT d.refid
+                    FROM (
+                        SELECT groupid, MIN(versionorder) AS latestversion
+                        FROM document
+                        WHERE orgid=? AND labelid=? AND lifecycle!=2 AND groupid!='' AND template=0
+                        GROUP BY groupid
+                    ) AS x INNER JOIN  document AS d ON d.groupid=x.groupid AND d.versionorder=x.latestversion
+                )
             GROUP BY categoryid, type
 		UNION ALL
 		SELECT 'users' as type, refid AS categoryid, count(*) AS count
@@ -226,7 +239,9 @@ func (s Scope) GetSpaceCategorySummary(ctx domain.RequestContext, spaceID string
 			WHERE orgid=? AND location='category'
 				AND refid IN (SELECT refid FROM category WHERE orgid=? AND labelid=?)
 			GROUP BY refid, type`,
-		ctx.OrgID, spaceID, ctx.OrgID, ctx.OrgID, spaceID)
+		ctx.OrgID, spaceID,
+		ctx.OrgID, spaceID, ctx.OrgID, spaceID,
+		ctx.OrgID, ctx.OrgID, spaceID)
 
 	if err == sql.ErrNoRows {
 		err = nil
