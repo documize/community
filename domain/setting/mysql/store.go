@@ -14,6 +14,7 @@ package mysql
 import (
 	"bytes"
 	"database/sql"
+	"fmt"
 
 	"github.com/documize/community/core/env"
 	"github.com/pkg/errors"
@@ -35,7 +36,6 @@ func (s Scope) Get(area, path string) (value string, err error) {
 	var item = make([]uint8, 0)
 
 	err = s.Runtime.Db.Get(&item, sql)
-
 	if err != nil {
 		return "", err
 	}
@@ -65,18 +65,18 @@ func (s Scope) Set(area, json string) (err error) {
 
 // GetUser fetches a configuration JSON element from the userconfig table for a given orgid/userid combination.
 // Errors return the empty string. A blank path returns the whole JSON object, as JSON.
-func (s Scope) GetUser(orgID, userID, area, path string) (value string, err error) {
+// You can store org level settings by providing an empty user ID.
+func (s Scope) GetUser(orgID, userID, key, path string) (value string, err error) {
+	var item = make([]uint8, 0)
+
 	if path != "" {
 		path = "." + path
 	}
 
-	qry := "SELECT JSON_EXTRACT(`config`,'$" + path + "') FROM `userconfig` WHERE `key` = '" + area +
+	qry := "SELECT JSON_EXTRACT(`config`,'$" + path + "') FROM `userconfig` WHERE `key` = '" + key +
 		"' AND `orgid` = '" + orgID + "' AND `userid` = '" + userID + "';"
 
-	var item = make([]uint8, 0)
-
 	err = s.Runtime.Db.Get(&item, qry)
-
 	if err != nil && err != sql.ErrNoRows {
 		return "", err
 	}
@@ -89,17 +89,35 @@ func (s Scope) GetUser(orgID, userID, area, path string) (value string, err erro
 	return value, nil
 }
 
-// SetUser writes a configuration JSON element to the userconfig table for the current user.
-func (s Scope) SetUser(orgID, userID, area, json string) (err error) {
-	if area == "" {
-		return errors.New("no area")
+// SetUser writes a configuration JSON element to the userconfig table for the specified user.
+// You can store org level settings by providing an empty user ID.
+func (s Scope) SetUser(orgID, userID, key, json string) (err error) {
+	if key == "" {
+		return errors.New("no key")
 	}
 
-	sql := "INSERT INTO `userconfig` (`orgid`,`userid`,`key`,`config`) " +
-		"VALUES ('" + orgID + "','" + userID + "','" + area + "','" + json +
-		"') ON DUPLICATE KEY UPDATE `config`='" + json + "';"
+	tx, err := s.Runtime.Db.Beginx()
+	if err != nil {
+		return err
+	}
 
-	_, err = s.Runtime.Db.Exec(sql)
+	_, err = tx.Exec("DELETE FROM userconfig WHERE orgid=? AND userid=? AND `key`=?", orgID, userID, key)
+	if err != nil {
+		fmt.Println(err)
+		fmt.Println("ccc")
+	}
+
+	_, err = tx.Exec("INSERT INTO userconfig (orgid, userid, `key`, `config`) VALUES (?, ?, ?, ?)", orgID, userID, key, json)
+	if err != nil {
+		fmt.Println(err)
+		fmt.Println("ddd")
+	}
+
+	if err == nil {
+		tx.Commit()
+	} else {
+		tx.Rollback()
+	}
 
 	return err
 }

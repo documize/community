@@ -96,3 +96,52 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 	response.WriteJSON(w, org)
 }
+
+// GetSetting returns the requested organization level setting.
+func (h *Handler) GetSetting(w http.ResponseWriter, r *http.Request) {
+	ctx := domain.GetRequestContext(r)
+
+	orgID := request.Param(r, "orgID")
+	if orgID != ctx.OrgID {
+		response.WriteForbiddenError(w)
+		return
+	}
+
+	key := request.Query(r, "key")
+	setting, _ := h.Store.Setting.GetUser(orgID, "", key, "")
+
+	response.WriteJSON(w, setting)
+}
+
+// SaveSetting saves org level setting.
+func (h *Handler) SaveSetting(w http.ResponseWriter, r *http.Request) {
+	ctx := domain.GetRequestContext(r)
+	method := "org.SaveSetting"
+
+	orgID := request.Param(r, "orgID")
+	if orgID != ctx.OrgID {
+		response.WriteForbiddenError(w)
+		return
+	}
+
+	key := request.Query(r, "key")
+
+	if !ctx.Administrator {
+		response.WriteForbiddenError(w)
+		return
+	}
+
+	defer streamutil.Close(r.Body)
+	body, err := ioutil.ReadAll(r.Body)
+
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	config := string(body)
+	h.Store.Setting.SetUser(orgID, "", key, config)
+
+	response.WriteEmpty(w)
+}
