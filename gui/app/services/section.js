@@ -48,6 +48,20 @@ export default BaseService.extend({
 		});
 	},
 
+	// Requests data from the specified section handler, passing the method and document ID
+	// and POST payload.
+	fetchText(page, method, data) {
+		let documentId = page.get('documentId');
+		let section = page.get('contentType');
+		let url = `sections?documentID=${documentId}&section=${section}&method=${method}`;
+
+		return this.get('ajax').post(url, {
+			data: JSON.stringify(data),
+			contentType: "application/json",
+			dataType: "html"
+		});
+	},
+
 	// Did any dynamic sections change? Fetch and send up for rendering?
 	refresh(documentId) {
 		let url = `sections/refresh?documentID=${documentId}`;

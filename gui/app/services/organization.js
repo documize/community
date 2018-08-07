@@ -47,6 +47,8 @@ export default Service.extend({
 	getOrgSetting(orgId, key) {
 		return this.get('ajax').request(`organization/${orgId}/setting?key=${key}`, {
 			method: 'GET'
+		}).then((response) => {
+			return JSON.parse(response);
 		});
 	},
 

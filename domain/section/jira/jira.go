@@ -12,13 +12,12 @@
 package jira
 
 import (
-	// "encoding/base64"
+	"bytes"
 	"encoding/json"
 	"fmt"
-	// "io/ioutil"
+	"html/template"
+	"io/ioutil"
 	"net/http"
-	// "bytes"
-	// "html/template"
 
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/domain"
@@ -131,218 +130,129 @@ func (p *Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http
 	}
 
 	switch method {
-	// case "secrets":
-	// 	secs(ctx, p.Store, w, r)
+	case "preview":
+		preview(ctx, p.Store, w, r)
 	case "auth":
 		auth(ctx, p.Store, w, r)
-		// case "workspace":
-		// 	workspace(ctx, p.Store, w, r)
-		// case "items":
-		// 	items(ctx, p.Store, w, r)
 	}
 }
 
 func auth(ctx *provider.Context, store *domain.Store, w http.ResponseWriter, r *http.Request) {
-	var login = jiraLogin{}
-	creds, err := store.Setting.GetUser(ctx.OrgID, "", "jira", "")
-	err = json.Unmarshal([]byte(creds), &login)
+	creds, err := getCredentials(ctx, store)
 	if err != nil {
 		provider.WriteForbidden(w)
 		return
 	}
 
-	tp := jira.BasicAuthTransport{Username: login.Username, Password: login.Secret}
-	client, err := jira.NewClient(tp.Client(), login.URL)
-
-	u, _, err := client.User.Get(login.Username)
-	fmt.Printf("\nEmail: %v\nSuccess!\n", u.EmailAddress)
-
-	// req, err := http.NewRequest("GET", fmt.Sprintf("%s/", login.URL), nil)
-	// header := []byte(fmt.Sprintf("%s:%s", login.Username, login.Secret))
-	// req.Header.Set("Authorization", "Basic "+base64.StdEncoding.EncodeToString(header))
-
-	// client := &http.Client{}
-	// res, err := client.Do(req)
-
-	// if err != nil {
-	// 	provider.WriteError(w, logID, err)
-	// 	return
-	// }
-	// if res.StatusCode != http.StatusOK {
-	// 	provider.WriteForbidden(w)
-	// 	return
-	// }
-
-	// defer res.Body.Close()
-	// var g = geminiUser{}
-
-	// dec := json.NewDecoder(res.Body)
-	// err = dec.Decode(&g)
-
-	// if err != nil {
-	// 	provider.WriteError(w, logID, err)
-	// 	return
-	// }
+	// Authenticate
+	_, _, err = authenticate(creds)
+	if err != nil {
+		fmt.Println(err)
+		provider.WriteError(w, logID, err)
+		return
+	}
 
 	provider.WriteJSON(w, "OK")
 }
 
-/*
-func workspace(ctx *provider.Context, store *domain.Store, w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	body, err := ioutil.ReadAll(r.Body)
-
+func preview(ctx *provider.Context, store *domain.Store, w http.ResponseWriter, r *http.Request) {
+	creds, err := getCredentials(ctx, store)
 	if err != nil {
-		provider.WriteMessage(w, logID, "Bad payload")
+		provider.WriteForbidden(w)
 		return
 	}
 
-	var config = geminiConfig{}
-	err = json.Unmarshal(body, &config)
-
-	if err != nil {
-		provider.WriteMessage(w, logID, "Bad payload")
-		return
-	}
-
-	config.Clean(ctx, store)
-
-	if len(config.URL) == 0 {
-		provider.WriteMessage(w, logID, "Missing URL value")
-		return
-	}
-
-	if len(config.Username) == 0 {
-		provider.WriteMessage(w, logID, "Missing Username value")
-		return
-	}
-
-	if len(config.APIKey) == 0 {
-		provider.WriteMessage(w, logID, "Missing APIKey value")
-		return
-	}
-
-	if config.UserID == 0 {
-		provider.WriteMessage(w, logID, "Missing UserId value")
-		return
-	}
-
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/navigationcards/users/%d", config.URL, config.UserID), nil)
-
-	creds := []byte(fmt.Sprintf("%s:%s", config.Username, config.APIKey))
-	req.Header.Set("Authorization", "Basic "+base64.StdEncoding.EncodeToString(creds))
-
-	client := &http.Client{}
-	res, err := client.Do(req)
-
+	client, _, err := authenticate(creds)
 	if err != nil {
 		fmt.Println(err)
 		provider.WriteError(w, logID, err)
 		return
 	}
 
-	if res.StatusCode != http.StatusOK {
-		provider.WriteForbidden(w)
-		return
-	}
-
-	defer res.Body.Close()
-	var workspace interface{}
-
-	dec := json.NewDecoder(res.Body)
-	err = dec.Decode(&workspace)
-
-	if err != nil {
-		provider.WriteError(w, logID, err)
-		return
-	}
-
-	provider.WriteJSON(w, workspace)
-}
-
-func items(ctx *provider.Context, store *domain.Store, w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-	body, err := ioutil.ReadAll(r.Body)
-
-	if err != nil {
-		provider.WriteMessage(w, logID, "Bad payload")
-		return
-	}
-
-	var config = geminiConfig{}
-	err = json.Unmarshal(body, &config)
-
-	if err != nil {
-		provider.WriteMessage(w, logID, "Bad payload")
-		return
-	}
-
-	config.Clean(ctx, store)
-
-	if len(config.URL) == 0 {
-		provider.WriteMessage(w, logID, "Missing URL value")
-		return
-	}
-
-	if len(config.Username) == 0 {
-		provider.WriteMessage(w, logID, "Missing Username value")
-		return
-	}
-
-	if len(config.APIKey) == 0 {
-		provider.WriteMessage(w, logID, "Missing APIKey value")
-		return
-	}
-
-	creds := []byte(fmt.Sprintf("%s:%s", config.Username, config.APIKey))
-
-	filter, err := json.Marshal(config.Filter)
-	if err != nil {
-		provider.WriteError(w, logID, err)
-		return
-	}
-
-	var jsonFilter = []byte(string(filter))
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/api/items/filtered", config.URL), bytes.NewBuffer(jsonFilter))
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Basic "+base64.StdEncoding.EncodeToString(creds))
-
-	client := &http.Client{}
-	res, err := client.Do(req)
-
-	if err != nil {
-		provider.WriteError(w, logID, err)
-		return
-	}
-
-	if res.StatusCode != http.StatusOK {
-		provider.WriteForbidden(w)
-		return
-	}
-
-	defer res.Body.Close()
-	var items interface{}
-
-	dec := json.NewDecoder(res.Body)
-	err = dec.Decode(&items)
-
+	config, err := readConfig(ctx, store, w, r)
 	if err != nil {
 		fmt.Println(err)
 		provider.WriteError(w, logID, err)
 		return
 	}
 
-	provider.WriteJSON(w, items)
+	issues, err := getIssues(config, client)
+
+	w.Header().Set("Content-Type", "html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(generateGrid(issues)))
 }
 
-func secs(ctx *provider.Context, store *domain.Store, w http.ResponseWriter, r *http.Request) {
-	sec, _ := getSecrets(ctx, store)
-	provider.WriteJSON(w, sec)
+// Pull config from HTTP request.
+func readConfig(ctx *provider.Context, store *domain.Store, w http.ResponseWriter, r *http.Request) (config jiraConfig, err error) {
+	defer r.Body.Close()
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return
+	}
+
+	err = json.Unmarshal(body, &config)
+	if err != nil {
+		return
+	}
+
+	return
 }
-*/
+
+// Get Jira connector configuration.
+func getCredentials(ctx *provider.Context, store *domain.Store) (login jiraLogin, err error) {
+	creds, err := store.Setting.GetUser(ctx.OrgID, "", "jira", "")
+
+	err = json.Unmarshal([]byte(creds), &login)
+	if err != nil {
+		return login, err
+	}
+
+	return
+}
+
+// Perform Jira login.
+func authenticate(login jiraLogin) (c *jira.Client, u *jira.User, err error) {
+	tp := jira.BasicAuthTransport{Username: login.Username, Password: login.Secret}
+	c, err = jira.NewClient(tp.Client(), login.URL)
+	if err != nil {
+		return
+	}
+
+	u, _, err = c.User.Get(login.Username)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+// Fetch Jira issues using configuration criteria.
+func getIssues(config jiraConfig, client *jira.Client) (issues []jira.Issue, err error) {
+	opts := &jira.SearchOptions{Expand: "", MaxResults: 500, StartAt: 0}
+	issues, _, err = client.Issue.Search(config.JQL, opts)
+
+	return
+}
+
+// Generate issues grid
+func generateGrid(issues []jira.Issue) string {
+	t := template.New("issues")
+	t, _ = t.Parse(renderTemplate)
+
+	payload := jiraGrid{}
+	payload.ItemCount = len(issues)
+	payload.Issues = issues
+
+	buffer := new(bytes.Buffer)
+	t.Execute(buffer, payload)
+
+	return buffer.String()
+
+}
 
 type jiraConfig struct {
-	JQL       int64                  `json:"jql"`
+	JQL       string                 `json:"jql"`
 	ItemCount int                    `json:"itemCount"`
 	Filter    map[string]interface{} `json:"filter"`
 }
@@ -352,3 +262,41 @@ type jiraLogin struct {
 	Username string `json:"username"`
 	Secret   string `json:"secret"`
 }
+
+type jiraGrid struct {
+	Issues    []jira.Issue `json:"issues"`
+	ItemCount int          `json:"itemCount"`
+}
+
+// the HTML that is rendered by this section.
+const renderTemplate = `
+<p>Showing {{.ItemCount}} Jira issues</p>
+<table class="basic-table section-jira-table">
+	<thead>
+		<tr>
+			<th class="bordered no-width">Key</th>
+			<th class="bordered no-width">T</th>
+			<th class="bordered no-width">Status</th>
+			<th class="bordered no-width">P</th>
+			<th class="bordered no-width">Component</th>
+			<th class="bordered">Summary</th>
+			<th class="bordered no-width">Assignee</th>
+			<th class="bordered no-width">Fix Version/s</th>
+		</tr>
+	</thead>
+	<tbody>
+		{{range $item := .Issues}}
+            <tr>
+                <td class="bordered no-width"><a href="{{ $item.Self }}">{{ $item.Key }}</a></td>
+                <td class="bordered no-width"><img class="section-jira-icon" src='{{ $item.Fields.Type.IconURL }}' /></td>
+                <td class="bordered no-width">{{ $item.Fields.Status.Name }}</td>
+                <td class="bordered no-width"><img class="section-jira-icon" src='{{ $item.Fields.Priority.IconURL }}' /></td>
+                <td class="bordered no-width"></td>
+                <td class="bordered no-width">{{ $item.Fields.Summary }}</td>
+                <td class="bordered no-width">{{ $item.Fields.Assignee.DisplayName }}</td>
+                <td class="bordered no-width"></td>
+            </tr>
+		{{end}}
+	</tbody>
+</table>
+`

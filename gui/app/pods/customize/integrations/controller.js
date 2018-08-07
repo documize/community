@@ -9,16 +9,7 @@
 //
 // https://documize.com
 
-import { inject as service } from '@ember/service';
 import Controller from '@ember/controller';
 
 export default Controller.extend({
-	orgService: service('organization'),
-
-	actions: {
-		save() {
-			return this.get('orgService').save(this.model.general).then(() => {
-			});
-		}
-	}
 });
