@@ -20,6 +20,7 @@ export default Component.extend(SectionMixin, TooltipMixin, {
 	waiting: false,
 	authenticated: false,
 	issuesGrid: '',
+	issuesList: null,
 
 	init() {
 		this._super(...arguments);
@@ -52,7 +53,33 @@ export default Component.extend(SectionMixin, TooltipMixin, {
 			.then((response) => { // eslint-disable-line no-unused-vars
 				this.set('authenticated', true);
 				this.set('waiting', false);
+
+				this.generatePreview();
 			}, (reason) => { // eslint-disable-line no-unused-vars
+				this.set('authenticated', false);
+				this.set('waiting', false);
+		});
+	},
+
+	generatePreview() {
+		this.set('waiting', true);
+
+		this.get('sectionService').fetch(this.get('page'), 'previewIssues', this.get('config'))
+			.then((response) => { // eslint-disable-line no-unused-vars
+				this.set('issuesList', response);
+				this.set('authenticated', true);
+				this.set('waiting', false);
+
+				this.get('sectionService').fetchText(this.get('page'), 'previewGrid', this.get('config'))
+					.then((response) => { // eslint-disable-line no-unused-vars
+						this.set('issuesGrid', response);
+					}, (reason) => { // eslint-disable-line no-unused-vars
+						console.log(reason); // eslint-disable-line no-console
+						this.set('issuesGrid', '');
+				});
+			}, (reason) => { // eslint-disable-line no-unused-vars
+				console.log(reason); // eslint-disable-line no-console
+				this.set('issuesList', []);
 				this.set('authenticated', false);
 				this.set('waiting', false);
 		});
@@ -64,36 +91,22 @@ export default Component.extend(SectionMixin, TooltipMixin, {
 		},
 
 		onPreview() {
-			this.set('waiting', true);
-
-			this.get('sectionService').fetchText(this.get('page'), 'preview', this.get('config'))
-				.then((response) => { // eslint-disable-line no-unused-vars
-					this.set('issuesGrid', response);
-					this.set('authenticated', true);
-					this.set('waiting', false);
-				}, (reason) => { // eslint-disable-line no-unused-vars
-					console.log(reason);
-					this.set('issuesGrid', '');
-					this.set('authenticated', false);
-					this.set('waiting', false);
-			});
+			this.generatePreview();
 		},
 
 		onCancel() {
-			let cb = this.get('onCancel');
-			cb();
+			this.get('onCancel')();
 		},
 
 		onAction(title) {
 			let page = this.get('page');
 			let meta = this.get('meta');
 			page.set('title', title);
-			meta.set('rawBody', JSON.stringify(this.get("items")));
+			meta.set('rawBody', JSON.stringify(this.get("issuesList")));
 			meta.set('config', JSON.stringify(this.get('config')));
 			meta.set('externalSource', true);
 
-			let cb = this.get('onAction');
-			cb(page, meta);
+			this.get('onAction')(page, meta);
 		}
 	}
 });

@@ -49,73 +49,68 @@ func (*Provider) Meta() provider.TypeMeta {
 }
 
 // Render converts Jira data into HTML suitable for browser rendering.
-func (*Provider) Render(ctx *provider.Context, config, data string) string {
-	return "<p>Something</p>"
+func (p *Provider) Render(ctx *provider.Context, config, data string) string {
+	// issues := []jira.Issue{}
+	// var c = jiraConfig{}
+
+	// json.Unmarshal([]byte(data), &issues)
+	// json.Unmarshal([]byte(config), &c)
+
+	var c = jiraConfig{}
+	err := json.Unmarshal([]byte(config), &c)
+	if err != nil {
+		p.Runtime.Log.Error("Unable to read Jira config", err)
+		return ""
+	}
+
+	creds, err := getCredentials(ctx, p.Store)
+	if err != nil {
+		p.Runtime.Log.Error("unable to fetch Jira connector configuration", err)
+		return ""
+	}
+
+	client, _, err := authenticate(creds)
+	if err != nil {
+		p.Runtime.Log.Error("unable to authenticate with Jira", err)
+		return ""
+	}
+
+	issues, err := getIssues(c, client)
+
+	return generateGrid(issues)
 }
 
 // Refresh fetches latest issues list.
 func (p *Provider) Refresh(ctx *provider.Context, config, data string) (newData string) {
-	// var c = geminiConfig{}
-	// err := json.Unmarshal([]byte(config), &c)
+	var c = jiraConfig{}
+	err := json.Unmarshal([]byte(config), &c)
+	if err != nil {
+		p.Runtime.Log.Error("Unable to read Jira config", err)
+		return
+	}
 
-	// if err != nil {
-	// 	p.Runtime.Log.Error("Unable to read Gemini config", err)
-	// 	return
-	// }
+	creds, err := getCredentials(ctx, p.Store)
+	if err != nil {
+		p.Runtime.Log.Error("unable to fetch Jira connector configuration", err)
+		return
+	}
 
-	// c.Clean(ctx, p.Store)
+	client, _, err := authenticate(creds)
+	if err != nil {
+		p.Runtime.Log.Error("unable to authenticate with Jira", err)
+		return
+	}
 
-	// if len(c.URL) == 0 {
-	// 	p.Runtime.Log.Info("Gemini.Refresh received empty URL")
-	// 	return
-	// }
+	issues, err := getIssues(c, client)
 
-	// if len(c.Username) == 0 {
-	// 	p.Runtime.Log.Info("Gemini.Refresh received empty username")
-	// 	return
-	// }
+	j, err := json.Marshal(issues)
+	if err != nil {
+		p.Runtime.Log.Error("unable to marshal Jira items", err)
+		return
+	}
 
-	// if len(c.APIKey) == 0 {
-	// 	p.Runtime.Log.Info("Gemini.Refresh received empty API key")
-	// 	return
-	// }
+	newData = string(j)
 
-	// req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/items/card/%d", c.URL, c.WorkspaceID), nil)
-	// // req.Header.Set("Content-Type", "application/json")
-
-	// creds := []byte(fmt.Sprintf("%s:%s", c.Username, c.APIKey))
-	// req.Header.Set("Authorization", "Basic "+base64.StdEncoding.EncodeToString(creds))
-
-	// client := &http.Client{}
-	// res, err := client.Do(req)
-
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return
-	// }
-
-	// if res.StatusCode != http.StatusOK {
-	// 	return
-	// }
-
-	// defer res.Body.Close()
-	// var items []geminiItem
-
-	// dec := json.NewDecoder(res.Body)
-	// err = dec.Decode(&items)
-	// if err != nil {
-	// 	p.Runtime.Log.Error("unable to Decode gemini items", err)
-	// 	return
-	// }
-
-	// j, err := json.Marshal(items)
-
-	// if err != nil {
-	// 	p.Runtime.Log.Error("unable to marshal gemini items", err)
-	// 	return
-	// }
-
-	// newData = string(j)
 	return
 }
 
@@ -130,8 +125,10 @@ func (p *Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http
 	}
 
 	switch method {
-	case "preview":
-		preview(ctx, p.Store, w, r)
+	case "previewIssues":
+		previewIssues(ctx, p.Store, w, r)
+	case "previewGrid":
+		previewGrid(ctx, p.Store, w, r)
 	case "auth":
 		auth(ctx, p.Store, w, r)
 	}
@@ -155,7 +152,33 @@ func auth(ctx *provider.Context, store *domain.Store, w http.ResponseWriter, r *
 	provider.WriteJSON(w, "OK")
 }
 
-func preview(ctx *provider.Context, store *domain.Store, w http.ResponseWriter, r *http.Request) {
+func previewIssues(ctx *provider.Context, store *domain.Store, w http.ResponseWriter, r *http.Request) {
+	creds, err := getCredentials(ctx, store)
+	if err != nil {
+		provider.WriteForbidden(w)
+		return
+	}
+
+	client, _, err := authenticate(creds)
+	if err != nil {
+		fmt.Println(err)
+		provider.WriteError(w, logID, err)
+		return
+	}
+
+	config, err := readConfig(ctx, store, w, r)
+	if err != nil {
+		fmt.Println(err)
+		provider.WriteError(w, logID, err)
+		return
+	}
+
+	issues, err := getIssues(config, client)
+
+	provider.WriteJSON(w, issues)
+}
+
+func previewGrid(ctx *provider.Context, store *domain.Store, w http.ResponseWriter, r *http.Request) {
 	creds, err := getCredentials(ctx, store)
 	if err != nil {
 		provider.WriteForbidden(w)
@@ -245,16 +268,18 @@ func generateGrid(issues []jira.Issue) string {
 	payload.Issues = issues
 
 	buffer := new(bytes.Buffer)
-	t.Execute(buffer, payload)
+	err := t.Execute(buffer, payload)
+
+	if err != nil {
+		fmt.Println("Jira render error", err)
+	}
 
 	return buffer.String()
-
 }
 
 type jiraConfig struct {
-	JQL       string                 `json:"jql"`
-	ItemCount int                    `json:"itemCount"`
-	Filter    map[string]interface{} `json:"filter"`
+	JQL       string `json:"jql"`
+	ItemCount int    `json:"itemCount"`
 }
 
 type jiraLogin struct {
@@ -270,7 +295,7 @@ type jiraGrid struct {
 
 // the HTML that is rendered by this section.
 const renderTemplate = `
-<p>Showing {{.ItemCount}} Jira issues</p>
+<p>{{.ItemCount}} items</p>
 <table class="basic-table section-jira-table">
 	<thead>
 		<tr>
