@@ -57,5 +57,20 @@ export default Service.extend({
 			method: 'POST',
 			data: JSON.stringify(config)
 		});
+	},
+
+	getGlobalSetting(key) {
+		return this.get('ajax').request(`organization/setting?key=${key}`, {
+			method: 'GET'
+		}).then((response) => {
+			return JSON.parse(response);
+		});
+	},
+
+	saveGlobalSetting(key, config) {
+		return this.get('ajax').request(`organization/setting?key=${key}`, {
+			method: 'POST',
+			data: JSON.stringify(config)
+		});
 	}
 });

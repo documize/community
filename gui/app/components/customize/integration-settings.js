@@ -19,6 +19,8 @@ export default Component.extend(Notifier, {
 
 	didReceiveAttrs() {
 		this._super(...arguments);
+
+		// Jira specific.
 		let jira = this.get('jira');
 
 		if (is.not.object(jira)) {
@@ -30,6 +32,19 @@ export default Component.extend(Notifier, {
 		}
 
 		this.set('jiraCreds', jira);
+
+		if (this.get('session.isGlobalAdmin')) {
+			// Trello specific.
+			let trello = this.get('trello');
+
+			if (is.not.object(trello)) {
+				trello = {
+					appKey: ''
+				};
+			}
+
+			this.set('trelloCreds', trello);
+		}
 	},
 
 	actions: {
@@ -42,8 +57,11 @@ export default Component.extend(Notifier, {
 			}
 
 			this.showWait();
+			this.get('orgSvc').saveOrgSetting(orgId, 'jira', this.get('jiraCreds')).then(() => {
+				if (this.get('session.isGlobalAdmin')) {
+					this.get('orgSvc').saveGlobalSetting('SECTION-TRELLO', this.get('trelloCreds'));
+				}
 
-			this.get('orgSvc').saveOrgSetting(orgId, 'jira', this.get('jiraCreds')).then(() =>{
 				this.showDone();
 			});
 		}

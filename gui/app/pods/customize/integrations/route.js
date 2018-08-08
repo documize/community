@@ -29,7 +29,8 @@ export default Route.extend(AuthenticatedRouteMixin, {
 		let orgId = this.get("appMeta.orgId");
 
 		return RSVP.hash({
-			jira: this.get('orgService').getOrgSetting(orgId, "jira")
+			jira: this.get('orgService').getOrgSetting(orgId, 'jira'),
+			trello: this.get('orgService').getGlobalSetting('SECTION-TRELLO')
 		});
 	},
 
