@@ -50,12 +50,6 @@ func (*Provider) Meta() provider.TypeMeta {
 
 // Render converts Jira data into HTML suitable for browser rendering.
 func (p *Provider) Render(ctx *provider.Context, config, data string) string {
-	// issues := []jira.Issue{}
-	// var c = jiraConfig{}
-
-	// json.Unmarshal([]byte(data), &issues)
-	// json.Unmarshal([]byte(config), &c)
-
 	var c = jiraConfig{}
 	err := json.Unmarshal([]byte(config), &c)
 	if err != nil {
@@ -77,7 +71,7 @@ func (p *Provider) Render(ctx *provider.Context, config, data string) string {
 
 	issues, err := getIssues(c, client)
 
-	return generateGrid(issues)
+	return generateGrid(creds.URL, issues)
 }
 
 // Refresh fetches latest issues list.
@@ -203,7 +197,7 @@ func previewGrid(ctx *provider.Context, store *domain.Store, w http.ResponseWrit
 
 	w.Header().Set("Content-Type", "html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(generateGrid(issues)))
+	w.Write([]byte(generateGrid(creds.URL, issues)))
 }
 
 // Pull config from HTTP request.
@@ -259,13 +253,14 @@ func getIssues(config jiraConfig, client *jira.Client) (issues []jira.Issue, err
 }
 
 // Generate issues grid
-func generateGrid(issues []jira.Issue) string {
+func generateGrid(jiraURL string, issues []jira.Issue) string {
 	t := template.New("issues")
 	t, _ = t.Parse(renderTemplate)
 
 	payload := jiraGrid{}
 	payload.ItemCount = len(issues)
 	payload.Issues = issues
+	payload.JiraURL = jiraURL
 
 	buffer := new(bytes.Buffer)
 	err := t.Execute(buffer, payload)
@@ -289,8 +284,14 @@ type jiraLogin struct {
 }
 
 type jiraGrid struct {
+	JiraURL   string       `json:"url"`
 	Issues    []jira.Issue `json:"issues"`
 	ItemCount int          `json:"itemCount"`
+}
+
+type jiraFilter struct {
+	Name string `json:"name"`
+	JQL  string `json:"jql"`
 }
 
 // the HTML that is rendered by this section.
@@ -303,23 +304,32 @@ const renderTemplate = `
 			<th class="bordered no-width">T</th>
 			<th class="bordered no-width">Status</th>
 			<th class="bordered no-width">P</th>
-			<th class="bordered no-width">Component</th>
+			<th class="bordered no-width">Component/s</th>
 			<th class="bordered">Summary</th>
 			<th class="bordered no-width">Assignee</th>
 			<th class="bordered no-width">Fix Version/s</th>
 		</tr>
 	</thead>
 	<tbody>
-		{{range $item := .Issues}}
+        {{$app := .JiraURL}}
+        {{range $item := .Issues}}
             <tr>
-                <td class="bordered no-width"><a href="{{ $item.Self }}">{{ $item.Key }}</a></td>
+                <td class="bordered no-width"><a href="{{ $app }}/browse/{{ $item.Key }}">{{ $item.Key }}</a></td>
                 <td class="bordered no-width"><img class="section-jira-icon" src='{{ $item.Fields.Type.IconURL }}' /></td>
-                <td class="bordered no-width">{{ $item.Fields.Status.Name }}</td>
+                <td class="bordered no-width"><span class="badge badge-warning">{{ $item.Fields.Status.Name }}</span></td>
                 <td class="bordered no-width"><img class="section-jira-icon" src='{{ $item.Fields.Priority.IconURL }}' /></td>
-                <td class="bordered no-width"></td>
+                <td class="bordered no-width">
+                    {{range $comp := $item.Fields.Components}}
+                        {{ $comp.Name }}
+                    {{end}}
+                </td>
                 <td class="bordered no-width">{{ $item.Fields.Summary }}</td>
                 <td class="bordered no-width">{{ $item.Fields.Assignee.DisplayName }}</td>
-                <td class="bordered no-width"></td>
+                <td class="bordered no-width">
+                    {{range $ver := $item.Fields.FixVersions}}
+                        {{ $ver.Name }}
+                    {{end}}
+                </td>
             </tr>
 		{{end}}
 	</tbody>
