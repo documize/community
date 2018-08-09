@@ -27,6 +27,10 @@ export default Component.extend(SectionMixin, NotifierMixin, TooltipMixin, {
 	boards: null,
 	noBoards: false,
 	appKey: "",
+	trelloConfigured: computed('config.board', function () {
+		return is.not.empty(this.get('appKey'));
+	}),
+
 	boardStyle: computed('config.board', function () {
 		let board = this.get('config.board');
 
