@@ -109,6 +109,9 @@ func (h *Handler) GetInstanceSetting(w http.ResponseWriter, r *http.Request) {
 
 	key := request.Query(r, "key")
 	setting, _ := h.Store.Setting.GetUser(orgID, "", key, "")
+	if len(setting) == 0 {
+		setting = "{}"
+	}
 
 	response.WriteJSON(w, setting)
 }

@@ -28,10 +28,17 @@ export default Route.extend(AuthenticatedRouteMixin, {
 	model() {
 		let orgId = this.get("appMeta.orgId");
 
-		return RSVP.hash({
-			jira: this.get('orgService').getOrgSetting(orgId, 'jira'),
-			trello: this.get('orgService').getGlobalSetting('SECTION-TRELLO')
-		});
+		if (this.get("session.isGlobalAdmin")) {
+			return RSVP.hash({
+				jira: this.get('orgService').getOrgSetting(orgId, 'jira'),
+				trello: this.get('orgService').getGlobalSetting('SECTION-TRELLO')
+			});
+		} else {
+			return RSVP.hash({
+				jira: this.get('orgService').getOrgSetting(orgId, 'jira'),
+				trello: { appKey: '' }
+			});
+		}
 	},
 
 	activate() {
