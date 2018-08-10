@@ -19,7 +19,7 @@ export default Service.extend({
 
 	// Returns attributes for specified org id.
 	getOrg(id) {
-		return this.get('ajax').request(`organizations/${id}`, {
+		return this.get('ajax').request(`organization/${id}`, {
 			method: 'GET'
 		}).then((response) => {
 			let data = this.get('store').normalize('organization', response);
@@ -38,9 +38,39 @@ export default Service.extend({
 			conversionEndpoint: org.get('conversionEndpoint')
 		});
 
-		return this.get('ajax').request(`organizations/${id}`, {
+		return this.get('ajax').request(`organization/${id}`, {
 			method: 'PUT',
 			data: JSON.stringify(org)
+		});
+	},
+
+	getOrgSetting(orgId, key) {
+		return this.get('ajax').request(`organization/${orgId}/setting?key=${key}`, {
+			method: 'GET'
+		}).then((response) => {
+			return JSON.parse(response);
+		});
+	},
+
+	saveOrgSetting(orgId, key, config) {
+		return this.get('ajax').request(`organization/${orgId}/setting?key=${key}`, {
+			method: 'POST',
+			data: JSON.stringify(config)
+		});
+	},
+
+	getGlobalSetting(key) {
+		return this.get('ajax').request(`organization/setting?key=${key}`, {
+			method: 'GET'
+		}).then((response) => {
+			return JSON.parse(response);
+		});
+	},
+
+	saveGlobalSetting(key, config) {
+		return this.get('ajax').request(`organization/setting?key=${key}`, {
+			method: 'POST',
+			data: JSON.stringify(config)
 		});
 	}
 });

@@ -117,8 +117,12 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	AddPrivate(rt, "documents/{documentID}/pages/{pageID}/meta", []string{"GET", "OPTIONS"}, nil, page.GetMeta)
 	AddPrivate(rt, "documents/{documentID}/pages/{pageID}/copy/{targetID}", []string{"POST", "OPTIONS"}, nil, page.Copy)
 
-	AddPrivate(rt, "organizations/{orgID}", []string{"GET", "OPTIONS"}, nil, organization.Get)
-	AddPrivate(rt, "organizations/{orgID}", []string{"PUT", "OPTIONS"}, nil, organization.Update)
+	AddPrivate(rt, "organization/setting", []string{"GET", "OPTIONS"}, nil, organization.GetGlobalSetting)
+	AddPrivate(rt, "organization/setting", []string{"POST", "OPTIONS"}, nil, organization.SaveGlobalSetting)
+	AddPrivate(rt, "organization/{orgID}", []string{"GET", "OPTIONS"}, nil, organization.Get)
+	AddPrivate(rt, "organization/{orgID}", []string{"PUT", "OPTIONS"}, nil, organization.Update)
+	AddPrivate(rt, "organization/{orgID}/setting", []string{"GET", "OPTIONS"}, nil, organization.GetInstanceSetting)
+	AddPrivate(rt, "organization/{orgID}/setting", []string{"POST", "OPTIONS"}, nil, organization.SaveInstanceSetting)
 
 	AddPrivate(rt, "space/{spaceID}", []string{"DELETE", "OPTIONS"}, nil, space.Delete)
 	AddPrivate(rt, "space/{spaceID}/move/{moveToId}", []string{"DELETE", "OPTIONS"}, nil, space.Remove)

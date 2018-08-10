@@ -1,0 +1,37 @@
+{{#section/base-editor document=document folder=folder page=page busy=waiting tip="Jira issue tracking" isDirty=(action 'isDirty') onCancel=(action 'onCancel') onAction=(action 'onAction')}}
+
+<div class="row">
+	<div class="col-12 mb-5">
+		{{#if session.isAdmin}}
+			{{#link-to 'customize.integrations' class="btn btn-outline-secondary font-weight-bold"}}
+				Configure Jira Connector
+			{{/link-to}}
+		{{else}}
+			{{#unless authenticated}}
+				<p>Your Documize administrator needs to provide Jira connection details before usage.</p>
+			{{/unless}}
+		{{/if}}
+	</div>
+</div>
+
+{{#if authenticated}}
+	<div class="row">
+		<div class="col-12">
+			<form {{action 'onPreview'}}>
+				<div class="form-group">
+					<label for="gemini-url">Jira Query Language</label>
+					{{focus-input id="jira-jql" type="text" value=config.jql class="form-control" placeholder="e.g. (status = resolved AND project = SysAdmin) OR assignee = bobsmith"}}
+				</div>
+				<button type="submit" class="btn btn-secondary font-weight-bold">Preview</button>
+			</form>
+		</div>
+	</div>
+
+	<div class="row my-5">
+		<div class="col-12">
+			{{{issuesGrid}}}
+		</div>
+	</div>
+{{/if}}
+
+{{/section/base-editor}}

@@ -145,7 +145,6 @@ func (p *Provider) Refresh(ctx *provider.Context, config, data string) (newData 
 	}
 
 	j, err := json.Marshal(items)
-
 	if err != nil {
 		p.Runtime.Log.Error("unable to marshal gemini items", err)
 		return

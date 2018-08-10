@@ -95,6 +95,9 @@ export default Router.map(function () {
 			this.route('search', {
 				path: 'search'
 			});
+			this.route('integrations', {
+				path: 'integrations'
+			});
 		}
 	);
 
