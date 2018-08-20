@@ -14,9 +14,12 @@ import Controller from '@ember/controller';
 
 export default Controller.extend({
 	userService: service('user'),
+	globalSvc: service('global'),
+	syncInProgress: false,
+	userLimit: 100,
 
 	loadUsers(filter) {
-		this.get('userService').getComplete(filter).then((users) => {
+		this.get('userService').getComplete(filter, this.get('userLimit')).then((users) => {
 			this.set('model', users);
 		});
 	},
@@ -27,7 +30,7 @@ export default Controller.extend({
 				this.get('model').pushObject(user);
 			});
 		},
-		
+
 		onAddUsers(list) {
 			return this.get('userService').addBulk(list).then(() => {
 				this.loadUsers('');
@@ -52,6 +55,14 @@ export default Controller.extend({
 
 		onFilter(filter) {
 			this.loadUsers(filter);
+		},
+
+		onSync() {
+			this.set('syncInProgress', true);
+			this.get('globalSvc').syncExternalUsers().then(() => {
+				this.set('syncInProgress', false);
+				this.loadUsers('');
+			});
 		}
 	}
 });

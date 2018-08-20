@@ -68,11 +68,12 @@ export default Service.extend({
 	// Returns all active and inactive users for organization.
 	// Only available for admins and limits results to max. 100 users.
 	// Takes filter for user search criteria.
-	getComplete(filter) {
+	getComplete(filter, limit) {
 		filter = filter.trim();
 		if (filter.length > 0) filter = encodeURIComponent(filter);
+		if (is.null(limit) || is.undefined(limit)) limit = 100;
 
-		return this.get('ajax').request(`users?active=0&filter=${filter}`).then((response) => {
+		return this.get('ajax').request(`users?active=0&filter=${filter}&limit=${limit}`).then((response) => {
 			if (is.not.array(response)) response = [];
 
 			return response.map((obj) => {

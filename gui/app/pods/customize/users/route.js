@@ -16,7 +16,6 @@ import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-rout
 
 export default Route.extend(AuthenticatedRouteMixin, {
 	userService: service('user'),
-	global: service('global'),
 	appMeta: service(),
 
 	beforeModel () {
@@ -27,19 +26,9 @@ export default Route.extend(AuthenticatedRouteMixin, {
 
 	model() {
 		return new EmberPromise((resolve) => {
-			let constants = this.get('constants');
-
-			if (this.get('appMeta.authProvider') == constants.AuthProvider.Keycloak) {
-				this.get('global').syncExternalUsers().then(() => {
-					this.get('userService').getComplete('').then((users) =>{
-						resolve(users);
-					});
-				});
-			} else {
-				this.get('userService').getComplete('').then((users) => {
-					resolve(users);
-				});
-			}
+			this.get('userService').getComplete('', 100).then((users) => {
+				resolve(users);
+			});
 		});
 	},
 

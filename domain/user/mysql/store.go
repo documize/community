@@ -132,7 +132,7 @@ func (s Scope) GetActiveUsersForOrganization(ctx domain.RequestContext) (u []use
 
 // GetUsersForOrganization returns a slice containing all of the user records for the organizaiton
 // identified in the Persister.
-func (s Scope) GetUsersForOrganization(ctx domain.RequestContext, filter string) (u []user.User, err error) {
+func (s Scope) GetUsersForOrganization(ctx domain.RequestContext, filter string, limit int) (u []user.User, err error) {
 	u = []user.User{}
 
 	filter = strings.TrimSpace(strings.ToLower(filter))
@@ -146,7 +146,7 @@ func (s Scope) GetUsersForOrganization(ctx domain.RequestContext, filter string)
 		u.global, a.active, a.editor, a.admin, a.users AS viewusers, a.analytics
 		FROM user u, account a
 		WHERE u.refid=a.userid AND a.orgid=? `+likeQuery+
-			`ORDER BY u.firstname, u.lastname LIMIT 100`, ctx.OrgID)
+			`ORDER BY u.firstname, u.lastname LIMIT `+strconv.Itoa(limit), ctx.OrgID)
 
 	if err == sql.ErrNoRows {
 		err = nil

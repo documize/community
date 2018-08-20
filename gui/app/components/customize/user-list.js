@@ -12,9 +12,9 @@
 import $ from 'jquery';
 import { inject as service } from '@ember/service';
 import { schedule, debounce } from '@ember/runloop';
-import Component from '@ember/component';
 import AuthProvider from '../../mixins/auth';
 import ModalMixin from '../../mixins/modal';
+import Component from '@ember/component';
 
 export default Component.extend(AuthProvider, ModalMixin, {
 	groupSvc: service('group'),
@@ -230,6 +230,15 @@ export default Component.extend(AuthProvider, ModalMixin, {
 			this.get('groupSvc').join(groupId, userId).then(() => {
 				this.filterUsers();
 			});
+		},
+
+		onSync() {
+			this.get('onSync')();
+		},
+
+		onLimit(limit) {
+			this.set('userLimit', limit);
+			this.filterUsers();
 		}
 	}
 });

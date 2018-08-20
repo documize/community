@@ -41,7 +41,11 @@ export default Route.extend({
 				this.get("session").authenticate('authenticator:keycloak', data).then(() => {
 					this.transitionTo('folders');
 				}, (reject) => {
-					this.set('message', reject.Error);
+					if (is.not.undefined(reject.Error)) {
+						this.set('message', reject.Error);
+					} else {
+						this.set('message', reject);
+					}
 					this.set('mode', 'reject');
 					resolve();
 				});

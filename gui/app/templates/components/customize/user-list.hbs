@@ -1,4 +1,11 @@
 <div class="view-customize my-5">
+	{{#if isAuthProviderKeycloak}}
+		{{#if syncInProgress}}
+			<div class="btn btn-secondary mt-3 mb-3">Keycloak user sync running...</div>
+		{{else}}
+			<div class="btn btn-success mt-3 mb-3" {{action 'onSync'}}>Sync with Keycloak</div>
+		{{/if}}
+	{{/if}}
 
 	<div class="my-2">
 		<span class="font-weight-bold">Spaces</span>
@@ -24,6 +31,39 @@
 	<div class="form-group mt-5 mb-3">
 		{{focus-input type="text" class="form-control" placeholder="filter users" value=filter}}
 		<small class="form-text text-muted">search firstname, lastname, email</small>
+	</div>
+
+
+	<div class="max-results py-3">
+		<div class="btn-group btn-group-toggle">
+			<label class="btn btn-outline-secondary {{if (eq userLimit 1) 'active'}}">
+				<input type="radio" name="options" autocomplete="off" {{action 'onLimit' 1}}>1
+			</label>
+			<label class="btn btn-outline-secondary {{if (eq userLimit 10) 'active'}}">
+				<input type="radio" name="options" autocomplete="off" {{action 'onLimit' 10}}>10
+			</label>
+			<label class="btn btn-outline-secondary {{if (eq userLimit 25) 'active'}}">
+				<input type="radio" name="options" autocomplete="off" {{action 'onLimit' 25}}>25
+			</label>
+			<label class="btn btn-outline-secondary {{if (eq userLimit 50) 'active'}}">
+				<input type="radio" name="options" autocomplete="off" {{action 'onLimit' 50}}>50
+			</label>
+			<label class="btn btn-outline-secondary {{if (eq userLimit 100) 'active'}}">
+				<input type="radio" name="options" autocomplete="off" {{action 'onLimit' 100}}>100
+			</label>
+			<label class="btn btn-outline-secondary {{if (eq userLimit 250) 'active'}}">
+				<input type="radio" name="options" autocomplete="off" {{action 'onLimit' 250}}>250
+			</label>
+			<label class="btn btn-outline-secondary {{if (eq userLimit 500) 'active'}}">
+				<input type="radio" name="options" autocomplete="off" {{action 'onLimit' 500}}>500
+			</label>
+			<label class="btn btn-outline-secondary {{if (eq userLimit 1000) 'active'}}">
+				<input type="radio" name="options" autocomplete="off" {{action 'onLimit' 1000}}>1,000
+			</label>
+			<label class="btn btn-outline-secondary {{if (eq userLimit 99999) 'active'}}">
+				<input type="radio" name="options" autocomplete="off" {{action 'onLimit' 99999}}>all
+			</label>
+		</div>
 	</div>
 
 	<table class="table table-responsive table-borderless user-table">

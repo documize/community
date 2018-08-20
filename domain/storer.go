@@ -115,7 +115,7 @@ type UserStorer interface {
 	GetByToken(ctx RequestContext, token string) (u user.User, err error)
 	GetBySerial(ctx RequestContext, serial string) (u user.User, err error)
 	GetActiveUsersForOrganization(ctx RequestContext) (u []user.User, err error)
-	GetUsersForOrganization(ctx RequestContext, filter string) (u []user.User, err error)
+	GetUsersForOrganization(ctx RequestContext, filter string, limit int) (u []user.User, err error)
 	GetSpaceUsers(ctx RequestContext, spaceID string) (u []user.User, err error)
 	GetUsersForSpaces(ctx RequestContext, spaces []string) (u []user.User, err error)
 	UpdateUser(ctx RequestContext, u user.User) (err error)

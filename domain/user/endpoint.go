@@ -248,6 +248,11 @@ func (h *Handler) GetOrganizationUsers(w http.ResponseWriter, r *http.Request) {
 		active = false
 	}
 
+	limit, _ := strconv.Atoi(request.Query(r, "limit"))
+	if limit == 0 {
+		limit = 100
+	}
+
 	u := []user.User{}
 
 	if active {
@@ -258,7 +263,7 @@ func (h *Handler) GetOrganizationUsers(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	} else {
-		u, err = h.Store.User.GetUsersForOrganization(ctx, filter)
+		u, err = h.Store.User.GetUsersForOrganization(ctx, filter, limit)
 		if err != nil && err != sql.ErrNoRows {
 			response.WriteServerError(w, method, err)
 			h.Runtime.Log.Error(method, err)
