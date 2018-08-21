@@ -77,11 +77,11 @@ func Fetch(c keycloakConfig) (users []user.User, err error) {
 		return users, err
 	}
 
-	url := fmt.Sprintf("%s/admin/realms/%s/users?max=500", c.URL, c.Realm)
+	url := fmt.Sprintf("%s/admin/realms/%s/users?max=99999", c.URL, c.Realm)
 	c.Group = strings.TrimSpace(c.Group)
 
 	if len(c.Group) > 0 {
-		url = fmt.Sprintf("%s/admin/realms/%s/groups/%s/members?max=500", c.URL, c.Realm, c.Group)
+		url = fmt.Sprintf("%s/admin/realms/%s/groups/%s/members?max=99999", c.URL, c.Realm, c.Group)
 	}
 
 	req, err = http.NewRequest("GET", url, nil)
