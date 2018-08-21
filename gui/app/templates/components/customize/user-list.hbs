@@ -33,9 +33,8 @@
 		<small class="form-text text-muted">search firstname, lastname, email</small>
 	</div>
 
-
 	<div class="max-results py-3">
-		<div class="btn-group btn-group-toggle">
+		<div class="btn-group btn-group-toggle" data-toggle="tooltip" data-placement="top" title="Show how many users">
 			<label class="btn btn-outline-secondary {{if (eq userLimit 1) 'active'}}">
 				<input type="radio" name="options" autocomplete="off" {{action 'onLimit' 1}}>1
 			</label>

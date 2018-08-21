@@ -119,13 +119,14 @@ $link-hover-decoration:     none;
 .modal-80 {
 	max-width: 80% !important;
 }
+
 body.modal-open {
 	padding-right: 0 !important;
-
 	// Do not scroll body to top.
 	// See: https://stackoverflow.com/questions/21604674/bootstrap-modal-background-jumps-to-top-on-toggle/21881894
 	overflow: visible;
 }
+
 .modal-header-white {
 	background-color: $color-white !important;
 	border: none !important;
@@ -144,6 +145,7 @@ body.modal-open {
 .popover-header {
 	font-size: 1.2rem;
 }
+
 .popover-body {
 	font-size: 1rem;
 
@@ -158,6 +160,11 @@ body.modal-open {
 			list-style: square;
 		}
 	}
+}
+
+.btn {
+	text-transform: uppercase;
+	font-weight: 600;
 }
 
 // Bootstrap override that removes gutter space on smaller screens

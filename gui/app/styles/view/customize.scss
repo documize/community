@@ -85,13 +85,13 @@
 			margin: 15px 0;
 
 			.name {
-				font-size: 1.2rem;
 				color: $color-off-black;
+				font-size: 1.3rem;
+				font-weight: 600;
 
 				> .purpose {
 					font-size: 1rem;
 					color: $color-gray;
-					display: inline-block;
 				}
 			}
 		}
@@ -106,15 +106,6 @@
 				color: $color-primary;
 				font-size: 1.2rem;
 			}
-		}
-
-		> hr {
-			height: 1px;
-			color: $color-border;
-			background: $color-border;
-			font-size: 0;
-			border: 0;
-			margin: 5px 10px;
 		}
 	}
 

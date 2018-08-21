@@ -4,7 +4,7 @@
 
 			<h1 class="admin-heading">Groups</h1>
 			<h2 class="sub-heading">Create groups for easier user management &mdash; assign users to groups</h2>
-			<div class="btn btn-success mt-3 mb-3" {{action 'onOpenGroupModal'}}>Add group</div>
+			<div class="btn btn-success mt-3 mb-3" {{action 'onShowAddGroupModal'}}>Add Group</div>
 
 			<div id="add-group-modal" class="modal" tabindex="-1" role="dialog">
 				<div class="modal-dialog" role="document">
@@ -36,15 +36,18 @@
 					<div class="row group">
 						<div class="col-8">
 							<div class="name">
-								{{group.name}}
+								{{group.name}} ({{group.members}})
 								{{#if group.purpose}}
-									<div class="purpose">&nbsp;&nbsp;&mdash;&nbsp;{{group.purpose}}</div>
+									<div class="purpose">{{group.purpose}}</div>
 								{{/if}}
 							</div>
-
 						</div>
 						<div class="col-4 buttons text-right">
-							<button class="btn btn-sm btn-secondary" {{action 'onShowMembersModal' group.id}}>{{group.members}} members</button>
+							<button class="btn btn-primary" {{action 'onShowAddMemberModal' group.id}}>Add</button>
+							{{#if (gt group.members 0)}}
+								<div class="button-icon-gap" />
+								<button class="btn btn-danger" {{action 'onShowRemoveMemberModal' group.id}}>Remove</button>
+							{{/if}}
 							<div class="button-icon-gap" />
 							<div class="button-icon-gray align-middle" data-toggle="tooltip" data-placement="top" title="Rename" {{action 'onShowEditModal' group.id}}>
 								<i class="material-icons">edit</i>
@@ -109,16 +112,11 @@
 				</div>
 			</div>
 
-			<div id="group-members-modal" class="modal" tabindex="-1" role="dialog">
+			<div id="group-remove-member-modal" class="modal" tabindex="-1" role="dialog">
 				<div class="modal-dialog modal-lg" role="document">
 					<div class="modal-content">
-						<div class="modal-header">{{membersGroup.name}} ({{members.length}})</div>
+						<div class="modal-header">Remove Member &mdash; {{membersGroup.name}} ({{members.length}})</div>
 						<div class="modal-body">
-							<div class="form-group">
-								<label for="group-members-search">Search for group members, non-members</label>
-								{{input id="group-members-search" type="text" class="form-control mousetrap" placeholder="Search members and users..." value=searchText key-up=(action 'onSearch')}}
-								<small class="form-text text-muted">search firstname, lastname, email</small>
-							</div>
 							<div class="view-customize">
 								<div class="group-users-members my-5">
 									{{#each members as |member|}}
@@ -129,26 +127,78 @@
 											</div>
 										</div>
 									{{/each}}
-									{{#if showUsers}}
-										<hr />
-										{{#each users as |user|}}
-											<div class="row item">
-												<div class="col-10 fullname">{{user.firstname}} {{user.lastname}}</div>
-												<div class="col-2 text-right">
-													{{#if user.isMember}}
-														<button class="btn btn-danger" {{action 'onLeaveGroup' user.id}}>Remove</button>
-													{{else}}
-														<button class="btn btn-success" {{action 'onJoinGroup' user.id}}>Add</button>
-													{{/if}}
-												</div>
-											</div>
-										{{/each}}
-									{{/if}}
 								</div>
 							</div>
 						</div>
 						<div class="modal-footer">
-							<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div id="group-add-member-modal" class="modal" tabindex="-1" role="dialog">
+				<div class="modal-dialog modal-lg" role="document">
+					<div class="modal-content">
+						<div class="modal-header">Add Member &mdash; {{membersGroup.name}} ({{members.length}})</div>
+						<div class="modal-body">
+							<div class="form-group">
+								<label for="group-members-search">Search users to join this group</label>
+								{{input id="group-members-search" type="text" class="form-control mousetrap" placeholder="Search members and users..." value=searchText key-up=(action 'onSearch')}}
+								<small class="form-text text-muted">search firstname, lastname, email</small>
+							</div>
+							<div class="view-customize">
+								<div class="text-center">
+									<div class="btn-group btn-group-toggle" data-toggle="tooltip" data-placement="top" title="Show how many users">
+										<label class="btn btn-outline-secondary {{if (eq userLimit 1) 'active'}}">
+											<input type="radio" name="options" autocomplete="off" {{action 'onLimit' 1}}>1
+										</label>
+										<label class="btn btn-outline-secondary {{if (eq userLimit 10) 'active'}}">
+											<input type="radio" name="options" autocomplete="off" {{action 'onLimit' 10}}>10
+										</label>
+										<label class="btn btn-outline-secondary {{if (eq userLimit 25) 'active'}}">
+											<input type="radio" name="options" autocomplete="off" {{action 'onLimit' 25}}>25
+										</label>
+										<label class="btn btn-outline-secondary {{if (eq userLimit 50) 'active'}}">
+											<input type="radio" name="options" autocomplete="off" {{action 'onLimit' 50}}>50
+										</label>
+										<label class="btn btn-outline-secondary {{if (eq userLimit 100) 'active'}}">
+											<input type="radio" name="options" autocomplete="off" {{action 'onLimit' 100}}>100
+										</label>
+										<label class="btn btn-outline-secondary {{if (eq userLimit 250) 'active'}}">
+											<input type="radio" name="options" autocomplete="off" {{action 'onLimit' 250}}>250
+										</label>
+										<label class="btn btn-outline-secondary {{if (eq userLimit 500) 'active'}}">
+											<input type="radio" name="options" autocomplete="off" {{action 'onLimit' 500}}>500
+										</label>
+										<label class="btn btn-outline-secondary {{if (eq userLimit 1000) 'active'}}">
+											<input type="radio" name="options" autocomplete="off" {{action 'onLimit' 1000}}>1,000
+										</label>
+										<label class="btn btn-outline-secondary {{if (eq userLimit 99999) 'active'}}">
+											<input type="radio" name="options" autocomplete="off" {{action 'onLimit' 99999}}>all
+										</label>
+									</div>
+								</div>
+								<div class="clearfix" />
+
+								<div class="group-users-members my-5">
+									{{#each users as |user|}}
+										<div class="row item">
+											<div class="col-10 fullname">{{user.firstname}} {{user.lastname}}</div>
+											<div class="col-2 text-right">
+												{{#if user.isMember}}
+													<button class="btn btn-danger" {{action 'onLeaveGroup' user.id}}>Remove</button>
+												{{else}}
+													<button class="btn btn-success" {{action 'onJoinGroup' user.id}}>Add</button>
+												{{/if}}
+											</div>
+										</div>
+									{{/each}}
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
 						</div>
 					</div>
 				</div>

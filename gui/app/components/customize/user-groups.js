@@ -13,19 +13,18 @@ import $ from 'jquery';
 import { inject as service } from '@ember/service';
 import { debounce } from '@ember/runloop';
 import { A } from '@ember/array';
-import Component from '@ember/component';
 import AuthProvider from '../../mixins/auth';
 import ModalMixin from '../../mixins/modal';
+import Component from '@ember/component';
 
 export default Component.extend(AuthProvider, ModalMixin, {
 	groupSvc: service('group'),
 	userSvc: service('user'),
 	newGroup: null,
 	searchText: '',
-	showUsers: false,
-	showMembers: true,
 	users: null,
 	members: null,
+	userLimit: 100,
 
 	didReceiveAttrs() {
 		this._super(...arguments);
@@ -34,11 +33,9 @@ export default Component.extend(AuthProvider, ModalMixin, {
 	},
 
 	loadGroups() {
-		this.get('groupSvc')
-			.getAll()
-			.then(groups => {
-				this.set('groups', groups);
-			});
+		this.get('groupSvc').getAll().then(groups => {
+			this.set('groups', groups);
+		});
 	},
 
 	setDefaults() {
@@ -55,19 +52,13 @@ export default Component.extend(AuthProvider, ModalMixin, {
 				this.set('members', members);
 
 				this.get('userSvc')
-					.matchUsers(searchText)
+					.matchUsers(searchText, this.get('userLimit'))
 					.then(users => {
 						let filteredUsers = A([]);
 						users.forEach(user => {
 							let m = members.findBy('userId', user.get('id'));
 							if (is.undefined(m)) filteredUsers.pushObject(user);
-							// user.set('isMember', is.not.undefined(m));
 						});
-
-						if (this.get('showMembers') && members.length === 0) {
-							this.set('showMembers', false);
-							this.set('showUsers', true);
-						}
 
 						this.set('users', filteredUsers);
 					});
@@ -75,12 +66,8 @@ export default Component.extend(AuthProvider, ModalMixin, {
 	},
 
 	actions: {
-		onOpenGroupModal() {
-			this.modalOpen(
-				'#add-group-modal',
-				{ show: true },
-				'#new-group-name'
-			);
+		onShowAddGroupModal() {
+			this.modalOpen('#add-group-modal', { show: true }, '#new-group-name');
 		},
 
 		onAddGroup(e) {
@@ -171,38 +158,23 @@ export default Component.extend(AuthProvider, ModalMixin, {
 			this.set('editGroup', null);
 		},
 
-		onShowMembersModal(groupId) {
+		onShowRemoveMemberModal(groupId) {
 			this.set('membersGroup', this.get('groups').findBy('id', groupId));
-			this.modalOpen(
-				'#group-members-modal',
-				{ show: true },
-				'#group-members-search'
-			);
+			this.modalOpen('#group-remove-member-modal', { show: true });
 			this.set('members', null);
+			this.loadGroupInfo();
+		},
+
+		onShowAddMemberModal(groupId) {
+			this.set('membersGroup', this.get('groups').findBy('id', groupId));
+			this.modalOpen('#group-add-member-modal', { show: true }, '#group-add-members-search');
 			this.set('users', null);
-			this.set('showMembers', true);
-			this.set('showUsers', false);
 			this.set('searchText', '');
 			this.loadGroupInfo();
 		},
 
 		onSearch() {
-			debounce(
-				this,
-				function() {
-					let searchText = this.get('searchText');
-					this.loadGroupInfo();
-
-					if (is.not.empty(searchText)) {
-						this.set('showMembers', false);
-						this.set('showUsers', true);
-					} else {
-						this.set('showMembers', true);
-						this.set('showUsers', false);
-					}
-				},
-				450
-			);
+			debounce(this, function() { this.loadGroupInfo(); }, 450);
 		},
 
 		onLeaveGroup(userId) {
@@ -225,6 +197,11 @@ export default Component.extend(AuthProvider, ModalMixin, {
 					this.loadGroupInfo();
 					this.loadGroups();
 				});
+		},
+
+		onLimit(limit) {
+			this.set('userLimit', limit);
+			this.loadGroupInfo();
 		}
 	}
 });

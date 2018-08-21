@@ -12,11 +12,12 @@
 import $ from 'jquery';
 import { inject as service } from '@ember/service';
 import { schedule, debounce } from '@ember/runloop';
+import TooltipMixin from '../../mixins/tooltip';
 import AuthProvider from '../../mixins/auth';
 import ModalMixin from '../../mixins/modal';
 import Component from '@ember/component';
 
-export default Component.extend(AuthProvider, ModalMixin, {
+export default Component.extend(AuthProvider, ModalMixin, TooltipMixin, {
 	groupSvc: service('group'),
 	editUser: null,
 	deleteUser: null,
@@ -45,6 +46,13 @@ export default Component.extend(AuthProvider, ModalMixin, {
 		});
 
 		this.set('users', users);
+
+		this.renderTooltips();
+	},
+
+	willDestroyElement() {
+		this._super(...arguments);
+		this.removeTooltips();
 	},
 
 	onKeywordChange: function () {

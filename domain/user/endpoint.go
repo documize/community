@@ -694,7 +694,12 @@ func (h *Handler) MatchUsers(w http.ResponseWriter, r *http.Request) {
 	}
 	searchText := string(body)
 
-	u, err := h.Store.User.MatchUsers(ctx, searchText, 100)
+	limit, _ := strconv.Atoi(request.Query(r, "limit"))
+	if limit == 0 {
+		limit = 100
+	}
+
+	u, err := h.Store.User.MatchUsers(ctx, searchText, limit)
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)

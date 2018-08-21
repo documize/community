@@ -169,8 +169,10 @@ export default Service.extend({
 	},
 
 	// matchUsers on firstname, lastname, email
-	matchUsers(text) {
-		return this.get('ajax').request('users/match', {
+	matchUsers(text, limit) {
+		if (is.null(limit) || is.undefined(limit)) limit = 100;
+
+		return this.get('ajax').request(`users/match?limit=${limit}`, {
 			method: 'POST',
 			dataType: 'json',
 			contentType: 'text',
