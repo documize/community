@@ -110,7 +110,15 @@ export default Component.extend({
 	},
 
 	invokeExport() {
+		// Cannot export if nothing has been changed
+		// so we skip straight to the save process.
+		if (is.empty(this.get('diagramXML'))) {
+			this.set('readyToSave', true);
+			return;
+		}
+
 		let editorFrame = document.getElementById(this.get('editorId'));
+
 		editorFrame.contentWindow.postMessage(
 			JSON.stringify(
 				{
@@ -126,7 +134,12 @@ export default Component.extend({
 		if (this.get('readyToSave')) {
 			let page = this.get('page');
 			let meta = this.get('meta');
-			meta.set('rawBody', this.get('diagram'));
+
+			// handle case where no diagram changes were made
+			let dg = this.get('diagram');
+			if (is.empty(dg)) dg = this.get('meta.rawBody');
+
+			meta.set('rawBody', dg);
 			page.set('title', this.get('title'));
 
 			this.set('waiting', false);
