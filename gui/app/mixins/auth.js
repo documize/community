@@ -16,6 +16,7 @@ export default Mixin.create({
 	appMeta: service(),
 	isAuthProviderDocumize: true,
 	IsAuthProviderKeycloak: false,
+	IsAuthProviderLDAP: false,
 
 	init() {
 		this._super(...arguments);
@@ -23,5 +24,6 @@ export default Mixin.create({
 
 		this.set('isAuthProviderDocumize', this.get('appMeta.authProvider') === constants.AuthProvider.Documize);
 		this.set('isAuthProviderKeycloak', this.get('appMeta.authProvider') === constants.AuthProvider.Keycloak);
+		this.set('isAuthProviderLDAP', this.get('appMeta.authProvider') === constants.AuthProvider.LDAP);
 	}
 });

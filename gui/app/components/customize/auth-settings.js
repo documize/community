@@ -36,6 +36,7 @@ export default Component.extend(Notifier, {
 
 	init() {
 		this._super(...arguments);
+
 		this.keycloakConfig = {
 			url: '',
 			realm: '',

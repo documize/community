@@ -2,14 +2,6 @@
 
 
 [[projects]]
-  digest = "1:ec2b97c119fc66f96b421f8798deb2f87cb4a5ee81cafeaf9b55420d035f8fea"
-  name = "github.com/andygrunwald/go-jira"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "0298784c4606cdf01e99644da115863c052a737c"
-  version = "v1.5.0"
-
-[[projects]]
   digest = "1:606d068450c82b9ddaa21de992f73563754077f0f411235cdfe71d0903a268c3"
   name = "github.com/codegangsta/negroni"
   packages = ["."]
@@ -250,11 +242,26 @@
   revision = "0298784c4606cdf01e99644da115863c052a737c"
   version = "v1.5.0"
 
+[[projects]]
+  digest = "1:81e1c5cee195fca5de06e2540cb63eea727a850b7e5c213548e7f81521c97a57"
+  name = "gopkg.in/asn1-ber.v1"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "379148ca0225df7a432012b8df0355c2a2063ac0"
+  version = "v1.2"
+
+[[projects]]
+  digest = "1:93aaeb913621a3a53aaa78592c00f46d63e3bb0ea76e2d9b07327b50959a5778"
+  name = "gopkg.in/ldap.v2"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "bb7a9ca6e4fbc2129e3db588a34bc970ffe811a9"
+  version = "v2.5.1"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "github.com/andygrunwald/go-jira",
     "github.com/codegangsta/negroni",
     "github.com/dgrijalva/jwt-go",
     "github.com/documize/blackfriday",
@@ -275,6 +282,7 @@
     "golang.org/x/oauth2",
     "gopkg.in/alexcesaro/quotedprintable.v3",
     "gopkg.in/andygrunwald/go-jira.v1",
+    "gopkg.in/ldap.v2",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

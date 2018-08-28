@@ -59,7 +59,7 @@ export default Controller.extend({
 
 		onSync() {
 			this.set('syncInProgress', true);
-			this.get('globalSvc').syncExternalUsers().then(() => {
+			this.get('globalSvc').syncKeycloak().then(() => {
 				this.set('syncInProgress', false);
 				this.loadUsers('');
 			});

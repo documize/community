@@ -28,12 +28,13 @@ import (
 	"github.com/documize/community/domain"
 	usr "github.com/documize/community/domain/user"
 	"github.com/documize/community/model/account"
+	"github.com/documize/community/model/auth"
 	"github.com/documize/community/model/user"
 	"github.com/pkg/errors"
 )
 
 // Fetch gets list of Keycloak users for specified Realm, Client Id
-func Fetch(c keycloakConfig) (users []user.User, err error) {
+func Fetch(c auth.KeycloakConfig) (users []user.User, err error) {
 	users = []user.User{}
 
 	form := url.Values{}
@@ -71,7 +72,7 @@ func Fetch(c keycloakConfig) (users []user.User, err error) {
 		return users, errors.New("Keycloak authentication failed " + res.Status)
 	}
 
-	ka := keycloakAPIAuth{}
+	ka := auth.KeycloakAPIAuth{}
 	err = json.Unmarshal(body, &ka)
 	if err != nil {
 		return users, err
@@ -114,7 +115,7 @@ func Fetch(c keycloakConfig) (users []user.User, err error) {
 		return users, errors.New("Keycloak users list call failed " + res.Status)
 	}
 
-	kcUsers := []keycloakUser{}
+	kcUsers := []auth.KeycloakUser{}
 	err = json.Unmarshal(body, &kcUsers)
 	if err != nil {
 		err = errors.Wrap(err, "cannot unmarshal Keycloak user list response")
