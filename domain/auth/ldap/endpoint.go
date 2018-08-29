@@ -92,6 +92,7 @@ func (h *Handler) Sync(w http.ResponseWriter, r *http.Request) {
 	c.BaseDN = "dc=example,dc=com"
 	c.BindDN = "cn=read-only-admin,dc=example,dc=com"
 	c.BindPassword = "password"
+	c.UserFilter = ""
 	c.GroupFilter = ""
 	c.DisableLogout = false
 	c.DefaultPermissionAddSpace = false

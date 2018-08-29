@@ -31,18 +31,6 @@ export default Route.extend(AuthenticatedRouteMixin, {
 			authConfig: null,
 		};
 
-		// TEST
-		// TEST
-		// TEST
-		// TEST
-		// TEST
-						this.get('global').syncLDAP().then(() => {});
-		// TEST
-		// TEST
-		// TEST
-		// TEST
-		// TEST
-
 		return new EmberPromise((resolve) => {
 			let constants = this.get('constants');
 

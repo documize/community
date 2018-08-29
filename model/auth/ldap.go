@@ -11,7 +11,21 @@
 
 package auth
 
-// LDAPConfig connection information
+// LDAPConfig that specifies LDAP server connection details and query filters.
+//
+//
+// Example for Active Directory -- filter users that belong to SomeGroupName:
+//      (&(objectCategory=Person)(sAMAccountName=*)(memberOf=cn=SomeGroupName,ou=users,dc=example,dc=com))
+//
+// Example for Active Directory -- filter all users that belong to SomeGroupName:
+//      (&(objectCategory=Person)(sAMAccountName=*)(memberOf:1.2.840.113556.1.4.1941:=cn=SomeGroupName,ou=users,dc=example,dc=com))
+//
+// Example for Active Directory -- filter all users that belong to MyGroup1, MyGroup2 or MyGroup3:
+//      (&(objectCategory=Person)(sAMAccountName=*)(|(memberOf=cn=MyGroup1,ou=users,dc=example,dc=com)(memberOf=cn=MyGroup2,ou=users,dc=example,dc=com)(memberOf=cn=MyGroup3,ou=users,dc=example,dc=com)))
+//
+// Example of group filter that returns users belonging to either Developers or Administrators group:
+//      (&(objectCategory=Group)(|(cn=developers)(cn=administrators)))
+//
 type LDAPConfig struct {
 	ServerHost                string `json:"serverHost"`
 	ServerPort                int    `json:"serverPort"`
@@ -19,9 +33,18 @@ type LDAPConfig struct {
 	BaseDN                    string `json:"baseDN"`
 	BindDN                    string `json:"bindDN"`
 	BindPassword              string `json:"bindPassword"`
+	UserFilter                string `json:"userFilter"`
 	GroupFilter               string `json:"groupFilter"`
 	DisableLogout             bool   `json:"disableLogout"`
 	DefaultPermissionAddSpace bool   `json:"defaultPermissionAddSpace"`
+	AttributeUserRDN          string `json:"attributeUserRDN"`
+	AttributeUserID           string `json:"attributeUserID"` // uid or sAMAccountName
+	AttributeUserFirstname    string `json:"attributeUserFirstname"`
+	AttributeUserLastname     string `json:"attributeUserLastname"`
+	AttributeUserEmail        string `json:"attributeUserEmail"`
+	AttributeUserDisplayName  string `json:"attributeUserDisplayName"`
+	AttributeUserGroupName    string `json:"attributeUserGroupName"`
+	AttributeGroupMember      string `json:"attributeGroupMember"`
 }
 
 // LDAPUser details user record returned by LDAP
