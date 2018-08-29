@@ -21,6 +21,8 @@ import (
 	ld "gopkg.in/ldap.v2"
 )
 
+// Works against https://www.forumsys.com/tutorials/integration-how-to/ldap/online-ldap-test-server/
+
 func TestPublicLDAPServer_UserList(t *testing.T) {
 	c := lm.LDAPConfig{}
 	c.ServerHost = "ldap.forumsys.com"
@@ -213,6 +215,83 @@ func TestPublicLDAPServer_Groups(t *testing.T) {
 			t.Log("group member search failed:", filter)
 		}
 	}
+}
+
+func TestPublicLDAP_Authenticate(t *testing.T) {
+	c := lm.LDAPConfig{}
+	c.ServerHost = "ldap.forumsys.com"
+	c.ServerPort = 389
+	c.EncryptionType = "none"
+	c.BaseDN = "dc=example,dc=com"
+	c.BindDN = "cn=read-only-admin,dc=example,dc=com"
+	c.BindPassword = "password"
+	c.UserFilter = ""
+	c.GroupFilter = ""
+
+	address := fmt.Sprintf("%s:%d", c.ServerHost, c.ServerPort)
+	t.Log("Connecting to LDAP server", address)
+	l, err := ld.Dial("tcp", address)
+	if err != nil {
+		t.Error("Error: unable to dial AD server: ", err.Error())
+		return
+	}
+	defer l.Close()
+
+	if c.EncryptionType == "starttls" {
+		t.Log("Using StartTLS with LDAP server")
+		err = l.StartTLS(&tls.Config{InsecureSkipVerify: true})
+		if err != nil {
+			t.Error("Error: unable to startTLS with LDAP server: ", err.Error())
+			return
+		}
+	}
+
+	// Authenticate with LDAP server using admin credentials.
+	t.Log("Binding LDAP admin user")
+	err = l.Bind(c.BindDN, c.BindPassword)
+	if err != nil {
+		t.Error("Error: unable to bind specified admin user to LDAP: ", err.Error())
+		return
+	}
+
+	username := "newton"
+	password := "password"
+	filter := fmt.Sprintf("(uid=%s)", username)
+
+	searchRequest := ld.NewSearchRequest(
+		c.BaseDN,
+		ld.ScopeWholeSubtree, ld.NeverDerefAliases, 0, 0, false,
+		filter,
+		[]string{"mail"},
+		nil,
+	)
+
+	t.Log("LDAP search filter:", filter)
+	sr, err := l.Search(searchRequest)
+	if err != nil {
+		t.Error("Error: unable to execute directory search: ", err.Error())
+		return
+	}
+
+	if len(sr.Entries) == 0 {
+		t.Error("Error: user not found")
+		return
+	}
+	if len(sr.Entries) != 1 {
+		t.Error("Error: too many users found during authentication")
+		return
+	}
+
+	userdn := sr.Entries[0].DN
+
+	// Bind as the user to verify their password
+	err = l.Bind(userdn, password)
+	if err != nil {
+		t.Error("Error: invalid credentials", err.Error())
+		return
+	}
+
+	t.Log("Authenticated", username)
 }
 
 func TestLocalLDAPServer_AllUsers(t *testing.T) {
