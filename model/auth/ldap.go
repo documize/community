@@ -11,9 +11,6 @@
 
 package auth
 
-// LDAPConfig that specifies LDAP server connection details and query filters.
-//
-//
 // Example for Active Directory -- filter users that belong to SomeGroupName:
 //      (&(objectCategory=Person)(sAMAccountName=*)(memberOf=cn=SomeGroupName,ou=users,dc=example,dc=com))
 //
@@ -26,6 +23,11 @@ package auth
 // Example of group filter that returns users belonging to either Developers or Administrators group:
 //      (&(objectCategory=Group)(|(cn=developers)(cn=administrators)))
 //
+// Sources of filter names:
+//      https://docs.oracle.com/cd/E26217_01/E26214/html/ldap-filters-attrs-users.html
+//      https://social.technet.microsoft.com/wiki/contents/articles/5392.active-directory-ldap-syntax-filters.aspx
+
+// LDAPConfig that specifies LDAP server connection details and query filters.
 type LDAPConfig struct {
 	ServerHost                string `json:"serverHost"`
 	ServerPort                int    `json:"serverPort"`

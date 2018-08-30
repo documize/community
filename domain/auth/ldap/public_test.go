@@ -112,7 +112,7 @@ func TestPublicLDAPServer_Groups(t *testing.T) {
 	c.BindDN = "cn=read-only-admin,dc=example,dc=com"
 	c.BindPassword = "password"
 	c.UserFilter = ""
-	c.GroupFilter = "(ou=Chemists)"
+	c.GroupFilter = "(|(ou=mathematicians)(ou=chemists))"
 
 	address := fmt.Sprintf("%s:%d", c.ServerHost, c.ServerPort)
 	t.Log("Connecting to LDAP server", address)
@@ -145,7 +145,7 @@ func TestPublicLDAPServer_Groups(t *testing.T) {
 	attrs := []string{}
 	if len(c.GroupFilter) > 0 {
 		filter = c.GroupFilter
-		attrs = []string{"dn", "cn"}
+		attrs = []string{"dn", "cn", "uniqueMember"}
 	} else if len(c.UserFilter) > 0 {
 		filter = c.UserFilter
 		attrs = []string{"dn", "cn", "givenName", "sn", "mail", "uid"}
@@ -175,44 +175,46 @@ func TestPublicLDAPServer_Groups(t *testing.T) {
 		return
 	}
 
-	// Get list of group members
-	rawMembers := sr.Entries[0].GetAttributeValues("uniqueMember")
-	fmt.Printf("%s", sr.Entries[0].DN)
+	// Get list of group members per group found.
+	for _, group := range sr.Entries {
+		t.Log("Found group", group.DN)
 
-	if len(rawMembers) == 0 {
-		t.Error("Error: group member attribute returned no users")
-		return
-	}
-
-	t.Logf("LDAP group contains %d members", len(rawMembers))
-
-	for _, entry := range rawMembers {
-		// get CN element from DN
-		parts := strings.Split(entry, ",")
-		if len(parts) == 0 {
+		rawMembers := group.GetAttributeValues("uniqueMember")
+		if len(rawMembers) == 0 {
+			t.Log("Error: group member attribute returned no users")
 			continue
 		}
-		filter := fmt.Sprintf("(%s)", parts[0])
 
-		usr := ld.NewSearchRequest(
-			c.BaseDN,
-			ld.ScopeWholeSubtree, ld.NeverDerefAliases, 0, 0, false,
-			filter,
-			[]string{"dn", "cn", "givenName", "sn", "mail", "uid"},
-			nil,
-		)
-		ue, err := l.Search(usr)
-		if err != nil {
-			t.Error("Error: unable to execute directory search for group member: ", err.Error())
-			return
-		}
+		t.Logf("LDAP group contains %d members", len(rawMembers))
 
-		if len(ue.Entries) > 0 {
-			for _, ur := range ue.Entries {
-				t.Logf("%s", ur.GetAttributeValue("mail"))
+		for _, entry := range rawMembers {
+			// get CN element from DN
+			parts := strings.Split(entry, ",")
+			if len(parts) == 0 {
+				continue
 			}
-		} else {
-			t.Log("group member search failed:", filter)
+			filter := fmt.Sprintf("(%s)", parts[0])
+
+			usr := ld.NewSearchRequest(
+				c.BaseDN,
+				ld.ScopeWholeSubtree, ld.NeverDerefAliases, 0, 0, false,
+				filter,
+				[]string{"dn", "cn", "givenName", "sn", "mail", "uid"},
+				nil,
+			)
+			ue, err := l.Search(usr)
+			if err != nil {
+				t.Log("Error: unable to execute directory search for group member: ", err.Error())
+				continue
+			}
+
+			if len(ue.Entries) > 0 {
+				for _, ur := range ue.Entries {
+					t.Logf("%s", ur.GetAttributeValue("mail"))
+				}
+			} else {
+				t.Log("group member search failed:", filter)
+			}
 		}
 	}
 }
