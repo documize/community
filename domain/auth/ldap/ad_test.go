@@ -12,7 +12,6 @@
 package ldap
 
 import (
-	"crypto/tls"
 	"fmt"
 	"strings"
 	"testing"
@@ -23,65 +22,54 @@ import (
 
 // Works against AD server in Azure confgiured using:
 //
-// https://auth0.com/docs/connector/test-dc
+//      https://auth0.com/docs/connector/test-dc
 //
 // Ensure VM network settings open up ports 389 and 636.
 
+var testConfigPublicAD = lm.LDAPConfig{
+	ServerType:               lm.ServerTypeAD,
+	ServerHost:               "documize-ad.eastus.cloudapp.azure.com",
+	ServerPort:               389,
+	EncryptionType:           "none",
+	BaseDN:                   "DC=mycompany,DC=local",
+	BindDN:                   "CN=ad-admin,CN=Users,DC=mycompany,DC=local",
+	BindPassword:             "8B5tNRLvbk8K",
+	UserFilter:               "",
+	GroupFilter:              "",
+	AttributeUserRDN:         "sAMAccountName",
+	AttributeUserFirstname:   "givenName",
+	AttributeUserLastname:    "sn",
+	AttributeUserEmail:       "mail",
+	AttributeUserDisplayName: "",
+	AttributeUserGroupName:   "",
+	AttributeGroupMember:     "member",
+}
+
 func TestADServer_UserList(t *testing.T) {
-	c := lm.LDAPConfig{}
-	c.ServerHost = "40.117.188.17"
-	c.ServerPort = 389
-	c.EncryptionType = "none"
-	c.BaseDN = "DC=mycompany,DC=local"
-	c.BindDN = "CN=ad-admin,CN=Users,DC=mycompany,DC=local"
-	c.BindPassword = "8B5tNRLvbk8K"
-	c.UserFilter = ""
-	c.GroupFilter = ""
+	testConfigPublicAD.UserFilter = "(|(objectCategory=person)(objectClass=user)(objectClass=inetOrgPerson))"
+	testConfigPublicAD.GroupFilter = ""
+	userAttrs := testConfigPublicAD.GetUserFilterAttributes()
 
-	address := fmt.Sprintf("%s:%d", c.ServerHost, c.ServerPort)
-
-	t.Log("Connecting to AD server", address)
-
-	l, err := ld.Dial("tcp", address)
+	l, err := Connect(testConfigPublicAD)
 	if err != nil {
-		t.Error("Error: unable to dial AD server: ", err.Error())
+		t.Error("Error: unable to dial LDAP server: ", err.Error())
 		return
 	}
 	defer l.Close()
 
-	if c.EncryptionType == "starttls" {
-		t.Log("Using StartTLS with AD server")
-		err = l.StartTLS(&tls.Config{InsecureSkipVerify: true})
-		if err != nil {
-			t.Error("Error: unable to startTLS with AD server: ", err.Error())
-			return
-		}
-	}
-
 	// Authenticate with AD server using admin credentials.
-	t.Log("Binding AD admin user")
-	err = l.Bind(c.BindDN, c.BindPassword)
+	t.Log("Binding LDAP admin user")
+	err = l.Bind(testConfigPublicAD.BindDN, testConfigPublicAD.BindPassword)
 	if err != nil {
 		t.Error("Error: unable to bind specified admin user to AD: ", err.Error())
 		return
 	}
 
-	// Get users from AD server by using filter
-	filter := ""
-	attrs := []string{}
-	if len(c.GroupFilter) > 0 {
-		filter = fmt.Sprintf("(&(objectClass=group)(cn=%s))", c.GroupFilter)
-		attrs = []string{"cn"}
-	} else {
-		filter = "(|(objectCategory=person)(objectClass=user)(objectClass=inetOrgPerson))"
-		attrs = []string{"dn", "cn", "givenName", "sn", "mail", "sAMAccountName"}
-	}
-
 	searchRequest := ld.NewSearchRequest(
-		c.BaseDN,
+		testConfigPublicAD.BaseDN,
 		ld.ScopeWholeSubtree, ld.NeverDerefAliases, 0, 0, false,
-		filter,
-		attrs,
+		testConfigPublicAD.UserFilter,
+		userAttrs,
 		nil,
 	)
 
@@ -99,74 +87,44 @@ func TestADServer_UserList(t *testing.T) {
 
 	for _, entry := range sr.Entries {
 		t.Logf("[%s] %s (%s %s) @ %s\n",
-			entry.GetAttributeValue("sAMAccountName"),
+			entry.GetAttributeValue(testConfigPublicAD.AttributeUserRDN),
 			entry.GetAttributeValue("cn"),
-			entry.GetAttributeValue("givenName"),
-			entry.GetAttributeValue("sn"),
-			entry.GetAttributeValue("mail"))
+			entry.GetAttributeValue(testConfigPublicAD.AttributeUserFirstname),
+			entry.GetAttributeValue(testConfigPublicAD.AttributeUserLastname),
+			entry.GetAttributeValue(testConfigPublicAD.AttributeUserEmail))
 	}
 }
 
 func TestADServer_Groups(t *testing.T) {
-	c := lm.LDAPConfig{}
-	c.ServerHost = "40.117.188.17"
-	c.ServerPort = 389
-	c.EncryptionType = "none"
-	c.BaseDN = "DC=mycompany,DC=local"
-	c.BindDN = "CN=ad-admin,CN=Users,DC=mycompany,DC=local"
-	c.BindPassword = "8B5tNRLvbk8K"
-	c.UserFilter = ""
-	c.GroupFilter = "(|(cn=Accounting)(cn=IT))"
+	testConfigPublicAD.UserFilter = ""
+	testConfigPublicAD.GroupFilter = "(|(cn=Accounting)(cn=IT))"
+	groupAttrs := testConfigPublicAD.GetGroupFilterAttributes()
+	userAttrs := testConfigPublicAD.GetUserFilterAttributes()
 
-	address := fmt.Sprintf("%s:%d", c.ServerHost, c.ServerPort)
-	t.Log("Connecting to AD server", address)
-	l, err := ld.Dial("tcp", address)
+	l, err := Connect(testConfigPublicAD)
 	if err != nil {
 		t.Error("Error: unable to dial AD server: ", err.Error())
 		return
 	}
 	defer l.Close()
 
-	if c.EncryptionType == "starttls" {
-		t.Log("Using StartTLS with AD server")
-		err = l.StartTLS(&tls.Config{InsecureSkipVerify: true})
-		if err != nil {
-			t.Error("Error: unable to startTLS with AD server: ", err.Error())
-			return
-		}
-	}
-
-	// Authenticate with AD server using admin credentials.
-	t.Log("Binding AD admin user")
-	err = l.Bind(c.BindDN, c.BindPassword)
+	// Authenticate with LDAP server using admin credentials.
+	t.Log("Binding LDAP admin user")
+	err = l.Bind(testConfigPublicAD.BindDN, testConfigPublicAD.BindPassword)
 	if err != nil {
 		t.Error("Error: unable to bind specified admin user to AD: ", err.Error())
 		return
 	}
 
-	// Get users from AD server by using filter
-	filter := ""
-	attrs := []string{}
-	if len(c.GroupFilter) > 0 {
-		filter = c.GroupFilter
-		attrs = []string{"dn", "cn", "member"}
-	} else if len(c.UserFilter) > 0 {
-		filter = c.UserFilter
-		attrs = []string{"dn", "cn", "givenName", "sn", "mail", "sAMAccountName"}
-	} else {
-		filter = "(|(objectClass=person)(objectClass=user)(objectClass=inetOrgPerson))"
-		attrs = []string{"dn", "cn", "givenName", "sn", "mail", "sAMAccountName"}
-	}
-
 	searchRequest := ld.NewSearchRequest(
-		c.BaseDN,
+		testConfigPublicAD.BaseDN,
 		ld.ScopeWholeSubtree, ld.NeverDerefAliases, 0, 0, false,
-		filter,
-		attrs,
+		testConfigPublicAD.GroupFilter,
+		groupAttrs,
 		nil,
 	)
 
-	t.Log("AD search filter:", filter)
+	t.Log("AD search filter:", testConfigPublicAD.GroupFilter)
 	sr, err := l.Search(searchRequest)
 	if err != nil {
 		t.Error("Error: unable to execute directory search: ", err.Error())
@@ -181,7 +139,9 @@ func TestADServer_Groups(t *testing.T) {
 
 	// Get list of group members for each group found.
 	for _, group := range sr.Entries {
-		rawMembers := group.GetAttributeValues("member")
+		t.Log("Found group", group.DN)
+
+		rawMembers := group.GetAttributeValues(testConfigPublicAD.AttributeGroupMember)
 		fmt.Printf("%s", group.DN)
 
 		if len(rawMembers) == 0 {
@@ -200,10 +160,10 @@ func TestADServer_Groups(t *testing.T) {
 			filter := fmt.Sprintf("(%s)", parts[0])
 
 			usr := ld.NewSearchRequest(
-				c.BaseDN,
+				testConfigPublicAD.BaseDN,
 				ld.ScopeWholeSubtree, ld.NeverDerefAliases, 0, 0, false,
 				filter,
-				[]string{"dn", "cn", "givenName", "sn", "mail", "sAMAccountName"},
+				userAttrs,
 				nil,
 			)
 			ue, err := l.Search(usr)
@@ -215,11 +175,11 @@ func TestADServer_Groups(t *testing.T) {
 			if len(ue.Entries) > 0 {
 				for _, ur := range ue.Entries {
 					t.Logf("[%s] %s (%s %s) @ %s\n",
-						ur.GetAttributeValue("sAMAccountName"),
+						ur.GetAttributeValue(testConfigPublicAD.AttributeUserRDN),
 						ur.GetAttributeValue("cn"),
-						ur.GetAttributeValue("givenName"),
-						ur.GetAttributeValue("sn"),
-						ur.GetAttributeValue("mail"))
+						ur.GetAttributeValue(testConfigPublicAD.AttributeUserFirstname),
+						ur.GetAttributeValue(testConfigPublicAD.AttributeUserLastname),
+						ur.GetAttributeValue(testConfigPublicAD.AttributeUserEmail))
 				}
 			} else {
 				t.Log("group member search failed:", filter)
@@ -227,53 +187,34 @@ func TestADServer_Groups(t *testing.T) {
 		}
 	}
 }
-
 func TestADServer_Authenticate(t *testing.T) {
-	c := lm.LDAPConfig{}
-	c.ServerHost = "40.117.188.17"
-	c.ServerPort = 389
-	c.EncryptionType = "none"
-	c.BaseDN = "DC=mycompany,DC=local"
-	c.BindDN = "CN=ad-admin,CN=Users,DC=mycompany,DC=local"
-	c.BindPassword = "8B5tNRLvbk8K"
-	c.UserFilter = ""
-	c.GroupFilter = ""
+	testConfigPublicAD.UserFilter = ""
+	testConfigPublicAD.GroupFilter = ""
+	userAttrs := testConfigPublicAD.GetUserFilterAttributes()
 
-	address := fmt.Sprintf("%s:%d", c.ServerHost, c.ServerPort)
-	t.Log("Connecting to AD server", address)
-	l, err := ld.Dial("tcp", address)
+	l, err := Connect(testConfigPublicAD)
 	if err != nil {
-		t.Error("Error: unable to dial AD server: ", err.Error())
+		t.Error("Error: unable to dial LDAP server: ", err.Error())
 		return
 	}
 	defer l.Close()
 
-	if c.EncryptionType == "starttls" {
-		t.Log("Using StartTLS with AD server")
-		err = l.StartTLS(&tls.Config{InsecureSkipVerify: true})
-		if err != nil {
-			t.Error("Error: unable to startTLS with AD server: ", err.Error())
-			return
-		}
-	}
-
 	// Authenticate with AD server using admin credentials.
 	t.Log("Binding AD admin user")
-	err = l.Bind(c.BindDN, c.BindPassword)
+	err = l.Bind(testConfigPublicAD.BindDN, testConfigPublicAD.BindPassword)
 	if err != nil {
 		t.Error("Error: unable to bind specified admin user to AD: ", err.Error())
 		return
 	}
-
 	username := `bob.johnson`
 	password := "Pass@word1!"
-	filter := fmt.Sprintf("(sAMAccountName=%s)", username)
+	filter := fmt.Sprintf("(%s=%s)", testConfigPublicAD.AttributeUserRDN, username)
 
 	searchRequest := ld.NewSearchRequest(
-		c.BaseDN,
+		testConfigPublicAD.BaseDN,
 		ld.ScopeWholeSubtree, ld.NeverDerefAliases, 0, 0, false,
 		filter,
-		[]string{"mail"},
+		userAttrs,
 		nil,
 	)
 

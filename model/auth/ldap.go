@@ -11,6 +11,10 @@
 
 package auth
 
+import (
+	"strings"
+)
+
 // Example for Active Directory -- filter users that belong to SomeGroupName:
 //      (&(objectCategory=Person)(sAMAccountName=*)(memberOf=cn=SomeGroupName,ou=users,dc=example,dc=com))
 //
@@ -29,24 +33,116 @@ package auth
 
 // LDAPConfig that specifies LDAP server connection details and query filters.
 type LDAPConfig struct {
-	ServerHost                string `json:"serverHost"`
-	ServerPort                int    `json:"serverPort"`
-	EncryptionType            string `json:"encryptionType"`
-	BaseDN                    string `json:"baseDN"`
-	BindDN                    string `json:"bindDN"`
-	BindPassword              string `json:"bindPassword"`
-	UserFilter                string `json:"userFilter"`
-	GroupFilter               string `json:"groupFilter"`
-	DisableLogout             bool   `json:"disableLogout"`
-	DefaultPermissionAddSpace bool   `json:"defaultPermissionAddSpace"`
-	AttributeUserRDN          string `json:"attributeUserRDN"`
-	AttributeUserID           string `json:"attributeUserID"` // uid or sAMAccountName
-	AttributeUserFirstname    string `json:"attributeUserFirstname"`
-	AttributeUserLastname     string `json:"attributeUserLastname"`
-	AttributeUserEmail        string `json:"attributeUserEmail"`
-	AttributeUserDisplayName  string `json:"attributeUserDisplayName"`
-	AttributeUserGroupName    string `json:"attributeUserGroupName"`
-	AttributeGroupMember      string `json:"attributeGroupMember"`
+	ServerHost                string     `json:"serverHost"`
+	ServerPort                int        `json:"serverPort"`
+	ServerType                ServerType `json:"serverType"`
+	EncryptionType            string     `json:"encryptionType"`
+	BaseDN                    string     `json:"baseDN"`
+	BindDN                    string     `json:"bindDN"`
+	BindPassword              string     `json:"bindPassword"`
+	UserFilter                string     `json:"userFilter"`
+	GroupFilter               string     `json:"groupFilter"`
+	DisableLogout             bool       `json:"disableLogout"`
+	DefaultPermissionAddSpace bool       `json:"defaultPermissionAddSpace"`
+	AttributeUserRDN          string     `json:"attributeUserRDN"`         // usually uid (LDAP) or sAMAccountName (AD)
+	AttributeUserFirstname    string     `json:"attributeUserFirstname"`   // usually givenName
+	AttributeUserLastname     string     `json:"attributeUserLastname"`    // usually sn
+	AttributeUserEmail        string     `json:"attributeUserEmail"`       // usually mail
+	AttributeUserDisplayName  string     `json:"attributeUserDisplayName"` // usually displayName
+	AttributeUserGroupName    string     `json:"attributeUserGroupName"`   // usually memberOf
+	AttributeGroupMember      string     `json:"attributeGroupMember"`     // usually member
+}
+
+// ServerType identifies the LDAP server type
+type ServerType string
+
+const (
+	// ServerTypeLDAP represents a generic LDAP server OpenLDAP.
+	ServerTypeLDAP = "ldap"
+	// ServerTypeAD represents Microsoft Active Directory server.
+	ServerTypeAD = "ad"
+)
+
+// Clean ensures configuration data is formatted correctly.
+func (c *LDAPConfig) Clean() {
+	c.BaseDN = strings.TrimSpace(c.BaseDN)
+	c.BindDN = strings.TrimSpace(c.BindDN)
+	c.BindPassword = strings.TrimSpace(c.BindPassword)
+	c.ServerHost = strings.TrimSpace(c.ServerHost)
+	c.EncryptionType = strings.TrimSpace(c.EncryptionType)
+	c.UserFilter = strings.TrimSpace(c.UserFilter)
+	c.GroupFilter = strings.TrimSpace(c.GroupFilter)
+
+	if c.ServerPort == 0 {
+		c.ServerPort = 389
+	}
+	if c.ServerType == "" {
+		c.ServerType = ServerTypeLDAP
+	}
+	if c.EncryptionType == "" {
+		c.EncryptionType = "none"
+	}
+
+	c.AttributeUserRDN = strings.TrimSpace(c.AttributeUserRDN)
+	c.AttributeUserFirstname = strings.TrimSpace(c.AttributeUserFirstname)
+	c.AttributeUserLastname = strings.TrimSpace(c.AttributeUserLastname)
+	c.AttributeUserEmail = strings.TrimSpace(c.AttributeUserEmail)
+	c.AttributeUserDisplayName = strings.TrimSpace(c.AttributeUserDisplayName)
+	c.AttributeUserGroupName = strings.TrimSpace(c.AttributeUserGroupName)
+
+	c.AttributeGroupMember = strings.TrimSpace(c.AttributeGroupMember)
+}
+
+// GetUserFilterAttributes gathers the fields that can be requested
+// when executing a user-based object filter.
+func (c *LDAPConfig) GetUserFilterAttributes() []string {
+	a := []string{}
+
+	// defaults
+	a = append(a, "dn")
+	a = append(a, "cn")
+
+	if len(c.AttributeUserRDN) > 0 {
+		a = append(a, c.AttributeUserRDN)
+	}
+
+	if len(c.AttributeUserFirstname) > 0 {
+		a = append(a, c.AttributeUserFirstname)
+	}
+
+	if len(c.AttributeUserLastname) > 0 {
+		a = append(a, c.AttributeUserLastname)
+	}
+
+	if len(c.AttributeUserEmail) > 0 {
+		a = append(a, c.AttributeUserEmail)
+	}
+
+	if len(c.AttributeUserDisplayName) > 0 {
+		a = append(a, c.AttributeUserDisplayName)
+	}
+
+	if len(c.AttributeUserGroupName) > 0 {
+		a = append(a, c.AttributeUserGroupName)
+	}
+
+	return a
+}
+
+// GetGroupFilterAttributes gathers the fields that can be requested
+// when executing a group-based object filter.
+func (c *LDAPConfig) GetGroupFilterAttributes() []string {
+	a := []string{}
+
+	// defaults
+	a = append(a, "dn")
+	a = append(a, "cn")
+
+	if len(c.AttributeGroupMember) > 0 {
+		a = append(a, c.AttributeGroupMember)
+	}
+
+	return a
 }
 
 // LDAPUser details user record returned by LDAP

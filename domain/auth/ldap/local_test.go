@@ -12,7 +12,6 @@
 package ldap
 
 import (
-	"crypto/tls"
 	"fmt"
 	"strings"
 	"testing"
@@ -24,68 +23,54 @@ import (
 // Works against https://github.com/rroemhild/docker-test-openldap
 // Use docker run --privileged -d -p 389:389 rroemhild/test-openldap
 
+var testConfigLocalLDAP = lm.LDAPConfig{
+	ServerType:               lm.ServerTypeLDAP,
+	ServerHost:               "127.0.0.1",
+	ServerPort:               389,
+	EncryptionType:           "starttls",
+	BaseDN:                   "ou=people,dc=planetexpress,dc=com",
+	BindDN:                   "cn=admin,dc=planetexpress,dc=com",
+	BindPassword:             "GoodNewsEveryone",
+	UserFilter:               "",
+	GroupFilter:              "",
+	AttributeUserRDN:         "uid",
+	AttributeUserFirstname:   "givenName",
+	AttributeUserLastname:    "sn",
+	AttributeUserEmail:       "mail",
+	AttributeUserDisplayName: "",
+	AttributeUserGroupName:   "",
+	AttributeGroupMember:     "member",
+}
+
 func TestLocalLDAPServer_AllUsers(t *testing.T) {
-	c := lm.LDAPConfig{}
-	c.ServerHost = "127.0.0.1"
-	c.ServerPort = 389
-	c.EncryptionType = "starttls"
-	c.BaseDN = "ou=people,dc=planetexpress,dc=com"
-	c.BindDN = "cn=admin,dc=planetexpress,dc=com"
-	c.BindPassword = "GoodNewsEveryone"
-	c.UserFilter = ""
-	c.GroupFilter = ""
+	testConfigLocalLDAP.UserFilter = "(|(objectClass=person)(objectClass=user)(objectClass=inetOrgPerson))"
+	testConfigLocalLDAP.GroupFilter = ""
+	userAttrs := testConfigLocalLDAP.GetUserFilterAttributes()
 
-	address := fmt.Sprintf("%s:%d", c.ServerHost, c.ServerPort)
-
-	t.Log("Connecting to LDAP server", address)
-
-	l, err := ld.Dial("tcp", address)
+	l, err := Connect(testConfigLocalLDAP)
 	if err != nil {
 		t.Error("Error: unable to dial LDAP server: ", err.Error())
 		return
 	}
 	defer l.Close()
 
-	if c.EncryptionType == "starttls" {
-		t.Log("Using StartTLS with LDAP server")
-		err = l.StartTLS(&tls.Config{InsecureSkipVerify: true})
-		if err != nil {
-			t.Error("Error: unable to startTLS with LDAP server: ", err.Error())
-			return
-		}
-	}
-
 	// Authenticate with LDAP server using admin credentials.
 	t.Log("Binding LDAP admin user")
-	err = l.Bind(c.BindDN, c.BindPassword)
+	err = l.Bind(testConfigLocalLDAP.BindDN, testConfigLocalLDAP.BindPassword)
 	if err != nil {
 		t.Error("Error: unable to bind specified admin user to LDAP: ", err.Error())
 		return
 	}
 
-	// Get users from LDAP server by using filter
-	filter := ""
-	attrs := []string{}
-	if len(c.GroupFilter) > 0 {
-		filter = c.GroupFilter
-		attrs = []string{"dn", "cn"}
-	} else if len(c.UserFilter) > 0 {
-		filter = c.UserFilter
-		attrs = []string{"dn", "cn", "givenName", "sn", "mail", "uid"}
-	} else {
-		filter = "(|(objectClass=person)(objectClass=user)(objectClass=inetOrgPerson))"
-		attrs = []string{"dn", "cn", "givenName", "sn", "mail", "uid"}
-	}
-
 	searchRequest := ld.NewSearchRequest(
-		c.BaseDN,
+		testConfigLocalLDAP.BaseDN,
 		ld.ScopeWholeSubtree, ld.NeverDerefAliases, 0, 0, false,
-		filter,
-		attrs,
+		testConfigLocalLDAP.UserFilter,
+		userAttrs,
 		nil,
 	)
 
-	t.Log("LDAP search filter:", filter)
+	t.Log("LDAP search filter:", testConfigLocalLDAP.UserFilter)
 	sr, err := l.Search(searchRequest)
 	if err != nil {
 		t.Error("Error: unable to execute directory search: ", err.Error())
@@ -100,76 +85,44 @@ func TestLocalLDAPServer_AllUsers(t *testing.T) {
 
 	for _, entry := range sr.Entries {
 		t.Logf("[%s] %s (%s %s) @ %s\n",
-			entry.GetAttributeValue("uid"),
+			entry.GetAttributeValue(testConfigLocalLDAP.AttributeUserRDN),
 			entry.GetAttributeValue("cn"),
-			entry.GetAttributeValue("givenName"),
-			entry.GetAttributeValue("sn"),
-			entry.GetAttributeValue("mail"))
+			entry.GetAttributeValue(testConfigLocalLDAP.AttributeUserFirstname),
+			entry.GetAttributeValue(testConfigLocalLDAP.AttributeUserLastname),
+			entry.GetAttributeValue(testConfigLocalLDAP.AttributeUserEmail))
 	}
 }
 
 func TestLocalLDAPServer_UsersInGroup(t *testing.T) {
-	c := lm.LDAPConfig{}
-	c.ServerHost = "127.0.0.1"
-	c.ServerPort = 389
-	c.EncryptionType = "starttls"
-	c.BaseDN = "dc=planetexpress,dc=com"
-	c.BindDN = "cn=admin,dc=planetexpress,dc=com"
-	c.BindPassword = "GoodNewsEveryone"
-	c.UserFilter = ""
-	c.GroupFilter = "(&(objectClass=group)(|(cn=ship_crew)(cn=admin_staff)))"
+	testConfigLocalLDAP.UserFilter = ""
+	testConfigLocalLDAP.GroupFilter = "(&(objectClass=group)(|(cn=ship_crew)(cn=admin_staff)))"
+	groupAttrs := testConfigLocalLDAP.GetGroupFilterAttributes()
+	userAttrs := testConfigLocalLDAP.GetUserFilterAttributes()
 
-	address := fmt.Sprintf("%s:%d", c.ServerHost, c.ServerPort)
-
-	t.Log("Connecting to LDAP server", address)
-
-	l, err := ld.Dial("tcp", address)
+	l, err := Connect(testConfigLocalLDAP)
 	if err != nil {
 		t.Error("Error: unable to dial LDAP server: ", err.Error())
 		return
 	}
 	defer l.Close()
 
-	if c.EncryptionType == "starttls" {
-		t.Log("Using StartTLS with LDAP server")
-		err = l.StartTLS(&tls.Config{InsecureSkipVerify: true})
-		if err != nil {
-			t.Error("Error: unable to startTLS with LDAP server: ", err.Error())
-			return
-		}
-	}
-
 	// Authenticate with LDAP server using admin credentials.
 	t.Log("Binding LDAP admin user")
-	err = l.Bind(c.BindDN, c.BindPassword)
+	err = l.Bind(testConfigLocalLDAP.BindDN, testConfigLocalLDAP.BindPassword)
 	if err != nil {
 		t.Error("Error: unable to bind specified admin user to LDAP: ", err.Error())
 		return
 	}
 
-	// Get users from LDAP server by using filter
-	filter := ""
-	attrs := []string{}
-	if len(c.GroupFilter) > 0 {
-		filter = c.GroupFilter
-		attrs = []string{"cn", "member"}
-	} else if len(c.UserFilter) > 0 {
-		filter = c.UserFilter
-		attrs = []string{"dn", "cn", "givenName", "sn", "mail", "uid"}
-	} else {
-		filter = "(|(objectCategory=person)(objectClass=person)(objectClass=user)(objectClass=inetOrgPerson))"
-		attrs = []string{"dn", "cn", "givenName", "sn", "mail", "uid"}
-	}
-
 	searchRequest := ld.NewSearchRequest(
-		c.BaseDN,
+		testConfigLocalLDAP.BaseDN,
 		ld.ScopeWholeSubtree, ld.NeverDerefAliases, 0, 0, false,
-		filter,
-		attrs,
+		testConfigLocalLDAP.GroupFilter,
+		groupAttrs,
 		nil,
 	)
 
-	t.Log("LDAP search filter:", filter)
+	t.Log("LDAP search filter:", testConfigLocalLDAP.GroupFilter)
 	sr, err := l.Search(searchRequest)
 	if err != nil {
 		t.Error("Error: unable to execute directory search: ", err.Error())
@@ -184,7 +137,9 @@ func TestLocalLDAPServer_UsersInGroup(t *testing.T) {
 
 	// Get list of group members per group found.
 	for _, group := range sr.Entries {
-		rawMembers := group.GetAttributeValues("member")
+		t.Log("Found group", group.DN)
+
+		rawMembers := group.GetAttributeValues(testConfigLocalLDAP.AttributeGroupMember)
 		if len(rawMembers) == 0 {
 			t.Log("Error: group member attribute returned no users")
 			continue
@@ -201,10 +156,10 @@ func TestLocalLDAPServer_UsersInGroup(t *testing.T) {
 			filter := fmt.Sprintf("(%s)", parts[0])
 
 			usr := ld.NewSearchRequest(
-				c.BaseDN,
+				testConfigLocalLDAP.BaseDN,
 				ld.ScopeWholeSubtree, ld.NeverDerefAliases, 0, 0, false,
 				filter,
-				[]string{"dn", "cn", "givenName", "sn", "mail", "uid"},
+				userAttrs,
 				nil,
 			)
 			ue, err := l.Search(usr)
@@ -215,7 +170,12 @@ func TestLocalLDAPServer_UsersInGroup(t *testing.T) {
 
 			if len(ue.Entries) > 0 {
 				for _, ur := range ue.Entries {
-					t.Logf("%s", ur.GetAttributeValue("mail"))
+					t.Logf("[%s] %s (%s %s) @ %s\n",
+						ur.GetAttributeValue(testConfigLocalLDAP.AttributeUserRDN),
+						ur.GetAttributeValue("cn"),
+						ur.GetAttributeValue(testConfigLocalLDAP.AttributeUserFirstname),
+						ur.GetAttributeValue(testConfigLocalLDAP.AttributeUserLastname),
+						ur.GetAttributeValue(testConfigLocalLDAP.AttributeUserEmail))
 				}
 			} else {
 				t.Log("group member search failed:", filter)
@@ -224,37 +184,20 @@ func TestLocalLDAPServer_UsersInGroup(t *testing.T) {
 	}
 }
 func TestLocalLDAP_Authenticate(t *testing.T) {
-	c := lm.LDAPConfig{}
-	c.ServerHost = "127.0.0.1"
-	c.ServerPort = 389
-	c.EncryptionType = "starttls"
-	c.BaseDN = "ou=people,dc=planetexpress,dc=com"
-	c.BindDN = "cn=admin,dc=planetexpress,dc=com"
-	c.BindPassword = "GoodNewsEveryone"
-	c.UserFilter = ""
-	c.GroupFilter = ""
+	testConfigLocalLDAP.UserFilter = ""
+	testConfigLocalLDAP.GroupFilter = ""
+	userAttrs := testConfigLocalLDAP.GetUserFilterAttributes()
 
-	address := fmt.Sprintf("%s:%d", c.ServerHost, c.ServerPort)
-	t.Log("Connecting to LDAP server", address)
-	l, err := ld.Dial("tcp", address)
+	l, err := Connect(testConfigLocalLDAP)
 	if err != nil {
-		t.Error("Error: unable to dial AD server: ", err.Error())
+		t.Error("Error: unable to dial LDAP server: ", err.Error())
 		return
 	}
 	defer l.Close()
 
-	if c.EncryptionType == "starttls" {
-		t.Log("Using StartTLS with LDAP server")
-		err = l.StartTLS(&tls.Config{InsecureSkipVerify: true})
-		if err != nil {
-			t.Error("Error: unable to startTLS with LDAP server: ", err.Error())
-			return
-		}
-	}
-
 	// Authenticate with LDAP server using admin credentials.
 	t.Log("Binding LDAP admin user")
-	err = l.Bind(c.BindDN, c.BindPassword)
+	err = l.Bind(testConfigLocalLDAP.BindDN, testConfigLocalLDAP.BindPassword)
 	if err != nil {
 		t.Error("Error: unable to bind specified admin user to LDAP: ", err.Error())
 		return
@@ -262,13 +205,13 @@ func TestLocalLDAP_Authenticate(t *testing.T) {
 
 	username := "professor"
 	password := "professor"
-	filter := fmt.Sprintf("(uid=%s)", username)
+	filter := fmt.Sprintf("(%s=%s)", testConfigPublicLDAP.AttributeUserRDN, username)
 
 	searchRequest := ld.NewSearchRequest(
-		c.BaseDN,
+		testConfigLocalLDAP.BaseDN,
 		ld.ScopeWholeSubtree, ld.NeverDerefAliases, 0, 0, false,
 		filter,
-		[]string{"mail"},
+		userAttrs,
 		nil,
 	)
 
