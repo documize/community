@@ -42,54 +42,24 @@ var testConfigLocalLDAP = lm.LDAPConfig{
 	AttributeGroupMember:     "member",
 }
 
-func TestLocalLDAPServer_AllUsers(t *testing.T) {
+func TestUserFilter_LocalLDAP(t *testing.T) {
 	testConfigLocalLDAP.UserFilter = "(|(objectClass=person)(objectClass=user)(objectClass=inetOrgPerson))"
-	testConfigLocalLDAP.GroupFilter = ""
-	userAttrs := testConfigLocalLDAP.GetUserFilterAttributes()
 
-	l, err := Connect(testConfigLocalLDAP)
+	e, err := executeUserFilter(testConfigLocalLDAP)
 	if err != nil {
-		t.Error("Error: unable to dial LDAP server: ", err.Error())
+		t.Error("unable to exeucte user filter", err.Error())
 		return
 	}
-	defer l.Close()
-
-	// Authenticate with LDAP server using admin credentials.
-	t.Log("Binding LDAP admin user")
-	err = l.Bind(testConfigLocalLDAP.BindDN, testConfigLocalLDAP.BindPassword)
-	if err != nil {
-		t.Error("Error: unable to bind specified admin user to LDAP: ", err.Error())
-		return
-	}
-
-	searchRequest := ld.NewSearchRequest(
-		testConfigLocalLDAP.BaseDN,
-		ld.ScopeWholeSubtree, ld.NeverDerefAliases, 0, 0, false,
-		testConfigLocalLDAP.UserFilter,
-		userAttrs,
-		nil,
-	)
-
-	t.Log("LDAP search filter:", testConfigLocalLDAP.UserFilter)
-	sr, err := l.Search(searchRequest)
-	if err != nil {
-		t.Error("Error: unable to execute directory search: ", err.Error())
-		return
-	}
-
-	t.Logf("LDAP search entries found: %d", len(sr.Entries))
-	if len(sr.Entries) == 0 {
+	if len(e) == 0 {
 		t.Error("Received ZERO LDAP search entries")
 		return
 	}
 
-	for _, entry := range sr.Entries {
+	t.Logf("LDAP search entries found: %d", len(e))
+
+	for _, u := range e {
 		t.Logf("[%s] %s (%s %s) @ %s\n",
-			entry.GetAttributeValue(testConfigLocalLDAP.AttributeUserRDN),
-			entry.GetAttributeValue("cn"),
-			entry.GetAttributeValue(testConfigLocalLDAP.AttributeUserFirstname),
-			entry.GetAttributeValue(testConfigLocalLDAP.AttributeUserLastname),
-			entry.GetAttributeValue(testConfigLocalLDAP.AttributeUserEmail))
+			u.RemoteID, u.CN, u.Firstname, u.Lastname, u.Email)
 	}
 }
 
@@ -99,7 +69,7 @@ func TestLocalLDAPServer_UsersInGroup(t *testing.T) {
 	groupAttrs := testConfigLocalLDAP.GetGroupFilterAttributes()
 	userAttrs := testConfigLocalLDAP.GetUserFilterAttributes()
 
-	l, err := Connect(testConfigLocalLDAP)
+	l, err := connect(testConfigLocalLDAP)
 	if err != nil {
 		t.Error("Error: unable to dial LDAP server: ", err.Error())
 		return
@@ -183,62 +153,43 @@ func TestLocalLDAPServer_UsersInGroup(t *testing.T) {
 		}
 	}
 }
-func TestLocalLDAP_Authenticate(t *testing.T) {
-	testConfigLocalLDAP.UserFilter = ""
-	testConfigLocalLDAP.GroupFilter = ""
-	userAttrs := testConfigLocalLDAP.GetUserFilterAttributes()
 
-	l, err := Connect(testConfigLocalLDAP)
+func TestAuthenticate_LocalLDAP(t *testing.T) {
+	l, err := connect(testConfigLocalLDAP)
 	if err != nil {
 		t.Error("Error: unable to dial LDAP server: ", err.Error())
 		return
 	}
 	defer l.Close()
 
-	// Authenticate with LDAP server using admin credentials.
-	t.Log("Binding LDAP admin user")
-	err = l.Bind(testConfigLocalLDAP.BindDN, testConfigLocalLDAP.BindPassword)
+	ok, err := authenticate(l, testConfigLocalLDAP, "professor", "professor")
 	if err != nil {
-		t.Error("Error: unable to bind specified admin user to LDAP: ", err.Error())
+		t.Error("error during LDAP authentication: ", err.Error())
 		return
 	}
+	if !ok {
+		t.Error("failed LDAP authentication")
+	}
 
-	username := "professor"
-	password := "professor"
-	filter := fmt.Sprintf("(%s=%s)", testConfigPublicLDAP.AttributeUserRDN, username)
+	t.Log("Authenticated")
+}
 
-	searchRequest := ld.NewSearchRequest(
-		testConfigLocalLDAP.BaseDN,
-		ld.ScopeWholeSubtree, ld.NeverDerefAliases, 0, 0, false,
-		filter,
-		userAttrs,
-		nil,
-	)
-
-	t.Log("LDAP search filter:", filter)
-	sr, err := l.Search(searchRequest)
+func TestNotAuthenticate_LocalLDAP(t *testing.T) {
+	l, err := connect(testConfigLocalLDAP)
 	if err != nil {
-		t.Error("Error: unable to execute directory search: ", err.Error())
+		t.Error("Error: unable to dial LDAP server: ", err.Error())
 		return
 	}
+	defer l.Close()
 
-	if len(sr.Entries) == 0 {
-		t.Error("Error: user not found")
-		return
-	}
-	if len(sr.Entries) != 1 {
-		t.Error("Error: too many users found during authentication")
-		return
-	}
-
-	userdn := sr.Entries[0].DN
-
-	// Bind as the user to verify their password
-	err = l.Bind(userdn, password)
+	ok, err := authenticate(l, testConfigLocalLDAP, "junk", "junk")
 	if err != nil {
-		t.Error("Error: invalid credentials", err.Error())
+		t.Error("error during LDAP authentication: ", err.Error())
 		return
 	}
+	if ok {
+		t.Error("incorrect LDAP authentication")
+	}
 
-	t.Log("Authenticated", username)
+	t.Log("Not authenticated")
 }

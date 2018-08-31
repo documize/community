@@ -20,7 +20,7 @@ import (
 	ld "gopkg.in/ldap.v2"
 )
 
-// Works against AD server in Azure confgiured using:
+// Works against AD server in Azure configured using:
 //
 //      https://auth0.com/docs/connector/test-dc
 //
@@ -45,53 +45,24 @@ var testConfigPublicAD = lm.LDAPConfig{
 	AttributeGroupMember:     "member",
 }
 
-func TestADServer_UserList(t *testing.T) {
+func TestUserFilter_PublicAD(t *testing.T) {
 	testConfigPublicAD.UserFilter = "(|(objectCategory=person)(objectClass=user)(objectClass=inetOrgPerson))"
-	testConfigPublicAD.GroupFilter = ""
-	userAttrs := testConfigPublicAD.GetUserFilterAttributes()
 
-	l, err := Connect(testConfigPublicAD)
+	e, err := executeUserFilter(testConfigPublicAD)
 	if err != nil {
-		t.Error("Error: unable to dial LDAP server: ", err.Error())
+		t.Error("unable to exeucte user filter", err.Error())
 		return
 	}
-	defer l.Close()
-
-	// Authenticate with AD server using admin credentials.
-	t.Log("Binding LDAP admin user")
-	err = l.Bind(testConfigPublicAD.BindDN, testConfigPublicAD.BindPassword)
-	if err != nil {
-		t.Error("Error: unable to bind specified admin user to AD: ", err.Error())
+	if len(e) == 0 {
+		t.Error("Received ZERO LDAP search entries")
 		return
 	}
 
-	searchRequest := ld.NewSearchRequest(
-		testConfigPublicAD.BaseDN,
-		ld.ScopeWholeSubtree, ld.NeverDerefAliases, 0, 0, false,
-		testConfigPublicAD.UserFilter,
-		userAttrs,
-		nil,
-	)
+	t.Logf("LDAP search entries found: %d", len(e))
 
-	sr, err := l.Search(searchRequest)
-	if err != nil {
-		t.Error("Error: unable to execute directory search: ", err.Error())
-		return
-	}
-
-	t.Logf("AD search entries found: %d", len(sr.Entries))
-	if len(sr.Entries) == 0 {
-		t.Error("Received ZERO AD search entries")
-		return
-	}
-
-	for _, entry := range sr.Entries {
+	for _, u := range e {
 		t.Logf("[%s] %s (%s %s) @ %s\n",
-			entry.GetAttributeValue(testConfigPublicAD.AttributeUserRDN),
-			entry.GetAttributeValue("cn"),
-			entry.GetAttributeValue(testConfigPublicAD.AttributeUserFirstname),
-			entry.GetAttributeValue(testConfigPublicAD.AttributeUserLastname),
-			entry.GetAttributeValue(testConfigPublicAD.AttributeUserEmail))
+			u.RemoteID, u.CN, u.Firstname, u.Lastname, u.Email)
 	}
 }
 
@@ -101,7 +72,7 @@ func TestADServer_Groups(t *testing.T) {
 	groupAttrs := testConfigPublicAD.GetGroupFilterAttributes()
 	userAttrs := testConfigPublicAD.GetUserFilterAttributes()
 
-	l, err := Connect(testConfigPublicAD)
+	l, err := connect(testConfigPublicAD)
 	if err != nil {
 		t.Error("Error: unable to dial AD server: ", err.Error())
 		return
@@ -142,8 +113,6 @@ func TestADServer_Groups(t *testing.T) {
 		t.Log("Found group", group.DN)
 
 		rawMembers := group.GetAttributeValues(testConfigPublicAD.AttributeGroupMember)
-		fmt.Printf("%s", group.DN)
-
 		if len(rawMembers) == 0 {
 			t.Log("Error: group member attribute returned no users")
 			continue
@@ -187,61 +156,43 @@ func TestADServer_Groups(t *testing.T) {
 		}
 	}
 }
-func TestADServer_Authenticate(t *testing.T) {
-	testConfigPublicAD.UserFilter = ""
-	testConfigPublicAD.GroupFilter = ""
-	userAttrs := testConfigPublicAD.GetUserFilterAttributes()
 
-	l, err := Connect(testConfigPublicAD)
+func TestAuthenticate_PublicAD(t *testing.T) {
+	l, err := connect(testConfigPublicAD)
 	if err != nil {
 		t.Error("Error: unable to dial LDAP server: ", err.Error())
 		return
 	}
 	defer l.Close()
 
-	// Authenticate with AD server using admin credentials.
-	t.Log("Binding AD admin user")
-	err = l.Bind(testConfigPublicAD.BindDN, testConfigPublicAD.BindPassword)
+	ok, err := authenticate(l, testConfigPublicAD, "bob.johnson", "Pass@word1!")
 	if err != nil {
-		t.Error("Error: unable to bind specified admin user to AD: ", err.Error())
+		t.Error("error during LDAP authentication: ", err.Error())
 		return
 	}
-	username := `bob.johnson`
-	password := "Pass@word1!"
-	filter := fmt.Sprintf("(%s=%s)", testConfigPublicAD.AttributeUserRDN, username)
+	if !ok {
+		t.Error("failed LDAP authentication")
+	}
 
-	searchRequest := ld.NewSearchRequest(
-		testConfigPublicAD.BaseDN,
-		ld.ScopeWholeSubtree, ld.NeverDerefAliases, 0, 0, false,
-		filter,
-		userAttrs,
-		nil,
-	)
+	t.Log("Authenticated")
+}
 
-	t.Log("AD search filter:", filter)
-	sr, err := l.Search(searchRequest)
+func TestNotAuthenticate_PublicAD(t *testing.T) {
+	l, err := connect(testConfigPublicAD)
 	if err != nil {
-		t.Error("Error: unable to execute directory search: ", err.Error())
+		t.Error("Error: unable to dial LDAP server: ", err.Error())
 		return
 	}
+	defer l.Close()
 
-	if len(sr.Entries) == 0 {
-		t.Error("Error: user not found")
-		return
-	}
-	if len(sr.Entries) != 1 {
-		t.Error("Error: too many users found during authentication")
-		return
-	}
-
-	userdn := sr.Entries[0].DN
-
-	// Bind as the user to verify their password
-	err = l.Bind(userdn, password)
+	ok, err := authenticate(l, testConfigPublicAD, "junk", "junk")
 	if err != nil {
-		t.Error("Error: invalid credentials", err.Error())
+		t.Error("error during LDAP authentication: ", err.Error())
 		return
 	}
+	if ok {
+		t.Error("incorrect LDAP authentication")
+	}
 
-	t.Log("Authenticated", username)
+	t.Log("Not authenticated")
 }

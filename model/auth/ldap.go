@@ -146,14 +146,13 @@ func (c *LDAPConfig) GetGroupFilterAttributes() []string {
 }
 
 // LDAPUser details user record returned by LDAP
-// type LDAPUser struct {
-// 	ID        string `json:"id"`
-// 	Username  string `json:"username"`
-// 	Email     string `json:"email"`
-// 	Firstname string `json:"firstName"`
-// 	Lastname  string `json:"lastName"`
-// 	Enabled   bool   `json:"enabled"`
-// }
+type LDAPUser struct {
+	RemoteID  string `json:"remoteId"`
+	CN        string `json:"cn"`
+	Email     string `json:"email"`
+	Firstname string `json:"firstName"`
+	Lastname  string `json:"lastName"`
+}
 
 // LDAPAuthRequest data received via LDAP client library
 // type LDAPAuthRequest struct {
