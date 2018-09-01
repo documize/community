@@ -14,6 +14,7 @@ package ldap
 import (
 	"crypto/tls"
 	"fmt"
+	"strings"
 
 	lm "github.com/documize/community/model/auth"
 	// "github.com/documize/community/model/user"
@@ -33,7 +34,7 @@ func connect(c lm.LDAPConfig) (l *ld.Conn, err error) {
 		return
 	}
 
-	if c.EncryptionType == "starttls" {
+	if c.EncryptionType == lm.EncryptionTypeStartTLS {
 		fmt.Println("Using StartTLS with LDAP server")
 		err = l.StartTLS(&tls.Config{InsecureSkipVerify: true})
 		if err != nil {
@@ -123,6 +124,74 @@ func executeUserFilter(c lm.LDAPConfig) (u []lm.LDAPUser, err error) {
 
 	for _, e := range sr.Entries {
 		u = append(u, extractUser(c, e))
+	}
+
+	return
+}
+
+// ExecuteGroupFilter returns all matching LDAP users that are paft of specified groups.
+func executeGroupFilter(c lm.LDAPConfig) (u []lm.LDAPUser, err error) {
+	l, err := connect(c)
+	if err != nil {
+		err = errors.Wrap(err, "unable to dial LDAP server")
+		return
+	}
+	defer l.Close()
+
+	// Authenticate with LDAP server using admin credentials.
+	err = l.Bind(c.BindDN, c.BindPassword)
+	if err != nil {
+		errors.Wrap(err, "unable to bind admin user")
+		return
+	}
+
+	searchRequest := ld.NewSearchRequest(
+		c.BaseDN,
+		ld.ScopeWholeSubtree, ld.NeverDerefAliases, 0, 0, false,
+		c.GroupFilter,
+		c.GetGroupFilterAttributes(),
+		nil,
+	)
+
+	sr, err := l.Search(searchRequest)
+	if err != nil {
+		errors.Wrap(err, "unable to execute directory search for user filter "+c.GroupFilter)
+		return
+	}
+
+	for _, g := range sr.Entries {
+		rawMembers := g.GetAttributeValues(c.AttributeGroupMember)
+		if len(rawMembers) == 0 {
+			continue
+		}
+
+		for _, entry := range rawMembers {
+			// get CN element from DN
+			parts := strings.Split(entry, ",")
+			if len(parts) == 0 {
+				continue
+			}
+			filter := fmt.Sprintf("(%s)", parts[0])
+
+			usr := ld.NewSearchRequest(
+				c.BaseDN,
+				ld.ScopeWholeSubtree, ld.NeverDerefAliases, 0, 0, false,
+				filter,
+				c.GetUserFilterAttributes(),
+				nil,
+			)
+
+			ue, err := l.Search(usr)
+			if err != nil {
+				continue
+			}
+
+			if len(ue.Entries) > 0 {
+				for _, ur := range ue.Entries {
+					u = append(u, extractUser(c, ur))
+				}
+			}
+		}
 	}
 
 	return

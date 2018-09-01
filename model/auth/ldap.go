@@ -33,24 +33,24 @@ import (
 
 // LDAPConfig that specifies LDAP server connection details and query filters.
 type LDAPConfig struct {
-	ServerHost                string     `json:"serverHost"`
-	ServerPort                int        `json:"serverPort"`
-	ServerType                ServerType `json:"serverType"`
-	EncryptionType            string     `json:"encryptionType"`
-	BaseDN                    string     `json:"baseDN"`
-	BindDN                    string     `json:"bindDN"`
-	BindPassword              string     `json:"bindPassword"`
-	UserFilter                string     `json:"userFilter"`
-	GroupFilter               string     `json:"groupFilter"`
-	DisableLogout             bool       `json:"disableLogout"`
-	DefaultPermissionAddSpace bool       `json:"defaultPermissionAddSpace"`
-	AttributeUserRDN          string     `json:"attributeUserRDN"`         // usually uid (LDAP) or sAMAccountName (AD)
-	AttributeUserFirstname    string     `json:"attributeUserFirstname"`   // usually givenName
-	AttributeUserLastname     string     `json:"attributeUserLastname"`    // usually sn
-	AttributeUserEmail        string     `json:"attributeUserEmail"`       // usually mail
-	AttributeUserDisplayName  string     `json:"attributeUserDisplayName"` // usually displayName
-	AttributeUserGroupName    string     `json:"attributeUserGroupName"`   // usually memberOf
-	AttributeGroupMember      string     `json:"attributeGroupMember"`     // usually member
+	ServerHost                string         `json:"serverHost"`
+	ServerPort                int            `json:"serverPort"`
+	ServerType                ServerType     `json:"serverType"`
+	EncryptionType            EncryptionType `json:"encryptionType"`
+	BaseDN                    string         `json:"baseDN"`
+	BindDN                    string         `json:"bindDN"`
+	BindPassword              string         `json:"bindPassword"`
+	UserFilter                string         `json:"userFilter"`
+	GroupFilter               string         `json:"groupFilter"`
+	DisableLogout             bool           `json:"disableLogout"`
+	DefaultPermissionAddSpace bool           `json:"defaultPermissionAddSpace"`
+	AttributeUserRDN          string         `json:"attributeUserRDN"`         // usually uid (LDAP) or sAMAccountName (AD)
+	AttributeUserFirstname    string         `json:"attributeUserFirstname"`   // usually givenName
+	AttributeUserLastname     string         `json:"attributeUserLastname"`    // usually sn
+	AttributeUserEmail        string         `json:"attributeUserEmail"`       // usually mail
+	AttributeUserDisplayName  string         `json:"attributeUserDisplayName"` // usually displayName
+	AttributeUserGroupName    string         `json:"attributeUserGroupName"`   // usually memberOf
+	AttributeGroupMember      string         `json:"attributeGroupMember"`     // usually member
 }
 
 // ServerType identifies the LDAP server type
@@ -63,13 +63,23 @@ const (
 	ServerTypeAD = "ad"
 )
 
+// EncryptionType determines encryption method for LDAP connection.EncryptionType
+type EncryptionType string
+
+const (
+	// EncryptionTypeNone is none.
+	EncryptionTypeNone = "none"
+
+	// EncryptionTypeStartTLS is using start TLS.
+	EncryptionTypeStartTLS = "starttls"
+)
+
 // Clean ensures configuration data is formatted correctly.
 func (c *LDAPConfig) Clean() {
 	c.BaseDN = strings.TrimSpace(c.BaseDN)
 	c.BindDN = strings.TrimSpace(c.BindDN)
 	c.BindPassword = strings.TrimSpace(c.BindPassword)
 	c.ServerHost = strings.TrimSpace(c.ServerHost)
-	c.EncryptionType = strings.TrimSpace(c.EncryptionType)
 	c.UserFilter = strings.TrimSpace(c.UserFilter)
 	c.GroupFilter = strings.TrimSpace(c.GroupFilter)
 
@@ -81,6 +91,9 @@ func (c *LDAPConfig) Clean() {
 	}
 	if c.EncryptionType == "" {
 		c.EncryptionType = "none"
+	}
+	if c.EncryptionType != EncryptionTypeNone || c.EncryptionType != EncryptionTypeStartTLS {
+		c.EncryptionType = EncryptionTypeNone
 	}
 
 	c.AttributeUserRDN = strings.TrimSpace(c.AttributeUserRDN)
