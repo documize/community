@@ -16,8 +16,9 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/documize/community/core/stringutil"
 	lm "github.com/documize/community/model/auth"
-	// "github.com/documize/community/model/user"
+	"github.com/documize/community/model/user"
 	"github.com/pkg/errors"
 	ld "gopkg.in/ldap.v2"
 )
@@ -201,9 +202,79 @@ func executeGroupFilter(c lm.LDAPConfig) (u []lm.LDAPUser, err error) {
 func extractUser(c lm.LDAPConfig, e *ld.Entry) (u lm.LDAPUser) {
 	u.Firstname = e.GetAttributeValue(c.AttributeUserFirstname)
 	u.Lastname = e.GetAttributeValue(c.AttributeUserLastname)
-	u.Email = e.GetAttributeValue(c.AttributeUserEmail)
+	u.Email = strings.ToLower(e.GetAttributeValue(c.AttributeUserEmail))
 	u.RemoteID = e.GetAttributeValue(c.AttributeUserRDN)
 	u.CN = e.GetAttributeValue("cn")
+
+	// Make name elements from DisplayName if we can.
+	if (len(u.Firstname) == 0 || len(u.Firstname) == 0) &&
+		len(e.GetAttributeValue(c.AttributeUserDisplayName)) > 0 {
+	}
+
+	if len(u.Firstname) == 0 {
+		u.Firstname = "Empty"
+	}
+	if len(u.Lastname) == 0 {
+		u.Lastname = "Empty"
+	}
+
+	return
+}
+
+// ConvertUsers creates a unique list of users using email as primary key.
+// The result is a collection of Documize user objects.
+func convertUsers(c lm.LDAPConfig, lu []lm.LDAPUser) (du []user.User) {
+	for _, i := range lu {
+		add := true
+		for _, j := range du {
+			if len(j.Email) > 0 && i.Email == j.Email {
+				add = false
+				break
+			}
+		}
+		// skip if empty email address
+		add = len(i.Email) > 0
+		if add {
+			nu := user.User{}
+			nu.Editor = c.DefaultPermissionAddSpace
+			nu.Active = true
+			nu.Email = i.Email
+			nu.ViewUsers = false
+			nu.Analytics = false
+			nu.Admin = false
+			nu.Global = false
+			nu.Firstname = i.Firstname
+			nu.Lastname = i.Lastname
+			nu.Initials = stringutil.MakeInitials(i.Firstname, i.Lastname)
+
+			du = append(du, nu)
+		}
+	}
+
+	return
+}
+
+// FetchUsers from LDAP server using both User and Group filters.
+func fetchUsers(c lm.LDAPConfig) (du []user.User, err error) {
+	du = []user.User{}
+
+	e1, err := executeUserFilter(c)
+	if err != nil {
+		err = errors.Wrap(err, "unable to execute user filter")
+		return
+	}
+
+	e2, err := executeGroupFilter(c)
+	if err != nil {
+		err = errors.Wrap(err, "unable to execute group filter")
+		return
+	}
+
+	// convert users from LDAP format to Documize format.
+	e3 := []lm.LDAPUser{}
+	e3 = append(e3, e1...)
+	e3 = append(e3, e2...)
+	du = convertUsers(c, e3)
 
 	return
 }

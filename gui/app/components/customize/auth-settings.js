@@ -20,12 +20,17 @@ import Component from '@ember/component';
 
 export default Component.extend(Notifier, {
 	appMeta: service(),
+
 	isDocumizeProvider: computed('authProvider', function() {
 		return this.get('authProvider') === this.get('constants').AuthProvider.Documize;
 	}),
 	isKeycloakProvider: computed('authProvider', function() {
 		return this.get('authProvider') === this.get('constants').AuthProvider.Keycloak;
 	}),
+	isLDAPProvider: computed('authProvider', function() {
+		return this.get('authProvider') === this.get('constants').AuthProvider.LDAP;
+	}),
+
 	KeycloakUrlError: empty('keycloakConfig.url'),
 	KeycloakRealmError: empty('keycloakConfig.realm'),
 	KeycloakClientIdError: empty('keycloakConfig.clientId'),
@@ -34,8 +39,27 @@ export default Component.extend(Notifier, {
 	KeycloakAdminPasswordError: empty('keycloakConfig.adminPassword'),
 	keycloakFailure: '',
 
+	ldapErrorServerHost: empty('ldapConfig.serverHost'),
+	ldapErrorServerPort: computed('ldapConfig.serverPort', function() {
+		return is.empty(this.get('ldapConfig.serverPort')) || is.not.number(parseInt(this.get('ldapConfig.serverPort')));
+	}),
+	ldapErrorBindDN: empty('ldapConfig.bindDN'),
+	ldapErrorBindPassword: empty('ldapConfig.bindPassword'),
+	ldapErrorNoFilter: computed('ldapConfig.{userFilter,groupFilter}', function() {
+		return is.empty(this.get('ldapConfig.userFilter')) && is.empty(this.get('ldapConfig.groupFilter'));
+	}),
+	ldapErrorAttributeUserRDN: empty('ldapConfig.attributeUserRDN'),
+	ldapErrorAttributeUserFirstname: empty('ldapConfig.attributeUserFirstname'),
+	ldapErrorAttributeUserLastname: empty('ldapConfig.attributeUserLastname'),
+	ldapErrorAttributeUserEmail: empty('ldapConfig.attributeUserEmail'),
+	ldapErrorAttributeGroupMember: computed('ldapConfig.{groupFilter,attributeGroupMember}', function() {
+		return is.not.empty(this.get('ldapConfig.groupFilter')) && is.empty(this.get('ldapConfig.attributeGroupMember'));
+	}),
+
 	init() {
 		this._super(...arguments);
+
+		let constants = this.get('constants');
 
 		this.keycloakConfig = {
 			url: '',
@@ -45,6 +69,27 @@ export default Component.extend(Notifier, {
 			adminUser: '',
 			adminPassword: '',
 			group: '',
+			disableLogout: false,
+			defaultPermissionAddSpace: false
+		};
+
+		this.ldapConfig =  {
+			serverType:               constants.AuthProvider.ServerTypeLDAP,
+			serverHost:               '',
+			serverPort:               389,
+			encryptionType:           constants.AuthProvider.EncryptionTypeStartTLS,
+			baseDN:                   "",
+			bindDN:                   "cn=admin,dc=planetexpress,dc=com",
+			bindPassword:             "GoodNewsEveryone",
+			userFilter:               "(|(objectClass=person)(objectClass=user)(objectClass=inetOrgPerson))",
+			groupFilter:              "(&(objectClass=group)(|(cn=ship_crew)(cn=admin_staff)))",
+			attributeUserRDN:         "uid",
+			attributeUserFirstname:   "givenName",
+			attributeUserLastname:    "sn",
+			attributeUserEmail:       "mail",
+			attributeUserDisplayName: "",
+			attributeUserGroupName:   "",
+			attributeGroupMember:     "member",
 			disableLogout: false,
 			defaultPermissionAddSpace: false
 		};
@@ -60,6 +105,7 @@ export default Component.extend(Notifier, {
 			case constants.AuthProvider.Documize:
 				// nothing to do
 				break;
+
 			case constants.AuthProvider.Keycloak: // eslint-disable-line no-case-declarations
 				let config = this.get('authConfig');
 
@@ -73,6 +119,19 @@ export default Component.extend(Notifier, {
 				}
 
 				this.set('keycloakConfig', config);
+				break;
+
+			case constants.AuthProvider.LDAP: // eslint-disable-line no-case-declarations
+				let ldapConfig = this.get('authConfig');
+
+				if (is.undefined(ldapConfig) || is.null(ldapConfig) || is.empty(ldapConfig) ) {
+					ldapConfig = {};
+				} else {
+					ldapConfig.defaultPermissionAddSpace = ldapConfig.hasOwnProperty('defaultPermissionAddSpace') ? ldapConfig.defaultPermissionAddSpace : false;
+					ldapConfig.disableLogout = ldapConfig.hasOwnProperty('disableLogout') ? ldapConfig.disableLogout : true;
+				}
+
+				this.set('ldapConfig', ldapConfig);
 				break;
 		}
 	},
@@ -88,6 +147,15 @@ export default Component.extend(Notifier, {
 			this.set('authProvider', constants.AuthProvider.Keycloak);
 		},
 
+		onLDAP() {
+			let constants = this.get('constants');
+			this.set('authProvider', constants.AuthProvider.LDAP);
+		},
+
+		onLDAPEncryption(e) {
+			this.set('ldapConfig.encryptionType', e);
+		},
+
 		onSave() {
 			let constants = this.get('constants');
 			let provider = this.get('authProvider');
@@ -99,6 +167,7 @@ export default Component.extend(Notifier, {
 				case constants.AuthProvider.Documize:
 					config = {};
 					break;
+
 				case constants.AuthProvider.Keycloak:
 					if (this.get('KeycloakUrlError')) {
 						this.$("#keycloak-url").focus();
@@ -142,13 +211,31 @@ export default Component.extend(Notifier, {
 
 					set(config, 'publicKey', encoding.Base64.encode(this.get('keycloakConfig.publicKey')));
 					break;
+
+				case constants.AuthProvider.LDAP:
+					if (this.get('ldapErrorServerHost')) {
+						this.$("#ldap-host").focus();
+						return;
+					}
+					if (this.get('ldapErrorServerPort')) {
+						this.$("#ldap-port").focus();
+						return;
+					}
+
+					config = copy(this.get('ldapConfig'));
+					config.serverHost = config.serverHost.trim();
+					config.serverPort = parseInt(this.get('ldapConfig.serverPort'));
+					break;
 			}
+
+			debugger;
 
 			this.showWait();
 
 			let data = { authProvider: provider, authConfig: JSON.stringify(config) };
 
 			this.get('onSave')(data).then(() => {
+				// Without sync we cannot log in
 				if (data.authProvider === constants.AuthProvider.Keycloak) {
 					this.get('onSync')().then((response) => {
 						if (response.isError) {
@@ -165,6 +252,7 @@ export default Component.extend(Notifier, {
 						}
 					});
 				}
+
 				this.showDone();
 			});
 		}

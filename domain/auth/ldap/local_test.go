@@ -60,6 +60,32 @@ func TestUserFilter_LocalLDAP(t *testing.T) {
 	}
 }
 
+func TestDualFilters_LocalLDAP(t *testing.T) {
+	testConfigLocalLDAP.UserFilter = "(|(objectClass=person)(objectClass=user)(objectClass=inetOrgPerson))"
+	e1, err := executeUserFilter(testConfigLocalLDAP)
+	if err != nil {
+		t.Error("unable to exeucte user filter", err.Error())
+		return
+	}
+
+	testConfigLocalLDAP.GroupFilter = "(&(objectClass=group)(|(cn=ship_crew)(cn=admin_staff)))"
+	e2, err := executeGroupFilter(testConfigLocalLDAP)
+	if err != nil {
+		t.Error("unable to exeucte group filter", err.Error())
+		return
+	}
+
+	e3 := []lm.LDAPUser{}
+	e3 = append(e3, e1...)
+	e3 = append(e3, e2...)
+	users := convertUsers(testConfigLocalLDAP, e3)
+
+	for _, u := range users {
+		t.Logf("(%s %s) @ %s\n",
+			u.Firstname, u.Lastname, u.Email)
+	}
+}
+
 func TestGroupFilter_LocalLDAP(t *testing.T) {
 	testConfigLocalLDAP.GroupFilter = "(&(objectClass=group)(|(cn=ship_crew)(cn=admin_staff)))"
 
@@ -74,11 +100,6 @@ func TestGroupFilter_LocalLDAP(t *testing.T) {
 	}
 
 	t.Logf("LDAP group search entries found: %d", len(e))
-
-	for _, u := range e {
-		t.Logf("[%s] %s (%s %s) @ %s\n",
-			u.RemoteID, u.CN, u.Firstname, u.Lastname, u.Email)
-	}
 }
 
 func TestAuthenticate_LocalLDAP(t *testing.T) {

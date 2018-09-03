@@ -214,7 +214,7 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	AddPrivate(rt, "global/search/status", []string{"GET", "OPTIONS"}, nil, meta.SearchStatus)
 	AddPrivate(rt, "global/search/reindex", []string{"POST", "OPTIONS"}, nil, meta.Reindex)
 	AddPrivate(rt, "global/sync/keycloak", []string{"GET", "OPTIONS"}, nil, keycloak.Sync)
-	AddPrivate(rt, "global/sync/ldap", []string{"GET", "OPTIONS"}, nil, ldap.Sync)
+	AddPrivate(rt, "global/sync/ldap/preview", []string{"POST", "OPTIONS"}, nil, ldap.Preview)
 
 	Add(rt, RoutePrefixRoot, "robots.txt", []string{"GET", "OPTIONS"}, nil, meta.RobotsTxt)
 	Add(rt, RoutePrefixRoot, "sitemap.xml", []string{"GET", "OPTIONS"}, nil, meta.Sitemap)

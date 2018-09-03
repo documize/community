@@ -106,6 +106,19 @@ export default Service.extend({
 		}
 	},
 
+	previewLDAP(config) {
+		if(this.get('sessionService.isAdmin')) {
+			return this.get('ajax').request(`global/sync/ldap/preview`, {
+				method: 'POST',
+				data: JSON.stringify(config)
+			}).then((response) => {
+				return response;
+			}).catch((error) => {
+				return error;
+			});
+		}
+	},
+
 	// Returns product license.
 	searchStatus() {
 		if (this.get('sessionService.isGlobalAdmin')) {

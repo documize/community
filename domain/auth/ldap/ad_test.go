@@ -31,8 +31,8 @@ var testConfigPublicAD = lm.LDAPConfig{
 	BaseDN:                   "DC=mycompany,DC=local",
 	BindDN:                   "CN=ad-admin,CN=Users,DC=mycompany,DC=local",
 	BindPassword:             "8B5tNRLvbk8K",
-	UserFilter:               "",
-	GroupFilter:              "",
+	UserFilter:               "(|(objectCategory=person)(objectClass=user)(objectClass=inetOrgPerson))",
+	GroupFilter:              "(|(cn=Accounting)(cn=IT))",
 	AttributeUserRDN:         "sAMAccountName",
 	AttributeUserFirstname:   "givenName",
 	AttributeUserLastname:    "sn",
@@ -43,8 +43,6 @@ var testConfigPublicAD = lm.LDAPConfig{
 }
 
 func TestUserFilter_PublicAD(t *testing.T) {
-	testConfigPublicAD.UserFilter = "(|(objectCategory=person)(objectClass=user)(objectClass=inetOrgPerson))"
-
 	e, err := executeUserFilter(testConfigPublicAD)
 	if err != nil {
 		t.Error("unable to exeucte user filter", err.Error())
@@ -64,8 +62,6 @@ func TestUserFilter_PublicAD(t *testing.T) {
 }
 
 func TestGroupFilter_PublicAD(t *testing.T) {
-	testConfigPublicAD.GroupFilter = "(|(cn=Accounting)(cn=IT))"
-
 	e, err := executeGroupFilter(testConfigPublicAD)
 	if err != nil {
 		t.Error("unable to exeucte group filter", err.Error())
