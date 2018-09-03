@@ -28,8 +28,8 @@ var testConfigLocalLDAP = lm.LDAPConfig{
 	BaseDN:                   "ou=people,dc=planetexpress,dc=com",
 	BindDN:                   "cn=admin,dc=planetexpress,dc=com",
 	BindPassword:             "GoodNewsEveryone",
-	UserFilter:               "",
-	GroupFilter:              "",
+	UserFilter:               "(|(objectClass=person)(objectClass=user)(objectClass=inetOrgPerson))",
+	GroupFilter:              "(&(objectClass=group)(|(cn=ship_crew)(cn=admin_staff)))",
 	AttributeUserRDN:         "uid",
 	AttributeUserFirstname:   "givenName",
 	AttributeUserLastname:    "sn",
@@ -40,8 +40,6 @@ var testConfigLocalLDAP = lm.LDAPConfig{
 }
 
 func TestUserFilter_LocalLDAP(t *testing.T) {
-	testConfigLocalLDAP.UserFilter = "(|(objectClass=person)(objectClass=user)(objectClass=inetOrgPerson))"
-
 	e, err := executeUserFilter(testConfigLocalLDAP)
 	if err != nil {
 		t.Error("unable to exeucte user filter", err.Error())
@@ -61,14 +59,12 @@ func TestUserFilter_LocalLDAP(t *testing.T) {
 }
 
 func TestDualFilters_LocalLDAP(t *testing.T) {
-	testConfigLocalLDAP.UserFilter = "(|(objectClass=person)(objectClass=user)(objectClass=inetOrgPerson))"
 	e1, err := executeUserFilter(testConfigLocalLDAP)
 	if err != nil {
 		t.Error("unable to exeucte user filter", err.Error())
 		return
 	}
 
-	testConfigLocalLDAP.GroupFilter = "(&(objectClass=group)(|(cn=ship_crew)(cn=admin_staff)))"
 	e2, err := executeGroupFilter(testConfigLocalLDAP)
 	if err != nil {
 		t.Error("unable to exeucte group filter", err.Error())
@@ -87,8 +83,6 @@ func TestDualFilters_LocalLDAP(t *testing.T) {
 }
 
 func TestGroupFilter_LocalLDAP(t *testing.T) {
-	testConfigLocalLDAP.GroupFilter = "(&(objectClass=group)(|(cn=ship_crew)(cn=admin_staff)))"
-
 	e, err := executeGroupFilter(testConfigLocalLDAP)
 	if err != nil {
 		t.Error("unable to exeucte group filter", err.Error())

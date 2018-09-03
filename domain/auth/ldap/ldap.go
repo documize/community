@@ -257,21 +257,27 @@ func convertUsers(c lm.LDAPConfig, lu []lm.LDAPUser) (du []user.User) {
 // FetchUsers from LDAP server using both User and Group filters.
 func fetchUsers(c lm.LDAPConfig) (du []user.User, err error) {
 	du = []user.User{}
+	e1 := []lm.LDAPUser{}
+	e2 := []lm.LDAPUser{}
+	e3 := []lm.LDAPUser{}
 
-	e1, err := executeUserFilter(c)
-	if err != nil {
-		err = errors.Wrap(err, "unable to execute user filter")
-		return
+	if len(c.UserFilter) > 0 {
+		e1, err = executeUserFilter(c)
+		if err != nil {
+			err = errors.Wrap(err, "unable to execute user filter")
+			return
+		}
 	}
 
-	e2, err := executeGroupFilter(c)
-	if err != nil {
-		err = errors.Wrap(err, "unable to execute group filter")
-		return
+	if len(c.GroupFilter) > 0 {
+		e2, err = executeGroupFilter(c)
+		if err != nil {
+			err = errors.Wrap(err, "unable to execute group filter")
+			return
+		}
 	}
 
 	// convert users from LDAP format to Documize format.
-	e3 := []lm.LDAPUser{}
 	e3 = append(e3, e1...)
 	e3 = append(e3, e2...)
 	du = convertUsers(c, e3)

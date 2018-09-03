@@ -15,11 +15,13 @@ import { set } from '@ember/object';
 import { copy } from '@ember/object/internals';
 import { inject as service } from '@ember/service';
 import Notifier from '../../mixins/notifier';
+import ModalMixin from '../../mixins/modal';
 import encoding from '../../utils/encoding';
 import Component from '@ember/component';
 
-export default Component.extend(Notifier, {
+export default Component.extend(ModalMixin, Notifier, {
 	appMeta: service(),
+	globalSvc: service('global'),
 
 	isDocumizeProvider: computed('authProvider', function() {
 		return this.get('authProvider') === this.get('constants').AuthProvider.Documize;
@@ -154,6 +156,19 @@ export default Component.extend(Notifier, {
 
 		onLDAPEncryption(e) {
 			this.set('ldapConfig.encryptionType', e);
+		},
+
+		onLDAPPreview() {
+			this.showWait();
+
+			let config = this.get('ldapConfig');
+			config.serverPort = parseInt(this.get('ldapConfig.serverPort'));
+
+			this.get('globalSvc').previewLDAP(config).then((preview) => {
+				this.set('ldapPreview', preview);
+				this.modalOpen("#ldap-preview-modal", {"show": true});
+				this.showDone();
+			});
 		},
 
 		onSave() {

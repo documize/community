@@ -58,6 +58,7 @@ func (h *Handler) Preview(w http.ResponseWriter, r *http.Request) {
 		IsError bool        `json:"isError"`
 		Users   []user.User `json:"users"`
 	}
+	result.Users = []user.User{}
 
 	// Read the request.
 	defer streamutil.Close(r.Body)

@@ -131,7 +131,7 @@
 			<div class="form-group row">
 				<label for="ldap-baseDN" class="col-sm-3 col-form-label">Base DN</label>
 				<div class="col-sm-9">
-					{{input id="ldap-baseDN" type="number" value=ldapConfig.baseDN class='form-control'}}
+					{{input id="ldap-baseDN" type="text" value=ldapConfig.baseDN class='form-control'}}
 					<small class="form-text text-muted">Starting point for search filters, e.g. ou=users,dc=example,dc=com</small>
 				</div>
 			</div>
@@ -214,12 +214,39 @@
 					{{x-toggle value=ldapConfig.defaultPermissionAddSpace size="medium" theme="light" onToggle=(action (mut ldapConfig.defaultPermissionAddSpace))}}
 				</div>
 			</div>
+			<div class="form-group row">
+				<div class="col-sm-3"></div>
+				<div class="col-sm-9">
+					<div class="btn btn-secondary mt-4" {{action 'onLDAPPreview'}}>Test Connection & Preview pauth&rarr;</div>
+				</div>
+			</div>
 		{{/if}}
 
-		<div class="btn btn-success mt-4" {{action 'onSave'}}>Save</div>
+		<div class="btn btn-success mt-4" {{action 'onSave'}}>ACTIVATE</div>
 	</form>
 
 	{{#if (gt keycloakFailure.length 0)}}
 		<p class="admin-setting-failure my-3">Keycloak connection failed: {{keycloakFailure}}</p>
 	{{/if}}
+</div>
+
+<div id="ldap-preview-modal" class="modal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">LDAP Preview</div>
+			<div class="modal-body">
+				{{#if ldapPreview.isError}}
+					<p class="text-danger">{{ldapPreview.message}}</p>
+				{{else}}
+					<p class="text-success">Connection successful.</p>
+					{{#each ldapPreview.users as |user|}}
+						<p>{{user.firstname}} {{user.firstname}} ({{user.email}})</p>
+					{{/each}}
+				{{/if}}
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
 </div>
