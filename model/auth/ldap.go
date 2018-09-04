@@ -166,15 +166,3 @@ type LDAPUser struct {
 	Firstname string `json:"firstName"`
 	Lastname  string `json:"lastName"`
 }
-
-// LDAPAuthRequest data received via LDAP client library
-// type LDAPAuthRequest struct {
-// 	Domain    string `json:"domain"`
-// 	Token     string `json:"token"`
-// 	RemoteID  string `json:"remoteId"`
-// 	Email     string `json:"email"`
-// 	Username  string `json:"username"`
-// 	Firstname string `json:"firstname"`
-// 	Lastname  string `json:"lastname"`
-// 	Enabled   bool   `json:"enabled"`
-// }
