@@ -33,32 +33,7 @@ export default Route.extend(AuthenticatedRouteMixin, {
 			authConfig: null,
 		};
 
-		let config = {
-			ServerType:               constants.AuthProvider.ServerTypeLDAP,
-			ServerHost:               "127.0.0.1",
-			ServerPort:               389,
-			EncryptionType:           constants.AuthProvider.EncryptionTypeStartTLS,
-			BaseDN:                   "ou=people,dc=planetexpress,dc=com",
-			BindDN:                   "cn=admin,dc=planetexpress,dc=com",
-			BindPassword:             "GoodNewsEveryone",
-			UserFilter:               "(|(objectClass=person)(objectClass=user)(objectClass=inetOrgPerson))",
-			GroupFilter:              "(&(objectClass=group)(|(cn=ship_crew)(cn=admin_staff)))",
-			AttributeUserRDN:         "uid",
-			AttributeUserFirstname:   "givenName",
-			AttributeUserLastname:    "sn",
-			AttributeUserEmail:       "mail",
-			AttributeUserDisplayName: "",
-			AttributeUserGroupName:   "",
-			AttributeGroupMember:     "member",
-		};
-
-		this.get('global').previewLDAP(config).then((r) => {
-			console.log(r);
-		});
-
 		return new EmberPromise((resolve) => {
-			let constants = this.get('constants');
-
 			this.get('global').getAuthConfig().then((config) => {
 				switch (data.authProvider) {
 					case constants.AuthProvider.Keycloak:

@@ -130,7 +130,7 @@ func (h *Handler) Sync(w http.ResponseWriter, r *http.Request) {
 		if len(u.Email) == 0 {
 			missing++
 		} else {
-			err = addUser(ctx, h.Runtime, h.Store, u, c.DefaultPermissionAddSpace)
+			_, err = auth.AddExternalUser(ctx, h.Runtime, h.Store, u, c.DefaultPermissionAddSpace)
 		}
 	}
 
@@ -240,7 +240,7 @@ func (h *Handler) Authenticate(w http.ResponseWriter, r *http.Request) {
 		u.Salt = secrets.GenerateSalt()
 		u.Password = secrets.GeneratePassword(secrets.GenerateRandomPassword(), u.Salt)
 
-		err = addUser(ctx, h.Runtime, h.Store, u, ac.DefaultPermissionAddSpace)
+		u, err = auth.AddExternalUser(ctx, h.Runtime, h.Store, u, ac.DefaultPermissionAddSpace)
 		if err != nil {
 			response.WriteServerError(w, method, err)
 			h.Runtime.Log.Error(method, err)

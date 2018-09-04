@@ -96,7 +96,7 @@ export default Service.extend({
 
 	syncLDAP() {
 		if(this.get('sessionService.isAdmin')) {
-			return this.get('ajax').request(`global/sync/ldap`, {
+			return this.get('ajax').request(`global/ldap/sync`, {
 				method: 'GET'
 			}).then((response) => {
 				return response;
@@ -108,7 +108,7 @@ export default Service.extend({
 
 	previewLDAP(config) {
 		if(this.get('sessionService.isAdmin')) {
-			return this.get('ajax').request(`global/sync/ldap/preview`, {
+			return this.get('ajax').request(`global/ldap/preview`, {
 				method: 'POST',
 				data: JSON.stringify(config)
 			}).then((response) => {

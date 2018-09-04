@@ -9,7 +9,7 @@
 
 <div class="view-customize">
 	<form class="mt-5">
-		<div class="widget-list-picker widget-list-picker-horiz mb-5">
+		<div class="widget-list-picker widget-list-picker-horiz">
 			<ul class="options">
 				<li class="option {{if isDocumizeProvider 'selected'}}" {{action 'onDocumize'}}>
 					<div class="text-header">Documize</div>
@@ -34,6 +34,14 @@
 				</li>
 			</ul>
 		</div>
+
+		<br/>
+		<br/>
+		<br/>
+
+		{{#if isDocumizeProvider}}
+			<p>There are no settings.</p>
+		{{/if}}
 
 		{{#if isKeycloakProvider}}
 			<div class="form-group row">
@@ -238,7 +246,7 @@
 				{{#if ldapPreview.isError}}
 					<p class="text-danger">{{ldapPreview.message}}</p>
 				{{else}}
-					<p class="text-success">Connection successful.</p>
+					<p class="text-success">Connection successful, found {{ldapPreview.count}} users.</p>
 					{{#each ldapPreview.users as |user|}}
 						<p>{{user.firstname}} {{user.firstname}} ({{user.email}})</p>
 					{{/each}}

@@ -48,8 +48,10 @@ func connect(c lm.LDAPConfig) (l *ld.Conn, err error) {
 }
 
 // Authenticate user against LDAP provider.
-func authenticate(l *ld.Conn, c lm.LDAPConfig, username, pwd string) (success bool, err error) {
+func authenticate(l *ld.Conn, c lm.LDAPConfig, username, pwd string) (lu lm.LDAPUser, success bool, err error) {
 	success = false
+	err = nil
+
 	userAttrs := c.GetUserFilterAttributes()
 	filter := fmt.Sprintf("(%s=%s)", c.AttributeUserRDN, username)
 
@@ -87,10 +89,13 @@ func authenticate(l *ld.Conn, c lm.LDAPConfig, username, pwd string) (success bo
 	// Bind as the user to verify their password
 	err = l.Bind(userdn, pwd)
 	if err != nil {
-		return false, nil
+		return
 	}
 
-	return true, nil
+	lu = extractUser(c, sr.Entries[0])
+	success = true
+
+	return
 }
 
 // ExecuteUserFilter returns all matching LDAP users.
@@ -212,10 +217,10 @@ func extractUser(c lm.LDAPConfig, e *ld.Entry) (u lm.LDAPUser) {
 	}
 
 	if len(u.Firstname) == 0 {
-		u.Firstname = "Empty"
+		u.Firstname = "LDAP"
 	}
 	if len(u.Lastname) == 0 {
-		u.Lastname = "Empty"
+		u.Lastname = "User"
 	}
 
 	return
@@ -235,21 +240,26 @@ func convertUsers(c lm.LDAPConfig, lu []lm.LDAPUser) (du []user.User) {
 		// skip if empty email address
 		add = len(i.Email) > 0
 		if add {
-			nu := user.User{}
-			nu.Editor = c.DefaultPermissionAddSpace
-			nu.Active = true
-			nu.Email = i.Email
-			nu.ViewUsers = false
-			nu.Analytics = false
-			nu.Admin = false
-			nu.Global = false
-			nu.Firstname = i.Firstname
-			nu.Lastname = i.Lastname
-			nu.Initials = stringutil.MakeInitials(i.Firstname, i.Lastname)
-
-			du = append(du, nu)
+			du = append(du, convertUser(c, i))
 		}
 	}
+
+	return
+}
+
+// ConvertUser turns LDAP user into Documize user.
+func convertUser(c lm.LDAPConfig, lu lm.LDAPUser) (du user.User) {
+	du = user.User{}
+	du.Editor = c.DefaultPermissionAddSpace
+	du.Active = true
+	du.Email = lu.Email
+	du.ViewUsers = false
+	du.Analytics = false
+	du.Admin = false
+	du.Global = false
+	du.Firstname = lu.Firstname
+	du.Lastname = lu.Lastname
+	du.Initials = stringutil.MakeInitials(lu.Firstname, lu.Lastname)
 
 	return
 }

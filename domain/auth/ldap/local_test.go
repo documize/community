@@ -104,16 +104,17 @@ func TestAuthenticate_LocalLDAP(t *testing.T) {
 	}
 	defer l.Close()
 
-	ok, err := authenticate(l, testConfigLocalLDAP, "professor", "professor")
+	user, ok, err := authenticate(l, testConfigLocalLDAP, "professor", "professor")
 	if err != nil {
 		t.Error("error during LDAP authentication: ", err.Error())
 		return
 	}
 	if !ok {
 		t.Error("failed LDAP authentication")
+		return
 	}
 
-	t.Log("Authenticated")
+	t.Log("Authenticated", user.Email)
 }
 
 func TestNotAuthenticate_LocalLDAP(t *testing.T) {
@@ -124,13 +125,14 @@ func TestNotAuthenticate_LocalLDAP(t *testing.T) {
 	}
 	defer l.Close()
 
-	ok, err := authenticate(l, testConfigLocalLDAP, "junk", "junk")
+	_, ok, err := authenticate(l, testConfigLocalLDAP, "junk", "junk")
 	if err != nil {
 		t.Error("error during LDAP authentication: ", err.Error())
 		return
 	}
 	if ok {
 		t.Error("incorrect LDAP authentication")
+		return
 	}
 
 	t.Log("Not authenticated")

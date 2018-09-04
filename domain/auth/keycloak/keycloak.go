@@ -13,7 +13,6 @@ package keycloak
 
 import (
 	"bytes"
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -22,12 +21,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/stringutil"
-	"github.com/documize/community/core/uniqueid"
-	"github.com/documize/community/domain"
-	usr "github.com/documize/community/domain/user"
-	"github.com/documize/community/model/account"
 	"github.com/documize/community/model/auth"
 	"github.com/documize/community/model/user"
 	"github.com/pkg/errors"
@@ -135,71 +129,4 @@ func Fetch(c auth.KeycloakConfig) (users []user.User, err error) {
 	}
 
 	return users, nil
-}
-
-// Helper method to setup user account in Documize using Keycloak provided user data.
-func addUser(ctx domain.RequestContext, rt *env.Runtime, store *domain.Store, u user.User, addSpace bool) (err error) {
-	// only create account if not dupe
-	addUser := true
-	addAccount := true
-	var userID string
-
-	userDupe, err := store.User.GetByEmail(ctx, u.Email)
-	if err != nil && err != sql.ErrNoRows {
-		return err
-	}
-
-	if u.Email == userDupe.Email {
-		addUser = false
-		userID = userDupe.RefID
-	}
-
-	ctx.Transaction, err = rt.Db.Beginx()
-	if err != nil {
-		return err
-	}
-
-	if addUser {
-		userID = uniqueid.Generate()
-		u.RefID = userID
-
-		err = store.User.Add(ctx, u)
-		if err != nil {
-			ctx.Transaction.Rollback()
-			return err
-		}
-	} else {
-		usr.AttachUserAccounts(ctx, *store, ctx.OrgID, &userDupe)
-
-		for _, a := range userDupe.Accounts {
-			if a.OrgID == ctx.OrgID {
-				addAccount = false
-				break
-			}
-		}
-	}
-
-	// set up user account for the org
-	if addAccount {
-		var a account.Account
-		a.UserID = userID
-		a.OrgID = ctx.OrgID
-		a.Editor = addSpace
-		a.Admin = false
-		accountID := uniqueid.Generate()
-		a.RefID = accountID
-		a.Active = true
-
-		err = store.Account.Add(ctx, a)
-		if err != nil {
-			ctx.Transaction.Rollback()
-			return err
-		}
-	}
-
-	ctx.Transaction.Commit()
-
-	u, err = store.User.Get(ctx, userID)
-
-	return err
 }

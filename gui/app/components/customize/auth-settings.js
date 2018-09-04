@@ -129,6 +129,7 @@ export default Component.extend(ModalMixin, Notifier, {
 				if (is.undefined(ldapConfig) || is.null(ldapConfig) || is.empty(ldapConfig) ) {
 					ldapConfig = {};
 				} else {
+					ldapConfig = JSON.parse(ldapConfig);
 					ldapConfig.defaultPermissionAddSpace = ldapConfig.hasOwnProperty('defaultPermissionAddSpace') ? ldapConfig.defaultPermissionAddSpace : false;
 					ldapConfig.disableLogout = ldapConfig.hasOwnProperty('disableLogout') ? ldapConfig.disableLogout : true;
 				}
@@ -240,10 +241,14 @@ export default Component.extend(ModalMixin, Notifier, {
 					config = copy(this.get('ldapConfig'));
 					config.serverHost = config.serverHost.trim();
 					config.serverPort = parseInt(this.get('ldapConfig.serverPort'));
+
+					if (is.not.empty(config.groupFilter) && is.empty(config.attributeGroupMember)) {
+						this.$('#ldap-attributeGroupMember').focus();
+						return;
+					}
+
 					break;
 			}
-
-			debugger;
 
 			this.showWait();
 
@@ -251,8 +256,28 @@ export default Component.extend(ModalMixin, Notifier, {
 
 			this.get('onSave')(data).then(() => {
 				// Without sync we cannot log in
+
+				// Keycloak sync process
 				if (data.authProvider === constants.AuthProvider.Keycloak) {
-					this.get('onSync')().then((response) => {
+					this.get('onSyncKeycloak')().then((response) => {
+						if (response.isError) {
+							this.set('keycloakFailure', response.message);
+							console.log(response.message); // eslint-disable-line no-console
+							data.authProvider = constants.AuthProvider.Documize;
+							this.get('onSave')(data).then(() => {});
+						} else {
+							if (data.authProvider === this.get('appMeta.authProvider')) {
+								console.log(response.message); // eslint-disable-line no-console
+							} else {
+								this.get('onChange')(data);
+							}
+						}
+					});
+				}
+
+				// LDAP sync process
+				if (data.authProvider === constants.AuthProvider.LDAP) {
+					this.get('onSyncLDAP')().then((response) => {
 						if (response.isError) {
 							this.set('keycloakFailure', response.message);
 							console.log(response.message); // eslint-disable-line no-console

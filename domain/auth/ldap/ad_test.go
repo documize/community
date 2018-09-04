@@ -88,16 +88,17 @@ func TestAuthenticate_PublicAD(t *testing.T) {
 	}
 	defer l.Close()
 
-	ok, err := authenticate(l, testConfigPublicAD, "bob.johnson", "Pass@word1!")
+	user, ok, err := authenticate(l, testConfigPublicAD, "bob.johnson", "Pass@word1!")
 	if err != nil {
 		t.Error("error during LDAP authentication: ", err.Error())
 		return
 	}
 	if !ok {
 		t.Error("failed LDAP authentication")
+		return
 	}
 
-	t.Log("Authenticated")
+	t.Log("Authenticated", user.Email)
 }
 
 func TestNotAuthenticate_PublicAD(t *testing.T) {
@@ -108,13 +109,14 @@ func TestNotAuthenticate_PublicAD(t *testing.T) {
 	}
 	defer l.Close()
 
-	ok, err := authenticate(l, testConfigPublicAD, "junk", "junk")
+	_, ok, err := authenticate(l, testConfigPublicAD, "junk", "junk")
 	if err != nil {
 		t.Error("error during LDAP authentication: ", err.Error())
 		return
 	}
 	if ok {
 		t.Error("incorrect LDAP authentication")
+		return
 	}
 
 	t.Log("Not authenticated")

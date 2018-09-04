@@ -240,8 +240,12 @@ export default Component.extend(AuthProvider, ModalMixin, TooltipMixin, {
 			});
 		},
 
-		onSync() {
-			this.get('onSync')();
+		onSyncKeycloak() {
+			this.get('onSyncKeycloak')();
+		},
+
+		onSyncLDAP() {
+			this.get('onSyncLDAP')();
 		},
 
 		onLimit(limit) {

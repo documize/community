@@ -10,8 +10,8 @@
 // https://documize.com
 
 import { Promise as EmberPromise } from 'rsvp';
-import Service, { inject as service } from '@ember/service';
 import netUtil from '../utils/net';
+import Service, { inject as service } from '@ember/service';
 
 export default Service.extend({
 	sessionService: service('session'),
@@ -59,7 +59,7 @@ export default Service.extend({
                     return resolve();
                 }).error(() => {
                     return reject(new Error('login failed'));
-                });            
+                });
             });
         });
     },

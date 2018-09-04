@@ -3,7 +3,14 @@
 		{{#if syncInProgress}}
 			<div class="btn btn-secondary mt-3 mb-3">Keycloak user sync running...</div>
 		{{else}}
-			<div class="btn btn-success mt-3 mb-3" {{action 'onSync'}}>Sync with Keycloak</div>
+			<div class="btn btn-success mt-3 mb-3" {{action 'onSyncKeycloak'}}>Sync with Keycloak</div>
+		{{/if}}
+	{{/if}}
+	{{#if isAuthProviderLDAP}}
+		{{#if syncInProgress}}
+			<div class="btn btn-secondary mt-3 mb-3">LDAP user sync running...</div>
+		{{else}}
+			<div class="btn btn-success mt-3 mb-3" {{action 'onSyncLDAP'}}>Sync with LDAP</div>
 		{{/if}}
 	{{/if}}
 

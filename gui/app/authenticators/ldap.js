@@ -12,13 +12,13 @@
 import { isPresent } from '@ember/utils';
 import { reject, resolve } from 'rsvp';
 import { inject as service } from '@ember/service';
+import encodingUtil from '../utils/encoding';
 import netUtil from '../utils/net';
 import Base from 'ember-simple-auth/authenticators/base';
 
 export default Base.extend({
 	ajax: service(),
 	appMeta: service(),
-	kcAuth: service(),
 	localStorage: service(),
 
 	restore(data) {
@@ -30,24 +30,31 @@ export default Base.extend({
 		return reject();
 	},
 
-	authenticate(data) {
-		data.domain = netUtil.getSubdomain();
+	authenticate(credentials) {
+		let domain = netUtil.getSubdomain();
+		let encoded;
 
-		if (!isPresent(data.token)) {
-			return reject("data.token is empty");
-		}
-		if (!isPresent(data.email)) {
-			return reject("data.email is empty");
+		if (typeof credentials === 'object') {
+			let { password, username } = credentials;
+
+			if (!isPresent(password) || !isPresent(username)) {
+				return reject("invalid");
+			}
+
+			encoded = encodingUtil.Base64.encode(`${domain}:${username}:${password}`);
+		} else if (typeof credentials === 'string') {
+			encoded = credentials;
+		} else {
+			return reject("invalid");
 		}
 
-		return this.get('ajax').post('public/authenticate/keycloak', {
-			data: JSON.stringify(data),
-			contentType: 'json'
-		});
+		let headers = { 'Authorization': 'Basic ' + encoded };
+
+		return this.get('ajax').post('public/authenticate/ldap', { headers });
 	},
 
 	invalidate() {
 		this.get('localStorage').clearAll();
-		return this.get('kcAuth').logout();
+		return resolve();
 	}
 });

@@ -32,9 +32,17 @@ export default Controller.extend(NotifierMixin, {
 			});
 		},
 
-		onSync() {
+		onSyncKeycloak() {
 			return new EmberPromise((resolve) => {
 				this.get('global').syncKeycloak().then((response) => {
+					resolve(response);
+				});
+			});
+		},
+
+		onSyncLDAP() {
+			return new EmberPromise((resolve) => {
+				this.get('global').syncLDAP().then((response) => {
 					resolve(response);
 				});
 			});
