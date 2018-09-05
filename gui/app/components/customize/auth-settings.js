@@ -57,11 +57,11 @@ export default Component.extend(ModalMixin, Notifier, {
 	ldapErrorAttributeGroupMember: computed('ldapConfig.{groupFilter,attributeGroupMember}', function() {
 		return is.not.empty(this.get('ldapConfig.groupFilter')) && is.empty(this.get('ldapConfig.attributeGroupMember'));
 	}),
+	ldapPreview: null,
+	ldapConfig: null,
 
 	init() {
 		this._super(...arguments);
-
-		let constants = this.get('constants');
 
 		this.keycloakConfig = {
 			url: '',
@@ -74,27 +74,6 @@ export default Component.extend(ModalMixin, Notifier, {
 			disableLogout: false,
 			defaultPermissionAddSpace: false
 		};
-
-		this.ldapConfig =  {
-			serverType:               constants.AuthProvider.ServerTypeLDAP,
-			serverHost:               '',
-			serverPort:               389,
-			encryptionType:           constants.AuthProvider.EncryptionTypeStartTLS,
-			baseDN:                   "",
-			bindDN:                   "cn=admin,dc=planetexpress,dc=com",
-			bindPassword:             "GoodNewsEveryone",
-			userFilter:               "(|(objectClass=person)(objectClass=user)(objectClass=inetOrgPerson))",
-			groupFilter:              "(&(objectClass=group)(|(cn=ship_crew)(cn=admin_staff)))",
-			attributeUserRDN:         "uid",
-			attributeUserFirstname:   "givenName",
-			attributeUserLastname:    "sn",
-			attributeUserEmail:       "mail",
-			attributeUserDisplayName: "",
-			attributeUserGroupName:   "",
-			attributeGroupMember:     "member",
-			disableLogout: false,
-			defaultPermissionAddSpace: false
-		};
 	},
 
 	didReceiveAttrs() {
@@ -102,6 +81,8 @@ export default Component.extend(ModalMixin, Notifier, {
 
 		let provider = this.get('authProvider');
 		let constants = this.get('constants');
+
+		this.set('ldapPreview', {isError: true, message: 'Unable to connect'});
 
 		switch (provider) {
 			case constants.AuthProvider.Documize:

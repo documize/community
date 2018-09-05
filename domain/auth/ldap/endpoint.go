@@ -54,6 +54,8 @@ func (h *Handler) Preview(w http.ResponseWriter, r *http.Request) {
 		Users   []user.User `json:"users"`
 		Count   int         `json:"count"`
 	}
+
+	result.IsError = true
 	result.Users = []user.User{}
 
 	// Read the request.
@@ -78,6 +80,25 @@ func (h *Handler) Preview(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if c.ServerPort == 0 && len(c.ServerHost) == 0 {
+		result.Message = "Missing LDAP server details"
+		result.IsError = true
+		response.WriteJSON(w, result)
+		return
+	}
+	if len(c.BindDN) == 0 && len(c.BindPassword) == 0 {
+		result.Message = "Missing LDAP bind credentials"
+		result.IsError = true
+		response.WriteJSON(w, result)
+		return
+	}
+	if len(c.UserFilter) == 0 && len(c.GroupFilter) == 0 {
+		result.Message = "Missing LDAP search filters"
+		result.IsError = true
+		response.WriteJSON(w, result)
+		return
+	}
+
 	h.Runtime.Log.Info("Fetching LDAP users")
 
 	users, err := fetchUsers(c)
@@ -90,7 +111,7 @@ func (h *Handler) Preview(w http.ResponseWriter, r *http.Request) {
 	}
 
 	result.IsError = false
-	result.Message = fmt.Sprintf("Sync'ed with LDAP, found %d users", len(users))
+	result.Message = fmt.Sprintf("Previewing LDAP, found %d users", len(users))
 	result.Count = len(users)
 	result.Users = users
 
@@ -118,6 +139,9 @@ func (h *Handler) Sync(w http.ResponseWriter, r *http.Request) {
 		Message string `json:"message"`
 		IsError bool   `json:"isError"`
 	}
+
+	result.IsError = true
+	result.Message = "Unable to connect to LDAP"
 
 	// Org contains raw auth provider config
 	org, err := h.Store.Organization.GetOrganization(ctx, ctx.OrgID)
