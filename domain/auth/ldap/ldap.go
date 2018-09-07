@@ -14,6 +14,7 @@ package ldap
 import (
 	"crypto/tls"
 	"fmt"
+	"math"
 	"strings"
 
 	"github.com/documize/community/core/stringutil"
@@ -116,13 +117,13 @@ func executeUserFilter(c lm.LDAPConfig) (u []lm.LDAPUser, err error) {
 
 	searchRequest := ld.NewSearchRequest(
 		c.BaseDN,
-		ld.ScopeWholeSubtree, ld.NeverDerefAliases, 0, 0, false,
+		ld.ScopeWholeSubtree, ld.NeverDerefAliases, math.MaxInt32, 0, false,
 		c.UserFilter,
 		c.GetUserFilterAttributes(),
 		nil,
 	)
 
-	sr, err := l.Search(searchRequest)
+	sr, err := l.SearchWithPaging(searchRequest, lm.MaxPageSize)
 	if err != nil {
 		errors.Wrap(err, "unable to execute directory search for user filter "+c.UserFilter)
 		return
@@ -153,13 +154,13 @@ func executeGroupFilter(c lm.LDAPConfig) (u []lm.LDAPUser, err error) {
 
 	searchRequest := ld.NewSearchRequest(
 		c.BaseDN,
-		ld.ScopeWholeSubtree, ld.NeverDerefAliases, 0, 0, false,
+		ld.ScopeWholeSubtree, ld.NeverDerefAliases, math.MaxInt32, 0, false,
 		c.GroupFilter,
 		c.GetGroupFilterAttributes(),
 		nil,
 	)
 
-	sr, err := l.Search(searchRequest)
+	sr, err := l.SearchWithPaging(searchRequest, lm.MaxPageSize)
 	if err != nil {
 		errors.Wrap(err, "unable to execute directory search for user filter "+c.GroupFilter)
 		return

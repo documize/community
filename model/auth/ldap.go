@@ -74,6 +74,13 @@ const (
 	EncryptionTypeStartTLS = "starttls"
 )
 
+const (
+	// MaxPageSize controls how many query results are
+	// fetched at once from the LDAP server.
+	// See https://answers.splunk.com/answers/1538/what-is-ldap-error-size-limit-exceeded.html
+	MaxPageSize = 250
+)
+
 // Clean ensures configuration data is formatted correctly.
 func (c *LDAPConfig) Clean() {
 	c.BaseDN = strings.TrimSpace(c.BaseDN)
