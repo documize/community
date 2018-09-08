@@ -19,7 +19,7 @@ export default Route.extend({
 	beforeModel() {
 		let constants = this.get('constants');
 
-		if (this.get('appMeta.authProvider') === constants.AuthProvider.Keycloak) {
+		if (this.get('appMeta.authProvider') !== constants.AuthProvider.Documize) {
 			this.transitionTo('auth.login');
 		}
 	},

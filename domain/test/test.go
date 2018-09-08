@@ -23,7 +23,7 @@ func startRuntime() (rt *env.Runtime, s *domain.Store) {
 	rt = new(env.Runtime)
 	s = new(domain.Store)
 
-	rt.Log = logging.NewLogger()
+	rt.Log = logging.NewLogger(false)
 	web.Embed = embed.NewEmbedder()
 
 	rt.Product = env.ProdInfo{}
@@ -61,3 +61,5 @@ func setupContext() domain.RequestContext {
 	ctx.OrgID = "test"
 	return ctx
 }
+
+// For dummy user data https://www.mockaroo.com

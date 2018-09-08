@@ -20,6 +20,7 @@ export default Service.extend({
 	ajax: service(),
 	localStorage: service(),
 	kcAuth: service(),
+	appHost: '',
 	apiHost: `${config.apiHost}`,
 	endpoint: `${config.apiHost}/${config.apiNamespace}`,
 	conversionEndpoint: '',
@@ -72,6 +73,7 @@ export default Service.extend({
 		return this.get('ajax').request('public/meta').then((response) => {
 			this.setProperties(response);
 			this.set('version', 'v' + this.get('version'));
+			this.set('appHost', window.location.host);
 
 			if (requestedRoute === 'secure') {
 				this.setProperties({

@@ -23,7 +23,12 @@ let constants = EmberObject.extend({
 
     AuthProvider: { // eslint-disable-line ember/avoid-leaking-state-in-ember-objects
         Documize: 'documize',
-        Keycloak: 'keycloak'
+		Keycloak: 'keycloak',
+		LDAP: 'ldap',
+		ServerTypeLDAP: 'ldap',
+		ServerTypeAD: 'ad',
+		EncryptionTypeNone: 'none',
+		EncryptionTypeStartTLS: 'starttls'
     },
 
 	DocumentActionType: { // eslint-disable-line ember/avoid-leaking-state-in-ember-objects

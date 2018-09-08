@@ -80,8 +80,13 @@ $input-btn-focus-color:     rgba($color-primary, .25);
 		font-weight: 500;
 	}
 
-	> small {
+	> small, > div[class*="col"] > small {
 		font-size: 1rem;
+	}
+
+	> small.highlight, > div[class*="col"] > small.highlight {
+		font-size: 1rem;
+		color: $color-orange !important;
 	}
 }
 

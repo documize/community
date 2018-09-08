@@ -64,7 +64,7 @@ func (h *Handler) Sync(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Exit if not using Keycloak
-	if org.AuthProvider != "keycloak" {
+	if org.AuthProvider != ath.AuthProviderKeycloak {
 		result.Message = "Error: skipping user sync with Keycloak as it is not the configured option"
 		result.IsError = true
 		response.WriteJSON(w, result)
@@ -73,7 +73,7 @@ func (h *Handler) Sync(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Make Keycloak auth provider config
-	c := keycloakConfig{}
+	c := ath.KeycloakConfig{}
 	err = json.Unmarshal([]byte(org.AuthConfig), &c)
 	if err != nil {
 		result.Message = "Error: unable read Keycloak configuration data"
@@ -121,6 +121,7 @@ func (h *Handler) Sync(w http.ResponseWriter, r *http.Request) {
 			insert = append(insert, k)
 		}
 	}
+
 	// Track the number of Keycloak users with missing data.
 	missing := 0
 
@@ -129,7 +130,7 @@ func (h *Handler) Sync(w http.ResponseWriter, r *http.Request) {
 		if len(u.Email) == 0 {
 			missing++
 		} else {
-			err = addUser(ctx, h.Runtime, h.Store, u, c.DefaultPermissionAddSpace)
+			_, err = auth.AddExternalUser(ctx, h.Runtime, h.Store, u, c.DefaultPermissionAddSpace)
 		}
 	}
 
@@ -153,7 +154,7 @@ func (h *Handler) Authenticate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	a := keycloakAuthRequest{}
+	a := ath.KeycloakAuthRequest{}
 	err = json.Unmarshal(body, &a)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())
@@ -181,7 +182,7 @@ func (h *Handler) Authenticate(w http.ResponseWriter, r *http.Request) {
 	ctx.OrgID = org.RefID
 
 	// Fetch Keycloak auth provider config
-	ac := keycloakConfig{}
+	ac := ath.KeycloakConfig{}
 	err = json.Unmarshal([]byte(org.AuthConfig), &ac)
 	if err != nil {
 		response.WriteBadRequestError(w, method, "Unable to unmarshall Keycloak Public Key")
@@ -239,7 +240,7 @@ func (h *Handler) Authenticate(w http.ResponseWriter, r *http.Request) {
 		u.Salt = secrets.GenerateSalt()
 		u.Password = secrets.GeneratePassword(secrets.GenerateRandomPassword(), u.Salt)
 
-		err = addUser(ctx, h.Runtime, h.Store, u, ac.DefaultPermissionAddSpace)
+		u, err = auth.AddExternalUser(ctx, h.Runtime, h.Store, u, ac.DefaultPermissionAddSpace)
 		if err != nil {
 			response.WriteServerError(w, method, err)
 			h.Runtime.Log.Error(method, err)

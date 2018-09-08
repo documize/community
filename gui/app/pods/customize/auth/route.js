@@ -11,8 +11,8 @@
 
 import { Promise as EmberPromise } from 'rsvp';
 import { inject as service } from '@ember/service';
-import Route from '@ember/routing/route';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
+import Route from '@ember/routing/route';
 
 export default Route.extend(AuthenticatedRouteMixin, {
 	appMeta: service(),
@@ -26,17 +26,20 @@ export default Route.extend(AuthenticatedRouteMixin, {
 	},
 
 	model() {
+		let constants = this.get('constants');
+
 		let data = {
 			authProvider: this.get('appMeta.authProvider'),
 			authConfig: null,
 		};
 
 		return new EmberPromise((resolve) => {
-			let constants = this.get('constants');
-
 			this.get('global').getAuthConfig().then((config) => {
 				switch (data.authProvider) {
 					case constants.AuthProvider.Keycloak:
+						data.authConfig = config;
+						break;
+					case constants.AuthProvider.LDAP:
 						data.authConfig = config;
 						break;
 					case constants.AuthProvider.Documize:

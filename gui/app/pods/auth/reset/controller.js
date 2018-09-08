@@ -10,11 +10,11 @@
 // https://documize.com
 
 import { inject as service } from '@ember/service';
-
 import Controller from '@ember/controller';
 
 export default Controller.extend({
 	userService: service('user'),
+	appMeta: service('app-meta'),
 	password: "",
 	passwordConfirm: "",
 	mustMatch: false,

@@ -11,8 +11,8 @@
 
 import { Promise as EmberPromise } from 'rsvp';
 import { inject as service } from '@ember/service';
-import Controller from '@ember/controller';
 import NotifierMixin from "../../../mixins/notifier";
+import Controller from '@ember/controller';
 
 export default Controller.extend(NotifierMixin, {
 	global: service(),
@@ -32,9 +32,17 @@ export default Controller.extend(NotifierMixin, {
 			});
 		},
 
-		onSync() {
+		onSyncKeycloak() {
 			return new EmberPromise((resolve) => {
-				this.get('global').syncExternalUsers().then((response) => {
+				this.get('global').syncKeycloak().then((response) => {
+					resolve(response);
+				});
+			});
+		},
+
+		onSyncLDAP() {
+			return new EmberPromise((resolve) => {
+				this.get('global').syncLDAP().then((response) => {
 					resolve(response);
 				});
 			});

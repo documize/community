@@ -36,7 +36,7 @@ export default Component.extend(ModalMixin, {
 
 		this.pins = [];
 
-		if (this.get('appMeta.authProvider') === constants.AuthProvider.Keycloak) {
+		if (this.get('appMeta.authProvider') !== constants.AuthProvider.Documize) {
 			let config = this.get('appMeta.authConfig');
 			config = JSON.parse(config);
 			this.set('enableLogout', !config.disableLogout);

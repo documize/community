@@ -9,11 +9,11 @@
 //
 // https://documize.com
 
-import Route from '@ember/routing/route';
 import { inject as service } from '@ember/service';
 import ApplicationRouteMixin from 'ember-simple-auth/mixins/application-route-mixin';
 import netUtil from '../utils/net';
 import TooltipMixin from '../mixins/tooltip';
+import Route from '@ember/routing/route';
 
 export default Route.extend(ApplicationRouteMixin, TooltipMixin, {
 	appMeta: service(),
@@ -27,7 +27,7 @@ export default Route.extend(ApplicationRouteMixin, TooltipMixin, {
 		let sa = this.get('session.session.authenticator');
 
 		return this.get('appMeta').boot(transition.targetName, window.location.href).then(data => {
-			if (sa !== "authenticator:documize" && sa !== "authenticator:keycloak" && data.allowAnonymousAccess) {
+			if (sa !== "authenticator:documize" && sa !== "authenticator:keycloak" && sa !== "authenticator:ldap" && data.allowAnonymousAccess) {
 				if (!this.get('appMeta.setupMode') && !this.get('appMeta.secureMode')) {
 					return this.get('session').authenticate('authenticator:anonymous', data);
 				}

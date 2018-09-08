@@ -10,9 +10,7 @@
 // https://documize.com
 
 import { inject as service } from '@ember/service';
-
 import Route from '@ember/routing/route';
-// import config from 'documize/config/environment';
 
 export default Route.extend({
 	session: service(),
@@ -20,15 +18,6 @@ export default Route.extend({
 
 	activate: function () {
 		this.get('session').invalidate().then(() => {
-			// if (config.environment === 'test') {
-			// 	this.transitionTo('auth.login');
-			// } else {
-			// 	if (this.get("appMeta.allowAnonymousAccess")) {
-			// 		this.transitionTo('folders');
-			// 	} else {
-			// 		this.transitionTo('auth.login');
-			// 	}
-			// }
 		});
 	}
 });

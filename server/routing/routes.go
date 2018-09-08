@@ -19,6 +19,7 @@ import (
 	"github.com/documize/community/domain/attachment"
 	"github.com/documize/community/domain/auth"
 	"github.com/documize/community/domain/auth/keycloak"
+	"github.com/documize/community/domain/auth/ldap"
 	"github.com/documize/community/domain/block"
 	"github.com/documize/community/domain/category"
 	"github.com/documize/community/domain/conversion"
@@ -52,6 +53,7 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	user := user.Handler{Runtime: rt, Store: s}
 	link := link.Handler{Runtime: rt, Store: s}
 	page := page.Handler{Runtime: rt, Store: s, Indexer: indexer}
+	ldap := ldap.Handler{Runtime: rt, Store: s}
 	space := space.Handler{Runtime: rt, Store: s}
 	block := block.Handler{Runtime: rt, Store: s}
 	group := group.Handler{Runtime: rt, Store: s}
@@ -80,6 +82,7 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	//**************************************************
 
 	AddPublic(rt, "authenticate/keycloak", []string{"POST", "OPTIONS"}, nil, keycloak.Authenticate)
+	AddPublic(rt, "authenticate/ldap", []string{"POST", "OPTIONS"}, nil, ldap.Authenticate)
 	AddPublic(rt, "authenticate", []string{"POST", "OPTIONS"}, nil, auth.Login)
 	AddPublic(rt, "validate", []string{"GET", "OPTIONS"}, nil, auth.ValidateToken)
 	AddPublic(rt, "forgot", []string{"POST", "OPTIONS"}, nil, user.ForgotPassword)
@@ -150,7 +153,6 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	AddPrivate(rt, "users/{userID}", []string{"GET", "OPTIONS"}, nil, user.Get)
 	AddPrivate(rt, "users/{userID}", []string{"PUT", "OPTIONS"}, nil, user.Update)
 	AddPrivate(rt, "users/{userID}", []string{"DELETE", "OPTIONS"}, nil, user.Delete)
-	AddPrivate(rt, "users/sync", []string{"GET", "OPTIONS"}, nil, keycloak.Sync)
 	AddPrivate(rt, "users/match", []string{"POST", "OPTIONS"}, nil, user.MatchUsers)
 	AddPrivate(rt, "users/import", []string{"POST", "OPTIONS"}, nil, user.BulkImport)
 
@@ -212,6 +214,9 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	AddPrivate(rt, "global/auth", []string{"PUT", "OPTIONS"}, nil, setting.SetAuthConfig)
 	AddPrivate(rt, "global/search/status", []string{"GET", "OPTIONS"}, nil, meta.SearchStatus)
 	AddPrivate(rt, "global/search/reindex", []string{"POST", "OPTIONS"}, nil, meta.Reindex)
+	AddPrivate(rt, "global/sync/keycloak", []string{"GET", "OPTIONS"}, nil, keycloak.Sync)
+	AddPrivate(rt, "global/ldap/preview", []string{"POST", "OPTIONS"}, nil, ldap.Preview)
+	AddPrivate(rt, "global/ldap/sync", []string{"GET", "OPTIONS"}, nil, ldap.Sync)
 
 	Add(rt, RoutePrefixRoot, "robots.txt", []string{"GET", "OPTIONS"}, nil, meta.RobotsTxt)
 	Add(rt, RoutePrefixRoot, "sitemap.xml", []string{"GET", "OPTIONS"}, nil, meta.Sitemap)

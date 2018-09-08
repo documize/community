@@ -10,11 +10,10 @@
 // https://documize.com
 
 import { isPresent } from '@ember/utils';
-
 import { reject, resolve } from 'rsvp';
 import { inject as service } from '@ember/service';
-import Base from 'ember-simple-auth/authenticators/base';
 import netUtil from '../utils/net';
+import Base from 'ember-simple-auth/authenticators/base';
 
 export default Base.extend({
 	ajax: service(),

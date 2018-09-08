@@ -18,3 +18,14 @@ type AuthenticationModel struct {
 	Token string    `json:"token"`
 	User  user.User `json:"user"`
 }
+
+const (
+	// AuthProviderDocumize is email/password based
+	AuthProviderDocumize = "documize"
+
+	// AuthProviderKeycloak performs login and user sync with external provider
+	AuthProviderKeycloak = "keycloak"
+
+	// AuthProviderLDAP performs login and user sync with external provider
+	AuthProviderLDAP = "ldap"
+)

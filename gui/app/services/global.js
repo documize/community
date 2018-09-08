@@ -82,10 +82,35 @@ export default Service.extend({
 		}
 	},
 
-	syncExternalUsers() {
+	syncKeycloak() {
 		if(this.get('sessionService.isAdmin')) {
-			return this.get('ajax').request(`users/sync`, {
+			return this.get('ajax').request(`global/sync/keycloak`, {
 				method: 'GET'
+			}).then((response) => {
+				return response;
+			}).catch((error) => {
+				return error;
+			});
+		}
+	},
+
+	syncLDAP() {
+		if(this.get('sessionService.isAdmin')) {
+			return this.get('ajax').request(`global/ldap/sync`, {
+				method: 'GET'
+			}).then((response) => {
+				return response;
+			}).catch((error) => {
+				return error;
+			});
+		}
+	},
+
+	previewLDAP(config) {
+		if(this.get('sessionService.isAdmin')) {
+			return this.get('ajax').request(`global/ldap/preview`, {
+				method: 'POST',
+				data: JSON.stringify(config)
 			}).then((response) => {
 				return response;
 			}).catch((error) => {

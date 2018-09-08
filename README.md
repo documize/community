@@ -58,9 +58,9 @@ Space view.
 
 ## Latest version
 
-[Community edition: v1.69.2](https://github.com/documize/community/releases)
+[Community edition: v1.70.0](https://github.com/documize/community/releases)
 
-[Enterprise edition: v1.71.2](https://documize.com/downloads)
+[Enterprise edition: v1.72.0](https://documize.com/downloads)
 
 ## OS support
 
@@ -98,6 +98,10 @@ Coming soon, PostgreSQL and Microsoft SQL Server database support.
 ## Authentication options
 
 Besides email/password login, you can also leverage the following options.
+
+### LDAP / Active Directory
+
+Connect and sync Documize with any LDAP v3 compliant provider including Microsoft Active Directory.
 
 ### Keycloak Integration
 

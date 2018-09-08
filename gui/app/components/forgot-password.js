@@ -12,8 +12,8 @@
 import $ from 'jquery';
 import { empty, and } from '@ember/object/computed';
 import { set } from '@ember/object';
-import Component from '@ember/component';
 import { isEmpty } from '@ember/utils';
+import Component from '@ember/component';
 
 export default Component.extend({
 	email: "",

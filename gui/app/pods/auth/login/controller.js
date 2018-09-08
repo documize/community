@@ -10,8 +10,8 @@
 // https://documize.com
 
 import { inject as service } from '@ember/service';
-import Controller from '@ember/controller';
 import AuthProvider from '../../../mixins/auth';
+import Controller from '@ember/controller';
 
 export default Controller.extend(AuthProvider, {
 	appMeta: service('app-meta'),
@@ -19,10 +19,19 @@ export default Controller.extend(AuthProvider, {
 	invalidCredentials: false,
 
 	reset() {
-		this.setProperties({
-			email: '',
-			password: ''
-		});
+		if (this.get('sAuthProviderDocumize')) {
+			this.setProperties({
+				email: '',
+				password: ''
+			});
+		}
+
+		if (this.get('sAuthProviderLDAP')) {
+			this.setProperties({
+				username: '',
+				password: ''
+			});
+		}
 
 		let dbhash = document.head.querySelector("[property=dbhash]").content;
 		if (dbhash.length > 0 && dbhash !== "{{.DBhash}}") {
@@ -32,14 +41,27 @@ export default Controller.extend(AuthProvider, {
 
 	actions: {
 		login() {
-			let creds = this.getProperties('email', 'password');
+			if (this.get('isAuthProviderDocumize')) {
+				let creds = this.getProperties('email', 'password');
 
-			this.get('session').authenticate('authenticator:documize', creds).then((response) => {
-				this.transitionToRoute('folders');
-				return response;
-			}).catch(() => {
-				this.set('invalidCredentials', true);
-			});
+				this.get('session').authenticate('authenticator:documize', creds).then((response) => {
+					this.transitionToRoute('folders');
+					return response;
+				}).catch(() => {
+					this.set('invalidCredentials', true);
+				});
+			}
+
+			if (this.get('isAuthProviderLDAP')) {
+				let creds = this.getProperties('username', 'password');
+
+				this.get('session').authenticate('authenticator:ldap', creds).then((response) => {
+					this.transitionToRoute('folders');
+					return response;
+				}).catch(() => {
+					this.set('invalidCredentials', true);
+				});
+			}
 		}
 	}
 });

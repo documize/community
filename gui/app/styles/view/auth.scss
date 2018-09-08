@@ -23,7 +23,13 @@
 
 		> img {
 			height: 60px;
-			margin: 40px 0;
+			margin: 30px 0 0 0;
+		}
+
+		> .url {
+			margin: 20px 0;
+			color: $color-gray;
+			font-weight: 0.9rem;
 		}
 	}
 }

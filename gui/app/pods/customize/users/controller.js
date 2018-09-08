@@ -57,9 +57,17 @@ export default Controller.extend({
 			this.loadUsers(filter);
 		},
 
-		onSync() {
+		onSyncKeycloak() {
 			this.set('syncInProgress', true);
-			this.get('globalSvc').syncExternalUsers().then(() => {
+			this.get('globalSvc').syncKeycloak().then(() => {
+				this.set('syncInProgress', false);
+				this.loadUsers('');
+			});
+		},
+
+		onSyncLDAP() {
+			this.set('syncInProgress', true);
+			this.get('globalSvc').syncLDAP().then(() => {
 				this.set('syncInProgress', false);
 				this.loadUsers('');
 			});
