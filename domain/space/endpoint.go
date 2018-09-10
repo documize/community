@@ -155,15 +155,15 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		spCloneRoles, err := h.Store.Permission.GetSpacePermissions(ctx, model.CloneID)
-		if err != nil {
-			ctx.Transaction.Rollback()
-			response.WriteServerError(w, method, err)
-			h.Runtime.Log.Error(method, err)
-			return
-		}
-
 		if model.CopyPermission {
+			spCloneRoles, err := h.Store.Permission.GetSpacePermissions(ctx, model.CloneID)
+			if err != nil {
+				ctx.Transaction.Rollback()
+				response.WriteServerError(w, method, err)
+				h.Runtime.Log.Error(method, err)
+				return
+			}
+
 			for _, r := range spCloneRoles {
 				r.RefID = sp.RefID
 
