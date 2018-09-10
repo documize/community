@@ -12,9 +12,9 @@
 import $ from 'jquery';
 import { htmlSafe } from '@ember/string';
 import { resolve } from 'rsvp';
-import Service, { inject as service } from '@ember/service';
 import miscUtil from '../utils/misc';
 import config from '../config/environment';
+import Service, { inject as service } from '@ember/service';
 
 export default Service.extend({
 	ajax: service(),
@@ -29,9 +29,6 @@ export default Service.extend({
 	version: '',
 	message: '',
 	edition: 'Community',
-	// for major.minor semver release detection
-	// for bugfix releases, only admin is made aware of new release and end users see no What's New messaging
-	updateAvailable: false,
 	valid: true,
 	allowAnonymousAccess: false,
 	authProvider: null,
@@ -39,6 +36,10 @@ export default Service.extend({
 	setupMode: false,
 	secureMode: false,
 	maxTags: 3,
+
+	// for major.minor semver release detection
+	// for bugfix releases, only admin is made aware of new release and end users see no What's New messaging
+	updateAvailable: false,
 
 	invalidLicense() {
 		return this.valid === false;

@@ -32,11 +32,13 @@ type License struct {
 	Name    string    `json:"name"`
 	Email   string    `json:"email"`
 	Edition string    `json:"edition"`
+	Package string    `json:"package"`
+	Plan    string    `json:"plan"`
 	Start   time.Time `json:"start"`
 	End     time.Time `json:"end"`
 	Seats   int       `json:"seats"`
 	Trial   bool      `json:"trial"`
-	Valid   bool
+	Valid   bool      `json:"valid"`
 }
 
 // IsEmpty determines if we have a license.

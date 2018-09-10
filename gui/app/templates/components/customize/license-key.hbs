@@ -12,13 +12,29 @@
 <div class="view-customize">
 	<form class="mt-5 ">
 		<div class="form-group">
-			<label for="product-license-xml">Enterprise Edition license (optional)</label>
+			<label for="product-license-xml">Optional Enterprise Edition License Key</label>
 			{{textarea id="product-license-xml" value=license rows="18" class=(if LicenseError 'form-control is-invalid' 'form-control')}}
-			<small class="form-text text-muted ">XML format</small>
 			{{#if appMeta.valid}}
-				<p class="mt-2 color-green">Valid</p>
+				{{#if (eq appMeta.edition "Enterprise")}}
+					<p class="mt-2 color-green">Registered to {{appMeta.license.email}} @ {{appMeta.license.name}}</p>
+					<p class="mt-2 color-green">{{appMeta.license.package}} package up to {{appMeta.license.seats}} users</p>
+					{{#if appMeta.license.trial}}
+						<p class="mt-2 color-red">Trial expiry {{formatted-date appMeta.license.end}}</p>
+					{{else}}
+						<p class="mt-2 color-green">Subscribed to {{formatted-date appMeta.license.end}}</p>
+					{{/if}}
+				{{else}}
+					<small class="form-text text-muted">License key is XML format and activates Enterprise edition</small>
+				{{/if}}
 			{{else}}
-				<p class="mt-2 color-red">Invalid</p>
+				<p class="mt-2 color-red">License is not valid &mdash; check user count and expirty date</p>
+				<p class="mt-2 color-gray">Registered to {{appMeta.license.email}} @ {{appMeta.license.name}}</p>
+				<p class="mt-2 color-gray">{{appMeta.license.package}} package up to {{appMeta.license.seats}} users</p>
+				{{#if appMeta.license.trial}}
+					<p class="mt-2 color-gray">Trial expiry {{formatted-date appMeta.license.end}}</p>
+				{{else}}
+					<p class="mt-2 color-gray">Subscribed to {{formatted-date appMeta.license.end}}</p>
+				{{/if}}
 			{{/if}}
 		</div>
 		<div class="btn btn-success mt-3" {{action 'saveLicense'}}>Save</div>
