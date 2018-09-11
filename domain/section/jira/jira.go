@@ -13,6 +13,7 @@ package jira
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"html/template"
@@ -230,7 +231,12 @@ func getCredentials(ctx *provider.Context, store *domain.Store) (login jiraLogin
 
 // Perform Jira login.
 func authenticate(login jiraLogin) (c *jira.Client, u *jira.User, err error) {
-	tp := jira.BasicAuthTransport{Username: login.Username, Password: login.Secret}
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	// client := &http.Client{Transport: tr}
+
+	tp := jira.BasicAuthTransport{Username: login.Username, Password: login.Secret, Transport: tr}
 	c, err = jira.NewClient(tp.Client(), login.URL)
 	if err != nil {
 		return
