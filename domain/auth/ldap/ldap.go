@@ -212,11 +212,6 @@ func extractUser(c lm.LDAPConfig, e *ld.Entry) (u lm.LDAPUser) {
 	u.RemoteID = e.GetAttributeValue(c.AttributeUserRDN)
 	u.CN = e.GetAttributeValue("cn")
 
-	// Make name elements from DisplayName if we can.
-	if (len(u.Firstname) == 0 || len(u.Firstname) == 0) &&
-		len(e.GetAttributeValue(c.AttributeUserDisplayName)) > 0 {
-	}
-
 	if len(u.Firstname) == 0 {
 		u.Firstname = "LDAP"
 	}
@@ -251,13 +246,13 @@ func convertUsers(c lm.LDAPConfig, lu []lm.LDAPUser) (du []user.User) {
 // ConvertUser turns LDAP user into Documize user.
 func convertUser(c lm.LDAPConfig, lu lm.LDAPUser) (du user.User) {
 	du = user.User{}
-	du.Editor = c.DefaultPermissionAddSpace
 	du.Active = true
-	du.Email = lu.Email
 	du.ViewUsers = false
 	du.Analytics = false
 	du.Admin = false
 	du.Global = false
+	du.Editor = c.DefaultPermissionAddSpace
+	du.Email = lu.Email
 	du.Firstname = lu.Firstname
 	du.Lastname = lu.Lastname
 	du.Initials = stringutil.MakeInitials(lu.Firstname, lu.Lastname)
