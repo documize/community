@@ -37,6 +37,15 @@ import (
 
 // StoreMySQL creates MySQL provider
 func StoreMySQL(r *env.Runtime, s *domain.Store) {
+	//  Required connection string parameters and defaults.
+	r.Storage.Params = map[string]string{
+		"charset":          "utf8mb4",
+		"parseTime":        "True",
+		"maxAllowedPacket": "104857600", // 4194304 // 16777216 = 16MB // 104857600 = 100MB
+	}
+
+	r.Storage.Example = "database connection string format is 'username:password@tcp(host:3306)/database'"
+
 	s.Account = account.Scope{Runtime: r}
 	s.Activity = activity.Scope{Runtime: r}
 	s.Attachment = attachment.Scope{Runtime: r}

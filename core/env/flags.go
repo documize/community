@@ -80,8 +80,8 @@ func ParseFlags() (f Flags) {
 	register(&port, "port", false, "http/https port number")
 	register(&forcePort2SSL, "forcesslport", false, "redirect given http port number to TLS")
 	register(&siteMode, "offline", false, "set to '1' for OFFLINE mode")
-	register(&dbType, "dbtype", false, "set to database type mysql|percona|mariadb")
-	register(&dbConn, "db", true, `'username:password@protocol(hostname:port)/databasename" for example "fred:bloggs@tcp(localhost:3306)/documize"`)
+	register(&dbType, "dbtype", true, "specify the database provider: mysql|percona|mariadb|postgressql")
+	register(&dbConn, "db", true, `'database specific connection string for example "user:password@tcp(localhost:3306)/dbname"`)
 
 	parse("db")
 
@@ -92,7 +92,7 @@ func ParseFlags() (f Flags) {
 	f.SiteMode = siteMode
 	f.SSLCertFile = certFile
 	f.SSLKeyFile = keyFile
-	f.DBType = dbType
+	f.DBType = strings.ToLower(dbType)
 
 	return f
 }

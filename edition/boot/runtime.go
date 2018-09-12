@@ -13,7 +13,6 @@
 package boot
 
 import (
-	"strings"
 	"time"
 
 	"github.com/documize/community/core/database"
@@ -47,25 +46,35 @@ func InitRuntime(r *env.Runtime, s *domain.Store) bool {
 		}
 	}
 
-	// Prepare DB
-	db, err := sqlx.Open("mysql", stdConn(r.Flags.DBConn))
+	// Work out required storage provider set it up.
+	switch r.Flags.DBType {
+	case "mysql":
+		r.Storage = env.StoreProvider{Type: env.StoreTypeMySQL, DriverName: "mysql"}
+		StoreMySQL(r, s)
+	case "mariadb":
+		r.Storage = env.StoreProvider{Type: env.StoreTypeMariaDB, DriverName: "mysql"}
+		StoreMySQL(r, s)
+	case "percona":
+		r.Storage = env.StoreProvider{Type: env.StoreTypePercona, DriverName: "mysql"}
+		StoreMySQL(r, s)
+	}
+
+	// Open connection to database
+	db, err := sqlx.Open(r.Storage.DriverName, r.Storage.ConnectionString(r.Flags.DBConn))
 	if err != nil {
 		r.Log.Error("unable to setup database", err)
 	}
-
 	r.Db = db
 	r.Db.SetMaxIdleConns(30)
 	r.Db.SetMaxOpenConns(100)
 	r.Db.SetConnMaxLifetime(time.Second * 14400)
-
 	err = r.Db.Ping()
 	if err != nil {
-		r.Log.Error("unable to connect to database, connection string should be of the form: '"+
-			"username:password@tcp(host:3306)/database'", err)
+		r.Log.Error("unable to connect to database - "+r.Storage.Example, err)
 		return false
 	}
 
-	// go into setup mode if required
+	// Go into setup mode if required.
 	if r.Flags.SiteMode != env.SiteModeOffline {
 		if database.Check(r) {
 			if err := database.Migrate(r, true /* the config table exists */); err != nil {
@@ -75,46 +84,8 @@ func InitRuntime(r *env.Runtime, s *domain.Store) bool {
 		}
 	}
 
-	// setup store based upon database type
-	AttachStore(r, s)
-
 	return true
 }
 
-var stdParams = map[string]string{
-	"charset":          "utf8mb4",
-	"parseTime":        "True",
-	"maxAllowedPacket": "104857600", // 4194304 // 16777216 = 16MB // 104857600 = 100MB
-}
-
-func stdConn(cs string) string {
-	queryBits := strings.Split(cs, "?")
-	ret := queryBits[0] + "?"
-	retFirst := true
-	if len(queryBits) == 2 {
-		paramBits := strings.Split(queryBits[1], "&")
-		for _, pb := range paramBits {
-			found := false
-			if assignBits := strings.Split(pb, "="); len(assignBits) == 2 {
-				_, found = stdParams[strings.TrimSpace(assignBits[0])]
-			}
-			if !found { // if we can't work out what it is, put it through
-				if retFirst {
-					retFirst = false
-				} else {
-					ret += "&"
-				}
-				ret += pb
-			}
-		}
-	}
-	for k, v := range stdParams {
-		if retFirst {
-			retFirst = false
-		} else {
-			ret += "&"
-		}
-		ret += k + "=" + v
-	}
-	return ret
-}
+// Clever way to detect database type:
+// https://github.com/golang-sql/sqlexp/blob/c2488a8be21d20d31abf0d05c2735efd2d09afe4/quoter.go#L46
