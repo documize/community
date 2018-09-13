@@ -43,10 +43,10 @@
 							</div>
 						</div>
 						<div class="col-4 buttons text-right">
-							<button class="btn btn-primary" {{action 'onShowAddMemberModal' group.id}}>Add</button>
+							<button class="btn btn-primary" {{action 'onShowAddMemberModal' group.id}}>Add Member</button>
 							{{#if (gt group.members 0)}}
 								<div class="button-icon-gap" />
-								<button class="btn btn-danger" {{action 'onShowRemoveMemberModal' group.id}}>Remove</button>
+								<button class="btn btn-danger" {{action 'onShowRemoveMemberModal' group.id}}>Remove Member</button>
 							{{/if}}
 							<div class="button-icon-gap" />
 							<div class="button-icon-gray align-middle" data-toggle="tooltip" data-placement="top" title="Rename" {{action 'onShowEditModal' group.id}}>
