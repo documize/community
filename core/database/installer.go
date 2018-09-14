@@ -57,7 +57,7 @@ func InstallUpgrade(runtime *env.Runtime, existingDB bool) (err error) {
 	// Make a list of scripts to execute based upon current database state.
 	toProcess := []Script{}
 	for _, s := range dbTypeScripts {
-		if s.Version > currentVersion {
+		if s.Version > currentVersion || currentVersion == 0 {
 			toProcess = append(toProcess, s)
 		}
 	}
