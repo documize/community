@@ -47,5 +47,5 @@ func Register(rt *env.Runtime, s *domain.Store) {
 	provider.Register("flowchart", &flowchart.Provider{Runtime: rt, Store: s})
 
 	p := provider.List()
-	rt.Log.Info(fmt.Sprintf("Registered %d sections", len(p)))
+	rt.Log.Info(fmt.Sprintf("Extensions: registered %d section types", len(p)))
 }

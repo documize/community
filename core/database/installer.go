@@ -39,6 +39,8 @@ func InstallUpgrade(runtime *env.Runtime, existingDB bool) (err error) {
 		return
 	}
 
+	runtime.Log.Info(fmt.Sprintf("Database: loaded  %d SQL scripts for provider %s", len(dbTypeScripts), runtime.Storage.Type))
+
 	// Get current database version.
 	currentVersion := 0
 	if existingDB {
@@ -63,7 +65,7 @@ func InstallUpgrade(runtime *env.Runtime, existingDB bool) (err error) {
 		var err error
 		amLeader, err = Lock(runtime, len(toProcess))
 		if err != nil {
-			runtime.Log.Error("unable to lock DB", err)
+			runtime.Log.Error("Database: failed to lock existing database for processing", err)
 		}
 	} else {
 		// New installation hopes that you are only spinning up one instance of Documize.

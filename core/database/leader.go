@@ -43,12 +43,14 @@ func Lock(runtime *env.Runtime, scriptsToProcess int) (bool, error) {
 	// Start transaction fotr lock process.
 	tx, err := runtime.Db.Beginx()
 	if err != nil {
+		runtime.Log.Error("Database: unable to start transaction", err)
 		return false, err
 	}
 
 	// Lock the database.
 	_, err = tx.Exec(processLockStartQuery(runtime.Storage.Type))
 	if err != nil {
+		runtime.Log.Error("Database: unable to lock tables", err)
 		return false, err
 	}
 
@@ -83,7 +85,7 @@ func Unlock(runtime *env.Runtime, tx *sqlx.Tx, err error, amLeader bool) error {
 		if tx != nil {
 			if err == nil {
 				tx.Commit()
-				runtime.Log.Info("Database: ready")
+				runtime.Log.Info("Database: is ready")
 				return nil
 			}
 			tx.Rollback()
