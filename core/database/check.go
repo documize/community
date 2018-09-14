@@ -140,33 +140,6 @@ func Check(runtime *env.Runtime) bool {
 	return true
 }
 
-// GetSQLVariant uses database value form @@version_comment to deduce MySQL variant.
-// func GetSQLVariant(dbType, vc string) env.DbVariant {
-// 	vc = strings.ToLower(vc)
-// 	dbType = strings.ToLower(dbType)
-
-// 	// determine type from database
-// 	if strings.Contains(vc, "mariadb") {
-// 		return env.DBVariantMariaDB
-// 	} else if strings.Contains(vc, "percona") {
-// 		return env.DBVariantPercona
-// 	} else if strings.Contains(vc, "mysql") {
-// 		return env.DbVariantMySQL
-// 	}
-
-// 	// now determine type from command line switch
-// 	if strings.Contains(dbType, "mariadb") {
-// 		return env.DBVariantMariaDB
-// 	} else if strings.Contains(dbType, "percona") {
-// 		return env.DBVariantPercona
-// 	} else if strings.Contains(dbType, "mysql") {
-// 		return env.DbVariantMySQL
-// 	}
-
-// 	// horrid default could cause app to crash
-// 	return env.DbVariantMySQL
-// }
-
 // GetSQLVersion returns SQL version as major,minor,patch numerics.
 func GetSQLVersion(v string) (ints []int, err error) {
 	ints = []int{0, 0, 0}

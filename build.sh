@@ -27,7 +27,8 @@ cp domain/mail/*.html embed/bindata/mail
 cp core/database/templates/*.html embed/bindata
 rm -rf embed/bindata/scripts
 mkdir -p embed/bindata/scripts
-cp -r core/database/scripts/autobuild/*.sql embed/bindata/scripts
+mkdir -p embed/bindata/scripts/mysql
+cp -r core/database/scripts/mysql/*.sql embed/bindata/scripts/mysql
 
 echo "Generating in-memory static assets..."
 # go get -u github.com/jteeuwen/go-bindata/...

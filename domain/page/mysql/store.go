@@ -50,7 +50,6 @@ func (s Scope) Add(ctx domain.RequestContext, model page.NewPage) (err error) {
 		row := s.Runtime.Db.QueryRow("SELECT max(sequence) FROM page WHERE orgid=? AND documentid=?", ctx.OrgID, model.Page.DocumentID)
 		var maxSeq float64
 		err = row.Scan(&maxSeq)
-
 		if err != nil {
 			maxSeq = 2048
 		}

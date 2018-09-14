@@ -19,6 +19,7 @@ import (
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/secrets"
 	"github.com/documize/community/domain"
+	"github.com/documize/community/edition/storage"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -50,13 +51,19 @@ func InitRuntime(r *env.Runtime, s *domain.Store) bool {
 	switch r.Flags.DBType {
 	case "mysql":
 		r.Storage = env.StoreProvider{Type: env.StoreTypeMySQL, DriverName: "mysql"}
-		StoreMySQL(r, s)
+		storage.SetMySQLProvider(r, s)
 	case "mariadb":
 		r.Storage = env.StoreProvider{Type: env.StoreTypeMariaDB, DriverName: "mysql"}
-		StoreMySQL(r, s)
+		storage.SetMySQLProvider(r, s)
 	case "percona":
 		r.Storage = env.StoreProvider{Type: env.StoreTypePercona, DriverName: "mysql"}
-		StoreMySQL(r, s)
+		storage.SetMySQLProvider(r, s)
+	case "pggg":
+		r.Storage = env.StoreProvider{Type: env.StoreTypePercona, DriverName: "pgggggg"}
+		// storage.SetPostgresSQLProvider(r, s)
+	case "mssql":
+		r.Storage = env.StoreProvider{Type: env.StoreTypePercona, DriverName: "sqlserver"}
+		// storage.SetSQLServerProvider(r, s)
 	}
 
 	// Open connection to database
@@ -77,7 +84,7 @@ func InitRuntime(r *env.Runtime, s *domain.Store) bool {
 	// Go into setup mode if required.
 	if r.Flags.SiteMode != env.SiteModeOffline {
 		if database.Check(r) {
-			if err := database.Migrate(r, true /* the config table exists */); err != nil {
+			if err := database.InstallUpgrade(r, true); err != nil {
 				r.Log.Error("unable to run database migration", err)
 				return false
 			}
