@@ -14,6 +14,7 @@ package database
 import (
 	"fmt"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -35,11 +36,11 @@ func InstallUpgrade(runtime *env.Runtime, existingDB bool) (err error) {
 	// Filter out database specific scripts.
 	dbTypeScripts := SpecificScripts(runtime, scripts)
 	if len(dbTypeScripts) == 0 {
-		runtime.Log.Info(fmt.Sprintf("Database: unable to load scripts for database type %s", runtime.Storage.Type))
+		runtime.Log.Info(fmt.Sprintf("Database: unable to load scripts for database type %s", runtime.StoreProvider.Type()))
 		return
 	}
 
-	runtime.Log.Info(fmt.Sprintf("Database: loaded  %d SQL scripts for provider %s", len(dbTypeScripts), runtime.Storage.Type))
+	runtime.Log.Info(fmt.Sprintf("Database: loaded  %d SQL scripts for provider %s", len(dbTypeScripts), runtime.StoreProvider.Type()))
 
 	// Get current database version.
 	currentVersion := 0
@@ -114,13 +115,13 @@ func runScripts(runtime *env.Runtime, tx *sqlx.Tx, scripts []Script) (err error)
 	for _, script := range scripts {
 		runtime.Log.Info(fmt.Sprintf("Databasse: processing SQL version %d", script.Version))
 
-		err = executeSQL(tx, runtime.Storage.Type, script.Script)
+		err = executeSQL(tx, runtime.StoreProvider.Type(), script.Script)
 		if err != nil {
 			return err
 		}
 
 		// Record the fact we have processed this database script version.
-		_, err = tx.Exec(recordVersionUpgradeQuery(runtime.Storage.Type, script.Version))
+		_, err = tx.Exec(runtime.StoreProvider.QueryRecordVersionUpgrade(script.Version))
 		if err != nil {
 			return err
 		}
@@ -169,4 +170,40 @@ func getStatements(bytes []byte) (stmts []string) {
 	}
 
 	return
+}
+
+// CurrentVersion returns number that represents the current database version number.
+// For example 23 represents the 23rd iteration of the database.
+func CurrentVersion(runtime *env.Runtime) (version int, err error) {
+	row := runtime.Db.QueryRow(runtime.StoreProvider.QueryGetDatabaseVersion())
+
+	var currentVersion string
+	err = row.Scan(&currentVersion)
+	if err != nil {
+		currentVersion = "0"
+	}
+
+	return extractVersionNumber(currentVersion), nil
+}
+
+// Turns legacy "db_00021.sql" and new "21" format into version number 21.
+func extractVersionNumber(s string) int {
+	// Good practice in case of human tampering.
+	s = strings.TrimSpace(s)
+	s = strings.ToLower(s)
+
+	// Remove any quotes from JSON string.
+	s = strings.Replace(s, "\"", "", -1)
+
+	// Remove legacy version string formatting.
+	// We know just store the number.
+	s = strings.Replace(s, "db_000", "", 1)
+	s = strings.Replace(s, ".sql", "", 1)
+
+	i, err := strconv.Atoi(s)
+	if err != nil {
+		i = 0
+	}
+
+	return i
 }

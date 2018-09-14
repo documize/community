@@ -13,9 +13,9 @@ package database
 
 import (
 	"fmt"
-	"github.com/documize/community/core/env"
 	"sort"
 
+	"github.com/documize/community/core/env"
 	"github.com/documize/community/server/web"
 )
 
@@ -47,7 +47,7 @@ func LoadScripts() (s Scripts, err error) {
 
 // SpecificScripts returns SQL scripts for current databasse provider.
 func SpecificScripts(runtime *env.Runtime, all Scripts) (s []Script) {
-	switch runtime.Storage.Type {
+	switch runtime.StoreProvider.Type() {
 	case env.StoreTypeMySQL, env.StoreTypeMariaDB, env.StoreTypePercona:
 		return all.MySQLScripts
 	case env.StoreTypePostgreSQL:

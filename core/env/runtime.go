@@ -14,7 +14,6 @@ package env
 
 import (
 	"github.com/jmoiron/sqlx"
-	"strings"
 )
 
 // SQL-STORE: DbVariant needs to be struct like: name, delims, std params and conn string method
@@ -22,11 +21,11 @@ import (
 // Runtime provides access to database, logger and other server-level scoped objects.
 // Use Context for per-request values.
 type Runtime struct {
-	Flags   Flags
-	Db      *sqlx.DB
-	Storage StoreProvider
-	Log     Logger
-	Product ProdInfo
+	Flags         Flags
+	Db            *sqlx.DB
+	StoreProvider StoreProvider
+	Log           Logger
+	Product       ProdInfo
 }
 
 const (
@@ -63,69 +62,61 @@ const (
 	StoreTypeMSSQL StoreType = "MSSQL"
 )
 
-// StoreProvider contains database specific details
-type StoreProvider struct {
-	// Type identifies storage provider
-	Type StoreType
+// StoreProvider defines a database provider.
+type StoreProvider interface {
+	// Name of provider
+	Type() StoreType
 
 	// SQL driver name used to open DB connection.
-	DriverName string
+	DriverName() string
 
-	// Database connection string parameters that must be present before connecting to DB
-	Params map[string]string
+	// Database connection string parameters that must be present before connecting to DB.
+	Params() map[string]string
 
-	// Example holds storage provider specific connection string format
+	// Example holds storage provider specific connection string format.
 	// used in error messages
-	Example string
-}
+	Example() string
 
-// ConnectionString returns provider specific DB connection string
-// complete with default parameters.
-func (s *StoreProvider) ConnectionString(cs string) string {
-	switch s.Type {
+	// DatabaseName holds the SQL database name where Documize tables live.
+	DatabaseName() string
 
-	case StoreTypePostgreSQL:
-		return "pg"
+	// Make connection string with default parameters.
+	MakeConnectionString() string
 
-	case StoreTypeMSSQL:
-		return "sql server"
+	// QueryMeta is how to extract version number, collation, character set from database provider.
+	QueryMeta() string
 
-	case StoreTypeMySQL, StoreTypeMariaDB, StoreTypePercona:
-		queryBits := strings.Split(cs, "?")
-		ret := queryBits[0] + "?"
-		retFirst := true
+	// QueryStartLock locks database tables.
+	QueryStartLock() string
 
-		if len(queryBits) == 2 {
-			paramBits := strings.Split(queryBits[1], "&")
-			for _, pb := range paramBits {
-				found := false
-				if assignBits := strings.Split(pb, "="); len(assignBits) == 2 {
-					_, found = s.Params[strings.TrimSpace(assignBits[0])]
-				}
-				if !found { // if we can't work out what it is, put it through
-					if retFirst {
-						retFirst = false
-					} else {
-						ret += "&"
-					}
-					ret += pb
-				}
-			}
-		}
+	// QueryFinishLock unlocks database tables.
+	QueryFinishLock() string
 
-		for k, v := range s.Params {
-			if retFirst {
-				retFirst = false
-			} else {
-				ret += "&"
-			}
-			ret += k + "=" + v
-		}
+	// QueryInsertProcessID returns database specific query that will
+	// insert ID of this running process.
+	QueryInsertProcessID() string
 
-		return ret
-	}
+	// QueryInsertProcessID returns database specific query that will
+	// delete ID of this running process.
+	QueryDeleteProcessID() string
 
-	return ""
+	// QueryRecordVersionUpgrade returns database specific insert statement
+	// that records the database version number.
+	QueryRecordVersionUpgrade(version int) string
+
+	// QueryGetDatabaseVersion returns the schema version number.
+	QueryGetDatabaseVersion() string
+
+	// QueryTableList returns a list tables in Documize database.
+	QueryTableList() string
+
+	// VerfiyVersion checks to see if actual database meets
+	// minimum version requirements.
+	VerfiyVersion(dbVersion string) (versionOK bool, minVerRequired string)
+
+	// VerfiyCharacterCollation checks to see if actual database
+	// has correct character set and collation settings.
+	VerfiyCharacterCollation(charset, collation string) (charOK bool, requirements string)
 }
 
 const (

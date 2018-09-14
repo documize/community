@@ -47,41 +47,42 @@ func InitRuntime(r *env.Runtime, s *domain.Store) bool {
 		}
 	}
 
-	// Work out required storage provider set it up.
+	// Set up required storage provider.
 	switch r.Flags.DBType {
 	case "mysql":
-		r.Storage = env.StoreProvider{Type: env.StoreTypeMySQL, DriverName: "mysql"}
 		storage.SetMySQLProvider(r, s)
 	case "mariadb":
-		r.Storage = env.StoreProvider{Type: env.StoreTypeMariaDB, DriverName: "mysql"}
 		storage.SetMySQLProvider(r, s)
 	case "percona":
-		r.Storage = env.StoreProvider{Type: env.StoreTypePercona, DriverName: "mysql"}
 		storage.SetMySQLProvider(r, s)
 	case "pggg":
-		r.Storage = env.StoreProvider{Type: env.StoreTypePercona, DriverName: "pgggggg"}
 		// storage.SetPostgresSQLProvider(r, s)
 	case "mssql":
-		r.Storage = env.StoreProvider{Type: env.StoreTypePercona, DriverName: "sqlserver"}
 		// storage.SetSQLServerProvider(r, s)
 	}
 
 	// Open connection to database
-	db, err := sqlx.Open(r.Storage.DriverName, r.Storage.ConnectionString(r.Flags.DBConn))
+	db, err := sqlx.Open(r.StoreProvider.DriverName(), r.StoreProvider.MakeConnectionString()) //r.Flags.DBConn
 	if err != nil {
 		r.Log.Error("unable to setup database", err)
 	}
+
+	// Database handle
 	r.Db = db
+
+	// Database connection defaults
 	r.Db.SetMaxIdleConns(30)
 	r.Db.SetMaxOpenConns(100)
 	r.Db.SetConnMaxLifetime(time.Second * 14400)
+
+	// Database good?
 	err = r.Db.Ping()
 	if err != nil {
-		r.Log.Error("unable to connect to database - "+r.Storage.Example, err)
+		r.Log.Error("unable to connect to database - "+r.StoreProvider.Example(), err)
 		return false
 	}
 
-	// Go into setup mode if required.
+	// Check database and upgrade if required.
 	if r.Flags.SiteMode != env.SiteModeOffline {
 		if database.Check(r) {
 			if err := database.InstallUpgrade(r, true); err != nil {
