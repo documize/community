@@ -62,6 +62,38 @@ Space view.
 
 [Enterprise edition: v1.72.0](https://documize.com/downloads)
 
+#### Update to latest comunity version automatically in Linux
+
+```
+#!/bin/bash
+
+# Requires:
+- curl
+- wget 
+- A service for documize
+
+VERSION="$(curl -s https://api.github.com/repos/documize/community/releases | grep 'tag_name' | cut -d\" -f4 | head -1)"
+
+service documize stop
+rm -f /bin/documize-community-linux-amd64
+if wget https://github.com/documize/community/releases/download/$VERSION/documize-community-linux-amd64 -P /bin/
+then
+    chmod +x /bin/documize-community-linux-amd64
+    echo "Rebooting in 5 seconds..."
+    echo "5"
+    sleep 1
+    echo "4"
+    sleep 1
+    echo "3"
+    sleep 1
+    echo "2"
+    sleep 1
+    echo "1"
+    sleep 1
+    reboot
+fi
+```
+
 ## OS support
 
 Documize runs on the following:
