@@ -67,6 +67,9 @@ type StoreProvider interface {
 	// Name of provider
 	Type() StoreType
 
+	// TypeVariant returns flavor of database provider.
+	TypeVariant() string
+
 	// SQL driver name used to open DB connection.
 	DriverName() string
 

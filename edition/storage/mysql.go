@@ -84,6 +84,11 @@ func (p MySQLProvider) Type() env.StoreType {
 	return env.StoreTypeMySQL
 }
 
+// TypeVariant returns databse flavor
+func (p MySQLProvider) TypeVariant() string {
+	return p.Variant
+}
+
 // DriverName returns database/sql driver name.
 func (p MySQLProvider) DriverName() string {
 	return "mysql"

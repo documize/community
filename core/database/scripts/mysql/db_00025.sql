@@ -163,13 +163,173 @@ ALTER TABLE `dmz_doc_attachment`
 	CHANGE `created` `c_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	CHANGE `revised` `c_revised` TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
+ALTER TABLE `dmz_doc_link`
+	CHANGE `refid` `c_refid` CHAR(16) NOT NULL,
+	CHANGE `orgid` `c_orgid` CHAR(16) NOT NULL,
+	CHANGE `folderid` `c_spaceid` CHAR(16) NOT NULL,
+	CHANGE `userid` `c_userid` CHAR(16) NOT NULL,
+	CHANGE `sourcedocumentid` `c_sourcedocid` CHAR(16) NOT NULL,
+	CHANGE `sourcepageid` `c_sourcesectionid` CHAR(16) NOT NULL,
+	CHANGE `linktype` `c_type` CHAR(16) NOT NULL,
+	CHANGE `targetdocumentid` `c_targetdocid` CHAR(16) NOT NULL,
+	CHANGE `targetid` `c_targetid` CHAR(16) NOT NULL DEFAULT '',
+	CHANGE `externalid` `c_externalid` VARCHAR(1000) NOT NULL DEFAULT '',
+	CHANGE `orphan` `c_orphan` BOOL NOT NULL DEFAULT 0,
+	CHANGE `created` `c_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	CHANGE `revised` `c_revised` TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
+ALTER TABLE `dmz_section`
+	CHANGE `refid` `c_refid` CHAR(16) NOT NULL,
+	CHANGE `orgid` `c_orgid` CHAR(16) NOT NULL,
+	CHANGE `documentid` `c_docid` CHAR(16) NOT NULL,
+	CHANGE `userid` `c_userid` CHAR(16) NOT NULL DEFAULT '',
+    CHANGE `pagetype` `c_type` CHAR(10) NOT NULL DEFAULT 'section',
+    CHANGE `contenttype` `c_contenttype` CHAR(20) NOT NULL DEFAULT 'wysiwyg',
+	CHANGE `blockid` `c_templateid` CHAR(16) NOT NULL DEFAULT '',
+	CHANGE `level` `c_level` INT UNSIGNED NOT NULL,
+	CHANGE `sequence` `c_sequence` DOUBLE NOT NULL,
+	CHANGE `title` `c_name` VARCHAR(2000) NOT NULL DEFAULT '',
+	CHANGE `body` `c_body` LONGTEXT,
+	CHANGE `revisions` `c_revisions` INT UNSIGNED NOT NULL,
+    CHANGE `status` `c_status` INT NOT NULL DEFAULT 0,
+	CHANGE `relativeid` `c_relativeid` CHAR(16) NOT NULL DEFAULT '',
+	CHANGE `created` `c_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	CHANGE `revised` `c_revised` TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
+ALTER TABLE `dmz_section_meta`
+	CHANGE `orgid` `c_orgid` CHAR(16) NOT NULL,
+	CHANGE `documentid` `c_docid` CHAR(16) NOT NULL,
+	CHANGE `userid` `c_userid` CHAR(16) NOT NULL DEFAULT '',
+	CHANGE `pageid` `c_sectionid` CHAR(16) NOT NULL,
+	CHANGE `rawbody` `c_rawbody` LONGBLOB,
+    CHANGE `config` `c_config` JSON,
+    CHANGE `externalsource` `c_external` BOOL DEFAULT 0,
+	CHANGE `created` `c_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	CHANGE `revised` `c_revised` TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
+ALTER TABLE `dmz_section_template`
+	CHANGE `refid` `c_refid` CHAR(16) NOT NULL,
+	CHANGE `orgid` `c_orgid` CHAR(16) NOT NULL,
+	CHANGE `labelid` `c_spaceid` CHAR(16) DEFAULT '',
+	CHANGE `userid` `c_userid` CHAR(16) DEFAULT '',
+    CHANGE `pagetype` `c_type` CHAR(10) NOT NULL DEFAULT 'section',
+    CHANGE `contenttype` `c_contenttype` CHAR(20) NOT NULL DEFAULT 'wysiwyg',
+	CHANGE `title` `c_name` VARCHAR(2000) NOT NULL DEFAULT '',
+	CHANGE `body` `c_body` LONGTEXT,
+    CHANGE `excerpt` `c_desc` VARCHAR(2000) NOT NULL DEFAULT '',
+    CHANGE `used` `c_used` INT UNSIGNED NOT NULL,
+	CHANGE `rawbody` `c_rawbody` LONGBLOB,
+    CHANGE `config` `c_config` JSON,
+    CHANGE `externalsource` `c_external` BOOL DEFAULT 0,
+	CHANGE `created` `c_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	CHANGE `revised` `c_revised` TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
+ALTER TABLE `dmz_section_revision`
+	CHANGE `refid` `c_refid` CHAR(16) NOT NULL,
+	CHANGE `orgid` `c_orgid` CHAR(16) NOT NULL,
+	CHANGE `documentid` `c_docid` CHAR(16) NOT NULL,
+	CHANGE `ownerid` `c_ownerid` CHAR(16) DEFAULT '',
+	CHANGE `pageid` `c_sectionid` CHAR(16) NOT NULL,
+	CHANGE `userid` `c_userid` CHAR(16) NOT NULL,
+    CHANGE `pagetype` `c_type` CHAR(10) NOT NULL DEFAULT 'section',
+    CHANGE `contenttype` `c_contenttype` CHAR(20) NOT NULL DEFAULT 'wysiwyg',
+	CHANGE `title` `c_name` VARCHAR(2000) NOT NULL DEFAULT '',
+	CHANGE `body` `c_body` LONGTEXT,
+	CHANGE `rawbody` `c_rawbody` LONGBLOB,
+    CHANGE `config` `c_config` JSON,
+	CHANGE `created` `c_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	CHANGE `revised` `c_revised` TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
+ALTER TABLE `dmz_user`
+	CHANGE `refid` `c_refid` CHAR(16) NOT NULL,
+	CHANGE `firstname` `c_firstname` VARCHAR(500) NOT NULL DEFAULT '',
+	CHANGE `lastname` `c_lastname` VARCHAR(500) NOT NULL DEFAULT '',
+	CHANGE `email` `c_email` VARCHAR(500) NOT NULL DEFAULT '',
+	CHANGE `initials` `c_initials` VARCHAR(20) NOT NULL DEFAULT '',
+    CHANGE `global` `c_globaladmin` BOOL NOT NULL DEFAULT 0,
+	CHANGE `password` `c_password` VARCHAR(500) NOT NULL DEFAULT '',
+	CHANGE `salt` `c_salt` VARCHAR(500) NOT NULL DEFAULT '',
+	CHANGE `reset` `c_reset` VARCHAR(500) NOT NULL DEFAULT '',
+    CHANGE `active` `c_active` BOOL NOT NULL DEFAULT 1,
+	CHANGE `lastversion` `c_lastversion` CHAR(16) NOT NULL DEFAULT '',
+	CHANGE `created` `c_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	CHANGE `revised` `c_revised` TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
+ALTER TABLE `dmz_user_account`
+	CHANGE `refid` `c_refid` CHAR(16) NOT NULL,
+	CHANGE `orgid` `c_orgid` CHAR(16) NOT NULL,
+	CHANGE `userid` `c_userid` CHAR(16) NOT NULL,
+    CHANGE `editor` `c_editor` BOOL NOT NULL DEFAULT 0,
+    CHANGE `admin` `c_admin` BOOL NOT NULL DEFAULT 0,
+    CHANGE `users` `c_users` BOOL NOT NULL DEFAULT 1,
+    CHANGE `analytics` `c_analytics` BOOL NOT NULL DEFAULT 0,
+    CHANGE `active` `c_active` BOOL NOT NULL DEFAULT 1,
+	CHANGE `created` `c_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	CHANGE `revised` `c_revised` TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
+ALTER TABLE `dmz_user_activity`
+	CHANGE `orgid` `c_orgid` CHAR(16) NOT NULL,
+	CHANGE `userid` `c_userid` CHAR(16) NOT NULL,
+	CHANGE `labelid` `c_spaceid` CHAR(16) NOT NULL,
+	CHANGE `documentid` `c_docid` CHAR(16) NOT NULL DEFAULT '',
+	CHANGE `pageid` `c_sectionid` CHAR(16) NOT NULL DEFAULT '',
+   	CHANGE `sourcetype` `c_sourcetype` INT NOT NULL DEFAULT 0,
+	CHANGE `activitytype` `c_activitytype` INT NOT NULL DEFAULT 0,
+	CHANGE `metadata` `c_metadata` VARCHAR(1000) NOT NULL DEFAULT '',
+	CHANGE `created` `c_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+ALTER TABLE `dmz_user_config`
+	CHANGE `orgid` `c_orgid` CHAR(16) NOT NULL,
+	CHANGE `userid` `c_userid` CHAR(16) NOT NULL,
+	CHANGE `key` `c_key` CHAR(200) NOT NULL,
+	CHANGE `config` `c_config` JSON;
+
+ALTER TABLE `dmz_config`
+	CHANGE `key` `c_key` CHAR(200) NOT NULL,
+	CHANGE `config` `c_config` JSON;
+
+ALTER TABLE `dmz_pin`
+	CHANGE `refid` `c_refid` CHAR(16) NOT NULL,
+	CHANGE `orgid` `c_orgid` CHAR(16) NOT NULL,
+	CHANGE `userid` `c_userid` CHAR(16) DEFAULT '',
+	CHANGE `labelid` `c_spaceid` CHAR(16) DEFAULT '',
+	CHANGE `documentid` `c_docid` CHAR(16) DEFAULT '',
+   	CHANGE `sequence` `c_sequence` INT UNSIGNED NOT NULL DEFAULT 99,
+	CHANGE `pin` `c_pin` CHAR(100) NOT NULL DEFAULT '',
+	CHANGE `created` `c_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	CHANGE `revised` `c_revised` TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+ALTER TABLE `dmz_search`
+	CHANGE `orgid` `c_orgid` CHAR(16) NOT NULL,
+	CHANGE `documentid` `c_docid` CHAR(16) NOT NULL,
+	CHANGE `itemid` `c_itemid` CHAR(16) NOT NULL DEFAULT '',
+	CHANGE `itemtype` `c_itemtype` VARCHAR(10) NOT NULL,
+    CHANGE `content` `c_content` LONGTEXT,
+	CHANGE `created` `c_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+ALTER TABLE `dmz_audit_log`
+	CHANGE `orgid` `c_orgid` CHAR(16) NOT NULL,
+	CHANGE `userid` `c_userid` CHAR(16) NOT NULL,
+	CHANGE `eventtype` `c_eventtype` VARCHAR(100) NOT NULL DEFAULT '',
+	CHANGE `ip` `c_ip` VARCHAR(39) NOT NULL DEFAULT '',
+	CHANGE `created` `c_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+ALTER TABLE `dmz_action`
+	CHANGE `refid` `c_refid` CHAR(16) NOT NULL,
+	CHANGE `orgid` `c_orgid` CHAR(16) NOT NULL,
+	CHANGE `documentid` `c_docid` CHAR(16) NOT NULL,
+	CHANGE `userid` `c_userid` CHAR(16) NOT NULL,
+	CHANGE `requestorid` `c_requestorid` CHAR(16) NOT NULL,
+    CHANGE `actiontype` `c_actiontype`  INT NOT NULL DEFAULT 0,
+   	CHANGE `note` `c_note` VARCHAR(2000) NOT NULL DEFAULT '',
+	CHANGE `requested` `c_requested` TIMESTAMP NULL,
+	CHANGE `due` `c_due` TIMESTAMP NULL,
+	CHANGE `completed` `c_completed` TIMESTAMP NULL,
+	CHANGE `iscomplete` `c_iscomplete` BOOL NOT NULL DEFAULT 0,
+	CHANGE `reftype` `c_reftype` CHAR(1) NOT NULL DEFAULT 'D',
+	CHANGE `reftypeid` `c_reftypeid` CHAR(16) NOT NULL,
+	CHANGE `created` `c_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	CHANGE `revised` `c_revised` TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
 -- deprecations
 DROP TABLE IF EXISTS `participant`;

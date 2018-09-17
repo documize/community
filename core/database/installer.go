@@ -115,7 +115,7 @@ func runScripts(runtime *env.Runtime, tx *sqlx.Tx, scripts []Script) (err error)
 	for _, script := range scripts {
 		runtime.Log.Info(fmt.Sprintf("Databasse: processing SQL version %d", script.Version))
 
-		err = executeSQL(tx, runtime.StoreProvider.Type(), script.Script)
+		err = executeSQL(tx, runtime.StoreProvider.Type(), runtime.StoreProvider.TypeVariant(), script.Script)
 		if err != nil {
 			return err
 		}
@@ -131,13 +131,13 @@ func runScripts(runtime *env.Runtime, tx *sqlx.Tx, scripts []Script) (err error)
 }
 
 // executeSQL runs specified SQL commands.
-func executeSQL(tx *sqlx.Tx, v env.StoreType, SQLfile []byte) error {
+func executeSQL(tx *sqlx.Tx, st env.StoreType, variant string, SQLfile []byte) error {
 	// Turn SQL file contents into runnable SQL statements.
 	stmts := getStatements(SQLfile)
 
 	for _, stmt := range stmts {
 		// MariaDB has no specific JSON column type (but has JSON queries)
-		if v == env.StoreTypeMariaDB {
+		if st == env.StoreTypeMySQL && variant == "mariadb" {
 			stmt = strings.Replace(stmt, "` JSON", "` TEXT", -1)
 		}
 
