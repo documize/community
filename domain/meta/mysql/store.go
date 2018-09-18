@@ -28,7 +28,7 @@ type Scope struct {
 // GetDocumentsID returns every document ID value stored.
 // The query runs at the instance level across all tenants.
 func (s Scope) GetDocumentsID(ctx domain.RequestContext) (documents []string, err error) {
-	err = s.Runtime.Db.Select(&documents, `SELECT refid FROM document WHERE lifecycle=1`)
+	err = s.Runtime.Db.Select(&documents, `SELECT c_refid FROM dmz_doc WHERE c_lifecycle=1`)
 
 	if err == sql.ErrNoRows {
 		err = nil
@@ -43,13 +43,14 @@ func (s Scope) GetDocumentsID(ctx domain.RequestContext) (documents []string, er
 
 // GetDocumentPages returns a slice containing all published page records for a given documentID, in presentation sequence.
 func (s Scope) GetDocumentPages(ctx domain.RequestContext, documentID string) (p []page.Page, err error) {
-	err = s.Runtime.Db.Select(&p,
-		`SELECT
-            a.id, a.refid, a.orgid, a.documentid, a.userid, a.contenttype,
-            a.pagetype, a.level, a.sequence, a.title, a.body, a.revisions,
-            a.blockid, a.status, a.relativeid, a.created, a.revised
-        FROM page a
-        WHERE a.documentid=? AND (a.status=0 OR ((a.status=4 OR a.status=2) AND a.relativeid=''))`,
+	err = s.Runtime.Db.Select(&p, `
+        SELECT id, c_refid AS refid, c_orgid AS orgid, c_docid AS documentid,
+            c_userid AS userid, c_contenttype AS contenttype,
+            c_type AS type, c_level AS level, c_sequence AS sequence, c_name AS name,
+            c_body AS body, c_revisions AS revisions, c_blockid AS templateid,
+            c_status AS status, c_relativeid AS relativeid, c_created AS created, c_revised AS revised
+        FROM dmz_section
+        WHERE c_docid=? AND (c_status=0 OR ((c_status=4 OR c_status=2) AND c_relativeid=''))`,
 		documentID)
 
 	if err != nil {
@@ -61,8 +62,7 @@ func (s Scope) GetDocumentPages(ctx domain.RequestContext, documentID string) (p
 
 // SearchIndexCount returns the numnber of index entries.
 func (s Scope) SearchIndexCount(ctx domain.RequestContext) (c int, err error) {
-	row := s.Runtime.Db.QueryRow("SELECT count(*) FROM search")
-
+	row := s.Runtime.Db.QueryRow("SELECT count(*) FROM dmz_search")
 	err = row.Scan(&c)
 	if err != nil {
 		err = errors.Wrap(err, "count search index entries")

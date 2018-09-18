@@ -23,11 +23,11 @@ import (
 type Document struct {
 	model.BaseEntity
 	OrgID        string              `json:"orgId"`
-	LabelID      string              `json:"folderId"`
+	SpaceID      string              `json:"folderId"`
 	UserID       string              `json:"userId"`
 	Job          string              `json:"job"`
 	Location     string              `json:"location"`
-	Title        string              `json:"name"`
+	Name         string              `json:"name"`
 	Excerpt      string              `json:"excerpt"`
 	Slug         string              `json:"-"`
 	Tags         string              `json:"tags"`
@@ -43,19 +43,19 @@ type Document struct {
 
 // SetDefaults ensures on blanks and cleans.
 func (d *Document) SetDefaults() {
-	d.Title = strings.TrimSpace(d.Title)
+	d.Name = strings.TrimSpace(d.Name)
 
-	if len(d.Title) == 0 {
-		d.Title = "Document"
+	if len(d.Name) == 0 {
+		d.Name = "Document"
 	}
 }
 
-// ByTitle sorts a collection of documents by document title.
-type ByTitle []Document
+// ByName sorts a collection of documents by document Name.
+type ByName []Document
 
-func (a ByTitle) Len() int           { return len(a) }
-func (a ByTitle) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a ByTitle) Less(i, j int) bool { return strings.ToLower(a[i].Title) < strings.ToLower(a[j].Title) }
+func (a ByName) Len() int           { return len(a) }
+func (a ByName) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByName) Less(i, j int) bool { return strings.ToLower(a[i].Name) < strings.ToLower(a[j].Name) }
 
 // DocumentMeta details who viewed the document.
 type DocumentMeta struct {

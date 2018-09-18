@@ -64,7 +64,7 @@ func (l *Space) IsRestricted() bool {
 // Viewer details who can see a particular space
 type Viewer struct {
 	Name      string `json:"name"`
-	LabelID   string `json:"folderId"`
+	SpaceID   string `json:"folderId"`
 	Type      int    `json:"folderType"`
 	UserID    string `json:"userId"`
 	Firstname string `json:"firstname"`

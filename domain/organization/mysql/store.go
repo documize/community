@@ -36,7 +36,7 @@ func (s Scope) AddOrganization(ctx domain.RequestContext, org org.Organization) 
 	org.Revised = time.Now().UTC()
 
 	_, err = ctx.Transaction.Exec(
-		"INSERT INTO organization (refid, company, title, message, domain, email, allowanonymousaccess, serial, maxtags, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		"INSERT INTO dmz_org (c_refid, c_company, c_title, c_message, c_domain, c_email, c_anonaccess, c_serial, c_maxtags, c_created, c_revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 		org.RefID, org.Company, org.Title, org.Message, strings.ToLower(org.Domain),
 		strings.ToLower(org.Email), org.AllowAnonymousAccess, org.Serial, org.MaxTags, org.Created, org.Revised)
 
@@ -49,7 +49,13 @@ func (s Scope) AddOrganization(ctx domain.RequestContext, org org.Organization) 
 
 // GetOrganization returns the Organization reocrod from the organization database table with the given id.
 func (s Scope) GetOrganization(ctx domain.RequestContext, id string) (org org.Organization, err error) {
-	stmt, err := s.Runtime.Db.Preparex("SELECT id, refid, company, title, message, domain, service as conversionendpoint, email, serial, active, allowanonymousaccess, authprovider, coalesce(authconfig,JSON_UNQUOTE('{}')) as authconfig, maxtags, created, revised FROM organization WHERE refid=?")
+	stmt, err := s.Runtime.Db.Preparex(`SELECT id, c_refid as refid,
+        c_orgid as orgid, c_title as title, c_message as message, c_domain as domain,
+        c_service as conversionendpoint, c_email as email, c_serial as serial, c_active as active,
+        c_anonaccess as allowannonymousaccess, c_authprovider as authprovider,
+        coalesce(c_authconfig,JSON_UNQUOTE('{}')) as authconfig, c_maxtags as maxtags,
+        c_created as created, c_revised as revised
+        FROM dmz_org WHERE refid=?`)
 	defer streamutil.Close(stmt)
 
 	if err != nil {
@@ -80,14 +86,26 @@ func (s Scope) GetOrganizationByDomain(subdomain string) (o org.Organization, er
 	}
 
 	// match on given domain name
-	err = s.Runtime.Db.Get(&o, "SELECT id, refid, company, title, message, domain, service as conversionendpoint, email, serial, active, allowanonymousaccess, authprovider, coalesce(authconfig,JSON_UNQUOTE('{}')) as authconfig, maxtags, created, revised FROM organization WHERE domain=? AND active=1", subdomain)
+	err = s.Runtime.Db.Get(&o, `SELECT id, c_refid as refid,
+        c_orgid as orgid, c_title as title, c_message as message, c_domain as domain,
+        c_service as conversionendpoint, c_email as email, c_serial as serial, c_active as active,
+        c_anonaccess as allowannonymousaccess, c_authprovider as authprovider,
+        coalesce(c_authconfig,JSON_UNQUOTE('{}')) as authconfig, c_maxtags as maxtags,
+        c_created as created, c_revised as revised
+        FROM dmz_org WHERE c_domain=? AND c_active=1`, subdomain)
 	if err == nil {
 		return
 	}
 	err = nil
 
 	// match on empty domain as last resort
-	err = s.Runtime.Db.Get(&o, "SELECT id, refid, company, title, message, domain, service as conversionendpoint, email, serial, active, allowanonymousaccess, authprovider, coalesce(authconfig,JSON_UNQUOTE('{}')) as authconfig, maxtags, created, revised FROM organization WHERE domain='' AND active=1")
+	err = s.Runtime.Db.Get(&o, `SELECT id, c_refid as refid,
+        c_orgid as orgid, c_title as title, c_message as message, c_domain as domain,
+        c_service as conversionendpoint, c_email as email, c_serial as serial, c_active as active,
+        c_anonaccess as allowannonymousaccess, c_authprovider as authprovider,
+        coalesce(c_authconfig,JSON_UNQUOTE('{}')) as authconfig, c_maxtags as maxtags,
+        c_created as created, c_revised as revised
+        FROM dmz_org WHERE c_domain='' AND c_active=1`)
 	if err != nil && err != sql.ErrNoRows {
 		err = errors.Wrap(err, "unable to execute select for empty subdomain")
 	}
@@ -99,7 +117,10 @@ func (s Scope) GetOrganizationByDomain(subdomain string) (o org.Organization, er
 func (s Scope) UpdateOrganization(ctx domain.RequestContext, org org.Organization) (err error) {
 	org.Revised = time.Now().UTC()
 
-	_, err = ctx.Transaction.NamedExec("UPDATE organization SET title=:title, message=:message, service=:conversionendpoint, email=:email, allowanonymousaccess=:allowanonymousaccess, maxtags=:maxtags, revised=:revised WHERE refid=:refid",
+	_, err = ctx.Transaction.NamedExec(`UPDATE dmz_org SET
+        c_title=:title, c_message=:message, c_service=:conversionendpoint, c_email=:email,
+        c_anonaccess=:allowanonymousaccess, c_maxtags=:maxtags, c_revised=:revised
+        WHERE c_refid=:refid`,
 		&org)
 
 	if err != nil {
@@ -112,12 +133,12 @@ func (s Scope) UpdateOrganization(ctx domain.RequestContext, org org.Organizatio
 // DeleteOrganization deletes the orgID organization from the organization table.
 func (s Scope) DeleteOrganization(ctx domain.RequestContext, orgID string) (rows int64, err error) {
 	b := mysql.BaseQuery{}
-	return b.Delete(ctx.Transaction, "organization", orgID)
+	return b.Delete(ctx.Transaction, "dmz_org", orgID)
 }
 
 // RemoveOrganization sets the orgID organization to be inactive, thus executing a "soft delete" operation.
 func (s Scope) RemoveOrganization(ctx domain.RequestContext, orgID string) (err error) {
-	_, err = ctx.Transaction.Exec("UPDATE organization SET active=0 WHERE refid=?", orgID)
+	_, err = ctx.Transaction.Exec("UPDATE dmz_org SET c_active=0 WHERE c_refid=?", orgID)
 
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to execute soft delete for org %s", orgID))
@@ -130,7 +151,10 @@ func (s Scope) RemoveOrganization(ctx domain.RequestContext, orgID string) (err 
 func (s Scope) UpdateAuthConfig(ctx domain.RequestContext, org org.Organization) (err error) {
 	org.Revised = time.Now().UTC()
 
-	_, err = ctx.Transaction.NamedExec("UPDATE organization SET allowanonymousaccess=:allowanonymousaccess, authprovider=:authprovider, authconfig=:authconfig, revised=:revised WHERE refid=:refid",
+	_, err = ctx.Transaction.NamedExec(`UPDATE dmz_org SET
+        c_anonaccess=:allowanonymousaccess, c_authprovider=:authprovider, c_authconfig=:authconfig,
+        c_revised=:revised
+        WHERE c_refid=:refid`,
 		&org)
 
 	if err != nil {
@@ -142,7 +166,7 @@ func (s Scope) UpdateAuthConfig(ctx domain.RequestContext, org org.Organization)
 
 // CheckDomain makes sure there is an organisation with the correct domain
 func (s Scope) CheckDomain(ctx domain.RequestContext, domain string) string {
-	row := s.Runtime.Db.QueryRow("SELECT COUNT(*) FROM organization WHERE domain=? AND active=1", domain)
+	row := s.Runtime.Db.QueryRow("SELECT COUNT(*) FROM dmz_org WHERE c_domain=? AND c_active=1", domain)
 
 	var count int
 	err := row.Scan(&count)

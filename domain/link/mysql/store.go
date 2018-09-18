@@ -36,8 +36,8 @@ func (s Scope) Add(ctx domain.RequestContext, l link.Link) (err error) {
 	l.Created = time.Now().UTC()
 	l.Revised = time.Now().UTC()
 
-	_, err = ctx.Transaction.Exec("INSERT INTO link (refid, orgid, folderid, userid, sourcedocumentid, sourcepageid, targetdocumentid, targetid, externalid, linktype, orphan, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-		l.RefID, l.OrgID, l.FolderID, l.UserID, l.SourceDocumentID, l.SourcePageID, l.TargetDocumentID, l.TargetID, l.ExternalID, l.LinkType, l.Orphan, l.Created, l.Revised)
+	_, err = ctx.Transaction.Exec("INSERT INTO dmz_doc_link (c_refid, c_orgid, c_spaceid, c_userid, c_sourcedocid, c_sourcesectionid, c_targetdocid, c_targetid, c_externalid, c_type, c_orphan, c_created, c_revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		l.RefID, l.OrgID, l.FolderID, l.UserID, l.SourceDocumentID, l.SourceSectionID, l.TargetDocumentID, l.TargetID, l.ExternalID, l.LinkType, l.Orphan, l.Created, l.Revised)
 
 	if err != nil {
 		err = errors.Wrap(err, "execute link insert")
@@ -48,18 +48,19 @@ func (s Scope) Add(ctx domain.RequestContext, l link.Link) (err error) {
 
 // GetDocumentOutboundLinks returns outbound links for specified document.
 func (s Scope) GetDocumentOutboundLinks(ctx domain.RequestContext, documentID string) (links []link.Link, err error) {
-	err = s.Runtime.Db.Select(&links,
-		`select l.refid, l.orgid, l.folderid, l.userid, l.sourcedocumentid, l.sourcepageid, l.targetdocumentid, l.targetid, l.externalid, l.linktype, l.orphan, l.created, l.revised
-		FROM link l
-		WHERE l.orgid=? AND l.sourcedocumentid=?`,
-		ctx.OrgID,
-		documentID)
+	err = s.Runtime.Db.Select(&links, `
+		select c_refid AS refid, c_orgid AS orgid, c_spaceid AS spaceid, c_userid AS userid,
+        c_sourcedocid AS sourcedocumentid, c_sourcesectionid AS sourcesectionid,
+        c_targetdocid AS targetdocumentid, c_targetid AS targetid, c_externalid AS externalid,
+        c_type as linktype, c_orphan As orphan, c_created AS created, c_revised AS revised
+		FROM dmz_doc_link
+		WHERE c_orgid=? AND c_sourcedocid=?`,
+		ctx.OrgID, documentID)
 
 	if err != nil && err != sql.ErrNoRows {
 		err = errors.Wrap(err, "select document oubound links")
 		return
 	}
-
 	if len(links) == 0 {
 		links = []link.Link{}
 	}
@@ -69,19 +70,19 @@ func (s Scope) GetDocumentOutboundLinks(ctx domain.RequestContext, documentID st
 
 // GetPageLinks returns outbound links for specified page in document.
 func (s Scope) GetPageLinks(ctx domain.RequestContext, documentID, pageID string) (links []link.Link, err error) {
-	err = s.Runtime.Db.Select(&links,
-		`select l.refid, l.orgid, l.folderid, l.userid, l.sourcedocumentid, l.sourcepageid, l.targetdocumentid, l.targetid, l.externalid, l.linktype, l.orphan, l.created, l.revised
-		FROM link l
-		WHERE l.orgid=? AND l.sourcedocumentid=? AND l.sourcepageid=?`,
-		ctx.OrgID,
-		documentID,
-		pageID)
+	err = s.Runtime.Db.Select(&links, `
+        select c_refid AS refid, c_orgid AS orgid, c_spaceid AS spaceid, c_userid AS userid,
+        c_sourcedocid AS sourcedocumentid, c_sourcesectionid AS sourcesectionid,
+        c_targetdocid AS targetdocumentid, c_targetid AS targetid, c_externalid AS externalid,
+        c_type as linktype, c_orphan As orphan, c_created AS created, c_revised AS revised
+		FROM dmz_doc_link
+		WHERE c_orgid=? AND c_sourcedocid=? AND c_sourcesectionid=?`,
+		ctx.OrgID, documentID, pageID)
 
 	if err != nil && err != sql.ErrNoRows {
 		err = errors.Wrap(err, "get page links")
 		return
 	}
-
 	if len(links) == 0 {
 		links = []link.Link{}
 	}
@@ -92,8 +93,9 @@ func (s Scope) GetPageLinks(ctx domain.RequestContext, documentID, pageID string
 // MarkOrphanDocumentLink marks all link records referencing specified document.
 func (s Scope) MarkOrphanDocumentLink(ctx domain.RequestContext, documentID string) (err error) {
 	revised := time.Now().UTC()
-
-	_, err = ctx.Transaction.Exec("UPDATE link SET orphan=1, revised=? WHERE linktype='document' AND orgid=? AND targetdocumentid=?",
+	_, err = ctx.Transaction.Exec(`UPDATE dmz_doc_link SET
+        c_orphan=1, c_revised=?
+        WHERE c_type='document' AND c_orgid=? AND c_targetdocid=?`,
 		revised, ctx.OrgID, documentID)
 
 	if err != nil {
@@ -106,8 +108,10 @@ func (s Scope) MarkOrphanDocumentLink(ctx domain.RequestContext, documentID stri
 // MarkOrphanPageLink marks all link records referencing specified page.
 func (s Scope) MarkOrphanPageLink(ctx domain.RequestContext, pageID string) (err error) {
 	revised := time.Now().UTC()
-
-	_, err = ctx.Transaction.Exec("UPDATE link SET orphan=1, revised=? WHERE linktype='section' AND orgid=? AND targetid=?", revised, ctx.OrgID, pageID)
+	_, err = ctx.Transaction.Exec(`UPDATE dmz_doc_link SET
+        c_orphan=1, c_revised=?
+        WHERE c_type='section' AND c_orgid=? AND c_targetid=?`,
+		revised, ctx.OrgID, pageID)
 
 	if err != nil {
 		err = errors.Wrap(err, "mark orphan page link")
@@ -119,8 +123,9 @@ func (s Scope) MarkOrphanPageLink(ctx domain.RequestContext, pageID string) (err
 // MarkOrphanAttachmentLink marks all link records referencing specified attachment.
 func (s Scope) MarkOrphanAttachmentLink(ctx domain.RequestContext, attachmentID string) (err error) {
 	revised := time.Now().UTC()
-
-	_, err = ctx.Transaction.Exec("UPDATE link SET orphan=1, revised=? WHERE linktype='file' AND orgid=? AND targetid=?",
+	_, err = ctx.Transaction.Exec(`UPDATE dmz_doc_link SET
+        c_orphan=1, c_revised=?
+        WHERE c_type='file' AND c_orgid=? AND c_targetid=?`,
 		revised, ctx.OrgID, attachmentID)
 
 	if err != nil {
@@ -133,19 +138,19 @@ func (s Scope) MarkOrphanAttachmentLink(ctx domain.RequestContext, attachmentID 
 // DeleteSourcePageLinks removes saved links for given source.
 func (s Scope) DeleteSourcePageLinks(ctx domain.RequestContext, pageID string) (rows int64, err error) {
 	b := mysql.BaseQuery{}
-	return b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM link WHERE orgid=\"%s\" AND sourcepageid=\"%s\"", ctx.OrgID, pageID))
+	return b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_doc_link WHERE c_orgid=\"%s\" AND c_sourcesectionid=\"%s\"", ctx.OrgID, pageID))
 }
 
 // DeleteSourceDocumentLinks removes saved links for given document.
 func (s Scope) DeleteSourceDocumentLinks(ctx domain.RequestContext, documentID string) (rows int64, err error) {
 	b := mysql.BaseQuery{}
-	return b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM link WHERE orgid=\"%s\" AND sourcedocumentid=\"%s\"", ctx.OrgID, documentID))
+	return b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_doc_link WHERE c_orgid=\"%s\" AND c_sourcedocid=\"%s\"", ctx.OrgID, documentID))
 }
 
 // DeleteLink removes saved link from the store.
 func (s Scope) DeleteLink(ctx domain.RequestContext, id string) (rows int64, err error) {
 	b := mysql.BaseQuery{}
-	return b.DeleteConstrained(ctx.Transaction, "link", ctx.OrgID, id)
+	return b.DeleteConstrained(ctx.Transaction, "dmz_doc_link", ctx.OrgID, id)
 }
 
 // SearchCandidates returns matching documents, sections and attachments using keywords.
@@ -155,21 +160,21 @@ func (s Scope) SearchCandidates(ctx domain.RequestContext, keywords string) (doc
 	// find matching documents
 	temp := []link.Candidate{}
 	keywords = strings.TrimSpace(strings.ToLower(keywords))
-	likeQuery := "LOWER(title) LIKE '%" + keywords + "%'"
+	likeQuery := "LOWER(c_name) LIKE '%" + keywords + "%'"
 
 	err = s.Runtime.Db.Select(&temp, `
-		SELECT d.refid as documentid, d. labelid as folderid, d.title, l.label as context
-		FROM document d LEFT JOIN label l ON d.labelid=l.refid WHERE l.orgid=? AND `+likeQuery+`
-		AND d.labelid IN
-		(
-			SELECT refid FROM label WHERE orgid=?
-			AND refid IN (SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid IN (
-				SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space' AND action='view'
-				UNION ALL
-				SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role'
-				AND p.location='space' AND p.action='view' AND (r.userid=? OR r.userid='0')
-			))
-		)
+		SELECT d.c_refid AS documentid, d.c_spaceid AS spaceid, d.c_name, l.c_name AS context
+        FROM dmz_doc d LEFT JOIN dmz_space l ON d.c_spaceid=l.c_refid
+        WHERE l.c_orgid=? AND `+likeQuery+` AND d.c_spaceid IN
+		    (SELECT c_refid FROM dmz_space WHERE c_orgid=? AND c_refid IN
+                (SELECT c_refid FROM dmz_permission WHERE c_orgid=? AND c_location='space' AND c_refid IN
+                    (SELECT c_refid from dmz_permission WHERE c_orgid=? AND c_who='user' AND (c_whoid=? OR c_whoid='0') AND c_location='space' AND c_action='view'
+				    UNION ALL
+                    SELECT p.c_refid from dmz_permission p LEFT JOIN dmz_group_member r ON p.c_whoid=r.c_groupid WHERE p.c_orgid=? AND p.c_who='role'
+                    AND p.c_location='space' AND p.c_action='view' AND (r.c_userid=? OR r.c_userid='0')
+                    )
+                )
+            )
 		ORDER BY title`, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.UserID, ctx.OrgID, ctx.UserID)
 
 	if err != nil {
@@ -180,7 +185,7 @@ func (s Scope) SearchCandidates(ctx domain.RequestContext, keywords string) (doc
 	for _, r := range temp {
 		c := link.Candidate{
 			RefID:      uniqueid.Generate(),
-			FolderID:   r.FolderID,
+			SpaceID:    r.SpaceID,
 			DocumentID: r.DocumentID,
 			TargetID:   r.DocumentID,
 			LinkType:   "document",
@@ -192,23 +197,25 @@ func (s Scope) SearchCandidates(ctx domain.RequestContext, keywords string) (doc
 	}
 
 	// find matching sections
-	likeQuery = "LOWER(p.title) LIKE '%" + keywords + "%'"
+	likeQuery = "LOWER(p.c_name) LIKE '%" + keywords + "%'"
 	temp = []link.Candidate{}
 
-	err = s.Runtime.Db.Select(&temp,
-		`SELECT p.refid as targetid, p.documentid as documentid, p.title as title, p.pagetype as linktype, d.title as context, d.labelid as folderid
-		FROM page p LEFT JOIN document d ON d.refid=p.documentid WHERE p.orgid=? AND `+likeQuery+`
-		AND d.labelid IN
-		(
-			SELECT refid FROM label WHERE orgid=?
-			AND refid IN (SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid IN (
-				SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space' AND action='view'
-				UNION ALL
-				SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role'
-				AND p.location='space' AND p.action='view' AND (r.userid=? OR r.userid='0')
-			))
-		)
-		ORDER BY p.title`, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.UserID, ctx.OrgID, ctx.UserID)
+	err = s.Runtime.Db.Select(&temp, `
+        SELECT p.c_refid AS targetid, p.c_docid AS documentid, p.c_name AS title,
+        p.c_type AS linktype, d.c_name AS context, d.c_spaceid AS spaceid
+        FROM dmz_section p LEFT JOIN dmz_doc d ON d.c_refid=p.c_docid
+        WHERE p.c_orgid=? AND `+likeQuery+` AND d.c_spaceid IN
+		    (SELECT c_refid FROM dmz_space WHERE c_orgid=? AND c_refid IN
+                (SELECT c_refid FROM dmz_permission WHERE c_orgid=? AND c_location='space' AND c_refid IN
+                    (SELECT c_refid from dmz_permission WHERE c_orgid=? AND c_who='user' AND (c_whoid=? OR c_whoid='0') AND c_location='space' AND c_action='view'
+                    UNION ALL
+                    SELECT p.c_refid from dmz_permission p LEFT JOIN dmz_group_member r ON p.c_whoid=r.c_groupid WHERE p.c_orgid=? AND p.c_who='role'
+                    AND p.c_location='space' AND p.c_action='view' AND (r.c_userid=? OR r.c_userid='0')
+                    )
+                )
+		    )
+        ORDER BY p.c_name`,
+		ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.UserID, ctx.OrgID, ctx.UserID)
 
 	if err != nil {
 		err = errors.Wrap(err, "execute search links 2")
@@ -218,7 +225,7 @@ func (s Scope) SearchCandidates(ctx domain.RequestContext, keywords string) (doc
 	for _, r := range temp {
 		c := link.Candidate{
 			RefID:      uniqueid.Generate(),
-			FolderID:   r.FolderID,
+			SpaceID:    r.SpaceID,
 			DocumentID: r.DocumentID,
 			TargetID:   r.TargetID,
 			LinkType:   r.LinkType,
@@ -233,20 +240,20 @@ func (s Scope) SearchCandidates(ctx domain.RequestContext, keywords string) (doc
 	likeQuery = "LOWER(a.filename) LIKE '%" + keywords + "%'"
 	temp = []link.Candidate{}
 
-	err = s.Runtime.Db.Select(&temp,
-		`SELECT a.refid as targetid, a.documentid as documentid, a.filename as title, a.extension as context, d.labelid as folderid
-		FROM attachment a LEFT JOIN document d ON d.refid=a.documentid WHERE a.orgid=? AND `+likeQuery+`
-		AND d.labelid IN
-		(
-			SELECT refid FROM label WHERE orgid=?
-			AND refid IN (SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid IN (
-				SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space' AND action='view'
-				UNION ALL
-				SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role'
-				AND p.location='space' AND p.action='view' AND (r.userid=? OR r.userid='0')
-			))
-		)
-		ORDER BY a.filename`, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.UserID, ctx.OrgID, ctx.UserID)
+	err = s.Runtime.Db.Select(&temp, `
+        SELECT a.c_refid AS targetid, a.c_docid AS documentid, a.c_filename AS title, a.c_extension AS context, d.c_spaceiid AS spaceid
+        FROM dmz_doc_attachment a LEFT JOIN dmz_doc d ON d.c_refid=a.c_docid
+        WHERE a.c_orgid=? AND `+likeQuery+` AND d.c_spaceid IN
+            (SELECT c_refid FROM dmz_space WHERE c_orgid=? AND c_refid IN
+                (SELECT c_refid FROM dmz_permission WHERE c_orgid=? AND c_location='space' AND c_refid IN
+                    (SELECT c_refid from dmz_permission WHERE c_orgid=? AND c_who='user' AND (c_whoid=? OR c_whoid='0') AND c_location='space' AND c_action='view'
+                    UNION ALL
+                    SELECT p.c_refid from dmz_permission p LEFT JOIN dmz_group_member r ON p.c_whoid=r.c_groupid WHERE p.c_orgid=? AND p.c_who='role'
+                    AND p.c_location='space' AND p.c_action='view' AND (r.c_userid=? OR r.c_userid='0')
+                    )
+                )
+		    )
+		ORDER BY a.c_filename`, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.UserID, ctx.OrgID, ctx.UserID)
 
 	if err != nil {
 		err = errors.Wrap(err, "execute search links 3")
@@ -256,7 +263,7 @@ func (s Scope) SearchCandidates(ctx domain.RequestContext, keywords string) (doc
 	for _, r := range temp {
 		c := link.Candidate{
 			RefID:      uniqueid.Generate(),
-			FolderID:   r.FolderID,
+			SpaceID:    r.SpaceID,
 			DocumentID: r.DocumentID,
 			TargetID:   r.TargetID,
 			LinkType:   "file",

@@ -34,8 +34,8 @@ func (s Scope) RecordUserActivity(ctx domain.RequestContext, activity activity.U
 	activity.UserID = ctx.UserID
 	activity.Created = time.Now().UTC()
 
-	_, err = ctx.Transaction.Exec("INSERT INTO useractivity (orgid, userid, labelid, documentid, pageid, sourcetype, activitytype, metadata, created) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-		activity.OrgID, activity.UserID, activity.LabelID, activity.DocumentID, activity.PageID, activity.SourceType, activity.ActivityType, activity.Metadata, activity.Created)
+	_, err = ctx.Transaction.Exec("INSERT INTO dmz_user_activity (c_orgid, c_userid, c_spaceid, c_docid, c_pageid, c_sourcetype, c_activitytype, c_metadata, c_created) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		activity.OrgID, activity.UserID, activity.SpaceID, activity.DocumentID, activity.SectionID, activity.SourceType, activity.ActivityType, activity.Metadata, activity.Created)
 
 	if err != nil {
 		err = errors.Wrap(err, "execute record user activity")
@@ -46,15 +46,18 @@ func (s Scope) RecordUserActivity(ctx domain.RequestContext, activity activity.U
 
 // GetDocumentActivity returns the metadata for a specified document.
 func (s Scope) GetDocumentActivity(ctx domain.RequestContext, id string) (a []activity.DocumentActivity, err error) {
-	qry := `SELECT a.id, DATE(a.created) as created, a.orgid, IFNULL(a.userid, '') AS userid, a.labelid, a.documentid, a.pageid, a.activitytype, a.metadata,
-		IFNULL(u.firstname, 'Anonymous') AS firstname, IFNULL(u.lastname, 'Viewer') AS lastname,
-		IFNULL(p.title, '') as pagetitle
-		FROM useractivity a
-		LEFT JOIN user u ON a.userid=u.refid
-		LEFT JOIN page p ON a.pageid=p.refid
-		WHERE a.orgid=? AND a.documentid=?
-		AND a.userid != '0' AND a.userid != ''
-		ORDER BY a.created DESC`
+	qry := `SELECT a.id, DATE(a.c_created) as created, a.c_orgid as orgid,
+        IFNULL(a.c_userid, '') AS userid, a.c_spaceid AS spaceid,
+        a.docid AS documentid, a.sectionid AS sectionid, a.c_activitytype AS activitytype,
+        a.c_metadata AS metadata,
+		IFNULL(u.c_firstname, 'Anonymous') AS firstname, IFNULL(u.c_lastname, 'Viewer') AS lastname,
+		IFNULL(p.c_name, '') as sectionname
+		FROM dmz_user_activity a
+		LEFT JOIN user u ON a.c_userid=u.c_refid
+		LEFT JOIN page p ON a.c_pageid=p.c_refid
+		WHERE a.c_orgid=? AND a.c_docid=?
+		AND a.c_userid != '0' AND a.c_userid != ''
+		ORDER BY a.c_created DESC`
 
 	err = s.Runtime.Db.Select(&a, qry, ctx.OrgID, id)
 
@@ -76,7 +79,7 @@ func (s Scope) GetDocumentActivity(ctx domain.RequestContext, id string) (a []ac
 func (s Scope) DeleteDocumentChangeActivity(ctx domain.RequestContext, documentID string) (rows int64, err error) {
 	b := mysql.BaseQuery{}
 	rows, err = b.DeleteWhere(ctx.Transaction,
-		fmt.Sprintf("DELETE FROM useractivity WHERE orgid='%s' AND documentid='%s' AND (activitytype=1 OR activitytype=2 OR activitytype=3 OR activitytype=4 OR activitytype=7)", ctx.OrgID, documentID))
+		fmt.Sprintf("DELETE FROM dmz_user_activity WHERE c_orgid='%s' AND c_docid='%s' AND (c_activitytype=1 OR c_activitytype=2 OR c_activitytype=3 OR c_activitytype=4 OR c_activitytype=7)", ctx.OrgID, documentID))
 
 	return
 }

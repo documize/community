@@ -34,7 +34,7 @@ type Scope struct {
 func (s Scope) AddPermission(ctx domain.RequestContext, r permission.Permission) (err error) {
 	r.Created = time.Now().UTC()
 
-	_, err = ctx.Transaction.Exec("INSERT INTO permission (orgid, who, whoid, action, scope, location, refid, created) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+	_, err = ctx.Transaction.Exec("INSERT INTO dmz_permission (c_orgid, c_who, c_whoid, c_action, c_scope, c_location, c_refid, c_created) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
 		r.OrgID, string(r.Who), r.WhoID, string(r.Action), string(r.Scope), string(r.Location), r.RefID, r.Created)
 
 	if err != nil {
@@ -65,12 +65,12 @@ func (s Scope) GetUserSpacePermissions(ctx domain.RequestContext, spaceID string
 	r = []permission.Permission{}
 
 	err = s.Runtime.Db.Select(&r, `
-		SELECT id, orgid, who, whoid, action, scope, location, refid
-			FROM permission
+		SELECT c_id, orgid, who, whoid, action, scope, location, refid
+			FROM dmz_permission
 			WHERE orgid=? AND location='space' AND refid=? AND who='user' AND (whoid=? OR whoid='0')
 		UNION ALL
 		SELECT p.id, p.orgid, p.who, p.whoid, p.action, p.scope, p.location, p.refid
-			FROM permission p
+			FROM dmz_permission p
 			LEFT JOIN rolemember r ON p.whoid=r.roleid
 			WHERE p.orgid=? AND p.location='space' AND refid=? AND p.who='role' AND (r.userid=? OR r.userid='0')`,
 		ctx.OrgID, spaceID, ctx.UserID, ctx.OrgID, spaceID, ctx.UserID)
@@ -90,14 +90,14 @@ func (s Scope) GetSpacePermissionsForUser(ctx domain.RequestContext, spaceID, us
 	r = []permission.Permission{}
 
 	err = s.Runtime.Db.Select(&r, `
-		SELECT id, orgid, who, whoid, action, scope, location, refid
-			FROM permission
-			WHERE orgid=? AND location='space' AND refid=? AND who='user' AND (whoid=? OR whoid='0')
+		SELECT id, c_orgid AS orgid, c_who AS who, c_whoid AS whoid, c_action AS action, c_scope AS scope, c_location AS location, c_refid AS refid
+        FROM dmz_permission
+        WHERE c_orgid=? AND c_location='space' AND c_refid=? AND c_who='user' AND (c_whoid=? OR c_whoid='0')
 		UNION ALL
-		SELECT p.id, p.orgid, p.who, p.whoid, p.action, p.scope, p.location, p.refid
-			FROM permission p
-			LEFT JOIN rolemember r ON p.whoid=r.roleid
-			WHERE p.orgid=? AND p.location='space' AND refid=? AND p.who='role' AND (r.userid=? OR r.userid='0')`,
+		SELECT p.id, p.c_orgid AS orgid, p.c_who AS who, p.c_whoid AS whoid, p.c_action AS action, p.c_scope AS scope, p.c_location AS location, p.c_refid AS refid
+        FROM dmz_permission p
+        LEFT JOIN dmz_group_member r ON p.c_whoid=r.c_roleid
+		WHERE p.c_orgid=? AND p.c_location='space' AND c_refid=? AND p.c_who='role' AND (r.c_userid=? OR r.c_userid='0')`,
 		ctx.OrgID, spaceID, userID, ctx.OrgID, spaceID, userID)
 
 	if err == sql.ErrNoRows {
@@ -116,19 +116,10 @@ func (s Scope) GetSpacePermissions(ctx domain.RequestContext, spaceID string) (r
 	r = []permission.Permission{}
 
 	err = s.Runtime.Db.Select(&r, `
-		SELECT id, orgid, who, whoid, action, scope, location, refid
-			FROM permission WHERE orgid=? AND location='space' AND refid=?`,
+        SELECT id, c_orgid AS orgid, c_who AS who, c_whoid AS whoid, c_action AS action, c_scope AS scope, c_location AS location, c_refid AS refid
+        FROM dmz_permission
+        WHERE c_orgid=? AND c_location='space' AND c_refid=?`,
 		ctx.OrgID, spaceID)
-
-	// err = s.Runtime.Db.Select(&r, `
-	// 	SELECT id, orgid, who, whoid, action, scope, location, refid
-	// 		FROM permission WHERE orgid=? AND location='space' AND refid=? AND who='user'
-	// 	UNION ALL
-	// 	SELECT p.id, p.orgid, p.who, p.whoid, p.action, p.scope, p.location, p.refid
-	// 		FROM permission p
-	// 		LEFT JOIN rolemember r ON p.whoid=r.roleid
-	// 		WHERE p.orgid=? AND p.location='space' AND p.refid=? AND p.who='role'`,
-	// 	ctx.OrgID, spaceID, ctx.OrgID, spaceID)
 
 	if err == sql.ErrNoRows {
 		err = nil
@@ -145,14 +136,14 @@ func (s Scope) GetCategoryPermissions(ctx domain.RequestContext, catID string) (
 	r = []permission.Permission{}
 
 	err = s.Runtime.Db.Select(&r, `
-		SELECT id, orgid, who, whoid, action, scope, location, refid
-			FROM permission
-			WHERE orgid=? AND location='category' AND who='user' AND (refid=? OR refid='0')
+        SELECT id, c_orgid AS orgid, c_who AS who, c_whoid AS whoid, c_action AS action, c_scope AS scope, c_location AS location, c_refid AS refid
+        FROM dmz_permission
+        WHERE c_orgid=? AND c_location='category' AND c_who='user' AND (c_refid=? OR c_refid='0')
 		UNION ALL
-		SELECT p.id, p.orgid, p.who, p.whoid, p.action, p.scope, p.location, p.refid
-			FROM permission p
-			LEFT JOIN rolemember r ON p.whoid=r.roleid
-			WHERE p.orgid=? AND p.location='category' AND p.who='role' AND (p.refid=? OR p.refid='0')`,
+        SELECT id, p.c_orgid AS orgid, p.c_who AS who, p.c_whoid AS whoid, p.c_action AS action, p.c_scope AS scope, p.c_location AS location, p.c_refid AS refid
+        FROM dmz_permission p
+        LEFT JOIN dmz_group_member r ON p.c_whoid=r.c_groupid
+        WHERE p.orgid=? AND p.location='category' AND p.who='role' AND (p.refid=? OR p.refid='0')`,
 		ctx.OrgID, catID, ctx.OrgID, catID)
 
 	if err == sql.ErrNoRows {
@@ -170,15 +161,15 @@ func (s Scope) GetCategoryUsers(ctx domain.RequestContext, catID string) (u []us
 	u = []user.User{}
 
 	err = s.Runtime.Db.Select(&u, `
-		SELECT u.id, IFNULL(u.refid, '') AS refid, IFNULL(u.firstname, '') AS firstname, IFNULL(u.lastname, '') as lastname, u.email, u.initials, u.password, u.salt, u.reset, u.created, u.revised
-		FROM user u LEFT JOIN account a ON u.refid = a.userid
-		WHERE a.orgid=? AND a.active=1 AND u.refid IN (
-			SELECT whoid from permission
-			WHERE orgid=? AND who='user' AND location='category' AND refid=?
+		SELECT u.id, IFNULL(u.c_refid, '') AS refid, IFNULL(u.c_firstname, '') AS firstname, IFNULL(u.c_lastname, '') as lastname, u.email AS email, u.initials AS initials, u.password AS password, u.salt AS salt, u.c_reset AS reset, u.c_created AS created, u.c_revised AS revised
+		FROM dmz_user u LEFT JOIN dmz_user_account a ON u.c_refid = a.c_userid
+		WHERE a.c_orgid=? AND a.c_active=1 AND u.c_refid IN (
+			SELECT c_whoid from dmz_permission
+			WHERE c_orgid=? AND c_who='user' AND c_location='category' AND c_refid=?
 			UNION ALL
-			SELECT r.userid from rolemember r
-				LEFT JOIN permission p ON p.whoid=r.roleid
-				WHERE p.orgid=? AND p.who='role' AND p.location='category' AND p.refid=?
+			SELECT r.c_userid from dmz_group_member r
+				LEFT JOIN dmz_permission p ON p.c_whoid=r.c_groupid
+				WHERE p.c_orgid=? AND p.c_who='role' AND p.c_location='category' AND p.c_refid=?
 		)
 		GROUP by u.id
 		ORDER BY firstname, lastname`,
@@ -200,13 +191,14 @@ func (s Scope) GetUserCategoryPermissions(ctx domain.RequestContext, userID stri
 	r = []permission.Permission{}
 
 	err = s.Runtime.Db.Select(&r, `
-		SELECT id, orgid, who, whoid, action, scope, location, refid
-			FROM permission WHERE orgid=? AND location='category' AND who='user' AND (whoid=? OR whoid='0')
-		UNION ALL
-		SELECT p.id, p.orgid, p.who, p.whoid, p.action, p.scope, p.location, p.refid
-			FROM permission p
-			LEFT JOIN rolemember r ON p.whoid=r.roleid
-			WHERE p.orgid=? AND p.location='category' AND p.who='role' AND (r.userid=? OR r.userid='0')`,
+        SELECT id, c_orgid AS orgid, c_who AS who, c_whoid AS whoid, c_action AS action, c_scope AS scope, c_location AS location, c_refid AS refid
+        FROM dmz_permission
+        WHERE c_orgid=? AND c_location='category' AND c_who='user' AND (c_whoid=? OR c_whoid='0')
+        UNION ALL
+        SELECT id, p.c_orgid AS orgid, p.c_who AS who, p.c_whoid AS whoid, p.c_action AS action, p.c_scope AS scope, p.c_location AS location, p.c_refid AS refid
+        FROM dmz_permission p
+        LEFT JOIN dmz_group_member r ON p.c_whoid=r.c_groupid
+        WHERE p.c_orgid=? AND p.c_location='category' AND p.c_who='role' AND (r.c_userid=? OR r.c_userid='0')`,
 		ctx.OrgID, userID, ctx.OrgID, userID)
 
 	if err == sql.ErrNoRows {
@@ -223,13 +215,14 @@ func (s Scope) GetUserCategoryPermissions(ctx domain.RequestContext, userID stri
 // Context is used to for user ID.
 func (s Scope) GetUserDocumentPermissions(ctx domain.RequestContext, documentID string) (r []permission.Permission, err error) {
 	err = s.Runtime.Db.Select(&r, `
-		SELECT id, orgid, who, whoid, action, scope, location, refid
-			FROM permission WHERE orgid=? AND location='document' AND refid=? AND who='user' AND (whoid=? OR whoid='0')
+        SELECT id, c_orgid AS orgid, c_who AS who, c_whoid AS whoid, c_action AS action, c_scope AS scope, c_location AS location, c_refid AS refid
+        FROM dmz_permission
+        WHERE c_orgid=? AND c_location='document' AND c_refid=? AND c_who='user' AND (c_whoid=? OR c_whoid='0')
 		UNION ALL
-		SELECT p.id, p.orgid, p.who, p.whoid, p.action, p.scope, p.location, p.refid
-			FROM permission p
-			LEFT JOIN rolemember r ON p.whoid=r.roleid
-			WHERE p.orgid=? AND p.location='document' AND refid=? AND p.who='role' AND (r.userid=? OR r.userid='0')`,
+        SELECT id, p.c_orgid AS orgid, p.c_who AS who, p.c_whoid AS whoid, p.c_action AS action, p.c_scope AS scope, p.c_location AS location, p.c_refid AS refid
+        FROM dmz_permission p
+        LEFT JOIN dmz_group_member r ON p.c_whoid=r.c_groupid
+        WHERE p.c_orgid=? AND p.c_location='document' AND p.c_refid=? AND p.c_who='role' AND (r.c_userid=? OR r.c_userid='0')`,
 		ctx.OrgID, documentID, ctx.UserID, ctx.OrgID, documentID, ctx.OrgID)
 
 	if err == sql.ErrNoRows {
@@ -247,13 +240,14 @@ func (s Scope) GetUserDocumentPermissions(ctx domain.RequestContext, documentID 
 // We do not filter by userID because we return permissions for all users.
 func (s Scope) GetDocumentPermissions(ctx domain.RequestContext, documentID string) (r []permission.Permission, err error) {
 	err = s.Runtime.Db.Select(&r, `
-		SELECT id, orgid, who, whoid, action, scope, location, refid
-			FROM permission WHERE orgid=? AND location='document' AND refid=? AND who='user'
+        SELECT id, c_orgid AS orgid, c_who AS who, c_whoid AS whoid, c_action AS action, c_scope AS scope, c_location AS location, c_refid AS refid
+        FROM dmz_permission
+        WHERE c_orgid=? AND c_location='document' AND c_refid=? AND c_who='user'
 		UNION ALL
-		SELECT p.id, p.orgid, p.who, p.whoid, p.action, p.scope, p.location, p.refid
-			FROM permission p
-			LEFT JOIN rolemember r ON p.whoid=r.roleid
-			WHERE p.orgid=? AND p.location='document' AND p.refid=? AND p.who='role'`,
+        SELECT id, p.c_orgid AS orgid, p.c_who AS who, p.c_whoid AS whoid, p.c_action AS action, p.c_scope AS scope, p.c_location AS location, p.c_refid AS refid
+        FROM dmz_permission p
+        LEFT JOIN dmz_group_member r ON p.c_whoid=r.c_groupid
+        WHERE p.c_orgid=? AND p.c_location='document' AND p.c_refid=? AND p.c_who='role'`,
 		ctx.OrgID, documentID, ctx.OrgID, documentID)
 
 	if err == sql.ErrNoRows {
@@ -267,20 +261,20 @@ func (s Scope) GetDocumentPermissions(ctx domain.RequestContext, documentID stri
 	return
 }
 
-// DeleteDocumentPermissions removes records from permissions table for given document.
+// DeleteDocumentPermissions removes records from dmz_permissions table for given document.
 func (s Scope) DeleteDocumentPermissions(ctx domain.RequestContext, documentID string) (rows int64, err error) {
 	b := mysql.BaseQuery{}
 
-	sql := fmt.Sprintf("DELETE FROM permission WHERE orgid='%s' AND location='document' AND refid='%s'", ctx.OrgID, documentID)
+	sql := fmt.Sprintf("DELETE FROM dmz_permission WHERE c_orgid='%s' AND location='document' AND c_refid='%s'", ctx.OrgID, documentID)
 
 	return b.DeleteWhere(ctx.Transaction, sql)
 }
 
-// DeleteSpacePermissions removes records from permissions table for given space ID.
+// DeleteSpacePermissions removes records from dmz_permissions table for given space ID.
 func (s Scope) DeleteSpacePermissions(ctx domain.RequestContext, spaceID string) (rows int64, err error) {
 	b := mysql.BaseQuery{}
 
-	sql := fmt.Sprintf("DELETE FROM permission WHERE orgid='%s' AND location='space' AND refid='%s'", ctx.OrgID, spaceID)
+	sql := fmt.Sprintf("DELETE FROM dmz_permission WHERE c_orgid='%s' AND c_location='space' AND c_refid='%s'", ctx.OrgID, spaceID)
 
 	return b.DeleteWhere(ctx.Transaction, sql)
 }
@@ -289,7 +283,7 @@ func (s Scope) DeleteSpacePermissions(ctx domain.RequestContext, spaceID string)
 func (s Scope) DeleteUserSpacePermissions(ctx domain.RequestContext, spaceID, userID string) (rows int64, err error) {
 	b := mysql.BaseQuery{}
 
-	sql := fmt.Sprintf("DELETE FROM permission WHERE orgid='%s' AND location='space' AND refid='%s' who='user' AND whoid='%s'",
+	sql := fmt.Sprintf("DELETE FROM dmz_permission WHERE c_orgid='%s' AND c_location='space' AND c_refid='%s' c_who='user' AND c_whoid='%s'",
 		ctx.OrgID, spaceID, userID)
 
 	return b.DeleteWhere(ctx.Transaction, sql)
@@ -299,17 +293,17 @@ func (s Scope) DeleteUserSpacePermissions(ctx domain.RequestContext, spaceID, us
 func (s Scope) DeleteUserPermissions(ctx domain.RequestContext, userID string) (rows int64, err error) {
 	b := mysql.BaseQuery{}
 
-	sql := fmt.Sprintf("DELETE FROM permission WHERE orgid='%s' AND who='user' AND whoid='%s'",
+	sql := fmt.Sprintf("DELETE FROM dmz_permission WHERE c_orgid='%s' AND c_who='user' AND c_whoid='%s'",
 		ctx.OrgID, userID)
 
 	return b.DeleteWhere(ctx.Transaction, sql)
 }
 
-// DeleteCategoryPermissions removes records from permissions table for given category ID.
+// DeleteCategoryPermissions removes records from dmz_permissions table for given category ID.
 func (s Scope) DeleteCategoryPermissions(ctx domain.RequestContext, categoryID string) (rows int64, err error) {
 	b := mysql.BaseQuery{}
 
-	sql := fmt.Sprintf("DELETE FROM permission WHERE orgid='%s' AND location='category' AND refid='%s'", ctx.OrgID, categoryID)
+	sql := fmt.Sprintf("DELETE FROM dmz_permission WHERE c_orgid='%s' AND c_location='category' AND c_refid='%s'", ctx.OrgID, categoryID)
 
 	return b.DeleteWhere(ctx.Transaction, sql)
 }
@@ -319,8 +313,8 @@ func (s Scope) DeleteSpaceCategoryPermissions(ctx domain.RequestContext, spaceID
 	b := mysql.BaseQuery{}
 
 	sql := fmt.Sprintf(`
-		DELETE FROM permission WHERE orgid='%s' AND location='category'
-			AND refid IN (SELECT refid FROM category WHERE orgid='%s' AND labelid='%s')`,
+		DELETE FROM dmz_permission WHERE c_orgid='%s' AND c_location='category'
+			AND c_refid IN (SELECT c_refid FROM dmz_category WHERE c_orgid='%s' AND c_spaceid='%s')`,
 		ctx.OrgID, ctx.OrgID, spaceID)
 
 	return b.DeleteWhere(ctx.Transaction, sql)
@@ -330,7 +324,7 @@ func (s Scope) DeleteSpaceCategoryPermissions(ctx domain.RequestContext, spaceID
 func (s Scope) DeleteGroupPermissions(ctx domain.RequestContext, groupID string) (rows int64, err error) {
 	b := mysql.BaseQuery{}
 
-	sql := fmt.Sprintf("DELETE FROM permission WHERE orgid='%s' AND who='role' AND whoid='%s'",
+	sql := fmt.Sprintf("DELETE FROM dmz_permission WHERE c_orgid='%s' AND c_who='role' AND c_whoid='%s'",
 		ctx.OrgID, groupID)
 
 	return b.DeleteWhere(ctx.Transaction, sql)

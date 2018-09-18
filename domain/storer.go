@@ -174,7 +174,6 @@ type DocumentStorer interface {
 	Get(ctx RequestContext, id string) (document doc.Document, err error)
 	GetBySpace(ctx RequestContext, spaceID string) (documents []doc.Document, err error)
 	TemplatesBySpace(ctx RequestContext, spaceID string) (documents []doc.Document, err error)
-	DocumentMeta(ctx RequestContext, id string) (meta doc.DocumentMeta, err error)
 	PublicDocuments(ctx RequestContext, orgID string) (documents []doc.SitemapDocument, err error)
 	Update(ctx RequestContext, document doc.Document) (err error)
 	UpdateGroup(ctx RequestContext, document doc.Document) (err error)

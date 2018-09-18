@@ -34,8 +34,8 @@ func (s Scope) Add(ctx domain.RequestContext, b block.Block) (err error) {
 	b.Created = time.Now().UTC()
 	b.Revised = time.Now().UTC()
 
-	_, err = ctx.Transaction.Exec("INSERT INTO block (refid, orgid, labelid, userid, contenttype, pagetype, title, body, excerpt, rawbody, config, externalsource, used, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-		b.RefID, b.OrgID, b.LabelID, b.UserID, b.ContentType, b.PageType, b.Title, b.Body, b.Excerpt, b.RawBody, b.Config, b.ExternalSource, b.Used, b.Created, b.Revised)
+	_, err = ctx.Transaction.Exec("INSERT INTO dmz_section_template (c_refid, c_orgid, c_spaceid, c_userid, c_contenttype, c_type, c_name, c_body, c_desc, c_rawbody, c_config, c_external, used, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		b.RefID, b.OrgID, b.SpaceID, b.UserID, b.ContentType, b.PageType, b.Name, b.Body, b.Excerpt, b.RawBody, b.Config, b.ExternalSource, b.Used, b.Created, b.Revised)
 
 	if err != nil {
 		err = errors.Wrap(err, "execute insert block")
@@ -46,7 +46,16 @@ func (s Scope) Add(ctx domain.RequestContext, b block.Block) (err error) {
 
 // Get returns requested reusable content block.
 func (s Scope) Get(ctx domain.RequestContext, id string) (b block.Block, err error) {
-	err = s.Runtime.Db.Get(&b, "SELECT a.id, a.refid, a.orgid, a.labelid, a.userid, a.contenttype, a.pagetype, a.title, a.body, a.excerpt, a.rawbody, a.config, a.externalsource, a.used, a.created, a.revised, b.firstname, b.lastname FROM block a LEFT JOIN user b ON a.userid = b.refid WHERE a.orgid=? AND a.refid=?",
+	err = s.Runtime.Db.Get(&b, `
+        SELECT a.id, a.c_refid as refid,
+        a.c_orgid as orgid,
+        a.c_spaceid AS spaceid, a.c_userid AS userid, a.c_contenttype AS contenttype, a.c_type AS type,
+        a.c_name AS name, a.c_body AS body, a.c_desc AS excerpt, a.c_rawbody AS rawbody,
+        a.c_config AS config, a.c_external AS externalsource, a.c_used AS used,
+        a.c_created AS created, a.c_revised AS revised,
+        b.c_firstname a firstname, b.c_lastname AS lastname
+        FROM dmz_section_template a LEFT JOIN dmz_user b ON a.c_userid = b.c_refid
+        WHERE a.c_orgid=? AND a.c_refid=?`,
 		ctx.OrgID, id)
 
 	if err != nil {
@@ -58,7 +67,18 @@ func (s Scope) Get(ctx domain.RequestContext, id string) (b block.Block, err err
 
 // GetBySpace returns all reusable content scoped to given space.
 func (s Scope) GetBySpace(ctx domain.RequestContext, spaceID string) (b []block.Block, err error) {
-	err = s.Runtime.Db.Select(&b, "SELECT a.id, a.refid, a.orgid, a.labelid, a.userid, a.contenttype, a.pagetype, a.title, a.body, a.excerpt, a.rawbody, a.config, a.externalsource, a.used, a.created, a.revised, b.firstname, b.lastname FROM block a LEFT JOIN user b ON a.userid = b.refid WHERE a.orgid=? AND a.labelid=? ORDER BY a.title", ctx.OrgID, spaceID)
+	err = s.Runtime.Db.Select(&b, `
+        SELECT a.id, a.c_refid as refid,
+        a.c_orgid as orgid,
+        a.c_spaceid AS spaceid, a.c_userid AS userid, a.c_contenttype AS contenttype, a.c_type AS type,
+        a.c_name AS name, a.c_body AS body, a.c_desc AS excerpt, a.c_rawbody AS rawbody,
+        a.c_config AS config, a.c_external AS externalsource, a.c_used AS used,
+        a.c_created AS created, a.c_revised AS revised,
+        b.c_firstname a firstname, b.c_lastname AS lastname
+        FROM dmz_section_template a LEFT JOIN dmz_user b ON a.c_userid = b.c_refid
+        WHERE a.c_orgid=? AND a.c_spaceid=?
+        ORDER BY a.c_name`,
+		ctx.OrgID, spaceID)
 
 	if err != nil {
 		err = errors.Wrap(err, "select space blocks")
@@ -69,7 +89,9 @@ func (s Scope) GetBySpace(ctx domain.RequestContext, spaceID string) (b []block.
 
 // IncrementUsage increments usage counter for content block.
 func (s Scope) IncrementUsage(ctx domain.RequestContext, id string) (err error) {
-	_, err = ctx.Transaction.Exec("UPDATE block SET used=used+1, revised=? WHERE orgid=? AND refid=?", time.Now().UTC(), ctx.OrgID, id)
+	_, err = ctx.Transaction.Exec(`UPDATE dmz_section_template SET
+        c_used=c_used+1, c_revised=? WHERE c_orgid=? AND c_refid=?`,
+		time.Now().UTC(), ctx.OrgID, id)
 
 	if err != nil {
 		err = errors.Wrap(err, "execute increment block usage")
@@ -80,7 +102,9 @@ func (s Scope) IncrementUsage(ctx domain.RequestContext, id string) (err error) 
 
 // DecrementUsage decrements usage counter for content block.
 func (s Scope) DecrementUsage(ctx domain.RequestContext, id string) (err error) {
-	_, err = ctx.Transaction.Exec("UPDATE block SET used=used-1, revised=? WHERE orgid=? AND refid=?", time.Now().UTC(), ctx.OrgID, id)
+	_, err = ctx.Transaction.Exec(`UPDATE dmz_section_template SET
+        c_used=c_used-1, c_revised=? WHERE c_orgid=? AND c_refid=?`,
+		time.Now().UTC(), ctx.OrgID, id)
 
 	if err != nil {
 		err = errors.Wrap(err, "execute decrement block usage")
@@ -91,7 +115,10 @@ func (s Scope) DecrementUsage(ctx domain.RequestContext, id string) (err error) 
 
 // RemoveReference clears page.blockid for given blockID.
 func (s Scope) RemoveReference(ctx domain.RequestContext, id string) (err error) {
-	_, err = ctx.Transaction.Exec("UPDATE page SET blockid='', revised=? WHERE orgid=? AND blockid=?", time.Now().UTC(), ctx.OrgID, id)
+	_, err = ctx.Transaction.Exec(`UPDATE dmz_section SET
+        c_templateid='', c_revised=?
+        WHERE c_orgid=? AND c_templateid=?`,
+		time.Now().UTC(), ctx.OrgID, id)
 
 	if err == sql.ErrNoRows {
 		err = nil
@@ -106,8 +133,11 @@ func (s Scope) RemoveReference(ctx domain.RequestContext, id string) (err error)
 // Update updates existing reusable content block item.
 func (s Scope) Update(ctx domain.RequestContext, b block.Block) (err error) {
 	b.Revised = time.Now().UTC()
-
-	_, err = ctx.Transaction.NamedExec("UPDATE block SET title=:title, body=:body, excerpt=:excerpt, rawbody=:rawbody, config=:config, revised=:revised WHERE orgid=:orgid AND refid=:refid", b)
+	_, err = ctx.Transaction.NamedExec(`UPDATE dmz_section_template SET
+        c_name=:title, c_body=:body, c_desc=:excerpt, c_rawbody=:rawbody,
+        c_config=:config, c_revised=:revised
+        WHERE c_orgid=:orgid AND c_refid=:refid`,
+		b)
 
 	if err != nil {
 		err = errors.Wrap(err, "execute update block")
@@ -119,5 +149,5 @@ func (s Scope) Update(ctx domain.RequestContext, b block.Block) (err error) {
 // Delete removes reusable content block from database.
 func (s Scope) Delete(ctx domain.RequestContext, id string) (rows int64, err error) {
 	b := mysql.BaseQuery{}
-	return b.DeleteConstrained(ctx.Transaction, "block", ctx.OrgID, id)
+	return b.DeleteConstrained(ctx.Transaction, "dmz_section_template", ctx.OrgID, id)
 }

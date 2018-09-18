@@ -32,7 +32,7 @@ RENAME TABLE
 -- field renaming
 ALTER TABLE `dmz_org`
     CHANGE `refid` `c_refid` CHAR(16) NOT NULL,
-    CHANGE `company` `c_company` VARCHAR(500) NOT NULL,
+    CHANGE `company` `c_refid` VARCHAR(500) NOT NULL,
     CHANGE `title` `c_title` VARCHAR(500) NOT NULL,
     CHANGE `message` `c_message` VARCHAR(500) NOT NULL,
     CHANGE `domain` `c_domain` VARCHAR(200) NOT NULL DEFAULT '',
@@ -295,7 +295,7 @@ ALTER TABLE `dmz_pin`
 	CHANGE `labelid` `c_spaceid` CHAR(16) DEFAULT '',
 	CHANGE `documentid` `c_docid` CHAR(16) DEFAULT '',
    	CHANGE `sequence` `c_sequence` INT UNSIGNED NOT NULL DEFAULT 99,
-	CHANGE `pin` `c_pin` CHAR(100) NOT NULL DEFAULT '',
+	CHANGE `pin` `c_name` CHAR(100) NOT NULL DEFAULT '',
 	CHANGE `created` `c_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	CHANGE `revised` `c_revised` TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
@@ -330,6 +330,7 @@ ALTER TABLE `dmz_action`
 	CHANGE `reftypeid` `c_reftypeid` CHAR(16) NOT NULL,
 	CHANGE `created` `c_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	CHANGE `revised` `c_revised` TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
 
 -- deprecations
 DROP TABLE IF EXISTS `participant`;

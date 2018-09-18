@@ -29,7 +29,7 @@ type Scope struct {
 
 // Add saves pinned item.
 func (s Scope) Add(ctx domain.RequestContext, pin pin.Pin) (err error) {
-	row := s.Runtime.Db.QueryRow("SELECT max(sequence) FROM pin WHERE orgid=? AND userid=?", ctx.OrgID, ctx.UserID)
+	row := s.Runtime.Db.QueryRow("SELECT max(c_sequence) FROM dmz_pin WHERE c_orgid=? AND c_userid=?", ctx.OrgID, ctx.UserID)
 	var maxSeq int
 	err = row.Scan(&maxSeq)
 
@@ -41,8 +41,8 @@ func (s Scope) Add(ctx domain.RequestContext, pin pin.Pin) (err error) {
 	pin.Revised = time.Now().UTC()
 	pin.Sequence = maxSeq + 1
 
-	_, err = ctx.Transaction.Exec("INSERT INTO pin (refid, orgid, userid, labelid, documentid, pin, sequence, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-		pin.RefID, pin.OrgID, pin.UserID, pin.FolderID, pin.DocumentID, pin.Pin, pin.Sequence, pin.Created, pin.Revised)
+	_, err = ctx.Transaction.Exec("INSERT INTO dmz_pin (c_refid, c_orgid, c_userid, c_spaceid, c_docid, c_name, c_sequence, c_created, c_revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		pin.RefID, pin.OrgID, pin.UserID, pin.SpaceID, pin.DocumentID, pin.Name, pin.Sequence, pin.Created, pin.Revised)
 
 	if err != nil {
 		err = errors.Wrap(err, "execute pin insert")
@@ -53,7 +53,11 @@ func (s Scope) Add(ctx domain.RequestContext, pin pin.Pin) (err error) {
 
 // GetPin returns requested pinned item.
 func (s Scope) GetPin(ctx domain.RequestContext, id string) (pin pin.Pin, err error) {
-	err = s.Runtime.Db.Get(&pin, "SELECT id, refid, orgid, userid, labelid as folderid, documentid, pin, sequence, created, revised FROM pin WHERE orgid=? AND refid=?",
+	err = s.Runtime.Db.Get(&pin, `SELECT id, c_refid AS refid,
+        c_orgid AS orgid, c_userid AS userid, c_spaceid AS spaceid, c_docid AS documentid,
+        c_name AS pin, c_sequence AS sequence, c_created AS created, c_revised AS revised
+        FROM dmz_pin
+        WHERE c_orgid=? AND c_refid=?`,
 		ctx.OrgID, id)
 
 	if err != nil {
@@ -65,7 +69,13 @@ func (s Scope) GetPin(ctx domain.RequestContext, id string) (pin pin.Pin, err er
 
 // GetUserPins returns pinned items for specified user.
 func (s Scope) GetUserPins(ctx domain.RequestContext, userID string) (pins []pin.Pin, err error) {
-	err = s.Runtime.Db.Select(&pins, "SELECT id, refid, orgid, userid, labelid as folderid, documentid, pin, sequence, created, revised FROM pin WHERE orgid=? AND userid=? ORDER BY sequence", ctx.OrgID, userID)
+	err = s.Runtime.Db.Select(&pins, `SELECT id, c_refid AS refid,
+        c_orgid AS orgid, c_userid AS userid, c_spaceid AS spaceid, c_docid AS documentid,
+        c_name AS pin, c_sequence AS sequence, c_created AS created, c_revised AS revised
+        FROM dmz_pin
+        WHERE c_orgid=? AND c_userid=?
+        ORDER BY c_sequence`,
+		ctx.OrgID, userID)
 
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("execute select pins for org %s and user %s", ctx.OrgID, userID))
@@ -78,9 +88,11 @@ func (s Scope) GetUserPins(ctx domain.RequestContext, userID string) (pins []pin
 func (s Scope) UpdatePin(ctx domain.RequestContext, pin pin.Pin) (err error) {
 	pin.Revised = time.Now().UTC()
 
-	_, err = ctx.Transaction.NamedExec("UPDATE pin SET labelid=:folderid, documentid=:documentid, pin=:pin, sequence=:sequence, revised=:revised WHERE orgid=:orgid AND refid=:refid",
+	_, err = ctx.Transaction.NamedExec(`UPDATE dmz_pin SET
+        c_spaceid=:spaceid, c_docid=:documentid, c_name=:name, c_sequence=:sequence,
+        c_revised=:revised
+        WHERE c_orgid=:orgid AND c_refid=:refid`,
 		&pin)
-
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("execute pin update %s", pin.RefID))
 	}
@@ -90,7 +102,7 @@ func (s Scope) UpdatePin(ctx domain.RequestContext, pin pin.Pin) (err error) {
 
 // UpdatePinSequence updates existing pinned item sequence number
 func (s Scope) UpdatePinSequence(ctx domain.RequestContext, pinID string, sequence int) (err error) {
-	_, err = ctx.Transaction.Exec("UPDATE pin SET sequence=?, revised=? WHERE orgid=? AND userid=? AND refid=?",
+	_, err = ctx.Transaction.Exec("UPDATE dmz_pin SET c_sequence=?, c_revised=? WHERE c_orgid=? AND c_userid=? AND c_refid=?",
 		sequence, time.Now().UTC(), ctx.OrgID, ctx.UserID, pinID)
 
 	if err != nil {
@@ -103,17 +115,17 @@ func (s Scope) UpdatePinSequence(ctx domain.RequestContext, pinID string, sequen
 // DeletePin removes folder from the store.
 func (s Scope) DeletePin(ctx domain.RequestContext, id string) (rows int64, err error) {
 	b := mysql.BaseQuery{}
-	return b.DeleteConstrained(ctx.Transaction, "pin", ctx.OrgID, id)
+	return b.DeleteConstrained(ctx.Transaction, "dmz_pin", ctx.OrgID, id)
 }
 
 // DeletePinnedSpace removes any pins for specified space.
 func (s Scope) DeletePinnedSpace(ctx domain.RequestContext, spaceID string) (rows int64, err error) {
 	b := mysql.BaseQuery{}
-	return b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM pin WHERE orgid=\"%s\" AND labelid=\"%s\"", ctx.OrgID, spaceID))
+	return b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_pin WHERE c_orgid=\"%s\" AND c_spaceid=\"%s\"", ctx.OrgID, spaceID))
 }
 
 // DeletePinnedDocument removes any pins for specified document.
 func (s Scope) DeletePinnedDocument(ctx domain.RequestContext, documentID string) (rows int64, err error) {
 	b := mysql.BaseQuery{}
-	return b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM pin WHERE orgid=\"%s\" AND documentid=\"%s\"", ctx.OrgID, documentID))
+	return b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_pin WHERE c_orgid=\"%s\" AND c_docid=\"%s\"", ctx.OrgID, documentID))
 }

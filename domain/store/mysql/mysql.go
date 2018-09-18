@@ -24,7 +24,7 @@ type BaseQuery struct {
 
 // Delete record.
 func (m *BaseQuery) Delete(tx *sqlx.Tx, table string, id string) (rows int64, err error) {
-	result, err := tx.Exec("DELETE FROM "+table+" WHERE refid=?", id)
+	result, err := tx.Exec("DELETE FROM "+table+" WHERE c_refid=?", id)
 
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to delete row in table %s", table))
@@ -38,7 +38,7 @@ func (m *BaseQuery) Delete(tx *sqlx.Tx, table string, id string) (rows int64, er
 
 // DeleteConstrained record constrained to Organization using refid.
 func (m *BaseQuery) DeleteConstrained(tx *sqlx.Tx, table string, orgID, id string) (rows int64, err error) {
-	result, err := tx.Exec("DELETE FROM "+table+" WHERE orgid=? AND refid=?", orgID, id)
+	result, err := tx.Exec("DELETE FROM "+table+" WHERE c_orgid=? AND c_refid=?", orgID, id)
 
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to delete row in table %s", table))
@@ -52,7 +52,7 @@ func (m *BaseQuery) DeleteConstrained(tx *sqlx.Tx, table string, orgID, id strin
 
 // DeleteConstrainedWithID record constrained to Organization using non refid.
 func (m *BaseQuery) DeleteConstrainedWithID(tx *sqlx.Tx, table string, orgID, id string) (rows int64, err error) {
-	result, err := tx.Exec("DELETE FROM "+table+" WHERE orgid=? AND id=?", orgID, id)
+	result, err := tx.Exec("DELETE FROM "+table+" WHERE c_orgid=? AND c_id=?", orgID, id)
 
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to delete row in table %s", table))

@@ -47,7 +47,7 @@ func (s Scope) Add(ctx domain.RequestContext, model page.NewPage) (err error) {
 
 	if model.Page.Sequence == 0 {
 		// Get maximum page sequence number and increment (used to be AND pagetype='section')
-		row := s.Runtime.Db.QueryRow("SELECT max(sequence) FROM page WHERE orgid=? AND documentid=?", ctx.OrgID, model.Page.DocumentID)
+		row := s.Runtime.Db.QueryRow("SELECT max(c_sequence) FROM dmz_section WHERE c_orgid=? AND c_docid=?", ctx.OrgID, model.Page.DocumentID)
 		var maxSeq float64
 		err = row.Scan(&maxSeq)
 		if err != nil {
@@ -57,10 +57,10 @@ func (s Scope) Add(ctx domain.RequestContext, model page.NewPage) (err error) {
 		model.Page.Sequence = maxSeq * 2
 	}
 
-	_, err = ctx.Transaction.Exec("INSERT INTO page (refid, orgid, documentid, userid, contenttype, pagetype, level, title, body, revisions, sequence, blockid, status, relativeid, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+	_, err = ctx.Transaction.Exec("INSERT INTO dmz_section (c_refid, c_orgid, c_docid, c_userid, c_contenttype, c_type, c_level, c_name, c_body, c_revisions, c_sequence, c_templateid, c_status, c_relativeid, c_created, c_revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 		model.Page.RefID, model.Page.OrgID, model.Page.DocumentID, model.Page.UserID, model.Page.ContentType, model.Page.PageType, model.Page.Level, model.Page.Title, model.Page.Body, model.Page.Revisions, model.Page.Sequence, model.Page.BlockID, model.Page.Status, model.Page.RelativeID, model.Page.Created, model.Page.Revised)
 
-	_, err = ctx.Transaction.Exec("INSERT INTO pagemeta (pageid, orgid, userid, documentid, rawbody, config, externalsource, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+	_, err = ctx.Transaction.Exec("INSERT INTO dmz_section_meta (c_sectionid, c_orgid, c_userid, c_docid, c_rawbody, c_config, c_external, c_created, c_revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
 		model.Meta.PageID, model.Meta.OrgID, model.Meta.UserID, model.Meta.DocumentID, model.Meta.RawBody, model.Meta.Config, model.Meta.ExternalSource, model.Meta.Created, model.Meta.Revised)
 
 	if err != nil {
@@ -72,7 +72,10 @@ func (s Scope) Add(ctx domain.RequestContext, model page.NewPage) (err error) {
 
 // Get returns the pageID page record from the page table.
 func (s Scope) Get(ctx domain.RequestContext, pageID string) (p page.Page, err error) {
-	err = s.Runtime.Db.Get(&p, "SELECT a.id, a.refid, a.orgid, a.documentid, a.userid, a.contenttype, a.pagetype, a.level, a.sequence, a.title, a.body, a.revisions, a.blockid, a.status, a.relativeid, a.created, a.revised FROM page a WHERE a.orgid=? AND a.refid=?",
+	err = s.Runtime.Db.Get(&p, `
+        SELECT c_id, c_refid, c_orgid, c_docid, c_userid, c_contenttype, c_type, c_level, c_sequence, c_name, c_body, c_revisions, c_templateid, c_status, c_relativeid, c_created, c_revised
+        FROM dmz_section
+        WHERE c_orgid=? AND c_refid=?`,
 		ctx.OrgID, pageID)
 
 	if err != nil {
@@ -84,7 +87,12 @@ func (s Scope) Get(ctx domain.RequestContext, pageID string) (p page.Page, err e
 
 // GetPages returns a slice containing all published page records for a given documentID, in presentation sequence.
 func (s Scope) GetPages(ctx domain.RequestContext, documentID string) (p []page.Page, err error) {
-	err = s.Runtime.Db.Select(&p, "SELECT a.id, a.refid, a.orgid, a.documentid, a.userid, a.contenttype, a.pagetype, a.level, a.sequence, a.title, a.body, a.revisions, a.blockid, a.status, a.relativeid, a.created, a.revised FROM page a WHERE a.orgid=? AND a.documentid=? AND (a.status=0 OR ((a.status=4 OR a.status=2) AND a.relativeid='')) ORDER BY a.sequence", ctx.OrgID, documentID)
+	err = s.Runtime.Db.Select(&p, `
+        SELECT c_id, c_refid, c_orgid, c_docid, c_userid, c_contenttype, c_type, c_level, c_sequence, c_name, c_body, c_revisions, c_templateid, c_status, c_relativeid, c_created, c_revised
+        FROM dmz_section
+        WHERE c_orgid=? AND c_docid=? AND (c_status=0 OR ((c_status=4 OR c_status=2) AND c_relativeid=''))
+        ORDER BY c_sequence`,
+		ctx.OrgID, documentID)
 
 	if err != nil {
 		err = errors.Wrap(err, "execute get pages")
@@ -95,7 +103,12 @@ func (s Scope) GetPages(ctx domain.RequestContext, documentID string) (p []page.
 
 // GetUnpublishedPages returns a slice containing all published page records for a given documentID, in presentation sequence.
 func (s Scope) GetUnpublishedPages(ctx domain.RequestContext, documentID string) (p []page.Page, err error) {
-	err = s.Runtime.Db.Select(&p, "SELECT a.id, a.refid, a.orgid, a.documentid, a.userid, a.contenttype, a.pagetype, a.level, a.sequence, a.title, a.body, a.revisions, a.blockid, a.status, a.relativeid, a.created, a.revised FROM page a WHERE a.orgid=? AND a.documentid=? AND a.status!=0 AND a.relativeid!='' ORDER BY a.sequence", ctx.OrgID, documentID)
+	err = s.Runtime.Db.Select(&p, `
+        SELECT c_id, c_refid, c_orgid, c_docid, c_userid, c_contenttype, c_type, c_level, c_sequence, c_name, c_body, c_revisions, c_templateid, c_status, c_relativeid, c_created, c_revised
+        FROM dmz_section
+        WHERE c_orgid=? AND c_docid=? AND c_status!=0 AND c_relativeid!=''
+        ORDER BY c_sequence`,
+		ctx.OrgID, documentID)
 
 	if err != nil {
 		err = errors.Wrap(err, "execute get unpublished pages")
@@ -107,7 +120,12 @@ func (s Scope) GetUnpublishedPages(ctx domain.RequestContext, documentID string)
 // GetPagesWithoutContent returns a slice containing all the page records for a given documentID, in presentation sequence,
 // but without the body field (which holds the HTML content).
 func (s Scope) GetPagesWithoutContent(ctx domain.RequestContext, documentID string) (pages []page.Page, err error) {
-	err = s.Runtime.Db.Select(&pages, "SELECT id, refid, orgid, documentid, userid, contenttype, pagetype, sequence, level, title, revisions, blockid, status, relativeid, created, revised FROM page WHERE orgid=? AND documentid=? AND status=0 ORDER BY sequence", ctx.OrgID, documentID)
+	err = s.Runtime.Db.Select(&pages, `
+        SELECT c_id, c_refid, c_orgid, c_docid, c_userid, c_contenttype, c_type, c_level, c_sequence, c_name, c_body, c_revisions, c_templateid, c_status, c_relativeid, c_created, c_revised
+        FROM dmz_section
+        WHERE c_orgid=? AND c_docid=? AND c_status=0
+        ORDER BY c_sequence`,
+		ctx.OrgID, documentID)
 
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("Unable to execute select pages for org %s and document %s", ctx.OrgID, documentID))
@@ -123,7 +141,15 @@ func (s Scope) Update(ctx domain.RequestContext, page page.Page, refID, userID s
 
 	// Store revision history
 	if !skipRevision {
-		_, err = ctx.Transaction.Exec("INSERT INTO revision (refid, orgid, documentid, ownerid, pageid, userid, contenttype, pagetype, title, body, rawbody, config, created, revised) SELECT ? as refid, a.orgid, a.documentid, a.userid as ownerid, a.refid as pageid, ? as userid, a.contenttype, a.pagetype, a.title, a.body, b.rawbody, b.config, ? as created, ? as revised FROM page a, pagemeta b WHERE a.refid=? AND a.refid=b.pageid",
+		_, err = ctx.Transaction.Exec(`
+            INSERT INTO dmz_section_revision
+                (c_refid, c_orgid, c_docid, c_ownerid, c_sectionid, c_userid, c_contenttype, c_type,
+                c_name, c_body, c_rawbody, c_config, c_created, c_revised)
+            SELECT ? as refid, a.c_orgid, a.c_docid, a.c_userid as ownerid, a.c_refid as sectionid,
+                ? as userid, a.c_contenttype, a.c_type, a.c_name, a.c_body,
+                b.c_rawbody, b.c_config, ? as c_created, ? as c_revised
+                FROM dmz_section a, dmz_section_meta b
+                WHERE a.c_refid=? AND a.c_refid=b.c_sectionid`,
 			refID, userID, time.Now().UTC(), time.Now().UTC(), page.RefID)
 
 		if err != nil {
@@ -133,7 +159,11 @@ func (s Scope) Update(ctx domain.RequestContext, page page.Page, refID, userID s
 	}
 
 	// Update page
-	_, err = ctx.Transaction.NamedExec("UPDATE page SET documentid=:documentid, level=:level, title=:title, body=:body, revisions=:revisions, sequence=:sequence, status=:status, relativeid=:relativeid, revised=:revised WHERE orgid=:orgid AND refid=:refid",
+	_, err = ctx.Transaction.NamedExec(`UPDATE dmz_section SET
+        docid=:documentid, level=:level, c_name=:name, body=:body,
+        c_revisions=:revisions, c_sequence=:sequence, c_status=:status,
+        c_relativeid=:relativeid, c_revised=:revised
+        WHERE orgid=:orgid AND refid=:refid`,
 		&page)
 
 	if err != nil {
@@ -143,7 +173,9 @@ func (s Scope) Update(ctx domain.RequestContext, page page.Page, refID, userID s
 
 	// Update revisions counter
 	if !skipRevision {
-		_, err = ctx.Transaction.Exec("UPDATE page SET revisions=revisions+1 WHERE orgid=? AND refid=?", ctx.OrgID, page.RefID)
+		_, err = ctx.Transaction.Exec(`UPDATE dmz_section SET c_revisions=c_revisions+1
+            WHERE c_orgid=? AND c_refid=?`,
+			ctx.OrgID, page.RefID)
 
 		if err != nil {
 			err = errors.Wrap(err, "execute page revision counter")
@@ -160,11 +192,11 @@ func (s Scope) Delete(ctx domain.RequestContext, documentID, pageID string) (row
 	rows, err = b.DeleteConstrained(ctx.Transaction, "page", ctx.OrgID, pageID)
 
 	if err == nil {
-		_, _ = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM pagemeta WHERE orgid='%s' AND pageid='%s'", ctx.OrgID, pageID))
+		_, _ = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_section_meta WHERE c_orgid='%s' AND c_sectionid='%s'", ctx.OrgID, pageID))
 	}
 
 	if err == nil {
-		_, _ = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM useraction WHERE orgid='%s' AND reftypeid='%s' AND reftype='P'", ctx.OrgID, pageID))
+		_, _ = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_action WHERE c_orgid='%s' AND c_reftypeid='%s' AND c_reftype='P'", ctx.OrgID, pageID))
 	}
 
 	return
@@ -182,7 +214,10 @@ func (s Scope) UpdateMeta(ctx domain.RequestContext, meta page.Meta, updateUserI
 		meta.UserID = ctx.UserID
 	}
 
-	_, err = ctx.Transaction.NamedExec("UPDATE pagemeta SET userid=:userid, documentid=:documentid, rawbody=:rawbody, config=:config, externalsource=:externalsource, revised=:revised WHERE orgid=:orgid AND pageid=:pageid",
+	_, err = ctx.Transaction.NamedExec(`UPDATE dmz_section_meta SET
+        c_userid=:userid, c_docid=:documentid, c_rawbody=:rawbody, c_config=:config,
+        c_external=:externalsource, c_revised=:revised
+        WHERE c_orgid=:orgid AND c_sectionid=:sectionid`,
 		&meta)
 
 	if err != nil {
@@ -194,7 +229,12 @@ func (s Scope) UpdateMeta(ctx domain.RequestContext, meta page.Meta, updateUserI
 
 // GetPageMeta returns the meta information associated with the page.
 func (s Scope) GetPageMeta(ctx domain.RequestContext, pageID string) (meta page.Meta, err error) {
-	err = s.Runtime.Db.Get(&meta, "SELECT id, pageid, orgid, userid, documentid, rawbody, coalesce(config,JSON_UNQUOTE('{}')) as config, externalsource, created, revised FROM pagemeta WHERE orgid=? AND pageid=?",
+	err = s.Runtime.Db.Get(&meta, `SELECT id, c_sectionid AS sectionid,
+        c_orgid AS orgid, c_userid AS userid, c_docid AS documentid,
+        c_rawbody AS rawbody, coalesce(c_config,JSON_UNQUOTE('{}')) as config,
+        c_external AS externalsource, c_created AS created, c_revised AS revised
+        FROM dmz_section_meta
+        WHERE c_orgid=? AND c_sectionid=?`,
 		ctx.OrgID, pageID)
 
 	if err != nil && err != sql.ErrNoRows {
@@ -208,10 +248,16 @@ func (s Scope) GetPageMeta(ctx domain.RequestContext, pageID string) (meta page.
 func (s Scope) GetDocumentPageMeta(ctx domain.RequestContext, documentID string, externalSourceOnly bool) (meta []page.Meta, err error) {
 	filter := ""
 	if externalSourceOnly {
-		filter = " AND externalsource=1"
+		filter = " AND c_external=1"
 	}
 
-	err = s.Runtime.Db.Select(&meta, "SELECT id, pageid, orgid, userid, documentid, rawbody, coalesce(config,JSON_UNQUOTE('{}')) as config, externalsource, created, revised FROM pagemeta WHERE orgid=? AND documentid=?"+filter, ctx.OrgID, documentID)
+	err = s.Runtime.Db.Select(&meta, `SELECT id, c_sectionid AS sectionid,
+        c_orgid AS orgid, c_userid AS userid, c_docid AS documentid,
+        c_rawbody AS rawbody, coalesce(c_config,JSON_UNQUOTE('{}')) as config,
+        c_external AS externalsource, c_created AS created, c_revised AS revised
+        FROM dmz_section_meta
+        WHERE c_orgid=? AND c_docid=?`+filter,
+		ctx.OrgID, documentID)
 
 	if err != nil {
 		err = errors.Wrap(err, "get document page meta")
@@ -227,7 +273,8 @@ func (s Scope) GetDocumentPageMeta(ctx domain.RequestContext, documentID string,
 // UpdateSequence changes the presentation sequence of the pageID page in the document.
 // It then propagates that change into the search table and audits that it has occurred.
 func (s Scope) UpdateSequence(ctx domain.RequestContext, documentID, pageID string, sequence float64) (err error) {
-	_, err = ctx.Transaction.Exec("UPDATE page SET sequence=? WHERE orgid=? AND refid=?", sequence, ctx.OrgID, pageID)
+	_, err = ctx.Transaction.Exec("UPDATE dmz_section SET c_sequence=? WHERE c_orgid=? AND c_refid=?",
+		sequence, ctx.OrgID, pageID)
 
 	if err != nil {
 		err = errors.Wrap(err, "execute page sequence update")
@@ -239,7 +286,8 @@ func (s Scope) UpdateSequence(ctx domain.RequestContext, documentID, pageID stri
 // UpdateLevel changes the heading level of the pageID page in the document.
 // It then propagates that change into the search table and audits that it has occurred.
 func (s Scope) UpdateLevel(ctx domain.RequestContext, documentID, pageID string, level int) (err error) {
-	_, err = ctx.Transaction.Exec("UPDATE page SET level=? WHERE orgid=? AND refid=?", level, ctx.OrgID, pageID)
+	_, err = ctx.Transaction.Exec("UPDATE dmz_section SET c_level=? WHERE c_orgid=? AND c_refid=?",
+		level, ctx.OrgID, pageID)
 
 	if err != nil {
 		err = errors.Wrap(err, "execute page level update")
@@ -250,7 +298,7 @@ func (s Scope) UpdateLevel(ctx domain.RequestContext, documentID, pageID string,
 
 // UpdateLevelSequence changes page level and sequence numbers.
 func (s Scope) UpdateLevelSequence(ctx domain.RequestContext, documentID, pageID string, level int, sequence float64) (err error) {
-	_, err = ctx.Transaction.Exec("UPDATE page SET level=?, sequence=? WHERE orgid=? AND refid=?",
+	_, err = ctx.Transaction.Exec("UPDATE dmz_section SET c_level=?, c_sequence=? WHERE c_orgid=? AND c_refid=?",
 		level, sequence, ctx.OrgID, pageID)
 
 	if err != nil {
@@ -262,13 +310,13 @@ func (s Scope) UpdateLevelSequence(ctx domain.RequestContext, documentID, pageID
 
 // GetNextPageSequence returns the next sequence numbner to use for a page in given document.
 func (s Scope) GetNextPageSequence(ctx domain.RequestContext, documentID string) (maxSeq float64, err error) {
-	row := s.Runtime.Db.QueryRow("SELECT max(sequence) FROM page WHERE orgid=? AND documentid=?", ctx.OrgID, documentID)
+	row := s.Runtime.Db.QueryRow("SELECT max(c_sequence) FROM dmz_section WHERE c_orgid=? AND c_docid=?",
+		ctx.OrgID, documentID)
 
 	err = row.Scan(&maxSeq)
 	if err != nil {
 		maxSeq = 2048
 	}
-
 	maxSeq = maxSeq * 2
 
 	return
@@ -280,7 +328,13 @@ func (s Scope) GetNextPageSequence(ctx domain.RequestContext, documentID string)
 
 // GetPageRevision returns the revisionID page revision record.
 func (s Scope) GetPageRevision(ctx domain.RequestContext, revisionID string) (revision page.Revision, err error) {
-	err = s.Runtime.Db.Get(&revision, "SELECT id, refid, orgid, documentid, ownerid, pageid, userid, contenttype, pagetype, title, body, coalesce(rawbody, '') as rawbody, coalesce(config,JSON_UNQUOTE('{}')) as config, created, revised FROM revision WHERE orgid=? and refid=?",
+	err = s.Runtime.Db.Get(&revision, `SELECT id, c_refid AS refid,
+        c_orgid AS orgid, c_docid AS documentid, c_ownerid AS  ownerid, c_sectionid AS sectionid,
+        c_userid AS userid, c_contenttype AS contenttype, c_type AS type,
+        c_name AS name, c_body AS body, coalesce(c_rawbody, '') as rawbody, coalesce(c_config,JSON_UNQUOTE('{}')) as config,
+        c_created AS created, c_revised AS revised
+        FROM dmz_section_revision
+        WHERE c_orgid=? and c_refid=?`,
 		ctx.OrgID, revisionID)
 
 	if err != nil {
@@ -293,7 +347,17 @@ func (s Scope) GetPageRevision(ctx domain.RequestContext, revisionID string) (re
 // GetPageRevisions returns a slice of page revision records for a given pageID, in the order they were created.
 // Then audits that the get-page-revisions action has occurred.
 func (s Scope) GetPageRevisions(ctx domain.RequestContext, pageID string) (revisions []page.Revision, err error) {
-	err = s.Runtime.Db.Select(&revisions, "SELECT a.id, a.refid, a.orgid, a.documentid, a.ownerid, a.pageid, a.userid, a.contenttype, a.pagetype, a.title, /*a.body, a.rawbody, a.config,*/ a.created, a.revised, coalesce(b.email,'') as email, coalesce(b.firstname,'') as firstname, coalesce(b.lastname,'') as lastname, coalesce(b.initials,'') as initials FROM revision a LEFT JOIN user b ON a.userid=b.refid WHERE a.orgid=? AND a.pageid=? AND a.pagetype='section' ORDER BY a.id DESC", ctx.OrgID, pageID)
+	err = s.Runtime.Db.Select(&revisions, `SELECT a.c_id, a.c_refid AS refid,
+        a.c_orgid AS orgid, a.c_docid AS documentid, a.c_ownerid AS ownerid, a.c_sectionid AS sectionid, a.c_userid AS userid,
+        a.c_contenttype AS contenttype, a.c_type AS type, a.c_name AS name,
+        a.c_created AS created, a.c_revised AS revised,
+        coalesce(b.c_email,'') as email, coalesce(b.c_firstname,'') as firstname,
+        coalesce(b.c_lastname,'') as lastname, coalesce(b.c_initials,'') as initials
+        FROM dmz_section_revision a
+        LEFT JOIN dmz_user b ON a.c_userid=b.c_refid
+        WHERE a.c_orgid=? AND a.c_sectionid=? AND a.c_type='section'
+        ORDER BY a.id DESC`,
+		ctx.OrgID, pageID)
 
 	if err != nil {
 		err = errors.Wrap(err, "get page revisions")
@@ -305,7 +369,19 @@ func (s Scope) GetPageRevisions(ctx domain.RequestContext, pageID string) (revis
 // GetDocumentRevisions returns a slice of page revision records for a given document, in the order they were created.
 // Then audits that the get-page-revisions action has occurred.
 func (s Scope) GetDocumentRevisions(ctx domain.RequestContext, documentID string) (revisions []page.Revision, err error) {
-	err = s.Runtime.Db.Select(&revisions, "SELECT a.id, a.refid, a.orgid, a.documentid, a.ownerid, a.pageid, a.userid, a.contenttype, a.pagetype, a.title, /*a.body, a.rawbody, a.config,*/ a.created, a.revised, coalesce(b.email,'') as email, coalesce(b.firstname,'') as firstname, coalesce(b.lastname,'') as lastname, coalesce(b.initials,'') as initials, coalesce(p.revisions, 0) as revisions FROM revision a LEFT JOIN user b ON a.userid=b.refid LEFT JOIN page p ON a.pageid=p.refid WHERE a.orgid=? AND a.documentid=? AND a.pagetype='section' ORDER BY a.id DESC", ctx.OrgID, documentID)
+	err = s.Runtime.Db.Select(&revisions, `SELECT a.id, a.c_refid AS refid,
+        a.c_orgid AS orgid, a.c_docid AS documentid, a.c_ownerid AS ownerid, a.c_sectionid AS sectionid,
+        a.c_userid AS userid, a.c_contenttype AS contenttype, a.c_type AS type, a.c_name AS name,
+        a.c_created AS created, a.c_revised AS revised,
+        coalesce(b.c_email,'') as email, coalesce(b.c_firstname,'') as firstname,
+        coalesce(b.c_lastname,'') as lastname, coalesce(b.c_initials,'') as initials,
+        coalesce(p.c_revisions, 0) as revisions
+        FROM dmz_section_revision a
+        LEFT JOIN dmz_user b ON a.c_userid=b.c_refid
+        LEFT JOIN dmz_section p ON a.c_sectionid=p.c_refid
+        WHERE a.c_orgid=? AND a.c_docid=? AND a.c_type='section'
+        ORDER BY a.id DESC`,
+		ctx.OrgID, documentID)
 
 	if len(revisions) == 0 {
 		revisions = []page.Revision{}
@@ -321,7 +397,8 @@ func (s Scope) GetDocumentRevisions(ctx domain.RequestContext, documentID string
 // DeletePageRevisions deletes all of the page revision records for a given pageID.
 func (s Scope) DeletePageRevisions(ctx domain.RequestContext, pageID string) (rows int64, err error) {
 	b := mysql.BaseQuery{}
-	rows, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM revision WHERE orgid='%s' AND pageid='%s'", ctx.OrgID, pageID))
+	rows, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_section_revision WHERE c_orgid='%s' AND c_sectionid='%s'",
+		ctx.OrgID, pageID))
 
 	return
 }

@@ -33,7 +33,7 @@ func (s Scope) Add(ctx domain.RequestContext, g group.Group) (err error) {
 	g.Created = time.Now().UTC()
 	g.Revised = time.Now().UTC()
 
-	_, err = ctx.Transaction.Exec("INSERT INTO role (refid, orgid, role, purpose, created, revised) VALUES (?, ?, ?, ?, ?, ?)",
+	_, err = ctx.Transaction.Exec("INSERT INTO dmz_group (c_refid, c_orgid, c_name, c_desc, c_created, c_revised) VALUES (?, ?, ?, ?, ?, ?)",
 		g.RefID, g.OrgID, g.Name, g.Purpose, g.Created, g.Revised)
 
 	if err != nil {
@@ -45,8 +45,10 @@ func (s Scope) Add(ctx domain.RequestContext, g group.Group) (err error) {
 
 // Get returns requested group.
 func (s Scope) Get(ctx domain.RequestContext, refID string) (g group.Group, err error) {
-	err = s.Runtime.Db.Get(&g,
-		`SELECT id, refid, orgid, role as name, purpose, created, revised FROM role WHERE orgid=? AND refid=?`,
+	err = s.Runtime.Db.Get(&g, `
+        SELECT id, c_refid AS refid, c_orgid AS orgid, c_name AS name, c_desc AS purpose, c_created, c_revised
+        FROM dmz_group
+        WHERE c_orgid=? AND c_refid=?`,
 		ctx.OrgID, refID)
 
 	if err != nil {
@@ -60,13 +62,14 @@ func (s Scope) Get(ctx domain.RequestContext, refID string) (g group.Group, err 
 func (s Scope) GetAll(ctx domain.RequestContext) (groups []group.Group, err error) {
 	groups = []group.Group{}
 
-	err = s.Runtime.Db.Select(&groups,
-		`SELECT a.id, a.refid, a.orgid, a.role as name, a.purpose, a.created, a.revised, COUNT(b.roleid) AS members
-		FROM role a
-		LEFT JOIN rolemember b ON a.refid=b.roleid
-		WHERE a.orgid=?
-		GROUP BY a.id, a.refid, a.orgid, a.role, a.purpose, a.created, a.revised
-		ORDER BY a.role`,
+	err = s.Runtime.Db.Select(&groups, `
+        SELECT id, c_refid AS refid, c_orgid AS orgid, c_name AS name, c_desc AS purpose, c_created, c_revised
+        COUNT(b.groupid) AS members
+		FROM dmz_group a
+		LEFT JOIN dmz_group_member b ON a.c_refid=b.c_groupid
+		WHERE a.c_orgid=?
+		GROUP BY a.c_id, a.c_refid, a.c_orgid, a.c_name, a.c_desc, a.c_created, a.c_revised
+		ORDER BY a.c_name`,
 		ctx.OrgID)
 
 	if err == sql.ErrNoRows {
@@ -83,7 +86,9 @@ func (s Scope) GetAll(ctx domain.RequestContext) (groups []group.Group, err erro
 func (s Scope) Update(ctx domain.RequestContext, g group.Group) (err error) {
 	g.Revised = time.Now().UTC()
 
-	_, err = ctx.Transaction.Exec("UPDATE role SET role=?, purpose=?, revised=? WHERE orgid=? AND refid=?",
+	_, err = ctx.Transaction.Exec(`UPDATE dmz_group SET
+        c_name=?, c_desc=?, c_revised=?
+        WHERE c_orgid=? AND c_refid=?`,
 		g.Name, g.Purpose, g.Revised, ctx.OrgID, g.RefID)
 
 	if err != nil {
@@ -97,20 +102,20 @@ func (s Scope) Update(ctx domain.RequestContext, g group.Group) (err error) {
 func (s Scope) Delete(ctx domain.RequestContext, refID string) (rows int64, err error) {
 	b := mysql.BaseQuery{}
 	b.DeleteConstrained(ctx.Transaction, "role", ctx.OrgID, refID)
-	return b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM rolemember WHERE orgid=\"%s\" AND roleid=\"%s\"", ctx.OrgID, refID))
+	return b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_group_member WHERE c_orgid=\"%s\" AND c_groupid=\"%s\"", ctx.OrgID, refID))
 }
 
 // GetGroupMembers returns all user associated with given group.
 func (s Scope) GetGroupMembers(ctx domain.RequestContext, groupID string) (members []group.Member, err error) {
 	members = []group.Member{}
 
-	err = s.Runtime.Db.Select(&members,
-		`SELECT a.id, a.orgid, a.roleid, a.userid,
-		IFNULL(b.firstname, '') as firstname, IFNULL(b.lastname, '') as lastname
-		FROM rolemember a
-		LEFT JOIN user b ON b.refid=a.userid
-		WHERE a.orgid=? AND a.roleid=?
-		ORDER BY b.firstname, b.lastname`,
+	err = s.Runtime.Db.Select(&members, `
+		SELECT a.id, a.c_orgid AS orgid, a.c_groupid AS groupid, a.c_userid AS userid,
+		IFNULL(b.c_firstname, '') as firstname, IFNULL(b.c_lastname, '') as lastname
+		FROM dmz_group_member a
+		LEFT JOIN dmz_user b ON b.c_refid=a.c_userid
+		WHERE a.c_orgid=? AND a.c_groupid=?
+		ORDER BY b.c_firstname, b.c_lastname`,
 		ctx.OrgID, groupID)
 
 	if err == sql.ErrNoRows {
@@ -125,7 +130,7 @@ func (s Scope) GetGroupMembers(ctx domain.RequestContext, groupID string) (membe
 
 // JoinGroup adds user to group.
 func (s Scope) JoinGroup(ctx domain.RequestContext, groupID, userID string) (err error) {
-	_, err = ctx.Transaction.Exec("INSERT INTO rolemember (orgid, roleid, userid) VALUES (?, ?, ?)", ctx.OrgID, groupID, userID)
+	_, err = ctx.Transaction.Exec("INSERT INTO dmz_group_member (orgid, groupid, userid) VALUES (?, ?, ?)", ctx.OrgID, groupID, userID)
 	if err != nil {
 		err = errors.Wrap(err, "insert group member")
 	}
@@ -136,7 +141,7 @@ func (s Scope) JoinGroup(ctx domain.RequestContext, groupID, userID string) (err
 // LeaveGroup removes user from group.
 func (s Scope) LeaveGroup(ctx domain.RequestContext, groupID, userID string) (err error) {
 	b := mysql.BaseQuery{}
-	_, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM rolemember WHERE orgid=\"%s\" AND roleid=\"%s\" AND userid=\"%s\"", ctx.OrgID, groupID, userID))
+	_, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_group_member WHERE c_orgid=\"%s\" AND c_groupid=\"%s\" AND c_userid=\"%s\"", ctx.OrgID, groupID, userID))
 	if err != nil {
 		err = errors.Wrap(err, "clear group member")
 	}
@@ -150,11 +155,12 @@ func (s Scope) LeaveGroup(ctx domain.RequestContext, groupID, userID string) (er
 func (s Scope) GetMembers(ctx domain.RequestContext) (r []group.Record, err error) {
 	r = []group.Record{}
 
-	err = s.Runtime.Db.Select(&r,
-		`SELECT a.id, a.orgid, a.roleid, a.userid, b.role as name, b.purpose
-		FROM rolemember a, role b
-		WHERE a.orgid=? AND a.roleid=b.refid
-		ORDER BY a.userid`,
+	err = s.Runtime.Db.Select(&r, `
+        SELECT a.id, a.c_orgid AS orgid, a.c_groupid AS groupid, a.c_userid AS userid,
+        b.c_name As name, b.c_desc AS purpose
+		FROM dmz_group_member a, dmz_group b
+		WHERE a.c_orgid=? AND a.c_groupid=b.refid
+		ORDER BY a.c_userid`,
 		ctx.OrgID)
 
 	if err == sql.ErrNoRows {

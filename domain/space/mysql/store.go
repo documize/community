@@ -35,7 +35,7 @@ func (s Scope) Add(ctx domain.RequestContext, sp space.Space) (err error) {
 	sp.Created = time.Now().UTC()
 	sp.Revised = time.Now().UTC()
 
-	_, err = ctx.Transaction.Exec("INSERT INTO label (refid, label, orgid, userid, type, lifecycle, likes, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+	_, err = ctx.Transaction.Exec("INSERT INTO dmz_space (c_refid, c_name, c_orgid, c_userid, c_type, c_lifecycle, c_likes, c_created, c_revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
 		sp.RefID, sp.Name, sp.OrgID, sp.UserID, sp.Type, sp.Lifecycle, sp.Likes, sp.Created, sp.Revised)
 
 	if err != nil {
@@ -47,7 +47,12 @@ func (s Scope) Add(ctx domain.RequestContext, sp space.Space) (err error) {
 
 // Get returns a space from the store.
 func (s Scope) Get(ctx domain.RequestContext, id string) (sp space.Space, err error) {
-	err = s.Runtime.Db.Get(&sp, "SELECT id,refid,label as name,orgid,userid,type,lifecycle,likes,created,revised FROM label WHERE orgid=? and refid=?",
+	err = s.Runtime.Db.Get(&sp, `SELECT id, c_refid as refid,
+        c_name as name, c_orgid as orgid, c_userid as userid,
+        c_type as type, c_lifecycle as lifecycle, c_likes as likes,
+        c_created as created, c_revised as revised
+        FROM dmz_space
+        WHERE c_orgid=? and c_refid=?`,
 		ctx.OrgID, id)
 
 	if err != nil {
@@ -59,7 +64,12 @@ func (s Scope) Get(ctx domain.RequestContext, id string) (sp space.Space, err er
 
 // PublicSpaces returns spaces that anyone can see.
 func (s Scope) PublicSpaces(ctx domain.RequestContext, orgID string) (sp []space.Space, err error) {
-	qry := "SELECT id,refid,label as name,orgid,userid,type,lifecycle,likes,created,revised FROM label a where orgid=? AND type=1"
+	qry := `SELECT id, c_refid as refid
+        c_name as name, c_orgid as orgid, c_userid as userid,
+        c_type as type, c_lifecycle as lifecycle, c_likes as likes,
+        c_created as created, c_revised as revised
+        FROM dmz_space
+        WHERE c_orgid=? AND c_type=1`
 
 	err = s.Runtime.Db.Select(&sp, qry, orgID)
 
@@ -78,14 +88,20 @@ func (s Scope) PublicSpaces(ctx domain.RequestContext, orgID string) (sp []space
 // Also handles which spaces can be seen by anonymous users.
 func (s Scope) GetViewable(ctx domain.RequestContext) (sp []space.Space, err error) {
 	q := `
-	SELECT id,refid,label as name,orgid,userid,type,lifecycle,likes,created,revised FROM label
-	WHERE orgid=?
-		AND refid IN (SELECT refid FROM permission WHERE orgid=? AND location='space' AND refid IN (
-		SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space' AND action='view' UNION ALL
-		SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role'
-		AND p.location='space' AND p.action='view' AND (r.userid=? OR r.userid='0')
-	))
-	ORDER BY name`
+    SELECT id, c_refid as refid
+        c_name as name, c_orgid as orgid, c_userid as userid,
+        c_type as type, c_lifecycle as lifecycle, c_likes as likes,
+        c_created as created, c_revised as revised
+    FROM dmz_space
+	WHERE c_orgid=? AND c_refid IN
+        (SELECT c_refid FROM dmz_permission WHERE c_orgid=? AND c_location='space' AND c_refid IN
+            (SELECT c_refid FROM dmz_permission WHERE c_orgid=? AND c_who='user' AND (c_whoid=? OR c_whoid='0') AND c_location='space' AND c_action='view'
+            UNION ALL
+		    SELECT p.refid from dmz_permission p LEFT JOIN dmz_group_member r ON p.c_whoid=r.c_groupid WHERE p.c_orgid=? AND p.c_who='role'
+            AND p.c_location='space' AND p.c_action='view' AND (r.c_userid=? OR r.c_userid='0')
+            )
+	    )
+	ORDER BY c_name`
 
 	err = s.Runtime.Db.Select(&sp, q,
 		ctx.OrgID,
@@ -109,9 +125,13 @@ func (s Scope) GetViewable(ctx domain.RequestContext) (sp []space.Space, err err
 // GetAll for admin users!
 func (s Scope) GetAll(ctx domain.RequestContext) (sp []space.Space, err error) {
 	qry := `
-	SELECT id,refid,label as name,orgid,userid,type,lifecycle,likes,created,revised FROM label
-	WHERE orgid=?
-	ORDER BY name`
+    SELECT id, c_refid as refid
+        c_name as name, c_orgid as orgid, c_userid as userid,
+        c_type as type, c_lifecycle as lifecycle, c_likes as likes,
+        c_created as created, c_revised as revised
+    FROM dmz_space
+    WHERE c_orgid=?
+	ORDER BY c_name`
 
 	err = s.Runtime.Db.Select(&sp, qry, ctx.OrgID)
 
@@ -130,8 +150,7 @@ func (s Scope) GetAll(ctx domain.RequestContext) (sp []space.Space, err error) {
 func (s Scope) Update(ctx domain.RequestContext, sp space.Space) (err error) {
 	sp.Revised = time.Now().UTC()
 
-	_, err = ctx.Transaction.NamedExec("UPDATE label SET label=:name, type=:type, lifecycle=:lifecycle, userid=:userid, likes=:likes, revised=:revised WHERE orgid=:orgid AND refid=:refid", &sp)
-
+	_, err = ctx.Transaction.NamedExec("UPDATE dmz_space SET c_name=:name, c_type=:type, c_lifecycle=:lifecycle, c_userid=:userid, c_likes=:likes, c_revised=:revised WHERE c_orgid=:orgid AND c_refid=:refid", &sp)
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to execute update for label %s", sp.RefID))
 	}
@@ -142,5 +161,5 @@ func (s Scope) Update(ctx domain.RequestContext, sp space.Space) (err error) {
 // Delete removes space from the store.
 func (s Scope) Delete(ctx domain.RequestContext, id string) (rows int64, err error) {
 	b := mysql.BaseQuery{}
-	return b.DeleteConstrained(ctx.Transaction, "label", ctx.OrgID, id)
+	return b.DeleteConstrained(ctx.Transaction, "dmz_space", ctx.OrgID, id)
 }

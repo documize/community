@@ -40,7 +40,7 @@ func (s Scope) Record(ctx domain.RequestContext, t audit.EventType) {
 		return
 	}
 
-	_, err = tx.Exec("INSERT INTO userevent (orgid, userid, eventtype, ip, created) VALUES (?, ?, ?, ?, ?)",
+	_, err = tx.Exec("INSERT INTO dmz_audit_log (c_orgid, c_userid, c_eventtype, c_ip, c_created) VALUES (?, ?, ?, ?, ?)",
 		e.OrgID, e.UserID, e.Type, e.IP, e.Created)
 
 	if err != nil {
