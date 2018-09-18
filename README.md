@@ -69,12 +69,14 @@ Space view.
 
 # Requires:
 - curl
-- wget 
-- A service for documize
+- wget
+- bash
+- A service for Documize (/etc/init.d/documize)
 
 VERSION="$(curl -s https://api.github.com/repos/documize/community/releases | grep 'tag_name' | cut -d\" -f4 | head -1)"
 
 service documize stop
+sleep 2 # Wait for the service to stop completely
 rm -f /bin/documize-community-linux-amd64
 if wget https://github.com/documize/community/releases/download/$VERSION/documize-community-linux-amd64 -P /bin/
 then
