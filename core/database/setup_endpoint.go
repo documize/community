@@ -131,7 +131,7 @@ func setupAccount(rt *env.Runtime, completion onboardRequest, serial string) (er
 	// Allocate organization to the user.
 	orgID := uniqueid.Generate()
 
-	sql := fmt.Sprintf("insert into organization (refid, company, title, message, domain, email, serial) values (\"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\")",
+	sql := fmt.Sprintf("insert into dmz_org (c_refid, c_company, c_title, c_message, c_domain, c_email, c_serial) VALUES (\"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\")",
 		orgID, completion.Company, completion.CompanyLong, completion.Message, completion.URL, completion.Email, serial)
 	_, err = runSQL(rt, sql)
 
@@ -142,7 +142,7 @@ func setupAccount(rt *env.Runtime, completion onboardRequest, serial string) (er
 
 	userID := uniqueid.Generate()
 
-	sql = fmt.Sprintf("insert into user (refid, firstname, lastname, email, initials, salt, password, global) values (\"%s\",\"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", 1)",
+	sql = fmt.Sprintf("INSERT INTO dmz_user (c_refid, c_firstname, c_lastname, c_email, c_initials, c_salt, c_password, c_globaladmin) VALUES (\"%s\",\"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", 1)",
 		userID, completion.Firstname, completion.Lastname, completion.Email, stringutil.MakeInitials(completion.Firstname, completion.Lastname), salt, password)
 	_, err = runSQL(rt, sql)
 
@@ -153,7 +153,7 @@ func setupAccount(rt *env.Runtime, completion onboardRequest, serial string) (er
 
 	// Link user to organization.
 	accountID := uniqueid.Generate()
-	sql = fmt.Sprintf("insert into account (refid, userid, orgid, `admin`, editor, users, analytics) values (\"%s\", \"%s\", \"%s\", 1, 1, 1, 1)", accountID, userID, orgID)
+	sql = fmt.Sprintf("INSERT INTO dmz_user_account (c_refid, c_userid, c_orgid, c_admin, c_editor, c_users, c_analytics) VALUES (\"%s\", \"%s\", \"%s\", 1, 1, 1, 1)", accountID, userID, orgID)
 	_, err = runSQL(rt, sql)
 
 	if err != nil {
@@ -163,59 +163,59 @@ func setupAccount(rt *env.Runtime, completion onboardRequest, serial string) (er
 
 	// create space
 	labelID := uniqueid.Generate()
-	sql = fmt.Sprintf("insert into label (refid, orgid, label, type, userid) values (\"%s\", \"%s\", \"My Project\", 2, \"%s\")", labelID, orgID, userID)
+	sql = fmt.Sprintf("INSERT INTO dmz_space (c_refid, c_orgid, c_name, c_type, c_userid) VALUES (\"%s\", \"%s\", \"My Project\", 2, \"%s\")", labelID, orgID, userID)
 	_, err = runSQL(rt, sql)
 	if err != nil {
-		rt.Log.Error("insert into label failed", err)
+		rt.Log.Error("INSERT INTO label failed", err)
 	}
 
 	// assign permissions to space
 	perms := []string{"view", "manage", "own", "doc-add", "doc-edit", "doc-delete", "doc-move", "doc-copy", "doc-template", "doc-approve", "doc-version", "doc-lifecycle"}
 	for _, p := range perms {
-		sql = fmt.Sprintf("insert into permission (orgid, who, whoid, action, scope, location, refid) values (\"%s\", 'user', \"%s\", \"%s\", 'object', 'space', \"%s\")", orgID, userID, p, labelID)
+		sql = fmt.Sprintf("INSERT INTO dmz_permission (c_orgid, c_who, c_whoid, c_action, c_scope, c_location, c_refid) VALUES (\"%s\", 'user', \"%s\", \"%s\", 'object', 'space', \"%s\")", orgID, userID, p, labelID)
 		_, err = runSQL(rt, sql)
 		if err != nil {
-			rt.Log.Error("insert into permission failed", err)
+			rt.Log.Error("INSERT INTO permission failed", err)
 		}
 	}
 
 	// Create some user groups
 	groupDevID := uniqueid.Generate()
-	sql = fmt.Sprintf("INSERT INTO role (refid, orgid, role, purpose) VALUES (\"%s\", \"%s\", \"Technology\", \"On-site and remote development teams\")", groupDevID, orgID)
+	sql = fmt.Sprintf("INSERT INTO group (c_refid, c_orgid, c_name, c_desc) VALUES (\"%s\", \"%s\", \"Technology\", \"On-site and remote development teams\")", groupDevID, orgID)
 	_, err = runSQL(rt, sql)
 	if err != nil {
-		rt.Log.Error("insert into role failed", err)
+		rt.Log.Error("INSERT INTO group failed", err)
 	}
 
 	groupProjectID := uniqueid.Generate()
-	sql = fmt.Sprintf("INSERT INTO role (refid, orgid, role, purpose) VALUES (\"%s\", \"%s\", \"Project Management\", \"HQ project management\")", groupProjectID, orgID)
+	sql = fmt.Sprintf("INSERT INTO group (c_refid, c_orgid, c_name, c_desc) VALUES (\"%s\", \"%s\", \"Project Management\", \"HQ project management\")", groupProjectID, orgID)
 	_, err = runSQL(rt, sql)
 	if err != nil {
-		rt.Log.Error("insert into role failed", err)
+		rt.Log.Error("INSERT INTO group failed", err)
 	}
 
 	groupBackofficeID := uniqueid.Generate()
-	sql = fmt.Sprintf("INSERT INTO role (refid, orgid, role, purpose) VALUES (\"%s\", \"%s\", \"Back Office\", \"Non-IT and PMO personnel\")", groupBackofficeID, orgID)
+	sql = fmt.Sprintf("INSERT INTO group (c_refid, c_orgid, c_name, c_desc) VALUES (\"%s\", \"%s\", \"Back Office\", \"Non-IT and PMO personnel\")", groupBackofficeID, orgID)
 	_, err = runSQL(rt, sql)
 	if err != nil {
-		rt.Log.Error("insert into role failed", err)
+		rt.Log.Error("INSERT INTO group failed", err)
 	}
 
 	// Join some groups
-	sql = fmt.Sprintf("INSERT INTO rolemember (orgid, roleid, userid) VALUES (\"%s\", \"%s\", \"%s\")", orgID, groupDevID, userID)
+	sql = fmt.Sprintf("INSERT INTO dmz_group_member (c_orgid, c_groupid, c_userid) VALUES (\"%s\", \"%s\", \"%s\")", orgID, groupDevID, userID)
 	_, err = runSQL(rt, sql)
 	if err != nil {
-		rt.Log.Error("insert into rolemember failed", err)
+		rt.Log.Error("INSERT INTO dmz_group_member failed", err)
 	}
-	sql = fmt.Sprintf("INSERT INTO rolemember (orgid, roleid, userid) VALUES (\"%s\", \"%s\", \"%s\")", orgID, groupProjectID, userID)
+	sql = fmt.Sprintf("INSERT INTO dmz_group_member (c_orgid, c_groupid, c_userid) VALUES (\"%s\", \"%s\", \"%s\")", orgID, groupProjectID, userID)
 	_, err = runSQL(rt, sql)
 	if err != nil {
-		rt.Log.Error("insert into rolemember failed", err)
+		rt.Log.Error("INSERT INTO dmz_group_member failed", err)
 	}
-	sql = fmt.Sprintf("INSERT INTO rolemember (orgid, roleid, userid) VALUES (\"%s\", \"%s\", \"%s\")", orgID, groupBackofficeID, userID)
+	sql = fmt.Sprintf("INSERT INTO dmz_group_member (c_orgid, c_groupid, c_userid) VALUES (\"%s\", \"%s\", \"%s\")", orgID, groupBackofficeID, userID)
 	_, err = runSQL(rt, sql)
 	if err != nil {
-		rt.Log.Error("insert into rolemember failed", err)
+		rt.Log.Error("INSERT INTO dmz_group_member failed", err)
 	}
 
 	return

@@ -178,12 +178,8 @@ func (s Scope) TemplatesBySpace(ctx domain.RequestContext, spaceID string) (docu
 // These documents can then be seen by search crawlers.
 func (s Scope) PublicDocuments(ctx domain.RequestContext, orgID string) (documents []doc.SitemapDocument, err error) {
 	err = s.Runtime.Db.Select(&documents, `
-        SELECT id, c_refid AS refid, c_orgid AS orgid, c_spaceid AS spaceid, c_userid AS userid,
-        c_job AS job, c_location AS location, c_name AS name, c_desc AS excerpt, c_slug AS slug,
-        c_tags AS tags, c_template AS template, c_protection AS protection, c_approval AS approval,
-        c_lifecycle AS lifecycle, c_versioned AS versioned, c_versionid AS versionid,
-        c_versionorder AS versionorder, c_groupid AS groupid, c_created AS created, c_revised AS revised
-        FROM dmz_doc
+        SELECT d.c_refid AS documentid, d.c_name AS document, d.c_revised as revised, l.c_refid AS spaceid, l.c_name AS space
+        FROM dmz_doc d
         LEFT JOIN dmz_space l ON l.c_refid=d.c_spaceid
 		WHERE d.c_orgid=? AND l.c_type=1 AND d.c_lifecycle=1 AND d.c_template=0`, orgID)
 
@@ -192,11 +188,15 @@ func (s Scope) PublicDocuments(ctx domain.RequestContext, orgID string) (documen
 		documents = []doc.SitemapDocument{}
 	}
 	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("execute GetPublicDocuments for org %s%s", orgID))
+		err = errors.Wrap(err, fmt.Sprintf("execute GetPublicDocuments for org %s", orgID))
 	}
 
 	return
 }
+
+/*
+	FROM document d LEFT JOIN label l ON l.refid=d.labelid
+*/
 
 // Update changes the given document record to the new values, updates search information and audits the action.
 func (s Scope) Update(ctx domain.RequestContext, document doc.Document) (err error) {
