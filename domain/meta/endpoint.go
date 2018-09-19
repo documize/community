@@ -91,23 +91,24 @@ func (h *Handler) RobotsTxt(w http.ResponseWriter, r *http.Request) {
 	// Anonymous access would mean we allow bots to crawl.
 	if o.AllowAnonymousAccess {
 		sitemap := ctx.GetAppURL("sitemap.xml")
-		robots = fmt.Sprintf(
-			`User-agent: *
-			Disallow: /settings/
-			Disallow: /settings/*
-			Disallow: /profile/
-			Disallow: /profile/*
-			Disallow: /auth/login/
-			Disallow: /auth/login/
-			Disallow: /auth/logout/
-			Disallow: /auth/logout/*
-			Disallow: /auth/reset/*
-			Disallow: /auth/reset/*
-			Disallow: /auth/sso/
-			Disallow: /auth/sso/*
-			Disallow: /share
-			Disallow: /share/*
-			Sitemap: %s`, sitemap)
+		robots = fmt.Sprintf(`User-agent: *
+Disallow: /settings/
+Disallow: /settings/*
+Disallow: /profile/
+Disallow: /profile/*
+Disallow: /auth/login/
+Disallow: /auth/login/
+Disallow: /auth/logout/
+Disallow: /auth/logout/*
+Disallow: /auth/reset/*
+Disallow: /auth/reset/*
+Disallow: /auth/sso/
+Disallow: /auth/sso/*
+Disallow: /auth/*
+Disallow: /auth/**
+Disallow: /share
+Disallow: /share/*
+Sitemap: %s`, sitemap)
 	}
 
 	response.WriteBytes(w, []byte(robots))
@@ -166,7 +167,7 @@ func (h *Handler) Sitemap(w http.ResponseWriter, r *http.Request) {
 		for _, document := range documents {
 			var item sitemapItem
 			item.URL = ctx.GetAppURL(fmt.Sprintf("s/%s/%s/d/%s/%s",
-				document.SpaceID, stringutil.MakeSlug(document.Folder), document.DocumentID, stringutil.MakeSlug(document.Document)))
+				document.SpaceID, stringutil.MakeSlug(document.Space), document.DocumentID, stringutil.MakeSlug(document.Document)))
 			item.Date = document.Revised.Format("2006-01-02T15:04:05.999999-07:00")
 			items = append(items, item)
 		}

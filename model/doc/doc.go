@@ -91,7 +91,7 @@ type SitemapDocument struct {
 	DocumentID string
 	Document   string
 	SpaceID    string
-	Folder     string
+	Space      string
 	Revised    time.Time
 }
 
