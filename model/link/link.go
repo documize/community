@@ -17,7 +17,7 @@ import "github.com/documize/community/model"
 type Link struct {
 	model.BaseEntity
 	OrgID            string `json:"orgId"`
-	FolderID         string `json:"folderId"`
+	SpaceID          string `json:"folderId"`
 	UserID           string `json:"userId"`
 	LinkType         string `json:"linkType"`
 	SourceDocumentID string `json:"sourceDocumentId"`

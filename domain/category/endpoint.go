@@ -74,9 +74,9 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Category max length 30.
-	cat.Category = strings.TrimSpace(cat.Category)
-	if len(cat.Category) > 30 {
-		cat.Category = cat.Category[:30]
+	cat.Name = strings.TrimSpace(cat.Name)
+	if len(cat.Name) > 30 {
+		cat.Name = cat.Name[:30]
 	}
 
 	err = h.Store.Category.Add(ctx, cat)
@@ -200,7 +200,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	cat.OrgID = ctx.OrgID
 	cat.RefID = categoryID
 
-	ok := permission.HasPermission(ctx, *h.Store, cat.LabelID, pm.SpaceManage, pm.SpaceOwner)
+	ok := permission.HasPermission(ctx, *h.Store, cat.SpaceID, pm.SpaceManage, pm.SpaceOwner)
 	if !ok || !ctx.Authenticated {
 		response.WriteForbiddenError(w)
 		return
@@ -252,7 +252,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ok := permission.HasPermission(ctx, *h.Store, cat.LabelID, pm.SpaceManage, pm.SpaceOwner)
+	ok := permission.HasPermission(ctx, *h.Store, cat.SpaceID, pm.SpaceManage, pm.SpaceOwner)
 	if !ok || !ctx.Authenticated {
 		response.WriteForbiddenError(w)
 		return
@@ -358,7 +358,7 @@ func (h *Handler) SetDocumentCategoryMembership(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	if !permission.HasPermission(ctx, *h.Store, cats[0].LabelID, pm.DocumentAdd, pm.DocumentEdit) {
+	if !permission.HasPermission(ctx, *h.Store, cats[0].SpaceID, pm.DocumentAdd, pm.DocumentEdit) {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -413,7 +413,7 @@ func (h *Handler) GetDocumentCategoryMembership(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	if !permission.HasPermission(ctx, *h.Store, doc.LabelID, pm.SpaceView, pm.DocumentAdd, pm.DocumentEdit) {
+	if !permission.HasPermission(ctx, *h.Store, doc.SpaceID, pm.SpaceView, pm.DocumentAdd, pm.DocumentEdit) {
 		response.WriteForbiddenError(w)
 		return
 	}

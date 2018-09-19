@@ -37,7 +37,7 @@ func (s Scope) Add(ctx domain.RequestContext, l link.Link) (err error) {
 	l.Revised = time.Now().UTC()
 
 	_, err = ctx.Transaction.Exec("INSERT INTO dmz_doc_link (c_refid, c_orgid, c_spaceid, c_userid, c_sourcedocid, c_sourcesectionid, c_targetdocid, c_targetid, c_externalid, c_type, c_orphan, c_created, c_revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-		l.RefID, l.OrgID, l.FolderID, l.UserID, l.SourceDocumentID, l.SourceSectionID, l.TargetDocumentID, l.TargetID, l.ExternalID, l.LinkType, l.Orphan, l.Created, l.Revised)
+		l.RefID, l.OrgID, l.SpaceID, l.UserID, l.SourceDocumentID, l.SourceSectionID, l.TargetDocumentID, l.TargetID, l.ExternalID, l.LinkType, l.Orphan, l.Created, l.Revised)
 
 	if err != nil {
 		err = errors.Wrap(err, "execute link insert")

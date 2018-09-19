@@ -165,7 +165,7 @@ func (p MySQLProvider) QueryMeta() string {
 
 // QueryStartLock locks database tables.
 func (p MySQLProvider) QueryStartLock() string {
-	return "LOCK TABLE `config` WRITE;"
+	return "LOCK TABLE dmz_config WRITE;"
 }
 
 // QueryFinishLock unlocks database tables.
@@ -176,13 +176,13 @@ func (p MySQLProvider) QueryFinishLock() string {
 // QueryInsertProcessID returns database specific query that will
 // insert ID of this running process.
 func (p MySQLProvider) QueryInsertProcessID() string {
-	return "INSERT INTO `config` (`key`,`config`) " + fmt.Sprintf(`VALUES ('DBLOCK','{"pid": "%d"}');`, os.Getpid())
+	return "INSERT INTO dmz_config (c_key,c_config) " + fmt.Sprintf(`VALUES ('DBLOCK','{"pid": "%d"}');`, os.Getpid())
 }
 
 // QueryDeleteProcessID returns database specific query that will
 // delete ID of this running process.
 func (p MySQLProvider) QueryDeleteProcessID() string {
-	return "DELETE FROM `config` WHERE `key`='DBLOCK';"
+	return "DELETE FROM dmz_config WHERE c_key='DBLOCK';"
 }
 
 // QueryRecordVersionUpgrade returns database specific insert statement
@@ -190,11 +190,24 @@ func (p MySQLProvider) QueryDeleteProcessID() string {
 func (p MySQLProvider) QueryRecordVersionUpgrade(version int) string {
 	// Make record that holds new database version number.
 	json := fmt.Sprintf("{\"database\": \"%d\"}", version)
+	return "INSERT INTO dmz_config (c_key,c_config) " + "VALUES ('META','" + json + "') ON DUPLICATE KEY UPDATE c_config='" + json + "';"
+}
+
+// QueryRecordVersionUpgradeLegacy returns database specific insert statement
+// that records the database version number.
+func (p MySQLProvider) QueryRecordVersionUpgradeLegacy(version int) string {
+	// Make record that holds new database version number.
+	json := fmt.Sprintf("{\"database\": \"%d\"}", version)
 	return "INSERT INTO `config` (`key`,`config`) " + "VALUES ('META','" + json + "') ON DUPLICATE KEY UPDATE `config`='" + json + "';"
 }
 
 // QueryGetDatabaseVersion returns the schema version number.
 func (p MySQLProvider) QueryGetDatabaseVersion() string {
+	return "SELECT JSON_EXTRACT(c_config,'$.database') FROM dmz_config WHERE c_key = 'META';"
+}
+
+// QueryGetDatabaseVersionLegacy returns the schema version number before The Great Schema Migration (v25, MySQL).
+func (p MySQLProvider) QueryGetDatabaseVersionLegacy() string {
 	return "SELECT JSON_EXTRACT(`config`,'$.database') FROM `config` WHERE `key` = 'META';"
 }
 
@@ -205,7 +218,7 @@ func (p MySQLProvider) QueryTableList() string {
 }
 
 // VerfiyVersion checks to see if actual database meets
-// minimum version requirements.
+// minimum version requirements.``
 func (p MySQLProvider) VerfiyVersion(dbVersion string) (bool, string) {
 	// Minimum MySQL / MariaDB version.
 	minVer := []int{5, 7, 10}

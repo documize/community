@@ -70,7 +70,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !permission.CanViewSpaceDocument(ctx, *h.Store, document.LabelID) {
+	if !permission.CanViewSpaceDocument(ctx, *h.Store, document.SpaceID) {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -85,7 +85,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 		}
 
 		err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-			LabelID:      document.LabelID,
+			SpaceID:      document.SpaceID,
 			DocumentID:   document.RefID,
 			SourceType:   activity.SourceTypeDocument,
 			ActivityType: activity.TypeRead})
@@ -166,7 +166,7 @@ func (h *Handler) BySpace(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Sort by title.
-	sort.Sort(doc.ByTitle(documents))
+	sort.Sort(doc.ByName(documents))
 
 	// Remove documents that cannot be seen due to lack of
 	// category view/access permission.
@@ -231,9 +231,9 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if oldDoc.LabelID != d.LabelID {
+	if oldDoc.SpaceID != d.SpaceID {
 		h.Store.Category.RemoveDocumentCategories(ctx, d.RefID)
-		err = h.Store.Document.MoveActivity(ctx, documentID, oldDoc.LabelID, d.LabelID)
+		err = h.Store.Document.MoveActivity(ctx, documentID, oldDoc.SpaceID, d.SpaceID)
 		if err != nil {
 			ctx.Transaction.Rollback()
 			response.WriteServerError(w, method, err)
@@ -268,7 +268,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		// Record document being marked as archived.
 		if d.Lifecycle == workflow.LifecycleArchived {
 			h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-				LabelID:      d.LabelID,
+				SpaceID:      d.SpaceID,
 				DocumentID:   documentID,
 				SourceType:   activity.SourceTypeDocument,
 				ActivityType: activity.TypeArchived})
@@ -277,7 +277,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		// Record document being marked as draft.
 		if d.Lifecycle == workflow.LifecycleDraft {
 			h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-				LabelID:      d.LabelID,
+				SpaceID:      d.SpaceID,
 				DocumentID:   documentID,
 				SourceType:   activity.SourceTypeDocument,
 				ActivityType: activity.TypeDraft})
@@ -286,7 +286,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		// Record document being marked as live.
 		if d.Lifecycle == workflow.LifecycleLive {
 			h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-				LabelID:      d.LabelID,
+				SpaceID:      d.SpaceID,
 				DocumentID:   documentID,
 				SourceType:   activity.SourceTypeDocument,
 				ActivityType: activity.TypePublished})
@@ -340,7 +340,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	// If approval workflow then only approvers can delete page
 	if doc.Protection == workflow.ProtectionReview {
-		approvers, err := permission.GetUsersWithDocumentPermission(ctx, *h.Store, doc.LabelID, doc.RefID, pm.DocumentApprove)
+		approvers, err := permission.GetUsersWithDocumentPermission(ctx, *h.Store, doc.SpaceID, doc.RefID, pm.DocumentApprove)
 		if err != nil {
 			response.WriteForbiddenError(w)
 			h.Runtime.Log.Error(method, err)
@@ -389,7 +389,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	// Draft actions are not logged
 	if doc.Lifecycle == workflow.LifecycleLive {
 		h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-			LabelID:      doc.LabelID,
+			SpaceID:      doc.SpaceID,
 			DocumentID:   documentID,
 			SourceType:   activity.SourceTypeDocument,
 			ActivityType: activity.TypeDeleted})
@@ -458,7 +458,7 @@ func (h *Handler) SearchDocuments(w http.ResponseWriter, r *http.Request) {
 			}
 
 			err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-				LabelID:      "",
+				SpaceID:      "",
 				DocumentID:   "",
 				Metadata:     options.Keywords,
 				SourceType:   activity.SourceTypeSearch,
@@ -504,7 +504,7 @@ func (h *Handler) recordSearchActivity(ctx domain.RequestContext, q []search.Que
 
 		if _, isExisting := prev[q[i].DocumentID]; !isExisting {
 			err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-				LabelID:      q[i].SpaceID,
+				SpaceID:      q[i].SpaceID,
 				DocumentID:   q[i].DocumentID,
 				Metadata:     keywords,
 				SourceType:   activity.SourceTypeSearch,
@@ -545,7 +545,7 @@ func (h *Handler) FetchDocumentData(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !permission.CanViewSpaceDocument(ctx, *h.Store, document.LabelID) {
+	if !permission.CanViewSpaceDocument(ctx, *h.Store, document.SpaceID) {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -557,9 +557,10 @@ func (h *Handler) FetchDocumentData(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// permissions
-	perms, err := h.Store.Permission.GetUserSpacePermissions(ctx, document.LabelID)
+	perms, err := h.Store.Permission.GetUserSpacePermissions(ctx, document.SpaceID)
 	if err != nil && err != sql.ErrNoRows {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 	if len(perms) == 0 {
@@ -570,6 +571,7 @@ func (h *Handler) FetchDocumentData(w http.ResponseWriter, r *http.Request) {
 	roles, err := h.Store.Permission.GetUserDocumentPermissions(ctx, document.RefID)
 	if err != nil && err != sql.ErrNoRows {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 	if len(roles) == 0 {
@@ -629,7 +631,7 @@ func (h *Handler) FetchDocumentData(w http.ResponseWriter, r *http.Request) {
 
 	if document.Lifecycle == workflow.LifecycleLive {
 		err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-			LabelID:      document.LabelID,
+			SpaceID:      document.SpaceID,
 			DocumentID:   document.RefID,
 			SourceType:   activity.SourceTypeDocument,
 			ActivityType: activity.TypeRead})

@@ -31,7 +31,7 @@ func (s Scope) Get(area, path string) (value string, err error) {
 		path = "." + path
 	}
 
-	sql := "SELECT JSON_EXTRACT(`config`,'$" + path + "') FROM `config` WHERE `key` = '" + area + "';"
+	sql := "SELECT JSON_EXTRACT(c_config,'$" + path + "') FROM dmz_config WHERE c_key = '" + area + "';"
 
 	var item = make([]uint8, 0)
 
@@ -54,9 +54,9 @@ func (s Scope) Set(area, json string) (err error) {
 		return errors.New("no area")
 	}
 
-	sql := "INSERT INTO `config` (`key`,`config`) " +
+	sql := "INSERT INTO dmz_config (c_key,c_config) " +
 		"VALUES ('" + area + "','" + json +
-		"') ON DUPLICATE KEY UPDATE `config`='" + json + "';"
+		"') ON DUPLICATE KEY UPDATE c_config='" + json + "';"
 
 	_, err = s.Runtime.Db.Exec(sql)
 
@@ -73,8 +73,8 @@ func (s Scope) GetUser(orgID, userID, key, path string) (value string, err error
 		path = "." + path
 	}
 
-	qry := "SELECT JSON_EXTRACT(`config`,'$" + path + "') FROM `userconfig` WHERE `key` = '" + key +
-		"' AND `orgid` = '" + orgID + "' AND `userid` = '" + userID + "';"
+	qry := "SELECT JSON_EXTRACT(c_config,'$" + path + "') FROM dmz_user_config WHERE c_key = '" + key +
+		"' AND c_orgid = '" + orgID + "' AND c_userid = '" + userID + "';"
 
 	err = s.Runtime.Db.Get(&item, qry)
 	if err != nil && err != sql.ErrNoRows {
@@ -101,13 +101,13 @@ func (s Scope) SetUser(orgID, userID, key, json string) (err error) {
 		return err
 	}
 
-	_, err = tx.Exec("DELETE FROM userconfig WHERE orgid=? AND userid=? AND `key`=?", orgID, userID, key)
+	_, err = tx.Exec("DELETE FROM dmz_user_config WHERE c_orgid=? AND c_userid=? AND c_key=?", orgID, userID, key)
 	if err != nil {
 		fmt.Println(err)
 		fmt.Println("ccc")
 	}
 
-	_, err = tx.Exec("INSERT INTO userconfig (orgid, userid, `key`, `config`) VALUES (?, ?, ?, ?)", orgID, userID, key, json)
+	_, err = tx.Exec("INSERT INTO dmz_user_config (c_orgid, c_userid, c_key, c_config) VALUES (?, ?, ?, ?)", orgID, userID, key, json)
 	if err != nil {
 		fmt.Println(err)
 		fmt.Println("ddd")

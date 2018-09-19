@@ -55,7 +55,7 @@ func (s Scope) Add(ctx domain.RequestContext, pin pin.Pin) (err error) {
 func (s Scope) GetPin(ctx domain.RequestContext, id string) (pin pin.Pin, err error) {
 	err = s.Runtime.Db.Get(&pin, `SELECT id, c_refid AS refid,
         c_orgid AS orgid, c_userid AS userid, c_spaceid AS spaceid, c_docid AS documentid,
-        c_name AS pin, c_sequence AS sequence, c_created AS created, c_revised AS revised
+        c_name AS name, c_sequence AS sequence, c_created AS created, c_revised AS revised
         FROM dmz_pin
         WHERE c_orgid=? AND c_refid=?`,
 		ctx.OrgID, id)
@@ -71,7 +71,7 @@ func (s Scope) GetPin(ctx domain.RequestContext, id string) (pin pin.Pin, err er
 func (s Scope) GetUserPins(ctx domain.RequestContext, userID string) (pins []pin.Pin, err error) {
 	err = s.Runtime.Db.Select(&pins, `SELECT id, c_refid AS refid,
         c_orgid AS orgid, c_userid AS userid, c_spaceid AS spaceid, c_docid AS documentid,
-        c_name AS pin, c_sequence AS sequence, c_created AS created, c_revised AS revised
+        c_name AS name, c_sequence AS sequence, c_created AS created, c_revised AS revised
         FROM dmz_pin
         WHERE c_orgid=? AND c_userid=?
         ORDER BY c_sequence`,

@@ -71,7 +71,7 @@ func Numberize(pages []Page) {
 		// Troubleshooting help
 		if len(numbering) == 0 {
 			fmt.Println(fmt.Sprintf("No number allocated to page %s ('%s')",
-				pages[i].RefID, pages[i].Title))
+				pages[i].RefID, pages[i].Name))
 		}
 
 		// update state

@@ -49,13 +49,14 @@ func (s Scope) AddOrganization(ctx domain.RequestContext, org org.Organization) 
 
 // GetOrganization returns the Organization reocrod from the organization database table with the given id.
 func (s Scope) GetOrganization(ctx domain.RequestContext, id string) (org org.Organization, err error) {
-	stmt, err := s.Runtime.Db.Preparex(`SELECT id, c_refid as refid,
-        c_orgid as orgid, c_title as title, c_message as message, c_domain as domain,
-        c_service as conversionendpoint, c_email as email, c_serial as serial, c_active as active,
-        c_anonaccess as allowannonymousaccess, c_authprovider as authprovider,
-        coalesce(c_authconfig,JSON_UNQUOTE('{}')) as authconfig, c_maxtags as maxtags,
-        c_created as created, c_revised as revised
-        FROM dmz_org WHERE refid=?`)
+	stmt, err := s.Runtime.Db.Preparex(`SELECT id, c_refid AS refid,
+        c_title AS title, c_message AS message, c_domain AS domain,
+        c_service AS conversionendpoint, c_email AS email, c_serial AS serial, c_active AS active,
+        c_anonaccess AS allowanonymousaccess, c_authprovider AS authprovider,
+        coalesce(c_authconfig,JSON_UNQUOTE('{}')) AS authconfig, c_maxtags AS maxtags,
+        c_created AS created, c_revised AS revised
+        FROM dmz_org
+        WHERE c_refid=?`)
 	defer streamutil.Close(stmt)
 
 	if err != nil {
@@ -64,7 +65,6 @@ func (s Scope) GetOrganization(ctx domain.RequestContext, id string) (org org.Or
 	}
 
 	err = stmt.Get(&org, id)
-
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to get org %s", id))
 		return
@@ -86,26 +86,29 @@ func (s Scope) GetOrganizationByDomain(subdomain string) (o org.Organization, er
 	}
 
 	// match on given domain name
-	err = s.Runtime.Db.Get(&o, `SELECT id, c_refid as refid,
-        c_orgid as orgid, c_title as title, c_message as message, c_domain as domain,
-        c_service as conversionendpoint, c_email as email, c_serial as serial, c_active as active,
-        c_anonaccess as allowannonymousaccess, c_authprovider as authprovider,
-        coalesce(c_authconfig,JSON_UNQUOTE('{}')) as authconfig, c_maxtags as maxtags,
-        c_created as created, c_revised as revised
-        FROM dmz_org WHERE c_domain=? AND c_active=1`, subdomain)
+	err = s.Runtime.Db.Get(&o, `SELECT id, c_refid AS refid,
+        c_title AS title, c_message AS message, c_domain AS domain,
+        c_service AS conversionendpoint, c_email AS email, c_serial AS serial, c_active AS active,
+        c_anonaccess AS allowanonymousaccess, c_authprovider AS authprovider,
+        coalesce(c_authconfig,JSON_UNQUOTE('{}')) AS authconfig, c_maxtags AS maxtags,
+        c_created AS created, c_revised AS revised
+        FROM dmz_org
+        WHERE c_domain=? AND c_active=1`, subdomain)
 	if err == nil {
 		return
 	}
+	fmt.Println(err)
 	err = nil
 
-	// match on empty domain as last resort
-	err = s.Runtime.Db.Get(&o, `SELECT id, c_refid as refid,
-        c_orgid as orgid, c_title as title, c_message as message, c_domain as domain,
-        c_service as conversionendpoint, c_email as email, c_serial as serial, c_active as active,
-        c_anonaccess as allowannonymousaccess, c_authprovider as authprovider,
-        coalesce(c_authconfig,JSON_UNQUOTE('{}')) as authconfig, c_maxtags as maxtags,
-        c_created as created, c_revised as revised
-        FROM dmz_org WHERE c_domain='' AND c_active=1`)
+	// match on empty domain AS last resort
+	err = s.Runtime.Db.Get(&o, `SELECT id, c_refid AS refid,
+        c_title AS title, c_message AS message, c_domain AS domain,
+        c_service AS conversionendpoint, c_email AS email, c_serial AS serial, c_active AS active,
+        c_anonaccess AS allowanonymousaccess, c_authprovider AS authprovider,
+        coalesce(c_authconfig,JSON_UNQUOTE('{}')) AS authconfig, c_maxtags AS maxtags,
+        c_created AS created, c_revised AS revised
+        FROM dmz_org
+        WHERE c_domain='' AND c_active=1`)
 	if err != nil && err != sql.ErrNoRows {
 		err = errors.Wrap(err, "unable to execute select for empty subdomain")
 	}

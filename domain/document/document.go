@@ -100,7 +100,7 @@ func CopyDocument(ctx domain.RequestContext, s domain.Store, documentID string) 
 
 		pageID := uniqueid.Generate()
 		p.RefID = pageID
-		meta.PageID = pageID
+		meta.SectionID = pageID
 		meta.DocumentID = newDocumentID
 
 		m := page.NewPage{}

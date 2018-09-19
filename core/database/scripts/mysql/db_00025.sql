@@ -29,10 +29,11 @@ RENAME TABLE
     `userevent` TO dmz_audit_log,
     `useraction` TO dmz_action;
 
+
 -- field renaming
-ALTER TABLE `dmz_org`
+ALTER TABLE dmz_org
     CHANGE `refid` `c_refid` CHAR(16) NOT NULL,
-    CHANGE `company` `c_refid` VARCHAR(500) NOT NULL,
+    CHANGE `company` `c_company` VARCHAR(500) NOT NULL,
     CHANGE `title` `c_title` VARCHAR(500) NOT NULL,
     CHANGE `message` `c_message` VARCHAR(500) NOT NULL,
     CHANGE `domain` `c_domain` VARCHAR(200) NOT NULL DEFAULT '',
@@ -48,7 +49,7 @@ ALTER TABLE `dmz_org`
     CHANGE `created` `c_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CHANGE `revised` `c_revised` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
 
-ALTER TABLE `dmz_space`
+ALTER TABLE dmz_space
     CHANGE `refid` `c_refid` CHAR(16) NOT NULL,
     CHANGE `orgid` `c_orgid` CHAR(16) NOT NULL,
     CHANGE `userid` `c_userid` CHAR(16) NOT NULL DEFAULT '',
@@ -59,7 +60,7 @@ ALTER TABLE `dmz_space`
     CHANGE `created` `c_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CHANGE `revised` `c_revised` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
 
-ALTER TABLE `dmz_category`
+ALTER TABLE dmz_category
     CHANGE `refid` `c_refid` CHAR(16) NOT NULL,
     CHANGE `orgid` `c_orgid` CHAR(16) NOT NULL,
     CHANGE `labelid` `c_spaceid` CHAR(16) NOT NULL,
@@ -67,7 +68,7 @@ ALTER TABLE `dmz_category`
     CHANGE `created` `c_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CHANGE `revised` `c_revised` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
 
-ALTER TABLE `dmz_category_member`
+ALTER TABLE dmz_category_member
     CHANGE `refid` `c_refid` CHAR(16) NOT NULL,
     CHANGE `orgid` `c_orgid` CHAR(16) NOT NULL,
     CHANGE `labelid` `c_spaceid` CHAR(16) NOT NULL,
@@ -76,7 +77,7 @@ ALTER TABLE `dmz_category_member`
     CHANGE `created` `c_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CHANGE `revised` `c_revised` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
 
-ALTER TABLE `dmz_group`
+ALTER TABLE dmz_group
     CHANGE `refid` `c_refid` CHAR(16) NOT NULL,
     CHANGE `orgid` `c_orgid` CHAR(16) NOT NULL,
     CHANGE `role` `c_name` VARCHAR(50) NOT NULL DEFAULT '',
@@ -84,12 +85,13 @@ ALTER TABLE `dmz_group`
     CHANGE `created` `c_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CHANGE `revised` `c_revised` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
 
-ALTER TABLE `dmz_group_member`
+ALTER TABLE dmz_group_member
     CHANGE `orgid` `c_orgid` CHAR(16) NOT NULL,
     CHANGE `roleid` `c_groupid` CHAR(16) NOT NULL,
     CHANGE `userid` `c_userid` CHAR(16) NOT NULL;
 
-ALTER TABLE `dmz_permission`
+
+ALTER TABLE dmz_permission
     CHANGE `orgid` `c_orgid` CHAR(16) NOT NULL,
     CHANGE `who` `c_who` VARCHAR(30) NOT NULL,
     CHANGE `whoid` `c_whoid` CHAR(16) NOT NULL DEFAULT '',
@@ -99,7 +101,8 @@ ALTER TABLE `dmz_permission`
     CHANGE `refid` `c_refid` CHAR(16) NOT NULL,
     CHANGE `created` `c_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
 
-ALTER TABLE `dmz_doc`
+
+ALTER TABLE dmz_doc
     CHANGE `refid` `c_refid` CHAR(16) NOT NULL,
     CHANGE `orgid` `c_orgid` CHAR(16) NOT NULL,
     CHANGE `labelid` `c_spaceid` CHAR(16) NOT NULL,
@@ -121,7 +124,7 @@ ALTER TABLE `dmz_doc`
     CHANGE `created` `c_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CHANGE `revised` `c_revised` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
 
-ALTER TABLE `dmz_doc_share`
+ALTER TABLE dmz_doc_share
     CHANGE `orgid` `c_orgid` CHAR(16) NOT NULL,
     CHANGE `documentid` `c_docid` CHAR(16) NOT NULL,
     CHANGE `userid` `c_userid` CHAR(16) DEFAULT '',
@@ -133,7 +136,7 @@ ALTER TABLE `dmz_doc_share`
     CHANGE `active` `c_active` BOOL NOT NULL DEFAULT 1,
     CHANGE `created` `c_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
 
-ALTER TABLE `dmz_doc_vote`
+ALTER TABLE dmz_doc_vote
     CHANGE `refid` `c_refid` CHAR(16) NOT NULL,
     CHANGE `orgid` `c_orgid` CHAR(16) NOT NULL,
     CHANGE `documentid` `c_docid` CHAR(16) NOT NULL,
@@ -142,7 +145,7 @@ ALTER TABLE `dmz_doc_vote`
     CHANGE `created` `c_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CHANGE `revised` `c_revised` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
 
-ALTER TABLE `dmz_doc_comment`
+ALTER TABLE dmz_doc_comment
     CHANGE `refid` `c_refid` CHAR(16) NOT NULL,
     CHANGE `orgid` `c_orgid` CHAR(16) NOT NULL,
     CHANGE `documentid` `c_docid` CHAR(16) NOT NULL,
@@ -151,7 +154,7 @@ ALTER TABLE `dmz_doc_comment`
     CHANGE `feedback` `c_feedback` LONGTEXT,
     CHANGE `created` `c_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
 
-ALTER TABLE `dmz_doc_attachment`
+ALTER TABLE dmz_doc_attachment
 	CHANGE `refid` `c_refid` CHAR(16) NOT NULL,
 	CHANGE `orgid` `c_orgid` CHAR(16) NOT NULL,
 	CHANGE `documentid` `c_docid` CHAR(16) NOT NULL,
@@ -163,7 +166,7 @@ ALTER TABLE `dmz_doc_attachment`
 	CHANGE `created` `c_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	CHANGE `revised` `c_revised` TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
-ALTER TABLE `dmz_doc_link`
+ALTER TABLE dmz_doc_link
 	CHANGE `refid` `c_refid` CHAR(16) NOT NULL,
 	CHANGE `orgid` `c_orgid` CHAR(16) NOT NULL,
 	CHANGE `folderid` `c_spaceid` CHAR(16) NOT NULL,
@@ -178,7 +181,7 @@ ALTER TABLE `dmz_doc_link`
 	CHANGE `created` `c_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	CHANGE `revised` `c_revised` TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
-ALTER TABLE `dmz_section`
+ALTER TABLE dmz_section
 	CHANGE `refid` `c_refid` CHAR(16) NOT NULL,
 	CHANGE `orgid` `c_orgid` CHAR(16) NOT NULL,
 	CHANGE `documentid` `c_docid` CHAR(16) NOT NULL,
@@ -196,7 +199,7 @@ ALTER TABLE `dmz_section`
 	CHANGE `created` `c_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	CHANGE `revised` `c_revised` TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
-ALTER TABLE `dmz_section_meta`
+ALTER TABLE dmz_section_meta
 	CHANGE `orgid` `c_orgid` CHAR(16) NOT NULL,
 	CHANGE `documentid` `c_docid` CHAR(16) NOT NULL,
 	CHANGE `userid` `c_userid` CHAR(16) NOT NULL DEFAULT '',
@@ -207,7 +210,7 @@ ALTER TABLE `dmz_section_meta`
 	CHANGE `created` `c_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	CHANGE `revised` `c_revised` TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
-ALTER TABLE `dmz_section_template`
+ALTER TABLE dmz_section_template
 	CHANGE `refid` `c_refid` CHAR(16) NOT NULL,
 	CHANGE `orgid` `c_orgid` CHAR(16) NOT NULL,
 	CHANGE `labelid` `c_spaceid` CHAR(16) DEFAULT '',
@@ -224,7 +227,7 @@ ALTER TABLE `dmz_section_template`
 	CHANGE `created` `c_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	CHANGE `revised` `c_revised` TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
-ALTER TABLE `dmz_section_revision`
+ALTER TABLE dmz_section_revision
 	CHANGE `refid` `c_refid` CHAR(16) NOT NULL,
 	CHANGE `orgid` `c_orgid` CHAR(16) NOT NULL,
 	CHANGE `documentid` `c_docid` CHAR(16) NOT NULL,
@@ -240,7 +243,7 @@ ALTER TABLE `dmz_section_revision`
 	CHANGE `created` `c_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	CHANGE `revised` `c_revised` TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
-ALTER TABLE `dmz_user`
+ALTER TABLE dmz_user
 	CHANGE `refid` `c_refid` CHAR(16) NOT NULL,
 	CHANGE `firstname` `c_firstname` VARCHAR(500) NOT NULL DEFAULT '',
 	CHANGE `lastname` `c_lastname` VARCHAR(500) NOT NULL DEFAULT '',
@@ -255,7 +258,7 @@ ALTER TABLE `dmz_user`
 	CHANGE `created` `c_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	CHANGE `revised` `c_revised` TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
-ALTER TABLE `dmz_user_account`
+ALTER TABLE dmz_user_account
 	CHANGE `refid` `c_refid` CHAR(16) NOT NULL,
 	CHANGE `orgid` `c_orgid` CHAR(16) NOT NULL,
 	CHANGE `userid` `c_userid` CHAR(16) NOT NULL,
@@ -267,7 +270,7 @@ ALTER TABLE `dmz_user_account`
 	CHANGE `created` `c_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	CHANGE `revised` `c_revised` TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
-ALTER TABLE `dmz_user_activity`
+ALTER TABLE dmz_user_activity
 	CHANGE `orgid` `c_orgid` CHAR(16) NOT NULL,
 	CHANGE `userid` `c_userid` CHAR(16) NOT NULL,
 	CHANGE `labelid` `c_spaceid` CHAR(16) NOT NULL,
@@ -278,17 +281,17 @@ ALTER TABLE `dmz_user_activity`
 	CHANGE `metadata` `c_metadata` VARCHAR(1000) NOT NULL DEFAULT '',
 	CHANGE `created` `c_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
-ALTER TABLE `dmz_user_config`
+ALTER TABLE dmz_user_config
 	CHANGE `orgid` `c_orgid` CHAR(16) NOT NULL,
 	CHANGE `userid` `c_userid` CHAR(16) NOT NULL,
 	CHANGE `key` `c_key` CHAR(200) NOT NULL,
 	CHANGE `config` `c_config` JSON;
 
-ALTER TABLE `dmz_config`
+ALTER TABLE dmz_config
 	CHANGE `key` `c_key` CHAR(200) NOT NULL,
 	CHANGE `config` `c_config` JSON;
 
-ALTER TABLE `dmz_pin`
+ALTER TABLE dmz_pin
 	CHANGE `refid` `c_refid` CHAR(16) NOT NULL,
 	CHANGE `orgid` `c_orgid` CHAR(16) NOT NULL,
 	CHANGE `userid` `c_userid` CHAR(16) DEFAULT '',
@@ -299,7 +302,7 @@ ALTER TABLE `dmz_pin`
 	CHANGE `created` `c_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	CHANGE `revised` `c_revised` TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
-ALTER TABLE `dmz_search`
+ALTER TABLE dmz_search
 	CHANGE `orgid` `c_orgid` CHAR(16) NOT NULL,
 	CHANGE `documentid` `c_docid` CHAR(16) NOT NULL,
 	CHANGE `itemid` `c_itemid` CHAR(16) NOT NULL DEFAULT '',
@@ -307,14 +310,14 @@ ALTER TABLE `dmz_search`
     CHANGE `content` `c_content` LONGTEXT,
 	CHANGE `created` `c_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
-ALTER TABLE `dmz_audit_log`
+ALTER TABLE dmz_audit_log
 	CHANGE `orgid` `c_orgid` CHAR(16) NOT NULL,
 	CHANGE `userid` `c_userid` CHAR(16) NOT NULL,
 	CHANGE `eventtype` `c_eventtype` VARCHAR(100) NOT NULL DEFAULT '',
 	CHANGE `ip` `c_ip` VARCHAR(39) NOT NULL DEFAULT '',
 	CHANGE `created` `c_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
-ALTER TABLE `dmz_action`
+ALTER TABLE dmz_action
 	CHANGE `refid` `c_refid` CHAR(16) NOT NULL,
 	CHANGE `orgid` `c_orgid` CHAR(16) NOT NULL,
 	CHANGE `documentid` `c_docid` CHAR(16) NOT NULL,

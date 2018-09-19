@@ -171,7 +171,7 @@ func processDocument(ctx domain.RequestContext, r *env.Runtime, store *domain.St
 	document := convertFileResult(filename, fileResult)
 	document.Job = job
 	document.OrgID = ctx.OrgID
-	document.LabelID = sp.RefID
+	document.SpaceID = sp.RefID
 	document.UserID = ctx.UserID
 	documentID := uniqueid.Generate()
 	document.RefID = documentID
@@ -193,16 +193,16 @@ func processDocument(ctx domain.RequestContext, r *env.Runtime, store *domain.St
 		p.OrgID = ctx.OrgID
 		p.DocumentID = documentID
 		p.Level = v.Level
-		p.Title = v.Title
+		p.Name = v.Title
 		p.Body = string(v.Body)
 		p.Sequence = float64(k+1) * 1024.0 // need to start above 0 to allow insertion before the first item
 		pageID := uniqueid.Generate()
 		p.RefID = pageID
 		p.ContentType = "wysiwyg"
-		p.PageType = "section"
+		p.Type = "section"
 
 		meta := page.Meta{}
-		meta.PageID = pageID
+		meta.SectionID = pageID
 		meta.RawBody = p.Body
 		meta.Config = "{}"
 
@@ -245,7 +245,7 @@ func processDocument(ctx domain.RequestContext, r *env.Runtime, store *domain.St
 	}
 
 	store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-		LabelID:      newDocument.LabelID,
+		SpaceID:      newDocument.SpaceID,
 		DocumentID:   newDocument.RefID,
 		SourceType:   activity.SourceTypeDocument,
 		ActivityType: activity.TypeCreated})
@@ -278,13 +278,13 @@ func convertFileResult(filename string, fileResult *api.DocumentConversionRespon
 	document = doc.Document{}
 	document.RefID = ""
 	document.OrgID = ""
-	document.LabelID = ""
+	document.SpaceID = ""
 	document.Job = ""
 	document.Location = filename
 
 	if fileResult != nil {
 		if len(fileResult.Pages) > 0 {
-			document.Title = fileResult.Pages[0].Title
+			document.Name = fileResult.Pages[0].Title
 			document.Slug = stringutil.MakeSlug(fileResult.Pages[0].Title)
 		}
 		document.Excerpt = fileResult.Excerpt

@@ -131,7 +131,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-		LabelID:      sp.RefID,
+		SpaceID:      sp.RefID,
 		SourceType:   activity.SourceTypeSpace,
 		ActivityType: activity.TypeCreated})
 	if err != nil {
@@ -210,7 +210,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 
 				documentID := uniqueid.Generate()
 				t.RefID = documentID
-				t.LabelID = sp.RefID
+				t.SpaceID = sp.RefID
 
 				// Reassign group ID
 				if len(t.GroupID) > 0 {
@@ -244,7 +244,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 					pageID := uniqueid.Generate()
 					p.RefID = pageID
 
-					meta.PageID = pageID
+					meta.SectionID = pageID
 					meta.DocumentID = documentID
 
 					model := page.NewPage{}
@@ -287,7 +287,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 
 			for _, b := range blocks {
 				b.RefID = uniqueid.Generate()
-				b.LabelID = sp.RefID
+				b.SpaceID = sp.RefID
 				b.UserID = ctx.UserID
 
 				err = h.Store.Block.Add(ctx, b)
@@ -358,7 +358,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-		LabelID:      sp.RefID,
+		SpaceID:      sp.RefID,
 		SourceType:   activity.SourceTypeSpace,
 		ActivityType: activity.TypeRead})
 
@@ -572,7 +572,7 @@ func (h *Handler) Remove(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-		LabelID:      id,
+		SpaceID:      id,
 		SourceType:   activity.SourceTypeSpace,
 		ActivityType: activity.TypeDeleted})
 	if err != nil {
@@ -669,7 +669,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-		LabelID:      id,
+		SpaceID:      id,
 		SourceType:   activity.SourceTypeSpace,
 		ActivityType: activity.TypeDeleted})
 	if err != nil {

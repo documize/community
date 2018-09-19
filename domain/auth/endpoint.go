@@ -190,7 +190,7 @@ func (h *Handler) ValidateToken(w http.ResponseWriter, r *http.Request) {
 	rc.OrgName = org.Title
 	rc.Administrator = false
 	rc.Editor = false
-	rc.Global = false
+	rc.GlobalAdmin = false
 	rc.AppURL = r.Host
 	rc.Subdomain = organization.GetSubdomainFromHost(r)
 	rc.SSL = r.TLS != nil
@@ -210,7 +210,7 @@ func (h *Handler) ValidateToken(w http.ResponseWriter, r *http.Request) {
 
 	rc.Administrator = u.Admin
 	rc.Editor = u.Editor
-	rc.Global = u.Global
+	rc.GlobalAdmin = u.GlobalAdmin
 
 	response.WriteJSON(w, u)
 }

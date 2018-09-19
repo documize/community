@@ -54,10 +54,11 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &b)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
-	if !permission.CanUploadDocument(ctx, *h.Store, b.LabelID) {
+	if !permission.CanUploadDocument(ctx, *h.Store, b.SpaceID) {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -67,6 +68,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -74,6 +76,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -84,6 +87,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	b, err = h.Store.Block.Get(ctx, b.RefID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -104,6 +108,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	b, err := h.Store.Block.Get(ctx, blockID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -132,6 +137,7 @@ func (h *Handler) GetBySpace(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -165,7 +171,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 	b.RefID = blockID
 
-	if !permission.CanUploadDocument(ctx, *h.Store, b.LabelID) {
+	if !permission.CanUploadDocument(ctx, *h.Store, b.SpaceID) {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -173,6 +179,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -180,6 +187,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -212,6 +220,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -219,6 +228,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 

@@ -73,9 +73,9 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	pin.RefID = uniqueid.Generate()
 	pin.OrgID = ctx.OrgID
 	pin.UserID = ctx.UserID
-	pin.Pin = strings.TrimSpace(pin.Pin)
-	if len(pin.Pin) > 20 {
-		pin.Pin = pin.Pin[0:20]
+	pin.Name = strings.TrimSpace(pin.Name)
+	if len(pin.Name) > 20 {
+		pin.Name = pin.Name[0:20]
 	}
 
 	ctx.Transaction, err = h.Runtime.Db.Beginx()

@@ -38,7 +38,7 @@ type Scope struct {
 // searchable items. Any existing document entries are removed.
 func (s Scope) IndexDocument(ctx domain.RequestContext, doc doc.Document, a []attachment.Attachment) (err error) {
 	// remove previous search entries
-	_, err = ctx.Transaction.Exec("DELETE FROM search WHERE orgid=? AND documentid=? AND (itemtype='doc' OR itemtype='file' OR itemtype='tag')",
+	_, err = ctx.Transaction.Exec("DELETE FROM dmz_search WHERE c_orgid=? AND c_docid=? AND (c_itemtype='doc' OR c_itemtype='file' OR c_itemtype='tag')",
 		ctx.OrgID, doc.RefID)
 
 	if err != nil {
@@ -46,8 +46,8 @@ func (s Scope) IndexDocument(ctx domain.RequestContext, doc doc.Document, a []at
 	}
 
 	// insert doc title
-	_, err = ctx.Transaction.Exec("INSERT INTO search (orgid, documentid, itemid, itemtype, content) VALUES (?, ?, ?, ?, ?)",
-		ctx.OrgID, doc.RefID, "", "doc", doc.Title)
+	_, err = ctx.Transaction.Exec("INSERT INTO dmz_search (c_orgid, c_docid, c_itemid, c_itemtype, c_content) VALUES (?, ?, ?, ?, ?)",
+		ctx.OrgID, doc.RefID, "", "doc", doc.Name)
 	if err != nil {
 		err = errors.Wrap(err, "execute insert document title entry")
 	}
@@ -59,7 +59,7 @@ func (s Scope) IndexDocument(ctx domain.RequestContext, doc doc.Document, a []at
 			continue
 		}
 
-		_, err = ctx.Transaction.Exec("INSERT INTO search (orgid, documentid, itemid, itemtype, content) VALUES (?, ?, ?, ?, ?)",
+		_, err = ctx.Transaction.Exec("INSERT INTO dmz_search (c_orgid, c_docid, c_itemid, c_itemtype, c_content) VALUES (?, ?, ?, ?, ?)",
 			ctx.OrgID, doc.RefID, "", "tag", t)
 
 		if err != nil {
@@ -69,7 +69,7 @@ func (s Scope) IndexDocument(ctx domain.RequestContext, doc doc.Document, a []at
 	}
 
 	for _, file := range a {
-		_, err = ctx.Transaction.Exec("INSERT INTO search (orgid, documentid, itemid, itemtype, content) VALUES (?, ?, ?, ?, ?)",
+		_, err = ctx.Transaction.Exec("INSERT INTO dmz_search (c_orgid, c_docid, c_itemid, c_itemtype, c_content) VALUES (?, ?, ?, ?, ?)",
 			ctx.OrgID, doc.RefID, file.RefID, "file", file.Filename)
 
 		if err != nil {
@@ -82,7 +82,7 @@ func (s Scope) IndexDocument(ctx domain.RequestContext, doc doc.Document, a []at
 
 // DeleteDocument removes all search entries for document.
 func (s Scope) DeleteDocument(ctx domain.RequestContext, ID string) (err error) {
-	_, err = ctx.Transaction.Exec("DELETE FROM search WHERE orgid=? AND documentid=?", ctx.OrgID, ID)
+	_, err = ctx.Transaction.Exec("DELETE FROM dmz_search WHERE c_orgid=? AND c_docid=?", ctx.OrgID, ID)
 
 	if err != nil {
 		err = errors.Wrap(err, "execute delete document entries")
@@ -100,7 +100,7 @@ func (s Scope) IndexContent(ctx domain.RequestContext, p page.Page) (err error) 
 	}
 
 	// remove previous search entries
-	_, err = ctx.Transaction.Exec("DELETE FROM search WHERE orgid=? AND documentid=? AND itemid=? AND itemtype='page'",
+	_, err = ctx.Transaction.Exec("DELETE FROM dmz_search WHERE c_orgid=? AND c_docid=? AND c_itemid=? AND c_itemtype='page'",
 		ctx.OrgID, p.DocumentID, p.RefID)
 
 	if err != nil {
@@ -115,14 +115,14 @@ func (s Scope) IndexContent(ctx domain.RequestContext, p page.Page) (err error) 
 	}
 	content = strings.TrimSpace(content)
 
-	_, err = ctx.Transaction.Exec("INSERT INTO search (orgid, documentid, itemid, itemtype, content) VALUES (?, ?, ?, ?, ?)",
+	_, err = ctx.Transaction.Exec("INSERT INTO dmz_search (c_orgid, c_docid, c_itemid, c_itemtype, c_content) VALUES (?, ?, ?, ?, ?)",
 		ctx.OrgID, p.DocumentID, p.RefID, "page", content)
 	if err != nil {
 		err = errors.Wrap(err, "execute insert document content entry")
 	}
 
-	_, err = ctx.Transaction.Exec("INSERT INTO search (orgid, documentid, itemid, itemtype, content) VALUES (?, ?, ?, ?, ?)",
-		ctx.OrgID, p.DocumentID, p.RefID, "page", p.Title)
+	_, err = ctx.Transaction.Exec("INSERT INTO dmz_search (c_orgid, c_docid, c_itemid, c_itemtype, c_content) VALUES (?, ?, ?, ?, ?)",
+		ctx.OrgID, p.DocumentID, p.RefID, "page", p.Name)
 	if err != nil {
 		err = errors.Wrap(err, "execute insert document page title entry")
 	}
@@ -134,7 +134,7 @@ func (s Scope) IndexContent(ctx domain.RequestContext, p page.Page) (err error) 
 func (s Scope) DeleteContent(ctx domain.RequestContext, pageID string) (err error) {
 	// remove all search entries
 	var stmt1 *sqlx.Stmt
-	stmt1, err = ctx.Transaction.Preparex("DELETE FROM search WHERE orgid=? AND itemid=? AND itemtype=?")
+	stmt1, err = ctx.Transaction.Preparex("DELETE FROM dmz_search WHERE c_orgid=? AND c_itemid=? AND c_itemtype=?")
 	defer streamutil.Close(stmt1)
 	if err != nil {
 		err = errors.Wrap(err, "prepare delete document content entry")
@@ -214,30 +214,30 @@ func (s Scope) Documents(ctx domain.RequestContext, q search.QueryOptions) (resu
 func (s Scope) matchFullText(ctx domain.RequestContext, keywords, itemType string) (r []search.QueryResult, err error) {
 	sql1 := `
 	SELECT
-		s.id, s.orgid, s.documentid, s.itemid, s.itemtype,
-        d.labelid as spaceid, COALESCE(d.title,'Unknown') AS document, d.tags,
-        d.excerpt, d.template, d.versionid,
-		COALESCE(l.label,'Unknown') AS space
+		s.id, s.c_orgid AS orgid, s.c_docid AS documentid, s.c_itemid AS itemid, s.c_itemtype AS itemtype,
+        d.c_spaceid as spaceid, COALESCE(d.c_name,'Unknown') AS document, d.c_tags AS tags,
+        d.c_desc AS excerpt, d.c_template AS template, d.c_versionid AS versionid,
+		COALESCE(l.c_name,'Unknown') AS space
 	FROM
-		search s,
-		document d
+		dmz_search s,
+		dmz_doc d
 	LEFT JOIN
-		label l ON l.orgid=d.orgid AND l.refid = d.labelid
+		dmz_space l ON l.c_orgid=d.c_orgid AND l.c_refid = d.c_spaceid
 	WHERE
-		s.orgid = ?
-		AND s.itemtype = ?
-		AND s.documentid = d.refid
-		AND d.labelid IN
+		s.c_orgid = ?
+		AND s.c_itemtype = ?
+		AND s.c_docid = d.refid
+		AND d.c_spaceid IN
 		(
-            SELECT refid FROM label WHERE orgid=? AND refid IN
+            SELECT c_refid FROM dmz_space WHERE c_orgid=? AND c_refid IN
             (
-				SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space'
+				SELECT c_refid from dmz_permission WHERE c_orgid=? AND c_who='user' AND (c_whoid=? OR c_whoid='0') AND c_location='space'
 				UNION ALL
-                SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role'
-                AND p.location='space' AND (r.userid=? OR r.userid='0')
+                SELECT p.c_refid from dmz_permission p LEFT JOIN dmz_group_member r ON p.c_whoid=r.c_groupid WHERE p.c_orgid=? AND p.c_who='role'
+                AND p.c_location='space' AND (r.c_userid=? OR r.c_userid='0')
             )
         )
-	AND MATCH(s.content) AGAINST(? IN BOOLEAN MODE)`
+	AND MATCH(s.c_content) AGAINST(? IN BOOLEAN MODE)`
 
 	err = s.Runtime.Db.Select(&r,
 		sql1,
@@ -270,30 +270,29 @@ func (s Scope) matchLike(ctx domain.RequestContext, keywords, itemType string) (
 
 	sql1 := `
 	SELECT
-		s.id, s.orgid, s.documentid, s.itemid, s.itemtype,
-		d.labelid as spaceid, COALESCE(d.title,'Unknown') AS document, d.tags, d.excerpt,
-		COALESCE(l.label,'Unknown') AS space
+		s.id, s.c_orgid AS orgid, s.c_docid AS documentid, s.c_itemid AS itemid, s.c_itemtype AS itemtype,
+		d.c_spaceid as spaceid, COALESCE(d.c_name,'Unknown') AS document, d.c_tags AS tags, d.c_desc AS excerpt,
+		COALESCE(l.c_name,'Unknown') AS space
 	FROM
-		search s,
-		document d
+		dmz_search s,
+		dmz_doc d
 	LEFT JOIN
-		label l ON l.orgid=d.orgid AND l.refid = d.labelid
+		dmz_space l ON l.c_orgid=d.c_orgid AND l.c_refid = d.c_spaceid
 	WHERE
-		s.orgid = ?
-		AND s.itemtype = ?
-		AND s.documentid = d.refid
-		-- AND d.template = 0
-		AND d.labelid IN
+		s.c_orgid = ?
+		AND s.c_itemtype = ?
+		AND s.c_docid = d.c_refid
+		AND d.c_spaceid IN
 		(
-            SELECT refid FROM label WHERE orgid=? AND refid IN
+            SELECT c_refid FROM dmz_space WHERE c_orgid=? AND c_refid IN
             (
-				SELECT refid from permission WHERE orgid=? AND who='user' AND (whoid=? OR whoid='0') AND location='space'
+				SELECT c_refid from dmz_permission WHERE c_orgid=? AND c_who='user' AND (c_whoid=? OR c_whoid='0') AND c_location='space'
 				UNION ALL
-				SELECT p.refid from permission p LEFT JOIN rolemember r ON p.whoid=r.roleid WHERE p.orgid=? AND p.who='role'
-				AND p.location='space' AND (r.userid=? OR r.userid='0')
+				SELECT p.c_refid from dmz_permission p LEFT JOIN dmz_group_member r ON p.c_whoid=r.c_groupid WHERE p.c_orgid=? AND p.c_who='role'
+				AND p.c_location='space' AND (r.c_userid=? OR r.c_userid='0')
 			)
 		)
-		AND s.content LIKE ?`
+		AND s.c_content LIKE ?`
 
 	err = s.Runtime.Db.Select(&r,
 		sql1,

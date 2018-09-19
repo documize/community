@@ -142,7 +142,7 @@ func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http
 		rc.Administrator = false
 		rc.Analytics = false
 		rc.Editor = false
-		rc.Global = false
+		rc.GlobalAdmin = false
 		rc.ViewUsers = false
 		rc.AppURL = r.Host
 		rc.Subdomain = organization.GetSubdomainFromHost(r)
@@ -166,6 +166,7 @@ func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http
 		if rc.Authenticated {
 			u, err := user.GetSecuredUser(rc, *m.Store, org.RefID, rc.UserID)
 			if err != nil {
+				m.Runtime.Log.Error("unable to secure API", err)
 				response.WriteServerError(w, method, err)
 				return
 			}
@@ -174,7 +175,7 @@ func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http
 			rc.Active = u.Active
 			rc.Analytics = u.Analytics
 			rc.Editor = u.Editor
-			rc.Global = u.Global
+			rc.GlobalAdmin = u.GlobalAdmin
 			rc.ViewUsers = u.ViewUsers
 			rc.Fullname = u.Fullname()
 
@@ -245,7 +246,7 @@ func (m *middleware) preAuthorizeStaticAssets(rt *env.Runtime, r *http.Request) 
 		ctx.Administrator = false
 		ctx.Editor = false
 		ctx.Analytics = false
-		ctx.Global = false
+		ctx.GlobalAdmin = false
 		ctx.AppURL = r.Host
 		ctx.SSL = r.TLS != nil
 

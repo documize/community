@@ -68,7 +68,7 @@ func (s Scope) GetAll(ctx domain.RequestContext) (groups []group.Group, err erro
 		FROM dmz_group a
 		LEFT JOIN dmz_group_member b ON a.c_refid=b.c_groupid
 		WHERE a.c_orgid=?
-		GROUP BY a.c_id, a.c_refid, a.c_orgid, a.c_name, a.c_desc, a.c_created, a.c_revised
+		GROUP BY a.id, a.c_refid, a.c_orgid, a.c_name, a.c_desc, a.c_created, a.c_revised
 		ORDER BY a.c_name`,
 		ctx.OrgID)
 

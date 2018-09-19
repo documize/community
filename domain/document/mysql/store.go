@@ -119,15 +119,16 @@ func (s Scope) GetBySpace(ctx domain.RequestContext, spaceID string) (documents 
         c_lifecycle AS lifecycle, c_versioned AS versioned, c_versionid AS versionid,
         c_versionorder AS versionorder, c_groupid AS groupid, c_created AS created, c_revised AS revised
         FROM dmz_doc
-        WHERE c_orgid=? AND c_template=0 AND c_spaceid IN (
+        WHERE c_orgid=? AND c_template=0 AND c_spaceid IN
 			(SELECT c_refid FROM dmz_space WHERE c_orgid=? AND c_refid IN
                 (SELECT c_refid FROM dmz_permission WHERE c_orgid=? AND c_location='space' AND c_refid=? AND c_refid IN
                     (SELECT c_refid from dmz_permission WHERE c_orgid=? AND c_who='user' AND (c_whoid=? OR c_whoid='0') AND c_location='space' AND c_action='view'
                     UNION ALL
-                    SELECT p.c_refid from permission p LEFT JOIN dmz_group_member r ON p.c_whoid=r.c_groupid WHERE p.c_orgid=?
-                    AND p.c_who='role' AND p.c_location='space' AND p.c_refid=? AND p.c_action='view' AND (r.c_userid=? OR r.c_userid='0'))
+                    SELECT p.c_refid from dmz_permission p LEFT JOIN dmz_group_member r ON p.c_whoid=r.c_groupid WHERE p.c_orgid=?
+                    AND p.c_who='role' AND p.c_location='space' AND p.c_refid=? AND p.c_action='view' AND (r.c_userid=? OR r.c_userid='0')
+                    )
                 )
-		    )
+            )
         ORDER BY c_name, c_versionorder`,
 		ctx.OrgID, ctx.OrgID, ctx.OrgID, spaceID, ctx.OrgID, ctx.UserID, ctx.OrgID, spaceID, ctx.UserID)
 
@@ -154,9 +155,9 @@ func (s Scope) TemplatesBySpace(ctx domain.RequestContext, spaceID string) (docu
 		AND c_spaceid IN
 			(SELECT c_refid FROM dmz_space WHERE c_orgid=? AND c_refid IN
                 (SELECT c_refid FROM dmz_permission WHERE c_orgid=? AND c_location='space' AND c_refid IN
-                    (SELECT c_refid from dmz_permission WHERE c_orgid=? AND c_who='user' AND (c_whoid=? OR c_whoid='0') AND c_location='space' AND c_action='view'
+                    (SELECT c_refid FROM dmz_permission WHERE c_orgid=? AND c_who='user' AND (c_whoid=? OR c_whoid='0') AND c_location='space' AND c_action='view'
 					UNION ALL
-                	SELECT p.refid from permission p LEFT JOIN dmz_group_member r ON p.c_whoid=r.c_groupid WHERE p.c_orgid=? AND p.c_who='role' AND p.c_location='space' AND p.c_action='view' AND (r.c_userid=? OR r.c_userid='0'))
+                	SELECT p.c_refid FROM dmz_permission p LEFT JOIN dmz_group_member r ON p.c_whoid=r.c_groupid WHERE p.c_orgid=? AND p.c_who='role' AND p.c_location='space' AND p.c_action='view' AND (r.c_userid=? OR r.c_userid='0'))
 				)
 			)
 		ORDER BY c_name`, ctx.OrgID, spaceID, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.UserID, ctx.OrgID, ctx.UserID)
@@ -311,23 +312,23 @@ func (s Scope) Delete(ctx domain.RequestContext, documentID string) (rows int64,
 // Remove document pages, revisions, attachments, updates the search subsystem.
 func (s Scope) DeleteBySpace(ctx domain.RequestContext, spaceID string) (rows int64, err error) {
 	b := mysql.BaseQuery{}
-	rows, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_section WHERE docid IN (SELECT c_refid FROM dmz_doc WHERE c_spaceid=\"%s\" AND c_orgid=\"%s\")", spaceID, ctx.OrgID))
+	rows, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_section WHERE _cdocid IN (SELECT c_refid FROM dmz_doc WHERE c_spaceid=\"%s\" AND c_orgid=\"%s\")", spaceID, ctx.OrgID))
 
 	if err != nil {
 		return
 	}
 
-	_, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_section_revision WHERE docid IN (SELECT c_refid FROM dmz_doc WHERE c_spaceid=\"%s\" AND c_orgid=\"%s\")", spaceID, ctx.OrgID))
+	_, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_section_revision WHERE c_docid IN (SELECT c_refid FROM dmz_doc WHERE c_spaceid=\"%s\" AND c_orgid=\"%s\")", spaceID, ctx.OrgID))
 	if err != nil {
 		return
 	}
 
-	_, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_doc_attachment WHERE docid IN (SELECT c_refid FROM dmz_doc WHERE c_spaceid=\"%s\" AND c_orgid=\"%s\")", spaceID, ctx.OrgID))
+	_, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_doc_attachment WHERE c_docid IN (SELECT c_refid FROM dmz_doc WHERE c_spaceid=\"%s\" AND c_orgid=\"%s\")", spaceID, ctx.OrgID))
 	if err != nil {
 		return
 	}
 
-	_, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_doc_vote WHERE docid IN (SELECT c_refid FROM dmz_doc WHERE c_spaceid=\"%s\" AND c_orgid=\"%s\")", spaceID, ctx.OrgID))
+	_, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_doc_vote WHERE c_docid IN (SELECT c_refid FROM dmz_doc WHERE c_spaceid=\"%s\" AND c_orgid=\"%s\")", spaceID, ctx.OrgID))
 	if err != nil {
 		return
 	}
@@ -346,7 +347,7 @@ func (s Scope) GetVersions(ctx domain.RequestContext, groupID string) (v []doc.V
 	v = []doc.Version{}
 
 	err = s.Runtime.Db.Select(&v, `
-        SELECT versionid, refid as documentid
+        SELECT c_versionid AS versionid, c_refid as documentid
 		FROM dmz_doc
 		WHERE c_orgid=? AND c_groupid=?
 		ORDER BY c_versionorder`, ctx.OrgID, groupID)

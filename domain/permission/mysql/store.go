@@ -65,14 +65,15 @@ func (s Scope) GetUserSpacePermissions(ctx domain.RequestContext, spaceID string
 	r = []permission.Permission{}
 
 	err = s.Runtime.Db.Select(&r, `
-		SELECT c_id, orgid, who, whoid, action, scope, location, refid
+        SELECT id, c_orgid AS orgid, c_who AS who, c_whoid AS whoid, c_action AS action,
+            c_scope AS scope, c_location AS location, c_refid AS refid
 			FROM dmz_permission
-			WHERE orgid=? AND location='space' AND refid=? AND who='user' AND (whoid=? OR whoid='0')
+			WHERE c_orgid=? AND c_location='space' AND c_refid=? AND c_who='user' AND (c_whoid=? OR c_whoid='0')
 		UNION ALL
-		SELECT p.id, p.orgid, p.who, p.whoid, p.action, p.scope, p.location, p.refid
+		SELECT p.id, p.c_orgid AS orgid, p.c_who AS who, p.c_whoid AS whoid, p.c_action AS action, p.c_scope AS scope, p.c_location AS location, p.c_refid AS refid
 			FROM dmz_permission p
-			LEFT JOIN rolemember r ON p.whoid=r.roleid
-			WHERE p.orgid=? AND p.location='space' AND refid=? AND p.who='role' AND (r.userid=? OR r.userid='0')`,
+			LEFT JOIN dmz_group_member r ON p.c_whoid=r.c_groupid
+			WHERE p.c_orgid=? AND p.c_location='space' AND c_refid=? AND p.c_who='role' AND (r.c_userid=? OR r.c_userid='0')`,
 		ctx.OrgID, spaceID, ctx.UserID, ctx.OrgID, spaceID, ctx.UserID)
 
 	if err == sql.ErrNoRows {
@@ -96,7 +97,7 @@ func (s Scope) GetSpacePermissionsForUser(ctx domain.RequestContext, spaceID, us
 		UNION ALL
 		SELECT p.id, p.c_orgid AS orgid, p.c_who AS who, p.c_whoid AS whoid, p.c_action AS action, p.c_scope AS scope, p.c_location AS location, p.c_refid AS refid
         FROM dmz_permission p
-        LEFT JOIN dmz_group_member r ON p.c_whoid=r.c_roleid
+        LEFT JOIN dmz_group_member r ON p.c_whoid=r.c_groupid
 		WHERE p.c_orgid=? AND p.c_location='space' AND c_refid=? AND p.c_who='role' AND (r.c_userid=? OR r.c_userid='0')`,
 		ctx.OrgID, spaceID, userID, ctx.OrgID, spaceID, userID)
 
@@ -143,7 +144,7 @@ func (s Scope) GetCategoryPermissions(ctx domain.RequestContext, catID string) (
         SELECT id, p.c_orgid AS orgid, p.c_who AS who, p.c_whoid AS whoid, p.c_action AS action, p.c_scope AS scope, p.c_location AS location, p.c_refid AS refid
         FROM dmz_permission p
         LEFT JOIN dmz_group_member r ON p.c_whoid=r.c_groupid
-        WHERE p.orgid=? AND p.location='category' AND p.who='role' AND (p.refid=? OR p.refid='0')`,
+        WHERE p.c_orgid=? AND p.c_location='category' AND p.c_who='role' AND (p.c_refid=? OR p.c_refid='0')`,
 		ctx.OrgID, catID, ctx.OrgID, catID)
 
 	if err == sql.ErrNoRows {
@@ -195,7 +196,7 @@ func (s Scope) GetUserCategoryPermissions(ctx domain.RequestContext, userID stri
         FROM dmz_permission
         WHERE c_orgid=? AND c_location='category' AND c_who='user' AND (c_whoid=? OR c_whoid='0')
         UNION ALL
-        SELECT id, p.c_orgid AS orgid, p.c_who AS who, p.c_whoid AS whoid, p.c_action AS action, p.c_scope AS scope, p.c_location AS location, p.c_refid AS refid
+        SELECT p.id, p.c_orgid AS orgid, p.c_who AS who, p.c_whoid AS whoid, p.c_action AS action, p.c_scope AS scope, p.c_location AS location, p.c_refid AS refid
         FROM dmz_permission p
         LEFT JOIN dmz_group_member r ON p.c_whoid=r.c_groupid
         WHERE p.c_orgid=? AND p.c_location='category' AND p.c_who='role' AND (r.c_userid=? OR r.c_userid='0')`,
@@ -219,7 +220,7 @@ func (s Scope) GetUserDocumentPermissions(ctx domain.RequestContext, documentID 
         FROM dmz_permission
         WHERE c_orgid=? AND c_location='document' AND c_refid=? AND c_who='user' AND (c_whoid=? OR c_whoid='0')
 		UNION ALL
-        SELECT id, p.c_orgid AS orgid, p.c_who AS who, p.c_whoid AS whoid, p.c_action AS action, p.c_scope AS scope, p.c_location AS location, p.c_refid AS refid
+        SELECT p.id, p.c_orgid AS orgid, p.c_who AS who, p.c_whoid AS whoid, p.c_action AS action, p.c_scope AS scope, p.c_location AS location, p.c_refid AS refid
         FROM dmz_permission p
         LEFT JOIN dmz_group_member r ON p.c_whoid=r.c_groupid
         WHERE p.c_orgid=? AND p.c_location='document' AND p.c_refid=? AND p.c_who='role' AND (r.c_userid=? OR r.c_userid='0')`,

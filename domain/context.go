@@ -42,7 +42,7 @@ type RequestContext struct {
 	Analytics     bool
 	Active        bool
 	Editor        bool
-	Global        bool
+	GlobalAdmin   bool
 	ViewUsers     bool
 }
 

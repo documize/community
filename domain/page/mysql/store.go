@@ -58,10 +58,10 @@ func (s Scope) Add(ctx domain.RequestContext, model page.NewPage) (err error) {
 	}
 
 	_, err = ctx.Transaction.Exec("INSERT INTO dmz_section (c_refid, c_orgid, c_docid, c_userid, c_contenttype, c_type, c_level, c_name, c_body, c_revisions, c_sequence, c_templateid, c_status, c_relativeid, c_created, c_revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-		model.Page.RefID, model.Page.OrgID, model.Page.DocumentID, model.Page.UserID, model.Page.ContentType, model.Page.PageType, model.Page.Level, model.Page.Title, model.Page.Body, model.Page.Revisions, model.Page.Sequence, model.Page.BlockID, model.Page.Status, model.Page.RelativeID, model.Page.Created, model.Page.Revised)
+		model.Page.RefID, model.Page.OrgID, model.Page.DocumentID, model.Page.UserID, model.Page.ContentType, model.Page.Type, model.Page.Level, model.Page.Name, model.Page.Body, model.Page.Revisions, model.Page.Sequence, model.Page.TemplateID, model.Page.Status, model.Page.RelativeID, model.Page.Created, model.Page.Revised)
 
 	_, err = ctx.Transaction.Exec("INSERT INTO dmz_section_meta (c_sectionid, c_orgid, c_userid, c_docid, c_rawbody, c_config, c_external, c_created, c_revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-		model.Meta.PageID, model.Meta.OrgID, model.Meta.UserID, model.Meta.DocumentID, model.Meta.RawBody, model.Meta.Config, model.Meta.ExternalSource, model.Meta.Created, model.Meta.Revised)
+		model.Meta.SectionID, model.Meta.OrgID, model.Meta.UserID, model.Meta.DocumentID, model.Meta.RawBody, model.Meta.Config, model.Meta.ExternalSource, model.Meta.Created, model.Meta.Revised)
 
 	if err != nil {
 		err = errors.Wrap(err, "execute page meta insert")
@@ -73,7 +73,9 @@ func (s Scope) Add(ctx domain.RequestContext, model page.NewPage) (err error) {
 // Get returns the pageID page record from the page table.
 func (s Scope) Get(ctx domain.RequestContext, pageID string) (p page.Page, err error) {
 	err = s.Runtime.Db.Get(&p, `
-        SELECT c_id, c_refid, c_orgid, c_docid, c_userid, c_contenttype, c_type, c_level, c_sequence, c_name, c_body, c_revisions, c_templateid, c_status, c_relativeid, c_created, c_revised
+        SELECT id, c_refid AS refid, c_orgid AS orgid, c_docid AS documentid, c_userid AS userid, c_contenttype AS contenttype, c_type AS type,
+        c_level AS level, c_sequence AS sequence, c_name AS name, c_body AS body, c_revisions AS revisions, c_templateid AS templateid,
+        c_status AS status, c_relativeid AS relativeid, c_created AS created, c_revised AS revised
         FROM dmz_section
         WHERE c_orgid=? AND c_refid=?`,
 		ctx.OrgID, pageID)
@@ -88,7 +90,9 @@ func (s Scope) Get(ctx domain.RequestContext, pageID string) (p page.Page, err e
 // GetPages returns a slice containing all published page records for a given documentID, in presentation sequence.
 func (s Scope) GetPages(ctx domain.RequestContext, documentID string) (p []page.Page, err error) {
 	err = s.Runtime.Db.Select(&p, `
-        SELECT c_id, c_refid, c_orgid, c_docid, c_userid, c_contenttype, c_type, c_level, c_sequence, c_name, c_body, c_revisions, c_templateid, c_status, c_relativeid, c_created, c_revised
+        SELECT id, c_refid AS refid, c_orgid AS orgid, c_docid AS documentid, c_userid AS userid, c_contenttype AS contenttype, c_type AS type,
+        c_level AS level, c_sequence AS sequence, c_name AS name, c_body AS body, c_revisions AS revisions, c_templateid AS templateid,
+        c_status AS status, c_relativeid AS relativeid, c_created AS created, c_revised AS revised
         FROM dmz_section
         WHERE c_orgid=? AND c_docid=? AND (c_status=0 OR ((c_status=4 OR c_status=2) AND c_relativeid=''))
         ORDER BY c_sequence`,
@@ -104,7 +108,9 @@ func (s Scope) GetPages(ctx domain.RequestContext, documentID string) (p []page.
 // GetUnpublishedPages returns a slice containing all published page records for a given documentID, in presentation sequence.
 func (s Scope) GetUnpublishedPages(ctx domain.RequestContext, documentID string) (p []page.Page, err error) {
 	err = s.Runtime.Db.Select(&p, `
-        SELECT c_id, c_refid, c_orgid, c_docid, c_userid, c_contenttype, c_type, c_level, c_sequence, c_name, c_body, c_revisions, c_templateid, c_status, c_relativeid, c_created, c_revised
+        SELECT id, c_refid AS refid, c_orgid AS orgid, c_docid AS documentid, c_userid AS userid, c_contenttype AS contenttype, c_type AS type,
+        c_level AS level, c_sequence AS sequence, c_name AS name, c_body AS body, c_revisions AS revisions, c_templateid AS templateid,
+        c_status AS status, c_relativeid AS relativeid, c_created AS created, c_revised AS revised
         FROM dmz_section
         WHERE c_orgid=? AND c_docid=? AND c_status!=0 AND c_relativeid!=''
         ORDER BY c_sequence`,
@@ -121,7 +127,9 @@ func (s Scope) GetUnpublishedPages(ctx domain.RequestContext, documentID string)
 // but without the body field (which holds the HTML content).
 func (s Scope) GetPagesWithoutContent(ctx domain.RequestContext, documentID string) (pages []page.Page, err error) {
 	err = s.Runtime.Db.Select(&pages, `
-        SELECT c_id, c_refid, c_orgid, c_docid, c_userid, c_contenttype, c_type, c_level, c_sequence, c_name, c_body, c_revisions, c_templateid, c_status, c_relativeid, c_created, c_revised
+        SELECT id, c_refid AS refid, c_orgid AS orgid, c_docid AS documentid, c_userid AS userid, c_contenttype AS contenttype, c_type AS type,
+        c_level AS level, c_sequence AS sequence, c_name AS name, c_revisions AS revisions, c_templateid AS templateid,
+        c_status AS status, c_relativeid AS relativeid, c_created AS created, c_revised AS revised
         FROM dmz_section
         WHERE c_orgid=? AND c_docid=? AND c_status=0
         ORDER BY c_sequence`,
@@ -145,9 +153,9 @@ func (s Scope) Update(ctx domain.RequestContext, page page.Page, refID, userID s
             INSERT INTO dmz_section_revision
                 (c_refid, c_orgid, c_docid, c_ownerid, c_sectionid, c_userid, c_contenttype, c_type,
                 c_name, c_body, c_rawbody, c_config, c_created, c_revised)
-            SELECT ? as refid, a.c_orgid, a.c_docid, a.c_userid as ownerid, a.c_refid as sectionid,
-                ? as userid, a.c_contenttype, a.c_type, a.c_name, a.c_body,
-                b.c_rawbody, b.c_config, ? as c_created, ? as c_revised
+            SELECT ? AS refid, a.c_orgid, a.c_docid, a.c_userid AS ownerid, a.c_refid AS sectionid,
+                ? AS userid, a.c_contenttype, a.c_type, a.c_name, a.c_body,
+                b.c_rawbody, b.c_config, ? AS c_created, ? As c_revised
                 FROM dmz_section a, dmz_section_meta b
                 WHERE a.c_refid=? AND a.c_refid=b.c_sectionid`,
 			refID, userID, time.Now().UTC(), time.Now().UTC(), page.RefID)
@@ -160,10 +168,10 @@ func (s Scope) Update(ctx domain.RequestContext, page page.Page, refID, userID s
 
 	// Update page
 	_, err = ctx.Transaction.NamedExec(`UPDATE dmz_section SET
-        docid=:documentid, level=:level, c_name=:name, body=:body,
+        c_docid=:documentid, c_level=:level, c_name=:name, c_body=:body,
         c_revisions=:revisions, c_sequence=:sequence, c_status=:status,
         c_relativeid=:relativeid, c_revised=:revised
-        WHERE orgid=:orgid AND refid=:refid`,
+        WHERE c_orgid=:orgid AND c_refid=:refid`,
 		&page)
 
 	if err != nil {
@@ -347,7 +355,7 @@ func (s Scope) GetPageRevision(ctx domain.RequestContext, revisionID string) (re
 // GetPageRevisions returns a slice of page revision records for a given pageID, in the order they were created.
 // Then audits that the get-page-revisions action has occurred.
 func (s Scope) GetPageRevisions(ctx domain.RequestContext, pageID string) (revisions []page.Revision, err error) {
-	err = s.Runtime.Db.Select(&revisions, `SELECT a.c_id, a.c_refid AS refid,
+	err = s.Runtime.Db.Select(&revisions, `SELECT a.id, a.c_refid AS refid,
         a.c_orgid AS orgid, a.c_docid AS documentid, a.c_ownerid AS ownerid, a.c_sectionid AS sectionid, a.c_userid AS userid,
         a.c_contenttype AS contenttype, a.c_type AS type, a.c_name AS name,
         a.c_created AS created, a.c_revised AS revised,

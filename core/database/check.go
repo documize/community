@@ -73,36 +73,20 @@ func Check(runtime *env.Runtime) bool {
 		return false
 	}
 
-	{ // if there are no rows in the database, enter set-up mode
-		var flds []string
-		if err := runtime.Db.Select(&flds, runtime.StoreProvider.QueryTableList()); err != nil {
-			msg := fmt.Sprintf("Database: unable to get database table list ")
-			runtime.Log.Error(msg, err)
-			web.SiteInfo.Issue = msg + err.Error()
-			runtime.Flags.SiteMode = env.SiteModeBadDB
-			return false
-		}
-
-		if strings.TrimSpace(flds[0]) == "0" {
-			runtime.Log.Info("Database: starting setup mode for empty database")
-			runtime.Flags.SiteMode = env.SiteModeSetup
-			return false
-		}
+	// if there are no rows in the database, enter set-up mode
+	var flds []string
+	if err := runtime.Db.Select(&flds, runtime.StoreProvider.QueryTableList()); err != nil {
+		msg := fmt.Sprintf("Database: unable to get database table list ")
+		runtime.Log.Error(msg, err)
+		web.SiteInfo.Issue = msg + err.Error()
+		runtime.Flags.SiteMode = env.SiteModeBadDB
+		return false
 	}
 
-	// Ensure no missing tables.
-	var tables = []string{"account", "attachment", "document",
-		"label", "organization", "page", "revision", "search", "user"}
-
-	for _, table := range tables {
-		var result []string
-		if err := runtime.Db.Select(&result, fmt.Sprintf("SELECT COUNT(*) FROM %s ;", table)); err != nil {
-			msg := fmt.Sprintf("Database: missing table %s", table)
-			runtime.Log.Error(msg, err)
-			web.SiteInfo.Issue = msg
-			runtime.Flags.SiteMode = env.SiteModeBadDB
-			return false
-		}
+	if strings.TrimSpace(flds[0]) == "0" {
+		runtime.Log.Info("Database: starting setup mode for empty database")
+		runtime.Flags.SiteMode = env.SiteModeSetup
+		return false
 	}
 
 	// We have good database, so proceed with app boot process.

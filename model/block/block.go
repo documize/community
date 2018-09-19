@@ -20,7 +20,7 @@ type Block struct {
 	SpaceID        string `json:"folderId"`
 	UserID         string `json:"userId"`
 	ContentType    string `json:"contentType"`
-	PageType       string `json:"pageType"`
+	Type           string `json:"pageType"`
 	Name           string `json:"title"`
 	Body           string `json:"body"`
 	Excerpt        string `json:"excerpt"`

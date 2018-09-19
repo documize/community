@@ -80,11 +80,11 @@ func (h *Handler) GetLinkCandidates(w http.ResponseWriter, r *http.Request) {
 		if p.RefID != pageID {
 			c := link.Candidate{
 				RefID:      uniqueid.Generate(),
-				FolderID:   folderID,
+				SpaceID:    folderID,
 				DocumentID: documentID,
 				TargetID:   p.RefID,
-				LinkType:   p.PageType,
-				Title:      p.Title,
+				LinkType:   p.Type,
+				Title:      p.Name,
 			}
 			pc = append(pc, c)
 		}
@@ -108,7 +108,7 @@ func (h *Handler) GetLinkCandidates(w http.ResponseWriter, r *http.Request) {
 	for _, f := range files {
 		c := link.Candidate{
 			RefID:      uniqueid.Generate(),
-			FolderID:   folderID,
+			SpaceID:    folderID,
 			DocumentID: documentID,
 			TargetID:   f.RefID,
 			LinkType:   "file",

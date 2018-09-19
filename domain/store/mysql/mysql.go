@@ -52,7 +52,7 @@ func (m *BaseQuery) DeleteConstrained(tx *sqlx.Tx, table string, orgID, id strin
 
 // DeleteConstrainedWithID record constrained to Organization using non refid.
 func (m *BaseQuery) DeleteConstrainedWithID(tx *sqlx.Tx, table string, orgID, id string) (rows int64, err error) {
-	result, err := tx.Exec("DELETE FROM "+table+" WHERE c_orgid=? AND c_id=?", orgID, id)
+	result, err := tx.Exec("DELETE FROM "+table+" WHERE c_orgid=? AND id=?", orgID, id)
 
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to delete row in table %s", table))

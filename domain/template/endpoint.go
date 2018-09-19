@@ -70,13 +70,13 @@ func (h *Handler) SavedList(w http.ResponseWriter, r *http.Request) {
 	for _, d := range documents {
 		var t = template.Template{}
 		t.ID = d.RefID
-		t.Title = d.Title
+		t.Title = d.Name
 		t.Description = d.Excerpt
 		t.Author = ""
 		t.Dated = d.Created
 		t.Type = template.TypePrivate
 
-		if d.LabelID == folderID {
+		if d.SpaceID == folderID {
 			templates = append(templates, t)
 		}
 	}
@@ -123,7 +123,7 @@ func (h *Handler) SaveAs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !permission.HasPermission(ctx, *h.Store, doc.LabelID, pm.DocumentTemplate) {
+	if !permission.HasPermission(ctx, *h.Store, doc.SpaceID, pm.DocumentTemplate) {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -138,7 +138,7 @@ func (h *Handler) SaveAs(w http.ResponseWriter, r *http.Request) {
 
 	docID := uniqueid.Generate()
 	doc.Template = true
-	doc.Title = model.Name
+	doc.Name = model.Name
 	doc.Excerpt = model.Excerpt
 	doc.RefID = docID
 	doc.ID = 0
@@ -170,7 +170,7 @@ func (h *Handler) SaveAs(w http.ResponseWriter, r *http.Request) {
 
 		pageID := uniqueid.Generate()
 		p.RefID = pageID
-		meta.PageID = pageID
+		meta.SectionID = pageID
 		meta.DocumentID = docID
 
 		m := page.NewPage{}
@@ -235,7 +235,7 @@ func (h *Handler) SaveAs(w http.ResponseWriter, r *http.Request) {
 		cc.CategoryID = c.RefID
 		cc.RefID = uniqueid.Generate()
 		cc.DocumentID = docID
-		cc.LabelID = doc.LabelID
+		cc.SpaceID = doc.SpaceID
 		err = h.Store.Category.AssociateDocument(ctx, cc)
 		if err != nil && err != sql.ErrNoRows {
 			response.WriteServerError(w, method, err)
@@ -289,12 +289,12 @@ func (h *Handler) Use(w http.ResponseWriter, r *http.Request) {
 
 	// Define an empty document just in case user wanted one.
 	var d = doc.Document{}
-	d.Title = docTitle
+	d.Name = docTitle
 	d.Location = fmt.Sprintf("template-%s", templateID)
 	d.Excerpt = "Add detailed description for document..."
-	d.Slug = stringutil.MakeSlug(d.Title)
+	d.Slug = stringutil.MakeSlug(d.Name)
 	d.Tags = ""
-	d.LabelID = folderID
+	d.SpaceID = folderID
 	documentID := uniqueid.Generate()
 	d.RefID = documentID
 
@@ -338,9 +338,9 @@ func (h *Handler) Use(w http.ResponseWriter, r *http.Request) {
 	documentID = uniqueid.Generate()
 	d.RefID = documentID
 	d.Template = false
-	d.LabelID = folderID
+	d.SpaceID = folderID
 	d.UserID = ctx.UserID
-	d.Title = docTitle
+	d.Name = docTitle
 
 	if h.Runtime.Product.Edition == env.CommunityEdition {
 		d.Lifecycle = workflow.LifecycleLive
@@ -369,7 +369,7 @@ func (h *Handler) Use(w http.ResponseWriter, r *http.Request) {
 		pageID := uniqueid.Generate()
 		p.RefID = pageID
 
-		meta.PageID = pageID
+		meta.SectionID = pageID
 		meta.DocumentID = documentID
 
 		model := page.NewPage{}
@@ -418,7 +418,7 @@ func (h *Handler) Use(w http.ResponseWriter, r *http.Request) {
 		cc.CategoryID = c.RefID
 		cc.RefID = uniqueid.Generate()
 		cc.DocumentID = d.RefID
-		cc.LabelID = d.LabelID
+		cc.SpaceID = d.SpaceID
 		err = h.Store.Category.AssociateDocument(ctx, cc)
 		if err != nil && err != sql.ErrNoRows {
 			response.WriteServerError(w, method, err)
@@ -437,7 +437,7 @@ func (h *Handler) Use(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	event.Handler().Publish(string(event.TypeAddDocument), nd.Title)
+	event.Handler().Publish(string(event.TypeAddDocument), nd.Name)
 
 	a, _ := h.Store.Attachment.GetAttachments(ctx, documentID)
 

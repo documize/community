@@ -250,7 +250,7 @@ func convertUser(c lm.LDAPConfig, lu lm.LDAPUser) (du user.User) {
 	du.ViewUsers = false
 	du.Analytics = false
 	du.Admin = false
-	du.Global = false
+	du.GlobalAdmin = false
 	du.Editor = c.DefaultPermissionAddSpace
 	du.Email = lu.Email
 	du.Firstname = lu.Firstname

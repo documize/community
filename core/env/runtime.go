@@ -107,8 +107,16 @@ type StoreProvider interface {
 	// that records the database version number.
 	QueryRecordVersionUpgrade(version int) string
 
+	// QueryRecordVersionUpgrade returns database specific insert statement
+	// that records the database version number.
+	// For use on databases before The Great Schema Migration (v25, MySQL).
+	QueryRecordVersionUpgradeLegacy(version int) string
+
 	// QueryGetDatabaseVersion returns the schema version number.
 	QueryGetDatabaseVersion() string
+
+	// QueryGetDatabaseVersionLegacy returns the schema version number before The Great Schema Migration (v25, MySQL).
+	QueryGetDatabaseVersionLegacy() string
 
 	// QueryTableList returns a list tables in Documize database.
 	QueryTableList() string

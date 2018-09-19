@@ -153,7 +153,7 @@ func exportSpace(ctx domain.RequestContext, s domain.Store, spaceID string) (toc
 	for _, d := range docs {
 		docHTML, e := processDocument(ctx, s, d.RefID)
 		if e == nil && len(docHTML) > 0 {
-			toc = append(toc, exportTOC{ID: d.RefID, Entry: d.Title})
+			toc = append(toc, exportTOC{ID: d.RefID, Entry: d.Name})
 			b.WriteString(docHTML)
 		} else {
 			return toc, b.String(), err
@@ -221,7 +221,7 @@ func exportCategory(ctx domain.RequestContext, s domain.Store, spaceID string, c
 	for _, d := range exportDocs {
 		docHTML, e := processDocument(ctx, s, d.RefID)
 		if e == nil && len(docHTML) > 0 {
-			toc = append(toc, exportTOC{ID: d.RefID, Entry: d.Title})
+			toc = append(toc, exportTOC{ID: d.RefID, Entry: d.Name})
 			b.WriteString(docHTML)
 		} else {
 			return toc, b.String(), err
@@ -274,7 +274,7 @@ func exportDocument(ctx domain.RequestContext, s domain.Store, spaceID string, d
 				if permission.CanViewDocument(ctx, s, d.RefID) {
 					docHTML, e := processDocument(ctx, s, d.RefID)
 					if e == nil && len(docHTML) > 0 {
-						toc = append(toc, exportTOC{ID: d.RefID, Entry: d.Title})
+						toc = append(toc, exportTOC{ID: d.RefID, Entry: d.Name})
 						b.WriteString(docHTML)
 					} else {
 						return toc, b.String(), err
@@ -325,7 +325,7 @@ func processDocument(ctx domain.RequestContext, s domain.Store, documentID strin
 	// Put out document name.
 	b.WriteString(fmt.Sprintf("<div class='export-doc-header' id='%s'>", doc.RefID))
 	b.WriteString("<div class='export-doc-title'>")
-	b.WriteString(doc.Title)
+	b.WriteString(doc.Name)
 	b.WriteString("</div>")
 	b.WriteString("<div class='export-doc-excerpt'>")
 	b.WriteString(doc.Excerpt)
@@ -338,7 +338,7 @@ func processDocument(ctx domain.RequestContext, s domain.Store, documentID strin
 		b.WriteString(`<div class="document-structure">`)
 		b.WriteString(`<div class="page-header">`)
 		b.WriteString(fmt.Sprintf("<span class='page-number'>%s</span>", page.Numbering))
-		b.WriteString(fmt.Sprintf("<span class='page-title'>%s</span>", page.Title))
+		b.WriteString(fmt.Sprintf("<span class='page-title'>%s</span>", page.Name))
 		b.WriteString("</div>")
 		b.WriteString("</div>")
 

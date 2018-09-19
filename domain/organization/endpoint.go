@@ -147,7 +147,7 @@ func (h *Handler) SaveInstanceSetting(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) GetGlobalSetting(w http.ResponseWriter, r *http.Request) {
 	ctx := domain.GetRequestContext(r)
 
-	if !ctx.Global {
+	if !ctx.GlobalAdmin {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -163,7 +163,7 @@ func (h *Handler) SaveGlobalSetting(w http.ResponseWriter, r *http.Request) {
 	method := "org.SaveGlobalSetting"
 	ctx := domain.GetRequestContext(r)
 
-	if !ctx.Global {
+	if !ctx.GlobalAdmin {
 		response.WriteForbiddenError(w)
 		return
 	}

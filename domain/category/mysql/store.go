@@ -225,7 +225,7 @@ func (s Scope) GetSpaceCategorySummary(ctx domain.RequestContext, spaceID string
 	c = []category.SummaryModel{}
 
 	err = s.Runtime.Db.Select(&c, `
-		SELECT 'documents' AS type, c_categoryid, COUNT(*) AS count
+		SELECT 'documents' AS type, c_categoryid AS categoryid, COUNT(*) AS count
 			FROM dmz_category_member
             WHERE c_orgid=? AND c_spaceid=?
             AND c_docid IN (
@@ -241,13 +241,13 @@ func (s Scope) GetSpaceCategorySummary(ctx domain.RequestContext, spaceID string
                         GROUP BY c_groupid
                     ) AS x INNER JOIN dmz_doc AS d ON d.c_groupid=x.c_groupid AND d.c_versionorder=x.latestversion
                 )
-            GROUP BY c_categoryid, c_type
+            GROUP BY c_categoryid, type
 		UNION ALL
 		SELECT 'users' AS type, c_refid AS categoryid, count(*) AS count
 			FROM dmz_permission
             WHERE c_orgid=? AND c_location='category' AND c_refid IN
                 (SELECT c_refid FROM dmz_category WHERE c_orgid=? AND c_spaceid=?)
-			GROUP BY c_refid, c_type`,
+			GROUP BY c_refid, type`,
 		ctx.OrgID, spaceID,
 		ctx.OrgID, spaceID, ctx.OrgID, spaceID,
 		ctx.OrgID, ctx.OrgID, spaceID)
@@ -286,7 +286,7 @@ func (s Scope) GetSpaceCategoryMembership(ctx domain.RequestContext, spaceID str
 	err = s.Runtime.Db.Select(&c, `
         SELECT id, c_refid AS refid, c_orgid AS orgid, c_spaceid AS spaceid, c_categoryid AS categoryid, c_docid AS documentid, c_created AS created, c_revised AS revised
         FROM dmz_category_member
-        WHERE c_orgid=? AND c_spaceid=? AND spaceid IN
+        WHERE c_orgid=? AND c_spaceid=? AND c_spaceid IN
             (SELECT c_refid FROM dmz_permission WHERE c_orgid=? AND c_location='space' AND c_refid IN
                 (SELECT c_refid FROM dmz_permission WHERE c_orgid=? AND c_who='user' AND (c_whoid=? OR c_whoid='0') AND c_location='space' AND c_action='view'
                 UNION ALL
@@ -311,7 +311,7 @@ func (s Scope) GetOrgCategoryMembership(ctx domain.RequestContext, userID string
 	err = s.Runtime.Db.Select(&c, `
         SELECT id, c_refid AS refid, c_orgid AS orgid, c_spaceid AS spaceid, c_categoryid AS categoryid, c_docid AS documentid, c_created AS created, c_revised AS revised
         FROM dmz_category_member
-        WHERE c_orgid=?  AND c_spaceid IN
+        WHERE c_orgid=? AND c_spaceid IN
             (SELECT c_refid FROM dmz_permission WHERE c_orgid=? AND c_location='space' AND c_refid IN
                 (SELECT c_refid from dmz_permission WHERE c_orgid=? AND c_who='user' AND (c_whoid=? OR c_whoid='0') AND c_location='space' AND c_action='view'
                 UNION ALL

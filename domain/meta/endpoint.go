@@ -166,7 +166,7 @@ func (h *Handler) Sitemap(w http.ResponseWriter, r *http.Request) {
 		for _, document := range documents {
 			var item sitemapItem
 			item.URL = ctx.GetAppURL(fmt.Sprintf("s/%s/%s/d/%s/%s",
-				document.FolderID, stringutil.MakeSlug(document.Folder), document.DocumentID, stringutil.MakeSlug(document.Document)))
+				document.SpaceID, stringutil.MakeSlug(document.Folder), document.DocumentID, stringutil.MakeSlug(document.Document)))
 			item.Date = document.Revised.Format("2006-01-02T15:04:05.999999-07:00")
 			items = append(items, item)
 		}
@@ -184,7 +184,7 @@ func (h *Handler) Sitemap(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) Reindex(w http.ResponseWriter, r *http.Request) {
 	ctx := domain.GetRequestContext(r)
 
-	if !ctx.Global {
+	if !ctx.GlobalAdmin {
 		response.WriteForbiddenError(w)
 		h.Runtime.Log.Info(fmt.Sprintf("%s attempted search reindex"))
 		return
@@ -234,7 +234,7 @@ func (h *Handler) SearchStatus(w http.ResponseWriter, r *http.Request) {
 	method := "meta.SearchStatus"
 	ctx := domain.GetRequestContext(r)
 
-	if !ctx.Global {
+	if !ctx.GlobalAdmin {
 		response.WriteForbiddenError(w)
 		h.Runtime.Log.Info(fmt.Sprintf("%s attempted get of search status"))
 		return

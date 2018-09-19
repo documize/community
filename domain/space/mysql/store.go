@@ -47,10 +47,10 @@ func (s Scope) Add(ctx domain.RequestContext, sp space.Space) (err error) {
 
 // Get returns a space from the store.
 func (s Scope) Get(ctx domain.RequestContext, id string) (sp space.Space, err error) {
-	err = s.Runtime.Db.Get(&sp, `SELECT id, c_refid as refid,
-        c_name as name, c_orgid as orgid, c_userid as userid,
-        c_type as type, c_lifecycle as lifecycle, c_likes as likes,
-        c_created as created, c_revised as revised
+	err = s.Runtime.Db.Get(&sp, `SELECT id, c_refid AS refid,
+        c_name AS name, c_orgid AS orgid, c_userid AS userid,
+        c_type AS type, c_lifecycle AS lifecycle, c_likes AS likes,
+        c_created AS created, c_revised AS revised
         FROM dmz_space
         WHERE c_orgid=? and c_refid=?`,
 		ctx.OrgID, id)
@@ -64,10 +64,10 @@ func (s Scope) Get(ctx domain.RequestContext, id string) (sp space.Space, err er
 
 // PublicSpaces returns spaces that anyone can see.
 func (s Scope) PublicSpaces(ctx domain.RequestContext, orgID string) (sp []space.Space, err error) {
-	qry := `SELECT id, c_refid as refid
-        c_name as name, c_orgid as orgid, c_userid as userid,
-        c_type as type, c_lifecycle as lifecycle, c_likes as likes,
-        c_created as created, c_revised as revised
+	qry := `SELECT id, c_refid AS refid,
+        c_name AS name, c_orgid AS orgid, c_userid AS userid,
+        c_type AS type, c_lifecycle AS lifecycle, c_likes AS likes,
+        c_created AS created, c_revised AS revised
         FROM dmz_space
         WHERE c_orgid=? AND c_type=1`
 
@@ -88,16 +88,16 @@ func (s Scope) PublicSpaces(ctx domain.RequestContext, orgID string) (sp []space
 // Also handles which spaces can be seen by anonymous users.
 func (s Scope) GetViewable(ctx domain.RequestContext) (sp []space.Space, err error) {
 	q := `
-    SELECT id, c_refid as refid
-        c_name as name, c_orgid as orgid, c_userid as userid,
-        c_type as type, c_lifecycle as lifecycle, c_likes as likes,
-        c_created as created, c_revised as revised
+    SELECT id, c_refid AS refid,
+        c_name AS name, c_orgid AS orgid, c_userid AS userid,
+        c_type AS type, c_lifecycle AS lifecycle, c_likes AS likes,
+        c_created AS created, c_revised AS revised
     FROM dmz_space
 	WHERE c_orgid=? AND c_refid IN
         (SELECT c_refid FROM dmz_permission WHERE c_orgid=? AND c_location='space' AND c_refid IN
             (SELECT c_refid FROM dmz_permission WHERE c_orgid=? AND c_who='user' AND (c_whoid=? OR c_whoid='0') AND c_location='space' AND c_action='view'
             UNION ALL
-		    SELECT p.refid from dmz_permission p LEFT JOIN dmz_group_member r ON p.c_whoid=r.c_groupid WHERE p.c_orgid=? AND p.c_who='role'
+		    SELECT p.c_refid from dmz_permission p LEFT JOIN dmz_group_member r ON p.c_whoid=r.c_groupid WHERE p.c_orgid=? AND p.c_who='role'
             AND p.c_location='space' AND p.c_action='view' AND (r.c_userid=? OR r.c_userid='0')
             )
 	    )
@@ -125,10 +125,10 @@ func (s Scope) GetViewable(ctx domain.RequestContext) (sp []space.Space, err err
 // GetAll for admin users!
 func (s Scope) GetAll(ctx domain.RequestContext) (sp []space.Space, err error) {
 	qry := `
-    SELECT id, c_refid as refid
-        c_name as name, c_orgid as orgid, c_userid as userid,
-        c_type as type, c_lifecycle as lifecycle, c_likes as likes,
-        c_created as created, c_revised as revised
+    SELECT id, c_refid AS refid,
+        c_name AS name, c_orgid AS orgid, c_userid AS userid,
+        c_type AS type, c_lifecycle AS lifecycle, c_likes AS likes,
+        c_created AS created, c_revised AS revised
     FROM dmz_space
     WHERE c_orgid=?
 	ORDER BY c_name`

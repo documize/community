@@ -50,7 +50,7 @@ func CanViewDocument(ctx domain.RequestContext, s domain.Store, documentID strin
 		return false
 	}
 
-	roles, err := s.Permission.GetUserSpacePermissions(ctx, document.LabelID)
+	roles, err := s.Permission.GetUserSpacePermissions(ctx, document.SpaceID)
 	if err == sql.ErrNoRows {
 		err = nil
 	}
@@ -59,7 +59,7 @@ func CanViewDocument(ctx domain.RequestContext, s domain.Store, documentID strin
 	}
 
 	for _, role := range roles {
-		if role.RefID == document.LabelID && role.Location == pm.LocationSpace && role.Scope == pm.ScopeRow &&
+		if role.RefID == document.SpaceID && role.Location == pm.LocationSpace && role.Scope == pm.ScopeRow &&
 			pm.ContainsPermission(role.Action, pm.SpaceView, pm.SpaceManage, pm.SpaceOwner) {
 			return true
 		}
@@ -79,7 +79,7 @@ func CanChangeDocument(ctx domain.RequestContext, s domain.Store, documentID str
 		return false
 	}
 
-	roles, err := s.Permission.GetUserSpacePermissions(ctx, document.LabelID)
+	roles, err := s.Permission.GetUserSpacePermissions(ctx, document.SpaceID)
 
 	if err == sql.ErrNoRows {
 		err = nil
@@ -89,7 +89,7 @@ func CanChangeDocument(ctx domain.RequestContext, s domain.Store, documentID str
 	}
 
 	for _, role := range roles {
-		if role.RefID == document.LabelID && role.Location == pm.LocationSpace && role.Scope == pm.ScopeRow && role.Action == pm.DocumentEdit {
+		if role.RefID == document.SpaceID && role.Location == pm.LocationSpace && role.Scope == pm.ScopeRow && role.Action == pm.DocumentEdit {
 			return true
 		}
 	}
@@ -108,7 +108,7 @@ func CanDeleteDocument(ctx domain.RequestContext, s domain.Store, documentID str
 		return false
 	}
 
-	roles, err := s.Permission.GetUserSpacePermissions(ctx, document.LabelID)
+	roles, err := s.Permission.GetUserSpacePermissions(ctx, document.SpaceID)
 
 	if err == sql.ErrNoRows {
 		err = nil
@@ -118,7 +118,7 @@ func CanDeleteDocument(ctx domain.RequestContext, s domain.Store, documentID str
 	}
 
 	for _, role := range roles {
-		if role.RefID == document.LabelID && role.Location == "space" && role.Scope == "object" && role.Action == pm.DocumentDelete {
+		if role.RefID == document.SpaceID && role.Location == "space" && role.Scope == "object" && role.Action == pm.DocumentDelete {
 			return true
 		}
 	}

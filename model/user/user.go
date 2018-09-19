@@ -31,7 +31,7 @@ type User struct {
 	Admin       bool              `json:"admin"`
 	ViewUsers   bool              `json:"viewUsers"`
 	Analytics   bool              `json:"analytics"`
-	Global      bool              `json:"global"`
+	GlobalAdmin bool              `json:"global"`
 	Password    string            `json:"-"`
 	Salt        string            `json:"-"`
 	Reset       string            `json:"-"`

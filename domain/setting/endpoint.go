@@ -38,7 +38,7 @@ func (h *Handler) SMTP(w http.ResponseWriter, r *http.Request) {
 	method := "setting.SMTP"
 	ctx := domain.GetRequestContext(r)
 
-	if !ctx.Global {
+	if !ctx.GlobalAdmin {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -63,7 +63,7 @@ func (h *Handler) SetSMTP(w http.ResponseWriter, r *http.Request) {
 	method := "setting.SetSMTP"
 	ctx := domain.GetRequestContext(r)
 
-	if !ctx.Global {
+	if !ctx.GlobalAdmin {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -130,7 +130,7 @@ func (h *Handler) SetSMTP(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) License(w http.ResponseWriter, r *http.Request) {
 	ctx := domain.GetRequestContext(r)
 
-	if !ctx.Global {
+	if !ctx.GlobalAdmin {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -164,7 +164,7 @@ func (h *Handler) SetLicense(w http.ResponseWriter, r *http.Request) {
 	method := "setting.SetLicense"
 	ctx := domain.GetRequestContext(r)
 
-	if !ctx.Global {
+	if !ctx.GlobalAdmin {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -222,7 +222,7 @@ func (h *Handler) AuthConfig(w http.ResponseWriter, r *http.Request) {
 	method := "global.auth"
 	ctx := domain.GetRequestContext(r)
 
-	if !ctx.Global {
+	if !ctx.GlobalAdmin {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -242,7 +242,7 @@ func (h *Handler) SetAuthConfig(w http.ResponseWriter, r *http.Request) {
 	method := "global.auth.save"
 	ctx := domain.GetRequestContext(r)
 
-	if !ctx.Global {
+	if !ctx.GlobalAdmin {
 		response.WriteForbiddenError(w)
 		return
 	}

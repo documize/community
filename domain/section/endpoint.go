@@ -111,7 +111,7 @@ func (h *Handler) RefreshSections(w http.ResponseWriter, r *http.Request) {
 
 	for _, pm := range meta {
 		// Grab the page because we need content type and
-		page, err2 := h.Store.Page.Get(ctx, pm.PageID)
+		page, err2 := h.Store.Page.Get(ctx, pm.SectionID)
 		if err2 == sql.ErrNoRows {
 			continue
 		}

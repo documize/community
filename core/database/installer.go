@@ -16,7 +16,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"time"
+	// "time"
 
 	"github.com/documize/community/core/env"
 	"github.com/jmoiron/sqlx"
@@ -24,7 +24,7 @@ import (
 
 // InstallUpgrade creates new database or upgrades existing database.
 func InstallUpgrade(runtime *env.Runtime, existingDB bool) (err error) {
-	amLeader := false
+	// amLeader := false
 
 	// Get all SQL scripts.
 	scripts, err := LoadScripts()
@@ -40,7 +40,7 @@ func InstallUpgrade(runtime *env.Runtime, existingDB bool) (err error) {
 		return
 	}
 
-	runtime.Log.Info(fmt.Sprintf("Database: loaded  %d SQL scripts for provider %s", len(dbTypeScripts), runtime.StoreProvider.Type()))
+	runtime.Log.Info(fmt.Sprintf("Database: loaded %d SQL scripts for provider %s", len(dbTypeScripts), runtime.StoreProvider.Type()))
 
 	// Get current database version.
 	currentVersion := 0
@@ -62,51 +62,77 @@ func InstallUpgrade(runtime *env.Runtime, existingDB bool) (err error) {
 		}
 	}
 
-	if existingDB {
-		var err error
-		amLeader, err = Lock(runtime, len(toProcess))
-		if err != nil {
-			runtime.Log.Error("Database: failed to lock existing database for processing", err)
-		}
-	} else {
-		// New installation hopes that you are only spinning up one instance of Documize.
-		// Assumption: nobody will perform the intial setup in a clustered environment.
-		amLeader = true
+	// For MySQL type there was major new schema introduced in v24.
+	// We check for this release and bypass usual locking code
+	// because tables have changed.
+	legacyMigration := runtime.StoreProvider.Type() == env.StoreTypeMySQL &&
+		currentVersion > 0 && currentVersion < 25 && len(toProcess) >= 26 && toProcess[len(toProcess)-1].Version == 25
+
+	if legacyMigration {
+		// Bypass all DB locking/checking processes as these look for new schema
+		// which we are about to install.
+		toProcess = toProcess[len(toProcess)-1:]
 	}
 
 	tx, err := runtime.Db.Beginx()
 	if err != nil {
-		return Unlock(runtime, tx, err, amLeader)
+		return err
 	}
-
-	// If currently running process is database leader then we perform upgrade.
-	if amLeader {
-		runtime.Log.Info(fmt.Sprintf("Database: %d SQL scripts to process", len(toProcess)))
-
-		err = runScripts(runtime, tx, toProcess)
-		if err != nil {
-			runtime.Log.Error("Database: error processing SQL script", err)
-		}
-
-		return Unlock(runtime, tx, err, amLeader)
-	}
-
-	// If currently running process is a slave instance then we wait for migration to complete.
-	targetVersion := toProcess[len(toProcess)-1].Version
-
-	for targetVersion != currentVersion {
-		time.Sleep(time.Second)
-		runtime.Log.Info("Database: slave instance polling for upgrade process completion")
+	err = runScripts(runtime, tx, toProcess)
+	if err != nil {
+		runtime.Log.Error("Database: error processing SQL scripts", err)
 		tx.Rollback()
-
-		// Get database version and check again.
-		currentVersion, err = CurrentVersion(runtime)
-		if err != nil {
-			return Unlock(runtime, tx, err, amLeader)
-		}
 	}
 
-	return Unlock(runtime, tx, nil, amLeader)
+	tx.Commit()
+
+	return nil
+
+	// New style schema
+	// if existingDB {
+	// 	amLeader, err = Lock(runtime, len(toProcess))
+	// 	if err != nil {
+	// 		runtime.Log.Error("Database: failed to lock existing database for processing", err)
+	// 	}
+	// } else {
+	// 	// New installation hopes that you are only spinning up one instance of Documize.
+	// 	// Assumption: nobody will perform the intial setup in a clustered environment.
+	// 	amLeader = true
+	// }
+
+	// tx, err := runtime.Db.Beginx()
+	// if err != nil {
+	// 	return Unlock(runtime, tx, err, amLeader)
+	// }
+
+	// // If currently running process is database leader then we perform upgrade.
+	// if amLeader {
+	// 	runtime.Log.Info(fmt.Sprintf("Database: %d SQL scripts to process", len(toProcess)))
+
+	// 	err = runScripts(runtime, tx, toProcess)
+	// 	if err != nil {
+	// 		runtime.Log.Error("Database: error processing SQL script", err)
+	// 	}
+
+	// 	return Unlock(runtime, tx, err, amLeader)
+	// }
+
+	// // If currently running process is a slave instance then we wait for migration to complete.
+	// targetVersion := toProcess[len(toProcess)-1].Version
+
+	// for targetVersion != currentVersion {
+	// 	time.Sleep(time.Second)
+	// 	runtime.Log.Info("Database: slave instance polling for upgrade process completion")
+	// 	tx.Rollback()
+
+	// 	// Get database version and check again.
+	// 	currentVersion, err = CurrentVersion(runtime)
+	// 	if err != nil {
+	// 		return Unlock(runtime, tx, err, amLeader)
+	// 	}
+	// }
+
+	// return Unlock(runtime, tx, nil, amLeader)
 }
 
 // Run SQL scripts to instal or upgrade this database.
@@ -117,12 +143,23 @@ func runScripts(runtime *env.Runtime, tx *sqlx.Tx, scripts []Script) (err error)
 
 		err = executeSQL(tx, runtime.StoreProvider.Type(), runtime.StoreProvider.TypeVariant(), script.Script)
 		if err != nil {
+			runtime.Log.Error(fmt.Sprintf("error executing script version %d", script.Version), err)
 			return err
 		}
 
 		// Record the fact we have processed this database script version.
 		_, err = tx.Exec(runtime.StoreProvider.QueryRecordVersionUpgrade(script.Version))
 		if err != nil {
+			// For MySQL we try the legacy DB checks.
+			if runtime.StoreProvider.Type() == env.StoreTypeMySQL {
+				runtime.Log.Error(fmt.Sprintf("Database: attempting legacy fallback for script version %d", script.Version), err)
+
+				_, err = tx.Exec(runtime.StoreProvider.QueryRecordVersionUpgradeLegacy(script.Version))
+				if err != nil {
+					return err
+				}
+			}
+
 			return err
 		}
 	}
@@ -143,6 +180,7 @@ func executeSQL(tx *sqlx.Tx, st env.StoreType, variant string, SQLfile []byte) e
 
 		_, err := tx.Exec(stmt)
 		if err != nil {
+			fmt.Println("sql statement error:", stmt)
 			return err
 		}
 	}
@@ -175,12 +213,16 @@ func getStatements(bytes []byte) (stmts []string) {
 // CurrentVersion returns number that represents the current database version number.
 // For example 23 represents the 23rd iteration of the database.
 func CurrentVersion(runtime *env.Runtime) (version int, err error) {
-	row := runtime.Db.QueryRow(runtime.StoreProvider.QueryGetDatabaseVersion())
+	currentVersion := "0"
 
-	var currentVersion string
+	row := runtime.Db.QueryRow(runtime.StoreProvider.QueryGetDatabaseVersion())
 	err = row.Scan(&currentVersion)
 	if err != nil {
-		currentVersion = "0"
+		// For MySQL we try the legacy DB checks.
+		if runtime.StoreProvider.Type() == env.StoreTypeMySQL {
+			row := runtime.Db.QueryRow(runtime.StoreProvider.QueryGetDatabaseVersionLegacy())
+			err = row.Scan(&currentVersion)
+		}
 	}
 
 	return extractVersionNumber(currentVersion), nil
