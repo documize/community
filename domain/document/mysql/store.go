@@ -221,14 +221,14 @@ func (s Scope) Update(ctx domain.RequestContext, document doc.Document) (err err
 
 // UpdateGroup applies same values to all documents with the same group ID.
 func (s Scope) UpdateGroup(ctx domain.RequestContext, d doc.Document) (err error) {
-	_, err = ctx.Transaction.Exec(`UPDATE dmz_doc SET c_name=?, c_desc? WHERE c_orgid=? AND c_groupid=?`,
+	_, err = ctx.Transaction.Exec(`UPDATE dmz_doc SET c_name=?, c_desc=? WHERE c_orgid=? AND c_groupid=?`,
 		d.Name, d.Excerpt, ctx.OrgID, d.GroupID)
 
 	if err == sql.ErrNoRows {
 		err = nil
 	}
 	if err != nil {
-		err = errors.Wrap(err, "document.store.UpdateTitle")
+		err = errors.Wrap(err, "document.store.UpdateGroup")
 	}
 
 	return
@@ -347,10 +347,11 @@ func (s Scope) GetVersions(ctx domain.RequestContext, groupID string) (v []doc.V
 	v = []doc.Version{}
 
 	err = s.Runtime.Db.Select(&v, `
-        SELECT c_versionid AS versionid, c_refid as documentid
+        SELECT c_versionid AS versionid, c_refid As documentid
 		FROM dmz_doc
 		WHERE c_orgid=? AND c_groupid=?
-		ORDER BY c_versionorder`, ctx.OrgID, groupID)
+        ORDER BY c_versionorder`,
+		ctx.OrgID, groupID)
 
 	if err == sql.ErrNoRows {
 		err = nil

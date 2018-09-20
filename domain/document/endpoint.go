@@ -93,6 +93,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			ctx.Transaction.Rollback()
 			h.Runtime.Log.Error(method, err)
+			return
 		}
 
 		ctx.Transaction.Commit()

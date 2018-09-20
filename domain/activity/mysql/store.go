@@ -48,7 +48,7 @@ func (s Scope) RecordUserActivity(ctx domain.RequestContext, activity activity.U
 func (s Scope) GetDocumentActivity(ctx domain.RequestContext, id string) (a []activity.DocumentActivity, err error) {
 	qry := `SELECT a.id, DATE(a.c_created) AS created, a.c_orgid AS orgid,
         IFNULL(a.c_userid, '') AS userid, a.c_spaceid AS spaceid,
-        a.docid AS documentid, a.sectionid AS sectionid, a.c_activitytype AS activitytype,
+        a.c_docid AS documentid, a.c_sectionid AS sectionid, a.c_activitytype AS activitytype,
         a.c_metadata AS metadata,
 		IFNULL(u.c_firstname, 'Anonymous') AS firstname, IFNULL(u.c_lastname, 'Viewer') AS lastname,
 		IFNULL(p.c_name, '') AS sectionname
