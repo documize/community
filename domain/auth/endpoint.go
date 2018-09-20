@@ -82,6 +82,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 	if err != nil && err != sql.ErrNoRows {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error("unable to fetch user", err)
 		return
 	}
 	if len(u.Reset) > 0 || len(u.Password) == 0 {

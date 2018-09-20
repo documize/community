@@ -47,7 +47,7 @@ func (s Scope) GetDocumentPages(ctx domain.RequestContext, documentID string) (p
         SELECT id, c_refid AS refid, c_orgid AS orgid, c_docid AS documentid,
             c_userid AS userid, c_contenttype AS contenttype,
             c_type AS type, c_level AS level, c_sequence AS sequence, c_name AS name,
-            c_body AS body, c_revisions AS revisions, c_blockid AS templateid,
+            c_body AS body, c_revisions AS revisions, c_templateid AS templateid,
             c_status AS status, c_relativeid AS relativeid, c_created AS created, c_revised AS revised
         FROM dmz_section
         WHERE c_docid=? AND (c_status=0 OR ((c_status=4 OR c_status=2) AND c_relativeid=''))`,

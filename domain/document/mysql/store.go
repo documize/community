@@ -305,7 +305,7 @@ func (s Scope) Delete(ctx domain.RequestContext, documentID string) (rows int64,
 		return
 	}
 
-	return b.DeleteConstrained(ctx.Transaction, "document", ctx.OrgID, documentID)
+	return b.DeleteConstrained(ctx.Transaction, "dmz_doc", ctx.OrgID, documentID)
 }
 
 // DeleteBySpace removes all documents for given space.

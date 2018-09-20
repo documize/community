@@ -134,7 +134,7 @@ func (s Scope) RemoveReference(ctx domain.RequestContext, id string) (err error)
 func (s Scope) Update(ctx domain.RequestContext, b block.Block) (err error) {
 	b.Revised = time.Now().UTC()
 	_, err = ctx.Transaction.NamedExec(`UPDATE dmz_section_template SET
-        c_name=:title, c_body=:body, c_desc=:excerpt, c_rawbody=:rawbody,
+        c_name=:name, c_body=:body, c_desc=:excerpt, c_rawbody=:rawbody,
         c_config=:config, c_revised=:revised
         WHERE c_orgid=:orgid AND c_refid=:refid`,
 		b)

@@ -141,7 +141,7 @@ func (s Scope) GetCategoryPermissions(ctx domain.RequestContext, catID string) (
         FROM dmz_permission
         WHERE c_orgid=? AND c_location='category' AND c_who='user' AND (c_refid=? OR c_refid='0')
 		UNION ALL
-        SELECT id, p.c_orgid AS orgid, p.c_who AS who, p.c_whoid AS whoid, p.c_action AS action, p.c_scope AS scope, p.c_location AS location, p.c_refid AS refid
+        SELECT p.id, p.c_orgid AS orgid, p.c_who AS who, p.c_whoid AS whoid, p.c_action AS action, p.c_scope AS scope, p.c_location AS location, p.c_refid AS refid
         FROM dmz_permission p
         LEFT JOIN dmz_group_member r ON p.c_whoid=r.c_groupid
         WHERE p.c_orgid=? AND p.c_location='category' AND p.c_who='role' AND (p.c_refid=? OR p.c_refid='0')`,
@@ -163,7 +163,8 @@ func (s Scope) GetCategoryUsers(ctx domain.RequestContext, catID string) (u []us
 
 	err = s.Runtime.Db.Select(&u, `
 		SELECT u.id, IFNULL(u.c_refid, '') AS refid, IFNULL(u.c_firstname, '') AS firstname, IFNULL(u.c_lastname, '') as lastname, u.email AS email, u.initials AS initials, u.password AS password, u.salt AS salt, u.c_reset AS reset, u.c_created AS created, u.c_revised AS revised
-		FROM dmz_user u LEFT JOIN dmz_user_account a ON u.c_refid = a.c_userid
+        FROM dmz_user u
+        LEFT JOIN dmz_user_account a ON u.c_refid = a.c_userid
 		WHERE a.c_orgid=? AND a.c_active=1 AND u.c_refid IN (
 			SELECT c_whoid from dmz_permission
 			WHERE c_orgid=? AND c_who='user' AND c_location='category' AND c_refid=?

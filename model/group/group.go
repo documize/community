@@ -26,7 +26,7 @@ type Group struct {
 type Member struct {
 	ID        uint64 `json:"id"`
 	OrgID     string `json:"orgId"`
-	RoleID    string `json:"roleId"`
+	GroupID   string `json:"groupId"`
 	UserID    string `json:"userId"`
 	Firstname string `json:"firstname"` //read-only info
 	Lastname  string `json:"lastname"`  //read-only info
@@ -36,7 +36,7 @@ type Member struct {
 type Record struct {
 	ID      uint64 `json:"id"`
 	OrgID   string `json:"orgId"`
-	RoleID  string `json:"roleId"`
+	GroupID string `json:"groupId"`
 	UserID  string `json:"userId"`
 	Name    string `json:"name"`
 	Purpose string `json:"purpose"`
@@ -45,7 +45,7 @@ type Record struct {
 // UserHasGroupMembership returns true if user belongs to specified group.
 func UserHasGroupMembership(r []Record, groupID, userID string) bool {
 	for i := range r {
-		if r[i].RoleID == groupID && r[i].UserID == userID {
+		if r[i].GroupID == groupID && r[i].UserID == userID {
 			return true
 		}
 	}
@@ -58,7 +58,7 @@ func FilterGroupRecords(r []Record, groupID string) (m []Record) {
 	m = []Record{}
 
 	for i := range r {
-		if r[i].RoleID == groupID {
+		if r[i].GroupID == groupID {
 			m = append(m, r[i])
 		}
 	}

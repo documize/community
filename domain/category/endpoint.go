@@ -164,6 +164,7 @@ func (h *Handler) GetAll(w http.ResponseWriter, r *http.Request) {
 	cat, err := h.Store.Category.GetAllBySpace(ctx, spaceID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -249,6 +250,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	cat, err := h.Store.Category.Get(ctx, catID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -318,8 +320,8 @@ func (h *Handler) GetSummary(w http.ResponseWriter, r *http.Request) {
 
 	s, err := h.Store.Category.GetSpaceCategorySummary(ctx, spaceID)
 	if err != nil {
-		h.Runtime.Log.Error("get space category summary failed", err)
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 

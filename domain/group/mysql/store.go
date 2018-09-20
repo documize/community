@@ -46,7 +46,7 @@ func (s Scope) Add(ctx domain.RequestContext, g group.Group) (err error) {
 // Get returns requested group.
 func (s Scope) Get(ctx domain.RequestContext, refID string) (g group.Group, err error) {
 	err = s.Runtime.Db.Get(&g, `
-        SELECT id, c_refid AS refid, c_orgid AS orgid, c_name AS name, c_desc AS purpose, c_created, c_revised
+    SELECT id, c_refid AS refid, c_orgid AS orgid, c_name AS name, c_desc AS purpose, c_created AS created, c_revised AS revised
         FROM dmz_group
         WHERE c_orgid=? AND c_refid=?`,
 		ctx.OrgID, refID)
@@ -63,8 +63,8 @@ func (s Scope) GetAll(ctx domain.RequestContext) (groups []group.Group, err erro
 	groups = []group.Group{}
 
 	err = s.Runtime.Db.Select(&groups, `
-        SELECT id, c_refid AS refid, c_orgid AS orgid, c_name AS name, c_desc AS purpose, c_created, c_revised
-        COUNT(b.groupid) AS members
+        SELECT a.id, a.c_refid AS refid, a.c_orgid AS orgid, a.c_name AS name, a.c_desc AS purpose, a.c_created AS created, a.c_revised AS revised,
+        COUNT(b.c_groupid) AS members
 		FROM dmz_group a
 		LEFT JOIN dmz_group_member b ON a.c_refid=b.c_groupid
 		WHERE a.c_orgid=?
@@ -101,7 +101,10 @@ func (s Scope) Update(ctx domain.RequestContext, g group.Group) (err error) {
 // Delete removes group from store.
 func (s Scope) Delete(ctx domain.RequestContext, refID string) (rows int64, err error) {
 	b := mysql.BaseQuery{}
-	b.DeleteConstrained(ctx.Transaction, "role", ctx.OrgID, refID)
+	_, err = b.DeleteConstrained(ctx.Transaction, "dmz_group", ctx.OrgID, refID)
+	if err != nil {
+		return
+	}
 	return b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_group_member WHERE c_orgid=\"%s\" AND c_groupid=\"%s\"", ctx.OrgID, refID))
 }
 
@@ -130,7 +133,7 @@ func (s Scope) GetGroupMembers(ctx domain.RequestContext, groupID string) (membe
 
 // JoinGroup adds user to group.
 func (s Scope) JoinGroup(ctx domain.RequestContext, groupID, userID string) (err error) {
-	_, err = ctx.Transaction.Exec("INSERT INTO dmz_group_member (orgid, groupid, userid) VALUES (?, ?, ?)", ctx.OrgID, groupID, userID)
+	_, err = ctx.Transaction.Exec("INSERT INTO dmz_group_member (c_orgid, c_groupid, c_userid) VALUES (?, ?, ?)", ctx.OrgID, groupID, userID)
 	if err != nil {
 		err = errors.Wrap(err, "insert group member")
 	}

@@ -192,6 +192,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	g, err := h.Store.Group.Get(ctx, groupID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
