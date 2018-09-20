@@ -55,7 +55,7 @@ func InitRuntime(r *env.Runtime, s *domain.Store) bool {
 		storage.SetMySQLProvider(r, s)
 	case "percona":
 		storage.SetMySQLProvider(r, s)
-	case "pggg":
+	case "postgres":
 		// storage.SetPostgresSQLProvider(r, s)
 	case "mssql":
 		// storage.SetSQLServerProvider(r, s)

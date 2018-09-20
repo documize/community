@@ -246,7 +246,7 @@ func (s Scope) GetDocumentPermissions(ctx domain.RequestContext, documentID stri
         FROM dmz_permission
         WHERE c_orgid=? AND c_location='document' AND c_refid=? AND c_who='user'
 		UNION ALL
-        SELECT id, p.c_orgid AS orgid, p.c_who AS who, p.c_whoid AS whoid, p.c_action AS action, p.c_scope AS scope, p.c_location AS location, p.c_refid AS refid
+        SELECT p.id, p.c_orgid AS orgid, p.c_who AS who, p.c_whoid AS whoid, p.c_action AS action, p.c_scope AS scope, p.c_location AS location, p.c_refid AS refid
         FROM dmz_permission p
         LEFT JOIN dmz_group_member r ON p.c_whoid=r.c_groupid
         WHERE p.c_orgid=? AND p.c_location='document' AND p.c_refid=? AND p.c_who='role'`,
@@ -267,7 +267,7 @@ func (s Scope) GetDocumentPermissions(ctx domain.RequestContext, documentID stri
 func (s Scope) DeleteDocumentPermissions(ctx domain.RequestContext, documentID string) (rows int64, err error) {
 	b := mysql.BaseQuery{}
 
-	sql := fmt.Sprintf("DELETE FROM dmz_permission WHERE c_orgid='%s' AND location='document' AND c_refid='%s'", ctx.OrgID, documentID)
+	sql := fmt.Sprintf("DELETE FROM dmz_permission WHERE c_orgid='%s' AND c_location='document' AND c_refid='%s'", ctx.OrgID, documentID)
 
 	return b.DeleteWhere(ctx.Transaction, sql)
 }
