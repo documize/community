@@ -226,7 +226,7 @@ func (s Scope) matchFullText(ctx domain.RequestContext, keywords, itemType strin
 	WHERE
 		s.c_orgid = ?
 		AND s.c_itemtype = ?
-		AND s.c_docid = d.refid
+		AND s.c_docid = d.c_refid
 		AND d.c_spaceid IN
 		(
             SELECT c_refid FROM dmz_space WHERE c_orgid=? AND c_refid IN

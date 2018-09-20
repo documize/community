@@ -35,7 +35,7 @@ func (s Scope) Add(ctx domain.RequestContext, d doc.Document) (err error) {
 	d.Revised = d.Created // put same time in both fields
 
 	_, err = ctx.Transaction.Exec(`
-        INSERT INTO dmz_doc (c_refid, c_orgid, c_spaceid, c_userid, c_job, c_location, c_name, c_desc as excerpt, c_slug, c_tags, c_template, c_protection, c_approval, c_lifecycle, c_versioned, c_versionid, c_versionorder, c_groupid, c_created, c_revised)
+        INSERT INTO dmz_doc (c_refid, c_orgid, c_spaceid, c_userid, c_job, c_location, c_name, c_desc, c_slug, c_tags, c_template, c_protection, c_approval, c_lifecycle, c_versioned, c_versionid, c_versionorder, c_groupid, c_created, c_revised)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 		d.RefID, d.OrgID, d.SpaceID, d.UserID, d.Job, d.Location, d.Name, d.Excerpt, d.Slug, d.Tags,
 		d.Template, d.Protection, d.Approval, d.Lifecycle, d.Versioned, d.VersionID, d.VersionOrder, d.GroupID, d.Created, d.Revised)
@@ -312,7 +312,7 @@ func (s Scope) Delete(ctx domain.RequestContext, documentID string) (rows int64,
 // Remove document pages, revisions, attachments, updates the search subsystem.
 func (s Scope) DeleteBySpace(ctx domain.RequestContext, spaceID string) (rows int64, err error) {
 	b := mysql.BaseQuery{}
-	rows, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_section WHERE _cdocid IN (SELECT c_refid FROM dmz_doc WHERE c_spaceid=\"%s\" AND c_orgid=\"%s\")", spaceID, ctx.OrgID))
+	rows, err = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_section WHERE c_docid IN (SELECT c_refid FROM dmz_doc WHERE c_spaceid=\"%s\" AND c_orgid=\"%s\")", spaceID, ctx.OrgID))
 
 	if err != nil {
 		return
@@ -333,7 +333,7 @@ func (s Scope) DeleteBySpace(ctx domain.RequestContext, spaceID string) (rows in
 		return
 	}
 
-	return b.DeleteConstrained(ctx.Transaction, "document", ctx.OrgID, spaceID)
+	return b.DeleteConstrained(ctx.Transaction, "dmz_doc", ctx.OrgID, spaceID)
 }
 
 // GetVersions returns a slice containing the documents for a given space.

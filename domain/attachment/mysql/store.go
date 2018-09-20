@@ -35,7 +35,7 @@ func (s Scope) Add(ctx domain.RequestContext, a attachment.Attachment) (err erro
 	bits := strings.Split(a.Filename, ".")
 	a.Extension = bits[len(bits)-1]
 
-	_, err = ctx.Transaction.Exec("INSERT INTO dmz_doc_attachment (c_refid, c_orgid, c_documentid, c_job, c_fileid, c_filename, c_data, c_extension, c_created, c_revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+	_, err = ctx.Transaction.Exec("INSERT INTO dmz_doc_attachment (c_refid, c_orgid, c_docid, c_job, c_fileid, c_filename, c_data, c_extension, c_created, c_revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 		a.RefID, a.OrgID, a.DocumentID, a.Job, a.FileID, a.Filename, a.Data, a.Extension, a.Created, a.Revised)
 
 	if err != nil {

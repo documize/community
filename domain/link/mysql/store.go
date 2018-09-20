@@ -160,10 +160,10 @@ func (s Scope) SearchCandidates(ctx domain.RequestContext, keywords string) (doc
 	// find matching documents
 	temp := []link.Candidate{}
 	keywords = strings.TrimSpace(strings.ToLower(keywords))
-	likeQuery := "LOWER(c_name) LIKE '%" + keywords + "%'"
+	likeQuery := "LOWER(d.c_name) LIKE '%" + keywords + "%'"
 
 	err = s.Runtime.Db.Select(&temp, `
-		SELECT d.c_refid AS documentid, d.c_spaceid AS spaceid, d.c_name, l.c_name AS context
+		SELECT d.c_refid AS documentid, d.c_spaceid AS spaceid, d.c_name AS title, l.c_name AS context
         FROM dmz_doc d LEFT JOIN dmz_space l ON d.c_spaceid=l.c_refid
         WHERE l.c_orgid=? AND `+likeQuery+` AND d.c_spaceid IN
 		    (SELECT c_refid FROM dmz_space WHERE c_orgid=? AND c_refid IN
@@ -237,11 +237,11 @@ func (s Scope) SearchCandidates(ctx domain.RequestContext, keywords string) (doc
 	}
 
 	// find matching attachments
-	likeQuery = "LOWER(a.filename) LIKE '%" + keywords + "%'"
+	likeQuery = "LOWER(a.c_filename) LIKE '%" + keywords + "%'"
 	temp = []link.Candidate{}
 
 	err = s.Runtime.Db.Select(&temp, `
-        SELECT a.c_refid AS targetid, a.c_docid AS documentid, a.c_filename AS title, a.c_extension AS context, d.c_spaceiid AS spaceid
+        SELECT a.c_refid AS targetid, a.c_docid AS documentid, a.c_filename AS title, a.c_extension AS context, d.c_spaceid AS spaceid
         FROM dmz_doc_attachment a LEFT JOIN dmz_doc d ON d.c_refid=a.c_docid
         WHERE a.c_orgid=? AND `+likeQuery+` AND d.c_spaceid IN
             (SELECT c_refid FROM dmz_space WHERE c_orgid=? AND c_refid IN

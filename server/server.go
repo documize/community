@@ -30,7 +30,7 @@ var testHost string // used during automated testing
 
 // Start router to handle all HTTP traffic.
 func Start(rt *env.Runtime, s *domain.Store, ready chan struct{}) {
-	rt.Log.Info(fmt.Sprintf("Edition: %s version %s", rt.Product.Title, rt.Product.Version))
+	rt.Log.Info(fmt.Sprintf("Product: %s version %s", rt.Product.Title, rt.Product.Version))
 
 	// decide which mode to serve up
 	switch rt.Flags.SiteMode {

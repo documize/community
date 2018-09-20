@@ -159,7 +159,7 @@ func (s Scope) GetMembers(ctx domain.RequestContext) (r []group.Record, err erro
         SELECT a.id, a.c_orgid AS orgid, a.c_groupid AS groupid, a.c_userid AS userid,
         b.c_name As name, b.c_desc AS purpose
 		FROM dmz_group_member a, dmz_group b
-		WHERE a.c_orgid=? AND a.c_groupid=b.refid
+		WHERE a.c_orgid=? AND a.c_groupid=b.c_refid
 		ORDER BY a.c_userid`,
 		ctx.OrgID)
 

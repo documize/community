@@ -197,7 +197,7 @@ func (s Scope) Update(ctx domain.RequestContext, page page.Page, refID, userID s
 // It then propagates that change into the search table, adds a delete the page revisions history, and audits that the page has been removed.
 func (s Scope) Delete(ctx domain.RequestContext, documentID, pageID string) (rows int64, err error) {
 	b := mysql.BaseQuery{}
-	rows, err = b.DeleteConstrained(ctx.Transaction, "page", ctx.OrgID, pageID)
+	rows, err = b.DeleteConstrained(ctx.Transaction, "dmz_section", ctx.OrgID, pageID)
 
 	if err == nil {
 		_, _ = b.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_section_meta WHERE c_orgid='%s' AND c_sectionid='%s'", ctx.OrgID, pageID))

@@ -159,7 +159,7 @@ func (s Scope) AssociateDocument(ctx domain.RequestContext, m category.Member) (
 	m.Created = time.Now().UTC()
 	m.Revised = time.Now().UTC()
 
-	_, err = ctx.Transaction.Exec("INSERT INTO dmz_category_member (c_refid, c_orgid, c_categoryid, c_spaceid, docid, c_created, c_revised) VALUES (?, ?, ?, ?, ?, ?, ?)",
+	_, err = ctx.Transaction.Exec("INSERT INTO dmz_category_member (c_refid, c_orgid, c_categoryid, c_spaceid, c_docid, c_created, c_revised) VALUES (?, ?, ?, ?, ?, ?, ?)",
 		m.RefID, m.OrgID, m.CategoryID, m.SpaceID, m.DocumentID, m.Created, m.Revised)
 
 	if err != nil {

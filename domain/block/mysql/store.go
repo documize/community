@@ -34,7 +34,7 @@ func (s Scope) Add(ctx domain.RequestContext, b block.Block) (err error) {
 	b.Created = time.Now().UTC()
 	b.Revised = time.Now().UTC()
 
-	_, err = ctx.Transaction.Exec("INSERT INTO dmz_section_template (c_refid, c_orgid, c_spaceid, c_userid, c_contenttype, c_type, c_name, c_body, c_desc, c_rawbody, c_config, c_external, used, created, revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+	_, err = ctx.Transaction.Exec("INSERT INTO dmz_section_template (c_refid, c_orgid, c_spaceid, c_userid, c_contenttype, c_type, c_name, c_body, c_desc, c_rawbody, c_config, c_external, c_used, c_created, c_revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 		b.RefID, b.OrgID, b.SpaceID, b.UserID, b.ContentType, b.Type, b.Name, b.Body, b.Excerpt, b.RawBody, b.Config, b.ExternalSource, b.Used, b.Created, b.Revised)
 
 	if err != nil {
