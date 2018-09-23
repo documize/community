@@ -62,7 +62,9 @@ func InstallUpgrade(runtime *env.Runtime, existingDB bool) (err error) {
 		}
 	}
 
-	// For MySQL type there was major new schema introduced in v24.
+    runtime.Log.Info(fmt.Sprintf("Database: %d scripts to process", len(toProcess)))
+
+    // For MySQL type there was major new schema introduced in v24.
 	// We check for this release and bypass usual locking code
 	// because tables have changed.
 	legacyMigration := runtime.StoreProvider.Type() == env.StoreTypeMySQL &&
@@ -72,6 +74,8 @@ func InstallUpgrade(runtime *env.Runtime, existingDB bool) (err error) {
 		// Bypass all DB locking/checking processes as these look for new schema
 		// which we are about to install.
 		toProcess = toProcess[len(toProcess)-1:]
+
+        runtime.Log.Info(fmt.Sprintf("Database: legacy schema has %d scripts to process", len(toProcess)))
 	}
 
 	tx, err := runtime.Db.Beginx()
@@ -139,28 +143,31 @@ func InstallUpgrade(runtime *env.Runtime, existingDB bool) (err error) {
 func runScripts(runtime *env.Runtime, tx *sqlx.Tx, scripts []Script) (err error) {
 	// We can have multiple scripts as each Documize database change has it's own SQL script.
 	for _, script := range scripts {
-		runtime.Log.Info(fmt.Sprintf("Databasse: processing SQL version %d", script.Version))
+		runtime.Log.Info(fmt.Sprintf("Database: processing SQL script %d", script.Version))
 
 		err = executeSQL(tx, runtime.StoreProvider.Type(), runtime.StoreProvider.TypeVariant(), script.Script)
 		if err != nil {
-			runtime.Log.Error(fmt.Sprintf("error executing script version %d", script.Version), err)
+			runtime.Log.Error(fmt.Sprintf("error executing SQL script %d", script.Version), err)
 			return err
 		}
 
 		// Record the fact we have processed this database script version.
 		_, err = tx.Exec(runtime.StoreProvider.QueryRecordVersionUpgrade(script.Version))
 		if err != nil {
-			// For MySQL we try the legacy DB checks.
+			// For MySQL we try the legacy DB schema.
 			if runtime.StoreProvider.Type() == env.StoreTypeMySQL {
-				runtime.Log.Error(fmt.Sprintf("Database: attempting legacy fallback for script version %d", script.Version), err)
+				runtime.Log.Info(fmt.Sprintf("Database: attempting legacy fallback for SQL script %d", script.Version))
 
 				_, err = tx.Exec(runtime.StoreProvider.QueryRecordVersionUpgradeLegacy(script.Version))
 				if err != nil {
+                    runtime.Log.Error(fmt.Sprintf("error recording execution of SQL script %d", script.Version), err)
 					return err
 				}
-			}
-
-			return err
+			} else {
+			    // Unknown issue running script on non-MySQL database.
+                runtime.Log.Error(fmt.Sprintf("error executing SQL script %d", script.Version), err)
+                return err
+            }
 		}
 	}
 

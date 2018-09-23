@@ -136,7 +136,7 @@ func setupAccount(rt *env.Runtime, completion onboardRequest, serial string) (er
 	_, err = runSQL(rt, sql)
 
 	if err != nil {
-		rt.Log.Error("Failed to insert into organization", err)
+        rt.Log.Error("INSERT TINO dmz_org failed", err)
 		return
 	}
 
@@ -147,7 +147,7 @@ func setupAccount(rt *env.Runtime, completion onboardRequest, serial string) (er
 	_, err = runSQL(rt, sql)
 
 	if err != nil {
-		rt.Log.Error("Failed with error", err)
+        rt.Log.Error("INSERT TINO dmz_user failed", err)
 		return err
 	}
 
@@ -157,7 +157,7 @@ func setupAccount(rt *env.Runtime, completion onboardRequest, serial string) (er
 	_, err = runSQL(rt, sql)
 
 	if err != nil {
-		rt.Log.Error("Failed with error", err)
+		rt.Log.Error("INSERT TINO dmz_user_account failed", err)
 		return err
 	}
 
@@ -166,7 +166,7 @@ func setupAccount(rt *env.Runtime, completion onboardRequest, serial string) (er
 	sql = fmt.Sprintf("INSERT INTO dmz_space (c_refid, c_orgid, c_name, c_type, c_userid) VALUES (\"%s\", \"%s\", \"My Project\", 2, \"%s\")", labelID, orgID, userID)
 	_, err = runSQL(rt, sql)
 	if err != nil {
-		rt.Log.Error("INSERT INTO label failed", err)
+		rt.Log.Error("INSERT INTO dmz_space failed", err)
 	}
 
 	// assign permissions to space
@@ -175,30 +175,30 @@ func setupAccount(rt *env.Runtime, completion onboardRequest, serial string) (er
 		sql = fmt.Sprintf("INSERT INTO dmz_permission (c_orgid, c_who, c_whoid, c_action, c_scope, c_location, c_refid) VALUES (\"%s\", 'user', \"%s\", \"%s\", 'object', 'space', \"%s\")", orgID, userID, p, labelID)
 		_, err = runSQL(rt, sql)
 		if err != nil {
-			rt.Log.Error("INSERT INTO permission failed", err)
+			rt.Log.Error("INSERT INTO dmz_permission failed", err)
 		}
 	}
 
 	// Create some user groups
 	groupDevID := uniqueid.Generate()
-	sql = fmt.Sprintf("INSERT INTO group (c_refid, c_orgid, c_name, c_desc) VALUES (\"%s\", \"%s\", \"Technology\", \"On-site and remote development teams\")", groupDevID, orgID)
+	sql = fmt.Sprintf("INSERT INTO dmz_group (c_refid, c_orgid, c_name, c_desc) VALUES (\"%s\", \"%s\", \"Technology\", \"On-site and remote development teams\")", groupDevID, orgID)
 	_, err = runSQL(rt, sql)
 	if err != nil {
-		rt.Log.Error("INSERT INTO group failed", err)
+		rt.Log.Error("INSERT INTO dmz_group failed", err)
 	}
 
 	groupProjectID := uniqueid.Generate()
-	sql = fmt.Sprintf("INSERT INTO group (c_refid, c_orgid, c_name, c_desc) VALUES (\"%s\", \"%s\", \"Project Management\", \"HQ project management\")", groupProjectID, orgID)
+	sql = fmt.Sprintf("INSERT INTO dmz_group (c_refid, c_orgid, c_name, c_desc) VALUES (\"%s\", \"%s\", \"Project Management\", \"HQ project management\")", groupProjectID, orgID)
 	_, err = runSQL(rt, sql)
 	if err != nil {
-		rt.Log.Error("INSERT INTO group failed", err)
+		rt.Log.Error("INSERT INTO dmz_group failed", err)
 	}
 
 	groupBackofficeID := uniqueid.Generate()
-	sql = fmt.Sprintf("INSERT INTO group (c_refid, c_orgid, c_name, c_desc) VALUES (\"%s\", \"%s\", \"Back Office\", \"Non-IT and PMO personnel\")", groupBackofficeID, orgID)
+	sql = fmt.Sprintf("INSERT INTO dmz_group (c_refid, c_orgid, c_name, c_desc) VALUES (\"%s\", \"%s\", \"Back Office\", \"Non-IT and PMO personnel\")", groupBackofficeID, orgID)
 	_, err = runSQL(rt, sql)
 	if err != nil {
-		rt.Log.Error("INSERT INTO group failed", err)
+		rt.Log.Error("INSERT INTO dmz_group failed", err)
 	}
 
 	// Join some groups
@@ -229,7 +229,7 @@ func runSQL(rt *env.Runtime, sql string) (id uint64, err error) {
 
 	tx, err := rt.Db.Beginx()
 	if err != nil {
-		rt.Log.Error("runSql - failed to get transaction", err)
+		rt.Log.Error("setup - failed to get transaction", err)
 		return
 	}
 
@@ -237,12 +237,12 @@ func runSQL(rt *env.Runtime, sql string) (id uint64, err error) {
 
 	if err != nil {
 		tx.Rollback()
-		rt.Log.Error("runSql - unable to run sql", err)
+		rt.Log.Error("setup - unable to run sql", err)
 		return
 	}
 
 	if err = tx.Commit(); err != nil {
-		rt.Log.Error("runSql - unable to commit sql", err)
+		rt.Log.Error("setup - unable to commit sql", err)
 		return
 	}
 
