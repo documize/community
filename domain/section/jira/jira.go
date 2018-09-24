@@ -239,11 +239,13 @@ func authenticate(login jiraLogin) (c *jira.Client, u *jira.User, err error) {
 	tp := jira.BasicAuthTransport{Username: login.Username, Password: login.Secret, Transport: tr}
 	c, err = jira.NewClient(tp.Client(), login.URL)
 	if err != nil {
+		fmt.Println("Cannot authenticate with Jira:", err)
 		return
 	}
 
 	u, _, err = c.User.Get(login.Username)
 	if err != nil {
+		fmt.Println("Cannot get authenticated Jira user:", err)
 		return
 	}
 
@@ -320,21 +322,28 @@ const renderTemplate = `
         {{$app := .JiraURL}}
         {{range $item := .Issues}}
             <tr>
-                <td class="bordered no-width"><a href="{{ $app }}/browse/{{ $item.Key }}">{{ $item.Key }}</a></td>
+                <td class="bordered no-width"><a href="{{ $app }}/browse/{{ $item.Key }}">{{ $item.Key }}&nbsp;</a></td>
                 <td class="bordered no-width"><img class="section-jira-icon" src='{{ $item.Fields.Type.IconURL }}' /></td>
-                <td class="bordered no-width"><span class="badge badge-warning">{{ $item.Fields.Status.Name }}</span></td>
+                <td class="bordered no-width"><span class="badge badge-warning">{{ $item.Fields.Status.Name }}</span>&nbsp;</td>
                 <td class="bordered no-width"><img class="section-jira-icon" src='{{ $item.Fields.Priority.IconURL }}' /></td>
                 <td class="bordered no-width">
                     {{range $comp := $item.Fields.Components}}
                         {{ $comp.Name }}
                     {{end}}
+                    &nbsp;
                 </td>
-                <td class="bordered no-width">{{ $item.Fields.Summary }}</td>
-                <td class="bordered no-width">{{ $item.Fields.Assignee.DisplayName }}</td>
+                <td class="bordered no-width">{{ $item.Fields.Summary }}&nbsp;</td>
+                <td class="bordered no-width">
+                    {{if $item.Fields.Assignee}}
+                        {{$item.Fields.Assignee.DisplayName}}
+                    {{end}}
+                    &nbsp;
+                </td>
                 <td class="bordered no-width">
                     {{range $ver := $item.Fields.FixVersions}}
                         {{ $ver.Name }}
                     {{end}}
+                    &nbsp;
                 </td>
             </tr>
 		{{end}}
