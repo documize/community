@@ -15,59 +15,129 @@ package storage
 import (
 	"errors"
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
 
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/domain"
-	account "github.com/documize/community/domain/account/mysql"
-	activity "github.com/documize/community/domain/activity/mysql"
-	attachment "github.com/documize/community/domain/attachment/mysql"
-	audit "github.com/documize/community/domain/audit/mysql"
-	block "github.com/documize/community/domain/block/mysql"
-	category "github.com/documize/community/domain/category/mysql"
-	doc "github.com/documize/community/domain/document/mysql"
-	group "github.com/documize/community/domain/group/mysql"
-	link "github.com/documize/community/domain/link/mysql"
-	meta "github.com/documize/community/domain/meta/mysql"
-	org "github.com/documize/community/domain/organization/mysql"
-	page "github.com/documize/community/domain/page/mysql"
-	permission "github.com/documize/community/domain/permission/mysql"
-	pin "github.com/documize/community/domain/pin/mysql"
-	search "github.com/documize/community/domain/search/mysql"
-	setting "github.com/documize/community/domain/setting/mysql"
-	space "github.com/documize/community/domain/space/mysql"
-	user "github.com/documize/community/domain/user/mysql"
+	account "github.com/documize/community/domain/account"
+	activity "github.com/documize/community/domain/activity"
+	attachment "github.com/documize/community/domain/attachment"
+	audit "github.com/documize/community/domain/audit"
+	block "github.com/documize/community/domain/block"
+	category "github.com/documize/community/domain/category"
+	document "github.com/documize/community/domain/document"
+	group "github.com/documize/community/domain/group"
+	link "github.com/documize/community/domain/link"
+	meta "github.com/documize/community/domain/meta"
+	org "github.com/documize/community/domain/organization"
+	page "github.com/documize/community/domain/page"
+	permission "github.com/documize/community/domain/permission"
+	pin "github.com/documize/community/domain/pin"
+	search "github.com/documize/community/domain/search"
+	setting "github.com/documize/community/domain/setting"
+	space "github.com/documize/community/domain/space"
+	user "github.com/documize/community/domain/user"
+	_ "github.com/go-sql-driver/mysql" // the mysql driver is required behind the scenes
 )
 
 // SetMySQLProvider creates MySQL provider
 func SetMySQLProvider(r *env.Runtime, s *domain.Store) {
-	// Set up provider specific details.
+	// Set up provider specific details and wire up data prividers.
 	r.StoreProvider = MySQLProvider{
 		ConnectionString: r.Flags.DBConn,
 		Variant:          r.Flags.DBType,
 	}
 
 	// Wire up data providers!
-	s.Account = account.Scope{Runtime: r}
-	s.Activity = activity.Scope{Runtime: r}
-	s.Attachment = attachment.Scope{Runtime: r}
-	s.Audit = audit.Scope{Runtime: r}
-	s.Block = block.Scope{Runtime: r}
-	s.Category = category.Scope{Runtime: r}
-	s.Document = doc.Scope{Runtime: r}
-	s.Group = group.Scope{Runtime: r}
-	s.Link = link.Scope{Runtime: r}
-	s.Meta = meta.Scope{Runtime: r}
-	s.Organization = org.Scope{Runtime: r}
-	s.Page = page.Scope{Runtime: r}
-	s.Pin = pin.Scope{Runtime: r}
-	s.Permission = permission.Scope{Runtime: r}
-	s.Search = search.Scope{Runtime: r}
-	s.Setting = setting.Scope{Runtime: r}
-	s.Space = space.Scope{Runtime: r}
-	s.User = user.Scope{Runtime: r}
+	accountStore := account.Store{}
+	accountStore.Runtime = r
+	s.Account = accountStore
+
+	// Activity
+	activityStore := activity.Store{}
+	activityStore.Runtime = r
+	s.Activity = activityStore
+
+	// Attachment
+	attachmentStore := attachment.Store{}
+	attachmentStore.Runtime = r
+	s.Attachment = attachmentStore
+
+	// Audit
+	auditStore := audit.Store{}
+	auditStore.Runtime = r
+	s.Audit = auditStore
+
+	// (Block) Section Template
+	blockStore := block.Store{}
+	blockStore.Runtime = r
+	s.Block = blockStore
+
+	// Category
+	categoryStore := category.Store{}
+	categoryStore.Runtime = r
+	s.Category = categoryStore
+
+	// Document
+	documentStore := document.Store{}
+	documentStore.Runtime = r
+	s.Document = documentStore
+
+	// Group
+	groupStore := group.Store{}
+	groupStore.Runtime = r
+	s.Group = groupStore
+
+	// Link
+	linkStore := link.Store{}
+	linkStore.Runtime = r
+	s.Link = linkStore
+
+	// Meta
+	metaStore := meta.Store{}
+	metaStore.Runtime = r
+	s.Meta = metaStore
+
+	// Organization (tenant)
+	orgStore := org.Store{}
+	orgStore.Runtime = r
+	s.Organization = orgStore
+
+	// Page (section)
+	pageStore := page.Store{}
+	pageStore.Runtime = r
+	s.Page = pageStore
+
+	// Permission
+	permissionStore := permission.Store{}
+	permissionStore.Runtime = r
+	s.Permission = permissionStore
+
+	// Pin
+	pinStore := pin.Store{}
+	pinStore.Runtime = r
+	s.Pin = pinStore
+
+	// Search
+	searchStore := search.Store{}
+	searchStore.Runtime = r
+	s.Search = searchStore
+
+	// Setting
+	settingStore := setting.Store{}
+	settingStore.Runtime = r
+	s.Setting = settingStore
+
+	// Space
+	spaceStore := space.Store{}
+	spaceStore.Runtime = r
+	s.Space = spaceStore
+
+	// User
+	userStore := user.Store{}
+	userStore.Runtime = r
+	s.User = userStore
 }
 
 // MySQLProvider supports MySQL 5.7.x and 8.0.x versions.
@@ -163,27 +233,27 @@ func (p MySQLProvider) QueryMeta() string {
 	return "SELECT VERSION() AS version, @@version_comment as comment, @@character_set_database AS charset, @@collation_database AS collation"
 }
 
-// QueryStartLock locks database tables.
-func (p MySQLProvider) QueryStartLock() string {
-	return "LOCK TABLE dmz_config WRITE;"
-}
+// // QueryStartLock locks database tables.
+// func (p MySQLProvider) QueryStartLock() string {
+// 	return "LOCK TABLE dmz_config WRITE;"
+// }
 
-// QueryFinishLock unlocks database tables.
-func (p MySQLProvider) QueryFinishLock() string {
-	return "UNLOCK TABLES;"
-}
+// // QueryFinishLock unlocks database tables.
+// func (p MySQLProvider) QueryFinishLock() string {
+// 	return "UNLOCK TABLES;"
+// }
 
-// QueryInsertProcessID returns database specific query that will
-// insert ID of this running process.
-func (p MySQLProvider) QueryInsertProcessID() string {
-	return "INSERT INTO dmz_config (c_key,c_config) " + fmt.Sprintf(`VALUES ('DBLOCK','{"pid": "%d"}');`, os.Getpid())
-}
+// // QueryInsertProcessID returns database specific query that will
+// // insert ID of this running process.
+// func (p MySQLProvider) QueryInsertProcessID() string {
+// 	return "INSERT INTO dmz_config (c_key,c_config) " + fmt.Sprintf(`VALUES ('DBLOCK','{"pid": "%d"}');`, os.Getpid())
+// }
 
-// QueryDeleteProcessID returns database specific query that will
-// delete ID of this running process.
-func (p MySQLProvider) QueryDeleteProcessID() string {
-	return "DELETE FROM dmz_config WHERE c_key='DBLOCK';"
-}
+// // QueryDeleteProcessID returns database specific query that will
+// // delete ID of this running process.
+// func (p MySQLProvider) QueryDeleteProcessID() string {
+// 	return "DELETE FROM dmz_config WHERE c_key='DBLOCK';"
+// }
 
 // QueryRecordVersionUpgrade returns database specific insert statement
 // that records the database version number.
@@ -213,8 +283,20 @@ func (p MySQLProvider) QueryGetDatabaseVersionLegacy() string {
 
 // QueryTableList returns a list tables in Documize database.
 func (p MySQLProvider) QueryTableList() string {
-	return `SELECT COUNT(*) FROM information_schema.tables
-        WHERE table_schema = '` + p.DatabaseName() + `' and TABLE_TYPE='BASE TABLE'`
+	return `SELECT TABLE_NAME FROM information_schema.tables
+        WHERE TABLE_SCHEMA = '` + p.DatabaseName() + `' AND TABLE_TYPE='BASE TABLE'`
+}
+
+// JSONEmpty returns empty SQL JSON object.
+// Typically used as 2nd parameter to COALESCE().
+func (p MySQLProvider) JSONEmpty() string {
+	return "JSON_UNQUOTE('{}')"
+}
+
+// JSONGetValue returns JSON attribute selection syntax.
+// Typically used in SELECT <my_json_field> query.
+func (p MySQLProvider) JSONGetValue(column, attribute string) string {
+	return fmt.Sprintf("JSON_EXTRACT(%s,'$.%s')", column, attribute)
 }
 
 // VerfiyVersion checks to see if actual database meets
@@ -245,6 +327,9 @@ func (p MySQLProvider) VerfiyVersion(dbVersion string) (bool, string) {
 
 // VerfiyCharacterCollation needs to ensure utf8/utf8mb4.
 func (p MySQLProvider) VerfiyCharacterCollation(charset, collation string) (charOK bool, requirements string) {
+	charset = strings.ToLower(charset)
+	collation = strings.ToLower(collation)
+
 	if charset != "utf8" && charset != "utf8mb4" {
 		return false, "MySQL character needs to be utf8/utf8mb4"
 	}

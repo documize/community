@@ -16,7 +16,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	// "time"
 
 	"github.com/documize/community/core/env"
 	"github.com/jmoiron/sqlx"
@@ -62,9 +61,9 @@ func InstallUpgrade(runtime *env.Runtime, existingDB bool) (err error) {
 		}
 	}
 
-    runtime.Log.Info(fmt.Sprintf("Database: %d scripts to process", len(toProcess)))
+	runtime.Log.Info(fmt.Sprintf("Database: %d scripts to process", len(toProcess)))
 
-    // For MySQL type there was major new schema introduced in v24.
+	// For MySQL type there was major new schema introduced in v24.
 	// We check for this release and bypass usual locking code
 	// because tables have changed.
 	legacyMigration := runtime.StoreProvider.Type() == env.StoreTypeMySQL &&
@@ -75,7 +74,7 @@ func InstallUpgrade(runtime *env.Runtime, existingDB bool) (err error) {
 		// which we are about to install.
 		toProcess = toProcess[len(toProcess)-1:]
 
-        runtime.Log.Info(fmt.Sprintf("Database: legacy schema has %d scripts to process", len(toProcess)))
+		runtime.Log.Info(fmt.Sprintf("Database: legacy schema has %d scripts to process", len(toProcess)))
 	}
 
 	tx, err := runtime.Db.Beginx()
@@ -160,14 +159,14 @@ func runScripts(runtime *env.Runtime, tx *sqlx.Tx, scripts []Script) (err error)
 
 				_, err = tx.Exec(runtime.StoreProvider.QueryRecordVersionUpgradeLegacy(script.Version))
 				if err != nil {
-                    runtime.Log.Error(fmt.Sprintf("error recording execution of SQL script %d", script.Version), err)
+					runtime.Log.Error(fmt.Sprintf("error recording execution of SQL script %d", script.Version), err)
 					return err
 				}
 			} else {
-			    // Unknown issue running script on non-MySQL database.
-                runtime.Log.Error(fmt.Sprintf("error executing SQL script %d", script.Version), err)
-                return err
-            }
+				// Unknown issue running script on non-MySQL database.
+				runtime.Log.Error(fmt.Sprintf("error executing SQL script %d", script.Version), err)
+				return err
+			}
 		}
 	}
 

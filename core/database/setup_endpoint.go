@@ -13,9 +13,7 @@ package database
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/documize/community/core/api/plugins"
@@ -124,130 +122,124 @@ type onboardRequest struct {
 // setupAccount prepares the database for a newly onboard customer.
 // Once done, they can then login and use Documize.
 func setupAccount(rt *env.Runtime, completion onboardRequest, serial string) (err error) {
-	//accountTitle := "This is where you will find documentation for your all projects. You can customize this message from the settings screen."
-	salt := secrets.GenerateSalt()
-	password := secrets.GeneratePassword(completion.Password, salt)
-
-	// Allocate organization to the user.
-	orgID := uniqueid.Generate()
-
-	sql := fmt.Sprintf("insert into dmz_org (c_refid, c_company, c_title, c_message, c_domain, c_email, c_serial) VALUES (\"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\")",
-		orgID, completion.Company, completion.CompanyLong, completion.Message, completion.URL, completion.Email, serial)
-	_, err = runSQL(rt, sql)
-
-	if err != nil {
-        rt.Log.Error("INSERT TINO dmz_org failed", err)
-		return
-	}
-
-	userID := uniqueid.Generate()
-
-	sql = fmt.Sprintf("INSERT INTO dmz_user (c_refid, c_firstname, c_lastname, c_email, c_initials, c_salt, c_password, c_globaladmin) VALUES (\"%s\",\"%s\", \"%s\", \"%s\", \"%s\", \"%s\", \"%s\", 1)",
-		userID, completion.Firstname, completion.Lastname, completion.Email, stringutil.MakeInitials(completion.Firstname, completion.Lastname), salt, password)
-	_, err = runSQL(rt, sql)
-
-	if err != nil {
-        rt.Log.Error("INSERT TINO dmz_user failed", err)
-		return err
-	}
-
-	// Link user to organization.
-	accountID := uniqueid.Generate()
-	sql = fmt.Sprintf("INSERT INTO dmz_user_account (c_refid, c_userid, c_orgid, c_admin, c_editor, c_users, c_analytics) VALUES (\"%s\", \"%s\", \"%s\", 1, 1, 1, 1)", accountID, userID, orgID)
-	_, err = runSQL(rt, sql)
-
-	if err != nil {
-		rt.Log.Error("INSERT TINO dmz_user_account failed", err)
-		return err
-	}
-
-	// create space
-	labelID := uniqueid.Generate()
-	sql = fmt.Sprintf("INSERT INTO dmz_space (c_refid, c_orgid, c_name, c_type, c_userid) VALUES (\"%s\", \"%s\", \"My Project\", 2, \"%s\")", labelID, orgID, userID)
-	_, err = runSQL(rt, sql)
-	if err != nil {
-		rt.Log.Error("INSERT INTO dmz_space failed", err)
-	}
-
-	// assign permissions to space
-	perms := []string{"view", "manage", "own", "doc-add", "doc-edit", "doc-delete", "doc-move", "doc-copy", "doc-template", "doc-approve", "doc-version", "doc-lifecycle"}
-	for _, p := range perms {
-		sql = fmt.Sprintf("INSERT INTO dmz_permission (c_orgid, c_who, c_whoid, c_action, c_scope, c_location, c_refid) VALUES (\"%s\", 'user', \"%s\", \"%s\", 'object', 'space', \"%s\")", orgID, userID, p, labelID)
-		_, err = runSQL(rt, sql)
-		if err != nil {
-			rt.Log.Error("INSERT INTO dmz_permission failed", err)
-		}
-	}
-
-	// Create some user groups
-	groupDevID := uniqueid.Generate()
-	sql = fmt.Sprintf("INSERT INTO dmz_group (c_refid, c_orgid, c_name, c_desc) VALUES (\"%s\", \"%s\", \"Technology\", \"On-site and remote development teams\")", groupDevID, orgID)
-	_, err = runSQL(rt, sql)
-	if err != nil {
-		rt.Log.Error("INSERT INTO dmz_group failed", err)
-	}
-
-	groupProjectID := uniqueid.Generate()
-	sql = fmt.Sprintf("INSERT INTO dmz_group (c_refid, c_orgid, c_name, c_desc) VALUES (\"%s\", \"%s\", \"Project Management\", \"HQ project management\")", groupProjectID, orgID)
-	_, err = runSQL(rt, sql)
-	if err != nil {
-		rt.Log.Error("INSERT INTO dmz_group failed", err)
-	}
-
-	groupBackofficeID := uniqueid.Generate()
-	sql = fmt.Sprintf("INSERT INTO dmz_group (c_refid, c_orgid, c_name, c_desc) VALUES (\"%s\", \"%s\", \"Back Office\", \"Non-IT and PMO personnel\")", groupBackofficeID, orgID)
-	_, err = runSQL(rt, sql)
-	if err != nil {
-		rt.Log.Error("INSERT INTO dmz_group failed", err)
-	}
-
-	// Join some groups
-	sql = fmt.Sprintf("INSERT INTO dmz_group_member (c_orgid, c_groupid, c_userid) VALUES (\"%s\", \"%s\", \"%s\")", orgID, groupDevID, userID)
-	_, err = runSQL(rt, sql)
-	if err != nil {
-		rt.Log.Error("INSERT INTO dmz_group_member failed", err)
-	}
-	sql = fmt.Sprintf("INSERT INTO dmz_group_member (c_orgid, c_groupid, c_userid) VALUES (\"%s\", \"%s\", \"%s\")", orgID, groupProjectID, userID)
-	_, err = runSQL(rt, sql)
-	if err != nil {
-		rt.Log.Error("INSERT INTO dmz_group_member failed", err)
-	}
-	sql = fmt.Sprintf("INSERT INTO dmz_group_member (c_orgid, c_groupid, c_userid) VALUES (\"%s\", \"%s\", \"%s\")", orgID, groupBackofficeID, userID)
-	_, err = runSQL(rt, sql)
-	if err != nil {
-		rt.Log.Error("INSERT INTO dmz_group_member failed", err)
-	}
-
-	return
-}
-
-// runSQL creates a transaction per call
-func runSQL(rt *env.Runtime, sql string) (id uint64, err error) {
-	if strings.TrimSpace(sql) == "" {
-		return 0, nil
-	}
-
 	tx, err := rt.Db.Beginx()
 	if err != nil {
 		rt.Log.Error("setup - failed to get transaction", err)
 		return
 	}
 
-	result, err := tx.Exec(sql)
+	//accountTitle := "This is where you will find documentation for your all projects. You can customize this message from the settings screen."
+	salt := secrets.GenerateSalt()
+	password := secrets.GeneratePassword(completion.Password, salt)
 
+	// Allocate organization to the user.
+	orgID := uniqueid.Generate()
+	_, err = tx.Exec(RebindParams("INSERT INTO dmz_org (c_refid, c_company, c_title, c_message, c_domain, c_email, c_serial) VALUES (?, ?, ?, ?, ?, ?, ?)", rt.StoreProvider.Type()),
+		orgID, completion.Company, completion.CompanyLong, completion.Message, completion.URL, completion.Email, serial)
 	if err != nil {
+		rt.Log.Error("INSERT INTO dmz_org failed", err)
 		tx.Rollback()
-		rt.Log.Error("setup - unable to run sql", err)
 		return
 	}
 
+	// Create user.
+	userID := uniqueid.Generate()
+	_, err = tx.Exec(RebindParams("INSERT INTO dmz_user (c_refid, c_firstname, c_lastname, c_email, c_initials, c_salt, c_password, c_globaladmin) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", rt.StoreProvider.Type()),
+		userID, completion.Firstname, completion.Lastname, completion.Email, stringutil.MakeInitials(completion.Firstname, completion.Lastname), salt, password, 1)
+	if err != nil {
+		rt.Log.Error("INSERT INTO dmz_user failed", err)
+		tx.Rollback()
+		return
+	}
+
+	// Link user to organization.
+	accountID := uniqueid.Generate()
+	_, err = tx.Exec(RebindParams("INSERT INTO dmz_user_account (c_refid, c_userid, c_orgid, c_admin, c_editor, c_users, c_analytics) VALUES (?, ?, ?, ?, ?, ?, ?)", rt.StoreProvider.Type()),
+		accountID, userID, orgID, 1, 1, 1, 1)
+	if err != nil {
+		rt.Log.Error("INSERT INTO dmz_user_account failed", err)
+		tx.Rollback()
+		return
+	}
+
+	// Create space.
+	labelID := uniqueid.Generate()
+	_, err = tx.Exec(RebindParams("INSERT INTO dmz_space (c_refid, c_orgid, c_userid, c_name, c_type) VALUES (?, ?, ?, ?, ?)", rt.StoreProvider.Type()),
+		labelID, orgID, userID, "Welcome", 2)
+	if err != nil {
+		rt.Log.Error("INSERT INTO dmz_space failed", err)
+		tx.Rollback()
+		return
+	}
+
+	// Assign permissions to space.
+	perms := []string{"view", "manage", "own", "doc-add", "doc-edit", "doc-delete", "doc-move", "doc-copy", "doc-template", "doc-approve", "doc-version", "doc-lifecycle"}
+	for _, p := range perms {
+		_, err = tx.Exec(RebindParams("INSERT INTO dmz_permission (c_orgid, c_who, c_whoid, c_action, c_scope, c_location, c_refid) VALUES (?, ?, ?, ?, ?, ?, ?)", rt.StoreProvider.Type()),
+			orgID, "user", userID, p, "object", "space", labelID)
+		if err != nil {
+			rt.Log.Error("INSERT INTO dmz_permission failed", err)
+			tx.Rollback()
+			return
+		}
+	}
+
+	// Create some user groups.
+	groupDevID := uniqueid.Generate()
+	_, err = tx.Exec(RebindParams("INSERT INTO dmz_group (c_refid, c_orgid, c_name, c_desc) VALUES (?, ?, ?, ?)", rt.StoreProvider.Type()),
+		groupDevID, orgID, "Technology", "On-site and remote development teams")
+	if err != nil {
+		rt.Log.Error("INSERT INTO dmz_group failed", err)
+		tx.Rollback()
+		return
+	}
+
+	groupProjectID := uniqueid.Generate()
+	_, err = tx.Exec(RebindParams("INSERT INTO dmz_group (c_refid, c_orgid, c_name, c_desc) VALUES (?, ?, ?, ?)", rt.StoreProvider.Type()),
+		groupProjectID, orgID, "Project Management", "HQ PMO and Account Management departments")
+	if err != nil {
+		rt.Log.Error("INSERT INTO dmz_group failed", err)
+		tx.Rollback()
+		return
+	}
+
+	groupBackofficeID := uniqueid.Generate()
+	_, err = tx.Exec(RebindParams("INSERT INTO dmz_group (c_refid, c_orgid, c_name, c_desc) VALUES (?, ?, ?, ?)", rt.StoreProvider.Type()),
+		groupBackofficeID, orgID, "Back Office", "Finance and HR people")
+	if err != nil {
+		rt.Log.Error("INSERT INTO dmz_group failed", err)
+		tx.Rollback()
+		return
+	}
+
+	// Join the user groups.
+	_, err = tx.Exec(RebindParams("INSERT INTO dmz_group_member (c_orgid, c_groupid, c_userid) VALUES (?, ?, ?)", rt.StoreProvider.Type()),
+		orgID, groupDevID, userID)
+	if err != nil {
+		rt.Log.Error("INSERT INTO dmz_group_member failed", err)
+		tx.Rollback()
+		return
+	}
+	_, err = tx.Exec(RebindParams("INSERT INTO dmz_group_member (c_orgid, c_groupid, c_userid) VALUES (?, ?, ?)", rt.StoreProvider.Type()),
+		orgID, groupProjectID, userID)
+	if err != nil {
+		rt.Log.Error("INSERT INTO dmz_group_member failed", err)
+		tx.Rollback()
+		return
+	}
+	_, err = tx.Exec(RebindParams("INSERT INTO dmz_group_member (c_orgid, c_groupid, c_userid) VALUES (?, ?, ?)", rt.StoreProvider.Type()),
+		orgID, groupBackofficeID, userID)
+	if err != nil {
+		rt.Log.Error("INSERT INTO dmz_group_member failed", err)
+		tx.Rollback()
+		return
+	}
+
+	// Finish up.
 	if err = tx.Commit(); err != nil {
 		rt.Log.Error("setup - unable to commit sql", err)
 		return
 	}
-
-	tempID, _ := result.LastInsertId()
-	id = uint64(tempID)
 
 	return
 }

@@ -228,6 +228,14 @@ func (r *Row) Columns() ([]string, error) {
 	return r.rows.Columns()
 }
 
+// ColumnTypes returns the underlying sql.Rows.ColumnTypes(), or the deferred error
+func (r *Row) ColumnTypes() ([]*sql.ColumnType, error) {
+	if r.err != nil {
+		return []*sql.ColumnType{}, r.err
+	}
+	return r.rows.ColumnTypes()
+}
+
 // Err returns the error encountered while scanning.
 func (r *Row) Err() error {
 	return r.err
@@ -593,7 +601,7 @@ func (r *Rows) StructScan(dest interface{}) error {
 		return errors.New("must pass a pointer, not a value, to StructScan destination")
 	}
 
-	v = reflect.Indirect(v)
+	v = v.Elem()
 
 	if !r.started {
 		columns, err := r.Columns()

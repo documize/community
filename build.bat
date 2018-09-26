@@ -33,9 +33,11 @@ copy core\database\templates\*.html embed\bindata
 rd /s /q embed\bindata\scripts
 mkdir embed\bindata\scripts
 mkdir embed\bindata\scripts\mysql
+mkdir embed\bindata\scripts\postgresql
 
 echo "Copying database scripts folder"
 robocopy /e /NFL /NDL /NJH core\database\scripts\mysql embed\bindata\scripts\mysql
+robocopy /e /NFL /NDL /NJH core\database\scripts\postgresql embed\bindata\scripts\postgresql
 
 echo "Generating in-memory static assets..."
 go get -u github.com/jteeuwen/go-bindata/...

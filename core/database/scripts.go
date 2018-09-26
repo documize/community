@@ -21,9 +21,9 @@ import (
 
 // Scripts holds all .SQL files for all supported database providers.
 type Scripts struct {
-	MySQLScripts       []Script
-	PostgresSQLScripts []Script
-	SQLServerScripts   []Script
+	MySQL      []Script
+	PostgreSQL []Script
+	SQLServer  []Script
 }
 
 // Script holds SQL script and it's associated version number.
@@ -37,7 +37,12 @@ func LoadScripts() (s Scripts, err error) {
 	assetDir := "bindata/scripts"
 
 	// MySQL
-	s.MySQLScripts, err = loadFiles(fmt.Sprintf("%s/mysql", assetDir))
+	s.MySQL, err = loadFiles(fmt.Sprintf("%s/mysql", assetDir))
+	if err != nil {
+		return
+	}
+	// PostgreSQL
+	s.PostgreSQL, err = loadFiles(fmt.Sprintf("%s/postgresql", assetDir))
 	if err != nil {
 		return
 	}
@@ -49,11 +54,11 @@ func LoadScripts() (s Scripts, err error) {
 func SpecificScripts(runtime *env.Runtime, all Scripts) (s []Script) {
 	switch runtime.StoreProvider.Type() {
 	case env.StoreTypeMySQL, env.StoreTypeMariaDB, env.StoreTypePercona:
-		return all.MySQLScripts
+		return all.MySQL
 	case env.StoreTypePostgreSQL:
-		return all.PostgresSQLScripts
+		return all.PostgreSQL
 	case env.StoreTypeMSSQL:
-		return all.SQLServerScripts
+		return all.SQLServer
 	}
 
 	return

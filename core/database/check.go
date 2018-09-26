@@ -13,7 +13,6 @@ package database
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/streamutil"
@@ -83,7 +82,7 @@ func Check(runtime *env.Runtime) bool {
 		return false
 	}
 
-	if strings.TrimSpace(flds[0]) == "0" {
+	if len(flds) == 0 {
 		runtime.Log.Info("Database: starting setup mode for empty database")
 		runtime.Flags.SiteMode = env.SiteModeSetup
 		return false

@@ -80,7 +80,7 @@ func ParseFlags() (f Flags) {
 	register(&port, "port", false, "http/https port number")
 	register(&forcePort2SSL, "forcesslport", false, "redirect given http port number to TLS")
 	register(&siteMode, "offline", false, "set to '1' for OFFLINE mode")
-	register(&dbType, "dbtype", true, "specify the database provider: mysql|percona|mariadb|postgressql")
+	register(&dbType, "dbtype", true, "specify the database provider: mysql|percona|mariadb|postgresql")
 	register(&dbConn, "db", true, `'database specific connection string for example "user:password@tcp(localhost:3306)/dbname"`)
 
 	parse("db")

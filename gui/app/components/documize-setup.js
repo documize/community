@@ -16,7 +16,7 @@ import { set } from '@ember/object';
 import Component from '@ember/component';
 
 export default Component.extend({
-	buttonLabel: 'Save',
+	buttonLabel: 'Complete setup',
 	titleEmpty: empty('model.title'),
 	firstnameEmpty: empty('model.firstname'),
 	lastnameEmpty: empty('model.lastname'),
@@ -57,7 +57,7 @@ export default Component.extend({
 
 			this.model.allowAnonymousAccess = $("#allowAnonymousAccess").prop('checked');
 
-			this.set('buttonLabel', 'Working...');
+			this.set('buttonLabel', 'Configuring, please wait...');
 
 			this.get('save')().then(() => {
 				set(this, 'titleError', false);
@@ -65,7 +65,6 @@ export default Component.extend({
 				set(this, 'adminLastnameError', false);
 				set(this, 'adminEmailError', false);
 				set(this, 'adminPasswordError', false);
-				this.set('buttonLabel', 'Save');
 			});
 		}
 	}

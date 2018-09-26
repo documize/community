@@ -23,7 +23,6 @@ import (
 	"github.com/documize/community/embed"
 	"github.com/documize/community/server"
 	"github.com/documize/community/server/web"
-	_ "github.com/go-sql-driver/mysql" // the mysql driver is required behind the scenes
 )
 
 var rt env.Runtime

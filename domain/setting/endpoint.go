@@ -80,16 +80,16 @@ func (h *Handler) SetSMTP(w http.ResponseWriter, r *http.Request) {
 	var config string
 	config = string(body)
 
-	ctx.Transaction, err = h.Runtime.Db.Beginx()
-	if err != nil {
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
+	// ctx.Transaction, err = h.Runtime.Db.Beginx()
+	// if err != nil {
+	// 	response.WriteServerError(w, method, err)
+	// 	h.Runtime.Log.Error(method, err)
+	// 	return
+	// }
 
 	h.Store.Setting.Set("SMTP", config)
 
-	ctx.Transaction.Commit()
+	// ctx.Transaction.Commit()
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSystemSMTP)
 
