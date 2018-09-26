@@ -68,10 +68,10 @@ Space view.
 #!/bin/bash
 
 # Requires:
-- curl
-- wget
-- bash
-- A service for Documize (/etc/init.d/documize)
+# - curl
+# - wget
+# - bash
+# - A service for Documize (/etc/init.d/documize)
 
 VERSION="$(curl -s https://api.github.com/repos/documize/community/releases | grep 'tag_name' | cut -d\" -f4 | head -1)"
 
