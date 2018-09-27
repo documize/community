@@ -26,6 +26,7 @@ import (
 	"github.com/documize/community/core/uniqueid"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/permission"
+	"github.com/documize/community/domain/store"
 	"github.com/documize/community/model/audit"
 	"github.com/documize/community/model/category"
 	pm "github.com/documize/community/model/permission"
@@ -34,7 +35,7 @@ import (
 // Handler contains the runtime information such as logging and database.
 type Handler struct {
 	Runtime *env.Runtime
-	Store   *domain.Store
+	Store   *store.Store
 }
 
 // Add saves space category.

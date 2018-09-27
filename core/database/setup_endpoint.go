@@ -21,14 +21,14 @@ import (
 	"github.com/documize/community/core/secrets"
 	"github.com/documize/community/core/stringutil"
 	"github.com/documize/community/core/uniqueid"
-	"github.com/documize/community/domain"
+	"github.com/documize/community/domain/store"
 	"github.com/documize/community/server/web"
 )
 
 // Handler contains the runtime information such as logging and database.
 type Handler struct {
 	Runtime *env.Runtime
-	Store   *domain.Store
+	Store   *store.Store
 }
 
 // Setup the tables in a blank database

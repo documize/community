@@ -16,7 +16,6 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/store"
 	"github.com/pkg/errors"
 )
@@ -24,14 +23,14 @@ import (
 // Store provides data access to user permission information.
 type Store struct {
 	store.Context
-	domain.SettingStorer
+	store.SettingStorer
 }
 
 // Get fetches a configuration JSON element from the config table.
 func (s Store) Get(area, path string) (value string, err error) {
 	qry := fmt.Sprintf("SELECT %s FROM dmz_config WHERE c_key = '%s';", s.GetJSONValue("c_config", path), area)
 
-	var item = make([]uint8, 0)
+	item := []byte{}
 	err = s.Runtime.Db.Get(&item, qry)
 	if err != nil {
 		return "", err
@@ -83,7 +82,7 @@ func (s Store) Set(area, json string) (err error) {
 func (s Store) GetUser(orgID, userID, key, path string) (value string, err error) {
 	var item = make([]uint8, 0)
 
-	qry := fmt.Sprintf("SELECT %s FROM dmz_config WHERE c_key = '%s' AND c_orgid='%s' AND c_userid='%s';",
+	qry := fmt.Sprintf("SELECT %s FROM dmz_user_config WHERE c_key = '%s' AND c_orgid='%s' AND c_userid='%s';",
 		s.GetJSONValue("c_config", path), key, orgID, userID)
 
 	err = s.Runtime.Db.Get(&item, qry)

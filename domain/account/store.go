@@ -25,7 +25,7 @@ import (
 // Store provides data access to account information.
 type Store struct {
 	store.Context
-	domain.AccountStorer
+	store.AccountStorer
 }
 
 // Add inserts the given record into the datbase account table.
@@ -69,7 +69,7 @@ func (s Store) GetUserAccounts(ctx domain.RequestContext, userID string) (t []ac
         a.c_active AS active, a.c_created AS created, a.c_revised AS revised,
         b.c_company AS company, b.c_title AS title, b.c_message AS message, b.c_domain as domain
         FROM dmz_user_account a, dmz_org b
-        WHERE a.c_userid=? AND a.c_orgid=b.c_refid AND a.c_active=1
+        WHERE a.c_userid=? AND a.c_orgid=b.c_refid AND a.c_active=true
         ORDER BY b.c_title`),
 		userID)
 
@@ -88,7 +88,7 @@ func (s Store) GetAccountsByOrg(ctx domain.RequestContext) (t []account.Account,
         a.c_active AS active, a.c_created AS created, a.c_revised AS revised,
         b.c_company AS company, b.c_title AS title, b.c_message AS message, b.c_domain as domain
         FROM dmz_user_account a, dmz_org b
-        WHERE a.c_orgid=b.c_refid AND a.c_orgid=? AND a.c_active=1`),
+        WHERE a.c_orgid=b.c_refid AND a.c_orgid=? AND a.c_active=true`),
 		ctx.OrgID)
 
 	if err != sql.ErrNoRows && err != nil {
@@ -100,7 +100,7 @@ func (s Store) GetAccountsByOrg(ctx domain.RequestContext) (t []account.Account,
 
 // CountOrgAccounts returns the numnber of active user accounts for specified organization.
 func (s Store) CountOrgAccounts(ctx domain.RequestContext) (c int) {
-	row := s.Runtime.Db.QueryRow(s.Bind("SELECT count(*) FROM dmz_user_account WHERE c_orgid=? AND c_active=1"), ctx.OrgID)
+	row := s.Runtime.Db.QueryRow(s.Bind("SELECT count(*) FROM dmz_user_account WHERE c_orgid=? AND c_active=true"), ctx.OrgID)
 	err := row.Scan(&c)
 	if err == sql.ErrNoRows {
 		return 0

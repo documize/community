@@ -14,6 +14,7 @@ package document
 import (
 	"github.com/documize/community/core/uniqueid"
 	"github.com/documize/community/domain"
+	"github.com/documize/community/domain/store"
 	"github.com/documize/community/model/category"
 	"github.com/documize/community/model/doc"
 	"github.com/documize/community/model/page"
@@ -64,7 +65,7 @@ func FilterCategoryProtected(docs []doc.Document, cats []category.Category, memb
 }
 
 // CopyDocument clones an existing document
-func CopyDocument(ctx domain.RequestContext, s domain.Store, documentID string) (newDocumentID string, err error) {
+func CopyDocument(ctx domain.RequestContext, s store.Store, documentID string) (newDocumentID string, err error) {
 	doc, err := s.Document.Get(ctx, documentID)
 	if err != nil {
 		err = errors.Wrap(err, "unable to fetch existing document")

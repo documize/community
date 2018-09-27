@@ -17,8 +17,14 @@
 					{{/if}}
 				</div>
 				<div class="form-group">
-					<label for="authPassword">Password</label>
-					{{input type="password" value=password id="authPassword" class="form-control" placeholder="network password" autocomplete="current-password"}}
+					{{#if isAuthProviderDocumize}}
+						<label for="authPassword">Password</label>
+						{{input type="password" value=password id="authPassword" class="form-control" autocomplete="current-password"}}
+					{{/if}}
+					{{#if isAuthProviderLDAP}}
+						<label for="authPassword">Network Password</label>
+						{{input type="password" value=password id="authPassword" class="form-control" autocomplete="current-password"}}
+					{{/if}}
 				</div>
 				<button type="submit" class="btn btn-success font-weight-bold text-uppercase mt-4">Sign in</button>
 				<div class="{{unless invalidCredentials "invisible"}} color-red mt-3">Invalid credentials</div>

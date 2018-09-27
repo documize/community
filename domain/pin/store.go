@@ -24,7 +24,7 @@ import (
 // Store provides data access to user permission information.
 type Store struct {
 	store.Context
-	domain.PinStorer
+	store.PinStorer
 }
 
 // Add saves pinned item.

@@ -62,7 +62,7 @@ func (m *Mailer) InviteNewUser(recipient, inviterName, inviterEmail, url, userna
 		m.Runtime.Log.Error(fmt.Sprintf("%s - unable to send email", method), err)
 	}
 	if !ok {
-		m.Runtime.Log.Info(fmt.Sprintf("%s unable to send email"))
+		m.Runtime.Log.Info(fmt.Sprintf("%s unable to send email", method))
 	}
 }
 

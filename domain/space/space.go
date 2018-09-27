@@ -19,6 +19,7 @@ import (
 	"github.com/documize/community/core/uniqueid"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/mail"
+	"github.com/documize/community/domain/store"
 	"github.com/documize/community/model/account"
 	"github.com/documize/community/model/permission"
 	"github.com/documize/community/model/space"
@@ -29,7 +30,7 @@ import (
 // We create the user account with default values and then take them
 // through a welcome process designed to capture profile data.
 // We add them to the organization and grant them view-only space access.
-func inviteNewUserToSharedSpace(ctx domain.RequestContext, rt *env.Runtime, s *domain.Store, email string, invitedBy user.User,
+func inviteNewUserToSharedSpace(ctx domain.RequestContext, rt *env.Runtime, s *store.Store, email string, invitedBy user.User,
 	baseURL string, sp space.Space, invitationMessage string) (err error) {
 
 	var u = user.User{}

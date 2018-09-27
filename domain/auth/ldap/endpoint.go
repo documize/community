@@ -26,6 +26,7 @@ import (
 	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/auth"
+	"github.com/documize/community/domain/store"
 	usr "github.com/documize/community/domain/user"
 	ath "github.com/documize/community/model/auth"
 	lm "github.com/documize/community/model/auth"
@@ -35,7 +36,7 @@ import (
 // Handler contains the runtime information such as logging and database.
 type Handler struct {
 	Runtime *env.Runtime
-	Store   *domain.Store
+	Store   *store.Store
 }
 
 // Preview connects to LDAP using paylaod and returns first 50 users.

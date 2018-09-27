@@ -25,7 +25,7 @@ import (
 // Store provides data access to user activity information.
 type Store struct {
 	store.Context
-	domain.ActivityStorer
+	store.ActivityStorer
 }
 
 // RecordUserActivity logs user initiated data changes.

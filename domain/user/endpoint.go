@@ -33,6 +33,7 @@ import (
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/mail"
 	"github.com/documize/community/domain/organization"
+	"github.com/documize/community/domain/store"
 	"github.com/documize/community/model/account"
 	"github.com/documize/community/model/audit"
 	"github.com/documize/community/model/group"
@@ -42,7 +43,7 @@ import (
 // Handler contains the runtime information such as logging and database.
 type Handler struct {
 	Runtime *env.Runtime
-	Store   *domain.Store
+	Store   *store.Store
 }
 
 // Add is the endpoint that enables an administrator to add a new user for their organization.

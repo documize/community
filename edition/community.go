@@ -16,8 +16,8 @@ import (
 	"fmt"
 
 	"github.com/documize/community/core/env"
-	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/section"
+	"github.com/documize/community/domain/store"
 	"github.com/documize/community/edition/boot"
 	"github.com/documize/community/edition/logging"
 	"github.com/documize/community/embed"
@@ -52,7 +52,7 @@ func main() {
 	rt.Product.License.Edition = "Community"
 
 	// setup store
-	s := domain.Store{}
+	s := store.Store{}
 
 	// parse settings from command line and environment
 	rt.Flags = env.ParseFlags()

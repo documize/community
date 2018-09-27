@@ -25,7 +25,7 @@ import (
 // Store provides data access to space information.
 type Store struct {
 	store.Context
-	domain.SpaceStorer
+	store.SpaceStorer
 }
 
 // Add adds new folder into the store.

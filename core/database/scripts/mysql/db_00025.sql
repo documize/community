@@ -117,7 +117,7 @@ ALTER TABLE dmz_doc
     CHANGE `protection` `c_protection` INT NOT NULL DEFAULT 0,
     CHANGE `approval` `c_approval` INT NOT NULL DEFAULT 0,
     CHANGE `lifecycle` `c_lifecycle` INT NOT NULL DEFAULT 1,
-    CHANGE `versioned` `c_versioned` INT NOT NULL DEFAULT 0,
+    CHANGE `versioned` `c_versioned` BOOL NOT NULL DEFAULT 0,
     CHANGE `versionid` `c_versionid` VARCHAR(100) NOT NULL DEFAULT '',
     CHANGE `versionorder` `c_versionorder` INT NOT NULL DEFAULT 0,
     CHANGE `groupid` `c_groupid` CHAR(16) NOT NULL DEFAULT '',

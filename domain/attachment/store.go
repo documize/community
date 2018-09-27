@@ -24,7 +24,7 @@ import (
 // Store provides data access to document/section attachments information.
 type Store struct {
 	store.Context
-	domain.AttachmentStorer
+	store.AttachmentStorer
 }
 
 // Add inserts the given record into the database attachement table.

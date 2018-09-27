@@ -28,7 +28,7 @@ import (
 // Store provides data access to space information.
 type Store struct {
 	store.Context
-	domain.UserStorer
+	store.UserStorer
 }
 
 // Add adds the given user record to the user table.
@@ -153,7 +153,7 @@ func (s Store) GetActiveUsersForOrganization(ctx domain.RequestContext) (u []use
         u.c_created AS created, u.c_revised AS revised,
         a.c_active AS active, a.c_editor AS editor, a.c_admin AS admin, a.c_users AS viewusers, a.c_analytics AS analytics
 		FROM dmz_user u, dmz_user_account a
-		WHERE u.c_refid=a.c_userid AND a.c_orgid=? AND a.c_active=1
+		WHERE u.c_refid=a.c_userid AND a.c_orgid=? AND a.c_active=true
 		ORDER BY u.c_firstname, u.c_lastname`),
 		ctx.OrgID)
 
@@ -210,7 +210,7 @@ func (s Store) GetSpaceUsers(ctx domain.RequestContext, spaceID string) (u []use
         u.c_created AS created, u.c_revised AS revised,
         a.c_active AS active, a.c_editor AS editor, a.c_admin AS admin, a.c_users AS viewusers, a.c_analytics AS analytics
         FROM dmz_user u, dmz_user_account a
-		WHERE a.c_orgid=? AND u.c_refid = a.c_userid AND a.c_active=1 AND u.c_refid IN (
+		WHERE a.c_orgid=? AND u.c_refid = a.c_userid AND a.c_active=true AND u.c_refid IN (
             SELECT c_whoid from dmz_permission WHERE c_orgid=? AND c_who='user' AND c_scope='object' AND c_location='space' AND c_refid=?
             UNION ALL
 			SELECT r.c_userid from dmz_group_member r LEFT JOIN dmz_permission p ON p.c_whoid=r.c_groupid WHERE p.c_orgid=? AND p.c_who='role' AND p.c_scope='object' AND p.c_location='space' AND p.c_refid=?
@@ -244,7 +244,7 @@ func (s Store) GetUsersForSpaces(ctx domain.RequestContext, spaces []string) (u 
         u.c_created AS created, u.c_revised AS revised,
         a.c_active AS active, a.c_editor AS editor, a.c_admin AS admin, a.c_users AS viewusers, a.c_analytics AS analytics
         FROM dmz_user u, dmz_user_account a
-        WHERE a.c_orgid=? AND u.c_refid = a.c_userid AND a.c_active=1 AND u.c_refid IN (
+        WHERE a.c_orgid=? AND u.c_refid = a.c_userid AND a.c_active=true AND u.c_refid IN (
             SELECT c_whoid from dmz_permission WHERE c_orgid=? AND c_who='user' AND c_scope='object' AND c_location='space' AND c_refid IN(?)
             UNION ALL
 			SELECT r.c_userid from dmz_group_member r LEFT JOIN dmz_permission p ON p.c_whoid=r.c_groupid WHERE p.c_orgid=? AND p.c_who='role' AND p.c_scope='object' AND p.c_location='space' AND p.c_refid IN(?)
@@ -313,7 +313,7 @@ func (s Store) ForgotUserPassword(ctx domain.RequestContext, email, token string
 
 // CountActiveUsers returns the number of active users in the system.
 func (s Store) CountActiveUsers() (c int) {
-	row := s.Runtime.Db.QueryRow("SELECT count(*) FROM dmz_user WHERE c_refid IN (SELECT c_userid FROM dmz_user_account WHERE c_active=1)")
+	row := s.Runtime.Db.QueryRow("SELECT count(*) FROM dmz_user WHERE c_refid IN (SELECT c_userid FROM dmz_user_account WHERE c_active=true)")
 
 	err := row.Scan(&c)
 	if err == sql.ErrNoRows {
@@ -346,7 +346,7 @@ func (s Store) MatchUsers(ctx domain.RequestContext, text string, maxMatches int
         u.c_created AS created, u.c_revised AS revised,
         a.c_active AS active, a.c_editor AS editor, a.c_admin AS admin, a.c_users AS viewusers, a.c_analytics AS analytics
         FROM dmz_user u, dmz_user_account a
-		WHERE a.c_orgid=? AND u.c_refid=a.c_userid AND a.c_active=1 `+likeQuery+` ORDER BY u.c_firstname, u.c_lastname LIMIT `+strconv.Itoa(maxMatches)),
+		WHERE a.c_orgid=? AND u.c_refid=a.c_userid AND a.c_active=true `+likeQuery+` ORDER BY u.c_firstname, u.c_lastname LIMIT `+strconv.Itoa(maxMatches)),
 		ctx.OrgID)
 
 	if err == sql.ErrNoRows {

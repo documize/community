@@ -16,14 +16,14 @@ import (
 
 	"github.com/documize/blackfriday"
 	"github.com/documize/community/core/env"
-	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/section/provider"
+	"github.com/documize/community/domain/store"
 )
 
 // Provider represents Markdown
 type Provider struct {
 	Runtime *env.Runtime
-	Store   *domain.Store
+	Store   *store.Store
 }
 
 // Meta describes us

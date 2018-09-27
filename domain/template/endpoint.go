@@ -30,6 +30,7 @@ import (
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/permission"
 	indexer "github.com/documize/community/domain/search"
+	"github.com/documize/community/domain/store"
 	"github.com/documize/community/model/attachment"
 	"github.com/documize/community/model/audit"
 	"github.com/documize/community/model/doc"
@@ -43,7 +44,7 @@ import (
 // Handler contains the runtime information such as logging and database.
 type Handler struct {
 	Runtime *env.Runtime
-	Store   *domain.Store
+	Store   *store.Store
 	Indexer indexer.Indexer
 }
 
@@ -262,7 +263,7 @@ func (h *Handler) SaveAs(w http.ResponseWriter, r *http.Request) {
 // Use creates new document using a saved document as a template.
 // If template ID is ZERO then we provide an Empty Document as the new document.
 func (h *Handler) Use(w http.ResponseWriter, r *http.Request) {
-	method := "template.saved"
+	method := "template.use"
 	ctx := domain.GetRequestContext(r)
 
 	folderID := request.Param(r, "folderID")

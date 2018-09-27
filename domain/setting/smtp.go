@@ -15,12 +15,12 @@ package setting
 import (
 	"strconv"
 
-	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/smtp"
+	"github.com/documize/community/domain/store"
 )
 
 // GetSMTPConfig returns SMTP configuration.
-func GetSMTPConfig(s *domain.Store) (c smtp.Config) {
+func GetSMTPConfig(s *store.Store) (c smtp.Config) {
 	c = smtp.Config{}
 
 	// server

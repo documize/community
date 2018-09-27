@@ -16,6 +16,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/core/stringutil"
 	"github.com/documize/community/domain"
@@ -32,7 +33,7 @@ import (
 // Store provides data access to space information.
 type Store struct {
 	store.Context
-	domain.SearchStorer
+	store.SearchStorer
 }
 
 // IndexDocument adds search index entries for document inserting title, tags and attachments as
@@ -214,32 +215,42 @@ func (s Store) Documents(ctx domain.RequestContext, q search.QueryOptions) (resu
 }
 
 func (s Store) matchFullText(ctx domain.RequestContext, keywords, itemType string) (r []search.QueryResult, err error) {
-	sql1 := `
-	SELECT
-		s.id, s.c_orgid AS orgid, s.c_docid AS documentid, s.c_itemid AS itemid, s.c_itemtype AS itemtype,
-        d.c_spaceid as spaceid, COALESCE(d.c_name,'Unknown') AS document, d.c_tags AS tags,
-        d.c_desc AS excerpt, d.c_template AS template, d.c_versionid AS versionid,
-		COALESCE(l.c_name,'Unknown') AS space
-	FROM
-		dmz_search s,
-		dmz_doc d
-	LEFT JOIN
-		dmz_space l ON l.c_orgid=d.c_orgid AND l.c_refid = d.c_spaceid
-	WHERE
-		s.c_orgid = ?
-		AND s.c_itemtype = ?
-		AND s.c_docid = d.c_refid
-		AND d.c_spaceid IN
-		(
-            SELECT c_refid FROM dmz_space WHERE c_orgid=? AND c_refid IN
+	// Full text search clause specific to database provider
+	fts := ""
+
+	switch s.Runtime.StoreProvider.Type() {
+	case env.StoreTypeMySQL:
+		fts = " AND MATCH(s.c_content) AGAINST(? IN BOOLEAN MODE)"
+	case env.StoreTypePostgreSQL:
+		fts = ""
+	}
+
+	sql1 := s.Bind(`
+        SELECT
+            s.id, s.c_orgid AS orgid, s.c_docid AS documentid, s.c_itemid AS itemid, s.c_itemtype AS itemtype,
+            d.c_spaceid as spaceid, COALESCE(d.c_name,'Unknown') AS document, d.c_tags AS tags,
+            d.c_desc AS excerpt, d.c_template AS template, d.c_versionid AS versionid,
+            COALESCE(l.c_name,'Unknown') AS space
+        FROM
+            dmz_search s,
+            dmz_doc d
+        LEFT JOIN
+            dmz_space l ON l.c_orgid=d.c_orgid AND l.c_refid = d.c_spaceid
+        WHERE
+            s.c_orgid = ?
+            AND s.c_itemtype = ?
+            AND s.c_docid = d.c_refid
+            AND d.c_spaceid IN
             (
-				SELECT c_refid from dmz_permission WHERE c_orgid=? AND c_who='user' AND (c_whoid=? OR c_whoid='0') AND c_location='space'
-				UNION ALL
-                SELECT p.c_refid from dmz_permission p LEFT JOIN dmz_group_member r ON p.c_whoid=r.c_groupid WHERE p.c_orgid=? AND p.c_who='role'
-                AND p.c_location='space' AND (r.c_userid=? OR r.c_userid='0')
+                SELECT c_refid FROM dmz_space WHERE c_orgid=? AND c_refid IN
+                (
+                    SELECT c_refid from dmz_permission WHERE c_orgid=? AND c_who='user' AND (c_whoid=? OR c_whoid='0') AND c_location='space'
+                    UNION ALL
+                    SELECT p.c_refid from dmz_permission p LEFT JOIN dmz_group_member r ON p.c_whoid=r.c_groupid WHERE p.c_orgid=? AND p.c_who='role'
+                    AND p.c_location='space' AND (r.c_userid=? OR r.c_userid='0')
+                )
             )
-        )
-	AND MATCH(s.c_content) AGAINST(? IN BOOLEAN MODE)`
+        ` + fts)
 
 	err = s.Runtime.Db.Select(&r,
 		sql1,
@@ -270,31 +281,30 @@ func (s Store) matchLike(ctx domain.RequestContext, keywords, itemType string) (
 	keywords = strings.Replace(keywords, "%", "", -1)
 	keywords = fmt.Sprintf("%%%s%%", keywords)
 
-	sql1 := `
-	SELECT
-		s.id, s.c_orgid AS orgid, s.c_docid AS documentid, s.c_itemid AS itemid, s.c_itemtype AS itemtype,
-		d.c_spaceid as spaceid, COALESCE(d.c_name,'Unknown') AS document, d.c_tags AS tags, d.c_desc AS excerpt,
-		COALESCE(l.c_name,'Unknown') AS space
-	FROM
-		dmz_search s,
-		dmz_doc d
-	LEFT JOIN
-		dmz_space l ON l.c_orgid=d.c_orgid AND l.c_refid = d.c_spaceid
-	WHERE
-		s.c_orgid = ?
-		AND s.c_itemtype = ?
-		AND s.c_docid = d.c_refid
-		AND d.c_spaceid IN
-		(
-            SELECT c_refid FROM dmz_space WHERE c_orgid=? AND c_refid IN
+	sql1 := s.Bind(`SELECT
+        s.id, s.c_orgid AS orgid, s.c_docid AS documentid, s.c_itemid AS itemid, s.c_itemtype AS itemtype,
+            d.c_spaceid as spaceid, COALESCE(d.c_name,'Unknown') AS document, d.c_tags AS tags, d.c_desc AS excerpt,
+            COALESCE(l.c_name,'Unknown') AS space
+        FROM
+            dmz_search s,
+            dmz_doc d
+        LEFT JOIN
+            dmz_space l ON l.c_orgid=d.c_orgid AND l.c_refid = d.c_spaceid
+        WHERE
+            s.c_orgid = ?
+            AND s.c_itemtype = ?
+            AND s.c_docid = d.c_refid
+            AND d.c_spaceid IN
             (
-				SELECT c_refid from dmz_permission WHERE c_orgid=? AND c_who='user' AND (c_whoid=? OR c_whoid='0') AND c_location='space'
-				UNION ALL
-				SELECT p.c_refid from dmz_permission p LEFT JOIN dmz_group_member r ON p.c_whoid=r.c_groupid WHERE p.c_orgid=? AND p.c_who='role'
-				AND p.c_location='space' AND (r.c_userid=? OR r.c_userid='0')
-			)
-		)
-		AND s.c_content LIKE ?`
+                SELECT c_refid FROM dmz_space WHERE c_orgid=? AND c_refid IN
+                (
+                    SELECT c_refid from dmz_permission WHERE c_orgid=? AND c_who='user' AND (c_whoid=? OR c_whoid='0') AND c_location='space'
+                    UNION ALL
+                    SELECT p.c_refid from dmz_permission p LEFT JOIN dmz_group_member r ON p.c_whoid=r.c_groupid WHERE p.c_orgid=? AND p.c_who='role'
+                    AND p.c_location='space' AND (r.c_userid=? OR r.c_userid='0')
+                )
+            )
+            AND s.c_content LIKE ?`)
 
 	err = s.Runtime.Db.Select(&r,
 		sql1,

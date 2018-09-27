@@ -22,13 +22,14 @@ import (
 	"github.com/documize/community/core/response"
 	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/domain"
+	"github.com/documize/community/domain/store"
 	"github.com/documize/community/model/org"
 )
 
 // Handler contains the runtime information such as logging and database.
 type Handler struct {
 	Runtime *env.Runtime
-	Store   *domain.Store
+	Store   *store.Store
 }
 
 // Get returns the requested organization.
@@ -95,91 +96,4 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	ctx.Transaction.Commit()
 
 	response.WriteJSON(w, org)
-}
-
-// GetInstanceSetting returns the requested organization level setting.
-func (h *Handler) GetInstanceSetting(w http.ResponseWriter, r *http.Request) {
-	ctx := domain.GetRequestContext(r)
-
-	orgID := request.Param(r, "orgID")
-	if orgID != ctx.OrgID || !ctx.Administrator {
-		response.WriteForbiddenError(w)
-		return
-	}
-
-	key := request.Query(r, "key")
-	setting, _ := h.Store.Setting.GetUser(orgID, "", key, "")
-	if len(setting) == 0 {
-		setting = "{}"
-	}
-
-	response.WriteJSON(w, setting)
-}
-
-// SaveInstanceSetting saves org level setting.
-func (h *Handler) SaveInstanceSetting(w http.ResponseWriter, r *http.Request) {
-	method := "org.SaveInstanceSetting"
-	ctx := domain.GetRequestContext(r)
-
-	orgID := request.Param(r, "orgID")
-	if orgID != ctx.OrgID || !ctx.Administrator {
-		response.WriteForbiddenError(w)
-		return
-	}
-
-	key := request.Query(r, "key")
-
-	defer streamutil.Close(r.Body)
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	config := string(body)
-	h.Store.Setting.SetUser(orgID, "", key, config)
-
-	response.WriteEmpty(w)
-}
-
-// GetGlobalSetting returns the requested organization level setting.
-func (h *Handler) GetGlobalSetting(w http.ResponseWriter, r *http.Request) {
-	ctx := domain.GetRequestContext(r)
-
-	if !ctx.GlobalAdmin {
-		response.WriteForbiddenError(w)
-		return
-	}
-
-	key := request.Query(r, "key")
-	setting, _ := h.Store.Setting.Get(key, "")
-
-	response.WriteJSON(w, setting)
-}
-
-// SaveGlobalSetting saves org level setting.
-func (h *Handler) SaveGlobalSetting(w http.ResponseWriter, r *http.Request) {
-	method := "org.SaveGlobalSetting"
-	ctx := domain.GetRequestContext(r)
-
-	if !ctx.GlobalAdmin {
-		response.WriteForbiddenError(w)
-		return
-	}
-
-	key := request.Query(r, "key")
-
-	defer streamutil.Close(r.Body)
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	config := string(body)
-	h.Store.Setting.Set(key, config)
-
-	response.WriteEmpty(w)
 }

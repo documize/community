@@ -22,6 +22,7 @@ import (
 	"github.com/documize/community/core/uniqueid"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/permission"
+	"github.com/documize/community/domain/store"
 	"github.com/documize/community/model/attachment"
 	"github.com/documize/community/model/link"
 	"github.com/documize/community/model/page"
@@ -30,7 +31,7 @@ import (
 // Handler contains the runtime information such as logging and database.
 type Handler struct {
 	Runtime *env.Runtime
-	Store   *domain.Store
+	Store   *store.Store
 }
 
 // GetLinkCandidates returns references to documents/sections/attachments.

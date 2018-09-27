@@ -25,7 +25,7 @@ import (
 // Store provides data access to organization (tenant) information.
 type Store struct {
 	store.Context
-	domain.OrganizationStorer
+	store.OrganizationStorer
 }
 
 //**************************************************
@@ -256,7 +256,7 @@ func (s Store) GetPageMeta(ctx domain.RequestContext, pageID string) (meta page.
 func (s Store) GetDocumentPageMeta(ctx domain.RequestContext, documentID string, externalSourceOnly bool) (meta []page.Meta, err error) {
 	filter := ""
 	if externalSourceOnly {
-		filter = " AND c_external=1"
+		filter = " AND c_external=true"
 	}
 
 	err = s.Runtime.Db.Select(&meta, s.Bind(`SELECT id, c_sectionid AS sectionid,

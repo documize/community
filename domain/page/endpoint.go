@@ -29,6 +29,7 @@ import (
 	"github.com/documize/community/domain/permission"
 	indexer "github.com/documize/community/domain/search"
 	"github.com/documize/community/domain/section/provider"
+	"github.com/documize/community/domain/store"
 	"github.com/documize/community/model/activity"
 	"github.com/documize/community/model/audit"
 	dm "github.com/documize/community/model/doc"
@@ -42,7 +43,7 @@ import (
 // Handler contains the runtime information such as logging and database.
 type Handler struct {
 	Runtime *env.Runtime
-	Store   *domain.Store
+	Store   *store.Store
 	Indexer indexer.Indexer
 }
 

@@ -23,7 +23,7 @@ import (
 // Store provides data access to audit log information.
 type Store struct {
 	store.Context
-	domain.AuditStorer
+	store.AuditStorer
 }
 
 // Record adds event entry for specified user using own DB TX.

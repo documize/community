@@ -25,13 +25,14 @@ import (
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/auth"
 	"github.com/documize/community/domain/organization"
+	"github.com/documize/community/domain/store"
 	"github.com/documize/community/domain/user"
 	"github.com/documize/community/model/org"
 )
 
 type middleware struct {
 	Runtime *env.Runtime
-	Store   *domain.Store
+	Store   *store.Store
 }
 
 func (m *middleware) cors(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {

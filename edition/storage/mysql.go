@@ -19,7 +19,6 @@ import (
 	"strings"
 
 	"github.com/documize/community/core/env"
-	"github.com/documize/community/domain"
 	account "github.com/documize/community/domain/account"
 	activity "github.com/documize/community/domain/activity"
 	attachment "github.com/documize/community/domain/attachment"
@@ -37,12 +36,13 @@ import (
 	search "github.com/documize/community/domain/search"
 	setting "github.com/documize/community/domain/setting"
 	space "github.com/documize/community/domain/space"
+	"github.com/documize/community/domain/store"
 	user "github.com/documize/community/domain/user"
 	_ "github.com/go-sql-driver/mysql" // the mysql driver is required behind the scenes
 )
 
 // SetMySQLProvider creates MySQL provider
-func SetMySQLProvider(r *env.Runtime, s *domain.Store) {
+func SetMySQLProvider(r *env.Runtime, s *store.Store) {
 	// Set up provider specific details and wire up data prividers.
 	r.StoreProvider = MySQLProvider{
 		ConnectionString: r.Flags.DBConn,
@@ -296,7 +296,11 @@ func (p MySQLProvider) JSONEmpty() string {
 // JSONGetValue returns JSON attribute selection syntax.
 // Typically used in SELECT <my_json_field> query.
 func (p MySQLProvider) JSONGetValue(column, attribute string) string {
-	return fmt.Sprintf("JSON_EXTRACT(%s,'$.%s')", column, attribute)
+	if len(attribute) > 0 {
+		return fmt.Sprintf("JSON_EXTRACT(%s,'$.%s')", column, attribute)
+	}
+
+	return fmt.Sprintf("JSON_EXTRACT(%s,'$')", column)
 }
 
 // VerfiyVersion checks to see if actual database meets

@@ -25,7 +25,7 @@ import (
 // Store provides data access to space category information.
 type Store struct {
 	store.Context
-	domain.CategoryStorer
+	store.CategoryStorer
 }
 
 // Add inserts the given record into the category table.
@@ -220,13 +220,13 @@ func (s Store) GetSpaceCategorySummary(ctx domain.RequestContext, spaceID string
             AND c_docid IN (
                 SELECT c_refid
                 FROM dmz_doc
-                WHERE c_orgid=? AND c_spaceid=? AND c_lifecycle!=2 AND c_template=0 AND c_groupid=''
+                WHERE c_orgid=? AND c_spaceid=? AND c_lifecycle!=2 AND c_template=false AND c_groupid=''
                 UNION ALL
                 SELECT d.c_refid
                     FROM (
                         SELECT c_groupid, MIN(c_versionorder) AS latestversion
                         FROM dmz_doc
-                        WHERE c_orgid=? AND c_spaceid=? AND c_lifecycle!=2 AND c_groupid!='' AND c_template=0
+                        WHERE c_orgid=? AND c_spaceid=? AND c_lifecycle!=2 AND c_groupid!='' AND c_template=false
                         GROUP BY c_groupid
                     ) AS x INNER JOIN dmz_doc AS d ON d.c_groupid=x.c_groupid AND d.c_versionorder=x.latestversion
                 )

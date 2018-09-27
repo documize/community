@@ -25,7 +25,7 @@ import (
 // Store provides data access to space category information.
 type Store struct {
 	store.Context
-	domain.DocumentStorer
+	store.DocumentStorer
 }
 
 // Add inserts new user group into store.

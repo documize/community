@@ -17,13 +17,14 @@ import (
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/uniqueid"
 	"github.com/documize/community/domain"
+	"github.com/documize/community/domain/store"
 	usr "github.com/documize/community/domain/user"
 	"github.com/documize/community/model/account"
 	"github.com/documize/community/model/user"
 )
 
 // AddExternalUser method to setup user account in Documize using Keycloak/LDAP provided user data.
-func AddExternalUser(ctx domain.RequestContext, rt *env.Runtime, store *domain.Store, u user.User, addSpace bool) (nu user.User, err error) {
+func AddExternalUser(ctx domain.RequestContext, rt *env.Runtime, store *store.Store, u user.User, addSpace bool) (nu user.User, err error) {
 	// only create account if not dupe
 	addUser := true
 	addAccount := true

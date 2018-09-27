@@ -26,9 +26,10 @@ import (
 	"github.com/documize/community/core/stringutil"
 	"github.com/documize/community/core/uniqueid"
 	"github.com/documize/community/domain"
-	"github.com/documize/community/domain/conversion/store"
+	ls "github.com/documize/community/domain/conversion/store"
 	"github.com/documize/community/domain/permission"
 	indexer "github.com/documize/community/domain/search"
+	"github.com/documize/community/domain/store"
 	"github.com/documize/community/model/activity"
 	"github.com/documize/community/model/attachment"
 	"github.com/documize/community/model/audit"
@@ -43,7 +44,7 @@ import (
 var storageProvider StorageProvider
 
 func init() {
-	storageProvider = new(store.LocalStorageProvider)
+	storageProvider = new(ls.LocalStorageProvider)
 }
 
 func (h *Handler) upload(w http.ResponseWriter, r *http.Request) (string, string, string) {
@@ -166,7 +167,7 @@ func (h *Handler) convert(w http.ResponseWriter, r *http.Request, job, folderID 
 	response.WriteJSON(w, nd)
 }
 
-func processDocument(ctx domain.RequestContext, r *env.Runtime, store *domain.Store, indexer indexer.Indexer, filename, job string, sp space.Space, fileResult *api.DocumentConversionResponse) (newDocument doc.Document, err error) {
+func processDocument(ctx domain.RequestContext, r *env.Runtime, store *store.Store, indexer indexer.Indexer, filename, job string, sp space.Space, fileResult *api.DocumentConversionResponse) (newDocument doc.Document, err error) {
 	// Convert into database objects
 	document := convertFileResult(filename, fileResult)
 	document.Job = job

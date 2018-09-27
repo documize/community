@@ -25,7 +25,7 @@ import (
 // Store provides data access to space category information.
 type Store struct {
 	store.Context
-	domain.DocumentStorer
+	store.DocumentStorer
 }
 
 // Add inserts the given document record into the document table and audits that it has been done.
@@ -35,8 +35,9 @@ func (s Store) Add(ctx domain.RequestContext, d doc.Document) (err error) {
 	d.Revised = d.Created // put same time in both fields
 
 	_, err = ctx.Transaction.Exec(s.Bind(`
-        INSERT INTO dmz_doc (c_refid, c_orgid, c_spaceid, c_userid, c_job, c_location, c_name, c_desc, c_slug, c_tags, c_template, c_protection, c_approval, c_lifecycle, c_versioned, c_versionid, c_versionorder, c_groupid, c_created, c_revised)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
+	    INSERT INTO dmz_doc (c_refid, c_orgid, c_spaceid, c_userid, c_job, c_location, c_name, c_desc, c_slug, c_tags,
+	        c_template, c_protection, c_approval, c_lifecycle, c_versioned, c_versionid, c_versionorder, c_groupid, c_created, c_revised)
+	    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
 		d.RefID, d.OrgID, d.SpaceID, d.UserID, d.Job, d.Location, d.Name, d.Excerpt, d.Slug, d.Tags,
 		d.Template, d.Protection, d.Approval, d.Lifecycle, d.Versioned, d.VersionID, d.VersionOrder, d.GroupID, d.Created, d.Revised)
 
@@ -83,7 +84,7 @@ func (s Store) GetBySpace(ctx domain.RequestContext, spaceID string) (documents 
         c_lifecycle AS lifecycle, c_versioned AS versioned, c_versionid AS versionid,
         c_versionorder AS versionorder, c_groupid AS groupid, c_created AS created, c_revised AS revised
         FROM dmz_doc
-        WHERE c_orgid=? AND c_template=0 AND c_spaceid IN
+        WHERE c_orgid=? AND c_template=false AND c_spaceid IN
 			(SELECT c_refid FROM dmz_space WHERE c_orgid=? AND c_refid IN
                 (SELECT c_refid FROM dmz_permission WHERE c_orgid=? AND c_location='space' AND c_refid=? AND c_refid IN
                     (SELECT c_refid from dmz_permission WHERE c_orgid=? AND c_who='user' AND (c_whoid=? OR c_whoid='0') AND c_location='space' AND c_action='view'
@@ -115,7 +116,7 @@ func (s Store) TemplatesBySpace(ctx domain.RequestContext, spaceID string) (docu
         c_lifecycle AS lifecycle, c_versioned AS versioned, c_versionid AS versionid,
         c_versionorder AS versionorder, c_groupid AS groupid, c_created AS created, c_revised AS revised
         FROM dmz_doc
-        WHERE c_orgid=? AND c_spaceid=? AND c_template=1 AND c_lifecycle=1
+        WHERE c_orgid=? AND c_spaceid=? AND c_template=true AND c_lifecycle=1
 		AND c_spaceid IN
 			(SELECT c_refid FROM dmz_space WHERE c_orgid=? AND c_refid IN
                 (SELECT c_refid FROM dmz_permission WHERE c_orgid=? AND c_location='space' AND c_refid IN
@@ -146,7 +147,7 @@ func (s Store) PublicDocuments(ctx domain.RequestContext, orgID string) (documen
         SELECT d.c_refid AS documentid, d.c_name AS document, d.c_revised as revised, l.c_refid AS spaceid, l.c_name AS space
         FROM dmz_doc d
         LEFT JOIN dmz_space l ON l.c_refid=d.c_spaceid
-        WHERE d.c_orgid=? AND l.c_type=1 AND d.c_lifecycle=1 AND d.c_template=0`),
+        WHERE d.c_orgid=? AND l.c_type=1 AND d.c_lifecycle=1 AND d.c_template=false`),
 		orgID)
 
 	if err == sql.ErrNoRows {

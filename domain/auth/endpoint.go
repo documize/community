@@ -23,6 +23,7 @@ import (
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/organization"
 	"github.com/documize/community/domain/section/provider"
+	"github.com/documize/community/domain/store"
 	"github.com/documize/community/domain/user"
 	"github.com/documize/community/model/auth"
 	"github.com/documize/community/model/org"
@@ -31,7 +32,7 @@ import (
 // Handler contains the runtime information such as logging and database.
 type Handler struct {
 	Runtime *env.Runtime
-	Store   *domain.Store
+	Store   *store.Store
 }
 
 // Login user based up HTTP Authorization header.

@@ -24,7 +24,7 @@ import (
 // Store provides data access to section template information.
 type Store struct {
 	store.Context
-	domain.BlockStorer
+	store.BlockStorer
 }
 
 // Add saves reusable content block.

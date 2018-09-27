@@ -27,6 +27,7 @@ import (
 	"github.com/documize/community/core/stringutil"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/mail"
+	"github.com/documize/community/domain/store"
 	"github.com/documize/community/model/audit"
 	"github.com/documize/community/model/group"
 	"github.com/documize/community/model/permission"
@@ -37,7 +38,7 @@ import (
 // Handler contains the runtime information such as logging and database.
 type Handler struct {
 	Runtime *env.Runtime
-	Store   *domain.Store
+	Store   *store.Store
 }
 
 // SetSpacePermissions persists specified space permissions

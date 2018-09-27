@@ -22,7 +22,7 @@ import (
 	"github.com/documize/community/core/api/convert/html"
 	"github.com/documize/community/core/api/convert/md"
 	api "github.com/documize/community/core/convapi"
-	"github.com/documize/community/domain"
+	"github.com/documize/community/domain/store"
 	"github.com/documize/glick"
 )
 
@@ -49,7 +49,7 @@ var Lib *glick.Library
 
 // Setup configures the global library at Lib,
 // largely based on the "config.json" file. It should be called only once.
-func Setup(s *domain.Store) error {
+func Setup(s *store.Store) error {
 	if insecure == "true" {
 		glick.InsecureSkipVerifyTLS = true
 	}

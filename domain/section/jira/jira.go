@@ -21,8 +21,8 @@ import (
 	"net/http"
 
 	"github.com/documize/community/core/env"
-	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/section/provider"
+	"github.com/documize/community/domain/store"
 	jira "gopkg.in/andygrunwald/go-jira.v1"
 )
 
@@ -34,7 +34,7 @@ const (
 // Provider represents Gemini
 type Provider struct {
 	Runtime *env.Runtime
-	Store   *domain.Store
+	Store   *store.Store
 }
 
 // Meta describes us.
@@ -129,7 +129,7 @@ func (p *Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http
 	}
 }
 
-func auth(ctx *provider.Context, store *domain.Store, w http.ResponseWriter, r *http.Request) {
+func auth(ctx *provider.Context, store *store.Store, w http.ResponseWriter, r *http.Request) {
 	creds, err := getCredentials(ctx, store)
 	if err != nil {
 		provider.WriteForbidden(w)
@@ -147,7 +147,7 @@ func auth(ctx *provider.Context, store *domain.Store, w http.ResponseWriter, r *
 	provider.WriteJSON(w, "OK")
 }
 
-func previewIssues(ctx *provider.Context, store *domain.Store, w http.ResponseWriter, r *http.Request) {
+func previewIssues(ctx *provider.Context, store *store.Store, w http.ResponseWriter, r *http.Request) {
 	creds, err := getCredentials(ctx, store)
 	if err != nil {
 		provider.WriteForbidden(w)
@@ -173,7 +173,7 @@ func previewIssues(ctx *provider.Context, store *domain.Store, w http.ResponseWr
 	provider.WriteJSON(w, issues)
 }
 
-func previewGrid(ctx *provider.Context, store *domain.Store, w http.ResponseWriter, r *http.Request) {
+func previewGrid(ctx *provider.Context, store *store.Store, w http.ResponseWriter, r *http.Request) {
 	creds, err := getCredentials(ctx, store)
 	if err != nil {
 		provider.WriteForbidden(w)
@@ -202,7 +202,7 @@ func previewGrid(ctx *provider.Context, store *domain.Store, w http.ResponseWrit
 }
 
 // Pull config from HTTP request.
-func readConfig(ctx *provider.Context, store *domain.Store, w http.ResponseWriter, r *http.Request) (config jiraConfig, err error) {
+func readConfig(ctx *provider.Context, store *store.Store, w http.ResponseWriter, r *http.Request) (config jiraConfig, err error) {
 	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -218,7 +218,7 @@ func readConfig(ctx *provider.Context, store *domain.Store, w http.ResponseWrite
 }
 
 // Get Jira connector configuration.
-func getCredentials(ctx *provider.Context, store *domain.Store) (login jiraLogin, err error) {
+func getCredentials(ctx *provider.Context, store *store.Store) (login jiraLogin, err error) {
 	creds, err := store.Setting.GetUser(ctx.OrgID, "", "jira", "")
 
 	err = json.Unmarshal([]byte(creds), &login)

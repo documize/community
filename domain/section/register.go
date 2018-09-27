@@ -15,7 +15,6 @@ import (
 	"fmt"
 
 	"github.com/documize/community/core/env"
-	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/section/airtable"
 	"github.com/documize/community/domain/section/code"
 	"github.com/documize/community/domain/section/flowchart"
@@ -28,10 +27,11 @@ import (
 	"github.com/documize/community/domain/section/table"
 	"github.com/documize/community/domain/section/trello"
 	"github.com/documize/community/domain/section/wysiwyg"
+	"github.com/documize/community/domain/store"
 )
 
 // Register sections
-func Register(rt *env.Runtime, s *domain.Store) {
+func Register(rt *env.Runtime, s *store.Store) {
 	provider.Register("code", &code.Provider{Runtime: rt, Store: s})
 	provider.Register("jira", &jira.Provider{Runtime: rt, Store: s})
 	provider.Register("gemini", &gemini.Provider{Runtime: rt, Store: s})

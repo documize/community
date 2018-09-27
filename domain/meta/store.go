@@ -23,7 +23,7 @@ import (
 // Store provides data access to space category information.
 type Store struct {
 	store.Context
-	domain.MetaStorer
+	store.MetaStorer
 }
 
 // GetDocumentsID returns every document ID value stored.

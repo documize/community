@@ -20,7 +20,7 @@ import (
 	"github.com/documize/community/core/api/plugins"
 	"github.com/documize/community/core/database"
 	"github.com/documize/community/core/env"
-	"github.com/documize/community/domain"
+	"github.com/documize/community/domain/store"
 	"github.com/documize/community/server/routing"
 	"github.com/documize/community/server/web"
 	"github.com/gorilla/mux"
@@ -29,7 +29,7 @@ import (
 var testHost string // used during automated testing
 
 // Start router to handle all HTTP traffic.
-func Start(rt *env.Runtime, s *domain.Store, ready chan struct{}) {
+func Start(rt *env.Runtime, s *store.Store, ready chan struct{}) {
 	rt.Log.Info(fmt.Sprintf("Product: %s version %s", rt.Product.Title, rt.Product.Version))
 
 	// decide which mode to serve up

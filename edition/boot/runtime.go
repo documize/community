@@ -18,13 +18,13 @@ import (
 	"github.com/documize/community/core/database"
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/secrets"
-	"github.com/documize/community/domain"
+	"github.com/documize/community/domain/store"
 	"github.com/documize/community/edition/storage"
 	"github.com/jmoiron/sqlx"
 )
 
 // InitRuntime prepares runtime using command line and environment variables.
-func InitRuntime(r *env.Runtime, s *domain.Store) bool {
+func InitRuntime(r *env.Runtime, s *store.Store) bool {
 	// We need SALT to hash auth JWT tokens
 	if r.Flags.Salt == "" {
 		r.Flags.Salt = secrets.RandSalt()

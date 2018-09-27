@@ -15,6 +15,7 @@ import (
 	"bytes"
 	"fmt"
 	"net/http"
+	"strings"
 	"text/template"
 
 	"github.com/documize/community/core/env"
@@ -24,6 +25,7 @@ import (
 	"github.com/documize/community/domain/auth"
 	"github.com/documize/community/domain/organization"
 	indexer "github.com/documize/community/domain/search"
+	"github.com/documize/community/domain/store"
 	"github.com/documize/community/model/doc"
 	"github.com/documize/community/model/org"
 	"github.com/documize/community/model/space"
@@ -32,7 +34,7 @@ import (
 // Handler contains the runtime information such as logging and database.
 type Handler struct {
 	Runtime *env.Runtime
-	Store   *domain.Store
+	Store   *store.Store
 	Indexer indexer.Indexer
 }
 
@@ -52,7 +54,7 @@ func (h *Handler) Meta(w http.ResponseWriter, r *http.Request) {
 	data.Title = org.Title
 	data.Message = org.Message
 	data.AllowAnonymousAccess = org.AllowAnonymousAccess
-	data.AuthProvider = org.AuthProvider
+	data.AuthProvider = strings.TrimSpace(org.AuthProvider)
 	data.AuthConfig = org.AuthConfig
 	data.MaxTags = org.MaxTags
 	data.Version = h.Runtime.Product.Version

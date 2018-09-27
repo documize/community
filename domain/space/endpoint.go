@@ -32,6 +32,7 @@ import (
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/mail"
 	"github.com/documize/community/domain/organization"
+	"github.com/documize/community/domain/store"
 	"github.com/documize/community/model/account"
 	"github.com/documize/community/model/activity"
 	"github.com/documize/community/model/audit"
@@ -47,7 +48,7 @@ import (
 // Handler contains the runtime information such as logging and database.
 type Handler struct {
 	Runtime *env.Runtime
-	Store   *domain.Store
+	Store   *store.Store
 }
 
 // Add creates a new space.
