@@ -54,6 +54,10 @@ func (s Store) GetDocumentPages(ctx domain.RequestContext, documentID string) (p
         WHERE c_docid=? AND (c_status=0 OR ((c_status=4 OR c_status=2) AND c_relativeid=''))`),
 		documentID)
 
+	if err == sql.ErrNoRows {
+		err = nil
+		p = []page.Page{}
+	}
 	if err != nil {
 		err = errors.Wrap(err, "failed to get instance document pages")
 	}

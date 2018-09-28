@@ -287,12 +287,13 @@ CREATE TABLE dmz_search (
     c_itemid varchar(16) COLLATE ucs_basic NOT NULL DEFAULT '',
     c_itemtype varchar(10) COLLATE ucs_basic NOT NULL,
     c_content text COLLATE ucs_basic,
+    c_token TSVECTOR,
     c_created timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (id)
 );
 CREATE INDEX idx_search_1 ON dmz_search (c_orgid);
 CREATE INDEX idx_search_2 ON dmz_search (c_docid);
-CREATE INDEX idx_search_3 ON dmz_search USING GIN (to_tsvector('english', c_content));
+CREATE INDEX idx_search_3 ON dmz_search USING GIN(c_token);
 
 DROP TABLE IF EXISTS dmz_section;
 CREATE TABLE dmz_section (

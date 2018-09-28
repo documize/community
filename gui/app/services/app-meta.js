@@ -36,6 +36,7 @@ export default Service.extend({
 	setupMode: false,
 	secureMode: false,
 	maxTags: 3,
+	storageProvider: '',
 
 	// for major.minor semver release detection
 	// for bugfix releases, only admin is made aware of new release and end users see no What's New messaging

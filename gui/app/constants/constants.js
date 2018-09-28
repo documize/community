@@ -135,6 +135,12 @@ let constants = EmberObject.extend({
 		Rejected:           6,
 		Publish:			7,
 	},
+
+	// Meta
+	StoreProvider: { // eslint-disable-line ember/avoid-leaking-state-in-ember-objects
+		MySQL: 'MySQL',
+		PostgreSQL: 'PostgreSQL',
+	},
 });
 
 export default { constants }

@@ -62,6 +62,7 @@ func (h *Handler) Meta(w http.ResponseWriter, r *http.Request) {
 	data.Valid = h.Runtime.Product.License.Valid
 	data.ConversionEndpoint = org.ConversionEndpoint
 	data.License = h.Runtime.Product.License
+	data.Storage = h.Runtime.StoreProvider.Type()
 
 	// Strip secrets
 	data.AuthConfig = auth.StripAuthSecrets(h.Runtime, org.AuthProvider, org.AuthConfig)
@@ -212,6 +213,19 @@ func (h *Handler) rebuildSearchIndex(ctx domain.RequestContext) {
 
 	for i := range docs {
 		d := docs[i]
+
+		doc, err := h.Store.Document.Get(ctx, d)
+		if err != nil {
+			h.Runtime.Log.Error(method, err)
+			return
+		}
+		at, err := h.Store.Attachment.GetAttachments(ctx, d)
+		if err != nil {
+			h.Runtime.Log.Error(method, err)
+			return
+		}
+
+		h.Indexer.IndexDocument(ctx, doc, at)
 
 		pages, err := h.Store.Meta.GetDocumentPages(ctx, d)
 		if err != nil {

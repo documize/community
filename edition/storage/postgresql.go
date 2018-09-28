@@ -45,18 +45,20 @@ type PostgreSQLProvider struct {
 	ConnectionString string
 
 	// Unused for this provider.
-	Variant string
+	Variant env.StoreType
 }
 
 // SetPostgreSQLProvider creates PostgreSQL provider
 func SetPostgreSQLProvider(r *env.Runtime, s *store.Store) {
-	// Set up provider specific details and wire up data prividers.
+	// Set up provider specific details.
 	r.StoreProvider = PostgreSQLProvider{
 		ConnectionString: r.Flags.DBConn,
-		Variant:          "",
+		Variant:          env.StoreTypePostgreSQL,
 	}
 
-	// Wire up data providers!
+	// Wire up data providers.
+
+	// Account
 	accountStore := account.Store{}
 	accountStore.Runtime = r
 	s.Account = accountStore
@@ -153,7 +155,7 @@ func (p PostgreSQLProvider) Type() env.StoreType {
 }
 
 // TypeVariant returns databse flavor
-func (p PostgreSQLProvider) TypeVariant() string {
+func (p PostgreSQLProvider) TypeVariant() env.StoreType {
 	return p.Variant
 }
 

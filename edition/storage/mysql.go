@@ -43,13 +43,24 @@ import (
 
 // SetMySQLProvider creates MySQL provider
 func SetMySQLProvider(r *env.Runtime, s *store.Store) {
-	// Set up provider specific details and wire up data prividers.
-	r.StoreProvider = MySQLProvider{
+	// Set up provider specific details.
+	p := MySQLProvider{
 		ConnectionString: r.Flags.DBConn,
-		Variant:          r.Flags.DBType,
+	}
+	switch r.Flags.DBType {
+	case "mysql":
+		p.Variant = env.StoreTypeMySQL
+	case "mariadb":
+		p.Variant = env.StoreTypeMariaDB
+	case "percona":
+		p.Variant = env.StoreTypePercona
 	}
 
-	// Wire up data providers!
+	r.StoreProvider = p
+
+	// Wire up data providers.
+
+	// Account
 	accountStore := account.Store{}
 	accountStore.Runtime = r
 	s.Account = accountStore
@@ -146,7 +157,7 @@ type MySQLProvider struct {
 	ConnectionString string
 
 	// User specified db type (mysql, percona or mariadb).
-	Variant string
+	Variant env.StoreType
 }
 
 // Type returns name of provider
@@ -155,7 +166,7 @@ func (p MySQLProvider) Type() env.StoreType {
 }
 
 // TypeVariant returns databse flavor
-func (p MySQLProvider) TypeVariant() string {
+func (p MySQLProvider) TypeVariant() env.StoreType {
 	return p.Variant
 }
 

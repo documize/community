@@ -33,7 +33,8 @@ type Store struct {
 func (s Store) AddPermission(ctx domain.RequestContext, r permission.Permission) (err error) {
 	r.Created = time.Now().UTC()
 
-	_, err = ctx.Transaction.Exec(s.Bind("INSERT INTO dmz_permission (c_orgid, c_who, c_whoid, c_action, c_scope, c_location, c_refid, c_created) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"),
+	_, err = ctx.Transaction.Exec(s.Bind(`INSERT INTO dmz_permission
+        (c_orgid, c_who, c_whoid, c_action, c_scope, c_location, c_refid, c_created) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`),
 		r.OrgID, string(r.Who), r.WhoID, string(r.Action), string(r.Scope), string(r.Location), r.RefID, r.Created)
 
 	if err != nil {
@@ -278,7 +279,7 @@ func (s Store) DeleteSpacePermissions(ctx domain.RequestContext, spaceID string)
 
 // DeleteUserSpacePermissions removes all roles for the specified user, for the specified space.
 func (s Store) DeleteUserSpacePermissions(ctx domain.RequestContext, spaceID, userID string) (rows int64, err error) {
-	sql := fmt.Sprintf("DELETE FROM dmz_permission WHERE c_orgid='%s' AND c_location='space' AND c_refid='%s' c_who='user' AND c_whoid='%s'",
+	sql := fmt.Sprintf("DELETE FROM dmz_permission WHERE c_orgid='%s' AND c_location='space' AND c_refid='%s' AND c_who='user' AND c_whoid='%s'",
 		ctx.OrgID, spaceID, userID)
 
 	return s.DeleteWhere(ctx.Transaction, sql)

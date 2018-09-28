@@ -12,6 +12,7 @@
 package attachment
 
 import (
+	"database/sql"
 	"strings"
 	"time"
 
@@ -75,8 +76,13 @@ func (s Store) GetAttachments(ctx domain.RequestContext, docID string) (a []atta
         ORDER BY c_filename`),
 		ctx.OrgID, docID)
 
+	if err == sql.ErrNoRows {
+		err = nil
+		a = []attachment.Attachment{}
+	}
 	if err != nil {
 		err = errors.Wrap(err, "execute select attachments")
+		return
 	}
 
 	return
@@ -93,6 +99,11 @@ func (s Store) GetAttachmentsWithData(ctx domain.RequestContext, docID string) (
         WHERE c_orgid=? and c_docid=?
         ORDER BY c_filename`),
 		ctx.OrgID, docID)
+
+	if err == sql.ErrNoRows {
+		err = nil
+		a = []attachment.Attachment{}
+	}
 
 	if err != nil {
 		err = errors.Wrap(err, "execute select attachments with data")

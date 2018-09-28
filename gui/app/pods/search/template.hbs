@@ -10,22 +10,36 @@
 		<div id="sidebar" class="sidebar">
 			<h1>Search</h1>
 			<div class="view-search">
-				<div class="syntax">
-					<div class="example">apple banana</div>
-					<div class="explain">Find rows that contain at least one of the two words</div>
-					<div class="example">+apple +banana</div>
-					<div class="explain">Find rows that contain both words</div>
-					<div class="example">+apple macintosh</div>
-					<div class="explain">Find rows that contain the word "apple", but rank rows higher if they also contain "macintosh"</div>
-					<div class="example">+apple -macintosh</div>
-					<div class="explain">Find rows that contain the word "apple" but not "macintosh"</div>
-					<div class="example">+apple +(&gt;turnover &lt;strudel)</div>
-					<div class="explain">Find rows that contain the words "apple" and "turnover", or "apple" and "strudel" (in any order), but rank "apple turnover" higher than "apple strudel"</div>
-					<div class="example">apple*</div>
-					<div class="explain">Find rows that contain words such as "apple", "apples", "applesauce", or "applet"</div>
-					<div class="example">"some words"</div>
-					<div class="explain">Find rows that contain the exact phrase "some words" (for example, rows that contain "some words of wisdom" but not "some noise words")</div>
-				</div>
+				{{#if (eq appMeta.storageProvider constants.StoreProvider.MySQL)}}
+					<div class="syntax">
+						<div class="example">apple banana</div>
+						<div class="explain">Show results that contain at least one of the two words</div>
+						<div class="example">+apple +banana</div>
+						<div class="explain">Show results that contain both words</div>
+						<div class="example">+apple macintosh</div>
+						<div class="explain">Show results that contain the word "apple", but rank rows higher if they also contain "macintosh"</div>
+						<div class="example">+apple -macintosh</div>
+						<div class="explain">Show results that contain the word "apple" but not "macintosh"</div>
+						<div class="example">+apple +(&gt;turnover &lt;strudel)</div>
+						<div class="explain">Show results that contain the words "apple" and "turnover", or "apple" and "strudel" (in any order), but rank "apple turnover" higher than "apple strudel"</div>
+						<div class="example">apple*</div>
+						<div class="explain">Show results that contain words such as "apple", "apples", "applesauce", or "applet"</div>
+						<div class="example">"some words"</div>
+						<div class="explain">Show results that contain the exact phrase "some words" (for example, rows that contain "some words of wisdom" but not "some noise words")</div>
+					</div>
+				{{/if}}
+				{{#if (eq appMeta.storageProvider constants.StoreProvider.PostgreSQL)}}
+					<div class="syntax">
+						<div class="example">apple | banana</div>
+						<div class="explain">Show results that contain at either word</div>
+						<div class="example">apple & banana</div>
+						<div class="explain">Show results that contain both words</div>
+						<div class="example">apple !macintosh</div>
+						<div class="explain">Show results that contain the word "apple" but not "macintosh"</div>
+						<div class="example">google & (apple | microsoft) & !ibm</div>
+						<div class="explain">Show results that have "google", either "apple" or "microsoft" but not "ibm"</div>
+					</div>
+				{{/if}}
 			</div>
 		</div>
 	{{/layout/middle-zone-sidebar}}

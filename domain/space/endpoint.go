@@ -470,7 +470,13 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 	// If newly marked Everyone space, ensure everyone has permission
 	if prev.Type != space.ScopePublic && sp.Type == space.ScopePublic {
-		h.Store.Permission.DeleteUserSpacePermissions(ctx, sp.RefID, user.EveryoneUserID)
+		_, err = h.Store.Permission.DeleteUserSpacePermissions(ctx, sp.RefID, user.EveryoneUserID)
+		if err != nil {
+			ctx.Transaction.Rollback()
+			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
+			return
+		}
 
 		perm := permission.Permission{}
 		perm.OrgID = sp.OrgID

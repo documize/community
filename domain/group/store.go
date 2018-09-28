@@ -104,7 +104,7 @@ func (s Store) Delete(ctx domain.RequestContext, refID string) (rows int64, err 
 	if err != nil {
 		return
 	}
-	return s.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_group_member WHERE c_orgid=\"%s\" AND c_groupid=\"%s\"", ctx.OrgID, refID))
+	return s.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_group_member WHERE c_orgid='%s' AND c_groupid='%s'", ctx.OrgID, refID))
 }
 
 // GetGroupMembers returns all user associated with given group.
@@ -143,8 +143,12 @@ func (s Store) JoinGroup(ctx domain.RequestContext, groupID, userID string) (err
 
 // LeaveGroup removes user from group.
 func (s Store) LeaveGroup(ctx domain.RequestContext, groupID, userID string) (err error) {
-	_, err = s.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_group_member WHERE c_orgid=\"%s\" AND c_groupid=\"%s\" AND c_userid=\"%s\"",
+	_, err = s.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_group_member WHERE c_orgid='%s' AND c_groupid='%s' AND c_userid='%s'",
 		ctx.OrgID, groupID, userID))
+
+	if err == sql.ErrNoRows {
+		err = nil
+	}
 	if err != nil {
 		err = errors.Wrap(err, "clear group member")
 	}

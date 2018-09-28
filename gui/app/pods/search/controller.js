@@ -9,9 +9,12 @@
 //
 // https://documize.com
 
+import { inject as service } from '@ember/service';
 import Controller from '@ember/controller';
 
 export default Controller.extend({
+	appMeta: service(),
+
 	queryParams: ['filter', 'matchDoc', 'matchContent', 'matchTag', 'matchFile', 'slog'],
 	filter: '',
 	matchDoc: true,

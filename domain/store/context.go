@@ -12,6 +12,7 @@
 package store
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/documize/community/core/env"
 	"github.com/jmoiron/sqlx"
@@ -44,12 +45,13 @@ func (c *Context) Bind(sql string) string {
 func (c *Context) Delete(tx *sqlx.Tx, table string, id string) (rows int64, err error) {
 	result, err := tx.Exec(c.Bind("DELETE FROM "+table+" WHERE c_refid=?"), id)
 
-	if err != nil {
+	if err != nil && err != sql.ErrNoRows {
 		err = errors.Wrap(err, fmt.Sprintf("unable to delete row in table %s", table))
 		return
 	}
 
 	rows, err = result.RowsAffected()
+	err = nil
 
 	return
 }
@@ -58,12 +60,13 @@ func (c *Context) Delete(tx *sqlx.Tx, table string, id string) (rows int64, err 
 func (c *Context) DeleteConstrained(tx *sqlx.Tx, table string, orgID, id string) (rows int64, err error) {
 	result, err := tx.Exec(c.Bind("DELETE FROM "+table+" WHERE c_orgid=? AND c_refid=?"), orgID, id)
 
-	if err != nil {
+	if err != nil && err != sql.ErrNoRows {
 		err = errors.Wrap(err, fmt.Sprintf("unable to delete row in table %s", table))
 		return
 	}
 
 	rows, err = result.RowsAffected()
+	err = nil
 
 	return
 }
@@ -72,12 +75,13 @@ func (c *Context) DeleteConstrained(tx *sqlx.Tx, table string, orgID, id string)
 func (c *Context) DeleteConstrainedWithID(tx *sqlx.Tx, table string, orgID, id string) (rows int64, err error) {
 	result, err := tx.Exec(c.Bind("DELETE FROM "+table+" WHERE c_orgid=? AND id=?"), orgID, id)
 
-	if err != nil {
+	if err != nil && err != sql.ErrNoRows {
 		err = errors.Wrap(err, fmt.Sprintf("unable to delete row in table %s", table))
 		return
 	}
 
 	rows, err = result.RowsAffected()
+	err = nil
 
 	return
 }
@@ -86,12 +90,13 @@ func (c *Context) DeleteConstrainedWithID(tx *sqlx.Tx, table string, orgID, id s
 func (c *Context) DeleteWhere(tx *sqlx.Tx, statement string) (rows int64, err error) {
 	result, err := tx.Exec(statement)
 
-	if err != nil {
+	if err != nil && err != sql.ErrNoRows {
 		err = errors.Wrap(err, fmt.Sprintf("unable to delete rows: %s", statement))
 		return
 	}
 
 	rows, err = result.RowsAffected()
+	err = nil
 
 	return
 }

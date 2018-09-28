@@ -39,43 +39,68 @@ type Store struct {
 // IndexDocument adds search index entries for document inserting title, tags and attachments as
 // searchable items. Any existing document entries are removed.
 func (s Store) IndexDocument(ctx domain.RequestContext, doc doc.Document, a []attachment.Attachment) (err error) {
+	method := "search.IndexDocument"
+
 	// remove previous search entries
 	_, err = ctx.Transaction.Exec(s.Bind("DELETE FROM dmz_search WHERE c_orgid=? AND c_docid=? AND (c_itemtype='doc' OR c_itemtype='file' OR c_itemtype='tag')"),
 		ctx.OrgID, doc.RefID)
-
-	if err != nil {
+	if err != nil && err != sql.ErrNoRows {
 		err = errors.Wrap(err, "execute delete document index entries")
+		s.Runtime.Log.Error(method, err)
+		return
 	}
 
 	// insert doc title
-	_, err = ctx.Transaction.Exec(s.Bind("INSERT INTO dmz_search (c_orgid, c_docid, c_itemid, c_itemtype, c_content) VALUES (?, ?, ?, ?, ?)"),
-		ctx.OrgID, doc.RefID, "", "doc", doc.Name)
-	if err != nil {
+	if s.Runtime.StoreProvider.Type() == env.StoreTypePostgreSQL {
+		_, err = ctx.Transaction.Exec(s.Bind("INSERT INTO dmz_search (c_orgid, c_docid, c_itemid, c_itemtype, c_content, c_token) VALUES (?, ?, ?, ?, ?, to_tsvector(?))"),
+			ctx.OrgID, doc.RefID, "", "doc", doc.Name, doc.Name)
+
+	} else {
+		_, err = ctx.Transaction.Exec(s.Bind("INSERT INTO dmz_search (c_orgid, c_docid, c_itemid, c_itemtype, c_content) VALUES (?, ?, ?, ?, ?)"),
+			ctx.OrgID, doc.RefID, "", "doc", doc.Name)
+	}
+	if err != nil && err != sql.ErrNoRows {
 		err = errors.Wrap(err, "execute insert document title entry")
+		s.Runtime.Log.Error(method, err)
+		return
 	}
 
 	// insert doc tags
 	tags := strings.Split(doc.Tags, "#")
 	for _, t := range tags {
+		t = strings.TrimSpace(t)
 		if len(t) == 0 {
 			continue
 		}
 
-		_, err = ctx.Transaction.Exec(s.Bind("INSERT INTO dmz_search (c_orgid, c_docid, c_itemid, c_itemtype, c_content) VALUES (?, ?, ?, ?, ?)"),
-			ctx.OrgID, doc.RefID, "", "tag", t)
+		if s.Runtime.StoreProvider.Type() == env.StoreTypePostgreSQL {
+			_, err = ctx.Transaction.Exec(s.Bind("INSERT INTO dmz_search (c_orgid, c_docid, c_itemid, c_itemtype, c_content, c_token) VALUES (?, ?, ?, ?, ?, to_tsvector(?))"),
+				ctx.OrgID, doc.RefID, "", "tag", t, t)
 
-		if err != nil {
+		} else {
+			_, err = ctx.Transaction.Exec(s.Bind("INSERT INTO dmz_search (c_orgid, c_docid, c_itemid, c_itemtype, c_content) VALUES (?, ?, ?, ?, ?)"),
+				ctx.OrgID, doc.RefID, "", "tag", t)
+		}
+		if err != nil && err != sql.ErrNoRows {
 			err = errors.Wrap(err, "execute insert document tag entry")
+			s.Runtime.Log.Error(method, err)
 			return
 		}
 	}
 
 	for _, file := range a {
-		_, err = ctx.Transaction.Exec(s.Bind("INSERT INTO dmz_search (c_orgid, c_docid, c_itemid, c_itemtype, c_content) VALUES (?, ?, ?, ?, ?)"),
-			ctx.OrgID, doc.RefID, file.RefID, "file", file.Filename)
+		if s.Runtime.StoreProvider.Type() == env.StoreTypePostgreSQL {
+			_, err = ctx.Transaction.Exec(s.Bind("INSERT INTO dmz_search (c_orgid, c_docid, c_itemid, c_itemtype, c_content, c_token) VALUES (?, ?, ?, ?, ?, to_tsvector(?))"),
+				ctx.OrgID, doc.RefID, file.RefID, "file", file.Filename, file.Filename)
 
-		if err != nil {
+		} else {
+			_, err = ctx.Transaction.Exec(s.Bind("INSERT INTO dmz_search (c_orgid, c_docid, c_itemid, c_itemtype, c_content) VALUES (?, ?, ?, ?, ?)"),
+				ctx.OrgID, doc.RefID, file.RefID, "file", file.Filename)
+		}
+		if err != nil && err != sql.ErrNoRows {
 			err = errors.Wrap(err, "execute insert document file entry")
+			s.Runtime.Log.Error(method, err)
+			return
 		}
 	}
 
@@ -84,11 +109,14 @@ func (s Store) IndexDocument(ctx domain.RequestContext, doc doc.Document, a []at
 
 // DeleteDocument removes all search entries for document.
 func (s Store) DeleteDocument(ctx domain.RequestContext, ID string) (err error) {
+	method := "search.DeleteDocument"
+
 	_, err = ctx.Transaction.Exec(s.Bind("DELETE FROM dmz_search WHERE c_orgid=? AND c_docid=?"),
 		ctx.OrgID, ID)
 
-	if err != nil {
+	if err != nil && err != sql.ErrNoRows {
 		err = errors.Wrap(err, "execute delete document entries")
+		s.Runtime.Log.Error(method, err)
 	}
 
 	return
@@ -97,6 +125,8 @@ func (s Store) DeleteDocument(ctx domain.RequestContext, ID string) (err error) 
 // IndexContent adds search index entry for document context.
 // Any existing document entries are removed.
 func (s Store) IndexContent(ctx domain.RequestContext, p page.Page) (err error) {
+	method := "search.IndexContent"
+
 	// we do not index pending pages
 	if p.Status == workflow.ChangePending || p.Status == workflow.ChangePendingNew {
 		return
@@ -106,28 +136,49 @@ func (s Store) IndexContent(ctx domain.RequestContext, p page.Page) (err error) 
 	_, err = ctx.Transaction.Exec(s.Bind("DELETE FROM dmz_search WHERE c_orgid=? AND c_docid=? AND c_itemid=? AND c_itemtype='page'"),
 		ctx.OrgID, p.DocumentID, p.RefID)
 
-	if err != nil {
+	if err != nil && err != sql.ErrNoRows {
 		err = errors.Wrap(err, "execute delete document content entry")
+		s.Runtime.Log.Error(method, err)
+		return
 	}
+	err = nil
 
 	// prepare content
 	content, err := stringutil.HTML(p.Body).Text(false)
 	if err != nil {
 		err = errors.Wrap(err, "search strip HTML failed")
+		s.Runtime.Log.Error(method, err)
 		return
 	}
 	content = strings.TrimSpace(content)
 
-	_, err = ctx.Transaction.Exec(s.Bind("INSERT INTO dmz_search (c_orgid, c_docid, c_itemid, c_itemtype, c_content) VALUES (?, ?, ?, ?, ?)"),
-		ctx.OrgID, p.DocumentID, p.RefID, "page", content)
-	if err != nil {
-		err = errors.Wrap(err, "execute insert document content entry")
-	}
+	if s.Runtime.StoreProvider.Type() == env.StoreTypePostgreSQL {
+		_, err = ctx.Transaction.Exec(s.Bind("INSERT INTO dmz_search (c_orgid, c_docid, c_itemid, c_itemtype, c_content, c_token) VALUES (?, ?, ?, ?, ?, to_tsvector(?))"),
+			ctx.OrgID, p.DocumentID, p.RefID, "page", content, content)
 
-	_, err = ctx.Transaction.Exec(s.Bind("INSERT INTO dmz_search (c_orgid, c_docid, c_itemid, c_itemtype, c_content) VALUES (?, ?, ?, ?, ?)"),
-		ctx.OrgID, p.DocumentID, p.RefID, "page", p.Name)
-	if err != nil {
-		err = errors.Wrap(err, "execute insert document page title entry")
+	} else {
+		_, err = ctx.Transaction.Exec(s.Bind("INSERT INTO dmz_search (c_orgid, c_docid, c_itemid, c_itemtype, c_content) VALUES (?, ?, ?, ?, ?)"),
+			ctx.OrgID, p.DocumentID, p.RefID, "page", content)
+	}
+	if err != nil && err != sql.ErrNoRows {
+		err = errors.Wrap(err, "execute insert section content entry")
+		s.Runtime.Log.Error(method, err)
+		return
+	}
+	err = nil
+
+	if s.Runtime.StoreProvider.Type() == env.StoreTypePostgreSQL {
+		_, err = ctx.Transaction.Exec(s.Bind("INSERT INTO dmz_search (c_orgid, c_docid, c_itemid, c_itemtype, c_content, c_token) VALUES (?, ?, ?, ?, ?, to_tsvector(?))"),
+			ctx.OrgID, p.DocumentID, p.RefID, "page", p.Name, p.Name)
+
+	} else {
+		_, err = ctx.Transaction.Exec(s.Bind("INSERT INTO dmz_search (c_orgid, c_docid, c_itemid, c_itemtype, c_content) VALUES (?, ?, ?, ?, ?)"),
+			ctx.OrgID, p.DocumentID, p.RefID, "page", p.Name)
+	}
+	if err != nil && err != sql.ErrNoRows {
+		err = errors.Wrap(err, "execute insert section title entry")
+		s.Runtime.Log.Error(method, err)
+		return
 	}
 
 	return nil
@@ -135,18 +186,23 @@ func (s Store) IndexContent(ctx domain.RequestContext, p page.Page) (err error) 
 
 // DeleteContent removes all search entries for specific document content.
 func (s Store) DeleteContent(ctx domain.RequestContext, pageID string) (err error) {
+	method := "search.DeleteContent"
+
 	// remove all search entries
 	var stmt1 *sqlx.Stmt
 	stmt1, err = ctx.Transaction.Preparex(s.Bind("DELETE FROM dmz_search WHERE c_orgid=? AND c_itemid=? AND c_itemtype=?"))
 	defer streamutil.Close(stmt1)
-	if err != nil {
+
+	if err != nil && err != sql.ErrNoRows {
 		err = errors.Wrap(err, "prepare delete document content entry")
+		s.Runtime.Log.Error(method, err)
 		return
 	}
 
 	_, err = stmt1.Exec(ctx.OrgID, pageID, "page")
-	if err != nil {
+	if err != nil && err != sql.ErrNoRows {
 		err = errors.Wrap(err, "execute delete document content entry")
+		s.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -220,9 +276,17 @@ func (s Store) matchFullText(ctx domain.RequestContext, keywords, itemType strin
 
 	switch s.Runtime.StoreProvider.Type() {
 	case env.StoreTypeMySQL:
-		fts = " AND MATCH(s.c_content) AGAINST(? IN BOOLEAN MODE)"
+		fts = " AND MATCH(s.c_content) AGAINST(? IN BOOLEAN MODE) "
 	case env.StoreTypePostgreSQL:
-		fts = ""
+		// By default, we expect no Postgres full text search operators.
+		parser := "plainto_tsquery"
+		// If we find operators then we have to use correct query processor.
+		operator := strings.ContainsAny(keywords, "!()&|*'`\":<->")
+		if operator {
+			parser = "to_tsquery"
+		}
+
+		fts = fmt.Sprintf(" AND s.c_token @@ %s(?) ", parser)
 	}
 
 	sql1 := s.Bind(`
@@ -279,7 +343,7 @@ func (s Store) matchLike(ctx domain.RequestContext, keywords, itemType string) (
 	keywords = strings.Replace(keywords, "'", "", -1)
 	keywords = strings.Replace(keywords, "\"", "", -1)
 	keywords = strings.Replace(keywords, "%", "", -1)
-	keywords = fmt.Sprintf("%%%s%%", keywords)
+	keywords = fmt.Sprintf("%%%s%%", strings.ToLower(keywords))
 
 	sql1 := s.Bind(`SELECT
         s.id, s.c_orgid AS orgid, s.c_docid AS documentid, s.c_itemid AS itemid, s.c_itemtype AS itemtype,
@@ -304,7 +368,7 @@ func (s Store) matchLike(ctx domain.RequestContext, keywords, itemType string) (
                     AND p.c_location='space' AND (r.c_userid=? OR r.c_userid='0')
                 )
             )
-            AND s.c_content LIKE ?`)
+            AND LOWER(s.c_content) LIKE ?`)
 
 	err = s.Runtime.Db.Select(&r,
 		sql1,

@@ -137,12 +137,12 @@ func (s Store) MarkOrphanAttachmentLink(ctx domain.RequestContext, attachmentID 
 
 // DeleteSourcePageLinks removes saved links for given source.
 func (s Store) DeleteSourcePageLinks(ctx domain.RequestContext, pageID string) (rows int64, err error) {
-	return s.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_doc_link WHERE c_orgid=\"%s\" AND c_sourcesectionid=\"%s\"", ctx.OrgID, pageID))
+	return s.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_doc_link WHERE c_orgid='%s' AND c_sourcesectionid='%s'", ctx.OrgID, pageID))
 }
 
 // DeleteSourceDocumentLinks removes saved links for given document.
 func (s Store) DeleteSourceDocumentLinks(ctx domain.RequestContext, documentID string) (rows int64, err error) {
-	return s.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_doc_link WHERE c_orgid=\"%s\" AND c_sourcedocid=\"%s\"", ctx.OrgID, documentID))
+	return s.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_doc_link WHERE c_orgid='%s' AND c_sourcedocid='%s'", ctx.OrgID, documentID))
 }
 
 // DeleteLink removes saved link from the store.
