@@ -52,6 +52,8 @@ func BuildExport(ctx domain.RequestContext, s store.Store, spec exportSpec) (htm
 			if e == nil {
 				content.WriteString(c)
 				toc = append(toc, t...)
+			} else {
+				fmt.Println("export.space", err)
 			}
 		}
 
@@ -60,6 +62,8 @@ func BuildExport(ctx domain.RequestContext, s store.Store, spec exportSpec) (htm
 		if e == nil {
 			content.WriteString(c)
 			toc = append(toc, t...)
+		} else {
+			fmt.Println("export.category", err)
 		}
 
 	case "document":
@@ -67,6 +71,8 @@ func BuildExport(ctx domain.RequestContext, s store.Store, spec exportSpec) (htm
 		if e == nil {
 			content.WriteString(c)
 			toc = append(toc, t...)
+		} else {
+			fmt.Println("export.document", err)
 		}
 	}
 

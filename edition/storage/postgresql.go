@@ -263,6 +263,12 @@ func (p PostgreSQLProvider) QueryTableList() string {
         WHERE table_type='BASE TABLE' AND table_schema NOT IN ('pg_catalog', 'information_schema') AND table_catalog='%s'`, p.DatabaseName())
 }
 
+// QueryDateInterval returns provider specific interval style
+// date SQL.
+func (p PostgreSQLProvider) QueryDateInterval(days int64) string {
+	return fmt.Sprintf("DATE(NOW()) - INTERVAL '%d day'", days)
+}
+
 // JSONEmpty returns empty SQL JSON object.
 // Typically used as 2nd parameter to COALESCE().
 func (p PostgreSQLProvider) JSONEmpty() string {

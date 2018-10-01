@@ -298,6 +298,12 @@ func (p MySQLProvider) QueryTableList() string {
         WHERE TABLE_SCHEMA = '` + p.DatabaseName() + `' AND TABLE_TYPE='BASE TABLE'`
 }
 
+// QueryDateInterval returns provider specific interval style
+// date SQL.
+func (p MySQLProvider) QueryDateInterval(days int64) string {
+	return fmt.Sprintf("DATE(NOW()) - INTERVAL %d DAY", days)
+}
+
 // JSONEmpty returns empty SQL JSON object.
 // Typically used as 2nd parameter to COALESCE().
 func (p MySQLProvider) JSONEmpty() string {

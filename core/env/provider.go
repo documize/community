@@ -91,6 +91,10 @@ type StoreProvider interface {
 	// QueryTableList returns a list tables in Documize database.
 	QueryTableList() string
 
+	// QueryDateInterval returns provider specific
+	// interval style date SQL.
+	QueryDateInterval(days int64) string
+
 	// JSONEmpty returns empty SQL JSON object.
 	// Typically used as 2nd parameter to COALESCE().
 	JSONEmpty() string
