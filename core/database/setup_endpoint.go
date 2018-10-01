@@ -145,7 +145,7 @@ func setupAccount(rt *env.Runtime, completion onboardRequest, serial string) (er
 	// Create user.
 	userID := uniqueid.Generate()
 	_, err = tx.Exec(RebindParams("INSERT INTO dmz_user (c_refid, c_firstname, c_lastname, c_email, c_initials, c_salt, c_password, c_globaladmin) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", rt.StoreProvider.Type()),
-		userID, completion.Firstname, completion.Lastname, completion.Email, stringutil.MakeInitials(completion.Firstname, completion.Lastname), salt, password, 1)
+		userID, completion.Firstname, completion.Lastname, completion.Email, stringutil.MakeInitials(completion.Firstname, completion.Lastname), salt, password, true)
 	if err != nil {
 		rt.Log.Error("INSERT INTO dmz_user failed", err)
 		tx.Rollback()
@@ -155,7 +155,7 @@ func setupAccount(rt *env.Runtime, completion onboardRequest, serial string) (er
 	// Link user to organization.
 	accountID := uniqueid.Generate()
 	_, err = tx.Exec(RebindParams("INSERT INTO dmz_user_account (c_refid, c_userid, c_orgid, c_admin, c_editor, c_users, c_analytics) VALUES (?, ?, ?, ?, ?, ?, ?)", rt.StoreProvider.Type()),
-		accountID, userID, orgID, 1, 1, 1, 1)
+		accountID, userID, orgID, true, true, true, true)
 	if err != nil {
 		rt.Log.Error("INSERT INTO dmz_user_account failed", err)
 		tx.Rollback()
@@ -163,9 +163,9 @@ func setupAccount(rt *env.Runtime, completion onboardRequest, serial string) (er
 	}
 
 	// Create space.
-	labelID := uniqueid.Generate()
+	spaceID := uniqueid.Generate()
 	_, err = tx.Exec(RebindParams("INSERT INTO dmz_space (c_refid, c_orgid, c_userid, c_name, c_type) VALUES (?, ?, ?, ?, ?)", rt.StoreProvider.Type()),
-		labelID, orgID, userID, "Welcome", 2)
+		spaceID, orgID, userID, "Welcome", 2)
 	if err != nil {
 		rt.Log.Error("INSERT INTO dmz_space failed", err)
 		tx.Rollback()
@@ -176,7 +176,7 @@ func setupAccount(rt *env.Runtime, completion onboardRequest, serial string) (er
 	perms := []string{"view", "manage", "own", "doc-add", "doc-edit", "doc-delete", "doc-move", "doc-copy", "doc-template", "doc-approve", "doc-version", "doc-lifecycle"}
 	for _, p := range perms {
 		_, err = tx.Exec(RebindParams("INSERT INTO dmz_permission (c_orgid, c_who, c_whoid, c_action, c_scope, c_location, c_refid) VALUES (?, ?, ?, ?, ?, ?, ?)", rt.StoreProvider.Type()),
-			orgID, "user", userID, p, "object", "space", labelID)
+			orgID, "user", userID, p, "object", "space", spaceID)
 		if err != nil {
 			rt.Log.Error("INSERT INTO dmz_permission failed", err)
 			tx.Rollback()
