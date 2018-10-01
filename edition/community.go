@@ -40,7 +40,7 @@ func main() {
 	// product details
 	rt.Product = env.ProdInfo{}
 	rt.Product.Major = "1"
-	rt.Product.Minor = "70"
+	rt.Product.Minor = "71"
 	rt.Product.Patch = "0"
 	rt.Product.Version = fmt.Sprintf("%s.%s.%s", rt.Product.Major, rt.Product.Minor, rt.Product.Patch)
 	rt.Product.Edition = "Community"
@@ -57,7 +57,6 @@ func main() {
 	// parse settings from command line and environment
 	rt.Flags = env.ParseFlags()
 	flagsOK := boot.InitRuntime(&rt, &s)
-
 	if flagsOK {
 		// runtime.Log = runtime.Log.SetDB(runtime.Db)
 	}
