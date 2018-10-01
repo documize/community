@@ -99,10 +99,11 @@
 								{{/if}}
 							</div>
 							<div class="dropdown-menu dropdown-menu-right" aria-labelledby="profile-button">
-								{{#link-to 'profile' class="dropdown-item" }}Profile{{/link-to}}
 								{{#if session.isAdmin}}
 									{{#link-to 'customize.general' class="dropdown-item" }}Settings{{/link-to}}
+									<div class="dropdown-divider"></div>
 								{{/if}}
+								{{#link-to 'profile' class="dropdown-item" }}Profile{{/link-to}}
 								<div class="dropdown-divider"></div>
 								{{#if session.isGlobalAdmin}}
 									{{#if appMeta.updateAvailable}}
