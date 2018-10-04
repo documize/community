@@ -58,7 +58,8 @@ func (h *Handler) Meta(w http.ResponseWriter, r *http.Request) {
 	data.AuthConfig = org.AuthConfig
 	data.MaxTags = org.MaxTags
 	data.Version = h.Runtime.Product.Version
-	data.Edition = h.Runtime.Product.License.Edition
+	data.Revision = h.Runtime.Product.Revision
+	data.Edition = h.Runtime.Product.Edition
 	data.Valid = h.Runtime.Product.License.Valid
 	data.ConversionEndpoint = org.ConversionEndpoint
 	data.License = h.Runtime.Product.License

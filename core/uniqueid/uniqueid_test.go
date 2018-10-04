@@ -23,7 +23,7 @@ var m = make(map[string]struct{})
 var mx sync.Mutex
 
 func mm(t *testing.T, id string) {
-	if len(id) != 16 {
+	if len(id) != 20 {
 		t.Errorf("len(id)=%d", len(id))
 	}
 	mx.Lock()

@@ -60,7 +60,6 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		response.WriteBadLicense(w)
 		return
 	}
-
 	if !ctx.Editor {
 		response.WriteForbiddenError(w)
 		return
@@ -205,11 +204,16 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		// to avoid conflicts.
 		groupChange := make(map[string]string)
 
+		// Store old-to-new document ID mapping for subsequence reference.
+		docMap := make(map[string]string)
+
 		if len(toCopy) > 0 {
 			for _, t := range toCopy {
 				origID := t.RefID
 
 				documentID := uniqueid.Generate()
+				docMap[t.RefID] = documentID
+
 				t.RefID = documentID
 				t.SpaceID = sp.RefID
 
@@ -320,6 +324,72 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// Copy over space categories, associated permissions and document assignments.
+		cats, err := h.Store.Category.GetAllBySpace(ctx, model.CloneID)
+		if err != nil {
+			ctx.Transaction.Rollback()
+			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
+			return
+		}
+
+		catMap := make(map[string]string)
+		for _, ct := range cats {
+			// Store old-to-new category ID mapping for subsequent processing.
+			cid := uniqueid.Generate()
+			catMap[ct.RefID] = cid
+
+			// Get existing user/group permissions for the category to be cloned.
+			cp, err := h.Store.Permission.GetCategoryPermissions(ctx, ct.RefID)
+			if err != nil {
+				ctx.Transaction.Rollback()
+				response.WriteServerError(w, method, err)
+				h.Runtime.Log.Error(method, err)
+				return
+			}
+
+			// Add cloned category.
+			ct.RefID = cid
+			ct.SpaceID = sp.RefID
+			err = h.Store.Category.Add(ctx, ct)
+			if err != nil {
+				ctx.Transaction.Rollback()
+				response.WriteServerError(w, method, err)
+				h.Runtime.Log.Error(method, err)
+				return
+			}
+
+			// Add cloned category permissions.
+			for _, p := range cp {
+				p.RefID = cid
+				err = h.Store.Permission.AddPermission(ctx, p)
+				if err != nil {
+					ctx.Transaction.Rollback()
+					response.WriteServerError(w, method, err)
+					h.Runtime.Log.Error(method, err)
+					return
+				}
+			}
+		}
+
+		// Add cloned category members
+		cm, err := h.Store.Category.GetSpaceCategoryMembership(ctx, model.CloneID)
+		for _, m := range cm {
+			m.RefID = uniqueid.Generate()
+			m.CategoryID = catMap[m.CategoryID]
+			m.DocumentID = docMap[m.DocumentID]
+			m.SpaceID = sp.RefID
+
+			err = h.Store.Category.AssociateDocument(ctx, m)
+			if err != nil {
+				ctx.Transaction.Rollback()
+				response.WriteServerError(w, method, err)
+				h.Runtime.Log.Error(method, err)
+				return
+			}
+		}
+
+		// Finish up the clone operations.
 		ctx.Transaction.Commit()
 	}
 
