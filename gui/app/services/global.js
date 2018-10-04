@@ -9,12 +9,14 @@
 //
 // https://documize.com
 
+import { Promise as EmberPromise } from 'rsvp';
 import Service, { inject as service } from '@ember/service';
 
 export default Service.extend({
 	sessionService: service('session'),
 	ajax: service(),
 	appMeta: service(),
+	browserSvc: service('browser'),
 	store: service(),
 
 	// Returns SMTP configuration.
@@ -137,5 +139,50 @@ export default Service.extend({
 				method: 'POST',
 			});
 		}
+	},
+
+	// Run tenant level backup.
+	backup(spec) {
+
+		return new EmberPromise((resolve) => {
+			let url = this.get('appMeta.endpoint');
+			let token = this.get('sessionService.session.content.authenticated.token');
+			let uploadUrl = `${url}/global/backup?token=${token}`;
+
+			var xhr = new XMLHttpRequest();
+			xhr.open('POST', uploadUrl);
+			xhr.setRequestHeader("Content-Type", "application/json");
+			xhr.responseType = 'blob';
+
+			xhr.onload = function() {
+				if (this.status == 200) {
+					// get binary data as a response
+					var blob = this.response;
+
+					let a = document.createElement("a");
+					a.style = "display: none";
+					document.body.appendChild(a);
+
+					let url = window.URL.createObjectURL(blob);
+					a.href = url;
+					a.download = xhr.getResponseHeader('x-documize-filename').replace('"', '');
+					a.click();
+
+					window.URL.revokeObjectURL(url);
+					document.body.removeChild(a);
+
+					resolve();
+				}
+			}
+
+			xhr.send(JSON.stringify(spec));
+		});
+
+		// return this.get('ajax').raw(`global/backup`, {
+		// 	method: 'post',
+		// 	data: JSON.stringify(spec),
+		// 	contentType: 'json',
+		// 	dataType: 'text'
+		// });
 	}
 });

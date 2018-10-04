@@ -98,6 +98,9 @@ export default Router.map(function () {
 			this.route('integrations', {
 				path: 'integrations'
 			});
+			this.route('backup', {
+				path: 'backup'
+			});
 		}
 	);
 

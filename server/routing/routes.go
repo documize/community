@@ -19,6 +19,7 @@ import (
 	"github.com/documize/community/domain/auth"
 	"github.com/documize/community/domain/auth/keycloak"
 	"github.com/documize/community/domain/auth/ldap"
+	"github.com/documize/community/domain/backup"
 	"github.com/documize/community/domain/block"
 	"github.com/documize/community/domain/category"
 	"github.com/documize/community/domain/conversion"
@@ -57,6 +58,7 @@ func RegisterEndpoints(rt *env.Runtime, s *store.Store) {
 	space := space.Handler{Runtime: rt, Store: s}
 	block := block.Handler{Runtime: rt, Store: s}
 	group := group.Handler{Runtime: rt, Store: s}
+	backup := backup.Handler{Runtime: rt, Store: s}
 	section := section.Handler{Runtime: rt, Store: s}
 	setting := setting.Handler{Runtime: rt, Store: s}
 	category := category.Handler{Runtime: rt, Store: s}
@@ -217,6 +219,7 @@ func RegisterEndpoints(rt *env.Runtime, s *store.Store) {
 	AddPrivate(rt, "global/sync/keycloak", []string{"GET", "OPTIONS"}, nil, keycloak.Sync)
 	AddPrivate(rt, "global/ldap/preview", []string{"POST", "OPTIONS"}, nil, ldap.Preview)
 	AddPrivate(rt, "global/ldap/sync", []string{"GET", "OPTIONS"}, nil, ldap.Sync)
+	AddPrivate(rt, "global/backup", []string{"POST", "OPTIONS"}, nil, backup.Backup)
 
 	Add(rt, RoutePrefixRoot, "robots.txt", []string{"GET", "OPTIONS"}, nil, meta.RobotsTxt)
 	Add(rt, RoutePrefixRoot, "sitemap.xml", []string{"GET", "OPTIONS"}, nil, meta.Sitemap)
