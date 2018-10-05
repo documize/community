@@ -73,6 +73,8 @@ export default Service.extend({
 			return resolve(this);
 		}
 
+		requestedRoute = requestedRoute.toLowerCase().trim();
+
 		return this.get('ajax').request('public/meta').then((response) => {
 			this.setProperties(response);
 			this.set('version', 'v' + this.get('version'));
@@ -86,6 +88,7 @@ export default Service.extend({
 				});
 
 				this.get('localStorage').clearAll();
+				return resolve(this);
 			} else if (is.not.include(requestedUrl, '/auth/')) {
 				this.get('localStorage').storeSessionItem('entryUrl', requestedUrl);
 			}

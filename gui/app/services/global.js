@@ -143,7 +143,6 @@ export default Service.extend({
 
 	// Run tenant level backup.
 	backup(spec) {
-
 		return new EmberPromise((resolve) => {
 			let url = this.get('appMeta.endpoint');
 			let token = this.get('sessionService.session.content.authenticated.token');
@@ -177,12 +176,5 @@ export default Service.extend({
 
 			xhr.send(JSON.stringify(spec));
 		});
-
-		// return this.get('ajax').raw(`global/backup`, {
-		// 	method: 'post',
-		// 	data: JSON.stringify(spec),
-		// 	contentType: 'json',
-		// 	dataType: 'text'
-		// });
 	}
 });

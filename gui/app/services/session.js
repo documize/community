@@ -35,7 +35,7 @@ export default SimpleAuthSession.extend({
 	}),
 
 	user: computed('isAuthenticated', 'session.content.authenticated.user', function () {
-		if (this.get('isAuthenticated')) {
+		if (this.get('isAuthenticated') && !this.get('appMeta.secureMode')) {
 			let user = this.get('session.content.authenticated.user') || { id: '0' };
 			let data = this.get('store').normalize('user', user);
 			let um = this.get('store').push(data)
@@ -45,7 +45,7 @@ export default SimpleAuthSession.extend({
 	}),
 
 	authenticated: computed('session.content.authenticated.user', function () {
-		if (is.null(this.get('session.authenticator'))) return false;
+		if (is.null(this.get('session.authenticator')) || this.get('appMeta.secureMode')) return false;
 		return this.get('session.authenticator') !== 'authenticator:anonymous' && this.get('session.content.authenticated.user.id') !== '0';
 	}),
 
