@@ -163,18 +163,15 @@ func (s Store) SearchCandidates(ctx domain.RequestContext, keywords string) (doc
 		SELECT d.c_refid AS documentid, d.c_spaceid AS spaceid, d.c_name AS title, l.c_name AS context
         FROM dmz_doc d LEFT JOIN dmz_space l ON d.c_spaceid=l.c_refid
         WHERE l.c_orgid=? AND `+likeQuery+` AND d.c_spaceid IN
-		    (SELECT c_refid FROM dmz_space WHERE c_orgid=? AND c_refid IN
-                (SELECT c_refid FROM dmz_permission WHERE c_orgid=? AND c_location='space' AND c_refid IN
-                    (SELECT c_refid from dmz_permission WHERE c_orgid=? AND c_who='user' AND (c_whoid=? OR c_whoid='0') AND c_location='space' AND c_action='view'
-				    UNION ALL
-                    SELECT p.c_refid from dmz_permission p LEFT JOIN dmz_group_member r ON p.c_whoid=r.c_groupid WHERE p.c_orgid=? AND p.c_who='role'
-                    AND p.c_location='space' AND p.c_action='view' AND (r.c_userid=? OR r.c_userid='0')
-                    )
+            (SELECT c_refid FROM dmz_permission WHERE c_orgid=? AND c_location='space' AND c_refid IN
+                (SELECT c_refid from dmz_permission WHERE c_orgid=? AND c_who='user' AND (c_whoid=? OR c_whoid='0') AND c_location='space' AND c_action='view'
+                UNION ALL
+                SELECT p.c_refid from dmz_permission p LEFT JOIN dmz_group_member r ON p.c_whoid=r.c_groupid WHERE p.c_orgid=? AND p.c_who='role'
+                AND p.c_location='space' AND p.c_action='view' AND (r.c_userid=? OR r.c_userid='0')
                 )
             )
         ORDER BY title`),
-		ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.UserID, ctx.OrgID, ctx.UserID)
-
+		ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.UserID, ctx.OrgID, ctx.UserID)
 	if err != nil {
 		err = errors.Wrap(err, "execute search links 1")
 		return
@@ -203,7 +200,6 @@ func (s Store) SearchCandidates(ctx domain.RequestContext, keywords string) (doc
         p.c_type AS linktype, d.c_name AS context, d.c_spaceid AS spaceid
         FROM dmz_section p LEFT JOIN dmz_doc d ON d.c_refid=p.c_docid
         WHERE p.c_orgid=? AND `+likeQuery+` AND d.c_spaceid IN
-		    (SELECT c_refid FROM dmz_space WHERE c_orgid=? AND c_refid IN
                 (SELECT c_refid FROM dmz_permission WHERE c_orgid=? AND c_location='space' AND c_refid IN
                     (SELECT c_refid from dmz_permission WHERE c_orgid=? AND c_who='user' AND (c_whoid=? OR c_whoid='0') AND c_location='space' AND c_action='view'
                     UNION ALL
@@ -211,10 +207,8 @@ func (s Store) SearchCandidates(ctx domain.RequestContext, keywords string) (doc
                     AND p.c_location='space' AND p.c_action='view' AND (r.c_userid=? OR r.c_userid='0')
                     )
                 )
-		    )
-        ORDER BY p.c_name`),
-		ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.UserID, ctx.OrgID, ctx.UserID)
-
+        ORDER BY title`),
+		ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.UserID, ctx.OrgID, ctx.UserID)
 	if err != nil {
 		err = errors.Wrap(err, "execute search links 2")
 		return
@@ -242,18 +236,15 @@ func (s Store) SearchCandidates(ctx domain.RequestContext, keywords string) (doc
         SELECT a.c_refid AS targetid, a.c_docid AS documentid, a.c_filename AS title, a.c_extension AS context, d.c_spaceid AS spaceid
         FROM dmz_doc_attachment a LEFT JOIN dmz_doc d ON d.c_refid=a.c_docid
         WHERE a.c_orgid=? AND `+likeQuery+` AND d.c_spaceid IN
-            (SELECT c_refid FROM dmz_space WHERE c_orgid=? AND c_refid IN
-                (SELECT c_refid FROM dmz_permission WHERE c_orgid=? AND c_location='space' AND c_refid IN
-                    (SELECT c_refid from dmz_permission WHERE c_orgid=? AND c_who='user' AND (c_whoid=? OR c_whoid='0') AND c_location='space' AND c_action='view'
-                    UNION ALL
-                    SELECT p.c_refid from dmz_permission p LEFT JOIN dmz_group_member r ON p.c_whoid=r.c_groupid WHERE p.c_orgid=? AND p.c_who='role'
-                    AND p.c_location='space' AND p.c_action='view' AND (r.c_userid=? OR r.c_userid='0')
-                    )
+            (SELECT c_refid FROM dmz_permission WHERE c_orgid=? AND c_location='space' AND c_refid IN
+                (SELECT c_refid from dmz_permission WHERE c_orgid=? AND c_who='user' AND (c_whoid=? OR c_whoid='0') AND c_location='space' AND c_action='view'
+                UNION ALL
+                SELECT p.c_refid from dmz_permission p LEFT JOIN dmz_group_member r ON p.c_whoid=r.c_groupid WHERE p.c_orgid=? AND p.c_who='role'
+                AND p.c_location='space' AND p.c_action='view' AND (r.c_userid=? OR r.c_userid='0')
                 )
-		    )
+            )
         ORDER BY a.c_filename`),
-		ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.UserID, ctx.OrgID, ctx.UserID)
-
+		ctx.OrgID, ctx.OrgID, ctx.OrgID, ctx.UserID, ctx.OrgID, ctx.UserID)
 	if err != nil {
 		err = errors.Wrap(err, "execute search links 3")
 		return
