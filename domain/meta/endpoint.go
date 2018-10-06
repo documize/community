@@ -204,7 +204,7 @@ func (h *Handler) Reindex(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) rebuildSearchIndex(ctx domain.RequestContext) {
 	method := "meta.rebuildSearchIndex"
 
-	docs, err := h.Store.Meta.GetDocumentsID(ctx)
+	docs, err := h.Store.Meta.Documents(ctx)
 	if err != nil {
 		h.Runtime.Log.Error(method, err)
 		return
@@ -215,23 +215,23 @@ func (h *Handler) rebuildSearchIndex(ctx domain.RequestContext) {
 	for i := range docs {
 		d := docs[i]
 
-		doc, err := h.Store.Document.Get(ctx, d)
+		dc, err := h.Store.Meta.Document(ctx, d)
 		if err != nil {
 			h.Runtime.Log.Error(method, err)
-			return
+			// continue
 		}
-		at, err := h.Store.Attachment.GetAttachments(ctx, d)
+		at, err := h.Store.Meta.Attachments(ctx, d)
 		if err != nil {
 			h.Runtime.Log.Error(method, err)
-			return
+			// continue
 		}
 
-		h.Indexer.IndexDocument(ctx, doc, at)
+		h.Indexer.IndexDocument(ctx, dc, at)
 
-		pages, err := h.Store.Meta.GetDocumentPages(ctx, d)
+		pages, err := h.Store.Meta.Pages(ctx, d)
 		if err != nil {
 			h.Runtime.Log.Error(method, err)
-			return
+			// continue
 		}
 
 		for j := range pages {

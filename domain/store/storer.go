@@ -290,7 +290,9 @@ type GroupStorer interface {
 
 // MetaStorer provide specialist methods for global administrators.
 type MetaStorer interface {
-	GetDocumentsID(ctx domain.RequestContext) (documents []string, err error)
-	GetDocumentPages(ctx domain.RequestContext, documentID string) (p []page.Page, err error)
+	Documents(ctx domain.RequestContext) (documents []string, err error)
+	Document(ctx domain.RequestContext, documentID string) (d doc.Document, err error)
+	Pages(ctx domain.RequestContext, documentID string) (p []page.Page, err error)
+	Attachments(ctx domain.RequestContext, docID string) (a []attachment.Attachment, err error)
 	SearchIndexCount(ctx domain.RequestContext) (c int, err error)
 }

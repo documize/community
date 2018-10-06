@@ -28,7 +28,7 @@ type Store struct {
 	store.AttachmentStorer
 }
 
-// Add inserts the given record into the database attachement table.
+// Add inserts the given record into the database attachment table.
 func (s Store) Add(ctx domain.RequestContext, a attachment.Attachment) (err error) {
 	a.OrgID = ctx.OrgID
 	a.Created = time.Now().UTC()
@@ -64,7 +64,7 @@ func (s Store) GetAttachment(ctx domain.RequestContext, orgID, attachmentID stri
 	return
 }
 
-// GetAttachments returns a slice containing the attachement records (excluding their data) for document docID, ordered by filename.
+// GetAttachments returns a slice containing the attachment records (excluding their data) for document docID, ordered by filename.
 func (s Store) GetAttachments(ctx domain.RequestContext, docID string) (a []attachment.Attachment, err error) {
 	err = s.Runtime.Db.Select(&a, s.Bind(`
         SELECT id, c_refid AS refid,
@@ -72,7 +72,7 @@ func (s Store) GetAttachments(ctx domain.RequestContext, docID string) (a []atta
         c_filename AS filename, c_extension AS extension,
         c_created AS created, c_revised AS revised
         FROM dmz_doc_attachment
-        WHERE c_orgid=? and c_docid=?
+        WHERE c_orgid=? AND c_docid=?
         ORDER BY c_filename`),
 		ctx.OrgID, docID)
 
@@ -88,7 +88,7 @@ func (s Store) GetAttachments(ctx domain.RequestContext, docID string) (a []atta
 	return
 }
 
-// GetAttachmentsWithData returns a slice containing the attachement records (including their data) for document docID, ordered by filename.
+// GetAttachmentsWithData returns a slice containing the attachment records (including their data) for document docID, ordered by filename.
 func (s Store) GetAttachmentsWithData(ctx domain.RequestContext, docID string) (a []attachment.Attachment, err error) {
 	err = s.Runtime.Db.Select(&a, s.Bind(`
         SELECT id, c_refid AS refid,

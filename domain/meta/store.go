@@ -13,9 +13,11 @@ package meta
 
 import (
 	"database/sql"
+	"github.com/documize/community/model/doc"
 
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/store"
+	"github.com/documize/community/model/attachment"
 	"github.com/documize/community/model/page"
 	"github.com/pkg/errors"
 )
@@ -26,9 +28,9 @@ type Store struct {
 	store.MetaStorer
 }
 
-// GetDocumentsID returns every document ID value stored.
+// Documents returns every document ID value stored.
 // The query runs at the instance level across all tenants.
-func (s Store) GetDocumentsID(ctx domain.RequestContext) (documents []string, err error) {
+func (s Store) Documents(ctx domain.RequestContext) (documents []string, err error) {
 	err = s.Runtime.Db.Select(&documents, `SELECT c_refid FROM dmz_doc WHERE c_lifecycle=1`)
 
 	if err == sql.ErrNoRows {
@@ -42,8 +44,27 @@ func (s Store) GetDocumentsID(ctx domain.RequestContext) (documents []string, er
 	return
 }
 
-// GetDocumentPages returns a slice containing all published page records for a given documentID, in presentation sequence.
-func (s Store) GetDocumentPages(ctx domain.RequestContext, documentID string) (p []page.Page, err error) {
+// Document fetches the document record with the given id fromt the document table and audits that it has been got.
+func (s Store) Document(ctx domain.RequestContext, id string) (document doc.Document, err error) {
+	err = s.Runtime.Db.Get(&document, s.Bind(`
+        SELECT id, c_refid AS refid, c_orgid AS orgid, c_spaceid AS spaceid, c_userid AS userid,
+        c_job AS job, c_location AS location, c_name AS name, c_desc AS excerpt, c_slug AS slug,
+        c_tags AS tags, c_template AS template, c_protection AS protection, c_approval AS approval,
+        c_lifecycle AS lifecycle, c_versioned AS versioned, c_versionid AS versionid,
+        c_versionorder AS versionorder, c_groupid AS groupid, c_created AS created, c_revised AS revised
+        FROM dmz_doc
+        WHERE c_refid=?`),
+		id)
+
+	if err != nil {
+		err = errors.Wrap(err, "execute select document")
+	}
+
+	return
+}
+
+// Pages returns a slice containing all published page records for a given documentID, in presentation sequence.
+func (s Store) Pages(ctx domain.RequestContext, documentID string) (p []page.Page, err error) {
 	err = s.Runtime.Db.Select(&p, s.Bind(`
         SELECT id, c_refid AS refid, c_orgid AS orgid, c_docid AS documentid,
             c_userid AS userid, c_contenttype AS contenttype,
@@ -60,6 +81,30 @@ func (s Store) GetDocumentPages(ctx domain.RequestContext, documentID string) (p
 	}
 	if err != nil {
 		err = errors.Wrap(err, "failed to get instance document pages")
+	}
+
+	return
+}
+
+// Attachments returns a slice containing the attachment records (excluding their data) for document docID, ordered by filename.
+func (s Store) Attachments(ctx domain.RequestContext, docID string) (a []attachment.Attachment, err error) {
+	err = s.Runtime.Db.Select(&a, s.Bind(`
+        SELECT id, c_refid AS refid,
+        c_orgid AS orgid, c_docid AS documentid, c_job AS job, c_fileid AS fileid,
+        c_filename AS filename, c_extension AS extension,
+        c_created AS created, c_revised AS revised
+        FROM dmz_doc_attachment
+        WHERE c_docid=?
+        ORDER BY c_filename`),
+		docID)
+
+	if err == sql.ErrNoRows {
+		err = nil
+		a = []attachment.Attachment{}
+	}
+	if err != nil {
+		err = errors.Wrap(err, "execute select attachments")
+		return
 	}
 
 	return

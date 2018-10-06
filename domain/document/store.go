@@ -57,7 +57,7 @@ func (s Store) Get(ctx domain.RequestContext, id string) (document doc.Document,
         c_lifecycle AS lifecycle, c_versioned AS versioned, c_versionid AS versionid,
         c_versionorder AS versionorder, c_groupid AS groupid, c_created AS created, c_revised AS revised
         FROM dmz_doc
-        WHERE c_orgid=? and c_refid=?`),
+        WHERE c_orgid=? AND c_refid=?`),
 		ctx.OrgID, id)
 
 	if err != nil {
