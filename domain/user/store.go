@@ -215,7 +215,7 @@ func (s Store) GetSpaceUsers(ctx domain.RequestContext, spaceID string) (u []use
             UNION ALL
 			SELECT r.c_userid from dmz_group_member r LEFT JOIN dmz_permission p ON p.c_whoid=r.c_groupid WHERE p.c_orgid=? AND p.c_who='role' AND p.c_scope='object' AND p.c_location='space' AND p.c_refid=?
 		)
-        ORDER BY u.c_firstname, c_u.lastname`),
+        ORDER BY u.c_firstname, u.c_lastname`),
 		ctx.OrgID, ctx.OrgID, spaceID, ctx.OrgID, spaceID)
 
 	if err == sql.ErrNoRows {
