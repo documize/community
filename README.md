@@ -100,7 +100,7 @@ Documize supports the following (evergreen) browsers:
 Documize is built with the following technologies:
 
 - EmberJS (v3.1.2)
-- Go (v1.10.3)
+- Go (v1.11.1)
 
 ## Authentication options
 
