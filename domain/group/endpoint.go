@@ -21,6 +21,7 @@ import (
 	"github.com/documize/community/core/response"
 	"github.com/documize/community/core/uniqueid"
 	"github.com/documize/community/domain"
+	"github.com/documize/community/domain/store"
 	"github.com/documize/community/model/audit"
 	"github.com/documize/community/model/group"
 )
@@ -28,7 +29,7 @@ import (
 // Handler contains the runtime information such as logging and database.
 type Handler struct {
 	Runtime *env.Runtime
-	Store   *domain.Store
+	Store   *store.Store
 }
 
 // Add saves new user group.
@@ -192,6 +193,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	g, err := h.Store.Group.Get(ctx, groupID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 

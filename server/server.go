@@ -20,7 +20,7 @@ import (
 	"github.com/documize/community/core/api/plugins"
 	"github.com/documize/community/core/database"
 	"github.com/documize/community/core/env"
-	"github.com/documize/community/domain"
+	"github.com/documize/community/domain/store"
 	"github.com/documize/community/server/routing"
 	"github.com/documize/community/server/web"
 	"github.com/gorilla/mux"
@@ -29,8 +29,8 @@ import (
 var testHost string // used during automated testing
 
 // Start router to handle all HTTP traffic.
-func Start(rt *env.Runtime, s *domain.Store, ready chan struct{}) {
-	rt.Log.Info(fmt.Sprintf("Starting %s version %s", rt.Product.Title, rt.Product.Version))
+func Start(rt *env.Runtime, s *store.Store, ready chan struct{}) {
+	rt.Log.Info(fmt.Sprintf("Product: %s version %s (build %d)", rt.Product.Title, rt.Product.Version, rt.Product.Revision))
 
 	// decide which mode to serve up
 	switch rt.Flags.SiteMode {
@@ -47,7 +47,7 @@ func Start(rt *env.Runtime, s *domain.Store, ready chan struct{}) {
 		if err != nil {
 			rt.Log.Error("plugin setup failed", err)
 		}
-		rt.Log.Info("Starting web server")
+		rt.Log.Info("Web Server: starting up")
 	}
 
 	// define middleware
@@ -88,7 +88,7 @@ func Start(rt *env.Runtime, s *domain.Store, ready chan struct{}) {
 
 	// start server
 	if !rt.Flags.SSLEnabled() {
-		rt.Log.Info("Starting non-SSL server on " + rt.Flags.HTTPPort)
+		rt.Log.Info("Web Server: binding non-SSL server on " + rt.Flags.HTTPPort)
 		if rt.Flags.SiteMode == env.SiteModeSetup {
 			rt.Log.Info("***")
 			rt.Log.Info(fmt.Sprintf("*** Go to http://localhost:%s/setup in your web browser and complete setup wizard ***", rt.Flags.HTTPPort))
@@ -98,7 +98,7 @@ func Start(rt *env.Runtime, s *domain.Store, ready chan struct{}) {
 		n.Run(testHost + ":" + rt.Flags.HTTPPort)
 	} else {
 		if rt.Flags.ForceHTTPPort2SSL != "" {
-			rt.Log.Info("Starting non-SSL server on " + rt.Flags.ForceHTTPPort2SSL + " and redirecting to SSL server on " + rt.Flags.HTTPPort)
+			rt.Log.Info("Web Server: binding non-SSL server on " + rt.Flags.ForceHTTPPort2SSL + " and redirecting to SSL server on " + rt.Flags.HTTPPort)
 
 			go func() {
 				err := http.ListenAndServe(":"+rt.Flags.ForceHTTPPort2SSL, http.HandlerFunc(
@@ -119,7 +119,7 @@ func Start(rt *env.Runtime, s *domain.Store, ready chan struct{}) {
 			rt.Log.Info("***")
 		}
 
-		rt.Log.Info("Starting SSL server on " + rt.Flags.HTTPPort + " with " + rt.Flags.SSLCertFile + " " + rt.Flags.SSLKeyFile)
+		rt.Log.Info("Web Server: starting SSL server on " + rt.Flags.HTTPPort + " with " + rt.Flags.SSLCertFile + " " + rt.Flags.SSLKeyFile)
 
 		// TODO: https://blog.gopheracademy.com/advent-2016/exposing-go-on-the-internet/
 

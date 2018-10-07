@@ -18,7 +18,7 @@ import (
 
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/secrets"
-	"github.com/documize/community/domain"
+	"github.com/documize/community/domain/store"
 )
 
 // SiteInfo describes set-up information about the site
@@ -33,7 +33,7 @@ func init() {
 // Handler contains the runtime information such as logging and database.
 type Handler struct {
 	Runtime *env.Runtime
-	Store   *domain.Store
+	Store   *store.Store
 }
 
 // EmberHandler serves HTML web pages

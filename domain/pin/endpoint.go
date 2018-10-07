@@ -23,6 +23,7 @@ import (
 	"github.com/documize/community/core/response"
 	"github.com/documize/community/core/uniqueid"
 	"github.com/documize/community/domain"
+	"github.com/documize/community/domain/store"
 	"github.com/documize/community/model/audit"
 	"github.com/documize/community/model/pin"
 )
@@ -30,7 +31,7 @@ import (
 // Handler contains the runtime information such as logging and database.
 type Handler struct {
 	Runtime *env.Runtime
-	Store   *domain.Store
+	Store   *store.Store
 }
 
 // Add saves pinned item.
@@ -73,9 +74,9 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	pin.RefID = uniqueid.Generate()
 	pin.OrgID = ctx.OrgID
 	pin.UserID = ctx.UserID
-	pin.Pin = strings.TrimSpace(pin.Pin)
-	if len(pin.Pin) > 20 {
-		pin.Pin = pin.Pin[0:20]
+	pin.Name = strings.TrimSpace(pin.Name)
+	if len(pin.Name) > 20 {
+		pin.Name = pin.Name[0:20]
 	}
 
 	ctx.Transaction, err = h.Runtime.Db.Beginx()

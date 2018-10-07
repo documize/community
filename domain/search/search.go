@@ -82,7 +82,12 @@ func (m *Indexer) IndexContent(ctx domain.RequestContext, p page.Page) {
 		return
 	}
 
-	ctx.Transaction.Commit()
+	err = ctx.Transaction.Commit()
+	if err != nil {
+		ctx.Transaction.Rollback()
+		m.runtime.Log.Error(method, err)
+		return
+	}
 }
 
 // DeleteContent removes all search entries for specific document content.

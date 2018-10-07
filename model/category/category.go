@@ -16,9 +16,9 @@ import "github.com/documize/community/model"
 // Category represents a category within a space that is persisted to the database.
 type Category struct {
 	model.BaseEntity
-	OrgID    string `json:"orgId"`
-	LabelID  string `json:"folderId"`
-	Category string `json:"category"`
+	OrgID   string `json:"orgId"`
+	SpaceID string `json:"folderId"`
+	Name    string `json:"category"`
 }
 
 // Member represents 0:M association between a document and category, persisted to the database.
@@ -26,7 +26,7 @@ type Member struct {
 	model.BaseEntity
 	OrgID      string `json:"orgId"`
 	CategoryID string `json:"categoryId"`
-	LabelID    string `json:"folderId"`
+	SpaceID    string `json:"folderId"`
 	DocumentID string `json:"documentId"`
 }
 

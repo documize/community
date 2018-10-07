@@ -20,13 +20,14 @@ import (
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/setting"
 	ds "github.com/documize/community/domain/smtp"
+	"github.com/documize/community/domain/store"
 	"github.com/documize/community/server/web"
 )
 
 // Mailer provides emailing facilities
 type Mailer struct {
 	Runtime *env.Runtime
-	Store   *domain.Store
+	Store   *store.Store
 	Context domain.RequestContext
 	Config  ds.Config
 	Dialer  *mail.Dialer

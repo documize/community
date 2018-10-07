@@ -22,13 +22,14 @@ import (
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/permission"
 	"github.com/documize/community/domain/section/provider"
+	"github.com/documize/community/domain/store"
 	"github.com/documize/community/model/page"
 )
 
 // Handler contains the runtime information such as logging and database.
 type Handler struct {
 	Runtime *env.Runtime
-	Store   *domain.Store
+	Store   *store.Store
 }
 
 // GetSections returns available smart sections.
@@ -111,7 +112,7 @@ func (h *Handler) RefreshSections(w http.ResponseWriter, r *http.Request) {
 
 	for _, pm := range meta {
 		// Grab the page because we need content type and
-		page, err2 := h.Store.Page.Get(ctx, pm.PageID)
+		page, err2 := h.Store.Page.Get(ctx, pm.SectionID)
 		if err2 == sql.ErrNoRows {
 			continue
 		}

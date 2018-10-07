@@ -59,7 +59,6 @@ npm-debug.log
 debug
 *.pem
 *.crt
-Dockerfile
 container.sh
 make.sh
 jsconfig.json

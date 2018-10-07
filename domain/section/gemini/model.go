@@ -14,8 +14,8 @@ package gemini
 import (
 	"strings"
 
-	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/section/provider"
+	"github.com/documize/community/domain/store"
 )
 
 // the HTML that is rendered by this section.
@@ -87,7 +87,7 @@ type geminiConfig struct {
 	Filter        map[string]interface{} `json:"filter"`
 }
 
-func (c *geminiConfig) Clean(ctx *provider.Context, store *domain.Store) {
+func (c *geminiConfig) Clean(ctx *provider.Context, store *store.Store) {
 	if ctx != nil {
 		sec, err := getSecrets(ctx, store)
 		if err == nil {
@@ -103,7 +103,7 @@ func (c *geminiConfig) Clean(ctx *provider.Context, store *domain.Store) {
 	c.URL = strings.TrimSpace(c.URL)
 }
 
-func (c *geminiConfig) SaveSecrets(ctx *provider.Context, store *domain.Store) {
+func (c *geminiConfig) SaveSecrets(ctx *provider.Context, store *store.Store) {
 	var sec secrets
 	sec.APIKey = strings.TrimSpace(c.APIKey)
 	sec.Username = strings.TrimSpace(c.Username)
@@ -117,7 +117,7 @@ type secrets struct {
 	APIKey   string `json:"apikey"`
 }
 
-func getSecrets(ctx *provider.Context, store *domain.Store) (sec secrets, err error) {
+func getSecrets(ctx *provider.Context, store *store.Store) (sec secrets, err error) {
 	err = ctx.UnmarshalSecrets(&sec, store)
 	return
 }

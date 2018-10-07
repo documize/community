@@ -23,11 +23,11 @@ export default Component.extend(Notifier, {
 		// Jira specific.
 		let jira = this.get('jira');
 
-		if (is.not.object(jira)) {
+		if (is.empty(jira) || is.not.object(jira)) {
 			jira = {
 				url: '',
 				username: '',
-				password: ''
+				secret: ''
 			};
 		}
 

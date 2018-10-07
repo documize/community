@@ -15,6 +15,7 @@ import (
 	"bytes"
 	"fmt"
 	"net/http"
+	"strings"
 	"text/template"
 
 	"github.com/documize/community/core/env"
@@ -24,6 +25,7 @@ import (
 	"github.com/documize/community/domain/auth"
 	"github.com/documize/community/domain/organization"
 	indexer "github.com/documize/community/domain/search"
+	"github.com/documize/community/domain/store"
 	"github.com/documize/community/model/doc"
 	"github.com/documize/community/model/org"
 	"github.com/documize/community/model/space"
@@ -32,7 +34,7 @@ import (
 // Handler contains the runtime information such as logging and database.
 type Handler struct {
 	Runtime *env.Runtime
-	Store   *domain.Store
+	Store   *store.Store
 	Indexer indexer.Indexer
 }
 
@@ -52,14 +54,16 @@ func (h *Handler) Meta(w http.ResponseWriter, r *http.Request) {
 	data.Title = org.Title
 	data.Message = org.Message
 	data.AllowAnonymousAccess = org.AllowAnonymousAccess
-	data.AuthProvider = org.AuthProvider
+	data.AuthProvider = strings.TrimSpace(org.AuthProvider)
 	data.AuthConfig = org.AuthConfig
 	data.MaxTags = org.MaxTags
 	data.Version = h.Runtime.Product.Version
-	data.Edition = h.Runtime.Product.License.Edition
+	data.Revision = h.Runtime.Product.Revision
+	data.Edition = h.Runtime.Product.Edition
 	data.Valid = h.Runtime.Product.License.Valid
 	data.ConversionEndpoint = org.ConversionEndpoint
 	data.License = h.Runtime.Product.License
+	data.Storage = h.Runtime.StoreProvider.Type()
 
 	// Strip secrets
 	data.AuthConfig = auth.StripAuthSecrets(h.Runtime, org.AuthProvider, org.AuthConfig)
@@ -91,23 +95,24 @@ func (h *Handler) RobotsTxt(w http.ResponseWriter, r *http.Request) {
 	// Anonymous access would mean we allow bots to crawl.
 	if o.AllowAnonymousAccess {
 		sitemap := ctx.GetAppURL("sitemap.xml")
-		robots = fmt.Sprintf(
-			`User-agent: *
-			Disallow: /settings/
-			Disallow: /settings/*
-			Disallow: /profile/
-			Disallow: /profile/*
-			Disallow: /auth/login/
-			Disallow: /auth/login/
-			Disallow: /auth/logout/
-			Disallow: /auth/logout/*
-			Disallow: /auth/reset/*
-			Disallow: /auth/reset/*
-			Disallow: /auth/sso/
-			Disallow: /auth/sso/*
-			Disallow: /share
-			Disallow: /share/*
-			Sitemap: %s`, sitemap)
+		robots = fmt.Sprintf(`User-agent: *
+Disallow: /settings/
+Disallow: /settings/*
+Disallow: /profile/
+Disallow: /profile/*
+Disallow: /auth/login/
+Disallow: /auth/login/
+Disallow: /auth/logout/
+Disallow: /auth/logout/*
+Disallow: /auth/reset/*
+Disallow: /auth/reset/*
+Disallow: /auth/sso/
+Disallow: /auth/sso/*
+Disallow: /auth/*
+Disallow: /auth/**
+Disallow: /share
+Disallow: /share/*
+Sitemap: %s`, sitemap)
 	}
 
 	response.WriteBytes(w, []byte(robots))
@@ -166,7 +171,7 @@ func (h *Handler) Sitemap(w http.ResponseWriter, r *http.Request) {
 		for _, document := range documents {
 			var item sitemapItem
 			item.URL = ctx.GetAppURL(fmt.Sprintf("s/%s/%s/d/%s/%s",
-				document.FolderID, stringutil.MakeSlug(document.Folder), document.DocumentID, stringutil.MakeSlug(document.Document)))
+				document.SpaceID, stringutil.MakeSlug(document.Space), document.DocumentID, stringutil.MakeSlug(document.Document)))
 			item.Date = document.Revised.Format("2006-01-02T15:04:05.999999-07:00")
 			items = append(items, item)
 		}
@@ -184,7 +189,7 @@ func (h *Handler) Sitemap(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) Reindex(w http.ResponseWriter, r *http.Request) {
 	ctx := domain.GetRequestContext(r)
 
-	if !ctx.Global {
+	if !ctx.GlobalAdmin {
 		response.WriteForbiddenError(w)
 		h.Runtime.Log.Info(fmt.Sprintf("%s attempted search reindex"))
 		return
@@ -199,7 +204,7 @@ func (h *Handler) Reindex(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) rebuildSearchIndex(ctx domain.RequestContext) {
 	method := "meta.rebuildSearchIndex"
 
-	docs, err := h.Store.Meta.GetDocumentsID(ctx)
+	docs, err := h.Store.Meta.Documents(ctx)
 	if err != nil {
 		h.Runtime.Log.Error(method, err)
 		return
@@ -210,10 +215,23 @@ func (h *Handler) rebuildSearchIndex(ctx domain.RequestContext) {
 	for i := range docs {
 		d := docs[i]
 
-		pages, err := h.Store.Meta.GetDocumentPages(ctx, d)
+		dc, err := h.Store.Meta.Document(ctx, d)
 		if err != nil {
 			h.Runtime.Log.Error(method, err)
-			return
+			// continue
+		}
+		at, err := h.Store.Meta.Attachments(ctx, d)
+		if err != nil {
+			h.Runtime.Log.Error(method, err)
+			// continue
+		}
+
+		h.Indexer.IndexDocument(ctx, dc, at)
+
+		pages, err := h.Store.Meta.Pages(ctx, d)
+		if err != nil {
+			h.Runtime.Log.Error(method, err)
+			// continue
 		}
 
 		for j := range pages {
@@ -234,7 +252,7 @@ func (h *Handler) SearchStatus(w http.ResponseWriter, r *http.Request) {
 	method := "meta.SearchStatus"
 	ctx := domain.GetRequestContext(r)
 
-	if !ctx.Global {
+	if !ctx.GlobalAdmin {
 		response.WriteForbiddenError(w)
 		h.Runtime.Log.Info(fmt.Sprintf("%s attempted get of search status"))
 		return

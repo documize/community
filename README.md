@@ -1,4 +1,4 @@
-> We're committed to providing frequent product releases to ensure self-host customers enjoy the same product as our cloud/SaaS customers.
+> We provide frequent product releases ensuring self-host customers enjoy the same features as our cloud/SaaS customers.
 >
 > Harvey Kandola, CEO & Founder, Documize Inc.
 
@@ -58,19 +58,32 @@ Space view.
 
 ## Latest version
 
-[Community edition: v1.70.0](https://github.com/documize/community/releases)
+[Community edition: v1.71.0](https://github.com/documize/community/releases)
 
-[Enterprise edition: v1.72.0](https://documize.com/downloads)
+[Enterprise edition: v1.73.0](https://documize.com/downloads)
 
 ## OS support
 
-Documize runs on the following:
+Documize can be installed and run on:
 
 - Linux
 - Windows
 - macOS
 
-# Browser support
+Heck, Documize will probably run just fine on a Raspberry Pi 3.
+
+## Database support
+
+Documize supports the following database systems:
+
+- PostgreSQL (v9.6+)
+- MySQL (v5.7.10+ and v8.0.0+)
+- Percona (v5.7.16-10+)
+- MariaDB (10.3.0+)
+
+Coming soon: Microsoft SQL Server 2017 (Linux/Windows).
+
+## Browser support
 
 Documize supports the following (evergreen) browsers:
 
@@ -78,6 +91,8 @@ Documize supports the following (evergreen) browsers:
 - Firefox
 - Safari
 - Brave
+- Vivaldi
+- Opera
 - MS Edge (16+)
 
 ## Technology stack
@@ -86,14 +101,6 @@ Documize is built with the following technologies:
 
 - EmberJS (v3.1.2)
 - Go (v1.10.3)
-
-...and supports the following databases:
-
-- MySQL (v5.7.10+)
-- Percona (v5.7.16-10+)
-- MariaDB (10.3.0+)
-
-Coming soon, PostgreSQL and Microsoft SQL Server database support.
 
 ## Authentication options
 

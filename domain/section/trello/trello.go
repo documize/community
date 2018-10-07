@@ -20,8 +20,8 @@ import (
 	"net/http"
 
 	"github.com/documize/community/core/env"
-	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/section/provider"
+	"github.com/documize/community/domain/store"
 )
 
 var meta provider.TypeMeta
@@ -39,7 +39,7 @@ func init() {
 // Provider represents Trello
 type Provider struct {
 	Runtime *env.Runtime
-	Store   *domain.Store
+	Store   *store.Store
 }
 
 // Meta describes us.

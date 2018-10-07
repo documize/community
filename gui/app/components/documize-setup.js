@@ -9,14 +9,14 @@
 //
 // https://documize.com
 
-import { empty, and } from '@ember/object/computed';
-
 import $ from 'jquery';
-import Component from '@ember/component';
+import { empty, and } from '@ember/object/computed';
 import { isEmpty } from '@ember/utils';
 import { set } from '@ember/object';
+import Component from '@ember/component';
 
 export default Component.extend({
+	buttonLabel: 'Complete setup',
 	titleEmpty: empty('model.title'),
 	firstnameEmpty: empty('model.firstname'),
 	lastnameEmpty: empty('model.lastname'),
@@ -56,6 +56,8 @@ export default Component.extend({
 			}
 
 			this.model.allowAnonymousAccess = $("#allowAnonymousAccess").prop('checked');
+
+			this.set('buttonLabel', 'Configuring, please wait...');
 
 			this.get('save')().then(() => {
 				set(this, 'titleError', false);

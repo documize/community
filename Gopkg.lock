@@ -66,12 +66,12 @@
   version = "v1.0"
 
 [[projects]]
-  digest = "1:850c49ca338a10fec2cb9e78f793043ed23965489d09e30bcc19fe29719da313"
+  digest = "1:adea5a94903eb4384abef30f3d878dc9ff6b6b5b0722da25b82e5169216dfb61"
   name = "github.com/go-sql-driver/mysql"
   packages = ["."]
   pruneopts = "UT"
-  revision = "a0583e0143b1624142adab07e0e97fe106d99561"
-  version = "v1.3"
+  revision = "d523deb1b23d913de5bdada721a6071e71283618"
+  version = "v1.4.0"
 
 [[projects]]
   digest = "1:ffc060c551980d37ee9e428ef528ee2813137249ccebb0bfc412ef83071cac91"
@@ -115,14 +115,25 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:692a381c4e8423b0c7d1fdf06324677c930a4a53ca4ee205fc0fa64b2fc9d9af"
+  digest = "1:7654989089e5bd5b6734ec3be8b695e87d3f1f8d95620b343fd7d3995a5b60d7"
   name = "github.com/jmoiron/sqlx"
   packages = [
     ".",
     "reflectx",
   ]
   pruneopts = "UT"
-  revision = "05cef0741ade10ca668982355b3f3f0bcf0ff0a8"
+  revision = "0dae4fefe7c0e190f7b5a78dac28a1c82cc8d849"
+
+[[projects]]
+  digest = "1:8ef506fc2bb9ced9b151dafa592d4046063d744c646c1bbe801982ce87e4bc24"
+  name = "github.com/lib/pq"
+  packages = [
+    ".",
+    "oid",
+  ]
+  pruneopts = "UT"
+  revision = "4ded0e9383f75c197b3a2aaa6d590ac52df6fd79"
+  version = "v1.0.0"
 
 [[projects]]
   branch = "master"
@@ -211,9 +222,10 @@
   revision = "543e37812f10c46c622c9575afd7ad22f22a12ba"
 
 [[projects]]
-  digest = "1:9cf45e754ab2dff5f53a553e6948b994ff738e4d1092ca608dcada945d8be0ef"
+  digest = "1:f40806967647e80fc51b941a586afefea6058592692c0bbfb3be7ea6b2b2a82d"
   name = "google.golang.org/appengine"
   packages = [
+    "cloudsql",
     "internal",
     "internal/base",
     "internal/datastore",
@@ -273,6 +285,7 @@
     "github.com/google/go-github/github",
     "github.com/gorilla/mux",
     "github.com/jmoiron/sqlx",
+    "github.com/lib/pq",
     "github.com/nu7hatch/gouuid",
     "github.com/pkg/errors",
     "golang.org/x/crypto/bcrypt",

@@ -169,7 +169,7 @@
 				<label for="ldap-groupFilter" class="col-sm-3 col-form-label">Group Filter</label>
 				<div class="col-sm-9">
 					{{input id="ldap-groupFilter" type="text" value=ldapConfig.groupFilter class=(if ldapErrorNoFilter 'form-control is-invalid' 'form-control')}}
-					<small class="form-text text-muted">Search filter for finding users via groups, e.g. (&(objectClass=group)(|(cn=ship_crew)(cn=admin_staff))</small>
+					<small class="form-text text-muted">Search filter for finding users via groups, e.g. (&(objectClass=group)(|(cn=ship_crew)(cn=admin_staff)))</small>
 				</div>
 			</div>
 
@@ -248,7 +248,7 @@
 				{{else}}
 					<p class="text-success">Connection successful, found {{ldapPreview.count}} users.</p>
 					{{#each ldapPreview.users as |user|}}
-						<p>{{user.firstname}} {{user.firstname}} ({{user.email}})</p>
+						<p>{{user.firstname}} {{user.lastname}} ({{user.email}})</p>
 					{{/each}}
 				{{/if}}
 			</div>

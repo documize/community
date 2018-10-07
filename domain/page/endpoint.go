@@ -29,6 +29,7 @@ import (
 	"github.com/documize/community/domain/permission"
 	indexer "github.com/documize/community/domain/search"
 	"github.com/documize/community/domain/section/provider"
+	"github.com/documize/community/domain/store"
 	"github.com/documize/community/model/activity"
 	"github.com/documize/community/model/audit"
 	dm "github.com/documize/community/model/doc"
@@ -42,7 +43,7 @@ import (
 // Handler contains the runtime information such as logging and database.
 type Handler struct {
 	Runtime *env.Runtime
-	Store   *domain.Store
+	Store   *store.Store
 	Indexer indexer.Indexer
 }
 
@@ -125,7 +126,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 
 	pageID := uniqueid.Generate()
 	model.Page.RefID = pageID
-	model.Meta.PageID = pageID
+	model.Meta.SectionID = pageID
 	model.Meta.OrgID = ctx.OrgID   // required for Render call below
 	model.Meta.UserID = ctx.UserID // required for Render call below
 	model.Page.SetDefaults()
@@ -160,16 +161,16 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(model.Page.BlockID) > 0 {
-		h.Store.Block.IncrementUsage(ctx, model.Page.BlockID)
+	if len(model.Page.TemplateID) > 0 {
+		h.Store.Block.IncrementUsage(ctx, model.Page.TemplateID)
 	}
 
 	// Draft actions are not logged
 	if doc.Lifecycle == workflow.LifecycleLive {
 		h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-			LabelID:      doc.LabelID,
+			SpaceID:      doc.SpaceID,
 			DocumentID:   model.Page.DocumentID,
-			PageID:       model.Page.RefID,
+			SectionID:    model.Page.RefID,
 			SourceType:   activity.SourceTypePage,
 			ActivityType: activity.TypeCreated})
 	}
@@ -438,9 +439,9 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	// Draft edits are not logged
 	if doc.Lifecycle == workflow.LifecycleLive {
 		h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-			LabelID:      doc.LabelID,
+			SpaceID:      doc.SpaceID,
 			DocumentID:   model.Page.DocumentID,
-			PageID:       model.Page.RefID,
+			SectionID:    model.Page.RefID,
 			SourceType:   activity.SourceTypePage,
 			ActivityType: activity.TypeEdited})
 	}
@@ -462,7 +463,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		link.OrgID = ctx.OrgID
 		link.UserID = ctx.UserID
 		link.SourceDocumentID = model.Page.DocumentID
-		link.SourcePageID = model.Page.RefID
+		link.SourceSectionID = model.Page.RefID
 
 		if link.LinkType == "document" || link.LinkType == "network" {
 			link.TargetID = ""
@@ -562,8 +563,8 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(p.BlockID) > 0 {
-		h.Store.Block.DecrementUsage(ctx, p.BlockID)
+	if len(p.TemplateID) > 0 {
+		h.Store.Block.DecrementUsage(ctx, p.TemplateID)
 	}
 
 	_, err = h.Store.Page.Delete(ctx, documentID, pageID)
@@ -577,9 +578,9 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	// Draft actions are not logged
 	if doc.Lifecycle == workflow.LifecycleLive {
 		h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-			LabelID:      doc.LabelID,
+			SpaceID:      doc.SpaceID,
 			DocumentID:   documentID,
-			PageID:       pageID,
+			SectionID:    pageID,
 			SourceType:   activity.SourceTypePage,
 			ActivityType: activity.TypeDeleted})
 	}
@@ -647,7 +648,7 @@ func (h *Handler) DeletePages(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, page := range *model {
-		pageData, err := h.Store.Page.Get(ctx, page.PageID)
+		pageData, err := h.Store.Page.Get(ctx, page.SectionID)
 		if err != nil {
 			ctx.Transaction.Rollback()
 			response.WriteServerError(w, method, err)
@@ -670,11 +671,11 @@ func (h *Handler) DeletePages(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 		}
-		if len(pageData.BlockID) > 0 {
-			h.Store.Block.DecrementUsage(ctx, pageData.BlockID)
+		if len(pageData.TemplateID) > 0 {
+			h.Store.Block.DecrementUsage(ctx, pageData.TemplateID)
 		}
 
-		_, err = h.Store.Page.Delete(ctx, documentID, page.PageID)
+		_, err = h.Store.Page.Delete(ctx, documentID, page.SectionID)
 		if err != nil {
 			ctx.Transaction.Rollback()
 			response.WriteServerError(w, method, err)
@@ -682,20 +683,20 @@ func (h *Handler) DeletePages(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		go h.Indexer.DeleteContent(ctx, page.PageID)
+		go h.Indexer.DeleteContent(ctx, page.SectionID)
 
-		h.Store.Link.DeleteSourcePageLinks(ctx, page.PageID)
+		h.Store.Link.DeleteSourcePageLinks(ctx, page.SectionID)
 
-		h.Store.Link.MarkOrphanPageLink(ctx, page.PageID)
+		h.Store.Link.MarkOrphanPageLink(ctx, page.SectionID)
 
-		h.Store.Page.DeletePageRevisions(ctx, page.PageID)
+		h.Store.Page.DeletePageRevisions(ctx, page.SectionID)
 
 		// Draft actions are not logged
 		if doc.Lifecycle == workflow.LifecycleLive {
 			h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-				LabelID:      doc.LabelID,
+				SpaceID:      doc.SpaceID,
 				DocumentID:   documentID,
-				PageID:       page.PageID,
+				SectionID:    page.SectionID,
 				SourceType:   activity.SourceTypePage,
 				ActivityType: activity.TypeDeleted})
 		}
@@ -769,7 +770,7 @@ func (h *Handler) ChangePageSequence(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, p := range *model {
-		err = h.Store.Page.UpdateSequence(ctx, documentID, p.PageID, p.Sequence)
+		err = h.Store.Page.UpdateSequence(ctx, documentID, p.SectionID, p.Sequence)
 		if err != nil {
 			ctx.Transaction.Rollback()
 			response.WriteServerError(w, method, err)
@@ -838,7 +839,7 @@ func (h *Handler) ChangePageLevel(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, p := range *model {
-		err = h.Store.Page.UpdateLevel(ctx, documentID, p.PageID, p.Level)
+		err = h.Store.Page.UpdateLevel(ctx, documentID, p.SectionID, p.Level)
 		if err != nil {
 			ctx.Transaction.Rollback()
 			response.WriteServerError(w, method, err)
@@ -932,7 +933,7 @@ func (h *Handler) Copy(w http.ResponseWriter, r *http.Request) {
 	p.DocumentID = targetID
 	p.UserID = ctx.UserID
 	pageMeta.DocumentID = targetID
-	pageMeta.PageID = newPageID
+	pageMeta.SectionID = newPageID
 	pageMeta.UserID = ctx.UserID
 
 	model := new(page.NewPage)
@@ -954,16 +955,16 @@ func (h *Handler) Copy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(model.Page.BlockID) > 0 {
-		h.Store.Block.IncrementUsage(ctx, model.Page.BlockID)
+	if len(model.Page.TemplateID) > 0 {
+		h.Store.Block.IncrementUsage(ctx, model.Page.TemplateID)
 	}
 
 	// Log t actions are not logged
 	if doc.Lifecycle == workflow.LifecycleLive {
 		h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-			LabelID:      doc.LabelID,
+			SpaceID:      doc.SpaceID,
 			DocumentID:   targetID,
-			PageID:       newPageID,
+			SectionID:    newPageID,
 			SourceType:   activity.SourceTypePage,
 			ActivityType: activity.TypeCreated})
 	}
@@ -1215,9 +1216,9 @@ func (h *Handler) Rollback(w http.ResponseWriter, r *http.Request) {
 	// Draft actions are not logged
 	if doc.Lifecycle == workflow.LifecycleLive {
 		h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-			LabelID:      doc.LabelID,
+			SpaceID:      doc.SpaceID,
 			DocumentID:   p.DocumentID,
-			PageID:       p.RefID,
+			SectionID:    p.RefID,
 			SourceType:   activity.SourceTypePage,
 			ActivityType: activity.TypeReverted})
 	}
@@ -1290,7 +1291,7 @@ func (h *Handler) FetchPages(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// permissions
-	perms, err := h.Store.Permission.GetUserSpacePermissions(ctx, doc.LabelID)
+	perms, err := h.Store.Permission.GetUserSpacePermissions(ctx, doc.SpaceID)
 	if err != nil && err != sql.ErrNoRows {
 		response.WriteServerError(w, method, err)
 		return
@@ -1344,7 +1345,7 @@ func (h *Handler) FetchPages(w http.ResponseWriter, r *http.Request) {
 			d.Page = p
 
 			for _, m := range meta {
-				if p.RefID == m.PageID {
+				if p.RefID == m.SectionID {
 					d.Meta = m
 					break
 				}
@@ -1359,7 +1360,7 @@ func (h *Handler) FetchPages(w http.ResponseWriter, r *http.Request) {
 					ud.Page = up
 
 					for _, m := range meta {
-						if up.RefID == m.PageID {
+						if up.RefID == m.SectionID {
 							ud.Meta = m
 							break
 						}
@@ -1413,7 +1414,7 @@ func (h *Handler) FetchPages(w http.ResponseWriter, r *http.Request) {
 			h.Runtime.Log.Error(method, err)
 		} else {
 			err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-				LabelID:      doc.LabelID,
+				SpaceID:      doc.SpaceID,
 				DocumentID:   doc.RefID,
 				Metadata:     source,                    // deliberate
 				SourceType:   activity.SourceTypeSearch, // deliberate
@@ -1450,7 +1451,7 @@ func (h *Handler) workflowPermitsChange(doc dm.Document, ctx domain.RequestConte
 
 	// If approval workflow then only approvers can delete page
 	if doc.Protection == workflow.ProtectionReview {
-		approvers, err := permission.GetUsersWithDocumentPermission(ctx, *h.Store, doc.LabelID, doc.RefID, pm.DocumentApprove)
+		approvers, err := permission.GetUsersWithDocumentPermission(ctx, *h.Store, doc.SpaceID, doc.RefID, pm.DocumentApprove)
 		if err != nil {
 			h.Runtime.Log.Error("workflowAllowsChange", err)
 			return false, err

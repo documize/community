@@ -15,13 +15,14 @@ import (
 	"database/sql"
 
 	"github.com/documize/community/domain"
+	"github.com/documize/community/domain/store"
 	group "github.com/documize/community/model/group"
 	pm "github.com/documize/community/model/permission"
 	u "github.com/documize/community/model/user"
 )
 
 // CanViewSpaceDocument returns if the user has permission to view a document within the specified folder.
-func CanViewSpaceDocument(ctx domain.RequestContext, s domain.Store, labelID string) bool {
+func CanViewSpaceDocument(ctx domain.RequestContext, s store.Store, labelID string) bool {
 	roles, err := s.Permission.GetUserSpacePermissions(ctx, labelID)
 	if err == sql.ErrNoRows {
 		err = nil
@@ -41,7 +42,7 @@ func CanViewSpaceDocument(ctx domain.RequestContext, s domain.Store, labelID str
 }
 
 // CanViewDocument returns if the client has permission to view a given document.
-func CanViewDocument(ctx domain.RequestContext, s domain.Store, documentID string) bool {
+func CanViewDocument(ctx domain.RequestContext, s store.Store, documentID string) bool {
 	document, err := s.Document.Get(ctx, documentID)
 	if err == sql.ErrNoRows {
 		err = nil
@@ -50,7 +51,7 @@ func CanViewDocument(ctx domain.RequestContext, s domain.Store, documentID strin
 		return false
 	}
 
-	roles, err := s.Permission.GetUserSpacePermissions(ctx, document.LabelID)
+	roles, err := s.Permission.GetUserSpacePermissions(ctx, document.SpaceID)
 	if err == sql.ErrNoRows {
 		err = nil
 	}
@@ -59,7 +60,7 @@ func CanViewDocument(ctx domain.RequestContext, s domain.Store, documentID strin
 	}
 
 	for _, role := range roles {
-		if role.RefID == document.LabelID && role.Location == pm.LocationSpace && role.Scope == pm.ScopeRow &&
+		if role.RefID == document.SpaceID && role.Location == pm.LocationSpace && role.Scope == pm.ScopeRow &&
 			pm.ContainsPermission(role.Action, pm.SpaceView, pm.SpaceManage, pm.SpaceOwner) {
 			return true
 		}
@@ -69,7 +70,7 @@ func CanViewDocument(ctx domain.RequestContext, s domain.Store, documentID strin
 }
 
 // CanChangeDocument returns if the clinet has permission to change a given document.
-func CanChangeDocument(ctx domain.RequestContext, s domain.Store, documentID string) bool {
+func CanChangeDocument(ctx domain.RequestContext, s store.Store, documentID string) bool {
 	document, err := s.Document.Get(ctx, documentID)
 
 	if err == sql.ErrNoRows {
@@ -79,7 +80,7 @@ func CanChangeDocument(ctx domain.RequestContext, s domain.Store, documentID str
 		return false
 	}
 
-	roles, err := s.Permission.GetUserSpacePermissions(ctx, document.LabelID)
+	roles, err := s.Permission.GetUserSpacePermissions(ctx, document.SpaceID)
 
 	if err == sql.ErrNoRows {
 		err = nil
@@ -89,7 +90,7 @@ func CanChangeDocument(ctx domain.RequestContext, s domain.Store, documentID str
 	}
 
 	for _, role := range roles {
-		if role.RefID == document.LabelID && role.Location == pm.LocationSpace && role.Scope == pm.ScopeRow && role.Action == pm.DocumentEdit {
+		if role.RefID == document.SpaceID && role.Location == pm.LocationSpace && role.Scope == pm.ScopeRow && role.Action == pm.DocumentEdit {
 			return true
 		}
 	}
@@ -98,7 +99,7 @@ func CanChangeDocument(ctx domain.RequestContext, s domain.Store, documentID str
 }
 
 // CanDeleteDocument returns if the clinet has permission to change a given document.
-func CanDeleteDocument(ctx domain.RequestContext, s domain.Store, documentID string) bool {
+func CanDeleteDocument(ctx domain.RequestContext, s store.Store, documentID string) bool {
 	document, err := s.Document.Get(ctx, documentID)
 
 	if err == sql.ErrNoRows {
@@ -108,7 +109,7 @@ func CanDeleteDocument(ctx domain.RequestContext, s domain.Store, documentID str
 		return false
 	}
 
-	roles, err := s.Permission.GetUserSpacePermissions(ctx, document.LabelID)
+	roles, err := s.Permission.GetUserSpacePermissions(ctx, document.SpaceID)
 
 	if err == sql.ErrNoRows {
 		err = nil
@@ -118,7 +119,7 @@ func CanDeleteDocument(ctx domain.RequestContext, s domain.Store, documentID str
 	}
 
 	for _, role := range roles {
-		if role.RefID == document.LabelID && role.Location == "space" && role.Scope == "object" && role.Action == pm.DocumentDelete {
+		if role.RefID == document.SpaceID && role.Location == "space" && role.Scope == "object" && role.Action == pm.DocumentDelete {
 			return true
 		}
 	}
@@ -127,7 +128,7 @@ func CanDeleteDocument(ctx domain.RequestContext, s domain.Store, documentID str
 }
 
 // CanUploadDocument returns if the client has permission to upload documents to the given space.
-func CanUploadDocument(ctx domain.RequestContext, s domain.Store, spaceID string) bool {
+func CanUploadDocument(ctx domain.RequestContext, s store.Store, spaceID string) bool {
 	roles, err := s.Permission.GetUserSpacePermissions(ctx, spaceID)
 	if err == sql.ErrNoRows {
 		err = nil
@@ -147,7 +148,7 @@ func CanUploadDocument(ctx domain.RequestContext, s domain.Store, spaceID string
 }
 
 // CanViewSpace returns if the user has permission to view the given spaceID.
-func CanViewSpace(ctx domain.RequestContext, s domain.Store, spaceID string) bool {
+func CanViewSpace(ctx domain.RequestContext, s store.Store, spaceID string) bool {
 	roles, err := s.Permission.GetUserSpacePermissions(ctx, spaceID)
 	if err == sql.ErrNoRows {
 		err = nil
@@ -166,7 +167,7 @@ func CanViewSpace(ctx domain.RequestContext, s domain.Store, spaceID string) boo
 }
 
 // CanViewDrafts returns if the user has permission to view drafts in space.
-func CanViewDrafts(ctx domain.RequestContext, s domain.Store, spaceID string) bool {
+func CanViewDrafts(ctx domain.RequestContext, s store.Store, spaceID string) bool {
 	roles, err := s.Permission.GetUserSpacePermissions(ctx, spaceID)
 	if err == sql.ErrNoRows {
 		err = nil
@@ -185,7 +186,7 @@ func CanViewDrafts(ctx domain.RequestContext, s domain.Store, spaceID string) bo
 }
 
 // CanManageVersion returns if the user has permission to manage versions in space.
-func CanManageVersion(ctx domain.RequestContext, s domain.Store, spaceID string) bool {
+func CanManageVersion(ctx domain.RequestContext, s store.Store, spaceID string) bool {
 	roles, err := s.Permission.GetUserSpacePermissions(ctx, spaceID)
 	if err == sql.ErrNoRows {
 		err = nil
@@ -204,7 +205,7 @@ func CanManageVersion(ctx domain.RequestContext, s domain.Store, spaceID string)
 }
 
 // HasPermission returns if current user can perform specified actions.
-func HasPermission(ctx domain.RequestContext, s domain.Store, spaceID string, actions ...pm.Action) bool {
+func HasPermission(ctx domain.RequestContext, s store.Store, spaceID string, actions ...pm.Action) bool {
 	roles, err := s.Permission.GetUserSpacePermissions(ctx, spaceID)
 
 	if err == sql.ErrNoRows {
@@ -228,7 +229,7 @@ func HasPermission(ctx domain.RequestContext, s domain.Store, spaceID string, ac
 }
 
 // CheckPermission returns if specified user can perform specified actions.
-func CheckPermission(ctx domain.RequestContext, s domain.Store, spaceID string, userID string, actions ...pm.Action) bool {
+func CheckPermission(ctx domain.RequestContext, s store.Store, spaceID string, userID string, actions ...pm.Action) bool {
 	roles, err := s.Permission.GetSpacePermissionsForUser(ctx, spaceID, userID)
 
 	if err == sql.ErrNoRows {
@@ -252,7 +253,7 @@ func CheckPermission(ctx domain.RequestContext, s domain.Store, spaceID string, 
 }
 
 // GetUsersWithDocumentPermission returns list of users who have specified document permission in given space
-func GetUsersWithDocumentPermission(ctx domain.RequestContext, s domain.Store, spaceID, documentID string, permissionRequired pm.Action) (users []u.User, err error) {
+func GetUsersWithDocumentPermission(ctx domain.RequestContext, s store.Store, spaceID, documentID string, permissionRequired pm.Action) (users []u.User, err error) {
 	users = []u.User{}
 	prev := make(map[string]bool) // used to ensure we only process user once
 

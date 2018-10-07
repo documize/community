@@ -151,7 +151,7 @@ export default Component.extend(AuthProvider, ModalMixin, {
 			this.get('groupSvc')
 				.update(group)
 				.then(() => {
-					this.load();
+					this.loadGroups();
 				});
 
 			this.modalClose('#edit-group-modal');

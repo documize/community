@@ -22,8 +22,8 @@ import (
 	"net/url"
 
 	"github.com/documize/community/core/env"
-	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/section/provider"
+	"github.com/documize/community/domain/store"
 )
 
 const me = "papertrail"
@@ -31,7 +31,7 @@ const me = "papertrail"
 // Provider represents Papertrail
 type Provider struct {
 	Runtime *env.Runtime
-	Store   *domain.Store
+	Store   *store.Store
 }
 
 // Meta describes us.
@@ -162,7 +162,7 @@ func (p *Provider) Refresh(ctx *provider.Context, config, data string) (newData 
 	return
 }
 
-func auth(rt *env.Runtime, store *domain.Store, ctx *provider.Context, config papertrailConfig, w http.ResponseWriter, r *http.Request) {
+func auth(rt *env.Runtime, store *store.Store, ctx *provider.Context, config papertrailConfig, w http.ResponseWriter, r *http.Request) {
 	result, err := fetchEvents(rt, config)
 
 	if result == nil {

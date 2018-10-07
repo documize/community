@@ -19,6 +19,7 @@ import (
 
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/permission"
+	"github.com/documize/community/domain/store"
 	"github.com/documize/community/model/doc"
 	"github.com/documize/community/model/page"
 	pm "github.com/documize/community/model/permission"
@@ -39,7 +40,7 @@ type exportTOC struct {
 }
 
 // BuildExport generates self-enclosed HTML for content specified.
-func BuildExport(ctx domain.RequestContext, s domain.Store, spec exportSpec) (html string, err error) {
+func BuildExport(ctx domain.RequestContext, s store.Store, spec exportSpec) (html string, err error) {
 	export := strings.Builder{}
 	content := strings.Builder{}
 	toc := []exportTOC{}
@@ -51,6 +52,8 @@ func BuildExport(ctx domain.RequestContext, s domain.Store, spec exportSpec) (ht
 			if e == nil {
 				content.WriteString(c)
 				toc = append(toc, t...)
+			} else {
+				fmt.Println("export.space", err)
 			}
 		}
 
@@ -59,6 +62,8 @@ func BuildExport(ctx domain.RequestContext, s domain.Store, spec exportSpec) (ht
 		if e == nil {
 			content.WriteString(c)
 			toc = append(toc, t...)
+		} else {
+			fmt.Println("export.category", err)
 		}
 
 	case "document":
@@ -66,6 +71,8 @@ func BuildExport(ctx domain.RequestContext, s domain.Store, spec exportSpec) (ht
 		if e == nil {
 			content.WriteString(c)
 			toc = append(toc, t...)
+		} else {
+			fmt.Println("export.document", err)
 		}
 	}
 
@@ -114,7 +121,7 @@ func BuildExport(ctx domain.RequestContext, s domain.Store, spec exportSpec) (ht
 }
 
 // exportSpace returns documents exported.
-func exportSpace(ctx domain.RequestContext, s domain.Store, spaceID string) (toc []exportTOC, export string, err error) {
+func exportSpace(ctx domain.RequestContext, s store.Store, spaceID string) (toc []exportTOC, export string, err error) {
 	// Permission check.
 	if !permission.CanViewSpace(ctx, s, spaceID) {
 		return toc, "", nil
@@ -153,7 +160,7 @@ func exportSpace(ctx domain.RequestContext, s domain.Store, spaceID string) (toc
 	for _, d := range docs {
 		docHTML, e := processDocument(ctx, s, d.RefID)
 		if e == nil && len(docHTML) > 0 {
-			toc = append(toc, exportTOC{ID: d.RefID, Entry: d.Title})
+			toc = append(toc, exportTOC{ID: d.RefID, Entry: d.Name})
 			b.WriteString(docHTML)
 		} else {
 			return toc, b.String(), err
@@ -164,7 +171,7 @@ func exportSpace(ctx domain.RequestContext, s domain.Store, spaceID string) (toc
 }
 
 // exportCategory returns documents exported for selected categories.
-func exportCategory(ctx domain.RequestContext, s domain.Store, spaceID string, category []string) (toc []exportTOC, export string, err error) {
+func exportCategory(ctx domain.RequestContext, s store.Store, spaceID string, category []string) (toc []exportTOC, export string, err error) {
 	// Permission check.
 	if !permission.CanViewSpace(ctx, s, spaceID) {
 		return toc, "", nil
@@ -221,7 +228,7 @@ func exportCategory(ctx domain.RequestContext, s domain.Store, spaceID string, c
 	for _, d := range exportDocs {
 		docHTML, e := processDocument(ctx, s, d.RefID)
 		if e == nil && len(docHTML) > 0 {
-			toc = append(toc, exportTOC{ID: d.RefID, Entry: d.Title})
+			toc = append(toc, exportTOC{ID: d.RefID, Entry: d.Name})
 			b.WriteString(docHTML)
 		} else {
 			return toc, b.String(), err
@@ -232,7 +239,7 @@ func exportCategory(ctx domain.RequestContext, s domain.Store, spaceID string, c
 }
 
 // exportDocument returns documents for export.
-func exportDocument(ctx domain.RequestContext, s domain.Store, spaceID string, document []string) (toc []exportTOC, export string, err error) {
+func exportDocument(ctx domain.RequestContext, s store.Store, spaceID string, document []string) (toc []exportTOC, export string, err error) {
 	// Permission check.
 	if !permission.CanViewSpace(ctx, s, spaceID) {
 		return toc, "", nil
@@ -274,7 +281,7 @@ func exportDocument(ctx domain.RequestContext, s domain.Store, spaceID string, d
 				if permission.CanViewDocument(ctx, s, d.RefID) {
 					docHTML, e := processDocument(ctx, s, d.RefID)
 					if e == nil && len(docHTML) > 0 {
-						toc = append(toc, exportTOC{ID: d.RefID, Entry: d.Title})
+						toc = append(toc, exportTOC{ID: d.RefID, Entry: d.Name})
 						b.WriteString(docHTML)
 					} else {
 						return toc, b.String(), err
@@ -288,7 +295,7 @@ func exportDocument(ctx domain.RequestContext, s domain.Store, spaceID string, d
 }
 
 // processDocument writes out document as HTML content
-func processDocument(ctx domain.RequestContext, s domain.Store, documentID string) (export string, err error) {
+func processDocument(ctx domain.RequestContext, s store.Store, documentID string) (export string, err error) {
 	b := strings.Builder{}
 
 	// Permission check.
@@ -325,7 +332,7 @@ func processDocument(ctx domain.RequestContext, s domain.Store, documentID strin
 	// Put out document name.
 	b.WriteString(fmt.Sprintf("<div class='export-doc-header' id='%s'>", doc.RefID))
 	b.WriteString("<div class='export-doc-title'>")
-	b.WriteString(doc.Title)
+	b.WriteString(doc.Name)
 	b.WriteString("</div>")
 	b.WriteString("<div class='export-doc-excerpt'>")
 	b.WriteString(doc.Excerpt)
@@ -338,7 +345,7 @@ func processDocument(ctx domain.RequestContext, s domain.Store, documentID strin
 		b.WriteString(`<div class="document-structure">`)
 		b.WriteString(`<div class="page-header">`)
 		b.WriteString(fmt.Sprintf("<span class='page-number'>%s</span>", page.Numbering))
-		b.WriteString(fmt.Sprintf("<span class='page-title'>%s</span>", page.Title))
+		b.WriteString(fmt.Sprintf("<span class='page-title'>%s</span>", page.Name))
 		b.WriteString("</div>")
 		b.WriteString("</div>")
 

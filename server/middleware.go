@@ -25,20 +25,21 @@ import (
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/auth"
 	"github.com/documize/community/domain/organization"
+	"github.com/documize/community/domain/store"
 	"github.com/documize/community/domain/user"
 	"github.com/documize/community/model/org"
 )
 
 type middleware struct {
 	Runtime *env.Runtime
-	Store   *domain.Store
+	Store   *store.Store
 }
 
 func (m *middleware) cors(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "PUT, GET, POST, DELETE, OPTIONS, PATCH")
 	w.Header().Set("Access-Control-Allow-Headers", "host, content-type, accept, authorization, origin, referer, user-agent, cache-control, x-requested-with")
-	w.Header().Set("Access-Control-Expose-Headers", "x-documize-version, x-documize-status")
+	w.Header().Set("Access-Control-Expose-Headers", "x-documize-version, x-documize-status, x-documize-filename, Content-Disposition, Content-Length")
 
 	if r.Method == "OPTIONS" {
 		w.Header().Add("X-Documize-Version", m.Runtime.Product.Version)
@@ -142,7 +143,7 @@ func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http
 		rc.Administrator = false
 		rc.Analytics = false
 		rc.Editor = false
-		rc.Global = false
+		rc.GlobalAdmin = false
 		rc.ViewUsers = false
 		rc.AppURL = r.Host
 		rc.Subdomain = organization.GetSubdomainFromHost(r)
@@ -166,6 +167,7 @@ func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http
 		if rc.Authenticated {
 			u, err := user.GetSecuredUser(rc, *m.Store, org.RefID, rc.UserID)
 			if err != nil {
+				m.Runtime.Log.Error("unable to secure API", err)
 				response.WriteServerError(w, method, err)
 				return
 			}
@@ -174,7 +176,7 @@ func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http
 			rc.Active = u.Active
 			rc.Analytics = u.Analytics
 			rc.Editor = u.Editor
-			rc.Global = u.Global
+			rc.GlobalAdmin = u.GlobalAdmin
 			rc.ViewUsers = u.ViewUsers
 			rc.Fullname = u.Fullname()
 
@@ -245,7 +247,7 @@ func (m *middleware) preAuthorizeStaticAssets(rt *env.Runtime, r *http.Request) 
 		ctx.Administrator = false
 		ctx.Editor = false
 		ctx.Analytics = false
-		ctx.Global = false
+		ctx.GlobalAdmin = false
 		ctx.AppURL = r.Host
 		ctx.SSL = r.TLS != nil
 

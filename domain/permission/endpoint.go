@@ -27,6 +27,7 @@ import (
 	"github.com/documize/community/core/stringutil"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/mail"
+	"github.com/documize/community/domain/store"
 	"github.com/documize/community/model/audit"
 	"github.com/documize/community/model/group"
 	"github.com/documize/community/model/permission"
@@ -37,7 +38,7 @@ import (
 // Handler contains the runtime information such as logging and database.
 type Handler struct {
 	Runtime *env.Runtime
-	Store   *domain.Store
+	Store   *store.Store
 }
 
 // SetSpacePermissions persists specified space permissions
@@ -333,6 +334,7 @@ func (h *Handler) GetUserSpacePermissions(w http.ResponseWriter, r *http.Request
 	perms, err := h.Store.Permission.GetUserSpacePermissions(ctx, spaceID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -354,6 +356,7 @@ func (h *Handler) GetCategoryViewers(w http.ResponseWriter, r *http.Request) {
 	u, err := h.Store.Permission.GetCategoryUsers(ctx, categoryID)
 	if err != nil && err != sql.ErrNoRows {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -574,7 +577,7 @@ func (h *Handler) SetDocumentPermissions(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	sp, err := h.Store.Space.Get(ctx, doc.LabelID)
+	sp, err := h.Store.Space.Get(ctx, doc.SpaceID)
 	if err != nil {
 		response.WriteNotFoundError(w, method, "space not found")
 		return
@@ -639,7 +642,7 @@ func (h *Handler) SetDocumentPermissions(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	url := ctx.GetAppURL(fmt.Sprintf("s/%s/%s/d/%s/%s", sp.RefID, stringutil.MakeSlug(sp.Name), doc.RefID, stringutil.MakeSlug(doc.Title)))
+	url := ctx.GetAppURL(fmt.Sprintf("s/%s/%s/d/%s/%s", sp.RefID, stringutil.MakeSlug(sp.Name), doc.RefID, stringutil.MakeSlug(doc.Name)))
 
 	// Permissions can be assigned to both groups and individual users.
 	// Pre-fetch users with group membership to help us work out
@@ -701,8 +704,8 @@ func (h *Handler) SetDocumentPermissions(w http.ResponseWriter, r *http.Request)
 						}
 
 						mailer := mail.Mailer{Runtime: h.Runtime, Store: h.Store, Context: ctx}
-						go mailer.DocumentApprover(existingUser.Email, inviter.Fullname(), inviter.Email, url, doc.Title)
-						h.Runtime.Log.Info(fmt.Sprintf("%s has made %s document approver for: %s", inviter.Email, existingUser.Email, doc.Title))
+						go mailer.DocumentApprover(existingUser.Email, inviter.Fullname(), inviter.Email, url, doc.Name)
+						h.Runtime.Log.Info(fmt.Sprintf("%s has made %s document approver for: %s", inviter.Email, existingUser.Email, doc.Name))
 					}
 				}
 			}

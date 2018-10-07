@@ -16,14 +16,14 @@ import (
 
 	api "github.com/documize/community/core/convapi"
 	"github.com/documize/community/core/env"
-	"github.com/documize/community/domain"
 	indexer "github.com/documize/community/domain/search"
+	"github.com/documize/community/domain/store"
 )
 
 // Handler contains the runtime information such as logging and database.
 type Handler struct {
 	Runtime *env.Runtime
-	Store   *domain.Store
+	Store   *store.Store
 	Indexer indexer.Indexer
 }
 

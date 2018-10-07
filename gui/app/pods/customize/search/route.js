@@ -29,6 +29,6 @@ export default Route.extend(AuthenticatedRouteMixin, {
 	},
 
 	activate() {
-		this.get('browser').setTitle('Search');
+		this.get('browser').setTitle('Search Engine');
 	}
 });

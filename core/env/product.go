@@ -18,13 +18,14 @@ import (
 
 // ProdInfo describes a product
 type ProdInfo struct {
-	Edition string
-	Title   string
-	Version string
-	Major   string
-	Minor   string
-	Patch   string
-	License License
+	Edition  string
+	Title    string
+	Version  string
+	Major    string
+	Minor    string
+	Patch    string
+	Revision int
+	License  License
 }
 
 // License holds details of product license.

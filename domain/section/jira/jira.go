@@ -21,8 +21,8 @@ import (
 	"net/http"
 
 	"github.com/documize/community/core/env"
-	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/section/provider"
+	"github.com/documize/community/domain/store"
 	jira "gopkg.in/andygrunwald/go-jira.v1"
 )
 
@@ -34,7 +34,7 @@ const (
 // Provider represents Gemini
 type Provider struct {
 	Runtime *env.Runtime
-	Store   *domain.Store
+	Store   *store.Store
 }
 
 // Meta describes us.
@@ -129,7 +129,7 @@ func (p *Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http
 	}
 }
 
-func auth(ctx *provider.Context, store *domain.Store, w http.ResponseWriter, r *http.Request) {
+func auth(ctx *provider.Context, store *store.Store, w http.ResponseWriter, r *http.Request) {
 	creds, err := getCredentials(ctx, store)
 	if err != nil {
 		provider.WriteForbidden(w)
@@ -147,7 +147,7 @@ func auth(ctx *provider.Context, store *domain.Store, w http.ResponseWriter, r *
 	provider.WriteJSON(w, "OK")
 }
 
-func previewIssues(ctx *provider.Context, store *domain.Store, w http.ResponseWriter, r *http.Request) {
+func previewIssues(ctx *provider.Context, store *store.Store, w http.ResponseWriter, r *http.Request) {
 	creds, err := getCredentials(ctx, store)
 	if err != nil {
 		provider.WriteForbidden(w)
@@ -173,7 +173,7 @@ func previewIssues(ctx *provider.Context, store *domain.Store, w http.ResponseWr
 	provider.WriteJSON(w, issues)
 }
 
-func previewGrid(ctx *provider.Context, store *domain.Store, w http.ResponseWriter, r *http.Request) {
+func previewGrid(ctx *provider.Context, store *store.Store, w http.ResponseWriter, r *http.Request) {
 	creds, err := getCredentials(ctx, store)
 	if err != nil {
 		provider.WriteForbidden(w)
@@ -202,7 +202,7 @@ func previewGrid(ctx *provider.Context, store *domain.Store, w http.ResponseWrit
 }
 
 // Pull config from HTTP request.
-func readConfig(ctx *provider.Context, store *domain.Store, w http.ResponseWriter, r *http.Request) (config jiraConfig, err error) {
+func readConfig(ctx *provider.Context, store *store.Store, w http.ResponseWriter, r *http.Request) (config jiraConfig, err error) {
 	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -218,7 +218,7 @@ func readConfig(ctx *provider.Context, store *domain.Store, w http.ResponseWrite
 }
 
 // Get Jira connector configuration.
-func getCredentials(ctx *provider.Context, store *domain.Store) (login jiraLogin, err error) {
+func getCredentials(ctx *provider.Context, store *store.Store) (login jiraLogin, err error) {
 	creds, err := store.Setting.GetUser(ctx.OrgID, "", "jira", "")
 
 	err = json.Unmarshal([]byte(creds), &login)
@@ -239,11 +239,13 @@ func authenticate(login jiraLogin) (c *jira.Client, u *jira.User, err error) {
 	tp := jira.BasicAuthTransport{Username: login.Username, Password: login.Secret, Transport: tr}
 	c, err = jira.NewClient(tp.Client(), login.URL)
 	if err != nil {
+		fmt.Println("Cannot authenticate with Jira:", err)
 		return
 	}
 
 	u, _, err = c.User.Get(login.Username)
 	if err != nil {
+		fmt.Println("Cannot get authenticated Jira user:", err)
 		return
 	}
 
@@ -320,21 +322,28 @@ const renderTemplate = `
         {{$app := .JiraURL}}
         {{range $item := .Issues}}
             <tr>
-                <td class="bordered no-width"><a href="{{ $app }}/browse/{{ $item.Key }}">{{ $item.Key }}</a></td>
+                <td class="bordered no-width"><a href="{{ $app }}/browse/{{ $item.Key }}">{{ $item.Key }}&nbsp;</a></td>
                 <td class="bordered no-width"><img class="section-jira-icon" src='{{ $item.Fields.Type.IconURL }}' /></td>
-                <td class="bordered no-width"><span class="badge badge-warning">{{ $item.Fields.Status.Name }}</span></td>
+                <td class="bordered no-width"><span class="badge badge-warning">{{ $item.Fields.Status.Name }}</span>&nbsp;</td>
                 <td class="bordered no-width"><img class="section-jira-icon" src='{{ $item.Fields.Priority.IconURL }}' /></td>
                 <td class="bordered no-width">
                     {{range $comp := $item.Fields.Components}}
                         {{ $comp.Name }}
                     {{end}}
+                    &nbsp;
                 </td>
-                <td class="bordered no-width">{{ $item.Fields.Summary }}</td>
-                <td class="bordered no-width">{{ $item.Fields.Assignee.DisplayName }}</td>
+                <td class="bordered no-width">{{ $item.Fields.Summary }}&nbsp;</td>
+                <td class="bordered no-width">
+                    {{if $item.Fields.Assignee}}
+                        {{$item.Fields.Assignee.DisplayName}}
+                    {{end}}
+                    &nbsp;
+                </td>
                 <td class="bordered no-width">
                     {{range $ver := $item.Fields.FixVersions}}
                         {{ $ver.Name }}
                     {{end}}
+                    &nbsp;
                 </td>
             </tr>
 		{{end}}

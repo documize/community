@@ -17,11 +17,11 @@ import "github.com/documize/community/model"
 type Block struct {
 	model.BaseEntity
 	OrgID          string `json:"orgId"`
-	LabelID        string `json:"folderId"`
+	SpaceID        string `json:"folderId"`
 	UserID         string `json:"userId"`
 	ContentType    string `json:"contentType"`
-	PageType       string `json:"pageType"`
-	Title          string `json:"title"`
+	Type           string `json:"pageType"`
+	Name           string `json:"title"`
 	Body           string `json:"body"`
 	Excerpt        string `json:"excerpt"`
 	RawBody        string `json:"rawBody"`        // a blob of data

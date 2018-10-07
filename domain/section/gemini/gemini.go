@@ -21,14 +21,14 @@ import (
 	"net/http"
 
 	"github.com/documize/community/core/env"
-	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/section/provider"
+	"github.com/documize/community/domain/store"
 )
 
 // Provider represents Gemini
 type Provider struct {
 	Runtime *env.Runtime
-	Store   *domain.Store
+	Store   *store.Store
 }
 
 // Meta describes us.
@@ -154,7 +154,7 @@ func (p *Provider) Refresh(ctx *provider.Context, config, data string) (newData 
 	return
 }
 
-func auth(ctx *provider.Context, store *domain.Store, w http.ResponseWriter, r *http.Request) {
+func auth(ctx *provider.Context, store *store.Store, w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -222,7 +222,7 @@ func auth(ctx *provider.Context, store *domain.Store, w http.ResponseWriter, r *
 	provider.WriteJSON(w, g)
 }
 
-func workspace(ctx *provider.Context, store *domain.Store, w http.ResponseWriter, r *http.Request) {
+func workspace(ctx *provider.Context, store *store.Store, w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -294,7 +294,7 @@ func workspace(ctx *provider.Context, store *domain.Store, w http.ResponseWriter
 	provider.WriteJSON(w, workspace)
 }
 
-func items(ctx *provider.Context, store *domain.Store, w http.ResponseWriter, r *http.Request) {
+func items(ctx *provider.Context, store *store.Store, w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -369,7 +369,7 @@ func items(ctx *provider.Context, store *domain.Store, w http.ResponseWriter, r 
 	provider.WriteJSON(w, items)
 }
 
-func secs(ctx *provider.Context, store *domain.Store, w http.ResponseWriter, r *http.Request) {
+func secs(ctx *provider.Context, store *store.Store, w http.ResponseWriter, r *http.Request) {
 	sec, _ := getSecrets(ctx, store)
 	provider.WriteJSON(w, sec)
 }

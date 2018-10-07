@@ -26,6 +26,7 @@ import (
 	"github.com/documize/community/core/uniqueid"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/permission"
+	"github.com/documize/community/domain/store"
 	"github.com/documize/community/model/audit"
 	"github.com/documize/community/model/category"
 	pm "github.com/documize/community/model/permission"
@@ -34,7 +35,7 @@ import (
 // Handler contains the runtime information such as logging and database.
 type Handler struct {
 	Runtime *env.Runtime
-	Store   *domain.Store
+	Store   *store.Store
 }
 
 // Add saves space category.
@@ -74,9 +75,9 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Category max length 30.
-	cat.Category = strings.TrimSpace(cat.Category)
-	if len(cat.Category) > 30 {
-		cat.Category = cat.Category[:30]
+	cat.Name = strings.TrimSpace(cat.Name)
+	if len(cat.Name) > 30 {
+		cat.Name = cat.Name[:30]
 	}
 
 	err = h.Store.Category.Add(ctx, cat)
@@ -164,6 +165,7 @@ func (h *Handler) GetAll(w http.ResponseWriter, r *http.Request) {
 	cat, err := h.Store.Category.GetAllBySpace(ctx, spaceID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -200,7 +202,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	cat.OrgID = ctx.OrgID
 	cat.RefID = categoryID
 
-	ok := permission.HasPermission(ctx, *h.Store, cat.LabelID, pm.SpaceManage, pm.SpaceOwner)
+	ok := permission.HasPermission(ctx, *h.Store, cat.SpaceID, pm.SpaceManage, pm.SpaceOwner)
 	if !ok || !ctx.Authenticated {
 		response.WriteForbiddenError(w)
 		return
@@ -249,10 +251,11 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	cat, err := h.Store.Category.Get(ctx, catID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
-	ok := permission.HasPermission(ctx, *h.Store, cat.LabelID, pm.SpaceManage, pm.SpaceOwner)
+	ok := permission.HasPermission(ctx, *h.Store, cat.SpaceID, pm.SpaceManage, pm.SpaceOwner)
 	if !ok || !ctx.Authenticated {
 		response.WriteForbiddenError(w)
 		return
@@ -318,8 +321,8 @@ func (h *Handler) GetSummary(w http.ResponseWriter, r *http.Request) {
 
 	s, err := h.Store.Category.GetSpaceCategorySummary(ctx, spaceID)
 	if err != nil {
-		h.Runtime.Log.Error("get space category summary failed", err)
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -358,7 +361,7 @@ func (h *Handler) SetDocumentCategoryMembership(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	if !permission.HasPermission(ctx, *h.Store, cats[0].LabelID, pm.DocumentAdd, pm.DocumentEdit) {
+	if !permission.HasPermission(ctx, *h.Store, cats[0].SpaceID, pm.DocumentAdd, pm.DocumentEdit) {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -413,7 +416,7 @@ func (h *Handler) GetDocumentCategoryMembership(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	if !permission.HasPermission(ctx, *h.Store, doc.LabelID, pm.SpaceView, pm.DocumentAdd, pm.DocumentEdit) {
+	if !permission.HasPermission(ctx, *h.Store, doc.SpaceID, pm.SpaceView, pm.DocumentAdd, pm.DocumentEdit) {
 		response.WriteForbiddenError(w)
 		return
 	}

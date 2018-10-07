@@ -15,7 +15,7 @@ import { computed } from '@ember/object';
 
 export default Model.extend({
 	orgId: attr('string'),
-	roleId: attr('string'),
+	groupId: attr('string'),
 	userId: attr('string'),
 
 	// for UI only

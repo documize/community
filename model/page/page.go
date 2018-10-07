@@ -26,12 +26,12 @@ type Page struct {
 	DocumentID  string                `json:"documentId"`
 	UserID      string                `json:"userId"`
 	ContentType string                `json:"contentType"`
-	PageType    string                `json:"pageType"`
-	BlockID     string                `json:"blockId"`
+	Type        string                `json:"pageType"`
+	TemplateID  string                `json:"blockId"`
 	Level       uint64                `json:"level"`
 	Sequence    float64               `json:"sequence"`
 	Numbering   string                `json:"numbering"`
-	Title       string                `json:"title"`
+	Name        string                `json:"title"`
 	Body        string                `json:"body"`
 	Revisions   uint64                `json:"revisions"`
 	Status      workflow.ChangeStatus `json:"status"`
@@ -48,17 +48,17 @@ func (p *Page) SetDefaults() {
 		p.Level = 1
 	}
 
-	p.Title = strings.TrimSpace(p.Title)
+	p.Name = strings.TrimSpace(p.Name)
 }
 
 // IsSectionType tells us that page is "words"
 func (p *Page) IsSectionType() bool {
-	return p.PageType == "section"
+	return p.Type == "section"
 }
 
 // IsTabType tells us that page is "SaaS data embed"
 func (p *Page) IsTabType() bool {
-	return p.PageType == "tab"
+	return p.Type == "tab"
 }
 
 // Meta holds raw page data that is used to
@@ -70,7 +70,7 @@ type Meta struct {
 	OrgID          string    `json:"orgId"`
 	UserID         string    `json:"userId"`
 	DocumentID     string    `json:"documentId"`
-	PageID         string    `json:"pageId"`
+	SectionID      string    `json:"pageId"`
 	RawBody        string    `json:"rawBody"`        // a blob of data
 	Config         string    `json:"config"`         // JSON based custom config for this type
 	ExternalSource bool      `json:"externalSource"` // true indicates data sourced externally
@@ -88,12 +88,12 @@ type Revision struct {
 	model.BaseEntity
 	OrgID       string `json:"orgId"`
 	DocumentID  string `json:"documentId"`
-	PageID      string `json:"pageId"`
+	SectionID   string `json:"pageId"`
 	OwnerID     string `json:"ownerId"`
 	UserID      string `json:"userId"`
 	ContentType string `json:"contentType"`
-	PageType    string `json:"pageType"`
-	Title       string `json:"title"`
+	Type        string `json:"pageType"`
+	Name        string `json:"title"`
 	Body        string `json:"body"`
 	RawBody     string `json:"rawBody"`
 	Config      string `json:"config"`
@@ -112,14 +112,14 @@ type NewPage struct {
 
 // SequenceRequest details a page ID and its sequence within the document.
 type SequenceRequest struct {
-	PageID   string  `json:"pageId"`
-	Sequence float64 `json:"sequence"`
+	SectionID string  `json:"pageId"`
+	Sequence  float64 `json:"sequence"`
 }
 
 // LevelRequest details a page ID and level.
 type LevelRequest struct {
-	PageID string `json:"pageId"`
-	Level  int    `json:"level"`
+	SectionID string `json:"pageId"`
+	Level     int    `json:"level"`
 }
 
 // BulkRequest details page, it's meta, pending page changes.

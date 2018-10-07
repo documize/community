@@ -13,17 +13,17 @@ package search
 
 import (
 	"github.com/documize/community/core/env"
-	"github.com/documize/community/domain"
+	"github.com/documize/community/domain/store"
 )
 
 // Indexer documents!
 type Indexer struct {
 	runtime *env.Runtime
-	store   *domain.Store
+	store   *store.Store
 }
 
 // NewIndexer provides background search indexer
-func NewIndexer(rt *env.Runtime, s *domain.Store) (i Indexer) {
+func NewIndexer(rt *env.Runtime, s *store.Store) (i Indexer) {
 	i = Indexer{}
 	i.runtime = rt
 	i.store = s

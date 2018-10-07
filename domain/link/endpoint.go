@@ -22,6 +22,7 @@ import (
 	"github.com/documize/community/core/uniqueid"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/permission"
+	"github.com/documize/community/domain/store"
 	"github.com/documize/community/model/attachment"
 	"github.com/documize/community/model/link"
 	"github.com/documize/community/model/page"
@@ -30,7 +31,7 @@ import (
 // Handler contains the runtime information such as logging and database.
 type Handler struct {
 	Runtime *env.Runtime
-	Store   *domain.Store
+	Store   *store.Store
 }
 
 // GetLinkCandidates returns references to documents/sections/attachments.
@@ -80,11 +81,11 @@ func (h *Handler) GetLinkCandidates(w http.ResponseWriter, r *http.Request) {
 		if p.RefID != pageID {
 			c := link.Candidate{
 				RefID:      uniqueid.Generate(),
-				FolderID:   folderID,
+				SpaceID:    folderID,
 				DocumentID: documentID,
 				TargetID:   p.RefID,
-				LinkType:   p.PageType,
-				Title:      p.Title,
+				LinkType:   p.Type,
+				Title:      p.Name,
 			}
 			pc = append(pc, c)
 		}
@@ -108,7 +109,7 @@ func (h *Handler) GetLinkCandidates(w http.ResponseWriter, r *http.Request) {
 	for _, f := range files {
 		c := link.Candidate{
 			RefID:      uniqueid.Generate(),
-			FolderID:   folderID,
+			SpaceID:    folderID,
 			DocumentID: documentID,
 			TargetID:   f.RefID,
 			LinkType:   "file",

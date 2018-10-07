@@ -23,6 +23,7 @@ import (
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/organization"
 	"github.com/documize/community/domain/section/provider"
+	"github.com/documize/community/domain/store"
 	"github.com/documize/community/domain/user"
 	"github.com/documize/community/model/auth"
 	"github.com/documize/community/model/org"
@@ -31,7 +32,7 @@ import (
 // Handler contains the runtime information such as logging and database.
 type Handler struct {
 	Runtime *env.Runtime
-	Store   *domain.Store
+	Store   *store.Store
 }
 
 // Login user based up HTTP Authorization header.
@@ -82,6 +83,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 	if err != nil && err != sql.ErrNoRows {
 		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error("unable to fetch user", err)
 		return
 	}
 	if len(u.Reset) > 0 || len(u.Password) == 0 {
@@ -190,7 +192,7 @@ func (h *Handler) ValidateToken(w http.ResponseWriter, r *http.Request) {
 	rc.OrgName = org.Title
 	rc.Administrator = false
 	rc.Editor = false
-	rc.Global = false
+	rc.GlobalAdmin = false
 	rc.AppURL = r.Host
 	rc.Subdomain = organization.GetSubdomainFromHost(r)
 	rc.SSL = r.TLS != nil
@@ -210,7 +212,7 @@ func (h *Handler) ValidateToken(w http.ResponseWriter, r *http.Request) {
 
 	rc.Administrator = u.Admin
 	rc.Editor = u.Editor
-	rc.Global = u.Global
+	rc.GlobalAdmin = u.GlobalAdmin
 
 	response.WriteJSON(w, u)
 }

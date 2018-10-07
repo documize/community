@@ -12,9 +12,11 @@
 import { computed } from '@ember/object';
 import { notEmpty } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
+import Modals from '../../mixins/modal';
+import Notifier from '../../mixins/notifier';
 import Component from '@ember/component';
 
-export default Component.extend({
+export default Component.extend(Modals, Notifier, {
 	documentService: service('document'),
 	appMeta: service(),
 	hasAttachments: notEmpty('files'),
@@ -53,8 +55,8 @@ export default Component.extend({
 			method: "post",
 			paramName: 'attachment',
 			clickable: true,
-			maxFilesize: 10,
-			parallelUploads: 3,
+			maxFilesize: 50,
+			parallelUploads: 5,
 			uploadMultiple: false,
 			addRemoveLinks: false,
 			autoProcessQueue: true,
@@ -64,10 +66,17 @@ export default Component.extend({
 				});
 
 				this.on("queuecomplete", function () {
+					self.showDone();
 					self.getAttachments();
 				});
 
 				this.on("addedfile", function ( /*file*/ ) {
+					self.showWait();
+				});
+
+				this.on("error", function (error, msg) { // // eslint-disable-line no-unused-vars
+					self.showNotification(msg);
+					console.log(msg); // eslint-disable-line no-console
 				});
 			}
 		});

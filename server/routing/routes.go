@@ -15,11 +15,11 @@ import (
 	"net/http"
 
 	"github.com/documize/community/core/env"
-	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/attachment"
 	"github.com/documize/community/domain/auth"
 	"github.com/documize/community/domain/auth/keycloak"
 	"github.com/documize/community/domain/auth/ldap"
+	"github.com/documize/community/domain/backup"
 	"github.com/documize/community/domain/block"
 	"github.com/documize/community/domain/category"
 	"github.com/documize/community/domain/conversion"
@@ -35,13 +35,14 @@ import (
 	"github.com/documize/community/domain/section"
 	"github.com/documize/community/domain/setting"
 	"github.com/documize/community/domain/space"
+	"github.com/documize/community/domain/store"
 	"github.com/documize/community/domain/template"
 	"github.com/documize/community/domain/user"
 	"github.com/documize/community/server/web"
 )
 
 // RegisterEndpoints register routes for serving API endpoints
-func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
+func RegisterEndpoints(rt *env.Runtime, s *store.Store) {
 	// base services
 	indexer := search.NewIndexer(rt, s)
 
@@ -57,6 +58,7 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	space := space.Handler{Runtime: rt, Store: s}
 	block := block.Handler{Runtime: rt, Store: s}
 	group := group.Handler{Runtime: rt, Store: s}
+	backup := backup.Handler{Runtime: rt, Store: s}
 	section := section.Handler{Runtime: rt, Store: s}
 	setting := setting.Handler{Runtime: rt, Store: s}
 	category := category.Handler{Runtime: rt, Store: s}
@@ -120,12 +122,12 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	AddPrivate(rt, "documents/{documentID}/pages/{pageID}/meta", []string{"GET", "OPTIONS"}, nil, page.GetMeta)
 	AddPrivate(rt, "documents/{documentID}/pages/{pageID}/copy/{targetID}", []string{"POST", "OPTIONS"}, nil, page.Copy)
 
-	AddPrivate(rt, "organization/setting", []string{"GET", "OPTIONS"}, nil, organization.GetGlobalSetting)
-	AddPrivate(rt, "organization/setting", []string{"POST", "OPTIONS"}, nil, organization.SaveGlobalSetting)
+	AddPrivate(rt, "organization/setting", []string{"GET", "OPTIONS"}, nil, setting.GetGlobalSetting)
+	AddPrivate(rt, "organization/setting", []string{"POST", "OPTIONS"}, nil, setting.SaveGlobalSetting)
 	AddPrivate(rt, "organization/{orgID}", []string{"GET", "OPTIONS"}, nil, organization.Get)
 	AddPrivate(rt, "organization/{orgID}", []string{"PUT", "OPTIONS"}, nil, organization.Update)
-	AddPrivate(rt, "organization/{orgID}/setting", []string{"GET", "OPTIONS"}, nil, organization.GetInstanceSetting)
-	AddPrivate(rt, "organization/{orgID}/setting", []string{"POST", "OPTIONS"}, nil, organization.SaveInstanceSetting)
+	AddPrivate(rt, "organization/{orgID}/setting", []string{"GET", "OPTIONS"}, nil, setting.GetInstanceSetting)
+	AddPrivate(rt, "organization/{orgID}/setting", []string{"POST", "OPTIONS"}, nil, setting.SaveInstanceSetting)
 
 	AddPrivate(rt, "space/{spaceID}", []string{"DELETE", "OPTIONS"}, nil, space.Delete)
 	AddPrivate(rt, "space/{spaceID}/move/{moveToId}", []string{"DELETE", "OPTIONS"}, nil, space.Remove)
@@ -217,6 +219,7 @@ func RegisterEndpoints(rt *env.Runtime, s *domain.Store) {
 	AddPrivate(rt, "global/sync/keycloak", []string{"GET", "OPTIONS"}, nil, keycloak.Sync)
 	AddPrivate(rt, "global/ldap/preview", []string{"POST", "OPTIONS"}, nil, ldap.Preview)
 	AddPrivate(rt, "global/ldap/sync", []string{"GET", "OPTIONS"}, nil, ldap.Sync)
+	AddPrivate(rt, "global/backup", []string{"POST", "OPTIONS"}, nil, backup.Backup)
 
 	Add(rt, RoutePrefixRoot, "robots.txt", []string{"GET", "OPTIONS"}, nil, meta.RobotsTxt)
 	Add(rt, RoutePrefixRoot, "sitemap.xml", []string{"GET", "OPTIONS"}, nil, meta.Sitemap)

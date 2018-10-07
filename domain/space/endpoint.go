@@ -32,6 +32,7 @@ import (
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/mail"
 	"github.com/documize/community/domain/organization"
+	"github.com/documize/community/domain/store"
 	"github.com/documize/community/model/account"
 	"github.com/documize/community/model/activity"
 	"github.com/documize/community/model/audit"
@@ -47,7 +48,7 @@ import (
 // Handler contains the runtime information such as logging and database.
 type Handler struct {
 	Runtime *env.Runtime
-	Store   *domain.Store
+	Store   *store.Store
 }
 
 // Add creates a new space.
@@ -59,7 +60,6 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		response.WriteBadLicense(w)
 		return
 	}
-
 	if !ctx.Editor {
 		response.WriteForbiddenError(w)
 		return
@@ -131,7 +131,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-		LabelID:      sp.RefID,
+		SpaceID:      sp.RefID,
 		SourceType:   activity.SourceTypeSpace,
 		ActivityType: activity.TypeCreated})
 	if err != nil {
@@ -204,13 +204,18 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		// to avoid conflicts.
 		groupChange := make(map[string]string)
 
+		// Store old-to-new document ID mapping for subsequence reference.
+		docMap := make(map[string]string)
+
 		if len(toCopy) > 0 {
 			for _, t := range toCopy {
 				origID := t.RefID
 
 				documentID := uniqueid.Generate()
+				docMap[t.RefID] = documentID
+
 				t.RefID = documentID
-				t.LabelID = sp.RefID
+				t.SpaceID = sp.RefID
 
 				// Reassign group ID
 				if len(t.GroupID) > 0 {
@@ -244,7 +249,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 					pageID := uniqueid.Generate()
 					p.RefID = pageID
 
-					meta.PageID = pageID
+					meta.SectionID = pageID
 					meta.DocumentID = documentID
 
 					model := page.NewPage{}
@@ -287,7 +292,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 
 			for _, b := range blocks {
 				b.RefID = uniqueid.Generate()
-				b.LabelID = sp.RefID
+				b.SpaceID = sp.RefID
 				b.UserID = ctx.UserID
 
 				err = h.Store.Block.Add(ctx, b)
@@ -319,6 +324,72 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// Copy over space categories, associated permissions and document assignments.
+		cats, err := h.Store.Category.GetAllBySpace(ctx, model.CloneID)
+		if err != nil {
+			ctx.Transaction.Rollback()
+			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
+			return
+		}
+
+		catMap := make(map[string]string)
+		for _, ct := range cats {
+			// Store old-to-new category ID mapping for subsequent processing.
+			cid := uniqueid.Generate()
+			catMap[ct.RefID] = cid
+
+			// Get existing user/group permissions for the category to be cloned.
+			cp, err := h.Store.Permission.GetCategoryPermissions(ctx, ct.RefID)
+			if err != nil {
+				ctx.Transaction.Rollback()
+				response.WriteServerError(w, method, err)
+				h.Runtime.Log.Error(method, err)
+				return
+			}
+
+			// Add cloned category.
+			ct.RefID = cid
+			ct.SpaceID = sp.RefID
+			err = h.Store.Category.Add(ctx, ct)
+			if err != nil {
+				ctx.Transaction.Rollback()
+				response.WriteServerError(w, method, err)
+				h.Runtime.Log.Error(method, err)
+				return
+			}
+
+			// Add cloned category permissions.
+			for _, p := range cp {
+				p.RefID = cid
+				err = h.Store.Permission.AddPermission(ctx, p)
+				if err != nil {
+					ctx.Transaction.Rollback()
+					response.WriteServerError(w, method, err)
+					h.Runtime.Log.Error(method, err)
+					return
+				}
+			}
+		}
+
+		// Add cloned category members
+		cm, err := h.Store.Category.GetSpaceCategoryMembership(ctx, model.CloneID)
+		for _, m := range cm {
+			m.RefID = uniqueid.Generate()
+			m.CategoryID = catMap[m.CategoryID]
+			m.DocumentID = docMap[m.DocumentID]
+			m.SpaceID = sp.RefID
+
+			err = h.Store.Category.AssociateDocument(ctx, m)
+			if err != nil {
+				ctx.Transaction.Rollback()
+				response.WriteServerError(w, method, err)
+				h.Runtime.Log.Error(method, err)
+				return
+			}
+		}
+
+		// Finish up the clone operations.
 		ctx.Transaction.Commit()
 	}
 
@@ -358,7 +429,7 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-		LabelID:      sp.RefID,
+		SpaceID:      sp.RefID,
 		SourceType:   activity.SourceTypeSpace,
 		ActivityType: activity.TypeRead})
 
@@ -469,7 +540,13 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 	// If newly marked Everyone space, ensure everyone has permission
 	if prev.Type != space.ScopePublic && sp.Type == space.ScopePublic {
-		h.Store.Permission.DeleteUserSpacePermissions(ctx, sp.RefID, user.EveryoneUserID)
+		_, err = h.Store.Permission.DeleteUserSpacePermissions(ctx, sp.RefID, user.EveryoneUserID)
+		if err != nil {
+			ctx.Transaction.Rollback()
+			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
+			return
+		}
 
 		perm := permission.Permission{}
 		perm.OrgID = sp.OrgID
@@ -572,7 +649,7 @@ func (h *Handler) Remove(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-		LabelID:      id,
+		SpaceID:      id,
 		SourceType:   activity.SourceTypeSpace,
 		ActivityType: activity.TypeDeleted})
 	if err != nil {
@@ -669,7 +746,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-		LabelID:      id,
+		SpaceID:      id,
 		SourceType:   activity.SourceTypeSpace,
 		ActivityType: activity.TypeDeleted})
 	if err != nil {

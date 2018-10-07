@@ -27,6 +27,7 @@ import (
 	"github.com/documize/community/core/stringutil"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/auth"
+	"github.com/documize/community/domain/store"
 	usr "github.com/documize/community/domain/user"
 	ath "github.com/documize/community/model/auth"
 	"github.com/documize/community/model/user"
@@ -35,7 +36,7 @@ import (
 // Handler contains the runtime information such as logging and database.
 type Handler struct {
 	Runtime *env.Runtime
-	Store   *domain.Store
+	Store   *store.Store
 }
 
 // Sync gets list of Keycloak users and inserts new users into Documize

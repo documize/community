@@ -16,17 +16,14 @@ import (
 	"fmt"
 
 	"github.com/documize/community/core/env"
-	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/section"
+	"github.com/documize/community/domain/store"
 	"github.com/documize/community/edition/boot"
 	"github.com/documize/community/edition/logging"
 	"github.com/documize/community/embed"
 	"github.com/documize/community/server"
 	"github.com/documize/community/server/web"
-	_ "github.com/go-sql-driver/mysql" // the mysql driver is required behind the scenes
 )
-
-var rt env.Runtime
 
 func main() {
 	// runtime stores server/application level information
@@ -41,8 +38,9 @@ func main() {
 	// product details
 	rt.Product = env.ProdInfo{}
 	rt.Product.Major = "1"
-	rt.Product.Minor = "70"
+	rt.Product.Minor = "71"
 	rt.Product.Patch = "0"
+	rt.Product.Revision = 181007125514
 	rt.Product.Version = fmt.Sprintf("%s.%s.%s", rt.Product.Major, rt.Product.Minor, rt.Product.Patch)
 	rt.Product.Edition = "Community"
 	rt.Product.Title = fmt.Sprintf("%s Edition", rt.Product.Edition)
@@ -53,12 +51,11 @@ func main() {
 	rt.Product.License.Edition = "Community"
 
 	// setup store
-	s := domain.Store{}
+	s := store.Store{}
 
 	// parse settings from command line and environment
 	rt.Flags = env.ParseFlags()
 	flagsOK := boot.InitRuntime(&rt, &s)
-
 	if flagsOK {
 		// runtime.Log = runtime.Log.SetDB(runtime.Db)
 	}

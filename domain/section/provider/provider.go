@@ -21,6 +21,7 @@ import (
 
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/domain"
+	"github.com/documize/community/domain/store"
 )
 
 // SecretReplacement is a constant used to replace secrets in data-structures when required.
@@ -32,14 +33,14 @@ var sectionsMap = make(map[string]Provider)
 
 // TypeMeta details a "smart section" that represents a "page" in a document.
 type TypeMeta struct {
-	ID          string                                                                      `json:"id"`
-	Order       int                                                                         `json:"order"`
-	ContentType string                                                                      `json:"contentType"`
-	PageType    string                                                                      `json:"pageType"`
-	Title       string                                                                      `json:"title"`
-	Description string                                                                      `json:"description"`
-	Preview     bool                                                                        `json:"preview"` // coming soon!
-	Callback    func(*env.Runtime, *domain.Store, http.ResponseWriter, *http.Request) error `json:"-"`
+	ID          string                                                                     `json:"id"`
+	Order       int                                                                        `json:"order"`
+	ContentType string                                                                     `json:"contentType"`
+	PageType    string                                                                     `json:"pageType"`
+	Title       string                                                                     `json:"title"`
+	Description string                                                                     `json:"description"`
+	Preview     bool                                                                       `json:"preview"` // coming soon!
+	Callback    func(*env.Runtime, *store.Store, http.ResponseWriter, *http.Request) error `json:"-"`
 }
 
 // ConfigHandle returns the key name for database config table
@@ -102,7 +103,7 @@ func Command(section string, ctx *Context, w http.ResponseWriter, r *http.Reques
 }
 
 // Callback passes parameters to the given section callback, the returned error indicates success.
-func Callback(section string, rt *env.Runtime, store *domain.Store, w http.ResponseWriter, r *http.Request) error {
+func Callback(section string, rt *env.Runtime, store *store.Store, w http.ResponseWriter, r *http.Request) error {
 	s, ok := sectionsMap[section]
 	if ok {
 		if cb := s.Meta().Callback; cb != nil {
@@ -194,7 +195,7 @@ func WriteForbidden(w http.ResponseWriter) {
 // The secrets must be in the form of a JSON format string, for example `{"mysecret":"lover"}`.
 // An empty string signifies no valid secrets for this user/org combination.
 // Note that this function can only be called within the Command method of a section.
-func (c *Context) SaveSecrets(JSONobj string, s *domain.Store) error {
+func (c *Context) SaveSecrets(JSONobj string, s *store.Store) error {
 	if !c.inCommand {
 		return errors.New("SaveSecrets() may only be called from within Command()")
 	}
@@ -204,7 +205,7 @@ func (c *Context) SaveSecrets(JSONobj string, s *domain.Store) error {
 
 // MarshalSecrets to the database.
 // Parameter the same as for json.Marshal().
-func (c *Context) MarshalSecrets(sec interface{}, s *domain.Store) error {
+func (c *Context) MarshalSecrets(sec interface{}, s *store.Store) error {
 	if !c.inCommand {
 		return errors.New("MarshalSecrets() may only be called from within Command()")
 	}
@@ -220,7 +221,7 @@ func (c *Context) MarshalSecrets(sec interface{}, s *domain.Store) error {
 // JSONpath format is defined at https://dev.mysql.com/doc/refman/5.7/en/json-path-syntax.html .
 // An empty JSONpath returns the whole JSON object, as JSON.
 // Errors return the empty string.
-func (c *Context) GetSecrets(JSONpath string, s *domain.Store) string {
+func (c *Context) GetSecrets(JSONpath string, s *store.Store) string {
 	m := c.prov.Meta()
 	v, _ := s.Setting.GetUser(c.OrgID, c.UserID, m.ContentType, JSONpath)
 
@@ -232,7 +233,7 @@ var ErrNoSecrets = errors.New("no secrets in database")
 
 // UnmarshalSecrets from the database.
 // Parameter the same as for "v" in json.Unmarshal().
-func (c *Context) UnmarshalSecrets(v interface{}, s *domain.Store) error {
+func (c *Context) UnmarshalSecrets(v interface{}, s *store.Store) error {
 	secTxt := c.GetSecrets("", s) // get all the json of the secrets
 	if len(secTxt) > 0 {
 		return json.Unmarshal([]byte(secTxt), v)

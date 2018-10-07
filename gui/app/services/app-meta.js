@@ -27,6 +27,7 @@ export default Service.extend({
 	orgId: '',
 	title: '',
 	version: '',
+	revision: 1000,
 	message: '',
 	edition: 'Community',
 	valid: true,
@@ -36,6 +37,7 @@ export default Service.extend({
 	setupMode: false,
 	secureMode: false,
 	maxTags: 3,
+	storageProvider: '',
 
 	// for major.minor semver release detection
 	// for bugfix releases, only admin is made aware of new release and end users see no What's New messaging
@@ -71,6 +73,8 @@ export default Service.extend({
 			return resolve(this);
 		}
 
+		requestedRoute = requestedRoute.toLowerCase().trim();
+
 		return this.get('ajax').request('public/meta').then((response) => {
 			this.setProperties(response);
 			this.set('version', 'v' + this.get('version'));
@@ -84,6 +88,7 @@ export default Service.extend({
 				});
 
 				this.get('localStorage').clearAll();
+				return resolve(this);
 			} else if (is.not.include(requestedUrl, '/auth/')) {
 				this.get('localStorage').storeSessionItem('entryUrl', requestedUrl);
 			}
