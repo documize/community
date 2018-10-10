@@ -17,7 +17,6 @@ import (
 	"strings"
 
 	"github.com/documize/community/core/env"
-	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/core/stringutil"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/store"
@@ -26,7 +25,6 @@ import (
 	"github.com/documize/community/model/page"
 	"github.com/documize/community/model/search"
 	"github.com/documize/community/model/workflow"
-	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 )
 
@@ -189,24 +187,16 @@ func (s Store) DeleteContent(ctx domain.RequestContext, pageID string) (err erro
 	method := "search.DeleteContent"
 
 	// remove all search entries
-	var stmt1 *sqlx.Stmt
-	stmt1, err = ctx.Transaction.Preparex(s.Bind("DELETE FROM dmz_search WHERE c_orgid=? AND c_itemid=? AND c_itemtype=?"))
-	defer streamutil.Close(stmt1)
+	_, err = ctx.Transaction.Exec(s.Bind("DELETE FROM dmz_search WHERE c_orgid=? AND c_itemid=? AND c_itemtype=?"),
+		ctx.OrgID, pageID, "page")
 
-	if err != nil && err != sql.ErrNoRows {
-		err = errors.Wrap(err, "prepare delete document content entry")
-		s.Runtime.Log.Error(method, err)
-		return
-	}
-
-	_, err = stmt1.Exec(ctx.OrgID, pageID, "page")
 	if err != nil && err != sql.ErrNoRows {
 		err = errors.Wrap(err, "execute delete document content entry")
 		s.Runtime.Log.Error(method, err)
 		return
 	}
 
-	return
+	return nil
 }
 
 // Documents searches the documents that the client is allowed to see, using the keywords search string, then audits that search.

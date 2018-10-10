@@ -745,6 +745,17 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Close out the delete process
+	ctx.Transaction.Commit()
+
+	// Record this action.
+	ctx.Transaction, err = h.Runtime.Db.Beginx()
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
 	err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
 		SpaceID:      id,
 		SourceType:   activity.SourceTypeSpace,
@@ -753,8 +764,6 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		ctx.Transaction.Rollback()
 		h.Runtime.Log.Error(method, err)
 	}
-
-	ctx.Transaction.Commit()
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSpaceDelete)
 

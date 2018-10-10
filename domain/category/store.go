@@ -203,7 +203,10 @@ func (s Store) RemoveDocumentCategories(ctx domain.RequestContext, documentID st
 // DeleteBySpace removes all category and category associations for given space.
 func (s Store) DeleteBySpace(ctx domain.RequestContext, spaceID string) (rows int64, err error) {
 	s1 := fmt.Sprintf("DELETE FROM dmz_category_member WHERE c_orgid='%s' AND c_spaceid='%s'", ctx.OrgID, spaceID)
-	s.DeleteWhere(ctx.Transaction, s1)
+	_, err = s.DeleteWhere(ctx.Transaction, s1)
+	if err != nil {
+		return
+	}
 
 	s2 := fmt.Sprintf("DELETE FROM dmz_category WHERE c_orgid='%s' AND c_spaceid='%s'", ctx.OrgID, spaceID)
 	return s.DeleteWhere(ctx.Transaction, s2)

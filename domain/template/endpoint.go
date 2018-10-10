@@ -409,6 +409,7 @@ func (h *Handler) Use(w http.ResponseWriter, r *http.Request) {
 	// Clone categories.
 	cats, err := h.Store.Category.GetDocumentCategoryMembership(ctx, templateID)
 	if err != nil && err != sql.ErrNoRows {
+		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
 		return
@@ -422,6 +423,7 @@ func (h *Handler) Use(w http.ResponseWriter, r *http.Request) {
 		cc.SpaceID = d.SpaceID
 		err = h.Store.Category.AssociateDocument(ctx, cc)
 		if err != nil && err != sql.ErrNoRows {
+			ctx.Transaction.Rollback()
 			response.WriteServerError(w, method, err)
 			h.Runtime.Log.Error(method, err)
 			return

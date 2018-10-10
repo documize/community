@@ -161,9 +161,6 @@ func (h *Handler) convert(w http.ResponseWriter, r *http.Request, job, folderID 
 		return
 	}
 
-	a, _ := h.Store.Attachment.GetAttachments(ctx, nd.RefID)
-	go h.Indexer.IndexDocument(ctx, nd, a)
-
 	response.WriteJSON(w, nd)
 }
 
@@ -252,7 +249,6 @@ func processDocument(ctx domain.RequestContext, r *env.Runtime, store *store.Sto
 		ActivityType: activity.TypeCreated})
 
 	err = ctx.Transaction.Commit()
-
 	if err != nil {
 		err = errors.Wrap(err, "cannot commit new document import")
 		return
@@ -260,12 +256,11 @@ func processDocument(ctx domain.RequestContext, r *env.Runtime, store *store.Sto
 
 	newDocument, err = store.Document.Get(ctx, documentID)
 	if err != nil {
-		ctx.Transaction.Rollback()
 		err = errors.Wrap(err, "cannot fetch new document")
 		return
 	}
 
-	indexer.IndexDocument(ctx, newDocument, da)
+	go indexer.IndexDocument(ctx, newDocument, da)
 
 	store.Audit.Record(ctx, audit.EventTypeDocumentUpload)
 

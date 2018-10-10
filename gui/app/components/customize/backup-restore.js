@@ -17,15 +17,36 @@ export default Component.extend(Notifier, {
 	appMeta: service(),
 	browserSvc: service('browser'),
 	buttonLabel: 'Run Backup',
+    backupSpec: null,
+    backupFilename: '',
+    backupError: false,
+    backupSuccess: false,
+
+    didReceiveAttrs() {
+        this._super(...arguments);
+        this.set('backupSpec', {
+            retain: true,
+            org: '*'
+            // org: this.get('appMeta.orgId')
+        });
+    },
 
 	actions: {
 		onBackup() {
 			this.showWait();
 			this.set('buttonLabel', 'Please wait, backup running...');
+            this.set('backupFilename', '');
+            this.set('backupSuccess', false);
+            this.set('backupFailed', false);
 
-			this.get('onBackup')({}).then(() => {
+			this.get('onBackup')(this.get('backupSpec')).then((filename) => {
 				this.set('buttonLabel', 'Run Backup');
 				this.showDone();
+                this.set('backupSuccess', true);
+                this.set('backupFilename', filename);
+			}, ()=> {
+				this.set('buttonLabel', 'Run Backup');
+                this.set('backupFailed', true);
 			});
 		}
 	}
