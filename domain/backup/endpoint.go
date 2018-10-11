@@ -83,6 +83,8 @@ func (h *Handler) Backup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	h.Runtime.Log.Info("Backup started")
+
 	bh := backerHandler{Runtime: h.Runtime, Store: h.Store, Context: ctx, Spec: spec}
 
 	// Produce zip file on disk.

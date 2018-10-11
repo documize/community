@@ -25,9 +25,9 @@ export default Component.extend(Notifier, {
     didReceiveAttrs() {
         this._super(...arguments);
         this.set('backupSpec', {
-            retain: true,
-            org: '*'
-            // org: this.get('appMeta.orgId')
+            retain: false,
+            // org: '*'
+            org: this.get('appMeta.orgId')
         });
     },
 
