@@ -97,7 +97,7 @@ func RegisterEndpoints(rt *env.Runtime, s *store.Store) {
 	// Secured private routes (require authentication)
 	//**************************************************
 
-	AddPrivate(rt, "import/folder/{folderID}", []string{"POST", "OPTIONS"}, nil, conversion.UploadConvert)
+	AddPrivate(rt, "import/folder/{spaceID}", []string{"POST", "OPTIONS"}, nil, conversion.UploadConvert)
 
 	AddPrivate(rt, "documents", []string{"GET", "OPTIONS"}, nil, document.BySpace)
 	AddPrivate(rt, "documents/{documentID}", []string{"GET", "OPTIONS"}, nil, document.Get)
@@ -161,19 +161,19 @@ func RegisterEndpoints(rt *env.Runtime, s *store.Store) {
 	AddPrivate(rt, "search", []string{"POST", "OPTIONS"}, nil, document.SearchDocuments)
 
 	AddPrivate(rt, "templates", []string{"POST", "OPTIONS"}, nil, template.SaveAs)
-	AddPrivate(rt, "templates/{templateID}/folder/{folderID}", []string{"POST", "OPTIONS"}, []string{"type", "saved"}, template.Use)
-	AddPrivate(rt, "templates/{folderID}", []string{"GET", "OPTIONS"}, nil, template.SavedList)
+	AddPrivate(rt, "templates/{templateID}/folder/{spaceID}", []string{"POST", "OPTIONS"}, []string{"type", "saved"}, template.Use)
+	AddPrivate(rt, "templates/{spaceID}", []string{"GET", "OPTIONS"}, nil, template.SavedList)
 
 	AddPrivate(rt, "sections", []string{"GET", "OPTIONS"}, nil, section.GetSections)
 	AddPrivate(rt, "sections", []string{"POST", "OPTIONS"}, nil, section.RunSectionCommand)
 	AddPrivate(rt, "sections/refresh", []string{"GET", "OPTIONS"}, nil, section.RefreshSections)
-	AddPrivate(rt, "sections/blocks/space/{folderID}", []string{"GET", "OPTIONS"}, nil, block.GetBySpace)
+	AddPrivate(rt, "sections/blocks/space/{spaceID}", []string{"GET", "OPTIONS"}, nil, block.GetBySpace)
 	AddPrivate(rt, "sections/blocks/{blockID}", []string{"GET", "OPTIONS"}, nil, block.Get)
 	AddPrivate(rt, "sections/blocks/{blockID}", []string{"PUT", "OPTIONS"}, nil, block.Update)
 	AddPrivate(rt, "sections/blocks/{blockID}", []string{"DELETE", "OPTIONS"}, nil, block.Delete)
 	AddPrivate(rt, "sections/blocks", []string{"POST", "OPTIONS"}, nil, block.Add)
 
-	AddPrivate(rt, "links/{folderID}/{documentID}/{pageID}", []string{"GET", "OPTIONS"}, nil, link.GetLinkCandidates)
+	AddPrivate(rt, "links/{spaceID}/{documentID}/{pageID}", []string{"GET", "OPTIONS"}, nil, link.GetLinkCandidates)
 	AddPrivate(rt, "links", []string{"GET", "OPTIONS"}, nil, link.SearchLinkCandidates)
 	AddPrivate(rt, "documents/{documentID}/links", []string{"GET", "OPTIONS"}, nil, document.DocumentLinks)
 
@@ -220,6 +220,7 @@ func RegisterEndpoints(rt *env.Runtime, s *store.Store) {
 	AddPrivate(rt, "global/ldap/preview", []string{"POST", "OPTIONS"}, nil, ldap.Preview)
 	AddPrivate(rt, "global/ldap/sync", []string{"GET", "OPTIONS"}, nil, ldap.Sync)
 	AddPrivate(rt, "global/backup", []string{"POST", "OPTIONS"}, nil, backup.Backup)
+	AddPrivate(rt, "global/restore", []string{"POST", "OPTIONS"}, nil, backup.Restore)
 
 	Add(rt, RoutePrefixRoot, "robots.txt", []string{"GET", "OPTIONS"}, nil, meta.RobotsTxt)
 	Add(rt, RoutePrefixRoot, "sitemap.xml", []string{"GET", "OPTIONS"}, nil, meta.Sitemap)

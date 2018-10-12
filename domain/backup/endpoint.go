@@ -32,11 +32,15 @@ package backup
 // operations. This is subject to further review.
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/documize/community/core/request"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/response"
@@ -104,10 +108,13 @@ func (h *Handler) Backup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	h.Runtime.Log.Info(fmt.Sprintf("Backup size pending download %d", len(bk)))
+
 	// Standard HTTP headers.
 	w.Header().Set("Content-Type", "application/zip")
 	w.Header().Set("Content-Disposition", `attachment; filename="`+filename+`" ; `+`filename*="`+filename+`"`)
 	w.Header().Set("Content-Length", fmt.Sprintf("%d", len(bk)))
+
 	// Custom HTTP header helps API consumer to extract backup filename cleanly
 	// instead of parsing 'Content-Disposition' header.
 	// This HTTP header is CORS white-listed.
@@ -128,4 +135,52 @@ func (h *Handler) Backup(w http.ResponseWriter, r *http.Request) {
 	if !spec.Retain {
 		os.Remove(filename)
 	}
+}
+
+// Restore receives ZIP file for restore operation.
+// Options are specified as HTTP query paramaters.
+func (h *Handler) Restore(w http.ResponseWriter, r *http.Request) {
+	method := "system.restore"
+	ctx := domain.GetRequestContext(r)
+
+	if !ctx.Administrator {
+		response.WriteForbiddenError(w)
+		h.Runtime.Log.Info(fmt.Sprintf("Non-admin attempted system restore operation (user ID: %s)", ctx.UserID))
+		return
+	}
+
+	h.Runtime.Log.Info(fmt.Sprintf("Restored attempted by user: %s", ctx.UserID))
+
+	overwriteOrg, err := strconv.ParseBool(request.Query(r, "org"))
+	if err != nil {
+		h.Runtime.Log.Info("Restore invoked without 'org' parameter")
+		response.WriteMissingDataError(w, method, "org=false/true missing")
+		return
+	}
+
+	createUsers, err := strconv.ParseBool(request.Query(r, "users"))
+	if err != nil {
+		h.Runtime.Log.Info("Restore invoked without 'users' parameter")
+		response.WriteMissingDataError(w, method, "users=false/true missing")
+		return
+	}
+
+	filedata, fileheader, err := r.FormFile("restore-file")
+	if err != nil {
+		response.WriteMissingDataError(w, method, "restore-file")
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	b := new(bytes.Buffer)
+	_, err = io.Copy(b, filedata)
+	if err != nil {
+		h.Runtime.Log.Error(method, err)
+		response.WriteServerError(w, method, err)
+		return
+	}
+
+	h.Runtime.Log.Info(fmt.Sprintf("%s %d %v %v", fileheader.Filename, len(b.Bytes()), overwriteOrg, createUsers))
+
+	response.WriteEmpty(w)
 }

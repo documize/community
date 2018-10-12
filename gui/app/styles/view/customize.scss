@@ -152,4 +152,78 @@
 	> .max-results {
 		float: right;
 	}
+
+	> .backup-restore {
+		margin: 20px 0;
+		font-size: 1.1rem;
+
+		> .backup-zone {
+			@include border-radius(3px);
+			border: 1px solid $color-border;
+			padding: 20px 20px;
+			background-color: lighten($color-green, 60%);
+
+			> .explain {
+				color: $color-gray;
+				font-size: 1rem;
+				font-style: italic;
+			}
+
+			> .backup-fail {
+				margin: 10px 0;
+				color: $color-red;
+			}
+
+			> .backup-success {
+				margin: 10px 0;
+				color: $color-green;
+			}
+		}
+
+		> .restore-zone {
+			@include border-radius(3px);
+			border: 1px solid $color-border;
+			margin: 50px 0;
+			padding: 20px 20px;
+			background-color: lighten($color-red, 60%);
+
+			> .restore-fail {
+				margin: 10px 0;
+				color: $color-red;
+			}
+
+			> .restore-success {
+				margin: 10px 0;
+				color: $color-green;
+			}
+
+			> .upload-backup-file {
+				@include ease-in();
+				margin: 50px 0 10px 0;
+
+				> .dz-preview, .dz-processing {
+					display: none !important;
+				}
+			}
+
+			.restore-upload-busy {
+				text-align: center;
+
+				> img {
+					height: 50px;
+					width: 50px;
+				}
+
+				> .wait {
+					color: $color-gray;
+					margin: 10px 0;
+				}
+
+				 > .ready {
+					 color: $color-green;
+					 margin: 10px 0;
+				 }
+			}
+		}
+	}
 }

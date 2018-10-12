@@ -18,6 +18,7 @@ export default Service.extend({
 	appMeta: service(),
 	browserSvc: service('browser'),
 	store: service(),
+	router: service(),
 
 	// Returns SMTP configuration.
 	getSMTPConfig() {
@@ -141,8 +142,12 @@ export default Service.extend({
 		}
 	},
 
-	// Run tenant level backup.
+	// Run backup.
 	backup(spec) {
+		if (!this.get('sessionService.isGlobalAdmin') || this.get('sessionService.isAdmin')) {
+			return;
+		}
+
 		return new EmberPromise((resolve, reject) => {
 			let url = this.get('appMeta.endpoint');
 			let token = this.get('sessionService.session.content.authenticated.token');
@@ -183,6 +188,34 @@ export default Service.extend({
 			}
 
 			xhr.send(JSON.stringify(spec));
+		});
+	},
+
+	restore(spec, file) {
+		var data = new FormData();
+		data.set('restore-file', file);
+
+		return new EmberPromise((resolve, reject) => {
+			let url = this.get('appMeta.endpoint');
+			let token = this.get('sessionService.session.content.authenticated.token');
+			let uploadUrl = `${url}/global/restore?token=${token}&org=${spec.overwriteOrg}&users=${spec.recreateUsers}`;
+
+			var xhr = new XMLHttpRequest();
+			xhr.open('POST', uploadUrl);
+
+			xhr.onload = function() {
+				if (this.status == 200) {
+					resolve();
+				} else {
+					reject();
+				}
+			}
+
+			xhr.onerror= function() {
+				reject();
+			}
+
+			xhr.send(data);
 		});
 	}
 });
