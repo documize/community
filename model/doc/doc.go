@@ -23,7 +23,7 @@ import (
 type Document struct {
 	model.BaseEntity
 	OrgID        string              `json:"orgId"`
-	SpaceID      string              `json:"folderId"`
+	SpaceID      string              `json:"spaceId"`
 	UserID       string              `json:"userId"`
 	Job          string              `json:"job"`
 	Location     string              `json:"location"`

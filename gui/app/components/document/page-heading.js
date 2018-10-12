@@ -147,7 +147,7 @@ export default Component.extend(ModalMixin, Tooltips, {
 
 			this.get('documentService').getPageMeta(this.get('document.id'), page.get('id')).then((pm) => {
 				let block = {
-					folderId: this.get('folder.id'),
+					spaceId: this.get('folder.id'),
 					contentType: page.get('contentType'),
 					pageType: page.get('pageType'),
 					title: blockTitle,

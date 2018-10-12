@@ -121,16 +121,16 @@ func (h *Handler) GetBySpace(w http.ResponseWriter, r *http.Request) {
 	method := "block.space"
 	ctx := domain.GetRequestContext(r)
 
-	folderID := request.Param(r, "folderID")
-	if len(folderID) == 0 {
-		response.WriteMissingDataError(w, method, "folderID")
+	spaceID := request.Param(r, "spaceID")
+	if len(spaceID) == 0 {
+		response.WriteMissingDataError(w, method, "spaceID")
 		return
 	}
 
 	var b []block.Block
 	var err error
 
-	b, err = h.Store.Block.GetBySpace(ctx, folderID)
+	b, err = h.Store.Block.GetBySpace(ctx, spaceID)
 
 	if len(b) == 0 {
 		b = []block.Block{}

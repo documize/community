@@ -18,7 +18,7 @@ type Pin struct {
 	model.BaseEntity
 	OrgID      string `json:"orgId"`
 	UserID     string `json:"userId"`
-	SpaceID    string `json:"folderId"`
+	SpaceID    string `json:"spaceId"`
 	DocumentID string `json:"documentId"`
 	Name       string `json:"pin"`
 	Sequence   int    `json:"sequence"`

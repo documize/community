@@ -29,12 +29,12 @@ type Handler struct {
 
 // UploadConvert is an endpoint to both upload and convert a document
 func (h *Handler) UploadConvert(w http.ResponseWriter, r *http.Request) {
-	job, folderID, orgID := h.upload(w, r)
+	job, spaceID, orgID := h.upload(w, r)
 	if job == "" {
 		return // error already handled
 	}
 
-	h.convert(w, r, job, folderID, api.ConversionJobRequest{
+	h.convert(w, r, job, spaceID, api.ConversionJobRequest{
 		Job:        job,
 		IndexDepth: 4,
 		OrgID:      orgID,

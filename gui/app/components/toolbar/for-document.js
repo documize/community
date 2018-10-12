@@ -92,7 +92,7 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, Notifier, {
 			let pin = {
 				pin: this.get('pinState.newName'),
 				documentId: this.get('document.id'),
-				folderId: this.get('space.id')
+				spaceId: this.get('space.id')
 			};
 
 			this.get('pinned').pinItem(pin).then((pin) => {

@@ -262,7 +262,7 @@ export default function () {
 			"name": name,
 			"orgId": "VzMuyEw_3WqiafcD",
 			"userId": "VzMuyEw_3WqiafcE",
-			"folderType": 2
+			"spaceType": 2
 		};
 
 		return schema.db.folders.insert(folder);
@@ -346,7 +346,7 @@ export default function () {
 			"name": "Test Folder",
 			"orgId": "VzMuyEw_3WqiafcD",
 			"userId": "VzMuyEw_3WqiafcE",
-			"folderType": 2
+			"spaceType": 2
 		};
 	});
 

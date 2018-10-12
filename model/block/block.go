@@ -17,7 +17,7 @@ import "github.com/documize/community/model"
 type Block struct {
 	model.BaseEntity
 	OrgID          string `json:"orgId"`
-	SpaceID        string `json:"folderId"`
+	SpaceID        string `json:"spaceId"`
 	UserID         string `json:"userId"`
 	ContentType    string `json:"contentType"`
 	Type           string `json:"pageType"`

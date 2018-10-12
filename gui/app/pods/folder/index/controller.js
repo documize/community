@@ -48,7 +48,7 @@ export default Controller.extend(NotifierMixin, {
 			all(promises1).then(() => {
 				promises1.forEach(function(doc, index) {
 					doc.then((d) => {
-						d.set('folderId', targetSpaceId);
+						d.set('spaceId', targetSpaceId);
 						d.set('selected', false);
 						promises2[index] = self.get('documentService').save(d);
 					});

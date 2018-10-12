@@ -65,7 +65,7 @@ export default Controller.extend(TooltipMixin, Notifier, {
 				this.set('deleteSpace.name', '');
 
 				this.get('folderService').adminList().then((folders) => {
-					let nonPrivateFolders = folders.rejectBy('folderType', 2);
+					let nonPrivateFolders = folders.rejectBy('spaceType', 2);
 					if (is.empty(nonPrivateFolders) || is.null(folders) || is.undefined(folders)) {
 						nonPrivateFolders = [];
 					}

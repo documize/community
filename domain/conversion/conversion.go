@@ -51,9 +51,9 @@ func (h *Handler) upload(w http.ResponseWriter, r *http.Request) (string, string
 	method := "conversion.upload"
 	ctx := domain.GetRequestContext(r)
 
-	folderID := request.Param(r, "folderID")
+	spaceID := request.Param(r, "spaceID")
 
-	if !permission.CanUploadDocument(ctx, *h.Store, folderID) {
+	if !permission.CanUploadDocument(ctx, *h.Store, spaceID) {
 		response.WriteForbiddenError(w)
 		return "", "", ""
 	}
@@ -92,10 +92,10 @@ func (h *Handler) upload(w http.ResponseWriter, r *http.Request) (string, string
 
 	h.Runtime.Log.Info(fmt.Sprintf("Org %s (%s) [Uploaded] %s", ctx.OrgName, ctx.OrgID, filename.Filename))
 
-	return job, folderID, ctx.OrgID
+	return job, spaceID, ctx.OrgID
 }
 
-func (h *Handler) convert(w http.ResponseWriter, r *http.Request, job, folderID string, conversion api.ConversionJobRequest) {
+func (h *Handler) convert(w http.ResponseWriter, r *http.Request, job, spaceID string, conversion api.ConversionJobRequest) {
 	method := "conversion.upload"
 	ctx := domain.GetRequestContext(r)
 
@@ -145,7 +145,7 @@ func (h *Handler) convert(w http.ResponseWriter, r *http.Request, job, folderID 
 	}
 
 	// Fetch space where document resides.
-	sp, err := h.Store.Space.Get(ctx, folderID)
+	sp, err := h.Store.Space.Get(ctx, spaceID)
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)

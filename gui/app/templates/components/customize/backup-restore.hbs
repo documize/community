@@ -8,17 +8,82 @@
 </div>
 
 <div class="view-customize">
-	<form class="mt-5 ">
-		<div class="form-group">
-			<p>It can take several minutes to complete the backup process &mdash; please be patient while the backup is running.</p>
-			<div class="btn btn-success my-5" {{action 'onBackup'}}>{{buttonLabel}}</div>
-            {{#if backupFailed}}
-                <p class="text-danger">Backup failed &mdash; please check server logs</p>
-            {{/if}}
-            {{#if backupSuccess}}
-                <p class="font-weight-bold">Backup successful ({{backupFilename}})</p>
-            {{/if}}
-		</div>
-	</form>
-</div>
 
+	<div class="backup-restore">
+		<div class="backup-zone">
+			{{#if session.isGlobalAdmin}}
+				<div class="explain">
+					<p>
+						Documize is a multi-tenanted application enabling both "tech.mycompany.com" and "sales.mycompany.com" to run using the same executable/database.
+						As a Documize <b>Global</b> Administrator, you will be performing a complete system-wide backup across all tenants.
+						A regular Documize Administrator can login to perform just a tenant-level backup (e.g. marketing.mycompany.com).
+					</p>
+				</div>
+			{{/if}}
+			<p class="font-weight-bold">It can take several minutes to complete the backup process &mdash; please be patient while the backup operation is in progress</p>
+
+			<div class="margin-top-30 margin-bottom-20">
+				{{#ui/ui-checkbox selected=backupSpec.retain}}
+					Retain backup file on server
+				{{/ui/ui-checkbox}}
+			</div>
+			<button class="btn btn-success mb-3" {{action 'onBackup'}}>{{buttonLabel}}</button>
+
+			{{#if backupFailed}}
+				<div class="backup-fail">Backup failed &mdash; please check server logs</div>
+			{{/if}}
+			{{#if backupSuccess}}
+				<div class="backup-success">Backup successful ({{backupFilename}})</div>
+			{{/if}}
+		</div>
+	</div>
+
+	<div class="backup-restore">
+		<div class="restore-zone">
+			{{#if session.isGlobalAdmin}}
+				<div class="explain">
+					<p class="font-weight-bold">WARNING:</p>
+					<p>
+						You should only perform a restore on a <b>new Documize instance</b> and NOT on the original instance.
+						Duplicate data might exist if you restore onto the same instance without first removing previous data.
+					</p>
+				</div>
+			{{/if}}
+			<p class="font-weight-bold">It can take up to an hour to complete the restore process &mdash; please be patient while the restore operation is in progress</p>
+
+			<div class="margin-top-30 margin-bottom-20">
+				<div class="custom-file">
+					<input type="file" class="custom-file-input" id="restore-file" accept="application/zip" multiple=false onchange={{action "upload"}}>
+					<label class="custom-file-label" for="restore-file">Choose backup file</label>
+				</div>
+					<div class="restore-upload-busy">
+						{{#if restoreUploadReady}}
+							<div class="ready">Ready to start restore</div>
+						{{/if}}
+						{{#if restoreUploading}}
+							<img src="/assets/img/busy-gray.gif" />
+							<div class="wait">Uploading file</div>
+						{{/if}}
+					</div>
+				<div class="margin-top-20"></div>
+				{{#ui/ui-checkbox selected=restoreSpec.overwriteOrg}}
+					Overwrite settings &mdash; SMTP, authentication, integrations and other settings
+				{{/ui/ui-checkbox}}
+				{{#ui/ui-checkbox selected=restoreSpec.recreateUsers}}
+					Recreate user accounts &mdash; users, groups, permissions
+				{{/ui/ui-checkbox}}
+			</div>
+
+			{{#if restoreFailed}}
+				<div class="restore-fail">Restore failed &mdash; please check server logs</div>
+			{{else if restoreSuccess}}
+				<div class="restore-success">Restore completed &mdash; restart your browser and log in</div>
+			{{else}}
+				{{#if restoreUploadReady}}
+					<button class="btn btn-danger mb-3" {{action 'onRestore'}}>{{restoreButtonLabel}}</button>
+				{{/if}}
+			{{/if}}
+		</div>
+	</div>
+
+</div>

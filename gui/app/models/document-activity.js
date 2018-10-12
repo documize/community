@@ -15,7 +15,7 @@ import attr from 'ember-data/attr';
 
 export default Model.extend({
 	orgId: attr('string'),
-	folderId: attr('string'),
+	spaceId: attr('string'),
 	documentId: attr('string'),
 	pageId: attr('string'),
 	pageTitle: attr('string'),

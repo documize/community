@@ -127,7 +127,7 @@ export default Component.extend(ModalMixin, TooltipMixin, {
 				selection = {
 					context: '',
 					documentId: documentId,
-					folderId: folderId,
+					spaceId: folderId,
 					id: stringUtil.makeId(16),
 					linkType: 'network',
 					targetId: '',

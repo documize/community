@@ -20,6 +20,12 @@ export default Controller.extend({
 			if(this.get('session.isAdmin')) {
 				return this.get('global').backup(spec);
 			}
+		},
+
+		onRestore(spec, filedata) {
+			if(this.get('session.isAdmin')) {
+				return this.get('global').restore(spec, filedata);
+			}
 		}
 	}
 });

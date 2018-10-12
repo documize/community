@@ -18,7 +18,7 @@ export default Model.extend({
 	name: attr('string'),
 	orgId: attr('string'),
 	userId: attr('string'),
-	folderType: attr('number', { defaultValue: 2 }),
+	spaceType: attr('number', { defaultValue: 2 }),
 	lifecycle: attr('number', { defaultValue: 1 }),
 	likes: attr('string'),
 
@@ -32,17 +32,17 @@ export default Model.extend({
 
 	markAsRestricted() {
 		let constants = this.get('constants');
-		this.set('folderType', constants.FolderType.Protected);
+		this.set('spaceType', constants.SpaceType.Protected);
 	},
 
 	markAsPrivate() {
 		let constants = this.get('constants');
-		this.set('folderType', constants.FolderType.Private);
+		this.set('spaceType', constants.SpaceType.Private);
 	},
 
 	markAsPublic() {
 		let constants = this.get('constants');
-		this.set('folderType', constants.FolderType.Public);
+		this.set('spaceType', constants.SpaceType.Public);
 	},
 
 	// client-side prop that holds who can see this folder

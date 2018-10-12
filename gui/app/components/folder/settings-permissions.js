@@ -99,7 +99,7 @@ export default Component.extend(Notifier, Modals, {
 		let raw = {
 			id: stringUtil.makeId(16),
 			orgId: this.get('folder.orgId'),
-			folderId: this.get('folder.id'),
+			spaceId: this.get('folder.id'),
 			whoId: whoId,
 			who: who,
 			name: name,

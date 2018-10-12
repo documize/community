@@ -18,7 +18,7 @@ type UserActivity struct {
 	ID           uint64     `json:"id"`
 	OrgID        string     `json:"orgId"`
 	UserID       string     `json:"userId"`
-	SpaceID      string     `json:"folderId"`
+	SpaceID      string     `json:"spaceId"`
 	DocumentID   string     `json:"documentId"`
 	SectionID    string     `json:"pageId"`
 	ActivityType Type       `json:"activityType"`
@@ -34,7 +34,7 @@ type UserActivity struct {
 type DocumentActivity struct {
 	ID           uint64    `json:"id"`
 	OrgID        string    `json:"orgId"`
-	SpaceID      string    `json:"folderId"`
+	SpaceID      string    `json:"spaceId"`
 	DocumentID   string    `json:"documentId"`
 	SectionID    string    `json:"pageId"`
 	SectionName  string    `json:"pageTitle"`

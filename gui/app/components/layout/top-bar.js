@@ -92,7 +92,7 @@ export default Component.extend(ModalMixin, {
 
 	actions: {
 		jumpToPin(pin) {
-			let folderId = pin.get('folderId');
+			let folderId = pin.get('spaceId');
 			let documentId = pin.get('documentId');
 
 			if (_.isEmpty(documentId)) {

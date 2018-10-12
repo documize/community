@@ -20,7 +20,7 @@ export default Model.extend({
 	job: attr('string'),
 	location: attr('string'),
 	orgId: attr('string'),
-	folderId: attr('string'),
+	spaceId: attr('string'),
 	userId: attr('string'),
 	tags: attr('string'),
 	template: attr('boolean'),

@@ -22,7 +22,7 @@ type Space struct {
 	Name   string `json:"name"`
 	OrgID  string `json:"orgId"`
 	UserID string `json:"userId"`
-	Type   Scope  `json:"folderType"`
+	Type   Scope  `json:"spaceType"`
 
 	// Lifecycle stores the default value all new documents are given upon creation.
 	Lifecycle workflow.Lifecycle `json:"lifecycle"`
@@ -64,8 +64,8 @@ func (l *Space) IsRestricted() bool {
 // Viewer details who can see a particular space
 type Viewer struct {
 	Name      string `json:"name"`
-	SpaceID   string `json:"folderId"`
-	Type      int    `json:"folderType"`
+	SpaceID   string `json:"spaceId"`
+	Type      int    `json:"spaceType"`
 	UserID    string `json:"userId"`
 	Firstname string `json:"firstname"`
 	Lastname  string `json:"lastname"`

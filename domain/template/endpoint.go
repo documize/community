@@ -53,13 +53,13 @@ func (h *Handler) SavedList(w http.ResponseWriter, r *http.Request) {
 	method := "template.saved"
 	ctx := domain.GetRequestContext(r)
 
-	folderID := request.Param(r, "folderID")
-	if len(folderID) == 0 {
-		response.WriteMissingDataError(w, method, "folderID")
+	spaceID := request.Param(r, "spaceID")
+	if len(spaceID) == 0 {
+		response.WriteMissingDataError(w, method, "spaceID")
 		return
 	}
 
-	documents, err := h.Store.Document.TemplatesBySpace(ctx, folderID)
+	documents, err := h.Store.Document.TemplatesBySpace(ctx, spaceID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
@@ -77,7 +77,7 @@ func (h *Handler) SavedList(w http.ResponseWriter, r *http.Request) {
 		t.Dated = d.Created
 		t.Type = template.TypePrivate
 
-		if d.SpaceID == folderID {
+		if d.SpaceID == spaceID {
 			templates = append(templates, t)
 		}
 	}
@@ -266,9 +266,9 @@ func (h *Handler) Use(w http.ResponseWriter, r *http.Request) {
 	method := "template.use"
 	ctx := domain.GetRequestContext(r)
 
-	folderID := request.Param(r, "folderID")
-	if len(folderID) == 0 {
-		response.WriteMissingDataError(w, method, "folderID")
+	spaceID := request.Param(r, "spaceID")
+	if len(spaceID) == 0 {
+		response.WriteMissingDataError(w, method, "spaceID")
 		return
 	}
 
@@ -295,7 +295,7 @@ func (h *Handler) Use(w http.ResponseWriter, r *http.Request) {
 	d.Excerpt = "Add detailed description for document..."
 	d.Slug = stringutil.MakeSlug(d.Name)
 	d.Tags = ""
-	d.SpaceID = folderID
+	d.SpaceID = spaceID
 	documentID := uniqueid.Generate()
 	d.RefID = documentID
 
@@ -321,7 +321,7 @@ func (h *Handler) Use(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Fetch space where document resides.
-	sp, err := h.Store.Space.Get(ctx, folderID)
+	sp, err := h.Store.Space.Get(ctx, spaceID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
@@ -339,7 +339,7 @@ func (h *Handler) Use(w http.ResponseWriter, r *http.Request) {
 	documentID = uniqueid.Generate()
 	d.RefID = documentID
 	d.Template = false
-	d.SpaceID = folderID
+	d.SpaceID = spaceID
 	d.UserID = ctx.UserID
 	d.Name = docTitle
 

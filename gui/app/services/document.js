@@ -410,7 +410,7 @@ export default Service.extend({
 			data.permissions = perms;
 			data.roles = roles;
 			data.folders = folders;
-			data.folder = folders.findBy('id', doc.get('folderId'));
+			data.folder = folders.findBy('id', doc.get('spaceId'));
 			data.links = response.links;
 			data.versions = response.versions;
 

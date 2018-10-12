@@ -82,7 +82,7 @@ export default Service.extend(Notifier, {
 			linkId: a.attributes["data-link-id"].value,
 			linkType: a.attributes["data-link-type"].value,
 			documentId: a.attributes["data-link-target-document-id"].value,
-			folderId: a.attributes["data-link-space-id"].value,
+			spaceId: a.attributes["data-link-space-id"].value,
 			targetId: a.attributes["data-link-target-id"].value,
 			externalId: is.undefined(a.attributes["data-link-external-id"]) ? '' : a.attributes["data-link-external-id"].value,
 			url: a.attributes["href"].value,

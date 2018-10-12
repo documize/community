@@ -39,9 +39,9 @@ func (h *Handler) GetLinkCandidates(w http.ResponseWriter, r *http.Request) {
 	method := "link.Candidates"
 	ctx := domain.GetRequestContext(r)
 
-	folderID := request.Param(r, "folderID")
-	if len(folderID) == 0 {
-		response.WriteMissingDataError(w, method, "folderID")
+	spaceID := request.Param(r, "spaceID")
+	if len(spaceID) == 0 {
+		response.WriteMissingDataError(w, method, "spaceID")
 		return
 	}
 
@@ -81,7 +81,7 @@ func (h *Handler) GetLinkCandidates(w http.ResponseWriter, r *http.Request) {
 		if p.RefID != pageID {
 			c := link.Candidate{
 				RefID:      uniqueid.Generate(),
-				SpaceID:    folderID,
+				SpaceID:    spaceID,
 				DocumentID: documentID,
 				TargetID:   p.RefID,
 				LinkType:   p.Type,
@@ -109,7 +109,7 @@ func (h *Handler) GetLinkCandidates(w http.ResponseWriter, r *http.Request) {
 	for _, f := range files {
 		c := link.Candidate{
 			RefID:      uniqueid.Generate(),
-			SpaceID:    folderID,
+			SpaceID:    spaceID,
 			DocumentID: documentID,
 			TargetID:   f.RefID,
 			LinkType:   "file",

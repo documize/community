@@ -17,7 +17,7 @@ package permission
 type Record struct {
 	ID                uint64  `json:"id"`
 	OrgID             string  `json:"orgId"`
-	SpaceID           string  `json:"folderId"`
+	SpaceID           string  `json:"spaceId"`
 	WhoID             string  `json:"whoId"`
 	Who               WhoType `json:"who"`
 	SpaceView         bool    `json:"spaceView"`
@@ -149,7 +149,7 @@ func EncodeRecord(r Record, a Action) (p Permission) {
 // CategoryViewRequestModel represents who should be allowed to see a category.
 type CategoryViewRequestModel struct {
 	OrgID      string  `json:"orgId"`
-	SpaceID    string  `json:"folderId"`
+	SpaceID    string  `json:"spaceId"`
 	CategoryID string  `json:"categoryID"`
 	WhoID      string  `json:"whoId"`
 	Who        WhoType `json:"who"`
