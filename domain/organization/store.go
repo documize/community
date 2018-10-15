@@ -32,11 +32,7 @@ type Store struct {
 
 // AddOrganization inserts the passed organization record into the organization table.
 func (s Store) AddOrganization(ctx domain.RequestContext, org org.Organization) (err error) {
-	org.Created = time.Now().UTC()
-	org.Revised = time.Now().UTC()
-
-	_, err = ctx.Transaction.Exec(
-		s.Bind("INSERT INTO dmz_org (c_refid, c_company, c_title, c_message, c_domain, c_email, c_anonaccess, c_serial, c_maxtags, c_created, c_revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"),
+	_, err = ctx.Transaction.Exec(s.Bind("INSERT INTO dmz_org (c_refid, c_company, c_title, c_message, c_domain, c_email, c_anonaccess, c_serial, c_maxtags, c_created, c_revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"),
 		org.RefID, org.Company, org.Title, org.Message, strings.ToLower(org.Domain),
 		strings.ToLower(org.Email), org.AllowAnonymousAccess, org.Serial, org.MaxTags, org.Created, org.Revised)
 

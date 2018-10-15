@@ -180,7 +180,28 @@ func (h *Handler) Restore(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.Runtime.Log.Info(fmt.Sprintf("%s %d %v %v", fileheader.Filename, len(b.Bytes()), overwriteOrg, createUsers))
+	h.Runtime.Log.Info(fmt.Sprintf("Restore file: %s %d", fileheader.Filename, len(b.Bytes())))
+
+	//
+	org, err := h.Store.Organization.GetOrganization(ctx, ctx.OrgID)
+	if err != nil {
+		h.Runtime.Log.Error(method, err)
+		response.WriteServerError(w, method, err)
+		return
+	}
+
+	// Prepare context and start restore process.
+	spec := m.ImportSpec{OverwriteOrg: overwriteOrg, CreateUsers: createUsers, Org: org}
+	rh := restoreHandler{Runtime: h.Runtime, Store: h.Store, Context: ctx, Spec: spec}
+
+	err = rh.PerformRestore(b.Bytes(), r.ContentLength)
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	h.Runtime.Log.Info("Restore completed")
 
 	response.WriteEmpty(w)
 }

@@ -13,6 +13,7 @@
 package backup
 
 import (
+	"github.com/documize/community/model/org"
 	"time"
 
 	"github.com/documize/community/core/env"
@@ -67,4 +68,10 @@ type ImportSpec struct {
 
 	// Recreate users.
 	CreateUsers bool `json:"createUsers"`
+
+	// As found in backup file.
+	Manifest Manifest
+
+	// Handle to the current organization being used for restore process.
+	Org org.Organization
 }

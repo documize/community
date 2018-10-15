@@ -144,11 +144,11 @@ export default Service.extend({
 
 	// Run backup.
 	backup(spec) {
-		if (!this.get('sessionService.isGlobalAdmin') || this.get('sessionService.isAdmin')) {
-			return;
-		}
-
 		return new EmberPromise((resolve, reject) => {
+			if (!this.get('sessionService.isGlobalAdmin') || !this.get('sessionService.isAdmin')) {
+				reject();
+			}
+
 			let url = this.get('appMeta.endpoint');
 			let token = this.get('sessionService.session.content.authenticated.token');
 			let uploadUrl = `${url}/global/backup?token=${token}`;
@@ -196,6 +196,10 @@ export default Service.extend({
 		data.set('restore-file', file);
 
 		return new EmberPromise((resolve, reject) => {
+			if (!this.get('sessionService.isGlobalAdmin') || !this.get('sessionService.isAdmin')) {
+				reject();
+			}
+
 			let url = this.get('appMeta.endpoint');
 			let token = this.get('sessionService.session.content.authenticated.token');
 			let uploadUrl = `${url}/global/restore?token=${token}&org=${spec.overwriteOrg}&users=${spec.recreateUsers}`;

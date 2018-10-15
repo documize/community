@@ -42,10 +42,8 @@
 		<div class="restore-zone">
 			{{#if session.isGlobalAdmin}}
 				<div class="explain">
-					<p class="font-weight-bold">WARNING:</p>
-					<p>
-						You should only perform a restore on a <b>new Documize instance</b> and NOT on the original instance.
-						Duplicate data might exist if you restore onto the same instance without first removing previous data.
+					<p class="font-weight-bold">
+						You should only perform a restore to an empty Documize instance.
 					</p>
 				</div>
 			{{/if}}
@@ -56,21 +54,9 @@
 					<input type="file" class="custom-file-input" id="restore-file" accept="application/zip" multiple=false onchange={{action "upload"}}>
 					<label class="custom-file-label" for="restore-file">Choose backup file</label>
 				</div>
-					<div class="restore-upload-busy">
-						{{#if restoreUploadReady}}
-							<div class="ready">Ready to start restore</div>
-						{{/if}}
-						{{#if restoreUploading}}
-							<img src="/assets/img/busy-gray.gif" />
-							<div class="wait">Uploading file</div>
-						{{/if}}
-					</div>
 				<div class="margin-top-20"></div>
 				{{#ui/ui-checkbox selected=restoreSpec.overwriteOrg}}
 					Overwrite settings &mdash; SMTP, authentication, integrations and other settings
-				{{/ui/ui-checkbox}}
-				{{#ui/ui-checkbox selected=restoreSpec.recreateUsers}}
-					Recreate user accounts &mdash; users, groups, permissions
 				{{/ui/ui-checkbox}}
 			</div>
 
@@ -80,10 +66,30 @@
 				<div class="restore-success">Restore completed &mdash; restart your browser and log in</div>
 			{{else}}
 				{{#if restoreUploadReady}}
-					<button class="btn btn-danger mb-3" {{action 'onRestore'}}>{{restoreButtonLabel}}</button>
+					<button class="btn btn-danger mb-3" {{action 'onShowRestoreModal'}}>{{restoreButtonLabel}}</button>
 				{{/if}}
 			{{/if}}
 		</div>
 	</div>
+</div>
 
+<div id="confirm-restore-modal" class="modal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">Confirm Restore</div>
+			<div class="modal-body">
+				<form onsubmit={{action 'onRestore'}}>
+					<div class="form-group">
+						<label for="delete-space-name">Please type RESTORE to commence the process</label>
+						{{input type='text' id="confirm-restore" class="form-control mousetrap" placeholder="Please type RESTORE" value=confirmRestore}}
+						<small class="form-text text-muted">You should only restore to an empty Documize instance</small>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-danger" onclick={{action 'onRestore'}}>Start Restore</button>
+			</div>
+		</div>
+	</div>
 </div>

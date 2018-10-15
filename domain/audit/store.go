@@ -43,7 +43,6 @@ func (s Store) Record(ctx domain.RequestContext, t audit.EventType) {
 
 	_, err = tx.Exec(s.Bind("INSERT INTO dmz_audit_log (c_orgid, c_userid, c_eventtype, c_ip, c_created) VALUES (?, ?, ?, ?, ?)"),
 		e.OrgID, e.UserID, e.Type, e.IP, e.Created)
-
 	if err != nil {
 		tx.Rollback()
 		s.Runtime.Log.Error("prepare audit insert", err)

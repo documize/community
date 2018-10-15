@@ -12,9 +12,10 @@
 import $ from 'jquery';
 import { inject as service } from '@ember/service';
 import Notifier from '../../mixins/notifier';
+import Modal from '../../mixins/modal';
 import Component from '@ember/component';
 
-export default Component.extend(Notifier, {
+export default Component.extend(Notifier, Modal, {
 	appMeta: service(),
 	browserSvc: service('browser'),
 	buttonLabel: 'Start Backup',
@@ -23,9 +24,9 @@ export default Component.extend(Notifier, {
     backupError: false,
 	backupSuccess: false,
     restoreSpec: null,
-	restoreButtonLabel: 'Perform Restore',
-	restoreUploading: false,
+	restoreButtonLabel: 'Restore',
 	restoreUploadReady: false,
+	confirmRestore: '',
 
     didReceiveAttrs() {
 		this._super(...arguments);
@@ -41,6 +42,7 @@ export default Component.extend(Notifier, {
 		});
 
 		this.set('restoreFile', null);
+		this.set('confirmRestore', '');
 	},
 
 	didInsertElement() {
@@ -79,7 +81,26 @@ export default Component.extend(Notifier, {
 			});
 		},
 
-		onRestore() {
+		onShowRestoreModal() {
+			this.modalOpen("#confirm-restore-modal", {"show": true}, '#confirm-restore');
+		},
+
+		onRestore(e) {
+			e.preventDefault();
+
+			let typed = this.get('confirmRestore');
+			typed = typed.toLowerCase();
+
+			if (typed !== 'restore' || typed === '') {
+				$("#confirm-restore").addClass("is-invalid").focus();
+				return;
+			}
+
+			this.set('confirmRestore', '');
+			$("#confirm-restore").removeClass("is-invalid");
+
+			this.modalClose('#confirm-restore-modal');
+
 			// do we have upload file?
 			// let files = document.getElementById("restore-file").files;
 			// if (is.undefined(files) || is.null(files)) {
@@ -111,17 +132,16 @@ export default Component.extend(Notifier, {
 
 			this.get('onRestore')(spec, filedata).then(() => {
 				this.showDone();
-				this.set('buttonLabel', 'Perform Restore');
+				this.set('buttonLabel', 'Restore');
                 this.set('restoreSuccess', true);
 			}, ()=> {
 				this.showDone();
-				this.set('restorButtonLabel', 'Perform Restore');
+				this.set('restorButtonLabel', 'Restore');
                 this.set('restoreFailed', true);
 			});
 		},
 
 		upload(event) {
-			this.set('restoreUploading', true);
 			this.set('restoreUploadReady', false);
 			this.set('restoreFile', null);
 
@@ -130,7 +150,6 @@ export default Component.extend(Notifier, {
 
 			this.set('restoreFile', file);
 			this.set('restoreUploadReady', true);
-			this.set('restoreUploading', false);
 
 			// let imageData;
 			// reader.onload = () => {
@@ -146,3 +165,7 @@ export default Component.extend(Notifier, {
 		}
 	}
 });
+
+// {{#ui/ui-checkbox selected=restoreSpec.recreateUsers}}
+// Recreate user accounts &mdash; users, groups, permissions
+// {{/ui/ui-checkbox}}

@@ -20,6 +20,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/event"
@@ -102,6 +103,9 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	sp.UserID = ctx.UserID
 	sp.Type = space.ScopePrivate
 	sp.Lifecycle = wf.LifecycleLive
+	sp.UserID = ctx.UserID
+	sp.Created = time.Now().UTC()
+	sp.Revised = time.Now().UTC()
 
 	err = h.Store.Space.Add(ctx, sp)
 	if err != nil {
