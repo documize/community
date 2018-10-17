@@ -12,23 +12,35 @@
 	<div class="backup-restore">
 		<div class="backup-zone">
 			{{#if session.isGlobalAdmin}}
-				<div class="explain">
-					<p>
-						Documize is a multi-tenanted application enabling both "tech.mycompany.com" and "sales.mycompany.com" to run using the same executable/database.
-						As a Documize <b>Global</b> Administrator, you will be performing a complete system-wide backup across all tenants.
-						A regular Documize Administrator can login to perform just a tenant-level backup (e.g. marketing.mycompany.com).
-					</p>
-				</div>
+				<p>
+					Documize is a multi-tenanted application enabling both "tech.mycompany.com" and "sales.mycompany.com" to run using the same executable/database.
+					As a Documize <b>Global Administrator</b>, you will be performing a complete system-wide backup across all tenants.
+					A Documize <b>Tenant Administrator</b> can login to perform a tenant-level backup (e.g. marketing.mycompany.com).
+				</p>
+			{{else}}
+				<p>
+					Documize is a multi-tenanted application enabling both "tech.mycompany.com" and "sales.mycompany.com" to run using the same executable/database.
+					A Documize <b>Global Administrator</b>, you will be performing a complete system-wide backup across all tenants.
+					As a Documize <b>Tenant Administrator</b> you can perform a tenant-level backup (e.g. marketing.mycompany.com).
+				</p>
 			{{/if}}
-			<p class="font-weight-bold">It can take several minutes to complete the backup process &mdash; please be patient while the backup operation is in progress</p>
+			<p>It can take <b>several minutes</b> to complete the backup process &mdash; please be patient while the backup operation is in progress.</p>
 
 			<div class="margin-top-30 margin-bottom-20">
 				{{#ui/ui-checkbox selected=backupSpec.retain}}
 					Retain backup file on server
 				{{/ui/ui-checkbox}}
 			</div>
-			<button class="btn btn-success mb-3" {{action 'onBackup'}}>{{buttonLabel}}</button>
 
+			{{#if backupRunning}}
+				<h3 class="text-success">Backup running, please wait...</h3>
+			{{else}}
+				<button class="btn btn-success mb-3" {{action 'onBackup'}}>BACKUP TENANT</button>
+				{{#if session.isGlobalAdmin}}
+					<div class="button-gap" />
+					<button class="btn btn-success mb-3" {{action 'onSystemBackup'}}>BACKUP SYSTEM</button>
+				{{/if}}
+			{{/if}}
 			{{#if backupFailed}}
 				<div class="backup-fail">Backup failed &mdash; please check server logs</div>
 			{{/if}}
@@ -41,13 +53,10 @@
 	<div class="backup-restore">
 		<div class="restore-zone">
 			{{#if session.isGlobalAdmin}}
-				<div class="explain">
-					<p class="font-weight-bold">
-						You should only perform a restore to an empty Documize instance.
-					</p>
-				</div>
+				<p class="text-danger">Restore from a <b>system backup</b> should only be performed on an <b>empty Documize database.</b></p>
 			{{/if}}
-			<p class="font-weight-bold">It can take up to an hour to complete the restore process &mdash; please be patient while the restore operation is in progress</p>
+			<p>Restore operation will <b>re-create</b> users, groups, permissions, spaces, categories and content.</p>
+			<p>It can take <b>several minutes</b> to complete the restore process &mdash; please be patient while the restore operation is in progress.</p>
 
 			<div class="margin-top-30 margin-bottom-20">
 				<div class="custom-file">
@@ -55,9 +64,6 @@
 					<label class="custom-file-label" for="restore-file">Choose backup file</label>
 				</div>
 				<div class="margin-top-20"></div>
-				{{#ui/ui-checkbox selected=restoreSpec.overwriteOrg}}
-					Overwrite settings &mdash; SMTP, authentication, integrations and other settings
-				{{/ui/ui-checkbox}}
 			</div>
 
 			{{#if restoreFailed}}

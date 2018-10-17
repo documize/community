@@ -162,12 +162,7 @@
 			border: 1px solid $color-border;
 			padding: 20px 20px;
 			background-color: lighten($color-green, 60%);
-
-			> .explain {
-				color: $color-gray;
-				font-size: 1rem;
-				font-style: italic;
-			}
+			color: $color-off-black;
 
 			> .backup-fail {
 				margin: 10px 0;
@@ -186,6 +181,7 @@
 			margin: 50px 0;
 			padding: 20px 20px;
 			background-color: lighten($color-red, 60%);
+			color: $color-off-black;
 
 			> .restore-fail {
 				margin: 10px 0;

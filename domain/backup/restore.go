@@ -20,6 +20,16 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/documize/community/model/account"
+	"github.com/documize/community/model/activity"
+	"github.com/documize/community/model/attachment"
+	"github.com/documize/community/model/block"
+	"github.com/documize/community/model/doc"
+	"github.com/documize/community/model/group"
+	"github.com/documize/community/model/link"
+	"github.com/documize/community/model/page"
+	"github.com/documize/community/model/permission"
+	"github.com/documize/community/model/pin"
 	"io/ioutil"
 	"strings"
 	"time"
@@ -62,6 +72,13 @@ func (r *restoreHandler) PerformRestore(b []byte, l int64) (err error) {
 		return
 	}
 
+	// Detect system backup file.
+	r.Spec.GlobalBackup = (r.Spec.Manifest.OrgID == "*")
+	// If user is not Global Admin then you cannot do system restore.
+	if !r.Context.GlobalAdmin {
+		r.Spec.GlobalBackup = false
+	}
+
 	// Organization.
 	err = r.dmzOrg()
 	if err != nil {
@@ -98,8 +115,116 @@ func (r *restoreHandler) PerformRestore(b []byte, l int64) (err error) {
 		return
 	}
 
-	// CategoryMember.
+	// Category Member.
 	err = r.dmzCategoryMember()
+	if err != nil {
+		return
+	}
+
+	// Group.
+	err = r.dmzGroup()
+	if err != nil {
+		return
+	}
+
+	// Group Member.
+	err = r.dmzGroupMember()
+	if err != nil {
+		return
+	}
+
+	// Permission.
+	err = r.dmzPermission()
+	if err != nil {
+		return
+	}
+
+	// Pin.
+	err = r.dmzPin()
+	if err != nil {
+		return
+	}
+
+	// Section.
+	err = r.dmzSection()
+	if err != nil {
+		return
+	}
+
+	// Section Meta.
+	err = r.dmzSectionMeta()
+	if err != nil {
+		return
+	}
+
+	// Section Template.
+	err = r.dmzSectionTemplate()
+	if err != nil {
+		return
+	}
+
+	// Section Revision.
+	err = r.dmzSectionRevision()
+	if err != nil {
+		return
+	}
+
+	// Doc.
+	err = r.dmzDoc()
+	if err != nil {
+		return
+	}
+
+	// Doc Vote.
+	err = r.dmzDocVote()
+	if err != nil {
+		return
+	}
+
+	// Doc Link.
+	err = r.dmzDocLink()
+	if err != nil {
+		return
+	}
+
+	// Doc Attachment.
+	err = r.dmzDocAttachment()
+	if err != nil {
+		return
+	}
+
+	// Doc Comment.
+	err = r.dmzDocComment()
+	if err != nil {
+		return
+	}
+
+	// Doc Share.
+	err = r.dmzDocShare()
+	if err != nil {
+		return
+	}
+
+	// User.
+	err = r.dmzUser()
+	if err != nil {
+		return
+	}
+
+	// User Account.
+	err = r.dmzUserAccount()
+	if err != nil {
+		return
+	}
+
+	// User Activity.
+	err = r.dmzUserActivity()
+	if err != nil {
+		return
+	}
+
+	// User Config.
+	err = r.dmzUserConfig()
 	if err != nil {
 		return
 	}
@@ -194,49 +319,25 @@ func (r *restoreHandler) dmzOrg() (err error) {
 		return
 	}
 
-	for i := range org {
-		// If same tenant (domain) then patch OrgID.
-		if org[i].Domain == r.Spec.Org.Domain {
-			org[i].RefID = r.Spec.Org.RefID
+	// Nuke all existing data.
+	_, err = r.Context.Transaction.Exec("TRUNCATE TABLE dmz_org")
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to truncate table", filename))
+		return
+	}
 
-			// Update org settings if allowed to do so.
-			if !r.Spec.OverwriteOrg {
-				org[i].AllowAnonymousAccess = r.Spec.Org.AllowAnonymousAccess
-				org[i].AuthProvider = r.Spec.Org.AuthProvider
-				org[i].AuthConfig = r.Spec.Org.AuthConfig
-				org[i].Company = r.Spec.Org.Company
-				org[i].ConversionEndpoint = r.Spec.Org.ConversionEndpoint
-				org[i].Email = r.Spec.Org.Email
-				org[i].MaxTags = r.Spec.Org.MaxTags
-				org[i].Message = r.Spec.Org.Message
-				org[i].Serial = r.Spec.Org.Serial
-				org[i].Title = r.Spec.Org.Title
-			}
+	// For global backup we recreate everything.
+	// For tenant backup we just update the current OrgID to match
+	// the one in the backup file, ensuring correct data linkage.
+	if r.Spec.GlobalBackup {
 
-			_, err = r.Context.Transaction.NamedExec(`UPDATE dmz_org SET
-                c_anonaccess=:allowanonymousaccess,
-                c_authprovider=:authprovider,
-                c_authconfig=:authconfig,
-                c_company=:company,
-                c_service=:conversionendpoint,
-                c_email=:email,
-                c_maxtags=:maxtags,
-                c_message=:message,
-                c_title=:title,
-                c_serial=:serial
-                WHERE c_refid=:refid`, &org[i])
-			if err != nil {
-				r.Context.Transaction.Rollback()
-				err = errors.Wrap(err, "unable to overwrite current organization settings")
-				return
-			}
-		} else {
-			// Add new organization.
+		for i := range org {
 			_, err = r.Context.Transaction.Exec(r.Runtime.Db.Rebind(`
-                INSERT INTO dmz_org (c_refid, c_company, c_title, c_message,
-                    c_domain, c_service, c_email, c_anonaccess, c_authprovider, c_authconfig,
-                    c_maxtags, c_verified, c_serial, c_active, c_created, c_revised)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
+                    INSERT INTO dmz_org (c_refid, c_company, c_title, c_message,
+                        c_domain, c_service, c_email, c_anonaccess, c_authprovider, c_authconfig,
+                        c_maxtags, c_verified, c_serial, c_active, c_created, c_revised)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
 				org[i].RefID, org[i].Company, org[i].Title, org[i].Message,
 				strings.ToLower(org[i].Domain), org[i].ConversionEndpoint, strings.ToLower(org[i].Email),
 				org[i].AllowAnonymousAccess, org[i].AuthProvider, org[i].AuthConfig,
@@ -246,6 +347,47 @@ func (r *restoreHandler) dmzOrg() (err error) {
 				err = errors.Wrap(err, fmt.Sprintf("unable to insert %s %s", filename, org[i].RefID))
 				return
 			}
+		}
+	} else {
+		// There should only be one organization in the backup.
+		// Bomb out if that is not the case.
+		if len(org) != 1 {
+			err = errors.Wrap(err, "tenant backup requires just one organization entry")
+			return
+		}
+
+		org[1].RefID = r.Spec.Org.RefID
+
+		// Update org settings if allowed to do so.
+		if !r.Spec.OverwriteOrg {
+			org[0].AllowAnonymousAccess = r.Spec.Org.AllowAnonymousAccess
+			org[0].AuthProvider = r.Spec.Org.AuthProvider
+			org[0].AuthConfig = r.Spec.Org.AuthConfig
+			org[0].Company = r.Spec.Org.Company
+			org[0].ConversionEndpoint = r.Spec.Org.ConversionEndpoint
+			org[0].Email = r.Spec.Org.Email
+			org[0].MaxTags = r.Spec.Org.MaxTags
+			org[0].Message = r.Spec.Org.Message
+			org[0].Serial = r.Spec.Org.Serial
+			org[0].Title = r.Spec.Org.Title
+		}
+
+		_, err = r.Context.Transaction.NamedExec(`UPDATE dmz_org SET
+		        c_anonaccess=:allowanonymousaccess,
+		        c_authprovider=:authprovider,
+		        c_authconfig=:authconfig,
+		        c_company=:company,
+		        c_service=:conversionendpoint,
+		        c_email=:email,
+		        c_maxtags=:maxtags,
+		        c_message=:message,
+		        c_title=:title,
+		        c_serial=:serial
+		        WHERE c_refid=:refid`, &org[0])
+		if err != nil {
+			r.Context.Transaction.Rollback()
+			err = errors.Wrap(err, "unable to overwrite current organization settings")
+			return
 		}
 	}
 
@@ -310,6 +452,18 @@ func (r *restoreHandler) dmzAudit() (err error) {
 		return
 	}
 
+	// Nuke all existing data.
+	nuke := "TRUNCATE TABLE dmz_audit_log"
+	if !r.Spec.GlobalBackup {
+		nuke = fmt.Sprintf("DELETE FROM dmz_audit_log WHERE c_orgid='%s'", r.Spec.Org.RefID)
+	}
+	_, err = r.Context.Transaction.Exec(nuke)
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to truncate table", filename))
+		return
+	}
+
 	for i := range log {
 		_, err = r.Context.Transaction.Exec(r.Runtime.Db.Rebind("INSERT INTO dmz_audit_log (c_orgid, c_userid, c_eventtype, c_ip, c_created) VALUES (?, ?, ?, ?, ?)"),
 			log[i].OrgID, log[i].UserID, log[i].Type, log[i].IP, log[i].Created)
@@ -354,6 +508,18 @@ func (r *restoreHandler) dmzAction() (err error) {
 		return
 	}
 
+	// Nuke all existing data.
+	nuke := "TRUNCATE TABLE dmz_action"
+	if !r.Spec.GlobalBackup {
+		nuke = fmt.Sprintf("DELETE FROM dmz_action WHERE c_orgid='%s'", r.Spec.Org.RefID)
+	}
+	_, err = r.Context.Transaction.Exec(nuke)
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to truncate table", filename))
+		return
+	}
+
 	for i := range ac {
 		_, err = r.Context.Transaction.Exec(r.Runtime.Db.Rebind("INSERT INTO dmz_action (c_refid, c_orgid, c_userid, c_docid, c_actiontype, c_note, c_requestorid, c_requested, c_due, c_reftype, c_reftypeid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"),
 			ac[i].RefID, ac[i].OrgID, ac[i].UserID, ac[i].DocumentID, ac[i].ActionType, ac[i].Note, ac[i].RequestorID, ac[i].Requested, ac[i].Due, ac[i].RefType, ac[i].RefTypeID)
@@ -392,6 +558,18 @@ func (r *restoreHandler) dmzSpace() (err error) {
 	r.Context.Transaction, err = r.Runtime.Db.Beginx()
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to start TX for %s", filename))
+		return
+	}
+
+	// Nuke all existing data.
+	nuke := "TRUNCATE TABLE dmz_space"
+	if !r.Spec.GlobalBackup {
+		nuke = fmt.Sprintf("DELETE FROM dmz_space WHERE c_orgid='%s'", r.Spec.Org.RefID)
+	}
+	_, err = r.Context.Transaction.Exec(nuke)
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to truncate table", filename))
 		return
 	}
 
@@ -437,6 +615,18 @@ func (r *restoreHandler) dmzCategory() (err error) {
 		return
 	}
 
+	// Nuke all existing data.
+	nuke := "TRUNCATE TABLE dmz_category"
+	if !r.Spec.GlobalBackup {
+		nuke = fmt.Sprintf("DELETE FROM dmz_category WHERE c_orgid='%s'", r.Spec.Org.RefID)
+	}
+	_, err = r.Context.Transaction.Exec(nuke)
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to truncate table", filename))
+		return
+	}
+
 	for i := range ct {
 		_, err = r.Context.Transaction.Exec(r.Runtime.Db.Rebind(`
             INSERT INTO dmz_category (c_refid, c_orgid, c_spaceid, c_name, c_created, c_revised)
@@ -462,7 +652,7 @@ func (r *restoreHandler) dmzCategory() (err error) {
 	return nil
 }
 
-// CategoryMember.
+// Category Member.
 func (r *restoreHandler) dmzCategoryMember() (err error) {
 	filename := "dmz_category_member.json"
 
@@ -478,6 +668,18 @@ func (r *restoreHandler) dmzCategoryMember() (err error) {
 	r.Context.Transaction, err = r.Runtime.Db.Beginx()
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to start TX for %s", filename))
+		return
+	}
+
+	// Nuke all existing data.
+	nuke := "TRUNCATE TABLE dmz_category_member"
+	if !r.Spec.GlobalBackup {
+		nuke = fmt.Sprintf("DELETE FROM dmz_category_member WHERE c_orgid='%s'", r.Spec.Org.RefID)
+	}
+	_, err = r.Context.Transaction.Exec(nuke)
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to truncate table", filename))
 		return
 	}
 
@@ -503,6 +705,1105 @@ func (r *restoreHandler) dmzCategoryMember() (err error) {
 	}
 
 	r.Runtime.Log.Info(fmt.Sprintf("Processed %s %d records", filename, len(cm)))
+
+	return nil
+}
+
+// Group.
+func (r *restoreHandler) dmzGroup() (err error) {
+	filename := "dmz_group.json"
+
+	gr := []group.Group{}
+	err = r.fileJSON(filename, &gr)
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("failed to load %s", filename))
+		return
+	}
+
+	r.Runtime.Log.Info(fmt.Sprintf("Extracted %s", filename))
+
+	r.Context.Transaction, err = r.Runtime.Db.Beginx()
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("unable to start TX for %s", filename))
+		return
+	}
+
+	// Nuke all existing data.
+	nuke := "TRUNCATE TABLE dmz_group"
+	if !r.Spec.GlobalBackup {
+		nuke = fmt.Sprintf("DELETE FROM dmz_group WHERE c_orgid='%s'", r.Spec.Org.RefID)
+	}
+	_, err = r.Context.Transaction.Exec(nuke)
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to truncate table", filename))
+		return
+	}
+
+	for i := range gr {
+		_, err = r.Context.Transaction.Exec(r.Runtime.Db.Rebind(`
+            INSERT INTO dmz_group
+            (c_refid, c_orgid, c_name, c_desc, c_created, c_revised)
+            VALUES (?, ?, ?, ?, ?, ?)`),
+			gr[i].RefID, gr[i].OrgID, gr[i].Name, gr[i].Purpose, gr[i].Created, gr[i].Revised)
+
+		if err != nil {
+			r.Context.Transaction.Rollback()
+			err = errors.Wrap(err, fmt.Sprintf("unable to insert %s %s", filename, gr[i].RefID))
+			return
+		}
+	}
+
+	err = r.Context.Transaction.Commit()
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to commit %s", filename))
+		return
+	}
+
+	r.Runtime.Log.Info(fmt.Sprintf("Processed %s %d records", filename, len(gr)))
+
+	return nil
+}
+
+// Group Member.
+func (r *restoreHandler) dmzGroupMember() (err error) {
+	filename := "dmz_group_member.json"
+
+	gm := []group.Member{}
+	err = r.fileJSON(filename, &gm)
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("failed to load %s", filename))
+		return
+	}
+
+	r.Runtime.Log.Info(fmt.Sprintf("Extracted %s", filename))
+
+	r.Context.Transaction, err = r.Runtime.Db.Beginx()
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("unable to start TX for %s", filename))
+		return
+	}
+
+	// Nuke all existing data.
+	nuke := "TRUNCATE TABLE dmz_group_member"
+	if !r.Spec.GlobalBackup {
+		nuke = fmt.Sprintf("DELETE FROM dmz_group_member WHERE c_orgid='%s'", r.Spec.Org.RefID)
+	}
+	_, err = r.Context.Transaction.Exec(nuke)
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to truncate table", filename))
+		return
+	}
+
+	for i := range gm {
+		_, err = r.Context.Transaction.Exec(r.Runtime.Db.Rebind(`
+            INSERT INTO dmz_group_member
+            (c_orgid, c_groupid, c_userid)
+            VALUES (?, ?, ?)`),
+			gm[i].OrgID, gm[i].GroupID, gm[i].UserID)
+
+		if err != nil {
+			r.Context.Transaction.Rollback()
+			err = errors.Wrap(err, fmt.Sprintf("unable to insert %s %s", filename, gm[i].UserID))
+			return
+		}
+	}
+
+	err = r.Context.Transaction.Commit()
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to commit %s", filename))
+		return
+	}
+
+	r.Runtime.Log.Info(fmt.Sprintf("Processed %s %d records", filename, len(gm)))
+
+	return nil
+}
+
+// Permission.
+func (r *restoreHandler) dmzPermission() (err error) {
+	filename := "dmz_permission.json"
+
+	pm := []permission.Permission{}
+	err = r.fileJSON(filename, &pm)
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("failed to load %s", filename))
+		return
+	}
+
+	r.Runtime.Log.Info(fmt.Sprintf("Extracted %s", filename))
+
+	r.Context.Transaction, err = r.Runtime.Db.Beginx()
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("unable to start TX for %s", filename))
+		return
+	}
+
+	// Nuke all existing data.
+	nuke := "TRUNCATE TABLE dmz_permission"
+	if !r.Spec.GlobalBackup {
+		nuke = fmt.Sprintf("DELETE FROM dmz_permission WHERE c_orgid='%s'", r.Spec.Org.RefID)
+	}
+	_, err = r.Context.Transaction.Exec(nuke)
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to truncate table", filename))
+		return
+	}
+
+	for i := range pm {
+		_, err = r.Context.Transaction.Exec(r.Runtime.Db.Rebind(`
+            INSERT INTO dmz_permission
+            (c_orgid, c_who, c_whoid, c_action, c_scope, c_location, c_refid, c_created)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`),
+			pm[i].OrgID, string(pm[i].Who), pm[i].WhoID, string(pm[i].Action), string(pm[i].Scope), string(pm[i].Location), pm[i].RefID, pm[i].Created)
+
+		if err != nil {
+			r.Context.Transaction.Rollback()
+			err = errors.Wrap(err, fmt.Sprintf("unable to insert %s %s", filename, pm[i].WhoID))
+			return
+		}
+	}
+
+	err = r.Context.Transaction.Commit()
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to commit %s", filename))
+		return
+	}
+
+	r.Runtime.Log.Info(fmt.Sprintf("Processed %s %d records", filename, len(pm)))
+
+	return nil
+}
+
+// Pin.
+func (r *restoreHandler) dmzPin() (err error) {
+	filename := "dmz_pin.json"
+
+	pin := []pin.Pin{}
+	err = r.fileJSON(filename, &pin)
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("failed to load %s", filename))
+		return
+	}
+
+	r.Runtime.Log.Info(fmt.Sprintf("Extracted %s", filename))
+
+	r.Context.Transaction, err = r.Runtime.Db.Beginx()
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("unable to start TX for %s", filename))
+		return
+	}
+
+	// Nuke all existing data.
+	nuke := "TRUNCATE TABLE dmz_pin"
+	if !r.Spec.GlobalBackup {
+		nuke = fmt.Sprintf("DELETE FROM dmz_pin WHERE c_orgid='%s'", r.Spec.Org.RefID)
+	}
+	_, err = r.Context.Transaction.Exec(nuke)
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to truncate table", filename))
+		return
+	}
+
+	for i := range pin {
+		_, err = r.Context.Transaction.Exec(r.Runtime.Db.Rebind(`
+            INSERT INTO dmz_pin
+            (c_refid, c_orgid, c_userid, c_spaceid, c_docid, c_name, c_sequence, c_created, c_revised)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`),
+			pin[i].RefID, pin[i].OrgID, pin[i].UserID, pin[i].SpaceID, pin[i].DocumentID, pin[i].Name, pin[i].Sequence, pin[i].Created, pin[i].Revised)
+
+		if err != nil {
+			r.Context.Transaction.Rollback()
+			err = errors.Wrap(err, fmt.Sprintf("unable to insert %s %s", filename, pin[i].RefID))
+			return
+		}
+	}
+
+	err = r.Context.Transaction.Commit()
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to commit %s", filename))
+		return
+	}
+
+	r.Runtime.Log.Info(fmt.Sprintf("Processed %s %d records", filename, len(pin)))
+
+	return nil
+}
+
+// Section.
+func (r *restoreHandler) dmzSection() (err error) {
+	filename := "dmz_section.json"
+
+	sc := []page.Page{}
+	err = r.fileJSON(filename, &sc)
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("failed to load %s", filename))
+		return
+	}
+
+	r.Runtime.Log.Info(fmt.Sprintf("Extracted %s", filename))
+
+	r.Context.Transaction, err = r.Runtime.Db.Beginx()
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("unable to start TX for %s", filename))
+		return
+	}
+
+	// Nuke all existing data.
+	nuke := "TRUNCATE TABLE dmz_section"
+	if !r.Spec.GlobalBackup {
+		nuke = fmt.Sprintf("DELETE FROM dmz_section WHERE c_orgid='%s'", r.Spec.Org.RefID)
+	}
+	_, err = r.Context.Transaction.Exec(nuke)
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to truncate table", filename))
+		return
+	}
+
+	for i := range sc {
+		_, err = r.Context.Transaction.Exec(r.Runtime.Db.Rebind(`
+            INSERT INTO dmz_section
+            (c_refid, c_orgid, c_docid, c_userid, c_contenttype, c_type, c_level, c_name, c_body,
+            c_revisions, c_sequence, c_templateid, c_status, c_relativeid, c_created, c_revised)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
+			sc[i].RefID, sc[i].OrgID, sc[i].DocumentID, sc[i].UserID,
+			sc[i].ContentType, sc[i].Type, sc[i].Level, sc[i].Name,
+			sc[i].Body, sc[i].Revisions, sc[i].Sequence, sc[i].TemplateID,
+			sc[i].Status, sc[i].RelativeID, sc[i].Created, sc[i].Revised)
+
+		if err != nil {
+			r.Context.Transaction.Rollback()
+			err = errors.Wrap(err, fmt.Sprintf("unable to insert %s %s", filename, sc[i].RefID))
+			return
+		}
+	}
+
+	err = r.Context.Transaction.Commit()
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to commit %s", filename))
+		return
+	}
+
+	r.Runtime.Log.Info(fmt.Sprintf("Processed %s %d records", filename, len(sc)))
+
+	return nil
+}
+
+// Section Meta
+func (r *restoreHandler) dmzSectionMeta() (err error) {
+	filename := "dmz_section_meta.json"
+
+	sm := []page.Meta{}
+	err = r.fileJSON(filename, &sm)
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("failed to load %s", filename))
+		return
+	}
+
+	r.Runtime.Log.Info(fmt.Sprintf("Extracted %s", filename))
+
+	r.Context.Transaction, err = r.Runtime.Db.Beginx()
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("unable to start TX for %s", filename))
+		return
+	}
+
+	// Nuke all existing data.
+	nuke := "TRUNCATE TABLE dmz_section_meta"
+	if !r.Spec.GlobalBackup {
+		nuke = fmt.Sprintf("DELETE FROM dmz_section_meta WHERE c_orgid='%s'", r.Spec.Org.RefID)
+	}
+	_, err = r.Context.Transaction.Exec(nuke)
+
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to truncate table", filename))
+		return
+	}
+
+	for i := range sm {
+		_, err = r.Context.Transaction.Exec(r.Runtime.Db.Rebind(`
+            INSERT INTO dmz_section_meta
+            (c_sectionid, c_orgid, c_userid, c_docid, c_rawbody,
+            c_config, c_external, c_created, c_revised)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`),
+			sm[i].SectionID, sm[i].OrgID, sm[i].UserID, sm[i].DocumentID,
+			sm[i].RawBody, sm[i].Config, sm[i].ExternalSource,
+			sm[i].Created, sm[i].Revised)
+
+		if err != nil {
+			r.Context.Transaction.Rollback()
+			err = errors.Wrap(err, fmt.Sprintf("unable to insert %s %s", filename, sm[i].SectionID))
+			return
+		}
+	}
+
+	err = r.Context.Transaction.Commit()
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to commit %s", filename))
+		return
+	}
+
+	r.Runtime.Log.Info(fmt.Sprintf("Processed %s %d records", filename, len(sm)))
+
+	return nil
+}
+
+// Section Revision
+func (r *restoreHandler) dmzSectionRevision() (err error) {
+	filename := "dmz_section_revision.json"
+
+	sr := []page.Revision{}
+	err = r.fileJSON(filename, &sr)
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("failed to load %s", filename))
+		return
+	}
+
+	r.Runtime.Log.Info(fmt.Sprintf("Extracted %s", filename))
+
+	r.Context.Transaction, err = r.Runtime.Db.Beginx()
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("unable to start TX for %s", filename))
+		return
+	}
+
+	// Nuke all existing data.
+	nuke := "TRUNCATE TABLE dmz_section_revision"
+	if !r.Spec.GlobalBackup {
+		nuke = fmt.Sprintf("DELETE FROM dmz_section_revision WHERE c_orgid='%s'", r.Spec.Org.RefID)
+	}
+	_, err = r.Context.Transaction.Exec(nuke)
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to truncate table", filename))
+		return
+	}
+
+	for i := range sr {
+		_, err = r.Context.Transaction.Exec(r.Runtime.Db.Rebind(`
+            INSERT INTO dmz_section_revision
+            (c_refid, c_orgid, c_docid, c_ownerid, c_sectionid, c_userid, c_contenttype,
+            c_type, c_name, c_body, c_rawbody, c_config, c_created, c_revised)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
+			sr[i].RefID, sr[i].OrgID, sr[i].DocumentID, sr[i].OwnerID,
+			sr[i].SectionID, sr[i].UserID, sr[i].ContentType, sr[i].Type, sr[i].Name,
+			sr[i].Body, sr[i].RawBody, sr[i].Config, sr[i].Created, sr[i].Revised)
+
+		if err != nil {
+			r.Context.Transaction.Rollback()
+			err = errors.Wrap(err, fmt.Sprintf("unable to insert %s %s", filename, sr[i].SectionID))
+			return
+		}
+	}
+
+	err = r.Context.Transaction.Commit()
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to commit %s", filename))
+		return
+	}
+
+	r.Runtime.Log.Info(fmt.Sprintf("Processed %s %d records", filename, len(sr)))
+
+	return nil
+}
+
+// Section Template
+func (r *restoreHandler) dmzSectionTemplate() (err error) {
+	filename := "dmz_section_template.json"
+
+	st := []block.Block{}
+	err = r.fileJSON(filename, &st)
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("failed to load %s", filename))
+		return
+	}
+
+	r.Runtime.Log.Info(fmt.Sprintf("Extracted %s", filename))
+
+	r.Context.Transaction, err = r.Runtime.Db.Beginx()
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("unable to start TX for %s", filename))
+		return
+	}
+
+	// Nuke all existing data.
+	nuke := "TRUNCATE TABLE dmz_section_template"
+	if !r.Spec.GlobalBackup {
+		nuke = fmt.Sprintf("DELETE FROM dmz_section_template WHERE c_orgid='%s'", r.Spec.Org.RefID)
+	}
+	_, err = r.Context.Transaction.Exec(nuke)
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to truncate table", filename))
+		return
+	}
+
+	for i := range st {
+		_, err = r.Context.Transaction.Exec(r.Runtime.Db.Rebind(`
+            INSERT INTO dmz_section_template
+            (c_refid, c_orgid, c_spaceid, c_userid, c_contenttype,
+            c_type, c_name, c_body, c_desc, c_rawbody, c_used,
+            c_config, c_external, c_created, c_revised)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
+			st[i].RefID, st[i].OrgID, st[i].SpaceID, st[i].UserID, st[i].ContentType, st[i].Type,
+			st[i].Name, st[i].Body, st[i].Excerpt, st[i].RawBody, st[i].Used,
+			st[i].Config, st[i].ExternalSource, st[i].Created, st[i].Revised)
+
+		if err != nil {
+			r.Context.Transaction.Rollback()
+			err = errors.Wrap(err, fmt.Sprintf("unable to insert %s %s", filename, st[i].RefID))
+			return
+		}
+	}
+
+	err = r.Context.Transaction.Commit()
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to commit %s", filename))
+		return
+	}
+
+	r.Runtime.Log.Info(fmt.Sprintf("Processed %s %d records", filename, len(st)))
+
+	return nil
+}
+
+// Doc
+func (r *restoreHandler) dmzDoc() (err error) {
+	filename := "dmz_doc.json"
+
+	doc := []doc.Document{}
+	err = r.fileJSON(filename, &doc)
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("failed to load %s", filename))
+		return
+	}
+
+	r.Runtime.Log.Info(fmt.Sprintf("Extracted %s", filename))
+
+	r.Context.Transaction, err = r.Runtime.Db.Beginx()
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("unable to start TX for %s", filename))
+		return
+	}
+
+	// Nuke all existing data.
+	nuke := "TRUNCATE TABLE dmz_doc"
+	if !r.Spec.GlobalBackup {
+		nuke = fmt.Sprintf("DELETE FROM dmz_doc WHERE c_orgid='%s'", r.Spec.Org.RefID)
+	}
+	_, err = r.Context.Transaction.Exec(nuke)
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to truncate table", filename))
+		return
+	}
+
+	for i := range doc {
+		_, err = r.Context.Transaction.Exec(r.Runtime.Db.Rebind(`
+            INSERT INTO dmz_doc
+            (c_refid, c_orgid, c_spaceid, c_userid, c_job, c_location,
+            c_name, c_desc, c_slug, c_tags, c_template, c_protection, c_approval,
+            c_lifecycle, c_versioned, c_versionid, c_versionorder, c_groupid, c_created, c_revised)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
+			doc[i].RefID, doc[i].OrgID, doc[i].SpaceID, doc[i].UserID, doc[i].Job,
+			doc[i].Location, doc[i].Name, doc[i].Excerpt, doc[i].Slug, doc[i].Tags,
+			doc[i].Template, doc[i].Protection, doc[i].Approval, doc[i].Lifecycle,
+			doc[i].Versioned, doc[i].VersionID, doc[i].VersionOrder, doc[i].GroupID,
+			doc[i].Created, doc[i].Revised)
+
+		if err != nil {
+			r.Context.Transaction.Rollback()
+			err = errors.Wrap(err, fmt.Sprintf("unable to insert %s %s", filename, doc[i].RefID))
+			return
+		}
+	}
+
+	err = r.Context.Transaction.Commit()
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to commit %s", filename))
+		return
+	}
+
+	r.Runtime.Log.Info(fmt.Sprintf("Processed %s %d records", filename, len(doc)))
+
+	return nil
+}
+
+// Doc Vote
+func (r *restoreHandler) dmzDocVote() (err error) {
+	filename := "dmz_doc_vote.json"
+
+	type vote struct {
+		RefID      string    `json:"refId"`
+		OrgID      string    `json:"orgId"`
+		DocumentID string    `json:"documentId"`
+		VoterID    string    `json:"voterId"`
+		Vote       int       `json:"vote"`
+		Created    time.Time `json:"created"`
+		Revised    time.Time `json:"revised"`
+	}
+	v := []vote{}
+	err = r.fileJSON(filename, &v)
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("failed to load %s", filename))
+		return
+	}
+
+	r.Runtime.Log.Info(fmt.Sprintf("Extracted %s", filename))
+
+	r.Context.Transaction, err = r.Runtime.Db.Beginx()
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("unable to start TX for %s", filename))
+		return
+	}
+
+	// Nuke all existing data.
+	nuke := "TRUNCATE TABLE dmz_doc_vote"
+	if !r.Spec.GlobalBackup {
+		nuke = fmt.Sprintf("DELETE FROM dmz_doc_vote WHERE c_orgid='%s'", r.Spec.Org.RefID)
+	}
+	_, err = r.Context.Transaction.Exec(nuke)
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to truncate table", filename))
+		return
+	}
+
+	for i := range v {
+		_, err = r.Context.Transaction.Exec(r.Runtime.Db.Rebind(`
+            INSERT INTO dmz_doc_vote (c_refid, c_orgid, c_docid, c_voter, c_vote, c_created, c_revised)
+            VALUES (?, ?, ?, ?, ?, ?, ?)`),
+			v[i].RefID, v[i].OrgID, v[i].DocumentID, v[i].VoterID, v[i].Vote, v[i].Created, v[i].Revised)
+
+		if err != nil {
+			r.Context.Transaction.Rollback()
+			err = errors.Wrap(err, fmt.Sprintf("unable to insert %s %s", filename, v[i].RefID))
+			return
+		}
+	}
+
+	err = r.Context.Transaction.Commit()
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to commit %s", filename))
+		return
+	}
+
+	r.Runtime.Log.Info(fmt.Sprintf("Processed %s %d records", filename, len(v)))
+
+	return nil
+}
+
+// Doc Link
+func (r *restoreHandler) dmzDocLink() (err error) {
+	filename := "dmz_doc_link.json"
+
+	lk := []link.Link{}
+	err = r.fileJSON(filename, &lk)
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("failed to load %s", filename))
+		return
+	}
+
+	r.Runtime.Log.Info(fmt.Sprintf("Extracted %s", filename))
+
+	r.Context.Transaction, err = r.Runtime.Db.Beginx()
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("unable to start TX for %s", filename))
+		return
+	}
+
+	// Nuke all existing data.
+	nuke := "TRUNCATE TABLE dmz_doc_link"
+	if !r.Spec.GlobalBackup {
+		nuke = fmt.Sprintf("DELETE FROM dmz_doc_link WHERE c_orgid='%s'", r.Spec.Org.RefID)
+	}
+	_, err = r.Context.Transaction.Exec(nuke)
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to truncate table", filename))
+		return
+	}
+
+	for i := range lk {
+		_, err = r.Context.Transaction.Exec(r.Runtime.Db.Rebind(`
+            INSERT INTO dmz_doc_link
+            (c_refid, c_orgid, c_spaceid, c_userid, c_sourcedocid, c_sourcesectionid,
+            c_targetdocid, c_targetid, c_externalid, c_type, c_orphan, c_created, c_revised)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
+			lk[i].RefID, lk[i].OrgID, lk[i].SpaceID, lk[i].UserID, lk[i].SourceDocumentID, lk[i].SourceSectionID,
+			lk[i].TargetDocumentID, lk[i].TargetID, lk[i].ExternalID, lk[i].LinkType, lk[i].Orphan,
+			lk[i].Created, lk[i].Revised)
+
+		if err != nil {
+			r.Context.Transaction.Rollback()
+			err = errors.Wrap(err, fmt.Sprintf("unable to insert %s %s", filename, lk[i].RefID))
+			return
+		}
+	}
+
+	err = r.Context.Transaction.Commit()
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to commit %s", filename))
+		return
+	}
+
+	r.Runtime.Log.Info(fmt.Sprintf("Processed %s %d records", filename, len(lk)))
+
+	return nil
+}
+
+// Doc Attachment
+func (r *restoreHandler) dmzDocAttachment() (err error) {
+	filename := "dmz_doc_attachment.json"
+
+	at := []attachment.Attachment{}
+	err = r.fileJSON(filename, &at)
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("failed to load %s", filename))
+		return
+	}
+
+	r.Runtime.Log.Info(fmt.Sprintf("Extracted %s", filename))
+
+	r.Context.Transaction, err = r.Runtime.Db.Beginx()
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("unable to start TX for %s", filename))
+		return
+	}
+
+	// Nuke all existing data.
+	nuke := "TRUNCATE TABLE dmz_doc_attachment"
+	if !r.Spec.GlobalBackup {
+		nuke = fmt.Sprintf("DELETE FROM dmz_doc_attachment WHERE c_orgid='%s'", r.Spec.Org.RefID)
+	}
+	_, err = r.Context.Transaction.Exec(nuke)
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to truncate table", filename))
+		return
+	}
+
+	for i := range at {
+		_, err = r.Context.Transaction.Exec(r.Runtime.Db.Rebind(`
+            INSERT INTO dmz_doc_attachment
+            (c_refid, c_orgid, c_docid, c_job, c_fileid,
+            c_filename, c_data, c_extension, c_created, c_revised)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
+			at[i].RefID, at[i].OrgID, at[i].DocumentID, at[i].Job, at[i].FileID, at[i].Filename,
+			at[i].Data, at[i].Extension, at[i].Created, at[i].Revised)
+
+		if err != nil {
+			r.Context.Transaction.Rollback()
+			err = errors.Wrap(err, fmt.Sprintf("unable to insert %s %s", filename, at[i].RefID))
+			return
+		}
+	}
+
+	err = r.Context.Transaction.Commit()
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to commit %s", filename))
+		return
+	}
+
+	r.Runtime.Log.Info(fmt.Sprintf("Processed %s %d records", filename, len(at)))
+
+	return nil
+}
+
+// Doc Comment
+func (r *restoreHandler) dmzDocComment() (err error) {
+	filename := "dmz_doc_comment.json"
+
+	type comment struct {
+		RefID      string `json:"feedbackId"`
+		OrgID      string `json:"orgId"`
+		DocumentID string `json:"documentId"`
+		UserID     string `json:"userId"`
+		Email      string `json:"email"`
+		Feedback   string `json:"feedback"`
+		Created    string `json:"created"`
+	}
+
+	cm := []comment{}
+	err = r.fileJSON(filename, &cm)
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("failed to load %s", filename))
+		return
+	}
+
+	r.Runtime.Log.Info(fmt.Sprintf("Extracted %s", filename))
+
+	r.Context.Transaction, err = r.Runtime.Db.Beginx()
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("unable to start TX for %s", filename))
+		return
+	}
+
+	// Nuke all existing data.
+	nuke := "TRUNCATE TABLE dmz_doc_comment"
+	if !r.Spec.GlobalBackup {
+		nuke = fmt.Sprintf("DELETE FROM dmz_doc_comment WHERE c_orgid='%s'", r.Spec.Org.RefID)
+	}
+	_, err = r.Context.Transaction.Exec(nuke)
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to truncate table", filename))
+		return
+	}
+
+	for i := range cm {
+		_, err = r.Context.Transaction.Exec(r.Runtime.Db.Rebind(`
+            INSERT INTO dmz_doc_comment
+            (c_refid, c_orgid, c_userid, c_docid, c_email, c_feedback, c_created)
+            VALUES (?, ?, ?, ?, ?, ?, ?)`),
+			cm[i].RefID, cm[i].OrgID, cm[i].UserID, cm[i].DocumentID,
+			cm[i].Email, cm[i].Feedback, cm[i].Created)
+
+		if err != nil {
+			r.Context.Transaction.Rollback()
+			err = errors.Wrap(err, fmt.Sprintf("unable to insert %s %s", filename, cm[i].RefID))
+			return
+		}
+	}
+
+	err = r.Context.Transaction.Commit()
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to commit %s", filename))
+		return
+	}
+
+	r.Runtime.Log.Info(fmt.Sprintf("Processed %s %d records", filename, len(cm)))
+
+	return nil
+}
+
+// Doc Share
+func (r *restoreHandler) dmzDocShare() (err error) {
+	filename := "dmz_doc_share.json"
+
+	type share struct {
+		ID         uint64    `json:"id"`
+		OrgID      string    `json:"orgId"`
+		UserID     string    `json:"userId"`
+		DocumentID string    `json:"documentId"`
+		Email      string    `json:"email"`
+		Message    string    `json:"message"`
+		Viewed     string    `json:"viewed"`  // recording each view as |date-viewed|date-viewed|
+		Secret     string    `json:"secret"`  // secure token used to access document
+		Expires    string    `json:"expires"` // number of days from creation, value of 0 means never
+		Active     bool      `json:"active"`
+		Created    time.Time `json:"created"`
+	}
+
+	sh := []share{}
+	err = r.fileJSON(filename, &sh)
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("failed to load %s", filename))
+		return
+	}
+
+	r.Runtime.Log.Info(fmt.Sprintf("Extracted %s", filename))
+
+	r.Context.Transaction, err = r.Runtime.Db.Beginx()
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("unable to start TX for %s", filename))
+		return
+	}
+
+	// Nuke all existing data.
+	nuke := "TRUNCATE TABLE dmz_doc_share"
+	if !r.Spec.GlobalBackup {
+		nuke = fmt.Sprintf("DELETE FROM dmz_doc_share WHERE c_orgid='%s'", r.Spec.Org.RefID)
+	}
+	_, err = r.Context.Transaction.Exec(nuke)
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to truncate table", filename))
+		return
+	}
+
+	for i := range sh {
+		_, err = r.Context.Transaction.Exec(r.Runtime.Db.Rebind(`
+            INSERT INTO dmz_doc_share
+            (c_orgid, c_userid, c_docid, c_email, c_message,
+            c_secret, c_expires, c_active, c_created)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`),
+			sh[i].OrgID, sh[i].UserID, sh[i].DocumentID, sh[i].Email, sh[i].Message,
+			sh[i].Secret, sh[i].Expires, sh[i].Active, sh[i].Created)
+
+		if err != nil {
+			r.Context.Transaction.Rollback()
+			err = errors.Wrap(err, fmt.Sprintf("unable to insert %s %d", filename, sh[i].ID))
+			return
+		}
+	}
+
+	err = r.Context.Transaction.Commit()
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to commit %s", filename))
+		return
+	}
+
+	r.Runtime.Log.Info(fmt.Sprintf("Processed %s %d records", filename, len(sh)))
+
+	return nil
+}
+
+// User.
+func (r *restoreHandler) dmzUser() (err error) {
+	filename := "dmz_user.json"
+
+	u := []m.User{}
+	err = r.fileJSON(filename, &u)
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("failed to load %s", filename))
+		return
+	}
+
+	r.Runtime.Log.Info(fmt.Sprintf("Extracted %s", filename))
+
+	r.Context.Transaction, err = r.Runtime.Db.Beginx()
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("unable to start TX for %s", filename))
+		return
+	}
+
+	// Nuke all existing data.
+	if r.Spec.GlobalBackup {
+		_, err = r.Context.Transaction.Exec("TRUNCATE TABLE dmz_user")
+		if err != nil {
+			r.Context.Transaction.Rollback()
+			err = errors.Wrap(err, fmt.Sprintf("unable to truncate table", filename))
+			return
+		}
+	}
+
+	for i := range u {
+		_, err = r.Context.Transaction.Exec(r.Runtime.Db.Rebind(`
+            INSERT INTO dmz_user
+            (c_refid, c_firstname, c_lastname, c_email, c_initials, c_globaladmin,
+            c_password, c_salt, c_reset, c_active, c_lastversion, c_created, c_revised)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
+			u[i].RefID, u[i].Firstname, u[i].Lastname, strings.ToLower(u[i].Email), u[i].Initials,
+			u[i].GlobalAdmin, u[i].Password, u[i].Salt, u[i].Reset, u[i].Active,
+			u[i].LastVersion, u[i].Created, u[i].Revised)
+
+		if err != nil {
+			r.Context.Transaction.Rollback()
+			err = errors.Wrap(err, fmt.Sprintf("unable to insert %s %s", filename, u[i].RefID))
+			return
+		}
+	}
+
+	err = r.Context.Transaction.Commit()
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to commit %s", filename))
+		return
+	}
+
+	r.Runtime.Log.Info(fmt.Sprintf("Processed %s %d records", filename, len(u)))
+
+	return nil
+}
+
+// Account.
+func (r *restoreHandler) dmzUserAccount() (err error) {
+	filename := "dmz_user_account.json"
+
+	ac := []account.Account{}
+	err = r.fileJSON(filename, &ac)
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("failed to load %s", filename))
+		return
+	}
+
+	r.Runtime.Log.Info(fmt.Sprintf("Extracted %s", filename))
+
+	r.Context.Transaction, err = r.Runtime.Db.Beginx()
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("unable to start TX for %s", filename))
+		return
+	}
+
+	// Nuke all existing data.
+	nuke := "TRUNCATE TABLE dmz_user_account"
+	if !r.Spec.GlobalBackup {
+		nuke = fmt.Sprintf("DELETE FROM dmz_user_account WHERE c_orgid='%s'", r.Spec.Org.RefID)
+	}
+	_, err = r.Context.Transaction.Exec(nuke)
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to truncate table", filename))
+		return
+	}
+
+	for i := range ac {
+		_, err = r.Context.Transaction.Exec(r.Runtime.Db.Rebind(`
+            INSERT INTO dmz_user_account
+            (c_refid, c_orgid, c_userid, c_admin, c_editor, c_users,
+            c_analytics, c_active, c_created, c_revised)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
+			ac[i].RefID, ac[i].OrgID, ac[i].UserID, ac[i].Admin, ac[i].Editor,
+			ac[i].Users, ac[i].Analytics, ac[i].Active, ac[i].Created, ac[i].Revised)
+
+		if err != nil {
+			r.Context.Transaction.Rollback()
+			err = errors.Wrap(err, fmt.Sprintf("unable to insert %s %s", filename, ac[i].RefID))
+			return
+		}
+	}
+
+	err = r.Context.Transaction.Commit()
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to commit %s", filename))
+		return
+	}
+
+	r.Runtime.Log.Info(fmt.Sprintf("Processed %s %d records", filename, len(ac)))
+
+	return nil
+}
+
+// User Activity.
+func (r *restoreHandler) dmzUserActivity() (err error) {
+	filename := "dmz_user_activity.json"
+
+	ac := []activity.UserActivity{}
+	err = r.fileJSON(filename, &ac)
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("failed to load %s", filename))
+		return
+	}
+
+	r.Runtime.Log.Info(fmt.Sprintf("Extracted %s", filename))
+
+	r.Context.Transaction, err = r.Runtime.Db.Beginx()
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("unable to start TX for %s", filename))
+		return
+	}
+
+	// Nuke all existing data.
+	nuke := "TRUNCATE TABLE dmz_user_activity"
+	if !r.Spec.GlobalBackup {
+		nuke = fmt.Sprintf("DELETE FROM dmz_user_activity WHERE c_orgid='%s'", r.Spec.Org.RefID)
+	}
+	_, err = r.Context.Transaction.Exec(nuke)
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to truncate table", filename))
+		return
+	}
+
+	for i := range ac {
+		_, err = r.Context.Transaction.Exec(r.Runtime.Db.Rebind(`
+            INSERT INTO dmz_user_activity
+            (c_orgid, c_userid, c_spaceid, c_docid, c_sectionid, c_sourcetype,
+            c_activitytype, c_metadata, c_created)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`),
+			ac[i].OrgID, ac[i].UserID, ac[i].SpaceID, ac[i].DocumentID,
+			ac[i].SectionID, ac[i].SourceType, ac[i].ActivityType,
+			ac[i].Metadata, ac[i].Created)
+
+		if err != nil {
+			r.Context.Transaction.Rollback()
+			err = errors.Wrap(err, fmt.Sprintf("unable to insert %s %s", filename, ac[i].UserID))
+			return
+		}
+	}
+
+	err = r.Context.Transaction.Commit()
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to commit %s", filename))
+		return
+	}
+
+	r.Runtime.Log.Info(fmt.Sprintf("Processed %s %d records", filename, len(ac)))
+
+	return nil
+}
+
+// User Config.
+func (r *restoreHandler) dmzUserConfig() (err error) {
+	filename := "dmz_user_config.json"
+
+	type userConfig struct {
+		OrgID       string `json:"orgId"`
+		UserID      string `json:"userId"`
+		ConfigKey   string `json:"key"`
+		ConfigValue string `json:"config"`
+	}
+	uc := []userConfig{}
+	err = r.fileJSON(filename, &uc)
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("failed to load %s", filename))
+		return
+	}
+
+	r.Runtime.Log.Info(fmt.Sprintf("Extracted %s", filename))
+
+	r.Context.Transaction, err = r.Runtime.Db.Beginx()
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("unable to start TX for %s", filename))
+		return
+	}
+
+	// Nuke all existing data.
+	nuke := "TRUNCATE TABLE dmz_user_config"
+	if !r.Spec.GlobalBackup {
+		nuke = fmt.Sprintf("DELETE FROM dmz_user_config WHERE c_orgid='%s'", r.Spec.Org.RefID)
+	}
+	_, err = r.Context.Transaction.Exec(nuke)
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to truncate table", filename))
+		return
+	}
+
+	for i := range uc {
+		_, err = r.Context.Transaction.Exec(r.Runtime.Db.Rebind(`
+            INSERT INTO dmz_user_config
+            (c_orgid, c_userid, c_key, c_config)
+            VALUES (?, ?, ?, ?)`),
+			uc[i].OrgID, uc[i].UserID, uc[i].ConfigKey, uc[i].ConfigValue)
+
+		if err != nil {
+			r.Context.Transaction.Rollback()
+			err = errors.Wrap(err, fmt.Sprintf("unable to insert %s %s", filename, uc[i].UserID))
+			return
+		}
+	}
+
+	err = r.Context.Transaction.Commit()
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to commit %s", filename))
+		return
+	}
+
+	r.Runtime.Log.Info(fmt.Sprintf("Processed %s %d records", filename, len(uc)))
 
 	return nil
 }

@@ -49,7 +49,6 @@ import (
 	"github.com/documize/community/model/permission"
 	"github.com/documize/community/model/pin"
 	"github.com/documize/community/model/space"
-	"github.com/documize/community/model/user"
 	uuid "github.com/nu7hatch/gouuid"
 	"github.com/pkg/errors"
 )
@@ -304,7 +303,7 @@ func (b backerHandler) dmzUserAccount(files *[]backupItem) (err error) {
 		w = fmt.Sprintf(" , dmz_user_account a WHERE u.c_refid=a.c_userid AND a.c_orgid='%s' ", b.Spec.OrgID)
 	}
 
-	u := []user.User{}
+	u := []m.User{}
 	err = b.Runtime.Db.Select(&u, `SELECT u.id, u.c_refid AS refid,
         u.c_firstname AS firstname, u.c_lastname AS lastname, u.c_email AS email,
         u.c_initials AS initials, u.c_globaladmin AS globaladmin,
@@ -740,13 +739,13 @@ func (b backerHandler) dmzDocument(files *[]backupItem) (err error) {
 	// Share
 	type share struct {
 		ID         uint64    `json:"id"`
-		OrgID      string    `json:"-"`
+		OrgID      string    `json:"orgId"`
 		UserID     string    `json:"userId"`
 		DocumentID string    `json:"documentId"`
 		Email      string    `json:"email"`
 		Message    string    `json:"message"`
 		Viewed     string    `json:"viewed"`  // recording each view as |date-viewed|date-viewed|
-		Secret     string    `json:"-"`       // secure token used to access document
+		Secret     string    `json:"secret"`  // secure token used to access document
 		Expires    string    `json:"expires"` // number of days from creation, value of 0 means never
 		Active     bool      `json:"active"`
 		Created    time.Time `json:"created"`
@@ -756,7 +755,7 @@ func (b backerHandler) dmzDocument(files *[]backupItem) (err error) {
 	err = b.Runtime.Db.Select(&sh, `
         SELECT id AS id, c_orgid AS orgid, c_docid AS documentid,
         c_userid AS userid, c_email AS email, c_message AS message, c_viewed AS viewed,
-        c_expires AS expires, c_active AS active, c_created AS created
+        c_expires AS expires, c_active AS active, c_secret AS secret, c_created AS created
         FROM dmz_doc_share`+w)
 	if err != nil {
 		return errors.Wrap(err, "select.docshare")

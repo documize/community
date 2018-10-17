@@ -13,10 +13,11 @@
 package backup
 
 import (
-	"github.com/documize/community/model/org"
 	"time"
 
 	"github.com/documize/community/core/env"
+	"github.com/documize/community/model"
+	"github.com/documize/community/model/org"
 )
 
 // Manifest contains backup meta information.
@@ -74,4 +75,24 @@ type ImportSpec struct {
 
 	// Handle to the current organization being used for restore process.
 	Org org.Organization
+
+	// Was the backup file for a global system backup?
+	// TRUE if Manifest.Org = "*".
+	GlobalBackup bool
+}
+
+// User represents user object for backup/restore operations.
+// We include user specific secrets in such operations.
+type User struct {
+	model.BaseEntity
+	Firstname   string `json:"firstname"`
+	Lastname    string `json:"lastname"`
+	Email       string `json:"email"`
+	Initials    string `json:"initials"`
+	Active      bool   `json:"active"`
+	GlobalAdmin bool   `json:"global"`
+	Password    string `json:"password"`
+	Salt        string `json:"salt"`
+	Reset       string `json:"reset"`
+	LastVersion string `json:"lastVersion"`
 }

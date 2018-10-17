@@ -17,12 +17,15 @@ import Component from '@ember/component';
 
 export default Component.extend(Notifier, Modal, {
 	appMeta: service(),
+	router: service(),
 	browserSvc: service('browser'),
-	buttonLabel: 'Start Backup',
+	backupLabel: 'Backup',
+	backupSystemLabel: 'System Backup',
     backupSpec: null,
     backupFilename: '',
     backupError: false,
 	backupSuccess: false,
+	backupRunning: false,
     restoreSpec: null,
 	restoreButtonLabel: 'Restore',
 	restoreUploadReady: false,
@@ -43,6 +46,8 @@ export default Component.extend(Notifier, Modal, {
 
 		this.set('restoreFile', null);
 		this.set('confirmRestore', '');
+
+		this.set('backupType', { Tenant: true, System: false });
 	},
 
 	didInsertElement() {
@@ -54,31 +59,42 @@ export default Component.extend(Notifier, Modal, {
 		});
 	},
 
+	doBackup() {
+		this.showWait();
+		this.set('backupFilename', '');
+		this.set('backupSuccess', false);
+		this.set('backupFailed', false);
+		this.set('backupRunning', true);
+
+		let spec = this.get('backupSpec');
+
+		this.get('onBackup')(spec).then((filename) => {
+			this.showDone();
+			this.set('backupLabel', 'Start Backup');
+			this.set('backupSuccess', true);
+			this.set('backupFilename', filename);
+			this.set('backupRunning', false);
+		}, ()=> {
+			this.showDone();
+			this.set('backupLabel', 'Run Backup');
+			this.set('backupFailed', true);
+			this.set('backupRunning', false);
+		});
+	},
+
 	actions: {
 		onBackup() {
-			this.showWait();
-			this.set('buttonLabel', 'Please wait, backup running...');
-            this.set('backupFilename', '');
-            this.set('backupSuccess', false);
-			this.set('backupFailed', false);
+			// We perform tenant level backup.
+			this.set('backupSpec.org', this.get('appMeta.orgId'));
 
-			// If Documize Global Admin we perform system-level backup.
-			// Otherwise it is current tenant backup.
-			let spec = this.get('backupSpec');
-			if (this.get('session.isGlobalAdmin')) {
-				spec.org = "*";
-			}
+			this.doBackup();
+		},
 
-			this.get('onBackup')(spec).then((filename) => {
-				this.showDone();
-				this.set('buttonLabel', 'Start Backup');
-                this.set('backupSuccess', true);
-                this.set('backupFilename', filename);
-			}, ()=> {
-				this.showDone();
-				this.set('buttonLabel', 'Run Backup');
-                this.set('backupFailed', true);
-			});
+		onSystemBackup() {
+			// We perform system-level backup.
+			this.set('backupSpec.org', '*');
+
+			this.doBackup();
 		},
 
 		onShowRestoreModal() {
@@ -132,11 +148,12 @@ export default Component.extend(Notifier, Modal, {
 
 			this.get('onRestore')(spec, filedata).then(() => {
 				this.showDone();
-				this.set('buttonLabel', 'Restore');
-                this.set('restoreSuccess', true);
+				this.set('backupLabel', 'Restore');
+				this.set('restoreSuccess', true);
+				this.get('router').transitionTo('auth.logout');
 			}, ()=> {
 				this.showDone();
-				this.set('restorButtonLabel', 'Restore');
+				this.set('restorbackupLabel', 'Restore');
                 this.set('restoreFailed', true);
 			});
 		},
