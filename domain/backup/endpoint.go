@@ -194,6 +194,7 @@ func (h *Handler) Restore(w http.ResponseWriter, r *http.Request) {
 	spec := m.ImportSpec{OverwriteOrg: overwriteOrg, CreateUsers: createUsers, Org: org}
 	rh := restoreHandler{Runtime: h.Runtime, Store: h.Store, Context: ctx, Spec: spec}
 
+	// Run the restore process.
 	err = rh.PerformRestore(b.Bytes(), r.ContentLength)
 	if err != nil {
 		response.WriteServerError(w, method, err)
@@ -201,6 +202,8 @@ func (h *Handler) Restore(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	h.Runtime.Log.Infof("Restore remapped %d OrgID values", len(rh.MapOrgID))
+	h.Runtime.Log.Infof("Restore remapped %d UserID values", len(rh.MapUserID))
 	h.Runtime.Log.Info("Restore completed")
 
 	response.WriteEmpty(w)

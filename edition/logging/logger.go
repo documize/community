@@ -35,6 +35,11 @@ func (l Logger) Info(message string) {
 	l.log.Println(message)
 }
 
+// Infof logs message via Sprintf.
+func (l Logger) Infof(message string, a ...interface{}) {
+	l.log.Println(fmt.Sprintf(message, a))
+}
+
 // Trace logs message if tracing enabled.
 func (l Logger) Trace(message string) {
 	if l.trace {

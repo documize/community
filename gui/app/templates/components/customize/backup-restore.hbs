@@ -24,6 +24,7 @@
 					As a Documize <b>Tenant Administrator</b> you can perform a tenant-level backup (e.g. marketing.mycompany.com).
 				</p>
 			{{/if}}
+			<p>Please use a Tenant Backup when migrating between self-host and Documize Cloud hosting.</p>
 			<p>It can take <b>several minutes</b> to complete the backup process &mdash; please be patient while the backup operation is in progress.</p>
 
 			<div class="margin-top-30 margin-bottom-20">
@@ -35,10 +36,10 @@
 			{{#if backupRunning}}
 				<h3 class="text-success">Backup running, please wait...</h3>
 			{{else}}
-				<button class="btn btn-success mb-3" {{action 'onBackup'}}>BACKUP TENANT</button>
+				<button class="btn btn-success mb-3" {{action 'onBackup'}}>TENANT BACKUP ({{appMeta.appHost}})</button>
 				{{#if session.isGlobalAdmin}}
 					<div class="button-gap" />
-					<button class="btn btn-success mb-3" {{action 'onSystemBackup'}}>BACKUP SYSTEM</button>
+					<button class="btn btn-success mb-3" {{action 'onSystemBackup'}}>SYSTEM BACKUP</button>
 				{{/if}}
 			{{/if}}
 			{{#if backupFailed}}
