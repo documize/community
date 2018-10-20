@@ -67,9 +67,6 @@ type ImportSpec struct {
 	// Overwrite current organization settings.
 	OverwriteOrg bool `json:"overwriteOrg"`
 
-	// Recreate users.
-	CreateUsers bool `json:"createUsers"`
-
 	// As found in backup file.
 	Manifest Manifest
 

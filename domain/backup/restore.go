@@ -101,7 +101,7 @@ func (r *restoreHandler) PerformRestore(b []byte, l int64) (err error) {
 		r.Spec.GlobalBackup = false
 	}
 
-	// Process might require reassignment of ID's so prepare map.
+	// Process might require reassignment of ID values.
 	r.MapOrgID = make(map[string]string)
 	r.MapUserID = make(map[string]string)
 

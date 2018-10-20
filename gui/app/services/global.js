@@ -145,7 +145,7 @@ export default Service.extend({
 	// Run backup.
 	backup(spec) {
 		return new EmberPromise((resolve, reject) => {
-			if (!this.get('sessionService.isGlobalAdmin') || !this.get('sessionService.isAdmin')) {
+			if (!this.get('sessionService.isGlobalAdmin') && !this.get('sessionService.isAdmin')) {
 				reject();
 			}
 
@@ -196,7 +196,7 @@ export default Service.extend({
 		data.set('restore-file', file);
 
 		return new EmberPromise((resolve, reject) => {
-			if (!this.get('sessionService.isGlobalAdmin') || !this.get('sessionService.isAdmin')) {
+			if (!this.get('sessionService.isGlobalAdmin') && !this.get('sessionService.isAdmin')) {
 				reject();
 			}
 

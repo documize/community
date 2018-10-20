@@ -73,7 +73,7 @@ type DocumentMetaViewer struct {
 
 // DocumentMetaEditor contains the "edit" metatdata content.
 type DocumentMetaEditor struct {
-	PageID    string    `json:"pageId"`
+	SectionID string    `json:"pageId"`
 	UserID    string    `json:"userId"`
 	Action    string    `json:"action"`
 	Created   time.Time `json:"created"`

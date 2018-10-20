@@ -158,13 +158,6 @@ func (h *Handler) Restore(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	createUsers, err := strconv.ParseBool(request.Query(r, "users"))
-	if err != nil {
-		h.Runtime.Log.Info("Restore invoked without 'users' parameter")
-		response.WriteMissingDataError(w, method, "users=false/true missing")
-		return
-	}
-
 	filedata, fileheader, err := r.FormFile("restore-file")
 	if err != nil {
 		response.WriteMissingDataError(w, method, "restore-file")
@@ -191,7 +184,7 @@ func (h *Handler) Restore(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Prepare context and start restore process.
-	spec := m.ImportSpec{OverwriteOrg: overwriteOrg, CreateUsers: createUsers, Org: org}
+	spec := m.ImportSpec{OverwriteOrg: overwriteOrg, Org: org}
 	rh := restoreHandler{Runtime: h.Runtime, Store: h.Store, Context: ctx, Spec: spec}
 
 	// Run the restore process.
