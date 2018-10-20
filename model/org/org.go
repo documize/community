@@ -16,7 +16,7 @@ import "github.com/documize/community/model"
 // Organization defines a company that uses this app.
 type Organization struct {
 	model.BaseEntity
-	Company              string `json:"-"`
+	Company              string `json:"company"`
 	Title                string `json:"title"`
 	Message              string `json:"message"`
 	Domain               string `json:"domain"`
@@ -26,6 +26,6 @@ type Organization struct {
 	AuthConfig           string `json:"authConfig"`
 	ConversionEndpoint   string `json:"conversionEndpoint"`
 	MaxTags              int    `json:"maxTags"`
-	Serial               string `json:"-"`
-	Active               bool   `json:"-"`
+	Serial               string `json:"serial"`
+	Active               bool   `json:"active"`
 }

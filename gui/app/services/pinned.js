@@ -133,7 +133,7 @@ export default Service.extend({
 
 			return this.getUserPins().then((pins) => {
 				pins.forEach((pin) => {
-					if (pin.get('userId') === userId && pin.get('documentId') === '' && pin.get('folderId') === spaceId) {
+					if (pin.get('userId') === userId && pin.get('documentId') === '' && pin.get('spaceId') === spaceId) {
 						resolve(pin.get('id'));
 					}
 				});

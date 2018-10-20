@@ -17,9 +17,11 @@ export default Controller.extend({
 
 	actions: {
 		onBackup(spec) {
-			if(this.get('session.isAdmin')) {
-				return this.get('global').backup(spec);
-			}
+			return this.get('global').backup(spec);
+		},
+
+		onRestore(spec, filedata) {
+			return this.get('global').restore(spec, filedata);
 		}
 	}
 });

@@ -108,7 +108,7 @@ export default Component.extend(ModalMixin, TooltipMixin, Notifer, {
 
 			let c = {
 				category: cat,
-				folderId: this.get('space.id')
+				spaceId: this.get('space.id')
 			};
 
 			this.showWait();

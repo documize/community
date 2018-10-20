@@ -27,7 +27,7 @@ export default Route.extend(AuthenticatedRouteMixin, {
 	},
 
 	setupController(controller, model) {
-		let nonPrivateFolders = model.rejectBy('folderType', 2);
+		let nonPrivateFolders = model.rejectBy('spaceType', 2);
 		if (is.empty(nonPrivateFolders) || is.null(model) || is.undefined(model)) {
 			nonPrivateFolders = [];
 		}

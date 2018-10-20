@@ -9,24 +9,46 @@
 //
 // https://documize.com
 
+// Package backup handle data backup/restore to/from ZIP format.
 package backup
 
+// Documize data is all held in the SQL database in relational format.
+// The objective is to export the data into a compressed file that
+// can be restored again as required.
+//
+// This allows for the following scenarios to be supported:
+//
+// 1. Copying data from one Documize instance to another.
+// 2. Changing database provider (e.g. from MySQL to PostgreSQL).
+// 3. Moving between Documize Cloud and self-hosted instances.
+// 4. GDPR compliance (send copy of data and nuke whatever remains).
+// 5. Setting up sample Documize instance with pre-defined content.
+//
+// The initial implementation is restricted to tenant or global
+// backup/restore operations and can only be performed by a verified
+// Global Administrator.
+//
+// In future the process should be able to support per space backup/restore
+// operations. This is subject to further review.
+
 import (
-	"archive/zip"
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/documize/community/core/request"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/response"
 	"github.com/documize/community/core/streamutil"
-	"github.com/documize/community/core/uniqueid"
 	"github.com/documize/community/domain"
 	indexer "github.com/documize/community/domain/search"
 	"github.com/documize/community/domain/store"
+	m "github.com/documize/community/model/backup"
 )
 
 // Handler contains the runtime information such as logging and database.
@@ -57,7 +79,7 @@ func (h *Handler) Backup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	spec := backupSpec{}
+	spec := m.ExportSpec{}
 	err = json.Unmarshal(body, &spec)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())
@@ -65,31 +87,41 @@ func (h *Handler) Backup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// data, err := backup(ctx, *h.Store, spec)
-	// if err != nil {
-	// 	response.WriteServerError(w, method, err)
-	// 	h.Runtime.Log.Error(method, err)
-	// 	return
-	// }
+	h.Runtime.Log.Info("Backup started")
 
-	// Filename is current timestamp
-	fn := fmt.Sprintf("dmz-backup-%s.zip", uniqueid.Generate())
+	bh := backerHandler{Runtime: h.Runtime, Store: h.Store, Context: ctx, Spec: spec}
 
-	ziptest(fn)
-
-	bb, err := ioutil.ReadFile(fn)
+	// Produce zip file on disk.
+	filename, err := bh.GenerateBackup()
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/zip")
-	w.Header().Set("Content-Disposition", `attachment; filename="`+fn+`" ; `+`filename*="`+fn+`"`)
-	w.Header().Set("Content-Length", fmt.Sprintf("%d", len(bb)))
-	w.Header().Set("x-documize-filename", fn)
+	// Read backup file into memory.
+	// DEBT: write file directly to HTTP response stream?
+	bk, err := ioutil.ReadFile(filename)
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
 
-	x, err := w.Write(bb)
+	h.Runtime.Log.Info(fmt.Sprintf("Backup size pending download %d", len(bk)))
+
+	// Standard HTTP headers.
+	w.Header().Set("Content-Type", "application/zip")
+	w.Header().Set("Content-Disposition", `attachment; filename="`+filename+`" ; `+`filename*="`+filename+`"`)
+	w.Header().Set("Content-Length", fmt.Sprintf("%d", len(bk)))
+
+	// Custom HTTP header helps API consumer to extract backup filename cleanly
+	// instead of parsing 'Content-Disposition' header.
+	// This HTTP header is CORS white-listed.
+	w.Header().Set("x-documize-filename", filename)
+
+	// Write backup to response stream.
+	x, err := w.Write(bk)
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
@@ -97,90 +129,75 @@ func (h *Handler) Backup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-
 	h.Runtime.Log.Info(fmt.Sprintf("Backup completed for %s by %s, size %d", ctx.OrgID, ctx.UserID, x))
+
+	// Delete backup file if not requested to keep it.
+	if !spec.Retain {
+		os.Remove(filename)
+	}
 }
 
-type backupSpec struct {
-}
+// Restore receives ZIP file for restore operation.
+// Options are specified as HTTP query paramaters.
+func (h *Handler) Restore(w http.ResponseWriter, r *http.Request) {
+	method := "system.restore"
+	ctx := domain.GetRequestContext(r)
 
-func backup(ctx domain.RequestContext, s store.Store, spec backupSpec) (file []byte, err error) {
-	buf := new(bytes.Buffer)
-	zw := zip.NewWriter(buf)
-
-	// Add some files to the archive.
-	var files = []struct {
-		Name, Body string
-	}{
-		{"readme.txt", "This archive contains some text files."},
-		{"gopher.txt", "Gopher names:\nGeorge\nGeoffrey\nGonzo"},
-		{"todo.txt", "Get animal handling licence.\nWrite more examples."},
+	if !ctx.Administrator {
+		response.WriteForbiddenError(w)
+		h.Runtime.Log.Info(fmt.Sprintf("Non-admin attempted system restore operation (user ID: %s)", ctx.UserID))
+		return
 	}
 
-	for _, file := range files {
-		f, err := zw.Create(file.Name)
-		if err != nil {
-			return nil, err
-		}
+	h.Runtime.Log.Info(fmt.Sprintf("Restored attempted by user: %s", ctx.UserID))
 
-		_, err = f.Write([]byte(file.Body))
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	// Make sure to check the error on Close.
-	err = zw.Close()
+	overwriteOrg, err := strconv.ParseBool(request.Query(r, "org"))
 	if err != nil {
-		return nil, err
+		h.Runtime.Log.Info("Restore invoked without 'org' parameter")
+		response.WriteMissingDataError(w, method, "org=false/true missing")
+		return
 	}
 
-	return buf.Bytes(), nil
-}
-
-func ziptest(filename string) {
-	// Create a file to write the archive buffer to
-	// Could also use an in memory buffer.
-	outFile, err := os.Create(filename)
+	filedata, fileheader, err := r.FormFile("restore-file")
 	if err != nil {
-		fmt.Println(err)
-	}
-	defer outFile.Close()
-
-	// Create a zip writer on top of the file writer
-	zipWriter := zip.NewWriter(outFile)
-
-	// Add files to archive
-	// We use some hard coded data to demonstrate,
-	// but you could iterate through all the files
-	// in a directory and pass the name and contents
-	// of each file, or you can take data from your
-	// program and write it write in to the archive
-	// without
-	var filesToArchive = []struct {
-		Name, Body string
-	}{
-		{"test.txt", "String contents of file"},
-		{"test2.txt", "\x61\x62\x63\n"},
+		response.WriteMissingDataError(w, method, "restore-file")
+		h.Runtime.Log.Error(method, err)
+		return
 	}
 
-	// Create and write files to the archive, which in turn
-	// are getting written to the underlying writer to the
-	// .zip file we created at the beginning
-	for _, file := range filesToArchive {
-		fileWriter, err := zipWriter.Create(file.Name)
-		if err != nil {
-			fmt.Println(err)
-		}
-		_, err = fileWriter.Write([]byte(file.Body))
-		if err != nil {
-			fmt.Println(err)
-		}
-	}
-
-	// Clean up
-	err = zipWriter.Close()
+	b := new(bytes.Buffer)
+	_, err = io.Copy(b, filedata)
 	if err != nil {
-		fmt.Println(err)
+		h.Runtime.Log.Error(method, err)
+		response.WriteServerError(w, method, err)
+		return
 	}
+
+	h.Runtime.Log.Info(fmt.Sprintf("Restore file: %s %d", fileheader.Filename, len(b.Bytes())))
+
+	//
+	org, err := h.Store.Organization.GetOrganization(ctx, ctx.OrgID)
+	if err != nil {
+		h.Runtime.Log.Error(method, err)
+		response.WriteServerError(w, method, err)
+		return
+	}
+
+	// Prepare context and start restore process.
+	spec := m.ImportSpec{OverwriteOrg: overwriteOrg, Org: org}
+	rh := restoreHandler{Runtime: h.Runtime, Store: h.Store, Context: ctx, Spec: spec}
+
+	// Run the restore process.
+	err = rh.PerformRestore(b.Bytes(), r.ContentLength)
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	h.Runtime.Log.Infof("Restore remapped %d OrgID values", len(rh.MapOrgID))
+	h.Runtime.Log.Infof("Restore remapped %d UserID values", len(rh.MapUserID))
+	h.Runtime.Log.Info("Restore completed")
+
+	response.WriteEmpty(w)
 }

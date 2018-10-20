@@ -18,6 +18,7 @@ export default Service.extend({
 	appMeta: service(),
 	browserSvc: service('browser'),
 	store: service(),
+	router: service(),
 
 	// Returns SMTP configuration.
 	getSMTPConfig() {
@@ -141,9 +142,13 @@ export default Service.extend({
 		}
 	},
 
-	// Run tenant level backup.
+	// Run backup.
 	backup(spec) {
-		return new EmberPromise((resolve) => {
+		return new EmberPromise((resolve, reject) => {
+			if (!this.get('sessionService.isGlobalAdmin') && !this.get('sessionService.isAdmin')) {
+				reject();
+			}
+
 			let url = this.get('appMeta.endpoint');
 			let token = this.get('sessionService.session.content.authenticated.token');
 			let uploadUrl = `${url}/global/backup?token=${token}`;
@@ -162,19 +167,59 @@ export default Service.extend({
 					a.style = "display: none";
 					document.body.appendChild(a);
 
+					let filename = xhr.getResponseHeader('x-documize-filename').replace('"', '');
+
 					let url = window.URL.createObjectURL(blob);
 					a.href = url;
-					a.download = xhr.getResponseHeader('x-documize-filename').replace('"', '');
+					a.download = filename;
 					a.click();
 
 					window.URL.revokeObjectURL(url);
 					document.body.removeChild(a);
 
-					resolve();
+					resolve(filename);
+				} else {
+					reject();
 				}
 			}
 
+			xhr.onerror= function() {
+				reject();
+			}
+
 			xhr.send(JSON.stringify(spec));
+		});
+	},
+
+	restore(spec, file) {
+		var data = new FormData();
+		data.set('restore-file', file);
+
+		return new EmberPromise((resolve, reject) => {
+			if (!this.get('sessionService.isGlobalAdmin') && !this.get('sessionService.isAdmin')) {
+				reject();
+			}
+
+			let url = this.get('appMeta.endpoint');
+			let token = this.get('sessionService.session.content.authenticated.token');
+			let uploadUrl = `${url}/global/restore?token=${token}&org=${spec.overwriteOrg}&users=${spec.recreateUsers}`;
+
+			var xhr = new XMLHttpRequest();
+			xhr.open('POST', uploadUrl);
+
+			xhr.onload = function() {
+				if (this.status == 200) {
+					resolve();
+				} else {
+					reject();
+				}
+			}
+
+			xhr.onerror= function() {
+				reject();
+			}
+
+			xhr.send(data);
 		});
 	}
 });

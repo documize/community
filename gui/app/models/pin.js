@@ -16,7 +16,7 @@ import { computed } from '@ember/object';
 export default Model.extend({
 	orgId: attr('string'),
 	userId: attr('string'),
-	folderId: attr('string'),
+	spaceId: attr('string'),
 	documentId: attr('string'),
 	sequence: attr('number', { defaultValue: 99 }),
 	pin: attr('string'),

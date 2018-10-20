@@ -137,7 +137,7 @@ export default Component.extend(Notifier, {
 			// prepare links associated with document
 			link.forEach((l) => {
 				let t = {
-					folderId: folderId,
+					spaceId: folderId,
 					documentId: docId,
 					categoryId: l.get('id')
 				};
@@ -148,7 +148,7 @@ export default Component.extend(Notifier, {
 			// prepare links no longer associated with document
 			unlink.forEach((l) => {
 				let t = {
-					folderId: folderId,
+					spaceId: folderId,
 					documentId: docId,
 					categoryId: l.get('id')
 				};

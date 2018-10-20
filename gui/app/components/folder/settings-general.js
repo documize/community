@@ -41,11 +41,11 @@ export default Component.extend(AuthMixin, Notifier, {
 		let folder = this.get('space');
 
 		let spaceTypeOptions = A([]);
-		spaceTypeOptions.pushObject({id: constants.FolderType.Private, label: 'Private - viewable only by me'});
-		spaceTypeOptions.pushObject({id: constants.FolderType.Protected, label: 'Protected - access is restricted to selected users'});
-		spaceTypeOptions.pushObject({id: constants.FolderType.Public, label: 'Public - can be seen by everyone'});
+		spaceTypeOptions.pushObject({id: constants.SpaceType.Private, label: 'Private - viewable only by me'});
+		spaceTypeOptions.pushObject({id: constants.SpaceType.Protected, label: 'Protected - access is restricted to selected users'});
+		spaceTypeOptions.pushObject({id: constants.SpaceType.Public, label: 'Public - can be seen by everyone'});
 		this.set('spaceTypeOptions', spaceTypeOptions);
-		this.set('spaceType', spaceTypeOptions.findBy('id', folder.get('folderType')));
+		this.set('spaceType', spaceTypeOptions.findBy('id', folder.get('spaceType')));
 
 		this.set('allowLikes', folder.get('allowLikes'));
 
@@ -75,7 +75,7 @@ export default Component.extend(AuthMixin, Notifier, {
 			if (!this.get('isSpaceAdmin')) return;
 
 			let space = this.get('space');
-			space.set('folderType', this.get('spaceType.id'));
+			space.set('spaceType', this.get('spaceType.id'));
 
 			let allowLikes = this.get('allowLikes');
 			space.set('likes', allowLikes ? this.get('likes') : '');

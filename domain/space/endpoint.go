@@ -20,6 +20,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/event"
@@ -102,6 +103,9 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	sp.UserID = ctx.UserID
 	sp.Type = space.ScopePrivate
 	sp.Lifecycle = wf.LifecycleLive
+	sp.UserID = ctx.UserID
+	sp.Created = time.Now().UTC()
+	sp.Revised = time.Now().UTC()
 
 	err = h.Store.Space.Add(ctx, sp)
 	if err != nil {
@@ -745,6 +749,17 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Close out the delete process
+	ctx.Transaction.Commit()
+
+	// Record this action.
+	ctx.Transaction, err = h.Runtime.Db.Beginx()
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
 	err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
 		SpaceID:      id,
 		SourceType:   activity.SourceTypeSpace,
@@ -753,8 +768,6 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		ctx.Transaction.Rollback()
 		h.Runtime.Log.Error(method, err)
 	}
-
-	ctx.Transaction.Commit()
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSpaceDelete)
 

@@ -17,7 +17,7 @@ import "github.com/documize/community/model"
 type Category struct {
 	model.BaseEntity
 	OrgID   string `json:"orgId"`
-	SpaceID string `json:"folderId"`
+	SpaceID string `json:"spaceId"`
 	Name    string `json:"category"`
 }
 
@@ -26,7 +26,7 @@ type Member struct {
 	model.BaseEntity
 	OrgID      string `json:"orgId"`
 	CategoryID string `json:"categoryId"`
-	SpaceID    string `json:"folderId"`
+	SpaceID    string `json:"spaceId"`
 	DocumentID string `json:"documentId"`
 }
 

@@ -7,21 +7,29 @@
 	margin: 0 0 5px 0;
 
 	> .material-icons {
-		font-size: 1.4rem;
+		font-size: 1.5rem;
 		color: $color-gray;
 		vertical-align: top;
 		margin-right: 5px;
 	}
 
 	> .selected {
-		color: $color-link;
+		color: $color-blue;
 	}
 
 	&:hover {
-		color: $color-link;
+		color: $color-blue;
+	}
+
+	> .text {
+		display: inline-block;
+		font-size: 1.1rem;
+		vertical-align: sub;
+		color: $color-off-black;
 	}
 }
 
 .ui-radio-selected {
-	color: $color-link;
+	color: $color-blue;
 }
+

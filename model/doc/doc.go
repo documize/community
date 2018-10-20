@@ -23,7 +23,7 @@ import (
 type Document struct {
 	model.BaseEntity
 	OrgID        string              `json:"orgId"`
-	SpaceID      string              `json:"folderId"`
+	SpaceID      string              `json:"spaceId"`
 	UserID       string              `json:"userId"`
 	Job          string              `json:"job"`
 	Location     string              `json:"location"`
@@ -73,7 +73,7 @@ type DocumentMetaViewer struct {
 
 // DocumentMetaEditor contains the "edit" metatdata content.
 type DocumentMetaEditor struct {
-	PageID    string    `json:"pageId"`
+	SectionID string    `json:"pageId"`
 	UserID    string    `json:"userId"`
 	Action    string    `json:"action"`
 	Created   time.Time `json:"created"`

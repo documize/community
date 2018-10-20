@@ -21,6 +21,6 @@ type Attachment struct {
 	Job        string `json:"job"`
 	FileID     string `json:"fileId"`
 	Filename   string `json:"filename"`
-	Data       []byte `json:"-"`
+	Data       []byte `json:"data"`
 	Extension  string `json:"extension"`
 }

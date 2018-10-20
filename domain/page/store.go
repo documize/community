@@ -29,7 +29,7 @@ type Store struct {
 }
 
 //**************************************************
-// Page Revisions
+// Page
 //**************************************************
 
 // Add inserts the given page into the page table, adds that page to the queue of pages to index and audits that the page has been added.
@@ -157,7 +157,7 @@ func (s Store) Update(ctx domain.RequestContext, page page.Page, refID, userID s
                 c_name, c_body, c_rawbody, c_config, c_created, c_revised)
             SELECT ? AS refid, a.c_orgid, a.c_docid, a.c_userid AS ownerid, a.c_refid AS sectionid,
                 ? AS userid, a.c_contenttype, a.c_type, a.c_name, a.c_body,
-                b.c_rawbody, b.c_config, ? AS c_created, ? As c_revised
+                b.c_rawbody, b.c_config, ? AS c_created, ? AS c_revised
                 FROM dmz_section a, dmz_section_meta b
                 WHERE a.c_refid=? AND a.c_refid=b.c_sectionid`),
 			refID, userID, time.Now().UTC(), time.Now().UTC(), page.RefID)

@@ -43,60 +43,56 @@ func (c *Context) Bind(sql string) string {
 
 // Delete record.
 func (c *Context) Delete(tx *sqlx.Tx, table string, id string) (rows int64, err error) {
-	result, err := tx.Exec(c.Bind("DELETE FROM "+table+" WHERE c_refid=?"), id)
-
-	if err != nil && err != sql.ErrNoRows {
+	_, err = tx.Exec(c.Bind("DELETE FROM "+table+" WHERE c_refid=?"), id)
+	if err == sql.ErrNoRows {
+		err = nil
+	}
+	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to delete row in table %s", table))
 		return
 	}
-
-	rows, err = result.RowsAffected()
-	err = nil
 
 	return
 }
 
 // DeleteConstrained record constrained to Organization using refid.
 func (c *Context) DeleteConstrained(tx *sqlx.Tx, table string, orgID, id string) (rows int64, err error) {
-	result, err := tx.Exec(c.Bind("DELETE FROM "+table+" WHERE c_orgid=? AND c_refid=?"), orgID, id)
-
-	if err != nil && err != sql.ErrNoRows {
+	_, err = tx.Exec(c.Bind("DELETE FROM "+table+" WHERE c_orgid=? AND c_refid=?"), orgID, id)
+	if err == sql.ErrNoRows {
+		err = nil
+	}
+	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to delete row in table %s", table))
 		return
 	}
-
-	rows, err = result.RowsAffected()
-	err = nil
 
 	return
 }
 
 // DeleteConstrainedWithID record constrained to Organization using non refid.
 func (c *Context) DeleteConstrainedWithID(tx *sqlx.Tx, table string, orgID, id string) (rows int64, err error) {
-	result, err := tx.Exec(c.Bind("DELETE FROM "+table+" WHERE c_orgid=? AND id=?"), orgID, id)
-
-	if err != nil && err != sql.ErrNoRows {
-		err = errors.Wrap(err, fmt.Sprintf("unable to delete row in table %s", table))
+	_, err = tx.Exec(c.Bind("DELETE FROM "+table+" WHERE c_orgid=? AND id=?"), orgID, id)
+	if err == sql.ErrNoRows {
+		err = nil
+	}
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("unable to delete rows by id: %s", id))
 		return
 	}
-
-	rows, err = result.RowsAffected()
-	err = nil
 
 	return
 }
 
 // DeleteWhere free form query.
 func (c *Context) DeleteWhere(tx *sqlx.Tx, statement string) (rows int64, err error) {
-	result, err := tx.Exec(statement)
-
-	if err != nil && err != sql.ErrNoRows {
+	_, err = tx.Exec(statement)
+	if err == sql.ErrNoRows {
+		err = nil
+	}
+	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to delete rows: %s", statement))
 		return
 	}
-
-	rows, err = result.RowsAffected()
-	err = nil
 
 	return
 }

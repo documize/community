@@ -21,7 +21,7 @@ import (
 type SitemapDocument struct {
 	DocumentID string
 	Document   string
-	FolderID   string
+	SpaceID    string
 	Folder     string
 	Revised    time.Time
 }

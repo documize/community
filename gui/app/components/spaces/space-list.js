@@ -36,13 +36,13 @@ export default Component.extend(TooltipMixin, NotifierMixin, AuthMixin, {
 		let privateFolders = [];
 
 		_.each(folders, folder => {
-			if (folder.get('folderType') === constants.FolderType.Public) {
+			if (folder.get('spaceType') === constants.SpaceType.Public) {
 				publicFolders.pushObject(folder);
 			}
-			if (folder.get('folderType') === constants.FolderType.Private) {
+			if (folder.get('spaceType') === constants.SpaceType.Private) {
 				privateFolders.pushObject(folder);
 			}
-			if (folder.get('folderType') === constants.FolderType.Protected) {
+			if (folder.get('spaceType') === constants.SpaceType.Protected) {
 				protectedFolders.pushObject(folder);
 			}
 		});

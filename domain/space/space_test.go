@@ -31,6 +31,9 @@ func TestSpace(t *testing.T) {
 		sp.UserID = ctx.UserID
 		sp.Type = space.ScopePublic
 		sp.Name = "PublicTestSpace"
+		sp.UserID = ctx.UserID
+		sp.Created = time.Now().UTC()
+		sp.Revised = time.Now().UTC()
 
 		err = s.Space.Add(ctx, sp)
 		if err != nil {
@@ -98,6 +101,9 @@ func TestSpace(t *testing.T) {
 		sp2.OrgID = ctx.OrgID
 		sp2.Type = space.ScopePrivate
 		sp2.Name = "PrivateTestSpace"
+		sp.UserID = ctx.UserID
+		sp.Created = time.Now().UTC()
+		sp.Revised = time.Now().UTC()
 
 		err = s.Space.Add(ctx, sp2)
 		if err != nil {

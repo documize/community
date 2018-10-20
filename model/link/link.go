@@ -17,7 +17,7 @@ import "github.com/documize/community/model"
 type Link struct {
 	model.BaseEntity
 	OrgID            string `json:"orgId"`
-	SpaceID          string `json:"folderId"`
+	SpaceID          string `json:"spaceId"`
 	UserID           string `json:"userId"`
 	LinkType         string `json:"linkType"`
 	SourceDocumentID string `json:"sourceDocumentId"`
@@ -32,7 +32,7 @@ type Link struct {
 type Candidate struct {
 	RefID      string `json:"id"`
 	LinkType   string `json:"linkType"`
-	SpaceID    string `json:"folderId"`
+	SpaceID    string `json:"spaceId"`
 	DocumentID string `json:"documentId"`
 	TargetID   string `json:"targetId"`
 	Title      string `json:"title"`   // what we label the link

@@ -51,9 +51,9 @@ func (h *Handler) upload(w http.ResponseWriter, r *http.Request) (string, string
 	method := "conversion.upload"
 	ctx := domain.GetRequestContext(r)
 
-	folderID := request.Param(r, "folderID")
+	spaceID := request.Param(r, "spaceID")
 
-	if !permission.CanUploadDocument(ctx, *h.Store, folderID) {
+	if !permission.CanUploadDocument(ctx, *h.Store, spaceID) {
 		response.WriteForbiddenError(w)
 		return "", "", ""
 	}
@@ -92,10 +92,10 @@ func (h *Handler) upload(w http.ResponseWriter, r *http.Request) (string, string
 
 	h.Runtime.Log.Info(fmt.Sprintf("Org %s (%s) [Uploaded] %s", ctx.OrgName, ctx.OrgID, filename.Filename))
 
-	return job, folderID, ctx.OrgID
+	return job, spaceID, ctx.OrgID
 }
 
-func (h *Handler) convert(w http.ResponseWriter, r *http.Request, job, folderID string, conversion api.ConversionJobRequest) {
+func (h *Handler) convert(w http.ResponseWriter, r *http.Request, job, spaceID string, conversion api.ConversionJobRequest) {
 	method := "conversion.upload"
 	ctx := domain.GetRequestContext(r)
 
@@ -145,7 +145,7 @@ func (h *Handler) convert(w http.ResponseWriter, r *http.Request, job, folderID 
 	}
 
 	// Fetch space where document resides.
-	sp, err := h.Store.Space.Get(ctx, folderID)
+	sp, err := h.Store.Space.Get(ctx, spaceID)
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)
@@ -160,9 +160,6 @@ func (h *Handler) convert(w http.ResponseWriter, r *http.Request, job, folderID 
 		h.Runtime.Log.Error(method, err)
 		return
 	}
-
-	a, _ := h.Store.Attachment.GetAttachments(ctx, nd.RefID)
-	go h.Indexer.IndexDocument(ctx, nd, a)
 
 	response.WriteJSON(w, nd)
 }
@@ -252,7 +249,6 @@ func processDocument(ctx domain.RequestContext, r *env.Runtime, store *store.Sto
 		ActivityType: activity.TypeCreated})
 
 	err = ctx.Transaction.Commit()
-
 	if err != nil {
 		err = errors.Wrap(err, "cannot commit new document import")
 		return
@@ -260,12 +256,11 @@ func processDocument(ctx domain.RequestContext, r *env.Runtime, store *store.Sto
 
 	newDocument, err = store.Document.Get(ctx, documentID)
 	if err != nil {
-		ctx.Transaction.Rollback()
 		err = errors.Wrap(err, "cannot fetch new document")
 		return
 	}
 
-	indexer.IndexDocument(ctx, newDocument, da)
+	go indexer.IndexDocument(ctx, newDocument, da)
 
 	store.Audit.Record(ctx, audit.EventTypeDocumentUpload)
 

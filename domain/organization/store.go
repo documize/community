@@ -18,7 +18,6 @@ import (
 	"time"
 
 	"github.com/documize/community/core/env"
-	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/store"
 	"github.com/documize/community/model/org"
@@ -33,11 +32,7 @@ type Store struct {
 
 // AddOrganization inserts the passed organization record into the organization table.
 func (s Store) AddOrganization(ctx domain.RequestContext, org org.Organization) (err error) {
-	org.Created = time.Now().UTC()
-	org.Revised = time.Now().UTC()
-
-	_, err = ctx.Transaction.Exec(
-		s.Bind("INSERT INTO dmz_org (c_refid, c_company, c_title, c_message, c_domain, c_email, c_anonaccess, c_serial, c_maxtags, c_created, c_revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"),
+	_, err = ctx.Transaction.Exec(s.Bind("INSERT INTO dmz_org (c_refid, c_company, c_title, c_message, c_domain, c_email, c_anonaccess, c_serial, c_maxtags, c_created, c_revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"),
 		org.RefID, org.Company, org.Title, org.Message, strings.ToLower(org.Domain),
 		strings.ToLower(org.Email), org.AllowAnonymousAccess, org.Serial, org.MaxTags, org.Created, org.Revised)
 
@@ -50,22 +45,16 @@ func (s Store) AddOrganization(ctx domain.RequestContext, org org.Organization) 
 
 // GetOrganization returns the Organization reocrod from the organization database table with the given id.
 func (s Store) GetOrganization(ctx domain.RequestContext, id string) (org org.Organization, err error) {
-	stmt, err := s.Runtime.Db.Preparex(s.Bind(`SELECT id, c_refid AS refid,
+	err = s.Runtime.Db.Get(&org, s.Bind(`SELECT id, c_refid AS refid,
         c_title AS title, c_message AS message, c_domain AS domain,
         c_service AS conversionendpoint, c_email AS email, c_serial AS serial, c_active AS active,
         c_anonaccess AS allowanonymousaccess, c_authprovider AS authprovider,
-        coalesce(c_authconfig,` + s.EmptyJSON() + `) AS authconfig, c_maxtags AS maxtags,
+        coalesce(c_authconfig,`+s.EmptyJSON()+`) AS authconfig, c_maxtags AS maxtags,
         c_created AS created, c_revised AS revised
         FROM dmz_org
-        WHERE c_refid=?`))
-	defer streamutil.Close(stmt)
+        WHERE c_refid=?`),
+		id)
 
-	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("unable to prepare select for org %s", id))
-		return
-	}
-
-	err = stmt.Get(&org, id)
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to get org %s", id))
 		return

@@ -20,8 +20,8 @@ export default Model.extend({
 	firstname: attr('string'),
 	lastname: attr('string'),
 	name: attr('string'),
-	folderId: attr('string'),
-	folderType: attr('number', { defaultValue: 0 }),
+	spaceId: attr('string'),
+	spaceType: attr('number', { defaultValue: 0 }),
 
 	fullname: computed('firstname', 'lastname', function () {
 		return `${this.get('firstname')} ${this.get('lastname')}`;
