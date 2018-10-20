@@ -9,7 +9,7 @@
 //
 // https://documize.com
 
-// Package eventing records and propagates events based on user actions.
+// Package audit records and propagates events based on user actions.
 package audit
 
 import "time"
@@ -93,6 +93,8 @@ const (
 	EventTypeWorkflowApprovedChange    EventType = "approved-change"
 	EventTypeWorkflowRejectedChange    EventType = "rejected-change"
 	EventTypeWorkflowPublishRequested  EventType = "requested-publication"
+	EventTypeDatabaseBackup            EventType = "backedup-database"
+	EventTypeDatabaseRestore           EventType = "restored-database"
 
 	// EventTypeVersionAdd records addition of version
 	EventTypeVersionAdd EventType = "added-version"

@@ -36,6 +36,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/documize/community/core/request"
+	"github.com/documize/community/model/audit"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -128,13 +129,15 @@ func (h *Handler) Backup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
 	h.Runtime.Log.Info(fmt.Sprintf("Backup completed for %s by %s, size %d", ctx.OrgID, ctx.UserID, x))
+	h.Store.Audit.Record(ctx, audit.EventTypeDatabaseBackup)
 
 	// Delete backup file if not requested to keep it.
 	if !spec.Retain {
 		os.Remove(filename)
 	}
+
+	w.WriteHeader(http.StatusOK)
 }
 
 // Restore receives ZIP file for restore operation.
