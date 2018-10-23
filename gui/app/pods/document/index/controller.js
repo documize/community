@@ -21,8 +21,9 @@ export default Controller.extend(Tooltips, Notifier, {
 	templateService: service('template'),
 	sectionService: service('section'),
 	linkService: service('link'),
+	router: service(),
 	tab: 'content',
-	queryParams: ['currentPageId'],
+	queryParams: ['currentPageId', 'source'],
 	showRevisions: computed('permissions', 'document.protection', function() {
 		if (!this.get('session.viewUsers')) return false;
 		if (this.get('document.protection') === this.get('constants').ProtectionType.None) return true;
@@ -235,6 +236,12 @@ export default Controller.extend(Tooltips, Notifier, {
 				this.set('tab', 'content');
 				this.get('target._routerMicrolib').refresh();
 			});
+		},
+
+		onEditMeta() {
+			if (!this.get('permissions.documentEdit')) return;
+
+			this.get('router').transitionTo('document.settings', {queryParams: {tab: 'general'}});
 		},
 
 		refresh(reloadPage) {
