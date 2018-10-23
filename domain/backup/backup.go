@@ -68,7 +68,7 @@ type backupItem struct {
 
 // Export data to JSON format, indented to look nice.
 func toJSON(v interface{}) (string, error) {
-	j, err := json.MarshalIndent(v, "", "    ")
+	j, err := json.Marshal(v)
 	if err != nil {
 		return "", err
 	}
