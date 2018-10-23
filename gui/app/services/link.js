@@ -63,15 +63,15 @@ export default Service.extend(Notifier, {
 
 		if (link.linkType === "section" || link.linkType === "tab" || link.linkType === "document") {
 			href = `/link/${link.linkType}/${link.id}`;
-			result = `<a data-documize='true' data-link-space-id='${link.folderId}' data-link-id='${link.id}' data-link-target-document-id='${link.documentId}' data-link-target-id='${link.targetId}' data-link-type='${link.linkType}' href='${href}'>${link.title}</a>`;
+			result = `<a data-documize='true' data-link-space-id='${link.spaceId}' data-link-id='${link.id}' data-link-target-document-id='${link.documentId}' data-link-target-id='${link.targetId}' data-link-type='${link.linkType}' href='${href}'>${link.title}</a>`;
 		}
 		if (link.linkType === "file") {
 			href = `${endpoint}/public/attachments/${orgId}/${link.targetId}`;
-			result = `<a data-documize='true' data-link-space-id='${link.folderId}' data-link-id='${link.id}' data-link-target-document-id='${link.documentId}' data-link-target-id='${link.targetId}' data-link-type='${link.linkType}' href='${href}'>${link.title}</a>`;
+			result = `<a data-documize='true' data-link-space-id='${link.spaceId}' data-link-id='${link.id}' data-link-target-document-id='${link.documentId}' data-link-target-id='${link.targetId}' data-link-type='${link.linkType}' href='${href}'>${link.title}</a>`;
 		}
 		if (link.linkType === "network") {
 			href = `fileto://${link.externalId}`;
-			result = `<a data-documize='true' data-link-space-id='${link.folderId}' data-link-id='${link.id}' data-link-target-document-id='${link.documentId}' data-link-target-id='${link.targetId}' data-link-external-id='${link.externalId}' data-link-type='${link.linkType}' href='${href}'>${link.title}</a>`;
+			result = `<a data-documize='true' data-link-space-id='${link.spaceId}' data-link-id='${link.id}' data-link-target-document-id='${link.documentId}' data-link-target-id='${link.targetId}' data-link-external-id='${link.externalId}' data-link-type='${link.linkType}' href='${href}'>${link.title}</a>`;
 		}
 
 		return result;
@@ -89,7 +89,7 @@ export default Service.extend(Notifier, {
 			orphan: false
 		};
 
-		link.orphan = _.isEmpty(link.linkId) || _.isEmpty(link.documentId) || _.isEmpty(link.folderId) || (_.isEmpty(link.targetId) && _.isEmpty(link.externalId));
+		link.orphan = _.isEmpty(link.linkId) || _.isEmpty(link.documentId) || _.isEmpty(link.spaceId) || (_.isEmpty(link.targetId) && _.isEmpty(link.externalId));
 
 		// we check latest state of link using database data
 		let existing = outboundLinks.findBy('id', link.linkId);
@@ -109,7 +109,7 @@ export default Service.extend(Notifier, {
 		}
 
 		let router = this.get('router');
-		let targetFolder = this.get('store').peekRecord('folder', link.folderId);
+		let targetFolder = this.get('store').peekRecord('folder', link.spaceId);
 		let targetDocument = this.get('store').peekRecord('document', link.documentId);
 		let folderSlug = is.null(targetFolder) ? "s" : targetFolder.get('slug');
 		let documentSlug = is.null(targetDocument) ? "d" : targetDocument.get('slug');
@@ -118,13 +118,13 @@ export default Service.extend(Notifier, {
 		if (link.linkType === "section" || link.linkType === "tab") {
 			let options = {};
 			options['pageId'] = link.targetId;
-			router.transitionTo('document', link.folderId, folderSlug, link.documentId, documentSlug, { queryParams: options });
+			router.transitionTo('document', link.spaceId, folderSlug, link.documentId, documentSlug, { queryParams: options });
 			return;
 		}
 
 		// handle document link
 		if (link.linkType === "document") {
-			router.transitionTo('document', link.folderId, folderSlug, link.documentId, documentSlug);
+			router.transitionTo('document', link.spaceId, folderSlug, link.documentId, documentSlug);
 			return;
 		}
 
