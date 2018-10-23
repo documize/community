@@ -76,7 +76,6 @@ func (p *Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http
 	}
 
 	defer r.Body.Close() // ignore error
-
 	body, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {

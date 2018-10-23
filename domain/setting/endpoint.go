@@ -72,7 +72,6 @@ func (h *Handler) SetSMTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	defer r.Body.Close()
-
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())
@@ -173,7 +172,6 @@ func (h *Handler) SetLicense(w http.ResponseWriter, r *http.Request) {
 	}
 
 	defer r.Body.Close()
-
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())
@@ -251,7 +249,6 @@ func (h *Handler) SetAuthConfig(w http.ResponseWriter, r *http.Request) {
 	}
 
 	defer r.Body.Close()
-
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())

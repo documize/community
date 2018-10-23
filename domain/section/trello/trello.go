@@ -54,7 +54,6 @@ func (p *Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http
 
 	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)
-
 	if err != nil {
 		provider.WriteMessage(w, "trello", "Bad body")
 		return

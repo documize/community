@@ -60,10 +60,6 @@ func (s Store) Get(ctx domain.RequestContext, id string) (document doc.Document,
         WHERE c_orgid=? AND c_refid=?`),
 		ctx.OrgID, id)
 
-	if err != nil {
-		err = errors.Wrap(err, "execute select document")
-	}
-
 	return
 }
 
