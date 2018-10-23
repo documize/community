@@ -58,9 +58,9 @@ Space view.
 
 ## Latest version
 
-[Community edition: v1.72.0](https://github.com/documize/community/releases)
+[Community edition: v1.72.1](https://github.com/documize/community/releases)
 
-[Enterprise edition: v1.74.0](https://documize.com/downloads)
+[Enterprise edition: v1.74.1](https://documize.com/downloads)
 
 ## OS support
 
@@ -77,7 +77,7 @@ Heck, Documize will probably run just fine on a Raspberry Pi 3.
 Documize supports the following database systems:
 
 - PostgreSQL (v9.6+)
-- MySQL (v5.7.10+ and v8.0.0+)
+- MySQL (v5.7.10+ and v8.0.12+)
 - Percona (v5.7.16-10+)
 - MariaDB (10.3.0+)
 
