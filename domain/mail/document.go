@@ -62,6 +62,6 @@ func (m *Mailer) DocumentApprover(recipient, inviterName, inviterEmail, url, doc
 		m.Runtime.Log.Error(fmt.Sprintf("%s - unable to send email", method), err)
 	}
 	if !ok {
-		m.Runtime.Log.Info(fmt.Sprintf("%s unable to send email"))
+		m.Runtime.Log.Info(fmt.Sprintf("%s unable to send email", method))
 	}
 }

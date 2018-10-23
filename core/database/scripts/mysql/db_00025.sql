@@ -29,7 +29,6 @@ RENAME TABLE
     `userevent` TO dmz_audit_log,
     `useraction` TO dmz_action;
 
-
 -- field renaming
 ALTER TABLE dmz_org
     CHANGE `refid` `c_refid` VARCHAR(20) NOT NULL,
@@ -90,7 +89,6 @@ ALTER TABLE dmz_group_member
     CHANGE `roleid` `c_groupid` VARCHAR(20) NOT NULL,
     CHANGE `userid` `c_userid` VARCHAR(20) NOT NULL;
 
-
 ALTER TABLE dmz_permission
     CHANGE `orgid` `c_orgid` VARCHAR(20) NOT NULL,
     CHANGE `who` `c_who` VARCHAR(30) NOT NULL,
@@ -100,7 +98,6 @@ ALTER TABLE dmz_permission
     CHANGE `location` `c_location` VARCHAR(100) NOT NULL,
     CHANGE `refid` `c_refid` VARCHAR(20) NOT NULL,
     CHANGE `created` `c_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
-
 
 ALTER TABLE dmz_doc
     CHANGE `refid` `c_refid` VARCHAR(20) NOT NULL,
@@ -333,7 +330,6 @@ ALTER TABLE dmz_action
 	CHANGE `reftypeid` `c_reftypeid` VARCHAR(20) NOT NULL,
 	CHANGE `created` `c_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	CHANGE `revised` `c_revised` TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
-
 
 -- deprecations
 DROP TABLE IF EXISTS `participant`;

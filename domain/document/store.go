@@ -161,10 +161,6 @@ func (s Store) PublicDocuments(ctx domain.RequestContext, orgID string) (documen
 	return
 }
 
-/*
-	FROM document d LEFT JOIN label l ON l.refid=d.labelid
-*/
-
 // Update changes the given document record to the new values, updates search information and audits the action.
 func (s Store) Update(ctx domain.RequestContext, document doc.Document) (err error) {
 	document.Revised = time.Now().UTC()
