@@ -262,6 +262,7 @@ func (h *Handler) Authenticate(w http.ResponseWriter, r *http.Request) {
 	// so we reject login request.
 	if len(u.Accounts) == 0 {
 		response.WriteUnauthorizedError(w)
+		err = fmt.Errorf("no user accounts found for %s", u.Email)
 		h.Runtime.Log.Error(method, err)
 		return
 	}
@@ -271,6 +272,7 @@ func (h *Handler) Authenticate(w http.ResponseWriter, r *http.Request) {
 		if ac.OrgID == org.RefID {
 			if ac.Active == false {
 				response.WriteUnauthorizedError(w)
+				err = fmt.Errorf("no ACTIVE user account found for %s", u.Email)
 				h.Runtime.Log.Error(method, err)
 				return
 			}
