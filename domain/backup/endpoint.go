@@ -102,6 +102,9 @@ func (h *Handler) Backup(w http.ResponseWriter, r *http.Request) {
 
 	// Read backup file into memory.
 	// DEBT: write file directly to HTTP response stream?
+	// defer out.Close()
+	// io.Copy(out, resp.Body)
+
 	bk, err := ioutil.ReadFile(filename)
 	if err != nil {
 		response.WriteServerError(w, method, err)
