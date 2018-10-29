@@ -57,7 +57,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	method := "space.add"
 	ctx := domain.GetRequestContext(r)
 
-	if !h.Runtime.Product.License.IsValid() {
+	if !h.Runtime.Product.License.IsValid(ctx.OrgID) {
 		response.WriteBadLicense(w)
 		return
 	}
@@ -582,7 +582,7 @@ func (h *Handler) Remove(w http.ResponseWriter, r *http.Request) {
 	method := "space.remove"
 	ctx := domain.GetRequestContext(r)
 
-	if !h.Runtime.Product.License.IsValid() {
+	if !h.Runtime.Product.License.IsValid(ctx.OrgID) {
 		response.WriteBadLicense(w)
 		return
 	}
@@ -675,7 +675,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	method := "space.delete"
 	ctx := domain.GetRequestContext(r)
 
-	if !h.Runtime.Product.License.IsValid() {
+	if !h.Runtime.Product.License.IsValid(ctx.OrgID) {
 		response.WriteBadLicense(w)
 		return
 	}

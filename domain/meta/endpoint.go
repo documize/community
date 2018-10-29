@@ -60,7 +60,7 @@ func (h *Handler) Meta(w http.ResponseWriter, r *http.Request) {
 	data.Version = h.Runtime.Product.Version
 	data.Revision = h.Runtime.Product.Revision
 	data.Edition = h.Runtime.Product.Edition
-	data.Valid = h.Runtime.Product.License.Valid
+	data.Valid = h.Runtime.Product.License.IsValid(org.RefID)
 	data.ConversionEndpoint = org.ConversionEndpoint
 	data.License = h.Runtime.Product.License
 	data.Storage = h.Runtime.StoreProvider.Type()

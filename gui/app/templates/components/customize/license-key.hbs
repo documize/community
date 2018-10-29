@@ -15,7 +15,7 @@
 			<label for="product-license-xml">Optional Enterprise Edition License Key</label>
 			{{textarea id="product-license-xml" value=license rows="18" class=(if LicenseError 'form-control is-invalid' 'form-control')}}
 			{{#if appMeta.valid}}
-				{{#if (eq appMeta.edition "Enterprise")}}
+				{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
 					<p class="mt-2 color-green">Registered to {{appMeta.license.email}} @ {{appMeta.license.name}}</p>
 					<p class="mt-2 color-green">{{appMeta.license.package}} package up to {{appMeta.license.seats}} users</p>
 					{{#if appMeta.license.trial}}

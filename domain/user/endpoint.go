@@ -51,7 +51,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	method := "user.Add"
 	ctx := domain.GetRequestContext(r)
 
-	if !h.Runtime.Product.License.IsValid() {
+	if !h.Runtime.Product.License.IsValid(ctx.OrgID) {
 		response.WriteBadLicense(w)
 	}
 

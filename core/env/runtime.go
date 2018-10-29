@@ -23,7 +23,7 @@ type Runtime struct {
 	Db            *sqlx.DB
 	StoreProvider StoreProvider
 	Log           Logger
-	Product       ProdInfo
+	Product       Product
 }
 
 const (
@@ -38,12 +38,4 @@ const (
 
 	// SiteModeBadDB redirects to db-error.html page
 	SiteModeBadDB = "3"
-)
-
-const (
-	// CommunityEdition is AGPL product variant
-	CommunityEdition = "Community"
-
-	// EnterpriseEdition is commercial licensed product variant
-	EnterpriseEdition = "Enterprise"
 )

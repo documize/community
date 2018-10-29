@@ -38,7 +38,7 @@ type SiteMeta struct {
 	Version              string        `json:"version"`
 	Revision             int           `json:"revision"`
 	MaxTags              int           `json:"maxTags"`
-	Edition              string        `json:"edition"`
+	Edition              env.Edition   `json:"edition"`
 	Valid                bool          `json:"valid"`
 	ConversionEndpoint   string        `json:"conversionEndpoint"`
 	License              env.License   `json:"license"`

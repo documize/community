@@ -7,12 +7,12 @@
 					<li class="item cursor-auto">
 						<img class="logo" src="/assets/img/icon-white-64x64.png" />
 					</li>
-					{{#if (eq appMeta.edition 'Community')}}
+					{{#if (eq appMeta.edition constants.Product.CommunityEdition)}}
 						<li class="item">
 							{{#link-to "folders" class=(if (eq selectItem 'spaces') 'link selected' 'link')}}SPACES{{/link-to}}
 						</li>
 					{{/if}}
-					{{#if (eq appMeta.edition 'Enterprise')}}
+					{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
 						{{#if session.viewDashboard}}
 							<li class="item">
 								{{#link-to "dashboard" class=(if (eq selectItem 'dashboard') 'link selected' 'link')}}ACTIONS{{/link-to}}
@@ -36,10 +36,10 @@
 					<i class="material-icons">menu</i>
 				</div>
 				<div class="dropdown-menu" aria-labelledby="top-nav-hamburger">
-					{{#if (eq appMeta.edition 'Community')}}
+					{{#if (eq appMeta.edition constants.Product.CommunityEdition)}}
 						{{#link-to "folders" class="dropdown-item"}}Spaces{{/link-to}}
 					{{/if}}
-					{{#if (eq appMeta.edition 'Enterprise')}}
+					{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
 						{{#link-to "folders" class="dropdown-item"}}Spaces{{/link-to}}
 						{{#if session.viewDashboard}}
 							{{#link-to "dashboard" class="dropdown-item"}}Actions{{/link-to}}
@@ -178,7 +178,7 @@
 						<div class="dotcom">
 							<a href="https://documize.com">https://documize.com</a>
 						</div>
-						{{#if (eq appMeta.edition 'Community')}}
+						{{#if (eq appMeta.edition constants.Product.CommunityEdition)}}
 							<div class="copyright">
 								&copy; Documize Inc. All rights reserved.
 							</div>

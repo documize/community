@@ -14,6 +14,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/domain/section"
@@ -36,21 +37,20 @@ func main() {
 	web.Embed = embed.NewEmbedder()
 
 	// product details
-	rt.Product = env.ProdInfo{}
+	rt.Product = env.Product{}
 	rt.Product.Major = "1"
 	rt.Product.Minor = "72"
 	rt.Product.Patch = "1"
 	rt.Product.Revision = 181022154519
 	rt.Product.Version = fmt.Sprintf("%s.%s.%s", rt.Product.Major, rt.Product.Minor, rt.Product.Patch)
-	rt.Product.Edition = "Community"
+	rt.Product.Edition = env.CommunityEdition
 	rt.Product.Title = fmt.Sprintf("%s Edition", rt.Product.Edition)
-	rt.Product.License = env.License{}
-	rt.Product.License.Seats = 1
-	rt.Product.License.Valid = true
-	rt.Product.License.Trial = false
-	rt.Product.License.Edition = "Community"
 
-	// setup store
+	// Community edition is good to go with no user limits.
+	rt.Product.License = env.License{Edition: env.CommunityEdition, Seats: env.Seats6, Trial: false,
+		Start: time.Now().UTC(), End: time.Now().UTC().Add(time.Hour * 24 * 7 * time.Duration(52))}
+
+	// Setup data store.
 	s := store.Store{}
 
 	// parse settings from command line and environment

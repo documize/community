@@ -23,6 +23,7 @@ func StripAuthSecrets(r *env.Runtime, provider, config string) string {
 	switch provider {
 	case auth.AuthProviderDocumize:
 		return config
+
 	case auth.AuthProviderKeycloak:
 		c := auth.KeycloakConfig{}
 		err := json.Unmarshal([]byte(config), &c)
@@ -41,6 +42,7 @@ func StripAuthSecrets(r *env.Runtime, provider, config string) string {
 		}
 
 		return string(j)
+
 	case auth.AuthProviderLDAP:
 		c := auth.LDAPConfig{}
 		err := json.Unmarshal([]byte(config), &c)

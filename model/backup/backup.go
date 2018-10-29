@@ -30,7 +30,7 @@ type Manifest struct {
 	OrgID string `json:"org"`
 
 	// Product edition at the time of the backup.
-	Edition string `json:"edition"`
+	Edition env.Edition `json:"edition"`
 
 	// When the backup took place.
 	Created time.Time `json:"created"`
