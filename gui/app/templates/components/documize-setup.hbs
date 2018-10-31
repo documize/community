@@ -25,7 +25,7 @@
 		<div class="form-group">
 			<label for="adminPassword">Password</label>
 			{{input id="adminPassword" type="password" value=model.password class=(if hasEmptyPasswordError 'form-control is-invalid' 'form-control')}}
-			<small class="form-text text-muted">Something you can remember without writing it down</small>
+			<small class="form-text text-muted">Pick something strong and unique that you don't use anywhere else</small>
 		</div>
 		<button type="submit" class="btn btn-success mt-5" {{action 'save'}}>{{buttonLabel}}</button>
 	</form>
