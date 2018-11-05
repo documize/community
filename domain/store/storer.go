@@ -12,7 +12,6 @@
 package store
 
 import (
-	"github.com/documize/community/core/env"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/model/account"
 	"github.com/documize/community/model/activity"
@@ -123,7 +122,7 @@ type UserStorer interface {
 	UpdateUserPassword(ctx domain.RequestContext, userID, salt, password string) (err error)
 	DeactiveUser(ctx domain.RequestContext, userID string) (err error)
 	ForgotUserPassword(ctx domain.RequestContext, email, token string) (err error)
-	CountActiveUsers() (c []env.LicenseUserAcount)
+	CountActiveUsers() (c []domain.SubscriptionUserAccount)
 	MatchUsers(ctx domain.RequestContext, text string, maxMatches int) (u []user.User, err error)
 }
 

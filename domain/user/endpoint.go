@@ -51,10 +51,9 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	method := "user.Add"
 	ctx := domain.GetRequestContext(r)
 
-	if !h.Runtime.Product.License.IsValid(ctx.OrgID) {
+	if !h.Runtime.Product.IsValid(ctx) {
 		response.WriteBadLicense(w)
 	}
-
 	if !ctx.Administrator {
 		response.WriteForbiddenError(w)
 		return
@@ -101,7 +100,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	requestedPassword := secrets.GenerateRandomPassword()
 	userModel.Salt = secrets.GenerateSalt()
 	userModel.Password = secrets.GeneratePassword(requestedPassword, userModel.Salt)
-	userModel.LastVersion = ctx.AppVersion
+	userModel.LastVersion = fmt.Sprintf("v%s", h.Runtime.Product.Version)
 
 	// only create account if not dupe
 	addUser := true

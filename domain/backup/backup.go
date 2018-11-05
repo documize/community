@@ -206,7 +206,7 @@ func (b backerHandler) produce(id string) (files []backupItem, err error) {
 func (b backerHandler) manifest(id string) (string, error) {
 	m := m.Manifest{
 		ID:        id,
-		Edition:   b.Runtime.Product.License.Edition,
+		Edition:   b.Runtime.Product.Edition,
 		Version:   b.Runtime.Product.Version,
 		Major:     b.Runtime.Product.Major,
 		Minor:     b.Runtime.Product.Minor,

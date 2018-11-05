@@ -43,9 +43,9 @@ export default Service.extend({
 	// for bugfix releases, only admin is made aware of new release and end users see no What's New messaging
 	updateAvailable: false,
 
-	invalidLicense() {
-		return this.valid === false;
-	},
+	// invalidLicense() {
+	// 	return this.valid === false;
+	// },
 
 	getBaseUrl(endpoint) {
 		return [this.get('endpoint'), endpoint].join('/');

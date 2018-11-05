@@ -13,7 +13,7 @@ package org
 
 import "github.com/documize/community/model"
 
-// Organization defines a company that uses this app.
+// Organization defines a tenant that uses this app.
 type Organization struct {
 	model.BaseEntity
 	Company              string `json:"company"`
@@ -28,4 +28,5 @@ type Organization struct {
 	MaxTags              int    `json:"maxTags"`
 	Serial               string `json:"serial"`
 	Active               bool   `json:"active"`
+	Subscription         string
 }

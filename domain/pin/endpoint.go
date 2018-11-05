@@ -45,7 +45,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !h.Runtime.Product.License.IsValid(ctx.OrgID) {
+	if !h.Runtime.Product.IsValid(ctx) {
 		response.WriteBadLicense(w)
 		return
 	}
@@ -154,7 +154,7 @@ func (h *Handler) DeleteUserPin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !h.Runtime.Product.License.IsValid(ctx.OrgID) {
+	if !h.Runtime.Product.IsValid(ctx) {
 		response.WriteBadLicense(w)
 		return
 	}
@@ -198,7 +198,7 @@ func (h *Handler) UpdatePinSequence(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !h.Runtime.Product.License.IsValid(ctx.OrgID) {
+	if !h.Runtime.Product.IsValid(ctx) {
 		response.WriteBadLicense(w)
 		return
 	}

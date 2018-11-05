@@ -210,8 +210,6 @@ func RegisterEndpoints(rt *env.Runtime, s *store.Store) {
 	// global admin routes
 	AddPrivate(rt, "global/smtp", []string{"GET", "OPTIONS"}, nil, setting.SMTP)
 	AddPrivate(rt, "global/smtp", []string{"PUT", "OPTIONS"}, nil, setting.SetSMTP)
-	AddPrivate(rt, "global/license", []string{"GET", "OPTIONS"}, nil, setting.License)
-	AddPrivate(rt, "global/license", []string{"PUT", "OPTIONS"}, nil, setting.SetLicense)
 	AddPrivate(rt, "global/auth", []string{"GET", "OPTIONS"}, nil, setting.AuthConfig)
 	AddPrivate(rt, "global/auth", []string{"PUT", "OPTIONS"}, nil, setting.SetAuthConfig)
 	AddPrivate(rt, "global/search/status", []string{"GET", "OPTIONS"}, nil, meta.SearchStatus)

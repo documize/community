@@ -14,9 +14,10 @@ package main
 
 import (
 	"fmt"
-	"time"
+	"os"
 
 	"github.com/documize/community/core/env"
+	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/section"
 	"github.com/documize/community/domain/store"
 	"github.com/documize/community/edition/boot"
@@ -37,26 +38,27 @@ func main() {
 	web.Embed = embed.NewEmbedder()
 
 	// product details
-	rt.Product = env.Product{}
+	rt.Product = domain.Product{}
 	rt.Product.Major = "1"
-	rt.Product.Minor = "72"
-	rt.Product.Patch = "1"
+	rt.Product.Minor = "73"
+	rt.Product.Patch = "0"
 	rt.Product.Revision = 181022154519
 	rt.Product.Version = fmt.Sprintf("%s.%s.%s", rt.Product.Major, rt.Product.Minor, rt.Product.Patch)
-	rt.Product.Edition = env.CommunityEdition
+	rt.Product.Edition = domain.CommunityEdition
 	rt.Product.Title = fmt.Sprintf("%s Edition", rt.Product.Edition)
-
-	// Community edition is good to go with no user limits.
-	rt.Product.License = env.License{Edition: env.CommunityEdition, Seats: env.Seats6, Trial: false,
-		Start: time.Now().UTC(), End: time.Now().UTC().Add(time.Hour * 24 * 7 * time.Duration(52))}
 
 	// Setup data store.
 	s := store.Store{}
 
-	// parse settings from command line and environment
-	rt.Flags = env.ParseFlags()
-	flagsOK := boot.InitRuntime(&rt, &s)
-	if flagsOK {
+	// Parse flags/envvars.
+	flagsOK := false
+	rt.Flags, flagsOK = env.ParseFlags()
+	if !flagsOK {
+		os.Exit(0)
+	}
+
+	bootOK := boot.InitRuntime(&rt, &s)
+	if bootOK {
 		// runtime.Log = runtime.Log.SetDB(runtime.Db)
 	}
 

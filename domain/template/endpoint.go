@@ -90,7 +90,7 @@ func (h *Handler) SaveAs(w http.ResponseWriter, r *http.Request) {
 	method := "template.saved"
 	ctx := domain.GetRequestContext(r)
 
-	if !h.Runtime.Product.License.IsValid(ctx.OrgID) {
+	if !h.Runtime.Product.IsValid(ctx) {
 		response.WriteBadLicense(w)
 		return
 	}
@@ -343,7 +343,7 @@ func (h *Handler) Use(w http.ResponseWriter, r *http.Request) {
 	d.UserID = ctx.UserID
 	d.Name = docTitle
 
-	if h.Runtime.Product.Edition == env.CommunityEdition {
+	if h.Runtime.Product.Edition == domain.CommunityEdition {
 		d.Lifecycle = workflow.LifecycleLive
 	} else {
 		d.Lifecycle = sp.Lifecycle

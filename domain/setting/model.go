@@ -12,27 +12,7 @@
 // Package setting manages both global and user level settings
 package setting
 
-import "encoding/xml"
-
-type licenseXML struct {
-	XMLName   xml.Name `xml:"DocumizeLicense"`
-	Key       string
-	Signature string
-}
-
-type licenseJSON struct {
-	Key       string `json:"key"`
-	Signature string `json:"signature"`
-}
-
 type authData struct {
 	AuthProvider string `json:"authProvider"`
 	AuthConfig   string `json:"authConfig"`
 }
-
-/*
-<DocumizeLicense>
-  <Key>some key</Key>
-  <Signature>some signature</Signature>
-</DocumizeLicense>
-*/

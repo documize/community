@@ -25,12 +25,13 @@ import (
 type Flags struct {
 	DBConn            string // database connection string
 	Salt              string // the salt string used to encode JWT tokens
-	DBType            string // (optional) database type
+	DBType            string // database type
 	SSLCertFile       string // (optional) name of SSL certificate PEM file
 	SSLKeyFile        string // (optional) name of SSL key PEM file
 	HTTPPort          string // (optional) HTTP or HTTPS port
 	ForceHTTPPort2SSL string // (optional) HTTP that should be redirected to HTTPS
 	SiteMode          string // (optional) if 1 then serve offline web page
+	Location          string // reserved
 }
 
 // SSLEnabled returns true if both cert and key were provided at runtime.
@@ -71,8 +72,9 @@ var flagList progFlags
 var loadMutex sync.Mutex
 
 // ParseFlags loads command line and OS environment variables required by the program to function.
-func ParseFlags() (f Flags) {
-	var dbConn, dbType, jwtKey, siteMode, port, certFile, keyFile, forcePort2SSL string
+func ParseFlags() (f Flags, ok bool) {
+	ok = true
+	var dbConn, dbType, jwtKey, siteMode, port, certFile, keyFile, forcePort2SSL, location string
 
 	register(&jwtKey, "salt", false, "the salt string used to encode JWT tokens, if not set a random value will be generated")
 	register(&certFile, "cert", false, "the cert.pem file used for https")
@@ -82,8 +84,11 @@ func ParseFlags() (f Flags) {
 	register(&siteMode, "offline", false, "set to '1' for OFFLINE mode")
 	register(&dbType, "dbtype", true, "specify the database provider: mysql|percona|mariadb|postgresql")
 	register(&dbConn, "db", true, `'database specific connection string for example "user:password@tcp(localhost:3306)/dbname"`)
+	register(&location, "location", false, `reserved`)
 
-	parse("db")
+	if !parse("db") {
+		ok = false
+	}
 
 	f.DBConn = dbConn
 	f.ForceHTTPPort2SSL = forcePort2SSL
@@ -94,7 +99,13 @@ func ParseFlags() (f Flags) {
 	f.SSLKeyFile = keyFile
 	f.DBType = strings.ToLower(dbType)
 
-	return f
+	// reserved
+	if len(location) == 0 {
+		location = "selfhost"
+	}
+	f.Location = strings.ToLower(location)
+
+	return f, ok
 }
 
 // register prepares flag for subsequent parsing
@@ -116,7 +127,7 @@ func register(target *string, name string, required bool, usage string) {
 }
 
 // parse loads flags from OS environment and command line switches
-func parse(doFirst string) {
+func parse(doFirst string) (ok bool) {
 	loadMutex.Lock()
 	defer loadMutex.Unlock()
 
@@ -141,10 +152,12 @@ func parse(doFirst string) {
 						}
 						fmt.Fprintln(os.Stderr)
 						flag.Usage()
-						return
+						return false
 					}
 				}
 			}
 		}
 	}
+
+	return true
 }

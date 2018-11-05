@@ -20,8 +20,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-// RequestContext provides per request scoped values required
-// by HTTP handlers.
+// RequestContext provides per request scoped values required for HTTP handlers.
 type RequestContext struct {
 	AllowAnonymousAccess bool
 	Authenticated        bool
@@ -36,14 +35,13 @@ type RequestContext struct {
 	Expires              time.Time
 	Fullname             string
 	Transaction          *sqlx.Tx
-	AppVersion           string
-
-	Administrator bool
-	Analytics     bool
-	Active        bool
-	Editor        bool
-	GlobalAdmin   bool
-	ViewUsers     bool
+	Administrator        bool
+	Analytics            bool
+	Active               bool
+	Editor               bool
+	GlobalAdmin          bool
+	ViewUsers            bool
+	Subscription         Subscription
 }
 
 //GetAppURL returns full HTTP url for the app

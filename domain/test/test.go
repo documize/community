@@ -35,12 +35,8 @@ func startRuntime() (rt *env.Runtime, s *store.Store) {
 	rt.Product.Version = fmt.Sprintf("%s.%s.%s", rt.Product.Major, rt.Product.Minor, rt.Product.Patch)
 	rt.Product.Edition = "Test"
 	rt.Product.Title = fmt.Sprintf("%s Edition", rt.Product.Edition)
-	rt.Product.License = env.License{}
-	rt.Product.License.Seats = 1
-	rt.Product.License.Trial = false
-	rt.Product.License.Edition = env.CommunityEdition
 
-	// parse settings from command line and environment
+    // parse settings from command line and environment
 	rt.Flags = env.ParseFlags()
 	boot.InitRuntime(rt, s)
 

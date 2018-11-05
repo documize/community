@@ -13,6 +13,7 @@
 package env
 
 import (
+	"github.com/documize/community/domain"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -23,7 +24,7 @@ type Runtime struct {
 	Db            *sqlx.DB
 	StoreProvider StoreProvider
 	Log           Logger
-	Product       Product
+	Product       domain.Product
 }
 
 const (

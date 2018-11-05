@@ -14,7 +14,6 @@ package user
 import (
 	"database/sql"
 	"fmt"
-	"github.com/documize/community/core/env"
 	"strconv"
 	"strings"
 	"time"
@@ -313,7 +312,7 @@ func (s Store) ForgotUserPassword(ctx domain.RequestContext, email, token string
 }
 
 // CountActiveUsers returns the number of active users in the system.
-func (s Store) CountActiveUsers() (c []env.LicenseUserAcount) {
+func (s Store) CountActiveUsers() (c []domain.SubscriptionUserAccount) {
 	err := s.Runtime.Db.Select(&c, "SELECT c_orgid AS orgid, COUNT(*) AS users FROM dmz_user_account WHERE c_active=true GROUP BY c_orgid ORDER BY c_orgid")
 
 	if err != nil && err != sql.ErrNoRows {

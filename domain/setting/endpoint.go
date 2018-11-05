@@ -14,13 +14,11 @@ package setting
 
 import (
 	"encoding/json"
-	"encoding/xml"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 
 	"github.com/documize/community/core/env"
-	"github.com/documize/community/core/event"
 	"github.com/documize/community/core/request"
 	"github.com/documize/community/core/response"
 	"github.com/documize/community/core/streamutil"
@@ -126,96 +124,6 @@ func (h *Handler) SetSMTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response.WriteJSON(w, result)
-}
-
-// License returns product license
-func (h *Handler) License(w http.ResponseWriter, r *http.Request) {
-	ctx := domain.GetRequestContext(r)
-
-	if !ctx.GlobalAdmin {
-		response.WriteForbiddenError(w)
-		return
-	}
-
-	config, _ := h.Store.Setting.Get("EDITION-LICENSE", "")
-	if len(config) == 0 {
-		config = "{}"
-	}
-
-	x := &licenseXML{Key: "", Signature: ""}
-	lj := licenseJSON{}
-
-	err := json.Unmarshal([]byte(config), &lj)
-	if err == nil {
-		x.Key = lj.Key
-		x.Signature = lj.Signature
-	} else {
-		h.Runtime.Log.Error("failed to JSON unmarshal EDITION-LICENSE", err)
-	}
-
-	output, err := xml.Marshal(x)
-	if err != nil {
-		h.Runtime.Log.Error("failed to XML marshal EDITION-LICENSE", err)
-	}
-
-	response.WriteBytes(w, output)
-}
-
-// SetLicense persists product license
-func (h *Handler) SetLicense(w http.ResponseWriter, r *http.Request) {
-	method := "setting.SetLicense"
-	ctx := domain.GetRequestContext(r)
-
-	if !ctx.GlobalAdmin {
-		response.WriteForbiddenError(w)
-		return
-	}
-
-	defer r.Body.Close()
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		response.WriteBadRequestError(w, method, err.Error())
-		return
-	}
-
-	var config string
-	config = string(body)
-	lj := licenseJSON{}
-	x := licenseXML{Key: "", Signature: ""}
-
-	err1 := xml.Unmarshal([]byte(config), &x)
-	if err1 == nil {
-		lj.Key = x.Key
-		lj.Signature = x.Signature
-	} else {
-		h.Runtime.Log.Error("failed to XML unmarshal EDITION-LICENSE", err)
-	}
-
-	j, err2 := json.Marshal(lj)
-	js := "{}"
-	if err2 == nil {
-		js = string(j)
-	} else {
-		h.Runtime.Log.Error("failed to JSON marshal EDITION-LICENSE", err2)
-	}
-
-	h.Store.Setting.Set("EDITION-LICENSE", js)
-
-	/* ctx.Transaction, err = h.Runtime.Db.Beginx()*/
-	//if err != nil {
-	//response.WriteServerError(w, method, err)
-	//return
-	//}
-
-	/*ctx.Transaction.Commit()*/
-
-	h.Runtime.Log.Info("License changed")
-
-	event.Handler().Publish(string(event.TypeSystemLicenseChange))
-
-	h.Store.Audit.Record(ctx, audit.EventTypeSystemLicense)
-
-	response.WriteEmpty(w)
 }
 
 // AuthConfig returns installation-wide auth configuration

@@ -31,10 +31,10 @@ type Store struct {
 }
 
 // AddOrganization inserts the passed organization record into the organization table.
-func (s Store) AddOrganization(ctx domain.RequestContext, org org.Organization) (err error) {
-	_, err = ctx.Transaction.Exec(s.Bind("INSERT INTO dmz_org (c_refid, c_company, c_title, c_message, c_domain, c_email, c_anonaccess, c_serial, c_maxtags, c_created, c_revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"),
-		org.RefID, org.Company, org.Title, org.Message, strings.ToLower(org.Domain),
-		strings.ToLower(org.Email), org.AllowAnonymousAccess, org.Serial, org.MaxTags, org.Created, org.Revised)
+func (s Store) AddOrganization(ctx domain.RequestContext, o org.Organization) (err error) {
+	_, err = ctx.Transaction.Exec(s.Bind("INSERT INTO dmz_org (c_refid, c_company, c_title, c_message, c_domain, c_email, c_anonaccess, c_serial, c_maxtags, c_sub, c_created, c_revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"),
+		o.RefID, o.Company, o.Title, o.Message, strings.ToLower(o.Domain),
+		strings.ToLower(o.Email), o.AllowAnonymousAccess, o.Serial, o.MaxTags, o.Subscription, o.Created, o.Revised)
 
 	if err != nil {
 		err = errors.Wrap(err, "unable to execute insert for org")
@@ -49,8 +49,8 @@ func (s Store) GetOrganization(ctx domain.RequestContext, id string) (org org.Or
         c_title AS title, c_message AS message, c_domain AS domain,
         c_service AS conversionendpoint, c_email AS email, c_serial AS serial, c_active AS active,
         c_anonaccess AS allowanonymousaccess, c_authprovider AS authprovider,
-        coalesce(c_authconfig,`+s.EmptyJSON()+`) AS authconfig, c_maxtags AS maxtags,
-        c_created AS created, c_revised AS revised
+        coalesce(c_authconfig,`+s.EmptyJSON()+`) AS authconfig, coalesce(c_sub,`+s.EmptyJSON()+`) AS subscription,
+        c_maxtags AS maxtags, c_created AS created, c_revised AS revised
         FROM dmz_org
         WHERE c_refid=?`),
 		id)
@@ -80,8 +80,8 @@ func (s Store) GetOrganizationByDomain(subdomain string) (o org.Organization, er
         c_title AS title, c_message AS message, c_domain AS domain,
         c_service AS conversionendpoint, c_email AS email, c_serial AS serial, c_active AS active,
         c_anonaccess AS allowanonymousaccess, c_authprovider AS authprovider,
-        coalesce(c_authconfig,`+s.EmptyJSON()+`) AS authconfig, c_maxtags AS maxtags,
-        c_created AS created, c_revised AS revised
+        coalesce(c_authconfig,`+s.EmptyJSON()+`) AS authconfig, coalesce(c_sub,`+s.EmptyJSON()+`) AS subscription,
+        c_maxtags AS maxtags, c_created AS created, c_revised AS revised
         FROM dmz_org
         WHERE c_domain=? AND c_active=true`),
 		subdomain)
@@ -95,8 +95,8 @@ func (s Store) GetOrganizationByDomain(subdomain string) (o org.Organization, er
         c_title AS title, c_message AS message, c_domain AS domain,
         c_service AS conversionendpoint, c_email AS email, c_serial AS serial, c_active AS active,
         c_anonaccess AS allowanonymousaccess, c_authprovider AS authprovider,
-        coalesce(c_authconfig,`+s.EmptyJSON()+`) AS authconfig, c_maxtags AS maxtags,
-        c_created AS created, c_revised AS revised
+        coalesce(c_authconfig,`+s.EmptyJSON()+`) AS authconfig, coalesce(c_sub,`+s.EmptyJSON()+`) AS subscription,
+        c_maxtags AS maxtags, c_created AS created, c_revised AS revised
         FROM dmz_org
         WHERE c_domain='' AND c_active=true`))
 
@@ -113,7 +113,7 @@ func (s Store) UpdateOrganization(ctx domain.RequestContext, org org.Organizatio
 
 	_, err = ctx.Transaction.NamedExec(`UPDATE dmz_org SET
         c_title=:title, c_message=:message, c_service=:conversionendpoint, c_email=:email,
-        c_anonaccess=:allowanonymousaccess, c_maxtags=:maxtags, c_revised=:revised
+        c_anonaccess=:allowanonymousaccess, c_sub=:subscription, c_maxtags=:maxtags, c_revised=:revised
         WHERE c_refid=:refid`,
 		&org)
 

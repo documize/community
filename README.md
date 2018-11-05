@@ -58,9 +58,9 @@ Space view.
 
 ## Latest version
 
-[Community edition: v1.72.1](https://github.com/documize/community/releases)
+[Community edition: v1.73.0](https://github.com/documize/community/releases)
 
-[Enterprise edition: v1.74.1](https://documize.com/downloads)
+[Enterprise edition: v1.75.0](https://documize.com/downloads)
 
 ## OS support
 
@@ -100,7 +100,7 @@ Documize supports the following (evergreen) browsers:
 Documize is built with the following technologies:
 
 - EmberJS (v3.1.2)
-- Go (v1.11.1)
+- Go (v1.11.2)
 
 ## Authentication options
 
