@@ -9,7 +9,6 @@
 //
 // https://documize.com
 
-import $ from 'jquery';
 import { empty } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import Notifier from '../../mixins/notifier';
@@ -18,20 +17,21 @@ import Component from '@ember/component';
 export default Component.extend(Notifier, {
 	appMeta: service(),
 	global: service(),
-	LicenseError: empty('license'),
-	changelog: '',
+	licenseError: empty('license'),
+	subscription: null,
+	planCloud: false,
+	planSelfhost: false,
 
-	init() {
+	didReceiveAttrs() {
 		this._super(...arguments);
-
-		let self = this;
-		let cacheBuster = + new Date();
-		$.ajax({
-			url: `https://storage.googleapis.com/documize/news/summary.html?cb=${cacheBuster}`,
-			type: 'GET',
-			dataType: 'html',
-			success: function (response) {
-				self.set('changelog', response);
+		this.get('global').getSubscription().then((subs) => {
+			this.set('subscription', subs);
+			if (subs.plan === 'Installed') {
+				this.set('planCloud', false);
+				this.set('planSelfhost', true);
+			} else {
+				this.set('planCloud', true);
+				this.set('planSelfhost', false);
 			}
 		});
 	},
@@ -40,7 +40,7 @@ export default Component.extend(Notifier, {
 		saveLicense() {
 			this.showWait();
 
-			this.get('global').saveLicense(this.get('license')).then(() => {
+			this.get('global').setLicense(this.get('license')).then(() => {
 				this.showDone();
 				window.location.reload();
 			});

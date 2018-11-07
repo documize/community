@@ -17,6 +17,7 @@ import AjaxService from 'ember-ajax/services/ajax';
 export default AjaxService.extend({
 	session: service(),
 	localStorage: service(),
+	appMeta: service(),
 	host: config.apiHost,
 	namespace: config.apiNamespace,
 
@@ -34,20 +35,27 @@ export default AjaxService.extend({
 
 	handleResponse(status, headers /*, payload*/) {
 		try {
+			// Handle user permission changes.
 			let user = this.get('session.session.content.authenticated.user');
 			let userUpdate = headers['x-documize-status'];
 			let appVersion = headers['x-documize-version'];
 
-			// when unauthorized on local API AJAX calls, redirect to app root
+			// Unauthorized local API AJAX calls redirect to app root.
 			if (status === 401 && is.not.undefined(appVersion) && is.not.include(window.location.href, '/auth')) {
 				this.get('localStorage').clearAll();
 				window.location.href = 'auth/login';
 			}
 
-			if (this.get('session.authenticated') && is.not.empty(userUpdate)  && is.not.undefined(userUpdate)) {
-				let latest = JSON.parse(userUpdate);
+			// Handle billing/licensing issue.
+			if (status === 402 || headers['x-documize-subscription'] === 'false') {
+				this.set('appMeta.valid', false);
+			}
 
-				if (!latest.active || user.editor !== latest.editor || user.admin !== latest.admin || user.analytics !== latest.analytics || user.viewUsers !== latest.viewUsers) {
+			if (this.get('session.authenticated') && is.not.empty(userUpdate) && is.not.undefined(userUpdate)) {
+				let latest = JSON.parse(userUpdate);
+				// Permission change means re-validation.
+				if (!latest.active || user.editor !== latest.editor || user.admin !== latest.admin ||
+					user.analytics !== latest.analytics || user.viewUsers !== latest.viewUsers) {
 					this.get('localStorage').clearAll();
 					window.location.href = 'auth/login';
 				}

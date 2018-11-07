@@ -38,14 +38,9 @@ export default Service.extend({
 	secureMode: false,
 	maxTags: 3,
 	storageProvider: '',
-
-	// for major.minor semver release detection
+	location: 'selfhost',
 	// for bugfix releases, only admin is made aware of new release and end users see no What's New messaging
 	updateAvailable: false,
-
-	// invalidLicense() {
-	// 	return this.valid === false;
-	// },
 
 	getBaseUrl(endpoint) {
 		return [this.get('endpoint'), endpoint].join('/');

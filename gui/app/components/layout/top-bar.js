@@ -13,9 +13,10 @@ import $ from 'jquery';
 import { notEmpty } from '@ember/object/computed';
 import { inject as service } from '@ember/service'
 import ModalMixin from '../../mixins/modal';
+import TooltipMixin from '../../mixins/tooltip';
 import Component from '@ember/component';
 
-export default Component.extend(ModalMixin, {
+export default Component.extend(ModalMixin, TooltipMixin, {
 	classNames: ['layout-header', 'non-printable'],
 	tagName: 'header',
 	folderService: service('folder'),
@@ -69,6 +70,8 @@ export default Component.extend(ModalMixin, {
 			this.eventBus.subscribe('pinChange', this, 'setupPins');
 			this.setupPins();
 		}
+
+		this.renderTooltips();
 	},
 
 	setupPins() {
@@ -87,6 +90,7 @@ export default Component.extend(ModalMixin, {
 	willDestroyElement() {
 		this._super(...arguments);
 
+		this.removeTooltips();
 		this.eventBus.unsubscribe('pinChange');
 	},
 
@@ -113,6 +117,14 @@ export default Component.extend(ModalMixin, {
 				this.get('session').seenNewVersion();
 				this.set('hasWhatsNew', false);
 			}
+		},
+
+		onBilling() {
+			if (!this.get('session.isAdmin')) {
+				return;
+			}
+
+			this.get('router').transitionTo('customize.billing');
 		}
 	}
 });

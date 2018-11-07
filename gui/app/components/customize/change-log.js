@@ -9,26 +9,31 @@
 //
 // https://documize.com
 
+import $ from 'jquery';
 import { inject as service } from '@ember/service';
-import Route from '@ember/routing/route';
-import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
+import Notifier from '../../mixins/notifier';
+import Component from '@ember/component';
 
-export default Route.extend(AuthenticatedRouteMixin, {
+export default Component.extend(Notifier, {
 	appMeta: service(),
-	session: service(),
 	global: service(),
+	changelog: '',
 
-	beforeModel() {
-		if (!this.get("session.isGlobalAdmin")) {
-			this.transitionTo('auth.login');
-		}
+	init() {
+		this._super(...arguments);
+
+		let self = this;
+		let cacheBuster = + new Date();
+		$.ajax({
+			url: `https://storage.googleapis.com/documize/news/summary.html?cb=${cacheBuster}`,
+			type: 'GET',
+			dataType: 'html',
+			success: function (response) {
+				self.set('changelog', response);
+			}
+		});
 	},
 
-	model() {
-		return this.get('global').getLicense();
-	},
-
-	activate() {
-		this.get('browser').setTitle('Product Licensing & Updates');
+	actions: {
 	}
 });

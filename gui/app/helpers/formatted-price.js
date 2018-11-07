@@ -9,16 +9,24 @@
 //
 // https://documize.com
 
-import Route from '@ember/routing/route';
-import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
+import { helper } from '@ember/component/helper';
 
-export default Route.extend(AuthenticatedRouteMixin, {
-	beforeModel() {
-		// this.transitionTo('folders');
-	},
+export function formattedPrice(params) {
+	let pence = params[0];
 
-	activate: function () {
-		this._super(...arguments);
-		this.browser.setTitleWithoutSuffix('Aw, Snap!');
+	if(is.not.number(pence)) {
+		return '$0'
 	}
-});
+
+	let p = parseInt(pence);
+
+	if(p === 0) {
+		return '$0'
+	}
+
+	let a = pence / 100;
+
+	return `$` + a;
+}
+
+export default helper(formattedPrice);

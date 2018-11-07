@@ -9,16 +9,25 @@
 //
 // https://documize.com
 
-import Route from '@ember/routing/route';
+import { inject as service } from '@ember/service';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
+import Route from '@ember/routing/route';
 
 export default Route.extend(AuthenticatedRouteMixin, {
+	appMeta: service(),
+	session: service(),
+	global: service(),
+
 	beforeModel() {
-		// this.transitionTo('folders');
+		if (!this.get("session.isAdmin")) {
+			this.transitionTo('auth.login');
+		}
 	},
 
-	activate: function () {
-		this._super(...arguments);
-		this.browser.setTitleWithoutSuffix('Aw, Snap!');
+	model() {
+	},
+
+	activate() {
+		this.get('browser').setTitle('Product Changelog');
 	}
 });
