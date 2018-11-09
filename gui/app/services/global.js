@@ -234,5 +234,15 @@ export default Service.extend({
 
 			xhr.send(data);
 		});
-	}
+	},
+
+	deactivate() {
+		if(this.get('sessionService.isAdmin')) {
+			return this.get('ajax').request(`deactivate`, {
+				method: 'POST',
+			}).then(() => {
+				return;
+			});
+		}
+	},
 });

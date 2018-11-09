@@ -130,3 +130,38 @@
 		{{/if}}
 	</form>
 </div>
+
+{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
+	{{#if (eq appMeta.location 'cloud')}}
+		<div class="row">
+			<div class="col-sm-4"></div>
+			<div class="col-sm-7">
+				<div class="view-customize">
+					<div class="deactivation-zone">
+						<p>Let us know if you would like to close your account or cancel your subscription.</p>
+						<p><span class="font-weight-bold">WARNING: </span>All data will be deleted so please download a complete backup of all your data.</p>
+						<p>Requests can take up to 24 hours to process.</p>
+						{{#link-to 'customize.backup' class="btn btn-success"}}PERFORM BACKUP{{/link-to}}
+						<div class="button-gap" />
+						<button class="btn btn-danger" {{action 'onDeactivate'}}>REQUEST ACCOUNT CLOSURE</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	{{/if}}
+{{/if}}
+
+<div id="deactivation-modal" class="modal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">Deactivation Requested</div>
+			<div class="modal-body">
+				<p>Your request has been sent and will be processed shortly.</p>
+				<p>If you haven't already, perform a backup to download all your data.</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>

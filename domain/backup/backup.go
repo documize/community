@@ -21,6 +21,8 @@ package backup
 // the file is deleted at the end of the process.
 //
 // The backup file contains a manifest file that describes the backup.
+//
+// TODO: explore writing straight to HTTP response via https://github.com/mholt/archiver
 
 import (
 	"archive/zip"

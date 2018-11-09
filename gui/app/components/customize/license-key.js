@@ -12,9 +12,10 @@
 import { empty } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import Notifier from '../../mixins/notifier';
+import Modals from '../../mixins/modal';
 import Component from '@ember/component';
 
-export default Component.extend(Notifier, {
+export default Component.extend(Notifier, Modals, {
 	appMeta: service(),
 	global: service(),
 	licenseError: empty('license'),
@@ -43,6 +44,13 @@ export default Component.extend(Notifier, {
 			this.get('global').setLicense(this.get('license')).then(() => {
 				this.showDone();
 				window.location.reload();
+			});
+		},
+
+		onDeactivate() {
+			this.get('global').deactivate().then(() => {
+				this.showDone();
+				this.modalOpen("#deactivation-modal", {"show": true});
 			});
 		}
 	}
