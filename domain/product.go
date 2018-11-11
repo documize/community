@@ -119,6 +119,11 @@ func (p *Product) IsValid(ctx RequestContext) bool {
 		if time.Now().UTC().Before(ctx.Subscription.End) && uc <= int(ctx.Subscription.Seats) {
 			return true
 		}
+	} else {
+		// First 10 is free for Enterprise edition.
+		if Seats1 == ctx.Subscription.Seats && time.Now().UTC().Before(ctx.Subscription.End) {
+			return true
+		}
 	}
 
 	return false

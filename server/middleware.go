@@ -169,7 +169,7 @@ func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http
 			}
 		}
 
-		// Tag all HTTP calls with subscription statu
+		// Tag all HTTP calls with subscription status
 		subs := "false"
 		if m.Runtime.Product.IsValid(rc) {
 			subs = "true"
