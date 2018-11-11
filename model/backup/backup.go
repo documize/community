@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/documize/community/core/env"
+	"github.com/documize/community/domain"
 	"github.com/documize/community/model"
 	"github.com/documize/community/model/org"
 )
@@ -30,7 +31,7 @@ type Manifest struct {
 	OrgID string `json:"org"`
 
 	// Product edition at the time of the backup.
-	Edition string `json:"edition"`
+	Edition domain.Edition `json:"edition"`
 
 	// When the backup took place.
 	Created time.Time `json:"created"`

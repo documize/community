@@ -136,9 +136,11 @@ func (r *restoreHandler) PerformRestore(b []byte, l int64) (err error) {
 	}
 
 	// Config.
-	err = r.dmzConfig()
-	if err != nil {
-		return
+	if r.Context.GlobalAdmin {
+		err = r.dmzConfig()
+		if err != nil {
+			return
+		}
 	}
 
 	// Audit Log.
@@ -449,6 +451,11 @@ func (r *restoreHandler) dmzConfig() (err error) {
 	r.Runtime.Log.Info(fmt.Sprintf("Extracted %s", filename))
 
 	for i := range c {
+		// We skip database schema version setting as this varies
+		// between database providers (e.g. MySQL v26, PostgreSQL v2).
+		if strings.ToUpper(c[i].ConfigKey) == "META" {
+			continue
+		}
 		err = r.Store.Setting.Set(c[i].ConfigKey, c[i].ConfigValue)
 		if err != nil {
 			err = errors.Wrap(err, fmt.Sprintf("unable to insert %s %s", filename, c[i].ConfigKey))
@@ -1644,8 +1651,7 @@ func (r *restoreHandler) dmzUser() (err error) {
 				err = errors.Wrap(err, fmt.Sprintf("unable to check email %s", u[i].Email))
 				return
 			}
-			// Existing userID from database overrides all incoming userID values
-			// by using remapUser().
+			// Existing userID from database overrides all incoming userID values by using remapUser().
 			if len(userID) > 0 {
 				r.MapUserID[u[i].RefID] = userID
 				insert = false

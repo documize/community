@@ -41,10 +41,23 @@ export default Service.extend({
 		}
 	},
 
+
+	// Returns product subscription.
+	getSubscription() {
+		if(this.get('sessionService.isAdmin')) {
+			return this.get('ajax').request(`subscription`, {
+				method: 'GET',
+				dataType: 'JSON'
+			}).then((response) => {
+				return response;
+			});
+		}
+	},
+
 	// Returns product license.
 	getLicense() {
-		if(this.get('sessionService.isGlobalAdmin')) {
-			return this.get('ajax').request(`global/license`, {
+		if(this.get('sessionService.isAdmin')) {
+			return this.get('ajax').request(`license`, {
 				method: 'GET',
 				dataType: "text"
 			}).then((response) => {
@@ -53,10 +66,10 @@ export default Service.extend({
 		}
 	},
 
-	// Saves product license.
-	saveLicense(license) {
-		if(this.get('sessionService.isGlobalAdmin')) {
-			return this.get('ajax').request(`global/license`, {
+	// Saves product subscription data.
+	setLicense(license) {
+		if(this.get('sessionService.isAdmin')) {
+			return this.get('ajax').request(`license`, {
 				method: 'PUT',
 				dataType: 'text',
 				data: license
@@ -221,5 +234,15 @@ export default Service.extend({
 
 			xhr.send(data);
 		});
-	}
+	},
+
+	deactivate() {
+		if(this.get('sessionService.isAdmin')) {
+			return this.get('ajax').request(`deactivate`, {
+				method: 'POST',
+			}).then(() => {
+				return;
+			});
+		}
+	},
 });

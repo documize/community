@@ -141,6 +141,58 @@ let constants = EmberObject.extend({
 		MySQL: 'MySQL',
 		PostgreSQL: 'PostgreSQL',
 	},
+
+	// Product is where we try to balance the fine line between useful open core
+	// and the revenue-generating proprietary edition.
+	Product: { // eslint-disable-line ember/avoid-leaking-state-in-ember-objects
+		// CommunityEdition is AGPL licensed open core of product.
+		CommunityEdition: 'Community',
+
+		// EnterpriseEdition is proprietary closed-source product.
+		EnterpriseEdition: 'Enterprise',
+
+		// PackageEssentials provides core capabilities.
+		PackageEssentials:  "Essentials",
+
+		// PackageAdvanced provides analytics, reporting,
+		// content lifecycle, content verisoning, and audit logs.
+		PackageAdvanced: "Advanced",
+
+		// PackagePremium provides actions, feedback capture,
+		// approvals workflow, secure external sharing.
+		PackagePremium: "Premium",
+
+		// PackageDataCenter provides multi-tenanting
+		// and a bunch of professional services.
+		PackageDataCenter: "Data Center",
+
+		// PlanCloud represents *.documize.com hosting.
+		PlanCloud: "Cloud",
+
+		// PlanSelfHost represents privately hosted Documize instance.
+		PlanSelfHost: "Self-host",
+
+		// Seats0 is 0 users.
+		Seats0: 0,
+
+		// Seats1 is 10 users.
+		Seats1: 10,
+
+		// Seats2 is 25 users.
+		Seats2: 25,
+
+		//Seats3 is 50 users.
+		Seats3: 50,
+
+		// Seats4 is 100 users.
+		Seats4: 100,
+
+		//Seats5 is 250 users.
+		Seats5: 250,
+
+		// Seats6 is unlimited.
+		Seats6: 9999
+	}
 });
 
 export default { constants }

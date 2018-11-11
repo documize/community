@@ -14,6 +14,11 @@ import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-rout
 
 export default Route.extend(AuthenticatedRouteMixin, {
 	beforeModel() {
-		this.transitionTo('folders');
+		// this.transitionTo('folders');
+	},
+
+	activate: function () {
+		this._super(...arguments);
+		this.browser.setTitleWithoutSuffix('Aw, Snap!');
 	}
 });

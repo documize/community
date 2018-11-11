@@ -32,15 +32,6 @@ func InstallUpgrade(runtime *env.Runtime, existingDB bool) (err error) {
 		return
 	}
 
-	// Filter out database specific scripts.
-	dbTypeScripts := SpecificScripts(runtime, scripts)
-	if len(dbTypeScripts) == 0 {
-		runtime.Log.Info(fmt.Sprintf("Database: unable to load scripts for database type %s", runtime.StoreProvider.Type()))
-		return
-	}
-
-	runtime.Log.Info(fmt.Sprintf("Database: loaded %d SQL scripts for provider %s", len(dbTypeScripts), runtime.StoreProvider.Type()))
-
 	// Get current database version.
 	currentVersion := 0
 	if existingDB {
@@ -52,6 +43,15 @@ func InstallUpgrade(runtime *env.Runtime, existingDB bool) (err error) {
 
 		runtime.Log.Info(fmt.Sprintf("Database: current version number is %d", currentVersion))
 	}
+
+	// Filter out database specific scripts.
+	dbTypeScripts := SpecificScripts(runtime, scripts)
+	if len(dbTypeScripts) == 0 {
+		runtime.Log.Info(fmt.Sprintf("Database: unable to load scripts for database type %s", runtime.StoreProvider.Type()))
+		return
+	}
+
+	runtime.Log.Info(fmt.Sprintf("Database: loaded %d SQL scripts for provider %s", len(dbTypeScripts), runtime.StoreProvider.Type()))
 
 	// Make a list of scripts to execute based upon current database state.
 	toProcess := []Script{}
@@ -90,52 +90,6 @@ func InstallUpgrade(runtime *env.Runtime, existingDB bool) (err error) {
 	tx.Commit()
 
 	return nil
-
-	// New style schema
-	// if existingDB {
-	// 	amLeader, err = Lock(runtime, len(toProcess))
-	// 	if err != nil {
-	// 		runtime.Log.Error("Database: failed to lock existing database for processing", err)
-	// 	}
-	// } else {
-	// 	// New installation hopes that you are only spinning up one instance of Documize.
-	// 	// Assumption: nobody will perform the intial setup in a clustered environment.
-	// 	amLeader = true
-	// }
-
-	// tx, err := runtime.Db.Beginx()
-	// if err != nil {
-	// 	return Unlock(runtime, tx, err, amLeader)
-	// }
-
-	// // If currently running process is database leader then we perform upgrade.
-	// if amLeader {
-	// 	runtime.Log.Info(fmt.Sprintf("Database: %d SQL scripts to process", len(toProcess)))
-
-	// 	err = runScripts(runtime, tx, toProcess)
-	// 	if err != nil {
-	// 		runtime.Log.Error("Database: error processing SQL script", err)
-	// 	}
-
-	// 	return Unlock(runtime, tx, err, amLeader)
-	// }
-
-	// // If currently running process is a slave instance then we wait for migration to complete.
-	// targetVersion := toProcess[len(toProcess)-1].Version
-
-	// for targetVersion != currentVersion {
-	// 	time.Sleep(time.Second)
-	// 	runtime.Log.Info("Database: slave instance polling for upgrade process completion")
-	// 	tx.Rollback()
-
-	// 	// Get database version and check again.
-	// 	currentVersion, err = CurrentVersion(runtime)
-	// 	if err != nil {
-	// 		return Unlock(runtime, tx, err, amLeader)
-	// 	}
-	// }
-
-	// return Unlock(runtime, tx, nil, amLeader)
 }
 
 // Run SQL scripts to instal or upgrade this database.

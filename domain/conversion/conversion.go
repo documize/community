@@ -174,7 +174,7 @@ func processDocument(ctx domain.RequestContext, r *env.Runtime, store *store.Sto
 	documentID := uniqueid.Generate()
 	document.RefID = documentID
 
-	if r.Product.Edition == env.CommunityEdition {
+	if r.Product.Edition == domain.CommunityEdition {
 		document.Lifecycle = workflow.LifecycleLive
 	} else {
 		document.Lifecycle = sp.Lifecycle

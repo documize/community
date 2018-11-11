@@ -52,7 +52,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	method := "page.add"
 	ctx := domain.GetRequestContext(r)
 
-	if !h.Runtime.Product.License.IsValid() {
+	if !h.Runtime.Product.IsValid(ctx) {
 		response.WriteBadLicense(w)
 		return
 	}
@@ -322,7 +322,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	method := "page.update"
 	ctx := domain.GetRequestContext(r)
 
-	if !h.Runtime.Product.License.IsValid() {
+	if !h.Runtime.Product.IsValid(ctx) {
 		response.WriteBadLicense(w)
 		return
 	}
@@ -510,7 +510,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	method := "page.delete"
 	ctx := domain.GetRequestContext(r)
 
-	if !h.Runtime.Product.License.IsValid() {
+	if !h.Runtime.Product.IsValid(ctx) {
 		response.WriteBadLicense(w)
 		return
 	}
@@ -608,7 +608,7 @@ func (h *Handler) DeletePages(w http.ResponseWriter, r *http.Request) {
 	method := "page.delete.pages"
 	ctx := domain.GetRequestContext(r)
 
-	if !h.Runtime.Product.License.IsValid() {
+	if !h.Runtime.Product.IsValid(ctx) {
 		response.WriteBadLicense(w)
 		return
 	}
@@ -721,7 +721,7 @@ func (h *Handler) ChangePageSequence(w http.ResponseWriter, r *http.Request) {
 	method := "page.sequence"
 	ctx := domain.GetRequestContext(r)
 
-	if !h.Runtime.Product.License.IsValid() {
+	if !h.Runtime.Product.IsValid(ctx) {
 		response.WriteBadLicense(w)
 		return
 	}
@@ -791,7 +791,7 @@ func (h *Handler) ChangePageLevel(w http.ResponseWriter, r *http.Request) {
 	method := "page.level"
 	ctx := domain.GetRequestContext(r)
 
-	if !h.Runtime.Product.License.IsValid() {
+	if !h.Runtime.Product.IsValid(ctx) {
 		response.WriteBadLicense(w)
 		return
 	}
@@ -987,7 +987,7 @@ func (h *Handler) GetDocumentRevisions(w http.ResponseWriter, r *http.Request) {
 	method := "page.document.revisions"
 	ctx := domain.GetRequestContext(r)
 
-	if !h.Runtime.Product.License.IsValid() {
+	if !h.Runtime.Product.IsValid(ctx) {
 		response.WriteBadLicense(w)
 		return
 	}
@@ -1018,7 +1018,7 @@ func (h *Handler) GetRevisions(w http.ResponseWriter, r *http.Request) {
 	method := "page.revisions"
 	ctx := domain.GetRequestContext(r)
 
-	if !h.Runtime.Product.License.IsValid() {
+	if !h.Runtime.Product.IsValid(ctx) {
 		response.WriteBadLicense(w)
 		return
 	}
@@ -1053,7 +1053,7 @@ func (h *Handler) GetDiff(w http.ResponseWriter, r *http.Request) {
 	method := "page.diff"
 	ctx := domain.GetRequestContext(r)
 
-	if !h.Runtime.Product.License.IsValid() {
+	if !h.Runtime.Product.IsValid(ctx) {
 		response.WriteBadLicense(w)
 		return
 	}

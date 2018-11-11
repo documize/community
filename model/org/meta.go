@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/documize/community/core/env"
+	"github.com/documize/community/domain"
 )
 
 // SitemapDocument details a document that can be exposed via Sitemap.
@@ -28,19 +29,18 @@ type SitemapDocument struct {
 
 // SiteMeta holds information associated with an Organization.
 type SiteMeta struct {
-	OrgID                string        `json:"orgId"`
-	Title                string        `json:"title"`
-	Message              string        `json:"message"`
-	URL                  string        `json:"url"`
-	AllowAnonymousAccess bool          `json:"allowAnonymousAccess"`
-	AuthProvider         string        `json:"authProvider"`
-	AuthConfig           string        `json:"authConfig"`
-	Version              string        `json:"version"`
-	Revision             int           `json:"revision"`
-	MaxTags              int           `json:"maxTags"`
-	Edition              string        `json:"edition"`
-	Valid                bool          `json:"valid"`
-	ConversionEndpoint   string        `json:"conversionEndpoint"`
-	License              env.License   `json:"license"`
-	Storage              env.StoreType `json:"storageProvider"`
+	OrgID                string         `json:"orgId"`
+	Title                string         `json:"title"`
+	Message              string         `json:"message"`
+	URL                  string         `json:"url"`
+	AllowAnonymousAccess bool           `json:"allowAnonymousAccess"`
+	AuthProvider         string         `json:"authProvider"`
+	AuthConfig           string         `json:"authConfig"`
+	Version              string         `json:"version"`
+	Revision             int            `json:"revision"`
+	MaxTags              int            `json:"maxTags"`
+	Edition              domain.Edition `json:"edition"`
+	ConversionEndpoint   string         `json:"conversionEndpoint"`
+	Storage              env.StoreType  `json:"storageProvider"`
+	Location             string         `json:"location"` // reserved for internal use
 }

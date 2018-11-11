@@ -83,7 +83,6 @@ func (store *LocalStorageProvider) Convert(params api.ConversionJobRequest) (fil
 	defer func() { os.RemoveAll(inputFolder) }()
 
 	for _, v := range list {
-
 		if v.Size() > 0 && !strings.HasPrefix(v.Name(), ".") && v.Mode().IsRegular() {
 			filename = inputFolder + v.Name()
 			fileData, err := ioutil.ReadFile(filename)
@@ -100,8 +99,6 @@ func (store *LocalStorageProvider) Convert(params api.ConversionJobRequest) (fil
 				fileRequest.LicenseKey = params.LicenseKey
 				fileRequest.LicenseSignature = params.LicenseSignature
 				fileRequest.ServiceEndpoint = params.ServiceEndpoint
-				//fileRequest.Job = params.OrgID + string(os.PathSeparator) + params.Job
-				//fileRequest.OrgID = params.OrgID
 
 				bits := strings.Split(filename, ".")
 				xtn := strings.ToLower(bits[len(bits)-1])

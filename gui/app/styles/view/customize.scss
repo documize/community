@@ -222,4 +222,13 @@
 			}
 		}
 	}
+
+	> .deactivation-zone {
+		@include border-radius(3px);
+		border: 1px solid $color-red;
+		margin: 30px 0;
+		padding: 20px 20px;
+		background-color: lighten($color-red, 60%);
+		color: $color-off-black;
+	}
 }

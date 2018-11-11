@@ -1,69 +1,167 @@
 <div class="row">
 	<div class="col">
 		<div class="view-customize">
-			<h1 class="admin-heading">{{appMeta.edition}} Edition {{appMeta.version}}</h1>
-			<h2 class="sub-heading">Enterprise Edition unlocks
-				<a class="" href="https://documize.com/pricing">premium capabilities and product support</a>
-			</h2>
+			<h1 class="admin-heading">Product Billing & Subscription</h1>
+			<h2 class="sub-heading">Active subscription details</h2>
 		</div>
 	</div>
 </div>
 
 <div class="view-customize">
-	<form class="mt-5 ">
-		<div class="form-group">
-			<label for="product-license-xml">Optional Enterprise Edition License Key</label>
-			{{textarea id="product-license-xml" value=license rows="18" class=(if LicenseError 'form-control is-invalid' 'form-control')}}
-			{{#if appMeta.valid}}
-				{{#if (eq appMeta.edition "Enterprise")}}
-					<p class="mt-2 color-green">Registered to {{appMeta.license.email}} @ {{appMeta.license.name}}</p>
-					<p class="mt-2 color-green">{{appMeta.license.package}} package up to {{appMeta.license.seats}} users</p>
-					{{#if appMeta.license.trial}}
-						<p class="mt-2 color-red">Trial expiry {{formatted-date appMeta.license.end}}</p>
-					{{else}}
-						<p class="mt-2 color-green">Subscribed to {{formatted-date appMeta.license.end}}</p>
-					{{/if}}
-				{{else}}
-					<small class="form-text text-muted">License key is XML format and activates Enterprise edition</small>
+	<form class="my-5 ">
+		<div class="form-group row">
+			<label for="sub-name" class="col-sm-4 col-form-label"></label>
+			<div class="col-sm-7">
+				{{#if (eq subscription.status 0)}}
+					<h3 class="text-danger">Enjoy the Documize free plan!</h3>
+					<a class="btn btn-success" href="https://documize.com/checkout?ref=app&l={{appMeta.location}}&id={{subscription.id}}&o={{appMeta.orgId}}&u={{subscription.seats}}&a={{subscription.activeUsers}}&e={{subscription.email}}">upgrade now &xrarr;</a>
 				{{/if}}
-			{{else}}
-				<p class="mt-2 color-red">License is not valid &mdash; check user count and expiry date</p>
-				<p class="mt-2 color-gray">Registered to {{appMeta.license.email}} @ {{appMeta.license.name}}</p>
-				<p class="mt-2 color-gray">{{appMeta.license.package}} package up to {{appMeta.license.seats}} users</p>
-				{{#if appMeta.license.trial}}
-					<p class="mt-2 color-gray">Trial expiry {{formatted-date appMeta.license.end}}</p>
-				{{else}}
-					<p class="mt-2 color-gray">Subscribed to {{formatted-date appMeta.license.end}}</p>
+				{{#if (eq subscription.status 1)}}
+					<h3 class="text-success">Nice, you have an active product subscription!</h3>
+					<a class="btn btn-success" href="https://documize.com/checkout?ref=app&l={{appMeta.location}}&id={{subscription.id}}&o={{appMeta.orgId}}&u={{subscription.seats}}&a={{subscription.activeUsers}}&e={{subscription.email}}">
+						change plan &xrarr;
+					</a>
 				{{/if}}
-			{{/if}}
+				{{#if (eq subscription.status 2)}}
+					<h3 class="text-danger">Hmm, your product subscription has expired</h3>
+					<a class="btn btn-success" href="https://documize.com/checkout?ref=app&l={{appMeta.location}}&id={{subscription.id}}&o={{appMeta.orgId}}&u={{subscription.seats}}&a={{subscription.activeUsers}}&e={{subscription.email}}">
+						renew &xrarr;
+					</a>
+				{{/if}}
+				{{#if (eq subscription.status 3)}}
+					<h3 class="text-danger">Hmm, {{subscription.activeUsers}} active user count exceeds permitted {{subscription.seats}} user limit</h3>
+					<a class="btn btn-success" href="https://documize.com/checkout?ref=app&l={{appMeta.location}}&id={{subscription.id}}&o={{appMeta.orgId}}&u={{subscription.seats}}&a={{subscription.activeUsers}}&e={{subscription.email}}">
+						upgrade &xrarr;
+					</a>
+				{{/if}}
+				{{#if (eq subscription.status 4)}}
+					<h3 class="text-danger">Hmm, your product subscription is not valid</h3>
+					<a class="btn btn-success" href="https://documize.com/pricing?ref=app">upgrade &xrarr;</a>
+				{{/if}}
+				<br/>
+				<br/>
+			</div>
 		</div>
-		<div class="btn btn-success mt-3" {{action 'saveLicense'}}>Save</div>
+		<div class="form-group row">
+			<label for="sub-id" class="col-sm-4 col-form-label">Customer ID</label>
+			<div class="col-sm-7">
+				{{input id="sub-id" type="text" value=subscription.id class='form-control' readonly=true}}
+				<small class="form-text text-muted">Quote this ID when contacting us</small>
+			</div>
+		</div>
+		<div class="form-group row">
+			<label for="sub-name" class="col-sm-4 col-form-label">Customer Name</label>
+			<div class="col-sm-7">
+				{{input id="sub-name" type="text" value=subscription.name class='form-control' readonly=true}}
+				<small class="form-text text-muted">The business or personal name of our customer</small>
+			</div>
+		</div>
+		<div class="form-group row">
+			<label for="sub-email" class="col-sm-4 col-form-label">Contact Email</label>
+			<div class="col-sm-7">
+				{{input id="sub-email" type="email" value=subscription.email class='form-control' readonly=true}}
+				<small class="form-text text-muted">Where we will send product update and billing notices</small>
+			</div>
+		</div>
+		<div class="form-group row">
+			<label for="sub-seats" class="col-sm-4 col-form-label">Maximum Users</label>
+			<div class="col-sm-7">
+				{{input id="sub-seats" type="number" value=subscription.seats class='form-control' readonly=true}}
+				<small class="form-text text-muted">Your user pack size &mdash; you have {{subscription.activeUsers}} active users at the moment</small>
+			</div>
+		</div>
+
+		{{#if (eq appMeta.location 'selfhost')}}
+			<div class="form-group row">
+				<label for="sub-start" class="col-sm-4 col-form-label">Start Date</label>
+				<div class="col-sm-7">
+					{{input id="sub-start" type="text" value=(formatted-date subscription.start) class='form-control' readonly=true}}
+					<small class="form-text text-muted">When you (re)signed up</small>
+				</div>
+			</div>
+			<div class="form-group row">
+				<label for="sub-end" class="col-sm-4 col-form-label">Renewal Date</label>
+				<div class="col-sm-7">
+					{{input id="sub-end" type="text" value=(formatted-date subscription.end) class='form-control' readonly=true}}
+					<small class="form-text text-muted">The renewal date of your annual subscription</small>
+				</div>
+			</div>
+			<div class="form-group row">
+				<label for="sub-price" class="col-sm-4 col-form-label">Annual Billing</label>
+				<div class="col-sm-7">
+					{{input id="sub-price" type="text" value=(formatted-price subscription.price) class='form-control' readonly=true}}
+					<small class="form-text text-muted">What you pay each year</small>
+				</div>
+			</div>
+		{{else}}
+			<div class="form-group row">
+				<label for="sub-start" class="col-sm-4 col-form-label">Start of Billing</label>
+				<div class="col-sm-7">
+					{{input id="sub-start" type="text" value=(formatted-date subscription.start) class='form-control' readonly=true}}
+					<small class="form-text text-muted">When we first charged your credit card &mdash; charged every 30 days thereafter</small>
+				</div>
+			</div>
+			<div class="form-group row">
+				<label for="sub-price" class="col-sm-4 col-form-label">Monthly Amount</label>
+				<div class="col-sm-7">
+					{{input id="sub-price" type="text" value=(formatted-price subscription.price) class='form-control' readonly=true}}
+					<small class="form-text text-muted">What you pay us each month</small>
+				</div>
+			</div>
+		{{/if}}
+
+		{{#if subscription.trial}}
+			<div class="form-group row">
+				<label for="sub-trial" class="col-sm-4 col-form-label">Trial?</label>
+				<div class="col-sm-7">
+					{{input id="sub-trial" type="text" value="Yes" class='form-control' readonly=true}}
+				</div>
+			</div>
+		{{/if}}
+		{{#if (eq appMeta.location 'selfhost')}}
+			<div class="form-group row">
+				<label for="sub-license" class="col-sm-4 col-form-label">Activation Key</label>
+				<div class="col-sm-7">
+					{{focus-textarea id="sub-license" value=license rows="10" class=(if licenseError 'form-control is-invalid' 'form-control')}}
+					<small class="form-text text-muted">The activation key you received after sign-up</small>
+					<div class="btn btn-secondary mt-3" {{action 'saveLicense'}}>Activate</div>
+				</div>
+			</div>
+		{{/if}}
 	</form>
 </div>
 
-<div class="product-update">
-	<div class="update-summary">
-		{{#if appMeta.updateAvailable}}
-			<a href="https://documize.com/downloads" class="caption">New version available</a>
-			<p class="instructions">
-				To upgrade, replace existing binary and restart Documize. Migrate between Community and Enterprise editions seamlessly.
-			</p>
-		{{else}}
-			<div class="caption">Release Summary</div>
-		{{/if}}
-		<p>
-			<span class="color-off-black">Community Edition {{appMeta.communityLatest}}</span>&nbsp;&nbsp;&nbsp;
-			<a href="https://storage.googleapis.com/documize/downloads/documize-community-windows-amd64.exe" class="font-weight-bold">Windows</a>&nbsp;&middot;
-			<a href="https://storage.googleapis.com/documize/downloads/documize-community-linux-amd64" class="font-weight-bold">Linux</a>&nbsp;&middot;
-			<a href="https://storage.googleapis.com/documize/downloads/documize-community-darwin-amd64" class="font-weight-bold">macOS</a>&nbsp;
-		</p>
-		<p>
-			<span class="color-off-black">Enterprise Edition {{appMeta.enterpriseLatest}}</span>&nbsp;&nbsp;&nbsp;
-			<a href="https://storage.googleapis.com/documize/downloads/documize-enterprise-windows-amd64.exe" class="font-weight-bold color-blue">Windows</a>&nbsp;&middot;
-			<a href="https://storage.googleapis.com/documize/downloads/documize-enterprise-linux-amd64" class="font-weight-bold color-blue">Linux</a>&nbsp;&middot;
-			<a href="https://storage.googleapis.com/documize/downloads/documize-enterprise-darwin-amd64" class="font-weight-bold color-blue">macOS</a>&nbsp;
-		</p>
-		<div class="my-5" />
-		{{{changelog}}}
+{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
+	{{#if (eq appMeta.location 'cloud')}}
+		<div class="row">
+			<div class="col-sm-4"></div>
+			<div class="col-sm-7">
+				<div class="view-customize">
+					<div class="deactivation-zone">
+						<p>Let us know if you would like to close your account or cancel your subscription.</p>
+						<p><span class="font-weight-bold">WARNING: </span>All data will be deleted so please download a complete backup of all your data.</p>
+						<p>Requests can take up to 24 hours to process.</p>
+						{{#link-to 'customize.backup' class="btn btn-success"}}PERFORM BACKUP{{/link-to}}
+						<div class="button-gap" />
+						<button class="btn btn-danger" {{action 'onDeactivate'}}>REQUEST ACCOUNT CLOSURE</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	{{/if}}
+{{/if}}
+
+<div id="deactivation-modal" class="modal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">Deactivation Requested</div>
+			<div class="modal-body">
+				<p>Your request has been sent and will be processed shortly.</p>
+				<p>If you haven't already, perform a backup to download all your data.</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+			</div>
+		</div>
 	</div>
 </div>

@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/response"
@@ -39,7 +40,7 @@ func (m *middleware) cors(w http.ResponseWriter, r *http.Request, next http.Hand
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "PUT, GET, POST, DELETE, OPTIONS, PATCH")
 	w.Header().Set("Access-Control-Allow-Headers", "host, content-type, accept, authorization, origin, referer, user-agent, cache-control, x-requested-with")
-	w.Header().Set("Access-Control-Expose-Headers", "x-documize-version, x-documize-status, x-documize-filename, Content-Disposition, Content-Length")
+	w.Header().Set("Access-Control-Expose-Headers", "x-documize-version, x-documize-status, x-documize-filename, x-documize-subscription, Content-Disposition, Content-Length")
 
 	if r.Method == "OPTIONS" {
 		w.Header().Add("X-Documize-Version", m.Runtime.Product.Version)
@@ -49,16 +50,6 @@ func (m *middleware) cors(w http.ResponseWriter, r *http.Request, next http.Hand
 
 		return
 	}
-
-	next(w, r)
-}
-
-func (m *middleware) metrics(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
-	w.Header().Add("X-Documize-Version", m.Runtime.Product.Version)
-	w.Header().Add("Cache-Control", "no-cache")
-
-	// Prevent page from being displayed in an iframe
-	w.Header().Add("X-Frame-Options", "DENY")
 
 	next(w, r)
 }
@@ -97,7 +88,6 @@ func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http
 				m.Runtime.Log.Info(fmt.Sprintf("unable to find org (domain: %s, orgID: %s)", dom, rc.OrgID))
 				return
 			}
-
 			response.WriteForbiddenError(w)
 			m.Runtime.Log.Error(method, err)
 			return
@@ -110,14 +100,6 @@ func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http
 		}
 
 		rc.Subdomain = org.Domain
-		// dom := organization.GetSubdomainFromHost(r)
-		// dom2 := organization.GetRequestSubdomain(r)
-
-		// if org.Domain != dom && org.Domain != dom2 {
-		// 	m.Runtime.Log.Info(fmt.Sprintf("domain mismatch %s vs. %s vs. %s", dom, dom2, org.Domain))
-		// 	response.WriteUnauthorizedError(w)
-		// 	return
-		// }
 
 		// If we have bad auth token and the domain allows anon access
 		// then we generate guest context.
@@ -148,7 +130,6 @@ func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http
 		rc.AppURL = r.Host
 		rc.Subdomain = organization.GetSubdomainFromHost(r)
 		rc.SSL = r.TLS != nil
-		rc.AppVersion = fmt.Sprintf("v%s", m.Runtime.Product.Version)
 
 		// get user IP from request
 		i := strings.LastIndex(r.RemoteAddr, ":")
@@ -162,6 +143,38 @@ func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http
 		if len(fip) > 0 {
 			rc.ClientIP = fip
 		}
+
+		// Product subscription checks for both product editions.
+		weeks := 52
+		if m.Runtime.Product.Edition == domain.CommunityEdition {
+			// Subscription for Community edition is always valid.
+			rc.Subscription = domain.Subscription{Edition: domain.CommunityEdition,
+				Seats: domain.Seats6,
+				Trial: false,
+				Start: time.Now().UTC(),
+				End:   time.Now().UTC().Add(time.Hour * 24 * 7 * time.Duration(weeks))}
+		} else {
+			// Enterprise edition requires valid subscription data.
+			if len(strings.TrimSpace(org.Subscription)) > 0 {
+				sd := domain.SubscriptionData{}
+				es1 := json.Unmarshal([]byte(org.Subscription), &sd)
+				if es1 == nil {
+					rc.Subscription, err = domain.DecodeSubscription(sd)
+					if err != nil {
+						m.Runtime.Log.Error("unable to decode subscription for org "+rc.OrgID, err)
+					}
+				} else {
+					m.Runtime.Log.Error("unable to load subscription for org "+rc.OrgID, es1)
+				}
+			}
+		}
+
+		// Tag all HTTP calls with subscription status
+		subs := "false"
+		if m.Runtime.Product.IsValid(rc) {
+			subs = "true"
+		}
+		w.Header().Add("X-Documize-Subscription", subs)
 
 		// Fetch user permissions for this org
 		if rc.Authenticated {

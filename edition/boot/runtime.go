@@ -64,7 +64,7 @@ func InitRuntime(r *env.Runtime, s *store.Store) bool {
 	// Open connection to database
 	db, err := sqlx.Open(r.StoreProvider.DriverName(), r.StoreProvider.MakeConnectionString()) //r.Flags.DBConn
 	if err != nil {
-		r.Log.Error("unable to setup database", err)
+		r.Log.Error("unable to open database", err)
 	}
 
 	// Database handle
@@ -94,6 +94,3 @@ func InitRuntime(r *env.Runtime, s *store.Store) bool {
 
 	return true
 }
-
-// Clever way to detect database type:
-// https://github.com/golang-sql/sqlexp/blob/c2488a8be21d20d31abf0d05c2735efd2d09afe4/quoter.go#L46

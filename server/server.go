@@ -80,7 +80,6 @@ func Start(rt *env.Runtime, s *store.Store, ready chan struct{}) {
 	n := negroni.New()
 	n.Use(negroni.NewStatic(web.StaticAssetsFileSystem()))
 	n.Use(negroni.HandlerFunc(cm.cors))
-	n.Use(negroni.HandlerFunc(cm.metrics))
 	n.UseHandler(router)
 
 	// tell caller we are ready to serve HTTP

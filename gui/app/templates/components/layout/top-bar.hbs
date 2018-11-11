@@ -7,12 +7,12 @@
 					<li class="item cursor-auto">
 						<img class="logo" src="/assets/img/icon-white-64x64.png" />
 					</li>
-					{{#if (eq appMeta.edition 'Community')}}
+					{{#if (eq appMeta.edition constants.Product.CommunityEdition)}}
 						<li class="item">
 							{{#link-to "folders" class=(if (eq selectItem 'spaces') 'link selected' 'link')}}SPACES{{/link-to}}
 						</li>
 					{{/if}}
-					{{#if (eq appMeta.edition 'Enterprise')}}
+					{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
 						{{#if session.viewDashboard}}
 							<li class="item">
 								{{#link-to "dashboard" class=(if (eq selectItem 'dashboard') 'link selected' 'link')}}ACTIONS{{/link-to}}
@@ -36,10 +36,10 @@
 					<i class="material-icons">menu</i>
 				</div>
 				<div class="dropdown-menu" aria-labelledby="top-nav-hamburger">
-					{{#if (eq appMeta.edition 'Community')}}
+					{{#if (eq appMeta.edition constants.Product.CommunityEdition)}}
 						{{#link-to "folders" class="dropdown-item"}}Spaces{{/link-to}}
 					{{/if}}
-					{{#if (eq appMeta.edition 'Enterprise')}}
+					{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
 						{{#link-to "folders" class="dropdown-item"}}Spaces{{/link-to}}
 						{{#if session.viewDashboard}}
 							{{#link-to "dashboard" class="dropdown-item"}}Actions{{/link-to}}
@@ -55,12 +55,22 @@
 		<div class="col col-6 col-md-3">
 			<div class="top-bar">
 				<div class="buttons d-flex flex-wrap align-items-center">
+					{{#unless appMeta.valid}}
+						<div class="btn-group">
+							<div class="button-icon-gold animated infinite wobble slow delay-2s"
+								data-toggle="tooltip" data-placement="bottom" title="Please select product plan"
+								{{action 'onBilling'}}>
+								<i class="material-icons">report</i>
+							</div>
+						</div>
+						<div class="button-icon-gap" />
+					{{/unless}}
+
 					<div class="btn-group">
 						{{#link-to "search" class="button-icon-white" }}
 							<i class="material-icons">search</i>
 						{{/link-to}}
 					</div>
-
 					{{#if session.authenticated}}
 						{{#if hasPins}}
 							<div class="button-icon-gap" />
@@ -100,14 +110,17 @@
 							</div>
 							<div class="dropdown-menu dropdown-menu-right" aria-labelledby="profile-button">
 								{{#if session.isAdmin}}
-									{{#link-to 'customize.general' class="dropdown-item" }}Settings{{/link-to}}
+									{{#link-to 'customize.general' class="dropdown-item"}}Settings{{/link-to}}
+									{{#unless appMeta.valid}}
+										{{#link-to 'customize.billing' class="dropdown-item font-weight-bold color-red"}}Update Billing{{/link-to}}
+									{{/unless}}
 									<div class="dropdown-divider"></div>
 								{{/if}}
 								{{#link-to 'profile' class="dropdown-item" }}Profile{{/link-to}}
 								<div class="dropdown-divider"></div>
 								{{#if session.isGlobalAdmin}}
 									{{#if appMeta.updateAvailable}}
-										{{#link-to 'customize.license' class="dropdown-item font-weight-bold color-orange" }}Update available{{/link-to}}
+										{{#link-to 'customize.product' class="dropdown-item font-weight-bold color-orange" }}Update available{{/link-to}}
 									{{/if}}
 								{{/if}}
 								<a href="#" class="dropdown-item {{if hasWhatsNew 'color-whats-new font-weight-bold'}}" {{action 'onShowWhatsNewModal'}}>What's New</a>
@@ -178,7 +191,7 @@
 						<div class="dotcom">
 							<a href="https://documize.com">https://documize.com</a>
 						</div>
-						{{#if (eq appMeta.edition 'Community')}}
+						{{#if (eq appMeta.edition constants.Product.CommunityEdition)}}
 							<div class="copyright">
 								&copy; Documize Inc. All rights reserved.
 							</div>

@@ -80,8 +80,8 @@ export default Router.map(function () {
 			this.route('smtp', {
 				path: 'smtp'
 			});
-			this.route('license', {
-				path: 'license'
+			this.route('product', {
+				path: 'product'
 			});
 			this.route('auth', {
 				path: 'auth'
@@ -100,6 +100,9 @@ export default Router.map(function () {
 			});
 			this.route('backup', {
 				path: 'backup'
+			});
+			this.route('billing', {
+				path: 'billing'
 			});
 		}
 	);

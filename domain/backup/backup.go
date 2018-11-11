@@ -21,6 +21,8 @@ package backup
 // the file is deleted at the end of the process.
 //
 // The backup file contains a manifest file that describes the backup.
+//
+// TODO: explore writing straight to HTTP response via https://github.com/mholt/archiver
 
 import (
 	"archive/zip"
@@ -266,7 +268,10 @@ func (b backerHandler) dmzConfig(files *[]backupItem) (err error) {
 	if err != nil {
 		return
 	}
-	*files = append(*files, backupItem{Filename: "dmz_config.json", Content: content})
+
+	if b.Spec.SystemBackup() {
+		*files = append(*files, backupItem{Filename: "dmz_config.json", Content: content})
+	}
 
 	w := ""
 	if !b.Spec.SystemBackup() {
