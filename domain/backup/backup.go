@@ -268,7 +268,10 @@ func (b backerHandler) dmzConfig(files *[]backupItem) (err error) {
 	if err != nil {
 		return
 	}
-	*files = append(*files, backupItem{Filename: "dmz_config.json", Content: content})
+
+	if b.Spec.SystemBackup() {
+		*files = append(*files, backupItem{Filename: "dmz_config.json", Content: content})
+	}
 
 	w := ""
 	if !b.Spec.SystemBackup() {

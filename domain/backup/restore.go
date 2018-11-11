@@ -136,9 +136,11 @@ func (r *restoreHandler) PerformRestore(b []byte, l int64) (err error) {
 	}
 
 	// Config.
-	err = r.dmzConfig()
-	if err != nil {
-		return
+	if r.Context.GlobalAdmin {
+		err = r.dmzConfig()
+		if err != nil {
+			return
+		}
 	}
 
 	// Audit Log.
@@ -1649,8 +1651,7 @@ func (r *restoreHandler) dmzUser() (err error) {
 				err = errors.Wrap(err, fmt.Sprintf("unable to check email %s", u[i].Email))
 				return
 			}
-			// Existing userID from database overrides all incoming userID values
-			// by using remapUser().
+			// Existing userID from database overrides all incoming userID values by using remapUser().
 			if len(userID) > 0 {
 				r.MapUserID[u[i].RefID] = userID
 				insert = false
