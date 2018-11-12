@@ -280,3 +280,12 @@ func (p PostgreSQLProvider) VerfiyCharacterCollation(charset, collation string) 
 
 	return true, ""
 }
+
+// ConvertTimestamp returns SQL function to correctly convert
+// ISO 8601 format (e.g. '2016-09-08T06:37:23Z') to SQL specific
+// timestamp value (e.g. 2016-09-08 06:37:23).
+// Must use ? for parameter placeholder character as DB layer
+// will convert to database specific parameter placeholder character.
+func (p PostgreSQLProvider) ConvertTimestamp() (statement string) {
+	return `to_timestamp(?,'YYYY-MM-DD HH24:MI:SS')`
+}

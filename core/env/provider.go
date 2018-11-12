@@ -59,20 +59,6 @@ type StoreProvider interface {
 	// QueryMeta is how to extract version number, collation, character set from database provider.
 	QueryMeta() string
 
-	// QueryStartLock locks database tables.
-	// QueryStartLock() string
-
-	// QueryFinishLock unlocks database tables.
-	// QueryFinishLock() string
-
-	// QueryInsertProcessID returns database specific query that will
-	// insert ID of this running process.
-	// QueryInsertProcessID() string
-
-	// QueryInsertProcessID returns database specific query that will
-	// delete ID of this running process.
-	// QueryDeleteProcessID() string
-
 	// QueryRecordVersionUpgrade returns database specific insert statement
 	// that records the database version number.
 	QueryRecordVersionUpgrade(version int) string
@@ -110,4 +96,11 @@ type StoreProvider interface {
 	// VerfiyCharacterCollation checks to see if actual database
 	// has correct character set and collation settings.
 	VerfiyCharacterCollation(charset, collation string) (charOK bool, requirements string)
+
+	// ConvertTimestamp returns SQL function to correctly convert
+	// ISO 8601 format (e.g. '2016-09-08T06:37:23Z') to SQL specific
+	// timestamp value (e.g. 2016-09-08 06:37:23).
+	// Must use ? for parameter placeholder character as DB layer
+	// will convert to database specific parameter placeholder character.
+	ConvertTimestamp() (statement string)
 }
