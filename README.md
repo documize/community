@@ -58,9 +58,9 @@ Space view.
 
 ## Latest version
 
-[Community edition: v1.73.0](https://github.com/documize/community/releases)
+[Community edition: v1.73.1](https://github.com/documize/community/releases)
 
-[Enterprise edition: v1.75.0](https://documize.com/downloads)
+[Enterprise edition: v1.75.1](https://documize.com/downloads)
 
 ## OS support
 
@@ -114,7 +114,7 @@ Connect and sync Documize with any LDAP v3 compliant provider including Microsof
 
 Documize provides out-of-the-box integration with [Redhat Keycloak](http://www.keycloak.org) for open source identity and access management.
 
-Connect and authenticate with LDAP, Active Directory and more.
+Connect and authenticate with LDAP, Active Directory or leverage Social Login.
 
 <https://docs.documize.com>
 
