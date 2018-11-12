@@ -21,16 +21,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"github.com/documize/community/model/account"
-	"github.com/documize/community/model/activity"
-	"github.com/documize/community/model/attachment"
-	"github.com/documize/community/model/block"
-	"github.com/documize/community/model/doc"
-	"github.com/documize/community/model/group"
-	"github.com/documize/community/model/link"
-	"github.com/documize/community/model/page"
-	"github.com/documize/community/model/permission"
-	"github.com/documize/community/model/pin"
 	"io/ioutil"
 	"strings"
 	"time"
@@ -38,11 +28,21 @@ import (
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/store"
+	"github.com/documize/community/model/account"
 	"github.com/documize/community/model/action"
+	"github.com/documize/community/model/activity"
+	"github.com/documize/community/model/attachment"
 	"github.com/documize/community/model/audit"
 	m "github.com/documize/community/model/backup"
+	"github.com/documize/community/model/block"
 	"github.com/documize/community/model/category"
+	"github.com/documize/community/model/doc"
+	"github.com/documize/community/model/group"
+	"github.com/documize/community/model/link"
 	"github.com/documize/community/model/org"
+	"github.com/documize/community/model/page"
+	"github.com/documize/community/model/permission"
+	"github.com/documize/community/model/pin"
 	"github.com/documize/community/model/space"
 	"github.com/pkg/errors"
 )
@@ -1473,13 +1473,13 @@ func (r *restoreHandler) dmzDocComment() (err error) {
 	filename := "dmz_doc_comment.json"
 
 	type comment struct {
-		RefID      string `json:"feedbackId"`
-		OrgID      string `json:"orgId"`
-		DocumentID string `json:"documentId"`
-		UserID     string `json:"userId"`
-		Email      string `json:"email"`
-		Feedback   string `json:"feedback"`
-		Created    string `json:"created"`
+		RefID      string    `json:"feedbackId"`
+		OrgID      string    `json:"orgId"`
+		DocumentID string    `json:"documentId"`
+		UserID     string    `json:"userId"`
+		Email      string    `json:"email"`
+		Feedback   string    `json:"feedback"`
+		Created    time.Time `json:"created"`
 	}
 	cm := []comment{}
 	err = r.fileJSON(filename, &cm)

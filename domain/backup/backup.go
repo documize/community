@@ -716,13 +716,13 @@ func (b backerHandler) dmzDocument(files *[]backupItem) (err error) {
 
 	// Comment
 	type comment struct {
-		RefID      string `json:"feedbackId"`
-		OrgID      string `json:"orgId"`
-		DocumentID string `json:"documentId"`
-		UserID     string `json:"userId"`
-		Email      string `json:"email"`
-		Feedback   string `json:"feedback"`
-		Created    string `json:"created"`
+		RefID      string    `json:"feedbackId"`
+		OrgID      string    `json:"orgId"`
+		DocumentID string    `json:"documentId"`
+		UserID     string    `json:"userId"`
+		Email      string    `json:"email"`
+		Feedback   string    `json:"feedback"`
+		Created    time.Time `json:"created"`
 	}
 
 	cm := []comment{}
