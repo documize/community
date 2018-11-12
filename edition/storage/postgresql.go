@@ -206,28 +206,6 @@ func (p PostgreSQLProvider) QueryMeta() string {
         FROM pg_database WHERE datname = '%s'`, p.DatabaseName())
 }
 
-// // QueryStartLock locks database tables.
-// func (p PostgreSQLProvider) QueryStartLock() string {
-// 	return ""
-// }
-
-// // QueryFinishLock unlocks database tables.
-// func (p PostgreSQLProvider) QueryFinishLock() string {
-// 	return ""
-// }
-
-// // QueryInsertProcessID returns database specific query that will
-// // insert ID of this running process.
-// func (p PostgreSQLProvider) QueryInsertProcessID() string {
-// 	return ""
-// }
-
-// // QueryDeleteProcessID returns database specific query that will
-// // delete ID of this running process.
-// func (p PostgreSQLProvider) QueryDeleteProcessID() string {
-// 	return ""
-// }
-
 // QueryRecordVersionUpgrade returns database specific insert statement
 // that records the database version number.
 func (p PostgreSQLProvider) QueryRecordVersionUpgrade(version int) string {

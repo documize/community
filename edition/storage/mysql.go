@@ -239,32 +239,10 @@ func (p MySQLProvider) MakeConnectionString() string {
 	return ret
 }
 
-// QueryMeta is how to extract version number, collation, character set from database provider.
+// QueryMeta is how to extract version number, collatio``n, character set from database provider.
 func (p MySQLProvider) QueryMeta() string {
 	return "SELECT VERSION() AS version, @@version_comment as comment, @@character_set_database AS charset, @@collation_database AS collation"
 }
-
-// // QueryStartLock locks database tables.
-// func (p MySQLProvider) QueryStartLock() string {
-// 	return "LOCK TABLE dmz_config WRITE;"
-// }
-
-// // QueryFinishLock unlocks database tables.
-// func (p MySQLProvider) QueryFinishLock() string {
-// 	return "UNLOCK TABLES;"
-// }
-
-// // QueryInsertProcessID returns database specific query that will
-// // insert ID of this running process.
-// func (p MySQLProvider) QueryInsertProcessID() string {
-// 	return "INSERT INTO dmz_config (c_key,c_config) " + fmt.Sprintf(`VALUES ('DBLOCK','{"pid": "%d"}');`, os.Getpid())
-// }
-
-// // QueryDeleteProcessID returns database specific query that will
-// // delete ID of this running process.
-// func (p MySQLProvider) QueryDeleteProcessID() string {
-// 	return "DELETE FROM dmz_config WHERE c_key='DBLOCK';"
-// }
 
 // QueryRecordVersionUpgrade returns database specific insert statement
 // that records the database version number.
@@ -321,7 +299,7 @@ func (p MySQLProvider) JSONGetValue(column, attribute string) string {
 }
 
 // VerfiyVersion checks to see if actual database meets
-// minimum version requirements.``
+// minimum version requirements.
 func (p MySQLProvider) VerfiyVersion(dbVersion string) (bool, string) {
 	// Minimum MySQL / MariaDB version.
 	minVer := []int{5, 7, 10}
