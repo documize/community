@@ -113,7 +113,7 @@ func (s Store) UpdateOrganization(ctx domain.RequestContext, org org.Organizatio
 
 	_, err = ctx.Transaction.NamedExec(`UPDATE dmz_org SET
         c_title=:title, c_message=:message, c_service=:conversionendpoint, c_email=:email,
-        c_anonaccess=:allowanonymousaccess, c_sub=:subscription, c_maxtags=:maxtags, c_revised=:revised
+        c_anonaccess=:allowanonymousaccess, c_maxtags=:maxtags, c_revised=:revised
         WHERE c_refid=:refid`,
 		&org)
 
