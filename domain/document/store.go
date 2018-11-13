@@ -318,22 +318,3 @@ func (s Store) GetVersions(ctx domain.RequestContext, groupID string) (v []doc.V
 
 	return
 }
-
-// Vote records document content vote.
-// Any existing vote by the user is replaced.
-func (s Store) Vote(ctx domain.RequestContext, refID, orgID, documentID, userID string, vote int) (err error) {
-	_, err = s.DeleteWhere(ctx.Transaction,
-		fmt.Sprintf("DELETE FROM dmz_doc_vote WHERE c_orgid='%s' AND c_docid='%s' AND c_voter='%s'",
-			orgID, documentID, userID))
-	if err != nil {
-		s.Runtime.Log.Error("store.Vote", err)
-	}
-
-	_, err = ctx.Transaction.Exec(s.Bind(`INSERT INTO dmz_doc_vote (c_refid, c_orgid, c_docid, c_voter, c_vote) VALUES (?, ?, ?, ?, ?)`),
-		refID, orgID, documentID, userID, vote)
-	if err != nil {
-		err = errors.Wrap(err, "execute insert vote")
-	}
-
-	return
-}
