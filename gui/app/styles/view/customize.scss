@@ -141,7 +141,7 @@
 		> .list {
 			> .item {
 				margin: 15px 0;
-				padding: 15px;
+				padding: 15px 0;
 				@include ease-in();
 				font-size: 1.2rem;
 				color: $color-primary;

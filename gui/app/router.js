@@ -89,9 +89,6 @@ export default Router.map(function () {
 			this.route('audit', {
 				path: 'audit'
 			});
-			this.route('archive', {
-				path: 'archive'
-			});
 			this.route('search', {
 				path: 'search'
 			});

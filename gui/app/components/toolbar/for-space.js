@@ -178,26 +178,6 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, Notifier, {
 			return true;
 		},
 
-		onSpaceDelete(e) {
-			e.preventDefault();
-
-			let spaceName = this.get('space').get('name');
-			let spaceNameTyped = this.get('deleteSpaceName');
-
-			if (spaceNameTyped !== spaceName || spaceNameTyped === '' || spaceName === '') {
-				$("#delete-space-name").addClass("is-invalid").focus();
-				return;
-			}
-
-			this.set('deleteSpaceName', '');
-			$("#delete-space-name").removeClass("is-invalid");
-
-			let cb = this.get('onDeleteSpace');
-			cb(this.get('space.id'));
-
-			this.modalClose('#space-delete-modal');
-		},
-
 		onShowEmptyDocModal() {
 			this.modalOpen("#empty-doc-modal", {"show": true}, '#empty-doc-name');
 		},

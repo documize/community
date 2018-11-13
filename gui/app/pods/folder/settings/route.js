@@ -10,7 +10,6 @@
 // https://documize.com
 
 import { hash } from 'rsvp';
-// import { inject as service } from '@ember/service';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 import Route from '@ember/routing/route';
 

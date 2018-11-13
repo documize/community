@@ -25,13 +25,6 @@ export default Controller.extend(NotifierMixin, {
 	filteredDocs: null,
 
 	actions: {
-		onDeleteSpace(id) {
-			this.get('folderService').delete(id).then(() => { /* jshint ignore:line */
-				this.get('localStorage').clearSessionItem('folder');
-				this.transitionToRoute('folders');
-			});
-		},
-
 		onRefresh() {
 			this.get('target._routerMicrolib').refresh();
 		},
