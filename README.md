@@ -2,7 +2,7 @@
 >
 > Harvey Kandola, CEO & Founder, Documize Inc.
 
-## The mission
+## The Mission
 
 To bring software development inspired features to the world of documenting -- refactoring, importing, testing, linting, metrics, PRs, versioning....
 
@@ -56,11 +56,11 @@ Space view.
 
 ![Documize](screenshot-2.png "Documize")
 
-## Latest version
+## Latest Release
 
-[Community edition: v1.73.1](https://github.com/documize/community/releases)
+[Community Edition: v1.76.0](https://github.com/documize/community/releases)
 
-[Enterprise edition: v1.75.1](https://documize.com/downloads)
+[Enterprise Edition: v1.76.0](https://documize.com/downloads)
 
 ## OS support
 
@@ -72,7 +72,7 @@ Documize can be installed and run on:
 
 Heck, Documize will probably run just fine on a Raspberry Pi 3.
 
-## Database support
+## Database Support
 
 Documize supports the following database systems:
 
@@ -83,7 +83,7 @@ Documize supports the following database systems:
 
 Coming soon: Microsoft SQL Server 2017 (Linux/Windows).
 
-## Browser support
+## Browser Support
 
 Documize supports the following (evergreen) browsers:
 
@@ -95,14 +95,14 @@ Documize supports the following (evergreen) browsers:
 - Opera
 - MS Edge (16+)
 
-## Technology stack
+## Technology Stack
 
 Documize is built with the following technologies:
 
 - EmberJS (v3.1.2)
 - Go (v1.11.2)
 
-## Authentication options
+## Authentication Options
 
 Besides email/password login, you can also leverage the following options.
 
@@ -132,7 +132,7 @@ We try to follow sound advice when writing commit messages:
 
 https://chris.beams.io/posts/git-commit/
 
-## The legal bit
+## The Legal Bit
 
 <https://documize.com>
 
