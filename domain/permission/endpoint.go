@@ -120,11 +120,6 @@ func (h *Handler) SetSpacePermissions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	url := ctx.GetAppURL(fmt.Sprintf("s/%s/%s", sp.RefID, stringutil.MakeSlug(sp.Name)))
-	me := false
-	hasEveryoneRole := false
-	roleCount := 0
-
 	// Permissions can be assigned to both groups and individual users.
 	// Pre-fetch users with group membership to help us work out
 	// if user belongs to a group with permissions.
@@ -135,6 +130,18 @@ func (h *Handler) SetSpacePermissions(w http.ResponseWriter, r *http.Request) {
 		h.Runtime.Log.Error(method, err)
 		return
 	}
+
+	// url is sent in 'space shared with you' invitation emails.
+	url := ctx.GetAppURL(fmt.Sprintf("s/%s/%s", sp.RefID, stringutil.MakeSlug(sp.Name)))
+	// me tracks if the user who changed permissions, also has some space permissions.
+	me := false
+	// hasEveryRole tracks if "everyone" has been give access to space.
+	hasEveryoneRole := false
+	// hasOwner tracks is at least one person or user group has been marked as space owner.
+	hasOwner := false
+	// roleCount tracks the number of permission records created for this space.
+	// It's used to determine if space has multiple participants, see below.
+	roleCount := 0
 
 	for _, perm := range model.Permissions {
 		perm.OrgID = ctx.OrgID
@@ -152,6 +159,12 @@ func (h *Handler) SetSpacePermissions(w http.ResponseWriter, r *http.Request) {
 		if (!isGroup && perm.WhoID == ctx.UserID) ||
 			(isGroup && group.UserHasGroupMembership(groupMembers, perm.WhoID, ctx.UserID)) {
 			me = true
+		}
+
+		// Detect is we have at least one space owner permission.
+		// Result used below to prevent lock-outs.
+		if hasOwner == false && perm.SpaceOwner {
+			hasOwner = true
 		}
 
 		// Only persist if there is a role!
@@ -209,8 +222,11 @@ func (h *Handler) SetSpacePermissions(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Do we need to ensure permissions for space owner when shared?
-	if !me {
+	// Catch and prevent lock-outs so we don't have
+	// zombie spaces that nobody can access.
+	if len(model.Permissions) == 0 {
+		// When no permissions are assigned we
+		// default to current user as being owner and viewer.
 		perm := permission.Permission{}
 		perm.OrgID = ctx.OrgID
 		perm.Who = permission.UserPermission
@@ -218,14 +234,36 @@ func (h *Handler) SetSpacePermissions(w http.ResponseWriter, r *http.Request) {
 		perm.Scope = permission.ScopeRow
 		perm.Location = permission.LocationSpace
 		perm.RefID = id
-		perm.Action = "" // we send array for actions below
-
-		err = h.Store.Permission.AddPermissions(ctx, perm, permission.SpaceView, permission.SpaceManage)
+		perm.Action = "" // we send allowable actions in function call...
+		err = h.Store.Permission.AddPermissions(ctx, perm, permission.SpaceOwner, permission.SpaceView)
 		if err != nil {
 			ctx.Transaction.Rollback()
 			response.WriteServerError(w, method, err)
 			h.Runtime.Log.Error(method, err)
 			return
+		}
+	} else {
+		// So we have permissions but we must check for at least one space owner.
+		if !hasOwner {
+			// So we have no space owner, make current user the owner
+			// if we have no permssions thus far.
+			if !me {
+				perm := permission.Permission{}
+				perm.OrgID = ctx.OrgID
+				perm.Who = permission.UserPermission
+				perm.WhoID = ctx.UserID
+				perm.Scope = permission.ScopeRow
+				perm.Location = permission.LocationSpace
+				perm.RefID = id
+				perm.Action = "" // we send allowable actions in function call...
+				err = h.Store.Permission.AddPermissions(ctx, perm, permission.SpaceOwner, permission.SpaceView)
+				if err != nil {
+					ctx.Transaction.Rollback()
+					response.WriteServerError(w, method, err)
+					h.Runtime.Log.Error(method, err)
+					return
+				}
+			}
 		}
 	}
 

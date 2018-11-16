@@ -84,7 +84,7 @@ export default Controller.extend(Tooltips, Notifier, {
 			let constants = this.get('constants');
 
 			// if document approval mode is locked return
-			if (document.get('protection') == constants.ProtectionType.Lock) {
+			if (document.get('protection') === constants.ProtectionType.Lock) {
 				// should not really happen
 				return;
 			}

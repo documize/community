@@ -34,7 +34,8 @@ type Store struct {
 func (s Store) AddOrganization(ctx domain.RequestContext, o org.Organization) (err error) {
 	_, err = ctx.Transaction.Exec(s.Bind("INSERT INTO dmz_org (c_refid, c_company, c_title, c_message, c_domain, c_email, c_anonaccess, c_serial, c_maxtags, c_sub, c_created, c_revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"),
 		o.RefID, o.Company, o.Title, o.Message, strings.ToLower(o.Domain),
-		strings.ToLower(o.Email), o.AllowAnonymousAccess, o.Serial, o.MaxTags, o.Subscription, o.Created, o.Revised)
+		strings.ToLower(o.Email), o.AllowAnonymousAccess, o.Serial, o.MaxTags,
+		o.Subscription, o.Created, o.Revised)
 
 	if err != nil {
 		err = errors.Wrap(err, "unable to execute insert for org")
@@ -43,13 +44,14 @@ func (s Store) AddOrganization(ctx domain.RequestContext, o org.Organization) (e
 	return nil
 }
 
-// GetOrganization returns the Organization reocrod from the organization database table with the given id.
+// GetOrganization returns the Organization record from the organization database table with the given id.
 func (s Store) GetOrganization(ctx domain.RequestContext, id string) (org org.Organization, err error) {
 	err = s.Runtime.Db.Get(&org, s.Bind(`SELECT id, c_refid AS refid,
         c_title AS title, c_message AS message, c_domain AS domain,
         c_service AS conversionendpoint, c_email AS email, c_serial AS serial, c_active AS active,
         c_anonaccess AS allowanonymousaccess, c_authprovider AS authprovider,
-        coalesce(c_authconfig,`+s.EmptyJSON()+`) AS authconfig, coalesce(c_sub,`+s.EmptyJSON()+`) AS subscription,
+        coalesce(c_authconfig,`+s.EmptyJSON()+`) AS authconfig, 
+	    coalesce(c_sub,`+s.EmptyJSON()+`) AS subscription,
         c_maxtags AS maxtags, c_created AS created, c_revised AS revised
         FROM dmz_org
         WHERE c_refid=?`),
@@ -80,7 +82,8 @@ func (s Store) GetOrganizationByDomain(subdomain string) (o org.Organization, er
         c_title AS title, c_message AS message, c_domain AS domain,
         c_service AS conversionendpoint, c_email AS email, c_serial AS serial, c_active AS active,
         c_anonaccess AS allowanonymousaccess, c_authprovider AS authprovider,
-        coalesce(c_authconfig,`+s.EmptyJSON()+`) AS authconfig, coalesce(c_sub,`+s.EmptyJSON()+`) AS subscription,
+        coalesce(c_authconfig,`+s.EmptyJSON()+`) AS authconfig, 
+	    coalesce(c_sub,`+s.EmptyJSON()+`) AS subscription,
         c_maxtags AS maxtags, c_created AS created, c_revised AS revised
         FROM dmz_org
         WHERE c_domain=? AND c_active=true`),
@@ -95,7 +98,8 @@ func (s Store) GetOrganizationByDomain(subdomain string) (o org.Organization, er
         c_title AS title, c_message AS message, c_domain AS domain,
         c_service AS conversionendpoint, c_email AS email, c_serial AS serial, c_active AS active,
         c_anonaccess AS allowanonymousaccess, c_authprovider AS authprovider,
-        coalesce(c_authconfig,`+s.EmptyJSON()+`) AS authconfig, coalesce(c_sub,`+s.EmptyJSON()+`) AS subscription,
+        coalesce(c_authconfig,`+s.EmptyJSON()+`) AS authconfig, 
+	    coalesce(c_sub,`+s.EmptyJSON()+`) AS subscription,
         c_maxtags AS maxtags, c_created AS created, c_revised AS revised
         FROM dmz_org
         WHERE c_domain='' AND c_active=true`))

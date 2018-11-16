@@ -59,9 +59,9 @@ type SpaceStorer interface {
 	Get(ctx domain.RequestContext, id string) (sp space.Space, err error)
 	PublicSpaces(ctx domain.RequestContext, orgID string) (sp []space.Space, err error)
 	GetViewable(ctx domain.RequestContext) (sp []space.Space, err error)
-	GetAll(ctx domain.RequestContext) (sp []space.Space, err error)
 	Update(ctx domain.RequestContext, sp space.Space) (err error)
 	Delete(ctx domain.RequestContext, id string) (rows int64, err error)
+	AdminList(ctx domain.RequestContext) (sp []space.Space, err error)
 }
 
 // CategoryStorer defines required methods for category and category membership management

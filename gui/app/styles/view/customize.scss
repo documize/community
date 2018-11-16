@@ -65,13 +65,11 @@
 
 	> .space-list {
         padding: 0;
-        margin: 0;
+        margin: 3rem 0;
 
 		> .space {
 			margin: 15px 0;
-			padding: 15px;
-			@include card();
-			@include ease-in();
+			padding: 15px 0;
 			font-size: 1.2rem;
 			color: $color-primary;
 		}

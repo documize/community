@@ -236,10 +236,12 @@ export default Service.extend({
 		});
 	},
 
-	deactivate() {
+	deactivate(comment) {
 		if(this.get('sessionService.isAdmin')) {
 			return this.get('ajax').request(`deactivate`, {
 				method: 'POST',
+				contentType: 'text',
+				data: comment,
 			}).then(() => {
 				return;
 			});

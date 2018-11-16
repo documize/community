@@ -29,7 +29,6 @@ export default Component.extend(AuthMixin, {
 
 	init() {
 		this._super(...arguments);
-		// this.filteredDocs = [];
 		this.setup();
 	},
 

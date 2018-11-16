@@ -22,6 +22,7 @@ export default Component.extend(Notifier, Modals, {
 	subscription: null,
 	planCloud: false,
 	planSelfhost: false,
+	comment: 'Nothing in particular -- just passing through. Please close my Documize account.',
 
 	didReceiveAttrs() {
 		this._super(...arguments);
@@ -47,10 +48,17 @@ export default Component.extend(Notifier, Modals, {
 			});
 		},
 
+		onRequestClosure() {
+			this.modalOpen("#deactivation-request-modal", {"show": true}, '#close-comment');
+		},
+
 		onDeactivate() {
-			this.get('global').deactivate().then(() => {
+			this.modalClose("#deactivation-request-modal");
+			let comment = this.get('comment');
+
+			this.get('global').deactivate(comment).then(() => {
 				this.showDone();
-				this.modalOpen("#deactivation-modal", {"show": true});
+				this.modalOpen("#deactivation-confirmation-modal", {"show": true});
 			});
 		}
 	}

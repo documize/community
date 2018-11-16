@@ -504,8 +504,11 @@ func (h *Handler) FetchSpaceData(w http.ResponseWriter, r *http.Request) {
 	fetch := category.FetchSpaceModel{}
 
 	// get space categories visible to user
-	cat, err := h.Store.Category.GetBySpace(ctx, spaceID)
-	if err != nil && err != sql.ErrNoRows {
+	var cat []category.Category
+	var err error
+
+	cat, err = h.Store.Category.GetBySpace(ctx, spaceID)
+	if err != nil {
 		h.Runtime.Log.Error("get space categories visible to user failed", err)
 		response.WriteServerError(w, method, err)
 		return
@@ -527,7 +530,7 @@ func (h *Handler) FetchSpaceData(w http.ResponseWriter, r *http.Request) {
 
 	// get category membership records
 	member, err := h.Store.Category.GetSpaceCategoryMembership(ctx, spaceID)
-	if err != nil && err != sql.ErrNoRows {
+	if err != nil {
 		h.Runtime.Log.Error("get document category membership for space", err)
 		response.WriteServerError(w, method, err)
 		return

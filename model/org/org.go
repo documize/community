@@ -11,7 +11,9 @@
 
 package org
 
-import "github.com/documize/community/model"
+import (
+	"github.com/documize/community/model"
+)
 
 // Organization defines a tenant that uses this app.
 type Organization struct {
@@ -28,5 +30,10 @@ type Organization struct {
 	MaxTags              int    `json:"maxTags"`
 	Serial               string `json:"serial"`
 	Active               bool   `json:"active"`
-	Subscription         string
+	Subscription         string `json:"subscription"`
+}
+
+// StripSecrets removes sensitive information.
+func (o *Organization) StripSecrets() {
+	o.Subscription = ""
 }

@@ -19,7 +19,10 @@
 					{{else}}
 						<div class="category col-8">
 							<div class="name">{{cat.category}}</div>
-							<div class="info">{{cat.documents}} {{if (eq cat.documents 1) 'document' 'documents' }} &middot; {{cat.users}} users/groups</div>
+							<div class="info">
+								{{cat.documents}} {{if (eq cat.documents 1) 'document' 'documents' }} &middot; {{cat.users}} users/groups
+								{{#unless cat.access}}<span class="text-danger">(you have no view permission)</span>{{/unless}}
+							</div>
 						</div>
 					{{/if}}
 					<div class="col-4 buttons text-right">

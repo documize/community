@@ -95,6 +95,7 @@ const (
 	EventTypeWorkflowPublishRequested  EventType = "requested-publication"
 	EventTypeDatabaseBackup            EventType = "backedup-database"
 	EventTypeDatabaseRestore           EventType = "restored-database"
+	EventTypeAssumedSpaceOwnership     EventType = "assumed-space-ownership"
 
 	// EventTypeVersionAdd records addition of version
 	EventTypeVersionAdd EventType = "added-version"

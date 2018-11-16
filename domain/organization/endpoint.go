@@ -51,6 +51,8 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	org.StripSecrets()
+
 	response.WriteJSON(w, org)
 }
 

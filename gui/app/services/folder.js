@@ -174,8 +174,9 @@ export default BaseService.extend({
 		});
 	},
 
-	// returns all spaces -- for use by documize admin user
-	adminList() {
+	// Returns all shared spaces and spaces without an owner.
+	// Administrator only method.
+	manage() {
 		return this.get('ajax').request(`space/manage`, {
 			method: "GET"
 		}).then((response) => {
@@ -189,5 +190,12 @@ export default BaseService.extend({
 
 			return data;
 		});
-	}
+	},
+
+	// Add admin as space owner.
+	grantOwnerPermission(folderId) {
+		return this.get('ajax').request(`space/manage/owner/${folderId}`, {
+			method: 'POST',
+		});
+	},
 });

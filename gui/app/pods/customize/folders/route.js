@@ -9,33 +9,17 @@
 //
 // https://documize.com
 
-import { inject as service } from '@ember/service';
-import Route from '@ember/routing/route';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
+import Route from '@ember/routing/route';
 
 export default Route.extend(AuthenticatedRouteMixin, {
-	folderService: service('folder'),
-
 	beforeModel() {
 		if (!this.session.isAdmin) {
 			this.transitionTo('auth.login');
 		}
 	},
 
-	model() {
-		return this.get('folderService').adminList();
-	},
-
-	setupController(controller, model) {
-		let nonPrivateFolders = model.rejectBy('spaceType', 2);
-		if (is.empty(nonPrivateFolders) || is.null(model) || is.undefined(model)) {
-			nonPrivateFolders = [];
-		}
-
-		controller.set('folders', nonPrivateFolders);
-	},
-
 	activate() {
-		this.get('browser').setTitle('Spaces');
+		this.get('browser').setTitle('Manage Spaces');
 	}
 });

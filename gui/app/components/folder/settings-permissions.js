@@ -34,6 +34,9 @@ export default Component.extend(Notifier, Modals, {
 	isSpaceAdmin: computed('permissions', function() {
 		return this.get('permissions.spaceOwner') || this.get('permissions.spaceManage');
 	}),
+	isNotSpaceOwner: computed('permissions', function() {
+		return !this.get('permissions.spaceOwner');
+	}),
 
 	didReceiveAttrs() {
 		this._super(...arguments);

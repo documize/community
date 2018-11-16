@@ -335,7 +335,7 @@ export default Service.extend({
 		} else {
 			let id = this.get('storageSvc').getSessionItem('anonId');
 
-			if (is.not.null(id) && is.not.undefined(id) && id.length === 16) {
+			if (is.not.null(id) && is.not.undefined(id) && id.length >= 16) {
 				userId = id;
 			} else {
 				userId = stringUtil.anonUserId();

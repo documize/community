@@ -62,6 +62,15 @@ export default Component.extend(ModalMixin, TooltipMixin, Notifer, {
 					cat.set('documents', docCount);
 					cat.set('users', userCount);
 				});
+
+				this.get('categorySvc').getUserVisible(this.get('space.id')).then((cm) => {
+					cm.forEach((cm) => {
+						let cat = _.findWhere(c, {id: cm.get('id') });
+						if (is.not.undefined(cat)) {
+							cat.set('access', is.not.undefined(cat));
+						}
+					});
+				});
 			});
 		});
 	},

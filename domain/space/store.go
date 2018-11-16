@@ -116,24 +116,35 @@ func (s Store) GetViewable(ctx domain.RequestContext) (sp []space.Space, err err
 	return
 }
 
-// GetAll for admin users!
-func (s Store) GetAll(ctx domain.RequestContext) (sp []space.Space, err error) {
-	qry := s.Bind(`SELECT id, c_refid AS refid,
+// AdminList returns all shared spaces and orphaned spaces that have no owner.
+func (s Store) AdminList(ctx domain.RequestContext) (sp []space.Space, err error) {
+	qry := s.Bind(`
+        SELECT id, c_refid AS refid,
         c_name AS name, c_orgid AS orgid, c_userid AS userid,
         c_type AS type, c_lifecycle AS lifecycle, c_likes AS likes,
         c_created AS created, c_revised AS revised
-    FROM dmz_space
-    WHERE c_orgid=?
-	ORDER BY c_name`)
+        FROM dmz_space
+        WHERE c_orgid=? AND (c_type=? OR c_type=?)
+        UNION ALL
+        SELECT id, c_refid AS refid,
+        c_name AS name, c_orgid AS orgid, c_userid AS userid,
+        c_type AS type, c_lifecycle AS lifecycle, c_likes AS likes,
+        c_created AS created, c_revised AS revised
+        FROM dmz_space
+        WHERE c_orgid=? AND (c_type=? OR c_type=?) AND c_refid NOT IN
+        (SELECT c_refid FROM dmz_permission WHERE c_orgid=? AND c_action='own')
+        ORDER BY name`)
 
-	err = s.Runtime.Db.Select(&sp, qry, ctx.OrgID)
-
+	err = s.Runtime.Db.Select(&sp, qry,
+		ctx.OrgID, space.ScopePublic, space.ScopeRestricted,
+		ctx.OrgID, space.ScopePublic, space.ScopeRestricted,
+		ctx.OrgID)
 	if err == sql.ErrNoRows {
 		err = nil
 		sp = []space.Space{}
 	}
 	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("failed space.GetAll org %s", ctx.OrgID))
+		err = errors.Wrap(err, fmt.Sprintf("failed space.AdminList org %s", ctx.OrgID))
 	}
 
 	return
