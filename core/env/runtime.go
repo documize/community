@@ -13,8 +13,25 @@
 package env
 
 import (
-	"github.com/documize/community/domain"
+    "context"
+    "database/sql"
+
+    "github.com/documize/community/domain"
 	"github.com/jmoiron/sqlx"
+)
+
+const (
+    // SiteModeNormal serves app
+    SiteModeNormal = ""
+
+    // SiteModeOffline serves offline.html
+    SiteModeOffline = "1"
+
+    // SiteModeSetup tells Ember to serve setup route
+    SiteModeSetup = "2"
+
+    // SiteModeBadDB redirects to db-error.html page
+    SiteModeBadDB = "3"
 )
 
 // Runtime provides access to database, logger and other server-level scoped objects.
@@ -27,16 +44,40 @@ type Runtime struct {
 	Product       domain.Product
 }
 
-const (
-	// SiteModeNormal serves app
-	SiteModeNormal = ""
+var ctx = context.Background()
 
-	// SiteModeOffline serves offline.html
-	SiteModeOffline = "1"
+// StartTx beings database transaction with application defined
+// database transaction isolation level.
+// Any error encountered during this operation is logged to runtime logger.
+func (r *Runtime) StartTx() (tx *sqlx.Tx, ok bool) {
+    tx, err := r.Db.BeginTxx(ctx, &sql.TxOptions{Isolation: sql.LevelReadUncommitted})
+    if err != nil {
+        r.Log.Error("unable to start database transaction", err)
+        return nil, false
+    }
 
-	// SiteModeSetup tells Ember to serve setup route
-	SiteModeSetup = "2"
+    return tx, true
+}
 
-	// SiteModeBadDB redirects to db-error.html page
-	SiteModeBadDB = "3"
-)
+// Rollback aborts active database transaction.
+// Any error encountered during this operation is logged to runtime logger.
+func (r *Runtime) Rollback(tx *sqlx.Tx) bool {
+    if err := tx.Commit(); err != nil {
+        r.Log.Error("unable to commit database transaction", err)
+        return false
+    }
+
+    return true
+}
+
+// Commit flushes pending changes to database.
+// Any error encountered during this operation is logged to runtime logger.
+func (r *Runtime) Commit(tx *sqlx.Tx) bool {
+    if err := tx.Commit(); err != nil {
+        r.Log.Error("unable to commit database transaction", err)
+        return false
+    }
+
+    return true
+}
+

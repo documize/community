@@ -33,6 +33,7 @@ import (
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/mail"
 	"github.com/documize/community/domain/organization"
+	perm "github.com/documize/community/domain/permission"
 	"github.com/documize/community/domain/store"
 	"github.com/documize/community/model/account"
 	"github.com/documize/community/model/activity"
@@ -460,25 +461,6 @@ func (h *Handler) GetViewable(w http.ResponseWriter, r *http.Request) {
 	response.WriteJSON(w, sp)
 }
 
-// GetAll returns every space for documize admin users to manage
-func (h *Handler) GetAll(w http.ResponseWriter, r *http.Request) {
-	method := "space.getAll"
-	ctx := domain.GetRequestContext(r)
-
-	if !ctx.Administrator {
-		response.WriteForbiddenError(w)
-		h.Runtime.Log.Info("rejected non-admin user request for all spaces")
-		return
-	}
-
-	sp, err := h.Store.Space.GetAll(ctx)
-	if err != nil {
-		h.Runtime.Log.Error(method, err)
-	}
-
-	response.WriteJSON(w, sp)
-}
-
 // Update processes request to save space object to the database
 func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	method := "space.update"
@@ -691,83 +673,77 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var err error
-	ctx.Transaction, err = h.Runtime.Db.Beginx()
-	if err != nil {
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
+	ok := true
+	ctx.Transaction, ok = h.Runtime.StartTx()
+    if !ok {
+		response.WriteError(w, method)
 		return
 	}
 
-	_, err = h.Store.Document.DeleteBySpace(ctx, id)
+	_, err := h.Store.Document.DeleteBySpace(ctx, id)
 	if err != nil {
-		ctx.Transaction.Rollback()
+	    h.Runtime.Rollback(ctx.Transaction)
 		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
 		return
 	}
 
 	_, err = h.Store.Permission.DeleteSpacePermissions(ctx, id)
 	if err != nil {
-		ctx.Transaction.Rollback()
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
+        h.Runtime.Rollback(ctx.Transaction)
+        response.WriteServerError(w, method, err)
 		return
 	}
 
 	// remove category permissions
 	_, err = h.Store.Permission.DeleteSpaceCategoryPermissions(ctx, id)
 	if err != nil {
-		ctx.Transaction.Rollback()
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
+        h.Runtime.Rollback(ctx.Transaction)
+        response.WriteServerError(w, method, err)
 		return
 	}
 
 	_, err = h.Store.Pin.DeletePinnedSpace(ctx, id)
 	if err != nil && err != sql.ErrNoRows {
-		ctx.Transaction.Rollback()
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
+        h.Runtime.Rollback(ctx.Transaction)
+        response.WriteServerError(w, method, err)
 		return
 	}
 
 	// remove category and members for space
 	_, err = h.Store.Category.DeleteBySpace(ctx, id)
 	if err != nil {
-		ctx.Transaction.Rollback()
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
+        h.Runtime.Rollback(ctx.Transaction)
+        response.WriteServerError(w, method, err)
 		return
 	}
 
 	_, err = h.Store.Space.Delete(ctx, id)
 	if err != nil {
-		ctx.Transaction.Rollback()
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
+        h.Runtime.Rollback(ctx.Transaction)
+        response.WriteServerError(w, method, err)
 		return
 	}
 
 	// Close out the delete process
-	ctx.Transaction.Commit()
+	h.Runtime.Commit(ctx.Transaction)
 
 	// Record this action.
-	ctx.Transaction, err = h.Runtime.Db.Beginx()
-	if err != nil {
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
+    ctx.Transaction, ok = h.Runtime.StartTx()
+    if !ok {
+        response.WriteError(w, method)
+        return
+    }
 
 	err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
 		SpaceID:      id,
 		SourceType:   activity.SourceTypeSpace,
 		ActivityType: activity.TypeDeleted})
 	if err != nil {
-		ctx.Transaction.Rollback()
-		h.Runtime.Log.Error(method, err)
+        h.Runtime.Rollback(ctx.Transaction)
+        response.WriteServerError(w, method, err)
 	}
+
+    h.Runtime.Commit(ctx.Transaction)
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSpaceDelete)
 
@@ -1027,6 +1003,88 @@ func (h *Handler) Invite(w http.ResponseWriter, r *http.Request) {
 	ctx.Transaction.Commit()
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSpaceInvite)
+
+	response.WriteEmpty(w)
+}
+
+// Manage returns all shared spaces and orphaned spaces that have no owner.
+func (h *Handler) Manage(w http.ResponseWriter, r *http.Request) {
+	method := "space.Manage"
+	ctx := domain.GetRequestContext(r)
+
+	if !ctx.Administrator {
+		response.WriteForbiddenError(w)
+		h.Runtime.Log.Info("rejected non-admin user request for all spaces")
+		return
+	}
+
+	sp, err := h.Store.Space.AdminList(ctx)
+	if err != nil {
+		h.Runtime.Log.Error(method, err)
+	}
+
+	response.WriteJSON(w, sp)
+}
+
+// ManageOwner adds current user as space owner.
+// Requires admin rights.
+func (h *Handler) ManageOwner(w http.ResponseWriter, r *http.Request) {
+	method := "space.ManageOwner"
+	ctx := domain.GetRequestContext(r)
+	var err error
+
+	if !ctx.Administrator {
+		response.WriteForbiddenError(w)
+		h.Runtime.Log.Info("rejected space.ManageOwner")
+		return
+	}
+
+	id := request.Param(r, "spaceID")
+	if len(id) == 0 {
+		response.WriteMissingDataError(w, method, "spaceID")
+		return
+	}
+
+	// If they are already space owner, skip.
+	isOwner := perm.HasPermission(ctx, *h.Store, id, permission.SpaceOwner)
+	if isOwner {
+		response.WriteEmpty(w)
+		return
+	}
+	// We need to check if user can see space before we make them owner!
+	isViewer := perm.HasPermission(ctx, *h.Store, id, permission.SpaceView)
+
+	// Add current user as space owner
+	ctx.Transaction, err = h.Runtime.Db.Beginx()
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	perm := permission.Permission{}
+	perm.OrgID = ctx.OrgID
+	perm.Who = permission.UserPermission
+	perm.WhoID = ctx.UserID
+	perm.Scope = permission.ScopeRow
+	perm.Location = permission.LocationSpace
+	perm.RefID = id
+	perm.Action = "" // we send allowable actions in function call...
+	if !isViewer {
+		err = h.Store.Permission.AddPermissions(ctx, perm, permission.SpaceOwner, permission.SpaceView)
+	} else {
+		err = h.Store.Permission.AddPermissions(ctx, perm, permission.SpaceOwner)
+	}
+	if err != nil {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	ctx.Transaction.Commit()
+
+	h.Store.Audit.Record(ctx, audit.EventTypeAssumedSpaceOwnership)
 
 	response.WriteEmpty(w)
 }
