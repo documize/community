@@ -46,6 +46,12 @@ func WriteServerError(w http.ResponseWriter, method string, err error) {
 	w.Write([]byte("{Error: 'Internal server error'}"))
 }
 
+// WriteError notifies HTTP client of general application error.
+func WriteError(w http.ResponseWriter, method string) {
+    writeStatus(w, http.StatusBadRequest)
+    w.Write([]byte("{Error: 'Internal server error'}"))
+}
+
 // WriteDuplicateError notifies HTTP client of duplicate data that has been rejected.
 func WriteDuplicateError(w http.ResponseWriter, method, entity string) {
 	writeStatus(w, http.StatusConflict)

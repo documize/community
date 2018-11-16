@@ -363,12 +363,13 @@ func (r *restoreHandler) dmzOrg() (err error) {
 			_, err = r.Context.Transaction.Exec(r.Runtime.Db.Rebind(`
                 INSERT INTO dmz_org (c_refid, c_company, c_title, c_message,
                 c_domain, c_service, c_email, c_anonaccess, c_authprovider, c_authconfig,
-                c_maxtags, c_verified, c_serial, c_active, c_created, c_revised)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
+                c_maxtags, c_verified, c_serial, c_sub, c_active, c_created, c_revised)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
 				org[i].RefID, org[i].Company, org[i].Title, org[i].Message,
 				strings.ToLower(org[i].Domain), org[i].ConversionEndpoint, strings.ToLower(org[i].Email),
 				org[i].AllowAnonymousAccess, org[i].AuthProvider, org[i].AuthConfig,
-				org[i].MaxTags, true, org[i].Serial, org[i].Active, org[i].Created, org[i].Revised)
+				org[i].MaxTags, true, org[i].Serial, org[i].Subscription,
+				org[i].Active, org[i].Created, org[i].Revised)
 			if err != nil {
 				r.Context.Transaction.Rollback()
 				err = errors.Wrap(err, fmt.Sprintf("unable to insert %s %s", filename, org[i].RefID))
@@ -400,6 +401,7 @@ func (r *restoreHandler) dmzOrg() (err error) {
 			org[0].Message = r.Spec.Org.Message
 			org[0].Serial = r.Spec.Org.Serial
 			org[0].Title = r.Spec.Org.Title
+			org[0].Subscription = r.Spec.Org.Subscription
 		}
 
 		_, err = r.Context.Transaction.NamedExec(`UPDATE dmz_org SET
@@ -412,7 +414,8 @@ func (r *restoreHandler) dmzOrg() (err error) {
             c_maxtags=:maxtags,
             c_message=:message,
             c_title=:title,
-            c_serial=:serial
+            c_serial=:serial,
+		    c_sub=:subscription
             WHERE c_refid=:refid`, &org[0])
 		if err != nil {
 			r.Context.Transaction.Rollback()

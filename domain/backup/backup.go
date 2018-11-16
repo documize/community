@@ -235,7 +235,8 @@ func (b backerHandler) dmzOrg(files *[]backupItem) (err error) {
 	err = b.Runtime.Db.Select(&o, `SELECT id, c_refid AS refid,
         c_title AS title, c_message AS message, c_domain AS domain,
         c_service AS conversionendpoint, c_email AS email, c_serial AS serial, c_active AS active,
-        c_anonaccess AS allowanonymousaccess, c_authprovider AS authprovider,
+        c_anonaccess AS allowanonymousaccess, c_authprovider AS authprovider, 
+	    coalesce(c_sub,`+b.Runtime.StoreProvider.JSONEmpty()+`) AS subscription,
         coalesce(c_authconfig,`+b.Runtime.StoreProvider.JSONEmpty()+`) AS authconfig, c_maxtags AS maxtags,
         c_created AS created, c_revised AS revised
         FROM dmz_org`+w)
