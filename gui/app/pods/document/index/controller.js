@@ -83,9 +83,17 @@ export default Controller.extend(Tooltips, Notifier, {
 			let documentId = document.get('id');
 			let constants = this.get('constants');
 
-			// if document approval mode is locked return
+			// Cannot change locked documents.
 			if (document.get('protection') === constants.ProtectionType.Lock) {
-				// should not really happen
+				return;
+			}
+
+			// Detect stale data situation and reload page.
+			// Happens when you are saving section edits that
+			// has just been approved.
+			// TODO: really need a better way than this
+			if (page.get('id') === page.get('relativeId')) {
+				window.location.reload();
 				return;
 			}
 
