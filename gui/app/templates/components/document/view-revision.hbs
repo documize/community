@@ -1,5 +1,7 @@
 <div class="mt-5">
-	{{#if hasRevisions}}
+	{{#unless hasRevisions}}
+		<p>No revisions made</p>
+	{{else}}
 		<div class="row">
 			<div class="col-12">
 				<div class="form-group">
@@ -18,7 +20,7 @@
 				</div>
 			</div>
 		</div>
-		{{#if permissions.documentEdit}}
+		{{#if canRollback}}
 			<div class="row">
 				<div class="col-12">
 					<div class="form-group">
@@ -26,23 +28,21 @@
 					</div>
 				</div>
 			</div>
-
-			<div id="document-rollback-modal" class="modal" tabindex="-1" role="dialog">
-				<div class="modal-dialog" role="document">
-					<div class="modal-content">
-						<div class="modal-header">Restore Document Section</div>
-						<div class="modal-body">
-							<p>Are you sure you want to roll back to this revision?</p>
-						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-							<button type="button" class="btn btn-success" onclick={{action 'onRollback'}}>Restore</button>
-						</div>
-					</div>
-				</div>
-			</div>
 		{{/if}}
-	{{else}}
-		<p>No revisions made</p>
-	{{/if}}
+	{{/unless}}
+</div>
+
+<div id="document-rollback-modal" class="modal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">Restore Section</div>
+			<div class="modal-body">
+				<p>Are you sure you want to restore this revision?</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-success" onclick={{action 'onRollback'}}>Restore</button>
+			</div>
+		</div>
+	</div>
 </div>

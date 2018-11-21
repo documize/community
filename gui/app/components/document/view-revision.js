@@ -11,18 +11,27 @@
 
 import { computed, set } from '@ember/object';
 import { inject as service } from '@ember/service';
-import Component from '@ember/component';
 import ModalMixin from '../../mixins/modal';
+import Component from '@ember/component';
 
 export default Component.extend(ModalMixin, {
 	documentService: service('document'),
 	revision: null,
+	revisions: null,
 	diff: '',
 	hasRevisions: computed('revisions', function() {
 		return this.get('revisions').length > 0;
 	}),
 	hasDiff: computed('diff', function() {
 		return this.get('diff').length > 0;
+	}),
+	canRollback: computed('permissions.documentEdit', 'document.protection', function() {
+		let constants = this.get('constants');
+
+		if (this.get('document.protection') === constants.ProtectionType.Lock) return false;
+
+		return this.get('permissions.documentEdit') &&
+			this.get('document.protection') === constants.ProtectionType.None;
 	}),
 
 	init() {
