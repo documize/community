@@ -26,9 +26,9 @@ type Context struct {
 
 // Bind selects query parameter placeholder for given database provider.
 //
-// MySQL uses ?, ?, ? (default for all Documize queries)
-// PostgreSQL uses $1, $2, $3
-// MS SQL Server uses @p1, @p2, @p3
+// MySQL uses ?, ?, ? (default for all Documize queries).``
+// PostgreSQL uses $1, $2, $3.
+// MS SQL Server uses @p1, @p2, @p3.
 func (c *Context) Bind(sql string) string {
 	// Default to MySQL.
 	bindParam := sqlx.QUESTION
