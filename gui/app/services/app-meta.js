@@ -120,10 +120,22 @@ export default Service.extend({
 	},
 
 	setTheme(theme) {
-		theme = theme.trim();
-		if (theme.length === 0) return;
+		$('#theme-link').remove();
+
+		theme = theme.toLowerCase().replace(' ', '-').replace('default', '').trim();
+		if (theme.length === 0) {
+			return;
+		}
 
 		let file = this.get('assetMap').resolve(`assets/theme-${theme}.css`);
-		$('head').append(`<link rel="stylesheet" href="${file}">`);
+		$('head').append(`<link id="theme-link" rel="stylesheet" href="${file}">`);
+	},
+
+	getThemes() {
+		return this.get('ajax').request(`public/meta/themes`, {
+			method: 'GET'
+		}).then((response) => {
+			return response;
+		});
 	}
 });

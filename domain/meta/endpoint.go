@@ -282,13 +282,12 @@ type searchStatus struct {
 // Themes returns list of installed UI themes.
 func (h *Handler) Themes(w http.ResponseWriter, r *http.Request) {
 	type theme struct {
-		Name    string `json:"names"`
+		Name    string `json:"name"`
 		Primary string `json:"primary"`
 	}
 
 	th := []theme{}
-
-	th = append(th, theme{Name: "Default", Primary: "#280A42"})
+	th = append(th, theme{Name: "", Primary: "#280A42"})
 	th = append(th, theme{Name: "Blue", Primary: "#176091"})
 	th = append(th, theme{Name: "Deep Orange", Primary: "#BF360C"})
 	th = append(th, theme{Name: "Teal", Primary: "#00695C"})

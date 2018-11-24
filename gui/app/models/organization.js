@@ -19,6 +19,7 @@ export default Model.extend({
 	conversionEndpoint: attr('string'),
 	allowAnonymousAccess: attr('boolean', { defaultValue: false }),
 	maxTags: attr('number', {defaultValue: 3}),
+	theme: attr('string'),
 	created: attr(),
 	revised: attr()
 });

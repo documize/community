@@ -13,10 +13,12 @@ import $ from 'jquery';
 import { empty, and } from '@ember/object/computed';
 import { isEmpty } from '@ember/utils';
 import { set } from '@ember/object';
+import { inject as service } from '@ember/service';
 import Notifier from '../../mixins/notifier';
 import Component from '@ember/component';
 
 export default Component.extend(Notifier, {
+	appMeta: service(),
 	maxTags: 3,
 	titleEmpty: empty('model.general.title'),
 	messageEmpty: empty('model.general.message'),
@@ -70,6 +72,11 @@ export default Component.extend(Notifier, {
 				set(this, 'messageError', false);
 				set(this, 'conversionEndpointError', false);
 			});
+		},
+
+		onThemeChange(theme) {
+			this.get('appMeta').setTheme(theme);
+			this.set('model.general.theme', theme);
 		}
 	}
 });

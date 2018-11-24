@@ -61,6 +61,14 @@
 				<small class="form-text text-muted">How many tags can be assigned to a document (between 3 and 10 tags)</small>
 			</div>
 		</div>
+		<div class="form-group row">
+			<label class="col-sm-4 col-form-label">Default Site Theme</label>
+			<div class="col-sm-7">
+				{{ui/theme-picker onChange=(action 'onThemeChange')}}
+				<small class="form-text text-muted">Users can set their own theme under Profile</small>
+			</div>
+		</div>
+
 		<div class="btn btn-success font-weight-bold text-uppercase mt-4" {{action 'save'}}>Save</div>
 	</form>
 </div>

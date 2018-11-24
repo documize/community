@@ -11,12 +11,14 @@
 
 import $ from 'jquery';
 import { empty } from '@ember/object/computed';
-import Component from '@ember/component';
 import { computed, set } from '@ember/object';
 import { isPresent, isEqual, isEmpty } from '@ember/utils';
+import { inject as service } from '@ember/service';
 import AuthProvider from '../mixins/auth';
+import Component from '@ember/component';
 
 export default Component.extend(AuthProvider, {
+	appMeta: service(),
 	hasFirstnameError: empty('model.firstname'),
 	hasLastnameError: empty('model.lastname'),
 	hasEmailError: computed('model.email', function() {
@@ -83,6 +85,11 @@ export default Component.extend(AuthProvider, {
 				set(this, 'password.password', '');
 				set(this, 'password.confirmation', '');
 			});
+		},
+
+		onThemeChange(theme) {
+			this.get('appMeta').setTheme(theme);
+			this.set('model.theme', theme);
 		}
 	}
 });
