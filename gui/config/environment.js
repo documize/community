@@ -23,6 +23,12 @@ module.exports = function (environment) {
 		apiNamespace: '',
 		contentSecurityPolicyHeader: 'Content-Security-Policy-Report-Only',
 
+		// ember-cli-ifa
+		ifa: {
+			enabled: true,
+			inline: false,
+		},
+
 		EmberENV: {
 			FEATURES: {}
 		},

@@ -17,6 +17,9 @@ module.exports = function (defaults) {
 	var app = new EmberApp(defaults, {
 		fingerprint: {
 			enabled: true,
+			generateAssetMap: true,
+			fingerprintAssetMap: true,
+			prepend: '/',
 			extensions: ['js', 'css'],
 			exclude: ['tinymce/**', 'codemirror/**', 'flowchart/**']
 		},
@@ -38,6 +41,17 @@ module.exports = function (defaults) {
 		sourcemaps: {
 			enabled: isDevelopment,
 			extensions: ['js']
+		},
+
+		outputPaths: {
+			app: {
+				css: {
+					'app': '/assets/documize.css',
+					'themes/blue': '/assets/theme-blue.css',
+					'themes/teal': '/assets/theme-teal.css',
+					'themes/deep-orange': '/assets/theme-deep-orange.css'
+				}
+			}
 		}
 	});
 

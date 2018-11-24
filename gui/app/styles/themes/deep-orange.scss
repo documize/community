@@ -1,0 +1,45 @@
+// Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
+//
+// This software (Documize Community Edition) is licensed under
+// GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
+//
+// You can operate outside the AGPL restrictions by purchasing
+// Documize Enterprise Edition and obtaining a commercial license
+// by contacting <sales@documize.com>.
+//
+// https://documize.com
+
+@import "../core/color.scss";
+$color-primary: #BF360C;
+$color-primary-light: #FBE9E7;
+$color-link: #FF8A65;
+
+.color-primary {
+	color: $color-primary !important;
+}
+.color-link {
+	color: $color-link !important;
+}
+.background-color-theme {
+	background-color: $color-primary !important;
+}
+.background-color-theme-light {
+	background-color: $color-primary-light !important;
+}
+
+@import "../core/font.scss";
+@import "../core/mixins.scss";
+@import "../core/base.scss";
+@import "../core/bootstrap.scss";
+
+@import "../core/view/common.scss";
+@import "../core/widget/widget.scss";
+@import "../core/view/toolbar.scss";
+@import "../core/view/views.scss";
+@import "../core/layout/all.scss";
+
+@import "../core/vendor.scss";
+@import "../core/print.scss";
+@import "../core/news.scss";
+@import "../core/section/all.scss";
+@import "../core/enterprise/all.scss";

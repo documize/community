@@ -20,6 +20,8 @@ export default Service.extend({
 	ajax: service(),
 	localStorage: service(),
 	kcAuth: service(),
+	assetMap: service('asset-map'),
+
 	appHost: '',
 	apiHost: `${config.apiHost}`,
 	endpoint: `${config.apiHost}/${config.apiNamespace}`,
@@ -41,6 +43,8 @@ export default Service.extend({
 	location: 'selfhost',
 	// for bugfix releases, only admin is made aware of new release and end users see no What's New messaging
 	updateAvailable: false,
+	// empty theme uses default theme
+	theme: '',
 
 	getBaseUrl(endpoint) {
 		return [this.get('endpoint'), endpoint].join('/');
@@ -74,6 +78,9 @@ export default Service.extend({
 			this.setProperties(response);
 			this.set('version', 'v' + this.get('version'));
 			this.set('appHost', window.location.host);
+
+			// Handle theming
+			this.setTheme(this.get('theme'));
 
 			if (requestedRoute === 'secure') {
 				this.setProperties({
@@ -110,5 +117,13 @@ export default Service.extend({
 
 			return response;
 		});
+	},
+
+	setTheme(theme) {
+		theme = theme.trim();
+		if (theme.length === 0) return;
+
+		let file = this.get('assetMap').resolve(`assets/theme-${theme}.css`);
+		$('head').append(`<link rel="stylesheet" href="${file}">`);
 	}
 });

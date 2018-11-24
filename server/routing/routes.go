@@ -75,9 +75,11 @@ func RegisterEndpoints(rt *env.Runtime, s *store.Store) {
 	//**************************************************
 
 	AddPublic(rt, "meta", []string{"GET", "OPTIONS"}, nil, meta.Meta)
-	AddPublic(rt, "version", []string{"GET", "OPTIONS"}, nil, func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte(rt.Product.Version))
-	})
+	AddPublic(rt, "meta/themes", []string{"GET", "OPTIONS"}, nil, meta.Themes)
+	AddPublic(rt, "version", []string{"GET", "OPTIONS"}, nil,
+		func(w http.ResponseWriter, r *http.Request) {
+			w.Write([]byte(rt.Product.Version))
+		})
 
 	//**************************************************
 	// Non-secure public service routes
