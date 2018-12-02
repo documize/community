@@ -20,10 +20,6 @@
             <label for="confirmPassword">Confirm Password</label>
             {{input id="confirmPassword" type="password" value=password.confirmation class=(if hasConfirmPasswordError 'form-control is-invalid' 'form-control')}}
         </div>
-        <div class="form-group">
-            <label>Theme</label>
-			{{ui/theme-picker onChange=(action 'onThemeChange')}}
-        </div>
     {{/if}}
     <div class="btn btn-success my-5" {{action 'save'}}>Save</div>
 </div>

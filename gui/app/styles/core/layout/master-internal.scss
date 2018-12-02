@@ -1,0 +1,553 @@
+$display-break-1: 700px;
+$display-break-2: 900px;
+$display-break-3: 1200px;
+$display-break-4: 1600px;
+$display-break-5: 1800px;
+
+// CSS GRID WITH FIXED SIDEBAR OUTSIDE GRID
+// Mobile-first layout
+.master-container {
+	display: block;
+	height: auto;
+	width: 100%;
+
+	.master-content {
+		display: block;
+		height: auto;
+		width: 100%;
+		background: cornsilk;
+	}
+}
+
+.master-sidebar-container {
+	display: block;
+	height: auto;
+	width: 100%;
+	background: pink;
+
+	.master-navbar {
+		display: block;
+		height: auto;
+		width: 100%;
+		background-color: red;
+		text-align: center;
+		padding: 0;
+
+		> .nav-content {
+			display: flex;
+			flex-grow: 1;
+			flex-direction: row;
+			align-items: center;
+			justify-content: space-between;
+			flex-wrap: wrap;
+			width: 100%;
+
+			> .nav-options {
+				> .option {
+					cursor: pointer;
+
+					>.dicon {
+						display: inline-block;
+						color: $color-white;
+						font-size: 20px;
+						padding: 10px;
+					}
+
+					> .name {
+						display: none;
+					}
+				}
+			}
+
+			> .meta {
+				> .logo {
+					display: none;
+					cursor: pointer;
+				}
+			}
+		}
+	}
+
+	.master-sidebar {
+		display: block;
+		height: auto;
+		width: 100%;
+		background-color: lightgray;
+	}
+}
+
+// Tablet starts around 700px
+@media (min-width: $display-break-1) {
+	.master-container {
+		display: grid;
+		grid-template-columns: 240px auto;
+
+		.master-content {
+			grid-column-start: 2;
+			background: cornsilk;
+		}
+	}
+
+	.master-sidebar-container {
+		position: fixed;
+		width: 240px;
+		height: 100vh;
+		background: pink;
+
+		.master-navbar {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 40px;
+			height: 100vh;
+			background-color: red;
+			text-align: center;
+			padding: 10px 0;
+
+			> .nav-content {
+				display: flex;
+				flex-grow: 1;
+				flex-direction: column;
+				align-items: center;
+				justify-content: space-between;
+				flex-wrap: wrap;
+				height: 100vh;
+
+				> .nav-options {
+					> .option {
+						>.dicon {
+							display: block;
+							color: $color-white;
+							font-size: 20px;
+							padding: 20px 0;
+						}
+					}
+				}
+
+				> .meta {
+					padding-bottom: 30px;
+
+					> .logo  {
+						display: block;
+
+						> img {
+							width: 32px;
+							height: 32px;
+						}
+
+						> .documize {
+							display: none;
+						}
+					}
+				}
+			}
+		}
+
+		.master-sidebar {
+			position: fixed;
+			top: 0;
+			left: 40px;
+			width: 200px;
+			height: 100vh;
+			background-color: lightgray;
+		}
+	}
+}
+
+// Small screen starts around 900px
+@media (min-width: $display-break-2) {
+	.master-container {
+		display: grid;
+		grid-template-columns: 290px auto;
+
+		.master-content {
+			grid-column-start: 2;
+			background: cornsilk;
+		}
+	}
+
+	.master-sidebar-container {
+		position: fixed;
+		width: 290px;
+		height: 100vh;
+		background: pink;
+
+		.master-navbar {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 70px;
+			height: 100vh;
+			background-color: red;
+			text-align: center;
+
+			> .nav-content {
+				> .nav-options {
+					> .option {
+						> .dicon {
+							display: block;
+							color: $color-white;
+							font-size: 24px;
+							padding: 25px 0 10px 0;
+						}
+
+						> .name {
+							display: block;
+							padding: 0 0 10px 0;
+							font-size: 0.8rem;
+							font-weight: 700;
+							color: white;
+							text-transform: uppercase;
+						}
+					}
+				}
+
+				> .meta {
+					> .logo  {
+						> img {
+							width: 32px;
+							height: 32px;
+						}
+
+						> .documize {
+							display: block;
+							font-size: 0.7rem;
+							color: white;
+							text-decoration: none;
+						}
+					}
+				}
+			}
+		}
+
+		.master-sidebar {
+			position: fixed;
+			top: 0;
+			left: 70px;
+			width: 220px;
+			height: 100vh;
+			background-color: lightgray;
+		}
+	}
+}
+
+// Medium screen starts around 1200px
+@media (min-width: $display-break-3) {
+	.master-container {
+		display: grid;
+		grid-template-columns: 320px auto;
+
+		.master-content {
+			grid-column-start: 2;
+			background: cornsilk;
+		}
+	}
+
+	.master-sidebar-container {
+		position: fixed;
+		width: 320px;
+		height: 100vh;
+		background: pink;
+
+		.master-navbar {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 70px;
+			height: 100vh;
+			background-color: red;
+		}
+
+		.master-sidebar {
+			position: fixed;
+			top: 0;
+			left: 70px;
+			width: 250px;
+			height: 100vh;
+			background-color: lightgray;
+		}
+	}
+}
+
+// Large screen starts around 1600px
+@media (min-width: $display-break-4) {
+	.master-container {
+		display: grid;
+		grid-template-columns: 370px auto;
+
+		.master-content {
+			grid-column-start: 2;
+			background: cornsilk;
+		}
+	}
+
+	.master-sidebar-container {
+		position: fixed;
+		width: 370px;
+		height: 100vh;
+		background: pink;
+
+		.master-navbar {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 70px;
+			height: 100vh;
+			background-color: red;
+		}
+
+		.master-sidebar {
+			position: fixed;
+			top: 0;
+			left: 70px;
+			width: 300px;
+			height: 100vh;
+			background-color: lightgray;
+		}
+	}
+}
+
+// $break-1: 900px;
+// $break-2: 1200px;
+// $break-3: 1400px;
+// $break-4: 1600px;
+// $break-5: 1800px;
+
+// FLEX
+// Mobile first layout
+// .master-container {
+// 	display: flex;
+// 	flex-direction: column;
+// 	width: 100%;
+// 	margin: 0;
+// 	padding: 0;
+
+// 	.master-navbar {
+// 		display: block;
+// 		margin: 0;
+// 		padding: 0;
+// 		height: 40px;
+// 		width: 100%;
+// 		background-color: red;
+// 	}
+
+// 	.master-sidebar {
+// 		display: block;
+// 		margin: 0;
+// 		padding: 0;
+// 		height: auto;
+// 		width: 100%;
+// 		background-color: lightgray;
+// 	}
+
+// 	.master-content {
+// 		display: block;
+// 		margin: 0;
+// 		padding: 0;
+// 		height: auto;
+// 		width: 100%;
+// 		background-color: cornsilk;
+// 	}
+// }
+
+// // Small desktop 900px
+// @media (min-width: $break-1) {
+// 	.master-container {
+// 		display: flex;
+// 		flex-direction: row;
+// 		width: 100%;
+// 		margin: 0;
+// 		padding: 0;
+// 		background-color: yellow;
+
+// 		.master-navbar {
+// 			flex: 0 0 80px;
+// 			width: 80px;
+// 			height: 100vh;
+// 			margin: 0;
+// 			padding: 0;
+// 			overflow-x: hidden;
+// 			overflow-y: auto;
+// 			@include sticky();
+// 			background-color: red;
+// 		}
+
+// 		.master-sidebar {
+// 			flex: 0 0 250px;
+// 			width: 250px;
+// 			height: 100vh;
+// 			margin: 0;
+// 			padding: 0;
+// 			overflow-x: hidden;
+// 			overflow-y: auto;
+// 			@include sticky();
+// 			background-color: lightgray;
+// 		}
+
+// 		.master-content {
+// 			flex: 0 1 700px;
+// 			max-width: 700px;
+// 			height: auto;
+// 			width: 100%;
+// 			margin: 0;
+// 			padding: 0;
+// 			background-color: cornsilk;
+// 		}
+// 	}
+// }
+
+
+// // Mobile-first layout
+// .master-container {
+// 	background-color: yellow;
+// 	margin: 0;
+// 	padding: 0;
+
+// 	.master-navbar {
+// 		display: block;
+// 		margin: 0;
+// 		padding: 0;
+// 		height: 40px;
+// 		width: 100%;
+// 		background-color: red;
+// 	}
+
+// 	.master-sidebar {
+// 		display: block;
+// 		margin: 0;
+// 		padding: 0;
+// 		height: auto;
+// 		width: 100%;
+// 		background-color: lightgray;
+// 	}
+
+// 	.master-content {
+// 		display: block;
+// 		margin: 0;
+// 		padding: 0;
+// 		height: auto;
+// 		width: 100%;
+// 		background-color: cornsilk;
+// 	}
+// }
+
+// // Small desktop starts at 900px
+// @media (min-width: $break-1) {
+// 	.master-container {
+// 		position: relative;
+// 		display: inline;
+
+// 		.master-navbar {
+// 			display: inline-block;
+// 			margin: 0;
+// 			padding: 0;
+// 			height: 100vh;
+// 			width: 80px;
+// 			background-color: red;
+// 			@include sticky();
+// 			top: 0;
+// 			left: 0;
+// 		}
+
+// 		.master-sidebar {
+// 			display: inline-block;
+// 			margin: 0;
+// 			padding: 0;
+// 			height: 100vh;
+// 			width: 250px;
+// 			background-color: lightgray;
+// 			@include sticky();
+// 			top: 0;
+// 			left: 0;
+// 		}
+
+// 		.master-content {
+// 			position: relative;
+// 			display: inline;
+// 			margin: 0 0 0 330px;
+// 			padding: 0;
+// 			background-color: cornsilk;
+// 		}
+// 	}
+// }
+
+
+/*
+// CSS GRID
+// Mobile-first layout
+.master-container {
+	display: grid;
+	grid-template-rows: 3;
+	grid-template-areas:
+		"nav"
+		"sidebar"
+		"content";
+}
+
+.master-navbar {
+	grid-area: nav;
+	grid-row: 1;
+	height: auto;
+	background-color: red;
+}
+
+.master-sidebar {
+	grid-area: sidebar;
+	grid-row: 2;
+	height: auto;
+	background-color: lightgray;
+}
+
+.master-content {
+	grid-area: content;
+	grid-row: 3;
+	height: auto;
+	background-color: yellow;
+}
+
+// Small desktop 900px
+@media (min-width: $break-1) {
+	.master-container {
+		grid-template-columns: 80px 250px auto;
+		grid-template-rows: 1;
+		grid-template-areas:
+			"nav sidebar content";
+
+		height: 100vh;
+	}
+
+	.master-navbar {
+		grid-area: nav;
+		grid-row: 1;
+		grid-column: 1;
+		height: 100vh;
+		width: 80px;
+	}
+
+	.master-sidebar {
+		grid-area: sidebar;
+		grid-row: 1;
+		grid-column: 2;
+		height: 100vh;
+		width: 250px;
+		position: fixed;
+		top: 0;
+		left: 80px;
+		z-index: 1;
+	}
+
+	.master-content {
+		grid-area: content;
+		grid-row: 1;
+		grid-column: 3;
+		// height: 100vh;
+	}
+}
+
+// @media (min-width: 900px) {
+// 	.master-container {
+// 		grid-template-columns: 80px 350px auto;
+// 	}
+// }
+
+*/
