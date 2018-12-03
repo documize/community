@@ -17,7 +17,7 @@ export default Mixin.create({
 	renderTooltips() {
 		schedule('afterRender', () => {
 			$('[data-toggle="tooltip"]').tooltip('dispose');
-			$('body').tooltip({selector: '[data-toggle="tooltip"]', delay: 250});
+			$('body').tooltip({selector: '[data-toggle="tooltip"]', delay: { "show": 1000, "hide": 100 }});
 		});
 	},
 

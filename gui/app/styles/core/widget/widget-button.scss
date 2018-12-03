@@ -196,24 +196,3 @@
 	display: inline-block;
 	margin-left: 5px;
 }
-
-.button-gravatar-white {
-    display: inline-block;
-	cursor: default;
-    position: relative;
-    // overflow: hidden; // kills update dots
-    width: 35px;
-    height: 35px;
-    line-height: 34px;
-    padding: 0;
-	border-radius: 50%;
-	text-align: center;
-	color: $color-primary;
-    font-weight: bold;
-	background-color: $color-white;
-	@include ease-in();
-
-	&:hover {
-		background-color: darken($color-white, 15%);
-	}
-}

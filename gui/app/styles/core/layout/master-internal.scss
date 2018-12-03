@@ -15,23 +15,22 @@ $display-break-5: 1800px;
 		display: block;
 		height: auto;
 		width: 100%;
-		background: cornsilk;
+		padding: 10px;
 	}
 }
-
 .master-sidebar-container {
 	display: block;
 	height: auto;
 	width: 100%;
-	background: pink;
 
 	.master-navbar {
 		display: block;
 		height: auto;
 		width: 100%;
-		background-color: red;
+		background-color: $color-primary;
 		text-align: center;
 		padding: 0;
+		z-index: 999;
 
 		> .nav-content {
 			display: flex;
@@ -64,6 +63,40 @@ $display-break-5: 1800px;
 					display: none;
 					cursor: pointer;
 				}
+
+				> .bookmarks {
+					display: inline-block;
+
+					>.dicon {
+						cursor: pointer;
+						color: $color-white;
+						font-size: 20px;
+						padding: 10px;
+					}
+				}
+
+				> .user-gravatar-container {
+					display: inline-block;
+					margin: 0 10px 0 0;
+					padding: 0;
+					vertical-align: text-bottom;
+
+					> .user-gravatar {
+						cursor: pointer;
+						position: relative;
+						width: 25px;
+						height: 25px;
+						line-height: 24px;
+						padding: 0;
+						border-radius: 50%;
+						font-size: 0.75rem;
+						text-align: center;
+						color: $color-primary;
+						font-weight: bold;
+						background-color: $color-white;
+						@extend .no-select;
+					}
+				}
 			}
 		}
 	}
@@ -72,7 +105,9 @@ $display-break-5: 1800px;
 		display: block;
 		height: auto;
 		width: 100%;
-		background-color: lightgray;
+		padding: 5px 10px;
+		z-index: 888;
+		background-color: $color-off-white;
 	}
 }
 
@@ -84,7 +119,7 @@ $display-break-5: 1800px;
 
 		.master-content {
 			grid-column-start: 2;
-			background: cornsilk;
+			padding: 10px;
 		}
 	}
 
@@ -92,7 +127,6 @@ $display-break-5: 1800px;
 		position: fixed;
 		width: 240px;
 		height: 100vh;
-		background: pink;
 
 		.master-navbar {
 			position: fixed;
@@ -100,7 +134,6 @@ $display-break-5: 1800px;
 			left: 0;
 			width: 40px;
 			height: 100vh;
-			background-color: red;
 			text-align: center;
 			padding: 10px 0;
 
@@ -139,6 +172,26 @@ $display-break-5: 1800px;
 							display: none;
 						}
 					}
+
+					> .bookmarks {
+						>.dicon {
+							display: block;
+							color: $color-white;
+							font-size: 20px;
+							padding: 20px 0;
+						}
+					}
+
+					> .user-gravatar-container {
+						display: block;
+						text-align: center;
+						margin: 0 0 15px 4px;
+						padding: 0;
+
+						> .user-gravatar {
+							display: block;
+						}
+					}
 				}
 			}
 		}
@@ -149,7 +202,8 @@ $display-break-5: 1800px;
 			left: 40px;
 			width: 200px;
 			height: 100vh;
-			background-color: lightgray;
+			overflow-x: hidden;
+			overflow-y: auto;
 		}
 	}
 }
@@ -162,7 +216,7 @@ $display-break-5: 1800px;
 
 		.master-content {
 			grid-column-start: 2;
-			background: cornsilk;
+			padding: 20px;
 		}
 	}
 
@@ -170,7 +224,6 @@ $display-break-5: 1800px;
 		position: fixed;
 		width: 290px;
 		height: 100vh;
-		background: pink;
 
 		.master-navbar {
 			position: fixed;
@@ -178,7 +231,6 @@ $display-break-5: 1800px;
 			left: 0;
 			width: 70px;
 			height: 100vh;
-			background-color: red;
 			text-align: center;
 
 			> .nav-content {
@@ -216,6 +268,18 @@ $display-break-5: 1800px;
 							text-decoration: none;
 						}
 					}
+
+					> .user-gravatar-container {
+						margin: 0 0 15px 8px;
+						padding: 0;
+
+						> .user-gravatar {
+							width: 30px;
+							height: 30px;
+							line-height: 30px;
+							font-size: 0.9rem;
+						}
+					}
 				}
 			}
 		}
@@ -226,7 +290,6 @@ $display-break-5: 1800px;
 			left: 70px;
 			width: 220px;
 			height: 100vh;
-			background-color: lightgray;
 		}
 	}
 }
@@ -239,7 +302,6 @@ $display-break-5: 1800px;
 
 		.master-content {
 			grid-column-start: 2;
-			background: cornsilk;
 		}
 	}
 
@@ -247,7 +309,6 @@ $display-break-5: 1800px;
 		position: fixed;
 		width: 320px;
 		height: 100vh;
-		background: pink;
 
 		.master-navbar {
 			position: fixed;
@@ -255,7 +316,6 @@ $display-break-5: 1800px;
 			left: 0;
 			width: 70px;
 			height: 100vh;
-			background-color: red;
 		}
 
 		.master-sidebar {
@@ -264,7 +324,7 @@ $display-break-5: 1800px;
 			left: 70px;
 			width: 250px;
 			height: 100vh;
-			background-color: lightgray;
+			padding: 20px 10px;
 		}
 	}
 }
@@ -277,7 +337,6 @@ $display-break-5: 1800px;
 
 		.master-content {
 			grid-column-start: 2;
-			background: cornsilk;
 		}
 	}
 
@@ -285,7 +344,6 @@ $display-break-5: 1800px;
 		position: fixed;
 		width: 370px;
 		height: 100vh;
-		background: pink;
 
 		.master-navbar {
 			position: fixed;
@@ -293,7 +351,6 @@ $display-break-5: 1800px;
 			left: 0;
 			width: 70px;
 			height: 100vh;
-			background-color: red;
 		}
 
 		.master-sidebar {
@@ -302,252 +359,7 @@ $display-break-5: 1800px;
 			left: 70px;
 			width: 300px;
 			height: 100vh;
-			background-color: lightgray;
+			padding: 20px 15px;
 		}
 	}
 }
-
-// $break-1: 900px;
-// $break-2: 1200px;
-// $break-3: 1400px;
-// $break-4: 1600px;
-// $break-5: 1800px;
-
-// FLEX
-// Mobile first layout
-// .master-container {
-// 	display: flex;
-// 	flex-direction: column;
-// 	width: 100%;
-// 	margin: 0;
-// 	padding: 0;
-
-// 	.master-navbar {
-// 		display: block;
-// 		margin: 0;
-// 		padding: 0;
-// 		height: 40px;
-// 		width: 100%;
-// 		background-color: red;
-// 	}
-
-// 	.master-sidebar {
-// 		display: block;
-// 		margin: 0;
-// 		padding: 0;
-// 		height: auto;
-// 		width: 100%;
-// 		background-color: lightgray;
-// 	}
-
-// 	.master-content {
-// 		display: block;
-// 		margin: 0;
-// 		padding: 0;
-// 		height: auto;
-// 		width: 100%;
-// 		background-color: cornsilk;
-// 	}
-// }
-
-// // Small desktop 900px
-// @media (min-width: $break-1) {
-// 	.master-container {
-// 		display: flex;
-// 		flex-direction: row;
-// 		width: 100%;
-// 		margin: 0;
-// 		padding: 0;
-// 		background-color: yellow;
-
-// 		.master-navbar {
-// 			flex: 0 0 80px;
-// 			width: 80px;
-// 			height: 100vh;
-// 			margin: 0;
-// 			padding: 0;
-// 			overflow-x: hidden;
-// 			overflow-y: auto;
-// 			@include sticky();
-// 			background-color: red;
-// 		}
-
-// 		.master-sidebar {
-// 			flex: 0 0 250px;
-// 			width: 250px;
-// 			height: 100vh;
-// 			margin: 0;
-// 			padding: 0;
-// 			overflow-x: hidden;
-// 			overflow-y: auto;
-// 			@include sticky();
-// 			background-color: lightgray;
-// 		}
-
-// 		.master-content {
-// 			flex: 0 1 700px;
-// 			max-width: 700px;
-// 			height: auto;
-// 			width: 100%;
-// 			margin: 0;
-// 			padding: 0;
-// 			background-color: cornsilk;
-// 		}
-// 	}
-// }
-
-
-// // Mobile-first layout
-// .master-container {
-// 	background-color: yellow;
-// 	margin: 0;
-// 	padding: 0;
-
-// 	.master-navbar {
-// 		display: block;
-// 		margin: 0;
-// 		padding: 0;
-// 		height: 40px;
-// 		width: 100%;
-// 		background-color: red;
-// 	}
-
-// 	.master-sidebar {
-// 		display: block;
-// 		margin: 0;
-// 		padding: 0;
-// 		height: auto;
-// 		width: 100%;
-// 		background-color: lightgray;
-// 	}
-
-// 	.master-content {
-// 		display: block;
-// 		margin: 0;
-// 		padding: 0;
-// 		height: auto;
-// 		width: 100%;
-// 		background-color: cornsilk;
-// 	}
-// }
-
-// // Small desktop starts at 900px
-// @media (min-width: $break-1) {
-// 	.master-container {
-// 		position: relative;
-// 		display: inline;
-
-// 		.master-navbar {
-// 			display: inline-block;
-// 			margin: 0;
-// 			padding: 0;
-// 			height: 100vh;
-// 			width: 80px;
-// 			background-color: red;
-// 			@include sticky();
-// 			top: 0;
-// 			left: 0;
-// 		}
-
-// 		.master-sidebar {
-// 			display: inline-block;
-// 			margin: 0;
-// 			padding: 0;
-// 			height: 100vh;
-// 			width: 250px;
-// 			background-color: lightgray;
-// 			@include sticky();
-// 			top: 0;
-// 			left: 0;
-// 		}
-
-// 		.master-content {
-// 			position: relative;
-// 			display: inline;
-// 			margin: 0 0 0 330px;
-// 			padding: 0;
-// 			background-color: cornsilk;
-// 		}
-// 	}
-// }
-
-
-/*
-// CSS GRID
-// Mobile-first layout
-.master-container {
-	display: grid;
-	grid-template-rows: 3;
-	grid-template-areas:
-		"nav"
-		"sidebar"
-		"content";
-}
-
-.master-navbar {
-	grid-area: nav;
-	grid-row: 1;
-	height: auto;
-	background-color: red;
-}
-
-.master-sidebar {
-	grid-area: sidebar;
-	grid-row: 2;
-	height: auto;
-	background-color: lightgray;
-}
-
-.master-content {
-	grid-area: content;
-	grid-row: 3;
-	height: auto;
-	background-color: yellow;
-}
-
-// Small desktop 900px
-@media (min-width: $break-1) {
-	.master-container {
-		grid-template-columns: 80px 250px auto;
-		grid-template-rows: 1;
-		grid-template-areas:
-			"nav sidebar content";
-
-		height: 100vh;
-	}
-
-	.master-navbar {
-		grid-area: nav;
-		grid-row: 1;
-		grid-column: 1;
-		height: 100vh;
-		width: 80px;
-	}
-
-	.master-sidebar {
-		grid-area: sidebar;
-		grid-row: 1;
-		grid-column: 2;
-		height: 100vh;
-		width: 250px;
-		position: fixed;
-		top: 0;
-		left: 80px;
-		z-index: 1;
-	}
-
-	.master-content {
-		grid-area: content;
-		grid-row: 1;
-		grid-column: 3;
-		// height: 100vh;
-	}
-}
-
-// @media (min-width: 900px) {
-// 	.master-container {
-// 		grid-template-columns: 80px 350px auto;
-// 	}
-// }
-
-*/
