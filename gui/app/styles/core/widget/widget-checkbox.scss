@@ -8,35 +8,35 @@
 
 	> .material-icons {
 		font-size: 1.5rem;
-		color: $color-gray;
+		color: map-get($gray-shades, 600);
 		vertical-align: top;
 	}
 
 	> .selected {
-		color: $color-blue;
+		color: map-get($gray-shades, 800);
 	}
 
 	&:hover {
-		color: $color-blue;
+		color: map-get($gray-shades, 800);
 	}
 
 	> .text {
 		display: inline-block;
 		font-size: 1.1rem;
 		vertical-align: sub;
-		color: $color-off-black;
+		color: $color-black-light-1;
 	}
 }
 
 .ui-checkbox-selected {
-	color: $color-blue;
+	color: map-get($gray-shades, 800);
 }
 
 .widget-checkbox {
-	color: $color-blue;
+	color: map-get($gray-shades, 800);
 	cursor: pointer;
 }
 
 .checkbox-gray {
-	color: $color-gray !important;
+	color: map-get($gray-shades, 600) !important;
 }

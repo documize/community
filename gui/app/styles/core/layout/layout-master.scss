@@ -22,7 +22,7 @@ $break-5: 1800px;
 
 .layout-sidebar {
 	order: -1;
-	background-color: $color-gray-light2;
+	background-color: map-get($gray-shades, 200);
 	padding: 1rem;
 }
 

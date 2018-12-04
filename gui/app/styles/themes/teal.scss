@@ -9,7 +9,8 @@
 //
 // https://documize.com
 
-@import "../core/color.scss";
+@import "../colors.scss";
+
 $color-primary: #00695C;
 $color-primary-light: #E0F2F1;
 $color-link: #348A37;
@@ -27,20 +28,4 @@ $color-link: #348A37;
 	background-color: $color-primary-light !important;
 }
 
-@import "../core/font.scss";
-@import "../core/icon.scss";
-@import "../core/mixins.scss";
-@import "../core/base.scss";
-@import "../core/bootstrap.scss";
-
-@import "../core/view/common.scss";
-@import "../core/widget/widget.scss";
-@import "../core/view/toolbar.scss";
-@import "../core/view/views.scss";
-@import "../core/layout/all.scss";
-
-@import "../core/vendor.scss";
-@import "../core/print.scss";
-@import "../core/news.scss";
-@import "../core/section/all.scss";
-@import "../core/enterprise/all.scss";
+@import "../core/all.scss";

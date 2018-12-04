@@ -31,14 +31,14 @@
 	@include ease-in();
 
 	> i {
-		color: $color-gray-light;
+		color: map-get($gray-shades, 300);
 		font-size: 2rem;
 		@include ease-in();
 	}
 
 	&:hover {
 		> i {
-			color: darken($color-gray-light, 15%);
+			color: darken(map-get($gray-shades, 300), 15%);
 		}
 	}
 }
@@ -49,14 +49,14 @@
 	@include ease-in();
 
 	> i {
-		color: $color-goldy;
+		color: map-get($yellow-shades, 700);
 		font-size: 2rem;
 		@include ease-in();
 	}
 
 	&:hover {
 		> i {
-			color: darken($color-goldy, 5%);
+			color: darken(map-get($yellow-shades, 700), 5%);
 		}
 	}
 }
@@ -67,14 +67,14 @@
 	@include ease-in();
 
 	> i {
-		color: $color-gray-light;
+		color: map-get($gray-shades, 300);
 		font-size: 2rem;
 		@include ease-in();
 	}
 
 	&:hover {
 		> i {
-			color: $color-red;
+			color: map-get($red-shades, 700);
 		}
 	}
 }
@@ -85,14 +85,14 @@
 	@include ease-in();
 
 	> i {
-		color: $color-blue;
+		color: map-get($gray-shades, 800);
 		font-size: 2rem;
 		@include ease-in();
 	}
 
 	&:hover {
 		> i {
-			color: darken($color-blue, 5%);
+			color: map-get($gray-shades, 600);
 		}
 	}
 }
@@ -103,14 +103,14 @@
 	@include ease-in();
 
 	> i {
-		color: $color-red;
+		color: map-get($red-shades, 700);
 		font-size: 2rem;
 		@include ease-in();
 	}
 
 	&:hover {
 		> i {
-			color: darken($color-red, 5%);
+			color: map-get($red-shades, 400);
 		}
 	}
 }
@@ -121,14 +121,14 @@
 	@include ease-in();
 
 	> i {
-		color: $color-green;
+		color: map-get($green-shades, 600);
 		font-size: 2rem;
 		@include ease-in();
 	}
 
 	&:hover {
 		> i {
-			color: darken($color-green, 5%);
+			color: map-get($green-shades, 700);
 		}
 	}
 }
@@ -139,14 +139,14 @@
 	@include ease-in();
 
 	> i {
-		color: $color-off-black;
+		color: $color-black-light-1;
 		font-size: 2rem;
 		@include ease-in();
 	}
 
 	&:hover {
 		> i {
-			color: darken($color-off-black, 5%);
+			color: darken($color-black-light-1, 5%);
 		}
 	}
 }
@@ -157,14 +157,14 @@
 	@include ease-in();
 
 	> i {
-		color: $color-primary;
+		color: $theme-500;
 		font-size: 2rem;
 		@include ease-in();
 	}
 
 	&:hover {
 		> i {
-			color: darken($color-primary, 5%);
+			color: darken($theme-500, 5%);
 		}
 	}
 }
@@ -175,14 +175,14 @@
 	@include ease-in();
 
 	> i {
-		color: $color-primary-light;
+		color: $theme-100;
 		font-size: 2rem;
 		@include ease-in();
 	}
 
 	&:hover {
 		> i {
-			color: darken($color-primary-light, 5%);
+			color: darken($theme-100, 5%);
 		}
 	}
 }

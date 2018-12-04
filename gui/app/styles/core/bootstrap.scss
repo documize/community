@@ -18,20 +18,20 @@
 // $font-family-sans-serif: "Helvetica", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 
 // colors
-$blue: 			$color-primary;
-$red: 			$color-red;
-$green: 		$color-green;
-$secondary:		$color-gray;
+$blue: 			$theme-500;
+$red: 			map-get($red-shades, 600);
+$green: 		map-get($green-shades, 700);
+$secondary:		map-get($gray-shades, 600);
 $light: 		$color-white;
-$dark:			$color-off-black;
+$dark:			$color-black-light-1;
 
 // popover
 $popover-bg: 			$color-white;
-$popover-header-bg: 	$color-dark;
+$popover-header-bg: 	map-get($gray-shades, 800);
 $popover-header-color:	$color-white;
 
 // tooltip
-$tooltip-bg:	$color-dark;
+$tooltip-bg:	map-get($gray-shades, 800);
 $tooltip-color:	$color-white;
 
 // modal
@@ -40,8 +40,8 @@ $modal-header-border-color:		$color-white;
 $modal-footer-border-color: 	$color-white;
 
 .modal-header {
-	background-color: $color-primary;
-	color: $color-off-white;
+	background-color: $theme-500;
+	color: map-get($gray-shades, 100);
 	font-size: 1.2rem;
 }
 
@@ -54,7 +54,7 @@ $border-radius-lg:  .15rem;
 $border-radius-sm:  .1rem;
 
 // dropdown
-$dropdown-link-color:               $color-off-black;
+$dropdown-link-color:               $color-black-light-1;
 $dropdown-link-hover-color:         $color-link;
 $dropdown-link-hover-bg:          	$color-white;
 $dropdown-link-active-color:        $color-link;
@@ -62,20 +62,20 @@ $dropdown-link-active-bg:           $color-white;
 $dropdown-header-color:				$color-black;
 
 // form
-$input-color:               $color-off-black;
-$input-border-color:        $color-stroke;
+$input-color:               $color-black-light-1;
+$input-border-color:        map-get($gray-shades, 200);
 $input-focus-bg:            $color-white;
-$input-focus-border-color:  $color-gray;
-$input-focus-color:         $color-off-black;
-$input-placeholder-color:   $color-gray;
-$input-focus-border-color:	$color-stroke;
+$input-focus-border-color:  map-get($gray-shades, 600);
+$input-focus-color:         $color-black-light-1;
+$input-placeholder-color:   map-get($gray-shades, 600);
+$input-focus-border-color:	map-get($gray-shades, 200);
 $input-btn-focus-width:     .2rem;
-$input-btn-focus-color:     rgba($color-primary, .25);
+$input-btn-focus-color:     rgba($theme-500, .25);
 
 // form labels
 .form-group {
 	> label {
-		color: $color-dark;
+		color: map-get($gray-shades, 800);
 		font-size: 1.2rem;
 		font-weight: 500;
 	}
@@ -86,7 +86,7 @@ $input-btn-focus-color:     rgba($color-primary, .25);
 
 	> small.highlight, > div[class*="col"] > small.highlight {
 		font-size: 1rem;
-		color: $color-orange !important;
+		color: map-get($yellow-shades, 700) !important;
 	}
 }
 
@@ -142,7 +142,7 @@ body.modal-open {
 		border: none !important;
 
 		> span {
-			color: $color-gray;
+			color: map-get($gray-shades, 600);
 			font-size: 2rem;
 		}
 	}

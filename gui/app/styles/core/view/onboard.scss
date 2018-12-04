@@ -1,7 +1,7 @@
 .onboarding-container {
     width: 100%;
     text-align: left;
-    color: $color-off-black;
+    color: $color-black-light-1;
 	letter-spacing: 1px;
 	margin: 50px 0;
 
@@ -48,13 +48,13 @@
     {
         font-size: 0.9rem;;
         font-style: italic;
-        color: $color-stroke;
+        color: map-get($gray-shades, 500);
     }
 
     .mismatch
     {
         display: none;
-        color: $color-red;
+        color: map-get($red-shades, 700);
         font-weight: 700;
     }
 
@@ -155,14 +155,14 @@
         h2
         {
             font-size: 2rem;;
-            color: $color-primary;
+            color: $theme-500;
             margin-bottom: 30px;
         }
 
         p
         {
             font-size: 1.3rem;
-            color: $color-primary;
+            color: $theme-500;
         }
 
         p.note
@@ -192,7 +192,7 @@
     //     padding: 10px 15px;
     //     background: #12A936;
     //     border: 0;
-    //     color: $color-off-white;
+    //     color: map-get($gray-shades, 100);
     //     border-radius: 3px;
     //     font-weight: 500;
     //     font-size: 16px;
@@ -220,7 +220,7 @@
     //     background: white;
     //     border: 1px solid #e2e2e2;
     //     @include border-radius(3px);
-    //     color: $color-off-black;
+    //     color: $color-black-light-1;
     //     font-weight: bold;
     //     font-size: 16px;
     //     -webkit-appearance: none;

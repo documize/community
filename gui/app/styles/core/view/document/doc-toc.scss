@@ -19,7 +19,7 @@
 					cursor: not-allowed !important;
 
 					> .material-icons {
-						color: $color-gray-light;
+						color: map-get($gray-shades, 300);
 					}
 				}
 			}
@@ -42,7 +42,7 @@
 				overflow: hidden;
 
 				> .link {
-					color: $color-dark;
+					color: map-get($gray-shades, 800);
 					font-weight: bold;
 
 					&:hover {
@@ -50,7 +50,7 @@
 					}
 
 					> .numbering {
-						color: $color-gray;
+						color: map-get($gray-shades, 600);
 						font-weight: bold;
 						display: inline-block;
 						margin-right: 10px;

@@ -8,8 +8,8 @@
 			@include ease-in();
 			margin: 0 0 5px 0;
 			padding: 10px 15px;
-			color: $color-gray;
-			background-color: $color-off-white;
+			color: map-get($gray-shades, 600);
+			background-color: map-get($gray-shades, 100);
 			cursor: pointer;
 			position: relative;
 			list-style-type: none;
@@ -19,12 +19,12 @@
 			}
 
 			> .title {
-				color : $color-off-black;
+				color : $color-black-light-1;
 				font-size: 1rem;
 			}
 
 			> .space {
-				color : $color-gray;
+				color : map-get($gray-shades, 600);
 				font-size: 0.8rem;
 				font-style: italic;
 				font-weight: bold;
@@ -32,7 +32,7 @@
 			}
 
 			> .snippet {
-				color : $color-gray;
+				color : map-get($gray-shades, 600);
 				font-size: 0.9rem;
 			}
 

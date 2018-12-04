@@ -1,6 +1,6 @@
 .content-zone {
 	> .explainer-header {
-		color: $color-gray;
+		color: map-get($gray-shades, 600);
 		font-size: 1.5rem;
 		font-weight: 500;
 	}
@@ -8,14 +8,14 @@
 	> .explainer-text {
 		margin: 3px 0;
 		padding: 0;
-		color: $color-gray;
+		color: map-get($gray-shades, 600);
 		font-size: 1.1rem;
 	}
 
 	> .explainer-list {
 		margin: 5px 20px;
 		padding: 0;
-		color: $color-gray;
+		color: map-get($gray-shades, 600);
 
 		> li {
 			margin: 0;

@@ -8,7 +8,7 @@
 
 		.doc-excerpt {
 			font-size: 1.2rem;
-			color: $color-gray;
+			color: map-get($gray-shades, 600);
 			margin: 0 0 20px;
 		}
 	}
@@ -18,24 +18,24 @@
 	@include border-radius(3px);
 	@include ease-in();
 	display: inline-block;
-	border: 2px solid $color-green;
+	border: 2px solid map-get($green-shades, 700);
 	padding: 2px 10px;
-	color: $color-gray;
-	background-color: $color-off-white;
+	color: map-get($gray-shades, 600);
+	background-color: map-get($gray-shades, 100);
 	font-weight: 800;
 	font-size: 1rem;
 
 	&:hover {
-		color: $color-green;
+		color: map-get($green-shades, 500);
 	}
 }
 
 .document-lifecycle-draft {
 	@extend .document-lifecycle-live;
-	border: 2px solid $color-orange;
+	border: 2px solid map-get($yellow-shades, 700);
 
 	&:hover {
-		color: $color-orange;
+		color: map-get($yellow-shades, 700);
 	}
 }
 
@@ -46,30 +46,30 @@
 	padding: 2px 10px;
 	font-weight: 800;
 	font-size: 1rem;
-	color: $color-gray;
-	background-color: $color-off-white;
-	border: 2px solid $color-gray;
+	color: map-get($gray-shades, 600);
+	background-color: map-get($gray-shades, 100);
+	border: 2px solid map-get($gray-shades, 600);
 
 	&:hover {
-		color: $color-dark;
+		color: map-get($gray-shades, 800);
 	}
 }
 
 .document-protection-review {
 	@extend .document-protection-unlocked;
-	border: 2px solid $color-orange;
+	border: 2px solid map-get($yellow-shades, 700);
 
 	&:hover {
-		color: $color-orange;
+		color: map-get($yellow-shades, 700);
 	}
 }
 
 .document-protection-locked {
 	@extend .document-protection-unlocked;
-	border: 2px solid $color-red;
+	border: 2px solid map-get($red-shades, 600);
 
 	&:hover {
-		color: $color-red;
+		color: map-get($red-shades, 600);
 	}
 }
 
@@ -78,10 +78,10 @@
 	padding: 2px 10px;
 	font-weight: 600;
 	font-size: 1rem;
-	color: $color-gray;
-	background-color: $color-off-white;
-	border: 2px solid $color-gray;
-	border-left: 13px solid $color-gray;
+	color: map-get($gray-shades, 600);
+	background-color: map-get($gray-shades, 100);
+	border: 2px solid map-get($gray-shades, 600);
+	border-left: 13px solid map-get($gray-shades, 600);
 	margin-right: 20px;
 }
 
@@ -91,6 +91,6 @@
 	font-size: 1.1rem;
 	font-weight: 600;
 	font-style: italic;
-	color: $color-gray;
+	color: map-get($gray-shades, 600);
 	margin-right: 20px;
 }

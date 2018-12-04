@@ -23,6 +23,7 @@
 		"@ember/optional-features": "^0.6.1",
 		"broccoli-asset-rev": "^2.4.5",
 		"ember-ajax": "^3.0.0",
+		"ember-attacher": "^0.13.10",
 		"ember-cli": "^3.1.4",
 		"ember-cli-app-version": "^3.0.0",
 		"ember-cli-babel": "^6.6.0",

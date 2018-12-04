@@ -38,11 +38,11 @@ export default Route.extend({
 	},
 
 	activate() {
-		$('body').addClass('background-color-theme-light');
+		$('body').addClass('background-color-theme-100');
 		document.title = "Documize Setup";
 	},
 
 	deactivate() {
-		$('body').removeClass('background-color-theme-light');
+		$('body').removeClass('background-color-theme-100');
 	}
 });

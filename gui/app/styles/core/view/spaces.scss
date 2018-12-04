@@ -2,13 +2,13 @@
 	> .heading {
 		font-size: 1.3rem;
 		font-weight: bold;
-		color: $color-dark;
+		color: map-get($gray-shades, 800);
 		text-transform: uppercase;
 
 		> .counter {
 			font-size: 0.9rem;
 			font-weight: normal;
-			color: $color-gray;
+			color: map-get($gray-shades, 600);
 			display: inline-block;
 			margin-left: 10px;
 		}
@@ -16,7 +16,7 @@
 
 	> .empty {
 		font-size: 1.2rem;
-		color: $color-gray;
+		color: map-get($gray-shades, 600);
 		font-weight: normal;
 		margin: 20px 0 50px 0;
 	}

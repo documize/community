@@ -37,8 +37,8 @@
 }
 
 .sidebar-view-switcher {
-	color: $color-primary;
-	background-color: $color-primary-light;
+	color: $theme-500;
+	background-color: map-get($gray-shades, 600);
 	padding: 5px 20px;
 	text-align: center;
 	height: 50px;

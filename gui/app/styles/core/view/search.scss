@@ -4,7 +4,7 @@
 	> .heading {
 		font-size: 1.5rem;
 		font-weight: bold;
-		color: $color-dark;
+		color: map-get($gray-shades, 800);
 		margin-top: 30px;
 	}
 
@@ -66,18 +66,18 @@
 					> .version {
 						font-size: 1.1rem;
 						font-weight: bold;
-						color: $color-gray;
+						color: map-get($gray-shades, 600);
 					}
 				}
 
 				> .space {
-					color: $color-off-black;
+					color: $color-black-light-1;
 					font-size: 1.2rem;
 					margin-bottom: 5px;
 				}
 
 				> .snippet {
-					color: $color-gray;
+					color: map-get($gray-shades, 600);
 					font-size: 1.1rem;
 					margin-bottom: 10px;
 				}
@@ -93,7 +93,7 @@
 				> .hashtag {
 					display: inline-block;
 					margin: 5px 10px 0 5px;
-					color: $color-gray;
+					color: map-get($gray-shades, 600);
 					font-size: 1rem;
 					font-style: italic;
 
@@ -114,13 +114,13 @@
 			font-weight: 600;
 			font-size: 1.1rem;
 			font-style: italic;
-			color: $color-dark;
+			color: map-get($gray-shades, 800);
 		}
 
 		> .explain {
 			margin: 10px 0 20px 0px;
 			font-size: 1.2rem;
-			color: $color-gray;
+			color: map-get($gray-shades, 600);
 		}
 	}
 }

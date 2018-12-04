@@ -63,18 +63,18 @@
 
 .drag-handle {
 	font-size: 1.5rem;
-	color: $color-gray-light;
+	color: map-get($gray-shades, 300);
 	cursor: pointer;
 }
 
 .drag-indicator-dropzone {
 	opacity: 1 !important;
-	border: 2px dotted $color-border;
+	border: 2px dotted map-get($gray-shades, 300);
 }
 
 .drag-indicator-chosen {
 	opacity: 1 !important;
-	background: $color-off-white;
+	background: map-get($gray-shades, 100);
 }
 
 .drag-indicator-dragged {

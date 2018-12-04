@@ -10,9 +10,9 @@
 			@include border-radius(3px);
 			margin: 0 0 15px 0;
 			padding: 10px 15px;
-			color: $color-gray;
-			background-color: $color-off-white;
-			border: 1px solid $color-gray;
+			color: map-get($gray-shades, 600);
+			background-color: map-get($gray-shades, 100);
+			border: 1px solid map-get($gray-shades, 600);
 			cursor: pointer;
 			position: relative;
 			list-style-type: none;
@@ -20,13 +20,13 @@
 
 			&:hover {
 				> .text-header, > .text {
-					color: $color-off-black;
+					color: $color-black-light-1;
 				}
 			}
 
 			> .text-header {
 				@include ease-in();
-				color: $color-gray;
+				color: map-get($gray-shades, 600);
 				font-size: 1.3rem;
 				font-weight: 600;
 				margin-bottom: 5px;
@@ -38,7 +38,7 @@
 
 			> .text {
 				@include ease-in();
-				color: $color-gray;
+				color: map-get($gray-shades, 600);
 				font-size: 1rem;
 				font-weight: 500;
 				overflow: hidden;
@@ -51,7 +51,7 @@
 				position: absolute;
 				top: 10px;
 				right: 10px;
-				color: $color-green;
+				color: map-get($green-shades, 600);
 				font-weight: 700;
 				font-size: 1.3rem;
 			}
@@ -59,11 +59,11 @@
 
 		> .selected {
 			> .text-header, > .text {
-				color: $color-off-black;
+				color: $color-black-light-1;
 			}
 
-			background-color: $color-yellow !important;
-			border: 1px solid $color-goldy !important;
+			background-color: map-get($yellow-shades, 700) !important;
+			border: 1px solid map-get($yellow-shades, 700) !important;
 		}
 	}
 }
@@ -96,12 +96,12 @@
 		display: inline-block;
 		font-size: 1.3rem;
 		font-weight: 700;
-		color: $color-gray;
+		color: map-get($gray-shades, 600);
 		cursor: pointer;
 	}
 
 	> .selected {
-		color: $color-green;
-		border-bottom: 1px solid $color-green;
+		color: map-get($green-shades, 600);
+		border-bottom: 1px solid map-get($green-shades, 600);
 	}
 }

@@ -112,7 +112,7 @@
 								{{#if session.isAdmin}}
 									{{#link-to 'customize.general' class="dropdown-item"}}Settings{{/link-to}}
 									{{#unless appMeta.valid}}
-										{{#link-to 'customize.billing' class="dropdown-item font-weight-bold color-red"}}Update Billing{{/link-to}}
+										{{#link-to 'customize.billing' class="dropdown-item font-weight-bold color-red-600"}}Update Billing{{/link-to}}
 									{{/unless}}
 									<div class="dropdown-divider"></div>
 								{{/if}}
@@ -120,10 +120,10 @@
 								<div class="dropdown-divider"></div>
 								{{#if session.isGlobalAdmin}}
 									{{#if appMeta.updateAvailable}}
-										{{#link-to 'customize.product' class="dropdown-item font-weight-bold color-orange" }}Update available{{/link-to}}
+										{{#link-to 'customize.product' class="dropdown-item font-weight-bold color-yellow-600"}}Update available{{/link-to}}
 									{{/if}}
 								{{/if}}
-								<a href="#" class="dropdown-item {{if hasWhatsNew 'color-whats-new font-weight-bold'}}" {{action 'onShowWhatsNewModal'}}>What's New</a>
+								<a href="#" class="dropdown-item {{if hasWhatsNew 'color-red-600 font-weight-bold'}}" {{action 'onShowWhatsNewModal'}}>What's New</a>
 								<a href="https://docs.documize.com" target="_blank" class="dropdown-item">Help</a>
 								<a href="#" class="dropdown-item" data-toggle="modal" data-target="#about-documize-modal" data-backdrop="static">About</a>
 								{{#if enableLogout}}

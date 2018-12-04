@@ -5,7 +5,7 @@
 		@include ease-in();
 		position: relative;
 		padding: 25px 50px;
-		box-shadow: 0 0 0 0.75pt $color-stroke,0 0 3pt 0.75pt $color-stroke;
+		box-shadow: 0 0 0 0.75pt map-get($gray-shades, 200),0 0 3pt 0.75pt map-get($gray-shades, 200);
 		background-color: $color-white;
 		margin: 50px 0;
 

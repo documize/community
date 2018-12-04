@@ -1,6 +1,6 @@
 footer {
-	background-color: $color-primary-light;
-	color: $color-gray;
+	background-color: $theme-100;
+	color: map-get($gray-shades, 600);
 	font-weight: 500;
 	font-size: 1rem;
 	padding: 5px 2rem;
@@ -12,7 +12,7 @@ footer {
 
 	a, a:visited {
 		@include ease-in();
-		color: $color-gray;
+		color: map-get($gray-shades, 600);
 		text-decoration: none;
 
 		&:hover {
@@ -33,7 +33,7 @@ footer {
 	}
 
 	> .progress-done {
-		background-color: $color-green;
+		background-color: map-get($green-shades, 600);
 		color: $color-white;
 		text-align: center;
 		font-size: 1rem;
@@ -45,7 +45,7 @@ footer {
 	> .progress-notification {
 		display: inline-block;
 		font-size: 1rem;
-		color: $color-green;
+		color: map-get($green-shades, 600);
 		font-weight: 500;
 	}
 }

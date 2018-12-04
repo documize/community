@@ -3,7 +3,7 @@
 }
 
 .top-bar {
-	background-color: $color-primary;
+	background-color: $theme-500;
 	color: $color-white;
 	padding: 0 2rem;
 	font-size: 1rem;
@@ -40,12 +40,12 @@
 			}
 
 			> .selected {
-				background-color: $color-primary-light !important;
-				color: $color-primary !important;
+				background-color: $theme-500 !important;
+				color: $theme-500 !important;
 				padding: 5px 10px !important;
 
 				&:hover {
-					color: darken($color-primary, 15%) !important;
+					color: darken($theme-500, 15%) !important;
 				}
 			}
 		}
@@ -63,23 +63,23 @@
 	> .hamburger {
 		@include ease-in();
 		@include border-radius(3px);
-		background-color: $color-primary;
-		border: 1px solid $color-primary-light;
+		background-color: $theme-500;
+		border: 1px solid $theme-100;
 
 		> i {
 			font-size: 1.8rem;
 			line-height: 2.1rem;
 			padding: 0px 3px 0px 3px;
-			color: $color-primary-light;
+			color: $theme-100;
 			cursor: pointer;
 			vertical-align: sub;
 		}
 
 		&:hover {
-			background-color: $color-primary-light;
+			background-color: $theme-100;
 
 			> i {
-				color: $color-primary;
+				color: $theme-500;
 			}
 		}
 	}

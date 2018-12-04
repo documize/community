@@ -10,8 +10,8 @@
 		margin: 0;
 		padding: 5px 15px;
 		background-color: $color-white;
-		color: $color-primary;
-		border: 1px solid $color-border;
+		color: $theme-500;
+		border: 1px solid map-get($gray-shades, 300);
 		font-weight: 500;
 		font-size: 1.1rem;
 		text-align: center;
@@ -30,7 +30,7 @@
 		}
 
 		&:hover {
-			background-color: $color-primary-light;
+			background-color: $theme-100;
 		}
 	}
 
@@ -48,7 +48,7 @@
 	}
 
 	> .selected {
-		background-color: $color-primary-light;
+		background-color: $theme-100;
 		font-weight: 700;
 	}
 }

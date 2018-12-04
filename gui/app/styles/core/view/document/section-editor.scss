@@ -6,7 +6,7 @@
 	> .canvas {
 		// margin: 34px 0 0 0;
 		padding: 30px 20px;
-		box-shadow: 0 0 0 0.75pt $color-stroke,0 0 3pt 0.75pt $color-stroke;
+		box-shadow: 0 0 0 0.75pt map-get($gray-shades, 200),0 0 3pt 0.75pt map-get($gray-shades, 200);
 	}
 }
 

@@ -1,0 +1,179 @@
+// Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
+//
+// This software (Documize Community Edition) is licensed under
+// GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
+//
+// You can operate outside the AGPL restrictions by purchasing
+// Documize Enterprise Edition and obtaining a commercial license
+// by contacting <sales@documize.com>.
+//
+// https://documize.com
+
+/**************************************************************
+* A color has 9 shades.
+* The base of the color is (usually) anchored with a suffix of 500.
+* The lightest shade is suffixed as 100.
+* The darkest shade is suffixed as 900.
+**************************************************************/
+
+/**************************************************************
+* Gray, Grey shades
+**************************************************************/
+$gray-shades: (
+	900: #1F2833,
+	800: #404B5A,
+	700: #6E7A89,
+	600: #929FB1,
+	500: #AEBECC,
+	400: #CBD4DB,
+	300: #D5DDE5,
+	200: #E1E7EB,
+	100: #F8F9FA
+);
+
+// Generate handy classes for text color and background color.
+$i: 900;
+@while $i > 0 {
+	.color-gray-#{$i} {
+		color: map-get($gray-shades, $i);
+	}
+	.background-color-gray-#{$i} {
+		background-color: map-get($gray-shades, $i);
+	}
+	$i: $i - 100;
+}
+
+/**************************************************************
+* Danger color ("red") shades
+**************************************************************/
+$red-shades: (
+	900: #431010,
+	800: #621111,
+	700: #8E1818,
+	600: #AB1D1D,
+	500: #D72424,
+	400: #E14D4D,
+	300: #E66A6A,
+	200: #F2B3B3,
+	100: #FCEDED
+);
+
+$i: 900;
+@while $i > 0 {
+	.color-red-#{$i} {
+		color: map-get($red-shades, $i);
+	}
+	.background-color-red-#{$i} {
+		background-color: map-get($red-shades, $i);
+	}
+	$i: $i - 100;
+}
+
+/**************************************************************
+* Information color ("yellow") shades
+**************************************************************/
+$yellow-shades: (
+	900: #433105,
+	800: #936B0A,
+	700: #C28E0E,
+	600: #EEAF15,
+	500: #F4CA64,
+	400: #F7DA94,
+	300: #FAE5B3,
+	200: #FCF0D3,
+	100: #FDF5E3
+);
+
+$i: 900;
+@while $i > 0 {
+	.color-yellow-#{$i} {
+		color: map-get($yellow-shades, $i);
+	}
+	.background-color-yellow-#{$i} {
+		background-color: map-get($yellow-shades, $i);
+	}
+	$i: $i - 100;
+}
+
+/**************************************************************
+* Success color ("green") shades
+**************************************************************/
+$green-shades: (
+	900: #0E311D,
+	800: #164B2C,
+	700: #227243,
+	600: #2D9A5A,
+	500: #39C171,
+	400: #6BD396,
+	300: #92DFB2,
+	200: #B9EACE,
+	100: #E1F6EA
+);
+
+$i: 900;
+@while $i > 0 {
+	.color-green-#{$i} {
+		color: map-get($green-shades, $i);
+	}
+	.background-color-green-#{$i} {
+		background-color: map-get($green-shades, $i);
+	}
+	$i: $i - 100;
+}
+
+/**************************************************************
+* Black to lighter shades
+**************************************************************/
+$color-black: #000000;
+$color-black-light-1: #1c1c1c;
+$color-black-light-2: #252525;
+$color-black-light-3: #434343;
+
+.color-black { color: $color-black; }
+.color-black-light-1 { color: $color-black-light-1; }
+.color-black-light-2 { color: $color-black-light-2; }
+.color-black-light-3 { color: $color-black-light-3; }
+.background-color-black { background-color: $color-black; }
+.background-color-black-light-1 { background-color: $color-black-light-1; }
+.background-color-black-light-2 { background-color: $color-black-light-2; }
+.background-color-black-light-3 { background-color: $color-black-light-3; }
+
+/**************************************************************
+* White to darker shades
+**************************************************************/
+$color-white: #ffffff;
+$color-white-dark-1: #f5f5f5;
+
+.color-white { color: $color-white; }
+.color-white-dark-1 { color: $color-white-dark-1; }
+.background-color-white { background-color: $color-white; }
+.background-color-white-dark-1 { background-color: $color-white-dark-1; }
+
+/**************************************************************
+* Specialty colors
+**************************************************************/
+
+// Documents, spaces card background color
+$color-card: #F6F4EE;
+
+/**************************************************************
+* Theme colors.
+*
+* This is the default theme of PURPLE.
+*
+* We go from 100 (lightest) to 900 (darkest).
+* Base shade is 500 and is used prominmently as the
+* left-side navigation sidebar color.
+**************************************************************/
+$theme-900: #160624;
+$theme-800: #1F0833;
+$theme-700: #310C51;
+$theme-600: #4C137D;
+$theme-500: #43116E;
+$theme-400: #9237E1;
+$theme-300: #CA9EF0;
+$theme-200: #EAD9F9;
+$theme-100: #FBF7FE;
+
+// Set hyperlink color for theme
+$color-link: map-get($green-shades, 700);

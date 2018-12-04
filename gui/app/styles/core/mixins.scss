@@ -50,7 +50,7 @@
 @mixin content-container($pad-tb: 25px, $pad-lr: 50px) {
     @include border-radius(2px);
     padding: $pad-tb $pad-lr;
-    box-shadow: 0 0 0 0.75pt $color-stroke,0 0 3pt 0.75pt $color-stroke;
+    box-shadow: 0 0 0 0.75pt map-get($gray-shades, 200),0 0 3pt 0.75pt map-get($gray-shades, 200);
     background-color: $color-white;
 }
 
@@ -64,17 +64,7 @@
 	}
 }
 
-@mixin card-theme() {
-	background-color: $color-primary-light;
-	box-shadow: 1px 1px 3px 0px rgba(211,211,211,1);
-
-	&:hover {
-		background-color: darken($color-primary-light, 5%);
-		color: $color-primary;
-	}
-}
 
 @mixin shadow() {
 	box-shadow: 1px 1px 3px 0px rgba(211,211,211,1);
 }
-

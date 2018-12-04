@@ -7,7 +7,7 @@
 
 	> .sub-heading {
 		font-size: 1.1rem;
-		color: $color-gray;
+		color: map-get($gray-shades, 600);
 	}
 
 	.user-table {
@@ -26,7 +26,7 @@
 
             > .email {
 				font-size: 0.9rem;
-				color: $color-off-black;
+				color: $color-black-light-1;
 				margin: 0;
 				display: inline-block;
 				font-weight: normal;
@@ -37,7 +37,7 @@
 			cursor: pointer;
 			margin: 5px 0 0 10px;
 			font-size: 1rem;
-			color: $color-gray;
+			color: map-get($gray-shades, 600);
 
 			&:hover {
 				color: $color-link;
@@ -46,19 +46,19 @@
 
 		.inactive-user
 		{
-			@extend .color-red;
+			color: map-get($red-shades, 600);
 			font-weight: normal;
 			text-decoration: line-through;
 		}
 
 		.admin-user
 		{
-			@extend .color-primary;
+			color: map-get($green-shades, 600);
 			font-weight: normal;
 		}
 
 		.checkbox {
-			color: $color-checkbox;
+			color: map-get($gray-shades, 900);
 			cursor: pointer;
 		}
 	}
@@ -71,7 +71,7 @@
 			margin: 15px 0;
 			padding: 15px 0;
 			font-size: 1.2rem;
-			color: $color-primary;
+			color: $theme-500;
 		}
 	}
 
@@ -83,13 +83,13 @@
 			margin: 15px 0;
 
 			.name {
-				color: $color-off-black;
+				color: $color-black-light-1;
 				font-size: 1.3rem;
 				font-weight: 600;
 
 				> .purpose {
 					font-size: 1rem;
-					color: $color-gray;
+					color: map-get($gray-shades, 600);
 				}
 			}
 		}
@@ -101,7 +101,7 @@
 			margin: 10px 0;
 
 			> .fullname {
-				color: $color-primary;
+				color: $theme-500;
 				font-size: 1.2rem;
 			}
 		}
@@ -113,7 +113,7 @@
 			margin: 10px 0;
 
 			> .group-name {
-				color: $color-primary;
+				color: $theme-500;
 				font-size: 1.2rem;
 
 				> .group-purpose {
@@ -126,13 +126,13 @@
 	> .smtp-failure, .admin-setting-failure {
 		font-size: 1.2rem;
 		font-weight: bold;
-		color: $color-red;
+		color: map-get($red-shades, 600);
 	}
 
 	> .smtp-success, .admin-setting-success {
 		font-size: 1.2rem;
 		font-weight: bold;
-		color: $color-green;
+		color: map-get($green-shades, 600);
 	}
 
 	> .archive-admin {
@@ -142,7 +142,7 @@
 				padding: 15px 0;
 				@include ease-in();
 				font-size: 1.2rem;
-				color: $color-primary;
+				color: $theme-500;
 			}
 		}
 	}
@@ -157,38 +157,38 @@
 
 		> .backup-zone {
 			@include border-radius(3px);
-			border: 1px solid $color-border;
+			border: 1px solid map-get($gray-shades, 300);
 			padding: 20px 20px;
-			background-color: lighten($color-green, 60%);
-			color: $color-off-black;
+			background-color: map-get($green-shades, 200);
+			color: $color-black-light-1;
 
 			> .backup-fail {
 				margin: 10px 0;
-				color: $color-red;
+				color: map-get($red-shades, 600);
 			}
 
 			> .backup-success {
 				margin: 10px 0;
-				color: $color-green;
+				color: map-get($green-shades, 800);
 			}
 		}
 
 		> .restore-zone {
 			@include border-radius(3px);
-			border: 1px solid $color-border;
+			border: 1px solid map-get($gray-shades, 300);
 			margin: 50px 0;
 			padding: 20px 20px;
-			background-color: lighten($color-red, 60%);
-			color: $color-off-black;
+			background-color: map-get($red-shades, 200);
+			color: $color-black-light-1;
 
 			> .restore-fail {
 				margin: 10px 0;
-				color: $color-red;
+				color: map-get($red-shades, 800);
 			}
 
 			> .restore-success {
 				margin: 10px 0;
-				color: $color-green;
+				color: map-get($green-shades, 700);
 			}
 
 			> .upload-backup-file {
@@ -209,12 +209,12 @@
 				}
 
 				> .wait {
-					color: $color-gray;
+					color: map-get($gray-shades, 600);
 					margin: 10px 0;
 				}
 
 				 > .ready {
-					 color: $color-green;
+					 color: map-get($green-shades, 700);
 					 margin: 10px 0;
 				 }
 			}
@@ -223,10 +223,10 @@
 
 	> .deactivation-zone {
 		@include border-radius(3px);
-		border: 1px solid $color-red;
+		border: 1px solid map-get($red-shades, 600);
 		margin: 30px 0;
 		padding: 20px 20px;
-		background-color: lighten($color-red, 60%);
-		color: $color-off-black;
+		background-color: map-get($red-shades, 100);
+		color: $color-black-light-1;
 	}
 }

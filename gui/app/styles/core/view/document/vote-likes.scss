@@ -3,14 +3,14 @@
 	padding: 30px 50px;
 	text-align: center;
 	max-width: 400px;
-	border: 1px dotted $color-border;
-	background: $color-off-white;
+	border: 1px dotted map-get($gray-shades, 300);
+	background: map-get($gray-shades, 100);
 	@include border-radius(3px);
 
 	> .prompt {
 		font-size: 1.5rem;
 		font-weight: 600;
-		color: $color-dark;
+		color: map-get($gray-shades, 800);
 	}
 
 	> .buttons {
@@ -20,6 +20,6 @@
 	> .ack {
 		font-size: 1.2rem;
 		font-weight: 600;
-		color: $color-green;
+		color: map-get($green-shades, 600);
 	}
 }

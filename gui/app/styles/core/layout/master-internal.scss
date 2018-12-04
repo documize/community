@@ -10,12 +10,14 @@ $display-break-5: 1800px;
 	display: block;
 	height: auto;
 	width: 100%;
+	// z-index: 777;
 
 	.master-content {
 		display: block;
 		height: auto;
 		width: 100%;
 		padding: 10px;
+		// z-index: 666;
 	}
 }
 .master-sidebar-container {
@@ -27,7 +29,7 @@ $display-break-5: 1800px;
 		display: block;
 		height: auto;
 		width: 100%;
-		background-color: $color-primary;
+		background-color: $theme-500;
 		text-align: center;
 		padding: 0;
 		z-index: 999;
@@ -91,7 +93,7 @@ $display-break-5: 1800px;
 						border-radius: 50%;
 						font-size: 0.75rem;
 						text-align: center;
-						color: $color-primary;
+						color: $theme-500;
 						font-weight: bold;
 						background-color: $color-white;
 						@extend .no-select;
@@ -107,7 +109,7 @@ $display-break-5: 1800px;
 		width: 100%;
 		padding: 5px 10px;
 		z-index: 888;
-		background-color: $color-off-white;
+		background-color: map-get($gray-shades, 100);
 	}
 }
 

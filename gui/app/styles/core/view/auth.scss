@@ -13,7 +13,7 @@
 	max-width: 500px;
 	padding: 20px 50px;
 	background-color: $color-white;
-	color: $color-off-black;
+	color: $color-black-light-1;
 	@include border-radius(3px);
 	@include shadow();
 
@@ -28,7 +28,7 @@
 
 		> .url {
 			margin: 20px 0;
-			color: $color-gray;
+			color: map-get($gray-shades, 600);
 			font-weight: 0.9rem;
 		}
 	}
@@ -38,5 +38,5 @@
 	text-align: center;
 	margin-top: 150px;
 	font-size: 3rem;
-	color: $color-gray;
+	color: map-get($gray-shades, 600);
 }

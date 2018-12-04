@@ -1,12 +1,12 @@
 .documize-base-exception
 {
-	background-color: $color-off-white;
-	border: 1px solid $color-border !important;
+	background-color: map-get($gray-shades, 100);
+	border: 1px solid map-get($gray-shades, 300) !important;
 	margin: 20px;
 	padding: 20px;
 	text-align: left;
 	font-size: 14px;
-	color: $color-off-black;
+	color: $color-black-light-1;
 
 	display: none !important;
 

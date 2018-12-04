@@ -1,7 +1,7 @@
 .view-space {
 	> .filter-caption {
 		margin: 10px 0;
-		color: $color-gray;
+		color: map-get($gray-shades, 600);
 		font-size: 1.1rem;
 		font-weight: 500;
 		text-align: center;
@@ -39,13 +39,13 @@
 				}
 
 				> .snippet {
-					color: $color-gray;
+					color: map-get($gray-shades, 600);
 					font-size: 1rem;
 					line-height: 24px;
 				}
 
 				&:hover {
-					color: $color-gray;
+					color: map-get($gray-shades, 600);
 				}
 			}
 
@@ -60,7 +60,7 @@
 					width: 10px;
 					margin: 0;
 					padding: 0;
-					color: $color-checkbox;
+					color: map-get($gray-shades, 900);
 				}
 			}
 
@@ -74,7 +74,7 @@
 		}
 
 		> .selected {
-			background-color: $color-primary-light !important;
+			background-color: $theme-100 !important;
 
 			> .checkbox {
 				display: block;
@@ -90,7 +90,7 @@
 		> .hashtag {
 			display: inline-block;
 			margin: 5px 10px 0 5px;
-			color: $color-gray;
+			color: map-get($gray-shades, 600);
 			font-size: 0.875rem;
 			font-style: italic;
 
@@ -105,12 +105,12 @@
 	> .title {
 		font-size: 1.5rem;
 		font-weight: bold;
-		color: $color-dark;
+		color: map-get($gray-shades, 800);
 	}
 
 	> .sub-title {
 		font-size: 1.1rem;
-		color: $color-gray;
+		color: map-get($gray-shades, 600);
 	}
 
 	> .permission-table {
@@ -131,8 +131,8 @@
 		> thead {
 			> tr {
 				> th {
-					background-color: $color-off-white;
-					color: $color-gray;
+					background-color: map-get($gray-shades, 100);
+					color: map-get($gray-shades, 600);
 				}
 
 				> th:first-child {
@@ -158,13 +158,13 @@
 
 				> .name {
 					font-size: 1.2rem;
-					color: $color-primary;
+					color: $theme-500;
 				}
 
 				> .info {
 					font-size: 0.9rem;
 					margin-top: 8px;
-					color: $color-gray;
+					color: map-get($gray-shades, 600);
 				}
 			}
 

@@ -95,7 +95,7 @@
 					<td class="{{unless user.active 'inactive-user'}} {{if user.admin 'admin-user'}}">
 						<div class="d-inline-block align-top">
 							{{#if user.me}}
-								<i class="material-icons color-gray">check_box_outline_blank</i>
+								<i class="material-icons color-gray-700">check_box_outline_blank</i>
 							{{else if user.selected}}
 								<i class="material-icons checkbox" {{action 'toggleSelect' user}}>check_box</i>
 							{{else}}
@@ -131,7 +131,7 @@
 					</td>
 					<td class="no-width text-center">
 						{{#if user.me}}
-							<i class="material-icons color-gray">check_box</i>
+							<i class="material-icons color-gray-700">check_box</i>
 						{{else if user.admin}}
 							<i class="material-icons checkbox" {{action 'toggleAdmin' user.id}}>check_box</i>
 						{{else}}
@@ -147,7 +147,7 @@
 					</td>
 					<td class="no-width text-center">
 						{{#if user.me}}
-							<i class="material-icons color-gray">check_box</i>
+							<i class="material-icons color-gray-700">check_box</i>
 						{{else if user.active}}
 							<i class="material-icons checkbox" {{action 'toggleActive' user.id}}>check_box</i>
 						{{else}}

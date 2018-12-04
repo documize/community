@@ -9,27 +9,27 @@
 	max-width: 500px;
 	padding: 30px;
 	@include border-radius(5px);
-	background-color: $color-off-white;
+	background-color: map-get($gray-shades, 100);
 	display: block;
 	opacity: 0.8;
 
 	> p {
 		font-size: 1.5rem;
 		line-height: 2.5rem;
-		color: $color-gray;
+		color: map-get($gray-shades, 600);
 		display: block;
 	}
 
 	> .material-icons {
 		font-size: 5rem;
-		color: $color-stroke;
+		color: map-get($gray-shades, 200);
 	}
 }
 
 .not-found {
 	text-align: center;
 	font-size: 2rem;
-	color: $color-gray;
+	color: map-get($gray-shades, 600);
 	margin: 5rem 0;
 }
 
@@ -50,12 +50,12 @@
 		margin: 0 20px 20px 0;
 		padding: 10px 0 0 0;
 		cursor: default;
-		border: 7px solid $color-gray-light;
+		border: 7px solid map-get($gray-shades, 300);
 		@include border-radius(3px);
 		@include ease-in();
 
 		&:hover {
-			border: 7px solid $color-gray;
+			border: 7px solid map-get($gray-shades, 600);
 		}
 
 		.tick {

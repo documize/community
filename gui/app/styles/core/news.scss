@@ -4,14 +4,14 @@
 
 	> .update-summary {
 		padding: 25px;
-		border: 1px solid $color-orange;
-		background-color: $color-off-white;
+		border: 1px solid map-get($yellow-shades, 700);
+		background-color: map-get($gray-shades, 100);
 		@include border-radius(2px);
 
 		> .caption {
 			font-weight: bold;
 			font-size: 1.5rem;
-			color: $color-orange;
+			color: map-get($yellow-shades, 700);
 			margin-bottom: 15px;
 			display: inline-block;
 		}
@@ -19,13 +19,13 @@
 		> .instructions {
 			font-weight: normal;
 			font-size: 1.3rem;
-			color: $color-gray;
+			color: map-get($gray-shades, 600);
 		}
 
 		> .version {
 			margin: 30px 0 0 20px;
 			font-size: 1.3rem;
-			color: $color-gray;
+			color: map-get($gray-shades, 600);
 			font-weight: bold;
 		}
 
@@ -41,8 +41,8 @@
 				> .tag-edition {
 					margin: 10px 10px 10px 10px;
 					padding: 5px 10px;
-					background-color: $color-gray-light;
-					color: $color-primary;
+					background-color: map-get($gray-shades, 300);
+					color: $theme-500;
 					font-weight: bold;
 					font-size: 0.9rem;
 				}
@@ -65,7 +65,7 @@
 	> .version {
 		font-weight: bold;
 		font-size: 1.1rem;
-		color: $color-gray;
+		color: map-get($gray-shades, 600);
 		margin-bottom: 20px;
 	}
 
@@ -80,7 +80,7 @@
 		text-align: center;
 		font-weight: normal;
 		font-size: 1rem;
-		color: $color-off-black;
+		color: $color-black-light-1;
 		margin-bottom: 20px;
 	}
 
@@ -88,7 +88,7 @@
 		text-align: left;
 		font-weight: normal;
 		font-size: 1rem;
-		color: $color-gray;
+		color: map-get($gray-shades, 600);
 	}
 }
 
@@ -96,7 +96,7 @@
 	border-radius: 10px;
     width: 10px;
     height: 10px;
-    background-color: $color-orange;
+    background-color: map-get($yellow-shades, 700);
     position: absolute;
     bottom: 0;
     right: 0;
@@ -106,7 +106,7 @@
 	border-radius: 10px;
     width: 10px;
     height: 10px;
-    background-color: $color-whats-new;
+    background-color: map-get($red-shades, 600);
     position: absolute;
     top: 0;
     right: 0;
@@ -120,23 +120,23 @@
 		margin: 0 0 10px 0;
 		text-align: center;
 		font-size: 2rem;
-		color: $color-off-black;
+		color: $color-black-light-1;
 	}
 
 	> .news-item {
 		padding: 30px 0;
-		border-bottom: 1px solid $color-border;
+		border-bottom: 1px solid map-get($gray-shades, 300);
 		text-align: center;
 
 		> .title {
-			color: $color-primary;
+			color: $theme-500;
 			font-size: 1.5rem;
 			font-weight: bold;
 			margin-bottom: 5px;
 		}
 
 		> .date {
-			color: $color-gray;
+			color: map-get($gray-shades, 600);
 			font-size: 1rem;
 			font-weight: 600;
 			margin-bottom: 10px;
@@ -152,8 +152,8 @@
 		> .tag-edition {
 			margin: 10px 10px 10px 10px;
 			padding: 5px 10px;
-			background-color: $color-off-white;
-			color: $color-gray;
+			background-color: map-get($gray-shades, 100);
+			color: map-get($gray-shades, 600);
 			font-weight: 700;
 			font-size: 0.9rem;
 			display: inline-block;
@@ -168,7 +168,7 @@
 	> .action {
 		margin: 20px 0;
 		text-align: center;
-		color: $color-gray;
+		color: map-get($gray-shades, 600);
 		font-weight: 800;
 		font-size: 1.3rem;
 	}

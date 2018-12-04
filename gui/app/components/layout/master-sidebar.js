@@ -13,10 +13,9 @@ import $ from 'jquery';
 import { notEmpty } from '@ember/object/computed';
 import { inject as service } from '@ember/service'
 import Modals from '../../mixins/modal';
-import Tooltips from '../../mixins/tooltip';
 import Component from '@ember/component';
 
-export default Component.extend(Tooltips, Modals, {
+export default Component.extend(Modals, {
 	tagName: 'div',
 	classNames: ['master-sidebar-container', 'non-printable'],
 	selectedItem: 'spaces',
@@ -71,8 +70,6 @@ export default Component.extend(Tooltips, Modals, {
 			this.eventBus.subscribe('pinChange', this, 'setupPins');
 			this.setupPins();
 		}
-
-		this.renderTooltips();
 	},
 
 	setupPins() {
@@ -91,7 +88,6 @@ export default Component.extend(Tooltips, Modals, {
 	willDestroyElement() {
 		this._super(...arguments);
 
-		this.removeTooltips();
 		this.eventBus.unsubscribe('pinChange');
 	},
 

@@ -7,11 +7,11 @@
     line-height: 0;
     margin: 0;
     text-align: center;
-	background-color: $color-symbol-box;
+	background-color: map-get($gray-shades, 300);
 
     > .material-icons {
         font-size: 22px;
         margin-top: 20px;
-        color: $color-symbol-icon;
+        color: map-get($gray-shades, 600);
     }
 }

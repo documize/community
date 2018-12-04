@@ -32,6 +32,13 @@ module.exports = function (environment) {
 		EmberENV: {
 			FEATURES: {}
 		},
+
+		// Tooltips & Popover component defaults
+		emberAttacher: {
+			arrow: false,
+			// showDelay: 1000
+		},
+
 		"ember-cli-mirage": {
 			enabled: false
 		},

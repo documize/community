@@ -10,8 +10,8 @@
 		margin: 0 0 2rem 0;
 
 		> .page-number {
-			color: $color-gray;
-			background-color: $color-gray-light2;
+			color: map-get($gray-shades, 600);
+			background-color: map-get($gray-shades, 200);
 			padding: 0.2rem 1rem;
 			font-size: 1.8rem;
 			margin: 0 1.5rem 0 0;
@@ -21,11 +21,11 @@
 		}
 
 		> .page-state-pending {
-			color: $color-red;
+			color: map-get($red-shades, 600);
 		}
 
 		> .page-state-review {
-			color: $color-green;
+			color: map-get($green-shades, 600);
 		}
 
 		> .page-title {
@@ -33,7 +33,7 @@
 			font-size: 2.0rem;
 			font-weight: bold;
 			margin: 16px 0;
-			color: $color-dark;
+			color: map-get($gray-shades, 800);
 		}
 	}
 
@@ -55,8 +55,8 @@
 		> thead {
 			> tr {
 				> th {
-					background-color: $color-off-white;
-					color: $color-gray;
+					background-color: map-get($gray-shades, 100);
+					color: map-get($gray-shades, 600);
 				}
 
 				> th:first-child {

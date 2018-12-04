@@ -1,6 +1,6 @@
 .avatar {
     color: $color-white;
-    background-color: $color-gray;
+    background-color: map-get($gray-shades, 600);
     @include border-radius(20px);
 	@include ease-in();
     padding: 10px 0 0 0;
@@ -12,7 +12,7 @@
 
 .avatar-large {
     color: $color-white;
-    background-color: $color-gray;
+    background-color: map-get($gray-shades, 600);
     @include border-radius(100px);
 	@include ease-in();
     height: 100px;

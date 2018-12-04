@@ -9,7 +9,7 @@
 		text-align: center;
 		margin: 30px 0 20px 0;
 		position: relative;
-		color: $color-gray-light;
+		color: map-get($gray-shades, 300);
 
 		> .cta {
 			@include ease-in();
@@ -17,7 +17,7 @@
 			letter-spacing: 0.22rem;
 
 			&:hover {
-				color: $color-green;
+				color: map-get($green-shades, 700);
 			}
 		}
 	}
@@ -29,14 +29,14 @@
 
 	.new-section-caption {
 		margin: 20px 0 10px 0;
-		color: $color-primary;
+		color: $theme-500;
 		font-size: 1.4rem;
 		font-weight: bold;
 	}
 
 	.new-section-empty {
 		font-size: 1.2rem;
-		color: $color-gray;
+		color: map-get($gray-shades, 600);
 	}
 
 	 .preset-list {
@@ -52,12 +52,12 @@
 			margin: 0 20px 20px 0;
 			padding: 12px 0 0 20px;
 			height: 60px;
-			border: 1px solid $color-border;
-			background-color: $color-off-white;
+			border: 1px solid map-get($gray-shades, 300);
+			background-color: map-get($gray-shades, 100);
 
 			&:hover {
-				border-color: $color-primary;
-				background-color: $color-primary-light;
+				border-color: $theme-500;
+				background-color: $theme-100;
 			}
 
 			.icon {
@@ -78,7 +78,7 @@
 				display: inline-block;
 				font-size: 1.1rem;
 				font-weight: 500;
-				color: $color-off-black;
+				color: $color-black-light-1;
 				letter-spacing: 0.5px;
 				margin-top: 6px;
 			}
@@ -99,12 +99,12 @@
 			padding: 12px 20px;
 			width: 100%;
 			position: relative;
-			border: 1px solid $color-border;
-			background-color: $color-off-white;
+			border: 1px solid map-get($gray-shades, 300);
+			background-color: map-get($gray-shades, 100);
 
 			&:hover {
-				border-color: $color-primary;
-				background-color: $color-primary-light;
+				border-color: $theme-500;
+				background-color: $theme-100;
 			}
 
 			> .actions {
@@ -118,12 +118,12 @@
 				> .title {
 					font-size: 1.1rem;
 					font-weight: 500;
-					color: $color-off-black;
+					color: $color-black-light-1;
 					letter-spacing: 0.5px;
 				}
 
 				> .desc {
-					color: $color-off-black;
+					color: $color-black-light-1;
 					font-size: 1rem;
 				}
 			}
