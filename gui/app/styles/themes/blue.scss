@@ -11,21 +11,25 @@
 
 @import "../colors.scss";
 
-$color-primary: #176091;
-$color-primary-light: #E6F1F8;
-$color-link: #348A37;
+/**************************************************************
+* Theme colors.
+*
+* We go from 100 (lightest) to 900 (darkest).
+*
+* Base shade is 500 and is used prominmently as the
+* left-side navigation sidebar color.
+**************************************************************/
+$theme-900: #071C2A;
+$theme-800: #0B2F48;
+$theme-700: #104365;
+$theme-600: #124D74;
+$theme-500: #176091;
+$theme-400: #2087CC;
+$theme-300: #5CAEE5;
+$theme-200: #B4DAF3;
+$theme-100: #EEF7FC;
 
-.color-primary {
-	color: $color-primary !important;
-}
-.color-link {
-	color: $color-link !important;
-}
-.background-color-theme {
-	background-color: $color-primary !important;
-}
-.background-color-theme-light {
-	background-color: $color-primary-light !important;
-}
+// Set hyperlink color for theme
+$color-link: map-get($green-shades, 700);
 
 @import "../core/all.scss";
