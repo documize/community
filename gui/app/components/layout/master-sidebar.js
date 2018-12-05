@@ -33,6 +33,7 @@ export default Component.extend(Modals, {
 
 	init() {
 		this._super(...arguments);
+
 		let constants = this.get('constants');
 
 		this.pins = [];
@@ -70,6 +71,16 @@ export default Component.extend(Modals, {
 			this.eventBus.subscribe('pinChange', this, 'setupPins');
 			this.setupPins();
 		}
+
+		this.eventBus.subscribe('notifyUser', this, 'processNotification');
+	},
+
+	willDestroyElement() {
+		this._super(...arguments);
+
+		this.eventBus.unsubscribe('notifyUser');
+		this.eventBus.unsubscribe('pinChange');
+		iziToast.destroy();
 	},
 
 	setupPins() {
@@ -85,10 +96,70 @@ export default Component.extend(Modals, {
 		});
 	},
 
-	willDestroyElement() {
-		this._super(...arguments);
+	processNotification(msg, type) {
+		if (this.get('isDestroyed') || this.get('isDestroying')) return;
 
-		this.eventBus.unsubscribe('pinChange');
+		// if (msg === 'wait') {
+		// 	this.set('showWait', true);
+		// 	this.set('showMessage', false);
+		// 	this.set('showDone', false);
+		// }
+
+		// New code...
+		if (is.not.undefined(type)) {
+			switch (type) {
+				case 'info':
+					iziToast.info({
+						title: '',
+						message: msg,
+					});
+					break;
+				case 'success':
+					iziToast.success({
+						title: '',
+						message: msg,
+					});
+					break;
+				case 'warn':
+					iziToast.warning({
+						title: '',
+						message: msg,
+					});
+					break;
+				case 'error':
+					iziToast.error({
+						title: '',
+						message: msg,
+					});
+					break;
+			}
+
+			return;
+		}
+
+		// Legacy code...
+		if (msg === 'done') {
+			$('.progress-done').removeClass('zoomOut').addClass('zoomIn');
+			this.set('showWait', false);
+			this.set('showMessage', false);
+			this.set('showDone', true);
+
+			setTimeout(function() {
+				$('.progress-done').removeClass('zoomIn').addClass('zoomOut');
+			}, 3000);
+		}
+
+		if (msg !== 'done' && msg !== 'wait') {
+			$('.progress-notification').removeClass('zoomOut').addClass('zoomIn');
+			this.set('showWait', false);
+			this.set('showDone', false);
+			this.set('showMessage', true);
+			this.set('message', msg);
+
+			setTimeout(function() {
+				$('.progress-notification').removeClass('zoomIn').addClass('zoomOut');
+			}, 3000);
+		}
 	},
 
 	actions: {

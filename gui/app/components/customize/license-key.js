@@ -40,10 +40,8 @@ export default Component.extend(Notifier, Modals, {
 
 	actions: {
 		saveLicense() {
-			this.showWait();
-
 			this.get('global').setLicense(this.get('license')).then(() => {
-				this.showDone();
+				this.notifySuccess('Saved');
 				window.location.reload();
 			});
 		},
@@ -57,7 +55,7 @@ export default Component.extend(Notifier, Modals, {
 			let comment = this.get('comment');
 
 			this.get('global').deactivate(comment).then(() => {
-				this.showDone();
+				this.notifySuccess('Saved');
 				this.modalOpen("#deactivation-confirmation-modal", {"show": true});
 			});
 		}

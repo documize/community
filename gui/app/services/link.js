@@ -147,7 +147,7 @@ export default Service.extend(Notifier, {
 			document.execCommand('copy');
 			document.body.removeChild(el);
 
-			this.showNotification('Copied location to clipboard');
+			this.notifyInfo('Copied location to clipboard');
 
 			return;
 		}

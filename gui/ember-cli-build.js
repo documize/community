@@ -61,6 +61,7 @@ module.exports = function (defaults) {
 	app.import('vendor/hoverIntent.min.js');
 	app.import('vendor/interact.min.js');
 	app.import('vendor/is.js');
+	app.import('vendor/iziToast.js');
 	app.import('vendor/keycloak.js');
 	app.import('vendor/markdown-it.min.js');
 	app.import('vendor/md5.js');

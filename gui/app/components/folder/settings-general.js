@@ -84,10 +84,8 @@ export default Component.extend(AuthMixin, Notifier, {
 			if (spaceName.length === 0) return;
 			space.set('name', spaceName);
 
-			this.showWait();
-
 			this.get('spaceSvc').save(space).then(() => {
-				this.showDone();
+				this.notifySuccess('Saved');
 			});
 		}
 	}

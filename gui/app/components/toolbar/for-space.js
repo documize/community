@@ -288,8 +288,6 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, Notifier, {
 		},
 
 		onExport() {
-			this.showWait();
-
 			let spec = {
 				spaceId: this.get('space.id'),
 				data: [],
@@ -310,7 +308,7 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, Notifier, {
 
 			this.get('documentSvc').export(spec).then((htmlExport) => {
 				this.get('browserSvc').downloadFile(htmlExport, this.get('space.slug') + '.html');
-				this.showDone();
+				this.notifySuccess('Exported');
 			});
 
 			this.modalClose("#space-export-modal");

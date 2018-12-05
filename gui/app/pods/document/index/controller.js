@@ -46,9 +46,8 @@ export default Controller.extend(Tooltips, Notifier, {
 		},
 
 		onSaveDocument(doc) {
-			this.showWait();
 			this.get('documentService').save(doc).then(() => {
-				this.showDone();
+				this.notifySuccess('Saved');
 			});
 			this.get('browser').setTitle(doc.get('name'));
 			this.get('browser').setMetaDescription(doc.get('excerpt'));
@@ -103,10 +102,8 @@ export default Controller.extend(Tooltips, Notifier, {
 				meta: meta.toJSON({ includeId: true })
 			};
 
-			this.showWait();
-
 			this.get('documentService').updatePage(documentId, page.get('id'), model).then((/*up*/) => {
-				this.showDone();
+				this.notifySuccess('Saved');
 
 				this.get('documentService').fetchPages(documentId, this.get('session.user.id')).then((pages) => {
 					this.set('pages', pages);
@@ -155,13 +152,11 @@ export default Controller.extend(Tooltips, Notifier, {
 		},
 
 		onInsertSection(data) {
-			this.showWait();
-
 			return new EmberPromise((resolve) => {
 				this.get('documentService').addPage(this.get('document.id'), data).then((newPage) => {
 					let data = this.get('store').normalize('page', newPage);
 					this.get('store').push(data);
-					this.showDone();
+					this.notifySuccess('Inserted');
 
 					this.get('documentService').fetchPages(this.get('document.id'), this.get('session.user.id')).then((pages) => {
 						this.set('pages', pages);
@@ -198,44 +193,36 @@ export default Controller.extend(Tooltips, Notifier, {
 		},
 
 		onSaveTemplate(name, desc) {
-			this.showWait();
-
 			this.get('templateService').saveAsTemplate(this.get('document.id'), name, desc).then(function () {
-				this.showDone();
+				this.notifySuccess('Template saved');
 			});
 		},
 
 		onPageSequenceChange(currentPageId, changes) {
-			this.showWait();
 			this.set('currentPageId', currentPageId);
 
 			this.get('documentService').changePageSequence(this.get('document.id'), changes).then(() => {
 				this.get('documentService').fetchPages(this.get('document.id'), this.get('session.user.id')).then( (pages) => {
 					this.set('pages', pages);
-					this.showDone();
 				});
 			});
 		},
 
 		onPageLevelChange(currentPageId, changes) {
-			this.showWait();
 			this.set('currentPageId', currentPageId);
 
 			this.get('documentService').changePageLevel(this.get('document.id'), changes).then(() => {
 				this.get('documentService').fetchPages(this.get('document.id'), this.get('session.user.id')).then( (pages) => {
 					this.set('pages', pages);
-					this.showDone();
 				});
 			});
 		},
 
 		onTagChange(tags) {
-			this.showDone();
-
 			let doc = this.get('document');
 			doc.set('tags', tags);
 			this.get('documentService').save(doc).then(()=> {
-				this.showWait();
+				this.notifySuccess('Saved');
 			});
 		},
 

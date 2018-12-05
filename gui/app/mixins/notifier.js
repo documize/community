@@ -12,21 +12,37 @@
 import Mixin from '@ember/object/mixin';
 
 export default Mixin.create({
-    showNotification(msg) {
-        this.eventBus.publish('notifyUser', msg);
+	notifySuccess(msg) {
+        this.eventBus.publish('notifyUser', msg, 'success');
 	},
 
-	showWait() {
-        this.eventBus.publish('notifyUser', 'wait');
+	notifyInfo(msg) {
+        this.eventBus.publish('notifyUser', msg, 'info');
 	},
 
-	showDone() {
-        this.eventBus.publish('notifyUser', 'done');
+	notifyWarn(msg) {
+        this.eventBus.publish('notifyUser', msg, 'warn');
+	},
+
+	notifyError(msg) {
+        this.eventBus.publish('notifyUser', msg, 'error');
 	},
 
     actions: {
-        showNotification(msg) {
-            this.eventBus.publish('notifyUser', msg);
-        }
+		notifySuccess(msg) {
+			this.eventBus.publish('notifyUser', msg, 'success');
+		},
+
+		notifyInfo(msg) {
+			this.eventBus.publish('notifyUser', msg, 'info');
+		},
+
+		notifyWarn(msg) {
+			this.eventBus.publish('notifyUser', msg, 'warn');
+		},
+
+		notifyError(msg) {
+			this.eventBus.publish('notifyUser', msg, 'error');
+		}
     }
 });

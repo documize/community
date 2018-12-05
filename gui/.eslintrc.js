@@ -61,6 +61,7 @@ module.exports = {
 	  "Keycloak": true,
 	  "slug": true,
 	  "interact": true,
-	  "velocity": true
+	  "velocity": true,
+	  "iziToast": true
   }
 };

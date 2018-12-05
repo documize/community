@@ -28,7 +28,7 @@ body {
 }
 
 a {
-	@include ease-in();
+	// @include ease-in();
 	color: $color-link;
 	text-decoration: none;
 	cursor: pointer;

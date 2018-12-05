@@ -80,8 +80,6 @@ export default Component.extend(Notifier, Modals, {
 		},
 
 		onExport() {
-			this.showWait();
-
 			let spec = {
 				spaceId: '',
 				data: _.pluck(this.get('folders'), 'id'),
@@ -90,15 +88,13 @@ export default Component.extend(Notifier, Modals, {
 
 			this.get('documentSvc').export(spec).then((htmlExport) => {
 				this.get('browserSvc').downloadFile(htmlExport, 'documize.html');
-				this.showDone();
+				this.notifySuccess('Exported');
 			});
 		},
 
 		onOwner(spaceId) {
-			this.showWait();
-
 			this.get('spaceSvc').grantOwnerPermission(spaceId).then(() => { /* jshint ignore:line */
-				this.showDone();
+				this.notifySuccess('Saved');
 			});
 		}
 	}

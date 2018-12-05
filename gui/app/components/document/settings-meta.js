@@ -125,8 +125,6 @@ export default Component.extend(Notifier, {
 
 	actions: {
 		onSave() {
-			this.showWait();
-
 			let docId = this.get('document.id');
 			let folderId = this.get('space.id');
 			let link = this.get('categories').filterBy('selected', true);
@@ -158,7 +156,7 @@ export default Component.extend(Notifier, {
 
 			this.get('categoryService').setCategoryMembership(toUnlink, 'unlink').then(() => {
 				this.get('categoryService').setCategoryMembership(toLink, 'link').then(() => {
-					this.showDone();
+					this.notifySuccess('Saved');
 				});
 			});
 

@@ -120,10 +120,9 @@ export default Component.extend(ModalMixin, TooltipMixin, Notifer, {
 				spaceId: this.get('space.id')
 			};
 
-			this.showWait();
 			this.get('categorySvc').add(c).then(() => {
 				this.load();
-				this.showDone();
+				this.notifySuccess('Category added');
 			});
 		},
 

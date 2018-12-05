@@ -135,8 +135,6 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, Notifier, {
 		},
 
 		onExport() {
-			this.showWait();
-
 			let spec = {
 				spaceId: this.get('document.folderId'),
 				data: [],
@@ -147,7 +145,7 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, Notifier, {
 
 			this.get('documentSvc').export(spec).then((htmlExport) => {
 				this.get('browserSvc').downloadFile(htmlExport, this.get('document.slug') + '.html');
-				this.showDone();
+				this.notifySuccess('Exported');
 			});
 		}
 	}

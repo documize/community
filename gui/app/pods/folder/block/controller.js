@@ -23,8 +23,6 @@ export default Controller.extend(Notifier, {
 		},
 
 		onAction(page, meta) {
-			this.showWait();
-
 			let b = this.get('model.block');
 			b.set('title', page.get('title'));
 			b.set('body', page.get('body'));
@@ -34,7 +32,7 @@ export default Controller.extend(Notifier, {
 			b.set('externalSource', meta.get('externalSource'));
 
 			this.get('sectionSvc').updateBlock(b).then(() => {
-				this.showDone();
+				this.notifySuccess('Saved');
 				this.get('router').transitionTo('folder.settings', {queryParams: {tab: 'blocks'}});
 			});
 		}

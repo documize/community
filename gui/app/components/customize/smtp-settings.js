@@ -48,11 +48,10 @@ export default Component.extend(Notifier, {
 				},
 			);
 
-			this.showWait();
 			this.set('buttonText', 'Please wait...');
 
 			this.get('saveSMTP')().then((result) => {
-				this.showDone();
+				this.notifySuccess('Saved');
 				this.set('buttonText', 'Save & Test');
 				this.set('testSMTP', result);
 			});

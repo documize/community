@@ -9,7 +9,26 @@
 //
 // https://documize.com
 
+import Notifier from '../../mixins/notifier';
 import Controller from '@ember/controller';
 
-export default Controller.extend({
+export default Controller.extend(Notifier, {
+
+	actions: {
+		onSuccess() {
+			this.notifySuccess('Saved');
+		},
+
+		onInfo() {
+			this.notifyInfo('Working');
+		},
+
+		onWarn() {
+			this.notifyWarn('Failed to get');
+		},
+
+		onError() {
+			this.notifyError('Unable to save changes');
+		}
+	}
 });

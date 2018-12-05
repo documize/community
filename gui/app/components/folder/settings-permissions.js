@@ -132,8 +132,6 @@ export default Component.extend(Notifier, Modals, {
 		let spacePermissions = this.get('spacePermissions');
 		let filteredUsers = A([]);
 
-		this.showWait();
-
 		this.get('userSvc').matchUsers(s).then((users) => {
 			users.forEach((user) => {
 				let exists = spacePermissions.findBy('whoId', user.get('id'));
@@ -144,7 +142,6 @@ export default Component.extend(Notifier, Modals, {
 			});
 
 			this.set('filteredUsers', filteredUsers);
-			this.showDone();
 		});
 	},
 
@@ -160,9 +157,7 @@ export default Component.extend(Notifier, Modals, {
 		onSave() {
 			if (!this.get('isSpaceAdmin')) return;
 
-			this.showWait();
-
-			let message = this.getDefaultInvitationMessage();
+				let message = this.getDefaultInvitationMessage();
 			let permissions = this.get('spacePermissions');
 			let folder = this.get('folder');
 			let payload = { Message: message, Permissions: permissions };
@@ -197,7 +192,7 @@ export default Component.extend(Notifier, Modals, {
 			}
 
 			this.get('spaceSvc').savePermissions(folder.get('id'), payload).then(() => {
-				this.showDone();
+				this.notifySuccess('Saved');
 				this.get('onRefresh')();
 			});
 		},
@@ -219,17 +214,13 @@ export default Component.extend(Notifier, Modals, {
 			let spacePermissions = this.get('spacePermissions');
 			let constants = this.get('constants');
 
-			this.showWait();
-
-			let exists = spacePermissions.findBy('whoId', user.get('id'));
+				let exists = spacePermissions.findBy('whoId', user.get('id'));
 
 			if (is.undefined(exists)) {
 				spacePermissions.pushObject(this.permissionRecord(constants.WhoType.User, user.get('id'), user.get('fullname')));
 				this.set('spacePermissions', spacePermissions);
 				this.send('onSearch');
 			}
-
-			this.showDone();
 		},
 
 		onSpaceInvite(e) {
@@ -248,9 +239,7 @@ export default Component.extend(Notifier, Modals, {
 				return;
 			}
 
-			this.showWait();
-
-			var result = {
+				var result = {
 				Message: message,
 				Recipients: []
 			};
@@ -271,7 +260,7 @@ export default Component.extend(Notifier, Modals, {
 			this.set('inviteEmail', '');
 
 			this.get('spaceSvc').share(this.get('folder.id'), result).then(() => {
-				this.showDone();
+				this.notifySuccess('Invites sent');
 				this.$('#space-invite-email').removeClass('is-invalid');
 				this.modalClose("#space-invite-user-modal");
 				this.load();

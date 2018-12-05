@@ -27,9 +27,8 @@ export default Controller.extend(Notifier, {
 		},
 
 		onSaveDocument(doc) {
-			this.showWait();
 			this.get('documentService').save(doc).then(() => {
-				this.showDone();
+				this.notifySuccess('Saved');
 			});
 
 			this.get('browser').setTitle(doc.get('name'));

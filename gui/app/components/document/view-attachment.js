@@ -66,16 +66,15 @@ export default Component.extend(Modals, Notifier, {
 				});
 
 				this.on("queuecomplete", function () {
-					self.showDone();
+					self.notifySuccess('Saved');
 					self.getAttachments();
 				});
 
 				this.on("addedfile", function ( /*file*/ ) {
-					self.showWait();
 				});
 
 				this.on("error", function (error, msg) { // // eslint-disable-line no-unused-vars
-					self.showNotification(msg);
+					self.notifyError(msg);
 					console.log(msg); // eslint-disable-line no-console
 				});
 			}
