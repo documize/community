@@ -9,12 +9,11 @@
 //
 // https://documize.com
 
-import Component from '@ember/component';
-import TooltipMixin from '../../mixins/tooltip';
 import NotifierMixin from '../../mixins/notifier';
 import AuthMixin from '../../mixins/auth';
+import Component from '@ember/component';
 
-export default Component.extend(TooltipMixin, NotifierMixin, AuthMixin, {
+export default Component.extend(NotifierMixin, AuthMixin, {
 	hasPublicFolders: false,
 	hasProtectedFolders: false,
 	hasPrivateFolders: false,

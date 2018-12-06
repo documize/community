@@ -38,7 +38,8 @@
 								{{#if hasBlocks}}
 									<ul class="block-list">
 										{{#each blocks as |block|}}
-											<li class="item" title="{{block.firstname}} {{block.lastname}}, {{time-ago block.created}}, used: {{ block.used }}" data-toggle="tooltip" data-placement="top">
+											<li class="item">
+												{{#attach-tooltip showDelay=1000}}Published by {{block.firstname}} {{block.lastname}}, {{time-ago block.created}} &mdash; used {{ block.used }} times{{/attach-tooltip}}
 												<div class="details" {{action 'onInsertBlock' block}}>
 													<div class="title text-truncate">{{block.title}}</div>
 													<div class="desc text-truncate">{{block.excerpt}}</div>

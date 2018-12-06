@@ -10,10 +10,6 @@
 // https://documize.com
 
 import Component from '@ember/component';
-import TooltipMixin from '../../mixins/tooltip';
 
-export default Component.extend(TooltipMixin, {
-	didRender() {
-		this.renderTooltips();
-	},
+export default Component.extend({
 });

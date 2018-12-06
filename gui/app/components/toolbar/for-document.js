@@ -12,12 +12,11 @@
 import $ from 'jquery';
 import { inject as service } from '@ember/service';
 import AuthMixin from '../../mixins/auth';
-import TooltipMixin from '../../mixins/tooltip';
 import ModalMixin from '../../mixins/modal';
 import Notifier from '../../mixins/notifier';
 import Component from '@ember/component';
 
-export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, Notifier, {
+export default Component.extend(ModalMixin, AuthMixin, Notifier, {
 	store: service(),
 	spaceSvc: service('folder'),
 	session: service(),
@@ -49,7 +48,6 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, Notifier, {
 			this.set('pinState.pinId', pinId);
 			this.set('pinState.isPinned', pinId !== '');
 			this.set('pinState.newName', doc.get('name'));
-			this.renderTooltips();
 		});
 
 		this.set('saveTemplate.name', this.get('document.name'));
@@ -63,7 +61,6 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, Notifier, {
 
 	willDestroyElement() {
 		this._super(...arguments);
-		this.removeTooltips();
 	},
 
 	actions: {
@@ -80,11 +77,9 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, Notifier, {
 
 		onUnpin() {
 			this.get('pinned').unpinItem(this.get('pinState.pinId')).then(() => {
-				$('#document-pin-button').tooltip('dispose');
 				this.set('pinState.isPinned', false);
 				this.set('pinState.pinId', '');
 				this.eventBus.publish('pinChange');
-				this.renderTooltips();
 			});
 		},
 
@@ -96,11 +91,9 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, Notifier, {
 			};
 
 			this.get('pinned').pinItem(pin).then((pin) => {
-				$('#document-pin-button').tooltip('dispose');
 				this.set('pinState.isPinned', true);
 				this.set('pinState.pinId', pin.get('id'));
 				this.eventBus.publish('pinChange');
-				this.renderTooltips();
 			});
 
 			return true;

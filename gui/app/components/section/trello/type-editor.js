@@ -14,12 +14,11 @@ import $ from 'jquery';
 import { htmlSafe } from '@ember/string';
 import { computed, set } from '@ember/object';
 import { inject as service } from '@ember/service';
-import Component from '@ember/component';
 import NotifierMixin from '../../../mixins/notifier';
-import TooltipMixin from '../../../mixins/tooltip';
 import SectionMixin from '../../../mixins/section';
+import Component from '@ember/component';
 
-export default Component.extend(SectionMixin, NotifierMixin, TooltipMixin, {
+export default Component.extend(SectionMixin, NotifierMixin, {
 	sectionService: service('section'),
 	isDirty: false,
 	busy: false,
@@ -91,10 +90,6 @@ export default Component.extend(SectionMixin, NotifierMixin, TooltipMixin, {
 			}, function (error) {
 				console.log(error); // eslint-disable-line no-console
 			});
-	},
-
-	willDestroyElement() {
-		this.removeTooltips();
 	},
 
 	getBoardLists() {

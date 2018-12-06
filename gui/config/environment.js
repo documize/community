@@ -18,7 +18,6 @@ module.exports = function (environment) {
 		locationType: 'auto',
 		environment: environment,
 		rootURL: '/',
-		// baseURL: '/',
 		apiHost: '',
 		apiNamespace: '',
 		contentSecurityPolicyHeader: 'Content-Security-Policy-Report-Only',
@@ -33,10 +32,9 @@ module.exports = function (environment) {
 			FEATURES: {}
 		},
 
-		// Tooltips & Popover component defaults
+		// Ember Attacher: tooltips & popover component defaults
 		emberAttacher: {
-			arrow: false,
-			// showDelay: 1000
+			arrow: false
 		},
 
 		"ember-cli-mirage": {

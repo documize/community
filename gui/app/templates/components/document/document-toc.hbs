@@ -1,7 +1,7 @@
 <div id="sidebar" class="sidebar-white document-sidebar">
 
 	<div class="sidebar-view-switcher d-flex align-items-center justify-content-center">
-		<i class="material-icons" title="Table of contents" data-toggle="tooltip" data-placement="top">reorder</i>
+		<i class="material-icons">reorder</i>
 	</div>
 
 	<div id="doc-toc" class="document-toc">
@@ -34,11 +34,13 @@
 						title={{item.page.title}}>
 						<span class="numbering">{{item.page.numbering}}</span>
 						{{#if (or item.userHasChangePending userHasNewPagePending)}}
-							<span class="color-red-600" title="Pending approval" data-toggle="tooltip" data-placement="top">[*]&nbsp;</span>
+							<span class="color-red-600" >[*]&nbsp;</span>
+							{{#attach-tooltip showDelay=1000}}Pending changes{{/attach-tooltip}}
 						{{/if}}
 						{{#if (or permissions.documentApprove roles.documentApprove)}}
 							{{#if item.changeAwaitingReview}}
-								<span class="color-green-700" title="Awaiting approval" data-toggle="tooltip" data-placement="top">[*]&nbsp;</span>
+								<span class="color-green-700">[*]&nbsp;</span>
+								{{#attach-tooltip showDelay=1000}}Awaiting approval{{/attach-tooltip}}
 							{{/if}}
 						{{/if}}
 						{{item.page.title}}

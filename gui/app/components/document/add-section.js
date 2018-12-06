@@ -13,12 +13,11 @@ import $ from 'jquery';
 import { empty } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import { computed } from '@ember/object';
-import Tooltips from '../../mixins/tooltip';
 import Notifier from '../../mixins/notifier';
 import Modals from '../../mixins/modal';
 import Component from '@ember/component';
 
-export default Component.extend(Tooltips, Notifier, Modals, {
+export default Component.extend(Notifier, Modals, {
 	documentService: service('document'),
 	sectionService: service('section'),
 	store: service(),

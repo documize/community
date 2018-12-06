@@ -13,11 +13,10 @@ import { debounce } from '@ember/runloop';
 import { computed, set } from '@ember/object';
 import { inject as service } from '@ember/service';
 import stringUtil from '../../utils/string';
-import TooltipMixin from '../../mixins/tooltip';
 import ModalMixin from '../../mixins/modal';
 import Component from '@ember/component';
 
-export default Component.extend(ModalMixin, TooltipMixin, {
+export default Component.extend(ModalMixin, {
 	link: service(),
 	linkName: '',
 	selection: null,
@@ -71,12 +70,10 @@ export default Component.extend(ModalMixin, TooltipMixin, {
 		this._super(...arguments);
 
 		this.$('#content-linker-networklocation').removeClass('is-invalid');
-		this.renderTooltips();
 	},
 
 	willDestroyElement() {
 		this._super(...arguments);
-		this.removeTooltips();
 		this.modalClose(this.get('modalId'));
 	},
 

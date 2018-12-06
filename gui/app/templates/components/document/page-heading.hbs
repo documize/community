@@ -19,40 +19,42 @@
 						{{/if}}
 						{{#if hasMenuPermissions}}
 							<div class="button-icon-gap" />
-							<div id="page-menu-button-{{page.id}}" class="button-icon-gray align-middle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<div id="page-menu-button-{{page.id}}" class="button-icon-gray align-middle">
 								<i class="material-icons">more_vert</i>
-							</div>
-							<div class="dropdown-menu dropdown-menu-right" aria-labelledby="page-menu-button-{{page.id}}">
-								{{#if canEdit}}
-									<a class="dropdown-item" href="#" id={{concat 'edit-page-button-' page.id}} {{action 'onEdit'}}>Edit</a>
-								{{/if}}
-								{{#if permissions.documentCopy}}
-									<a class="dropdown-item" href="#" id={{concat 'copy-page-button-' page.id}} data-toggle="modal" data-target={{concat '#copy-page-modal-' page.id}} data-backdrop="static">Copy</a>
-								{{/if}}
-								{{#if canMove}}
-									<a class="dropdown-item" href="#" id={{concat 'move-page-button-' page.id}} data-toggle="modal" data-target={{concat '#move-page-modal-' page.id}} data-backdrop="static">Move</a>
-								{{/if}}
-								{{#if permissions.documentTemplate}}
-									<a class="dropdown-item" href="#" id={{concat 'publish-page-button-' page.id}} data-toggle="modal" data-target={{concat '#publish-page-modal-' page.id}} data-backdrop="static">Publish</a>
-								{{/if}}
-								{{#if canDelete}}
-									<a class="dropdown-item text-danger" href="#" id={{concat 'delete-page-button-' page.id}} data-toggle="modal" data-target={{concat '#delete-page-modal-' page.id}} data-backdrop="static">Delete</a>
-								{{/if}}
-								{{#if (and canEdit state.actionablePage)}}
-									<div class="dropdown-divider"></div>
-									{{#unless state.indentDisabled}}
-										<a class="dropdown-item" href="#" id={{concat 'toc-indent-button-' page.id}} {{action 'pageIndent'}}>Indent</a>
-									{{/unless}}
-									{{#unless state.outdentDisabled}}
-										<a class="dropdown-item" href="#" id={{concat 'toc-outdent-button-' page.id}} {{action 'pageOutdent'}}>Outdent</a>
-									{{/unless}}
-									{{#unless state.upDisabled}}
-										<a class="dropdown-item" href="#" id={{concat 'toc-up-button-' page.id}} {{action 'pageUp'}}>Move up</a>
-									{{/unless}}
-									{{#unless state.downDisabled}}
-										<a class="dropdown-item" href="#" id={{concat 'toc-down-button-' page.id}} {{action 'pageDown'}}>Move down</a>
-									{{/unless}}
-								{{/if}}
+								{{#attach-popover class="ember-attacher-popper" hideOn='clickout' showOn='click' isShown=false}}
+									<div class="menu">
+										{{#if canEdit}}
+											<a class="item" href="#" id={{concat 'edit-page-button-' page.id}} {{action 'onEdit'}}>Edit</a>
+										{{/if}}
+										{{#if permissions.documentCopy}}
+											<a class="item" href="#" id={{concat 'copy-page-button-' page.id}} data-toggle="modal" data-target={{concat '#copy-page-modal-' page.id}} data-backdrop="static">Copy</a>
+										{{/if}}
+										{{#if canMove}}
+											<a class="item" href="#" id={{concat 'move-page-button-' page.id}} data-toggle="modal" data-target={{concat '#move-page-modal-' page.id}} data-backdrop="static">Move</a>
+										{{/if}}
+										{{#if permissions.documentTemplate}}
+											<a class="item" href="#" id={{concat 'publish-page-button-' page.id}} data-toggle="modal" data-target={{concat '#publish-page-modal-' page.id}} data-backdrop="static">Publish</a>
+										{{/if}}
+										{{#if canDelete}}
+											<a class="item red" href="#" id={{concat 'delete-page-button-' page.id}} data-toggle="modal" data-target={{concat '#delete-page-modal-' page.id}} data-backdrop="static">Delete</a>
+										{{/if}}
+										{{#if (and canEdit state.actionablePage)}}
+											<div class="divider"></div>
+											{{#unless state.indentDisabled}}
+												<a class="item" href="#" id={{concat 'toc-indent-button-' page.id}} {{action 'pageIndent'}}>Indent</a>
+											{{/unless}}
+											{{#unless state.outdentDisabled}}
+												<a class="item" href="#" id={{concat 'toc-outdent-button-' page.id}} {{action 'pageOutdent'}}>Outdent</a>
+											{{/unless}}
+											{{#unless state.upDisabled}}
+												<a class="item" href="#" id={{concat 'toc-up-button-' page.id}} {{action 'pageUp'}}>Move up</a>
+											{{/unless}}
+											{{#unless state.downDisabled}}
+												<a class="item" href="#" id={{concat 'toc-down-button-' page.id}} {{action 'pageDown'}}>Move down</a>
+											{{/unless}}
+										{{/if}}
+									</div>
+								{{/attach-popover}}
 							</div>
 						{{/if}}
 					</div>

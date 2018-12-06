@@ -22,15 +22,17 @@
 <div class="d-sm-inline-block margin-left-20" />
 
 {{#each selectedCategories as |cat|}}
-	<div class="document-category {{if isSpaceAdmin 'cursor-pointer'}}" data-toggle="tooltip" data-placement="top" title="Category" {{action 'onEditCategory'}}>
+	<div class="document-category {{if isSpaceAdmin 'cursor-pointer'}}" {{action 'onEditCategory'}}>
 		{{cat.category}}
+		{{#attach-tooltip showDelay=1000}}Category{{/attach-tooltip}}
 	</div>
 {{/each}}
 
 <div class="d-block d-sm-none margin-top-20" />
 
 {{#each tagz as |t index|}}
-	<div class="document-tag {{if isSpaceAdmin 'cursor-pointer'}}" data-toggle="tooltip" data-placement="top" title="Tag" {{action 'onEditCategory'}}>
+	<div class="document-tag {{if isSpaceAdmin 'cursor-pointer'}}" {{action 'onEditCategory'}}>
+		{{#attach-tooltip showDelay=1000}}Tag{{/attach-tooltip}}
 		{{concat '#' t}}
 	</div>
 {{/each}}

@@ -31,6 +31,7 @@
 				</div>
 			</div>
 
+			<p>Put these as cards with nice action CTAs</p>
 			<div class="groups-list">
 				{{#each groups as |group|}}
 					<div class="row group">
@@ -49,12 +50,14 @@
 								<button class="btn btn-danger" {{action 'onShowRemoveMemberModal' group.id}}>Remove Member</button>
 							{{/if}}
 							<div class="button-icon-gap" />
-							<div class="button-icon-gray align-middle" data-toggle="tooltip" data-placement="top" title="Rename" {{action 'onShowEditModal' group.id}}>
+							<div class="button-icon-gray align-middle" {{action 'onShowEditModal' group.id}}>
 								<i class="material-icons">edit</i>
+								{{#attach-tooltip showDelay=1000}}Edit group{{/attach-tooltip}}
 							</div>
 							<div class="button-icon-gap" />
-							<div class="button-icon-danger align-middle" data-toggle="tooltip" data-placement="top" title="Delete" {{action 'onShowDeleteModal' group.id}}>
+							<div class="button-icon-danger align-middle"  {{action 'onShowDeleteModal' group.id}}>
 								<i class="material-icons">delete</i>
+								{{#attach-tooltip showDelay=1000}}Delete group{{/attach-tooltip}}
 							</div>
 						</div>
 					</div>
@@ -149,7 +152,8 @@
 							</div>
 							<div class="view-customize">
 								<div class="text-center">
-									<div class="btn-group btn-group-toggle" data-toggle="tooltip" data-placement="top" title="Show how many users">
+									<div class="btn-group btn-group-toggle">
+										{{#attach-tooltip showDelay=1000}}Number of users to display{{/attach-tooltip}}>
 										<label class="btn btn-outline-secondary {{if (eq userLimit 1) 'active'}}">
 											<input type="radio" name="options" autocomplete="off" {{action 'onLimit' 1}}>1
 										</label>

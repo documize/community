@@ -17,12 +17,14 @@
 						{{#link-to 'folder' space.id space.slug class="alt"}}{{space.name}}{{/link-to}}
 					</div>
 					<div class="col-12 col-sm-4 text-right">
-						<div id="space-ownership-button-{{space.id}}" class="button-icon-gray align-middle" data-toggle="tooltip" data-placement="top" title="Add myself as space owner" {{action "onOwner" space.id}}>
+						<div id="space-ownership-button-{{space.id}}" class="button-icon-gray align-middle" {{action "onOwner" space.id}}>
 							<i class="material-icons" data-toggle="modal">person_add</i>
+							{{#attach-tooltip showDelay=1000}}Add myself as space owner{{/attach-tooltip}}
 						</div>
 						<div class="button-icon-gap" />
-						<div id="space-delete-button-{{space.id}}" class="button-icon-danger align-middle" data-toggle="tooltip" data-placement="top" title="Delete space and all content" {{action "onShow" space.id}}>
+						<div id="space-delete-button-{{space.id}}" class="button-icon-danger align-middle" {{action "onShow" space.id}}>
 							<i class="material-icons" data-toggle="modal" data-target="#space-delete-modal" data-backdrop="static">delete</i>
+							{{#attach-tooltip showDelay=1000}}Delete space and all content{{/attach-tooltip}}
 						</div>
 					</div>
 				</div>

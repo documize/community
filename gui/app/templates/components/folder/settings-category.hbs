@@ -30,15 +30,18 @@
 							<button type="button" class="btn btn-outline-secondary" {{action 'onEditCancel' cat.id}}>Cancel</button>
 							<button type="button" class="btn btn-success"  {{action 'onSave' cat.id}}>Save</button>
 						{{else}}
-							<div id="category-access-button-{{cat.id}}" class="button-icon-gray align-middle" data-toggle="tooltip" data-placement="top" title="Category access" {{action 'onShowAccessPicker' cat.id}}>
+							<div id="category-access-button-{{cat.id}}" class="button-icon-gray align-middle" {{action 'onShowAccessPicker' cat.id}}>
+								{{#attach-tooltip showDelay=1000}}Category view permission{{/attach-tooltip}}
 								<i class="material-icons">security</i>
 							</div>
 							<div class="button-icon-gap" />
-							<div class="button-icon-gray align-middle" data-toggle="tooltip" data-placement="top" title="Rename" {{action 'onEdit' cat.id}} >
+							<div class="button-icon-gray align-middle" {{action 'onEdit' cat.id}} >
+								{{#attach-tooltip showDelay=1000}}Rename{{/attach-tooltip}}
 								<i class="material-icons">edit</i>
 							</div>
 							<div class="button-icon-gap" />
-							<div id="{{concat 'delete-category-' cat.id}}" class="button-icon-danger align-middle" data-toggle="tooltip" data-placement="top" title="Delete" {{action 'onShowDelete' cat.id}}>
+							<div id="{{concat 'delete-category-' cat.id}}" class="button-icon-danger align-middle" {{action 'onShowDelete' cat.id}}>
+								{{#attach-tooltip showDelay=1000}}Delete{{/attach-tooltip}}
 								<i class="material-icons">delete</i>
 							</div>
 						{{/if}}

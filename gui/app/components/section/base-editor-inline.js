@@ -12,11 +12,10 @@
 import $ from 'jquery';
 import { empty } from '@ember/object/computed';
 import { computed } from '@ember/object';
-import TooltipMixin from '../../mixins/tooltip';
 import ModalMixin from '../../mixins/modal';
 import Component from '@ember/component';
 
-export default Component.extend(TooltipMixin, ModalMixin, {
+export default Component.extend(ModalMixin, {
 	busy: false,
 	mousetrap: null,
 	showLinkModal: false,
@@ -57,14 +56,10 @@ export default Component.extend(TooltipMixin, ModalMixin, {
 		$('#' + this.get('pageId')).focus(function() {
 			$(this).select();
 		});
-
-		this.renderTooltips();
 	},
 
 	willDestroyElement() {
 		this._super(...arguments);
-
-		this.removeTooltips();
 
 		let mousetrap = this.get('mousetrap');
 		if (is.not.null(mousetrap)) {

@@ -21,7 +21,10 @@
 				{{/if}}
 
 				{{#if contentLinkerButton}}
-					<div class="btn btn-primary" id="section-editor-link-button-{{pageId}}" data-toggle="tooltip" data-placement="top" title="Insert link" {{action 'onShowLinkModal'}}>Link</div>
+					<div class="btn btn-primary" id="section-editor-link-button-{{pageId}}" {{action 'onShowLinkModal'}}>
+						Link
+						{{#attach-tooltip showDelay=1000}}Insert Link{{/attach-tooltip}}
+					</div>
 				{{/if}}
 
 				{{#if previewButton}}

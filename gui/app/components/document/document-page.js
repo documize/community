@@ -11,9 +11,8 @@
 
 import { inject as service } from '@ember/service';
 import Component from '@ember/component';
-import TooltipMixin from '../../mixins/tooltip';
 
-export default Component.extend(TooltipMixin, {
+export default Component.extend({
 	documentService: service('document'),
 	sectionService: service('section'),
 	editMode: false,

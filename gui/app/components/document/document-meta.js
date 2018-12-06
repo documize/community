@@ -9,21 +9,18 @@
 //
 // https://documize.com
 
-import $ from 'jquery';
 import { A } from '@ember/array';
 import { computed } from '@ember/object';
 import { notEmpty } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import Modals from '../../mixins/modal';
-import Tooltips from '../../mixins/tooltip';
 import Component from '@ember/component';
 
-export default Component.extend(Modals, Tooltips, {
+export default Component.extend(Modals, {
 	documentService: service('document'),
 	sessionService: service('session'),
 	categoryService: service('category'),
 	router: service(),
-
 	contributorMsg: '',
 	approverMsg: '',
 	userChanges: notEmpty('contributorMsg'),
@@ -79,67 +76,7 @@ export default Component.extend(Modals, Tooltips, {
 		this._super(...arguments);
 
 		this.workflowStatus();
-		this.popovers();
 		this.load();
-	},
-
-	didInsertElement() {
-		this._super(...arguments);
-
-		this.popovers();
-		this.renderTooltips();
-	},
-
-	willDestroyElement() {
-		this._super(...arguments);
-
-		$('#document-lifecycle-popover').popover('dispose');
-		$('#document-protection-popover').popover('dispose');
-		this.removeTooltips();
-	},
-
-	popovers() {
-		let constants = this.get('constants');
-
-		if (this.get('permissions.documentLifecycle')) {
-			$('#document-lifecycle-popover').addClass('cursor-pointer');
-		} else {
-			$('#document-lifecycle-popover').popover('dispose');
-			$('#document-lifecycle-popover').removeClass('cursor-pointer');
-
-			$('#document-lifecycle-popover').popover({
-				html: true,
-				title: 'Lifecycle',
-				content: "<p>Draft &mdash; restricted visiblity and not searchable</p><p>Live &mdash; document visible to all</p><p>Archived &mdash; not visible or searchable</p>",
-				placement: 'top',
-				trigger: 'hover click'
-			});
-		}
-
-		if (this.get('permissions.documentApprove')) {
-			$('#document-protection-popover').addClass('cursor-pointer');
-		} else {
-			$('#document-protection-popover').popover('dispose');
-			$('#document-protection-popover').removeClass('cursor-pointer');
-
-			let ccMsg = `<p>${this.changeControlMsg}</p>`;
-
-			if (this.get('document.protection') ===  constants.ProtectionType.Review) {
-				ccMsg += '<ul>'
-				ccMsg += `<li>${this.approvalMsg}</li>`;
-				if (this.get('userChanges')) ccMsg += `<li>Your contributions: ${this.contributorMsg}</li>`;
-				if (this.get('isApprover') && this.get('approverMsg.length') > 0) ccMsg += `<li>${this.approverMsg}</li>`;
-				ccMsg += '</ul>'
-			}
-
-			$('#document-protection-popover').popover({
-				html: true,
-				title: 'Change Control',
-				content: ccMsg,
-				placement: 'top',
-				trigger: 'hover click'
-			});
-		}
 	},
 
 	workflowStatus() {
@@ -175,8 +112,6 @@ export default Component.extend(Modals, Tooltips, {
 
 		this.set('approverMsg', approverMsg);
 		this.set('selectedVersion', this.get('versions').findBy('documentId', this.get('document.id')));
-
-		this.popovers();
 	},
 
 	load() {

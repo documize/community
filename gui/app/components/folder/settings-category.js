@@ -12,19 +12,17 @@
 import $ from 'jquery';
 import { A } from '@ember/array';
 import { inject as service } from '@ember/service';
-import TooltipMixin from '../../mixins/tooltip';
 import ModalMixin from '../../mixins/modal';
 import Notifer from '../../mixins/notifier';
 import Component from '@ember/component';
 
-export default Component.extend(ModalMixin, TooltipMixin, Notifer, {
+export default Component.extend(ModalMixin, Notifer, {
 	spaceSvc: service('folder'),
 	groupSvc: service('group'),
 	categorySvc: service('category'),
 	appMeta: service(),
 	store: service(),
 	deleteId: '',
-	dropdown: null,
 	newCategory: '',
 
 	init() {
@@ -34,13 +32,11 @@ export default Component.extend(ModalMixin, TooltipMixin, Notifer, {
 
 	didReceiveAttrs() {
 		this._super(...arguments);
-		this.renderTooltips();
 		this.load();
 	},
 
 	willDestroyElement() {
 		this._super(...arguments);
-		this.removeTooltips();
 	},
 
 	load() {
@@ -143,13 +139,11 @@ export default Component.extend(ModalMixin, TooltipMixin, Notifer, {
 
 		onEdit(id) {
 			this.setEdit(id, true);
-			this.removeTooltips();
 		},
 
 		onEditCancel(id) {
 			this.setEdit(id, false);
 			this.load();
-			this.renderTooltips();
 		},
 
 		onSave(id) {
@@ -165,8 +159,6 @@ export default Component.extend(ModalMixin, TooltipMixin, Notifer, {
 			this.get('categorySvc').save(cat).then(() => {
 				this.load();
 			});
-
-			this.renderTooltips();
 		},
 
 		onShowAccessPicker(catId) {

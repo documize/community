@@ -13,10 +13,9 @@ import { computed } from '@ember/object';
 import { schedule } from '@ember/runloop';
 import { inject as service } from '@ember/service';
 import tocUtil from '../../utils/toc';
-import TooltipMixin from '../../mixins/tooltip';
 import Component from '@ember/component';
 
-export default Component.extend(TooltipMixin, {
+export default Component.extend({
 	documentService: service('document'),
 	emptyState: computed('pages', function () {
 		return this.get('pages.length') === 0;
@@ -54,13 +53,11 @@ export default Component.extend(TooltipMixin, {
 	didInsertElement() {
 		this._super(...arguments);
 		this.eventBus.subscribe('documentPageAdded', this, 'onDocumentPageAdded');
-		this.renderTooltips();
 	},
 
 	willDestroyElement() {
 		this._super(...arguments);
 		this.eventBus.unsubscribe('documentPageAdded');
-		this.removeTooltips();
 	},
 
 	onDocumentPageAdded(pageId) {

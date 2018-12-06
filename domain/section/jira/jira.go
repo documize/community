@@ -324,7 +324,7 @@ const renderTemplate = `
             <tr>
                 <td class="bordered no-width"><a href="{{ $app }}/browse/{{ $item.Key }}">{{ $item.Key }}&nbsp;</a></td>
                 <td class="bordered no-width"><img class="section-jira-icon" src='{{ $item.Fields.Type.IconURL }}' /></td>
-                <td class="bordered no-width"><span class="badge badge-warning">{{ $item.Fields.Status.Name }}</span>&nbsp;</td>
+                <td class="bordered no-width"><span class="seciton-jira-status">{{ $item.Fields.Status.Name }}</span>&nbsp;</td>
                 <td class="bordered no-width"><img class="section-jira-icon" src='{{ $item.Fields.Priority.IconURL }}' /></td>
                 <td class="bordered no-width">
                     {{range $comp := $item.Fields.Components}}

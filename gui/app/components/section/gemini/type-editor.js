@@ -13,11 +13,10 @@ import $ from 'jquery';
 import { set } from '@ember/object';
 import { schedule } from '@ember/runloop';
 import { inject as service } from '@ember/service';
-import Component from '@ember/component';
 import SectionMixin from '../../../mixins/section';
-import TooltipMixin from '../../../mixins/tooltip';
+import Component from '@ember/component';
 
-export default Component.extend(SectionMixin, TooltipMixin, {
+export default Component.extend(SectionMixin, {
 	sectionService: service('section'),
 	isDirty: false,
 	waiting: false,
@@ -27,7 +26,7 @@ export default Component.extend(SectionMixin, TooltipMixin, {
 		this._super(...arguments);
 		this.user = {};
 		this.workspaces = [];
-		this.config = {};			
+		this.config = {};
 	},
 
 	didReceiveAttrs() {
@@ -92,7 +91,6 @@ export default Component.extend(SectionMixin, TooltipMixin, {
 
 				schedule('afterRender', () => {
 					window.scrollTo(0, document.body.scrollHeight);
-					self.renderTooltips();
 				});
 				self.set('waiting', false);
 			}, function (reason) { // eslint-disable-line no-unused-vars

@@ -13,11 +13,10 @@ import $ from 'jquery';
 import { notEmpty } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import { computed } from '@ember/object';
-import TooltipMixin from '../../mixins/tooltip';
 import Notifier from '../../mixins/notifier';
 import Component from '@ember/component';
 
-export default Component.extend(TooltipMixin, Notifier, {
+export default Component.extend(Notifier, {
 	documentService: service('document'),
 	sectionService: service('section'),
 	store: service(),
@@ -49,19 +48,7 @@ export default Component.extend(TooltipMixin, Notifier, {
 	didInsertElement() {
 		this._super(...arguments);
 
-		if (this.get('session.authenticated')) {
-			this.renderTooltips();
-		}
-
 		this.jumpToSection(this.get('currentPageId'));
-	},
-
-	willDestroyElement() {
-		this._super(...arguments);
-
-		if (this.get('session.authenticated')) {
-			this.removeTooltips();
-		}
 	},
 
 	contentLinkHandler() {

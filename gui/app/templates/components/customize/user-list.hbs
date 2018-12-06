@@ -41,7 +41,8 @@
 	</div>
 
 	<div class="max-results py-3">
-		<div class="btn-group btn-group-toggle" data-toggle="tooltip" data-placement="top" title="Show how many users">
+		<div class="btn-group btn-group-toggle">
+			{{#attach-tooltip showDelay=1000}}Number of users to display{{/attach-tooltip}}
 			<label class="btn btn-outline-secondary {{if (eq userLimit 1) 'active'}}">
 				<input type="radio" name="options" autocomplete="off" {{action 'onLimit' 1}}>1
 			</label>
@@ -157,11 +158,13 @@
 					<td class="no-width text-center">
 						<div class="user-button-{{user.id}} button-icon-gray button-icon-small" title="Edit" {{action "onShowEdit" user.id}}>
 							<i class="material-icons">mode_edit</i>
+							{{#attach-tooltip showDelay=1000}}Edit user{{/attach-tooltip}}
 						</div>
 						{{#unless user.me}}
 							<div class="button-icon-gap" />
 							<div class="delete-button-{{user.id}} button-icon-red button-icon-small" title="Delete" {{action "onShowDelete" user.id}}>
 								<i class="material-icons">delete</i>
+								{{#attach-tooltip showDelay=1000}}Delete user{{/attach-tooltip}}
 							</div>
 						{{/unless}}
 					</td>

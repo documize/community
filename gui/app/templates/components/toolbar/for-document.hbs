@@ -2,43 +2,50 @@
 	{{#if session.authenticated}}
 		{{#if permissions.documentEdit}}
 			{{#link-to 'document.settings' space.id space.slug document.id document.slug class="button-icon-gray align-middle"}}
-				<i class="material-icons" data-toggle="tooltip" data-placement="top" title="Meta, Lifecycle, Change Control">settings</i>
+				<i class="material-icons">settings</i>
+				{{#attach-tooltip showDelay=1000}}Settings &mdash; meta, lifecycle, workflow{{/attach-tooltip}}
 			{{/link-to}}
 			<div class="button-icon-gap" />
 		{{/if}}
 		{{#if permissions.documentAdd}}
-			<div id="document-template-button" class="button-icon-gray align-middle" data-toggle="tooltip" data-placement="top" title="Save as template">
+			<div id="document-template-button" class="button-icon-gray align-middle">
 				<i class="material-icons" data-toggle="modal" data-target="#document-template-modal" data-backdrop="static">content_copy</i>
+				{{#attach-tooltip showDelay=1000}}Save as template{{/attach-tooltip}}
 			</div>
 			<div class="button-icon-gap" />
 		{{/if}}
 	{{/if}}
 
-	<div id="document-print-button" class="button-icon-gray align-middle" data-toggle="tooltip" data-placement="top" title="Print" {{action 'onPrintDocument'}}>
+	<div id="document-print-button" class="button-icon-gray align-middle" {{action 'onPrintDocument'}}>
 		<i class="material-icons">print</i>
+		{{#attach-tooltip showDelay=1000}}Print{{/attach-tooltip}}
 	</div>
 	<div class="button-icon-gap" />
 
-	<div id="space-export-button" class="button-icon-danger align-middle" data-toggle="tooltip" data-placement="top" title="Export as HTML" {{action 'onExport'}}>
+	<div id="space-export-button" class="button-icon-danger align-middle" {{action 'onExport'}}>
 		<i class="material-icons">import_export</i>
+		{{#attach-tooltip showDelay=1000}}Export as HTML{{/attach-tooltip}}
 	</div>
 	<div class="button-icon-gap" />
 
 	{{#if pinState.isPinned}}
-		<div id="document-pin-button" class="button-icon-gold align-middle" data-toggle="tooltip" data-placement="top" title="Remove favorite" {{action 'onUnpin'}}>
+		<div id="document-pin-button" class="button-icon-gold align-middle" {{action 'onUnpin'}}>
 			<i class="material-icons">star</i>
+			{{#attach-tooltip showDelay=1000}}Remove bookmark{{/attach-tooltip}}
 		</div>
 		<div class="button-icon-gap" />
 	{{else if session.authenticated}}
-		<div id="document-pin-button" class="button-icon-gray align-middle" data-toggle="tooltip" data-placement="top" title="Save favorite" {{action 'onPin'}}>
+		<div id="document-pin-button" class="button-icon-gray align-middle" {{action 'onPin'}}>
 			<i class="material-icons">star</i>
+			{{#attach-tooltip showDelay=1000}}Add bookmark{{/attach-tooltip}}
 		</div>
 		<div class="button-icon-gap" />
 	{{/if}}
 
 	{{#if permissions.documentDelete}}
-		<div id="document-delete-button" class="button-icon-danger align-middle" data-toggle="tooltip" data-placement="top" title="Delete document">
+		<div id="document-delete-button" class="button-icon-danger align-middle">
 			<i class="material-icons" data-toggle="modal" data-target="#document-delete-modal" data-backdrop="static">delete</i>
+			{{#attach-tooltip showDelay=1000}}Delete{{/attach-tooltip}}
 		</div>
 	{{/if}}
 </div>

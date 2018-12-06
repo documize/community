@@ -10,11 +10,10 @@
 // https://documize.com
 
 import { inject as service } from '@ember/service';
-import Component from '@ember/component';
 import SectionMixin from '../../../mixins/section';
-import TooltipMixin from '../../../mixins/tooltip';
+import Component from '@ember/component';
 
-export default Component.extend(SectionMixin, TooltipMixin, {
+export default Component.extend(SectionMixin, {
 	sectionService: service('section'),
 	isDirty: false,
 	waiting: false,

@@ -38,15 +38,13 @@
 			{{#each spacePermissions as |permission|}}
 				<tr>
 					<td class="no-wrap no-width">
-						<i class="material-icons align-top text-secondary cursor-pointer" data-toggle="dropdown" aria-haspopup="true"
-							 aria-expanded="false">
-							 more_vert
-						</i>
-						<div class="dropdown-menu dropdown-menu-left" aria-labelledby="permission-dropdown-{{permission.whoId}}">
-							<a class="dropdown-item" href="#" {{action 'onBulkPermission' permission true}}>Grant all</a>
-							<a class="dropdown-item" href="#" {{action 'onBulkPermission' permission false}}>Revoke all</a>
-						</div>
-
+						<i class="material-icons align-top text-secondary cursor-pointer">more_vert</i>
+						{{#attach-popover class="ember-attacher-popper" hideOn='clickout' showOn='click' isShown=false}}
+							<div class="menu">
+								<a class="item" href="#" {{action 'onBulkPermission' permission true}}>Grant all</a>
+								<a class="item" href="#" {{action 'onBulkPermission' permission false}}>Revoke all</a>
+							</div>
+						{{/attach-popover}}
 						{{#if (eq permission.who "role")}}
 							<span class="button-icon-blue button-icon-small align-middle">
 								<i class="material-icons">people</i>

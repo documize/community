@@ -12,10 +12,9 @@
 import { inject as service } from '@ember/service';
 import ApplicationRouteMixin from 'ember-simple-auth/mixins/application-route-mixin';
 import netUtil from '../utils/net';
-import TooltipMixin from '../mixins/tooltip';
 import Route from '@ember/routing/route';
 
-export default Route.extend(ApplicationRouteMixin, TooltipMixin, {
+export default Route.extend(ApplicationRouteMixin, {
 	appMeta: service(),
 	session: service(),
 	pinned: service(),
@@ -55,7 +54,6 @@ export default Route.extend(ApplicationRouteMixin, TooltipMixin, {
 	actions: {
 		willTransition: function( /*transition*/ ) {
 			Mousetrap.reset();
-			this.removeTooltips();
 		},
 
 		error(error, transition) {

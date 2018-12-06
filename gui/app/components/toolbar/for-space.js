@@ -13,13 +13,12 @@ import $ from 'jquery';
 import { computed } from '@ember/object';
 import { schedule } from '@ember/runloop';
 import { inject as service } from '@ember/service';
-import TooltipMixin from '../../mixins/tooltip';
 import ModalMixin from '../../mixins/modal';
 import AuthMixin from '../../mixins/auth';
 import Notifier from '../../mixins/notifier';
 import Component from '@ember/component';
 
-export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, Notifier, {
+export default Component.extend(ModalMixin, AuthMixin, Notifier, {
 	spaceService: service('folder'),
 	localStorage: service(),
 	templateService: service('template'),
@@ -75,7 +74,6 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, Notifier, {
 			this.set('pinState.pinId', pinId);
 			this.set('pinState.isPinned', pinId !== '');
 			this.set('pinState.newName', folder.get('name'));
-			this.renderTooltips();
 		});
 
 		let cats = this.get('categories');
@@ -92,7 +90,6 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, Notifier, {
 
 	willDestroyElement() {
 		this._super(...arguments);
-		this.removeTooltips();
 
 		if (is.not.null(this.get('dropzone'))) {
 			this.get('dropzone').destroy();
@@ -152,11 +149,9 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, Notifier, {
 	actions: {
 		onUnpin() {
 			this.get('pinned').unpinItem(this.get('pinState.pinId')).then(() => {
-				$('#space-pin-button').tooltip('dispose');
 				this.set('pinState.isPinned', false);
 				this.set('pinState.pinId', '');
 				this.eventBus.publish('pinChange');
-				this.renderTooltips();
 			});
 		},
 
@@ -168,11 +163,9 @@ export default Component.extend(ModalMixin, TooltipMixin, AuthMixin, Notifier, {
 			};
 
 			this.get('pinned').pinItem(pin).then((pin) => {
-				$('#space-pin-button').tooltip('dispose');
 				this.set('pinState.isPinned', true);
 				this.set('pinState.pinId', pin.get('id'));
 				this.eventBus.publish('pinChange');
-				this.renderTooltips();
 			});
 
 			return true;

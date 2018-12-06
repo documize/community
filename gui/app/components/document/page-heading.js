@@ -13,12 +13,11 @@ import $ from 'jquery';
 import { computed } from '@ember/object';
 import { debounce } from '@ember/runloop';
 import { inject as service } from '@ember/service';
-import Tooltips from '../../mixins/tooltip';
 import ModalMixin from '../../mixins/modal';
 import tocUtil from '../../utils/toc';
 import Component from '@ember/component';
 
-export default Component.extend(ModalMixin, Tooltips, {
+export default Component.extend(ModalMixin, {
 	documentService: service('document'),
 	searchService: service('search'),
 	router: service(),
@@ -76,14 +75,6 @@ export default Component.extend(ModalMixin, Tooltips, {
 		this.set('canMove', permissions.get('documentMove'));
 
 		this.setState(this.get('page.id'));
-	},
-
-	didInsertElement() {
-		this._super(...arguments);
-
-		if (this.get('session.authenticated')) {
-			this.renderTooltips();
-		}
 	},
 
 	searchDocs() {

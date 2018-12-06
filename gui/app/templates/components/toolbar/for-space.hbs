@@ -3,14 +3,18 @@
 	<div class="col-6">
 		{{#if permissions.documentAdd}}
 			<div class="btn-group" role="group">
-				<button id="btnGroupDocument" type="button" class="btn btn-success font-weight-bold dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">+ CONTENT</button>
-				<div class="dropdown-menu" aria-labelledby="btnGroupDocument">
-					<a class="dropdown-item" href="#" {{action 'onShowEmptyDocModal'}}>Blank canvas</a>
-					{{#if hasTemplates}}
-						<a class="dropdown-item" href="#" {{action 'onShowTemplateDocModal'}}>From template</a>
-					{{/if}}
-					<a class="dropdown-item" href="#" {{action 'onShowImportDocModal'}}>Import files</a>
-				</div>
+				<button id="btnGroupDocument" type="button" class="btn btn-success font-weight-bold dropdown-toggle">
+					+ CONTENT
+					{{#attach-popover class="ember-attacher-popper" hideOn='clickout' showOn='click' isShown=false}}
+						<div class="menu">
+							<a class="item" href="#" {{action 'onShowEmptyDocModal'}}>Blank canvas</a>
+							{{#if hasTemplates}}
+								<a class="item" href="#" {{action 'onShowTemplateDocModal'}}>From template</a>
+							{{/if}}
+							<a class="item" href="#" {{action 'onShowImportDocModal'}}>Import files</a>
+						</div>
+					{{/attach-popover}}
+				</button>
 			</div>
 			<div id="empty-doc-modal" class="modal" tabindex="-1" role="dialog">
 				<div class="modal-dialog" role="document">
@@ -95,27 +99,31 @@
 
 	<div class="col-6 text-right">
 		{{#if hasDocuments}}
-			<div id="space-export-button" class="button-icon-danger align-middle" data-toggle="tooltip" data-placement="top" title="Export as HTML" {{action 'onShowExport'}}>
+			<div id="space-export-button" class="button-icon-danger align-middle" {{action 'onShowExport'}}>
 				<i class="material-icons">import_export</i>
+				{{#attach-tooltip showDelay=1000}}Export as HTML{{/attach-tooltip}}
 			</div>
 		{{/if}}
 
 		{{#if pinState.isPinned}}
 			<div class="button-icon-gap" />
-			<div id="space-pin-button" class="button-icon-gold align-middle" data-toggle="tooltip" data-placement="top" title="Remove favorite" {{action 'onUnpin'}}>
+			<div id="space-pin-button" class="button-icon-gold align-middle" {{action 'onUnpin'}}>
 				<i class="material-icons">star</i>
+				{{#attach-tooltip showDelay=1000}}Remove bookmark{{/attach-tooltip}}
 			</div>
 		{{else if session.authenticated}}
 			<div class="button-icon-gap" />
-			<div id="space-pin-button" class="button-icon-gray align-middle" data-toggle="tooltip" data-placement="top" title="Save favorite" {{action 'onPin'}}>
+			<div id="space-pin-button" class="button-icon-gray align-middle" {{action 'onPin'}}>
 				<i class="material-icons">star</i>
+				{{#attach-tooltip showDelay=1000}}Bookmark{{/attach-tooltip}}
 			</div>
 		{{/if}}
 
 		{{#if (or permissions.spaceOwner permissions.spaceManage)}}
 			<div class="button-icon-gap" />
 			{{#link-to 'folder.settings' space.id space.slug class="button-icon-gray align-middle"}}
-				<i class="material-icons" data-toggle="tooltip" data-placement="top" title="Settings, users, permissions, templates">settings</i>
+				<i class="material-icons">settings</i>
+				{{#attach-tooltip showDelay=1000}}Settings, permissions, templates{{/attach-tooltip}}
 			{{/link-to}}
 		{{/if}}
 	</div>

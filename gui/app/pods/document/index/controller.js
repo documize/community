@@ -12,11 +12,10 @@
 import { Promise as EmberPromise } from 'rsvp';
 import { inject as service } from '@ember/service';
 import { computed } from '@ember/object';
-import Tooltips from '../../../mixins/tooltip';
 import Notifier from '../../../mixins/notifier';
 import Controller from '@ember/controller';
 
-export default Controller.extend(Tooltips, Notifier, {
+export default Controller.extend(Notifier, {
 	documentService: service('document'),
 	templateService: service('template'),
 	sectionService: service('section'),
