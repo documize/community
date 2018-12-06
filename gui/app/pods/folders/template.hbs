@@ -1,20 +1,14 @@
-{{#layout/top-bar selectItem="spaces"}}
-{{/layout/top-bar}}
+{{#layout/master-sidebar selectedItem="spaces"}}
+{{/layout/master-sidebar}}
 
-{{#layout/middle-zone}}
-	{{#layout/middle-zone-content}}
-		{{spaces/space-list spaces=model}}
-	{{/layout/middle-zone-content}}
+{{#layout/master-content}}
 
-	{{#layout/middle-zone-sidebar}}
-		<div id="sidebar" class="sidebar">
-			<h1>{{appMeta.title}}</h1>
-			<p>{{appMeta.message}}</p>
-			{{#if session.isEditor}}
-				<button type="button" class="btn btn-success font-weight-bold my-3" {{action 'onShowModal'}}>+ SPACE</button>
-			{{/if}}
-		</div>
-	{{/layout/middle-zone-sidebar}}
+	<h1>{{appMeta.title}}</h1>
+	<p>{{appMeta.message}}</p>
+	{{#if session.isEditor}}
+		<button type="button" class="btn btn-success font-weight-bold my-3" {{action 'onShowModal'}}>+ SPACE</button>
+	{{/if}}
+	{{spaces/space-list spaces=model}}
 
 	<div class="modal" tabindex="-1" role="dialog" id="add-space-modal">
 		<div class="modal-dialog" role="document">
@@ -47,7 +41,5 @@
 			</div>
 		</div>
 	</div>
-{{/layout/middle-zone}}
 
-{{#layout/bottom-bar}}
-{{/layout/bottom-bar}}
+{{/layout/master-content}}
