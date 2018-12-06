@@ -60,8 +60,6 @@ module.exports = {
 	  "userLogin": true,
 	  "Keycloak": true,
 	  "slug": true,
-	  "interact": true,
-	  "velocity": true,
 	  "iziToast": true
   }
 };

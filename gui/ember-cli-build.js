@@ -58,8 +58,6 @@ module.exports = function (defaults) {
 	app.import('vendor/datetimepicker.min.js');
 	app.import('vendor/documize.js');
 	app.import('vendor/dropzone.js');
-	app.import('vendor/hoverIntent.min.js');
-	app.import('vendor/interact.min.js');
 	app.import('vendor/is.js');
 	app.import('vendor/iziToast.js');
 	app.import('vendor/keycloak.js');
@@ -67,15 +65,11 @@ module.exports = function (defaults) {
 	app.import('vendor/md5.js');
 	app.import('vendor/moment.js');
 	app.import('vendor/mousetrap.js');
-	app.import('vendor/overlay-scrollbars.js');
 	app.import('vendor/prism.js');
 	app.import('vendor/slug.js');
 	app.import('vendor/sortable.js');
 	app.import('vendor/table-editor.min.js');
 	app.import('vendor/underscore.js');
-	app.import('vendor/velocity.js');
-	app.import('vendor/velocity.ui.js');
-	app.import('vendor/waypoints.js');
 	app.import('vendor/codemirror.js'); // boot-up files
 
 	app.import('vendor/bootstrap.bundle.min.js');
