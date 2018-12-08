@@ -1,4 +1,8 @@
-%dmz-toolbar {
+%toolbar-shadow {
+	box-shadow: 1px 1px 3px 0px map-get($gray-shades, 200);
+}
+
+.dmz-toolbar {
 	display: inline-block;
     text-align: center;
     white-space: nowrap;
@@ -47,42 +51,80 @@
 	}
 }
 
-.dmz-toolbar-dark-small {
-	@extend %dmz-toolbar;
-	background-color: map-get($gray-shades, 200);
-}
-
-.dmz-toolbar-dark-large {
-	@extend %dmz-toolbar;
-	background-color: map-get($gray-shades, 200);
-	height: 36px;
-	padding: 5px 10px;
+.dmz-toolbar-large {
+	height: 40px;
+	padding: 7px 10px;
 	line-height: 33px;
 
 	> .dicon {
 		font-size: 20px;
 		font-weight: 500;
+		padding: 0 0.5rem;
 	}
 }
 
-.dmz-toolbar-small {
-	@extend %dmz-toolbar;
-	background-color: transparent;
+.dmz-toolbar-dark {
+	background-color: map-get($gray-shades, 200);
 }
 
-.dmz-toolbar-large {
-	@extend .dmz-toolbar-dark-large;
-	background-color: transparent;
-}
-
-.dmz-toolbar-raised-small {
-	@extend %dmz-toolbar;
+.dmz-toolbar-light {
 	background-color: map-get($gray-shades, 100);
-	@include button-shadow-light();
 }
 
-.dmz-toolbar-raised-large {
-	@extend .dmz-toolbar-dark-large;
-	background-color: map-get($gray-shades, 100);
-	@include button-shadow-light();
+.dmz-toolbar-raised {
+	@extend %toolbar-shadow;
 }
+
+.dmz-toolbar-bordered {
+	border: 1px solid map-get($gray-shades, 300);
+}
+
+
+// .dmz-toolbar-dark-small {
+// 	@extend .dmz-toolbar;
+// 	background-color: map-get($gray-shades, 200);
+// 	border: 1px solid map-get($gray-shades, 300);
+// 	@extend %toolbar-shadow;
+// }
+
+// .dmz-toolbar-dark-large {
+// 	@extend .dmz-toolbar;
+// 	background-color: map-get($gray-shades, 200);
+// 	border: 1px solid map-get($gray-shades, 300);
+// 	height: 40px;
+// 	padding: 7px 10px;
+// 	line-height: 33px;
+// 	@extend %toolbar-shadow;
+
+// 	> .dicon {
+// 		font-size: 20px;
+// 		font-weight: 500;
+// 		padding: 0 0.5rem;
+// 	}
+// }
+
+// .dmz-toolbar-small {
+// 	@extend .dmz-toolbar;
+// 	background-color: transparent;
+// }
+
+// .dmz-toolbar-large {
+// 	@extend .dmz-toolbar-dark-large;
+// 	background-color: transparent;
+// 	border: none;
+// 	box-shadow: none;
+// }
+
+// .dmz-toolbar-raised-small {
+// 	@extend .dmz-toolbar;
+// 	@extend %toolbar-shadow;
+// 	background-color: map-get($gray-shades, 100);
+// 	border: 1px solid map-get($gray-shades, 200);
+// }
+
+// .dmz-toolbar-raised-large {
+// 	@extend .dmz-toolbar-dark-large;
+// 	@extend %toolbar-shadow;
+// 	background-color: map-get($gray-shades, 100);
+// 	border: 1px solid map-get($gray-shades, 200);
+// }

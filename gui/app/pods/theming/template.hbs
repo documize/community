@@ -6,6 +6,11 @@
 	<p>Bring to the table win-win survival strategies to ensure proactive domination. At the end of the day, going forward, a new normal that has evolved from generation X is on the runway heading towards a streamlined cloud solution. User generated content in real-time will have multiple touchpoints for offshoring.</p>
 {{/layout/master-sidebar}}
 {{#layout/master-content}}
+	<button class="dmz-button-theme">save</button>
+	<div class="dmz-button-gap-right" />
+	<button class="dmz-button-theme-light">update</button>
+	<br/>
+	<br/>
 	<button class="dmz-button-green" {{action 'onSuccess'}}>save</button>
 	<div class="dmz-button-gap-right" />
 	<button class="dmz-button-yellow" {{action 'onInfo'}}>update</button>
@@ -16,78 +21,80 @@
 	<div class="dmz-button-gap-right" />
 	<br/>
 	<br/>
-	<button class="dmz-button-green-light">Save</button>
+	<button class="dmz-button-green-light"><div class='label'>Save</div></button>
 	<div class="dmz-button-gap-right" />
-	<button class="dmz-button-yellow-light">Update</button>
+	<button class="dmz-button-yellow-light"><div class='label'>Update</div></button>
 	<div class="dmz-button-gap-right" />
-	<button class="dmz-button-gray-light">cancel</button>
+	<button class="dmz-button-gray-light"><div class='label'>cancel</div></button>
 	<div class="dmz-button-gap-right" />
-	<button class="dmz-button-red-light">Delete</button>
-	<div class="dmz-button-gap-right" />
-	<br/>
-	<br/>
-	<button class="dmz-button-green-light"><i class="dicon dicon-e-add"/>space</button>
-	<div class="dmz-button-gap-right" />
-	<button class="dmz-button-green-light"><i class="dicon dicon-e-add"/>content</button>
-	<div class="dmz-button-gap-right" />
-	<button class="dmz-button-yellow-light"><i class="dicon dicon-e-add"/>user</button>
-	<div class="dmz-button-gap-right" />
-	<button class="dmz-button-gray-light"><i class="dicon dicon-e-add"/>group</button>
+	<button class="dmz-button-red-light"><div class='label'>Delete</div></button>
 	<div class="dmz-button-gap-right" />
 	<br/>
 	<br/>
-	<div class="dmz-toolbar-dark-small">
+	<button class="dmz-button-green-light"><i class="dicon dicon-e-add"/><div class='label'>space</div></button>
+	<div class="dmz-button-gap-right" />
+	<button class="dmz-button-green-light"><i class="dicon dicon-e-add"/><div class='label'>content</div></button>
+	<div class="dmz-button-gap-right" />
+	<button class="dmz-button-yellow-light"><i class="dicon dicon-e-add"/><div class='label'>user</div></button>
+	<div class="dmz-button-gap-right" />
+	<button class="dmz-button-gray-light"><i class="dicon dicon-e-add"/><div class='label'>group</div></button>
+	<div class="dmz-button-gap-right" />
+	<button class="dmz-button-red-light"><i class="dicon dicon-bin"/><div class='label'>delete</div></button>
+	<div class="dmz-button-gap-right" />
+	<br/>
+	<br/>
+	{{#ui/ui-toolbar dark=false light=false raised=false large=false bordered=false}}
 		<i class="dicon dicon-bin red"/>
 		<i class="dicon dicon-print yellow"/>
 		<i class="dicon dicon-settings-gear"/>
 		<i class="dicon dicon-print green"/>
 		<i class="dicon dicon-single-01"/>
-	</div>
+	{{/ui/ui-toolbar}}
 	<br/>
 	<br/>
-	<div class="dmz-toolbar-dark-large">
+	{{#ui/ui-toolbar dark=false light=true raised=true large=false bordered=true}}
 		<i class="dicon dicon-bin red"/>
 		<i class="dicon dicon-print yellow"/>
 		<i class="dicon dicon-settings-gear"/>
 		<i class="dicon dicon-print green"/>
 		<i class="dicon dicon-single-01"/>
-	</div>
+	{{/ui/ui-toolbar}}
 	<br/>
 	<br/>
-	<div class="dmz-toolbar-small">
+	{{#ui/ui-toolbar dark=true light=false raised=true large=false bordered=true}}
 		<i class="dicon dicon-bin red"/>
 		<i class="dicon dicon-print yellow"/>
 		<i class="dicon dicon-settings-gear"/>
 		<i class="dicon dicon-print green"/>
 		<i class="dicon dicon-single-01"/>
-	</div>
+	{{/ui/ui-toolbar}}
 	<br/>
 	<br/>
-	<div class="dmz-toolbar-large">
+	{{#ui/ui-toolbar dark=false light=false raised=false large=true bordered=false}}
 		<i class="dicon dicon-bin red"/>
 		<i class="dicon dicon-print yellow"/>
 		<i class="dicon dicon-settings-gear"/>
 		<i class="dicon dicon-print green"/>
 		<i class="dicon dicon-single-01"/>
-	</div>
+	{{/ui/ui-toolbar}}
 	<br/>
 	<br/>
-	<div class="dmz-toolbar-raised-small">
+	{{#ui/ui-toolbar dark=false light=true raised=true large=true bordered=true}}
 		<i class="dicon dicon-bin red"/>
 		<i class="dicon dicon-print yellow"/>
 		<i class="dicon dicon-settings-gear"/>
 		<i class="dicon dicon-print green"/>
 		<i class="dicon dicon-single-01"/>
-	</div>
+	{{/ui/ui-toolbar}}
 	<br/>
 	<br/>
-	<div class="dmz-toolbar-raised-large">
+	{{#ui/ui-toolbar dark=true light=false raised=true large=true bordered=true}}
 		<i class="dicon dicon-bin red"/>
 		<i class="dicon dicon-print yellow"/>
 		<i class="dicon dicon-settings-gear"/>
 		<i class="dicon dicon-print green"/>
 		<i class="dicon dicon-single-01"/>
-	</div>
+	{{/ui/ui-toolbar}}
 	<br/>
 	<br/>
 	<p>Bring to the table win-win survival strategies to ensure proactive domination. At the end of the day, going forward, a new normal that has evolved from generation X is on the runway heading towards a streamlined cloud solution. User generated content in real-time will have multiple touchpoints for offshoring.</p>

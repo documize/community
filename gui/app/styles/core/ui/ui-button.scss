@@ -1,3 +1,10 @@
+@mixin button-shadow-light() {
+	box-shadow: 1px 1px 3px 0px map-get($gray-shades, 300);
+}
+@mixin button-shadow() {
+	box-shadow: 1px 1px 3px 0px map-get($gray-shades, 500);
+}
+
 %dmz-button {
 	display: inline-block;
     white-space: nowrap;
@@ -8,15 +15,23 @@
     font-size: 1rem;
     line-height: 1.5;
     border: 1px solid transparent;
+	text-transform: uppercase;
+	cursor: pointer;
 	@extend .no-select;
 	@include button-shadow();
 	@include border-radius(2px);
-	text-transform: uppercase;
 
 	> .dicon {
-		font-size: 0.7rem;
-		padding: 0 5px 0 0;
-		font-weight: 700;
+		font-size: 1rem;
+		padding: 0.2rem 0.4rem 0 0;
+		font-weight: 500;
+	}
+
+	> .label {
+		display: inline-block;
+		margin: 0;
+		padding: 0;
+		vertical-align: top;
 	}
 }
 
@@ -113,7 +128,7 @@
 	@include button-shadow-light();
 
 	&:hover {
-		background-color: map-get($red-shades, 300);
+		background-color: map-get($red-shades, 200);
 	}
 }
 
@@ -136,5 +151,27 @@
 
 	&:hover {
 		background-color: map-get($gray-shades, 300);
+	}
+}
+
+.dmz-button-theme {
+	@extend %dmz-button;
+	background-color: $theme-800;
+	color: $color-white;
+	@include button-shadow();
+
+	&:hover {
+		background-color: $theme-600;
+	}
+}
+.dmz-button-theme-light {
+	@extend %dmz-button;
+	background-color: $theme-100;
+	color: $theme-800;
+	border: 1px solid $theme-200;
+	@include button-shadow-light();
+
+	&:hover {
+		background-color: $theme-200;
 	}
 }
