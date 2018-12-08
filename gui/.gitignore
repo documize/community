@@ -2,8 +2,8 @@
 
 # compiled output
 /dist/
-/dist-prod/
 /tmp/
+/dist-prod/
 
 # dependencies
 /bower_components/

@@ -22,8 +22,8 @@ module.exports = {
       files: [
         '.eslintrc.js',
         '.template-lintrc.js',
-        'testem.js',
         'ember-cli-build.js',
+        'testem.js',
         'config/**/*.js'
       ],
       parserOptions: {
