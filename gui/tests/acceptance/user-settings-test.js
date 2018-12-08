@@ -39,8 +39,8 @@ module('Acceptance | User Settings', function(hooks) {
       await fillIn('#siteTitle', 'Documize Tests');
       await click('.button-blue');
 
-      let websiteTitle = find('.content .title').textContent.trim();
-      let websiteTitleInput = find('#siteTitle').value;
+      websiteTitle = find('.content .title').textContent.trim();
+      websiteTitleInput = find('#siteTitle').value;
       assert.equal(websiteTitleInput, websiteTitle, 'Website title is set to Documize Tests');
   });
 
@@ -81,7 +81,7 @@ module('Acceptance | User Settings', function(hooks) {
       await fillIn('#newUserEmail', 'test.user@domain.com');
       await click('.button-blue');
 
-      let numberOfUsers = findAll('.user-list tr').length;
+      numberOfUsers = findAll('.user-list tr').length;
       assert.equal(numberOfUsers, 4, '3 Users listed');
       assert.equal(currentURL(), '/settings/users');
   });

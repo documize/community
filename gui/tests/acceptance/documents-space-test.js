@@ -51,7 +51,7 @@ module('Acceptance | Documents space', function(hooks) {
 
       await click('a div:contains(My Project) .space-name');
 
-      let numberOfDocuments = findAll('.documents-list li').length;
+      numberOfDocuments = findAll('.documents-list li').length;
       assert.equal(numberOfDocuments, 3, '3 documents listed');
   });
 
@@ -117,7 +117,7 @@ module('Acceptance | Documents space', function(hooks) {
 
       await visit('/s/VzMygEw_3WrtFzto/test');
 
-      let numberOfPublicFolders = findAll('.folders-list div:contains(EVERYONE) .list a').length;
+      numberOfPublicFolders = findAll('.folders-list div:contains(EVERYONE) .list a').length;
       assert.equal(numberOfPublicFolders, 2, '2 folder listed as public');
       assert.equal(currentURL(), '/s/VzMygEw_3WrtFzto/test');
   });
@@ -147,12 +147,12 @@ module('Acceptance | Documents space', function(hooks) {
 
       await click('.documents-list li:first .checkbox');
 
-      let deleteButton = find('#delete-documents-button');
+      deleteButton = find('#delete-documents-button');
       assert.equal(deleteButton.length, 1, 'Delete button displayed after selecting document');
 
       await click('.actions div:contains(Delete) .flat-red');
 
-      let numberOfDocuments = find('.documents-list li');
+      numberOfDocuments = find('.documents-list li');
       assert.equal(numberOfDocuments.length, 1, '1 documents is displayed');
   });
 
