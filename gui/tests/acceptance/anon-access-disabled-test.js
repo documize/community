@@ -1,3 +1,4 @@
+import { currentURL, visit } from '@ember/test-helpers';
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
 // This software (Documize Community Edition) is licensed under
@@ -9,19 +10,19 @@
 //
 // https://documize.com
 
-import { test } from 'qunit';
-import moduleForAcceptance from 'documize/tests/helpers/module-for-acceptance';
+import { module, test } from 'qunit';
+import { setupApplicationTest } from 'ember-qunit';
 
-moduleForAcceptance('Acceptance | Anon access disabled');
+module('Acceptance | Anon access disabled', function(hooks) {
+  setupApplicationTest(hooks);
 
-test('visiting / when not authenticated and with { allowAnonymousAccess: false } takes user to login', function (assert) {
-	server.create('meta', { allowAnonymousAccess: false });
-	visit('/');
+  test('visiting / when not authenticated and with { allowAnonymousAccess: false } takes user to login', async function(assert) {
+      server.create('meta', { allowAnonymousAccess: false });
+      await visit('/');
 
-	andThen(function () {
-		assert.equal(currentURL(), '/auth/login');
-		findWithAssert('#authEmail');
-		findWithAssert('#authPassword');
-		findWithAssert('button');
-	});
+      assert.equal(currentURL(), '/auth/login');
+      findWithAssert('#authEmail');
+      findWithAssert('#authPassword');
+      findWithAssert('button');
+  });
 });

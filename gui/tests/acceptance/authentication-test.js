@@ -1,3 +1,4 @@
+import { click, fillIn, currentURL, visit } from '@ember/test-helpers';
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
 // This software (Documize Community Edition) is licensed under
@@ -9,50 +10,44 @@
 //
 // https://documize.com
 
-import { test } from 'qunit';
-import moduleForAcceptance from 'documize/tests/helpers/module-for-acceptance';
+import { module, test } from 'qunit';
+import { setupApplicationTest } from 'ember-qunit';
 
-moduleForAcceptance('Acceptance | Authentication');
+module('Acceptance | Authentication', function(hooks) {
+  setupApplicationTest(hooks);
 
-test('visiting /auth/login and logging in', function (assert) {
-	server.create('meta', { allowAnonymousAccess: false });
-	visit('/auth/login');
+  test('visiting /auth/login and logging in', async function(assert) {
+      server.create('meta', { allowAnonymousAccess: false });
+      await visit('/auth/login');
 
-	fillIn('#authEmail', 'brizdigital@gmail.com');
-	fillIn('#authPassword', 'zinyando123');
-	click('button');
+      await fillIn('#authEmail', 'brizdigital@gmail.com');
+      await fillIn('#authPassword', 'zinyando123');
+      await click('button');
 
-	andThen(function () {
-		assert.equal(currentURL(), '/s/VzMuyEw_3WqiafcG/my-project', 'Login successful');
-	});
-});
+      assert.equal(currentURL(), '/s/VzMuyEw_3WqiafcG/my-project', 'Login successful');
+  });
 
-test('logging out a user', function (assert) {
-	server.create('meta', { allowAnonymousAccess: false });
-	userLogin();
-	click('.dropdown-menu a:contains(Logout)');
+  test('logging out a user', async function(assert) {
+      server.create('meta', { allowAnonymousAccess: false });
+      userLogin();
+      await click('.dropdown-menu a:contains(Logout)');
 
-	andThen(function () {
-		assert.equal(currentURL(), '/auth/login', 'Logging out successful');
-	});
-});
+      assert.equal(currentURL(), '/auth/login', 'Logging out successful');
+  });
 
-test('successful sso login authenticates redirects to dashboard', function (assert) {
-	server.create('meta', { allowAnonymousAccess: false });
+  test('successful sso login authenticates redirects to dashboard', async function(assert) {
+      server.create('meta', { allowAnonymousAccess: false });
 
-	visit('/auth/sso/OmJyaXpkaWdpdGFsQGdtYWlsLmNvbTp6aW55YW5kbzEyMw==');
+      await visit('/auth/sso/OmJyaXpkaWdpdGFsQGdtYWlsLmNvbTp6aW55YW5kbzEyMw==');
 
-	andThen(function () {
-		assert.equal(currentURL(), '/s/VzMuyEw_3WqiafcG/my-project', 'SSO login successful');
-	});
-});
+      assert.equal(currentURL(), '/s/VzMuyEw_3WqiafcG/my-project', 'SSO login successful');
+  });
 
-test('sso login with bad token should redirect to login', function (assert) {
-	server.create('meta', { allowAnonymousAccess: false });
+  test('sso login with bad token should redirect to login', async function(assert) {
+      server.create('meta', { allowAnonymousAccess: false });
 
-	visit('/auth/sso/randomToken1234567890');
+      await visit('/auth/sso/randomToken1234567890');
 
-	andThen(function () {
-		assert.equal(currentURL(), '/auth/login', 'SSO login unsuccessful');
-	});
+      assert.equal(currentURL(), '/auth/login', 'SSO login unsuccessful');
+  });
 });
