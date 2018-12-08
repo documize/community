@@ -1,4 +1,4 @@
-<div id="page-{{page.id}}" data-id="{{page.id}}" data-type="{{page.contentType}}">
+<div id="page-{{page.id}}" data-id={{page.id}} data-type={{page.contentType}}>
 
 	{{#if editMode}}
 
@@ -8,8 +8,8 @@
 				folder=folder
 				page=editPage
 				meta=editMeta
-				onCancel=(action 'onCancelEdit')
-				onAction=(action 'onSavePage')}}
+				onCancel=(action "onCancelEdit")
+				onAction=(action "onSavePage")}}
 		</div>
 
 	{{else}}
@@ -25,12 +25,12 @@
 			pending=pending
 			document=document
 			permissions=permissions
-			onEdit=(action 'onEdit')
+			onEdit=(action "onEdit")
 			refresh=(action refresh)
-			onCopyPage=(action 'onCopyPage')
-			onMovePage=(action 'onMovePage')
-			onDeletePage=(action 'onDeletePage')
-			onSavePageAsBlock=(action 'onSavePageAsBlock')
+			onCopyPage=(action "onCopyPage")
+			onMovePage=(action "onMovePage")
+			onDeletePage=(action "onDeletePage")
+			onSavePageAsBlock=(action "onSavePageAsBlock")
 			onPageLevelChange=(action onPageLevelChange)
 			onPageSequenceChange=(action onPageSequenceChange)}}
 

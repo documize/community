@@ -1,11 +1,11 @@
 {{#layout/top-bar}}
 	<li class="item">
-		{{#link-to "folder.index" folder.id folder.slug class='link'}}
+		{{#link-to "folder.index" folder.id folder.slug class="link"}}
 			{{folder.name}}
 		{{/link-to}}
 	</li>
 	<li class="item">
-		{{#link-to 'document.index' folder.id folder.slug document.id document.slug class="link selected"}}
+		{{#link-to "document.index" folder.id folder.slug document.id document.slug class="link selected"}}
 			{{document.name}}
 		{{/link-to}}
 	</li>
@@ -23,24 +23,24 @@
 			document=document
 			versions=versions
 			permissions=permissions
-			refresh=(action 'refresh')
-			onSaveTemplate=(action 'onSaveTemplate')
-			onSaveDocument=(action 'onSaveDocument')
-			onDocumentDelete=(action 'onDocumentDelete')}}
+			refresh=(action "refresh")
+			onSaveTemplate=(action "onSaveTemplate")
+			onSaveDocument=(action "onSaveDocument")
+			onDocumentDelete=(action "onDocumentDelete")}}
 
 		<div class="text-center non-printable document-tabnav">
 			<ul class="tabnav-control">
-				<li class="tab {{if (eq tab 'content') 'selected'}}" {{action 'onTabChange' 'content'}}>Content</li>
+				<li class="tab {{if (eq tab "content") "selected"}}" {{action "onTabChange" "content"}}>Content</li>
 				{{#if session.authenticated}}
 					{{#if showRevisions}}
-						<li class="tab {{if (eq tab 'revision') 'selected'}}" {{action 'onTabChange' 'revision'}}>Revisions</li>
+						<li class="tab {{if (eq tab "revision") "selected"}}" {{action "onTabChange" "revision"}}>Revisions</li>
 					{{/if}}
 				{{/if}}
 			</ul>
 		</div>
 
 		<div class="view-document">
-			<div class="document-heading {{if permissions.documentEdit 'cursor-pointer' ''}}" {{action 'onEditMeta'}}>
+			<div class="document-heading {{if permissions.documentEdit "cursor-pointer"}}" {{action "onEditMeta"}}>
 				<h1 class="doc-title">
 					{{#if document.template}}
 						<span class="bg-warning p-1 pr-2 pl-2">Template</span>&nbsp;&nbsp;
@@ -58,9 +58,9 @@
 			document=document
 			versions=versions
 			permissions=permissions
-			onSaveDocument=(action 'onSaveDocument')}}
+			onSaveDocument=(action "onSaveDocument")}}
 
-		{{#if (eq tab 'content')}}
+		{{#if (eq tab "content")}}
 			{{document/view-content
 				roles=roles
 				links=links
@@ -72,25 +72,25 @@
 				document=document
 				permissions=permissions
 				currentPageId=currentPageId
-				refresh=(action 'refresh')
-				onSavePage=(action 'onSavePage')
-				onCopyPage=(action 'onCopyPage')
-				onMovePage=(action 'onMovePage')
-				onDeletePage=(action 'onPageDeleted')
-				onInsertSection=(action 'onInsertSection')
-				onSavePageAsBlock=(action 'onSavePageAsBlock')
-				onPageLevelChange=(action 'onPageLevelChange')
-				onPageSequenceChange=(action 'onPageSequenceChange')}}
+				refresh=(action "refresh")
+				onSavePage=(action "onSavePage")
+				onCopyPage=(action "onCopyPage")
+				onMovePage=(action "onMovePage")
+				onDeletePage=(action "onPageDeleted")
+				onInsertSection=(action "onInsertSection")
+				onSavePageAsBlock=(action "onSavePageAsBlock")
+				onPageLevelChange=(action "onPageLevelChange")
+				onPageSequenceChange=(action "onPageSequenceChange")}}
 		{{/if}}
 
-		{{#if (eq tab 'revision')}}
+		{{#if (eq tab "revision")}}
 			{{#if showRevisions}}
 				{{document/view-revision
 					pages=pages
 					folder=folder
 					document=document
 					permissions=permissions
-					onRollback=(action 'onRollback')}}
+					onRollback=(action "onRollback")}}
 			{{/if}}
 		{{/if}}
 
@@ -107,9 +107,9 @@
 			document=document
 			permissions=permissions
 			currentPageId=currentPageId
-			onShowPage=(action 'onShowPage')
-			onPageLevelChange=(action 'onPageLevelChange')
-			onPageSequenceChange=(action 'onPageSequenceChange')}}
+			onShowPage=(action "onShowPage")
+			onPageLevelChange=(action "onPageLevelChange")
+			onPageSequenceChange=(action "onPageSequenceChange")}}
 
 	{{/layout/middle-zone-sidebar}}
 

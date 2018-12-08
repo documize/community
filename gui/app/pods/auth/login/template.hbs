@@ -2,10 +2,10 @@
 	{{#if model.showLogin}}
 		<div class="auth-box">
 			<div class="logo">
-				<img src="/assets/img/logo-purple.png" title="Documize" alt="Documize" class="img-fluid" />
+				<img src="/assets/img/logo-purple.png" title="Documize" alt="Documize" class="img-fluid">
 				<div class="url">{{appMeta.appHost}}</div>
 			</div>
-			<form {{action 'login' on="submit"}}>
+			<form {{action "login" on="submit"}}>
 				<div class="form-group">
 					{{#if isAuthProviderDocumize}}
 						<label for="authEmail">Email</label>
@@ -29,7 +29,7 @@
 				<button type="submit" class="btn btn-success font-weight-bold text-uppercase mt-4">Sign in</button>
 				<div class="{{unless invalidCredentials "invisible"}} color-red-600 mt-3">Invalid credentials</div>
 				{{#if isAuthProviderDocumize}}
-					{{#link-to 'auth.forgot'}}Forgot your password?{{/link-to}}
+					{{#link-to "auth.forgot"}}Forgot your password?{{/link-to}}
 				{{/if}}
 			</form>
 		</div>

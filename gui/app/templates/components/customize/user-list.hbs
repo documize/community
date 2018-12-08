@@ -3,14 +3,14 @@
 		{{#if syncInProgress}}
 			<div class="btn btn-secondary mt-3 mb-3">Keycloak user sync running...</div>
 		{{else}}
-			<div class="btn btn-success mt-3 mb-3" {{action 'onSyncKeycloak'}}>Sync with Keycloak</div>
+			<div class="btn btn-success mt-3 mb-3" {{action "onSyncKeycloak"}}>Sync with Keycloak</div>
 		{{/if}}
 	{{/if}}
 	{{#if isAuthProviderLDAP}}
 		{{#if syncInProgress}}
 			<div class="btn btn-secondary mt-3 mb-3">LDAP user sync running...</div>
 		{{else}}
-			<div class="btn btn-success mt-3 mb-3" {{action 'onSyncLDAP'}}>Sync with LDAP</div>
+			<div class="btn btn-success mt-3 mb-3" {{action "onSyncLDAP"}}>Sync with LDAP</div>
 		{{/if}}
 	{{/if}}
 
@@ -43,32 +43,32 @@
 	<div class="max-results py-3">
 		<div class="btn-group btn-group-toggle">
 			{{#attach-tooltip showDelay=1000}}Number of users to display{{/attach-tooltip}}
-			<label class="btn btn-outline-secondary {{if (eq userLimit 1) 'active'}}">
-				<input type="radio" name="options" autocomplete="off" {{action 'onLimit' 1}}>1
+			<label class="btn btn-outline-secondary {{if (eq userLimit 1) "active"}}">
+				<input type="radio" name="options" autocomplete="off" {{action "onLimit" 1}}>1
 			</label>
-			<label class="btn btn-outline-secondary {{if (eq userLimit 10) 'active'}}">
-				<input type="radio" name="options" autocomplete="off" {{action 'onLimit' 10}}>10
+			<label class="btn btn-outline-secondary {{if (eq userLimit 10) "active"}}">
+				<input type="radio" name="options" autocomplete="off" {{action "onLimit" 10}}>10
 			</label>
-			<label class="btn btn-outline-secondary {{if (eq userLimit 25) 'active'}}">
-				<input type="radio" name="options" autocomplete="off" {{action 'onLimit' 25}}>25
+			<label class="btn btn-outline-secondary {{if (eq userLimit 25) "active"}}">
+				<input type="radio" name="options" autocomplete="off" {{action "onLimit" 25}}>25
 			</label>
-			<label class="btn btn-outline-secondary {{if (eq userLimit 50) 'active'}}">
-				<input type="radio" name="options" autocomplete="off" {{action 'onLimit' 50}}>50
+			<label class="btn btn-outline-secondary {{if (eq userLimit 50) "active"}}">
+				<input type="radio" name="options" autocomplete="off" {{action "onLimit" 50}}>50
 			</label>
-			<label class="btn btn-outline-secondary {{if (eq userLimit 100) 'active'}}">
-				<input type="radio" name="options" autocomplete="off" {{action 'onLimit' 100}}>100
+			<label class="btn btn-outline-secondary {{if (eq userLimit 100) "active"}}">
+				<input type="radio" name="options" autocomplete="off" {{action "onLimit" 100}}>100
 			</label>
-			<label class="btn btn-outline-secondary {{if (eq userLimit 250) 'active'}}">
-				<input type="radio" name="options" autocomplete="off" {{action 'onLimit' 250}}>250
+			<label class="btn btn-outline-secondary {{if (eq userLimit 250) "active"}}">
+				<input type="radio" name="options" autocomplete="off" {{action "onLimit" 250}}>250
 			</label>
-			<label class="btn btn-outline-secondary {{if (eq userLimit 500) 'active'}}">
-				<input type="radio" name="options" autocomplete="off" {{action 'onLimit' 500}}>500
+			<label class="btn btn-outline-secondary {{if (eq userLimit 500) "active"}}">
+				<input type="radio" name="options" autocomplete="off" {{action "onLimit" 500}}>500
 			</label>
-			<label class="btn btn-outline-secondary {{if (eq userLimit 1000) 'active'}}">
-				<input type="radio" name="options" autocomplete="off" {{action 'onLimit' 1000}}>1,000
+			<label class="btn btn-outline-secondary {{if (eq userLimit 1000) "active"}}">
+				<input type="radio" name="options" autocomplete="off" {{action "onLimit" 1000}}>1,000
 			</label>
-			<label class="btn btn-outline-secondary {{if (eq userLimit 99999) 'active'}}">
-				<input type="radio" name="options" autocomplete="off" {{action 'onLimit' 99999}}>all
+			<label class="btn btn-outline-secondary {{if (eq userLimit 99999) "active"}}">
+				<input type="radio" name="options" autocomplete="off" {{action "onLimit" 99999}}>all
 			</label>
 		</div>
 	</div>
@@ -93,14 +93,14 @@
 		<tbody>
 			{{#each users key="id" as |user|}}
 				<tr>
-					<td class="{{unless user.active 'inactive-user'}} {{if user.admin 'admin-user'}}">
+					<td class="{{unless user.active "inactive-user"}} {{if user.admin "admin-user"}}">
 						<div class="d-inline-block align-top">
 							{{#if user.me}}
 								<i class="material-icons color-gray-700">check_box_outline_blank</i>
 							{{else if user.selected}}
-								<i class="material-icons checkbox" {{action 'toggleSelect' user}}>check_box</i>
+								<i class="material-icons checkbox" {{action "toggleSelect" user}}>check_box</i>
 							{{else}}
-								<i class="material-icons checkbox" {{action 'toggleSelect' user}}>check_box_outline_blank</i>
+								<i class="material-icons checkbox" {{action "toggleSelect" user}}>check_box_outline_blank</i>
 							{{/if}}
 						</div>
 						<div class="d-inline-block">
@@ -118,41 +118,41 @@
 					</td>
 					<td class="no-width text-center">
 						{{#if user.editor}}
-							<i class="material-icons checkbox" {{action 'toggleEditor' user.id}}>check_box</i>
+							<i class="material-icons checkbox" {{action "toggleEditor" user.id}}>check_box</i>
 						{{else}}
-							<i class="material-icons checkbox" {{action 'toggleEditor' user.id}}>check_box_outline_blank</i>
+							<i class="material-icons checkbox" {{action "toggleEditor" user.id}}>check_box_outline_blank</i>
 						{{/if}}
 					</td>
 					<td class="no-width text-center">
 						{{#if user.viewUsers}}
-							<i class="material-icons checkbox" {{action 'toggleUsers' user.id}}>check_box</i>
+							<i class="material-icons checkbox" {{action "toggleUsers" user.id}}>check_box</i>
 						{{else}}
-							<i class="material-icons checkbox" {{action 'toggleUsers' user.id}}>check_box_outline_blank</i>
+							<i class="material-icons checkbox" {{action "toggleUsers" user.id}}>check_box_outline_blank</i>
 						{{/if}}
 					</td>
 					<td class="no-width text-center">
 						{{#if user.me}}
 							<i class="material-icons color-gray-700">check_box</i>
 						{{else if user.admin}}
-							<i class="material-icons checkbox" {{action 'toggleAdmin' user.id}}>check_box</i>
+							<i class="material-icons checkbox" {{action "toggleAdmin" user.id}}>check_box</i>
 						{{else}}
-							<i class="material-icons checkbox" {{action 'toggleAdmin' user.id}}>check_box_outline_blank</i>
+							<i class="material-icons checkbox" {{action "toggleAdmin" user.id}}>check_box_outline_blank</i>
 						{{/if}}
 					</td>
 					<td class="no-width text-center">
 						{{#if user.analytics}}
-							<i class="material-icons checkbox" {{action 'toggleAnalytics' user.id}}>check_box</i>
+							<i class="material-icons checkbox" {{action "toggleAnalytics" user.id}}>check_box</i>
 						{{else}}
-							<i class="material-icons checkbox" {{action 'toggleAnalytics' user.id}}>check_box_outline_blank</i>
+							<i class="material-icons checkbox" {{action "toggleAnalytics" user.id}}>check_box_outline_blank</i>
 						{{/if}}
 					</td>
 					<td class="no-width text-center">
 						{{#if user.me}}
 							<i class="material-icons color-gray-700">check_box</i>
 						{{else if user.active}}
-							<i class="material-icons checkbox" {{action 'toggleActive' user.id}}>check_box</i>
+							<i class="material-icons checkbox" {{action "toggleActive" user.id}}>check_box</i>
 						{{else}}
-							<i class="material-icons checkbox" {{action 'toggleActive' user.id}}>check_box_outline_blank</i>
+							<i class="material-icons checkbox" {{action "toggleActive" user.id}}>check_box_outline_blank</i>
 						{{/if}}
 					</td>
 					<td class="no-width text-center">
@@ -214,13 +214,13 @@
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-				<button type="button" class="btn btn-success" onclick={{action 'onUpdate'}}>Save</button>
+				<button type="button" class="btn btn-success" onclick={{action "onUpdate"}}>Save</button>
 			</div>
 		</div>
 	</div>
 </div>
 
-{{#ui/ui-dialog title="Delete User" confirmCaption="Delete" buttonType="btn-danger" show=showDeleteDialog onAction=(action 'onDelete')}}
+{{#ui/ui-dialog title="Delete User" confirmCaption="Delete" buttonType="btn-danger" show=showDeleteDialog onAction=(action "onDelete")}}
 	<p>Are you sure you want to delete {{deleteUser.fullname}}?</p>
 {{/ui/ui-dialog}}
 
@@ -233,7 +233,7 @@
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-				<button type="button" class="btn btn-success" onclick={{action 'onBulkDelete'}}>Delete</button>
+				<button type="button" class="btn btn-success" onclick={{action "onBulkDelete"}}>Delete</button>
 			</div>
 		</div>
 	</div>
@@ -255,9 +255,9 @@
 								</div>
 								<div class="col-2 text-right">
 									{{#if group.isMember}}
-										<button class="btn btn-danger" {{action 'onLeaveGroup' group.id}}>Leave</button>
+										<button class="btn btn-danger" {{action "onLeaveGroup" group.id}}>Leave</button>
 									{{else}}
-										<button class="btn btn-success" {{action 'onJoinGroup' group.id}}>Join</button>
+										<button class="btn btn-success" {{action "onJoinGroup" group.id}}>Join</button>
 									{{/if}}
 								</div>
 							</div>

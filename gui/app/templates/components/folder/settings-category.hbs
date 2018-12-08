@@ -1,11 +1,11 @@
 <div class="content-zone">
 
 	<div class="explainer-header explainer-gap">Categories</div>
-	<form class="form-inline" onsubmit={{action 'onAdd'}}>
+	<form class="form-inline" onsubmit={{action "onAdd"}}>
 		<div class="form-group mr-3">
-			{{focus-input id="new-category-name" type='text' class="form-control mousetrap" placeholder="Category name" value=newCategory}}
+			{{focus-input id="new-category-name" type="text" class="form-control mousetrap" placeholder="Category name" value=newCategory}}
 		</div>
-		<button type="button" class="btn btn-success font-weight-bold" onclick={{action 'onAdd'}}>Add</button>
+		<button type="button" class="btn btn-success font-weight-bold" onclick={{action "onAdd"}}>Add</button>
 	</form>
 
 	<div class="space-admin">
@@ -13,34 +13,34 @@
 			{{#each category as |cat|}}
 				<div class="item row">
 					{{#if cat.editMode}}
-						<form onsubmit={{action 'onSave' cat.id bubbles=false}} class="col-8">
-							{{focus-input id=(concat 'edit-category-' cat.id) type="text" value=cat.category class="form-control"}}
+						<form onsubmit={{action "onSave" cat.id bubbles=false}} class="col-8">
+							{{focus-input id=(concat "edit-category-" cat.id) type="text" value=cat.category class="form-control"}}
 						</form>
 					{{else}}
 						<div class="category col-8">
 							<div class="name">{{cat.category}}</div>
 							<div class="info">
-								{{cat.documents}} {{if (eq cat.documents 1) 'document' 'documents' }} &middot; {{cat.users}} users/groups
+								{{cat.documents}} {{if (eq cat.documents 1) "document" "documents" }} &middot; {{cat.users}} users/groups
 								{{#unless cat.access}}<span class="text-danger">(you have no view permission)</span>{{/unless}}
 							</div>
 						</div>
 					{{/if}}
 					<div class="col-4 buttons text-right">
 						{{#if cat.editMode}}
-							<button type="button" class="btn btn-outline-secondary" {{action 'onEditCancel' cat.id}}>Cancel</button>
-							<button type="button" class="btn btn-success"  {{action 'onSave' cat.id}}>Save</button>
+							<button type="button" class="btn btn-outline-secondary" {{action "onEditCancel" cat.id}}>Cancel</button>
+							<button type="button" class="btn btn-success"  {{action "onSave" cat.id}}>Save</button>
 						{{else}}
-							<div id="category-access-button-{{cat.id}}" class="button-icon-gray align-middle" {{action 'onShowAccessPicker' cat.id}}>
+							<div id="category-access-button-{{cat.id}}" class="button-icon-gray align-middle" {{action "onShowAccessPicker" cat.id}}>
 								{{#attach-tooltip showDelay=1000}}Category view permission{{/attach-tooltip}}
 								<i class="material-icons">security</i>
 							</div>
 							<div class="button-icon-gap" />
-							<div class="button-icon-gray align-middle" {{action 'onEdit' cat.id}} >
+							<div class="button-icon-gray align-middle" {{action "onEdit" cat.id}} >
 								{{#attach-tooltip showDelay=1000}}Rename{{/attach-tooltip}}
 								<i class="material-icons">edit</i>
 							</div>
 							<div class="button-icon-gap" />
-							<div id="{{concat 'delete-category-' cat.id}}" class="button-icon-danger align-middle" {{action 'onShowDelete' cat.id}}>
+							<div id={{concat "delete-category-" cat.id}} class="button-icon-danger align-middle" {{action "onShowDelete" cat.id}}>
 								{{#attach-tooltip showDelay=1000}}Delete{{/attach-tooltip}}
 								<i class="material-icons">delete</i>
 							</div>
@@ -62,19 +62,19 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-					<button type="button" class="btn btn-danger" onclick={{action 'onDelete'}}>Delete</button>
+					<button type="button" class="btn btn-danger" onclick={{action "onDelete"}}>Delete</button>
 				</div>
 			</div>
 		</div>
 	</div>
 
-	{{#ui/ui-dialog title="Set Category Access" confirmCaption="Save" buttonType="btn-success" show=showCategoryAccess onAction=(action 'onGrantAccess')}}
+	{{#ui/ui-dialog title="Set Category Access" confirmCaption="Save" buttonType="btn-success" show=showCategoryAccess onAction=(action "onGrantAccess")}}
 		<p>Select who can view documents within category</p>
 
 		<div class="widget-list-picker">
 			<ul class="options">
 				{{#each categoryPermissions as |permission|}}
-					<li class="option {{if permission.selected 'selected'}}" {{action 'onToggle' permission}}>
+					<li class="option {{if permission.selected "selected"}}" {{action "onToggle" permission}}>
 						<div class="text text-truncate">
 							{{#if (eq permission.who "role")}}
 								<span class="button-icon-gray button-icon-small align-middle">

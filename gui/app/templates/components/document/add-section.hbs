@@ -11,7 +11,7 @@
 							<div class="col-12">
 								<div class="form-group">
 									{{focus-input type="text" id="new-section-name" value=newSectionName
-										class=(if newSectionNameMissing 'mousetrap form-control form-control-lg	is-invalid' 'mousetrap form-control form-control-lg')
+										class=(if newSectionNameMissing "mousetrap form-control form-control-lg	is-invalid" "mousetrap form-control form-control-lg")
 										placeholder="Enter section name" autocomplete="off"}}
 								</div>
 							</div>
@@ -23,11 +23,11 @@
 									<div class="new-section-caption">Select Section Type</div>
 									<ul class="preset-list">
 										{{#each sections as |section|}}
-										<li class="item" {{action 'onInsertSection' section}}>
+										<li class="item" {{action "onInsertSection" section}}>
 											<div class="icon">
-												<img class="img" src="/sections/{{section.contentType}}.png" srcset="/sections/{{section.contentType}}@2x.png" />
+												<img class="img" src="/sections/{{section.contentType}}.png" srcset="/sections/{{section.contentType}}@2x.png">
 											</div>
-											<div class='title'>{{section.title}}</div>
+											<div class="title">{{section.title}}</div>
 										</li>
 										{{/each}}
 									</ul>
@@ -40,7 +40,7 @@
 										{{#each blocks as |block|}}
 											<li class="item">
 												{{#attach-tooltip showDelay=1000}}Published by {{block.firstname}} {{block.lastname}}, {{time-ago block.created}} &mdash; used {{ block.used }} times{{/attach-tooltip}}
-												<div class="details" {{action 'onInsertBlock' block}}>
+												<div class="details" {{action "onInsertBlock" block}}>
 													<div class="title text-truncate">{{block.title}}</div>
 													<div class="desc text-truncate">{{block.excerpt}}</div>
 												</div>

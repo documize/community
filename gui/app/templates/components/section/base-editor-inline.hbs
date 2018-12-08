@@ -3,36 +3,36 @@
 		<div class="col-8 section-editor">
             {{#if blockMode}}
                 <div class="form-group">
-                    {{focus-input id="page-id-{{pageId}}" value=pageTitle class=(if hasNameError 'form-control mousetrap form-control-lg edit-title is-invalid' 'form-control form-control-lg edit-title mousetrap') placeholder="Enter name"}}
+                    {{focus-input id="page-id-{{pageId}}" value=pageTitle class=(if hasNameError "form-control mousetrap form-control-lg edit-title is-invalid" "form-control form-control-lg edit-title mousetrap") placeholder="Enter name"}}
                 </div>
                 <div class="form-group">
-                    {{textarea id="page-excerpt-{{pageId}}" value=page.excerpt rows="2" class=(if hasDescError 'form-control mousetrap form-control-lg edit-title is-invalid' 'form-control form-control-lg edit-title mousetrap') placeholder="Enter description"}}
+                    {{textarea id="page-excerpt-{{pageId}}" value=page.excerpt rows="2" class=(if hasDescError "form-control mousetrap form-control-lg edit-title is-invalid" "form-control form-control-lg edit-title mousetrap") placeholder="Enter description"}}
                 </div>
             {{else}}
                 <div class="form-group">
-                    {{focus-input type="text" id=pageId value=pageTitle class=(if hasNameError 'form-control mousetrap form-control-lg edit-title is-invalid' 'form-control form-control-lg edit-title mousetrap') placeholder="Enter name"}}
+                    {{focus-input type="text" id=pageId value=pageTitle class=(if hasNameError "form-control mousetrap form-control-lg edit-title is-invalid" "form-control form-control-lg edit-title mousetrap") placeholder="Enter name"}}
                 </div>
             {{/if}}
         </div>
 		<div class="col-4">
 			<div class="float-right">
 				{{#if busy}}
-					<img src="/assets/img/busy-gray.gif" class="busy-indicator" />
+					<img src="/assets/img/busy-gray.gif" class="busy-indicator">
 				{{/if}}
 
 				{{#if contentLinkerButton}}
-					<div class="btn btn-primary" id="section-editor-link-button-{{pageId}}" {{action 'onShowLinkModal'}}>
+					<div class="btn btn-primary" id="section-editor-link-button-{{pageId}}" {{action "onShowLinkModal"}}>
 						Link
 						{{#attach-tooltip showDelay=1000}}Insert Link{{/attach-tooltip}}
 					</div>
 				{{/if}}
 
 				{{#if previewButton}}
-                    <div class="btn btn-primary" id="section-editor-preview-button-{{pageId}}" {{action 'onPreview'}}>{{previewText}}</div>
+                    <div class="btn btn-primary" id="section-editor-preview-button-{{pageId}}" {{action "onPreview"}}>{{previewText}}</div>
 				{{/if}}
 
-				<div class="btn btn-success" {{action 'onAction'}}>Save</div>
-				<div class="btn btn-outline-secondary" id="section-editor-cancel-button-{{pageId}}" {{action 'onCancel'}}>Cancel</div>
+				<div class="btn btn-success" {{action "onAction"}}>Save</div>
+				<div class="btn btn-outline-secondary" id="section-editor-cancel-button-{{pageId}}" {{action "onCancel"}}>Cancel</div>
 			</div>
         </div>
     </div>
@@ -54,10 +54,10 @@
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Continue editing</button>
-				<button type="button" class="btn btn-danger" onclick={{action 'onDiscard'}}>Discard changes</button>
+				<button type="button" class="btn btn-danger" onclick={{action "onDiscard"}}>Discard changes</button>
 			</div>
 		</div>
 	</div>
 </div>
 
-{{document/content-linker document=document folder=folder page=page showModal=showLinkModal onInsertLink=(action 'onInsertLink')}}
+{{document/content-linker document=document folder=folder page=page showModal=showLinkModal onInsertLink=(action "onInsertLink")}}

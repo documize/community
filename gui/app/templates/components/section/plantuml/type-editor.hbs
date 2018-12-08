@@ -1,4 +1,4 @@
-{{#section/base-editor document=document folder=folder page=page busy=waiting tip="Concise name that describes the diagram" isDirty=(action 'isDirty') onCancel=(action 'onCancel') onAction=(action 'onAction')}}
+{{#section/base-editor document=document folder=folder page=page busy=waiting tip="Concise name that describes the diagram" isDirty=(action "isDirty") onCancel=(action "onCancel") onAction=(action "onAction")}}
 	<div class="section-plantuml-diagram">
 		<div class="container">
 			<div class="row">
@@ -8,13 +8,13 @@
 						<div class="my-3">
 							<p>Insert sample diagrams:</p>
 							<p>
-								<button type="button" class="btn btn-light" {{action 'onInsertSequence'}}>Sequence</button>
-								<button type="button" class="btn btn-light" {{action 'onInsertUseCase'}}>Use Case</button>
-								<button type="button" class="btn btn-light" {{action 'onInsertClass'}}>Class</button>
-								<button type="button" class="btn btn-light" {{action 'onInsertActivity'}}>Activity</button>
-								<button type="button" class="btn btn-light" {{action 'onInsertActivityNew'}}>Activity (new syntax)</button>
-								<button type="button" class="btn btn-light" {{action 'onInsertComponent'}}>Component</button>
-								<button type="button" class="btn btn-light" {{action 'onInsertState'}}>State</button>
+								<button type="button" class="btn btn-light" {{action "onInsertSequence"}}>Sequence</button>
+								<button type="button" class="btn btn-light" {{action "onInsertUseCase"}}>Use Case</button>
+								<button type="button" class="btn btn-light" {{action "onInsertClass"}}>Class</button>
+								<button type="button" class="btn btn-light" {{action "onInsertActivity"}}>Activity</button>
+								<button type="button" class="btn btn-light" {{action "onInsertActivityNew"}}>Activity (new syntax)</button>
+								<button type="button" class="btn btn-light" {{action "onInsertComponent"}}>Component</button>
+								<button type="button" class="btn btn-light" {{action "onInsertState"}}>State</button>
 							</p>
 						</div>
 						{{focus-textarea value=diagramText rows=30 id=editorId class="diagram-editor form-control mousetrap"}}
@@ -24,9 +24,9 @@
 			<div class="row">
 				<div class="col-12">
 					<div class="form-group">
-						<button type="button" class="btn btn-secondary" {{action 'onPreview'}}>{{previewButtonCaption}}</button>
+						<button type="button" class="btn btn-secondary" {{action "onPreview"}}>{{previewButtonCaption}}</button>
 						<div id={{previewId}} class="text-center my-5">
-							<img src="{{diagramPreview}}" />
+							<img src={{diagramPreview}}>
 						</div>
 					</div>
 				</div>

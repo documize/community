@@ -12,44 +12,44 @@
 			<p>Configure authentication, SMTP, licensing and manage user accounts</p>
 
 			<ul class="tabnav-control tabnav-control-centered w-75">
-				{{#link-to 'customize.general' activeClass='selected' class="tab tab-vertical" tagName="li" }}General{{/link-to}}
-				{{#link-to 'customize.integrations' activeClass='selected' class="tab tab-vertical" tagName="li" }}Integrations{{/link-to}}
+				{{#link-to "customize.general" activeClass="selected" class="tab tab-vertical" tagName="li"}}General{{/link-to}}
+				{{#link-to "customize.integrations" activeClass="selected" class="tab tab-vertical" tagName="li"}}Integrations{{/link-to}}
 				{{#if session.isGlobalAdmin}}
-					{{#link-to 'customize.smtp' activeClass='selected' class="tab tab-vertical" tagName="li" }}Mail{{/link-to}}
+					{{#link-to "customize.smtp" activeClass="selected" class="tab tab-vertical" tagName="li"}}Mail{{/link-to}}
 				{{/if}}
 			</ul>
 
 			<div class="mt-4" />
 			<ul class="tabnav-control tabnav-control-centered w-75">
-				{{#link-to 'customize.groups' activeClass='selected' class="tab tab-vertical" tagName="li" }}Groups{{/link-to}}
-				{{#link-to 'customize.users' activeClass='selected' class="tab tab-vertical" tagName="li" }}Users{{/link-to}}
+				{{#link-to "customize.groups" activeClass="selected" class="tab tab-vertical" tagName="li"}}Groups{{/link-to}}
+				{{#link-to "customize.users" activeClass="selected" class="tab tab-vertical" tagName="li"}}Users{{/link-to}}
 				{{#if session.isGlobalAdmin}}
-					{{#link-to 'customize.auth' activeClass='selected' class="tab tab-vertical" tagName="li" }}Authentication{{/link-to}}
+					{{#link-to "customize.auth" activeClass="selected" class="tab tab-vertical" tagName="li"}}Authentication{{/link-to}}
 				{{/if}}
 			</ul>
 
 			<div class="mt-4" />
 			<ul class="tabnav-control tabnav-control-centered w-75">
-				{{#link-to 'customize.folders' activeClass='selected' class="tab tab-vertical" tagName="li" }}Spaces{{/link-to}}
+				{{#link-to "customize.folders" activeClass="selected" class="tab tab-vertical" tagName="li"}}Spaces{{/link-to}}
 				{{#if session.isGlobalAdmin}}
-					{{#link-to 'customize.search' activeClass='selected' class="tab tab-vertical" tagName="li" }}Search{{/link-to}}
+					{{#link-to "customize.search" activeClass="selected" class="tab tab-vertical" tagName="li"}}Search{{/link-to}}
 					{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
-						{{#link-to 'customize.audit' activeClass='selected' class="tab tab-vertical" tagName="li" }}Audit{{/link-to}}
+						{{#link-to "customize.audit" activeClass="selected" class="tab tab-vertical" tagName="li"}}Audit{{/link-to}}
 					{{/if}}
 				{{/if}}
 			</ul>
 
 			<div class="mt-4" />
 			<ul class="tabnav-control tabnav-control-centered w-75">
-				{{#link-to 'customize.backup' activeClass='selected' class="tab tab-vertical" tagName="li" }}Backup // Restore{{/link-to}}
+				{{#link-to "customize.backup" activeClass="selected" class="tab tab-vertical" tagName="li"}}Backup // Restore{{/link-to}}
 			</ul>
 
 			<div class="mt-4" />
 			<ul class="tabnav-control tabnav-control-centered w-75">
 				{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
-					{{#link-to 'customize.billing' activeClass='selected' class="tab tab-vertical" tagName="li" }}Billing{{/link-to}}
+					{{#link-to "customize.billing" activeClass="selected" class="tab tab-vertical" tagName="li"}}Billing{{/link-to}}
 				{{/if}}
-				{{#link-to 'customize.product' activeClass='selected' class="tab tab-vertical" tagName="li" }}Changelog{{/link-to}}
+				{{#link-to "customize.product" activeClass="selected" class="tab tab-vertical" tagName="li"}}Changelog{{/link-to}}
 			</ul>
 		</div>
 	{{/layout/middle-zone-sidebar}}

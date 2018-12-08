@@ -5,12 +5,14 @@ module.exports = {
   rules: {
 	  	'attribute-indentation': false,
 	  	'block-indentation': false,
-	  	'no-nested-interactive': false,
+		'img-alt-attributes': false,
 		'link-rel-noopener': false,
+		'no-inline-styles': false,
+		'no-invalid-interactive': false,
+		'no-nested-interactive': false,
 		'no-triple-curlies': false,
 		'style-concatenation': false,
-		'no-inline-styles': false,
-		'img-alt-attributes': false,
+		'simple-unless': false,
   	}
 };
 

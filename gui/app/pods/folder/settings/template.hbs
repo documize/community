@@ -1,11 +1,11 @@
 {{#layout/top-bar}}
 	<li class="item">
-		{{#link-to "folder.index" model.folder.id model.folder.slug class='link'}}
+		{{#link-to "folder.index" model.folder.id model.folder.slug class="link"}}
 			{{model.folder.name}}
 		{{/link-to}}
 	</li>
 	<li class="item">
-		{{#link-to "folder.settings" model.folder.id model.folder.slug class='link selected'}}
+		{{#link-to "folder.settings" model.folder.id model.folder.slug class="link selected"}}
 			Settings
 		{{/link-to}}
 	</li>
@@ -13,33 +13,33 @@
 
 {{#layout/middle-zone}}
 	{{#layout/middle-zone-content}}
-		{{#if (eq tab 'general')}}
+		{{#if (eq tab "general")}}
 			{{folder/settings-general permissions=model.permissions space=model.folder}}
 		{{/if}}
 
-		{{#if (eq tab 'permissions')}}
-			{{folder/settings-permissions permissions=model.permissions folders=model.folders folder=model.folder onRefresh=(action 'onRefresh')}}
+		{{#if (eq tab "permissions")}}
+			{{folder/settings-permissions permissions=model.permissions folders=model.folders folder=model.folder onRefresh=(action "onRefresh")}}
 		{{/if}}
 
-		{{#if (eq tab 'templates')}}
+		{{#if (eq tab "templates")}}
 			{{folder/settings-templates permissions=model.permissions space=model.folder templates=model.templates}}
 		{{/if}}
 
-		{{#if (eq tab 'blocks')}}
+		{{#if (eq tab "blocks")}}
 			{{folder/settings-blocks permissions=model.permissions space=model.folder}}
 		{{/if}}
 
 		{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
-			{{#if (eq tab 'archived')}}
+			{{#if (eq tab "archived")}}
 				{{enterprise/space-archived permissions=model.permissions spaces=model.folder space=model.folder}}
 			{{/if}}
 		{{/if}}
 
-		{{#if (eq tab 'categories')}}
+		{{#if (eq tab "categories")}}
 			{{folder/settings-category permissions=model.permissions spaces=model.folder space=model.folder}}
 		{{/if}}
 
-		{{#if (eq tab 'deletion')}}
+		{{#if (eq tab "deletion")}}
 			{{folder/settings-delete permissions=model.permissions spaces=model.folder space=model.folder}}
 		{{/if}}
 	{{/layout/middle-zone-content}}
@@ -47,28 +47,28 @@
 	{{#layout/middle-zone-sidebar}}
 		<div id="sidebar" class="sidebar">
 			<ul class="tabnav-control tabnav-control-centered w-75">
-				<li class="tab tab-vertical {{if (eq tab 'general') 'selected'}}" {{action 'onTab' 'general'}}>General</li>
-				<li class="tab tab-vertical {{if (eq tab 'permissions') 'selected'}}" {{action 'onTab' 'permissions'}}>User Permissions</li>
+				<li class="tab tab-vertical {{if (eq tab "general") "selected"}}" {{action "onTab" "general"}}>General</li>
+				<li class="tab tab-vertical {{if (eq tab "permissions") "selected"}}" {{action "onTab" "permissions"}}>User Permissions</li>
 			</ul>
 
 			<div class="mt-4" />
 			<ul class="tabnav-control tabnav-control-centered w-75">
-				<li class="tab tab-vertical {{if (eq tab 'categories') 'selected'}}" {{action 'onTab' 'categories'}}>Categories</li>
+				<li class="tab tab-vertical {{if (eq tab "categories") "selected"}}" {{action "onTab" "categories"}}>Categories</li>
 			</ul>
 
 			<div class="mt-4" />
 			<ul class="tabnav-control tabnav-control-centered w-75">
-				<li class="tab tab-vertical {{if (eq tab 'templates') 'selected'}}" {{action 'onTab' 'templates'}}>Document Templates</li>
-				<li class="tab tab-vertical {{if (eq tab 'blocks') 'selected'}}" {{action 'onTab' 'blocks'}}>Content Blocks</li>
+				<li class="tab tab-vertical {{if (eq tab "templates") "selected"}}" {{action "onTab" "templates"}}>Document Templates</li>
+				<li class="tab tab-vertical {{if (eq tab "blocks") "selected"}}" {{action "onTab" "blocks"}}>Content Blocks</li>
 				{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
-					<li class="tab tab-vertical {{if (eq tab 'archived') 'selected'}}" {{action 'onTab' 'archived'}}>Archived</li>
+					<li class="tab tab-vertical {{if (eq tab "archived") "selected"}}" {{action "onTab" "archived"}}>Archived</li>
 				{{/if}}
 			</ul>
 
 			{{#if model.permissions.spaceOwner}}
 				<div class="mt-4" />
 				<ul class="tabnav-control tabnav-control-centered w-75">
-					<li class="tab tab-vertical {{if (eq tab 'deletion') 'selected'}}" {{action 'onTab' 'deletion'}}>Delete</li>
+					<li class="tab tab-vertical {{if (eq tab "deletion") "selected"}}" {{action "onTab" "deletion"}}>Delete</li>
 				</ul>
 			{{/if}}
 		</div>

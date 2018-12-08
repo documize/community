@@ -1,6 +1,6 @@
 {{#layout/top-bar}}
 	<li class="item">
-		{{#link-to "folder.index" model.folder.id model.folder.slug class='link selected'}}
+		{{#link-to "folder.index" model.folder.id model.folder.slug class="link selected"}}
 			{{model.folder.name}}
 		{{/link-to}}
 	</li>
@@ -16,7 +16,7 @@
 			category=category
 			categories=model.categories
 			documents=filteredDocs
-			onRefresh=(action 'onRefresh')}}
+			onRefresh=(action "onRefresh")}}
 
 		{{folder/documents-list
 			documents=filteredDocs
@@ -24,9 +24,9 @@
 			space=model.folder
 			templates=model.templates
 			permissions=model.permissions
-			onExportDocument=(action 'onExportDocument')
-			onDeleteDocument=(action 'onDeleteDocument')
-			onMoveDocument=(action 'onMoveDocument')}}
+			onExportDocument=(action "onExportDocument")
+			onDeleteDocument=(action "onDeleteDocument")
+			onMoveDocument=(action "onMoveDocument")}}
 	{{/layout/middle-zone-content}}
 
 	{{#layout/middle-zone-sidebar scrollable=true}}
@@ -42,8 +42,8 @@
 				categoryMembers=model.categoryMembers
 				rootDocCount=model.rootDocCount
 				categoryFilter=category
-				onFiltered=(action 'onFiltered')
-				onRefresh=(action 'onRefresh')}}
+				onFiltered=(action "onFiltered")
+				onRefresh=(action "onRefresh")}}
 		</div>
 	{{/layout/middle-zone-sidebar}}
 {{/layout/middle-zone}}

@@ -1,10 +1,10 @@
 <div class="view-space">
 	<div class="filter-caption mt-4">{{documents.length}} documents</div>
 	<ul class="tabnav-control tabnav-control-centered w-75">
-		<li class="tab tab-vertical {{if spaceSelected 'selected'}}" {{action 'onDocumentFilter' 'space' space.id}}>All ({{documents.length}})</li>
+		<li class="tab tab-vertical {{if spaceSelected "selected"}}" {{action "onDocumentFilter" "space" space.id}}>All ({{documents.length}})</li>
 		{{#if hasCategories}}
 			{{#if (gt rootDocCount 0)}}
-				<li class="tab tab-vertical text-truncate {{if uncategorizedSelected 'selected'}}" {{action 'onDocumentFilter' 'uncategorized' space.id}}>Uncategorized ({{rootDocCount}})</li>
+				<li class="tab tab-vertical text-truncate {{if uncategorizedSelected "selected"}}" {{action "onDocumentFilter" "uncategorized" space.id}}>Uncategorized ({{rootDocCount}})</li>
 			{{/if}}
 		{{/if}}
 	</ul>
@@ -22,14 +22,14 @@
 		{{/if}}
 	</div>
 	<ul class="tabnav-control tabnav-control-centered w-75">
-		{{#each categories as |cat index|}}
-			<li class="tab tab-vertical text-truncate {{if cat.selected 'selected'}}" {{action 'onDocumentFilter' 'category' cat.id}}>{{cat.category}} ({{cat.docCount}})</li>
+		{{#each categories as |cat|}}
+			<li class="tab tab-vertical text-truncate {{if cat.selected "selected"}}" {{action "onDocumentFilter" "category" cat.id}}>{{cat.category}} ({{cat.docCount}})</li>
 		{{/each}}
 	</ul>
 
 	{{#if spaceSettings}}
-		<div class="text-center {{if (gt categories.length 0) 'mt-4'}}">
-			{{#link-to 'folder.settings' space.id space.slug (query-params tab="categories") class="btn btn-secondary font-weight-bold"}}{{categoryLinkName}}{{/link-to}}
+		<div class="text-center {{if (gt categories.length 0) "mt-4"}}">
+			{{#link-to "folder.settings" space.id space.slug (query-params tab="categories") class="btn btn-secondary font-weight-bold"}}{{categoryLinkName}}{{/link-to}}
 		</div>
 	{{/if}}
 </div>

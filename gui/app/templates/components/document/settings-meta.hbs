@@ -10,7 +10,7 @@
 				<div class="input-group-prepend">
 					<span class="input-group-text">#</span>
 				</div>
-				{{input type='text' id=(concat 'add-tag-field-' tag.number) class="form-control mousetrap tag-input" placeholder="Tag name" value=tag.value}}
+				{{input type="text" id=(concat "add-tag-field-" tag.number) class="form-control mousetrap tag-input" placeholder="Tag name" value=tag.value}}
 			</div>
 		{{/each}}
 	</form>
@@ -20,7 +20,7 @@
 	<h1>Assign categories</h1>
 	<p class="form-text text-muted">Categories allow you divide a space into logical chunks</p>
 
-	{{ui/ui-list-picker items=categories nameField='category' singleSelect=false}}
+	{{ui/ui-list-picker items=categories nameField="category" singleSelect=false}}
 	{{#unless selectedCategories}}
 		<p class="text-danger">This space has no categories defined yet.</p>
 	{{/unless}}

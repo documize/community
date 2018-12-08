@@ -3,7 +3,7 @@
 		{{#each documents key="id" as |document|}}
 			<li class="document {{if document.selected "selected"}}" id="document-{{document.id}}">
 
-				{{#link-to 'document.index' space.id space.slug document.id document.slug}}
+				{{#link-to "document.index" space.id space.slug document.id document.slug}}
 					<div class="title">{{ document.name }}</div>
 					<div class="snippet">{{ document.excerpt }}</div>
 					{{folder/document-tags documentTags=document.tags}}
@@ -13,7 +13,7 @@
 				{{/link-to}}
 
 				{{#if hasDocumentActions}}
-					<div class="checkbox" {{action 'selectDocument' document.id}}>
+					<div class="checkbox" {{action "selectDocument" document.id}}>
 						{{#if document.selected}}
 							<i class="material-icons">check_box</i>
 						{{else}}
@@ -22,20 +22,20 @@
 					</div>
 					{{#if document.selected}}
 						<div class="actions">
-							<div class="move-documents-button button-icon-green button-icon-small align-middle" {{action 'onExport'}}>
+							<div class="move-documents-button button-icon-green button-icon-small align-middle" {{action "onExport"}}>
 								<i class="material-icons">import_export</i>
 								{{#attach-tooltip showDelay=1000}}Export as HTML{{/attach-tooltip}}
 							</div>
 							<div class="button-icon-gap" />
 							{{#if permissions.documentMove}}
-								<div class="move-documents-button button-icon-green button-icon-small align-middle" {{action 'onShowMoveDocuments'}}>
+								<div class="move-documents-button button-icon-green button-icon-small align-middle" {{action "onShowMoveDocuments"}}>
 									<i class="material-icons">compare_arrows</i>
 									{{#attach-tooltip showDelay=1000}}Move{{/attach-tooltip}}
 								</div>
 								<div class="button-icon-gap" />
 							{{/if}}
 							{{#if permissions.documentDelete}}
-								<div class="delete-documents-button button-icon-red button-icon-small align-middle" {{action 'onShowDeleteDocuments'}}>
+								<div class="delete-documents-button button-icon-red button-icon-small align-middle" {{action "onShowDeleteDocuments"}}>
 									{{#attach-tooltip showDelay=1000}}Delete{{/attach-tooltip}}
 									<i class="material-icons">delete</i>
 								</div>
@@ -49,15 +49,13 @@
 	</ul>
 </div>
 
-{{#ui/ui-dialog title="Delete Documents" confirmCaption="Delete" buttonType="btn-danger" show=showDeleteDialog onAction=(action
- 'onDeleteDocuments')}}
+{{#ui/ui-dialog title="Delete Documents" confirmCaption="Delete" buttonType="btn-danger" show=showDeleteDialog onAction=(action "onDeleteDocuments")}}
 	<p>Are you sure you want to delete {{selectedDocuments.length}} {{selectedCaption}}?</p>
 {{/ui/ui-dialog}}
 
-{{#ui/ui-dialog title="Move Documents" confirmCaption="Move" buttonType="btn-success" show=showMoveDialog onAction=(action
- 'onMoveDocuments')}}
+{{#ui/ui-dialog title="Move Documents" confirmCaption="Move" buttonType="btn-success" show=showMoveDialog onAction=(action "onMoveDocuments")}}
 	<p>Select space for {{selectedDocuments.length}} {{selectedCaption}}</p>
-	{{ui/ui-list-picker items=moveOptions nameField='name' singleSelect=true}}
+	{{ui/ui-list-picker items=moveOptions nameField="name" singleSelect=true}}
 {{/ui/ui-dialog}}
 
 {{#if showAdd}}

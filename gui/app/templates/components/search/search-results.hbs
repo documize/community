@@ -1,9 +1,9 @@
 <div class="view-search">
 	<div class="heading">{{resultPhrase}}</div>
 	<ul class="documents">
-		{{#each documents key="id" as |result index|}}
+		{{#each documents key="id" as |result|}}
 			<li class="document">
-				{{#link-to 'document.index' result.spaceId result.spaceSlug result.documentId result.documentSlug (query-params currentPageId=result.itemId source=searchQuery) class="link"}}
+				{{#link-to "document.index" result.spaceId result.spaceSlug result.documentId result.documentSlug (query-params currentPageId=result.itemId source=searchQuery) class="link"}}
 					<div class="title">
 						{{result.document}}
 						{{#if (gt result.versionId.length 0)}}

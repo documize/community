@@ -4,9 +4,9 @@
 
 <div class="container-fluid my-3">
 	<div class="row justify-content-center">
-		<button type="button" class="btn btn-info font-weight-bold text-uppercase my-3" onclick={{action 'onShowAddModal'}}>Add existing users</button>
+		<button type="button" class="btn btn-info font-weight-bold text-uppercase my-3" onclick={{action "onShowAddModal"}}>Add existing users</button>
 		&nbsp;&nbsp;
-		<button type="button" class="btn btn-info font-weight-bold text-uppercase my-3" onclick={{action 'onShowInviteModal'}}>Invite new users</button>
+		<button type="button" class="btn btn-info font-weight-bold text-uppercase my-3" onclick={{action "onShowInviteModal"}}>Invite new users</button>
 	</div>
 </div>
 
@@ -39,10 +39,10 @@
 				<tr>
 					<td class="no-wrap no-width">
 						<i class="material-icons align-top text-secondary cursor-pointer">more_vert</i>
-						{{#attach-popover class="ember-attacher-popper" hideOn='clickout' showOn='click' isShown=false}}
+						{{#attach-popover class="ember-attacher-popper" hideOn="clickout" showOn="click" isShown=false}}
 							<div class="menu">
-								<a class="item" href="#" {{action 'onBulkPermission' permission true}}>Grant all</a>
-								<a class="item" href="#" {{action 'onBulkPermission' permission false}}>Revoke all</a>
+								<a class="item" href="#" {{action "onBulkPermission" permission true}}>Grant all</a>
+								<a class="item" href="#" {{action "onBulkPermission" permission false}}>Revoke all</a>
 							</div>
 						{{/attach-popover}}
 						{{#if (eq permission.who "role")}}
@@ -88,7 +88,7 @@
 	</table>
 </div>
 
-<button type="button" class="btn btn-success font-weight-bold text-uppercase my-3" onclick={{action 'onSave'}}>SAVE</button>
+<button type="button" class="btn btn-success font-weight-bold text-uppercase my-3" onclick={{action "onSave"}}>SAVE</button>
 
 <div class="row my-3">
 	<div class="col-12 col-md-6">
@@ -124,12 +124,12 @@
 		<div class="modal-content">
 			<div class="modal-header">Add User To Space</div>
 			<div class="modal-body">
-				{{input id="user-search" type="text" class="form-control mousetrap" placeholder="Search for users by firstname, lastname, email" value=searchText key-up=(action 'onSearch')}}
+				{{input id="user-search" type="text" class="form-control mousetrap" placeholder="Search for users by firstname, lastname, email" value=searchText key-up=(action "onSearch")}}
 				{{#each filteredUsers as |user|}}
 					<div class="row my-3">
 						<div class="col-10">{{user.fullname}}</div>
 						<div class="col-2 text-right">
-							<button class="btn btn-success" {{action 'onAdd' user}}>Add</button>
+							<button class="btn btn-success" {{action "onAdd" user}}>Add</button>
 						</div>
 					</div>
 				{{/each}}
@@ -147,10 +147,10 @@
 			<div class="modal-header">Invite Users to Space</div>
 			<div class="modal-body">
 				<p>Email invite leads to a smooth onboarding process</p>
-				<form onsubmit={{action 'onSpaceInvite'}}>
+				<form onsubmit={{action "onSpaceInvite"}}>
 					<div class="form-group">
 						<label for="space-invite-email">Email</label>
-						{{input id="space-invite-email" type='email' class="form-control mousetrap" placeholder="Enter email" value=inviteEmail}}
+						{{input id="space-invite-email" type="email" class="form-control mousetrap" placeholder="Enter email" value=inviteEmail}}
 						<small class="form-text text-muted">Comma separate multiple email addresses</small>
 					</div>
 					<div class="form-group">
@@ -161,7 +161,7 @@
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
-				<button type="button" class="btn btn-success" onclick={{action 'onSpaceInvite'}}>Invite</button>
+				<button type="button" class="btn btn-success" onclick={{action "onSpaceInvite"}}>Invite</button>
 			</div>
 		</div>
 	</div>

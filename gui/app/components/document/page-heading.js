@@ -10,7 +10,7 @@
 // https://documize.com
 
 import $ from 'jquery';
-import { computed } from '@ember/object';
+import { computed, observer } from '@ember/object';
 import { debounce } from '@ember/runloop';
 import { inject as service } from '@ember/service';
 import ModalMixin from '../../mixins/modal';
@@ -28,9 +28,9 @@ export default Component.extend(ModalMixin, {
 	canDelete: false,
 	canMove: false,
 	docSearchFilter: '',
-	onKeywordChange: function () {
+	onKeywordChange: observer('docSearchFilter',  function() {
 		debounce(this, this.searchDocs, 750);
-	}.observes('docSearchFilter'),
+	}),
 	emptySearch: computed('docSearchResults', function() {
 		return this.get('docSearchResults.length') === 0;
 	}),

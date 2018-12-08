@@ -1,29 +1,29 @@
 <div class="master-navbar">
 	<div class="nav-content">
 		<div class="nav-options">
-			{{#link-to 'folders' class=(if (eq selectedItem 'spaces') 'option selected' 'option')}}
+			{{#link-to "folders" class=(if (eq selectedItem "spaces") "option selected" "option")}}
 				<i class="dicon dicon-grid-interface"></i>
 				<div class="name">spaces</div>
 			{{/link-to}}
 			{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
 				{{#if session.viewDashboard}}
-					{{#link-to 'dashboard' class=(if (eq selectedItem 'actions') 'option selected' 'option')}}
+					{{#link-to "dashboard" class=(if (eq selectedItem "actions") "option selected" "option")}}
 						<i class="dicon dicon-list-bullet-2"></i>
 						<div class="name">actions</div>
 					{{/link-to}}
-					{{#link-to 'activity' class=(if (eq selectedItem 'activity') 'option selected' 'option')}}
+					{{#link-to "activity" class=(if (eq selectedItem "activity") "option selected" "option")}}
 						<i class="dicon dicon-pulse"></i>
 						<div class="name">activity</div>
 					{{/link-to}}
 				{{/if}}
 				{{#if session.viewAnalytics}}
-					{{#link-to 'analytics' class=(if (eq selectedItem 'analytics') 'option selected' 'option')}}
+					{{#link-to "analytics" class=(if (eq selectedItem "analytics") "option selected" "option")}}
 						<i class="dicon dicon-chart-bar-33"></i>
 						<div class="name">reports</div>
 					{{/link-to}}
 				{{/if}}
 			{{/if}}
-			{{#link-to 'search' class=(if (eq selectedItem 'spaces') 'option selected' 'option')}}
+			{{#link-to "search" class=(if (eq selectedItem "spaces") "option selected" "option")}}
 				<i class="dicon dicon-magnifier"></i>
 				<div class="name">search</div>
 			{{/link-to}}
@@ -34,18 +34,18 @@
 				{{#if hasPins}}
 					<div class="bookmarks" id="user-pins-button">
 						<i class="dicon dicon-bookmark"></i>
-						{{#attach-popover class="ember-attacher-popper" hideOn='clickout' showOn='click' isShown=false}}
+						{{#attach-popover class="ember-attacher-popper" hideOn="clickout" showOn="click" isShown=false}}
 							<div class="menu">
 								{{#if hasSpacePins}}
 									<li class="item header">Spaces</li>
 									{{#each spacePins as |pin|}}
-										<a class="item" href="#" {{action 'jumpToPin' pin}} data-id= {{pin.id}} id="pin-{{pin.id}}">{{pin.pin}}</a>
+										<a class="item" href="#" {{action "jumpToPin" pin}} data-id= {{pin.id}} id="pin-{{pin.id}}">{{pin.pin}}</a>
 									{{/each}}
 								{{/if}}
 								{{#if hasDocumentPins}}
 									<li class="item header">Content</li>
 									{{#each documentPins as |pin|}}
-										<a class="item" href="#" {{action 'jumpToPin' pin}} data-id= {{pin.id}} id="pin-{{pin.id}}">{{pin.pin}}</a>
+										<a class="item" href="#" {{action "jumpToPin" pin}} data-id= {{pin.id}} id="pin-{{pin.id}}">{{pin.pin}}</a>
 									{{/each}}
 								{{/if}}
 							</div>
@@ -63,28 +63,28 @@
 								<div class="update-available-dot" />
 							{{/if}}
 						{{/if}}
-						{{#attach-popover class="ember-attacher-popper" hideOn='clickout' showOn='click' isShown=false}}
+						{{#attach-popover class="ember-attacher-popper" hideOn="clickout" showOn="click" isShown=false}}
 							<div class="menu">
 								{{#if session.isAdmin}}
-									{{#link-to 'customize.general' class="item"}}Settings{{/link-to}}
+									{{#link-to "customize.general" class="item"}}Settings{{/link-to}}
 									{{#unless appMeta.valid}}
-										{{#link-to 'customize.billing' class="item bold red"}}Update Billing{{/link-to}}
+										{{#link-to "customize.billing" class="item bold red"}}Update Billing{{/link-to}}
 									{{/unless}}
 									<div class="divider"></div>
 								{{/if}}
-								{{#link-to 'profile' class="item"}}Profile{{/link-to}}
+								{{#link-to "profile" class="item"}}Profile{{/link-to}}
 								<div class="divider"></div>
 								{{#if session.isGlobalAdmin}}
 									{{#if appMeta.updateAvailable}}
-										{{#link-to 'customize.product' class="item bold yellow"}}Update available{{/link-to}}
+										{{#link-to "customize.product" class="item bold yellow"}}Update available{{/link-to}}
 									{{/if}}
 								{{/if}}
-								<a href="#" class="item {{if hasWhatsNew 'bold green'}}" {{action 'onShowWhatsNewModal'}}>What's New</a>
+								<a href="#" class="item {{if hasWhatsNew "bold green"}}" {{action "onShowWhatsNewModal"}}>What's New</a>
 								<a href="https://docs.documize.com" target="_blank" class="item">Help</a>
 								<a href="#" class="item" data-toggle="modal" data-target="#about-documize-modal" data-backdrop="static">About</a>
 								{{#if enableLogout}}
 									<div class="divider"></div>
-									{{#link-to 'auth.logout' class="item" }}Logout{{/link-to}}
+									{{#link-to "auth.logout" class="item" }}Logout{{/link-to}}
 								{{/if}}
 							</div>
 						{{/attach-popover}}
@@ -92,7 +92,7 @@
 				</div>
 			{{/if}}
 			<a class="logo" href="https://documize.com?ref=app">
-				<img src="/assets/img/icon-white-64x64.png" />
+				<img src="/assets/img/icon-white-64x64.png">
 				<div class="documize">Documize</div>
 			</a>
 		</div>
@@ -146,8 +146,8 @@
 									&copy; Documize Inc. All rights reserved.
 								</div>
 								<div class="license">
-									<br/>
-									<br/> This software (Documize Community Edition) is licensed under
+									<br>
+									<br> This software (Documize Community Edition) is licensed under
 									<a href="http://www.gnu.org/licenses/agpl-3.0.en.html">GNU AGPL v3</a>
 									You can operate outside the AGPL restrictions by purchasing Documize Enterprise Edition and obtaining a commercial license by
 									contacting

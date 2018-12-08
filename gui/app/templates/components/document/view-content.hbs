@@ -1,8 +1,8 @@
 {{#if hasPages}}
 
-	{{#each pages key="id" as |item index|}}
+	{{#each pages key="id" as |item|}}
 		{{#if canEdit}}
-			<div class="start-section" {{action 'onShowSectionWizard' item.page}}>
+			<div class="start-section" {{action "onShowSectionWizard" item.page}}>
 				<div class="start-button">
 					<div class="cta">+ SECTION</div>
 				</div>
@@ -22,17 +22,17 @@
 			pending=item.pending
 			permissions=permissions
 			refresh=(action refresh)
-			onSavePage=(action 'onSavePage')
-			onCopyPage=(action 'onCopyPage')
-			onMovePage=(action 'onMovePage')
-			onDeletePage=(action 'onDeletePage')
-			onSavePageAsBlock=(action 'onSavePageAsBlock')
+			onSavePage=(action "onSavePage")
+			onCopyPage=(action "onCopyPage")
+			onMovePage=(action "onMovePage")
+			onDeletePage=(action "onDeletePage")
+			onSavePageAsBlock=(action "onSavePageAsBlock")
 			onPageLevelChange=(action onPageLevelChange)
 			onPageSequenceChange=(action onPageSequenceChange)}}
 	{{/each}}
 
 	{{#if canEdit}}
-		<div class="start-section" {{action 'onShowSectionWizard'}}>
+		<div class="start-section" {{action "onShowSectionWizard"}}>
 			<div class="start-button">
 				<div class="cta">+ SECTION</div>
 			</div>
@@ -47,8 +47,8 @@
 					{{folder.likes}}
 				</div>
 				<div class="buttons">
-					<button type="button" class="btn btn-outline-success font-weight-bold" {{action 'onVote' 1}}>Yes, thanks!</button>&nbsp;&nbsp;
-					<button type="button" class="btn btn-outline-secondary font-weight-bold" {{action 'onVote' 2}}>Not really</button>
+					<button type="button" class="btn btn-outline-success font-weight-bold" {{action "onVote" 1}}>Yes, thanks!</button>&nbsp;&nbsp;
+					<button type="button" class="btn btn-outline-secondary font-weight-bold" {{action "onVote" 2}}>Not really</button>
 				</div>
 				{{else}}
 				<div class="ack">Thanks for the feedback!</div>
@@ -60,7 +60,7 @@
 {{else }}
 
 	{{#if canEdit}}
-		<div class="start-section" {{action 'onShowSectionWizard'}}>
+		<div class="start-section" {{action "onShowSectionWizard"}}>
 			<div class="start-button">
 				<div class="cta">+ SECTION</div>
 			</div>

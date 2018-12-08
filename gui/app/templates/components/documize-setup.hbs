@@ -4,29 +4,29 @@
 	<form class="my-5" {{action "save" on="submit"}}>
 		<div class="form-group">
 			<label>Team</label>
-			{{focus-input id="siteTitle" type="text" value=model.title class=(if hasEmptyTitleError 'form-control is-invalid' 'form-control')}}
-			<small class="form-text text-muted">What's your tribe called?</small>
+			{{focus-input id="siteTitle" type="text" value=model.title class=(if hasEmptyTitleError "form-control is-invalid" "form-control")}}
+			<small class="form-text text-muted">What"s your tribe called?</small>
 		</div>
 		<div class="form-group">
 			<label for="adminFirstname">Firstname</label>
-			{{input id="adminFirstname" type="text" value=model.firstname class=(if hasEmptyFirstnameError 'form-control is-invalid' 'form-control')}}
+			{{input id="adminFirstname" type="text" value=model.firstname class=(if hasEmptyFirstnameError "form-control is-invalid" "form-control")}}
 			<small class="form-text text-muted">What do people call you?</small>
 		</div>
 		<div class="form-group">
 			<label for="adminLastname">Lastname</label>
-			{{input id="adminLastname" type="text" value=model.lastname class=(if hasEmptyLastnameError 'form-control is-invalid' 'form-control')}}
+			{{input id="adminLastname" type="text" value=model.lastname class=(if hasEmptyLastnameError "form-control is-invalid" "form-control")}}
 			<small class="form-text text-muted">How the government refers to you</small>
 		</div>
 		<div class="form-group">
 			<label for="adminEmail">Email</label>
-			{{input id="adminEmail" type="email" value=model.email class=(if hasEmptyEmailError 'form-control is-invalid' 'form-control')}}
+			{{input id="adminEmail" type="email" value=model.email class=(if hasEmptyEmailError "form-control is-invalid" "form-control")}}
 			<small class="form-text text-muted">No spam. Ever.</small>
 		</div>
 		<div class="form-group">
 			<label for="adminPassword">Password</label>
-			{{input id="adminPassword" type="password" value=model.password class=(if hasEmptyPasswordError 'form-control is-invalid' 'form-control')}}
+			{{input id="adminPassword" type="password" value=model.password class=(if hasEmptyPasswordError "form-control is-invalid" "form-control")}}
 			<small class="form-text text-muted">Pick something strong and unique that you don't use anywhere else</small>
 		</div>
-		<button type="submit" class="btn btn-success mt-5" {{action 'save'}}>{{buttonLabel}}</button>
+		<button type="submit" class="btn btn-success mt-5" {{action "save"}}>{{buttonLabel}}</button>
 	</form>
 </div>

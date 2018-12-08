@@ -12,7 +12,7 @@
 import $ from 'jquery';
 import { empty } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
-import { computed } from '@ember/object';
+import { computed, observer } from '@ember/object';
 import Notifier from '../../mixins/notifier';
 import Modals from '../../mixins/modal';
 import Component from '@ember/component';
@@ -33,7 +33,7 @@ export default Component.extend(Notifier, Modals, {
 		return this.get('blocks.length') > 0;
 	}),
 
-	onModalToggle: function () {
+	onModalToggle: observer('show', function() {
 		let modalId = this.get('modalId');
 
 		if (this.get('show')) {
@@ -48,7 +48,7 @@ export default Component.extend(Notifier, Modals, {
 			$(modalId).modal('hide');
 			$(modalId).modal('dispose');
 		}
-	}.observes('show'),
+	}),
 
 	addSection(model) {
 		this.modalClose(this.get('modalId'));

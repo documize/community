@@ -2,22 +2,22 @@
     <div class="row">
 		<div class="col-8 section-editor">
 			<div class="form-group">
-				{{focus-input type="text" id="page-title" value=page.title class=(if hasNameError 'form-control mousetrap form-control-lg edit-title is-invalid' 'form-control form-control-lg edit-title mousetrap') placeholder="Enter name"}}
+				{{focus-input type="text" id="page-title" value=page.title class=(if hasNameError "form-control mousetrap form-control-lg edit-title is-invalid" "form-control form-control-lg edit-title mousetrap") placeholder="Enter name"}}
 			</div>
             {{#if hasExcerpt}}
                 <div class="form-group">
-                    {{textarea id="page-excerpt" value=page.excerpt rows="2" class=(if hasDescError 'form-control mousetrap form-control-lg edit-title is-invalid' 'form-control form-control-lg edit-title mousetrap') placeholder="Enter description"}}
+                    {{textarea id="page-excerpt" value=page.excerpt rows="2" class=(if hasDescError "form-control mousetrap form-control-lg edit-title is-invalid" "form-control form-control-lg edit-title mousetrap") placeholder="Enter description"}}
                 </div>
             {{/if}}
         </div>
 		<div class="col-4">
 			<div class="float-right">
 				{{#if busy}}
-					<img src="/assets/img/busy-gray.gif" class="busy-indicator" />
+					<img src="/assets/img/busy-gray.gif" class="busy-indicator">
 				{{/if}}
 
-				<div class="btn btn-success" {{action 'onAction'}}>{{actionLabel}}</div>
-				<div class="btn btn-outline-secondary" id="section-editor-cancel-button-{{pageId}}" {{action 'onCancel'}}>{{cancelLabel}}</div>
+				<div class="btn btn-success" {{action "onAction"}}>{{actionLabel}}</div>
+				<div class="btn btn-outline-secondary" id="section-editor-cancel-button-{{pageId}}" {{action "onCancel"}}>{{cancelLabel}}</div>
 			</div>
         </div>
     </div>
@@ -39,7 +39,7 @@
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Continue editing</button>
-				<button type="button" class="btn btn-danger" onclick={{action 'onDiscard'}}>Discard changes</button>
+				<button type="button" class="btn btn-danger" onclick={{action "onDiscard"}}>Discard changes</button>
 			</div>
 		</div>
 	</div>

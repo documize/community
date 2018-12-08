@@ -1,6 +1,6 @@
 {{#section/base-editor document=document folder=folder page=page busy=busy
 	tip="Trello is the visual way to manage your projects and organize anything (https://trello.com)"
-	isDirty=(action 'isDirty') onCancel=(action 'onCancel') onAction=(action 'onAction')}}
+	isDirty=(action "isDirty") onCancel=(action "onCancel") onAction=(action "onAction")}}
 
 	{{#if trelloConfigured}}
 		{{#if authenticated}}
@@ -9,14 +9,14 @@
 			{{else}}
 				<div class="form-group">
 					<label>Select Board</label>
-					{{ui-select id="boards-dropdown" content=boards action=(action 'onBoardChange') optionValuePath="id" optionLabelPath="name" selection=config.board}}
+					{{ui-select id="boards-dropdown" content=boards action=(action "onBoardChange") optionValuePath="id" optionLabelPath="name" selection=config.board}}
 				</div>
 				<div class="form-group">
 					<label for="airtable-embed-cod">Select Lists</label>
 					<div class="section-trello-board" style= {{boardStyle}}>
 						<div class="section-trello-board-title">{{config.board.name}}</div>
 						{{#each config.lists as |list|}}
-							<div class="section-trello-list" {{action 'onListCheckbox' list.id}}>
+							<div class="section-trello-list" {{action "onListCheckbox" list.id}}>
 								{{#if list.included}}
 									<i class="material-icons widget-checkbox checkbox-gray section-trello-list-checkbox">check_box</i>
 								{{else}}
@@ -30,11 +30,11 @@
 				</div>
 			{{/if}}
 		{{else}}
-			<div class="btn btn-primary" {{action 'auth'}}>Authenticate</div>
+			<div class="btn btn-primary" {{action "auth"}}>Authenticate</div>
 		{{/if}}
 	{{else}}
 		{{#if session.isGlobalAdmin}}
-			{{#link-to 'customize.integrations' class="btn btn-outline-secondary font-weight-bold"}}
+			{{#link-to "customize.integrations" class="btn btn-outline-secondary font-weight-bold"}}
 				Configure Trello Connector
 			{{/link-to}}
 		{{else}}

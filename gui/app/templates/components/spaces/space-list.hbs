@@ -5,7 +5,7 @@
 	{{/unless}}
 	<ul class="list clearfix">
 		{{#each publicFolders as |folder|}}
-			{{#link-to 'folder.index' folder.id folder.slug}}
+			{{#link-to "folder.index" folder.id folder.slug}}
 				<li class="item">{{ folder.name }}</li>
 			{{/link-to}}
 		{{/each}}
@@ -18,7 +18,7 @@
 		{{/unless}}
 		<ul class="list clearfix">
 			{{#each protectedFolders as |folder|}}
-				{{#link-to 'folder.index' folder.id folder.slug}}
+				{{#link-to "folder.index" folder.id folder.slug}}
 					<li class="item">{{ folder.name }}</li>
 				{{/link-to}}
 			{{/each}}
@@ -30,7 +30,7 @@
 		{{/unless}}
 		<ul class="list clearfix">
 			{{#each privateFolders as |folder|}}
-				{{#link-to 'folder.index' folder.id folder.slug}}
+				{{#link-to "folder.index" folder.id folder.slug}}
 					<li class="item">{{ folder.name }}</li>
 				{{/link-to}}
 			{{/each}}

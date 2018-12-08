@@ -6,7 +6,7 @@
 	<h1>{{appMeta.title}}</h1>
 	<p>{{appMeta.message}}</p>
 	{{#if session.isEditor}}
-		<button type="button" class="btn btn-success font-weight-bold my-3" {{action 'onShowModal'}}>+ SPACE</button>
+		<button type="button" class="btn btn-success font-weight-bold my-3" {{action "onShowModal"}}>+ SPACE</button>
 	{{/if}}
 	{{spaces/space-list spaces=model}}
 
@@ -15,15 +15,15 @@
 			<div class="modal-content">
 				<div class="modal-header">Add Space</div>
 				<div class="modal-body">
-					<form onsubmit={{action 'onAddSpace'}}>
+					<form onsubmit={{action "onAddSpace"}}>
 						<div class="form-group">
 							<label for="new-space-name">Space Name</label>
-							{{input type='text' id="new-space-name" class="form-control mousetrap" placeholder="Space name" value=spaceName}}
+							{{input type="text" id="new-space-name" class="form-control mousetrap" placeholder="Space name" value=spaceName}}
 							<small id="emailHelp" class="form-text text-muted">Characters and numbers only</small>
 						</div>
 						<div class="form-group">
 							<label for="clone-space-dropdown">Clone Space</label>
-							{{ui-select id="clone-space-dropdown" content=model prompt="select space" action=(action 'onCloneSpaceSelect') optionValuePath="id" optionLabelPath="name" selection=clonedSpace}}
+							{{ui-select id="clone-space-dropdown" content=model prompt="select space" action=(action "onCloneSpaceSelect") optionValuePath="id" optionLabelPath="name" selection=clonedSpace}}
 							<small id="emailHelp" class="form-text text-muted">Copy templates, permissions, documents from existing space</small>
 							<div class="margin-top-10" />
 							{{#if hasClone}}
@@ -36,7 +36,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-					<button type="button" class="btn btn-success" onclick={{action 'onAddSpace'}}>Add</button>
+					<button type="button" class="btn btn-success" onclick={{action "onAddSpace"}}>Add</button>
 				</div>
 			</div>
 		</div>

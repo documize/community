@@ -8,14 +8,14 @@
 	{{/if}}
 	{{#if hasAttachments}}
 		<ul class="list">
-			{{#each files key="id" as |a index|}}
+			{{#each files key="id" as |file|}}
 				<li class="item">
-					<a href="{{appMeta.endpoint}}/public/attachments/{{appMeta.orgId}}/{{a.id}}">
-						{{a.filename}}
+					<a href="{{appMeta.endpoint}}/public/attachments/{{appMeta.orgId}}/{{file.id}}">
+						{{file.filename}}
 					</a>
 					{{#if canEdit}}
 						<div class="delete">
-							<div class="button-icon-danger button-icon-small align-middle" {{action 'onShowDialog' a.id a.filename}}>
+							<div class="button-icon-danger button-icon-small align-middle" {{action "onShowDialog" file.id file.filename}}>
 								<i class="material-icons">delete</i>
 							</div>
 						</div>
@@ -26,6 +26,6 @@
 	{{/if}}
 </div>
 
-{{#ui/ui-dialog title="Delete Attachment" confirmCaption="Delete" buttonType="btn-danger" show=showDialog onAction=(action 'onDelete')}}
+{{#ui/ui-dialog title="Delete Attachment" confirmCaption="Delete" buttonType="btn-danger" show=showDialog onAction=(action "onDelete")}}
 	<p>Are you sure you want to delete {{deleteAttachment.name}}?</p>
 {{/ui/ui-dialog}}

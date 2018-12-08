@@ -1,7 +1,7 @@
 <div class="text-right non-printable">
 	{{#if session.authenticated}}
 		{{#if permissions.documentEdit}}
-			{{#link-to 'document.settings' space.id space.slug document.id document.slug class="button-icon-gray align-middle"}}
+			{{#link-to "document.settings" space.id space.slug document.id document.slug class="button-icon-gray align-middle"}}
 				<i class="material-icons">settings</i>
 				{{#attach-tooltip showDelay=1000}}Settings &mdash; meta, lifecycle, workflow{{/attach-tooltip}}
 			{{/link-to}}
@@ -16,26 +16,26 @@
 		{{/if}}
 	{{/if}}
 
-	<div id="document-print-button" class="button-icon-gray align-middle" {{action 'onPrintDocument'}}>
+	<div id="document-print-button" class="button-icon-gray align-middle" {{action "onPrintDocument"}}>
 		<i class="material-icons">print</i>
 		{{#attach-tooltip showDelay=1000}}Print{{/attach-tooltip}}
 	</div>
 	<div class="button-icon-gap" />
 
-	<div id="space-export-button" class="button-icon-danger align-middle" {{action 'onExport'}}>
+	<div id="space-export-button" class="button-icon-danger align-middle" {{action "onExport"}}>
 		<i class="material-icons">import_export</i>
 		{{#attach-tooltip showDelay=1000}}Export as HTML{{/attach-tooltip}}
 	</div>
 	<div class="button-icon-gap" />
 
 	{{#if pinState.isPinned}}
-		<div id="document-pin-button" class="button-icon-gold align-middle" {{action 'onUnpin'}}>
+		<div id="document-pin-button" class="button-icon-gold align-middle" {{action "onUnpin"}}>
 			<i class="material-icons">star</i>
 			{{#attach-tooltip showDelay=1000}}Remove bookmark{{/attach-tooltip}}
 		</div>
 		<div class="button-icon-gap" />
 	{{else if session.authenticated}}
-		<div id="document-pin-button" class="button-icon-gray align-middle" {{action 'onPin'}}>
+		<div id="document-pin-button" class="button-icon-gray align-middle" {{action "onPin"}}>
 			<i class="material-icons">star</i>
 			{{#attach-tooltip showDelay=1000}}Add bookmark{{/attach-tooltip}}
 		</div>
@@ -55,10 +55,10 @@
 		<div class="modal-content">
 			<div class="modal-header">Save as Template</div>
 			<div class="modal-body">
-				<form onsubmit={{action 'onSaveTemplate'}}>
+				<form onsubmit={{action "onSaveTemplate"}}>
 					<div class="form-group">
 						<label for="new-template-name">Name</label>
-						{{input id="new-template-name" value=saveTemplate.name type='email' class="form-control mousetrap" placeholder="Template name"}}
+						{{input id="new-template-name" value=saveTemplate.name type="email" class="form-control mousetrap" placeholder="Template name"}}
 						<small class="form-text text-muted">Good template name conveys document type</small>
 					</div>
 					<div class="form-group">
@@ -70,7 +70,7 @@
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-				<button type="button" class="btn btn-success" onclick={{action 'onSaveTemplate'}}>Save</button>
+				<button type="button" class="btn btn-success" onclick={{action "onSaveTemplate"}}>Save</button>
 			</div>
 		</div>
 	</div>
@@ -85,7 +85,7 @@
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-				<button type="button" class="btn btn-danger" onclick={{action 'onDocumentDelete'}}>Delete</button>
+				<button type="button" class="btn btn-danger" onclick={{action "onDocumentDelete"}}>Delete</button>
 			</div>
 		</div>
 	</div>

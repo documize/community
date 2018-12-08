@@ -1,14 +1,14 @@
-{{#section/base-editor document=document folder=folder page=page busy=waiting tip="Papertrail cloud logging service (https://papertrailapp.com)" isDirty=(action 'isDirty') onCancel=(action 'onCancel') onAction=(action 'onAction')}}
+{{#section/base-editor document=document folder=folder page=page busy=waiting tip="Papertrail cloud logging service (https://papertrailapp.com)" isDirty=(action "isDirty") onCancel=(action "onCancel") onAction=(action "onAction")}}
 
 <div class="row">
 	<div class="col-6">
-		<form {{ action 'auth' on="submit" }} >
+		<form {{action "auth" on="submit"}} >
 			<div class="form-group">
 				<label>Papertrail API Key</label>
 				{{focus-input id="papertrail-apitoken" type="password" value=config.APIToken class="form-control"}}
 				<small class="form-text text-muted">API Token (from your profile)</small>
 			</div>
-			<div class="btn btn-primary" {{ action 'auth' }} >
+			<div class="btn btn-primary" {{action "auth"}} >
 				{{#if authenticated}}
 					Re-Authenticate
 				{{else}}
@@ -20,7 +20,7 @@
 
 	{{#if authenticated}}
 		<div class="col-6">
-			<form {{action 'onAction' on="submit"}}>
+			<form {{action "onAction" on="submit"}}>
 				<div class="form-group">
 					<label for="papertrail-query">Search query</label>
 					{{input id="papertrail-query" type="text" class="form-control mousetrap" value=config.query}}
@@ -33,7 +33,7 @@
 				</div>
 				<div class="form-group">
 					<label for="group-dropdown">Group</label>
-					{{ui-select id="group-dropdown" prompt="<group>" content=options.groups action=(action 'onGroupsChange') optionValuePath="id" optionLabelPath="name" selection=config.group}}
+					{{ui-select id="group-dropdown" prompt="<group>" content=options.groups action=(action "onGroupsChange") optionValuePath="id" optionLabelPath="name" selection=config.group}}
 					<small class="form-text text-muted">Optional Papertrail group</small>
 				</div>
 			</form>

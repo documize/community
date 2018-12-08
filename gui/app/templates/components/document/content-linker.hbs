@@ -7,10 +7,10 @@
 					<div class="row">
 						<div class="col mt-3 mb-5">
 							<ul class="tabnav-control text-center">
-								<li class="tab {{if tab1Selected 'selected'}}" {{action 'onTabSelect' 1}}>Section</li>
-								<li class="tab {{if tab2Selected 'selected'}}" {{action 'onTabSelect' 2}}>Attachment</li>
-								<li class="tab {{if tab3Selected 'selected'}}" {{action 'onTabSelect' 3}}>Search</li>
-								<li class="tab {{if tab4Selected 'selected'}}" {{action 'onTabSelect' 4}}>Network</li>
+								<li class="tab {{if tab1Selected "selected"}}" {{action "onTabSelect" 1}}>Section</li>
+								<li class="tab {{if tab2Selected "selected"}}" {{action "onTabSelect" 2}}>Attachment</li>
+								<li class="tab {{if tab3Selected "selected"}}" {{action "onTabSelect" 3}}>Search</li>
+								<li class="tab {{if tab4Selected "selected"}}" {{action "onTabSelect" 4}}>Network</li>
 							</ul>
 						</div>
 					</div>
@@ -19,7 +19,7 @@
 						<div class="row">
 							<div class="col content-linker-modal-container">
 								<p>Link to content within this document</p>
-								{{ui/ui-list-picker items=candidates.pages nameField='title' singleSelect=true onSelect=(action 'setSelection')}}
+								{{ui/ui-list-picker items=candidates.pages nameField="title" singleSelect=true onSelect=(action "setSelection")}}
 							</div>
 						</div>
 					{{/if}}
@@ -31,9 +31,9 @@
 								<div class="widget-list-picker">
 									<ul class="options">
 										{{#each candidates.attachments as |item|}}
-											<li class="option {{if item.selected 'selected'}}" {{action 'setSelection' item}}>
+											<li class="option {{if item.selected "selected"}}" {{action "setSelection" item}}>
 												<div class="text text-truncate">
-													<img class="icon" src="/assets/img/attachments/{{document/file-icon item.context}}" />
+													<img class="icon" src="/assets/img/attachments/{{document/file-icon item.context}}">
 													{{item.title}}
 												</div>
 												{{#if item.selected}}
@@ -61,9 +61,9 @@
 								<div class="widget-list-picker">
 									<ul class="options">
 										{{#each matches.documents as |item|}}
-											<li class="option {{if item.selected 'selected'}}" {{action 'setSelection' item}}>
+											<li class="option {{if item.selected "selected"}}" {{action "setSelection" item}}>
 												<div class="text text-truncate">
-													{{item.title}}<br/>{{item.context}}
+													{{item.title}}<br>{{item.context}}
 												</div>
 												{{#if item.selected}}
 													<i class="material-icons">check</i>
@@ -71,9 +71,9 @@
 											</li>
 										{{/each}}
 										{{#each matches.pages as |item|}}
-											<li class="option {{if item.selected 'selected'}}" {{action 'setSelection' item}}>
+											<li class="option {{if item.selected "selected"}}" {{action "setSelection" item}}>
 												<div class="text text-truncate">
-													{{item.title}}<br/>{{item.context}}
+													{{item.title}}<br>{{item.context}}
 												</div>
 												{{#if item.selected}}
 													<i class="material-icons">check</i>
@@ -81,9 +81,9 @@
 											</li>
 										{{/each}}
 										{{#each matches.attachments as |item|}}
-											<li class="option {{if item.selected 'selected'}}" {{action 'setSelection' item}}>
+											<li class="option {{if item.selected "selected"}}" {{action "setSelection" item}}>
 												<div class="text text-truncate">
-													<img class="icon" src="/assets/img/attachments/{{document/file-icon item.context}}" />
+													<img class="icon" src="/assets/img/attachments/{{document/file-icon item.context}}">
 													{{item.title}}
 												</div>
 												{{#if item.selected}}
@@ -112,8 +112,8 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-outline-secondary" {{action 'onCancel'}}>Cancel</button>
-				<button type="button" class="btn btn-success" {{action 'onInsertLink'}}>Insert</button>
+				<button type="button" class="btn btn-outline-secondary" {{action "onCancel"}}>Cancel</button>
+				<button type="button" class="btn btn-success" {{action "onInsertLink"}}>Insert</button>
 			</div>
 		</div>
 	</div>

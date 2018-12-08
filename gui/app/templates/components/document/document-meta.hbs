@@ -1,28 +1,28 @@
 {{#if (eq document.lifecycle constants.Lifecycle.Live)}}
-	<div id="document-lifecycle-popover" class="document-lifecycle-live text-uppercase" {{action 'onEditLifecycle'}}>{{document.lifecycleLabel}}</div>
+	<div id="document-lifecycle-popover" class="document-lifecycle-live text-uppercase" {{action "onEditLifecycle"}}>{{document.lifecycleLabel}}</div>
 {{/if}}
 {{#if (eq document.lifecycle constants.Lifecycle.Draft)}}
-	<div id="document-lifecycle-popover" class="document-lifecycle-draft text-uppercase" {{action 'onEditLifecycle'}}>{{document.lifecycleLabel}}</div>
+	<div id="document-lifecycle-popover" class="document-lifecycle-draft text-uppercase" {{action "onEditLifecycle"}}>{{document.lifecycleLabel}}</div>
 {{/if}}
 
 <div class="d-block d-sm-none margin-top-20" />
 <div class="d-sm-inline-block margin-left-20" />
 
 {{#if (eq document.protection constants.ProtectionType.None)}}
-	<div id="document-protection-popover" class="document-protection-unlocked text-uppercase" {{action 'onEditProtection'}}>OPEN</div>
+	<div id="document-protection-popover" class="document-protection-unlocked text-uppercase" {{action "onEditProtection"}}>OPEN</div>
 {{/if}}
 {{#if (eq document.protection constants.ProtectionType.Review)}}
-	<div id="document-protection-popover" class="document-protection-review text-uppercase" {{action 'onEditProtection'}}>PROTECTED</div>
+	<div id="document-protection-popover" class="document-protection-review text-uppercase" {{action "onEditProtection"}}>PROTECTED</div>
 {{/if}}
 {{#if (eq document.protection constants.ProtectionType.Lock)}}
-	<div id="document-protection-popover" class="document-protection-locked text-uppercase" {{action 'onEditProtection'}}>LOCKED</div>
+	<div id="document-protection-popover" class="document-protection-locked text-uppercase" {{action "onEditProtection"}}>LOCKED</div>
 {{/if}}
 
 <div class="d-block d-sm-none margin-top-20" />
 <div class="d-sm-inline-block margin-left-20" />
 
 {{#each selectedCategories as |cat|}}
-	<div class="document-category {{if isSpaceAdmin 'cursor-pointer'}}" {{action 'onEditCategory'}}>
+	<div class="document-category {{if isSpaceAdmin "cursor-pointer"}}" {{action "onEditCategory"}}>
 		{{cat.category}}
 		{{#attach-tooltip showDelay=1000}}Category{{/attach-tooltip}}
 	</div>
@@ -30,10 +30,10 @@
 
 <div class="d-block d-sm-none margin-top-20" />
 
-{{#each tagz as |t index|}}
-	<div class="document-tag {{if isSpaceAdmin 'cursor-pointer'}}" {{action 'onEditCategory'}}>
+{{#each tagz as |t|}}
+	<div class="document-tag {{if isSpaceAdmin "cursor-pointer"}}" {{action "onEditCategory"}}>
 		{{#attach-tooltip showDelay=1000}}Tag{{/attach-tooltip}}
-		{{concat '#' t}}
+		{{concat "#" t}}
 	</div>
 {{/each}}
 

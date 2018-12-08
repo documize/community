@@ -1,6 +1,6 @@
 <div class="theme-picker">
 	{{#each themes as |theme|}}
-		<div class="theme" style="{{concat 'background-color: ' theme.primary}}" {{action 'onSelect' theme.name}}>
+		<div class="theme" style={{concat "background-color: " theme.primary}} {{action "onSelect" theme.name}}>
 			{{theme.name}}
 			<div class="tick">
 				{{#if theme.selected}}

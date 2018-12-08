@@ -5,13 +5,13 @@
 			<div class="btn-group" role="group">
 				<button id="btnGroupDocument" type="button" class="btn btn-success font-weight-bold dropdown-toggle">
 					+ CONTENT
-					{{#attach-popover class="ember-attacher-popper" hideOn='clickout' showOn='click' isShown=false}}
+					{{#attach-popover class="ember-attacher-popper" hideOn="clickout" showOn="click" isShown=false}}
 						<div class="menu">
-							<a class="item" href="#" {{action 'onShowEmptyDocModal'}}>Blank canvas</a>
+							<a class="item" href="#" {{action "onShowEmptyDocModal"}}>Blank canvas</a>
 							{{#if hasTemplates}}
-								<a class="item" href="#" {{action 'onShowTemplateDocModal'}}>From template</a>
+								<a class="item" href="#" {{action "onShowTemplateDocModal"}}>From template</a>
 							{{/if}}
-							<a class="item" href="#" {{action 'onShowImportDocModal'}}>Import files</a>
+							<a class="item" href="#" {{action "onShowImportDocModal"}}>Import files</a>
 						</div>
 					{{/attach-popover}}
 				</button>
@@ -21,16 +21,16 @@
 					<div class="modal-content">
 						<div class="modal-header">Blank Canvas</div>
 						<div class="modal-body">
-							<form onsubmit={{action 'onAddEmptyDoc'}}>
+							<form onsubmit={{action "onAddEmptyDoc"}}>
 								<div class="form-group">
 									<label for="empty-doc-name">Document Name</label>
-									{{input id="empty-doc-name" type="text" value=emptyDocName placeholder="Enter name" class=(if emptyDocNameError 'form-control mousetrap is-invalid' 'form-control mousetrap') autocomplete="off"}}
+									{{input id="empty-doc-name" type="text" value=emptyDocName placeholder="Enter name" class=(if emptyDocNameError "form-control mousetrap is-invalid" "form-control mousetrap") autocomplete="off"}}
 								</div>
 							</form>
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-							<button type="button" class="btn btn-success" onclick={{action 'onAddEmptyDoc'}}>Add</button>
+							<button type="button" class="btn btn-success" onclick={{action "onAddEmptyDoc"}}>Add</button>
 						</div>
 					</div>
 				</div>
@@ -40,17 +40,17 @@
 					<div class="modal-content">
 						<div class="modal-header">From Template</div>
 						<div class="modal-body">
-							<form onsubmit={{action 'onAddTemplateDoc'}}>
+							<form onsubmit={{action "onAddTemplateDoc"}}>
 								<div class="form-group">
 									<label for="template-doc-name">Document Name</label>
-									{{input id="template-doc-name" type="text" value=templateDocName placeholder="Enter name" class=(if templateDocNameError 'form-control mousetrap is-invalid' 'form-control mousetrap') autocomplete="off"}}
+									{{input id="template-doc-name" type="text" value=templateDocName placeholder="Enter name" class=(if templateDocNameError "form-control mousetrap is-invalid" "form-control mousetrap") autocomplete="off"}}
 								</div>
 								<div class="widget-list-picker">
 									<ul class="options">
 										{{#each templates as |item|}}
-											<li class="option {{if item.selected 'selected'}}" {{action 'onSelectTemplate' item}}>
+											<li class="option {{if item.selected "selected"}}" {{action "onSelectTemplate" item}}>
 												<div class="text text-truncate">
-													{{item.title}}<br/>{{item.description}}
+													{{item.title}}<br>{{item.description}}
 												</div>
 												{{#if item.selected}}
 													<i class="material-icons">check</i>
@@ -63,7 +63,7 @@
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-							<button type="button" class="btn btn-success" onclick={{action 'onAddTemplateDoc'}}>Add</button>
+							<button type="button" class="btn btn-success" onclick={{action "onAddTemplateDoc"}}>Add</button>
 						</div>
 					</div>
 				</div>
@@ -75,11 +75,11 @@
 						<div class="modal-body">
 							<div class="import-zone">
 								<button id="import-document-button" type="button" class="btn btn-outline-secondary btn-lg btn-block">
-									<br/>
+									<br>
 									Click to select files or drag-drop files
-									<br/><br/>
+									<br><br>
 									.doc, .docx, .md, .markdown
-									<br/><br/>
+									<br><br>
 								</button>
 								<div class="import-status">
 									{{#each importStatus as |status|}}
@@ -99,7 +99,7 @@
 
 	<div class="col-6 text-right">
 		{{#if hasDocuments}}
-			<div id="space-export-button" class="button-icon-danger align-middle" {{action 'onShowExport'}}>
+			<div id="space-export-button" class="button-icon-danger align-middle" {{action "onShowExport"}}>
 				<i class="material-icons">import_export</i>
 				{{#attach-tooltip showDelay=1000}}Export as HTML{{/attach-tooltip}}
 			</div>
@@ -107,13 +107,13 @@
 
 		{{#if pinState.isPinned}}
 			<div class="button-icon-gap" />
-			<div id="space-pin-button" class="button-icon-gold align-middle" {{action 'onUnpin'}}>
+			<div id="space-pin-button" class="button-icon-gold align-middle" {{action "onUnpin"}}>
 				<i class="material-icons">star</i>
 				{{#attach-tooltip showDelay=1000}}Remove bookmark{{/attach-tooltip}}
 			</div>
 		{{else if session.authenticated}}
 			<div class="button-icon-gap" />
-			<div id="space-pin-button" class="button-icon-gray align-middle" {{action 'onPin'}}>
+			<div id="space-pin-button" class="button-icon-gray align-middle" {{action "onPin"}}>
 				<i class="material-icons">star</i>
 				{{#attach-tooltip showDelay=1000}}Bookmark{{/attach-tooltip}}
 			</div>
@@ -121,7 +121,7 @@
 
 		{{#if (or permissions.spaceOwner permissions.spaceManage)}}
 			<div class="button-icon-gap" />
-			{{#link-to 'folder.settings' space.id space.slug class="button-icon-gray align-middle"}}
+			{{#link-to "folder.settings" space.id space.slug class="button-icon-gray align-middle"}}
 				<i class="material-icons">settings</i>
 				{{#attach-tooltip showDelay=1000}}Settings, permissions, templates{{/attach-tooltip}}
 			{{/link-to}}
@@ -146,7 +146,7 @@
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-				<button type="button" class="btn btn-success" onclick={{action 'onExport'}}>Export</button>
+				<button type="button" class="btn btn-success" onclick={{action "onExport"}}>Export</button>
 			</div>
 		</div>
 	</div>

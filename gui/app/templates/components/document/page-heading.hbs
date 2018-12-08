@@ -13,7 +13,7 @@
 				<div class="page-toolbar" id="page-toolbar-{{ page.id }}">
 					<div class="float-right">
 						{{#if canEdit}}
-							<div id="page-edit-button-{{page.id}}" class="button-icon-gray align-middle d-none d-md-inline-block" {{action 'onEdit'}}>
+							<div id="page-edit-button-{{page.id}}" class="button-icon-gray align-middle d-none d-md-inline-block" {{action "onEdit"}}>
 								<i class="material-icons">mode_edit</i>
 							</div>
 						{{/if}}
@@ -21,36 +21,36 @@
 							<div class="button-icon-gap" />
 							<div id="page-menu-button-{{page.id}}" class="button-icon-gray align-middle">
 								<i class="material-icons">more_vert</i>
-								{{#attach-popover class="ember-attacher-popper" hideOn='clickout' showOn='click' isShown=false}}
+								{{#attach-popover class="ember-attacher-popper" hideOn="clickout" showOn="click" isShown=false}}
 									<div class="menu">
 										{{#if canEdit}}
-											<a class="item" href="#" id={{concat 'edit-page-button-' page.id}} {{action 'onEdit'}}>Edit</a>
+											<a class="item" href="#" id={{concat "edit-page-button-" page.id}} {{action "onEdit"}}>Edit</a>
 										{{/if}}
 										{{#if permissions.documentCopy}}
-											<a class="item" href="#" id={{concat 'copy-page-button-' page.id}} data-toggle="modal" data-target={{concat '#copy-page-modal-' page.id}} data-backdrop="static">Copy</a>
+											<a class="item" href="#" id={{concat "copy-page-button-" page.id}} data-toggle="modal" data-target={{concat "#copy-page-modal-" page.id}} data-backdrop="static">Copy</a>
 										{{/if}}
 										{{#if canMove}}
-											<a class="item" href="#" id={{concat 'move-page-button-' page.id}} data-toggle="modal" data-target={{concat '#move-page-modal-' page.id}} data-backdrop="static">Move</a>
+											<a class="item" href="#" id={{concat "move-page-button-" page.id}} data-toggle="modal" data-target={{concat "#move-page-modal-" page.id}} data-backdrop="static">Move</a>
 										{{/if}}
 										{{#if permissions.documentTemplate}}
-											<a class="item" href="#" id={{concat 'publish-page-button-' page.id}} data-toggle="modal" data-target={{concat '#publish-page-modal-' page.id}} data-backdrop="static">Publish</a>
+											<a class="item" href="#" id={{concat "publish-page-button-" page.id}} data-toggle="modal" data-target={{concat "#publish-page-modal-" page.id}} data-backdrop="static">Publish</a>
 										{{/if}}
 										{{#if canDelete}}
-											<a class="item red" href="#" id={{concat 'delete-page-button-' page.id}} data-toggle="modal" data-target={{concat '#delete-page-modal-' page.id}} data-backdrop="static">Delete</a>
+											<a class="item red" href="#" id={{concat "delete-page-button-" page.id}} data-toggle="modal" data-target={{concat "#delete-page-modal-" page.id}} data-backdrop="static">Delete</a>
 										{{/if}}
 										{{#if (and canEdit state.actionablePage)}}
 											<div class="divider"></div>
 											{{#unless state.indentDisabled}}
-												<a class="item" href="#" id={{concat 'toc-indent-button-' page.id}} {{action 'pageIndent'}}>Indent</a>
+												<a class="item" href="#" id={{concat "toc-indent-button-" page.id}} {{action "pageIndent"}}>Indent</a>
 											{{/unless}}
 											{{#unless state.outdentDisabled}}
-												<a class="item" href="#" id={{concat 'toc-outdent-button-' page.id}} {{action 'pageOutdent'}}>Outdent</a>
+												<a class="item" href="#" id={{concat "toc-outdent-button-" page.id}} {{action "pageOutdent"}}>Outdent</a>
 											{{/unless}}
 											{{#unless state.upDisabled}}
-												<a class="item" href="#" id={{concat 'toc-up-button-' page.id}} {{action 'pageUp'}}>Move up</a>
+												<a class="item" href="#" id={{concat "toc-up-button-" page.id}} {{action "pageUp"}}>Move up</a>
 											{{/unless}}
 											{{#unless state.downDisabled}}
-												<a class="item" href="#" id={{concat 'toc-down-button-' page.id}} {{action 'pageDown'}}>Move down</a>
+												<a class="item" href="#" id={{concat "toc-down-button-" page.id}} {{action "pageDown"}}>Move down</a>
 											{{/unless}}
 										{{/if}}
 									</div>
@@ -65,22 +65,22 @@
 </div>
 
 {{#if permissions.documentCopy}}
-	<div id={{concat 'copy-page-modal-' page.id}} class="modal" tabindex="-1" role="dialog">
+	<div id={{concat "copy-page-modal-" page.id}} class="modal" tabindex="-1" role="dialog">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 				<div class="modal-header">Copy Section</div>
 				<div class="modal-body">
 					<div class="form-group">
 						<label>Destination Document</label>
-						{{focus-input type="text" value=docSearchFilter class="form-control mb-4" placeholder='a OR b, x AND y, "phrase mat*"'}}
+						{{focus-input type="text" value=docSearchFilter class="form-control mb-4" placeholder="a OR b, x AND y, 'phrase mat*'"}}
 					</div>
 					<div class="my-5 document-copy-move">
 						{{#if emptySearch}}
 							<p>No matching documents found.</p>
 						{{/if}}
 						<ul class="documents-list">
-							{{#each docSearchResults key="id" as |result index|}}
-								<li class="document {{if result.selected 'selected'}}" {{action 'onSelectSearchResult' result.documentId}}>
+							{{#each docSearchResults key="id" as |result|}}
+								<li class="document {{if result.selected "selected"}}" {{action "onSelectSearchResult" result.documentId}}>
 									<div class="title">{{result.document}}</div>
 									<div class="space">{{result.space}}</div>
 									<div class="snippet">{{result.excerpt}}</div>
@@ -94,7 +94,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-					<button type="button" class="btn btn-success" onclick={{action 'onCopyPage'}}>Copy</button>
+					<button type="button" class="btn btn-success" onclick={{action "onCopyPage"}}>Copy</button>
 				</div>
 			</div>
 		</div>
@@ -102,22 +102,22 @@
 {{/if}}
 
 {{#if permissions.documentMove}}
-	<div id={{concat 'move-page-modal-' page.id}} class="modal" tabindex="-1" role="dialog">
+	<div id={{concat "move-page-modal-" page.id}} class="modal" tabindex="-1" role="dialog">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 				<div class="modal-header">Move Section</div>
 				<div class="modal-body">
 					<div class="form-group">
 						<label>Destination Document</label>
-						{{focus-input type="text" value=docSearchFilter class="form-control mb-4" placeholder='a OR b, x AND y, "phrase mat*"'}}
+						{{focus-input type="text" value=docSearchFilter class="form-control mb-4" placeholder="a OR b, x AND y, 'phrase mat*'"}}
 					</div>
 					<div class="my-5 document-copy-move">
 						{{#if emptySearch}}
 							<p>No matching documents found.</p>
 						{{/if}}
 						<ul class="documents-list">
-							{{#each docSearchResults key="id" as |result index|}}
-								<li class="document {{if result.selected 'selected'}}" {{action 'onSelectSearchResult' result.documentId}}>
+							{{#each docSearchResults key="id" as |result|}}
+								<li class="document {{if result.selected "selected"}}" {{action "onSelectSearchResult" result.documentId}}>
 									<div class="title">{{result.document}}</div>
 									<div class="space">{{result.space}}</div>
 									<div class="snippet">{{result.excerpt}}</div>
@@ -131,7 +131,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-					<button type="button" class="btn btn-success" onclick={{action 'onMovePage'}}>Move</button>
+					<button type="button" class="btn btn-success" onclick={{action "onMovePage"}}>Move</button>
 				</div>
 			</div>
 		</div>
@@ -139,7 +139,7 @@
 {{/if}}
 
 {{#if permissions.documentDelete}}
-	<div id= {{concat 'delete-page-modal-' page.id}} class="modal" tabindex="-1" role="dialog">
+	<div id= {{concat "delete-page-modal-" page.id}} class="modal" tabindex="-1" role="dialog">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 				<div class="modal-header">Delete Section</div>
@@ -147,8 +147,8 @@
 					<p>Are you sure you want to delete this section?</p>
 					<div class="form-group">
 						<div class="form-check">
-							{{input type="checkbox" class="form-check-input" checked=deleteChildren  id=(concat 'delete-page-check-' page.id)}}
-							<label class="form-check-label" for= {{concat 'delete-page-check-' page.id}}>
+							{{input type="checkbox" class="form-check-input" checked=deleteChildren  id=(concat "delete-page-check-" page.id)}}
+							<label class="form-check-label" for= {{concat "delete-page-check-" page.id}}>
 								Also delete child sections
 							</label>
 						</div>
@@ -156,7 +156,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-					<button type="button" class="btn btn-danger" onclick= {{action 'onDeletePage'}}>Delete</button>
+					<button type="button" class="btn btn-danger" onclick= {{action "onDeletePage"}}>Delete</button>
 				</div>
 			</div>
 		</div>
@@ -164,25 +164,25 @@
 {{/if}}
 
 {{#if permissions.documentTemplate}}
-	<div id={{concat 'publish-page-modal-' page.id}} class="modal" tabindex="-1" role="dialog">
+	<div id={{concat "publish-page-modal-" page.id}} class="modal" tabindex="-1" role="dialog">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 				<div class="modal-header">Publish Reusable Content Block</div>
 				<div class="modal-body">
 					<div class="form-group">
 						<label for="block-title-{{page.id}}">Name</label>
-						{{input id=(concat 'block-title-' page.id) type='text' class="form-control mousetrap" placeholder="Enter name" value=blockTitle}}
+						{{input id=(concat "block-title-" page.id) type="text" class="form-control mousetrap" placeholder="Enter name" value=blockTitle}}
 						<small class="form-text text-muted">Provide a short title for the reusable content block</small>
 					</div>
 					<div class="form-group">
 						<label for="block-desc-{{page.id}}">Description</label>
-						{{textarea id=(concat 'block-desc-' page.id) rows="3" class="form-control mousetrap" placeholder="Enter description" value=blockExcerpt}}
+						{{textarea id=(concat "block-desc-" page.id) rows="3" class="form-control mousetrap" placeholder="Enter description" value=blockExcerpt}}
 						<small class="form-text text-muted">Short description to help others understand the reusable content block</small>
 					</div>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-					<button type="button" class="btn btn-success" onclick={{action 'onSavePageAsBlock'}}>Publish</button>
+					<button type="button" class="btn btn-success" onclick={{action "onSavePageAsBlock"}}>Publish</button>
 				</div>
 			</div>
 		</div>

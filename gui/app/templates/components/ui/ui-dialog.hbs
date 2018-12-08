@@ -1,15 +1,15 @@
-<div id="{{contentId}}" class="modal" tabindex="-1" role="dialog">
+<div id={{contentId}} class="modal" tabindex="-1" role="dialog">
 	<div class="modal-dialog {{size}}" role="document">
 		<div class="modal-content">
 			<div class="modal-header">{{title}}</div>
 			<div class="modal-body">
-				<form onsubmit={{action 'onAction'}}>
+				<form onsubmit={{action "onAction"}}>
 					 {{yield}}
 				</form>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-outline-secondary" data-dismiss="modal" {{action 'onCancel'}}>{{cancelCaption}}</button>
-				<button type="button" class="btn {{buttonType}}" onclick={{action 'onAction'}}>{{confirmCaption}}</button>
+				<button type="button" class="btn btn-outline-secondary" data-dismiss="modal" {{action "onCancel"}}>{{cancelCaption}}</button>
+				<button type="button" class="btn {{buttonType}}" onclick={{action "onAction"}}>{{confirmCaption}}</button>
 			</div>
 		</div>
 	</div>

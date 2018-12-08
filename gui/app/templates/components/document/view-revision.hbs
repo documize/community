@@ -5,7 +5,7 @@
 		<div class="row">
 			<div class="col-12">
 				<div class="form-group">
-					{{ui-select tagName="span" class="revision-picker" content=revisions action=(action 'onSelectRevision') optionValuePath="id" optionLabelPath="label"}}
+					{{ui-select tagName="span" class="revision-picker" content=revisions action=(action "onSelectRevision") optionValuePath="id" optionLabelPath="label"}}
 				</div>
 			</div>
 		</div>
@@ -41,7 +41,7 @@
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-				<button type="button" class="btn btn-success" onclick={{action 'onRollback'}}>Restore</button>
+				<button type="button" class="btn btn-success" onclick={{action "onRollback"}}>Restore</button>
 			</div>
 		</div>
 	</div>

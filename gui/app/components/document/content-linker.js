@@ -10,7 +10,7 @@
 // https://documize.com
 
 import { debounce } from '@ember/runloop';
-import { computed, set } from '@ember/object';
+import { computed, set, observer } from '@ember/object';
 import { inject as service } from '@ember/service';
 import stringUtil from '../../utils/string';
 import ModalMixin from '../../mixins/modal';
@@ -35,7 +35,7 @@ export default Component.extend(ModalMixin, {
 	}),
 	modalId: computed('page', function() { return '#content-linker-modal-' + this.get('page.id'); }),
 	showModal: false,
-	onToggle: function() {
+	onToggle: observer('showModal', function() {
 		let modalId = this.get('modalId');
 
 		if (!this.get('showModal')) {
@@ -55,7 +55,7 @@ export default Component.extend(ModalMixin, {
 		});
 
 		this.modalOpen(modalId, {show: true});
-	}.observes('showModal'),
+	}),
 
 	init() {
 		this._super(...arguments);
@@ -77,9 +77,9 @@ export default Component.extend(ModalMixin, {
 		this.modalClose(this.get('modalId'));
 	},
 
-	onKeywordChange: function() {
+	onKeywordChange: observer('keywords', function() {
 		debounce(this, this.fetch, 750);
-	}.observes('keywords'),
+	}),
 
 	fetch() {
 		let keywords = this.get('keywords');
