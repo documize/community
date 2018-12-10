@@ -1747,11 +1747,11 @@
 	border-color: map-get($yellow-shades, 300);
   }
   .iziToast.iziToast-color-blue {
-	background: rgba(157,222,255,0.9);
-	border-color: rgba(157,222,255,0.9);
+	background: map-get($gray-shades, 500);
+	border-color: map-get($gray-shades, 500);
   }
   .iziToast.iziToast-color-green {
-	background: map-get($green-shades, 300);
-	border-color: map-get($green-shades, 300);
+	background: map-get($green-shades, 400);
+	border-color: map-get($green-shades, 400);
   }
 

@@ -29,6 +29,14 @@ export default Controller.extend(Notifier, {
 
 		onError() {
 			this.notifyError('Unable to save changes');
+		},
+
+		onButtonClick(v) {
+			console.log(v); // eslint-disable-line no-console
+		},
+
+		onToolbarClick(v) {
+			console.log(v); // eslint-disable-line no-console
 		}
 	}
 });
