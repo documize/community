@@ -1,6 +1,11 @@
 // https://github.com/kybishop/ember-attacher
 
 .ember-attacher-tooltip {
-	font-size: 0.9rem;
-	padding: 0.5rem 0.75rem;
+	font-size: 0.9rem !important;
+	padding: 0.5rem 0.75rem !important;
+	background-color: map-get($gray-shades, 600) !important;
+
+	> div {
+		background-color: map-get($gray-shades, 600) !important;
+	}
 }

@@ -33,7 +33,7 @@
 				</div>
 				<div class="form-group">
 					<label for="group-dropdown">Group</label>
-					{{ui-select id="group-dropdown" prompt="<group>" content=options.groups action=(action "onGroupsChange") optionValuePath="id" optionLabelPath="name" selection=config.group}}
+					{{ui/ui-select id="group-dropdown" prompt="<group>" content=options.groups action=(action "onGroupsChange") optionValuePath="id" optionLabelPath="name" selection=config.group}}
 					<small class="form-text text-muted">Optional Papertrail group</small>
 				</div>
 			</form>

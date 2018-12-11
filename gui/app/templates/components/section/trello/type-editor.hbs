@@ -9,7 +9,7 @@
 			{{else}}
 				<div class="form-group">
 					<label>Select Board</label>
-					{{ui-select id="boards-dropdown" content=boards action=(action "onBoardChange") optionValuePath="id" optionLabelPath="name" selection=config.board}}
+					{{ui/ui-select id="boards-dropdown" content=boards action=(action "onBoardChange") optionValuePath="id" optionLabelPath="name" selection=config.board}}
 				</div>
 				<div class="form-group">
 					<label for="airtable-embed-cod">Select Lists</label>

@@ -11,9 +11,9 @@
 
 import $ from 'jquery';
 import { empty, and } from '@ember/object/computed';
-import Component from '@ember/component';
 import { isEqual, isEmpty } from '@ember/utils';
 import { set } from '@ember/object';
+import Component from '@ember/component';
 
 export default Component.extend({
 	password: "",

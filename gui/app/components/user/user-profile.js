@@ -14,7 +14,7 @@ import { empty } from '@ember/object/computed';
 import { computed, set } from '@ember/object';
 import { isPresent, isEqual, isEmpty } from '@ember/utils';
 import { inject as service } from '@ember/service';
-import AuthProvider from '../mixins/auth';
+import AuthProvider from '../../mixins/auth';
 import Component from '@ember/component';
 
 export default Component.extend(AuthProvider, {

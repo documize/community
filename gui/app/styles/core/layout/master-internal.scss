@@ -1,9 +1,3 @@
-$display-break-1: 700px;
-$display-break-2: 900px;
-$display-break-3: 1200px;
-$display-break-4: 1600px;
-$display-break-5: 1800px;
-
 // CSS GRID WITH FIXED SIDEBAR OUTSIDE GRID
 // Mobile-first layout
 .master-container {
@@ -121,7 +115,7 @@ $display-break-5: 1800px;
 
 		.master-content {
 			grid-column-start: 2;
-			padding: 10px;
+			padding: 20px;
 		}
 	}
 
@@ -304,6 +298,7 @@ $display-break-5: 1800px;
 
 		.master-content {
 			grid-column-start: 2;
+			padding: 40px 30px;
 		}
 	}
 
@@ -335,10 +330,11 @@ $display-break-5: 1800px;
 @media (min-width: $display-break-4) {
 	.master-container {
 		display: grid;
-		grid-template-columns: 370px auto;
+		grid-template-columns: 370px  minmax(auto, 1200px);
 
 		.master-content {
 			grid-column-start: 2;
+			padding: 40px 40px;
 		}
 	}
 

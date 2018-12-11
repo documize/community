@@ -16,12 +16,14 @@ export default Component.extend({
 	tagName: 'button',
 	classNames: [],
 	classNameBindings: ['calcClass'],
+	attributeBindings: ['calcAttrs:data-dismiss'],
 
 	label: '',
 	icon: '',
 	color: '',
 	light: false,
 	themed: false,
+	dismiss: false,
 
 	iconClass: '',
 	hasIcon: computed('iconClass', function() {
@@ -30,15 +32,7 @@ export default Component.extend({
 
 	calcClass: computed(function() {
 		// Prepare icon class name
-		let ic = '';
-		let icon = this.icon;
-
-		if (icon === 'delete') ic = 'dicon-bin';
-		if (icon === 'print') ic = 'dicon-print';
-		if (icon === 'settings') ic = 'dicon-settings-gear';
-		if (icon === 'plus') ic = 'dicon-e-add';
-		if (icon === 'person') ic = 'dicon-single-01';
-		this.iconClass = ic;
+		this.iconClass = this.icon;
 
 		// Prepare button class name
 		let bc = 'dmz-button';
@@ -55,7 +49,17 @@ export default Component.extend({
 		return bc;
 	}),
 
-	click() {
-		this.onClick();
+	calcAttrs: computed(function() {
+		if (this.dismiss) {
+			return 'modal';
+		}
+
+		return null;
+	}),
+
+	click(e) {
+		if (is.not.undefined(this.onClick)) {
+			this.onClick(e);
+		}
 	}
 });

@@ -9,46 +9,41 @@
 //
 // https://documize.com
 
+import { inject as service } from '@ember/service';
 import { computed } from '@ember/object';
 import Component from '@ember/component';
 
 export default Component.extend({
+	router: service(),
 	tagName: 'i',
 	classNames: ['dicon'],
 	classNameBindings: ['calcClass'],
 
 	color: '',
 	icon: '',
+	tooltip: '',
 
 	calcClass: computed(function() {
 		let c = '';
 		let icon = this.icon;
 
-		switch (this.color) {
-			case 'red':
-				c += 'red';
-				break;
-			case 'yellow':
-				c += 'yellow';
-				break;
-			case 'green':
-				c += 'green';
-				break;
-		}
-		c += ' ';
+		if (this.color !== '') c += this.color + ' ';
 
-		if (icon === 'delete') c += 'dicon-bin';
-		if (icon === 'print') c += 'dicon-print';
-		if (icon === 'settings') c += 'dicon-settings-gear';
-		if (icon === 'plus') c += 'dicon-e-add';
-		if (icon === 'person') c += 'dicon-single-01';
-		c += ' ';
-
+		if (icon !== '') c += icon + ' ';
 
 		return c.trim();
 	}),
 
-	click() {
-		this.onClick();
+	click(e) {
+		if (is.not.undefined(this.onClick)) {
+			this.onClick(e);
+			return;
+		}
+		if (is.not.undefined(this.linkTo)) {
+			// TODO:
+			// Pass in linkModel, linkOptions
+			// https://emberjs.com/api/ember/3.5/classes/RouterService/methods/transitionTo?anchor=transitionTo
+			this.router.transitionTo(this.linkTo);
+		}
 	}
 });

@@ -192,6 +192,31 @@ let constants = EmberObject.extend({
 
 		// Seats6 is unlimited.
 		Seats6: 9999
+	},
+
+	Icon: { // eslint-disable-line ember/avoid-leaking-state-in-ember-objects
+		Delete: 'dicon-bin',
+		Print: 'dicon-print',
+		Plus: 'dicon-e-add',
+		Person: 'dicon-single-01',
+		Settings: 'dicon-settings-gear',
+	},
+
+	Color: { // eslint-disable-line ember/avoid-leaking-state-in-ember-objects
+		Red: 'red',
+		Green: 'green',
+		Yellow: 'yellow',
+		Gray: 'gray'
+	},
+
+	Label: { // eslint-disable-line ember/avoid-leaking-state-in-ember-objects
+		Add: 'Add',
+		Cancel: 'Cancel',
+		Close: 'Close',
+		Delete: 'Delete',
+		Insert: 'Insert',
+		Save: 'Save',
+		Update: 'Update',
 	}
 });
 

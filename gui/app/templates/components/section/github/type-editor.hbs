@@ -5,7 +5,7 @@
 			<div class="col-6">
 				<div class="form-group">
 					<label>Select Organization</label>
-					{{ui-select id="owners-dropdown" content=owners action=(action "onOwnerChange") optionValuePath="id" optionLabelPath="name" selection=config.owner}}
+					{{ui/ui-select id="owners-dropdown" content=owners action=(action "onOwnerChange") optionValuePath="id" optionLabelPath="name" selection=config.owner}}
 					<small class="form-text text-muted">Select organization or user whose repository you want to show</small>
 				</div>
 				<div class="form-group">
