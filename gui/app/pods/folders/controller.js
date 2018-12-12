@@ -27,6 +27,12 @@ export default Controller.extend(AuthMixin, Modals, {
 	hasClone: notEmpty('clonedSpace.id'),
 	clonedSpace: null,
 
+	selectedView: 'all',
+	selectedSpaces: null,
+	publicSpaces: null,
+	protectedSpaces: null,
+	personalSpaces: null,
+
 	actions: {
 		onShowModal() {
 			this.modalOpen('#add-space-modal', {'show': true}, '#new-space-name');
@@ -65,6 +71,25 @@ export default Controller.extend(AuthMixin, Modals, {
 				this.get('folderService').setCurrentFolder(sp);
 				this.transitionToRoute('folder', sp.get('id'), sp.get('slug'));
 			});
+		},
+
+		onSelect(view) {
+			this.set('selectedView', view);
+
+			switch(view) {
+				case 'all':
+					this.set('selectedSpaces', this.get('model'));
+					break;
+				case 'public':
+					this.set('selectedSpaces', this.get('publicSpaces'));
+					break;
+				case 'protected':
+					this.set('selectedSpaces', this.get('protectedSpaces'));
+					break;
+				case 'personal':
+					this.set('selectedSpaces', this.get('personalSpaces'));
+					break;
+			}
 		}
 	}
 });

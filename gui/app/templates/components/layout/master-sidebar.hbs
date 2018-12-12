@@ -2,29 +2,29 @@
 	<div class="nav-content">
 		<div class="nav-options">
 			{{#link-to "folders" class=(if (eq selectedItem "spaces") "option selected" "option")}}
-				<i class="dicon dicon-grid-interface"></i>
+				<i class={{concat "dicon " constants.Icon.Grid1}}></i>
 				<div class="name">spaces</div>
 			{{/link-to}}
 			{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
 				{{#if session.viewDashboard}}
 					{{#link-to "dashboard" class=(if (eq selectedItem "actions") "option selected" "option")}}
-						<i class="dicon dicon-list-bullet-2"></i>
+						<i class={{concat "dicon " constants.Icon.ListBullet}}></i>
 						<div class="name">actions</div>
 					{{/link-to}}
 					{{#link-to "activity" class=(if (eq selectedItem "activity") "option selected" "option")}}
-						<i class="dicon dicon-pulse"></i>
+						<i class={{concat "dicon " constants.Icon.Pulse}}></i>
 						<div class="name">activity</div>
 					{{/link-to}}
 				{{/if}}
 				{{#if session.viewAnalytics}}
 					{{#link-to "analytics" class=(if (eq selectedItem "analytics") "option selected" "option")}}
-						<i class="dicon dicon-chart-bar-33"></i>
+						<i class={{concat "dicon " constants.Icon.BarChart}}></i>
 						<div class="name">reports</div>
 					{{/link-to}}
 				{{/if}}
 			{{/if}}
 			{{#link-to "search" class=(if (eq selectedItem "spaces") "option selected" "option")}}
-				<i class="dicon dicon-magnifier"></i>
+				<i class={{concat "dicon " constants.Icon.Search}}></i>
 				<div class="name">search</div>
 			{{/link-to}}
 		</div>
@@ -33,7 +33,7 @@
 			{{#if session.authenticated}}
 				{{#if hasPins}}
 					<div class="bookmarks" id="user-pins-button">
-						<i class="dicon dicon-bookmark"></i>
+						<i class={{concat "dicon " constants.Icon.Bookmark}}></i>
 						{{#attach-popover class="ember-attacher-popper" hideOn="clickout" showOn="click" isShown=false}}
 							<div class="menu">
 								{{#if hasSpacePins}}
@@ -165,5 +165,7 @@
 	{{/if}}
 </div>
 <div class="master-sidebar">
-	{{yield}}
+	<div class="sidebar-content">
+		{{yield}}
+	</div>
 </div>

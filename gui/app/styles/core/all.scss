@@ -29,18 +29,21 @@
 .background-color-theme-200 { background-color: $theme-200; }
 .background-color-theme-100 { background-color: $theme-100; }
 
+@import "reset.scss";
 @import "font.scss";
 @import "icon.scss";
 @import "mixins.scss";
-@import "base.scss";
+@import "layout/all.scss";
+@import "util.scss";
+@import "text.scss";
 @import "bootstrap.scss";
+
 
 @import "view/common.scss";
 @import "widget/widget.scss";
 @import "ui/all.scss";
 @import "view/toolbar.scss";
 @import "view/views.scss";
-@import "layout/all.scss";
 
 @import "vendor/all.scss";
 @import "print.scss";

@@ -29,7 +29,33 @@ export default Route.extend(AuthenticatedRouteMixin, {
 		return this.get('folderService').getAll();
 	},
 
+	setupController(controller, model) {
+		this._super(controller, model);
+		controller.set('selectedSpaces', model);
+
+		let constants = this.get('constants');
+		let publicSpaces = [];
+		let protectedSpaces = [];
+		let personalSpaces = [];
+
+		_.each(model, space => {
+			if (space.get('spaceType') === constants.SpaceType.Public) {
+				publicSpaces.pushObject(space);
+			}
+			if (space.get('spaceType') === constants.SpaceType.Private) {
+				personalSpaces.pushObject(space);
+			}
+			if (space.get('spaceType') === constants.SpaceType.Protected) {
+				protectedSpaces.pushObject(space);
+			}
+		});
+
+		controller.set('publicSpaces', publicSpaces);
+		controller.set('protectedSpaces', protectedSpaces);
+		controller.set('personalSpaces', personalSpaces);
+	},
+
 	activate() {
 		this.get('browser').setTitle('Spaces');
-	}	
+	}
 });

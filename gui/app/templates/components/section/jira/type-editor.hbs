@@ -3,7 +3,7 @@
 <div class="row">
 	<div class="col-12 mb-5">
 		{{#if session.isAdmin}}
-			{{#link-to "customize.integrations" class="btn btn-outline-secondary font-weight-bold"}}
+			{{#link-to "customize.integrations" class="btn btn-outline-secondary bold-700"}}
 				Configure Jira Connector
 			{{/link-to}}
 		{{else}}
@@ -22,7 +22,7 @@
 					<label for="gemini-url">Jira Query Language</label>
 					{{focus-input id="jira-jql" type="text" value=config.jql class="form-control" placeholder="e.g. (status = resolved AND project = SysAdmin) OR assignee = bobsmith"}}
 				</div>
-				<button type="submit" class="btn btn-secondary font-weight-bold">Preview</button>
+				<button type="submit" class="btn btn-secondary bold-700">Preview</button>
 			</form>
 		</div>
 	</div>

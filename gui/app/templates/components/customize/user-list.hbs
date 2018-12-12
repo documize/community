@@ -1,37 +1,38 @@
 <div class="view-customize my-5">
 	{{#if isAuthProviderKeycloak}}
-		{{#if syncInProgress}}
-			<div class="btn btn-secondary mt-3 mb-3">Keycloak user sync running...</div>
-		{{else}}
-			<div class="btn btn-success mt-3 mb-3" {{action "onSyncKeycloak"}}>Sync with Keycloak</div>
-		{{/if}}
+	{{#if syncInProgress}}
+	<div class="btn btn-secondary mt-3 mb-3">Keycloak user sync running...</div>
+	{{else}}
+	<div class="btn btn-success mt-3 mb-3" {{action "onSyncKeycloak"}}>Sync with Keycloak</div>
+	{{/if}}
 	{{/if}}
 	{{#if isAuthProviderLDAP}}
-		{{#if syncInProgress}}
-			<div class="btn btn-secondary mt-3 mb-3">LDAP user sync running...</div>
-		{{else}}
-			<div class="btn btn-success mt-3 mb-3" {{action "onSyncLDAP"}}>Sync with LDAP</div>
-		{{/if}}
+	{{#if syncInProgress}}
+	<div class="btn btn-secondary mt-3 mb-3">LDAP user sync running...</div>
+	{{else}}
+	<div class="btn btn-success mt-3 mb-3" {{action "onSyncLDAP"}}>Sync with LDAP</div>
+	{{/if}}
 	{{/if}}
 
 	<div class="my-2">
-		<span class="font-weight-bold">Spaces</span>
+		<span class="bold-700">Spaces</span>
 		<span class="text-muted">&nbsp;&nbsp;&mdash;&nbsp;can add spaces, both personal and shared with others</span>
 	</div>
 	<div class="my-2">
-		<span class="font-weight-bold">Visible</span>
-		<span class="text-muted">&nbsp;&nbsp;&mdash;&nbsp;can see names of users and groups, can disable for external users like customers/partners</span>
+		<span class="bold-700">Visible</span>
+		<span class="text-muted">&nbsp;&nbsp;&mdash;&nbsp;can see names of users and groups, can disable for external users
+			like customers/partners</span>
 	</div>
 	<div class="my-2">
-		<span class="font-weight-bold">Admin</span>
+		<span class="bold-700">Admin</span>
 		<span class="text-muted">&nbsp;&nbsp;&mdash;&nbsp;can manage all aspects of Documize, like this screen</span>
 	</div>
 	<div class="my-2">
-		<span class="font-weight-bold">Analytics</span>
+		<span class="bold-700">Analytics</span>
 		<span class="text-muted">&nbsp;&nbsp;&mdash;&nbsp;can view analytical reports</span>
 	</div>
 	<div class="mt-2 mb-4">
-		<span class="font-weight-bold">Active</span>
+		<span class="bold-700">Active</span>
 		<span class="text-muted">&nbsp;&nbsp;&mdash;&nbsp;can login and use Documize</span>
 	</div>
 
@@ -78,7 +79,8 @@
 			<tr>
 				<th class="text-muted">
 					{{#if hasSelectedUsers}}
-						<button id="bulk-delete-users" type="button" class="btn btn-danger" data-toggle="modal" data-target="#admin-user-delete-modal" data-backdrop="static">Delete selected users</button>
+					<button id="bulk-delete-users" type="button" class="btn btn-danger" data-toggle="modal" data-target="#admin-user-delete-modal"
+					 data-backdrop="static">Delete selected users</button>
 					{{/if}}
 				</th>
 				<th class="no-width">Spaces</th>
@@ -92,83 +94,86 @@
 		</thead>
 		<tbody>
 			{{#each users key="id" as |user|}}
-				<tr>
-					<td class="{{unless user.active "inactive-user"}} {{if user.admin "admin-user"}}">
-						<div class="d-inline-block align-top">
-							{{#if user.me}}
-								<i class="material-icons color-gray-700">check_box_outline_blank</i>
-							{{else if user.selected}}
-								<i class="material-icons checkbox" {{action "toggleSelect" user}}>check_box</i>
+			<tr>
+				<td class="{{unless user.active "inactive-user"}} {{if user.admin "admin-user"}}">
+					<div class="d-inline-block align-top">
+						{{#if user.me}}
+						<i class="material-icons color-gray-700">check_box_outline_blank</i>
+						{{else if user.selected}}
+						<i class="material-icons checkbox" {{action "toggleSelect" user}}>check_box</i>
+						{{else}}
+						<i class="material-icons checkbox" {{action "toggleSelect" user}}>check_box_outline_blank</i>
+						{{/if}}
+					</div>
+					<div class="d-inline-block">
+						<div class="name" {{action "onShowEdit" user.id}}>{{user.fullname}}<div class="email">&nbsp;&nbsp;({{user.email}})</div>
+						</div>
+						<div class="groups" {{action "onShowGroupsModal" user.id}}>
+							{{#each user.groups as |group|}}
+							<span class="group">
+								{{group.name}}{{#if (not-eq group user.groups.lastObject)}}, {{/if}}
+							</span>
 							{{else}}
-								<i class="material-icons checkbox" {{action "toggleSelect" user}}>check_box_outline_blank</i>
-							{{/if}}
+							<span class="group">&lt;no groups&gt;</span>
+							{{/each}}
 						</div>
-						<div class="d-inline-block">
-							<div class="name" {{action "onShowEdit" user.id}}>{{user.fullname}}<div class="email">&nbsp;&nbsp;({{user.email}})</div></div>
-							<div class="groups" {{action "onShowGroupsModal" user.id}}>
-								{{#each user.groups as |group|}}
-									<span class="group">
-										{{group.name}}{{#if (not-eq group user.groups.lastObject)}}, {{/if}}
-									</span>
-								{{else}}
-									<span class="group">&lt;no groups&gt;</span>
-								{{/each}}
-							</div>
-						</div>
-					</td>
-					<td class="no-width text-center">
-						{{#if user.editor}}
-							<i class="material-icons checkbox" {{action "toggleEditor" user.id}}>check_box</i>
-						{{else}}
-							<i class="material-icons checkbox" {{action "toggleEditor" user.id}}>check_box_outline_blank</i>
-						{{/if}}
-					</td>
-					<td class="no-width text-center">
-						{{#if user.viewUsers}}
-							<i class="material-icons checkbox" {{action "toggleUsers" user.id}}>check_box</i>
-						{{else}}
-							<i class="material-icons checkbox" {{action "toggleUsers" user.id}}>check_box_outline_blank</i>
-						{{/if}}
-					</td>
-					<td class="no-width text-center">
-						{{#if user.me}}
-							<i class="material-icons color-gray-700">check_box</i>
-						{{else if user.admin}}
-							<i class="material-icons checkbox" {{action "toggleAdmin" user.id}}>check_box</i>
-						{{else}}
-							<i class="material-icons checkbox" {{action "toggleAdmin" user.id}}>check_box_outline_blank</i>
-						{{/if}}
-					</td>
-					<td class="no-width text-center">
-						{{#if user.analytics}}
-							<i class="material-icons checkbox" {{action "toggleAnalytics" user.id}}>check_box</i>
-						{{else}}
-							<i class="material-icons checkbox" {{action "toggleAnalytics" user.id}}>check_box_outline_blank</i>
-						{{/if}}
-					</td>
-					<td class="no-width text-center">
-						{{#if user.me}}
-							<i class="material-icons color-gray-700">check_box</i>
-						{{else if user.active}}
-							<i class="material-icons checkbox" {{action "toggleActive" user.id}}>check_box</i>
-						{{else}}
-							<i class="material-icons checkbox" {{action "toggleActive" user.id}}>check_box_outline_blank</i>
-						{{/if}}
-					</td>
-					<td class="no-width text-center">
-						<div class="user-button-{{user.id}} button-icon-gray button-icon-small" title="Edit" {{action "onShowEdit" user.id}}>
-							<i class="material-icons">mode_edit</i>
-							{{#attach-tooltip showDelay=1000}}Edit user{{/attach-tooltip}}
-						</div>
-						{{#unless user.me}}
-							<div class="button-icon-gap" />
-							<div class="delete-button-{{user.id}} button-icon-red button-icon-small" title="Delete" {{action "onShowDelete" user.id}}>
-								<i class="material-icons">delete</i>
-								{{#attach-tooltip showDelay=1000}}Delete user{{/attach-tooltip}}
-							</div>
-						{{/unless}}
-					</td>
-				</tr>
+					</div>
+				</td>
+				<td class="no-width text-center">
+					{{#if user.editor}}
+					<i class="material-icons checkbox" {{action "toggleEditor" user.id}}>check_box</i>
+					{{else}}
+					<i class="material-icons checkbox" {{action "toggleEditor" user.id}}>check_box_outline_blank</i>
+					{{/if}}
+				</td>
+				<td class="no-width text-center">
+					{{#if user.viewUsers}}
+					<i class="material-icons checkbox" {{action "toggleUsers" user.id}}>check_box</i>
+					{{else}}
+					<i class="material-icons checkbox" {{action "toggleUsers" user.id}}>check_box_outline_blank</i>
+					{{/if}}
+				</td>
+				<td class="no-width text-center">
+					{{#if user.me}}
+					<i class="material-icons color-gray-700">check_box</i>
+					{{else if user.admin}}
+					<i class="material-icons checkbox" {{action "toggleAdmin" user.id}}>check_box</i>
+					{{else}}
+					<i class="material-icons checkbox" {{action "toggleAdmin" user.id}}>check_box_outline_blank</i>
+					{{/if}}
+				</td>
+				<td class="no-width text-center">
+					{{#if user.analytics}}
+					<i class="material-icons checkbox" {{action "toggleAnalytics" user.id}}>check_box</i>
+					{{else}}
+					<i class="material-icons checkbox" {{action "toggleAnalytics" user.id}}>check_box_outline_blank</i>
+					{{/if}}
+				</td>
+				<td class="no-width text-center">
+					{{#if user.me}}
+					<i class="material-icons color-gray-700">check_box</i>
+					{{else if user.active}}
+					<i class="material-icons checkbox" {{action "toggleActive" user.id}}>check_box</i>
+					{{else}}
+					<i class="material-icons checkbox" {{action "toggleActive" user.id}}>check_box_outline_blank</i>
+					{{/if}}
+				</td>
+				<td class="no-width text-center">
+					<div class="user-button-{{user.id}} button-icon-gray button-icon-small" title="Edit"
+					 {{action "onShowEdit" user.id}}>
+						<i class="material-icons">mode_edit</i>
+						{{#attach-tooltip showDelay=1000}}Edit user{{/attach-tooltip}}
+					</div>
+					{{#unless user.me}}
+					<div class="button-icon-gap" />
+					<div class="delete-button-{{user.id}} button-icon-red button-icon-small" title="Delete"
+					 {{action "onShowDelete" user.id}}>
+						<i class="material-icons">delete</i>
+						{{#attach-tooltip showDelay=1000}}Delete user{{/attach-tooltip}}
+					</div>
+					{{/unless}}
+				</td>
+			</tr>
 			{{/each}}
 		</tbody>
 	</table>
@@ -193,22 +198,22 @@
 						{{input id="edit-email" type="text" class="form-control" value=editUser.email}}
 					</div>
 					{{#if isAuthProviderDocumize}}
-						<div class="row">
-							<div class="col-md-6">
-								<div class="form-group">
-									<label for="edit-password">Password</label>
-									{{input id="edit-password" type="password" class="form-control" value=password.password}}
-									<small class="form-text text-muted">Optional new password</small>
-								</div>
-							</div>
-							<div class="col-md-6">
-								<div class="form-group">
-									<label for="edit-confirmPassword">Confirm Password</label>
-									{{input id="edit-confirmPassword" type="password" class="form-control" value=password.confirmation}}
-									<small class="form-text text-muted">Confirm new password</small>
-								</div>
+					<div class="row">
+						<div class="col-md-6">
+							<div class="form-group">
+								<label for="edit-password">Password</label>
+								{{input id="edit-password" type="password" class="form-control" value=password.password}}
+								<small class="form-text text-muted">Optional new password</small>
 							</div>
 						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label for="edit-confirmPassword">Confirm Password</label>
+								{{input id="edit-confirmPassword" type="password" class="form-control" value=password.confirmation}}
+								<small class="form-text text-muted">Confirm new password</small>
+							</div>
+						</div>
+					</div>
 					{{/if}}
 				</form>
 			</div>
@@ -220,8 +225,9 @@
 	</div>
 </div>
 
-{{#ui/ui-dialog title="Delete User" confirmCaption="Delete" buttonType="btn-danger" show=showDeleteDialog onAction=(action "onDelete")}}
-	<p>Are you sure you want to delete {{deleteUser.fullname}}?</p>
+{{#ui/ui-dialog title="Delete User" confirmCaption="Delete" buttonType="btn-danger" show=showDeleteDialog
+onAction=(action "onDelete")}}
+<p>Are you sure you want to delete {{deleteUser.fullname}}?</p>
 {{/ui/ui-dialog}}
 
 <div id="admin-user-delete-modal" class="modal" tabindex="-1" role="dialog">
@@ -247,20 +253,20 @@
 				<div class="view-customize">
 					<div class="group-membership my-5">
 						{{#each groups as |group|}}
-							<div class="row item">
-								<div class="col-10 group-name">{{group.name}}
-									{{#if group.purpose}}
-										<span class="text-muted group-purpose">&nbsp;&nbsp;&mdash;&nbsp;{{group.purpose}}</span>
-									{{/if}}
-								</div>
-								<div class="col-2 text-right">
-									{{#if group.isMember}}
-										<button class="btn btn-danger" {{action "onLeaveGroup" group.id}}>Leave</button>
-									{{else}}
-										<button class="btn btn-success" {{action "onJoinGroup" group.id}}>Join</button>
-									{{/if}}
-								</div>
+						<div class="row item">
+							<div class="col-10 group-name">{{group.name}}
+								{{#if group.purpose}}
+								<span class="text-muted group-purpose">&nbsp;&nbsp;&mdash;&nbsp;{{group.purpose}}</span>
+								{{/if}}
 							</div>
+							<div class="col-2 text-right">
+								{{#if group.isMember}}
+								<button class="btn btn-danger" {{action "onLeaveGroup" group.id}}>Leave</button>
+								{{else}}
+								<button class="btn btn-success" {{action "onJoinGroup" group.id}}>Join</button>
+								{{/if}}
+							</div>
+						</div>
 						{{/each}}
 					</div>
 				</div>

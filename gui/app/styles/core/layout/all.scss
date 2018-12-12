@@ -1,8 +1,12 @@
+@import "grid.scss";
+@import "spacing.scss";
+@import "headings.scss";
+@import "master-internal.scss";
+@import "sidebar.scss";
+
 @import "layout-master.scss";
 @import "layout-topbar.scss";
 @import "layout-sidebar.scss";
 @import "layout-footer.scss";
 @import "layout-content.scss";
 
-@import "common.scss";
-@import "master-internal.scss";

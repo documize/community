@@ -1,0 +1,57 @@
+// Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
+//
+// This software (Documize Community Edition) is licensed under
+// GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
+//
+// You can operate outside the AGPL restrictions by purchasing
+// Documize Enterprise Edition and obtaining a commercial license
+// by contacting <sales@documize.com>.
+//
+// https://documize.com
+
+html {
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+    -ms-overflow-style: -ms-autohiding-scrollbar;
+	text-rendering: optimizeLegibility;
+	height: 100%;
+	width: 100%;
+	overflow-y: scroll;
+	font-size: 0.875rem;
+}
+
+body {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	// height: 100vh;
+}
+
+ul {
+	margin: 0;
+	padding: 0;
+
+	li {
+		list-style: none;
+		list-style-type: none;
+	}
+}
+
+input:-webkit-autofill {
+	-webkit-box-shadow: 0 0 0 1000px white inset;
+	box-shadow: 0 0 0 1000px white inset;
+}
+
+::-webkit-scrollbar {
+    width: 7px;
+}
+::-webkit-scrollbar-track {
+    background: map-get($gray-shades, 100);
+}
+::-webkit-scrollbar-thumb {
+	background: map-get($gray-shades, 300);
+
+	&:hover {
+		background: map-get($gray-shades, 600);
+	}
+}

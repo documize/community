@@ -1,0 +1,71 @@
+.spacer-100 { height: 10px; }
+.spacer-200 { height: 20px; }
+.spacer-300 { height: 30px; }
+.spacer-400 { height: 40px; }
+.spacer-500 { height: 70px; }
+.spacer-600 { height: 100px; }
+.spacer-700 { height: 120px; }
+.spacer-800 { height: 150px; }
+.spacer-900 { height: 200px; }
+
+@media (max-width: $display-break-1) {
+	div[class^="spacer-"] {
+		height: 1px;
+	}
+}
+
+$i: 150;
+@while $i > 0 {
+	.margin-#{$i} {
+		margin: #{$i}px;
+	}
+
+	.margin-top-#{$i} {
+		margin-top: #{$i}px;
+	}
+
+	.margin-bottom-#{$i} {
+		margin-bottom: #{$i}px;
+	}
+
+	.margin-right-#{$i} {
+		margin-right: #{$i}px;
+	}
+
+	.margin-left-#{$i} {
+		margin-left: #{$i}px;
+	}
+	$i: $i - 5;
+}
+
+$i: 150;
+@while $i > 0 {
+	.padding-#{$i} {
+		padding: #{$i}px;
+	}
+
+	.padding-top-#{$i} {
+		padding-top: #{$i}px;
+	}
+
+	.padding-bottom-#{$i} {
+		padding-bottom: #{$i}px;
+	}
+
+	.padding-right-#{$i} {
+		padding-right: #{$i}px;
+	}
+
+	.padding-left-#{$i} {
+		padding-left: #{$i}px;
+	}
+	$i: $i - 5;
+}
+
+$i: 100;
+@while $i > 0 {
+	.width-#{$i} {
+		width: #{$i}#{"%"} !important;
+	}
+	$i: $i - 1;
+}

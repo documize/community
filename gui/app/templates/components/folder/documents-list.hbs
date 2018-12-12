@@ -8,7 +8,7 @@
 					<div class="snippet">{{ document.excerpt }}</div>
 					{{folder/document-tags documentTags=document.tags}}
 					{{#if (not-eq document.lifecycle constants.Lifecycle.Live)}}
-						<button type="button" class="mt-3 btn btn-warning text-uppercase font-weight-bold">{{document.lifecycleLabel}}</button>
+						<button type="button" class="mt-3 btn btn-warning text-uppercase bold-700">{{document.lifecycleLabel}}</button>
 					{{/if}}
 				{{/link-to}}
 

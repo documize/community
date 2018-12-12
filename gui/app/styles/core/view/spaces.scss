@@ -1,44 +1,101 @@
 .view-spaces {
-	> .heading {
-		font-size: 1.3rem;
-		font-weight: bold;
-		color: map-get($gray-shades, 800);
-		text-transform: uppercase;
-
-		> .counter {
-			font-size: 0.9rem;
-			font-weight: normal;
-			color: map-get($gray-shades, 600);
-			display: inline-block;
-			margin-left: 10px;
-		}
-	}
-
-	> .empty {
-		font-size: 1.2rem;
-		color: map-get($gray-shades, 600);
-		font-weight: normal;
-		margin: 20px 0 50px 0;
-	}
-
 	> .list {
-		margin: 30px 0;
+		margin: 0;
 		padding: 0;
 
 		> a {
-			color: $color-black;
-
 			> .item {
 				@include card();
-				@include ease-in();
 				list-style-type: none;
-				float: left;
-				margin: 0 20px 20px 0;
-				padding: 10px;
-				width: 250px;
-				height: 100px;
-				font-size: 1.1rem;
-				overflow: hidden;
+				margin: 0 0 2rem 0;
+				padding: 15px 20px;
+				width: 100%;
+				display: grid;
+				grid-template-columns: 1fr;
+				grid-template-rows: 2fr;
+
+				> .info {
+					grid-column-start: 1;
+					grid-row-start: 1;
+					padding: 0;
+					align-self: self-start;
+					justify-self: self-start;
+
+					> .name {
+						font-size: 1.3rem;
+						font-weight: 700;
+						color: map-get($gray-shades, 800);
+					}
+
+					> .desc {
+						font-size: 1.1rem;
+						font-weight: 400;
+						margin-top: 0.4rem;
+						color: $color-black-light-3;
+					}
+
+					> .meta {
+						padding: 25px 0 0 0;
+
+						> .dicon {
+							color: map-get($gray-shades, 600);
+							font-size: 20px;
+						}
+					}
+				}
+
+				> .stats {
+					grid-column-start: 1;
+					grid-row-start: 2;
+					padding: 0;
+					align-self: self-start;
+					justify-self: self-start;
+
+					> .stat {
+						text-align: center;
+						display: inline-block;
+						margin: 5px 30px 5px 0;
+
+						> .number {
+							font-size: 1.7rem;
+							font-weight: 700;
+							color: map-get($gray-shades, 600);
+						}
+
+						> .label {
+							font-size: 0.9rem;
+							font-weight: 500;
+							color: map-get($gray-shades, 600);
+							text-transform: uppercase;
+						}
+					}
+				}
+
+				@media (min-width: $display-break-2) {
+					grid-template-columns: 8fr 2fr;
+					grid-template-rows: 1fr;
+
+					> .info {
+						grid-column-start: 1;
+						grid-row-start: 1;
+						padding: 0;
+					}
+
+					> .stats {
+						grid-column-start: 2;
+						grid-row-start: 1;
+						padding: 0;
+						justify-self: self-end;
+
+						> .stat, > .number, > .label {
+							display: block;
+						}
+
+						> .stat {
+							margin: 5px 0;
+						}
+					}
+				}
 			}
 		}
 	}

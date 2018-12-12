@@ -1,25 +1,10 @@
-// Styles that apply to all pages using master layout
-
-
 $display-break-1: 700px;
 $display-break-2: 900px;
 $display-break-3: 1200px;
 $display-break-4: 1600px;
 $display-break-5: 1800px;
 
-.master-page-heading {
-	font-size: 2rem;
-	font-weight: 700;
-	color: map-get($gray-shades, 800);
-}
-
-.master-page-desc {
-	font-size: 1.2rem;
-	font-weight: 400;
-	color: map-get($gray-shades, 700);
-}
-
-.grid-container-8-2 {
+%grid-base {
 	display: grid;
 	grid-template-columns: 1fr;
 	grid-template-rows: 2fr;
@@ -40,8 +25,55 @@ $display-break-5: 1800px;
 		justify-self: self-start;
 	}
 
+	// X- axis alignment
+	.grid-cell-left {
+		justify-self: self-end;
+	}
+	.grid-cell-right {
+		justify-self: self-end;
+	}
+	.grid-cell-center {
+		justify-self: center;
+	}
+
+	// Y axis alignment
+	.grid-cell-top {
+		align-self: self-start;
+	}
+	.grid-cell-middle {
+		align-self: center;
+	}
+	.grid-cell-bottom {
+		align-self: self-end;
+	}
+}
+
+.grid-container-8-2 {
+	@extend %grid-base;
+
 	@media (min-width: $display-break-2) {
 		grid-template-columns: 8fr 2fr;
+		grid-template-rows: 1fr;
+
+		.grid-cell-1 {
+			grid-column-start: 1;
+			grid-row-start: 1;
+			padding: 0;
+		}
+
+		.grid-cell-2 {
+			grid-column-start: 2;
+			grid-row-start: 1;
+			padding: 0;
+		}
+	}
+}
+
+.grid-container-6-4 {
+	@extend %grid-base;
+
+	@media (min-width: $display-break-2) {
+		grid-template-columns: 6fr 4fr;
 		grid-template-rows: 1fr;
 
 		.grid-cell-1 {
