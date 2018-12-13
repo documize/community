@@ -19,13 +19,12 @@
 							<input id="stage-1-lastname" type="text" value="" class="form-control">
 							<small class="form-text text-muted">Usually not the same as your firstname</small>
 						</div>
-						<div class="form-group mt-5">
-							<div id="stage-1-next" class="btn btn-success">Next &rarr;</div>
-						</div>
+						{{ui/ui-spacer size=300}}
+						{{ui/ui-button id="stage-1-next" color=constants.Color.Green light=true icon=constants.Icon.ArrowRight label=constants.Label.Next}}
 					</div>
 
 					<div class="stage-2">
-						<h2>Password</h2>
+						<p>Let's set up your account</p>
 						<div class="form-group">
 							<label for="stage-2-password">Choose Password</label>
 							<input id="stage-2-password" type="password" value="" class="form-control">
@@ -37,14 +36,12 @@
 							<input id="stage-2-password-confirm" type="password" value="" class="form-control">
 							<small class="form-text text-muted">Re-type your chosen password</small>
 						</div>
-						<div class="form-group mt-5">
-							<div id="stage-2-next" class="btn btn-success">Sign In &rarr;</div>
-						</div>
+						{{ui/ui-spacer size=300}}
+						{{ui/ui-button id="stage-2-next" color=constants.Color.Green light=true icon=constants.Icon.ArrowRight label=constants.Label.SignIn}}
 					</div>
 
 					<div class="stage-3">
-						<h1>Please Wait</h1>
-						<p>Signing you in...</p>
+						<p>Please wait...</p>
 					</div>
 
 				</div>

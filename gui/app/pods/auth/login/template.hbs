@@ -26,7 +26,9 @@
 						{{input type="password" value=password id="authPassword" class="form-control" autocomplete="current-password"}}
 					{{/if}}
 				</div>
-				<button type="submit" class="btn btn-success bold-700 text-uppercase mt-4">Sign in</button>
+
+				{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.SignIn onClick=(action "login")}}
+
 				<div class="{{unless invalidCredentials "invisible"}} color-red-600 mt-3">Invalid credentials</div>
 				{{#if isAuthProviderDocumize}}
 					{{#link-to "auth.forgot"}}Forgot your password?{{/link-to}}

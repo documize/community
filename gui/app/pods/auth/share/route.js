@@ -37,10 +37,10 @@ export default Route.extend(AuthenticatedRouteMixin, {
 
 	activate() {
 		this.get('browser').setTitle('Share Space');
-		$('body').addClass('background-color-gray-200');
+		// $('body').addClass('background-color-gray-200');
 	},
 
 	deactivate() {
-		$('body').removeClass('background-color-gray-200');
+		// $('body').removeClass('background-color-gray-200');
 	}
 });

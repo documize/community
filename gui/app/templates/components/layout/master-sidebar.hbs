@@ -90,6 +90,12 @@
 						{{/attach-popover}}
 					</div>
 				</div>
+			{{else}}
+				{{#link-to "auth.login" class="login"}}
+					<i class={{concat "dicon " constants.Icon.Unlocked}}>
+						{{#attach-tooltip showDelay=1000}}Login{{/attach-tooltip}}
+					</i>
+				{{/link-to}}
 			{{/if}}
 			<a class="logo" href="https://documize.com?ref=app">
 				<img src="/assets/img/icon-white-64x64.png">
@@ -118,7 +124,7 @@
 						</div>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Close dismiss=true}}
 					</div>
 				</div>
 			</div>
@@ -157,7 +163,7 @@
 						</div>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Close dismiss=true}}
 					</div>
 				</div>
 			</div>

@@ -60,7 +60,7 @@
 					cursor: pointer;
 				}
 
-				> .bookmarks {
+				> .bookmarks, > .login {
 					display: inline-block;
 
 					>.dicon {
@@ -169,7 +169,7 @@
 						}
 					}
 
-					> .bookmarks {
+					> .bookmarks, > .login {
 						>.dicon {
 							display: block;
 							color: $color-white;

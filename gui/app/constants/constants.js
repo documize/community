@@ -197,10 +197,10 @@ let constants = EmberObject.extend({
 	Icon: { // eslint-disable-line ember/avoid-leaking-state-in-ember-objects
 		All: 'dicon-menu-8',
 		Announce: 'dicon-notification',
-		ArrowUp: 'dicon-arrow-up',
-		ArrowDown: 'dicon-arrow-down',
-		ArrowLeft: 'dicon-arrow-left',
-		ArrowRight: 'dicon-arrow-right',
+		ArrowUp: 'dicon-arrow-up-2',
+		ArrowDown: 'dicon-arrow-down-2',
+		ArrowLeft: 'dicon-arrow-left-2',
+		ArrowRight: 'dicon-arrow-right-2',
 		Attachment: 'dicon-attachment',
 		BarChart: 'dicon-chart-bar-2',
 		Bookmark: 'dicon-bookmark',
@@ -248,8 +248,11 @@ let constants = EmberObject.extend({
 		Delete: 'Delete',
 		Export: 'Export',
 		Insert: 'Insert',
+		Next: 'Next',
+		Reset: 'Reset',
 		Restore: 'Restore',
 		Save: 'Save',
+		SignIn: 'Sign In',
 		Update: 'Update',
 	}
 });

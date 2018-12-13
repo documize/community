@@ -155,14 +155,14 @@
         h2
         {
             font-size: 2rem;;
-            color: $theme-500;
+            color: $color-black-light-2;
             margin-bottom: 30px;
         }
 
         p
         {
             font-size: 1.3rem;
-            color: $theme-500;
+            color: $color-black-light-2;
         }
 
         p.note
@@ -184,7 +184,7 @@
     }
 
 	input[type='email'], input[type='text'], input[type='password'] {
-		background-color: transparent;
+		// background-color: transparent;
 	}
 
     // input[type='submit']

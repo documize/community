@@ -16,7 +16,7 @@ export default Component.extend({
 	tagName: 'button',
 	classNames: [],
 	classNameBindings: ['calcClass'],
-	attributeBindings: ['calcAttrs:data-dismiss'],
+	attributeBindings: ['calcAttrs:data-dismiss', 'submitAttrs:type'],
 
 	label: '',
 	icon: '',
@@ -55,6 +55,10 @@ export default Component.extend({
 		}
 
 		return null;
+	}),
+
+	submitAttrs: computed(function() {
+		return this.submit ? "submit": null;
 	}),
 
 	click(e) {

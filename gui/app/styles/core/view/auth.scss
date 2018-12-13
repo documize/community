@@ -13,9 +13,9 @@
 	max-width: 500px;
 	padding: 20px 50px;
 	background-color: $color-white;
-	color: $color-black-light-1;
+	color: map-get($gray-shades, 700);
 	@include border-radius(3px);
-	@include shadow();
+	border: 1px solid map-get($gray-shades, 400);
 
 	.logo {
 		text-align: center;
@@ -29,7 +29,8 @@
 		> .url {
 			margin: 20px 0;
 			color: map-get($gray-shades, 700);
-			font-weight: 0.9rem;
+			font-size: 0.9rem;
+			font-weight: 500;
 		}
 	}
 }

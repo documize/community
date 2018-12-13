@@ -95,11 +95,14 @@ export default Component.extend({
             }
 
             if ($("#stage-2-password-confirm").val() !== $("#stage-2-password").val()) {
-                $(".mismatch").show();
+                $("#stage-2-password").addClass("is-invalid");
+                $("#stage-2-password-confirm").addClass("is-invalid");
+                // $(".mismatch").show();
                 // $(".password-status").attr("src", "/assets/img/onboard/lock-red.png");
                 return;
             }
 
+			$("#stage-2-password").removeClass("is-invalid");
 			$("#stage-2-password-confirm").removeClass("is-invalid");
 
             self.set('processing', false);
