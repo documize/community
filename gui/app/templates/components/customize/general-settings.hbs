@@ -1,73 +1,52 @@
-<div class="row">
-	<div class="col">
-		<div class="view-customize">
-			<h1 class="admin-heading">Instance Settings</h1>
-			<h2 class="sub-heading">Settings applicable to the Documize instance</h2>
-		</div>
-	</div>
-</div>
-
 <div class="view-customize">
-	<form class="mt-5">
-		<div class="form-group row">
-			<label for="siteTitle" class="col-sm-4 col-form-label">Site Name</label>
-			<div class="col-sm-7">
-				{{focus-input id="siteTitle" type="text" value=model.general.title class=(if hasTitleInputError "form-control is-invalid" "form-control")}}
-				<small class="form-text text-muted">Provide short title for this Documize instance</small>
+	<form>
+		<div class="form-group">
+			<label for="siteTitle">Site Name</label>
+			{{focus-input id="siteTitle" type="text" value=model.general.title class=(if hasTitleInputError "form-control is-invalid" "form-control")}}
+			<small class="form-text text-muted">Provide short title for this Documize instance</small>
+		</div>
+		<div class="form-group">
+			<label id="siteMessage">Site Message</label>
+			{{textarea id="siteMessage" rows="3" value=model.general.message class=(if hasMessageInputError "form-control is-invalid" "form-control")}}
+			<small class="form-text text-muted">Provide short message explaining this Documize instance</small>
+		</div>
+		<div class="form-group">
+			<label>Anonymous Access</label>
+			<div class="form-check">
+				<input type="checkbox" class="form-check-input" id="allowAnonymousAccess" checked={{model.general.allowAnonymousAccess}}>
+				<label class="form-check-label" for="allowAnonymousAccess">
+					Make content marked as "Everyone" available to anonymous users
+				</label>
 			</div>
 		</div>
-		<div class="form-group row">
-			<label id="siteMessage" class="col-sm-4 col-form-label">Site Message</label>
-			<div class="col-sm-7">
-				{{textarea id="siteMessage" rows="3" value=model.general.message class=(if hasMessageInputError "form-control is-invalid" "form-control")}}
-				<small class="form-text text-muted">Provide short message explaining this Documize instance</small>
-			</div>
+		<div class="form-group">
+			<label for="conversionEndpoint">Conversion Service URL</label>
+			{{input id="conversionEndpoint" type="text" value=model.general.conversionEndpoint class=(if hasConversionEndpointInputError "form-control is-invalid" "form-control")}}
+			<small class="form-text text-muted">
+				Endpoint for handling import/export (e.g. https://api.documize.com,
+				<a href="https://docs.documize.com/s/WNEpptWJ9AABRnha/administration-guides/d/WO0pt_MXigAB6sJ7/general-options">view documentation</a>)
+			</small>
 		</div>
-		<div class="form-group row">
-			<label class="col-sm-4 col-form-label">Anonymous Access</label>
-			<div class="col-sm-7">
-				<div class="form-check">
-					<input type="checkbox" class="form-check-input" id="allowAnonymousAccess" checked={{model.general.allowAnonymousAccess}}>
-					<label class="form-check-label" for="allowAnonymousAccess">
-						Make content marked as "Everyone" available to anonymous users
-					</label>
-				</div>
-			</div>
+		<div class="form-group">
+			<label for="maxTags">Maximum Tags Per Document</label>
+			<select class="form-control" id="maxTags" {{action "change" on="change"}}>
+				<option selected={{is-equal 3 maxTags}} value="3">3</option>
+				<option selected={{is-equal 4 maxTags}} value="4">4</option>
+				<option selected={{is-equal 5 maxTags}} value="5">5</option>
+				<option selected={{is-equal 6 maxTags}} value="6">6</option>
+				<option selected={{is-equal 7 maxTags}} value="7">7</option>
+				<option selected={{is-equal 8 maxTags}} value="8">8</option>
+				<option selected={{is-equal 9 maxTags}} value="9">9</option>
+				<option selected={{is-equal 10 maxTags}} value="10">10</option>
+			</select>
+			<small class="form-text text-muted">How many tags can be assigned to a document (between 3 and 10 tags)</small>
 		</div>
-		<div class="form-group row">
-			<label for="conversionEndpoint" class="col-sm-4 col-form-label">Conversion Service URL</label>
-			<div class="col-sm-7">
-				{{input id="conversionEndpoint" type="text" value=model.general.conversionEndpoint class=(if hasConversionEndpointInputError "form-control is-invalid" "form-control")}}
-				<small class="form-text text-muted">
-					Endpoint for handling import/export (e.g. https://api.documize.com,
-					<a href="https://docs.documize.com/s/WNEpptWJ9AABRnha/administration-guides/d/WO0pt_MXigAB6sJ7/general-options">view documentation</a>)
-				</small>
-			</div>
-		</div>
-		<div class="form-group row">
-			<label for="maxTags" class="col-sm-4 col-form-label">Maximum Tags Per Document</label>
-			<div class="col-sm-7">
-				<select class="form-control" id="maxTags" {{action "change" on="change"}}>
-					<option selected={{is-equal 3 maxTags}} value="3">3</option>
-					<option selected={{is-equal 4 maxTags}} value="4">4</option>
-					<option selected={{is-equal 5 maxTags}} value="5">5</option>
-					<option selected={{is-equal 6 maxTags}} value="6">6</option>
-					<option selected={{is-equal 7 maxTags}} value="7">7</option>
-					<option selected={{is-equal 8 maxTags}} value="8">8</option>
-					<option selected={{is-equal 9 maxTags}} value="9">9</option>
-					<option selected={{is-equal 10 maxTags}} value="10">10</option>
-				</select>
-				<small class="form-text text-muted">How many tags can be assigned to a document (between 3 and 10 tags)</small>
-			</div>
-		</div>
-		<div class="form-group row">
-			<label class="col-sm-4 col-form-label">Default Site Theme</label>
-			<div class="col-sm-7">
-				{{ui/theme-picker onChange=(action "onThemeChange")}}
-				<small class="form-text text-muted">Users can set their own theme under Profile</small>
-			</div>
+		<div class="form-group">
+			<label>Default Site Theme</label>
+			{{ui/theme-picker onChange=(action "onThemeChange")}}
+			<small class="form-text text-muted">Users can set their own theme under Profile</small>
 		</div>
 
-		<div class="btn btn-success bold-700 text-uppercase mt-4" {{action "save"}}>Save</div>
+		{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Save onClick=(action "save")}}
 	</form>
 </div>

@@ -1,11 +1,9 @@
 <div class="row">
 	<div class="col">
 		<div class="view-customize">
-			<h1 class="admin-heading">Users</h1>
-			<h2 class="sub-heading">Set basic information, passwords and permissions for {{users.length}} users</h2>
-
 			{{#if isAuthProviderDocumize}}
-				<div class="btn btn-success mt-3 mb-3" {{action "onOpenUserModal"}}>Add user</div>
+				{{ui/ui-button color=constants.Color.Green light=true icon=constants.Icon.Person label=constants.Label.Add onClick=(action "onOpenUserModal")}}
+
 				<div id="add-user-modal" class="modal" tabindex="-1" role="dialog">
 					<div class="modal-dialog modal-lg" role="document">
 						<div class="modal-content">

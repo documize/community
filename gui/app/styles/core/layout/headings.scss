@@ -10,3 +10,22 @@
 	font-weight: 400;
 	color: map-get($gray-shades, 800);
 }
+
+.logo-heading {
+	display: flex;
+	flex-direction: row;
+
+	> .image {
+		align-self: center;
+		margin-right: 25px;
+
+		> i {
+			font-size: 3.5rem;
+			color: map-get($gray-shades, 600);
+		}
+	}
+
+	> .text {
+		align-self: flex-start;
+	}
+}

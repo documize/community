@@ -76,6 +76,7 @@ export default Component.extend(Notifier, Modals, {
 				this.set('deleteSpace.id', '');
 				this.set('deleteSpace.name', '');
 				this.loadData();
+				this.notifySuccess('Deleted');
 			});
 		},
 
@@ -85,6 +86,8 @@ export default Component.extend(Notifier, Modals, {
 				data: _.pluck(this.get('folders'), 'id'),
 				filterType: 'space',
 			};
+
+			this.notifyInfo('Export running...');
 
 			this.get('documentSvc').export(spec).then((htmlExport) => {
 				this.get('browserSvc').downloadFile(htmlExport, 'documize.html');

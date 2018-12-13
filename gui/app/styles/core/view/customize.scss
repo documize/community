@@ -1,15 +1,4 @@
 .view-customize {
-	> .admin-heading {
-		font-size: 1.5rem;
-		font-weight: bold;
-		color: $color-black;
-	}
-
-	> .sub-heading {
-		font-size: 1.1rem;
-		color: map-get($gray-shades, 600);
-	}
-
 	.user-table {
 		tbody tr td, thead tr th {
 			border-top: none !important;
@@ -157,9 +146,9 @@
 
 		> .backup-zone {
 			@include border-radius(3px);
-			border: 1px solid map-get($gray-shades, 300);
+			border: 1px solid map-get($green-shades, 200);
 			padding: 20px 20px;
-			background-color: map-get($green-shades, 200);
+			background-color: map-get($green-shades, 100);
 			color: $color-black-light-1;
 
 			> .backup-fail {
@@ -175,10 +164,10 @@
 
 		> .restore-zone {
 			@include border-radius(3px);
-			border: 1px solid map-get($gray-shades, 300);
+			border: 1px solid map-get($red-shades, 200);
 			margin: 50px 0;
 			padding: 20px 20px;
-			background-color: map-get($red-shades, 200);
+			background-color: map-get($red-shades, 100);
 			color: $color-black-light-1;
 
 			> .restore-fail {

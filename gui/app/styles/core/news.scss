@@ -1,32 +1,60 @@
 .product-update {
 	text-align: left;
-	margin: 50px 0;
 
-	> .update-summary {
+	> .update-status {
 		padding: 25px;
-		border: 1px solid map-get($yellow-shades, 700);
-		background-color: map-get($gray-shades, 100);
-		@include border-radius(2px);
+		background-color: map-get($yellow-shades, 100);
+		border: 1px solid map-get($yellow-shades, 200);
+		@include shadow();
+		@include border-radius(3px);
 
-		> .caption {
+		> .title {
 			font-weight: bold;
 			font-size: 1.5rem;
-			color: map-get($yellow-shades, 700);
+			color: map-get($yellow-shades, 600);
 			margin-bottom: 15px;
-			display: inline-block;
+			display:block;
 		}
 
 		> .instructions {
-			font-weight: normal;
+			font-weight: 500;
 			font-size: 1.3rem;
-			color: map-get($gray-shades, 600);
+			color: map-get($gray-shades, 800);
+			margin-bottom: 30px;
 		}
 
+		> .links {
+			margin: 30px 0 0 0;
+
+			> p {
+				> .edition-name {
+					font-size: 1.3rem;
+					font-weight: 400;
+					color: map-get($yellow-shades, 900);
+				}
+
+				> .link {
+					font-size: 1.3rem;
+					color: map-get($yellow-shades, 800);
+					font-weight: 600;
+				}
+			}
+		}
+	}
+
+	> .change-log {
+		padding: 25px;
+		background-color: map-get($gray-shades, 100);
+		border: 1px solid map-get($gray-shades, 200);
+		@include shadow();
+		@include border-radius(3px);
+
 		> .version {
-			margin: 30px 0 0 20px;
-			font-size: 1.3rem;
-			color: map-get($gray-shades, 600);
-			font-weight: bold;
+			font-weight: 700;
+			font-size: 1.2rem;
+			color: map-get($yellow-shades, 700);
+			margin: 10px 0;
+			display: block;
 		}
 
 		> .changes {
@@ -41,10 +69,11 @@
 				> .tag-edition {
 					margin: 10px 10px 10px 10px;
 					padding: 5px 10px;
-					background-color: map-get($gray-shades, 300);
-					color: $theme-500;
+					background-color: map-get($green-shades, 200);
+					color: map-get($green-shades, 600);
 					font-weight: bold;
 					font-size: 0.9rem;
+					@include border-radius(3px);
 				}
 			}
 		}

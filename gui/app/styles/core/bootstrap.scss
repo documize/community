@@ -59,19 +59,23 @@ $input-btn-focus-color:     rgba($theme-500, .25);
 // form labels
 .form-group {
 	> label {
-		color: map-get($gray-shades, 800);
+		color: map-get($gray-shades, 700);
 		font-size: 1.2rem;
-		font-weight: 500;
+		font-weight: 600;
 	}
 
 	> small, > div[class*="col"] > small {
+		color: map-get($gray-shades, 600);
 		font-size: 1rem;
+		font-weight: 300;
 	}
 
 	> small.highlight, > div[class*="col"] > small.highlight {
 		font-size: 1rem;
 		color: map-get($yellow-shades, 700) !important;
 	}
+
+	margin-bottom: 30px !important;
 }
 
 // links

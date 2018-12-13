@@ -1,59 +1,71 @@
-{{#layout/top-bar}}
-{{/layout/top-bar}}
+{{#layout/master-sidebar}}
+	{{ui/ui-spacer size=300}}
 
-{{#layout/middle-zone}}
-	{{#layout/middle-zone-content}}
-		{{outlet}}
-	{{/layout/middle-zone-content}}
-
-	{{#layout/middle-zone-sidebar}}
-		<div id="sidebar" class="sidebar">
-			<h1>Settings</h1>
-			<p>Configure authentication, SMTP, licensing and manage user accounts</p>
-
-			<ul class="tabnav-control tabnav-control-centered w-75">
-				{{#link-to "customize.general" activeClass="selected" class="tab tab-vertical" tagName="li"}}General{{/link-to}}
-				{{#link-to "customize.integrations" activeClass="selected" class="tab tab-vertical" tagName="li"}}Integrations{{/link-to}}
-				{{#if session.isGlobalAdmin}}
-					{{#link-to "customize.smtp" activeClass="selected" class="tab tab-vertical" tagName="li"}}Mail{{/link-to}}
-				{{/if}}
-			</ul>
-
-			<div class="mt-4" />
-			<ul class="tabnav-control tabnav-control-centered w-75">
-				{{#link-to "customize.groups" activeClass="selected" class="tab tab-vertical" tagName="li"}}Groups{{/link-to}}
-				{{#link-to "customize.users" activeClass="selected" class="tab tab-vertical" tagName="li"}}Users{{/link-to}}
-				{{#if session.isGlobalAdmin}}
-					{{#link-to "customize.auth" activeClass="selected" class="tab tab-vertical" tagName="li"}}Authentication{{/link-to}}
-				{{/if}}
-			</ul>
-
-			<div class="mt-4" />
-			<ul class="tabnav-control tabnav-control-centered w-75">
-				{{#link-to "customize.folders" activeClass="selected" class="tab tab-vertical" tagName="li"}}Spaces{{/link-to}}
-				{{#if session.isGlobalAdmin}}
-					{{#link-to "customize.search" activeClass="selected" class="tab tab-vertical" tagName="li"}}Search{{/link-to}}
-					{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
-						{{#link-to "customize.audit" activeClass="selected" class="tab tab-vertical" tagName="li"}}Audit{{/link-to}}
-					{{/if}}
-				{{/if}}
-			</ul>
-
-			<div class="mt-4" />
-			<ul class="tabnav-control tabnav-control-centered w-75">
-				{{#link-to "customize.backup" activeClass="selected" class="tab tab-vertical" tagName="li"}}Backup // Restore{{/link-to}}
-			</ul>
-
-			<div class="mt-4" />
-			<ul class="tabnav-control tabnav-control-centered w-75">
+	<div class="section">
+		<div class="title">filter</div>
+		<div class="list">
+			{{#link-to "customize.general" activeClass="selected" class="item" tagName="div"}}
+				<i class={{concat "dicon " constants.Icon.Settings}} />
+				<div class="name">General</div>
+			{{/link-to}}
+			{{#link-to "customize.integrations" activeClass="selected" class="item" tagName="div"}}
+				<i class={{concat "dicon " constants.Icon.Integrations}} />
+				<div class="name">Integrations</div>
+			{{/link-to}}
+			{{#if session.isGlobalAdmin}}
+				{{#link-to "customize.smtp" activeClass="selected" class="item" tagName="div"}}
+					<i class={{concat "dicon " constants.Icon.Send}} />
+					<div class="name">Mail Server</div>
+				{{/link-to}}
+			{{/if}}
+			{{#link-to "customize.users" activeClass="selected" class="item" tagName="div"}}
+				<i class={{concat "dicon " constants.Icon.Person}} />
+				<div class="name">User Management</div>
+			{{/link-to}}
+			{{#link-to "customize.groups" activeClass="selected" class="item" tagName="div"}}
+				<i class={{concat "dicon " constants.Icon.People}} />
+				<div class="name">User Groups</div>
+			{{/link-to}}
+			{{#if session.isGlobalAdmin}}
+				{{#link-to "customize.auth" activeClass="selected" class="item" tagName="div"}}
+					<i class={{concat "dicon " constants.Icon.Locked}} />
+					<div class="name">Authentication</div>
+				{{/link-to}}
+			{{/if}}
+			{{#link-to "customize.folders" activeClass="selected" class="item" tagName="div"}}
+				<i class={{concat "dicon " constants.Icon.Grid1}} />
+				<div class="name">Spaces</div>
+			{{/link-to}}
+			{{#if session.isGlobalAdmin}}
+				{{#link-to "customize.search" activeClass="selected" class="item" tagName="div"}}
+					<i class={{concat "dicon " constants.Icon.Search}} />
+					<div class="name">Search</div>
+				{{/link-to}}
 				{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
-					{{#link-to "customize.billing" activeClass="selected" class="tab tab-vertical" tagName="li"}}Billing{{/link-to}}
+					{{#link-to "customize.audit" activeClass="selected" class="item" tagName="div"}}
+						<i class={{concat "dicon " constants.Icon.ButtonAction}} />
+						<div class="name">Audit Log</div>
+					{{/link-to}}
 				{{/if}}
-				{{#link-to "customize.product" activeClass="selected" class="tab tab-vertical" tagName="li"}}Changelog{{/link-to}}
-			</ul>
+			{{/if}}
+			{{#link-to "customize.backup" activeClass="selected" class="item" tagName="div"}}
+				<i class={{concat "dicon " constants.Icon.Database}} />
+				<div class="name">Backup & Restore</div>
+			{{/link-to}}
+			{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
+				{{#link-to "customize.billing" activeClass="selected" class="item" tagName="div"}}
+					<i class={{concat "dicon " constants.Icon.Handshake}} />
+					<div class="name">Billing</div>
+				{{/link-to}}
+			{{/if}}
+			{{#link-to "customize.product" activeClass="selected" class="item" tagName="div"}}
+				<i class={{concat "dicon " constants.Icon.Announce}} />
+				<div class="name">Changelog</div>
+			{{/link-to}}
 		</div>
-	{{/layout/middle-zone-sidebar}}
-{{/layout/middle-zone}}
+	</div>
+{{/layout/master-sidebar}}
 
-{{#layout/bottom-bar}}
-{{/layout/bottom-bar}}
+{{#layout/master-content}}
+	{{outlet}}
+{{/layout/master-content}}

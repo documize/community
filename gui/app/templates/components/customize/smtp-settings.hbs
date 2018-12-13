@@ -1,91 +1,56 @@
-<div class="row">
-	<div class="col">
-		<div class="view-customize">
-			<h1 class="admin-heading">SMTP Server</h1>
-			<h2 class="sub-heading">For sending email notifications</h2>
-		</div>
-	</div>
-</div>
-
 <div class="view-customize">
-	<form class="mt-5">
-		<div class="form-group row">
-			<label for="smtp-host" class="col-sm-4 col-form-label">Host</label>
-			<div class="col-sm-8">
-				{{focus-input id="smtp-host" type="text" value=model.smtp.host class=(if SMTPHostEmptyError "form-control is-invalid" "form-control")}}
-				<small class="form-text text-muted">e.g. my.host.com</small>
+	<form>
+		<div class="form-group">
+			<label for="smtp-host">Host</label>
+			{{focus-input id="smtp-host" type="text" value=model.smtp.host class=(if SMTPHostEmptyError "form-control is-invalid" "form-control")}}
+			<small class="form-text">e.g. my.host.com</small>
+		</div>
+		<div class="form-group">
+			<label for="smtp-port">Port</label>
+			{{input id="smtp-port" type="text" value=model.smtp.port class=(if SMTPPortEmptyError "form-control is-invalid" "form-control")}}
+			<small class="form-text text-muted">e.g. 587</small>
+		</div>
+		<div class="form-group">
+			<label for="smtp-userid">Username</label>
+			{{input id="smtp-userid" type="text" value=model.smtp.userid class="form-control"}}
+			<small class="form-text text-muted">e.g. Login username for SMTP server</small>
+		</div>
+		<div class="form-group">
+			<label for="smtp-password">Password</label>
+			{{input id="smtp-password" type="password" value=model.smtp.password class="form-control"}}
+			<small class="form-text text-muted">e.g. Login password for SMTP server</small>
+		</div>
+		<div class="form-group">
+			<label for="smtp-sender">Sender Email</label>
+			{{input id="smtp-sender" type="email" value=model.smtp.sender class=(if SMTPSenderEmptyError "form-control is-invalid" "form-control")}}
+			<small class="form-text text-muted">e.g. user@some-domain.com</small>
+		</div>
+		<div class="form-group">
+			<label for="smtp-senderName">Sender Name</label>
+			{{input id="smtp-senderName" type="text" value=model.smtp.senderName class=(if senderNameError "form-control is-invalid" "form-control")}}
+			<small class="form-text text-muted">e.g. Documize</small>
+		</div>
+		<div class="form-group">
+			<label>Anonymous</label>
+			<div class="form-check">
+				{{input id="smtp-anonymous" type="checkbox" checked=model.smtp.anonymous class="form-check-input"}}
+				<label class="form-check-label" for="smtp-anonymous">Anonymous authentication, ignore Username and Password fields</label>
 			</div>
 		</div>
-		<div class="form-group row">
-			<label for="smtp-port" class="col-sm-4 col-form-label">Port</label>
-			<div class="col-sm-8">
-				{{input id="smtp-port" type="text" value=model.smtp.port class=(if SMTPPortEmptyError "form-control is-invalid" "form-control")}}
-				<small class="form-text text-muted">e.g. 587</small>
+		<div class="form-group">
+			<label>Base64</label>
+			<div class="form-check">
+				{{input id="smtp-base64creds" type="checkbox" checked=model.smtp.base64creds class="form-check-input"}}
+				<label class="form-check-label" for="smtp-base64creds">Base64 encode Username and Password fields</label>
 			</div>
 		</div>
-		<div class="form-group row">
-			<label for="smtp-userid" class="col-sm-4 col-form-label">Username</label>
-			<div class="col-sm-8">
-				{{input id="smtp-userid" type="text" value=model.smtp.userid class="form-control"}}
-				<small class="form-text text-muted">e.g. Login username for SMTP server</small>
+		<div class="form-group">
+			<label>SSL</label>
+			<div class="form-check">
+				{{input id="smtp-usessl" type="checkbox" checked=model.smtp.usessl class="form-check-input"}}
+				<label class="form-check-label" for="smtp-usessl">Use SSL</label>
 			</div>
 		</div>
-		<div class="form-group row">
-			<label for="smtp-password" class="col-sm-4 col-form-label">Password</label>
-			<div class="col-sm-8">
-				{{input id="smtp-password" type="password" value=model.smtp.password class="form-control"}}
-				<small class="form-text text-muted">e.g. Login password for SMTP server</small>
-			</div>
-		</div>
-
-		<div class="form-group row">
-			<label for="smtp-sender" class="col-sm-4 col-form-label">Sender Email</label>
-			<div class="col-sm-8">
-				{{input id="smtp-sender" type="email" value=model.smtp.sender class=(if SMTPSenderEmptyError "form-control is-invalid" "form-control")}}
-				<small class="form-text text-muted">e.g. user@some-domain.com</small>
-			</div>
-		</div>
-		<div class="form-group row">
-			<label for="smtp-senderName" class="col-sm-4 col-form-label">Sender Name</label>
-			<div class="col-sm-8">
-				{{input id="smtp-senderName" type="text" value=model.smtp.senderName class=(if senderNameError "form-control is-invalid" "form-control")}}
-				<small class="form-text text-muted">e.g. Documize</small>
-			</div>
-		</div>
-
-		<div class="form-group row">
-			<label class="col-sm-4 col-form-label">Anonymous</label>
-			<div class="col-sm-8">
-				<div class="form-check">
-					{{input id="smtp-anonymous" type="checkbox" checked=model.smtp.anonymous class="form-check-input"}}
-					<label class="form-check-label" for="smtp-anonymous">Anonymous authentication, ignore Username and Password fields</label>
-				</div>
-			</div>
-		</div>
-		<div class="form-group row">
-			<label class="col-sm-4 col-form-label">Base64</label>
-			<div class="col-sm-8">
-				<div class="form-check">
-					{{input id="smtp-base64creds" type="checkbox" checked=model.smtp.base64creds class="form-check-input"}}
-					<label class="form-check-label" for="smtp-base64creds">Base64 encode Username and Password fields</label>
-				</div>
-			</div>
-		</div>
-		<div class="form-group row">
-			<label class="col-sm-4 col-form-label">SSL</label>
-			<div class="col-sm-8">
-				<div class="form-check">
-					{{input id="smtp-usessl" type="checkbox" checked=model.smtp.usessl class="form-check-input"}}
-					<label class="form-check-label" for="smtp-usessl">Use SSL</label>
-				</div>
-			</div>
-		</div>
-
-		<div class="btn btn-success mt-4" {{action "saveSMTP"}}>{{buttonText}}</div>
+		{{ui/ui-button color=constants.Color.Green light=true label=buttonText onClick=(action "saveSMTP")}}
 	</form>
-	{{#if testSMTP.success}}
-		<p class="smtp-success my-3">{{testSMTP.message}}</p>
-	{{else}}
-		<p class="smtp-failure my-3">{{testSMTP.message}}</p>
-	{{/if}}
 </div>

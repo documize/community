@@ -1,14 +1,5 @@
-<div class="row">
-	<div class="col">
-		<div class="view-customize">
-			<h1 class="admin-heading">Authentication</h1>
-			<h2 class="sub-heading">Choose user authentication mechanism</h2>
-		</div>
-	</div>
-</div>
-
 <div class="view-customize">
-	<form class="mt-5">
+	<form>
 		<div class="widget-list-picker widget-list-picker-horiz">
 			<ul class="options">
 				<li class="option {{if isDocumizeProvider "selected"}}" {{action "onDocumize"}}>
@@ -35,202 +26,144 @@
 			</ul>
 		</div>
 
-		<br>
-		<br>
-		<br>
-
-		{{#if isDocumizeProvider}}
-			<p>There are no settings.</p>
-		{{/if}}
+		{{ui/ui-spacer size=300}}
 
 		{{#if isKeycloakProvider}}
-			<div class="form-group row">
-				<label for="keycloak-url" class="col-sm-3 col-form-label">Keycloak Server URL</label>
-				<div class="col-sm-9">
-					{{focus-input id="keycloak-url" type="text" value=keycloakConfig.url class=(if KeycloakUrlError "form-control is-invalid" "form-control")}}
-					<small class="form-text text-muted">e.g. http://localhost:8888/auth</small>
-				</div>
+			<div class="form-group">
+				<label for="keycloak-url">Keycloak Server URL</label>
+				{{focus-input id="keycloak-url" type="text" value=keycloakConfig.url class=(if KeycloakUrlError "form-control is-invalid" "form-control")}}
+				<small class="form-text text-muted">e.g. http://localhost:8888/auth</small>
 			</div>
-			<div class="form-group row">
-				<label for="keycloak-realm" class="col-sm-3 col-form-label">Keycloak Realm</label>
-				<div class="col-sm-9">
-					{{input id="keycloak-realm" type="text" value=keycloakConfig.realm class=(if KeycloakRealmError "form-control is-invalid" "form-control")}}
-					<small class="form-text text-muted">e.g. main</small>
-				</div>
+			<div class="form-group">
+				<label for="keycloak-realm">Keycloak Realm</label>
+				{{input id="keycloak-realm" type="text" value=keycloakConfig.realm class=(if KeycloakRealmError "form-control is-invalid" "form-control")}}
+				<small class="form-text text-muted">e.g. main</small>
 			</div>
-			<div class="form-group row">
-				<label for="keycloak-publicKey" class="col-sm-3 col-form-label">Keycloak Realm Public Key</label>
-				<div class="col-sm-9">
-					{{textarea id="keycloak-publicKey" type="text" value=keycloakConfig.publicKey rows=7 class=(if KeycloakPublicKeyError "form-control is-invalid" "form-control")}}
-					<small class="form-text text-muted">Copy the RSA Public Key from Realm Settings &rarr; Keys</small>
-				</div>
+			<div class="form-group">
+				<label for="keycloak-publicKey">Keycloak Realm Public Key</label>
+				{{textarea id="keycloak-publicKey" type="text" value=keycloakConfig.publicKey rows=7 class=(if KeycloakPublicKeyError "form-control is-invalid" "form-control")}}
+				<small class="form-text text-muted">Copy the RSA Public Key from Realm Settings &rarr; Keys</small>
 			</div>
-			<div class="form-group row">
-				<label for="keycloak-clientId" class="col-sm-3 col-form-label">Keycloak OIDC Client ID</label>
-				<div class="col-sm-9">
-					{{input id="keycloak-clientId" type="text" value=keycloakConfig.clientId class=(if KeycloakClientIdError "form-control is-invalid" "form-control")}}
-					<small class="form-text text-muted">e.g. account</small>
-				</div>
+			<div class="form-group">
+				<label for="keycloak-clientId">Keycloak OIDC Client ID</label>
+				{{input id="keycloak-clientId" type="text" value=keycloakConfig.clientId class=(if KeycloakClientIdError "form-control is-invalid" "form-control")}}
+				<small class="form-text text-muted">e.g. account</small>
 			</div>
-			<div class="form-group row">
-				<label for="keycloak-group" class="col-sm-3 col-form-label">Keycloak Group ID (Optional)</label>
-				<div class="col-sm-9">
-					{{input id="keycloak-group" type="text" value=keycloakConfig.group class="form-control"}}
-					<small class="form-text text-muted">If you want to sync users in a particular Group (e.g. "Documize Users"), provide the Group ID (e.g. 511d8b61-1ec8-45f6-bc8d-5de64d54c9d2)</small>
-				</div>
+			<div class="form-group">
+				<label for="keycloak-group">Keycloak Group ID (Optional)</label>
+				{{input id="keycloak-group" type="text" value=keycloakConfig.group class="form-control"}}
+				<small class="form-text text-muted">If you want to sync users in a particular Group (e.g. "Documize Users"), provide the Group ID (e.g. 511d8b61-1ec8-45f6-bc8d-5de64d54c9d2)</small>
 			</div>
-			<div class="form-group row">
-				<label for="keycloak-admin-user" class="col-sm-3 col-form-label">Keycloak Username</label>
-				<div class="col-sm-9">
-					{{input id="keycloak-admin-user" type="text" value=keycloakConfig.adminUser class=(if KeycloakAdminUserError "form-control is-invalid" "form-control")}}
-					<small class="form-text text-muted">Used to connect with Keycloak and sync users with Documize (create user under Master Realm and assign 'view-users' role
-						against Realm specified above)</small>
-				</div>
+			<div class="form-group">
+				<label for="keycloak-admin-user">Keycloak Username</label>
+				{{input id="keycloak-admin-user" type="text" value=keycloakConfig.adminUser class=(if KeycloakAdminUserError "form-control is-invalid" "form-control")}}
+				<small class="form-text text-muted">Used to connect with Keycloak and sync users with Documize (create user under Master Realm and assign 'view-users' role
+					against Realm specified above)</small>
 			</div>
-			<div class="form-group row">
-				<label for="keycloak-admin-password" class="col-sm-3 col-form-label">Keycloak Password</label>
-				<div class="col-sm-9">
-					{{input id="keycloak-admin-password" type="password" value=keycloakConfig.adminPassword class=(if KeycloakAdminPasswordError "form-control is-invalid" "form-control")}}
-					<small class="form-text text-muted">Used to connect with Keycloak and sync users with Documize</small>
-				</div>
+			<div class="form-group">
+				<label for="keycloak-admin-password">Keycloak Password</label>
+				{{input id="keycloak-admin-password" type="password" value=keycloakConfig.adminPassword class=(if KeycloakAdminPasswordError "form-control is-invalid" "form-control")}}
+				<small class="form-text text-muted">Used to connect with Keycloak and sync users with Documize</small>
 			</div>
-			<div class="form-group row">
-				<label class="col-sm-3 col-form-label">Disable Logout</label>
-				<div class="col-sm-9">
-					{{x-toggle value=keycloakConfig.disableLogout size="medium" theme="light" onToggle=(action (mut keycloakConfig.disableLogout))}}
-				</div>
+			<div class="form-group">
+				<label>Disable Logout</label>
+				{{x-toggle value=keycloakConfig.disableLogout size="medium" theme="light" onToggle=(action (mut keycloakConfig.disableLogout))}}
 			</div>
-			<div class="form-group row">
-				<label for="ldap-defaultPermissionAddSpace" class="col-sm-3 col-form-label">Can Create Spaces</label>
-				<div class="col-sm-9">
-					{{x-toggle value=keycloakConfig.defaultPermissionAddSpace size="medium" theme="light" onToggle=(action (mut keycloakConfig.defaultPermissionAddSpace))}}
-				</div>
+			<div class="form-group">
+				<label for="ldap-defaultPermissionAddSpace">Can Create Spaces</label>
+				{{x-toggle value=keycloakConfig.defaultPermissionAddSpace size="medium" theme="light" onToggle=(action (mut keycloakConfig.defaultPermissionAddSpace))}}
 			</div>
 		{{/if}}
 
 		{{#if isLDAPProvider}}
-			<div class="form-group row">
-				<label for="ldap-host" class="col-sm-3 col-form-label">LDAP Server</label>
-				<div class="col-sm-9">
-					{{focus-input id="ldap-host" type="text" value=ldapConfig.serverHost class=(if ldapErrorServerHost "form-control is-invalid" "form-control")}}
-					<small class="form-text text-muted">IP or host address, e.g. ldap.example.org, 127.0.0.1</small>
-				</div>
+			<div class="form-group">
+				<label for="ldap-host">LDAP Server</label>
+				{{focus-input id="ldap-host" type="text" value=ldapConfig.serverHost class=(if ldapErrorServerHost "form-control is-invalid" "form-control")}}
+				<small class="form-text text-muted">IP or host address, e.g. ldap.example.org, 127.0.0.1</small>
 			</div>
-			<div class="form-group row">
-				<label for="ldap-port" class="col-sm-3 col-form-label">LDAP Server Port</label>
-				<div class="col-sm-9">
-					{{input id="ldap-port" type="number" value=ldapConfig.serverPort class=(if ldapErrorServerPort "form-control is-invalid" "form-control")}}
-					<small class="form-text text-muted">Port number, e.g. 389</small>
-				</div>
+			<div class="form-group">
+				<label for="ldap-port">LDAP Server Port</label>
+				{{input id="ldap-port" type="number" value=ldapConfig.serverPort class=(if ldapErrorServerPort "form-control is-invalid" "form-control")}}
+				<small class="form-text text-muted">Port number, e.g. 389</small>
 			</div>
-			<div class="form-group row">
-				<label for="ldap-encryption" class="col-sm-3 col-form-label">Encryption</label>
-				<div class="col-sm-9">
-					<select onchange={{action "onLDAPEncryption" value="target.value"}} class="form-control">
-						<option value={{constants.AuthProvider.EncryptionTypeNone}} selected={{is-equal ldapConfig.encryptionType constants.AuthProvider.EncryptionTypeNone}}>
-							{{constants.AuthProvider.EncryptionTypeNone}}
-						</option>
-						<option value={{constants.AuthProvider.EncryptionTypeStartTLS}} selected={{is-equal ldapConfig.encryptionType constants.AuthProvider.EncryptionTypeStartTLS}}>
-							{{constants.AuthProvider.EncryptionTypeStartTLS}}
-						</option>
-					</select>
-				</div>
+			<div class="form-group">
+				<label for="ldap-encryption">Encryption</label>
+				<select onchange={{action "onLDAPEncryption" value="target.value"}} class="form-control">
+					<option value={{constants.AuthProvider.EncryptionTypeNone}} selected={{is-equal ldapConfig.encryptionType constants.AuthProvider.EncryptionTypeNone}}>
+						{{constants.AuthProvider.EncryptionTypeNone}}
+					</option>
+					<option value={{constants.AuthProvider.EncryptionTypeStartTLS}} selected={{is-equal ldapConfig.encryptionType constants.AuthProvider.EncryptionTypeStartTLS}}>
+						{{constants.AuthProvider.EncryptionTypeStartTLS}}
+					</option>
+				</select>
 			</div>
-			<div class="form-group row">
-				<label for="ldap-baseDN" class="col-sm-3 col-form-label">Base DN</label>
-				<div class="col-sm-9">
-					{{input id="ldap-baseDN" type="text" value=ldapConfig.baseDN class="form-control"}}
-					<small class="form-text text-muted">Starting point for search filters, e.g. ou=users,dc=example,dc=com</small>
-				</div>
+			<div class="form-group">
+				<label for="ldap-baseDN">Base DN</label>
+				{{input id="ldap-baseDN" type="text" value=ldapConfig.baseDN class="form-control"}}
+				<small class="form-text text-muted">Starting point for search filters, e.g. ou=users,dc=example,dc=com</small>
 			</div>
-			<div class="form-group row">
-				<label for="ldap-bindDN" class="col-sm-3 col-form-label">Bind DN</label>
-				<div class="col-sm-9">
-					{{input id="ldap-bindDN" type="text" value=ldapConfig.bindDN class=(if ldapErrorBindDN "form-control is-invalid" "form-control")}}
-					<small class="form-text text-muted">login credentials for LDAP server</small>
-				</div>
+			<div class="form-group">
+				<label for="ldap-bindDN">Bind DN</label>
+				{{input id="ldap-bindDN" type="text" value=ldapConfig.bindDN class=(if ldapErrorBindDN "form-control is-invalid" "form-control")}}
+				<small class="form-text text-muted">login credentials for LDAP server</small>
 			</div>
-			<div class="form-group row">
-				<label for="ldap-bindPassword" class="col-sm-3 col-form-label">Bind Password</label>
-				<div class="col-sm-9">
-					{{input id="ldap-bindPassword" type="password" value=ldapConfig.bindPassword class=(if ldapErrorBindPassword "form-control is-invalid" "form-control")}}
-					<small class="form-text text-muted">login credentials for LDAP server</small>
-				</div>
+			<div class="form-group">
+				<label for="ldap-bindPassword">Bind Password</label>
+				{{input id="ldap-bindPassword" type="password" value=ldapConfig.bindPassword class=(if ldapErrorBindPassword "form-control is-invalid" "form-control")}}
+				<small class="form-text text-muted">login credentials for LDAP server</small>
 			</div>
-			<div class="form-group row">
-				<label for="ldap-userFilter" class="col-sm-3 col-form-label">User Filter</label>
-				<div class="col-sm-9">
-					{{input id="ldap-userFilter" type="text" value=ldapConfig.userFilter class=(if ldapErrorNoFilter "form-control is-invalid" "form-control")}}
-					<small class="form-text text-muted">Search filter for finding users, e.g. (|(objectClass=person)(objectClass=user)(objectClass=inetOrgPerson))</small>
-					<small class="form-text text-muted highlight">Specify User Filter and/or Group Filter</small>
-				</div>
+			<div class="form-group">
+				<label for="ldap-userFilter">User Filter</label>
+				{{input id="ldap-userFilter" type="text" value=ldapConfig.userFilter class=(if ldapErrorNoFilter "form-control is-invalid" "form-control")}}
+				<small class="form-text text-muted">Search filter for finding users, e.g. (|(objectClass=person)(objectClass=user)(objectClass=inetOrgPerson))</small>
+				<small class="form-text text-muted highlight">Specify User Filter and/or Group Filter</small>
 			</div>
-			<div class="form-group row">
-				<label for="ldap-groupFilter" class="col-sm-3 col-form-label">Group Filter</label>
-				<div class="col-sm-9">
-					{{input id="ldap-groupFilter" type="text" value=ldapConfig.groupFilter class=(if ldapErrorNoFilter "form-control is-invalid" "form-control")}}
-					<small class="form-text text-muted">Search filter for finding users via groups, e.g. (&(objectClass=group)(|(cn=ship_crew)(cn=admin_staff)))</small>
-				</div>
+			<div class="form-group">
+				<label for="ldap-groupFilter">Group Filter</label>
+				{{input id="ldap-groupFilter" type="text" value=ldapConfig.groupFilter class=(if ldapErrorNoFilter "form-control is-invalid" "form-control")}}
+				<small class="form-text text-muted">Search filter for finding users via groups, e.g. (&(objectClass=group)(|(cn=ship_crew)(cn=admin_staff)))</small>
 			</div>
 
-			<div class="form-group row">
-				<label for="ldap-attributeUserRDN" class="col-sm-3 col-form-label">User Attribute RDN</label>
-				<div class="col-sm-9">
-					{{input id="ldap-attributeUserRDN" type="text" value=ldapConfig.attributeUserRDN class=(if ldapErrorAttributeUserRDN "form-control is-invalid" "form-control")}}
-					<small class="form-text text-muted">Username/login attribute, e.g. uid in LDAP, sAMAccountName in Active Directory</small>
-					<small class="form-text text-muted highlight">User Attributes used to retreive data when using User Filter</small>
-				</div>
+			<div class="form-group">
+				<label for="ldap-attributeUserRDN">User Attribute RDN</label>
+				{{input id="ldap-attributeUserRDN" type="text" value=ldapConfig.attributeUserRDN class=(if ldapErrorAttributeUserRDN "form-control is-invalid" "form-control")}}
+				<small class="form-text text-muted">Username/login attribute, e.g. uid in LDAP, sAMAccountName in Active Directory</small>
+				<small class="form-text text-muted highlight">User Attributes used to retreive data when using User Filter</small>
 			</div>
-			<div class="form-group row">
-				<label for="ldap-attributeUserFirstname" class="col-sm-3 col-form-label">User Attribute Firstname</label>
-				<div class="col-sm-9">
-					{{input id="ldap-attributeUserFirstname" type="text" value=ldapConfig.attributeUserFirstname class=(if ldapErrorAttributeUserFirstname "form-control is-invalid" "form-control")}}
-					<small class="form-text text-muted">Firstname attribute, e.g. givenName</small>
-				</div>
+			<div class="form-group">
+				<label for="ldap-attributeUserFirstname">User Attribute Firstname</label>
+				{{input id="ldap-attributeUserFirstname" type="text" value=ldapConfig.attributeUserFirstname class=(if ldapErrorAttributeUserFirstname "form-control is-invalid" "form-control")}}
+				<small class="form-text text-muted">Firstname attribute, e.g. givenName</small>
 			</div>
-			<div class="form-group row">
-				<label for="ldap-attributeUserLastname" class="col-sm-3 col-form-label">User Attribute Lastname</label>
-				<div class="col-sm-9">
-					{{input id="ldap-attributeUserLastname" type="text" value=ldapConfig.attributeUserLastname class=(if ldapErrorAttributeUserLastname "form-control is-invalid" "form-control")}}
-					<small class="form-text text-muted">Lastname attribute, e.g. sn</small>
-				</div>
+			<div class="form-group">
+				<label for="ldap-attributeUserLastname">User Attribute Lastname</label>
+				{{input id="ldap-attributeUserLastname" type="text" value=ldapConfig.attributeUserLastname class=(if ldapErrorAttributeUserLastname "form-control is-invalid" "form-control")}}
+				<small class="form-text text-muted">Lastname attribute, e.g. sn</small>
 			</div>
-			<div class="form-group row">
-				<label for="ldap-attributeUserEmail" class="col-sm-3 col-form-label">User Attribute Email</label>
-				<div class="col-sm-9">
-					{{input id="ldap-attributeUserEmail" type="text" value=ldapConfig.attributeUserEmail class=(if ldapErrorAttributeUserEmail "form-control is-invalid" "form-control")}}
-					<small class="form-text text-muted">Email attribute, e.g. mail</small>
-				</div>
+			<div class="form-group">
+				<label for="ldap-attributeUserEmail">User Attribute Email</label>
+				{{input id="ldap-attributeUserEmail" type="text" value=ldapConfig.attributeUserEmail class=(if ldapErrorAttributeUserEmail "form-control is-invalid" "form-control")}}
+				<small class="form-text text-muted">Email attribute, e.g. mail</small>
 			</div>
-			<div class="form-group row">
-				<label for="ldap-attributeGroupMember" class="col-sm-3 col-form-label">Group Attribute Member</label>
-				<div class="col-sm-9">
-					{{input id="ldap-attributeGroupMember" type="text" value=ldapConfig.attributeGroupMember class=(if ldapErrorAttributeGroupMember "form-control is-invalid" "form-control")}}
-					<small class="form-text text-muted">Attribute that identifies individual group member, e.g. member or uniqueMember</small>
-					<small class="form-text text-muted highlight">Group Attributes used to retreive data when using Group Filter</small>
-				</div>
+			<div class="form-group">
+				<label for="ldap-attributeGroupMember">Group Attribute Member</label>
+				{{input id="ldap-attributeGroupMember" type="text" value=ldapConfig.attributeGroupMember class=(if ldapErrorAttributeGroupMember "form-control is-invalid" "form-control")}}
+				<small class="form-text text-muted">Attribute that identifies individual group member, e.g. member or uniqueMember</small>
+				<small class="form-text text-muted highlight">Group Attributes used to retreive data when using Group Filter</small>
 			</div>
-			<div class="form-group row">
-				<label for="ldap-disableLogout" class="col-sm-3 col-form-label">Disable Logout</label>
-				<div class="col-sm-9">
-					{{x-toggle value=ldapConfig.disableLogout size="medium" theme="light" onToggle=(action (mut ldapConfig.disableLogout))}}
-				</div>
+			<div class="form-group">
+				<label for="ldap-disableLogout">Disable Logout</label>
+				{{x-toggle value=ldapConfig.disableLogout size="medium" theme="light" onToggle=(action (mut ldapConfig.disableLogout))}}
 			</div>
-			<div class="form-group row">
-				<label for="ldap-defaultPermissionAddSpace" class="col-sm-3 col-form-label">Can Create Spaces</label>
-				<div class="col-sm-9">
-					{{x-toggle value=ldapConfig.defaultPermissionAddSpace size="medium" theme="light" onToggle=(action (mut ldapConfig.defaultPermissionAddSpace))}}
-				</div>
+			<div class="form-group">
+				<label for="ldap-defaultPermissionAddSpace">Can Create Spaces</label>
+				{{x-toggle value=ldapConfig.defaultPermissionAddSpace size="medium" theme="light" onToggle=(action (mut ldapConfig.defaultPermissionAddSpace))}}
 			</div>
-			<div class="form-group row">
-				<div class="col-sm-3"></div>
-				<div class="col-sm-9">
-					<div class="btn btn-secondary mt-4" {{action "onLDAPPreview"}}>Test Connection & Preview pauth&rarr;</div>
-				</div>
-			</div>
+			{{ui/ui-button color=constants.Color.Yellow light=true label="Test →" onClick=(action "onLDAPPreview")}}
+			{{ui/ui-button-gap}}
 		{{/if}}
 
-		<div class="btn btn-success mt-4" {{action "onSave"}}>ACTIVATE</div>
+		{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Activate onClick=(action "onSave")}}
 	</form>
 
 	{{#if (gt keycloakFailure.length 0)}}
@@ -253,7 +186,7 @@
 				{{/if}}
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
 			</div>
 		</div>
 	</div>

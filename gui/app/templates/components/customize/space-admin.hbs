@@ -1,15 +1,7 @@
-<div class="row">
-	<div class="col">
-		<div class="view-customize">
-			<h1 class="admin-heading">Manage Spaces</h1>
-			<h2 class="sub-heading">Delete spaces, take ownership of shared spaces and orphaned spaces</h2>
-		</div>
-	</div>
-</div>
-
-<div class="view-customize my-5">
+<div class="view-customize">
 	{{#if spaces}}
-		<button type="button" class="btn btn-success" onclick={{action "onExport"}}>Export content</button>
+		{{ui/ui-button color=constants.Color.Yellow light=true icon=constants.Icon.Export label=constants.Label.Export onClick=(action "onExport")}}
+
 		<div class="space-list">
 			{{#each spaces as |space|}}
 				<div class="space row">
@@ -46,8 +38,9 @@
 						</form>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-						<button type="button" class="btn btn-danger" onclick={{action "onDelete"}}>Delete</button>
+						{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+						{{ui/ui-button-gap}}
+						{{ui/ui-button color=constants.Color.Red light=true label=constants.Label.Delete onClick=(action "onDelete")}}
 					</div>
 				</div>
 			</div>

@@ -24,7 +24,7 @@ export default Component.extend(Notifier, {
 	testSMTP: null,
 
 	actions: {
-		saveSMTP() {
+		saveSMTP(e) {
 			if (this.get('SMTPHostEmptyError')) {
 				$("#smtp-host").focus();
 				return;
@@ -49,11 +49,17 @@ export default Component.extend(Notifier, {
 			);
 
 			this.set('buttonText', 'Please wait...');
+			this.notifyInfo('Sending test email to you');
 
 			this.get('saveSMTP')().then((result) => {
-				this.notifySuccess('Saved');
 				this.set('buttonText', 'Save & Test');
 				this.set('testSMTP', result);
+
+				if (result.success) {
+					this.notifySuccess(result.message);
+				} else {
+					this.notifyError(result.message);
+				}
 			});
 		}
 	}

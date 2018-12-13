@@ -1,33 +1,29 @@
 {{#layout/master-sidebar selectedItem="spaces"}}
-
-	{{#unless session.isMobile}}
-		{{ui/ui-spacer size=300}}
-	{{/unless}}
+	{{ui/ui-spacer size=300}}
 
 	<div class="section">
 		<div class="title">filter</div>
 		<div class="list">
-			<div class="item {{if (eq selectedView "all") "selected"}}" {{action 'onSelect' 'all'}}>
+			<div class="item {{if (eq selectedView "all") "selected"}}" {{action "onSelect" "all"}}>
 				<i class={{concat "dicon " constants.Icon.All}} />
 				<div class="name">All ({{model.length}})</div>
 			</div>
-			<div class="item {{if (eq selectedView "public") "selected"}}" {{action 'onSelect' 'public'}}>
+			<div class="item {{if (eq selectedView "public") "selected"}}" {{action "onSelect" "public"}}>
 				<i class={{concat "dicon " constants.Icon.World}} />
 				<div class="name">Public ({{publicSpaces.length}})</div>
 			</div>
 			{{#if session.authenticated}}
-				<div class="item {{if (eq selectedView "protected") "selected"}}" {{action 'onSelect' 'protected'}}>
+				<div class="item {{if (eq selectedView "protected") "selected"}}" {{action "onSelect" "protected"}}>
 					<i class={{concat "dicon " constants.Icon.People}} />
 					<div class="name">Protected ({{protectedSpaces.length}})</div>
 				</div>
-				<div class="item {{if (eq selectedView "personal") "selected"}}" {{action 'onSelect' 'personal'}}>
+				<div class="item {{if (eq selectedView "personal") "selected"}}" {{action "onSelect" "personal"}}>
 					<i class={{concat "dicon " constants.Icon.Person}} />
 					<div class="name">Personal ({{personalSpaces.length}})</div>
 				</div>
 			{{/if}}
 		</div>
 	</div>
-
 {{/layout/master-sidebar}}
 
 {{#layout/master-content}}

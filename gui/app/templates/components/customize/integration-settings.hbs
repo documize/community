@@ -1,52 +1,33 @@
-<div class="row">
-	<div class="col">
-		<div class="view-customize">
-			<h1 class="admin-heading">Integrations Settings</h1>
-			<h2 class="sub-heading">Enable and configure third party integrations</h2>
-		</div>
-	</div>
-</div>
-
 <div class="view-customize">
-	<form class="mt-5">
-
+	<form>
 		<h2>Jira</h2>
 		<p>Displays issues within documentation</p>
-		<div class="form-group row">
-			<label for="jira-url" class="col-sm-4 col-form-label">URL</label>
-			<div class="col-sm-7">
-				{{focus-input id="jira-url" type="text" value=jiraCreds.url class="form-control"}}
-				<small class="form-text text-muted">Fully qualified domain name for your Jira instance e.g. http://jira.example.org</small>
-			</div>
+		<div class="form-group">
+			<label for="jira-url">URL</label>
+			{{focus-input id="jira-url" type="text" value=jiraCreds.url class="form-control"}}
+			<small class="form-text text-muted">Fully qualified domain name for your Jira instance e.g. http://jira.example.org</small>
 		</div>
-		<div class="form-group row">
-			<label for="jira-username" class="col-sm-4 col-form-label">Username</label>
-			<div class="col-sm-7">
-				{{input id="jira-username" type="text" value=jiraCreds.username class="form-control"}}
-				<small class="form-text text-muted">Your Jira login username/email</small>
-			</div>
+		<div class="form-group">
+			<label for="jira-username">Username</label>
+			{{input id="jira-username" type="text" value=jiraCreds.username class="form-control"}}
+			<small class="form-text text-muted">Your Jira login username/email</small>
 		</div>
-		<div class="form-group row">
-			<label for="jira-secret" class="col-sm-4 col-form-label">Password</label>
-			<div class="col-sm-7">
-				{{input id="jira-secret" type="password" value=jiraCreds.secret class="form-control"}}
-				<small class="form-text text-muted">Provide API Token if using Atlassian Cloud or Password when self-hosting Jira</small>
-			</div>
+		<div class="form-group">
+			<label for="jira-secret">Password</label>
+			{{input id="jira-secret" type="password" value=jiraCreds.secret class="form-control"}}
+			<small class="form-text text-muted">Provide API Token if using Atlassian Cloud or Password when self-hosting Jira</small>
 		</div>
 
 		{{#if session.isGlobalAdmin}}
 			<h2>Trello</h2>
 			<p>Displays boards within documentation</p>
-			<div class="form-group row">
-				<label for="trello-key" class="col-sm-4 col-form-label">App Key</label>
-				<div class="col-sm-7">
+			<div class="form-group">
+				<label for="trello-key">App Key</label>
 					{{input id="trello-key" type="text" value=trelloCreds.appKey class="form-control"}}
-					<small class="form-text text-muted">See <a href="https://trello.com/app-key">https://trello.com/app-key</a></small>
-				</div>
+				<small class="form-text text-muted">See <a href="https://trello.com/app-key">https://trello.com/app-key</a></small>
 			</div>
 		{{/if}}
 
-		<div class="btn btn-success bold-700 text-uppercase mt-4" {{action "onSave"}}>Save</div>
-
+		{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Save onClick=(action "onSave")}}
 	</form>
 </div>
