@@ -195,6 +195,7 @@ let constants = EmberObject.extend({
 	},
 
 	Icon: { // eslint-disable-line ember/avoid-leaking-state-in-ember-objects
+		AddUser: 'dicon-add-27',
 		All: 'dicon-menu-8',
 		Announce: 'dicon-notification',
 		ArrowUp: 'dicon-arrow-up-2',
@@ -225,6 +226,7 @@ let constants = EmberObject.extend({
 		Person: 'dicon-single-01',
 		People: 'dicon-multiple-19',
 		Remove: 'dicon-i-remove',
+		RemoveUser: 'dicon-delete-28',
 		Search: 'dicon-magnifier',
 		Send: 'dicon-send',
 		Settings: 'dicon-settings-gear',
@@ -248,7 +250,9 @@ let constants = EmberObject.extend({
 		Delete: 'Delete',
 		Export: 'Export',
 		Insert: 'Insert',
+		Join : 'Join',
 		Next: 'Next',
+		Remove: 'Remove',
 		Reset: 'Reset',
 		Restore: 'Restore',
 		Save: 'Save',

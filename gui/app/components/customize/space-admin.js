@@ -33,13 +33,11 @@ export default Component.extend(Notifier, Modals, {
 
 	init() {
 		this._super(...arguments);
-
 		this.loadData();
 	},
 
 	didReceiveAttrs() {
 		this._super(...arguments);
-
 		this.deleteSpace = {
 			id: '',
 			name: ''
@@ -55,6 +53,7 @@ export default Component.extend(Notifier, Modals, {
 	actions: {
 		onShow(id) {
 			this.set('deleteSpace.id', id);
+			this.modalOpen("#space-delete-modal", {"show": true}, '#delete-space-name');
 		},
 
 		onDelete() {
@@ -91,13 +90,13 @@ export default Component.extend(Notifier, Modals, {
 
 			this.get('documentSvc').export(spec).then((htmlExport) => {
 				this.get('browserSvc').downloadFile(htmlExport, 'documize.html');
-				this.notifySuccess('Exported');
+				this.notifySuccess('Export completed');
 			});
 		},
 
 		onOwner(spaceId) {
 			this.get('spaceSvc').grantOwnerPermission(spaceId).then(() => { /* jshint ignore:line */
-				this.notifySuccess('Saved');
+				this.notifySuccess('Added as owner');
 			});
 		}
 	}

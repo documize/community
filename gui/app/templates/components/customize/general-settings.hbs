@@ -11,13 +11,13 @@
 			<small class="form-text text-muted">Provide short message explaining this Documize instance</small>
 		</div>
 		<div class="form-group">
-			<label>Anonymous Access</label>
-			<div class="form-check">
-				<input type="checkbox" class="form-check-input" id="allowAnonymousAccess" checked={{model.general.allowAnonymousAccess}}>
-				<label class="form-check-label" for="allowAnonymousAccess">
-					Make content marked as "Everyone" available to anonymous users
-				</label>
-			</div>
+			<label>Site Theme</label>
+			{{ui/theme-picker onChange=(action "onThemeChange")}}
+			<small class="form-text text-muted">Users can set their own theme under Profile</small>
+		</div>
+		<div class="form-group">
+			<label>Public Spaces Viewable By Anonymous Users</label>
+			{{x-toggle value=model.general.allowAnonymousAccess size="medium" theme="light" onToggle=(action (mut model.general.allowAnonymousAccess))}}
 		</div>
 		<div class="form-group">
 			<label for="conversionEndpoint">Conversion Service URL</label>
@@ -41,12 +41,7 @@
 			</select>
 			<small class="form-text text-muted">How many tags can be assigned to a document (between 3 and 10 tags)</small>
 		</div>
-		<div class="form-group">
-			<label>Default Site Theme</label>
-			{{ui/theme-picker onChange=(action "onThemeChange")}}
-			<small class="form-text text-muted">Users can set their own theme under Profile</small>
-		</div>
 
-		{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Save onClick=(action "save")}}
+		{{ui/ui-button color=constants.Color.Green light=true icon=constants.Icon.Settings label=constants.Label.Save onClick=(action "save")}}
 	</form>
 </div>

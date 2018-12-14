@@ -26,10 +26,10 @@
 			{{#if backupRunning}}
 				<h3 class="text-success">Backup running, please wait...</h3>
 			{{else}}
-				{{ui/ui-button color=constants.Color.Yellow light=true label=(concat "TENANT BACKUP (" appMeta.appHost ")") onClick=(action "onBackup")}}
+				{{ui/ui-button color=constants.Color.Yellow light=true icon=constants.Icon.Database label=(concat "BACKUP TENANT (" appMeta.appHost ")") onClick=(action "onBackup")}}
 				{{#if session.isGlobalAdmin}}
 					{{ui/ui-button-gap}}
-					{{ui/ui-button color=constants.Color.Green light=true label="SYSTEM BACKUP" onClick=(action "onSystemBackup")}}
+					{{ui/ui-button color=constants.Color.Yellow light=true icon=constants.Icon.Database label="BACKUP SYSTEM" onClick=(action "onSystemBackup")}}
 				{{/if}}
 			{{/if}}
 			{{#if backupFailed}}
@@ -44,7 +44,7 @@
 	<div class="backup-restore">
 		<div class="restore-zone">
 			{{#if session.isGlobalAdmin}}
-				<p class="text-danger">Restore from a <b>system backup</b> should only be performed on an <b>empty Documize database.</b></p>
+				<p>Restore from a <b>system backup</b> should only be performed on an <b>empty Documize database.</b></p>
 			{{/if}}
 			<p>Restore operation will <b>re-create</b> users, groups, permissions, spaces, categories and content.</p>
 			<p>It can take <b>several minutes</b> to complete the restore process &mdash; please be patient while the restore operation is in progress.</p>
@@ -63,7 +63,7 @@
 				<div class="restore-success">Restore completed &mdash; restart your browser and log in</div>
 			{{else}}
 				{{#if restoreUploadReady}}
-					{{ui/ui-button color=constants.Color.Red light=false label=restoreButtonLabel onClick=(action "onShowRestoreModal")}}
+					{{ui/ui-button color=constants.Color.Red light=false icon=constants.Icon.Database label=restoreButtonLabel onClick=(action "onShowRestoreModal")}}
 				{{/if}}
 			{{/if}}
 		</div>

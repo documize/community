@@ -53,14 +53,41 @@
 	}
 
 	> .space-list {
-        padding: 0;
-        margin: 3rem 0;
+		margin: 0;
+		padding: 0;
 
 		> .space {
-			margin: 15px 0;
-			padding: 15px 0;
-			font-size: 1.2rem;
-			color: $theme-500;
+			@include card();
+			list-style-type: none;
+			margin: 0 0 2rem 0;
+			padding: 15px 20px;
+			width: 100%;
+
+			> .info {
+				padding: 0;
+
+				> a {
+					> .name {
+						font-size: 1.3rem;
+						font-weight: 700;
+						color: map-get($gray-shades, 800);
+
+						> .dicon {
+							color: map-get($gray-shades, 600);
+							font-size: 20px;
+							vertical-align: middle;
+							margin-right: 10px;
+						}
+					}
+
+					> .desc {
+						font-size: 1.1rem;
+						font-weight: 400;
+						margin-top: 0.4rem;
+						color: $color-black-light-3;
+					}
+				}
+			}
 		}
 	}
 
@@ -69,17 +96,23 @@
         margin: 0;
 
 		> .group {
-			margin: 15px 0;
+			@include card();
+			list-style-type: none;
+			margin: 0 0 2rem 0;
+			padding: 15px 20px;
+			width: 100%;
 
-			.name {
-				color: $color-black-light-1;
+			> .name {
 				font-size: 1.3rem;
-				font-weight: 600;
+				font-weight: 700;
+				color: map-get($gray-shades, 800);
+			}
 
-				> .purpose {
-					font-size: 1rem;
-					color: map-get($gray-shades, 600);
-				}
+			> .desc {
+				font-size: 1.1rem;
+				font-weight: 400;
+				margin-top: 0.4rem;
+				color: $color-black-light-3;
 			}
 		}
 	}
@@ -87,11 +120,11 @@
 	// used for group admin
 	> .group-users-members {
 		> .item {
-			margin: 10px 0;
+			margin: 5px 0;
 
 			> .fullname {
-				color: $theme-500;
-				font-size: 1.2rem;
+				color: map-get($gray-shades, 800);
+				font-size: 1rem;
 			}
 		}
 	}
@@ -149,7 +182,7 @@
 			border: 1px solid map-get($green-shades, 200);
 			padding: 20px 20px;
 			background-color: map-get($green-shades, 100);
-			color: $color-black-light-1;
+			color: map-get($green-shades, 700);
 
 			> .backup-fail {
 				margin: 10px 0;
@@ -168,7 +201,7 @@
 			margin: 50px 0;
 			padding: 20px 20px;
 			background-color: map-get($red-shades, 100);
-			color: $color-black-light-1;
+			color: map-get($red-shades, 700);
 
 			> .restore-fail {
 				margin: 10px 0;

@@ -4,38 +4,39 @@
 	> .update-status {
 		padding: 25px;
 		background-color: map-get($yellow-shades, 100);
-		border: 1px solid map-get($yellow-shades, 200);
-		@include shadow();
+		border: 1px solid map-get($yellow-shades, 300);
 		@include border-radius(3px);
 
 		> .title {
 			font-weight: bold;
 			font-size: 1.5rem;
-			color: map-get($yellow-shades, 600);
-			margin-bottom: 15px;
+			color: map-get($yellow-shades, 800);
+			margin-bottom: 5px;
 			display:block;
 		}
 
 		> .instructions {
 			font-weight: 500;
-			font-size: 1.3rem;
+			font-size: 1.1rem;
 			color: map-get($gray-shades, 800);
 			margin-bottom: 30px;
 		}
 
 		> .links {
-			margin: 30px 0 0 0;
+			margin: 10px 0 0 0;
 
 			> p {
+				margin: 0.3rem 0;
+
 				> .edition-name {
-					font-size: 1.3rem;
+					font-size: 1.1rem;
 					font-weight: 400;
 					color: map-get($yellow-shades, 900);
 				}
 
 				> .link {
-					font-size: 1.3rem;
-					color: map-get($yellow-shades, 800);
+					font-size: 1.1rem;
+					color: map-get($yellow-shades, 600);
 					font-weight: 600;
 				}
 			}
@@ -46,13 +47,12 @@
 		padding: 25px;
 		background-color: map-get($gray-shades, 100);
 		border: 1px solid map-get($gray-shades, 200);
-		@include shadow();
 		@include border-radius(3px);
 
 		> .version {
 			font-weight: 700;
 			font-size: 1.2rem;
-			color: map-get($yellow-shades, 700);
+			color: map-get($gray-shades, 700);
 			margin: 10px 0;
 			display: block;
 		}

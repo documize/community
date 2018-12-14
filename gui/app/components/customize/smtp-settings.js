@@ -24,7 +24,7 @@ export default Component.extend(Notifier, {
 	testSMTP: null,
 
 	actions: {
-		saveSMTP(e) {
+		saveSMTP() {
 			if (this.get('SMTPHostEmptyError')) {
 				$("#smtp-host").focus();
 				return;

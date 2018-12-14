@@ -31,26 +31,17 @@
 			<small class="form-text text-muted">e.g. Documize</small>
 		</div>
 		<div class="form-group">
-			<label>Anonymous</label>
-			<div class="form-check">
-				{{input id="smtp-anonymous" type="checkbox" checked=model.smtp.anonymous class="form-check-input"}}
-				<label class="form-check-label" for="smtp-anonymous">Anonymous authentication, ignore Username and Password fields</label>
-			</div>
+			<label>Anonymous Authentication (Ignore Credentials)</label>
+			{{x-toggle value=model.smtp.anonymous size="medium" theme="light" onToggle=(action (mut model.smtp.anonymous))}}
 		</div>
 		<div class="form-group">
-			<label>Base64</label>
-			<div class="form-check">
-				{{input id="smtp-base64creds" type="checkbox" checked=model.smtp.base64creds class="form-check-input"}}
-				<label class="form-check-label" for="smtp-base64creds">Base64 encode Username and Password fields</label>
-			</div>
+			<label>Base64 Encode Credentials</label>
+			{{x-toggle value=model.smtp.base64creds size="medium" theme="light" onToggle=(action (mut model.smtp.base64creds))}}
 		</div>
 		<div class="form-group">
-			<label>SSL</label>
-			<div class="form-check">
-				{{input id="smtp-usessl" type="checkbox" checked=model.smtp.usessl class="form-check-input"}}
-				<label class="form-check-label" for="smtp-usessl">Use SSL</label>
-			</div>
+			<label>Use SSL</label>
+			{{x-toggle value=model.smtp.usessl size="medium" theme="light" onToggle=(action (mut model.smtp.usessl))}}
 		</div>
-		{{ui/ui-button color=constants.Color.Green light=true label=buttonText onClick=(action "saveSMTP")}}
+		{{ui/ui-button color=constants.Color.Green light=true icon=constants.Icon.Send label=buttonText onClick=(action "saveSMTP")}}
 	</form>
 </div>

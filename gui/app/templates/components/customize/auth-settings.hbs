@@ -163,7 +163,7 @@
 			{{ui/ui-button-gap}}
 		{{/if}}
 
-		{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Activate onClick=(action "onSave")}}
+		{{ui/ui-button color=constants.Color.Green light=true icon=constants.Icon.Locked label=constants.Label.Activate onClick=(action "onSave")}}
 	</form>
 
 	{{#if (gt keycloakFailure.length 0)}}
