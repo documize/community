@@ -40,8 +40,9 @@
 			> .nav-options {
 				> .option {
 					cursor: pointer;
+					display: block;
 
-					>.dicon {
+					> .dicon {
 						display: inline-block;
 						color: $color-white;
 						font-size: 20px;
@@ -51,6 +52,10 @@
 					> .name {
 						display: none;
 					}
+				}
+
+				> .selected {
+					// background-color: $theme-400;
 				}
 			}
 

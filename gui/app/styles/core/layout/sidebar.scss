@@ -37,6 +37,11 @@
 					color: $color-black-light-3;
 				}
 
+				> input[type=checkbox] {
+					margin: -6px 0 0 0;
+					padding: 0;
+				}
+
 				&:hover {
 					> .dicon {
 						color: map-get($gray-shades, 600);

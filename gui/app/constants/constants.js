@@ -260,6 +260,7 @@ let constants = EmberObject.extend({
 		Reset: 'Reset',
 		Restore: 'Restore',
 		Save: 'Save',
+		Search: 'Search',
 		SignIn: 'Sign In',
 		Update: 'Update',
 	}

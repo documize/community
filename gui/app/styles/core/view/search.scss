@@ -1,16 +1,8 @@
 .view-search {
-	margin-top: 30px;
-
-	> .heading {
-		font-size: 1.5rem;
-		font-weight: bold;
-		color: map-get($gray-shades, 800);
-		margin-top: 30px;
-	}
-
 	.search-box {
 		width: 300px;
 	}
+
 	@media (min-width: 900px) {
 		.search-box {
 			width: 400px;
@@ -105,22 +97,27 @@
 		}
 	}
 
-
 	> .syntax {
-		margin: 20px 0;
+		margin: 10px 0;
 
 		> .example {
 			margin-top: 10px;
-			font-weight: 600;
-			font-size: 1.1rem;
+			font-weight: 500;
+			font-size: 1rem;
 			font-style: italic;
-			color: map-get($gray-shades, 800);
+			color: map-get($gray-shades, 700);
 		}
 
 		> .explain {
-			margin: 10px 0 20px 0px;
-			font-size: 1.2rem;
+			margin: 5px 0 15px 0px;
+			font-size: 0.9rem;
 			color: map-get($gray-shades, 600);
 		}
+	}
+
+	> .result-summary {
+		font-size: 1.2rem;
+		font-weight: 600;
+		color: map-get($gray-shades, 800);
 	}
 }
