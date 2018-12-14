@@ -1,4 +1,31 @@
 .view-customize {
+
+	> .explain-user-perms {
+		padding: 15px 25px;
+		background-color: map-get($yellow-shades, 100);
+		border: 1px solid map-get($yellow-shades, 300);
+		@include border-radius(3px);
+
+		> .title {
+			font-weight: 700;
+			font-size: 1.1rem;
+			color: map-get($yellow-shades, 800);
+		}
+
+		> .perm-name {
+			font-size: 1rem;
+			font-weight: 600;
+			color: map-get($gray-shades, 800);
+			margin-top: 10px;
+		}
+
+		> .perm-desc {
+			font-size: 0.9rem;
+			font-weight: 300;
+			color: map-get($gray-shades, 800);
+		}
+	}
+
 	.user-table {
 		tbody tr td, thead tr th {
 			border-top: none !important;
@@ -6,49 +33,53 @@
 		}
 
 		.name {
-			font-size: 1.2rem;
-			font-weight: bold;
-			color: $color-link;
+			font-size: 1.1rem;
+			font-weight: 500;
+			color: map-get($gray-shades, 900);
 			margin: 0 0 0 10px;
 			display: inline-block;
 			cursor: pointer;
 
             > .email {
-				font-size: 0.9rem;
-				color: $color-black-light-1;
+				font-size: 1rem;
+				font-weight: 400;
+				color: map-get($gray-shades, 800);
 				margin: 0;
-				display: inline-block;
-				font-weight: normal;
+				display: block;
 			}
 		}
 
 		.groups {
-			cursor: pointer;
-			margin: 5px 0 0 10px;
 			font-size: 1rem;
-			color: map-get($gray-shades, 600);
+			font-weight: 300;
+			color: map-get($yellow-shades, 900);
+			cursor: pointer;
+			margin: 0 0 0 10px;
 
 			&:hover {
 				color: $color-link;
 			}
 		}
 
-		.inactive-user
-		{
-			color: map-get($red-shades, 600);
-			font-weight: normal;
-			text-decoration: line-through;
+		.inactive-user {
+			> .name, > .name > .email, > .groups {
+				color: map-get($red-shades, 600) !important;
+				font-weight: normal !important;
+				text-decoration: line-through !important;
+			}
 		}
 
-		.admin-user
-		{
-			color: map-get($green-shades, 600);
-			font-weight: normal;
+		.admin-user {
+			> .name, > .name > .email, > .groups {
+				color: map-get($green-shades, 600);
+				font-weight: 600;
+			}
 		}
 
-		.checkbox {
-			color: map-get($gray-shades, 900);
+		.user-checkbox {
+			color: map-get($green-shades, 700);
 			cursor: pointer;
+			font-weight: 600;
 		}
 	}
 
@@ -119,8 +150,11 @@
 
 	// used for group admin
 	> .group-users-members {
+		text-align: center;
+
 		> .item {
-			margin: 5px 0;
+			margin: 7px;
+			display: inline-block;
 
 			> .fullname {
 				color: map-get($gray-shades, 800);
@@ -135,10 +169,11 @@
 			margin: 10px 0;
 
 			> .group-name {
-				color: $theme-500;
-				font-size: 1.2rem;
+				color: map-get($gray-shades, 800);
+				font-size: 1rem;
 
 				> .group-purpose {
+					color: map-get($gray-shades, 700);
 					font-size: 0.9rem;
 				}
 			}
@@ -167,10 +202,6 @@
 				color: $theme-500;
 			}
 		}
-	}
-
-	> .max-results {
-		float: right;
 	}
 
 	> .backup-restore {

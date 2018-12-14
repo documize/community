@@ -15,21 +15,17 @@ import Component from '@ember/component';
 
 export default Component.extend({
 	router: service(),
-	tagName: 'i',
-	classNames: ['dicon'],
+	tagName: 'div',
+	classNames: ['label'],
 	classNameBindings: ['calcClass'],
 
 	color: '',
-	icon: '',
+	label: '',
 	tooltip: '',
 
 	calcClass: computed(function() {
 		let c = '';
-		let icon = this.icon;
-
 		if (this.color !== '') c += this.color + ' ';
-
-		if (icon !== '') c += icon + ' ';
 
 		return c.trim();
 	}),

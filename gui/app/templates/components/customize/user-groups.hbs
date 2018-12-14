@@ -103,15 +103,13 @@
 				<div class="modal-header">Remove Member &mdash; {{membersGroup.name}} ({{members.length}})</div>
 				<div class="modal-body">
 					<div class="view-customize">
-						<div class="group-users-members my-5">
+						<div class="group-users-members">
 							{{#each members as |member|}}
-								<div class="row item">
-									<div class="col-10 fullname">{{member.fullname}}</div>
-									<div class="col-2 text-right">
-										{{#ui/ui-toolbar dark=false light=true raised=true large=false bordered=true}}
-											{{ui/ui-toolbar-icon icon=constants.Icon.RemoveUser color=constants.Color.Red tooltip="Remove member" onClick=(action "onLeaveGroup" member.userId)}}
-										{{/ui/ui-toolbar}}
-									</div>
+								<div class="item">
+									{{#ui/ui-toolbar dark=false light=true raised=true large=false bordered=true}}
+										{{ui/ui-toolbar-icon icon=constants.Icon.RemoveUser color=constants.Color.Red tooltip="Remove member" onClick=(action "onLeaveGroup" member.userId)}}
+										{{ui/ui-toolbar-label color=constants.Color.Gray label=member.fullname onClick=(action "onLeaveGroup" member.userId)}}
+									{{/ui/ui-toolbar}}
 								</div>
 							{{/each}}
 						</div>
@@ -130,58 +128,36 @@
 				<div class="modal-header">Add Member &mdash; {{membersGroup.name}} ({{members.length}})</div>
 				<div class="modal-body">
 					<div class="form-group">
-						<label for="group-members-search">Search users to join this group</label>
+						<label for="group-members-search">Find users</label>
 						{{input id="group-members-search" type="text" class="form-control mousetrap" placeholder="Search members and users..." value=searchText key-up=(action "onSearch")}}
-						<small class="form-text text-muted">search firstname, lastname, email</small>
+						<small class="form-text text-muted">firstname, lastname, email</small>
 					</div>
 					<div class="view-customize">
 						<div class="text-center">
-							<div class="btn-group btn-group-toggle">
-								{{#attach-tooltip showDelay=1000}}Number of users to display{{/attach-tooltip}}
-								<label class="btn btn-outline-secondary {{if (eq userLimit 1) "active"}}">
-									<input type="radio" name="options" autocomplete="off" {{action "onLimit" 1}}>1
-								</label>
-								<label class="btn btn-outline-secondary {{if (eq userLimit 10) "active"}}">
-									<input type="radio" name="options" autocomplete="off" {{action "onLimit" 10}}>10
-								</label>
-								<label class="btn btn-outline-secondary {{if (eq userLimit 25) "active"}}">
-									<input type="radio" name="options" autocomplete="off" {{action "onLimit" 25}}>25
-								</label>
-								<label class="btn btn-outline-secondary {{if (eq userLimit 50) "active"}}">
-									<input type="radio" name="options" autocomplete="off" {{action "onLimit" 50}}>50
-								</label>
-								<label class="btn btn-outline-secondary {{if (eq userLimit 100) "active"}}">
-									<input type="radio" name="options" autocomplete="off" {{action "onLimit" 100}}>100
-								</label>
-								<label class="btn btn-outline-secondary {{if (eq userLimit 250) "active"}}">
-									<input type="radio" name="options" autocomplete="off" {{action "onLimit" 250}}>250
-								</label>
-								<label class="btn btn-outline-secondary {{if (eq userLimit 500) "active"}}">
-									<input type="radio" name="options" autocomplete="off" {{action "onLimit" 500}}>500
-								</label>
-								<label class="btn btn-outline-secondary {{if (eq userLimit 1000) "active"}}">
-									<input type="radio" name="options" autocomplete="off" {{action "onLimit" 1000}}>1,000
-								</label>
-								<label class="btn btn-outline-secondary {{if (eq userLimit 99999) "active"}}">
-									<input type="radio" name="options" autocomplete="off" {{action "onLimit" 99999}}>all
-								</label>
-							</div>
+							{{#ui/ui-toolbar dark=false light=false raised=false large=true bordered=false tooltip="Maximum users to display"}}
+								{{ui/ui-toolbar-label color=constants.Color.Gray label="1" onClick=(action "onLimit" 1)}}
+								{{ui/ui-toolbar-label color=constants.Color.Gray label="10" onClick=(action "onLimit" 10)}}
+								{{ui/ui-toolbar-label color=constants.Color.Gray label="25" onClick=(action "onLimit" 25)}}
+								{{ui/ui-toolbar-label color=constants.Color.Gray label="50" onClick=(action "onLimit" 50)}}
+								{{ui/ui-toolbar-label color=constants.Color.Gray label="100" onClick=(action "onLimit" 100)}}
+								{{ui/ui-toolbar-label color=constants.Color.Gray label="250" onClick=(action "onLimit" 250)}}
+								{{ui/ui-toolbar-label color=constants.Color.Gray label="500" onClick=(action "onLimit" 500)}}
+								{{ui/ui-toolbar-label color=constants.Color.Gray label="1,000" onClick=(action "onLimit" 1000)}}
+								{{ui/ui-toolbar-label color=constants.Color.Gray label="ALL" onClick=(action "onLimit" 99999)}}
+							{{/ui/ui-toolbar}}
 						</div>
-						<div class="clearfix" />
-
-						<div class="group-users-members my-5">
+						{{ui/ui-spacer size=300}}
+						<div class="group-users-members">
 							{{#each users as |user|}}
-								<div class="row item">
-									<div class="col-10 fullname">{{user.firstname}} {{user.lastname}}</div>
-									<div class="col-2 text-right">
-										{{#ui/ui-toolbar dark=false light=true raised=true large=false bordered=true}}
-											{{#if user.isMember}}
-												{{ui/ui-toolbar-icon icon=constants.Icon.RemoveUser color=constants.Color.Red tooltip="Remove member" onClick=(action "onLeaveGroup" user.id)}}
-											{{else}}
-												{{ui/ui-toolbar-icon icon=constants.Icon.AddUser color=constants.Color.Green tooltip="Add member" onClick=(action "onJoinGroup" user.id)}}
-											{{/if}}
-										{{/ui/ui-toolbar}}
-									</div>
+								<div class="item">
+									{{#ui/ui-toolbar dark=false light=true raised=true large=false bordered=true}}
+										{{#if user.isMember}}
+											{{ui/ui-toolbar-icon icon=constants.Icon.RemoveUser color=constants.Color.Red tooltip="Remove member" onClick=(action "onLeaveGroup" user.id)}}
+										{{else}}
+											{{ui/ui-toolbar-icon icon=constants.Icon.AddUser color=constants.Color.Green tooltip="Add member" onClick=(action "onJoinGroup" user.id)}}
+											{{ui/ui-toolbar-label color=constants.Color.Gray label=(concat user.firstname " " user.lastname) onClick=(action "onJoinGroup" user.id)}}
+										{{/if}}
+									{{/ui/ui-toolbar}}
 								</div>
 							{{/each}}
 						</div>

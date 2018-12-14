@@ -8,8 +8,8 @@
 				</form>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-outline-secondary" data-dismiss="modal" {{action "onCancel"}}>{{cancelCaption}}</button>
-				<button type="button" class="btn {{buttonType}}" onclick={{action "onAction"}}>{{confirmCaption}}</button>
+				{{ui/ui-button color=constants.Color.Gray light=true label=cancelCaption dismiss=true onClick=(action "onCancel")}}
+				{{ui/ui-button color=buttonColor light=true label=confirmCaption onClick=(action "onAction")}}
 			</div>
 		</div>
 	</div>

@@ -26,6 +26,6 @@
 	{{/if}}
 </div>
 
-{{#ui/ui-dialog title="Delete Attachment" confirmCaption="Delete" buttonType="btn-danger" show=showDialog onAction=(action "onDelete")}}
+{{#ui/ui-dialog title="Delete Attachment" confirmCaption="Delete" buttonColor=constants.Color.Red show=showDialog onAction=(action "onDelete")}}
 	<p>Are you sure you want to delete {{deleteAttachment.name}}?</p>
 {{/ui/ui-dialog}}

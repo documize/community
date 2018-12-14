@@ -3,13 +3,16 @@
 }
 
 .dmz-toolbar {
-	display: inline-block;
+	display: inline-flex;
+	// flex: 0 1 auto;
+	flex-basis: auto;
     text-align: center;
     white-space: nowrap;
     vertical-align: middle;
     border: 1px solid transparent;
 	height: 30px;
-	padding: 5px 10px;
+	width: auto;
+	padding: 6px 10px;
 	line-height: 24px;
 	@extend .no-select;
 	@include border-radius(6px);
@@ -18,12 +21,22 @@
 		font-size: 16px;
 		font-weight: 500;
 		color: map-get($gray-shades, 600);
-		padding: 0 0.25rem;
+		padding: 0 0.5rem;
 		cursor: pointer;
 
 		&:hover {
 			color: map-get($gray-shades, 700);
 		}
+	}
+
+	> .label {
+		// display: inline-block;
+		font-size: 14px;
+		font-weight: 500;
+		color: map-get($gray-shades, 600);
+		padding: 0 0.5rem;
+		align-self: center;
+		cursor: pointer;
 	}
 
 	> .red {
@@ -53,7 +66,7 @@
 
 .dmz-toolbar-large {
 	height: 40px;
-	padding: 7px 10px;
+	padding: 9px 10px;
 	line-height: 33px;
 
 	> .dicon {

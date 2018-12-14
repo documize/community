@@ -49,11 +49,11 @@
 	</ul>
 </div>
 
-{{#ui/ui-dialog title="Delete Documents" confirmCaption="Delete" buttonType="btn-danger" show=showDeleteDialog onAction=(action "onDeleteDocuments")}}
+{{#ui/ui-dialog title="Delete Documents" confirmCaption="Delete" buttonColor=constants.Color.Red show=showDeleteDialog onAction=(action "onDeleteDocuments")}}
 	<p>Are you sure you want to delete {{selectedDocuments.length}} {{selectedCaption}}?</p>
 {{/ui/ui-dialog}}
 
-{{#ui/ui-dialog title="Move Documents" confirmCaption="Move" buttonType="btn-success" show=showMoveDialog onAction=(action "onMoveDocuments")}}
+{{#ui/ui-dialog title="Move Documents" confirmCaption="Move" buttonColor=constants.Color.Green show=showMoveDialog onAction=(action "onMoveDocuments")}}
 	<p>Select space for {{selectedDocuments.length}} {{selectedCaption}}</p>
 	{{ui/ui-list-picker items=moveOptions nameField="name" singleSelect=true}}
 {{/ui/ui-dialog}}

@@ -10,25 +10,13 @@
 // https://documize.com
 
 a {
-	// @include ease-in();
+	cursor: pointer;
 	color: $color-link;
 	text-decoration: none;
-	cursor: pointer;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 
-	a:focus,
-	a:hover {
-		text-decoration: none;
-	}
-}
-
-a.admin-link {
-	text-decoration: none;
-	font-weight: bold;
-
-	a:focus,
-	a:hover {
+	a:focus, a:hover {
 		text-decoration: none;
 	}
 }
@@ -86,3 +74,34 @@ a.broken-link {
 	border: 1px solid map-get($gray-shades, 300);
 }
 
+.hide {
+	display: none;
+}
+
+.display-block {
+	display: block;
+}
+
+.display-inline-block {
+	display: inline-block;
+}
+
+.visible {
+	visibility: visible;
+}
+
+.invisible {
+	visibility: none;
+}
+
+.align-top {
+	vertical-align: top!important;
+}
+
+.align-middle {
+	vertical-align: middle!important;
+}
+
+.text-center {
+	text-align: center;
+}

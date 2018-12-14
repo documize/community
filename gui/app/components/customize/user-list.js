@@ -15,9 +15,10 @@ import { inject as service } from '@ember/service';
 import { schedule, debounce } from '@ember/runloop';
 import AuthProvider from '../../mixins/auth';
 import ModalMixin from '../../mixins/modal';
+import Notifier from '../../mixins/notifier';
 import Component from '@ember/component';
 
-export default Component.extend(AuthProvider, ModalMixin, {
+export default Component.extend(AuthProvider, ModalMixin, Notifier, {
 	groupSvc: service('group'),
 	editUser: null,
 	deleteUser: null,
@@ -171,7 +172,13 @@ export default Component.extend(AuthProvider, ModalMixin, {
 			let cb = this.get('onDelete');
 			cb(this.get('deleteUser.id'));
 
+			this.notifySuccess("Deleted user");
+
 			return true;
+		},
+
+		onShowDeleteBulk() {
+			this.modalOpen("#admin-user-delete-modal", {"show": true});
 		},
 
 		onBulkDelete() {
@@ -184,6 +191,8 @@ export default Component.extend(AuthProvider, ModalMixin, {
 
 			this.set('selectedUsers', []);
 			this.set('hasSelectedUsers', false);
+
+			this.notifySuccess("Deleted selected users");
 
 			this.modalClose('#admin-user-delete-modal');
 		},

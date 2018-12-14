@@ -24,7 +24,5 @@ export default Component.extend({
 	bordered: false,
 	dark: false,
 	light: false,
-
-	actions: {
-	}
+	tooltip: ''
 });
