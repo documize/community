@@ -40,3 +40,10 @@
 .bold-700 { font-weight: 700; }
 .bold-800 { font-weight: 800; }
 .bold-900 { font-weight: 900; }
+
+@media screen and (-webkit-min-device-pixel-ratio: 2), screen and (min-resolution: 2dppx) {
+	body {
+		-moz-osx-font-smoothing: grayscale;
+		-webkit-font-smoothing: antialiased;
+	}
+}
