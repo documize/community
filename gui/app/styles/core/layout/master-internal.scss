@@ -1,4 +1,5 @@
 // CSS GRID WITH FIXED SIDEBAR OUTSIDE GRID
+
 // Mobile-first layout
 .master-container {
 	display: block;
@@ -18,6 +19,7 @@
 	display: block;
 	height: auto;
 	width: 100%;
+	z-index: 1041;
 
 	.master-navbar {
 		display: block;
@@ -38,9 +40,15 @@
 			width: 100%;
 
 			> .nav-options {
+				> .selected {
+					> .dicon, > .name {
+						color: $theme-400 !important;
+					}
+				}
+
 				> .option {
 					cursor: pointer;
-					display: block;
+					display: inline-block;
 
 					> .dicon {
 						display: inline-block;
@@ -52,10 +60,6 @@
 					> .name {
 						display: none;
 					}
-				}
-
-				> .selected {
-					// background-color: $theme-400;
 				}
 			}
 
@@ -241,15 +245,15 @@
 							display: block;
 							color: $color-white;
 							font-size: 24px;
-							padding: 25px 0 10px 0;
+							padding: 15px 0 10px 0;
 						}
 
 						> .name {
 							display: block;
-							padding: 0 0 10px 0;
+							padding: 0 0 15px 0;
 							font-size: 0.8rem;
 							font-weight: 700;
-							color: white;
+							color: $color-white;
 							text-transform: uppercase;
 						}
 					}
