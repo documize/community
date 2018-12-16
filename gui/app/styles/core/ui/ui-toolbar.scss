@@ -4,7 +4,6 @@
 
 .dmz-toolbar {
 	display: inline-flex;
-	// flex: 0 1 auto;
 	flex-basis: auto;
     text-align: center;
     white-space: nowrap;
@@ -30,13 +29,16 @@
 	}
 
 	> .label {
-		// display: inline-block;
 		font-size: 14px;
 		font-weight: 500;
 		color: map-get($gray-shades, 600);
 		padding: 0 0.5rem;
 		align-self: center;
 		cursor: pointer;
+	}
+
+	> .label-selected {
+		color: map-get($yellow-shades, 600);
 	}
 
 	> .red {

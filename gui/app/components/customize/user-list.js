@@ -25,6 +25,7 @@ export default Component.extend(AuthProvider, ModalMixin, Notifier, {
 	filter: '',
 	hasSelectedUsers: false,
 	showDeleteDialog: false,
+	showPermExplain: false,
 
 	init() {
 		this._super(...arguments);
@@ -58,6 +59,16 @@ export default Component.extend(AuthProvider, ModalMixin, Notifier, {
 	},
 
 	actions: {
+		togglePerms() {
+			this.set('showPermExplain', !this.get('showPermExplain'));
+
+			if (this.showPermExplain) {
+				this.$(".perms").show();
+			} else {
+				this.$(".perms").hide();
+			}
+		},
+
 		toggleSelect(user) {
 			user.set('selected', !user.get('selected'));
 

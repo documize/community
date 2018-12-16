@@ -19,17 +19,26 @@
 
 	{{ui/ui-spacer size=300}}
 	<div class="explain-user-perms">
-		<div class="title">User Permissions Explained</div>
-		<div class="perm-name">Spaces</div>
-		<div class="perm-desc">Can add spaces, both personal and shared with others</div>
-		<div class="perm-name">Visible</div>
-		<div class="perm-desc">Can see names of users and groups, can disable for external users like customers/partners</div>
-		<div class="perm-name">Admin</div>
-		<div class="perm-desc">Can manage all aspects of Documize, like this screen</div>
-		<div class="perm-name">Analytics</div>
-		<div class="perm-desc">Can view analytical reports<</div>
-		<div class="perm-name">Active</div>
-		<div class="perm-desc">Can login and use Documize</div>
+		<div class="title" {{action "togglePerms"}}>
+			Permissions Explained
+			{{#if showPermExplain}}
+				<i class="dicon {{constants.Icon.ArrowSmallUp}}" />
+			{{else}}
+				<i class="dicon {{constants.Icon.ArrowSmallDown}}" />
+			{{/if}}
+		</div>
+		<div class="perms">
+			<div class="perm-name">Spaces</div>
+			<div class="perm-desc">Can add spaces, both personal and shared with others</div>
+			<div class="perm-name">Visible</div>
+			<div class="perm-desc">Can see names of users and groups, can disable for external users like customers/partners</div>
+			<div class="perm-name">Admin</div>
+			<div class="perm-desc">Can manage all aspects of Documize, like this screen</div>
+			<div class="perm-name">Analytics</div>
+			<div class="perm-desc">Can view analytical reports<</div>
+			<div class="perm-name">Active</div>
+			<div class="perm-desc">Can login and use Documize</div>
+		</div>
 	</div>
 	{{ui/ui-spacer size=300}}
 
@@ -40,15 +49,15 @@
 
 	<div class="text-center">
 		{{#ui/ui-toolbar dark=false light=false raised=false large=true bordered=false tooltip="Maximum users to display"}}
-			{{ui/ui-toolbar-label color=constants.Color.Gray label="1" onClick=(action "onLimit" 1)}}
-			{{ui/ui-toolbar-label color=constants.Color.Gray label="10" onClick=(action "onLimit" 10)}}
-			{{ui/ui-toolbar-label color=constants.Color.Gray label="25" onClick=(action "onLimit" 25)}}
-			{{ui/ui-toolbar-label color=constants.Color.Gray label="50" onClick=(action "onLimit" 50)}}
-			{{ui/ui-toolbar-label color=constants.Color.Gray label="100" onClick=(action "onLimit" 100)}}
-			{{ui/ui-toolbar-label color=constants.Color.Gray label="250" onClick=(action "onLimit" 250)}}
-			{{ui/ui-toolbar-label color=constants.Color.Gray label="500" onClick=(action "onLimit" 500)}}
-			{{ui/ui-toolbar-label color=constants.Color.Gray label="1,000" onClick=(action "onLimit" 1000)}}
-			{{ui/ui-toolbar-label color=constants.Color.Gray label="ALL" onClick=(action "onLimit" 99999)}}
+			{{ui/ui-toolbar-label color=constants.Color.Gray label="5" selected=(eq userLimit 5) onClick=(action "onLimit" 5)}}
+			{{ui/ui-toolbar-label color=constants.Color.Gray label="10" selected=(eq userLimit 10) onClick=(action "onLimit" 10)}}
+			{{ui/ui-toolbar-label color=constants.Color.Gray label="25" selected=(eq userLimit 25) onClick=(action "onLimit" 25)}}
+			{{ui/ui-toolbar-label color=constants.Color.Gray label="50" selected=(eq userLimit 50) onClick=(action "onLimit" 50)}}
+			{{ui/ui-toolbar-label color=constants.Color.Gray label="100" selected=(eq userLimit 100) onClick=(action "onLimit" 100)}}
+			{{ui/ui-toolbar-label color=constants.Color.Gray label="250" selected=(eq userLimit 250) onClick=(action "onLimit" 250)}}
+			{{ui/ui-toolbar-label color=constants.Color.Gray label="500" selected=(eq userLimit 500) onClick=(action "onLimit" 500)}}
+			{{ui/ui-toolbar-label color=constants.Color.Gray label="1,000" selected=(eq userLimit 1000) onClick=(action "onLimit" 1000)}}
+			{{ui/ui-toolbar-label color=constants.Color.Gray label="ALL" selected=(eq userLimit 99999) onClick=(action "onLimit" 99999)}}
 		{{/ui/ui-toolbar}}
 	</div>
 

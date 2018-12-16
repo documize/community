@@ -5,24 +5,35 @@
 		background-color: map-get($yellow-shades, 100);
 		border: 1px solid map-get($yellow-shades, 300);
 		@include border-radius(3px);
+		@extend .no-select;
 
 		> .title {
 			font-weight: 700;
 			font-size: 1.1rem;
 			color: map-get($yellow-shades, 800);
+			cursor: pointer;
+
+			> i {
+				font-size: 20px;
+				vertical-align: sub;
+			}
 		}
 
-		> .perm-name {
-			font-size: 1rem;
-			font-weight: 600;
-			color: map-get($gray-shades, 800);
-			margin-top: 10px;
-		}
+		.perms {
+			display: none;
 
-		> .perm-desc {
-			font-size: 0.9rem;
-			font-weight: 300;
-			color: map-get($gray-shades, 800);
+			> .perm-name {
+				font-size: 1rem;
+				font-weight: 600;
+				color: map-get($gray-shades, 800);
+				margin-top: 10px;
+			}
+
+			> .perm-desc {
+				font-size: 0.9rem;
+				font-weight: 300;
+				color: map-get($gray-shades, 800);
+			}
 		}
 	}
 

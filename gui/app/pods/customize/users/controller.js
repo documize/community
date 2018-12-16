@@ -16,7 +16,7 @@ export default Controller.extend({
 	userService: service('user'),
 	globalSvc: service('global'),
 	syncInProgress: false,
-	userLimit: 100,
+	userLimit: 25,
 
 	loadUsers(filter) {
 		this.get('userService').getComplete(filter, this.get('userLimit')).then((users) => {

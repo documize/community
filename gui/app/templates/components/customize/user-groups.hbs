@@ -135,15 +135,15 @@
 					<div class="view-customize">
 						<div class="text-center">
 							{{#ui/ui-toolbar dark=false light=false raised=false large=true bordered=false tooltip="Maximum users to display"}}
-								{{ui/ui-toolbar-label color=constants.Color.Gray label="1" onClick=(action "onLimit" 1)}}
-								{{ui/ui-toolbar-label color=constants.Color.Gray label="10" onClick=(action "onLimit" 10)}}
-								{{ui/ui-toolbar-label color=constants.Color.Gray label="25" onClick=(action "onLimit" 25)}}
-								{{ui/ui-toolbar-label color=constants.Color.Gray label="50" onClick=(action "onLimit" 50)}}
-								{{ui/ui-toolbar-label color=constants.Color.Gray label="100" onClick=(action "onLimit" 100)}}
-								{{ui/ui-toolbar-label color=constants.Color.Gray label="250" onClick=(action "onLimit" 250)}}
-								{{ui/ui-toolbar-label color=constants.Color.Gray label="500" onClick=(action "onLimit" 500)}}
-								{{ui/ui-toolbar-label color=constants.Color.Gray label="1,000" onClick=(action "onLimit" 1000)}}
-								{{ui/ui-toolbar-label color=constants.Color.Gray label="ALL" onClick=(action "onLimit" 99999)}}
+								{{ui/ui-toolbar-label color=constants.Color.Gray label="5" selected=(eq userLimit 5) onClick=(action "onLimit" 5)}}
+								{{ui/ui-toolbar-label color=constants.Color.Gray label="10" selected=(eq userLimit 10) onClick=(action "onLimit" 10)}}
+								{{ui/ui-toolbar-label color=constants.Color.Gray label="25" selected=(eq userLimit 25) onClick=(action "onLimit" 25)}}
+								{{ui/ui-toolbar-label color=constants.Color.Gray label="50" selected=(eq userLimit 50) onClick=(action "onLimit" 50)}}
+								{{ui/ui-toolbar-label color=constants.Color.Gray label="100" selected=(eq userLimit 100) onClick=(action "onLimit" 100)}}
+								{{ui/ui-toolbar-label color=constants.Color.Gray label="250" selected=(eq userLimit 250) onClick=(action "onLimit" 250)}}
+								{{ui/ui-toolbar-label color=constants.Color.Gray label="500" selected=(eq userLimit 500) onClick=(action "onLimit" 500)}}
+								{{ui/ui-toolbar-label color=constants.Color.Gray label="1,000" selected=(eq userLimit 1000) onClick=(action "onLimit" 1000)}}
+								{{ui/ui-toolbar-label color=constants.Color.Gray label="ALL" selected=(eq userLimit 99999) onClick=(action "onLimit" 99999)}}
 							{{/ui/ui-toolbar}}
 						</div>
 						{{ui/ui-spacer size=300}}

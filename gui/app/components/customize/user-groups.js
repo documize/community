@@ -24,7 +24,7 @@ export default Component.extend(AuthProvider, ModalMixin, {
 	searchText: '',
 	users: null,
 	members: null,
-	userLimit: 100,
+	userLimit: 25,
 
 	didReceiveAttrs() {
 		this._super(...arguments);

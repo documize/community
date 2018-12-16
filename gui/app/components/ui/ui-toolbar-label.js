@@ -22,10 +22,13 @@ export default Component.extend({
 	color: '',
 	label: '',
 	tooltip: '',
+	selected: false,
 
-	calcClass: computed(function() {
+	calcClass: computed('selected', function() {
 		let c = '';
 		if (this.color !== '') c += this.color + ' ';
+
+		if (this.selected === true) c += 'label-selected';
 
 		return c.trim();
 	}),
