@@ -23,6 +23,12 @@
 					{{/link-to}}
 				{{/if}}
 			{{/if}}
+			{{#if (and session.authenticated session.isAdmin)}}
+				{{#link-to "customize.general" class=(if (eq selectedItem "settings") "option selected" "option")}}
+					<i class={{concat "dicon " constants.Icon.Settings}}></i>
+					<div class="name">Settings</div>
+				{{/link-to}}
+			{{/if}}
 			{{#link-to "search" class=(if (eq selectedItem "search") "option selected" "option")}}
 				<i class={{concat "dicon " constants.Icon.Search}}></i>
 				<div class="name">search</div>

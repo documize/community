@@ -18,7 +18,7 @@ import Component from '@ember/component';
 export default Component.extend(Modals, {
 	tagName: 'div',
 	classNames: ['master-sidebar-container', 'non-printable'],
-	selectedItem: 'spaces',
+	selectedItem: '',
 	folderService: service('folder'),
 	appMeta: service(),
 	session: service(),
