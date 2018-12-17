@@ -71,23 +71,22 @@
 						{{/if}}
 						{{#attach-popover class="ember-attacher-popper" hideOn="clickout" showOn="click" isShown=false}}
 							<div class="menu">
+								{{#link-to "profile" class="item"}}Profile{{/link-to}}
 								{{#if session.isAdmin}}
+									<div class="divider"></div>
 									{{#link-to "customize.general" class="item"}}Settings{{/link-to}}
 									{{#unless appMeta.valid}}
 										{{#link-to "customize.billing" class="item bold red"}}Update Billing{{/link-to}}
 									{{/unless}}
-									<div class="divider"></div>
 								{{/if}}
-								{{#link-to "profile" class="item"}}Profile{{/link-to}}
-								<div class="divider"></div>
 								{{#if session.isGlobalAdmin}}
 									{{#if appMeta.updateAvailable}}
 										{{#link-to "customize.product" class="item bold yellow"}}Update available{{/link-to}}
 									{{/if}}
 								{{/if}}
-								<a href="#" class="item {{if hasWhatsNew "bold green"}}" {{action "onShowWhatsNewModal"}}>What's New</a>
+								<div class="divider"></div>
+								{{#link-to "updates" class=(if hasWhatsNew "item bold green" "item")}}What's New{{/link-to}}
 								<a href="https://docs.documize.com" target="_blank" class="item">Help</a>
-								<a href="#" class="item" data-toggle="modal" data-target="#about-documize-modal" data-backdrop="static">About</a>
 								{{#if enableLogout}}
 									<div class="divider"></div>
 									{{#link-to "auth.logout" class="item" }}Logout{{/link-to}}
@@ -106,75 +105,10 @@
 			<a class="logo" href="https://documize.com?ref=app">
 				<img src="/assets/img/icon-white-64x64.png">
 				<div class="documize">Documize</div>
+				{{#attach-tooltip showDelay=1000}}Documize {{appMeta.edition}} Edition {{appMeta.version}}{{/attach-tooltip}}
 			</a>
 		</div>
 	</div>
-	{{#if session.authenticated}}
-		<div id="whats-new-modal" class="modal" tabindex="-1" role="dialog">
-			<div class="modal-dialog modal-lg" role="document">
-				<div class="modal-header modal-header-white">
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true" data-dismiss="modal" aria-label="Close">&times;</span>
-					</button>
-				</div>
-				<div class="modal-content">
-					<div class="modal-body">
-						<div class="product-news">
-							<h2>What's New</h2>
-
-							{{{newsContent}}}
-
-							<div class="action">
-								Have an idea? Suggestion or feedback? <a href="mailto:support@documize.com">Get in touch!</a>
-							</div>
-						</div>
-					</div>
-					<div class="modal-footer">
-						{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Close dismiss=true}}
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<div id="about-documize-modal" class="modal" tabindex="-1" role="dialog">
-			<div class="modal-dialog modal-dialog-centered" role="document">
-				<div class="modal-content">
-					<div class="modal-body">
-						<div class="product-about">
-							<div class="edition">
-								Documize {{appMeta.edition}} Edition
-							</div>
-							<div class="version">
-								{{appMeta.version}}
-							</div>
-							<div class="version">
-								Build {{appMeta.revision}}
-							</div>
-							<div class="dotcom">
-								<a href="https://documize.com">https://documize.com</a>
-							</div>
-							{{#if (eq appMeta.edition constants.Product.CommunityEdition)}}
-								<div class="copyright">
-									&copy; Documize Inc. All rights reserved.
-								</div>
-								<div class="license">
-									<br>
-									<br> This software (Documize Community Edition) is licensed under
-									<a href="http://www.gnu.org/licenses/agpl-3.0.en.html">GNU AGPL v3</a>
-									You can operate outside the AGPL restrictions by purchasing Documize Enterprise Edition and obtaining a commercial license by
-									contacting
-									<a href="mailto:sales@documize.com">sales@documize.com</a>
-								</div>
-							{{/if}}
-						</div>
-					</div>
-					<div class="modal-footer">
-						{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Close dismiss=true}}
-					</div>
-				</div>
-			</div>
-		</div>
-	{{/if}}
 </div>
 <div class="master-sidebar">
 	<div class="sidebar-content">

@@ -11,7 +11,7 @@
 
 import $ from 'jquery';
 import { notEmpty } from '@ember/object/computed';
-import { inject as service } from '@ember/service'
+import { inject as service } from '@ember/service';
 import Modals from '../../mixins/modal';
 import Component from '@ember/component';
 

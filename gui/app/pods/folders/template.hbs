@@ -34,12 +34,10 @@
 		</div>
 		<div class="grid-cell-2 grid-cell-right">
 			{{#if (or session.isEditor session.isAdmin)}}
-				{{#ui/ui-toolbar dark=false light=true raised=true large=true bordered=true}}
+				{{#ui/ui-toolbar dark=false light=true raised=true large=true bordered=true tooltip="New space"}}
 					{{#if session.isEditor}}
-						{{ui/ui-toolbar-icon icon=constants.Icon.Plus color=constants.Color.Green tooltip="New space" onClick=(action "onShowModal")}}
-					{{/if}}
-					{{#if session.isAdmin}}
-					{{ui/ui-toolbar-icon icon=constants.Icon.Settings tooltip="Settings" linkTo="customize.general"}}
+						{{ui/ui-toolbar-icon icon=constants.Icon.Plus color=constants.Color.Green onClick=(action "onShowModal")}}
+						{{ui/ui-toolbar-label label="SPACE" color=constants.Color.Green onClick=(action "onShowModal")}}
 					{{/if}}
 				{{/ui/ui-toolbar}}
 			{{/if}}

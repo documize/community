@@ -158,6 +158,10 @@ export default Router.map(function () {
 		path: 'theming'
 	});
 
+	this.route('updates', {
+		path: 'updates'
+	});
+
 	this.route('not-found', {
 		path: '/*wildcard'
 	});
