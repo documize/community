@@ -39,10 +39,11 @@ export default Component.extend({
 			this.onClick(e);
 			return;
 		}
+
 		if (is.not.undefined(this.linkTo)) {
 			// TODO: pass in linkModel, linkOptions
 			// https://emberjs.com/api/ember/3.5/classes/RouterService/methods/transitionTo?anchor=transitionTo
-			this.router.transitionTo(this.linkTo);
+			this.router.transitionTo(this.get('linkTo'));
 		}
 	}
 });

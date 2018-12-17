@@ -1,11 +1,19 @@
-<div class="content-zone">
-	<div class="explainer-header explainer-gap">Delete this space and all documents</div>
-	<form>
-		<div class="form-group">
-			<label>Please type space name to confirm</label>
-			{{focus-input id="delete-space-name" type="text" value=deleteSpaceName class="form-control mousetrap" placeholder="Space name" autocomplete="off"}}
-			<small class="form-text text-muted">This will delete all documents and templates within this space!</small>
-		</div>
-	</form>
-	<button type="button" class="btn btn-danger mt-3" onclick={{action "onDelete"}}>Delete Space</button>
-</div>
+{{layout/logo-heading
+	title="Delete Space"
+	desc="Proceed with caution as there is no undo"
+	icon=constants.Icon.Delete}}
+
+<form>
+	<div class="form-group">
+		<label>Please type space name to confirm</label>
+		{{focus-input id="delete-space-name" type="text" value=deleteSpaceName class="form-control mousetrap" placeholder="Space name" autocomplete="off"}}
+		<small class="form-text text-muted">This will delete all documents and templates within this space!</small>
+	</div>
+</form>
+
+{{ui/ui-button
+	color=constants.Color.Red
+	icon=constants.Icon.Delete
+	label=constants.Label.Delete
+	light=true
+	onClick=(action 'onDelete')}}

@@ -4,7 +4,7 @@
 			tooltip="Export as HTML" onClick=(action "onShowExport")}}
 	{{/if}}
 	{{#if pinState.isPinned}}
-		{{ui/ui-toolbar-icon icon=constants.Icon.BookmarkDelete color=constants.Color.Gray
+		{{ui/ui-toolbar-icon icon=constants.Icon.BookmarkDelete color=constants.Color.Yellow
 			tooltip="Remove view from bookmarks" onClick=(action "onUnpin")}}
 	{{else if session.authenticated}}
 		{{ui/ui-toolbar-icon icon=constants.Icon.BookmarkAdd color=constants.Color.Gray
@@ -13,11 +13,7 @@
 
 	{{#if (or permissions.spaceOwner permissions.spaceManage)}}
 		{{ui/ui-toolbar-icon icon=constants.Icon.Settings color=constants.Color.Gray
-			tooltip="Space settings" link="folder.settings" }}
-		{{!-- {{#link-to "folder.settings" space.id space.slug class="button-icon-gray align-middle"}}
-			<i class="material-icons">settings</i>
-			{{#attach-tooltip showDelay=1000}}Settings, permissions, templates{{/attach-tooltip}}
-		{{/link-to}} --}}
+			tooltip="Space settings" linkTo="folder.settings"}}
 	{{/if}}
 {{/ui/ui-toolbar}}
 

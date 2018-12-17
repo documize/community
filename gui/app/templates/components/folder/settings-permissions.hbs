@@ -1,17 +1,76 @@
-<div class="content-zone">
-	<div class="explainer-header">Who can see this space and perform actions</div>
-</div>
+{{layout/logo-heading
+	title="Space Permissions"
+	desc="Assign permissions to users or groups and invite new users to this space"
+	icon=constants.Icon.Locked}}
 
-<div class="container-fluid my-3">
-	<div class="row justify-content-center">
-		<button type="button" class="btn btn-info bold-700 text-uppercase my-3" onclick={{action "onShowAddModal"}}>Add existing users</button>
-		&nbsp;&nbsp;
-		<button type="button" class="btn btn-info bold-700 text-uppercase my-3" onclick={{action "onShowInviteModal"}}>Invite new users</button>
+<div class="view-customize">
+	<div class="explain-user-perms">
+		<div class="title" {{action "toggleSpacePerms"}}>
+			Space Permissions Explained
+			{{#if showSpacePermExplain}}
+				<i class="dicon {{constants.Icon.ArrowSmallUp}}" />
+			{{else}}
+				<i class="dicon {{constants.Icon.ArrowSmallDown}}" />
+			{{/if}}
+		</div>
+		<div class="perms space-perms">
+			<div class="perm-name">View</div>
+			<div class="perm-desc">See content within this space</div>
+			<div class="perm-name">Manage</div>
+			<div class="perm-desc">Manage all aspects of space except deletion</div>
+			<div class="perm-name">Owner</div>
+			<div class="perm-desc">Manage and delete space</div>
+		</div>
+
+		{{ui/ui-spacer size=200}}
+
+		<div class="title" {{action "toggleDocumentPerms"}}>
+			Document Permissions Explained
+			{{#if showDocumentPermExplain}}
+				<i class="dicon {{constants.Icon.ArrowSmallUp}}" />
+			{{else}}
+				<i class="dicon {{constants.Icon.ArrowSmallDown}}" />
+			{{/if}}
+		</div>
+		<div class="perms document-perms">
+			<div class="perm-name">Create</div>
+			<div class="perm-desc">Can create new documents in space</div>
+			<div class="perm-name">Edit</div>
+			<div class="perm-desc">Can change document contents</div>
+			<div class="perm-name">Delete</div>
+			<div class="perm-desc">Can remove documents from space</div>
+			<div class="perm-name">Move</div>
+			<div class="perm-desc">Can move documents from this space to another space</div>
+			<div class="perm-name">Copy</div>
+			<div class="perm-desc">Can duplicate documents</div>
+			<div class="perm-name">Templates</div>
+			<div class="perm-desc">Can create and publish document templates</div>
+			<div class="perm-name">Approval</div>
+			<div class="perm-desc">Can approve or reject document content changes</div>
+			<div class="perm-name">Lifecycle</div>
+			<div class="perm-desc">Can mark documents as Draft, Live and Archived</div>
+			<div class="perm-name">Versions</div>
+			<div class="perm-desc">Can create document version and link them together</div>
+		</div>
 	</div>
 </div>
 
+{{ui/ui-spacer size=300}}
+
+<div class="text-center">
+	{{ui/ui-button color=constants.Color.Gray light=true icon=constants.Icon.Person
+		label="Add Existing User"
+		onClick=(action "onShowAddModal")}}
+	{{ui/ui-button-gap}}
+	{{ui/ui-button color=constants.Color.Gray light=true icon=constants.Icon.Plus
+		label="Invite New User"
+		onClick=(action "onShowInviteModal")}}
+</div>
+
+{{ui/ui-spacer size=300}}
+
 <div class="space-admin table-responsive">
-	<table class="table table-hover permission-table mb-3">
+	<table class="table table-hover permission-table">
 		<thead>
 			<tr>
 				<th></th>
@@ -88,36 +147,8 @@
 	</table>
 </div>
 
-<button type="button" class="btn btn-success bold-700 text-uppercase my-3" onclick={{action "onSave"}}>SAVE</button>
-
-<div class="row my-3">
-	<div class="col-12 col-md-6">
-		<div class="content-zone">
-			<p class="explainer-text">Space permissions:</p>
-			<ul class="explainer-list">
-				<li>View &mdash; see content within this space</li>
-				<li>Manage &mdash; manage all aspects of space except deletion</li>
-				<li>Owner &mdash; manage and delete space</li>
-			</ul>
-		</div>
-	</div>
-	<div class="col-12 col-md-6">
-		<div class="content-zone">
-			<p class="explainer-text">Document permissions:</p>
-			<ul class="explainer-list explainer-gap">
-				<li>Create &mdash; create new documents</li>
-				<li>Edit &mdash; edit documents</li>
-				<li>Delete &mdash; delete documents</li>
-				<li>Move &mdash; move content between documents</li>
-				<li>Copy &mdash; copy content between documents</li>
-				<li>Templates &mdash; create, edit, delete document templates and content blocks</li>
-				<li>Approval &mdash; approve or reject content changes</li>
-				<li>Lifecycle &mdash; mark documents as Draft, Live or Archived</li>
-				<li>Versions &mdash; create versions of documents (baselining)</li>
-			</ul>
-		</div>
-	</div>
-</div>
+{{ui/ui-button color=constants.Color.Green light=true icon=constants.Icon.Locked
+	label=constants.Label.Save onClick=(action "onSave")}}
 
 <div id="space-add-user-modal" class="modal" tabindex="-1" role="dialog">
 	<div class="modal-dialog" role="document">
@@ -135,7 +166,7 @@
 				{{/each}}
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+	 			{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Close dismiss=true}}
 			</div>
 		</div>
 	</div>
@@ -160,8 +191,11 @@
 				</form>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
-				<button type="button" class="btn btn-success" onclick={{action "onSpaceInvite"}}>Invite</button>
+				{{ui/ui-button color=constants.Color.Gray light=true
+					label=constants.Label.Close dismiss=true}}
+				{{ui/ui-button-gap}}
+				{{ui/ui-button color=constants.Color.Green light=true
+					label=constants.Label.Invite onClick=(action "onSpaceInvite")}}
 			</div>
 		</div>
 	</div>

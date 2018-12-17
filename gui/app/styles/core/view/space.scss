@@ -138,15 +138,31 @@
 }
 
 .space-admin {
-	> .title {
-		font-size: 1.5rem;
-		font-weight: bold;
-		color: map-get($gray-shades, 800);
-	}
+	> .blocks {
+		margin: 0;
+		padding: 0;
 
-	> .sub-title {
-		font-size: 1.1rem;
-		color: map-get($gray-shades, 600);
+		> .block {
+			@include card();
+			list-style-type: none;
+			margin: 0 0 2rem 0;
+			padding: 15px 20px;
+			width: 100%;
+			position: relative;
+
+			> .name {
+				font-size: 1.3rem;
+				font-weight: 700;
+				color: map-get($gray-shades, 800);
+			}
+
+			> .desc {
+				font-size: 1.1rem;
+				font-weight: 400;
+				margin: 0.4rem 0 1rem 0;
+				color: $color-black-light-3;
+			}
+		}
 	}
 
 	> .permission-table {

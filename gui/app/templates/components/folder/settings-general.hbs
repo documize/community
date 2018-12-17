@@ -1,31 +1,36 @@
-<div class="content-zone">
-	<div class="explainer-header explainer-gap">General options for this space</div>
-	<form>
-		<div class="form-group">
-			<label>Space Name</label>
-			{{focus-input id="space-name" type="text" value=spaceName class=(if hasNameError "form-control is-invalid" "form-control") placeholder="Space name" autocomplete="off"}}
-		</div>
+{{layout/logo-heading
+	title="General Options"
+	desc="Set options to control how people interact with this space"
+	icon=constants.Icon.Settings}}
 
-		<div class="form-group">
-			<label>Space Type</label>
-			{{ui/ui-select id="spacetypes-dropdown" content=spaceTypeOptions optionValuePath="id" optionLabelPath="label" selection=spaceType action=(action "onSetSpaceType")}}
-			<small class="form-text text-muted">Who can see this space?</small>
-		</div>
+<form>
+	<div class="form-group">
+		<label>Space Name</label>
+		{{focus-input id="space-name" type="text" value=spaceName class=(if hasNameError "form-control is-invalid" "form-control") placeholder="Space name" autocomplete="off"}}
+	</div>
 
+	<div class="form-group">
+		<label>Space Type</label>
+		{{ui/ui-select id="spacetypes-dropdown" content=spaceTypeOptions optionValuePath="id" optionLabelPath="label" selection=spaceType action=(action "onSetSpaceType")}}
+	</div>
+
+	<div class="form-group">
+		<label>Enable Like/Dislike Feedback</label>
+		{{x-toggle value=allowLikes size="medium" theme="light" onToggle=(action (mut allowLikes))}}
+	</div>
+
+	{{#if allowLikes}}
 		<div class="form-group">
-			<label>Content Liking</label>
-			{{#if allowLikes}}
+			<label>Feedback Prompt</label>
 				{{input type="text" id="space-likes-prompt" class="form-control" placeholder="Enter prompt asking for user feedback" value=likes}}
 				<small class="form-text text-muted">Specify the prompt, e.g. Did this help you? Was this helpful? Did you find what you needed?</small>
-				<div class="mt-4">
-					<button type="button" class="btn btn-outline-danger" onclick={{action "onSetLikes" false}}>Do not allow users to like content</button>
-				</div>
-			{{else}}
-				<div>
-					<button type="button" class="btn btn-outline-success" onclick={{action "onSetLikes" true}}>Allow users to like content</button>
-				</div>
-			{{/if}}
 		</div>
-	</form>
-	<button type="button" class="btn btn-success mt-3" onclick={{action "onSave"}}>Save</button>
-</div>
+	{{/if}}
+</form>
+
+{{ui/ui-button
+	color=constants.Color.Green
+	icon=constants.Icon.Settings
+	label=constants.Label.Save
+	light=true
+	onClick=(action 'onSave')}}

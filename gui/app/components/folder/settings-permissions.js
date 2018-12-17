@@ -30,6 +30,8 @@ export default Component.extend(Notifier, Modals, {
 	searchText: '',
 	inviteEmail: '',
 	inviteMessage: '',
+	showSpacePermExplain: false,
+	showDocumentPermExplain: false,
 
 	isSpaceAdmin: computed('permissions', function() {
 		return this.get('permissions.spaceOwner') || this.get('permissions.spaceManage');
@@ -146,6 +148,26 @@ export default Component.extend(Notifier, Modals, {
 	},
 
 	actions: {
+		toggleSpacePerms() {
+			this.set('showSpacePermExplain', !this.get('showSpacePermExplain'));
+
+			if (this.showSpacePermExplain) {
+				this.$(".space-perms").show();
+			} else {
+				this.$(".space-perms").hide();
+			}
+		},
+
+		toggleDocumentPerms() {
+			this.set('showDocumentPermExplain', !this.get('showDocumentPermExplain'));
+
+			if (this.showDocumentPermExplain) {
+				this.$(".document-perms").show();
+			} else {
+				this.$(".document-perms").hide();
+			}
+		},
+
 		onShowInviteModal() {
 			this.modalOpen("#space-invite-user-modal", {"show": true}, '#space-invite-email');
 		},

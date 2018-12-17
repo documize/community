@@ -1,14 +1,21 @@
-<div class="content-zone">
-	<div class="explainer-header explainer-gap">Content blocks provide re-usable content that can be inserted into any document</div>
-	{{#each blocks as |block|}}
-		<div class="mb-5">
-			<h1>{{block.title}}</h1>
-			<p>{{block.excerpt}}</p>
-			<button type="button" class="btn btn-outline-success" onclick={{action "onEdit" block.id}}>Edit</button>
-			<div class="button-gap" />
-			<button type="button" class="btn btn-outline-danger" onclick={{action "onShowDeleteDialog" block.id}}>Delete</button>
-		</div>
-	{{/each}}
+{{layout/logo-heading
+	title="Content Blocks"
+	desc="Content blocks provide re-usable content that can be inserted into any document"
+	icon=constants.Icon.Blocks}}
+
+<div class="space-admin">
+	<div class="blocks">
+		{{#each blocks as |block|}}
+			<div class="block">
+				<div class="name">{{block.title}}</div>
+				<div class="desc">{{block.excerpt}}</div>
+				{{#ui/ui-toolbar dark=false light=true raised=true large=false bordered=true}}
+					{{ui/ui-toolbar-icon icon=constants.Icon.Edit color=constants.Color.Gray tooltip="Edit block" onClick=(action "onEdit" block.id)}}
+					{{ui/ui-toolbar-icon icon=constants.Icon.Delete color=constants.Color.Red tooltip="Delete block" onClick=(action "onShowDeleteDialog" block.id)}}
+				{{/ui/ui-toolbar}}
+			</div>
+		{{/each}}
+	</div>
 </div>
 
 {{#if isSpaceAdmin}}
