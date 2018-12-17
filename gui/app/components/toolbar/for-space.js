@@ -19,6 +19,7 @@ import Notifier from '../../mixins/notifier';
 import Component from '@ember/component';
 
 export default Component.extend(ModalMixin, AuthMixin, Notifier, {
+	classNames: ["display-inline-block"],
 	spaceService: service('folder'),
 	localStorage: service(),
 	templateService: service('template'),

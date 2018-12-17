@@ -32,6 +32,8 @@ export default Route.extend(AuthenticatedRouteMixin, {
 	model() {
 		this.get('browser').setTitle(this.modelFor('folder').folder.get('name'));
 
+		let constants = this.get('constants');
+
 		let folders = this.modelFor('folder').folders;
 		folders.forEach(f => {
 			f.set('selected', false);
@@ -47,6 +49,8 @@ export default Route.extend(AuthenticatedRouteMixin, {
 			permissions: this.modelFor('folder').permissions,
 			folders: folders,
 			documents: documents,
+			documentsDraft: _.filter(documents, function(d) { return d.get('lifecycle') === constants.Lifecycle.Draft; }),
+			documentsLive: _.filter(documents, function(d) { return d.get('lifecycle') === constants.Lifecycle.Live; }),
 			templates: this.modelFor('folder').templates,
 			showStartDocument: false,
 			rootDocCount: 0,

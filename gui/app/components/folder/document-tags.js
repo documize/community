@@ -12,6 +12,8 @@
 import Component from '@ember/component';
 
 export default Component.extend({
+	classNames: ['hashtags'],
+
 	init() {
 		this._super(...arguments);
         let tagz = [];
@@ -20,7 +22,7 @@ export default Component.extend({
             let tags = this.get('documentTags').split('#');
             _.each(tags, function(tag) {
                 if (tag.length > 0) {
-                    tagz.pushObject("#" + tag);
+                    tagz.pushObject(tag);
                 }
             });
         }

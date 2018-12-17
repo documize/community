@@ -90,3 +90,25 @@ $display-break-5: 1800px;
 		}
 	}
 }
+
+.grid-container-5-5 {
+	@extend %grid-base;
+
+	@media (min-width: $display-break-2) {
+		grid-template-columns: 5fr 5fr;
+		grid-template-rows: 1fr;
+
+		.grid-cell-1 {
+			grid-column-start: 1;
+			grid-row-start: 1;
+			padding: 0;
+		}
+
+		.grid-cell-2 {
+			grid-column-start: 2;
+			grid-row-start: 1;
+			padding: 0;
+			justify-self: self-end;
+		}
+	}
+}

@@ -36,7 +36,7 @@ import (
 	"github.com/documize/community/model/doc"
 	"github.com/documize/community/model/page"
 	pm "github.com/documize/community/model/permission"
-	"github.com/documize/community/model/template"
+	// "github.com/documize/community/model/template"
 	"github.com/documize/community/model/workflow"
 	uuid "github.com/nu7hatch/gouuid"
 )
@@ -66,23 +66,23 @@ func (h *Handler) SavedList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	templates := []template.Template{}
+	// templates := []template.Template{}
 
-	for _, d := range documents {
-		var t = template.Template{}
-		t.ID = d.RefID
-		t.Title = d.Name
-		t.Description = d.Excerpt
-		t.Author = ""
-		t.Dated = d.Created
-		t.Type = template.TypePrivate
+	// for _, d := range documents {
+	// 	var t = template.Template{}
+	// 	t.ID = d.RefID
+	// 	t.Title = d.Name
+	// 	t.Description = d.Excerpt
+	// 	t.Author = ""
+	// 	t.Dated = d.Created
+	// 	t.Type = template.TypePrivate
 
-		if d.SpaceID == spaceID {
-			templates = append(templates, t)
-		}
-	}
+	// 	if d.SpaceID == spaceID {
+	// 		templates = append(templates, t)
+	// 	}
+	// }
 
-	response.WriteJSON(w, templates)
+	response.WriteJSON(w, documents)
 }
 
 // SaveAs saves existing document as a template.

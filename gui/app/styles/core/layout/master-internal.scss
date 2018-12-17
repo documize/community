@@ -5,21 +5,19 @@
 	display: block;
 	height: auto;
 	width: 100%;
-	// z-index: 777;
 
 	.master-content {
 		display: block;
 		height: auto;
 		width: 100%;
 		padding: 10px;
-		// z-index: 666;
 	}
 }
 .master-sidebar-container {
 	display: block;
 	height: auto;
 	width: 100%;
-	z-index: 1041;
+	// z-index: 1041; // reequired if we want to show modals from inside sidebar
 
 	.master-navbar {
 		display: block;

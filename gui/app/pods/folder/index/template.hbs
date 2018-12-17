@@ -1,54 +1,49 @@
-{{#layout/top-bar}}
-	<li class="item">
-		{{#link-to "folder.index" model.folder.id model.folder.slug class="link selected"}}
-			{{model.folder.name}}
-		{{/link-to}}
-	</li>
-{{/layout/top-bar}}
+{{#layout/master-sidebar selectedItem="spaces"}}
+	{{folder/space-sidebar
+		spaces=model.folders
+		space=model.folder
+		templates=model.templates
+		permissions=model.permissions
+		documents=model.documents
+		documentsDraft=model.documentsDraft
+		documentsLive=model.documentsLive
+		categories=model.categories
+		categorySummary=model.categorySummary
+		categoryMembers=model.categoryMembers
+		rootDocCount=model.rootDocCount
+		categoryFilter=category
+		onFiltered=(action "onFiltered")
+		onRefresh=(action "onRefresh")}}
+{{/layout/master-sidebar}}
 
-{{#layout/middle-zone}}
-	{{#layout/middle-zone-content}}
-		{{toolbar/for-space
-			spaces=model.folders
-			space=model.folder
-			permissions=model.permissions
-			templates=model.templates
-			category=category
-			categories=model.categories
-			documents=filteredDocs
-			onRefresh=(action "onRefresh")}}
-
-		{{folder/documents-list
-			documents=filteredDocs
-			spaces=model.folders
-			space=model.folder
-			templates=model.templates
-			permissions=model.permissions
-			onExportDocument=(action "onExportDocument")
-			onDeleteDocument=(action "onDeleteDocument")
-			onMoveDocument=(action "onMoveDocument")}}
-	{{/layout/middle-zone-content}}
-
-	{{#layout/middle-zone-sidebar scrollable=true}}
-		<div id="sidebar" class="sidebar">
-			{{folder/space-view
+{{#layout/master-content}}
+	<div class="grid-container-6-4">
+		<div class="grid-cell-1">
+			{{layout/page-heading title=model.folder.name}}
+			{{layout/page-desc desc="some space desc"}}
+		</div>
+		<div class="grid-cell-2 grid-cell-right">
+			{{toolbar/for-space
 				spaces=model.folders
 				space=model.folder
-				templates=model.templates
 				permissions=model.permissions
-				documents=model.documents
+				templates=model.templates
+				category=category
 				categories=model.categories
-				categorySummary=model.categorySummary
-				categoryMembers=model.categoryMembers
-				rootDocCount=model.rootDocCount
-				categoryFilter=category
-				onFiltered=(action "onFiltered")
+				documents=filteredDocs
 				onRefresh=(action "onRefresh")}}
 		</div>
-	{{/layout/middle-zone-sidebar}}
-{{/layout/middle-zone}}
+	</div>
 
-{{#layout/bottom-bar}}
-{{/layout/bottom-bar}}
+	{{ui/ui-spacer size=400}}
 
-
+	{{folder/documents-list
+		documents=filteredDocs
+		spaces=model.folders
+		space=model.folder
+		templates=model.templates
+		permissions=model.permissions
+		onExportDocument=(action "onExportDocument")
+		onDeleteDocument=(action "onDeleteDocument")
+		onMoveDocument=(action "onMoveDocument")}}
+{{/layout/master-content}}

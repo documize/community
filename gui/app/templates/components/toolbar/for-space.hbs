@@ -1,134 +1,120 @@
-<div class="row justify-content-between no-gutters">
+{{#ui/ui-toolbar dark=false light=false raised=false large=true bordered=false}}
+	{{#if hasDocuments}}
+		{{ui/ui-toolbar-icon icon=constants.Icon.Export color=constants.Color.Gray
+			tooltip="Export as HTML" onClick=(action "onShowExport")}}
+	{{/if}}
+	{{#if pinState.isPinned}}
+		{{ui/ui-toolbar-icon icon=constants.Icon.BookmarkDelete color=constants.Color.Gray
+			tooltip="Remove view from bookmarks" onClick=(action "onUnpin")}}
+	{{else if session.authenticated}}
+		{{ui/ui-toolbar-icon icon=constants.Icon.BookmarkAdd color=constants.Color.Gray
+			tooltip="Bookmark this view" onClick=(action "onPin")}}
+	{{/if}}
 
-	<div class="col-6">
-		{{#if permissions.documentAdd}}
-			<div class="btn-group" role="group">
-				<button id="btnGroupDocument" type="button" class="btn btn-success bold-700 dropdown-toggle">
-					+ CONTENT
-					{{#attach-popover class="ember-attacher-popper" hideOn="clickout" showOn="click" isShown=false}}
-						<div class="menu">
-							<a class="item" href="#" {{action "onShowEmptyDocModal"}}>Blank canvas</a>
-							{{#if hasTemplates}}
-								<a class="item" href="#" {{action "onShowTemplateDocModal"}}>From template</a>
-							{{/if}}
-							<a class="item" href="#" {{action "onShowImportDocModal"}}>Import files</a>
-						</div>
-					{{/attach-popover}}
-				</button>
+	{{#if (or permissions.spaceOwner permissions.spaceManage)}}
+		{{ui/ui-toolbar-icon icon=constants.Icon.Settings color=constants.Color.Gray
+			tooltip="Space settings" link="folder.settings" }}
+		{{!-- {{#link-to "folder.settings" space.id space.slug class="button-icon-gray align-middle"}}
+			<i class="material-icons">settings</i>
+			{{#attach-tooltip showDelay=1000}}Settings, permissions, templates{{/attach-tooltip}}
+		{{/link-to}} --}}
+	{{/if}}
+{{/ui/ui-toolbar}}
+
+{{#if permissions.documentAdd}}
+	{{#ui/ui-toolbar dark=false light=true raised=true large=true bordered=true}}
+		{{ui/ui-toolbar-icon icon=constants.Icon.Plus color=constants.Color.Green}}
+		{{ui/ui-toolbar-label label="CONTENT" color=constants.Color.Green}}
+		{{#attach-popover class="ember-attacher-popper" hideOn="clickout" showOn="click" isShown=false}}
+			<div class="menu">
+				<a class="item" href="#" {{action "onShowEmptyDocModal"}}>Blank canvas</a>
+				{{#if hasTemplates}}
+					<a class="item" href="#" {{action "onShowTemplateDocModal"}}>From template</a>
+				{{/if}}
+				<a class="item" href="#" {{action "onShowImportDocModal"}}>Import files</a>
 			</div>
-			<div id="empty-doc-modal" class="modal" tabindex="-1" role="dialog">
-				<div class="modal-dialog" role="document">
-					<div class="modal-content">
-						<div class="modal-header">Blank Canvas</div>
-						<div class="modal-body">
-							<form onsubmit={{action "onAddEmptyDoc"}}>
-								<div class="form-group">
-									<label for="empty-doc-name">Document Name</label>
-									{{input id="empty-doc-name" type="text" value=emptyDocName placeholder="Enter name" class=(if emptyDocNameError "form-control mousetrap is-invalid" "form-control mousetrap") autocomplete="off"}}
-								</div>
-							</form>
+		{{/attach-popover}}
+	{{/ui/ui-toolbar}}
+
+	<div id="empty-doc-modal" class="modal" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">Blank Canvas</div>
+				<div class="modal-body">
+					<form onsubmit={{action "onAddEmptyDoc"}}>
+						<div class="form-group">
+							<label for="empty-doc-name">Document Name</label>
+							{{input id="empty-doc-name" type="text" value=emptyDocName placeholder="Enter name" class=(if emptyDocNameError "form-control mousetrap is-invalid" "form-control mousetrap") autocomplete="off"}}
 						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-							<button type="button" class="btn btn-success" onclick={{action "onAddEmptyDoc"}}>Add</button>
-						</div>
-					</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+					<button type="button" class="btn btn-success" onclick={{action "onAddEmptyDoc"}}>Add</button>
 				</div>
 			</div>
-			<div id="template-doc-modal" class="modal" tabindex="-1" role="dialog">
-				<div class="modal-dialog" role="document">
-					<div class="modal-content">
-						<div class="modal-header">From Template</div>
-						<div class="modal-body">
-							<form onsubmit={{action "onAddTemplateDoc"}}>
-								<div class="form-group">
-									<label for="template-doc-name">Document Name</label>
-									{{input id="template-doc-name" type="text" value=templateDocName placeholder="Enter name" class=(if templateDocNameError "form-control mousetrap is-invalid" "form-control mousetrap") autocomplete="off"}}
-								</div>
-								<div class="widget-list-picker">
-									<ul class="options">
-										{{#each templates as |item|}}
-											<li class="option {{if item.selected "selected"}}" {{action "onSelectTemplate" item}}>
-												<div class="text text-truncate">
-													{{item.title}}<br>{{item.description}}
-												</div>
-												{{#if item.selected}}
-													<i class="material-icons">check</i>
-												{{/if}}
-											</li>
-										{{/each}}
-									</ul>
-								</div>
-							</form>
-						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-							<button type="button" class="btn btn-success" onclick={{action "onAddTemplateDoc"}}>Add</button>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div id="import-doc-modal" class="modal" tabindex="-1" role="dialog">
-				<div class="modal-dialog" role="document">
-					<div class="modal-content">
-						<div class="modal-header">Import Files</div>
-						<div class="modal-body">
-							<div class="import-zone">
-								<button id="import-document-button" type="button" class="btn btn-outline-secondary btn-lg btn-block">
-									<br>
-									Click to select files or drag-drop files
-									<br><br>
-									.doc, .docx, .md, .markdown
-									<br><br>
-								</button>
-								<div class="import-status">
-									{{#each importStatus as |status|}}
-										<p>{{status}}</p>
-									{{/each}}
-								</div>
-							</div>
-						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-						</div>
-					</div>
-				</div>
-			</div>
-		{{/if}}
+		</div>
 	</div>
-
-	<div class="col-6 text-right">
-		{{#if hasDocuments}}
-			<div id="space-export-button" class="button-icon-danger align-middle" {{action "onShowExport"}}>
-				<i class="material-icons">import_export</i>
-				{{#attach-tooltip showDelay=1000}}Export as HTML{{/attach-tooltip}}
+	<div id="template-doc-modal" class="modal" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">From Template</div>
+				<div class="modal-body">
+					<form onsubmit={{action "onAddTemplateDoc"}}>
+						<div class="form-group">
+							<label for="template-doc-name">Document Name</label>
+							{{input id="template-doc-name" type="text" value=templateDocName placeholder="Enter name" class=(if templateDocNameError "form-control mousetrap is-invalid" "form-control mousetrap") autocomplete="off"}}
+						</div>
+						<div class="widget-list-picker">
+							<ul class="options">
+								{{#each templates as |item|}}
+									<li class="option {{if item.selected "selected"}}" {{action "onSelectTemplate" item}}>
+										<div class="text text-truncate">
+											{{item.title}}<br>{{item.description}}
+										</div>
+										{{#if item.selected}}
+											<i class="material-icons">check</i>
+										{{/if}}
+									</li>
+								{{/each}}
+							</ul>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+					<button type="button" class="btn btn-success" onclick={{action "onAddTemplateDoc"}}>Add</button>
+				</div>
 			</div>
-		{{/if}}
-
-		{{#if pinState.isPinned}}
-			<div class="button-icon-gap" />
-			<div id="space-pin-button" class="button-icon-gold align-middle" {{action "onUnpin"}}>
-				<i class="material-icons">star</i>
-				{{#attach-tooltip showDelay=1000}}Remove bookmark{{/attach-tooltip}}
-			</div>
-		{{else if session.authenticated}}
-			<div class="button-icon-gap" />
-			<div id="space-pin-button" class="button-icon-gray align-middle" {{action "onPin"}}>
-				<i class="material-icons">star</i>
-				{{#attach-tooltip showDelay=1000}}Bookmark{{/attach-tooltip}}
-			</div>
-		{{/if}}
-
-		{{#if (or permissions.spaceOwner permissions.spaceManage)}}
-			<div class="button-icon-gap" />
-			{{#link-to "folder.settings" space.id space.slug class="button-icon-gray align-middle"}}
-				<i class="material-icons">settings</i>
-				{{#attach-tooltip showDelay=1000}}Settings, permissions, templates{{/attach-tooltip}}
-			{{/link-to}}
-		{{/if}}
+		</div>
 	</div>
-
-</div>
+	<div id="import-doc-modal" class="modal" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">Import Files</div>
+				<div class="modal-body">
+					<div class="import-zone">
+						<button id="import-document-button" type="button" class="btn btn-outline-secondary btn-lg btn-block">
+							<br>
+							Click to select files or drag-drop files
+							<br><br>
+							.doc, .docx, .md, .markdown
+							<br><br>
+						</button>
+						<div class="import-status">
+							{{#each importStatus as |status|}}
+								<p>{{status}}</p>
+							{{/each}}
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+{{/if}}
 
 <div id="space-export-modal" class="modal" tabindex="-1" role="dialog">
 	<div class="modal-dialog" role="document">

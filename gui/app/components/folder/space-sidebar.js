@@ -17,6 +17,7 @@ import AuthMixin from '../../mixins/auth';
 import Component from '@ember/component';
 
 export default Component.extend(AuthMixin, {
+	classNames: ["section"],
 	router: service(),
 	documentService: service('document'),
 	folderService: service('folder'),
@@ -26,6 +27,7 @@ export default Component.extend(AuthMixin, {
 	spaceSettings: computed('permissions', function() {
 		return this.get('permissions.spaceOwner') || this.get('permissions.spaceManage');
 	}),
+	selectedFilter: '',
 
 	init() {
 		this._super(...arguments);
@@ -81,8 +83,6 @@ export default Component.extend(AuthMixin, {
 					});
 
 					this.set('categoryFilter', id);
-					this.set('spaceSelected', false);
-					this.set('uncategorizedSelected', false);
 					break;
 
 				case 'uncategorized':
@@ -94,19 +94,29 @@ export default Component.extend(AuthMixin, {
 					});
 
 					this.set('categoryFilter', '');
-					this.set('spaceSelected', false);
-					this.set('uncategorizedSelected', true);
 					break;
 
 				case 'space':
-					allowed = _.pluck(categoryMembers, 'documentId');
 					docs.forEach((d) => {
 						filtered.pushObject(d);
 					});
 
 					this.set('categoryFilter', '');
-					this.set('spaceSelected', true);
-					this.set('uncategorizedSelected', false);
+					break;
+
+				case 'template':
+					filtered.pushObjects(this.get('templates'));
+					this.set('categoryFilter', '');
+					break;
+
+				case 'draft':
+					filtered = this.get('documentsDraft');
+					this.set('categoryFilter', '');
+					break;
+
+				case 'live':
+					filtered = this.get('documentsLive');
+					this.set('categoryFilter', '');
 					break;
 			}
 
@@ -114,6 +124,7 @@ export default Component.extend(AuthMixin, {
 				cat.set('selected', cat.get('id') === id);
 			});
 
+			this.set('selectedFilter', filter);
 			this.set('categories', categories);
 			this.get('onFiltered')(filtered);
 		}

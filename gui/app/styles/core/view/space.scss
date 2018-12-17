@@ -1,24 +1,15 @@
 .view-space {
-	> .filter-caption {
-		margin: 10px 0;
-		color: map-get($gray-shades, 600);
-		font-size: 1.1rem;
-		font-weight: 500;
-		text-align: center;
-	}
-
 	> .documents {
-		margin: 60px 0;
+		margin: 0;
 		padding: 0;
 
 		> .document {
 			@include card();
-			@include ease-in();
 			list-style-type: none;
-			overflow: hidden;
-			position: relative;
-			margin: 0 0 30px 0;
+			margin: 0 0 2rem 0;
+			padding: 15px 20px;
 			width: 100%;
+			position: relative;
 
 			&:hover {
 				> .checkbox {
@@ -26,55 +17,110 @@
 				}
 			}
 
-			> a {
-				@include ease-in();
-				display: block;
-				position: relative;
-				padding: 15px 20px;
-
-				> .title {
-					color: $color-black;
-					font-size: 1.3rem;
-					margin-bottom: 5px;
-				}
-
-				> .snippet {
-					color: map-get($gray-shades, 600);
-					font-size: 1rem;
-					line-height: 24px;
-				}
-
-				&:hover {
-					color: map-get($gray-shades, 600);
-				}
-			}
-
 			> .checkbox {
 				position: absolute;
 				display: none;
 				top: 10px;
-				right: 20px;
+				right: 10px;
 				cursor: pointer;
 
-				> .material-icons {
-					width: 10px;
-					margin: 0;
-					padding: 0;
-					color: map-get($gray-shades, 900);
+				> .dicon {
+					color: map-get($yellow-shades, 700);
+					cursor: pointer;
+					font-weight: 600;
+					font-size: 20px;
 				}
 			}
 
 			> .actions {
 				position: absolute;
 				display: none;
-				bottom: 2px;
-				right: 12px;
+				bottom: 10px;
+				right: 10px;
 				cursor: pointer;
+			}
+
+			> .info {
+				padding: 0;
+				align-self: self-start;
+				justify-self: self-start;
+
+				> .name {
+					font-size: 1.3rem;
+					font-weight: 700;
+					color: map-get($gray-shades, 800);
+				}
+
+				> .desc {
+					font-size: 1.1rem;
+					font-weight: 400;
+					margin-top: 0.4rem;
+					color: $color-black-light-3;
+				}
+			}
+
+			> .meta {
+				padding: 25px 0 0 0;
+
+				> .lifecycle {
+					display: inline-block;
+					text-transform: uppercase;
+					font-size: 0.9rem;
+					font-weight: 500;
+					text-align: center;
+					@include border-radius(5px);
+					background-color: map-get($gray-shades, 300);
+					padding: 0.25rem 1rem;
+
+					> .draft {
+						color: map-get($yellow-shades, 600);
+					}
+
+					> .live {
+						color: map-get($green-shades, 600);
+					}
+
+					> .archived {
+						color: map-get($red-shades, 600);
+					}
+				}
+
+				> .dicon {
+					color: map-get($gray-shades, 600);
+					font-size: 20px;
+				}
+
+				.hashtags {
+					display: inline-block;
+					padding: 0 10px 0 10px;
+
+					> .hashtag {
+						padding: 0 10px 0 10px;
+
+						> .dicon {
+							color: map-get($gray-shades, 500);
+							font-size: 20px;
+							vertical-align: bottom;
+						}
+
+						> .name {
+							display: inline-block;
+							color: map-get($gray-shades, 800);
+							font-size: 1rem;
+						}
+
+						&:hover {
+							> .dicon, > .name {
+								color: map-get($gray-shades, 600);
+							}
+						}
+					}
+				}
 			}
 		}
 
 		> .selected {
-			background-color: $theme-100 !important;
+			background-color: map-get($yellow-shades, 200);
 
 			> .checkbox {
 				display: block;
@@ -83,19 +129,9 @@
 			> .actions {
 				display: block;
 			}
-		}
-	}
-
-	.hashtags {
-		> .hashtag {
-			display: inline-block;
-			margin: 5px 10px 0 5px;
-			color: map-get($gray-shades, 600);
-			font-size: 0.875rem;
-			font-style: italic;
 
 			&:hover {
-				color: $color-link;
+				background-color: map-get($yellow-shades, 200);
 			}
 		}
 	}
