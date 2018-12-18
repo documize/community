@@ -17,7 +17,7 @@
 	display: block;
 	height: auto;
 	width: 100%;
-	// z-index: 1041; // reequired if we want to show modals from inside sidebar
+	z-index: 1041; // reequired if we want to show modals from inside sidebar
 
 	.master-navbar {
 		display: block;

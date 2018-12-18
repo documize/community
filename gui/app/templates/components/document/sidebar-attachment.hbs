@@ -1,0 +1,34 @@
+{{#if canEdit}}
+	<div class="text-center">
+		{{#ui/ui-toolbar dark=true raised=true large=false bordered=true}}
+			{{ui/ui-toolbar-label color=constants.Color.Gray label="Upload Files" id="upload-document-files"}}
+		{{/ui/ui-toolbar}}
+		{{ui/ui-spacer size=100}}
+	</div>
+{{/if}}
+
+{{#if hasAttachments}}
+	<div class="document-sidebar-attachment">
+		<ul class="files">
+			{{#each files key="id" as |file|}}
+				<li class="file">
+					<a href="{{appMeta.endpoint}}/public/attachments/{{appMeta.orgId}}/{{file.id}}">
+						{{file.filename}}
+					</a>
+					{{#if canEdit}}
+						<div class="menu">
+							{{#ui/ui-toolbar dark=false light=false raised=false large=false bordered=false}}
+								{{ui/ui-toolbar-icon icon=constants.Icon.Delete color=constants.Color.Red
+									onClick=(action "onShowDialog" file.id file.filename)}}
+							{{/ui/ui-toolbar}}
+						</div>
+					{{/if}}
+				</li>
+			{{/each}}
+		</ul>
+	</div>
+{{/if}}
+
+{{#ui/ui-dialog title="Delete Attachment" confirmCaption="Delete" buttonColor=constants.Color.Red show=showDialog onAction=(action "onDelete")}}
+	<p>Are you sure you want to delete {{deleteAttachment.name}}?</p>
+{{/ui/ui-dialog}}

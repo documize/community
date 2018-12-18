@@ -18,6 +18,7 @@ import Component from '@ember/component';
 
 export default Component.extend(Modals, Notifier, {
 	documentService: service('document'),
+	browserSvc: service('browser'),
 	appMeta: service(),
 	hasAttachments: notEmpty('files'),
 	canEdit: computed('permissions.documentEdit', 'document.protection', function() {
@@ -114,6 +115,15 @@ export default Component.extend(Modals, Notifier, {
 			});
 
 			return true;
+		},
+
+		onExport() {
+			this.get('documentSvc').export({}).then((htmlExport) => {
+				this.get('browserSvc').downloadFile(htmlExport, this.get('space.slug') + '.html');
+				this.notifySuccess('Exported');
+			});
+
+			this.modalClose("#space-export-modal");
 		}
 	}
 });

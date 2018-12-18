@@ -13,6 +13,10 @@
 			color: map-get($gray-shades, 700);
 		}
 
+		> .center {
+			text-align: center;
+		}
+
 		> .text {
 			margin: 10px 0;
 			font-size: 1rem;
@@ -21,14 +25,15 @@
 		}
 
 		> .label {
+			@include border-radius(3px);
+			@extend .no-select;
 			display: inline-block;
 			margin: 10px 0 13px 0;
 			padding: 0.3rem 0.7rem;
 			font-size: 1.1rem;
-			font-weight: 500;
+			font-weight: 400;
 			background-color: map-get($gray-shades, 600);
 			color: map-get($gray-shades, 100);
-			@include border-radius(3px);
 		}
 
 		> .list {

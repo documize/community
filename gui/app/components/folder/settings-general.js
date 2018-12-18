@@ -11,7 +11,6 @@
 
 import { A } from '@ember/array';
 import { inject as service } from '@ember/service';
-import { schedule } from '@ember/runloop';
 import { computed } from '@ember/object';
 import { empty } from '@ember/object/computed';
 import AuthMixin from '../../mixins/auth';

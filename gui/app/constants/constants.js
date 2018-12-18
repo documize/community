@@ -260,6 +260,7 @@ let constants = EmberObject.extend({
 		Close: 'Close',
 		Delete: 'Delete',
 		Export: 'Export',
+		File: 'File',
 		Insert: 'Insert',
 		Invite: 'Invite',
 		Join: 'Join',
@@ -272,6 +273,7 @@ let constants = EmberObject.extend({
 		Search: 'Search',
 		SignIn: 'Sign In',
 		Update: 'Update',
+		Upload: 'Upload'
 	}
 });
 

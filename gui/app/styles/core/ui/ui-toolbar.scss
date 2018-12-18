@@ -28,6 +28,10 @@
 		}
 	}
 
+	> .icon-selected {
+		color: map-get($yellow-shades, 600);
+	}
+
 	> .label {
 		font-size: 14px;
 		font-weight: 500;

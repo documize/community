@@ -1,32 +1,78 @@
-{{#layout/top-bar}}
-	<li class="item">
-		{{#link-to "folder.index" folder.id folder.slug class="link"}}
-			{{folder.name}}
-		{{/link-to}}
-	</li>
-	<li class="item">
-		{{#link-to "document.index" folder.id folder.slug document.id document.slug class="link selected"}}
-			{{document.name}}
-		{{/link-to}}
-	</li>
-{{/layout/top-bar}}
+{{#layout/master-sidebar}}
+	{{ui/ui-spacer size=300}}
 
-{{#layout/middle-zone}}
+	<div class="section">
+		<div class="title">status</div>
 
-	{{#layout/middle-zone-content}}
+		<div class="{{if (eq document.lifecycle constants.Lifecycle.Draft) "label-draft"}}
+			{{if (eq document.lifecycle constants.Lifecycle.Live) "label-live"}}
+			{{if (eq document.lifecycle constants.Lifecycle.Archived) "label-archived"}}">
+			{{document.lifecycleLabel}}
+			{{#attach-tooltip showDelay=1000}}Lifecycle: Draft &middot; Live &middot; Archived{{/attach-tooltip}}
+		</div>
+		<div class="label-approval">
+			{{#if (eq document.protection constants.ProtectionType.None)}}OPEN{{/if}}
+			{{#if (eq document.protection constants.ProtectionType.Review)}}PROTECTED{{/if}}
+			{{#if (eq document.protection constants.ProtectionType.Lock)}}LOCKED{{/if}}
+			{{#attach-tooltip showDelay=1000}}Change Control: Open &middot; Protected &middot; Locked{{/attach-tooltip}}
+		</div>
 
-		{{toolbar/for-document
+		{{ui/ui-spacer size=200}}
+
+		<div class="text-center">
+			{{#ui/ui-toolbar dark=true light=true raised=true large=false bordered=true}}
+				{{ui/ui-toolbar-icon icon=constants.Icon.Index color=constants.Color.Gray tooltip="Table of contents"
+					selected=(eq sidebarTab "toc") onClick=(action "onSidebarChange" "toc")}}
+				{{ui/ui-toolbar-icon icon=constants.Icon.Attachment color=constants.Color.Gray tooltip="Attachments"
+					selected=(eq sidebarTab "files") onClick=(action "onSidebarChange" "files")}}
+			{{/ui/ui-toolbar}}
+		</div>
+	</div>
+
+	{{ui/ui-spacer size=200}}
+	{{#if (eq sidebarTab "toc")}}
+		{{document/sidebar-toc
 			tab=tab
+			page=page
 			roles=roles
-			space=folder
-			spaces=folders
+			pages=pages
+			folder=folder
 			document=document
-			versions=versions
 			permissions=permissions
-			refresh=(action "refresh")
-			onSaveTemplate=(action "onSaveTemplate")
-			onSaveDocument=(action "onSaveDocument")
-			onDocumentDelete=(action "onDocumentDelete")}}
+			currentPageId=currentPageId
+			onShowPage=(action "onShowPage")
+			onPageLevelChange=(action "onPageLevelChange")
+			onPageSequenceChange=(action "onPageSequenceChange")}}
+	{{/if}}
+	{{#if (eq sidebarTab "files")}}
+		{{document/sidebar-attachment
+			document=document
+			permissions=permissions}}
+	{{/if}}
+{{/layout/master-sidebar}}
+
+{{#layout/master-content}}
+	<div class="grid-container-6-4">
+		<div class="grid-cell-1">
+		</div>
+
+		<div class="grid-cell-2 grid-cell-right">
+			{{toolbar/for-document
+				tab=tab
+				roles=roles
+				space=folder
+				spaces=folders
+				document=document
+				versions=versions
+				permissions=permissions
+				refresh=(action "refresh")
+				onSaveTemplate=(action "onSaveTemplate")
+				onSaveDocument=(action "onSaveDocument")
+				onDocumentDelete=(action "onDocumentDelete")}}
+		</div>
+	</div>
+
+	{{ui/ui-spacer size=400}}
 
 		<div class="text-center non-printable document-tabnav">
 			<ul class="tabnav-control">
@@ -94,26 +140,5 @@
 			{{/if}}
 		{{/if}}
 
-	{{/layout/middle-zone-content}}
+{{/layout/master-content}}
 
-	{{#layout/middle-zone-sidebar}}
-
-		{{document/document-toc
-			tab=tab
-			page=page
-			roles=roles
-			pages=pages
-			folder=folder
-			document=document
-			permissions=permissions
-			currentPageId=currentPageId
-			onShowPage=(action "onShowPage")
-			onPageLevelChange=(action "onPageLevelChange")
-			onPageSequenceChange=(action "onPageSequenceChange")}}
-
-	{{/layout/middle-zone-sidebar}}
-
-{{/layout/middle-zone}}
-
-{{#layout/bottom-bar}}
-{{/layout/bottom-bar}}

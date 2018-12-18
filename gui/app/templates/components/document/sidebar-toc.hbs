@@ -1,0 +1,44 @@
+<div class="title center">table of contents</div>
+{{#if canEdit}}
+	<div class="document-sidebar-toc">
+		<div class="controls {{if state.actionablePage "current-page"}}">
+			<div id="toc-up-button" class="arrow {{if state.upDisabled "disabled"}}" {{action "pageUp"}}>
+				<i class="dicon {{constants.Icon.ArrowSmallUp}}" />
+			</div>
+			<div id="toc-down-button" class="arrow {{if state.downDisabled "disabled"}}" {{action "pageDown"}}>
+				<i class="dicon {{constants.Icon.ArrowSmallDown}}" />
+			</div>
+			<div id="toc-outdent-button" class="arrow {{if state.outdentDisabled "disabled"}}" {{action "pageOutdent"}}>
+				<i class="dicon {{constants.Icon.ArrowSmallLeft}}" />
+			</div>
+			<div id="toc-indent-button" class="arrow {{if state.indentDisabled "disabled"}}" {{action "pageIndent"}}>
+				<i class="dicon {{constants.Icon.ArrowSmallRight}}" />
+			</div>
+		</div>
+	</div>
+{{/if}}
+
+<div class="document-sidebar-toc">
+	<ul class="index-list">
+		{{#each pages key="id" as |item|}}
+			<li class="item">
+				<a id="index-{{item.page.id}}" {{action "onGotoPage" item.page.id}}
+					class="link toc-index-item {{item.page.tocIndentCss}} {{if (eq item.page.id state.pageId) "selected"}}"
+					title={{item.page.title}}>
+					<span class="numbering">{{item.page.numbering}}</span>
+					{{#if (or item.userHasChangePending userHasNewPagePending)}}
+						<span class="color-red-600" >[*]&nbsp;</span>
+						{{#attach-tooltip showDelay=1000}}Pending changes{{/attach-tooltip}}
+					{{/if}}
+					{{#if (or permissions.documentApprove roles.documentApprove)}}
+						{{#if item.changeAwaitingReview}}
+							<span class="color-green-700">[*]&nbsp;</span>
+							{{#attach-tooltip showDelay=1000}}Awaiting approval{{/attach-tooltip}}
+						{{/if}}
+					{{/if}}
+					{{item.page.title}}
+				</a>
+			</li>
+		{{/each}}
+	</ul>
+</div>

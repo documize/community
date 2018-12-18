@@ -18,7 +18,6 @@ export default Component.extend({
 	tagName: 'div',
 	classNames: ['label'],
 	classNameBindings: ['calcClass'],
-
 	color: '',
 	label: '',
 	tooltip: '',

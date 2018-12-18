@@ -16,6 +16,7 @@ import tocUtil from '../../utils/toc';
 import Component from '@ember/component';
 
 export default Component.extend({
+	classNames: ["section"],
 	documentService: service('document'),
 	emptyState: computed('pages', function () {
 		return this.get('pages.length') === 0;

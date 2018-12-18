@@ -62,8 +62,8 @@ export default Component.extend({
 	}),
 
 	click(e) {
-		e.preventDefault();
 		if (is.not.undefined(this.onClick)) {
+			e.preventDefault();
 			this.onClick(e);
 		}
 	}

@@ -1,0 +1,40 @@
+.document-sidebar-attachment {
+	.dz-preview, .dz-processing {
+		display: none !important;
+	}
+
+	> .files {
+		margin: 0;
+		padding: 0;
+
+		> .file {
+			@include card();
+			list-style-type: none;
+			margin: 10px 0 0 0;
+			padding: 5px;
+			width: 100%;
+			font-size: 0.9rem;
+			position: relative;
+
+			> a {
+				display: inline-block;
+				font-size: 0.9rem;
+				vertical-align: text-top;
+				margin-right: 10px;
+				width: 90%;
+				@extend .text-truncate;
+				color: map-get($gray-shades, 800);
+
+				&:hover {
+					color: map-get($gray-shades, 900);
+				}
+			}
+
+			> .menu {
+				position: absolute;
+				right: -10px;
+				top: 0;
+			}
+		}
+	}
+}

@@ -105,3 +105,9 @@ a.broken-link {
 .text-center {
 	text-align: center;
 }
+
+@media print {
+	.no-print {
+		display: none !important;
+	}
+}

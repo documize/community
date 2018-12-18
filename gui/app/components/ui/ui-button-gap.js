@@ -16,7 +16,6 @@ export default Component.extend({
 	tagName: 'div',
 	classNames: [],
 	classNameBindings: ['calcClass'],
-
 	where: 'right',
 	calcClass: computed(function() {
 		return `dmz-button-gap-${this.where}`;

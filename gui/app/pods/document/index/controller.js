@@ -21,6 +21,7 @@ export default Controller.extend(Notifier, {
 	sectionService: service('section'),
 	linkService: service('link'),
 	router: service(),
+	sidebarTab: 'toc',
 	tab: 'content',
 	queryParams: ['currentPageId', 'source'],
 	showRevisions: computed('permissions', 'document.protection', function() {
@@ -32,6 +33,10 @@ export default Controller.extend(Notifier, {
 	}),
 
 	actions: {
+		onSidebarChange(tab) {
+			this.set('sidebarTab', tab);
+		},
+
 		onTabChange(tab) {
 			this.set('tab', tab);
 			if (tab === 'content') {

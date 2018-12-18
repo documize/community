@@ -18,16 +18,18 @@ export default Component.extend({
 	tagName: 'i',
 	classNames: ['dicon'],
 	classNameBindings: ['calcClass'],
-
 	color: '',
 	icon: '',
 	tooltip: '',
+	selected: false,
 
-	calcClass: computed(function() {
+	calcClass: computed('selected', function() {
 		let c = '';
 		let icon = this.icon;
 
 		if (this.color !== '') c += this.color + ' ';
+
+		if (this.selected === true) c += 'icon-selected' + ' ';
 
 		if (icon !== '') c += icon + ' ';
 
