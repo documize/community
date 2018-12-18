@@ -195,37 +195,48 @@
 		}
 	}
 
+	.add-users {
+		text-align: center;
+
+		> .item {
+			margin: 7px;
+			display: inline-block;
+		}
+	}
+
 	> .categories {
         padding: 0;
         margin: 0;
 
-		> .item {
-			margin: 15px 0;
-			padding: 15px;
+		> .category {
 			@include card();
-			@include ease-in();
+			list-style-type: none;
+			margin: 0 0 2rem 0;
+			padding: 15px 20px;
+			width: 100%;
+			position: relative;
 
-			> .category {
-				display: inline-block;
+			> .info {
+				padding: 0;
+				align-self: self-start;
+				justify-self: self-start;
 
 				> .name {
-					font-size: 1.2rem;
-					color: $theme-500;
+					font-size: 1.3rem;
+					font-weight: 700;
+					color: map-get($gray-shades, 800);
 				}
 
-				> .info {
-					font-size: 0.9rem;
-					margin-top: 8px;
-					color: map-get($gray-shades, 600);
+				> .desc {
+					font-size: 1.1rem;
+					font-weight: 400;
+					margin-top: 0.4rem;
+					color: $color-black-light-3;
 				}
 			}
 
-			> .buttons {
-				margin-top: 5px;
-			}
-
-			> .action {
-				display: inline-block;
+			> .actions {
+				margin-top: 20px;
 			}
 		}
 	}

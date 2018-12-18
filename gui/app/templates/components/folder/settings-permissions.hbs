@@ -151,19 +151,31 @@
 	label=constants.Label.Save onClick=(action "onSave")}}
 
 <div id="space-add-user-modal" class="modal" tabindex="-1" role="dialog">
-	<div class="modal-dialog" role="document">
+	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
-			<div class="modal-header">Add User To Space</div>
+			<div class="modal-header">Add users to this space</div>
 			<div class="modal-body">
 				{{input id="user-search" type="text" class="form-control mousetrap" placeholder="Search for users by firstname, lastname, email" value=searchText key-up=(action "onSearch")}}
-				{{#each filteredUsers as |user|}}
-					<div class="row my-3">
-						<div class="col-10">{{user.fullname}}</div>
-						<div class="col-2 text-right">
-							<button class="btn btn-success" {{action "onAdd" user}}>Add</button>
-						</div>
+				{{ui/ui-spacer size=200}}
+				<div class="space-admin">
+					<div class="add-users">
+						{{#each filteredUsers as |user|}}
+							<div class="item">
+								{{#ui/ui-toolbar dark=false light=true raised=true large=false bordered=true}}
+									{{ui/ui-toolbar-icon
+										icon=constants.Icon.AddUser
+										color=constants.Color.Green
+										tooltip="Remove member"
+										onClick=(action "onAdd" user)}}
+									{{ui/ui-toolbar-label
+										color=constants.Color.Gray
+										label=user.fullname
+										onClick=(action "onAdd" user)}}
+								{{/ui/ui-toolbar}}
+							</div>
+						{{/each}}
 					</div>
-				{{/each}}
+				</div>
 			</div>
 			<div class="modal-footer">
 	 			{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Close dismiss=true}}
@@ -173,9 +185,9 @@
 </div>
 
 <div id="space-invite-user-modal" class="modal" tabindex="-1" role="dialog">
-	<div class="modal-dialog" role="document">
+	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
-			<div class="modal-header">Invite Users to Space</div>
+			<div class="modal-header">Invite users to this space</div>
 			<div class="modal-body">
 				<p>Email invite leads to a smooth onboarding process</p>
 				<form onsubmit={{action "onSpaceInvite"}}>

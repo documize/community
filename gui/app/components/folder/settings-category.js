@@ -22,6 +22,8 @@ export default Component.extend(ModalMixin, Notifer, {
 	categorySvc: service('category'),
 	appMeta: service(),
 	store: service(),
+	editId: '',
+	editName: '',
 	deleteId: '',
 	newCategory: '',
 
@@ -122,6 +124,14 @@ export default Component.extend(ModalMixin, Notifer, {
 			});
 		},
 
+		onShowEdit(id) {
+			let cat = this.get('category').findBy('id', id);
+			this.set('editId', cat.get('id'));
+			this.set('editName', cat.get('category'));
+
+			this.modalOpen('#category-edit-modal', {show: true}, "#edit-category-id");
+		},
+
 		onShowDelete(id) {
 			let cat = this.get('category').findBy('id', id);
 			this.set('deleteId', cat.get('id'));
@@ -137,24 +147,18 @@ export default Component.extend(ModalMixin, Notifer, {
 			});
 		},
 
-		onEdit(id) {
-			this.setEdit(id, true);
-		},
-
-		onEditCancel(id) {
-			this.setEdit(id, false);
-			this.load();
-		},
-
-		onSave(id) {
-			let cat = this.setEdit(id, true);
-			if (cat.get('category') === '') {
-				$('#edit-category-' + cat.get('id')).addClass('is-invalid').focus();
+		onSave() {
+			let name = this.get('editName');
+			if (name === '') {
+				$('#edit-category-name').addClass('is-invalid').focus();
 				return false;
 			}
 
-			cat = this.setEdit(id, false);
-			$('#edit-category-' + cat.get('id')).removeClass('is-invalid');
+			let cat = this.get('category').findBy('id', this.get('editId'));
+			cat.set('category', name);
+
+			this.modalClose('#category-edit-modal');
+			$('#edit-category-name').removeClass('is-invalid');
 
 			this.get('categorySvc').save(cat).then(() => {
 				this.load();
