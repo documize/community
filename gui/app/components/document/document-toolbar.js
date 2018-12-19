@@ -64,6 +64,14 @@ export default Component.extend(ModalMixin, AuthMixin, Notifier, {
 	},
 
 	actions: {
+		onShowTemplateModal() {
+			this.modalOpen("#document-template-modal", {show:true}, "#new-template-name");
+		},
+
+		onShowDeleteModal() {
+			this.modalOpen("#document-delete-modal", {show:true});
+		},
+
 		onDocumentDelete() {
 			this.modalClose('#document-delete-modal');
 

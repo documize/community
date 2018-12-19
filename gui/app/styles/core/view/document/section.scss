@@ -54,7 +54,7 @@
 	@include border-radius(5px);
 	@extend .no-select;
 	text-align: right;
-	margin: 2rem 0;
+	margin: 1.5rem 0;
 	display: block;
 	cursor: pointer;
 
@@ -64,6 +64,7 @@
 		vertical-align: middle;
 		padding: 0.5rem;
 		font-size: 16px;
+		@extend %toolbar-shadow;
 
 		&:hover {
 			color: map-get($yellow-shades, 700);

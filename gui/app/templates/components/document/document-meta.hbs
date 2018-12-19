@@ -37,4 +37,10 @@
 		{{#if (eq document.protection constants.ProtectionType.Lock)}}LOCKED{{/if}}
 		{{#attach-tooltip showDelay=1000}}Change Control: Open &middot; Protected &middot; Locked{{/attach-tooltip}}
 	</div>
+	{{#if document.template}}
+		<div class="label-template">
+			Template
+			{{#attach-tooltip showDelay=1000}}This is a template{{/attach-tooltip}}
+		</div>
+	{{/if}}
 </div>
