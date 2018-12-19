@@ -92,7 +92,7 @@ func RegisterEndpoints(rt *env.Runtime, s *store.Store) {
 	AddPublic(rt, "forgot", []string{"POST", "OPTIONS"}, nil, user.ForgotPassword)
 	AddPublic(rt, "reset/{token}", []string{"POST", "OPTIONS"}, nil, user.ResetPassword)
 	AddPublic(rt, "share/{spaceID}", []string{"POST", "OPTIONS"}, nil, space.AcceptInvitation)
-	AddPublic(rt, "attachments/{orgID}/{attachmentID}", []string{"GET", "OPTIONS"}, nil, attachment.Download)
+	AddPublic(rt, "attachment/{orgID}/{attachmentID}", []string{"GET", "OPTIONS"}, nil, attachment.Download)
 
 	//**************************************************
 	// Secured private routes (require authentication)

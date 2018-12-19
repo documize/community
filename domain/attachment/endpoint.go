@@ -15,9 +15,12 @@ import (
 	"bytes"
 	"database/sql"
 	"fmt"
+	"github.com/documize/community/domain/auth"
+	"github.com/documize/community/model/space"
 	"io"
 	"mime"
 	"net/http"
+	"strings"
 
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/request"
@@ -47,9 +50,22 @@ func (h *Handler) Download(w http.ResponseWriter, r *http.Request) {
 	method := "attachment.Download"
 	ctx := domain.GetRequestContext(r)
 	ctx.Subdomain = organization.GetSubdomainFromHost(r)
+	ctx.OrgID = request.Param(r, "orgID")
 
-	a, err := h.Store.Attachment.GetAttachment(ctx, request.Param(r, "orgID"), request.Param(r, "attachmentID"))
+	// Is caller permitted to download this attachment?
+	canDownload := false
 
+	// Do e have user authentication token?
+	authToken := strings.TrimSpace(request.Query(r, "token"))
+
+	// Do we have secure sharing token (for external users)?
+	secureToken := strings.TrimSpace(request.Query(r, "secure"))
+
+	// We now fetch attachment, the document and space it lives inside.
+	// Any data loading issue spells the end of this request.
+
+	// Get attachment being requested.
+	a, err := h.Store.Attachment.GetAttachment(ctx, ctx.OrgID, request.Param(r, "attachmentID"))
 	if err == sql.ErrNoRows {
 		response.WriteNotFoundError(w, method, request.Param(r, "fileID"))
 		return
@@ -60,6 +76,86 @@ func (h *Handler) Download(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get the document for this attachment
+	doc, err := h.Store.Document.Get(ctx, a.DocumentID)
+	if err == sql.ErrNoRows {
+		response.WriteNotFoundError(w, method, a.DocumentID)
+		return
+	}
+	if err != nil {
+		h.Runtime.Log.Error("get attachment document", err)
+		response.WriteServerError(w, method, err)
+		return
+	}
+
+	// Get the space for this attachment
+	sp, err := h.Store.Space.Get(ctx, doc.SpaceID)
+	if err == sql.ErrNoRows {
+		response.WriteNotFoundError(w, method, a.DocumentID)
+		return
+	}
+	if err != nil {
+		h.Runtime.Log.Error("get attachment document", err)
+		response.WriteServerError(w, method, err)
+		return
+	}
+
+	// At this point, all data associated data is loaded.
+	// We now begin security checks based upon the request.
+
+	// If attachment is in public space then anyone can download
+	if sp.Type == space.ScopePublic {
+		canDownload = true
+	}
+
+	// If an user authentication token was provided we check to see
+	// if user can view document.
+	// This check only applies to attachments NOT in public spaces.
+	if sp.Type != space.ScopePublic && len(authToken) > 0 {
+		// Decode and check incoming token
+		creds, _, err := auth.DecodeJWT(h.Runtime, authToken)
+		if err != nil {
+			h.Runtime.Log.Error("get attachment decode auth token", err)
+			response.WriteForbiddenError(w)
+			return
+		}
+		// Check for tampering.
+		if ctx.OrgID != creds.OrgID {
+			h.Runtime.Log.Error("get attachment org ID mismatch", err)
+			response.WriteForbiddenError(w)
+			return
+		}
+
+		// Use token-based user ID for subsequent processing.
+		ctx.UserID = creds.UserID
+
+		// Check to see if user can view BOTH space and document.
+		if !permission.CanViewSpace(ctx, *h.Store, sp.RefID) || !permission.CanViewDocument(ctx, *h.Store, a.DocumentID) {
+			h.Runtime.Log.Error("get attachment cannot view document", err)
+			response.WriteServerError(w, method, err)
+			return
+		}
+
+		// Authenticated user can view attachment.
+		canDownload = true
+	}
+
+	// External users can be sent secure document viewing links.
+	// Those documents may contain attachments that external viewers
+	// can download as required.
+	// Such secure document viewing links can have expiry dates.
+	if len(authToken) == 0 && len(secureToken) > 0 {
+
+	}
+
+	// Send back error if caller unable view attachment
+	if !canDownload {
+		h.Runtime.Log.Error("get attachment refused", err)
+		response.WriteForbiddenError(w)
+		return
+	}
+
+	// At this point, user can view attachment so we send it back!
 	typ := mime.TypeByExtension("." + a.Extension)
 	if typ == "" {
 		typ = "application/octet-stream"

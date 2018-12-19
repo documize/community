@@ -85,6 +85,16 @@ export default SimpleAuthSession.extend({
 			this.get('session.content.authenticated.user.viewUsers') === true;
 	}),
 
+	authToken: computed('session.content.authenticated.user', function () {
+		if (is.null(this.get('session.authenticator')) ||
+			this.get('appMeta.secureMode')) return '';
+
+		if (this.get('session.authenticator') === 'authenticator:anonymous' ||
+			this.get('session.content.authenticated.user.id') === '0') return '';
+
+		return this.get('session.content.authenticated.token');
+	}),
+
 	init() {
 		this._super(...arguments);
 

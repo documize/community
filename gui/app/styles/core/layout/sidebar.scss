@@ -84,4 +84,15 @@
 			}
 		}
 	}
+
+	.empty-label {
+		margin: 10px 0;
+		font-size: 1rem;
+		font-weight: 500;
+		color: map-get($gray-shades, 700);
+		font-style: italic;
+		padding: 0 7px;
+	}
 }
+
+

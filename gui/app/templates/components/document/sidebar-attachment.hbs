@@ -12,7 +12,7 @@
 		<ul class="files">
 			{{#each files key="id" as |file|}}
 				<li class="file">
-					<a href="{{appMeta.endpoint}}/public/attachments/{{appMeta.orgId}}/{{file.id}}">
+					<a href="{{appMeta.endpoint}}/public/attachment/{{appMeta.orgId}}/{{file.id}}{{downloadQuery}}">
 						{{file.filename}}
 					</a>
 					{{#if canEdit}}
@@ -27,6 +27,8 @@
 			{{/each}}
 		</ul>
 	</div>
+{{else}}
+	<p class="empty-label">No attachments</p>
 {{/if}}
 
 {{#ui/ui-dialog title="Delete Attachment" confirmCaption="Delete" buttonColor=constants.Color.Red show=showDialog onAction=(action "onDelete")}}

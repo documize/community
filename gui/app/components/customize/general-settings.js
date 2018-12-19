@@ -62,7 +62,6 @@ export default Component.extend(Notifier, {
 			}
 
 			this.set('model.general.maxTags', this.get('maxTags'));
-			this.model.general.set('allowAnonymousAccess', $("#allowAnonymousAccess").prop('checked'));
 
 			this.get('save')().then(() => {
 				this.notifySuccess('Saved');

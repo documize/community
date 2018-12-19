@@ -112,6 +112,10 @@ Disallow: /auth/*
 Disallow: /auth/**
 Disallow: /share
 Disallow: /share/*
+Disallow: /attachments
+Disallow: /attachments/*
+Disallow: /attachment
+Disallow: /attachment/*
 Sitemap: %s`, sitemap)
 	}
 

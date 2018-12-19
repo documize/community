@@ -20,11 +20,13 @@ export default Component.extend(Modals, Notifier, {
 	documentService: service('document'),
 	browserSvc: service('browser'),
 	appMeta: service(),
+	session: service(),
 	hasAttachments: notEmpty('files'),
 	canEdit: computed('permissions.documentEdit', 'document.protection', function() {
 		return this.get('document.protection') !== this.get('constants').ProtectionType.Lock && this.get('permissions.documentEdit');
 	}),
 	showDialog: false,
+	downloadQuery: '',
 
 	init() {
 		this._super(...arguments);
@@ -50,7 +52,7 @@ export default Component.extend(Modals, Notifier, {
 
 		let dzone = new Dropzone("#upload-document-files", {
 			headers: {
-				'Authorization': 'Bearer ' + self.get('session.session.content.authenticated.token')
+				'Authorization': 'Bearer ' + self.get('session.authToken')
 			},
 			url: uploadUrl,
 			method: "post",
@@ -67,16 +69,16 @@ export default Component.extend(Modals, Notifier, {
 				});
 
 				this.on("queuecomplete", function () {
-					self.notifySuccess('Saved');
+					self.notifySuccess('Uploaded file');
 					self.getAttachments();
 				});
 
 				this.on("addedfile", function ( /*file*/ ) {
 				});
 
-				this.on("error", function (error, msg) { // // eslint-disable-line no-unused-vars
+				this.on("error", function (error, msg) {
 					self.notifyError(msg);
-					console.log(msg); // eslint-disable-line no-console
+					self.notifyError(error);
 				});
 			}
 		});
@@ -86,6 +88,13 @@ export default Component.extend(Modals, Notifier, {
 		});
 
 		this.set('drop', dzone);
+
+		// For authenticated users we send server auth token.
+		let qry = '';
+		if (this.get('session.authenticated')) {
+			qry = '?token=' + this.get('session.authToken');
+		}
+		this.set('downloadQuery', qry);
 	},
 
 	getAttachments() {
