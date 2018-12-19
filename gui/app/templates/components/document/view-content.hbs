@@ -1,14 +1,13 @@
 {{#if hasPages}}
-
 	{{#each pages key="id" as |item|}}
 		{{#if canEdit}}
-			<div class="start-section" {{action "onShowSectionWizard" item.page}}>
-				<div class="start-button">
-					<div class="cta">+ SECTION</div>
-				</div>
+			<div class="start-section">
+				<i class="dicon {{constants.Icon.Plus}}" {{action "onShowSectionWizard" item.page}}>
+					{{#attach-tooltip showDelay=1000}}Insert section here{{/attach-tooltip}}
+				</i>
 			</div>
 		{{else}}
-			<div class="margin-top-70" />
+			{{ui/ui-spacer size=700}}
 		{{/if}}
 		{{document/document-page
 			roles=roles
@@ -32,10 +31,10 @@
 	{{/each}}
 
 	{{#if canEdit}}
-		<div class="start-section" {{action "onShowSectionWizard"}}>
-			<div class="start-button">
-				<div class="cta">+ SECTION</div>
-			</div>
+		<div class="start-section">
+			<i class="dicon {{constants.Icon.Plus}}" {{action "onShowSectionWizard"}}>
+				{{#attach-tooltip showDelay=1000}}Insert section here{{/attach-tooltip}}
+			</i>
 		</div>
 	{{/if}}
 
@@ -56,17 +55,14 @@
 			</div>
 		</div>
 	{{/if}}
-
 {{else }}
-
 	{{#if canEdit}}
-		<div class="start-section" {{action "onShowSectionWizard"}}>
-			<div class="start-button">
-				<div class="cta">+ SECTION</div>
-			</div>
+		<div class="start-section">
+			<i class="dicon {{constants.Icon.Plus}}" {{action "onShowSectionWizard"}}>
+				{{#attach-tooltip showDelay=1000}}Insert section here{{/attach-tooltip}}
+			</i>
 		</div>
 	{{/if}}
-
 {{/if}}
 
 {{#if canEdit}}

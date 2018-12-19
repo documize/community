@@ -24,6 +24,7 @@ export default Component.extend({
 	light: false,
 	themed: false,
 	dismiss: false,
+	uppercase: true,
 
 	iconClass: '',
 	hasIcon: computed('iconClass', function() {
@@ -44,6 +45,10 @@ export default Component.extend({
 
 		if (this.light) {
 			bc += '-light';
+		}
+
+		if (!this.uppercase) {
+			bc += ' text-case-normal';
 		}
 
 		return bc;

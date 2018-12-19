@@ -1,0 +1,13 @@
+{{#each selectedCategories as |cat|}}
+	<div class="document-category {{if isSpaceAdmin "cursor-pointer"}}" {{action "onEditCategory"}}>
+		{{cat.category}}
+		{{#attach-tooltip showDelay=1000}}Category{{/attach-tooltip}}
+	</div>
+{{/each}}
+
+{{#each tagz as |t|}}
+	<div class="document-tag {{if isSpaceAdmin "cursor-pointer"}}" {{action "onEditCategory"}}>
+		{{#attach-tooltip showDelay=1000}}Tag{{/attach-tooltip}}
+		{{concat "#" t}}
+	</div>
+{{/each}}

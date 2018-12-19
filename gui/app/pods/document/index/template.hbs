@@ -1,23 +1,8 @@
 {{#layout/master-sidebar}}
-	{{ui/ui-spacer size=300}}
+	{{ui/ui-spacer size=200}}
 
 	<div class="section">
-		<div class="title">status</div>
-
-		<div class="{{if (eq document.lifecycle constants.Lifecycle.Draft) "label-draft"}}
-			{{if (eq document.lifecycle constants.Lifecycle.Live) "label-live"}}
-			{{if (eq document.lifecycle constants.Lifecycle.Archived) "label-archived"}}">
-			{{document.lifecycleLabel}}
-			{{#attach-tooltip showDelay=1000}}Lifecycle: Draft &middot; Live &middot; Archived{{/attach-tooltip}}
-		</div>
-		<div class="label-approval">
-			{{#if (eq document.protection constants.ProtectionType.None)}}OPEN{{/if}}
-			{{#if (eq document.protection constants.ProtectionType.Review)}}PROTECTED{{/if}}
-			{{#if (eq document.protection constants.ProtectionType.Lock)}}LOCKED{{/if}}
-			{{#attach-tooltip showDelay=1000}}Change Control: Open &middot; Protected &middot; Locked{{/attach-tooltip}}
-		</div>
-
-		{{ui/ui-spacer size=200}}
+		{{ui/ui-spacer size=100}}
 
 		<div class="text-center">
 			{{#ui/ui-toolbar dark=true light=true raised=true large=false bordered=true}}
@@ -30,6 +15,7 @@
 	</div>
 
 	{{ui/ui-spacer size=200}}
+
 	{{#if (eq sidebarTab "toc")}}
 		{{document/sidebar-toc
 			tab=tab
@@ -54,10 +40,18 @@
 {{#layout/master-content}}
 	<div class="grid-container-6-4">
 		<div class="grid-cell-1">
+			{{document/document-meta
+				tab=tab
+				roles=roles
+				space=folder
+				spaces=folders
+				document=document
+				versions=versions
+				permissions=permissions}}
 		</div>
 
 		<div class="grid-cell-2 grid-cell-right">
-			{{toolbar/for-document
+			{{document/document-toolbar
 				tab=tab
 				roles=roles
 				space=folder
@@ -74,71 +68,48 @@
 
 	{{ui/ui-spacer size=400}}
 
-		<div class="text-center non-printable document-tabnav">
-			<ul class="tabnav-control">
-				<li class="tab {{if (eq tab "content") "selected"}}" {{action "onTabChange" "content"}}>Content</li>
-				{{#if session.authenticated}}
-					{{#if showRevisions}}
-						<li class="tab {{if (eq tab "revision") "selected"}}" {{action "onTabChange" "revision"}}>Revisions</li>
-					{{/if}}
-				{{/if}}
-			</ul>
+	<div class="document-meta">
+		<div class="document-heading">
+			<h1 class="name">{{document.name}}</h1>
+			<h2 class="desc">{{document.excerpt}}</h2>
+			{{#if document.template}}
+				<span class="bg-warning p-1 pr-2 pl-2">Template</span>&nbsp;&nbsp;
+			{{/if}}
 		</div>
+	</div>
 
-		<div class="view-document">
-			<div class="document-heading {{if permissions.documentEdit "cursor-pointer"}}" {{action "onEditMeta"}}>
-				<h1 class="doc-title">
-					{{#if document.template}}
-						<span class="bg-warning p-1 pr-2 pl-2">Template</span>&nbsp;&nbsp;
-					{{/if}}
-					{{document.name}}
-				</h1>
-				<div class="doc-excerpt">{{document.excerpt}}</div>
-			</div>
-		</div>
-
-		{{document/document-meta
+	{{#if (eq tab "content")}}
+		{{document/view-content
+			roles=roles
+			links=links
 			pages=pages
+			blocks=blocks
 			folder=folder
 			folders=folders
+			sections=sections
 			document=document
-			versions=versions
 			permissions=permissions
-			onSaveDocument=(action "onSaveDocument")}}
+			currentPageId=currentPageId
+			refresh=(action "refresh")
+			onSavePage=(action "onSavePage")
+			onCopyPage=(action "onCopyPage")
+			onMovePage=(action "onMovePage")
+			onDeletePage=(action "onPageDeleted")
+			onInsertSection=(action "onInsertSection")
+			onSavePageAsBlock=(action "onSavePageAsBlock")
+			onPageLevelChange=(action "onPageLevelChange")
+			onPageSequenceChange=(action "onPageSequenceChange")}}
+	{{/if}}
 
-		{{#if (eq tab "content")}}
-			{{document/view-content
-				roles=roles
-				links=links
+	{{#if (eq tab "revision")}}
+		{{#if showRevisions}}
+			{{document/view-revision
 				pages=pages
-				blocks=blocks
 				folder=folder
-				folders=folders
-				sections=sections
 				document=document
 				permissions=permissions
-				currentPageId=currentPageId
-				refresh=(action "refresh")
-				onSavePage=(action "onSavePage")
-				onCopyPage=(action "onCopyPage")
-				onMovePage=(action "onMovePage")
-				onDeletePage=(action "onPageDeleted")
-				onInsertSection=(action "onInsertSection")
-				onSavePageAsBlock=(action "onSavePageAsBlock")
-				onPageLevelChange=(action "onPageLevelChange")
-				onPageSequenceChange=(action "onPageSequenceChange")}}
+				onRollback=(action "onRollback")}}
 		{{/if}}
-
-		{{#if (eq tab "revision")}}
-			{{#if showRevisions}}
-				{{document/view-revision
-					pages=pages
-					folder=folder
-					document=document
-					permissions=permissions
-					onRollback=(action "onRollback")}}
-			{{/if}}
-		{{/if}}
-
+	{{/if}}
 {{/layout/master-content}}
 

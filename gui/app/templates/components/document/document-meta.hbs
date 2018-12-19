@@ -1,38 +1,40 @@
-{{#if (eq document.lifecycle constants.Lifecycle.Live)}}
-	<div id="document-lifecycle-popover" class="document-lifecycle-live text-uppercase" {{action "onEditLifecycle"}}>{{document.lifecycleLabel}}</div>
-{{/if}}
-{{#if (eq document.lifecycle constants.Lifecycle.Draft)}}
-	<div id="document-lifecycle-popover" class="document-lifecycle-draft text-uppercase" {{action "onEditLifecycle"}}>{{document.lifecycleLabel}}</div>
-{{/if}}
+<div class="document-meta">
+	{{#link-to 'folder.index' space.id space.slug class="no-print"}}
+		{{ui/ui-button light=true color=constants.Color.Yellow uppercase=false
+			icon=constants.Icon.ArrowLeft label=space.name}}
+	{{/link-to}}
 
-<div class="d-block d-sm-none margin-top-20" />
-<div class="d-sm-inline-block margin-left-20" />
+	{{ui/ui-spacer size=300}}
 
-{{#if (eq document.protection constants.ProtectionType.None)}}
-	<div id="document-protection-popover" class="document-protection-unlocked text-uppercase" {{action "onEditProtection"}}>OPEN</div>
-{{/if}}
-{{#if (eq document.protection constants.ProtectionType.Review)}}
-	<div id="document-protection-popover" class="document-protection-review text-uppercase" {{action "onEditProtection"}}>PROTECTED</div>
-{{/if}}
-{{#if (eq document.protection constants.ProtectionType.Lock)}}
-	<div id="document-protection-popover" class="document-protection-locked text-uppercase" {{action "onEditProtection"}}>LOCKED</div>
-{{/if}}
+	<div class="title">CATEGORY / TAG</div>
+	{{#each selectedCategories as |cat|}}
+		<div class="meta-label">
+			<i class="dicon {{constants.Icon.Category}}"/>
+			{{cat.category}}
+			{{#attach-tooltip showDelay=1000}}Category{{/attach-tooltip}}
+		</div>
+	{{/each}}
+	{{#each tagz as |t|}}
+		<div class="meta-label">
+			<i class="dicon {{constants.Icon.Tag}}"/>
+			{{t}}
+			{{#attach-tooltip showDelay=1000}}Tag{{/attach-tooltip}}
+		</div>
+	{{/each}}
 
-<div class="d-block d-sm-none margin-top-20" />
-<div class="d-sm-inline-block margin-left-20" />
+	{{ui/ui-spacer size=200}}
 
-{{#each selectedCategories as |cat|}}
-	<div class="document-category {{if isSpaceAdmin "cursor-pointer"}}" {{action "onEditCategory"}}>
-		{{cat.category}}
-		{{#attach-tooltip showDelay=1000}}Category{{/attach-tooltip}}
+	<div class="title">STATUS</div>
+	<div class="{{if (eq document.lifecycle constants.Lifecycle.Draft) "label-draft"}}
+		{{if (eq document.lifecycle constants.Lifecycle.Live) "label-live"}}
+		{{if (eq document.lifecycle constants.Lifecycle.Archived) "label-archived"}}">
+		{{document.lifecycleLabel}}
+		{{#attach-tooltip showDelay=1000}}Lifecycle: Draft &middot; Live &middot; Archived{{/attach-tooltip}}
 	</div>
-{{/each}}
-
-<div class="d-block d-sm-none margin-top-20" />
-
-{{#each tagz as |t|}}
-	<div class="document-tag {{if isSpaceAdmin "cursor-pointer"}}" {{action "onEditCategory"}}>
-		{{#attach-tooltip showDelay=1000}}Tag{{/attach-tooltip}}
-		{{concat "#" t}}
+	<div class="label-approval">
+		{{#if (eq document.protection constants.ProtectionType.None)}}OPEN{{/if}}
+		{{#if (eq document.protection constants.ProtectionType.Review)}}PROTECTED{{/if}}
+		{{#if (eq document.protection constants.ProtectionType.Lock)}}LOCKED{{/if}}
+		{{#attach-tooltip showDelay=1000}}Change Control: Open &middot; Protected &middot; Locked{{/attach-tooltip}}
 	</div>
-{{/each}}
+</div>

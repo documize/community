@@ -48,17 +48,23 @@ a.broken-link {
 	user-select: none;
 }
 
+@media print {
+	.no-print {
+		display: none !important;
+	}
+}
+
+.no-width {
+	white-space: nowrap;
+	width: 1%;
+}
+
 .cursor-pointer {
 	cursor: pointer;
 }
 
 .cursor-auto {
 	cursor: auto !important;
-}
-
-.no-width {
-	white-space: nowrap;
-	width: 1%;
 }
 
 .absolute-center {
@@ -77,37 +83,39 @@ a.broken-link {
 .hide {
 	display: none;
 }
-
-.display-block {
-	display: block;
-}
-
-.display-inline-block {
-	display: inline-block;
-}
-
 .visible {
 	visibility: visible;
 }
-
 .invisible {
 	visibility: none;
+}
+.display-block {
+	display: block;
+}
+.display-inline-block {
+	display: inline-block;
 }
 
 .align-top {
 	vertical-align: top!important;
 }
-
 .align-middle {
 	vertical-align: middle!important;
 }
 
+.text-left {
+	text-align: left;
+}
+.text-right {
+	text-align: right;
+}
 .text-center {
 	text-align: center;
 }
 
-@media print {
-	.no-print {
-		display: none !important;
-	}
+.float-left {
+	float: left;
+}
+.float-right {
+	float: right;
 }

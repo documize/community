@@ -31,6 +31,10 @@
 	text-transform: uppercase;
 }
 
+.text-case-normal {
+	text-transform: none !important;
+}
+
 .bold-100 { font-weight: 100; }
 .bold-200 { font-weight: 200; }
 .bold-300 { font-weight: 300; }

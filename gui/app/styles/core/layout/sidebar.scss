@@ -1,6 +1,7 @@
 .sidebar-content {
 	display: block;
 	position: relative;
+	// @extend .text-truncate;
 
 	> .section {
 		margin: 0;
@@ -11,6 +12,12 @@
 			font-size: 1rem;
 			font-weight: 600;
 			color: map-get($gray-shades, 700);
+		}
+
+		> .nav-button {
+			width: 100%;
+			display: inline-block;
+			@extend .no-select;
 		}
 
 		> .center {

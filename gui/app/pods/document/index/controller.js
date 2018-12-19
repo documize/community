@@ -11,7 +11,6 @@
 
 import { Promise as EmberPromise } from 'rsvp';
 import { inject as service } from '@ember/service';
-import { computed } from '@ember/object';
 import Notifier from '../../../mixins/notifier';
 import Controller from '@ember/controller';
 
@@ -24,13 +23,6 @@ export default Controller.extend(Notifier, {
 	sidebarTab: 'toc',
 	tab: 'content',
 	queryParams: ['currentPageId', 'source'],
-	showRevisions: computed('permissions', 'document.protection', function() {
-		if (!this.get('session.viewUsers')) return false;
-		if (this.get('document.protection') === this.get('constants').ProtectionType.None) return true;
-		if (this.get('document.protection') === this.get('constants').ProtectionType.Review && this.get('permissions.documentApprove')) return true;
-
-		return false;
-	}),
 
 	actions: {
 		onSidebarChange(tab) {
