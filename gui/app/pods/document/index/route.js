@@ -53,6 +53,8 @@ export default Route.extend(AuthenticatedRouteMixin, {
 	},
 
 	setupController(controller, model) {
+		this._super(controller, model);
+
 		controller.set('folders', model.folders);
 		controller.set('folder', model.folder);
 		controller.set('document', model.document);

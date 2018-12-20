@@ -28,6 +28,8 @@ export default Route.extend(AuthenticatedRouteMixin, {
 	},
 
 	setupController(controller, model) {
+		this._super(controller, model);
+
 		controller.set('model', model);
 		controller.set('serial', this.serial);
 		controller.set('slug', this.slug);

@@ -56,6 +56,8 @@ export default Route.extend({
 	},
 
 	setupController: function (controller, model) {
+		this._super(controller, model);
+
 		controller.set('model', model);
 		controller.reset();
 	},

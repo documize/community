@@ -25,6 +25,8 @@ export default Route.extend({
 	},
 
 	setupController(controller, model) {
+		this._super(controller, model);
+
 		controller.set('model', model);
 		controller.set('sayThanks', false);
 	},
