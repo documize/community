@@ -25,6 +25,10 @@ $display-break-5: 1800px;
 		justify-self: self-start;
 	}
 
+	.grid-cell-width-100 {
+		width: 100%;
+	}
+
 	// X-axis alignment
 	.grid-cell-left {
 		justify-self: self-end;

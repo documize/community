@@ -157,7 +157,6 @@ func (p *Provider) Refresh(ctx *provider.Context, config, data string) (newData 
 func auth(ctx *provider.Context, store *store.Store, w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)
-
 	if err != nil {
 		provider.WriteMessage(w, "gemini", "Bad payload")
 		return
@@ -165,7 +164,6 @@ func auth(ctx *provider.Context, store *store.Store, w http.ResponseWriter, r *h
 
 	var config = geminiConfig{}
 	err = json.Unmarshal(body, &config)
-
 	if err != nil {
 		provider.WriteMessage(w, "gemini", "Bad payload")
 		return
@@ -177,30 +175,26 @@ func auth(ctx *provider.Context, store *store.Store, w http.ResponseWriter, r *h
 		provider.WriteMessage(w, "gemini", "Missing URL value")
 		return
 	}
-
 	if len(config.Username) == 0 {
 		provider.WriteMessage(w, "gemini", "Missing Username value")
 		return
 	}
-
 	if len(config.APIKey) == 0 {
 		provider.WriteMessage(w, "gemini", "Missing APIKey value")
 		return
 	}
 
 	creds := []byte(fmt.Sprintf("%s:%s", config.Username, config.APIKey))
-
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/users/username/%s", config.URL, config.Username), nil)
 	req.Header.Set("Authorization", "Basic "+base64.StdEncoding.EncodeToString(creds))
 
 	client := &http.Client{}
 	res, err := client.Do(req)
-
 	if err != nil {
 		provider.WriteError(w, "gemini", err)
+		fmt.Println(err)
 		return
 	}
-
 	if res.StatusCode != http.StatusOK {
 		provider.WriteForbidden(w)
 		return
@@ -213,9 +207,9 @@ func auth(ctx *provider.Context, store *store.Store, w http.ResponseWriter, r *h
 
 	dec := json.NewDecoder(res.Body)
 	err = dec.Decode(&g)
-
 	if err != nil {
 		provider.WriteError(w, "gemini", err)
+		fmt.Println(err)
 		return
 	}
 

@@ -1,5 +1,9 @@
+{{layout/logo-heading
+	title="Trello"
+	desc="Trello is the visual way to manage your projects and organize anything (https://trello.com)"
+	icon=constants.Icon.Integrations}}
+
 {{#section/base-editor document=document folder=folder page=page busy=busy
-	tip="Trello is the visual way to manage your projects and organize anything (https://trello.com)"
 	isDirty=(action "isDirty") onCancel=(action "onCancel") onAction=(action "onAction")}}
 
 	{{#if trelloConfigured}}
@@ -30,7 +34,8 @@
 				</div>
 			{{/if}}
 		{{else}}
-			<div class="btn btn-primary" {{action "auth"}}>Authenticate</div>
+			{{ui/ui-button color=constants.Color.Green light=true
+				label=constants.Label.Authenticate onClick=(action "auth")}}
 		{{/if}}
 	{{else}}
 		{{#if session.isGlobalAdmin}}
