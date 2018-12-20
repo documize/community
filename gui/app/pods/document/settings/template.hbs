@@ -1,49 +1,53 @@
-{{#layout/top-bar}}
-	<li class="item">
-		{{#link-to "folder.index" model.folder.id model.folder.slug class="link"}}
-			{{model.folder.name}}
-		{{/link-to}}
-	</li>
-	<li class="item">
-		{{#link-to "document.index" model.folder.id model.folder.slug model.document.id model.document.slug class="link"}}
-			{{model.document.name}}
-		{{/link-to}}
-	</li>
-	<li class="item">
-		{{#link-to "document.settings" model.folder.id model.folder.slug class="link selected"}}
-			Settings
-		{{/link-to}}
-	</li>
-{{/layout/top-bar}}
+{{#layout/master-sidebar}}
+	{{ui/ui-spacer size=300}}
 
-{{#layout/middle-zone}}
-	{{#layout/middle-zone-content}}
-		{{#if (eq tab "general")}}
-			{{document/settings-general
-				space=model.folder
-				document=model.document
-				permissions=model.permissions
-				onSaveDocument=(action "onSaveDocument")}}
-		{{/if}}
+	<div class="section">
+		{{#link-to "document.index"}}
+			{{ui/ui-button color=constants.Color.Yellow light=true icon=constants.Icon.ArrowLeft label="Document"}}
+		{{/link-to}}
 
-		{{#if (eq tab "meta")}}
-			{{document/settings-meta
-				space=model.folder
-				document=model.document
-				permissions=model.permissions
-				onSaveDocument=(action "onSaveDocument")}}
-		{{/if}}
-	{{/layout/middle-zone-content}}
+		{{ui/ui-spacer size=400}}
 
-	{{#layout/middle-zone-sidebar}}
-		<div id="sidebar" class="sidebar">
-			<ul class="tabnav-control tabnav-control-centered w-75">
-				<li class="tab tab-vertical {{if (eq tab "general") "selected"}}" {{action "onTab" "general"}}>General</li>
-				<li class="tab tab-vertical {{if (eq tab "meta") "selected"}}" {{action "onTab" "meta"}}>Categories & Tags</li>
-			</ul>
+		<div class="title">Document Options</div>
+		<div class="list">
+			<div class="item {{if (eq tab "general") "selected"}}" {{action "onTab" "general"}}>
+				<i class={{concat "dicon " constants.Icon.Settings}} />
+				<div class="name">Content Settings</div>
+			</div>
+			<div class="item {{if (eq tab "category") "selected"}}" {{action "onTab" "category"}}>
+				<i class={{concat "dicon " constants.Icon.Category}} />
+				<div class="name">Categories</div>
+			</div>
+			<div class="item {{if (eq tab "tag") "selected"}}" {{action "onTab" "tag"}}>
+				<i class={{concat "dicon " constants.Icon.Tag}} />
+				<div class="name">Tags</div>
+			</div>
 		</div>
-	{{/layout/middle-zone-sidebar}}
-{{/layout/middle-zone}}
+	</div>
+{{/layout/master-sidebar}}
 
-{{#layout/bottom-bar}}
-{{/layout/bottom-bar}}
+{{#layout/master-content}}
+	{{#if (eq tab "general")}}
+		{{document/settings-general
+			space=model.folder
+			document=model.document
+			permissions=model.permissions
+			onSaveDocument=(action "onSaveDocument")}}
+	{{/if}}
+
+	{{#if (eq tab "category")}}
+		{{document/settings-category
+			space=model.folder
+			document=model.document
+			permissions=model.permissions
+			onSaveDocument=(action "onSaveDocument")}}
+	{{/if}}
+
+	{{#if (eq tab "tag")}}
+		{{document/settings-tag
+			space=model.folder
+			document=model.document
+			permissions=model.permissions
+			onSaveDocument=(action "onSaveDocument")}}
+	{{/if}}
+{{/layout/master-content}}

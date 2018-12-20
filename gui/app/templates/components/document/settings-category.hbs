@@ -1,0 +1,19 @@
+{{layout/logo-heading
+	title="Categories"
+	desc="Assign one or more categories to help organize content within this space"
+	icon=constants.Icon.Category}}
+
+{{ui/ui-list-picker items=categories nameField="category" singleSelect=false}}
+
+{{#unless categories}}
+	<p class="color-green-700">This space has no categories yet</p>
+{{/unless}}
+
+{{ui/ui-spacer size=300}}
+
+{{ui/ui-button
+	color=constants.Color.Green
+	icon=constants.Icon.Category
+	label=constants.Label.Save
+	light=true
+	onClick=(action "onSave")}}

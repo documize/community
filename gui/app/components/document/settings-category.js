@@ -156,7 +156,6 @@ export default Component.extend(Notifier, {
 
 			this.get('categoryService').setCategoryMembership(toUnlink, 'unlink').then(() => {
 				this.get('categoryService').setCategoryMembership(toLink, 'link').then(() => {
-					this.notifySuccess('Saved');
 				});
 			});
 
