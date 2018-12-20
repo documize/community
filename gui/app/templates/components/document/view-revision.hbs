@@ -1,36 +1,22 @@
-<div class="mt-5">
-	{{#unless hasRevisions}}
-		<p>No revisions made</p>
-	{{else}}
-		<div class="row">
-			<div class="col-12">
-				<div class="form-group">
-					{{ui/ui-select tagName="span" class="revision-picker" content=revisions action=(action "onSelectRevision") optionValuePath="id" optionLabelPath="label"}}
-				</div>
-			</div>
+{{#unless revisions}}
+	<p>No revisions made</p>
+{{/unless}}
+
+<div class="view-revision">
+	{{#if hasDiff}}
+		<h1>{{revision.title}}</h1>
+		<h2>Changed by {{revision.firstname}} {{revision.lastname}}</h2>
+		{{ui/ui-spacer size=200}}
+		<div class="diff-zone wysiwyg">
+			{{{diff}}}
 		</div>
-		<div class="row">
-			<div class="col-12 view-revision">
-				<div class="diff-zone">
-					{{#if hasDiff}}
-						<div class="wysiwyg">
-							{{{diff}}}
-						</div>
-					{{/if}}
-				</div>
-			</div>
-		</div>
-		{{#if canRollback}}
-			<div class="row">
-				<div class="col-12">
-					<div class="form-group">
-						<div id="restore-history-button" class="btn btn-danger" data-toggle="modal" data-target="#document-rollback-modal" data-backdrop="static">Restore to this version</div>
-					</div>
-				</div>
-			</div>
-		{{/if}}
-	{{/unless}}
+	{{/if}}
 </div>
+
+{{#if canRollback}}
+	{{ui/ui-spacer size=400}}
+	{{ui/ui-button color=constants.Color.Red icon=constants.Icon.TimeBack light=true label=constants.Label.Restore onClick=(action "onShowModal")}}
+{{/if}}
 
 <div id="document-rollback-modal" class="modal" tabindex="-1" role="dialog">
 	<div class="modal-dialog" role="document">
@@ -40,8 +26,8 @@
 				<p>Are you sure you want to restore this revision?</p>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-				<button type="button" class="btn btn-success" onclick={{action "onRollback"}}>Restore</button>
+				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+				{{ui/ui-button color=constants.Color.Red light=true label=constants.Label.Restore onClick=(action "onRollback")}}
 			</div>
 		</div>
 	</div>

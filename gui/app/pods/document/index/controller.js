@@ -21,7 +21,6 @@ export default Controller.extend(Notifier, {
 	linkService: service('link'),
 	router: service(),
 	sidebarTab: 'toc',
-	tab: 'content',
 	queryParams: ['currentPageId', 'source'],
 
 	actions: {
@@ -29,15 +28,7 @@ export default Controller.extend(Notifier, {
 			this.set('sidebarTab', tab);
 		},
 
-		onTabChange(tab) {
-			this.set('tab', tab);
-			if (tab === 'content') {
-				this.send('refresh');
-			}
-		},
-
 		onShowPage(pageId) {
-			this.set('tab', 'content');
 			this.get('browser').scrollTo(`#page-${pageId}`);
 		},
 
@@ -219,13 +210,6 @@ export default Controller.extend(Notifier, {
 			doc.set('tags', tags);
 			this.get('documentService').save(doc).then(()=> {
 				this.notifySuccess('Saved');
-			});
-		},
-
-		onRollback(pageId, revisionId) {
-			this.get('documentService').rollbackPage(this.get('document.id'), pageId, revisionId).then(() => {
-				this.set('tab', 'content');
-				this.get('target._routerMicrolib').refresh();
 			});
 		},
 

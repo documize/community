@@ -45,8 +45,8 @@
 					</form>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-					<button type="button" class="btn btn-success" onclick={{action "onAddEmptyDoc"}}>Add</button>
+					{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+					{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Add onClick=(action "onAddEmptyDoc")}}
 				</div>
 			</div>
 		</div>
@@ -78,8 +78,8 @@
 					</form>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-					<button type="button" class="btn btn-success" onclick={{action "onAddTemplateDoc"}}>Add</button>
+					{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+					{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Add onClick=(action "onAddTemplateDoc")}}
 				</div>
 			</div>
 		</div>
@@ -105,7 +105,7 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
 				</div>
 			</div>
 		</div>
@@ -127,8 +127,8 @@
 				{{/if}}
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-				<button type="button" class="btn btn-success" onclick={{action "onExport"}}>Export</button>
+				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+				{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Export onClick=(action "onExport")}}
 			</div>
 		</div>
 	</div>

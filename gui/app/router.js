@@ -56,6 +56,9 @@ export default Router.map(function () {
 			this.route('settings', {
 				path: 'settings'
 			});
+			this.route('revisions', {
+				path: 'revisions'
+			});
 		}
 	);
 

@@ -11,6 +11,7 @@
 
 import $ from 'jquery';
 import { inject as service } from '@ember/service';
+import { computed } from '@ember/object';
 import AuthMixin from '../../mixins/auth';
 import ModalMixin from '../../mixins/modal';
 import Notifier from '../../mixins/notifier';
@@ -24,6 +25,14 @@ export default Component.extend(ModalMixin, AuthMixin, Notifier, {
 	pinned: service(),
 	browserSvc: service('browser'),
 	documentSvc: service('document'),
+	showRevisions: computed('permissions', 'document.protection', function() {
+		if (!this.get('session.authenticated')) return false;
+		if (!this.get('session.viewUsers')) return false;
+		if (this.get('document.protection') === this.get('constants').ProtectionType.None) return true;
+		if (this.get('document.protection') === this.get('constants').ProtectionType.Review && this.get('permissions.documentApprove')) return true;
+
+		return false;
+	}),
 
 	init() {
 		this._super(...arguments);

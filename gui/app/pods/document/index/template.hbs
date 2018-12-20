@@ -75,38 +75,25 @@
 		</div>
 	</div>
 
-	{{#if (eq tab "content")}}
-		{{document/view-content
-			roles=roles
-			links=links
-			pages=pages
-			blocks=blocks
-			folder=folder
-			folders=folders
-			sections=sections
-			document=document
-			permissions=permissions
-			currentPageId=currentPageId
-			refresh=(action "refresh")
-			onSavePage=(action "onSavePage")
-			onCopyPage=(action "onCopyPage")
-			onMovePage=(action "onMovePage")
-			onDeletePage=(action "onPageDeleted")
-			onInsertSection=(action "onInsertSection")
-			onSavePageAsBlock=(action "onSavePageAsBlock")
-			onPageLevelChange=(action "onPageLevelChange")
-			onPageSequenceChange=(action "onPageSequenceChange")}}
-	{{/if}}
-
-	{{#if (eq tab "revision")}}
-		{{#if showRevisions}}
-			{{document/view-revision
-				pages=pages
-				folder=folder
-				document=document
-				permissions=permissions
-				onRollback=(action "onRollback")}}
-		{{/if}}
-	{{/if}}
+	{{document/view-content
+		roles=roles
+		links=links
+		pages=pages
+		blocks=blocks
+		folder=folder
+		folders=folders
+		sections=sections
+		document=document
+		permissions=permissions
+		currentPageId=currentPageId
+		refresh=(action "refresh")
+		onSavePage=(action "onSavePage")
+		onCopyPage=(action "onCopyPage")
+		onMovePage=(action "onMovePage")
+		onDeletePage=(action "onPageDeleted")
+		onInsertSection=(action "onInsertSection")
+		onSavePageAsBlock=(action "onSavePageAsBlock")
+		onPageLevelChange=(action "onPageLevelChange")
+		onPageSequenceChange=(action "onPageSequenceChange")}}
 {{/layout/master-content}}
 

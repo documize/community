@@ -39,23 +39,21 @@
 	{{/if}}
 
 	{{#if showLikes}}
-		<div class=" d-flex justify-content-center no-print">
-			<div class="vote-box">
-				{{#unless voteThanks}}
-				<div class="prompt">
-					{{folder.likes}}
-				</div>
+		<div class="vote-box no-print">
+			{{#if voteThanks}}
+				<div class="thanks">Thanks for the feedback!</div>
+			{{else}}
+				<div class="prompt">{{folder.likes}}</div>
+				{{ui/ui-spacer size=200}}
 				<div class="buttons">
-					<button type="button" class="btn btn-outline-success bold-700" {{action "onVote" 1}}>Yes, thanks!</button>&nbsp;&nbsp;
-					<button type="button" class="btn btn-outline-secondary bold-700" {{action "onVote" 2}}>Not really</button>
+					{{ui/ui-button color=constants.Color.Yellow light=true label="Yes, thanks!" onClick=(action "onVote" 1)}}
+					{{ui/ui-button-gap}}
+					{{ui/ui-button color=constants.Color.Yellow light=true label="Not really" onClick=(action "onVote" 2)}}
 				</div>
-				{{else}}
-				<div class="ack">Thanks for the feedback!</div>
-				{{/unless}}
-			</div>
+			{{/if}}
 		</div>
 	{{/if}}
-{{else }}
+{{else}}
 	{{#if canEdit}}
 		<div class="start-section">
 			<i class="dicon {{constants.Icon.Plus}}" {{action "onShowSectionWizard"}}>

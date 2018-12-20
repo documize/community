@@ -51,12 +51,10 @@
 }
 
 .start-section {
-	@include border-radius(5px);
 	@extend .no-select;
 	text-align: right;
 	margin: 1.5rem 0;
 	display: block;
-	cursor: pointer;
 
 	> i {
 		background-color: map-get($yellow-shades, 100);
@@ -65,6 +63,8 @@
 		padding: 0.5rem;
 		font-size: 16px;
 		@extend %toolbar-shadow;
+		@include border-radius(5px);
+		cursor: pointer;
 
 		&:hover {
 			color: map-get($yellow-shades, 700);
