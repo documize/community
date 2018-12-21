@@ -93,9 +93,6 @@ $link-hover-decoration:     none;
 
 // Optional
 @import "node_modules/bootstrap/scss/reboot";
-// @import "node_modules/bootstrap/scss/grid";
-// @import "node_modules/bootstrap/scss/buttons";
-// @import "node_modules/bootstrap/scss/button-group";
 @import "node_modules/bootstrap/scss/forms";
 @import "node_modules/bootstrap/scss/custom-forms";
 @import "node_modules/bootstrap/scss/input-group";
@@ -106,6 +103,19 @@ $link-hover-decoration:     none;
 // Boostrap overrides
 .modal-80 {
 	max-width: 80% !important;
+}
+.modal-70 {
+	max-width: 70% !important;
+}
+.modal-60 {
+	max-width: 60% !important;
+}
+.modal-50 {
+	max-width: 50% !important;
+}
+
+.modal-backdrop {
+	z-index: 1041;
 }
 
 body.modal-open {
@@ -130,15 +140,3 @@ body.modal-open {
 	}
 }
 
-.btn {
-	text-transform: uppercase;
-	font-weight: 600;
-}
-
-// Bootstrap override that removes gutter space on smaller screens
-// @media (max-width: 1200px) {
-//     .container {
-//         width: 100%;
-//         max-width: none;
-//     }
-// }
