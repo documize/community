@@ -10,6 +10,7 @@
 // https://documize.com
 
 import { A } from '@ember/array';
+import { computed } from '@ember/object';
 import { inject as service } from '@ember/service';
 import Modals from '../../mixins/modal';
 import Component from '@ember/component';
@@ -19,10 +20,15 @@ export default Component.extend(Modals, {
 	sessionService: service('session'),
 	categoryService: service('category'),
 	router: service(),
+	selectedCategories: A([]),
+	tagz: A([]),
+
+	unassigned: computed('selectedCategories', 'tagz', function() {
+		return this.get('selectedCategories').length === 0 && this.get('tagz').length === 0;
+	}),
 
 	didReceiveAttrs() {
 		this._super(...arguments);
-
 		this.load();
 	},
 

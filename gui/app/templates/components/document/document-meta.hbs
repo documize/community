@@ -22,6 +22,16 @@
 		</div>
 	{{/each}}
 
+	{{#if unassigned}}
+		{{#if permissions.spaceManage}}
+			{{#ui/ui-toolbar dark=false light=true raised=true large=false bordered=true}}
+				{{ui/ui-toolbar-icon icon=constants.Icon.Plus color=constants.Color.Gray linkTo="document.settings"}}
+			{{/ui/ui-toolbar}}
+		{{else}}
+			<div class="empty">Unassigned</div>
+		{{/if}}
+	{{/if}}
+
 	{{ui/ui-spacer size=200}}
 
 	<div class="title">STATUS</div>

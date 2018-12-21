@@ -10,6 +10,20 @@
 		margin-bottom: 5px;
 	}
 
+	> .text {
+		margin: 10px 0;
+		font-size: 1rem;
+		font-weight: 500;
+		color: map-get($gray-shades, 600);
+	}
+
+	> .empty {
+		margin: 10px 0;
+		font-size: 1rem;
+		font-weight: 400;
+		color: map-get($gray-shades, 600);
+	}
+
 	> .meta-label {
 		@include border-radius(3px);
 		@extend .no-select;

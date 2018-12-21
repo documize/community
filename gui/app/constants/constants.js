@@ -289,6 +289,7 @@ let constants = EmberObject.extend({
 		Save: 'Save',
 		Search: 'Search',
 		SignIn: 'Sign In',
+		Unassigned: 'Unassigned',
 		Update: 'Update',
 		Upload: 'Upload'
 	}
