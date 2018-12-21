@@ -66,10 +66,10 @@
 								{{#each templates as |item|}}
 									<li class="option {{if item.selected "selected"}}" {{action "onSelectTemplate" item}}>
 										<div class="text text-truncate">
-											{{item.title}}<br>{{item.description}}
+											{{item.name}}<br>{{item.excerpt}}
 										</div>
 										{{#if item.selected}}
-											<i class="material-icons">check</i>
+											<i class="dicon {{constants.Icon.Tick}}" />
 										{{/if}}
 									</li>
 								{{/each}}
@@ -79,6 +79,7 @@
 				</div>
 				<div class="modal-footer">
 					{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+					{{ui/ui-button-gap}}
 					{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Add onClick=(action "onAddTemplateDoc")}}
 				</div>
 			</div>
@@ -90,7 +91,7 @@
 				<div class="modal-header">Import Files</div>
 				<div class="modal-body">
 					<div class="import-zone">
-						<button id="import-document-button" type="button" class="btn btn-outline-secondary btn-lg btn-block">
+						<button id="import-document-button" type="button" class="dmz-button-yellow-light text-center">
 							<br>
 							Click to select files or drag-drop files
 							<br><br>
@@ -128,6 +129,7 @@
 			</div>
 			<div class="modal-footer">
 				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+				{{ui/ui-button-gap}}
 				{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Export onClick=(action "onExport")}}
 			</div>
 		</div>

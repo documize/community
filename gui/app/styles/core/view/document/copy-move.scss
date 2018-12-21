@@ -5,17 +5,19 @@
 		width: 100%;
 
 		> .document {
-			@include ease-in();
-			margin: 0 0 5px 0;
+			margin: 0 0 15px 0;
 			padding: 10px 15px;
-			color: map-get($gray-shades, 600);
+			color: map-get($gray-shades, 700);
 			background-color: map-get($gray-shades, 100);
+			border: 1px solid map-get($gray-shades, 200);
 			cursor: pointer;
 			position: relative;
 			list-style-type: none;
 
 			&:hover {
-				color: $color-black;
+				> .title, > .space, > .snippet {
+					color: map-get($gray-shades, 800);
+				}
 			}
 
 			> .title {
@@ -24,7 +26,6 @@
 			}
 
 			> .space {
-				color : map-get($gray-shades, 600);
 				font-size: 0.8rem;
 				font-style: italic;
 				font-weight: bold;
@@ -32,24 +33,26 @@
 			}
 
 			> .snippet {
-				color : map-get($gray-shades, 600);
 				font-size: 0.9rem;
 			}
 
-			> .material-icons {
+			> .dicon {
 				position: absolute;
 				top: 10px;
 				right: 10px;
-				color: $color-white;
+				color: map-get($yellow-shades, 800);
+				font-weight: 700;
+				font-size: 1.3rem;
 			}
 		}
 
 		> .selected {
-			background-color: $color-link !important;
-
 			> .title, .space, .snippet {
-				color: $color-white !important;
+				color: map-get($yellow-shades, 800) !important;
 			}
+
+			background-color: map-get($yellow-shades, 100) !important;
+			border: 1px solid map-get($yellow-shades, 300) !important;
 		}
 	}
 }

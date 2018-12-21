@@ -37,6 +37,7 @@ export default Component.extend({
 
 		// Prepare button class name
 		let bc = 'dmz-button';
+
 		if (this.themed) {
 			bc += '-theme';
 		} else {

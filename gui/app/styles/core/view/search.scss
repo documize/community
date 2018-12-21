@@ -30,7 +30,6 @@
 
 		> .document {
 			@include card();
-			@include ease-in();
 			list-style-type: none;
 			overflow: hidden;
 			position: relative;
@@ -44,7 +43,6 @@
 			}
 
 			> a {
-				@include ease-in();
 				display: block;
 				position: relative;
 				padding: 15px 20px;

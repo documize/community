@@ -6,21 +6,21 @@
 					<div class="text-header">Documize</div>
 					<div class="text">Built-in email/password</div>
 					{{#if isDocumizeProvider}}
-						<i class="material-icons">check</i>
+						<i class="dicon {{constants.Icon.Tick}}" />
 					{{/if}}
 				</li>
 				<li class="option {{if isKeycloakProvider "selected"}}" {{action "onKeycloak"}}>
 					<div class="text-header">Keycloak</div>
 					<div class="text">Via authentication server</div>
 					{{#if isKeycloakProvider}}
-						<i class="material-icons">check</i>
+						<i class="dicon {{constants.Icon.Tick}}" />
 					{{/if}}
 				</li>
 				<li class="option {{if isLDAPProvider "selected"}}" {{action "onLDAP"}}>
 					<div class="text-header">LDAP</div>
 					<div class="text">Connect to LDAP/ Active Directory</div>
 					{{#if isLDAPProvider}}
-						<i class="material-icons">check</i>
+						<i class="dicon {{constants.Icon.Tick}}" />
 					{{/if}}
 				</li>
 			</ul>

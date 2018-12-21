@@ -20,7 +20,7 @@
 		display: block;
 	}
 
-	> .material-icons {
+	> .dicon {
 		font-size: 5rem;
 		color: map-get($gray-shades, 200);
 	}
@@ -32,7 +32,6 @@
 	color: map-get($gray-shades, 600);
 	margin: 5rem 0;
 }
-
 
 .theme-picker {
 	display : block;
@@ -52,7 +51,6 @@
 		cursor: default;
 		border: 7px solid map-get($gray-shades, 300);
 		@include border-radius(3px);
-		@include ease-in();
 
 		&:hover {
 			border: 7px solid map-get($gray-shades, 600);

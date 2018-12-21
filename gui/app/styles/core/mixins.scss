@@ -7,6 +7,15 @@
 	position: sticky;
 }
 
+@mixin card() {
+	background-color: $color-card;
+	box-shadow: 1px 1px 3px 0px rgba(211,211,211,1);
+
+	&:hover {
+		background-color: map-get($gray-shades, 100);
+	}
+}
+
 @mixin border-radius($radius)
 {
 	-webkit-border-radius: $radius;
@@ -36,33 +45,4 @@
 {
 	border-bottom-left-radius: $radius;
 	border-bottom-right-radius: $radius;
-}
-
-@mixin ease-in()
-{
-	// -webkit-transition: all 0.30s ease-in-out;
-	// -moz-transition: all 0.30s ease-in-out;
-	// -ms-transition: all 0.30s ease-in-out;
-	// -o-transition: all 0.30s ease-in-out;
-	// transition: all 0.30s ease-in-out;
-}
-
-@mixin content-container($pad-tb: 25px, $pad-lr: 50px) {
-    @include border-radius(2px);
-    padding: $pad-tb $pad-lr;
-    box-shadow: 0 0 0 0.75pt map-get($gray-shades, 200),0 0 3pt 0.75pt map-get($gray-shades, 200);
-    background-color: $color-white;
-}
-
-@mixin card() {
-	background-color: $color-card;
-	box-shadow: 1px 1px 3px 0px rgba(211,211,211,1);
-
-	&:hover {
-		background-color: map-get($gray-shades, 100);
-	}
-}
-
-@mixin shadow() {
-	box-shadow: 1px 1px 3px 0px rgba(211,211,211,1);
 }

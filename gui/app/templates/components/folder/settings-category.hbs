@@ -87,29 +87,12 @@
 		<ul class="options">
 			{{#each categoryPermissions as |permission|}}
 				<li class="option {{if permission.selected "selected"}}" {{action "onToggle" permission}}>
-					<div class="text text-truncate">
-						{{#if (eq permission.who "role")}}
-							<span class="button-icon-gray button-icon-small align-middle">
-								<i class="material-icons">people</i>
-							</span>
-						{{else}}
-							{{#if (eq permission.whoId constants.EveryoneUserId)}}
-								<span class="button-icon-gray button-icon-small align-middle">
-									<i class="material-icons">language</i>
-								</span>
-							{{else}}
-								<span class="button-icon-gray button-icon-small align-middle">
-									<i class="material-icons">person</i>
-								</span>
-							{{/if}}
-						{{/if}}
-						&nbsp;{{permission.name}}
-						{{#if (eq permission.whoId session.user.id)}}
-							<small class="form-text text-muted d-inline-block">(you)</small>
-						{{/if}}
-					</div>
+					{{permission.name}}
+					{{#if (eq permission.whoId session.user.id)}}
+						<small class="form-text text-muted d-inline-block">(you)</small>
+					{{/if}}
 					{{#if permission.selected}}
-						<i class="material-icons">check</i>
+						<i class="dicon {{constants.Icon.Tick}}"/>
 					{{/if}}
 				</li>
 			{{/each}}

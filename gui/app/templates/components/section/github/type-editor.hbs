@@ -34,25 +34,12 @@
 					<div class="form-group">
 						<label>Select Repository</label>
 						{{ui/ui-list-picker items=config.lists nameField="repo" singleSelect=true}}
-
-						{{!-- <div class="github-board">
-							{{#each config.lists as |list|}}
-								<div class="github-list" {{action "onListCheckbox" list.id}}>
-									{{#if list.included}}
-										<i class="material-icons widget-checkbox checkbox-gray github-list-checkbox">check_box</i>
-									{{else}}
-										<i class="material-icons widget-checkbox checkbox-gray github-list-checkbox">check_box_outline_blank</i>
-									{{/if}}
-									<span class="github-list-title">{{list.repo}} {{#if list.private}}(private){{/if}}</span>
-								</div>
-							{{/each}}
-						</div> --}}
 					</div>
 				</div>
 			</div>
 		{{else}}
 			<div class="col-6">
-				<div class="btn btn-primary" {{action "auth"}}>Authenticate</div>
+				<div class="" {{action "auth"}}>Authenticate</div>
 			</div>
 		{{/if}}
 	</div>

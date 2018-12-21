@@ -172,6 +172,10 @@
 					margin: 0;
 					padding: 10px 15px;
 					text-align: center;
+
+					> .dicon {
+						color: map-get($gray-shades, 700);
+					}
 				}
 
 				> td:first-child {

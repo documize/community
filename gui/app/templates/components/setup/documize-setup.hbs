@@ -1,7 +1,8 @@
 <div class="col-9">
 	<h1>Let's setup Documize</h1>
 	<h3>Database: {{model.dbname}}</h3>
-	<form class="my-5" {{action "save" on="submit"}}>
+	{{ui/ui-spacer size=300}}
+	<form {{action "save" on="submit"}}>
 		<div class="form-group">
 			<label>Team</label>
 			{{focus-input id="siteTitle" type="text" value=model.title class=(if hasEmptyTitleError "form-control is-invalid" "form-control")}}
@@ -27,6 +28,7 @@
 			{{input id="adminPassword" type="password" value=model.password class=(if hasEmptyPasswordError "form-control is-invalid" "form-control")}}
 			<small class="form-text text-muted">Pick something strong and unique that you don't use anywhere else</small>
 		</div>
-		<button type="submit" class="btn btn-success mt-5" {{action "save"}}>{{buttonLabel}}</button>
+		{{ui/ui-button submit=true color=constants.Color.Green light=true label=buttonLabel onClick=(action "save")}}
 	</form>
+	{{ui/ui-spacer size=300}}
 </div>

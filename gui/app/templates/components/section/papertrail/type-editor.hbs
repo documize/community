@@ -14,13 +14,7 @@
 					{{focus-input id="papertrail-apitoken" type="password" value=config.APIToken class="form-control"}}
 					<small class="form-text text-muted">API Token (from your profile)</small>
 				</div>
-				<div class="btn btn-primary" {{action "auth"}} >
-					{{#if authenticated}}
-						Re-Authenticate
-					{{else}}
-						Authenticate
-					{{/if}}
-				</div>
+				{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Authenticate onClick=(action "auth")}}
 			</form>
 		</div>
 		<div class="grid-cell-2">

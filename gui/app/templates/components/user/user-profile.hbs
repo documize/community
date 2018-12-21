@@ -21,5 +21,5 @@
             {{input id="confirmPassword" type="password" value=password.confirmation class=(if hasConfirmPasswordError "form-control is-invalid" "form-control")}}
         </div>
     {{/if}}
-    <div class="btn btn-success my-5" {{action "save"}}>Save</div>
+	{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Save onClick=(action "save")}}
 </div>

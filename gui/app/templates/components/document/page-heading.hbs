@@ -67,9 +67,10 @@
 				<div class="modal-body">
 					<div class="form-group">
 						<label>Destination Document</label>
-						{{focus-input type="text" value=docSearchFilter class="form-control mb-4" placeholder="a OR b, x AND y, 'phrase mat*'"}}
+						{{focus-input type="text" value=docSearchFilter class="form-control" placeholder="a OR b, x AND y, 'phrase mat*'"}}
 					</div>
-					<div class="my-5 document-copy-move">
+					{{ui/ui-spacer size=100}}
+					<div class="document-copy-move">
 						{{#if emptySearch}}
 							<p>No matching documents found.</p>
 						{{/if}}
@@ -80,7 +81,7 @@
 									<div class="space">{{result.space}}</div>
 									<div class="snippet">{{result.excerpt}}</div>
 									{{#if result.selected}}
-										<i class="material-icons">check</i>
+										<i class="dicon {{constants.Icon.Tick}}" />
 									{{/if}}
 								</li>
 							{{/each}}
@@ -88,8 +89,9 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-					<button type="button" class="btn btn-success" onclick={{action "onCopyPage"}}>Copy</button>
+					{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+					{{ui/ui-button-gap}}
+					{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Copy onClick=(action "onCopyPage")}}
 				</div>
 			</div>
 		</div>
@@ -104,9 +106,9 @@
 				<div class="modal-body">
 					<div class="form-group">
 						<label>Destination Document</label>
-						{{focus-input type="text" value=docSearchFilter class="form-control mb-4" placeholder="a OR b, x AND y, 'phrase mat*'"}}
+						{{focus-input type="text" value=docSearchFilter class="form-control" placeholder="a OR b, x AND y, 'phrase mat*'"}}
 					</div>
-					<div class="my-5 document-copy-move">
+					<div class="document-copy-move">
 						{{#if emptySearch}}
 							<p>No matching documents found.</p>
 						{{/if}}
@@ -117,7 +119,7 @@
 									<div class="space">{{result.space}}</div>
 									<div class="snippet">{{result.excerpt}}</div>
 									{{#if result.selected}}
-										<i class="material-icons">check</i>
+										<i class="dicon {{constants.Icon.Tick}}" />
 									{{/if}}
 								</li>
 							{{/each}}
@@ -125,8 +127,9 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-					<button type="button" class="btn btn-success" onclick={{action "onMovePage"}}>Move</button>
+					{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+					{{ui/ui-button-gap}}
+					{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Copy onClick=(action "onMovePage")}}
 				</div>
 			</div>
 		</div>
@@ -150,8 +153,9 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-					<button type="button" class="btn btn-danger" onclick= {{action "onDeletePage"}}>Delete</button>
+					{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+					{{ui/ui-button-gap}}
+					{{ui/ui-button color=constants.Color.Delete light=true label=constants.Label.Delete onClick=(action "onDeletePage")}}
 				</div>
 			</div>
 		</div>
@@ -176,8 +180,9 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
-					<button type="button" class="btn btn-success" onclick={{action "onSavePageAsBlock"}}>Publish</button>
+					{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+					{{ui/ui-button-gap}}
+					{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Publish onClick=(action "onSavePageAsBlock")}}
 				</div>
 			</div>
 		</div>

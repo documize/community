@@ -97,7 +97,7 @@
 			{{#each spacePermissions as |permission|}}
 				<tr>
 					<td class="no-wrap no-width">
-						<i class="material-icons align-top text-secondary cursor-pointer">more_vert</i>
+						<i class="dicon {{constants.Icon.TriangleSmallDown}} cursor-pointer"/>
 						{{#attach-popover class="ember-attacher-popper" hideOn="clickout" showOn="click" isShown=false}}
 							<div class="menu">
 								<a class="item" href="#" {{action "onBulkPermission" permission true}}>Grant all</a>
@@ -105,25 +105,17 @@
 							</div>
 						{{/attach-popover}}
 						{{#if (eq permission.who "role")}}
-							<span class="button-icon-blue button-icon-small align-middle">
-								<i class="material-icons">people</i>
-							</span>
-							<span class="color-gray-700">&nbsp;{{permission.name}}
-								<small class="form-text text-muted d-inline-block">({{permission.members}})</small>
-							</span>
+							<i class="dicon {{constants.Icon.People}}"/>
+							<span class="color-gray-700">&nbsp;{{permission.name}} ({{permission.members}})</span>
 						{{else}}
 							{{#if (eq permission.whoId constants.EveryoneUserId)}}
-								<span class="button-icon-green button-icon-small align-middle">
-									<i class="material-icons">language</i>
-								</span>
+								<i class="dicon {{constants.Icon.World}}"/>
 								<span class="color-green-700">&nbsp;{{permission.name}}</span>
 							{{else}}
-								<span class="button-icon-gray button-icon-small align-middle">
-									<i class="material-icons">person</i>
-								</span>
-								<span class="">&nbsp;{{permission.name}}
+								<i class="dicon {{constants.Icon.Person}}"/>
+								<span>&nbsp;{{permission.name}}
 									{{#if (eq permission.whoId session.user.id)}}
-										<small class="form-text text-muted d-inline-block">(you)</small>
+										&nbsp;(you)
 									{{/if}}
 								</span>
 							{{/if}}

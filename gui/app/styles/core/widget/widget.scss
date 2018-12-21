@@ -1,20 +1,4 @@
 // Copyright (c) 2015 Documize Inc.
-// Material Design icons from https://design.google.com/icons/
-
-.material-icons {
-	font-family: "Material Icons";
-	font-weight: normal;
-	font-style: normal;
-	font-size: 1.2rem;
-	display: inline-block;
-	text-transform: none;
-	letter-spacing: normal;
-	word-wrap: normal;
-	-webkit-font-smoothing: antialiased;
-	text-rendering: optimizeLegibility;
-	-moz-osx-font-smoothing: grayscale;
-	font-feature-settings: "liga";
-}
 
 .transition-shadow {
 	transition: box-shadow 0.25s;
@@ -83,11 +67,9 @@
 }
 
 @import "widget-avatar";
-@import "widget-button";
 @import "widget-checkbox";
 @import "widget-list-picker";
 @import "widget-notification";
-@import "widget-radio";
 @import "widget-symbol";
 @import "widget-table";
 @import "widget-tabnav";

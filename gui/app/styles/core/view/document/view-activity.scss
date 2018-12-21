@@ -14,7 +14,6 @@
 		width: 100%;
 
 		> .item {
-			@include ease-in();
 			list-style: none;
 			padding: 10px 0;
 			margin: 5px 0;
@@ -36,7 +35,6 @@
 			}
 
 			> .details {
-				@include ease-in();
 				vertical-align: top;
 				display: inline-block;
 

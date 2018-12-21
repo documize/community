@@ -2,7 +2,6 @@
     color: $color-white;
     background-color: map-get($gray-shades, 600);
     @include border-radius(20px);
-	@include ease-in();
     padding: 10px 0 0 0;
     letter-spacing: 1px;
     text-align: center;
@@ -14,7 +13,6 @@
     color: $color-white;
     background-color: map-get($gray-shades, 600);
     @include border-radius(100px);
-	@include ease-in();
     height: 100px;
     width: 100px;
     font-size: 30px;

@@ -22,9 +22,9 @@
 						{{#each config.lists as |list|}}
 							<div class="section-trello-list" {{action "onListCheckbox" list.id}}>
 								{{#if list.included}}
-									<i class="material-icons widget-checkbox checkbox-gray section-trello-list-checkbox">check_box</i>
+									<i class="section-trello-list-checkbox dicon {{constants.Icon.CheckboxChecked}}" />
 								{{else}}
-									<i class="material-icons widget-checkbox checkbox-gray section-trello-list-checkbox">check_box_outline_blank</i>
+									<i class="section-trello-list-checkbox dicon {{constants.Icon.Checkbox}}" />
 								{{/if}}
 								<span class="trello-list-title">{{list.name}}</span>
 							</div>
@@ -39,8 +39,10 @@
 		{{/if}}
 	{{else}}
 		{{#if session.isGlobalAdmin}}
-			{{#link-to "customize.integrations" class="btn btn-outline-secondary bold-700"}}
-				Configure Trello Connector
+			{{#link-to "customize.integrations"}}
+				{{ui/ui-button color=constants.Color.Yellow light=true
+					label="Configure Trello Connector"}}
+
 			{{/link-to}}
 		{{else}}
 			<p>Your Documize administrator needs to configure Trello before usage.</p>
