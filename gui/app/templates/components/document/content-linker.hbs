@@ -4,8 +4,12 @@
 			<div class="modal-header">Insert Link</div>
 			<div class="modal-body">
 				<ul class="tabnav-control text-center">
-					<li class="tab {{if tab1Selected "selected"}}" {{action "onTabSelect" 1}}>Section</li>
-					<li class="tab {{if tab2Selected "selected"}}" {{action "onTabSelect" 2}}>Attachment</li>
+					{{#if hasSections}}
+						<li class="tab {{if tab1Selected "selected"}}" {{action "onTabSelect" 1}}>Section</li>
+					{{/if}}
+					{{#if hasAttachments}}
+						<li class="tab {{if tab2Selected "selected"}}" {{action "onTabSelect" 2}}>Attachment</li>
+					{{/if}}
 					<li class="tab {{if tab3Selected "selected"}}" {{action "onTabSelect" 3}}>Search</li>
 					<li class="tab {{if tab4Selected "selected"}}" {{action "onTabSelect" 4}}>Network</li>
 				</ul>

@@ -31,6 +31,7 @@ $modal-header-border-color:		$color-white;
 $modal-footer-border-color: 	$color-white;
 
 .modal-header {
+	// background-color: map-get($gray-shades, 800);
 	background-color: $theme-500;
 	color: map-get($gray-shades, 100);
 	font-size: 1.2rem;

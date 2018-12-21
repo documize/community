@@ -21,11 +21,6 @@ a {
 	}
 }
 
-a.broken-link {
-	color: map-get($red-shades, 600);
-	text-decoration: line-through;
-}
-
 .no-outline {
 	outline: none !important;
 	border: none !important;

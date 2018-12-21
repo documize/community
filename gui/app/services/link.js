@@ -13,7 +13,7 @@ import Service, { inject as service } from '@ember/service';
 import Notifier from '../mixins/notifier';
 
 export default Service.extend(Notifier, {
-	sessionService: service('session'),
+	session: service('session'),
 	ajax: service(),
 	appMeta: service(),
 	store: service(),
@@ -66,7 +66,13 @@ export default Service.extend(Notifier, {
 			result = `<a data-documize='true' data-link-space-id='${link.spaceId}' data-link-id='${link.id}' data-link-target-document-id='${link.documentId}' data-link-target-id='${link.targetId}' data-link-type='${link.linkType}' href='${href}'>${link.title}</a>`;
 		}
 		if (link.linkType === "file") {
-			href = `${endpoint}/public/attachments/${orgId}/${link.targetId}`;
+			// For authenticated users we send server auth token.
+			let qry = '';
+			if (this.get('session.authenticated')) {
+				qry = '?token=' + this.get('session.authToken');
+			}
+
+			href = `${endpoint}/public/attachment/${orgId}/${link.targetId}${qry}`;
 			result = `<a data-documize='true' data-link-space-id='${link.spaceId}' data-link-id='${link.id}' data-link-target-document-id='${link.documentId}' data-link-target-id='${link.targetId}' data-link-type='${link.linkType}' href='${href}'>${link.title}</a>`;
 		}
 		if (link.linkType === "network") {
@@ -130,6 +136,7 @@ export default Service.extend(Notifier, {
 
 		// handle attachment links
 		if (link.linkType === "file") {
+			link.url = link.url.replace('attachments/', 'attachment/');
 			window.location.href = link.url;
 			return;
 		}

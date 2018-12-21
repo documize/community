@@ -35,3 +35,8 @@
 .block-editor {
 	margin-top: 3rem;
 }
+
+a.broken-link {
+	color: map-get($red-shades, 600);
+	text-decoration: line-through;
+}

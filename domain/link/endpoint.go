@@ -97,7 +97,6 @@ func (h *Handler) GetLinkCandidates(w http.ResponseWriter, r *http.Request) {
 	if len(files) == 0 {
 		files = []attachment.Attachment{}
 	}
-
 	if err != nil && err != sql.ErrNoRows {
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
