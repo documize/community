@@ -52,9 +52,9 @@ export default Component.extend(Modals, {
 
 	actions: {
 		onEditCategory() {
-			if (!this.get('permissions.spaceManage')) return;
+			if (!this.get('permissions.documentEdit')) return;
 
-			this.get('router').transitionTo('document.settings', {queryParams: {tab: 'meta'}});
+			this.get('router').transitionTo('document.settings', {queryParams: {tab: 'category'}});
 		}
 	}
 });

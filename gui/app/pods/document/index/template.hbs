@@ -68,7 +68,7 @@
 
 	{{ui/ui-spacer size=400}}
 
-	<div class="document-meta">
+	<div class="document-meta {{if permissions.documentEdit "cursor-pointer"}}" {{action "onEditMeta"}}>
 		<div class="document-heading">
 			<h1 class="name">{{document.name}}</h1>
 			<h2 class="desc">{{document.excerpt}}</h2>

@@ -6,7 +6,7 @@
 
 	{{ui/ui-spacer size=300}}
 
-	<div class="title">CATEGORY / TAG</div>
+	<div class="title {{if permissions.documentEdit "cursor-pointer"}}" {{action "onEditCategory"}}>CATEGORY / TAG</div>
 	{{#each selectedCategories as |cat|}}
 		<div class="meta-label">
 			<i class="dicon {{constants.Icon.Category}}"/>
