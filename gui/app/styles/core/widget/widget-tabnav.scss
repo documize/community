@@ -8,9 +8,8 @@
 		display: inline-block;
 		margin: 0;
 		padding: 5px 15px;
-		background-color: $color-white;
-		color: $theme-500;
-		border: 1px solid map-get($gray-shades, 300);
+		background-color: map-get($gray-shades, 100);
+		border: 1px solid map-get($gray-shades, 200);
 		font-weight: 500;
 		font-size: 1.1rem;
 		text-align: center;
@@ -29,7 +28,7 @@
 		}
 
 		&:hover {
-			background-color: $theme-100;
+			background-color: map-get($gray-shades, 200);
 		}
 	}
 
@@ -47,8 +46,9 @@
 	}
 
 	> .selected {
-		background-color: $theme-100;
-		font-weight: 700;
+		color: map-get($yellow-shades, 700);
+		background-color: map-get($yellow-shades, 100);
+		font-weight: 500;
 	}
 }
 

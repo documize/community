@@ -47,19 +47,10 @@
 	}
 
 	.non-printable,
-	header,
-	footer,
-	.tabnav-control,
-	.document-toolbar,
-	.document-toc,
-	.tabnav-control,
-	#nav-bar,
+	.no-print,
+	.master-sidebar-container
 	.page-toolbar,
 	.start-section,
-	.start-button,
-	#top-bar,
-	#sidebar,
-	#sub-nav,
 	.new-section-wizard {
 		float: none !important;
 		display: none !important;
@@ -111,20 +102,7 @@
 		color: #000000 !important;
 	}
 
-	.container {
-		width: auto !important;
-		min-width: 100% !important;
-		margin: 0 !important;
-		padding: 0 !important;
-	  }
-
-
-	[class*="col-"] {
-		float: left !important;
-		width: 100% !important;
-	}
-
-	.layout-body, .layout-content {
+	.master-content {
 		padding: 0 !important;
 		margin: 0 !important;
 		display: block !important;

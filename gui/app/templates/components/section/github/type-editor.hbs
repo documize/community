@@ -1,47 +1,38 @@
 {{#section/base-editor document=document folder=folder page=page busy=busy	tip="GitHub is how people build software. (https://github.com)"	isDirty=(action "isDirty") onCancel=(action "onCancel") onAction=(action "onAction")}}
-
-	<div class="row section-github-editor">
+	<div class="section-github-editor">
 		{{#if authenticated}}
-			<div class="col-6">
-				<div class="form-group">
-					<label>Select Organization</label>
-					{{ui/ui-select id="owners-dropdown" content=owners action=(action "onOwnerChange") optionValuePath="id" optionLabelPath="name" selection=config.owner}}
-					<small class="form-text text-muted">Select organization or user whose repository you want to show</small>
-				</div>
-				<div class="form-group">
-					<label>Show items since</label>
-					{{input id="branch-since" value=config.branchSince type="text" class="form-control"}}
-					<small class="form-text text-muted">default is 7 days ago</small>
-				</div>
-				<div class="form-group">
-					<label>GitHub Views</label>
-					<div class="github-view">
-						{{input id="show-milestone" checked=config.showMilestones type="checkbox"}}
-						<label>Show Milestones</label>
-						<br>
-						{{input id="show-issues" checked=config.showIssues type="checkbox"}}
-						<label>Show Issues</label>
-						<br>
-						{{input id="show-commits" checked=config.showCommits type="checkbox" }}
-						<label>Show Commits</label>
-					</div>
-					<small class="form-text text-muted">Select the views you want to show</small>
-				</div>
+			<div class="form-group">
+				<label>Select Organization</label>
+				{{ui/ui-select id="owners-dropdown" content=owners action=(action "onOwnerChange") optionValuePath="id" optionLabelPath="name" selection=config.owner}}
+				<small class="form-text text-muted">Select organization or user whose repository you want to show</small>
 			</div>
-
-			<div class="col-6">
-				<div class="input-form">
-					<div class="form-group">
-						<label>Select Repository</label>
-						{{ui/ui-list-picker items=config.lists nameField="repo" singleSelect=true}}
-					</div>
+			<div class="form-group">
+				<label>Show items since</label>
+				{{input id="branch-since" value=config.branchSince type="text" class="form-control"}}
+				<small class="form-text text-muted">default is 7 days ago</small>
+			</div>
+			<div class="form-group">
+				<label>GitHub Views</label>
+				<div class="github-view">
+					{{input id="show-milestone" checked=config.showMilestones type="checkbox"}}
+					<label>Show Milestones</label>
+					<br>
+					{{input id="show-issues" checked=config.showIssues type="checkbox"}}
+					<label>Show Issues</label>
+					<br>
+					{{input id="show-commits" checked=config.showCommits type="checkbox" }}
+					<label>Show Commits</label>
+				</div>
+				<small class="form-text text-muted">Select the views you want to show</small>
+			</div>
+			<div class="input-form">
+				<div class="form-group">
+					<label>Select Repository</label>
+					{{ui/ui-list-picker items=config.lists nameField="repo" singleSelect=true}}
 				</div>
 			</div>
 		{{else}}
-			<div class="col-6">
-				<div class="" {{action "auth"}}>Authenticate</div>
-			</div>
+			<div class="" {{action "auth"}}>Authenticate</div>
 		{{/if}}
 	</div>
-
 {{/section/base-editor}}

@@ -188,22 +188,16 @@
 						{{input id="edit-email" type="text" class="form-control" value=editUser.email}}
 					</div>
 					{{#if isAuthProviderDocumize}}
-					<div class="row">
-						<div class="col-md-6">
-							<div class="form-group">
-								<label for="edit-password">Password</label>
-								{{input id="edit-password" type="password" class="form-control" value=password.password}}
-								<small class="form-text text-muted">Optional new password</small>
-							</div>
+						<div class="form-group">
+							<label for="edit-password">Password</label>
+							{{input id="edit-password" type="password" class="form-control" value=password.password}}
+							<small class="form-text text-muted">Optional new password</small>
 						</div>
-						<div class="col-md-6">
-							<div class="form-group">
-								<label for="edit-confirmPassword">Confirm Password</label>
-								{{input id="edit-confirmPassword" type="password" class="form-control" value=password.confirmation}}
-								<small class="form-text text-muted">Confirm new password</small>
-							</div>
+						<div class="form-group">
+							<label for="edit-confirmPassword">Confirm Password</label>
+							{{input id="edit-confirmPassword" type="password" class="form-control" value=password.confirmation}}
+							<small class="form-text text-muted">Confirm new password</small>
 						</div>
-					</div>
 					{{/if}}
 				</form>
 			</div>
@@ -236,26 +230,36 @@
 		<div class="modal-content">
 			<div class="modal-header">{{selectedUser.fullname}}</div>
 			<div class="modal-body">
-				<div class="view-customize">
-					<div class="group-membership">
-						{{#each groups as |group|}}
-						<div class="row item">
-							<div class="col-10 group-name">{{group.name}}
-								{{#if group.purpose}}
-									<span class="group-purpose">&nbsp;&mdash;&nbsp;{{group.purpose}}</span>
-								{{/if}}
-							</div>
-							<div class="col-2 text-right">
-								{{#if group.isMember}}
-									{{ui/ui-button color=constants.Color.Red light=true label=constants.Label.Leave onClick=(action "onLeaveGroup" group.id)}}
-								{{else}}
-									{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Join onClick=(action "onJoinGroup" group.id)}}
-								{{/if}}
+				{{#each groups as |group|}}
+					<div class="grid-container-8-2">
+						<div class="grid-cell-1">
+							<div class="view-customize">
+								<div class="group-membership">
+									<div class="item">
+										<div class="group-name">{{group.name}}
+											{{#if group.purpose}}
+												<span class="group-purpose">&nbsp;&mdash;&nbsp;{{group.purpose}}</span>
+											{{/if}}
+										</div>
+									</div>
+								</div>
 							</div>
 						</div>
-						{{/each}}
+						<div class="grid-cell-2 grid-cell-right">
+							<div class="view-customize">
+								<div class="group-membership">
+									<div class="item">
+										{{#if group.isMember}}
+											{{ui/ui-button color=constants.Color.Red light=true label=constants.Label.Leave onClick=(action "onLeaveGroup" group.id)}}
+										{{else}}
+											{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Join onClick=(action "onJoinGroup" group.id)}}
+										{{/if}}
+									</div>
+								</div>
+							</div>
+						</div>
 					</div>
-				</div>
+				{{/each}}
 			</div>
 			<div class="modal-footer">
 				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Close dismiss=true}}
