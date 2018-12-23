@@ -1,7 +1,5 @@
 <div id="page-{{page.id}}" data-id={{page.id}} data-type={{page.contentType}}>
-
 	{{#if editMode}}
-
 		<div class="wysiwyg">
 			{{document/document-editor
 				document=document
@@ -11,9 +9,7 @@
 				onCancel=(action "onCancelEdit")
 				onAction=(action "onSavePage")}}
 		</div>
-
 	{{else}}
-
 		{{document/page-heading
 			page=page
 			meta=meta
@@ -37,7 +33,5 @@
 		<div class="wysiwyg">
 			{{section/base-renderer page=page}}
 		</div>
-
 	{{/if}}
-
 </div>

@@ -62,14 +62,6 @@ export default Component.extend(AuthMixin, Notifier, {
 			this.set('spaceType', t);
 		},
 
-		// onSetLikes(l) {
-		// 	this.set('allowLikes', l);
-
-		// 	schedule('afterRender', () => {
-		// 		if (l) this.$('#space-likes-prompt').focus();
-		// 	});
-		// },
-
 		onSave() {
 			if (!this.get('isSpaceAdmin')) return;
 

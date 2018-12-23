@@ -32,7 +32,7 @@ export default Component.extend(Notifier, {
 			if (this.get('hasNameError')) return;
 			if (!this.get('permissions.documentEdit')) return;
 
-			this.set('document.name', this.get('docName'));
+			this.set('document.name', this.get('docName').trim());
 			this.set('document.excerpt', this.get('docExcerpt').trim());
 
 			let cb = this.get('onSaveDocument');
