@@ -33,6 +33,14 @@ export default Component.extend(ModalMixin, AuthMixin, Notifier, {
 
 		return false;
 	}),
+	showActivity: computed('permissions', function() {
+		if (this.get('appMeta.edition') !== this.get('constants').Product.EnterpriseEdition) return false;
+		if (!this.get('session.authenticated')) return false;
+		if (!this.get('session.viewUsers')) return false;
+		if (this.get('permissions.spaceView')) return true;
+
+		return false;
+	}),
 
 	init() {
 		this._super(...arguments);

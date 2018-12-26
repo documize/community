@@ -32,7 +32,7 @@ export default Route.extend(AuthenticatedRouteMixin, {
 
 				this.set('revisions', revisions);
 
-				resolve(revisions)
+				resolve(revisions);
 			});
 		});
 	},

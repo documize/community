@@ -19,6 +19,8 @@ export default Route.extend(AuthenticatedRouteMixin, {
 	linkService: service('link'),
 	folderService: service('folder'),
 	userService: service('user'),
+	contributionStatus: '',
+	approvalStatus: '',
 
 	beforeModel(transition) {
 		// Note the source that sent user to this document.

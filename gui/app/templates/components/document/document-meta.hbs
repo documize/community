@@ -1,11 +1,6 @@
+{{ui/ui-spacer size=300}}
+
 <div class="document-meta">
-	{{#link-to "folder.index" space.id space.slug class="no-print"}}
-		{{ui/ui-button light=true color=constants.Color.Yellow uppercase=false
-			icon=constants.Icon.ArrowLeft label=space.name}}
-	{{/link-to}}
-
-	{{ui/ui-spacer size=300}}
-
 	<div class="title {{if permissions.documentEdit "cursor-pointer"}}" {{action "onEditCategory"}}>CATEGORY / TAG</div>
 	{{#each selectedCategories as |cat|}}
 		<div class="meta-label">
@@ -30,27 +25,5 @@
 		{{else}}
 			<div class="empty">Unassigned</div>
 		{{/if}}
-	{{/if}}
-
-	{{ui/ui-spacer size=200}}
-
-	<div class="title">STATUS</div>
-	<div class="{{if (eq document.lifecycle constants.Lifecycle.Draft) "label-draft"}}
-		{{if (eq document.lifecycle constants.Lifecycle.Live) "label-live"}}
-		{{if (eq document.lifecycle constants.Lifecycle.Archived) "label-archived"}}">
-		{{document.lifecycleLabel}}
-		{{#attach-tooltip showDelay=1000}}Lifecycle: Draft &middot; Live &middot; Archived{{/attach-tooltip}}
-	</div>
-	<div class="label-approval">
-		{{#if (eq document.protection constants.ProtectionType.None)}}OPEN{{/if}}
-		{{#if (eq document.protection constants.ProtectionType.Review)}}PROTECTED{{/if}}
-		{{#if (eq document.protection constants.ProtectionType.Lock)}}LOCKED{{/if}}
-		{{#attach-tooltip showDelay=1000}}Change Control: Open &middot; Protected &middot; Locked{{/attach-tooltip}}
-	</div>
-	{{#if document.template}}
-		<div class="label-template">
-			Template
-			{{#attach-tooltip showDelay=1000}}This is a template{{/attach-tooltip}}
-		</div>
 	{{/if}}
 </div>

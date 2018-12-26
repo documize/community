@@ -13,6 +13,11 @@
 				tooltip="Save as template" onClick=(action "onShowTemplateModal")}}
 		{{/if}}
 
+		{{#if showActivity}}
+			{{ui/ui-toolbar-icon icon=constants.Icon.Pulse color=constants.Color.Gray
+				tooltip="See content activity" linkTo="document.activity"}}
+		{{/if}}
+
 		{{#if showRevisions}}
 			{{ui/ui-toolbar-icon icon=constants.Icon.TimeBack color=constants.Color.Gray
 				tooltip="Revisions and rollback" linkTo="document.revisions"}}
@@ -56,6 +61,7 @@
 			</div>
 			<div class="modal-footer">
 				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+				{{ui/ui-button-gap}}
 				{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Delete onClick=(action "onSaveTemplate")}}
 			</div>
 		</div>
@@ -71,6 +77,7 @@
 			</div>
 			<div class="modal-footer">
 				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+				{{ui/ui-button-gap}}
 				{{ui/ui-button color=constants.Color.Red light=true label=constants.Label.Delete onClick=(action "onDocumentDelete")}}
 			</div>
 		</div>

@@ -67,7 +67,7 @@
 					cursor: pointer;
 				}
 
-				> .bookmarks, > .login {
+				> .bookmarks, > .login, > .invalid-plan {
 					display: inline-block;
 
 					>.dicon {
@@ -75,6 +75,12 @@
 						color: $color-white;
 						font-size: 20px;
 						padding: 10px;
+					}
+				}
+
+				> .invalid-plan {
+					>.dicon {
+						color: map-get($yellow-shades, 600) !important;
 					}
 				}
 
@@ -176,19 +182,20 @@
 						}
 					}
 
-					> .bookmarks, > .login {
+					> .bookmarks, > .login, > .invalid-plan {
+						display: block;
+
 						>.dicon {
-							display: block;
 							color: $color-white;
 							font-size: 20px;
-							padding: 20px 0;
+							padding: 10px 0;
 						}
 					}
 
 					> .user-gravatar-container {
 						display: block;
 						text-align: center;
-						margin: 0 0 15px 4px;
+						margin: 10px 0 15px 4px;
 						padding: 0;
 
 						> .user-gravatar {
@@ -273,7 +280,7 @@
 					}
 
 					> .user-gravatar-container {
-						margin: 0 0 15px 8px;
+						margin: 10px 0 15px 8px;
 						padding: 0;
 
 						> .user-gravatar {

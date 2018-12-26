@@ -11,6 +11,7 @@
 
 import { A } from '@ember/array';
 import { computed } from '@ember/object';
+import { notEmpty } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import Modals from '../../mixins/modal';
 import Component from '@ember/component';
@@ -22,7 +23,7 @@ export default Component.extend(Modals, {
 	router: service(),
 	selectedCategories: A([]),
 	tagz: A([]),
-
+	userChanges: notEmpty('contributorMsg'),
 	unassigned: computed('selectedCategories', 'tagz', function() {
 		return this.get('selectedCategories').length === 0 && this.get('tagz').length === 0;
 	}),

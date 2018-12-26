@@ -28,10 +28,9 @@
 			</div>
 			{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
 				<div class="item {{if (eq tab "archived") "selected"}}" {{action "onTab" "archived"}}>
-					<i class={{concat "dicon " constants.Icon.ListBullet}} />
+					<i class={{concat "dicon " constants.Icon.Archive}} />
 					<div class="name">Archived Content</div>
 				</div>
-				<li class="tab tab-vertical {{if (eq tab "archived") "selected"}}" {{action "onTab" "archived"}}>Archived</li>
 			{{/if}}
 			{{#if model.permissions.spaceOwner}}
 				<div class="item {{if (eq tab "deletion") "selected"}}" {{action "onTab" "deletion"}}>

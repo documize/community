@@ -198,6 +198,7 @@ let constants = EmberObject.extend({
 		AddUser: 'dicon-add-27',
 		All: 'dicon-menu-8',
 		Announce: 'dicon-notification',
+		Archive: 'dicon-box',
 		ArrowUp: 'dicon-arrow-up-2',
 		ArrowDown: 'dicon-arrow-down-2',
 		ArrowLeft: 'dicon-arrow-left-2',
@@ -207,7 +208,7 @@ let constants = EmberObject.extend({
 		ArrowSmallLeft: 'dicon-small-left',
 		ArrowSmallRight: 'dicon-small-right',
 		Attachment: 'dicon-attachment',
-		BarChart: 'dicon-chart-bar-2',
+		BarChart: 'dicon-chart-bar-33',
 		Blocks: 'dicon-menu-6',
 		Bookmark: 'dicon-bookmark',
 		BookmarkSolid: 'dicon-bookmark-2',
@@ -246,6 +247,7 @@ let constants = EmberObject.extend({
 		Search: 'dicon-magnifier',
 		Send: 'dicon-send',
 		Settings: 'dicon-settings-gear',
+		Split: 'dicon-split-37',
 		Tag: 'dicon-delete-key',
 		TickSmall: 'dicon-d-check',
 		Tick: 'dicon-check',
@@ -256,6 +258,7 @@ let constants = EmberObject.extend({
 		TriangleSmallDown: 'dicon-small-triangle-down',
 		TriangleSmallLeft: 'dicon-small-triangle-left',
 		TriangleSmallRight: 'dicon-small-triangle-right',
+		Unarchive: 'dicon-download',
 		Unlocked: 'dicon-unlocked',
 		World: 'dicon-globe',
 	},
@@ -270,6 +273,7 @@ let constants = EmberObject.extend({
 	Label: { // eslint-disable-line ember/avoid-leaking-state-in-ember-objects
 		Add: 'Add',
 		Activate: "Activate",
+		Approve: 'Approve',
 		Authenticate: 'Authenticate',
 		Cancel: 'Cancel',
 		Close: 'Close',
@@ -282,7 +286,9 @@ let constants = EmberObject.extend({
 		Join: 'Join',
 		Leave: 'Leave',
 		Next: 'Next',
+		OK: 'OK',
 		Publish: 'Publish',
+		Reject: 'Reject',
 		Remove: 'Remove',
 		Reset: 'Reset',
 		Restore: 'Restore',
@@ -291,7 +297,8 @@ let constants = EmberObject.extend({
 		SignIn: 'Sign In',
 		Unassigned: 'Unassigned',
 		Update: 'Update',
-		Upload: 'Upload'
+		Upload: 'Upload',
+		Version: 'Version'
 	}
 });
 

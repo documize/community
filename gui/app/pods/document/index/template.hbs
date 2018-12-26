@@ -1,8 +1,20 @@
 {{#layout/master-sidebar}}
-	{{ui/ui-spacer size=200}}
+	{{ui/ui-spacer size=100}}
 
 	<div class="section">
-		{{ui/ui-spacer size=100}}
+		{{document/sidebar-meta
+			tab=tab
+			roles=roles
+			pages=pages
+			space=folder
+			spaces=folders
+			document=document
+			versions=versions
+			permissions=permissions
+			contributionStatus=contributionStatus
+			approvalStatus=approvalStatus}}
+
+		{{ui/ui-spacer size=300}}
 
 		<div class="text-center">
 			{{#ui/ui-toolbar dark=true light=true raised=true large=false bordered=true}}
@@ -40,14 +52,10 @@
 {{#layout/master-content}}
 	<div class="grid-container-6-4">
 		<div class="grid-cell-1">
-			{{document/document-meta
-				tab=tab
-				roles=roles
-				space=folder
-				spaces=folders
-				document=document
-				versions=versions
-				permissions=permissions}}
+			{{#link-to "folder.index" folder.id folder.slug class="no-print"}}
+				{{ui/ui-button light=true color=constants.Color.Yellow uppercase=false
+					icon=constants.Icon.ArrowLeft label=folder.name}}
+			{{/link-to}}
 		</div>
 
 		<div class="grid-cell-2 grid-cell-right">
@@ -66,7 +74,37 @@
 		</div>
 	</div>
 
-	{{ui/ui-spacer size=400}}
+	{{document/document-meta
+		tab=tab
+		roles=roles
+		pages=pages
+		space=folder
+		spaces=folders
+		document=document
+		versions=versions
+		permissions=permissions
+		contributionStatus=contributionStatus
+		approvalStatus=approvalStatus}}
+
+	{{#if contributionStatus}}
+		{{ui/ui-spacer size=200}}
+		<div class="document-meta">
+			<div class="label-workflow-status">
+				{{contributionStatus}}
+			</div>
+		</div>
+	{{else}}
+		{{#if approvalStatus}}
+			{{ui/ui-spacer size=200}}
+			<div class="document-meta">
+				<div class="label-workflow-status">
+					{{approvalStatus}}
+				</div>
+			</div>
+		{{/if}}
+	{{/if}}
+
+	{{ui/ui-spacer size=300}}
 
 	<div class="document-meta {{if permissions.documentEdit "cursor-pointer"}}" {{action "onEditMeta"}}>
 		<div class="document-heading">

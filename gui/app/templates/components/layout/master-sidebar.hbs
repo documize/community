@@ -36,6 +36,14 @@
 		</div>
 
 		<div class="meta">
+			{{#if session.isAdmin}}
+				{{#unless appMeta.valid}}
+					<div class="invalid-plan" {{action "onBilling"}}>
+						<i class={{concat "dicon " constants.Icon.Handshake}} />
+						{{#attach-tooltip}}Invalid product plan{{/attach-tooltip}}
+					</div>
+				{{/unless}}
+			{{/if}}
 			{{#if session.authenticated}}
 				{{#if hasPins}}
 					<div class="bookmarks" id="user-pins-button">

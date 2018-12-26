@@ -22,6 +22,8 @@ export default Controller.extend(Notifier, {
 	router: service(),
 	sidebarTab: 'toc',
 	queryParams: ['currentPageId', 'source'],
+	contributionStatus: '',
+	approvalStatus: '',
 
 	actions: {
 		onSidebarChange(tab) {

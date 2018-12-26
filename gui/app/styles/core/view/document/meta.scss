@@ -43,7 +43,7 @@
 		}
 	}
 
-	> .label-approval {
+	> .label-open {
 		@include border-radius(3px);
 		@extend .no-select;
 		display: inline-block;
@@ -53,6 +53,32 @@
 		font-weight: 500;
 		background-color: map-get($gray-shades, 700);
 		color: map-get($gray-shades, 100);
+		text-transform: uppercase;
+	}
+
+	> .label-protected {
+		@include border-radius(3px);
+		@extend .no-select;
+		display: inline-block;
+		margin: 5px 5px 5px 0;
+		padding: 0.3rem 0.7rem;
+		font-size: 1.1rem;
+		font-weight: 500;
+		background-color: map-get($green-shades, 700);
+		color: map-get($green-shades, 100);
+		text-transform: uppercase;
+	}
+
+	> .label-locked {
+		@include border-radius(3px);
+		@extend .no-select;
+		display: inline-block;
+		margin: 5px 5px 5px 0;
+		padding: 0.3rem 0.7rem;
+		font-size: 1.1rem;
+		font-weight: 500;
+		background-color: map-get($red-shades, 700);
+		color: map-get($red-shades, 300);
 		text-transform: uppercase;
 	}
 
@@ -108,6 +134,15 @@
 		text-transform: uppercase;
 	}
 
+	> .label-workflow-status {
+		@extend .no-select;
+		display: block;
+		margin: 0;
+		font-size: 1.1rem;
+		font-weight: 400;
+		color: map-get($gray-shades, 700);
+	}
+
 	> .document-heading {
 		.name {
 			color: map-get($gray-shades, 900);
@@ -116,7 +151,7 @@
 		}
 
 		.desc {
-			color: map-get($gray-shades, 700);
+			color: map-get($gray-shades, 800);
 			font-size: 1.2rem;
 			font-weight: 500;
 		}

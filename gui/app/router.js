@@ -29,6 +29,10 @@ export default Router.map(function () {
 		path: 'analytics'
 	});
 
+	this.route('activity', {
+		path: 'activity'
+	});
+
 	this.route(
 		'folder',
 		{
@@ -58,6 +62,9 @@ export default Router.map(function () {
 			});
 			this.route('revisions', {
 				path: 'revisions'
+			});
+			this.route('activity', {
+				path: 'activity'
 			});
 		}
 	);
