@@ -21,6 +21,7 @@ import (
 	"github.com/documize/community/model/category"
 	"github.com/documize/community/model/doc"
 	"github.com/documize/community/model/group"
+	"github.com/documize/community/model/label"
 	"github.com/documize/community/model/link"
 	"github.com/documize/community/model/org"
 	"github.com/documize/community/model/page"
@@ -42,6 +43,7 @@ type Store struct {
 	Document     DocumentStorer
 	Group        GroupStorer
 	Link         LinkStorer
+	Label        LabelStorer
 	Meta         MetaStorer
 	Organization OrganizationStorer
 	Page         PageStorer
@@ -62,6 +64,10 @@ type SpaceStorer interface {
 	Update(ctx domain.RequestContext, sp space.Space) (err error)
 	Delete(ctx domain.RequestContext, id string) (rows int64, err error)
 	AdminList(ctx domain.RequestContext) (sp []space.Space, err error)
+	IncrementCategoryCount(ctx domain.RequestContext, spaceID string) (err error)
+	DecrementCategoryCount(ctx domain.RequestContext, spaceID string) (err error)
+	IncrementContentCount(ctx domain.RequestContext, spaceID string) (err error)
+	DecrementContentCount(ctx domain.RequestContext, spaceID string) (err error)
 }
 
 // CategoryStorer defines required methods for category and category membership management
@@ -285,6 +291,7 @@ type GroupStorer interface {
 	GetMembers(ctx domain.RequestContext) (r []group.Record, err error)
 	JoinGroup(ctx domain.RequestContext, groupID, userID string) (err error)
 	LeaveGroup(ctx domain.RequestContext, groupID, userID string) (err error)
+	RemoveUserGroups(ctx domain.RequestContext, userID string) (err error)
 }
 
 // MetaStorer provide specialist methods for global administrators.
@@ -294,4 +301,13 @@ type MetaStorer interface {
 	Pages(ctx domain.RequestContext, documentID string) (p []page.Page, err error)
 	Attachments(ctx domain.RequestContext, docID string) (a []attachment.Attachment, err error)
 	SearchIndexCount(ctx domain.RequestContext) (c int, err error)
+}
+
+// LabelStorer defines required methods for space label management
+type LabelStorer interface {
+	Add(ctx domain.RequestContext, l label.Label) (err error)
+	Get(ctx domain.RequestContext) (l []label.Label, err error)
+	Update(ctx domain.RequestContext, l label.Label) (err error)
+	Delete(ctx domain.RequestContext, id string) (rows int64, err error)
+	RemoveReference(ctx domain.RequestContext, spaceID string) (err error)
 }

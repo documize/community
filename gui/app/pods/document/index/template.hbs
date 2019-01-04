@@ -3,7 +3,6 @@
 
 	<div class="section">
 		{{document/sidebar-meta
-			tab=tab
 			roles=roles
 			pages=pages
 			space=folder
@@ -17,11 +16,15 @@
 		{{ui/ui-spacer size=300}}
 
 		<div class="text-center">
-			{{#ui/ui-toolbar dark=true light=true raised=true large=false bordered=true}}
+			{{#ui/ui-toolbar dark=false light=true raised=true large=false bordered=true}}
 				{{ui/ui-toolbar-icon icon=constants.Icon.Index color=constants.Color.Gray tooltip="Table of contents"
 					selected=(eq sidebarTab "toc") onClick=(action "onSidebarChange" "toc")}}
 				{{ui/ui-toolbar-icon icon=constants.Icon.Attachment color=constants.Color.Gray tooltip="Attachments"
 					selected=(eq sidebarTab "files") onClick=(action "onSidebarChange" "files")}}
+				{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
+					{{ui/ui-toolbar-icon icon=constants.Icon.Chat color=constants.Color.Gray tooltip="Comments & Feedback"
+						selected=(eq sidebarTab "feedback") onClick=(action "onSidebarChange" "feedback")}}
+				{{/if}}
 			{{/ui/ui-toolbar}}
 		</div>
 	</div>
@@ -30,7 +33,6 @@
 
 	{{#if (eq sidebarTab "toc")}}
 		{{document/sidebar-toc
-			tab=tab
 			page=page
 			roles=roles
 			pages=pages
@@ -42,8 +44,15 @@
 			onPageLevelChange=(action "onPageLevelChange")
 			onPageSequenceChange=(action "onPageSequenceChange")}}
 	{{/if}}
+
 	{{#if (eq sidebarTab "files")}}
 		{{document/sidebar-attachment
+			document=document
+			permissions=permissions}}
+	{{/if}}
+
+	{{#if (eq sidebarTab "feedback")}}
+		{{enterprise/sidebar-feedback
 			document=document
 			permissions=permissions}}
 	{{/if}}

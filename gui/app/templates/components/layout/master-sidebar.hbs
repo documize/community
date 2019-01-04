@@ -1,38 +1,40 @@
 <div class="master-navbar">
 	<div class="nav-content">
 		<div class="nav-options">
-			{{#link-to "folders" class=(if (eq selectedItem "spaces") "option selected" "option")}}
-				<i class={{concat "dicon " constants.Icon.Grid1}}></i>
-				<div class="name">spaces</div>
-			{{/link-to}}
-			{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
-				{{#if session.viewDashboard}}
-					{{#link-to "dashboard" class=(if (eq selectedItem "actions") "option selected" "option")}}
-						<i class={{concat "dicon " constants.Icon.ListBullet}}></i>
-						<div class="name">actions</div>
-					{{/link-to}}
-					{{#link-to "activity" class=(if (eq selectedItem "activity") "option selected" "option")}}
-						<i class={{concat "dicon " constants.Icon.Pulse}}></i>
-						<div class="name">activity</div>
-					{{/link-to}}
-				{{/if}}
-				{{#if session.viewAnalytics}}
-					{{#link-to "analytics" class=(if (eq selectedItem "analytics") "option selected" "option")}}
-						<i class={{concat "dicon " constants.Icon.BarChart}}></i>
-						<div class="name">reports</div>
-					{{/link-to}}
-				{{/if}}
-			{{/if}}
-			{{#if (and session.authenticated session.isAdmin)}}
-				{{#link-to "customize.general" class=(if (eq selectedItem "settings") "option selected" "option")}}
-					<i class={{concat "dicon " constants.Icon.Settings}}></i>
-					<div class="name">Settings</div>
+			{{#unless hideNavigation}}
+				{{#link-to "folders" class=(if (eq selectedItem "spaces") "option selected" "option")}}
+					<i class={{concat "dicon " constants.Icon.Grid}}></i>
+					<div class="name">spaces</div>
 				{{/link-to}}
-			{{/if}}
-			{{#link-to "search" class=(if (eq selectedItem "search") "option selected" "option")}}
-				<i class={{concat "dicon " constants.Icon.Search}}></i>
-				<div class="name">search</div>
-			{{/link-to}}
+				{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
+					{{#if session.viewDashboard}}
+						{{#link-to "action" class=(if (eq selectedItem "actions") "option selected" "option")}}
+							<i class={{concat "dicon " constants.Icon.ListBullet}}></i>
+							<div class="name">actions</div>
+						{{/link-to}}
+						{{#link-to "activity" class=(if (eq selectedItem "activity") "option selected" "option")}}
+							<i class={{concat "dicon " constants.Icon.Pulse}}></i>
+							<div class="name">activity</div>
+						{{/link-to}}
+					{{/if}}
+					{{#if session.viewAnalytics}}
+						{{#link-to "analytics" class=(if (eq selectedItem "analytics") "option selected" "option")}}
+							<i class={{concat "dicon " constants.Icon.BarChart}}></i>
+							<div class="name">reports</div>
+						{{/link-to}}
+					{{/if}}
+				{{/if}}
+				{{#if (and session.authenticated session.isAdmin)}}
+					{{#link-to "customize.general" class=(if (eq selectedItem "settings") "option selected" "option")}}
+						<i class={{concat "dicon " constants.Icon.Settings}}></i>
+						<div class="name">Settings</div>
+					{{/link-to}}
+				{{/if}}
+				{{#link-to "search" class=(if (eq selectedItem "search") "option selected" "option")}}
+					<i class={{concat "dicon " constants.Icon.Search}}></i>
+					<div class="name">search</div>
+				{{/link-to}}
+			{{/unless}}
 		</div>
 
 		<div class="meta">

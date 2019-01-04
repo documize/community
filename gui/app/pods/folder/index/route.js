@@ -47,6 +47,7 @@ export default Route.extend(AuthenticatedRouteMixin, {
 		return hash({
 			folder: this.modelFor('folder').folder,
 			permissions: this.modelFor('folder').permissions,
+			labels: this.modelFor('folder').labels,
 			folders: folders,
 			documents: documents,
 			documentsDraft: _.filter(documents, function(d) { return d.get('lifecycle') === constants.Lifecycle.Draft; }),

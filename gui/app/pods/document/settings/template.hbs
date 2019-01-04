@@ -21,6 +21,20 @@
 				<i class={{concat "dicon " constants.Icon.Tag}} />
 				<div class="name">Tags</div>
 			</div>
+			{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
+				{{#if model.permissions.documentApprove}}
+					<div class="item {{if (eq tab "protection") "selected"}}" {{action "onTab" "protection"}}>
+						<i class={{concat "dicon " constants.Icon.Locked}} />
+						<div class="name">Change Control</div>
+					</div>
+				{{/if}}
+				{{#if model.permissions.documentVersion}}
+					<div class="item {{if (eq tab "versions") "selected"}}" {{action "onTab" "versions"}}>
+						<i class={{concat "dicon " constants.Icon.Copy}} />
+						<div class="name">Versions</div>
+					</div>
+				{{/if}}
+			{{/if}}
 		</div>
 	</div>
 {{/layout/master-sidebar}}
@@ -47,6 +61,27 @@
 			space=model.folder
 			document=model.document
 			permissions=model.permissions
+			onSaveDocument=(action "onSaveDocument")}}
+	{{/if}}
+
+	{{#if (eq tab "protection")}}
+		{{document/settings-protection
+			space=model.folder
+			spaces=model.folders
+			document=model.document
+			permissions=model.permissions
+			onRefresh=(action "onRefresh")
+			onSaveDocument=(action "onSaveDocument")}}
+	{{/if}}
+
+	{{#if (eq tab "versions")}}
+		{{enterprise/settings-version
+			space=model.folder
+			spaces=model.folders
+			document=model.document
+			permissions=model.permissions
+			versions=model.versions
+			onRefresh=(action "onRefresh")
 			onSaveDocument=(action "onSaveDocument")}}
 	{{/if}}
 {{/layout/master-content}}

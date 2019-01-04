@@ -11,14 +11,15 @@
 
 import { Promise as EmberPromise, hash } from 'rsvp';
 import { inject as service } from '@ember/service';
-import Route from '@ember/routing/route';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
+import Route from '@ember/routing/route';
 
 export default Route.extend(AuthenticatedRouteMixin, {
 	documentService: service('document'),
 	folderService: service('folder'),
 	templateService: service('template'),
 	session: service(''),
+	labelSvc: service('label'),
 
 	beforeModel() {
 		this.set('folderId', this.paramsFor('folder').folder_id)
@@ -41,7 +42,8 @@ export default Route.extend(AuthenticatedRouteMixin, {
 			permissions: this.get('permissions'),
 			folders: this.get('folderService').getAll(),
 			documents: this.get('documentService').getAllBySpace(params.folder_id),
-			templates: this.get('templateService').getSavedTemplates(params.folder_id)
+			templates: this.get('templateService').getSavedTemplates(params.folder_id),
+			labels: this.get('labelSvc').getAll()
 		});
 	},
 

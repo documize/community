@@ -25,6 +25,14 @@
 						font-size: 1.3rem;
 						font-weight: 700;
 						color: map-get($gray-shades, 800);
+
+						> .icon {
+							color: map-get($gray-shades, 700);
+							font-size: 20px;
+							vertical-align: middle;
+							display: inline-block;
+							margin-right: 10px;
+						}
 					}
 
 					> .desc {
@@ -35,11 +43,24 @@
 					}
 
 					> .meta {
-						padding: 25px 0 0 0;
+						padding: 15px 0 0 0;
 
 						> .dicon {
 							color: map-get($gray-shades, 600);
 							font-size: 20px;
+							margin-right: 20px;
+							vertical-align: middle;
+						}
+
+						> .space-label {
+							@include border-radius(3px);
+							@extend .no-select;
+							display: inline-block;
+							margin: 10px 0 13px 0;
+							padding: 0.3rem 0.7rem;
+							font-size: 1.1rem;
+							font-weight: 400;
+							color: map-get($gray-shades, 100);
 						}
 					}
 				}

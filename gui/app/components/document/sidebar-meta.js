@@ -9,7 +9,6 @@
 //
 // https://documize.com
 
-import { A } from '@ember/array';
 import { computed } from '@ember/object';
 import { notEmpty } from '@ember/object/computed';
 import { inject as service } from '@ember/service';

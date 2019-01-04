@@ -71,11 +71,6 @@ export default Component.extend(ModalMixin, AuthMixin, Notifier, {
 		this.set('saveTemplate.description', this.get('document.excerpt'));
 	},
 
-	didInsertElement() {
-		this._super(...arguments);
-		this.modalInputFocus('#document-template-modal', '#new-template-name');
-	},
-
 	willDestroyElement() {
 		this._super(...arguments);
 	},

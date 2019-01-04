@@ -4,10 +4,17 @@
 			{{#link-to "folder.index" space.id space.slug}}
 				<li class="item">
 					<div class="info">
-						<div class="name">{{space.name}}</div>
-						<div class="desc">Some description that is to be wired up to the backend</div>
+						<div class="name">
+							{{#if space.icon}}
+								<div class="icon">
+									{{ui/ui-icon-meta icon=space.icon}}
+								</div>
+							{{/if}}
+							{{space.name}}
+						</div>
+						<div class="desc">{{space.desc}}&nbsp;</div>
 						<div class="meta">
-							{{#if (eq space.spaceType constants.SpaceType.Public)}}
+							{{!-- {{#if (eq space.spaceType constants.SpaceType.Public)}}
 								<i class={{concat "dicon " constants.Icon.World}}>
 									{{#attach-tooltip showDelay=1000}}Public space{{/attach-tooltip}}
 								</i>
@@ -21,16 +28,19 @@
 								<i class={{concat "dicon " constants.Icon.Person}}>
 									{{#attach-tooltip showDelay=1000}}Personal space{{/attach-tooltip}}
 								</i>
+							{{/if}} --}}
+							{{#if space.labelId}}
+								{{spaces/space-label labels=labels labelId=space.labelId}}
 							{{/if}}
 						</div>
 					</div>
 					<div class="stats">
 						<div class="stat">
-							<div class="number">18</div>
+							<div class="number">{{space.countContent}}</div>
 							<div class="label">items</div>
 						</div>
 						<div class="stat">
-							<div class="number">5</div>
+							<div class="number">{{space.countCategory}}</div>
 							<div class="label">categories</div>
 						</div>
 					</div>

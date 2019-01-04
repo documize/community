@@ -1,5 +1,16 @@
 <div class="no-print">
-	{{#ui/ui-toolbar dark=false light=true raised=true large=true bordered=true}}
+
+	{{#ui/ui-toolbar dark=false light=false raised=false large=true bordered=false}}
+		{{#ui/ui-toolbar-icon icon=constants.Icon.Export color=constants.Color.Gray tooltip="Print, PDF, Export"}}
+			{{#attach-popover class="ember-attacher-popper" hideOn="clickout" showOn="click" isShown=false}}
+				<ul class="menu">
+					<li class="item" {{action "onExport"}}>Export as HTML file</li>
+					<li class="item" {{action "onPDF"}}>Download as PDF</li>
+					<li class="item" {{action "onPrintDocument"}}>Print...</li>
+				</ul>
+			{{/attach-popover}}
+		{{/ui/ui-toolbar-icon}}
+
 		{{#if pinState.isPinned}}
 			{{ui/ui-toolbar-icon icon=constants.Icon.BookmarkDelete color=constants.Color.Yellow
 				tooltip="Remove from bookmarks" onClick=(action "onUnpin")}}
@@ -8,9 +19,31 @@
 				tooltip="Bookmark" onClick=(action "onPin")}}
 		{{/if}}
 
-		{{#if permissions.documentAdd}}
-			{{ui/ui-toolbar-icon icon=constants.Icon.Copy color=constants.Color.Gray
-				tooltip="Save as template" onClick=(action "onShowTemplateModal")}}
+		{{#if permissions.documentEdit}}
+			{{ui/ui-toolbar-icon icon=constants.Icon.Settings color=constants.Color.Gray
+				tooltip="Rename, Categories, Tag, Status, Workflow" linkTo="document.settings"}}
+		{{/if}}
+	{{/ui/ui-toolbar}}
+
+	{{#ui/ui-toolbar dark=false light=true raised=true large=true bordered=true}}
+		{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
+			{{#if permissions.documentEdit}}
+				{{#ui/ui-toolbar-icon icon=constants.Icon.UserAssign color=constants.Color.Gray tooltip="Actions & Sharing"}}
+					{{#attach-popover class="ember-attacher-popper" hideOn="clickout" showOn="click" isShown=false}}
+						<ul class="menu">
+							<li class="item" {{action "onShowRequestContributionModal"}}>Request contribution</li>
+							<li class="item" {{action "onShowRequestFeedbackModal"}}>Request feedback</li>
+							<li class="item" {{action "onShowRequestReadModal"}}>Request read</li>
+							{{#if (eq document.lifecycle constants.Lifecycle.Draft)}}
+								<li class="divider"/>
+								<li class="item" {{action "onShowPublishModal"}}>Request publication</li>
+							{{/if}}
+							<li class="divider"/>
+							<li class="item" {{action "onShareModal"}}>Share via secure external link</li>
+						</ul>
+					{{/attach-popover}}
+				{{/ui/ui-toolbar-icon}}
+			{{/if}}
 		{{/if}}
 
 		{{#if showActivity}}
@@ -23,20 +56,14 @@
 				tooltip="Revisions and rollback" linkTo="document.revisions"}}
 		{{/if}}
 
-		{{ui/ui-toolbar-icon icon=constants.Icon.Download color=constants.Color.Gray
-			tooltip="Download as HTML file" onClick=(action "onExport")}}
-
-		{{ui/ui-toolbar-icon icon=constants.Icon.Print color=constants.Color.Gray
-			tooltip="Print" onClick=(action "onPrintDocument")}}
+		{{#if permissions.documentAdd}}
+			{{ui/ui-toolbar-icon icon=constants.Icon.Copy color=constants.Color.Gray
+				tooltip="Save as template" onClick=(action "onShowTemplateModal")}}
+		{{/if}}
 
 		{{#if permissions.documentDelete}}
 			{{ui/ui-toolbar-icon icon=constants.Icon.Delete color=constants.Color.Gray
 				tooltip="Delete" onClick=(action "onShowDeleteModal")}}
-		{{/if}}
-
-		{{#if permissions.documentEdit}}
-			{{ui/ui-toolbar-icon icon=constants.Icon.Settings color=constants.Color.Green
-				tooltip="Rename, metadata, workflow" linkTo="document.settings"}}
 		{{/if}}
 	{{/ui/ui-toolbar}}
 </div>

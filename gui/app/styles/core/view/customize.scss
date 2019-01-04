@@ -324,4 +324,19 @@
 			color: map-get($yellow-shades, 800);
 		}
 	}
+
+	> .space-labels {
+		display : block;
+
+		> .label {
+			@include border-radius(3px);
+			@extend .no-select;
+			display: block;
+			margin: 20px 0;
+			padding: 1rem 1rem;
+			font-size: 1.2rem;
+			font-weight: 500;
+			color: $color-white;
+		}
+	}
 }

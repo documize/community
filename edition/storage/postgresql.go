@@ -25,6 +25,7 @@ import (
 	category "github.com/documize/community/domain/category"
 	document "github.com/documize/community/domain/document"
 	group "github.com/documize/community/domain/group"
+	label "github.com/documize/community/domain/label"
 	link "github.com/documize/community/domain/link"
 	meta "github.com/documize/community/domain/meta"
 	org "github.com/documize/community/domain/organization"
@@ -147,6 +148,11 @@ func SetPostgreSQLProvider(r *env.Runtime, s *store.Store) {
 	userStore := user.Store{}
 	userStore.Runtime = r
 	s.User = userStore
+
+	// Space Label
+	labelStore := label.Store{}
+	labelStore.Runtime = r
+	s.Label = labelStore
 }
 
 // Type returns name of provider

@@ -14,7 +14,6 @@ import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-rout
 import Route from '@ember/routing/route';
 
 export default Route.extend(AuthenticatedRouteMixin, {
-
 	model() {
 		this.get('browser').setTitle(this.modelFor('folder').folder.get('name'));
 
@@ -23,6 +22,7 @@ export default Route.extend(AuthenticatedRouteMixin, {
 			folders: this.modelFor('folder').folders,
 			permissions: this.modelFor('folder').permissions,
 			templates: this.modelFor('folder').templates,
+			labels: this.modelFor('folder').labels,
 		});
 	}
 });

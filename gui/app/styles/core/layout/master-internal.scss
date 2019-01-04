@@ -17,7 +17,7 @@
 	display: block;
 	height: auto;
 	width: 100%;
-	z-index: 1041; // reequired if we want to show modals from inside sidebar
+	z-index: 1041; // required if we want to show modals from inside sidebar
 
 	.master-navbar {
 		display: block;
@@ -40,7 +40,7 @@
 			> .nav-options {
 				> .selected {
 					> .dicon, > .name {
-						color: $theme-400 !important;
+						color: $color-white !important;
 					}
 				}
 
@@ -50,13 +50,20 @@
 
 					> .dicon {
 						display: inline-block;
-						color: $color-white;
+						color: $theme-300;
 						font-size: 20px;
 						padding: 10px;
 					}
 
 					> .name {
 						display: none;
+						color: $theme-300;
+					}
+
+					&:hover {
+						> .dicon, > .name {
+							color: $theme-400 !important;
+						}
 					}
 				}
 			}
@@ -159,7 +166,6 @@
 					> .option {
 						>.dicon {
 							display: block;
-							color: $color-white;
 							font-size: 20px;
 							padding: 20px 0;
 						}
@@ -248,7 +254,6 @@
 					> .option {
 						> .dicon {
 							display: block;
-							color: $color-white;
 							font-size: 24px;
 							padding: 15px 0 10px 0;
 						}
@@ -258,7 +263,6 @@
 							padding: 0 0 15px 0;
 							font-size: 0.8rem;
 							font-weight: 700;
-							color: $color-white;
 							text-transform: uppercase;
 						}
 					}

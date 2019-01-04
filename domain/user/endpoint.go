@@ -405,8 +405,17 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// remove all associated roles for this user
+	// Remove user's permissions
 	_, err = h.Store.Permission.DeleteUserPermissions(ctx, userID)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	// Remove all user groups memberships
+	err = h.Store.Group.RemoveUserGroups(ctx, userID)
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)

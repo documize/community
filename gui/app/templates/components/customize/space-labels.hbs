@@ -1,0 +1,78 @@
+<div class="view-customize">
+	{{ui/ui-button
+		light=true
+		color=constants.Color.Green
+		icon=constants.Icon.Checkbox
+		label=constants.Label.Add
+		onClick=(action "onShowAddModal")}}
+
+	{{ui/ui-spacer size=300}}
+
+	<ul class="space-labels">
+		{{#each labels as |label|}}
+			<li class="label" style={{concat "background-color:" label.color ";"}}>
+				<div class="grid-container-6-4">
+					<div class="grid-cell-1 grid-cell-middle">
+						{{label.name}}
+					</div>
+					<div class="grid-cell-2 grid-cell-right">
+						{{#ui/ui-toolbar dark=false light=true raised=false large=false bordered=false}}
+							{{ui/ui-toolbar-icon icon=constants.Icon.Edit color=constants.Color.Green tooltip="Update label" onClick=(action "onShowUpdateModal" label)}}
+							{{ui/ui-toolbar-icon icon=constants.Icon.Delete color=constants.Color.Red tooltip="Delete label" onClick=(action "onShowDeleteModal" label)}}
+						{{/ui/ui-toolbar}}
+					</div>
+				</div>
+			</li>
+		{{/each}}
+	</ul>
+</div>
+
+<div id="add-label-modal" class="modal" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">Add Label</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<label for="add-label-name">Name</label>
+					{{input type="text" id="add-label-name" class="form-control mousetrap" placeholder="Label name" value=labelName}}
+				</div>
+				<div class="form-group">
+					<label>Color</label>
+					{{ui/label-color-picker onChange=(action "onSetColor")}}
+				</div>
+			</div>
+			<div class="modal-footer">
+				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+				{{ui/ui-button-gap}}
+				{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Add onClick=(action "onAdd")}}
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="edit-label-modal" class="modal" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">Update Label</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<label for="edit-label-name">Name</label>
+					{{input type="text" id="edit-label-name" class="form-control mousetrap" placeholder="Label name" value=labelName}}
+				</div>
+				<div class="form-group">
+					<label>Color</label>
+					{{ui/label-color-picker onChange=(action "onSetColor")}}
+				</div>
+			</div>
+			<div class="modal-footer">
+				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+				{{ui/ui-button-gap}}
+				{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Save onClick=(action "onUpdate")}}
+			</div>
+		</div>
+	</div>
+</div>
+
+{{#ui/ui-dialog title="Delete Label" confirmCaption="Delete" buttonColor=constants.Color.Red show=showDeleteDialog onAction=(action "onDelete")}}
+	<p>Are you sure you want to delete the label <b>{{deleteLabel.name}}?</b></p>
+{{/ui/ui-dialog}}

@@ -30,6 +30,7 @@ export default Component.extend(Modals, {
 	hasDocumentPins: notEmpty('documentPins'),
 	hasWhatsNew: false,
 	newsContent: '',
+	hideNavigation: false,
 
 	init() {
 		this._super(...arguments);

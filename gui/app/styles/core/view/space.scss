@@ -245,3 +245,39 @@
 		}
 	}
 }
+
+.space-label-picker {
+	display : block;
+
+	> .label {
+		@extend .no-select;
+		@extend .text-truncate;
+		display: inline-block;
+		width: 200px;
+		margin: 0 20px 20px 0;
+		padding: 0.5rem 0.75rem;
+		font-size: 1rem;
+		font-weight: 500;
+		color: $color-white;
+		border: 3px solid map-get($gray-shades, 300);
+		@include border-radius(3px);
+		cursor: pointer;
+
+		&:hover {
+			border: 3px solid map-get($gray-shades, 600);
+		}
+	}
+
+	.none {
+		background-color: $color-white;
+		color: map-get($gray-shades, 500);
+	}
+
+	> .selected {
+		border: 3px solid map-get($yellow-shades, 800);
+
+		&:hover {
+			border: 3px solid map-get($yellow-shades, 800);
+		}
+	}
+}

@@ -11,7 +11,7 @@
 .dicon {
 	display: inline-block;
 	font: normal normal normal 1em/1 'dmzui';
-	speak: none;
+	// speak: none;
 	text-transform: none;
 	/* Better Font Rendering */
 	-webkit-font-smoothing: antialiased;
@@ -171,16 +171,8 @@ icons
 	content: "\ea04";
   }
 
-  .dicon-code::before {
-	content: "\ea05";
-  }
-
   .dicon-attachment::before {
 	content: "\ea06";
-  }
-
-  .dicon-align-justify::before {
-	content: "\ea07";
   }
 
   .dicon-pen-2::before {
@@ -335,10 +327,6 @@ icons
 	content: "\ea35";
   }
 
-  .dicon-gallery-view::before {
-	content: "\ea36";
-  }
-
   .dicon-time::before {
 	content: "\ea37";
   }
@@ -355,18 +343,6 @@ icons
 	content: "\ea3a";
   }
 
-  .dicon-ctrl-down::before {
-	content: "\ea3d";
-  }
-
-  .dicon-ctrl-left::before {
-	content: "\ea3e";
-  }
-
-  .dicon-ctrl-up::before {
-	content: "\ea3f";
-  }
-
   .dicon-menu-6::before {
 	content: "\ea40";
   }
@@ -375,20 +351,8 @@ icons
 	content: "\ea41";
   }
 
-  .dicon-reload::before {
-	content: "\ea42";
-  }
-
   .dicon-copy::before {
 	content: "\ea43";
-  }
-
-  .dicon-list-numbers::before {
-	content: "\ea45";
-  }
-
-  .dicon-bookmark-2::before {
-	content: "\ea46";
   }
 
   .dicon-menu-8::before {
@@ -451,14 +415,14 @@ icons
 	content: "\ea56";
   }
 
-  .dicon-d-check::before {
-	content: "\ea57";
-  }
-
   .dicon-preview::before {
 	content: "\ea58";
   }
 
   .dicon-link::before {
 	content: "\ea59";
+  }
+
+  .dicon-b-check::before {
+	content: "\ea5a";
   }

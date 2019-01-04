@@ -27,6 +27,7 @@
 			text-align: left;
 			padding: 0.5rem 1.5rem;
 			font-size: 1rem;
+			cursor: pointer;
 
 			&:hover {
 				color: $color-black;
@@ -79,6 +80,17 @@
 
 		.bold {
 			font-weight: 600;
+		}
+	}
+
+	> .form {
+		padding: 20px;
+		width: 300px;
+
+		> .caption {
+			font-size: 1rem;
+			font-weight: 600;
+			color: map-get($gray-shades, 800);
 		}
 	}
 }

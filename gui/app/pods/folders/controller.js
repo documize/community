@@ -78,7 +78,7 @@ export default Controller.extend(AuthMixin, Modals, {
 
 			switch(view) {
 				case 'all':
-					this.set('selectedSpaces', this.get('model'));
+					this.set('selectedSpaces', this.get('model.spaces'));
 					break;
 				case 'public':
 					this.set('selectedSpaces', this.get('publicSpaces'));
@@ -88,6 +88,9 @@ export default Controller.extend(AuthMixin, Modals, {
 					break;
 				case 'personal':
 					this.set('selectedSpaces', this.get('personalSpaces'));
+					break;
+				default:
+					this.set('selectedSpaces', this.get(view));
 					break;
 			}
 		}

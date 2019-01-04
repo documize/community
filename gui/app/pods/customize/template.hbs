@@ -8,6 +8,22 @@
 				<i class={{concat "dicon " constants.Icon.Settings}} />
 				<div class="name">General</div>
 			{{/link-to}}
+			{{#link-to "customize.labels" activeClass="selected" class="item" tagName="div"}}
+				<i class={{concat "dicon " constants.Icon.Checkbox}} />
+				<div class="name">Labels</div>
+			{{/link-to}}
+			{{#link-to "customize.folders" activeClass="selected" class="item" tagName="div"}}
+				<i class={{concat "dicon " constants.Icon.Grid}} />
+				<div class="name">Spaces</div>
+			{{/link-to}}
+			{{#link-to "customize.users" activeClass="selected" class="item" tagName="div"}}
+				<i class={{concat "dicon " constants.Icon.Person}} />
+				<div class="name">User Management</div>
+			{{/link-to}}
+			{{#link-to "customize.groups" activeClass="selected" class="item" tagName="div"}}
+				<i class={{concat "dicon " constants.Icon.People}} />
+				<div class="name">User Groups</div>
+			{{/link-to}}
 			{{#link-to "customize.integrations" activeClass="selected" class="item" tagName="div"}}
 				<i class={{concat "dicon " constants.Icon.Integrations}} />
 				<div class="name">Integrations</div>
@@ -17,26 +33,10 @@
 					<i class={{concat "dicon " constants.Icon.Send}} />
 					<div class="name">Mail Server</div>
 				{{/link-to}}
-			{{/if}}
-			{{#link-to "customize.users" activeClass="selected" class="item" tagName="div"}}
-				<i class={{concat "dicon " constants.Icon.Person}} />
-				<div class="name">User Management</div>
-			{{/link-to}}
-			{{#link-to "customize.groups" activeClass="selected" class="item" tagName="div"}}
-				<i class={{concat "dicon " constants.Icon.People}} />
-				<div class="name">User Groups</div>
-			{{/link-to}}
-			{{#if session.isGlobalAdmin}}
 				{{#link-to "customize.auth" activeClass="selected" class="item" tagName="div"}}
 					<i class={{concat "dicon " constants.Icon.Locked}} />
 					<div class="name">Authentication</div>
 				{{/link-to}}
-			{{/if}}
-			{{#link-to "customize.folders" activeClass="selected" class="item" tagName="div"}}
-				<i class={{concat "dicon " constants.Icon.Grid1}} />
-				<div class="name">Spaces</div>
-			{{/link-to}}
-			{{#if session.isGlobalAdmin}}
 				{{#link-to "customize.search" activeClass="selected" class="item" tagName="div"}}
 					<i class={{concat "dicon " constants.Icon.Search}} />
 					<div class="name">Search</div>
@@ -60,7 +60,7 @@
 			{{/if}}
 			{{#link-to "customize.product" activeClass="selected" class="item" tagName="div"}}
 				<i class={{concat "dicon " constants.Icon.Announce}} />
-				<div class="name">Documize Changelog</div>
+				<div class="name">Changelog</div>
 			{{/link-to}}
 		</div>
 	</div>

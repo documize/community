@@ -25,6 +25,7 @@ import (
 	"github.com/documize/community/domain/conversion"
 	"github.com/documize/community/domain/document"
 	"github.com/documize/community/domain/group"
+	"github.com/documize/community/domain/label"
 	"github.com/documize/community/domain/link"
 	"github.com/documize/community/domain/meta"
 	"github.com/documize/community/domain/organization"
@@ -58,6 +59,7 @@ func RegisterEndpoints(rt *env.Runtime, s *store.Store) {
 	space := space.Handler{Runtime: rt, Store: s}
 	block := block.Handler{Runtime: rt, Store: s}
 	group := group.Handler{Runtime: rt, Store: s}
+	label := label.Handler{Runtime: rt, Store: s}
 	backup := backup.Handler{Runtime: rt, Store: s}
 	section := section.Handler{Runtime: rt, Store: s}
 	setting := setting.Handler{Runtime: rt, Store: s}
@@ -139,6 +141,11 @@ func RegisterEndpoints(rt *env.Runtime, s *store.Store) {
 	AddPrivate(rt, "space", []string{"GET", "OPTIONS"}, nil, space.GetViewable)
 	AddPrivate(rt, "space/{spaceID}", []string{"PUT", "OPTIONS"}, nil, space.Update)
 	AddPrivate(rt, "space", []string{"POST", "OPTIONS"}, nil, space.Add)
+
+	AddPrivate(rt, "label", []string{"POST", "OPTIONS"}, nil, label.Add)
+	AddPrivate(rt, "label", []string{"GET", "OPTIONS"}, nil, label.Get)
+	AddPrivate(rt, "label/{labelID}", []string{"PUT", "OPTIONS"}, nil, label.Update)
+	AddPrivate(rt, "label/{labelID}", []string{"DELETE", "OPTIONS"}, nil, label.Delete)
 
 	AddPrivate(rt, "category/space/{spaceID}/summary", []string{"GET", "OPTIONS"}, nil, category.GetSummary)
 	AddPrivate(rt, "category/document/{documentID}", []string{"GET", "OPTIONS"}, nil, category.GetDocumentCategoryMembership)

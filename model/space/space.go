@@ -19,10 +19,15 @@ import (
 // Space defines a container for documents.
 type Space struct {
 	model.BaseEntity
-	Name   string `json:"name"`
-	OrgID  string `json:"orgId"`
-	UserID string `json:"userId"`
-	Type   Scope  `json:"spaceType"`
+	Name          string `json:"name"`
+	Description   string `json:"desc"`
+	OrgID         string `json:"orgId"`
+	UserID        string `json:"userId"`
+	LabelID       string `json:"labelId"`
+	Type          Scope  `json:"spaceType"`
+	CountCategory int    `json:"countCategory"`
+	CountContent  int    `json:"countContent"`
+	Icon          string `json:"icon"`
 
 	// Lifecycle stores the default value all new documents are given upon creation.
 	Lifecycle workflow.Lifecycle `json:"lifecycle"`

@@ -2,6 +2,7 @@
 	{{folder/space-sidebar
 		spaces=model.folders
 		space=model.folder
+		labels=model.labels
 		templates=model.templates
 		permissions=model.permissions
 		documents=model.documents
@@ -19,8 +20,10 @@
 {{#layout/master-content}}
 	<div class="grid-container-6-4">
 		<div class="grid-cell-1">
-			{{layout/page-heading title=model.folder.name}}
-			{{layout/page-desc desc="some space desc"}}
+		{{layout/logo-heading
+			title=model.folder.name
+			desc=model.folder.desc
+			meta=model.folder.icon}}
 		</div>
 		<div class="grid-cell-2 grid-cell-right">
 			{{folder/space-toolbar
@@ -34,8 +37,6 @@
 				onRefresh=(action "onRefresh")}}
 		</div>
 	</div>
-
-	{{ui/ui-spacer size=400}}
 
 	{{folder/documents-list
 		documents=filteredDocs

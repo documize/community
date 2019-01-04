@@ -96,6 +96,9 @@ const (
 	EventTypeDatabaseBackup            EventType = "backedup-database"
 	EventTypeDatabaseRestore           EventType = "restored-database"
 	EventTypeAssumedSpaceOwnership     EventType = "assumed-space-ownership"
+	EventTypeLabelAdd                  EventType = "added-label"
+	EventTypeLabelUpdate               EventType = "updated-label"
+	EventTypeLabelDelete               EventType = "removed-label"
 
 	// EventTypeVersionAdd records addition of version
 	EventTypeVersionAdd EventType = "added-version"

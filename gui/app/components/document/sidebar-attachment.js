@@ -17,6 +17,7 @@ import Notifier from '../../mixins/notifier';
 import Component from '@ember/component';
 
 export default Component.extend(Modals, Notifier, {
+	classNames: ["section"],
 	documentService: service('document'),
 	browserSvc: service('browser'),
 	appMeta: service(),
@@ -50,7 +51,7 @@ export default Component.extend(Modals, Notifier, {
 		let url = this.get('appMeta.endpoint');
 		let uploadUrl = `${url}/documents/${documentId}/attachments`;
 
-		let dzone = new Dropzone("#upload-document-files", {
+		let dzone = new Dropzone("#upload-document-files > div", {
 			headers: {
 				'Authorization': 'Bearer ' + self.get('session.authToken')
 			},

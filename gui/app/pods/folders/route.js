@@ -9,6 +9,7 @@
 //
 // https://documize.com
 
+import { hash } from 'rsvp';
 import Route from '@ember/routing/route';
 import { inject as service } from '@ember/service';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
@@ -17,6 +18,7 @@ export default Route.extend(AuthenticatedRouteMixin, {
 	appMeta: service(),
 	folderService: service('folder'),
 	localStorage: service(),
+	labelSvc: service('label'),
 
 	beforeModel() {
 		if (this.get('appMeta.setupMode')) {
@@ -26,19 +28,22 @@ export default Route.extend(AuthenticatedRouteMixin, {
 	},
 
 	model() {
-		return this.get('folderService').getAll();
+		return hash({
+			spaces: this.get('folderService').getAll(),
+			labels: this.get('labelSvc').getAll()
+		});
 	},
 
 	setupController(controller, model) {
 		this._super(controller, model);
-		controller.set('selectedSpaces', model);
+		controller.set('selectedSpaces', model.spaces);
 
 		let constants = this.get('constants');
 		let publicSpaces = [];
 		let protectedSpaces = [];
 		let personalSpaces = [];
 
-		_.each(model, space => {
+		_.each(model.spaces, space => {
 			if (space.get('spaceType') === constants.SpaceType.Public) {
 				publicSpaces.pushObject(space);
 			}
@@ -50,6 +55,14 @@ export default Route.extend(AuthenticatedRouteMixin, {
 			}
 		});
 
+		_.each(model.labels, label => {
+			let spaces = _.where(model.spaces, {labelId: label.get('id')});
+			label.set('count', spaces.length);
+			controller.set(label.get('id'), spaces);
+		});
+
+		controller.set('labels', model.labels);
+		controller.set('spaces', publicSpaces);
 		controller.set('publicSpaces', publicSpaces);
 		controller.set('protectedSpaces', protectedSpaces);
 		controller.set('personalSpaces', personalSpaces);

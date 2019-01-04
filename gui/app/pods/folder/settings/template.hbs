@@ -12,7 +12,7 @@
 		<div class="list">
 			<div class="item {{if (eq tab "general") "selected"}}" {{action "onTab" "general"}}>
 				<i class={{concat "dicon " constants.Icon.Settings}} />
-				<div class="name">Options</div>
+				<div class="name">Meta</div>
 			</div>
 			<div class="item {{if (eq tab "categories") "selected"}}" {{action "onTab" "categories"}}>
 				<i class={{concat "dicon " constants.Icon.Category}} />
@@ -44,7 +44,7 @@
 
 {{#layout/master-content}}
 	{{#if (eq tab "general")}}
-		{{folder/settings-general permissions=model.permissions space=model.folder}}
+		{{folder/settings-general permissions=model.permissions space=model.folder labels=model.labels}}
 	{{/if}}
 
 	{{#if (eq tab "permissions")}}

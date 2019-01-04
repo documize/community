@@ -1,7 +1,13 @@
 <div class="logo-heading">
-	<div class="image">
-		<i class="dicon {{icon}}" />
-	</div>
+	{{#if icon}}
+		<div class="icon">
+			<i class="dicon {{icon}}" />
+		</div>
+	{{else if meta}}
+		<div class="meta-icon">
+			{{ui/ui-icon-meta icon=meta}}
+		</div>
+	{{/if}}
 	<div class="text">
 		{{layout/page-heading title=title}}
 		{{layout/page-desc desc=desc}}

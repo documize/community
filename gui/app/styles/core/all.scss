@@ -30,7 +30,8 @@
 .background-color-theme-100 { background-color: $theme-100; }
 
 @import "reset.scss";
-@import "icon.scss";
+@import "icon-ui.scss";
+@import "icon-meta.scss";
 @import "mixins.scss";
 @import "layout/all.scss";
 @import "util.scss";

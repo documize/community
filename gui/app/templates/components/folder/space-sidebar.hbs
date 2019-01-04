@@ -1,7 +1,11 @@
 {{ui/ui-spacer size=300}}
 
 <div class="title">label</div>
-<div class="label">Unclassified</div>
+{{#if (eq space.labelId "")}}
+	<div class="label">Unclassified</div>
+{{else}}
+	<div class="label" style={{{spaceLabel.bgColor}}}>{{spaceLabel.name}}</div>
+{{/if}}
 
 {{ui/ui-spacer size=200}}
 

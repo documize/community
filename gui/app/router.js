@@ -21,8 +21,8 @@ export default Router.map(function () {
 		path: '/'
 	});
 
-	this.route('dashboard', {
-		path: 'dashboard'
+	this.route('action', {
+		path: 'action'
 	});
 
 	this.route('analytics', {
@@ -77,6 +77,9 @@ export default Router.map(function () {
 		function () {
 			this.route('general', {
 				path: 'general'
+			});
+			this.route('labels', {
+				path: 'labels'
 			});
 			this.route('groups', {
 				path: 'groups'

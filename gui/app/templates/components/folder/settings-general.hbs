@@ -1,21 +1,53 @@
 {{layout/logo-heading
-	title="General Options"
-	desc="Set options to control how people interact with this space"
+	title="Space Meta"
+	desc="Set space visibility, icon and label"
 	icon=constants.Icon.Settings}}
 
 <form>
 	<div class="form-group">
-		<label>Space Name</label>
+		<label>Name</label>
 		{{focus-input id="space-name" type="text" value=spaceName class=(if hasNameError "form-control is-invalid" "form-control") placeholder="Space name" autocomplete="off"}}
 	</div>
 
 	<div class="form-group">
-		<label>Space Type</label>
+		<label>Description</label>
+		{{focus-input id="space-desc" type="text" value=spaceDesc class="form-control" placeholder="Space description" autocomplete="off"}}
+	</div>
+
+	<div class="form-group">
+		<label>Visibility</label>
 		{{ui/ui-select id="spacetypes-dropdown" content=spaceTypeOptions optionValuePath="id" optionLabelPath="label" selection=spaceType action=(action "onSetSpaceType")}}
 	</div>
 
 	<div class="form-group">
-		<label>Enable Like/Dislike Feedback</label>
+		<label>Icon</label>
+		<div class="ui-icon-picker">
+			<ul class="list">
+				{{#each iconList as |icon|}}
+					<li class="item {{if (eq spaceIcon icon) "selected"}}" {{action "onSetIcon" icon}}>
+						{{ui/ui-icon-meta icon=icon}}
+					</li>
+				{{/each}}
+			</ul>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label>Label</label>
+		<ul class="space-label-picker">
+			<li class="label none {{if (eq spaceLabel "") "selected"}}" {{action "onSetLabel" ""}}>None</li>
+			{{#each labels as |label|}}
+				<li class="label {{if (eq spaceLabel label.id) "selected"}}"
+					style={{concat "background-color:" label.color ";"}}
+					{{action "onSetLabel" label.id}} title={{label.name}}>
+					{{label.name}}
+				</li>
+			{{/each}}
+		</ul>
+	</div>
+
+	<div class="form-group">
+		<label>Enable Feedback</label>
 		{{x-toggle value=allowLikes size="medium" theme="light" onToggle=(action (mut allowLikes))}}
 	</div>
 

@@ -57,13 +57,13 @@ func (h *Handler) Meta(w http.ResponseWriter, r *http.Request) {
 	data.AuthProvider = strings.TrimSpace(org.AuthProvider)
 	data.AuthConfig = org.AuthConfig
 	data.MaxTags = org.MaxTags
+	data.Theme = org.Theme
 	data.Version = h.Runtime.Product.Version
 	data.Revision = h.Runtime.Product.Revision
 	data.Edition = h.Runtime.Product.Edition
 	data.ConversionEndpoint = org.ConversionEndpoint
 	data.Storage = h.Runtime.StoreProvider.Type()
 	data.Location = h.Runtime.Flags.Location // reserved
-	data.Theme = org.Theme
 
 	// Strip secrets
 	data.AuthConfig = auth.StripAuthSecrets(h.Runtime, org.AuthProvider, org.AuthConfig)
@@ -195,7 +195,7 @@ func (h *Handler) Reindex(w http.ResponseWriter, r *http.Request) {
 
 	if !ctx.GlobalAdmin {
 		response.WriteForbiddenError(w)
-		h.Runtime.Log.Info(fmt.Sprintf("%s attempted search reindex"))
+		h.Runtime.Log.Info(fmt.Sprintf("%s attempted search reindex", ctx.UserID))
 		return
 	}
 
@@ -258,7 +258,7 @@ func (h *Handler) SearchStatus(w http.ResponseWriter, r *http.Request) {
 
 	if !ctx.GlobalAdmin {
 		response.WriteForbiddenError(w)
-		h.Runtime.Log.Info(fmt.Sprintf("%s attempted get of search status"))
+		h.Runtime.Log.Info(fmt.Sprintf("%s attempted get of search status", ctx.UserID))
 		return
 	}
 
@@ -292,9 +292,12 @@ func (h *Handler) Themes(w http.ResponseWriter, r *http.Request) {
 
 	th := []theme{}
 	th = append(th, theme{Name: "", Primary: "#280A42"})
-	th = append(th, theme{Name: "Blue", Primary: "#176091"})
-	th = append(th, theme{Name: "Deep Orange", Primary: "#BF360C"})
-	th = append(th, theme{Name: "Teal", Primary: "#00695C"})
+	th = append(th, theme{Name: "Brave", Primary: "#BF360C"})
+	th = append(th, theme{Name: "Conference", Primary: "#176091"})
+	th = append(th, theme{Name: "Forest", Primary: "#00695C"})
+	th = append(th, theme{Name: "Harvest", Primary: "#A65F20"})
+	th = append(th, theme{Name: "Silver", Primary: "#AEBECC"})
+	th = append(th, theme{Name: "Sunflower", Primary: "#D7B92F"})
 
 	response.WriteJSON(w, th)
 }

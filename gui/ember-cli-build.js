@@ -47,9 +47,12 @@ module.exports = function (defaults) {
 			app: {
 				css: {
 					'app': '/assets/documize.css',
-					'themes/blue': '/assets/theme-blue.css',
-					'themes/teal': '/assets/theme-teal.css',
-					'themes/deep-orange': '/assets/theme-deep-orange.css'
+					'themes/conference': '/assets/theme-conference.css',
+					'themes/forest': '/assets/theme-forest.css',
+					'themes/brave': '/assets/theme-brave.css',
+					'themes/harvest': '/assets/theme-harvest.css',
+					'themes/sunflower': '/assets/theme-sunflower.css',
+					'themes/silver': '/assets/theme-silver.css',
 				}
 			}
 		}

@@ -145,7 +145,7 @@ func (h *Handler) Download(w http.ResponseWriter, r *http.Request) {
 	// can download as required.
 	// Such secure document viewing links can have expiry dates.
 	if len(authToken) == 0 && len(secureToken) > 0 {
-
+		// TODO
 	}
 
 	// Send back error if caller unable view attachment

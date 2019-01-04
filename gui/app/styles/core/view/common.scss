@@ -38,29 +38,58 @@
 	margin-bottom: 10px;
 
 	> .theme {
-		height: 100px;
-		width: 250px;
+		height: 60px;
+		width: 200px;
 		text-align: center;
 		color: $color-white;
-		font-weight: 600;
-		font-size: 1.2rem;
+		font-weight: 500;
+		font-size: 1rem;
 		display: inline-block;
 		position: relative;
 		margin: 0 20px 20px 0;
-		padding: 10px 0 0 0;
+		padding: 5px;
 		cursor: default;
-		border: 7px solid map-get($gray-shades, 300);
+		border: 3px solid map-get($gray-shades, 300);
 		@include border-radius(3px);
 
 		&:hover {
-			border: 7px solid map-get($gray-shades, 600);
+			border: 3px solid map-get($gray-shades, 600);
 		}
+	}
 
-		.tick {
-			text-align: center;
-			color: $color-white;
-			font-weight: 400;
-			font-size: 2rem;
+	> .selected {
+		border: 3px solid map-get($yellow-shades, 600);
+
+		&:hover {
+			border: 3px solid map-get($yellow-shades, 600);
+		}
+	}
+}
+
+.label-color-picker {
+	display : block;
+
+	> .color {
+		height: 60px;
+		width: 60px;
+		text-align: center;
+		display: inline-block;
+		position: relative;
+		margin: 0 20px 20px 0;
+		cursor: default;
+		border: 3px solid map-get($gray-shades, 300);
+		@include border-radius(3px);
+
+		&:hover {
+			border: 3px solid map-get($gray-shades, 600);
+		}
+	}
+
+	> .selected {
+		border: 3px solid map-get($yellow-shades, 600);
+
+		&:hover {
+			border: 3px solid map-get($yellow-shades, 600);
 		}
 	}
 }
