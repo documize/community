@@ -9,9 +9,20 @@
 //
 // https://documize.com
 
+import { inject as service } from '@ember/service';
 import Component from '@ember/component';
 
 export default Component.extend({
+	appMeta: service(),
 	icon: null,
-	meta: null
+	meta: null,
+	logo: false,
+
+	didReceiveAttrs() {
+		this._super(...arguments);
+		if (this.get('logo')) {
+			let cb = + new Date();
+			this.set('cacheBuster', cb);
+		}
+	}
 });

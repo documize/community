@@ -72,5 +72,12 @@ export default Service.extend({
 			method: 'POST',
 			data: JSON.stringify(config)
 		});
+	},
+
+	useDefaultLogo(orgId) {
+		return this.get('ajax').request(`organization/${orgId}/logo`, {
+			method: 'POST',
+			data: '',
+		});
 	}
 });

@@ -32,6 +32,51 @@ export default Component.extend(Notifier, {
 		this.set('maxTags', this.get('model.general.maxTags'));
 	},
 
+	didInsertElement() {
+		this._super(...arguments);
+
+		let self = this;
+		let url = this.get('appMeta.endpoint');
+		let orgId = this.get('appMeta.orgId');
+		let uploadUrl = `${url}/organization/${orgId}/logo`;
+
+		let dzone = new Dropzone("#upload-logo > div", {
+			headers: {
+				'Authorization': 'Bearer ' + self.get('session.authToken')
+			},
+			url: uploadUrl,
+			method: "post",
+			paramName: 'attachment',
+			clickable: true,
+			maxFilesize: 50,
+			parallelUploads: 1,
+			uploadMultiple: false,
+			addRemoveLinks: false,
+			autoProcessQueue: true,
+			createImageThumbnails: false,
+
+			init: function () {
+				this.on("success", function (/*file, response*/ ) {
+				});
+
+				this.on("queuecomplete", function () {
+					self.notifySuccess('Logo uploaded');
+				});
+
+				this.on("error", function (error, msg) {
+					self.notifyError(msg);
+					self.notifyError(error);
+				});
+			}
+		});
+
+		dzone.on("complete", function (file) {
+			dzone.removeFile(file);
+		});
+
+		this.set('drop', dzone);
+	},
+
 	actions: {
 		change() {
             const selectEl = this.$('#maxTags')[0];
@@ -63,7 +108,7 @@ export default Component.extend(Notifier, {
 
 			this.set('model.general.maxTags', this.get('maxTags'));
 
-			this.get('save')().then(() => {
+			this.get('onUpdate')().then(() => {
 				this.notifySuccess('Saved');
 				set(this, 'titleError', false);
 				set(this, 'messageError', false);
@@ -74,6 +119,11 @@ export default Component.extend(Notifier, {
 		onThemeChange(theme) {
 			this.get('appMeta').setTheme(theme);
 			this.set('model.general.theme', theme);
+		},
+
+		onDefaultLogo() {
+			this.get('onDefaultLogo')(this.get('appMeta.orgId'));
+			this.notifySuccess('Using default logo');
 		}
 	}
 });

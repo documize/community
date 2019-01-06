@@ -1,47 +1,55 @@
 <div class="view-customize">
-	<form>
-		<div class="form-group">
-			<label for="siteTitle">Site Name</label>
-			{{focus-input id="siteTitle" type="text" value=model.general.title class=(if hasTitleInputError "form-control is-invalid" "form-control")}}
-			<small class="form-text text-muted">Provide short title for this Documize instance</small>
+	<div class="form-group">
+		<label for="siteTitle">Site Name</label>
+		{{focus-input id="siteTitle" type="text" value=model.general.title class=(if hasTitleInputError "form-control is-invalid" "form-control")}}
+		<small class="form-text text-muted">Provide short title for this Documize instance</small>
+	</div>
+	<div class="form-group">
+		<label id="siteMessage">Site Message</label>
+		{{textarea id="siteMessage" rows="3" value=model.general.message class=(if hasMessageInputError "form-control is-invalid" "form-control")}}
+		<small class="form-text text-muted">Provide short message explaining this Documize instance</small>
+	</div>
+	<div class="form-group">
+		<label>Site Theme</label>
+		{{ui/theme-picker onChange=(action "onThemeChange")}}
+	</div>
+	<div class="form-group">
+		<label>Site Logo</label>
+		<div>
+			{{ui/ui-button light=true color=constants.Color.Gray label="Use Default" onClick=(action "onDefaultLogo")}}
+			{{ui/ui-button-gap}}
+			{{ui/ui-button light=true color=constants.Color.Yellow label="Upload Custom" id="upload-logo"}}
 		</div>
-		<div class="form-group">
-			<label id="siteMessage">Site Message</label>
-			{{textarea id="siteMessage" rows="3" value=model.general.message class=(if hasMessageInputError "form-control is-invalid" "form-control")}}
-			<small class="form-text text-muted">Provide short message explaining this Documize instance</small>
-		</div>
-		<div class="form-group">
-			<label>Site Theme</label>
-			{{ui/theme-picker onChange=(action "onThemeChange")}}
-			<small class="form-text text-muted">Users can set their own theme under Profile</small>
-		</div>
-		<div class="form-group">
-			<label>Public Spaces Viewable By Anonymous Users</label>
-			{{x-toggle value=model.general.allowAnonymousAccess size="medium" theme="light" onToggle=(action (mut model.general.allowAnonymousAccess))}}
-		</div>
-		<div class="form-group">
-			<label for="conversionEndpoint">Conversion Service URL</label>
-			{{input id="conversionEndpoint" type="text" value=model.general.conversionEndpoint class=(if hasConversionEndpointInputError "form-control is-invalid" "form-control")}}
-			<small class="form-text text-muted">
-				Endpoint for handling import/export (e.g. https://api.documize.com,
-				<a href="https://docs.documize.com/s/WNEpptWJ9AABRnha/administration-guides/d/WO0pt_MXigAB6sJ7/general-options">view documentation</a>)
-			</small>
-		</div>
-		<div class="form-group">
-			<label for="maxTags">Maximum Tags Per Document</label>
-			<select class="form-control" id="maxTags" {{action "change" on="change"}}>
-				<option selected={{is-equal 3 maxTags}} value="3">3</option>
-				<option selected={{is-equal 4 maxTags}} value="4">4</option>
-				<option selected={{is-equal 5 maxTags}} value="5">5</option>
-				<option selected={{is-equal 6 maxTags}} value="6">6</option>
-				<option selected={{is-equal 7 maxTags}} value="7">7</option>
-				<option selected={{is-equal 8 maxTags}} value="8">8</option>
-				<option selected={{is-equal 9 maxTags}} value="9">9</option>
-				<option selected={{is-equal 10 maxTags}} value="10">10</option>
-			</select>
-			<small class="form-text text-muted">How many tags can be assigned to a document (between 3 and 10 tags)</small>
-		</div>
+		<small class="form-text text-muted">You can choose to upload a small logo (e.g. 64px x 64px)</small>
+	</div>
 
-		{{ui/ui-button color=constants.Color.Green light=true icon=constants.Icon.Settings label=constants.Label.Save onClick=(action "save")}}
-	</form>
+	<div class="form-group">
+		<label>Public Spaces Viewable By Anonymous Users</label>
+		{{x-toggle value=model.general.allowAnonymousAccess size="medium" theme="light" onToggle=(action (mut model.general.allowAnonymousAccess))}}
+		<small class="form-text text-muted">Share content with unauthenticated site visitors</small>
+	</div>
+	<div class="form-group">
+		<label for="conversionEndpoint">Conversion Service URL</label>
+		{{input id="conversionEndpoint" type="text" value=model.general.conversionEndpoint class=(if hasConversionEndpointInputError "form-control is-invalid" "form-control")}}
+		<small class="form-text text-muted">
+			Endpoint for handling import/export (e.g. https://api.documize.com,
+			<a href="https://docs.documize.com/s/WNEpptWJ9AABRnha/administration-guides/d/WO0pt_MXigAB6sJ7/general-options">read the documentation</a>)
+		</small>
+	</div>
+	<div class="form-group">
+		<label for="maxTags">Maximum Tags Per Document</label>
+		<select class="form-control" id="maxTags" {{action "change" on="change"}}>
+			<option selected={{is-equal 3 maxTags}} value="3">3</option>
+			<option selected={{is-equal 4 maxTags}} value="4">4</option>
+			<option selected={{is-equal 5 maxTags}} value="5">5</option>
+			<option selected={{is-equal 6 maxTags}} value="6">6</option>
+			<option selected={{is-equal 7 maxTags}} value="7">7</option>
+			<option selected={{is-equal 8 maxTags}} value="8">8</option>
+			<option selected={{is-equal 9 maxTags}} value="9">9</option>
+			<option selected={{is-equal 10 maxTags}} value="10">10</option>
+		</select>
+		<small class="form-text text-muted">How many tags can be assigned to a document (between 3 and 10 tags)</small>
+	</div>
+
+	{{ui/ui-button color=constants.Color.Green light=true icon=constants.Icon.Settings label=constants.Label.Save onClick=(action "save")}}
 </div>

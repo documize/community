@@ -30,7 +30,12 @@ type Store struct {
 
 // Add adds new folder into the store.
 func (s Store) Add(ctx domain.RequestContext, sp space.Space) (err error) {
-	_, err = ctx.Transaction.Exec(s.Bind("INSERT INTO dmz_space (c_refid, c_name, c_orgid, c_userid, c_type, c_lifecycle, c_likes, c_icon, c_desc, c_count_category, c_count_content, c_labelid, c_created, c_revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"),
+	_, err = ctx.Transaction.Exec(s.Bind(`
+        INSERT INTO dmz_space
+            (c_refid, c_name, c_orgid, c_userid, c_type, c_lifecycle,
+            c_likes, c_icon, c_desc, c_count_category, c_count_content,
+            c_labelid, c_created, c_revised)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
 		sp.RefID, sp.Name, sp.OrgID, sp.UserID, sp.Type, sp.Lifecycle, sp.Likes,
 		sp.Icon, sp.Description, sp.CountCategory, sp.CountContent, sp.LabelID,
 		sp.Created, sp.Revised)

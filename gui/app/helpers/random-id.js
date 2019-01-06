@@ -9,20 +9,11 @@
 //
 // https://documize.com
 
-import { inject as service } from '@ember/service';
-import Controller from '@ember/controller';
+import stringUtil from '../utils/string';
+import { helper } from '@ember/component/helper';
 
-export default Controller.extend({
-	orgService: service('organization'),
-
-	actions: {
-		onUpdate() {
-			return this.get('orgService').save(this.model.general).then(() => {
-			});
-		},
-
-		onDefaultLogo(orgId) {
-			return this.get('orgService').useDefaultLogo(orgId);
-		}
-	}
+// Usage: {{random-id}}
+export default helper(function() {
+    return stringUtil.makeId(10);
 });
+

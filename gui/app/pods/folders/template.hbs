@@ -32,11 +32,13 @@
 		{{#if labels}}
 			<div class="list">
 				{{#each labels as |label|}}
-					<div class="item {{if (eq selectedView label.id) "selected"}}" {{action "onSelect" label.id}}>
-						<i class={{concat "dicon " constants.Icon.Checkbox}}
-							style={{label.bgfgColor}}/>
-						<div class="name">{{label.name}} ({{label.count}})</div>
-					</div>
+					{{#if (gt label.count 0)}}
+						<div class="item {{if (eq selectedView label.id) "selected"}}" {{action "onSelect" label.id}}>
+							<i class={{concat "dicon " constants.Icon.Checkbox}}
+								style={{label.bgfgColor}}/>
+							<div class="name">{{label.name}} ({{label.count}})</div>
+						</div>
+					{{/if}}
 				{{/each}}
 			</div>
 		{{else}}
@@ -48,8 +50,10 @@
 {{#layout/master-content}}
 	<div class="grid-container-8-2">
 		<div class="grid-cell-1">
-			{{layout/page-heading title=appMeta.title}}
-			{{layout/page-desc desc=appMeta.message}}
+			{{layout/logo-heading
+				title=appMeta.title
+				desc=appMeta.message
+				logo=true}}
 		</div>
 		<div class="grid-cell-2 grid-cell-right">
 			{{#if (or session.isEditor session.isAdmin)}}
@@ -68,16 +72,49 @@
 	{{spaces/space-list spaces=selectedSpaces labels=labels}}
 
 	<div class="modal" tabindex="-1" role="dialog" id="add-space-modal">
-		<div class="modal-dialog" role="document">
+		<div class="modal-dialog modal-lg" role="document">
 			<div class="modal-content">
-				<div class="modal-header">Add Space</div>
+				<div class="modal-header">New Space</div>
 				<div class="modal-body">
 					<form onsubmit={{action "onAddSpace"}}>
 						<div class="form-group">
-							<label for="new-space-name">Space Name</label>
+							<label for="new-space-name">Name</label>
 							{{input type="text" id="new-space-name" class="form-control mousetrap" placeholder="Space name" value=spaceName}}
 							<small class="form-text text-muted">Characters and numbers only</small>
 						</div>
+
+						<div class="form-group">
+							<label>Description</label>
+							{{focus-input id="space-desc" type="text" value=spaceDesc class="form-control" placeholder="Space description" autocomplete="off"}}
+						</div>
+
+						<div class="form-group">
+							<label>Icon</label>
+							<div class="ui-icon-picker">
+								<ul class="list">
+									{{#each iconList as |icon|}}
+										<li class="item {{if (eq spaceIcon icon) "selected"}}" {{action "onSetIcon" icon}}>
+											{{ui/ui-icon-meta icon=icon}}
+										</li>
+									{{/each}}
+								</ul>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label>Label</label>
+							<ul class="space-label-picker">
+								<li class="label none {{if (eq spaceLabel "") "selected"}}" {{action "onSetLabel" ""}}>None</li>
+								{{#each labels as |label|}}
+									<li class="label {{if (eq spaceLabel label.id) "selected"}}"
+										style={{label.bgColor}}
+										{{action "onSetLabel" label.id}} title={{label.name}}>
+										{{label.name}}
+									</li>
+								{{/each}}
+							</ul>
+						</div>
+
 						<div class="form-group">
 							<label for="clone-space-dropdown">Clone Space</label>
 							{{ui/ui-select id="clone-space-dropdown" content=model prompt="select space" action=(action "onCloneSpaceSelect") optionValuePath="id" optionLabelPath="name" selection=clonedSpace}}

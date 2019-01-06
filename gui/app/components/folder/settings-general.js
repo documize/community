@@ -20,6 +20,7 @@ import Component from '@ember/component';
 export default Component.extend(AuthMixin, Notifier, {
 	router: service(),
 	spaceSvc: service('folder'),
+	iconSvc: service('icon'),
 	localStorage: service('localStorage'),
 	isSpaceAdmin: computed('permissions', function() {
 		return this.get('permissions.spaceOwner') || this.get('permissions.spaceManage');
@@ -40,7 +41,7 @@ export default Component.extend(AuthMixin, Notifier, {
 	init() {
 		this._super(...arguments);
 
-		this.populateIconList();
+		this.set('iconList', this.get('iconSvc').getSpaceIconList());
 	},
 
 	didReceiveAttrs() {
@@ -74,62 +75,6 @@ export default Component.extend(AuthMixin, Notifier, {
 		}
 
 		this.set('spaceIcon', icon);
-	},
-
-	populateIconList() {
-		let list = this.get('iconList');
-		let constants = this.get('constants');
-
-		list = A([]);
-
-		list.pushObject(constants.IconMeta.Star);
-		list.pushObject(constants.IconMeta.Support);
-		list.pushObject(constants.IconMeta.Message);
-		list.pushObject(constants.IconMeta.Apps);
-		list.pushObject(constants.IconMeta.Box);
-		list.pushObject(constants.IconMeta.Gift);
-		list.pushObject(constants.IconMeta.Design);
-		list.pushObject(constants.IconMeta.Bulb);
-		list.pushObject(constants.IconMeta.Metrics);
-		list.pushObject(constants.IconMeta.PieChart);
-		list.pushObject(constants.IconMeta.BarChart);
-		list.pushObject(constants.IconMeta.Finance);
-		list.pushObject(constants.IconMeta.Lab);
-		list.pushObject(constants.IconMeta.Code);
-		list.pushObject(constants.IconMeta.Help);
-		list.pushObject(constants.IconMeta.Manuals);
-		list.pushObject(constants.IconMeta.Flow);
-		list.pushObject(constants.IconMeta.Out);
-		list.pushObject(constants.IconMeta.In);
-		list.pushObject(constants.IconMeta.Partner);
-		list.pushObject(constants.IconMeta.Org);
-		list.pushObject(constants.IconMeta.Home);
-		list.pushObject(constants.IconMeta.Infinite);
-		list.pushObject(constants.IconMeta.Todo);
-		list.pushObject(constants.IconMeta.Procedure);
-		list.pushObject(constants.IconMeta.Outgoing);
-		list.pushObject(constants.IconMeta.Incoming);
-		list.pushObject(constants.IconMeta.Travel);
-		list.pushObject(constants.IconMeta.Winner);
-		list.pushObject(constants.IconMeta.Roadmap);
-		list.pushObject(constants.IconMeta.Money);
-		list.pushObject(constants.IconMeta.Security);
-		list.pushObject(constants.IconMeta.Tune);
-		list.pushObject(constants.IconMeta.Guide);
-		list.pushObject(constants.IconMeta.Smile);
-		list.pushObject(constants.IconMeta.Rocket);
-		list.pushObject(constants.IconMeta.Time);
-		list.pushObject(constants.IconMeta.Cup);
-		list.pushObject(constants.IconMeta.Marketing);
-		list.pushObject(constants.IconMeta.Announce);
-		list.pushObject(constants.IconMeta.Devops);
-		list.pushObject(constants.IconMeta.World);
-		list.pushObject(constants.IconMeta.Plan);
-		list.pushObject(constants.IconMeta.Components);
-		list.pushObject(constants.IconMeta.People);
-		list.pushObject(constants.IconMeta.Checklist);
-
-		this.set('iconList', list);
 	},
 
 	actions: {

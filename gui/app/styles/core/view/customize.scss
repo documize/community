@@ -339,4 +339,10 @@
 			color: $color-white;
 		}
 	}
+
+	> #upload-logo {
+		.dz-preview, .dz-processing, .dz-file-preview {
+			display: none !important;
+		}
+	}
 }

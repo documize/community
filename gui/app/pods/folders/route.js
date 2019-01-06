@@ -17,6 +17,7 @@ import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-rout
 export default Route.extend(AuthenticatedRouteMixin, {
 	appMeta: service(),
 	folderService: service('folder'),
+	iconSvc: service('icon'),
 	localStorage: service(),
 	labelSvc: service('label'),
 
@@ -66,6 +67,7 @@ export default Route.extend(AuthenticatedRouteMixin, {
 		controller.set('publicSpaces', publicSpaces);
 		controller.set('protectedSpaces', protectedSpaces);
 		controller.set('personalSpaces', personalSpaces);
+		controller.set('iconList', this.get('iconSvc').getSpaceIconList());
 	},
 
 	activate() {

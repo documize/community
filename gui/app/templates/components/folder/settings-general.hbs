@@ -38,7 +38,7 @@
 			<li class="label none {{if (eq spaceLabel "") "selected"}}" {{action "onSetLabel" ""}}>None</li>
 			{{#each labels as |label|}}
 				<li class="label {{if (eq spaceLabel label.id) "selected"}}"
-					style={{concat "background-color:" label.color ";"}}
+					style={{label.bgColor}}
 					{{action "onSetLabel" label.id}} title={{label.name}}>
 					{{label.name}}
 				</li>

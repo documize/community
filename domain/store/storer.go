@@ -154,6 +154,8 @@ type OrganizationStorer interface {
 	RemoveOrganization(ctx domain.RequestContext, orgID string) (err error)
 	UpdateAuthConfig(ctx domain.RequestContext, org org.Organization) (err error)
 	CheckDomain(ctx domain.RequestContext, domain string) string
+	Logo(ctx domain.RequestContext, domain string) (l []byte, err error)
+	UploadLogo(ctx domain.RequestContext, l []byte) (err error)
 }
 
 // PinStorer defines required methods for pin management

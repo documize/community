@@ -99,6 +99,9 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 
 	var sp space.Space
 	sp.Name = model.Name
+	sp.Description = model.Description
+	sp.Icon = model.Icon
+	sp.LabelID = model.LabelID
 	sp.RefID = uniqueid.Generate()
 	sp.OrgID = ctx.OrgID
 	sp.UserID = ctx.UserID
@@ -675,52 +678,52 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	ok := true
 	ctx.Transaction, ok = h.Runtime.StartTx()
-    if !ok {
+	if !ok {
 		response.WriteError(w, method)
 		return
 	}
 
 	_, err := h.Store.Document.DeleteBySpace(ctx, id)
 	if err != nil {
-	    h.Runtime.Rollback(ctx.Transaction)
+		h.Runtime.Rollback(ctx.Transaction)
 		response.WriteServerError(w, method, err)
 		return
 	}
 
 	_, err = h.Store.Permission.DeleteSpacePermissions(ctx, id)
 	if err != nil {
-        h.Runtime.Rollback(ctx.Transaction)
-        response.WriteServerError(w, method, err)
+		h.Runtime.Rollback(ctx.Transaction)
+		response.WriteServerError(w, method, err)
 		return
 	}
 
 	// remove category permissions
 	_, err = h.Store.Permission.DeleteSpaceCategoryPermissions(ctx, id)
 	if err != nil {
-        h.Runtime.Rollback(ctx.Transaction)
-        response.WriteServerError(w, method, err)
+		h.Runtime.Rollback(ctx.Transaction)
+		response.WriteServerError(w, method, err)
 		return
 	}
 
 	_, err = h.Store.Pin.DeletePinnedSpace(ctx, id)
 	if err != nil && err != sql.ErrNoRows {
-        h.Runtime.Rollback(ctx.Transaction)
-        response.WriteServerError(w, method, err)
+		h.Runtime.Rollback(ctx.Transaction)
+		response.WriteServerError(w, method, err)
 		return
 	}
 
 	// remove category and members for space
 	_, err = h.Store.Category.DeleteBySpace(ctx, id)
 	if err != nil {
-        h.Runtime.Rollback(ctx.Transaction)
-        response.WriteServerError(w, method, err)
+		h.Runtime.Rollback(ctx.Transaction)
+		response.WriteServerError(w, method, err)
 		return
 	}
 
 	_, err = h.Store.Space.Delete(ctx, id)
 	if err != nil {
-        h.Runtime.Rollback(ctx.Transaction)
-        response.WriteServerError(w, method, err)
+		h.Runtime.Rollback(ctx.Transaction)
+		response.WriteServerError(w, method, err)
 		return
 	}
 
@@ -728,22 +731,22 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	h.Runtime.Commit(ctx.Transaction)
 
 	// Record this action.
-    ctx.Transaction, ok = h.Runtime.StartTx()
-    if !ok {
-        response.WriteError(w, method)
-        return
-    }
+	ctx.Transaction, ok = h.Runtime.StartTx()
+	if !ok {
+		response.WriteError(w, method)
+		return
+	}
 
 	err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
 		SpaceID:      id,
 		SourceType:   activity.SourceTypeSpace,
 		ActivityType: activity.TypeDeleted})
 	if err != nil {
-        h.Runtime.Rollback(ctx.Transaction)
-        response.WriteServerError(w, method, err)
+		h.Runtime.Rollback(ctx.Transaction)
+		response.WriteServerError(w, method, err)
 	}
 
-    h.Runtime.Commit(ctx.Transaction)
+	h.Runtime.Commit(ctx.Transaction)
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSpaceDelete)
 

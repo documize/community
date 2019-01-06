@@ -95,6 +95,7 @@ func RegisterEndpoints(rt *env.Runtime, s *store.Store) {
 	AddPublic(rt, "reset/{token}", []string{"POST", "OPTIONS"}, nil, user.ResetPassword)
 	AddPublic(rt, "share/{spaceID}", []string{"POST", "OPTIONS"}, nil, space.AcceptInvitation)
 	AddPublic(rt, "attachment/{orgID}/{attachmentID}", []string{"GET", "OPTIONS"}, nil, attachment.Download)
+	AddPublic(rt, "logo", []string{"GET", "OPTIONS"}, nil, meta.Logo)
 
 	//**************************************************
 	// Secured private routes (require authentication)
@@ -131,6 +132,7 @@ func RegisterEndpoints(rt *env.Runtime, s *store.Store) {
 	AddPrivate(rt, "organization/{orgID}", []string{"PUT", "OPTIONS"}, nil, organization.Update)
 	AddPrivate(rt, "organization/{orgID}/setting", []string{"GET", "OPTIONS"}, nil, setting.GetInstanceSetting)
 	AddPrivate(rt, "organization/{orgID}/setting", []string{"POST", "OPTIONS"}, nil, setting.SaveInstanceSetting)
+	AddPrivate(rt, "organization/{orgID}/logo", []string{"POST", "OPTIONS"}, nil, organization.UploadLogo)
 
 	AddPrivate(rt, "space/{spaceID}", []string{"DELETE", "OPTIONS"}, nil, space.Delete)
 	AddPrivate(rt, "space/{spaceID}/move/{moveToId}", []string{"DELETE", "OPTIONS"}, nil, space.Remove)

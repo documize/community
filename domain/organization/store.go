@@ -52,7 +52,7 @@ func (s Store) GetOrganization(ctx domain.RequestContext, id string) (org org.Or
         c_anonaccess AS allowanonymousaccess, c_authprovider AS authprovider,
         coalesce(c_authconfig,`+s.EmptyJSON()+`) AS authconfig,
 	    coalesce(c_sub,`+s.EmptyJSON()+`) AS subscription,
-        c_maxtags AS maxtags, c_created AS created, c_revised AS revised, c_theme AS theme
+        c_maxtags AS maxtags, c_theme AS theme, c_created AS created, c_revised AS revised
         FROM dmz_org
         WHERE c_refid=?`),
 		id)
@@ -175,4 +175,32 @@ func (s Store) CheckDomain(ctx domain.RequestContext, domain string) string {
 	}
 
 	return ""
+}
+
+// Logo fetchs stored image from store or NULL.
+func (s Store) Logo(ctx domain.RequestContext, domain string) (l []byte, err error) {
+	row := s.Runtime.Db.QueryRow(s.Bind("SELECT c_logo FROM dmz_org WHERE c_domain=? AND c_active=true"), domain)
+
+	err = row.Scan(&l)
+	if err == sql.ErrNoRows {
+		err = nil
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return l, nil
+}
+
+// UploadLogo saves custom logo to the organization record.
+func (s Store) UploadLogo(ctx domain.RequestContext, logo []byte) (err error) {
+	_, err = ctx.Transaction.Exec(s.Bind("UPDATE dmz_org SET c_logo=?, c_revised=? WHERE c_refid=?"),
+		logo, time.Now().UTC(), ctx.OrgID)
+
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("unable to save custom logo for org %s", ctx.OrgID))
+	}
+
+	return
 }

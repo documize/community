@@ -99,6 +99,7 @@ const (
 	EventTypeLabelAdd                  EventType = "added-label"
 	EventTypeLabelUpdate               EventType = "updated-label"
 	EventTypeLabelDelete               EventType = "removed-label"
+	EventTypeOrganizationLogo          EventType = "uploaded-logo"
 
 	// EventTypeVersionAdd records addition of version
 	EventTypeVersionAdd EventType = "added-version"

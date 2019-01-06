@@ -13,6 +13,7 @@ package meta
 
 import (
 	"bytes"
+	"encoding/base64"
 	"fmt"
 	"net/http"
 	"strings"
@@ -301,3 +302,41 @@ func (h *Handler) Themes(w http.ResponseWriter, r *http.Request) {
 
 	response.WriteJSON(w, th)
 }
+
+// Logo returns site logo based upon request domain (e.g. acme.documize.com).
+// The default Documize logo is returned if organization has not uploaded
+// their own logo.
+func (h *Handler) Logo(w http.ResponseWriter, r *http.Request) {
+	ctx := domain.GetRequestContext(r)
+	d := organization.GetSubdomainFromHost(r)
+
+	logo, err := h.Store.Organization.Logo(ctx, d)
+	if err != nil {
+		h.Runtime.Log.Infof("unable to fetch logo for domain %s", d)
+		response.WriteNotFound(w)
+		return
+	}
+
+	if len(string(logo)) == 0 {
+		logo, err = base64.StdEncoding.DecodeString(defaultLogo)
+		if err != nil {
+			h.Runtime.Log.Error("unable to decode default logo", err)
+			response.WriteEmpty(w)
+			return
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/octet-stream")
+	w.Header().Set("Content-Length", fmt.Sprintf("%d", len(logo)))
+	w.WriteHeader(http.StatusOK)
+
+	_, err = w.Write(logo)
+	if err != nil {
+		h.Runtime.Log.Error("failed to write org logo", err)
+		return
+	}
+}
+
+var defaultLogo = `
+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
+`

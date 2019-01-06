@@ -1,8 +1,9 @@
 <div class="auth-center">
 	<div class="auth-box">
 		<div class="logo">
-			<img src="/assets/img/logo-purple.png" title="Documize" alt="Documize" class="img-fluid">
-			<div class="url">{{appMeta.appHost}}</div>
+			<img src="{{appMeta.endpoint}}/public/logo?cb={{random-id}}"
+				title="Documize" alt="Documize" class="img-fluid">
+			<div class="url">{{appMeta.title}} ({{appMeta.appHost}})</div>
 		</div>
 		{{user/password-reset reset=(action "reset")}}
 	</div>

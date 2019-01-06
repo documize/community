@@ -19,19 +19,20 @@ import Controller from '@ember/controller';
 export default Controller.extend(AuthMixin, Modals, {
 	appMeta: service(),
 	folderService: service('folder'),
-
-	spaceName: '',
 	copyTemplate: true,
 	copyPermission: true,
 	copyDocument: false,
 	hasClone: notEmpty('clonedSpace.id'),
 	clonedSpace: null,
-
 	selectedView: 'all',
 	selectedSpaces: null,
 	publicSpaces: null,
 	protectedSpaces: null,
 	personalSpaces: null,
+	spaceIcon: '',
+	spaceLabel: '',
+	spaceDesc: '',
+	spaceName: '',
 
 	actions: {
 		onShowModal() {
@@ -42,10 +43,22 @@ export default Controller.extend(AuthMixin, Modals, {
 			this.set('clonedSpace', sp)
 		},
 
+
+		onSetIcon(icon) {
+			this.set('spaceIcon', icon);
+		},
+
+		onSetLabel(id) {
+			this.set('spaceLabel', id);
+		},
+
 		onAddSpace(e) {
 			e.preventDefault();
 
 			let spaceName = this.get('spaceName');
+			let spaceDesc = this.get('spaceDesc');
+			let spaceIcon = this.get('spaceIcon');
+			let spaceLabel = this.get('spaceLabel');
 			let clonedId = this.get('clonedSpace.id');
 
 			if (is.empty(spaceName)) {
@@ -55,6 +68,9 @@ export default Controller.extend(AuthMixin, Modals, {
 
 			let payload = {
 				name: spaceName,
+				desc: spaceDesc,
+				icon: spaceIcon,
+				labelId: spaceLabel,
 				cloneId: clonedId,
 				copyTemplate: this.get('copyTemplate'),
 				copyPermission: this.get('copyPermission'),
@@ -62,6 +78,9 @@ export default Controller.extend(AuthMixin, Modals, {
 			}
 
 			this.set('spaceName', '');
+			this.set('spaceDesc', '');
+			this.set('spaceIcon', '');
+			this.set('spaceLabel', '');
 			this.set('clonedSpace', null);
 			$("#new-space-name").removeClass("is-invalid");
 

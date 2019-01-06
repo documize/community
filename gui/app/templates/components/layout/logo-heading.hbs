@@ -7,6 +7,11 @@
 		<div class="meta-icon">
 			{{ui/ui-icon-meta icon=meta}}
 		</div>
+	{{else if logo}}
+		<div class="meta-logo">
+			<img src="{{appMeta.endpoint}}/public/logo?cb={{cacheBuster}}"
+				style="max-width: 200px; max-height: 100px;">
+		</div>
 	{{/if}}
 	<div class="text">
 		{{layout/page-heading title=title}}
