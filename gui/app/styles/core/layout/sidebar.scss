@@ -76,6 +76,10 @@
 					padding: 0;
 				}
 
+				> .label-color {
+					@include border-radius(3px);
+				}
+
 				&:hover {
 					> .dicon {
 						color: map-get($gray-shades, 600);

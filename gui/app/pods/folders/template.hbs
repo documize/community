@@ -34,8 +34,7 @@
 				{{#each labels as |label|}}
 					{{#if (gt label.count 0)}}
 						<div class="item {{if (eq selectedView label.id) "selected"}}" {{action "onSelect" label.id}}>
-							<i class={{concat "dicon " constants.Icon.Checkbox}}
-								style={{label.bgfgColor}}/>
+							<i class={{concat "dicon label-color " constants.Icon.Checkbox}} style={{label.bgfgColor}}/>
 							<div class="name">{{label.name}} ({{label.count}})</div>
 						</div>
 					{{/if}}
