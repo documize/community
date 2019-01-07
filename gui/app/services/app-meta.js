@@ -127,7 +127,7 @@ export default Service.extend({
 			return;
 		}
 
-		let file = this.get('assetMap').resolve(`assets/theme-${theme}.css`);
+		let file = window.assetMapping[`theme${theme}`]
 		$('head').append(`<link id="theme-link" rel="stylesheet" href="${file}">`);
 	},
 
