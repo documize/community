@@ -8,23 +8,26 @@ echo "Build process started $NOW"
 
 echo "Building Ember assets..."
 cd gui
-ember b -o dist-prod/ --environment=production
+ember build ---environment=production --output-path dist-prod --suppress-sizes true
+cd ..
 
 echo "Copying Ember assets..."
-cd ..
 rm -rf embed/bindata/public
 mkdir -p embed/bindata/public
 cp -r gui/dist-prod/assets embed/bindata/public
 cp -r gui/dist-prod/codemirror embed/bindata/public/codemirror
-cp -r gui/dist-prod/tinymce embed/bindata/public/tinymce
+cp -r gui/dist-prod/prism embed/bindata/public/prism
 cp -r gui/dist-prod/sections embed/bindata/public/sections
+cp -r gui/dist-prod/tinymce embed/bindata/public/tinymce
 cp gui/dist-prod/*.* embed/bindata
 cp gui/dist-prod/favicon.ico embed/bindata/public
 cp gui/dist-prod/manifest.json embed/bindata/public
+
 rm -rf embed/bindata/mail
 mkdir -p embed/bindata/mail
 cp domain/mail/*.html embed/bindata/mail
 cp core/database/templates/*.html embed/bindata
+
 rm -rf embed/bindata/scripts
 mkdir -p embed/bindata/scripts
 mkdir -p embed/bindata/scripts/mysql

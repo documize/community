@@ -1,15 +1,5 @@
-// Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
-//
-// This software (Documize Community Edition) is licensed under
-// GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
-//
-// You can operate outside the AGPL restrictions by purchasing
-// Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>.
-//
-// https://documize.com
+'use strict';
 
-/* global require, module */
 var EmberApp = require('ember-cli/lib/broccoli/ember-app');
 var isDevelopment = EmberApp.env() === 'development';
 
@@ -21,20 +11,20 @@ module.exports = function (defaults) {
 			fingerprintAssetMap: true,
 			prepend: '/',
 			extensions: ['js', 'css'],
-			exclude: ['tinymce/**', 'codemirror/**', 'flowchart/**']
+			exclude: ['tinymce/**', 'codemirror/**', 'prism/**']
 		},
 
 		minifyJS: {
 			enabled: !isDevelopment,
 			options: {
-				exclude: ['tinymce/**', 'codemirror/**', 'flowchart/**']
+				exclude: ['tinymce/**', 'codemirror/**', 'prism/**']
 			}
 		},
 
 		minifyCSS: {
 			enabled: !isDevelopment,
 			options: {
-				exclude: ['tinymce/**', 'codemirror/**', 'flowchart/**']
+				exclude: ['tinymce/**', 'codemirror/**', 'prism/**']
 			}
 		},
 
@@ -79,3 +69,14 @@ module.exports = function (defaults) {
 
 	return app.toTree();
 };
+
+// Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
+//
+// This software (Documize Community Edition) is licensed under
+// GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
+//
+// You can operate outside the AGPL restrictions by purchasing
+// Documize Enterprise Edition and obtaining a commercial license
+// by contacting <sales@documize.com>.
+//
+// https://documize.com

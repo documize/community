@@ -10,6 +10,7 @@ call ember b -o dist-prod/ --environment=production
 
 echo "Copying Ember assets..."
 cd ..
+
 rd /s /q embed\bindata\public
 mkdir embed\bindata\public
 echo "Copying Ember assets folder"
