@@ -20,8 +20,6 @@ export default Service.extend({
 	ajax: service(),
 	localStorage: service(),
 	kcAuth: service(),
-	assetMap: service('asset-map'),
-
 	appHost: '',
 	apiHost: `${config.apiHost}`,
 	endpoint: `${config.apiHost}/${config.apiNamespace}`,
