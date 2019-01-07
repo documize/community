@@ -48,13 +48,7 @@ Integrations for embedding SaaS data within documents, zero add-on/marketplace f
 
 ## What does it look like?
 
-All spaces.
-
 ![Documize](screenshot-1.png "Documize")
-
-Space view.
-
-![Documize](screenshot-2.png "Documize")
 
 ## Latest Release
 
