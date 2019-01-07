@@ -7,36 +7,34 @@
 	margin: 0 0 5px 0;
 
 	> .dicon{
-		font-size: 1.5rem;
-		color: map-get($gray-shades, 600);
 		vertical-align: top;
+		font-size: 1.5rem;
+		font-weight: 600;
+		color: map-get($yellow-shades, 700);
 	}
 
 	> .selected {
-		color: map-get($gray-shades, 800);
-	}
-
-	&:hover {
-		color: map-get($gray-shades, 800);
+		color: map-get($yellow-shades, 700);
 	}
 
 	> .text {
 		display: inline-block;
 		font-size: 1.1rem;
-		vertical-align: sub;
+		vertical-align: bottom;
 		color: $color-black-light-1;
+		margin-left: 10px;
 	}
 }
 
 .ui-checkbox-selected {
-	color: map-get($gray-shades, 800);
+	color: map-get($yellow-shades, 700);
 }
 
 .widget-checkbox {
-	color: map-get($gray-shades, 800);
+	color: map-get($yellow-shades, 700);
 	cursor: pointer;
 }
 
 .checkbox-gray {
-	color: map-get($gray-shades, 600) !important;
+	color: map-get($gray-shades, 700) !important;
 }
