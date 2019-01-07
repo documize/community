@@ -310,29 +310,41 @@ func (h *Handler) Logo(w http.ResponseWriter, r *http.Request) {
 	ctx := domain.GetRequestContext(r)
 	d := organization.GetSubdomainFromHost(r)
 
+	// If organization has logo, send it back.
 	logo, err := h.Store.Organization.Logo(ctx, d)
+	if err == nil && len(logo) > 0 {
+		h.writeLogo(w, r, logo)
+		return
+	}
 	if err != nil {
 		h.Runtime.Log.Infof("unable to fetch logo for domain %s", d)
-		response.WriteNotFound(w)
+	}
+
+	// Otherwise, we send back default logo.
+	h.DefaultLogo(w, r)
+}
+
+// DefaultLogo write the default Documize logo to the HTTP response.
+func (h *Handler) DefaultLogo(w http.ResponseWriter, r *http.Request) {
+	logo, err := base64.StdEncoding.DecodeString(defaultLogo)
+	if err != nil {
+		h.Runtime.Log.Error("unable to decode default logo", err)
+		response.WriteEmpty(w)
 		return
 	}
 
-	if len(string(logo)) == 0 {
-		logo, err = base64.StdEncoding.DecodeString(defaultLogo)
-		if err != nil {
-			h.Runtime.Log.Error("unable to decode default logo", err)
-			response.WriteEmpty(w)
-			return
-		}
-	}
+	h.writeLogo(w, r, logo)
+}
 
+// writeLogo writes byte array as logo to HTTP response stream.
+func (h *Handler) writeLogo(w http.ResponseWriter, r *http.Request, logo []byte) {
 	w.Header().Set("Content-Type", "application/octet-stream")
 	w.Header().Set("Content-Length", fmt.Sprintf("%d", len(logo)))
 	w.WriteHeader(http.StatusOK)
 
-	_, err = w.Write(logo)
+	_, err := w.Write(logo)
 	if err != nil {
-		h.Runtime.Log.Error("failed to write org logo", err)
+		h.Runtime.Log.Error("failed to write logo", err)
 		return
 	}
 }

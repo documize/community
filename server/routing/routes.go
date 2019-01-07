@@ -95,6 +95,7 @@ func RegisterEndpoints(rt *env.Runtime, s *store.Store) {
 	AddPublic(rt, "reset/{token}", []string{"POST", "OPTIONS"}, nil, user.ResetPassword)
 	AddPublic(rt, "share/{spaceID}", []string{"POST", "OPTIONS"}, nil, space.AcceptInvitation)
 	AddPublic(rt, "attachment/{orgID}/{attachmentID}", []string{"GET", "OPTIONS"}, nil, attachment.Download)
+	AddPublic(rt, "logo", []string{"GET", "OPTIONS"}, []string{"default", "true"}, meta.DefaultLogo)
 	AddPublic(rt, "logo", []string{"GET", "OPTIONS"}, nil, meta.Logo)
 
 	//**************************************************
