@@ -63,7 +63,8 @@ module.exports = function (defaults) {
 	app.import('vendor/sortable.js');
 	app.import('vendor/table-editor.min.js');
 	app.import('vendor/underscore.js');
-	app.import('vendor/codemirror.js'); // boot-up files
+	app.import('vendor/codemirror.js'); // core lib
+	app.import('vendor/codemirror-boot.js'); // boot-up files
 
 	app.import('vendor/bootstrap.bundle.min.js');
 

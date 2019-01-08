@@ -1,5 +1,5 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
-// Distributed under an MIT license: http://codemirror.net/LICENSE
+// Distributed under an MIT license: https://codemirror.net/LICENSE
 
 (function() {
   var mode = CodeMirror.getMode({indentUnit: 2}, "css");
@@ -147,6 +147,14 @@
      "}",
      "[tag h1][builtin #foo] {",
      "  [property color]: [atom var]([variable-2 --main-color]);",
+     "}");
+
+  MT("blank_css_variable",
+     ":[variable-3 root] {",
+     "  [variable-2 --]: [atom #06c];",
+     "}",
+     "[tag h1][builtin #foo] {",
+     "  [property color]: [atom var]([variable-2 --]);",
      "}");
 
   MT("supports",
