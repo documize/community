@@ -31,14 +31,18 @@ export default Model.extend({
 	versionId: attr('string'),
 	versionOrder: attr('number', { defaultValue: 0 }),
 	groupId: attr('string'),
+	created: attr(),
+	revised: attr(),
 
-	// client-side property
-	selected: attr('boolean', { defaultValue: false }),
+	// read-only presentation field
+	category: attr({defaultValue() {return [];}}),
+
 	slug: computed('name', function () {
 		return stringUtil.makeSlug(this.get('name'));
 	}),
-	created: attr(),
-	revised: attr(),
+
+	// client-side property
+	selected: attr('boolean', { defaultValue: false }),
 
 	isDraft: computed('lifecycle', function () {
 		let constants = this.get('constants');

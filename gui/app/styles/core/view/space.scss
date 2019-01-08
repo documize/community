@@ -71,6 +71,7 @@
 					@include border-radius(5px);
 					background-color: map-get($gray-shades, 300);
 					padding: 0.25rem 1rem;
+					margin-right: 20px;
 
 					> .draft {
 						color: map-get($yellow-shades, 600);
@@ -90,12 +91,34 @@
 					font-size: 20px;
 				}
 
+				.categories {
+					display: inline-block;
+					padding: 0;
+
+					> .category {
+						padding: 0 15px 0 0;
+						display: inline-block;
+
+						> .dicon {
+							color: map-get($gray-shades, 500);
+							font-size: 20px;
+							vertical-align: bottom;
+						}
+
+						> .name {
+							display: inline-block;
+							color: map-get($gray-shades, 800);
+							font-size: 1rem;
+						}
+					}
+				}
+
 				.hashtags {
 					display: inline-block;
-					padding: 0 10px 0 10px;
+					padding: 0;
 
 					> .hashtag {
-						padding: 0 10px 0 10px;
+						padding: 0 15px 0 0;
 
 						> .dicon {
 							color: map-get($gray-shades, 500);

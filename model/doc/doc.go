@@ -39,6 +39,9 @@ type Document struct {
 	VersionID    string              `json:"versionId"`
 	VersionOrder int                 `json:"versionOrder"`
 	GroupID      string              `json:"groupId"`
+
+	// Read-only presentation only data
+	Category []string `json:"category"`
 }
 
 // SetDefaults ensures on blanks and cleans.
@@ -50,12 +53,19 @@ func (d *Document) SetDefaults() {
 	}
 }
 
-// ByName sorts a collection of documents by document Name.
+// ByName sorts a collection of documents by document name.
 type ByName []Document
 
 func (a ByName) Len() int           { return len(a) }
 func (a ByName) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a ByName) Less(i, j int) bool { return strings.ToLower(a[i].Name) < strings.ToLower(a[j].Name) }
+
+// ByID sorts a collection of documents by document ID.
+type ByID []Document
+
+func (a ByID) Len() int           { return len(a) }
+func (a ByID) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByID) Less(i, j int) bool { return a[i].RefID > a[j].RefID }
 
 // DocumentMeta details who viewed the document.
 type DocumentMeta struct {
