@@ -2,7 +2,7 @@
 	margin: 0 0 0 0;
 
 	> .page-header {
-		margin: 0 0 2rem 0;
+		margin: 2rem 0 2rem 0;
 
 		> .page-number {
 			color: $theme-500;
@@ -53,7 +53,7 @@
 .start-section {
 	@extend .no-select;
 	text-align: right;
-	margin: 1.5rem 0;
+	margin: 0;
 	display: block;
 
 	> i {

@@ -95,7 +95,7 @@
 									{{/if}}
 								{{/if}}
 								<div class="divider"></div>
-								{{#link-to "updates" class=(if hasWhatsNew "item bold green" "item")}}What's New{{/link-to}}
+								<a class={{if hasWhatsNew "item bold green" "item"}} href="#" {{action "onNew"}}>What's New</a>
 								<a href="https://docs.documize.com" target="_blank" class="item">Help</a>
 								{{#if enableLogout}}
 									<div class="divider"></div>

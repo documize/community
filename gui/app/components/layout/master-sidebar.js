@@ -100,13 +100,6 @@ export default Component.extend(Modals, {
 	processNotification(msg, type) {
 		if (this.get('isDestroyed') || this.get('isDestroying')) return;
 
-		// if (msg === 'wait') {
-		// 	this.set('showWait', true);
-		// 	this.set('showMessage', false);
-		// 	this.set('showDone', false);
-		// }
-
-		// New code...
 		if (is.not.undefined(type)) {
 			switch (type) {
 				case 'info':
@@ -137,30 +130,6 @@ export default Component.extend(Modals, {
 
 			return;
 		}
-
-		// Legacy code...
-		if (msg === 'done') {
-			$('.progress-done').removeClass('zoomOut').addClass('zoomIn');
-			this.set('showWait', false);
-			this.set('showMessage', false);
-			this.set('showDone', true);
-
-			setTimeout(function() {
-				$('.progress-done').removeClass('zoomIn').addClass('zoomOut');
-			}, 3000);
-		}
-
-		if (msg !== 'done' && msg !== 'wait') {
-			$('.progress-notification').removeClass('zoomOut').addClass('zoomIn');
-			this.set('showWait', false);
-			this.set('showDone', false);
-			this.set('showMessage', true);
-			this.set('message', msg);
-
-			setTimeout(function() {
-				$('.progress-notification').removeClass('zoomIn').addClass('zoomOut');
-			}, 3000);
-		}
 	},
 
 	actions: {
@@ -179,12 +148,11 @@ export default Component.extend(Modals, {
 			}
 		},
 
-		onShowWhatsNewModal() {
-			this.modalOpen("#whats-new-modal", { "show": true });
-
+		onNew() {
 			if (this.get('newsContent.length') > 0) {
 				this.get('session').seenNewVersion();
 				this.set('hasWhatsNew', false);
+				this.get('router').transitionTo('updates');
 			}
 		},
 

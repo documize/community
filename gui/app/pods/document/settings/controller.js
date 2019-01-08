@@ -15,6 +15,7 @@ import Controller from '@ember/controller';
 
 export default Controller.extend(Notifier, {
 	router: service(),
+	appMeta: service(),
 	folderService: service('folder'),
 	documentService: service('document'),
 	localStorage: service('localStorage'),
