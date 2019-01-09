@@ -17,12 +17,11 @@
 
 	<div class="section-markdown-editor">
 		{{#if editMode}}
-			<textarea id={{editorId}} class="mousetrap">{{{pageBody}}}</textarea>
+			{{textarea id=editorId class="mousetrap" value=pageBody}}
 		{{else}}
 			<div class="mousetrap wysiwyg section-markdown-preview">
 				{{{pagePreview}}}
 			</div>
 		{{/if}}
 	</div>
-
 {{/section/base-editor-inline}}

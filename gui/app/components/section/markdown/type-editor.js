@@ -33,7 +33,7 @@ export default Component.extend({
 	init() {
 		this._super(...arguments);
 		let body = (is.not.undefined(this.get('meta'))) ? this.get('meta.rawBody').trim() : '';
-        this.set('pageBody', body);
+		this.set('pageBody', body);
     },
 
 	didInsertElement() {
@@ -67,7 +67,7 @@ export default Component.extend({
             dragDrop: false,
 			extraKeys: {"Enter": "newlineAndIndentContinueMarkdownList"}
         });
-		
+
 		CodeMirror.commands.save = function(/*instance*/){
 			Mousetrap.trigger('ctrl+s');
 		};
