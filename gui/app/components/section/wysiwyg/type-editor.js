@@ -62,7 +62,9 @@ export default Component.extend({
 						inline: 'i'
 					}
 				},
+				codesample_content_css: '//' + window.location.host + '/prism.css',
 				codesample_languages: [
+					{ text: 'ASP.NET (C#)', value: 'aspnet' },
 					{ text: 'C', value: 'c' },
 					{ text: 'C#', value: 'csharp' },
 					{ text: 'C++', value: 'cpp' },
@@ -105,10 +107,8 @@ export default Component.extend({
 				],
 				menu: {},
 				menubar: false,
-				toolbar1:
-					'formatselect fontsizeselect | bold italic underline strikethrough superscript subscript | forecolor backcolor link unlink',
-				toolbar2:
-					'outdent indent bullist numlist | alignleft aligncenter alignright alignjustify | table uploadimage image media codesample',
+				toolbar1: 'formatselect fontsizeselect | bold italic underline strikethrough superscript subscript | forecolor backcolor link unlink',
+				toolbar2: 'outdent indent bullist numlist | alignleft aligncenter alignright alignjustify | table uploadimage image media codesample',
 				save_onsavecallback: function () {
 					Mousetrap.trigger('ctrl+s');
 				}
