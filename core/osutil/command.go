@@ -14,10 +14,9 @@ package osutil
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"os/exec"
 	"time"
-
-	"github.com/documize/community/core/log"
 )
 
 var errTimeout = errors.New("conversion timelimit exceeded")
@@ -39,7 +38,7 @@ func CommandWithTimeout(command *exec.Cmd, timeout time.Duration) ([]byte, error
 	select {
 	case <-time.After(timeout):
 		if err := command.Process.Kill(); err != nil {
-			log.Error("failed to kill: ", err)
+			fmt.Errorf("failed to kill: ", err)
 		}
 		<-done // prevent memory leak
 		//fmt.Println("DEBUG timeout")
