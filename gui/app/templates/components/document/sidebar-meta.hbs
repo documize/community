@@ -1,28 +1,30 @@
 <div class="document-meta">
-	<div class="title">VERSION</div>
-	{{#if (gt versions.length 0)}}
-		{{#ui/ui-toolbar dark=false light=true raised=true large=false bordered=true}}
-			{{ui/ui-toolbar-label label=document.versionId color=constants.Color.Gray}}
-			{{#attach-popover class="ember-attacher-popper" hideOn="clickout" showOn="click" isShown=false}}
-				<div class="menu">
-					<li class="item header">Select version to view</li>
-					{{#each versions as |version|}}
-						<a class="item" href="#" {{action "onSelectVersion" version}}>{{version.versionId}}</a>
-					{{/each}}
-				</div>
-			{{/attach-popover}}
-		{{/ui/ui-toolbar}}
-	{{else}}
-		{{#if permissions.spaceManage}}
+	{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
+		<div class="title">VERSION</div>
+		{{#if (gt versions.length 0)}}
 			{{#ui/ui-toolbar dark=false light=true raised=true large=false bordered=true}}
-				{{ui/ui-toolbar-icon icon=constants.Icon.Plus color=constants.Color.Gray linkTo="document.settings"}}
+				{{ui/ui-toolbar-label label=document.versionId color=constants.Color.Gray}}
+				{{#attach-popover class="ember-attacher-popper" hideOn="clickout" showOn="click" isShown=false}}
+					<div class="menu">
+						<li class="item header">Select version to view</li>
+						{{#each versions as |version|}}
+							<a class="item" href="#" {{action "onSelectVersion" version}}>{{version.versionId}}</a>
+						{{/each}}
+					</div>
+				{{/attach-popover}}
 			{{/ui/ui-toolbar}}
 		{{else}}
-			<div class="empty">Not versioned</div>
+			{{#if permissions.spaceManage}}
+				{{#ui/ui-toolbar dark=false light=true raised=true large=false bordered=true}}
+					{{ui/ui-toolbar-icon icon=constants.Icon.Plus color=constants.Color.Gray linkTo="document.settings"}}
+				{{/ui/ui-toolbar}}
+			{{else}}
+				<div class="empty">Not versioned</div>
+			{{/if}}
 		{{/if}}
-	{{/if}}
 
-	{{ui/ui-spacer size=200}}
+		{{ui/ui-spacer size=200}}
+	{{/if}}
 
 	<div class="title {{if permissions.documentEdit "cursor-pointer"}}" {{action "onEditStatus"}}>STATUS</div>
 	<div class="{{if (eq document.lifecycle constants.Lifecycle.Draft) "label-draft"}}

@@ -16,6 +16,7 @@ import Modals from '../../mixins/modal';
 import Component from '@ember/component';
 
 export default Component.extend(Modals, {
+	appMeta: service(),
 	documentService: service('document'),
 	sessionService: service('session'),
 	router: service(),

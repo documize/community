@@ -124,7 +124,7 @@ export default Component.extend({
                     let creds = { password: password, email: user.email };
 
                     self.get('session').authenticate('authenticator:documize', creds).then(() => {
-                        window.location.href = 's/' + self.folderId + "/" + self.slug;
+                        window.location.href = '//' + window.location.host + '/s/' + self.folderId + "/" + self.slug;
                     });
 
                     // var credentials = encodingUtil.Base64.encode(netUtil.getSubdomain() + ":" + user.email + ":" + password);
