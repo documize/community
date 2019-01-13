@@ -210,7 +210,7 @@ let constants = EmberObject.extend({
 		Attachment: 'dicon-attachment',
 		BarChart: 'dicon-chart-bar-33',
 		Blocks: 'dicon-menu-6',
-		BookmarkSolid: 'dicon-bookmark-2',
+		BookmarkSolid: 'dicon-bookmark',
 		BookmarkAdd: 'dicon-bookmark-add',
 		BookmarkDelete: 'dicon-bookmark-delete',
 		ButtonAction: 'dicon-button-2',

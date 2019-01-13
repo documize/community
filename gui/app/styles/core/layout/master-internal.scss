@@ -36,6 +36,8 @@
 			justify-content: space-between;
 			flex-wrap: wrap;
 			width: 100%;
+			overflow-x: hidden;
+			overflow-y: auto;
 
 			> .nav-options {
 				> .selected {
@@ -160,7 +162,7 @@
 				flex-direction: column;
 				align-items: center;
 				justify-content: space-between;
-				flex-wrap: wrap;
+				flex-wrap: nowrap;
 				height: 100vh;
 
 				> .nav-options {
@@ -176,7 +178,7 @@
 				}
 
 				> .meta {
-					padding-bottom: 30px;
+					padding-bottom: 35px;
 
 					> .logo  {
 						display: block;
