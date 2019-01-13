@@ -136,6 +136,7 @@
 		.master-content {
 			grid-column-start: 2;
 			padding: 20px;
+			max-width: calc(100vw - 250px);
 		}
 	}
 
@@ -235,6 +236,7 @@
 		.master-content {
 			grid-column-start: 2;
 			padding: 20px;
+			max-width: calc(100vw - 300px);
 		}
 	}
 
@@ -319,6 +321,7 @@
 		.master-content {
 			grid-column-start: 2;
 			padding: 40px 30px;
+			max-width: calc(100vw - 330px);
 		}
 	}
 
@@ -350,11 +353,12 @@
 @media (min-width: $display-break-4) {
 	.master-container {
 		display: grid;
-		grid-template-columns: 370px  minmax(auto, 1200px);
+		grid-template-columns: 370px minmax(auto, 1200px);
 
 		.master-content {
 			grid-column-start: 2;
 			padding: 40px 40px;
+			max-width: 1200px;
 		}
 	}
 
