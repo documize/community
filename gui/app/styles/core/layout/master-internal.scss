@@ -36,8 +36,8 @@
 			justify-content: space-between;
 			flex-wrap: wrap;
 			width: 100%;
-			overflow-x: hidden;
-			overflow-y: auto;
+			// overflow-x: hidden;
+			// overflow-y: auto;
 
 			> .nav-options {
 				> .selected {
@@ -130,7 +130,7 @@
 }
 
 // Tablet starts around 700px
-@media (min-width: $display-break-1) {
+@media (min-width: $display-break-1) and (min-height: 650px) {
 	.master-container {
 		display: grid;
 		grid-template-columns: 240px auto;
@@ -230,7 +230,7 @@
 }
 
 // Small screen starts around 900px
-@media (min-width: $display-break-2) {
+@media (min-width: $display-break-2) and (min-height: 650px) {
 	.master-container {
 		display: grid;
 		grid-template-columns: 290px auto;
@@ -315,7 +315,7 @@
 }
 
 // Medium screen starts around 1200px
-@media (min-width: $display-break-3) {
+@media (min-width: $display-break-3) and (min-height: 650px) {
 	.master-container {
 		display: grid;
 		grid-template-columns: 320px auto;
@@ -352,7 +352,7 @@
 }
 
 // Large screen starts around 1600px
-@media (min-width: $display-break-4) {
+@media (min-width: $display-break-4) and (min-height: 650px) {
 	.master-container {
 		display: grid;
 		grid-template-columns: 370px minmax(auto, 1200px);

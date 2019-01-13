@@ -71,8 +71,8 @@ func (s Store) PublicSpaces(ctx domain.RequestContext, orgID string) (sp []space
 	qry := s.Bind(`SELECT id, c_refid AS refid,
         c_name AS name, c_orgid AS orgid, c_userid AS userid,
         c_type AS type, c_lifecycle AS lifecycle, c_likes AS likes,
-        c_icon AS icon, c_labelid AS labelid, c_desc AS desc,
-        c_count_category as countcategory, c_count_content AS countcontent,
+        c_icon AS icon, c_labelid AS labelid, c_desc AS description,
+        c_count_category AS countcategory, c_count_content AS countcontent,
         c_created AS created, c_revised AS revised
         FROM dmz_space
         WHERE c_orgid=? AND c_type=1`)
