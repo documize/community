@@ -41,6 +41,13 @@ export default Component.extend(ModalMixin, AuthMixin, Notifier, {
 
 		return false;
 	}),
+	hasToolbar: computed('permissions', 'showRevisions', 'showActivity', function() {
+		if (this.get('showRevisions') || this.get('showActivity')) return true;
+		if (this.get('permissions.documentAdd') || this.get('permissions.documentDelete')) return true;
+		if (this.get('appMeta.edition') === this.get('constants').Product.EnterpriseEdition &&
+			this.get('permissions.documentEdit')) return true;
+
+	}),
 
 	init() {
 		this._super(...arguments);
@@ -149,7 +156,7 @@ export default Component.extend(ModalMixin, AuthMixin, Notifier, {
 
 		onExport() {
 			let spec = {
-				spaceId: this.get('document.folderId'),
+				spaceId: this.get('document.spaceId'),
 				data: [],
 				filterType: 'document',
 			};

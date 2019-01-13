@@ -25,47 +25,49 @@
 		{{/if}}
 	{{/ui/ui-toolbar}}
 
-	{{#ui/ui-toolbar dark=false light=true raised=true large=true bordered=true}}
-		{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
-			{{#if permissions.documentEdit}}
-				{{#ui/ui-toolbar-icon icon=constants.Icon.UserAssign color=constants.Color.Gray tooltip="Actions & Sharing"}}
-					{{#attach-popover class="ember-attacher-popper" hideOn="clickout" showOn="click" isShown=false}}
-						<ul class="menu">
-							<li class="item" {{action "onShowRequestContributionModal"}}>Request contribution</li>
-							<li class="item" {{action "onShowRequestFeedbackModal"}}>Request feedback</li>
-							<li class="item" {{action "onShowRequestReadModal"}}>Request read</li>
-							{{#if (eq document.lifecycle constants.Lifecycle.Draft)}}
+	{{#if hasToolbar}}
+		{{#ui/ui-toolbar dark=false light=true raised=true large=true bordered=true}}
+			{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
+				{{#if permissions.documentEdit}}
+					{{#ui/ui-toolbar-icon icon=constants.Icon.UserAssign color=constants.Color.Gray tooltip="Actions & Sharing"}}
+						{{#attach-popover class="ember-attacher-popper" hideOn="clickout" showOn="click" isShown=false}}
+							<ul class="menu">
+								<li class="item" {{action "onShowRequestContributionModal"}}>Request contribution</li>
+								<li class="item" {{action "onShowRequestFeedbackModal"}}>Request feedback</li>
+								<li class="item" {{action "onShowRequestReadModal"}}>Request read</li>
+								{{#if (eq document.lifecycle constants.Lifecycle.Draft)}}
+									<li class="divider"/>
+									<li class="item" {{action "onShowPublishModal"}}>Request publication</li>
+								{{/if}}
 								<li class="divider"/>
-								<li class="item" {{action "onShowPublishModal"}}>Request publication</li>
-							{{/if}}
-							<li class="divider"/>
-							<li class="item" {{action "onShareModal"}}>Share via secure external link</li>
-						</ul>
-					{{/attach-popover}}
-				{{/ui/ui-toolbar-icon}}
+								<li class="item" {{action "onShareModal"}}>Share via secure external link</li>
+							</ul>
+						{{/attach-popover}}
+					{{/ui/ui-toolbar-icon}}
+				{{/if}}
 			{{/if}}
-		{{/if}}
 
-		{{#if showActivity}}
-			{{ui/ui-toolbar-icon icon=constants.Icon.Pulse color=constants.Color.Gray
-				tooltip="See content activity" linkTo="document.activity"}}
-		{{/if}}
+			{{#if showActivity}}
+				{{ui/ui-toolbar-icon icon=constants.Icon.Pulse color=constants.Color.Gray
+					tooltip="See content activity" linkTo="document.activity"}}
+			{{/if}}
 
-		{{#if showRevisions}}
-			{{ui/ui-toolbar-icon icon=constants.Icon.TimeBack color=constants.Color.Gray
-				tooltip="Revisions and rollback" linkTo="document.revisions"}}
-		{{/if}}
+			{{#if showRevisions}}
+				{{ui/ui-toolbar-icon icon=constants.Icon.TimeBack color=constants.Color.Gray
+					tooltip="Revisions and rollback" linkTo="document.revisions"}}
+			{{/if}}
 
-		{{#if permissions.documentAdd}}
-			{{ui/ui-toolbar-icon icon=constants.Icon.Copy color=constants.Color.Gray
-				tooltip="Save as template" onClick=(action "onShowTemplateModal")}}
-		{{/if}}
+			{{#if permissions.documentAdd}}
+				{{ui/ui-toolbar-icon icon=constants.Icon.Copy color=constants.Color.Gray
+					tooltip="Save as template" onClick=(action "onShowTemplateModal")}}
+			{{/if}}
 
-		{{#if permissions.documentDelete}}
-			{{ui/ui-toolbar-icon icon=constants.Icon.Delete color=constants.Color.Gray
-				tooltip="Delete" onClick=(action "onShowDeleteModal")}}
-		{{/if}}
-	{{/ui/ui-toolbar}}
+			{{#if permissions.documentDelete}}
+				{{ui/ui-toolbar-icon icon=constants.Icon.Delete color=constants.Color.Gray
+					tooltip="Delete" onClick=(action "onShowDeleteModal")}}
+			{{/if}}
+		{{/ui/ui-toolbar}}
+	{{/if}}
 </div>
 
 <div id="document-template-modal" class="modal" tabindex="-1" role="dialog">
