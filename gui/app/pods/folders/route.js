@@ -38,6 +38,7 @@ export default Route.extend(AuthenticatedRouteMixin, {
 	setupController(controller, model) {
 		this._super(controller, model);
 		controller.set('selectedSpaces', model.spaces);
+		controller.set('selectedView', 'all');
 
 		let constants = this.get('constants');
 		let publicSpaces = [];
@@ -62,8 +63,8 @@ export default Route.extend(AuthenticatedRouteMixin, {
 			controller.set(label.get('id'), spaces);
 		});
 
+		controller.set('spaces', model.spaces);
 		controller.set('labels', model.labels);
-		controller.set('spaces', publicSpaces);
 		controller.set('publicSpaces', publicSpaces);
 		controller.set('protectedSpaces', protectedSpaces);
 		controller.set('personalSpaces', personalSpaces);

@@ -116,7 +116,7 @@
 
 						<div class="form-group">
 							<label for="clone-space-dropdown">Clone Space</label>
-							{{ui/ui-select id="clone-space-dropdown" content=model prompt="select space" action=(action "onCloneSpaceSelect") optionValuePath="id" optionLabelPath="name" selection=clonedSpace}}
+							{{ui/ui-select id="clone-space-dropdown" content=spaces prompt="select space" action=(action "onCloneSpaceSelect") optionValuePath="id" optionLabelPath="name" selection=clonedSpace}}
 							<small id="emailHelp" class="form-text text-muted">Copy templates, permissions, documents from existing space</small>
 							<div class="margin-top-10" />
 							{{#if hasClone}}

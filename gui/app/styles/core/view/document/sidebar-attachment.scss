@@ -1,8 +1,10 @@
-.document-sidebar-attachment {
-	.dz-preview, .dz-processing {
+#upload-document-files {
+	> .dz-preview, .dz-processing {
 		display: none !important;
 	}
+}
 
+.document-sidebar-attachment {
 	> .files {
 		margin: 0;
 		padding: 0;

@@ -19,6 +19,7 @@ export default Controller.extend(Notifier, {
 	templateService: service('template'),
 	sectionService: service('section'),
 	linkService: service('link'),
+	appMeta: service(),
 	router: service(),
 	sidebarTab: 'toc',
 	queryParams: ['currentPageId', 'source'],
