@@ -18,8 +18,20 @@
 					{{#if canEdit}}
 						<div class="menu">
 							{{#ui/ui-toolbar dark=false light=false raised=false large=false bordered=false}}
-								{{ui/ui-toolbar-icon icon=constants.Icon.Delete color=constants.Color.Red
-									onClick=(action "onShowDialog" file.id file.filename)}}
+								{{#ui/ui-toolbar-icon icon=constants.Icon.Delete color=constants.Color.Red}}
+									{{#attach-popover class="ember-attacher-popper" hideOn="escapekey, clickout" showOn="click" isShown=false}}
+										<div class="form">
+											<p>Are you sure you want to delete this file?</p>
+											{{ui/ui-spacer size=100}}
+											{{ui/ui-button
+												light=false
+												label=constants.Label.Delete
+												color=constants.Color.Red
+												onClick=(action "onDelete" file)}}
+										</div>
+									{{/attach-popover}}
+								{{/ui/ui-toolbar-icon}}
+
 							{{/ui/ui-toolbar}}
 						</div>
 					{{/if}}

@@ -36,9 +36,10 @@ export default Component.extend(AuthMixin, Notifier, {
 			$("#delete-space-name").removeClass("is-invalid");
 
 			this.get('spaceSvc').delete(this.get('space.id')).then(() => { /* jshint ignore:line */
-				this.get('localStorage').clearSessionItem('folder');
-				this.get('router').transitionTo('folders');
 			});
+
+			this.get('localStorage').clearSessionItem('folder');
+			this.get('router').transitionTo('folders');
 		}
 	}
 });

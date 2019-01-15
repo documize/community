@@ -29,11 +29,6 @@ export default Component.extend(Modals, Notifier, {
 	showDialog: false,
 	downloadQuery: '',
 
-	init() {
-		this._super(...arguments);
-		this.deleteAttachment = { id: '', name: '' };
-	},
-
 	didReceiveAttrs() {
 		this._super(...arguments);
 		this.getAttachments();
@@ -94,6 +89,8 @@ export default Component.extend(Modals, Notifier, {
 		let qry = '';
 		if (this.get('session.authenticated')) {
 			qry = '?token=' + this.get('session.authToken');
+		} else {
+			qry = '?secure=' + this.get('session.secureToken');
 		}
 		this.set('downloadQuery', qry);
 	},
@@ -105,26 +102,11 @@ export default Component.extend(Modals, Notifier, {
 	},
 
 	actions: {
-		onShowDialog(id, name) {
-			this.set('deleteAttachment', { id: id, name: name });
-
-			this.set('showDialog', true);
-		},
-
-		onDelete() {
-			this.set('showDialog', false);
-
-			let attachment = this.get('deleteAttachment');
-
+		onDelete(attachment) {
 			this.get('documentService').deleteAttachment(this.get('document.id'), attachment.id).then(() => {
+				this.notifySuccess('File deleted');
 				this.getAttachments();
-				this.set('deleteAttachment', {
-					id: "",
-					name: ""
-				});
 			});
-
-			return true;
 		},
 
 		onExport() {
