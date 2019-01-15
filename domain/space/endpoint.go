@@ -676,6 +676,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Delete the space first.
 	ok := true
 	ctx.Transaction, ok = h.Runtime.StartTx()
 	if !ok {
@@ -683,7 +684,23 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := h.Store.Document.DeleteBySpace(ctx, id)
+	_, err := h.Store.Space.Delete(ctx, id)
+	if err != nil {
+		h.Runtime.Rollback(ctx.Transaction)
+		response.WriteServerError(w, method, err)
+		return
+	}
+
+	h.Runtime.Commit(ctx.Transaction)
+
+	// Delete data associated with this space.
+	ctx.Transaction, ok = h.Runtime.StartTx()
+	if !ok {
+		response.WriteError(w, method)
+		return
+	}
+
+	_, err = h.Store.Document.DeleteBySpace(ctx, id)
 	if err != nil {
 		h.Runtime.Rollback(ctx.Transaction)
 		response.WriteServerError(w, method, err)
@@ -697,8 +714,14 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// remove category permissions
 	_, err = h.Store.Permission.DeleteSpaceCategoryPermissions(ctx, id)
+	if err != nil {
+		h.Runtime.Rollback(ctx.Transaction)
+		response.WriteServerError(w, method, err)
+		return
+	}
+
+	_, err = h.Store.Category.DeleteBySpace(ctx, id)
 	if err != nil {
 		h.Runtime.Rollback(ctx.Transaction)
 		response.WriteServerError(w, method, err)
@@ -712,22 +735,6 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// remove category and members for space
-	_, err = h.Store.Category.DeleteBySpace(ctx, id)
-	if err != nil {
-		h.Runtime.Rollback(ctx.Transaction)
-		response.WriteServerError(w, method, err)
-		return
-	}
-
-	_, err = h.Store.Space.Delete(ctx, id)
-	if err != nil {
-		h.Runtime.Rollback(ctx.Transaction)
-		response.WriteServerError(w, method, err)
-		return
-	}
-
-	// Close out the delete process
 	h.Runtime.Commit(ctx.Transaction)
 
 	// Record this action.

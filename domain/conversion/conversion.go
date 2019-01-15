@@ -248,6 +248,12 @@ func processDocument(ctx domain.RequestContext, r *env.Runtime, store *store.Sto
 		SourceType:   activity.SourceTypeDocument,
 		ActivityType: activity.TypeCreated})
 
+	err = store.Space.IncrementContentCount(ctx, newDocument.SpaceID)
+	if err != nil {
+		err = errors.Wrap(err, "cannot increment space content count")
+		return
+	}
+
 	err = ctx.Transaction.Commit()
 	if err != nil {
 		err = errors.Wrap(err, "cannot commit new document import")
@@ -261,12 +267,6 @@ func processDocument(ctx domain.RequestContext, r *env.Runtime, store *store.Sto
 	}
 
 	go indexer.IndexDocument(ctx, newDocument, da)
-
-	err = store.Space.IncrementContentCount(ctx, newDocument.SpaceID)
-	if err != nil {
-		err = errors.Wrap(err, "cannot increment space content count")
-		return
-	}
 
 	store.Audit.Record(ctx, audit.EventTypeDocumentUpload)
 
