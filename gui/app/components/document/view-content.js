@@ -21,7 +21,7 @@ export default Component.extend(Notifier, {
 	sectionService: service('section'),
 	store: service(),
 	appMeta: service(),
-	link: service(),
+	linkSvc: service('link'),
 	hasPages: notEmpty('pages'),
 	showInsertSectionModal: false,
 	newSectionLocation: '',
@@ -40,24 +40,21 @@ export default Component.extend(Notifier, {
 		this.set('showLikes', this.get('folder.allowLikes') && this.get('document.isLive'));
 	},
 
-	didRender() {
-		this._super(...arguments);
-		this.contentLinkHandler();
-	},
-
 	didInsertElement() {
 		this._super(...arguments);
 
 		this.jumpToSection(this.get('currentPageId'));
+
+		this.contentLinkHandler();
 	},
 
 	contentLinkHandler() {
-		let links = this.get('link');
+		let linkSvc = this.get('linkSvc');
 		let doc = this.get('document');
 		let self = this;
 
 		$("a[data-documize='true']").off('click').on('click', function (e) {
-			let link = links.getLinkObject(self.get('links'), this);
+			let link = linkSvc.getLinkObject(self.get('links'), this);
 
 			// local link? exists?
 			if ((link.linkType === "section" || link.linkType === "tab") && link.documentId === doc.get('id')) {
@@ -79,7 +76,10 @@ export default Component.extend(Notifier, {
 				return false;
 			}
 
-			links.linkClick(doc, link);
+			e.preventDefault();
+			e.stopPropagation();
+
+			linkSvc.linkClick(doc, link);
 			return false;
 		});
 	},

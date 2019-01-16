@@ -25,7 +25,12 @@ export default SimpleAuthSession.extend({
 	currentFolder: null,
 	isMac: false,
 	isMobile: false,
+
 	secureToken: '',
+	hasSecureToken: computed('secureToken', function () {
+		let st = this.get('secureToken');
+		return is.not.null(st) && is.not.undefined(st) && st.length > 0;
+	}),
 
 	hasAccounts: computed('isAuthenticated', 'session.content.authenticated.user', function () {
 		return this.get('session.authenticator') !== 'authenticator:anonymous' && this.get('session.content.authenticated.user.accounts').length > 0;

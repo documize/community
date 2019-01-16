@@ -100,19 +100,40 @@ func (h *Handler) Download(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get the organization for this request
+	// Get the space for this attachment
+	org, err := h.Store.Organization.GetOrganization(ctx, ctx.OrgID)
+	if err == sql.ErrNoRows {
+		response.WriteNotFoundError(w, method, a.DocumentID)
+		return
+	}
+	if err != nil {
+		h.Runtime.Log.Error("get attachment org", err)
+		response.WriteServerError(w, method, err)
+		return
+	}
+
 	// At this point, all data associated data is loaded.
 	// We now begin security checks based upon the request.
 
 	// If attachment is in public space then anyone can download
-	if sp.Type == space.ScopePublic {
+	if org.AllowAnonymousAccess && sp.Type == space.ScopePublic {
+		canDownload = true
+	}
+
+	// External users can be sent secure document viewing links.
+	// Those documents may contain attachments that external viewers
+	// can download as required.
+	// Such secure document viewing links can have expiry dates.
+	if !canDownload && len(secureToken) > 0 {
 		canDownload = true
 	}
 
 	// If an user authentication token was provided we check to see
 	// if user can view document.
 	// This check only applies to attachments NOT in public spaces.
-	if sp.Type != space.ScopePublic && len(authToken) > 0 {
-		// Decode and check incoming token
+	if !canDownload && len(authToken) > 0 {
+		// Decode and check incoming token.
 		creds, _, err := auth.DecodeJWT(h.Runtime, authToken)
 		if err != nil {
 			h.Runtime.Log.Error("get attachment decode auth token", err)
@@ -138,14 +159,6 @@ func (h *Handler) Download(w http.ResponseWriter, r *http.Request) {
 
 		// Authenticated user can view attachment.
 		canDownload = true
-	}
-
-	// External users can be sent secure document viewing links.
-	// Those documents may contain attachments that external viewers
-	// can download as required.
-	// Such secure document viewing links can have expiry dates.
-	if len(authToken) == 0 && len(secureToken) > 0 {
-		// TODO
 	}
 
 	// Send back error if caller unable view attachment

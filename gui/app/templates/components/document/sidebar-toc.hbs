@@ -16,6 +16,8 @@
 			</div>
 		</div>
 	</div>
+{{else}}
+	{{ui/ui-spacer size=100}}
 {{/if}}
 
 <div class="document-sidebar-toc">
@@ -27,7 +29,7 @@
 					title={{item.page.title}}>
 					<span class="numbering">{{item.page.numbering}}</span>
 					{{#if (or item.userHasChangePending userHasNewPagePending)}}
-						<span class="color-red-600" >[*]&nbsp;</span>
+						<span class="color-red-600">[*]&nbsp;</span>
 						{{#attach-tooltip showDelay=1000}}Pending changes{{/attach-tooltip}}
 					{{/if}}
 					{{#if (or permissions.documentApprove roles.documentApprove)}}

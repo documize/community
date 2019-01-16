@@ -87,10 +87,10 @@ export default Component.extend(Modals, Notifier, {
 
 		// For authenticated users we send server auth token.
 		let qry = '';
-		if (this.get('session.authenticated')) {
-			qry = '?token=' + this.get('session.authToken');
-		} else {
+		if (this.get('session.hasSecureToken')) {
 			qry = '?secure=' + this.get('session.secureToken');
+		} else if (this.get('session.authenticated')) {
+			qry = '?token=' + this.get('session.authToken');
 		}
 		this.set('downloadQuery', qry);
 	},

@@ -66,13 +66,7 @@ export default Service.extend(Notifier, {
 			result = `<a data-documize='true' data-link-space-id='${link.spaceId}' data-link-id='${link.id}' data-link-target-document-id='${link.documentId}' data-link-target-id='${link.targetId}' data-link-type='${link.linkType}' href='${href}'>${link.title}</a>`;
 		}
 		if (link.linkType === "file") {
-			// For authenticated users we send server auth token.
-			let qry = '';
-			if (this.get('session.authenticated')) {
-				qry = '?token=' + this.get('session.authToken');
-			}
-
-			href = `${endpoint}/public/attachment/${orgId}/${link.targetId}${qry}`;
+			href = `${endpoint}/public/attachment/${orgId}/${link.targetId}`;
 			result = `<a data-documize='true' data-link-space-id='${link.spaceId}' data-link-id='${link.id}' data-link-target-document-id='${link.documentId}' data-link-target-id='${link.targetId}' data-link-type='${link.linkType}' href='${href}'>${link.title}</a>`;
 		}
 		if (link.linkType === "network") {
@@ -136,8 +130,16 @@ export default Service.extend(Notifier, {
 
 		// handle attachment links
 		if (link.linkType === "file") {
+			// For authenticated users we send server auth token.
+			let qry = '';
+			if (this.get('session.hasSecureToken')) {
+				qry = '?secure=' + this.get('session.secureToken');
+			} else if (this.get('session.authenticated')) {
+				qry = '?token=' + this.get('session.authToken');
+			}
+
 			link.url = link.url.replace('attachments/', 'attachment/');
-			window.location.href = link.url;
+			window.location.href = link.url + qry;
 			return;
 		}
 
