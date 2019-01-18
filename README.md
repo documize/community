@@ -50,6 +50,8 @@ Integrations for embedding SaaS data within documents, zero add-on/marketplace f
 
 ![Documize](screenshot-1.png "Documize")
 
+[See it live](https://docs.documize.com)
+
 ## Latest Release
 
 [Community Edition: v2.0.0](https://github.com/documize/community/releases)
