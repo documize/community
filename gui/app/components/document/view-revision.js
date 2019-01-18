@@ -9,19 +9,15 @@
 //
 // https://documize.com
 
-import { computed, set } from '@ember/object';
+import { computed } from '@ember/object';
 import { inject as service } from '@ember/service';
 import ModalMixin from '../../mixins/modal';
 import Component from '@ember/component';
 
 export default Component.extend(ModalMixin, {
 	documentService: service('document'),
-	revision: null,
-	revisions: null,
 	diff: '',
-	hasRevisions: computed('revisions', function() {
-		return this.get('revisions').length > 0;
-	}),
+	revision: null,
 	hasDiff: computed('diff', function() {
 		return this.get('diff').length > 0;
 	}),
@@ -34,32 +30,17 @@ export default Component.extend(ModalMixin, {
 			this.get('document.protection') === constants.ProtectionType.None;
 	}),
 
-	init() {
-		this._super(...arguments);
-		this.revisions = [];
-	},
-
 	didReceiveAttrs() {
 		this._super(...arguments);
-		this.fetchRevisions();
-	},
 
-	fetchRevisions() {
-		this.get('documentService').getDocumentRevisions(this.get('document.id')).then((revisions) => {
-			revisions.forEach((r) => {
-				set(r, 'deleted', r.revisions === 0);
-				let date = moment(r.created).format('Do MMMM YYYY HH:mm');
-				let format = `${r.firstname} ${r.lastname} on ${date} changed ${r.title}`;
-				set(r, 'label', format);
-			});
+		let revision = this.get('revision');
 
-			this.set('revisions', revisions);
-
-			if (revisions.length > 0 && is.null(this.get('revision'))) {
-				this.send('onSelectRevision', revisions[0]);
+		if (is.not.null(revision)) {
+			if (!revision.deleted) {
+				this.fetchDiff(revision.pageId, revision.id);
 			}
-		});
-	},
+		}
+},
 
 	fetchDiff(pageId, revisionId) {
 		this.get('documentService').getPageRevisionDiff(this.get('document.id'), pageId, revisionId).then((revision) => {
@@ -68,12 +49,8 @@ export default Component.extend(ModalMixin, {
 	},
 
 	actions: {
-		onSelectRevision(revision) {
-			this.set('revision', revision);
-
-			if (!revision.deleted) {
-				this.fetchDiff(revision.pageId, revision.id);
-			}
+		onShowModal() {
+			this.modalOpen('#document-rollback-modal', {show:true});
 		},
 
 		onRollback() {

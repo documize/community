@@ -1,0 +1,428 @@
+@font-face {
+	font-family: 'dmzui';
+	src: url('font/dmzui.eot');
+	src: url('font/dmzui.eot') format('embedded-opentype'), url('font/dmzui.woff2') format('woff2'), url('font/dmzui.woff') format('woff'), url('font/dmzui.ttf') format('truetype'), url('font/dmzui.svg') format('svg');
+	font-weight: normal;
+	font-style: normal;
+  }
+  /*------------------------
+	  base class definition
+  -------------------------*/
+.dicon {
+	display: inline-block;
+	font: normal normal normal 1em/1 'dmzui';
+	// speak: none;
+	text-transform: none;
+	/* Better Font Rendering */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+/*------------------------
+change icon size
+-------------------------*/
+/* relative units */
+.dicon-sm {
+	font-size: 0.8em;
+}
+.dicon-lg {
+	font-size: 1.2em;
+}
+/* absolute units */
+.dicon-16 {
+	font-size: 16px;
+}
+.dicon-24 {
+	font-size: 24px;
+}
+.dicon-32 {
+	font-size: 32px;
+}
+.dicon-48 {
+	font-size: 48px;
+}
+
+/*----------------------------------
+add a square/circle background
+-----------------------------------*/
+.dicon-bg-square,
+.dicon-bg-circle {
+	padding: 0.35em;
+	background-color: #eee;
+}
+.dicon-bg-circle {
+	border-radius: 50%;
+}
+/*------------------------------------
+use icons as list item markers
+-------------------------------------*/
+.dicon-ul {
+	padding-left: 0;
+	list-style-type: none;
+}
+.dicon-ul > li {
+	display: flex;
+	align-items: flex-start;
+	line-height: 1.4;
+}
+.dicon-ul > li > .dicon {
+	margin-right: 0.4em;
+	line-height: inherit;
+}
+
+/*------------------------
+spinning icons
+-------------------------*/
+.dicon-is-spinning {
+	-webkit-animation: dicon-spin 2s infinite linear;
+	-moz-animation: dicon-spin 2s infinite linear;
+	animation: dicon-spin 2s infinite linear;
+}
+
+@-webkit-keyframes dicon-spin {
+	0% {
+	-webkit-transform: rotate(0deg);
+	}
+	100% {
+	-webkit-transform: rotate(360deg);
+	}
+}
+@-moz-keyframes dicon-spin {
+	0% {
+	-moz-transform: rotate(0deg);
+	}
+	100% {
+	-moz-transform: rotate(360deg);
+	}
+}
+@keyframes dicon-spin {
+	0% {
+	-webkit-transform: rotate(0deg);
+	-moz-transform: rotate(0deg);
+	-ms-transform: rotate(0deg);
+	-o-transform: rotate(0deg);
+	transform: rotate(0deg);
+	}
+	100% {
+	-webkit-transform: rotate(360deg);
+	-moz-transform: rotate(360deg);
+	-ms-transform: rotate(360deg);
+	-o-transform: rotate(360deg);
+	transform: rotate(360deg);
+	}
+}
+/*------------------------
+rotated/flipped icons
+-------------------------*/
+.dicon-rotate-90 {
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
+	-webkit-transform: rotate(90deg);
+	-moz-transform: rotate(90deg);
+	-ms-transform: rotate(90deg);
+	-o-transform: rotate(90deg);
+	transform: rotate(90deg);
+}
+.dicon-rotate-180 {
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
+	-webkit-transform: rotate(180deg);
+	-moz-transform: rotate(180deg);
+	-ms-transform: rotate(180deg);
+	-o-transform: rotate(180deg);
+	transform: rotate(180deg);
+}
+.dicon-rotate-270 {
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+	-webkit-transform: rotate(270deg);
+	-moz-transform: rotate(270deg);
+	-ms-transform: rotate(270deg);
+	-o-transform: rotate(270deg);
+	transform: rotate(270deg);
+}
+.dicon-flip-y {
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=0);
+	-webkit-transform: scale(-1, 1);
+	-moz-transform: scale(-1, 1);
+	-ms-transform: scale(-1, 1);
+	-o-transform: scale(-1, 1);
+	transform: scale(-1, 1);
+}
+.dicon-flip-x {
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
+	-webkit-transform: scale(1, -1);
+	-moz-transform: scale(1, -1);
+	-ms-transform: scale(1, -1);
+	-o-transform: scale(1, -1);
+	transform: scale(1, -1);
+}
+
+/*------------------------
+icons
+-------------------------*/
+
+.dicon-delete-key::before {
+	content: "\ea02";
+  }
+
+  .dicon-i-remove::before {
+	content: "\ea03";
+  }
+
+  .dicon-bin::before {
+	content: "\ea04";
+  }
+
+  .dicon-attachment::before {
+	content: "\ea06";
+  }
+
+  .dicon-pen-2::before {
+	content: "\ea08";
+  }
+
+  .dicon-settings-gear::before {
+	content: "\ea0c";
+  }
+
+  .dicon-small-down::before {
+	content: "\ea11";
+  }
+
+  .dicon-small-left::before {
+	content: "\ea12";
+  }
+
+  .dicon-small-right::before {
+	content: "\ea13";
+  }
+
+  .dicon-small-up::before {
+	content: "\ea14";
+  }
+
+  .dicon-small-triangle-down::before {
+	content: "\ea15";
+  }
+
+  .dicon-small-triangle-left::before {
+	content: "\ea16";
+  }
+
+  .dicon-small-triangle-right::before {
+	content: "\ea17";
+  }
+
+  .dicon-small-triangle-up::before {
+	content: "\ea18";
+  }
+
+  .dicon-arrow-down-2::before {
+	content: "\ea19";
+  }
+
+  .dicon-arrow-left-2::before {
+	content: "\ea1a";
+  }
+
+  .dicon-arrow-right-2::before {
+	content: "\ea1b";
+  }
+
+  .dicon-arrow-up-2::before {
+	content: "\ea1c";
+  }
+
+  .dicon-chart-bar-33::before {
+	content: "\ea1d";
+  }
+
+  .dicon-geometry::before {
+	content: "\ea1e";
+  }
+
+  .dicon-bookmark::before {
+	content: "\ea1f";
+  }
+
+  .dicon-bookmark-delete::before {
+	content: "\ea20";
+  }
+
+  .dicon-bookmark-add::before {
+	content: "\ea22";
+  }
+
+  .dicon-pdf::before {
+	content: "\ea23";
+  }
+
+  .dicon-print::before {
+	content: "\ea24";
+  }
+
+  .dicon-list-bullet-2::before {
+	content: "\ea25";
+  }
+
+  .dicon-magnifier::before {
+	content: "\ea26";
+  }
+
+  .dicon-b-chat::before {
+	content: "\ea27";
+  }
+
+  .dicon-filter-tool::before {
+	content: "\ea28";
+  }
+
+  .dicon-grid-interface::before {
+	content: "\ea29";
+  }
+
+  .dicon-lock::before {
+	content: "\ea2a";
+  }
+
+  .dicon-unlocked::before {
+	content: "\ea2b";
+  }
+
+  .dicon-menu-7::before {
+	content: "\ea2c";
+  }
+
+  .dicon-network-connection::before {
+	content: "\ea2d";
+  }
+
+  .dicon-e-add::before {
+	content: "\ea2e";
+  }
+
+  .dicon-data-upload::before {
+	content: "\ea2f";
+  }
+
+  .dicon-upload::before {
+	content: "\ea30";
+  }
+
+  .dicon-flag::before {
+	content: "\ea31";
+  }
+
+  .dicon-globe::before {
+	content: "\ea32";
+  }
+
+  .dicon-single-01::before {
+	content: "\ea33";
+  }
+
+  .dicon-multiple-19::before {
+	content: "\ea34";
+  }
+
+  .dicon-box::before {
+	content: "\ea35";
+  }
+
+  .dicon-time::before {
+	content: "\ea37";
+  }
+
+  .dicon-split-37::before {
+	content: "\ea38";
+  }
+
+  .dicon-sort-tool::before {
+	content: "\ea39";
+  }
+
+  .dicon-button-2::before {
+	content: "\ea3a";
+  }
+
+  .dicon-menu-6::before {
+	content: "\ea40";
+  }
+
+  .dicon-pulse::before {
+	content: "\ea41";
+  }
+
+  .dicon-copy::before {
+	content: "\ea43";
+  }
+
+  .dicon-menu-8::before {
+	content: "\ea48";
+  }
+
+  .dicon-send::before {
+	content: "\ea49";
+  }
+
+  .dicon-email::before {
+	content: "\ea4a";
+  }
+
+  .dicon-download::before {
+	content: "\ea4b";
+  }
+
+  .dicon-database::before {
+	content: "\ea4c";
+  }
+
+  .dicon-notification::before {
+	content: "\ea4d";
+  }
+
+  .dicon-handshake::before {
+	content: "\ea4e";
+  }
+
+  .dicon-add-27::before {
+	content: "\ea4f";
+  }
+
+  .dicon-delete-28::before {
+	content: "\ea50";
+  }
+
+  .dicon-i-check::before {
+	content: "\ea51";
+  }
+
+  .dicon-shape-rectangle::before {
+	content: "\ea52";
+  }
+
+  .dicon-ban::before {
+	content: "\ea53";
+  }
+
+  .dicon-check-single::before {
+	content: "\ea54";
+  }
+
+  .dicon-check-double::before {
+	content: "\ea55";
+  }
+
+  .dicon-check::before {
+	content: "\ea56";
+  }
+
+  .dicon-preview::before {
+	content: "\ea58";
+  }
+
+  .dicon-link::before {
+	content: "\ea59";
+  }
+
+  .dicon-b-check::before {
+	content: "\ea5a";
+  }

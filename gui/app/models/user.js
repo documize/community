@@ -27,6 +27,7 @@ export default Model.extend({
 	accounts: attr(),
 	groups: attr(),
 	lastVersion: attr('string'),
+	theme: attr('string'),
 	created: attr(),
 	revised: attr(),
 

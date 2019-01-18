@@ -13,7 +13,7 @@ import Service, { inject as service } from '@ember/service';
 import Notifier from '../mixins/notifier';
 
 export default Service.extend(Notifier, {
-	sessionService: service('session'),
+	session: service('session'),
 	ajax: service(),
 	appMeta: service(),
 	store: service(),
@@ -66,7 +66,7 @@ export default Service.extend(Notifier, {
 			result = `<a data-documize='true' data-link-space-id='${link.spaceId}' data-link-id='${link.id}' data-link-target-document-id='${link.documentId}' data-link-target-id='${link.targetId}' data-link-type='${link.linkType}' href='${href}'>${link.title}</a>`;
 		}
 		if (link.linkType === "file") {
-			href = `${endpoint}/public/attachments/${orgId}/${link.targetId}`;
+			href = `${endpoint}/public/attachment/${orgId}/${link.targetId}`;
 			result = `<a data-documize='true' data-link-space-id='${link.spaceId}' data-link-id='${link.id}' data-link-target-document-id='${link.documentId}' data-link-target-id='${link.targetId}' data-link-type='${link.linkType}' href='${href}'>${link.title}</a>`;
 		}
 		if (link.linkType === "network") {
@@ -130,7 +130,16 @@ export default Service.extend(Notifier, {
 
 		// handle attachment links
 		if (link.linkType === "file") {
-			window.location.href = link.url;
+			// For authenticated users we send server auth token.
+			let qry = '';
+			if (this.get('session.hasSecureToken')) {
+				qry = '?secure=' + this.get('session.secureToken');
+			} else if (this.get('session.authenticated')) {
+				qry = '?token=' + this.get('session.authToken');
+			}
+
+			link.url = link.url.replace('attachments/', 'attachment/');
+			window.location.href = link.url + qry;
 			return;
 		}
 
@@ -147,7 +156,7 @@ export default Service.extend(Notifier, {
 			document.execCommand('copy');
 			document.body.removeChild(el);
 
-			this.showNotification('Copied location to clipboard');
+			this.notifyInfo('Copied location to clipboard');
 
 			return;
 		}

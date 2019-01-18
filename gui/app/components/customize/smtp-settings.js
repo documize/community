@@ -48,13 +48,18 @@ export default Component.extend(Notifier, {
 				},
 			);
 
-			this.showWait();
 			this.set('buttonText', 'Please wait...');
+			this.notifyInfo('Sending test email to you');
 
 			this.get('saveSMTP')().then((result) => {
-				this.showDone();
 				this.set('buttonText', 'Save & Test');
 				this.set('testSMTP', result);
+
+				if (result.success) {
+					this.notifySuccess(result.message);
+				} else {
+					this.notifyError(result.message);
+				}
 			});
 		}
 	}

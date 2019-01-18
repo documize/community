@@ -1,0 +1,58 @@
+.document-copy-move {
+	> .documents-list {
+		margin: 0;
+		padding: 0;
+		width: 100%;
+
+		> .document {
+			margin: 0 0 15px 0;
+			padding: 10px 15px;
+			color: map-get($gray-shades, 700);
+			background-color: map-get($gray-shades, 100);
+			border: 1px solid map-get($gray-shades, 200);
+			cursor: pointer;
+			position: relative;
+			list-style-type: none;
+
+			&:hover {
+				> .title, > .space, > .snippet {
+					color: map-get($gray-shades, 800);
+				}
+			}
+
+			> .title {
+				color : $color-black-light-1;
+				font-size: 1rem;
+			}
+
+			> .space {
+				font-size: 0.8rem;
+				font-style: italic;
+				font-weight: bold;
+				margin-bottom: 10px;
+			}
+
+			> .snippet {
+				font-size: 0.9rem;
+			}
+
+			> .dicon {
+				position: absolute;
+				top: 10px;
+				right: 10px;
+				color: map-get($yellow-shades, 800);
+				font-weight: 700;
+				font-size: 1.3rem;
+			}
+		}
+
+		> .selected {
+			> .title, .space, .snippet {
+				color: map-get($yellow-shades, 800) !important;
+			}
+
+			background-color: map-get($yellow-shades, 100) !important;
+			border: 1px solid map-get($yellow-shades, 300) !important;
+		}
+	}
+}

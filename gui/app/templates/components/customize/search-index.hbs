@@ -1,17 +1,8 @@
-<div class="row">
-	<div class="col">
-		<div class="view-customize">
-			<h1 class="admin-heading">Search</h1>
-			<h2 class="sub-heading">There are currently {{searchStatus.entries}} search entries.</h2>
-		</div>
-	</div>
-</div>
-
 <div class="view-customize">
-	<form class="mt-5 ">
+	<form>
 		<div class="form-group">
-			<p>It can take up to 30 minutes to rebuild the search index across all documents and associated content.</p>
-			<div class="btn btn-danger mt-3" {{action 'reindex'}}>{{buttonLabel}}</div>
+			<p>It can take up to 30 minutes to rebuild the search index.</p>
+			{{ui/ui-button color=constants.Color.Yellow light=true icon=constants.Icon.Search label=buttonLabel onClick=(action "reindex")}}
 		</div>
 	</form>
 </div>

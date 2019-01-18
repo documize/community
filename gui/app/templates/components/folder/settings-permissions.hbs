@@ -1,17 +1,76 @@
-<div class="content-zone">
-	<div class="explainer-header">Who can see this space and perform actions</div>
-</div>
+{{layout/logo-heading
+	title="Space Permissions"
+	desc="Assign permissions to users or groups and invite new users to this space"
+	icon=constants.Icon.Locked}}
 
-<div class="container-fluid my-3">
-	<div class="row justify-content-center">
-		<button type="button" class="btn btn-info font-weight-bold text-uppercase my-3" onclick={{action 'onShowAddModal'}}>Add existing users</button>
-		&nbsp;&nbsp;
-		<button type="button" class="btn btn-info font-weight-bold text-uppercase my-3" onclick={{action 'onShowInviteModal'}}>Invite new users</button>
+<div class="view-customize">
+	<div class="explain-user-perms">
+		<div class="title" {{action "toggleSpacePerms"}}>
+			Space Permissions Explained
+			{{#if showSpacePermExplain}}
+				<i class="dicon {{constants.Icon.ArrowSmallUp}}" />
+			{{else}}
+				<i class="dicon {{constants.Icon.ArrowSmallDown}}" />
+			{{/if}}
+		</div>
+		<div class="perms space-perms">
+			<div class="perm-name">View</div>
+			<div class="perm-desc">See content within this space</div>
+			<div class="perm-name">Manage</div>
+			<div class="perm-desc">Manage all aspects of space except deletion</div>
+			<div class="perm-name">Owner</div>
+			<div class="perm-desc">Manage and delete space</div>
+		</div>
+
+		{{ui/ui-spacer size=200}}
+
+		<div class="title" {{action "toggleDocumentPerms"}}>
+			Document Permissions Explained
+			{{#if showDocumentPermExplain}}
+				<i class="dicon {{constants.Icon.ArrowSmallUp}}" />
+			{{else}}
+				<i class="dicon {{constants.Icon.ArrowSmallDown}}" />
+			{{/if}}
+		</div>
+		<div class="perms document-perms">
+			<div class="perm-name">Create</div>
+			<div class="perm-desc">Can create new documents in space</div>
+			<div class="perm-name">Edit</div>
+			<div class="perm-desc">Can change document contents</div>
+			<div class="perm-name">Delete</div>
+			<div class="perm-desc">Can remove documents from space</div>
+			<div class="perm-name">Move</div>
+			<div class="perm-desc">Can move documents from this space to another space</div>
+			<div class="perm-name">Copy</div>
+			<div class="perm-desc">Can duplicate documents</div>
+			<div class="perm-name">Templates</div>
+			<div class="perm-desc">Can create and publish document templates</div>
+			<div class="perm-name">Approval</div>
+			<div class="perm-desc">Can approve or reject document content changes</div>
+			<div class="perm-name">Lifecycle</div>
+			<div class="perm-desc">Can mark documents as Draft, Live and Archived</div>
+			<div class="perm-name">Versions</div>
+			<div class="perm-desc">Can create document version and link them together</div>
+		</div>
 	</div>
 </div>
 
+{{ui/ui-spacer size=300}}
+
+<div class="text-center">
+	{{ui/ui-button color=constants.Color.Gray light=true icon=constants.Icon.Person
+		label="Add Existing User"
+		onClick=(action "onShowAddModal")}}
+	{{ui/ui-button-gap}}
+	{{ui/ui-button color=constants.Color.Gray light=true icon=constants.Icon.Plus
+		label="Invite New User"
+		onClick=(action "onShowInviteModal")}}
+</div>
+
+{{ui/ui-spacer size=300}}
+
 <div class="space-admin table-responsive">
-	<table class="table table-hover permission-table mb-3">
+	<table class="table table-hover permission-table">
 		<thead>
 			<tr>
 				<th></th>
@@ -38,35 +97,25 @@
 			{{#each spacePermissions as |permission|}}
 				<tr>
 					<td class="no-wrap no-width">
-						<i class="material-icons align-top text-secondary cursor-pointer" data-toggle="dropdown" aria-haspopup="true"
-							 aria-expanded="false">
-							 more_vert
-						</i>
-						<div class="dropdown-menu dropdown-menu-left" aria-labelledby="permission-dropdown-{{permission.whoId}}">
-							<a class="dropdown-item" href="#" {{action 'onBulkPermission' permission true}}>Grant all</a>
-							<a class="dropdown-item" href="#" {{action 'onBulkPermission' permission false}}>Revoke all</a>
-						</div>
-
+						<i class="dicon {{constants.Icon.TriangleSmallDown}} cursor-pointer"/>
+						{{#attach-popover class="ember-attacher-popper" hideOn="clickout" showOn="click" isShown=false}}
+							<div class="menu">
+								<a class="item" href="#" {{action "onBulkPermission" permission true}}>Grant all</a>
+								<a class="item" href="#" {{action "onBulkPermission" permission false}}>Revoke all</a>
+							</div>
+						{{/attach-popover}}
 						{{#if (eq permission.who "role")}}
-							<span class="button-icon-blue button-icon-small align-middle">
-								<i class="material-icons">people</i>
-							</span>
-							<span class="color-blue">&nbsp;{{permission.name}}
-								<small class="form-text text-muted d-inline-block">({{permission.members}})</small>
-							</span>
+							<i class="dicon {{constants.Icon.People}}"/>
+							<span class="color-gray-700">&nbsp;{{permission.name}} ({{permission.members}})</span>
 						{{else}}
 							{{#if (eq permission.whoId constants.EveryoneUserId)}}
-								<span class="button-icon-green button-icon-small align-middle">
-									<i class="material-icons">language</i>
-								</span>
-								<span class="color-green">&nbsp;{{permission.name}}</span>
+								<i class="dicon {{constants.Icon.World}}"/>
+								<span class="color-green-700">&nbsp;{{permission.name}}</span>
 							{{else}}
-								<span class="button-icon-gray button-icon-small align-middle">
-									<i class="material-icons">person</i>
-								</span>
-								<span class="">&nbsp;{{permission.name}}
+								<i class="dicon {{constants.Icon.Person}}"/>
+								<span>&nbsp;{{permission.name}}
 									{{#if (eq permission.whoId session.user.id)}}
-										<small class="form-text text-muted d-inline-block">(you)</small>
+										&nbsp;(you)
 									{{/if}}
 								</span>
 							{{/if}}
@@ -90,69 +139,53 @@
 	</table>
 </div>
 
-<button type="button" class="btn btn-success font-weight-bold text-uppercase my-3" onclick={{action 'onSave'}}>SAVE</button>
-
-<div class="row my-3">
-	<div class="col-12 col-md-6">
-		<div class="content-zone">
-			<p class="explainer-text">Space permissions:</p>
-			<ul class="explainer-list">
-				<li>View &mdash; see content within this space</li>
-				<li>Manage &mdash; manage all aspects of space except deletion</li>
-				<li>Owner &mdash; manage and delete space</li>
-			</ul>
-		</div>
-	</div>
-	<div class="col-12 col-md-6">
-		<div class="content-zone">
-			<p class="explainer-text">Document permissions:</p>
-			<ul class="explainer-list explainer-gap">
-				<li>Create &mdash; create new documents</li>
-				<li>Edit &mdash; edit documents</li>
-				<li>Delete &mdash; delete documents</li>
-				<li>Move &mdash; move content between documents</li>
-				<li>Copy &mdash; copy content between documents</li>
-				<li>Templates &mdash; create, edit, delete document templates and content blocks</li>
-				<li>Approval &mdash; approve or reject content changes</li>
-				<li>Lifecycle &mdash; mark documents as Draft, Live or Archived</li>
-				<li>Versions &mdash; create versions of documents (baselining)</li>
-			</ul>
-		</div>
-	</div>
-</div>
+{{ui/ui-button color=constants.Color.Green light=true icon=constants.Icon.Locked
+	label=constants.Label.Save onClick=(action "onSave")}}
 
 <div id="space-add-user-modal" class="modal" tabindex="-1" role="dialog">
-	<div class="modal-dialog" role="document">
+	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
-			<div class="modal-header">Add User To Space</div>
+			<div class="modal-header">Add users to this space</div>
 			<div class="modal-body">
-				{{input id="user-search" type="text" class="form-control mousetrap" placeholder="Search for users by firstname, lastname, email" value=searchText key-up=(action 'onSearch')}}
-				{{#each filteredUsers as |user|}}
-					<div class="row my-3">
-						<div class="col-10">{{user.fullname}}</div>
-						<div class="col-2 text-right">
-							<button class="btn btn-success" {{action 'onAdd' user}}>Add</button>
-						</div>
+				{{input id="user-search" type="text" class="form-control mousetrap" placeholder="Search for users by firstname, lastname, email" value=searchText key-up=(action "onSearch")}}
+				{{ui/ui-spacer size=200}}
+				<div class="space-admin">
+					<div class="add-users">
+						{{#each filteredUsers as |user|}}
+							<div class="item">
+								{{#ui/ui-toolbar dark=false light=true raised=true large=false bordered=true}}
+									{{ui/ui-toolbar-icon
+										icon=constants.Icon.AddUser
+										color=constants.Color.Green
+										tooltip="Remove member"
+										onClick=(action "onAdd" user)}}
+									{{ui/ui-toolbar-label
+										color=constants.Color.Gray
+										label=user.fullname
+										onClick=(action "onAdd" user)}}
+								{{/ui/ui-toolbar}}
+							</div>
+						{{/each}}
 					</div>
-				{{/each}}
+				</div>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+	 			{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Close dismiss=true}}
 			</div>
 		</div>
 	</div>
 </div>
 
 <div id="space-invite-user-modal" class="modal" tabindex="-1" role="dialog">
-	<div class="modal-dialog" role="document">
+	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
-			<div class="modal-header">Invite Users to Space</div>
+			<div class="modal-header">Invite users to this space</div>
 			<div class="modal-body">
 				<p>Email invite leads to a smooth onboarding process</p>
-				<form onsubmit={{action 'onSpaceInvite'}}>
+				<form onsubmit={{action "onSpaceInvite"}}>
 					<div class="form-group">
 						<label for="space-invite-email">Email</label>
-						{{input id="space-invite-email" type='email' class="form-control mousetrap" placeholder="Enter email" value=inviteEmail}}
+						{{input id="space-invite-email" type="email" class="form-control mousetrap" placeholder="Enter email" value=inviteEmail}}
 						<small class="form-text text-muted">Comma separate multiple email addresses</small>
 					</div>
 					<div class="form-group">
@@ -162,8 +195,9 @@
 				</form>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
-				<button type="button" class="btn btn-success" onclick={{action 'onSpaceInvite'}}>Invite</button>
+				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Close dismiss=true}}
+				{{ui/ui-button-gap}}
+				{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Invite onClick=(action "onSpaceInvite")}}
 			</div>
 		</div>
 	</div>

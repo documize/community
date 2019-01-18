@@ -1,0 +1,57 @@
+.tabnav-control {
+	padding: 0 !important;
+	margin: 0 !important;
+	font-size: 0;
+
+	> .tab {
+		@extend .text-truncate;
+		display: inline-block;
+		margin: 0;
+		padding: 5px 15px;
+		background-color: map-get($gray-shades, 100);
+		border: 1px solid map-get($gray-shades, 200);
+		font-weight: 500;
+		font-size: 1.1rem;
+		text-align: center;
+		cursor: pointer;
+		line-height: 26px;
+		list-style-type: none;
+		margin-left: -4px;				// remove whitespace inline block
+		margin-top: -1px;				// ensure no double-border when tabs are stacked vertically on mobile device
+
+		&:first-of-type {
+			@include border-radius-left(3px);
+		}
+
+		&:last-of-type {
+			@include border-radius-right(3px);
+		}
+
+		&:hover {
+			background-color: map-get($gray-shades, 200);
+		}
+	}
+
+	> .tab-vertical {
+		display: block;
+		margin-left: 0;
+
+		&:first-of-type {
+			@include border-radius-top(3px);
+		}
+
+		&:last-of-type {
+			@include border-radius-bottom(3px);
+		}
+	}
+
+	> .selected {
+		color: map-get($yellow-shades, 700);
+		background-color: map-get($yellow-shades, 100);
+		font-weight: 500;
+	}
+}
+
+.tabnav-control-centered {
+	margin: 0 auto !important;
+}

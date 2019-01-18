@@ -52,11 +52,9 @@ export default Component.extend(AuthMixin, Notifier, {
 
 			let id = this.get('deleteBlockId');
 
-			this.showWait();
-
 			this.get('sectionSvc').deleteBlock(id).then(() => {
 				this.set('deleteBlockId', '');
-				this.showDone();
+				this.notifySuccess('Deleted');
 
 				this.get('sectionSvc').getSpaceBlocks(this.get('space.id')).then((blocks) => {
 					this.set('blocks', blocks);

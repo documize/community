@@ -43,4 +43,5 @@ type SiteMeta struct {
 	ConversionEndpoint   string         `json:"conversionEndpoint"`
 	Storage              env.StoreType  `json:"storageProvider"`
 	Location             string         `json:"location"` // reserved for internal use
+	Theme                string         `json:"theme"`    // default side-wide theme, user overrideble
 }

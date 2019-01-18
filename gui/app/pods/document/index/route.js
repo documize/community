@@ -19,6 +19,8 @@ export default Route.extend(AuthenticatedRouteMixin, {
 	linkService: service('link'),
 	folderService: service('folder'),
 	userService: service('user'),
+	contributionStatus: '',
+	approvalStatus: '',
 
 	beforeModel(transition) {
 		// Note the source that sent user to this document.
@@ -53,6 +55,8 @@ export default Route.extend(AuthenticatedRouteMixin, {
 	},
 
 	setupController(controller, model) {
+		this._super(controller, model);
+
 		controller.set('folders', model.folders);
 		controller.set('folder', model.folder);
 		controller.set('document', model.document);

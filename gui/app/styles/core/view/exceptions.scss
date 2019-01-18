@@ -1,0 +1,49 @@
+.documize-base-exception
+{
+	background-color: map-get($gray-shades, 100);
+	border: 1px solid map-get($gray-shades, 300) !important;
+	margin: 20px;
+	padding: 20px;
+	text-align: left;
+	font-size: 14px;
+	color: $color-black-light-1;
+
+	display: none !important;
+
+	.label
+	{
+		font-weight: bold;
+		text-transform: uppercase;
+		padding-right: 30px;
+	}
+}
+
+.documize-first-page
+{
+	@extend .documize-base-exception;
+}
+
+.documize-exotic-image
+{
+	@extend .documize-base-exception;
+}
+
+.documize-footnote
+{
+	@extend .documize-base-exception;
+}
+
+.documize-graphictext
+{
+	@extend .documize-base-exception;
+}
+
+.documize-math
+{
+	@extend .documize-base-exception;
+}
+
+.documize-attachment
+{
+	display: none !important;
+}

@@ -41,7 +41,7 @@ export default Service.extend({
 			});
 
 			templates = response.map((template) => {
-				let data = this.get('store').normalize('template', template);
+				let data = this.get('store').normalize('document', template);
 				return this.get('store').push(data);
 			});
 

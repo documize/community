@@ -1,0 +1,95 @@
+.modal-content {
+	border: none !important;
+}
+
+.empty-state {
+	text-align: center;
+	margin: 0 auto;
+	margin-top: 50px;
+	max-width: 500px;
+	padding: 30px;
+	@include border-radius(5px);
+	background-color: map-get($gray-shades, 100);
+	display: block;
+	opacity: 0.8;
+
+	> p {
+		font-size: 1.5rem;
+		line-height: 2.5rem;
+		color: map-get($gray-shades, 600);
+		display: block;
+	}
+
+	> .dicon {
+		font-size: 5rem;
+		color: map-get($gray-shades, 200);
+	}
+}
+
+.not-found {
+	text-align: center;
+	font-size: 2rem;
+	color: map-get($gray-shades, 600);
+	margin: 5rem 0;
+}
+
+.theme-picker {
+	display : block;
+	margin-bottom: 10px;
+
+	> .theme {
+		height: 60px;
+		width: 200px;
+		text-align: center;
+		color: $color-white;
+		font-weight: 500;
+		font-size: 1rem;
+		display: inline-block;
+		position: relative;
+		margin: 0 20px 20px 0;
+		padding: 5px;
+		cursor: default;
+		border: 3px solid map-get($gray-shades, 300);
+		@include border-radius(3px);
+
+		&:hover {
+			border: 3px solid map-get($gray-shades, 600);
+		}
+	}
+
+	> .selected {
+		border: 3px solid map-get($yellow-shades, 600);
+
+		&:hover {
+			border: 3px solid map-get($yellow-shades, 600);
+		}
+	}
+}
+
+.label-color-picker {
+	display : block;
+
+	> .color {
+		height: 60px;
+		width: 60px;
+		text-align: center;
+		display: inline-block;
+		position: relative;
+		margin: 0 20px 20px 0;
+		cursor: default;
+		border: 3px solid map-get($gray-shades, 300);
+		@include border-radius(3px);
+
+		&:hover {
+			border: 3px solid map-get($gray-shades, 600);
+		}
+	}
+
+	> .selected {
+		border: 3px solid map-get($yellow-shades, 600);
+
+		&:hover {
+			border: 3px solid map-get($yellow-shades, 600);
+		}
+	}
+}

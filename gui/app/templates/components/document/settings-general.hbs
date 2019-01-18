@@ -1,21 +1,25 @@
-<div class="content-zone">
-	<div class="explainer-header">General Options</div>
-	<p class="explainer-text explainer-gap">Set name, excerpt and lifecycle stage</p>
+{{layout/logo-heading
+	title="Content Settings"
+	desc="Set name, description and lifecycle stage"
+	icon=constants.Icon.Settings}}
 
-	<form class="view-document">
-		<div class="form-group">
-			<label for="document-name">Name</label>
-			{{focus-input id="document-name" type="text" value=docName
-				class=(if hasNameError 'form-control mousetrap is-invalid' 'form-control mousetrap') placeholder="Title" autocomplete="off"}}
-		</div>
+<form class="view-document">
+	<div class="form-group">
+		<label for="document-name">Name</label>
+		{{focus-input id="document-name" type="text" value=docName
+			class=(if hasNameError "form-control mousetrap is-invalid" "form-control mousetrap") placeholder="Title" autocomplete="off"}}
+	</div>
 
-		<div class="form-group">
-			<label for="document-excerpt">Excerpt</label>
-			{{textarea id="document-excerpt" rows="4" value=docExcerpt class='form-control mousetrap' placeholder="Excerpt" autocomplete="off"}}
-			<small class="form-text text-muted">Optional description explaining content</small>
-		</div>
+	<div class="form-group">
+		<label for="document-excerpt">Description</label>
+		{{textarea id="document-excerpt" rows="4" value=docExcerpt class="form-control mousetrap" placeholder="Excerpt" autocomplete="off"}}
+		<small class="form-text text-muted">Optional description explaining content</small>
+	</div>
 
-		<button type="submit" class="btn btn-success text-uppercase font-weight-bold mt-5" {{action "onSave"}}>Save</button>
-	</form>
-</div>
-
+	{{ui/ui-button
+		color=constants.Color.Green
+		icon=constants.Icon.Settings
+		label=constants.Label.Save
+		light=true
+		onClick=(action "onSave")}}
+</form>

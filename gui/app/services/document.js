@@ -356,7 +356,7 @@ export default Service.extend({
 	},
 
 	//**************************************************
-	// Export
+	// Export content to HTML
 	//**************************************************
 
 	export(spec) {
@@ -365,6 +365,14 @@ export default Service.extend({
 			contentType: 'json',
 			dataType: 'html'
 		});
+	},
+
+	//**************************************************
+	// Secure document attachment download
+	//**************************************************
+
+	downloadAttachment(fileId) {
+		return this.get('ajax').get(`attachment/${fileId}`, {});
 	},
 
 	//**************************************************

@@ -41,6 +41,8 @@ export default Service.extend({
 	location: 'selfhost',
 	// for bugfix releases, only admin is made aware of new release and end users see no What's New messaging
 	updateAvailable: false,
+	// empty theme uses default theme
+	theme: '',
 
 	getBaseUrl(endpoint) {
 		return [this.get('endpoint'), endpoint].join('/');
@@ -75,6 +77,9 @@ export default Service.extend({
 			this.set('version', 'v' + this.get('version'));
 			this.set('appHost', window.location.host);
 
+			// Handle theming
+			this.setTheme(this.get('theme'));
+
 			if (requestedRoute === 'secure') {
 				this.setProperties({
 					title: htmlSafe("Secure document viewing"),
@@ -108,6 +113,26 @@ export default Service.extend({
 				if (re === 'Enterprise' && isNewEnterprise) self.set('updateAvailable', true);
 			});
 
+			return response;
+		});
+	},
+
+	setTheme(theme) {
+		$('#theme-link').remove();
+
+		theme = theme.toLowerCase().replace(' ', '-').replace('default', '').trim();
+		if (theme.length === 0) {
+			return;
+		}
+
+		let file = window.assetMapping[`theme${theme}`]
+		$('head').append(`<link id="theme-link" rel="stylesheet" href="${file}">`);
+	},
+
+	getThemes() {
+		return this.get('ajax').request(`public/meta/themes`, {
+			method: 'GET'
+		}).then((response) => {
 			return response;
 		});
 	}

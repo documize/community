@@ -1,0 +1,90 @@
+.section-trello-board {
+    width: 100%;
+    padding: 10px;
+    white-space: nowrap;
+    overflow: auto
+}
+
+.section-trello-board-title {
+    font-weight: bold;
+    color: #fff;
+    font-size: 16px;
+}
+
+.section-trello-list {
+    background-color: #e2e4e6;
+    padding: 10px;
+    border-radius: 3px;
+    margin: 10px 10px 0 0;
+    max-width: 300px;
+}
+
+.section-trello-list-title {
+    font-weight: bold;
+    color: #4c4c4c;
+    font-size: 14px;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.section-trello-list-checkbox {
+	vertical-align: middle;
+	margin-right: 10px;
+}
+
+.section-trello-render {
+	> .trello-board {
+		width: 100%;
+		max-height: 600px;
+		padding: 10px;
+		white-space: nowrap;
+		overflow: auto;
+
+        > a {
+            > .trello-board-title {
+                font-weight: bold;
+                color: #fff;
+                font-size: 16px;
+            }
+        }
+
+        > .trello-list {
+            background-color: #e2e4e6;
+            padding: 10px;
+            border-radius: 3px;
+            margin: 10px 10px 0 0;
+            width: 300px;
+            max-height: 500px;
+            display: inline-block;
+            white-space: nowrap;
+            overflow: auto;
+            vertical-align: top;
+
+            > .trello-list-title {
+                font-weight: bold;
+                color: #4c4c4c;
+                font-size: 14px;
+                margin: 0 10px 10px 0;
+            }
+
+            > a {
+                > .trello-card {
+                    color: #4c4c4c;
+                    border-bottom: 1px solid #CDD2D4;
+                    background-color: #fff;
+                    border-radius: 3px;
+                    padding: 7px 7px;
+                    margin: 5px 0;
+                    font-size: 14px;
+                    font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+                    line-height: 18px;
+                    overflow: hidden;
+                    word-wrap: break-word;
+                    white-space: normal;
+                    cursor: pointer;
+                    vertical-align: top;
+                }
+            }
+        }
+	}
+}

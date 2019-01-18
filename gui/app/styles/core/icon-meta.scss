@@ -1,0 +1,334 @@
+@font-face {
+	font-family: 'dmzmeta';
+	src: url('font/dmzmeta.eot');
+	src: url('font/dmzmeta.eot') format('embedded-opentype'), url('font/dmzmeta.woff2') format('woff2'), url('font/dmzmeta.woff') format('woff'), url('font/dmzmeta.ttf') format('truetype'), url('font/dmzmeta.svg') format('svg');
+	font-weight: normal;
+	font-style: normal;
+  }
+/*------------------------
+	base class definition
+-------------------------*/
+.dmeta {
+	display: inline-block;
+	font: normal normal normal 1em/1 'dmzmeta';
+	/* speak: none; */
+	text-transform: none;
+	/* Better Font Rendering */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+  }
+  /*------------------------
+	change icon size
+  -------------------------*/
+  /* relative units */
+  .dmeta-sm {
+	font-size: 0.8em;
+  }
+  .dmeta-lg {
+	font-size: 1.2em;
+  }
+  /* absolute units */
+  .dmeta-16 {
+	font-size: 16px;
+  }
+  .dmeta-32 {
+	font-size: 32px;
+  }
+  /*----------------------------------
+	add a square/circle background
+  -----------------------------------*/
+  .dmeta-bg-square,
+  .dmeta-bg-circle {
+	padding: 0.35em;
+	background-color: #eee;
+  }
+  .dmeta-bg-circle {
+	border-radius: 50%;
+  }
+  /*------------------------------------
+	use icons as list item markers
+  -------------------------------------*/
+  .dmeta-ul {
+	padding-left: 0;
+	list-style-type: none;
+  }
+  .dmeta-ul > li {
+	display: flex;
+	align-items: flex-start;
+	line-height: 1.4;
+  }
+  .dmeta-ul > li > .dmeta {
+	margin-right: 0.4em;
+	line-height: inherit;
+  }
+  /*------------------------
+	spinning icons
+  -------------------------*/
+  .dmeta-is-spinning {
+	-webkit-animation: dmeta-spin 2s infinite linear;
+	-moz-animation: dmeta-spin 2s infinite linear;
+	animation: dmeta-spin 2s infinite linear;
+  }
+  @-webkit-keyframes dmeta-spin {
+	0% {
+	  -webkit-transform: rotate(0deg);
+	}
+	100% {
+	  -webkit-transform: rotate(360deg);
+	}
+  }
+  @-moz-keyframes dmeta-spin {
+	0% {
+	  -moz-transform: rotate(0deg);
+	}
+	100% {
+	  -moz-transform: rotate(360deg);
+	}
+  }
+  @keyframes dmeta-spin {
+	0% {
+	  -webkit-transform: rotate(0deg);
+	  -moz-transform: rotate(0deg);
+	  -ms-transform: rotate(0deg);
+	  -o-transform: rotate(0deg);
+	  transform: rotate(0deg);
+	}
+	100% {
+	  -webkit-transform: rotate(360deg);
+	  -moz-transform: rotate(360deg);
+	  -ms-transform: rotate(360deg);
+	  -o-transform: rotate(360deg);
+	  transform: rotate(360deg);
+	}
+  }
+  /*------------------------
+	rotated/flipped icons
+  -------------------------*/
+  .dmeta-rotate-90 {
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
+	-webkit-transform: rotate(90deg);
+	-moz-transform: rotate(90deg);
+	-ms-transform: rotate(90deg);
+	-o-transform: rotate(90deg);
+	transform: rotate(90deg);
+  }
+  .dmeta-rotate-180 {
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
+	-webkit-transform: rotate(180deg);
+	-moz-transform: rotate(180deg);
+	-ms-transform: rotate(180deg);
+	-o-transform: rotate(180deg);
+	transform: rotate(180deg);
+  }
+  .dmeta-rotate-270 {
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+	-webkit-transform: rotate(270deg);
+	-moz-transform: rotate(270deg);
+	-ms-transform: rotate(270deg);
+	-o-transform: rotate(270deg);
+	transform: rotate(270deg);
+  }
+  .dmeta-flip-y {
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=0);
+	-webkit-transform: scale(-1, 1);
+	-moz-transform: scale(-1, 1);
+	-ms-transform: scale(-1, 1);
+	-o-transform: scale(-1, 1);
+	transform: scale(-1, 1);
+  }
+  .dmeta-flip-x {
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
+	-webkit-transform: scale(1, -1);
+	-moz-transform: scale(1, -1);
+	-ms-transform: scale(1, -1);
+	-o-transform: scale(1, -1);
+	transform: scale(1, -1);
+  }
+  /*------------------------
+	  icons
+  -------------------------*/
+
+  .dmeta-meta-checklist::before {
+	content: "\ea02";
+  }
+
+  .dmeta-meta-people::before {
+	content: "\ea03";
+  }
+
+  .dmeta-meta-components::before {
+	content: "\ea06";
+  }
+
+  .dmeta-meta-plan::before {
+	content: "\ea07";
+  }
+
+  .dmeta-meta-world::before {
+	content: "\ea09";
+  }
+
+  .dmeta-meta-devops::before {
+	content: "\ea0a";
+  }
+
+  .dmeta-meta-announce::before {
+	content: "\ea0c";
+  }
+
+  .dmeta-meta-marketing::before {
+	content: "\ea0d";
+  }
+
+  .dmeta-meta-sales::before {
+	content: "\ea0e";
+  }
+
+  .dmeta-meta-time::before {
+	content: "\ea0f";
+  }
+
+  .dmeta-meta-rocket::before {
+	content: "\ea10";
+  }
+
+  .dmeta-meta-smile::before {
+	content: "\ea11";
+  }
+
+  .dmeta-meta-guide::before {
+	content: "\ea12";
+  }
+
+  .dmeta-meta-tune::before {
+	content: "\ea13";
+  }
+
+  .dmeta-meta-security::before {
+	content: "\ea15";
+  }
+
+  .dmeta-meta-money::before {
+	content: "\ea16";
+  }
+
+  .dmeta-meta-roadmap::before {
+	content: "\ea17";
+  }
+
+  .dmeta-meta-winner::before {
+	content: "\ea19";
+  }
+
+  .dmeta-meta-travel::before {
+	content: "\ea1a";
+  }
+
+  .dmeta-meta-incoming::before {
+	content: "\ea1e";
+  }
+
+  .dmeta-meta-outgoing::before {
+	content: "\ea1f";
+  }
+
+  .dmeta-meta-procedure::before {
+	content: "\ea20";
+  }
+
+  .dmeta-meta-todo::before {
+	content: "\ea21";
+  }
+
+  .dmeta-meta-infinite::before {
+	content: "\ea22";
+  }
+
+  .dmeta-meta-home::before {
+	content: "\ea23";
+  }
+
+  .dmeta-meta-org::before {
+	content: "\ea24";
+  }
+
+  .dmeta-meta-partner::before {
+	content: "\ea25";
+  }
+
+  .dmeta-meta-in::before {
+	content: "\ea28";
+  }
+
+  .dmeta-meta-out::before {
+	content: "\ea29";
+  }
+
+  .dmeta-meta-flow::before {
+	content: "\ea2b";
+  }
+
+  .dmeta-meta-manuals::before {
+	content: "\ea32";
+  }
+
+  .dmeta-meta-help::before {
+	content: "\ea35";
+  }
+
+  .dmeta-meta-code::before {
+	content: "\ea36";
+  }
+
+  .dmeta-meta-lab::before {
+	content: "\ea37";
+  }
+
+  .dmeta-meta-finance::before {
+	content: "\ea38";
+  }
+
+  .dmeta-meta-barchart::before {
+	content: "\ea39";
+  }
+
+  .dmeta-meta-piechart::before {
+	content: "\ea3a";
+  }
+
+  .dmeta-meta-metrics::before {
+	content: "\ea3b";
+  }
+
+  .dmeta-meta-bulb::before {
+	content: "\ea3c";
+  }
+
+  .dmeta-meta-design::before {
+	content: "\ea3d";
+  }
+
+  .dmeta-meta-gift::before {
+	content: "\ea3e";
+  }
+
+  .dmeta-meta-box::before {
+	content: "\ea3f";
+  }
+
+  .dmeta-meta-apps::before {
+	content: "\ea40";
+  }
+
+  .dmeta-meta-message::before {
+	content: "\ea41";
+  }
+
+  .dmeta-meta-support::before {
+	content: "\ea42";
+  }
+
+  .dmeta-meta-star::before {
+	content: "\ea43";
+  }
+

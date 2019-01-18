@@ -1,0 +1,177 @@
+@mixin button-shadow-light() {
+	box-shadow: 1px 1px 3px 0px map-get($gray-shades, 300);
+}
+@mixin button-shadow() {
+	box-shadow: 1px 1px 3px 0px map-get($gray-shades, 500);
+}
+
+%dmz-button {
+	display: inline-block;
+    white-space: nowrap;
+    vertical-align: middle;
+    text-align: center;
+    padding: 0.375rem 0.75rem;
+    font-weight: 500;
+    font-size: 1rem;
+    line-height: 1.5;
+    border: 1px solid transparent;
+	text-transform: uppercase;
+	cursor: pointer;
+	@extend .no-select;
+	@include button-shadow();
+	@include border-radius(2px);
+
+	> .dicon {
+		font-size: 1rem;
+		padding: 0.2rem 0.4rem 0 0;
+		font-weight: 500;
+	}
+
+	> .label {
+		display: inline-block;
+		margin: 0;
+		padding: 0;
+		vertical-align: top;
+	}
+}
+
+// Button spacer utilities
+.dmz-button-gap-right {
+	margin: 0 5px 0 0;
+	display: inline-block;
+}
+.dmz-button-gap-left {
+	margin: 0 0 0 5px;
+	display: inline-block;
+}
+.dmz-button-gap-x {
+	margin: 0 5px;
+	display: inline-block;
+}
+.dmz-button-gap-top {
+	margin: 5px 0 0 0;
+	display: inline-block;
+}
+.dmz-button-gap-bottom {
+	margin: 0 0 5px 0;
+	display: inline-block;
+}
+.dmz-button-gap-y {
+	margin: 5px 0;
+	display: inline-block;
+}
+.dmz-button-gap-x-y {
+	margin: 5px;
+	display: inline-block;
+}
+
+// Colored buttons
+.dmz-button-green {
+	@extend %dmz-button;
+	background-color: map-get($green-shades, 600);
+	color: $color-white;
+	@include button-shadow();
+
+	&:hover {
+		background-color: map-get($green-shades, 700);
+	}
+}
+.dmz-button-green-light {
+	@extend %dmz-button;
+	background-color: map-get($green-shades, 200);
+	color: map-get($green-shades, 700);
+	border: 1px solid map-get($green-shades, 300);
+	@include button-shadow-light();
+
+	&:hover {
+		background-color: map-get($green-shades, 300);
+	}
+}
+
+.dmz-button-yellow {
+	@extend %dmz-button;
+	background-color: map-get($yellow-shades, 600);
+	color: $color-white;
+	@include button-shadow();
+
+	&:hover {
+		background-color: map-get($yellow-shades, 700);
+	}
+}
+.dmz-button-yellow-light {
+	@extend %dmz-button;
+	background-color: map-get($yellow-shades, 200);
+	color: map-get($yellow-shades, 700);
+	border: 1px solid map-get($yellow-shades, 300);
+	@include button-shadow-light();
+
+	&:hover {
+		background-color: map-get($yellow-shades, 300);
+	}
+}
+
+.dmz-button-red {
+	@extend %dmz-button;
+	background-color: map-get($red-shades, 600);
+	color: $color-white;
+	@include button-shadow();
+
+	&:hover {
+		background-color: map-get($red-shades, 700);
+	}
+}
+.dmz-button-red-light {
+	@extend %dmz-button;
+	background-color: map-get($red-shades, 100);
+	color: map-get($red-shades, 700);
+	border: 1px solid map-get($red-shades, 200);
+	@include button-shadow-light();
+
+	&:hover {
+		background-color: map-get($red-shades, 200);
+	}
+}
+
+.dmz-button-gray {
+	@extend %dmz-button;
+	background-color: map-get($gray-shades, 600);
+	color: $color-white;
+	@include button-shadow();
+
+	&:hover {
+		background-color: map-get($gray-shades, 700);
+	}
+}
+.dmz-button-gray-light {
+	@extend %dmz-button;
+	background-color: map-get($gray-shades, 200);
+	color: map-get($gray-shades, 700);
+	border: 1px solid map-get($gray-shades, 300);
+	@include button-shadow-light();
+
+	&:hover {
+		background-color: map-get($gray-shades, 300);
+	}
+}
+
+.dmz-button-theme {
+	@extend %dmz-button;
+	background-color: $theme-800;
+	color: $color-white;
+	@include button-shadow();
+
+	&:hover {
+		background-color: $theme-600;
+	}
+}
+.dmz-button-theme-light {
+	@extend %dmz-button;
+	background-color: $theme-100;
+	color: $theme-800;
+	border: 1px solid $theme-200;
+	@include button-shadow-light();
+
+	&:hover {
+		background-color: $theme-200;
+	}
+}

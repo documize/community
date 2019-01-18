@@ -10,21 +10,73 @@
 // https://documize.com
 
 import { computed } from '@ember/object';
-import Model from 'ember-data/model';
 import attr from 'ember-data/attr';
 import stringUtil from '../utils/string';
-// import { belongsTo, hasMany } from 'ember-data/relationships';
+import Model from 'ember-data/model';
+
 
 export default Model.extend({
-	author: attr('string'),
-	dated: attr(),
-	description: attr('string'),
-	title: attr('string'),
-	type: attr('number', { defaultValue: 0 }),
+	name: attr('string'),
+	excerpt: attr('string'),
+	job: attr('string'),
+	location: attr('string'),
+	orgId: attr('string'),
+	spaceId: attr('string'),
+	userId: attr('string'),
+	tags: attr('string'),
+	template: attr('boolean'),
+	protection: attr('number', { defaultValue: 0 }),
+	approval: attr('number', { defaultValue: 0 }),
+	lifecycle: attr('number', { defaultValue: 1 }),
+	versioned: attr('boolean'),
+	versionId: attr('string'),
+	versionOrder: attr('number', { defaultValue: 0 }),
+	groupId: attr('string'),
 
-	slug: computed('title', function () {
-		return stringUtil.makeSlug(this.get('title'));
+	// client-side property
+	selected: attr('boolean', { defaultValue: false }),
+	slug: computed('name', function () {
+		return stringUtil.makeSlug(this.get('name'));
 	}),
 	created: attr(),
-	revised: attr()
+	revised: attr(),
+
+	isDraft: computed('lifecycle', function () {
+		let constants = this.get('constants');
+		return this.get('lifecycle') == constants.Lifecycle.Draft;
+	}),
+
+	isLive: computed('lifecycle', function () {
+		let constants = this.get('constants');
+		return this.get('lifecycle') == constants.Lifecycle.Live;
+	}),
+
+	lifecycleLabel: computed('lifecycle', function () {
+		let constants = this.get('constants');
+		switch (this.get('lifecycle')) {
+			case constants.Lifecycle.Draft:
+				return constants.Lifecycle.DraftLabel;
+			case constants.Lifecycle.Live:
+				return constants.Lifecycle.LiveLabel;
+			case constants.Lifecycle.Archived:
+				return constants.Lifecycle.ArchivedLabel;
+		}
+
+		return '';
+	}),
 });
+
+
+// export default Model.extend({
+// 	author: attr('string'),
+// 	dated: attr(),
+// 	description: attr('string'),
+// 	title: attr('string'),
+// 	type: attr('number', { defaultValue: 0 }),
+
+// 	slug: computed('title', function () {
+// 		return stringUtil.makeSlug(this.get('title'));
+// 	}),
+// 	created: attr(),
+// 	revised: attr()
+// });

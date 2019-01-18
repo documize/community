@@ -10,20 +10,22 @@
 // https://documize.com
 
 import $ from 'jquery';
+import { observer } from '@ember/object';
 import { inject as service } from '@ember/service';
 import { schedule, debounce } from '@ember/runloop';
-import TooltipMixin from '../../mixins/tooltip';
 import AuthProvider from '../../mixins/auth';
 import ModalMixin from '../../mixins/modal';
+import Notifier from '../../mixins/notifier';
 import Component from '@ember/component';
 
-export default Component.extend(AuthProvider, ModalMixin, TooltipMixin, {
+export default Component.extend(AuthProvider, ModalMixin, Notifier, {
 	groupSvc: service('group'),
 	editUser: null,
 	deleteUser: null,
 	filter: '',
 	hasSelectedUsers: false,
 	showDeleteDialog: false,
+	showPermExplain: false,
 
 	init() {
 		this._super(...arguments);
@@ -46,24 +48,27 @@ export default Component.extend(AuthProvider, ModalMixin, TooltipMixin, {
 		});
 
 		this.set('users', users);
-
-		this.renderTooltips();
 	},
 
-	willDestroyElement() {
-		this._super(...arguments);
-		this.removeTooltips();
-	},
-
-	onKeywordChange: function () {
+	onKeywordChange: observer('filter', function() {
 		debounce(this, this.filterUsers, 350);
-	}.observes('filter'),
+	}),
 
 	filterUsers() {
 		this.get('onFilter')(this.get('filter'));
 	},
 
 	actions: {
+		togglePerms() {
+			this.set('showPermExplain', !this.get('showPermExplain'));
+
+			if (this.showPermExplain) {
+				this.$(".perms").show();
+			} else {
+				this.$(".perms").hide();
+			}
+		},
+
 		toggleSelect(user) {
 			user.set('selected', !user.get('selected'));
 
@@ -178,7 +183,13 @@ export default Component.extend(AuthProvider, ModalMixin, TooltipMixin, {
 			let cb = this.get('onDelete');
 			cb(this.get('deleteUser.id'));
 
+			this.notifySuccess("Deleted user");
+
 			return true;
+		},
+
+		onShowDeleteBulk() {
+			this.modalOpen("#admin-user-delete-modal", {"show": true});
 		},
 
 		onBulkDelete() {
@@ -191,6 +202,8 @@ export default Component.extend(AuthProvider, ModalMixin, TooltipMixin, {
 
 			this.set('selectedUsers', []);
 			this.set('hasSelectedUsers', false);
+
+			this.notifySuccess("Deleted selected users");
 
 			this.modalClose('#admin-user-delete-modal');
 		},

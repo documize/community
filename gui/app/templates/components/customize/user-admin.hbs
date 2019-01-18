@@ -1,56 +1,44 @@
-<div class="row">
-	<div class="col">
-		<div class="view-customize">
-			<h1 class="admin-heading">Users</h1>
-			<h2 class="sub-heading">Set basic information, passwords and permissions for {{users.length}} users</h2>
-
-			{{#if isAuthProviderDocumize}}
-				<div class="btn btn-success mt-3 mb-3" {{action 'onOpenUserModal'}}>Add user</div>
-				<div id="add-user-modal" class="modal" tabindex="-1" role="dialog">
-					<div class="modal-dialog modal-lg" role="document">
-						<div class="modal-content">
-							<div class="modal-header">Add User</div>
-							<div class="modal-body">
-								<form onsubmit={{action 'onAddUser'}}>
-									<div class="form-row">
-										<div class="col">
-											<label for="newUserFirstname">Firstname</label>
-											{{input id="newUserFirstname" type="text" class="form-control" placeholder="Firstname" value=newUser.firstname}}
-										</div>
-										<div class="col">
-											<label for="newUserLastname">Lastname</label>
-											{{input id="newUserLastname" type="text" class="form-control" placeholder="Lastname" value=newUser.lastname}}
-										</div>
-										<div class="col">
-											<label for="newUserEmail">Email</label>
-											{{input id="newUserEmail" type="email" class="form-control" placeholder="Email" value=newUser.email}}
-										</div>
-									</div>
-									<div class="form-row">
-										<div class="col mt-3 text-right">
-											<button type="submit" class="btn btn-success" {{action 'onAddUser'}}>Add user</button>
-										</div>
-									</div>
-								</form>
-								<form onsubmit={{action 'onAddUser'}}>
-									<div class="form-group">
-										<label for="edit-group-desc">Bulk create users</label>
-										{{textarea id="bulkUsers" value=bulkUsers class="form-control" rows="5" placeholder="firstname, lastname, email"}}
-										<small class="form-text text-muted">Comma-delimited list: firstname, lastname, email</small>
-									</div>
-									<div class="text-right">
-										<button type="submit" class="btn btn-success" {{action 'onAddUsers'}}>Add users</button>
-									</div>
-								</form>
+<div class="view-customize">
+	{{#if isAuthProviderDocumize}}
+		{{ui/ui-button color=constants.Color.Green light=true icon=constants.Icon.Person label=constants.Label.Add onClick=(action "onOpenUserModal")}}
+		<div id="add-user-modal" class="modal" tabindex="-1" role="dialog">
+			<div class="modal-dialog modal-lg" role="document">
+				<div class="modal-content">
+					<div class="modal-header">Add Users</div>
+					<div class="modal-body">
+						<form onsubmit={{action "onAddUser"}}>
+							<div class="form-row">
+								<div class="col">
+									<label for="newUserFirstname">Firstname</label>
+									{{input id="newUserFirstname" type="text" class="form-control" placeholder="Firstname" value=newUser.firstname}}
+								</div>
+								<div class="col">
+									<label for="newUserLastname">Lastname</label>
+									{{input id="newUserLastname" type="text" class="form-control" placeholder="Lastname" value=newUser.lastname}}
+								</div>
+								<div class="col">
+									<label for="newUserEmail">Email</label>
+									{{input id="newUserEmail" type="email" class="form-control" placeholder="Email" value=newUser.email}}
+								</div>
 							</div>
-							<div class="modal-footer mt-4">
-								<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+							{{ui/ui-spacer size=200}}
+							{{ui/ui-button color=constants.Color.Green icon=constants.Icon.Person light=true label=constants.Label.Add onClick=(action "onAddUser")}}
+							{{ui/ui-spacer size=300}}
+						</form>
+						<form onsubmit={{action "onAddUser"}}>
+							<div class="form-group">
+								<label for="edit-group-desc">Bulk Upload</label>
+								{{textarea id="bulkUsers" value=bulkUsers class="form-control" rows="5" placeholder="firstname, lastname, email"}}
+								<small class="form-text text-muted">Comma-delimited list: firstname, lastname, email</small>
 							</div>
-						</div>
+							{{ui/ui-button color=constants.Color.Green icon=constants.Icon.People light=true label=constants.Label.Add onClick=(action "onAddUsers")}}
+						</form>
+					</div>
+					<div class="modal-footer">
+						{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Close dismiss=true}}
 					</div>
 				</div>
-			{{/if}}
-
+			</div>
 		</div>
-	</div>
+	{{/if}}
 </div>

@@ -8,20 +8,7 @@
 // by contacting <sales@documize.com>.
 //
 // https://documize.com
-@import "color.scss";
-@import "font.scss";
-@import "mixins.scss";
-@import "base.scss";
-@import "bootstrap.scss";
 
-@import "view/common.scss";
-@import "widget/widget.scss";
-@import "view/toolbar.scss";
-@import "view/views.scss";
-@import "layout/all.scss";
+@import "colors.scss";
+@import "core/all.scss";
 
-@import "vendor.scss";
-@import "print.scss";
-@import "news.scss";
-@import "section/all.scss";
-@import "enterprise/all.scss";

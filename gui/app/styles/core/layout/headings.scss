@@ -1,0 +1,31 @@
+// Headings
+.master-page-heading {
+	font-size: 2rem;
+	font-weight: 700;
+	color: map-get($gray-shades, 800);
+}
+
+.master-page-desc {
+	font-size: 1.2rem;
+	font-weight: 400;
+	color: map-get($gray-shades, 800);
+}
+
+.logo-heading {
+	display: flex;
+	flex-direction: row;
+
+	> .icon, > .meta-icon, > .meta-logo {
+		align-self: center;
+		margin-right: 25px;
+
+		> i {
+			font-size: 3.5rem;
+			color: map-get($gray-shades, 600);
+		}
+	}
+
+	> .text {
+		align-self: flex-start;
+	}
+}

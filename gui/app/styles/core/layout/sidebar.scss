@@ -1,0 +1,187 @@
+.sidebar-content {
+	display: block;
+	position: relative;
+	// @extend .text-truncate;
+
+	> .section {
+		margin: 0;
+		padding: 0 7px;
+
+		> .title {
+			text-transform: uppercase;
+			font-size: 1rem;
+			font-weight: 600;
+			color: map-get($gray-shades, 700);
+		}
+
+		> .nav-button {
+			width: 100%;
+			display: inline-block;
+			@extend .no-select;
+		}
+
+		> .center {
+			text-align: center;
+		}
+
+		> .text {
+			margin: 10px 0;
+			font-size: 1rem;
+			font-weight: 500;
+			color: $color-black-light-3;
+		}
+
+		> .form-field {
+			margin: 10px 0 5px 0;
+		}
+
+		> .label {
+			@include border-radius(3px);
+			@extend .no-select;
+			display: inline-block;
+			margin: 10px 0 13px 0;
+			padding: 0.3rem 0.7rem;
+			font-size: 1.1rem;
+			font-weight: 400;
+			background-color: map-get($gray-shades, 600);
+			color: map-get($gray-shades, 100);
+		}
+
+		> .list {
+			margin: 10px 0;
+
+			> .item {
+				padding: 3px 0;
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				cursor: pointer;
+
+				> .dicon {
+					font-size: 16px;
+					font-weight: bold;
+					color: map-get($gray-shades, 500);
+				}
+
+				> .name {
+					display: inline-block;
+					padding: 0 0 0 8px;
+					font-size: 1rem;
+					font-weight: 500;
+					color: $color-black-light-3;
+				}
+
+				> input[type=checkbox] {
+					margin: -6px 0 0 0;
+					padding: 0;
+				}
+
+				> .label-color {
+					@include border-radius(3px);
+				}
+
+				&:hover {
+					> .dicon {
+						color: map-get($gray-shades, 600);
+					}
+
+					> .name {
+						color: $color-black-light-1;
+					}
+				}
+			}
+
+			> .selected {
+				> .dicon, > .name, &:hover {
+					color: $theme-500 !important;
+					font-weight: 600 !important;
+				}
+			}
+		}
+
+		> .tabs {
+			margin: 0;
+			padding: 0;
+
+			> .tab {
+				margin: 20px 0;
+				padding: 10px 10px;
+				@include border-radius(3px);
+				background-color: $color-white;
+				border: 1px solid map-get($gray-shades, 200);
+				cursor: pointer;
+
+				> .icon {
+					display: inline-block;
+					font-size: 24px;
+					color: map-get($gray-shades, 700);
+					margin: 0 10px 0 0;
+					vertical-align: top;
+				}
+
+				> .text {
+					display: inline-block;
+
+					> .title {
+						display: block;
+						font-size: 1.1rem;
+						font-weight: 500;
+						color: map-get($gray-shades, 800);
+					}
+
+					> .desc {
+						display: block;
+						margin: 5px 0 5px 0;
+						font-size: 1rem;
+						font-weight: 400;
+						color: map-get($gray-shades, 700);
+					}
+				}
+
+				&:hover {
+					> .icon {
+						color: map-get($gray-shades, 800);
+					}
+
+					> .text {
+						> .title {
+							color: map-get($gray-shades, 900);
+						}
+
+						> .desc {
+							color: map-get($gray-shades, 800);
+						}
+					}
+				}
+			}
+
+			> .selected, > .selected:hover {
+				background-color: map-get($yellow-shades, 200);
+				border: 1px solid map-get($yellow-shades, 300);
+
+				> .icon {
+					color: map-get($yellow-shades, 700);
+				}
+
+				> .text {
+					> .title {
+						color: map-get($yellow-shades, 800);
+					}
+
+					> .desc {
+						color: map-get($yellow-shades, 700);
+					}
+				}
+			}
+		}
+	}
+
+	.empty-label {
+		margin: 10px 0;
+		font-size: 1rem;
+		font-weight: 500;
+		color: map-get($gray-shades, 700);
+		font-style: italic;
+		padding: 0 7px;
+	}
+}

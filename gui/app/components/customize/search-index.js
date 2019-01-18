@@ -10,16 +10,20 @@
 // https://documize.com
 
 import { inject as service } from '@ember/service';
+import Notifier from '../../mixins/notifier';
 import Component from '@ember/component';
 
-export default Component.extend({
+export default Component.extend(Notifier, {
 	appMeta: service(),
-	buttonLabel: 'Rebuild Search Index',
+	buttonLabel: 'Rebuild',
 
 	actions: {
 		reindex() {
-			this.set('buttonLabel', 'Rebuilding search index...')
-			this.get('reindex')();
+			this.set('buttonLabel', 'Running...');
+			this.notifyInfo("Starting search re-index process");
+			this.get('reindex')(() => {
+				this.notifySuccess("Search re-indexing complete");
+			});
 		}
 	}
 });

@@ -105,6 +105,14 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	err = h.Store.Space.IncrementCategoryCount(ctx, cat.SpaceID)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
 	ctx.Transaction.Commit()
 
 	cat, err = h.Store.Category.Get(ctx, cat.RefID)
@@ -288,6 +296,14 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	// remove category
 	_, err = h.Store.Category.Delete(ctx, cat.RefID)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	err = h.Store.Space.DecrementCategoryCount(ctx, cat.SpaceID)
 	if err != nil {
 		ctx.Transaction.Rollback()
 		response.WriteServerError(w, method, err)

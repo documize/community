@@ -166,9 +166,6 @@ func (h *Handler) BySpace(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Sort by title.
-	sort.Sort(doc.ByName(documents))
-
 	// Remove documents that cannot be seen due to lack of
 	// category view/access permission.
 	cats, err := h.Store.Category.GetBySpace(ctx, spaceID)
@@ -177,6 +174,30 @@ func (h *Handler) BySpace(w http.ResponseWriter, r *http.Request) {
 
 	// Keep the latest version when faced with multiple versions.
 	filtered = FilterLastVersion(filtered)
+
+	// Sort document list by ID.
+	sort.Sort(doc.ByID(filtered))
+
+	// Attach category membership to each document.
+	// Put category names into map for easier retrieval.
+	catNames := make(map[string]string)
+	for i := range cats {
+		catNames[cats[i].RefID] = cats[i].Name
+	}
+	// Loop the smaller list which is categories assigned to documents.
+	for i := range members {
+		// Get name of category
+		cn := catNames[members[i].CategoryID]
+		// Find document that is assigned this category.
+		j := sort.Search(len(filtered), func(k int) bool { return filtered[k].RefID <= members[i].DocumentID })
+		// Attach category name to document
+		if j < len(filtered) && filtered[j].RefID == members[i].DocumentID {
+			filtered[j].Category = append(filtered[j].Category, cn)
+		}
+	}
+
+	// Sort document list by title.
+	sort.Sort(doc.ByName(filtered))
 
 	response.WriteJSON(w, filtered)
 }
@@ -394,6 +415,14 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 			DocumentID:   documentID,
 			SourceType:   activity.SourceTypeDocument,
 			ActivityType: activity.TypeDeleted})
+	}
+
+	err = h.Store.Space.DecrementContentCount(ctx, doc.SpaceID)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
 	}
 
 	ctx.Transaction.Commit()

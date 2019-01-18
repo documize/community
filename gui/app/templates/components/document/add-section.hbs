@@ -1,63 +1,43 @@
 <div id="add-section-modal" class="modal" tabindex="-1" role="dialog">
-	<div class="modal-dialog modal-80" role="document">
+	<div class="modal-dialog modal-60" role="document">
 		<div class="modal-content">
 			<div class="modal-header">Insert Section</div>
 			<div class="modal-body">
-
 				<div id="new-section-wizard" class="new-section-wizard">
-					<div class="container box">
-
-						<div class="row">
-							<div class="col-12">
-								<div class="form-group">
-									{{focus-input type="text" id="new-section-name" value=newSectionName
-										class=(if newSectionNameMissing 'mousetrap form-control form-control-lg	is-invalid' 'mousetrap form-control form-control-lg')
-										placeholder="Enter section name" autocomplete="off"}}
-								</div>
-							</div>
-						</div>
-
-						<div class="row">
-							<div class="col-12 col-md-6">
-								<div class="form-group">
-									<div class="new-section-caption">Select Section Type</div>
-									<ul class="preset-list">
-										{{#each sections as |section|}}
-										<li class="item" {{action 'onInsertSection' section}}>
-											<div class="icon">
-												<img class="img" src="/sections/{{section.contentType}}.png" srcset="/sections/{{section.contentType}}@2x.png" />
-											</div>
-											<div class='title'>{{section.title}}</div>
-										</li>
-										{{/each}}
-									</ul>
-								</div>
-							</div>
-							<div class="col-12 col-md-6">
-								<div class="new-section-caption">Select Re-usable Content</div>
-								{{#if hasBlocks}}
-									<ul class="block-list">
-										{{#each blocks as |block|}}
-											<li class="item" title="{{block.firstname}} {{block.lastname}}, {{time-ago block.created}}, used: {{ block.used }}" data-toggle="tooltip" data-placement="top">
-												<div class="details" {{action 'onInsertBlock' block}}>
-													<div class="title text-truncate">{{block.title}}</div>
-													<div class="desc text-truncate">{{block.excerpt}}</div>
-												</div>
-											</li>
-										{{/each}}
-									</ul>
-								{{else}}
-									<div class="new-section-empty">You have no reusable content &mdash; publish any document section as a template for others to reuse</div>
-								{{/if}}
-							</div>
-						</div>
-
+					<div class="form-group">
+						{{focus-input type="text" id="new-section-name" value=newSectionName
+							class=(if newSectionNameMissing "mousetrap form-control form-control-lg	is-invalid" "mousetrap form-control form-control-lg")
+							placeholder="Enter section name" autocomplete="off"}}
 					</div>
-				</div>
 
+					<ul class="options">
+						{{#each sections as |section|}}
+							<li class="preset-option" {{action "onInsertSection" section}}>
+								<div class="icon">
+									<img class="img" src="/sections/{{section.contentType}}.png" srcset="/sections/{{section.contentType}}@2x.png">
+								</div>
+								<div class="name">{{section.title}}</div>
+							</li>
+						{{/each}}
+						{{#if hasBlocks}}
+							<br>
+							<br>
+						{{/if}}
+						{{#each blocks as |block|}}
+							<li class="block-option" {{action "onInsertBlock" block}}>
+								<div class="name">{{block.title}}</div>
+								<div class="desc">{{block.excerpt}}</div>
+								{{#attach-tooltip showDelay=1000}}
+									{{block.excerpt}}<br>
+									Published by {{block.firstname}} {{block.lastname}}, {{time-ago block.created}}
+								{{/attach-tooltip}}
+							</li>
+						{{/each}}
+					</ul>
+				</div>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
 			</div>
 		</div>
 	</div>

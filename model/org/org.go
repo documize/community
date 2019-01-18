@@ -31,6 +31,7 @@ type Organization struct {
 	Serial               string `json:"serial"`
 	Active               bool   `json:"active"`
 	Subscription         string `json:"subscription"`
+	Theme                string `json:"theme"`
 }
 
 // StripSecrets removes sensitive information.

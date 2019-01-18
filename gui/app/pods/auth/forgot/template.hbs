@@ -1,11 +1,12 @@
 <div class="auth-center">
 	<div class="auth-box">
 		<div class="logo">
-			<img src="/assets/img/logo-purple.png" title="Documize" alt="Documize" class="img-fluid" />
-			<div class="url">Authenticate with {{appMeta.appHost}}</div>
+			<img src="{{appMeta.endpoint}}/public/logo?cb={{random-id}}"
+				title="Documize" alt="Documize" class="img-fluid">
+			<div class="url">{{appMeta.title}} ({{appMeta.appHost}})</div>
 		</div>
 		<div class="login-form">
-			{{forgot-password forgot=(action 'forgot')}}
+			{{user/forgot-password forgot=(action "forgot")}}
 		</div>
 	</div>
 </div>

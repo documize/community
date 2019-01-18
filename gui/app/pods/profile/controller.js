@@ -10,9 +10,8 @@
 // https://documize.com
 
 import { inject as service } from '@ember/service';
-
-import Controller from '@ember/controller';
 import { isPresent } from '@ember/utils';
+import Controller from '@ember/controller';
 
 export default Controller.extend({
 	userService: service('user'),

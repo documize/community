@@ -67,8 +67,6 @@ export default Controller.extend(NotifierMixin, {
 		},
 
 		onExportDocument(documents) {
-			this.showWait();
-
 			let spec = {
 				spaceId: this.get('model.folder.id'),
 				data: documents,
@@ -77,7 +75,7 @@ export default Controller.extend(NotifierMixin, {
 
 			this.get('documentSvc').export(spec).then((htmlExport) => {
 				this.get('browserSvc').downloadFile(htmlExport, this.get('model.folder.slug') + '.html');
-				this.showDone();
+				this.notifySuccess('Exported');
 			});
 		},
 

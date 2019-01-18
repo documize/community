@@ -95,11 +95,14 @@ export default Component.extend({
             }
 
             if ($("#stage-2-password-confirm").val() !== $("#stage-2-password").val()) {
-                $(".mismatch").show();
+                $("#stage-2-password").addClass("is-invalid");
+                $("#stage-2-password-confirm").addClass("is-invalid");
+                // $(".mismatch").show();
                 // $(".password-status").attr("src", "/assets/img/onboard/lock-red.png");
                 return;
             }
 
+			$("#stage-2-password").removeClass("is-invalid");
 			$("#stage-2-password-confirm").removeClass("is-invalid");
 
             self.set('processing', false);
@@ -121,7 +124,7 @@ export default Component.extend({
                     let creds = { password: password, email: user.email };
 
                     self.get('session').authenticate('authenticator:documize', creds).then(() => {
-                        window.location.href = 's/' + self.folderId + "/" + self.slug;
+                        window.location.href = '//' + window.location.host + '/s/' + self.folderId + "/" + self.slug;
                     });
 
                     // var credentials = encodingUtil.Base64.encode(netUtil.getSubdomain() + ":" + user.email + ":" + password);

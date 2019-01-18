@@ -27,4 +27,5 @@ type Account struct {
 	Message   string `json:"message"`
 	Domain    string `json:"domain"`
 	Active    bool   `json:"active"`
+	Theme     string `json:"theme"`
 }

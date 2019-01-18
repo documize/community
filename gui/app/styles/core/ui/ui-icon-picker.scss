@@ -1,0 +1,28 @@
+.ui-icon-picker {
+	> .list {
+		> .item {
+			display: inline-block;
+			margin: 10px;
+
+			> i {
+				font-size: 2.5rem;
+				color: map-get($gray-shades, 500);
+				cursor: pointer;
+
+				&:hover {
+					color: map-get($gray-shades, 600);
+				}
+			}
+		}
+
+		> .selected {
+			>  i {
+				color: map-get($yellow-shades, 600);
+
+				&:hover {
+					color: map-get($yellow-shades, 600);
+				}
+			}
+		}
+	}
+}

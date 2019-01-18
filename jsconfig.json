@@ -1,13 +1,1 @@
-{
-	"compilerOptions": {
-		"target": "es6",
-		"experimentalDecorators": true,
-		"allowSyntheticDefaultImports": true
-	},
-	"exclude": ["node_modules", "bower_components", "tmp", "vendor", ".git", "dist", "dist-prod", "gui/node_modules", "gui/dist", "gui/dist-prod", "gui/tmp"],
-	"typeAcquisition": {
-		"include": [
-			"underscore"
-		]
-	}
-}
+{"compilerOptions":{"target":"es6","experimentalDecorators":true},"exclude":["node_modules","bower_components","tmp","vendor",".git","dist","dist-prod"],"typeAcquisition":{"include":["underscore"]}}

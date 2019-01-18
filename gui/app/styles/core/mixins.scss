@@ -1,0 +1,48 @@
+@mixin sticky()
+{
+	position: -moz-sticky;
+	position: -ms-sticky;
+	position: -o-sticky;
+	position: -webkit-sticky;
+	position: sticky;
+}
+
+@mixin card() {
+	background-color: $color-card;
+	box-shadow: 1px 1px 3px 0px rgba(211,211,211,1);
+
+	&:hover {
+		background-color: map-get($gray-shades, 100);
+	}
+}
+
+@mixin border-radius($radius)
+{
+	-webkit-border-radius: $radius;
+	-moz-border-radius: $radius;
+	border-radius: $radius;
+}
+
+@mixin border-radius-left($radius)
+{
+	border-top-left-radius: $radius;
+	border-bottom-left-radius: $radius;
+}
+
+@mixin border-radius-right($radius)
+{
+	border-top-right-radius: $radius;
+	border-bottom-right-radius: $radius;
+}
+
+@mixin border-radius-top($radius)
+{
+	border-top-left-radius: $radius;
+	border-top-right-radius: $radius;
+}
+
+@mixin border-radius-bottom($radius)
+{
+	border-bottom-left-radius: $radius;
+	border-bottom-right-radius: $radius;
+}

@@ -36,6 +36,7 @@ type User struct {
 	Salt        string            `json:"-"`
 	Reset       string            `json:"-"`
 	LastVersion string            `json:"lastVersion"`
+	Theme       string            `json:"theme"`
 	Accounts    []account.Account `json:"accounts"`
 	Groups      []group.Record    `json:"groups"`
 }

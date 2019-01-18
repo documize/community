@@ -9,6 +9,7 @@
 //
 // https://documize.com
 
+import { hash } from 'rsvp';
 import Route from '@ember/routing/route';
 import { inject as service } from '@ember/service';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
@@ -16,7 +17,9 @@ import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-rout
 export default Route.extend(AuthenticatedRouteMixin, {
 	appMeta: service(),
 	folderService: service('folder'),
+	iconSvc: service('icon'),
 	localStorage: service(),
+	labelSvc: service('label'),
 
 	beforeModel() {
 		if (this.get('appMeta.setupMode')) {
@@ -26,10 +29,49 @@ export default Route.extend(AuthenticatedRouteMixin, {
 	},
 
 	model() {
-		return this.get('folderService').getAll();
+		return hash({
+			spaces: this.get('folderService').getAll(),
+			labels: this.get('labelSvc').getAll()
+		});
+	},
+
+	setupController(controller, model) {
+		this._super(controller, model);
+		controller.set('selectedSpaces', model.spaces);
+		controller.set('selectedView', 'all');
+
+		let constants = this.get('constants');
+		let publicSpaces = [];
+		let protectedSpaces = [];
+		let personalSpaces = [];
+
+		_.each(model.spaces, space => {
+			if (space.get('spaceType') === constants.SpaceType.Public) {
+				publicSpaces.pushObject(space);
+			}
+			if (space.get('spaceType') === constants.SpaceType.Private) {
+				personalSpaces.pushObject(space);
+			}
+			if (space.get('spaceType') === constants.SpaceType.Protected) {
+				protectedSpaces.pushObject(space);
+			}
+		});
+
+		_.each(model.labels, label => {
+			let spaces = _.where(model.spaces, {labelId: label.get('id')});
+			label.set('count', spaces.length);
+			controller.set(label.get('id'), spaces);
+		});
+
+		controller.set('spaces', model.spaces);
+		controller.set('labels', model.labels);
+		controller.set('publicSpaces', publicSpaces);
+		controller.set('protectedSpaces', protectedSpaces);
+		controller.set('personalSpaces', personalSpaces);
+		controller.set('iconList', this.get('iconSvc').getSpaceIconList());
 	},
 
 	activate() {
 		this.get('browser').setTitle('Spaces');
-	}	
+	}
 });

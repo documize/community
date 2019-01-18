@@ -1,0 +1,27 @@
+.onboarding-container {
+	p {
+		margin: 1rem 0 5rem 0;
+		font-size: 1.3rem;
+		font-weight: 500;
+		color: map-get($green-shades, 700);
+	}
+
+    .stage-1 {
+        display: block;
+    }
+
+    .stage-2 {
+        display: none;
+    }
+
+    .stage-3 {
+        display: none;
+
+		p.wait {
+			margin: 5rem 0 0 0;
+			font-size: 2rem;
+			font-weight: 600;
+			color: map-get($yellow-shades, 800);
+		}
+	}
+}

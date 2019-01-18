@@ -24,7 +24,6 @@ module.exports = {
 		"Sortable": true,
 		"moment": true,
 		"Dropzone": true,
-		"Tooltip": true,
 		"server": true,
 		"authenticateUser": true,
 		"stubAudit": true,

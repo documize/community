@@ -11,7 +11,6 @@
 
 import { A } from '@ember/array';
 import { inject as service } from '@ember/service';
-import { schedule } from '@ember/runloop';
 import { computed } from '@ember/object';
 import { empty } from '@ember/object/computed';
 import AuthMixin from '../../mixins/auth';
@@ -21,18 +20,29 @@ import Component from '@ember/component';
 export default Component.extend(AuthMixin, Notifier, {
 	router: service(),
 	spaceSvc: service('folder'),
+	iconSvc: service('icon'),
 	localStorage: service('localStorage'),
-
 	isSpaceAdmin: computed('permissions', function() {
 		return this.get('permissions.spaceOwner') || this.get('permissions.spaceManage');
 	}),
-
 	spaceName: '',
 	hasNameError: empty('spaceName'),
 	spaceTypeOptions: A([]),
 	spaceType: 0,
 	likes: '',
 	allowLikes: false,
+	spaceLifecycleOptions: A([]),
+	spaceLifecycle: null,
+	iconList: A([]),
+	spaceIcon: '',
+	spaceDesc: '',
+	spaceLabel: '',
+
+	init() {
+		this._super(...arguments);
+
+		this.set('iconList', this.get('iconSvc').getSpaceIconList());
+	},
 
 	didReceiveAttrs() {
 		this._super(...arguments);
@@ -56,6 +66,15 @@ export default Component.extend(AuthMixin, Notifier, {
 		}
 
 		this.set('spaceName', this.get('space.name'));
+		this.set('spaceDesc', this.get('space.desc'));
+		this.set('spaceLabel', this.get('space.labelId'));
+
+		let icon = this.get('space.icon');
+		if (is.empty(icon)) {
+			icon = constants.IconMeta.Apps;
+		}
+
+		this.set('spaceIcon', icon);
 	},
 
 	actions: {
@@ -63,12 +82,16 @@ export default Component.extend(AuthMixin, Notifier, {
 			this.set('spaceType', t);
 		},
 
-		onSetLikes(l) {
-			this.set('allowLikes', l);
+		onSetSpaceLifecycle(l) {
+			this.set('spaceLifecycle', l);
+		},
 
-			schedule('afterRender', () => {
-				if (l) this.$('#space-likes-prompt').focus();
-			});
+		onSetIcon(icon) {
+			this.set('spaceIcon', icon);
+		},
+
+		onSetLabel(id) {
+			this.set('spaceLabel', id);
 		},
 
 		onSave() {
@@ -84,10 +107,12 @@ export default Component.extend(AuthMixin, Notifier, {
 			if (spaceName.length === 0) return;
 			space.set('name', spaceName);
 
-			this.showWait();
+			space.set('icon', this.get('spaceIcon'));
+			space.set('desc', this.get('spaceDesc'));
+			space.set('labelId', this.get('spaceLabel'));
 
 			this.get('spaceSvc').save(space).then(() => {
-				this.showDone();
+				this.notifySuccess('Saved');
 			});
 		}
 	}

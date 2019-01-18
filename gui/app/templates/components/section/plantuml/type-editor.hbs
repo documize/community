@@ -1,36 +1,41 @@
-{{#section/base-editor document=document folder=folder page=page busy=waiting tip="Concise name that describes the diagram" isDirty=(action 'isDirty') onCancel=(action 'onCancel') onAction=(action 'onAction')}}
+{{layout/logo-heading
+	title="PlantUML"
+	desc="Create UML diagrams from a plain text language (http://plantuml.com)"
+	icon=constants.Icon.Integrations}}
+
+{{#section/base-editor document=document folder=folder page=page busy=waiting
+	isDirty=(action "isDirty") onCancel=(action "onCancel") onAction=(action "onAction")}}
+
 	<div class="section-plantuml-diagram">
-		<div class="container">
-			<div class="row">
-				<div class="col-12">
-					<div class="form-group">
-						<label><a href="http://plantuml.com/" target="_blank">PlantUML Diagram</a></label>
-						<div class="my-3">
-							<p>Insert sample diagrams:</p>
-							<p>
-								<button type="button" class="btn btn-light" {{action 'onInsertSequence'}}>Sequence</button>
-								<button type="button" class="btn btn-light" {{action 'onInsertUseCase'}}>Use Case</button>
-								<button type="button" class="btn btn-light" {{action 'onInsertClass'}}>Class</button>
-								<button type="button" class="btn btn-light" {{action 'onInsertActivity'}}>Activity</button>
-								<button type="button" class="btn btn-light" {{action 'onInsertActivityNew'}}>Activity (new syntax)</button>
-								<button type="button" class="btn btn-light" {{action 'onInsertComponent'}}>Component</button>
-								<button type="button" class="btn btn-light" {{action 'onInsertState'}}>State</button>
-							</p>
-						</div>
-						{{focus-textarea value=diagramText rows=30 id=editorId class="diagram-editor form-control mousetrap"}}
-					</div>
-				</div>
+		<div class="form-group">
+			<label><a href="http://plantuml.com/" target="_blank">PlantUML Diagram</a></label>
+			{{ui/ui-spacer size=200}}
+			<div>
+				<p>Insert sample diagrams:</p>
+				<p>
+					{{ui/ui-button color=constants.Color.Gray light=true label="Sequence" onClick=(action "onInsertSequence")}}
+					{{ui/ui-button color=constants.Color.Gray light=true label="Use Case" onClick=(action "onInsertUseCase")}}
+					{{ui/ui-button color=constants.Color.Gray light=true label="Class" onClick=(action "onInsertClass")}}
+					{{ui/ui-button color=constants.Color.Gray light=true label="Activity" onClick=(action "onInsertActivity")}}
+					{{ui/ui-button color=constants.Color.Gray light=true label="Activity (new syntax)" onClick=(action "onInsertActivityNew")}}
+					{{ui/ui-button color=constants.Color.Gray light=true label="Component" onClick=(action "onInsertComponent")}}
+					{{ui/ui-button color=constants.Color.Gray light=true label="State" onClick=(action "onInsertState")}}
+				</p>
 			</div>
-			<div class="row">
-				<div class="col-12">
-					<div class="form-group">
-						<button type="button" class="btn btn-secondary" {{action 'onPreview'}}>{{previewButtonCaption}}</button>
-						<div id={{previewId}} class="text-center my-5">
-							<img src="{{diagramPreview}}" />
-						</div>
-					</div>
-				</div>
-			</div>
+			{{focus-textarea value=diagramText rows=30 id=editorId class="diagram-editor form-control mousetrap"}}
 		</div>
 	</div>
+
+	{{ui/ui-spacer size=200}}
+
+	{{ui/ui-button color=constants.Color.Yellow light=true label=previewButtonCaption onClick=(action "onPreview")}}
+
+	{{ui/ui-spacer size=200}}
+
+	<div id={{previewId}} class="text-center">
+		<img src={{diagramPreview}}>
+	</div>
+
+	{{ui/ui-spacer size=200}}
+
 {{/section/base-editor}}

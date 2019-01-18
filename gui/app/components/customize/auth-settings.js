@@ -141,15 +141,13 @@ export default Component.extend(ModalMixin, Notifier, {
 		},
 
 		onLDAPPreview() {
-			this.showWait();
-
 			let config = this.get('ldapConfig');
 			config.serverPort = parseInt(this.get('ldapConfig.serverPort'));
 
 			this.get('globalSvc').previewLDAP(config).then((preview) => {
 				this.set('ldapPreview', preview);
 				this.modalOpen("#ldap-preview-modal", {"show": true});
-				this.showDone();
+				this.notifySuccess('Saved');
 			});
 		},
 
@@ -231,8 +229,6 @@ export default Component.extend(ModalMixin, Notifier, {
 					break;
 			}
 
-			this.showWait();
-
 			let data = { authProvider: provider, authConfig: JSON.stringify(config) };
 
 			this.get('onSave')(data).then(() => {
@@ -274,7 +270,7 @@ export default Component.extend(ModalMixin, Notifier, {
 					});
 				}
 
-				this.showDone();
+				this.notifySuccess('Saved');
 			});
 		}
 	}

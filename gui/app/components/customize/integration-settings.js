@@ -56,13 +56,12 @@ export default Component.extend(Notifier, {
 				this.set('jiraCreds.url', url.substring(0, url.length-1));
 			}
 
-			this.showWait();
 			this.get('orgSvc').saveOrgSetting(orgId, 'jira', this.get('jiraCreds')).then(() => {
 				if (this.get('session.isGlobalAdmin')) {
 					this.get('orgSvc').saveGlobalSetting('SECTION-TRELLO', this.get('trelloCreds'));
 				}
 
-				this.showDone();
+				this.notifySuccess('Saved');
 			});
 		}
 	}

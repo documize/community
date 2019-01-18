@@ -1,0 +1,114 @@
+<div class="no-print">
+
+	{{#ui/ui-toolbar dark=false light=false raised=false large=true bordered=false}}
+		{{#ui/ui-toolbar-icon icon=constants.Icon.Export color=constants.Color.Gray tooltip="Print, PDF, Export"}}
+			{{#attach-popover class="ember-attacher-popper" hideOn="clickout" showOn="click" isShown=false}}
+				<ul class="menu">
+					<li class="item" {{action "onExport"}}>Export as HTML file</li>
+					<li class="item" {{action "onPDF"}}>Download as PDF</li>
+					<li class="item" {{action "onPrintDocument"}}>Print...</li>
+				</ul>
+			{{/attach-popover}}
+		{{/ui/ui-toolbar-icon}}
+
+		{{#if pinState.isPinned}}
+			{{ui/ui-toolbar-icon icon=constants.Icon.BookmarkDelete color=constants.Color.Yellow
+				tooltip="Remove from bookmarks" onClick=(action "onUnpin")}}
+		{{else if session.authenticated}}
+			{{ui/ui-toolbar-icon icon=constants.Icon.BookmarkAdd color=constants.Color.Gray
+				tooltip="Bookmark" onClick=(action "onPin")}}
+		{{/if}}
+
+		{{#if permissions.documentEdit}}
+			{{ui/ui-toolbar-icon icon=constants.Icon.Settings color=constants.Color.Gray
+				tooltip="Rename, Categories, Tag, Status, Workflow" linkTo="document.settings"}}
+		{{/if}}
+	{{/ui/ui-toolbar}}
+
+	{{#if hasToolbar}}
+		{{#ui/ui-toolbar dark=false light=true raised=true large=true bordered=true}}
+			{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
+				{{#if permissions.documentEdit}}
+					{{#ui/ui-toolbar-icon icon=constants.Icon.UserAssign color=constants.Color.Gray tooltip="Actions & Sharing"}}
+						{{#attach-popover class="ember-attacher-popper" hideOn="clickout" showOn="click" isShown=false}}
+							<ul class="menu">
+								<li class="item" {{action "onShowRequestContributionModal"}}>Request contribution</li>
+								<li class="item" {{action "onShowRequestFeedbackModal"}}>Request feedback</li>
+								<li class="item" {{action "onShowRequestReadModal"}}>Request read</li>
+								{{#if (eq document.lifecycle constants.Lifecycle.Draft)}}
+									<li class="divider"/>
+									<li class="item" {{action "onShowPublishModal"}}>Request publication</li>
+								{{/if}}
+								<li class="divider"/>
+								<li class="item" {{action "onShareModal"}}>Share via secure external link</li>
+							</ul>
+						{{/attach-popover}}
+					{{/ui/ui-toolbar-icon}}
+				{{/if}}
+			{{/if}}
+
+			{{#if showActivity}}
+				{{ui/ui-toolbar-icon icon=constants.Icon.Pulse color=constants.Color.Gray
+					tooltip="See content activity" linkTo="document.activity"}}
+			{{/if}}
+
+			{{#if showRevisions}}
+				{{ui/ui-toolbar-icon icon=constants.Icon.TimeBack color=constants.Color.Gray
+					tooltip="Revisions and rollback" linkTo="document.revisions"}}
+			{{/if}}
+
+			{{#if permissions.documentAdd}}
+				{{ui/ui-toolbar-icon icon=constants.Icon.Copy color=constants.Color.Gray
+					tooltip="Save as template" onClick=(action "onShowTemplateModal")}}
+			{{/if}}
+
+			{{#if permissions.documentDelete}}
+				{{ui/ui-toolbar-icon icon=constants.Icon.Delete color=constants.Color.Gray
+					tooltip="Delete" onClick=(action "onShowDeleteModal")}}
+			{{/if}}
+		{{/ui/ui-toolbar}}
+	{{/if}}
+</div>
+
+<div id="document-template-modal" class="modal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">Save as Template</div>
+			<div class="modal-body">
+				<form onsubmit={{action "onSaveTemplate"}}>
+					<div class="form-group">
+						<label for="new-template-name">Name</label>
+						{{input id="new-template-name" value=saveTemplate.name type="email" class="form-control mousetrap" placeholder="Template name"}}
+						<small class="form-text text-muted">Good template name conveys document type</small>
+					</div>
+					<div class="form-group">
+						<label for="new-template-desc">Description</label>
+						{{textarea id="new-template-desc" value=saveTemplate.description class="form-control" rows="5"}}
+						<small class="form-text text-muted">Explain use case for this template</small>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+				{{ui/ui-button-gap}}
+				{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Delete onClick=(action "onSaveTemplate")}}
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="document-delete-modal" class="modal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">Delete Document</div>
+			<div class="modal-body">
+				<p>Are you sure you want to delete this document?</p>
+			</div>
+			<div class="modal-footer">
+				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+				{{ui/ui-button-gap}}
+				{{ui/ui-button color=constants.Color.Red light=true label=constants.Label.Delete onClick=(action "onDocumentDelete")}}
+			</div>
+		</div>
+	</div>
+</div>

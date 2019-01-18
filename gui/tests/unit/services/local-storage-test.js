@@ -1,3 +1,4 @@
+import { module, test } from 'qunit';
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
 // This software (Documize Community Edition) is licensed under 
@@ -9,15 +10,14 @@
 //
 // https://documize.com
 
-import { moduleFor, test } from 'ember-qunit';
+import { setupTest } from 'ember-qunit';
 
-moduleFor('service:local-storage', 'Unit | Service | local storage', {
-	// Specify the other units that are required for this test.
-	// needs: ['service:foo']
-});
+module('Unit | Service | local storage', function(hooks) {
+  setupTest(hooks);
 
-// Replace this with your real tests.
-test('it exists', function (assert) {
-	let service = this.subject();
-	assert.ok(service);
+  // Replace this with your real tests.
+  test('it exists', function (assert) {
+      let service = this.owner.lookup('service:local-storage');
+      assert.ok(service);
+  });
 });

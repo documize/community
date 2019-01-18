@@ -56,16 +56,18 @@ export default Route.extend({
 	},
 
 	setupController: function (controller, model) {
+		this._super(controller, model);
+
 		controller.set('model', model);
 		controller.reset();
 	},
 
 	activate() {
 		this.get('browser').setTitleAsPhrase('Login');
-		$('body').addClass('background-color-theme-light d-flex justify-content-center align-items-center');
+		$('body').addClass('background-color-theme-100 d-flex justify-content-center align-items-center');
 	},
 
 	deactivate() {
-		$('body').removeClass('background-color-theme-light d-flex justify-content-center align-items-center');
+		$('body').removeClass('background-color-theme-100 d-flex justify-content-center align-items-center');
 	}
 });

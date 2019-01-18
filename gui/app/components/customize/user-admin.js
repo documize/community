@@ -12,9 +12,10 @@
 import $ from 'jquery';
 import AuthProvider from '../../mixins/auth';
 import ModalMixin from '../../mixins/modal';
+import Notifier from '../../mixins/notifier';
 import Component from '@ember/component';
 
-export default Component.extend(AuthProvider, ModalMixin, {
+export default Component.extend(AuthProvider, ModalMixin, Notifier, {
 	bulkUsers: '',
 	newUser: null,
 
@@ -51,6 +52,7 @@ export default Component.extend(AuthProvider, ModalMixin, {
 
 			this.get('onAddUser')(user).then(() => {
 				this.set('newUser', { firstname: '', lastname: '', email: '', active: true });
+				this.notifySuccess('Added user');
 			});
 
 			this.modalClose("#add-user-modal");
@@ -65,6 +67,7 @@ export default Component.extend(AuthProvider, ModalMixin, {
 
 			this.get('onAddUsers')(this.get('bulkUsers')).then(() => {
 				this.set('bulkUsers', '');
+				this.notifySuccess('Added users');
 			});
 
 			this.modalClose("#add-user-modal");

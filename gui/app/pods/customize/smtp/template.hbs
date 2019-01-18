@@ -1,1 +1,6 @@
-{{customize/smtp-settings model=model saveSMTP=(action 'saveSMTP')}}
+{{layout/logo-heading
+	title="Mail Server"
+	desc="Specify mail server details required for sending user invite and notification emails"
+	icon=constants.Icon.Send}}
+
+{{customize/smtp-settings model=model saveSMTP=(action "saveSMTP")}}

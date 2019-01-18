@@ -1,0 +1,121 @@
+.view-search {
+	.search-box {
+		width: 300px;
+	}
+
+	@media (min-width: 900px) {
+		.search-box {
+			width: 400px;
+		}
+	}
+	@media (min-width: 1200px) {
+		.search-box {
+			width: 600px;
+		}
+	}
+	@media (min-width: 1400px) {
+		.search-box {
+			width: 700px;
+		}
+	}
+	@media (min-width: 1800px) {
+		.search-box {
+			width: 900px;
+		}
+	}
+
+	> .documents {
+		margin: 20px 0;
+		padding: 0;
+
+		> .document {
+			@include card();
+			list-style-type: none;
+			overflow: hidden;
+			position: relative;
+			margin: 0 0 30px 0;
+			width: 100%;
+
+			&:hover {
+				> .checkbox {
+					display: block;
+				}
+			}
+
+			> a {
+				display: block;
+				position: relative;
+				padding: 15px 20px;
+
+				> .title {
+					color: $color-black;
+					font-weight: bold;
+					font-size: 1.4rem;
+					margin-bottom: 5px;
+
+					> .version {
+						font-size: 1.1rem;
+						font-weight: bold;
+						color: map-get($gray-shades, 600);
+					}
+				}
+
+				> .space {
+					color: $color-black-light-1;
+					font-size: 1.2rem;
+					margin-bottom: 5px;
+				}
+
+				> .snippet {
+					color: map-get($gray-shades, 600);
+					font-size: 1.1rem;
+					margin-bottom: 10px;
+				}
+
+				&:hover {
+					> .title {
+						color: $color-link;
+					}
+				}
+			}
+
+			.hashtags {
+				> .hashtag {
+					display: inline-block;
+					margin: 5px 10px 0 5px;
+					color: map-get($gray-shades, 600);
+					font-size: 1rem;
+					font-style: italic;
+
+					&:hover {
+						color: $color-link;
+					}
+				}
+			}
+		}
+	}
+
+	> .syntax {
+		margin: 10px 0;
+
+		> .example {
+			margin-top: 10px;
+			font-weight: 500;
+			font-size: 1rem;
+			font-style: italic;
+			color: map-get($gray-shades, 700);
+		}
+
+		> .explain {
+			margin: 5px 0 15px 0px;
+			font-size: 0.9rem;
+			color: map-get($gray-shades, 600);
+		}
+	}
+
+	> .result-summary {
+		font-size: 1.2rem;
+		font-weight: 600;
+		color: map-get($gray-shades, 800);
+	}
+}

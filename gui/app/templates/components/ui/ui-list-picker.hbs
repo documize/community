@@ -1,10 +1,10 @@
 <div class="widget-list-picker">
-	<ul class="options" style="{{{styleCss}}}">
+	<ul class="options" style={{{styleCss}}}>
 		{{#each items as |item|}}
-			<li class="option {{if item.selected 'selected'}}" {{action 'onToggle' item}}>
+			<li class="option {{if item.selected "selected"}}" {{action "onToggle" item}}>
 				<div class="text text-truncate">{{get item nameField}}</div>
 				{{#if item.selected}}
-					<i class="material-icons">check</i>
+					<i class="dicon {{constants.Icon.Tick}}" />
 				{{/if}}
 			</li>
 		{{/each}}

@@ -1,1 +1,8 @@
-{{customize/general-settings model=model save=(action 'save')}}
+{{layout/logo-heading
+	title="General"
+	desc="Options to help you customize Documize"
+	icon=constants.Icon.Settings}}
+
+{{customize/general-settings model=model
+	onUpdate=(action "onUpdate")
+	onDefaultLogo=(action "onDefaultLogo")}}

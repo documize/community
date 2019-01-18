@@ -1,0 +1,25 @@
+{{layout/logo-heading
+	title="Tags"
+	desc=(concat "Specify up to " appMeta.maxTags " tags — lowercase, characters, numbers, hyphens only")
+	icon=constants.Icon.Category}}
+
+{{#each tagz as |tag|}}
+	<div class="input-group">
+		<div class="input-group-prepend">
+			<span class="input-group-text">
+				<i class="dicon {{constants.Icon.Tag}}" />
+			</span>
+		</div>
+		{{input type="text" id=(concat "add-tag-field-" tag.number) class="form-control mousetrap tag-input" placeholder="Tag name" value=tag.value}}
+	</div>
+	{{ui/ui-spacer size=200}}
+{{/each}}
+
+{{ui/ui-spacer size=300}}
+
+{{ui/ui-button
+	color=constants.Color.Green
+	icon=constants.Icon.Tag
+	label=constants.Label.Save
+	light=true
+	onClick=(action "onSave")}}

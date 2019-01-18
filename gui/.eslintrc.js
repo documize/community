@@ -20,8 +20,10 @@ module.exports = {
     // node files
     {
       files: [
-        'testem.js',
+        '.eslintrc.js',
+        '.template-lintrc.js',
         'ember-cli-build.js',
+        'testem.js',
         'config/**/*.js'
       ],
       parserOptions: {
@@ -60,7 +62,6 @@ module.exports = {
 	  "userLogin": true,
 	  "Keycloak": true,
 	  "slug": true,
-	  "interact": true,
-	  "velocity": true
+	  "iziToast": true
   }
 };

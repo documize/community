@@ -1,0 +1,143 @@
+// Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
+//
+// This software (Documize Community Edition) is licensed under
+// GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
+//
+// You can operate outside the AGPL restrictions by purchasing
+// Documize Enterprise Edition and obtaining a commercial license
+// by contacting <sales@documize.com>.
+//
+// https://documize.com
+
+
+//
+// Variable overrides
+//
+
+// font
+// $font-family-sans-serif: "Helvetica", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+
+// colors
+$blue: 			$theme-500;
+$red: 			map-get($red-shades, 600);
+$green: 		map-get($green-shades, 700);
+$secondary:		map-get($gray-shades, 600);
+$light: 		$color-white;
+$dark:			$color-black-light-1;
+
+// modal
+$modal-backdrop-opacity: 		0.5;
+$modal-header-border-color:		$color-white;
+$modal-footer-border-color: 	$color-white;
+
+.modal-header {
+	// background-color: map-get($gray-shades, 800);
+	background-color: $theme-500;
+	color: map-get($gray-shades, 100);
+	font-size: 1.2rem;
+	font-weight: 600;
+}
+
+// rounded corners
+$border-radius:		0;
+$border-radius-lg:  0;
+$border-radius-sm:  0;
+$border-radius:		.125rem;
+$border-radius-lg:  .15rem;
+$border-radius-sm:  .1rem;
+
+// form
+$input-color:               $color-black-light-1;
+$input-border-color:        map-get($gray-shades, 200);
+$input-focus-bg:            $color-white;
+$input-focus-border-color:  map-get($gray-shades, 600);
+$input-focus-color:         $color-black-light-1;
+$input-placeholder-color:   map-get($gray-shades, 600);
+$input-focus-border-color:	map-get($gray-shades, 200);
+
+// form labels
+.form-group {
+	> label {
+		color: map-get($gray-shades, 700);
+		font-size: 1.2rem;
+		font-weight: 600;
+	}
+
+	> small, > div[class*="col"] > small {
+		color: map-get($gray-shades, 600);
+		font-size: 1rem;
+		font-weight: 300;
+	}
+
+	> small.highlight, > div[class*="col"] > small.highlight {
+		font-size: 1rem;
+		color: map-get($yellow-shades, 700) !important;
+	}
+
+	margin-bottom: 30px !important;
+}
+
+// links
+$link-color:                $color-link;
+$link-decoration:           none;
+$link-hover-color:          darken($link-color, 15%) !default;
+$link-hover-decoration:     none;
+
+//
+// Bootstrap includes
+//
+
+// Required
+@import "node_modules/bootstrap/scss/functions";
+@import "node_modules/bootstrap/scss/variables";
+@import "node_modules/bootstrap/scss/mixins";
+
+// Optional
+@import "node_modules/bootstrap/scss/reboot";
+@import "node_modules/bootstrap/scss/forms";
+@import "node_modules/bootstrap/scss/custom-forms";
+@import "node_modules/bootstrap/scss/input-group";
+@import "node_modules/bootstrap/scss/modal";
+@import "node_modules/bootstrap/scss/utilities";
+@import "node_modules/bootstrap/scss/tables";
+
+// Boostrap overrides
+.modal-80 {
+	max-width: 80% !important;
+}
+.modal-70 {
+	max-width: 70% !important;
+}
+.modal-60 {
+	max-width: 60% !important;
+}
+.modal-50 {
+	max-width: 50% !important;
+}
+
+.modal-backdrop {
+	z-index: 1041;
+}
+
+body.modal-open {
+	padding-right: 0 !important;
+	// Do not scroll body to top.
+	// See: https://stackoverflow.com/questions/21604674/bootstrap-modal-background-jumps-to-top-on-toggle/21881894
+	overflow: visible;
+}
+
+.modal-header-white {
+	background-color: $color-white !important;
+	border: none !important;
+
+	> .close {
+		background-color: $color-white !important;
+		border: none !important;
+
+		> span {
+			color: map-get($gray-shades, 600);
+			font-size: 2rem;
+		}
+	}
+}
+

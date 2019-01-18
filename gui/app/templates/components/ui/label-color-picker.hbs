@@ -1,0 +1,8 @@
+<div class="label-color-picker">
+	{{#each colors as |color|}}
+		<div class="color {{if color.selected "selected"}}"
+			style={{concat "background-color: " color.code ";"}}
+			{{action "onSelect" color.code}}>
+		</div>
+	{{/each}}
+</div>

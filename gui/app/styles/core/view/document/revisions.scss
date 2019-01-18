@@ -1,0 +1,11 @@
+.view-revision {
+	> h1 {
+		color: map-get($yellow-shades, 800);
+	}
+
+	> h2 {
+		color: map-get($yellow-shades, 700);
+		font-size: 1.2rem;
+		font-weight: 400;
+	}
+}

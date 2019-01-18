@@ -1,0 +1,348 @@
+.view-customize {
+	> .explain-user-perms {
+		padding: 15px 25px;
+		background-color: map-get($yellow-shades, 100);
+		border: 1px solid map-get($yellow-shades, 300);
+		@include border-radius(3px);
+		@extend .no-select;
+
+		> .title {
+			font-weight: 700;
+			font-size: 1.1rem;
+			color: map-get($yellow-shades, 800);
+			cursor: pointer;
+
+			> i {
+				font-size: 20px;
+				vertical-align: sub;
+			}
+		}
+
+		.perms {
+			display: none;
+
+			> .perm-name {
+				font-size: 1rem;
+				font-weight: 600;
+				color: map-get($gray-shades, 800);
+				margin-top: 10px;
+			}
+
+			> .perm-desc {
+				font-size: 0.9rem;
+				font-weight: 300;
+				color: map-get($gray-shades, 800);
+			}
+		}
+	}
+
+	.user-table {
+		tbody tr td, thead tr th {
+			border-top: none !important;
+			border-bottom: none !important;
+		}
+
+		.name {
+			font-size: 1.1rem;
+			font-weight: 500;
+			color: map-get($gray-shades, 900);
+			margin: 0 0 0 10px;
+			display: inline-block;
+			cursor: pointer;
+
+            > .email {
+				font-size: 1rem;
+				font-weight: 400;
+				color: map-get($gray-shades, 800);
+				margin: 0;
+				display: block;
+			}
+		}
+
+		.groups {
+			font-size: 1rem;
+			font-weight: 300;
+			color: map-get($yellow-shades, 900);
+			cursor: pointer;
+			margin: 0 0 0 10px;
+
+			&:hover {
+				color: $color-link;
+			}
+		}
+
+		.inactive-user {
+			> .name, > .name > .email, > .groups {
+				color: map-get($red-shades, 600) !important;
+				font-weight: normal !important;
+				text-decoration: line-through !important;
+			}
+		}
+
+		.admin-user {
+			> .name, > .name > .email, > .groups {
+				color: map-get($green-shades, 600);
+				font-weight: 600;
+			}
+		}
+
+		.user-checkbox {
+			color: map-get($green-shades, 700);
+			cursor: pointer;
+			font-weight: 600;
+		}
+	}
+
+	> .space-list {
+		margin: 0;
+		padding: 0;
+
+		> .space {
+			@include card();
+			list-style-type: none;
+			margin: 0 0 2rem 0;
+			padding: 15px 20px;
+			width: 100%;
+
+			> .info {
+				padding: 0;
+
+				> a {
+					> .name {
+						font-size: 1.3rem;
+						font-weight: 700;
+						color: map-get($gray-shades, 800);
+
+						> .dicon {
+							color: map-get($gray-shades, 600);
+							font-size: 20px;
+							vertical-align: middle;
+							margin-right: 10px;
+						}
+					}
+
+					> .desc {
+						font-size: 1.1rem;
+						font-weight: 400;
+						margin-top: 0.4rem;
+						color: $color-black-light-3;
+					}
+				}
+			}
+		}
+	}
+
+	> .groups-list {
+        padding: 0;
+        margin: 0;
+
+		> .group {
+			@include card();
+			list-style-type: none;
+			margin: 0 0 2rem 0;
+			padding: 15px 20px;
+			width: 100%;
+
+			> .name {
+				font-size: 1.3rem;
+				font-weight: 700;
+				color: map-get($gray-shades, 800);
+			}
+
+			> .desc {
+				font-size: 1.1rem;
+				font-weight: 400;
+				margin-top: 0.4rem;
+				color: $color-black-light-3;
+			}
+		}
+	}
+
+	// used for group admin
+	> .group-users-members {
+		text-align: center;
+
+		> .item {
+			margin: 7px;
+			display: inline-block;
+
+			> .fullname {
+				color: map-get($gray-shades, 800);
+				font-size: 1rem;
+			}
+		}
+	}
+
+	// used for user admin
+	> .group-membership {
+		> .item {
+			margin: 10px 0;
+
+			> .group-name {
+				display: inline-block;
+				color: map-get($gray-shades, 800);
+				font-size: 1rem;
+				font-weight: 500;
+
+				> .group-purpose {
+					color: map-get($gray-shades, 700);
+					font-size: 0.9rem;
+					font-weight: 400;
+				}
+			}
+		}
+	}
+
+	> .smtp-failure, .admin-setting-failure {
+		font-size: 1.2rem;
+		font-weight: bold;
+		color: map-get($red-shades, 600);
+	}
+
+	> .smtp-success, .admin-setting-success {
+		font-size: 1.2rem;
+		font-weight: bold;
+		color: map-get($green-shades, 600);
+	}
+
+	> .archive-admin {
+		> .list {
+			padding: 0;
+			margin: 0;
+
+			> .item {
+				@include card();
+				list-style-type: none;
+				margin: 0 0 2rem 0;
+				padding: 15px 20px;
+				width: 100%;
+				position: relative;
+
+				> .info {
+					padding: 0;
+					align-self: self-start;
+					justify-self: self-start;
+
+					> .name {
+						font-size: 1.3rem;
+						font-weight: 700;
+						color: map-get($gray-shades, 800);
+					}
+
+					> .desc {
+						font-size: 1.1rem;
+						font-weight: 400;
+						margin-top: 0.4rem;
+						color: $color-black-light-3;
+					}
+				}
+
+				> .actions {
+					margin-top: 20px;
+				}
+			}
+		}
+	}
+
+	> .backup-restore {
+		margin: 20px 0;
+		font-size: 1.1rem;
+
+		> .backup-zone {
+			@include border-radius(3px);
+			border: 1px solid map-get($green-shades, 200);
+			padding: 20px 20px;
+			background-color: map-get($green-shades, 100);
+			color: map-get($green-shades, 700);
+
+			> .backup-fail {
+				margin: 10px 0;
+				color: map-get($red-shades, 600);
+			}
+
+			> .backup-success {
+				margin: 10px 0;
+				color: map-get($green-shades, 800);
+			}
+		}
+
+		> .restore-zone {
+			@include border-radius(3px);
+			border: 1px solid map-get($red-shades, 200);
+			margin: 50px 0;
+			padding: 20px 20px;
+			background-color: map-get($red-shades, 100);
+			color: map-get($red-shades, 700);
+
+			> .restore-fail {
+				margin: 10px 0;
+				color: map-get($red-shades, 800);
+			}
+
+			> .restore-success {
+				margin: 10px 0;
+				color: map-get($green-shades, 700);
+			}
+
+			> .upload-backup-file {
+				margin: 50px 0 10px 0;
+
+				> .dz-preview, .dz-processing {
+					display: none !important;
+				}
+			}
+
+			.restore-upload-busy {
+				text-align: center;
+
+				> img {
+					height: 50px;
+					width: 50px;
+				}
+
+				> .wait {
+					color: map-get($gray-shades, 600);
+					margin: 10px 0;
+				}
+
+				 > .ready {
+					 color: map-get($green-shades, 700);
+					 margin: 10px 0;
+				 }
+			}
+		}
+	}
+
+	> .deactivation-zone {
+		@include border-radius(3px);
+		border: 1px solid map-get($yellow-shades, 600);
+		margin: 30px 0;
+		padding: 20px 20px;
+		background-color: map-get($yellow-shades, 100);
+
+		> p {
+			color: map-get($yellow-shades, 800);
+		}
+	}
+
+	> .space-labels {
+		display : block;
+
+		> .label {
+			@include border-radius(3px);
+			@extend .no-select;
+			display: block;
+			margin: 20px 0;
+			padding: 1rem 1rem;
+			font-size: 1.2rem;
+			font-weight: 500;
+			color: $color-white;
+		}
+	}
+
+	> #upload-logo {
+		.dz-preview, .dz-processing, .dz-file-preview {
+			display: none !important;
+		}
+	}
+}

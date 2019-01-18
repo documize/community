@@ -1,0 +1,99 @@
+%toolbar-shadow {
+	box-shadow: 1px 1px 3px 0px map-get($gray-shades, 200);
+}
+
+.dmz-toolbar {
+	display: inline-flex;
+	flex-basis: auto;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    border: 1px solid transparent;
+	height: 30px;
+	width: auto;
+	padding: 6px 10px;
+	line-height: 24px;
+	@extend .no-select;
+	@include border-radius(6px);
+
+	> .dicon {
+		font-size: 16px;
+		font-weight: 500;
+		color: map-get($gray-shades, 600);
+		padding: 0 0.5rem;
+		cursor: pointer;
+
+		&:hover {
+			color: map-get($gray-shades, 700);
+		}
+	}
+
+	> .icon-selected {
+		color: map-get($yellow-shades, 600);
+	}
+
+	> .label {
+		font-size: 14px;
+		font-weight: 500;
+		color: map-get($gray-shades, 600);
+		padding: 0 0.5rem;
+		align-self: center;
+		cursor: pointer;
+	}
+
+	> .label-selected {
+		color: map-get($yellow-shades, 600);
+	}
+
+	> .red {
+		color: map-get($red-shades, 500);
+
+		&:hover {
+			color: map-get($red-shades, 600);
+		}
+	}
+
+	> .yellow {
+		color: map-get($yellow-shades, 600);
+
+		&:hover {
+			color: map-get($yellow-shades, 700);
+		}
+	}
+
+	> .green {
+		color: map-get($green-shades, 500);
+
+		&:hover {
+			color: map-get($green-shades, 600);
+		}
+	}
+}
+
+.dmz-toolbar-large {
+	height: 40px;
+	padding: 9px 10px;
+	line-height: 33px;
+
+	> .dicon {
+		font-size: 20px;
+		font-weight: 500;
+		padding: 0 0.5rem;
+	}
+}
+
+.dmz-toolbar-dark {
+	background-color: map-get($gray-shades, 200);
+}
+
+.dmz-toolbar-light {
+	background-color: map-get($gray-shades, 100);
+}
+
+.dmz-toolbar-raised {
+	@extend %toolbar-shadow;
+}
+
+.dmz-toolbar-bordered {
+	border: 1px solid map-get($gray-shades, 300);
+}

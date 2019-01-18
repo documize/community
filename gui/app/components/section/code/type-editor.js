@@ -10,10 +10,9 @@
 // https://documize.com
 
 import { computed } from '@ember/object';
-import TooltipMixin from '../../../mixins/tooltip';
 import Component from '@ember/component';
 
-export default Component.extend(TooltipMixin, {
+export default Component.extend({
     isDirty: false,
     pageBody: "",
     codeSyntax: null,
@@ -100,9 +99,6 @@ export default Component.extend(TooltipMixin, {
 			editor = null;
 			this.set('codeEditor', null);
 		}
-
-		this.removeTooltips();
-
     },
 
     // Wrap code in PRE tag with language identifier for subsequent rendering.

@@ -12,19 +12,19 @@
 import $ from 'jquery';
 import { A } from '@ember/array';
 import { inject as service } from '@ember/service';
-import TooltipMixin from '../../mixins/tooltip';
 import ModalMixin from '../../mixins/modal';
 import Notifer from '../../mixins/notifier';
 import Component from '@ember/component';
 
-export default Component.extend(ModalMixin, TooltipMixin, Notifer, {
+export default Component.extend(ModalMixin, Notifer, {
 	spaceSvc: service('folder'),
 	groupSvc: service('group'),
 	categorySvc: service('category'),
 	appMeta: service(),
 	store: service(),
+	editId: '',
+	editName: '',
 	deleteId: '',
-	dropdown: null,
 	newCategory: '',
 
 	init() {
@@ -34,13 +34,11 @@ export default Component.extend(ModalMixin, TooltipMixin, Notifer, {
 
 	didReceiveAttrs() {
 		this._super(...arguments);
-		this.renderTooltips();
 		this.load();
 	},
 
 	willDestroyElement() {
 		this._super(...arguments);
-		this.removeTooltips();
 	},
 
 	load() {
@@ -120,11 +118,18 @@ export default Component.extend(ModalMixin, TooltipMixin, Notifer, {
 				spaceId: this.get('space.id')
 			};
 
-			this.showWait();
 			this.get('categorySvc').add(c).then(() => {
 				this.load();
-				this.showDone();
+				this.notifySuccess('Category added');
 			});
+		},
+
+		onShowEdit(id) {
+			let cat = this.get('category').findBy('id', id);
+			this.set('editId', cat.get('id'));
+			this.set('editName', cat.get('category'));
+
+			this.modalOpen('#category-edit-modal', {show: true}, "#edit-category-id");
 		},
 
 		onShowDelete(id) {
@@ -142,32 +147,22 @@ export default Component.extend(ModalMixin, TooltipMixin, Notifer, {
 			});
 		},
 
-		onEdit(id) {
-			this.setEdit(id, true);
-			this.removeTooltips();
-		},
-
-		onEditCancel(id) {
-			this.setEdit(id, false);
-			this.load();
-			this.renderTooltips();
-		},
-
-		onSave(id) {
-			let cat = this.setEdit(id, true);
-			if (cat.get('category') === '') {
-				$('#edit-category-' + cat.get('id')).addClass('is-invalid').focus();
+		onSave() {
+			let name = this.get('editName');
+			if (name === '') {
+				$('#edit-category-name').addClass('is-invalid').focus();
 				return false;
 			}
 
-			cat = this.setEdit(id, false);
-			$('#edit-category-' + cat.get('id')).removeClass('is-invalid');
+			let cat = this.get('category').findBy('id', this.get('editId'));
+			cat.set('category', name);
+
+			this.modalClose('#category-edit-modal');
+			$('#edit-category-name').removeClass('is-invalid');
 
 			this.get('categorySvc').save(cat).then(() => {
 				this.load();
 			});
-
-			this.renderTooltips();
 		},
 
 		onShowAccessPicker(catId) {

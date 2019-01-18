@@ -1,5 +1,6 @@
-<div class="hashtags">
-	{{#each tagz as |tg|}}
-		{{#link-to "search" (query-params filter=tg) class="hashtag"}}{{tg}}{{/link-to}}
-	{{/each}}
-</div>
+{{#each tagz as |tg|}}
+	{{#link-to "search" (query-params filter=tg) class="hashtag"}}
+		<i class="dicon {{constants.Icon.Tag}}" />
+		<div class="name">{{tg}}</div>
+	{{/link-to}}
+{{/each}}

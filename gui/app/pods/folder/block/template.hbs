@@ -1,17 +1,18 @@
-{{#layout/top-bar}}
-	<li class="item">
-		{{#link-to "folder.index" model.folder.id model.folder.slug class='link'}}
-			{{model.folder.name}}
+{{#layout/master-sidebar}}
+	{{ui/ui-spacer size=300}}
+	<div class="section">
+		{{#link-to "folder.settings"}}
+			{{ui/ui-button color=constants.Color.Yellow light=true icon=constants.Icon.ArrowLeft label="Space Settings"}}
 		{{/link-to}}
-	</li>
-	<li class="item">
-		{{#link-to 'document.index' model.folder.id model.folder.slug model.document.id model.document.slug class="link selected"}}
-			{{model.document.name}}
-		{{/link-to}}
-	</li>
-{{/layout/top-bar}}
+	</div>
+{{/layout/master-sidebar}}
 
-{{document/block-editor document=model.document folder=model.folder block=model.block onCancel=(action 'onCancel') onAction=(action 'onAction')}}
+{{#layout/master-content}}
+	{{layout/logo-heading
+		title="Content Blocks"
+		desc="Content blocks provide re-usable content that can be inserted into any document"
+		icon=constants.Icon.Integrations}}
 
-{{#layout/bottom-bar}}
-{{/layout/bottom-bar}}
+	{{document/block-editor document=model.document folder=model.folder block=model.block
+		onCancel=(action "onCancel") onAction=(action "onAction")}}
+{{/layout/master-content}}

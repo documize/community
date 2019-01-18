@@ -1,37 +1,30 @@
-<div class="row">
-	<div class="col">
-		<div class="view-customize">
-			<h1 class="admin-heading">{{appMeta.edition}} Edition {{appMeta.version}}</h1>
-			<h2 class="sub-heading">Enterprise Edition unlocks
-				<a class="" href="https://documize.com/pricing">premium capabilities and product support</a>
-			</h2>
-		</div>
-	</div>
-</div>
-
 <div class="product-update">
-	<div class="update-summary">
-		{{#if appMeta.updateAvailable}}
-			<a href="https://documize.com/downloads" class="caption">New version available</a>
+	<div class="update-status">
+		{{#if appMeta.updateAvailable }}
+			<a  class="title" href="https://documize.com/downloads">Documize product update is available :)</a>
 			<p class="instructions">
 				To upgrade, replace existing binary and restart Documize. Migrate between Community and Enterprise editions seamlessly.
 			</p>
 		{{else}}
-			<div class="caption">Release Summary</div>
+			<div class="title">Product Downloads</div>
 		{{/if}}
-		<p>
-			<span class="color-off-black">Community Edition {{appMeta.communityLatest}}</span>&nbsp;&nbsp;&nbsp;
-			<a href="https://storage.googleapis.com/documize/downloads/documize-community-windows-amd64.exe" class="font-weight-bold">Windows</a>&nbsp;&middot;
-			<a href="https://storage.googleapis.com/documize/downloads/documize-community-linux-amd64" class="font-weight-bold">Linux</a>&nbsp;&middot;
-			<a href="https://storage.googleapis.com/documize/downloads/documize-community-darwin-amd64" class="font-weight-bold">macOS</a>&nbsp;
-		</p>
-		<p>
-			<span class="color-off-black">Enterprise Edition {{appMeta.enterpriseLatest}}</span>&nbsp;&nbsp;&nbsp;
-			<a href="https://storage.googleapis.com/documize/downloads/documize-enterprise-windows-amd64.exe" class="font-weight-bold color-blue">Windows</a>&nbsp;&middot;
-			<a href="https://storage.googleapis.com/documize/downloads/documize-enterprise-linux-amd64" class="font-weight-bold color-blue">Linux</a>&nbsp;&middot;
-			<a href="https://storage.googleapis.com/documize/downloads/documize-enterprise-darwin-amd64" class="font-weight-bold color-blue">macOS</a>&nbsp;
-		</p>
-		<div class="my-5" />
+		<div class="links">
+			<p>
+				<span class="edition-name">Community Edition {{appMeta.communityLatest}}</span>&nbsp;&nbsp;&nbsp;
+				<a class="link" href="https://storage.googleapis.com/documize/downloads/documize-community-windows-amd64.exe">Windows</a>&nbsp;&middot;
+				<a class="link" href="https://storage.googleapis.com/documize/downloads/documize-community-linux-amd64">Linux</a>&nbsp;&middot;
+				<a class="link" href="https://storage.googleapis.com/documize/downloads/documize-community-darwin-amd64">macOS</a>&nbsp;
+			</p>
+			<p>
+				<span class="edition-name">Enterprise Edition {{appMeta.enterpriseLatest}}</span>&nbsp;&nbsp;&nbsp;
+				<a class="link" href="https://storage.googleapis.com/documize/downloads/documize-enterprise-windows-amd64.exe">Windows</a>&nbsp;&middot;
+				<a class="link" href="https://storage.googleapis.com/documize/downloads/documize-enterprise-linux-amd64">Linux</a>&nbsp;&middot;
+				<a class="link" href="https://storage.googleapis.com/documize/downloads/documize-enterprise-darwin-amd64">macOS</a>&nbsp;
+			</p>
+		</div>
+	</div>
+	{{ui/ui-spacer size=400}}
+	<div class="change-log">
 		{{{changelog}}}
 	</div>
 </div>

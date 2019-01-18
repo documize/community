@@ -30,7 +30,7 @@ export default Service.extend({
         setTimeout(interv, wait);
     },
 
-	showNotification(msg) {
-		this.get('eventBus').publish('notifyUser', msg);
-	}
+	// showNotification(msg) {
+	// 	this.get('eventBus').publish('notifyUser', msg);
+	// }
 });

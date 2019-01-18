@@ -1,0 +1,113 @@
+// Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
+//
+// This software (Documize Community Edition) is licensed under
+// GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
+//
+// You can operate outside the AGPL restrictions by purchasing
+// Documize Enterprise Edition and obtaining a commercial license
+// by contacting <sales@documize.com>.
+//
+// https://documize.com
+@media print {
+	@page {
+		size: 8.5in 11in;
+		margin: 20mm;
+
+		@top-right {
+			font-size: 12px;
+			color: $color-black-light-1;
+			// content: string(doctitle);
+		}
+
+		@bottom-left {
+			font-size: 12px;
+			color: $color-black-light-1;
+			// content: 'Exported from Documize';
+		}
+
+		@bottom-right {
+			font-size: 12px;
+			color: $color-black-light-1;
+			// content: counter(page);
+		}
+	}
+
+	html, body {
+		background-color: transparent !important;
+		max-width: none !important;
+		float: none !important;
+		position: relative !important;
+		height: initial !important;
+		min-height: initial !important;
+		-webkit-print-color-adjust: exact;
+		overflow: hidden;
+		margin: 0 !important;
+		padding: 0 !important;
+		min-width: 768px !important;
+	}
+
+	.non-printable,
+	.no-print,
+	.master-sidebar-container
+	.page-toolbar,
+	.start-section,
+	.new-section-wizard {
+		float: none !important;
+		display: none !important;
+		margin: 0 !important;
+		padding: 0 !important;
+		width: 0 !important;
+		z-index: 0 !important;
+	}
+
+	.non-printable-message,
+	.print-title {
+		display: block !important;
+	}
+
+	.document-heading {
+		text-align: left !important;
+		padding: 0 !important;
+		margin-bottom: 40px !important;
+		color: #000000;
+	}
+	.doc-title {
+		margin: 0 !important;
+		padding: 0 !important;
+		font-size: 1.5rem !important;
+		color: #000000 !important;
+	}
+	.doc-excerpt {
+		margin: 0 !important;
+		padding: 0 !important;
+		color: #464545 !important;
+		font-size: 1.2rem !important;
+	}
+
+	.wysiwyg {
+		font-size: 15px !important;
+		line-height: 22px !important;
+		color: #000000 !important;
+
+		h1 { font-size: 22px; color: #000000 !important; }
+		h2 { font-size: 20px; color: #000000 !important; }
+		h3 { font-size: 18px; color: #000000 !important; }
+		h4 { font-size: 17px; color: #000000 !important; }
+		h5 { font-size: 16px; color: #000000 !important; }
+		h6 { font-size: 16px; color: #000000 !important; }
+	}
+
+	.page-title {
+		font-size: 20px !important;
+		color: #000000 !important;
+	}
+
+	.master-content {
+		padding: 0 !important;
+		margin: 0 !important;
+		display: block !important;
+		flex: none !important;
+		width: auto !important;
+		max-width: auto !important;
+	}
+}

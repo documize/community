@@ -26,6 +26,12 @@ export default SimpleAuthSession.extend({
 	isMac: false,
 	isMobile: false,
 
+	secureToken: '',
+	hasSecureToken: computed('secureToken', function () {
+		let st = this.get('secureToken');
+		return is.not.null(st) && is.not.undefined(st) && st.length > 0;
+	}),
+
 	hasAccounts: computed('isAuthenticated', 'session.content.authenticated.user', function () {
 		return this.get('session.authenticator') !== 'authenticator:anonymous' && this.get('session.content.authenticated.user.accounts').length > 0;
 	}),
@@ -83,6 +89,16 @@ export default SimpleAuthSession.extend({
 		return this.get('session.authenticator') !== 'authenticator:anonymous' &&
 			this.get('session.content.authenticated.user.id') !== '0' &&
 			this.get('session.content.authenticated.user.viewUsers') === true;
+	}),
+
+	authToken: computed('session.content.authenticated.user', function () {
+		if (is.null(this.get('session.authenticator')) ||
+			this.get('appMeta.secureMode')) return '';
+
+		if (this.get('session.authenticator') === 'authenticator:anonymous' ||
+			this.get('session.content.authenticated.user.id') === '0') return '';
+
+		return this.get('session.content.authenticated.token');
 	}),
 
 	init() {

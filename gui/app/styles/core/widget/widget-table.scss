@@ -1,0 +1,59 @@
+.basic-table {
+	padding: 0;
+	margin: 0 0 25px 0;
+	width: 100%;
+	font-size: 1rem;
+	border: 1px solid map-get($gray-shades, 300);
+	border-radius: 2px;
+	border-collapse: collapse;
+
+	> tbody {
+		> tr {
+			> td {
+				vertical-align: top;
+				text-align: left;
+				padding: 10px;
+			}
+		}
+	}
+
+	> thead {
+		> tr {
+			background-color: map-get($gray-shades, 100);
+
+			> th {
+				vertical-align: top;
+				text-align: left;
+				font-weight: bold;
+				padding: 10px;
+				border-bottom: 1px solid map-get($gray-shades, 300);
+			}
+		}
+	}
+
+	.bordered {
+		border: 1px solid map-get($gray-shades, 300);
+	}
+
+	.border-top {
+		border-top: 1px solid map-get($gray-shades, 300);
+	}
+
+	.border-bottom {
+		border-bottom: 1px solid map-get($gray-shades, 300);
+	}
+
+	.action-link {
+		font-size: 0.8rem;
+		margin-left: 5px;
+	}
+
+	.no-width {
+		white-space: nowrap;
+		width: 1%;
+	}
+}
+
+.no-table-border {
+	border: none;
+}

@@ -1,0 +1,35 @@
+// Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
+//
+// This software (Documize Community Edition) is licensed under
+// GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
+//
+// You can operate outside the AGPL restrictions by purchasing
+// Documize Enterprise Edition and obtaining a commercial license
+// by contacting <sales@documize.com>.
+//
+// https://documize.com
+
+@import "../colors.scss";
+
+/**************************************************************
+* Theme colors.
+*
+* We go from 100 (lightest) to 900 (darkest).
+*
+* Base shade is 500 and is used prominmently as the
+* left-side navigation sidebar color.
+**************************************************************/
+$theme-900: #001412;
+$theme-800: #00362F;
+$theme-700: #00473E;
+$theme-600: #00584D;
+$theme-500: #00695C;
+$theme-400: #00AD98;
+$theme-300: #ADFFF5;
+$theme-200: #CFFFF9;
+$theme-100: #F1FFFD;
+
+// Set hyperlink color for theme
+$color-link: map-get($green-shades, 700);
+
+@import "../core/all.scss";

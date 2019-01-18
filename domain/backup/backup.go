@@ -46,7 +46,6 @@ import (
 	"github.com/documize/community/model/doc"
 	"github.com/documize/community/model/group"
 	"github.com/documize/community/model/link"
-	"github.com/documize/community/model/org"
 	"github.com/documize/community/model/page"
 	"github.com/documize/community/model/permission"
 	"github.com/documize/community/model/pin"
@@ -231,14 +230,14 @@ func (b backerHandler) dmzOrg(files *[]backupItem) (err error) {
 		w = fmt.Sprintf(" WHERE c_refid='%s' ", b.Spec.OrgID)
 	}
 
-	o := []org.Organization{}
+	o := []orgExtended{}
 	err = b.Runtime.Db.Select(&o, `SELECT id, c_refid AS refid,
         c_title AS title, c_message AS message, c_domain AS domain,
         c_service AS conversionendpoint, c_email AS email, c_serial AS serial, c_active AS active,
-        c_anonaccess AS allowanonymousaccess, c_authprovider AS authprovider, 
+        c_anonaccess AS allowanonymousaccess, c_authprovider AS authprovider,
 	    coalesce(c_sub,`+b.Runtime.StoreProvider.JSONEmpty()+`) AS subscription,
         coalesce(c_authconfig,`+b.Runtime.StoreProvider.JSONEmpty()+`) AS authconfig, c_maxtags AS maxtags,
-        c_created AS created, c_revised AS revised
+        c_theme AS theme, c_logo AS logo, c_created AS created, c_revised AS revised
         FROM dmz_org`+w)
 	if err != nil {
 		return
@@ -255,10 +254,6 @@ func (b backerHandler) dmzOrg(files *[]backupItem) (err error) {
 
 // Config, User Config.
 func (b backerHandler) dmzConfig(files *[]backupItem) (err error) {
-	type config struct {
-		ConfigKey   string `json:"key"`
-		ConfigValue string `json:"config"`
-	}
 	c := []config{}
 	err = b.Runtime.Db.Select(&c, `SELECT c_key AS configkey, c_config AS configvalue FROM dmz_config`)
 	if err != nil {
@@ -279,14 +274,7 @@ func (b backerHandler) dmzConfig(files *[]backupItem) (err error) {
 		w = fmt.Sprintf(" where c_orgid='%s' ", b.Spec.OrgID)
 	}
 
-	type userConfig struct {
-		OrgID       string `json:"orgId"`
-		UserID      string `json:"userId"`
-		ConfigKey   string `json:"key"`
-		ConfigValue string `json:"config"`
-	}
 	uc := []userConfig{}
-
 	err = b.Runtime.Db.Select(&uc, `select c_orgid AS orgid, c_userid AS userid,
 	c_key AS configkey, c_config AS configvalue FROM dmz_user_config`+w)
 	if err != nil {
@@ -475,6 +463,8 @@ func (b backerHandler) dmzSpace(files *[]backupItem) (err error) {
 	err = b.Runtime.Db.Select(&sp, `SELECT id, c_refid AS refid,
         c_name AS name, c_orgid AS orgid, c_userid AS userid,
         c_type AS type, c_lifecycle AS lifecycle, c_likes AS likes,
+        c_icon AS icon, c_labelid AS labelid, c_desc AS description,
+        c_count_category As countcategory, c_count_content AS countcontent,
         c_created AS created, c_revised AS revised
         FROM dmz_space`+w)
 	if err != nil {
@@ -671,16 +661,6 @@ func (b backerHandler) dmzDocument(files *[]backupItem) (err error) {
 	*files = append(*files, backupItem{Filename: "dmz_doc.json", Content: content})
 
 	// Vote
-	type vote struct {
-		RefID      string    `json:"refId"`
-		OrgID      string    `json:"orgId"`
-		DocumentID string    `json:"documentId"`
-		VoterID    string    `json:"voterId"`
-		Vote       int       `json:"vote"`
-		Created    time.Time `json:"created"`
-		Revised    time.Time `json:"revised"`
-	}
-
 	vt := []vote{}
 	err = b.Runtime.Db.Select(&vt, `
         SELECT c_refid AS refid, c_orgid AS orgid,
@@ -716,16 +696,6 @@ func (b backerHandler) dmzDocument(files *[]backupItem) (err error) {
 	*files = append(*files, backupItem{Filename: "dmz_doc_link.json", Content: content})
 
 	// Comment
-	type comment struct {
-		RefID      string    `json:"feedbackId"`
-		OrgID      string    `json:"orgId"`
-		DocumentID string    `json:"documentId"`
-		UserID     string    `json:"userId"`
-		Email      string    `json:"email"`
-		Feedback   string    `json:"feedback"`
-		Created    time.Time `json:"created"`
-	}
-
 	cm := []comment{}
 	err = b.Runtime.Db.Select(&cm, `
         SELECT c_refid AS refid, c_orgid AS orgid, c_docid AS documentid,
@@ -743,20 +713,6 @@ func (b backerHandler) dmzDocument(files *[]backupItem) (err error) {
 	*files = append(*files, backupItem{Filename: "dmz_doc_comment.json", Content: content})
 
 	// Share
-	type share struct {
-		ID         uint64    `json:"id"`
-		OrgID      string    `json:"orgId"`
-		UserID     string    `json:"userId"`
-		DocumentID string    `json:"documentId"`
-		Email      string    `json:"email"`
-		Message    string    `json:"message"`
-		Viewed     string    `json:"viewed"`  // recording each view as |date-viewed|date-viewed|
-		Secret     string    `json:"secret"`  // secure token used to access document
-		Expires    string    `json:"expires"` // number of days from creation, value of 0 means never
-		Active     bool      `json:"active"`
-		Created    time.Time `json:"created"`
-	}
-
 	sh := []share{}
 	err = b.Runtime.Db.Select(&sh, `
         SELECT id AS id, c_orgid AS orgid, c_docid AS documentid,

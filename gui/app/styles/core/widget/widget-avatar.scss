@@ -1,0 +1,24 @@
+.avatar {
+    color: $color-white;
+    background-color: map-get($gray-shades, 600);
+    @include border-radius(20px);
+    padding: 10px 0 0 0;
+    letter-spacing: 1px;
+    text-align: center;
+    height: 35px;
+    width: 35px;
+}
+
+.avatar-large {
+    color: $color-white;
+    background-color: map-get($gray-shades, 600);
+    @include border-radius(100px);
+    height: 100px;
+    width: 100px;
+    font-size: 30px;
+    padding: 28px;
+    letter-spacing: 1px;
+    text-align: center;
+    margin: 0 auto;
+}
+

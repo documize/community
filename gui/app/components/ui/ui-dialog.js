@@ -19,7 +19,6 @@ export default Component.extend({
 	confirmCaption: 'OK',
 	title: 'Confirm',
 	show: false,
-	buttonType: 'btn-secondary',
 	size: '', // modal-lg, modal-sm
 
 	didInsertElement() {

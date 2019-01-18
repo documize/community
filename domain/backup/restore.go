@@ -39,7 +39,6 @@ import (
 	"github.com/documize/community/model/doc"
 	"github.com/documize/community/model/group"
 	"github.com/documize/community/model/link"
-	"github.com/documize/community/model/org"
 	"github.com/documize/community/model/page"
 	"github.com/documize/community/model/permission"
 	"github.com/documize/community/model/pin"
@@ -332,7 +331,7 @@ func (r *restoreHandler) readZip(filename string) (found bool, b []byte, err err
 func (r *restoreHandler) dmzOrg() (err error) {
 	filename := "dmz_org.json"
 
-	org := []org.Organization{}
+	org := []orgExtended{}
 	err = r.fileJSON(filename, &org)
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("failed to load %s", filename))
@@ -363,12 +362,14 @@ func (r *restoreHandler) dmzOrg() (err error) {
 			_, err = r.Context.Transaction.Exec(r.Runtime.Db.Rebind(`
                 INSERT INTO dmz_org (c_refid, c_company, c_title, c_message,
                 c_domain, c_service, c_email, c_anonaccess, c_authprovider, c_authconfig,
-                c_maxtags, c_verified, c_serial, c_sub, c_active, c_created, c_revised)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
+                c_maxtags, c_verified, c_serial, c_sub, c_active,
+                c_theme, c_logo, c_created, c_revised)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
 				org[i].RefID, org[i].Company, org[i].Title, org[i].Message,
 				strings.ToLower(org[i].Domain), org[i].ConversionEndpoint, strings.ToLower(org[i].Email),
 				org[i].AllowAnonymousAccess, org[i].AuthProvider, org[i].AuthConfig,
 				org[i].MaxTags, true, org[i].Serial, org[i].Subscription,
+				org[i].Theme, org[i].Logo,
 				org[i].Active, org[i].Created, org[i].Revised)
 			if err != nil {
 				r.Context.Transaction.Rollback()
@@ -402,6 +403,7 @@ func (r *restoreHandler) dmzOrg() (err error) {
 			org[0].Serial = r.Spec.Org.Serial
 			org[0].Title = r.Spec.Org.Title
 			org[0].Subscription = r.Spec.Org.Subscription
+			org[0].Theme = r.Spec.Org.Theme
 		}
 
 		_, err = r.Context.Transaction.NamedExec(`UPDATE dmz_org SET
@@ -612,8 +614,16 @@ func (r *restoreHandler) dmzSpace() (err error) {
 	}
 
 	for i := range sp {
-		_, err = r.Context.Transaction.Exec(r.Runtime.Db.Rebind("INSERT INTO dmz_space (c_refid, c_name, c_orgid, c_userid, c_type, c_lifecycle, c_likes, c_created, c_revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"),
-			sp[i].RefID, sp[i].Name, r.remapOrg(sp[i].OrgID), r.remapUser(sp[i].UserID), sp[i].Type, sp[i].Lifecycle, sp[i].Likes, sp[i].Created, sp[i].Revised)
+		_, err = r.Context.Transaction.Exec(r.Runtime.Db.Rebind(`
+            INSERT INTO dmz_space
+                (c_refid, c_name, c_orgid, c_userid, c_type, c_lifecycle,
+                c_likes, c_icon, c_desc, c_count_category, c_count_content,
+                c_labelid, c_created, c_revised)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
+			sp[i].RefID, sp[i].Name, r.remapOrg(sp[i].OrgID),
+			r.remapUser(sp[i].UserID), sp[i].Type, sp[i].Lifecycle,
+			sp[i].Likes, sp[i].Icon, sp[i].Description, sp[i].CountCategory,
+			sp[i].CountContent, sp[i].LabelID, sp[i].Created, sp[i].Revised)
 
 		if err != nil {
 			r.Context.Transaction.Rollback()

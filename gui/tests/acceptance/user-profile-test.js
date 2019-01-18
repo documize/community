@@ -1,3 +1,4 @@
+import { click, fillIn, find, currentURL, visit } from '@ember/test-helpers';
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
 // This software (Documize Community Edition) is licensed under
@@ -9,42 +10,38 @@
 //
 // https://documize.com
 
-import { test } from 'qunit';
-import moduleForAcceptance from 'documize/tests/helpers/module-for-acceptance';
+import { module, test } from 'qunit';
+import { setupApplicationTest } from 'ember-qunit';
 
-moduleForAcceptance('Acceptance | user profile');
+module('Acceptance | user profile', function(hooks) {
+  setupApplicationTest(hooks);
 
-test('visiting /profile', function (assert) {
-	authenticateUser();
-	visit('/profile');
+  test('visiting /profile', async function(assert) {
+      authenticateUser();
+      await visit('/profile');
 
-	andThen(function () {
-		assert.equal(currentURL(), '/profile');
-		assert.equal(find('#firstname').val(), 'Lennex', 'Firstaname input displays correct value');
-		assert.equal(find('#lastname').val(), 'Zinyando', 'Lastname input displays correct value');
-		assert.equal(find('#email').val(), 'brizdigital@gmail.com', 'Email input displays correct value');
-	});
-});
+      assert.equal(currentURL(), '/profile');
+      assert.equal(find('#firstname').value, 'Lennex', 'Firstaname input displays correct value');
+      assert.equal(find('#lastname').value, 'Zinyando', 'Lastname input displays correct value');
+      assert.equal(find('#email').value, 'brizdigital@gmail.com', 'Email input displays correct value');
+  });
 
-test('changing user details and email ', function (assert) {
-	authenticateUser();
-	visit('/profile');
+  test('changing user details and email ', async function(assert) {
+      authenticateUser();
+      await visit('/profile');
 
-	andThen(function () {
-		assert.equal(currentURL(), '/profile');
-		assert.equal(find('.content .name').text().trim(), 'Lennex Zinyando', 'Profile name displayed');
-		assert.equal(find('#firstname').val(), 'Lennex', 'Firstaname input displays correct value');
-		assert.equal(find('#lastname').val(), 'Zinyando', 'Lastname input displays correct value');
-		assert.equal(find('#email').val(), 'brizdigital@gmail.com', 'Email input displays correct value');
-	});
+      assert.equal(currentURL(), '/profile');
+      assert.equal(find('.content .name').textContent.trim(), 'Lennex Zinyando', 'Profile name displayed');
+      assert.equal(find('#firstname').value, 'Lennex', 'Firstaname input displays correct value');
+      assert.equal(find('#lastname').value, 'Zinyando', 'Lastname input displays correct value');
+      assert.equal(find('#email').value, 'brizdigital@gmail.com', 'Email input displays correct value');
 
-	fillIn('#firstname', 'Test');
-	fillIn('#lastname', 'User');
-	fillIn('#email', 'test.user@domain.com');
-	click('.button-blue');
+      await fillIn('#firstname', 'Test');
+      await fillIn('#lastname', 'User');
+      await fillIn('#email', 'test.user@domain.com');
+      await click('.button-blue');
 
-	andThen(function () {
-		assert.equal(currentURL(), '/s/VzMuyEw_3WqiafcG/my-project');
-		assert.equal(find('.content .name').text().trim(), 'Test User', 'Profile name displayed');
-	});
+      assert.equal(currentURL(), '/s/VzMuyEw_3WqiafcG/my-project');
+      assert.equal(find('.content .name').textContent.trim(), 'Test User', 'Profile name displayed');
+  });
 });

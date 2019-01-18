@@ -1,0 +1,73 @@
+.section-heading {
+	margin: 0 0 0 0;
+
+	> .page-header {
+		margin: 2rem 0 2rem 0;
+
+		> .page-number {
+			color: $theme-500;
+			background-color: $theme-100;
+			padding: 0.2rem 1rem;
+			font-size: 1.8rem;
+			margin: 0 1.5rem 0 0;
+			font-weight: normal;
+			text-align: center;
+			display: inline-block;
+		}
+
+		> .page-state-pending {
+			color: map-get($red-shades, 600);
+		}
+
+		> .page-state-review {
+			color: map-get($green-shades, 600);
+		}
+
+		> .page-title {
+			display: inline;
+			font-size: 2.0rem;
+			font-weight: bold;
+			margin: 16px 0;
+			color: map-get($gray-shades, 800);
+		}
+	}
+
+	> .section-toolbar {
+		> i {
+			font-size: 20px;
+			color: map-get($gray-shades, 400);
+			cursor: pointer;
+
+			&:hover {
+				color: map-get($gray-shades, 700);
+			}
+		}
+
+		> .gap {
+			width: 5px;
+			display: inline-block;
+		}
+	}
+}
+
+.start-section {
+	@extend .no-select;
+	text-align: right;
+	margin: 0.5rem 0;
+	display: block;
+
+	> i {
+		background-color: map-get($yellow-shades, 100);
+		color: map-get($yellow-shades, 500);
+		vertical-align: middle;
+		padding: 0.5rem;
+		font-size: 16px;
+		@extend %toolbar-shadow;
+		@include border-radius(5px);
+		cursor: pointer;
+
+		&:hover {
+			color: map-get($yellow-shades, 700);
+		}
+	}
+}

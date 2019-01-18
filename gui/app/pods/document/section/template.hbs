@@ -1,25 +1,14 @@
-{{#layout/top-bar}}
-	<li class="item">
-		{{#link-to "folder.index" model.folder.id model.folder.slug class='link'}}
-			{{model.folder.name}}
-		{{/link-to}}
-	</li>
-	<li class="item">
-		{{#link-to 'document.index' model.folder.id model.folder.slug model.document.id model.document.slug class="link selected"}}
-			{{model.document.name}}
-		{{/link-to}}
-	</li>
-{{/layout/top-bar}}
+{{#layout/master-sidebar}}
+	{{ui/ui-spacer size=300}}
 
-<div class="container">
-	<div class="row">
-		<div class="col-12">
-			<div class="mt-5">
-				{{document/document-editor document=model.document folder=model.folder page=model.page meta=model.meta onCancel=(action 'onCancel') onAction=(action 'onAction')}}
-			</div>
-		</div>
+	<div class="section">
+		{{#link-to "document.index" model.folder.id model.folder.slug model.document.id model.document.slug}}
+			{{ui/ui-button color=constants.Color.Yellow light=true icon=constants.Icon.ArrowLeft label="Document"}}
+		{{/link-to}}
 	</div>
-</div>
+{{/layout/master-sidebar}}
 
-{{#layout/bottom-bar}}
-{{/layout/bottom-bar}}
+{{#layout/master-content}}
+	{{document/document-editor document=model.document folder=model.folder page=model.page meta=model.meta
+		onCancel=(action "onCancel") onAction=(action "onAction")}}
+{{/layout/master-content}}

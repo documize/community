@@ -21,12 +21,16 @@ export default Router.map(function () {
 		path: '/'
 	});
 
-	this.route('dashboard', {
-		path: 'dashboard'
+	this.route('action', {
+		path: 'action'
 	});
 
 	this.route('analytics', {
 		path: 'analytics'
+	});
+
+	this.route('activity', {
+		path: 'activity'
 	});
 
 	this.route(
@@ -56,6 +60,12 @@ export default Router.map(function () {
 			this.route('settings', {
 				path: 'settings'
 			});
+			this.route('revisions', {
+				path: 'revisions'
+			});
+			this.route('activity', {
+				path: 'activity'
+			});
 		}
 	);
 
@@ -67,6 +77,9 @@ export default Router.map(function () {
 		function () {
 			this.route('general', {
 				path: 'general'
+			});
+			this.route('labels', {
+				path: 'labels'
 			});
 			this.route('groups', {
 				path: 'groups'
@@ -156,6 +169,10 @@ export default Router.map(function () {
 
 	this.route('theming', {
 		path: 'theming'
+	});
+
+	this.route('updates', {
+		path: 'updates'
 	});
 
 	this.route('not-found', {

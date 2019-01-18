@@ -39,8 +39,6 @@ export default Service.extend({
         if (is.null(description) || is.undefined(description)) {
             description = this.get('sessionService.appMeta.message');
         }
-
-        $('head').append('<meta name="description" content="' + description + '">');
     },
 
     scrollTo(id) {

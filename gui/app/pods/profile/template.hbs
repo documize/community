@@ -1,18 +1,11 @@
-{{#layout/top-bar}}
-{{/layout/top-bar}}
+{{#layout/master-sidebar}}
+{{/layout/master-sidebar}}
 
-{{#layout/middle-zone}}
-	{{#layout/middle-zone-content}}
-		{{user-profile model=model save=(action 'save')}}
-	{{/layout/middle-zone-content}}
+{{#layout/master-content}}
+	{{layout/logo-heading
+		title=session.user.fullname
+		desc="Manage you profile and password"
+		icon=constants.Icon.Person}}
 
-	{{#layout/middle-zone-sidebar}}
-		<div id="sidebar" class="sidebar sidebar-center">
-			<h1>{{session.user.fullname}}</h1>
-			<div class="avatar-large my-3">{{session.user.initials}}</div>
-		</div>
-	{{/layout/middle-zone-sidebar}}
-{{/layout/middle-zone}}
-
-{{#layout/bottom-bar}}
-{{/layout/bottom-bar}}
+	{{user/user-profile model=model save=(action "save")}}
+{{/layout/master-content}}

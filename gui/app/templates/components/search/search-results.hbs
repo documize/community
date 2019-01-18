@@ -1,9 +1,9 @@
 <div class="view-search">
-	<div class="heading">{{resultPhrase}}</div>
+	<div class="result-summary">{{resultPhrase}}</div>
 	<ul class="documents">
-		{{#each documents key="id" as |result index|}}
+		{{#each documents key="id" as |result|}}
 			<li class="document">
-				{{#link-to 'document.index' result.spaceId result.spaceSlug result.documentId result.documentSlug (query-params currentPageId=result.itemId source=searchQuery) class="link"}}
+				{{#link-to "document.index" result.spaceId result.spaceSlug result.documentId result.documentSlug (query-params currentPageId=result.itemId source=searchQuery) class="link"}}
 					<div class="title">
 						{{result.document}}
 						{{#if (gt result.versionId.length 0)}}
@@ -13,9 +13,6 @@
 					<div class="space">{{result.space}}</div>
 					<div class="snippet">{{result.excerpt}}</div>
 					{{folder/document-tags documentTags=result.tags}}
-					{{#if result.template}}
-						<button type="button" class="mt-3 btn btn-warning text-uppercase font-weight-bold">TEMPLATE</button>
-					{{/if}}
 				{{/link-to}}
 			</li>
 		{{/each}}

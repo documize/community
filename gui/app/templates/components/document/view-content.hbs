@@ -1,14 +1,13 @@
 {{#if hasPages}}
-
-	{{#each pages key="id" as |item index|}}
+	{{#each pages key="id" as |item|}}
 		{{#if canEdit}}
-			<div class="start-section" {{action 'onShowSectionWizard' item.page}}>
-				<div class="start-button">
-					<div class="cta">+ SECTION</div>
-				</div>
+			<div class="start-section">
+				<i class="dicon {{constants.Icon.Plus}}" {{action "onShowSectionWizard" item.page}}>
+					{{#attach-tooltip showDelay=1000}}Insert section here{{/attach-tooltip}}
+				</i>
 			</div>
 		{{else}}
-			<div class="margin-top-70" />
+			{{ui/ui-spacer size=100}}
 		{{/if}}
 		{{document/document-page
 			roles=roles
@@ -22,51 +21,46 @@
 			pending=item.pending
 			permissions=permissions
 			refresh=(action refresh)
-			onSavePage=(action 'onSavePage')
-			onCopyPage=(action 'onCopyPage')
-			onMovePage=(action 'onMovePage')
-			onDeletePage=(action 'onDeletePage')
-			onSavePageAsBlock=(action 'onSavePageAsBlock')
+			onSavePage=(action "onSavePage")
+			onCopyPage=(action "onCopyPage")
+			onMovePage=(action "onMovePage")
+			onDeletePage=(action "onDeletePage")
+			onSavePageAsBlock=(action "onSavePageAsBlock")
 			onPageLevelChange=(action onPageLevelChange)
 			onPageSequenceChange=(action onPageSequenceChange)}}
 	{{/each}}
 
 	{{#if canEdit}}
-		<div class="start-section" {{action 'onShowSectionWizard'}}>
-			<div class="start-button">
-				<div class="cta">+ SECTION</div>
-			</div>
+		<div class="start-section">
+			<i class="dicon {{constants.Icon.Plus}}" {{action "onShowSectionWizard"}}>
+				{{#attach-tooltip showDelay=1000}}Insert section here{{/attach-tooltip}}
+			</i>
 		</div>
 	{{/if}}
 
 	{{#if showLikes}}
-		<div class=" d-flex justify-content-center non-printable">
-			<div class="vote-box">
-				{{#unless voteThanks}}
-				<div class="prompt">
-					{{folder.likes}}
-				</div>
+		<div class="vote-box no-print">
+			{{#if voteThanks}}
+				<div class="thanks">Thanks for the feedback!</div>
+			{{else}}
+				<div class="prompt">{{folder.likes}}</div>
+				{{ui/ui-spacer size=200}}
 				<div class="buttons">
-					<button type="button" class="btn btn-outline-success font-weight-bold" {{action 'onVote' 1}}>Yes, thanks!</button>&nbsp;&nbsp;
-					<button type="button" class="btn btn-outline-secondary font-weight-bold" {{action 'onVote' 2}}>Not really</button>
+					{{ui/ui-button color=constants.Color.Yellow light=true label="Yes, thanks!" onClick=(action "onVote" 1)}}
+					{{ui/ui-button-gap}}
+					{{ui/ui-button color=constants.Color.Yellow light=true label="Not really" onClick=(action "onVote" 2)}}
 				</div>
-				{{else}}
-				<div class="ack">Thanks for the feedback!</div>
-				{{/unless}}
-			</div>
+			{{/if}}
 		</div>
 	{{/if}}
-
-{{else }}
-
+{{else}}
 	{{#if canEdit}}
-		<div class="start-section" {{action 'onShowSectionWizard'}}>
-			<div class="start-button">
-				<div class="cta">+ SECTION</div>
-			</div>
+		<div class="start-section">
+			<i class="dicon {{constants.Icon.Plus}}" {{action "onShowSectionWizard"}}>
+				{{#attach-tooltip showDelay=1000}}Insert section here{{/attach-tooltip}}
+			</i>
 		</div>
 	{{/if}}
-
 {{/if}}
 
 {{#if canEdit}}

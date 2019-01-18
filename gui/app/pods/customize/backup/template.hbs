@@ -1,1 +1,6 @@
-{{customize/backup-restore onBackup=(action 'onBackup') onRestore=(action 'onRestore')}}
+{{layout/logo-heading
+	title="Backup & Restore"
+	desc="Export all content to self-contained single zip file"
+	icon=constants.Icon.Database}}
+
+{{customize/backup-restore onBackup=(action "onBackup") onRestore=(action "onRestore")}}

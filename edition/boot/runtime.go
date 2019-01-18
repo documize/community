@@ -13,6 +13,7 @@
 package boot
 
 import (
+	"os"
 	"time"
 
 	"github.com/documize/community/core/database"
@@ -57,28 +58,37 @@ func InitRuntime(r *env.Runtime, s *store.Store) bool {
 		storage.SetMySQLProvider(r, s)
 	case "postgresql":
 		storage.SetPostgreSQLProvider(r, s)
-	case "mssql":
-		// storage.SetSQLServerProvider(r, s)
+	// case "mssql":
+	// storage.SetSQLServerProvider(r, s)
+	default:
+		r.Log.Infof("Unsupported database type: %s", r.Flags.DBType)
+		r.Log.Info("Documize supports the following database types: mysql | mariadb | percona | postgresql")
+		os.Exit(1)
+		return false
 	}
 
 	// Open connection to database
 	db, err := sqlx.Open(r.StoreProvider.DriverName(), r.StoreProvider.MakeConnectionString()) //r.Flags.DBConn
 	if err != nil {
-		r.Log.Error("unable to open database", err)
+		r.Log.Error("Unable to open database", err)
+		os.Exit(1)
+		return false
 	}
 
-	// Database handle
+	// Set the database handle
 	r.Db = db
 
-	// Database connection defaults
+	// Set connection defaults
 	r.Db.SetMaxIdleConns(30)
 	r.Db.SetMaxOpenConns(100)
 	r.Db.SetConnMaxLifetime(time.Second * 14400)
 
-	// Database good?
+	// Ping verifies a connection to the database is still alive, establishing a connection if necessary.
 	err = r.Db.Ping()
 	if err != nil {
-		r.Log.Error("unable to connect to database - "+r.StoreProvider.Example(), err)
+		r.Log.Error("Unable to connect to database", err)
+		r.Log.Info(r.StoreProvider.Example())
+		os.Exit(1)
 		return false
 	}
 

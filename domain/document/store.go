@@ -81,17 +81,15 @@ func (s Store) GetBySpace(ctx domain.RequestContext, spaceID string) (documents 
         c_versionorder AS versionorder, c_groupid AS groupid, c_created AS created, c_revised AS revised
         FROM dmz_doc
         WHERE c_orgid=? AND c_template=false AND c_spaceid IN
-			(SELECT c_refid FROM dmz_space WHERE c_orgid=? AND c_refid IN
-                (SELECT c_refid FROM dmz_permission WHERE c_orgid=? AND c_location='space' AND c_refid=? AND c_refid IN
-                    (SELECT c_refid from dmz_permission WHERE c_orgid=? AND c_who='user' AND (c_whoid=? OR c_whoid='0') AND c_location='space' AND c_action='view'
-                    UNION ALL
-                    SELECT p.c_refid from dmz_permission p LEFT JOIN dmz_group_member r ON p.c_whoid=r.c_groupid WHERE p.c_orgid=?
-                    AND p.c_who='role' AND p.c_location='space' AND p.c_refid=? AND p.c_action='view' AND (r.c_userid=? OR r.c_userid='0')
-                    )
+            (SELECT c_refid FROM dmz_permission WHERE c_orgid=? AND c_location='space' AND c_refid=? AND c_refid IN
+                (SELECT c_refid from dmz_permission WHERE c_orgid=? AND c_who='user' AND (c_whoid=? OR c_whoid='0') AND c_location='space' AND c_action='view'
+                UNION ALL
+                SELECT p.c_refid from dmz_permission p LEFT JOIN dmz_group_member r ON p.c_whoid=r.c_groupid WHERE p.c_orgid=?
+                AND p.c_who='role' AND p.c_location='space' AND p.c_refid=? AND p.c_action='view' AND (r.c_userid=? OR r.c_userid='0')
                 )
             )
         ORDER BY c_name, c_versionorder`),
-		ctx.OrgID, ctx.OrgID, ctx.OrgID, spaceID, ctx.OrgID, ctx.UserID, ctx.OrgID, spaceID, ctx.UserID)
+		ctx.OrgID, ctx.OrgID, spaceID, ctx.OrgID, ctx.UserID, ctx.OrgID, spaceID, ctx.UserID)
 
 	if err == sql.ErrNoRows {
 		err = nil
@@ -99,6 +97,9 @@ func (s Store) GetBySpace(ctx domain.RequestContext, spaceID string) (documents 
 	if err != nil {
 		err = errors.Wrap(err, "select documents by space")
 	}
+
+	// (SELECT c_refid FROM dmz_space WHERE c_orgid=? AND c_refid IN
+	// )
 
 	return
 }

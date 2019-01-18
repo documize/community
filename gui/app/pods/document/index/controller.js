@@ -11,44 +11,33 @@
 
 import { Promise as EmberPromise } from 'rsvp';
 import { inject as service } from '@ember/service';
-import { computed } from '@ember/object';
-import Tooltips from '../../../mixins/tooltip';
 import Notifier from '../../../mixins/notifier';
 import Controller from '@ember/controller';
 
-export default Controller.extend(Tooltips, Notifier, {
+export default Controller.extend(Notifier, {
 	documentService: service('document'),
 	templateService: service('template'),
 	sectionService: service('section'),
 	linkService: service('link'),
+	appMeta: service(),
 	router: service(),
-	tab: 'content',
+	sidebarTab: 'toc',
 	queryParams: ['currentPageId', 'source'],
-	showRevisions: computed('permissions', 'document.protection', function() {
-		if (!this.get('session.viewUsers')) return false;
-		if (this.get('document.protection') === this.get('constants').ProtectionType.None) return true;
-		if (this.get('document.protection') === this.get('constants').ProtectionType.Review && this.get('permissions.documentApprove')) return true;
-
-		return false;
-	}),
+	contributionStatus: '',
+	approvalStatus: '',
 
 	actions: {
-		onTabChange(tab) {
-			this.set('tab', tab);
-			if (tab === 'content') {
-				this.send('refresh');
-			}
+		onSidebarChange(tab) {
+			this.set('sidebarTab', tab);
 		},
 
 		onShowPage(pageId) {
-			this.set('tab', 'content');
 			this.get('browser').scrollTo(`#page-${pageId}`);
 		},
 
 		onSaveDocument(doc) {
-			this.showWait();
 			this.get('documentService').save(doc).then(() => {
-				this.showDone();
+				this.notifySuccess('Saved');
 			});
 			this.get('browser').setTitle(doc.get('name'));
 			this.get('browser').setMetaDescription(doc.get('excerpt'));
@@ -103,10 +92,8 @@ export default Controller.extend(Tooltips, Notifier, {
 				meta: meta.toJSON({ includeId: true })
 			};
 
-			this.showWait();
-
 			this.get('documentService').updatePage(documentId, page.get('id'), model).then((/*up*/) => {
-				this.showDone();
+				this.notifySuccess('Saved');
 
 				this.get('documentService').fetchPages(documentId, this.get('session.user.id')).then((pages) => {
 					this.set('pages', pages);
@@ -155,13 +142,11 @@ export default Controller.extend(Tooltips, Notifier, {
 		},
 
 		onInsertSection(data) {
-			this.showWait();
-
 			return new EmberPromise((resolve) => {
 				this.get('documentService').addPage(this.get('document.id'), data).then((newPage) => {
 					let data = this.get('store').normalize('page', newPage);
 					this.get('store').push(data);
-					this.showDone();
+					this.notifySuccess('Inserted');
 
 					this.get('documentService').fetchPages(this.get('document.id'), this.get('session.user.id')).then((pages) => {
 						this.set('pages', pages);
@@ -198,51 +183,36 @@ export default Controller.extend(Tooltips, Notifier, {
 		},
 
 		onSaveTemplate(name, desc) {
-			this.showWait();
-
 			this.get('templateService').saveAsTemplate(this.get('document.id'), name, desc).then(function () {
-				this.showDone();
+				this.notifySuccess('Template saved');
 			});
 		},
 
 		onPageSequenceChange(currentPageId, changes) {
-			this.showWait();
 			this.set('currentPageId', currentPageId);
 
 			this.get('documentService').changePageSequence(this.get('document.id'), changes).then(() => {
 				this.get('documentService').fetchPages(this.get('document.id'), this.get('session.user.id')).then( (pages) => {
 					this.set('pages', pages);
-					this.showDone();
 				});
 			});
 		},
 
 		onPageLevelChange(currentPageId, changes) {
-			this.showWait();
 			this.set('currentPageId', currentPageId);
 
 			this.get('documentService').changePageLevel(this.get('document.id'), changes).then(() => {
 				this.get('documentService').fetchPages(this.get('document.id'), this.get('session.user.id')).then( (pages) => {
 					this.set('pages', pages);
-					this.showDone();
 				});
 			});
 		},
 
 		onTagChange(tags) {
-			this.showDone();
-
 			let doc = this.get('document');
 			doc.set('tags', tags);
 			this.get('documentService').save(doc).then(()=> {
-				this.showWait();
-			});
-		},
-
-		onRollback(pageId, revisionId) {
-			this.get('documentService').rollbackPage(this.get('document.id'), pageId, revisionId).then(() => {
-				this.set('tab', 'content');
-				this.get('target._routerMicrolib').refresh();
+				this.notifySuccess('Saved');
 			});
 		},
 

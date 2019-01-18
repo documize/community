@@ -179,3 +179,19 @@ func (s Store) GetMembers(ctx domain.RequestContext) (r []group.Record, err erro
 
 	return
 }
+
+// RemoveUserGroups remove user from all group.
+func (s Store) RemoveUserGroups(ctx domain.RequestContext, userID string) (err error) {
+	_, err = s.DeleteWhere(ctx.Transaction,
+		fmt.Sprintf("DELETE FROM dmz_group_member WHERE c_orgid='%s' AND c_userid='%s'",
+			ctx.OrgID, userID))
+
+	if err == sql.ErrNoRows {
+		err = nil
+	}
+	if err != nil {
+		err = errors.Wrap(err, "RemoveUserGroups")
+	}
+
+	return
+}

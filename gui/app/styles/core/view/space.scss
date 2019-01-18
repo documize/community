@@ -1,0 +1,306 @@
+.view-space {
+	> .documents {
+		margin: 0;
+		padding: 0;
+
+		> .document {
+			@include card();
+			list-style-type: none;
+			margin: 0 0 2rem 0;
+			padding: 15px 20px;
+			width: 100%;
+			position: relative;
+
+			&:hover {
+				> .checkbox {
+					display: block;
+				}
+			}
+
+			> .checkbox {
+				position: absolute;
+				display: none;
+				top: 10px;
+				right: 10px;
+				cursor: pointer;
+
+				> .dicon {
+					color: map-get($yellow-shades, 700);
+					cursor: pointer;
+					font-weight: 600;
+					font-size: 20px;
+				}
+			}
+
+			> .actions {
+				position: absolute;
+				display: none;
+				bottom: 10px;
+				right: 10px;
+				cursor: pointer;
+			}
+
+			> .info {
+				padding: 0;
+				align-self: self-start;
+				justify-self: self-start;
+
+				> .name {
+					font-size: 1.3rem;
+					font-weight: 700;
+					color: map-get($gray-shades, 800);
+				}
+
+				> .desc {
+					font-size: 1.1rem;
+					font-weight: 400;
+					margin-top: 0.4rem;
+					color: $color-black-light-3;
+				}
+			}
+
+			> .meta {
+				padding: 25px 0 0 0;
+
+				> .lifecycle {
+					display: inline-block;
+					text-transform: uppercase;
+					font-size: 0.9rem;
+					font-weight: 500;
+					text-align: center;
+					@include border-radius(5px);
+					background-color: map-get($gray-shades, 300);
+					padding: 0.25rem 1rem;
+					margin-right: 20px;
+
+					> .draft {
+						color: map-get($yellow-shades, 600);
+					}
+
+					> .live {
+						color: map-get($green-shades, 600);
+					}
+
+					> .archived {
+						color: map-get($red-shades, 600);
+					}
+				}
+
+				> .dicon {
+					color: map-get($gray-shades, 600);
+					font-size: 20px;
+				}
+
+				.categories {
+					display: inline-block;
+					padding: 0;
+
+					> .category {
+						padding: 0 15px 0 0;
+						display: inline-block;
+
+						> .dicon {
+							color: map-get($gray-shades, 500);
+							font-size: 20px;
+							vertical-align: bottom;
+						}
+
+						> .name {
+							display: inline-block;
+							color: map-get($gray-shades, 800);
+							font-size: 1rem;
+						}
+					}
+				}
+
+				.hashtags {
+					display: inline-block;
+					padding: 0;
+
+					> .hashtag {
+						padding: 0 15px 0 0;
+
+						> .dicon {
+							color: map-get($gray-shades, 500);
+							font-size: 20px;
+							vertical-align: bottom;
+						}
+
+						> .name {
+							display: inline-block;
+							color: map-get($gray-shades, 800);
+							font-size: 1rem;
+						}
+
+						&:hover {
+							> .dicon, > .name {
+								color: map-get($gray-shades, 600);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		> .selected {
+			background-color: map-get($yellow-shades, 200);
+
+			> .checkbox {
+				display: block;
+			}
+
+			> .actions {
+				display: block;
+			}
+
+			&:hover {
+				background-color: map-get($yellow-shades, 200);
+			}
+		}
+	}
+}
+
+.space-admin {
+	> .blocks {
+		margin: 0;
+		padding: 0;
+
+		> .block {
+			@include card();
+			list-style-type: none;
+			margin: 0 0 2rem 0;
+			padding: 15px 20px;
+			width: 100%;
+			position: relative;
+
+			> .name {
+				font-size: 1.3rem;
+				font-weight: 700;
+				color: map-get($gray-shades, 800);
+			}
+
+			> .desc {
+				font-size: 1.1rem;
+				font-weight: 400;
+				margin: 0.4rem 0 1rem 0;
+				color: $color-black-light-3;
+			}
+		}
+	}
+
+	> .permission-table {
+		> tbody, > thead {
+			> tr, > th {
+				> td, > th {
+					margin: 0;
+					padding: 10px 15px;
+					text-align: center;
+
+					> .dicon {
+						color: map-get($gray-shades, 700);
+					}
+				}
+
+				> td:first-child {
+					text-align: left;
+				}
+			}
+		}
+
+		> thead {
+			> tr {
+				> th {
+					background-color: map-get($gray-shades, 100);
+					color: map-get($gray-shades, 600);
+				}
+
+				> th:first-child {
+					background-color: $color-white !important;
+					border: none !important;
+				}
+			}
+		}
+	}
+
+	.add-users {
+		text-align: center;
+
+		> .item {
+			margin: 7px;
+			display: inline-block;
+		}
+	}
+
+	> .categories {
+        padding: 0;
+        margin: 0;
+
+		> .category {
+			@include card();
+			list-style-type: none;
+			margin: 0 0 2rem 0;
+			padding: 15px 20px;
+			width: 100%;
+			position: relative;
+
+			> .info {
+				padding: 0;
+				align-self: self-start;
+				justify-self: self-start;
+
+				> .name {
+					font-size: 1.3rem;
+					font-weight: 700;
+					color: map-get($gray-shades, 800);
+				}
+
+				> .desc {
+					font-size: 1.1rem;
+					font-weight: 400;
+					margin-top: 0.4rem;
+					color: $color-black-light-3;
+				}
+			}
+
+			> .actions {
+				margin-top: 20px;
+			}
+		}
+	}
+}
+
+.space-label-picker {
+	display : block;
+
+	> .label {
+		@extend .no-select;
+		@extend .text-truncate;
+		display: inline-block;
+		width: 200px;
+		margin: 0 10px 10px 0;
+		padding: 0.5rem 0.75rem;
+		font-size: 1rem;
+		font-weight: 500;
+		color: $color-white;
+		border: 3px solid map-get($gray-shades, 300);
+		@include border-radius(3px);
+		cursor: pointer;
+
+		&:hover {
+			border: 3px solid map-get($gray-shades, 600);
+		}
+	}
+
+	.none {
+		background-color: $color-white;
+		color: map-get($gray-shades, 500);
+	}
+
+	> .selected {
+		border: 3px solid map-get($yellow-shades, 800);
+
+		&:hover {
+			border: 3px solid map-get($yellow-shades, 800);
+		}
+	}
+}

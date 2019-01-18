@@ -1,0 +1,21 @@
+<div class="logo-heading">
+	{{#if icon}}
+		<div class="icon">
+			<i class="dicon {{icon}}" />
+		</div>
+	{{else if meta}}
+		<div class="meta-icon">
+			{{ui/ui-icon-meta icon=meta}}
+		</div>
+	{{else if logo}}
+		<div class="meta-logo">
+			<img src="{{appMeta.endpoint}}/public/logo?cb={{cacheBuster}}"
+				style="max-width: 200px; max-height: 100px;">
+		</div>
+	{{/if}}
+	<div class="text">
+		{{layout/page-heading title=title}}
+		{{layout/page-desc desc=desc}}
+	</div>
+</div>
+{{ui/ui-spacer size=300}}

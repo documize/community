@@ -1,0 +1,63 @@
+.document-sidebar-toc {
+	> .controls {
+		margin: 5px 0 10px 0;
+		text-align: center;
+
+		> .arrow {
+			margin: 0 5px;
+			display: inline-block;
+
+			> i {
+				font-size: 2rem;
+				color: map-get($yellow-shades, 600);
+			}
+		}
+
+		> .disabled {
+			cursor: not-allowed !important;
+
+			> i {
+				color: map-get($gray-shades, 400);
+			}
+		}
+	}
+
+	> .index-list {
+		padding: 0;
+		list-style: none;
+		font-size: 0.9rem;
+		overflow-x: hidden;
+		list-style-type: none;
+		margin: 0 0 0 0;
+
+		.item {
+			@extend .no-select;
+			padding: 4px 0;
+			text-overflow: ellipsis;
+			word-wrap: break-word;
+			white-space: nowrap;
+			overflow: hidden;
+
+			> .link {
+				color: map-get($gray-shades, 800);
+				font-weight: 400;
+
+				&:hover {
+					color: map-get($yellow-shades, 600);
+				}
+
+				> .numbering {
+					color: map-get($gray-shades, 600);
+					font-weight: 500;
+					display: inline-block;
+					margin-right: 10px;
+				}
+			}
+
+			> .selected {
+				color: map-get($yellow-shades, 600);
+				font-weight: 600;
+			}
+		}
+	}
+}

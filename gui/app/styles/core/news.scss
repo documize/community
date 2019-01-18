@@ -1,0 +1,204 @@
+.product-update {
+	text-align: left;
+
+	> .update-status {
+		padding: 25px;
+		background-color: map-get($yellow-shades, 100);
+		border: 1px solid map-get($yellow-shades, 300);
+		@include border-radius(3px);
+
+		> .title {
+			font-weight: bold;
+			font-size: 1.5rem;
+			color: map-get($yellow-shades, 800);
+			margin-bottom: 5px;
+			display:block;
+		}
+
+		> .instructions {
+			font-weight: 500;
+			font-size: 1.1rem;
+			color: map-get($gray-shades, 800);
+			margin-bottom: 30px;
+		}
+
+		> .links {
+			margin: 10px 0 0 0;
+
+			> p {
+				margin: 0.3rem 0;
+
+				> .edition-name {
+					font-size: 1.1rem;
+					font-weight: 400;
+					color: map-get($yellow-shades, 900);
+				}
+
+				> .link {
+					font-size: 1.1rem;
+					color: map-get($yellow-shades, 600);
+					font-weight: 600;
+				}
+			}
+		}
+	}
+
+	> .change-log {
+		padding: 25px;
+		background-color: map-get($gray-shades, 100);
+		border: 1px solid map-get($gray-shades, 200);
+		@include border-radius(3px);
+
+		> .version {
+			font-weight: 700;
+			font-size: 1.2rem;
+			color: map-get($gray-shades, 700);
+			margin: 10px 0;
+			display: block;
+		}
+
+		> .changes {
+			margin: 10px 0 0 40px;
+
+			> li {
+				list-style-type: disc;
+				padding: 5px 0;
+				font-size: 1.2rem;
+				color: $color-black;
+
+				> .tag-edition {
+					margin: 10px 10px 10px 10px;
+					padding: 5px 10px;
+					background-color: map-get($green-shades, 200);
+					color: map-get($green-shades, 600);
+					font-weight: bold;
+					font-size: 0.9rem;
+					@include border-radius(3px);
+				}
+			}
+		}
+	}
+}
+
+.product-about {
+	text-align: center;
+	margin: 30px 30px;
+
+	> .edition {
+		font-weight: normal;
+		font-size: 1.5rem;
+		color: $color-black;
+		margin-bottom: 5px;
+	}
+
+	> .version {
+		font-weight: bold;
+		font-size: 1.1rem;
+		color: map-get($gray-shades, 600);
+		margin-bottom: 20px;
+	}
+
+	> .dotcom {
+		font-weight: bold;
+		font-size: 1.2rem;
+		color: $color-link;
+		margin-bottom: 40px;
+	}
+
+	> .copyright {
+		text-align: center;
+		font-weight: normal;
+		font-size: 1rem;
+		color: $color-black-light-1;
+		margin-bottom: 20px;
+	}
+
+	> .license {
+		text-align: left;
+		font-weight: normal;
+		font-size: 1rem;
+		color: map-get($gray-shades, 600);
+	}
+}
+
+.update-available-dot {
+	border-radius: 10px;
+    width: 10px;
+    height: 10px;
+    background-color: map-get($yellow-shades, 700);
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+.whats-new-dot {
+	border-radius: 10px;
+    width: 10px;
+    height: 10px;
+    background-color: map-get($red-shades, 600);
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.product-news {
+	text-align: left;
+	margin: 0 30px;
+
+	> h2 {
+		margin: 0 0 10px 0;
+		text-align: center;
+		font-size: 2rem;
+		color: $color-black-light-1;
+	}
+
+	> .news-item {
+		padding: 30px 0;
+		border-bottom: 1px solid map-get($gray-shades, 300);
+		text-align: center;
+
+		> .title {
+			color: $theme-500;
+			font-size: 1.5rem;
+			font-weight: bold;
+			margin-bottom: 5px;
+		}
+
+		> .date {
+			color: map-get($gray-shades, 600);
+			font-size: 1rem;
+			font-weight: 600;
+			margin-bottom: 10px;
+		}
+
+		> .info {
+			color: $color-black;
+			font-size: 1.1rem;
+			font-weight: normal;
+			margin-top: 15px;
+		}
+
+		> .tag-edition {
+			margin: 10px 10px 10px 10px;
+			padding: 5px 10px;
+			background-color: map-get($gray-shades, 100);
+			color: map-get($gray-shades, 600);
+			font-weight: 700;
+			font-size: 0.9rem;
+			display: inline-block;
+		}
+
+		> img {
+			max-width: 450px;
+			max-height: 350px;
+		}
+	}
+
+	> .action {
+		margin: 20px 0;
+		text-align: center;
+		color: map-get($gray-shades, 600);
+		font-weight: 800;
+		font-size: 1.3rem;
+	}
+}

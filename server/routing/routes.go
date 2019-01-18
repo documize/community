@@ -25,6 +25,7 @@ import (
 	"github.com/documize/community/domain/conversion"
 	"github.com/documize/community/domain/document"
 	"github.com/documize/community/domain/group"
+	"github.com/documize/community/domain/label"
 	"github.com/documize/community/domain/link"
 	"github.com/documize/community/domain/meta"
 	"github.com/documize/community/domain/organization"
@@ -58,6 +59,7 @@ func RegisterEndpoints(rt *env.Runtime, s *store.Store) {
 	space := space.Handler{Runtime: rt, Store: s}
 	block := block.Handler{Runtime: rt, Store: s}
 	group := group.Handler{Runtime: rt, Store: s}
+	label := label.Handler{Runtime: rt, Store: s}
 	backup := backup.Handler{Runtime: rt, Store: s}
 	section := section.Handler{Runtime: rt, Store: s}
 	setting := setting.Handler{Runtime: rt, Store: s}
@@ -75,9 +77,11 @@ func RegisterEndpoints(rt *env.Runtime, s *store.Store) {
 	//**************************************************
 
 	AddPublic(rt, "meta", []string{"GET", "OPTIONS"}, nil, meta.Meta)
-	AddPublic(rt, "version", []string{"GET", "OPTIONS"}, nil, func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte(rt.Product.Version))
-	})
+	AddPublic(rt, "meta/themes", []string{"GET", "OPTIONS"}, nil, meta.Themes)
+	AddPublic(rt, "version", []string{"GET", "OPTIONS"}, nil,
+		func(w http.ResponseWriter, r *http.Request) {
+			w.Write([]byte(rt.Product.Version))
+		})
 
 	//**************************************************
 	// Non-secure public service routes
@@ -90,7 +94,9 @@ func RegisterEndpoints(rt *env.Runtime, s *store.Store) {
 	AddPublic(rt, "forgot", []string{"POST", "OPTIONS"}, nil, user.ForgotPassword)
 	AddPublic(rt, "reset/{token}", []string{"POST", "OPTIONS"}, nil, user.ResetPassword)
 	AddPublic(rt, "share/{spaceID}", []string{"POST", "OPTIONS"}, nil, space.AcceptInvitation)
-	AddPublic(rt, "attachments/{orgID}/{attachmentID}", []string{"GET", "OPTIONS"}, nil, attachment.Download)
+	AddPublic(rt, "attachment/{orgID}/{attachmentID}", []string{"GET", "OPTIONS"}, nil, attachment.Download)
+	AddPublic(rt, "logo", []string{"GET", "OPTIONS"}, []string{"default", "true"}, meta.DefaultLogo)
+	AddPublic(rt, "logo", []string{"GET", "OPTIONS"}, nil, meta.Logo)
 
 	//**************************************************
 	// Secured private routes (require authentication)
@@ -127,6 +133,7 @@ func RegisterEndpoints(rt *env.Runtime, s *store.Store) {
 	AddPrivate(rt, "organization/{orgID}", []string{"PUT", "OPTIONS"}, nil, organization.Update)
 	AddPrivate(rt, "organization/{orgID}/setting", []string{"GET", "OPTIONS"}, nil, setting.GetInstanceSetting)
 	AddPrivate(rt, "organization/{orgID}/setting", []string{"POST", "OPTIONS"}, nil, setting.SaveInstanceSetting)
+	AddPrivate(rt, "organization/{orgID}/logo", []string{"POST", "OPTIONS"}, nil, organization.UploadLogo)
 
 	AddPrivate(rt, "space/{spaceID}", []string{"DELETE", "OPTIONS"}, nil, space.Delete)
 	AddPrivate(rt, "space/{spaceID}/move/{moveToId}", []string{"DELETE", "OPTIONS"}, nil, space.Remove)
@@ -137,6 +144,11 @@ func RegisterEndpoints(rt *env.Runtime, s *store.Store) {
 	AddPrivate(rt, "space", []string{"GET", "OPTIONS"}, nil, space.GetViewable)
 	AddPrivate(rt, "space/{spaceID}", []string{"PUT", "OPTIONS"}, nil, space.Update)
 	AddPrivate(rt, "space", []string{"POST", "OPTIONS"}, nil, space.Add)
+
+	AddPrivate(rt, "label", []string{"POST", "OPTIONS"}, nil, label.Add)
+	AddPrivate(rt, "label", []string{"GET", "OPTIONS"}, nil, label.Get)
+	AddPrivate(rt, "label/{labelID}", []string{"PUT", "OPTIONS"}, nil, label.Update)
+	AddPrivate(rt, "label/{labelID}", []string{"DELETE", "OPTIONS"}, nil, label.Delete)
 
 	AddPrivate(rt, "category/space/{spaceID}/summary", []string{"GET", "OPTIONS"}, nil, category.GetSummary)
 	AddPrivate(rt, "category/document/{documentID}", []string{"GET", "OPTIONS"}, nil, category.GetDocumentCategoryMembership)

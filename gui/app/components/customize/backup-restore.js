@@ -60,7 +60,6 @@ export default Component.extend(Notifier, Modal, {
 	},
 
 	doBackup() {
-		this.showWait();
 		this.set('backupFilename', '');
 		this.set('backupSuccess', false);
 		this.set('backupFailed', false);
@@ -69,13 +68,13 @@ export default Component.extend(Notifier, Modal, {
 		let spec = this.get('backupSpec');
 
 		this.get('onBackup')(spec).then((filename) => {
-			this.showDone();
+			this.notifySuccess('Completed');
 			this.set('backupLabel', 'Start Backup');
 			this.set('backupSuccess', true);
 			this.set('backupFilename', filename);
 			this.set('backupRunning', false);
 		}, ()=> {
-			this.showDone();
+			this.notifyError('Failed');
 			this.set('backupLabel', 'Run Backup');
 			this.set('backupFailed', true);
 			this.set('backupRunning', false);
@@ -134,7 +133,6 @@ export default Component.extend(Notifier, Modal, {
 			}
 
 			// start restore process
-			this.showWait();
 			this.set('restoreButtonLabel', 'Please wait, restore running...');
             this.set('restoreSuccess', false);
 			this.set('restoreFailed', false);
@@ -147,12 +145,12 @@ export default Component.extend(Notifier, Modal, {
 			}
 
 			this.get('onRestore')(spec, filedata).then(() => {
-				this.showDone();
+				this.notifySuccess('Completed');
 				this.set('backupLabel', 'Restore');
 				this.set('restoreSuccess', true);
 				this.get('router').transitionTo('auth.logout');
 			}, ()=> {
-				this.showDone();
+				this.notifyError('Failed');
 				this.set('restorbackupLabel', 'Restore');
                 this.set('restoreFailed', true);
 			});

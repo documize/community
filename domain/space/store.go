@@ -30,8 +30,15 @@ type Store struct {
 
 // Add adds new folder into the store.
 func (s Store) Add(ctx domain.RequestContext, sp space.Space) (err error) {
-	_, err = ctx.Transaction.Exec(s.Bind("INSERT INTO dmz_space (c_refid, c_name, c_orgid, c_userid, c_type, c_lifecycle, c_likes, c_created, c_revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"),
-		sp.RefID, sp.Name, sp.OrgID, sp.UserID, sp.Type, sp.Lifecycle, sp.Likes, sp.Created, sp.Revised)
+	_, err = ctx.Transaction.Exec(s.Bind(`
+        INSERT INTO dmz_space
+            (c_refid, c_name, c_orgid, c_userid, c_type, c_lifecycle,
+            c_likes, c_icon, c_desc, c_count_category, c_count_content,
+            c_labelid, c_created, c_revised)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
+		sp.RefID, sp.Name, sp.OrgID, sp.UserID, sp.Type, sp.Lifecycle, sp.Likes,
+		sp.Icon, sp.Description, sp.CountCategory, sp.CountContent, sp.LabelID,
+		sp.Created, sp.Revised)
 
 	if err != nil {
 		err = errors.Wrap(err, "unable to execute insert for space")
@@ -45,6 +52,8 @@ func (s Store) Get(ctx domain.RequestContext, id string) (sp space.Space, err er
 	err = s.Runtime.Db.Get(&sp, s.Bind(`SELECT id, c_refid AS refid,
         c_name AS name, c_orgid AS orgid, c_userid AS userid,
         c_type AS type, c_lifecycle AS lifecycle, c_likes AS likes,
+        c_icon AS icon, c_labelid AS labelid, c_desc AS description,
+        c_count_category As countcategory, c_count_content AS countcontent,
         c_created AS created, c_revised AS revised
         FROM dmz_space
         WHERE c_orgid=? and c_refid=?`),
@@ -62,6 +71,8 @@ func (s Store) PublicSpaces(ctx domain.RequestContext, orgID string) (sp []space
 	qry := s.Bind(`SELECT id, c_refid AS refid,
         c_name AS name, c_orgid AS orgid, c_userid AS userid,
         c_type AS type, c_lifecycle AS lifecycle, c_likes AS likes,
+        c_icon AS icon, c_labelid AS labelid, c_desc AS description,
+        c_count_category AS countcategory, c_count_content AS countcontent,
         c_created AS created, c_revised AS revised
         FROM dmz_space
         WHERE c_orgid=? AND c_type=1`)
@@ -85,6 +96,8 @@ func (s Store) GetViewable(ctx domain.RequestContext) (sp []space.Space, err err
 	q := s.Bind(`SELECT id, c_refid AS refid,
         c_name AS name, c_orgid AS orgid, c_userid AS userid,
         c_type AS type, c_lifecycle AS lifecycle, c_likes AS likes,
+        c_icon AS icon, c_labelid AS labelid, c_desc AS description,
+        c_count_category AS countcategory, c_count_content AS countcontent,
         c_created AS created, c_revised AS revised
     FROM dmz_space
 	WHERE c_orgid=? AND c_refid IN
@@ -122,14 +135,18 @@ func (s Store) AdminList(ctx domain.RequestContext) (sp []space.Space, err error
         SELECT id, c_refid AS refid,
         c_name AS name, c_orgid AS orgid, c_userid AS userid,
         c_type AS type, c_lifecycle AS lifecycle, c_likes AS likes,
-        c_created AS created, c_revised AS revised
+        c_created AS created, c_revised AS revised,
+        c_icon AS icon, c_labelid AS labelid, c_desc AS description,
+        c_count_category AS countcategory, c_count_content AS countcontent
         FROM dmz_space
         WHERE c_orgid=? AND (c_type=? OR c_type=?)
         UNION ALL
         SELECT id, c_refid AS refid,
         c_name AS name, c_orgid AS orgid, c_userid AS userid,
         c_type AS type, c_lifecycle AS lifecycle, c_likes AS likes,
-        c_created AS created, c_revised AS revised
+        c_created AS created, c_revised AS revised,
+        c_icon AS icon, c_labelid AS labelid, c_desc AS description,
+        c_count_category AS countcategory, c_count_content AS countcontent
         FROM dmz_space
         WHERE c_orgid=? AND (c_type=? OR c_type=?) AND c_refid NOT IN
         (SELECT c_refid FROM dmz_permission WHERE c_orgid=? AND c_action='own')
@@ -154,7 +171,13 @@ func (s Store) AdminList(ctx domain.RequestContext) (sp []space.Space, err error
 func (s Store) Update(ctx domain.RequestContext, sp space.Space) (err error) {
 	sp.Revised = time.Now().UTC()
 
-	_, err = ctx.Transaction.NamedExec("UPDATE dmz_space SET c_name=:name, c_type=:type, c_lifecycle=:lifecycle, c_userid=:userid, c_likes=:likes, c_revised=:revised WHERE c_orgid=:orgid AND c_refid=:refid", &sp)
+	_, err = ctx.Transaction.NamedExec(`
+        UPDATE dmz_space
+            SET c_name=:name, c_type=:type, c_lifecycle=:lifecycle, c_userid=:userid,
+            c_likes=:likes, c_desc=:description, c_labelid=:labelid, c_icon=:icon,
+            c_count_category=:countcategory, c_count_content=:countcontent,
+            c_revised=:revised
+            WHERE c_orgid=:orgid AND c_refid=:refid`, &sp)
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to execute update for space %s", sp.RefID))
 	}
@@ -165,4 +188,56 @@ func (s Store) Update(ctx domain.RequestContext, sp space.Space) (err error) {
 // Delete removes space from the store.
 func (s Store) Delete(ctx domain.RequestContext, id string) (rows int64, err error) {
 	return s.DeleteConstrained(ctx.Transaction, "dmz_space", ctx.OrgID, id)
+}
+
+// IncrementCategoryCount increments usage counter for space category.
+func (s Store) IncrementCategoryCount(ctx domain.RequestContext, spaceID string) (err error) {
+	_, err = ctx.Transaction.Exec(s.Bind(`UPDATE dmz_space SET
+        c_count_category=c_count_category+1, c_revised=? WHERE c_orgid=? AND c_refid=?`),
+		time.Now().UTC(), ctx.OrgID, spaceID)
+
+	if err != nil {
+		err = errors.Wrap(err, "execute increment category count")
+	}
+
+	return
+}
+
+// DecrementCategoryCount decrements usage counter for space category.
+func (s Store) DecrementCategoryCount(ctx domain.RequestContext, spaceID string) (err error) {
+	_, err = ctx.Transaction.Exec(s.Bind(`UPDATE dmz_space SET
+        c_count_category=c_count_category-1, c_revised=? WHERE c_orgid=? AND c_refid=?`),
+		time.Now().UTC(), ctx.OrgID, spaceID)
+
+	if err != nil {
+		err = errors.Wrap(err, "execute decrement category count")
+	}
+
+	return
+}
+
+// IncrementContentCount increments usage counter for space category.
+func (s Store) IncrementContentCount(ctx domain.RequestContext, spaceID string) (err error) {
+	_, err = ctx.Transaction.Exec(s.Bind(`UPDATE dmz_space SET
+        c_count_content=c_count_content+1, c_revised=? WHERE c_orgid=? AND c_refid=?`),
+		time.Now().UTC(), ctx.OrgID, spaceID)
+
+	if err != nil {
+		err = errors.Wrap(err, "execute increment content count")
+	}
+
+	return
+}
+
+// DecrementContentCount decrements usage counter for space category.
+func (s Store) DecrementContentCount(ctx domain.RequestContext, spaceID string) (err error) {
+	_, err = ctx.Transaction.Exec(s.Bind(`UPDATE dmz_space SET
+        c_count_content=c_count_content-1, c_revised=? WHERE c_orgid=? AND c_refid=?`),
+		time.Now().UTC(), ctx.OrgID, spaceID)
+
+	if err != nil {
+		err = errors.Wrap(err, "execute decrement category count")
+	}
+
+	return
 }

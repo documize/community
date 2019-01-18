@@ -1,0 +1,116 @@
+// Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
+//
+// This software (Documize Community Edition) is licensed under
+// GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
+//
+// You can operate outside the AGPL restrictions by purchasing
+// Documize Enterprise Edition and obtaining a commercial license
+// by contacting <sales@documize.com>.
+//
+// https://documize.com
+
+a {
+	cursor: pointer;
+	color: $color-link;
+	text-decoration: none;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+
+	a:focus, a:hover {
+		text-decoration: none;
+	}
+}
+
+.no-outline {
+	outline: none !important;
+	border: none !important;
+	box-shadow: none !important;
+
+	&:active,
+	&:focus {
+		border: none !important;
+		box-shadow: none !important;
+	}
+}
+
+.no-select {
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+}
+
+@media print {
+	.no-print {
+		display: none !important;
+	}
+}
+
+.no-width {
+	white-space: nowrap;
+	width: 1%;
+}
+
+.cursor-pointer {
+	cursor: pointer;
+}
+
+.cursor-auto {
+	cursor: auto !important;
+}
+
+.absolute-center {
+	margin: auto;
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+}
+
+.bordered {
+	border: 1px solid map-get($gray-shades, 300);
+}
+
+.hide {
+	display: none;
+}
+.visible {
+	visibility: visible;
+}
+.invisible {
+	visibility: none;
+}
+.display-block {
+	display: block;
+}
+.display-inline-block {
+	display: inline-block;
+}
+
+.align-top {
+	vertical-align: top!important;
+}
+.align-middle {
+	vertical-align: middle!important;
+}
+
+.text-left {
+	text-align: left;
+}
+.text-right {
+	text-align: right;
+}
+.text-center {
+	text-align: center;
+}
+
+.float-left {
+	float: left;
+}
+.float-right {
+	float: right;
+}

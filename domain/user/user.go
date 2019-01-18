@@ -42,6 +42,7 @@ func AttachUserAccounts(ctx domain.RequestContext, s store.Store, orgID string, 
 	u.Active = false
 	u.ViewUsers = false
 	u.Analytics = false
+	u.Theme = ""
 
 	for _, account := range u.Accounts {
 		if account.OrgID == orgID {
@@ -50,6 +51,7 @@ func AttachUserAccounts(ctx domain.RequestContext, s store.Store, orgID string, 
 			u.Active = account.Active
 			u.ViewUsers = account.Users
 			u.Analytics = account.Analytics
+			u.Theme = account.Theme
 			break
 		}
 	}

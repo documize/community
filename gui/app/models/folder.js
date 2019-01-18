@@ -21,6 +21,11 @@ export default Model.extend({
 	spaceType: attr('number', { defaultValue: 2 }),
 	lifecycle: attr('number', { defaultValue: 1 }),
 	likes: attr('string'),
+	icon: attr('string', { defaultValue: '' }),
+	desc: attr('string', { defaultValue: '' }),
+	labelId: attr('string', { defaultValue: '' }),
+	countCategory: attr('number', { defaultValue: 0 }),
+	countContent: attr('number', { defaultValue: 0 }),
 
 	allowLikes: computed('likes', function () {
 		return is.not.empty(this.get('likes')) && is.not.undefined(this.get('likes'));

@@ -15,6 +15,7 @@ import Controller from '@ember/controller';
 
 export default Controller.extend(Notifier, {
 	router: service(),
+	appMeta: service(),
 	folderService: service('folder'),
 	documentService: service('document'),
 	localStorage: service('localStorage'),
@@ -27,9 +28,8 @@ export default Controller.extend(Notifier, {
 		},
 
 		onSaveDocument(doc) {
-			this.showWait();
 			this.get('documentService').save(doc).then(() => {
-				this.showDone();
+				this.notifySuccess('Saved');
 			});
 
 			this.get('browser').setTitle(doc.get('name'));

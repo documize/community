@@ -1,0 +1,25 @@
+.section-jira {
+	margin: 0;
+	padding: 0;
+}
+
+.section-jira-table {
+    font-size: 1rem;
+    width: auto !important;
+
+    a:hover {
+        text-decoration: underline;
+    }
+}
+
+.section-jira-icon {
+	height: 16px;
+	width: 16px;
+}
+
+.seciton-jira-status {
+	padding: 3px 5px;
+	font-size: 0.9rem;
+	background-color: map-get($yellow-shades, 600);
+	color: $color-white;
+}

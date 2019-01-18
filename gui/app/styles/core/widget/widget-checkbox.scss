@@ -1,0 +1,40 @@
+.ui-checkbox {
+	vertical-align: bottom;
+	cursor: pointer;
+	font-size: 1.1rem;
+	overflow: hidden;
+	white-space: nowrap;
+	margin: 0 0 5px 0;
+
+	> .dicon{
+		vertical-align: top;
+		font-size: 1.5rem;
+		font-weight: 600;
+		color: map-get($yellow-shades, 700);
+	}
+
+	> .selected {
+		color: map-get($yellow-shades, 700);
+	}
+
+	> .text {
+		display: inline-block;
+		font-size: 1.1rem;
+		vertical-align: bottom;
+		color: $color-black-light-1;
+		margin-left: 10px;
+	}
+}
+
+.ui-checkbox-selected {
+	color: map-get($yellow-shades, 700);
+}
+
+.widget-checkbox {
+	color: map-get($yellow-shades, 700);
+	cursor: pointer;
+}
+
+.checkbox-gray {
+	color: map-get($gray-shades, 700) !important;
+}

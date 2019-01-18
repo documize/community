@@ -1,34 +1,16 @@
 <div class="view-search">
-	<form onsubmit={{action 'onSearch'}} class="form-inline">
+	<form onsubmit={{action "onSearch"}} class="form-inline">
 		<div class="form-group">
-			{{focus-input type="text" value=filter class="form-control mr-3 search-box" placeholder='keywords, tags'}}
+			{{focus-input type="text" value=filter class="form-control mr-3 search-box" placeholder="keywords, tags"}}
 		</div>
 		<div class="form-group">
-			<button class="btn btn-success" {{action 'onSearch'}}>Search</button>
+			{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Search onClick=(action "onSearch")}}
 		</div>
 	</form>
-	<div class="form-group mt-2">
-		<div class="form-check form-check-inline">
-			{{input type="checkbox" id="search-1" class="form-check-input" checked=matchDoc}}
-			<label class="form-check-label" for="search-1">&nbsp;document title</label>
-		</div>
-		<div class="form-check form-check-inline">
-			{{input type="checkbox" id="search-2" class="form-check-input" checked=matchContent}}
-			<label class="form-check-label" for="search-2">&nbsp;content</label>
-		</div>
-		<div class="form-check form-check-inline">
-			{{input type="checkbox" id="search-3" class="form-check-input" checked=matchTag}}
-			<label class="form-check-label" for="search-3">&nbsp;tag name</label>
-		</div>
-		<div class="form-check form-check-inline">
-			{{input type="checkbox" id="search-4" class="form-check-input" checked=matchFile}}
-			<label class="form-check-label" for="search-4">&nbsp;attachment name</label>
-		</div>
-	</div>
-
 	{{#if validSearch}}
 		{{search/search-results results=results keywords=filter}}
 	{{else}}
-		<p class="text-danger my-5">Your search term is too short</p>
+		{{ui/ui-spacer size=300}}
+		<p class="color-red-700">Your search query is too short</p>
 	{{/if}}
 </div>

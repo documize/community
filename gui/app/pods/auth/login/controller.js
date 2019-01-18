@@ -19,14 +19,14 @@ export default Controller.extend(AuthProvider, {
 	invalidCredentials: false,
 
 	reset() {
-		if (this.get('sAuthProviderDocumize')) {
+		if (this.get('isAuthProviderDocumize')) {
 			this.setProperties({
 				email: '',
 				password: ''
 			});
 		}
 
-		if (this.get('sAuthProviderLDAP')) {
+		if (this.get('isAuthProviderLDAP')) {
 			this.setProperties({
 				username: '',
 				password: ''

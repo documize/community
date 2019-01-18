@@ -1,39 +1,51 @@
 <div class="view-spaces">
-	<div class="heading">EVERYONE <div class="counter">({{publicFolders.length}})</div></div>
-	{{#unless hasPublicFolders}}
-		<p class="empty">No global spaces</p>
-	{{/unless}}
-	<ul class="list clearfix">
-		{{#each publicFolders as |folder|}}
-			{{#link-to 'folder.index' folder.id folder.slug}}
-				<li class="item">{{ folder.name }}</li>
+	<ul class="list">
+		{{#each spaces as |space|}}
+			{{#link-to "folder.index" space.id space.slug}}
+				<li class="item">
+					<div class="info">
+						<div class="name">
+							{{#if space.icon}}
+								<div class="icon">
+									{{ui/ui-icon-meta icon=space.icon}}
+								</div>
+							{{/if}}
+							{{space.name}}
+						</div>
+						<div class="desc">{{space.desc}}&nbsp;</div>
+						<div class="meta">
+							{{!-- {{#if (eq space.spaceType constants.SpaceType.Public)}}
+								<i class={{concat "dicon " constants.Icon.World}}>
+									{{#attach-tooltip showDelay=1000}}Public space{{/attach-tooltip}}
+								</i>
+							{{/if}}
+							{{#if (eq space.spaceType constants.SpaceType.Protected)}}
+								<i class={{concat "dicon " constants.Icon.People}}>
+									{{#attach-tooltip showDelay=1000}}Protected space{{/attach-tooltip}}
+								</i>
+							{{/if}}
+							{{#if (eq space.spaceType constants.SpaceType.Private)}}
+								<i class={{concat "dicon " constants.Icon.Person}}>
+									{{#attach-tooltip showDelay=1000}}Personal space{{/attach-tooltip}}
+								</i>
+							{{/if}} --}}
+							{{#if space.labelId}}
+								{{spaces/space-label labels=labels labelId=space.labelId}}
+							{{/if}}
+						</div>
+					</div>
+					<div class="stats">
+						<div class="stat">
+							<div class="number">{{space.countContent}}</div>
+							<div class="label">items</div>
+						</div>
+						<div class="stat">
+							<div class="number">{{space.countCategory}}</div>
+							<div class="label">categories</div>
+						</div>
+					</div>
+				</li>
 			{{/link-to}}
 		{{/each}}
 	</ul>
-
-	{{#if session.authenticated}}
-		<div class="heading">TEAM <div class="counter">({{protectedFolders.length}})</div></div>
-		{{#unless hasProtectedFolders}}
-			<p class="empty">No team spaces</p>
-		{{/unless}}
-		<ul class="list clearfix">
-			{{#each protectedFolders as |folder|}}
-				{{#link-to 'folder.index' folder.id folder.slug}}
-					<li class="item">{{ folder.name }}</li>
-				{{/link-to}}
-			{{/each}}
-		</ul>
-
-		<div class="heading">PERSONAL <div class="counter">({{privateFolders.length}})</div></div>
-		{{#unless hasPrivateFolders}}
-			<p class="empty">No personal spaces</p>
-		{{/unless}}
-		<ul class="list clearfix">
-			{{#each privateFolders as |folder|}}
-				{{#link-to 'folder.index' folder.id folder.slug}}
-					<li class="item">{{ folder.name }}</li>
-				{{/link-to}}
-			{{/each}}
-		</ul>
-	{{/if}}
 </div>

@@ -1,0 +1,103 @@
+.widget-list-picker {
+	margin: 10px 0;
+
+	> .options {
+		width: 100%;
+		margin: 0 auto;
+		padding: 0;
+
+		> .option {
+			@include border-radius(3px);
+			margin: 0 0 15px 0;
+			padding: 10px 15px;
+			color: map-get($gray-shades, 700);
+			background-color: map-get($gray-shades, 100);
+			border: 1px solid map-get($gray-shades, 200);
+			cursor: pointer;
+			position: relative;
+			list-style-type: none;
+		    line-height: 26px;
+
+			&:hover {
+				> .text-header, > .text {
+					color: map-get($gray-shades, 800);
+				}
+			}
+
+			> .text-header {
+				font-size: 1.3rem;
+				font-weight: 600;
+				margin-bottom: 5px;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+				width: 80%;
+			}
+
+			> .text {
+				font-size: 1rem;
+				font-weight: 400;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+				width: 80%;
+			}
+
+			> .dicon {
+				position: absolute;
+				top: 10px;
+				right: 10px;
+				color: map-get($yellow-shades, 800);
+				font-weight: 700;
+				font-size: 1.3rem;
+			}
+		}
+
+		> .selected {
+			> .text-header, > .text {
+				color: map-get($yellow-shades, 800) !important;
+			}
+
+			background-color: map-get($yellow-shades, 100) !important;
+			border: 1px solid map-get($yellow-shades, 300) !important;
+		}
+	}
+}
+
+.widget-list-picker-horiz {
+	> .options {
+		> .option {
+			display: inline-block;
+			margin: 15px 15px 0 0;
+			padding: 10px 15px;
+			width: 30%;
+
+			@media only screen and (max-width: 1200px) {
+				display: block;
+				width: 100%;
+			}
+		}
+	}
+}
+
+.widget-list-choice {
+	text-align: left;
+	margin: 0;
+	padding: 0;
+	display: inline-block;
+
+	> li {
+		margin: 0 20px 0 0;
+		padding: 0;
+		display: inline-block;
+		font-size: 1.3rem;
+		font-weight: 700;
+		color: map-get($gray-shades, 600);
+		cursor: pointer;
+	}
+
+	> .selected {
+		color: map-get($green-shades, 600);
+		border-bottom: 1px solid map-get($green-shades, 600);
+	}
+}

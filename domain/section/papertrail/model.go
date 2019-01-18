@@ -28,7 +28,7 @@ const renderTemplate = `
 	<tbody>
 		{{range $item := .Events}}
 		<tr>
-			<td class="bordered no-width color-gray">{{ $item.Dated }}</td>
+			<td class="bordered no-width color-gray-600">{{ $item.Dated }}</td>
 			<td class="bordered no-width">{{ $item.Severity }}</td>
 			<td class="bordered width-90">{{ $item.Message }}</td>
 		</tr>

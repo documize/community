@@ -1,7 +1,12 @@
+{{layout/logo-heading
+	title="Authentication"
+	desc="Choose user authentication provider — Documize, Redhat Keycloak, LDAP/AD"
+	icon=constants.Icon.Locked}}
+
 {{customize/auth-settings
 	authProvider=model.authProvider
 	authConfig=model.authConfig
-    onSave=(action 'onSave')
-	onSyncLDAP=(action 'onSyncLDAP')
-	onSyncKeycloak=(action 'onSyncKeycloak')
-	onChange=(action 'onChange')}}
+    onSave=(action "onSave")
+	onSyncLDAP=(action "onSyncLDAP")
+	onSyncKeycloak=(action "onSyncKeycloak")
+	onChange=(action "onChange")}}

@@ -76,37 +76,37 @@ export default Model.extend({
 
 		switch (this.get('activityType')) {
 			case constants.UserActivityType.Created:
-				color = 'color-blue';
+				color = 'color-gray-700';
 				break;
 			case constants.UserActivityType.Read:
 				color = 'color-black';
 				break;
 			case constants.UserActivityType.Edited:
-				color = 'color-green';
+				color = 'color-green-700';
 				break;
 			case constants.UserActivityType.Deleted:
-				color = 'color-red';
+				color = 'color-red-600';
 				break;
 			case constants.UserActivityType.Archived:
-				color = 'color-gray';
+				color = 'color-gray-700';
 				break;
 			case constants.UserActivityType.Approved:
-				color = 'color-green';
+				color = 'color-green-700';
 				break;
 			case constants.UserActivityType.Reverted:
-				color = 'color-red';
+				color = 'color-red-600';
 				break;
 			case constants.UserActivityType.PublishedTemplate:
-				color = 'color-blue';
+				color = 'color-gray-700';
 				break;
 			case constants.UserActivityType.PublishedBlock:
-				color = 'color-blue';
+				color = 'color-gray-700';
 				break;
 			case constants.UserActivityType.Rejected:
-				color = 'color-red';
+				color = 'color-red-600';
 				break;
 			case constants.UserActivityType.Published:
-				color = 'color-green';
+				color = 'color-green-700';
 				break;
 			default:
 				break;

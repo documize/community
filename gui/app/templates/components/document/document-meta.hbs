@@ -1,42 +1,29 @@
-{{#if (eq document.lifecycle constants.Lifecycle.Live)}}
-	<div id="document-lifecycle-popover" class="document-lifecycle-live text-uppercase" {{action 'onEditLifecycle'}}>{{document.lifecycleLabel}}</div>
-{{/if}}
-{{#if (eq document.lifecycle constants.Lifecycle.Draft)}}
-	<div id="document-lifecycle-popover" class="document-lifecycle-draft text-uppercase" {{action 'onEditLifecycle'}}>{{document.lifecycleLabel}}</div>
-{{/if}}
-
-<div class="d-block d-sm-none margin-top-20" />
-<div class="d-sm-inline-block margin-left-20" />
-
-{{#if (eq document.protection constants.ProtectionType.None)}}
-	<div id="document-protection-popover" class="document-protection-unlocked text-uppercase" {{action 'onEditProtection'}}>OPEN</div>
-{{/if}}
-{{#if (eq document.protection constants.ProtectionType.Review)}}
-	<div id="document-protection-popover" class="document-protection-review text-uppercase" {{action 'onEditProtection'}}>PROTECTED</div>
-{{/if}}
-{{#if (eq document.protection constants.ProtectionType.Lock)}}
-	<div id="document-protection-popover" class="document-protection-locked text-uppercase" {{action 'onEditProtection'}}>LOCKED</div>
-{{/if}}
-
-<div class="d-block d-sm-none margin-top-20" />
-<div class="d-sm-inline-block margin-left-20" />
-
-{{#each selectedCategories as |cat|}}
-	<div class="document-category {{if isSpaceAdmin 'cursor-pointer'}}" data-toggle="tooltip" data-placement="top" title="Category" {{action 'onEditCategory'}}>
-		{{cat.category}}
-	</div>
-{{/each}}
-
-<div class="d-block d-sm-none margin-top-20" />
-
-{{#each tagz as |t index|}}
-	<div class="document-tag {{if isSpaceAdmin 'cursor-pointer'}}" data-toggle="tooltip" data-placement="top" title="Tag" {{action 'onEditCategory'}}>
-		{{concat '#' t}}
-	</div>
-{{/each}}
+{{ui/ui-spacer size=300}}
 
 <div class="document-meta">
-	{{document/view-attachment document=document permissions=permissions}}
-</div>
+	<div class="title {{if permissions.documentEdit "cursor-pointer"}}" {{action "onEditCategory"}}>CATEGORY / TAG</div>
+	{{#each selectedCategories as |cat|}}
+		<div class="meta-label">
+			<i class="dicon {{constants.Icon.Category}}"/>
+			{{cat.category}}
+			{{#attach-tooltip showDelay=1000}}Category{{/attach-tooltip}}
+		</div>
+	{{/each}}
+	{{#each tagz as |t|}}
+		<div class="meta-label">
+			<i class="dicon {{constants.Icon.Tag}}"/>
+			{{t}}
+			{{#attach-tooltip showDelay=1000}}Tag{{/attach-tooltip}}
+		</div>
+	{{/each}}
 
-<div class="margin-top-70" />
+	{{#if unassigned}}
+		{{#if permissions.spaceManage}}
+			{{#ui/ui-toolbar dark=false light=true raised=true large=false bordered=true}}
+				{{ui/ui-toolbar-icon icon=constants.Icon.Plus color=constants.Color.Gray linkTo="document.settings"}}
+			{{/ui/ui-toolbar}}
+		{{else}}
+			<div class="empty">Unassigned</div>
+		{{/if}}
+	{{/if}}
+</div>
