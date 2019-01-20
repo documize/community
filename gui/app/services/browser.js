@@ -55,17 +55,20 @@ export default Service.extend({
 	downloadFile(content, filename) {
 		let b = new Blob([content], { type: 'text/html' });
 
-		let a = document.createElement("a");
-		a.style = "display: none";
-		document.body.appendChild(a);
+		if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+			window.navigator.msSaveOrOpenBlob(b, filename);
+		} else {
+			let a = document.createElement("a");
+			a.style = "display: none;";
+			document.body.appendChild(a);
 
-		let url = window.URL.createObjectURL(b);
+			let url = window.URL.createObjectURL(b);
+			a.href = url;
+			a.download = filename;
+			a.click();
 
-		a.href = url;
-		a.download = filename;
-		a.click();
-
-		window.URL.revokeObjectURL(url);
-		document.body.removeChild(a);
+			window.URL.revokeObjectURL(url);
+			document.body.removeChild(a);
+		}
 	}
 });
