@@ -89,7 +89,7 @@ Documize supports the following (evergreen) browsers:
 - Brave
 - Vivaldi
 - Opera
-- MS Edge (16+)
+- Microsoft Edge (v42+)
 
 ## Technology Stack
 
