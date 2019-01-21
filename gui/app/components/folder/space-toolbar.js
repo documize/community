@@ -80,7 +80,7 @@ export default Component.extend(ModalMixin, AuthMixin, Notifier, {
 		let cats = this.get('categories');
 		cats.forEach((cat) => {
 			cat.set('exportSelected', false);
-		})
+		});
 	},
 
 	didInsertElement() {
