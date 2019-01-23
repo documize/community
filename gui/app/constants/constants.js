@@ -337,8 +337,10 @@ let constants = EmberObject.extend({
 		Invite: 'Invite',
 		Join: 'Join',
 		Leave: 'Leave',
+		Move: 'Move',
 		Next: 'Next',
 		OK: 'OK',
+		Preview: 'Preview',
 		Publish: 'Publish',
 		Reject: 'Reject',
 		Remove: 'Remove',
@@ -357,4 +359,4 @@ let constants = EmberObject.extend({
 	}
 });
 
-export default { constants }
+export default { constants };
