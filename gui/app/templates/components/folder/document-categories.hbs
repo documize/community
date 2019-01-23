@@ -1,8 +1,10 @@
 {{#if categories}}
 	{{#each categories as |cat|}}
-		<div class="category">
-			<i class="dicon {{constants.Icon.Category}}" />
-			<div class="name">{{cat}}</div>
-		</div>
+		{{#if cat}}
+			<div class="category">
+				<i class="dicon {{constants.Icon.Category}}" />
+				<div class="name">{{cat}}</div>
+			</div>
+		{{/if}}
 	{{/each}}
 {{/if}}

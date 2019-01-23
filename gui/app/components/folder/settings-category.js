@@ -45,7 +45,6 @@ export default Component.extend(ModalMixin, Notifer, {
 		// get categories
 		this.get('categorySvc').getAll(this.get('space.id')).then((c) => {
 			this.set('category', c);
-
 			// get summary of documents and users for each category in space
 			this.get('categorySvc').getSummary(this.get('space.id')).then((s) => {
 				c.forEach((cat) => {

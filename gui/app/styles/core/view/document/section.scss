@@ -47,12 +47,20 @@
 			width: 5px;
 			display: inline-block;
 		}
+
+		> i.add-section {
+			color: map-get($yellow-shades, 500);
+
+			&:hover {
+				color: map-get($yellow-shades, 700);
+			}
+		}
 	}
 }
 
 .start-section {
 	@extend .no-select;
-	text-align: right;
+	text-align: center;
 	margin: 0.5rem 0;
 	display: block;
 

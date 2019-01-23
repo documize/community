@@ -1,14 +1,6 @@
 {{#if hasPages}}
 	{{#each pages key="id" as |item|}}
-		{{#if canEdit}}
-			<div class="start-section">
-				<i class="dicon {{constants.Icon.Plus}}" {{action "onShowSectionWizard" item.page}}>
-					{{#attach-tooltip showDelay=1000}}Insert section here{{/attach-tooltip}}
-				</i>
-			</div>
-		{{else}}
-			{{ui/ui-spacer size=100}}
-		{{/if}}
+		{{ui/ui-spacer size=100}}
 		{{document/document-page
 			roles=roles
 			pages=pages
@@ -27,17 +19,9 @@
 			onDeletePage=(action "onDeletePage")
 			onSavePageAsBlock=(action "onSavePageAsBlock")
 			onPageLevelChange=(action onPageLevelChange)
-			onPageSequenceChange=(action onPageSequenceChange)}}
+			onPageSequenceChange=(action onPageSequenceChange)
+			onShowSectionWizard=(action "onShowSectionWizard")}}
 	{{/each}}
-
-	{{#if canEdit}}
-		<div class="start-section">
-			<i class="dicon {{constants.Icon.Plus}}" {{action "onShowSectionWizard"}}>
-				{{#attach-tooltip showDelay=1000}}Insert section here{{/attach-tooltip}}
-			</i>
-		</div>
-	{{/if}}
-
 	{{#if showLikes}}
 		<div class="vote-box no-print">
 			{{#if voteThanks}}
@@ -53,14 +37,14 @@
 			{{/if}}
 		</div>
 	{{/if}}
-{{else}}
-	{{#if canEdit}}
-		<div class="start-section">
-			<i class="dicon {{constants.Icon.Plus}}" {{action "onShowSectionWizard"}}>
-				{{#attach-tooltip showDelay=1000}}Insert section here{{/attach-tooltip}}
-			</i>
-		</div>
-	{{/if}}
+{{/if}}
+
+{{#if canEdit}}
+	<div class="start-section">
+		<i class="dicon {{constants.Icon.Plus}}" {{action "onShowSectionWizard"}}>
+			{{#attach-tooltip showDelay=1000}}Insert section here{{/attach-tooltip}}
+		</i>
+	</div>
 {{/if}}
 
 {{#if canEdit}}

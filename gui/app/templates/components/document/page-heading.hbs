@@ -12,6 +12,10 @@
 			<div class="section-heading no-print" id="page-toolbar-{{ page.id }}">
 				<div class="section-toolbar">
 					{{#if canEdit}}
+						<i class="add-section dicon {{constants.Icon.Plus}}" {{action "onShowSectionWizard" page}}>
+							{{#attach-tooltip showDelay=1000}}Insert section above{{/attach-tooltip}}
+						</i>
+						<div class="gap"/>
 						<i class="dicon {{constants.Icon.Edit}}" {{action "onEdit"}} />
 					{{/if}}
 					{{#if hasMenuPermissions}}
