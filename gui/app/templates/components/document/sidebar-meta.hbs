@@ -1,4 +1,10 @@
 <div class="document-meta">
+	{{#link-to "folder.index" space.id space.slug class="no-print"}}
+		{{ui/ui-button light=true color=constants.Color.Yellow uppercase=false
+			icon=constants.Icon.ArrowLeft label=space.name stretch=true truncate=true}}
+	{{/link-to}}
+	{{ui/ui-spacer size=200}}
+
 	{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
 		<div class="title">VERSION</div>
 		{{#if (gt versions.length 0)}}

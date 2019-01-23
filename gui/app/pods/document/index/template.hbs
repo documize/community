@@ -59,28 +59,19 @@
 {{/layout/master-sidebar}}
 
 {{#layout/master-content}}
-	<div class="grid-container-6-4">
-		<div class="grid-cell-1">
-			{{#link-to "folder.index" folder.id folder.slug class="no-print"}}
-				{{ui/ui-button light=true color=constants.Color.Yellow uppercase=false
-					icon=constants.Icon.ArrowLeft label=folder.name}}
-			{{/link-to}}
-		</div>
-
-		<div class="grid-cell-2 grid-cell-right">
-			{{document/document-toolbar
-				tab=tab
-				roles=roles
-				space=folder
-				spaces=folders
-				document=document
-				versions=versions
-				permissions=permissions
-				refresh=(action "refresh")
-				onSaveTemplate=(action "onSaveTemplate")
-				onSaveDocument=(action "onSaveDocument")
-				onDocumentDelete=(action "onDocumentDelete")}}
-		</div>
+	<div class="text-right">
+		{{document/document-toolbar
+			tab=tab
+			roles=roles
+			space=folder
+			spaces=folders
+			document=document
+			versions=versions
+			permissions=permissions
+			refresh=(action "refresh")
+			onSaveTemplate=(action "onSaveTemplate")
+			onSaveDocument=(action "onSaveDocument")
+			onDocumentDelete=(action "onDocumentDelete")}}
 	</div>
 
 	{{document/document-meta

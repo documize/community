@@ -67,5 +67,8 @@ $i: 100;
 	.width-#{$i} {
 		width: #{$i}#{"%"} !important;
 	}
+	.max-width-#{$i} {
+		max-width: #{$i}#{"%"} !important;
+	}
 	$i: $i - 1;
 }

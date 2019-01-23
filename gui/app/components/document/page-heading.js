@@ -101,6 +101,10 @@ export default Component.extend(ModalMixin, {
 	},
 
 	actions: {
+		onShowSectionWizard(beforePage) {
+			this.get('onShowSectionWizard')(beforePage);
+		},
+
 		onEdit() {
 			let page = this.get('page');
 
