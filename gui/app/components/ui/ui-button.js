@@ -17,15 +17,15 @@ export default Component.extend({
 	classNames: [],
 	classNameBindings: ['calcClass'],
 	attributeBindings: ['calcAttrs:data-dismiss', 'submitAttrs:type'],
-
 	label: '',
 	icon: '',
 	color: '',
 	light: false,
 	themed: false,
 	dismiss: false,
+	truncate: false,
+	stretch: false,
 	uppercase: true,
-
 	iconClass: '',
 	hasIcon: computed('iconClass', function() {
 		return this.iconClass.trim() != '';
@@ -50,6 +50,14 @@ export default Component.extend({
 
 		if (!this.uppercase) {
 			bc += ' text-case-normal';
+		}
+
+		if (this.truncate) {
+			bc += ' text-truncate';
+		}
+
+		if (this.stretch) {
+			bc += ' max-width-100 text-left';
 		}
 
 		return bc;
