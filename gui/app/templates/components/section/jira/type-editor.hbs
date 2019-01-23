@@ -3,12 +3,12 @@
 	desc="Jira provides issue tracking and agile software"
 	icon=constants.Icon.Integrations}}
 
-
 {{#section/base-editor document=document folder=folder page=page busy=waiting isDirty=(action "isDirty") onCancel=(action "onCancel") onAction=(action "onAction")}}
 	{{#if session.isAdmin}}
 		{{#link-to "customize.integrations"}}
 			{{ui/ui-button color=constants.Color.Green light=true label="Configure Jira Connector"}}
 		{{/link-to}}
+		{{ui/ui-spacer size=300}}
 	{{else}}
 		{{#unless authenticated}}
 			<p class="color-green-600">Your Documize administrator needs to provide Jira connection details before usage.</p>
@@ -20,7 +20,7 @@
 				<label for="jira-jql">Jira Query Language</label>
 				{{focus-input id="jira-jql" type="text" value=config.jql class="form-control" placeholder="e.g. (status = resolved AND project = SysAdmin) OR assignee = bobsmith"}}
 			</div>
-			{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Preview submit=true onClick=(action "onPreview")}}
+			{{ui/ui-button color=constants.Color.Yellow light=true label=constants.Label.Preview submit=true onClick=(action "onPreview")}}
 		</form>
 
 		{{ui/ui-spacer size=300}}
