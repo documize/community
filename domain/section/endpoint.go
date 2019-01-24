@@ -60,12 +60,7 @@ func (h *Handler) RunSectionCommand(w http.ResponseWriter, r *http.Request) {
 	// it's up to the section handler to parse if required.
 
 	// Permission checks
-	if !permission.CanChangeDocument(ctx, *h.Store, documentID) {
-		response.WriteForbiddenError(w)
-		return
-	}
-
-	if !ctx.Editor {
+	if !ctx.Editor && !permission.CanChangeDocument(ctx, *h.Store, documentID) {
 		response.WriteForbiddenError(w)
 		return
 	}
