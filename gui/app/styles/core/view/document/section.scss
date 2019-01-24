@@ -61,12 +61,12 @@
 .start-section {
 	@extend .no-select;
 	text-align: center;
-	margin: 0.5rem 0;
+	margin: 2rem 0;
 	display: block;
 
 	> i {
-		background-color: map-get($yellow-shades, 100);
-		color: map-get($yellow-shades, 500);
+		background-color: map-get($green-shades, 100);
+		color: map-get($green-shades, 500);
 		vertical-align: middle;
 		padding: 0.5rem;
 		font-size: 16px;
@@ -75,7 +75,7 @@
 		cursor: pointer;
 
 		&:hover {
-			color: map-get($yellow-shades, 700);
+			color: map-get($green-shades, 700);
 		}
 	}
 }

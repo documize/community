@@ -22,21 +22,6 @@
 			onPageSequenceChange=(action onPageSequenceChange)
 			onShowSectionWizard=(action "onShowSectionWizard")}}
 	{{/each}}
-	{{#if showLikes}}
-		<div class="vote-box no-print">
-			{{#if voteThanks}}
-				<div class="thanks">Thanks for the feedback!</div>
-			{{else}}
-				<div class="prompt">{{folder.likes}}</div>
-				{{ui/ui-spacer size=200}}
-				<div class="buttons">
-					{{ui/ui-button color=constants.Color.Yellow light=true label="Yes, thanks!" onClick=(action "onVote" 1)}}
-					{{ui/ui-button-gap}}
-					{{ui/ui-button color=constants.Color.Yellow light=true label="Not really" onClick=(action "onVote" 2)}}
-				</div>
-			{{/if}}
-		</div>
-	{{/if}}
 {{/if}}
 
 {{#if canEdit}}
@@ -44,6 +29,22 @@
 		<i class="dicon {{constants.Icon.Plus}}" {{action "onShowSectionWizard"}}>
 			{{#attach-tooltip showDelay=1000}}Insert section here{{/attach-tooltip}}
 		</i>
+	</div>
+{{/if}}
+
+{{#if showLikes}}
+	<div class="vote-box no-print">
+		{{#if voteThanks}}
+			<div class="thanks">Thanks for the feedback!</div>
+		{{else}}
+			<div class="prompt">{{folder.likes}}</div>
+			{{ui/ui-spacer size=200}}
+			<div class="buttons">
+				{{ui/ui-button color=constants.Color.Yellow light=true label="Yes, thanks!" onClick=(action "onVote" 1)}}
+				{{ui/ui-button-gap}}
+				{{ui/ui-button color=constants.Color.Yellow light=true label="Not really" onClick=(action "onVote" 2)}}
+			</div>
+		{{/if}}
 	</div>
 {{/if}}
 
