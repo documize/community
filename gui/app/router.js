@@ -9,11 +9,12 @@
 //
 // https://documize.com
 
-import EmberRouter from '@ember/routing/router';
 import config from './config/environment';
+import EmberRouter from '@ember/routing/router';
 
 var Router = EmberRouter.extend({
-	location: config.locationType
+	location: config.locationType,
+	rootURL: config.rootURL
 });
 
 export default Router.map(function () {
