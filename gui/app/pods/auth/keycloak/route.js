@@ -29,7 +29,7 @@ export default Route.extend({
 		return new EmberPromise((resolve) => {
 			let constants = this.get('constants');
 
-			this.set('mode', is.not.undefined(transition.queryParams.mode) ? transition.queryParams.mode : 'reject');
+			this.set('mode', is.not.undefined(transition.to.queryParams.mode) ? transition.to.queryParams.mode : 'reject');
 
 			if (this.get('mode') === 'reject' || this.get('appMeta.authProvider') !== constants.AuthProvider.Keycloak) {
 				resolve();
