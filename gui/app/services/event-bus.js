@@ -13,18 +13,18 @@ import Evented from '@ember/object/evented';
 import Service from '@ember/service';
 
 export default Service.extend(Evented, {
-	init() {
-		this._super(...arguments);
-		let _this = this;
+	// init() {
+	// 	this._super(...arguments);
+	// 	let _this = this;
 
-		window.addEventListener("scroll", _.throttle(function() {
-			_this.publish('scrolled', null);
-		}, 100));
+	// 	window.addEventListener("scroll", _.throttle(function() {
+	// 		_this.publish('scrolled', null);
+	// 	}, 100));
 
-		window.addEventListener("resize", _.debounce(function() {
-			_this.publish('resized', null);
-		}, 100));
-	},
+	// 	window.addEventListener("resize", _.debounce(function() {
+	// 		_this.publish('resized', null);
+	// 	}, 100));
+	// },
 
     publish: function() {
         return this.trigger.apply(this, arguments);

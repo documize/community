@@ -79,8 +79,8 @@ export default Component.extend(Modals, {
 	willDestroyElement() {
 		this._super(...arguments);
 
-		this.eventBus.unsubscribe('notifyUser');
-		this.eventBus.unsubscribe('pinChange');
+		this.eventBus.unsubscribe('notifyUser', this, 'processNotification');
+		this.eventBus.unsubscribe('pinChange', this, 'setupPins');
 		iziToast.destroy();
 	},
 

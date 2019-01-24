@@ -58,7 +58,7 @@ export default Component.extend({
 
 	willDestroyElement() {
 		this._super(...arguments);
-		this.eventBus.unsubscribe('documentPageAdded');
+		this.eventBus.unsubscribe('documentPageAdded', this, 'onDocumentPageAdded');
 	},
 
 	onDocumentPageAdded(pageId) {
