@@ -54,9 +54,9 @@ Integrations for embedding SaaS data within documents, zero add-on/marketplace f
 
 ## Latest Release
 
-[Community Edition: v2.0.0](https://github.com/documize/community/releases)
+[Community Edition: v2.0.1](https://github.com/documize/community/releases)
 
-[Enterprise Edition: v2.0.0](https://documize.com/downloads)
+[Enterprise Edition: v2.0.1](https://documize.com/downloads)
 
 ## OS support
 
@@ -96,7 +96,7 @@ Documize supports the following (evergreen) browsers:
 Documize is built with the following technologies:
 
 - EmberJS (v3.5.1)
-- Go (v1.11.4)
+- Go (v1.11.5)
 
 ## Authentication Options
 
