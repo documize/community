@@ -15,9 +15,9 @@ import Component from '@ember/component';
 
 export default Component.extend(Modals, {
 	labelName: '',
-	labelColor: '',
+	labelColor: '#263238',
 	editLabel: null,
-	deleetLabel: null,
+	deleteLabel: null,
 	showDeleteDialog: false,
 
 	actions: {
@@ -47,6 +47,10 @@ export default Component.extend(Modals, {
 			let label = {
 				name: this.get('labelName').trim(),
 				color: this.get('labelColor').trim(),
+			}
+
+			if (label.color === '') {
+				label.color = '#263238';
 			}
 
 			if (is.empty(label.name)) {
