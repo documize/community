@@ -89,11 +89,11 @@ func (s Store) Delete(ctx domain.RequestContext, id string) (rows int64, err err
 }
 
 // RemoveReference clears space.labelID for given label.
-func (s Store) RemoveReference(ctx domain.RequestContext, spaceID string) (err error) {
+func (s Store) RemoveReference(ctx domain.RequestContext, labelID string) (err error) {
 	_, err = ctx.Transaction.Exec(s.Bind(`UPDATE dmz_space SET
         c_labelid='', c_revised=?
-        WHERE c_orgid=? AND c_refid=?`),
-		time.Now().UTC(), ctx.OrgID, spaceID)
+        WHERE c_orgid=? AND c_labelid=?`),
+		time.Now().UTC(), ctx.OrgID, labelID)
 
 	if err == sql.ErrNoRows {
 		err = nil

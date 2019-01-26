@@ -311,5 +311,5 @@ type LabelStorer interface {
 	Get(ctx domain.RequestContext) (l []label.Label, err error)
 	Update(ctx domain.RequestContext, l label.Label) (err error)
 	Delete(ctx domain.RequestContext, id string) (rows int64, err error)
-	RemoveReference(ctx domain.RequestContext, spaceID string) (err error)
+	RemoveReference(ctx domain.RequestContext, labelID string) (err error)
 }

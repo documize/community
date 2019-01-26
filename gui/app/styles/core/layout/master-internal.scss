@@ -13,6 +13,7 @@
 		padding: 10px;
 	}
 }
+
 .master-sidebar-container {
 	display: block;
 	height: auto;
@@ -36,8 +37,6 @@
 			justify-content: space-between;
 			flex-wrap: wrap;
 			width: 100%;
-			// overflow-x: hidden;
-			// overflow-y: auto;
 
 			> .nav-options {
 				> .selected {
@@ -130,7 +129,7 @@
 }
 
 // Tablet starts around 700px
-@media (min-width: $display-break-1) and (min-height: 650px) {
+@media (min-width: $display-break-1) {
 	.master-container {
 		display: grid;
 		grid-template-columns: 240px auto;
