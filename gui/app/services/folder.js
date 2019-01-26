@@ -10,8 +10,8 @@
 // https://documize.com
 
 import RSVP from 'rsvp';
-
 import { inject as service } from '@ember/service';
+import { isForbiddenError } from 'ember-ajax/errors';
 import BaseService from '../services/base';
 
 export default BaseService.extend({
@@ -110,6 +110,12 @@ export default BaseService.extend({
 			});
 
 			return data;
+		}).catch((error) => {
+			if (isForbiddenError(error)) {
+				this.get('localStorage').clearAll();
+				this.get('router').transitionTo('auth.login');
+			}
+			return error;
 		});
 	},
 

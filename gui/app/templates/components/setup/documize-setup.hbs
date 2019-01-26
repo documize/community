@@ -1,22 +1,26 @@
-<div class="col-9">
-	<h1>Let's setup Documize</h1>
-	<h3>Database: {{model.dbname}}</h3>
+<div class="installer">
+	<div>
+		<img src="/assets/img/setup/cogs.png" width="157" height="187" alt="Setup new database" class="no-select no-outline">
+	</div>
+
 	{{ui/ui-spacer size=300}}
+	<h1 class="color-gray-800">Documize Setup</h1>
+	<h3 class="color-gray-700">Database is {{model.dbname}}</h3>
+	{{ui/ui-spacer size=300}}
+
 	<form {{action "save" on="submit"}}>
 		<div class="form-group">
-			<label>Team</label>
+			<label>Site name</label>
 			{{focus-input id="siteTitle" type="text" value=model.title class=(if hasEmptyTitleError "form-control is-invalid" "form-control")}}
-			<small class="form-text text-muted">What"s your tribe called?</small>
+			<small class="form-text text-muted">Usually your company name</small>
 		</div>
 		<div class="form-group">
 			<label for="adminFirstname">Firstname</label>
 			{{input id="adminFirstname" type="text" value=model.firstname class=(if hasEmptyFirstnameError "form-control is-invalid" "form-control")}}
-			<small class="form-text text-muted">What do people call you?</small>
 		</div>
 		<div class="form-group">
 			<label for="adminLastname">Lastname</label>
 			{{input id="adminLastname" type="text" value=model.lastname class=(if hasEmptyLastnameError "form-control is-invalid" "form-control")}}
-			<small class="form-text text-muted">How the government refers to you</small>
 		</div>
 		<div class="form-group">
 			<label for="adminEmail">Email</label>
@@ -30,5 +34,6 @@
 		</div>
 		{{ui/ui-button submit=true color=constants.Color.Green light=true label=buttonLabel onClick=(action "save")}}
 	</form>
+
 	{{ui/ui-spacer size=300}}
 </div>

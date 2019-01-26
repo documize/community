@@ -1,17 +1,1 @@
-{{ui/ui-spacer size=700}}
-
-<div class="page-setup">
-	<div class="grid-container-5-5">
-		<div class="grid-cell-1">
-			<div>
-				<img src="/assets/img/setup/logo.png" alt="Documize" class="no-select no-outline margin-top-20">
-			</div>
-			<div class="margin-top-150">
-				<img src="/assets/img/setup/cogs.png" width="157" height="187" alt="Setup new database" class="no-select no-outline">
-			</div>
-		</div>
-		<div class="grid-cell-2 grid-cell-right">
-			{{setup/documize-setup model=model save=(action "save")}}
-		</div>
-	</div>
-</div>
+{{setup/documize-setup model=model save=(action "save")}}
