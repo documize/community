@@ -59,20 +59,18 @@
 {{/layout/master-sidebar}}
 
 {{#layout/master-content}}
-	<div class="text-right">
-		{{document/document-toolbar
-			tab=tab
-			roles=roles
-			space=folder
-			spaces=folders
-			document=document
-			versions=versions
-			permissions=permissions
-			refresh=(action "refresh")
-			onSaveTemplate=(action "onSaveTemplate")
-			onSaveDocument=(action "onSaveDocument")
-			onDocumentDelete=(action "onDocumentDelete")}}
-	</div>
+	{{document/document-toolbar
+		tab=tab
+		roles=roles
+		space=folder
+		spaces=folders
+		document=document
+		versions=versions
+		permissions=permissions
+		refresh=(action "refresh")
+		onSaveTemplate=(action "onSaveTemplate")
+		onSaveDocument=(action "onSaveDocument")
+		onDocumentDelete=(action "onDocumentDelete")}}
 
 	{{document/document-meta
 		tab=tab
