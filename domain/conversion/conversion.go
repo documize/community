@@ -17,6 +17,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"path/filepath"
 	"strings"
 
 	api "github.com/documize/community/core/convapi"
@@ -284,15 +285,36 @@ func convertFileResult(filename string, fileResult *api.DocumentConversionRespon
 	document.Job = ""
 	document.Location = filename
 
+	// Make document name from filename minus extension.
+	document.Name = GetDocumentNameFromFilename(filename)
+	document.Slug = stringutil.MakeSlug(document.Name)
+
 	if fileResult != nil {
-		if len(fileResult.Pages) > 0 {
-			document.Name = fileResult.Pages[0].Title
-			document.Slug = stringutil.MakeSlug(fileResult.Pages[0].Title)
-		}
 		document.Excerpt = fileResult.Excerpt
 	}
 
 	document.Tags = "" // now a # separated list of tag-words, rather than JSON
 
 	return document
+}
+
+// GetDocumentNameFromFilename strips path and extension.
+func GetDocumentNameFromFilename(filename string) (dn string) {
+	dn = filename
+
+	// First try Linux separator.
+	t := strings.SplitAfter(filename, "/")
+	if len(t) > 1 {
+		dn = t[len(t)-1]
+	} else {
+		// Now try Linux separator.
+		t = strings.SplitAfter(filename, "\\")
+		if len(t) > 1 {
+			dn = t[len(t)-1]
+		}
+	}
+
+	// Remove file extension.
+	dn = strings.TrimSuffix(dn, filepath.Ext(dn))
+	return
 }
