@@ -40,41 +40,43 @@ export default Component.extend(Notifier, {
 		let orgId = this.get('appMeta.orgId');
 		let uploadUrl = `${url}/organization/${orgId}/logo`;
 
-		let dzone = new Dropzone("#upload-logo > div", {
-			headers: {
-				'Authorization': 'Bearer ' + self.get('session.authToken')
-			},
-			url: uploadUrl,
-			method: "post",
-			paramName: 'attachment',
-			clickable: true,
-			maxFilesize: 50,
-			parallelUploads: 1,
-			uploadMultiple: false,
-			addRemoveLinks: false,
-			autoProcessQueue: true,
-			createImageThumbnails: false,
+		// Handle upload clicks on button and anything inside that button.
+		let sel = ['#upload-logo', '#upload-logo > div'];
+		for (var i=0; i < 2; i++) {
+			let dzone = new Dropzone(sel[i], {
+				headers: {
+					'Authorization': 'Bearer ' + self.get('session.authToken')
+				},
+				url: uploadUrl,
+				method: "post",
+				paramName: 'attachment',
+				clickable: true,
+				maxFilesize: 50,
+				parallelUploads: 1,
+				uploadMultiple: false,
+				addRemoveLinks: false,
+				autoProcessQueue: true,
+				createImageThumbnails: false,
 
-			init: function () {
-				this.on("success", function (/*file, response*/ ) {
-				});
+				init: function () {
+					this.on("success", function (/*file, response*/ ) {
+					});
 
-				this.on("queuecomplete", function () {
-					self.notifySuccess('Logo uploaded');
-				});
+					this.on("queuecomplete", function () {
+						self.notifySuccess('Logo uploaded');
+					});
 
-				this.on("error", function (error, msg) {
-					self.notifyError(msg);
-					self.notifyError(error);
-				});
-			}
-		});
+					this.on("error", function (error, msg) {
+						self.notifyError(msg);
+						self.notifyError(error);
+					});
+				}
+			});
 
-		dzone.on("complete", function (file) {
-			dzone.removeFile(file);
-		});
-
-		this.set('drop', dzone);
+			dzone.on("complete", function (file) {
+				dzone.removeFile(file);
+			});
+		}
 	},
 
 	actions: {
