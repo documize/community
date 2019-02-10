@@ -13,6 +13,27 @@ import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-rout
 import Route from '@ember/routing/route';
 
 export default Route.extend(AuthenticatedRouteMixin, {
+	matchFilter: null,
+
+	beforeModel(transition) {
+		let matchFilter = {
+			matchDoc: is.undefined(transition.to.queryParams.matchDoc) ? true : (transition.to.queryParams.matchDoc == 'true'),
+			matchContent: is.undefined(transition.to.queryParams.matchContent) ? true : (transition.to.queryParams.matchContent == 'true'),
+			matchTag: is.undefined(transition.to.queryParams.matchTag) ? true : (transition.to.queryParams.matchTag == 'true'),
+			matchFile: is.undefined(transition.to.queryParams.matchFile) ? true : (transition.to.queryParams.matchFile == 'true'),
+			slog: is.undefined(transition.to.queryParams.slog) ? false : (transition.to.queryParams.slog === 'true'),
+		};
+
+		this.set('matchFilter', matchFilter);
+	},
+
+	setupController: function (controller, model) {
+		this._super(controller, model);
+
+		controller.set('model', model);
+		controller.set('matchFilter', this.get('matchFilter'));
+	},
+
     activate() {
 		this.get('browser').setTitle('Search');
 	}

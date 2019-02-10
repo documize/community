@@ -14,12 +14,11 @@ import Controller from '@ember/controller';
 
 export default Controller.extend({
 	appMeta: service(),
-
 	queryParams: ['filter', 'matchDoc', 'matchContent', 'matchTag', 'matchFile', 'slog'],
 	filter: '',
 	matchDoc: true,
 	matchContent: true,
 	matchTag: true,
 	matchFile: true,
-	slog: false,
+	slog: false
 });

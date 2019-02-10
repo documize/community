@@ -17,20 +17,43 @@ export default Component.extend({
 	searchSvc: service('search'),
 	results: A([]),
 	validSearch: true,
+	keywords: '' ,
+	matchFilter: null,
 
-	init() {
+	// init() {
+	// 	this._super(...arguments);
+	// },
+
+	didReceiveAttrs() {
 		this._super(...arguments);
+		this.set('keywords', this.get('filter'));
+		this.set('matchFilter', this.get('matchFilter'));
 		this.fetch();
+		console.log('receive a');
 	},
+
+	didReceiveAttrs() {
+		this._super(...arguments);
+		// this.set('keywords', this.get('filter'));
+		this.set('matchFilter', this.get('matchFilter'));
+		this.fetch();
+		console.log('update a');
+	},
+
+	// didUpdateAttrs() {
+	// 	this._super(...arguments);
+	// 	this.fetch();
+	// 	console.log('update a');
+	// },
 
 	fetch() {
 		let payload = {
-			keywords: this.get('filter'),
-			doc: this.get('matchDoc'),
-			attachment: this.get('matchFile'),
-			tag: this.get('matchTag'),
-			content: this.get('matchContent'),
-			slog: this.get('slog')
+			keywords: this.get('keywords'),
+			doc: this.get('matchFilter.matchDoc'),
+			attachment: this.get('matchFilter.matchFile'),
+			tag: this.get('matchFilter.matchTag'),
+			content: this.get('matchFilter.matchContent'),
+			slog: this.get('matchFilter.slog')
 		};
 
 		payload.keywords = payload.keywords.trim();
@@ -51,7 +74,7 @@ export default Component.extend({
 
 	actions: {
 		onSearch() {
-			if (this.get('filter').trim().length < 3) {
+			if (this.get('keywords').trim().length < 3) {
 				this.set('validSearch', false);
 				return;
 			}
