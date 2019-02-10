@@ -46,44 +46,47 @@ export default Component.extend(Modals, Notifier, {
 		let url = this.get('appMeta.endpoint');
 		let uploadUrl = `${url}/documents/${documentId}/attachments`;
 
-		let dzone = new Dropzone("#upload-document-files > div", {
-			headers: {
-				'Authorization': 'Bearer ' + self.get('session.authToken')
-			},
-			url: uploadUrl,
-			method: "post",
-			paramName: 'attachment',
-			clickable: true,
-			maxFilesize: 50,
-			parallelUploads: 5,
-			uploadMultiple: false,
-			addRemoveLinks: false,
-			autoProcessQueue: true,
 
-			init: function () {
-				this.on("success", function (/*file, response*/ ) {
-				});
+		// Handle upload clicks on button and anything inside that button.
+		let sel = ['#upload-document-files ', '#upload-document-files  > div'];
+		for (var i=0; i < 2; i++) {
+			let dzone = new Dropzone(sel[i], {
+				headers: {
+					'Authorization': 'Bearer ' + self.get('session.authToken')
+				},
+				url: uploadUrl,
+				method: "post",
+				paramName: 'attachment',
+				clickable: true,
+				maxFilesize: 50,
+				parallelUploads: 5,
+				uploadMultiple: false,
+				addRemoveLinks: false,
+				autoProcessQueue: true,
 
-				this.on("queuecomplete", function () {
-					self.notifySuccess('Uploaded file');
-					self.getAttachments();
-				});
+				init: function () {
+					this.on("success", function (/*file, response*/ ) {
+					});
 
-				this.on("addedfile", function ( /*file*/ ) {
-				});
+					this.on("queuecomplete", function () {
+						self.notifySuccess('Uploaded file');
+						self.getAttachments();
+					});
 
-				this.on("error", function (error, msg) {
-					self.notifyError(msg);
-					self.notifyError(error);
-				});
-			}
-		});
+					this.on("addedfile", function ( /*file*/ ) {
+					});
 
-		dzone.on("complete", function (file) {
-			dzone.removeFile(file);
-		});
+					this.on("error", function (error, msg) {
+						self.notifyError(msg);
+						self.notifyError(error);
+					});
+				}
+			});
 
-		this.set('drop', dzone);
+			dzone.on("complete", function (file) {
+				dzone.removeFile(file);
+			});
+		}
 
 		// For authenticated users we send server auth token.
 		let qry = '';

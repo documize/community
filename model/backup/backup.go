@@ -40,7 +40,7 @@ type Manifest struct {
 	Major    string `json:"major"`
 	Minor    string `json:"minor"`
 	Patch    string `json:"patch"`
-	Revision int    `json:"revision"`
+	Revision string `json:"revision"`
 	Version  string `json:"version"`
 
 	// Database provider used by source system.

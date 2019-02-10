@@ -27,7 +27,7 @@ export default Service.extend({
 	orgId: '',
 	title: '',
 	version: '',
-	revision: 1000,
+	revision: '1000',
 	message: '',
 	edition: 'Community',
 	valid: true,

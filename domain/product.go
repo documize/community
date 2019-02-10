@@ -95,7 +95,7 @@ type Product struct {
 	Major    string
 	Minor    string
 	Patch    string
-	Revision int
+	Revision string
 
 	// UserCount is number of users within Documize instance by tenant.
 	UserCount map[string]int
