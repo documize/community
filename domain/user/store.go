@@ -236,7 +236,23 @@ func (s Store) GetUsersForSpaces(ctx domain.RequestContext, spaces []string) (u 
 		return
 	}
 
-	query, args, err := sqlx.In(s.Bind(`
+	// query, args, err := sqlx.In(s.Bind(`
+	//     SELECT u.id, u.c_refid AS refid,
+	//     u.c_firstname AS firstname, u.c_lastname AS lastname, u.c_email AS email,
+	//     u.c_initials AS initials, u.c_globaladmin AS globaladmin,
+	//     u.c_password AS password, u.c_salt AS salt, u.c_reset AS reset, u.c_lastversion AS lastversion,
+	//     u.c_created AS created, u.c_revised AS revised,
+	//     a.c_active AS active, a.c_editor AS editor, a.c_admin AS admin, a.c_users AS viewusers, a.c_analytics AS analytics
+	//     FROM dmz_user u, dmz_user_account a
+	//     WHERE a.c_orgid=? AND u.c_refid = a.c_userid AND a.c_active=true AND u.c_refid IN (
+	//         SELECT c_whoid from dmz_permission WHERE c_orgid=? AND c_who='user' AND c_scope='object' AND c_location='space' AND c_refid IN(?)
+	//         UNION ALL
+	// 		SELECT r.c_userid from dmz_group_member r LEFT JOIN dmz_permission p ON p.c_whoid=r.c_groupid WHERE p.c_orgid=? AND p.c_who='role' AND p.c_scope='object' AND p.c_location='space' AND p.c_refid IN(?)
+	// 	)
+	//     ORDER BY u.c_firstname, u.c_lastname`),
+	// 	ctx.OrgID, ctx.OrgID, spaces, ctx.OrgID, spaces)
+
+	query, args, err := sqlx.In(`
         SELECT u.id, u.c_refid AS refid,
         u.c_firstname AS firstname, u.c_lastname AS lastname, u.c_email AS email,
         u.c_initials AS initials, u.c_globaladmin AS globaladmin,
@@ -249,8 +265,12 @@ func (s Store) GetUsersForSpaces(ctx domain.RequestContext, spaces []string) (u 
             UNION ALL
 			SELECT r.c_userid from dmz_group_member r LEFT JOIN dmz_permission p ON p.c_whoid=r.c_groupid WHERE p.c_orgid=? AND p.c_who='role' AND p.c_scope='object' AND p.c_location='space' AND p.c_refid IN(?)
 		)
-        ORDER BY u.c_firstname, u.c_lastname`),
+        ORDER BY u.c_firstname, u.c_lastname`,
 		ctx.OrgID, ctx.OrgID, spaces, ctx.OrgID, spaces)
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("GetUsersForSpaces IN query failed %s", ctx.UserID))
+		return
+	}
 
 	query = s.Runtime.Db.Rebind(query)
 	err = s.Runtime.Db.Select(&u, query, args...)

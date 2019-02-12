@@ -54,9 +54,9 @@ Integrations for embedding SaaS data within documents, zero add-on/marketplace f
 
 ## Latest Release
 
-[Community Edition: v2.0.3](https://github.com/documize/community/releases)
+[Community Edition: v2.0.4](https://github.com/documize/community/releases)
 
-[Enterprise Edition: v2.0.3](https://documize.com/downloads)
+[Enterprise Edition: v2.0.4](https://documize.com/downloads)
 
 ## OS support
 
