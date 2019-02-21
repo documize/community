@@ -38,6 +38,7 @@ import (
 	"github.com/documize/community/model/category"
 	"github.com/documize/community/model/doc"
 	"github.com/documize/community/model/group"
+	"github.com/documize/community/model/label"
 	"github.com/documize/community/model/link"
 	"github.com/documize/community/model/page"
 	"github.com/documize/community/model/permission"
@@ -150,6 +151,12 @@ func (r *restoreHandler) PerformRestore(b []byte, l int64) (err error) {
 
 	// Action.
 	err = r.dmzAction()
+	if err != nil {
+		return
+	}
+
+	// Space Label.
+	err = r.dmzSpaceLabel()
 	if err != nil {
 		return
 	}
@@ -578,6 +585,64 @@ func (r *restoreHandler) dmzAction() (err error) {
 	}
 
 	r.Runtime.Log.Info(fmt.Sprintf("Processed %s %d records", filename, len(ac)))
+
+	return nil
+}
+
+// Space Label.
+func (r *restoreHandler) dmzSpaceLabel() (err error) {
+	filename := "dmz_space_label.json"
+
+	label := []label.Label{}
+	err = r.fileJSON(filename, &label)
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("failed to load %s", filename))
+		return
+	}
+
+	r.Runtime.Log.Info(fmt.Sprintf("Extracted %s", filename))
+
+	r.Context.Transaction, err = r.Runtime.Db.Beginx()
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("unable to start TX for %s", filename))
+		return
+	}
+
+	// Nuke all existing data.
+	nuke := "TRUNCATE TABLE dmz_space_label"
+	if !r.Spec.GlobalBackup {
+		nuke = fmt.Sprintf("DELETE FROM dmz_space_label WHERE c_orgid='%s'", r.Spec.Org.RefID)
+	}
+	_, err = r.Context.Transaction.Exec(nuke)
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to truncate table %s", filename))
+		return
+	}
+
+	for i := range label {
+		_, err = r.Context.Transaction.Exec(r.Runtime.Db.Rebind(`
+            INSERT INTO dmz_space_label
+            (c_refid, c_orgid, c_name, c_color, c_created, c_revised)
+            VALUES (?, ?, ?, ?, ?, ?)`),
+			label[i].RefID, r.remapOrg(label[i].OrgID), label[i].Name, label[i].Color,
+			label[i].Created, label[i].Revised)
+
+		if err != nil {
+			r.Context.Transaction.Rollback()
+			err = errors.Wrap(err, fmt.Sprintf("unable to insert %s %s", filename, label[i].RefID))
+			return
+		}
+	}
+
+	err = r.Context.Transaction.Commit()
+	if err != nil {
+		r.Context.Transaction.Rollback()
+		err = errors.Wrap(err, fmt.Sprintf("unable to commit %s", filename))
+		return
+	}
+
+	r.Runtime.Log.Info(fmt.Sprintf("Processed %s %d records", filename, len(label)))
 
 	return nil
 }

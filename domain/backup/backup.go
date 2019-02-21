@@ -45,6 +45,7 @@ import (
 	"github.com/documize/community/model/category"
 	"github.com/documize/community/model/doc"
 	"github.com/documize/community/model/group"
+	"github.com/documize/community/model/label"
 	"github.com/documize/community/model/link"
 	"github.com/documize/community/model/page"
 	"github.com/documize/community/model/permission"
@@ -166,6 +167,12 @@ func (b backerHandler) produce(id string) (files []backupItem, err error) {
 
 	// Pin
 	err = b.dmzPin(&files)
+	if err != nil {
+		return
+	}
+
+	// Space Label
+	err = b.dmzSpaceLabel(&files)
 	if err != nil {
 		return
 	}
@@ -448,6 +455,32 @@ func (b backerHandler) dmzPin(files *[]backupItem) (err error) {
 		return errors.Wrap(err, "json.pin")
 	}
 	*files = append(*files, backupItem{Filename: "dmz_pin.json", Content: content})
+
+	return
+}
+
+// Space Label
+func (b backerHandler) dmzSpaceLabel(files *[]backupItem) (err error) {
+	w := ""
+	if !b.Spec.SystemBackup() {
+		w = fmt.Sprintf(" WHERE c_orgid='%s' ", b.Spec.OrgID)
+	}
+
+	l := []label.Label{}
+	err = b.Runtime.Db.Select(&l, `
+        SELECT id, c_refid AS refid,
+        c_orgid AS orgid, c_name AS name, c_color AS color,
+        c_created AS created, c_revised AS revised
+        FROM dmz_space_label`+w)
+	if err != nil {
+		return errors.Wrap(err, "select.space_label")
+	}
+
+	content, err := toJSON(l)
+	if err != nil {
+		return errors.Wrap(err, "json.space_label")
+	}
+	*files = append(*files, backupItem{Filename: "dmz_space_label.json", Content: content})
 
 	return
 }
