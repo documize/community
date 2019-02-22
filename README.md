@@ -4,7 +4,11 @@
 
 ## Welcome
 
-Documize is an open source alternative to Confluence built with Golang and EmberJS.
+Documize is an open source modern, lightweight and comprehensive alternative to Confluence.
+
+It's built with Golang + EmberJS and compiled down to a single executable binary for Linux, Windows and macOS.
+
+All you need to provide is PostgreSQL or any MySQL variant.
 
 - Built for technical and non-technical users
 - Organization through labels, spaces and categories
