@@ -1,56 +1,16 @@
-> We provide frequent product releases ensuring self-host customers enjoy the same features as our cloud/SaaS customers.
+> We provide frequent product updates to ensure self-host customers receive enhancements at the same time as our cloud-hosted customers.
 >
-> Harvey Kandola, CEO & Founder, Documize Inc.
+> Harvey Kandola / CEO & Founder / Documize, Inc.
 
-## The Mission
+## Welcome
 
-To bring software development inspired features to the world of documenting -- refactoring, importing, testing, linting, metrics, PRs, versioning....
+Documize is an open source alternative to Confluence built with Golang and EmberJS.
 
-## What is it?
-
-Documize is an intelligent document environment (IDE) for authoring, tracking and delivering documentation -- everything you need in one place.
-
-## Why should I care?
-
-Because maybe like us you're tired of:
-
-* juggling WYSIWYG editors, wiki software and other document related solutions
-* playing email tennis with documents, contributions, versions and feedback
-* sharing not-so-secure folders with external participants
-
-Sound familiar? Read on.
-
-## Who is it for?
-
-Anyone who wants a single place for any kind of document.
-
-Anyone who wants to loop in external participants with complete security.
-
-Anyone who wishes documentation and knowledge capture worked like agile software development.
-
-Anyone who knows that nested folders fail miserably.
-
-Anyone who wants to move on from wiki software.
-
-## What's different about Documize?
-
-Sane organization through personal, team and public spaces.
-
-Granular document access control via categories.
-
-Section based approach to document construction.
-
-Reusable templates and content blocks.
-
-Documentation related tasking and delegation.
-
-Integrations for embedding SaaS data within documents, zero add-on/marketplace fees.
-
-## What does it look like?
+- Built for technical and non-technical users
+- Organization through labels, spaces and categories
+- No fee-charging marketplace
 
 ![Documize](screenshot-1.png "Documize")
-
-[See it live](https://docs.documize.com)
 
 ## Latest Release
 
@@ -60,8 +20,6 @@ Integrations for embedding SaaS data within documents, zero add-on/marketplace f
 
 ## OS support
 
-Documize can be installed and run on:
-
 - Linux
 - Windows
 - macOS
@@ -70,18 +28,12 @@ Heck, Documize will probably run just fine on a Raspberry Pi 3.
 
 ## Database Support
 
-Documize supports the following database systems:
-
 - PostgreSQL (v9.6+)
 - MySQL (v5.7.10+ and v8.0.12+)
 - Percona (v5.7.16-10+)
 - MariaDB (10.3.0+)
 
-Coming soon: Microsoft SQL Server 2017 (Linux/Windows).
-
 ## Browser Support
-
-Documize supports the following (evergreen) browsers:
 
 - Chrome
 - Firefox
@@ -93,40 +45,12 @@ Documize supports the following (evergreen) browsers:
 
 ## Technology Stack
 
-Documize is built with the following:
-
-- Ember JS (v3.7.2)
 - Go (v1.11.5)
+- Ember JS (v3.7.2)
 
 ## Authentication Options
 
-Besides email/password login, you can also leverage the following options.
-
-### LDAP / Active Directory
-
-Connect and sync Documize with any LDAP v3 compliant provider including Microsoft Active Directory.
-
-### Keycloak Integration
-
-Documize provides out-of-the-box integration with [Redhat Keycloak](http://www.keycloak.org) for open source identity and access management.
-
-Connect and authenticate with LDAP, Active Directory or leverage Social Login.
-
-<https://docs.documize.com>
-
-### Auth0 Compatible
-
-Documize is compatible with Auth0 identity as a service.
-
-[![JWT Auth for open source projects](https://cdn.auth0.com/oss/badges/a0-badge-dark.png)](https://auth0.com/?utm_source=oss&utm_medium=gp&utm_campaign=oss)
-
-Open Source Identity and Access Management
-
-## Developer's Note
-
-We try to follow sound advice when writing commit messages:
-
-https://chris.beams.io/posts/git-commit/
+Besides email/password login, you can also connect to LDAP/Active Directory or Red Hat Keycloak server.
 
 ## The Legal Bit
 
