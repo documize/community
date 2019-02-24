@@ -1,31 +1,31 @@
 <div class="view-customize">
 	{{#if (eq subscription.status 0)}}
 		<h3 class="color-red-600">Enjoy the Documize free plan!</h3>
-		<a href="https://documize.com/checkout?ref=app&l={{appMeta.location}}&id={{subscription.id}}&o={{appMeta.orgId}}&u={{subscription.seats}}&a={{subscription.activeUsers}}&e={{subscription.email}}">
+		<a href="https://www.documize.com/checkout?ref=app&l={{appMeta.location}}&id={{subscription.id}}&o={{appMeta.orgId}}&u={{subscription.seats}}&a={{subscription.activeUsers}}&e={{subscription.email}}">
 			{{ui/ui-button color=constants.Color.Yellow light=true label="Upgrade Now"}}
 		</a>
 	{{/if}}
 	{{#if (eq subscription.status 1)}}
 		<h3 class="color-green-600">Nice, you have an active product subscription!</h3>
-		<a href="https://documize.com/checkout?ref=app&l={{appMeta.location}}&id={{subscription.id}}&o={{appMeta.orgId}}&u={{subscription.seats}}&a={{subscription.activeUsers}}&e={{subscription.email}}">
+		<a href="https://www.documize.com/checkout?ref=app&l={{appMeta.location}}&id={{subscription.id}}&o={{appMeta.orgId}}&u={{subscription.seats}}&a={{subscription.activeUsers}}&e={{subscription.email}}">
 			{{ui/ui-button color=constants.Color.Yellow light=true label="Change Plan"}}
 		</a>
 	{{/if}}
 	{{#if (eq subscription.status 2)}}
 		<h3 class="color-red-600">Hmm, your product subscription has expired</h3>
-		<a href="https://documize.com/checkout?ref=app&l={{appMeta.location}}&id={{subscription.id}}&o={{appMeta.orgId}}&u={{subscription.seats}}&a={{subscription.activeUsers}}&e={{subscription.email}}">
+		<a href="https://www.documize.com/checkout?ref=app&l={{appMeta.location}}&id={{subscription.id}}&o={{appMeta.orgId}}&u={{subscription.seats}}&a={{subscription.activeUsers}}&e={{subscription.email}}">
 			{{ui/ui-button color=constants.Color.Yellow light=true label="Renew"}}
 		</a>
 	{{/if}}
 	{{#if (eq subscription.status 3)}}
 		<h3 class="color-red-600">Hmm, {{subscription.activeUsers}} active user count exceeds permitted {{subscription.seats}} user limit</h3>
-		<a href="https://documize.com/checkout?ref=app&l={{appMeta.location}}&id={{subscription.id}}&o={{appMeta.orgId}}&u={{subscription.seats}}&a={{subscription.activeUsers}}&e={{subscription.email}}">
+		<a href="https://www.documize.com/checkout?ref=app&l={{appMeta.location}}&id={{subscription.id}}&o={{appMeta.orgId}}&u={{subscription.seats}}&a={{subscription.activeUsers}}&e={{subscription.email}}">
 			{{ui/ui-button color=constants.Color.Yellow light=true label="Upgrade"}}
 		</a>
 	{{/if}}
 	{{#if (eq subscription.status 4)}}
 		<h3 class="color-red-600">Hmm, your product subscription is not valid</h3>
-		<a href="https://documize.com/pricing?ref=app">
+		<a href="https://www.documize.com/pricing?ref=app">
 			{{ui/ui-button color=constants.Color.Yellow light=true label="Upgrade"}}
 		</a>
 	{{/if}}
