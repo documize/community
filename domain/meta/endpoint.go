@@ -310,8 +310,16 @@ func (h *Handler) Logo(w http.ResponseWriter, r *http.Request) {
 	ctx := domain.GetRequestContext(r)
 	d := organization.GetSubdomainFromHost(r)
 
-	// If organization has logo, send it back.
+	// If organization has logo, send it back by using specified subdomain.
 	logo, err := h.Store.Organization.Logo(ctx, d)
+	if err == nil && len(logo) > 0 {
+		h.writeLogo(w, r, logo)
+		return
+	}
+
+	// Sometimes people use subdomain like docs.example.org but backend
+	// does not reflect that domain, e.g. dmz_org.c_domain is empty.
+	logo, err = h.Store.Organization.Logo(ctx, "")
 	if err == nil && len(logo) > 0 {
 		h.writeLogo(w, r, logo)
 		return
