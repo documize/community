@@ -1,18 +1,18 @@
 <div class="installer">
-	<div>
-		<img src="/assets/img/setup/cogs.png" width="157" height="187" alt="Setup new database" class="no-select no-outline">
-	</div>
-
+	<img src="/assets/img/setup/logo-purple.png" srcset="/assets/img/setup/logo-purple@2x.png" alt="Documize Setup" style="width: 250px; height: 76px;">
 	{{ui/ui-spacer size=300}}
-	<h1 class="color-gray-800">Documize Setup</h1>
-	<h3 class="color-gray-700">Database is {{model.dbname}}</h3>
+	<h1 class="color-theme-700">Installation Guide</h1>
+	<p class="color-gray-800">
+		Review the <a href="https://docs.documize.com/s/VzO9ZqMOCgABGyfW/installation-guides/d/V16L08ucxwABhZF6/installation-guide">installation instructions</a>
+		and the <a href="https://docs.documize.com/s/VzO9ZqMOCgABGyfW/installation-guides/d/V2KuM8ICcQABagM5/mysql-specific-database-tuning">MySQL database tuning guide</a>
+	</p>
 	{{ui/ui-spacer size=300}}
 
 	<form {{action "save" on="submit"}}>
 		<div class="form-group">
 			<label>Site name</label>
 			{{focus-input id="siteTitle" type="text" value=model.title class=(if hasEmptyTitleError "form-control is-invalid" "form-control")}}
-			<small class="form-text text-muted">Usually your company name</small>
+			<small class="form-text text-muted">Usually your company or team name</small>
 		</div>
 		<div class="form-group">
 			<label for="adminFirstname">Firstname</label>

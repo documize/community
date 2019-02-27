@@ -39,7 +39,7 @@ export default Route.extend({
 
 	activate() {
 		$('body').addClass('background-color-theme-100');
-		document.title = "Documize Setup";
+		document.title = "Welcome to the Documize installer";
 	},
 
 	deactivate() {
