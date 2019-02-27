@@ -11,6 +11,7 @@ It's built with Golang + EmberJS and compiled down to a single executable binary
 All you need to provide is PostgreSQL or any MySQL variant.
 
 - Built for technical and non-technical users
+- Designed to unify both customer-facing and internal documentation
 - Organization through labels, spaces and categories
 - No fee-charging marketplace
 
