@@ -15,10 +15,10 @@ import (
 	"bytes"
 	"database/sql"
 	"encoding/json"
-	"github.com/documize/community/model/audit"
 	"io"
 	"io/ioutil"
 	"net/http"
+	"strings"
 
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/request"
@@ -26,6 +26,7 @@ import (
 	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/store"
+	"github.com/documize/community/model/audit"
 	"github.com/documize/community/model/org"
 )
 
@@ -82,6 +83,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &org)
 
 	org.RefID = ctx.OrgID
+	org.Domain = strings.ToLower(org.Domain)
 
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {

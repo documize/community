@@ -19,7 +19,9 @@ import Component from '@ember/component';
 
 export default Component.extend(Notifier, {
 	appMeta: service(),
+	router: service(),
 	maxTags: 3,
+	domain: '',
 	titleEmpty: empty('model.general.title'),
 	messageEmpty: empty('model.general.message'),
 	conversionEndpointEmpty: empty('model.general.conversionEndpoint'),
@@ -30,6 +32,7 @@ export default Component.extend(Notifier, {
 	didReceiveAttrs() {
 		this._super(...arguments);
 		this.set('maxTags', this.get('model.general.maxTags'));
+		this.set('domain', this.get('model.general.domain'));
 	},
 
 	didInsertElement() {
@@ -110,11 +113,20 @@ export default Component.extend(Notifier, {
 
 			this.set('model.general.maxTags', this.get('maxTags'));
 
+			let domainChanged = this.get('model.general.domain') !== this.get('domain').toLowerCase();
+			this.set('model.general.domain', this.get('domain').toLowerCase());
+
 			this.get('onUpdate')().then(() => {
 				this.notifySuccess('Saved');
 				set(this, 'titleError', false);
 				set(this, 'messageError', false);
 				set(this, 'conversionEndpointError', false);
+
+
+				if (domainChanged) {
+					let router = this.get('router');
+					router.transitionTo('auth.login');
+				}
 			});
 		},
 

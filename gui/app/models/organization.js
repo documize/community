@@ -16,6 +16,7 @@ export default Model.extend({
 	title: attr('string'),
 	message: attr('string'),
 	email: attr('string'),
+	domain: attr('string'),
 	conversionEndpoint: attr('string'),
 	allowAnonymousAccess: attr('boolean', { defaultValue: false }),
 	maxTags: attr('number', {defaultValue: 3}),

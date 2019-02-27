@@ -10,9 +10,9 @@
 // https://documize.com
 
 import { inject as service } from '@ember/service';
-import Route from '@ember/routing/route';
 import RSVP from 'rsvp';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
+import Route from '@ember/routing/route';
 
 export default Route.extend(AuthenticatedRouteMixin, {
 	orgService: service('organization'),

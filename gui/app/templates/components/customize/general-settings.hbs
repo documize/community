@@ -22,6 +22,13 @@
 		</div>
 		<small class="form-text text-muted">You can choose to upload a small logo (e.g. 64px x 64px)</small>
 	</div>
+	{{#if (eq appMeta.location "selfhost")}}
+		<div class="form-group">
+			<label for="orgDomain">Site URL Subdomain</label>
+			{{input id="orgDomain" type="text" value=domain class="form-control" placeholder="e.g. docs"}}
+			<small class="form-text text-muted">If you are hosting on "docs.example.org" then the subdomain value should be set to "doc"</small>
+		</div>
+{{/if}}
 
 	<div class="form-group">
 		<label>Public Spaces Viewable By Anonymous Users</label>
