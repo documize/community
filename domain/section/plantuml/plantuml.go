@@ -107,7 +107,7 @@ func (p *Provider) generateDiagram(ctx *provider.Context, data string) string {
 		}}
 	client := &http.Client{Transport: transport}
 
-	resp, _ := client.Post(org.ConversionEndpoint+"/api/plantuml", "application/text", bytes.NewReader([]byte(data)))
+	resp, _ := client.Post(org.ConversionEndpoint+"/api/plantuml", "application/text; charset=utf-8", bytes.NewReader([]byte(data)))
 	defer func() {
 		if e := resp.Body.Close(); e != nil {
 			fmt.Println("resp.Body.Close error: " + e.Error())
