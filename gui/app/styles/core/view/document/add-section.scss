@@ -15,6 +15,8 @@
 			margin: 10px;
 			background-color: map-get($gray-shades, 100);
 			border: 1px solid map-get($gray-shades, 200);
+			overflow-x: hidden;
+			text-overflow: ellipsis;
 			@extend .no-select;
 			@include border-radius(2px);
 			@include button-shadow-light();
