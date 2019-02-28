@@ -32,7 +32,7 @@ green     #859900
 
 code[class*="language-"],
 pre[class*="language-"] {
-	color: #657b83; /* base00 */
+	color: map-get($gray-shades, 800); /* base00 */
 	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
 	text-align: left;
 	white-space: pre;
@@ -117,7 +117,7 @@ pre[class*="language-"] {
 }
 
 .token.entity {
-	color: #657b83; /* base00 */
+	color: $color-black-light-1; /* base00 */
 	background: #eee8d5; /* base2 */
 }
 

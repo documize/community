@@ -69,6 +69,7 @@
 		border: 1px solid map-get($yellow-shades, 300);
 		@include border-radius(3px);
 		font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
+		color: map-get($gray-shades, 800);
 	}
 
 	pre {
@@ -77,6 +78,7 @@
 		border: 1px solid map-get($yellow-shades, 300);
 		@include border-radius(3px);
 		font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
+		color: map-get($gray-shades, 800);
 
 		> code {
 			background-color: transparent;
@@ -85,6 +87,7 @@
 			@include border-radius(0px);
 			font-size: 1rem;
 			font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
+			color: map-get($gray-shades, 800);
 		}
 	}
 
