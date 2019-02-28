@@ -266,6 +266,11 @@ func (s Store) matchFullText(ctx domain.RequestContext, keywords, itemType strin
 
 	switch s.Runtime.StoreProvider.Type() {
 	case env.StoreTypeMySQL:
+		// Tag names can contain hyphens so we have to wrap text in double quotes
+		// and then the query parser wraps in single quotes.
+		if itemType == "tag" {
+			keywords = fmt.Sprintf("\"%s\"", keywords)
+		}
 		fts = " AND MATCH(s.c_content) AGAINST(? IN BOOLEAN MODE) "
 	case env.StoreTypePostgreSQL:
 		// By default, we expect no Postgres full text search operators.

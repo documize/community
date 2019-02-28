@@ -29,22 +29,7 @@ export default Component.extend({
 		this.set('keywords', this.get('filter'));
 		this.set('matchFilter', this.get('matchFilter'));
 		this.fetch();
-		console.log('receive a');
 	},
-
-	didReceiveAttrs() {
-		this._super(...arguments);
-		// this.set('keywords', this.get('filter'));
-		this.set('matchFilter', this.get('matchFilter'));
-		this.fetch();
-		console.log('update a');
-	},
-
-	// didUpdateAttrs() {
-	// 	this._super(...arguments);
-	// 	this.fetch();
-	// 	console.log('update a');
-	// },
 
 	fetch() {
 		let payload = {

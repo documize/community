@@ -1,5 +1,5 @@
 {{#each tagz as |tg|}}
-	{{#link-to "search" (query-params filter=tg) class="hashtag"}}
+	{{#link-to "search" (query-params filter=tg matchTag=true matchContent=false matchFile=false matchDoc=false) class="hashtag"}}
 		<i class="dicon {{constants.Icon.Tag}}" />
 		<div class="name">{{tg}}</div>
 	{{/link-to}}

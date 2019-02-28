@@ -80,15 +80,23 @@
 			}
 
 			.hashtags {
-				> .hashtag {
-					display: inline-block;
-					margin: 5px 10px 0 5px;
-					color: map-get($gray-shades, 600);
-					font-size: 1rem;
-					font-style: italic;
+				display: inline-block;
+				padding: 0;
 
-					&:hover {
-						color: $color-link;
+				> .hashtag {
+					padding: 0 15px 0 0;
+
+					> .dicon {
+						color: map-get($gray-shades, 500);
+						font-size: 20px;
+						vertical-align: bottom;
+						padding: 0 5px 0 0;
+					}
+
+					> .name {
+						display: inline-block;
+						color: map-get($gray-shades, 800);
+						font-size: 1rem;
 					}
 				}
 			}
