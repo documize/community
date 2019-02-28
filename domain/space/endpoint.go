@@ -429,6 +429,14 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Cater for negative counts caused by user database manipulation.
+	if sp.CountCategory < 0 {
+		sp.CountCategory = 0
+	}
+	if sp.CountContent < 0 {
+		sp.CountContent = 0
+	}
+
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
@@ -459,6 +467,16 @@ func (h *Handler) GetViewable(w http.ResponseWriter, r *http.Request) {
 	sp, err := h.Store.Space.GetViewable(ctx)
 	if err != nil {
 		h.Runtime.Log.Error(method, err)
+	}
+
+	// Cater for negative counts caused by user database manipulation.
+	for i := range sp {
+		if sp[i].CountCategory < 0 {
+			sp[i].CountCategory = 0
+		}
+		if sp[i].CountContent < 0 {
+			sp[i].CountContent = 0
+		}
 	}
 
 	response.WriteJSON(w, sp)
