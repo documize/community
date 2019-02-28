@@ -1,6 +1,6 @@
 {
   "name": "documize",
-  "version": "2.0.6",
+  "version": "2.1.0",
   "description": "The Document IDE",
   "repository": "",
   "license": "AGPL",
@@ -24,7 +24,7 @@
     "@ember/jquery": "^0.6.0",
     "@ember/optional-features": "^0.7.0",
     "broccoli-asset-rev": "^3.0.0",
-    "ember-ajax": "^3.1.0",
+    "ember-ajax": "^4.0.1",
     "ember-attacher": "^0.13.10",
     "ember-cli": "~3.8.0",
     "ember-cli-app-version": "^3.2.0",
