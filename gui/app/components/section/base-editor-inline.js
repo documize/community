@@ -60,6 +60,7 @@ export default Component.extend(ModalMixin, {
 
 	willDestroyElement() {
 		this._super(...arguments);
+		this.set('showLinkModal', false);
 
 		let mousetrap = this.get('mousetrap');
 		if (is.not.null(mousetrap)) {

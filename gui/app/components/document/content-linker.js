@@ -10,7 +10,7 @@
 // https://documize.com
 
 import { debounce } from '@ember/runloop';
-import { computed, set, observer } from '@ember/object';
+import { computed, set } from '@ember/object';
 import { inject as service } from '@ember/service';
 import stringUtil from '../../utils/string';
 import ModalMixin from '../../mixins/modal';
@@ -35,7 +35,19 @@ export default Component.extend(ModalMixin, {
 	}),
 	modalId: computed('page', function() { return '#content-linker-modal-' + this.get('page.id'); }),
 	showModal: false,
-	onToggle: observer('showModal', function() {
+
+	init() {
+		this._super(...arguments);
+		this.matches = {
+			documents: [],
+			pages: [],
+			attachments: []
+		};
+	},
+
+	didReceiveAttrs() {
+		this._super(...arguments);
+
 		let modalId = this.get('modalId');
 
 		if (!this.get('showModal')) {
@@ -52,18 +64,20 @@ export default Component.extend(ModalMixin, {
 			self.set('candidates', candidates);
 			self.set('hasSections', is.not.null(candidates.pages) && candidates.pages.length);
 			self.set('hasAttachments', is.not.null(candidates.attachments) && candidates.attachments.length);
+
+			if (!self.get('hasSections') && !self.get('hasAttachments')) {
+				self.set('tab1Selected', false);
+				self.set('tab2Selected', false);
+				self.set('tab3Selected', true);
+				self.set('tab4Selected', false);
+			}
 		});
 
 		this.modalOpen(modalId, {show: true});
-	}),
 
-	init() {
-		this._super(...arguments);
-		this.matches = {
-			documents: [],
-			pages: [],
-			attachments: []
-		};
+		this.modalOnHide(modalId, () => {
+			this.set('showModal', false);
+		});
 	},
 
 	didRender() {
@@ -74,12 +88,9 @@ export default Component.extend(ModalMixin, {
 
 	willDestroyElement() {
 		this._super(...arguments);
+		this.set('showModal', false);
 		this.modalClose(this.get('modalId'));
 	},
-
-	onKeywordChange: observer('keywords', function() {
-		debounce(this, this.fetch, 750);
-	}),
 
 	fetch() {
 		let keywords = this.get('keywords');
@@ -96,6 +107,10 @@ export default Component.extend(ModalMixin, {
 	},
 
 	actions: {
+		onSearch() {
+			debounce(this, this.fetch, 750);
+		},
+
 		setSelection(i) {
 			let candidates = this.get('candidates');
 			let matches = this.get('matches');

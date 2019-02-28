@@ -46,7 +46,7 @@
 					<div class="content-linker-modal-container">
 						<div class="form-group">
 							<label>Search</label>
-							{{focus-input id="content-linker-search" type="input" class="form-control" value=keywords placeholder="keyword search" autocomplete="off"}}
+							{{focus-input id="content-linker-search" type="input" class="form-control" value=keywords placeholder="keyword search" autocomplete="off" key-up=(action "onSearch")}}
 							<small class="form-text text-muted">Document name, content, attachment name</small>
 						</div>
 						{{#unless hasMatches}}

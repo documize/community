@@ -37,6 +37,7 @@ export default Component.extend(Notifier, {
 
 	didReceiveAttrs() {
 		this._super(...arguments);
+
 		this.set('showLikes', this.get('folder.allowLikes') && this.get('document.isLive'));
 	},
 
@@ -44,6 +45,10 @@ export default Component.extend(Notifier, {
 		this._super(...arguments);
 
 		this.jumpToSection(this.get('currentPageId'));
+	},
+
+	didRender() {
+		this._super(...arguments);
 
 		this.contentLinkHandler();
 	},
