@@ -62,7 +62,7 @@ export default Component.extend({
 						inline: 'i'
 					}
 				},
-				codesample_content_css: '//' + window.location.host + '/prism.css',
+				codesample_content_css: '//' + window.location.host + '/prism/prism.css',
 				codesample_languages: [
 					{ text: 'ASP.NET (C#)', value: 'aspnet' },
 					{ text: 'C', value: 'c' },
