@@ -22,6 +22,10 @@ export function initialize(application) {
         }
     });
 
+	// required since Ember 3.8.0 upgrade to avoid clash with underscore.js
+	window.lodash = _.noConflict();
+	// window.underscore = _.noConflict();
+
     let cs = constants.constants;
     application.register('constants:main', cs);
 
