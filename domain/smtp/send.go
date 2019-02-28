@@ -51,6 +51,11 @@ type Config struct {
 
 	// SkipSSLVerify allows unverified certificates
 	SkipSSLVerify bool
+
+	// SenderFQDN is the sending servers fully qualified domain name
+	// as some SMTP servers require a value other than localhost.
+	// e.g. docs.example.org
+	SenderFQDN string
 }
 
 // Connect returns open connection to server for sending email
@@ -71,10 +76,10 @@ func Connect(c Config) (d *mail.Dialer, err error) {
 		p = base64.StdEncoding.EncodeToString([]byte(p))
 	}
 
-	// basic server
+	// Basic server
 	d = mail.NewDialer(c.Host, c.Port, u, p)
 
-	// use SSL
+	// Use SSL
 	d.SSL = c.UseSSL
 
 	// verify SSL cert chain
@@ -82,6 +87,12 @@ func Connect(c Config) (d *mail.Dialer, err error) {
 
 	// TLS mode
 	d.StartTLSPolicy = mail.OpportunisticStartTLS
+
+	// Use FQDN of sending server if we have one.
+	c.SenderFQDN = strings.TrimSpace(c.SenderFQDN)
+	if len(c.SenderFQDN) > 0 {
+		d.LocalName = c.SenderFQDN
+	}
 
 	return d, nil
 }

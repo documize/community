@@ -56,5 +56,7 @@ func GetSMTPConfig(s *store.Store) (c smtp.Config) {
 	c.SkipSSLVerify, _ = strconv.ParseBool(verifySSL)
 	c.SkipSSLVerify = true
 
+	c.SenderFQDN, _ = s.Setting.Get("SMTP", "fqdn")
+
 	return
 }
