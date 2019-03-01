@@ -26,6 +26,9 @@ import (
 
 // InitRuntime prepares runtime using command line and environment variables.
 func InitRuntime(r *env.Runtime, s *store.Store) bool {
+	// TODO: remove this line when Go1.13 is released.
+	os.Setenv("GODEBUG", os.Getenv("GODEBUG")+",tls13=1")
+
 	// We need SALT to hash auth JWT tokens
 	if r.Flags.Salt == "" {
 		r.Flags.Salt = secrets.RandSalt()
