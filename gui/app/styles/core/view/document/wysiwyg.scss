@@ -91,6 +91,19 @@
 		}
 	}
 
+	blockquote {
+		background-color: map-get($gray-shades, 100);
+		border-left: 7px solid map-get($gray-shades, 200);
+		color: map-get($gray-shades, 800);
+		@include border-radius(3px);
+		padding: 10px 20px;
+		margin: 10px 30px;
+
+		> p {
+			margin: 0.5rem 0;
+		}
+	}
+
 	.code-mirror {
 		background-color: none;
 		padding: 10px;
