@@ -62,6 +62,7 @@ module.exports = {
 	  "userLogin": true,
 	  "Keycloak": true,
 	  "slug": true,
-	  "iziToast": true
+	  "iziToast": true,
+	  "Papa": true,
   }
 };

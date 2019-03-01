@@ -24,6 +24,8 @@ export default Component.extend({
 	defaultTable: '<table class="wysiwyg-table" style="width: 100%;"><thead><tr><th><br></th><th><br></th><th><br></th><th><br></th></tr></thead><tbody><tr><td style="width: 25.0000%;"><br></td><td style="width: 25.0000%;"><br></td><td style="width: 25.0000%;"><br></td><td style="width: 25.0000%;"><br></td></tr><tr><td style="width: 25.0000%;"><br></td><td style="width: 25.0000%;"><br></td><td style="width: 25.0000%;"><br></td><td style="width: 25.0000%;"><br></td></tr><tr><td style="width: 25.0000%;"><br></td><td style="width: 25.0000%;"><br></td><td style="width: 25.0000%;"><br></td><td style="width: 25.0000%;"><br></td></tr></tbody></table>',
 
 	didReceiveAttrs() {
+		this._super(...arguments);
+
 		this.set('pageBody', this.get('meta.rawBody'));
 
 		if (is.empty(this.get('pageBody'))) {
@@ -32,7 +34,10 @@ export default Component.extend({
 	},
 
 	didInsertElement() {
+		this._super(...arguments);
+
 		let id = '#' + this.get('editorId');
+
 		$(id).froalaEditor({
 			toolbarButtons: [],
 			toolbarInline: true,
@@ -47,6 +52,8 @@ export default Component.extend({
 	},
 
 	willDestroyElement() {
+		this._super(...arguments);
+
 		$('#' + this.get('editorId')).off('froalaEditor.contentChanged');
 	},
 

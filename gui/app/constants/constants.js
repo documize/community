@@ -333,6 +333,7 @@ let constants = EmberObject.extend({
 		Edit: 'Edit',
 		Export: 'Export',
 		File: 'File',
+		Import: 'Import',
 		Insert: 'Insert',
 		Invite: 'Invite',
 		Join: 'Join',

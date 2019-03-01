@@ -107,7 +107,7 @@ export default Component.extend({
 				],
 				menu: {},
 				menubar: false,
-				toolbar1: 'formatselect fontsizeselect | bold italic underline strikethrough superscript subscript | forecolor backcolor link unlink',
+				toolbar1: 'formatselect fontsizeselect | bold italic underline strikethrough superscript subscript blockquote | forecolor backcolor link unlink',
 				toolbar2: 'outdent indent bullist numlist | alignleft aligncenter alignright alignjustify | table uploadimage image media codesample',
 				save_onsavecallback: function () {
 					Mousetrap.trigger('ctrl+s');
@@ -129,11 +129,8 @@ export default Component.extend({
 
 	willDestroyElement() {
 		this._super(...arguments);
-		tinymce.EditorManager.execCommand(
-			'mceRemoveEditor',
-			true,
-			this.get('editorId')
-		);
+
+		tinymce.EditorManager.execCommand('mceRemoveEditor', true, this.get('editorId'));
 	},
 
 	actions: {

@@ -9,7 +9,7 @@
 //
 // https://documize.com
 
-package table
+package tabular
 
 import (
 	"net/http"
@@ -19,7 +19,7 @@ import (
 	"github.com/documize/community/domain/store"
 )
 
-// Provider represents Table
+// Provider represents tabular
 type Provider struct {
 	Runtime *env.Runtime
 	Store   *store.Store
@@ -29,13 +29,12 @@ type Provider struct {
 func (*Provider) Meta() provider.TypeMeta {
 	section := provider.TypeMeta{}
 
-	section.ID = "81a2ea93-2dfc-434d-841e-54b832492c92"
+	section.ID = "a77d2f73-2cb5-4f6d-bb21-7227a7a097f3"
 	section.Title = "Tabular"
-	section.Description = "Rows, columns for tabular data"
-	section.ContentType = "table"
+	section.Description = "Table with rows and columns"
+	section.ContentType = "tabular"
 	section.PageType = "section"
 	section.Order = 9996
-	section.Retired = true
 
 	return section
 }
@@ -45,7 +44,7 @@ func (*Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http.R
 	provider.WriteEmpty(w)
 }
 
-// Render sends back data as-is (HTML).
+// Render returns data as-is (HTML).
 func (*Provider) Render(ctx *provider.Context, config, data string) string {
 	return data
 }

@@ -12,12 +12,14 @@
 
 					<ul class="options">
 						{{#each sections as |section|}}
-							<li class="preset-option" {{action "onInsertSection" section}}>
-								<div class="icon">
-									<img class="img" src="/sections/{{section.contentType}}.png" srcset="/sections/{{section.contentType}}@2x.png">
-								</div>
-								<div class="name">{{section.title}}</div>
-							</li>
+							{{#unless section.retired}}
+								<li class="preset-option" {{action "onInsertSection" section}}>
+									<div class="icon">
+										<img class="img" src="/sections/{{section.contentType}}.png" srcset="/sections/{{section.contentType}}@2x.png">
+									</div>
+									<div class="name">{{section.title}}</div>
+								</li>
+							{{/unless}}
 						{{/each}}
 						{{#if hasBlocks}}
 							<br>

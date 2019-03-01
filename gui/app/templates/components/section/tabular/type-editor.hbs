@@ -1,0 +1,52 @@
+{{#section/base-editor-inline
+	document=document
+	folder=folder
+	page=page
+	blockMode=blockMode
+	contentLinkerButton=true
+	onInsertLink=(action "onInsertLink")
+	isDirty=(action "isDirty")
+	onCancel=(action "onCancel")
+	onAction=(action "onAction")}}
+
+	<div class="text-right">
+		{{ui/ui-button
+			color=constants.Color.Yellow
+			light=true
+			label="IMPORT CSV"
+			onClick=(action "onShowImportModal")}}
+	</div>
+
+	{{ui/ui-spacer size=300}}
+
+	<div id={{editorId}} class="mousetrap wysiwyg wysiwyg-editor">
+		{{{pageBody}}}
+	</div>
+
+	<div id={{modalId}} class="modal" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">CSV To Table</div>
+				<div class="modal-body">
+					<p class="color-yellow-700">Note: existing table data will be replaced</p>
+					<div class="form-group">
+						<label for="csv-data">Paste CSV Data</label>
+						{{textarea id="csv-data" value=importData class="form-control" rows="10"}}
+						<small class="form-text text-muted">Common delimiters are supported</small>
+					</div>
+					<div class="form-group">
+						<label>First Row Header</label>
+						{{x-toggle value=importOption.headers size="medium" theme="light" onToggle=(action (mut importOption.headers))}}
+						<small class="form-text text-muted">Enable if first row contains headers</small>
+					</div>
+				</div>
+				<div class="modal-footer">
+					{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+					{{ui/ui-button-gap}}
+					{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Import onClick=(action "onImport")}}
+				</div>
+			</div>
+		</div>
+	</div>
+
+{{/section/base-editor-inline}}

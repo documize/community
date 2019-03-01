@@ -21,6 +21,7 @@ export default Model.extend({
 	description: attr('string'),
 	iconFont: attr('string'),
 	iconFile: attr('string'),
+	retired: attr('boolean'),
 
 	hasImage: computed('iconFont', 'iconFile', function () {
 		return this.get('iconFile').length > 0;

@@ -25,6 +25,7 @@ import (
 	"github.com/documize/community/domain/section/plantuml"
 	"github.com/documize/community/domain/section/provider"
 	"github.com/documize/community/domain/section/table"
+	"github.com/documize/community/domain/section/tabular"
 	"github.com/documize/community/domain/section/trello"
 	"github.com/documize/community/domain/section/wysiwyg"
 	"github.com/documize/community/domain/store"
@@ -38,6 +39,7 @@ func Register(rt *env.Runtime, s *store.Store) {
 	// provider.Register("github", &github.Provider{Runtime: rt, Store: s})
 	provider.Register("markdown", &markdown.Provider{Runtime: rt, Store: s})
 	provider.Register("papertrail", &papertrail.Provider{Runtime: rt, Store: s})
+	provider.Register("tabular", &tabular.Provider{Runtime: rt, Store: s})
 	provider.Register("table", &table.Provider{Runtime: rt, Store: s})
 	provider.Register("code", &code.Provider{Runtime: rt, Store: s})
 	provider.Register("trello", &trello.Provider{Runtime: rt, Store: s})

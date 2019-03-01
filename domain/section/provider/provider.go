@@ -39,6 +39,7 @@ type TypeMeta struct {
 	PageType    string                                                                     `json:"pageType"`
 	Title       string                                                                     `json:"title"`
 	Description string                                                                     `json:"description"`
+	Retired     bool                                                                       `json:"retired"` // no new inserts of this type, just edits
 	Preview     bool                                                                       `json:"preview"` // coming soon!
 	Callback    func(*env.Runtime, *store.Store, http.ResponseWriter, *http.Request) error `json:"-"`
 }
