@@ -2,6 +2,7 @@
 
 var EmberApp = require('ember-cli/lib/broccoli/ember-app');
 var isDevelopment = EmberApp.env() === 'development';
+// var isTest = EmberApp.env() === 'test';
 
 module.exports = function (defaults) {
 	var app = new EmberApp(defaults, {
@@ -27,6 +28,10 @@ module.exports = function (defaults) {
 				exclude: ['tinymce/**', 'codemirror/**', 'prism/**']
 			}
 		},
+
+		// autoprefixer: {
+		// 	sourcemap: false
+		// },
 
 		sourcemaps: {
 			enabled: isDevelopment,
@@ -58,6 +63,7 @@ module.exports = function (defaults) {
 	app.import('vendor/md5.js');
 	app.import('vendor/moment.js');
 	app.import('vendor/mousetrap.js');
+	app.import('vendor/papaparse.js');
 	app.import('vendor/prism.js');
 	app.import('vendor/slug.js');
 	app.import('vendor/sortable.js');
@@ -70,14 +76,3 @@ module.exports = function (defaults) {
 
 	return app.toTree();
 };
-
-// Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
-//
-// This software (Documize Community Edition) is licensed under
-// GNU AGPL v3 http://www.gnu.org/licenses/agpl-3.0.en.html
-//
-// You can operate outside the AGPL restrictions by purchasing
-// Documize Enterprise Edition and obtaining a commercial license
-// by contacting <sales@documize.com>.
-//
-// https://documize.com
