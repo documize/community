@@ -63,6 +63,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	l.RefID = uniqueid.Generate()
+	l.OrgID = ctx.OrgID
 
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
@@ -155,7 +156,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 	h.Store.Audit.Record(ctx, audit.EventTypeLabelUpdate)
 
-	response.WriteEmpty(w)
+	response.WriteJSON(w, l)
 }
 
 // Delete removes space label from store and
