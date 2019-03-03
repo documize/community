@@ -12,7 +12,7 @@
 import $ from 'jquery';
 import { empty, and } from '@ember/object/computed';
 import { isEmpty } from '@ember/utils';
-import stringUtil from '../utils/string';
+import stringUtil from '../../utils/string';
 import { set } from '@ember/object';
 import Component from '@ember/component';
 
