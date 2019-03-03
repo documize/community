@@ -183,7 +183,7 @@ export default Controller.extend(Notifier, {
 		},
 
 		onSaveTemplate(name, desc) {
-			this.get('templateService').saveAsTemplate(this.get('document.id'), name, desc).then(function () {
+			this.get('templateService').saveAsTemplate(this.get('document.id'), name, desc).then(() => {
 				this.notifySuccess('Template saved');
 			});
 		},
@@ -202,7 +202,7 @@ export default Controller.extend(Notifier, {
 			this.set('currentPageId', currentPageId);
 
 			this.get('documentService').changePageLevel(this.get('document.id'), changes).then(() => {
-				this.get('documentService').fetchPages(this.get('document.id'), this.get('session.user.id')).then( (pages) => {
+				this.get('documentService').fetchPages(this.get('document.id'), this.get('session.user.id')).then((pages) => {
 					this.set('pages', pages);
 				});
 			});

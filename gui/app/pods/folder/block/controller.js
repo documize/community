@@ -32,7 +32,6 @@ export default Controller.extend(Notifier, {
 			b.set('externalSource', meta.get('externalSource'));
 
 			this.get('sectionSvc').updateBlock(b).then(() => {
-				this.notifySuccess('Saved');
 				this.get('router').transitionTo('folder.settings', {queryParams: {tab: 'blocks'}});
 			});
 		}

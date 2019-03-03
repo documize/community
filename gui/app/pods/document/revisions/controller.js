@@ -25,7 +25,6 @@ export default Controller.extend(Notifier, {
 
 		onRollback(pageId, revisionId) {
 			this.get('documentService').rollbackPage(this.get('document.id'), pageId, revisionId).then(() => {
-				this.notifySuccess('Reverted to selected revision');
 				this.get('router').transitionTo('document.index');
 			});
 		}
