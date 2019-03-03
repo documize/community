@@ -27,13 +27,13 @@ export default Component.extend(SectionMixin, NotifierMixin, {
 	noBoards: false,
 	appKey: "",
 	trelloConfigured: computed('appKey', function () {
-		return is.not.empty(this.get('appKey'));
+		return !_.isEmpty(this.get('appKey'));
 	}),
 
 	boardStyle: computed('config.board', function () {
 		let board = this.get('config.board');
 
-		if (is.null(board) || is.undefined(board)) {
+		if (_.isNull(board) || _.isUndefined(board)) {
 			return "#4c4c4c";
 		}
 
@@ -55,7 +55,7 @@ export default Component.extend(SectionMixin, NotifierMixin, {
 			config = JSON.parse(this.get('meta.config'));
 		} catch (e) {} // eslint-disable-line no-empty
 
-		if (is.empty(config)) {
+		if (_.isEmpty(config)) {
 			config = {
 				token: "",
 				user: null,
@@ -73,9 +73,9 @@ export default Component.extend(SectionMixin, NotifierMixin, {
 
 				// On auth callback capture user token
 				let hashToken = window.location.hash;
-				if (is.not.undefined(hashToken) && is.not.null(hashToken)) {
+				if (!_.isUndefined(hashToken) && !_.isNull(hashToken)) {
 					let token = hashToken.replace("#token=", "");
-					if (is.not.empty(token)) {
+					if (!_.isEmpty(token)) {
 						self.set('config.token', token);
 					}
 				}
@@ -100,14 +100,14 @@ export default Component.extend(SectionMixin, NotifierMixin, {
 		let board = this.get('config.board');
 		let page = this.get('page');
 
-		if (is.null(boards) || is.undefined(boards) || boards.length === 0) {
+		if (_.isNull(boards) || _.isUndefined(boards) || boards.length === 0) {
 			this.set('noBoards', true);
 			return;
 		}
 
 		this.set('noBoards', false);
 
-		if (is.null(board) || is.undefined(board)) {
+		if (_.isNull(board) || _.isUndefined(board)) {
 			if (boards.length) {
 				board = boards[0];
 				this.set('config.board', board);
@@ -126,7 +126,7 @@ export default Component.extend(SectionMixin, NotifierMixin, {
 				lists.forEach(function (list) {
 					let saved = savedLists.findBy("id", list.id);
 					let included = true;
-					if (is.not.undefined(saved)) {
+					if (!_.isUndefined(saved)) {
 						included = saved.included;
 					}
 					list.included = included;

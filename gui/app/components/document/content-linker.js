@@ -62,8 +62,8 @@ export default Component.extend(ModalMixin, {
 
 		this.get('link').getCandidates(folderId, documentId, pageId).then(function (candidates) {
 			self.set('candidates', candidates);
-			self.set('hasSections', is.not.null(candidates.pages) && candidates.pages.length);
-			self.set('hasAttachments', is.not.null(candidates.attachments) && candidates.attachments.length);
+			self.set('hasSections', !_.isNull(candidates.pages) && candidates.pages.length);
+			self.set('hasAttachments', !_.isNull(candidates.attachments) && candidates.attachments.length);
 
 			if (!self.get('hasSections') && !self.get('hasAttachments')) {
 				self.set('tab1Selected', false);
@@ -148,7 +148,7 @@ export default Component.extend(ModalMixin, {
 				}
 			}
 
-			if (is.null(selection)) {
+			if (_.isNull(selection)) {
 				if (this.get('tab4Selected')) this.$('#content-linker-networklocation').addClass('is-invalid').focus();
 				return;
 			}

@@ -37,12 +37,12 @@ export default Component.extend({
 	}),
 
 	click(e) {
-		if (is.not.undefined(this.onClick)) {
+		if (!_.isUndefined(this.onClick)) {
 			this.onClick(e);
 			return;
 		}
 
-		if (is.not.undefined(this.linkTo)) {
+		if (!_.isUndefined(this.linkTo)) {
 			// TODO: pass in linkModel, linkOptions
 			// https://emberjs.com/api/ember/3.5/classes/RouterService/methods/transitionTo?anchor=transitionTo
 			this.router.transitionTo(this.get('linkTo'));

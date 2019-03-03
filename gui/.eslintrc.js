@@ -46,7 +46,6 @@ module.exports = {
     }
   ],
   globals: {
-	  "is": true,
 	  "mermaid": true,
 	  "_": true,
 	  "tinymce": true,

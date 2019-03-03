@@ -29,7 +29,7 @@ export default Route.extend({
 		return new EmberPromise((resolve) => {
 			let constants = this.get('constants');
 
-			this.set('mode', is.not.undefined(transition.to.queryParams.mode) ? transition.to.queryParams.mode : 'reject');
+			this.set('mode', !_.isUndefined(transition.to.queryParams.mode) ? transition.to.queryParams.mode : 'reject');
 
 			if (this.get('mode') === 'reject' || this.get('appMeta.authProvider') !== constants.AuthProvider.Keycloak) {
 				resolve();
@@ -41,7 +41,7 @@ export default Route.extend({
 				this.get("session").authenticate('authenticator:keycloak', data).then(() => {
 					this.transitionTo('folders');
 				}, (reject) => {
-					if (is.not.undefined(reject.Error)) {
+					if (!_.isUndefined(reject.Error)) {
 						this.set('message', reject.Error);
 					} else {
 						this.set('message', reject);

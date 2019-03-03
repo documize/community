@@ -28,7 +28,7 @@ export default Component.extend({
 
 		this.set('pageBody', this.get('meta.rawBody'));
 
-		if (is.empty(this.get('pageBody'))) {
+		if (_.isEmpty(this.get('pageBody'))) {
 			this.set('pageBody', this.get('defaultTable'));
 		}
 	},
@@ -74,7 +74,7 @@ export default Component.extend({
 			let body = $('#' + this.get('editorId')).froalaEditor('html.get', true);
 			page.set('title', title);
 
-			if (is.empty(body)) {
+			if (_.isEmpty(body)) {
 				body = this.get('defaultTable');
 			}
 

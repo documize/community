@@ -63,7 +63,7 @@ export default Component.extend({
         });
 
         let syntax = this.get("codeSyntax");
-        if (is.not.undefined(syntax)) {
+        if (!_.isUndefined(syntax)) {
             CodeMirror.autoLoadMode(editor, syntax.mode);
             editor.setOption("mode", syntax.mode);
         }
@@ -75,7 +75,7 @@ export default Component.extend({
         this._super(...arguments);
 
 		let editor = this.get('codeEditor');
-		if (is.not.null(editor)) {
+		if (!_.isNull(editor)) {
 			editor.toTextArea();
 			editor = null;
         }

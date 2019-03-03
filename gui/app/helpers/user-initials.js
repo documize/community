@@ -16,10 +16,10 @@ export function userInitials(params) {
     let firstname = params[0];
     let lastname = params[1];
 
-	if (is.undefined(firstname)) {
+	if (_.isUndefined(firstname)) {
 		firstname = " ";
 	}
-	if (is.undefined(lastname)) {
+	if (_.isUndefined(lastname)) {
 		lastname = " ";
 	}
 

@@ -14,7 +14,7 @@ import { helper } from '@ember/component/helper';
 export function formattedDate(params) {
 	let date = params[0];
     let format = params[1];
-    if (is.undefined(format)) format = 'Do MMMM YYYY, HH:mm';
+    if (_.isUndefined(format)) format = 'Do MMMM YYYY, HH:mm';
 
 	// https://momentjs.com/docs/#/manipulating/local/
 	return moment.utc(date).local().format(format);

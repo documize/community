@@ -33,7 +33,7 @@ export default Component.extend(SectionMixin, NotifierMixin, {
 		let self = this;
 		let page = this.get('page');
 
-		if (is.undefined(this.get('config.clientId')) || is.undefined(this.get('config.callbackUrl'))) {
+		if (_.isUndefined(this.get('config.clientId')) || _.isUndefined(this.get('config.callbackUrl'))) {
 			self.get('sectionService').fetch(page, "config", {})
 			.then(function (cfg) {
 				let config = {};
@@ -77,7 +77,7 @@ export default Component.extend(SectionMixin, NotifierMixin, {
 				let code = window.location.search;
 				code = code.replace("?mode=edit", "");
 
-				if (is.not.undefined(code) && is.not.null(code) && is.not.empty(code) && code !== "") {
+				if (!_.isUndefined(code) && !_.isNull(code) && !_.isEmpty(code) && code !== "") {
 					let tok = code.replace("&code=", "");
 					self.get('sectionService').fetch(page, "saveSecret", { "token": tok })
 						.then(function () {
@@ -111,7 +111,7 @@ export default Component.extend(SectionMixin, NotifierMixin, {
 		let owners = this.get('owners');
 		let thisOwner = this.get('config.owner');
 
-		if (is.null(thisOwner) || is.undefined(thisOwner)) {
+		if (_.isNull(thisOwner) || _.isUndefined(thisOwner)) {
 			if (owners.length) {
 				thisOwner = owners[0];
 				this.set('config.owner', thisOwner);
@@ -124,7 +124,7 @@ export default Component.extend(SectionMixin, NotifierMixin, {
 
 		this.getOrgReposLists();
 
-		if (is.undefined(this.get('initDateTimePicker'))) {
+		if (_.isUndefined(this.get('initDateTimePicker'))) {
 			$.datetimepicker.setLocale('en');
 			$('#branch-since').datetimepicker();
 			this.set('initDateTimePicker', "Done");
@@ -157,10 +157,10 @@ export default Component.extend(SectionMixin, NotifierMixin, {
 					lists2.forEach(function (list) {
 						let included = false;
 						var saved;
-						if (is.not.undefined(savedLists)) {
+						if (!_.isUndefined(savedLists)) {
 							saved = savedLists.findBy("id", list.id);
 						}
-						if (is.not.undefined(saved)) {
+						if (!_.isUndefined(saved)) {
 							included = saved.selected;
 							noIncluded = false;
 						}

@@ -53,7 +53,7 @@ export default Service.extend({
 		this.set('authProvider', constants.AuthProvider.Documize);
 
 		let dbhash;
-		if (is.not.null(document.head.querySelector("[property=dbhash]"))) {
+		if (!_.isNull(document.head.querySelector("[property=dbhash]"))) {
 			dbhash = document.head.querySelector("[property=dbhash]").content;
 		}
 
@@ -89,7 +89,7 @@ export default Service.extend({
 
 				this.get('localStorage').clearAll();
 				return resolve(this);
-			} else if (is.not.include(requestedUrl, '/auth/')) {
+			} else if (!_.includes(requestedUrl, '/auth/')) {
 				this.get('localStorage').storeSessionItem('entryUrl', requestedUrl);
 			}
 

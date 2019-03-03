@@ -39,7 +39,7 @@ export default Service.extend({
 		return this.get('ajax').request(`pin/${userId}`, {
 			method: 'GET'
 		}).then((response) => {
-			if (is.not.array(response)) response = [];
+			if (!_.isArray(response)) response = [];
 			let pins = ArrayProxy.create({ content: A([]) });
 
 			pins = response.map((pin) => {
@@ -93,7 +93,7 @@ export default Service.extend({
 				method: 'POST',
 				data: JSON.stringify(data)
 			}).then((response) => {
-				if (is.not.array(response)) response = [];
+				if (!_.isArray(response)) response = [];
 
 				let pins = ArrayProxy.create({
 					content: A([])

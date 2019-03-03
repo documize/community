@@ -92,7 +92,7 @@ export default Component.extend(ModalMixin, AuthMixin, Notifier, {
 	willDestroyElement() {
 		this._super(...arguments);
 
-		if (is.not.null(this.get('dropzone'))) {
+		if (!_.isNull(this.get('dropzone'))) {
 			this.get('dropzone').destroy();
 			this.set('dropzone', null);
 		}
@@ -100,7 +100,7 @@ export default Component.extend(ModalMixin, AuthMixin, Notifier, {
 
 	setupImport() {
 		// already done init?
-		if (is.not.null(this.get('dropzone'))) {
+		if (!_.isNull(this.get('dropzone'))) {
 			this.get('dropzone').destroy();
 			this.set('dropzone', null);
 		}
@@ -180,7 +180,7 @@ export default Component.extend(ModalMixin, AuthMixin, Notifier, {
 			e.preventDefault();
 			let docName = this.get('emptyDocName');
 
-			if (is.empty(docName)) {
+			if (_.isEmpty(docName)) {
 				this.set('emptyDocNameError', true);
 				$('#empty-doc-name').focus();
 				return;
@@ -217,14 +217,14 @@ export default Component.extend(ModalMixin, AuthMixin, Notifier, {
 			e.preventDefault();
 			let docName = this.get('templateDocName');
 
-			if (is.empty(docName)) {
+			if (_.isEmpty(docName)) {
 				this.set('templateDocNameError', true);
 				$('#template-doc-name').focus();
 				return;
 			}
 
 			let id = this.get('selectedTemplate');
-			if (is.empty(id)) {
+			if (_.isEmpty(id)) {
 				$('#widget-list-picker').addClass('is-invalid');
 				return;
 			}

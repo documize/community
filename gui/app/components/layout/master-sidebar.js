@@ -100,7 +100,7 @@ export default Component.extend(Modals, {
 	processNotification(msg, type) {
 		if (this.get('isDestroyed') || this.get('isDestroying')) return;
 
-		if (is.not.undefined(type)) {
+		if (!_.isUndefined(type)) {
 			switch (type) {
 				case 'info':
 					iziToast.info({

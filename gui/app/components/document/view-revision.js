@@ -35,7 +35,7 @@ export default Component.extend(ModalMixin, {
 
 		let revision = this.get('revision');
 
-		if (is.not.null(revision)) {
+		if (!_.isNull(revision)) {
 			if (!revision.deleted) {
 				this.fetchDiff(revision.pageId, revision.id);
 			}

@@ -57,7 +57,7 @@ export default Component.extend(AuthProvider, ModalMixin, {
 						let filteredUsers = A([]);
 						users.forEach(user => {
 							let m = members.findBy('userId', user.get('id'));
-							if (is.undefined(m)) filteredUsers.pushObject(user);
+							if (_.isUndefined(m)) filteredUsers.pushObject(user);
 						});
 
 						this.set('users', filteredUsers);
@@ -75,7 +75,7 @@ export default Component.extend(AuthProvider, ModalMixin, {
 
 			let newGroup = this.get('newGroup');
 
-			if (is.empty(newGroup.name)) {
+			if (_.isEmpty(newGroup.name)) {
 				$('#new-group-name')
 					.addClass('is-invalid')
 					.focus();
@@ -108,7 +108,7 @@ export default Component.extend(AuthProvider, ModalMixin, {
 			let group = this.get('groups').findBy('id', deleteGroup.id);
 
 			if (
-				is.empty(deleteGroup.name) ||
+				_.isEmpty(deleteGroup.name) ||
 				group.get('name') !== deleteGroup.name
 			) {
 				$('#delete-group-name')
@@ -141,7 +141,7 @@ export default Component.extend(AuthProvider, ModalMixin, {
 
 			let group = this.get('editGroup');
 
-			if (is.empty(group.get('name'))) {
+			if (_.isEmpty(group.get('name'))) {
 				$('#edit-group-name')
 					.addClass('is-invalid')
 					.focus();

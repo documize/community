@@ -23,13 +23,11 @@ export default SimpleAuthSession.extend({
 	localStorage: service(),
 	folderPermissions: null,
 	currentFolder: null,
-	isMac: false,
-	isMobile: false,
 
 	secureToken: '',
 	hasSecureToken: computed('secureToken', function () {
 		let st = this.get('secureToken');
-		return is.not.null(st) && is.not.undefined(st) && st.length > 0;
+		return !_.isNull(st) && !_.isUndefined(st) && st.length > 0;
 	}),
 
 	hasAccounts: computed('isAuthenticated', 'session.content.authenticated.user', function () {
@@ -51,7 +49,7 @@ export default SimpleAuthSession.extend({
 	}),
 
 	authenticated: computed('session.content.authenticated.user', function () {
-		if (is.null(this.get('session.authenticator')) || this.get('appMeta.secureMode')) return false;
+		if (_.isNull(this.get('session.authenticator')) || this.get('appMeta.secureMode')) return false;
 		return this.get('session.authenticator') !== 'authenticator:anonymous' && this.get('session.content.authenticated.user.id') !== '0';
 	}),
 
@@ -92,7 +90,7 @@ export default SimpleAuthSession.extend({
 	}),
 
 	authToken: computed('session.content.authenticated.user', function () {
-		if (is.null(this.get('session.authenticator')) ||
+		if (_.isNull(this.get('session.authenticator')) ||
 			this.get('appMeta.secureMode')) return '';
 
 		if (this.get('session.authenticator') === 'authenticator:anonymous' ||
@@ -103,9 +101,6 @@ export default SimpleAuthSession.extend({
 
 	init() {
 		this._super(...arguments);
-
-		this.set('isMac', is.mac());
-		this.set('isMobile', is.mobile());
 	},
 
 	logout() {

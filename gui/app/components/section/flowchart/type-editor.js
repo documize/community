@@ -112,7 +112,7 @@ export default Component.extend({
 	invokeExport() {
 		// Cannot export if nothing has been changed
 		// so we skip straight to the save process.
-		if (is.empty(this.get('diagramXML'))) {
+		if (_.isEmpty(this.get('diagramXML'))) {
 			this.set('readyToSave', true);
 			return;
 		}
@@ -137,7 +137,7 @@ export default Component.extend({
 
 			// handle case where no diagram changes were made
 			let dg = this.get('diagram');
-			if (is.empty(dg)) dg = this.get('meta.rawBody');
+			if (_.isEmpty(dg)) dg = this.get('meta.rawBody');
 
 			meta.set('rawBody', dg);
 			page.set('title', this.get('title'));

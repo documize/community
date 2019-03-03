@@ -10,7 +10,7 @@
 // https://documize.com
 
 function getSubdomain() {
-	if (is.ipv4(window.location.host)) {
+	if (isIPv4(window.location.host)) {
 		return "";
 	}
 
@@ -30,7 +30,7 @@ function getAppUrl(domain) {
 
 	let leftOvers = parts.join(".");
 
-	if (is.empty(domain)) {
+	if (_.isEmpty(domain)) {
 		domain = "";
 	} else {
 		domain = domain + ".";
@@ -82,10 +82,16 @@ function isInvalidLicenseError(reason) {
 	return false;
 }
 
+function isIPv4(ip) {
+	var re = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+	return re.test(ip);
+}
+
 export default {
 	getSubdomain,
 	getAppUrl,
 	isAjaxAccessError,
 	isAjaxNotFoundError,
 	isInvalidLicenseError,
+	isIPv4,
 };

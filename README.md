@@ -19,9 +19,9 @@ All you need to provide is PostgreSQL or any MySQL variant.
 
 ## Latest Release
 
-[Community Edition: v2.0.6](https://github.com/documize/community/releases)
+[Community Edition: v2.1.0](https://github.com/documize/community/releases)
 
-[Enterprise Edition: v2.0.6](https://www.documize.com/downloads)
+[Enterprise Edition: v2.1.0](https://www.documize.com/downloads)
 
 ## OS support
 
@@ -50,8 +50,8 @@ Heck, Documize will probably run just fine on a Raspberry Pi 3.
 
 ## Technology Stack
 
-- Go (v1.11.5)
-- Ember JS (v3.7.2)
+- Go (v1.12.0)
+- Ember JS (v3.8.0)
 
 ## Authentication Options
 

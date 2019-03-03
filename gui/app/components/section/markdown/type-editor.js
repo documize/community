@@ -32,7 +32,7 @@ export default Component.extend({
 
 	init() {
 		this._super(...arguments);
-		let body = (is.not.undefined(this.get('meta'))) ? this.get('meta.rawBody').trim() : '';
+		let body = (!_.isUndefined(this.get('meta'))) ? this.get('meta.rawBody').trim() : '';
 		this.set('pageBody', body);
     },
 
@@ -76,7 +76,7 @@ export default Component.extend({
 
         let syntax = this.get("codeSyntax");
 
-        if (is.not.undefined(syntax)) {
+        if (!_.isUndefined(syntax)) {
             CodeMirror.autoLoadMode(editor, "markdown");
             editor.setOption("mode", "markdown");
         }

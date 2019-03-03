@@ -26,7 +26,7 @@ function getState(toc, page) {
 		pageId: ''
 	};
 
-	if (is.undefined(page)) {
+	if (_.isUndefined(page)) {
 		return state;
 	}
 
@@ -109,8 +109,8 @@ function getState(toc, page) {
 	state.indentDisabled = !state.tocTools.allowIndent;
 	state.outdentDisabled = !state.tocTools.allowOutdent;
 
-	state.actionablePage = is.not.empty(state.tocTools.upTarget) ||
-		is.not.empty(state.tocTools.downTarget) ||
+	state.actionablePage = !_.isEmpty(state.tocTools.upTarget) ||
+		!_.isEmpty(state.tocTools.downTarget) ||
 		state.tocTools.allowIndent || state.tocTools.allowOutdent;
 
 	return state;
@@ -122,20 +122,20 @@ function moveUp(state, pages, current) {
 	var page2 = null;
 	var pendingChanges = [];
 
-	if (is.not.undefined(page1)) page1 = page1.get('page');
+	if (!_.isUndefined(page1)) page1 = page1.get('page');
 
-	if (is.undefined(current) || is.undefined(page1)) {
+	if (_.isUndefined(current) || _.isUndefined(page1)) {
 		return pendingChanges;
 	}
 
 	var index1 = _.findIndex(pages, function(i) { return i.get('page.id') === page1.get('id'); });
 
 	if (index1 !== -1) {
-		if (is.not.undefined(pages[index1 - 1])) page2 = pages[index1 - 1].get('page');
+		if (!_.isUndefined(pages[index1 - 1])) page2 = pages[index1 - 1].get('page');
 	}
 
 	var sequence1 = page1.get('sequence');
-	var sequence2 = is.not.null(page2) && is.not.undefined(page2) ? page2.get('sequence') : 0;
+	var sequence2 = !_.isNull(page2) && !_.isUndefined(page2) ? page2.get('sequence') : 0;
 	var index = _.findIndex(pages, function(i) { return i.get('page.id') === current.get('id'); });
 
 	if (index !== -1) {
@@ -167,7 +167,7 @@ function moveUp(state, pages, current) {
 function moveDown(state, pages, current) {
 	var pageIndex = _.findIndex(pages, function(i) { return i.get('page.id') === current.get('id'); });
 	var downTarget = _.find(pages, function(i) { return i.get('page.id') === state.tocTools.downTarget; });
-	if (is.not.undefined(downTarget)) downTarget = downTarget.get('page');
+	if (!_.isUndefined(downTarget)) downTarget = downTarget.get('page');
 
 	var downTargetIndex = _.findIndex(pages, function(i) { return i.get('page.id')  === downTarget.get('id'); });
 	var pendingChanges = [];
@@ -188,9 +188,9 @@ function moveDown(state, pages, current) {
 		var belowThisGuyIndex = _.findIndex(pages, function(i) { return i.get('page.id') === aboveThisGuy.get('id'); })
 		var belowThisGuy = pages[belowThisGuyIndex - 1];
 
-		if (is.not.null(belowThisGuy)) belowThisGuy = belowThisGuy.get('page');
+		if (!_.isNull(belowThisGuy)) belowThisGuy = belowThisGuy.get('page');
 
-		if (is.not.null(belowThisGuy) && belowThisGuy.get('level') > current.get('level')) {
+		if (!_.isNull(belowThisGuy) && belowThisGuy.get('level') > current.get('level')) {
 			startingSequence = (aboveThisGuy.get('sequence') + belowThisGuy.get('sequence')) / 2;
 			upperSequence = aboveThisGuy.get('sequence');
 		} else {

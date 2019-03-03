@@ -41,7 +41,7 @@ export default AjaxService.extend({
 			let appVersion = headers['x-documize-version'];
 
 			// Unauthorized local API AJAX calls redirect to app root.
-			if (status === 401 && is.not.undefined(appVersion) && is.not.include(window.location.href, '/auth')) {
+			if (status === 401 && !_.isUndefined(appVersion) && !_.includes(window.location.href, '/auth')) {
 				this.get('localStorage').clearAll();
 				window.location.href = 'auth/login';
 			}
@@ -51,7 +51,7 @@ export default AjaxService.extend({
 				this.set('appMeta.valid', false);
 			}
 
-			if (this.get('session.authenticated') && is.not.empty(userUpdate) && is.not.undefined(userUpdate)) {
+			if (this.get('session.authenticated') && !_.isEmpty(userUpdate) && !_.isUndefined(userUpdate)) {
 				let latest = JSON.parse(userUpdate);
 				// Permission change means re-validation.
 				if (!latest.active || user.editor !== latest.editor || user.admin !== latest.admin ||

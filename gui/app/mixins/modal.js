@@ -21,7 +21,7 @@ export default Mixin.create({
 		$(modalId).modal('dispose');
 		$(modalId).modal(options);
 
-		if (is.not.undefined(focusId)) {
+		if (!_.isUndefined(focusId)) {
 			$(focusId).trigger('focus');
 		}
 	},

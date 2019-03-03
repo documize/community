@@ -38,7 +38,7 @@ export default Component.extend(Modals, Notifier, {
 
 		this.set('pageBody', this.get('meta.rawBody'));
 
-		if (is.empty(this.get('pageBody'))) {
+		if (_.isEmpty(this.get('pageBody'))) {
 			this.set('pageBody', this.get('defaultTable'));
 		}
 
@@ -126,7 +126,7 @@ export default Component.extend(Modals, Notifier, {
 
 	generateImportTable(results) {
 		// nothing to import?
-		if (is.undefined(results) || results.data.length === 0) {
+		if (_.isUndefined(results) || results.data.length === 0) {
 			return;
 		}
 
@@ -135,7 +135,7 @@ export default Component.extend(Modals, Notifier, {
 		let table = '<table class="wysiwyg-table" style="width: 100%;"><thead><tr>';
 
 		// Setup the table headers
-		if (opts.headers && is.array(results.meta.fields)) {
+		if (opts.headers && _.isArray(results.meta.fields)) {
 			// use headers from file
 			results.meta.fields.forEach((header) => {
 				table = table + '<th>' + header.trim() + '</th>';
@@ -155,7 +155,7 @@ export default Component.extend(Modals, Notifier, {
 		results.data.forEach(row => {
 			table = table + '<tr>';
 
-			if (is.array(row)) {
+			if (_.isArray(row)) {
 				row.forEach((cell) => {
 					table = table + '<td>' + cell.trim() + '</td>';
 				});
@@ -189,7 +189,7 @@ export default Component.extend(Modals, Notifier, {
 
 			this.modalClose('#' + this.get('modalId'));
 
-			if (is.empty(csv)) {
+			if (_.isEmpty(csv)) {
 				return;
 			}
 
@@ -206,7 +206,7 @@ export default Component.extend(Modals, Notifier, {
 			let editor = tinymce.EditorManager.get(this.get('editorId'));
 			let userSelection = editor.selection.getContent();
 
-			if (is.not.empty(userSelection)) {
+			if (!_.isEmpty(userSelection)) {
 				set(link, 'title', userSelection);
 			}
 
@@ -219,8 +219,8 @@ export default Component.extend(Modals, Notifier, {
 		isDirty() {
 			let editor = tinymce.EditorManager.get(this.get('editorId'));
 			return (
-				is.not.undefined(tinymce) &&
-				is.not.undefined(editor) &&
+				!_.isUndefined(tinymce) &&
+				!_.isUndefined(editor) &&
 				editor.isDirty()
 			);
 		},

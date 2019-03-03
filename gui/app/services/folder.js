@@ -102,7 +102,7 @@ export default BaseService.extend({
 			method: "GET"
 		}).then((response) => {
 			let data = [];
-			if (is.not.array(response)) response = [];
+			if (!_.isArray(response)) response = [];
 
 			data = response.map((obj) => {
 				let data = this.get('store').normalize('folder', obj);
@@ -125,7 +125,7 @@ export default BaseService.extend({
 			method: "GET"
 		}).then((response) => {
 			let data = [];
-			if (is.not.array(response)) response = [];
+			if (!_.isArray(response)) response = [];
 
 			data = response.map((obj) => {
 				obj.id = 'sp-' + obj.id;
@@ -156,7 +156,7 @@ export default BaseService.extend({
 
 	// Current folder caching
 	setCurrentFolder(folder) {
-		if (is.undefined(folder) || is.null(folder)) {
+		if (_.isUndefined(folder) || _.isNull(folder)) {
 			return;
 		}
 
@@ -187,7 +187,7 @@ export default BaseService.extend({
 			method: "GET"
 		}).then((response) => {
 			let data = [];
-			if (is.not.array(response)) response = [];
+			if (!_.isArray(response)) response = [];
 
 			data = response.map((obj) => {
 				let data = this.get('store').normalize('folder', obj);

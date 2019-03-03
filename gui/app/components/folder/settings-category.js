@@ -48,11 +48,11 @@ export default Component.extend(ModalMixin, Notifer, {
 			// get summary of documents and users for each category in space
 			this.get('categorySvc').getSummary(this.get('space.id')).then((s) => {
 				c.forEach((cat) => {
-					let docs = _.where(s, {categoryId: cat.get('id'), type: 'documents'});
+					let docs = _.filter(s, {categoryId: cat.get('id'), type: 'documents'});
 					let docCount = 0;
 					docs.forEach((d) => { docCount = docCount + d.count });
 
-					let users = _.where(s, {categoryId: cat.get('id'), type: 'users'});
+					let users = _.filter(s, {categoryId: cat.get('id'), type: 'users'});
 					let userCount = 0;
 					users.forEach((u) => { userCount = userCount + u.count });
 
@@ -62,9 +62,9 @@ export default Component.extend(ModalMixin, Notifer, {
 
 				this.get('categorySvc').getUserVisible(this.get('space.id')).then((cm) => {
 					cm.forEach((cm) => {
-						let cat = _.findWhere(c, {id: cm.get('id') });
-						if (is.not.undefined(cat)) {
-							cat.set('access', is.not.undefined(cat));
+						let cat = _.find(c, {id: cm.get('id') });
+						if (!_.isUndefined(cat)) {
+							cat.set('access', !_.isUndefined(cat));
 						}
 					});
 				});
@@ -91,7 +91,7 @@ export default Component.extend(ModalMixin, Notifer, {
 		let cats = this.get('category');
 		let cat = cats.findBy('id', id);
 
-		if (is.not.undefined(cat)) {
+		if (!_.isUndefined(cat)) {
 			cat.set('editMode', val);
 		}
 
@@ -185,7 +185,7 @@ export default Component.extend(ModalMixin, Notifer, {
 					// mark those users as selected that have permission to see the current category
 					perms.forEach((perm) => {
 						let c = categoryPermissions.findBy('whoId', perm.get('whoId'));
-						if (is.not.undefined(c)) {
+						if (!_.isUndefined(c)) {
 							c.set('selected', true);
 						}
 					});

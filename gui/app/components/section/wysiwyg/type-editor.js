@@ -138,7 +138,7 @@ export default Component.extend({
 			let editor = tinymce.EditorManager.get(this.get('editorId'));
 			let userSelection = editor.selection.getContent();
 
-			if (is.not.empty(userSelection)) {
+			if (!_.isEmpty(userSelection)) {
 				set(link, 'title', userSelection);
 			}
 
@@ -151,8 +151,8 @@ export default Component.extend({
 		isDirty() {
 			let editor = tinymce.EditorManager.get(this.get('editorId'));
 			return (
-				is.not.undefined(tinymce) &&
-				is.not.undefined(editor) &&
+				!_.isUndefined(tinymce) &&
+				!_.isUndefined(editor) &&
 				editor.isDirty()
 			);
 		},

@@ -58,7 +58,7 @@ export default Route.extend(AuthenticatedRouteMixin, {
 		});
 
 		_.each(model.labels, label => {
-			let spaces = _.where(model.spaces, {labelId: label.get('id')});
+			let spaces = _.filter(model.spaces, {labelId: label.get('id')});
 			label.set('count', spaces.length);
 			controller.set(label.get('id'), spaces);
 		});

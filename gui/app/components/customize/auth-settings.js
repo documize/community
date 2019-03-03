@@ -43,19 +43,19 @@ export default Component.extend(ModalMixin, Notifier, {
 
 	ldapErrorServerHost: empty('ldapConfig.serverHost'),
 	ldapErrorServerPort: computed('ldapConfig.serverPort', function() {
-		return is.empty(this.get('ldapConfig.serverPort')) || is.not.number(parseInt(this.get('ldapConfig.serverPort')));
+		return _.isEmpty(this.get('ldapConfig.serverPort')) || !_.isNumber(parseInt(this.get('ldapConfig.serverPort')));
 	}),
 	ldapErrorBindDN: empty('ldapConfig.bindDN'),
 	ldapErrorBindPassword: empty('ldapConfig.bindPassword'),
 	ldapErrorNoFilter: computed('ldapConfig.{userFilter,groupFilter}', function() {
-		return is.empty(this.get('ldapConfig.userFilter')) && is.empty(this.get('ldapConfig.groupFilter'));
+		return _.isEmpty(this.get('ldapConfig.userFilter')) && _.isEmpty(this.get('ldapConfig.groupFilter'));
 	}),
 	ldapErrorAttributeUserRDN: empty('ldapConfig.attributeUserRDN'),
 	ldapErrorAttributeUserFirstname: empty('ldapConfig.attributeUserFirstname'),
 	ldapErrorAttributeUserLastname: empty('ldapConfig.attributeUserLastname'),
 	ldapErrorAttributeUserEmail: empty('ldapConfig.attributeUserEmail'),
 	ldapErrorAttributeGroupMember: computed('ldapConfig.{groupFilter,attributeGroupMember}', function() {
-		return is.not.empty(this.get('ldapConfig.groupFilter')) && is.empty(this.get('ldapConfig.attributeGroupMember'));
+		return !_.isEmpty(this.get('ldapConfig.groupFilter')) && _.isEmpty(this.get('ldapConfig.attributeGroupMember'));
 	}),
 	ldapPreview: null,
 	ldapConfig: null,
@@ -92,7 +92,7 @@ export default Component.extend(ModalMixin, Notifier, {
 			case constants.AuthProvider.Keycloak: // eslint-disable-line no-case-declarations
 				let config = this.get('authConfig');
 
-				if (is.undefined(config) || is.null(config) || is.empty(config) ) {
+				if (_.isUndefined(config) || _.isNull(config) || _.isEmpty(config) ) {
 					config = {};
 				} else {
 					config = JSON.parse(config);
@@ -107,7 +107,7 @@ export default Component.extend(ModalMixin, Notifier, {
 			case constants.AuthProvider.LDAP: // eslint-disable-line no-case-declarations
 				let ldapConfig = this.get('authConfig');
 
-				if (is.undefined(ldapConfig) || is.null(ldapConfig) || is.empty(ldapConfig) ) {
+				if (_.isUndefined(ldapConfig) || _.isNull(ldapConfig) || _.isEmpty(ldapConfig) ) {
 					ldapConfig = {};
 				} else {
 					ldapConfig = JSON.parse(ldapConfig);
@@ -194,13 +194,13 @@ export default Component.extend(ModalMixin, Notifier, {
 					config.realm = config.realm.trim();
 					config.clientId = config.clientId.trim();
 					config.publicKey = config.publicKey.trim();
-					config.group = is.undefined(config.group) ? '' : config.group.trim();
+					config.group = _.isUndefined(config.group) ? '' : config.group.trim();
 					config.adminUser = config.adminUser.trim();
 					config.adminPassword = config.adminPassword.trim();
 					config.defaultPermissionAddSpace = config.hasOwnProperty('defaultPermissionAddSpace') ? config.defaultPermissionAddSpace : true;
 					config.disableLogout = config.hasOwnProperty('disableLogout') ? config.disableLogout : true;
 
-					if (is.endWith(config.url, '/')) {
+					if (_.endsWith(config.url, '/')) {
 						config.url = config.url.substring(0, config.url.length-1);
 					}
 
@@ -221,7 +221,7 @@ export default Component.extend(ModalMixin, Notifier, {
 					config.serverHost = config.serverHost.trim();
 					config.serverPort = parseInt(this.get('ldapConfig.serverPort'));
 
-					if (is.not.empty(config.groupFilter) && is.empty(config.attributeGroupMember)) {
+					if (!_.isEmpty(config.groupFilter) && _.isEmpty(config.attributeGroupMember)) {
 						this.$('#ldap-attributeGroupMember').focus();
 						return;
 					}

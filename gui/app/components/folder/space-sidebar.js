@@ -46,8 +46,8 @@ export default Component.extend(AuthMixin, {
 		let selectedCategory = '';
 
 		categories.forEach((cat)=> {
-			let summary = _.findWhere(categorySummary, {type: "documents", categoryId: cat.get('id')});
-			let docCount =  is.not.undefined(summary) ? summary.count : 0;
+			let summary = _.find(categorySummary, {type: "documents", categoryId: cat.get('id')});
+			let docCount =  !_.isUndefined(summary) ? summary.count : 0;
 			cat.set('docCount', docCount);
 			if (docCount > 0 && selectedCategory === '') {
 				selectedCategory = cat.get('id');
@@ -56,7 +56,7 @@ export default Component.extend(AuthMixin, {
 
 		this.set('categories', categories);
 		this.set('categoryLinkName', categories.length > 0 ? 'Manage' : 'Add');
-		this.set('spaceLabel', _.findWhere(this.get('labels'), {id: this.get('space.labelId')}));
+		this.set('spaceLabel', _.find(this.get('labels'), {id: this.get('space.labelId')}));
 
 		schedule('afterRender', () => {
 			if (this.get('categoryFilter') !== '') {
@@ -77,9 +77,9 @@ export default Component.extend(AuthMixin, {
 
 			switch (filter) {
 				case 'category':
-					allowed = _.pluck(_.where(categoryMembers, {'categoryId': id}), 'documentId');
+					allowed = _.map(_.filter(categoryMembers, {'categoryId': id}), 'documentId');
 					docs.forEach((d) => {
-						if (_.contains(allowed, d.get('id'))) {
+						if (_.includes(allowed, d.get('id'))) {
 							filtered.pushObject(d);
 						}
 					});
@@ -88,9 +88,9 @@ export default Component.extend(AuthMixin, {
 					break;
 
 				case 'uncategorized':
-					allowed = _.pluck(categoryMembers, 'documentId');
+					allowed = _.map(categoryMembers, 'documentId');
 					docs.forEach((d) => {
-						if (!_.contains(allowed, d.get('id'))) {
+						if (!_.includes(allowed, d.get('id'))) {
 							filtered.pushObject(d);
 						}
 					});

@@ -90,7 +90,7 @@ export default Component.extend(Notifier, {
 	},
 
 	jumpToSection(cp) {
-		if (is.not.empty(cp) && is.not.undefined(cp) && is.not.null(cp)) {
+		if (!_.isEmpty(cp) && !_.isUndefined(cp) && !_.isNull(cp)) {
 			this.get('browser').scrollTo(`#page-${cp}`)
 		}
 	},

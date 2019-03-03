@@ -14,7 +14,7 @@ import { helper } from '@ember/component/helper';
 export function formattedPrice(params) {
 	let pence = params[0];
 
-	if(is.not.number(pence)) {
+	if(!_.isNumber(pence)) {
 		return '$0'
 	}
 

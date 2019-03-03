@@ -107,7 +107,7 @@ export default Component.extend(Notifier, {
 			}
 
 			let e = this.get('model.general.conversionEndpoint');
-			if (is.endWith(e, '/')) {
+			if (_.endsWith(e, '/')) {
 				this.set('model.general.conversionEndpoint', e.substring(0, e.length-1));
 			}
 

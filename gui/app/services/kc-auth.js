@@ -26,7 +26,7 @@ export default Service.extend({
 
 	boot() {
         return new EmberPromise((resolve, reject) => {
-            if (is.not.undefined(this.get('keycloak')) && is.not.null(this.get('keycloak')) ) {
+            if (!_.isUndefined(this.get('keycloak')) && !_.isNull(this.get('keycloak')) ) {
                 resolve(this.get('keycloak'));
                 return;
             }
@@ -94,12 +94,12 @@ export default Service.extend({
 		return {
             domain: '',
 			token: this.get('keycloak').token,
-            remoteId: is.null(profile.id) || is.undefined(profile.id) ? profile.email: profile.id,
-			email: is.null(profile.email) || is.undefined(profile.email) ? '': profile.email,
-			username: is.null(profile.username) || is.undefined(profile.username) ? '': profile.username,
-			firstname: is.null(profile.firstName) || is.undefined(profile.firstName) ? profile.username: profile.firstName,
-			lastname: is.null(profile.lastName) || is.undefined(profile.lastName) ? profile.username: profile.lastName,
-			enabled: is.null(profile.enabled) || is.undefined(profile.enabled) ? true: profile.enabled
+            remoteId: _.isNull(profile.id) || _.isUndefined(profile.id) ? profile.email: profile.id,
+			email: _.isNull(profile.email) || _.isUndefined(profile.email) ? '': profile.email,
+			username: _.isNull(profile.username) || _.isUndefined(profile.username) ? '': profile.username,
+			firstname: _.isNull(profile.firstName) || _.isUndefined(profile.firstName) ? profile.username: profile.firstName,
+			lastname: _.isNull(profile.lastName) || _.isUndefined(profile.lastName) ? profile.username: profile.lastName,
+			enabled: _.isNull(profile.enabled) || _.isUndefined(profile.enabled) ? true: profile.enabled
 		};
 	}
 });

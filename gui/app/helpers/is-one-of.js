@@ -12,7 +12,7 @@
 import { helper } from '@ember/component/helper';
 
 export function isOneOf(params/*, hash*/) {
-	if (is.not.undefined(params) || is.not.null(params)) {
+	if (!_.isUndefined(params) || !_.isNull(params)) {
 		if (params.length >= 2) {
 			let value = params[0];
 			for (let i=1; i < params.length; i++) {

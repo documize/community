@@ -56,7 +56,7 @@ export default Service.extend({
 	// Returns all active users for organization.
 	getAll() {
 		return this.get('ajax').request(`users?active=1`).then((response) => {
-			if (is.not.array(response)) response = [];
+			if (!_.isArray(response)) response = [];
 
 			return response.map((obj) => {
 				let data = this.get('store').normalize('user', obj);
@@ -71,10 +71,10 @@ export default Service.extend({
 	getComplete(filter, limit) {
 		filter = filter.trim();
 		if (filter.length > 0) filter = encodeURIComponent(filter);
-		if (is.null(limit) || is.undefined(limit)) limit = 100;
+		if (_.isNull(limit) || _.isUndefined(limit)) limit = 100;
 
 		return this.get('ajax').request(`users?active=0&filter=${filter}&limit=${limit}`).then((response) => {
-			if (is.not.array(response)) response = [];
+			if (!_.isArray(response)) response = [];
 
 			return response.map((obj) => {
 				let data = this.get('store').normalize('user', obj);
@@ -91,7 +91,7 @@ export default Service.extend({
 			method: "GET"
 		}).then((response) => {
 			let data = [];
-			if (is.not.array(response)) response = [];
+			if (!_.isArray(response)) response = [];
 
 			data = response.map((obj) => {
 				let data = this.get('store').normalize('user', obj);
@@ -170,7 +170,7 @@ export default Service.extend({
 
 	// matchUsers on firstname, lastname, email
 	matchUsers(text, limit) {
-		if (is.null(limit) || is.undefined(limit)) limit = 100;
+		if (_.isNull(limit) || _.isUndefined(limit)) limit = 100;
 
 		return this.get('ajax').request(`users/match?limit=${limit}`, {
 			method: 'POST',
@@ -179,7 +179,7 @@ export default Service.extend({
 			data: text
 		}).then((response) => {
 			let data = [];
-			if (is.not.array(response)) response = [];
+			if (!_.isArray(response)) response = [];
 
 			data = response.map((obj) => {
 				let data = this.get('store').normalize('user', obj);

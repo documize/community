@@ -25,7 +25,7 @@ export default Route.extend(AuthenticatedRouteMixin, {
 	beforeModel(transition) {
 		// Note the source that sent user to this document.
 		let source = transition.to.queryParams.source;
-		if (is.null(source) || is.undefined(source)) source = "";
+		if (_.isNull(source) || _.isUndefined(source)) source = "";
 
 		return new EmberPromise((resolve) => {
 			this.get('documentService').fetchPages(this.paramsFor('document').document_id, this.get('session.user.id'), source).then((data) => {

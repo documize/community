@@ -42,10 +42,10 @@ export default Route.extend(ApplicationRouteMixin, {
 
 		let next = this.get('localStorage').getSessionItem('entryUrl');
 
-		if (is.not.null(next) && is.not.undefined(next)) {
+		if (!_.isNull(next) && !_.isUndefined(next)) {
 			this.get('localStorage').clearSessionItem('entryUrl')
 
-			if (is.not.include(next, '/auth/')) {
+			if (!_.includes(next, '/auth/')) {
 				window.location.href= next;
 			}
 		}

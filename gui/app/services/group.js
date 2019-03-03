@@ -35,7 +35,7 @@ export default BaseService.extend({
 			method: 'GET'
 		}).then((response) => {
 			let data = [];
-			if (is.not.array(response)) response = [];
+			if (!_.isArray(response)) response = [];
 
 			data = response.map((obj) => {
 				let data = this.get('store').normalize('group', obj);

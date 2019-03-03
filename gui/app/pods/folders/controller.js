@@ -61,7 +61,7 @@ export default Controller.extend(AuthMixin, Modals, {
 			let spaceLabel = this.get('spaceLabel');
 			let clonedId = this.get('clonedSpace.id');
 
-			if (is.empty(spaceName)) {
+			if (_.isEmpty(spaceName)) {
 				$("#new-space-name").addClass("is-invalid").focus();
 				return false;
 			}

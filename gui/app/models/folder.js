@@ -28,7 +28,7 @@ export default Model.extend({
 	countContent: attr('number', { defaultValue: 0 }),
 
 	allowLikes: computed('likes', function () {
-		return is.not.empty(this.get('likes')) && is.not.undefined(this.get('likes'));
+		return !_.isEmpty(this.get('likes')) && !_.isUndefined(this.get('likes'));
 	}),
 
 	slug: computed('name', function () {

@@ -72,7 +72,7 @@ export default Component.extend({
 		onDeletePage(deleteChildren) {
 			let page = this.get('page');
 
-			if (is.undefined(page)) {
+			if (_.isUndefined(page)) {
 				return;
 			}
 

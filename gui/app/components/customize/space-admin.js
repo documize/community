@@ -82,7 +82,7 @@ export default Component.extend(Notifier, Modals, {
 		onExport() {
 			let spec = {
 				spaceId: '',
-				data: _.pluck(this.get('folders'), 'id'),
+				data: _.map(this.get('folders'), 'id'),
 				filterType: 'space',
 			};
 

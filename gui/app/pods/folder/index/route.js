@@ -67,7 +67,7 @@ export default Route.extend(AuthenticatedRouteMixin, {
 		let rootDocCount = 0;
 
 		// get documentId's from category members
-		let withCat = _.pluck(categoryMembers, 'documentId');
+		let withCat = _.map(categoryMembers, 'documentId');
 
 		// calculate documents without category;
 		docs.forEach((d) => {

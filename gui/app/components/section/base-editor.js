@@ -67,12 +67,12 @@ export default Component.extend(ModalMixin, {
 				return;
 			}
 
-			if (is.empty(this.get('page.title'))) {
+			if (_.isEmpty(this.get('page.title'))) {
 				$("#page-title").addClass("is-invalid").focus();
 				return;
 			}
 
-			if (this.get('hasExcerpt') && is.empty(this.get('page.excerpt'))) {
+			if (this.get('hasExcerpt') && _.isEmpty(this.get('page.excerpt'))) {
 				$("#page-excerpt").addClass("is-invalid").focus();
 				return;
 			}

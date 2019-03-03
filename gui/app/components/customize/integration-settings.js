@@ -23,7 +23,7 @@ export default Component.extend(Notifier, {
 		// Jira specific.
 		let jira = this.get('jira');
 
-		if (is.empty(jira) || is.not.object(jira)) {
+		if (_.isEmpty(jira) || !_.isObject(jira)) {
 			jira = {
 				url: '',
 				username: '',
@@ -37,7 +37,7 @@ export default Component.extend(Notifier, {
 			// Trello specific.
 			let trello = this.get('trello');
 
-			if (is.not.object(trello)) {
+			if (!_.isObject(trello)) {
 				trello = {
 					appKey: ''
 				};
@@ -52,7 +52,7 @@ export default Component.extend(Notifier, {
 			let orgId = this.get("appMeta.orgId");
 			let url = this.get('jiraCreds.url');
 
-			if (is.endWith(url, '/')) {
+			if (_.endsWith(url, '/')) {
 				this.set('jiraCreds.url', url.substring(0, url.length-1));
 			}
 

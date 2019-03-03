@@ -22,11 +22,11 @@ export default Component.extend({
 		let icon = this.icon;
 		let constants = this.get('constants');
 
-		if (is.null(icon)) {
+		if (_.isNull(icon)) {
 			return '';
 		}
 
-		if (is.empty(icon)) {
+		if (_.isEmpty(icon)) {
 			icon = constants.IconMeta.Apps;
 		}
 

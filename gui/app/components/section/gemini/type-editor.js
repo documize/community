@@ -36,7 +36,7 @@ export default Component.extend(SectionMixin, {
 			config = JSON.parse(this.get('meta.config'));
 		} catch (e) {} // eslint-disable-line no-empty
 
-		if (is.empty(config)) {
+		if (_.isEmpty(config)) {
 			config = {
 				APIKey: "",
 				filter: {},
@@ -148,15 +148,15 @@ export default Component.extend(SectionMixin, {
 
 		auth() {
 			// missing data?
-			if (is.empty(this.get('config.url'))) {
+			if (_.isEmpty(this.get('config.url'))) {
 				$("#gemini-url").addClass("is-invalid").focus();
 				return;
 			}
-			if (is.empty(this.get('config.username'))) {
+			if (_.isEmpty(this.get('config.username'))) {
 				$("#gemini-username").addClass("is-invalid").focus();
 				return;
 			}
-			if (is.empty(this.get('config.APIKey'))) {
+			if (_.isEmpty(this.get('config.APIKey'))) {
 				$("#gemini-apikey").addClass("is-invalid").focus();
 				return;
 			}

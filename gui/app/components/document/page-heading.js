@@ -127,7 +127,7 @@ export default Component.extend(ModalMixin, {
 			let page = this.get('page');
 			let titleElem = '#block-title-' + page.get('id');
 			let blockTitle = this.get('blockTitle');
-			if (is.empty(blockTitle)) {
+			if (_.isEmpty(blockTitle)) {
 				$(titleElem).addClass('is-invalid');
 				return;
 			}
@@ -135,7 +135,7 @@ export default Component.extend(ModalMixin, {
 			let excerptElem = '#block-desc-' + page.get('id');
 			let blockExcerpt = this.get('blockExcerpt');
 			blockExcerpt = blockExcerpt.replace(/\n/g, "");
-			if (is.empty(blockExcerpt)) {
+			if (_.isEmpty(blockExcerpt)) {
 				$(excerptElem).addClass('is-invalid');
 				return;
 			}
@@ -178,9 +178,9 @@ export default Component.extend(ModalMixin, {
 
 		onCopyPage() {
 			let item = this.get('docSearchResults').findBy('selected', true);
-			let documentId = is.not.undefined(item) ? item.get('documentId') : '';
+			let documentId = !_.isUndefined(item) ? item.get('documentId') : '';
 
-			if (is.empty(documentId)) return;
+			if (_.isEmpty(documentId)) return;
 
 			this.modalClose('#copy-page-modal-' + this.get('page.id'));
 
@@ -193,9 +193,9 @@ export default Component.extend(ModalMixin, {
 
 		onMovePage() {
 			let item = this.get('docSearchResults').findBy('selected', true);
-			let documentId = is.not.undefined(item) ? item.get('documentId') : '';
+			let documentId = !_.isUndefined(item) ? item.get('documentId') : '';
 
-			if (is.empty(documentId)) return;
+			if (_.isEmpty(documentId)) return;
 
 			// can't move into self
 			if (documentId === this.get('document.id')) return;
@@ -219,7 +219,7 @@ export default Component.extend(ModalMixin, {
 
 			let pages = this.get('pages');
 			let page = _.find(pages, function(i) { return i.get('page.id') === state.pageId; });
-			if (is.not.undefined(page)) page = page.get('page');
+			if (!_.isUndefined(page)) page = page.get('page');
 
 			let pendingChanges = tocUtil.moveUp(state, pages, page);
 			if (pendingChanges.length > 0) {
@@ -235,7 +235,7 @@ export default Component.extend(ModalMixin, {
 			let state = this.get('state');
 			let pages = this.get('pages');
 			let page = _.find(pages, function(i) { return i.get('page.id') === state.pageId; });
-			if (is.not.undefined(page)) page = page.get('page');
+			if (!_.isUndefined(page)) page = page.get('page');
 
 			let pendingChanges = tocUtil.moveDown(state, pages, page);
 			if (pendingChanges.length > 0) {
@@ -251,7 +251,7 @@ export default Component.extend(ModalMixin, {
 			let state = this.get('state');
 			let pages = this.get('pages');
 			let page = _.find(pages, function(i) { return i.get('page.id') === state.pageId; });
-			if (is.not.undefined(page)) page = page.get('page');
+			if (!_.isUndefined(page)) page = page.get('page');
 
 			let pendingChanges = tocUtil.indent(state, pages, page);
 			if (pendingChanges.length > 0) {
@@ -267,7 +267,7 @@ export default Component.extend(ModalMixin, {
 			let state = this.get('state');
 			let pages = this.get('pages');
 			let page = _.find(pages, function(i) { return i.get('page.id') === state.pageId; });
-			if (is.not.undefined(page)) page = page.get('page');
+			if (!_.isUndefined(page)) page = page.get('page');
 
 			let pendingChanges = tocUtil.outdent(state, pages, page);
 			if (pendingChanges.length > 0) {

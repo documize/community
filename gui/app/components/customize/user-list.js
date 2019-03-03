@@ -16,6 +16,7 @@ import { schedule, debounce } from '@ember/runloop';
 import AuthProvider from '../../mixins/auth';
 import ModalMixin from '../../mixins/modal';
 import Notifier from '../../mixins/notifier';
+import stringUtil from '../../utils/string';
 import Component from '@ember/component';
 
 export default Component.extend(AuthProvider, ModalMixin, Notifier, {
@@ -142,15 +143,15 @@ export default Component.extend(AuthProvider, ModalMixin, Notifier, {
 			let user = this.get('editUser');
 			let password = this.get('password');
 
-			if (is.empty(user.firstname)) {
+			if (_.isEmpty(user.firstname)) {
 				$("#edit-firstname").addClass("is-invalid").focus();
 				return;
 			}
-			if (is.empty(user.lastname)) {
+			if (_.isEmpty(user.lastname)) {
 				$("#edit-lastname").addClass("is-invalid").focus();
 				return;
 			}
-			if (is.empty(user.email) || is.not.email(user.email)) {
+			if (_.isEmpty(user.email) || !stringUtil.isEmail(user.email)) {
 				$("#edit-email").addClass("is-invalid").focus();
 				return;
 			}
@@ -161,7 +162,7 @@ export default Component.extend(AuthProvider, ModalMixin, Notifier, {
 			let cb = this.get('onSave');
 			cb(user);
 
-			if (is.not.empty(password.password) && is.not.empty(password.confirmation) &&
+			if (!_.isEmpty(password.password) && !_.isEmpty(password.confirmation) &&
 				password.password === password.confirmation) {
 
 				let pw = this.get('onPassword');
@@ -218,7 +219,7 @@ export default Component.extend(AuthProvider, ModalMixin, Notifier, {
 			let groups = this.get('groups');
 			groups.forEach((g) => {
 				let hasGroup = userGroups.findBy('groupId', g.get('id'));
-				g.set('isMember', is.not.undefined(hasGroup));
+				g.set('isMember', !_.isUndefined(hasGroup));
 			})
 			this.set('groups', groups);
 
@@ -230,7 +231,7 @@ export default Component.extend(AuthProvider, ModalMixin, Notifier, {
 			let group = this.get('groups').findBy('id', groupId);
 			group.set('isMember', false);
 
-			if (is.undefined(groupId) || is.undefined(userId)) {
+			if (_.isUndefined(groupId) || _.isUndefined(userId)) {
 				return;
 			}
 
@@ -244,7 +245,7 @@ export default Component.extend(AuthProvider, ModalMixin, Notifier, {
 			let group = this.get('groups').findBy('id', groupId);
 			group.set('isMember', true);
 
-			if (is.undefined(groupId) || is.undefined(userId)) {
+			if (_.isUndefined(groupId) || _.isUndefined(userId)) {
 				return;
 			}
 

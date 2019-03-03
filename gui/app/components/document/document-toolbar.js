@@ -57,6 +57,7 @@ export default Component.extend(ModalMixin, AuthMixin, Notifier, {
 			pinId: '',
 			newName: ''
 		};
+		
 		this.saveTemplate = {
 			name: '',
 			description: ''
@@ -130,12 +131,12 @@ export default Component.extend(ModalMixin, AuthMixin, Notifier, {
 			let name = this.get('saveTemplate.name');
 			let excerpt = this.get('saveTemplate.description');
 
-			if (is.empty(name)) {
+			if (_.isEmpty(name)) {
 				$("#new-template-name").addClass("is-invalid").focus();
 				return;
 			}
 
-			if (is.empty(excerpt)) {
+			if (_.isEmpty(excerpt)) {
 				$("#new-template-desc").addClass("is-invalid").focus();
 				return;
 			}

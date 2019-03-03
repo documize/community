@@ -34,7 +34,7 @@ export default BaseService.extend({
 			method: 'GET'
 		}).then((response) => {
 			let data = [];
-			if (is.null(response)) response = [];
+			if (_.isNull(response)) response = [];
 
 			data = response.map((obj) => {
 				let data = this.get('store').normalize('label', obj);

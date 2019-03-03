@@ -2,10 +2,15 @@
 
 var EmberApp = require('ember-cli/lib/broccoli/ember-app');
 var isDevelopment = EmberApp.env() === 'development';
+var nodeSass = require('node-sass');
 // var isTest = EmberApp.env() === 'test';
 
 module.exports = function (defaults) {
 	var app = new EmberApp(defaults, {
+		sassOptions: {
+			implementation: nodeSass
+		},
+
 		fingerprint: {
 			enabled: true,
 			generateAssetMap: true,
@@ -59,6 +64,7 @@ module.exports = function (defaults) {
 	app.import('vendor/is.js');
 	app.import('vendor/iziToast.js');
 	app.import('vendor/keycloak.js');
+	app.import('vendor/lodash.js');
 	app.import('vendor/markdown-it.min.js');
 	app.import('vendor/md5.js');
 	app.import('vendor/moment.js');
@@ -68,7 +74,6 @@ module.exports = function (defaults) {
 	app.import('vendor/slug.js');
 	app.import('vendor/sortable.js');
 	app.import('vendor/table-editor.min.js');
-	app.import('vendor/underscore.js');
 	app.import('vendor/codemirror.js'); // core lib
 	app.import('vendor/codemirror-boot.js'); // boot-up files
 

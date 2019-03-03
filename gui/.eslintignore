@@ -1,11 +1,4 @@
-public/tinymce/**
-public/tinymce/
-public/tinymce
-public/codemirror/**
-public/codemirror/
-public/codemirror
-
-# unconventional js
+/public/
 /blueprints/*/files/
 /vendor/
 

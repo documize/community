@@ -67,7 +67,7 @@ export default Component.extend(Notifier, Modals, {
 		}
 
 		// But, if we can work work correct placement, we put new content as best we can.
-		if (is.object(beforePage)) {
+		if (_.isObject(beforePage)) {
 			level = beforePage.get('level');
 
 			// get any page before the beforePage so we can insert this new section between them
@@ -76,7 +76,7 @@ export default Component.extend(Notifier, Modals, {
 			if (index !== -1) {
 				let beforeBeforePage = this.get('pages')[index-1];
 
-				if (is.not.undefined(beforeBeforePage)) {
+				if (!_.isUndefined(beforeBeforePage)) {
 					sequence = (beforePage.get('sequence') + beforeBeforePage.get('page.sequence')) / 2;
 				} else {
 					sequence = beforePage.get('sequence') / 2;
@@ -97,7 +97,7 @@ export default Component.extend(Notifier, Modals, {
 	actions: {
 		onInsertSection(section) {
 			let sectionName = this.get('newSectionName');
-			if (is.empty(sectionName)) {
+			if (_.isEmpty(sectionName)) {
 				$("#new-section-name").focus();
 				return;
 			}
@@ -127,7 +127,7 @@ export default Component.extend(Notifier, Modals, {
 
 		onInsertBlock(block) {
 			let sectionName = this.get('newSectionName');
-			if (is.empty(sectionName)) {
+			if (_.isEmpty(sectionName)) {
 				$("#new-section-name").focus();
 				return;
 			}

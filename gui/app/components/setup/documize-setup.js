@@ -12,6 +12,7 @@
 import $ from 'jquery';
 import { empty, and } from '@ember/object/computed';
 import { isEmpty } from '@ember/utils';
+import stringUtil from '../utils/string';
 import { set } from '@ember/object';
 import Component from '@ember/component';
 
@@ -45,7 +46,7 @@ export default Component.extend({
 				return $("#adminLastname").focus();
 			}
 
-			if (isEmpty(this.get('model.email')) || !is.email(this.get('model.email'))) {
+			if (isEmpty(this.get('model.email')) || !stringUtil.isEmail(this.get('model.email'))) {
 				set(this, 'adminEmailError', true);
 				return $("#adminEmail").focus();
 			}

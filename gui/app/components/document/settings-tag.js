@@ -92,7 +92,7 @@ export default Component.extend(Notifier, {
 				this.set('selectedCategories', selected);
 				selected.forEach((s) => {
 					let cat = cats.findBy('id', s.id);
-					if (is.not.undefined(cat)) {
+					if (!_.isUndefined(cat)) {
 						cat.set('selected', true);
 						this.set('categories', cats);
 					}
@@ -165,7 +165,7 @@ export default Component.extend(Notifier, {
 			_.each(tagz, (t) => {
 				let tag = t.value.toLowerCase().trim();
 				if (tag.length> 0) {
-					if (!_.contains(tagzToSave, tag) && is.not.startWith(tag, '-')) {
+					if (!_.includes(tagzToSave, tag) && !_.startsWith(tag, '-')) {
 						tagzToSave.push(tag);
 						this.$('#add-tag-field-' + t.number).removeClass('is-invalid');
 					} else {

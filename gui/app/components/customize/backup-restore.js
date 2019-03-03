@@ -118,17 +118,17 @@ export default Component.extend(Notifier, Modal, {
 
 			// do we have upload file?
 			// let files = document.getElementById("restore-file").files;
-			// if (is.undefined(files) || is.null(files)) {
+			// if (_.isUndefined(files) || _.isNull(files)) {
 			// 	return;
 			// }
 
 			// let file = document.getElementById("restore-file").files[0];
-			// if (is.undefined(file) || is.null(file)) {
+			// if (_.isUndefined(file) || _.isNull(file)) {
 			// 	return;
 			// }
 
 			let filedata = this.get('restoreFile');
-			if (is.null(filedata)) {
+			if (_.isNull(filedata)) {
 				return;
 			}
 

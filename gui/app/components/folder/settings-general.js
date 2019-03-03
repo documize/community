@@ -70,7 +70,7 @@ export default Component.extend(AuthMixin, Notifier, {
 		this.set('spaceLabel', this.get('space.labelId'));
 
 		let icon = this.get('space.icon');
-		if (is.empty(icon)) {
+		if (_.isEmpty(icon)) {
 			icon = constants.IconMeta.Apps;
 		}
 

@@ -24,6 +24,6 @@ export default Component.extend({
 	didReceiveAttrs() {
 		this._super(...arguments);
 
-		this.set('label', _.findWhere(this.get('labels'), {id: this.get('labelId')}));
+		this.set('label', _.find(this.get('labels'), {id: this.get('labelId')}));
 	}
 });

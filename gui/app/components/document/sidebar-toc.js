@@ -48,7 +48,7 @@ export default Component.extend({
 	didReceiveAttrs() {
 		this._super(...arguments);
 		let cp = this.get('currentPageId');
-		this.setState(is.empty(cp) ? '' : cp);
+		this.setState(_.isEmpty(cp) ? '' : cp);
 	},
 
 	didInsertElement() {
@@ -71,7 +71,7 @@ export default Component.extend({
 	setState(pageId) {
 		let toc = this.get('pages');
 		let page = _.find(toc, function(i) { return i.get('page.id') === pageId; });
-		let state = tocUtil.getState(toc, is.not.undefined(page) ? page.get('page') : page);
+		let state = tocUtil.getState(toc, !_.isUndefined(page) ? page.get('page') : page);
 
 		if (!this.get('canEdit')) {
 			state.actionablePage = false;
@@ -92,7 +92,7 @@ export default Component.extend({
 
 			let pages = this.get('pages');
 			let page = _.find(pages, function(i) { return i.get('page.id') === state.pageId; });
-			if (is.not.undefined(page)) page = page.get('page');
+			if (!_.isUndefined(page)) page = page.get('page');
 
 			let pendingChanges = tocUtil.moveUp(state, pages, page);
 			if (pendingChanges.length > 0) {
@@ -108,7 +108,7 @@ export default Component.extend({
 			let state = this.get('state');
 			let pages = this.get('pages');
 			let page = _.find(pages, function(i) { return i.get('page.id') === state.pageId; });
-			if (is.not.undefined(page)) page = page.get('page');
+			if (!_.isUndefined(page)) page = page.get('page');
 
 			let pendingChanges = tocUtil.moveDown(state, pages, page);
 			if (pendingChanges.length > 0) {
@@ -124,7 +124,7 @@ export default Component.extend({
 			let state = this.get('state');
 			let pages = this.get('pages');
 			let page = _.find(pages, function(i) { return i.get('page.id') === state.pageId; });
-			if (is.not.undefined(page)) page = page.get('page');
+			if (!_.isUndefined(page)) page = page.get('page');
 
 			let pendingChanges = tocUtil.indent(state, pages, page);
 			if (pendingChanges.length > 0) {
@@ -140,7 +140,7 @@ export default Component.extend({
 			let state = this.get('state');
 			let pages = this.get('pages');
 			let page = _.find(pages, function(i) { return i.get('page.id') === state.pageId; });
-			if (is.not.undefined(page)) page = page.get('page');
+			if (!_.isUndefined(page)) page = page.get('page');
 
 			let pendingChanges = tocUtil.outdent(state, pages, page);
 			if (pendingChanges.length > 0) {

@@ -138,7 +138,7 @@ export default Component.extend(Notifier, Modals, {
 			users.forEach((user) => {
 				let exists = spacePermissions.findBy('whoId', user.get('id'));
 
-				if (is.undefined(exists)) {
+				if (_.isUndefined(exists)) {
 					filteredUsers.pushObject(user);
 				}
 			});
@@ -203,7 +203,7 @@ export default Component.extend(Notifier, Modals, {
 				}
 			});
 
-			if (is.not.undefined(hasEveryone)) {
+			if (!_.isUndefined(hasEveryone)) {
 				folder.markAsPublic();
 			} else {
 				if (roleCount > 1) {
@@ -238,7 +238,7 @@ export default Component.extend(Notifier, Modals, {
 
 				let exists = spacePermissions.findBy('whoId', user.get('id'));
 
-			if (is.undefined(exists)) {
+			if (_.isUndefined(exists)) {
 				spacePermissions.pushObject(this.permissionRecord(constants.WhoType.User, user.get('id'), user.get('fullname')));
 				this.set('spacePermissions', spacePermissions);
 				this.send('onSearch');

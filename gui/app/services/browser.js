@@ -36,7 +36,7 @@ export default Service.extend({
     setMetaDescription(description) {
         $('meta[name=description]').remove();
 
-        if (is.null(description) || is.undefined(description)) {
+        if (_.isNull(description) || _.isUndefined(description)) {
             description = this.get('sessionService.appMeta.message');
         }
     },
@@ -44,7 +44,7 @@ export default Service.extend({
     scrollTo(id) {
         schedule('afterRender', () => {
             let elem = $(id).offset();
-            if (is.undefined(elem)) return;
+            if (_.isUndefined(elem)) return;
 
             $('html, body').animate({
                 scrollTop: elem.top

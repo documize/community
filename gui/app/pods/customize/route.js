@@ -14,7 +14,7 @@ import Route from '@ember/routing/route';
 
 export default Route.extend(AuthenticatedRouteMixin, {
 	beforeModel: function (transition) {
-		if (is.equal(transition.targetName, 'customize.index')) {
+		if (_.isEqual(transition.targetName, 'customize.index')) {
 			this.transitionTo('customize.general');
 		}
 	},

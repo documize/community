@@ -25,7 +25,7 @@ export default Service.extend({
 			data: JSON.stringify(payload),
 			contentType: 'json'
 		}).then((response) => {
-			if (is.not.array(response)) response = [];
+			if (!_.isArray(response)) response = [];
 
 			let results = ArrayProxy.create({
 				content: A([])

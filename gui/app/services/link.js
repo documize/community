@@ -84,7 +84,7 @@ export default Service.extend(Notifier, {
 			documentId: a.attributes["data-link-target-document-id"].value,
 			spaceId: a.attributes["data-link-space-id"].value,
 			targetId: a.attributes["data-link-target-id"].value,
-			externalId: is.undefined(a.attributes["data-link-external-id"]) ? '' : a.attributes["data-link-external-id"].value,
+			externalId: _.isUndefined(a.attributes["data-link-external-id"]) ? '' : a.attributes["data-link-external-id"].value,
 			url: a.attributes["href"].value,
 			orphan: false
 		};
@@ -111,8 +111,8 @@ export default Service.extend(Notifier, {
 		let router = this.get('router');
 		let targetFolder = this.get('store').peekRecord('folder', link.spaceId);
 		let targetDocument = this.get('store').peekRecord('document', link.documentId);
-		let folderSlug = is.null(targetFolder) ? "s" : targetFolder.get('slug');
-		let documentSlug = is.null(targetDocument) ? "d" : targetDocument.get('slug');
+		let folderSlug = _.isNull(targetFolder) ? "s" : targetFolder.get('slug');
+		let documentSlug = _.isNull(targetDocument) ? "d" : targetDocument.get('slug');
 
 		// handle section link
 		if (link.linkType === "section" || link.linkType === "tab") {

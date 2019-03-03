@@ -13,6 +13,7 @@ import $ from 'jquery';
 import AuthProvider from '../../mixins/auth';
 import ModalMixin from '../../mixins/modal';
 import Notifier from '../../mixins/notifier';
+import stringUtil from '../../utils/string';
 import Component from '@ember/component';
 
 export default Component.extend(AuthProvider, ModalMixin, Notifier, {
@@ -30,19 +31,19 @@ export default Component.extend(AuthProvider, ModalMixin, Notifier, {
 		},
 
 		onAddUser() {
-			if (is.empty(this.get('newUser.firstname'))) {
+			if (_.isEmpty(this.get('newUser.firstname'))) {
 				$("#newUserFirstname").addClass('is-invalid').focus();
 				return;
 			}
 			$("#newUserFirstname").removeClass('is-invalid');
 
-			if (is.empty(this.get('newUser.lastname'))) {
+			if (_.isEmpty(this.get('newUser.lastname'))) {
 				$("#newUserLastname").addClass('is-invalid').focus();
 				return;
 			}
 			$("#newUserLastname").removeClass('is-invalid');
 
-			if (is.empty(this.get('newUser.email')) || is.not.email(this.get('newUser.email'))) {
+			if (_.isEmpty(this.get('newUser.email')) || !stringUtil.isEmail(this.get('newUser.email'))) {
 				$("#newUserEmail").addClass('is-invalid').focus();
 				return;
 			}
@@ -59,7 +60,7 @@ export default Component.extend(AuthProvider, ModalMixin, Notifier, {
 		},
 
 		onAddUsers() {
-			if (is.empty(this.get('bulkUsers'))) {
+			if (_.isEmpty(this.get('bulkUsers'))) {
 				$("#bulkUsers").addClass('is-invalid').focus();
 				return;
 			}

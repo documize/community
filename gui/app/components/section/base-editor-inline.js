@@ -38,7 +38,7 @@ export default Component.extend(ModalMixin, {
 
 		let msContainer = document.getElementById('section-editor-' + this.get('containerId'));
 		let mousetrap = this.get('mousetrap');
-		if (is.null(mousetrap)) {
+		if (_.isNull(mousetrap)) {
 			mousetrap = new Mousetrap(msContainer);
 		}
 
@@ -63,7 +63,7 @@ export default Component.extend(ModalMixin, {
 		this.set('showLinkModal', false);
 
 		let mousetrap = this.get('mousetrap');
-		if (is.not.null(mousetrap)) {
+		if (!_.isNull(mousetrap)) {
 			mousetrap.unbind('esc');
 			mousetrap.unbind(['ctrl+s', 'command+s']);
 		}
@@ -71,7 +71,7 @@ export default Component.extend(ModalMixin, {
 
 	actions: {
 		onAction() {
-			if (this.get('busy') || is.empty(this.get('pageTitle'))) {
+			if (this.get('busy') || _.isEmpty(this.get('pageTitle'))) {
 				return;
 			}
 

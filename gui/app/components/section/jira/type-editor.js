@@ -38,7 +38,7 @@ export default Component.extend(SectionMixin, {
 			config = JSON.parse(this.get('meta.config'));
 		} catch (e) {} // eslint-disable-line no-empty
 
-		if (is.empty(config)) {
+		if (_.isEmpty(config)) {
 			config = {
 				jql: '',
 				itemCount: 0,

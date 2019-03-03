@@ -17,11 +17,11 @@ export default Route.extend(AuthenticatedRouteMixin, {
 
 	beforeModel(transition) {
 		let matchFilter = {
-			matchDoc: is.undefined(transition.to.queryParams.matchDoc) ? true : (transition.to.queryParams.matchDoc == 'true'),
-			matchContent: is.undefined(transition.to.queryParams.matchContent) ? true : (transition.to.queryParams.matchContent == 'true'),
-			matchTag: is.undefined(transition.to.queryParams.matchTag) ? true : (transition.to.queryParams.matchTag == 'true'),
-			matchFile: is.undefined(transition.to.queryParams.matchFile) ? true : (transition.to.queryParams.matchFile == 'true'),
-			slog: is.undefined(transition.to.queryParams.slog) ? false : (transition.to.queryParams.slog === 'true'),
+			matchDoc: _.isUndefined(transition.to.queryParams.matchDoc) ? true : (transition.to.queryParams.matchDoc == 'true'),
+			matchContent: _.isUndefined(transition.to.queryParams.matchContent) ? true : (transition.to.queryParams.matchContent == 'true'),
+			matchTag: _.isUndefined(transition.to.queryParams.matchTag) ? true : (transition.to.queryParams.matchTag == 'true'),
+			matchFile: _.isUndefined(transition.to.queryParams.matchFile) ? true : (transition.to.queryParams.matchFile == 'true'),
+			slog: _.isUndefined(transition.to.queryParams.slog) ? false : (transition.to.queryParams.slog === 'true'),
 		};
 
 		this.set('matchFilter', matchFilter);

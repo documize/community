@@ -62,7 +62,7 @@ export default Component.extend({
         this.set('syntaxOptions', opts);
 
         // default check
-        if (is.null(this.get("codeSyntax"))) {
+        if (_.isNull(this.get("codeSyntax"))) {
             this.set("codeSyntax", opts.findBy("mode", "htmlmixed"));
         }
     },
@@ -83,7 +83,7 @@ export default Component.extend({
 		};
 
         let syntax = this.get("codeSyntax");
-        if (is.not.undefined(syntax)) {
+        if (!_.isUndefined(syntax)) {
             CodeMirror.autoLoadMode(editor, syntax.mode);
             editor.setOption("mode", syntax.mode);
         }
@@ -94,7 +94,7 @@ export default Component.extend({
     willDestroyElement() {
 		let editor = this.get('codeEditor');
 
-		if (is.not.null(editor)) {
+		if (!_.isNull(editor)) {
 			editor.toTextArea();
 			editor = null;
 			this.set('codeEditor', null);

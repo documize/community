@@ -15,6 +15,7 @@ import { computed, set } from '@ember/object';
 import { isPresent, isEqual, isEmpty } from '@ember/utils';
 import { inject as service } from '@ember/service';
 import AuthProvider from '../../mixins/auth';
+import stringUtil from '../../utils/string';
 import Component from '@ember/component';
 
 export default Component.extend(AuthProvider, {
@@ -23,7 +24,7 @@ export default Component.extend(AuthProvider, {
 	hasLastnameError: empty('model.lastname'),
 	hasEmailError: computed('model.email', function() {
 		let email = this.get('model.email');
-		return isEmpty(email) || is.not.email(email);
+		return isEmpty(email) || !stringUtil.isEmail(email);
 	}),
 	hasPasswordError: computed('passwordError', 'password.password', {
 		get() {

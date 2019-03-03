@@ -53,7 +53,7 @@ export default Component.extend(Modals, {
 				label.color = '#263238';
 			}
 
-			if (is.empty(label.name)) {
+			if (_.isEmpty(label.name)) {
 				$('#add-label-name').addClass('is-invalid').focus();
 				return;
 			}
@@ -69,7 +69,7 @@ export default Component.extend(Modals, {
 			let color = this.get('labelColor').trim();
 			let label = this.get('editLabel');
 
-			if (is.empty(name)) {
+			if (_.isEmpty(name)) {
 				$('#edit-label-name').addClass('is-invalid').focus();
 				return;
 			}

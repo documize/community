@@ -34,7 +34,7 @@ export default Component.extend(SectionMixin, NotifierMixin, {
 			config = JSON.parse(this.get('meta.config'));
 		} catch (e) {} // eslint-disable-line no-empty
 
-		if (is.empty(config)) {
+		if (_.isEmpty(config)) {
 			config = {
 				APIToken: "",
 				query: "",
@@ -78,12 +78,12 @@ export default Component.extend(SectionMixin, NotifierMixin, {
 
 							let options = self.get('options');
 							let group = {};
-							if (is.not.null(config.group)) {
-								group = _.findWhere(options.groups, { id: config.group.id });
+							if (!_.isNull(config.group)) {
+								group = _.find(options.groups, { id: config.group.id });
 							} else {
 								group = options.groups[0];
 							}
-							if (is.not.undefined(group)) {
+							if (!_.isUndefined(group)) {
 								set(config, 'group', group);
 							}
 						}, function (reason) {
@@ -152,7 +152,7 @@ export default Component.extend(SectionMixin, NotifierMixin, {
 
 			let config = this.get('config');
 			let max = 10;
-			if (is.number(parseInt(config.max))) {
+			if (_.isNumber(parseInt(config.max))) {
 				max = parseInt(config.max);
 			}
 

@@ -47,7 +47,7 @@ export default Service.extend({
 			let documents = ArrayProxy.create({
 				content: A([])
 			});
-			if (is.not.array(response)) response = [];
+			if (!_.isArray(response)) response = [];
 
 			documents = response.map((doc) => {
 				let data = this.get('store').normalize('document', doc);
@@ -115,7 +115,7 @@ export default Service.extend({
 		return this.get('ajax').request(`documents/${documentId}/pages`, {
 			method: 'GET'
 		}).then((response) => {
-			if (is.not.array(response)) response = [];
+			if (!_.isArray(response)) response = [];
 			let pages = [];
 
 			pages = response.map((page) => {
@@ -218,7 +218,7 @@ export default Service.extend({
 		return this.get('ajax').request(`documents/${documentId}/pages?content=0`, {
 			method: 'GET'
 		}).then((response) => {
-			if (is.not.array(response)) response = [];
+			if (!_.isArray(response)) response = [];
 
 			let data = [];
 			data = response.map((obj) => {
@@ -288,7 +288,7 @@ export default Service.extend({
 		return this.get('ajax').request(`sections/targets`, {
 			method: 'GET'
 		}).then((response) => {
-			if (is.not.array(response)) response = [];
+			if (!_.isArray(response)) response = [];
 			let data = [];
 
 			data = response.map((obj) => {
@@ -335,7 +335,7 @@ export default Service.extend({
 		} else {
 			let id = this.get('storageSvc').getSessionItem('anonId');
 
-			if (is.not.null(id) && is.not.undefined(id) && id.length >= 16) {
+			if (!_.isNull(id) && !_.isUndefined(id) && id.length >= 16) {
 				userId = id;
 			} else {
 				userId = stringUtil.anonUserId();
@@ -443,7 +443,7 @@ export default Service.extend({
 		let userHasChangeAwaitingReview = false;
 		let userHasChangeRejected = false;
 
-		if (is.null(source) || is.undefined(source)) source = "";
+		if (_.isNull(source) || _.isUndefined(source)) source = "";
 
 		return this.get('ajax').request(`fetch/page/${documentId}?source=${source}`, {
 			method: 'GET'
