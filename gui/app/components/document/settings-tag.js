@@ -52,7 +52,7 @@ export default Component.extend(Notifier, {
 					return true;
 				}
 
-					if (e.shiftKey) {
+				if (e.shiftKey) {
 					return false;
 				}
 
@@ -65,6 +65,7 @@ export default Component.extend(Notifier, {
 					e.which === 40 ||
 					e.which === 45 ||
 					e.which === 189 ||
+					e.which === 173 ||
 					e.which === 8 ||
 					e.which === 127 ||
 					(e.which >= 65 && e.which <= 90) ||
