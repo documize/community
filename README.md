@@ -19,9 +19,9 @@ All you need to provide is PostgreSQL or any MySQL variant.
 
 ## Latest Release
 
-[Community Edition: v2.1.0](https://github.com/documize/community/releases)
+[Community Edition: v2.1.1](https://github.com/documize/community/releases)
 
-[Enterprise Edition: v2.1.0](https://www.documize.com/downloads)
+[Enterprise Edition: v2.1.1](https://www.documize.com/downloads)
 
 ## OS support
 
