@@ -178,7 +178,7 @@ function moveDown(state, pages, current) {
 
 	var startingSequence = 0;
 	var upperSequence = 0;
-	var cutOff = _.rest(pages, downTargetIndex);
+	var cutOff = _.drop(pages, downTargetIndex);
 	var siblings = _.reject(cutOff, function (p) {
 		return p.get('page.level') !== current.get('level') || p.get('page.id') === current.get('id') || p.get('page.id') === downTarget.get('id');
 	});
