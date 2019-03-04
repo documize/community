@@ -820,6 +820,7 @@ func (h *Handler) AcceptInvitation(w http.ResponseWriter, r *http.Request) {
 
 	if len(model.Serial) == 0 || len(model.Firstname) == 0 || len(model.Lastname) == 0 || len(model.Password) == 0 {
 		response.WriteMissingDataError(w, method, "Serial, Firstname, Lastname, Password")
+		h.Runtime.Log.Error(method, err)
 		return
 	}
 
