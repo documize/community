@@ -1,4 +1,4 @@
-> We provide frequent product updates to ensure self-host customers receive enhancements at the same time as our cloud-hosted customers.
+> We provide frequent product updates to ensure self-hosted customers receive enhancements at the same time as our cloud-hosted customers.
 >
 > Harvey Kandola / CEO & Founder / Documize, Inc.
 
