@@ -1,6 +1,6 @@
-> We provide frequent product updates to ensure self-hosted customers stay in sync with our cloud-hosted customers.
+> *We provide frequent product updates to ensure self-hosted customers stay in sync with our cloud-hosted customers.*
 >
-> Harvey Kandola / CEO & Founder / Documize, Inc.
+> **Harvey Kandola / CEO & Founder / Documize, Inc.**
 
 ## Welcome
 
