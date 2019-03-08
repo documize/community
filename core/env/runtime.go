@@ -13,25 +13,25 @@
 package env
 
 import (
-    "context"
-    "database/sql"
+	"context"
+	"database/sql"
 
-    "github.com/documize/community/domain"
+	"github.com/documize/community/domain"
 	"github.com/jmoiron/sqlx"
 )
 
 const (
-    // SiteModeNormal serves app
-    SiteModeNormal = ""
+	// SiteModeNormal serves app
+	SiteModeNormal = ""
 
-    // SiteModeOffline serves offline.html
-    SiteModeOffline = "1"
+	// SiteModeOffline serves offline.html
+	SiteModeOffline = "1"
 
-    // SiteModeSetup tells Ember to serve setup route
-    SiteModeSetup = "2"
+	// SiteModeSetup tells Ember to serve setup route
+	SiteModeSetup = "2"
 
-    // SiteModeBadDB redirects to db-error.html page
-    SiteModeBadDB = "3"
+	// SiteModeBadDB redirects to db-error.html page
+	SiteModeBadDB = "3"
 )
 
 // Runtime provides access to database, logger and other server-level scoped objects.
@@ -44,40 +44,37 @@ type Runtime struct {
 	Product       domain.Product
 }
 
-var ctx = context.Background()
-
 // StartTx beings database transaction with application defined
 // database transaction isolation level.
 // Any error encountered during this operation is logged to runtime logger.
-func (r *Runtime) StartTx() (tx *sqlx.Tx, ok bool) {
-    tx, err := r.Db.BeginTxx(ctx, &sql.TxOptions{Isolation: sql.LevelReadUncommitted})
-    if err != nil {
-        r.Log.Error("unable to start database transaction", err)
-        return nil, false
-    }
+func (r *Runtime) StartTx(i sql.IsolationLevel) (tx *sqlx.Tx, ok bool) {
+	tx, err := r.Db.BeginTxx(context.Background(), &sql.TxOptions{Isolation: i})
+	if err != nil {
+		r.Log.Error("unable to start database transaction", err)
+		return nil, false
+	}
 
-    return tx, true
+	return tx, true
 }
 
 // Rollback aborts active database transaction.
 // Any error encountered during this operation is logged to runtime logger.
 func (r *Runtime) Rollback(tx *sqlx.Tx) bool {
-    if err := tx.Commit(); err != nil {
-        r.Log.Error("unable to commit database transaction", err)
-        return false
-    }
+	if err := tx.Commit(); err != nil {
+		r.Log.Error("unable to commit database transaction", err)
+		return false
+	}
 
-    return true
+	return true
 }
 
 // Commit flushes pending changes to database.
 // Any error encountered during this operation is logged to runtime logger.
 func (r *Runtime) Commit(tx *sqlx.Tx) bool {
-    if err := tx.Commit(); err != nil {
-        r.Log.Error("unable to commit database transaction", err)
-        return false
-    }
+	if err := tx.Commit(); err != nil {
+		r.Log.Error("unable to commit database transaction", err)
+		return false
+	}
 
-    return true
+	return true
 }
-

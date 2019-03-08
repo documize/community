@@ -12,12 +12,14 @@
 package search
 
 import (
+	"database/sql"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/model/attachment"
 	"github.com/documize/community/model/category"
 	"github.com/documize/community/model/doc"
 	"github.com/documize/community/model/page"
 	sm "github.com/documize/community/model/search"
+	"github.com/documize/community/model/workflow"
 )
 
 // IndexDocument adds search indesd entries for document inserting title, tags and attachments as
@@ -26,20 +28,21 @@ func (m *Indexer) IndexDocument(ctx domain.RequestContext, d doc.Document, a []a
 	method := "search.IndexDocument"
 	var err error
 
-	ctx.Transaction, err = m.runtime.Db.Beginx()
-	if err != nil {
-		m.runtime.Log.Error(method, err)
+	ok := true
+	ctx.Transaction, ok = m.runtime.StartTx(sql.LevelReadUncommitted)
+	if !ok {
+		m.runtime.Log.Info("unable to start TX for " + method)
 		return
 	}
 
 	err = m.store.Search.IndexDocument(ctx, d, a)
 	if err != nil {
-		ctx.Transaction.Rollback()
+		m.runtime.Rollback(ctx.Transaction)
 		m.runtime.Log.Error(method, err)
 		return
 	}
 
-	ctx.Transaction.Commit()
+	m.runtime.Commit(ctx.Transaction)
 }
 
 // DeleteDocument removes all search entries for document.
@@ -47,20 +50,21 @@ func (m *Indexer) DeleteDocument(ctx domain.RequestContext, ID string) {
 	method := "search.DeleteDocument"
 	var err error
 
-	ctx.Transaction, err = m.runtime.Db.Beginx()
-	if err != nil {
-		m.runtime.Log.Error(method, err)
+	ok := true
+	ctx.Transaction, ok = m.runtime.StartTx(sql.LevelReadUncommitted)
+	if !ok {
+		m.runtime.Log.Info("unable to start TX for " + method)
 		return
 	}
 
 	err = m.store.Search.DeleteDocument(ctx, ID)
 	if err != nil {
-		ctx.Transaction.Rollback()
+		m.runtime.Rollback(ctx.Transaction)
 		m.runtime.Log.Error(method, err)
 		return
 	}
 
-	ctx.Transaction.Commit()
+	m.runtime.Commit(ctx.Transaction)
 }
 
 // IndexContent adds search index entry for document context.
@@ -69,25 +73,26 @@ func (m *Indexer) IndexContent(ctx domain.RequestContext, p page.Page) {
 	method := "search.IndexContent"
 	var err error
 
-	ctx.Transaction, err = m.runtime.Db.Beginx()
-	if err != nil {
-		m.runtime.Log.Error(method, err)
+	// we do not index pending pages
+	if p.Status == workflow.ChangePending || p.Status == workflow.ChangePendingNew {
+		return
+	}
+
+	ok := true
+	ctx.Transaction, ok = m.runtime.StartTx(sql.LevelReadUncommitted)
+	if !ok {
+		m.runtime.Log.Info("unable to start TX for " + method)
 		return
 	}
 
 	err = m.store.Search.IndexContent(ctx, p)
 	if err != nil {
-		ctx.Transaction.Rollback()
+		m.runtime.Rollback(ctx.Transaction)
 		m.runtime.Log.Error(method, err)
 		return
 	}
 
-	err = ctx.Transaction.Commit()
-	if err != nil {
-		ctx.Transaction.Rollback()
-		m.runtime.Log.Error(method, err)
-		return
-	}
+	m.runtime.Commit(ctx.Transaction)
 }
 
 // DeleteContent removes all search entries for specific document content.
@@ -95,20 +100,21 @@ func (m *Indexer) DeleteContent(ctx domain.RequestContext, pageID string) {
 	method := "search.DeleteContent"
 	var err error
 
-	ctx.Transaction, err = m.runtime.Db.Beginx()
-	if err != nil {
-		m.runtime.Log.Error(method, err)
+	ok := true
+	ctx.Transaction, ok = m.runtime.StartTx(sql.LevelReadUncommitted)
+	if !ok {
+		m.runtime.Log.Info("unable to start TX for " + method)
 		return
 	}
 
 	err = m.store.Search.DeleteContent(ctx, pageID)
 	if err != nil {
-		ctx.Transaction.Rollback()
+		m.runtime.Rollback(ctx.Transaction)
 		m.runtime.Log.Error(method, err)
 		return
 	}
 
-	ctx.Transaction.Commit()
+	m.runtime.Commit(ctx.Transaction)
 }
 
 // FilterCategoryProtected removes search results that cannot be seen by user

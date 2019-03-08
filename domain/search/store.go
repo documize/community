@@ -24,7 +24,6 @@ import (
 	"github.com/documize/community/model/doc"
 	"github.com/documize/community/model/page"
 	"github.com/documize/community/model/search"
-	"github.com/documize/community/model/workflow"
 	"github.com/pkg/errors"
 )
 
@@ -124,11 +123,6 @@ func (s Store) DeleteDocument(ctx domain.RequestContext, ID string) (err error) 
 // Any existing document entries are removed.
 func (s Store) IndexContent(ctx domain.RequestContext, p page.Page) (err error) {
 	method := "search.IndexContent"
-
-	// we do not index pending pages
-	if p.Status == workflow.ChangePending || p.Status == workflow.ChangePendingNew {
-		return
-	}
 
 	// remove previous search entries
 	_, err = ctx.Transaction.Exec(s.Bind("DELETE FROM dmz_search WHERE c_orgid=? AND c_docid=? AND c_itemid=? AND c_itemtype='page'"),
