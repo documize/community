@@ -273,6 +273,7 @@ func (h *Handler) Authenticate(w http.ResponseWriter, r *http.Request) {
 	// Check for required fields.
 	if len(username) == 0 || len(password) == 0 {
 		response.WriteUnauthorizedError(w)
+		h.Runtime.Log.Info("LDAP authentication aborted due to missing username/password")
 		return
 	}
 
@@ -313,6 +314,7 @@ func (h *Handler) Authenticate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if !ok {
+		h.Runtime.Log.Info("LDAP failed login request for " + username + " @ " + dom)
 		response.WriteUnauthorizedError(w)
 		return
 	}
