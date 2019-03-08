@@ -1,3 +1,15 @@
+.space-label {
+	@include border-radius(3px);
+	@extend .no-select;
+	display: inline-block;
+	margin: 10px 0 13px 0;
+	padding: 0.3rem 0.7rem;
+	font-size: 1.1rem;
+	font-weight: 400;
+	background-color: map-get($gray-shades, 600);
+	color: map-get($gray-shades, 100);
+}
+
 .view-space {
 	> .documents {
 		margin: 0;
@@ -5,6 +17,7 @@
 
 		> .document {
 			@include card();
+			box-shadow: none;
 			list-style-type: none;
 			margin: 0 0 2rem 0;
 			padding: 15px 20px;

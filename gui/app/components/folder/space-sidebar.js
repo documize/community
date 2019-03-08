@@ -28,7 +28,6 @@ export default Component.extend(AuthMixin, {
 		return this.get('permissions.spaceOwner') || this.get('permissions.spaceManage');
 	}),
 	selectedFilter: '',
-	spaceLabel: null,
 
 	init() {
 		this._super(...arguments);
@@ -56,7 +55,6 @@ export default Component.extend(AuthMixin, {
 
 		this.set('categories', categories);
 		this.set('categoryLinkName', categories.length > 0 ? 'Manage' : 'Add');
-		this.set('spaceLabel', _.find(this.get('labels'), {id: this.get('space.labelId')}));
 
 		schedule('afterRender', () => {
 			if (this.get('categoryFilter') !== '') {
@@ -118,6 +116,16 @@ export default Component.extend(AuthMixin, {
 
 				case 'live':
 					filtered = this.get('documentsLive');
+					this.set('categoryFilter', '');
+					break;
+
+				case 'add':
+					filtered = this.get('recentAdd');
+					this.set('categoryFilter', '');
+					break;
+
+				case 'update':
+					filtered = this.get('recentUpdate');
 					this.set('categoryFilter', '');
 					break;
 			}
