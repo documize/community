@@ -179,6 +179,18 @@ func (s Store) Update(ctx domain.RequestContext, document doc.Document) (err err
 	return
 }
 
+// UpdateRevised sets document revision date to UTC now.
+func (s Store) UpdateRevised(ctx domain.RequestContext, docID string) (err error) {
+	_, err = ctx.Transaction.Exec(s.Bind(`UPDATE dmz_doc SET c_revised=? WHERE c_orgid=? AND c_refid=?`),
+		time.Now().UTC(), ctx.OrgID, docID)
+
+	if err != nil {
+		err = errors.Wrap(err, "document.store.UpdateRevised")
+	}
+
+	return
+}
+
 // UpdateGroup applies same values to all documents with the same group ID.
 func (s Store) UpdateGroup(ctx domain.RequestContext, d doc.Document) (err error) {
 	_, err = ctx.Transaction.Exec(s.Bind(`UPDATE dmz_doc SET c_name=?, c_desc=? WHERE c_orgid=? AND c_groupid=?`),
