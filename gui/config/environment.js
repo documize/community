@@ -28,7 +28,11 @@ module.exports = function (environment) {
 
 		// Ember Attacher: tooltips & popover component defaults
 		emberAttacher: {
-			arrow: false
+			arrow: false,
+			animation: 'fill',
+			// popperOptions: {
+			// 	placement: 'bottom right'
+			// }
 		},
 
 		"ember-cli-mirage": {
