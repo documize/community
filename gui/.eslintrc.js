@@ -63,5 +63,6 @@ module.exports = {
 	  "slug": true,
 	  "iziToast": true,
 	  "Papa": true,
+    "Popper": true,
   }
 };

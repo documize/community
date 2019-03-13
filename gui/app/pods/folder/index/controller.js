@@ -23,6 +23,14 @@ export default Controller.extend(NotifierMixin, {
 	queryParams: ['category'],
 	category: '',
 	filteredDocs: null,
+	// eslint-disable-next-line ember/avoid-leaking-state-in-ember-objects
+	sortBy: {
+		name: true, 
+		created: false,
+		updated: false,
+		asc: true,
+		desc: false,
+	},
 
 	actions: {
 		onRefresh() {
@@ -80,6 +88,30 @@ export default Controller.extend(NotifierMixin, {
 		},
 
 		onFiltered(docs) {
+			let ls = this.get('localStorage');
+			let sortBy = this.get('sortBy');
+
+			if (_.isNull(docs)) return;
+
+			if (sortBy.name) { 
+				docs = docs.sortBy('name');
+				ls.storeSessionItem('space.sortBy', 'name');
+			}
+			if (sortBy.created) { 
+				docs = docs.sortBy('created');
+				ls.storeSessionItem('space.sortBy', 'created');
+			}
+			if (sortBy.updated) { 
+				docs = docs.sortBy('revised');
+				ls.storeSessionItem('space.sortBy', 'updated');
+			}
+			if (sortBy.desc) { 
+				docs = docs.reverseObjects();
+				ls.storeSessionItem('space.sortOrder', 'desc');
+			} else {
+				ls.storeSessionItem('space.sortOrder', 'asc');
+			}
+			
 			this.set('filteredDocs', docs);
 		}
 	}

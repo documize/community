@@ -21,6 +21,7 @@ export default Component.extend({
 	icon: '',
 	color: '',
 	light: false,
+	outline: false,
 	themed: false,
 	dismiss: false,
 	truncate: false,
@@ -46,6 +47,10 @@ export default Component.extend({
 
 		if (this.light) {
 			bc += '-light';
+		}
+
+		if (this.outline) {
+			bc += '-outline';
 		}
 
 		if (!this.uppercase) {

@@ -4,6 +4,9 @@
 @mixin button-shadow() {
 	box-shadow: 1px 1px 3px 0px map-get($gray-shades, 500);
 }
+@mixin button-shadow-none() {
+	box-shadow: none;
+}
 
 %dmz-button {
 	display: inline-block;
@@ -151,6 +154,26 @@
 
 	&:hover {
 		background-color: map-get($gray-shades, 300);
+	}
+}
+.dmz-button-gray-outline {
+	@extend %dmz-button;
+	background-color: transparent;
+	color: map-get($gray-shades, 700);
+	border: 1px solid map-get($gray-shades, 300);
+	@extend .no-select;
+	outline: none;
+	@include button-shadow-none();
+
+	&:active,
+	&:focus {
+		outline: none;
+		@include button-shadow-none();
+	}
+
+	&:hover {
+		color: map-get($gray-shades, 800);
+		border-color: map-get($gray-shades, 500);
 	}
 }
 

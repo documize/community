@@ -44,13 +44,15 @@
 				onRefresh=(action "onRefresh")}}
 		</div>
 	</div>
-
+	
 	{{folder/documents-list
 		documents=filteredDocs
 		spaces=model.folders
 		space=model.folder
 		templates=model.templates
 		permissions=model.permissions
+		sortBy=sortBy
+		onFiltered=(action "onFiltered")
 		onExportDocument=(action "onExportDocument")
 		onDeleteDocument=(action "onDeleteDocument")
 		onMoveDocument=(action "onMoveDocument")}}
