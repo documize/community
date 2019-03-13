@@ -1,6 +1,15 @@
 <div class="view-space">
 
 	<div class="text-right">
+		{{#ui/ui-toolbar dark=false light=false raised=false large=false bordered=false}}
+			{{ui/ui-toolbar-icon icon=constants.Icon.Blocks color=constants.Color.Gray tooltip="Complete"
+				selected=(eq viewDensity "1") onClick=(action "onSwitchView" "1")}}
+			{{ui/ui-toolbar-icon icon=constants.Icon.All color=constants.Color.Gray tooltip="Comfort"
+				selected=(eq viewDensity "2") onClick=(action "onSwitchView" "2")}}
+			{{ui/ui-toolbar-label label="—"  color=constants.Color.Gray tooltip="Compact"
+				selected=(eq viewDensity "3") onClick=(action "onSwitchView" "3")}}				
+		{{/ui/ui-toolbar}}
+
 		{{#ui/ui-button
 			light=false
 			outline=true
@@ -59,19 +68,23 @@
 			<li class="document {{if document.selected "selected"}}" id="document-{{document.id}}">
 				{{#link-to "document.index" space.id space.slug document.id document.slug class="info"}}
 					<div class="name">{{ document.name }}</div>
-					<div class="desc">{{ document.excerpt }}</div>
+					{{#if (not-eq viewDensity "3")}}
+						<div class="desc">{{ document.excerpt }}</div>
+					{{/if}}
 				{{/link-to}}
-				<div class="meta">
-					<div class="lifecycle">
-						<div class="{{if (eq document.lifecycle constants.Lifecycle.Draft) "draft"}}
-						{{if (eq document.lifecycle constants.Lifecycle.Live) "live"}}
-						{{if (eq document.lifecycle constants.Lifecycle.Archived) "archived"}}">
-							{{document.lifecycleLabel}}
+				{{#if (eq viewDensity "1")}}
+					<div class="meta">
+						<div class="lifecycle">
+							<div class="{{if (eq document.lifecycle constants.Lifecycle.Draft) "draft"}}
+							{{if (eq document.lifecycle constants.Lifecycle.Live) "live"}}
+							{{if (eq document.lifecycle constants.Lifecycle.Archived) "archived"}}">
+								{{document.lifecycleLabel}}
+							</div>
 						</div>
+						{{folder/document-categories categories=document.category}}
+						{{folder/document-tags documentTags=document.tags}}
 					</div>
-					{{folder/document-categories categories=document.category}}
-					{{folder/document-tags documentTags=document.tags}}
-				</div>
+				{{/if}}
 
 				{{#if hasDocumentActions}}
 					<div class="checkbox" {{action "selectDocument" document.id}}>

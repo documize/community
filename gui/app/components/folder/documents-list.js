@@ -20,6 +20,7 @@ export default Component.extend({
 	showMoveDialog: false,
 	selectedDocuments: A([]),
 	selectedCaption: 'document',
+	viewDensity: "1",
 
 	showAdd: computed('permissions.documentAdd', 'documents', function() {
 		return this.get('documents.length') === 0 && this.get('permissions.documentAdd');
@@ -48,6 +49,11 @@ export default Component.extend({
 		if (!_.isNull(sortOrder) && !_.isUndefined(sortOrder)) {
 			this.send('onSetSort', sortOrder);
 		}
+
+		let viewDensity = this.get('localStorage').getSessionItem('space.density');
+		if (!_.isNull(viewDensity) && !_.isUndefined(viewDensity)) {
+			this.set('viewDensity', viewDensity);
+		}		
 	},
 
 	actions: {
@@ -83,6 +89,11 @@ export default Component.extend({
 		onSortBy(attacher) { 
 			// attacher.hide();
 			this.get('onFiltered')(this.get('documents'));
+		},
+
+		onSwitchView(v) {
+			this.set('viewDensity', v);
+			this.get('localStorage').storeSessionItem('space.density', v);
 		},
 
 		onShowDeleteDocuments() {
