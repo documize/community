@@ -36,7 +36,7 @@ export default Component.extend({
 		let phrase = 'Nothing found';
 
 		if (docs.length > 0) {
-			duped = _.uniq(docs, function (item) {
+			duped = _.uniqBy(docs, function(item) {
 				return item.get('documentId');
 			});
 
