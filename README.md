@@ -1,9 +1,3 @@
-> *We provide frequent product updates for both cloud and self-hosted customers.*
->
-> **Harvey Kandola / CEO & Founder / Documize, Inc.**
-
-## Welcome
-
 Documize is an open source modern, lightweight and comprehensive alternative to Confluence.
 
 It's built with Golang + EmberJS and compiled down to a single executable binary for Linux, Windows and macOS.
@@ -19,9 +13,13 @@ All you need to provide is PostgreSQL or any MySQL variant.
 
 ## Latest Release
 
-[Community Edition: v2.1.1](https://github.com/documize/community/releases)
+[Community Edition: v2.2.0](https://github.com/documize/community/releases)
 
-[Enterprise Edition: v2.1.1](https://www.documize.com/downloads)
+[Enterprise Edition: v2.2.0](https://www.documize.com/downloads)
+
+> *We provide frequent product updates for both cloud and self-hosted customers.*
+>
+> **Harvey Kandola, CEO/Founder, Documize, Inc.**
 
 ## OS support
 
@@ -50,7 +48,7 @@ Heck, Documize will probably run just fine on a Raspberry Pi 3.
 
 ## Technology Stack
 
-- Go (v1.12.0)
+- Go (v1.12.1)
 - Ember JS (v3.8.0)
 
 ## Authentication Options

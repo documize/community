@@ -24,7 +24,6 @@ import (
 	"github.com/documize/community/model/doc"
 	"github.com/documize/community/model/page"
 	"github.com/documize/community/model/search"
-	"github.com/documize/community/model/workflow"
 	"github.com/pkg/errors"
 )
 
@@ -124,11 +123,6 @@ func (s Store) DeleteDocument(ctx domain.RequestContext, ID string) (err error) 
 // Any existing document entries are removed.
 func (s Store) IndexContent(ctx domain.RequestContext, p page.Page) (err error) {
 	method := "search.IndexContent"
-
-	// we do not index pending pages
-	if p.Status == workflow.ChangePending || p.Status == workflow.ChangePendingNew {
-		return
-	}
 
 	// remove previous search entries
 	_, err = ctx.Transaction.Exec(s.Bind("DELETE FROM dmz_search WHERE c_orgid=? AND c_docid=? AND c_itemid=? AND c_itemtype='page'"),
@@ -289,7 +283,7 @@ func (s Store) matchFullText(ctx domain.RequestContext, keywords, itemType strin
             s.id, s.c_orgid AS orgid, s.c_docid AS documentid, s.c_itemid AS itemid, s.c_itemtype AS itemtype,
             d.c_spaceid as spaceid, COALESCE(d.c_name,'Unknown') AS document, d.c_tags AS tags,
             d.c_desc AS excerpt, d.c_template AS template, d.c_versionid AS versionid,
-            COALESCE(l.c_name,'Unknown') AS space
+            COALESCE(l.c_name,'Unknown') AS space, d.c_created AS created, d.c_revised AS revised
         FROM
             dmz_search s,
             dmz_doc d
@@ -343,7 +337,7 @@ func (s Store) matchLike(ctx domain.RequestContext, keywords, itemType string) (
 	sql1 := s.Bind(`SELECT
         s.id, s.c_orgid AS orgid, s.c_docid AS documentid, s.c_itemid AS itemid, s.c_itemtype AS itemtype,
             d.c_spaceid as spaceid, COALESCE(d.c_name,'Unknown') AS document, d.c_tags AS tags, d.c_desc AS excerpt,
-            COALESCE(l.c_name,'Unknown') AS space
+            COALESCE(l.c_name,'Unknown') AS space, d.c_created AS created, d.c_revised AS revised
         FROM
             dmz_search s,
             dmz_doc d

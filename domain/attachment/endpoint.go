@@ -67,7 +67,7 @@ func (h *Handler) Download(w http.ResponseWriter, r *http.Request) {
 	// Get attachment being requested.
 	a, err := h.Store.Attachment.GetAttachment(ctx, ctx.OrgID, request.Param(r, "attachmentID"))
 	if err == sql.ErrNoRows {
-		response.WriteNotFoundError(w, method, request.Param(r, "fileID"))
+		response.WriteNotFoundError(w, method, request.Param(r, "attachmentID"))
 		return
 	}
 	if err != nil {
@@ -159,6 +159,12 @@ func (h *Handler) Download(w http.ResponseWriter, r *http.Request) {
 
 		// Authenticated user can view attachment.
 		canDownload = true
+	}
+
+	if  len(secureToken) == 0 && len(authToken) == 0 {
+		h.Runtime.Log.Error("get attachment received no access token", err)
+		response.WriteForbiddenError(w)
+		return
 	}
 
 	// Send back error if caller unable view attachment

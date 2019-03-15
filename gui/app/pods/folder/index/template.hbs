@@ -8,6 +8,8 @@
 		documents=model.documents
 		documentsDraft=model.documentsDraft
 		documentsLive=model.documentsLive
+		recentAdd=model.recentAdd
+		recentUpdate=model.recentUpdate
 		categories=model.categories
 		categorySummary=model.categorySummary
 		categoryMembers=model.categoryMembers
@@ -20,6 +22,11 @@
 {{#layout/master-content}}
 	<div class="grid-container-6-4">
 		<div class="grid-cell-1">
+			{{#if (eq model.folder.labelId "")}}
+				<div class="space-label">Unclassified</div>
+			{{else}}
+				<div class="space-label" style={{{model.label.bgColor}}}>{{model.label.name}}</div>
+			{{/if}}
 			{{layout/logo-heading
 				title=model.folder.name
 				desc=model.folder.desc
@@ -37,13 +44,15 @@
 				onRefresh=(action "onRefresh")}}
 		</div>
 	</div>
-
+	
 	{{folder/documents-list
 		documents=filteredDocs
 		spaces=model.folders
 		space=model.folder
 		templates=model.templates
 		permissions=model.permissions
+		sortBy=sortBy
+		onFiltered=(action "onFiltered")
 		onExportDocument=(action "onExportDocument")
 		onDeleteDocument=(action "onDeleteDocument")
 		onMoveDocument=(action "onMoveDocument")}}

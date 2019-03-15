@@ -696,7 +696,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	// Delete the space first.
 	ok := true
-	ctx.Transaction, ok = h.Runtime.StartTx()
+	ctx.Transaction, ok = h.Runtime.StartTx(sql.LevelReadUncommitted)
 	if !ok {
 		response.WriteError(w, method)
 		return
@@ -712,7 +712,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	h.Runtime.Commit(ctx.Transaction)
 
 	// Delete data associated with this space.
-	ctx.Transaction, ok = h.Runtime.StartTx()
+	ctx.Transaction, ok = h.Runtime.StartTx(sql.LevelReadUncommitted)
 	if !ok {
 		response.WriteError(w, method)
 		return
@@ -756,7 +756,7 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	h.Runtime.Commit(ctx.Transaction)
 
 	// Record this action.
-	ctx.Transaction, ok = h.Runtime.StartTx()
+	ctx.Transaction, ok = h.Runtime.StartTx(sql.LevelReadUncommitted)
 	if !ok {
 		response.WriteError(w, method)
 		return

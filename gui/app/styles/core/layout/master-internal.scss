@@ -1,4 +1,4 @@
-// CSS GRID WITH FIXED SIDEBAR OUTSIDE GRID
+// CSS GRID LAYOUT
 
 // Mobile-first layout
 .master-container {
@@ -124,7 +124,8 @@
 		width: 100%;
 		padding: 5px 10px;
 		z-index: 888;
-		background-color: map-get($gray-shades, 100);
+		// background-color: map-get($gray-shades, 100);
+		background-color: $color-sidebar;
 	}
 }
 

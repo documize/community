@@ -50,7 +50,7 @@
 				{{#if hasPins}}
 					<div class="bookmarks" id="user-pins-button">
 						<i class={{concat "dicon " constants.Icon.BookmarkSolid}}></i>
-						{{#attach-popover class="ember-attacher-popper" hideOn="clickout" showOn="click" isShown=false}}
+						{{#attach-popover class="ember-attacher-popper" hideOn="clickout click" showOn="click" isShown=false}}
 							<div class="menu">
 								{{#if hasSpacePins}}
 									<li class="item header">Spaces</li>
@@ -79,7 +79,7 @@
 								<div class="update-available-dot" />
 							{{/if}}
 						{{/if}}
-						{{#attach-popover class="ember-attacher-popper" hideOn="clickout" showOn="click" isShown=false}}
+						{{#attach-popover class="ember-attacher-popper" hideOn="clickout click" showOn="click" isShown=false}}
 							<div class="menu">
 								{{#link-to "profile" class="item"}}Profile{{/link-to}}
 								{{#if session.isAdmin}}

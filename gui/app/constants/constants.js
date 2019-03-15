@@ -353,6 +353,7 @@ let constants = EmberObject.extend({
 		Send: 'Send',
 		Share: 'Share',
 		SignIn: 'Sign In',
+		Sort: 'Sort',
 		Unassigned: 'Unassigned',
 		Update: 'Update',
 		Upload: 'Upload',

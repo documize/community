@@ -1,6 +1,6 @@
 .wysiwyg {
-	font-size: 15px;
-	line-height: 20px;
+	font-size: 1rem;
+	line-height: 1.5rem;
 	color: $color-black-light-1;
 
 	table {
@@ -31,20 +31,31 @@
 	ul {
 		margin: 15px 0;
 		padding: 0 0 0 40px;
-		line-height: 20px;
+		// line-height: 20px;
+		line-height: 1.8rem;
 	}
 
 	ol {
 		li {
 			// list-style-type: decimal;
-			line-height: 20px;
+			// line-height: 20px;
+			line-height: 1.8rem;
 		}
 	}
 
 	ul {
 		li {
 			// list-style-type: disc;
-			line-height: 20px;
+			// line-height: 20px;
+			line-height: 1.8rem;
+		}
+	}
+
+	p {
+		line-height: 1.5rem;
+
+		> code {
+			line-height: 1.8rem;
 		}
 	}
 
@@ -83,6 +94,7 @@
 		@include border-radius(3px);
 		font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
 		color: map-get($gray-shades, 800);
+		margin: 1.5rem 0;
 
 		> code {
 			background-color: transparent;
@@ -93,6 +105,10 @@
 			font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
 			color: map-get($gray-shades, 800);
 		}
+	}
+
+	pre[class*="language-"] {
+		margin: 1.5rem 0;
 	}
 
 	blockquote {

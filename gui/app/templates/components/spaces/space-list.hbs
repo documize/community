@@ -1,4 +1,18 @@
 <div class="view-spaces">
+	
+	<div class="text-right">
+		{{#ui/ui-toolbar dark=false light=false raised=false large=false bordered=false}}
+			{{ui/ui-toolbar-icon icon=constants.Icon.Blocks color=constants.Color.Gray tooltip="Complete"
+				selected=(eq viewDensity "1") onClick=(action "onSwitchView" "1")}}
+			{{ui/ui-toolbar-icon icon=constants.Icon.All color=constants.Color.Gray tooltip="Comfort"
+				selected=(eq viewDensity "2") onClick=(action "onSwitchView" "2")}}
+			{{ui/ui-toolbar-label label="—"  color=constants.Color.Gray tooltip="Compact"
+				selected=(eq viewDensity "3") onClick=(action "onSwitchView" "3")}}				
+		{{/ui/ui-toolbar}}
+	</div>
+
+	{{ui/ui-spacer size=200}}
+
 	<ul class="list">
 		{{#each spaces as |space|}}
 			{{#link-to "folder.index" space.id space.slug}}
@@ -12,40 +26,47 @@
 							{{/if}}
 							{{space.name}}
 						</div>
-						<div class="desc">{{space.desc}}&nbsp;</div>
-						<div class="meta">
-							{{!-- {{#if (eq space.spaceType constants.SpaceType.Public)}}
-								<i class={{concat "dicon " constants.Icon.World}}>
-									{{#attach-tooltip showDelay=1000}}Public space{{/attach-tooltip}}
-								</i>
-							{{/if}}
-							{{#if (eq space.spaceType constants.SpaceType.Protected)}}
-								<i class={{concat "dicon " constants.Icon.People}}>
-									{{#attach-tooltip showDelay=1000}}Protected space{{/attach-tooltip}}
-								</i>
-							{{/if}}
-							{{#if (eq space.spaceType constants.SpaceType.Private)}}
-								<i class={{concat "dicon " constants.Icon.Person}}>
-									{{#attach-tooltip showDelay=1000}}Personal space{{/attach-tooltip}}
-								</i>
-							{{/if}} --}}
-							{{#if space.labelId}}
-								{{spaces/space-label labels=labels labelId=space.labelId}}
-							{{/if}}
-						</div>
+						{{#if (not-eq viewDensity "3")}}
+							<div class="desc">{{space.desc}}&nbsp;</div>
+						{{/if}}
+						{{#if (eq viewDensity "1")}}
+							<div class="meta">
+								{{!-- {{#if (eq space.spaceType constants.SpaceType.Public)}}
+									<i class={{concat "dicon " constants.Icon.World}}>
+										{{#attach-tooltip showDelay=1000}}Public space{{/attach-tooltip}}
+									</i>
+								{{/if}}
+								{{#if (eq space.spaceType constants.SpaceType.Protected)}}
+									<i class={{concat "dicon " constants.Icon.People}}>
+										{{#attach-tooltip showDelay=1000}}Protected space{{/attach-tooltip}}
+									</i>
+								{{/if}}
+								{{#if (eq space.spaceType constants.SpaceType.Private)}}
+									<i class={{concat "dicon " constants.Icon.Person}}>
+										{{#attach-tooltip showDelay=1000}}Personal space{{/attach-tooltip}}
+									</i>
+								{{/if}} --}}
+								{{#if space.labelId}}
+									{{spaces/space-label labels=labels labelId=space.labelId}}
+								{{/if}}
+							</div>
+						{{/if}}
 					</div>
-					<div class="stats">
-						<div class="stat">
-							<div class="number">{{space.countContent}}</div>
-							<div class="label">items</div>
+					{{#if (eq viewDensity "1")}}
+						<div class="stats">
+							<div class="stat">
+								<div class="number">{{space.countContent}}</div>
+								<div class="label">items</div>
+							</div>
+							<div class="stat">
+								<div class="number">{{space.countCategory}}</div>
+								<div class="label">categories</div>
+							</div>
 						</div>
-						<div class="stat">
-							<div class="number">{{space.countCategory}}</div>
-							<div class="label">categories</div>
-						</div>
-					</div>
+					{{/if}}
 				</li>
 			{{/link-to}}
 		{{/each}}
 	</ul>
+
 </div>

@@ -175,6 +175,9 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 			ActivityType: activity.TypeCreated})
 	}
 
+	// Update doc revised.
+	h.Store.Document.UpdateRevised(ctx, doc.RefID)
+
 	ctx.Transaction.Commit()
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSectionAdd)
@@ -492,6 +495,9 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// Update doc revised.
+	h.Store.Document.UpdateRevised(ctx, model.Page.DocumentID)
+
 	ctx.Transaction.Commit()
 
 	if doc.Lifecycle == workflow.LifecycleLive {
@@ -592,6 +598,9 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	h.Store.Link.MarkOrphanPageLink(ctx, pageID)
 
 	h.Store.Page.DeletePageRevisions(ctx, pageID)
+
+	// Update doc revised.
+	h.Store.Document.UpdateRevised(ctx, doc.RefID)
 
 	ctx.Transaction.Commit()
 
@@ -702,6 +711,9 @@ func (h *Handler) DeletePages(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// Update doc revised.
+	h.Store.Document.UpdateRevised(ctx, doc.RefID)
+
 	ctx.Transaction.Commit()
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSectionDelete)
@@ -779,6 +791,9 @@ func (h *Handler) ChangePageSequence(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// Update doc revised.
+	h.Store.Document.UpdateRevised(ctx, doc.RefID)
+
 	ctx.Transaction.Commit()
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSectionResequence)
@@ -847,6 +862,9 @@ func (h *Handler) ChangePageLevel(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+
+	// Update doc revised.
+	h.Store.Document.UpdateRevised(ctx, doc.RefID)
 
 	ctx.Transaction.Commit()
 
@@ -968,6 +986,9 @@ func (h *Handler) Copy(w http.ResponseWriter, r *http.Request) {
 			SourceType:   activity.SourceTypePage,
 			ActivityType: activity.TypeCreated})
 	}
+
+	// Update doc revised.
+	h.Store.Document.UpdateRevised(ctx, targetID)
 
 	ctx.Transaction.Commit()
 
@@ -1222,6 +1243,9 @@ func (h *Handler) Rollback(w http.ResponseWriter, r *http.Request) {
 			SourceType:   activity.SourceTypePage,
 			ActivityType: activity.TypeReverted})
 	}
+
+	// Update doc revised.
+	h.Store.Document.UpdateRevised(ctx, doc.RefID)
 
 	ctx.Transaction.Commit()
 

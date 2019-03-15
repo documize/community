@@ -119,6 +119,8 @@ export default Component.extend(Notifier, Modals, {
 				meta: meta
 			};
 
+			this.set('newSectionName', '');
+
 			const promise = this.addSection(model);
 			promise.then((id) => {
 				this.set('toEdit', model.page.pageType === 'section' ? id : '');
@@ -151,6 +153,8 @@ export default Component.extend(Notifier, Modals, {
 				page: page,
 				meta: meta
 			};
+
+			this.set('newSectionName', '');
 
 			const promise = this.addSection(model);
 			promise.then((id) => { // eslint-disable-line no-unused-vars

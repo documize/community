@@ -11,6 +11,7 @@ module.exports = {
 		'no-invalid-interactive': false,
 		'no-nested-interactive': false,
 		'no-triple-curlies': false,
+		'no-global-jquery': false,
 		'style-concatenation': false,
 		'simple-unless': false,
   	}

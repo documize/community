@@ -266,7 +266,8 @@
   .CodeMirror-wrap pre {
 	word-wrap: break-word;
 	white-space: pre-wrap;
-	word-break: normal;
+  word-break: normal;
+  font-size: 1.1rem;
   }
 
   .CodeMirror-linebackground {

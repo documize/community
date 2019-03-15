@@ -1,14 +1,5 @@
 {{ui/ui-spacer size=300}}
 
-<div class="title">label</div>
-{{#if (eq space.labelId "")}}
-	<div class="label">Unclassified</div>
-{{else}}
-	<div class="label" style={{{spaceLabel.bgColor}}}>{{spaceLabel.name}}</div>
-{{/if}}
-
-{{ui/ui-spacer size=200}}
-
 <div class="title">filter</div>
 <div class="list">
 	<div class="item {{if (eq selectedFilter "space") "selected"}}" {{action "onDocumentFilter" "space" space.id}}>
@@ -39,6 +30,14 @@
 			<div class="name">Live ({{documentsLive.length}})</div>
 		</div>
 	{{/if}}
+	<div class="item {{if (eq selectedFilter "add") "selected"}}" {{action "onDocumentFilter" "add" space.id}}>
+		<i class={{concat "dicon " constants.Icon.Filter}} />
+		<div class="name">Added recently ({{recentAdd.length}})</div>
+	</div>
+	<div class="item {{if (eq selectedFilter "update") "selected"}}" {{action "onDocumentFilter" "update" space.id}}>
+		<i class={{concat "dicon " constants.Icon.Filter}} />
+		<div class="name">Updated recently ({{recentUpdate.length}})</div>
+	</div>
 </div>
 
 {{ui/ui-spacer size=200}}

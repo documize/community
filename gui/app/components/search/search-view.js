@@ -20,10 +20,6 @@ export default Component.extend({
 	keywords: '' ,
 	matchFilter: null,
 
-	// init() {
-	// 	this._super(...arguments);
-	// },
-
 	didReceiveAttrs() {
 		this._super(...arguments);
 		this.set('keywords', this.get('filter'));

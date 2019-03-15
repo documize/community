@@ -3,8 +3,12 @@
 .ember-attacher-popper {
 	background-color: $color-white;
 	font-size: 1rem;
-	box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
-	@include border-radius(3px);
+	-webkit-box-shadow: 3px 3px 33px 0 rgba(0, 0, 0, 0.16), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+	box-shadow: 3px 3px 33px 0 rgba(0, 0, 0, 0.16), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+	// -webkit-box-shadow: 0 20px 66px 0 rgba(34,48,73,0.2);
+    // box-shadow: 0 20px 66px 0 rgba(34,48,73,0.2);
+
+	@include border-radius(5px);
 
 	> p {
 		margin: 4px;
@@ -31,7 +35,7 @@
 
 			&:hover {
 				color: $color-black;
-				background-color: map-get($gray-shades, 100);
+				background-color: map-get($yellow-shades, 100);
 			}
 		}
 
@@ -82,6 +86,24 @@
 		.bold {
 			font-weight: 600;
 		}
+	}
+
+	> .closer {
+		color: map-get($gray-shades, 500);
+		font-weight: 300;
+		font-size: 1.7rem;
+		cursor: pointer;
+		padding: 5px 5px 0 0;
+		display: block;
+		text-align: right;
+
+		&:hover {
+			color: map-get($gray-shades, 700);
+		}
+	}
+
+	> .container {
+		padding: 0 20px 20px 20px;
 	}
 
 	> .form {

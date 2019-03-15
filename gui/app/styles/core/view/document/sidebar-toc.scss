@@ -25,14 +25,14 @@
 	> .index-list {
 		padding: 0;
 		list-style: none;
-		font-size: 0.9rem;
+		font-size: 1rem;
 		overflow-x: hidden;
 		list-style-type: none;
 		margin: 0 0 0 0;
 
 		.item {
 			@extend .no-select;
-			padding: 4px 0;
+			padding: 5px 0;
 			text-overflow: ellipsis;
 			word-wrap: break-word;
 			white-space: nowrap;
@@ -40,7 +40,7 @@
 
 			> .link {
 				color: map-get($gray-shades, 800);
-				font-weight: 400;
+				font-weight: 500;
 
 				&:hover {
 					color: map-get($yellow-shades, 600);
@@ -51,6 +51,7 @@
 					font-weight: 500;
 					display: inline-block;
 					margin-right: 10px;
+					font-size: 0.9rem;
 				}
 			}
 

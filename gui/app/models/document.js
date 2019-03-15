@@ -67,4 +67,15 @@ export default Model.extend({
 
 		return '';
 	}),
+
+	addRecent: computed('created', function() {
+		let after = moment().subtract(7, 'days');
+		return moment(this.get('created')).isSameOrAfter(after);
+	}),
+
+	updateRecent: computed('created', function() {
+		let after = moment().subtract(7, 'days');
+		return moment(this.get('revised')).isSameOrAfter(after) &&
+			moment(this.get('created')).isBefore(after);
+	})
 });

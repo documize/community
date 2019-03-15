@@ -184,6 +184,7 @@ type DocumentStorer interface {
 	TemplatesBySpace(ctx domain.RequestContext, spaceID string) (documents []doc.Document, err error)
 	PublicDocuments(ctx domain.RequestContext, orgID string) (documents []doc.SitemapDocument, err error)
 	Update(ctx domain.RequestContext, document doc.Document) (err error)
+	UpdateRevised(ctx domain.RequestContext, docID string) (err error)
 	UpdateGroup(ctx domain.RequestContext, document doc.Document) (err error)
 	ChangeDocumentSpace(ctx domain.RequestContext, document, space string) (err error)
 	MoveDocumentSpace(ctx domain.RequestContext, id, move string) (err error)

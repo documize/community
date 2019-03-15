@@ -11,6 +11,10 @@
 
 package search
 
+import (
+	"time"
+)
+
 // QueryOptions defines how we search.
 type QueryOptions struct {
 	Keywords   string `json:"keywords"`
@@ -23,18 +27,20 @@ type QueryOptions struct {
 
 // QueryResult represents 'presentable' search results.
 type QueryResult struct {
-	ID           string `json:"id"`
-	OrgID        string `json:"orgId"`
-	ItemID       string `json:"itemId"`
-	ItemType     string `json:"itemType"`
-	DocumentID   string `json:"documentId"`
-	DocumentSlug string `json:"documentSlug"`
-	Document     string `json:"document"`
-	Excerpt      string `json:"excerpt"`
-	Tags         string `json:"tags"`
-	SpaceID      string `json:"spaceId"`
-	Space        string `json:"space"`
-	SpaceSlug    string `json:"spaceSlug"`
-	Template     bool   `json:"template"`
-	VersionID    string `json:"versionId"`
+	ID           string    `json:"id"`
+	OrgID        string    `json:"orgId"`
+	ItemID       string    `json:"itemId"`
+	ItemType     string    `json:"itemType"`
+	DocumentID   string    `json:"documentId"`
+	DocumentSlug string    `json:"documentSlug"`
+	Document     string    `json:"document"`
+	Excerpt      string    `json:"excerpt"`
+	Tags         string    `json:"tags"`
+	SpaceID      string    `json:"spaceId"`
+	Space        string    `json:"space"`
+	SpaceSlug    string    `json:"spaceSlug"`
+	Template     bool      `json:"template"`
+	VersionID    string    `json:"versionId"`
+	Created      time.Time `json:"created"`
+	Revised      time.Time `json:"revised"`
 }

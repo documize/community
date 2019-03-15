@@ -36,7 +36,6 @@ func Register(rt *env.Runtime, s *store.Store) {
 	provider.Register("code", &code.Provider{Runtime: rt, Store: s})
 	provider.Register("jira", &jira.Provider{Runtime: rt, Store: s})
 	provider.Register("gemini", &gemini.Provider{Runtime: rt, Store: s})
-	// provider.Register("github", &github.Provider{Runtime: rt, Store: s})
 	provider.Register("markdown", &markdown.Provider{Runtime: rt, Store: s})
 	provider.Register("papertrail", &papertrail.Provider{Runtime: rt, Store: s})
 	provider.Register("tabular", &tabular.Provider{Runtime: rt, Store: s})
