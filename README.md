@@ -60,3 +60,5 @@ Besides email/password login, you can also connect to LDAP/Active Directory or R
 <https://documize.com>
 
 This software (Documize Community Edition) is licensed under GNU AGPL v3 <http://www.gnu.org/licenses/agpl-3.0.en.html>. You can operate outside the AGPL restrictions by purchasing Documize Enterprise Edition and obtaining a commercial license by contacting <sales@documize.com>. Documize® is a registered trade mark of Documize Inc.
+
+Documize uses other open source components and we acknowledge them in [NOTICES](NOTICES.MD)
