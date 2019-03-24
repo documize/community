@@ -97,6 +97,9 @@ export default Router.map(function () {
 			this.route('product', {
 				path: 'product'
 			});
+			this.route('notice', {
+				path: 'notice'
+			});
 			this.route('auth', {
 				path: 'auth'
 			});
