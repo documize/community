@@ -46,6 +46,11 @@ func LoadScripts() (s Scripts, err error) {
 	if err != nil {
 		return
 	}
+	// PostgreSQL
+	s.SQLServer, err = loadFiles(fmt.Sprintf("%s/sqlserver", assetDir))
+	if err != nil {
+		return
+	}
 
 	return s, nil
 }
@@ -57,7 +62,7 @@ func SpecificScripts(runtime *env.Runtime, all Scripts) (s []Script) {
 		return all.MySQL
 	case env.StoreTypePostgreSQL:
 		return all.PostgreSQL
-	case env.StoreTypeMSSQL:
+	case env.StoreTypeSQLServer:
 		return all.SQLServer
 	}
 

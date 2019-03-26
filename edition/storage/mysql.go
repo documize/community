@@ -190,8 +190,8 @@ func (p MySQLProvider) Params() map[string]string {
 	}
 }
 
-// Example holds storage provider specific connection string format.
-// used in error messages
+// Example holds storage provider specific connection string format
+// used in error messages.
 func (p MySQLProvider) Example() string {
 	return "database connection string format is 'username:password@tcp(host:3306)/database'"
 }

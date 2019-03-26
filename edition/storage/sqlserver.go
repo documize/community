@@ -16,6 +16,7 @@ import (
 	"fmt"
 	"strings"
 
+	_ "github.com/denisenkom/go-mssqldb" // the SQL Server driver is required behind the scenes
 	"github.com/documize/community/core/env"
 	account "github.com/documize/community/domain/account"
 	activity "github.com/documize/community/domain/activity"
@@ -37,11 +38,10 @@ import (
 	space "github.com/documize/community/domain/space"
 	"github.com/documize/community/domain/store"
 	user "github.com/documize/community/domain/user"
-	_ "github.com/lib/pq" // the PostgreSQL driver is required behind the scenes
 )
 
-// PostgreSQLProvider supports by popular demand.
-type PostgreSQLProvider struct {
+// SQLServerProvider supports Microsoft SQl Server.
+type SQLServerProvider struct {
 	// User specified connection string.
 	ConnectionString string
 
@@ -49,12 +49,15 @@ type PostgreSQLProvider struct {
 	Variant env.StoreType
 }
 
-// SetPostgreSQLProvider creates PostgreSQL provider
-func SetPostgreSQLProvider(r *env.Runtime, s *store.Store) {
+// SetSQLServerProvider creates PostgreSQL provider.
+//
+// Driver for Golang: https://github.com/denisenkom/go-mssqldb
+// Docker Linux testing: https://docs.microsoft.com/en-us/sql/linux/quickstart-install-connect-docker?view=sql-server-2017
+func SetSQLServerProvider(r *env.Runtime, s *store.Store) {
 	// Set up provider specific details.
-	r.StoreProvider = PostgreSQLProvider{
+	r.StoreProvider = SQLServerProvider{
 		ConnectionString: r.Flags.DBConn,
-		Variant:          env.StoreTypePostgreSQL,
+		Variant:          env.StoreTypeSQLServer,
 	}
 
 	// Wire up data providers.
@@ -156,39 +159,44 @@ func SetPostgreSQLProvider(r *env.Runtime, s *store.Store) {
 }
 
 // Type returns name of provider
-func (p PostgreSQLProvider) Type() env.StoreType {
-	return env.StoreTypePostgreSQL
+func (p SQLServerProvider) Type() env.StoreType {
+	return env.StoreTypeSQLServer
 }
 
 // TypeVariant returns databse flavor
-func (p PostgreSQLProvider) TypeVariant() env.StoreType {
+func (p SQLServerProvider) TypeVariant() env.StoreType {
 	return p.Variant
 }
 
 // DriverName returns database/sql driver name.
-func (p PostgreSQLProvider) DriverName() string {
-	return "postgres"
+func (p SQLServerProvider) DriverName() string {
+	return "sqlserver"
 }
 
 // Params returns connection string parameters that must be present before connecting to DB.
-func (p PostgreSQLProvider) Params() map[string]string {
+func (p SQLServerProvider) Params() map[string]string {
 	// Not used for this provider.
 	return map[string]string{}
 }
 
 // Example holds storage provider specific connection string format
 // used in error messages.
-func (p PostgreSQLProvider) Example() string {
-	return "database connection string format is 'host=localhost port=5432 sslmode=disable user=admin password=secret dbname=documize'"
+func (p SQLServerProvider) Example() string {
+	return "database connection string format options: sqlserver://username:password@host:port?database=Documize OR sqlserver://username:password@host/instance?database=Documize OR sqlserver://sa@localhost/SQLExpress?database=Documize"
 }
 
 // DatabaseName holds the SQL database name where Documize tables live.
-func (p PostgreSQLProvider) DatabaseName() string {
-	bits := strings.Split(p.ConnectionString, " ")
-	for _, s := range bits {
+func (p SQLServerProvider) DatabaseName() string {
+	bits := strings.Split(p.ConnectionString, "?")
+	if len(bits) != 2 {
+		return ""
+	}
+
+	params := strings.Split(bits[len(bits)-1], "&")
+	for _, s := range params {
 		s = strings.TrimSpace(s)
-		if strings.Contains(s, "dbname=") {
-			s = strings.Replace(s, "dbname=", "", 1)
+		if strings.Contains(s, "database=") {
+			s = strings.Replace(s, "database=", "", 1)
 
 			return s
 		}
@@ -199,13 +207,13 @@ func (p PostgreSQLProvider) DatabaseName() string {
 
 // MakeConnectionString returns provider specific DB connection string
 // complete with default parameters.
-func (p PostgreSQLProvider) MakeConnectionString() string {
+func (p SQLServerProvider) MakeConnectionString() string {
 	// No special processing so return as-is.
 	return p.ConnectionString
 }
 
 // QueryMeta is how to extract version number, collation, character set from database provider.
-func (p PostgreSQLProvider) QueryMeta() string {
+func (p SQLServerProvider) QueryMeta() string {
 	// SELECT version() as vstring, current_setting('server_version_num') as vnumber, pg_encoding_to_char(encoding) AS charset FROM pg_database WHERE datname = 'documize';
 
 	return fmt.Sprintf(`SELECT cast(current_setting('server_version_num') AS TEXT) AS version, version() AS comment, pg_encoding_to_char(encoding) AS charset, '' AS collation
@@ -214,7 +222,7 @@ func (p PostgreSQLProvider) QueryMeta() string {
 
 // QueryRecordVersionUpgrade returns database specific insert statement
 // that records the database version number.
-func (p PostgreSQLProvider) QueryRecordVersionUpgrade(version int) string {
+func (p SQLServerProvider) QueryRecordVersionUpgrade(version int) string {
 	// Make record that holds new database version number.
 	json := fmt.Sprintf("{\"database\": \"%d\"}", version)
 
@@ -224,24 +232,24 @@ func (p PostgreSQLProvider) QueryRecordVersionUpgrade(version int) string {
 
 // QueryRecordVersionUpgradeLegacy returns database specific insert statement
 // that records the database version number.
-func (p PostgreSQLProvider) QueryRecordVersionUpgradeLegacy(version int) string {
+func (p SQLServerProvider) QueryRecordVersionUpgradeLegacy(version int) string {
 	// This provider has no legacy schema.
 	return p.QueryRecordVersionUpgrade(version)
 }
 
 // QueryGetDatabaseVersion returns the schema version number.
-func (p PostgreSQLProvider) QueryGetDatabaseVersion() string {
+func (p SQLServerProvider) QueryGetDatabaseVersion() string {
 	return "SELECT c_config -> 'database' FROM dmz_config WHERE c_key = 'META';"
 }
 
 // QueryGetDatabaseVersionLegacy returns the schema version number before The Great Schema Migration (v25, MySQL).
-func (p PostgreSQLProvider) QueryGetDatabaseVersionLegacy() string {
+func (p SQLServerProvider) QueryGetDatabaseVersionLegacy() string {
 	// This provider has no legacy schema.
 	return p.QueryGetDatabaseVersion()
 }
 
 // QueryTableList returns a list tables in Documize database.
-func (p PostgreSQLProvider) QueryTableList() string {
+func (p SQLServerProvider) QueryTableList() string {
 	return fmt.Sprintf(`select table_name
         FROM information_schema.tables
         WHERE table_type='BASE TABLE' AND table_schema NOT IN ('pg_catalog', 'information_schema') AND table_catalog='%s'`, p.DatabaseName())
@@ -249,19 +257,19 @@ func (p PostgreSQLProvider) QueryTableList() string {
 
 // QueryDateInterval returns provider specific interval style
 // date SQL.
-func (p PostgreSQLProvider) QueryDateInterval(days int64) string {
+func (p SQLServerProvider) QueryDateInterval(days int64) string {
 	return fmt.Sprintf("DATE(NOW()) - INTERVAL '%d day'", days)
 }
 
 // JSONEmpty returns empty SQL JSON object.
 // Typically used as 2nd parameter to COALESCE().
-func (p PostgreSQLProvider) JSONEmpty() string {
+func (p SQLServerProvider) JSONEmpty() string {
 	return "'{}'::json"
 }
 
 // JSONGetValue returns JSON attribute selection syntax.
 // Typically used in SELECT <my_json_field> query.
-func (p PostgreSQLProvider) JSONGetValue(column, attribute string) string {
+func (p SQLServerProvider) JSONGetValue(column, attribute string) string {
 	if len(attribute) > 0 {
 		return fmt.Sprintf("%s -> '%s'", column, attribute)
 	}
@@ -271,13 +279,13 @@ func (p PostgreSQLProvider) JSONGetValue(column, attribute string) string {
 
 // VerfiyVersion checks to see if actual database meets
 // minimum version requirements.``
-func (p PostgreSQLProvider) VerfiyVersion(dbVersion string) (bool, string) {
+func (p SQLServerProvider) VerfiyVersion(dbVersion string) (bool, string) {
 	// All versions supported.
 	return true, ""
 }
 
 // VerfiyCharacterCollation needs to ensure utf8.
-func (p PostgreSQLProvider) VerfiyCharacterCollation(charset, collation string) (charOK bool, requirements string) {
+func (p SQLServerProvider) VerfiyCharacterCollation(charset, collation string) (charOK bool, requirements string) {
 	if strings.ToLower(charset) != "utf8" {
 		return false, fmt.Sprintf("PostgreSQL character set needs to be utf8, found %s", charset)
 	}
@@ -292,6 +300,6 @@ func (p PostgreSQLProvider) VerfiyCharacterCollation(charset, collation string) 
 // timestamp value (e.g. 2016-09-08 06:37:23).
 // Must use ? for parameter placeholder character as DB layer
 // will convert to database specific parameter placeholder character.
-func (p PostgreSQLProvider) ConvertTimestamp() (statement string) {
+func (p SQLServerProvider) ConvertTimestamp() (statement string) {
 	return `to_timestamp(?,'YYYY-MM-DD HH24:MI:SS')`
 }

@@ -28,8 +28,8 @@ const (
 	// StoreTypePostgreSQL is PostgreSQL
 	StoreTypePostgreSQL StoreType = "PostgreSQL"
 
-	// StoreTypeMSSQL is Microsoft SQL Server
-	StoreTypeMSSQL StoreType = "MSSQL"
+	// StoreTypeSQLServer is Microsoft SQL Server
+	StoreTypeSQLServer StoreType = "SQLServer"
 )
 
 // StoreProvider defines a database provider.
