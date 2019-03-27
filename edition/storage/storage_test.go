@@ -49,3 +49,40 @@ func TestSQLServerProviderDatabaseNameWithParams(t *testing.T) {
 
 	t.Log(r.StoreProvider.MakeConnectionString())
 }
+
+func TestSQLServerVersion(t *testing.T) {
+	r := env.Runtime{}
+	s := store.Store{}
+	r.Flags.DBType = "sqlserver"
+	r.Flags.DBConn = "sqlserver://username:password@host:port?database=Test2Documize&some=param"
+
+	SetSQLServerProvider(&r, &s)
+
+	version := "15.0.1300.359"
+	ok, msg := r.StoreProvider.VerfiyVersion(version)
+	if !ok {
+		t.Errorf("2019 check failed: %s", msg)
+	}
+	t.Log(version)
+
+	version = "14.0.3048.4"
+	ok, msg = r.StoreProvider.VerfiyVersion(version)
+	if !ok {
+		t.Errorf("2017 check failed: %s", msg)
+	}
+	t.Log(version)
+
+	version = "13.0.1601.5"
+	ok, msg = r.StoreProvider.VerfiyVersion(version)
+	if !ok {
+		t.Errorf("2016 check failed: %s", msg)
+	}
+	t.Log(version)
+
+	version = "12.0.6214.1"
+	ok, msg = r.StoreProvider.VerfiyVersion(version)
+	if ok {
+		t.Errorf("unsupported release check failed: %s", msg)
+	}
+	t.Log(version)
+}

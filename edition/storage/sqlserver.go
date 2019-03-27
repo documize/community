@@ -53,6 +53,7 @@ type SQLServerProvider struct {
 //
 // Driver for Golang: https://github.com/denisenkom/go-mssqldb
 // Docker Linux testing: https://docs.microsoft.com/en-us/sql/linux/quickstart-install-connect-docker?view=sql-server-2017
+// docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=Passw0rd' -p 1433:1433 --name sql1 -d mcr.microsoft.com/mssql/server:2017-latest
 func SetSQLServerProvider(r *env.Runtime, s *store.Store) {
 	// Set up provider specific details.
 	r.StoreProvider = SQLServerProvider{
@@ -212,12 +213,17 @@ func (p SQLServerProvider) MakeConnectionString() string {
 	return p.ConnectionString
 }
 
-// QueryMeta is how to extract version number, collation, character set from database provider.
+// QueryMeta is how to extract version number, version related comment,
+// character set and collation from database provider.
 func (p SQLServerProvider) QueryMeta() string {
-	// SELECT version() as vstring, current_setting('server_version_num') as vnumber, pg_encoding_to_char(encoding) AS charset FROM pg_database WHERE datname = 'documize';
-
-	return fmt.Sprintf(`SELECT cast(current_setting('server_version_num') AS TEXT) AS version, version() AS comment, pg_encoding_to_char(encoding) AS charset, '' AS collation
-        FROM pg_database WHERE datname = '%s'`, p.DatabaseName())
+	return fmt.Sprintf(`
+		SELECT 
+		CAST(SERVERPROPERTY('productversion') AS VARCHAR) AS version,
+		@@VERSION AS comment,
+		collation_name AS collation,
+		'' AS charset
+		FROM sys.databases
+		WHERE name='%s'`, p.DatabaseName())
 }
 
 // QueryRecordVersionUpgrade returns database specific insert statement
@@ -239,7 +245,7 @@ func (p SQLServerProvider) QueryRecordVersionUpgradeLegacy(version int) string {
 
 // QueryGetDatabaseVersion returns the schema version number.
 func (p SQLServerProvider) QueryGetDatabaseVersion() string {
-	return "SELECT c_config -> 'database' FROM dmz_config WHERE c_key = 'META';"
+	return "SELECT JSON_VALUE(c_config, '$.database') FROM dmz_config WHERE c_key = 'META';"
 }
 
 // QueryGetDatabaseVersionLegacy returns the schema version number before The Great Schema Migration (v25, MySQL).
@@ -250,56 +256,60 @@ func (p SQLServerProvider) QueryGetDatabaseVersionLegacy() string {
 
 // QueryTableList returns a list tables in Documize database.
 func (p SQLServerProvider) QueryTableList() string {
-	return fmt.Sprintf(`select table_name
-        FROM information_schema.tables
-        WHERE table_type='BASE TABLE' AND table_schema NOT IN ('pg_catalog', 'information_schema') AND table_catalog='%s'`, p.DatabaseName())
+	return fmt.Sprintf(`SELECT TABLE_NAME 
+	FROM %s.INFORMATION_SCHEMA.TABLES`, p.DatabaseName())
 }
 
 // QueryDateInterval returns provider specific interval style
 // date SQL.
 func (p SQLServerProvider) QueryDateInterval(days int64) string {
-	return fmt.Sprintf("DATE(NOW()) - INTERVAL '%d day'", days)
+	return fmt.Sprintf("DATEADD(DAY, -%d, GETDATE())", days)
 }
 
 // JSONEmpty returns empty SQL JSON object.
 // Typically used as 2nd parameter to COALESCE().
 func (p SQLServerProvider) JSONEmpty() string {
-	return "'{}'::json"
+	return "'{}'"
 }
 
 // JSONGetValue returns JSON attribute selection syntax.
 // Typically used in SELECT <my_json_field> query.
 func (p SQLServerProvider) JSONGetValue(column, attribute string) string {
 	if len(attribute) > 0 {
-		return fmt.Sprintf("%s -> '%s'", column, attribute)
+		return fmt.Sprintf("JSON_VALUE(%s, '$.%s'", column, attribute)
 	}
 
-	return fmt.Sprintf("%s", column)
+	return fmt.Sprintf("JSON_QUERY(%s)", column)
 }
 
 // VerfiyVersion checks to see if actual database meets
-// minimum version requirements.``
+// minimum version requirements.
+//
+// See: http://sqlserverbuilds.blogspot.com
 func (p SQLServerProvider) VerfiyVersion(dbVersion string) (bool, string) {
-	// All versions supported.
-	return true, ""
+
+	if strings.HasPrefix(dbVersion, "13.") ||
+		strings.HasPrefix(dbVersion, "14.") ||
+		strings.HasPrefix(dbVersion, "15.") {
+		return true, ""
+	}
+
+	return false, "Microsoft SQL Server 2016, 2017 or 2019 is required"
 }
 
 // VerfiyCharacterCollation needs to ensure utf8.
+// https://www.red-gate.com/simple-talk/sql/sql-development/questions-sql-server-collations-shy-ask/
 func (p SQLServerProvider) VerfiyCharacterCollation(charset, collation string) (charOK bool, requirements string) {
-	if strings.ToLower(charset) != "utf8" {
-		return false, fmt.Sprintf("PostgreSQL character set needs to be utf8, found %s", charset)
-	}
-
-	// Collation check ignored.
-
+	// Collation & characters check ignored.
 	return true, ""
 }
 
 // ConvertTimestamp returns SQL function to correctly convert
 // ISO 8601 format (e.g. '2016-09-08T06:37:23Z') to SQL specific
 // timestamp value (e.g. 2016-09-08 06:37:23).
-// Must use ? for parameter placeholder character as DB layer
+//
+// We must use ? for parameter placeholder character as DB layer
 // will convert to database specific parameter placeholder character.
 func (p SQLServerProvider) ConvertTimestamp() (statement string) {
-	return `to_timestamp(?,'YYYY-MM-DD HH24:MI:SS')`
+	return `convert(varchar, ?, 13)`
 }

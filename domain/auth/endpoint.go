@@ -122,6 +122,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 // ValidateToken finds and validates authentication token.
+// TODO: remove
 func (h *Handler) ValidateToken(w http.ResponseWriter, r *http.Request) {
 	// TODO should this go after token validation?
 	if s := r.URL.Query().Get("section"); s != "" {
