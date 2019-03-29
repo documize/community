@@ -32,8 +32,10 @@ rm -rf embed/bindata/scripts
 mkdir -p embed/bindata/scripts
 mkdir -p embed/bindata/scripts/mysql
 mkdir -p embed/bindata/scripts/postgresql
+mkdir -p embed/bindata/scripts/sqlserver
 cp -r core/database/scripts/mysql/*.sql embed/bindata/scripts/mysql
 cp -r core/database/scripts/postgresql/*.sql embed/bindata/scripts/postgresql
+cp -r core/database/scripts/sqlserver/*.sql embed/bindata/scripts/sqlserver
 
 echo "Generating in-memory static assets..."
 # go get -u github.com/jteeuwen/go-bindata/...

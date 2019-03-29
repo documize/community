@@ -51,9 +51,17 @@ type SQLServerProvider struct {
 
 // SetSQLServerProvider creates PostgreSQL provider.
 //
-// Driver for Golang: https://github.com/denisenkom/go-mssqldb
-// Docker Linux testing: https://docs.microsoft.com/en-us/sql/linux/quickstart-install-connect-docker?view=sql-server-2017
-// docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=Passw0rd' -p 1433:1433 --name sql1 -d mcr.microsoft.com/mssql/server:2017-latest
+// Useful links:
+//
+// Driver for Golang:
+//		https://github.com/denisenkom/go-mssqldb
+// Docker Linux testing:
+//		https://docs.microsoft.com/en-us/sql/linux/quickstart-install-connect-docker?view=sql-server-2017
+// 		docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=Passw0rd' -p 1433:1433 --name sql1 -d mcr.microsoft.com/mssql/server:2017-latest
+// JSON types:
+// 		https://docs.microsoft.com/en-us/sql/relational-databases/json/json-data-sql-server?view=sql-server-2017
+//
+// Supports 2016, 2017 and 2019.
 func SetSQLServerProvider(r *env.Runtime, s *store.Store) {
 	// Set up provider specific details.
 	r.StoreProvider = SQLServerProvider{
@@ -232,8 +240,7 @@ func (p SQLServerProvider) QueryRecordVersionUpgrade(version int) string {
 	// Make record that holds new database version number.
 	json := fmt.Sprintf("{\"database\": \"%d\"}", version)
 
-	return fmt.Sprintf(`INSERT INTO dmz_config (c_key,c_config) VALUES ('META','%s')
-        ON CONFLICT (c_key) DO UPDATE SET c_config='%s' WHERE dmz_config.c_key='META'`, json, json)
+	return fmt.Sprintf(`UPDATE dmz_config SET c_config='%s' WHERE c_key='META'`, json)
 }
 
 // QueryRecordVersionUpgradeLegacy returns database specific insert statement
