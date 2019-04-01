@@ -71,7 +71,7 @@ func InitRuntime(r *env.Runtime, s *store.Store) bool {
 	}
 
 	// Open connection to database
-	db, err := sqlx.Open(r.StoreProvider.DriverName(), r.StoreProvider.MakeConnectionString()) //r.Flags.DBConn
+	db, err := sqlx.Open(r.StoreProvider.DriverName(), r.StoreProvider.MakeConnectionString())
 	if err != nil {
 		r.Log.Error("Unable to open database", err)
 		os.Exit(1)

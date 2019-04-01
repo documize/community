@@ -239,13 +239,13 @@ func (s Store) GetSpaceCategorySummary(ctx domain.RequestContext, spaceID string
                         GROUP BY c_groupid
                     ) AS x INNER JOIN dmz_doc AS d ON d.c_groupid=x.c_groupid AND d.c_versionorder=x.latestversion
                 )
-            GROUP BY c_categoryid, grouptype
+            GROUP BY c_categoryid
 		UNION ALL
 		SELECT 'users' AS grouptype, c_refid AS categoryid, count(*) AS count
 			FROM dmz_permission
             WHERE c_orgid=? AND c_location='category' AND c_refid IN
                 (SELECT c_refid FROM dmz_category WHERE c_orgid=? AND c_spaceid=?)
-			GROUP BY c_refid, grouptype`),
+			GROUP BY c_refid`),
 		ctx.OrgID, spaceID,
 		ctx.OrgID, spaceID, ctx.OrgID, spaceID,
 		ctx.OrgID, ctx.OrgID, spaceID)

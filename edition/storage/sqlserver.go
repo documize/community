@@ -185,7 +185,13 @@ func (p SQLServerProvider) DriverName() string {
 // Params returns connection string parameters that must be present before connecting to DB.
 func (p SQLServerProvider) Params() map[string]string {
 	// Not used for this provider.
-	return map[string]string{}
+	// return map[string]string{}
+
+	return map[string]string{
+		"app+name":           "Documize",
+		"connection+timeout": "0",
+		"keep-alive":         "0",
+	}
 }
 
 // Example holds storage provider specific connection string format
@@ -217,8 +223,42 @@ func (p SQLServerProvider) DatabaseName() string {
 // MakeConnectionString returns provider specific DB connection string
 // complete with default parameters.
 func (p SQLServerProvider) MakeConnectionString() string {
+	queryBits := strings.Split(p.ConnectionString, "?")
+	ret := queryBits[0] + "?"
+	retFirst := true
+
+	params := p.Params()
+
+	if len(queryBits) == 2 {
+		paramBits := strings.Split(queryBits[1], "&")
+		for _, pb := range paramBits {
+			found := false
+			if assignBits := strings.Split(pb, "="); len(assignBits) == 2 {
+				_, found = params[strings.TrimSpace(assignBits[0])]
+			}
+			if !found { // if we can't work out what it is, put it through
+				if retFirst {
+					retFirst = false
+				} else {
+					ret += "&"
+				}
+				ret += pb
+			}
+		}
+	}
+
+	for k, v := range params {
+		if retFirst {
+			retFirst = false
+		} else {
+			ret += "&"
+		}
+		ret += k + "=" + v
+	}
+
+	return ret
 	// No special processing so return as-is.
-	return p.ConnectionString
+	// return p.ConnectionString
 }
 
 // QueryMeta is how to extract version number, version related comment,
