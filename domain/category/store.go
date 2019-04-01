@@ -223,29 +223,29 @@ func (s Store) GetSpaceCategorySummary(ctx domain.RequestContext, spaceID string
 	c = []category.SummaryModel{}
 
 	err = s.Runtime.Db.Select(&c, s.Bind(`
-		SELECT 'documents' AS type, c_categoryid AS categoryid, COUNT(*) AS count
+		SELECT 'documents' AS grouptype, c_categoryid AS categoryid, COUNT(*) AS count
 			FROM dmz_category_member
             WHERE c_orgid=? AND c_spaceid=?
             AND c_docid IN (
                 SELECT c_refid
                 FROM dmz_doc
-                WHERE c_orgid=? AND c_spaceid=? AND c_lifecycle!=2 AND c_template=false AND c_groupid=''
+                WHERE c_orgid=? AND c_spaceid=? AND c_lifecycle!=2 AND c_template=`+s.IsFalse()+` AND c_groupid=''
                 UNION ALL
                 SELECT d.c_refid
                     FROM (
                         SELECT c_groupid, MIN(c_versionorder) AS latestversion
                         FROM dmz_doc
-                        WHERE c_orgid=? AND c_spaceid=? AND c_lifecycle!=2 AND c_groupid!='' AND c_template=false
+                        WHERE c_orgid=? AND c_spaceid=? AND c_lifecycle!=2 AND c_groupid!='' AND c_template=`+s.IsFalse()+`
                         GROUP BY c_groupid
                     ) AS x INNER JOIN dmz_doc AS d ON d.c_groupid=x.c_groupid AND d.c_versionorder=x.latestversion
                 )
-            GROUP BY c_categoryid, type
+            GROUP BY c_categoryid, grouptype
 		UNION ALL
-		SELECT 'users' AS type, c_refid AS categoryid, count(*) AS count
+		SELECT 'users' AS grouptype, c_refid AS categoryid, count(*) AS count
 			FROM dmz_permission
             WHERE c_orgid=? AND c_location='category' AND c_refid IN
                 (SELECT c_refid FROM dmz_category WHERE c_orgid=? AND c_spaceid=?)
-			GROUP BY c_refid, type`),
+			GROUP BY c_refid, grouptype`),
 		ctx.OrgID, spaceID,
 		ctx.OrgID, spaceID, ctx.OrgID, spaceID,
 		ctx.OrgID, ctx.OrgID, spaceID)

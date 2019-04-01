@@ -354,6 +354,16 @@ func (p MySQLProvider) ConvertTimestamp() (statement string) {
 	return `STR_TO_DATE(?,'%Y-%m-%d %H:%i:%s')`
 }
 
+// IsTrue returns "1"
+func (p MySQLProvider) IsTrue() string {
+	return "1"
+}
+
+// IsFalse returns "0"
+func (p MySQLProvider) IsFalse() string {
+	return "0"
+}
+
 // convertDatabaseVersion turns database version string as major,minor,patch numerics.
 func convertDatabaseVersion(v string) (ints []int, err error) {
 	ints = []int{0, 0, 0}

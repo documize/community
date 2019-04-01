@@ -295,3 +295,13 @@ func (p PostgreSQLProvider) VerfiyCharacterCollation(charset, collation string) 
 func (p PostgreSQLProvider) ConvertTimestamp() (statement string) {
 	return `to_timestamp(?,'YYYY-MM-DD HH24:MI:SS')`
 }
+
+// IsTrue returns "true"
+func (p PostgreSQLProvider) IsTrue() string {
+	return "true"
+}
+
+// IsFalse returns "false"
+func (p PostgreSQLProvider) IsFalse() string {
+	return "false"
+}

@@ -103,4 +103,12 @@ type StoreProvider interface {
 	// Must use ? for parameter placeholder character as DB layer
 	// will convert to database specific parameter placeholder character.
 	ConvertTimestamp() (statement string)
+
+	// IsTrue returns storage provider boolean TRUE:
+	// MySQL is 1, PostgresSQL is TRUE, SQL Server is 1
+	IsTrue() string
+
+	// IsFalse returns storage provider boolean FALSE:
+	// MySQL is 0, PostgresSQL is FALSE, SQL Server is 0
+	IsFalse() string
 }

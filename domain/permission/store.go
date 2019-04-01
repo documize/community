@@ -165,7 +165,7 @@ func (s Store) GetCategoryUsers(ctx domain.RequestContext, catID string) (u []us
 		SELECT u.id, COALESCE(u.c_refid, '') AS refid, COALESCE(u.c_firstname, '') AS firstname, COALESCE(u.c_lastname, '') as lastname, u.email AS email, u.initials AS initials, u.password AS password, u.salt AS salt, u.c_reset AS reset, u.c_created AS created, u.c_revised AS revised
         FROM dmz_user u
         LEFT JOIN dmz_user_account a ON u.c_refid = a.c_userid
-		WHERE a.c_orgid=? AND a.c_active=true AND u.c_refid IN (
+		WHERE a.c_orgid=? AND a.c_active=`+s.IsTrue()+` AND u.c_refid IN (
 			SELECT c_whoid from dmz_permission
 			WHERE c_orgid=? AND c_who='user' AND c_location='category' AND c_refid=?
 			UNION ALL

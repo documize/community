@@ -71,6 +71,15 @@ let constants = EmberObject.extend({
 		ReviewLabel: 'Changes require approval before publication'
 	},
 
+	// Database type
+	StorageProvider: { // eslint-disable-line ember/avoid-leaking-state-in-ember-objects
+		SQLServer: 'SQLServer',
+		PostgreSQL: 'PostgreSQL',
+		Percona: 'Percona',
+		MariaDB: 'MariaDB',
+		MySQL: 'MySQL',
+	},
+
 	// Document
 	ApprovalType: { // eslint-disable-line ember/avoid-leaking-state-in-ember-objects
 		None: 0,

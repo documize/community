@@ -320,3 +320,13 @@ func (p SQLServerProvider) VerfiyCharacterCollation(charset, collation string) (
 func (p SQLServerProvider) ConvertTimestamp() (statement string) {
 	return `convert(varchar, ?, 13)`
 }
+
+// IsTrue returns "1"
+func (p SQLServerProvider) IsTrue() string {
+	return "1"
+}
+
+// IsFalse returns "0"
+func (p SQLServerProvider) IsFalse() string {
+	return "0"
+}
