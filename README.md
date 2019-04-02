@@ -13,9 +13,9 @@ All you need to provide is PostgreSQL or any MySQL variant.
 
 ## Latest Release
 
-[Community Edition: v2.2.1](https://github.com/documize/community/releases)
+[Community Edition: v2.3.0](https://github.com/documize/community/releases)
 
-[Enterprise Edition: v2.2.1](https://www.documize.com/downloads)
+[Enterprise Edition: v2.3.0](https://www.documize.com/downloads)
 
 > *We provide frequent product updates for both cloud and self-hosted customers.*
 >
@@ -45,7 +45,7 @@ Heck, Documize will probably run just fine on a Raspberry Pi.
 - Brave
 - Vivaldi
 - Opera
-- Microsoft Edge (v42+)
+- Edge (v42+)
 
 ## Technology Stack
 

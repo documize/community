@@ -14,7 +14,6 @@ package search
 import (
 	"database/sql"
 
-	"github.com/documize/community/core/env"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/model/attachment"
 	"github.com/documize/community/model/category"
@@ -27,10 +26,6 @@ import (
 // IndexDocument adds search indesd entries for document inserting title, tags and attachments as
 // searchable items. Any existing document entries are removed.
 func (m *Indexer) IndexDocument(ctx domain.RequestContext, d doc.Document, a []attachment.Attachment) {
-	if m.runtime.StoreProvider.Type() == env.StoreTypeSQLServer {
-		return
-	}
-
 	method := "search.IndexDocument"
 	var err error
 
@@ -53,10 +48,6 @@ func (m *Indexer) IndexDocument(ctx domain.RequestContext, d doc.Document, a []a
 
 // DeleteDocument removes all search entries for document.
 func (m *Indexer) DeleteDocument(ctx domain.RequestContext, ID string) {
-	if m.runtime.StoreProvider.Type() == env.StoreTypeSQLServer {
-		return
-	}
-
 	method := "search.DeleteDocument"
 	var err error
 
@@ -80,10 +71,6 @@ func (m *Indexer) DeleteDocument(ctx domain.RequestContext, ID string) {
 // IndexContent adds search index entry for document context.
 // Any existing document entries are removed.
 func (m *Indexer) IndexContent(ctx domain.RequestContext, p page.Page) {
-	if m.runtime.StoreProvider.Type() == env.StoreTypeSQLServer {
-		return
-	}
-
 	method := "search.IndexContent"
 	var err error
 
@@ -111,10 +98,6 @@ func (m *Indexer) IndexContent(ctx domain.RequestContext, p page.Page) {
 
 // DeleteContent removes all search entries for specific document content.
 func (m *Indexer) DeleteContent(ctx domain.RequestContext, pageID string) {
-	if m.runtime.StoreProvider.Type() == env.StoreTypeSQLServer {
-		return
-	}
-
 	method := "search.DeleteContent"
 	var err error
 

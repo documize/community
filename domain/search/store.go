@@ -335,10 +335,11 @@ func (s Store) matchLike(ctx domain.RequestContext, keywords, itemType string) (
 	keywords = fmt.Sprintf("%%%s%%", strings.ToLower(keywords))
 
 	sql1 := s.Bind(`SELECT
-        s.id, s.c_orgid AS orgid, s.c_docid AS documentid, s.c_itemid AS itemid, s.c_itemtype AS itemtype,
-            d.c_spaceid as spaceid, COALESCE(d.c_name,'Unknown') AS document, d.c_tags AS tags, d.c_desc AS excerpt,
-            COALESCE(l.c_name,'Unknown') AS space, d.c_created AS created, d.c_revised AS revised
-        FROM
+			s.id, s.c_orgid AS orgid, s.c_docid AS documentid, s.c_itemid AS itemid, s.c_itemtype AS itemtype,
+			d.c_spaceid as spaceid, COALESCE(d.c_name,'Unknown') AS document, d.c_tags AS tags,
+			d.c_desc AS excerpt, d.c_template AS template, d.c_versionid AS versionid,
+			COALESCE(l.c_name,'Unknown') AS space, d.c_created AS created, d.c_revised AS revised
+		FROM
             dmz_search s,
             dmz_doc d
         LEFT JOIN

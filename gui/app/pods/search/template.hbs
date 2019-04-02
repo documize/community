@@ -57,6 +57,8 @@
 					<div class="explain">Show results that have "google", either "apple" or "microsoft" but not "ibm"</div>
 				</div>
 			{{/if}}
+			{{#if (eq appMeta.storageProvider constants.StoreProvider.SQLServer)}}
+			{{/if}}
 		</div>
 	</div>
 {{/layout/master-sidebar}}
@@ -64,7 +66,7 @@
 {{#layout/master-content}}
 	{{layout/logo-heading
 		title="Search"
-		desc="Basic and advanced search queries"
+		desc="Find content"
 		icon=constants.Icon.Search}}
 
 	{{search/search-view

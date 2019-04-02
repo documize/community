@@ -263,20 +263,18 @@ CREATE TABLE dmz_pin (
 );
 CREATE INDEX idx_pin_1 ON dmz_pin (c_userid);
 
--- DROP TABLE IF EXISTS dmz_search;
--- CREATE TABLE dmz_search (
---     id BIGINT PRIMARY KEY IDENTITY (1, 1) NOT NULL,
---     c_orgid NVARCHAR(20) COLLATE Latin1_General_CS_AS NOT NULL,
---     c_docid NVARCHAR(20) COLLATE Latin1_General_CS_AS NOT NULL,
---     c_itemid NVARCHAR(20) COLLATE Latin1_General_CS_AS NOT NULL DEFAULT '',
---     c_itemtype NVARCHAR(10) COLLATE Latin1_General_CS_AS NOT NULL,
---     c_content NVARCHAR(MAX) COLLATE Latin1_General_CS_AS,
---     c_token TSVECTOR,
---     c_created DATETIME2 NOT NULL DEFAULT CURRENT_TIMESTAMP
--- );
--- CREATE INDEX idx_search_1 ON dmz_search (c_orgid);
--- CREATE INDEX idx_search_2 ON dmz_search (c_docid);
--- CREATE INDEX idx_search_3 ON dmz_search USING GIN(c_token);
+DROP TABLE IF EXISTS dmz_search;
+CREATE TABLE dmz_search (
+    id BIGINT PRIMARY KEY IDENTITY (1, 1) NOT NULL,
+    c_orgid NVARCHAR(20) COLLATE Latin1_General_CS_AS NOT NULL,
+    c_docid NVARCHAR(20) COLLATE Latin1_General_CS_AS NOT NULL,
+    c_itemid NVARCHAR(20) COLLATE Latin1_General_CS_AS NOT NULL DEFAULT '',
+    c_itemtype NVARCHAR(10) COLLATE Latin1_General_CS_AS NOT NULL,
+    c_content NVARCHAR(MAX) COLLATE Latin1_General_CS_AS,
+    c_created DATETIME2 NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX idx_search_1 ON dmz_search (c_orgid);
+CREATE INDEX idx_search_2 ON dmz_search (c_docid);
 
 DROP TABLE IF EXISTS dmz_section;
 CREATE TABLE dmz_section (

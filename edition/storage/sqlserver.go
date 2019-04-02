@@ -142,7 +142,7 @@ func SetSQLServerProvider(r *env.Runtime, s *store.Store) {
 	s.Pin = pinStore
 
 	// Search
-	searchStore := search.Store{}
+	searchStore := search.StoreSQLServer{}
 	searchStore.Runtime = r
 	s.Search = searchStore
 
