@@ -111,4 +111,7 @@ type StoreProvider interface {
 	// IsFalse returns storage provider boolean FALSE:
 	// MySQL is 0, PostgresSQL is FALSE, SQL Server is 0
 	IsFalse() string
+
+	// RowLimit returns SQL for limited number of returned rows
+	RowLimit(max int) string
 }

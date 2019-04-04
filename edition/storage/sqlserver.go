@@ -370,3 +370,8 @@ func (p SQLServerProvider) IsTrue() string {
 func (p SQLServerProvider) IsFalse() string {
 	return "0"
 }
+
+// RowLimit returns SQL for limiting number of rows returned.
+func (p SQLServerProvider) RowLimit(max int) string {
+	return fmt.Sprintf("TOP %d", max)
+}

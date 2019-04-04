@@ -364,6 +364,11 @@ func (p MySQLProvider) IsFalse() string {
 	return "0"
 }
 
+// RowLimit returns SQL for limiting number of rows returned.
+func (p MySQLProvider) RowLimit(max int) string {
+	return fmt.Sprintf("LIMIT %d", max)
+}
+
 // convertDatabaseVersion turns database version string as major,minor,patch numerics.
 func convertDatabaseVersion(v string) (ints []int, err error) {
 	ints = []int{0, 0, 0}

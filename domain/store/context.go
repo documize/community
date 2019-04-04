@@ -119,3 +119,21 @@ func (c *Context) IsTrue() string {
 func (c *Context) IsFalse() string {
 	return c.Runtime.StoreProvider.IsFalse()
 }
+
+// RowLimitVariants returns the SQL clause for limiting rows.
+// Depending on the storage provider, the limit clause goes either
+// at the start of the query or the end.
+func (c *Context) RowLimitVariants(max int) (variantStart string, variantEnd string) {
+	variantStart = ""
+	variantEnd = ""
+
+	if c.Runtime.StoreProvider.Type() == env.StoreTypeSQLServer {
+		// SQL Server and variants use 'SELECT TOP nnn' syntax.
+		variantStart = c.Runtime.StoreProvider.RowLimit(max)
+	} else {
+		// MySQL and variants use 'SELECT ... LIMIT nnn' syntax.
+		variantEnd = c.Runtime.StoreProvider.RowLimit(max)
+	}
+
+	return
+}

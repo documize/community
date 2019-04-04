@@ -305,3 +305,8 @@ func (p PostgreSQLProvider) IsTrue() string {
 func (p PostgreSQLProvider) IsFalse() string {
 	return "false"
 }
+
+// RowLimit returns SQL for limiting number of rows returned.
+func (p PostgreSQLProvider) RowLimit(max int) string {
+	return fmt.Sprintf("LIMIT %d", max)
+}
