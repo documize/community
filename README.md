@@ -2,7 +2,7 @@ Documize is an open source modern, lightweight and comprehensive alternative to 
 
 It's built with Golang + EmberJS and compiled down to a single executable binary for Linux, Windows and macOS.
 
-All you need to provide is PostgreSQL or any MySQL variant.
+All you need to provide is PostgreSQL, Microsoft SQL Server or any MySQL variant.
 
 - Built for technical and non-technical users
 - Designed to unify both customer-facing and internal documentation
