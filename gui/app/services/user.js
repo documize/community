@@ -10,7 +10,6 @@
 // https://documize.com
 
 import { isEmpty } from '@ember/utils';
-
 import RSVP from 'rsvp';
 import Service, { inject as service } from '@ember/service';
 
