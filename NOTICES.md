@@ -2515,7 +2515,7 @@ https:///github.com/trivago/tgo
    limitations under the License.
 
 
-https://github.com/denisenkom/go-mssq
+https://github.com/denisenkom/go-mssqldb
 
 Copyright (c) 2012 The Go Authors. All rights reserved.
 
