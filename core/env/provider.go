@@ -28,8 +28,8 @@ const (
 	// StoreTypePostgreSQL is PostgreSQL
 	StoreTypePostgreSQL StoreType = "PostgreSQL"
 
-	// StoreTypeMSSQL is Microsoft SQL Server
-	StoreTypeMSSQL StoreType = "MSSQL"
+	// StoreTypeSQLServer is Microsoft SQL Server
+	StoreTypeSQLServer StoreType = "SQLServer"
 )
 
 // StoreProvider defines a database provider.
@@ -103,4 +103,15 @@ type StoreProvider interface {
 	// Must use ? for parameter placeholder character as DB layer
 	// will convert to database specific parameter placeholder character.
 	ConvertTimestamp() (statement string)
+
+	// IsTrue returns storage provider boolean TRUE:
+	// MySQL is 1, PostgresSQL is TRUE, SQL Server is 1
+	IsTrue() string
+
+	// IsFalse returns storage provider boolean FALSE:
+	// MySQL is 0, PostgresSQL is FALSE, SQL Server is 0
+	IsFalse() string
+
+	// RowLimit returns SQL for limited number of returned rows
+	RowLimit(max int) string
 }

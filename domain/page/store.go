@@ -61,10 +61,12 @@ func (s Store) Add(ctx domain.RequestContext, model page.NewPage) (err error) {
 
 	_, err = ctx.Transaction.Exec(s.Bind("INSERT INTO dmz_section (c_refid, c_orgid, c_docid, c_userid, c_contenttype, c_type, c_level, c_name, c_body, c_revisions, c_sequence, c_templateid, c_status, c_relativeid, c_created, c_revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"),
 		model.Page.RefID, model.Page.OrgID, model.Page.DocumentID, model.Page.UserID, model.Page.ContentType, model.Page.Type, model.Page.Level, model.Page.Name, model.Page.Body, model.Page.Revisions, model.Page.Sequence, model.Page.TemplateID, model.Page.Status, model.Page.RelativeID, model.Page.Created, model.Page.Revised)
+	if err != nil {
+		err = errors.Wrap(err, "execute page insert")
+	}
 
 	_, err = ctx.Transaction.Exec(s.Bind("INSERT INTO dmz_section_meta (c_sectionid, c_orgid, c_userid, c_docid, c_rawbody, c_config, c_external, c_created, c_revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"),
 		model.Meta.SectionID, model.Meta.OrgID, model.Meta.UserID, model.Meta.DocumentID, model.Meta.RawBody, model.Meta.Config, model.Meta.ExternalSource, model.Meta.Created, model.Meta.Revised)
-
 	if err != nil {
 		err = errors.Wrap(err, "execute page meta insert")
 	}
@@ -241,7 +243,7 @@ func (s Store) GetPageMeta(ctx domain.RequestContext, pageID string) (meta page.
         c_orgid AS orgid, c_userid AS userid, c_docid AS documentid,
         c_rawbody AS rawbody, coalesce(c_config,`+s.EmptyJSON()+`) as config,
         c_external AS externalsource, c_created AS created, c_revised AS revised
-        FROM dmz_section_meta
+        FROM dmz_section_meta 
         WHERE c_orgid=? AND c_sectionid=?`),
 		ctx.OrgID, pageID)
 
@@ -256,7 +258,7 @@ func (s Store) GetPageMeta(ctx domain.RequestContext, pageID string) (meta page.
 func (s Store) GetDocumentPageMeta(ctx domain.RequestContext, documentID string, externalSourceOnly bool) (meta []page.Meta, err error) {
 	filter := ""
 	if externalSourceOnly {
-		filter = " AND c_external=true"
+		filter = " AND c_external=" + s.IsTrue()
 	}
 
 	err = s.Runtime.Db.Select(&meta, s.Bind(`SELECT id, c_sectionid AS sectionid,

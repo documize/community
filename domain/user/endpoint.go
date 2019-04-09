@@ -586,6 +586,7 @@ func (h *Handler) ForgotPassword(w http.ResponseWriter, r *http.Request) {
 	ctx := domain.GetRequestContext(r)
 	ctx.Subdomain = organization.GetSubdomainFromHost(r)
 
+	// Get email address from payload.
 	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -593,7 +594,6 @@ func (h *Handler) ForgotPassword(w http.ResponseWriter, r *http.Request) {
 		h.Runtime.Log.Error(method, err)
 		return
 	}
-
 	u := new(user.User)
 	err = json.Unmarshal(body, &u)
 	if err != nil {
@@ -602,6 +602,15 @@ func (h *Handler) ForgotPassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Exit process if user does not exist.
+	_, err = h.Store.User.GetByEmail(ctx, u.Email)
+	if err != nil {
+		response.WriteNotFound(w)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	// Set token for password reset process.
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
 		response.WriteServerError(w, method, err)
@@ -610,7 +619,6 @@ func (h *Handler) ForgotPassword(w http.ResponseWriter, r *http.Request) {
 	}
 
 	token := secrets.GenerateSalt()
-
 	err = h.Store.User.ForgotUserPassword(ctx, u.Email, token)
 	if err != nil && err != sql.ErrNoRows {
 		ctx.Transaction.Rollback()
@@ -618,7 +626,6 @@ func (h *Handler) ForgotPassword(w http.ResponseWriter, r *http.Request) {
 		h.Runtime.Log.Error(method, err)
 		return
 	}
-
 	if err == sql.ErrNoRows {
 		ctx.Transaction.Rollback()
 		h.Runtime.Log.Info(fmt.Sprintf("User %s not found for password reset process", u.Email))
@@ -628,6 +635,7 @@ func (h *Handler) ForgotPassword(w http.ResponseWriter, r *http.Request) {
 
 	ctx.Transaction.Commit()
 
+	// Fire reset email to user.
 	appURL := ctx.GetAppURL(fmt.Sprintf("auth/reset/%s", token))
 	mailer := mail.Mailer{Runtime: h.Runtime, Store: h.Store, Context: ctx}
 	go mailer.PasswordReset(u.Email, appURL)

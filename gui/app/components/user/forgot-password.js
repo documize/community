@@ -18,6 +18,7 @@ import Component from '@ember/component';
 export default Component.extend({
 	email: "",
 	sayThanks: false,
+	sayError: false,
 	emailEmpty: empty('email'),
 	hasEmptyEmailError: and('emailEmpty', 'emailIsEmpty'),
 
@@ -30,10 +31,16 @@ export default Component.extend({
 				return $("#email").focus();
 			}
 
+			set(this, 'sayThanks', false);
+			set(this, 'sayError', false);
+
+			set(this, 'emailIsEmpty', false);
+
 			this.get('forgot')(email).then(() => {
 				set(this, 'sayThanks', true);
 				set(this, 'email', '');
-				set(this, 'emailIsEmpty', false);
+			}).catch(() => {
+				set(this, 'sayError', true);
 			});
 		}
 	}

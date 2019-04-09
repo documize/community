@@ -15,9 +15,10 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"github.com/documize/community/model/category"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/documize/community/model/category"
 
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/event"
@@ -36,6 +37,7 @@ import (
 	"github.com/documize/community/model/doc"
 	"github.com/documize/community/model/page"
 	pm "github.com/documize/community/model/permission"
+
 	// "github.com/documize/community/model/template"
 	"github.com/documize/community/model/workflow"
 	uuid "github.com/nu7hatch/gouuid"
@@ -336,12 +338,7 @@ func (h *Handler) Use(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctx.Transaction, err = h.Runtime.Db.Beginx()
-	if err != nil {
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
+	ctx.Transaction, _ = h.Runtime.StartTx(sql.LevelReadUncommitted)
 
 	// Prepare new document
 	documentID = uniqueid.Generate()
@@ -386,11 +383,10 @@ func (h *Handler) Use(w http.ResponseWriter, r *http.Request) {
 		model.Meta = meta
 
 		err = h.Store.Page.Add(ctx, model)
-
 		if err != nil {
+			h.Runtime.Log.Error(method, err)
 			ctx.Transaction.Rollback()
 			response.WriteServerError(w, method, err)
-			h.Runtime.Log.Error(method, err)
 			return
 		}
 	}

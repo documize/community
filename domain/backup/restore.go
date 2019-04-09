@@ -375,9 +375,10 @@ func (r *restoreHandler) dmzOrg() (err error) {
 				org[i].RefID, org[i].Company, org[i].Title, org[i].Message,
 				strings.ToLower(org[i].Domain), org[i].ConversionEndpoint, strings.ToLower(org[i].Email),
 				org[i].AllowAnonymousAccess, org[i].AuthProvider, org[i].AuthConfig,
-				org[i].MaxTags, true, org[i].Serial, org[i].Subscription,
+				org[i].MaxTags, r.Runtime.StoreProvider.IsTrue(), org[i].Serial, 
+				org[i].Subscription, org[i].Active,
 				org[i].Theme, org[i].Logo,
-				org[i].Active, org[i].Created, org[i].Revised)
+				org[i].Created, org[i].Revised)
 			if err != nil {
 				r.Context.Transaction.Rollback()
 				err = errors.Wrap(err, fmt.Sprintf("unable to insert %s %s", filename, org[i].RefID))

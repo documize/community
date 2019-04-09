@@ -61,8 +61,8 @@ func InitRuntime(r *env.Runtime, s *store.Store) bool {
 		storage.SetMySQLProvider(r, s)
 	case "postgresql":
 		storage.SetPostgreSQLProvider(r, s)
-	// case "mssql":
-	// storage.SetSQLServerProvider(r, s)
+	case "sqlserver":
+		storage.SetSQLServerProvider(r, s)
 	default:
 		r.Log.Infof("Unsupported database type: %s", r.Flags.DBType)
 		r.Log.Info("Documize supports the following database types: mysql | mariadb | percona | postgresql")
@@ -71,7 +71,7 @@ func InitRuntime(r *env.Runtime, s *store.Store) bool {
 	}
 
 	// Open connection to database
-	db, err := sqlx.Open(r.StoreProvider.DriverName(), r.StoreProvider.MakeConnectionString()) //r.Flags.DBConn
+	db, err := sqlx.Open(r.StoreProvider.DriverName(), r.StoreProvider.MakeConnectionString())
 	if err != nil {
 		r.Log.Error("Unable to open database", err)
 		os.Exit(1)

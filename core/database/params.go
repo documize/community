@@ -28,6 +28,8 @@ func RebindParams(sql string, s env.StoreType) string {
 	switch s {
 	case env.StoreTypePostgreSQL:
 		bindParam = sqlx.DOLLAR
+	case env.StoreTypeSQLServer:
+		bindParam = sqlx.AT
 	}
 
 	return sqlx.Rebind(bindParam, sql)

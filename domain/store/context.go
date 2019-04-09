@@ -14,6 +14,7 @@ package store
 import (
 	"database/sql"
 	"fmt"
+
 	"github.com/documize/community/core/env"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
@@ -36,6 +37,8 @@ func (c *Context) Bind(sql string) string {
 	switch c.Runtime.StoreProvider.Type() {
 	case env.StoreTypePostgreSQL:
 		bindParam = sqlx.DOLLAR
+	case env.StoreTypeSQLServer:
+		bindParam = sqlx.AT
 	}
 
 	return sqlx.Rebind(bindParam, sql)
@@ -105,4 +108,32 @@ func (c *Context) EmptyJSON() string {
 // GetJSONValue returns database specific empty JSON object.
 func (c *Context) GetJSONValue(column, attribute string) string {
 	return c.Runtime.StoreProvider.JSONGetValue(column, attribute)
+}
+
+// IsTrue return string representation of TRUE for storage provider.
+func (c *Context) IsTrue() string {
+	return c.Runtime.StoreProvider.IsTrue()
+}
+
+// IsFalse return string representation of FALSE for storage provider.
+func (c *Context) IsFalse() string {
+	return c.Runtime.StoreProvider.IsFalse()
+}
+
+// RowLimitVariants returns the SQL clause for limiting rows.
+// Depending on the storage provider, the limit clause goes either
+// at the start of the query or the end.
+func (c *Context) RowLimitVariants(max int) (variantStart string, variantEnd string) {
+	variantStart = ""
+	variantEnd = ""
+
+	if c.Runtime.StoreProvider.Type() == env.StoreTypeSQLServer {
+		// SQL Server and variants use 'SELECT TOP nnn' syntax.
+		variantStart = c.Runtime.StoreProvider.RowLimit(max)
+	} else {
+		// MySQL and variants use 'SELECT ... LIMIT nnn' syntax.
+		variantEnd = c.Runtime.StoreProvider.RowLimit(max)
+	}
+
+	return
 }

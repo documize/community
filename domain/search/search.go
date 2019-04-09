@@ -13,6 +13,7 @@ package search
 
 import (
 	"database/sql"
+
 	"github.com/documize/community/domain"
 	"github.com/documize/community/model/attachment"
 	"github.com/documize/community/model/category"

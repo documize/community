@@ -13,9 +13,9 @@ All you need to provide is PostgreSQL or any MySQL variant.
 
 ## Latest Release
 
-[Community Edition: v2.2.1](https://github.com/documize/community/releases)
+[Community Edition: v2.3.0](https://github.com/documize/community/releases)
 
-[Enterprise Edition: v2.2.1](https://www.documize.com/downloads)
+[Enterprise Edition: v2.3.0](https://www.documize.com/downloads)
 
 > *We provide frequent product updates for both cloud and self-hosted customers.*
 >
@@ -27,11 +27,12 @@ All you need to provide is PostgreSQL or any MySQL variant.
 - Windows
 - macOS
 
-Heck, Documize will probably run just fine on a Raspberry Pi 3.
+Heck, Documize will probably run just fine on a Raspberry Pi.
 
 ## Database Support
 
 - PostgreSQL (v9.6+)
+- Microsoft SQL Server (2016+)
 - MySQL (v5.7.10+ and v8.0.12+)
 - Percona (v5.7.16-10+)
 - MariaDB (10.3.0+)
@@ -44,11 +45,11 @@ Heck, Documize will probably run just fine on a Raspberry Pi 3.
 - Brave
 - Vivaldi
 - Opera
-- Microsoft Edge (v42+)
+- Edge (v42+)
 
 ## Technology Stack
 
-- Go (v1.12.1)
+- Go (v1.12.2)
 - Ember JS (v3.8.0)
 
 ## Authentication Options

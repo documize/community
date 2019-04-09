@@ -37,7 +37,7 @@ import (
 	space "github.com/documize/community/domain/space"
 	"github.com/documize/community/domain/store"
 	user "github.com/documize/community/domain/user"
-	_ "github.com/lib/pq" // the mysql driver is required behind the scenes
+	_ "github.com/lib/pq" // the PostgreSQL driver is required behind the scenes
 )
 
 // PostgreSQLProvider supports by popular demand.
@@ -176,8 +176,8 @@ func (p PostgreSQLProvider) Params() map[string]string {
 	return map[string]string{}
 }
 
-// Example holds storage provider specific connection string format.
-// used in error messages
+// Example holds storage provider specific connection string format
+// used in error messages.
 func (p PostgreSQLProvider) Example() string {
 	return "database connection string format is 'host=localhost port=5432 sslmode=disable user=admin password=secret dbname=documize'"
 }
@@ -294,4 +294,19 @@ func (p PostgreSQLProvider) VerfiyCharacterCollation(charset, collation string) 
 // will convert to database specific parameter placeholder character.
 func (p PostgreSQLProvider) ConvertTimestamp() (statement string) {
 	return `to_timestamp(?,'YYYY-MM-DD HH24:MI:SS')`
+}
+
+// IsTrue returns "true"
+func (p PostgreSQLProvider) IsTrue() string {
+	return "true"
+}
+
+// IsFalse returns "false"
+func (p PostgreSQLProvider) IsFalse() string {
+	return "false"
+}
+
+// RowLimit returns SQL for limiting number of rows returned.
+func (p PostgreSQLProvider) RowLimit(max int) string {
+	return fmt.Sprintf("LIMIT %d", max)
 }

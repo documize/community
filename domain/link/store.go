@@ -94,7 +94,7 @@ func (s Store) GetPageLinks(ctx domain.RequestContext, documentID, pageID string
 func (s Store) MarkOrphanDocumentLink(ctx domain.RequestContext, documentID string) (err error) {
 	revised := time.Now().UTC()
 	_, err = ctx.Transaction.Exec(s.Bind(`UPDATE dmz_doc_link SET
-        c_orphan=true, c_revised=?
+        c_orphan=`+s.IsTrue()+`, c_revised=?
         WHERE c_type='document' AND c_orgid=? AND c_targetdocid=?`),
 		revised, ctx.OrgID, documentID)
 
@@ -109,7 +109,7 @@ func (s Store) MarkOrphanDocumentLink(ctx domain.RequestContext, documentID stri
 func (s Store) MarkOrphanPageLink(ctx domain.RequestContext, pageID string) (err error) {
 	revised := time.Now().UTC()
 	_, err = ctx.Transaction.Exec(s.Bind(`UPDATE dmz_doc_link SET
-        c_orphan=true, c_revised=?
+        c_orphan=`+s.IsTrue()+`, c_revised=?
         WHERE c_type='section' AND c_orgid=? AND c_targetid=?`),
 		revised, ctx.OrgID, pageID)
 
@@ -124,7 +124,7 @@ func (s Store) MarkOrphanPageLink(ctx domain.RequestContext, pageID string) (err
 func (s Store) MarkOrphanAttachmentLink(ctx domain.RequestContext, attachmentID string) (err error) {
 	revised := time.Now().UTC()
 	_, err = ctx.Transaction.Exec(s.Bind(`UPDATE dmz_doc_link SET
-        c_orphan=true, c_revised=?
+        c_orphan=`+s.IsTrue()+`, c_revised=?
         WHERE c_type='file' AND c_orgid=? AND c_targetid=?`),
 		revised, ctx.OrgID, attachmentID)
 

@@ -190,8 +190,8 @@ func (p MySQLProvider) Params() map[string]string {
 	}
 }
 
-// Example holds storage provider specific connection string format.
-// used in error messages
+// Example holds storage provider specific connection string format
+// used in error messages.
 func (p MySQLProvider) Example() string {
 	return "database connection string format is 'username:password@tcp(host:3306)/database'"
 }
@@ -352,6 +352,21 @@ func (p MySQLProvider) VerfiyCharacterCollation(charset, collation string) (char
 // will convert to database specific parameter placeholder character.
 func (p MySQLProvider) ConvertTimestamp() (statement string) {
 	return `STR_TO_DATE(?,'%Y-%m-%d %H:%i:%s')`
+}
+
+// IsTrue returns "1"
+func (p MySQLProvider) IsTrue() string {
+	return "1"
+}
+
+// IsFalse returns "0"
+func (p MySQLProvider) IsFalse() string {
+	return "0"
+}
+
+// RowLimit returns SQL for limiting number of rows returned.
+func (p MySQLProvider) RowLimit(max int) string {
+	return fmt.Sprintf("LIMIT %d", max)
 }
 
 // convertDatabaseVersion turns database version string as major,minor,patch numerics.

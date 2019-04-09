@@ -37,10 +37,12 @@ rd /s /q embed\bindata\scripts
 mkdir embed\bindata\scripts
 mkdir embed\bindata\scripts\mysql
 mkdir embed\bindata\scripts\postgresql
+mkdir embed\bindata\scripts\sqlserver
 
 echo "Copying database scripts folder"
 robocopy /e /NFL /NDL /NJH core\database\scripts\mysql embed\bindata\scripts\mysql
 robocopy /e /NFL /NDL /NJH core\database\scripts\postgresql embed\bindata\scripts\postgresql
+robocopy /e /NFL /NDL /NJH core\database\scripts\sqlserver embed\bindata\scripts\sqlserver
 
 echo "Generating in-memory static assets..."
 go get -u github.com/jteeuwen/go-bindata/...
@@ -51,12 +53,12 @@ cd ..
 
 echo "Compiling Windows"
 set GOOS=windows
-go build -gcflags=-trimpath=%GOPATH% -asmflags=-trimpath=%GOPATH% -o bin/documize-community-windows-amd64.exe edition/community.go
+go build -ldflags="-s -w" -gcflags="all=-trimpath=$GOPATH" -o bin/documize-community-windows-amd64.exe edition/community.go
 
 echo "Compiling Linux"
 set GOOS=linux
-go build -gcflags=-trimpath=%GOPATH% -asmflags=-trimpath=%GOPATH% -o bin/documize-community-linux-amd64 edition/community.go
+go build -ldflags="-s -w" -gcflags="all=-trimpath=$GOPATH" -o bin/documize-community-linux-amd64 edition/community.go
 
 echo "Compiling Darwin"
 set GOOS=darwin
-go build -gcflags=-trimpath=%GOPATH% -asmflags=-trimpath=%GOPATH% -o bin/documize-community-darwin-amd64 edition/community.go
+go build -ldflags="-s -w" -gcflags="all=-trimpath=$GOPATH" -o bin/documize-community-darwin-amd64 edition/community.go

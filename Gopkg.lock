@@ -2,12 +2,31 @@
 
 
 [[projects]]
+  digest = "1:b62a3c5b37db602bf1158e921da1a762315a4c37855fd418a14498aa87a342d5"
+  name = "cloud.google.com/go"
+  packages = ["civil"]
+  pruneopts = "UT"
+  revision = "2fa99f4c25c422525316dcb1fd3d5b94e1944cfd"
+  version = "v0.37.1"
+
+[[projects]]
   digest = "1:606d068450c82b9ddaa21de992f73563754077f0f411235cdfe71d0903a268c3"
   name = "github.com/codegangsta/negroni"
   packages = ["."]
   pruneopts = "UT"
   revision = "5dbbc83f748fc3ad38585842b0aedab546d0ea1e"
   version = "v0.3.0"
+
+[[projects]]
+  branch = "master"
+  digest = "1:cf0505eb7d4704d5ab445353dc64122acf56d13937e20dac5570b995cb21232c"
+  name = "github.com/denisenkom/go-mssqldb"
+  packages = [
+    ".",
+    "internal/cp",
+  ]
+  pruneopts = "UT"
+  revision = "a8ed825ac8537383ef814eaf5a16174751796a2b"
 
 [[projects]]
   digest = "1:217f778e19b8d206112c21d21a7cc72ca3cb493b67631680a2324bc50335d432"
@@ -188,11 +207,12 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:1ecf2a49df33be51e757d0033d5d51d5f784f35f68e5a38f797b2d3f03357d71"
+  digest = "1:68344dbfaa4179bb50a583eb8172ace3f1edaf3aebc24e68c03f549f6e6b60dc"
   name = "golang.org/x/crypto"
   packages = [
     "bcrypt",
     "blowfish",
+    "md4",
   ]
   pruneopts = "UT"
   revision = "650f4a345ab4e5b245a3034b110ebc7299e68186"
@@ -275,6 +295,7 @@
   analyzer-version = 1
   input-imports = [
     "github.com/codegangsta/negroni",
+    "github.com/denisenkom/go-mssqldb",
     "github.com/dgrijalva/jwt-go",
     "github.com/documize/blackfriday",
     "github.com/documize/glick",

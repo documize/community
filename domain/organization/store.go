@@ -86,11 +86,12 @@ func (s Store) GetOrganizationByDomain(subdomain string) (o org.Organization, er
 	    coalesce(c_sub,`+s.EmptyJSON()+`) AS subscription,
         c_maxtags AS maxtags, c_created AS created, c_revised AS revised, c_theme AS theme
         FROM dmz_org
-        WHERE c_domain=? AND c_active=true`),
+        WHERE c_domain=? AND c_active=`+s.IsTrue()),
 		subdomain)
 	if err == nil {
 		return
 	}
+	s.Runtime.Log.Error("meta", err)
 
 	// match on empty domain AS last resort
 	err = s.Runtime.Db.Get(&o, s.Bind(`SELECT id, c_refid AS refid,
@@ -101,7 +102,7 @@ func (s Store) GetOrganizationByDomain(subdomain string) (o org.Organization, er
 	    coalesce(c_sub,`+s.EmptyJSON()+`) AS subscription,
         c_maxtags AS maxtags, c_created AS created, c_revised AS revised, c_theme AS theme
         FROM dmz_org
-        WHERE c_domain='' AND c_active=true`))
+        WHERE c_domain='' AND c_active=`+s.IsTrue()))
 
 	if err != nil && err != sql.ErrNoRows {
 		err = errors.Wrap(err, "unable to execute select for empty subdomain")
@@ -134,7 +135,7 @@ func (s Store) DeleteOrganization(ctx domain.RequestContext, orgID string) (rows
 
 // RemoveOrganization sets the orgID organization to be inactive, thus executing a "soft delete" operation.
 func (s Store) RemoveOrganization(ctx domain.RequestContext, orgID string) (err error) {
-	_, err = ctx.Transaction.Exec(s.Bind("UPDATE dmz_org SET c_active=false WHERE c_refid=?"), orgID)
+	_, err = ctx.Transaction.Exec(s.Bind("UPDATE dmz_org SET c_active="+s.IsFalse()+"  WHERE c_refid=?"), orgID)
 
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to execute soft delete for org %s", orgID))
@@ -162,7 +163,7 @@ func (s Store) UpdateAuthConfig(ctx domain.RequestContext, org org.Organization)
 
 // CheckDomain makes sure there is an organisation with the correct domain
 func (s Store) CheckDomain(ctx domain.RequestContext, domain string) string {
-	row := s.Runtime.Db.QueryRow(s.Bind("SELECT COUNT(*) FROM dmz_org WHERE c_domain=? AND c_active=true"), domain)
+	row := s.Runtime.Db.QueryRow(s.Bind("SELECT COUNT(*) FROM dmz_org WHERE c_domain=? AND c_active="+s.IsTrue()), domain)
 
 	var count int
 	err := row.Scan(&count)
@@ -179,7 +180,7 @@ func (s Store) CheckDomain(ctx domain.RequestContext, domain string) string {
 
 // Logo fetchs stored image from store or NULL.
 func (s Store) Logo(ctx domain.RequestContext, domain string) (l []byte, err error) {
-	row := s.Runtime.Db.QueryRow(s.Bind("SELECT c_logo FROM dmz_org WHERE c_domain=? AND c_active=true"), domain)
+	row := s.Runtime.Db.QueryRow(s.Bind("SELECT c_logo FROM dmz_org WHERE c_domain=? AND c_active="+s.IsTrue()), domain)
 
 	err = row.Scan(&l)
 	if err == sql.ErrNoRows {

@@ -82,7 +82,7 @@ func ParseFlags() (f Flags, ok bool) {
 	register(&port, "port", false, "http/https port number")
 	register(&forcePort2SSL, "forcesslport", false, "redirect given http port number to TLS")
 	register(&siteMode, "offline", false, "set to '1' for OFFLINE mode")
-	register(&dbType, "dbtype", true, "specify the database provider: mysql|percona|mariadb|postgresql")
+	register(&dbType, "dbtype", true, "specify the database provider: mysql|percona|mariadb|postgresql|sqlserver")
 	register(&dbConn, "db", true, `'database specific connection string for example "user:password@tcp(localhost:3306)/dbname"`)
 	register(&location, "location", false, `reserved`)
 
@@ -90,6 +90,7 @@ func ParseFlags() (f Flags, ok bool) {
 		ok = false
 	}
 
+	f.DBType = strings.ToLower(dbType)
 	f.DBConn = dbConn
 	f.ForceHTTPPort2SSL = forcePort2SSL
 	f.HTTPPort = port
@@ -97,7 +98,6 @@ func ParseFlags() (f Flags, ok bool) {
 	f.SiteMode = siteMode
 	f.SSLCertFile = certFile
 	f.SSLKeyFile = keyFile
-	f.DBType = strings.ToLower(dbType)
 
 	// reserved
 	if len(location) == 0 {

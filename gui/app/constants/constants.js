@@ -136,10 +136,13 @@ let constants = EmberObject.extend({
 		Publish:			7,
 	},
 
-	// Meta
+	// Database type
 	StoreProvider: { // eslint-disable-line ember/avoid-leaking-state-in-ember-objects
 		MySQL: 'MySQL',
 		PostgreSQL: 'PostgreSQL',
+		Percona: 'Percona',
+		MariaDB: 'MariaDB',
+		SQLServer: 'SQLServer',
 	},
 
 	// Product is where we try to balance the fine line between useful open core
