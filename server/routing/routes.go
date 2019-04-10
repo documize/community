@@ -187,6 +187,7 @@ func RegisterEndpoints(rt *env.Runtime, s *store.Store) {
 
 	AddPrivate(rt, "links/{spaceID}/{documentID}/{pageID}", []string{"GET", "OPTIONS"}, nil, link.GetLinkCandidates)
 	AddPrivate(rt, "links", []string{"GET", "OPTIONS"}, nil, link.SearchLinkCandidates)
+	AddPrivate(rt, "link/{linkID}", []string{"GET", "OPTIONS"}, nil, link.GetLink)
 	AddPrivate(rt, "documents/{documentID}/links", []string{"GET", "OPTIONS"}, nil, document.DocumentLinks)
 
 	AddPrivate(rt, "pin/{userID}", []string{"POST", "OPTIONS"}, nil, pin.Add)

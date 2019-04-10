@@ -35,6 +35,16 @@ export default Service.extend(Notifier, {
 		});
 	},
 
+	// Returns link URL for specified link.
+	fetchLinkUrl(linkId) {
+		return this.get('ajax').request(`link/${linkId}`, {
+			method: 'GET',
+			dataType: 'text'
+		}).then((response) => {
+			return response;
+		});
+	},	
+
 	// Returns keyword-based candidates
 	searchCandidates(keywords) {
 		let url = "links?keywords=" + encodeURIComponent(keywords);

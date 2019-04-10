@@ -15,12 +15,13 @@ import (
 	"bytes"
 	"database/sql"
 	"fmt"
-	"github.com/documize/community/domain/auth"
-	"github.com/documize/community/model/space"
 	"io"
 	"mime"
 	"net/http"
 	"strings"
+
+	"github.com/documize/community/domain/auth"
+	"github.com/documize/community/model/space"
 
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/request"
@@ -161,7 +162,7 @@ func (h *Handler) Download(w http.ResponseWriter, r *http.Request) {
 		canDownload = true
 	}
 
-	if  len(secureToken) == 0 && len(authToken) == 0 {
+	if !canDownload && len(secureToken) == 0 && len(authToken) == 0 {
 		h.Runtime.Log.Error("get attachment received no access token", err)
 		response.WriteForbiddenError(w)
 		return

@@ -49,7 +49,7 @@ Heck, Documize will probably run just fine on a Raspberry Pi.
 
 ## Technology Stack
 
-- Go (v1.12.2)
+- Go (v1.12.3)
 - Ember JS (v3.8.0)
 
 ## Authentication Options

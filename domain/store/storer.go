@@ -215,6 +215,7 @@ type AttachmentStorer interface {
 type LinkStorer interface {
 	Add(ctx domain.RequestContext, l link.Link) (err error)
 	SearchCandidates(ctx domain.RequestContext, keywords string) (docs []link.Candidate, pages []link.Candidate, attachments []link.Candidate, err error)
+	GetLink(ctx domain.RequestContext, linkID string) (l link.Link, err error)
 	GetDocumentOutboundLinks(ctx domain.RequestContext, documentID string) (links []link.Link, err error)
 	GetPageLinks(ctx domain.RequestContext, documentID, pageID string) (links []link.Link, err error)
 	MarkOrphanDocumentLink(ctx domain.RequestContext, documentID string) (err error)

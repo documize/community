@@ -46,6 +46,25 @@ func (s Store) Add(ctx domain.RequestContext, l link.Link) (err error) {
 	return
 }
 
+// GetLink returns specified link.
+func (s Store) GetLink(ctx domain.RequestContext, linkID string) (l link.Link, err error) {
+	err = s.Runtime.Db.Get(&l, s.Bind(`
+		select c_refid AS refid, c_orgid AS orgid, c_spaceid AS spaceid, c_userid AS userid,
+        c_sourcedocid AS sourcedocumentid, c_sourcesectionid AS sourcesectionid,
+        c_targetdocid AS targetdocumentid, c_targetid AS targetid, c_externalid AS externalid,
+        c_type as linktype, c_orphan As orphan, c_created AS created, c_revised AS revised
+		FROM dmz_doc_link
+		WHERE c_orgid=? AND c_refid=?`),
+		ctx.OrgID, linkID)
+
+	if err != nil {
+		err = errors.Wrapf(err, "select link %s", linkID)
+		return
+	}
+
+	return
+}
+
 // GetDocumentOutboundLinks returns outbound links for specified document.
 func (s Store) GetDocumentOutboundLinks(ctx domain.RequestContext, documentID string) (links []link.Link, err error) {
 	err = s.Runtime.Db.Select(&links, s.Bind(`

@@ -129,6 +129,10 @@ export default Router.map(function () {
 		path: 'secure/:token'
 	});
 
+	this.route('jumpto', {
+		path: 'link/:jump_type/:jump_id'
+	});
+
 	this.route(
 		'auth',
 		{

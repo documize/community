@@ -13,8 +13,11 @@ package link
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 	"net/url"
+
+	"github.com/documize/community/core/stringutil"
 
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/request"
@@ -159,4 +162,56 @@ func (h *Handler) SearchLinkCandidates(w http.ResponseWriter, r *http.Request) {
 	payload.Attachments = attachments
 
 	response.WriteJSON(w, payload)
+}
+
+// GetLink returns link object for given ID.
+func (h *Handler) GetLink(w http.ResponseWriter, r *http.Request) {
+	method := "link.GetLink"
+	ctx := domain.GetRequestContext(r)
+
+	// Param check.
+	linkID := request.Param(r, "linkID")
+	if len(linkID) == 0 {
+		response.WriteMissingDataError(w, method, "linkID")
+		return
+	}
+
+	// Load link record.
+	link, err := h.Store.Link.GetLink(ctx, linkID)
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		return
+	}
+
+	// Check document permissions.
+	if !permission.CanViewDocument(ctx, *h.Store, link.SourceDocumentID) {
+		response.WriteForbiddenError(w)
+		return
+	}
+
+	// Build URL for link
+	url := ""
+
+	// Jump-to-document link type.
+	if link.LinkType == "document" {
+		doc, err := h.Store.Document.Get(ctx, link.TargetDocumentID)
+		if err != nil {
+			response.WriteString(w, url)
+		}
+		url = ctx.GetAppURL(fmt.Sprintf("s/%s/%s/d/%s/%s",
+			doc.SpaceID, doc.SpaceID, doc.RefID, stringutil.MakeSlug(doc.Name)))
+	}
+
+	// Jump-to-section link type.
+	if link.LinkType == "section" || link.LinkType == "tab" {
+		doc, err := h.Store.Document.Get(ctx, link.TargetDocumentID)
+		if err != nil {
+			response.WriteString(w, url)
+		}
+		url = ctx.GetAppURL(fmt.Sprintf("s/%s/%s/d/%s/%s?currentPageId=%s",
+			doc.SpaceID, doc.SpaceID, doc.RefID,
+			stringutil.MakeSlug(doc.Name), link.TargetID))
+	}
+
+	response.WriteString(w, url)
 }
