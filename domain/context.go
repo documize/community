@@ -17,6 +17,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/documize/community/core/request"
+
 	"github.com/jmoiron/sqlx"
 )
 
@@ -69,7 +71,7 @@ func GetRequestContext(r *http.Request) (ctx RequestContext) {
 
 	ctx = RequestContext{}
 	ctx.AppURL = r.Host
-	ctx.SSL = r.TLS != nil
+	ctx.SSL = request.IsSSL(r)
 
 	return
 }

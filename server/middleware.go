@@ -22,6 +22,7 @@ import (
 	"time"
 
 	"github.com/documize/community/core/env"
+	"github.com/documize/community/core/request"
 	"github.com/documize/community/core/response"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/auth"
@@ -129,7 +130,7 @@ func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http
 		rc.ViewUsers = false
 		rc.AppURL = r.Host
 		rc.Subdomain = organization.GetSubdomainFromHost(r)
-		rc.SSL = r.TLS != nil
+		rc.SSL = request.IsSSL(r)
 
 		// get user IP from request
 		i := strings.LastIndex(r.RemoteAddr, ":")
@@ -138,7 +139,6 @@ func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http
 		} else {
 			rc.ClientIP = r.RemoteAddr[:i]
 		}
-
 		fip := r.Header.Get("X-Forwarded-For")
 		if len(fip) > 0 {
 			rc.ClientIP = fip
@@ -262,7 +262,7 @@ func (m *middleware) preAuthorizeStaticAssets(rt *env.Runtime, r *http.Request) 
 		ctx.Analytics = false
 		ctx.GlobalAdmin = false
 		ctx.AppURL = r.Host
-		ctx.SSL = r.TLS != nil
+		ctx.SSL = request.IsSSL(r)
 
 		return true, ctx
 	}

@@ -23,6 +23,7 @@ import (
 	"github.com/documize/community/domain/store"
 	"github.com/documize/community/server/routing"
 	"github.com/documize/community/server/web"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
 
@@ -76,6 +77,9 @@ func Start(rt *env.Runtime, s *store.Store, ready chan struct{}) {
 		negroni.HandlerFunc(cm.cors),
 		negroni.Wrap(routing.BuildRoutes(rt, routing.RoutePrefixRoot)),
 	))
+
+	// Look out for reverse proxy headers.
+	router.Use(handlers.ProxyHeaders)
 
 	n := negroni.New()
 	n.Use(negroni.NewStatic(web.StaticAssetsFileSystem()))

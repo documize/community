@@ -17,6 +17,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/documize/community/core/request"
+
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/response"
 	"github.com/documize/community/core/secrets"
@@ -196,7 +198,7 @@ func (h *Handler) ValidateToken(w http.ResponseWriter, r *http.Request) {
 	rc.GlobalAdmin = false
 	rc.AppURL = r.Host
 	rc.Subdomain = organization.GetSubdomainFromHost(r)
-	rc.SSL = r.TLS != nil
+	rc.SSL = request.IsSSL(r)
 
 	// Fetch user permissions for this org
 	if !rc.Authenticated {

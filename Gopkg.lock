@@ -125,6 +125,14 @@
   version = "v1.1"
 
 [[projects]]
+  digest = "1:664d37ea261f0fc73dd17f4a1f5f46d01fbb0b0d75f6375af064824424109b7d"
+  name = "github.com/gorilla/handlers"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "7e0847f9db758cdebd26c149d0ae9d5d0b9c98ce"
+  version = "v1.4.0"
+
+[[projects]]
   digest = "1:88aa9e326e2bd6045a46e00a922954b3e1a9ac5787109f49ac85366df370e1e5"
   name = "github.com/gorilla/mux"
   packages = ["."]
@@ -304,6 +312,7 @@
     "github.com/elazarl/go-bindata-assetfs",
     "github.com/go-sql-driver/mysql",
     "github.com/google/go-github/github",
+    "github.com/gorilla/handlers",
     "github.com/gorilla/mux",
     "github.com/jmoiron/sqlx",
     "github.com/lib/pq",
