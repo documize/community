@@ -69,6 +69,9 @@
 					</div>
 					<div class="space">{{result.space}}</div>
 					<div class="snippet">{{result.excerpt}}</div>
+					{{#if result.template}}
+						<div class="template">Template</div>
+					{{/if}}
 					{{folder/document-tags documentTags=result.tags}}
 				{{/link-to}}
 			</li>
