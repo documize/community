@@ -316,7 +316,7 @@ func (s Store) GetVersions(ctx domain.RequestContext, groupID string) (v []doc.V
 	v = []doc.Version{}
 
 	err = s.Runtime.Db.Select(&v, s.Bind(`
-        SELECT c_versionid AS versionid, c_refid As documentid
+        SELECT c_versionid AS versionid, c_refid As documentid, c_lifecycle AS lifecycle
 		FROM dmz_doc
 		WHERE c_orgid=? AND c_groupid=?
         ORDER BY c_versionorder`),

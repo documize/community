@@ -107,6 +107,7 @@ type SitemapDocument struct {
 
 // Version points to a version of a document.
 type Version struct {
-	VersionID  string `json:"versionId"`
-	DocumentID string `json:"documentId"`
+	VersionID  string             `json:"versionId"`
+	DocumentID string             `json:"documentId"`
+	Lifecycle  workflow.Lifecycle `json:"lifecycle"`
 }

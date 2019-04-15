@@ -586,6 +586,12 @@ func (h *Handler) FetchDocumentData(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Check if draft document can been seen by user.
+	if document.Lifecycle == workflow.LifecycleDraft && !permission.CanViewDrafts(ctx, *h.Store, document.SpaceID) {
+		response.WriteForbiddenError(w)
+		return
+	}
+
 	// permissions
 	perms, err := h.Store.Permission.GetUserSpacePermissions(ctx, document.SpaceID)
 	if err != nil && err != sql.ErrNoRows {
@@ -633,13 +639,25 @@ func (h *Handler) FetchDocumentData(w http.ResponseWriter, r *http.Request) {
 
 	// Get version information for this document.
 	v := []doc.Version{}
-
 	if len(document.GroupID) > 0 {
-		v, err = h.Store.Document.GetVersions(ctx, document.GroupID)
-		if err != nil && err != sql.ErrNoRows {
+		// Get versions.
+		vt, err := h.Store.Document.GetVersions(ctx, document.GroupID)
+		if err != nil {
 			response.WriteServerError(w, method, err)
 			h.Runtime.Log.Error(method, err)
 			return
+		}
+		// What about draft document versions?
+		if record.DocumentLifecycle {
+			// We can see and manage document lifecycle so take all versions.
+			v = vt
+		} else {
+			// Only send back LIVE content because user cannot drafts.
+			for i := range vt {
+				if vt[i].Lifecycle == workflow.LifecycleLive {
+					v = append(v, vt[i])
+				}
+			}
 		}
 	}
 
