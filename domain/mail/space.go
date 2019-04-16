@@ -34,6 +34,10 @@ func (m *Mailer) ShareSpaceExistingUser(recipient, inviterName, inviterEmail, ur
 	em.ReplyTo = inviterEmail
 	em.ReplyName = inviterName
 
+	if IsBlockedEmailDomain(em.ToEmail) {
+		return
+	}
+
 	parameters := struct {
 		Subject     string
 		Inviter     string
@@ -62,7 +66,7 @@ func (m *Mailer) ShareSpaceExistingUser(recipient, inviterName, inviterEmail, ur
 		m.Runtime.Log.Error(fmt.Sprintf("%s - unable to send email", method), err)
 	}
 	if !ok {
-		m.Runtime.Log.Info(fmt.Sprintf("%s unable to send email"))
+		m.Runtime.Log.Info(fmt.Sprintf("%s unable to send email", method))
 	}
 }
 
@@ -82,6 +86,10 @@ func (m *Mailer) ShareSpaceNewUser(recipient, inviterName, inviterEmail, url, sp
 	em.ToName = recipient
 	em.ReplyTo = inviterEmail
 	em.ReplyName = inviterName
+
+	if IsBlockedEmailDomain(em.ToEmail) {
+		return
+	}
 
 	parameters := struct {
 		Subject     string
@@ -111,6 +119,6 @@ func (m *Mailer) ShareSpaceNewUser(recipient, inviterName, inviterEmail, url, sp
 		m.Runtime.Log.Error(fmt.Sprintf("%s - unable to send email", method), err)
 	}
 	if !ok {
-		m.Runtime.Log.Info(fmt.Sprintf("%s unable to send email"))
+		m.Runtime.Log.Info(fmt.Sprintf("%s unable to send email", method))
 	}
 }

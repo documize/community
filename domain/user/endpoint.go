@@ -85,14 +85,18 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		response.WriteMissingDataError(w, method, "email")
 		return
 	}
-
 	if len(userModel.Firstname) == 0 {
 		response.WriteMissingDataError(w, method, "firsrtname")
 		return
 	}
-
 	if len(userModel.Lastname) == 0 {
 		response.WriteMissingDataError(w, method, "lastname")
+		return
+	}
+
+	// Spam checks.
+	if mail.IsBlockedEmailDomain(userModel.Email) {
+		response.WriteForbiddenError(w)
 		return
 	}
 
@@ -807,6 +811,13 @@ func (h *Handler) BulkImport(w http.ResponseWriter, r *http.Request) {
 		if addUser {
 			userID = uniqueid.Generate()
 			userModel.RefID = userID
+
+			// Spam checks.
+			if mail.IsBlockedEmailDomain(userModel.Email) {
+				ctx.Transaction.Rollback()
+				response.WriteForbiddenError(w)
+				return
+			}
 
 			err = h.Store.User.Add(ctx, userModel)
 			if err != nil {

@@ -935,6 +935,12 @@ func (h *Handler) Invite(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// Spam checks.
+		if mail.IsBlockedEmailDomain(email) {
+			response.WriteForbiddenError(w)
+			return
+		}
+
 		if len(u.RefID) > 0 {
 			// Ensure they have access to this organization
 			accounts, err2 := h.Store.Account.GetUserAccounts(ctx, u.RefID)

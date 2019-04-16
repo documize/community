@@ -36,6 +36,10 @@ func (m *Mailer) DocumentApprover(recipient, inviterName, inviterEmail, url, doc
 	em.ReplyTo = inviterEmail
 	em.ReplyName = inviterName
 
+	if IsBlockedEmailDomain(em.ToEmail) {
+		return
+	}
+
 	parameters := struct {
 		Subject     string
 		Inviter     string

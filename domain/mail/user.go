@@ -34,6 +34,10 @@ func (m *Mailer) InviteNewUser(recipient, inviterName, inviterEmail, url, userna
 	em.ReplyTo = inviterEmail
 	em.ReplyName = inviterName
 
+	if IsBlockedEmailDomain(em.ToEmail) {
+		return
+	}
+
 	parameters := struct {
 		Subject     string
 		Inviter     string
@@ -83,6 +87,10 @@ func (m *Mailer) InviteExistingUser(recipient, inviterName, inviterEmail, url st
 	em.ReplyTo = inviterEmail
 	em.ReplyName = inviterName
 
+	if IsBlockedEmailDomain(em.ToEmail) {
+		return
+	}
+
 	parameters := struct {
 		Subject     string
 		Inviter     string
@@ -107,7 +115,7 @@ func (m *Mailer) InviteExistingUser(recipient, inviterName, inviterEmail, url st
 		m.Runtime.Log.Error(fmt.Sprintf("%s - unable to send email", method), err)
 	}
 	if !ok {
-		m.Runtime.Log.Info(fmt.Sprintf("%s unable to send email"))
+		m.Runtime.Log.Info(fmt.Sprintf("%s unable to send email", method))
 	}
 }
 
@@ -120,6 +128,10 @@ func (m *Mailer) PasswordReset(recipient, url string) {
 	em.Subject = "Documize password reset request"
 	em.ToEmail = recipient
 	em.ToName = recipient
+
+	if IsBlockedEmailDomain(em.ToEmail) {
+		return
+	}
 
 	parameters := struct {
 		Subject     string
@@ -143,6 +155,6 @@ func (m *Mailer) PasswordReset(recipient, url string) {
 		m.Runtime.Log.Error(fmt.Sprintf("%s - unable to send email", method), err)
 	}
 	if !ok {
-		m.Runtime.Log.Info(fmt.Sprintf("%s unable to send email"))
+		m.Runtime.Log.Info(fmt.Sprintf("%s unable to send email", method))
 	}
 }

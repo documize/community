@@ -39,12 +39,6 @@ func (m *Mailer) Initialize() {
 	m.Dialer, _ = ds.Connect(m.Config)
 }
 
-// Send prepares and sends email.
-func (m *Mailer) Send(em ds.EmailMessage) (ok bool, err error) {
-	ok, err = ds.SendMessage(m.Dialer, m.Config, em)
-	return
-}
-
 // ParseTemplate produces email template.
 func (m *Mailer) ParseTemplate(filename string, params interface{}) (html string, err error) {
 	html = ""
