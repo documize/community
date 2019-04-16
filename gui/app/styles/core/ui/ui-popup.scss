@@ -44,6 +44,7 @@
 			background-color: map-get($gray-shades, 300);
 			font-size: 1rem;
 			font-weight: 600;
+			cursor: auto;
 
 			&:hover {
 				color: map-get($gray-shades, 800);
