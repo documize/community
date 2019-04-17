@@ -50,7 +50,8 @@ export default Route.extend(AuthenticatedRouteMixin, {
 			permissions: this.modelFor('document').permissions,
 			roles: this.modelFor('document').roles,
 			blocks: this.modelFor('document').blocks,
-			versions: this.modelFor('document').versions
+			versions: this.modelFor('document').versions,
+			attachments: this.modelFor('document').attachments
 		});
 	},
 
@@ -67,6 +68,7 @@ export default Route.extend(AuthenticatedRouteMixin, {
 		controller.set('roles', model.roles);
 		controller.set('blocks', model.blocks);
 		controller.set('versions', model.versions);
+		controller.set('attachments', model.attachments);
 	},
 
 	activate: function () {

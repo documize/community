@@ -22,6 +22,7 @@ import (
 	"github.com/documize/community/domain/section/jira"
 	"github.com/documize/community/domain/section/markdown"
 	"github.com/documize/community/domain/section/papertrail"
+	"github.com/documize/community/domain/section/pdfjs"
 	"github.com/documize/community/domain/section/plantuml"
 	"github.com/documize/community/domain/section/provider"
 	"github.com/documize/community/domain/section/table"
@@ -46,6 +47,7 @@ func Register(rt *env.Runtime, s *store.Store) {
 	provider.Register("airtable", &airtable.Provider{Runtime: rt, Store: s})
 	provider.Register("plantuml", &plantuml.Provider{Runtime: rt, Store: s})
 	provider.Register("flowchart", &flowchart.Provider{Runtime: rt, Store: s})
+	provider.Register("pdf", &pdfjs.Provider{Runtime: rt, Store: s})
 
 	p := provider.List()
 	rt.Log.Info(fmt.Sprintf("Extensions: registered %d section types", len(p)))

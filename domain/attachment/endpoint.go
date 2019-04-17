@@ -217,7 +217,6 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 		response.WriteServerError(w, method, err)
 		return
 	}
-
 	if len(a) == 0 {
 		a = []attachment.Attachment{}
 	}
@@ -299,6 +298,9 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// File can be associated with a section as well.
+	sectionID := request.Query(r, "page")
+
 	if !permission.CanChangeDocument(ctx, *h.Store, documentID) {
 		response.WriteForbiddenError(w)
 		return
@@ -336,6 +338,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	a.FileID = random[0:9]
 	a.Filename = filename.Filename
 	a.Data = b.Bytes()
+	a.SectionID = sectionID
 
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {

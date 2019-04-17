@@ -36,8 +36,8 @@ func (s Store) Add(ctx domain.RequestContext, a attachment.Attachment) (err erro
 	bits := strings.Split(a.Filename, ".")
 	a.Extension = bits[len(bits)-1]
 
-	_, err = ctx.Transaction.Exec(s.Bind("INSERT INTO dmz_doc_attachment (c_refid, c_orgid, c_docid, c_job, c_fileid, c_filename, c_data, c_extension, c_created, c_revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"),
-		a.RefID, a.OrgID, a.DocumentID, a.Job, a.FileID, a.Filename, a.Data, a.Extension, a.Created, a.Revised)
+	_, err = ctx.Transaction.Exec(s.Bind("INSERT INTO dmz_doc_attachment (c_refid, c_orgid, c_docid, c_sectionid, c_job, c_fileid, c_filename, c_data, c_extension, c_created, c_revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"),
+		a.RefID, a.OrgID, a.DocumentID, a.SectionID, a.Job, a.FileID, a.Filename, a.Data, a.Extension, a.Created, a.Revised)
 
 	if err != nil {
 		err = errors.Wrap(err, "execute insert attachment")
@@ -50,7 +50,7 @@ func (s Store) Add(ctx domain.RequestContext, a attachment.Attachment) (err erro
 func (s Store) GetAttachment(ctx domain.RequestContext, orgID, attachmentID string) (a attachment.Attachment, err error) {
 	err = s.Runtime.Db.Get(&a, s.Bind(`
         SELECT id, c_refid AS refid,
-        c_orgid AS orgid, c_docid AS documentid, c_job AS job, c_fileid AS fileid,
+        c_orgid AS orgid, c_docid AS documentid, c_sectionid AS sectionid, c_job AS job, c_fileid AS fileid,
         c_filename AS filename, c_data AS data, c_extension AS extension,
         c_created AS created, c_revised AS revised
         FROM dmz_doc_attachment
@@ -68,7 +68,7 @@ func (s Store) GetAttachment(ctx domain.RequestContext, orgID, attachmentID stri
 func (s Store) GetAttachments(ctx domain.RequestContext, docID string) (a []attachment.Attachment, err error) {
 	err = s.Runtime.Db.Select(&a, s.Bind(`
         SELECT id, c_refid AS refid,
-        c_orgid AS orgid, c_docid AS documentid, c_job AS job, c_fileid AS fileid,
+        c_orgid AS orgid, c_docid AS documentid, c_sectionid AS sectionid, c_job AS job, c_fileid AS fileid,
         c_filename AS filename, c_extension AS extension,
         c_created AS created, c_revised AS revised
         FROM dmz_doc_attachment
@@ -92,7 +92,7 @@ func (s Store) GetAttachments(ctx domain.RequestContext, docID string) (a []atta
 func (s Store) GetAttachmentsWithData(ctx domain.RequestContext, docID string) (a []attachment.Attachment, err error) {
 	err = s.Runtime.Db.Select(&a, s.Bind(`
         SELECT id, c_refid AS refid,
-        c_orgid AS orgid, c_docid AS documentid, c_job AS job, c_fileid AS fileid,
+        c_orgid AS orgid, c_docid AS documentid, c_sectionid AS sectionid, c_job AS job, c_fileid AS fileid,
         c_filename AS filename, c_data AS data, c_extension AS extension,
         c_created AS created, c_revised AS revised
         FROM dmz_doc_attachment

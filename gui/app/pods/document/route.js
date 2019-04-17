@@ -33,6 +33,7 @@ export default Route.extend(AuthenticatedRouteMixin, {
 				this.set('roles', data.roles);
 				this.set('links', data.links);
 				this.set('versions', data.versions);
+				this.set('attachments', data.attachments);
 				resolve();
 			});
 		});
@@ -47,6 +48,7 @@ export default Route.extend(AuthenticatedRouteMixin, {
 			roles: this.get('roles'),
 			links: this.get('links'),
 			versions: this.get('versions'),
+			attachments: this.get('attachments'),
 			sections: this.get('sectionService').getAll(),
 			blocks: this.get('sectionService').getSpaceBlocks(this.get('folder.id'))
 		});

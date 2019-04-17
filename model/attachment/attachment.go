@@ -18,6 +18,7 @@ type Attachment struct {
 	model.BaseEntity
 	OrgID      string `json:"orgId"`
 	DocumentID string `json:"documentId"`
+	SectionID  string `json:"pageId"`
 	Job        string `json:"job"`
 	FileID     string `json:"fileId"`
 	Filename   string `json:"filename"`

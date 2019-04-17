@@ -30,6 +30,7 @@ import (
 	indexer "github.com/documize/community/domain/search"
 	"github.com/documize/community/domain/store"
 	"github.com/documize/community/model/activity"
+	"github.com/documize/community/model/attachment"
 	"github.com/documize/community/model/audit"
 	"github.com/documize/community/model/doc"
 	"github.com/documize/community/model/link"
@@ -661,6 +662,14 @@ func (h *Handler) FetchDocumentData(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// Attachments.
+	a, err := h.Store.Attachment.GetAttachments(ctx, id)
+	if err != nil && err != sql.ErrNoRows {
+		h.Runtime.Log.Error("get attachment", err)
+		response.WriteServerError(w, method, err)
+		return
+	}
+
 	// Prepare response.
 	data := BulkDocumentData{}
 	data.Document = document
@@ -669,6 +678,7 @@ func (h *Handler) FetchDocumentData(w http.ResponseWriter, r *http.Request) {
 	data.Links = l
 	data.Spaces = sp
 	data.Versions = v
+	data.Attachments = a
 
 	ctx.Transaction, err = h.Runtime.Db.Beginx()
 	if err != nil {
@@ -700,12 +710,13 @@ func (h *Handler) FetchDocumentData(w http.ResponseWriter, r *http.Request) {
 // BulkDocumentData represents all data associated for a single document.
 // Used by FetchDocumentData() bulk data load call.
 type BulkDocumentData struct {
-	Document    doc.Document      `json:"document"`
-	Permissions pm.Record         `json:"permissions"`
-	Roles       pm.DocumentRecord `json:"roles"`
-	Spaces      []space.Space     `json:"folders"`
-	Links       []link.Link       `json:"links"`
-	Versions    []doc.Version     `json:"versions"`
+	Document    doc.Document            `json:"document"`
+	Permissions pm.Record               `json:"permissions"`
+	Roles       pm.DocumentRecord       `json:"roles"`
+	Spaces      []space.Space           `json:"folders"`
+	Links       []link.Link             `json:"links"`
+	Versions    []doc.Version           `json:"versions"`
+	Attachments []attachment.Attachment `json:"attachments"`
 }
 
 // Export returns content as self-enclosed HTML file.

@@ -4,6 +4,10 @@
 	}
 }
 
+.dz-preview, .dz-processing {
+	display: none !important;
+}
+
 .document-sidebar-attachment {
 	> .files {
 		margin: 0;
