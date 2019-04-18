@@ -9,9 +9,14 @@
 //
 // https://documize.com
 
+import { inject as service } from '@ember/service';
 import Component from '@ember/component';
 
 export default Component.extend({
+    appMeta: service(),
+	session: service(),
+
+    // PDF URL is calculated
     pdfUrl: '',
 
     // https://github.com/mozilla/pdf.js/wiki/Viewer-options
@@ -26,10 +31,35 @@ export default Component.extend({
             return;
         }
 
-        let page = this.get('page');
-        let rawBody = page.get('body');
+		let pdfOption = {};
 
-        this.set('pdfUrl', encodeURIComponent('https://demo.test:5001/api/public/attachment/4Tec34w8/bhird7crtr314et90n7g?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkb21haW4iOiJkZW1vIiwiZXhwIjoxNTg2MzQ1ODA2LCJpc3MiOiJEb2N1bWl6ZSIsIm9yZyI6IjRUZWMzNHc4Iiwic3ViIjoid2ViYXBwIiwidXNlciI6ImlKZGY2cVVXIn0.YPrf_xlNJZVK1Ikt3S0HJagIqqnVjxwepUVQ44VYXR4'));
+		try {
+			pdfOption = JSON.parse(this.get('page.body'));
+		} catch (e) {} // eslint-disable-line no-empty
+
+		if (_.isEmpty(pdfOption)) {
+			pdfOption = {
+				height: 600,
+				sidebar: 'none', // none, bookmarks, thumbs
+                startPage: 1,
+			};
+		}
+
+        this.set('pdfOption', pdfOption);
+
+        let endpoint = this.get('appMeta.endpoint');
+        let orgId = this.get('appMeta.orgId');
+        let fileId = this.get('pdfOption.fileId');
+
+		// For authenticated users we send server auth token.
+		let qry = '';
+		if (this.get('session.hasSecureToken')) {
+			qry = '?secure=' + this.get('session.secureToken');
+		} else if (this.get('session.authenticated')) {
+			qry = '?token=' + this.get('session.authToken');
+		}
+
+        this.set('pdfUrl', encodeURIComponent(`${endpoint}/public/attachment/${orgId}/${fileId}${qry}`));
     },
 
     didInsertElement() {

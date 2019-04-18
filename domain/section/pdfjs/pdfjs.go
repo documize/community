@@ -46,10 +46,10 @@ func (*Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http.R
 
 // Render just sends back HMTL as-is.
 func (*Provider) Render(ctx *provider.Context, config, data string) string {
-	return data
+	return config
 }
 
 // Refresh just sends back data as-is.
 func (*Provider) Refresh(ctx *provider.Context, config, data string) string {
-	return data
+	return config
 }

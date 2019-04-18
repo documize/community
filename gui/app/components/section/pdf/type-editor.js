@@ -18,22 +18,59 @@ export default Component.extend({
 	editorId: computed('page', function () {
 		let page = this.get('page');
 		return `pdf-editor-${page.id}`;
-	}),
+    }),
+    pdfOption: null,
+    pdfName: '',
 
 	init() {
         this._super(...arguments);
-        this.set('pageBody', this.get('meta.rawBody'));
+        this.pdfOption = {};
     },
 
-    didInsertElement() {
+    didReceiveAttrs() {
+		let pdfOption = {};
+
+		try {
+			pdfOption = JSON.parse(this.get('meta.config'));
+		} catch (e) {} // eslint-disable-line no-empty
+
+		if (_.isEmpty(pdfOption)) {
+			pdfOption = {
+				height: 600,
+				sidebar: 'none', // none, bookmarks, thumbs
+                startPage: 1,
+                fileId: ''
+			};
+		}
+
+        this.set('pdfOption', pdfOption);
+        this.setPDF();
+    },
+    
+    didUpdateAttrs() {
         this._super(...arguments);
+        this.setPDF();        
     },
 
-    willDestroyElement() {
-        this._super(...arguments);
+    setPDF() {
+        let files = this.get('attachments');
+        if (!_.isArray(files)) return;
+
+        for (let i=0; i < files.length; i++) {
+            if (_.endsWith(files[i].get('extension'), 'pdf') && 
+                files[i].get('pageId') === this.get('page.id')) {
+                this.set('pdfName', files[i].get('filename'));
+                this.set('pdfOption.fileId', files[i].get('id'));
+                break;
+            }
+        }
     },
 
     actions: {
+        onSetSidebar(e) {
+            this.set('pdfOption.sidebar', e);
+        },
+
         isDirty() {
             return this.get('isDirty');
         },
@@ -44,11 +81,14 @@ export default Component.extend({
         },
 
         onAction(title) {
+            let config = this.get('pdfOption');
             let page = this.get('page');
             let meta = this.get('meta');
-            meta.set('rawBody', '');
+            
             page.set('title', title);
-            page.set('body', meta.get('rawBody'));
+            page.set('body', JSON.stringify(config));
+            meta.set('config', JSON.stringify(config));
+            meta.set('rawBody', JSON.stringify(config));
 
             let cb = this.get('onAction');
             cb(page, meta);
