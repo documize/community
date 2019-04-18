@@ -36,7 +36,7 @@ export default Model.extend({
 	}),
 
 	tocIndent: computed('level', function () {
-		return (this.get('level') - 1) * 20;
+		return (this.get('level') - 1) * 10;
 	}),
 
 	tocIndentCss: computed('tocIndent', function () {

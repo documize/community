@@ -10,7 +10,7 @@
 // https://documize.com
 
 import $ from 'jquery';
-import { empty, notEmpty } from '@ember/object/computed';
+import { empty } from '@ember/object/computed';
 import { computed } from '@ember/object';
 import { inject as service } from '@ember/service';
 import Modals from '../../mixins/modal';
@@ -26,16 +26,11 @@ export default Component.extend(Modals, Notifier, {
 	showLinkModal: false,
 	files: null,
 	downloadQuery: '',
-	hasAttachments: notEmpty('files'),
 	hasNameError: empty('page.title'),
 	hasDescError: empty('page.excerpt'),
 	pageId: computed('page', function () {
 		let page = this.get('page');
 		return `page-editor-${page.id}`;
-	}),
-	uploadId: computed('page', function () {
-		let page = this.get('page');
-		return `page-uploader-${page.id}`;
 	}),
 	previewText: 'Preview',
 	pageTitle: '',
@@ -70,67 +65,6 @@ export default Component.extend(Modals, Notifier, {
 		});
 	},
 
-	didInsertElement() {
-		this._super(...arguments);
-
-		let self = this;
-		let documentId = this.get('document.id');
-		let pageId = this.get('page.id');
-		let url = this.get('appMeta.endpoint');
-		let uploadUrl = `${url}/documents/${documentId}/attachments?page=${pageId}`;
-		let uploadId = this.get('uploadId');
-
-		// Handle upload clicks on button and anything inside that button.
-		let sel = ['#' + uploadId, '#' + uploadId + ' > div'];
-		for (var i=0; i < 2; i++) {
-			let dzone = new Dropzone(sel[i], {
-				headers: {
-					'Authorization': 'Bearer ' + self.get('session.authToken')
-				},
-				url: uploadUrl,
-				method: "post",
-				paramName: 'attachment',
-				clickable: true,
-				maxFilesize: 250,
-				parallelUploads: 5,
-				uploadMultiple: false,
-				addRemoveLinks: false,
-				autoProcessQueue: true,
-
-				init: function () {
-					this.on("success", function (/*file, response*/ ) {
-					});
-
-					this.on("queuecomplete", function () {
-						self.notifySuccess('Uploaded file');
-						self.getAttachments();
-					});
-
-					this.on("addedfile", function ( /*file*/ ) {
-					});
-
-					this.on("error", function (error, msg) {
-						self.notifyError(msg);
-						self.notifyError(error);
-					});
-				}
-			});
-
-			dzone.on("complete", function (file) {
-				dzone.removeFile(file);
-			});
-		}
-
-		// For authenticated users we send server auth token.
-		let qry = '';
-		if (this.get('session.hasSecureToken')) {
-			qry = '?secure=' + this.get('session.secureToken');
-		} else if (this.get('session.authenticated')) {
-			qry = '?token=' + this.get('session.authToken');
-		}
-		this.set('downloadQuery', qry);
-	},
-
 	willDestroyElement() {
 		this._super(...arguments);
 		this.set('showLinkModal', false);
@@ -140,12 +74,6 @@ export default Component.extend(Modals, Notifier, {
 			mousetrap.unbind('esc');
 			mousetrap.unbind(['ctrl+s', 'command+s']);
 		}
-	},
-
-	getAttachments() {
-		this.get('documentSvc').getAttachments(this.get('document.id')).then((files) => {
-			this.set('files', files);
-		});
 	},
 
 	actions: {

@@ -6,6 +6,7 @@
 				folder=folder
 				page=editPage
 				meta=editMeta
+				attachments=attachments
 				onCancel=(action "onCancelEdit")
 				onAction=(action "onSavePage")}}
 		</div>
@@ -35,4 +36,9 @@
 			{{section/base-renderer page=page}}
 		</div>
 	{{/if}}
+
+	{{document/section-attachment uploadLabel="Upload Attachments" 
+		editMode=editMode page=page document=document files=attachments
+		onAttachmentUpload=(action onAttachmentUpload)
+		onAttachmentDelete=(action onAttachmentDelete)}}
 </div>

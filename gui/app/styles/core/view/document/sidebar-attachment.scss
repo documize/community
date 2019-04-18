@@ -4,10 +4,6 @@
 	}
 }
 
-.dz-preview, .dz-processing {
-	display: none !important;
-}
-
 .document-sidebar-attachment {
 	> .files {
 		margin: 0;
@@ -42,5 +38,42 @@
 				top: 0;
 			}
 		}
+	}
+}
+
+.dz-preview, .dz-processing {
+	display: none !important;
+}
+.section-attachments {
+	margin: 1.5rem 0 0 0;
+	padding: 0;
+
+	> .file {
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
+		width: 100%;
+		font-size: 1rem;
+		position: relative;
+
+		> a {
+			display: inline-block;
+			font-size: 1rem;
+			vertical-align: text-top;
+			margin-right: 10px;
+			width: 90%;
+			@extend .text-truncate;
+			color: map-get($green-shades, 800);
+
+			&:hover {
+				color: map-get($green-shades, 900);
+			}
+		}
+		
+		> .menu {
+			position: absolute;
+			right: -10px;
+			top: 0;
+		}		
 	}
 }
