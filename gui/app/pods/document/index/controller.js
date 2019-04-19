@@ -258,7 +258,7 @@ export default Controller.extend(Notifier, {
 						if (reloadPage) {
 							window.location.reload();
 						} else {
-						resolve();
+							resolve();
 						}
 					});
 				});

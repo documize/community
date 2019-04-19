@@ -669,6 +669,9 @@ func (h *Handler) FetchDocumentData(w http.ResponseWriter, r *http.Request) {
 		response.WriteServerError(w, method, err)
 		return
 	}
+	if len(a) == 0 {
+		a = []attachment.Attachment{}
+	}
 
 	// Prepare response.
 	data := BulkDocumentData{}
