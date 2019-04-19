@@ -207,8 +207,10 @@ type AttachmentStorer interface {
 	Add(ctx domain.RequestContext, a attachment.Attachment) (err error)
 	GetAttachment(ctx domain.RequestContext, orgID, attachmentID string) (a attachment.Attachment, err error)
 	GetAttachments(ctx domain.RequestContext, docID string) (a []attachment.Attachment, err error)
+	GetSectionAttachments(ctx domain.RequestContext, sectionID string) (a []attachment.Attachment, err error)
 	GetAttachmentsWithData(ctx domain.RequestContext, docID string) (a []attachment.Attachment, err error)
 	Delete(ctx domain.RequestContext, id string) (rows int64, err error)
+	DeleteSection(ctx domain.RequestContext, id string) (rows int64, err error)
 }
 
 // LinkStorer defines required methods for persisting content links

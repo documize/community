@@ -22,6 +22,7 @@ import (
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/request"
 	"github.com/documize/community/core/response"
+	"github.com/documize/community/core/secrets"
 	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/core/uniqueid"
 	"github.com/documize/community/domain"
@@ -599,6 +600,8 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	h.Store.Page.DeletePageRevisions(ctx, pageID)
 
+	h.Store.Attachment.DeleteSection(ctx, pageID)
+
 	// Update doc revised.
 	h.Store.Document.UpdateRevised(ctx, doc.RefID)
 
@@ -699,6 +702,8 @@ func (h *Handler) DeletePages(w http.ResponseWriter, r *http.Request) {
 		h.Store.Link.MarkOrphanPageLink(ctx, page.SectionID)
 
 		h.Store.Page.DeletePageRevisions(ctx, page.SectionID)
+
+		h.Store.Attachment.DeleteSection(ctx, page.SectionID)
 
 		// Draft actions are not logged
 		if doc.Lifecycle == workflow.LifecycleLive {
@@ -977,7 +982,27 @@ func (h *Handler) Copy(w http.ResponseWriter, r *http.Request) {
 		h.Store.Block.IncrementUsage(ctx, model.Page.TemplateID)
 	}
 
-	// Log t actions are not logged
+	// Copy section attachments.
+	at, err := h.Store.Attachment.GetSectionAttachments(ctx, pageID)
+	if err != nil {
+		h.Runtime.Log.Error(method, err)
+	}
+	for i := range at {
+		at[i].DocumentID = targetID
+		at[i].SectionID = newPageID
+		at[i].RefID = uniqueid.Generate()
+		random := secrets.GenerateSalt()
+		at[i].FileID = random[0:9]
+
+		err1 := h.Store.Attachment.Add(ctx, at[i])
+		if err1 != nil {
+			ctx.Transaction.Rollback()
+			response.WriteServerError(w, method, err1)
+			h.Runtime.Log.Error(method, err1)
+			return
+		}
+	}
+
 	if doc.Lifecycle == workflow.LifecycleLive {
 		h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
 			SpaceID:      doc.SpaceID,

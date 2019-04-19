@@ -13,6 +13,7 @@ package attachment
 
 import (
 	"database/sql"
+	"fmt"
 	"strings"
 	"time"
 
@@ -88,6 +89,31 @@ func (s Store) GetAttachments(ctx domain.RequestContext, docID string) (a []atta
 	return
 }
 
+// GetSectionAttachments returns a slice containing the attachment records
+// with file  data for specified document section.
+func (s Store) GetSectionAttachments(ctx domain.RequestContext, sectionID string) (a []attachment.Attachment, err error) {
+	err = s.Runtime.Db.Select(&a, s.Bind(`
+        SELECT id, c_refid AS refid,
+        c_orgid AS orgid, c_docid AS documentid, c_sectionid AS sectionid, c_job AS job, c_fileid AS fileid,
+        c_filename AS filename, c_data AS data, c_extension AS extension,
+        c_created AS created, c_revised AS revised
+        FROM dmz_doc_attachment
+        WHERE c_orgid=? AND c_sectionid=?
+        ORDER BY c_filename`),
+		ctx.OrgID, sectionID)
+
+	if err == sql.ErrNoRows {
+		err = nil
+		a = []attachment.Attachment{}
+	}
+	if err != nil {
+		err = errors.Wrap(err, "execute select section attachments")
+		return
+	}
+
+	return
+}
+
 // GetAttachmentsWithData returns a slice containing the attachment records (including their data) for document docID, ordered by filename.
 func (s Store) GetAttachmentsWithData(ctx domain.RequestContext, docID string) (a []attachment.Attachment, err error) {
 	err = s.Runtime.Db.Select(&a, s.Bind(`
@@ -115,4 +141,12 @@ func (s Store) GetAttachmentsWithData(ctx domain.RequestContext, docID string) (
 // Delete deletes the id record from the database attachment table.
 func (s Store) Delete(ctx domain.RequestContext, id string) (rows int64, err error) {
 	return s.DeleteConstrained(ctx.Transaction, "dmz_doc_attachment", ctx.OrgID, id)
+}
+
+// DeleteSection removes all attachments agasinst a section.
+func (s Store) DeleteSection(ctx domain.RequestContext, sectionID string) (rows int64, err error) {
+	rows, err = s.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_doc_attachment WHERE c_orgid='%s' AND c_sectionid='%s'",
+		ctx.OrgID, sectionID))
+
+	return
 }

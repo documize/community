@@ -54,6 +54,9 @@ export default Component.extend({
 
     setPDF() {
         let files = this.get('attachments');
+        this.set('pdfName', '');
+        this.set('pdfOption.fileId', '');
+
         if (!_.isArray(files)) return;
 
         for (let i=0; i < files.length; i++) {
@@ -84,7 +87,7 @@ export default Component.extend({
             let config = this.get('pdfOption');
             let page = this.get('page');
             let meta = this.get('meta');
-            
+
             page.set('title', title);
             page.set('body', JSON.stringify(config));
             meta.set('config', JSON.stringify(config));

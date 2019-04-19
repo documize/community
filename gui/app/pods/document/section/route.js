@@ -11,8 +11,8 @@
 
 import { hash } from 'rsvp';
 import { inject as service } from '@ember/service';
-import Route from '@ember/routing/route';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
+import Route from '@ember/routing/route';
 
 export default Route.extend(AuthenticatedRouteMixin, {
 	documentService: service('document'),
@@ -27,6 +27,7 @@ export default Route.extend(AuthenticatedRouteMixin, {
 			permissions: this.get('folderService').get('permissions'),
 			links: this.modelFor('document').links,
 			sections: this.modelFor('document').sections,
+			attachments: this.modelFor('document').attachments,
 			page: this.get('documentService').getPage(this.modelFor('document').document.get('id'), params.page_id),
 			meta: this.get('documentService').getPageMeta(this.modelFor('document').document.get('id'), params.page_id)
 		});

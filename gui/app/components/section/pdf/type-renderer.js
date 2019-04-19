@@ -51,6 +51,10 @@ export default Component.extend({
         let orgId = this.get('appMeta.orgId');
         let fileId = this.get('pdfOption.fileId');
 
+        if (_.isEmpty(fileId)) {
+            return;
+        }
+
 		// For authenticated users we send server auth token.
 		let qry = '';
 		if (this.get('session.hasSecureToken')) {
