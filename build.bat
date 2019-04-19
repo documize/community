@@ -21,6 +21,8 @@ echo "Copying Ember prism folder"
 robocopy /e /NFL /NDL /NJH gui\dist-prod\prism embed\bindata\public\prism
 echo "Copying Ember tinymce folder"
 robocopy /e /NFL /NDL /NJH gui\dist-prod\tinymce embed\bindata\public\tinymce
+echo "Copying Ember pdfjs folder"
+robocopy /e /NFL /NDL /NJH gui\dist-prod\pdfjs embed\bindata\public\pdfjs
 echo "Copying Ember sections folder"
 robocopy /e /NFL /NDL /NJH gui\dist-prod\sections embed\bindata\public\sections
 

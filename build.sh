@@ -19,6 +19,7 @@ cp -r gui/dist-prod/codemirror embed/bindata/public/codemirror
 cp -r gui/dist-prod/prism embed/bindata/public/prism
 cp -r gui/dist-prod/sections embed/bindata/public/sections
 cp -r gui/dist-prod/tinymce embed/bindata/public/tinymce
+cp -r gui/dist-prod/pdfjs embed/bindata/public/pdfjs
 cp gui/dist-prod/*.* embed/bindata
 cp gui/dist-prod/favicon.ico embed/bindata/public
 cp gui/dist-prod/manifest.json embed/bindata/public
