@@ -1,0 +1,37 @@
+{{#section/base-editor-inline document=document folder=folder page=page tip="Select PDF to render" isDirty=(action "isDirty") onCancel=(action "onCancel") onAction=(action "onAction")}}
+
+    <div class="form-group">
+        <label for="new-space-name">PDF</label>
+        {{input type="text" class="form-control mousetrap" placeholder="click upload button below" value=pdfName readonly=true}}
+        <small class="form-text text-muted">First PDF uploaded will be used</small>
+    </div>
+
+    <div class="form-group">
+        <label for="new-space-name">Preview Height</label>
+        {{input type="number" class="form-control mousetrap" placeholder="e.g. 700" value=pdfOption.height}}
+        <small class="form-text text-muted">How tall is the PDF preview?</small>
+    </div>
+
+    <div class="form-group">
+        <label for="new-space-name">Start Page</label>
+        {{input type="number" class="form-control mousetrap" placeholder="e.g. 1" value=pdfOption.startPage}}
+        <small class="form-text text-muted">The first page to display</small>
+    </div>
+
+    <div class="form-group">
+        <label for="new-space-name">Sidebar</label>
+        <select onchange={{action "onSetSidebar" value="target.value"}} class="form-control">
+            <option value="none" selected={{is-equal pdfOption.sidebar 'none'}}>
+                None
+            </option>
+            <option value="bookmarks" selected={{is-equal pdfOption.sidebar 'bookmarks'}}>
+                Bookmarks
+            </option>
+            <option value="thumbs" selected={{is-equal pdfOption.sidebar 'thumbs'}}>
+                Thumbnails
+            </option>
+        </select>
+        <small class="form-text text-muted">Optionally, set sidebar content</small>
+    </div>
+
+{{/section/base-editor-inline}}

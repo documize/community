@@ -15,7 +15,7 @@ CREATE TABLE dmz_space_label (
 CREATE INDEX idx_space_label_1 ON dmz_space_label (id);
 CREATE INDEX idx_space_label_2 ON dmz_space_label (c_orgid);
 
--- Space table upgrade to support labelling, icon and summary stats
+-- Space table upgrade to support label, icon and summary stats
 ALTER TABLE dmz_space ADD COLUMN c_desc VARCHAR(200) NOT NULL DEFAULT '';
 ALTER TABLE dmz_space ADD COLUMN c_labelid VARCHAR(20) NOT NULL DEFAULT '' COLLATE ucs_basic;
 ALTER TABLE dmz_space ADD COLUMN c_icon VARCHAR(20) NOT NULL DEFAULT '';

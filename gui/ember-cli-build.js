@@ -17,20 +17,20 @@ module.exports = function (defaults) {
 			fingerprintAssetMap: true,
 			prepend: '/',
 			extensions: ['js', 'css'],
-			exclude: ['tinymce/**', 'codemirror/**', 'prism/**']
+			exclude: ['tinymce/**', 'codemirror/**', 'prism/**', 'pdfjs/**']
 		},
 
 		minifyJS: {
 			enabled: !isDevelopment,
 			options: {
-				exclude: ['tinymce/**', 'codemirror/**', 'prism/**']
+				exclude: ['tinymce/**', 'codemirror/**', 'prism/**', 'pdfjs/**']
 			}
 		},
 
 		minifyCSS: {
 			enabled: !isDevelopment,
 			options: {
-				exclude: ['tinymce/**', 'codemirror/**', 'prism/**']
+				exclude: ['tinymce/**', 'codemirror/**', 'prism/**', 'pdfjs/**']
 			}
 		},
 

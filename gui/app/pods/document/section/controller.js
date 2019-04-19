@@ -43,5 +43,19 @@ export default Controller.extend({
 					{ queryParams: { currentPageId: page.get('id')}});
 			});
 		},
+
+		onAttachmentUpload() {
+			this.get('documentService').getAttachments(this.get('model.document.id')).then((files) => {
+				this.set('model.attachments', files);
+			});
+		},
+
+		onAttachmentDelete(attachmentId) {
+			this.get('documentService').deleteAttachment(this.get('model.document.id'), attachmentId).then(() => {
+				this.get('documentService').getAttachments(this.get('model.document.id')).then((files) => {
+					this.set('attachments', files);
+				});
+			});
+		},		
 	}
 });

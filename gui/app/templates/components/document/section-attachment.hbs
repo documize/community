@@ -1,0 +1,39 @@
+{{#if editMode}}
+	{{ui/ui-spacer size=200}}
+	{{ui/ui-button color=constants.Color.Gray label=uploadLabel id=uploadId}}
+{{/if}}
+
+<ul class="section-attachments">
+	{{#each files key="id" as |file|}}
+		{{#if (eq file.pageId page.id)}}
+			<li class="file">
+				<a href="{{appMeta.endpoint}}/public/attachment/{{appMeta.orgId}}/{{file.id}}{{downloadQuery}}">
+					{{file.filename}}
+				</a>
+				{{#if editMode}}
+					<div class="menu">
+						{{#ui/ui-toolbar dark=false light=false raised=false large=false bordered=false}}
+							{{#ui/ui-toolbar-icon icon=constants.Icon.Delete color=constants.Color.Red}}
+								{{#attach-popover class="ember-attacher-popper" hideOn="escapekey, clickout" showOn="click" isShown=false}}
+									<div class="form">
+										<p>Are you sure you want to delete this file?</p>
+										{{ui/ui-spacer size=100}}
+										{{ui/ui-button
+											light=false
+											label=constants.Label.Delete
+											color=constants.Color.Red
+											onClick=(action "onDelete" file)}}
+									</div>
+								{{/attach-popover}}
+							{{/ui/ui-toolbar-icon}}
+						{{/ui/ui-toolbar}}
+					</div>
+				{{/if}}				
+			</li>
+		{{/if}}
+	{{/each}}
+</ul>
+
+{{#ui/ui-dialog title="Delete Attachment" confirmCaption="Delete" buttonColor=constants.Color.Red show=showDialog onAction=(action "onDelete")}}
+	<p>Are you sure you want to delete this attachment?</p>
+{{/ui/ui-dialog}}

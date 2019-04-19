@@ -12,10 +12,11 @@
 import $ from 'jquery';
 import { empty } from '@ember/object/computed';
 import { computed } from '@ember/object';
-import ModalMixin from '../../mixins/modal';
+import Modals from '../../mixins/modal';
+import Notifier from '../../mixins/notifier';
 import Component from '@ember/component';
 
-export default Component.extend(ModalMixin, {
+export default Component.extend(Modals, Notifier, {
 	busy: false,
 	mousetrap: null,
 	showLinkModal: false,

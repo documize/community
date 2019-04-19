@@ -9,6 +9,17 @@
 {{/layout/master-sidebar}}
 
 {{#layout/master-content}}
-	{{document/document-editor document=model.document folder=model.folder page=model.page meta=model.meta
+	{{document/document-editor 
+		document=model.document 
+		folder=model.folder 
+		page=model.page 
+		meta=model.meta
+		attachments=model.attachments
 		onCancel=(action "onCancel") onAction=(action "onAction")}}
+
+	{{document/section-attachment uploadLabel="Upload Attachments" 
+		editMode=true page=model.page document=model.document 
+		files=model.attachments
+		onAttachmentUpload=(action "onAttachmentUpload")
+		onAttachmentDelete=(action "onAttachmentDelete")}}
 {{/layout/master-content}}

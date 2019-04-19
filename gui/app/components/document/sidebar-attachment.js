@@ -46,7 +46,6 @@ export default Component.extend(Modals, Notifier, {
 		let url = this.get('appMeta.endpoint');
 		let uploadUrl = `${url}/documents/${documentId}/attachments`;
 
-
 		// Handle upload clicks on button and anything inside that button.
 		let sel = ['#upload-document-files ', '#upload-document-files  > div'];
 		for (var i=0; i < 2; i++) {
@@ -58,7 +57,7 @@ export default Component.extend(Modals, Notifier, {
 				method: "post",
 				paramName: 'attachment',
 				clickable: true,
-				maxFilesize: 50,
+				maxFilesize: 250,
 				parallelUploads: 5,
 				uploadMultiple: false,
 				addRemoveLinks: false,

@@ -222,6 +222,20 @@ export default Controller.extend(Notifier, {
 			this.get('router').transitionTo('document.settings', {queryParams: {tab: 'general'}});
 		},
 
+		onAttachmentUpload() {
+			this.get('documentService').getAttachments(this.get('document.id')).then((files) => {
+				this.set('attachments', files);
+			});
+		},
+
+		onAttachmentDelete(attachmentId) {
+			this.get('documentService').deleteAttachment(this.get('document.id'), attachmentId).then(() => {
+				this.get('documentService').getAttachments(this.get('document.id')).then((files) => {
+					this.set('attachments', files);
+				});
+			});
+		},
+
 		refresh(reloadPage) {
 			return new EmberPromise((resolve) => {
 				this.get('documentService').fetchDocumentData(this.get('document.id')).then((data) => {
@@ -232,6 +246,7 @@ export default Controller.extend(Notifier, {
 					this.set('roles', data.roles);
 					this.set('links', data.links);
 					this.set('versions', data.versions);
+					this.set('attachments', data.attachments);
 
 					this.get('documentService').fetchPages(this.get('document.id'), this.get('session.user.id')).then((data) => {
 						this.set('pages', data);
@@ -243,7 +258,7 @@ export default Controller.extend(Notifier, {
 						if (reloadPage) {
 							window.location.reload();
 						} else {
-						resolve();
+							resolve();
 						}
 					});
 				});

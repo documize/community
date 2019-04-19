@@ -397,6 +397,7 @@ export default Service.extend({
 				folder: {},
 				links: [],
 				versions: [],
+				attachments: [],
 			};
 
 			let doc = this.get('store').normalize('document', response.document);
@@ -414,6 +415,11 @@ export default Service.extend({
 				return this.get('store').push(data);
 			});
 
+			let attachments = response.attachments.map((obj) => {
+				let data = this.get('store').normalize('attachment', obj);
+				return this.get('store').push(data);
+			});
+
 			data.document = doc;
 			data.permissions = perms;
 			data.roles = roles;
@@ -421,6 +427,7 @@ export default Service.extend({
 			data.folder = folders.findBy('id', doc.get('spaceId'));
 			data.links = response.links;
 			data.versions = response.versions;
+			data.attachments = attachments;
 
 			return data;
 		}).catch((error) => {
