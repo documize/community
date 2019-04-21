@@ -375,7 +375,7 @@ func (r *restoreHandler) dmzOrg() (err error) {
 				org[i].RefID, org[i].Company, org[i].Title, org[i].Message,
 				strings.ToLower(org[i].Domain), org[i].ConversionEndpoint, strings.ToLower(org[i].Email),
 				org[i].AllowAnonymousAccess, org[i].AuthProvider, org[i].AuthConfig,
-				org[i].MaxTags, r.Runtime.StoreProvider.IsTrue(), org[i].Serial, 
+				org[i].MaxTags, r.Runtime.StoreProvider.IsTrue(), org[i].Serial,
 				org[i].Subscription, org[i].Active,
 				org[i].Theme, org[i].Logo,
 				org[i].Created, org[i].Revised)
@@ -1521,11 +1521,11 @@ func (r *restoreHandler) dmzDocAttachment() (err error) {
 	for i := range at {
 		_, err = r.Context.Transaction.Exec(r.Runtime.Db.Rebind(`
             INSERT INTO dmz_doc_attachment
-            (c_refid, c_orgid, c_docid, c_job, c_fileid,
+            (c_refid, c_orgid, c_docid, c_sectionid, c_job, c_fileid,
             c_filename, c_data, c_extension, c_created, c_revised)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
-			at[i].RefID, r.remapOrg(at[i].OrgID), at[i].DocumentID, at[i].Job,
-			at[i].FileID, at[i].Filename,
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
+			at[i].RefID, r.remapOrg(at[i].OrgID), at[i].DocumentID, at[i].SectionID,
+			at[i].Job, at[i].FileID, at[i].Filename,
 			at[i].Data, at[i].Extension, at[i].Created, at[i].Revised)
 
 		if err != nil {

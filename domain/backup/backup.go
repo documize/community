@@ -766,7 +766,7 @@ func (b backerHandler) dmzDocument(files *[]backupItem) (err error) {
 	at := []attachment.Attachment{}
 	err = b.Runtime.Db.Select(&at, `
         SELECT id, c_refid AS refid,
-        c_orgid AS orgid, c_docid AS documentid, c_job AS job, c_fileid AS fileid,
+        c_orgid AS orgid, c_docid AS documentid, c_sectionid AS sectionid, c_job AS job, c_fileid AS fileid,
         c_filename AS filename, c_data AS data, c_extension AS extension,
         c_created AS created, c_revised AS revised
         FROM dmz_doc_attachment`+w)
