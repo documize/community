@@ -244,7 +244,7 @@ func (p PostgreSQLProvider) QueryGetDatabaseVersionLegacy() string {
 func (p PostgreSQLProvider) QueryTableList() string {
 	return fmt.Sprintf(`select table_name
         FROM information_schema.tables
-        WHERE table_type='BASE TABLE' AND table_schema NOT IN ('pg_catalog', 'information_schema') AND table_catalog='%s'`, p.DatabaseName())
+        WHERE table_type='BASE TABLE' AND table_schema NOT IN ('pg_catalog', 'information_schema') AND table_name != 'spatial_ref_sys' AND table_catalog='%s'`, p.DatabaseName())
 }
 
 // QueryDateInterval returns provider specific interval style
