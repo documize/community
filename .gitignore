@@ -70,3 +70,4 @@ bower.json.ember-try
 package.json.ember-try
 embed/bindata_assetfs.go
 dmz-backup*.zip
+*.conf
