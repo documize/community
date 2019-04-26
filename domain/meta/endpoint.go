@@ -13,6 +13,7 @@ package meta
 
 import (
 	"bytes"
+	"database/sql"
 	"encoding/base64"
 	"fmt"
 	"net/http"
@@ -78,17 +79,20 @@ func (h *Handler) RobotsTxt(w http.ResponseWriter, r *http.Request) {
 	method := "GetRobots"
 	ctx := domain.GetRequestContext(r)
 
-	dom := organization.GetSubdomainFromHost(r)
-	o, err := h.Store.Organization.GetOrganizationByDomain(dom)
-
 	// default is to deny
 	robots :=
 		`User-agent: *
 		Disallow: /
 		`
 
+	dom := organization.GetSubdomainFromHost(r)
+	o, err := h.Store.Organization.GetOrganizationByDomain(dom)
+
 	if err != nil {
-		h.Runtime.Log.Info(fmt.Sprintf("%s failed to get Organization for domain %s", method, dom))
+		if err != sql.ErrNoRows {
+			// Log error if query was not empty
+			h.Runtime.Log.Info(fmt.Sprintf("%s failed to get Organization for domain %s", method, dom))
+		}
 		o = org.Organization{}
 		o.AllowAnonymousAccess = false
 	}
