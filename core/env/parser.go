@@ -36,19 +36,16 @@ func ParseFlags() (f Flags, ok bool) {
 	return
 }
 
-// configFile read parameters from TOML format config file.
+// configFile checks for the presence of exactly one command argument
+// checks to see if it is a TOML format config file.
 func configFile() (f Flags, ok bool) {
 	ok = false
 
-	// See if we have -config parameter -- return false to signal no config file specified.
+	// We are expecting: ./documize sample.conf
 	var configFile string
-	// flag.StringVar(&configFile, "config", "", "specify path to TOML format config file")
-	// flag.Parse()
-
 	if len(os.Args) != 2 {
 		return
 	}
-
 	configFile = os.Args[1]
 	if len(configFile) == 0 || !configFileExists(configFile) {
 		return
