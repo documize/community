@@ -23,6 +23,7 @@ type Flags struct {
 	SSLKeyFile        string // (optional) name of SSL key PEM file
 	SiteMode          string // (optional) if 1 then serve offline web page
 	Location          string // reserved
+	ConfigSource      string // tells us if configuration info was obtained from command line or config file
 }
 
 // SSLEnabled returns true if both cert and key were provided at runtime.

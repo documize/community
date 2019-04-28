@@ -21,10 +21,10 @@ import (
 	"github.com/BurntSushi/toml"
 )
 
-// ParseFlags loads runtime parameters like port numbers and DB connections.
+// LoadConfig loads runtime parameters like port numbers and DB connections.
 // We first check for -config switch that would point us towards a .CONF file.
 // If not found, we then read parameters from command line and environment vars.
-func ParseFlags() (f Flags, ok bool) {
+func LoadConfig() (f Flags, ok bool) {
 	// Check and process config file
 	f, ok = configFile()
 
@@ -33,23 +33,44 @@ func ParseFlags() (f Flags, ok bool) {
 		f, ok = commandLineEnv()
 	}
 
+	// reserved
+	if len(f.Location) == 0 {
+		f.Location = "selfhost"
+	}
+
 	return
 }
 
-// configFile checks for the presence of exactly one command argument
+// configFile checks for the presence of zero or one command argument.
+// If no arguments are provided then we look for and load documize.conf file.
+// If one argument is provided then we load the specified config file.
+// If more than one argument is provided then we exit as flags as have passed.
 // checks to see if it is a TOML format config file.
 func configFile() (f Flags, ok bool) {
 	ok = false
-
-	// We are expecting: ./documize sample.conf
 	var configFile string
-	if len(os.Args) != 2 {
+
+	// First argument is always program being executed.
+
+	// No additional arguments means check for documize.conf file.
+	if len(os.Args) == 1 {
+		// No arguments, so we default to default config filename.
+		configFile = "documize.conf"
+	} else if len(os.Args) == 2 {
+		// Config filename passed in, so we use it.
+		configFile = os.Args[1]
+	} else {
+		// Too many arguments means flags passed in so we return.
 		return
 	}
-	configFile = os.Args[1]
+
+	// Does file exist?
 	if len(configFile) == 0 || !configFileExists(configFile) {
 		return
 	}
+
+	// Tell caller where the config came from.
+	f.ConfigSource = configFile
 
 	// So now we have file and we parse the TOML format.
 	var ct ConfigToml
@@ -66,6 +87,7 @@ func configFile() (f Flags, ok bool) {
 	f.ForceHTTPPort2SSL = strconv.Itoa(ct.HTTP.ForceSSLPort)
 	f.SSLCertFile = ct.HTTP.Cert
 	f.SSLKeyFile = ct.HTTP.Key
+	f.Location = strings.ToLower(ct.Install.Location)
 
 	ok = true
 	return
@@ -99,12 +121,8 @@ func commandLineEnv() (f Flags, ok bool) {
 	f.SiteMode = siteMode
 	f.SSLCertFile = certFile
 	f.SSLKeyFile = keyFile
-
-	// reserved
-	if len(location) == 0 {
-		location = "selfhost"
-	}
 	f.Location = strings.ToLower(location)
+	f.ConfigSource = "flags/environment"
 
 	return f, ok
 }
