@@ -25,7 +25,6 @@ export default Component.extend(Modals, Notifier, {
 		return `page-uploader-${page.id}`;
 	}),
 	uploadLabel: 'Upload Attachments',
-	uploaderReady: false,
 
 	didReceiveAttrs() {
 		this._super(...arguments);
@@ -42,10 +41,29 @@ export default Component.extend(Modals, Notifier, {
 
 	didRender() {
 		this._super(...arguments);
+		
+		// For authenticated users we send server auth token.
+		let qry = '';
+		if (this.get('session.hasSecureToken')) {
+			qry = '?secure=' + this.get('session.secureToken');
+		} else if (this.get('session.authenticated')) {
+			qry = '?token=' + this.get('session.authToken');
+		}
+		this.set('downloadQuery', qry);	
 
 		// We don't setup uploader if not edit mode.
-		if (!this.get('editMode') || this.get('uploaderReady')) {
+		if (!this.get('editMode')) {
 			return;
+		}
+
+		// Remove any previous Dropzone init.
+		for (var j=0; j < 2; j++) {
+			let dz = this.get('dzone' + j);
+
+			if (!_.isNull(dz) && !_.isUndefined(dz)) {
+				dz.destroy();
+				this.set('dzone' + j, null);
+			}
 		}
 
 		let self = this;
@@ -94,9 +112,10 @@ export default Component.extend(Modals, Notifier, {
 			dzone.on("complete", function (file) {
 				dzone.removeFile(file);
 			});
-		}
 
-		this.set('uploaderReady', true);
+
+			this.set('dzone' + i, dzone);
+		}
 	},
 
 	actions: {
