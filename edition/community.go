@@ -28,21 +28,21 @@ import (
 )
 
 func main() {
-	// runtime stores server/application level information
+	// Runtime stores server/application information.
 	rt := env.Runtime{}
 
-	// wire up logging implementation
+	// Wire up logging implementation.
 	rt.Log = logging.NewLogger(false)
 
-	// wire up embedded web assets handler
+	// Wire up embedded web assets handler.
 	web.Embed = embed.NewEmbedder()
 
-	// product details
+	// Specify the product edition.
 	rt.Product = domain.Product{}
 	rt.Product.Major = "2"
 	rt.Product.Minor = "4"
-	rt.Product.Patch = "1"
-	rt.Product.Revision = "190426114302"
+	rt.Product.Patch = "2"
+	rt.Product.Revision = "190429132654"
 	rt.Product.Version = fmt.Sprintf("%s.%s.%s", rt.Product.Major, rt.Product.Minor, rt.Product.Patch)
 	rt.Product.Edition = domain.CommunityEdition
 	rt.Product.Title = fmt.Sprintf("%s Edition", rt.Product.Edition)
@@ -50,21 +50,24 @@ func main() {
 	// Setup data store.
 	s := store.Store{}
 
-	// Parse flags/envars.
+	// Parse configuration information.
 	flagsOK := false
-	rt.Flags, flagsOK = env.ParseFlags()
+	rt.Flags, flagsOK = env.LoadConfig()
 	if !flagsOK {
 		os.Exit(0)
 	}
+	rt.Log.Info("Configuration source: " + rt.Flags.ConfigSource)
 
+	// Start database init.
 	bootOK := boot.InitRuntime(&rt, &s)
 	if bootOK {
 		// runtime.Log = runtime.Log.SetDB(runtime.Db)
 	}
 
-	// Register smart sections
+	// Register document sections.
 	section.Register(&rt, &s)
 
+	// Start web server.
 	ready := make(chan struct{}, 1) // channel signals router ready
 	server.Start(&rt, &s, ready)
 }

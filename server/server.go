@@ -124,8 +124,6 @@ func Start(rt *env.Runtime, s *store.Store, ready chan struct{}) {
 
 		rt.Log.Info("Web Server: starting SSL server on " + rt.Flags.HTTPPort + " with " + rt.Flags.SSLCertFile + " " + rt.Flags.SSLKeyFile)
 
-		// TODO: https://blog.gopheracademy.com/advent-2016/exposing-go-on-the-internet/
-
 		server := &http.Server{Addr: ":" + rt.Flags.HTTPPort, Handler: n /*, TLSConfig: myTLSConfig*/}
 		server.SetKeepAlivesEnabled(true)
 
