@@ -126,8 +126,7 @@ func (h *Handler) Preview(w http.ResponseWriter, r *http.Request) {
 	response.WriteJSON(w, result)
 }
 
-// Sync gets list of Keycloak users and inserts new users into Documize
-// and marks Keycloak disabled users as inactive.
+// Sync gets list of LDAP users and inserts new users into Documize.
 func (h *Handler) Sync(w http.ResponseWriter, r *http.Request) {
 	ctx := domain.GetRequestContext(r)
 

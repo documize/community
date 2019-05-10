@@ -51,7 +51,6 @@ func configFile() (f Flags, ok bool) {
 	var configFile string
 
 	// First argument is always program being executed.
-
 	// No additional arguments means check for documize.conf file.
 	if len(os.Args) == 1 {
 		// No arguments, so we default to default config filename.
@@ -72,14 +71,12 @@ func configFile() (f Flags, ok bool) {
 	// Tell caller where the config came from.
 	f.ConfigSource = configFile
 
-	// So now we have file and we parse the TOML format.
+	// We parse the TOML format config file.
 	var ct ConfigToml
 	if _, err := toml.DecodeFile(configFile, &ct); err != nil {
 		fmt.Println(err)
 		return
 	}
-
-	// TOML format cofig file is good so we map to flags.
 	f.DBType = strings.ToLower(ct.Database.Type)
 	f.DBConn = ct.Database.Connection
 	f.Salt = ct.Database.Salt

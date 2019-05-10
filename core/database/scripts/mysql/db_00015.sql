@@ -1,6 +1,5 @@
 /* community edition */
 
-ALTER DATABASE documize CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
 ALTER TABLE account CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
 ALTER TABLE attachment CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
 ALTER TABLE block CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
