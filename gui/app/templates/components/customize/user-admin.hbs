@@ -1,5 +1,5 @@
 <div class="view-customize">
-	{{#if (or isAuthProviderDocumize IsDualAuth)}}
+	{{#if (or isAuthProviderDocumize isDualAuth)}}
 		{{ui/ui-button color=constants.Color.Green light=true icon=constants.Icon.Person label=constants.Label.Add onClick=(action "onOpenUserModal")}}
 		<div id="add-user-modal" class="modal" tabindex="-1" role="dialog">
 			<div class="modal-dialog modal-lg" role="document">
