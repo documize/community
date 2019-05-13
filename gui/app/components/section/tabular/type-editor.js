@@ -64,7 +64,7 @@ export default Component.extend(Modals, Notifier, {
 	addEditor() {
 		schedule('afterRender', () => {
 			let options = {
-				cache_suffix: '?v=492',
+				cache_suffix: '?v=505',
 				selector: '#' + this.get('editorId'),
 				relative_urls: false,
 				browser_spellcheck: true,
@@ -77,8 +77,8 @@ export default Component.extend(Modals, Notifier, {
 				},
 				image_advtab: true,
 				media_live_embeds: true,
-				theme: 'modern',
-				skin: 'lightgray-gradient',
+				theme: 'silver',
+				skin: 'oxide',
 				entity_encoding: 'raw',
 				extended_valid_elements: 'b,i,b/strong,i/em',
 				fontsize_formats:
@@ -95,7 +95,7 @@ export default Component.extend(Modals, Notifier, {
 					'advlist autolink lists link image charmap print hr anchor pagebreak',
 					'searchreplace wordcount visualblocks visualchars code codesample fullscreen',
 					'insertdatetime media nonbreaking save table directionality',
-					'template paste textcolor colorpicker textpattern imagetools uploadimage'
+					'template paste textpattern imagetools'
 				],
 				menu: {},
 				menubar: false,
@@ -108,7 +108,7 @@ export default Component.extend(Modals, Notifier, {
 			};
 
 			if (typeof tinymce === 'undefined') {
-				$.getScript('/tinymce/tinymce.min.js?v=492', function () {
+				$.getScript('/tinymce/tinymce.min.js?v=505', function () {
 					window.tinymce.dom.Event.domLoaded = true;
 					tinymce.baseURL = '//' + window.location.host + '/tinymce';
 					tinymce.suffix = '.min';
