@@ -159,6 +159,11 @@
 				<label for="ldap-defaultPermissionAddSpace">Can Create Spaces</label>
 				{{x-toggle value=ldapConfig.defaultPermissionAddSpace size="medium" theme="light" onToggle=(action (mut ldapConfig.defaultPermissionAddSpace))}}
 			</div>
+			<div class="form-group">
+				<label for="ldap-allowFormsAuth">Dual Login</label>
+				{{x-toggle value=ldapConfig.allowFormsAuth size="medium" theme="light" onToggle=(action (mut ldapConfig.allowFormsAuth))}}
+				<small class="form-text text-muted">Enable login via LDAP and regular Documize email/password (useful for testing LDAP)</small>
+			</div>
 			{{ui/ui-button color=constants.Color.Yellow light=true label="Test →" onClick=(action "onLDAPPreview")}}
 			{{ui/ui-button-gap}}
 		{{/if}}

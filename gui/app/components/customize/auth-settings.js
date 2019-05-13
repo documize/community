@@ -113,6 +113,7 @@ export default Component.extend(ModalMixin, Notifier, {
 					ldapConfig = JSON.parse(ldapConfig);
 					ldapConfig.defaultPermissionAddSpace = ldapConfig.hasOwnProperty('defaultPermissionAddSpace') ? ldapConfig.defaultPermissionAddSpace : false;
 					ldapConfig.disableLogout = ldapConfig.hasOwnProperty('disableLogout') ? ldapConfig.disableLogout : true;
+					ldapConfig.allowFormsAuth = ldapConfig.hasOwnProperty('allowFormsAuth') ? ldapConfig.allowFormsAuth : false;
 				}
 
 				this.set('ldapConfig', ldapConfig);

@@ -21,7 +21,7 @@ import (
 	lm "github.com/documize/community/model/auth"
 	"github.com/documize/community/model/user"
 	"github.com/pkg/errors"
-	ld "gopkg.in/ldap.v2"
+	ld "gopkg.in/ldap.v3"
 )
 
 // Connect establishes connection to LDAP server.

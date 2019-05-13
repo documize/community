@@ -1,5 +1,5 @@
 <div class="view-customize">
-	{{#if isAuthProviderKeycloak}}
+	{{#if (or isAuthProviderKeycloak isDualAuth)}}
 		{{ui/ui-spacer size=300}}
 		{{#if syncInProgress}}
 			{{ui/ui-button color=constants.Color.Gray light=true icon=constants.Icon.Locked label="Keycloak user sync running..."}}
@@ -187,7 +187,7 @@
 						<label for="edit-email">Email</label>
 						{{input id="edit-email" type="text" class="form-control" value=editUser.email}}
 					</div>
-					{{#if isAuthProviderDocumize}}
+					{{#if (or isAuthProviderDocumize IsDualAuth)}}
 						<div class="form-group">
 							<label for="edit-password">Password</label>
 							{{input id="edit-password" type="password" class="form-control" value=password.password}}
