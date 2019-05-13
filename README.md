@@ -19,7 +19,7 @@ All you need to provide is PostgreSQL, Microsoft SQL Server or any MySQL variant
 
 > *We provide frequent product updates for both cloud and self-hosted customers.*
 >
-> **Harvey Kandola, CEO/Founder, Documize, Inc.**
+> **Harvey Kandola, CEO/Founder @ Documize**
 
 ## OS support
 
