@@ -25,7 +25,7 @@ export default Route.extend(ApplicationRouteMixin, {
 
 		let sa = this.get('session.session.authenticator');
 
-		return this.get('appMeta').boot(transition.targetName, window.location.href).then(data => {
+		return this.get('appMeta').boot(transition.targetName, '').then(data => {
 			if (sa !== "authenticator:documize" && sa !== "authenticator:keycloak" && sa !== "authenticator:ldap" && data.allowAnonymousAccess) {
 				if (!this.get('appMeta.setupMode') && !this.get('appMeta.secureMode')) {
 					return this.get('session').authenticate('authenticator:anonymous', data);
@@ -46,7 +46,7 @@ export default Route.extend(ApplicationRouteMixin, {
 			this.get('localStorage').clearSessionItem('entryUrl')
 
 			if (!_.includes(next, '/auth/')) {
-				window.location.href= next;
+				// window.location.href= next;
 			}
 		}
 	},
