@@ -15,8 +15,9 @@ import Mixin from '@ember/object/mixin';
 export default Mixin.create({
 	appMeta: service(),
 	isAuthProviderDocumize: true,
-	IsAuthProviderKeycloak: false,
-	IsAuthProviderLDAP: false,
+	isAuthProviderKeycloak: false,
+	isAuthProviderLDAP: false,
+	isDualAuth: false,
 
 	init() {
 		this._super(...arguments);
@@ -25,5 +26,16 @@ export default Mixin.create({
 		this.set('isAuthProviderDocumize', this.get('appMeta.authProvider') === constants.AuthProvider.Documize);
 		this.set('isAuthProviderKeycloak', this.get('appMeta.authProvider') === constants.AuthProvider.Keycloak);
 		this.set('isAuthProviderLDAP', this.get('appMeta.authProvider') === constants.AuthProvider.LDAP);
+
+		if (this.get('appMeta.authProvider') === constants.AuthProvider.LDAP) {
+			let config = this.get('appMeta.authConfig');
+
+			if (!_.isUndefined(config) && !_.isNull(config) && !_.isEmpty(config) ) {
+				config = JSON.parse(config);
+				this.set('isDualAuth', config.allowFormsAuth);
+			} else {
+				this.set('isDualAuth', false);
+			}
+		}
 	}
 });

@@ -44,6 +44,7 @@ type LDAPConfig struct {
 	GroupFilter               string         `json:"groupFilter"`
 	DisableLogout             bool           `json:"disableLogout"`
 	DefaultPermissionAddSpace bool           `json:"defaultPermissionAddSpace"`
+	AllowFormsAuth            bool           `json:"allowFormsAuth"`           // enable dual login via LDAP + email/password
 	AttributeUserRDN          string         `json:"attributeUserRDN"`         // usually uid (LDAP) or sAMAccountName (AD)
 	AttributeUserFirstname    string         `json:"attributeUserFirstname"`   // usually givenName
 	AttributeUserLastname     string         `json:"attributeUserLastname"`    // usually sn

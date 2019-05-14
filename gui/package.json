@@ -1,6 +1,6 @@
 {
   "name": "documize",
-  "version": "2.4.2",
+  "version": "2.5.0",
   "description": "The Document IDE",
   "repository": "",
   "license": "AGPL",
@@ -59,7 +59,7 @@
   "dependencies": {
     "bootstrap": "^4.2.1",
     "nan": "git+https://github.com/nodejs/nan.git",
-    "node-sass": "^4.11.0",
+    "node-sass": "^4.12.0",
     "npm": "^6.7.0",
     "pdfjs-dist": "^2.0.943",
     "popper.js": "^1.14.7"

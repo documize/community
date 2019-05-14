@@ -15,6 +15,8 @@ import Route from '@ember/routing/route';
 export default Route.extend({
 	session: service(),
 	appMeta: service(),
+	router: service(),
+	localStorage: service(),
 
 	activate: function () {
 		this.get('session').invalidate().then(() => {

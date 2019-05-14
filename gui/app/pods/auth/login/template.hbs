@@ -13,7 +13,7 @@
 						{{focus-input type="email" value=email id="authEmail" class="form-control mousetrap" placeholder="" autocomplete="username email"}}
 					{{/if}}
 					{{#if isAuthProviderLDAP}}
-						<label for="authUsername">Network Username</label>
+						<label for="authUsername">Username</label>
 						{{focus-input type="text" value=username id="authUsername" class="form-control mousetrap" placeholder="network domain username" autocomplete="username"}}
 					{{/if}}
 				</div>
@@ -23,7 +23,7 @@
 						{{input type="password" value=password id="authPassword" class="form-control" autocomplete="current-password"}}
 					{{/if}}
 					{{#if isAuthProviderLDAP}}
-						<label for="authPassword">Network Password</label>
+						<label for="authPassword">Password</label>
 						{{input type="password" value=password id="authPassword" class="form-control" autocomplete="current-password"}}
 					{{/if}}
 				</div>

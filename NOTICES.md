@@ -36,7 +36,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 https://github.com/gorilla/context
 https://github.com/gorilla/mux
-    
+
 Copyright (c) 2012 Rodrigo Moraes. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -197,7 +197,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 
 https://github.com/jmoiron/sqlx
-    
+
 Copyright (c) 2013, Jason Moiron
 
 Permission is hereby granted, free of charge, to any person
@@ -223,7 +223,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 
 https://github.com/mytrile/mime-ext
-    
+
 The MIT License (MIT)
 
 Copyright (c) 2014 Dimitar Kostov
@@ -247,7 +247,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 https://github.com/nu7hatch/gouuid
-    
+
 Copyright (C) 2011 by Krzysztof Kowalik <chris@nu7hat.ch>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -270,7 +270,7 @@ SOFTWARE.
 
 
 https://github.com/rs/xid
-    
+
 Copyright (c) 2015 Olivier Poitrey <rs@dailymotion.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -318,7 +318,7 @@ SOFTWARE.
 
 
 https://github.com/jordan-wright/email
-    
+
 Elements of the software in this file were modified from github.com/jordan-wright/email and
 are subject to the licence below:
 
@@ -625,9 +625,9 @@ OTHER DEALINGS IN THE SOFTWARE.
 https://github.com/blueimp/JavaScript-MD5
 
 JavaScript MD5 1.0.1
- 
+
 Copyright 2011, Sebastian Tschan
-https://blueimp.net 
+https://blueimp.net
 Licensed under the MIT license:
 http://www.opensource.org/licenses/MIT
 
@@ -834,7 +834,7 @@ such a program is covered only if its contents constitute a work based
 on the Library (independent of the use of the Library in a tool for
 writing it).  Whether that is true depends on what the Library does
 and what the program that uses the Library does.
-  
+
   1. You may copy and distribute verbatim copies of the Library's
 complete source code as you receive it, in any medium, provided that
 you conspicuously and appropriately publish on each copy an
@@ -1471,7 +1471,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 
-https://github.com/arasatasaygin/is.js 
+https://github.com/arasatasaygin/is.js
 
 The MIT License (MIT)
 
@@ -1853,6 +1853,7 @@ SOFTWARE.
 
 
 gopkg.in/ldap.v2
+gopkg.in/ldap.v3
 
 The MIT License (MIT)
 

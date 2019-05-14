@@ -63,17 +63,12 @@
 			margin-right: 10px;
 			width: 90%;
 			@extend .text-truncate;
-			color: map-get($green-shades, 800);
-
-			&:hover {
-				color: map-get($green-shades, 900);
-			}
 		}
-		
+
 		> .menu {
 			position: absolute;
 			right: -10px;
 			top: 0;
-		}		
+		}
 	}
 }

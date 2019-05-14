@@ -89,7 +89,7 @@ export default Service.extend({
 
 				this.get('localStorage').clearAll();
 				return resolve(this);
-			} else if (!_.includes(requestedUrl, '/auth/')) {
+			} else if (!_.includes(requestedUrl, '/auth/') && !_.isEmpty(requestedUrl)) {
 				this.get('localStorage').storeSessionItem('entryUrl', requestedUrl);
 			}
 

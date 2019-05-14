@@ -278,8 +278,6 @@ func (h *Handler) Authenticate(w http.ResponseWriter, r *http.Request) {
 
 	dom = h.Store.Organization.CheckDomain(ctx, dom) // TODO optimize by removing this once js allows empty domains
 
-	h.Runtime.Log.Info("LDAP login request " + username + " @ " + dom)
-
 	// Get the org and it's associated LDAP config.
 	org, err := h.Store.Organization.GetOrganizationByDomain(dom)
 	if err != nil {
@@ -298,6 +296,13 @@ func (h *Handler) Authenticate(w http.ResponseWriter, r *http.Request) {
 
 	ctx.OrgID = org.RefID
 
+	// We first connect to LDAP and try to authenticate user.
+	// If user auth fails and dual authentication is enabled,
+	// we try to authenticate with email/password combo.
+	var u user.User
+
+	// Try LDAP
+	h.Runtime.Log.Info("LDAP login request " + username + " @ " + dom)
 	l, err := connect(lc)
 	if err != nil {
 		response.WriteBadRequestError(w, method, "unable to dial LDAP server")
@@ -305,49 +310,83 @@ func (h *Handler) Authenticate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer l.Close()
-
 	lu, ok, err := authenticate(l, lc, username, password)
 	if err != nil {
 		response.WriteBadRequestError(w, method, "error during LDAP authentication")
 		h.Runtime.Log.Error(method, err)
 		return
 	}
-	if !ok {
-		h.Runtime.Log.Info("LDAP failed login request for " + username + " @ " + dom)
-		response.WriteUnauthorizedError(w)
-		return
-	}
 
-	h.Runtime.Log.Info("LDAP logon completed " + lu.Email)
+	// If OK then we complete LDAP specific processing
+	if ok {
+		h.Runtime.Log.Info("LDAP logon completed " + lu.Email)
 
-	u, err := h.Store.User.GetByDomain(ctx, dom, lu.Email)
-	if err != nil && err != sql.ErrNoRows {
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	// Create user account if not found
-	if err == sql.ErrNoRows {
-		h.Runtime.Log.Info("Adding new LDAP user " + lu.Email + " @ " + dom)
-
-		u = convertUser(lc, lu)
-		u.Salt = secrets.GenerateSalt()
-		u.Password = secrets.GeneratePassword(secrets.GenerateRandomPassword(), u.Salt)
-
-		u, err = auth.AddExternalUser(ctx, h.Runtime, h.Store, u, lc.DefaultPermissionAddSpace)
-		if err != nil {
+		u, err = h.Store.User.GetByDomain(ctx, dom, lu.Email)
+		if err != nil && err != sql.ErrNoRows {
 			response.WriteServerError(w, method, err)
 			h.Runtime.Log.Error(method, err)
 			return
 		}
+
+		// Create user account if not found
+		if err == sql.ErrNoRows {
+			h.Runtime.Log.Info("Adding new LDAP user " + lu.Email + " @ " + dom)
+
+			u = convertUser(lc, lu)
+			u.Salt = secrets.GenerateSalt()
+			u.Password = secrets.GeneratePassword(secrets.GenerateRandomPassword(), u.Salt)
+
+			u, err = auth.AddExternalUser(ctx, h.Runtime, h.Store, u, lc.DefaultPermissionAddSpace)
+			if err != nil {
+				response.WriteServerError(w, method, err)
+				h.Runtime.Log.Error(method, err)
+				return
+			}
+		}
 	}
+
+	// If LDAP authentication failed, we check to see if we are allowed
+	// to perform authentication via regular email/password.
+	if !ok {
+		// Return as unauthorized if dual authentication not enabled.
+		if !lc.AllowFormsAuth {
+			h.Runtime.Log.Info("LDAP failed login request for " + username + " @ " + dom)
+			response.WriteUnauthorizedError(w)
+			return
+		}
+
+		h.Runtime.Log.Info("Trying forms auth as LDAP login login failed for " + username + " @ " + dom)
+
+		// Now try regular email/password authentication.
+		u, err = h.Store.User.GetByDomain(ctx, dom, username)
+		if err == sql.ErrNoRows {
+			response.WriteUnauthorizedError(w)
+			return
+		}
+		if err != nil && err != sql.ErrNoRows {
+			h.Runtime.Log.Error("unable to fetch user", err)
+			response.WriteServerError(w, method, err)
+			return
+		}
+		if len(u.Reset) > 0 || len(u.Password) == 0 {
+			response.WriteUnauthorizedError(w)
+			return
+		}
+
+		// Password correct and active user
+		if username != strings.TrimSpace(strings.ToLower(u.Email)) || !secrets.MatchPassword(u.Password, password, u.Salt) {
+			response.WriteUnauthorizedError(w)
+			return
+		}
+	}
+
+	// Below is standard flow for user authentication regardless
+	// if they used LDAP or email/password combo.
 
 	// Attach user accounts and work out permissions.
 	usr.AttachUserAccounts(ctx, *h.Store, org.RefID, &u)
 
-	// No accounts signals data integrity problem
-	// so we reject login request.
+	// No accounts signals data integrity problem so we reject login request.
 	if len(u.Accounts) == 0 {
 		response.WriteUnauthorizedError(w)
 		h.Runtime.Log.Error(method, err)
@@ -366,7 +405,7 @@ func (h *Handler) Authenticate(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Generate JWT token
+	// Send back newly generated JWT token.
 	authModel := ath.AuthenticationModel{}
 	authModel.Token = auth.GenerateJWT(h.Runtime, u.RefID, org.RefID, dom)
 	authModel.User = u

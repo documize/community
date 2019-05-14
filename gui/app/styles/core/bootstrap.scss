@@ -80,7 +80,7 @@ $input-focus-border-color:	map-get($gray-shades, 200);
 // links
 $link-color:                $color-link;
 $link-decoration:           none;
-$link-hover-color:          darken($link-color, 15%) !default;
+$link-hover-color:          $color-link-hover !default;
 $link-hover-decoration:     none;
 
 //
