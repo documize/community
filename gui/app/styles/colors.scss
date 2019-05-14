@@ -163,7 +163,7 @@ $color-sidebar: #f2f8fd;
 * This is the default theme of PURPLE.
 *
 * We go from 100 (lightest) to 900 (darkest).
-* Base shade is 500 and is used prominmently as the
+* Base shade is 500 and is used prominently as the
 * left-side navigation sidebar color.
 **************************************************************/
 $theme-900: #160624;
@@ -177,4 +177,6 @@ $theme-200: #EAD9F9;
 $theme-100: #FBF7FE;
 
 // Set hyperlink color for theme
-$color-link: map-get($green-shades, 700);
+// $color-link: map-get($green-shades, 700);
+$color-link: #0080a5;
+$color-link-hover: #0fb4e2;
