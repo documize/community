@@ -38,7 +38,7 @@ func (s Store) Add(ctx domain.RequestContext, u user.User) (err error) {
 	u.Revised = time.Now().UTC()
 
 	_, err = ctx.Transaction.Exec(s.Bind("INSERT INTO dmz_user (c_refid, c_firstname, c_lastname, c_email, c_initials, c_password, c_salt, c_reset, c_lastversion, c_created, c_revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"),
-		u.RefID, u.Firstname, u.Lastname, strings.ToLower(u.Email), u.Initials, u.Password, u.Salt, "", u.LastVersion, u.Created, u.Revised)
+		u.RefID, u.Firstname, u.Lastname, strings.TrimSpace(strings.ToLower(u.Email)), u.Initials, u.Password, u.Salt, "", u.LastVersion, u.Created, u.Revised)
 
 	if err != nil {
 		err = errors.Wrap(err, "execute user insert")
@@ -74,7 +74,7 @@ func (s Store) GetByDomain(ctx domain.RequestContext, domain, email string) (u u
         u.c_password AS password, u.c_salt AS salt, u.c_reset AS reset, u.c_lastversion AS lastversion,
         u.c_created AS created, u.c_revised AS revised
         FROM dmz_user u, dmz_user_account a, dmz_org o
-        WHERE TRIM(LOWER(u.c_email))=? AND u.c_refid=a.c_userid AND a.c_orgid=o.c_refid AND TRIM(LOWER(o.c_domain))=?`),
+        WHERE LOWER(u.c_email)=? AND u.c_refid=a.c_userid AND a.c_orgid=o.c_refid AND LOWER(o.c_domain)=?`),
 		email, domain)
 
 	if err != nil && err != sql.ErrNoRows {
@@ -94,7 +94,7 @@ func (s Store) GetByEmail(ctx domain.RequestContext, email string) (u user.User,
         u.c_password AS password, u.c_salt AS salt, u.c_reset AS reset, u.c_lastversion AS lastversion,
         u.c_created AS created, u.c_revised AS revised
         FROM dmz_user u
-        WHERE TRIM(LOWER(u.c_email))=?`),
+        WHERE LOWER(u.c_email)=?`),
 		email)
 
 	if err != nil && err != sql.ErrNoRows {
