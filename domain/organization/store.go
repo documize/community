@@ -91,7 +91,6 @@ func (s Store) GetOrganizationByDomain(subdomain string) (o org.Organization, er
 	if err == nil {
 		return
 	}
-	s.Runtime.Log.Error("meta", err)
 
 	// match on empty domain AS last resort
 	err = s.Runtime.Db.Get(&o, s.Bind(`SELECT id, c_refid AS refid,
