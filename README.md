@@ -26,8 +26,7 @@ All you need to provide is PostgreSQL, Microsoft SQL Server or any MySQL variant
 - Linux
 - Windows
 - macOS
-
-Heck, Documize will probably run just fine on a Raspberry Pi.
+- Raspberry Pi (using the ARM builds)
 
 ## Database Support
 
