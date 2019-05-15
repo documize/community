@@ -44,22 +44,19 @@ echo "Generating in-memory static assets..."
 cd embed
 go generate
 
-echo "Compiling app..."
 cd ..
-for arch in amd64 ; do
-    for os in darwin linux windows ; do
-        if [ "$os" == "windows" ] ; then
-            echo "Compiling documize-community-$os-$arch.exe"
-            env GOOS=$os GOARCH=$arch GODEBUG=tls13=1 go build -gcflags="all=-trimpath=$GOPATH" -o bin/documize-community-$os-$arch.exe ./edition/community.go
-        else
-            echo "Compiling documize-community-$os-$arch"
-            env GOOS=$os GOARCH=$arch GODEBUG=tls13=1 go build -gcflags="all=-trimpath=$GOPATH" -o bin/documize-community-$os-$arch ./edition/community.go
-        fi
-    done
-done
+echo "Compiling for Linux..."
+env GOOS=linux GOARCH=amd64 GODEBUG=tls13=1 go build -gcflags="all=-trimpath=$GOPATH" -o bin/documize-community-linux-amd64 ./edition/community.go
+echo "Compiling for macOS..."
+env GOOS=darwin GOARCH=amd64 GODEBUG=tls13=1 go build -gcflags="all=-trimpath=$GOPATH" -o bin/documize-community-darwin-amd64 ./edition/community.go
+echo "Compiling for Windows..."
+env GOOS=windows GOARCH=amd64 GODEBUG=tls13=1 go build -gcflags="all=-trimpath=$GOPATH" -o bin/documize-community-windows-amd64.exe ./edition/community.go
+echo "Compiling for ARM..."
+env GOOS=linux GOARCH=arm GODEBUG=tls13=1 go build -gcflags="all=-trimpath=$GOPATH" -o bin/documize-community-linux-arm ./edition/community.go
+echo "Compiling for ARM64..."
+env GOOS=linux GOARCH=arm64 GODEBUG=tls13=1 go build -gcflags="all=-trimpath=$GOPATH" -o bin/documize-community-linux-arm64 ./edition/community.go
 
 echo "Finished."
-
 
 # CGO_ENABLED=0 GOOS=linux go build -a -ldflags="-s -w" -installsuffix cgo
 # go build -ldflags '-d -s -w' -a -tags netgo -installsuffix netgo test.go
