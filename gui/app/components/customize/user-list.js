@@ -10,7 +10,6 @@
 // https://documize.com
 
 import $ from 'jquery';
-import { observer } from '@ember/object';
 import { inject as service } from '@ember/service';
 import { schedule, debounce } from '@ember/runloop';
 import AuthProvider from '../../mixins/auth';
@@ -51,15 +50,15 @@ export default Component.extend(AuthProvider, ModalMixin, Notifier, {
 		this.set('users', users);
 	},
 
-	onKeywordChange: observer('filter', function() {
-		debounce(this, this.filterUsers, 350);
-	}),
-
 	filterUsers() {
 		this.get('onFilter')(this.get('filter'));
 	},
 
 	actions: {
+		onFilterChange() {
+			debounce(this, this.filterUsers, 350);
+		},
+
 		togglePerms() {
 			this.set('showPermExplain', !this.get('showPermExplain'));
 

@@ -33,6 +33,7 @@ export default Component.extend(Notifier, Modals, {
 		return this.get('blocks.length') > 0;
 	}),
 
+	// eslint-disable-next-line ember/no-observers
 	onModalToggle: observer('show', function() {
 		let modalId = this.get('modalId');
 

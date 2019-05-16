@@ -28,9 +28,12 @@ export default Component.extend(ModalMixin, {
 	canDelete: false,
 	canMove: false,
 	docSearchFilter: '',
+
+	// eslint-disable-next-line ember/no-observers
 	onKeywordChange: observer('docSearchFilter',  function() {
 		debounce(this, this.searchDocs, 750);
 	}),
+
 	emptySearch: computed('docSearchResults', function() {
 		return this.get('docSearchResults.length') === 0;
 	}),

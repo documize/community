@@ -85,11 +85,12 @@ export default Component.extend(ModalMixin, Notifier, {
 		this.set('ldapPreview', {isError: true, message: 'Unable to connect'});
 
 		switch (provider) {
-			case constants.AuthProvider.Documize:
+			case constants.AuthProvider.Documize: {
 				// nothing to do
 				break;
+			}
 
-			case constants.AuthProvider.Keycloak: // eslint-disable-line no-case-declarations
+			case constants.AuthProvider.Keycloak: {
 				let config = this.get('authConfig');
 
 				if (_.isUndefined(config) || _.isNull(config) || _.isEmpty(config) ) {
@@ -103,8 +104,9 @@ export default Component.extend(ModalMixin, Notifier, {
 
 				this.set('keycloakConfig', config);
 				break;
+			}
 
-			case constants.AuthProvider.LDAP: // eslint-disable-line no-case-declarations
+			case constants.AuthProvider.LDAP: {
 				let ldapConfig = this.get('authConfig');
 
 				if (_.isUndefined(ldapConfig) || _.isNull(ldapConfig) || _.isEmpty(ldapConfig) ) {
@@ -118,6 +120,7 @@ export default Component.extend(ModalMixin, Notifier, {
 
 				this.set('ldapConfig', ldapConfig);
 				break;
+			}
 		}
 	},
 

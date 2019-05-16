@@ -49,7 +49,7 @@ All you need to provide is PostgreSQL, Microsoft SQL Server or any MySQL variant
 ## Technology Stack
 
 - Go (v1.12.5)
-- Ember JS (v3.8.0)
+- Ember JS (v3.10.0)
 
 ## Authentication Options
 

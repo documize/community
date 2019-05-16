@@ -130,6 +130,7 @@ export default Component.extend({
 			), '*');
 	},
 
+	// eslint-disable-next-line ember/no-observers
 	goSave: observer('readyToSave', function() {
 		if (this.get('readyToSave')) {
 			let page = this.get('page');

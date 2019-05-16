@@ -43,7 +43,7 @@
 	{{ui/ui-spacer size=300}}
 
 	<div class="form-group">
-		{{focus-input type="text" class="form-control" placeholder="filter users" value=filter}}
+		{{focus-input type="text" class="form-control" placeholder="filter users" value=filter key-up=(action "onFilterChange")}}
 		<small class="form-text text-muted">search firstname, lastname, email</small>
 	</div>
 

@@ -21,13 +21,13 @@
     <div class="form-group">
         <label for="new-space-name">Sidebar</label>
         <select onchange={{action "onSetSidebar" value="target.value"}} class="form-control">
-            <option value="none" selected={{is-equal pdfOption.sidebar 'none'}}>
+            <option value="none" selected={{is-equal pdfOption.sidebar "none"}}>
                 None
             </option>
-            <option value="bookmarks" selected={{is-equal pdfOption.sidebar 'bookmarks'}}>
+            <option value="bookmarks" selected={{is-equal pdfOption.sidebar "bookmarks"}}>
                 Bookmarks
             </option>
-            <option value="thumbs" selected={{is-equal pdfOption.sidebar 'thumbs'}}>
+            <option value="thumbs" selected={{is-equal pdfOption.sidebar "thumbs"}}>
                 Thumbnails
             </option>
         </select>

@@ -11,7 +11,7 @@
 	<div class="document-sidebar-attachment">
 		<ul class="files">
 			{{#each files key="id" as |file|}}
-				{{#if (eq file.pageId '')}}
+				{{#if (eq file.pageId "")}}
 					<li class="file">
 						<a href="{{appMeta.endpoint}}/public/attachment/{{appMeta.orgId}}/{{file.id}}{{downloadQuery}}">
 							{{file.filename}}
