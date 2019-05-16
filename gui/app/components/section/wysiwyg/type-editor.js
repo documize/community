@@ -40,7 +40,7 @@ export default Component.extend({
 				browser_spellcheck: true,
 				gecko_spellcheck: false,
 				statusbar: false,
-				inline: true,
+				inline: false,
 				paste_data_images: true,
 				images_upload_handler: function (blobInfo, success, failure) { // eslint-disable-line no-unused-vars
 					success("data:" + blobInfo.blob().type + ";base64," + blobInfo.base64());
@@ -100,7 +100,7 @@ export default Component.extend({
 					{ text: 'YAML', value: 'yaml' }
 				],
 				plugins: [
-					'advlist autolink lists link image charmap print hr anchor pagebreak',
+					'advlist autolink autoresize lists link image charmap print hr anchor pagebreak',
 					'searchreplace wordcount visualblocks visualchars code codesample fullscreen',
 					'insertdatetime media nonbreaking save table directionality',
 					'template paste textpattern imagetools'
