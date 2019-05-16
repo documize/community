@@ -52,7 +52,6 @@ _testmain.go
 node_modules
 
 # Misc.
-build
 plugin-msword/plugin-msword
 plugin-msword/plugin-msword-osx
 npm-debug.log
