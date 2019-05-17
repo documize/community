@@ -21,7 +21,7 @@ All you need to provide is PostgreSQL, Microsoft SQL Server or any MySQL variant
 >
 > **Harvey Kandola, CEO/Founder @ Documize**
 
-## OS support
+## OS Support
 
 - Linux
 - Windows
