@@ -1,14 +1,15 @@
-{{#layout/master-sidebar}}
-	<Ui::UiSpacer @size=300 />
-
-	<div class="section">
+<Layout::MasterNavigation />
+<Layout::MasterToolbar>
+	<div class="zone-1">
 		{{#link-to "document.index" model.folder.id model.folder.slug model.document.id model.document.slug}}
-			{{ui/ui-button color=constants.Color.Yellow light=true icon=constants.Icon.ArrowLeft label="Document"}}
+			{{ui/ui-button color=constants.Color.Gray outline=true uppercase=false icon=constants.Icon.ArrowLeft label=model.document.name}}
 		{{/link-to}}
 	</div>
-{{/layout/master-sidebar}}
+	<div class="zone-2" />
+	<div class="zone-3" />
+</Layout::MasterToolbar>
 
-{{#layout/master-content}}
+<Layout::Container>
 	{{document/document-editor
 		document=model.document
 		folder=model.folder
@@ -22,4 +23,4 @@
 		files=model.attachments
 		onAttachmentUpload=(action "onAttachmentUpload")
 		onAttachmentDelete=(action "onAttachmentDelete")}}
-{{/layout/master-content}}
+</Layout::Container>

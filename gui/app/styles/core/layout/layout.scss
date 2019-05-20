@@ -162,7 +162,7 @@ $sidebar-height: auto;
 			height: $sidebar-height;
 			// overflow-x: hidden;
 			// overflow-y: auto;
-			padding: 20px 15px;
+			padding: 20px 10px 20px 20px;
 		}
 
 		.master-content {
@@ -199,7 +199,7 @@ $sidebar-height: auto;
 
 		.master-sidebar {
 			width: 300px;
-			padding: 40px 20px;
+			padding: 40px 10px 40px 20px;
 		}
 
 		.master-content {
@@ -214,11 +214,11 @@ $sidebar-height: auto;
 @media (min-width: $display-break-4) and (min-height: 650px) {
 	.master-grid-container {
 		display: grid;
-		grid-template-columns: 350px minmax(auto, 1200px);
+		grid-template-columns: 400px minmax(auto, 1200px);
 
 		.master-sidebar {
-			width: 350px;
-			padding: 40px 20px;
+			width: 400px;
+			padding: 40px 10px 40px 20px;
 		}
 
 		.master-content {
@@ -264,6 +264,6 @@ $sidebar-height: auto;
 @media (min-width: $display-break-4) and (min-height: 650px) {
 	.master-container {
 		padding: 40px;
-		max-width: 1200px;
+		// max-width: 1200px;
 	}
 }

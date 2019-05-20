@@ -1,10 +1,11 @@
 .sidebar-content {
 	display: block;
 	position: relative;
-	padding: 20px 10px 10px 10px;
+	padding: 20px 5px 20px 10px;
+	// background-color: $theme-100;
 	background-color: $color-sidebar;
-	@include border-radius(4px);
-	border: 1px solid map-get($gray-shades, 100);
+	// background-color: map-get($gray-shades, 100);
+	@include border-radius(6px);
 
 	> .section {
 		margin: 0;

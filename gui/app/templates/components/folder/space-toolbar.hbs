@@ -18,7 +18,7 @@
 {{/ui/ui-toolbar}}
 
 {{#if permissions.documentAdd}}
-	{{#ui/ui-toolbar dark=false light=true raised=true large=true bordered=true}}
+	{{#ui/ui-toolbar dark=false light=true raised=true large=false bordered=true}}
 		{{ui/ui-toolbar-icon icon=constants.Icon.Plus color=constants.Color.Green}}
 		{{ui/ui-toolbar-label label="CONTENT" color=constants.Color.Green}}
 		{{#attach-popover class="ember-attacher-popper" hideOn="clickout" showOn="click" isShown=false}}

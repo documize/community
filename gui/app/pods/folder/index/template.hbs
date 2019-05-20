@@ -3,6 +3,15 @@
 	<div class="zone-1" />
 	<div class="zone-2" />
 	<div class="zone-3">
+		{{folder/space-toolbar
+			spaces=model.folders
+			space=model.folder
+			permissions=model.permissions
+			templates=model.templates
+			category=category
+			categories=model.categories
+			documents=filteredDocs
+			onRefresh=(action "onRefresh")}}
 	</div>
 </Layout::MasterToolbar>
 
@@ -26,76 +35,28 @@
 		onFiltered=(action "onFiltered")
 		onRefresh=(action "onRefresh")}}
 
-
-	<Layout::Grid::Sidebar>
-		<div class="sidebar-content">
-			<div class="section">
-				<div class="title">ABOUT</div>
-				<div class="text">
-					Documize product updates are released frequently for both
-					cloud and self-hosted customers.
-				</div>
-				<div class="text">
-					Have an idea, suggestion or some feedback? <a href="mailto:support@documize.com">Get in touch.</a>
-				</div>
-			</div>
-		</div>
-	</Layout::Grid::Sidebar>
 	<Layout::Grid::Content>
-		{{layout/logo-heading
-			title="Product News"
-			desc="Latest product news and updates"
-			icon=constants.Icon.Announce}}
+		{{#if (eq model.folder.labelId "")}}
+			<div class="space-label">Unclassified</div>
+		{{else}}
+			<div class="space-label" style={{{model.label.bgColor}}}>{{model.label.name}}</div>
+		{{/if}}
 
-		<div class="product-news">
-			{{{newsContent}}}
-			<div class="action">
-				Have an idea? Suggestion or feedback? <a href="mailto:support@documize.com">Get in touch!</a>
-			</div>
-		</div>
+		{{layout/logo-heading
+			title=model.folder.name
+			desc=model.folder.desc
+			meta=model.folder.icon}}
+
+		{{folder/documents-list
+			documents=filteredDocs
+			spaces=model.folders
+			space=model.folder
+			templates=model.templates
+			permissions=model.permissions
+			sortBy=sortBy
+			onFiltered=(action "onFiltered")
+			onExportDocument=(action "onExportDocument")
+			onDeleteDocument=(action "onDeleteDocument")
+			onMoveDocument=(action "onMoveDocument")}}
 	</Layout::Grid::Content>
 </Layout::Grid::Container>
-
-
-
-
-
-
-{{#layout/master-content}}
-	<div class="grid-container-6-4">
-		<div class="grid-cell-1">
-			{{#if (eq model.folder.labelId "")}}
-				<div class="space-label">Unclassified</div>
-			{{else}}
-				<div class="space-label" style={{{model.label.bgColor}}}>{{model.label.name}}</div>
-			{{/if}}
-			{{layout/logo-heading
-				title=model.folder.name
-				desc=model.folder.desc
-				meta=model.folder.icon}}
-		</div>
-		<div class="grid-cell-2 grid-cell-right">
-			{{folder/space-toolbar
-				spaces=model.folders
-				space=model.folder
-				permissions=model.permissions
-				templates=model.templates
-				category=category
-				categories=model.categories
-				documents=filteredDocs
-				onRefresh=(action "onRefresh")}}
-		</div>
-	</div>
-
-	{{folder/documents-list
-		documents=filteredDocs
-		spaces=model.folders
-		space=model.folder
-		templates=model.templates
-		permissions=model.permissions
-		sortBy=sortBy
-		onFiltered=(action "onFiltered")
-		onExportDocument=(action "onExportDocument")
-		onDeleteDocument=(action "onDeleteDocument")
-		onMoveDocument=(action "onMoveDocument")}}
-{{/layout/master-content}}

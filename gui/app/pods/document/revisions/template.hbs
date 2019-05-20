@@ -1,38 +1,46 @@
-{{#layout/master-sidebar}}
-	<Ui::UiSpacer @size=300 />
-
-	<div class="section">
+<Layout::MasterNavigation />
+<Layout::MasterToolbar>
+	<div class="zone-1">
 		{{#link-to "document.index"}}
-			{{ui/ui-button color=constants.Color.Yellow light=true icon=constants.Icon.ArrowLeft label="Document"}}
+			{{ui/ui-button color=constants.Color.Gray outline=true uppercase=false icon=constants.Icon.ArrowLeft label=document.name}}
 		{{/link-to}}
-
-		<Ui::UiSpacer @size=400 />
-
-		<div class="title">REVISIONS</div>
-		<div class="list">
-			{{#each revisions as |revision|}}
-				<div class="item {{if (eq selectedRevision revision) "selected"}}" {{action "onRevision" revision}}>
-					<i class={{concat "dicon " constants.Icon.TriangleSmallRight}} />
-					<div class="name">{{formatted-date revision.created}}</div>
-				</div>
-			{{/each}}
-		</div>
 	</div>
-{{/layout/master-sidebar}}
+	<div class="zone-2" />
+	<div class="zone-3" />
+</Layout::MasterToolbar>
 
-{{#layout/master-content}}
-	{{layout/logo-heading
-		title="Content Revisions"
-		desc="Review previous content changes and roll back edits"
-		icon=constants.Icon.TimeBack}}
+<Layout::Grid::Container>
+	<Layout::Grid::Sidebar>
+		<div class="sidebar-content">
+			<div class="section">
+				<div class="title">REVISIONS</div>
+				<div class="list">
+					{{#each revisions as |revision|}}
+						<div class="item {{if (eq selectedRevision revision) "selected"}}" {{action "onRevision" revision}}>
+							<i class={{concat "dicon " constants.Icon.TriangleSmallRight}} />
+							<div class="name">{{formatted-date revision.created}}</div>
+						</div>
+					{{/each}}
+				</div>
+			</div>
+		</div>
+	</Layout::Grid::Sidebar>
 
-	{{document/view-revision
-		pages=pages
-		folder=folder
-		document=document
-		permissions=permissions
-		revisions=revisions
-		revision=selectedRevision
-		onRollback=(action "onRollback")}}
-{{/layout/master-content}}
+	<Layout::Grid::Content>
+		{{layout/logo-heading
+			title="Content Revisions"
+			desc="Review previous content changes and roll back edits"
+			icon=constants.Icon.TimeBack}}
+
+		{{document/view-revision
+			pages=pages
+			folder=folder
+			document=document
+			permissions=permissions
+			revisions=revisions
+			revision=selectedRevision
+			onRollback=(action "onRollback")}}
+	</Layout::Grid::Content>
+</Layout::Grid::Container>
+
 

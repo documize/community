@@ -1,5 +1,5 @@
-<Layout::Grid::Sidebar>
-	<div class="sidebar-content">
+<div class="sidebar-content">
+	<div class="section">
 		<div class="title">filter</div>
 		<div class="list">
 			<div class="item {{if (eq selectedFilter "space") "selected"}}" {{action "onDocumentFilter" "space" space.id}}>
@@ -39,9 +39,11 @@
 				<div class="name">Updated recently ({{recentUpdate.length}})</div>
 			</div>
 		</div>
+	</div>
 
-		<Ui::UiSpacer @size=200 />
+	<Ui::UiSpacer @size=200 />
 
+	<div class="section">
 		<div class="title">category</div>
 		<div class="list">
 			{{#if categories}}
@@ -55,4 +57,4 @@
 			{{/if}}
 		</div>
 	</div>
-</Layout::Grid::Sidebar>
+</div>

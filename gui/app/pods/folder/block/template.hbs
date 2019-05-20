@@ -1,18 +1,29 @@
-{{#layout/master-sidebar}}
-	<Ui::UiSpacer @size=300 />
-	<div class="section">
+<Layout::MasterNavigation />
+<Layout::MasterToolbar>
+	<div class="zone-1">
 		{{#link-to "folder.settings"}}
-			{{ui/ui-button color=constants.Color.Yellow light=true icon=constants.Icon.ArrowLeft label="Space Settings"}}
+			{{ui/ui-button color=constants.Color.Gray outline=true uppercase=false icon=constants.Icon.ArrowLeft label=model.folder.name}}
 		{{/link-to}}
 	</div>
-{{/layout/master-sidebar}}
+</Layout::MasterToolbar>
 
-{{#layout/master-content}}
-	{{layout/logo-heading
-		title="Content Blocks"
-		desc="Content blocks provide re-usable content that can be inserted into any document"
-		icon=constants.Icon.Integrations}}
+<Layout::Grid::Container>
+	<Layout::Grid::Sidebar>
+		<div class="sidebar-content">
+			<div class="section">
+				<div class="title">about</div>
+				<div class="text"></div>
+			</div>
+		</div>
+	</Layout::Grid::Sidebar>
 
-	{{document/block-editor document=model.document folder=model.folder block=model.block
-		onCancel=(action "onCancel") onAction=(action "onAction")}}
-{{/layout/master-content}}
+	<Layout::Grid::Content>
+		{{layout/logo-heading
+			title="Content Blocks"
+			desc="Content blocks provide re-usable content that can be inserted into any document"
+			icon=constants.Icon.Integrations}}
+
+		{{document/block-editor document=model.document folder=model.folder block=model.block
+			onCancel=(action "onCancel") onAction=(action "onAction")}}
+	</Layout::Grid::Content>
+</Layout::Grid::Container>
