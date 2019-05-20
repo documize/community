@@ -8,7 +8,7 @@
 			<label for="stage-1-lastname">Last name</label>
 			<input id="stage-1-lastname" type="text" value="" class="form-control form-control-lg">
 		</div>
-		{{ui/ui-spacer size=300}}
+		<Ui::UiSpacer @size=300 />
 		{{ui/ui-button id="stage-1-next" color=constants.Color.Green light=true icon=constants.Icon.ArrowRight label=constants.Label.Next}}
 	</div>
 
@@ -24,7 +24,7 @@
 			<input id="stage-2-password-confirm" type="password" value="" class="form-control form-control-lg">
 			<small class="form-text text-muted">Re-type your chosen password</small>
 		</div>
-		{{ui/ui-spacer size=300}}
+		<Ui::UiSpacer @size=300 />
 		{{ui/ui-button id="stage-2-next" color=constants.Color.Green light=true icon=constants.Icon.ArrowRight label=constants.Label.SignIn}}
 	</div>
 

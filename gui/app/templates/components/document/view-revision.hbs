@@ -6,7 +6,7 @@
 	{{#if hasDiff}}
 		<h1>{{revision.title}}</h1>
 		<h2>Changed by {{revision.firstname}} {{revision.lastname}}</h2>
-		{{ui/ui-spacer size=200}}
+		<Ui::UiSpacer @size=200 />
 		<div class="diff-zone wysiwyg">
 			{{{diff}}}
 		</div>
@@ -14,7 +14,7 @@
 </div>
 
 {{#if canRollback}}
-	{{ui/ui-spacer size=400}}
+	<Ui::UiSpacer @size=400 />
 	{{ui/ui-button color=constants.Color.Red icon=constants.Icon.TimeBack light=true label=constants.Label.Restore onClick=(action "onShowModal")}}
 {{/if}}
 

@@ -17,7 +17,7 @@ import Component from '@ember/component';
 
 export default Component.extend(Modals, {
 	tagName: 'div',
-	classNames: ['master-sidebar-container', 'non-printable'],
+	classNames: ['master-navigation', 'non-printable'],
 	selectedItem: '',
 	folderService: service('folder'),
 	appMeta: service(),

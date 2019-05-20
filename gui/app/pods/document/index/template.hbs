@@ -1,5 +1,5 @@
 {{#layout/master-sidebar}}
-	{{ui/ui-spacer size=100}}
+	<Ui::UiSpacer @size=100 />
 
 	<div class="section">
 		{{document/sidebar-meta
@@ -13,7 +13,7 @@
 			contributionStatus=contributionStatus
 			approvalStatus=approvalStatus}}
 
-		{{ui/ui-spacer size=300}}
+		<Ui::UiSpacer @size=300 />
 
 		<div class="text-center">
 			{{#ui/ui-toolbar dark=false light=true raised=true large=false bordered=true}}
@@ -29,7 +29,7 @@
 		</div>
 	</div>
 
-	{{ui/ui-spacer size=200}}
+	<Ui::UiSpacer @size=200 />
 
 	{{#if (eq sidebarTab "toc")}}
 		{{document/sidebar-toc
@@ -85,7 +85,7 @@
 		approvalStatus=approvalStatus}}
 
 	{{#if contributionStatus}}
-		{{ui/ui-spacer size=200}}
+		<Ui::UiSpacer @size=200 />
 		<div class="document-meta">
 			<div class="label-workflow-status">
 				{{contributionStatus}}
@@ -93,7 +93,7 @@
 		</div>
 	{{else}}
 		{{#if approvalStatus}}
-			{{ui/ui-spacer size=200}}
+			<Ui::UiSpacer @size=200 />
 			<div class="document-meta">
 				<div class="label-workflow-status">
 					{{approvalStatus}}
@@ -102,7 +102,7 @@
 		{{/if}}
 	{{/if}}
 
-	{{ui/ui-spacer size=300}}
+	<Ui::UiSpacer @size=300 />
 
 	<div class="document-meta {{if permissions.documentEdit "cursor-pointer"}}" {{action "onEditMeta"}}>
 		<div class="document-heading">

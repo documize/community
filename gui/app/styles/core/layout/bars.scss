@@ -1,0 +1,264 @@
+// CSS GRID LAYOUT
+
+// Mobile-first layout
+.master-navigation {
+	display: block;
+	height: auto;
+	width: 100%;
+
+	> .navbar {
+		display: block;
+		height: auto;
+		width: 100%;
+		background-color: $theme-500;
+		text-align: center;
+		padding: 0;
+		z-index: 999;
+
+		> .container {
+			display: flex;
+			flex-grow: 1;
+			flex-direction: row;
+			align-items: center;
+			justify-content: space-between;
+			flex-wrap: wrap;
+			width: 100%;
+			padding: 0 20px;
+
+			> .options {
+				> .selected {
+					> .dicon {
+						color: $color-white !important;
+					}
+				}
+
+				> .option {
+					cursor: pointer;
+					display: inline-block;
+
+					> .dicon {
+						display: inline-block;
+						color: $theme-300;
+						font-size: 20px;
+						padding: 10px 10px;
+					}
+
+					&:hover {
+						> .dicon {
+							color: $theme-400 !important;
+						}
+					}
+				}
+
+				> .invalid-plan {
+					> .dicon {
+						color: map-get($yellow-shades, 600) !important;
+					}
+				}
+
+				> .user-gravatar-container {
+					display: inline-block;
+					margin: 0;
+					padding: 7px 10px;
+					vertical-align: top;
+
+					> .user-gravatar {
+						display: inline-block;
+						cursor: pointer;
+						position: relative;
+						width: 26px;
+						height: 26px;
+						line-height: 26px;
+						padding: 0;
+						border-radius: 50%;
+						font-size: 0.85rem;
+						text-align: center;
+						color: $theme-500;
+						font-weight: bold;
+						background-color: $color-white;
+						@extend .no-select;
+					}
+				}
+			}
+		}
+	}
+
+	> .toolbar {
+		display: block;
+		height: auto;
+		min-height: 40px;
+		width: 100%;
+		background-color: map-get($gray-shades, 100);
+		background-color: $color-sidebar;
+		text-align: center;
+		padding: 0;
+		z-index: 999;
+
+		> .container {
+			display: flex;
+			flex-grow: 1;
+			flex-direction: row;
+			align-items: center;
+			justify-content: space-between;
+			flex-wrap: wrap;
+			width: 100%;
+			padding: 0 10px;
+
+			> div[class^="zone-"], div[class*=" zone-"] {
+				margin: 0;
+				padding: 10px 10px;
+			}
+		}
+	}
+}
+
+.master-container {
+	display: block;
+	height: auto;
+	width: 100%;
+
+	.master-content {
+		display: block;
+		height: auto;
+		width: 100%;
+		padding: 10px;
+	}
+}
+
+// Desktop layout adjustments
+// Small screen starts around 900px
+@media (min-width: $display-break-1) and (min-height: 650px) {
+	.master-navigation {
+		> .navbar {
+
+		}
+
+		> .toolbar {
+
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+.master-sidebar-container {
+	display: block;
+	height: auto;
+	width: 100%;
+	//z-index: 1041; // required if we want to show modals from inside sidebar
+}
+
+// Tablet starts around 700px
+@media (min-width: $display-break-1) {
+	.master-container {
+		display: grid;
+		grid-template-columns: 240px auto;
+
+		.master-sidebar {
+			width: 200px;
+			height: auto;
+			max-height: 90vh;
+			overflow-x: hidden;
+			overflow-y: auto;
+		}
+
+		.master-content {
+			grid-column-start: 2;
+			padding: 20px;
+			max-width: calc(100vw - 250px);
+		}
+	}
+}
+
+// Small screen starts around 900px
+@media (min-width: $display-break-2) and (min-height: 650px) {
+	.master-container {
+		display: grid;
+		grid-template-columns: 290px auto;
+
+		.master-content {
+			grid-column-start: 2;
+			padding: 20px;
+			max-width: calc(100vw - 300px);
+		}
+	}
+
+	.master-sidebar-container {
+		position: fixed;
+		width: 290px;
+		height: 100vh;
+
+		.master-sidebar {
+			position: fixed;
+			top: 0;
+			left: 70px;
+			width: 220px;
+			height: 100vh;
+		}
+	}
+}
+
+// Medium screen starts around 1200px
+@media (min-width: $display-break-3) and (min-height: 650px) {
+	.master-container {
+		display: grid;
+		grid-template-columns: 320px auto;
+
+		.master-content {
+			grid-column-start: 2;
+			padding: 40px 30px;
+			max-width: calc(100vw - 330px);
+		}
+	}
+
+	.master-sidebar-container {
+		position: fixed;
+		width: 320px;
+		height: 100vh;
+
+
+		.master-sidebar {
+			position: fixed;
+			top: 0;
+			left: 70px;
+			width: 250px;
+			height: 100vh;
+			padding: 20px 10px;
+		}
+	}
+}
+
+// Large screen starts around 1600px
+@media (min-width: $display-break-4) and (min-height: 650px) {
+	.master-container {
+		display: grid;
+		grid-template-columns: 370px minmax(auto, 1200px);
+
+		.master-content {
+			grid-column-start: 2;
+			padding: 40px 40px;
+			max-width: 1200px;
+		}
+	}
+
+	.master-sidebar-container {
+		position: fixed;
+		width: 370px;
+		height: 100vh;
+
+		.master-sidebar {
+			position: fixed;
+			top: 0;
+			left: 70px;
+			width: 300px;
+			height: 100vh;
+			padding: 20px 15px;
+		}
+	}
+}

@@ -26,7 +26,7 @@
 		</div>
 	</div>
 
-	{{ui/ui-spacer size=300}}
+	<Ui::UiSpacer @size=300 />
 
 	<div class="groups-list">
 		{{#each groups as |group|}}
@@ -35,7 +35,7 @@
 					{{group.name}} ({{group.members}})
 				</div>
 				<div class="desc">{{group.purpose}}</div>
-				{{ui/ui-spacer size=200}}
+				<Ui::UiSpacer @size=200 />
 				{{#ui/ui-toolbar dark=false light=true raised=true large=false bordered=true}}
 					{{ui/ui-toolbar-icon icon=constants.Icon.AddUser color=constants.Color.Gray tooltip="Add members" onClick=(action "onShowAddMemberModal" group.id)}}
 					{{#if (gt group.members 0)}}
@@ -146,7 +146,7 @@
 								{{ui/ui-toolbar-label color=constants.Color.Gray label="ALL" selected=(eq userLimit 99999) onClick=(action "onLimit" 99999)}}
 							{{/ui/ui-toolbar}}
 						</div>
-						{{ui/ui-spacer size=300}}
+						<Ui::UiSpacer @size=300 />
 						<div class="group-users-members">
 							{{#each users as |user|}}
 								<div class="item">

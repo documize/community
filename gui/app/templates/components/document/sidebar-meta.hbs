@@ -3,7 +3,7 @@
 		{{ui/ui-button light=true color=constants.Color.Yellow uppercase=false
 			icon=constants.Icon.ArrowLeft label=space.name stretch=true truncate=true}}
 	{{/link-to}}
-	{{ui/ui-spacer size=200}}
+	<Ui::UiSpacer @size=200 />
 
 	{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
 		<div class="title">VERSION</div>
@@ -29,7 +29,7 @@
 			{{/if}}
 		{{/if}}
 
-		{{ui/ui-spacer size=200}}
+		<Ui::UiSpacer @size=200 />
 	{{/if}}
 
 	<div class="title {{if permissions.documentEdit "cursor-pointer"}}" {{action "onEditStatus"}}>STATUS</div>

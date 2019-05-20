@@ -19,7 +19,9 @@ export default Component.extend({
 	size: 500,
 
 	calcClass: computed(function() {
-		switch(this.size) {
+		let size = parseInt(this.size, 10);
+
+		switch(size) {
 			case 100:
 				return 'spacer-100';
 
