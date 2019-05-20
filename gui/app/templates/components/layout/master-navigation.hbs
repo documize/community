@@ -101,7 +101,7 @@
 									{{/if}}
 								{{/if}}
 								<div class="divider"></div>
-								<a class={{if hasWhatsNew "item bold green" "item"}} href="#" {{action "onNew"}}>What's New</a>
+								<a class={{if hasWhatsNew "item bold red" "item"}} href="#" {{action "onNew"}}>What's New</a>
 								<a href="https://docs.documize.com" target="_blank" class="item">Help</a>
 								{{#if enableLogout}}
 									<div class="divider"></div>
@@ -112,10 +112,8 @@
 					</div>
 				</div>
 			{{else}}
-				{{#link-to "auth.login" class="login"}}
-					<i class={{concat "dicon " constants.Icon.Unlocked}}>
-						{{#attach-tooltip showDelay=1000}}Login{{/attach-tooltip}}
-					</i>
+				{{#link-to "auth.login" class="option"}}
+					{{constants.Label.Login}}
 				{{/link-to}}
 			{{/if}}
 		</div>

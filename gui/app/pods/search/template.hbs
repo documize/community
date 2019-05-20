@@ -1,75 +1,79 @@
-{{#layout/master-sidebar selectedItem="search"}}
-	<Ui::UiSpacer @size=300 />
+<Layout::MasterNavigation @selectedItem="search" />
+<Layout::MasterToolbar />
 
-	<div class="section">
-		<div class="title">Match Filter</div>
-		<div class="list">
-			<div class="item">
-				{{input id="search-1" type="checkbox" checked=matchFilter.matchDoc}}
-				<label for="search-1" class="name">Document name</label>
+<Layout::Grid::Container>
+	<Layout::Grid::Sidebar>
+		<div class="sidebar-content">
+			<div class="section">
+				<div class="title">Match Filter</div>
+				<div class="list">
+					<div class="item">
+						{{input id="search-1" type="checkbox" checked=matchFilter.matchDoc}}
+						<label for="search-1" class="name">Document name</label>
+					</div>
+					<div class="item">
+						{{input id="search-2" type="checkbox" checked=matchFilter.matchContent}}
+						<label for="search-2" class="name">Document content</label>
+					</div>
+					<div class="item">
+						{{input id="search-3" type="checkbox" checked=matchFilter.matchTag}}
+						<label for="search-3" class="name">Tag name</label>
+					</div>
+					<div class="item">
+						{{input id="search-4" type="checkbox" checked=matchFilter.matchFile}}
+						<label for="search-4" class="name">Attachment name</label>
+					</div>
+				</div>
 			</div>
-			<div class="item">
-				{{input id="search-2" type="checkbox" checked=matchFilter.matchContent}}
-				<label for="search-2" class="name">Document content</label>
-			</div>
-			<div class="item">
-				{{input id="search-3" type="checkbox" checked=matchFilter.matchTag}}
-				<label for="search-3" class="name">Tag name</label>
-			</div>
-			<div class="item">
-				{{input id="search-4" type="checkbox" checked=matchFilter.matchFile}}
-				<label for="search-4" class="name">Attachment name</label>
+			<Ui::UiSpacer @size=200 />
+			<div class="section">
+				<div class="title">query examples</div>
+				<div class="view-search">
+					{{#if (eq appMeta.storageProvider constants.StoreProvider.MySQL)}}
+						<div class="syntax">
+							<div class="example">apple banana</div>
+							<div class="explain">Show results that contain at least one of the two words</div>
+							<div class="example">+apple +banana</div>
+							<div class="explain">Show results that contain both words</div>
+							<div class="example">+apple macintosh</div>
+							<div class="explain">Show results that contain the word "apple", but rank rows higher if they also contain "macintosh"</div>
+							<div class="example">+apple -macintosh</div>
+							<div class="explain">Show results that contain the word "apple" but not "macintosh"</div>
+							<div class="example">+apple +(&gt;turnover &lt;strudel)</div>
+							<div class="explain">Show results that contain the words "apple" and "turnover", or "apple" and "strudel" (in any order), but rank "apple turnover" higher than "apple strudel"</div>
+							<div class="example">apple*</div>
+							<div class="explain">Show results that contain words such as "apple", "apples", "applesauce", or "applet"</div>
+							<div class="example">"some words"</div>
+							<div class="explain">Show results that contain the exact phrase "some words" (for example, rows that contain "some words of wisdom" but not "some noise words")</div>
+						</div>
+					{{/if}}
+					{{#if (eq appMeta.storageProvider constants.StoreProvider.PostgreSQL)}}
+						<div class="syntax">
+							<div class="example">apple | banana</div>
+							<div class="explain">Show results that contain at either word</div>
+							<div class="example">apple & banana</div>
+							<div class="explain">Show results that contain both words</div>
+							<div class="example">apple !macintosh</div>
+							<div class="explain">Show results that contain the word "apple" but not "macintosh"</div>
+							<div class="example">google & (apple | microsoft) & !ibm</div>
+							<div class="explain">Show results that have "google", either "apple" or "microsoft" but not "ibm"</div>
+						</div>
+					{{/if}}
+					{{#if (eq appMeta.storageProvider constants.StoreProvider.SQLServer)}}
+					{{/if}}
+				</div>
 			</div>
 		</div>
-	</div>
-	<Ui::UiSpacer @size=200 />
+	</Layout::Grid::Sidebar>
 
-	<div class="section">
-		<div class="title">query examples</div>
-		<div class="view-search">
-			{{#if (eq appMeta.storageProvider constants.StoreProvider.MySQL)}}
-				<div class="syntax">
-					<div class="example">apple banana</div>
-					<div class="explain">Show results that contain at least one of the two words</div>
-					<div class="example">+apple +banana</div>
-					<div class="explain">Show results that contain both words</div>
-					<div class="example">+apple macintosh</div>
-					<div class="explain">Show results that contain the word "apple", but rank rows higher if they also contain "macintosh"</div>
-					<div class="example">+apple -macintosh</div>
-					<div class="explain">Show results that contain the word "apple" but not "macintosh"</div>
-					<div class="example">+apple +(&gt;turnover &lt;strudel)</div>
-					<div class="explain">Show results that contain the words "apple" and "turnover", or "apple" and "strudel" (in any order), but rank "apple turnover" higher than "apple strudel"</div>
-					<div class="example">apple*</div>
-					<div class="explain">Show results that contain words such as "apple", "apples", "applesauce", or "applet"</div>
-					<div class="example">"some words"</div>
-					<div class="explain">Show results that contain the exact phrase "some words" (for example, rows that contain "some words of wisdom" but not "some noise words")</div>
-				</div>
-			{{/if}}
-			{{#if (eq appMeta.storageProvider constants.StoreProvider.PostgreSQL)}}
-				<div class="syntax">
-					<div class="example">apple | banana</div>
-					<div class="explain">Show results that contain at either word</div>
-					<div class="example">apple & banana</div>
-					<div class="explain">Show results that contain both words</div>
-					<div class="example">apple !macintosh</div>
-					<div class="explain">Show results that contain the word "apple" but not "macintosh"</div>
-					<div class="example">google & (apple | microsoft) & !ibm</div>
-					<div class="explain">Show results that have "google", either "apple" or "microsoft" but not "ibm"</div>
-				</div>
-			{{/if}}
-			{{#if (eq appMeta.storageProvider constants.StoreProvider.SQLServer)}}
-			{{/if}}
-		</div>
-	</div>
-{{/layout/master-sidebar}}
+	<Layout::Grid::Content>
+		{{layout/logo-heading
+			title="Search"
+			desc="Find content"
+			icon=constants.Icon.Search}}
 
-{{#layout/master-content}}
-	{{layout/logo-heading
-		title="Search"
-		desc="Find content"
-		icon=constants.Icon.Search}}
-
-	{{search/search-view
-		filter=filter
-		matchFilter=matchFilter}}
-{{/layout/master-content}}
+		{{search/search-view
+			filter=filter
+			matchFilter=matchFilter}}
+	</Layout::Grid::Content>
+</Layout::Grid::Container>

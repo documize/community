@@ -1,26 +1,40 @@
-{{#layout/master-sidebar}}
-	<Ui::UiSpacer @size=300 />
-
-	<div class="section">
-		<div class="title">SUMMARY</div>
-		<Ui::UiSpacer @size=100 />
-		<p>Documize {{appMeta.edition}} Edition</p>
-		<p>Version {{appMeta.version}}</p>
-		<p>Build {{appMeta.revision}}</p>
-	</div>
-
-{{/layout/master-sidebar}}
-
-{{#layout/master-content}}
-	{{layout/logo-heading
-		title="Product News"
-		desc="Latest product news and updates from Documize Inc."
-		icon=constants.Icon.Announce}}
-
-	<div class="product-news">
-		{{{newsContent}}}
-		<div class="action">
-			Have an idea? Suggestion or feedback? <a href="mailto:support@documize.com">Get in touch!</a>
+<Layout::MasterNavigation />
+<Layout::MasterToolbar>
+	<div class="zone-1" />
+	<div class="zone-2">
+		<div class="label color-gray-700">
+			Documize {{appMeta.edition}} Edition {{appMeta.version}} (build {{appMeta.revision}})
 		</div>
 	</div>
-{{/layout/master-content}}
+	<div class="zone-3" />
+</Layout::MasterToolbar>
+
+<Layout::Grid::Container>
+	<Layout::Grid::Sidebar>
+		<div class="sidebar-content">
+			<div class="section">
+				<div class="title">ABOUT</div>
+				<div class="text">
+					Documize product updates are released frequently for both
+					cloud and self-hosted customers.
+				</div>
+				<div class="text">
+					Have an idea, suggestion or some feedback? <a href="mailto:support@documize.com">Get in touch.</a>
+				</div>
+			</div>
+		</div>
+	</Layout::Grid::Sidebar>
+	<Layout::Grid::Content>
+		{{layout/logo-heading
+			title="Product News"
+			desc="Latest product news and updates"
+			icon=constants.Icon.Announce}}
+
+		<div class="product-news">
+			{{{newsContent}}}
+			<div class="action">
+				Have an idea? Suggestion or feedback? <a href="mailto:support@documize.com">Get in touch!</a>
+			</div>
+		</div>
+	</Layout::Grid::Content>
+</Layout::Grid::Container>

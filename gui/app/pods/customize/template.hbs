@@ -1,71 +1,83 @@
-{{#layout/master-sidebar selectedItem="settings"}}
-	<Ui::UiSpacer @size=300 />
-
-	<div class="section">
-		<div class="title">administration</div>
-		<div class="list">
-			{{#link-to "customize.general" activeClass="selected" class="item" tagName="div"}}
-				<i class={{concat "dicon " constants.Icon.Settings}} />
-				<div class="name">General</div>
-			{{/link-to}}
-			{{#link-to "customize.labels" activeClass="selected" class="item" tagName="div"}}
-				<i class={{concat "dicon " constants.Icon.Checkbox}} />
-				<div class="name">Labels</div>
-			{{/link-to}}
-			{{#link-to "customize.folders" activeClass="selected" class="item" tagName="div"}}
-				<i class={{concat "dicon " constants.Icon.Grid}} />
-				<div class="name">Spaces</div>
-			{{/link-to}}
-			{{#link-to "customize.users" activeClass="selected" class="item" tagName="div"}}
-				<i class={{concat "dicon " constants.Icon.Person}} />
-				<div class="name">User Management</div>
-			{{/link-to}}
-			{{#link-to "customize.groups" activeClass="selected" class="item" tagName="div"}}
-				<i class={{concat "dicon " constants.Icon.People}} />
-				<div class="name">User Groups</div>
-			{{/link-to}}
-			{{#link-to "customize.integrations" activeClass="selected" class="item" tagName="div"}}
-				<i class={{concat "dicon " constants.Icon.Integrations}} />
-				<div class="name">Integrations</div>
-			{{/link-to}}
-			{{#if session.isGlobalAdmin}}
-				{{#link-to "customize.smtp" activeClass="selected" class="item" tagName="div"}}
-					<i class={{concat "dicon " constants.Icon.Send}} />
-					<div class="name">Mail Server</div>
-				{{/link-to}}
-				{{#link-to "customize.auth" activeClass="selected" class="item" tagName="div"}}
-					<i class={{concat "dicon " constants.Icon.Locked}} />
-					<div class="name">Authentication</div>
-				{{/link-to}}
-				{{#link-to "customize.search" activeClass="selected" class="item" tagName="div"}}
-					<i class={{concat "dicon " constants.Icon.Search}} />
-					<div class="name">Search</div>
-				{{/link-to}}
-				{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
-					{{#link-to "customize.audit" activeClass="selected" class="item" tagName="div"}}
-						<i class={{concat "dicon " constants.Icon.ButtonAction}} />
-						<div class="name">Audit Log</div>
-					{{/link-to}}
-				{{/if}}
-			{{/if}}
-			{{#link-to "customize.backup" activeClass="selected" class="item" tagName="div"}}
-				<i class={{concat "dicon " constants.Icon.Database}} />
-				<div class="name">Backup & Restore</div>
-			{{/link-to}}
-			{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
-				{{#link-to "customize.billing" activeClass="selected" class="item" tagName="div"}}
-					<i class={{concat "dicon " constants.Icon.Handshake}} />
-					<div class="name">Billing</div>
-				{{/link-to}}
-			{{/if}}
-			{{#link-to "customize.product" activeClass="selected" class="item" tagName="div"}}
-				<i class={{concat "dicon " constants.Icon.Announce}} />
-				<div class="name">Changelog</div>
-			{{/link-to}}
+<Layout::MasterNavigation @selectedItem="settings" />
+<Layout::MasterToolbar>
+	<div class="zone-1" />
+	<div class="zone-2">
+		<div class="label color-gray-700">
+			Documize {{appMeta.edition}} Edition {{appMeta.version}} (build {{appMeta.revision}})
 		</div>
 	</div>
-{{/layout/master-sidebar}}
+	<div class="zone-3" />
+</Layout::MasterToolbar>
 
-{{#layout/master-content}}
-	{{outlet}}
-{{/layout/master-content}}
+<Layout::Grid::Container>
+	<Layout::Grid::Sidebar>
+		<div class="sidebar-content">
+			<div class="section">
+				<div class="title">administration</div>
+				<div class="list">
+					{{#link-to "customize.general" activeClass="selected" class="item" tagName="div"}}
+						<i class={{concat "dicon " constants.Icon.Settings}} />
+						<div class="name">General</div>
+					{{/link-to}}
+					{{#link-to "customize.labels" activeClass="selected" class="item" tagName="div"}}
+						<i class={{concat "dicon " constants.Icon.Checkbox}} />
+						<div class="name">Labels</div>
+					{{/link-to}}
+					{{#link-to "customize.folders" activeClass="selected" class="item" tagName="div"}}
+						<i class={{concat "dicon " constants.Icon.Grid}} />
+						<div class="name">Spaces</div>
+					{{/link-to}}
+					{{#link-to "customize.users" activeClass="selected" class="item" tagName="div"}}
+						<i class={{concat "dicon " constants.Icon.Person}} />
+						<div class="name">User Management</div>
+					{{/link-to}}
+					{{#link-to "customize.groups" activeClass="selected" class="item" tagName="div"}}
+						<i class={{concat "dicon " constants.Icon.People}} />
+						<div class="name">User Groups</div>
+					{{/link-to}}
+					{{#link-to "customize.integrations" activeClass="selected" class="item" tagName="div"}}
+						<i class={{concat "dicon " constants.Icon.Integrations}} />
+						<div class="name">Integrations</div>
+					{{/link-to}}
+					{{#if session.isGlobalAdmin}}
+						{{#link-to "customize.smtp" activeClass="selected" class="item" tagName="div"}}
+							<i class={{concat "dicon " constants.Icon.Send}} />
+							<div class="name">Mail Server</div>
+						{{/link-to}}
+						{{#link-to "customize.auth" activeClass="selected" class="item" tagName="div"}}
+							<i class={{concat "dicon " constants.Icon.Locked}} />
+							<div class="name">Authentication</div>
+						{{/link-to}}
+						{{#link-to "customize.search" activeClass="selected" class="item" tagName="div"}}
+							<i class={{concat "dicon " constants.Icon.Search}} />
+							<div class="name">Search</div>
+						{{/link-to}}
+						{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
+							{{#link-to "customize.audit" activeClass="selected" class="item" tagName="div"}}
+								<i class={{concat "dicon " constants.Icon.ButtonAction}} />
+								<div class="name">Audit Log</div>
+							{{/link-to}}
+						{{/if}}
+					{{/if}}
+					{{#link-to "customize.backup" activeClass="selected" class="item" tagName="div"}}
+						<i class={{concat "dicon " constants.Icon.Database}} />
+						<div class="name">Backup & Restore</div>
+					{{/link-to}}
+					{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
+						{{#link-to "customize.billing" activeClass="selected" class="item" tagName="div"}}
+							<i class={{concat "dicon " constants.Icon.Handshake}} />
+							<div class="name">Billing</div>
+						{{/link-to}}
+					{{/if}}
+					{{#link-to "customize.product" activeClass="selected" class="item" tagName="div"}}
+						<i class={{concat "dicon " constants.Icon.Announce}} />
+						<div class="name">Changelog</div>
+					{{/link-to}}
+				</div>
+			</div>
+		</div>
+	</Layout::Grid::Sidebar>
+	<Layout::Grid::Content>
+		{{outlet}}
+	</Layout::Grid::Content>
+</Layout::Grid::Container>

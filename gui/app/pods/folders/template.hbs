@@ -1,9 +1,7 @@
 <Layout::MasterNavigation @selectedItem="spaces" />
 <Layout::MasterToolbar>
-	<div class="zone-1">
-	</div>
-	<div class="zone-2">
-	</div>
+	<div class="zone-1" />
+	<div class="zone-2" />
 	<div class="zone-3">
 		{{#if (or session.isEditor session.isAdmin)}}
 			{{#ui/ui-toolbar dark=false light=true raised=true large=false bordered=true tooltip="New space"}}
@@ -16,13 +14,9 @@
 	</div>
 </Layout::MasterToolbar>
 
-<div class="master-container">
-	<div class="master-sidebar">
+<Layout::Grid::Container>
+	<Layout::Grid::Sidebar>
 		<div class="sidebar-content">
-			{{yield}}
-
-			<Ui::UiSpacer @size=300 />
-
 			<div class="section">
 				<div class="title">filter</div>
 				<div class="list">
@@ -67,11 +61,10 @@
 				{{/if}}
 			</div>
 		</div>
-	</div>
+	</Layout::Grid::Sidebar>
 
-	<div class="master-content">
+	<Layout::Grid::Content>
 		{{layout/logo-heading title=appMeta.title desc=appMeta.message logo=true}}
-		<Ui::UiSpacer @size=400 />
 
 		{{spaces/space-list spaces=selectedSpaces labels=labels}}
 
@@ -140,9 +133,5 @@
 				</div>
 			</div>
 		</div>
-	</div>
-
-</div>
-
-<Layout::MasterContent>
-</Layout::MasterContent>
+	</Layout::Grid::Content>
+</Layout::Grid::Container>

@@ -1,4 +1,12 @@
-{{#layout/master-sidebar}}
+<Layout::MasterNavigation />
+<Layout::MasterToolbar>
+	<div class="zone-1" />
+	<div class="zone-2" />
+	<div class="zone-3">
+	</div>
+</Layout::MasterToolbar>
+
+<Layout::Grid::Container>
 	{{folder/space-sidebar
 		spaces=model.folders
 		space=model.folder
@@ -17,7 +25,41 @@
 		categoryFilter=category
 		onFiltered=(action "onFiltered")
 		onRefresh=(action "onRefresh")}}
-{{/layout/master-sidebar}}
+
+
+	<Layout::Grid::Sidebar>
+		<div class="sidebar-content">
+			<div class="section">
+				<div class="title">ABOUT</div>
+				<div class="text">
+					Documize product updates are released frequently for both
+					cloud and self-hosted customers.
+				</div>
+				<div class="text">
+					Have an idea, suggestion or some feedback? <a href="mailto:support@documize.com">Get in touch.</a>
+				</div>
+			</div>
+		</div>
+	</Layout::Grid::Sidebar>
+	<Layout::Grid::Content>
+		{{layout/logo-heading
+			title="Product News"
+			desc="Latest product news and updates"
+			icon=constants.Icon.Announce}}
+
+		<div class="product-news">
+			{{{newsContent}}}
+			<div class="action">
+				Have an idea? Suggestion or feedback? <a href="mailto:support@documize.com">Get in touch!</a>
+			</div>
+		</div>
+	</Layout::Grid::Content>
+</Layout::Grid::Container>
+
+
+
+
+
 
 {{#layout/master-content}}
 	<div class="grid-container-6-4">
@@ -44,7 +86,7 @@
 				onRefresh=(action "onRefresh")}}
 		</div>
 	</div>
-	
+
 	{{folder/documents-list
 		documents=filteredDocs
 		spaces=model.folders

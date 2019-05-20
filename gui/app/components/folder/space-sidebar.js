@@ -17,7 +17,6 @@ import AuthMixin from '../../mixins/auth';
 import Component from '@ember/component';
 
 export default Component.extend(AuthMixin, {
-	classNames: ["section"],
 	router: service(),
 	documentService: service('document'),
 	folderService: service('folder'),

@@ -9,10 +9,9 @@
 //
 // https://documize.com
 
-import Route from '@ember/routing/route';
+import Component from '@ember/component';
 
-export default Route.extend({
-    activate() {
-		this.get('browser').setTitle('Product News');
-	}
+export default Component.extend({
+	tagName: 'div',
+	classNames: ['master-grid-container'],
 });

@@ -1,6 +1,6 @@
-// CSS GRID LAYOUT
-
-// Mobile-first layout
+// *****************************************************************
+// Define mobile-first layout for top navigation bar and toolbar.
+// *****************************************************************
 .master-navigation {
 	display: block;
 	height: auto;
@@ -8,7 +8,7 @@
 
 	> .navbar {
 		display: block;
-		height: auto;
+		height: 40px;
 		width: 100%;
 		background-color: $theme-500;
 		text-align: center;
@@ -50,6 +50,14 @@
 					}
 				}
 
+				> a.option {
+					color: $theme-300;
+
+					&:hover {
+						color: $color-white;
+					}
+				}
+
 				> .invalid-plan {
 					> .dicon {
 						color: map-get($yellow-shades, 600) !important;
@@ -86,10 +94,10 @@
 	> .toolbar {
 		display: block;
 		height: auto;
-		min-height: 40px;
+		height: 50px;
 		width: 100%;
-		background-color: map-get($gray-shades, 100);
 		background-color: $color-sidebar;
+		background-color: $theme-100;
 		text-align: center;
 		padding: 0;
 		z-index: 999;
@@ -107,15 +115,30 @@
 			> div[class^="zone-"], div[class*=" zone-"] {
 				margin: 0;
 				padding: 10px 10px;
+				justify-content: center;
+
+				> .label {
+					font-size: 1rem;
+				}
 			}
 		}
 	}
 }
 
-.master-container {
+// *****************************************************************
+// Define mobile-first layout for main content zone with a sidebar.
+// *****************************************************************
+.master-grid-container {
 	display: block;
 	height: auto;
 	width: 100%;
+
+	.master-sidebar {
+		display: block;
+		height: auto;
+		width: 100%;
+		padding: 10px;
+	}
 
 	.master-content {
 		display: block;
@@ -125,47 +148,39 @@
 	}
 }
 
-// Desktop layout adjustments
-// Small screen starts around 900px
-@media (min-width: $display-break-1) and (min-height: 650px) {
-	.master-navigation {
-		> .navbar {
+// $sidebar-height: calc(100vh - 90px);
+$sidebar-height: auto;
 
+// Tablet starts around 700px
+@media (min-width: $display-break-1) {
+	.master-grid-container {
+		display: grid;
+		grid-template-columns: 200px auto;
+
+		.master-sidebar {
+			width: 200px;
+			height: $sidebar-height;
+			// overflow-x: hidden;
+			// overflow-y: auto;
+			padding: 20px 15px;
 		}
 
-		> .toolbar {
-
+		.master-content {
+			grid-column-start: 2;
+			padding: 20px;
+			max-width: calc(100vw - 210px);
 		}
 	}
 }
 
-
-
-
-
-
-
-
-
-.master-sidebar-container {
-	display: block;
-	height: auto;
-	width: 100%;
-	//z-index: 1041; // required if we want to show modals from inside sidebar
-}
-
-// Tablet starts around 700px
-@media (min-width: $display-break-1) {
-	.master-container {
+// Small screen starts around 900px
+@media (min-width: $display-break-2) and (min-height: 650px) {
+	.master-grid-container {
 		display: grid;
 		grid-template-columns: 240px auto;
 
 		.master-sidebar {
-			width: 200px;
-			height: auto;
-			max-height: 90vh;
-			overflow-x: hidden;
-			overflow-y: auto;
+			width: 240px;
 		}
 
 		.master-content {
@@ -176,69 +191,35 @@
 	}
 }
 
-// Small screen starts around 900px
-@media (min-width: $display-break-2) and (min-height: 650px) {
-	.master-container {
-		display: grid;
-		grid-template-columns: 290px auto;
-
-		.master-content {
-			grid-column-start: 2;
-			padding: 20px;
-			max-width: calc(100vw - 300px);
-		}
-	}
-
-	.master-sidebar-container {
-		position: fixed;
-		width: 290px;
-		height: 100vh;
-
-		.master-sidebar {
-			position: fixed;
-			top: 0;
-			left: 70px;
-			width: 220px;
-			height: 100vh;
-		}
-	}
-}
-
 // Medium screen starts around 1200px
 @media (min-width: $display-break-3) and (min-height: 650px) {
-	.master-container {
+	.master-grid-container {
 		display: grid;
-		grid-template-columns: 320px auto;
+		grid-template-columns: 300px auto;
+
+		.master-sidebar {
+			width: 300px;
+			padding: 40px 20px;
+		}
 
 		.master-content {
 			grid-column-start: 2;
 			padding: 40px 30px;
-			max-width: calc(100vw - 330px);
-		}
-	}
-
-	.master-sidebar-container {
-		position: fixed;
-		width: 320px;
-		height: 100vh;
-
-
-		.master-sidebar {
-			position: fixed;
-			top: 0;
-			left: 70px;
-			width: 250px;
-			height: 100vh;
-			padding: 20px 10px;
+			max-width: calc(100vw - 310px);
 		}
 	}
 }
 
 // Large screen starts around 1600px
 @media (min-width: $display-break-4) and (min-height: 650px) {
-	.master-container {
+	.master-grid-container {
 		display: grid;
-		grid-template-columns: 370px minmax(auto, 1200px);
+		grid-template-columns: 350px minmax(auto, 1200px);
+
+		.master-sidebar {
+			width: 350px;
+			padding: 40px 20px;
+		}
 
 		.master-content {
 			grid-column-start: 2;
@@ -246,19 +227,43 @@
 			max-width: 1200px;
 		}
 	}
+}
 
-	.master-sidebar-container {
-		position: fixed;
-		width: 370px;
-		height: 100vh;
+// *****************************************************************
+// Define mobile-first layout for content without a sidebar.
+// *****************************************************************
+.master-container {
+	display: block;
+	height: auto;
+	width: 100%;
+	padding: 20px;
+}
 
-		.master-sidebar {
-			position: fixed;
-			top: 0;
-			left: 70px;
-			width: 300px;
-			height: 100vh;
-			padding: 20px 15px;
-		}
+// Tablet starts around 700px
+@media (min-width: $display-break-1) {
+	.master-container {
+		padding: 20px;
+	}
+}
+
+// Small screen starts around 900px
+@media (min-width: $display-break-2) and (min-height: 650px) {
+	.master-container {
+		padding: 20px;
+	}
+}
+
+// Medium screen starts around 1200px
+@media (min-width: $display-break-3) and (min-height: 650px) {
+	.master-container {
+		padding: 30px;
+	}
+}
+
+// Large screen starts around 1600px
+@media (min-width: $display-break-4) and (min-height: 650px) {
+	.master-container {
+		padding: 40px;
+		max-width: 1200px;
 	}
 }

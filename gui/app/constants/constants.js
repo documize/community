@@ -341,6 +341,7 @@ let constants = EmberObject.extend({
 		Invite: 'Invite',
 		Join: 'Join',
 		Leave: 'Leave',
+		Login: 'Login',
 		Move: 'Move',
 		Next: 'Next',
 		OK: 'OK',
