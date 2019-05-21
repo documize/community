@@ -1,8 +1,8 @@
 <Layout::MasterNavigation />
 <Layout::MasterToolbar>
 	<div class="zone-1">
-		{{#link-to "folder.index" folder.id folder.slug class="no-print"}}
-			{{ui/ui-button color=constants.Color.Gray outline=true uppercase=false icon=constants.Icon.ArrowLeft label=folder.name}}
+		{{#link-to "folder.index" folder.id folder.slug}}
+			{{ui/ui-button themed=true uppercase=false icon=constants.Icon.ArrowLeft label=folder.name}}
 		{{/link-to}}
 	</div>
 	<div class="zone-2" />

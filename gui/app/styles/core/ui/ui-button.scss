@@ -179,12 +179,12 @@
 
 .dmz-button-theme {
 	@extend %dmz-button;
-	background-color: $theme-800;
+	background-color: $theme-500;
 	color: $color-white;
 	@include button-shadow();
 
 	&:hover {
-		background-color: $theme-600;
+		background-color: $theme-700;
 	}
 }
 .dmz-button-theme-light {

@@ -40,16 +40,16 @@
 		}
 
 		> .header {
-			color: map-get($gray-shades, 800);
-			background-color: map-get($gray-shades, 300);
+			color: $color-white;
+			background-color: $theme-500;
 			font-size: 1rem;
 			font-weight: 600;
 			cursor: auto;
 
 			&:hover {
-				color: map-get($gray-shades, 800);
-				background-color: map-get($gray-shades, 300);
-			}
+				color: $color-white;
+				background-color: $theme-500;
+				}
 		}
 
 		> .divider {

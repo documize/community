@@ -12,15 +12,6 @@
 import Component from '@ember/component';
 
 export default Component.extend({
-	classNames: ['dmz-toolbar', 'non-printable'],
-	classNameBindings:
-		['raised:dmz-toolbar-raised',
-		'bordered:dmz-toolbar-bordered',
-		'light:dmz-toolbar-light',
-		'dark:dmz-toolbar-dark'],
-	raised: false,
-	bordered: false,
-	dark: false,
-	light: false,
-	tooltip: ''
+	tagName: 'div',
+	classNames: ['divider'],
 });
