@@ -18,7 +18,7 @@
 	{{#ui/ui-toolbar-dropdown label="Export" arrow=true}}
 		{{#attach-popover class="ember-attacher-popper" hideOn="clickout" showOn="click" isShown=false}}
 			<ul class="menu">
-				<li class="item" {{action "onPrintDocument"}}>Send to print...</li>
+				<li class="item" {{action "onPrintDocument"}}>Print</li>
 				<li class="item" {{action "onExport"}}>Download HTML file</li>
 			</ul>
 		{{/attach-popover}}
@@ -47,24 +47,25 @@
 		{{/if}}
 	{{/if}}
 
-	{{#if (or pinState.isPinned session.authenticated)}}
-		{{#if pinState.isPinned}}
-			{{ui/ui-toolbar-icon icon=constants.Icon.BookmarkDelete color=constants.Color.Yellow
-				tooltip="Remove from bookmarks" onClick=(action "onUnpin")}}
-		{{else if session.authenticated}}
-			{{ui/ui-toolbar-icon icon=constants.Icon.BookmarkAdd color=constants.Color.Gray
-				tooltip="Bookmark" onClick=(action "onPin")}}
-		{{/if}}
-	{{/if}}
-
-	{{#if permissions.documentAdd}}
-		{{ui/ui-toolbar-icon icon=constants.Icon.Copy
-			tooltip="Save as template" onClick=(action "onShowTemplateModal")}}
-	{{/if}}
-
-	{{#if permissions.documentDelete}}
-		{{ui/ui-toolbar-icon icon=constants.Icon.Delete
-			tooltip="Delete" onClick=(action "onShowDeleteModal")}}
+	{{#if (or pinState.isPinned session.authenticated permissions.documentAdd permissions.documentDelete)}}
+		{{#ui/ui-toolbar-dropdown label="More" arrow=true}}
+			{{#attach-popover class="ember-attacher-popper" hideOn="clickout" showOn="click" isShown=false}}
+				<ul class="menu">
+					{{#if pinState.isPinned}}
+						<li class="item" {{action "onUnpin"}}>Remove bookmark</li>
+					{{else if session.authenticated}}
+						<li class="item" {{action "onPin"}}>Bookmark</li>
+					{{/if}}
+					{{#if permissions.documentAdd}}
+						<li class="item" {{action "onShowTemplateModal"}}>Save as template</li>
+					{{/if}}
+					{{#if permissions.documentDelete}}
+						<li class="divider"/>
+						<li class="item red" {{action "onShowDeleteModal"}}>Delete</li>
+					{{/if}}
+				</ul>
+			{{/attach-popover}}
+		{{/ui/ui-toolbar-dropdown}}
 	{{/if}}
 
 	{{#if permissions.documentEdit}}
