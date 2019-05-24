@@ -10,7 +10,14 @@
 	color: map-get($gray-shades, 100);
 }
 
+.space-label-dropdown {
+	font-size: 25px;
+	vertical-align: middle;
+	cursor: pointer;
+}
+
 .view-space {
+
 	> .documents {
 		margin: 0;
 		padding: 0;
