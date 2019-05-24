@@ -1,9 +1,10 @@
 <Layout::MasterNavigation />
 <Layout::MasterToolbar>
 	<div class="zone-1">
-		{{#link-to "folder.settings"}}
-			{{ui/ui-button color=constants.Color.Gray outline=true uppercase=false icon=constants.Icon.ArrowLeft label=model.folder.name}}
-		{{/link-to}}
+		{{#ui/ui-toolbar dark=false light=false raised=false large=false bordered=false}}
+			{{ui/ui-toolbar-button themed=true uppercase=false
+				icon=constants.Icon.ArrowLeft label=model.space.name onClick=(action "onBack")}}
+		{{/ui/ui-toolbar}}
 	</div>
 </Layout::MasterToolbar>
 
@@ -12,7 +13,7 @@
 		<div class="sidebar-content">
 			<div class="section">
 				<div class="title">about</div>
-				<div class="text"></div>
+				<div class="text">Manage reusable snippets of content for this space</div>
 			</div>
 		</div>
 	</Layout::Grid::Sidebar>
@@ -23,7 +24,7 @@
 			desc="Content blocks provide re-usable content that can be inserted into any document"
 			icon=constants.Icon.Integrations}}
 
-		{{document/block-editor document=model.document folder=model.folder block=model.block
+		{{document/block-editor document=model.document folder=model.space block=model.block
 			onCancel=(action "onCancel") onAction=(action "onAction")}}
 	</Layout::Grid::Content>
 </Layout::Grid::Container>

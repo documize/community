@@ -1,9 +1,7 @@
 <Layout::MasterNavigation />
 <Layout::MasterToolbar>
 	<div class="zone-1">
-		{{#link-to "folder.index" folder.id folder.slug}}
-			{{ui/ui-button themed=true uppercase=false icon=constants.Icon.ArrowLeft label=folder.name}}
-		{{/link-to}}
+		<Document::DocumentsList @space={{folder}} @docId=document.id />
 	</div>
 	<div class="zone-2" />
 	<div class="zone-3">

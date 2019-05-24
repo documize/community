@@ -1,9 +1,10 @@
 <Layout::MasterNavigation />
 <Layout::MasterToolbar>
 	<div class="zone-1">
-		{{#link-to "document.index"}}
-			{{ui/ui-button themed=true uppercase=false icon=constants.Icon.ArrowLeft label=document.name}}
-		{{/link-to}}
+		{{#ui/ui-toolbar dark=false light=false raised=false large=false bordered=false}}
+			{{ui/ui-toolbar-button themed=true uppercase=false
+				icon=constants.Icon.ArrowLeft label=document.name onClick=(action "onBack")}}
+		{{/ui/ui-toolbar}}
 	</div>
 	<div class="zone-2" />
 	<div class="zone-3" />

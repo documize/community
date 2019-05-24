@@ -39,7 +39,7 @@ export default Component.extend({
 		let bc = 'button';
 
 		if (this.themed) {
-			bc += 'theme';
+			bc += '-theme';
 		} else {
 			bc += '-' + this.color;
 		}

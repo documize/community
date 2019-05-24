@@ -238,6 +238,7 @@ let constants = EmberObject.extend({
 		Link: 'dicon-link',
 		ListBullet: 'dicon-list-bullet-2',
 		Locked: 'dicon-lock',
+		MoreHorizontal: 'dicon-menu-5',
 		NotAllowed: 'dicon-ban',
 		PDF: 'dicon-pdf',
 		Print: 'dicon-print',

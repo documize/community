@@ -19,6 +19,10 @@ export default Controller.extend(Notifier, {
 	selectedRevision: null,
 
 	actions: {
+		onBack() {
+			this.get('router').transitionTo('document.index');
+		},
+
 		onRevision(revision) {
 			this.set('selectedRevision', revision);
 		},

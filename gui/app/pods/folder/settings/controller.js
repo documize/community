@@ -22,6 +22,10 @@ export default Controller.extend(NotifierMixin, {
 	tab: 'general',
 
 	actions: {
+		onBack() {
+			this.get('router').transitionTo('folder.index');
+		},
+
 		onTab(view) {
 			this.set('tab', view);
 		},

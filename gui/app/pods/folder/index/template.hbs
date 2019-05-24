@@ -1,9 +1,10 @@
 <Layout::MasterNavigation />
 <Layout::MasterToolbar>
 	<div class="zone-1">
-		{{#link-to "folders"}}
-			{{ui/ui-button themed=true uppercase=true icon=constants.Icon.ArrowLeft label=constants.Label.Spaces}}
-		{{/link-to}}
+		{{#ui/ui-toolbar dark=false light=false raised=false large=false bordered=false}}
+			{{ui/ui-toolbar-button themed=true uppercase=true
+				icon=constants.Icon.ArrowLeft label=constants.Label.Spaces onClick=(action "onBack")}}
+		{{/ui/ui-toolbar}}
 	</div>
 	<div class="zone-2" />
 	<div class="zone-3">

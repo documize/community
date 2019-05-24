@@ -18,6 +18,10 @@ export default Controller.extend(Notifier, {
 	sectionSvc: service('section'),
 
 	actions: {
+		onBack() {
+			this.get('router').transitionTo('folder.settings');
+		},
+
 		onCancel( /*page*/ ) {
 			this.get('router').transitionTo('folder.settings', {queryParams: {tab: 'blocks'}});
 		},

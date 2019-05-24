@@ -23,6 +23,10 @@ export default Controller.extend(Notifier, {
 	tab: 'general',
 
 	actions: {
+		onBack() {
+			this.get('router').transitionTo('document.index');
+		},
+
 		onTab(view) {
 			this.set('tab', view);
 		},
