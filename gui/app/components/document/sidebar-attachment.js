@@ -37,6 +37,15 @@ export default Component.extend(Modals, Notifier, {
 	didInsertElement() {
 		this._super(...arguments);
 
+		// For authenticated users we send server auth token.
+		let qry = '';
+		if (this.get('session.hasSecureToken')) {
+			qry = '?secure=' + this.get('session.secureToken');
+		} else if (this.get('session.authenticated')) {
+			qry = '?token=' + this.get('session.authToken');
+		}
+		this.set('downloadQuery', qry);
+
 		if (!this.get('permissions.documentEdit') || this.get('document.protection') === this.get('constants').ProtectionType.Lock) {
 			return;
 		}
@@ -86,15 +95,6 @@ export default Component.extend(Modals, Notifier, {
 				dzone.removeFile(file);
 			});
 		}
-
-		// For authenticated users we send server auth token.
-		let qry = '';
-		if (this.get('session.hasSecureToken')) {
-			qry = '?secure=' + this.get('session.secureToken');
-		} else if (this.get('session.authenticated')) {
-			qry = '?token=' + this.get('session.authToken');
-		}
-		this.set('downloadQuery', qry);
 	},
 
 	getAttachments() {
