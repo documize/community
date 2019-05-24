@@ -85,6 +85,10 @@
 						font-weight: bold;
 						background-color: $color-white;
 						@extend .no-select;
+
+						&:hover {
+							background-color: $theme-100;
+						}
 					}
 				}
 			}
@@ -108,12 +112,13 @@
 			flex-wrap: wrap;
 			align-items: center;
 			justify-content: space-between;
-			padding: 0 15px;
+			padding: 0 15px 0 20px;
 
 			> div[class^="zone-"], > div[class*=" zone-"] {
 				margin: 0;
-				// padding: 10px 10px;
+				padding: 0;
 				align-items: center;
+				align-self: center;
 
 				> .label {
 					font-size: 1rem;

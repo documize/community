@@ -8,7 +8,7 @@
 	// -webkit-box-shadow: 0 20px 66px 0 rgba(34,48,73,0.2);
     // box-shadow: 0 20px 66px 0 rgba(34,48,73,0.2);
 
-	@include border-radius(5px);
+	@include border-radius(3px);
 
 	> p {
 		margin: 4px;
@@ -36,6 +36,7 @@
 			&:hover {
 				color: $color-black;
 				background-color: map-get($yellow-shades, 100);
+				@include border-radius(3px);
 			}
 		}
 

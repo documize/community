@@ -1,36 +1,40 @@
 {{#ui/ui-toolbar dark=false light=false raised=false large=false bordered=false}}
-	{{#if hasDocuments}}
-		{{ui/ui-toolbar-icon icon=constants.Icon.Export color=constants.Color.Gray
-			tooltip="Export as HTML" onClick=(action "onShowExport")}}
+	{{#if (or hasDocuments pinState.isPinned session.authenticated)}}
+		{{#ui/ui-toolbar-dropdown label="Content" arrow=true}}
+			{{#attach-popover class="ember-attacher-popper" hideOn="clickout" showOn="click" isShown=false}}
+				<div class="menu">
+					{{#if pinState.isPinned}}
+						<li class="item" {{action "onUnpin"}}>Remove bookmark</li>
+					{{else if session.authenticated}}
+						<li class="item" {{action "onPin"}}>Bookmark</li>
+					{{/if}}
+					{{#if hasDocuments}}
+						<li class="item" {{action "onShowExport"}}>Download</li>
+					{{/if}}
+				</div>
+			{{/attach-popover}}
+		{{/ui/ui-toolbar-dropdown}}
 	{{/if}}
-	{{#if pinState.isPinned}}
-		{{ui/ui-toolbar-icon icon=constants.Icon.BookmarkDelete color=constants.Color.Yellow
-			tooltip="Remove view from bookmarks" onClick=(action "onUnpin")}}
-	{{else if session.authenticated}}
-		{{ui/ui-toolbar-icon icon=constants.Icon.BookmarkAdd color=constants.Color.Gray
-			tooltip="Bookmark this view" onClick=(action "onPin")}}
+
+	{{#if permissions.documentAdd}}
+		{{#ui/ui-toolbar-dropdown label="New" arrow=true}}
+			{{#attach-popover class="ember-attacher-popper" hideOn="clickout" showOn="click" isShown=false}}
+				<div class="menu">
+					<li class="item" {{action "onShowEmptyDocModal"}}>Blank canvas</li>
+					{{#if hasTemplates}}
+						<li class="item" {{action "onShowTemplateDocModal"}}>From template</li>
+					{{/if}}
+					<li class="item" {{action "onShowImportDocModal"}}>Import files</li>
+				</div>
+			{{/attach-popover}}
+		{{/ui/ui-toolbar-dropdown}}
 	{{/if}}
 
 	{{#if (or permissions.spaceOwner permissions.spaceManage)}}
-		{{ui/ui-toolbar-icon icon=constants.Icon.Settings color=constants.Color.Gray
+		{{ui/ui-toolbar-icon icon=constants.Icon.Settings color=constants.Color.Green
 			tooltip="Space settings" linkTo="folder.settings"}}
 	{{/if}}
 {{/ui/ui-toolbar}}
-
-{{#if permissions.documentAdd}}
-	{{#ui/ui-toolbar dark=false light=false raised=false large=false bordered=false}}
-		{{ui/ui-toolbar-button color=constants.Color.Green uppercase=false icon=constants.Icon.Plus label="CONTENT"}}
-		{{#attach-popover class="ember-attacher-popper" hideOn="clickout" showOn="click" isShown=false}}
-			<div class="menu">
-				<a class="item" href="#" {{action "onShowEmptyDocModal"}}>Blank canvas</a>
-				{{#if hasTemplates}}
-					<a class="item" href="#" {{action "onShowTemplateDocModal"}}>From template</a>
-				{{/if}}
-				<a class="item" href="#" {{action "onShowImportDocModal"}}>Import files</a>
-			</div>
-		{{/attach-popover}}
-	{{/ui/ui-toolbar}}
-{{/if}}
 
 <div id="empty-doc-modal" class="modal" tabindex="-1" role="dialog">
 	<div class="modal-dialog" role="document">

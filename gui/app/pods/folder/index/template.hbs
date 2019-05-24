@@ -1,6 +1,10 @@
 <Layout::MasterNavigation />
 <Layout::MasterToolbar>
-	<div class="zone-1" />
+	<div class="zone-1">
+		{{#link-to "folders"}}
+			{{ui/ui-button themed=true uppercase=true icon=constants.Icon.ArrowLeft label=constants.Label.Spaces}}
+		{{/link-to}}
+	</div>
 	<div class="zone-2" />
 	<div class="zone-3">
 		{{folder/space-toolbar

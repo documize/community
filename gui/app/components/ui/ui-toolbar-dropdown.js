@@ -22,7 +22,7 @@ export default Component.extend({
 
 	calcClass: computed(function() {
 		// Prepare icon class name
-		this.iconClass = this.get('constants').Icon.TriangleSmallDown;
+		this.iconClass = this.get('constants').Icon.ArrowSmallDown;
 
 		// Prepare button class name
 		let bc = 'dropdown';

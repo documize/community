@@ -12,7 +12,7 @@
 import Component from '@ember/component';
 
 export default Component.extend({
-	classNames: ['dmz-toolbar', 'non-printable'],
+	classNames: ['dmz-toolbar'],
 	classNameBindings:
 		['raised:dmz-toolbar-raised',
 		'bordered:dmz-toolbar-bordered',
