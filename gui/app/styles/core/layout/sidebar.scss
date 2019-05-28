@@ -7,6 +7,19 @@
 	// background-color: map-get($gray-shades, 100);
 	@include border-radius(6px);
 
+	> .goto-top {
+		position: absolute;
+		top: 7px;
+		left: 10px;
+		cursor: pointer;
+		color: map-get($gray-shades, 500);
+		font-size: 1rem;
+
+		&:hover {
+			color: map-get($gray-shades, 800);
+		}
+	}
+
 	> .section {
 		margin: 0;
 		padding: 0 7px;

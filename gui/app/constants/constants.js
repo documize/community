@@ -232,6 +232,7 @@ let constants = EmberObject.extend({
 		Export2: 'dicon-upload',
 		Filter: 'dicon-sort-tool',
 		Grid: 'dicon-grid-interface',
+		GoTop: 'dicon-move-layer-up',
 		Handshake: 'dicon-handshake',
 		Index: 'dicon-menu-8',
 		Integrations: 'dicon-geometry',

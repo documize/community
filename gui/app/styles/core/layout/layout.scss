@@ -36,6 +36,9 @@ $sidebar-height: auto;
 			// overflow-x: hidden;
 			// overflow-y: auto;
 			padding: 20px 10px 20px 20px;
+			height: calc(100vh - 150px);
+			@include sticky();
+			top: 0px;
 		}
 
 		.master-content {
