@@ -1,6 +1,6 @@
 <div class="view-customize">
 	{{#if isAuthProviderKeycloak}}
-		<Ui::UiSpacer @size=300 />
+		<Ui::UiSpacer @size="300" />
 		{{#if syncInProgress}}
 			{{ui/ui-button color=constants.Color.Gray light=true icon=constants.Icon.Locked label="Keycloak user sync running..."}}
 		{{else}}
@@ -9,7 +9,7 @@
 	{{/if}}
 
 	{{#if (or isAuthProviderLDAP c)}}
-		<Ui::UiSpacer @size=300 />
+		<Ui::UiSpacer @size="300" />
 		{{#if syncInProgress}}
 			{{ui/ui-button color=constants.Color.Gray light=true icon=constants.Icon.Locked label="LDAP user sync running..."}}
 		{{else}}
@@ -17,7 +17,7 @@
 		{{/if}}
 	{{/if}}
 
-	<Ui::UiSpacer @size=300 />
+	<Ui::UiSpacer @size="300" />
 	<div class="explain-user-perms">
 		<div class="title" {{action "togglePerms"}}>
 			Permissions Explained
@@ -40,7 +40,7 @@
 			<div class="perm-desc">Can login and use Documize</div>
 		</div>
 	</div>
-	<Ui::UiSpacer @size=300 />
+	<Ui::UiSpacer @size="300" />
 
 	<div class="form-group">
 		{{focus-input type="text" class="form-control" placeholder="filter users" value=filter key-up=(action "onFilterChange")}}

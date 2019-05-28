@@ -1,7 +1,7 @@
 <Layout::MasterNavigation />
 <Layout::MasterToolbar>
 	<div class="zone-1">
-		<Document::DocumentsList @space={{folder}} @docId=document.id />
+		<Document::DocumentsList @space={{folder}} @docId={{document.id}} />
 	</div>
 	<div class="zone-2" />
 	<div class="zone-3">
@@ -39,7 +39,7 @@
 				</div>
 			</div>
 
-			<Ui::UiSpacer @size=200 />
+			<Ui::UiSpacer @size="200" />
 
 			{{#if (eq sidebarTab "toc")}}
 				{{document/sidebar-toc
@@ -95,7 +95,7 @@
 			approvalStatus=approvalStatus}}
 
 		{{#if contributionStatus}}
-			<Ui::UiSpacer @size=200 />
+			<Ui::UiSpacer @size="200" />
 			<div class="document-meta">
 				<div class="label-workflow-status">
 					{{contributionStatus}}
@@ -103,7 +103,7 @@
 			</div>
 		{{else}}
 			{{#if approvalStatus}}
-				<Ui::UiSpacer @size=200 />
+				<Ui::UiSpacer @size="200" />
 				<div class="document-meta">
 					<div class="label-workflow-status">
 						{{approvalStatus}}
@@ -112,7 +112,7 @@
 			{{/if}}
 		{{/if}}
 
-		<Ui::UiSpacer @size=300 />
+		<Ui::UiSpacer @size="300" />
 
 		<div class="document-meta {{if permissions.documentEdit "cursor-pointer"}}" {{action "onEditMeta"}}>
 			<div class="document-heading">

@@ -9,7 +9,7 @@
 	<div class="section-plantuml-diagram">
 		<div class="form-group">
 			<label><a href="http://plantuml.com/" target="_blank">PlantUML Diagram</a></label>
-			<Ui::UiSpacer @size=200 />
+			<Ui::UiSpacer @size="200" />
 			<div>
 				<p>Insert sample diagrams:</p>
 				<p>
@@ -26,16 +26,16 @@
 		</div>
 	</div>
 
-	<Ui::UiSpacer @size=200 />
+	<Ui::UiSpacer @size="200" />
 
 	{{ui/ui-button color=constants.Color.Yellow light=true label=previewButtonCaption onClick=(action "onPreview")}}
 
-	<Ui::UiSpacer @size=200 />
+	<Ui::UiSpacer @size="200" />
 
 	<div id={{previewId}} class="text-center">
 		<img src={{diagramPreview}}>
 	</div>
 
-	<Ui::UiSpacer @size=200 />
+	<Ui::UiSpacer @size="200" />
 
 {{/section/base-editor}}

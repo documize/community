@@ -19,6 +19,9 @@
 		margin: 0;
 		padding: 0;
 		min-width: 140px;
+		max-height: calc(100vh - 200px);
+		overflow: hidden;
+		overflow-y: auto;
 
 		> .item {
 			color: map-get($gray-shades, 800);

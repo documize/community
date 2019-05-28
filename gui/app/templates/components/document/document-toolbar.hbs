@@ -2,7 +2,7 @@
 	{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
 		{{#if permissions.documentEdit}}
 			{{#ui/ui-toolbar-dropdown label="Actions" arrow=true}}
-				{{#attach-popover class="ember-attacher-popper" hideOn="clickout" showOn="click" isShown=false}}
+				{{#attach-popover class="ember-attacher-popper" hideOn="click clickout" showOn="click" isShown=false}}
 					<ul class="menu">
 						<li class="item" {{action "onShowRequestContributionModal"}}>Request contribution</li>
 						<li class="item" {{action "onShowRequestFeedbackModal"}}>Request feedback</li>
@@ -20,7 +20,7 @@
 	{{/if}}
 
 	{{#ui/ui-toolbar-dropdown label="Content" arrow=true}}
-		{{#attach-popover class="ember-attacher-popper" hideOn="clickout" showOn="click" isShown=false}}
+		{{#attach-popover class="ember-attacher-popper" hideOn="click clickout" showOn="click" isShown=false}}
 			<ul class="menu">
 				{{#if pinState.isPinned}}
 					<li class="item" {{action "onUnpin"}}>Remove bookmark</li>
@@ -47,7 +47,7 @@
 
 	{{#if (or showActivity showRevisions)}}
 		{{#ui/ui-toolbar-dropdown label="History" arrow=true}}
-			{{#attach-popover class="ember-attacher-popper" hideOn="clickout" showOn="click" isShown=false}}
+			{{#attach-popover class="ember-attacher-popper" hideOn="click clickout" showOn="click" isShown=false}}
 				<ul class="menu">
 					{{#if showActivity}}
 						{{#link-to "document.activity" class="item"}}Activity summary{{/link-to}}

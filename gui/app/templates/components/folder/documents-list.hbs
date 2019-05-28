@@ -20,7 +20,7 @@
 			{{#attach-popover class="ember-attacher-popper" hideOn="click" showOn="click" isShown=false placement="bottom-end" as |attacher|}}
 				<i class="dicon {{constants.Icon.Cross}} closer" {{action attacher.hide}}/>
 				<div class="container">
-					<Ui::UiSpacer @size=100 />
+					<Ui::UiSpacer @size="100" />
 
 					<div class="text-center">
 						<ul class="ui-option-picker ui-option-picker-horiz">
@@ -36,7 +36,7 @@
 						</ul>
 					</div>
 
-					<Ui::UiSpacer @size=100 />
+					<Ui::UiSpacer @size="100" />
 
 					<div class="text-center">
 						<ul class="ui-option-picker ui-option-picker-horiz">
@@ -49,7 +49,7 @@
 						</ul>
 					</div>
 
-					<Ui::UiSpacer @size=300 />
+					<Ui::UiSpacer @size="300" />
 
 					{{ui/ui-button
 						light=true
@@ -61,7 +61,7 @@
 		{{/ui/ui-button}}
 	</div>
 
-	<Ui::UiSpacer @size=200 />
+	<Ui::UiSpacer @size="200" />
 
 	<ul class="documents">
 		{{#each documents key="id" as |document|}}

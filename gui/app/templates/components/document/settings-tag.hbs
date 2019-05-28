@@ -12,10 +12,10 @@
 		</div>
 		{{input type="text" id=(concat "add-tag-field-" tag.number) class="form-control mousetrap tag-input" placeholder="Tag name" value=tag.value}}
 	</div>
-	<Ui::UiSpacer @size=200 />
+	<Ui::UiSpacer @size="200" />
 {{/each}}
 
-<Ui::UiSpacer @size=300 />
+<Ui::UiSpacer @size="300" />
 
 {{ui/ui-button
 	color=constants.Color.Green

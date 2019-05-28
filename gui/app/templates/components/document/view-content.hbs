@@ -1,6 +1,6 @@
 {{#if hasPages}}
 	{{#each pages key="id" as |item|}}
-		<Ui::UiSpacer @size=100 />
+		<Ui::UiSpacer @size="100" />
 		{{document/document-page
 			roles=roles
 			pages=pages
@@ -41,7 +41,7 @@
 			<div class="thanks">Thanks for the feedback!</div>
 		{{else}}
 			<div class="prompt">{{folder.likes}}</div>
-			<Ui::UiSpacer @size=200 />
+			<Ui::UiSpacer @size="200" />
 			<div class="buttons">
 				{{ui/ui-button color=constants.Color.Yellow light=true label="Yes, thanks!" onClick=(action "onVote" 1)}}
 				{{ui/ui-button-gap}}

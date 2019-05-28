@@ -1,6 +1,6 @@
 {{#if spaces}}
 	{{ui/ui-button color=constants.Color.Yellow light=true icon=constants.Icon.Export label="Export All Content" onClick=(action "onExport")}}
-	<Ui::UiSpacer @size=300 />
+	<Ui::UiSpacer @size="300" />
 
 	<div class="view-customize">
 		<ul class="space-list">
@@ -28,7 +28,7 @@
 							</div>
 							<div class="desc">Some description that is to be wired up to the backend</div>
 						{{/link-to}}
-						<Ui::UiSpacer @size=200 />
+						<Ui::UiSpacer @size="200" />
 						{{#ui/ui-toolbar dark=false light=true raised=true large=false bordered=true}}
 							{{ui/ui-toolbar-icon icon=constants.Icon.AddUser color=constants.Color.Green tooltip="Add myself as owner" onClick=(action "onOwner" space.id)}}
 							{{ui/ui-toolbar-icon icon=constants.Icon.Delete color=constants.Color.Red tooltip="Delete space" onClick=(action "onShow" space.id)}}

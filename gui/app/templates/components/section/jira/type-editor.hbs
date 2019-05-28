@@ -8,7 +8,7 @@
 		{{#link-to "customize.integrations"}}
 			{{ui/ui-button color=constants.Color.Green light=true label="Configure Jira Connector"}}
 		{{/link-to}}
-		<Ui::UiSpacer @size=300 />
+		<Ui::UiSpacer @size="300" />
 	{{else}}
 		{{#unless authenticated}}
 			<p class="color-green-600">Your Documize administrator needs to provide Jira connection details before usage.</p>
@@ -23,10 +23,10 @@
 			{{ui/ui-button color=constants.Color.Yellow light=true label=constants.Label.Preview submit=true onClick=(action "onPreview")}}
 		</form>
 
-		<Ui::UiSpacer @size=300 />>
+		<Ui::UiSpacer @size="300" />>
 		{{{issuesGrid}}}
 	{{else}}
-		<Ui::UiSpacer @size=300 />
+		<Ui::UiSpacer @size="300" />
 		<p class="color-gray-700">Jira connector not authenticated</p>
 	{{/if}}
 {{/section/base-editor}}

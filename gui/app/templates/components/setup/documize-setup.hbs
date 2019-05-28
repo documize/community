@@ -1,12 +1,12 @@
 <div class="installer">
 	<img src="/assets/img/setup/logo-purple.png" srcset="/assets/img/setup/logo-purple@2x.png" alt="Documize Setup" style="width: 250px; height: 76px;">
-	<Ui::UiSpacer @size=300 />
+	<Ui::UiSpacer @size="300" />
 	<h1 class="color-theme-700">Installation Guide</h1>
 	<p class="color-gray-800">
 		Review the <a href="https://docs.documize.com/s/VzO9ZqMOCgABGyfW/installation-guides/d/V16L08ucxwABhZF6/installation-guide">installation instructions</a>
 		and recommended <a href="https://docs.documize.com/s/VzO9ZqMOCgABGyfW/installation-guides/d/V2KuM8ICcQABagM5/mysql-specific-database-tuning">database tuning guide</a>
 	</p>
-	<Ui::UiSpacer @size=300 />
+	<Ui::UiSpacer @size="300" />
 
 	<form {{action "save" on="submit"}}>
 		<div class="form-group">
@@ -35,5 +35,5 @@
 		{{ui/ui-button submit=true color=constants.Color.Green light=true label=buttonLabel onClick=(action "save")}}
 	</form>
 
-	<Ui::UiSpacer @size=300 />
+	<Ui::UiSpacer @size="300" />
 </div>

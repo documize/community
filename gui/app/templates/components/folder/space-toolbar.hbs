@@ -1,7 +1,7 @@
 {{#ui/ui-toolbar dark=false light=false raised=false large=false bordered=false}}
 	{{#if (or hasDocuments pinState.isPinned session.authenticated)}}
 		{{#ui/ui-toolbar-dropdown label="Content" arrow=true}}
-			{{#attach-popover class="ember-attacher-popper" hideOn="clickout" showOn="click" isShown=false}}
+			{{#attach-popover class="ember-attacher-popper" hideOn="click clickout" showOn="click" isShown=false}}
 				<div class="menu">
 					{{#if pinState.isPinned}}
 						<li class="item" {{action "onUnpin"}}>Remove bookmark</li>
@@ -18,7 +18,7 @@
 
 	{{#if permissions.documentAdd}}
 		{{#ui/ui-toolbar-dropdown label="New" arrow=true}}
-			{{#attach-popover class="ember-attacher-popper" hideOn="clickout" showOn="click" isShown=false}}
+			{{#attach-popover class="ember-attacher-popper" hideOn="click clickout" showOn="click" isShown=false}}
 				<div class="menu">
 					<li class="item" {{action "onShowEmptyDocModal"}}>Blank canvas</li>
 					{{#if hasTemplates}}

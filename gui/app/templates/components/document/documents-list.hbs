@@ -3,7 +3,7 @@
 		icon=constants.Icon.ArrowLeft label=space.name onClick=(action "onSpace")}}
 	{{#if docs}}
 		{{#ui/ui-toolbar-icon icon=constants.Icon.ArrowSmallDown}}
-			{{#attach-popover class="ember-attacher-popper" hideOn="clickout" showOn="click" isShown=false placement="bottom-middle"}}
+			{{#attach-popover class="ember-attacher-popper" hideOn="click clickout" showOn="click" isShown=false placement="bottom-middle" }}
 				<ul class="menu">
 					{{#each docs as |doc|}}
 						{{#if (not-eq doc.id docId)}}

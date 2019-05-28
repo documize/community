@@ -1,9 +1,9 @@
 <div class="title center">attachments</div>
 {{#if canEdit}}
 	<div class="text-center">
-		<Ui::UiSpacer @size=100 />
+		<Ui::UiSpacer @size="100" />
 		{{ui/ui-button color=constants.Color.Gray label="Upload" id="upload-document-files"}}
-		<Ui::UiSpacer @size=100 />
+		<Ui::UiSpacer @size="100" />
 	</div>
 {{/if}}
 
@@ -23,7 +23,7 @@
 										{{#attach-popover class="ember-attacher-popper" hideOn="escapekey, clickout" showOn="click" isShown=false}}
 											<div class="form">
 												<p>Are you sure you want to delete this file?</p>
-												<Ui::UiSpacer @size=100 />
+												<Ui::UiSpacer @size="100" />
 												{{ui/ui-button
 													light=false
 													label=constants.Label.Delete
