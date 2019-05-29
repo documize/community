@@ -83,7 +83,6 @@
 			approvalStatus=approvalStatus}}
 
 		{{#if contributionStatus}}
-			<Ui::UiSpacer @size="200" />
 			<div class="document-meta">
 				<div class="label-workflow-status">
 					{{contributionStatus}}
@@ -91,7 +90,6 @@
 			</div>
 		{{else}}
 			{{#if approvalStatus}}
-				<Ui::UiSpacer @size="200" />
 				<div class="document-meta">
 					<div class="label-workflow-status">
 						{{approvalStatus}}

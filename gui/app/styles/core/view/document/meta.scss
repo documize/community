@@ -156,4 +156,24 @@
 			font-weight: 500;
 		}
 	}
+
+	> .label-version {
+		@include border-radius(3px);
+		@extend .no-select;
+		display: inline-block;
+		margin: 5px 5px 5px 0;
+		padding: 0.3rem 0.7rem;
+		font-size: 1.1rem;
+		font-weight: 500;
+		background-color: map-get($yellow-shades, 100);
+		color: map-get($gray-shades, 700);
+		text-transform: uppercase;
+	}
+
+	> .version-dropdown {
+		color: map-get($gray-shades, 500);
+		font-size: 25px;
+		vertical-align: middle;
+		cursor: pointer;
+	}
 }
