@@ -29,8 +29,6 @@
 					{{#ui/ui-toolbar dark=false light=true raised=true large=false bordered=true}}
 						{{ui/ui-toolbar-icon icon=constants.Icon.Index color=constants.Color.Gray tooltip="Table of contents"
 							selected=(eq sidebarTab "toc") onClick=(action "onSidebarChange" "toc")}}
-						{{ui/ui-toolbar-icon icon=constants.Icon.Attachment color=constants.Color.Gray tooltip="Attachments"
-							selected=(eq sidebarTab "files") onClick=(action "onSidebarChange" "files")}}
 						{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
 							{{ui/ui-toolbar-icon icon=constants.Icon.Chat color=constants.Color.Gray tooltip="Comments & Feedback"
 								selected=(eq sidebarTab "feedback") onClick=(action "onSidebarChange" "feedback")}}
@@ -53,12 +51,6 @@
 					onShowPage=(action "onShowPage")
 					onPageLevelChange=(action "onPageLevelChange")
 					onPageSequenceChange=(action "onPageSequenceChange")}}
-			{{/if}}
-
-			{{#if (eq sidebarTab "files")}}
-				{{document/sidebar-attachment
-					document=document
-					permissions=permissions}}
 			{{/if}}
 
 			{{#if (eq sidebarTab "feedback")}}
@@ -89,6 +81,7 @@
 			spaces=folders
 			document=document
 			versions=versions
+			attachments=attachments
 			permissions=permissions
 			contributionStatus=contributionStatus
 			approvalStatus=approvalStatus}}

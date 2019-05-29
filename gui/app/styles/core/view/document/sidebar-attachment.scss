@@ -1,9 +1,3 @@
-#upload-document-files {
-	> .dz-preview, .dz-processing {
-		display: none !important;
-	}
-}
-
 .document-sidebar-attachment {
 	> .files {
 		margin: 0;
@@ -11,27 +5,45 @@
 
 		> .file {
 			list-style-type: none;
-			margin: 10px 0 0 0;
-			padding: 5px;
-			width: 100%;
+			margin: 0;
+			padding: 0 10px 0 0;
 			font-size: 0.9rem;
 			position: relative;
+			display: inline-block;
 
 			> a {
 				display: inline-block;
-				font-size: 0.9rem;
-				vertical-align: text-top;
-				margin-right: 10px;
-				width: 90%;
+				font-size: 1rem;
 				@extend .text-truncate;
 			}
 
 			> .menu {
-				position: absolute;
-				right: -10px;
-				top: 0;
+				display: inline-block;
+				color: map-get($gray-shades, 300);
+				font-size: 1.2rem;
+
+				&:hover {
+					color: map-get($gray-shades, 600);
+				}
 			}
 		}
+	}
+}
+
+#upload-document-files {
+	> span {
+		display: block;
+		color: map-get($gray-shades, 600);
+		font-size: 1rem;
+		cursor: pointer;
+
+		&:hover {
+			color: map-get($gray-shades, 800);
+		}
+	}
+
+	> .dz-preview, .dz-processing {
+		display: none !important;
 	}
 }
 

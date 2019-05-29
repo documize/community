@@ -71,20 +71,20 @@
 					{{#if (not-eq viewDensity "3")}}
 						<div class="desc">{{ document.excerpt }}</div>
 					{{/if}}
-				{{/link-to}}
-				{{#if (eq viewDensity "1")}}
-					<div class="meta">
-						<div class="lifecycle">
-							<div class="{{if (eq document.lifecycle constants.Lifecycle.Draft) "draft"}}
-							{{if (eq document.lifecycle constants.Lifecycle.Live) "live"}}
-							{{if (eq document.lifecycle constants.Lifecycle.Archived) "archived"}}">
-								{{document.lifecycleLabel}}
+					{{#if (eq viewDensity "1")}}
+						<div class="meta">
+							<div class="lifecycle">
+								<div class="{{if (eq document.lifecycle constants.Lifecycle.Draft) "draft"}}
+								{{if (eq document.lifecycle constants.Lifecycle.Live) "live"}}
+								{{if (eq document.lifecycle constants.Lifecycle.Archived) "archived"}}">
+									{{document.lifecycleLabel}}
+								</div>
 							</div>
+							{{folder/document-categories categories=document.category}}
+							{{folder/document-tags documentTags=document.tags}}
 						</div>
-						{{folder/document-categories categories=document.category}}
-						{{folder/document-tags documentTags=document.tags}}
-					</div>
-				{{/if}}
+					{{/if}}
+				{{/link-to}}
 
 				{{#if hasDocumentActions}}
 					<div class="checkbox" {{action "selectDocument" document.id}}>

@@ -17,7 +17,7 @@ import Notifier from '../../mixins/notifier';
 import Component from '@ember/component';
 
 export default Component.extend(Modals, Notifier, {
-	classNames: ["section"],
+	classNames: ["document-meta"],
 	documentService: service('document'),
 	browserSvc: service('browser'),
 	appMeta: service(),
@@ -56,7 +56,7 @@ export default Component.extend(Modals, Notifier, {
 		let uploadUrl = `${url}/documents/${documentId}/attachments`;
 
 		// Handle upload clicks on button and anything inside that button.
-		let sel = ['#upload-document-files ', '#upload-document-files  > div'];
+		let sel = ['#upload-document-files ', '#upload-document-files  > span'];
 		for (var i=0; i < 2; i++) {
 			let dzone = new Dropzone(sel[i], {
 				headers: {
@@ -109,15 +109,6 @@ export default Component.extend(Modals, Notifier, {
 				this.notifySuccess('File deleted');
 				this.getAttachments();
 			});
-		},
-
-		onExport() {
-			this.get('documentSvc').export({}).then((htmlExport) => {
-				this.get('browserSvc').downloadFile(htmlExport, this.get('space.slug') + '.html');
-				this.notifySuccess('Exported');
-			});
-
-			this.modalClose("#space-export-modal");
 		}
 	}
 });
