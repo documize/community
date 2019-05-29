@@ -9,7 +9,6 @@
 //
 // https://documize.com
 
-import browser from '../../../services/browser';
 import Component from '@ember/component';
 
 export default Component.extend({

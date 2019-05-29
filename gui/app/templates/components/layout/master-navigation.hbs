@@ -1,7 +1,7 @@
 <div class="navbar">
 	<div class="container">
-		<div class="options">
-			{{#unless hideNavigation}}
+		{{#unless hideNavigation}}
+			<div class="options">
 				{{#link-to "folders" class=(if (eq selectedItem "spaces") "option selected" "option")}}
 					<i class={{concat "dicon " constants.Icon.Grid}}>
 						{{#attach-tooltip showDelay=1000}}Spaces{{/attach-tooltip}}
@@ -33,83 +33,83 @@
 						{{#attach-tooltip showDelay=1000}}Search{{/attach-tooltip}}
 					</i>
 				{{/link-to}}
-			{{/unless}}
-		</div>
+			</div>
 
-		<div class="options">
-			{{#if session.isAdmin}}
-				{{#unless appMeta.valid}}
-					<div class="option invalid-plan" {{action "onBilling"}}>
-						<i class={{concat "dicon " constants.Icon.Announce}} />
-						{{#attach-tooltip}}Invalid product plan{{/attach-tooltip}}
-					</div>
-				{{/unless}}
-			{{/if}}
-			{{#if session.authenticated}}
-				{{#if hasPins}}
-					<div class="option" id="user-pins-button">
-						<i class={{concat "dicon " constants.Icon.BookmarkSolid}}></i>
-						{{#attach-popover class="ember-attacher-popper" hideOn="clickout click" showOn="click" isShown=false}}
-							<div class="menu">
-								{{#if hasSpacePins}}
-									<li class="item header">Spaces</li>
-									{{#each spacePins as |pin|}}
-										<a class="item" href="#" {{action "jumpToPin" pin}} data-id= {{pin.id}} id="pin-{{pin.id}}">{{pin.pin}}</a>
-									{{/each}}
-								{{/if}}
-								{{#if hasDocumentPins}}
-									<li class="item header">Content</li>
-									{{#each documentPins as |pin|}}
-										<a class="item" href="#" {{action "jumpToPin" pin}} data-id= {{pin.id}} id="pin-{{pin.id}}">{{pin.pin}}</a>
-									{{/each}}
-								{{/if}}
-							</div>
-						{{/attach-popover}}
-					</div>
+			<div class="options">
+				{{#if session.isAdmin}}
+					{{#unless appMeta.valid}}
+						<div class="option invalid-plan" {{action "onBilling"}}>
+							<i class={{concat "dicon " constants.Icon.Announce}} />
+							{{#attach-tooltip}}Invalid product plan{{/attach-tooltip}}
+						</div>
+					{{/unless}}
 				{{/if}}
-				<div class="user-gravatar-container">
-					<div class="user-gravatar" id="profile-button">
-						{{session.user.initials}}
-						{{#if hasWhatsNew}}
-							<div class="whats-new-dot" />
-						{{/if}}
-						{{#if session.isGlobalAdmin}}
-							{{#if appMeta.updateAvailable}}
-								<div class="update-available-dot" />
-							{{/if}}
-						{{/if}}
-						{{#attach-popover class="ember-attacher-popper" hideOn="clickout click" showOn="click" isShown=false}}
-							<div class="menu">
-								{{#link-to "profile" class="item"}}Profile{{/link-to}}
-								{{#if session.isAdmin}}
-									<div class="divider"></div>
-									{{#link-to "customize.general" class="item"}}Settings{{/link-to}}
-									{{#unless appMeta.valid}}
-										{{#link-to "customize.billing" class="item bold red"}}Update Billing{{/link-to}}
-									{{/unless}}
-								{{/if}}
-								{{#if session.isGlobalAdmin}}
-									{{#if appMeta.updateAvailable}}
-										{{#link-to "customize.product" class="item bold yellow"}}Update available{{/link-to}}
+				{{#if session.authenticated}}
+					{{#if hasPins}}
+						<div class="option" id="user-pins-button">
+							<i class={{concat "dicon " constants.Icon.BookmarkSolid}}></i>
+							{{#attach-popover class="ember-attacher-popper" hideOn="clickout click" showOn="click" isShown=false}}
+								<div class="menu">
+									{{#if hasSpacePins}}
+										<li class="item header">Spaces</li>
+										{{#each spacePins as |pin|}}
+											<a class="item" href="#" {{action "jumpToPin" pin}} data-id= {{pin.id}} id="pin-{{pin.id}}">{{pin.pin}}</a>
+										{{/each}}
 									{{/if}}
+									{{#if hasDocumentPins}}
+										<li class="item header">Content</li>
+										{{#each documentPins as |pin|}}
+											<a class="item" href="#" {{action "jumpToPin" pin}} data-id= {{pin.id}} id="pin-{{pin.id}}">{{pin.pin}}</a>
+										{{/each}}
+									{{/if}}
+								</div>
+							{{/attach-popover}}
+						</div>
+					{{/if}}
+					<div class="user-gravatar-container">
+						<div class="user-gravatar" id="profile-button">
+							{{session.user.initials}}
+							{{#if hasWhatsNew}}
+								<div class="whats-new-dot" />
+							{{/if}}
+							{{#if session.isGlobalAdmin}}
+								{{#if appMeta.updateAvailable}}
+									<div class="update-available-dot" />
 								{{/if}}
-								<div class="divider"></div>
-								<a class={{if hasWhatsNew "item bold red" "item"}} href="#" {{action "onNew"}}>What's New</a>
-								<a href="https://docs.documize.com" target="_blank" class="item">Help</a>
-								{{#if enableLogout}}
+							{{/if}}
+							{{#attach-popover class="ember-attacher-popper" hideOn="clickout click" showOn="click" isShown=false}}
+								<div class="menu">
+									{{#link-to "profile" class="item"}}Profile{{/link-to}}
+									{{#if session.isAdmin}}
+										<div class="divider"></div>
+										{{#link-to "customize.general" class="item"}}Settings{{/link-to}}
+										{{#unless appMeta.valid}}
+											{{#link-to "customize.billing" class="item bold red"}}Update Billing{{/link-to}}
+										{{/unless}}
+									{{/if}}
+									{{#if session.isGlobalAdmin}}
+										{{#if appMeta.updateAvailable}}
+											{{#link-to "customize.product" class="item bold yellow"}}Update available{{/link-to}}
+										{{/if}}
+									{{/if}}
 									<div class="divider"></div>
-									{{#link-to "auth.logout" class="item"}}Logout{{/link-to}}
-								{{/if}}
-							</div>
-						{{/attach-popover}}
+									<a class={{if hasWhatsNew "item bold red" "item"}} href="#" {{action "onNew"}}>What's New</a>
+									<a href="https://docs.documize.com" target="_blank" class="item">Help</a>
+									{{#if enableLogout}}
+										<div class="divider"></div>
+										{{#link-to "auth.logout" class="item"}}Logout{{/link-to}}
+									{{/if}}
+								</div>
+							{{/attach-popover}}
+						</div>
 					</div>
-				</div>
-			{{else}}
-				{{#link-to "auth.login" class="option"}}
-					{{constants.Label.Login}}
-				{{/link-to}}
-			{{/if}}
-		</div>
+				{{else}}
+					{{#link-to "auth.login" class="option"}}
+						{{constants.Label.Login}}
+					{{/link-to}}
+				{{/if}}
+			</div>
+		{{/unless}}
 	</div>
 </div>
 
