@@ -52,6 +52,12 @@ export default Component.extend(Modals, {
 	},
 
 	actions: {
+		onEdit() {
+			if (!this.get('permissions.documentEdit')) return;
+
+			this.get('router').transitionTo('document.settings');
+		},
+
 		onEditCategory() {
 			if (!this.get('permissions.documentEdit')) return;
 

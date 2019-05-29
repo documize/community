@@ -1,7 +1,41 @@
-<Ui::UiSpacer @size="300" />
-
 <div class="document-meta">
-	<div class="title {{if permissions.documentEdit "cursor-pointer"}}" {{action "onEditCategory"}}>CATEGORY / TAG</div>
+	<div class="title">STATUS</div>
+	<div class="{{if (eq document.lifecycle constants.Lifecycle.Draft) "label-draft"}}
+		{{if (eq document.lifecycle constants.Lifecycle.Live) "label-live"}}
+		{{if (eq document.lifecycle constants.Lifecycle.Archived) "label-archived"}}" {{action "onEdit"}}>
+		{{document.lifecycleLabel}}
+		{{#attach-tooltip showDelay=1000}}Lifecycle: Draft &middot; Live &middot; Archived{{/attach-tooltip}}
+	</div>
+
+	{{#if (eq document.protection constants.ProtectionType.None)}}
+		<div class="label-open {{if permissions.documentEdit "cursor-pointer"}}" {{action "onEdit"}}>
+			OPEN
+			{{#attach-tooltip showDelay=1000}}Change Control: Open &middot; Protected &middot; Locked{{/attach-tooltip}}
+		</div>
+	{{/if}}
+	{{#if (eq document.protection constants.ProtectionType.Review)}}
+		<div class="label-protected {{if permissions.documentEdit "cursor-pointer"}}" {{action "onEdit"}}>
+			PROTECTED
+			{{#attach-tooltip showDelay=1000}}Change Control: Open &middot; Protected &middot; Locked{{/attach-tooltip}}
+		</div>
+	{{/if}}
+	{{#if (eq document.protection constants.ProtectionType.Lock)}}
+		<div class="label-locked {{if permissions.documentEdit "cursor-pointer"}}" {{action "onEdit"}}>
+			LOCKED
+			{{#attach-tooltip showDelay=1000}}Change Control: Open &middot; Protected &middot; Locked{{/attach-tooltip}}
+		</div>
+	{{/if}}
+
+	{{#if document.template}}
+		<div class="label-template">
+			Template
+			{{#attach-tooltip showDelay=1000}}This is a template{{/attach-tooltip}}
+		</div>
+	{{/if}}
+
+	<Ui::UiSpacer @size="200" />
+
+	<div class="title">CATEGORY / TAG</div>
 	{{#each selectedCategories as |cat|}}
 		<div class="meta-label">
 			<i class="dicon {{constants.Icon.Category}}"/>
@@ -19,11 +53,11 @@
 
 	{{#if unassigned}}
 		{{#if permissions.spaceManage}}
-			{{#ui/ui-toolbar dark=false light=true raised=true large=false bordered=true}}
-				{{ui/ui-toolbar-icon icon=constants.Icon.Plus color=constants.Color.Gray linkTo="document.settings"}}
-			{{/ui/ui-toolbar}}
+			<div class="empty cursor-pointer" {{action "onEditCategory"}}>Unassigned</div>
 		{{else}}
 			<div class="empty">Unassigned</div>
 		{{/if}}
 	{{/if}}
+
+	<Ui::UiSpacer @size="200" />
 </div>
