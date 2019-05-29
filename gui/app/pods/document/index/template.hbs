@@ -70,6 +70,17 @@
 	</Layout::Grid::Sidebar>
 
 	<Layout::Grid::Content>
+		{{document/version-picker
+			roles=roles
+			pages=pages
+			space=folder
+			spaces=folders
+			document=document
+			versions=versions
+			permissions=permissions
+			contributionStatus=contributionStatus
+			approvalStatus=approvalStatus}}
+
 		{{document/document-meta
 			tab=tab
 			roles=roles
@@ -81,22 +92,6 @@
 			permissions=permissions
 			contributionStatus=contributionStatus
 			approvalStatus=approvalStatus}}
-
-		{{#if contributionStatus}}
-			<div class="document-meta">
-				<div class="label-workflow-status">
-					{{contributionStatus}}
-				</div>
-			</div>
-		{{else}}
-			{{#if approvalStatus}}
-				<div class="document-meta">
-					<div class="label-workflow-status">
-						{{approvalStatus}}
-					</div>
-				</div>
-			{{/if}}
-		{{/if}}
 
 		<Ui::UiSpacer @size="300" />
 

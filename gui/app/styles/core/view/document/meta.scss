@@ -138,9 +138,9 @@
 		@extend .no-select;
 		display: block;
 		margin: 0;
-		font-size: 1.1rem;
+		font-size: 0.9rem;
 		font-weight: 400;
-		color: map-get($yellow-shades, 700);
+		color: map-get($gray-shades, 700);
 	}
 
 	> .document-heading {

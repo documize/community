@@ -26,6 +26,18 @@
 		</div>
 	{{/if}}
 
+	{{#if contributionStatus}}
+		<div class="label-workflow-status">
+			{{contributionStatus}}
+		</div>
+	{{else}}
+		{{#if approvalStatus}}
+			<div class="label-workflow-status">
+				{{approvalStatus}}
+			</div>
+		{{/if}}
+	{{/if}}
+
 	{{#if document.template}}
 		<div class="label-template">
 			Template
