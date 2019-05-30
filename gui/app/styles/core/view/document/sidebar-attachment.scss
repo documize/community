@@ -31,8 +31,17 @@
 }
 
 #upload-document-files {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	font-size: 0.9rem;
+	position: relative;
+	display: inline-block;
+	text-transform: uppercase;
+	vertical-align: super;
+
 	> span {
-		display: block;
+		display: inline-block;
 		color: map-get($gray-shades, 600);
 		font-size: 1rem;
 		cursor: pointer;

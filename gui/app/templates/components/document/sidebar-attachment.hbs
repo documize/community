@@ -29,14 +29,16 @@
 					</li>
 				{{/if}}
 			{{/each}}
+			{{#if canEdit}}
+				<li id="upload-document-files">
+					<span>Upload</span>
+				</li>
+			{{/if}}
 		</ul>
 	</div>
 	{{#if canEdit}}
 		{{#unless hasAttachments}}
 			<Ui::UiSpacer @size="100" />
 		{{/unless}}
-		<div id="upload-document-files">
-			<span>Upload</span>
-		</div>
 	{{/if}}
 {{/if}}
