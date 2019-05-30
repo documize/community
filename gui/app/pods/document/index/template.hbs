@@ -42,17 +42,6 @@
 	</Layout::Grid::Sidebar>
 
 	<Layout::Grid::Content>
-		{{document/version-picker
-			roles=roles
-			pages=pages
-			space=folder
-			spaces=folders
-			document=document
-			versions=versions
-			permissions=permissions
-			contributionStatus=contributionStatus
-			approvalStatus=approvalStatus}}
-
 		{{document/document-meta
 			tab=tab
 			roles=roles
@@ -72,6 +61,12 @@
 			<div class="document-heading">
 				<h1 class="name">{{document.name}}</h1>
 				<h2 class="desc">{{document.excerpt}}</h2>
+				<div class="dates">
+					{{formatted-date document.created}}
+					{{#if (not-eq document.created document.revised)}}
+						&mdash; revised {{formatted-date document.revised}}
+					{{/if}}
+				</div>
 			</div>
 		</div>
 

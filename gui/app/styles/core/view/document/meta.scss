@@ -140,21 +140,7 @@
 		margin: 0;
 		font-size: 0.9rem;
 		font-weight: 400;
-		color: map-get($gray-shades, 700);
-	}
-
-	> .document-heading {
-		.name {
-			color: map-get($gray-shades, 900);
-			font-size: 2.2rem;
-			font-weight: 700;
-		}
-
-		.desc {
-			color: map-get($gray-shades, 800);
-			font-size: 1.2rem;
-			font-weight: 500;
-		}
+		color: map-get($green-shades, 700);
 	}
 
 	> .label-version {
@@ -175,5 +161,27 @@
 		font-size: 25px;
 		vertical-align: middle;
 		cursor: pointer;
+	}
+
+	> .document-heading {
+		.name {
+			color: map-get($gray-shades, 900);
+			font-size: 2.2rem;
+			font-weight: 700;
+		}
+
+		.desc {
+			color: map-get($gray-shades, 800);
+			font-size: 1.2rem;
+			font-weight: 500;
+		}
+
+		> .dates {
+			margin-bottom: 2rem;
+			font-size: 1rem;
+			font-weight: 300;
+			font-style: italic;
+			color: map-get($gray-shades, 700);
+		}
 	}
 }
