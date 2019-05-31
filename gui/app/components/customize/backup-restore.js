@@ -53,7 +53,7 @@ export default Component.extend(Notifier, Modal, {
 	didInsertElement() {
 		this._super(...arguments);
 
-		this.$('#restore-file').on('change', function(){
+		$('#restore-file').on('change', function(){
 			var fileName = document.getElementById("restore-file").files[0].name;
 			$(this).next('.custom-file-label').html(fileName);
 		});

@@ -9,6 +9,7 @@
 //
 // https://documize.com
 
+import $ from 'jquery';
 import { computed } from '@ember/object';
 import { empty } from '@ember/object/computed';
 import { set } from '@ember/object';
@@ -169,27 +170,27 @@ export default Component.extend(ModalMixin, Notifier, {
 
 				case constants.AuthProvider.Keycloak:
 					if (this.get('KeycloakUrlError')) {
-						this.$("#keycloak-url").focus();
+						$("#keycloak-url").focus();
 						return;
 					}
 					if (this.get('KeycloakRealmError')) {
-						this.$("#keycloak-realm").focus();
+						$("#keycloak-realm").focus();
 						return;
 					}
 					if (this.get('KeycloakClientIdError')) {
-						this.$("#keycloak-clientId").focus();
+						$("#keycloak-clientId").focus();
 						return;
 					}
 					if (this.get('KeycloakPublicKeyError')) {
-						this.$("#keycloak-publicKey").focus();
+						$("#keycloak-publicKey").focus();
 						return;
 					}
 					if (this.get('KeycloakAdminUserError')) {
-						this.$("#keycloak-admin-user").focus();
+						$("#keycloak-admin-user").focus();
 						return;
 					}
 					if (this.get('KeycloakAdminPasswordError')) {
-						this.$("#keycloak-admin-password").focus();
+						$("#keycloak-admin-password").focus();
 						return;
 					}
 
@@ -213,11 +214,11 @@ export default Component.extend(ModalMixin, Notifier, {
 
 				case constants.AuthProvider.LDAP:
 					if (this.get('ldapErrorServerHost')) {
-						this.$("#ldap-host").focus();
+						$("#ldap-host").focus();
 						return;
 					}
 					if (this.get('ldapErrorServerPort')) {
-						this.$("#ldap-port").focus();
+						$("#ldap-port").focus();
 						return;
 					}
 
@@ -226,7 +227,7 @@ export default Component.extend(ModalMixin, Notifier, {
 					config.serverPort = parseInt(this.get('ldapConfig.serverPort'));
 
 					if (!_.isEmpty(config.groupFilter) && _.isEmpty(config.attributeGroupMember)) {
-						this.$('#ldap-attributeGroupMember').focus();
+						$('#ldap-attributeGroupMember').focus();
 						return;
 					}
 

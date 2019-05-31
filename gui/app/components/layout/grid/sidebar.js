@@ -13,5 +13,5 @@ import Component from '@ember/component';
 
 export default Component.extend({
 	tagName: 'div',
-	classNames: ['master-sidebar'],
+	classNames: ['master-sidebar', 'non-printable'],
 });

@@ -17,7 +17,7 @@ import Notifier from '../../mixins/notifier';
 import Component from '@ember/component';
 
 export default Component.extend(Modals, Notifier, {
-	classNames: ["document-meta"],
+	classNames: ["document-meta", ' non-printable'],
 	documentService: service('document'),
 	browserSvc: service('browser'),
 	appMeta: service(),

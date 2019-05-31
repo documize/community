@@ -9,14 +9,12 @@
 	.master-sidebar {
 		display: block;
 		height: auto;
-		width: 100%;
 		margin: 10px;
 	}
 
 	.master-content {
 		display: block;
 		height: auto;
-		width: 100%;
 		padding: 10px;
 	}
 }
@@ -52,7 +50,7 @@
 		grid-template-columns: 240px auto;
 
 		.master-sidebar {
-			width: 240px;
+			width: 220px;
 		}
 
 		.master-content {
@@ -70,7 +68,7 @@
 		grid-template-columns: 300px auto;
 
 		.master-sidebar {
-			width: 300px;
+			width: 280px;
 			margin: 40px 10px 40px 20px;
 			height: calc(100vh - 90px - 80px);
 		}

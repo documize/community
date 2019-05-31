@@ -17,6 +17,8 @@ import Modals from '../../mixins/modal';
 import Component from '@ember/component';
 
 export default Component.extend(Modals, {
+	classNames: ['document-meta-wrapper', 'non-printable'],
+	appMeta: service(),
 	documentService: service('document'),
 	sessionService: service('session'),
 	categoryService: service('category'),
@@ -62,6 +64,12 @@ export default Component.extend(Modals, {
 			if (!this.get('permissions.documentEdit')) return;
 
 			this.get('router').transitionTo('document.settings', {queryParams: {tab: 'category'}});
+		},
+
+		onSelectVersion(version) {
+			let space = this.get('space');
+
+			this.get('router').transitionTo('document', space.get('id'), space.get('slug'), version.documentId, this.get('document.slug'));
 		}
 	}
 });

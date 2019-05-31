@@ -63,9 +63,9 @@ export default Component.extend(AuthProvider, ModalMixin, Notifier, {
 			this.set('showPermExplain', !this.get('showPermExplain'));
 
 			if (this.showPermExplain) {
-				this.$(".perms").show();
+				$(".perms").show();
 			} else {
-				this.$(".perms").hide();
+				$(".perms").hide();
 			}
 		},
 

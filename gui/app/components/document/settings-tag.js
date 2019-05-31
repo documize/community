@@ -168,9 +168,9 @@ export default Component.extend(Notifier, {
 				if (tag.length> 0) {
 					if (!_.includes(tagzToSave, tag) && !_.startsWith(tag, '-')) {
 						tagzToSave.push(tag);
-						this.$('#add-tag-field-' + t.number).removeClass('is-invalid');
+						$('#add-tag-field-' + t.number).removeClass('is-invalid');
 					} else {
-						this.$('#add-tag-field-' + t.number).addClass('is-invalid');
+						$('#add-tag-field-' + t.number).addClass('is-invalid');
 					}
 				}
 			});

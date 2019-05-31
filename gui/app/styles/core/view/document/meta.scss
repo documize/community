@@ -1,3 +1,9 @@
+.document-meta-wrapper {
+	padding: 20px 20px 0 20px;
+	@include border-radius(7px);
+	background-color: map-get($gray-shades, 100);
+}
+
 .document-meta {
 	margin: 0;
 	padding: 0;
@@ -147,12 +153,12 @@
 		@include border-radius(3px);
 		@extend .no-select;
 		display: inline-block;
-		margin: 5px 5px 5px 0;
+		margin: 5px 0 5px 0;
 		padding: 0.3rem 0.7rem;
 		font-size: 1.1rem;
 		font-weight: 500;
-		background-color: map-get($yellow-shades, 100);
-		color: map-get($gray-shades, 700);
+		background-color: map-get($gray-shades, 800);
+		color: map-get($gray-shades, 100);
 		text-transform: uppercase;
 	}
 
@@ -165,6 +171,7 @@
 
 	> .document-heading {
 		.name {
+			margin: 1.5rem 0 0.5rem 0;
 			color: map-get($gray-shades, 900);
 			font-size: 2.2rem;
 			font-weight: 700;
@@ -177,7 +184,7 @@
 		}
 
 		> .dates {
-			margin-bottom: 2rem;
+			margin-bottom: 3rem;
 			font-size: 1rem;
 			font-weight: 300;
 			font-style: italic;
