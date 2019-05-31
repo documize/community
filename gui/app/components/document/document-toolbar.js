@@ -99,7 +99,35 @@ export default Component.extend(ModalMixin, AuthMixin, Notifier, {
 			cb();
 		},
 
-		onPrintDocument() {
+		onShowPrintModal() {
+			let pages = this.get('pages');
+
+			// By default we select everything for print.
+			pages.forEach((item) => {
+				item.set('printSelected', true);
+			});
+
+			this.set('pages', pages);
+
+			this.modalOpen("#document-print-modal", {show:true});
+		},
+
+		onPrintSelection() {
+			this.modalClose('#document-print-modal');
+
+			let pages = this.get('pages');
+			pages.forEach((item) => {
+				let pageId = item.get('page.id');
+				let selected = item.get('printSelected');
+				$(`#page-${pageId}`).addClass('non-printable');
+				$(`#page-spacer-${pageId}`).addClass('non-printable');
+
+				if (selected) {
+					$(`#page-${pageId}`).removeClass('non-printable');
+					$(`#page-spacer-${pageId}`).removeClass('non-printable');
+				}
+			});
+
 			window.print();
 		},
 

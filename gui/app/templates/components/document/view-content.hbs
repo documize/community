@@ -1,6 +1,6 @@
 {{#if hasPages}}
 	{{#each pages key="id" as |item|}}
-		<Ui::UiSpacer @size="100" />
+		<Ui::UiSpacer @size="100" id={{concat 'page-spacer-' item.page.id}} />
 		{{document/document-page
 			roles=roles
 			pages=pages

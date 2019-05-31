@@ -29,7 +29,7 @@
 					<li class="item" {{action "onPin"}}>Bookmark</li>
 					<li class="divider"/>
 				{{/if}}
-				<li class="item" {{action "onPrintDocument"}}>Print</li>
+				<li class="item" {{action "onShowPrintModal"}}>Print</li>
 				<li class="item" {{action "onExport"}}>Download</li>
 				{{#if permissions.documentAdd}}
 					<li class="divider"/>
@@ -88,6 +88,27 @@
 				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
 				{{ui/ui-button-gap}}
 				{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Save onClick=(action "onSaveTemplate")}}
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="document-print-modal" class="modal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">Print</div>
+			<div class="modal-body">
+				<p>Print all content or select sections.</p>
+				{{#each pages as |item|}}
+					{{#ui/ui-checkbox selected=item.printSelected}}
+						{{item.page.numbering}}. {{item.page.title}}
+					{{/ui/ui-checkbox}}
+				{{/each}}
+			</div>
+			<div class="modal-footer">
+				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+				{{ui/ui-button-gap}}
+				{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Print onClick=(action "onPrintSelection")}}
 			</div>
 		</div>
 	</div>

@@ -348,6 +348,7 @@ let constants = EmberObject.extend({
 		Next: 'Next',
 		OK: 'OK',
 		Preview: 'Preview',
+		Print: 'Print',
 		Publish: 'Publish',
 		Reject: 'Reject',
 		Remove: 'Remove',
