@@ -45,19 +45,19 @@
 			<div class="space-label">Unclassified</div>
 		{{else}}
 			<div class="space-label" style={{{model.label.bgColor}}}>{{model.label.name}}</div>
-			<i class="space-label-dropdown dicon {{constants.Icon.ArrowSmallDown}}">
-				{{#attach-popover class="ember-attacher-popper" hideOn="click clickout" showOn="click" isShown=false placement="bottom-middle"}}
-					<ul class="menu">
-						{{#each model.folders as |space|}}
-							{{#if (eq space.labelId model.label.id)}}
+			{{#if (gt model.labelSpaces.length 1)}}
+				<i class="space-label-dropdown dicon {{constants.Icon.ArrowSmallDown}}">
+					{{#attach-popover class="ember-attacher-popper" hideOn="click clickout" showOn="click" isShown=false placement="bottom-middle"}}
+						<ul class="menu">
+							{{#each model.labelSpaces as |space|}}
 								{{#if (not-eq space.id model.folder.id)}}
 									{{#link-to "folder.index" space.id space.slug class="item"}}{{space.name}}{{/link-to}}
 								{{/if}}
-							{{/if}}
-						{{/each}}
-					</ul>
-				{{/attach-popover}}
-			</i>
+							{{/each}}
+						</ul>
+					{{/attach-popover}}
+				</i>
+			{{/if}}
 		{{/if}}
 
 		{{layout/logo-heading
