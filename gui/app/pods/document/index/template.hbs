@@ -25,6 +25,11 @@
 	<Layout::Grid::Sidebar>
 		<div class="sidebar-content">
 			<Layout::Grid::SidebarGoTop />
+			<Layout::Grid::SidebarCustomAction>
+				<i class="dicon {{constants.Icon.Expand}} {{if (gt expandState.length 0) 'color-green-500'}}" {{action "onExpandAll"}}>
+					{{#attach-tooltip showDelay=750}}Expand/collapse{{/attach-tooltip}}
+				</i>
+			</Layout::Grid::SidebarCustomAction>
 
 			<Ui::UiSpacer @size="200" />
 
@@ -72,6 +77,7 @@
 		</div>
 
 		{{document/view-content
+			expandState=expandState
 			roles=roles
 			links=links
 			pages=pages
@@ -84,6 +90,7 @@
 			attachments=attachments
 			currentPageId=currentPageId
 			refresh=(action "refresh")
+			onExpand=(action "onExpand")
 			onSavePage=(action "onSavePage")
 			onCopyPage=(action "onCopyPage")
 			onMovePage=(action "onMovePage")

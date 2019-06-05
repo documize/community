@@ -1,7 +1,8 @@
 {{#if hasPages}}
 	{{#each pages key="id" as |item|}}
-		<Ui::UiSpacer @size="100" id={{concat 'page-spacer-' item.page.id}} />
+		<Ui::UiSpacer @size="100" id={{concat "page-spacer-" item.page.id}} />
 		{{document/document-page
+			expandState=expandState
 			roles=roles
 			pages=pages
 			folder=folder
@@ -14,6 +15,7 @@
 			permissions=permissions
 			attachments=attachments
 			refresh=(action refresh)
+			onExpand=(action onExpand)
 			onAttachmentUpload=(action onAttachmentUpload)
 			onAttachmentDelete=(action onAttachmentDelete)
 			onSavePage=(action "onSavePage")

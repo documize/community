@@ -19,6 +19,7 @@ export default Route.extend(AuthenticatedRouteMixin, {
 	linkService: service('link'),
 	folderService: service('folder'),
 	userService: service('user'),
+	localStore: service('local-storage'),
 	contributionStatus: '',
 	approvalStatus: '',
 
@@ -69,6 +70,9 @@ export default Route.extend(AuthenticatedRouteMixin, {
 		controller.set('blocks', model.blocks);
 		controller.set('versions', model.versions);
 		controller.set('attachments', model.attachments);
+
+		// For persistence of section expand/collapse state.
+		controller.set('expandState', this.get('localStore').getDocSectionHide(model.document.id));
 	},
 
 	activate: function () {

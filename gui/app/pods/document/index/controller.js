@@ -19,6 +19,7 @@ export default Controller.extend(Notifier, {
 	templateService: service('template'),
 	sectionService: service('section'),
 	linkService: service('link'),
+	localStore: service('local-storage'),
 	appMeta: service(),
 	router: service(),
 	sidebarTab: 'toc',
@@ -263,6 +264,36 @@ export default Controller.extend(Notifier, {
 					});
 				});
 			});
+		},
+
+		// Expand all if nothing is expanded at the moment.
+		// Collapse all if something is expanded at the moment.
+		onExpandAll() {
+			let expandState = this.get('localStore').getDocSectionHide(this.get('document.id'));
+
+			if (expandState.length === 0) {
+				let pages = this.get('pages');
+				pages.forEach((item) => {
+					expandState.push(item.get('page.id'));
+				})
+			} else {
+				expandState = [];
+			}
+
+			this.get('localStore').setDocSectionHide(this.get('document.id'), expandState);
+			this.set('expandState', expandState);
+		},
+
+		onExpand(pageId, show) {
+			let expandState = this.get('localStore').getDocSectionHide(this.get('document.id'));
+
+			if (show) {
+				expandState = _.without(expandState, pageId)
+			} else {
+				expandState.push(pageId);
+			}
+
+			this.get('localStore').setDocSectionHide(this.get('document.id'), expandState);
 		}
 	}
 });

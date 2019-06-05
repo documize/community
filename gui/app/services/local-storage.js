@@ -26,5 +26,24 @@ export default Service.extend({
 
 	clearAll() {
 		localStorage.clear();
-	}
+	},
+
+	getDocSectionHide(docId) {
+		let state = localStorage[`doc-hide-${docId}`];
+		if (_.isUndefined(state) || _.isEmpty(state)) {
+			return [];
+		}
+
+		return _.split(state, '|');
+	},
+
+	setDocSectionHide(docId, state) {
+		let key = `doc-hide-${docId}`;
+
+		if (state.length === 0) {
+			delete localStorage[key];
+		} else {
+			localStorage[key] =  _.join(state, '|');
+		}
+	},
 });

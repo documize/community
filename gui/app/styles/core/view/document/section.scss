@@ -55,6 +55,14 @@
 				color: map-get($yellow-shades, 700);
 			}
 		}
+
+		> i.expand {
+			color: map-get($green-shades, 500);
+
+			&:hover {
+				color: map-get($green-shades, 700);
+			}
+		}
 	}
 }
 

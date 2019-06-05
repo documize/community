@@ -38,6 +38,7 @@ export default Component.extend(Notifier, {
 	didReceiveAttrs() {
 		this._super(...arguments);
 
+		// Show/allow liking if space allows it and document is published.
 		this.set('showLikes', this.get('folder.allowLikes') && this.get('document.isLive'));
 	},
 

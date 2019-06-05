@@ -12,6 +12,7 @@
 		</div>
 	{{else}}
 		{{document/page-heading
+			expanded=expanded
 			page=page
 			meta=meta
 			pages=pages
@@ -24,6 +25,7 @@
 			permissions=permissions
 			onEdit=(action "onEdit")
 			refresh=(action refresh)
+			onExpand=(action onExpand)
 			onCopyPage=(action "onCopyPage")
 			onMovePage=(action "onMovePage")
 			onDeletePage=(action "onDeletePage")
@@ -32,12 +34,14 @@
 			onPageSequenceChange=(action onPageSequenceChange)
 			onShowSectionWizard=(action onShowSectionWizard)}}
 
+		{{#if expanded}}
 		<div class="wysiwyg">
 			{{section/base-renderer page=page}}
 		</div>
 	{{/if}}
+	{{/if}}
 
-	{{document/section-attachment uploadLabel="Upload Attachments" 
+	{{document/section-attachment uploadLabel="Upload Attachments"
 		editMode=editMode page=page document=document files=attachments
 		onAttachmentUpload=(action onAttachmentUpload)
 		onAttachmentDelete=(action onAttachmentDelete)}}
