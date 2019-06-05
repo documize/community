@@ -8,14 +8,10 @@
 		</div>
 	</div>
 	<div class="grid-cell-2 grid-cell-right grid-cell-middle">
-			<div class="section-heading no-print" id="page-toolbar-{{ page.id }}">
-				<div class="section-toolbar">
-				<i class="dicon {{constants.Icon.Expand}} {{unless expanded "expand"}}" {{action "onExpand"}}>
-					{{#attach-tooltip showDelay=1000}}Show/hide{{/attach-tooltip}}
-				</i>
+		<div class="section-heading no-print" id="page-toolbar-{{ page.id }}">
+			<div class="section-toolbar">
 				{{#unless (eq document.protection constants.ProtectionType.Lock)}}
 					{{#if canEdit}}
-						<div class="gap"/>
 						<i class="add-section dicon {{constants.Icon.Plus}}" {{action "onShowSectionWizard" page}}>
 							{{#attach-tooltip showDelay=1000}}Insert section above{{/attach-tooltip}}
 						</i>
@@ -62,8 +58,16 @@
 						</i>
 					{{/if}}
 				{{/unless}}
-				</div>
+				<div class="gap"/>
+				<i id="page-copy-link-{{page.id}}" class="dicon {{constants.Icon.Link}}" {{action "onCopyLink"}}>
+					{{#attach-tooltip showDelay=1000}}Copy link{{/attach-tooltip}}
+				</i>
+				<div class="gap"/>
+				<i class="dicon {{constants.Icon.Expand}} {{unless expanded "expand"}}" {{action "onExpand"}}>
+					{{#attach-tooltip showDelay=1000}}Show/hide{{/attach-tooltip}}
+				</i>
 			</div>
+		</div>
 	</div>
 </div>
 

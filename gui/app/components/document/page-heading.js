@@ -13,11 +13,12 @@ import $ from 'jquery';
 import { computed, observer } from '@ember/object';
 import { debounce } from '@ember/runloop';
 import { inject as service } from '@ember/service';
+import Notifier from '../../mixins/notifier';
 import ModalMixin from '../../mixins/modal';
 import tocUtil from '../../utils/toc';
 import Component from '@ember/component';
 
-export default Component.extend(ModalMixin, {
+export default Component.extend(Notifier, ModalMixin, {
 	documentService: service('document'),
 	searchService: service('search'),
 	router: service(),
@@ -78,6 +79,29 @@ export default Component.extend(ModalMixin, {
 		this.set('canMove', permissions.get('documentMove'));
 
 		this.setState(this.get('page.id'));
+	},
+
+	didInsertElement(){
+		this._super(...arguments);
+
+		let pageId = this.get('page.id');
+		let url = this.get('appMeta.appHost') +
+			this.get('router').generate('document.index', {queryParams: {currentPageId: pageId}});
+		let self = this;
+
+		let clip = new ClipboardJS('#page-copy-link-' + pageId, {
+			text: function() {
+				self.notifySuccess('Link copied to clipboard');
+				return url;
+			}
+		});
+
+		this.set('clip', clip);
+	},
+
+	willDestroyElement() {
+		let clip = this.get('clip');
+		if (!_.isUndefined(clip)) clip.destroy();
 	},
 
 	searchDocs() {
@@ -277,6 +301,15 @@ export default Component.extend(ModalMixin, {
 				let cb = this.get('onPageLevelChange');
 				cb(state.pageId, pendingChanges);
 			}
-		}
+		},
+			
+		onExpand() {
+			this.set('expanded', !this.get('expanded'));
+			this.get('onExpand')(this.get('page.id'), this.get('expanded'));
+		},
+
+		onCopyLink() {
+			this.set('currentPageId', this.get('page.id'));
+		}	
 	}
 });

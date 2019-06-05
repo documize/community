@@ -337,6 +337,7 @@ let constants = EmberObject.extend({
 		Close: 'Close',
 		Copy: 'Copy',
 		Delete: 'Delete',
+		Duplicate: 'Duplicate',
 		Edit: 'Edit',
 		Export: 'Export',
 		File: 'File',

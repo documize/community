@@ -12,34 +12,35 @@
 		</div>
 	{{else}}
 		<div class={{page.tocIndentCss}}>
-		{{document/page-heading
-			expanded=expanded
-			page=page
-			meta=meta
-			pages=pages
-			roles=roles
-			folder=folder
-			blocks=blocks
-			tabMode=tabMode
-			pending=pending
-			document=document
-			permissions=permissions
-			onEdit=(action "onEdit")
-			refresh=(action refresh)
-			onExpand=(action onExpand)
-			onCopyPage=(action "onCopyPage")
-			onMovePage=(action "onMovePage")
-			onDeletePage=(action "onDeletePage")
-			onSavePageAsBlock=(action "onSavePageAsBlock")
-			onPageLevelChange=(action onPageLevelChange)
-			onPageSequenceChange=(action onPageSequenceChange)
-			onShowSectionWizard=(action onShowSectionWizard)}}
+			{{document/page-heading
+				expanded=expanded
+				page=page
+				meta=meta
+				pages=pages
+				roles=roles
+				folder=folder
+				blocks=blocks
+				tabMode=tabMode
+				pending=pending
+				document=document
+				permissions=permissions
+				currentPageId=currentPageId
+				onEdit=(action "onEdit")
+				refresh=(action refresh)
+				onExpand=(action onExpand)
+				onCopyPage=(action "onCopyPage")
+				onMovePage=(action "onMovePage")
+				onDeletePage=(action "onDeletePage")
+				onSavePageAsBlock=(action "onSavePageAsBlock")
+				onPageLevelChange=(action onPageLevelChange)
+				onPageSequenceChange=(action onPageSequenceChange)
+				onShowSectionWizard=(action onShowSectionWizard)}}
 
-		{{#if expanded}}
-		<div class="wysiwyg">
-			{{section/base-renderer page=page}}
-		</div>
-	{{/if}}
+			{{#if expanded}}
+				<div class="wysiwyg">
+					{{section/base-renderer page=page}}
+				</div>
+			{{/if}}
 		</div>
 	{{/if}}
 
