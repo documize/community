@@ -22,6 +22,7 @@ export default Component.extend(Notifier, ModalMixin, {
 	documentService: service('document'),
 	searchService: service('search'),
 	router: service(),
+	appMeta: service(),
 	deleteChildren: false,
 	blockTitle: "",
 	blockExcerpt: "",
