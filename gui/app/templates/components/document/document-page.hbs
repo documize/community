@@ -11,6 +11,7 @@
 				onAction=(action "onSavePage")}}
 		</div>
 	{{else}}
+		<div class={{page.tocIndentCss}}>
 		{{document/page-heading
 			expanded=expanded
 			page=page
@@ -39,6 +40,7 @@
 			{{section/base-renderer page=page}}
 		</div>
 	{{/if}}
+		</div>
 	{{/if}}
 
 	{{document/section-attachment uploadLabel="Upload Attachments"
