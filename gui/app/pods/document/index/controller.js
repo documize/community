@@ -189,6 +189,12 @@ export default Controller.extend(Notifier, {
 			});
 		},
 
+		onDuplicate(name) {
+			this.get('documentService').duplicate(this.get('folder.id'), this.get('document.id'), name).then(() => {
+				this.notifySuccess('Duplicated');
+			});
+		},
+
 		onPageSequenceChange(currentPageId, changes) {
 			this.set('currentPageId', currentPageId);
 

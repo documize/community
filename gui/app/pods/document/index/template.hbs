@@ -17,6 +17,7 @@
 			refresh=(action "refresh")
 			onSaveTemplate=(action "onSaveTemplate")
 			onSaveDocument=(action "onSaveDocument")
+			onDuplicate=(action "onDuplicate")
 			onDocumentDelete=(action "onDocumentDelete")}}
 	</div>
 </Layout::MasterToolbar>
@@ -63,7 +64,7 @@
 
 		<Ui::UiSpacer @size="300" />
 
-		<div class="document-meta {{if permissions.documentEdit "cursor-pointer"}}" {{action "onEditMeta"}}>
+		<div class="document-meta">
 			<div class="document-heading">
 				<h1 class="name">{{document.name}}</h1>
 				<h2 class="desc">{{document.excerpt}}</h2>

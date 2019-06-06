@@ -111,3 +111,10 @@ type Version struct {
 	DocumentID string             `json:"documentId"`
 	Lifecycle  workflow.Lifecycle `json:"lifecycle"`
 }
+
+// DuplicateModel is used to create a copy of a document.
+type DuplicateModel struct {
+	SpaceID    string `json:"spaceId"`
+	DocumentID string `json:"documentId"`
+	Name       string `json:"documentName"`
+}

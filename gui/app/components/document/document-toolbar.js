@@ -48,6 +48,7 @@ export default Component.extend(ModalMixin, AuthMixin, Notifier, {
 			this.get('permissions.documentEdit')) return true;
 
 	}),
+	duplicateName: '',
 
 	init() {
 		this._super(...arguments);
@@ -57,7 +58,7 @@ export default Component.extend(ModalMixin, AuthMixin, Notifier, {
 			pinId: '',
 			newName: ''
 		};
-		
+
 		this.saveTemplate = {
 			name: '',
 			description: ''
@@ -86,6 +87,10 @@ export default Component.extend(ModalMixin, AuthMixin, Notifier, {
 	actions: {
 		onShowTemplateModal() {
 			this.modalOpen("#document-template-modal", {show:true}, "#new-template-name");
+		},
+
+		onShowDuplicateModal() {
+			this.modalOpen("#document-duplicate-modal", {show:true}, "#duplicate-name");
 		},
 
 		onShowDeleteModal() {
@@ -179,6 +184,25 @@ export default Component.extend(ModalMixin, AuthMixin, Notifier, {
 			cb(name, excerpt);
 
 			this.modalClose('#document-template-modal');
+
+			return true;
+		},
+
+		onDuplicate() {
+			let name = this.get('duplicateName');
+
+			if (_.isEmpty(name)) {
+				$("#duplicate-name").addClass("is-invalid").focus();
+				return;
+			}
+
+			$("#duplicate-name").removeClass("is-invalid");
+
+			this.set('duplicateName', '');
+
+			this.get('onDuplicate')(name);
+
+			this.modalClose('#document-duplicate-modal');
 
 			return true;
 		},

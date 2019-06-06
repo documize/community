@@ -33,17 +33,16 @@
 				<li class="item" {{action "onExport"}}>Download</li>
 				{{#if permissions.documentAdd}}
 					<li class="divider"/>
-					<li class="item" {{action "onShowTemplateModal"}}>Publish template</li>
+					<li class="item" {{action "onShowTemplateModal"}}>Template</li>
+					<li class="item" {{action "onShowDuplicateModal"}}>Duplicate</li>
 				{{/if}}
 				{{#if permissions.documentDelete}}
 					<li class="divider"/>
 					<li class="item red" {{action "onShowDeleteModal"}}>Delete</li>
 				{{/if}}
-
 			</ul>
 		{{/attach-popover}}
 	{{/ui/ui-toolbar-dropdown}}
-
 
 	{{#if (or showActivity showRevisions)}}
 		{{#ui/ui-toolbar-dropdown label="History" arrow=true}}
@@ -125,6 +124,28 @@
 				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
 				{{ui/ui-button-gap}}
 				{{ui/ui-button color=constants.Color.Red light=true label=constants.Label.Delete onClick=(action "onDocumentDelete")}}
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="document-duplicate-modal" class="modal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">Duplicate</div>
+			<div class="modal-body">
+				<form onsubmit={{action "onDuplicate"}}>
+					<div class="form-group">
+						<label for="duplicate-name">Name</label>
+						{{input id="duplicate-name" value=duplicateName type="email" class="form-control mousetrap" placeholder="Name"}}
+						<small class="form-text text-muted">Content will be duplicated within this space</small>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+				{{ui/ui-button-gap}}
+				{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Duplicate onClick=(action "onDuplicate")}}
 			</div>
 		</div>
 	</div>

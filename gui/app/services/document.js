@@ -78,6 +78,21 @@ export default Service.extend({
 		});
 	},
 
+
+	// Duplicate creates a copy.
+	duplicate(spaceId, docId, docName) {
+		let data = {
+			spaceId: spaceId,
+			documentId: docId,
+			documentName: docName
+		};
+
+		return this.get('ajax').request(`document/duplicate`, {
+			method: 'POST',
+			data: JSON.stringify(data)
+		});
+	},
+
 	//**************************************************
 	// Page
 	//**************************************************

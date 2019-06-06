@@ -76,12 +76,12 @@ func (s Store) GetDocumentOutboundLinks(ctx domain.RequestContext, documentID st
 		WHERE c_orgid=? AND c_sourcedocid=?`),
 		ctx.OrgID, documentID)
 
-	if err != nil && err != sql.ErrNoRows {
-		err = errors.Wrap(err, "select document oubound links")
-		return
-	}
-	if len(links) == 0 {
+	if err == sql.ErrNoRows || len(links) == 0 {
+		err = nil
 		links = []link.Link{}
+	}
+	if err != nil {
+		err = errors.Wrap(err, "select document oubound links")
 	}
 
 	return

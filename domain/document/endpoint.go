@@ -24,6 +24,7 @@ import (
 	"github.com/documize/community/core/response"
 	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/core/stringutil"
+	"github.com/documize/community/core/uniqueid"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/organization"
 	"github.com/documize/community/domain/permission"
@@ -34,6 +35,7 @@ import (
 	"github.com/documize/community/model/audit"
 	"github.com/documize/community/model/doc"
 	"github.com/documize/community/model/link"
+	"github.com/documize/community/model/page"
 	pm "github.com/documize/community/model/permission"
 	"github.com/documize/community/model/search"
 	"github.com/documize/community/model/space"
@@ -765,4 +767,217 @@ func (h *Handler) Export(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(export))
+}
+
+// Duplicate makes a copy of a document.
+// Name of new document is required.
+func (h *Handler) Duplicate(w http.ResponseWriter, r *http.Request) {
+	method := "document.Duplicate"
+	ctx := domain.GetRequestContext(r)
+
+	// Parse payload
+	defer streamutil.Close(r.Body)
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	m := doc.DuplicateModel{}
+	err = json.Unmarshal(body, &m)
+	if err != nil {
+		response.WriteBadRequestError(w, method, err.Error())
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	// Check permissions
+	if !permission.CanViewDocument(ctx, *h.Store, m.DocumentID) {
+		response.WriteForbiddenError(w)
+		return
+	}
+	if !permission.CanUploadDocument(ctx, *h.Store, m.SpaceID) {
+		response.WriteForbiddenError(w)
+		return
+	}
+
+	ctx.Transaction, err = h.Runtime.Db.Beginx()
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	// Get document to be duplicated.
+	d, err := h.Store.Document.Get(ctx, m.DocumentID)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	// Assign new ID and remove versioning info.
+	d.RefID = uniqueid.Generate()
+	d.GroupID = ""
+	d.Name = m.Name
+
+	// Fetch doc attachments, links.
+	da, err := h.Store.Attachment.GetAttachmentsWithData(ctx, m.DocumentID)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+	dl, err := h.Store.Link.GetDocumentOutboundLinks(ctx, m.DocumentID)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+
+	// Fetch published and unpublished sections.
+	pages, err := h.Store.Page.GetPages(ctx, m.DocumentID)
+	if err != nil && err != sql.ErrNoRows {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+	if len(pages) == 0 {
+		pages = []page.Page{}
+	}
+	unpublished, err := h.Store.Page.GetUnpublishedPages(ctx, m.DocumentID)
+	if err != nil && err != sql.ErrNoRows {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+	if len(unpublished) == 0 {
+		unpublished = []page.Page{}
+	}
+	pages = append(pages, unpublished...)
+	meta, err := h.Store.Page.GetDocumentPageMeta(ctx, m.DocumentID, false)
+	if err != nil && err != sql.ErrNoRows {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+	if len(meta) == 0 {
+		meta = []page.Meta{}
+	}
+
+	// Duplicate the complete document starting with the document.
+	err = h.Store.Document.Add(ctx, d)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+	// Attachments
+	for i := range da {
+		da[i].RefID = uniqueid.Generate()
+		da[i].DocumentID = d.RefID
+
+		err = h.Store.Attachment.Add(ctx, da[i])
+		if err != nil {
+			ctx.Transaction.Rollback()
+			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
+			return
+		}
+	}
+	// Links
+	for l := range dl {
+		dl[l].SourceDocumentID = d.RefID
+		dl[l].RefID = uniqueid.Generate()
+
+		err = h.Store.Link.Add(ctx, dl[l])
+		if err != nil {
+			ctx.Transaction.Rollback()
+			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
+			return
+		}
+	}
+	// Sections
+	for j := range pages {
+		// Get meta for section
+		sm := page.Meta{}
+		for k := range meta {
+			if meta[k].SectionID == pages[j].RefID {
+				sm = meta[k]
+				break
+			}
+		}
+
+		// Get attachments for section.
+		sa, err := h.Store.Attachment.GetSectionAttachments(ctx, pages[j].RefID)
+		if err != nil {
+			ctx.Transaction.Rollback()
+			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
+			return
+		}
+
+		pages[j].RefID = uniqueid.Generate()
+		pages[j].DocumentID = d.RefID
+		sm.DocumentID = d.RefID
+		sm.SectionID = pages[j].RefID
+
+		err = h.Store.Page.Add(ctx, page.NewPage{Page: pages[j], Meta: sm})
+		if err != nil {
+			ctx.Transaction.Rollback()
+			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
+			return
+		}
+
+		// Now add any section attachments.
+		for n := range sa {
+			sa[n].RefID = uniqueid.Generate()
+			sa[n].DocumentID = d.RefID
+			sa[n].SectionID = pages[j].RefID
+
+			err = h.Store.Attachment.Add(ctx, sa[n])
+			if err != nil {
+				ctx.Transaction.Rollback()
+				response.WriteServerError(w, method, err)
+				h.Runtime.Log.Error(method, err)
+				return
+			}
+		}
+	}
+
+	// Record activity and finish.
+	h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
+		SpaceID:      d.SpaceID,
+		DocumentID:   d.RefID,
+		SourceType:   activity.SourceTypeDocument,
+		ActivityType: activity.TypeCreated})
+
+	ctx.Transaction.Commit()
+
+	h.Store.Audit.Record(ctx, audit.EventTypeDocumentAdd)
+
+	// Update search index if published.
+	if d.Lifecycle == workflow.LifecycleLive {
+		a, _ := h.Store.Attachment.GetAttachments(ctx, d.RefID)
+		go h.Indexer.IndexDocument(ctx, d, a)
+
+		pages, _ := h.Store.Page.GetPages(ctx, d.RefID)
+		for i := range pages {
+			go h.Indexer.IndexContent(ctx, pages[i])
+		}
+	} else {
+		go h.Indexer.DeleteDocument(ctx, d.RefID)
+	}
+
+	response.WriteEmpty(w)
 }
