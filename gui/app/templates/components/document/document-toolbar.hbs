@@ -31,10 +31,14 @@
 				{{/if}}
 				<li class="item" {{action "onShowPrintModal"}}>Print</li>
 				<li class="item" {{action "onExport"}}>Download</li>
-				{{#if permissions.documentAdd}}
+				{{#if (or permissions.documentAdd permissions.documentCopy)}}
 					<li class="divider"/>
-					<li class="item" {{action "onShowTemplateModal"}}>Template</li>
-					<li class="item" {{action "onShowDuplicateModal"}}>Duplicate</li>
+					{{#if permissions.documentAdd}}
+						<li class="item" {{action "onShowTemplateModal"}}>Template</li>
+					{{/if}}
+					{{#if permissions.documentCopy}}
+						<li class="item" {{action "onShowDuplicateModal"}}>Copy</li>
+					{{/if}}
 				{{/if}}
 				{{#if permissions.documentDelete}}
 					<li class="divider"/>

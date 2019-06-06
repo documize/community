@@ -775,6 +775,9 @@ func (h *Handler) Duplicate(w http.ResponseWriter, r *http.Request) {
 	method := "document.Duplicate"
 	ctx := domain.GetRequestContext(r)
 
+	// Holds old to new ref ID values.
+	pageRefMap := make(map[string]string)
+
 	// Parse payload
 	defer streamutil.Close(r.Body)
 	body, err := ioutil.ReadAll(r.Body)
@@ -893,21 +896,12 @@ func (h *Handler) Duplicate(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	// Links
-	for l := range dl {
-		dl[l].SourceDocumentID = d.RefID
-		dl[l].RefID = uniqueid.Generate()
 
-		err = h.Store.Link.Add(ctx, dl[l])
-		if err != nil {
-			ctx.Transaction.Rollback()
-			response.WriteServerError(w, method, err)
-			h.Runtime.Log.Error(method, err)
-			return
-		}
-	}
 	// Sections
 	for j := range pages {
+		// Create mapping between old and new section IDs.
+		pageRefMap[pages[j].RefID] = uniqueid.Generate()
+
 		// Get meta for section
 		sm := page.Meta{}
 		for k := range meta {
@@ -926,7 +920,7 @@ func (h *Handler) Duplicate(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		pages[j].RefID = uniqueid.Generate()
+		pages[j].RefID = pageRefMap[pages[j].RefID]
 		pages[j].DocumentID = d.RefID
 		sm.DocumentID = d.RefID
 		sm.SectionID = pages[j].RefID
@@ -952,6 +946,25 @@ func (h *Handler) Duplicate(w http.ResponseWriter, r *http.Request) {
 				h.Runtime.Log.Error(method, err)
 				return
 			}
+		}
+	}
+	// Links
+	for l := range dl {
+		// Update common meta for all links.
+		dl[l].RefID = uniqueid.Generate()
+		dl[l].SourceDocumentID = d.RefID
+
+		// Remap section ID.
+		if len(dl[l].SourceSectionID) > 0 && len(pageRefMap[dl[l].SourceSectionID]) > 0 {
+			dl[l].SourceSectionID = pageRefMap[dl[l].SourceSectionID]
+		}
+
+		err = h.Store.Link.Add(ctx, dl[l])
+		if err != nil {
+			ctx.Transaction.Rollback()
+			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
+			return
 		}
 	}
 

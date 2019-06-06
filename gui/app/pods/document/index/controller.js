@@ -9,7 +9,7 @@
 //
 // https://documize.com
 
-import { Promise as EmberPromise } from 'rsvp';
+import { Promise as EmberPromise, all } from 'rsvp';
 import { inject as service } from '@ember/service';
 import Notifier from '../../../mixins/notifier';
 import Controller from '@ember/controller';
@@ -46,8 +46,19 @@ export default Controller.extend(Notifier, {
 
 		onCopyPage(pageId, targetDocumentId) {
 			let documentId = this.get('document.id');
-			this.get('documentService').copyPage(documentId, pageId, targetDocumentId).then(() => {
+			let pages = this.get('pages');
 
+			// Make list of page ID values including all child pages.
+			let pagesToProcess = [{ pageId: pageId }].concat(this.get('documentService').getChildren(pages, pageId));
+
+			// Copy each page.
+			let promises = [];
+			pagesToProcess.forEach((page, index) => {
+				promises[index] = this.get('documentService').copyPage(documentId, page.pageId, targetDocumentId);
+			});
+
+			// Do post-processing after all copying has completed.
+			all(promises).then(() => {
 				// refresh data if copied to same document
 				if (documentId === targetDocumentId) {
 					this.set('pageId', '');
@@ -62,9 +73,21 @@ export default Controller.extend(Notifier, {
 
 		onMovePage(pageId, targetDocumentId) {
 			let documentId = this.get('document.id');
+			let pages = this.get('pages');
 
-			this.get('documentService').copyPage(documentId, pageId, targetDocumentId).then(() => {
-				this.send('onPageDeleted', { id: pageId, children: false });
+			// Make list of page ID values including all child pages.
+			let pagesToProcess = [{ pageId: pageId }].concat(this.get('documentService').getChildren(pages, pageId));
+
+			// Copy each page.
+			let promises = [];
+			pagesToProcess.forEach((page, index) => {
+				promises[index] = this.get('documentService').copyPage(documentId, page.pageId, targetDocumentId);
+			});
+
+			// Do post-processing after all copying has completed.
+			all(promises).then(() => {
+				// For move operation we delete all copied pages.
+				this.send('onPageDeleted', { id: pageId, children: true });
 			});
 		},
 
@@ -109,19 +132,9 @@ export default Controller.extend(Notifier, {
 			let documentId = this.get('document.id');
 			let deleteId = deletePage.id;
 			let deleteChildren = deletePage.children;
-			let pendingChanges = [];
 
 			let pages = this.get('pages');
-			let pageIndex = _.findIndex(pages, function(i) { return i.get('page.id') === deleteId; });
-			let item = pages[pageIndex];
-
-			// select affected pages
-			for (var i = pageIndex + 1; i < pages.get('length'); i++) {
-				if (i === pageIndex + 1 && pages[i].get('page.level') === item.get('page.level')) break;
-				if (pages[i].get('page.level') <= item.get('page.level')) break;
-
-				pendingChanges.push({ pageId: pages[i].get('page.id'), level: pages[i].get('page.level') - 1 });
-			}
+			let pendingChanges = this.get('documentService').getChildren(pages, deleteId);
 
 			this.set('currentPageId', null);
 

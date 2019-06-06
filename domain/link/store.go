@@ -98,12 +98,12 @@ func (s Store) GetPageLinks(ctx domain.RequestContext, documentID, pageID string
 		WHERE c_orgid=? AND c_sourcedocid=? AND c_sourcesectionid=?`),
 		ctx.OrgID, documentID, pageID)
 
-	if err != nil && err != sql.ErrNoRows {
-		err = errors.Wrap(err, "get page links")
-		return
-	}
-	if len(links) == 0 {
+	if err == sql.ErrNoRows || len(links) == 0 {
+		err = nil
 		links = []link.Link{}
+	}
+	if err != nil {
+		err = errors.Wrap(err, "get page links")
 	}
 
 	return
