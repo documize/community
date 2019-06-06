@@ -10,58 +10,55 @@
 	<div class="grid-cell-2 grid-cell-right grid-cell-middle">
 		<div class="section-heading no-print" id="page-toolbar-{{ page.id }}">
 			<div class="section-toolbar">
-				{{#unless (eq document.protection constants.ProtectionType.Lock)}}
 					{{#if canEdit}}
 						<i class="add-section dicon {{constants.Icon.Plus}}" {{action "onShowSectionWizard" page}}>
 							{{#attach-tooltip showDelay=1000}}Insert section above{{/attach-tooltip}}
 						</i>
 						<div class="gap"/>
 						<i class="dicon {{constants.Icon.Edit}}" {{action "onEdit"}} />
-					{{/if}}
-					{{#if hasMenuPermissions}}
 						<div class="gap"/>
-						<i class="dicon {{constants.Icon.Settings}}">
-							{{#attach-popover class="ember-attacher-popper" hideOn="clickout click" showOn="click" isShown=false}}
-								<div class="menu">
-									{{#if canEdit}}
-										<a class="item" href="#" id={{concat "edit-page-button-" page.id}} {{action "onEdit"}}>Edit</a>
-									{{/if}}
-									{{#if permissions.documentCopy}}
-										<a class="item" href="#" id={{concat "copy-page-button-" page.id}} data-toggle="modal" data-target={{concat "#copy-page-modal-" page.id}} data-backdrop="static">Copy</a>
-									{{/if}}
-									{{#if canMove}}
-										<a class="item" href="#" id={{concat "move-page-button-" page.id}} data-toggle="modal" data-target={{concat "#move-page-modal-" page.id}} data-backdrop="static">Move</a>
-									{{/if}}
-									{{#if permissions.documentTemplate}}
-										<a class="item" href="#" id={{concat "publish-page-button-" page.id}} data-toggle="modal" data-target={{concat "#publish-page-modal-" page.id}} data-backdrop="static">Publish</a>
-									{{/if}}
-									{{#if canDelete}}
-										<a class="item red" href="#" id={{concat "delete-page-button-" page.id}} data-toggle="modal" data-target={{concat "#delete-page-modal-" page.id}} data-backdrop="static">Delete</a>
-									{{/if}}
-									{{#if (and canEdit state.actionablePage)}}
-										<div class="divider"></div>
-										{{#unless state.indentDisabled}}
-											<a class="item" href="#" id={{concat "toc-indent-button-" page.id}} {{action "pageIndent"}}>Indent</a>
-										{{/unless}}
-										{{#unless state.outdentDisabled}}
-											<a class="item" href="#" id={{concat "toc-outdent-button-" page.id}} {{action "pageOutdent"}}>Outdent</a>
-										{{/unless}}
-										{{#unless state.upDisabled}}
-											<a class="item" href="#" id={{concat "toc-up-button-" page.id}} {{action "pageUp"}}>Move up</a>
-										{{/unless}}
-										{{#unless state.downDisabled}}
-											<a class="item" href="#" id={{concat "toc-down-button-" page.id}} {{action "pageDown"}}>Move down</a>
-										{{/unless}}
-									{{/if}}
-								</div>
-							{{/attach-popover}}
-						</i>
 					{{/if}}
-				{{/unless}}
-				<div class="gap"/>
-				<i id="page-copy-link-{{page.id}}" class="dicon {{constants.Icon.Link}}" {{action "onCopyLink"}}>
-					{{#attach-tooltip showDelay=1000}}Copy link{{/attach-tooltip}}
-				</i>
+					<i class="dicon {{constants.Icon.Settings}}">
+						{{#attach-popover class="ember-attacher-popper" hideOn="clickout click" showOn="click" isShown=false}}
+							<div class="menu">
+								<a class="item" href="#" id="page-copy-link-{{page.id}}" {{action "onCopyLink"}}>Copy link</a>
+								{{#if (or canEdit permissions.documentCopy permissions.documentMove permissions.documentTemplate)}}
+									<div class="divider"></div>
+								{{/if}}
+								{{#if canEdit}}
+									<a class="item" href="#" id={{concat "edit-page-button-" page.id}} {{action "onEdit"}}>Edit</a>
+								{{/if}}
+								{{#if permissions.documentCopy}}
+									<a class="item" href="#" id={{concat "copy-page-button-" page.id}} {{action "onShowCopyModal"}}>Copy</a>
+								{{/if}}
+								{{#if permissions.documentMove}}
+									<a class="item" href="#" id={{concat "move-page-button-" page.id}} {{action "onShowMoveModal"}}>Move</a>
+								{{/if}}
+								{{#if permissions.documentTemplate}}
+									<a class="item" href="#" id={{concat "publish-page-button-" page.id}} data-toggle="modal" data-target={{concat "#publish-page-modal-" page.id}} data-backdrop="static">Publish</a>
+								{{/if}}
+								{{#if permissions.documentDelete}}
+									<div class="divider"></div>
+									<a class="item red" href="#" id={{concat "delete-page-button-" page.id}} data-toggle="modal" data-target={{concat "#delete-page-modal-" page.id}} data-backdrop="static">Delete</a>
+								{{/if}}
+								{{#if (and canEdit state.actionablePage)}}
+									<div class="divider"></div>
+									{{#unless state.indentDisabled}}
+										<a class="item" href="#" id={{concat "toc-indent-button-" page.id}} {{action "pageIndent"}}>Indent</a>
+									{{/unless}}
+									{{#unless state.outdentDisabled}}
+										<a class="item" href="#" id={{concat "toc-outdent-button-" page.id}} {{action "pageOutdent"}}>Outdent</a>
+									{{/unless}}
+									{{#unless state.upDisabled}}
+										<a class="item" href="#" id={{concat "toc-up-button-" page.id}} {{action "pageUp"}}>Move up</a>
+									{{/unless}}
+									{{#unless state.downDisabled}}
+										<a class="item" href="#" id={{concat "toc-down-button-" page.id}} {{action "pageDown"}}>Move down</a>
+									{{/unless}}
+								{{/if}}
+							</div>
+						{{/attach-popover}}
+					</i>
 				<div class="gap"/>
 				<i class="dicon {{constants.Icon.Expand}} {{unless expanded "expand"}}" {{action "onExpand"}}>
 					{{#attach-tooltip showDelay=1000}}Show/hide{{/attach-tooltip}}
@@ -73,31 +70,19 @@
 
 {{#if permissions.documentCopy}}
 	<div id={{concat "copy-page-modal-" page.id}} class="modal" tabindex="-1" role="dialog">
-		<div class="modal-dialog" role="document">
+		<div class="modal-dialog modal-50" role="document">
 			<div class="modal-content">
-				<div class="modal-header">Copy Section</div>
+				<div class="modal-header">Copy Destination</div>
 				<div class="modal-body">
-					<div class="form-group">
-						<label>Destination Document</label>
-						{{focus-input type="text" value=docSearchFilter class="form-control" placeholder="a OR b, x AND y, 'phrase mat*'"}}
-					</div>
+					<p>This section and all nested sections will be copied to the selected document.</p>
 					<Ui::UiSpacer @size="100" />
-					<div class="document-copy-move">
-						{{#if emptySearch}}
-							<p>No matching documents found.</p>
-						{{/if}}
-						<ul class="documents-list">
-							{{#each docSearchResults key="id" as |result|}}
-								<li class="document {{if result.selected "selected"}}" {{action "onSelectSearchResult" result.documentId}}>
-									<div class="title">{{result.document}}</div>
-									<div class="space">{{result.space}}</div>
-									<div class="snippet">{{result.excerpt}}</div>
-									{{#if result.selected}}
-										<i class="dicon {{constants.Icon.Tick}}" />
-									{{/if}}
-								</li>
-							{{/each}}
-						</ul>
+					<div class="form-group">
+						<label>Space</label>
+						{{ui/ui-select content=folders optionValuePath="id" optionLabelPath="name" selection=targetSpace action=(action "onSelectSpace")}}
+					</div>
+					<div class="form-group">
+						<label>Document</label>
+						{{ui/ui-select content=targetDocs optionValuePath="id" optionLabelPath="name" selection=targetDoc action=(action "onSelectDoc")}}
 					</div>
 				</div>
 				<div class="modal-footer">
@@ -112,30 +97,19 @@
 
 {{#if permissions.documentMove}}
 	<div id={{concat "move-page-modal-" page.id}} class="modal" tabindex="-1" role="dialog">
-		<div class="modal-dialog" role="document">
+		<div class="modal-dialog modal-50" role="document">
 			<div class="modal-content">
-				<div class="modal-header">Move Section</div>
+				<div class="modal-header">Move Destination</div>
 				<div class="modal-body">
+					<p>This section and all nested sections will be moved to the selected document.</p>
+					<Ui::UiSpacer @size="100" />
 					<div class="form-group">
-						<label>Destination Document</label>
-						{{focus-input type="text" value=docSearchFilter class="form-control" placeholder="a OR b, x AND y, 'phrase mat*'"}}
+						<label>Space</label>
+						{{ui/ui-select content=folders optionValuePath="id" optionLabelPath="name" selection=targetSpace action=(action "onSelectSpace")}}
 					</div>
-					<div class="document-copy-move">
-						{{#if emptySearch}}
-							<p>No matching documents found.</p>
-						{{/if}}
-						<ul class="documents-list">
-							{{#each docSearchResults key="id" as |result|}}
-								<li class="document {{if result.selected "selected"}}" {{action "onSelectSearchResult" result.documentId}}>
-									<div class="title">{{result.document}}</div>
-									<div class="space">{{result.space}}</div>
-									<div class="snippet">{{result.excerpt}}</div>
-									{{#if result.selected}}
-										<i class="dicon {{constants.Icon.Tick}}" />
-									{{/if}}
-								</li>
-							{{/each}}
-						</ul>
+					<div class="form-group">
+						<label>Document</label>
+						{{ui/ui-select content=targetDocs optionValuePath="id" optionLabelPath="name" selection=targetDoc action=(action "onSelectDoc")}}
 					</div>
 				</div>
 				<div class="modal-footer">

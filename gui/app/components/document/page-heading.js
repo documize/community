@@ -26,10 +26,9 @@ export default Component.extend(Notifier, ModalMixin, {
 	deleteChildren: false,
 	blockTitle: "",
 	blockExcerpt: "",
-	// canEdit: false,
-	canDelete: false,
-	canMove: false,
-	docSearchFilter: '',
+	targetSpace: null,
+	targetDocs: null,
+	targetDoc: null,
 
 	// eslint-disable-next-line ember/no-observers
 	onKeywordChange: observer('docSearchFilter',  function() {
@@ -38,12 +37,6 @@ export default Component.extend(Notifier, ModalMixin, {
 
 	emptySearch: computed('docSearchResults', function() {
 		return this.get('docSearchResults.length') === 0;
-	}),
-	hasMenuPermissions: computed('permissions.{documentCopy,documentTemplate}', 'userPendingItem', 'canEdit', 'canMove', 'canDelete', function() {
-		let permissions = this.get('permissions');
-
-		return permissions.get('documentCopy') || permissions.get('documentTemplate') ||
-			this.get('canEdit') || this.get('canMove') || this.get('canDelete');
 	}),
 	canEdit: computed('permissions', 'document', 'pages', function() {
 		let constants = this.get('constants');
@@ -59,7 +52,7 @@ export default Component.extend(Notifier, ModalMixin, {
 
 	init() {
 		this._super(...arguments);
-		this.docSearchResults = [];
+
 		this.state = {
 			actionablePage: false,
 			upDisabled: true,
@@ -73,11 +66,6 @@ export default Component.extend(Notifier, ModalMixin, {
 	didReceiveAttrs() {
 		this._super(...arguments);
 		this.modalInputFocus('#publish-page-modal-' + this.get('page.id'), '#block-title-' + this.get('page.id'));
-
-		let permissions = this.get('permissions');
-		// this.set('canEdit', permissions.get('documentEdit'));
-		this.set('canDelete', permissions.get('documentDelete'));
-		this.set('canMove', permissions.get('documentMove'));
 
 		this.setState(this.get('page.id'));
 	},
@@ -101,17 +89,10 @@ export default Component.extend(Notifier, ModalMixin, {
 	},
 
 	willDestroyElement() {
+		this._super(...arguments);
+
 		let clip = this.get('clip');
 		if (!_.isUndefined(clip)) clip.destroy();
-	},
-
-	searchDocs() {
-		let payload = { keywords: this.get('docSearchFilter').trim(), doc: true };
-		if (payload.keywords.length == 0) return;
-
-		this.get('searchService').find(payload).then((response)=> {
-			this.set('docSearchResults', response);
-		});
 	},
 
 	// Controls what user can do with the toc enty for this page
@@ -196,45 +177,55 @@ export default Component.extend(Notifier, ModalMixin, {
 			});
 		},
 
-		onSelectSearchResult(documentId) {
-			let results = this.get('docSearchResults');
-			results.forEach((d) => {
-				d.set('selected', d.get('documentId') === documentId);
-			});
-			this.set('docSearchResults', results);
+		onShowCopyModal() {
+			this.send('onSelectSpace', this.get('folder'));
+			this.modalOpen('#copy-page-modal-' + this.get('page.id'), {show:true});
+		},
+
+		onShowMoveModal() {
+			this.send('onSelectSpace', this.get('folder'));
+			this.modalOpen('#move-page-modal-' + this.get('page.id'), {show:true});
 		},
 
 		onCopyPage() {
-			let item = this.get('docSearchResults').findBy('selected', true);
-			let documentId = !_.isUndefined(item) ? item.get('documentId') : '';
-
-			if (_.isEmpty(documentId)) return;
+			let targetDoc = this.get('targetDoc');
+			if (_.isNull(targetDoc)) return;
 
 			this.modalClose('#copy-page-modal-' + this.get('page.id'));
 
-			let cb = this.get('onCopyPage');
-			cb(documentId);
-
-			let refresh = this.get('refresh');
-			refresh();
+			this.get('onCopyPage')(targetDoc.get('id'));
+			this.get('refresh')();
 		},
 
 		onMovePage() {
-			let item = this.get('docSearchResults').findBy('selected', true);
-			let documentId = !_.isUndefined(item) ? item.get('documentId') : '';
-
-			if (_.isEmpty(documentId)) return;
-
-			// can't move into self
-			if (documentId === this.get('document.id')) return;
+			let targetDoc = this.get('targetDoc');
+			if (_.isNull(targetDoc)) return;
 
 			this.modalClose('#move-page-modal-' + this.get('page.id'));
 
-			let cb = this.get('onMovePage');
-			cb(documentId);
+			this.get('onMovePage')(targetDoc.get('id'));
+			this.get('refresh')();
+		},
 
-			let refresh = this.get('refresh');
-			refresh();
+		// Load up documents for selected space and select the first one.
+		onSelectSpace(space) {
+			this.set('targetSpace', space);
+
+			this.get('documentService').getAllBySpace(space.get('id')).then((docs) => {
+				this.set('targetDocs', docs);
+
+				if (space.get('id') === this.get('folder.id')) {
+					this.set('targetDoc', this.get('document'));
+				} else {
+					if (docs.length > 0) {
+						this.set('targetDoc', docs[0]);
+					}
+				}
+			});
+		},
+
+		onSelectDoc(doc) {
+			this.set('targetDoc', doc);
 		},
 
 		// Page up -- above pages shunt down
@@ -303,7 +294,7 @@ export default Component.extend(Notifier, ModalMixin, {
 				cb(state.pageId, pendingChanges);
 			}
 		},
-			
+
 		onExpand() {
 			this.set('expanded', !this.get('expanded'));
 			this.get('onExpand')(this.get('page.id'), this.get('expanded'));
@@ -311,6 +302,6 @@ export default Component.extend(Notifier, ModalMixin, {
 
 		onCopyLink() {
 			this.set('currentPageId', this.get('page.id'));
-		}	
+		}
 	}
 });
