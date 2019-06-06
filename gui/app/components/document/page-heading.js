@@ -132,6 +132,10 @@ export default Component.extend(Notifier, ModalMixin, {
 			this.modalClose('#delete-page-modal-' + this.get('page.id'));
 		},
 
+		onShowPublishModal() {
+			this.modalOpen('#publish-page-modal-' + this.get('page.id'), {"show": true}, '#block-title-' + this.get('page.id'));
+		},
+
 		onSavePageAsBlock() {
 			let page = this.get('page');
 			let titleElem = '#block-title-' + page.get('id');

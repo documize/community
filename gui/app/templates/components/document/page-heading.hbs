@@ -35,7 +35,7 @@
 								<a class="item" href="#" id={{concat "move-page-button-" page.id}} {{action "onShowMoveModal"}}>Move</a>
 							{{/if}}
 							{{#if permissions.documentTemplate}}
-								<a class="item" href="#" id={{concat "publish-page-button-" page.id}} data-toggle="modal" data-target={{concat "#publish-page-modal-" page.id}} data-backdrop="static">Publish</a>
+								<a class="item" href="#" id={{concat "publish-page-button-" page.id}} {{action "onShowPublishModal"}}>Publish</a>
 							{{/if}}
 							{{#if permissions.documentDelete}}
 								<div class="divider"></div>
