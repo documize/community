@@ -355,6 +355,7 @@ let constants = EmberObject.extend({
 		Publish: 'Publish',
 		Reject: 'Reject',
 		Remove: 'Remove',
+		Reply: 'Reply',
 		Reset: 'Reset',
 		Restore: 'Restore',
 		Request: 'Request',
