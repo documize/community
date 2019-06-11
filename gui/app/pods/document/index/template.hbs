@@ -49,6 +49,19 @@
 	</Layout::Grid::Sidebar>
 
 	<Layout::Grid::Content>
+		<div class="document-meta">
+			<div class="document-heading">
+				<h1 class="name">{{document.name}}</h1>
+				<h2 class="desc">{{document.excerpt}}</h2>
+				<div class="dates">
+					{{formatted-date document.created}}
+					{{#if (not-eq document.created document.revised)}}
+						&mdash; revised {{formatted-date document.revised}}
+					{{/if}}
+				</div>
+			</div>
+		</div>
+
 		{{document/document-meta
 			tab=tab
 			roles=roles
@@ -63,19 +76,6 @@
 			approvalStatus=approvalStatus}}
 
 		<Ui::UiSpacer @size="300" />
-
-		<div class="document-meta">
-			<div class="document-heading">
-				<h1 class="name">{{document.name}}</h1>
-				<h2 class="desc">{{document.excerpt}}</h2>
-				<div class="dates">
-					{{formatted-date document.created}}
-					{{#if (not-eq document.created document.revised)}}
-						&mdash; revised {{formatted-date document.revised}}
-					{{/if}}
-				</div>
-			</div>
-		</div>
 
 		{{document/view-content
 			expandState=expandState
