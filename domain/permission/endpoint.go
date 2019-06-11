@@ -344,13 +344,9 @@ func (h *Handler) GetSpacePermissions(w http.ResponseWriter, r *http.Request) {
 				records[i].Name = user.EveryoneUserName
 			} else {
 				u, err := h.Store.User.Get(ctx, records[i].WhoID)
-				if err != nil {
-					h.Runtime.Log.Info(fmt.Sprintf("user not found %s", records[i].WhoID))
-					h.Runtime.Log.Error(method, err)
-					continue
+				if err == nil {
+					records[i].Name = u.Fullname()
 				}
-
-				records[i].Name = u.Fullname()
 			}
 		}
 	}
