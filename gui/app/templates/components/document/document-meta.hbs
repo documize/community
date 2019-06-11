@@ -2,25 +2,25 @@
 	<div class="title">STATUS</div>
 	<div class="{{if (eq document.lifecycle constants.Lifecycle.Draft) "label-draft"}}
 		{{if (eq document.lifecycle constants.Lifecycle.Live) "label-live"}}
-		{{if (eq document.lifecycle constants.Lifecycle.Archived) "label-archived"}}" {{action "onEdit"}}>
+		{{if (eq document.lifecycle constants.Lifecycle.Archived) "label-archived"}}">
 		{{document.lifecycleLabel}}
 		{{#attach-tooltip showDelay=1000}}Lifecycle: Draft &middot; Live &middot; Archived{{/attach-tooltip}}
 	</div>
 
 	{{#if (eq document.protection constants.ProtectionType.None)}}
-		<div class="label-open {{if permissions.documentEdit "cursor-pointer"}}" {{action "onEdit"}}>
+		<div class="label-open">
 			OPEN
 			{{#attach-tooltip showDelay=1000}}Change Control: Open &middot; Protected &middot; Locked{{/attach-tooltip}}
 		</div>
 	{{/if}}
 	{{#if (eq document.protection constants.ProtectionType.Review)}}
-		<div class="label-protected {{if permissions.documentEdit "cursor-pointer"}}" {{action "onEdit"}}>
+		<div class="label-protected">
 			PROTECTED
 			{{#attach-tooltip showDelay=1000}}Change Control: Open &middot; Protected &middot; Locked{{/attach-tooltip}}
 		</div>
 	{{/if}}
 	{{#if (eq document.protection constants.ProtectionType.Lock)}}
-		<div class="label-locked {{if permissions.documentEdit "cursor-pointer"}}" {{action "onEdit"}}>
+		<div class="label-locked">
 			LOCKED
 			{{#attach-tooltip showDelay=1000}}Change Control: Open &middot; Protected &middot; Locked{{/attach-tooltip}}
 		</div>
