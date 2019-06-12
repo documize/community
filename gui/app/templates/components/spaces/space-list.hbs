@@ -1,5 +1,5 @@
 <div class="view-spaces">
-	
+
 	<div class="text-right">
 		{{#ui/ui-toolbar dark=false light=false raised=false large=false bordered=false}}
 			{{ui/ui-toolbar-icon icon=constants.Icon.Blocks color=constants.Color.Gray tooltip="Complete"
@@ -7,11 +7,11 @@
 			{{ui/ui-toolbar-icon icon=constants.Icon.All color=constants.Color.Gray tooltip="Comfort"
 				selected=(eq viewDensity "2") onClick=(action "onSwitchView" "2")}}
 			{{ui/ui-toolbar-label label="—"  color=constants.Color.Gray tooltip="Compact"
-				selected=(eq viewDensity "3") onClick=(action "onSwitchView" "3")}}				
+				selected=(eq viewDensity "3") onClick=(action "onSwitchView" "3")}}
 		{{/ui/ui-toolbar}}
 	</div>
 
-	{{ui/ui-spacer size=200}}
+	<Ui::UiSpacer @size="200" />
 
 	<ul class="list">
 		{{#each spaces as |space|}}

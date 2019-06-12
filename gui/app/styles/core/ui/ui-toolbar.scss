@@ -1,31 +1,35 @@
 %toolbar-shadow {
 	box-shadow: 1px 1px 3px 0px map-get($gray-shades, 200);
+	box-shadow: none;
 }
 
 .dmz-toolbar {
 	display: inline-flex;
 	flex-basis: auto;
+	align-items: center;
     text-align: center;
     white-space: nowrap;
-    vertical-align: middle;
     border: 1px solid transparent;
-	height: 30px;
 	width: auto;
 	padding: 6px 10px;
-	line-height: 24px;
 	@extend .no-select;
-	@include border-radius(6px);
+	@include border-radius(4px);
 
 	> .dicon {
-		font-size: 16px;
-		font-weight: 500;
-		color: map-get($gray-shades, 600);
+		font-size: 20px;
+		color: $theme-500;
 		padding: 0 0.5rem;
 		cursor: pointer;
 
 		&:hover {
-			color: map-get($gray-shades, 700);
+			color: $theme-400;
 		}
+	}
+
+	> .divider {
+		margin: 0 6px;
+		width: 1px;
+		background-color: $theme-200;
 	}
 
 	> .icon-selected {
@@ -34,7 +38,7 @@
 
 	> .label {
 		font-size: 14px;
-		font-weight: 500;
+		font-weight: 400;
 		color: map-get($gray-shades, 600);
 		padding: 0 0.5rem;
 		align-self: center;
@@ -68,17 +72,154 @@
 			color: map-get($green-shades, 600);
 		}
 	}
-}
 
-.dmz-toolbar-large {
-	height: 40px;
-	padding: 9px 10px;
-	line-height: 33px;
+	> .dropdown {
+		display: inline-block;
+		cursor: pointer;
 
-	> .dicon {
-		font-size: 20px;
+		&:hover {
+			> .label, > .dicon {
+				color: $theme-400;
+			}
+		}
+
+		> .label {
+			display: inline-block;
+			font-size: 1rem;
+			font-weight: 400;
+			color: $theme-500;
+			padding: 0 0 0 0.5rem;
+			vertical-align: text-bottom;
+		}
+
+		> .dicon {
+			font-size: 20px;
+			color: $theme-500;
+			padding: 0 0.3rem 0 0;
+			vertical-align: bottom;
+		}
+	}
+
+	> .dropdown-green {
+		> .label, > .dicon {
+			color: map-get($green-shades, 500);
+
+			&:hover {
+				color: map-get($green-shades, 600);
+			}
+		}
+	}
+
+	> %button {
+		display: inline-block;
+		white-space: nowrap;
+		text-align: center;
+		padding: 0.375rem 0.75rem;
+		// margin: 0 0.5rem;
 		font-weight: 500;
-		padding: 0 0.5rem;
+		font-size: 1rem;
+		border: 1px solid transparent;
+		text-transform: uppercase;
+		cursor: pointer;
+		@extend .no-select;
+		@include border-radius(2px);
+		outline: none;
+		background-color: map-get($gray-shades, 600);
+		color: $color-white;
+		// @include button-shadow();
+
+		> .dicon {
+			font-size: 1rem;
+			padding: 0.2rem 0.4rem 0 0;
+			font-weight: 500;
+		}
+
+		> .label {
+			display: inline-block;
+			font-size: 1rem;
+			margin: 0;
+			padding: 0;
+		}
+
+		&:hover {
+			color: map-get($gray-shades, 800);
+			border-color: map-get($gray-shades, 500);
+		}
+	}
+
+	.button-theme {
+		@extend %button;
+		background-color: $theme-500;
+		color: $color-white;
+
+		&:hover {
+			color: $color-white;
+			border-color: $theme-600;
+			background-color: $theme-600;
+		}
+	}
+
+	.button-green {
+		@extend %button;
+		background-color: map-get($green-shades, 600);
+		color: $color-white;
+
+		&:hover {
+			color: $color-white;
+			border-color: map-get($green-shades, 500);
+			background-color: map-get($green-shades, 500);
+		}
+	}
+
+	.button-green-light {
+		@extend %button;
+		background-color: map-get($green-shades, 200);
+		color: map-get($green-shades, 700);
+		border: 1px solid map-get($green-shades, 300);
+
+		&:hover {
+			background-color: map-get($green-shades, 300);
+		}
+	}
+
+	.button-yellow {
+		@extend %button;
+		background-color: map-get($yellow-shades, 600);
+		color: $color-white;
+
+		&:hover {
+			background-color: map-get($yellow-shades, 700);
+		}
+	}
+	.button-yellow-light {
+		@extend %button;
+		background-color: map-get($yellow-shades, 200);
+		color: map-get($yellow-shades, 700);
+		border: 1px solid map-get($yellow-shades, 300);
+
+		&:hover {
+			background-color: map-get($yellow-shades, 300);
+		}
+	}
+
+	.button-red {
+		@extend %button;
+		background-color: map-get($red-shades, 600);
+		color: $color-white;
+
+		&:hover {
+			background-color: map-get($red-shades, 700);
+		}
+	}
+	.button-red-light {
+		@extend %button;
+		background-color: map-get($red-shades, 100);
+		color: map-get($red-shades, 700);
+		border: 1px solid map-get($red-shades, 200);
+
+		&:hover {
+			background-color: map-get($red-shades, 200);
+		}
 	}
 }
 
@@ -88,6 +229,7 @@
 
 .dmz-toolbar-light {
 	background-color: map-get($gray-shades, 100);
+	background-color: $color-white;
 }
 
 .dmz-toolbar-raised {

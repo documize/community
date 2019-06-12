@@ -1,8 +1,12 @@
-{{#layout/master-sidebar}}
-	{{ui/ui-spacer size=100}}
-
-	<div class="section">
-		{{document/sidebar-meta
+<Layout::MasterNavigation />
+<Layout::MasterToolbar>
+	<div class="zone-1">
+		<Document::DocumentsList @space={{folder}} @docId={{document.id}} />
+	</div>
+	<div class="zone-2" />
+	<div class="zone-3">
+		{{document/document-toolbar
+			tab=tab
 			roles=roles
 			pages=pages
 			space=folder
@@ -10,128 +14,93 @@
 			document=document
 			versions=versions
 			permissions=permissions
+			refresh=(action "refresh")
+			onSaveTemplate=(action "onSaveTemplate")
+			onSaveDocument=(action "onSaveDocument")
+			onDuplicate=(action "onDuplicate")
+			onDocumentDelete=(action "onDocumentDelete")}}
+	</div>
+</Layout::MasterToolbar>
+
+<Layout::Grid::Container>
+	<Layout::Grid::Sidebar>
+		<div class="sidebar-content">
+			<Layout::Grid::SidebarGoTop />
+			<Layout::Grid::SidebarCustomAction>
+				<i class="dicon {{constants.Icon.Expand}} {{if (gt expandState.length 0) "color-green-500"}}" {{action "onExpandAll"}}>
+					{{#attach-tooltip showDelay=750}}Expand/collapse{{/attach-tooltip}}
+				</i>
+			</Layout::Grid::SidebarCustomAction>
+
+			<Ui::UiSpacer @size="200" />
+
+				{{document/sidebar-toc
+					page=page
+					roles=roles
+					pages=pages
+					folder=folder
+					document=document
+					permissions=permissions
+					currentPageId=currentPageId
+					onShowPage=(action "onShowPage")
+					onPageLevelChange=(action "onPageLevelChange")
+					onPageSequenceChange=(action "onPageSequenceChange")}}
+		</div>
+	</Layout::Grid::Sidebar>
+
+	<Layout::Grid::Content>
+		<div class="document-meta">
+			<div class="document-heading">
+				<h1 class="name">{{document.name}}</h1>
+				<h2 class="desc">{{document.excerpt}}</h2>
+				<div class="dates">
+					{{formatted-date document.created}}
+					{{#if (not-eq document.created document.revised)}}
+						&mdash; revised {{formatted-date document.revised}}
+					{{/if}}
+				</div>
+			</div>
+		</div>
+
+		{{document/document-meta
+			tab=tab
+			roles=roles
+			pages=pages
+			space=folder
+			spaces=folders
+			document=document
+			versions=versions
+			attachments=attachments
+			permissions=permissions
 			contributionStatus=contributionStatus
 			approvalStatus=approvalStatus}}
 
-		{{ui/ui-spacer size=300}}
+		<Ui::UiSpacer @size="300" />
 
-		<div class="text-center">
-			{{#ui/ui-toolbar dark=false light=true raised=true large=false bordered=true}}
-				{{ui/ui-toolbar-icon icon=constants.Icon.Index color=constants.Color.Gray tooltip="Table of contents"
-					selected=(eq sidebarTab "toc") onClick=(action "onSidebarChange" "toc")}}
-				{{ui/ui-toolbar-icon icon=constants.Icon.Attachment color=constants.Color.Gray tooltip="Attachments"
-					selected=(eq sidebarTab "files") onClick=(action "onSidebarChange" "files")}}
-				{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
-					{{ui/ui-toolbar-icon icon=constants.Icon.Chat color=constants.Color.Gray tooltip="Comments & Feedback"
-						selected=(eq sidebarTab "feedback") onClick=(action "onSidebarChange" "feedback")}}
-				{{/if}}
-			{{/ui/ui-toolbar}}
-		</div>
-	</div>
-
-	{{ui/ui-spacer size=200}}
-
-	{{#if (eq sidebarTab "toc")}}
-		{{document/sidebar-toc
-			page=page
+		{{document/view-content
+			expandState=expandState
 			roles=roles
+			links=links
 			pages=pages
+			blocks=blocks
 			folder=folder
+			folders=folders
+			sections=sections
 			document=document
 			permissions=permissions
+			attachments=attachments
 			currentPageId=currentPageId
-			onShowPage=(action "onShowPage")
+			refresh=(action "refresh")
+			onExpand=(action "onExpand")
+			onSavePage=(action "onSavePage")
+			onCopyPage=(action "onCopyPage")
+			onMovePage=(action "onMovePage")
+			onDeletePage=(action "onPageDeleted")
+			onInsertSection=(action "onInsertSection")
+			onSavePageAsBlock=(action "onSavePageAsBlock")
 			onPageLevelChange=(action "onPageLevelChange")
-			onPageSequenceChange=(action "onPageSequenceChange")}}
-	{{/if}}
-
-	{{#if (eq sidebarTab "files")}}
-		{{document/sidebar-attachment
-			document=document
-			permissions=permissions}}
-	{{/if}}
-
-	{{#if (eq sidebarTab "feedback")}}
-		{{enterprise/sidebar-feedback
-			document=document
-			permissions=permissions}}
-	{{/if}}
-{{/layout/master-sidebar}}
-
-{{#layout/master-content}}
-	{{document/document-toolbar
-		tab=tab
-		roles=roles
-		space=folder
-		spaces=folders
-		document=document
-		versions=versions
-		permissions=permissions
-		refresh=(action "refresh")
-		onSaveTemplate=(action "onSaveTemplate")
-		onSaveDocument=(action "onSaveDocument")
-		onDocumentDelete=(action "onDocumentDelete")}}
-
-	{{document/document-meta
-		tab=tab
-		roles=roles
-		pages=pages
-		space=folder
-		spaces=folders
-		document=document
-		versions=versions
-		permissions=permissions
-		contributionStatus=contributionStatus
-		approvalStatus=approvalStatus}}
-
-	{{#if contributionStatus}}
-		{{ui/ui-spacer size=200}}
-		<div class="document-meta">
-			<div class="label-workflow-status">
-				{{contributionStatus}}
-			</div>
-		</div>
-	{{else}}
-		{{#if approvalStatus}}
-			{{ui/ui-spacer size=200}}
-			<div class="document-meta">
-				<div class="label-workflow-status">
-					{{approvalStatus}}
-				</div>
-			</div>
-		{{/if}}
-	{{/if}}
-
-	{{ui/ui-spacer size=300}}
-
-	<div class="document-meta {{if permissions.documentEdit "cursor-pointer"}}" {{action "onEditMeta"}}>
-		<div class="document-heading">
-			<h1 class="name">{{document.name}}</h1>
-			<h2 class="desc">{{document.excerpt}}</h2>
-		</div>
-	</div>
-
-	{{document/view-content
-		roles=roles
-		links=links
-		pages=pages
-		blocks=blocks
-		folder=folder
-		folders=folders
-		sections=sections
-		document=document
-		permissions=permissions
-		attachments=attachments
-		currentPageId=currentPageId
-		refresh=(action "refresh")
-		onSavePage=(action "onSavePage")
-		onCopyPage=(action "onCopyPage")
-		onMovePage=(action "onMovePage")
-		onDeletePage=(action "onPageDeleted")
-		onInsertSection=(action "onInsertSection")
-		onSavePageAsBlock=(action "onSavePageAsBlock")
-		onPageLevelChange=(action "onPageLevelChange")
-		onPageSequenceChange=(action "onPageSequenceChange")
-		onAttachmentUpload=(action "onAttachmentUpload")
-		onAttachmentDelete=(action "onAttachmentDelete")}}
-{{/layout/master-content}}
+			onPageSequenceChange=(action "onPageSequenceChange")
+			onAttachmentUpload=(action "onAttachmentUpload")
+			onAttachmentDelete=(action "onAttachmentDelete")}}
+	</Layout::Grid::Content>
+</Layout::Grid::Container>

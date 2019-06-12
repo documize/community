@@ -78,6 +78,21 @@ export default Service.extend({
 		});
 	},
 
+
+	// Duplicate creates a copy.
+	duplicate(spaceId, docId, docName) {
+		let data = {
+			spaceId: spaceId,
+			documentId: docId,
+			documentName: docName
+		};
+
+		return this.get('ajax').request(`document/duplicate`, {
+			method: 'POST',
+			data: JSON.stringify(data)
+		});
+	},
+
 	//**************************************************
 	// Page
 	//**************************************************
@@ -166,6 +181,22 @@ export default Service.extend({
 		return this.get('ajax').request(url, {
 			method: 'DELETE'
 		});
+	},
+
+	// Given a page ID, return all children of the starting page.
+	getChildren(pages, pageId) {
+		let children = [];
+		let pageIndex = _.findIndex(pages, function(i) { return i.get('page.id') === pageId; });
+		let item = pages[pageIndex];
+
+		for (var i = pageIndex + 1; i < pages.get('length'); i++) {
+			if (i === pageIndex + 1 && pages[i].get('page.level') === item.get('page.level')) break;
+			if (pages[i].get('page.level') <= item.get('page.level')) break;
+
+			children.push({ pageId: pages[i].get('page.id'), level: pages[i].get('page.level') - 1 });
+		}
+
+		return children;
 	},
 
 	//**************************************************

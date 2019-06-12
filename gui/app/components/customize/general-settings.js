@@ -84,7 +84,7 @@ export default Component.extend(Notifier, {
 
 	actions: {
 		change() {
-            const selectEl = this.$('#maxTags')[0];
+            const selectEl = $('#maxTags')[0];
             const selection = selectEl.selectedOptions[0].value;
 
 			this.set('maxTags', parseInt(selection));

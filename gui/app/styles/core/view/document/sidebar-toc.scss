@@ -26,21 +26,24 @@
 		padding: 0;
 		list-style: none;
 		font-size: 1rem;
-		overflow-x: hidden;
 		list-style-type: none;
 		margin: 0 0 0 0;
 
 		.item {
 			@extend .no-select;
 			padding: 5px 0;
-			text-overflow: ellipsis;
-			word-wrap: break-word;
-			white-space: nowrap;
-			overflow: hidden;
+			// text-overflow: ellipsis;
+			// word-wrap: break-word;
+			// white-space: nowrap;
+			// overflow: hidden;
 
 			> .link {
 				color: map-get($gray-shades, 800);
-				font-weight: 500;
+				// font-weight: 300;
+				// text-overflow: ellipsis;
+				// word-wrap: break-word;
+				// white-space: nowrap;
+				overflow: hidden;
 
 				&:hover {
 					color: map-get($yellow-shades, 600);
@@ -48,7 +51,7 @@
 
 				> .numbering {
 					color: map-get($gray-shades, 600);
-					font-weight: 500;
+					font-weight: 300;
 					display: inline-block;
 					margin-right: 10px;
 					font-size: 0.9rem;

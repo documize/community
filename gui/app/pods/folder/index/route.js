@@ -44,11 +44,14 @@ export default Route.extend(AuthenticatedRouteMixin, {
 			d.set('selected', false);
 		});
 
+		let labelId = this.modelFor('folder').folder.get('labelId');
+
 		return hash({
 			folder: this.modelFor('folder').folder,
 			permissions: this.modelFor('folder').permissions,
-			label: 	_.find(this.modelFor('folder').labels, {id: this.modelFor('folder').folder.get('labelId')}),
+			label: 	_.find(this.modelFor('folder').labels, {id: labelId}),
 			labels: this.modelFor('folder').labels,
+			labelSpaces: _.filter(folders, function(s) { return s.get('labelId') === labelId; }),
 			folders: folders,
 			documents: documents,
 			documentsDraft: _.filter(documents, function(d) { return d.get('lifecycle') === constants.Lifecycle.Draft; }),

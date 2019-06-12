@@ -15,8 +15,10 @@ a {
 	text-decoration: none;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
+	outline: none;
 
 	a:focus, a:hover {
+		outline: none;
 		text-decoration: underline;
 	}
 }

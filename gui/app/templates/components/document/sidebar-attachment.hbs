@@ -1,13 +1,6 @@
-<div class="title center">attachments</div>
-{{#if canEdit}}
-	<div class="text-center">
-		{{ui/ui-spacer size=100}}
-		{{ui/ui-button color=constants.Color.Gray label="Upload" id="upload-document-files"}}
-		{{ui/ui-spacer size=100}}
-	</div>
-{{/if}}
-
-{{#if hasAttachments}}
+{{#if (or hasAttachments canEdit)}}
+	<Ui::UiSpacer @size="200" />
+	<div class="title">attachments</div>
 	<div class="document-sidebar-attachment">
 		<ul class="files">
 			{{#each files key="id" as |file|}}
@@ -18,32 +11,34 @@
 						</a>
 						{{#if canEdit}}
 							<div class="menu">
-								{{#ui/ui-toolbar dark=false light=false raised=false large=false bordered=false}}
-									{{#ui/ui-toolbar-icon icon=constants.Icon.Delete color=constants.Color.Red}}
-										{{#attach-popover class="ember-attacher-popper" hideOn="escapekey, clickout" showOn="click" isShown=false}}
-											<div class="form">
-												<p>Are you sure you want to delete this file?</p>
-												{{ui/ui-spacer size=100}}
-												{{ui/ui-button
-													light=false
-													label=constants.Label.Delete
-													color=constants.Color.Red
-													onClick=(action "onDelete" file)}}
-											</div>
-										{{/attach-popover}}
-									{{/ui/ui-toolbar-icon}}
-								{{/ui/ui-toolbar}}
+								<i class="dicon {{constants.Icon.Cross}}">
+									{{#attach-popover class="ember-attacher-popper" hideOn="escapekey, clickout" showOn="click" isShown=false}}
+										<div class="form">
+											<p>Are you sure you want to delete this file?</p>
+											<Ui::UiSpacer @size="100" />
+											{{ui/ui-button
+												light=false
+												label=constants.Label.Delete
+												color=constants.Color.Red
+												onClick=(action "onDelete" file)}}
+										</div>
+									{{/attach-popover}}
+								</i>
 							</div>
 						{{/if}}
 					</li>
 				{{/if}}
 			{{/each}}
+			{{#if canEdit}}
+				<li id="upload-document-files">
+					<span>Upload</span>
+				</li>
+			{{/if}}
 		</ul>
 	</div>
-{{else}}
-	<p class="empty-label">No attachments</p>
+	{{#if canEdit}}
+		{{#unless hasAttachments}}
+			<Ui::UiSpacer @size="100" />
+		{{/unless}}
+	{{/if}}
 {{/if}}
-
-{{#ui/ui-dialog title="Delete Attachment" confirmCaption="Delete" buttonColor=constants.Color.Red show=showDialog onAction=(action "onDelete")}}
-	<p>Are you sure you want to delete {{deleteAttachment.name}}?</p>
-{{/ui/ui-dialog}}

@@ -126,6 +126,7 @@ func RegisterEndpoints(rt *env.Runtime, s *store.Store) {
 	AddPrivate(rt, "documents/{documentID}/attachments", []string{"POST", "OPTIONS"}, nil, attachment.Add)
 	AddPrivate(rt, "documents/{documentID}/pages/{pageID}/meta", []string{"GET", "OPTIONS"}, nil, page.GetMeta)
 	AddPrivate(rt, "documents/{documentID}/pages/{pageID}/copy/{targetID}", []string{"POST", "OPTIONS"}, nil, page.Copy)
+	AddPrivate(rt, "document/duplicate", []string{"POST", "OPTIONS"}, nil, document.Duplicate)
 
 	AddPrivate(rt, "organization/setting", []string{"GET", "OPTIONS"}, nil, setting.GetGlobalSetting)
 	AddPrivate(rt, "organization/setting", []string{"POST", "OPTIONS"}, nil, setting.SaveGlobalSetting)

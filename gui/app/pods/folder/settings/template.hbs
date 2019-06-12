@@ -1,75 +1,81 @@
-{{#layout/master-sidebar}}
-	{{ui/ui-spacer size=300}}
-
-	<div class="section">
-		{{#link-to "folder.index"}}
-			{{ui/ui-button color=constants.Color.Yellow light=true icon=constants.Icon.ArrowLeft label="Space"}}
-		{{/link-to}}
-
-		{{ui/ui-spacer size=400}}
-
-		<div class="title">space management</div>
-		<div class="list">
-			<div class="item {{if (eq tab "general") "selected"}}" {{action "onTab" "general"}}>
-				<i class={{concat "dicon " constants.Icon.Settings}} />
-				<div class="name">Meta</div>
-			</div>
-			<div class="item {{if (eq tab "categories") "selected"}}" {{action "onTab" "categories"}}>
-				<i class={{concat "dicon " constants.Icon.Category}} />
-				<div class="name">Categories</div>
-			</div>
-			<div class="item {{if (eq tab "permissions") "selected"}}" {{action "onTab" "permissions"}}>
-				<i class={{concat "dicon " constants.Icon.Locked}} />
-				<div class="name">Permissions</div>
-			</div>
-			<div class="item {{if (eq tab "blocks") "selected"}}" {{action "onTab" "blocks"}}>
-				<i class={{concat "dicon " constants.Icon.Blocks}} />
-				<div class="name">Content Blocks</div>
-			</div>
-			{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
-				<div class="item {{if (eq tab "archived") "selected"}}" {{action "onTab" "archived"}}>
-					<i class={{concat "dicon " constants.Icon.Archive}} />
-					<div class="name">Archived Content</div>
-				</div>
-			{{/if}}
-			{{#if model.permissions.spaceOwner}}
-				<div class="item {{if (eq tab "deletion") "selected"}}" {{action "onTab" "deletion"}}>
-					<i class={{concat "dicon " constants.Icon.Delete}} />
-					<div class="name">Deletion</div>
-				</div>
-			{{/if}}
-		</div>
+<Layout::MasterNavigation />
+<Layout::MasterToolbar>
+	<div class="zone-1">
+		{{#ui/ui-toolbar dark=false light=false raised=false large=false bordered=false}}
+			{{ui/ui-toolbar-button themed=true uppercase=false
+				icon=constants.Icon.ArrowLeft label=model.folder.name onClick=(action "onBack")}}
+		{{/ui/ui-toolbar}}
 	</div>
-{{/layout/master-sidebar}}
+</Layout::MasterToolbar>
 
-{{#layout/master-content}}
-	{{#if (eq tab "general")}}
-		{{folder/settings-general permissions=model.permissions space=model.folder labels=model.labels}}
-	{{/if}}
+<Layout::Grid::Container>
+	<Layout::Grid::Sidebar>
+		<div class="sidebar-content">
+			<div class="section">
+				<div class="title">space management</div>
+				<div class="list">
+					<div class="item {{if (eq tab "general") "selected"}}" {{action "onTab" "general"}}>
+						<i class={{concat "dicon " constants.Icon.Settings}} />
+						<div class="name">Meta</div>
+					</div>
+					<div class="item {{if (eq tab "categories") "selected"}}" {{action "onTab" "categories"}}>
+						<i class={{concat "dicon " constants.Icon.Category}} />
+						<div class="name">Categories</div>
+					</div>
+					<div class="item {{if (eq tab "permissions") "selected"}}" {{action "onTab" "permissions"}}>
+						<i class={{concat "dicon " constants.Icon.Locked}} />
+						<div class="name">Permissions</div>
+					</div>
+					<div class="item {{if (eq tab "blocks") "selected"}}" {{action "onTab" "blocks"}}>
+						<i class={{concat "dicon " constants.Icon.Blocks}} />
+						<div class="name">Content Blocks</div>
+					</div>
+					{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
+						<div class="item {{if (eq tab "archived") "selected"}}" {{action "onTab" "archived"}}>
+							<i class={{concat "dicon " constants.Icon.Archive}} />
+							<div class="name">Archived Content</div>
+						</div>
+					{{/if}}
+					{{#if model.permissions.spaceOwner}}
+						<div class="item {{if (eq tab "deletion") "selected"}}" {{action "onTab" "deletion"}}>
+							<i class={{concat "dicon " constants.Icon.Delete}} />
+							<div class="name">Deletion</div>
+						</div>
+					{{/if}}
+				</div>
+			</div>
+		</div>
+	</Layout::Grid::Sidebar>
 
-	{{#if (eq tab "permissions")}}
-		{{folder/settings-permissions permissions=model.permissions folders=model.folders folder=model.folder onRefresh=(action "onRefresh")}}
-	{{/if}}
-
-	{{#if (eq tab "templates")}}
-		{{folder/settings-templates permissions=model.permissions space=model.folder templates=model.templates}}
-	{{/if}}
-
-	{{#if (eq tab "blocks")}}
-		{{folder/settings-blocks permissions=model.permissions space=model.folder}}
-	{{/if}}
-
-	{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
-		{{#if (eq tab "archived")}}
-			{{enterprise/space-archived permissions=model.permissions spaces=model.folder space=model.folder}}
+	<Layout::Grid::Content>
+		{{#if (eq tab "general")}}
+			{{folder/settings-general permissions=model.permissions space=model.folder labels=model.labels}}
 		{{/if}}
-	{{/if}}
 
-	{{#if (eq tab "categories")}}
-		{{folder/settings-category permissions=model.permissions spaces=model.folder space=model.folder}}
-	{{/if}}
+		{{#if (eq tab "permissions")}}
+			{{folder/settings-permissions permissions=model.permissions folders=model.folders folder=model.folder onRefresh=(action "onRefresh")}}
+		{{/if}}
 
-	{{#if (eq tab "deletion")}}
-		{{folder/settings-delete permissions=model.permissions spaces=model.folder space=model.folder}}
-	{{/if}}
-{{/layout/master-content}}
+		{{#if (eq tab "templates")}}
+			{{folder/settings-templates permissions=model.permissions space=model.folder templates=model.templates}}
+		{{/if}}
+
+		{{#if (eq tab "blocks")}}
+			{{folder/settings-blocks permissions=model.permissions space=model.folder}}
+		{{/if}}
+
+		{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
+			{{#if (eq tab "archived")}}
+				{{enterprise/space-archived permissions=model.permissions spaces=model.folder space=model.folder}}
+			{{/if}}
+		{{/if}}
+
+		{{#if (eq tab "categories")}}
+			{{folder/settings-category permissions=model.permissions spaces=model.folder space=model.folder}}
+		{{/if}}
+
+		{{#if (eq tab "deletion")}}
+			{{folder/settings-delete permissions=model.permissions spaces=model.folder space=model.folder}}
+		{{/if}}
+	</Layout::Grid::Content>
+</Layout::Grid::Container>

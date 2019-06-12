@@ -9,6 +9,7 @@
 //
 // https://documize.com
 
+import $ from 'jquery';
 import { debounce } from '@ember/runloop';
 import { computed, set } from '@ember/object';
 import { inject as service } from '@ember/service';
@@ -83,7 +84,7 @@ export default Component.extend(ModalMixin, {
 	didRender() {
 		this._super(...arguments);
 
-		this.$('#content-linker-networklocation').removeClass('is-invalid');
+		$('#content-linker-networklocation').removeClass('is-invalid');
 	},
 
 	willDestroyElement() {
@@ -149,7 +150,7 @@ export default Component.extend(ModalMixin, {
 			}
 
 			if (_.isNull(selection)) {
-				if (this.get('tab4Selected')) this.$('#content-linker-networklocation').addClass('is-invalid').focus();
+				if (this.get('tab4Selected')) $('#content-linker-networklocation').addClass('is-invalid').focus();
 				return;
 			}
 

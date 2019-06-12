@@ -1,72 +1,72 @@
-<div class="text-right no-print">
-	{{#ui/ui-toolbar dark=false light=false raised=false large=true bordered=false}}
-		{{#ui/ui-toolbar-icon icon=constants.Icon.Export color=constants.Color.Gray tooltip="Print, PDF, Export"}}
-			{{#attach-popover class="ember-attacher-popper" hideOn="clickout" showOn="click" isShown=false}}
+{{#ui/ui-toolbar dark=false light=false raised=false large=false bordered=false}}
+	{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
+		{{#if permissions.documentEdit}}
+			{{#ui/ui-toolbar-dropdown label="Actions" arrow=true}}
+				{{#attach-popover class="ember-attacher-popper" hideOn="click clickout" showOn="click" isShown=false}}
+					<ul class="menu">
+						<li class="item" {{action "onShowRequestContributionModal"}}>Request contribution</li>
+						<li class="item" {{action "onShowRequestFeedbackModal"}}>Request feedback</li>
+						<li class="item" {{action "onShowRequestReadModal"}}>Request read</li>
+						{{#if (eq document.lifecycle constants.Lifecycle.Draft)}}
+							<li class="divider"/>
+							<li class="item" {{action "onShowPublishModal"}}>Request publication</li>
+						{{/if}}
+						<li class="divider"/>
+						<li class="item" {{action "onShareModal"}}>Share via secure external link</li>
+					</ul>
+				{{/attach-popover}}
+			{{/ui/ui-toolbar-dropdown}}
+		{{/if}}
+	{{/if}}
+
+	{{#ui/ui-toolbar-dropdown label="Content" arrow=true}}
+		{{#attach-popover class="ember-attacher-popper" hideOn="click clickout" showOn="click" isShown=false}}
+			<ul class="menu">
+				{{#if pinState.isPinned}}
+					<li class="item" {{action "onUnpin"}}>Remove bookmark</li>
+					<li class="divider"/>
+				{{else if session.authenticated}}
+					<li class="item" {{action "onPin"}}>Bookmark</li>
+					<li class="divider"/>
+				{{/if}}
+				<li class="item" {{action "onShowPrintModal"}}>Print</li>
+				<li class="item" {{action "onExport"}}>Download</li>
+				{{#if (or permissions.documentAdd permissions.documentCopy)}}
+					<li class="divider"/>
+					{{#if permissions.documentAdd}}
+						<li class="item" {{action "onShowTemplateModal"}}>Template</li>
+					{{/if}}
+					{{#if permissions.documentCopy}}
+						<li class="item" {{action "onShowDuplicateModal"}}>Copy</li>
+					{{/if}}
+				{{/if}}
+				{{#if permissions.documentDelete}}
+					<li class="divider"/>
+					<li class="item red" {{action "onShowDeleteModal"}}>Delete</li>
+				{{/if}}
+			</ul>
+		{{/attach-popover}}
+	{{/ui/ui-toolbar-dropdown}}
+
+	{{#if (or showActivity showRevisions)}}
+		{{#ui/ui-toolbar-dropdown label="History" arrow=true}}
+			{{#attach-popover class="ember-attacher-popper" hideOn="click clickout" showOn="click" isShown=false}}
 				<ul class="menu">
-					<li class="item" {{action "onExport"}}>Export as HTML file</li>
-					<li class="item" {{action "onPrintDocument"}}>Print...</li>
+					{{#if showActivity}}
+						{{#link-to "document.activity" class="item"}}Activity{{/link-to}}
+					{{/if}}
+					{{#if showRevisions}}
+						{{#link-to "document.revisions" class="item"}}Revisions{{/link-to}}
+					{{/if}}
 				</ul>
 			{{/attach-popover}}
-		{{/ui/ui-toolbar-icon}}
-
-		{{#if pinState.isPinned}}
-			{{ui/ui-toolbar-icon icon=constants.Icon.BookmarkDelete color=constants.Color.Yellow
-				tooltip="Remove from bookmarks" onClick=(action "onUnpin")}}
-		{{else if session.authenticated}}
-			{{ui/ui-toolbar-icon icon=constants.Icon.BookmarkAdd color=constants.Color.Gray
-				tooltip="Bookmark" onClick=(action "onPin")}}
-		{{/if}}
-
-		{{#if permissions.documentEdit}}
-			{{ui/ui-toolbar-icon icon=constants.Icon.Settings color=constants.Color.Gray
-				tooltip="Rename, Categories, Tag, Status, Workflow" linkTo="document.settings"}}
-		{{/if}}
-	{{/ui/ui-toolbar}}
-
-	{{#if hasToolbar}}
-		{{#ui/ui-toolbar dark=false light=true raised=true large=true bordered=true}}
-			{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
-				{{#if permissions.documentEdit}}
-					{{#ui/ui-toolbar-icon icon=constants.Icon.UserAssign color=constants.Color.Gray tooltip="Actions & Sharing"}}
-						{{#attach-popover class="ember-attacher-popper" hideOn="clickout" showOn="click" isShown=false}}
-							<ul class="menu">
-								<li class="item" {{action "onShowRequestContributionModal"}}>Request contribution</li>
-								<li class="item" {{action "onShowRequestFeedbackModal"}}>Request feedback</li>
-								<li class="item" {{action "onShowRequestReadModal"}}>Request read</li>
-								{{#if (eq document.lifecycle constants.Lifecycle.Draft)}}
-									<li class="divider"/>
-									<li class="item" {{action "onShowPublishModal"}}>Request publication</li>
-								{{/if}}
-								<li class="divider"/>
-								<li class="item" {{action "onShareModal"}}>Share via secure external link</li>
-							</ul>
-						{{/attach-popover}}
-					{{/ui/ui-toolbar-icon}}
-				{{/if}}
-			{{/if}}
-
-			{{#if showActivity}}
-				{{ui/ui-toolbar-icon icon=constants.Icon.Pulse color=constants.Color.Gray
-					tooltip="See content activity" linkTo="document.activity"}}
-			{{/if}}
-
-			{{#if showRevisions}}
-				{{ui/ui-toolbar-icon icon=constants.Icon.TimeBack color=constants.Color.Gray
-					tooltip="Revisions and rollback" linkTo="document.revisions"}}
-			{{/if}}
-
-			{{#if permissions.documentAdd}}
-				{{ui/ui-toolbar-icon icon=constants.Icon.Copy color=constants.Color.Gray
-					tooltip="Save as template" onClick=(action "onShowTemplateModal")}}
-			{{/if}}
-
-			{{#if permissions.documentDelete}}
-				{{ui/ui-toolbar-icon icon=constants.Icon.Delete color=constants.Color.Gray
-					tooltip="Delete" onClick=(action "onShowDeleteModal")}}
-			{{/if}}
-		{{/ui/ui-toolbar}}
+		{{/ui/ui-toolbar-dropdown}}
 	{{/if}}
-</div>
+
+	{{#if permissions.documentEdit}}
+		{{ui/ui-toolbar-icon icon=constants.Icon.Settings color=constants.Color.Green tooltip="Rename, Categories, Tag, Status, Workflow" linkTo="document.settings"}}
+	{{/if}}
+{{/ui/ui-toolbar}}
 
 <div id="document-template-modal" class="modal" tabindex="-1" role="dialog">
 	<div class="modal-dialog" role="document">
@@ -95,6 +95,27 @@
 	</div>
 </div>
 
+<div id="document-print-modal" class="modal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">Print</div>
+			<div class="modal-body">
+				<p>Print all content or select sections.</p>
+				{{#each pages as |item|}}
+					{{#ui/ui-checkbox selected=item.printSelected}}
+						{{item.page.numbering}}. {{item.page.title}}
+					{{/ui/ui-checkbox}}
+				{{/each}}
+			</div>
+			<div class="modal-footer">
+				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+				{{ui/ui-button-gap}}
+				{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Print onClick=(action "onPrintSelection")}}
+			</div>
+		</div>
+	</div>
+</div>
+
 <div id="document-delete-modal" class="modal" tabindex="-1" role="dialog">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
@@ -106,6 +127,28 @@
 				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
 				{{ui/ui-button-gap}}
 				{{ui/ui-button color=constants.Color.Red light=true label=constants.Label.Delete onClick=(action "onDocumentDelete")}}
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="document-duplicate-modal" class="modal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">Duplicate</div>
+			<div class="modal-body">
+				<form onsubmit={{action "onDuplicate"}}>
+					<div class="form-group">
+						<label for="duplicate-name">Name</label>
+						{{input id="duplicate-name" value=duplicateName type="email" class="form-control mousetrap" placeholder="Name"}}
+						<small class="form-text text-muted">Content will be duplicated within this space</small>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+				{{ui/ui-button-gap}}
+				{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Duplicate onClick=(action "onDuplicate")}}
 			</div>
 		</div>
 	</div>

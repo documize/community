@@ -1,25 +1,27 @@
-{{#layout/master-sidebar}}
-	{{ui/ui-spacer size=300}}
-
-	<div class="section">
-		{{#link-to "document.index" model.folder.id model.folder.slug model.document.id model.document.slug}}
-			{{ui/ui-button color=constants.Color.Yellow light=true icon=constants.Icon.ArrowLeft label="Document"}}
-		{{/link-to}}
+<Layout::MasterNavigation />
+<Layout::MasterToolbar>
+	<div class="zone-1">
+		{{#ui/ui-toolbar dark=false light=false raised=false large=false bordered=false}}
+			{{ui/ui-toolbar-button themed=true uppercase=false
+				icon=constants.Icon.ArrowLeft label=model.document.name onClick=(action "onCancel")}}
+		{{/ui/ui-toolbar}}
 	</div>
-{{/layout/master-sidebar}}
+	<div class="zone-2" />
+	<div class="zone-3" />
+</Layout::MasterToolbar>
 
-{{#layout/master-content}}
-	{{document/document-editor 
-		document=model.document 
-		folder=model.folder 
-		page=model.page 
+<Layout::Container>
+	{{document/document-editor
+		document=model.document
+		folder=model.folder
+		page=model.page
 		meta=model.meta
 		attachments=model.attachments
 		onCancel=(action "onCancel") onAction=(action "onAction")}}
 
-	{{document/section-attachment uploadLabel="Upload Attachments" 
-		editMode=true page=model.page document=model.document 
+	{{document/section-attachment uploadLabel="Upload Attachments"
+		editMode=true page=model.page document=model.document
 		files=model.attachments
 		onAttachmentUpload=(action "onAttachmentUpload")
 		onAttachmentDelete=(action "onAttachmentDelete")}}
-{{/layout/master-content}}
+</Layout::Container>

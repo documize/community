@@ -14,14 +14,10 @@ package attachment
 import (
 	"bytes"
 	"database/sql"
-	"fmt"
 	"io"
 	"mime"
 	"net/http"
 	"strings"
-
-	"github.com/documize/community/domain/auth"
-	"github.com/documize/community/model/space"
 
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/request"
@@ -29,12 +25,14 @@ import (
 	"github.com/documize/community/core/secrets"
 	"github.com/documize/community/core/uniqueid"
 	"github.com/documize/community/domain"
+	"github.com/documize/community/domain/auth"
 	"github.com/documize/community/domain/organization"
 	"github.com/documize/community/domain/permission"
 	indexer "github.com/documize/community/domain/search"
 	"github.com/documize/community/domain/store"
 	"github.com/documize/community/model/attachment"
 	"github.com/documize/community/model/audit"
+	"github.com/documize/community/model/space"
 	"github.com/documize/community/model/workflow"
 	uuid "github.com/nu7hatch/gouuid"
 )
@@ -89,7 +87,7 @@ func (h *Handler) Download(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get the space for this attachment
+	// Get the space for this attachment.
 	sp, err := h.Store.Space.Get(ctx, doc.SpaceID)
 	if err == sql.ErrNoRows {
 		response.WriteNotFoundError(w, method, a.DocumentID)
@@ -101,8 +99,7 @@ func (h *Handler) Download(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get the organization for this request
-	// Get the space for this attachment
+	// Get the organization for this request.
 	org, err := h.Store.Organization.GetOrganization(ctx, ctx.OrgID)
 	if err == sql.ErrNoRows {
 		response.WriteNotFoundError(w, method, a.DocumentID)
@@ -181,16 +178,20 @@ func (h *Handler) Download(w http.ResponseWriter, r *http.Request) {
 		typ = "application/octet-stream"
 	}
 
+	dataSize := len(a.Data)
+
 	w.Header().Set("Content-Type", typ)
 	w.Header().Set("Content-Disposition", `Attachment; filename="`+a.Filename+`" ; `+`filename*="`+a.Filename+`"`)
-	w.Header().Set("Content-Length", fmt.Sprintf("%d", len(a.Data)))
-	w.WriteHeader(http.StatusOK)
+	if dataSize != 0 {
+		w.Header().Set("Content-Length", string(dataSize))
+	}
 
 	_, err = w.Write(a.Data)
 	if err != nil {
 		h.Runtime.Log.Error("write attachment", err)
 		return
 	}
+	w.WriteHeader(http.StatusOK)
 
 	h.Store.Audit.Record(ctx, audit.EventTypeAttachmentDownload)
 }

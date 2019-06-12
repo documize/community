@@ -48,6 +48,7 @@ export default Component.extend(ModalMixin, AuthMixin, Notifier, {
 			this.get('permissions.documentEdit')) return true;
 
 	}),
+	duplicateName: '',
 
 	init() {
 		this._super(...arguments);
@@ -57,7 +58,7 @@ export default Component.extend(ModalMixin, AuthMixin, Notifier, {
 			pinId: '',
 			newName: ''
 		};
-		
+
 		this.saveTemplate = {
 			name: '',
 			description: ''
@@ -88,6 +89,10 @@ export default Component.extend(ModalMixin, AuthMixin, Notifier, {
 			this.modalOpen("#document-template-modal", {show:true}, "#new-template-name");
 		},
 
+		onShowDuplicateModal() {
+			this.modalOpen("#document-duplicate-modal", {show:true}, "#duplicate-name");
+		},
+
 		onShowDeleteModal() {
 			this.modalOpen("#document-delete-modal", {show:true});
 		},
@@ -99,7 +104,35 @@ export default Component.extend(ModalMixin, AuthMixin, Notifier, {
 			cb();
 		},
 
-		onPrintDocument() {
+		onShowPrintModal() {
+			let pages = this.get('pages');
+
+			// By default we select everything for print.
+			pages.forEach((item) => {
+				item.set('printSelected', true);
+			});
+
+			this.set('pages', pages);
+
+			this.modalOpen("#document-print-modal", {show:true});
+		},
+
+		onPrintSelection() {
+			this.modalClose('#document-print-modal');
+
+			let pages = this.get('pages');
+			pages.forEach((item) => {
+				let pageId = item.get('page.id');
+				let selected = item.get('printSelected');
+				$(`#page-${pageId}`).addClass('non-printable');
+				$(`#page-spacer-${pageId}`).addClass('non-printable');
+
+				if (selected) {
+					$(`#page-${pageId}`).removeClass('non-printable');
+					$(`#page-spacer-${pageId}`).removeClass('non-printable');
+				}
+			});
+
 			window.print();
 		},
 
@@ -151,6 +184,25 @@ export default Component.extend(ModalMixin, AuthMixin, Notifier, {
 			cb(name, excerpt);
 
 			this.modalClose('#document-template-modal');
+
+			return true;
+		},
+
+		onDuplicate() {
+			let name = this.get('duplicateName');
+
+			if (_.isEmpty(name)) {
+				$("#duplicate-name").addClass("is-invalid").focus();
+				return;
+			}
+
+			$("#duplicate-name").removeClass("is-invalid");
+
+			this.set('duplicateName', '');
+
+			this.get('onDuplicate')(name);
+
+			this.modalClose('#document-duplicate-modal');
 
 			return true;
 		},

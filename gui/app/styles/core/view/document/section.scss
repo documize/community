@@ -2,7 +2,7 @@
 	margin: 0 0 0 0;
 
 	> .page-header {
-		margin: 2rem 0 2rem 0;
+		margin: 0 0 2rem 0;
 
 		> .page-number {
 			color: $theme-500;
@@ -53,6 +53,14 @@
 
 			&:hover {
 				color: map-get($yellow-shades, 700);
+			}
+		}
+
+		> i.expand {
+			color: map-get($green-shades, 500);
+
+			&:hover {
+				color: map-get($green-shades, 700);
 			}
 		}
 	}

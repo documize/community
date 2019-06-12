@@ -1,0 +1,129 @@
+// *****************************************************************
+// Define mobile-first layout for top navigation bar and toolbar.
+// *****************************************************************
+.master-navigation {
+	display: block;
+	height: auto;
+	width: 100%;
+
+	> .navbar {
+		display: block;
+		height: 40px;
+		width: 100%;
+		background-color: $theme-500;
+		text-align: center;
+		padding: 0;
+		z-index: 999;
+
+		> .container {
+			display: flex;
+			flex-grow: 1;
+			flex-direction: row;
+			align-items: center;
+			justify-content: space-between;
+			flex-wrap: wrap;
+			width: 100%;
+			padding: 0 20px;
+
+			> .options {
+				> .selected {
+					> .dicon {
+						color: $color-white !important;
+					}
+				}
+
+				> .option {
+					cursor: pointer;
+					display: inline-block;
+
+					> .dicon {
+						display: inline-block;
+						color: $theme-300;
+						font-size: 20px;
+						padding: 10px 10px;
+					}
+
+					&:hover {
+						> .dicon {
+							color: $color-white !important;
+						}
+					}
+				}
+
+				> a.option {
+					color: $theme-300;
+
+					&:hover {
+						color: $color-white;
+					}
+				}
+
+				> .invalid-plan {
+					> .dicon {
+						color: map-get($yellow-shades, 600) !important;
+					}
+				}
+
+				> .user-gravatar-container {
+					display: inline-block;
+					margin: 0;
+					padding: 7px 10px;
+					vertical-align: top;
+
+					> .user-gravatar {
+						display: inline-block;
+						cursor: pointer;
+						position: relative;
+						width: 26px;
+						height: 26px;
+						line-height: 26px;
+						padding: 0;
+						border-radius: 50%;
+						font-size: 0.85rem;
+						text-align: center;
+						color: $theme-500;
+						font-weight: bold;
+						background-color: $color-white;
+						@extend .no-select;
+
+						&:hover {
+							background-color: $theme-100;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	> .toolbar {
+		display: block;
+		width: 100%;
+		background-color: $color-sidebar;
+		background-color: $theme-100;
+		padding: 0;
+		// z-index: 999;
+
+		> .container {
+			height: 50px;
+			width: 100%;
+			display: flex;
+			flex-grow: 1;
+			flex-direction: row;
+			flex-wrap: wrap;
+			align-items: center;
+			justify-content: space-between;
+			padding: 0 15px 0 20px;
+
+			> div[class^="zone-"], > div[class*=" zone-"] {
+				margin: 0;
+				padding: 0;
+				align-items: center;
+				align-self: center;
+
+				> .label {
+					font-size: 1rem;
+				}
+			}
+		}
+	}
+}

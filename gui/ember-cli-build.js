@@ -58,6 +58,7 @@ module.exports = function (defaults) {
 		}
 	});
 
+	app.import('vendor/clipboard.js');
 	app.import('vendor/datetimepicker.min.js');
 	app.import('vendor/documize.js');
 	app.import('vendor/dropzone.js');

@@ -1,10 +1,12 @@
 {{#if hasPages}}
 	{{#each pages key="id" as |item|}}
-		{{ui/ui-spacer size=100}}
+		<Ui::UiSpacer @size="100" id={{concat "page-spacer-" item.page.id}} />
 		{{document/document-page
+			expandState=expandState
 			roles=roles
 			pages=pages
 			folder=folder
+			folders=folders
 			toEdit=toEdit
 			blocks=blocks
 			page=item.page
@@ -13,7 +15,9 @@
 			pending=item.pending
 			permissions=permissions
 			attachments=attachments
+			currentPageId=currentPageId
 			refresh=(action refresh)
+			onExpand=(action onExpand)
 			onAttachmentUpload=(action onAttachmentUpload)
 			onAttachmentDelete=(action onAttachmentDelete)
 			onSavePage=(action "onSavePage")
@@ -21,7 +25,7 @@
 			onMovePage=(action "onMovePage")
 			onDeletePage=(action "onDeletePage")
 			onSavePageAsBlock=(action "onSavePageAsBlock")
-			onPageLevelChange=(action onPageLevelChange)			
+			onPageLevelChange=(action onPageLevelChange)
 			onPageSequenceChange=(action onPageSequenceChange)
 			onShowSectionWizard=(action "onShowSectionWizard")}}
 	{{/each}}
@@ -41,7 +45,7 @@
 			<div class="thanks">Thanks for the feedback!</div>
 		{{else}}
 			<div class="prompt">{{folder.likes}}</div>
-			{{ui/ui-spacer size=200}}
+			<Ui::UiSpacer @size="200" />
 			<div class="buttons">
 				{{ui/ui-button color=constants.Color.Yellow light=true label="Yes, thanks!" onClick=(action "onVote" 1)}}
 				{{ui/ui-button-gap}}

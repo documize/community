@@ -1,0 +1,17 @@
+{{#ui/ui-toolbar dark=false light=false raised=false large=false bordered=false}}
+	{{ui/ui-toolbar-button themed=true uppercase=false
+		icon=constants.Icon.ArrowLeft label=space.name onClick=(action "onSpace")}}
+	{{#if docs}}
+		{{#ui/ui-toolbar-icon icon=constants.Icon.ArrowSmallDown}}
+			{{#attach-popover class="ember-attacher-popper" hideOn="click clickout" showOn="click" isShown=false placement="bottom-middle" }}
+				<ul class="menu">
+					{{#each docs as |doc|}}
+						{{#if (not-eq doc.id docId)}}
+							{{#link-to "document.index" doc.spaceId doc.spaceId doc.id doc.slug class="item"}}{{doc.name}}{{/link-to}}
+						{{/if}}
+					{{/each}}
+				</ul>
+			{{/attach-popover}}
+		{{/ui/ui-toolbar-icon}}
+	{{/if}}
+{{/ui/ui-toolbar}}

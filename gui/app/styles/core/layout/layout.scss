@@ -1,0 +1,140 @@
+// *****************************************************************
+// Define mobile-first layout for main content zone with a sidebar.
+// *****************************************************************
+.master-grid-container {
+	display: block;
+	height: auto;
+	width: 100%;
+
+	.master-sidebar {
+		display: block;
+		height: auto;
+		margin: 10px;
+	}
+
+	.master-content {
+		display: block;
+		height: auto;
+		padding: 10px;
+	}
+}
+
+// Tablet starts around 700px
+@media (min-width: $display-break-1) {
+	.master-grid-container {
+		display: grid;
+		grid-template-columns: 200px auto;
+
+		.master-sidebar {
+			width: 200px;
+			margin: 20px 10px 20px 20px;
+			height: calc(100vh - 90px - 40px);
+			@include sticky();
+			top: 0px;
+			overflow-x: hidden;
+			overflow-y: auto;
+		}
+
+		.master-content {
+			grid-column-start: 2;
+			padding: 20px;
+			max-width: calc(100vw - 210px);
+		}
+	}
+}
+
+// Small screen starts around 900px
+@media (min-width: $display-break-2) and (min-height: 650px) {
+	.master-grid-container {
+		display: grid;
+		grid-template-columns: 240px auto;
+
+		.master-sidebar {
+			width: 220px;
+		}
+
+		.master-content {
+			grid-column-start: 2;
+			padding: 20px;
+			max-width: calc(100vw - 250px);
+		}
+	}
+}
+
+// Medium screen starts around 1200px
+@media (min-width: $display-break-3) and (min-height: 650px) {
+	.master-grid-container {
+		display: grid;
+		grid-template-columns: 300px auto;
+
+		.master-sidebar {
+			width: 280px;
+			margin: 40px 10px 40px 20px;
+			height: calc(100vh - 90px - 80px);
+		}
+
+		.master-content {
+			grid-column-start: 2;
+			padding: 40px 30px;
+			max-width: calc(100vw - 310px);
+		}
+	}
+}
+
+// Large screen starts around 1600px
+@media (min-width: $display-break-4) and (min-height: 650px) {
+	.master-grid-container {
+		display: grid;
+		grid-template-columns: 400px minmax(auto, 1200px);
+
+		.master-sidebar {
+			width: 400px;
+			margin: 40px 10px 40px 20px;
+		}
+
+		.master-content {
+			grid-column-start: 2;
+			padding: 40px 40px;
+			max-width: 1200px;
+		}
+	}
+}
+
+// *****************************************************************
+// Define mobile-first layout for content without a sidebar.
+// *****************************************************************
+.master-container {
+	display: block;
+	height: auto;
+	width: 100%;
+	padding: 20px;
+}
+
+// Tablet starts around 700px
+@media (min-width: $display-break-1) {
+	.master-container {
+		padding: 20px;
+	}
+}
+
+// Small screen starts around 900px
+@media (min-width: $display-break-2) and (min-height: 650px) {
+	.master-container {
+		padding: 20px;
+	}
+}
+
+// Medium screen starts around 1200px
+@media (min-width: $display-break-3) and (min-height: 650px) {
+	.master-container {
+		padding: 30px;
+	}
+}
+
+// Large screen starts around 1600px
+@media (min-width: $display-break-4) and (min-height: 650px) {
+	.master-container {
+		padding: 40px;
+		// max-width: 1200px;
+	}
+}

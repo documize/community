@@ -15,6 +15,7 @@ import NotifierMixin from '../../../mixins/notifier';
 import Controller from '@ember/controller';
 
 export default Controller.extend(NotifierMixin, {
+	router: service(),
 	documentService: service('document'),
 	folderService: service('folder'),
 	localStorage: service('localStorage'),
@@ -25,7 +26,7 @@ export default Controller.extend(NotifierMixin, {
 	filteredDocs: null,
 	// eslint-disable-next-line ember/avoid-leaking-state-in-ember-objects
 	sortBy: {
-		name: true, 
+		name: true,
 		created: false,
 		updated: false,
 		asc: true,
@@ -33,6 +34,10 @@ export default Controller.extend(NotifierMixin, {
 	},
 
 	actions: {
+		onBack() {
+			this.get('router').transitionTo('folders');
+		},
+
 		onRefresh() {
 			this.get('target._routerMicrolib').refresh();
 		},
@@ -93,25 +98,25 @@ export default Controller.extend(NotifierMixin, {
 
 			if (_.isNull(docs)) return;
 
-			if (sortBy.name) { 
+			if (sortBy.name) {
 				docs = docs.sortBy('name');
 				ls.storeSessionItem('space.sortBy', 'name');
 			}
-			if (sortBy.created) { 
+			if (sortBy.created) {
 				docs = docs.sortBy('created');
 				ls.storeSessionItem('space.sortBy', 'created');
 			}
-			if (sortBy.updated) { 
+			if (sortBy.updated) {
 				docs = docs.sortBy('revised');
 				ls.storeSessionItem('space.sortBy', 'updated');
 			}
-			if (sortBy.desc) { 
+			if (sortBy.desc) {
 				docs = docs.reverseObjects();
 				ls.storeSessionItem('space.sortOrder', 'desc');
 			} else {
 				ls.storeSessionItem('space.sortOrder', 'asc');
 			}
-			
+
 			this.set('filteredDocs', docs);
 		}
 	}

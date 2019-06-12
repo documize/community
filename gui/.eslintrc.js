@@ -75,5 +75,6 @@ module.exports = {
 	  "iziToast": true,
 	  "Papa": true,
     "Popper": true,
+    "ClipboardJS": true
   }
 };

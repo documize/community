@@ -18,17 +18,23 @@ export default Component.extend({
 	editMode: false,
 	editPage: null,
 	editMeta: null,
+	expanded: true,
 
 	didReceiveAttrs() {
 		this._super(...arguments);
 
 		if (this.get('isDestroyed') || this.get('isDestroying')) return;
 
+		let pageId = this.get('page.id');
+
 		if (this.get('session.authenticated')) {
 			this.workflow();
 		}
 
-		if (this.get('toEdit') === this.get('page.id') && this.get('permissions.documentEdit')) this.send('onEdit');
+		if (this.get('toEdit') === pageId && this.get('permissions.documentEdit')) this.send('onEdit');
+
+		// Work out if this section is expanded by default (state stored in browser local storage).
+		this.set('expanded', !_.includes(this.get('expandState'), pageId));
 	},
 
 	workflow() {

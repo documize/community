@@ -12,4 +12,7 @@
 import Route from '@ember/routing/route';
 
 export default Route.extend({
+    activate() {
+		this.get('browser').setTitle('Product News');
+	}
 });

@@ -911,16 +911,28 @@ func (h *Handler) Copy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// fetch data
+	// Get both source and target documents.
 	doc, err := h.Store.Document.Get(ctx, documentID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
 		return
 	}
+	targetDoc, err := h.Store.Document.Get(ctx, targetID)
+	if err != nil {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
 
-	// workflow check
-	if doc.Protection == workflow.ProtectionLock || doc.Protection == workflow.ProtectionReview {
+	// Workflow check for target (receiving) doc.
+	if targetDoc.Protection == workflow.ProtectionLock || targetDoc.Protection == workflow.ProtectionReview {
+		response.WriteForbiddenError(w)
+		return
+	}
+
+	// Check permissions for target document and copy permission.
+	if !permission.CanChangeDocument(ctx, *h.Store, targetDoc.RefID) {
 		response.WriteForbiddenError(w)
 		return
 	}
@@ -951,8 +963,9 @@ func (h *Handler) Copy(w http.ResponseWriter, r *http.Request) {
 
 	newPageID := uniqueid.Generate()
 	p.RefID = newPageID
-	p.Level = 1
-	p.Sequence = 0
+	p.Level = p.Level
+	// p.Sequence = p.Sequence
+	p.Sequence, _ = h.Store.Page.GetNextPageSequence(ctx, targetDoc.RefID)
 	p.DocumentID = targetID
 	p.UserID = ctx.UserID
 	pageMeta.DocumentID = targetID
@@ -1003,6 +1016,33 @@ func (h *Handler) Copy(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// Copy section links.
+	links, err := h.Store.Link.GetPageLinks(ctx, documentID, pageID)
+	if err != nil {
+		ctx.Transaction.Rollback()
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+	for lindex := range links {
+		links[lindex].RefID = uniqueid.Generate()
+		links[lindex].SourceSectionID = newPageID
+		links[lindex].SourceDocumentID = targetID
+
+		err = h.Store.Link.Add(ctx, links[lindex])
+		if err != nil {
+			ctx.Transaction.Rollback()
+			response.WriteServerError(w, method, err)
+			h.Runtime.Log.Error(method, err)
+			return
+		}
+	}
+
+	// Update doc revised.
+	h.Store.Document.UpdateRevised(ctx, targetID)
+
+	// If document is published, we record activity and
+	// index content for search.
 	if doc.Lifecycle == workflow.LifecycleLive {
 		h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
 			SpaceID:      doc.SpaceID,
@@ -1010,17 +1050,18 @@ func (h *Handler) Copy(w http.ResponseWriter, r *http.Request) {
 			SectionID:    newPageID,
 			SourceType:   activity.SourceTypePage,
 			ActivityType: activity.TypeCreated})
-	}
 
-	// Update doc revised.
-	h.Store.Document.UpdateRevised(ctx, targetID)
+		go h.Indexer.IndexContent(ctx, p)
+	}
 
 	ctx.Transaction.Commit()
 
 	h.Store.Audit.Record(ctx, audit.EventTypeSectionCopy)
 
-	np, _ := h.Store.Page.Get(ctx, pageID)
+	// Re-level all pages in document.
+	h.LevelizeDocument(ctx, targetID)
 
+	np, _ := h.Store.Page.Get(ctx, pageID)
 	response.WriteJSON(w, np)
 }
 

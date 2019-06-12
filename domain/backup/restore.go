@@ -1551,15 +1551,6 @@ func (r *restoreHandler) dmzDocAttachment() (err error) {
 func (r *restoreHandler) dmzDocComment() (err error) {
 	filename := "dmz_doc_comment.json"
 
-	type comment struct {
-		RefID      string    `json:"feedbackId"`
-		OrgID      string    `json:"orgId"`
-		DocumentID string    `json:"documentId"`
-		UserID     string    `json:"userId"`
-		Email      string    `json:"email"`
-		Feedback   string    `json:"feedback"`
-		Created    time.Time `json:"created"`
-	}
 	cm := []comment{}
 	err = r.fileJSON(filename, &cm)
 	if err != nil {
@@ -1590,10 +1581,10 @@ func (r *restoreHandler) dmzDocComment() (err error) {
 	for i := range cm {
 		_, err = r.Context.Transaction.Exec(r.Runtime.Db.Rebind(`
             INSERT INTO dmz_doc_comment
-            (c_refid, c_orgid, c_userid, c_docid, c_email, c_feedback, c_created)
-            VALUES (?, ?, ?, ?, ?, ?, ?)`),
+            (c_refid, c_orgid, c_userid, c_docid, c_email, c_feedback, c_replyto, c_sectionid, c_created)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`),
 			cm[i].RefID, r.remapOrg(cm[i].OrgID), r.remapUser(cm[i].UserID), cm[i].DocumentID,
-			cm[i].Email, cm[i].Feedback, cm[i].Created)
+			cm[i].Email, cm[i].Feedback, cm[i].ReplyTo, cm[i].SectionID, cm[i].Created)
 
 		if err != nil {
 			r.Context.Transaction.Rollback()
@@ -1727,6 +1718,7 @@ func (r *restoreHandler) dmzUser() (err error) {
 				insert = true
 			}
 			if err != nil {
+				r.Context.Transaction.Rollback()
 				err = errors.Wrap(err, fmt.Sprintf("unable to check email %s", u[i].Email))
 				return
 			}

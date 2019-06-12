@@ -11,33 +11,41 @@
 				onAction=(action "onSavePage")}}
 		</div>
 	{{else}}
-		{{document/page-heading
-			page=page
-			meta=meta
-			pages=pages
-			roles=roles
-			folder=folder
-			blocks=blocks
-			tabMode=tabMode
-			pending=pending
-			document=document
-			permissions=permissions
-			onEdit=(action "onEdit")
-			refresh=(action refresh)
-			onCopyPage=(action "onCopyPage")
-			onMovePage=(action "onMovePage")
-			onDeletePage=(action "onDeletePage")
-			onSavePageAsBlock=(action "onSavePageAsBlock")
-			onPageLevelChange=(action onPageLevelChange)
-			onPageSequenceChange=(action onPageSequenceChange)
-			onShowSectionWizard=(action onShowSectionWizard)}}
+		<div class={{page.tocIndentCss}}>
+			{{document/page-heading
+				expanded=expanded
+				page=page
+				meta=meta
+				pages=pages
+				roles=roles
+				folder=folder
+				folders=folders
+				blocks=blocks
+				tabMode=tabMode
+				pending=pending
+				document=document
+				permissions=permissions
+				currentPageId=currentPageId
+				onEdit=(action "onEdit")
+				refresh=(action refresh)
+				onExpand=(action onExpand)
+				onCopyPage=(action "onCopyPage")
+				onMovePage=(action "onMovePage")
+				onDeletePage=(action "onDeletePage")
+				onSavePageAsBlock=(action "onSavePageAsBlock")
+				onPageLevelChange=(action onPageLevelChange)
+				onPageSequenceChange=(action onPageSequenceChange)
+				onShowSectionWizard=(action onShowSectionWizard)}}
 
-		<div class="wysiwyg">
-			{{section/base-renderer page=page}}
+			{{#if expanded}}
+				<div class="wysiwyg">
+					{{section/base-renderer page=page}}
+				</div>
+			{{/if}}
 		</div>
 	{{/if}}
 
-	{{document/section-attachment uploadLabel="Upload Attachments" 
+	{{document/section-attachment uploadLabel="Upload Attachments"
 		editMode=editMode page=page document=document files=attachments
 		onAttachmentUpload=(action onAttachmentUpload)
 		onAttachmentDelete=(action onAttachmentDelete)}}

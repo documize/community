@@ -8,7 +8,7 @@
 	// -webkit-box-shadow: 0 20px 66px 0 rgba(34,48,73,0.2);
     // box-shadow: 0 20px 66px 0 rgba(34,48,73,0.2);
 
-	@include border-radius(5px);
+	@include border-radius(3px);
 
 	> p {
 		margin: 4px;
@@ -19,6 +19,9 @@
 		margin: 0;
 		padding: 0;
 		min-width: 140px;
+		max-height: calc(100vh - 200px);
+		overflow: hidden;
+		overflow-y: auto;
 
 		> .item {
 			color: map-get($gray-shades, 800);
@@ -36,20 +39,21 @@
 			&:hover {
 				color: $color-black;
 				background-color: map-get($yellow-shades, 100);
+				@include border-radius(3px);
 			}
 		}
 
 		> .header {
-			color: map-get($gray-shades, 800);
-			background-color: map-get($gray-shades, 300);
+			color: $color-white;
+			background-color: $theme-500;
 			font-size: 1rem;
 			font-weight: 600;
 			cursor: auto;
 
 			&:hover {
-				color: map-get($gray-shades, 800);
-				background-color: map-get($gray-shades, 300);
-			}
+				color: $color-white;
+				background-color: $theme-500;
+				}
 		}
 
 		> .divider {

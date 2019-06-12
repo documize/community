@@ -9,6 +9,7 @@
 //
 // https://documize.com
 
+import $ from 'jquery';
 import { inject as service } from '@ember/service';
 import { A } from '@ember/array';
 import { debounce } from '@ember/runloop';
@@ -152,9 +153,9 @@ export default Component.extend(Notifier, Modals, {
 			this.set('showSpacePermExplain', !this.get('showSpacePermExplain'));
 
 			if (this.showSpacePermExplain) {
-				this.$(".space-perms").show();
+				$(".space-perms").show();
 			} else {
-				this.$(".space-perms").hide();
+				$(".space-perms").hide();
 			}
 		},
 
@@ -162,9 +163,9 @@ export default Component.extend(Notifier, Modals, {
 			this.set('showDocumentPermExplain', !this.get('showDocumentPermExplain'));
 
 			if (this.showDocumentPermExplain) {
-				this.$(".document-perms").show();
+				$(".document-perms").show();
 			} else {
-				this.$(".document-perms").hide();
+				$(".document-perms").hide();
 			}
 		},
 
@@ -257,7 +258,7 @@ export default Component.extend(Notifier, Modals, {
 			}
 
 			if (email.length === 0) {
-				this.$('#space-invite-email').addClass('is-invalid').focus();
+				$('#space-invite-email').addClass('is-invalid').focus();
 				return;
 			}
 
@@ -283,7 +284,7 @@ export default Component.extend(Notifier, Modals, {
 
 			this.get('spaceSvc').share(this.get('folder.id'), result).then(() => {
 				this.notifySuccess('Invites sent');
-				this.$('#space-invite-email').removeClass('is-invalid');
+				$('#space-invite-email').removeClass('is-invalid');
 				this.modalClose("#space-invite-user-modal");
 				this.load();
 			});

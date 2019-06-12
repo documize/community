@@ -29,7 +29,7 @@
 			{{ui/ui-button color=constants.Color.Yellow light=true label="Upgrade"}}
 		</a>
 	{{/if}}
-	{{ui/ui-spacer size=400}}
+	<Ui::UiSpacer @size="400" />
 
 	<form>
 		<div class="form-group">
@@ -101,7 +101,7 @@
 
 {{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
 	{{#if (eq appMeta.location "cloud")}}
-		{{ui/ui-spacer size=400}}
+		<Ui::UiSpacer @size="400" />
 		<div class="view-customize">
 			<div class="deactivation-zone">
 				<p>Let us know if you would like to close your account or cancel your subscription.</p>

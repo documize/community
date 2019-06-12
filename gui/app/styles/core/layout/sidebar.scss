@@ -1,7 +1,39 @@
 .sidebar-content {
 	display: block;
 	position: relative;
-	// @extend .text-truncate;
+	padding: 20px 5px 20px 10px;
+	// background-color: $theme-100;
+	background-color: $color-sidebar;
+	// background-color: map-get($gray-shades, 100);
+	@include border-radius(6px);
+
+	> .goto-top {
+		position: absolute;
+		top: 10px;
+		left: 10px;
+		cursor: pointer;
+		color: map-get($gray-shades, 500);
+		font-size: 1rem;
+
+		&:hover {
+			color: map-get($gray-shades, 800);
+		}
+	}
+
+	// Allows for icon to be placed top right corner of sidebar zone.
+	// Expects icon to be placed in the zone.
+	> .custom-action {
+		position: absolute;
+		top: 10px;
+		right: 10px;
+		cursor: pointer;
+		color: map-get($gray-shades, 500);
+		font-size: 1rem;
+
+		&:hover {
+			color: map-get($gray-shades, 800);
+		}
+	}
 
 	> .section {
 		margin: 0;

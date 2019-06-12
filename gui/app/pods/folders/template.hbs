@@ -1,138 +1,142 @@
-{{#layout/master-sidebar selectedItem="spaces"}}
-	{{ui/ui-spacer size=300}}
-
-	<div class="section">
-		<div class="title">filter</div>
-		<div class="list">
-			<div class="item {{if (eq selectedView "all") "selected"}}" {{action "onSelect" "all"}}>
-				<i class={{concat "dicon " constants.Icon.All}} />
-				<div class="name">All ({{model.spaces.length}})</div>
-			</div>
-			<div class="item {{if (eq selectedView "public") "selected"}}" {{action "onSelect" "public"}}>
-				<i class={{concat "dicon " constants.Icon.World}} />
-				<div class="name">Public ({{publicSpaces.length}})</div>
-			</div>
-			{{#if session.authenticated}}
-				<div class="item {{if (eq selectedView "protected") "selected"}}" {{action "onSelect" "protected"}}>
-					<i class={{concat "dicon " constants.Icon.People}} />
-					<div class="name">Protected ({{protectedSpaces.length}})</div>
-				</div>
-				<div class="item {{if (eq selectedView "personal") "selected"}}" {{action "onSelect" "personal"}}>
-					<i class={{concat "dicon " constants.Icon.Person}} />
-					<div class="name">Personal ({{personalSpaces.length}})</div>
-				</div>
-			{{/if}}
-		</div>
-	</div>
-
-	{{ui/ui-spacer size=300}}
-
-	<div class="section">
-		<div class="title">label</div>
-		{{#if labels}}
-			<div class="list">
-				{{#each labels as |label|}}
-					{{#if (gt label.count 0)}}
-						<div class="item {{if (eq selectedView label.id) "selected"}}" {{action "onSelect" label.id}}>
-							<i class={{concat "dicon label-color " constants.Icon.Checkbox}} style={{label.bgfgColor}}/>
-							<div class="name">{{label.name}} ({{label.count}})</div>
-						</div>
-					{{/if}}
-				{{/each}}
-			</div>
-		{{else}}
-			<div class="empty">No labels</div>
+<Layout::MasterNavigation @selectedItem="spaces" />
+<Layout::MasterToolbar>
+	<div class="zone-1" />
+	<div class="zone-2" />
+	<div class="zone-3">
+		{{#if (or session.isEditor session.isAdmin)}}
+			{{#ui/ui-toolbar dark=false light=false raised=false large=false bordered=false}}
+				{{#if session.isEditor}}
+					{{ui/ui-toolbar-button icon=constants.Icon.Plus color=constants.Color.Green
+						label=constants.Label.Space onClick=(action "onShowModal")}}
+					{{ui/ui-toolbar-divider}}
+				{{/if}}
+				{{#if session.isAdmin}}
+					{{ui/ui-toolbar-icon icon=constants.Icon.Settings color=constants.Color.Green
+						tooltip="Space settings" linkTo="customize"}}
+				{{/if}}
+			{{/ui/ui-toolbar}}
 		{{/if}}
 	</div>
-{{/layout/master-sidebar}}
+</Layout::MasterToolbar>
 
-{{#layout/master-content}}
-	<div class="grid-container-8-2">
-		<div class="grid-cell-1">
-			{{layout/logo-heading
-				title=appMeta.title
-				desc=appMeta.message
-				logo=true}}
-		</div>
-		<div class="grid-cell-2 grid-cell-right">
-			{{#if (or session.isEditor session.isAdmin)}}
-				{{#ui/ui-toolbar dark=false light=true raised=true large=true bordered=true tooltip="New space"}}
-					{{#if session.isEditor}}
-						{{ui/ui-toolbar-icon icon=constants.Icon.Plus color=constants.Color.Green onClick=(action "onShowModal")}}
-						{{ui/ui-toolbar-label label="SPACE" color=constants.Color.Green onClick=(action "onShowModal")}}
+<Layout::Grid::Container>
+	<Layout::Grid::Sidebar>
+		<div class="sidebar-content">
+			<div class="section">
+				<div class="title">filter</div>
+				<div class="list">
+					<div class="item {{if (eq selectedView "all") "selected"}}" {{action "onSelect" "all"}}>
+						<i class={{concat "dicon " constants.Icon.All}} />
+						<div class="name">All ({{model.spaces.length}})</div>
+					</div>
+					<div class="item {{if (eq selectedView "public") "selected"}}" {{action "onSelect" "public"}}>
+						<i class={{concat "dicon " constants.Icon.World}} />
+						<div class="name">Public ({{publicSpaces.length}})</div>
+					</div>
+					{{#if session.authenticated}}
+						<div class="item {{if (eq selectedView "protected") "selected"}}" {{action "onSelect" "protected"}}>
+							<i class={{concat "dicon " constants.Icon.People}} />
+							<div class="name">Protected ({{protectedSpaces.length}})</div>
+						</div>
+						<div class="item {{if (eq selectedView "personal") "selected"}}" {{action "onSelect" "personal"}}>
+							<i class={{concat "dicon " constants.Icon.Person}} />
+							<div class="name">Personal ({{personalSpaces.length}})</div>
+						</div>
 					{{/if}}
-				{{/ui/ui-toolbar}}
-			{{/if}}
+				</div>
+			</div>
+
+			<Ui::UiSpacer @size="300" />
+
+			<div class="section">
+				<div class="title">label</div>
+				{{#if labels}}
+					<div class="list">
+						{{#each labels as |label|}}
+							{{#if (gt label.count 0)}}
+								<div class="item {{if (eq selectedView label.id) "selected"}}" {{action "onSelect" label.id}}>
+									<i class={{concat "dicon label-color " constants.Icon.Checkbox}} style={{label.bgfgColor}}/>
+									<div class="name">{{label.name}} ({{label.count}})</div>
+								</div>
+							{{/if}}
+						{{/each}}
+					</div>
+				{{else}}
+					<div class="empty">No labels</div>
+				{{/if}}
+			</div>
 		</div>
-	</div>
+	</Layout::Grid::Sidebar>
 
-	{{ui/ui-spacer size=400}}
+	<Layout::Grid::Content>
+		{{layout/logo-heading title=appMeta.title desc=appMeta.message logo=true}}
 
-	{{spaces/space-list spaces=selectedSpaces labels=labels}}
+		{{spaces/space-list spaces=selectedSpaces labels=labels}}
 
-	<div class="modal" tabindex="-1" role="dialog" id="add-space-modal">
-		<div class="modal-dialog modal-lg" role="document">
-			<div class="modal-content">
-				<div class="modal-header">New Space</div>
-				<div class="modal-body">
-					<form onsubmit={{action "onAddSpace"}}>
-						<div class="form-group">
-							<label for="new-space-name">Name</label>
-							{{input type="text" id="new-space-name" class="form-control mousetrap" placeholder="Space name" value=spaceName}}
-							<small class="form-text text-muted">Characters and numbers only</small>
-						</div>
+		<div class="modal" tabindex="-1" role="dialog" id="add-space-modal">
+			<div class="modal-dialog modal-lg" role="document">
+				<div class="modal-content">
+					<div class="modal-header">New Space</div>
+					<div class="modal-body">
+						<form onsubmit={{action "onAddSpace"}}>
+							<div class="form-group">
+								<label for="new-space-name">Name</label>
+								{{input type="text" id="new-space-name" class="form-control mousetrap" placeholder="Space name" value=spaceName}}
+								<small class="form-text text-muted">Characters and numbers only</small>
+							</div>
 
-						<div class="form-group">
-							<label>Description</label>
-							{{focus-input id="space-desc" type="text" value=spaceDesc class="form-control" placeholder="Space description" autocomplete="off"}}
-						</div>
+							<div class="form-group">
+								<label>Description</label>
+								{{focus-input id="space-desc" type="text" value=spaceDesc class="form-control" placeholder="Space description" autocomplete="off"}}
+							</div>
 
-						<div class="form-group">
-							<label>Icon</label>
-							<div class="ui-icon-picker">
-								<ul class="list">
-									{{#each iconList as |icon|}}
-										<li class="item {{if (eq spaceIcon icon) "selected"}}" {{action "onSetIcon" icon}}>
-											{{ui/ui-icon-meta icon=icon}}
+							<div class="form-group">
+								<label>Icon</label>
+								<div class="ui-icon-picker">
+									<ul class="list">
+										{{#each iconList as |icon|}}
+											<li class="item {{if (eq spaceIcon icon) "selected"}}" {{action "onSetIcon" icon}}>
+												{{ui/ui-icon-meta icon=icon}}
+											</li>
+										{{/each}}
+									</ul>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label>Label</label>
+								<ul class="space-label-picker">
+									<li class="label none {{if (eq spaceLabel "") "selected"}}" {{action "onSetLabel" ""}}>None</li>
+									{{#each labels as |label|}}
+										<li class="label {{if (eq spaceLabel label.id) "selected"}}"
+											style={{label.bgColor}}
+											{{action "onSetLabel" label.id}} title={{label.name}}>
+											{{label.name}}
 										</li>
 									{{/each}}
 								</ul>
 							</div>
-						</div>
 
-						<div class="form-group">
-							<label>Label</label>
-							<ul class="space-label-picker">
-								<li class="label none {{if (eq spaceLabel "") "selected"}}" {{action "onSetLabel" ""}}>None</li>
-								{{#each labels as |label|}}
-									<li class="label {{if (eq spaceLabel label.id) "selected"}}"
-										style={{label.bgColor}}
-										{{action "onSetLabel" label.id}} title={{label.name}}>
-										{{label.name}}
-									</li>
-								{{/each}}
-							</ul>
-						</div>
-
-						<div class="form-group">
-							<label for="clone-space-dropdown">Clone Space</label>
-							{{ui/ui-select id="clone-space-dropdown" content=spaces prompt="select space" action=(action "onCloneSpaceSelect") optionValuePath="id" optionLabelPath="name" selection=clonedSpace}}
-							<small id="emailHelp" class="form-text text-muted">Copy templates, permissions, documents from existing space</small>
-							<div class="margin-top-10" />
-							{{#if hasClone}}
-								{{#ui/ui-checkbox selected=copyTemplate}}Copy templates{{/ui/ui-checkbox}}
-								{{#ui/ui-checkbox selected=copyPermission}}Copy permissions{{/ui/ui-checkbox}}
-								{{#ui/ui-checkbox selected=copyDocument}}Copy documents{{/ui/ui-checkbox}}
-							{{/if}}
-						</div>
-					</form>
-				</div>
-				<div class="modal-footer">
-					{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
-					{{ui/ui-button-gap}}
-					{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Add onClick=(action "onAddSpace")}}
+							<div class="form-group">
+								<label for="clone-space-dropdown">Clone Space</label>
+								{{ui/ui-select id="clone-space-dropdown" content=spaces prompt="select space" action=(action "onCloneSpaceSelect") optionValuePath="id" optionLabelPath="name" selection=clonedSpace}}
+								<small id="emailHelp" class="form-text text-muted">Copy templates, permissions, documents from existing space</small>
+								<div class="margin-top-10" />
+								{{#if hasClone}}
+									{{#ui/ui-checkbox selected=copyTemplate}}Copy templates{{/ui/ui-checkbox}}
+									{{#ui/ui-checkbox selected=copyPermission}}Copy permissions{{/ui/ui-checkbox}}
+									{{#ui/ui-checkbox selected=copyDocument}}Copy documents{{/ui/ui-checkbox}}
+								{{/if}}
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+						{{ui/ui-button-gap}}
+						{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Add onClick=(action "onAddSpace")}}
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
-{{/layout/master-content}}
+	</Layout::Grid::Content>
+</Layout::Grid::Container>

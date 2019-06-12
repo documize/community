@@ -1,11 +1,26 @@
-{{#layout/master-sidebar}}
-{{/layout/master-sidebar}}
+<Layout::MasterNavigation />
+<Layout::MasterToolbar />
 
-{{#layout/master-content}}
-	{{layout/logo-heading
-		title=session.user.fullname
-		desc="Manage you profile and password"
-		icon=constants.Icon.Person}}
+<Layout::Grid::Container>
+	<Layout::Grid::Sidebar>
+		<div class="sidebar-content">
+			<div class="section">
+				<div class="title">PROFILE</div>
+				<div class="text">
+					Set your personal information or reset your password.
+				</div>
+				<div class="text">
+					Have a product idea, suggestion or some feedback? <a href="mailto:support@documize.com">Get in touch.</a>
+				</div>
+			</div>
+		</div>
+	</Layout::Grid::Sidebar>
+	<Layout::Grid::Content>
+		{{layout/logo-heading
+			title=session.user.fullname
+			desc="Manage your profile and password"
+			icon=constants.Icon.Person}}
 
-	{{user/user-profile model=model save=(action "save")}}
-{{/layout/master-content}}
+		{{user/user-profile model=model save=(action "save")}}
+	</Layout::Grid::Content>
+</Layout::Grid::Container>

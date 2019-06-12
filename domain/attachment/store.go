@@ -34,8 +34,10 @@ func (s Store) Add(ctx domain.RequestContext, a attachment.Attachment) (err erro
 	a.OrgID = ctx.OrgID
 	a.Created = time.Now().UTC()
 	a.Revised = time.Now().UTC()
-	bits := strings.Split(a.Filename, ".")
-	a.Extension = bits[len(bits)-1]
+	if len(a.Extension) == 0 {
+		bits := strings.Split(a.Filename, ".")
+		a.Extension = bits[len(bits)-1]
+	}
 
 	_, err = ctx.Transaction.Exec(s.Bind("INSERT INTO dmz_doc_attachment (c_refid, c_orgid, c_docid, c_sectionid, c_job, c_fileid, c_filename, c_data, c_extension, c_created, c_revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"),
 		a.RefID, a.OrgID, a.DocumentID, a.SectionID, a.Job, a.FileID, a.Filename, a.Data, a.Extension, a.Created, a.Revised)
