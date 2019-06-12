@@ -96,7 +96,7 @@ export default Service.extend({
 			let self = this;
 			let cacheBuster = + new Date();
 
-			$.getJSON(`https://storage.googleapis.com/documize/news/meta.json?cb=${cacheBuster}`, function (versions) {
+			$.getJSON(`https://documize.s3-eu-west-1.amazonaws.com/news/meta.json?cb=${cacheBuster}`, function (versions) {
 				let cv = 'v' + versions.community.version;
 				let ev = 'v' + versions.enterprise.version;
 				let re = self.get('edition');
