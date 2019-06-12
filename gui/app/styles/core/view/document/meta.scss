@@ -159,7 +159,6 @@
 		font-weight: 500;
 		background-color: map-get($gray-shades, 800);
 		color: map-get($gray-shades, 100);
-		text-transform: uppercase;
 	}
 
 	> .version-dropdown {
@@ -184,7 +183,7 @@
 		}
 
 		> .dates {
-			margin-bottom: 3rem;
+			margin-bottom: 2rem;
 			font-size: 0.9rem;
 			font-weight: 300;
 			color: map-get($gray-shades, 700);

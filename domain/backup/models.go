@@ -59,6 +59,8 @@ type comment struct {
 	UserID     string    `json:"userId"`
 	Email      string    `json:"email"`
 	Feedback   string    `json:"feedback"`
+	SectionID  string    `json:"sectionId"`
+	ReplyTo    string    `json:"replyTo"`
 	Created    time.Time `json:"created"`
 }
 

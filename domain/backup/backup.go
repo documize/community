@@ -733,7 +733,8 @@ func (b backerHandler) dmzDocument(files *[]backupItem) (err error) {
 	err = b.Runtime.Db.Select(&cm, `
         SELECT c_refid AS refid, c_orgid AS orgid, c_docid AS documentid,
         c_userid AS userid, c_email AS email,
-        c_feedback AS feedback, c_created AS created
+		c_feedback AS feedback, c_sectionid AS sectionid, c_replyto AS replyto,
+		c_created AS created
         FROM dmz_doc_comment`+w)
 	if err != nil {
 		return errors.Wrap(err, "select.doccomment")
