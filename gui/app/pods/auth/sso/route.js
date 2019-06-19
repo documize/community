@@ -16,8 +16,12 @@ export default Route.extend({
 	session: service(),
 	localStorage: service(),
 
-	beforeModel() {
+	beforeModel(transition) {
 		this.get('localStorage').clearAll();
+
+		if (!_.isUndefined(transition.to.queryParams.fr)) {
+			this.get('localStorage').setFirstRun();
+		}
 	},
 
 	model({ token }) {

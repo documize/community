@@ -33,7 +33,9 @@ export default Route.extend({
 			firstname: "",
 			lastname: "",
 			email: "",
-			password: pwd
+			password: pwd,
+			activationKey: '',
+			edition: document.head.querySelector("[property=edition]").content
 		};
 	},
 

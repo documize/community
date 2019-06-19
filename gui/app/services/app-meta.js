@@ -59,10 +59,12 @@ export default Service.extend({
 
 		let isInSetupMode = dbhash && dbhash !== "{{.DBhash}}";
 		if (isInSetupMode) {
+			let edition = document.head.querySelector("[property=edition]");
 			this.setProperties({
 				title: htmlSafe("Documize Setup"),
 				allowAnonymousAccess: true,
-				setupMode: true
+				setupMode: true,
+				edition: !_.isNull(edition) ? edition : 'Community'
 			});
 
 			this.get('localStorage').clearAll();

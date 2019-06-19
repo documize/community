@@ -1,7 +1,7 @@
 <div class="installer">
 	<img src="/assets/img/setup/logo-purple.png" srcset="/assets/img/setup/logo-purple@2x.png" alt="Documize Setup" style="width: 250px; height: 76px;">
 	<Ui::UiSpacer @size="300" />
-	<h1 class="color-theme-700">Installation Guide</h1>
+	<h1 class="color-theme-700">Setup</h1>
 	<p class="color-gray-800">
 		Review the <a href="https://docs.documize.com/s/VzO9ZqMOCgABGyfW/installation-guides/d/V16L08ucxwABhZF6/installation-guide">installation instructions</a>
 		and recommended <a href="https://docs.documize.com/s/VzO9ZqMOCgABGyfW/installation-guides/d/V2KuM8ICcQABagM5/mysql-specific-database-tuning">database tuning guide</a>
@@ -11,27 +11,33 @@
 	<form {{action "save" on="submit"}}>
 		<div class="form-group">
 			<label>Site name</label>
-			{{focus-input id="siteTitle" type="text" value=model.title class=(if hasEmptyTitleError "form-control is-invalid" "form-control")}}
+			{{focus-input id="setup-title" type="text" value=model.title class=(if hasTitleError "form-control is-invalid" "form-control")}}
 			<small class="form-text text-muted">Usually your company or team name</small>
 		</div>
 		<div class="form-group">
-			<label for="adminFirstname">Firstname</label>
-			{{input id="adminFirstname" type="text" value=model.firstname class=(if hasEmptyFirstnameError "form-control is-invalid" "form-control")}}
+			<label for="setup-firstname">Firstname</label>
+			{{input id="setup-firstname" type="text" value=model.firstname class=(if hasFirstnameError "form-control is-invalid" "form-control")}}
 		</div>
 		<div class="form-group">
-			<label for="adminLastname">Lastname</label>
-			{{input id="adminLastname" type="text" value=model.lastname class=(if hasEmptyLastnameError "form-control is-invalid" "form-control")}}
+			<label for="setup-lastname">Lastname</label>
+			{{input id="setup-lastname" type="text" value=model.lastname class=(if hasLastnameError "form-control is-invalid" "form-control")}}
 		</div>
 		<div class="form-group">
-			<label for="adminEmail">Email</label>
-			{{input id="adminEmail" type="email" value=model.email class=(if hasEmptyEmailError "form-control is-invalid" "form-control")}}
-			<small class="form-text text-muted">No spam. Ever.</small>
+			<label for="setup-email">Email</label>
+			{{input id="setup-email" type="email" value=model.email class=(if hasEmailError "form-control is-invalid" "form-control")}}
 		</div>
 		<div class="form-group">
-			<label for="adminPassword">Password</label>
-			{{input id="adminPassword" type="password" value=model.password class=(if hasEmptyPasswordError "form-control is-invalid" "form-control")}}
+			<label for="new-password">Password</label>
+			{{input id="new-password" type="password" value=model.password class=(if hasPasswordError "form-control is-invalid" "form-control")}}
 			<small class="form-text text-muted">Pick something strong and unique that you don't use anywhere else</small>
 		</div>
+		{{#if (eq model.edition constants.Product.EnterpriseEdition)}}
+			<div class="form-group">
+				<label for="activation-key">Activation Key</label>
+				{{textarea id="activation-key" value=model.activationKey rows="5" class=(if hasKeyError "form-control is-invalid" "form-control")}}
+				<small class="form-text text-muted">You can get it from <a href="https://www.documize.com/downloads" target="_blank">https://www.documize.com/downloads</a></small>
+			</div>
+		{{/if}}
 		{{ui/ui-button submit=true color=constants.Color.Green light=true label=buttonLabel onClick=(action "save")}}
 	</form>
 

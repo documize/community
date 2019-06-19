@@ -12,6 +12,8 @@
 package database
 
 import (
+	"encoding/json"
+	"encoding/xml"
 	"errors"
 	"net/http"
 	"time"
@@ -21,6 +23,7 @@ import (
 	"github.com/documize/community/core/secrets"
 	"github.com/documize/community/core/stringutil"
 	"github.com/documize/community/core/uniqueid"
+	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/store"
 	"github.com/documize/community/server/web"
 )
@@ -65,15 +68,16 @@ func (h *Handler) Setup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	details := onboardRequest{
-		URL:         "",
-		Company:     r.Form.Get("title"),
-		CompanyLong: r.Form.Get("title"),
-		Message:     r.Form.Get("message"),
-		Email:       r.Form.Get("email"),
-		Password:    r.Form.Get("password"),
-		Firstname:   r.Form.Get("firstname"),
-		Lastname:    r.Form.Get("lastname"),
-		Revised:     time.Now().UTC(),
+		URL:           "",
+		Company:       r.Form.Get("title"),
+		CompanyLong:   r.Form.Get("title"),
+		Message:       r.Form.Get("message"),
+		Email:         r.Form.Get("email"),
+		Password:      r.Form.Get("password"),
+		Firstname:     r.Form.Get("firstname"),
+		Lastname:      r.Form.Get("lastname"),
+		ActivationKey: r.Form.Get("activationKey"),
+		Revised:       time.Now().UTC(),
 	}
 
 	if details.Company == "" ||
@@ -108,15 +112,16 @@ func (h *Handler) Setup(w http.ResponseWriter, r *http.Request) {
 
 // The result of completing the onboarding process.
 type onboardRequest struct {
-	URL         string
-	Company     string
-	CompanyLong string
-	Message     string
-	Email       string
-	Password    string
-	Firstname   string
-	Lastname    string
-	Revised     time.Time
+	URL           string
+	Company       string
+	CompanyLong   string
+	Message       string
+	Email         string
+	Password      string
+	Firstname     string
+	Lastname      string
+	ActivationKey string
+	Revised       time.Time
 }
 
 // setupAccount prepares the database for a newly onboard customer.
@@ -132,10 +137,14 @@ func setupAccount(rt *env.Runtime, completion onboardRequest, serial string) (er
 	salt := secrets.GenerateSalt()
 	password := secrets.GeneratePassword(completion.Password, salt)
 
+	// Process activation key if we have one.
+	activationKey := processActivationKey(rt, completion)
+
 	// Allocate organization to the user.
 	orgID := uniqueid.Generate()
-	_, err = tx.Exec(RebindParams("INSERT INTO dmz_org (c_refid, c_company, c_title, c_message, c_domain, c_email, c_serial) VALUES (?, ?, ?, ?, ?, ?, ?)", rt.StoreProvider.Type()),
-		orgID, completion.Company, completion.CompanyLong, completion.Message, completion.URL, completion.Email, serial)
+	_, err = tx.Exec(RebindParams("INSERT INTO dmz_org (c_refid, c_company, c_title, c_message, c_domain, c_email, c_serial, c_sub) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+		rt.StoreProvider.Type()),
+		orgID, completion.Company, completion.CompanyLong, completion.Message, completion.URL, completion.Email, serial, activationKey)
 	if err != nil {
 		rt.Log.Error("INSERT INTO dmz_org failed", err)
 		tx.Rollback()
@@ -239,6 +248,33 @@ func setupAccount(rt *env.Runtime, completion onboardRequest, serial string) (er
 	if err = tx.Commit(); err != nil {
 		rt.Log.Error("setup - unable to commit sql", err)
 		return
+	}
+
+	return
+}
+
+func processActivationKey(rt *env.Runtime, or onboardRequest) (key string) {
+	key = "{}"
+	if len(or.ActivationKey) == 0 {
+		return
+	}
+
+	j := domain.SubscriptionData{}
+	x := domain.SubscriptionXML{Key: "", Signature: ""}
+
+	err1 := xml.Unmarshal([]byte(or.ActivationKey), &x)
+	if err1 == nil {
+		j.Key = x.Key
+		j.Signature = x.Signature
+	} else {
+		rt.Log.Error("failed to XML unmarshal subscription XML", err1)
+	}
+
+	d, err2 := json.Marshal(j)
+	if err2 == nil {
+		key = string(d)
+	} else {
+		rt.Log.Error("failed to JSON marshal subscription XML", err2)
 	}
 
 	return

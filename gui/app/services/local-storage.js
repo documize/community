@@ -12,22 +12,23 @@
 import Service from '@ember/service';
 
 export default Service.extend({
-	storeSessionItem: function (key, data) {
-		localStorage[key] = data;
-	},
-
-	getSessionItem: function (key) {
-		return localStorage[key];
-	},
-
-	clearSessionItem: function (key) {
-		delete localStorage[key];
-	},
-
+	// Remove all items from storage.
 	clearAll() {
 		localStorage.clear();
 	},
 
+	// Generic session item CRUD methods.
+	storeSessionItem: function (key, data) {
+		localStorage[key] = data;
+	},
+	getSessionItem: function (key) {
+		return localStorage[key];
+	},
+	clearSessionItem: function (key) {
+		delete localStorage[key];
+	},
+
+	// Per document expand/collapse state.
 	getDocSectionHide(docId) {
 		let state = localStorage[`doc-hide-${docId}`];
 		if (_.isUndefined(state) || _.isEmpty(state)) {
@@ -36,7 +37,6 @@ export default Service.extend({
 
 		return _.split(state, '|');
 	},
-
 	setDocSectionHide(docId, state) {
 		let key = `doc-hide-${docId}`;
 
@@ -46,4 +46,15 @@ export default Service.extend({
 			localStorage[key] =  _.join(state, '|');
 		}
 	},
+
+	// First run wizard.
+	setFirstRun() {
+		localStorage['firstRun'] = true;
+	},
+	isFirstRun() {
+		return !_.isUndefined(localStorage['firstRun']);
+	},
+	unsetFirstRun() {
+		delete localStorage['firstRun'];
+	}
 });

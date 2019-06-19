@@ -23,10 +23,10 @@ export default Controller.extend({
 				data: this.model,
 				dataType: "text",
 			}).then(() => {
-				let dom = ""; // supports http://localhost:5001 installations (which is the default for all self-installs)
-				var credentials = Encoding.Base64.encode(dom + ":" + this.model.email + ":" + this.model.password);
-				window.location.href = "/auth/sso/" + encodeURIComponent(credentials);
-			}).catch((error) => { // eslint-disable-line no-unused-vars
+				let dom = ""; // supports http://localhost:5001 installs (which is the default for all self-installs)
+				let credentials = Encoding.Base64.encode(dom + ":" + this.model.email + ":" + this.model.password);
+				window.location.href = "/auth/sso/" + encodeURIComponent(credentials) + '?fr=1';
+			}).catch((/*error*/) => {
 				// TODO notify user of the error within the GUI
 			});
 		}
