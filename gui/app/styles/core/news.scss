@@ -5,7 +5,7 @@
 		padding: 25px;
 		background-color: map-get($yellow-shades, 100);
 		border: 1px solid map-get($yellow-shades, 300);
-		@include border-radius(3px);
+		@include border-radius(16px);
 
 		> .title {
 			font-weight: bold;
@@ -47,7 +47,7 @@
 		padding: 25px;
 		background-color: map-get($gray-shades, 100);
 		border: 1px solid map-get($gray-shades, 200);
-		@include border-radius(3px);
+		@include border-radius(16px);
 
 		> .version {
 			font-weight: 700;

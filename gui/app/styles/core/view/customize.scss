@@ -99,6 +99,7 @@
 
 		> .space {
 			@include card();
+			@include border-radius(16px);
 			list-style-type: none;
 			margin: 0 0 2rem 0;
 			padding: 15px 20px;
@@ -138,6 +139,7 @@
 
 		> .group {
 			@include card();
+			@include border-radius(16px);
 			list-style-type: none;
 			margin: 0 0 2rem 0;
 			padding: 15px 20px;
@@ -212,6 +214,7 @@
 
 			> .item {
 				@include card();
+				@include border-radius(16px);
 				list-style-type: none;
 				margin: 0 0 2rem 0;
 				padding: 15px 20px;
@@ -249,7 +252,7 @@
 		font-size: 1.1rem;
 
 		> .backup-zone {
-			@include border-radius(3px);
+			@include border-radius(16px);
 			border: 1px solid map-get($green-shades, 200);
 			padding: 20px 20px;
 			background-color: map-get($green-shades, 100);
@@ -267,7 +270,7 @@
 		}
 
 		> .restore-zone {
-			@include border-radius(3px);
+			@include border-radius(16px);
 			border: 1px solid map-get($red-shades, 200);
 			margin: 50px 0;
 			padding: 20px 20px;
@@ -314,7 +317,7 @@
 	}
 
 	> .deactivation-zone {
-		@include border-radius(3px);
+		@include border-radius(16px);
 		border: 1px solid map-get($yellow-shades, 600);
 		margin: 30px 0;
 		padding: 20px 20px;

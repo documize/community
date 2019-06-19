@@ -13,6 +13,7 @@
 				display: grid;
 				grid-template-columns: 1fr;
 				grid-template-rows: 2fr;
+				@include border-radius(16px);
 
 				> .info {
 					grid-column-start: 1;

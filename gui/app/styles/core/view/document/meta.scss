@@ -1,6 +1,6 @@
 .document-meta-wrapper {
 	padding: 20px 20px 0 20px;
-	@include border-radius(7px);
+	@include border-radius(16px);
 	background-color: map-get($gray-shades, 100);
 }
 

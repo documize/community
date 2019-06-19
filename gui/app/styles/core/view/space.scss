@@ -23,6 +23,7 @@
 
 		> .document {
 			@include card();
+			@include border-radius(16px);
 			list-style-type: none;
 			margin: 0 0 2rem 0;
 			padding: 15px 20px;

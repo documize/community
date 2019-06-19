@@ -5,7 +5,7 @@
 	// background-color: $theme-100;
 	background-color: $color-sidebar;
 	// background-color: map-get($gray-shades, 100);
-	@include border-radius(6px);
+	@include border-radius(16px);
 
 	> .goto-top {
 		position: absolute;
