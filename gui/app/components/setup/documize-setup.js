@@ -9,64 +9,37 @@
 //
 // https://documize.com
 
-import $ from 'jquery';
-import { empty, and } from '@ember/object/computed';
-import { isEmpty } from '@ember/utils';
 import stringUtil from '../../utils/string';
-import { set } from '@ember/object';
+import $ from 'jquery';
+import { empty } from '@ember/object/computed';
+import { inject as service } from '@ember/service';
 import Component from '@ember/component';
 
 export default Component.extend({
+	appMeta: service(),
 	buttonLabel: 'Complete setup',
-	titleEmpty: empty('model.title'),
-	firstnameEmpty: empty('model.firstname'),
-	lastnameEmpty: empty('model.lastname'),
-	emailEmpty: empty('model.email'),
-	passwordEmpty: empty('model.password'),
-	hasEmptyTitleError: and('titleEmpty', 'titleError'),
-	hasEmptyFirstnameError: and('firstnameEmpty', 'adminFirstnameError'),
-	hasEmptyLastnameError: and('lastnameEmpty', 'adminLastnameError'),
-	hasEmptyEmailError: and('emailEmpty', 'adminEmailError'),
-	hasEmptyPasswordError: and('passwordEmpty', 'adminPasswordError'),
+	hasTitleError: empty('model.title'),
+	hasFirstnameError: empty('model.firstname'),
+	hasLastnameError: empty('model.lastname'),
+	hasEmailError: empty('model.email'),
+	hasPasswordError: empty('model.password'),
+	hasKeyError: empty('model.activationKey'),
 
 	actions: {
-		save() {
-			if (isEmpty(this.get('model.title'))) {
-				set(this, 'titleError', true);
-				return $("#siteTitle").focus();
+		save () {
+			if (this.get('hasTitleError')) return $("#setup-title").focus();
+			if (this.get('hasFirstnameError')) return $("#setup-firstname").focus();
+			if (this.get('hasLastnameError'))  return $("#setup-lastname").focus();
+			if (this.get('hasEmailError') || !stringUtil.isEmail(this.get('model.email'))) return $("#setup-email").focus();
+			if (this.get('hasPasswordError')) return $("#new-password").focus();
+
+			if (this.get('model.edition') === this.get('constants').Product.EnterpriseEdition && this.get('hasKeyError')) {
+				return $("#activation-key").focus();
 			}
 
-			if (isEmpty(this.get('model.firstname'))) {
-				set(this, 'adminFirstnameError', true);
-				return $("#adminFirstname").focus();
-			}
+			this.set('buttonLabel', 'Setting up, please wait...');
 
-			if (isEmpty(this.get('model.lastname'))) {
-				set(this, 'adminLastnameError', true);
-				return $("#adminLastname").focus();
-			}
-
-			if (isEmpty(this.get('model.email')) || !stringUtil.isEmail(this.get('model.email'))) {
-				set(this, 'adminEmailError', true);
-				return $("#adminEmail").focus();
-			}
-
-			if (isEmpty(this.get('model.password'))) {
-				set(this, 'adminPasswordError', true);
-				return $("#adminPassword").focus();
-			}
-
-			this.model.allowAnonymousAccess = $("#allowAnonymousAccess").prop('checked');
-
-			this.set('buttonLabel', 'Configuring, please wait...');
-
-			this.get('save')().then(() => {
-				set(this, 'titleError', false);
-				set(this, 'adminFirstnameError', false);
-				set(this, 'adminLastnameError', false);
-				set(this, 'adminEmailError', false);
-				set(this, 'adminPasswordError', false);
-			});
+			this.get('save')();
 		}
 	}
 });

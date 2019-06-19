@@ -16,7 +16,7 @@ import Component from '@ember/component';
 export default Component.extend(Modals, {
 	localStorage: service(),
 
-	didReceiveAttrs() {
+	didInsertElement() {
 		this._super(...arguments);
 
 		let firstRun = this.get('localStorage').isFirstRun();
