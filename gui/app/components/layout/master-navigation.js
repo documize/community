@@ -162,6 +162,14 @@ export default Component.extend(Modals, {
 			}
 
 			this.get('router').transitionTo('customize.billing');
+		},
+
+		onConfigured() {
+			if (!this.get('session.isAdmin')) {
+				return;
+			}
+
+			this.get('router').transitionTo('customize.smtp');
 		}
 	}
 });

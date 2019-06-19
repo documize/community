@@ -11,10 +11,12 @@
 
 import $ from 'jquery';
 import { empty } from '@ember/object/computed';
+import { inject as service } from '@ember/service';
 import Notifier from '../../mixins/notifier';
 import Component from '@ember/component';
 
 export default Component.extend(Notifier, {
+	appMeta: service(),
 	SMTPHostEmptyError: empty('model.smtp.host'),
 	SMTPPortEmptyError: empty('model.smtp.port'),
 	SMTPSenderEmptyError: empty('model.smtp.sender'),
@@ -54,6 +56,8 @@ export default Component.extend(Notifier, {
 			this.get('saveSMTP')().then((result) => {
 				this.set('buttonText', 'Save & Test');
 				this.set('testSMTP', result);
+
+				this.set('appMeta.configured', true);
 
 				if (result.success) {
 					this.notifySuccess(result.message);

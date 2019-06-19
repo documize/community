@@ -48,7 +48,6 @@ func (h *Handler) SMTP(w http.ResponseWriter, r *http.Request) {
 
 	var y map[string]interface{}
 	json.Unmarshal([]byte(config), &y)
-
 	j, err := json.Marshal(y)
 	if err != nil {
 		response.WriteBadRequestError(w, method, err.Error())

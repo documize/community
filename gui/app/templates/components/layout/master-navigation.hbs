@@ -40,7 +40,13 @@
 					{{#unless appMeta.valid}}
 						<div class="option invalid-plan" {{action "onBilling"}}>
 							<i class={{concat "dicon " constants.Icon.Announce}} />
-							{{#attach-tooltip}}Invalid product plan{{/attach-tooltip}}
+							{{#attach-tooltip}}Missing activation key{{/attach-tooltip}}
+						</div>
+					{{/unless}}
+					{{#unless appMeta.configured}}
+						<div class="option invalid-plan" {{action "onConfigured"}}>
+							<i class={{concat "dicon " constants.Icon.Announce}} />
+							{{#attach-tooltip}}Missing mail server settings{{/attach-tooltip}}
 						</div>
 					{{/unless}}
 				{{/if}}

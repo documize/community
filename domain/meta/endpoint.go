@@ -27,6 +27,7 @@ import (
 	"github.com/documize/community/domain/auth"
 	"github.com/documize/community/domain/organization"
 	indexer "github.com/documize/community/domain/search"
+	"github.com/documize/community/domain/setting"
 	"github.com/documize/community/domain/store"
 	"github.com/documize/community/model/doc"
 	"github.com/documize/community/model/org"
@@ -66,6 +67,13 @@ func (h *Handler) Meta(w http.ResponseWriter, r *http.Request) {
 	data.ConversionEndpoint = org.ConversionEndpoint
 	data.Storage = h.Runtime.StoreProvider.Type()
 	data.Location = h.Runtime.Flags.Location // reserved
+
+	// Is product setup complete? SMTP in this case.
+	data.Configured = true
+	cfg := setting.GetSMTPConfig(h.Store)
+	if len(cfg.Host) == 0 {
+		data.Configured = false
+	}
 
 	// Strip secrets
 	data.AuthConfig = auth.StripAuthSecrets(h.Runtime, org.AuthProvider, org.AuthConfig)

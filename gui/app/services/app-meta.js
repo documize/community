@@ -34,6 +34,7 @@ export default Service.extend({
 	allowAnonymousAccess: false,
 	authProvider: null,
 	authConfig: null,
+	configured: true,
 	setupMode: false,
 	secureMode: false,
 	maxTags: 3,
