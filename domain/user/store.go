@@ -349,8 +349,18 @@ func (s Store) MatchUsers(ctx domain.RequestContext, text string, maxMatches int
 		likeQuery = " AND (LOWER(c_firstname) LIKE '%" + text + "%' OR LOWER(c_lastname) LIKE '%" + text + "%' OR LOWER(c_email) LIKE '%" + text + "%') "
 	}
 
-	err = s.Runtime.Db.Select(&u, s.Bind(
-		`SELECT u.id, u.c_refid AS refid,
+	if s.Runtime.StoreProvider.Type() == env.StoreTypeSQLServer {
+		err = s.Runtime.Db.Select(&u, s.Bind(`SELECT TOP(`+strconv.Itoa(maxMatches)+`) u.id, u.c_refid AS refid,
+        u.c_firstname AS firstname, u.c_lastname AS lastname, u.c_email AS email,
+        u.c_initials AS initials, u.c_globaladmin AS globaladmin,
+        u.c_password AS password, u.c_salt AS salt, u.c_reset AS reset, u.c_lastversion AS lastversion,
+        u.c_created AS created, u.c_revised AS revised,
+        a.c_active AS active, a.c_editor AS editor, a.c_admin AS admin, a.c_users AS viewusers, a.c_analytics AS analytics
+        FROM dmz_user u, dmz_user_account a
+		WHERE a.c_orgid=? AND u.c_refid=a.c_userid AND a.c_active=`+s.IsTrue()+likeQuery+` ORDER BY u.c_firstname, u.c_lastname`),
+			ctx.OrgID)
+	} else {
+		err = s.Runtime.Db.Select(&u, s.Bind(`SELECT u.id, u.c_refid AS refid,
         u.c_firstname AS firstname, u.c_lastname AS lastname, u.c_email AS email,
         u.c_initials AS initials, u.c_globaladmin AS globaladmin,
         u.c_password AS password, u.c_salt AS salt, u.c_reset AS reset, u.c_lastversion AS lastversion,
@@ -358,7 +368,8 @@ func (s Store) MatchUsers(ctx domain.RequestContext, text string, maxMatches int
         a.c_active AS active, a.c_editor AS editor, a.c_admin AS admin, a.c_users AS viewusers, a.c_analytics AS analytics
         FROM dmz_user u, dmz_user_account a
 		WHERE a.c_orgid=? AND u.c_refid=a.c_userid AND a.c_active=`+s.IsTrue()+likeQuery+` ORDER BY u.c_firstname, u.c_lastname LIMIT `+strconv.Itoa(maxMatches)),
-		ctx.OrgID)
+			ctx.OrgID)
+	}
 
 	if err == sql.ErrNoRows {
 		err = nil
