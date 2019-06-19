@@ -23,7 +23,7 @@ import (
 
 // SiteInfo describes set-up information about the site
 var SiteInfo struct {
-	DBname, DBhash, Issue string
+	DBname, DBhash, Issue, Edition string
 }
 
 func init() {
@@ -49,6 +49,8 @@ func (h *Handler) EmberHandler(w http.ResponseWriter, r *http.Request) {
 	default:
 		SiteInfo.DBhash = ""
 	}
+
+	SiteInfo.Edition = string(h.Runtime.Product.Edition)
 
 	data, err := Embed.Asset("bindata/" + filename)
 	if err != nil {
