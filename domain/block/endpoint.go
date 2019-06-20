@@ -97,7 +97,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 
 // Get returns requested reusable content block.
 func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
-	method := "block.add"
+	method := "block.get"
 	ctx := domain.GetRequestContext(r)
 
 	blockID := request.Param(r, "blockID")
@@ -135,7 +135,6 @@ func (h *Handler) GetBySpace(w http.ResponseWriter, r *http.Request) {
 	if len(b) == 0 {
 		b = []block.Block{}
 	}
-
 	if err != nil {
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
