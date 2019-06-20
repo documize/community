@@ -79,23 +79,24 @@ func routesKey(rt *env.Runtime, prefix, path string, methods, queries []string) 
 }
 
 // Add an endpoint to those that will be processed when Serve() is called.
-func Add(rt *env.Runtime, prefix, path string, methods, queries []string, endPtFn RouteFunc) error {
+func Add(rt *env.Runtime, prefix, path string, methods, queries []string, endPtFn RouteFunc) {
 	k, e := routesKey(rt, prefix, path, methods, queries)
 	if e != nil {
-		return e
+		rt.Log.Error("unable to add route", e)
+		return
 	}
+
 	routes[k] = endPtFn
-	return nil
 }
 
 // AddPrivate endpoint
-func AddPrivate(rt *env.Runtime, path string, methods, queries []string, endPtFn RouteFunc) error {
-	return Add(rt, RoutePrefixPrivate, path, methods, queries, endPtFn)
+func AddPrivate(rt *env.Runtime, path string, methods, queries []string, endPtFn RouteFunc)  {
+	Add(rt, RoutePrefixPrivate, path, methods, queries, endPtFn)
 }
 
 // AddPublic endpoint
-func AddPublic(rt *env.Runtime, path string, methods, queries []string, endPtFn RouteFunc) error {
-	return Add(rt, RoutePrefixPublic, path, methods, queries, endPtFn)
+func AddPublic(rt *env.Runtime, path string, methods, queries []string, endPtFn RouteFunc)  {
+	Add(rt, RoutePrefixPublic, path, methods, queries, endPtFn)
 }
 
 // Remove an endpoint.
