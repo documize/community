@@ -166,15 +166,15 @@ export default Service.extend({
 			let token = this.get('sessionService.session.content.authenticated.token');
 			let uploadUrl = `${url}/global/backup?token=${token}`;
 
-			var xhr = new XMLHttpRequest();
+			let xhr = new XMLHttpRequest();
 			xhr.open('POST', uploadUrl);
 			xhr.setRequestHeader("Content-Type", "application/json");
 			xhr.responseType = 'blob';
 
 			xhr.onload = function() {
-				if (this.status == 200) {
+				if (this.status === 200) {
 					// get binary data as a response
-					var blob = this.response;
+					let blob = this.response;
 
 					let a = document.createElement("a");
 					a.style = "display: none";
@@ -194,18 +194,18 @@ export default Service.extend({
 				} else {
 					reject();
 				}
-			}
+			};
 
 			xhr.onerror= function() {
 				reject();
-			}
+			};
 
 			xhr.send(JSON.stringify(spec));
 		});
 	},
 
 	restore(spec, file) {
-		var data = new FormData();
+		let data = new FormData();
 		data.set('restore-file', file);
 
 		return new EmberPromise((resolve, reject) => {
@@ -217,20 +217,20 @@ export default Service.extend({
 			let token = this.get('sessionService.session.content.authenticated.token');
 			let uploadUrl = `${url}/global/restore?token=${token}&org=${spec.overwriteOrg}&users=${spec.recreateUsers}`;
 
-			var xhr = new XMLHttpRequest();
+			let xhr = new XMLHttpRequest();
 			xhr.open('POST', uploadUrl);
 
 			xhr.onload = function() {
-				if (this.status == 200) {
+				if (this.status === 200) {
 					resolve();
 				} else {
 					reject();
 				}
-			}
+			};
 
 			xhr.onerror= function() {
 				reject();
-			}
+			};
 
 			xhr.send(data);
 		});
@@ -242,9 +242,13 @@ export default Service.extend({
 				method: 'POST',
 				contentType: 'text',
 				data: comment,
-			}).then(() => {
-				return;
 			});
 		}
 	},
+
+	onboard() {
+		return this.get('ajax').request(`setup/onboard`, {
+			method: 'POST',
+		});
+	}
 });

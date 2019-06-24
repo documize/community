@@ -46,6 +46,10 @@ robocopy /e /NFL /NDL /NJH core\database\scripts\mysql embed\bindata\scripts\mys
 robocopy /e /NFL /NDL /NJH core\database\scripts\postgresql embed\bindata\scripts\postgresql
 robocopy /e /NFL /NDL /NJH core\database\scripts\sqlserver embed\bindata\scripts\sqlserver
 
+rd /s /q embed\bindata\onboard
+mkdir embed\bindata\onboard
+robocopy /e /NFL /NDL /NJH domain\onboard\*.json  embed\bindata\onboard
+
 echo "Generating in-memory static assets..."
 go get -u github.com/jteeuwen/go-bindata/...
 go get -u github.com/elazarl/go-bindata-assetfs/...

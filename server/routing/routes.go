@@ -28,6 +28,7 @@ import (
 	"github.com/documize/community/domain/label"
 	"github.com/documize/community/domain/link"
 	"github.com/documize/community/domain/meta"
+	"github.com/documize/community/domain/onboard"
 	"github.com/documize/community/domain/organization"
 	"github.com/documize/community/domain/page"
 	"github.com/documize/community/domain/permission"
@@ -72,20 +73,23 @@ func RegisterEndpoints(rt *env.Runtime, s *store.Store) {
 	permission := permission.Handler{Runtime: rt, Store: s}
 	organization := organization.Handler{Runtime: rt, Store: s}
 
-	//**************************************************
+	searchEndpoint := search.Handler{Runtime: rt, Store: s, Indexer: indexer}
+	onboardEndpoint := onboard.Handler{Runtime: rt, Store: s, Indexer: indexer}
+
+	// **************************************************
 	// Non-secure public info routes
-	//**************************************************
+	// **************************************************
 
 	AddPublic(rt, "meta", []string{"GET", "OPTIONS"}, nil, meta.Meta)
 	AddPublic(rt, "meta/themes", []string{"GET", "OPTIONS"}, nil, meta.Themes)
 	AddPublic(rt, "version", []string{"GET", "OPTIONS"}, nil,
 		func(w http.ResponseWriter, r *http.Request) {
-			w.Write([]byte(rt.Product.Version))
+			_, _ = w.Write([]byte(rt.Product.Version))
 		})
 
-	//**************************************************
+	// **************************************************
 	// Non-secure public service routes
-	//**************************************************
+	// **************************************************
 
 	AddPublic(rt, "authenticate/keycloak", []string{"POST", "OPTIONS"}, nil, keycloak.Authenticate)
 	AddPublic(rt, "authenticate/ldap", []string{"POST", "OPTIONS"}, nil, ldap.Authenticate)
@@ -98,9 +102,9 @@ func RegisterEndpoints(rt *env.Runtime, s *store.Store) {
 	AddPublic(rt, "logo", []string{"GET", "OPTIONS"}, []string{"default", "true"}, meta.DefaultLogo)
 	AddPublic(rt, "logo", []string{"GET", "OPTIONS"}, nil, meta.Logo)
 
-	//**************************************************
+	// **************************************************
 	// Secured private routes (require authentication)
-	//**************************************************
+	// **************************************************
 
 	AddPrivate(rt, "import/folder/{spaceID}", []string{"POST", "OPTIONS"}, nil, conversion.UploadConvert)
 
@@ -226,13 +230,15 @@ func RegisterEndpoints(rt *env.Runtime, s *store.Store) {
 	AddPrivate(rt, "global/smtp", []string{"PUT", "OPTIONS"}, nil, setting.SetSMTP)
 	AddPrivate(rt, "global/auth", []string{"GET", "OPTIONS"}, nil, setting.AuthConfig)
 	AddPrivate(rt, "global/auth", []string{"PUT", "OPTIONS"}, nil, setting.SetAuthConfig)
-	AddPrivate(rt, "global/search/status", []string{"GET", "OPTIONS"}, nil, meta.SearchStatus)
-	AddPrivate(rt, "global/search/reindex", []string{"POST", "OPTIONS"}, nil, meta.Reindex)
 	AddPrivate(rt, "global/sync/keycloak", []string{"GET", "OPTIONS"}, nil, keycloak.Sync)
 	AddPrivate(rt, "global/ldap/preview", []string{"POST", "OPTIONS"}, nil, ldap.Preview)
 	AddPrivate(rt, "global/ldap/sync", []string{"GET", "OPTIONS"}, nil, ldap.Sync)
 	AddPrivate(rt, "global/backup", []string{"POST", "OPTIONS"}, nil, backup.Backup)
 	AddPrivate(rt, "global/restore", []string{"POST", "OPTIONS"}, nil, backup.Restore)
+	AddPrivate(rt, "global/search/status", []string{"GET", "OPTIONS"}, nil, searchEndpoint.Status)
+	AddPrivate(rt, "global/search/reindex", []string{"POST", "OPTIONS"}, nil, searchEndpoint.Reindex)
+
+	AddPrivate(rt, "setup/onboard", []string{"POST", "OPTIONS"}, nil, onboardEndpoint.InstallSample)
 
 	Add(rt, RoutePrefixRoot, "robots.txt", []string{"GET", "OPTIONS"}, nil, meta.RobotsTxt)
 	Add(rt, RoutePrefixRoot, "sitemap.xml", []string{"GET", "OPTIONS"}, nil, meta.Sitemap)

@@ -29,6 +29,7 @@ import (
 	label "github.com/documize/community/domain/label"
 	link "github.com/documize/community/domain/link"
 	meta "github.com/documize/community/domain/meta"
+	"github.com/documize/community/domain/onboard"
 	org "github.com/documize/community/domain/organization"
 	page "github.com/documize/community/domain/page"
 	permission "github.com/documize/community/domain/permission"
@@ -165,6 +166,11 @@ func SetSQLServerProvider(r *env.Runtime, s *store.Store) {
 	labelStore := label.Store{}
 	labelStore.Runtime = r
 	s.Label = labelStore
+
+	// New user onboarding.
+	onboardStore := onboard.Store{}
+	onboardStore.Runtime = r
+	s.Onboard = onboardStore
 }
 
 // Type returns name of provider

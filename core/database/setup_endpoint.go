@@ -133,7 +133,6 @@ func setupAccount(rt *env.Runtime, completion onboardRequest, serial string) (er
 		return
 	}
 
-	//accountTitle := "This is where you will find documentation for your all projects. You can customize this message from the settings screen."
 	salt := secrets.GenerateSalt()
 	password := secrets.GeneratePassword(completion.Password, salt)
 
@@ -147,7 +146,7 @@ func setupAccount(rt *env.Runtime, completion onboardRequest, serial string) (er
 		orgID, completion.Company, completion.CompanyLong, completion.Message, completion.URL, completion.Email, serial, activationKey)
 	if err != nil {
 		rt.Log.Error("INSERT INTO dmz_org failed", err)
-		tx.Rollback()
+		rt.Rollback(tx)
 		return
 	}
 
@@ -157,7 +156,7 @@ func setupAccount(rt *env.Runtime, completion onboardRequest, serial string) (er
 		userID, completion.Firstname, completion.Lastname, completion.Email, stringutil.MakeInitials(completion.Firstname, completion.Lastname), salt, password, true)
 	if err != nil {
 		rt.Log.Error("INSERT INTO dmz_user failed", err)
-		tx.Rollback()
+		rt.Rollback(tx)
 		return
 	}
 
@@ -167,80 +166,7 @@ func setupAccount(rt *env.Runtime, completion onboardRequest, serial string) (er
 		accountID, userID, orgID, true, true, true, true)
 	if err != nil {
 		rt.Log.Error("INSERT INTO dmz_user_account failed", err)
-		tx.Rollback()
-		return
-	}
-
-	// Create space.
-	spaceID := uniqueid.Generate()
-	_, err = tx.Exec(RebindParams("INSERT INTO dmz_space (c_refid, c_orgid, c_userid, c_name, c_type) VALUES (?, ?, ?, ?, ?)", rt.StoreProvider.Type()),
-		spaceID, orgID, userID, "Welcome", 2)
-	if err != nil {
-		rt.Log.Error("INSERT INTO dmz_space failed", err)
-		tx.Rollback()
-		return
-	}
-
-	// Assign permissions to space.
-	perms := []string{"view", "manage", "own", "doc-add", "doc-edit", "doc-delete", "doc-move", "doc-copy", "doc-template", "doc-approve", "doc-version", "doc-lifecycle"}
-	for _, p := range perms {
-		_, err = tx.Exec(RebindParams("INSERT INTO dmz_permission (c_orgid, c_who, c_whoid, c_action, c_scope, c_location, c_refid) VALUES (?, ?, ?, ?, ?, ?, ?)", rt.StoreProvider.Type()),
-			orgID, "user", userID, p, "object", "space", spaceID)
-		if err != nil {
-			rt.Log.Error("INSERT INTO dmz_permission failed", err)
-			tx.Rollback()
-			return
-		}
-	}
-
-	// Create some user groups.
-	groupDevID := uniqueid.Generate()
-	_, err = tx.Exec(RebindParams("INSERT INTO dmz_group (c_refid, c_orgid, c_name, c_desc) VALUES (?, ?, ?, ?)", rt.StoreProvider.Type()),
-		groupDevID, orgID, "Technology", "On-site and remote development teams")
-	if err != nil {
-		rt.Log.Error("INSERT INTO dmz_group failed", err)
-		tx.Rollback()
-		return
-	}
-
-	groupProjectID := uniqueid.Generate()
-	_, err = tx.Exec(RebindParams("INSERT INTO dmz_group (c_refid, c_orgid, c_name, c_desc) VALUES (?, ?, ?, ?)", rt.StoreProvider.Type()),
-		groupProjectID, orgID, "Project Management", "HQ PMO and Account Management departments")
-	if err != nil {
-		rt.Log.Error("INSERT INTO dmz_group failed", err)
-		tx.Rollback()
-		return
-	}
-
-	groupBackofficeID := uniqueid.Generate()
-	_, err = tx.Exec(RebindParams("INSERT INTO dmz_group (c_refid, c_orgid, c_name, c_desc) VALUES (?, ?, ?, ?)", rt.StoreProvider.Type()),
-		groupBackofficeID, orgID, "Back Office", "Finance and HR people")
-	if err != nil {
-		rt.Log.Error("INSERT INTO dmz_group failed", err)
-		tx.Rollback()
-		return
-	}
-
-	// Join the user groups.
-	_, err = tx.Exec(RebindParams("INSERT INTO dmz_group_member (c_orgid, c_groupid, c_userid) VALUES (?, ?, ?)", rt.StoreProvider.Type()),
-		orgID, groupDevID, userID)
-	if err != nil {
-		rt.Log.Error("INSERT INTO dmz_group_member failed", err)
-		tx.Rollback()
-		return
-	}
-	_, err = tx.Exec(RebindParams("INSERT INTO dmz_group_member (c_orgid, c_groupid, c_userid) VALUES (?, ?, ?)", rt.StoreProvider.Type()),
-		orgID, groupProjectID, userID)
-	if err != nil {
-		rt.Log.Error("INSERT INTO dmz_group_member failed", err)
-		tx.Rollback()
-		return
-	}
-	_, err = tx.Exec(RebindParams("INSERT INTO dmz_group_member (c_orgid, c_groupid, c_userid) VALUES (?, ?, ?)", rt.StoreProvider.Type()),
-		orgID, groupBackofficeID, userID)
-	if err != nil {
-		rt.Log.Error("INSERT INTO dmz_group_member failed", err)
-		tx.Rollback()
+		rt.Rollback(tx)
 		return
 	}
 

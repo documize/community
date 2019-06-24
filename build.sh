@@ -38,6 +38,10 @@ cp -r core/database/scripts/mysql/*.sql embed/bindata/scripts/mysql
 cp -r core/database/scripts/postgresql/*.sql embed/bindata/scripts/postgresql
 cp -r core/database/scripts/sqlserver/*.sql embed/bindata/scripts/sqlserver
 
+rm -rf embed/bindata/onboard
+mkdir -p embed/bindata/onboard
+cp -r domain/onboard/*.json embed/bindata/onboard
+
 echo "Generating in-memory static assets..."
 # go get -u github.com/jteeuwen/go-bindata/...
 # go get -u github.com/elazarl/go-bindata-assetfs/...

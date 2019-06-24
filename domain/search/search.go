@@ -13,6 +13,7 @@ package search
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/documize/community/domain"
 	"github.com/documize/community/model/attachment"
@@ -116,6 +117,53 @@ func (m *Indexer) DeleteContent(ctx domain.RequestContext, pageID string) {
 	}
 
 	m.runtime.Commit(ctx.Transaction)
+}
+
+// Rebuild recreates all search indexes.
+func (m *Indexer) Rebuild(ctx domain.RequestContext) {
+	method := "search.rebuildSearchIndex"
+
+	docs, err := m.store.Meta.Documents(ctx)
+	if err != nil {
+		m.runtime.Log.Error(method, err)
+		return
+	}
+
+	m.runtime.Log.Info(fmt.Sprintf("Search re-index started for %d documents", len(docs)))
+
+	for i := range docs {
+		d := docs[i]
+
+		dc, err := m.store.Meta.Document(ctx, d)
+		if err != nil {
+			m.runtime.Log.Error(method, err)
+			// continue
+		}
+		at, err := m.store.Meta.Attachments(ctx, d)
+		if err != nil {
+			m.runtime.Log.Error(method, err)
+			// continue
+		}
+
+		m.IndexDocument(ctx, dc, at)
+
+		pages, err := m.store.Meta.Pages(ctx, d)
+		if err != nil {
+			m.runtime.Log.Error(method, err)
+			// continue
+		}
+
+		for j := range pages {
+			m.IndexContent(ctx, pages[j])
+		}
+
+		// Log process every N documents.
+		if i%100 == 0 {
+			m.runtime.Log.Info(fmt.Sprintf("Search re-indexed %d documents...", i))
+		}
+	}
+
+	m.runtime.Log.Info(fmt.Sprintf("Search re-index finished for %d documents", len(docs)))
 }
 
 // FilterCategoryProtected removes search results that cannot be seen by user

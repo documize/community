@@ -13,6 +13,7 @@ import { inject as service } from '@ember/service';
 import Route from '@ember/routing/route';
 
 export default Route.extend({
+	globalSvc: service('global'),
 	session: service(),
 	localStorage: service(),
 
@@ -27,7 +28,15 @@ export default Route.extend({
 	model({ token }) {
 		this.get("session").authenticate('authenticator:documize', decodeURIComponent(token))
 			.then(() => {
-				this.transitionTo('folders');
+				if (this.get('localStorage').isFirstRun()) {
+					this.get('globalSvc').onboard().then(() => {
+						this.transitionTo('folders');
+					}).catch(() => {
+						this.transitionTo('folders');
+					});
+				} else {
+					this.transitionTo('folders');
+				}
 			}, () => {
 				this.transitionTo('auth.login');
 			});

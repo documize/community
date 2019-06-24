@@ -202,98 +202,9 @@ func (h *Handler) Sitemap(w http.ResponseWriter, r *http.Request) {
 	response.WriteBytes(w, buffer.Bytes())
 }
 
-// Reindex indexes all documents and attachments.
-func (h *Handler) Reindex(w http.ResponseWriter, r *http.Request) {
-	ctx := domain.GetRequestContext(r)
-
-	if !ctx.GlobalAdmin {
-		response.WriteForbiddenError(w)
-		h.Runtime.Log.Info(fmt.Sprintf("%s attempted search reindex", ctx.UserID))
-		return
-	}
-
-	go h.rebuildSearchIndex(ctx)
-
-	response.WriteEmpty(w)
-}
-
-// rebuildSearchIndex indexes all documents and attachments.
-func (h *Handler) rebuildSearchIndex(ctx domain.RequestContext) {
-	method := "meta.rebuildSearchIndex"
-
-	docs, err := h.Store.Meta.Documents(ctx)
-	if err != nil {
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	h.Runtime.Log.Info(fmt.Sprintf("Search re-index started for %d documents", len(docs)))
-
-	for i := range docs {
-		d := docs[i]
-
-		dc, err := h.Store.Meta.Document(ctx, d)
-		if err != nil {
-			h.Runtime.Log.Error(method, err)
-			// continue
-		}
-		at, err := h.Store.Meta.Attachments(ctx, d)
-		if err != nil {
-			h.Runtime.Log.Error(method, err)
-			// continue
-		}
-
-		h.Indexer.IndexDocument(ctx, dc, at)
-
-		pages, err := h.Store.Meta.Pages(ctx, d)
-		if err != nil {
-			h.Runtime.Log.Error(method, err)
-			// continue
-		}
-
-		for j := range pages {
-			h.Indexer.IndexContent(ctx, pages[j])
-		}
-
-		// Log process every N documents.
-		if i%100 == 0 {
-			h.Runtime.Log.Info(fmt.Sprintf("Search re-indexed %d documents...", i))
-		}
-	}
-
-	h.Runtime.Log.Info(fmt.Sprintf("Search re-index finished for %d documents", len(docs)))
-}
-
-// SearchStatus returns state of search index
-func (h *Handler) SearchStatus(w http.ResponseWriter, r *http.Request) {
-	method := "meta.SearchStatus"
-	ctx := domain.GetRequestContext(r)
-
-	if !ctx.GlobalAdmin {
-		response.WriteForbiddenError(w)
-		h.Runtime.Log.Info(fmt.Sprintf("%s attempted get of search status", ctx.UserID))
-		return
-	}
-
-	count, err := h.Store.Meta.SearchIndexCount(ctx)
-	if err != nil {
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
-	var ss = searchStatus{Entries: count}
-
-	response.WriteJSON(w, ss)
-}
-
 type sitemapItem struct {
 	URL  string
 	Date string
-}
-
-type searchStatus struct {
-	Entries int `json:"entries"`
 }
 
 // Themes returns list of installed UI themes.

@@ -36,6 +36,7 @@ import (
 	pin "github.com/documize/community/domain/pin"
 	search "github.com/documize/community/domain/search"
 	setting "github.com/documize/community/domain/setting"
+	"github.com/documize/community/domain/onboard"
 	space "github.com/documize/community/domain/space"
 	"github.com/documize/community/domain/store"
 	user "github.com/documize/community/domain/user"
@@ -155,6 +156,11 @@ func SetMySQLProvider(r *env.Runtime, s *store.Store) {
 	labelStore := label.Store{}
 	labelStore.Runtime = r
 	s.Label = labelStore
+
+	// New user onboarding.
+	onboardStore := onboard.Store{}
+	onboardStore.Runtime = r
+	s.Onboard = onboardStore
 }
 
 // MySQLProvider supports MySQL 5.7.x and 8.0.x versions.

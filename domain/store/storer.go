@@ -53,6 +53,7 @@ type Store struct {
 	Setting      SettingStorer
 	Space        SpaceStorer
 	User         UserStorer
+	Onboard OnboardStorer
 }
 
 // SpaceStorer defines required methods for space management
@@ -316,4 +317,9 @@ type LabelStorer interface {
 	Update(ctx domain.RequestContext, l label.Label) (err error)
 	Delete(ctx domain.RequestContext, id string) (rows int64, err error)
 	RemoveReference(ctx domain.RequestContext, labelID string) (err error)
+}
+
+// OnboardStorer defines required methods for enterprise customer onboarding process.
+type OnboardStorer interface {
+	ContentCounts() (spaces, docs int)
 }
