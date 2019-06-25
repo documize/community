@@ -56,7 +56,7 @@ export default Component.extend(Modals, Notifier, {
 		let uploadUrl = `${url}/documents/${documentId}/attachments`;
 
 		// Handle upload clicks on button and anything inside that button.
-		let sel = ['#upload-document-files ', '#upload-document-files  > span'];
+		let sel = ['#upload-document-files ', '#upload-document-files  > i'];
 		for (var i=0; i < 2; i++) {
 			let dzone = new Dropzone(sel[i], {
 				headers: {

@@ -40,7 +40,7 @@
 	text-transform: uppercase;
 	vertical-align: super;
 
-	> span {
+	> i {
 		display: inline-block;
 		color: map-get($gray-shades, 600);
 		font-size: 1rem;
