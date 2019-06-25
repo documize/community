@@ -8,9 +8,9 @@
 		<div class="title" {{action "toggleSpacePerms"}}>
 			Space Permissions Explained
 			{{#if showSpacePermExplain}}
-				<i class="dicon {{constants.Icon.ArrowSmallUp}}" />
+                <i class="dicon {{constants.Icon.ArrowSmallUp}}"></i>
 			{{else}}
-				<i class="dicon {{constants.Icon.ArrowSmallDown}}" />
+				<i class="dicon {{constants.Icon.ArrowSmallDown}}"></i>
 			{{/if}}
 		</div>
 		<div class="perms space-perms">
@@ -27,9 +27,9 @@
 		<div class="title" {{action "toggleDocumentPerms"}}>
 			Document Permissions Explained
 			{{#if showDocumentPermExplain}}
-				<i class="dicon {{constants.Icon.ArrowSmallUp}}" />
+				<i class="dicon {{constants.Icon.ArrowSmallUp}}"></i>
 			{{else}}
-				<i class="dicon {{constants.Icon.ArrowSmallDown}}" />
+				<i class="dicon {{constants.Icon.ArrowSmallDown}}"></i>
 			{{/if}}
 		</div>
 		<div class="perms document-perms">
@@ -61,10 +61,12 @@
 	{{ui/ui-button color=constants.Color.Gray light=true icon=constants.Icon.Person
 		label="Add Existing User"
 		onClick=(action "onShowAddModal")}}
-	{{ui/ui-button-gap}}
-	{{ui/ui-button color=constants.Color.Gray light=true icon=constants.Icon.Plus
-		label="Invite New User"
-		onClick=(action "onShowInviteModal")}}
+    {{#if isAuthProviderDocumize}}
+        {{ui/ui-button-gap}}
+        {{ui/ui-button color=constants.Color.Gray light=true icon=constants.Icon.Plus
+            label="Invite New User"
+            onClick=(action "onShowInviteModal")}}
+    {{/if}}
 </div>
 
 <Ui::UiSpacer @size="300" />

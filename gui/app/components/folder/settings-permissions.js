@@ -16,10 +16,11 @@ import { debounce } from '@ember/runloop';
 import { computed } from '@ember/object';
 import Notifier from '../../mixins/notifier';
 import Modals from '../../mixins/modal';
+import AuthProvider from '../../mixins/auth';
 import stringUtil from '../../utils/string';
 import Component from '@ember/component';
 
-export default Component.extend(Notifier, Modals, {
+export default Component.extend(Notifier, Modals, AuthProvider, {
 	groupSvc: service('group'),
 	spaceSvc: service('folder'),
 	userSvc: service('user'),
