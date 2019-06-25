@@ -206,5 +206,8 @@ func (h *Handler) Restore(w http.ResponseWriter, r *http.Request) {
 	h.Runtime.Log.Infof("Restore remapped %d UserID values", len(rh.MapUserID))
 	h.Runtime.Log.Info("Restore completed")
 
+	h.Runtime.Log.Info("Building search index")
+	go h.Indexer.Rebuild(ctx)
+
 	response.WriteEmpty(w)
 }
