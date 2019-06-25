@@ -51,7 +51,7 @@ func (s Store) Get(ctx domain.RequestContext) (l []label.Label, err error) {
         c_name AS name, c_color AS color,
         c_created AS created, c_revised AS revised
         FROM dmz_space_label
-        WHERE c_orgid=?`),
+        WHERE c_orgid=? ORDER BY c_name`),
 		ctx.OrgID)
 
 	if err == sql.ErrNoRows {
