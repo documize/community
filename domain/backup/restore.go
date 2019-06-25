@@ -1531,6 +1531,7 @@ func (r *restoreHandler) dmzDocAttachment() (err error) {
 		if err != nil {
 			r.Context.Transaction.Rollback()
 			err = errors.Wrap(err, fmt.Sprintf("unable to insert %s %s", filename, at[i].RefID))
+			r.Runtime.Log.Error("warning", err)
 			return
 		}
 	}

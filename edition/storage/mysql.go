@@ -30,13 +30,13 @@ import (
 	label "github.com/documize/community/domain/label"
 	link "github.com/documize/community/domain/link"
 	meta "github.com/documize/community/domain/meta"
+	"github.com/documize/community/domain/onboard"
 	org "github.com/documize/community/domain/organization"
 	page "github.com/documize/community/domain/page"
 	permission "github.com/documize/community/domain/permission"
 	pin "github.com/documize/community/domain/pin"
 	search "github.com/documize/community/domain/search"
 	setting "github.com/documize/community/domain/setting"
-	"github.com/documize/community/domain/onboard"
 	space "github.com/documize/community/domain/space"
 	"github.com/documize/community/domain/store"
 	user "github.com/documize/community/domain/user"
@@ -192,8 +192,14 @@ func (p MySQLProvider) Params() map[string]string {
 	return map[string]string{
 		"charset":          "utf8mb4",
 		"parseTime":        "True",
-		"maxAllowedPacket": "104857600", // 4194304 // 16777216 = 16MB // 104857600 = 100MB
+		"maxAllowedPacket": "0",
 	}
+
+	// maxAllowedPacket
+	// default is 4194304
+	// 16777216 = 16MB
+	// 104857600 = 100MB
+	// 0 means fetch value from server
 }
 
 // Example holds storage provider specific connection string format

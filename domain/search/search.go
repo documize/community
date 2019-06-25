@@ -129,7 +129,7 @@ func (m *Indexer) Rebuild(ctx domain.RequestContext) {
 		return
 	}
 
-	m.runtime.Log.Info(fmt.Sprintf("Search re-index started for %d documents", len(docs)))
+	m.runtime.Log.Info(fmt.Sprintf("Search re-indexing started for %d documents", len(docs)))
 
 	for i := range docs {
 		d := docs[i]
@@ -163,7 +163,7 @@ func (m *Indexer) Rebuild(ctx domain.RequestContext) {
 		}
 	}
 
-	m.runtime.Log.Info(fmt.Sprintf("Search re-index finished for %d documents", len(docs)))
+	m.runtime.Log.Info(fmt.Sprintf("Search re-indexing finished for %d documents", len(docs)))
 }
 
 // FilterCategoryProtected removes search results that cannot be seen by user

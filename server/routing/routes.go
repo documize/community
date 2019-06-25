@@ -61,7 +61,7 @@ func RegisterEndpoints(rt *env.Runtime, s *store.Store) {
 	block := block.Handler{Runtime: rt, Store: s}
 	group := group.Handler{Runtime: rt, Store: s}
 	label := label.Handler{Runtime: rt, Store: s}
-	backup := backup.Handler{Runtime: rt, Store: s}
+	backup := backup.Handler{Runtime: rt, Store: s, Indexer: indexer}
 	section := section.Handler{Runtime: rt, Store: s}
 	setting := setting.Handler{Runtime: rt, Store: s}
 	category := category.Handler{Runtime: rt, Store: s}

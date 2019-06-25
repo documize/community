@@ -38,6 +38,7 @@ func (h *Handler) Reindex(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	h.Runtime.Log.Info("Building search index")
 	go h.Indexer.Rebuild(ctx)
 
 	response.WriteEmpty(w)
