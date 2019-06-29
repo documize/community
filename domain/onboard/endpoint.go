@@ -22,6 +22,7 @@ import (
 
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/response"
+	"github.com/documize/community/core/uniqueid"
 	"github.com/documize/community/domain"
 	indexer "github.com/documize/community/domain/search"
 	"github.com/documize/community/domain/store"
@@ -32,9 +33,10 @@ import (
 
 // Handler contains the runtime information such as logging and database.
 type Handler struct {
-	Runtime *env.Runtime
-	Store   *store.Store
-	Indexer indexer.Indexer
+	Runtime  *env.Runtime
+	Store    *store.Store
+	Indexer  indexer.Indexer
+	MappedID map[string]string
 }
 
 // InstallSample inserts sample data into database.
@@ -46,14 +48,15 @@ func (h *Handler) InstallSample(w http.ResponseWriter, r *http.Request) {
 		response.WriteBadLicense(w)
 		return
 	}
-	if !ctx.Administrator || !ctx.Authenticated || !ctx.GlobalAdmin {
+
+	if !ctx.Administrator {
 		response.WriteForbiddenError(w)
 		return
 	}
 
 	// Only proceed if we have no spaces and documents.
 	// This prevents sample data restore inside existing live instance.
-	spaces, docs := h.Store.Onboard.ContentCounts()
+	spaces, docs := h.Store.Onboard.ContentCounts(ctx.OrgID)
 	if spaces > 0 || docs > 0 {
 		h.Runtime.Log.Info("Unable to install sample data when database contains spaces/docs")
 		response.WriteForbiddenError(w)
@@ -126,19 +129,39 @@ func (h *Handler) unpackFile(filename string, v interface{}) (err error) {
 	return nil
 }
 
+// Returns new ID based on old ID.
+func (h *Handler) getMappedID(table, old string) string {
+	// Return mapped ID if we have one.
+	key := table + "_" + old
+	if n, ok := h.MappedID[key]; ok {
+		return n
+	}
+
+	// Generate new ID and send back.
+	newID := uniqueid.Generate()
+	h.MappedID[table+"_"+old] = newID
+	return newID
+}
+
 // Insert data into database using sample data loaded from embedded assets.
 func (h *Handler) processSampleData(data om.SampleData) (err error) {
 	data.Context.Transaction, _ = h.Runtime.StartTx(sql.LevelReadUncommitted)
 
+	h.MappedID = make(map[string]string)
+
 	// Space Label.
-	h.Runtime.Log.Info(fmt.Sprintf("Installing space label (%d)", len(data.SpaceLabel)))
+	h.Runtime.Log.Info(fmt.Sprintf("Installing (%d) space labels", len(data.SpaceLabel)))
 	for i := range data.SpaceLabel {
 		_, err = data.Context.Transaction.Exec(h.Runtime.Db.Rebind(`
             INSERT INTO dmz_space_label
             (c_refid, c_orgid, c_name, c_color, c_created, c_revised)
             VALUES (?, ?, ?, ?, ?, ?)`),
-			data.SpaceLabel[i].RefID, data.Context.OrgID, data.SpaceLabel[i].Name,
-			data.SpaceLabel[i].Color, data.SpaceLabel[i].Created, data.SpaceLabel[i].Revised)
+			h.getMappedID("label", data.SpaceLabel[i].RefID),
+			data.Context.OrgID,
+			data.SpaceLabel[i].Name,
+			data.SpaceLabel[i].Color,
+			data.SpaceLabel[i].Created,
+			data.SpaceLabel[i].Revised)
 
 		if err != nil {
 			h.Runtime.Rollback(data.Context.Transaction)
@@ -148,7 +171,7 @@ func (h *Handler) processSampleData(data om.SampleData) (err error) {
 	}
 
 	// Space.
-	h.Runtime.Log.Info(fmt.Sprintf("Installing space (%d)", len(data.Space)))
+	h.Runtime.Log.Info(fmt.Sprintf("Installing (%d) spaces", len(data.Space)))
 	for i := range data.Space {
 		_, err = data.Context.Transaction.Exec(h.Runtime.Db.Rebind(`
             INSERT INTO dmz_space
@@ -156,11 +179,19 @@ func (h *Handler) processSampleData(data om.SampleData) (err error) {
                 c_likes, c_icon, c_desc, c_count_category, c_count_content,
                 c_labelid, c_created, c_revised)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
-			data.Space[i].RefID, data.Space[i].Name, data.Context.OrgID,
-			data.Context.UserID, data.Space[i].Type, data.Space[i].Lifecycle,
-			data.Space[i].Likes, data.Space[i].Icon, data.Space[i].Description,
-			data.Space[i].CountCategory, data.Space[i].CountContent,
-			data.Space[i].LabelID, data.Space[i].Created, data.Space[i].Revised)
+			h.getMappedID("space", data.Space[i].RefID),
+			data.Space[i].Name,
+			data.Context.OrgID,
+			data.Context.UserID,
+			data.Space[i].Type,
+			data.Space[i].Lifecycle,
+			data.Space[i].Likes,
+			data.Space[i].Icon,
+			data.Space[i].Description,
+			data.Space[i].CountCategory,
+			data.Space[i].CountContent,
+			h.getMappedID("label", data.Space[i].LabelID),
+			data.Space[i].Created, data.Space[i].Revised)
 
 		if err != nil {
 			h.Runtime.Rollback(data.Context.Transaction)
@@ -169,13 +200,18 @@ func (h *Handler) processSampleData(data om.SampleData) (err error) {
 		}
 	}
 
-	h.Runtime.Log.Info(fmt.Sprintf("Installing category (%d)", len(data.Category)))
+	// Category.
+	h.Runtime.Log.Info(fmt.Sprintf("Installing (%d) categories", len(data.Category)))
 	for i := range data.Category {
 		_, err = data.Context.Transaction.Exec(h.Runtime.Db.Rebind(`
             INSERT INTO dmz_category (c_refid, c_orgid, c_spaceid, c_name, c_created, c_revised)
             VALUES (?, ?, ?, ?, ?, ?)`),
-			data.Category[i].RefID, data.Context.OrgID, data.Category[i].SpaceID, data.Category[i].Name,
-			data.Category[i].Created, data.Category[i].Revised)
+			h.getMappedID("category", data.Category[i].RefID),
+			data.Context.OrgID,
+			h.getMappedID("space", data.Category[i].SpaceID),
+			data.Category[i].Name,
+			data.Category[i].Created,
+			data.Category[i].Revised)
 
 		if err != nil {
 			h.Runtime.Rollback(data.Context.Transaction)
@@ -184,15 +220,20 @@ func (h *Handler) processSampleData(data om.SampleData) (err error) {
 		}
 	}
 
+	// Category Member.
 	h.Runtime.Log.Info(fmt.Sprintf("Installing category member (%d)", len(data.CategoryMember)))
 	for i := range data.CategoryMember {
 		_, err = data.Context.Transaction.Exec(h.Runtime.Db.Rebind(`
             INSERT INTO dmz_category_member
             (c_refid, c_orgid, c_categoryid, c_spaceid, c_docid, c_created, c_revised)
             VALUES (?, ?, ?, ?, ?, ?, ?)`),
-			data.CategoryMember[i].RefID, data.Context.OrgID, data.CategoryMember[i].CategoryID,
-			data.CategoryMember[i].SpaceID, data.CategoryMember[i].DocumentID,
-			data.CategoryMember[i].Created, data.CategoryMember[i].Revised)
+			h.getMappedID("category_member", data.CategoryMember[i].RefID),
+			data.Context.OrgID,
+			h.getMappedID("category", data.CategoryMember[i].CategoryID),
+			h.getMappedID("space", data.CategoryMember[i].SpaceID),
+			h.getMappedID("document", data.CategoryMember[i].DocumentID),
+			data.CategoryMember[i].Created,
+			data.CategoryMember[i].Revised)
 
 		if err != nil {
 			h.Runtime.Rollback(data.Context.Transaction)
@@ -210,7 +251,7 @@ func (h *Handler) processSampleData(data om.SampleData) (err error) {
 	perm.Location = permission.LocationSpace
 
 	for i := range data.Space {
-		perm.RefID = data.Space[i].RefID
+		perm.RefID = h.getMappedID("space", data.Space[i].RefID)
 		perm.Action = "" // we send array for actions below
 
 		err = h.Store.Permission.AddPermissions(data.Context, perm,
@@ -235,7 +276,7 @@ func (h *Handler) processSampleData(data om.SampleData) (err error) {
 		pc.WhoID = data.Context.UserID
 		pc.Scope = permission.ScopeRow
 		pc.Location = permission.LocationCategory
-		pc.RefID = data.Category[i].RefID
+		pc.RefID = h.getMappedID("category", data.Category[i].RefID)
 		pc.Action = permission.CategoryView
 
 		err = h.Store.Permission.AddPermission(data.Context, pc)
@@ -246,6 +287,7 @@ func (h *Handler) processSampleData(data om.SampleData) (err error) {
 		}
 	}
 
+	// Document.
 	h.Runtime.Log.Info(fmt.Sprintf("Installing document (%d)", len(data.Document)))
 	for i := range data.Document {
 		_, err = data.Context.Transaction.Exec(h.Runtime.Db.Rebind(`
@@ -254,15 +296,26 @@ func (h *Handler) processSampleData(data om.SampleData) (err error) {
             c_name, c_desc, c_slug, c_tags, c_template, c_protection, c_approval,
             c_lifecycle, c_versioned, c_versionid, c_versionorder, c_groupid, c_created, c_revised)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
-			data.Document[i].RefID, data.Context.OrgID, data.Document[i].SpaceID,
-			data.Context.UserID, data.Document[i].Job,
-			data.Document[i].Location, data.Document[i].Name, data.Document[i].Excerpt,
-			data.Document[i].Slug, data.Document[i].Tags,
-			data.Document[i].Template, data.Document[i].Protection,
-			data.Document[i].Approval, data.Document[i].Lifecycle,
-			data.Document[i].Versioned, data.Document[i].VersionID,
-			data.Document[i].VersionOrder, data.Document[i].GroupID,
-			data.Document[i].Created, data.Document[i].Revised)
+			h.getMappedID("document", data.Document[i].RefID),
+			data.Context.OrgID,
+			h.getMappedID("space", data.Document[i].SpaceID),
+			data.Context.UserID,
+			data.Document[i].Job,
+			data.Document[i].Location,
+			data.Document[i].Name,
+			data.Document[i].Excerpt,
+			data.Document[i].Slug,
+			data.Document[i].Tags,
+			data.Document[i].Template,
+			data.Document[i].Protection,
+			data.Document[i].Approval,
+			data.Document[i].Lifecycle,
+			data.Document[i].Versioned,
+			data.Document[i].VersionID,
+			data.Document[i].VersionOrder,
+			data.Document[i].GroupID,
+			data.Document[i].Created,
+			data.Document[i].Revised)
 
 		if err != nil {
 			h.Runtime.Rollback(data.Context.Transaction)
@@ -271,6 +324,7 @@ func (h *Handler) processSampleData(data om.SampleData) (err error) {
 		}
 	}
 
+	// Document Attachment.
 	h.Runtime.Log.Info(fmt.Sprintf("Installing document attachment (%d)", len(data.DocumentAttachment)))
 	for i := range data.DocumentAttachment {
 		_, err = data.Context.Transaction.Exec(h.Runtime.Db.Rebind(`
@@ -278,12 +332,17 @@ func (h *Handler) processSampleData(data om.SampleData) (err error) {
             (c_refid, c_orgid, c_docid, c_sectionid, c_job, c_fileid,
             c_filename, c_data, c_extension, c_created, c_revised)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
-			data.DocumentAttachment[i].RefID, data.Context.OrgID,
-			data.DocumentAttachment[i].DocumentID, data.DocumentAttachment[i].SectionID,
-			data.DocumentAttachment[i].Job, data.DocumentAttachment[i].FileID,
+			h.getMappedID("document_attachment", data.DocumentAttachment[i].RefID),
+			data.Context.OrgID,
+			h.getMappedID("document", data.DocumentAttachment[i].DocumentID),
+			h.getMappedID("section", data.DocumentAttachment[i].SectionID),
+			data.DocumentAttachment[i].Job,
+			data.DocumentAttachment[i].FileID,
 			data.DocumentAttachment[i].Filename,
-			data.DocumentAttachment[i].Data, data.DocumentAttachment[i].Extension,
-			data.DocumentAttachment[i].Created, data.DocumentAttachment[i].Revised)
+			data.DocumentAttachment[i].Data,
+			data.DocumentAttachment[i].Extension,
+			data.DocumentAttachment[i].Created,
+			data.DocumentAttachment[i].Revised)
 
 		if err != nil {
 			h.Runtime.Rollback(data.Context.Transaction)
@@ -292,18 +351,36 @@ func (h *Handler) processSampleData(data om.SampleData) (err error) {
 		}
 	}
 
+	// Document Link.
 	h.Runtime.Log.Info(fmt.Sprintf("Installing document link (%d)", len(data.DocumentLink)))
 	for i := range data.DocumentLink {
+		targetID := ""
+		if data.DocumentLink[i].LinkType == "file" {
+			targetID = h.getMappedID("document_attachment", data.DocumentLink[i].TargetID)
+		} else if data.DocumentLink[i].LinkType == "document" {
+			targetID = h.getMappedID("document", data.DocumentLink[i].TargetID)
+		} else {
+			targetID = h.getMappedID("section", data.DocumentLink[i].TargetID)
+		}
+
 		_, err = data.Context.Transaction.Exec(h.Runtime.Db.Rebind(`
             INSERT INTO dmz_doc_link
             (c_refid, c_orgid, c_spaceid, c_userid, c_sourcedocid, c_sourcesectionid,
             c_targetdocid, c_targetid, c_externalid, c_type, c_orphan, c_created, c_revised)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
-			data.DocumentLink[i].RefID, data.Context.OrgID, data.DocumentLink[i].SpaceID,
-			data.Context.UserID, data.DocumentLink[i].SourceDocumentID, data.DocumentLink[i].SourceSectionID,
-			data.DocumentLink[i].TargetDocumentID, data.DocumentLink[i].TargetID, data.DocumentLink[i].ExternalID,
-			data.DocumentLink[i].LinkType, data.DocumentLink[i].Orphan,
-			data.DocumentLink[i].Created, data.DocumentLink[i].Revised)
+			h.getMappedID("document_link", data.DocumentLink[i].RefID),
+			data.Context.OrgID,
+			h.getMappedID("space", data.DocumentLink[i].SpaceID),
+			data.Context.UserID,
+			h.getMappedID("document", data.DocumentLink[i].SourceDocumentID),
+			h.getMappedID("section", data.DocumentLink[i].SourceSectionID),
+			h.getMappedID("document", data.DocumentLink[i].TargetDocumentID),
+			targetID,
+			data.DocumentLink[i].ExternalID,
+			data.DocumentLink[i].LinkType,
+			data.DocumentLink[i].Orphan,
+			data.DocumentLink[i].Created,
+			data.DocumentLink[i].Revised)
 
 		if err != nil {
 			h.Runtime.Rollback(data.Context.Transaction)
@@ -312,6 +389,7 @@ func (h *Handler) processSampleData(data om.SampleData) (err error) {
 		}
 	}
 
+	// Document Section.
 	h.Runtime.Log.Info(fmt.Sprintf("Installing section (%d)", len(data.Section)))
 	for i := range data.Section {
 		_, err = data.Context.Transaction.Exec(h.Runtime.Db.Rebind(`
@@ -319,14 +397,22 @@ func (h *Handler) processSampleData(data om.SampleData) (err error) {
             (c_refid, c_orgid, c_docid, c_userid, c_contenttype, c_type, c_level, c_name, c_body,
             c_revisions, c_sequence, c_templateid, c_status, c_relativeid, c_created, c_revised)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
-			data.Section[i].RefID, data.Context.OrgID, data.Section[i].DocumentID,
+			h.getMappedID("section", data.Section[i].RefID),
+			data.Context.OrgID,
+			h.getMappedID("document", data.Section[i].DocumentID),
 			data.Context.UserID,
-			data.Section[i].ContentType, data.Section[i].Type,
-			data.Section[i].Level, data.Section[i].Name,
-			data.Section[i].Body, data.Section[i].Revisions,
-			data.Section[i].Sequence, data.Section[i].TemplateID,
-			data.Section[i].Status, data.Section[i].RelativeID,
-			data.Section[i].Created, data.Section[i].Revised)
+			data.Section[i].ContentType,
+			data.Section[i].Type,
+			data.Section[i].Level,
+			data.Section[i].Name,
+			data.Section[i].Body,
+			data.Section[i].Revisions,
+			data.Section[i].Sequence,
+			h.getMappedID("section", data.Section[i].TemplateID),
+			data.Section[i].Status,
+			h.getMappedID("section", data.Section[i].RelativeID),
+			data.Section[i].Created,
+			data.Section[i].Revised)
 
 		if err != nil {
 			h.Runtime.Rollback(data.Context.Transaction)
@@ -335,6 +421,7 @@ func (h *Handler) processSampleData(data om.SampleData) (err error) {
 		}
 	}
 
+	// Document Section Meta.
 	h.Runtime.Log.Info(fmt.Sprintf("Installing section meta (%d)", len(data.SectionMeta)))
 	for i := range data.SectionMeta {
 		_, err = data.Context.Transaction.Exec(h.Runtime.Db.Rebind(`
@@ -342,11 +429,15 @@ func (h *Handler) processSampleData(data om.SampleData) (err error) {
             (c_sectionid, c_orgid, c_userid, c_docid, c_rawbody,
             c_config, c_external, c_created, c_revised)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`),
-			data.SectionMeta[i].SectionID, data.Context.OrgID, data.Context.UserID,
-			data.SectionMeta[i].DocumentID,
-			data.SectionMeta[i].RawBody, data.SectionMeta[i].Config,
+			h.getMappedID("section", data.SectionMeta[i].SectionID),
+			data.Context.OrgID,
+			data.Context.UserID,
+			h.getMappedID("document", data.SectionMeta[i].DocumentID),
+			data.SectionMeta[i].RawBody,
+			data.SectionMeta[i].Config,
 			data.SectionMeta[i].ExternalSource,
-			data.SectionMeta[i].Created, data.SectionMeta[i].Revised)
+			data.SectionMeta[i].Created,
+			data.SectionMeta[i].Revised)
 
 		if err != nil {
 			h.Runtime.Rollback(data.Context.Transaction)
@@ -360,8 +451,6 @@ func (h *Handler) processSampleData(data om.SampleData) (err error) {
 		h.Runtime.Rollback(data.Context.Transaction)
 		return
 	}
-
-	// Build search index
 
 	return nil
 }

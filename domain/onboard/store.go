@@ -22,7 +22,7 @@ type Store struct {
 }
 
 // ContentCounts returns the number of spaces and documents.
-func (s Store) ContentCounts() (spaces, docs int) {
+func (s Store) ContentCounts(orgID string) (spaces, docs int) {
 	// By default we assume there is content in case of error condition.
 	spaces = 10
 	docs = 10
@@ -30,16 +30,20 @@ func (s Store) ContentCounts() (spaces, docs int) {
 	var m int
 	var err error
 
-	row := s.Runtime.Db.QueryRow("SELECT COUNT(*) FROM dmz_space")
+	row := s.Runtime.Db.QueryRow(s.Bind("SELECT COUNT(*) FROM dmz_space WHERE c_orgid=?"), orgID)
 	err = row.Scan(&m)
 	if err == nil {
 		spaces = m
+	} else {
+		s.Runtime.Log.Error("onboard.ContentCounts", err)
 	}
 
-	row = s.Runtime.Db.QueryRow("SELECT COUNT(*) FROM dmz_doc")
+	row = s.Runtime.Db.QueryRow(s.Bind("SELECT COUNT(*) FROM dmz_doc WHERE c_orgid=?"), orgID)
 	err = row.Scan(&m)
 	if err == nil {
 		docs = m
+	} else {
+		s.Runtime.Log.Error("onboard.ContentCounts", err)
 	}
 
 	return

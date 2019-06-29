@@ -53,7 +53,7 @@ type Store struct {
 	Setting      SettingStorer
 	Space        SpaceStorer
 	User         UserStorer
-	Onboard OnboardStorer
+	Onboard      OnboardStorer
 }
 
 // SpaceStorer defines required methods for space management
@@ -321,5 +321,5 @@ type LabelStorer interface {
 
 // OnboardStorer defines required methods for enterprise customer onboarding process.
 type OnboardStorer interface {
-	ContentCounts() (spaces, docs int)
+	ContentCounts(orgID string) (spaces, docs int)
 }

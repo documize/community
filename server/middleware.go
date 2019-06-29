@@ -263,6 +263,7 @@ func (m *middleware) preAuthorizeStaticAssets(rt *env.Runtime, r *http.Request) 
 		ctx.GlobalAdmin = false
 		ctx.AppURL = r.Host
 		ctx.SSL = request.IsSSL(r)
+		ctx.OrgID = org.RefID
 
 		return true, ctx
 	}

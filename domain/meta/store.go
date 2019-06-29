@@ -13,6 +13,8 @@ package meta
 
 import (
 	"database/sql"
+	"fmt"
+
 	"github.com/documize/community/model/doc"
 
 	"github.com/documize/community/domain"
@@ -29,9 +31,14 @@ type Store struct {
 }
 
 // Documents returns every document ID value stored.
-// The query runs at the instance level across all tenants.
+// For global admins, the query runs at the instance level across all tenants.
+// For tenant admins, the query is restricted to the tenant.
 func (s Store) Documents(ctx domain.RequestContext) (documents []string, err error) {
-	err = s.Runtime.Db.Select(&documents, `SELECT c_refid FROM dmz_doc WHERE c_lifecycle=1`)
+	qry := "SELECT c_refid FROM dmz_doc WHERE c_lifecycle=1"
+	if !ctx.GlobalAdmin {
+		qry = fmt.Sprintf("%s AND c_orgid='%s'", qry, ctx.OrgID)
+	}
+	err = s.Runtime.Db.Select(&documents, qry)
 
 	if err == sql.ErrNoRows {
 		err = nil
