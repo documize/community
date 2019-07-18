@@ -16,8 +16,9 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/documize/community/domain/store"
 	"github.com/pkg/errors"
+
+	"github.com/documize/community/domain/store"
 )
 
 // Store provides data access to user permission information.

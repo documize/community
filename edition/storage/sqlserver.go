@@ -329,7 +329,7 @@ func (p SQLServerProvider) JSONEmpty() string {
 // Typically used in SELECT <my_json_field> query.
 func (p SQLServerProvider) JSONGetValue(column, attribute string) string {
 	if len(attribute) > 0 {
-		return fmt.Sprintf("JSON_VALUE(%s, '$.%s'", column, attribute)
+		return fmt.Sprintf("JSON_VALUE(%s, '$.%s')", column, attribute)
 	}
 
 	return fmt.Sprintf("JSON_QUERY(%s)", column)

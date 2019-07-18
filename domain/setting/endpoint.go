@@ -110,6 +110,7 @@ func (h *Handler) SetSMTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	cfg := GetSMTPConfig(h.Store)
+	h.Runtime.Log.Infof("%v", cfg)
 	dialer, err := smtp.Connect(cfg)
 	em := smtp.EmailMessage{}
 	em.Subject = "Documize SMTP Test"
