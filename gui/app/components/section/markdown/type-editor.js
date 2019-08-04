@@ -91,7 +91,7 @@ export default Component.extend({
 					this.attachEditor();
 				} else {
 					this.set('pageBody',this.getBody());
-					let md = window.markdownit({ linkify: true });
+					let md = window.markdownit({ linkify: true, html: true });
 					let result = md.render(this.getBody());
 
 					this.set('pagePreview', result);
