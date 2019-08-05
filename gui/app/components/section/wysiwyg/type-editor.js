@@ -34,11 +34,11 @@ export default Component.extend({
 
 		schedule('afterRender', () => {
 			let options = {
-				cache_suffix: '?v=505',
+				cache_suffix: '?v=5012',
 				selector: '#' + this.get('editorId'),
 				relative_urls: false,
 				browser_spellcheck: true,
-				gecko_spellcheck: false,
+				contextmenu: false,
 				statusbar: false,
 				inline: false,
 				paste_data_images: true,
@@ -117,7 +117,7 @@ export default Component.extend({
 			};
 
 			if (typeof tinymce === 'undefined') {
-				$.getScript('/tinymce/tinymce.min.js?v=505', function () {
+				$.getScript('/tinymce/tinymce.min.js?v=5012', function () {
 					window.tinymce.dom.Event.domLoaded = true;
 					tinymce.baseURL = '//' + window.location.host + '/tinymce';
 					tinymce.suffix = '.min';
