@@ -27,8 +27,12 @@
 						{{input type="password" value=password id="authPassword" class="form-control" autocomplete="current-password"}}
 					{{/if}}
 				</div>
+        {{#if isAuthProviderCAS}}
+            {{ui/ui-button color=constants.Color.Green light=true label=constants.Label.SignIn onClick=(action "loginWithCAS")}}
+        {{else}}
+            {{ui/ui-button color=constants.Color.Green light=true label=constants.Label.SignIn onClick=(action "login")}}
+        {{/if}}
 
-				{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.SignIn onClick=(action "login")}}
 
 				<div class="{{unless invalidCredentials "invisible"}} color-red-600 mt-3">Invalid credentials</div>
 				{{#if isAuthProviderDocumize}}

@@ -42,6 +42,8 @@ export default Route.extend(AuthenticatedRouteMixin, {
 					case constants.AuthProvider.LDAP:
 						data.authConfig = config;
 						break;
+					case constants.AuthProvider.CAS:
+						data.authConfig = config;
 					case constants.AuthProvider.Documize:
 						data.authConfig = '';
 						break;

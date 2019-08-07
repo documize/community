@@ -25,6 +25,7 @@ let constants = EmberObject.extend({
         Documize: 'documize',
 		Keycloak: 'keycloak',
 		LDAP: 'ldap',
+		CAS: 'cas',
 		ServerTypeLDAP: 'ldap',
 		ServerTypeAD: 'ad',
 		EncryptionTypeNone: 'none',

@@ -12,10 +12,12 @@
 import { inject as service } from '@ember/service';
 import AuthProvider from '../../../mixins/auth';
 import Controller from '@ember/controller';
+import {Promise as EmberPromise} from "rsvp";
 
 export default Controller.extend(AuthProvider, {
 	appMeta: service('app-meta'),
 	session: service('session'),
+
 	invalidCredentials: false,
 
 	reset() {
@@ -26,7 +28,7 @@ export default Controller.extend(AuthProvider, {
 			});
 		}
 
-		if (this.get('isAuthProviderLDAP')) {
+		if (this.get('isAuthProviderLDAP') || this.get('isAuthProviderCAS')) {
 			this.setProperties({
 				username: '',
 				password: ''
@@ -62,6 +64,24 @@ export default Controller.extend(AuthProvider, {
 					this.set('invalidCredentials', true);
 				});
 			}
+			// if (this.get('isAuthProviderCAS')) {
+			//
+			// 	this.get('session').authenticate('authenticator:cas').then((response) => {
+			// 		this.transitionToRoute('folders');
+			// 		return response;
+			// 	}).catch(() => {
+			// 		this.set('invalidCredentials', true);
+			// 	});
+			// }
+		},
+		loginWithCAS(){
+			// let config = this.get('config');
+			let url = 'https://sso.bangdao-tech.com/sso/login?service=' + encodeURIComponent('https://duty.bangdao-tech.com/');
+			window.location.replace(url);
+
+
+
 		}
 	}
+
 });
