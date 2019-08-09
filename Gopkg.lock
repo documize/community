@@ -101,6 +101,14 @@
   version = "v1.4.0"
 
 [[projects]]
+  branch = "master"
+  digest = "1:1ba1d79f2810270045c328ae5d674321db34e3aae468eb4233883b473c5c0467"
+  name = "github.com/golang/glog"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "23def4e6c14b4da8ac2ed8007337bc5eb5007998"
+
+[[projects]]
   digest = "1:ffc060c551980d37ee9e428ef528ee2813137249ccebb0bfc412ef83071cac91"
   name = "github.com/golang/protobuf"
   packages = ["proto"]
@@ -299,12 +307,28 @@
   version = "v1.2"
 
 [[projects]]
+  digest = "1:d095b21d330637ad0e1025231ef91023f64c65dda093a437001fe8becfb77099"
+  name = "gopkg.in/cas.v2"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "1b87d011d1fc0430cdbdfe3115c9843ec33d9da6"
+  version = "v2.1.0"
+
+[[projects]]
   digest = "1:e9a0fa7c2dfc90e0fae16be5825ad98074d8704f5fcebfdc289a8e8fb0f8e4b5"
   name = "gopkg.in/ldap.v3"
   packages = ["."]
   pruneopts = "UT"
   revision = "9f0d712775a0973b7824a1585a86a4ea1d5263d9"
   version = "v3.0.3"
+
+[[projects]]
+  digest = "1:4d2e5a73dc1500038e504a8d78b986630e3626dc027bc030ba5c75da257cdb96"
+  name = "gopkg.in/yaml.v2"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "51d6538a90f86fe93ac480b35f37b2be17fef232"
+  version = "v2.2.2"
 
 [solve-meta]
   analyzer-name = "dep"
@@ -334,6 +358,7 @@
     "golang.org/x/oauth2",
     "gopkg.in/alexcesaro/quotedprintable.v3",
     "gopkg.in/andygrunwald/go-jira.v1",
+    "gopkg.in/cas.v2",
     "gopkg.in/ldap.v3",
   ]
   solver-name = "gps-cdcl"

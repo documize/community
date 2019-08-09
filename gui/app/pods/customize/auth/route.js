@@ -44,6 +44,7 @@ export default Route.extend(AuthenticatedRouteMixin, {
 						break;
 					case constants.AuthProvider.CAS:
 						data.authConfig = config;
+						break;
 					case constants.AuthProvider.Documize:
 						data.authConfig = '';
 						break;

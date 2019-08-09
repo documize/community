@@ -9,10 +9,13 @@
 //
 // https://documize.com
 
+import { isPresent } from '@ember/utils';
+
 import { reject, resolve } from 'rsvp';
 import { inject as service } from '@ember/service';
 
 import Base from 'ember-simple-auth/authenticators/base';
+import netUtil from "../utils/net";
 
 export default Base.extend({
 	ajax: service(),
@@ -28,8 +31,16 @@ export default Base.extend({
 		return reject();
 	},
 
-	authenticate(){
-		return this.get('ajax').request('public/authenticate/cas' );
+	authenticate(data){
+		data.domain = netUtil.getSubdomain();
+
+		if (!isPresent(data.ticket)) {
+			return reject("data.ticket is empty");
+		}
+		return this.get('ajax').post('public/authenticate/cas', {
+			data: JSON.stringify(data),
+			contentType: 'json'
+		});
 	},
 
 	invalidate() {

@@ -17,6 +17,7 @@ import (
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/domain/attachment"
 	"github.com/documize/community/domain/auth"
+	"github.com/documize/community/domain/auth/cas"
 	"github.com/documize/community/domain/auth/keycloak"
 	"github.com/documize/community/domain/auth/ldap"
 	"github.com/documize/community/domain/backup"
@@ -66,6 +67,7 @@ func RegisterEndpoints(rt *env.Runtime, s *store.Store) {
 	setting := setting.Handler{Runtime: rt, Store: s}
 	category := category.Handler{Runtime: rt, Store: s}
 	keycloak := keycloak.Handler{Runtime: rt, Store: s}
+	cas := cas.Handler{Runtime:rt, Store: s}
 	template := template.Handler{Runtime: rt, Store: s, Indexer: indexer}
 	document := document.Handler{Runtime: rt, Store: s, Indexer: indexer}
 	attachment := attachment.Handler{Runtime: rt, Store: s, Indexer: indexer}
@@ -93,6 +95,7 @@ func RegisterEndpoints(rt *env.Runtime, s *store.Store) {
 
 	AddPublic(rt, "authenticate/keycloak", []string{"POST", "OPTIONS"}, nil, keycloak.Authenticate)
 	AddPublic(rt, "authenticate/ldap", []string{"POST", "OPTIONS"}, nil, ldap.Authenticate)
+	AddPublic(rt, "authenticate/cas", []string{"POST", "OPTIONS"}, nil, cas.Authenticate)
 	AddPublic(rt, "authenticate", []string{"POST", "OPTIONS"}, nil, auth.Login)
 	AddPublic(rt, "validate", []string{"GET", "OPTIONS"}, nil, auth.ValidateToken)
 	AddPublic(rt, "forgot", []string{"POST", "OPTIONS"}, nil, user.ForgotPassword)

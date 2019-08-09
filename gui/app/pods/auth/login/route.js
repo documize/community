@@ -41,6 +41,13 @@ export default Route.extend({
 					});
 
 					break;
+				case constants.AuthProvider.CAS: {
+					let config = JSON.parse(this.get('appMeta.authConfig'));
+					let url = config.url + '/login?service=' + encodeURIComponent(config.redirectUrl);
+					window.location.replace(url);
+					resolve();
+					break;
+				}
 
 				default:
 					this.set('showLogin', true);

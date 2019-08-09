@@ -12,7 +12,6 @@
 import { inject as service } from '@ember/service';
 import AuthProvider from '../../../mixins/auth';
 import Controller from '@ember/controller';
-import {Promise as EmberPromise} from "rsvp";
 
 export default Controller.extend(AuthProvider, {
 	appMeta: service('app-meta'),
@@ -73,14 +72,6 @@ export default Controller.extend(AuthProvider, {
 			// 		this.set('invalidCredentials', true);
 			// 	});
 			// }
-		},
-		loginWithCAS(){
-			// let config = this.get('config');
-			let url = 'https://sso.bangdao-tech.com/sso/login?service=' + encodeURIComponent('https://duty.bangdao-tech.com/');
-			window.location.replace(url);
-
-
-
 		}
 	}
 
