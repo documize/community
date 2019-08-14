@@ -2,7 +2,7 @@ FROM golang:1.12-alpine as builder
 COPY . /go/src/github.com/documize/community
 
 RUN  cd /go/src/github.com/documize/community && \
-    env GOOS=linux GOARCH=amd64 GODEBUG=tls13=1 go build -gcflags="all=-trimpath=$GOPATH" -o bin/documize-community-linux-amd64 ./edition/community.go
+    env GOOS=linux GOARCH=amd64 GODEBUG=tls13=1 go build -o bin/documize-community-linux-amd64 ./edition/community.go
 
 # build release image
 FROM alpine:3.10
