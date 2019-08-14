@@ -6,6 +6,7 @@ RUN  cd /go/src/github.com/documize/community && \
 
 # build release image
 FROM alpine:3.10
+RUN apk update && apk add ca-certificates && rm -rf /var/cache/apk/*
 COPY --from=builder /go/src/github.com/documize/community/bin/documize-community-linux-amd64 /documize
 EXPOSE 5001
 ENTRYPOINT [ "/documize" ]
