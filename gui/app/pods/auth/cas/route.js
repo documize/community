@@ -23,12 +23,11 @@ export default Route.extend({
 			refreshModel: true
 		},
 		ticket   : {
-			refreshModel: true,
-			replace     : true,
+			refreshModel: true
 		}
 	},
 	message: '',
-
+	mode: 'login',
 	afterModel(model) {
 		return new EmberPromise((resolve) => {
 			let constants = this.get('constants');
@@ -45,11 +44,11 @@ export default Route.extend({
 				this.transitionTo('folders');
 			}, (reject) => {
 				if (!_.isUndefined(reject.Error)) {
-					this.set('message', reject.Error);
+					model.message = reject.Error;
 				} else {
-					this.set('message', reject);
+					model.message = reject.Error;
 				}
-				this.set('mode', 'reject');
+				model.mode = 'reject';
 				resolve();
 			});
 
