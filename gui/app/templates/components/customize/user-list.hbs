@@ -8,7 +8,7 @@
 		{{/if}}
 	{{/if}}
 
-	{{#if (or isAuthProviderLDAP c)}}
+	{{#if (or isAuthProviderLDAP isDualAuth)}}
 		<Ui::UiSpacer @size="300" />
 		{{#if syncInProgress}}
 			{{ui/ui-button color=constants.Color.Gray light=true icon=constants.Icon.Locked label="LDAP user sync running..."}}

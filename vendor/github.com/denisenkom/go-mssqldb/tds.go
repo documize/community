@@ -655,28 +655,29 @@ func sendAttention(buf *tdsBuffer) error {
 }
 
 type connectParams struct {
-	logFlags               uint64
-	port                   uint64
-	host                   string
-	instance               string
-	database               string
-	user                   string
-	password               string
-	dial_timeout           time.Duration
-	conn_timeout           time.Duration
-	keepAlive              time.Duration
-	encrypt                bool
-	disableEncryption      bool
-	trustServerCertificate bool
-	certificate            string
-	hostInCertificate      string
-	serverSPN              string
-	workstation            string
-	appname                string
-	typeFlags              uint8
-	failOverPartner        string
-	failOverPort           uint64
-	packetSize             uint16
+	logFlags                  uint64
+	port                      uint64
+	host                      string
+	instance                  string
+	database                  string
+	user                      string
+	password                  string
+	dial_timeout              time.Duration
+	conn_timeout              time.Duration
+	keepAlive                 time.Duration
+	encrypt                   bool
+	disableEncryption         bool
+	trustServerCertificate    bool
+	certificate               string
+	hostInCertificate         string
+	hostInCertificateProvided bool
+	serverSPN                 string
+	workstation               string
+	appname                   string
+	typeFlags                 uint8
+	failOverPartner           string
+	failOverPort              uint64
+	packetSize                uint16
 }
 
 func splitConnectionString(dsn string) (res map[string]string) {
@@ -1050,8 +1051,11 @@ func parseConnectParams(dsn string) (connectParams, error) {
 	}
 	p.certificate = params["certificate"]
 	p.hostInCertificate, ok = params["hostnameincertificate"]
-	if !ok {
+	if ok {
+		p.hostInCertificateProvided = true
+	} else {
 		p.hostInCertificate = p.host
+		p.hostInCertificateProvided = false
 	}
 
 	serverSPN, ok := params["serverspn"]
@@ -1318,42 +1322,43 @@ initiate_connection:
 	}
 
 	// processing login response
-	var sspi_msg []byte
-continue_login:
-	tokchan := make(chan tokenStruct, 5)
-	go processResponse(context.Background(), &sess, tokchan, nil)
 	success := false
-	for tok := range tokchan {
-		switch token := tok.(type) {
-		case sspiMsg:
-			sspi_msg, err = auth.NextBytes(token)
-			if err != nil {
-				return nil, err
-			}
-		case loginAckStruct:
-			success = true
-			sess.loginAck = token
-		case error:
-			return nil, fmt.Errorf("Login error: %s", token.Error())
-		case doneStruct:
-			if token.isError() {
-				return nil, fmt.Errorf("Login error: %s", token.getError())
+	for {
+		tokchan := make(chan tokenStruct, 5)
+		go processResponse(context.Background(), &sess, tokchan, nil)
+		for tok := range tokchan {
+			switch token := tok.(type) {
+			case sspiMsg:
+				sspi_msg, err := auth.NextBytes(token)
+				if err != nil {
+					return nil, err
+				}
+				if sspi_msg != nil && len(sspi_msg) > 0 {
+					outbuf.BeginPacket(packSSPIMessage, false)
+					_, err = outbuf.Write(sspi_msg)
+					if err != nil {
+						return nil, err
+					}
+					err = outbuf.FinishPacket()
+					if err != nil {
+						return nil, err
+					}
+					sspi_msg = nil
+				}
+			case loginAckStruct:
+				success = true
+				sess.loginAck = token
+			case error:
+				return nil, fmt.Errorf("Login error: %s", token.Error())
+			case doneStruct:
+				if token.isError() {
+					return nil, fmt.Errorf("Login error: %s", token.getError())
+				}
+				goto loginEnd
 			}
 		}
 	}
-	if sspi_msg != nil {
-		outbuf.BeginPacket(packSSPIMessage, false)
-		_, err = outbuf.Write(sspi_msg)
-		if err != nil {
-			return nil, err
-		}
-		err = outbuf.FinishPacket()
-		if err != nil {
-			return nil, err
-		}
-		sspi_msg = nil
-		goto continue_login
-	}
+loginEnd:
 	if !success {
 		return nil, fmt.Errorf("Login failed")
 	}
@@ -1361,6 +1366,9 @@ continue_login:
 		toconn.Close()
 		p.host = sess.routedServer
 		p.port = uint64(sess.routedPort)
+		if !p.hostInCertificateProvided {
+			p.hostInCertificate = sess.routedServer
+		}
 		goto initiate_connection
 	}
 	return &sess, nil

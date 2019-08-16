@@ -27,14 +27,15 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:cf0505eb7d4704d5ab445353dc64122acf56d13937e20dac5570b995cb21232c"
+  digest = "1:159f2147aa2b2e5fa020480ab46ab26f3e6c3ebe5d0191632622cc9aa81bcffe"
   name = "github.com/denisenkom/go-mssqldb"
   packages = [
     ".",
     "internal/cp",
+    "internal/querytext",
   ]
   pruneopts = "UT"
-  revision = "a8ed825ac8537383ef814eaf5a16174751796a2b"
+  revision = "db2462fef53bd29c619fe40f73cbfcc12be79d9f"
 
 [[projects]]
   digest = "1:217f778e19b8d206112c21d21a7cc72ca3cb493b67631680a2324bc50335d432"
@@ -93,12 +94,12 @@
   version = "v1.0"
 
 [[projects]]
-  digest = "1:adea5a94903eb4384abef30f3d878dc9ff6b6b5b0722da25b82e5169216dfb61"
+  digest = "1:ec6f9bf5e274c833c911923c9193867f3f18788c461f76f05f62bb1510e0ae65"
   name = "github.com/go-sql-driver/mysql"
   packages = ["."]
   pruneopts = "UT"
-  revision = "d523deb1b23d913de5bdada721a6071e71283618"
-  version = "v1.4.0"
+  revision = "72cd26f257d44c1114970e19afddcd812016007e"
+  version = "v1.4.1"
 
 [[projects]]
   branch = "master"
@@ -168,15 +169,16 @@
   revision = "d161d7a76b5661016ad0b085869f77fd410f3e6a"
 
 [[projects]]
-  digest = "1:8ef506fc2bb9ced9b151dafa592d4046063d744c646c1bbe801982ce87e4bc24"
+  digest = "1:12cb143f2148bf54bcd9fe622abac17325e85eeb1d84b8ec6caf1c80232108fd"
   name = "github.com/lib/pq"
   packages = [
     ".",
     "oid",
+    "scram",
   ]
   pruneopts = "UT"
-  revision = "4ded0e9383f75c197b3a2aaa6d590ac52df6fd79"
-  version = "v1.0.0"
+  revision = "3427c32cb71afc948325f299f040e53c1dd78979"
+  version = "v1.2.0"
 
 [[projects]]
   branch = "master"

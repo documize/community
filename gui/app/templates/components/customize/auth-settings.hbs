@@ -18,14 +18,14 @@
 				</li>
 				<li class="option {{if isLDAPProvider "selected"}}" {{action "onLDAP"}}>
 					<div class="text-header">LDAP</div>
-					<div class="text">Connect to LDAP/ Active Directory</div>
+					<div class="text">Connect to LDAP/Active Directory</div>
 					{{#if isLDAPProvider}}
 						<i class="dicon {{constants.Icon.Tick}}" />
 					{{/if}}
 				</li>
                 <li class="option {{if isCASProvider "selected"}}" {{action "onCAS"}}>
                     <div class="text-header">CAS</div>
-                    <div class="text">Via authentication server</div>
+                    <div class="text">Via Central Authentication Server</div>
                     {{#if isCASProvider}}
                         <i class="dicon {{constants.Icon.Tick}}" />
                     {{/if}}

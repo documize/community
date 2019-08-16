@@ -1,15 +1,13 @@
 package auth
 
-
-// CASAuthRequest data received via Keycloak client library
+// CASAuthRequest data received via CAS client library
 type CASAuthRequest struct {
-	Ticket     string `json:"ticket"`
+	Ticket string `json:"ticket"`
 	Domain string `json:"domain"`
 }
 
-
 // CASConfig server configuration
 type CASConfig struct {
-	URL                       string `json:"url"`
+	URL         string `json:"url"`
 	RedirectURL string `json"redirectUrl"`
 }

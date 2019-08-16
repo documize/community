@@ -4,6 +4,11 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net/http"
+	"net/url"
+	"strings"
+
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/response"
 	"github.com/documize/community/core/secrets"
@@ -16,10 +21,6 @@ import (
 	ath "github.com/documize/community/model/auth"
 	"github.com/documize/community/model/user"
 	casv2 "gopkg.in/cas.v2"
-	"io/ioutil"
-	"net/http"
-	"net/url"
-	"strings"
 )
 
 // Handler contains the runtime information such as logging and database.
@@ -27,7 +28,6 @@ type Handler struct {
 	Runtime *env.Runtime
 	Store   *store.Store
 }
-
 
 // Authenticate checks CAS authentication credentials.
 func (h *Handler) Authenticate(w http.ResponseWriter, r *http.Request) {
@@ -63,15 +63,15 @@ func (h *Handler) Authenticate(w http.ResponseWriter, r *http.Request) {
 	ac := ath.CASConfig{}
 	err = json.Unmarshal([]byte(org.AuthConfig), &ac)
 	if err != nil {
-		response.WriteBadRequestError(w, method, "Unable to unmarshall CAS config")
+		response.WriteBadRequestError(w, method, "Unable to unmarshal CAS configuration")
 		h.Runtime.Log.Error(method, err)
 		return
 	}
 	service := url.QueryEscape(ac.RedirectURL)
 
-	validateUrl := ac.URL + "/serviceValidate?ticket=" + a.Ticket + "&service="+ service;
+	validateURL := ac.URL + "/serviceValidate?ticket=" + a.Ticket + "&service=" + service
 
-	resp, err := http.Get(validateUrl)
+	resp, err := http.Get(validateURL)
 	if err != nil {
 		response.WriteBadRequestError(w, method, "Unable to get service validate url")
 		h.Runtime.Log.Error(method, err)
