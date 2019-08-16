@@ -63,7 +63,7 @@ func (h *Handler) Authenticate(w http.ResponseWriter, r *http.Request) {
 	ac := ath.CASConfig{}
 	err = json.Unmarshal([]byte(org.AuthConfig), &ac)
 	if err != nil {
-		response.WriteBadRequestError(w, method, "Unable to unmarshall Keycloak Public Key")
+		response.WriteBadRequestError(w, method, "Unable to unmarshall CAS config")
 		h.Runtime.Log.Error(method, err)
 		return
 	}
@@ -80,13 +80,13 @@ func (h *Handler) Authenticate(w http.ResponseWriter, r *http.Request) {
 	defer streamutil.Close(resp.Body)
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		response.WriteBadRequestError(w, method, "Verity CAS ticket error")
+		response.WriteBadRequestError(w, method, "Unable to verify CAS ticket: "+ a.Ticket)
 		h.Runtime.Log.Error(method, err)
 		return
 	}
 	userInfo, err := casv2.ParseServiceResponse(data)
 	if err != nil {
-		response.WriteBadRequestError(w, method, "can't parse user info")
+		response.WriteBadRequestError(w, method, "Unable to get user information")
 		h.Runtime.Log.Error(method, err)
 		return
 	}
