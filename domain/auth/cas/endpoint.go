@@ -113,10 +113,10 @@ func (h *Handler) Authenticate(w http.ResponseWriter, r *http.Request) {
 		u.GlobalAdmin = false
 		u.Email = userInfo.User
 
-		firstName := userInfo.Attributes.Get("first_name")
-		lastName := userInfo.Attributes.Get("last_name")
-		if firstName != "" || lastName != "" {
-			u.Initials = stringutil.MakeInitials(firstName, lastName)
+		u.Firstname = userInfo.Attributes.Get("first_name")
+		u.Lastname = userInfo.Attributes.Get("last_name")
+		if u.Firstname != "" || u.Lastname != "" {
+			u.Initials = stringutil.MakeInitials(u.Firstname, u.Lastname)
 		}else {
 			u.Initials = stringutil.MakeInitials(userInfo.User, "")
 		}
