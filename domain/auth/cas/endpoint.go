@@ -80,7 +80,7 @@ func (h *Handler) Authenticate(w http.ResponseWriter, r *http.Request) {
 	defer streamutil.Close(resp.Body)
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		response.WriteBadRequestError(w, method, "Unable to verify CAS ticket: "+ a.Ticket)
+		response.WriteBadRequestError(w, method, "Unable to verify CAS ticket: "+a.Ticket)
 		h.Runtime.Log.Error(method, err)
 		return
 	}
@@ -113,12 +113,16 @@ func (h *Handler) Authenticate(w http.ResponseWriter, r *http.Request) {
 		u.GlobalAdmin = false
 		u.Email = userInfo.User
 
-		u.Firstname = userInfo.Attributes.Get("first_name")
-		u.Lastname = userInfo.Attributes.Get("last_name")
-		if u.Firstname != "" || u.Lastname != "" {
-			u.Initials = stringutil.MakeInitials(u.Firstname, u.Lastname)
-		}else {
+		fn := userInfo.Attributes.Get("first_name")
+		ln := userInfo.Attributes.Get("last_name")
+		if len(fn) > 0 || len(ln) > 0 {
+			u.Initials = stringutil.MakeInitials(fn, ln)
+			u.Firstname = fn
+			u.Lastname = ln
+		} else {
 			u.Initials = stringutil.MakeInitials(userInfo.User, "")
+			u.Firstname = userInfo.User
+			u.Lastname = ""
 		}
 
 		u.Salt = secrets.GenerateSalt()
