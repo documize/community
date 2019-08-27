@@ -205,6 +205,7 @@ func (s Store) GetUserCategoryPermissions(ctx domain.RequestContext, userID stri
 
 	if err == sql.ErrNoRows {
 		err = nil
+		r = []permission.Permission{}
 	}
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to execute select category permissions for user %s", userID))

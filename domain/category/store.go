@@ -262,8 +262,6 @@ func (s Store) GetSpaceCategorySummary(ctx domain.RequestContext, spaceID string
 
 // GetDocumentCategoryMembership returns all space categories associated with given document.
 func (s Store) GetDocumentCategoryMembership(ctx domain.RequestContext, documentID string) (c []category.Category, err error) {
-	c = []category.Category{}
-
 	err = s.Runtime.Db.Select(&c, s.Bind(`
         SELECT id, c_refid AS refid, c_orgid AS orgid, c_spaceid AS spaceid, c_name AS name, c_created AS created, c_revised AS revised
         FROM dmz_category
@@ -272,6 +270,7 @@ func (s Store) GetDocumentCategoryMembership(ctx domain.RequestContext, document
 
 	if err == sql.ErrNoRows {
 		err = nil
+		c = []category.Category{}
 	}
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to execute select categories for document %s", documentID))
@@ -280,7 +279,8 @@ func (s Store) GetDocumentCategoryMembership(ctx domain.RequestContext, document
 	return
 }
 
-// GetSpaceCategoryMembership returns category/document associations within space.
+// GetSpaceCategoryMembership returns category/document associations within space,
+// for specified user.
 func (s Store) GetSpaceCategoryMembership(ctx domain.RequestContext, spaceID string) (c []category.Member, err error) {
 	err = s.Runtime.Db.Select(&c, s.Bind(`
         SELECT id, c_refid AS refid, c_orgid AS orgid, c_spaceid AS spaceid, c_categoryid AS categoryid, c_docid AS documentid, c_created AS created, c_revised AS revised

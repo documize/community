@@ -33,6 +33,7 @@ import (
 	"github.com/documize/community/model/activity"
 	"github.com/documize/community/model/attachment"
 	"github.com/documize/community/model/audit"
+	"github.com/documize/community/model/category"
 	"github.com/documize/community/model/doc"
 	"github.com/documize/community/model/link"
 	"github.com/documize/community/model/page"
@@ -556,7 +557,6 @@ func (h *Handler) FetchDocumentData(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// document
 	document, err := h.Store.Document.Get(ctx, id)
 	if err == sql.ErrNoRows {
 		response.WriteNotFoundError(w, method, id)
@@ -573,7 +573,7 @@ func (h *Handler) FetchDocumentData(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Don't serve archived document
+	// Don't serve archived document.
 	if document.Lifecycle == workflow.LifecycleArchived {
 		response.WriteForbiddenError(w)
 		return
@@ -581,6 +581,37 @@ func (h *Handler) FetchDocumentData(w http.ResponseWriter, r *http.Request) {
 
 	// Check if draft document can been seen by user.
 	if document.Lifecycle == workflow.LifecycleDraft && !permission.CanViewDrafts(ctx, *h.Store, document.SpaceID) {
+		response.WriteForbiddenError(w)
+		return
+	}
+
+	// If document has been assigned one or more categories,
+	// we check to see if user can view this document.
+	cat, err := h.Store.Category.GetDocumentCategoryMembership(ctx, document.RefID)
+	if err != nil && err != sql.ErrNoRows {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+	perm, err := h.Store.Permission.GetUserCategoryPermissions(ctx, ctx.UserID)
+	if err != nil && err != sql.ErrNoRows {
+		response.WriteServerError(w, method, err)
+		h.Runtime.Log.Error(method, err)
+		return
+	}
+	see := []category.Category{}
+	for _, c := range cat {
+		for _, p := range perm {
+			if p.RefID == c.RefID {
+				see = append(see, c)
+				break
+			}
+		}
+	}
+
+	// User cannot view document if document has categories assigned
+	// but user cannot see any of them.
+	if len(cat) > 0 && len(see) == 0 {
 		response.WriteForbiddenError(w)
 		return
 	}
