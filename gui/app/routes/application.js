@@ -26,7 +26,7 @@ export default Route.extend(ApplicationRouteMixin, {
 		let sa = this.get('session.session.authenticator');
 
 		return this.get('appMeta').boot(transition.targetName, '').then(data => {
-			if (sa !== "authenticator:documize" && sa !== "authenticator:keycloak" && sa !== "authenticator:ldap" && data.allowAnonymousAccess) {
+			if (sa !== "authenticator:documize" && sa !== "authenticator:keycloak" && sa !== "authenticator:ldap" && sa != "authenticator:cas" && data.allowAnonymousAccess) {
 				if (!this.get('appMeta.setupMode') && !this.get('appMeta.secureMode')) {
 					return this.get('session').authenticate('authenticator:anonymous', data);
 				}

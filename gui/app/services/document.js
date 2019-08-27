@@ -412,7 +412,7 @@ export default Service.extend({
 
 	// fetchXXX represents UI specific bulk data loading designed to
 	// reduce network traffic and boost app performance.
-	// This method that returns:
+	// This method returns:
 	// 1. getUserVisible()
 	// 2. getSummary()
 	// 3. getSpaceCategoryMembership()

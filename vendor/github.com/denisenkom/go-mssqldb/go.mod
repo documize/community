@@ -1,6 +1,6 @@
 module github.com/denisenkom/go-mssqldb
 
-go 1.12
+go 1.11
 
 require (
 	cloud.google.com/go v0.37.4

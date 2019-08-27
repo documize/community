@@ -160,6 +160,9 @@ export default Router.map(function () {
 			this.route('share', {
 				path: 'share/:id/:slug/:serial'
 			});
+			this.route('cas', {
+				path: 'cas'
+			});
 		}
 	);
 

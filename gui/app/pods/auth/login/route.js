@@ -17,6 +17,7 @@ import Route from '@ember/routing/route';
 export default Route.extend({
     appMeta: service(),
 	kcAuth: service(),
+	global: service(),
 	localStorage: service(),
 	showLogin: false,
 
@@ -40,6 +41,13 @@ export default Route.extend({
 					});
 
 					break;
+				case constants.AuthProvider.CAS: {
+					let config = JSON.parse(this.get('appMeta.authConfig'));
+					let url = config.url + '/login?service=' + encodeURIComponent(config.redirectUrl);
+					window.location.replace(url);
+					resolve();
+					break;
+				}
 
 				default:
 					this.set('showLogin', true);

@@ -33,6 +33,9 @@ export default Component.extend(ModalMixin, Notifier, {
 	isLDAPProvider: computed('authProvider', function() {
 		return this.get('authProvider') === this.get('constants').AuthProvider.LDAP;
 	}),
+	isCASProvider: computed('authProvider', function(){
+		return this.get('authProvider') === this.get('constants').AuthProvider.CAS;
+	}),
 
 	KeycloakUrlError: empty('keycloakConfig.url'),
 	KeycloakRealmError: empty('keycloakConfig.realm'),
@@ -60,6 +63,10 @@ export default Component.extend(ModalMixin, Notifier, {
 	}),
 	ldapPreview: null,
 	ldapConfig: null,
+
+	casErrorUrl: empty('casConfig.url'),
+	casErrorRedirectUrl: empty('casConfig.redirectUrl'),
+	casConfig:null,
 
 	init() {
 		this._super(...arguments);
@@ -122,6 +129,19 @@ export default Component.extend(ModalMixin, Notifier, {
 				this.set('ldapConfig', ldapConfig);
 				break;
 			}
+			case constants.AuthProvider.CAS: {
+				let casConfig = this.get('authConfig');
+				if (_.isUndefined(casConfig) || _.isNull(casConfig) || _.isEmpty(casConfig) ) {
+					casConfig = {};
+				} else {
+					casConfig = JSON.parse(casConfig);
+					casConfig.url = casConfig.hasOwnProperty('url') ? casConfig.url : '';
+					casConfig.redirectUrl = casConfig.hasOwnProperty('redirectUrl') ? casConfig.redirectUrl : '';
+				}
+
+				this.set('casConfig', casConfig);
+				break;
+			}
 		}
 	},
 
@@ -139,6 +159,10 @@ export default Component.extend(ModalMixin, Notifier, {
 		onLDAP() {
 			let constants = this.get('constants');
 			this.set('authProvider', constants.AuthProvider.LDAP);
+		},
+		onCAS() {
+			let constants = this.get('constants');
+			this.set('authProvider', constants.AuthProvider.CAS);
 		},
 
 		onLDAPEncryption(e) {
@@ -230,6 +254,21 @@ export default Component.extend(ModalMixin, Notifier, {
 						$('#ldap-attributeGroupMember').focus();
 						return;
 					}
+
+					break;
+				case constants.AuthProvider.CAS:
+					if (this.get('casErrorUrl')) {
+						$("#cas-url").focus();
+						return;
+					}
+					if (this.get('casErrorRedirectUrl')) {
+						$("#cas-redirect-url").focus();
+						return;
+					}
+
+					config = copy(this.get('casConfig'));
+					config.url = config.url.trim();
+					config.redirectUrl = config.redirectUrl.trim();
 
 					break;
 			}
