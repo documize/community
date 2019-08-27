@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"strings"
 
 	"github.com/pkg/errors"
 )
@@ -28,12 +29,19 @@ func NewJiraError(resp *Response, httpError error) error {
 	if err != nil {
 		return errors.Wrap(err, httpError.Error())
 	}
-
 	jerr := Error{HTTPError: httpError}
-	err = json.Unmarshal(body, &jerr)
-	if err != nil {
-		httpError = errors.Wrap(errors.New("Could not parse JSON"), httpError.Error())
-		return errors.Wrap(err, httpError.Error())
+	contentType := resp.Header.Get("Content-Type")
+	if strings.HasPrefix(contentType, "application/json") {
+		err = json.Unmarshal(body, &jerr)
+		if err != nil {
+			httpError = errors.Wrap(errors.New("Could not parse JSON"), httpError.Error())
+			return errors.Wrap(err, httpError.Error())
+		}
+	} else {
+        if httpError == nil {
+            return fmt.Errorf("Got Response Status %s:%s", resp.Status, string(body))
+        }
+		return errors.Wrap(httpError, fmt.Sprintf("%s: %s", resp.Status, string(body)))
 	}
 
 	return &jerr

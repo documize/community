@@ -35,7 +35,7 @@ type Board struct {
 type BoardListOptions struct {
 	// BoardType filters results to boards of the specified type.
 	// Valid values: scrum, kanban.
-	BoardType string `url:"boardType,omitempty"`
+	BoardType string `url:"type,omitempty"`
 	// Name filters results to boards that match or partially match the specified name.
 	Name string `url:"name,omitempty"`
 	// ProjectKeyOrID filters results to boards that are relevant to a project.

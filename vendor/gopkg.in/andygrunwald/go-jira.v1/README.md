@@ -17,15 +17,18 @@
 
 This package is not JIRA API complete (yet), but you can call every API endpoint you want. See [Call a not implemented API endpoint](#call-a-not-implemented-api-endpoint) how to do this. For all possible API endpoints of JIRA have a look at [latest JIRA REST API documentation](https://docs.atlassian.com/jira/REST/latest/).
 
-## Compatible JIRA versions
+## Requirements
 
-This package was tested against JIRA v6.3.4 and v7.1.2.
+* Go >= 1.8
+* JIRA v6.3.4 & v7.1.2.
 
 ## Installation
 
 It is go gettable
 
-    $ go get github.com/andygrunwald/go-jira
+```bash
+go get github.com/andygrunwald/go-jira
+```
 
 For stable versions you can use one of our tags with [gopkg.in](http://labix.org/gopkg.in). E.g.
 
@@ -40,8 +43,10 @@ import (
 
 (optional) to run unit / example tests:
 
-    $ cd $GOPATH/src/github.com/andygrunwald/go-jira
-    $ go test -v ./...
+```bash
+cd $GOPATH/src/github.com/andygrunwald/go-jira
+go test -v ./...
+```
 
 ## API
 
@@ -89,13 +94,13 @@ For convenience, capability for basic and cookie-based authentication is include
 
 #### Basic auth example
 
-A more thorough, [runnable example](examples/basicauth/main.go) is provided in the examples directory.
+A more thorough, [runnable example](examples/basicauth/main.go) is provided in the examples directory. **It's worth noting that using passwords in basic auth is now deprecated and will be removed.** Jira gives you the ability to [create tokens now.](https://confluence.atlassian.com/cloud/api-tokens-938839638.html)
 
 ```go
 func main() {
 	tp := jira.BasicAuthTransport{
 		Username: "username",
-		Password: "password",
+		Password: "token",
 	}
 
 	client, err := jira.NewClient(tp.Client(), "https://my.jira.com")
@@ -106,25 +111,10 @@ func main() {
 }
 ```
 
-#### Authenticate with session cookie
+#### Authenticate with session cookie [DEPRECATED]
 
-A more thorough, [runnable example](examples/cookieauth/main.go) is provided in the examples directory.
+JIRA [deprecated this authentication method.](https://developer.atlassian.com/cloud/jira/platform/deprecation-notice-basic-auth-and-cookie-based-auth/)  It's not longer available for use.
 
-Note:  The `AuthURL` is almost always going to have the path `/rest/auth/1/session`
-
-```go
-	tp := jira.CookieAuthTransport{
-		Username: "username",
-		Password: "password",
-		AuthURL:  "https://my.jira.com/rest/auth/1/session",
-	}
-
-	client, err := jira.NewClient(tp.Client(), "https://my.jira.com")
-	u, _, err := client.User.Get("admin")
-
-	fmt.Printf("\nEmail: %v\nSuccess!\n", u.EmailAddress)
-}
-```
 
 #### Authenticate with OAuth
 
@@ -146,10 +136,9 @@ import (
 
 func main() {
 	base := "https://my.jira.com"
-	tp := jira.CookieAuthTransport{
+	tp := jira.BasicAuthTransport{
 		Username: "username",
-		Password: "password",
-		AuthURL:  fmt.Sprintf("%s/rest/auth/1/session", base),
+		Password: "token",
 	}
 
 	jiraClient, err := jira.NewClient(tp.Client(), base)
@@ -200,17 +189,16 @@ import (
 
 func main() {
 	base := "https://my.jira.com"
-	tp := jira.CookieAuthTransport{
+	tp := jira.BasicAuthTransport{
 		Username: "username",
-		Password: "password",
-		AuthURL:  fmt.Sprintf("%s/rest/auth/1/session", base),
+		Password: "token",
 	}
 
 	jiraClient, err := jira.NewClient(tp.Client(), base)
 	req, _ := jiraClient.NewRequest("GET", "rest/api/2/project", nil)
 
 	projects := new([]jira.Project)
-	_, err := jiraClient.Do(req, projects)
+	_, err = jiraClient.Do(req, projects)
 	if err != nil {
 		panic(err)
 	}
@@ -250,15 +238,15 @@ A few examples:
 * Correct typos in the README / documentation
 * Reporting bugs
 * Implement a new feature or endpoint
-* Sharing the love if [go-jira](https://github.com/andygrunwald/go-jira) and help people to get use to it
+* Sharing the love of [go-jira](https://github.com/andygrunwald/go-jira) and help people to get use to it
 
 If you are new to pull requests, checkout [Collaborating on projects using issues and pull requests / Creating a pull request](https://help.github.com/articles/creating-a-pull-request/).
 
 ### Dependency management
 
-`go-jira` uses `dep` for dependency management.  After cloning the repo, it's easy to make sure you have the correct dependencies by running `dep ensure`.
+`go-jira` uses `go modules` for dependency management.  After cloning the repo, it's easy to make sure you have the correct dependencies by running `go mod tidy`.
 
-For adding new dependencies, updating dependencies, and other operations, the [Daily Dep](https://golang.github.io/dep/docs/daily-dep.html) is a good place to start.
+For adding new dependencies, updating dependencies, and other operations, the [Daily workflow](https://github.com/golang/go/wiki/Modules#daily-workflow) is a good place to start.
 
 ### Sandbox environment for testing
 

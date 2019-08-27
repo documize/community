@@ -293,12 +293,12 @@
   revision = "2caba252f4dc53eaf6b553000885530023f54623"
 
 [[projects]]
-  digest = "1:ec2b97c119fc66f96b421f8798deb2f87cb4a5ee81cafeaf9b55420d035f8fea"
+  digest = "1:78e84cebc662378af09d7ebaee20b1b813b4b2afcfb91be41d519ce6454eab1d"
   name = "gopkg.in/andygrunwald/go-jira.v1"
   packages = ["."]
   pruneopts = "UT"
-  revision = "0298784c4606cdf01e99644da115863c052a737c"
-  version = "v1.5.0"
+  revision = "7966e7f5ed3e453362a4deac213c0e6cf7563f4c"
+  version = "v1.10.0"
 
 [[projects]]
   digest = "1:81e1c5cee195fca5de06e2540cb63eea727a850b7e5c213548e7f81521c97a57"

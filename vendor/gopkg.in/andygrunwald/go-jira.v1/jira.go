@@ -27,19 +27,22 @@ type Client struct {
 	session *Session
 
 	// Services used for talking to different parts of the JIRA API.
-	Authentication *AuthenticationService
-	Issue          *IssueService
-	Project        *ProjectService
-	Board          *BoardService
-	Sprint         *SprintService
-	User           *UserService
-	Group          *GroupService
-	Version        *VersionService
-	Priority       *PriorityService
-	Field          *FieldService
-	Component      *ComponentService
-	Resolution     *ResolutionService
-	StatusCategory *StatusCategoryService
+	Authentication   *AuthenticationService
+	Issue            *IssueService
+	Project          *ProjectService
+	Board            *BoardService
+	Sprint           *SprintService
+	User             *UserService
+	Group            *GroupService
+	Version          *VersionService
+	Priority         *PriorityService
+	Field            *FieldService
+	Component        *ComponentService
+	Resolution       *ResolutionService
+	StatusCategory   *StatusCategoryService
+	Filter           *FilterService
+	Role             *RoleService
+	PermissionScheme *PermissionSchemeService
 }
 
 // NewClient returns a new JIRA API client.
@@ -81,6 +84,9 @@ func NewClient(httpClient *http.Client, baseURL string) (*Client, error) {
 	c.Component = &ComponentService{client: c}
 	c.Resolution = &ResolutionService{client: c}
 	c.StatusCategory = &StatusCategoryService{client: c}
+	c.Filter = &FilterService{client: c}
+	c.Role = &RoleService{client: c}
+	c.PermissionScheme = &PermissionSchemeService{client: c}
 
 	return c, nil
 }
@@ -375,7 +381,10 @@ func (t *CookieAuthTransport) RoundTrip(req *http.Request) (*http.Response, erro
 
 	req2 := cloneRequest(req) // per RoundTripper contract
 	for _, cookie := range t.SessionObject {
-		req2.AddCookie(cookie)
+		// Don't add an empty value cookie to the request
+		if cookie.Value != "" {
+			req2.AddCookie(cookie)
+		}
 	}
 
 	return t.transport().RoundTrip(req2)
