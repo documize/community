@@ -1,0 +1,50 @@
+# This Docker Compose file will start up Documize with PostgreSQL.
+#
+# Use 'documize-enterprise-linux-amd64' for Enterprise Edition (default).
+# Use 'documize-community-linux-amd64' for Community Edition.
+#
+# You can move between editions anytime without any data loss
+# because of the common database schema.
+#
+# The latest product release executable will be pulled down
+# from a public Amazon S3 bucket.
+#
+# Use 'docker-compose up|down' to start or stop containers.
+version: "3"
+
+services:
+  db:
+    image: postgres:latest
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: documize
+      POSTGRES_PASSWORD: Passw0rd
+      POSTGRES_DB: documize
+    volumes:
+       - db-data:/var/lib/postgresql/data
+    networks:
+       - documizenet
+
+  app:
+    image: debian:latest
+    command: /bin/sh -c "apt-get -qq update && apt-get -qq install -y wget && wget https://documize.s3-eu-west-1.amazonaws.com/downloads/documize-enterprise-linux-amd64 && chmod 777 ./documize-enterprise-linux-amd64 && ./documize-enterprise-linux-amd64"
+    depends_on:
+      - db
+    ports:
+      - 5001:5001
+    environment:
+      DOCUMIZEPORT: 5001
+      DOCUMIZEDB: host=db port=5432 dbname=documize user=documize password=Passw0rd sslmode=disable
+      DOCUMIZEDBTYPE: postgresql
+      DOCUMIZESALT: hsk3Acndky8cdTNx3
+      DOCUMIZELOCATION: selfhost
+    networks:
+      - documizenet
+
+volumes:
+  db-data:
+
+networks:
+  documizenet:
