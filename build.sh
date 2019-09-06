@@ -50,15 +50,15 @@ go generate
 
 cd ..
 echo "Compiling for Linux..."
-env GOOS=linux GOARCH=amd64 go build -gcflags="all=-trimpath=$GOPATH" -o bin/documize-community-linux-amd64 ./edition/community.go
+env GOOS=linux GOARCH=amd64 go build -trimpath -o bin/documize-community-linux-amd64 ./edition/community.go
 echo "Compiling for macOS..."
-env GOOS=darwin GOARCH=amd64 go build -gcflags="all=-trimpath=$GOPATH" -o bin/documize-community-darwin-amd64 ./edition/community.go
+env GOOS=darwin GOARCH=amd64 go build -trimpath -o bin/documize-community-darwin-amd64 ./edition/community.go
 echo "Compiling for Windows..."
-env GOOS=windows GOARCH=amd64 go build -gcflags="all=-trimpath=$GOPATH" -o bin/documize-community-windows-amd64.exe ./edition/community.go
+env GOOS=windows GOARCH=amd64 go build -trimpath -o bin/documize-community-windows-amd64.exe ./edition/community.go
 echo "Compiling for ARM..."
-env GOOS=linux GOARCH=arm go build -gcflags="all=-trimpath=$GOPATH" -o bin/documize-community-linux-arm ./edition/community.go
+env GOOS=linux GOARCH=arm go build -trimpath -o bin/documize-community-linux-arm ./edition/community.go
 echo "Compiling for ARM64..."
-env GOOS=linux GOARCH=arm64 go build -gcflags="all=-trimpath=$GOPATH" -o bin/documize-community-linux-arm64 ./edition/community.go
+env GOOS=linux GOARCH=arm64 go build -trimpath -o bin/documize-community-linux-arm64 ./edition/community.go
 
 echo "Finished."
 

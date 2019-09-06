@@ -1,0 +1,93 @@
+# cloud.google.com/go v0.37.4
+cloud.google.com/go/civil
+# github.com/BurntSushi/toml v0.3.1
+github.com/BurntSushi/toml
+# github.com/andygrunwald/go-jira v1.10.0
+github.com/andygrunwald/go-jira
+# github.com/codegangsta/negroni v0.3.0
+github.com/codegangsta/negroni
+# github.com/denisenkom/go-mssqldb v0.0.0-20190806190131-db2462fef53b
+github.com/denisenkom/go-mssqldb
+github.com/denisenkom/go-mssqldb/internal/cp
+github.com/denisenkom/go-mssqldb/internal/querytext
+# github.com/dgrijalva/jwt-go v3.1.0+incompatible
+github.com/dgrijalva/jwt-go
+# github.com/documize/blackfriday v2.0.0+incompatible
+github.com/documize/blackfriday
+# github.com/documize/glick v0.0.0-20160503134043-a8ccbef88237
+github.com/documize/glick
+# github.com/documize/html-diff v0.0.0-20160503140253-f61c192c7796
+github.com/documize/html-diff
+# github.com/documize/slug v1.1.1
+github.com/documize/slug
+# github.com/elazarl/go-bindata-assetfs v1.0.0
+github.com/elazarl/go-bindata-assetfs
+# github.com/fatih/structs v1.0.0
+github.com/fatih/structs
+# github.com/go-sql-driver/mysql v1.4.1
+github.com/go-sql-driver/mysql
+# github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
+github.com/golang/glog
+# github.com/golang/protobuf v1.2.0
+github.com/golang/protobuf/proto
+# github.com/google/go-github v17.0.0+incompatible
+github.com/google/go-github/github
+# github.com/google/go-querystring v1.0.0
+github.com/google/go-querystring/query
+# github.com/gorilla/context v1.1.1
+github.com/gorilla/context
+# github.com/gorilla/handlers v1.4.0
+github.com/gorilla/handlers
+# github.com/gorilla/mux v1.6.2
+github.com/gorilla/mux
+# github.com/jmoiron/sqlx v1.2.0
+github.com/jmoiron/sqlx
+github.com/jmoiron/sqlx/reflectx
+# github.com/lib/pq v1.2.0
+github.com/lib/pq
+github.com/lib/pq/oid
+github.com/lib/pq/scram
+# github.com/mb0/diff v0.0.0-20131118162322-d8d9a906c24d
+github.com/mb0/diff
+# github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
+github.com/nu7hatch/gouuid
+# github.com/pkg/errors v0.8.0
+github.com/pkg/errors
+# github.com/rainycape/unidecode v0.0.0-20150907023854-cb7f23ec59be
+github.com/rainycape/unidecode
+# github.com/shurcooL/sanitized_anchor_name v0.0.0-20170918181015-86672fcb3f95
+github.com/shurcooL/sanitized_anchor_name
+# github.com/trivago/tgo v1.0.1
+github.com/trivago/tgo/tcontainer
+github.com/trivago/tgo/treflect
+# golang.org/x/crypto v0.0.0-20190426145343-a29dc8fdc734
+golang.org/x/crypto/bcrypt
+golang.org/x/crypto/blowfish
+golang.org/x/crypto/md4
+# golang.org/x/net v0.0.0-20190404232315-eb5bcb51f2a3
+golang.org/x/net/context
+golang.org/x/net/context/ctxhttp
+golang.org/x/net/html
+golang.org/x/net/html/atom
+# golang.org/x/oauth2 v0.0.0-20190226205417-e64efc72b421
+golang.org/x/oauth2
+golang.org/x/oauth2/internal
+# google.golang.org/appengine v1.4.0
+google.golang.org/appengine/cloudsql
+google.golang.org/appengine/internal
+google.golang.org/appengine/internal/base
+google.golang.org/appengine/internal/datastore
+google.golang.org/appengine/internal/log
+google.golang.org/appengine/internal/remote_api
+google.golang.org/appengine/internal/urlfetch
+google.golang.org/appengine/urlfetch
+# gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc
+gopkg.in/alexcesaro/quotedprintable.v3
+# gopkg.in/asn1-ber.v1 v1.0.0-20170511165959-379148ca0225
+gopkg.in/asn1-ber.v1
+# gopkg.in/cas.v2 v2.1.0
+gopkg.in/cas.v2
+# gopkg.in/ldap.v3 v3.0.3
+gopkg.in/ldap.v3
+# gopkg.in/yaml.v2 v2.2.2
+gopkg.in/yaml.v2

@@ -20,10 +20,10 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	jira "github.com/andygrunwald/go-jira"
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/domain/section/provider"
 	"github.com/documize/community/domain/store"
-	jira "gopkg.in/andygrunwald/go-jira.v1"
 )
 
 //
