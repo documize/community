@@ -66,4 +66,4 @@ echo "Finished."
 # go build -ldflags '-d -s -w' -a -tags netgo -installsuffix netgo test.go
 # ldd test
 
-# go build -a -o main -gcflags=all=-trimpath=/home/xibz -asmflags=all=-trimpath=/home/xibz main.go
+# https://stackoverflow.com/questions/55664630/how-do-i-migrate-from-dep-to-go-modules
