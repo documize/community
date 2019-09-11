@@ -50,7 +50,7 @@
 					{{#if (eq appMeta.storageProvider constants.StoreProvider.PostgreSQL)}}
 						<div class="syntax">
 							<div class="example">apple | banana</div>
-							<div class="explain">Show results that contain at either word</div>
+							<div class="explain">Show results that contain either word</div>
 							<div class="example">apple & banana</div>
 							<div class="explain">Show results that contain both words</div>
 							<div class="example">apple !macintosh</div>
@@ -60,6 +60,18 @@
 						</div>
 					{{/if}}
 					{{#if (eq appMeta.storageProvider constants.StoreProvider.SQLServer)}}
+						<div class="syntax">
+							<div class="example">apple OR banana</div>
+							<div class="explain">Show results that contain either word</div>
+							<div class="example">apple AND banana</div>
+							<div class="explain">Show results that contain both words</div>
+							<div class="example">apple AND NOT macintosh</div>
+							<div class="explain">Show results that contain the word "apple" but not "macintosh"</div>
+							<div class="example">"apple*"</div>
+							<div class="explain">Show results that contain words such as "apple", "apples", "applesauce", or "applet"</div>
+							<div class="example">"some words"</div>
+							<div class="explain">Show results that contain the exact phrase "some words" (for example, rows that contain "some words of wisdom" but not "some noise words")</div>
+						</div>
 					{{/if}}
 				</div>
 			</div>

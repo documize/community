@@ -48,10 +48,12 @@
 							<i class={{concat "dicon " constants.Icon.Locked}} />
 							<div class="name">Authentication</div>
 						{{/link-to}}
-						{{#link-to "customize.search" activeClass="selected" class="item" tagName="div"}}
-							<i class={{concat "dicon " constants.Icon.Search}} />
-							<div class="name">Search</div>
-						{{/link-to}}
+						{{#unless (eq appMeta.storageProvider constants.StoreProvider.SQLServer)}}
+							{{#link-to "customize.search" activeClass="selected" class="item" tagName="div"}}
+								<i class={{concat "dicon " constants.Icon.Search}} />
+								<div class="name">Search</div>
+							{{/link-to}}
+						{{/unless}}
 						{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
 							{{#link-to "customize.audit" activeClass="selected" class="item" tagName="div"}}
 								<i class={{concat "dicon " constants.Icon.ButtonAction}} />

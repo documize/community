@@ -77,35 +77,42 @@ func InstallUpgrade(runtime *env.Runtime, existingDB bool) (err error) {
 		runtime.Log.Info(fmt.Sprintf("Database: legacy schema has %d scripts to process", len(toProcess)))
 	}
 
-	tx, err := runtime.Db.Beginx()
-	if err != nil {
-		return err
-	}
-	err = runScripts(runtime, tx, toProcess)
+	err = runScripts(runtime, toProcess)
 	if err != nil {
 		runtime.Log.Error("Database: error processing SQL scripts", err)
-		tx.Rollback()
 	}
-
-	tx.Commit()
 
 	return nil
 }
 
 // Run SQL scripts to instal or upgrade this database.
-func runScripts(runtime *env.Runtime, tx *sqlx.Tx, scripts []Script) (err error) {
+// We do not use transactions for Microsoft SQL Server because
+// CREATE FULLTEXT CATALOG statement cannot be used inside a user transaction.
+func runScripts(runtime *env.Runtime, scripts []Script) (err error) {
+	tx, err := runtime.Db.Beginx()
+	if err != nil {
+		return err
+	}
+
 	// We can have multiple scripts as each Documize database change has it's own SQL script.
 	for _, script := range scripts {
 		runtime.Log.Info(fmt.Sprintf("Database: processing SQL script %d", script.Version))
 
-		err = executeSQL(tx, runtime.StoreProvider.Type(), runtime.StoreProvider.TypeVariant(), script.Script)
+		err = executeSQL(tx, runtime, script.Script)
 		if err != nil {
 			runtime.Log.Error(fmt.Sprintf("error executing SQL script %d", script.Version), err)
+			if runtime.StoreProvider.Type() != env.StoreTypeSQLServer {
+				tx.Rollback()
+			}
 			return err
 		}
 
 		// Record the fact we have processed this database script version.
-		_, err = tx.Exec(runtime.StoreProvider.QueryRecordVersionUpgrade(script.Version))
+		if runtime.StoreProvider.Type() != env.StoreTypeSQLServer {
+			_, err = tx.Exec(runtime.StoreProvider.QueryRecordVersionUpgrade(script.Version))
+		} else {
+			_, err = runtime.Db.Exec(runtime.StoreProvider.QueryRecordVersionUpgrade(script.Version))
+		}
 		if err != nil {
 			// For MySQL we try the legacy DB schema.
 			if runtime.StoreProvider.Type() == env.StoreTypeMySQL {
@@ -114,31 +121,45 @@ func runScripts(runtime *env.Runtime, tx *sqlx.Tx, scripts []Script) (err error)
 				_, err = tx.Exec(runtime.StoreProvider.QueryRecordVersionUpgradeLegacy(script.Version))
 				if err != nil {
 					runtime.Log.Error(fmt.Sprintf("error recording execution of SQL script %d", script.Version), err)
+					if runtime.StoreProvider.Type() != env.StoreTypeSQLServer {
+						tx.Rollback()
+					}
 					return err
 				}
 			} else {
 				// Unknown issue running script on non-MySQL database.
 				runtime.Log.Error(fmt.Sprintf("error executing SQL script %d", script.Version), err)
+				if runtime.StoreProvider.Type() != env.StoreTypeSQLServer {
+					tx.Rollback()
+				}
 				return err
 			}
 		}
 	}
 
+	tx.Commit()
+
 	return nil
 }
 
 // executeSQL runs specified SQL commands.
-func executeSQL(tx *sqlx.Tx, st env.StoreType, variant env.StoreType, SQLfile []byte) error {
+func executeSQL(tx *sqlx.Tx, runtime *env.Runtime, SQLfile []byte) error {
 	// Turn SQL file contents into runnable SQL statements.
 	stmts := getStatements(SQLfile)
 
 	for _, stmt := range stmts {
 		// MariaDB has no specific JSON column type (but has JSON queries)
-		if st == env.StoreTypeMySQL && variant == env.StoreTypeMariaDB {
+		if runtime.StoreProvider.Type() == env.StoreTypeMySQL &&
+			runtime.StoreProvider.TypeVariant() == env.StoreTypeMariaDB {
 			stmt = strings.Replace(stmt, "` JSON", "` TEXT", -1)
 		}
 
-		_, err := tx.Exec(stmt)
+		var err error
+		if runtime.StoreProvider.Type() != env.StoreTypeSQLServer {
+			_, err = tx.Exec(stmt)
+		} else {
+			_, err = runtime.Db.Exec(stmt)
+		}
 		if err != nil {
 			fmt.Println("sql statement error:", stmt)
 			return err

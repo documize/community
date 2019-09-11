@@ -30,8 +30,10 @@ All you need to provide is PostgreSQL, Microsoft SQL Server or any MySQL variant
 
 ## Database Support
 
+For all database types, Full-Text Search support (FTS) is mandatory.
+
 - PostgreSQL (v9.6+)
-- Microsoft SQL Server (2016+)
+- Microsoft SQL Server (2016+ with FTS)
 - MySQL (v5.7.10+ and v8.0.12+)
 - Percona (v5.7.16-10+)
 - MariaDB (10.3.0+)
@@ -48,8 +50,8 @@ All you need to provide is PostgreSQL, Microsoft SQL Server or any MySQL variant
 
 ## Technology Stack
 
-- Go (v1.12.9)
-- Ember JS (v3.12.0)
+- Go (v1.13.0)
+- EmberJS (v3.12.0)
 
 ## Authentication Options
 
@@ -60,7 +62,7 @@ Besides email/password login, you can also authenticate via:
 * Red Hat Keycloak
 * Central Authentication Service (CAS)
 
-When using LDAP/Active Directory, you can optionally also authenticate with email/password.
+When using LDAP/Active Directory, you can enable dual-authentication with email/password.
 
 ## The Legal Bit
 
