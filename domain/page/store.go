@@ -243,7 +243,7 @@ func (s Store) GetPageMeta(ctx domain.RequestContext, pageID string) (meta page.
         c_orgid AS orgid, c_userid AS userid, c_docid AS documentid,
         c_rawbody AS rawbody, coalesce(c_config,`+s.EmptyJSON()+`) as config,
         c_external AS externalsource, c_created AS created, c_revised AS revised
-        FROM dmz_section_meta 
+        FROM dmz_section_meta
         WHERE c_orgid=? AND c_sectionid=?`),
 		ctx.OrgID, pageID)
 

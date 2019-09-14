@@ -44,8 +44,7 @@ type Runtime struct {
 	Product       domain.Product
 }
 
-// StartTx beings database transaction with application defined
-// database transaction isolation level.
+// StartTx begins database transaction with given transaction isolation level.
 // Any error encountered during this operation is logged to runtime logger.
 func (r *Runtime) StartTx(i sql.IsolationLevel) (tx *sqlx.Tx, ok bool) {
 	tx, err := r.Db.BeginTxx(context.Background(), &sql.TxOptions{Isolation: i})
