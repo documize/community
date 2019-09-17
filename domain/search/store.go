@@ -313,7 +313,8 @@ func (s Store) matchFullText(ctx domain.RequestContext, keywords, itemType strin
 		ctx.OrgID,
 		ctx.UserID,
 		ctx.OrgID,
-		ctx.UserID)
+		ctx.UserID,
+		keywords)
 
 	if err == sql.ErrNoRows {
 		err = nil
