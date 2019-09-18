@@ -1334,6 +1334,7 @@ func (h *Handler) FetchPages(w http.ResponseWriter, r *http.Request) {
 	documentID := request.Param(r, "documentID")
 	if len(documentID) == 0 {
 		response.WriteMissingDataError(w, method, "documentID")
+		h.Runtime.Log.Infof("Document ID missing for org %s", ctx.OrgID)
 		return
 	}
 
@@ -1343,7 +1344,7 @@ func (h *Handler) FetchPages(w http.ResponseWriter, r *http.Request) {
 	doc, err := h.Store.Document.Get(ctx, documentID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
+		h.Runtime.Log.Infof("Document not found %s", documentID)
 		return
 	}
 
