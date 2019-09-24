@@ -312,6 +312,9 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	ctx.Transaction.Commit()
 
 	h.Store.Space.SetStats(ctx, d.SpaceID)
+	if oldDoc.SpaceID != d.SpaceID {
+		h.Store.Space.SetStats(ctx, oldDoc.SpaceID)
+	}
 	h.Store.Audit.Record(ctx, audit.EventTypeDocumentUpdate)
 
 	// Live document indexed for search.
