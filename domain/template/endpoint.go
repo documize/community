@@ -247,17 +247,10 @@ func (h *Handler) SaveAs(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	err = h.Store.Space.IncrementContentCount(ctx, doc.SpaceID)
-	if err != nil {
-		ctx.Transaction.Rollback()
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
 	// Commit and return new document template
 	ctx.Transaction.Commit()
 
+	h.Store.Space.SetStats(ctx, doc.SpaceID)
 	h.Store.Audit.Record(ctx, audit.EventTypeTemplateAdd)
 
 	doc, err = h.Store.Document.Get(ctx, docID)
@@ -434,16 +427,9 @@ func (h *Handler) Use(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	err = h.Store.Space.IncrementContentCount(ctx, d.SpaceID)
-	if err != nil {
-		ctx.Transaction.Rollback()
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
 	ctx.Transaction.Commit()
 
+	h.Store.Space.SetStats(ctx, d.SpaceID)
 	h.Store.Audit.Record(ctx, audit.EventTypeTemplateUse)
 
 	nd, err := h.Store.Document.Get(ctx, documentID)

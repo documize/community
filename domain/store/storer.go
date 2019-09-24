@@ -65,10 +65,7 @@ type SpaceStorer interface {
 	Update(ctx domain.RequestContext, sp space.Space) (err error)
 	Delete(ctx domain.RequestContext, id string) (rows int64, err error)
 	AdminList(ctx domain.RequestContext) (sp []space.Space, err error)
-	IncrementCategoryCount(ctx domain.RequestContext, spaceID string) (err error)
-	DecrementCategoryCount(ctx domain.RequestContext, spaceID string) (err error)
-	IncrementContentCount(ctx domain.RequestContext, spaceID string) (err error)
-	DecrementContentCount(ctx domain.RequestContext, spaceID string) (err error)
+	SetStats(ctx domain.RequestContext, spaceID string) (err error)
 }
 
 // CategoryStorer defines required methods for category and category membership management

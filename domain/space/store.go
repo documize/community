@@ -28,7 +28,7 @@ type Store struct {
 	store.SpaceStorer
 }
 
-// Add adds new folder into the store.
+// Add adds new space into the store.
 func (s Store) Add(ctx domain.RequestContext, sp space.Space) (err error) {
 	_, err = ctx.Transaction.Exec(s.Bind(`
         INSERT INTO dmz_space
@@ -190,54 +190,49 @@ func (s Store) Delete(ctx domain.RequestContext, id string) (rows int64, err err
 	return s.DeleteConstrained(ctx.Transaction, "dmz_space", ctx.OrgID, id)
 }
 
-// IncrementCategoryCount increments usage counter for space category.
-func (s Store) IncrementCategoryCount(ctx domain.RequestContext, spaceID string) (err error) {
-	_, err = ctx.Transaction.Exec(s.Bind(`UPDATE dmz_space SET
-        c_count_category=c_count_category+1, c_revised=? WHERE c_orgid=? AND c_refid=?`),
-		time.Now().UTC(), ctx.OrgID, spaceID)
-
+// SetStats updates the number of category/documents in space.
+func (s Store) SetStats(ctx domain.RequestContext, spaceID string) (err error) {
+	tx, err := s.Runtime.Db.Beginx()
 	if err != nil {
-		err = errors.Wrap(err, "execute increment category count")
+		s.Runtime.Log.Error("transaction", err)
+		return
 	}
 
-	return
-}
-
-// DecrementCategoryCount decrements usage counter for space category.
-func (s Store) DecrementCategoryCount(ctx domain.RequestContext, spaceID string) (err error) {
-	_, err = ctx.Transaction.Exec(s.Bind(`UPDATE dmz_space SET
-        c_count_category=c_count_category-1, c_revised=? WHERE c_orgid=? AND c_refid=?`),
-		time.Now().UTC(), ctx.OrgID, spaceID)
-
+	var docs, cats int
+	f := s.IsFalse()
+	row := s.Runtime.Db.QueryRow(s.Bind("SELECT COUNT(*) FROM dmz_doc WHERE c_orgid=? AND c_spaceid=? AND c_lifecycle=1 AND c_template="+f),
+		ctx.OrgID, spaceID)
+	err = row.Scan(&docs)
+	if err == sql.ErrNoRows {
+		docs = 0
+	}
 	if err != nil {
-		err = errors.Wrap(err, "execute decrement category count")
+		s.Runtime.Log.Error("SetStats", err)
+		docs = 0
 	}
 
-	return
-}
-
-// IncrementContentCount increments usage counter for space category.
-func (s Store) IncrementContentCount(ctx domain.RequestContext, spaceID string) (err error) {
-	_, err = ctx.Transaction.Exec(s.Bind(`UPDATE dmz_space SET
-        c_count_content=c_count_content+1, c_revised=? WHERE c_orgid=? AND c_refid=?`),
-		time.Now().UTC(), ctx.OrgID, spaceID)
-
+	row = s.Runtime.Db.QueryRow(s.Bind("SELECT COUNT(*) FROM dmz_category WHERE c_orgid=? AND c_spaceid=?"),
+		ctx.OrgID, spaceID)
+	err = row.Scan(&cats)
+	if err == sql.ErrNoRows {
+		cats = 0
+	}
 	if err != nil {
-		err = errors.Wrap(err, "execute increment content count")
+		s.Runtime.Log.Error("SetStats", err)
+		cats = 0
 	}
 
-	return
-}
-
-// DecrementContentCount decrements usage counter for space category.
-func (s Store) DecrementContentCount(ctx domain.RequestContext, spaceID string) (err error) {
-	_, err = ctx.Transaction.Exec(s.Bind(`UPDATE dmz_space SET
-        c_count_content=c_count_content-1, c_revised=? WHERE c_orgid=? AND c_refid=?`),
-		time.Now().UTC(), ctx.OrgID, spaceID)
+	_, err = tx.Exec(s.Bind(`UPDATE dmz_space SET
+		c_count_content=?, c_count_category=?, c_revised=?
+		WHERE c_orgid=? AND c_refid=?`),
+		docs, cats, time.Now().UTC(), ctx.OrgID, spaceID)
 
 	if err != nil {
-		err = errors.Wrap(err, "execute decrement category count")
+		s.Runtime.Log.Error("SetStats", err)
+		tx.Rollback()
 	}
+
+	tx.Commit()
 
 	return
 }

@@ -311,6 +311,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 	ctx.Transaction.Commit()
 
+	h.Store.Space.SetStats(ctx, d.SpaceID)
 	h.Store.Audit.Record(ctx, audit.EventTypeDocumentUpdate)
 
 	// Live document indexed for search.
@@ -411,16 +412,9 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 			ActivityType: activity.TypeDeleted})
 	}
 
-	err = h.Store.Space.DecrementContentCount(ctx, doc.SpaceID)
-	if err != nil {
-		ctx.Transaction.Rollback()
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
 	ctx.Transaction.Commit()
 
+	h.Store.Space.SetStats(ctx, doc.SpaceID)
 	h.Store.Audit.Record(ctx, audit.EventTypeDocumentDelete)
 
 	go h.Indexer.DeleteDocument(ctx, documentID)
