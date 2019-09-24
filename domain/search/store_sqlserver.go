@@ -13,6 +13,7 @@ package search
 
 import (
 	"database/sql"
+	"fmt"
 	"strings"
 
 	"github.com/documize/community/domain"
@@ -82,6 +83,17 @@ func (s StoreSQLServer) Documents(ctx domain.RequestContext, q search.QueryOptio
 		}
 
 		results = append(results, r2...)
+	}
+
+	// Match doc content
+	if q.Tag {
+		r3, err2 := s.matchTag(ctx, q.Keywords)
+		if err2 != nil {
+			err = errors.Wrap(err2, "search document tag")
+			return
+		}
+
+		results = append(results, r3...)
 	}
 
 	if len(results) == 0 {
@@ -178,6 +190,55 @@ func (s StoreSQLServer) matchSection(ctx domain.RequestContext, keywords string)
 		ctx.OrgID,
 		ctx.UserID,
 		keywords, keywords)
+
+	if err == sql.ErrNoRows {
+		err = nil
+		r = []search.QueryResult{}
+	}
+
+	return
+}
+
+func (s StoreSQLServer) matchTag(ctx domain.RequestContext, keywords string) (r []search.QueryResult, err error) {
+	// LIKE clause does not like quotes!
+	keywords = strings.Replace(keywords, "'", "", -1)
+	keywords = strings.Replace(keywords, "\"", "", -1)
+	keywords = strings.Replace(keywords, "%", "", -1)
+	keywords = fmt.Sprintf("%%%s%%", strings.ToLower(keywords))
+
+	sql1 := s.Bind(`SELECT
+			d.id, d.c_orgid AS orgid, d.c_refid AS documentid, d.c_refid AS itemid, 'tag' AS itemtype,
+			d.c_spaceid as spaceid, COALESCE(d.c_name,'Unknown') AS document, d.c_tags AS tags,
+			d.c_desc AS excerpt, d.c_template AS template, d.c_versionid AS versionid,
+			COALESCE(l.c_name,'Unknown') AS space, d.c_created AS created, d.c_revised AS revised
+		FROM
+            dmz_doc d
+        LEFT JOIN
+            dmz_space l ON l.c_orgid=d.c_orgid AND l.c_refid = d.c_spaceid
+        WHERE
+			d.c_orgid = ?
+			AND d.c_lifecycle = 1
+            AND d.c_spaceid IN
+            (
+                SELECT c_refid FROM dmz_space WHERE c_orgid=? AND c_refid IN
+                (
+                    SELECT c_refid from dmz_permission WHERE c_orgid=? AND c_who='user' AND (c_whoid=? OR c_whoid='0') AND c_location='space'
+                    UNION ALL
+                    SELECT p.c_refid from dmz_permission p LEFT JOIN dmz_group_member r ON p.c_whoid=r.c_groupid WHERE p.c_orgid=? AND p.c_who='role'
+                    AND p.c_location='space' AND (r.c_userid=? OR r.c_userid='0')
+                )
+            )
+            AND d.c_tags LIKE ?`)
+
+	err = s.Runtime.Db.Select(&r,
+		sql1,
+		ctx.OrgID,
+		ctx.OrgID,
+		ctx.OrgID,
+		ctx.UserID,
+		ctx.OrgID,
+		ctx.UserID,
+		keywords)
 
 	if err == sql.ErrNoRows {
 		err = nil
