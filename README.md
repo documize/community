@@ -13,9 +13,9 @@ All you need to provide is PostgreSQL, Microsoft SQL Server or any MySQL variant
 
 ## Latest Release
 
-[Community Edition: v3.3.0](https://github.com/documize/community/releases)
+[Community Edition: v3.3.1](https://github.com/documize/community/releases)
 
-[Enterprise Edition: v3.3.0](https://www.documize.com/downloads)
+[Enterprise Edition: v3.3.1](https://www.documize.com/downloads)
 
 > *We provide frequent product updates for both cloud and self-hosted customers.*
 >
