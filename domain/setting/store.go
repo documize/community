@@ -12,13 +12,13 @@
 package setting
 
 import (
-	"bytes"
-	"database/sql"
-	"fmt"
+    "bytes"
+    "database/sql"
+    "fmt"
 
-	"github.com/pkg/errors"
+    "github.com/pkg/errors"
 
-	"github.com/documize/community/domain/store"
+    "github.com/documize/community/domain/store"
 )
 
 // Store provides data access to user permission information.
@@ -57,15 +57,14 @@ func (s Store) Set(area, json string) (err error) {
 		return
 	}
 
-	_, err = tx.Exec(fmt.Sprintf("DELETE FROM dmz_config WHERE c_key = '%s'", area))
+	_, err = tx.Exec(s.Bind("DELETE FROM dmz_config WHERE c_key = ?"), area)
 	if err != nil && err != sql.ErrNoRows {
 		tx.Rollback()
 		s.Runtime.Log.Error(fmt.Sprintf("setting.Set %s", area), err)
 		return err
 	}
 
-	_, err = tx.Exec(fmt.Sprintf("INSERT INTO dmz_config (c_key,c_config) VALUES ('%s','%s')",
-		area, json))
+	_, err = tx.Exec(s.Bind("INSERT INTO dmz_config (c_key,c_config) VALUES (?, ?)"), area, json)
 	if err != nil && err != sql.ErrNoRows {
 		tx.Rollback()
 		s.Runtime.Log.Error(fmt.Sprintf("setting.Set %s", area), err)
