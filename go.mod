@@ -19,6 +19,7 @@ require (
 	github.com/gorilla/handlers v1.4.0
 	github.com/gorilla/mux v1.6.2
 	github.com/jmoiron/sqlx v1.2.0
+	github.com/jteeuwen/go-bindata v3.0.7+incompatible // indirect
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/lib/pq v1.2.0
 	github.com/mb0/diff v0.0.0-20131118162322-d8d9a906c24d // indirect
