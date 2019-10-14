@@ -62,6 +62,9 @@ export default Component.extend(Modals, Notifier, {
 		let uploadUrl = `${url}/documents/${documentId}/attachments`;
 
 		// Handle upload clicks on button and anything inside that button.
+		// But only if user can edit this document.
+		if (!this.get('canEdit')) return;
+
 		let sel = ['#upload-document-files ', '#upload-document-files  > i'];
 		for (var i=0; i < 2; i++) {
 			let dzone = new Dropzone(sel[i], {
