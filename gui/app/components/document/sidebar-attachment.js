@@ -25,9 +25,9 @@ export default Component.extend(Modals, Notifier, {
 	hasAttachments: notEmpty('files'),
 	canEdit: computed('permissions.{documentApprove,documentEdit}', 'document.protection', function() {
 		// Check to see if specific scenarios prevent us from changing doc level attachments.
-		if (this.get('document.protection') == this.get('constants').ProtectionType.Lock) return false;
+		if (this.get('document.protection') === this.get('constants').ProtectionType.Lock) return false;
 		if (!this.get('permissions.documentEdit')) return false;
-		if (this.get('document.protection') == this.get('constants').ProtectionType.Review && !this.get('permissions.documentApprove')) return false;
+		if (this.get('document.protection') === this.get('constants').ProtectionType.Review && !this.get('permissions.documentApprove')) return false;
 
 		// By default, we can edit/upload attachments that sit at the document level.
 		return true;
