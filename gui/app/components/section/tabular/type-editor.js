@@ -64,7 +64,7 @@ export default Component.extend(Modals, Notifier, {
 	addEditor() {
 		schedule('afterRender', () => {
 			let options = {
-				cache_suffix: '?v=5012',
+				cache_suffix: '?v=510',
 				selector: '#' + this.get('editorId'),
 				relative_urls: false,
 				browser_spellcheck: true,
@@ -101,13 +101,14 @@ export default Component.extend(Modals, Notifier, {
 				table_toolbar: '',
 				toolbar1: 'table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol',
 				toolbar2: 'fontsizeselect | forecolor backcolor link unlink | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify',
+				toolbar_sticky: true,
 				save_onsavecallback: function () {
 					Mousetrap.trigger('ctrl+s');
 				}
 			};
 
 			if (typeof tinymce === 'undefined') {
-				$.getScript('/tinymce/tinymce.min.js?v=5012', function () {
+				$.getScript('/tinymce/tinymce.min.js?v=510', function () {
 					window.tinymce.dom.Event.domLoaded = true;
 					tinymce.baseURL = '//' + window.location.host + '/tinymce';
 					tinymce.suffix = '.min';
