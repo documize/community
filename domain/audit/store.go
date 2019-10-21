@@ -14,6 +14,7 @@ package audit
 
 import (
 	"time"
+	"database/sql"
 
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/store"
@@ -35,21 +36,21 @@ func (s Store) Record(ctx domain.RequestContext, t audit.EventType) {
 	e.IP = ctx.ClientIP
 	e.Type = string(t)
 
-	tx, err := s.Runtime.Db.Beginx()
-	if err != nil {
-		s.Runtime.Log.Error("transaction", err)
+	tx, ok := s.Runtime.StartTx(sql.LevelReadUncommitted)
+	if !ok {
+		s.Runtime.Log.Info("unable to start transaction")
 		return
 	}
 
-	_, err = tx.Exec(s.Bind("INSERT INTO dmz_audit_log (c_orgid, c_userid, c_eventtype, c_ip, c_created) VALUES (?, ?, ?, ?, ?)"),
+	_, err := tx.Exec(s.Bind("INSERT INTO dmz_audit_log (c_orgid, c_userid, c_eventtype, c_ip, c_created) VALUES (?, ?, ?, ?, ?)"),
 		e.OrgID, e.UserID, e.Type, e.IP, e.Created)
 	if err != nil {
-		tx.Rollback()
+	    s.Runtime.Rollback(tx)
 		s.Runtime.Log.Error("prepare audit insert", err)
 		return
 	}
 
-	tx.Commit()
+    s.Runtime.Commit(tx)
 
 	return
 }
