@@ -44,8 +44,13 @@ export default Component.extend(Notifier, ModalMixin, {
 		let authenticated = this.get('session.authenticated');
 		let notEmpty = this.get('pages.length') > 0;
 
-		if (notEmpty && authenticated && permissions.get('documentEdit') && this.get('document.protection') === constants.ProtectionType.None) return true;
-		if (notEmpty && authenticated && permissions.get('documentApprove') && this.get('document.protection') === constants.ProtectionType.Review) return true;
+		if (notEmpty && authenticated && permissions.get('documentEdit')
+			&& (this.get('document.protection') !== constants.ProtectionType.Locked)) {
+				return true;
+		}
+
+		// if (notEmpty && authenticated && permissions.get('documentEdit') && this.get('document.protection') === constants.ProtectionType.None) return true;
+		// if (notEmpty && authenticated && permissions.get('documentApprove') && this.get('document.protection') === constants.ProtectionType.Review) return true;
 
 		return false;
 	}),
