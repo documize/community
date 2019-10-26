@@ -91,7 +91,7 @@ export default Component.extend(Modals, Notifier, {
 					}
 				},
 				plugins: [
-					'advlist autolink lists link image charmap print hr anchor pagebreak',
+					'advlist autolink lists link image charmap print hr pagebreak',
 					'searchreplace wordcount visualblocks visualchars code codesample fullscreen',
 					'insertdatetime media nonbreaking save table directionality',
 					'template paste textpattern imagetools'

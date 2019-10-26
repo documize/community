@@ -102,7 +102,7 @@ export default Component.extend({
 					{ text: 'YAML', value: 'yaml' }
 				],
 				plugins: [
-					'advlist autolink autoresize lists link image charmap print hr anchor pagebreak',
+					'advlist autolink autoresize lists link image charmap print hr pagebreak',
 					'searchreplace wordcount visualblocks visualchars code codesample fullscreen',
 					'insertdatetime media nonbreaking save table directionality',
 					'template paste textpattern imagetools'
