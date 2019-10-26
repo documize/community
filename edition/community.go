@@ -40,9 +40,9 @@ func main() {
 	// Specify the product edition.
 	rt.Product = domain.Product{}
 	rt.Product.Major = "3"
-	rt.Product.Minor = "3"
-	rt.Product.Patch = "2"
-	rt.Product.Revision = "191017131056"
+	rt.Product.Minor = "4"
+	rt.Product.Patch = "0"
+	rt.Product.Revision = "191021105505"
 	rt.Product.Version = fmt.Sprintf("%s.%s.%s", rt.Product.Major, rt.Product.Minor, rt.Product.Patch)
 	rt.Product.Edition = domain.CommunityEdition
 	rt.Product.Title = fmt.Sprintf("%s Edition", rt.Product.Edition)

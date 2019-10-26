@@ -29,7 +29,7 @@ func InitRuntime(r *env.Runtime, s *store.Store) bool {
 	// TODO: remove this line when Go1.13 is released.
 	os.Setenv("GODEBUG", os.Getenv("GODEBUG")+",tls13=1")
 
-	// We need SALT to hash auth JWT tokens
+	// We need SALT to hash auth JWT tokens.
 	if r.Flags.Salt == "" {
 		r.Flags.Salt = secrets.RandSalt()
 
@@ -37,10 +37,10 @@ func InitRuntime(r *env.Runtime, s *store.Store) bool {
 			return false
 		}
 
-		r.Log.Info("please set DOCUMIZESALT or use -salt with this value: " + r.Flags.Salt)
+		r.Log.Info("please set DOCUMIZESALT environment variable or use -salt switch with this value: " + r.Flags.Salt)
 	}
 
-	// We can use either or both HTTP and HTTPS ports
+	// We can use either or both HTTP and HTTPS ports.
 	if r.Flags.SSLCertFile == "" && r.Flags.SSLKeyFile == "" {
 		if r.Flags.HTTPPort == "" {
 			r.Flags.HTTPPort = "80"
@@ -65,12 +65,12 @@ func InitRuntime(r *env.Runtime, s *store.Store) bool {
 		storage.SetSQLServerProvider(r, s)
 	default:
 		r.Log.Infof("Unsupported database type: %s", r.Flags.DBType)
-		r.Log.Info("Documize supports the following database types: mysql | mariadb | percona | postgresql")
+		r.Log.Info("Documize supports the following database types: mysql mariadb percona postgresql sqlserver")
 		os.Exit(1)
 		return false
 	}
 
-	// Open connection to database
+	// Open connection to database.
 	db, err := sqlx.Open(r.StoreProvider.DriverName(), r.StoreProvider.MakeConnectionString())
 	if err != nil {
 		r.Log.Error("Unable to open database", err)
@@ -78,10 +78,10 @@ func InitRuntime(r *env.Runtime, s *store.Store) bool {
 		return false
 	}
 
-	// Set the database handle
+	// Set the database handle.
 	r.Db = db
 
-	// Set connection defaults
+	// Set connection defaults.
 	r.Db.SetMaxIdleConns(30)
 	r.Db.SetMaxOpenConns(100)
 	r.Db.SetConnMaxLifetime(time.Second * 14400)
