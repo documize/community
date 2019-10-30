@@ -231,17 +231,18 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 	d.RefID = documentID
 
-	ctx.Transaction, err = h.Runtime.Db.Beginx()
-	if err != nil {
+	var ok bool
+	ctx.Transaction, ok = h.Runtime.StartTx(sql.LevelReadUncommitted)
+	if !ok {
+		h.Runtime.Log.Info("unable to start transaction " + method)
 		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
 		return
 	}
 
 	// If space changed for document, remove document categories.
 	oldDoc, err := h.Store.Document.Get(ctx, documentID)
 	if err != nil {
-		ctx.Transaction.Rollback()
+		h.Runtime.Rollback(ctx.Transaction)
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
 		return
@@ -251,7 +252,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		h.Store.Category.RemoveDocumentCategories(ctx, d.RefID)
 		err = h.Store.Document.MoveActivity(ctx, documentID, oldDoc.SpaceID, d.SpaceID)
 		if err != nil {
-			ctx.Transaction.Rollback()
+			h.Runtime.Rollback(ctx.Transaction)
 			response.WriteServerError(w, method, err)
 			h.Runtime.Log.Error(method, err)
 			return
@@ -260,7 +261,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 	err = h.Store.Document.Update(ctx, d)
 	if err != nil {
-		ctx.Transaction.Rollback()
+		h.Runtime.Rollback(ctx.Transaction)
 		response.WriteServerError(w, method, err)
 		h.Runtime.Log.Error(method, err)
 		return
@@ -272,7 +273,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	if len(d.GroupID) > 0 {
 		err = h.Store.Document.UpdateGroup(ctx, d)
 		if err != nil {
-			ctx.Transaction.Rollback()
+			h.Runtime.Rollback(ctx.Transaction)
 			response.WriteServerError(w, method, err)
 			h.Runtime.Log.Error(method, err)
 			return
@@ -309,12 +310,13 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	ctx.Transaction.Commit()
+	h.Runtime.Commit(ctx.Transaction)
 
 	h.Store.Space.SetStats(ctx, d.SpaceID)
 	if oldDoc.SpaceID != d.SpaceID {
 		h.Store.Space.SetStats(ctx, oldDoc.SpaceID)
 	}
+
 	h.Store.Audit.Record(ctx, audit.EventTypeDocumentUpdate)
 
 	// Live document indexed for search.
