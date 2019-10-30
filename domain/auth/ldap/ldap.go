@@ -210,7 +210,7 @@ func executeGroupFilter(c lm.LDAPConfig) (u []lm.LDAPUser, err error) {
 // DN values can contain escaped commas like in two ways:
 //
 // 		\,
-// 		\\5c,
+// 		\5c,
 //
 // Relevant notes:
 
@@ -223,21 +223,20 @@ func executeGroupFilter(c lm.LDAPConfig) (u []lm.LDAPUser, err error) {
 //
 // When we split on comma, here is our logic:
 //
-// 1. We replace any escaped comma values with a special character sequence, in this case !?!
-// 2. We string.split on comma as per usual.
-// 3. We put back the original escaped comma values.
+// 1. Replace any escaped comma values with a special character sequence.
+// 2. Split string on comma as per usual.
+// 3. Put back the original escaped comma values.
 func splitDN(dn string) []string {
-	var r string
-	r = strings.ReplaceAll(dn, "\\5c,", "!!1!!")
-	r = strings.ReplaceAll(dn, "\\,", "!!2!!")
+	dn = strings.ReplaceAll(dn, `\5c,`, "!!1!!")
+	dn = strings.ReplaceAll(dn, `\,`, "!!2!!")
 
-	sp := strings.Split(r, ",")
+	sp := strings.Split(dn, ",")
 
 	for i := range sp {
 		val := sp[i]
-		r2 := strings.ReplaceAll(val, "!!1!!", "\\5c,")
-		r2 = strings.ReplaceAll(val, "!!2!!", "\\,")
-		sp[i] = r2
+		val = strings.ReplaceAll(val, "!!1!!", `\5c,`)
+		val = strings.ReplaceAll(val, "!!2!!", `\,`)
+		sp[i] = val
 	}
 
 	return sp
