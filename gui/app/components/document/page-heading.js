@@ -45,7 +45,7 @@ export default Component.extend(Notifier, ModalMixin, {
 		let notEmpty = this.get('pages.length') > 0;
 
 		if (notEmpty && authenticated && permissions.get('documentEdit')
-			&& (this.get('document.protection') !== constants.ProtectionType.Locked)) {
+			&& (this.get('document.protection') !== constants.ProtectionType.Lock)) {
 				return true;
 		}
 
