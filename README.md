@@ -50,7 +50,7 @@ For all database types, Full-Text Search support (FTS) is mandatory.
 
 ## Technology Stack
 
-- Go (v1.13.3)
+- Go (v1.13.4)
 - Ember JS (v3.12.0)
 
 ## Authentication Options
