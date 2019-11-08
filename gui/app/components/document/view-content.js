@@ -44,7 +44,6 @@ export default Component.extend(Notifier, {
 
 	didInsertElement() {
 		this._super(...arguments);
-
 	},
 
 	didRender() {
@@ -92,7 +91,7 @@ export default Component.extend(Notifier, {
 
 	jumpToSection(cp) {
 		if (!_.isEmpty(cp) && !_.isUndefined(cp) && !_.isNull(cp)) {
-			this.get('browser').scrollTo(`#page-${cp}`)
+			this.get('browser').waitScrollTo(`#page-${cp}`);
 		}
 	},
 
