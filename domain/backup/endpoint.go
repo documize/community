@@ -124,6 +124,7 @@ func (h *Handler) Backup(w http.ResponseWriter, r *http.Request) {
 	// instead of parsing 'Content-Disposition' header.
 	// This HTTP header is CORS white-listed.
 	w.Header().Set("x-documize-filename", filename)
+	w.WriteHeader(http.StatusOK)
 
 	// Write backup to response stream.
 	x, err := w.Write(bk)
@@ -140,8 +141,6 @@ func (h *Handler) Backup(w http.ResponseWriter, r *http.Request) {
 	if !spec.Retain {
 		os.Remove(filename)
 	}
-
-	w.WriteHeader(http.StatusOK)
 }
 
 // Restore receives ZIP file for restore operation.

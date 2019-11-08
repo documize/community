@@ -180,6 +180,7 @@ func (h *Handler) Download(w http.ResponseWriter, r *http.Request) {
 
 	dataSize := len(a.Data)
 
+	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", typ)
 	w.Header().Set("Content-Disposition", `Attachment; filename="`+a.Filename+`" ; `+`filename*="`+a.Filename+`"`)
 	if dataSize != 0 {
@@ -191,7 +192,6 @@ func (h *Handler) Download(w http.ResponseWriter, r *http.Request) {
 		h.Runtime.Log.Error("write attachment", err)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
 
 	h.Store.Audit.Record(ctx, audit.EventTypeAttachmentDownload)
 }
