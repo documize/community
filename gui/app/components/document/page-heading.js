@@ -79,7 +79,7 @@ export default Component.extend(Notifier, ModalMixin, {
 		this._super(...arguments);
 
 		let pageId = this.get('page.id');
-		let url = this.get('appMeta.appHost') +
+		let url = window.location.protocol + '//' + this.get('appMeta.appHost') +
 			this.get('router').generate('document.index', {queryParams: {currentPageId: pageId}});
 		let self = this;
 
