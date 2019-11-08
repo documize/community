@@ -11,7 +11,6 @@
 
 import $ from 'jquery';
 import Service, { inject as service } from '@ember/service';
-import { schedule } from '@ember/runloop';
 
 export default Service.extend({
     sessionService: service('session'),
@@ -42,15 +41,17 @@ export default Service.extend({
     },
 
     scrollTo(id) {
-        schedule('afterRender', () => {
-            let elem = $(id).offset();
-            if (_.isUndefined(elem)) return;
+        let elem = $(id).offset();
+        if (_.isUndefined(elem)) return;
 
-            $('html, body').animate({
-                scrollTop: elem.top
-            }, 250);
-        });
-	},
+        $('html, body').animate({
+            scrollTop: elem.top
+        }, 250);
+    },
+
+    waitScrollTo(id) {
+        setTimeout(() => { this.scrollTo(id); }, 1000);
+    },
 
 	downloadFile(content, filename) {
 		let b = new Blob([content], { type: 'text/html' });
