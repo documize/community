@@ -147,6 +147,26 @@ func CanUploadDocument(ctx domain.RequestContext, s store.Store, spaceID string)
 	return false
 }
 
+// CanManageSpace returns if the user has permission to manage the given space.
+func CanManageSpace(ctx domain.RequestContext, s store.Store, spaceID string) bool {
+	roles, err := s.Permission.GetUserSpacePermissions(ctx, spaceID)
+	if err == sql.ErrNoRows {
+		err = nil
+	}
+	if err != nil {
+		return false
+	}
+	for _, role := range roles {
+		if role.RefID == spaceID && role.Location == pm.LocationSpace && role.Scope == pm.ScopeRow &&
+			pm.ContainsPermission(role.Action, pm.SpaceManage, pm.SpaceOwner) {
+			return true
+		}
+	}
+
+	return false
+}
+
+
 // CanViewSpace returns if the user has permission to view the given spaceID.
 func CanViewSpace(ctx domain.RequestContext, s store.Store, spaceID string) bool {
 	roles, err := s.Permission.GetUserSpacePermissions(ctx, spaceID)

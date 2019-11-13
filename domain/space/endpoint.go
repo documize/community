@@ -487,11 +487,6 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	method := "space.update"
 	ctx := domain.GetRequestContext(r)
 
-	if !ctx.Editor {
-		response.WriteForbiddenError(w)
-		return
-	}
-
 	spaceID := request.Param(r, "spaceID")
 	if len(spaceID) == 0 {
 		response.WriteMissingDataError(w, method, "spaceID")
@@ -521,6 +516,13 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sp.RefID = spaceID
+
+	// Check permissions (either Documize admin OR space owner/manager).
+	canManage := perm.CanViewSpace(ctx, *h.Store, spaceID)
+	if !canManage && !ctx.Administrator {
+		response.WriteForbiddenError(w)
+		return
+	}
 
 	// Retreive previous record for comparison later.
 	prev, err := h.Store.Space.Get(ctx, spaceID)
