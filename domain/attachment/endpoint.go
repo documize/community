@@ -180,7 +180,7 @@ func (h *Handler) Download(w http.ResponseWriter, r *http.Request) {
 
 	dataSize := len(a.Data)
 
-	w.WriteHeader(http.StatusOK)
+	// w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", typ)
 	w.Header().Set("Content-Disposition", `Attachment; filename="`+a.Filename+`" ; `+`filename*="`+a.Filename+`"`)
 	if dataSize != 0 {

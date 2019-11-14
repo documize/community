@@ -518,7 +518,7 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	sp.RefID = spaceID
 
 	// Check permissions (either Documize admin OR space owner/manager).
-	canManage := perm.CanViewSpace(ctx, *h.Store, spaceID)
+	canManage := perm.CanManageSpace(ctx, *h.Store, spaceID)
 	if !canManage && !ctx.Administrator {
 		response.WriteForbiddenError(w)
 		return
