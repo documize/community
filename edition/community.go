@@ -40,12 +40,14 @@ func main() {
 	// Specify the product edition.
 	rt.Product = domain.Product{}
 	rt.Product.Major = "3"
-	rt.Product.Minor = "4"
-	rt.Product.Patch = "3"
-	rt.Product.Revision = "191114171637"
+	rt.Product.Minor = "5"
+	rt.Product.Patch = "0"
+	rt.Product.Revision = "191115164251"
 	rt.Product.Version = fmt.Sprintf("%s.%s.%s", rt.Product.Major, rt.Product.Minor, rt.Product.Patch)
 	rt.Product.Edition = domain.CommunityEdition
 	rt.Product.Title = fmt.Sprintf("%s Edition", rt.Product.Edition)
+
+	rt.Log.Info(fmt.Sprintf("Product: %s version %s (build %s)", rt.Product.Title, rt.Product.Version, rt.Product.Revision))
 
 	// Setup data store.
 	s := store.Store{}
