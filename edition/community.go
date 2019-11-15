@@ -56,7 +56,7 @@ func main() {
 	if !flagsOK {
 		os.Exit(0)
 	}
-	rt.Log.Info("Configuration source: " + rt.Flags.ConfigSource)
+	rt.Log.Info("Configuration: " + rt.Flags.ConfigSource)
 
 	// Start database init.
 	bootOK := boot.InitRuntime(&rt, &s)

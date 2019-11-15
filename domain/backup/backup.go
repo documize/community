@@ -545,7 +545,8 @@ func (b backerHandler) dmzCategory(files *[]backupItem) (err error) {
 	err = b.Runtime.Db.Select(&cat, `
         SELECT id, c_refid AS refid,
         c_orgid AS orgid, c_spaceid AS spaceid,
-        c_name AS name, c_created AS created, c_revised AS revised
+		c_name AS name, c_default AS isdefault,
+		c_created AS created, c_revised AS revised
         FROM dmz_category`+w)
 	if err != nil {
 		return errors.Wrap(err, "select.category")

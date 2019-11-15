@@ -204,12 +204,13 @@ func (h *Handler) processSampleData(data om.SampleData) (err error) {
 	h.Runtime.Log.Info(fmt.Sprintf("Installing (%d) categories", len(data.Category)))
 	for i := range data.Category {
 		_, err = data.Context.Transaction.Exec(h.Runtime.Db.Rebind(`
-            INSERT INTO dmz_category (c_refid, c_orgid, c_spaceid, c_name, c_created, c_revised)
-            VALUES (?, ?, ?, ?, ?, ?)`),
+            INSERT INTO dmz_category (c_refid, c_orgid, c_spaceid, c_name, c_default, c_created, c_revised)
+            VALUES (?, ?, ?, ?, ?, ?, ?)`),
 			h.getMappedID("category", data.Category[i].RefID),
 			data.Context.OrgID,
 			h.getMappedID("space", data.Category[i].SpaceID),
 			data.Category[i].Name,
+			data.Category[i].IsDefault,
 			data.Category[i].Created,
 			data.Category[i].Revised)
 

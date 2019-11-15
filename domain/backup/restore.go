@@ -743,9 +743,9 @@ func (r *restoreHandler) dmzCategory() (err error) {
 
 	for i := range ct {
 		_, err = r.Context.Transaction.Exec(r.Runtime.Db.Rebind(`
-            INSERT INTO dmz_category (c_refid, c_orgid, c_spaceid, c_name, c_created, c_revised)
-            VALUES (?, ?, ?, ?, ?, ?)`),
-			ct[i].RefID, r.remapOrg(ct[i].OrgID), ct[i].SpaceID, ct[i].Name, ct[i].Created, ct[i].Revised)
+            INSERT INTO dmz_category (c_refid, c_orgid, c_spaceid, c_name, c_default, c_created, c_revised)
+            VALUES (?, ?, ?, ?, ?, ?, ?`),
+			ct[i].RefID, r.remapOrg(ct[i].OrgID), ct[i].SpaceID, ct[i].Name, ct[i].IsDefault, ct[i].Created, ct[i].Revised)
 
 		if err != nil {
 			r.Context.Transaction.Rollback()

@@ -16,6 +16,7 @@ export default Model.extend({
 	orgId: attr('string'),
 	spaceId: attr('string'),
 	category: attr('string'),
+	isDefault: attr('boolean'),
 	created: attr(),
 	revised: attr(),
 

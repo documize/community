@@ -33,8 +33,8 @@ func (s Store) Add(ctx domain.RequestContext, c category.Category) (err error) {
 	c.Created = time.Now().UTC()
 	c.Revised = time.Now().UTC()
 
-	_, err = ctx.Transaction.Exec(s.Bind("INSERT INTO dmz_category (c_refid, c_orgid, c_spaceid, c_name, c_created, c_revised) VALUES (?, ?, ?, ?, ?, ?)"),
-		c.RefID, c.OrgID, c.SpaceID, c.Name, c.Created, c.Revised)
+	_, err = ctx.Transaction.Exec(s.Bind("INSERT INTO dmz_category (c_refid, c_orgid, c_spaceid, c_name, c_default, c_created, c_revised) VALUES (?, ?, ?, ?, ?, ?, ?)"),
+		c.RefID, c.OrgID, c.SpaceID, c.Name, c.IsDefault, c.Created, c.Revised)
 
 	if err != nil {
 		err = errors.Wrap(err, "unable to execute insert category")
@@ -47,7 +47,7 @@ func (s Store) Add(ctx domain.RequestContext, c category.Category) (err error) {
 // Context is used to for user ID.
 func (s Store) GetBySpace(ctx domain.RequestContext, spaceID string) (c []category.Category, err error) {
 	err = s.Runtime.Db.Select(&c, s.Bind(`
-        SELECT id, c_refid AS refid, c_orgid AS orgid, c_spaceid AS spaceid, c_name AS name, c_created AS created, c_revised AS revised
+        SELECT id, c_refid AS refid, c_orgid AS orgid, c_spaceid AS spaceid, c_name AS name, c_default AS isdefault, c_created AS created, c_revised AS revised
         FROM dmz_category
 		WHERE c_orgid=? AND c_spaceid=? AND c_refid IN
             (
@@ -77,7 +77,7 @@ func (s Store) GetAllBySpace(ctx domain.RequestContext, spaceID string) (c []cat
 	c = []category.Category{}
 
 	err = s.Runtime.Db.Select(&c, s.Bind(`
-        SELECT id, c_refid AS refid, c_orgid AS orgid, c_spaceid AS spaceid, c_name AS name, c_created AS created, c_revised AS revised
+        SELECT id, c_refid AS refid, c_orgid AS orgid, c_spaceid AS spaceid, c_name AS name, c_default AS isdefault, c_created AS created, c_revised AS revised
         FROM dmz_category
         WHERE c_orgid=? AND c_spaceid=? AND c_spaceid IN
             (
@@ -105,7 +105,7 @@ func (s Store) GetAllBySpace(ctx domain.RequestContext, spaceID string) (c []cat
 // GetByOrg returns all categories accessible by user for their org.
 func (s Store) GetByOrg(ctx domain.RequestContext, userID string) (c []category.Category, err error) {
 	err = s.Runtime.Db.Select(&c, s.Bind(`
-        SELECT id, c_refid AS refid, c_orgid AS orgid, c_spaceid AS spaceid, c_name AS name, c_created AS created, c_revised AS revised
+        SELECT id, c_refid AS refid, c_orgid AS orgid, c_spaceid AS spaceid, c_name AS name, c_default AS isdefault, c_created AS created, c_revised AS revised
         FROM dmz_category
         WHERE c_orgid=? AND c_refid IN
             (SELECT c_refid FROM dmz_permission WHERE c_orgid=? AND c_location='category' AND c_refid IN (
@@ -131,7 +131,7 @@ func (s Store) GetByOrg(ctx domain.RequestContext, userID string) (c []category.
 func (s Store) Update(ctx domain.RequestContext, c category.Category) (err error) {
 	c.Revised = time.Now().UTC()
 
-	_, err = ctx.Transaction.NamedExec(s.Bind("UPDATE dmz_category SET c_name=:name, c_revised=:revised WHERE c_orgid=:orgid AND c_refid=:refid"), c)
+	_, err = ctx.Transaction.NamedExec(s.Bind("UPDATE dmz_category SET c_name=:name, c_default=:isdefault, c_revised=:revised WHERE c_orgid=:orgid AND c_refid=:refid"), c)
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to execute update for category %s", c.RefID))
 	}
@@ -142,7 +142,7 @@ func (s Store) Update(ctx domain.RequestContext, c category.Category) (err error
 // Get returns specified category
 func (s Store) Get(ctx domain.RequestContext, id string) (c category.Category, err error) {
 	err = s.Runtime.Db.Get(&c, s.Bind(`
-        SELECT id, c_refid AS refid, c_orgid AS orgid, c_spaceid AS spaceid, c_name AS name, c_created AS created, c_revised AS revised
+        SELECT id, c_refid AS refid, c_orgid AS orgid, c_spaceid AS spaceid, c_name AS name, c_default AS isdefault, c_created AS created, c_revised AS revised
         FROM dmz_category
         WHERE c_orgid=? AND c_refid=?`),
 		ctx.OrgID, id)
@@ -263,7 +263,7 @@ func (s Store) GetSpaceCategorySummary(ctx domain.RequestContext, spaceID string
 // GetDocumentCategoryMembership returns all space categories associated with given document.
 func (s Store) GetDocumentCategoryMembership(ctx domain.RequestContext, documentID string) (c []category.Category, err error) {
 	err = s.Runtime.Db.Select(&c, s.Bind(`
-        SELECT id, c_refid AS refid, c_orgid AS orgid, c_spaceid AS spaceid, c_name AS name, c_created AS created, c_revised AS revised
+        SELECT id, c_refid AS refid, c_orgid AS orgid, c_spaceid AS spaceid, c_name AS name, c_default AS isdefault, c_created AS created, c_revised AS revised
         FROM dmz_category
         WHERE c_orgid=? AND c_refid IN (SELECT c_categoryid FROM dmz_category_member WHERE c_orgid=? AND c_docid=?)`),
 		ctx.OrgID, ctx.OrgID, documentID)

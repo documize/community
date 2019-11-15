@@ -1,4 +1,4 @@
-/* Enterprise edition */
+/* Community edition */
 
 -- Fulltext search support
 IF  EXISTS (SELECT * FROM sysfulltextcatalogs ftc WHERE ftc.name = N'dmz_search_catalog')

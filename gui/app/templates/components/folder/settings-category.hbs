@@ -55,6 +55,11 @@
 				<div class="form-group">
 					{{focus-input id="edit-category-name" type="text" class="form-control mousetrap" placeholder="Category name" value=editName}}
 				</div>
+				<div class="form-group">
+					<label>Default</label>
+					{{x-toggle value=editDefault size="medium" theme="light" onToggle=(action (mut editDefault))}}
+					<small class="form-text text-muted">Automatically aplies to newly created documents</small>
+				</div>
 			</div>
 			<div class="modal-footer">
 				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Close dismiss=true}}

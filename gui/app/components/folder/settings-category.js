@@ -24,6 +24,7 @@ export default Component.extend(ModalMixin, Notifer, {
 	store: service(),
 	editId: '',
 	editName: '',
+	editDefault: false,
 	deleteId: '',
 	newCategory: '',
 
@@ -127,6 +128,7 @@ export default Component.extend(ModalMixin, Notifer, {
 			let cat = this.get('category').findBy('id', id);
 			this.set('editId', cat.get('id'));
 			this.set('editName', cat.get('category'));
+			this.set('editDefault', cat.get('isDefault'));
 
 			this.modalOpen('#category-edit-modal', {show: true}, "#edit-category-id");
 		},
@@ -155,6 +157,7 @@ export default Component.extend(ModalMixin, Notifer, {
 
 			let cat = this.get('category').findBy('id', this.get('editId'));
 			cat.set('category', name);
+			cat.set('isDefault', this.get('editDefault'));
 
 			this.modalClose('#category-edit-modal');
 			$('#edit-category-name').removeClass('is-invalid');

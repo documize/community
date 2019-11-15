@@ -34,6 +34,7 @@ import (
 	"github.com/documize/community/model/activity"
 	"github.com/documize/community/model/attachment"
 	"github.com/documize/community/model/audit"
+	cm "github.com/documize/community/model/category"
 	"github.com/documize/community/model/doc"
 	"github.com/documize/community/model/page"
 	"github.com/documize/community/model/space"
@@ -165,7 +166,8 @@ func (h *Handler) convert(w http.ResponseWriter, r *http.Request, job, spaceID s
 	response.WriteJSON(w, nd)
 }
 
-func processDocument(ctx domain.RequestContext, r *env.Runtime, store *store.Store, indexer indexer.Indexer, filename, job string, sp space.Space, fileResult *api.DocumentConversionResponse) (newDocument doc.Document, err error) {
+func processDocument(ctx domain.RequestContext, r *env.Runtime, store *store.Store, indexer indexer.Indexer, filename,
+	job string, sp space.Space, fileResult *api.DocumentConversionResponse) (newDocument doc.Document, err error) {
 	// Convert into database objects
 	document := convertFileResult(filename, fileResult)
 	document.Job = job
@@ -243,9 +245,30 @@ func processDocument(ctx domain.RequestContext, r *env.Runtime, store *store.Sto
 		da = append(da, a)
 	}
 
+	// Add default categories to newly created document (if we have them).
+	cats, err := store.Category.GetBySpace(ctx, document.SpaceID)
+	if err != nil {
+		r.Log.Error("fetch default categories for new document", err)
+	}
+	for ic := range cats {
+		if cats[ic].IsDefault {
+			c := cm.Member{}
+			c.OrgID = ctx.OrgID
+			c.SpaceID = sp.RefID
+			c.RefID = uniqueid.Generate()
+			c.DocumentID = document.RefID
+			c.CategoryID = cats[ic].RefID
+
+			err = store.Category.AssociateDocument(ctx, c)
+			if err != nil {
+				r.Log.Error("apply default category to new document", err)
+			}
+		}
+	}
+
 	store.Activity.RecordUserActivity(ctx, activity.UserActivity{
-		SpaceID:      newDocument.SpaceID,
-		DocumentID:   newDocument.RefID,
+		SpaceID:      document.SpaceID,
+		DocumentID:   document.RefID,
 		SourceType:   activity.SourceTypeDocument,
 		ActivityType: activity.TypeCreated})
 
