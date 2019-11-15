@@ -31,6 +31,9 @@
 					{{#unless cat.access}}
 						<p class="color-red-600 bold-500">You have no view permission for this category</p>
 					{{/unless}}
+					{{#if cat.isDefault}}
+						<p class="color-yellow-600 bold-500">Default category for new content</p>
+					{{/if}}
 				</div>
 				<div class="actions">
 					{{#ui/ui-toolbar dark=false light=true raised=true large=false bordered=true}}
