@@ -14,6 +14,7 @@ import { empty, and } from '@ember/object/computed';
 import { isEmpty } from '@ember/utils';
 import { set } from '@ember/object';
 import { inject as service } from '@ember/service';
+import { schedule } from '@ember/runloop';
 import Notifier from '../../mixins/notifier';
 import Component from '@ember/component';
 
@@ -31,6 +32,7 @@ export default Component.extend(Notifier, {
 
 	didReceiveAttrs() {
 		this._super(...arguments);
+
 		this.set('maxTags', this.get('model.general.maxTags'));
 		this.set('domain', this.get('model.general.domain'));
 	},
@@ -80,6 +82,69 @@ export default Component.extend(Notifier, {
 				dzone.removeFile(file);
 			});
 		}
+
+		schedule('afterRender', () => {
+			let options = {
+				cache_suffix: '?v=510',
+				selector: '#editor-message',
+				relative_urls: false,
+				browser_spellcheck: true,
+				contextmenu: false,
+				statusbar: false,
+				inline: false,
+				paste_data_images: true,
+				images_upload_handler: function (blobInfo, success, failure) { // eslint-disable-line no-unused-vars
+					success("data:" + blobInfo.blob().type + ";base64," + blobInfo.base64());
+				},
+				image_advtab: true,
+				image_caption: true,
+				media_live_embeds: true,
+				theme: 'silver',
+				skin: 'oxide',
+				entity_encoding: 'raw',
+				extended_valid_elements: 'b,i,b/strong,i/em',
+				fontsize_formats:
+					'8px 10px 12px 14px 16px 18px 20px 22px 24px 26px 28px 30px 32px 34px 36px 38px 40px 42px 44px 46px 48px 50px 52px 54px 56px 58px 60px 70px 80px 90px 100px',
+				formats: {
+					bold: {
+						inline: 'b'
+					},
+					italic: {
+						inline: 'i'
+					}
+				},
+
+				plugins: [
+					'advlist autolink autoresize lists link image charmap print hr pagebreak',
+					'searchreplace wordcount visualblocks visualchars',
+					'insertdatetime media nonbreaking save table directionality',
+					'template paste textpattern imagetools'
+				],
+				menu: {},
+				menubar: false,
+				toolbar: [
+					'formatselect fontsizeselect | bold italic underline strikethrough superscript subscript blockquote | forecolor backcolor link unlink',
+					'outdent indent bullist numlist | alignleft aligncenter alignright alignjustify | table uploadimage image media'
+				],
+			};
+
+			if (typeof tinymce === 'undefined') {
+				$.getScript('/tinymce/tinymce.min.js?v=510', function () {
+					window.tinymce.dom.Event.domLoaded = true;
+					tinymce.baseURL = '//' + window.location.host + '/tinymce';
+					tinymce.suffix = '.min';
+					tinymce.init(options);
+				});
+			} else {
+				tinymce.init(options);
+			}
+		});
+	},
+
+	willDestroyElement() {
+		this._super(...arguments);
+
+		tinymce.EditorManager.execCommand('mceRemoveEditor', true, 'editor-message');
 	},
 
 	actions: {
@@ -91,14 +156,17 @@ export default Component.extend(Notifier, {
         },
 
 		save() {
+			let editor = tinymce.EditorManager.get('editor-message');
+			let message = editor.getContent();
+
 			if (isEmpty(this.get('model.general.title'))) {
 				set(this, 'titleError', true);
 				return $("#siteTitle").focus();
 			}
 
-			if (isEmpty(this.get('model.general.message'))) {
+			if (isEmpty(message)) {
 				set(this, 'messageError', true);
-				return $("#siteMessage").focus();
+				return editor.focus();
 			}
 
 			if (isEmpty(this.get('model.general.conversionEndpoint'))) {
@@ -112,6 +180,7 @@ export default Component.extend(Notifier, {
 			}
 
 			this.set('model.general.maxTags', this.get('maxTags'));
+			this.set('model.general.message', message);
 
 			let domainChanged = this.get('model.general.domain') !== this.get('domain').toLowerCase();
 			this.set('model.general.domain', this.get('domain').toLowerCase());

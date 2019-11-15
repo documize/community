@@ -9,10 +9,12 @@
 //
 // https://documize.com
 
+import $ from 'jquery';
 import { A } from '@ember/array';
 import { inject as service } from '@ember/service';
 import { computed } from '@ember/object';
 import { empty } from '@ember/object/computed';
+import { schedule } from '@ember/runloop';
 import AuthMixin from '../../mixins/auth';
 import Notifier from '../../mixins/notifier';
 import Component from '@ember/component';
@@ -42,6 +44,73 @@ export default Component.extend(AuthMixin, Notifier, {
 		this._super(...arguments);
 
 		this.set('iconList', this.get('iconSvc').getSpaceIconList());
+	},
+
+	didInsertElement() {
+		this._super(...arguments);
+
+		schedule('afterRender', () => {
+			let options = {
+				cache_suffix: '?v=510',
+				selector: '#space-desc',
+				relative_urls: false,
+				browser_spellcheck: true,
+				contextmenu: false,
+				statusbar: false,
+				inline: false,
+				paste_data_images: true,
+				images_upload_handler: function (blobInfo, success, failure) { // eslint-disable-line no-unused-vars
+					success("data:" + blobInfo.blob().type + ";base64," + blobInfo.base64());
+				},
+				image_advtab: true,
+				image_caption: true,
+				media_live_embeds: true,
+				theme: 'silver',
+				skin: 'oxide',
+				entity_encoding: 'raw',
+				extended_valid_elements: 'b,i,b/strong,i/em',
+				fontsize_formats:
+					'8px 10px 12px 14px 16px 18px 20px 22px 24px 26px 28px 30px 32px 34px 36px 38px 40px 42px 44px 46px 48px 50px 52px 54px 56px 58px 60px 70px 80px 90px 100px',
+				formats: {
+					bold: {
+						inline: 'b'
+					},
+					italic: {
+						inline: 'i'
+					}
+				},
+
+				plugins: [
+					'advlist autolink autoresize lists link image charmap print hr pagebreak',
+					'searchreplace wordcount visualblocks visualchars',
+					'insertdatetime media nonbreaking save table directionality',
+					'template paste textpattern imagetools'
+				],
+				menu: {},
+				menubar: false,
+				toolbar: [
+					'formatselect fontsizeselect | bold italic underline strikethrough superscript subscript blockquote | forecolor backcolor link unlink',
+					'outdent indent bullist numlist | alignleft aligncenter alignright alignjustify | table uploadimage image media'
+				],
+			};
+
+			if (typeof tinymce === 'undefined') {
+				$.getScript('/tinymce/tinymce.min.js?v=510', function () {
+					window.tinymce.dom.Event.domLoaded = true;
+					tinymce.baseURL = '//' + window.location.host + '/tinymce';
+					tinymce.suffix = '.min';
+					tinymce.init(options);
+				});
+			} else {
+				tinymce.init(options);
+			}
+		});
+	},
+
+	willDestroyElement() {
+		this._super(...arguments);
+
+		tinymce.EditorManager.execCommand('mceRemoveEditor', true, 'space-desc');
 	},
 
 	didReceiveAttrs() {
@@ -107,8 +176,11 @@ export default Component.extend(AuthMixin, Notifier, {
 			if (spaceName.length === 0) return;
 			space.set('name', spaceName);
 
+			let editor = tinymce.EditorManager.get('space-desc');
+			let spaceDesc = editor.getContent();
+
 			space.set('icon', this.get('spaceIcon'));
-			space.set('desc', this.get('spaceDesc'));
+			space.set('desc', spaceDesc);
 			space.set('labelId', this.get('spaceLabel'));
 
 			this.get('spaceSvc').save(space).then(() => {

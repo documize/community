@@ -16,8 +16,9 @@
 	flex-direction: row;
 
 	> .icon, > .meta-icon, > .meta-logo {
-		align-self: center;
+		align-self: flex-start;
 		margin-right: 25px;
+		margin-top: 10px;
 
 		> i {
 			font-size: 3.5rem;

@@ -6,7 +6,9 @@
 	</div>
 	<div class="form-group">
 		<label id="siteMessage">Site Message</label>
-		{{textarea id="siteMessage" rows="3" value=model.general.message class=(if hasMessageInputError "form-control is-invalid" "form-control")}}
+		<div id="editor-message" class="wysiwyg wysiwyg-editor">
+			{{{model.general.message}}}
+		</div>
 		<small class="form-text text-muted">Provide short message explaining this Documize instance</small>
 	</div>
 	<div class="form-group">

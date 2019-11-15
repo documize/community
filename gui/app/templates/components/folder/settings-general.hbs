@@ -11,7 +11,9 @@
 
 	<div class="form-group">
 		<label>Description</label>
-		{{focus-input id="space-desc" type="text" value=spaceDesc class="form-control" placeholder="Space description" autocomplete="off"}}
+		<div id="space-desc" class="wysiwyg wysiwyg-editor">
+			{{{spaceDesc}}}
+		</div>
 	</div>
 
 	<div class="form-group">
