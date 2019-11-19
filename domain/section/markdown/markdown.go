@@ -18,6 +18,7 @@ import (
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/domain/section/provider"
 	"github.com/documize/community/domain/store"
+	"github.com/microcosm-cc/bluemonday"
 )
 
 // Provider represents Markdown
@@ -47,9 +48,11 @@ func (*Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http.R
 
 // Render converts markdown data into HTML suitable for browser rendering.
 func (*Provider) Render(ctx *provider.Context, config, data string) string {
-	result := blackfriday.Run([]byte(data))
+	unsafe := blackfriday.Run([]byte(data))
 
-	return string(result)
+	safe := bluemonday.UGCPolicy().SanitizeBytes(unsafe)
+
+	return string(safe)
 }
 
 // Refresh just sends back data as-is.
