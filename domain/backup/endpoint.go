@@ -89,7 +89,7 @@ func (h *Handler) Backup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.Runtime.Log.Info("Backup started")
+	h.Runtime.Log.Infof("Backup started %s", ctx.OrgID)
 
 	bh := backerHandler{Runtime: h.Runtime, Store: h.Store, Context: ctx, Spec: spec}
 
@@ -113,7 +113,7 @@ func (h *Handler) Backup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.Runtime.Log.Info(fmt.Sprintf("Backup size pending download %d", len(bk)))
+	h.Runtime.Log.Info(fmt.Sprintf("Backup size of org %s pending download %d", ctx.OrgID, len(bk)))
 
 	// Standard HTTP headers.
 	w.Header().Set("Content-Type", "application/zip")

@@ -106,12 +106,6 @@
 			<div class="deactivation-zone">
 				<p>Let us know if you would like to close your account or cancel your subscription.</p>
 				<p>Requests can take up to 24 hours to process.</p>
-				<p><span class="bold-700">WARNING: </span>All data will be deleted so please download a complete backup of all your data.</p>
-
-				{{#link-to "customize.backup"}}
-					{{ui/ui-button color=constants.Color.Gray light=true label="Run Backup"}}
-				{{/link-to}}
-				{{ui/ui-button-gap}}
 				{{ui/ui-button color=constants.Color.Red light=true label="Close Account" onClick=(action "onRequestClosure")}}
 			</div>
 		</div>

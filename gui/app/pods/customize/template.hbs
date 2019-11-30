@@ -61,10 +61,12 @@
 							{{/link-to}}
 						{{/if}}
 					{{/if}}
-					{{#link-to "customize.backup" activeClass="selected" class="item" tagName="div"}}
-						<i class={{concat "dicon " constants.Icon.Database}} />
-						<div class="name">Backup & Restore</div>
-					{{/link-to}}
+					{{#if (eq appMeta.location "selfhost")}}
+						{{#link-to "customize.backup" activeClass="selected" class="item" tagName="div"}}
+							<i class={{concat "dicon " constants.Icon.Database}} />
+							<div class="name">Backup & Restore</div>
+						{{/link-to}}
+					{{/if}}
 					{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
 						{{#link-to "customize.billing" activeClass="selected" class="item" tagName="div"}}
 							<i class={{concat "dicon " constants.Icon.Handshake}} />
