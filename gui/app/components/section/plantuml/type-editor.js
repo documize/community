@@ -30,6 +30,9 @@ export default Component.extend({
 		let page = this.get('page');
 		return `plantuml-preview-${page.id}`;
     }),
+	emptyDiagram: computed('diagramText', function () {
+		return _.isEmpty(this.get('diagramText'));
+    }),
 
     generatePreview() {
         this.set('waiting', true);
@@ -50,7 +53,7 @@ export default Component.extend({
             });
         });
     },
-    
+
     didReceiveAttrs() {
         this._super(...arguments);
         this.set('waiting', false);
@@ -96,20 +99,20 @@ title Servlet Container
 
 if "Page.onSecurityCheck" then
     ->[true] "Page.onInit()"
-    
+
     if "isForward?" then
     ->[no] "Process controls"
-    
+
     if "continue processing?" then
         -->[yes] ===RENDERING===
     else
         -->[no] ===REDIRECT_CHECK===
     endif
-    
+
     else
     -->[yes] ===RENDERING===
     endif
-    
+
     if "is Post?" then
     -->[yes] "Page.onPost()"
     --> "Page.onRender()" as render
@@ -118,7 +121,7 @@ if "Page.onSecurityCheck" then
     -->[no] "Page.onGet()"
     --> render
     endif
-    
+
 else
     -->[false] ===REDIRECT_CHECK===
 endif
@@ -243,7 +246,7 @@ if (Page.onSecurityCheck) then (true)
     if (continue processing?) then (no)
         stop
     endif
-    
+
     if (isPost?) then (yes)
         :Page.onPost();
     else (no)
@@ -280,11 +283,11 @@ package "Some Group" {
     HTTP - [First Component]
     [Another Component]
 }
-    
+
 node "Other Groups" {
     FTP - [Second Component]
     [First Component] --> FTP
-} 
+}
 
 cloud {
     [Example 1]
@@ -331,11 +334,11 @@ state State3 {
 State3 --> State3 : Failed
 State3 --> [*] : Succeeded / Save Result
 State3 --> [*] : Aborted
-    
+
 @enduml`;
 
             this.set('diagramText', txt);
             this.generatePreview();
-        }  
+        }
     }
 });

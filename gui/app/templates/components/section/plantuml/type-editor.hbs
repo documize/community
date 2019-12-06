@@ -10,23 +10,24 @@
 		<div class="form-group">
 			<label><a href="http://plantuml.com/" target="_blank">PlantUML Diagram</a></label>
 			<Ui::UiSpacer @size="200" />
-			<div>
-				<p>Insert sample diagrams:</p>
-				<p>
-					{{ui/ui-button color=constants.Color.Gray light=true label="Sequence" onClick=(action "onInsertSequence")}}
-					{{ui/ui-button color=constants.Color.Gray light=true label="Use Case" onClick=(action "onInsertUseCase")}}
-					{{ui/ui-button color=constants.Color.Gray light=true label="Class" onClick=(action "onInsertClass")}}
-					{{ui/ui-button color=constants.Color.Gray light=true label="Activity" onClick=(action "onInsertActivity")}}
-					{{ui/ui-button color=constants.Color.Gray light=true label="Activity (new syntax)" onClick=(action "onInsertActivityNew")}}
-					{{ui/ui-button color=constants.Color.Gray light=true label="Component" onClick=(action "onInsertComponent")}}
-					{{ui/ui-button color=constants.Color.Gray light=true label="State" onClick=(action "onInsertState")}}
-				</p>
-			</div>
 			{{focus-textarea value=diagramText rows=30 id=editorId class="diagram-editor form-control mousetrap"}}
+			{{#if emptyDiagram}}
+				<div>
+					<Ui::UiSpacer @size="100" />
+					<p>Insert sample diagrams:</p>
+					<p>
+						{{ui/ui-button color=constants.Color.Gray light=true label="Sequence" onClick=(action "onInsertSequence")}}
+						{{ui/ui-button color=constants.Color.Gray light=true label="Use Case" onClick=(action "onInsertUseCase")}}
+						{{ui/ui-button color=constants.Color.Gray light=true label="Class" onClick=(action "onInsertClass")}}
+						{{ui/ui-button color=constants.Color.Gray light=true label="Activity" onClick=(action "onInsertActivity")}}
+						{{ui/ui-button color=constants.Color.Gray light=true label="Activity (new syntax)" onClick=(action "onInsertActivityNew")}}
+						{{ui/ui-button color=constants.Color.Gray light=true label="Component" onClick=(action "onInsertComponent")}}
+						{{ui/ui-button color=constants.Color.Gray light=true label="State" onClick=(action "onInsertState")}}
+					</p>
+				</div>
+			{{/if}}
 		</div>
 	</div>
-
-	<Ui::UiSpacer @size="200" />
 
 	{{ui/ui-button color=constants.Color.Yellow light=true label=previewButtonCaption onClick=(action "onPreview")}}
 
