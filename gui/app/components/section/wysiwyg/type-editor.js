@@ -23,6 +23,7 @@ export default Component.extend({
 		let page = this.get('page');
 		return `wysiwyg-editor-${page.id}`;
 	}),
+	scrollFix: false,
 
 	didReceiveAttrs() {
 		this._super(...arguments);
@@ -32,9 +33,16 @@ export default Component.extend({
 	didInsertElement() {
 		this._super(...arguments);
 
+		if ($('html').css('overflow-y') === 'scroll') {
+			this.set('scrollFix', true);
+			$('html').css('overflow-y', 'unset');
+		} else {
+			this.set('scrollFix', false);
+		}
+
 		schedule('afterRender', () => {
 			let options = {
-				cache_suffix: '?v=510',
+				cache_suffix: '?v=513',
 				selector: '#' + this.get('editorId'),
 				relative_urls: false,
 				browser_spellcheck: true,
@@ -120,7 +128,7 @@ export default Component.extend({
 			};
 
 			if (typeof tinymce === 'undefined') {
-				$.getScript('/tinymce/tinymce.min.js?v=510', function () {
+				$.getScript('/tinymce/tinymce.min.js?v=513', function () {
 					window.tinymce.dom.Event.domLoaded = true;
 					tinymce.baseURL = '//' + window.location.host + '/tinymce';
 					tinymce.suffix = '.min';
@@ -136,6 +144,11 @@ export default Component.extend({
 		this._super(...arguments);
 
 		tinymce.EditorManager.execCommand('mceRemoveEditor', true, this.get('editorId'));
+
+		if (this.get('scrollFix')) {
+			this.set('scrollFix', false);
+			$('html').css('overflow-y', 'scroll');
+		}
 	},
 
 	actions: {
