@@ -44,12 +44,12 @@ export default Component.extend(Notifier, {
 
 	didInsertElement() {
 		this._super(...arguments);
+		this.jumpToSection(this.get('currentPageId'));
 	},
 
 	didRender() {
 		this._super(...arguments);
 
-		this.jumpToSection(this.get('currentPageId'));
 		this.contentLinkHandler();
 	},
 
