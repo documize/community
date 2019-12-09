@@ -114,8 +114,10 @@ func (p *Provider) generateDiagram(ctx *provider.Context, data string) string {
 		}
 	}()
 
-	png, _ := ioutil.ReadAll(resp.Body)
-	pngEncoded := base64.StdEncoding.EncodeToString(png)
+	img, _ := ioutil.ReadAll(resp.Body)
+	enc := base64.StdEncoding.EncodeToString(img)
 
-	return string(fmt.Sprintf("data:image/png;base64,%s", pngEncoded))
+	// return string(fmt.Sprintf("data:image/png;base64,%s", enc))
+
+	return string(fmt.Sprintf("data:image/svg+xml;base64,%s", enc))
 }
