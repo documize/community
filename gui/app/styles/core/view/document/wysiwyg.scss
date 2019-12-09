@@ -3,6 +3,10 @@
 	line-height: 1.5rem;
 	color: $color-black-light-1;
 
+	iframe {
+		border: none;
+	}
+
 	table {
 		border: 1px solid map-get($gray-shades, 300) !important;
 

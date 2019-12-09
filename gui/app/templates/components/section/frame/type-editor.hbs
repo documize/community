@@ -1,0 +1,12 @@
+{{layout/logo-heading
+	title="IFrame"
+	desc="Embed an IFrame"
+	icon=constants.Icon.Integrations}}
+
+{{#section/base-editor document=document folder=folder page=page isDirty=(action "isDirty") onCancel=(action "onCancel") onAction=(action "onAction")}}
+	<div class="form-group">
+		<label for="iframe-embed-code">IFrame embed code</label>
+		{{textarea value=data rows="10" id="iframe-embed-code" class="form-control mousetrap" placeholder="Enter code" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"}}
+		<small class="form-text text-muted">Paste the iframe code snippet</small>
+	</div>
+{{/section/base-editor}}
