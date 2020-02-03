@@ -31,6 +31,9 @@ export default Component.extend({
 	hasDocumentActions: computed('permissions.{documentDelete,documentMove}', function() {
 		return this.get('permissions.documentDelete') || this.get('permissions.documentMove');
 	}),
+    hasCategoryFilter: computed('categoryFilter', function() {
+        return !_.isEmpty(this.get('categoryFilter'));
+    }),
 
 	didReceiveAttrs() {
 		this._super(...arguments);
@@ -53,7 +56,7 @@ export default Component.extend({
 		let viewDensity = this.get('localStorage').getSessionItem('space.density');
 		if (!_.isNull(viewDensity) && !_.isUndefined(viewDensity)) {
 			this.set('viewDensity', viewDensity);
-		}		
+		}
 	},
 
 	actions: {
@@ -86,7 +89,7 @@ export default Component.extend({
 		},
 
 		// eslint-disable-next-line no-unused-vars
-		onSortBy(attacher) { 
+		onSortBy(attacher) {
 			// attacher.hide();
 			this.get('onFiltered')(this.get('documents'));
 		},
@@ -161,6 +164,18 @@ export default Component.extend({
 
 			this.set('selectedCaption', list.length > 1 ? 'documents' : 'document');
 			this.set('selectedDocuments', A(list));
-        }
+		},
+
+		onPin(documentId) {
+			this.get('onPin')(documentId);
+		},
+
+		onUnpin(documentId) {
+			this.get('onUnpin')(documentId);
+		},
+
+        onPinSequence(documentId, direction) {
+            this.get('onPinSequence')(documentId, direction);
+        },
     }
 });

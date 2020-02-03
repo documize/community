@@ -29,16 +29,16 @@ type Store struct {
 }
 
 // RecordUserActivity logs user initiated data changes.
-func (s Store) RecordUserActivity(ctx domain.RequestContext, activity activity.UserActivity) (err error) {
+func (s Store) RecordUserActivity(ctx domain.RequestContext, activity activity.UserActivity) {
 	activity.OrgID = ctx.OrgID
 	activity.UserID = ctx.UserID
 	activity.Created = time.Now().UTC()
 
-	_, err = ctx.Transaction.Exec(s.Bind("INSERT INTO dmz_user_activity (c_orgid, c_userid, c_spaceid, c_docid, c_sectionid, c_sourcetype, c_activitytype, c_metadata, c_created) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"),
+	_, err := ctx.Transaction.Exec(s.Bind("INSERT INTO dmz_user_activity (c_orgid, c_userid, c_spaceid, c_docid, c_sectionid, c_sourcetype, c_activitytype, c_metadata, c_created) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"),
 		activity.OrgID, activity.UserID, activity.SpaceID, activity.DocumentID, activity.SectionID, activity.SourceType, activity.ActivityType, activity.Metadata, activity.Created)
 
 	if err != nil {
-		err = errors.Wrap(err, "execute record user activity")
+		s.Runtime.Log.Error("execute record user activity", err)
 	}
 
 	return

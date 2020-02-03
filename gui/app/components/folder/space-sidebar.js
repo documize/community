@@ -36,7 +36,7 @@ export default Component.extend(AuthMixin, {
 		this.setup();
 	},
 
-	didReceiveAttrs() {
+	didUpdateAttrs() {
 		this._super(...arguments);
 		this.setup();
 	},
@@ -138,6 +138,7 @@ export default Component.extend(AuthMixin, {
 
 			this.set('selectedFilter', filter);
 			this.set('categories', categories);
+
 			this.get('onFiltered')(filtered);
 		}
 	}

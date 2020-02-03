@@ -38,6 +38,7 @@ type Document struct {
 	Versioned    bool                `json:"versioned"`
 	VersionID    string              `json:"versionId"`
 	VersionOrder int                 `json:"versionOrder"`
+	Sequence     int                 `json:"sequence"`
 	GroupID      string              `json:"groupId"`
 
 	// Read-only presentation only data
@@ -66,6 +67,13 @@ type ByID []Document
 func (a ByID) Len() int           { return len(a) }
 func (a ByID) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a ByID) Less(i, j int) bool { return a[i].RefID > a[j].RefID }
+
+// BySeq sorts a collection of documents by sequenced number.
+type BySeq []Document
+
+func (a BySeq) Len() int           { return len(a) }
+func (a BySeq) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a BySeq) Less(i, j int) bool { return a[i].Sequence < a[j].Sequence }
 
 // DocumentMeta details who viewed the document.
 type DocumentMeta struct {
@@ -118,3 +126,15 @@ type DuplicateModel struct {
 	DocumentID string `json:"documentId"`
 	Name       string `json:"documentName"`
 }
+
+// SortedDocs provides list od pinned and unpinned documents
+// sorted by sequence and name respectively.
+type SortedDocs struct {
+	Pinned   []Document `json:"pinned"`
+	Unpinned []Document `json:"unpinned"`
+}
+
+const (
+	// Unsequenced tells us if document is pinned or not
+	Unsequenced int = 99999
+)

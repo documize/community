@@ -115,6 +115,15 @@ const (
 
 	// TypePublished happens when a document is moved from Draft to Live.
 	TypePublished Type = 16
+
+	// TypePinned happens when a document is pinned within space.
+	TypePinned Type = 17
+
+	// TypeUnpinned happens when a document is no longer pinned inside a space.
+	TypeUnpinned Type = 18
+
+	// TypePinSequence is when the order of sequenced documents is changed.
+	TypePinSequence Type = 19
 )
 
 // TypeName returns one-work descriptor for activity type
@@ -152,6 +161,12 @@ func TypeName(t Type) string {
 		return "Search"
 	case TypePublished:
 		return "Publish"
+	case TypePinned:
+		return "Pinned"
+	case TypeUnpinned:
+		return "Unpinned"
+	case TypePinSequence:
+		return "Sequence"
 	}
 
 	return ""

@@ -30,6 +30,7 @@ export default Model.extend({
 	versioned: attr('boolean'),
 	versionId: attr('string'),
 	versionOrder: attr('number', { defaultValue: 0 }),
+	sequence: attr('number', { defaultValue: 99999 }),
 	groupId: attr('string'),
 	created: attr(),
 	revised: attr(),
@@ -46,12 +47,12 @@ export default Model.extend({
 
 	isDraft: computed('lifecycle', function () {
 		let constants = this.get('constants');
-		return this.get('lifecycle') == constants.Lifecycle.Draft;
+		return this.get('lifecycle') === constants.Lifecycle.Draft;
 	}),
 
 	isLive: computed('lifecycle', function () {
 		let constants = this.get('constants');
-		return this.get('lifecycle') == constants.Lifecycle.Live;
+		return this.get('lifecycle') === constants.Lifecycle.Live;
 	}),
 
 	lifecycleLabel: computed('lifecycle', function () {
@@ -77,5 +78,10 @@ export default Model.extend({
 		let after = moment().subtract(7, 'days');
 		return moment(this.get('revised')).isSameOrAfter(after) &&
 			moment(this.get('created')).isBefore(after);
-	})
+	}),
+
+	isSequenced: computed('sequence', function () {
+		let constants = this.get('constants');
+		return this.get('sequence') !== constants.Unsequenced;
+	}),
 });

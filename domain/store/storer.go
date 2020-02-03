@@ -190,6 +190,10 @@ type DocumentStorer interface {
 	DeleteBySpace(ctx domain.RequestContext, spaceID string) (rows int64, err error)
 	GetVersions(ctx domain.RequestContext, groupID string) (v []doc.Version, err error)
 	MoveActivity(ctx domain.RequestContext, documentID, oldSpaceID, newSpaceID string) (err error)
+	Pin(ctx domain.RequestContext, documentID string, seq int) (err error)
+	Unpin(ctx domain.RequestContext, documentID string) (err error)
+	PinSequence(ctx domain.RequestContext, spaceID string) (max int, err error)
+	Pinned(ctx domain.RequestContext, spaceID string) (d []doc.Document, err error)
 }
 
 // SettingStorer defines required methods for persisting global and user level settings
@@ -228,7 +232,7 @@ type LinkStorer interface {
 
 // ActivityStorer defines required methods for persisting document activity
 type ActivityStorer interface {
-	RecordUserActivity(ctx domain.RequestContext, activity activity.UserActivity) (err error)
+	RecordUserActivity(ctx domain.RequestContext, activity activity.UserActivity)
 	GetDocumentActivity(ctx domain.RequestContext, id string) (a []activity.DocumentActivity, err error)
 	DeleteDocumentChangeActivity(ctx domain.RequestContext, id string) (rows int64, err error)
 }

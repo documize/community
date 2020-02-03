@@ -95,29 +95,54 @@ export default Controller.extend(NotifierMixin, {
 		onFiltered(docs) {
 			let ls = this.get('localStorage');
 			let sortBy = this.get('sortBy');
+			let constants = this.get('constants');
 
 			if (_.isNull(docs)) return;
 
+			let pinned = _.filter(docs, function(d) { return d.get('sequence') !== constants.Unsequenced; })
+			let unpinned = _.filter(docs, function(d) { return d.get('sequence') === constants.Unsequenced; })
+
 			if (sortBy.name) {
-				docs = docs.sortBy('name');
+				unpinned = unpinned.sortBy('name');
 				ls.storeSessionItem('space.sortBy', 'name');
 			}
 			if (sortBy.created) {
-				docs = docs.sortBy('created');
+				unpinned = unpinned.sortBy('created');
 				ls.storeSessionItem('space.sortBy', 'created');
 			}
 			if (sortBy.updated) {
-				docs = docs.sortBy('revised');
+				unpinned = unpinned.sortBy('revised');
 				ls.storeSessionItem('space.sortBy', 'updated');
 			}
 			if (sortBy.desc) {
-				docs = docs.reverseObjects();
+				unpinned = unpinned.reverseObjects();
 				ls.storeSessionItem('space.sortOrder', 'desc');
 			} else {
 				ls.storeSessionItem('space.sortOrder', 'asc');
 			}
 
-			this.set('filteredDocs', docs);
-		}
+			this.set('filteredDocs', _.concat(pinned, unpinned));
+		},
+
+		onPin(documentId) {
+            this.get('documentSvc').pin(documentId).then(() => {
+                this.notifySuccess('Pinned');
+                this.send('onRefresh');
+            });
+		},
+
+		onUnpin(documentId) {
+            this.get('documentSvc').unpin(documentId).then(() => {
+                this.notifySuccess('Unpinned');
+                this.send('onRefresh');
+            });
+		},
+
+        onPinSequence(documentId, direction) {
+            this.get('documentSvc').onPinSequence(documentId, direction).then(() => {
+                this.notifySuccess('Moved');
+                this.send('onRefresh');
+            });
+        },
 	}
 });

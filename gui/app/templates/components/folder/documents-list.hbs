@@ -63,13 +63,22 @@
 		{{#each documents key="id" as |document|}}
 			<li class="document {{if document.selected "selected"}}" id="document-{{document.id}}">
 				{{#link-to "document.index" space.id space.slug document.id document.slug class="info"}}
-					<div class="name">{{ document.name }}</div>
+					<div class="name">
+                        {{ document.name }}
+                        {{#if document.isSequenced}}
+                            <div class="pinned">
+                                <i class="dicon {{constants.Icon.TickDouble}}">
+                                    {{#attach-tooltip showDelay=250}}Pinned{{/attach-tooltip}}
+                                </i>
+                            </div>
+                        {{/if}}
+                    </div>
 					{{#if (not-eq viewDensity "3")}}
 						<div class="desc">{{ document.excerpt }}</div>
 					{{/if}}
 					{{#if (eq viewDensity "1")}}
 						<div class="meta">
-							<div class="lifecycle">
+                            <div class="lifecycle">
 								<div class="{{if (eq document.lifecycle constants.Lifecycle.Draft) "draft"}}
 								{{if (eq document.lifecycle constants.Lifecycle.Live) "live"}}
 								{{if (eq document.lifecycle constants.Lifecycle.Archived) "archived"}}">
@@ -83,6 +92,25 @@
 				{{/link-to}}
 
 				{{#if hasDocumentActions}}
+					<div class="sequence">
+						{{#if document.isSequenced}}
+                            {{#unless hasCategoryFilter}}
+                                <i class="dicon {{constants.Icon.ArrowSmallUp}}" {{action "onPinSequence" document.id "u"}}>
+                                    {{#attach-tooltip showDelay=250}}Move up{{/attach-tooltip}}
+                                </i>
+                                <i class="dicon {{constants.Icon.ArrowSmallDown}}" {{action "onPinSequence" document.id "d"}}>
+                                    {{#attach-tooltip showDelay=250}}Move down{{/attach-tooltip}}
+                                </i>
+                            {{/unless}}
+							<i class="dicon {{constants.Icon.Cross}}" {{action "onUnpin" document.id}}>
+								{{#attach-tooltip showDelay=250}}Unpin{{/attach-tooltip}}
+							</i>
+						{{else}}
+							<i class="dicon {{constants.Icon.ArrowSmallUp}}" {{action "onPin" document.id}}>
+								{{#attach-tooltip showDelay=250}}Pin{{/attach-tooltip}}
+							</i>
+						{{/if}}
+					</div>
 					<div class="checkbox" {{action "selectDocument" document.id}}>
 						{{#if document.selected}}
 							<i class="dicon {{constants.Icon.CheckboxChecked}}"/>

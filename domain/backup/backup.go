@@ -682,7 +682,7 @@ func (b backerHandler) dmzDocument(files *[]backupItem) (err error) {
         c_job AS job, c_location AS location, c_name AS name, c_desc AS excerpt, c_slug AS slug,
         c_tags AS tags, c_template AS template, c_protection AS protection, c_approval AS approval,
         c_lifecycle AS lifecycle, c_versioned AS versioned, c_versionid AS versionid,
-        c_versionorder AS versionorder, c_groupid AS groupid, c_created AS created, c_revised AS revised
+        c_versionorder AS versionorder, c_seq AS sequence, c_groupid AS groupid, c_created AS created, c_revised AS revised
         FROM dmz_doc`+w)
 	if err != nil {
 		return errors.Wrap(err, "select.document")

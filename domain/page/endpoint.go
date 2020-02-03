@@ -1504,17 +1504,12 @@ func (h *Handler) FetchPages(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			h.Runtime.Log.Error(method, err)
 		} else {
-			err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
+			h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
 				SpaceID:      doc.SpaceID,
 				DocumentID:   doc.RefID,
 				Metadata:     source,                    // deliberate
 				SourceType:   activity.SourceTypeSearch, // deliberate
 				ActivityType: activity.TypeRead})
-
-			if err != nil {
-				ctx.Transaction.Rollback()
-				h.Runtime.Log.Error(method, err)
-			}
 
 			ctx.Transaction.Commit()
 		}

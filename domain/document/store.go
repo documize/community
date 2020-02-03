@@ -16,10 +16,11 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/pkg/errors"
+
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/store"
 	"github.com/documize/community/model/doc"
-	"github.com/pkg/errors"
 )
 
 // Store provides data access to space category information.
@@ -36,10 +37,12 @@ func (s Store) Add(ctx domain.RequestContext, d doc.Document) (err error) {
 
 	_, err = ctx.Transaction.Exec(s.Bind(`
 	    INSERT INTO dmz_doc (c_refid, c_orgid, c_spaceid, c_userid, c_job, c_location, c_name, c_desc, c_slug, c_tags,
-	        c_template, c_protection, c_approval, c_lifecycle, c_versioned, c_versionid, c_versionorder, c_groupid, c_created, c_revised)
-	    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
+			c_template, c_protection, c_approval, c_lifecycle, c_versioned, c_versionid, c_versionorder, c_seq, c_groupid,
+			c_created, c_revised)
+	    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
 		d.RefID, d.OrgID, d.SpaceID, d.UserID, d.Job, d.Location, d.Name, d.Excerpt, d.Slug, d.Tags,
-		d.Template, d.Protection, d.Approval, d.Lifecycle, d.Versioned, d.VersionID, d.VersionOrder, d.GroupID, d.Created, d.Revised)
+		d.Template, d.Protection, d.Approval, d.Lifecycle, d.Versioned, d.VersionID, d.VersionOrder, d.Sequence,
+		d.GroupID, d.Created, d.Revised)
 
 	if err != nil {
 		err = errors.Wrap(err, "execute insert document")
@@ -55,7 +58,7 @@ func (s Store) Get(ctx domain.RequestContext, id string) (document doc.Document,
         c_job AS job, c_location AS location, c_name AS name, c_desc AS excerpt, c_slug AS slug,
         c_tags AS tags, c_template AS template, c_protection AS protection, c_approval AS approval,
         c_lifecycle AS lifecycle, c_versioned AS versioned, c_versionid AS versionid,
-        c_versionorder AS versionorder, c_groupid AS groupid, c_created AS created, c_revised AS revised
+        c_versionorder AS versionorder, c_seq AS sequence, c_groupid AS groupid, c_created AS created, c_revised AS revised
         FROM dmz_doc
         WHERE c_orgid=? AND c_refid=?`),
 		ctx.OrgID, id)
@@ -78,7 +81,7 @@ func (s Store) GetBySpace(ctx domain.RequestContext, spaceID string) (documents 
         c_job AS job, c_location AS location, c_name AS name, c_desc AS excerpt, c_slug AS slug,
         c_tags AS tags, c_template AS template, c_protection AS protection, c_approval AS approval,
         c_lifecycle AS lifecycle, c_versioned AS versioned, c_versionid AS versionid,
-        c_versionorder AS versionorder, c_groupid AS groupid, c_created AS created, c_revised AS revised
+        c_versionorder AS versionorder, c_seq AS sequence, c_groupid AS groupid, c_created AS created, c_revised AS revised
         FROM dmz_doc
         WHERE c_orgid=? AND c_template=`+s.IsFalse()+` AND c_spaceid IN
             (SELECT c_refid FROM dmz_permission WHERE c_orgid=? AND c_location='space' AND c_refid=? AND c_refid IN
@@ -111,7 +114,7 @@ func (s Store) TemplatesBySpace(ctx domain.RequestContext, spaceID string) (docu
         c_job AS job, c_location AS location, c_name AS name, c_desc AS excerpt, c_slug AS slug,
         c_tags AS tags, c_template AS template, c_protection AS protection, c_approval AS approval,
         c_lifecycle AS lifecycle, c_versioned AS versioned, c_versionid AS versionid,
-        c_versionorder AS versionorder, c_groupid AS groupid, c_created AS created, c_revised AS revised
+        c_versionorder AS versionorder, c_seq AS sequence, c_groupid AS groupid, c_created AS created, c_revised AS revised
         FROM dmz_doc
         WHERE c_orgid=? AND c_spaceid=? AND c_template=`+s.IsTrue()+` AND c_lifecycle=1
 		AND c_spaceid IN
@@ -167,7 +170,8 @@ func (s Store) Update(ctx domain.RequestContext, document doc.Document) (err err
             c_spaceid=:spaceid, c_userid=:userid, c_job=:job, c_location=:location, c_name=:name,
             c_desc=:excerpt, c_slug=:slug, c_tags=:tags, c_template=:template,
             c_protection=:protection, c_approval=:approval, c_lifecycle=:lifecycle,
-            c_versioned=:versioned, c_versionid=:versionid, c_versionorder=:versionorder,
+			c_versioned=:versioned, c_versionid=:versionid, c_versionorder=:versionorder,
+			c_seq=:sequence,
             c_groupid=:groupid, c_revised=:revised
         WHERE c_orgid=:orgid AND c_refid=:refid`),
 		&document)
@@ -327,6 +331,81 @@ func (s Store) GetVersions(ctx domain.RequestContext, groupID string) (v []doc.V
 	}
 	if err != nil {
 		err = errors.Wrap(err, "document.store.GetVersions")
+	}
+
+	return
+}
+
+// Pin allocates sequence number to specified document so that it appears
+// at the documents list.
+func (s Store) Pin(ctx domain.RequestContext, documentID string, seq int) (err error) {
+	_, err = ctx.Transaction.Exec(s.Bind("UPDATE dmz_doc SET c_seq=? WHERE c_orgid=? AND c_refid=?"),
+		seq, ctx.OrgID, documentID)
+
+	if err != nil {
+		err = errors.Wrap(err, "document.store.Pin")
+	}
+
+	return
+}
+
+// Unpin resets sequence number for given document.
+func (s Store) Unpin(ctx domain.RequestContext, documentID string) (err error) {
+	_, err = ctx.Transaction.Exec(s.Bind("UPDATE dmz_doc SET c_seq=? WHERE c_orgid=? AND c_refid=?"),
+		doc.Unsequenced, ctx.OrgID, documentID)
+
+	if err != nil {
+		err = errors.Wrap(err, "document.store.Unpin")
+	}
+
+	return
+}
+
+// PinSequence fectches pinned documents and returns current
+// maximum sequence value.
+func (s Store) PinSequence(ctx domain.RequestContext, spaceID string) (max int, err error) {
+	max = 0
+
+	err = s.Runtime.Db.Get(&max, s.Bind(`
+        SELECT MAX(c_seq)
+		FROM dmz_doc
+		WHERE c_orgid=? AND c_spaceid=?
+        AND c_seq != 99999`),
+		ctx.OrgID, spaceID)
+
+	if err == sql.ErrNoRows {
+		err = nil
+	}
+	if err != nil {
+		max = doc.Unsequenced
+		err = errors.Wrap(err, "document.store.PinSequence")
+	}
+
+	return
+}
+
+// Pinned documents for space are fetched.
+func (s Store) Pinned(ctx domain.RequestContext, spaceID string) (d []doc.Document, err error) {
+	d = []doc.Document{}
+
+	err = s.Runtime.Db.Select(&d, s.Bind(`
+        SELECT id, c_refid AS refid, c_orgid AS orgid, c_spaceid AS spaceid, c_userid AS userid,
+        c_job AS job, c_location AS location, c_name AS name, c_desc AS excerpt, c_slug AS slug,
+        c_tags AS tags, c_template AS template, c_protection AS protection, c_approval AS approval,
+        c_lifecycle AS lifecycle, c_versioned AS versioned, c_versionid AS versionid,
+        c_versionorder AS versionorder, c_seq AS sequence, c_groupid AS groupid,
+	    c_created AS created, c_revised AS revised
+        FROM dmz_doc
+		WHERE c_orgid=? AND c_spaceid=?
+        AND c_seq != 99999
+	    ORDER BY c_seq`),
+		ctx.OrgID, spaceID)
+
+	if err == sql.ErrNoRows {
+		err = nil
+	}
+	if err != nil {
+		err = errors.Wrap(err, "document.store.Pinned")
 	}
 
 	return

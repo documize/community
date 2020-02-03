@@ -138,14 +138,10 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
+	h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
 		SpaceID:      sp.RefID,
 		SourceType:   activity.SourceTypeSpace,
 		ActivityType: activity.TypeCreated})
-	if err != nil {
-		ctx.Transaction.Rollback()
-		h.Runtime.Log.Error(method, err)
-	}
 
 	ctx.Transaction.Commit()
 
@@ -444,15 +440,10 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
+	h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
 		SpaceID:      sp.RefID,
 		SourceType:   activity.SourceTypeSpace,
 		ActivityType: activity.TypeRead})
-
-	if err != nil {
-		ctx.Transaction.Rollback()
-		h.Runtime.Log.Error(method, err)
-	}
 
 	ctx.Transaction.Commit()
 
@@ -657,14 +648,10 @@ func (h *Handler) Remove(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
+	h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
 		SpaceID:      id,
 		SourceType:   activity.SourceTypeSpace,
 		ActivityType: activity.TypeDeleted})
-	if err != nil {
-		ctx.Transaction.Rollback()
-		h.Runtime.Log.Error(method, err)
-	}
 
 	ctx.Transaction.Commit()
 
@@ -764,14 +751,10 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
+	h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
 		SpaceID:      id,
 		SourceType:   activity.SourceTypeSpace,
 		ActivityType: activity.TypeDeleted})
-	if err != nil {
-		h.Runtime.Rollback(ctx.Transaction)
-		response.WriteServerError(w, method, err)
-	}
 
 	h.Runtime.Commit(ctx.Transaction)
 

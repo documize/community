@@ -34,6 +34,10 @@
 				> .checkbox {
 					display: block;
 				}
+
+				> .sequence {
+					display: block;
+				}
 			}
 
 			> .checkbox {
@@ -41,6 +45,21 @@
 				display: none;
 				top: 10px;
 				right: 10px;
+				cursor: pointer;
+
+				> .dicon {
+					color: map-get($yellow-shades, 700);
+					cursor: pointer;
+					font-weight: 600;
+					font-size: 20px;
+				}
+			}
+
+			> .sequence {
+				position: absolute;
+				display: none;
+				top: 10px;
+				right: 40px;
 				cursor: pointer;
 
 				> .dicon {
@@ -68,6 +87,17 @@
 					font-size: 1.3rem;
 					font-weight: 700;
 					color: map-get($gray-shades, 800);
+
+                    > .pinned {
+                        display: inline-block;
+                        margin-left: 10px;
+
+                        > .dicon {
+                            font-size: 0.9rem;
+                            font-weight: 500;
+                            color: map-get($gray-shades, 600);
+                        }
+                    }
 				}
 
 				> .desc {
@@ -165,6 +195,10 @@
 			background-color: map-get($yellow-shades, 200);
 
 			> .checkbox {
+				display: block;
+			}
+
+			> .sequence {
 				display: block;
 			}
 
