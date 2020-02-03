@@ -744,7 +744,7 @@ func (r *restoreHandler) dmzCategory() (err error) {
 	for i := range ct {
 		_, err = r.Context.Transaction.Exec(r.Runtime.Db.Rebind(`
             INSERT INTO dmz_category (c_refid, c_orgid, c_spaceid, c_name, c_default, c_created, c_revised)
-            VALUES (?, ?, ?, ?, ?, ?, ?`),
+            VALUES (?, ?, ?, ?, ?, ?, ?)`),
 			ct[i].RefID, r.remapOrg(ct[i].OrgID), ct[i].SpaceID, ct[i].Name, ct[i].IsDefault, ct[i].Created, ct[i].Revised)
 
 		if err != nil {
@@ -1334,12 +1334,13 @@ func (r *restoreHandler) dmzDoc() (err error) {
             INSERT INTO dmz_doc
             (c_refid, c_orgid, c_spaceid, c_userid, c_job, c_location,
             c_name, c_desc, c_slug, c_tags, c_template, c_protection, c_approval,
-            c_lifecycle, c_versioned, c_versionid, c_versionorder, c_groupid, c_created, c_revised)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
+			c_lifecycle, c_versioned, c_versionid, c_versionorder, c_seq, c_groupid,
+			c_created, c_revised)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
 			doc[i].RefID, r.remapOrg(doc[i].OrgID), doc[i].SpaceID, r.remapUser(doc[i].UserID), doc[i].Job,
 			doc[i].Location, doc[i].Name, doc[i].Excerpt, doc[i].Slug, doc[i].Tags,
 			doc[i].Template, doc[i].Protection, doc[i].Approval, doc[i].Lifecycle,
-			doc[i].Versioned, doc[i].VersionID, doc[i].VersionOrder, doc[i].GroupID,
+			doc[i].Versioned, doc[i].VersionID, doc[i].VersionOrder, doc[i].Sequence, doc[i].GroupID,
 			doc[i].Created, doc[i].Revised)
 
 		if err != nil {
