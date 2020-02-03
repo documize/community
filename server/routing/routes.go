@@ -67,7 +67,7 @@ func RegisterEndpoints(rt *env.Runtime, s *store.Store) {
 	setting := setting.Handler{Runtime: rt, Store: s}
 	category := category.Handler{Runtime: rt, Store: s}
 	keycloak := keycloak.Handler{Runtime: rt, Store: s}
-	cas := cas.Handler{Runtime:rt, Store: s}
+	cas := cas.Handler{Runtime: rt, Store: s}
 	template := template.Handler{Runtime: rt, Store: s, Indexer: indexer}
 	document := document.Handler{Runtime: rt, Store: s, Indexer: indexer}
 	attachment := attachment.Handler{Runtime: rt, Store: s, Indexer: indexer}
@@ -134,6 +134,9 @@ func RegisterEndpoints(rt *env.Runtime, s *store.Store) {
 	AddPrivate(rt, "documents/{documentID}/pages/{pageID}/meta", []string{"GET", "OPTIONS"}, nil, page.GetMeta)
 	AddPrivate(rt, "documents/{documentID}/pages/{pageID}/copy/{targetID}", []string{"POST", "OPTIONS"}, nil, page.Copy)
 	AddPrivate(rt, "document/duplicate", []string{"POST", "OPTIONS"}, nil, document.Duplicate)
+	AddPrivate(rt, "document/pinmove/{documentID}", []string{"POST", "OPTIONS"}, nil, document.PinMove)
+	AddPrivate(rt, "document/pin/{documentID}", []string{"POST", "OPTIONS"}, nil, document.Pin)
+	AddPrivate(rt, "document/unpin/{documentID}", []string{"DELETE", "OPTIONS"}, nil, document.Unpin)
 
 	AddPrivate(rt, "organization/setting", []string{"GET", "OPTIONS"}, nil, setting.GetGlobalSetting)
 	AddPrivate(rt, "organization/setting", []string{"POST", "OPTIONS"}, nil, setting.SaveGlobalSetting)
