@@ -3,122 +3,129 @@
 		margin: 0;
 		padding: 0;
 
-		> a {
-			> .item {
-				@include card();
-				list-style-type: none;
-				margin: 0 0 2rem 0;
-				padding: 15px 20px;
-				width: 100%;
-				display: grid;
-				grid-template-columns: 1fr;
-				grid-template-rows: 2fr;
-				@include border-radius(16px);
+        > .item {
+            @include card();
+            list-style-type: none;
+            margin: 0 0 2rem 0;
+            padding: 15px 20px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-rows: 2fr;
+            @include border-radius(16px);
 
-				> .info {
-					grid-column-start: 1;
-					grid-row-start: 1;
-					padding: 0;
-					align-self: self-start;
-					justify-self: self-start;
+            > .info {
+                grid-column-start: 1;
+                grid-row-start: 1;
+                padding: 0;
+                align-self: self-start;
+                justify-self: self-start;
+                width: 100%;
 
-					> .name {
-						font-size: 1.4rem;
-						font-weight: 700;
-						color: map-get($gray-shades, 800);
+                > a {
+                    > .name {
+                        font-size: 1.4rem;
+                        font-weight: 700;
+                        color: map-get($gray-shades, 800);
 
-						> .icon {
-							color: map-get($gray-shades, 700);
-							font-size: 26px;
-							vertical-align: middle;
-							display: inline-block;
-							margin-right: 10px;
-						}
-					}
+                        > .icon {
+                            color: map-get($gray-shades, 700);
+                            font-size: 26px;
+                            vertical-align: middle;
+                            display: inline-block;
+                            margin-right: 10px;
+                        }
+                    }
+                }
 
-					> .desc {
-						font-size: 1.1rem;
-						font-weight: 400;
-						margin-top: 0.4rem;
-						color: $color-black-light-3;
-					}
+                > .desc {
+                    font-size: 1.1rem;
+                    font-weight: 400;
+                    margin-top: 0.4rem;
+                    color: $color-black-light-3;
+                }
 
-					> .meta {
-						padding: 15px 0 0 0;
+                > a {
+                    > .meta {
+                        padding: 15px 0 0 0;
 
-						> .dicon {
-							color: map-get($gray-shades, 600);
-							font-size: 20px;
-							margin-right: 20px;
-							vertical-align: middle;
-						}
+                        > .dicon {
+                            color: map-get($gray-shades, 600);
+                            font-size: 20px;
+                            margin-right: 20px;
+                            vertical-align: middle;
+                        }
 
-						> .space-label {
-							@include border-radius(3px);
-							@extend .no-select;
-							display: inline-block;
-							margin: 10px 0 13px 0;
-							padding: 0.3rem 0.7rem;
-							font-size: 1.1rem;
-							font-weight: 400;
-							color: map-get($gray-shades, 100);
-						}
-					}
-				}
+                        > .space-label {
+                            @include border-radius(3px);
+                            @extend .no-select;
+                            display: inline-block;
+                            margin: 10px 0 13px 0;
+                            padding: 0.3rem 0.7rem;
+                            font-size: 1.1rem;
+                            font-weight: 400;
+                            color: map-get($gray-shades, 100);
+                        }
+                    }
+                }
+            }
 
-				> .stats {
-					grid-column-start: 1;
-					grid-row-start: 2;
-					padding: 0;
-					align-self: self-start;
-					justify-self: self-start;
+            > a {
+                > .stats {
+                    grid-column-start: 1;
+                    grid-row-start: 2;
+                    padding: 0;
+                    align-self: self-start;
+                    justify-self: self-start;
 
-					> .stat {
-						text-align: center;
-						display: inline-block;
-						margin: 5px 30px 5px 0;
+                    > .stat {
+                        text-align: center;
+                        display: inline-block;
+                        margin: 5px 30px 5px 0;
 
-						> .number {
-							font-size: 1.7rem;
-							font-weight: 700;
-							color: map-get($gray-shades, 600);
-						}
+                        > .number {
+                            font-size: 1.7rem;
+                            font-weight: 700;
+                            color: map-get($gray-shades, 600);
+                        }
 
-						> .label {
-							font-size: 0.9rem;
-							font-weight: 500;
-							color: map-get($gray-shades, 600);
-							text-transform: uppercase;
-						}
-					}
-				}
+                        > .label {
+                            font-size: 0.9rem;
+                            font-weight: 500;
+                            color: map-get($gray-shades, 600);
+                            text-transform: uppercase;
+                        }
+                    }
+                }
+            }
 
-				@media (min-width: $display-break-2) {
-					grid-template-columns: 8fr 2fr;
-					grid-template-rows: 1fr;
+            @media (min-width: $display-break-2) {
+                grid-template-columns: 8fr 2fr;
+                grid-template-rows: 1fr;
 
-					> .info {
-						grid-column-start: 1;
-						grid-row-start: 1;
-						padding: 0;
-					}
+                > .info {
+                    grid-column-start: 1;
+                    grid-row-start: 1;
+                    padding: 0;
+                }
 
-					> .stats {
-						grid-column-start: 2;
-						grid-row-start: 1;
-						padding: 0;
-						justify-self: self-end;
+                > a {
+                    > .stats {
+                        grid-column-start: 2;
+                        grid-row-start: 1;
+                        padding: 0;
+                        justify-self: self-end;
 
-						> .stat, > .number, > .label {
-							display: block;
-						}
+                        > .stat, > .number, > .label {
+                            display: block;
+                        }
 
-						> .stat {
-							margin: 5px 0;
-						}
-					}
-				}
-			}
-		}
+                        > .stat {
+                            margin: 5px 0;
+                        }
+                    }
+                }
+            }
+        }
 	}
 }

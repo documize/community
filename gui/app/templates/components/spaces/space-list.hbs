@@ -15,57 +15,61 @@
 
 	<ul class="list">
 		{{#each spaces as |space|}}
-			{{#link-to "folder.index" space.id space.slug}}
-				<li class="item">
-					<div class="info">
-						<div class="name">
-							{{#if space.icon}}
-								<div class="icon">
-									{{ui/ui-icon-meta icon=space.icon}}
-								</div>
-							{{/if}}
-							{{space.name}}
-						</div>
-						{{#if (not-eq viewDensity "3")}}
-							<div class="desc">{{{space.desc}}}</div>
-						{{/if}}
-						{{#if (eq viewDensity "1")}}
-							<div class="meta">
-								{{!-- {{#if (eq space.spaceType constants.SpaceType.Public)}}
-									<i class={{concat "dicon " constants.Icon.World}}>
-										{{#attach-tooltip showDelay=1000}}Public space{{/attach-tooltip}}
-									</i>
-								{{/if}}
-								{{#if (eq space.spaceType constants.SpaceType.Protected)}}
-									<i class={{concat "dicon " constants.Icon.People}}>
-										{{#attach-tooltip showDelay=1000}}Protected space{{/attach-tooltip}}
-									</i>
-								{{/if}}
-								{{#if (eq space.spaceType constants.SpaceType.Private)}}
-									<i class={{concat "dicon " constants.Icon.Person}}>
-										{{#attach-tooltip showDelay=1000}}Personal space{{/attach-tooltip}}
-									</i>
-								{{/if}} --}}
-								{{#if space.labelId}}
-									{{spaces/space-label labels=labels labelId=space.labelId}}
-								{{/if}}
-							</div>
-						{{/if}}
-					</div>
-					{{#if (eq viewDensity "1")}}
-						<div class="stats">
-							<div class="stat">
-								<div class="number">{{space.countContent}}</div>
-								<div class="label">items</div>
-							</div>
-							<div class="stat">
-								<div class="number">{{space.countCategory}}</div>
-								<div class="label">categories</div>
-							</div>
-						</div>
-					{{/if}}
-				</li>
-			{{/link-to}}
+            <li class="item">
+                <div class="info">
+                    {{#link-to "folder.index" space.id space.slug}}
+                        <div class="name">
+                            {{#if space.icon}}
+                                <div class="icon">
+                                    {{ui/ui-icon-meta icon=space.icon}}
+                                </div>
+                            {{/if}}
+                                {{space.name}}
+                        </div>
+                    {{/link-to}}
+                    {{#if (not-eq viewDensity "3")}}
+                        <div class="desc">{{{space.desc}}}</div>
+                    {{/if}}
+                    {{#if (eq viewDensity "1")}}
+                        {{#link-to "folder.index" space.id space.slug}}
+                            <div class="meta">
+                                {{!-- {{#if (eq space.spaceType constants.SpaceType.Public)}}
+                                    <i class={{concat "dicon " constants.Icon.World}}>
+                                        {{#attach-tooltip showDelay=1000}}Public space{{/attach-tooltip}}
+                                    </i>
+                                {{/if}}
+                                {{#if (eq space.spaceType constants.SpaceType.Protected)}}
+                                    <i class={{concat "dicon " constants.Icon.People}}>
+                                        {{#attach-tooltip showDelay=1000}}Protected space{{/attach-tooltip}}
+                                    </i>
+                                {{/if}}
+                                {{#if (eq space.spaceType constants.SpaceType.Private)}}
+                                    <i class={{concat "dicon " constants.Icon.Person}}>
+                                        {{#attach-tooltip showDelay=1000}}Personal space{{/attach-tooltip}}
+                                    </i>
+                                {{/if}} --}}
+                                {{#if space.labelId}}
+                                    {{spaces/space-label labels=labels labelId=space.labelId}}
+                                {{/if}}
+                            </div>
+                        {{/link-to}}
+                    {{/if}}
+                </div>
+                {{#if (eq viewDensity "1")}}
+                    {{#link-to "folder.index" space.id space.slug}}
+                        <div class="stats">
+                            <div class="stat">
+                                <div class="number">{{space.countContent}}</div>
+                                <div class="label">items</div>
+                            </div>
+                            <div class="stat">
+                                <div class="number">{{space.countCategory}}</div>
+                                <div class="label">categories</div>
+                            </div>
+                        </div>
+                    {{/link-to}}
+                {{/if}}
+            </li>
 		{{/each}}
 	</ul>
 
