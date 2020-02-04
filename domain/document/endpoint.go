@@ -1070,6 +1070,8 @@ func (h *Handler) Pin(w http.ResponseWriter, r *http.Request) {
 
 	h.Runtime.Commit(ctx.Transaction)
 
+	h.Store.Audit.Record(ctx, audit.EventTypeDocPinAdd)
+
 	response.WriteEmpty(w)
 }
 
@@ -1121,6 +1123,8 @@ func (h *Handler) Unpin(w http.ResponseWriter, r *http.Request) {
 		ActivityType: activity.TypeUnpinned})
 
 	h.Runtime.Commit(ctx.Transaction)
+
+	h.Store.Audit.Record(ctx, audit.EventTypeDocPinRemove)
 
 	response.WriteEmpty(w)
 }
@@ -1221,6 +1225,8 @@ func (h *Handler) PinMove(w http.ResponseWriter, r *http.Request) {
 		DocumentID:   documentID,
 		SourceType:   activity.SourceTypeDocument,
 		ActivityType: activity.TypePinSequence})
+
+	h.Store.Audit.Record(ctx, audit.EventTypeDocPinChange)
 
 	h.Runtime.Commit(ctx.Transaction)
 
