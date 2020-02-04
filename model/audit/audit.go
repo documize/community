@@ -100,6 +100,9 @@ const (
 	EventTypeLabelUpdate               EventType = "updated-label"
 	EventTypeLabelDelete               EventType = "removed-label"
 	EventTypeOrganizationLogo          EventType = "uploaded-logo"
+	EventTypeDocPinAdd                 EventType = "pinned-document"
+	EventTypeDocPinRemove              EventType = "unpinned-document"
+	EventTypeDocPinChange              EventType = "resequenced-document"
 
 	// EventTypeVersionAdd records addition of version
 	EventTypeVersionAdd EventType = "added-version"
