@@ -367,7 +367,7 @@ func (s Store) PinSequence(ctx domain.RequestContext, spaceID string) (max int, 
 	max = 0
 
 	err = s.Runtime.Db.Get(&max, s.Bind(`
-        SELECT MAX(c_seq)
+        SELECT COALESCE(MAX(c_seq), 0)
 		FROM dmz_doc
 		WHERE c_orgid=? AND c_spaceid=?
         AND c_seq != 99999`),
