@@ -31,8 +31,8 @@ export default Component.extend({
 	hasDocumentActions: computed('permissions.{documentDelete,documentMove}', function() {
 		return this.get('permissions.documentDelete') || this.get('permissions.documentMove');
 	}),
-    hasCategoryFilter: computed('categoryFilter', function() {
-        return !_.isEmpty(this.get('categoryFilter'));
+    showingAllDocs: computed('categoryFilter', 'numDocuments', 'documents', function() {
+        return _.isEmpty(this.get('categoryFilter')) && this.get('documents').length == this.get("numDocuments");
     }),
 
 	didReceiveAttrs() {

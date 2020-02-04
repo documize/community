@@ -94,14 +94,14 @@
 				{{#if hasDocumentActions}}
 					<div class="sequence">
 						{{#if document.isSequenced}}
-                            {{#unless hasCategoryFilter}}
+                            {{#if showingAllDocs}}
                                 <i class="dicon {{constants.Icon.ArrowSmallUp}}" {{action "onPinSequence" document.id "u"}}>
                                     {{#attach-tooltip showDelay=250}}Move up{{/attach-tooltip}}
                                 </i>
                                 <i class="dicon {{constants.Icon.ArrowSmallDown}}" {{action "onPinSequence" document.id "d"}}>
                                     {{#attach-tooltip showDelay=250}}Move down{{/attach-tooltip}}
                                 </i>
-                            {{/unless}}
+                            {{/if}}
 							<i class="dicon {{constants.Icon.Cross}}" {{action "onUnpin" document.id}}>
 								{{#attach-tooltip showDelay=250}}Unpin{{/attach-tooltip}}
 							</i>
