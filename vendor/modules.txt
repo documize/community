@@ -49,6 +49,8 @@ github.com/lib/pq/oid
 github.com/lib/pq/scram
 # github.com/mb0/diff v0.0.0-20131118162322-d8d9a906c24d
 github.com/mb0/diff
+# github.com/microcosm-cc/bluemonday v1.0.2
+github.com/microcosm-cc/bluemonday
 # github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 github.com/nu7hatch/gouuid
 # github.com/pkg/errors v0.8.0

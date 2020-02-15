@@ -59,12 +59,12 @@ cd ..
 
 echo "Compiling Windows"
 set GOOS=windows
-go build -gcflags="all=-trimpath=$GOPATH" -o bin/documize-community-windows-amd64.exe edition/community.go
+go build -mod=vendor -gcflags="all=-trimpath=$GOPATH" -o bin/documize-community-windows-amd64.exe edition/community.go
 
 echo "Compiling Linux"
 set GOOS=linux
-go build -gcflags="all=-trimpath=$GOPATH" -o bin/documize-community-linux-amd64 edition/community.go
+go build -mod=vendor -gcflags="all=-trimpath=$GOPATH" -o bin/documize-community-linux-amd64 edition/community.go
 
 echo "Compiling Darwin"
 set GOOS=darwin
-go build -gcflags="all=-trimpath=$GOPATH" -o bin/documize-community-darwin-amd64 edition/community.go
+go build -mod=vendor -gcflags="all=-trimpath=$GOPATH" -o bin/documize-community-darwin-amd64 edition/community.go
