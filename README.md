@@ -68,7 +68,7 @@ When using LDAP/Active Directory, you can enable dual-authentication with email/
 
 For both Communuity and Enterprise editions, please contact our help desk:
 
-<support@documize.copm>
+<support@documize.com>
 
 We aim to respond within two working days!
 
