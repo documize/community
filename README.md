@@ -64,6 +64,14 @@ Besides email/password login, you can also authenticate via:
 
 When using LDAP/Active Directory, you can enable dual-authentication with email/password.
 
+## Product/Technical Support
+
+For both Communuity and Enterprise editions, please contact our help desk:
+
+<support@documize.copm>
+
+We aim to respond within two working days!
+
 ## The Legal Bit
 
 <https://documize.com>
