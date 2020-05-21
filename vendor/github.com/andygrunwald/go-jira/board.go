@@ -74,6 +74,56 @@ type Sprint struct {
 	State         string     `json:"state" structs:"state"`
 }
 
+// BoardConfiguration represents a boardConfiguration of a jira board
+type BoardConfiguration struct {
+	ID           int                            `json:"id"`
+	Name         string                         `json:"name"`
+	Self         string                         `json:"self"`
+	Location     BoardConfigurationLocation     `json:"location"`
+	Filter       BoardConfigurationFilter       `json:"filter"`
+	SubQuery     BoardConfigurationSubQuery     `json:"subQuery"`
+	ColumnConfig BoardConfigurationColumnConfig `json:"columnConfig"`
+}
+
+// BoardConfigurationFilter reference to the filter used by the given board.
+type BoardConfigurationFilter struct {
+	ID   string `json:"id"`
+	Self string `json:"self"`
+}
+
+// BoardConfigurationSubQuery  (Kanban only) - JQL subquery used by the given board.
+type BoardConfigurationSubQuery struct {
+	Query string `json:"query"`
+}
+
+// BoardConfigurationLocation reference to the container that the board is located in
+type BoardConfigurationLocation struct {
+	Type string `json:"type"`
+	Key  string `json:"key"`
+	ID   string `json:"id"`
+	Self string `json:"self"`
+	Name string `json:"name"`
+}
+
+// BoardConfigurationColumnConfig lists the columns for a given board in the order defined in the column configuration
+// with constrainttype (none, issueCount, issueCountExclSubs)
+type BoardConfigurationColumnConfig struct {
+	Columns        []BoardConfigurationColumn `json:"columns"`
+	ConstraintType string                     `json:"constraintType"`
+}
+
+// BoardConfigurationColumn lists the name of the board with the statuses that maps to a particular column
+type BoardConfigurationColumn struct {
+	Name   string                           `json:"name"`
+	Status []BoardConfigurationColumnStatus `json:"statuses"`
+}
+
+// BoardConfigurationColumnStatus represents a status in the column configuration
+type BoardConfigurationColumnStatus struct {
+	ID   string `json:"id"`
+	Self string `json:"self"`
+}
+
 // GetAllBoards will returns all boards. This only includes boards that the user has permission to view.
 //
 // JIRA API docs: https://docs.atlassian.com/jira-software/REST/cloud/#agile/1.0/board-getAllBoards
@@ -201,4 +251,25 @@ func (s *BoardService) GetAllSprintsWithOptions(boardID int, options *GetAllSpri
 	}
 
 	return result, resp, err
+}
+
+// GetBoardConfiguration will return a board configuration for a given board Id
+// Jira API docs:https://developer.atlassian.com/cloud/jira/software/rest/#api-rest-agile-1-0-board-boardId-configuration-get
+func (s *BoardService) GetBoardConfiguration(boardID int) (*BoardConfiguration, *Response, error) {
+	apiEndpoint := fmt.Sprintf("rest/agile/1.0/board/%d/configuration", boardID)
+
+	req, err := s.client.NewRequest("GET", apiEndpoint, nil)
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	result := new(BoardConfiguration)
+	resp, err := s.client.Do(req, result)
+	if err != nil {
+		err = NewJiraError(resp, err)
+	}
+
+	return result, resp, err
+
 }

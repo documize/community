@@ -46,6 +46,7 @@ type Issue struct {
 	Fields         *IssueFields         `json:"fields,omitempty" structs:"fields,omitempty"`
 	RenderedFields *IssueRenderedFields `json:"renderedFields,omitempty" structs:"renderedFields,omitempty"`
 	Changelog      *Changelog           `json:"changelog,omitempty" structs:"changelog,omitempty"`
+	Transitions    []Transition         `json:"transitions,omitempty" structs:"transitions,omitempty"`
 }
 
 // ChangelogItems reflects one single changelog item of a history item
@@ -268,18 +269,6 @@ type Component struct {
 	Name string `json:"name,omitempty" structs:"name,omitempty"`
 }
 
-// Status represents the current status of a JIRA issue.
-// Typical status are "Open", "In Progress", "Closed", ...
-// Status can be user defined in every JIRA instance.
-type Status struct {
-	Self           string         `json:"self" structs:"self"`
-	Description    string         `json:"description" structs:"description"`
-	IconURL        string         `json:"iconUrl" structs:"iconUrl"`
-	Name           string         `json:"name" structs:"name"`
-	ID             string         `json:"id" structs:"id"`
-	StatusCategory StatusCategory `json:"statusCategory" structs:"statusCategory"`
-}
-
 // Progress represents the progress of a JIRA issue.
 type Progress struct {
 	Progress int `json:"progress" structs:"progress"`
@@ -479,7 +468,7 @@ type FixVersion struct {
 	Self            string `json:"self,omitempty" structs:"self,omitempty"`
 	ID              string `json:"id,omitempty" structs:"id,omitempty"`
 	Name            string `json:"name,omitempty" structs:"name,omitempty"`
-	Description     string `json:"description,omitempty" structs:"name,omitempty"`
+	Description     string `json:"description,omitempty" structs:"description,omitempty"`
 	Archived        *bool  `json:"archived,omitempty" structs:"archived,omitempty"`
 	Released        *bool  `json:"released,omitempty" structs:"released,omitempty"`
 	ReleaseDate     string `json:"releaseDate,omitempty" structs:"releaseDate,omitempty"`
@@ -557,6 +546,44 @@ type AddWorklogQueryOptions struct {
 // CustomFields represents custom fields of JIRA
 // This can heavily differ between JIRA instances
 type CustomFields map[string]string
+
+// RemoteLink represents remote links which linked to issues
+type RemoteLink struct {
+	ID           int                    `json:"id,omitempty" structs:"id,omitempty"`
+	Self         string                 `json:"self,omitempty" structs:"self,omitempty"`
+	GlobalID     string                 `json:"globalId,omitempty" structs:"globalId,omitempty"`
+	Application  *RemoteLinkApplication `json:"application,omitempty" structs:"application,omitempty"`
+	Relationship string                 `json:"relationship,omitempty" structs:"relationship,omitempty"`
+	Object       *RemoteLinkObject      `json:"object,omitempty" structs:"object,omitempty"`
+}
+
+// RemoteLinkApplication represents remote links application
+type RemoteLinkApplication struct {
+	Type string `json:"type,omitempty" structs:"type,omitempty"`
+	Name string `json:"name,omitempty" structs:"name,omitempty"`
+}
+
+// RemoteLinkObject represents remote link object itself
+type RemoteLinkObject struct {
+	URL     string            `json:"url,omitempty" structs:"url,omitempty"`
+	Title   string            `json:"title,omitempty" structs:"title,omitempty"`
+	Summary string            `json:"summary,omitempty" structs:"summary,omitempty"`
+	Icon    *RemoteLinkIcon   `json:"icon,omitempty" structs:"icon,omitempty"`
+	Status  *RemoteLinkStatus `json:"status,omitempty" structs:"status,omitempty"`
+}
+
+// RemoteLinkIcon represents icon displayed next to link
+type RemoteLinkIcon struct {
+	Url16x16 string `json:"url16x16,omitempty" structs:"url16x16,omitempty"`
+	Title    string `json:"title,omitempty" structs:"title,omitempty"`
+	Link     string `json:"link,omitempty" structs:"link,omitempty"`
+}
+
+// RemoteLinkStatus if the link is a resolvable object (issue, epic) - the structure represent its status
+type RemoteLinkStatus struct {
+	Resolved bool
+	Icon     *RemoteLinkIcon
+}
 
 // Get returns a full representation of the issue for the given issue key.
 // JIRA will attempt to identify the issue by the issueIdOrKey path parameter.
@@ -858,6 +885,33 @@ func (s *IssueService) DeleteComment(issueID, commentID string) error {
 func (s *IssueService) AddWorklogRecord(issueID string, record *WorklogRecord, options ...func(*http.Request) error) (*WorklogRecord, *Response, error) {
 	apiEndpoint := fmt.Sprintf("rest/api/2/issue/%s/worklog", issueID)
 	req, err := s.client.NewRequest("POST", apiEndpoint, record)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	for _, option := range options {
+		err = option(req)
+		if err != nil {
+			return nil, nil, err
+		}
+	}
+
+	responseRecord := new(WorklogRecord)
+	resp, err := s.client.Do(req, responseRecord)
+	if err != nil {
+		jerr := NewJiraError(resp, err)
+		return nil, resp, jerr
+	}
+
+	return responseRecord, resp, nil
+}
+
+// UpdateWorklogRecord updates a worklog record.
+//
+// https://docs.atlassian.com/software/jira/docs/api/REST/7.1.2/#api/2/issue-updateWorklog
+func (s *IssueService) UpdateWorklogRecord(issueID, worklogID string, record *WorklogRecord, options ...func(*http.Request) error) (*WorklogRecord, *Response, error) {
+	apiEndpoint := fmt.Sprintf("rest/api/2/issue/%s/worklog/%s", issueID, worklogID)
+	req, err := s.client.NewRequest("PUT", apiEndpoint, record)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -1257,4 +1311,22 @@ func (c ChangelogHistory) CreatedTime() (time.Time, error) {
 	}
 	t, err := time.Parse("2006-01-02T15:04:05.999-0700", c.Created)
 	return t, err
+}
+
+// GetRemoteLinks gets remote issue links on the issue.
+//
+// JIRA API docs: https://docs.atlassian.com/jira/REST/latest/#api/2/issue-getRemoteIssueLinks
+func (s *IssueService) GetRemoteLinks(id string) (*[]RemoteLink, *Response, error) {
+	apiEndpoint := fmt.Sprintf("rest/api/2/issue/%s/remotelink", id)
+	req, err := s.client.NewRequest("GET", apiEndpoint, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	result := new([]RemoteLink)
+	resp, err := s.client.Do(req, result)
+	if err != nil {
+		err = NewJiraError(resp, err)
+	}
+	return result, resp, err
 }

@@ -15,8 +15,9 @@ type UserService struct {
 
 // User represents a JIRA user.
 type User struct {
-	Self      string `json:"self,omitempty" structs:"self,omitempty"`
-	AccountID string `json:"accountId,omitempty" structs:"accountId,omitempty"`
+	Self        string `json:"self,omitempty" structs:"self,omitempty"`
+	AccountID   string `json:"accountId,omitempty" structs:"accountId,omitempty"`
+	AccountType string `json:"accountType,omitempty" structs:"accountType,omitempty"`
 	// TODO: name & key are deprecated, see:
 	// https://developer.atlassian.com/cloud/jira/platform/api-changes-for-user-privacy-announcement/
 	Name            string     `json:"name,omitempty" structs:"name,omitempty"`
@@ -27,6 +28,7 @@ type User struct {
 	DisplayName     string     `json:"displayName,omitempty" structs:"displayName,omitempty"`
 	Active          bool       `json:"active,omitempty" structs:"active,omitempty"`
 	TimeZone        string     `json:"timeZone,omitempty" structs:"timeZone,omitempty"`
+	Locale          string     `json:"locale,omitempty" structs:"locale,omitempty"`
 	ApplicationKeys []string   `json:"applicationKeys,omitempty" structs:"applicationKeys,omitempty"`
 }
 

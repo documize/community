@@ -3,6 +3,7 @@ module github.com/andygrunwald/go-jira
 go 1.12
 
 require (
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fatih/structs v1.0.0
 	github.com/google/go-cmp v0.3.0
 	github.com/google/go-querystring v0.0.0-20170111101155-53e6ce116135

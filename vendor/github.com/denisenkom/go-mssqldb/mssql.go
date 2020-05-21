@@ -397,7 +397,10 @@ func (s *Stmt) Close() error {
 }
 
 func (s *Stmt) SetQueryNotification(id, options string, timeout time.Duration) {
-	to := uint32(timeout / time.Second)
+	// 2.2.5.3.1 Query Notifications Header
+	// https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-tds/e168d373-a7b7-41aa-b6ca-25985466a7e0
+	// Timeout in milliseconds in TDS protocol.
+	to := uint32(timeout / time.Millisecond)
 	if to < 1 {
 		to = 1
 	}
@@ -613,11 +616,13 @@ loop:
 			break loop
 		case doneStruct:
 			if token.isError() {
+				cancel()
 				return nil, s.c.checkBadConn(token.getError())
 			}
 		case ReturnStatus:
 			s.c.setReturnStatus(token)
 		case error:
+			cancel()
 			return nil, s.c.checkBadConn(token)
 		}
 	}
@@ -874,29 +879,6 @@ type Result struct {
 
 func (r *Result) RowsAffected() (int64, error) {
 	return r.rowsAffected, nil
-}
-
-func (r *Result) LastInsertId() (int64, error) {
-	s, err := r.c.Prepare("select cast(@@identity as bigint)")
-	if err != nil {
-		return 0, err
-	}
-	defer s.Close()
-	rows, err := s.Query(nil)
-	if err != nil {
-		return 0, err
-	}
-	defer rows.Close()
-	dest := make([]driver.Value, 1)
-	err = rows.Next(dest)
-	if err != nil {
-		return 0, err
-	}
-	if dest[0] == nil {
-		return -1, errors.New("There is no generated identity value")
-	}
-	lastInsertId := dest[0].(int64)
-	return lastInsertId, nil
 }
 
 var _ driver.Pinger = &Conn{}

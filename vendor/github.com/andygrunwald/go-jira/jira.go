@@ -2,28 +2,38 @@ package jira
 
 import (
 	"bytes"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
 	"reflect"
+	"sort"
 	"strings"
 	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/google/go-querystring/query"
 	"github.com/pkg/errors"
 )
 
+// httpClient defines an interface for an http.Client implementation so that alternative
+// http Clients can be passed in for making requests
+type httpClient interface {
+	Do(request *http.Request) (response *http.Response, err error)
+}
+
 // A Client manages communication with the JIRA API.
 type Client struct {
 	// HTTP client used to communicate with the API.
-	client *http.Client
+	client httpClient
 
 	// Base URL for API requests.
 	baseURL *url.URL
 
-	// Session storage if the user authentificate with a Session cookie
+	// Session storage if the user authenticates with a Session cookie
 	session *Session
 
 	// Services used for talking to different parts of the JIRA API.
@@ -43,6 +53,8 @@ type Client struct {
 	Filter           *FilterService
 	Role             *RoleService
 	PermissionScheme *PermissionSchemeService
+	Status           *StatusService
+	IssueLinkType    *IssueLinkTypeService
 }
 
 // NewClient returns a new JIRA API client.
@@ -52,7 +64,7 @@ type Client struct {
 // As an alternative you can use Session Cookie based authentication provided by this package as well.
 // See https://docs.atlassian.com/jira/REST/latest/#authentication
 // baseURL is the HTTP endpoint of your JIRA instance and should always be specified with a trailing slash.
-func NewClient(httpClient *http.Client, baseURL string) (*Client, error) {
+func NewClient(httpClient httpClient, baseURL string) (*Client, error) {
 	if httpClient == nil {
 		httpClient = http.DefaultClient
 	}
@@ -87,6 +99,8 @@ func NewClient(httpClient *http.Client, baseURL string) (*Client, error) {
 	c.Filter = &FilterService{client: c}
 	c.Role = &RoleService{client: c}
 	c.PermissionScheme = &PermissionSchemeService{client: c}
+	c.Status = &StatusService{client: c}
+	c.IssueLinkType = &IssueLinkTypeService{client: c}
 
 	return c, nil
 }
@@ -352,7 +366,7 @@ func (t *BasicAuthTransport) transport() http.RoundTripper {
 // CookieAuthTransport is an http.RoundTripper that authenticates all requests
 // using Jira's cookie-based authentication.
 //
-// Note that it is generally preferrable to use HTTP BASIC authentication with the REST API.
+// Note that it is generally preferable to use HTTP BASIC authentication with the REST API.
 // However, this resource may be used to mimic the behaviour of JIRA's log-in page (e.g. to display log-in errors to a user).
 //
 // JIRA API docs: https://docs.atlassian.com/jira/REST/latest/#auth/1/session
@@ -443,6 +457,78 @@ func (t *CookieAuthTransport) transport() http.RoundTripper {
 		return t.Transport
 	}
 	return http.DefaultTransport
+}
+
+// JWTAuthTransport is an http.RoundTripper that authenticates all requests
+// using Jira's JWT based authentication.
+//
+// NOTE: this form of auth should be used by add-ons installed from the Atlassian marketplace.
+//
+// JIRA docs: https://developer.atlassian.com/cloud/jira/platform/understanding-jwt
+// Examples in other languages:
+//    https://bitbucket.org/atlassian/atlassian-jwt-ruby/src/d44a8e7a4649e4f23edaa784402655fda7c816ea/lib/atlassian/jwt.rb
+//    https://bitbucket.org/atlassian/atlassian-jwt-py/src/master/atlassian_jwt/url_utils.py
+type JWTAuthTransport struct {
+	Secret []byte
+	Issuer string
+
+	// Transport is the underlying HTTP transport to use when making requests.
+	// It will default to http.DefaultTransport if nil.
+	Transport http.RoundTripper
+}
+
+func (t *JWTAuthTransport) Client() *http.Client {
+	return &http.Client{Transport: t}
+}
+
+func (t *JWTAuthTransport) transport() http.RoundTripper {
+	if t.Transport != nil {
+		return t.Transport
+	}
+	return http.DefaultTransport
+}
+
+// RoundTrip adds the session object to the request.
+func (t *JWTAuthTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	req2 := cloneRequest(req) // per RoundTripper contract
+	exp := time.Duration(59) * time.Second
+	qsh := t.createQueryStringHash(req.Method, req2.URL)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"iss": t.Issuer,
+		"iat": time.Now().Unix(),
+		"exp": time.Now().Add(exp).Unix(),
+		"qsh": qsh,
+	})
+
+	jwtStr, err := token.SignedString(t.Secret)
+	if err != nil {
+		return nil, errors.Wrap(err, "jwtAuth: error signing JWT")
+	}
+
+	req2.Header.Set("Authorization", fmt.Sprintf("JWT %s", jwtStr))
+	return t.transport().RoundTrip(req2)
+}
+
+func (t *JWTAuthTransport) createQueryStringHash(httpMethod string, jiraURL *url.URL) string {
+	canonicalRequest := t.canonicalizeRequest(httpMethod, jiraURL)
+	h := sha256.Sum256([]byte(canonicalRequest))
+	return hex.EncodeToString(h[:])
+}
+
+func (t *JWTAuthTransport) canonicalizeRequest(httpMethod string, jiraURL *url.URL) string {
+	path := "/" + strings.Replace(strings.Trim(jiraURL.Path, "/"), "&", "%26", -1)
+
+	var canonicalQueryString []string
+	for k, v := range jiraURL.Query() {
+		if k == "jwt" {
+			continue
+		}
+		param := url.QueryEscape(k)
+		value := url.QueryEscape(strings.Join(v, ""))
+		canonicalQueryString = append(canonicalQueryString, strings.Replace(strings.Join([]string{param, value}, "="), "+", "%20", -1))
+	}
+	sort.Strings(canonicalQueryString)
+	return fmt.Sprintf("%s&%s&%s", strings.ToUpper(httpMethod), path, strings.Join(canonicalQueryString, "&"))
 }
 
 // cloneRequest returns a clone of the provided *http.Request.
