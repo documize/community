@@ -102,9 +102,12 @@ func (p *Provider) generateDiagram(ctx *provider.Context, data string) string {
 	org, _ := p.Store.Organization.GetOrganization(ctx.Request, ctx.OrgID)
 
 	var transport = &http.Transport{
+		Proxy: http.ProxyFromEnvironment,
 		TLSClientConfig: &tls.Config{
 			InsecureSkipVerify: true, // TODO should be glick.InsecureSkipVerifyTLS (from -insecure flag) but get error: x509: certificate signed by unknown authority
+
 		}}
+
 	client := &http.Client{Transport: transport}
 
 	resp, _ := client.Post(org.ConversionEndpoint+"/api/plantuml", "application/text; charset=utf-8", bytes.NewReader([]byte(data)))
