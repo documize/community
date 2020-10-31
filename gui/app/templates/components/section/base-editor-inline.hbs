@@ -29,8 +29,8 @@
 						tooltip="Insert Link" onClick=(action "onShowLinkModal")}}
 				{{/if}}
 				{{#if previewButton}}
-					{{ui/ui-toolbar-icon icon=constants.Icon.Preview color=constants.Color.Gray
-						tooltip="Preview changes" onClick=(action "onPreview")}}
+					{{ui/ui-toolbar-icon icon=previewIcon color=constants.Color.Gray
+						tooltip=previewText onClick=(action "onPreview")}}
 				{{/if}}
 				{{ui/ui-toolbar-icon icon=constants.Icon.Tick color=constants.Color.Green tooltip="Save changes" onClick=(action "onAction")}}
 				{{ui/ui-toolbar-icon icon=constants.Icon.Cross color=constants.Color.Red tooltip="Cancel editing" onClick=(action "onCancel")}}

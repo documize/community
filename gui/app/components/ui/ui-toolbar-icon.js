@@ -39,6 +39,7 @@ export default Component.extend({
 	click(e) {
 		if (!_.isUndefined(this.onClick)) {
 			this.onClick(e);
+			this.notifyPropertyChange('calcClass');
 			return;
 		}
 
