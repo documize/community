@@ -14,7 +14,7 @@ version: "3"
 
 services:
   db:
-    image: postgres:latest
+    image: postgres:12
     restart: always
     ports:
       - 5432:5432
