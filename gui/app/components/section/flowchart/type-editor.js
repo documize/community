@@ -170,3 +170,7 @@ export default Component.extend({
 // https://desk.draw.io/support/solutions/articles/16000042546-what-url-parameters-are-supported-
 // https://desk.draw.io/support/solutions/articles/16000042544-how-does-embed-mode-work-
 // https://jgraph.github.io/mxgraph/docs/js-api/files/editor/mxEditor-js.html
+
+// https://github.com/jgraph/drawio-github/blob/master/edit-diagram.html
+// https://github.com/jgraph/drawio-integration
+// https://desk.draw.io/support/solutions/articles/16000042544-embed-mode
