@@ -39,6 +39,11 @@
 		line-height: 1.8rem;
 	}
 
+	ol ol, ul ul {
+		margin-top: 0;
+		margin-bottom: 0;
+	}
+
 	ol {
 		li {
 			// list-style-type: decimal;
