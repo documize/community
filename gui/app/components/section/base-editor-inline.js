@@ -27,6 +27,10 @@ export default Component.extend(Modals, Notifier, {
 		return `page-editor-${page.id}`;
 	}),
 	previewText: 'Preview',
+	previewIcon: computed('previewIcon', function () {
+		let constants = this.get('constants');
+		return constants.Icon.Preview;
+	}),
 	pageTitle: '',
 
 	didReceiveAttrs() {
@@ -102,8 +106,10 @@ export default Component.extend(Modals, Notifier, {
 		},
 
 		onPreview() {
+			let constants = this.get('constants');
 			let pt = this.get('previewText');
 			this.set('previewText', pt === 'Preview' ? 'Edit Mode' : 'Preview');
+			this.set('previewIcon', pt === 'Preview' ? constants.Icon.Edit : constants.Icon.Preview);
 			return this.get('onPreview')();
 		},
 
