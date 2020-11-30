@@ -13,13 +13,9 @@ All you need to provide is PostgreSQL, Microsoft SQL Server or any MySQL variant
 
 ## Latest Release
 
-[Community Edition: v3.8.1](https://github.com/documize/community/releases)
+[Community Edition: v3.8.2](https://github.com/documize/community/releases)
 
-[Enterprise Edition: v3.8.1](https://www.documize.com/downloads)
-
-> *We provide frequent product updates for both cloud and self-hosted customers.*
->
-> **Harvey Kandola, CEO/Founder @ Documize**
+[Enterprise Edition: v3.8.2](https://www.documize.com/downloads)
 
 ## OS Support
 
@@ -50,7 +46,7 @@ For all database types, Full-Text Search support (FTS) is mandatory.
 
 ## Technology Stack
 
-- Go (v1.14.3)
+- Go (v1.15.5)
 - Ember JS (v3.12.0)
 
 ## Authentication Options

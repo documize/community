@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"github.com/documize/community/core/env"
+	"github.com/documize/community/core/stringutil"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/store"
 	"github.com/documize/community/model/user"
@@ -168,50 +169,6 @@ func (s Store) GetActiveUsersForOrganization(ctx domain.RequestContext) (u []use
 	return
 }
 
-// GetUsersForOrganization returns a slice containing all of the user records for the organizaiton
-// identified in the context.
-func (s Store) GetUsersForOrganization(ctx domain.RequestContext, filter string, limit int) (u []user.User, err error) {
-	u = []user.User{}
-
-	filter = strings.TrimSpace(strings.ToLower(filter))
-	likeQuery := ""
-	if len(filter) > 0 {
-		likeQuery = " AND (LOWER(u.c_firstname) LIKE '%" + filter + "%' OR LOWER(u.c_lastname) LIKE '%" + filter + "%' OR LOWER(u.c_email) LIKE '%" + filter + "%') "
-	}
-
-	if s.Runtime.StoreProvider.Type() == env.StoreTypeSQLServer {
-		err = s.Runtime.Db.Select(&u, s.Bind(`SELECT TOP(`+strconv.Itoa(limit)+`) u.id, u.c_refid AS refid,
-        u.c_firstname AS firstname, u.c_lastname AS lastname, u.c_email AS email,
-        u.c_initials AS initials, u.c_globaladmin AS globaladmin,
-        u.c_password AS password, u.c_salt AS salt, u.c_reset AS reset, u.c_lastversion AS lastversion,
-        u.c_created AS created, u.c_revised AS revised,
-        a.c_active AS active, a.c_editor AS editor, a.c_admin AS admin, a.c_users AS viewusers, a.c_analytics AS analytics
-        FROM dmz_user u, dmz_user_account a
-        WHERE u.c_refid=a.c_userid AND a.c_orgid=? `+likeQuery+
-			`ORDER BY u.c_firstname, u.c_lastname`), ctx.OrgID)
-	} else {
-		err = s.Runtime.Db.Select(&u, s.Bind(`SELECT u.id, u.c_refid AS refid,
-        u.c_firstname AS firstname, u.c_lastname AS lastname, u.c_email AS email,
-        u.c_initials AS initials, u.c_globaladmin AS globaladmin,
-        u.c_password AS password, u.c_salt AS salt, u.c_reset AS reset, u.c_lastversion AS lastversion,
-        u.c_created AS created, u.c_revised AS revised,
-        a.c_active AS active, a.c_editor AS editor, a.c_admin AS admin, a.c_users AS viewusers, a.c_analytics AS analytics
-        FROM dmz_user u, dmz_user_account a
-        WHERE u.c_refid=a.c_userid AND a.c_orgid=? `+likeQuery+
-			`ORDER BY u.c_firstname, u.c_lastname LIMIT `+strconv.Itoa(limit)), ctx.OrgID)
-	}
-
-	if err == sql.ErrNoRows {
-		err = nil
-	}
-
-	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf(" get users for org %s", ctx.OrgID))
-	}
-
-	return
-}
-
 // GetSpaceUsers returns a slice containing all user records for given space.
 func (s Store) GetSpaceUsers(ctx domain.RequestContext, spaceID string) (u []user.User, err error) {
 	u = []user.User{}
@@ -339,11 +296,58 @@ func (s Store) CountActiveUsers() (c []domain.SubscriptionUserAccount) {
 	return
 }
 
+// GetUsersForOrganization returns a slice containing all of the user records for the organizaiton
+// identified in the context.
+func (s Store) GetUsersForOrganization(ctx domain.RequestContext, filter string, limit int) (u []user.User, err error) {
+	u = []user.User{}
+
+	filter = strings.TrimSpace(strings.ToLower(filter))
+	filter = stringutil.CleanDBValue(filter)
+
+	likeQuery := ""
+	if len(filter) > 0 {
+		likeQuery = " AND (LOWER(u.c_firstname) LIKE '%" + filter + "%' OR LOWER(u.c_lastname) LIKE '%" + filter + "%' OR LOWER(u.c_email) LIKE '%" + filter + "%') "
+	}
+
+	if s.Runtime.StoreProvider.Type() == env.StoreTypeSQLServer {
+		err = s.Runtime.Db.Select(&u, s.Bind(`SELECT TOP(`+strconv.Itoa(limit)+`) u.id, u.c_refid AS refid,
+        u.c_firstname AS firstname, u.c_lastname AS lastname, u.c_email AS email,
+        u.c_initials AS initials, u.c_globaladmin AS globaladmin,
+        u.c_password AS password, u.c_salt AS salt, u.c_reset AS reset, u.c_lastversion AS lastversion,
+        u.c_created AS created, u.c_revised AS revised,
+        a.c_active AS active, a.c_editor AS editor, a.c_admin AS admin, a.c_users AS viewusers, a.c_analytics AS analytics
+        FROM dmz_user u, dmz_user_account a
+        WHERE u.c_refid=a.c_userid AND a.c_orgid=? `+likeQuery+
+			`ORDER BY u.c_firstname, u.c_lastname`), ctx.OrgID)
+	} else {
+		err = s.Runtime.Db.Select(&u, s.Bind(`SELECT u.id, u.c_refid AS refid,
+        u.c_firstname AS firstname, u.c_lastname AS lastname, u.c_email AS email,
+        u.c_initials AS initials, u.c_globaladmin AS globaladmin,
+        u.c_password AS password, u.c_salt AS salt, u.c_reset AS reset, u.c_lastversion AS lastversion,
+        u.c_created AS created, u.c_revised AS revised,
+        a.c_active AS active, a.c_editor AS editor, a.c_admin AS admin, a.c_users AS viewusers, a.c_analytics AS analytics
+        FROM dmz_user u, dmz_user_account a
+        WHERE u.c_refid=a.c_userid AND a.c_orgid=? `+likeQuery+
+			`ORDER BY u.c_firstname, u.c_lastname LIMIT `+strconv.Itoa(limit)), ctx.OrgID)
+	}
+
+	if err == sql.ErrNoRows {
+		err = nil
+	}
+
+	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf(" get users for org %s", ctx.OrgID))
+	}
+
+	return
+}
+
 // MatchUsers returns users that have match to either firstname, lastname or email.
 func (s Store) MatchUsers(ctx domain.RequestContext, text string, maxMatches int) (u []user.User, err error) {
 	u = []user.User{}
 
 	text = strings.TrimSpace(strings.ToLower(text))
+	text = stringutil.CleanDBValue(text)
 	likeQuery := ""
 	if len(text) > 0 {
 		likeQuery = " AND (LOWER(c_firstname) LIKE '%" + text + "%' OR LOWER(c_lastname) LIKE '%" + text + "%' OR LOWER(c_email) LIKE '%" + text + "%') "
