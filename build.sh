@@ -43,6 +43,7 @@ mkdir -p embed/bindata/onboard
 cp -r domain/onboard/*.json embed/bindata/onboard
 
 echo "Generating in-memory static assets..."
+export PATH=$PATH:~/go/bin
 # go get -u github.com/jteeuwen/go-bindata/...
 # go get -u github.com/elazarl/go-bindata-assetfs/...
 cd embed

@@ -1,6 +1,6 @@
 module github.com/documize/community
 
-go 1.13
+go 1.16
 
 require (
 	cloud.google.com/go v0.57.0 // indirect

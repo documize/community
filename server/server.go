@@ -12,6 +12,7 @@
 package server
 
 import (
+	"crypto/tls"
 	"fmt"
 	"net/http"
 	"strings"
@@ -122,7 +123,11 @@ func Start(rt *env.Runtime, s *store.Store, ready chan struct{}) {
 
 		rt.Log.Info("Web Server: starting SSL server on " + rt.Flags.HTTPPort + " with " + rt.Flags.SSLCertFile + " " + rt.Flags.SSLKeyFile)
 
-		server := &http.Server{Addr: ":" + rt.Flags.HTTPPort, Handler: n /*, TLSConfig: myTLSConfig*/}
+		cfg := &tls.Config{
+			MinVersion: tls.VersionTLS12,
+		}
+
+		server := &http.Server{Addr: ":" + rt.Flags.HTTPPort, Handler: n, TLSConfig: cfg}
 		server.SetKeepAlivesEnabled(true)
 
 		if err := server.ListenAndServeTLS(rt.Flags.SSLCertFile, rt.Flags.SSLKeyFile); err != nil {
