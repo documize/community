@@ -1,13 +1,9 @@
-# cloud.google.com/go v0.57.0
-## explicit
 # github.com/BurntSushi/toml v0.3.1
 ## explicit
 github.com/BurntSushi/toml
 # github.com/andygrunwald/go-jira v1.12.0
 ## explicit
 github.com/andygrunwald/go-jira
-# github.com/apache/thrift v0.12.0
-## explicit
 # github.com/codegangsta/negroni v1.0.0
 ## explicit
 github.com/codegangsta/negroni
@@ -43,8 +39,10 @@ github.com/go-sql-driver/mysql
 # github.com/golang-sql/civil v0.0.0-20190719163853-cb61b32ac6fe
 github.com/golang-sql/civil
 # github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
+## explicit
 github.com/golang/glog
 # github.com/golang/protobuf v1.4.0
+## explicit
 github.com/golang/protobuf/proto
 # github.com/google/go-github v17.0.0+incompatible
 ## explicit
@@ -62,8 +60,6 @@ github.com/gorilla/mux
 ## explicit
 github.com/jmoiron/sqlx
 github.com/jmoiron/sqlx/reflectx
-# github.com/jteeuwen/go-bindata v3.0.7+incompatible
-## explicit
 # github.com/kr/pretty v0.2.0
 ## explicit
 # github.com/lib/pq v1.5.2
@@ -80,13 +76,9 @@ github.com/microcosm-cc/bluemonday
 # github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 ## explicit
 github.com/nu7hatch/gouuid
-# github.com/openzipkin/zipkin-go v0.1.6
-## explicit
 # github.com/pkg/errors v0.9.1
 ## explicit
 github.com/pkg/errors
-# github.com/prometheus/client_golang v0.9.3-0.20190127221311-3c4408c8b829
-## explicit
 # github.com/rainycape/unidecode v0.0.0-20150907023854-cb7f23ec59be
 ## explicit
 github.com/rainycape/unidecode
@@ -112,6 +104,7 @@ golang.org/x/net/html/atom
 golang.org/x/oauth2
 golang.org/x/oauth2/internal
 # google.golang.org/appengine v1.6.6
+## explicit
 google.golang.org/appengine/internal
 google.golang.org/appengine/internal/base
 google.golang.org/appengine/internal/datastore

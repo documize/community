@@ -52,8 +52,10 @@ go generate
 cd ..
 echo "Compiling for Linux..."
 env GOOS=linux GOARCH=amd64 go build -mod=vendor -trimpath -o bin/documize-community-linux-amd64 ./edition/community.go
-echo "Compiling for macOS..."
+echo "Compiling for macOS Intel..."
 env GOOS=darwin GOARCH=amd64 go build -mod=vendor -trimpath -o bin/documize-community-darwin-amd64 ./edition/community.go
+echo "Compiling for macOS ARM..."
+env GOOS=darwin GOARCH=arm64 go build -mod=vendor -trimpath -o bin/documize-community-darwin-arm64 ./edition/community.go
 echo "Compiling for Windows..."
 env GOOS=windows GOARCH=amd64 go build -mod=vendor -trimpath -o bin/documize-community-windows-amd64.exe ./edition/community.go
 echo "Compiling for ARM..."
