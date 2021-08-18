@@ -18,6 +18,7 @@ _convert
 bin/*
 dist/*
 embed/bindata/*
+edition/static/*
 gui/dist/*
 gui/dist-prod/*
 

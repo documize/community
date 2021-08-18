@@ -2,13 +2,13 @@
 ## explicit
 github.com/BurntSushi/toml
 # github.com/andygrunwald/go-jira v1.12.0
-## explicit
+## explicit; go 1.12
 github.com/andygrunwald/go-jira
 # github.com/codegangsta/negroni v1.0.0
 ## explicit
 github.com/codegangsta/negroni
 # github.com/denisenkom/go-mssqldb v0.0.0-20200428022330-06a60b6afbbc
-## explicit
+## explicit; go 1.11
 github.com/denisenkom/go-mssqldb
 github.com/denisenkom/go-mssqldb/internal/cp
 github.com/denisenkom/go-mssqldb/internal/decimal
@@ -28,21 +28,20 @@ github.com/documize/html-diff
 # github.com/documize/slug v1.1.1
 ## explicit
 github.com/documize/slug
-# github.com/elazarl/go-bindata-assetfs v1.0.0
-## explicit
-github.com/elazarl/go-bindata-assetfs
 # github.com/fatih/structs v1.0.0
+## explicit
 github.com/fatih/structs
 # github.com/go-sql-driver/mysql v1.5.0
-## explicit
+## explicit; go 1.10
 github.com/go-sql-driver/mysql
 # github.com/golang-sql/civil v0.0.0-20190719163853-cb61b32ac6fe
+## explicit
 github.com/golang-sql/civil
 # github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
 ## explicit
 github.com/golang/glog
 # github.com/golang/protobuf v1.4.0
-## explicit
+## explicit; go 1.9
 github.com/golang/protobuf/proto
 # github.com/google/go-github v17.0.0+incompatible
 ## explicit
@@ -54,14 +53,14 @@ github.com/google/go-querystring/query
 ## explicit
 github.com/gorilla/handlers
 # github.com/gorilla/mux v1.7.4
-## explicit
+## explicit; go 1.12
 github.com/gorilla/mux
 # github.com/jmoiron/sqlx v1.2.0
 ## explicit
 github.com/jmoiron/sqlx
 github.com/jmoiron/sqlx/reflectx
 # github.com/kr/pretty v0.2.0
-## explicit
+## explicit; go 1.12
 # github.com/lib/pq v1.5.2
 ## explicit
 github.com/lib/pq
@@ -71,7 +70,7 @@ github.com/lib/pq/scram
 ## explicit
 github.com/mb0/diff
 # github.com/microcosm-cc/bluemonday v1.0.2
-## explicit
+## explicit; go 1.9
 github.com/microcosm-cc/bluemonday
 # github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 ## explicit
@@ -86,25 +85,28 @@ github.com/rainycape/unidecode
 ## explicit
 github.com/shurcooL/sanitized_anchor_name
 # github.com/trivago/tgo v1.0.1
+## explicit
 github.com/trivago/tgo/tcontainer
 github.com/trivago/tgo/treflect
 # golang.org/x/crypto v0.0.0-20200510223506-06a226fb4e37
-## explicit
+## explicit; go 1.11
 golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blowfish
 golang.org/x/crypto/md4
 # golang.org/x/net v0.0.0-20200520182314-0ba52f642ac2
-## explicit
+## explicit; go 1.11
 golang.org/x/net/context
 golang.org/x/net/context/ctxhttp
 golang.org/x/net/html
 golang.org/x/net/html/atom
 # golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
-## explicit
+## explicit; go 1.11
 golang.org/x/oauth2
 golang.org/x/oauth2/internal
+# golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
+## explicit; go 1.11
 # google.golang.org/appengine v1.6.6
-## explicit
+## explicit; go 1.11
 google.golang.org/appengine/internal
 google.golang.org/appengine/internal/base
 google.golang.org/appengine/internal/datastore
@@ -113,6 +115,7 @@ google.golang.org/appengine/internal/remote_api
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/urlfetch
 # google.golang.org/protobuf v1.21.0
+## explicit; go 1.9
 google.golang.org/protobuf/encoding/prototext
 google.golang.org/protobuf/encoding/protowire
 google.golang.org/protobuf/internal/descfmt
@@ -144,6 +147,7 @@ google.golang.org/protobuf/runtime/protoimpl
 ## explicit
 gopkg.in/alexcesaro/quotedprintable.v3
 # gopkg.in/asn1-ber.v1 v1.0.0-20181015200546-f715ec2f112d
+## explicit
 gopkg.in/asn1-ber.v1
 # gopkg.in/cas.v2 v2.1.0
 ## explicit
