@@ -81,6 +81,19 @@ export default Service.extend({
 
 	// Duplicate creates a copy.
 	duplicate(spaceId, docId, docName) {
+		// for (let index = 0; index < 10; index++) {
+		// 	let data = {
+		// 		spaceId: spaceId,
+		// 		documentId: docId,
+		// 		documentName: docName + " " + index
+		// 	};
+
+		// 	this.get('ajax').request(`document/duplicate`, {
+		// 		method: 'POST',
+		// 		data: JSON.stringify(data)
+		// 	});
+		// }
+
 		let data = {
 			spaceId: spaceId,
 			documentId: docId,

@@ -67,9 +67,7 @@
                         {{ document.name }}
                         {{#if document.isSequenced}}
                             <div class="pinned">
-                                <i class="dicon {{constants.Icon.TickDouble}}">
-                                    {{#attach-tooltip showDelay=250}}Pinned{{/attach-tooltip}}
-                                </i>
+                                <i class="dicon {{constants.Icon.TickDouble}}" title="Pinned" />
                             </div>
                         {{/if}}
                     </div>
@@ -95,20 +93,12 @@
 					<div class="sequence">
 						{{#if document.isSequenced}}
                             {{#if showingAllDocs}}
-                                <i class="dicon {{constants.Icon.ArrowSmallUp}}" {{action "onPinSequence" document.id "u"}}>
-                                    {{#attach-tooltip showDelay=250}}Move up{{/attach-tooltip}}
-                                </i>
-                                <i class="dicon {{constants.Icon.ArrowSmallDown}}" {{action "onPinSequence" document.id "d"}}>
-                                    {{#attach-tooltip showDelay=250}}Move down{{/attach-tooltip}}
-                                </i>
+                                <i class="dicon {{constants.Icon.ArrowSmallUp}}" {{action "onPinSequence" document.id "u"}} title="Move up" />
+                                <i class="dicon {{constants.Icon.ArrowSmallDown}}" {{action "onPinSequence" document.id "d"}} title="Move down" />
                             {{/if}}
-							<i class="dicon {{constants.Icon.Cross}}" {{action "onUnpin" document.id}}>
-								{{#attach-tooltip showDelay=250}}Unpin{{/attach-tooltip}}
-							</i>
+							<i class="dicon {{constants.Icon.Cross}}" {{action "onUnpin" document.id}} title="Unpin" />
 						{{else}}
-							<i class="dicon {{constants.Icon.ArrowSmallUp}}" {{action "onPin" document.id}}>
-								{{#attach-tooltip showDelay=250}}Pin{{/attach-tooltip}}
-							</i>
+							<i class="dicon {{constants.Icon.ArrowSmallUp}}" {{action "onPin" document.id}} title="Pin" />
 						{{/if}}
 					</div>
 					<div class="checkbox" {{action "selectDocument" document.id}}>

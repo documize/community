@@ -1,3 +1,5 @@
+/* eslint-disable ember/require-super-in-init */
+
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
 // This software (Documize Community Edition) is licensed under
