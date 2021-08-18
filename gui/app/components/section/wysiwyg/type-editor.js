@@ -106,6 +106,7 @@ export default Component.extend({
 					{ text: 'SQL', value: 'sql' },
 					{ text: 'Swift', value: 'swift' },
 					{ text: 'TypeScript', value: 'typescript' },
+					{ text: 'VB.Net', value: 'vbnet' },
 					{ text: 'XML', value: 'markup' },
 					{ text: 'YAML', value: 'yaml' }
 				],
