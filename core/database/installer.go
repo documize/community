@@ -26,7 +26,7 @@ func InstallUpgrade(runtime *env.Runtime, existingDB bool) (err error) {
 	// amLeader := false
 
 	// Get all SQL scripts.
-	scripts, err := LoadScripts()
+	scripts, err := LoadScripts(runtime)
 	if err != nil {
 		runtime.Log.Error("Database: unable to load scripts", err)
 		return

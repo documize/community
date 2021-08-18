@@ -12,44 +12,36 @@ ember build ---environment=production --output-path dist-prod --suppress-sizes t
 cd ..
 
 echo "Copying Ember assets..."
-rm -rf embed/bindata/public
-mkdir -p embed/bindata/public
-cp -r gui/dist-prod/assets embed/bindata/public
-cp -r gui/dist-prod/codemirror embed/bindata/public/codemirror
-cp -r gui/dist-prod/prism embed/bindata/public/prism
-cp -r gui/dist-prod/sections embed/bindata/public/sections
-cp -r gui/dist-prod/tinymce embed/bindata/public/tinymce
-cp -r gui/dist-prod/pdfjs embed/bindata/public/pdfjs
-cp gui/dist-prod/*.* embed/bindata
-cp gui/dist-prod/favicon.ico embed/bindata/public
-cp gui/dist-prod/manifest.json embed/bindata/public
+rm -rf edition/static/public
+mkdir -p edition/static/public
+cp -r gui/dist-prod/assets edition/static/public
+cp -r gui/dist-prod/codemirror edition/static/public/codemirror
+cp -r gui/dist-prod/prism edition/static/public/prism
+cp -r gui/dist-prod/sections edition/static/public/sections
+cp -r gui/dist-prod/tinymce edition/static/public/tinymce
+cp -r gui/dist-prod/pdfjs edition/static/public/pdfjs
+cp gui/dist-prod/*.* edition/static
+cp gui/dist-prod/favicon.ico edition/static/public
+cp gui/dist-prod/manifest.json edition/static/public
 
-rm -rf embed/bindata/mail
-mkdir -p embed/bindata/mail
-cp domain/mail/*.html embed/bindata/mail
-cp core/database/templates/*.html embed/bindata
+rm -rf edition/static/mail
+mkdir -p edition/static/mail
+cp domain/mail/*.html edition/static/mail
+cp core/database/templates/*.html edition/static
 
-rm -rf embed/bindata/scripts
-mkdir -p embed/bindata/scripts
-mkdir -p embed/bindata/scripts/mysql
-mkdir -p embed/bindata/scripts/postgresql
-mkdir -p embed/bindata/scripts/sqlserver
-cp -r core/database/scripts/mysql/*.sql embed/bindata/scripts/mysql
-cp -r core/database/scripts/postgresql/*.sql embed/bindata/scripts/postgresql
-cp -r core/database/scripts/sqlserver/*.sql embed/bindata/scripts/sqlserver
+rm -rf edition/static/scripts
+mkdir -p edition/static/scripts
+mkdir -p edition/static/scripts/mysql
+mkdir -p edition/static/scripts/postgresql
+mkdir -p edition/static/scripts/sqlserver
+cp -r core/database/scripts/mysql/*.sql edition/static/scripts/mysql
+cp -r core/database/scripts/postgresql/*.sql edition/static/scripts/postgresql
+cp -r core/database/scripts/sqlserver/*.sql edition/static/scripts/sqlserver
 
-rm -rf embed/bindata/onboard
-mkdir -p embed/bindata/onboard
-cp -r domain/onboard/*.json embed/bindata/onboard
+rm -rf edition/static/onboard
+mkdir -p edition/static/onboard
+cp -r domain/onboard/*.json edition/static/onboard
 
-echo "Generating in-memory static assets..."
-export PATH=$PATH:~/go/bin
-# go get -u github.com/jteeuwen/go-bindata/...
-# go get -u github.com/elazarl/go-bindata-assetfs/...
-cd embed
-go generate
-
-cd ..
 echo "Compiling for Linux..."
 env GOOS=linux GOARCH=amd64 go build -mod=vendor -trimpath -o bin/documize-community-linux-amd64 ./edition/community.go
 echo "Compiling for macOS Intel..."
@@ -68,5 +60,3 @@ echo "Finished."
 # CGO_ENABLED=0 GOOS=linux go build -a -ldflags="-s -w" -installsuffix cgo
 # go build -ldflags '-d -s -w' -a -tags netgo -installsuffix netgo test.go
 # ldd test
-
-# https://stackoverflow.com/questions/55664630/how-do-i-migrate-from-dep-to-go-modules

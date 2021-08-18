@@ -16,6 +16,7 @@ import (
 	"html/template"
 	"net/http"
 
+	"github.com/documize/community/core/asset"
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/secrets"
 	"github.com/documize/community/domain/store"
@@ -39,11 +40,12 @@ type Handler struct {
 // EmberHandler serves HTML web pages
 func (h *Handler) EmberHandler(w http.ResponseWriter, r *http.Request) {
 	filename := "index.html"
+
 	switch h.Runtime.Flags.SiteMode {
 	case env.SiteModeOffline:
 		filename = "offline.html"
 	case env.SiteModeSetup:
-		// NoOp
+		// noop
 	case env.SiteModeBadDB:
 		filename = "db-error.html"
 	default:
@@ -52,13 +54,13 @@ func (h *Handler) EmberHandler(w http.ResponseWriter, r *http.Request) {
 
 	SiteInfo.Edition = string(h.Runtime.Product.Edition)
 
-	data, err := Embed.Asset("bindata/" + filename)
+	content, _, err := asset.FetchStatic(h.Runtime.Assets, filename)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	emberView := template.Must(template.New(filename).Parse(string(data)))
+	emberView := template.Must(template.New(filename).Parse(string(content)))
 
 	if err := emberView.Execute(w, SiteInfo); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

@@ -15,6 +15,7 @@ package env
 import (
 	"context"
 	"database/sql"
+	"embed"
 
 	"github.com/documize/community/domain"
 	"github.com/jmoiron/sqlx"
@@ -42,6 +43,7 @@ type Runtime struct {
 	StoreProvider StoreProvider
 	Log           Logger
 	Product       domain.Product
+	Assets        embed.FS
 }
 
 // StartTx begins database transaction with given transaction isolation level.

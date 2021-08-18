@@ -20,6 +20,7 @@ import (
 
 	"github.com/pkg/errors"
 
+	"github.com/documize/community/core/asset"
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/response"
 	"github.com/documize/community/core/uniqueid"
@@ -28,7 +29,6 @@ import (
 	"github.com/documize/community/domain/store"
 	om "github.com/documize/community/model/onboard"
 	"github.com/documize/community/model/permission"
-	"github.com/documize/community/server/web"
 )
 
 // Handler contains the runtime information such as logging and database.
@@ -112,14 +112,14 @@ func (h *Handler) loadFile(data om.SampleData, filename string, v interface{}) {
 
 // Reads file and unmarshals content as JSON.
 func (h *Handler) unpackFile(filename string, v interface{}) (err error) {
-	data, err := web.Embed.Asset("bindata/onboard/" + filename)
+	content, _, err := asset.FetchStatic(h.Runtime.Assets, "onboard/"+filename)
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("missing %s", filename))
 		h.Runtime.Log.Error("failed to load file", err)
 		return
 	}
 
-	err = json.Unmarshal(data, &v)
+	err = json.Unmarshal([]byte(content), &v)
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("failed to read %s as JSON", filename))
 		h.Runtime.Log.Error("failed to load file", err)

@@ -13,15 +13,17 @@ package mail
 
 import (
 	"bytes"
+	"fmt"
 	"html/template"
 
+	"github.com/documize/community/core/asset"
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/mail"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/setting"
 	ds "github.com/documize/community/domain/smtp"
 	"github.com/documize/community/domain/store"
-	"github.com/documize/community/server/web"
+	"github.com/pkg/errors"
 )
 
 // Mailer provides emailing facilities
@@ -43,15 +45,15 @@ func (m *Mailer) Initialize() {
 func (m *Mailer) ParseTemplate(filename string, params interface{}) (html string, err error) {
 	html = ""
 
-	file, err := web.ReadFile(filename)
+	content, _, err := asset.FetchStatic(m.Runtime.Assets, filename)
 	if err != nil {
+		err = errors.Wrap(err, fmt.Sprintf("missing %s", filename))
+		m.Runtime.Log.Error("failed to load mail template", err)
 		return
 	}
 
-	emailTemplate := string(file)
 	buffer := new(bytes.Buffer)
-
-	t := template.Must(template.New("emailTemplate").Parse(emailTemplate))
+	t := template.Must(template.New("emailTemplate").Parse(content))
 	t.Execute(buffer, &params)
 
 	html = buffer.String()

@@ -19,11 +19,11 @@ import (
 
 	"github.com/codegangsta/negroni"
 	"github.com/documize/community/core/api/plugins"
+	"github.com/documize/community/core/asset"
 	"github.com/documize/community/core/database"
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/domain/store"
 	"github.com/documize/community/server/routing"
-	"github.com/documize/community/server/web"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
@@ -81,7 +81,13 @@ func Start(rt *env.Runtime, s *store.Store, ready chan struct{}) {
 	router.Use(handlers.ProxyHeaders)
 
 	n := negroni.New()
-	n.Use(negroni.NewStatic(web.StaticAssetsFileSystem()))
+
+	sfs, err := asset.GetPublicFileSystem(rt.Assets)
+	if err != nil {
+		rt.Log.Error("!!!!!!!!!! Cannot load public file system", err)
+	}
+	n.Use(negroni.NewStatic(sfs))
+
 	n.Use(negroni.HandlerFunc(cm.cors))
 	n.UseHandler(router)
 

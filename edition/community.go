@@ -13,6 +13,7 @@
 package main
 
 import (
+	"embed"
 	"fmt"
 	"os"
 
@@ -22,10 +23,11 @@ import (
 	"github.com/documize/community/domain/store"
 	"github.com/documize/community/edition/boot"
 	"github.com/documize/community/edition/logging"
-	"github.com/documize/community/embed"
 	"github.com/documize/community/server"
-	"github.com/documize/community/server/web"
 )
+
+//go:embed static/*
+var embeddedFiles embed.FS
 
 func main() {
 	// Runtime stores server/application information.
@@ -34,20 +36,20 @@ func main() {
 	// Wire up logging implementation.
 	rt.Log = logging.NewLogger(false)
 
-	// Wire up embedded web assets handler.
-	web.Embed = embed.NewEmbedder()
-
 	// Specify the product edition.
 	rt.Product = domain.Product{}
-	rt.Product.Major = "3"
-	rt.Product.Minor = "9"
+	rt.Product.Major = "4"
+	rt.Product.Minor = "0"
 	rt.Product.Patch = "0"
-	rt.Product.Revision = "210328153633"
+	rt.Product.Revision = "210817183831"
 	rt.Product.Version = fmt.Sprintf("%s.%s.%s", rt.Product.Major, rt.Product.Minor, rt.Product.Patch)
 	rt.Product.Edition = domain.CommunityEdition
 	rt.Product.Title = fmt.Sprintf("%s Edition", rt.Product.Edition)
 
 	rt.Log.Info(fmt.Sprintf("Product: %s version %s (build %s)", rt.Product.Title, rt.Product.Version, rt.Product.Revision))
+
+	// Locate static assets.
+	rt.Assets = embeddedFiles
 
 	// Setup data store.
 	s := store.Store{}
@@ -61,10 +63,7 @@ func main() {
 	rt.Log.Info("Configuration: " + rt.Flags.ConfigSource)
 
 	// Start database init.
-	bootOK := boot.InitRuntime(&rt, &s)
-	if bootOK {
-		// runtime.Log = runtime.Log.SetDB(runtime.Db)
-	}
+	boot.InitRuntime(&rt, &s)
 
 	// Register document sections.
 	section.Register(&rt, &s)

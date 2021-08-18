@@ -12,11 +12,12 @@
 package database
 
 import (
+	"embed"
 	"fmt"
 	"sort"
 
+	"github.com/documize/community/core/asset"
 	"github.com/documize/community/core/env"
-	"github.com/documize/community/server/web"
 )
 
 // Scripts holds all .SQL files for all supported database providers.
@@ -33,21 +34,19 @@ type Script struct {
 }
 
 // LoadScripts returns .SQL scripts for supported database providers.
-func LoadScripts() (s Scripts, err error) {
-	assetDir := "bindata/scripts"
-
+func LoadScripts(runtime *env.Runtime) (s Scripts, err error) {
 	// MySQL
-	s.MySQL, err = loadFiles(fmt.Sprintf("%s/mysql", assetDir))
+	s.MySQL, err = loadFiles(runtime.Assets, "scripts/mysql")
 	if err != nil {
 		return
 	}
 	// PostgreSQL
-	s.PostgreSQL, err = loadFiles(fmt.Sprintf("%s/postgresql", assetDir))
+	s.PostgreSQL, err = loadFiles(runtime.Assets, "scripts/postgresql")
 	if err != nil {
 		return
 	}
 	// PostgreSQL
-	s.SQLServer, err = loadFiles(fmt.Sprintf("%s/sqlserver", assetDir))
+	s.SQLServer, err = loadFiles(runtime.Assets, "scripts/sqlserver")
 	if err != nil {
 		return
 	}
@@ -70,20 +69,22 @@ func SpecificScripts(runtime *env.Runtime, all Scripts) (s []Script) {
 }
 
 // loadFiles returns all SQL scripts in specified folder as [][]byte.
-func loadFiles(path string) (b []Script, err error) {
-	buf := []byte{}
-	scripts, err := web.AssetDir(path)
+func loadFiles(fs embed.FS, path string) (b []Script, err error) {
+	scripts, err := asset.FetchStaticDir(fs, path)
 	if err != nil {
 		return
 	}
+
 	sort.Strings(scripts)
-	for _, file := range scripts {
-		buf, err = web.Asset(fmt.Sprintf("%s/%s", path, file))
+
+	for i := range scripts {
+		filename := scripts[i]
+		sqlfile, _, err := asset.FetchStatic(fs, fmt.Sprintf("%s/%s", path, filename))
 		if err != nil {
-			return
+			return b, err
 		}
 
-		b = append(b, Script{Version: extractVersionNumber(file), Script: buf})
+		b = append(b, Script{Version: extractVersionNumber(filename), Script: []byte(sqlfile)})
 	}
 
 	return b, nil
