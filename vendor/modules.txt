@@ -1,3 +1,6 @@
+# github.com/Azure/go-ntlmssp v0.0.0-20200615164410-66371956d46c
+## explicit
+github.com/Azure/go-ntlmssp
 # github.com/BurntSushi/toml v0.3.1
 ## explicit
 github.com/BurntSushi/toml
@@ -7,12 +10,13 @@ github.com/andygrunwald/go-jira
 # github.com/codegangsta/negroni v1.0.0
 ## explicit
 github.com/codegangsta/negroni
-# github.com/denisenkom/go-mssqldb v0.0.0-20200428022330-06a60b6afbbc
+# github.com/denisenkom/go-mssqldb v0.10.1-0.20210728001037-ee2fbc25fd8f
 ## explicit; go 1.11
 github.com/denisenkom/go-mssqldb
 github.com/denisenkom/go-mssqldb/internal/cp
 github.com/denisenkom/go-mssqldb/internal/decimal
 github.com/denisenkom/go-mssqldb/internal/querytext
+github.com/denisenkom/go-mssqldb/msdsn
 # github.com/dgrijalva/jwt-go v3.2.0+incompatible
 ## explicit
 github.com/dgrijalva/jwt-go
@@ -31,7 +35,13 @@ github.com/documize/slug
 # github.com/fatih/structs v1.0.0
 ## explicit
 github.com/fatih/structs
-# github.com/go-sql-driver/mysql v1.5.0
+# github.com/go-asn1-ber/asn1-ber v1.5.3
+## explicit; go 1.13
+github.com/go-asn1-ber/asn1-ber
+# github.com/go-ldap/ldap/v3 v3.4.1
+## explicit; go 1.13
+github.com/go-ldap/ldap/v3
+# github.com/go-sql-driver/mysql v1.6.0
 ## explicit; go 1.10
 github.com/go-sql-driver/mysql
 # github.com/golang-sql/civil v0.0.0-20190719163853-cb61b32ac6fe
@@ -61,8 +71,8 @@ github.com/jmoiron/sqlx
 github.com/jmoiron/sqlx/reflectx
 # github.com/kr/pretty v0.2.0
 ## explicit; go 1.12
-# github.com/lib/pq v1.5.2
-## explicit
+# github.com/lib/pq v1.10.2
+## explicit; go 1.13
 github.com/lib/pq
 github.com/lib/pq/oid
 github.com/lib/pq/scram
@@ -88,7 +98,7 @@ github.com/shurcooL/sanitized_anchor_name
 ## explicit
 github.com/trivago/tgo/tcontainer
 github.com/trivago/tgo/treflect
-# golang.org/x/crypto v0.0.0-20200510223506-06a226fb4e37
+# golang.org/x/crypto v0.0.0-20200604202706-70a84ac30bf9
 ## explicit; go 1.11
 golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blowfish
@@ -146,17 +156,11 @@ google.golang.org/protobuf/runtime/protoimpl
 # gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc
 ## explicit
 gopkg.in/alexcesaro/quotedprintable.v3
-# gopkg.in/asn1-ber.v1 v1.0.0-20181015200546-f715ec2f112d
-## explicit
-gopkg.in/asn1-ber.v1
 # gopkg.in/cas.v2 v2.1.0
 ## explicit
 gopkg.in/cas.v2
 # gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127
 ## explicit
-# gopkg.in/ldap.v3 v3.1.0
-## explicit
-gopkg.in/ldap.v3
 # gopkg.in/yaml.v2 v2.2.2
 ## explicit
 gopkg.in/yaml.v2

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 	"reflect"
+	"strconv"
 	"strings"
 	"time"
 
@@ -44,8 +45,9 @@ type BulkOptions struct {
 type DataValue interface{}
 
 const (
-	sqlDateFormat = "2006-01-02"
-	sqlTimeFormat = "2006-01-02 15:04:05.999999999Z07:00"
+	sqlDateFormat     = "2006-01-02"
+	sqlDateTimeFormat = "2006-01-02 15:04:05.999999999Z07:00"
+	sqlTimeFormat     = "15:04:05.9999999"
 )
 
 func (cn *Conn) CreateBulk(table string, columns []string) (_ *Bulk) {
@@ -86,7 +88,7 @@ func (b *Bulk) sendBulkCommand(ctx context.Context) (err error) {
 			b.bulkColumns = append(b.bulkColumns, *bulkCol)
 			b.dlogf("Adding column %s %s %#x", colname, bulkCol.ColName, bulkCol.ti.TypeId)
 		} else {
-			return fmt.Errorf("Column %s does not exist in destination table %s", colname, b.tablename)
+			return fmt.Errorf("column %s does not exist in destination table %s", colname, b.tablename)
 		}
 	}
 
@@ -166,7 +168,7 @@ func (b *Bulk) AddRow(row []interface{}) (err error) {
 	}
 
 	if len(row) != len(b.bulkColumns) {
-		return fmt.Errorf("Row does not have the same number of columns than the destination table %d %d",
+		return fmt.Errorf("row does not have the same number of columns than the destination table %d %d",
 			len(row), len(b.bulkColumns))
 	}
 
@@ -215,7 +217,7 @@ func (b *Bulk) makeRowData(row []interface{}) ([]byte, error) {
 }
 
 func (b *Bulk) Done() (rowcount int64, err error) {
-	if b.headerSent == false {
+	if !b.headerSent {
 		//no rows had been sent
 		return 0, nil
 	}
@@ -233,24 +235,13 @@ func (b *Bulk) Done() (rowcount int64, err error) {
 
 	buf.FinishPacket()
 
-	tokchan := make(chan tokenStruct, 5)
-	go processResponse(b.ctx, b.cn.sess, tokchan, nil)
-
-	var rowCount int64
-	for token := range tokchan {
-		switch token := token.(type) {
-		case doneStruct:
-			if token.Status&doneCount != 0 {
-				rowCount = int64(token.RowCount)
-			}
-			if token.isError() {
-				return 0, token.getError()
-			}
-		case error:
-			return 0, b.cn.checkBadConn(token)
-		}
+	reader := startReading(b.cn.sess, b.ctx, outputs{})
+	err = reader.iterateResponse()
+	if err != nil {
+		return 0, b.cn.checkBadConn(err, false)
 	}
-	return rowCount, nil
+
+	return reader.rowCount, nil
 }
 
 func (b *Bulk) createColMetadata() []byte {
@@ -339,6 +330,10 @@ func (b *Bulk) makeParam(val DataValue, col columnStruct) (res param, err error)
 			intvalue = int64(val)
 		case int64:
 			intvalue = val
+		case float32:
+			intvalue = int64(val)
+		case float64:
+			intvalue = int64(val)
 		default:
 			err = fmt.Errorf("mssql: invalid type for int column: %T", val)
 			return
@@ -383,6 +378,8 @@ func (b *Bulk) makeParam(val DataValue, col columnStruct) (res param, err error)
 		switch val := val.(type) {
 		case string:
 			res.buffer = str2ucs2(val)
+		case int64:
+			res.buffer = []byte(strconv.FormatInt(val, 10))
 		case []byte:
 			res.buffer = val
 		default:
@@ -397,6 +394,8 @@ func (b *Bulk) makeParam(val DataValue, col columnStruct) (res param, err error)
 			res.buffer = []byte(val)
 		case []byte:
 			res.buffer = val
+		case int64:
+			res.buffer = []byte(strconv.FormatInt(val, 10))
 		default:
 			err = fmt.Errorf("mssql: invalid type for varchar column: %T %s", val, val)
 			return
@@ -421,7 +420,7 @@ func (b *Bulk) makeParam(val DataValue, col columnStruct) (res param, err error)
 			res.ti.Size = len(res.buffer)
 		case string:
 			var t time.Time
-			if t, err = time.Parse(sqlTimeFormat, val); err != nil {
+			if t, err = time.Parse(sqlDateTimeFormat, val); err != nil {
 				return res, fmt.Errorf("bulk: unable to convert string to date: %v", err)
 			}
 			res.buffer = encodeDateTime2(t, int(col.ti.Scale))
@@ -437,7 +436,7 @@ func (b *Bulk) makeParam(val DataValue, col columnStruct) (res param, err error)
 			res.ti.Size = len(res.buffer)
 		case string:
 			var t time.Time
-			if t, err = time.Parse(sqlTimeFormat, val); err != nil {
+			if t, err = time.Parse(sqlDateTimeFormat, val); err != nil {
 				return res, fmt.Errorf("bulk: unable to convert string to date: %v", err)
 			}
 			res.buffer = encodeDateTimeOffset(t, int(col.ti.Scale))
@@ -468,7 +467,7 @@ func (b *Bulk) makeParam(val DataValue, col columnStruct) (res param, err error)
 		case time.Time:
 			t = val
 		case string:
-			if t, err = time.Parse(sqlTimeFormat, val); err != nil {
+			if t, err = time.Parse(sqlDateTimeFormat, val); err != nil {
 				return res, fmt.Errorf("bulk: unable to convert string to date: %v", err)
 			}
 		default:
@@ -485,7 +484,22 @@ func (b *Bulk) makeParam(val DataValue, col columnStruct) (res param, err error)
 		} else {
 			err = fmt.Errorf("mssql: invalid size of column %d", col.ti.Size)
 		}
-
+	case typeTimeN:
+		var t time.Time
+		switch val := val.(type) {
+		case time.Time:
+			res.buffer = encodeTime(val.Hour(), val.Minute(), val.Second(), val.Nanosecond(), int(col.ti.Scale))
+			res.ti.Size = len(res.buffer)
+		case string:
+			if t, err = time.Parse(sqlTimeFormat, val); err != nil {
+				return res, fmt.Errorf("bulk: unable to convert string to time: %v", err)
+			}
+			res.buffer = encodeTime(t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), int(col.ti.Scale))
+			res.ti.Size = len(res.buffer)
+		default:
+			err = fmt.Errorf("mssql: invalid type for time column: %T %s", val, val)
+			return
+		}
 	// case typeMoney, typeMoney4, typeMoneyN:
 	case typeDecimal, typeDecimalN, typeNumeric, typeNumericN:
 		prec := col.ti.Prec

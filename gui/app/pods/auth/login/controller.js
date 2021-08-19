@@ -1,3 +1,5 @@
+/* eslint-disable ember/no-actions-hash */
+/* eslint-disable ember/no-classic-classes */
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
 // This software (Documize Community Edition) is licensed under

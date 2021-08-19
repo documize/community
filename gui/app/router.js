@@ -186,7 +186,8 @@ export default Router.map(function () {
 		path: 'updates'
 	});
 
-	this.route('not-found', {
+	this.route('auth/login', {
 		path: '/*wildcard'
+		// path: '/*wildcard'
 	});
 });

@@ -20,8 +20,8 @@ import (
 	"github.com/documize/community/core/stringutil"
 	lm "github.com/documize/community/model/auth"
 	"github.com/documize/community/model/user"
+	ld "github.com/go-ldap/ldap/v3"
 	"github.com/pkg/errors"
-	ld "gopkg.in/ldap.v3"
 )
 
 // Connect establishes connection to LDAP server.

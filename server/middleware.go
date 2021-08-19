@@ -43,12 +43,11 @@ func (m *middleware) cors(w http.ResponseWriter, r *http.Request, next http.Hand
 	w.Header().Set("Access-Control-Allow-Headers", "host, content-type, accept, authorization, origin, referer, user-agent, cache-control, x-requested-with, range")
 	w.Header().Set("Access-Control-Expose-Headers", "x-documize-version, x-documize-status, x-documize-filename, x-documize-subscription, Content-Disposition, Content-Length")
 
+	w.Header().Add("X-Documize-Version", m.Runtime.Product.Version)
+	w.Header().Add("Cache-Control", "no-cache")
+
 	if r.Method == "OPTIONS" {
-		w.Header().Add("X-Documize-Version", m.Runtime.Product.Version)
-		w.Header().Add("Cache-Control", "no-cache")
-
 		w.Write([]byte(""))
-
 		return
 	}
 
