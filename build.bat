@@ -8,54 +8,44 @@ cd gui
 call ember b -o dist-prod/ --environment=production
 ::Call allows the rest of the file to run
 
-echo "Copying Ember assets..."
-cd ..
-
-rd /s /q embed\bindata\public
-mkdir embed\bindata\public
+rd /s /q edition\static\public
+mkdir edition\static\public
 echo "Copying Ember assets folder"
-robocopy /e /NFL /NDL /NJH gui\dist-prod\assets embed\bindata\public\assets
+robocopy /e /NFL /NDL /NJH gui\dist-prod\assets edition\static\public\assets
 echo "Copying Ember codemirror folder"
-robocopy /e /NFL /NDL /NJH gui\dist-prod\codemirror embed\bindata\public\codemirror
+robocopy /e /NFL /NDL /NJH gui\dist-prod\codemirror edition\static\public\codemirror
 echo "Copying Ember prism folder"
-robocopy /e /NFL /NDL /NJH gui\dist-prod\prism embed\bindata\public\prism
+robocopy /e /NFL /NDL /NJH gui\dist-prod\prism edition\static\public\prism
 echo "Copying Ember tinymce folder"
-robocopy /e /NFL /NDL /NJH gui\dist-prod\tinymce embed\bindata\public\tinymce
+robocopy /e /NFL /NDL /NJH gui\dist-prod\tinymce edition\static\public\tinymce
 echo "Copying Ember pdfjs folder"
-robocopy /e /NFL /NDL /NJH gui\dist-prod\pdfjs embed\bindata\public\pdfjs
+robocopy /e /NFL /NDL /NJH gui\dist-prod\pdfjs edition\static\public\pdfjs
 echo "Copying Ember sections folder"
-robocopy /e /NFL /NDL /NJH gui\dist-prod\sections embed\bindata\public\sections
+robocopy /e /NFL /NDL /NJH gui\dist-prod\sections edition\static\public\sections
 
-copy gui\dist-prod\*.* embed\bindata
-copy gui\dist-prod\favicon.ico embed\bindata\public
-copy gui\dist-prod\manifest.json embed\bindata\public
+copy gui\dist-prod\*.* edition\static
+copy gui\dist-prod\favicon.ico edition\static\public
+copy gui\dist-prod\manifest.json edition\static\public
 
-rd /s /q embed\bindata\mail
-mkdir embed\bindata\mail
-copy domain\mail\*.html embed\bindata\mail
-copy core\database\templates\*.html embed\bindata
+rd /s /q edition\static\mail
+mkdir edition\static\mail
+copy domain\mail\*.html edition\static\mail
+copy core\database\templates\*.html edition\static
 
-rd /s /q embed\bindata\scripts
-mkdir embed\bindata\scripts
-mkdir embed\bindata\scripts\mysql
-mkdir embed\bindata\scripts\postgresql
-mkdir embed\bindata\scripts\sqlserver
+rd /s /q edition\static\scripts
+mkdir edition\static\scripts
+mkdir edition\static\scripts\mysql
+mkdir edition\static\scripts\postgresql
+mkdir edition\static\scripts\sqlserver
 
 echo "Copying database scripts folder"
-robocopy /e /NFL /NDL /NJH core\database\scripts\mysql embed\bindata\scripts\mysql
-robocopy /e /NFL /NDL /NJH core\database\scripts\postgresql embed\bindata\scripts\postgresql
-robocopy /e /NFL /NDL /NJH core\database\scripts\sqlserver embed\bindata\scripts\sqlserver
+robocopy /e /NFL /NDL /NJH core\database\scripts\mysql edition\static\scripts\mysql
+robocopy /e /NFL /NDL /NJH core\database\scripts\postgresql edition\static\scripts\postgresql
+robocopy /e /NFL /NDL /NJH core\database\scripts\sqlserver edition\static\scripts\sqlserver
 
-rd /s /q embed\bindata\onboard
-mkdir embed\bindata\onboard
-robocopy /e /NFL /NDL /NJH domain\onboard\*.json  embed\bindata\onboard
-
-echo "Generating in-memory static assets..."
-go get -u github.com/jteeuwen/go-bindata/...
-go get -u github.com/elazarl/go-bindata-assetfs/...
-cd embed
-go generate
-cd ..
+rd /s /q edition\static\onboard
+mkdir edition\static\onboard
+robocopy /e /NFL /NDL /NJH domain\onboard\*.json  edition\static\onboard
 
 echo "Compiling Windows"
 set GOOS=windows
