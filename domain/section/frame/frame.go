@@ -54,5 +54,6 @@ func (*Provider) Refresh(ctx *provider.Context, config, data string) string {
 }
 
 func embed(config, data string) string {
+	// return bluemonday.UGCPolicy().Sanitize(data)
 	return data
 }

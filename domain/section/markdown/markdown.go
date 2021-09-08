@@ -47,6 +47,7 @@ func (*Provider) Command(ctx *provider.Context, w http.ResponseWriter, r *http.R
 }
 
 // Render converts markdown data into HTML suitable for browser rendering.
+// See also https://github.com/yuin/goldmark
 func (*Provider) Render(ctx *provider.Context, config, data string) string {
 	unsafe := blackfriday.Run([]byte(data))
 

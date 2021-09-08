@@ -43,6 +43,7 @@ import (
 	"github.com/documize/community/model/space"
 	"github.com/documize/community/model/user"
 	"github.com/documize/community/model/workflow"
+	"github.com/microcosm-cc/bluemonday"
 )
 
 // Handler contains the runtime information such as logging and database.
@@ -269,6 +270,9 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+
+	d.Name = bluemonday.StrictPolicy().Sanitize(d.Name)
+	d.Excerpt = bluemonday.StrictPolicy().Sanitize(d.Excerpt)
 
 	err = h.Store.Document.Update(ctx, d)
 	if err != nil {

@@ -7,48 +7,51 @@ let isDevelopment = EmberApp.env() === 'development';
 
 module.exports = function(defaults) {
 	let app = new EmberApp(defaults, {
+		fingerprint: {
+				enabled: true,
+				generateAssetMap: true,
+				fingerprintAssetMap: false,
+				prepend: '/',
+				extensions: ['js', 'css'],
+				exclude: ['tinymce/**', 'codemirror/**', 'prism/**', 'pdfjs/**']
+		},
+
+		minifyCSS: {
+			enabled: !isDevelopment,
+			options: {
+				exclude: ['tinymce/**', 'codemirror/**', 'prism/**', 'pdfjs/**']
+			}
+		},
+
+		outputPaths: {
+			app: {
+				css: {
+					'app': '/assets/documize.css',
+					'themes/conference': '/assets/theme-conference.css',
+					'themes/forest': '/assets/theme-forest.css',
+					'themes/brave': '/assets/theme-brave.css',
+					'themes/harvest': '/assets/theme-harvest.css',
+					'themes/sunflower': '/assets/theme-sunflower.css',
+					'themes/silver': '/assets/theme-silver.css',
+				}
+			}
+		},
+
 		'ember-cli-terser': {
 			enabled: !isDevelopment,
 			exclude: ['tinymce/**', 'codemirror/**', 'prism/**', 'pdfjs/**'],
 
 			hiddenSourceMap: true,
 
-			fingerprint: {
-				enabled: true,
-				generateAssetMap: true,
-				fingerprintAssetMap: true,
-				prepend: '/',
-				extensions: ['js', 'css'],
-				exclude: ['tinymce/**', 'codemirror/**', 'prism/**', 'pdfjs/**']
+			terser: {
 			},
 
-			minifyJS: {
-				enabled: !isDevelopment,
-				options: {
-					exclude: ['tinymce/**', 'codemirror/**', 'prism/**', 'pdfjs/**']
-				}
-			},
-
-			minifyCSS: {
-				enabled: !isDevelopment,
-				options: {
-					exclude: ['tinymce/**', 'codemirror/**', 'prism/**', 'pdfjs/**']
-				}
-			},
-
-			outputPaths: {
-				app: {
-					css: {
-						'app': '/assets/documize.css',
-						'themes/conference': '/assets/theme-conference.css',
-						'themes/forest': '/assets/theme-forest.css',
-						'themes/brave': '/assets/theme-brave.css',
-						'themes/harvest': '/assets/theme-harvest.css',
-						'themes/sunflower': '/assets/theme-sunflower.css',
-						'themes/silver': '/assets/theme-silver.css',
-					}
-				}
-			}
+			// minifyJS: {
+			// 	enabled: !isDevelopment,
+			// 	options: {
+			// 		exclude: ['tinymce/**', 'codemirror/**', 'prism/**', 'pdfjs/**']
+			// 	}
+			// },
 		},
 	});
 

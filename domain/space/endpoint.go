@@ -44,6 +44,7 @@ import (
 	"github.com/documize/community/model/space"
 	"github.com/documize/community/model/user"
 	wf "github.com/documize/community/model/workflow"
+	"github.com/microcosm-cc/bluemonday"
 	uuid "github.com/nu7hatch/gouuid"
 )
 
@@ -99,7 +100,8 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 
 	var sp space.Space
 	sp.Name = model.Name
-	sp.Description = model.Description
+	sp.Description = bluemonday.StrictPolicy().Sanitize(model.Description)
+
 	sp.Icon = model.Icon
 	sp.LabelID = model.LabelID
 	sp.RefID = uniqueid.Generate()
