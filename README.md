@@ -13,9 +13,9 @@ All you need to provide is PostgreSQL, Microsoft SQL Server or any MySQL variant
 
 ## Latest Release
 
-[Community Edition: v3.9.0](https://github.com/documize/community/releases)
+[Community Edition: v4.0.0](https://github.com/documize/community/releases)
 
-[Enterprise Edition: v3.9.0](https://www.documize.com/downloads)
+[Enterprise Edition: v4.0.0](https://www.documize.com/downloads)
 
 ## OS Support
 
