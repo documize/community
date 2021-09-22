@@ -3,4 +3,4 @@
 bin
 .idea
 selfcert
-gui
+gui/dist-prod
