@@ -41,22 +41,7 @@ const (
 	CommunityEdition Edition = "Community"
 
 	// EnterpriseEdition is proprietary closed-source product.
-	EnterpriseEdition Edition = "Enterprise"
-
-	// PackageEssentials provides core capabilities.
-	PackageEssentials Package = "Essentials"
-
-	// PackageAdvanced provides analytics, reporting,
-	// content lifecycle, content verisoning, and audit logs.
-	PackageAdvanced Package = "Advanced"
-
-	// PackagePremium provides actions, feedback capture,
-	// approvals workflow, secure external sharing.
-	PackagePremium Package = "Premium"
-
-	// PackageDataCenter provides multi-tenanting
-	// and a bunch of professional services.
-	PackageDataCenter Package = "Data Center"
+	EnterpriseEdition Edition = "Community+"
 
 	// PlanCloud represents *.documize.com hosting.
 	PlanCloud Plan = "Cloud"

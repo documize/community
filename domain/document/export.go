@@ -83,7 +83,7 @@ func BuildExport(ctx domain.RequestContext, s store.Store, spec exportSpec) (htm
 	export.WriteString(`<meta charset="utf-8">`)
 	export.WriteString(`<meta http-equiv="X-UA-Compatible" content="IE=edge">`)
 	export.WriteString("<title>")
-	export.WriteString("Documize Export")
+	export.WriteString("Documize Community Export")
 	export.WriteString("</title>")
 	export.WriteString("<style>")
 	export.WriteString(baseCSS)
@@ -96,7 +96,7 @@ func BuildExport(ctx domain.RequestContext, s store.Store, spec exportSpec) (htm
 
 	// Show title and timestamp.
 	generated := time.Now().UTC().Format(time.ANSIC)
-	export.WriteString(fmt.Sprintf("<h1 class='export-h1'>%s</h1>", "Documize Export"))
+	export.WriteString(fmt.Sprintf("<h1 class='export-h1'>%s</h1>", "Documize Community Export"))
 	export.WriteString(fmt.Sprintf("<div class='export-stamp'>%v</div>", generated))
 
 	// Spit out table of contents.
@@ -419,7 +419,7 @@ const (
         font-size: 1.1rem;
         font-weight; normal;
     }
-	
+
 	.section-heading > .page-header {
 		margin: 2rem 0 2rem 0 !important;
 	}

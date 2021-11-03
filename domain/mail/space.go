@@ -81,7 +81,7 @@ func (m *Mailer) ShareSpaceNewUser(recipient, inviterName, inviterEmail, url, sp
 	}
 
 	em := smtp.EmailMessage{}
-	em.Subject = fmt.Sprintf("%s has shared %s with you on Documize", inviterName, space)
+	em.Subject = fmt.Sprintf("%s has shared %s with you on Documize Community", inviterName, space)
 	em.ToEmail = recipient
 	em.ToName = recipient
 	em.ReplyTo = inviterEmail

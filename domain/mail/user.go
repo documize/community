@@ -28,7 +28,7 @@ func (m *Mailer) InviteNewUser(recipient, inviterName, inviterEmail, url, userna
 	}
 
 	em := smtp.EmailMessage{}
-	em.Subject = fmt.Sprintf("%s has invited you to Documize", inviterName)
+	em.Subject = fmt.Sprintf("%s has invited you to Documize Community", inviterName)
 	em.ToEmail = recipient
 	em.ToName = recipient
 	em.ReplyTo = inviterEmail
@@ -81,7 +81,7 @@ func (m *Mailer) InviteExistingUser(recipient, inviterName, inviterEmail, url st
 	}
 
 	em := smtp.EmailMessage{}
-	em.Subject = fmt.Sprintf("%s has invited you to their Documize account", inviterName)
+	em.Subject = fmt.Sprintf("%s has invited you to their Documize Community account", inviterName)
 	em.ToEmail = recipient
 	em.ToName = recipient
 	em.ReplyTo = inviterEmail
@@ -125,7 +125,7 @@ func (m *Mailer) PasswordReset(recipient, url string) {
 	m.Initialize()
 
 	em := smtp.EmailMessage{}
-	em.Subject = "Documize password reset request"
+	em.Subject = "Documize Community password reset request"
 	em.ToEmail = recipient
 	em.ToName = recipient
 

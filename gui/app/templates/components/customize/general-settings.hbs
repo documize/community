@@ -2,14 +2,14 @@
 	<div class="form-group">
 		<label for="siteTitle">Site Name</label>
 		{{focus-input id="siteTitle" type="text" value=model.general.title class=(if hasTitleInputError "form-control is-invalid" "form-control")}}
-		<small class="form-text text-muted">Provide short title for this Documize instance</small>
+		<small class="form-text text-muted">Provide short title for this Documize Community instance</small>
 	</div>
 	<div class="form-group">
 		<label id="siteMessage">Site Message</label>
 		<div id="editor-message" class="wysiwyg wysiwyg-editor">
 			{{{model.general.message}}}
 		</div>
-		<small class="form-text text-muted">Provide short message explaining this Documize instance</small>
+		<small class="form-text text-muted">Provide short message explaining this Documize Community instance</small>
 	</div>
 	<div class="form-group">
 		<label>Site Theme</label>

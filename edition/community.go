@@ -39,14 +39,14 @@ func main() {
 	// Specify the product edition.
 	rt.Product = domain.Product{}
 	rt.Product.Major = "4"
-	rt.Product.Minor = "0"
+	rt.Product.Minor = "1"
 	rt.Product.Patch = "0"
-	rt.Product.Revision = "210907143905"
+	rt.Product.Revision = "211103113945"
 	rt.Product.Version = fmt.Sprintf("%s.%s.%s", rt.Product.Major, rt.Product.Minor, rt.Product.Patch)
 	rt.Product.Edition = domain.CommunityEdition
-	rt.Product.Title = fmt.Sprintf("%s Edition", rt.Product.Edition)
+	rt.Product.Title = "Community"
 
-	rt.Log.Info(fmt.Sprintf("Product: %s version %s (build %s)", rt.Product.Title, rt.Product.Version, rt.Product.Revision))
+	rt.Log.Info(fmt.Sprintf("Documize %s v%s (build %s)", rt.Product.Title, rt.Product.Version, rt.Product.Revision))
 
 	// Locate static assets.
 	rt.Assets = embeddedFiles

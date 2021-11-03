@@ -1,32 +1,13 @@
 <div class="product-update">
 	<div class="update-status">
 		{{#if appMeta.updateAvailable }}
-			<a  class="title" href="https://www.documize.com/downloads">Documize product update is available :)</a>
+			<a  class="title" href="https://www.documize.com/community/downloads">Product update is available :)</a>
 			<p class="instructions">
-				To upgrade, replace existing binary and restart Documize. Migrate between Community and Enterprise editions seamlessly.
+				To upgrade, replace existing binary and restart Documize Community.
 			</p>
-		{{else}}
-			<div class="title">Product Downloads</div>
+			<Ui::UiSpacer @size="400" />
 		{{/if}}
-		<div class="links">
-			<p>
-				<span class="edition-name">Community Edition {{appMeta.communityLatest}}</span>&nbsp;&nbsp;&nbsp;
-				<a class="link" href="https://documize.s3-eu-west-1.amazonaws.com/downloads/documize-community-windows-amd64.exe">Windows</a>&nbsp;&middot;
-				<a class="link" href="https://documize.s3-eu-west-1.amazonaws.com/downloads/documize-community-linux-amd64">Linux</a>&nbsp;&middot;
-				<a class="link" href="https://documize.s3-eu-west-1.amazonaws.com/downloads/documize-community-darwin-amd64">macOS</a>&nbsp;
-			</p>
-			<p>
-				<span class="edition-name">Enterprise Edition {{appMeta.enterpriseLatest}}</span>&nbsp;&nbsp;&nbsp;
-				<a class="link" href="https://documize.s3-eu-west-1.amazonaws.com/downloads/documize-enterprise-windows-amd64.exe">Windows</a>&nbsp;&middot;
-				<a class="link" href="https://documize.s3-eu-west-1.amazonaws.com/downloads/documize-enterprise-linux-amd64">Linux</a>&nbsp;&middot;
-				<a class="link" href="https://documize.s3-eu-west-1.amazonaws.com/downloads/documize-enterprise-darwin-amd64">macOS</a>&nbsp;
-			</p>
-			<small class="color-gray-500 margin-top-20">
-				Documize utilizes {{#link-to "customize.notice" class="color-gray-600"}}third party{{/link-to}} open source components
-			</small>
-		</div>
 	</div>
-	<Ui::UiSpacer @size="400" />
 	<div class="change-log">
 		{{{changelog}}}
 	</div>

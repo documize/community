@@ -160,18 +160,6 @@ let constants = EmberObject.extend({
 		// PackageEssentials provides core capabilities.
 		PackageEssentials:  "Essentials",
 
-		// PackageAdvanced provides analytics, reporting,
-		// content lifecycle, content verisoning, and audit logs.
-		PackageAdvanced: "Advanced",
-
-		// PackagePremium provides actions, feedback capture,
-		// approvals workflow, secure external sharing.
-		PackagePremium: "Premium",
-
-		// PackageDataCenter provides multi-tenanting
-		// and a bunch of professional services.
-		PackageDataCenter: "Data Center",
-
 		// PlanCloud represents *.documize.com hosting.
 		PlanCloud: "Cloud",
 

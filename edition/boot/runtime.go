@@ -62,7 +62,7 @@ func InitRuntime(r *env.Runtime, s *store.Store) bool {
 		storage.SetSQLServerProvider(r, s)
 	default:
 		r.Log.Infof("Unsupported database type: %s", r.Flags.DBType)
-		r.Log.Info("Documize supports the following database types: mysql mariadb percona postgresql sqlserver")
+		r.Log.Info("Documize Community supports the following database types: mysql mariadb percona postgresql sqlserver")
 		os.Exit(1)
 		return false
 	}

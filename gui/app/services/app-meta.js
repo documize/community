@@ -62,7 +62,7 @@ export default Service.extend({
 		if (isInSetupMode) {
 			let edition = document.head.querySelector("[property=edition]");
 			this.setProperties({
-				title: htmlSafe("Documize Setup"),
+				title: htmlSafe("Documize Community Setup"),
 				allowAnonymousAccess: true,
 				setupMode: true,
 				edition: !_.isNull(edition) ? edition : 'Community'

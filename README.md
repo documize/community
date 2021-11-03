@@ -1,21 +1,22 @@
-Documize is an open source modern, lightweight and comprehensive alternative to Confluence and other such solutions.
+Documize Community is an open source modern, lightweight alternative to Confluence and other similar solutions.
 
 - Built for technical and non-technical users
 - Designed to unify both customer-facing and internal documentation
 - Organization through labels, spaces and categories
-- No fee-charging marketplace
 
 It's built with Golang + EmberJS and compiled down to a single executable binary for Linux, Windows and macOS.
 
 All you need to provide is PostgreSQL, Microsoft SQL Server or any MySQL variant.
 
-![Documize](screenshot-1.png "Documize")
+![Documize Community](screenshot-1.png "Documize Community")
 
 ## Latest Release
 
-[Community Edition: v4.0.0](https://github.com/documize/community/releases)
+[Community edition: v4.0.0](https://github.com/documize/community/releases)
 
-[Enterprise Edition: v4.0.0](https://www.documize.com/downloads)
+[Community+ edition: v4.0.0](https://www.documize.com/community/downloads)
+
+The Community+ edition is our enterprise-ready offering with customer support and advanced capabilities.
 
 ## OS Support
 
@@ -36,17 +37,17 @@ For all database types, Full-Text Search support (FTS) is mandatory.
 
 ## Browser Support
 
-- Chrome
 - Firefox
+- Chrome
 - Safari
+- Microsoft Edge (v42+)
 - Brave
 - Vivaldi
 - Opera
-- Microsoft Edge (v42+)
 
 ## Technology Stack
 
-- Go (v1.16.2)
+- Go (v1.17.2)
 - Ember JS (v3.12.0)
 
 ## Authentication Options
@@ -72,6 +73,6 @@ We aim to respond within two working days!
 
 <https://documize.com>
 
-This software (Documize Community Edition) is licensed under GNU AGPL v3 <http://www.gnu.org/licenses/agpl-3.0.en.html>. You can operate outside the AGPL restrictions by purchasing Documize Enterprise Edition and obtaining a commercial license by contacting <sales@documize.com>. Documize® is a registered trade mark of Documize Inc.
+This software (Documize Community Edition) is licensed under GNU AGPL v3 <http://www.gnu.org/licenses/agpl-3.0.en.html>. You can operate outside the AGPL restrictions by purchasing Documize Community+ edition and obtaining a commercial license by contacting <sales@documize.com>. Documize® is a registered trade mark of Documize Inc.
 
 Documize uses other open source components and we acknowledge them in [NOTICES](NOTICES.md)

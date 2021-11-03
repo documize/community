@@ -2,11 +2,6 @@
 	text-align: left;
 
 	> .update-status {
-		padding: 25px;
-		background-color: map-get($yellow-shades, 100);
-		border: 1px solid map-get($yellow-shades, 300);
-		@include border-radius(16px);
-
 		> .title {
 			font-weight: bold;
 			font-size: 1.5rem;
