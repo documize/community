@@ -12,11 +12,23 @@ All you need to provide is PostgreSQL, Microsoft SQL Server or any MySQL variant
 
 ## Latest Release
 
-[Community edition: v4.0.0](https://github.com/documize/community/releases)
+[Community edition: v4.1.0](https://github.com/documize/community/releases)
 
-[Community+ edition: v4.0.0](https://www.documize.com/community/downloads)
+[Community+ edition: v4.1.0](https://www.documize.com/community/downloads)
 
-The Community+ edition is our enterprise-ready offering with customer support and advanced capabilities.
+The Community+ edition is the enterprise-ready offering with advanced capabilities and customer support:
+
+- content approval workflows
+- content organization by label, space and category
+- content version management
+- content lifecycle management
+- content feedback capture
+- content PDF export
+- analytics and reporting
+- activity streams
+- audit logs
+- actions assignments
+- product support
 
 ## OS Support
 
@@ -47,7 +59,7 @@ For all database types, Full-Text Search support (FTS) is mandatory.
 
 ## Technology Stack
 
-- Go (v1.17.2)
+- Go (v1.17.3)
 - Ember JS (v3.12.0)
 
 ## Authentication Options
@@ -63,7 +75,7 @@ When using LDAP/Active Directory, you can enable dual-authentication with email/
 
 ## Product/Technical Support
 
-For both Community and Enterprise editions, please contact our help desk for product help, suggestions and other enquiries.
+For both Community and Community+ editions, please contact our help desk for product help, suggestions and other enquiries.
 
 <support@documize.com>
 
