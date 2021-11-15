@@ -113,7 +113,7 @@ export default Service.extend({
 				let isNewEnterprise = miscUtil.isNewVersion(rv, ev, true);
 
 				if (re === 'Community' && isNewCommunity) self.set('updateAvailable', true);
-				if (re === 'Enterprise' && isNewEnterprise) self.set('updateAvailable', true);
+				if (re === 'Community+' && isNewEnterprise) self.set('updateAvailable', true);
 			});
 
 			return response;

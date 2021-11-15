@@ -22,7 +22,7 @@ export default Controller.extend({
 		this._super(...arguments);
 
 		let version = this.get('appMeta.version');
-		let edition = this.get('appMeta.edition').toLowerCase();
+		let edition = encodeURIComponent(this.get('appMeta.edition').toLowerCase());
 		let self = this;
 		let cacheBuster = + new Date();
 

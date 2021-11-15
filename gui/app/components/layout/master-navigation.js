@@ -50,7 +50,7 @@ export default Component.extend(Modals, {
 		});
 
 		let version = this.get('appMeta.version');
-		let edition = this.get('appMeta.edition').toLowerCase();
+		let edition = encodeURIComponent(this.get('appMeta.edition').toLowerCase());
 
 		let self = this;
 		let cacheBuster = + new Date();

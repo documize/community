@@ -155,7 +155,7 @@ let constants = EmberObject.extend({
 		CommunityEdition: 'Community',
 
 		// EnterpriseEdition is proprietary closed-source product.
-		EnterpriseEdition: 'Enterprise',
+		EnterpriseEdition: 'Community+',
 
 		// PackageEssentials provides core capabilities.
 		PackageEssentials:  "Essentials",
