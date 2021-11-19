@@ -42,18 +42,22 @@ rm -rf edition/static/onboard
 mkdir -p edition/static/onboard
 cp -r domain/onboard/*.json edition/static/onboard
 
-echo "Compiling for Linux..."
-env GOOS=linux GOARCH=amd64 go build -mod=vendor -trimpath -o bin/documize-community-linux-amd64 ./edition/community.go
 echo "Compiling for macOS Intel..."
 env GOOS=darwin GOARCH=amd64 go build -mod=vendor -trimpath -o bin/documize-community-darwin-amd64 ./edition/community.go
 echo "Compiling for macOS ARM..."
 env GOOS=darwin GOARCH=arm64 go build -mod=vendor -trimpath -o bin/documize-community-darwin-arm64 ./edition/community.go
-echo "Compiling for Windows..."
+echo "Compiling for Windows AMD..."
 env GOOS=windows GOARCH=amd64 go build -mod=vendor -trimpath -o bin/documize-community-windows-amd64.exe ./edition/community.go
-echo "Compiling for ARM..."
+echo "Compiling for Linux AMD..."
+env GOOS=linux GOARCH=amd64 go build -mod=vendor -trimpath -o bin/documize-community-linux-amd64 ./edition/community.go
+echo "Compiling for Linux ARM..."
 env GOOS=linux GOARCH=arm go build -mod=vendor -trimpath -o bin/documize-community-linux-arm ./edition/community.go
-echo "Compiling for ARM64..."
+echo "Compiling for Linux ARM64..."
 env GOOS=linux GOARCH=arm64 go build -mod=vendor -trimpath -o bin/documize-community-linux-arm64 ./edition/community.go
+echo "Compiling for FreeBSD ARM64..."
+env GOOS=freebsd GOARCH=arm64 go build -mod=vendor -trimpath -o bin/documize-community-freebsd-arm64 ./edition/community.go
+echo "Compiling for FreeBSD AMD64..."
+env GOOS=freebsd GOARCH=amd64 go build -mod=vendor -trimpath -o bin/documize-community-freebsd-amd64 ./edition/community.go
 
 echo "Finished."
 
