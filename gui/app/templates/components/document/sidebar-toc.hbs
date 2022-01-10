@@ -29,13 +29,11 @@
 					title={{item.page.title}}>
 					<span class="numbering">{{item.page.numbering}}</span>
 					{{#if (or item.userHasChangePending userHasNewPagePending)}}
-						<span class="color-red-600">[*]&nbsp;</span>
-						{{#attach-tooltip showDelay=1000}}Pending changes{{/attach-tooltip}}
+						<span class="color-red-600" title="Pending changes">[*]&nbsp;</span>
 					{{/if}}
 					{{#if (or permissions.documentApprove roles.documentApprove)}}
 						{{#if item.changeAwaitingReview}}
-							<span class="color-green-700">[*]&nbsp;</span>
-							{{#attach-tooltip showDelay=1000}}Awaiting approval{{/attach-tooltip}}
+							<span class="color-green-700" title="Awaiting approval">[*]&nbsp;</span>
 						{{/if}}
 					{{/if}}
 					{{item.page.title}}

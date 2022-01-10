@@ -10,19 +10,13 @@
 						{{#link-to "folder.index" space.id space.slug}}
 							<div class="name">
 								{{#if (eq space.spaceType constants.SpaceType.Public)}}
-									<i class={{concat "dicon " constants.Icon.World}}>
-										{{#attach-tooltip showDelay=1000}}Public space{{/attach-tooltip}}
-									</i>
+									<i class={{concat "dicon " constants.Icon.World}} title="Public space" />
 								{{/if}}
 								{{#if (eq space.spaceType constants.SpaceType.Protected)}}
-									<i class={{concat "dicon " constants.Icon.People}}>
-										{{#attach-tooltip showDelay=1000}}Protected space{{/attach-tooltip}}
-									</i>
+									<i class={{concat "dicon " constants.Icon.People}} title="Protected space" />
 								{{/if}}
 								{{#if (eq space.spaceType constants.SpaceType.Private)}}
-									<i class={{concat "dicon " constants.Icon.Person}}>
-										{{#attach-tooltip showDelay=1000}}Personal space{{/attach-tooltip}}
-									</i>
+									<i class={{concat "dicon " constants.Icon.Person}} title="Personal space" />
 								{{/if}}
 								{{space.name}}
 							</div>

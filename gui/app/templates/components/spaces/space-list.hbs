@@ -33,21 +33,6 @@
                     {{#if (eq viewDensity "1")}}
                         {{#link-to "folder.index" space.id space.slug}}
                             <div class="meta">
-                                {{!-- {{#if (eq space.spaceType constants.SpaceType.Public)}}
-                                    <i class={{concat "dicon " constants.Icon.World}}>
-                                        {{#attach-tooltip showDelay=1000}}Public space{{/attach-tooltip}}
-                                    </i>
-                                {{/if}}
-                                {{#if (eq space.spaceType constants.SpaceType.Protected)}}
-                                    <i class={{concat "dicon " constants.Icon.People}}>
-                                        {{#attach-tooltip showDelay=1000}}Protected space{{/attach-tooltip}}
-                                    </i>
-                                {{/if}}
-                                {{#if (eq space.spaceType constants.SpaceType.Private)}}
-                                    <i class={{concat "dicon " constants.Icon.Person}}>
-                                        {{#attach-tooltip showDelay=1000}}Personal space{{/attach-tooltip}}
-                                    </i>
-                                {{/if}} --}}
                                 {{#if space.labelId}}
                                     {{spaces/space-label labels=labels labelId=space.labelId}}
                                 {{/if}}

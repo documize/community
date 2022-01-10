@@ -16,7 +16,7 @@ All you need to provide is your database -- PostgreSQL, Microsoft SQL Server or 
 
 [Community+ edition: v4.1.1](https://www.documize.com/community/downloads)
 
-The Community+ edition is the enterprise-ready offering with advanced capabilities and customer support:
+The Community+ edition is the "Enterprise" offering with advanced capabilities and customer support:
 
 - content approval workflows
 - content organization by label, space and category
@@ -36,6 +36,8 @@ The Community+ edition is the enterprise-ready offering with advanced capabiliti
 - Windows
 - macOS
 - Raspberry Pi (ARM build)
+
+Support for AMD and ARM 64 bit architectures.
 
 ## Database Support
 
@@ -59,7 +61,7 @@ For all database types, Full-Text Search support (FTS) is mandatory.
 
 ## Technology Stack
 
-- Go (v1.17.3)
+- Go (v1.17.6)
 - Ember JS (v3.12.0)
 
 ## Authentication Options
@@ -83,8 +85,8 @@ We aim to respond within two working days!
 
 ## The Legal Bit
 
-<https://documize.com>
+<https://www.documize.com>
 
-This software (Documize Community Edition) is licensed under GNU AGPL v3 <http://www.gnu.org/licenses/agpl-3.0.en.html>. You can operate outside the AGPL restrictions by purchasing Documize Community+ edition and obtaining a commercial license by contacting <sales@documize.com>. Documize® is a registered trade mark of Documize Inc.
+This software (Documize Community Edition) is licensed under GNU AGPL v3 <http://www.gnu.org/licenses/agpl-3.0.en.html>. You can operate outside the AGPL restrictions by purchasing Documize Community+ edition and obtaining a commercial license by contacting <sales@documize.com>. Documize® is a registered trademark of Documize Inc.
 
 Documize uses other open source components and we acknowledge them in [NOTICES](NOTICES.md)

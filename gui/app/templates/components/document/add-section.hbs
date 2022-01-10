@@ -29,10 +29,6 @@
 							<li class="block-option" {{action "onInsertBlock" block}}>
 								<div class="name">{{block.title}}</div>
 								<div class="desc">{{block.excerpt}}</div>
-								{{#attach-tooltip showDelay=1000}}
-									{{block.excerpt}}<br>
-									Published by {{block.firstname}} {{block.lastname}}, {{time-ago block.created}}
-								{{/attach-tooltip}}
 							</li>
 						{{/each}}
 					</ul>

@@ -3,35 +3,25 @@
 		{{#unless hideNavigation}}
 			<div class="options">
 				{{#link-to "folders" class=(if (eq selectedItem "spaces") "option selected" "option")}}
-					<i class={{concat "dicon " constants.Icon.Grid}}>
-						{{#attach-tooltip showDelay=1000}}Spaces{{/attach-tooltip}}
-					</i>
+					<i class={{concat "dicon " constants.Icon.Grid}} title="Spaces" />
 				{{/link-to}}
 				{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
 					{{#if session.viewDashboard}}
 						{{#link-to "action" class=(if (eq selectedItem "actions") "option selected" "option")}}
-							<i class={{concat "dicon " constants.Icon.ListBullet}}>
-								{{#attach-tooltip showDelay=1000}}Actions{{/attach-tooltip}}
-							</i>
+							<i class={{concat "dicon " constants.Icon.ListBullet}} title="Actions" />
 						{{/link-to}}
 						{{#link-to "activity" class=(if (eq selectedItem "activity") "option selected" "option")}}
-							<i class={{concat "dicon " constants.Icon.Pulse}}>
-								{{#attach-tooltip showDelay=1000}}Activity{{/attach-tooltip}}
-							</i>
+							<i class={{concat "dicon " constants.Icon.Pulse}} title="Activity" />
 						{{/link-to}}
 					{{/if}}
 					{{#if session.viewAnalytics}}
 						{{#link-to "analytics" class=(if (eq selectedItem "analytics") "option selected" "option")}}
-							<i class={{concat "dicon " constants.Icon.BarChart}}>
-								{{#attach-tooltip showDelay=1000}}Reports{{/attach-tooltip}}
-							</i>
+							<i class={{concat "dicon " constants.Icon.BarChart}} title="Reports" />
 						{{/link-to}}
 					{{/if}}
 				{{/if}}
 				{{#link-to "search" class=(if (eq selectedItem "search") "option selected" "option")}}
-					<i class={{concat "dicon " constants.Icon.Search}}>
-						{{#attach-tooltip showDelay=1000}}Search{{/attach-tooltip}}
-					</i>
+					<i class={{concat "dicon " constants.Icon.Search}} title="Search" />
 				{{/link-to}}
 			</div>
 
@@ -39,14 +29,12 @@
 				{{#if session.isAdmin}}
 					{{#unless appMeta.valid}}
 						<div class="option invalid-plan" {{action "onBilling"}}>
-							<i class={{concat "dicon " constants.Icon.Announce}} />
-							{{#attach-tooltip}}Missing activation key{{/attach-tooltip}}
+							<i class={{concat "dicon " constants.Icon.Announce}} title="Missing activation key" />
 						</div>
 					{{/unless}}
 					{{#unless appMeta.configured}}
 						<div class="option invalid-plan" {{action "onConfigured"}}>
-							<i class={{concat "dicon " constants.Icon.Announce}} />
-							{{#attach-tooltip}}Missing mail server settings{{/attach-tooltip}}
+							<i class={{concat "dicon " constants.Icon.Announce}} title="Missing mail server settings" />
 						</div>
 					{{/unless}}
 				{{/if}}

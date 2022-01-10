@@ -4,25 +4,21 @@
 		{{if (eq document.lifecycle constants.Lifecycle.Live) "label-live"}}
 		{{if (eq document.lifecycle constants.Lifecycle.Archived) "label-archived"}}">
 		{{document.lifecycleLabel}}
-		{{#attach-tooltip showDelay=1000}}Lifecycle: Draft &middot; Live &middot; Archived{{/attach-tooltip}}
 	</div>
 
 	{{#if (eq document.protection constants.ProtectionType.None)}}
 		<div class="label-open">
 			OPEN
-			{{#attach-tooltip showDelay=1000}}Change Control: Open &middot; Protected &middot; Locked{{/attach-tooltip}}
 		</div>
 	{{/if}}
 	{{#if (eq document.protection constants.ProtectionType.Review)}}
 		<div class="label-protected">
 			PROTECTED
-			{{#attach-tooltip showDelay=1000}}Change Control: Open &middot; Protected &middot; Locked{{/attach-tooltip}}
 		</div>
 	{{/if}}
 	{{#if (eq document.protection constants.ProtectionType.Lock)}}
 		<div class="label-locked">
 			LOCKED
-			{{#attach-tooltip showDelay=1000}}Change Control: Open &middot; Protected &middot; Locked{{/attach-tooltip}}
 		</div>
 	{{/if}}
 
@@ -39,9 +35,8 @@
 	{{/if}}
 
 	{{#if document.template}}
-			<div class="label-template non-printable">
+		<div class="label-template non-printable" title="This is a template">
 			Template
-			{{#attach-tooltip showDelay=1000}}This is a template{{/attach-tooltip}}
 		</div>
 	{{/if}}
 
@@ -50,16 +45,14 @@
 	<div class="title">CATEGORY / TAG</div>
 	{{#each selectedCategories as |cat|}}
 		<div class="meta-label">
-			<i class="dicon {{constants.Icon.Category}}"/>
+			<i class="dicon {{constants.Icon.Category}}" title="Category" />
 			{{cat.category}}
-			{{#attach-tooltip showDelay=1000}}Category{{/attach-tooltip}}
 		</div>
 	{{/each}}
 	{{#each tagz as |t|}}
 		<div class="meta-label">
-			<i class="dicon {{constants.Icon.Tag}}"/>
+			<i class="dicon {{constants.Icon.Tag}}" title="tag" />
 			{{t}}
-			{{#attach-tooltip showDelay=1000}}Tag{{/attach-tooltip}}
 		</div>
 	{{/each}}
 	{{#if unassigned}}

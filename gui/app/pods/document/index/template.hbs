@@ -27,9 +27,7 @@
 		<div class="sidebar-content">
 			<Layout::Grid::SidebarGoTop />
 			<Layout::Grid::SidebarCustomAction>
-				<i class="dicon {{constants.Icon.Expand}} {{if (gt expandState.length 0) "color-green-500"}}" {{action "onExpandAll"}}>
-					{{#attach-tooltip showDelay=750}}Expand/collapse{{/attach-tooltip}}
-				</i>
+				<i class="dicon {{constants.Icon.Expand}} {{if (gt expandState.length 0) "color-green-500"}}" {{action "onExpandAll"}} title="Expand/collapse" />
 			</Layout::Grid::SidebarCustomAction>
 
 			<Ui::UiSpacer @size="200" />
