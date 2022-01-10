@@ -1,3 +1,5 @@
+/* eslint-disable ember/no-classic-classes */
+/* eslint-disable ember/require-tagless-components */
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
 // This software (Documize Community Edition) is licensed under
@@ -22,6 +24,10 @@ export default Component.extend({
 	icon: '',
 	tooltip: '',
 	selected: false,
+	attributeBindings: ['title'],
+	title: computed('tooltip', function() {
+		return this.tooltip;
+	}),
 
 	calcClass: computed('selected', function() {
 		let c = '';
