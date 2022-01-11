@@ -22,6 +22,8 @@ export default Component.extend({
 	label: '',
 	tooltip: '',
 	selected: false,
+	ariaRole: "button",
+	tabindex: 0,
 
 	calcClass: computed('selected', function() {
 		let c = '';

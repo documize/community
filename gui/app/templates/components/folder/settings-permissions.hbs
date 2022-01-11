@@ -5,7 +5,7 @@
 
 <div class="view-customize">
 	<div class="explain-user-perms">
-		<div class="title" {{action "toggleSpacePerms"}}>
+		<div class="title" {{action "toggleSpacePerms"}} role="button" tabindex="0">
 			Space Permissions Explained
 			{{#if showSpacePermExplain}}
                 <i class="dicon {{constants.Icon.ArrowSmallUp}}"></i>
@@ -24,7 +24,7 @@
 
 		<Ui::UiSpacer @size="200" />
 
-		<div class="title" {{action "toggleDocumentPerms"}}>
+		<div class="title" {{action "toggleDocumentPerms"}} role="button" tabindex="0">
 			Document Permissions Explained
 			{{#if showDocumentPermExplain}}
 				<i class="dicon {{constants.Icon.ArrowSmallUp}}"></i>
@@ -102,8 +102,8 @@
 						<i class="dicon {{constants.Icon.TriangleSmallDown}} cursor-pointer"/>
 						{{#attach-popover class="ember-attacher-popper" hideOn="click clickout" showOn="click" isShown=false}}
 							<div class="menu">
-								<a class="item" href="#" {{action "onBulkPermission" permission true}}>Grant all</a>
-								<a class="item" href="#" {{action "onBulkPermission" permission false}}>Revoke all</a>
+								<a class="item" href="#" {{action "onBulkPermission" permission true}} role="button" tabindex="0">Grant all</a>
+								<a class="item" href="#" {{action "onBulkPermission" permission false}} role="button" tabindex="0">Revoke all</a>
 							</div>
 						{{/attach-popover}}
 						{{#if (eq permission.who "role")}}

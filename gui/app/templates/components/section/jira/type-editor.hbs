@@ -15,7 +15,7 @@
 		{{/unless}}
 	{{/if}}
 	{{#if authenticated}}
-		<form {{action "onPreview"}}>
+		<form {{action "onPreview"}} role="form">
 			<div class="form-group">
 				<label for="jira-jql">Jira Query Language</label>
 				{{focus-input id="jira-jql" type="text" value=config.jql class="form-control" placeholder="e.g. (status = resolved AND project = SysAdmin) OR assignee = bobsmith"}}

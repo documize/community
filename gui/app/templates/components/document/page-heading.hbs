@@ -11,29 +11,29 @@
 		<div class="section-heading no-print" id="page-toolbar-{{ page.id }}">
 			<div class="section-toolbar">
 				{{#if canEdit}}
-					<i class="add-section dicon {{constants.Icon.Plus}}" {{action "onShowSectionWizard" page}} title="Insert section above" />
+					<i class="add-section dicon {{constants.Icon.Plus}}" {{action "onShowSectionWizard" page}} title="Insert section" tabindex="0" role="button" />
 					<div class="gap"/>
-					<i class="dicon {{constants.Icon.Edit}}" {{action "onEdit"}} title="Edit" />
+					<i class="dicon {{constants.Icon.Edit}}" {{action "onEdit"}} title="Edit section" tabindex="0" role="button" />
 					<div class="gap"/>
 				{{/if}}
-				<i class="dicon {{constants.Icon.Settings}}">
+				<i class="dicon {{constants.Icon.Settings}}" title="Actions" aria-haspopup="menu" aria-label="Dropdown menu for section">
 					{{#attach-popover class="ember-attacher-popper" hideOn="clickout click" showOn="click" isShown=false}}
-						<div class="menu">
-							<a class="item" href="#" id="page-copy-link-{{page.id}}" {{action "onCopyLink"}}>Copy link</a>
+						<div class="menu" >
+							<a class="item" href="#" id="page-copy-link-{{page.id}}" {{action "onCopyLink"}} tabindex="0" role="button">Copy link</a>
 							{{#if (or canEdit permissions.documentCopy permissions.documentMove permissions.documentTemplate)}}
 								<div class="divider"></div>
 							{{/if}}
 							{{#if canEdit}}
-								<a class="item" href="#" id={{concat "edit-page-button-" page.id}} {{action "onEdit"}}>Edit</a>
+								<a class="item" href="#" id={{concat "edit-page-button-" page.id}} {{action "onEdit"}} tabindex="0" role="button">Edit</a>
 							{{/if}}
 							{{#if permissions.documentCopy}}
-								<a class="item" href="#" id={{concat "copy-page-button-" page.id}} {{action "onShowCopyModal"}}>Copy</a>
+								<a class="item" href="#" id={{concat "copy-page-button-" page.id}} {{action "onShowCopyModal"}} tabindex="0" role="button">Copy</a>
 							{{/if}}
 							{{#if permissions.documentMove}}
-								<a class="item" href="#" id={{concat "move-page-button-" page.id}} {{action "onShowMoveModal"}}>Move</a>
+								<a class="item" href="#" id={{concat "move-page-button-" page.id}} {{action "onShowMoveModal"}} tabindex="0" role="button">Move</a>
 							{{/if}}
 							{{#if permissions.documentTemplate}}
-								<a class="item" href="#" id={{concat "publish-page-button-" page.id}} {{action "onShowPublishModal"}}>Publish</a>
+								<a class="item" href="#" id={{concat "publish-page-button-" page.id}} {{action "onShowPublishModal"}} tabindex="0" role="button">Publish</a>
 							{{/if}}
 							{{#if permissions.documentDelete}}
 								<div class="divider"></div>

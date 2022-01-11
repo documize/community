@@ -5,19 +5,19 @@
 			{{#ui/ui-toolbar dark=false light=false raised=false large=false bordered=false}}
 				{{#ui/ui-toolbar-icon icon=constants.Icon.Sort color=constants.Color.Gray tooltip="Sort"}}
 					{{#attach-popover class="ember-attacher-popper" hideOn="click" showOn="click" isShown=false placement="bottom-end" as |attacher|}}
-						<i class="dicon {{constants.Icon.Cross}} closer" {{action attacher.hide}}/>
+						<i class="dicon {{constants.Icon.Cross}} closer" {{action attacher.hide}} role="button" tabindex="0" title="Close" aria-label="Close" />
 						<div class="container">
 							<Ui::UiSpacer @size="100" />
 
 							<div class="text-center">
 								<ul class="ui-option-picker ui-option-picker-horiz">
-									<li class="option {{if sortBy.name "selected"}}" {{action "onSetSort" "name"}}>
+									<li class="option {{if sortBy.name "selected"}}" {{action "onSetSort" "name"}} role="button" tabindex="0" aria-label="Sort by name">
 										<div class="text">Name</div>
 									</li>
-									<li class="option {{if sortBy.created "selected"}}" {{action "onSetSort" "created"}}>
+									<li class="option {{if sortBy.created "selected"}}" {{action "onSetSort" "created"}} role="button" tabindex="0" aria-label="Sort by created">
 										<div class="text">Created date</div>
 									</li>
-									<li class="option {{if sortBy.updated "selected"}}" {{action "onSetSort" "updated"}}>
+									<li class="option {{if sortBy.updated "selected"}}" {{action "onSetSort" "updated"}} role="button" tabindex="0" aria-label="Sort by revised">
 										<div class="text">Last updated</div>
 									</li>
 								</ul>
@@ -27,10 +27,10 @@
 
 							<div class="text-center">
 								<ul class="ui-option-picker ui-option-picker-horiz">
-									<li class="option {{if sortBy.asc "selected"}}" {{action "onSetSort" "asc"}}>
+									<li class="option {{if sortBy.asc "selected"}}" {{action "onSetSort" "asc"}} role="button" tabindex="0" aria-label="Sort ascending">
 										<div class="text">Ascending</div>
 									</li>
-									<li class="option {{if sortBy.desc "selected"}}" {{action "onSetSort" "desc"}}>
+									<li class="option {{if sortBy.desc "selected"}}" {{action "onSetSort" "desc"}} role="button" tabindex="0" aria-label="Sort descending">
 										<div class="text">Descending</div>
 									</li>
 								</ul>

@@ -20,7 +20,7 @@
 
     <div class="form-group">
         <label for="new-space-name">Sidebar</label>
-        <select onchange={{action "onSetSidebar" value="target.value"}} class="form-control">
+        <select onchange={{action "onSetSidebar" value="target.value"}} class="form-control" role="button" tabindex="0">
             <option value="none" selected={{is-equal pdfOption.sidebar "none"}}>
                 None
             </option>

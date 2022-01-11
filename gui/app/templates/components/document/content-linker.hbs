@@ -5,13 +5,13 @@
 			<div class="modal-body">
 				<ul class="tabnav-control text-center">
 					{{#if hasSections}}
-						<li class="tab {{if tab1Selected "selected"}}" {{action "onTabSelect" 1}}>Section</li>
+						<li class="tab {{if tab1Selected "selected"}}" {{action "onTabSelect" 1}} role="button" tabindex="0">Section</li>
 					{{/if}}
 					{{#if hasAttachments}}
-						<li class="tab {{if tab2Selected "selected"}}" {{action "onTabSelect" 2}}>Attachment</li>
+						<li class="tab {{if tab2Selected "selected"}}" {{action "onTabSelect" 2}} role="button" tabindex="0">Attachment</li>
 					{{/if}}
-					<li class="tab {{if tab3Selected "selected"}}" {{action "onTabSelect" 3}}>Search</li>
-					<li class="tab {{if tab4Selected "selected"}}" {{action "onTabSelect" 4}}>Network</li>
+					<li class="tab {{if tab3Selected "selected"}}" {{action "onTabSelect" 3}} role="button" tabindex="0">Search</li>
+					<li class="tab {{if tab4Selected "selected"}}" {{action "onTabSelect" 4}} role="button" tabindex="0">Network</li>
 				</ul>
 
 				{{#if showSections}}
@@ -27,13 +27,13 @@
 						<div class="widget-list-picker">
 							<ul class="options">
 								{{#each candidates.attachments as |item|}}
-									<li class="option {{if item.selected "selected"}}" {{action "setSelection" item}}>
+									<li class="option {{if item.selected "selected"}}" {{action "setSelection" item}} role="button" tabindex="0">
 										<div class="text text-truncate">
 											<img class="icon" src="/assets/img/attachments/{{document/file-icon item.context}}">
 											{{item.title}}
 										</div>
 										{{#if item.selected}}
-											<i class="dicon {{constants.Icon.Tick}}" />
+											<i class="dicon {{constants.Icon.Tick}}" aria-selected="true" />
 										{{/if}}
 									</li>
 								{{/each}}
@@ -55,33 +55,33 @@
 						<div class="widget-list-picker">
 							<ul class="options">
 								{{#each matches.documents as |item|}}
-									<li class="option {{if item.selected "selected"}}" {{action "setSelection" item}}>
+									<li class="option {{if item.selected "selected"}}" {{action "setSelection" item}} role="button" tabindex="0">
 										<div class="text text-truncate">
 											{{item.title}}<br>{{item.context}}
 										</div>
 										{{#if item.selected}}
-											<i class="dicon {{constants.Icon.Tick}}" />
+											<i class="dicon {{constants.Icon.Tick}}" aria-selected="true" />
 										{{/if}}
 									</li>
 								{{/each}}
 								{{#each matches.pages as |item|}}
-									<li class="option {{if item.selected "selected"}}" {{action "setSelection" item}}>
+									<li class="option {{if item.selected "selected"}}" {{action "setSelection" item}} role="button" tabindex="0">
 										<div class="text text-truncate">
 											{{item.title}}<br>{{item.context}}
 										</div>
 										{{#if item.selected}}
-											<i class="dicon {{constants.Icon.Tick}}" />
+											<i class="dicon {{constants.Icon.Tick}}" aria-selected="true" />
 										{{/if}}
 									</li>
 								{{/each}}
 								{{#each matches.attachments as |item|}}
-									<li class="option {{if item.selected "selected"}}" {{action "setSelection" item}}>
+									<li class="option {{if item.selected "selected"}}" {{action "setSelection" item}} role="button" tabindex="0">
 										<div class="text text-truncate">
 											<img class="icon" src="/assets/img/attachments/{{document/file-icon item.context}}">
 											{{item.title}}
 										</div>
 										{{#if item.selected}}
-											<i class="dicon {{constants.Icon.Tick}}" />
+											<i class="dicon {{constants.Icon.Tick}}" aria-selected="true" />
 										{{/if}}
 									</li>
 								{{/each}}

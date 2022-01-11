@@ -2,39 +2,39 @@
 	<div class="section">
 		<div class="title">filter</div>
 		<div class="list">
-			<div class="item {{if (eq selectedFilter "space") "selected"}}" {{action "onDocumentFilter" "space" space.id}}>
+			<div class="item {{if (eq selectedFilter "space") "selected"}}" {{action "onDocumentFilter" "space" space.id}} role="button" tabindex="0">
 				<i class={{concat "dicon " constants.Icon.Filter}} />
 				<div class="name">All ({{documents.length}})</div>
 			</div>
 			{{#if hasCategories}}
 				{{#if (gt rootDocCount 0)}}
-					<div class="item {{if (eq selectedFilter "uncategorized") "selected"}}" {{action "onDocumentFilter" "uncategorized" space.id}}>
+					<div class="item {{if (eq selectedFilter "uncategorized") "selected"}}" {{action "onDocumentFilter" "uncategorized" space.id}} role="button" tabindex="0">
 						<i class={{concat "dicon " constants.Icon.Filter}} />
 						<div class="name">Uncategorized ({{rootDocCount}})</div>
 					</div>
 				{{/if}}
 			{{/if}}
 			{{#if permissions.documentTemplate}}
-				<div class="item {{if (eq selectedFilter "template") "selected"}}" {{action "onDocumentFilter" "template" space.id}}>
+				<div class="item {{if (eq selectedFilter "template") "selected"}}" {{action "onDocumentFilter" "template" space.id}} role="button" tabindex="0">
 					<i class={{concat "dicon " constants.Icon.Filter}} />
 					<div class="name">Templates ({{templates.length}})</div>
 				</div>
 			{{/if}}
 			{{#if permissions.documentLifecycle}}
-				<div class="item {{if (eq selectedFilter "draft") "selected"}}" {{action "onDocumentFilter" "draft" space.id}}>
+				<div class="item {{if (eq selectedFilter "draft") "selected"}}" {{action "onDocumentFilter" "draft" space.id}} role="button" tabindex="0">
 					<i class={{concat "dicon " constants.Icon.Filter}} />
 					<div class="name">Drafts ({{documentsDraft.length}})</div>
 				</div>
-				<div class="item {{if (eq selectedFilter "live") "selected"}}" {{action "onDocumentFilter" "live" space.id}}>
+				<div class="item {{if (eq selectedFilter "live") "selected"}}" {{action "onDocumentFilter" "live" space.id}} role="button" tabindex="0">
 					<i class={{concat "dicon " constants.Icon.Filter}} />
 					<div class="name">Live ({{documentsLive.length}})</div>
 				</div>
 			{{/if}}
-			<div class="item {{if (eq selectedFilter "add") "selected"}}" {{action "onDocumentFilter" "add" space.id}}>
+			<div class="item {{if (eq selectedFilter "add") "selected"}}" {{action "onDocumentFilter" "add" space.id}} role="button" tabindex="0">
 				<i class={{concat "dicon " constants.Icon.Filter}} />
 				<div class="name">Added recently ({{recentAdd.length}})</div>
 			</div>
-			<div class="item {{if (eq selectedFilter "update") "selected"}}" {{action "onDocumentFilter" "update" space.id}}>
+			<div class="item {{if (eq selectedFilter "update") "selected"}}" {{action "onDocumentFilter" "update" space.id}} role="button" tabindex="0">
 				<i class={{concat "dicon " constants.Icon.Filter}} />
 				<div class="name">Updated recently ({{recentUpdate.length}})</div>
 			</div>
@@ -48,7 +48,7 @@
 		<div class="list">
 			{{#if categories}}
 				{{#each categories as |cat|}}
-					<div class="item {{if cat.selected "selected"}}" {{action "onDocumentFilter" "category" cat.id}}>
+					<div class="item {{if cat.selected "selected"}}" {{action "onDocumentFilter" "category" cat.id}} role="button" tabindex="0">
 						<i class={{concat "dicon " constants.Icon.Category}} />
 						<div class="name">{{cat.category}} ({{cat.docCount}})</div>
 					</div>

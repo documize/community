@@ -3,7 +3,7 @@
 	desc="Set space visibility, icon and label"
 	icon=constants.Icon.Settings}}
 
-<form>
+<form role="form">
 	<div class="form-group">
 		<label>Name</label>
 		{{focus-input id="space-name" type="text" value=spaceName class=(if hasNameError "form-control is-invalid" "form-control") placeholder="Space name" autocomplete="off"}}
@@ -26,7 +26,7 @@
 		<div class="ui-icon-picker">
 			<ul class="list">
 				{{#each iconList as |icon|}}
-					<li class="item {{if (eq spaceIcon icon) "selected"}}" {{action "onSetIcon" icon}}>
+					<li class="item {{if (eq spaceIcon icon) "selected"}}" {{action "onSetIcon" icon}} role="button" tabindex="0">
 						{{ui/ui-icon-meta icon=icon}}
 					</li>
 				{{/each}}
@@ -37,9 +37,9 @@
 	<div class="form-group">
 		<label>Label</label>
 		<ul class="space-label-picker">
-			<li class="label none {{if (eq spaceLabel "") "selected"}}" {{action "onSetLabel" ""}}>None</li>
+			<li class="label none {{if (eq spaceLabel "") "selected"}}" {{action "onSetLabel" ""}} role="button" tabindex="0">None</li>
 			{{#each labels as |label|}}
-				<li class="label {{if (eq spaceLabel label.id) "selected"}}"
+				<li class="label {{if (eq spaceLabel label.id) "selected"}}" role="button" tabindex="0"
 					style={{label.bgColor}}
 					{{action "onSetLabel" label.id}} title={{label.name}}>
 					{{label.name}}

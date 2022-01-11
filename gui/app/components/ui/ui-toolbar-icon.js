@@ -25,6 +25,8 @@ export default Component.extend({
 	tooltip: '',
 	selected: false,
 	attributeBindings: ['title'],
+	tabindex: 0,
+	ariaRole: "button",
 	title: computed('tooltip', function() {
 		return this.tooltip;
 	}),

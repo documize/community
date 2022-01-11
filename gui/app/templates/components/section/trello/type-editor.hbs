@@ -20,7 +20,7 @@
 					<div class="section-trello-board" style= {{boardStyle}}>
 						<div class="section-trello-board-title">{{config.board.name}}</div>
 						{{#each config.lists as |list|}}
-							<div class="section-trello-list" {{action "onListCheckbox" list.id}}>
+							<div class="section-trello-list" {{action "onListCheckbox" list.id}} role="button" tabindex="0">
 								{{#if list.included}}
 									<i class="section-trello-list-checkbox dicon {{constants.Icon.CheckboxChecked}}" />
 								{{else}}

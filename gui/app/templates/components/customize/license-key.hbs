@@ -31,7 +31,7 @@
 	{{/if}}
 	<Ui::UiSpacer @size="400" />
 
-	<form>
+	<form role="form">
 		<div class="form-group">
 			<label for="sub-id">Customer ID</label>
 			{{input id="sub-id" type="text" value=subscription.id class="form-control" readonly=true}}
@@ -117,7 +117,7 @@
 		<div class="modal-content">
 			<div class="modal-header">Request Account Closure</div>
 			<div class="modal-body">
-                <form {{action "onEditComment" on="submit"}}>
+                <form {{action "onEditComment" on="submit"}} role="form">
                     <div class="form-group">
                         <label for="the-comment">Comment</label>
                         {{focus-textarea id="close-comment" class="form-control" rows="5" value=comment}}

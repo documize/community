@@ -91,17 +91,17 @@
 						{{#if user.me}}
 							<i class="user-checkbox dicon {{constants.Icon.NotAllowed}}" />
 						{{else if user.selected}}
-							<i class="user-checkbox dicon {{constants.Icon.CheckboxChecked}}" {{action "toggleSelect" user}} />
+							<i class="user-checkbox dicon {{constants.Icon.CheckboxChecked}}" {{action "toggleSelect" user}} role="button" tabindex="0" />
 						{{else}}
-							<i class="user-checkbox dicon {{constants.Icon.Checkbox}}" {{action "toggleSelect" user}} />
+							<i class="user-checkbox dicon {{constants.Icon.Checkbox}}" {{action "toggleSelect" user}} role="button" tabindex="0" />
 						{{/if}}
 					</td>
 					<td class="{{unless user.active "inactive-user"}} {{if user.admin "admin-user"}}">
-						<div class="name" {{action "onShowEdit" user.id}}>
+						<div class="name" {{action "onShowEdit" user.id}} role="button" tabindex="0">
 							{{user.fullname}}
 							<div class="email">{{user.email}}</div>
 						</div>
-						<div class="groups" {{action "onShowGroupsModal" user.id}}>
+						<div class="groups" {{action "onShowGroupsModal" user.id}} role="button" tabindex="0">
 							{{#each user.groups as |group|}}
 								<span class="group">
 									{{group.name}}{{#if (not-eq group user.groups.lastObject)}}, {{/if}}
@@ -113,41 +113,41 @@
 					</td>
 					<td class="no-width text-center align-middle">
 						{{#if user.editor}}
-							<i class="user-checkbox dicon {{constants.Icon.CheckboxChecked}}" {{action "toggleEditor" user.id}} />
+							<i class="user-checkbox dicon {{constants.Icon.CheckboxChecked}}" {{action "toggleEditor" user.id}} role="button" tabindex="0" />
 						{{else}}
-							<i class="user-checkbox dicon {{constants.Icon.Checkbox}}" {{action "toggleEditor" user.id}} />
+							<i class="user-checkbox dicon {{constants.Icon.Checkbox}}" {{action "toggleEditor" user.id}} role="button" tabindex="0" />
 						{{/if}}
 					</td>
 					<td class="no-width text-center align-middle">
 						{{#if user.viewUsers}}
-							<i class="user-checkbox dicon {{constants.Icon.CheckboxChecked}}" {{action "toggleUsers" user.id}} />
+							<i class="user-checkbox dicon {{constants.Icon.CheckboxChecked}}" {{action "toggleUsers" user.id}} role="button" tabindex="0" />
 						{{else}}
-							<i class="user-checkbox dicon {{constants.Icon.Checkbox}}" {{action "toggleUsers" user.id}} />
+							<i class="user-checkbox dicon {{constants.Icon.Checkbox}}" {{action "toggleUsers" user.id}} role="button" tabindex="0" />
 						{{/if}}
 					</td>
 					<td class="no-width text-center align-middle">
 						{{#if user.analytics}}
-							<i class="user-checkbox dicon {{constants.Icon.CheckboxChecked}}" {{action "toggleAnalytics" user.id}} />
+							<i class="user-checkbox dicon {{constants.Icon.CheckboxChecked}}" {{action "toggleAnalytics" user.id}} role="button" tabindex="0" />
 						{{else}}
-							<i class="user-checkbox dicon {{constants.Icon.Checkbox}}" {{action "toggleAnalytics" user.id}} />
+							<i class="user-checkbox dicon {{constants.Icon.Checkbox}}" {{action "toggleAnalytics" user.id}} role="button" tabindex="0" />
 						{{/if}}
 					</td>
 					<td class="no-width text-center align-middle">
 						{{#if user.me}}
 							<i class="user-checkbox dicon {{constants.Icon.NotAllowed}}" />
 						{{else if user.admin}}
-							<i class="user-checkbox dicon {{constants.Icon.CheckboxChecked}}" {{action "toggleAdmin" user.id}} />
+							<i class="user-checkbox dicon {{constants.Icon.CheckboxChecked}}" {{action "toggleAdmin" user.id}} role="button" tabindex="0" />
 						{{else}}
-							<i class="user-checkbox dicon {{constants.Icon.Checkbox}}" {{action "toggleAdmin" user.id}} />
+							<i class="user-checkbox dicon {{constants.Icon.Checkbox}}" {{action "toggleAdmin" user.id}} role="button" tabindex="0" />
 						{{/if}}
 					</td>
 					<td class="no-width text-center align-middle">
 						{{#if user.me}}
 							<i class="user-checkbox dicon {{constants.Icon.NotAllowed}}" />
 						{{else if user.active}}
-							<i class="user-checkbox dicon {{constants.Icon.CheckboxChecked}}" {{action "toggleActive" user.id}} />
+							<i class="user-checkbox dicon {{constants.Icon.CheckboxChecked}}" {{action "toggleActive" user.id}} role="button" tabindex="0" />
 						{{else}}
-							<i class="user-checkbox dicon {{constants.Icon.Checkbox}}" {{action "toggleActive" user.id}} />
+							<i class="user-checkbox dicon {{constants.Icon.Checkbox}}" {{action "toggleActive" user.id}} role="button" tabindex="0" />
 						{{/if}}
 					</td>
 					<td class="no-width text-center align-middle">
@@ -174,7 +174,7 @@
 		<div class="modal-content">
 			<div class="modal-header">User {{editUser.firstname}} {{editUser.lastname}}</div>
 			<div class="modal-body">
-				<form>
+				<form role="form">
 					<div class="form-group">
 						<label for="edit-firstname">Firstname</label>
 						{{input id="edit-firstname" class="form-control" type="text" value=editUser.firstname}}

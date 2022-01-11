@@ -2,16 +2,16 @@
 {{#if canEdit}}
 	<div class="document-sidebar-toc">
 		<div class="controls {{if state.actionablePage "current-page"}}">
-			<div id="toc-up-button" class="arrow {{if state.upDisabled "disabled"}}" {{action "pageUp"}}>
+			<div id="toc-up-button" class="arrow {{if state.upDisabled "disabled"}}" {{action "pageUp"}} role="button" tabindex="0" aria-label="Up">
 				<i class="dicon {{constants.Icon.ArrowSmallUp}}" />
 			</div>
-			<div id="toc-down-button" class="arrow {{if state.downDisabled "disabled"}}" {{action "pageDown"}}>
+			<div id="toc-down-button" class="arrow {{if state.downDisabled "disabled"}}" {{action "pageDown"}} role="button" tabindex="0" aria-label="Down">
 				<i class="dicon {{constants.Icon.ArrowSmallDown}}" />
 			</div>
-			<div id="toc-outdent-button" class="arrow {{if state.outdentDisabled "disabled"}}" {{action "pageOutdent"}}>
+			<div id="toc-outdent-button" class="arrow {{if state.outdentDisabled "disabled"}}" {{action "pageOutdent"}} role="button" tabindex="0" aria-label="Outdent">
 				<i class="dicon {{constants.Icon.ArrowSmallLeft}}" />
 			</div>
-			<div id="toc-indent-button" class="arrow {{if state.indentDisabled "disabled"}}" {{action "pageIndent"}}>
+			<div id="toc-indent-button" class="arrow {{if state.indentDisabled "disabled"}}" {{action "pageIndent"}} role="button" tabindex="0" aria-label="Indent">
 				<i class="dicon {{constants.Icon.ArrowSmallRight}}" />
 			</div>
 		</div>
@@ -24,7 +24,7 @@
 	<ul class="index-list">
 		{{#each pages key="id" as |item|}}
 			<li class="item">
-				<a id="index-{{item.page.id}}" {{action "onGotoPage" item.page.id}}
+				<a id="index-{{item.page.id}}" {{action "onGotoPage" item.page.id}}  role="button" tabindex="0"
 					class="link toc-index-item {{item.page.tocIndentCss}} {{if (eq item.page.id state.pageId) "selected"}}"
 					title={{item.page.title}}>
 					<span class="numbering">{{item.page.numbering}}</span>

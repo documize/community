@@ -27,6 +27,8 @@ export default Component.extend({
 	stretch: false,
 	uppercase: true,
 	iconClass: '',
+	ariaRole: "button",
+	tabindex: 0,
 	hasIcon: computed('iconClass', function() {
 		return this.iconClass.trim() != '';
 	}),

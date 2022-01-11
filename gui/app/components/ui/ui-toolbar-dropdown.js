@@ -19,6 +19,8 @@ export default Component.extend({
 	color: '',
 	arrow: true,
 	iconClass: '',
+	ariaRole: "button",
+	tabindex: 0,
 
 	calcClass: computed(function() {
 		// Prepare icon class name

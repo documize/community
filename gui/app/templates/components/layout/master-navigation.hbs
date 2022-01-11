@@ -3,25 +3,25 @@
 		{{#unless hideNavigation}}
 			<div class="options">
 				{{#link-to "folders" class=(if (eq selectedItem "spaces") "option selected" "option")}}
-					<i class={{concat "dicon " constants.Icon.Grid}} title="Spaces" />
+					<i class={{concat "dicon " constants.Icon.Grid}} title="Spaces" tabindex="0" role="button" />
 				{{/link-to}}
 				{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
 					{{#if session.viewDashboard}}
 						{{#link-to "action" class=(if (eq selectedItem "actions") "option selected" "option")}}
-							<i class={{concat "dicon " constants.Icon.ListBullet}} title="Actions" />
+							<i class={{concat "dicon " constants.Icon.ListBullet}} title="Actions" tabindex="0" role="button" />
 						{{/link-to}}
 						{{#link-to "activity" class=(if (eq selectedItem "activity") "option selected" "option")}}
-							<i class={{concat "dicon " constants.Icon.Pulse}} title="Activity" />
+							<i class={{concat "dicon " constants.Icon.Pulse}} title="Activity" tabindex="0" role="button" />
 						{{/link-to}}
 					{{/if}}
 					{{#if session.viewAnalytics}}
 						{{#link-to "analytics" class=(if (eq selectedItem "analytics") "option selected" "option")}}
-							<i class={{concat "dicon " constants.Icon.BarChart}} title="Reports" />
+							<i class={{concat "dicon " constants.Icon.BarChart}} title="Reports" tabindex="0" role="button" />
 						{{/link-to}}
 					{{/if}}
 				{{/if}}
 				{{#link-to "search" class=(if (eq selectedItem "search") "option selected" "option")}}
-					<i class={{concat "dicon " constants.Icon.Search}} title="Search" />
+					<i class={{concat "dicon " constants.Icon.Search}} title="Search" role="search" tabindex="0" />
 				{{/link-to}}
 			</div>
 
@@ -29,31 +29,31 @@
 				{{#if session.isAdmin}}
 					{{#unless appMeta.valid}}
 						<div class="option invalid-plan" {{action "onBilling"}}>
-							<i class={{concat "dicon " constants.Icon.Announce}} title="Missing activation key" />
+							<i class={{concat "dicon " constants.Icon.Announce}} title="Missing activation key" tabindex="0" role="button" />
 						</div>
 					{{/unless}}
 					{{#unless appMeta.configured}}
 						<div class="option invalid-plan" {{action "onConfigured"}}>
-							<i class={{concat "dicon " constants.Icon.Announce}} title="Missing mail server settings" />
+							<i class={{concat "dicon " constants.Icon.Announce}} title="Missing mail server settings" tabindex="0" role="button" />
 						</div>
 					{{/unless}}
 				{{/if}}
 				{{#if session.authenticated}}
 					{{#if hasPins}}
 						<div class="option" id="user-pins-button">
-							<i class={{concat "dicon " constants.Icon.BookmarkSolid}}></i>
+							<i class={{concat "dicon " constants.Icon.BookmarkSolid}} aria-haspopup="menu" tabindex="0" role="button" title="Bookmarked content"></i>
 							{{#attach-popover class="ember-attacher-popper" hideOn="clickout click" showOn="click" isShown=false}}
 								<div class="menu">
 									{{#if hasSpacePins}}
 										<li class="item header">Spaces</li>
 										{{#each spacePins as |pin|}}
-											<a class="item" href="#" {{action "jumpToPin" pin}} data-id= {{pin.id}} id="pin-{{pin.id}}">{{pin.pin}}</a>
+											<a class="item" href="#" {{action "jumpToPin" pin}} data-id= {{pin.id}} id="pin-{{pin.id}}" tabindex="0" role="button">{{pin.pin}}</a>
 										{{/each}}
 									{{/if}}
 									{{#if hasDocumentPins}}
 										<li class="item header">Content</li>
 										{{#each documentPins as |pin|}}
-											<a class="item" href="#" {{action "jumpToPin" pin}} data-id= {{pin.id}} id="pin-{{pin.id}}">{{pin.pin}}</a>
+											<a class="item" href="#" {{action "jumpToPin" pin}} data-id= {{pin.id}} id="pin-{{pin.id}}" tabindex="0" role="button">{{pin.pin}}</a>
 										{{/each}}
 									{{/if}}
 								</div>
@@ -61,7 +61,7 @@
 						</div>
 					{{/if}}
 					<div class="user-gravatar-container">
-						<div class="user-gravatar" id="profile-button">
+						<div class="user-gravatar" id="profile-button" tabindex="0" role="button" aria-haspopup="menu">
 							{{session.user.initials}}
 							{{#if hasWhatsNew}}
 								<div class="whats-new-dot" />

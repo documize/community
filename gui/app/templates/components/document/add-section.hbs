@@ -13,7 +13,7 @@
 					<ul class="options">
 						{{#each sections as |section|}}
 							{{#unless section.retired}}
-								<li class="preset-option" {{action "onInsertSection" section}}>
+								<li class="preset-option" {{action "onInsertSection" section}} role="button" tabindex="0">
 									<div class="icon">
 										<img class="img" src="/sections/{{section.contentType}}.png" srcset="/sections/{{section.contentType}}@2x.png">
 									</div>
@@ -26,7 +26,7 @@
 							<br>
 						{{/if}}
 						{{#each blocks as |block|}}
-							<li class="block-option" {{action "onInsertBlock" block}}>
+							<li class="block-option" {{action "onInsertBlock" block}} role="button" tabindex="0">
 								<div class="name">{{block.title}}</div>
 								<div class="desc">{{block.excerpt}}</div>
 							</li>

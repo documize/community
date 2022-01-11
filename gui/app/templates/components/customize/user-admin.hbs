@@ -25,7 +25,7 @@
 							{{ui/ui-button color=constants.Color.Green icon=constants.Icon.Person light=true label=constants.Label.Add onClick=(action "onAddUser")}}
 							<Ui::UiSpacer @size="300" />
 						</form>
-						<form onsubmit={{action "onAddUser"}}>
+						<form onsubmit={{action "onAddUser"}} role="form">
 							<div class="form-group">
 								<label for="edit-group-desc">Bulk Upload</label>
 								{{textarea id="bulkUsers" value=bulkUsers class="form-control" rows="5" placeholder="firstname, lastname, email"}}

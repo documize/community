@@ -19,7 +19,7 @@
 		</div>
 		<div class="grid-cell-2">
 			{{#if authenticated}}
-				<form {{action "onAction" on="submit"}}>
+				<form {{action "onAction" on="submit"}} role="form">
 					<div class="form-group">
 						<label for="papertrail-query">Search query</label>
 						{{input id="papertrail-query" type="text" class="form-control mousetrap" value=config.query}}

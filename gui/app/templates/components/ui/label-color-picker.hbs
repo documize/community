@@ -2,7 +2,7 @@
 	{{#each colors as |color|}}
 		<div class="color {{if color.selected "selected"}}"
 			style={{concat "background-color: " color.code ";"}}
-			{{action "onSelect" color.code}}>
+			{{action "onSelect" color.code}} role="button" tabindex="0">
 		</div>
 	{{/each}}
 </div>

@@ -2,28 +2,28 @@
 	<form>
 		<div class="widget-list-picker widget-list-picker-horiz">
 			<ul class="options">
-				<li class="option {{if isDocumizeProvider "selected"}}" {{action "onDocumize"}}>
+				<li class="option {{if isDocumizeProvider "selected"}}" {{action "onDocumize"}} role="button" tabindex="0">
 					<div class="text-header">Documize</div>
 					<div class="text">Built-in email/password</div>
 					{{#if isDocumizeProvider}}
 						<i class="dicon {{constants.Icon.Tick}}" />
 					{{/if}}
 				</li>
-				<li class="option {{if isKeycloakProvider "selected"}}" {{action "onKeycloak"}}>
+				<li class="option {{if isKeycloakProvider "selected"}}" {{action "onKeycloak"}} role="button" tabindex="0">
 					<div class="text-header">Keycloak</div>
 					<div class="text">Via authentication server</div>
 					{{#if isKeycloakProvider}}
 						<i class="dicon {{constants.Icon.Tick}}" />
 					{{/if}}
 				</li>
-				<li class="option {{if isLDAPProvider "selected"}}" {{action "onLDAP"}}>
+				<li class="option {{if isLDAPProvider "selected"}}" {{action "onLDAP"}} role="button" tabindex="0">
 					<div class="text-header">LDAP</div>
 					<div class="text">Connect to LDAP/Active Directory</div>
 					{{#if isLDAPProvider}}
 						<i class="dicon {{constants.Icon.Tick}}" />
 					{{/if}}
 				</li>
-                <li class="option {{if isCASProvider "selected"}}" {{action "onCAS"}}>
+                <li class="option {{if isCASProvider "selected"}}" {{action "onCAS"}} role="button" tabindex="0">
                     <div class="text-header">CAS</div>
                     <div class="text">Via Central Authentication Server</div>
                     {{#if isCASProvider}}

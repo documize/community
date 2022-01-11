@@ -4,15 +4,15 @@
 			{{#ui/ui-toolbar-dropdown label="Actions" arrow=true}}
 				{{#attach-popover class="ember-attacher-popper" hideOn="click clickout" showOn="click" isShown=false}}
 					<ul class="menu">
-						<li class="item" {{action "onShowRequestContributionModal"}}>Request contribution</li>
-						<li class="item" {{action "onShowRequestFeedbackModal"}}>Request feedback</li>
-						<li class="item" {{action "onShowRequestReadModal"}}>Request read</li>
+						<li class="item" {{action "onShowRequestContributionModal"}} role="button" tabindex="0">Request contribution</li>
+						<li class="item" {{action "onShowRequestFeedbackModal"}} role="button" tabindex="0">Request feedback</li>
+						<li class="item" {{action "onShowRequestReadModal"}} role="button" tabindex="0">Request read</li>
 						{{#if (eq document.lifecycle constants.Lifecycle.Draft)}}
 							<li class="divider"/>
-							<li class="item" {{action "onShowPublishModal"}}>Request publication</li>
+							<li class="item" {{action "onShowPublishModal"}} role="button" tabindex="0">Request publication</li>
 						{{/if}}
 						<li class="divider"/>
-						<li class="item" {{action "onShareModal"}}>Share via secure external link</li>
+						<li class="item" {{action "onShareModal"}} role="button" tabindex="0">Share via secure external link</li>
 					</ul>
 				{{/attach-popover}}
 			{{/ui/ui-toolbar-dropdown}}
@@ -23,26 +23,26 @@
 		{{#attach-popover class="ember-attacher-popper" hideOn="click clickout" showOn="click" isShown=false}}
 			<ul class="menu">
 				{{#if pinState.isPinned}}
-					<li class="item" {{action "onUnpin"}}>Remove bookmark</li>
+					<li class="item" {{action "onUnpin"}} role="button" tabindex="0">Remove bookmark</li>
 					<li class="divider"/>
 				{{else if session.authenticated}}
-					<li class="item" {{action "onPin"}}>Bookmark</li>
+					<li class="item" {{action "onPin"}} role="button" tabindex="0">Bookmark</li>
 					<li class="divider"/>
 				{{/if}}
-				<li class="item" {{action "onShowPrintModal"}}>Print</li>
-				<li class="item" {{action "onExport"}}>Download</li>
+				<li class="item" {{action "onShowPrintModal"}} role="button" tabindex="0">Print</li>
+				<li class="item" {{action "onExport"}} role="button" tabindex="0">Download</li>
 				{{#if (or permissions.documentAdd permissions.documentCopy)}}
 					<li class="divider"/>
 					{{#if permissions.documentAdd}}
-						<li class="item" {{action "onShowTemplateModal"}}>Template</li>
+						<li class="item" {{action "onShowTemplateModal"}} role="button" tabindex="0">Template</li>
 					{{/if}}
 					{{#if permissions.documentCopy}}
-						<li class="item" {{action "onShowDuplicateModal"}}>Copy</li>
+						<li class="item" {{action "onShowDuplicateModal"}} role="button" tabindex="0">Copy</li>
 					{{/if}}
 				{{/if}}
 				{{#if permissions.documentDelete}}
 					<li class="divider"/>
-					<li class="item red" {{action "onShowDeleteModal"}}>Delete</li>
+					<li class="item red" {{action "onShowDeleteModal"}} role="button" tabindex="0">Delete</li>
 				{{/if}}
 			</ul>
 		{{/attach-popover}}

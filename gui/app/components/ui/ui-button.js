@@ -1,3 +1,4 @@
+/* eslint-disable ember/no-classic-classes */
 // Copyright 2016 Documize Inc. <legal@documize.com>. All rights reserved.
 //
 // This software (Documize Community Edition) is licensed under
@@ -28,6 +29,8 @@ export default Component.extend({
 	stretch: false,
 	uppercase: true,
 	iconClass: '',
+	ariaRole: "button",
+	tabindex: 0,
 	hasIcon: computed('iconClass', function() {
 		return this.iconClass.trim() != '';
 	}),

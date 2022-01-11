@@ -1,6 +1,6 @@
 <div class="theme-picker">
 	{{#each themes as |theme|}}
-		<div class="theme {{if theme.selected "selected"}}" style={{concat "background-color: " theme.primary}} {{action "onSelect" theme.name}}>
+		<div class="theme {{if theme.selected "selected"}}" style={{concat "background-color: " theme.primary}} {{action "onSelect" theme.name}} role="button" tabindex="0">
 			{{theme.name}}
 		</div>
 	{{/each}}

@@ -11,7 +11,7 @@
 						</a>
 						{{#if canEdit}}
 							<div class="menu">
-								<i class="dicon {{constants.Icon.Cross}}">
+								<i class="dicon {{constants.Icon.Cross}}" role="button" tabindex="0" aria-haspopup="menu">
 									{{#attach-popover class="ember-attacher-popper" hideOn="escapekey, clickout" showOn="click" isShown=false}}
 										<div class="form">
 											<p>Are you sure you want to delete this file?</p>
@@ -31,7 +31,7 @@
 			{{/each}}
 			{{#if canEdit}}
 				<li id="upload-document-files">
-					<i class="dicon {{constants.Icon.Plus}}"></i>
+					<i class="dicon {{constants.Icon.Plus}}" role="button" tabindex="0" title="Upload file" />
 				</li>
 			{{/if}}
 		</ul>

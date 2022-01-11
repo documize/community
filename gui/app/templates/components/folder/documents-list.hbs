@@ -13,19 +13,19 @@
 
 			{{#ui/ui-toolbar-icon icon=constants.Icon.Sort color=constants.Color.Gray tooltip="Sort"}}
 				{{#attach-popover class="ember-attacher-popper" hideOn="click" showOn="click" isShown=false placement="bottom-end" as |attacher|}}
-					<i class="dicon {{constants.Icon.Cross}} closer" {{action attacher.hide}}/>
+					<i class="dicon {{constants.Icon.Cross}} closer" {{action attacher.hide}}  role="button" tabindex="0" aria-label="Close" />
 					<div class="container">
 						<Ui::UiSpacer @size="100" />
 
 						<div class="text-center">
 							<ul class="ui-option-picker ui-option-picker-horiz">
-								<li class="option {{if sortBy.name "selected"}}" {{action "onSetSort" "name"}}>
+								<li class="option {{if sortBy.name "selected"}}" {{action "onSetSort" "name"}} role="button" tabindex="0" aria-label="Sort by name">
 									<div class="text">Name</div>
 								</li>
-								<li class="option {{if sortBy.created "selected"}}" {{action "onSetSort" "created"}}>
+								<li class="option {{if sortBy.created "selected"}}" {{action "onSetSort" "created"}} role="button" tabindex="0" aria-label="Sort by created">
 									<div class="text">Created date</div>
 								</li>
-								<li class="option {{if sortBy.updated "selected"}}" {{action "onSetSort" "updated"}}>
+								<li class="option {{if sortBy.updated "selected"}}" {{action "onSetSort" "updated"}} role="button" tabindex="0" aria-label="Sort by revised">
 									<div class="text">Last updated</div>
 								</li>
 							</ul>
@@ -35,10 +35,10 @@
 
 						<div class="text-center">
 							<ul class="ui-option-picker ui-option-picker-horiz">
-								<li class="option {{if sortBy.asc "selected"}}" {{action "onSetSort" "asc"}}>
+								<li class="option {{if sortBy.asc "selected"}}" {{action "onSetSort" "asc"}} role="button" tabindex="0" aria-label="Sort ascending">
 									<div class="text">Ascending</div>
 								</li>
-								<li class="option {{if sortBy.desc "selected"}}" {{action "onSetSort" "desc"}}>
+								<li class="option {{if sortBy.desc "selected"}}" {{action "onSetSort" "desc"}} role="button" tabindex="0" aria-label="Sort descending">
 									<div class="text">Descending</div>
 								</li>
 							</ul>
@@ -93,15 +93,15 @@
 					<div class="sequence">
 						{{#if document.isSequenced}}
                             {{#if showingAllDocs}}
-                                <i class="dicon {{constants.Icon.ArrowSmallUp}}" {{action "onPinSequence" document.id "u"}} title="Move up" />
-                                <i class="dicon {{constants.Icon.ArrowSmallDown}}" {{action "onPinSequence" document.id "d"}} title="Move down" />
+                                <i class="dicon {{constants.Icon.ArrowSmallUp}}" {{action "onPinSequence" document.id "u"}} title="Move up" role="button" tabindex="0"/>
+                                <i class="dicon {{constants.Icon.ArrowSmallDown}}" {{action "onPinSequence" document.id "d"}} title="Move down" role="button" tabindex="0" />
                             {{/if}}
-							<i class="dicon {{constants.Icon.Cross}}" {{action "onUnpin" document.id}} title="Unpin" />
+							<i class="dicon {{constants.Icon.Cross}}" {{action "onUnpin" document.id}} title="Unpin" role="button" tabindex="0" />
 						{{else}}
-							<i class="dicon {{constants.Icon.ArrowSmallUp}}" {{action "onPin" document.id}} title="Pin" />
+							<i class="dicon {{constants.Icon.ArrowSmallUp}}" {{action "onPin" document.id}} title="Pin" role="button" tabindex="0" />
 						{{/if}}
 					</div>
-					<div class="checkbox" {{action "selectDocument" document.id}}>
+					<div class="checkbox" {{action "selectDocument" document.id}} role="checkbox" tabindex="0">
 						{{#if document.selected}}
 							<i class="dicon {{constants.Icon.CheckboxChecked}}"/>
 						{{else}}
