@@ -74,10 +74,10 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Category max length 30.
+	// Category max length 50.
 	cat.Name = strings.TrimSpace(cat.Name)
-	if len(cat.Name) > 30 {
-		cat.Name = cat.Name[:30]
+	if len(cat.Name) > 50 {
+		cat.Name = cat.Name[:50]
 	}
 
 	err = h.Store.Category.Add(ctx, cat)
