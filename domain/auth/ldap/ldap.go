@@ -213,12 +213,12 @@ func executeGroupFilter(c lm.LDAPConfig) (u []lm.LDAPUser, err error) {
 // 		\5c,
 //
 // Relevant notes:
-
+//
 // 		https://docs.oracle.com/cd/E19424-01/820-4811/gdxpo/index.html#6ng8i269q
 // 		https://devblogs.microsoft.com/scripting/how-can-i-work-with-a-cn-that-has-a-comma-in-it/
 //
 // Example:
-
+//
 //		CN=Surname\, Name,OU=Something,OU=AD-Example,OU=Examaple,DC=example,DC=example,DC=com
 //
 // When we split on comma, here is our logic:
