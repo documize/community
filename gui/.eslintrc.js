@@ -15,6 +15,16 @@ module.exports = {
     browser: true
   },
   rules: {
+    "ember/no-classic-classes": "off",
+    "ember/require-tagless-components": "off",
+    "ember/require-computed-property-dependencies": "off",
+    "ember/no-classic-components": "off",
+    "ember/no-assignment-of-untracked-properties-used-in-tracking-contexts": "off",
+    "ember/no-component-lifecycle-hooks": "off",
+    "ember/no-get": "off",
+    "ember/no-jquery": "off",
+    "ember/no-mixins": "off",
+    "ember/no-actions-hash": "off"
   },
   overrides: [
     // node files

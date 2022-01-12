@@ -327,21 +327,16 @@ func (h *Handler) Authenticate(w http.ResponseWriter, r *http.Request) {
 			h.Runtime.Log.Error(method, err)
 			return
 		}
+		if len(lu.Email) == 0 || len(u.Email) == 0 {
+			response.WriteUnauthorizedError(w)
+			h.Runtime.Log.Infof("LDAP user without email faild auth (%s)", username)
+			return
+		}
 
-		// Create user account if not found
+		// If user authenticated BUT is not within Documize, we fail authentication.
+		// If dual auth is enabled, we can try regular email/password login (see next).
 		if err == sql.ErrNoRows {
-			h.Runtime.Log.Info("Adding new LDAP user " + lu.Email + " @ " + dom)
-
-			u = convertUser(lc, lu)
-			u.Salt = secrets.GenerateSalt()
-			u.Password = secrets.GeneratePassword(secrets.GenerateRandomPassword(), u.Salt)
-
-			u, err = auth.AddExternalUser(ctx, h.Runtime, h.Store, u, lc.DefaultPermissionAddSpace)
-			if err != nil {
-				response.WriteServerError(w, method, err)
-				h.Runtime.Log.Error(method, err)
-				return
-			}
+			ok = false
 		}
 	}
 

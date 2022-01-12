@@ -1,11 +1,11 @@
 {
   "name": "documize",
-  "version": "4.2.0",
+  "version": "4.2.1",
   "private": true,
-  "description": "Documize",
+  "description": "Documize Community",
   "repository": "",
   "license": "AGPL",
-  "author": "Documize",
+  "author": "Documize Inc.",
   "directories": {
     "doc": "doc",
     "test": "tests"

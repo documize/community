@@ -100,7 +100,7 @@ func (c *LDAPConfig) Clean() {
 	if c.EncryptionType == "" {
 		c.EncryptionType = "none"
 	}
-	if c.EncryptionType != EncryptionTypeNone || c.EncryptionType != EncryptionTypeStartTLS {
+	if c.EncryptionType != EncryptionTypeNone && c.EncryptionType != EncryptionTypeStartTLS {
 		c.EncryptionType = EncryptionTypeNone
 	}
 

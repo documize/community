@@ -8,13 +8,13 @@ It's built with Golang + EmberJS and compiled down to a single executable binary
 
 All you need to provide is your database -- PostgreSQL, Microsoft SQL Server or any MySQL variant.
 
-![Documize Community](screenshot-1.png "Documize Community")
+![Documize Community](screenshot-1.png)
 
 ## Latest Release
 
-[Community edition: v4.2.0](https://github.com/documize/community/releases)
+[Community edition: v4.2.1](https://github.com/documize/community/releases)
 
-[Community+ edition: v4.2.0](https://www.documize.com/community/downloads)
+[Community+ edition: v4.2.1](https://www.documize.com/community/downloads)
 
 The Community+ edition is the "Enterprise" offering with advanced capabilities and customer support:
 
