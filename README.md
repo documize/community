@@ -12,9 +12,9 @@ All you need to provide is your database -- PostgreSQL, Microsoft SQL Server or 
 
 ## Latest Release
 
-[Community edition: v4.2.1](https://github.com/documize/community/releases)
+[Community edition: v4.2.2](https://github.com/documize/community/releases)
 
-[Community+ edition: v4.2.1](https://www.documize.com/community/downloads)
+[Community+ edition: v4.2.2](https://www.documize.com/community/downloads)
 
 The Community+ edition is the "Enterprise" offering with advanced capabilities and customer support:
 
