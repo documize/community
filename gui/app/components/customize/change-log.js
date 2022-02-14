@@ -25,7 +25,7 @@ export default Component.extend(Notifier, {
 		let self = this;
 		let cacheBuster = + new Date();
 		$.ajax({
-			url: `https://documize.s3-eu-west-1.amazonaws.com/news/summary.html?cb=${cacheBuster}`,
+			url: `https://www.documize.com/community/news/summary.html?cb=${cacheBuster}`,
 			type: 'GET',
 			dataType: 'html',
 			success: function (response) {

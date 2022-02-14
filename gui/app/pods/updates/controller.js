@@ -27,7 +27,7 @@ export default Controller.extend({
 		let cacheBuster = + new Date();
 
 		$.ajax({
-			url: `https://documize.s3-eu-west-1.amazonaws.com/news/${edition}/${version}.html?cb=${cacheBuster}`,
+			url: `https://www.documize.com/community/news/${edition}/${version}.html?cb=${cacheBuster}`,
 			type: 'GET',
 			dataType: 'html',
 			success: function (response) {
