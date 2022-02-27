@@ -30,6 +30,8 @@ The Community+ edition is the "Enterprise" offering with advanced capabilities a
 - actions assignments
 - product support
 
+The Community+ edition is [now totally free](https://www.documize.com) for unlimited users.
+
 ## OS Support
 
 - Linux
