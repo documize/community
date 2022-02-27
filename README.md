@@ -89,6 +89,6 @@ We aim to respond within two working days!
 
 <https://www.documize.com>
 
-This software (Documize Community Edition) is licensed under GNU AGPL v3 <http://www.gnu.org/licenses/agpl-3.0.en.html>. You can operate outside the AGPL restrictions by purchasing Documize Community+ edition and obtaining a commercial license by contacting <sales@documize.com>. Documize® is a registered trademark of Documize Inc.
+This software (Documize Community Edition) is licensed under GNU AGPL v3 <http://www.gnu.org/licenses/agpl-3.0.en.html>.
 
 Documize uses other open source components and we acknowledge them in [NOTICES](NOTICES.md)
