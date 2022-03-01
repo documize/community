@@ -44,6 +44,7 @@ export default Service.extend({
 	updateAvailable: false,
 	// empty theme uses default theme
 	theme: '',
+	locale: 'en-US',
 
 	getBaseUrl(endpoint) {
 		return [this.get('endpoint'), endpoint].join('/');

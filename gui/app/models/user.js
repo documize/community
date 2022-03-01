@@ -30,6 +30,7 @@ export default Model.extend({
 	theme: attr('string'),
 	created: attr(),
 	revised: attr(),
+	locale: attr('string', { defaultValue: "en-US" }),
 
 	fullname: computed('firstname', 'lastname', function () {
 		return `${this.get('firstname')} ${this.get('lastname')}`;

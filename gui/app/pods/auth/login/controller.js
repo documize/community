@@ -76,5 +76,4 @@ export default Controller.extend(AuthProvider, {
 			// }
 		}
 	}
-
 });

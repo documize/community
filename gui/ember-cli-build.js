@@ -8,12 +8,12 @@ let isDevelopment = EmberApp.env() === 'development';
 module.exports = function(defaults) {
 	let app = new EmberApp(defaults, {
 		fingerprint: {
-				enabled: true,
-				generateAssetMap: true,
-				fingerprintAssetMap: false,
-				prepend: '/',
-				extensions: ['js', 'css'],
-				exclude: ['tinymce/**', 'codemirror/**', 'prism/**', 'pdfjs/**']
+			enabled: true,
+			generateAssetMap: true,
+			fingerprintAssetMap: false,
+			prepend: '/',
+			extensions: ['js', 'css'],
+			exclude: ['tinymce/**', 'codemirror/**', 'prism/**', 'pdfjs/**']
 		},
 
 		minifyCSS: {
