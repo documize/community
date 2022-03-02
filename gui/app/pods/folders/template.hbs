@@ -12,7 +12,7 @@
 				{{/if}}
 				{{#if session.isAdmin}}
 					{{ui/ui-toolbar-icon icon=constants.Icon.Settings color=constants.Color.Green
-						tooltip="Documize Community settings" linkTo="customize"}}
+						linkTo="customize"}}
 				{{/if}}
 			{{/ui/ui-toolbar}}
 		{{/if}}
@@ -27,20 +27,20 @@
 				<div class="list">
 					<div class="item {{if (eq selectedView "all") "selected"}}" {{action "onSelect" "all"}}>
 						<i class={{concat "dicon " constants.Icon.All}} />
-						<div class="name">All ({{model.spaces.length}})</div>
+						<div class="name">{{localize 'all'}} ({{model.spaces.length}})</div>
 					</div>
 					<div class="item {{if (eq selectedView "public") "selected"}}" {{action "onSelect" "public"}}>
 						<i class={{concat "dicon " constants.Icon.World}} />
-						<div class="name">Public ({{publicSpaces.length}})</div>
+						<div class="name">{{localize 'public'}} ({{publicSpaces.length}})</div>
 					</div>
 					{{#if session.authenticated}}
 						<div class="item {{if (eq selectedView "protected") "selected"}}" {{action "onSelect" "protected"}}>
 							<i class={{concat "dicon " constants.Icon.People}} />
-							<div class="name">Protected ({{protectedSpaces.length}})</div>
+							<div class="name">{{localize 'protected'}} ({{protectedSpaces.length}})</div>
 						</div>
 						<div class="item {{if (eq selectedView "personal") "selected"}}" {{action "onSelect" "personal"}}>
 							<i class={{concat "dicon " constants.Icon.Person}} />
-							<div class="name">Personal ({{personalSpaces.length}})</div>
+							<div class="name">{{localize 'personal'}} ({{personalSpaces.length}})</div>
 						</div>
 					{{/if}}
 				</div>
@@ -49,7 +49,7 @@
 			<Ui::UiSpacer @size="300" />
 
 			<div class="section">
-				<div class="title">label</div>
+				<div class="title">{{localize 'label'}}</div>
 				{{#if labels}}
 					<div class="list">
 						{{#each labels as |label|}}
@@ -62,7 +62,7 @@
 						{{/each}}
 					</div>
 				{{else}}
-					<div class="empty">No labels</div>
+					<div class="empty">{{localize 'no_labels'}}</div>
 				{{/if}}
 			</div>
 		</div>

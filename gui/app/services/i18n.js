@@ -20,14 +20,28 @@ export default Service.extend({
         });
     },
 
-    localize(key) {
+    localize(key, ...args) {
         console.log(this.session.locale);
+
+        let str = "";
 
         switch(this.session.locale) {
             case "fr-FR":
-                return "unsupported";
+                str = "";
+                break;
             default:
-                return this.langs.enUS[key];
-            }
+                str = this.langs.enUS[key];
+        }
+
+        if (str === "") {
+            console.log("i18n miss", key);
+            return;
+        }
+
+        for (let i = 0; i < args.length; i++) {
+            str = str.replace(`{${i+1}}`, args[i]);
+        }
+
+        return str;
     },
 });

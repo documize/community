@@ -1,5 +1,5 @@
 <div class="installer">
-	<img src="/assets/img/setup/logo-purple.png" srcset="/assets/img/setup/logo-purple@2x.png" alt="Documize Community Setup" style="width: 250px; height: 76px;">
+	<img src="/assets/img/setup/logo.png" srcset="/assets/img/setup/logo@2x.png" alt="Documize Community Setup" style="width: 250px; height: 76px;">
 	<Ui::UiSpacer @size="300" />
 	<h1 class="color-theme-700">Setup</h1>
 	<p class="color-gray-800">
@@ -38,7 +38,7 @@
 			<div class="form-group">
 				<label for="activation-key">Activation Key</label>
 				{{textarea id="activation-key" value=model.activationKey rows="5" class=(if hasKeyError "form-control is-invalid" "form-control")}}
-				<small class="form-text text-muted">You can get it from <a href="https://www.documize.com/downloads" target="_blank">https://www.documize.com/downloads</a></small>
+				<small class="form-text text-muted">You can get from <a href="https://www.documize.com/community" target="_blank">https://www.documize.com/community</a></small>
 			</div>
 		{{/if}}
 		{{ui/ui-button submit=true color=constants.Color.Green light=true label=buttonLabel onClick=(action "save")}}

@@ -36,7 +36,7 @@ func GetSMTPConfig(s *store.Store) (c smtp.Config) {
 	c.SenderEmail, _ = s.Setting.Get("SMTP", "sender")
 	c.SenderName, _ = s.Setting.Get("SMTP", "senderName")
 	if c.SenderName == "" {
-		c.SenderName = "Documize"
+		c.SenderName = "Documize Community"
 	}
 
 	// anon auth?
