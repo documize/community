@@ -1,3 +1,13 @@
 {
-    "filter": "filterr"
+    "filter": "Filter",
+    "all": "All",
+    "public": "Public",
+    "protected": "Protected",
+    "personal": "Personal",
+    "label": "Label",
+    "no_labels": "No labels",
+
+
+
+    "z": "z"
 }
