@@ -35,7 +35,7 @@
 			{{/if}}
 		{{else}}
 			{{ui/ui-button color=constants.Color.Green light=true
-				label=constants.Label.Authenticate onClick=(action "auth")}}
+				label=(localize 'authenticate') onClick=(action "auth")}}
 		{{/if}}
 	{{else}}
 		{{#if session.isGlobalAdmin}}

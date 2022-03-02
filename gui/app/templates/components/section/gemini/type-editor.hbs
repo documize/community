@@ -21,7 +21,7 @@
 				{{input id="gemini-apikey" type="password" value=config.APIKey class="form-control"}}
 				<small class="form-text text-muted">Gemini user API key (from user profile)</small>
 			</div>
-			{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Authenticate onClick=(action "auth")}}
+			{{ui/ui-button color=constants.Color.Green light=true label=(localize 'authenticate') onClick=(action "auth")}}
 		</div>
 		<div class="grid-cell-2">
 			{{#if authenticated}}

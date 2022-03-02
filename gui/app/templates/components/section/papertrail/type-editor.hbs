@@ -14,7 +14,7 @@
 					{{focus-input id="papertrail-apitoken" type="password" value=config.APIToken class="form-control"}}
 					<small class="form-text text-muted">API Token (from your profile)</small>
 				</div>
-				{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Authenticate onClick=(action "auth")}}
+				{{ui/ui-button color=constants.Color.Green light=true label=(localize 'authenticate') onClick=(action "auth")}}
 			</form>
 		</div>
 		<div class="grid-cell-2">

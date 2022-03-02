@@ -1,5 +1,5 @@
 <div class="view-customize">
-	{{ui/ui-button color=constants.Color.Green light=true icon=constants.Icon.People label=constants.Label.Add onClick=(action "onShowAddGroupModal")}}
+	{{ui/ui-button color=constants.Color.Green light=true icon=constants.Icon.People label=(localize 'add') onClick=(action "onShowAddGroupModal")}}
 	<div id="add-group-modal" class="modal" tabindex="-1" role="dialog">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
@@ -20,7 +20,7 @@
 				<div class="modal-footer">
 					{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Close dismiss=true}}
 					{{ui/ui-button-gap}}
-					{{ui/ui-button color=constants.Color.Red light=true label=constants.Label.Add onClick=(action "onAddGroup")}}
+					{{ui/ui-button color=constants.Color.Red light=true label=(localize 'add') onClick=(action "onAddGroup")}}
 				</div>
 			</div>
 		</div>

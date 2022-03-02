@@ -62,7 +62,7 @@
 						{{/each}}
 					</div>
 				{{else}}
-					<div class="empty">{{localize 'no_labels'}}</div>
+					<div class="empty">{{localize 'labels_none'}}</div>
 				{{/if}}
 			</div>
 		</div>
@@ -76,22 +76,22 @@
 		<div class="modal" tabindex="-1" role="dialog" id="add-space-modal">
 			<div class="modal-dialog modal-lg" role="document">
 				<div class="modal-content">
-					<div class="modal-header">New Space</div>
+					<div class="modal-header">{{localize 'space_new'}}</div>
 					<div class="modal-body">
 						<form onsubmit={{action "onAddSpace"}}>
 							<div class="form-group">
-								<label for="new-space-name">Name</label>
-								{{input type="text" id="new-space-name" class="form-control mousetrap" placeholder="Space name" value=spaceName}}
+								<label for="new-space-name">{{localize 'name'}}</label>
+								{{input type="text" id="new-space-name" class="form-control mousetrap" placeholder=(localize 'space_name') value=spaceName}}
 								<small class="form-text text-muted">Characters and numbers only</small>
 							</div>
 
 							<div class="form-group">
-								<label>Description</label>
-								{{focus-input id="space-desc" type="text" value=spaceDesc class="form-control" placeholder="Space description" autocomplete="off"}}
+								<label>{{localize 'description'}}</label>
+								{{focus-input id="space-desc" type="text" value=spaceDesc class="form-control" placeholder=(localize 'space_description') autocomplete="off"}}
 							</div>
 
 							<div class="form-group">
-								<label>Icon</label>
+								<label>{{localize 'icon'}}</label>
 								<div class="ui-icon-picker">
 									<ul class="list">
 										{{#each iconList as |icon|}}
@@ -104,9 +104,9 @@
 							</div>
 
 							<div class="form-group">
-								<label>Label</label>
+								<label>{{localize 'label'}}</label>
 								<ul class="space-label-picker">
-									<li class="label none {{if (eq spaceLabel "") "selected"}}" {{action "onSetLabel" ""}}>None</li>
+									<li class="label none {{if (eq spaceLabel "") "selected"}}" {{action "onSetLabel" ""}}>{{localize 'none'}}</li>
 									{{#each labels as |label|}}
 										<li class="label {{if (eq spaceLabel label.id) "selected"}}"
 											style={{label.bgColor}}
@@ -118,22 +118,22 @@
 							</div>
 
 							<div class="form-group">
-								<label for="clone-space-dropdown">Clone Space</label>
-								{{ui/ui-select id="clone-space-dropdown" content=spaces prompt="select space" action=(action "onCloneSpaceSelect") optionValuePath="id" optionLabelPath="name" selection=clonedSpace}}
-								<small id="emailHelp" class="form-text text-muted">Copy templates, permissions, documents from existing space</small>
+								<label for="clone-space-dropdown">{{localize 'space_clone'}}</label>
+								{{ui/ui-select id="clone-space-dropdown" content=spaces prompt=(localize 'space_select') action=(action "onCloneSpaceSelect") optionValuePath="id" optionLabelPath="name" selection=clonedSpace}}
+								<small id="emailHelp" class="form-text text-muted">{{localize 'space_copy'}}</small>
 								<div class="margin-top-10" />
 								{{#if hasClone}}
-									{{#ui/ui-checkbox selected=copyTemplate}}Copy templates{{/ui/ui-checkbox}}
-									{{#ui/ui-checkbox selected=copyPermission}}Copy permissions{{/ui/ui-checkbox}}
-									{{#ui/ui-checkbox selected=copyDocument}}Copy documents{{/ui/ui-checkbox}}
+									{{#ui/ui-checkbox selected=copyTemplate}}{{localize 'space_copy_template'}}{{/ui/ui-checkbox}}
+									{{#ui/ui-checkbox selected=copyPermission}}{{localize 'space_copy_permission'}}{{/ui/ui-checkbox}}
+									{{#ui/ui-checkbox selected=copyDocument}}{{localize 'space_copy_document'}}{{/ui/ui-checkbox}}
 								{{/if}}
 							</div>
 						</form>
 					</div>
 					<div class="modal-footer">
-						{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+						{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'cancel') dismiss=true}}
 						{{ui/ui-button-gap}}
-						{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Add onClick=(action "onAddSpace")}}
+						{{ui/ui-button color=constants.Color.Green light=true label=(localize 'add') onClick=(action "onAddSpace")}}
 					</div>
 				</div>
 			</div>

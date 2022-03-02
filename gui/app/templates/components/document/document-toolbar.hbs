@@ -87,7 +87,7 @@
 				</form>
 			</div>
 			<div class="modal-footer">
-				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+				{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'cancel') dismiss=true}}
 				{{ui/ui-button-gap}}
 				{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Save onClick=(action "onSaveTemplate")}}
 			</div>
@@ -108,7 +108,7 @@
 				{{/each}}
 			</div>
 			<div class="modal-footer">
-				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+				{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'cancel') dismiss=true}}
 				{{ui/ui-button-gap}}
 				{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Print onClick=(action "onPrintSelection")}}
 			</div>
@@ -124,7 +124,7 @@
 				<p>Are you sure you want to delete this document?</p>
 			</div>
 			<div class="modal-footer">
-				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+				{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'cancel') dismiss=true}}
 				{{ui/ui-button-gap}}
 				{{ui/ui-button color=constants.Color.Red light=true label=constants.Label.Delete onClick=(action "onDocumentDelete")}}
 			</div>
@@ -146,7 +146,7 @@
 				</form>
 			</div>
 			<div class="modal-footer">
-				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+				{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'cancel') dismiss=true}}
 				{{ui/ui-button-gap}}
 				{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Duplicate onClick=(action "onDuplicate")}}
 			</div>

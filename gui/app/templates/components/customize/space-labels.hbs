@@ -3,7 +3,7 @@
 		light=true
 		color=constants.Color.Green
 		icon=constants.Icon.Checkbox
-		label=constants.Label.Add
+		label=(localize 'add')
 		onClick=(action "onShowAddModal")}}
 
 	<Ui::UiSpacer @size="300" />
@@ -42,9 +42,9 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+				{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'cancel') dismiss=true}}
 				{{ui/ui-button-gap}}
-				{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Add onClick=(action "onAdd")}}
+				{{ui/ui-button color=constants.Color.Green light=true label=(localize 'add') onClick=(action "onAdd")}}
 			</div>
 		</div>
 	</div>
@@ -65,7 +65,7 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+				{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'cancel') dismiss=true}}
 				{{ui/ui-button-gap}}
 				{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Save onClick=(action "onUpdate")}}
 			</div>

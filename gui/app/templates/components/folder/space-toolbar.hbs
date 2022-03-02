@@ -49,9 +49,9 @@
 				</form>
 			</div>
 			<div class="modal-footer">
-				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+				{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'cancel') dismiss=true}}
 				{{ui/ui-button-gap}}
-				{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Add onClick=(action "onAddEmptyDoc")}}
+				{{ui/ui-button color=constants.Color.Green light=true label=(localize 'add') onClick=(action "onAddEmptyDoc")}}
 			</div>
 		</div>
 	</div>
@@ -83,9 +83,9 @@
 				</form>
 			</div>
 			<div class="modal-footer">
-				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+				{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'cancel') dismiss=true}}
 				{{ui/ui-button-gap}}
-				{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Add onClick=(action "onAddTemplateDoc")}}
+				{{ui/ui-button color=constants.Color.Green light=true label=(localize 'add') onClick=(action "onAddTemplateDoc")}}
 			</div>
 		</div>
 	</div>
@@ -111,7 +111,7 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+				{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'cancel') dismiss=true}}
 			</div>
 		</div>
 	</div>
@@ -132,7 +132,7 @@
 				{{/if}}
 			</div>
 			<div class="modal-footer">
-				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+				{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'cancel') dismiss=true}}
 				{{ui/ui-button-gap}}
 				{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Export onClick=(action "onExport")}}
 			</div>

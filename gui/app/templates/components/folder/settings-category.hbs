@@ -10,7 +10,7 @@
 				{{focus-input id="new-category-name" type="text" class="form-control mousetrap" placeholder="Category name" value=newCategory}}
 			</div>
 			{{ui/ui-button color=constants.Color.Green light=true
-				label=constants.Label.Add icon=constants.Icon.Category
+				label=(localize 'add') icon=constants.Icon.Category
 				onClick=(action "onAdd")}}
 		</form>
 	</div>

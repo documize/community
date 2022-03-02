@@ -1,12 +1,44 @@
 {
+    "none": "None",
+    "add": "Add",
+    "activate": "Activate",
+    "approve": "Approve",
+    "authenticate": "Authenticate",
+    "cancel": "Cancel",
+
+
+    "name": "Name",
+    "description": "Description",
+    "icon": "Icon",
+    "draft": "Draft",
+    "live": "Live",
+    "archived": "Archived",
+
     "filter": "Filter",
     "all": "All",
     "public": "Public",
     "protected": "Protected",
     "personal": "Personal",
-    "label": "Label",
-    "no_labels": "No labels",
 
+    "label": "Label",
+    "labels_none": "No labels",
+
+    "space_new": "New Space",
+    "space_name": "Space name",
+    "space_description": "Space description",
+    "space_clone": "Clone Space",
+    "space_select": "Select Space",
+    "space_copy": "Copy templates, permissions, documents from existing space",
+    "space_copy_template": "Copy templates",
+    "space_copy_permission": "Copy permissions",
+    "space_copy_document": "Copy documents",
+
+    "protection_none": "Changes permitted without approval",
+    "protection_lock": "Locked, changes not permitted",
+    "protection_review": "Changes require approval before publication",
+    "approval_anybody": "Approval required from any approver",
+    "approval_majority": "Majority approval required from approvers",
+    "approval_unanimous": "Unanimous approval required from all approvers",
 
 
     "z": "z"
