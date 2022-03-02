@@ -101,9 +101,9 @@
 				{{/if}}
 			</div>
 			<div class="modal-footer">
-				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Close dismiss=true}}
+				{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'close') dismiss=true}}
 				{{ui/ui-button-gap}}
-				{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Insert onClick=(action "onInsertLink")}}
+				{{ui/ui-button color=constants.Color.Green light=true label=(localize 'insert') onClick=(action "onInsertLink")}}
 			</div>
 		</div>
 	</div>

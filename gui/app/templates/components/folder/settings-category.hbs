@@ -65,9 +65,9 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Close dismiss=true}}
+				{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'close') dismiss=true}}
 				{{ui/ui-button-gap}}
-				{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Save onClick=(action "onSave")}}
+				{{ui/ui-button color=constants.Color.Green light=true label=(localize 'save') onClick=(action "onSave")}}
 			</div>
 		</div>
 	</div>
@@ -81,9 +81,9 @@
 				<p>Are you sure you want to delete this category?</p>
 			</div>
 			<div class="modal-footer">
-				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Close dismiss=true}}
+				{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'close') dismiss=true}}
 				{{ui/ui-button-gap}}
-				{{ui/ui-button color=constants.Color.Red light=true label=constants.Label.Delete onClick=(action "onDelete")}}
+				{{ui/ui-button color=constants.Color.Red light=true label=(localize 'delete') onClick=(action "onDelete")}}
 			</div>
 		</div>
 	</div>

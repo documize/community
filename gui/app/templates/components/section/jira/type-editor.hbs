@@ -20,7 +20,7 @@
 				<label for="jira-jql">Jira Query Language</label>
 				{{focus-input id="jira-jql" type="text" value=config.jql class="form-control" placeholder="e.g. (status = resolved AND project = SysAdmin) OR assignee = bobsmith"}}
 			</div>
-			{{ui/ui-button color=constants.Color.Yellow light=true label=constants.Label.Preview submit=true onClick=(action "onPreview")}}
+			{{ui/ui-button color=constants.Color.Yellow light=true label=(localize 'preview') submit=true onClick=(action "onPreview")}}
 		</form>
 
 		<Ui::UiSpacer @size="300" />>

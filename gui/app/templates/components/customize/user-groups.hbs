@@ -18,7 +18,7 @@
 					</form>
 				</div>
 				<div class="modal-footer">
-					{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Close dismiss=true}}
+					{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'close') dismiss=true}}
 					{{ui/ui-button-gap}}
 					{{ui/ui-button color=constants.Color.Red light=true label=(localize 'add') onClick=(action "onAddGroup")}}
 				</div>
@@ -63,9 +63,9 @@
 					</form>
 				</div>
 				<div class="modal-footer">
-					{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Close dismiss=true}}
+					{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'close') dismiss=true}}
 					{{ui/ui-button-gap}}
-					{{ui/ui-button color=constants.Color.Red light=true label=constants.Label.Delete onClick=(action "onDeleteGroup")}}
+					{{ui/ui-button color=constants.Color.Red light=true label=(localize 'delete') onClick=(action "onDeleteGroup")}}
 				</div>
 			</div>
 		</div>
@@ -89,9 +89,9 @@
 					</form>
 				</div>
 				<div class="modal-footer">
-					{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Close dismiss=true}}
+					{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'close') dismiss=true}}
 					{{ui/ui-button-gap}}
-					{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Save onClick=(action "onEditGroup")}}
+					{{ui/ui-button color=constants.Color.Green light=true label=(localize 'save') onClick=(action "onEditGroup")}}
 				</div>
 			</div>
 		</div>
@@ -116,7 +116,7 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Close dismiss=true}}
+					{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'close') dismiss=true}}
 				</div>
 			</div>
 		</div>
@@ -164,7 +164,7 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Close dismiss=true}}
+					{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'close') dismiss=true}}
 				</div>
 			</div>
 		</div>

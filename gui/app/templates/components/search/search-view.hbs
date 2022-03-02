@@ -4,7 +4,7 @@
 			{{focus-input type="text" value=keywords class="form-control mr-3 search-box" placeholder="keywords, tags"}}
 		</div>
 		<div class="form-group">
-			{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Search onClick=(action "onSearch")}}
+			{{ui/ui-button color=constants.Color.Green light=true label=(localize 'search') onClick=(action "onSearch")}}
 		</div>
 	</form>
 	{{#if validSearch}}

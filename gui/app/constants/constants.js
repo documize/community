@@ -306,46 +306,6 @@ let constants = EmberObject.extend({
 		Yellow: 'yellow',
 		Gray: 'gray'
 	},
-
-	Label: { // eslint-disable-line ember/avoid-leaking-state-in-ember-objects
-		Close: 'Close',
-		Copy: 'Copy',
-		Delete: 'Delete',
-		Duplicate: 'Duplicate',
-		Edit: 'Edit',
-		Export: 'Export',
-		File: 'File',
-		Import: 'Import',
-		Insert: 'Insert',
-		Invite: 'Invite',
-		Join: 'Join',
-		Leave: 'Leave',
-		Login: 'Login',
-		Move: 'Move',
-		Next: 'Next',
-		OK: 'OK',
-		Preview: 'Preview',
-		Print: 'Print',
-		Publish: 'Publish',
-		Reject: 'Reject',
-		Remove: 'Remove',
-		Reply: 'Reply',
-		Reset: 'Reset',
-		Restore: 'Restore',
-		Request: 'Request',
-		Save: 'Save',
-		Search: 'Search',
-		Send: 'Send',
-		Share: 'Share',
-		SignIn: 'Sign In',
-		Sort: 'Sort',
-		Space: 'Space',
-		Spaces: 'Spaces',
-		Unassigned: 'Unassigned',
-		Update: 'Update',
-		Upload: 'Upload',
-		Version: 'Version'
-	}
 });
 
 export default { constants };

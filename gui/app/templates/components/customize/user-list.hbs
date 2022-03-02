@@ -202,9 +202,9 @@
 				</form>
 			</div>
 			<div class="modal-footer">
-				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Close dismiss=true}}
+				{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'close') dismiss=true}}
 				{{ui/ui-button-gap}}
-				{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Update onClick=(action "onUpdate")}}
+				{{ui/ui-button color=constants.Color.Green light=true label=(localize 'update') onClick=(action "onUpdate")}}
 			</div>
 		</div>
 	</div>
@@ -218,9 +218,9 @@
 				<p>Are you sure you want to delete selected users?</p>
 			</div>
 			<div class="modal-footer">
-				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Close dismiss=true}}
+				{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'close') dismiss=true}}
 				{{ui/ui-button-gap}}
-				{{ui/ui-button color=constants.Color.Red light=true label=constants.Label.Delete onClick=(action "onBulkDelete")}}
+				{{ui/ui-button color=constants.Color.Red light=true label=(localize 'delete') onClick=(action "onBulkDelete")}}
 			</div>
 		</div>
 	</div>
@@ -251,9 +251,9 @@
 								<div class="group-membership">
 									<div class="item">
 										{{#if group.isMember}}
-											{{ui/ui-button color=constants.Color.Red light=true label=constants.Label.Leave onClick=(action "onLeaveGroup" group.id)}}
+											{{ui/ui-button color=constants.Color.Red light=true label=(localize 'leave') onClick=(action "onLeaveGroup" group.id)}}
 										{{else}}
-											{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Join onClick=(action "onJoinGroup" group.id)}}
+											{{ui/ui-button color=constants.Color.Green light=true label=(localize 'join') onClick=(action "onJoinGroup" group.id)}}
 										{{/if}}
 									</div>
 								</div>
@@ -263,7 +263,7 @@
 				{{/each}}
 			</div>
 			<div class="modal-footer">
-				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Close dismiss=true}}
+				{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'close') dismiss=true}}
 			</div>
 		</div>
 	</div>

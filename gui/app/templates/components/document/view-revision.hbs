@@ -15,7 +15,7 @@
 
 {{#if canRollback}}
 	<Ui::UiSpacer @size="400" />
-	{{ui/ui-button color=constants.Color.Red icon=constants.Icon.TimeBack light=true label=constants.Label.Restore onClick=(action "onShowModal")}}
+	{{ui/ui-button color=constants.Color.Red icon=constants.Icon.TimeBack light=true label=(localize 'restore') onClick=(action "onShowModal")}}
 {{/if}}
 
 <div id="document-rollback-modal" class="modal" tabindex="-1" role="dialog">
@@ -27,7 +27,7 @@
 			</div>
 			<div class="modal-footer">
 				{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'cancel') dismiss=true}}
-				{{ui/ui-button color=constants.Color.Red light=true label=constants.Label.Restore onClick=(action "onRollback")}}
+				{{ui/ui-button color=constants.Color.Red light=true label=(localize 'restore') onClick=(action "onRollback")}}
 			</div>
 		</div>
 	</div>

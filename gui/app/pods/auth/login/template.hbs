@@ -27,7 +27,7 @@
 						{{input type="password" value=password id="authPassword" class="form-control" autocomplete="current-password"}}
 					{{/if}}
 				</div>
-                {{ui/ui-button color=constants.Color.Green light=true label=constants.Label.SignIn onClick=(action "login")}}
+                {{ui/ui-button color=constants.Color.Green light=true label=(localize 'signin') onClick=(action "login")}}
 
 
 				<div class="{{unless invalidCredentials "invisible"}} color-red-600 mt-3">Invalid credentials</div>

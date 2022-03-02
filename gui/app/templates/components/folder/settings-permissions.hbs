@@ -144,7 +144,7 @@
 <Ui::UiSpacer @size="200" />
 
 {{ui/ui-button color=constants.Color.Green light=true icon=constants.Icon.Locked
-	label=constants.Label.Save onClick=(action "onSave")}}
+	label=(localize 'save') onClick=(action "onSave")}}
 
 <div id="space-add-user-modal" class="modal" tabindex="-1" role="dialog">
 	<div class="modal-dialog modal-lg" role="document">
@@ -174,7 +174,7 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-	 			{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Close dismiss=true}}
+	 			{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'close') dismiss=true}}
 			</div>
 		</div>
 	</div>
@@ -199,9 +199,9 @@
 				</form>
 			</div>
 			<div class="modal-footer">
-				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Close dismiss=true}}
+				{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'close') dismiss=true}}
 				{{ui/ui-button-gap}}
-				{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Invite onClick=(action "onSpaceInvite")}}
+				{{ui/ui-button color=constants.Color.Green light=true label=(localize 'invite') onClick=(action "onSpaceInvite")}}
 			</div>
 		</div>
 	</div>
