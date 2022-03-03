@@ -4,21 +4,21 @@
 		<div id="add-user-modal" class="modal" tabindex="-1" role="dialog">
 			<div class="modal-dialog modal-lg" role="document">
 				<div class="modal-content">
-					<div class="modal-header">Add Users</div>
+					<div class="modal-header">{{localize 'user_admin_add'}}</div>
 					<div class="modal-body">
 						<form onsubmit={{action "onAddUser"}}>
 							<div class="form-row">
 								<div class="col">
-									<label for="newUserFirstname">Firstname</label>
-									{{input id="newUserFirstname" type="text" class="form-control" placeholder="Firstname" value=newUser.firstname}}
+									<label for="newUserFirstname">{{localize 'firstname'}}</label>
+									{{input id="newUserFirstname" type="text" class="form-control" placeholder="" value=newUser.firstname}}
 								</div>
 								<div class="col">
-									<label for="newUserLastname">Lastname</label>
-									{{input id="newUserLastname" type="text" class="form-control" placeholder="Lastname" value=newUser.lastname}}
+									<label for="newUserLastname">{{localize 'lastname'}}</label>
+									{{input id="newUserLastname" type="text" class="form-control" placeholder="" value=newUser.lastname}}
 								</div>
 								<div class="col">
-									<label for="newUserEmail">Email</label>
-									{{input id="newUserEmail" type="email" class="form-control" placeholder="Email" value=newUser.email}}
+									<label for="newUserEmail">{{localize 'email'}}</label>
+									{{input id="newUserEmail" type="email" class="form-control" placeholder="" value=newUser.email}}
 								</div>
 							</div>
 							<Ui::UiSpacer @size="200" />
@@ -27,9 +27,9 @@
 						</form>
 						<form onsubmit={{action "onAddUser"}} role="form">
 							<div class="form-group">
-								<label for="edit-group-desc">Bulk Upload</label>
-								{{textarea id="bulkUsers" value=bulkUsers class="form-control" rows="5" placeholder="firstname, lastname, email"}}
-								<small class="form-text text-muted">Comma-delimited list: firstname, lastname, email</small>
+								<label for="edit-group-desc">{{localize 'user_admin_bulk'}}</label>
+								{{textarea id="bulkUsers" value=bulkUsers class="form-control" rows="5" placeholder=""}}
+								<small class="form-text text-muted">{{localize 'user_admin_bulk_format'}}</small>
 							</div>
 							{{ui/ui-button color=constants.Color.Green icon=constants.Icon.People light=true label=(localize 'add') onClick=(action "onAddUsers")}}
 						</form>

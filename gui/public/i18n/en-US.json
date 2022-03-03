@@ -9,6 +9,7 @@
     "copy": "Copy",
     "delete": "Delete",
     "deleted": "Deleted",
+    "remove": "Remove",
     "duplicate": "Duplicate",
     "edit": "Edit",
     "import": "Import",
@@ -27,7 +28,6 @@
     "print": "Print",
     "reject": "Reject",
     "rejected": "Rejected",
-    "remove": "Remove",
     "reply": "Reply",
     "reset": "Reset",
     "restore": "Restore",
@@ -55,6 +55,9 @@
     "icon": "Icon",
     "color": "Color",
     "running": "Running...",
+    "firstname": "Firstname",
+    "lastname": "Lastname",
+    "email": "Email",
 
     "filter": "Filter",
     "all": "All",
@@ -168,6 +171,22 @@
     "label_update": "Update Label",
     "label_delete": "Delete Label",
     "label_delete_confirm": "Are you sure you want to delete the label {1}?",
+    "user_admin_add": "Add Users",
+    "user_admin_bulk": "Bulk Upload",
+    "user_admin_bulk_format": "Comma-delimited list: firstname, lastname, email",
+    "group_add": "Add Group",
+    "group_name_explain": "Enter group name, e.g. Managers, Developers, Acme Team",
+    "group_member_add": "Add member",
+    "group_member_remove": "Remove member",
+    "group_delete": "Delete Group",
+    "group_delete_confirm": "Are you sure you want to delete this group?",
+    "group_delete_name": "Please type group name to confirm",
+    "group_delete_name_explain": "This will remove group membership information and associated permissions",
+    "group_edit": "Edit Group",
+    "group_find_user": "Find users",
+    "group_find_user_syntax": "firstname, lastname, email",
 
-    "x": "x"
+
+
+    "---": "---"
 }
