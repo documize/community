@@ -13,7 +13,7 @@ module.exports = function(defaults) {
 			fingerprintAssetMap: false,
 			prepend: '/',
 			extensions: ['js', 'css'],
-			exclude: ['tinymce/**', 'codemirror/**', 'prism/**', 'pdfjs/**']
+			exclude: ['tinymce/**', 'codemirror/**', 'prism/**', 'pdfjs/**', 'i18n/**']
 		},
 
 		minifyCSS: {
@@ -40,11 +40,9 @@ module.exports = function(defaults) {
 		'ember-cli-terser': {
 			enabled: !isDevelopment,
 			exclude: ['tinymce/**', 'codemirror/**', 'prism/**', 'pdfjs/**'],
-
-			hiddenSourceMap: true,
-
 			terser: {
 			},
+			hiddenSourceMap: true,
 
 			// minifyJS: {
 			// 	enabled: !isDevelopment,
