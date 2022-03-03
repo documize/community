@@ -53,6 +53,7 @@
     "name": "Name",
     "description": "Description",
     "icon": "Icon",
+    "color": "Color",
     "running": "Running...",
 
     "filter": "Filter",
@@ -82,9 +83,7 @@
     "approval_anybody": "Approval required from any approver",
     "approval_majority": "Majority approval required from approvers",
     "approval_unanimous": "Unanimous approval required from all approvers",
-
     "template_published": "Published Template",
-
     "block_published": "Published Block",
 
     "auth_email_password": "Built-in email/password",
@@ -110,10 +109,8 @@
     "restore_confirm": "Confirm Restore",
     "restore_confirm_input": "Please type RESTORE to commence the process",
     "restore_warn": "You should only restore to an empty Documize Community instance",
-
     "changelog_available": "Product update is available",
     "changelog_guidance": "To upgrade, replace existing binary and restart Documize Community.",
-
     "customize_name": "Site Name",
     "customize_name_explain": "Provide short title for this Documize Community instance",
     "customize_message": "Site Message",
@@ -142,6 +139,35 @@
     "search_reindex_rebuild": "Rebuild",
     "search_reindex_start": "Starting search re-index process",
     "search_reindex_finish": "Search re-indexing complete",
+    "smtp_host": "Host",
+    "smtp_host_explain": "e.g. my.host.com",
+    "smtp_port": "Port",
+    "smtp_port_explain": "e.g. 587",
+    "smtp_username": "Username",
+    "smtp_username_explain": "e.g. Login username for SMTP server",
+    "smtp_password": "Password",
+    "smtp_password_explain": "e.g. Login password for SMTP server",
+    "smtp_sender_email": "Sender Email",
+    "smtp_sender_email_explain": "e.g. user@example.org",
+    "smtp_sender_name": "Sender Name",
+    "smtp_sender_name_explain": "e.g. Documize",
+    "smtp_fqdn": "Sender Server Fully Qualified Domain Name",
+    "smtp_fqdn_explain": "(optional) SMTP can require valid domain name, e.g. docs.example.org",
+    "smtp_anon_auth": "Anonymous Authentication (Ignore Credentials)",
+    "smtp_base64": "Base64 Encode Credentials",
+    "smtp_ssl": "Use SSL",
+    "space_admin_export": "Export All Content",
+    "space_admin_make_owner": "Add myself as owner",
+    "space_admin_delete": "Delete space",
+    "space_admin_empty": "There are no shared spaces to manage",
+    "space_admin_delete_title": "Space Deletion",
+    "space_admin_delete_check": "Are you sure you want to delete this space and all documents?",
+    "space_admin_confirm": "Please type space name to confirm",
+    "space_admin_confirm_explain": "This will delete all documents and templates within this space!",
+    "label_add": "Add Label",
+    "label_update": "Update Label",
+    "label_delete": "Delete Label",
+    "label_delete_confirm": "Are you sure you want to delete the label {1}?",
 
     "x": "x"
 }

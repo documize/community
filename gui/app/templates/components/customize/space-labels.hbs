@@ -17,8 +17,8 @@
 					</div>
 					<div class="grid-cell-2 grid-cell-right">
 						{{#ui/ui-toolbar dark=false light=true raised=false large=false bordered=false}}
-							{{ui/ui-toolbar-icon icon=constants.Icon.Edit color=constants.Color.Green tooltip="Update label" onClick=(action "onShowUpdateModal" label)}}
-							{{ui/ui-toolbar-icon icon=constants.Icon.Delete color=constants.Color.Red tooltip="Delete label" onClick=(action "onShowDeleteModal" label)}}
+							{{ui/ui-toolbar-icon icon=constants.Icon.Edit color=constants.Color.Green tooltip=(localize 'update') onClick=(action "onShowUpdateModal" label)}}
+							{{ui/ui-toolbar-icon icon=constants.Icon.Delete color=constants.Color.Red tooltip=(localize 'delete') onClick=(action "onShowDeleteModal" label)}}
 						{{/ui/ui-toolbar}}
 					</div>
 				</div>
@@ -30,14 +30,14 @@
 <div id="add-label-modal" class="modal" tabindex="-1" role="dialog">
 	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
-			<div class="modal-header">Add Label</div>
+			<div class="modal-header">{{localize 'label_add'}}</div>
 			<div class="modal-body">
 				<div class="form-group">
-					<label for="add-label-name">Name</label>
-					{{input type="text" id="add-label-name" class="form-control mousetrap" placeholder="Label name" value=labelName}}
+					<label for="add-label-name">{{localize 'name'}}</label>
+					{{input type="text" id="add-label-name" class="form-control mousetrap" placeholder="" value=labelName}}
 				</div>
 				<div class="form-group">
-					<label>Color</label>
+					<label>{{localize 'color'}}</label>
 					{{ui/label-color-picker onChange=(action "onSetColor")}}
 				</div>
 			</div>
@@ -53,14 +53,14 @@
 <div id="edit-label-modal" class="modal" tabindex="-1" role="dialog">
 	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
-			<div class="modal-header">Update Label</div>
+			<div class="modal-header">{{localize 'label_update'}}</div>
 			<div class="modal-body">
 				<div class="form-group">
-					<label for="edit-label-name">Name</label>
-					{{input type="text" id="edit-label-name" class="form-control mousetrap" placeholder="Label name" value=labelName}}
+					<label for="edit-label-name">{{localize 'name'}}</label>
+					{{input type="text" id="edit-label-name" class="form-control mousetrap" placeholder="" value=labelName}}
 				</div>
 				<div class="form-group">
-					<label>Color</label>
+					<label>{{localize 'color'}}</label>
 					{{ui/label-color-picker onChange=(action "onSetColor")}}
 				</div>
 			</div>
@@ -73,6 +73,6 @@
 	</div>
 </div>
 
-{{#ui/ui-dialog title="Delete Label" confirmCaption="Delete" buttonColor=constants.Color.Red show=showDeleteDialog onAction=(action "onDelete")}}
-	<p>Are you sure you want to delete the label <b>{{deleteLabel.name}}?</b></p>
+{{#ui/ui-dialog title=(localize 'label_delete') confirmCaption="Delete" buttonColor=constants.Color.Red show=showDeleteDialog onAction=(action "onDelete")}}
+	<p>{{localize 'label_delete_confirm' deleteLabel.name}}</p>
 {{/ui/ui-dialog}}
