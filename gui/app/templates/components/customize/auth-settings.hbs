@@ -4,28 +4,28 @@
 			<ul class="options">
 				<li class="option {{if isDocumizeProvider "selected"}}" {{action "onDocumize"}} role="button" tabindex="0">
 					<div class="text-header">Documize</div>
-					<div class="text">Built-in email/password</div>
+					<div class="text">{{localize 'auth_email_password'}}</div>
 					{{#if isDocumizeProvider}}
 						<i class="dicon {{constants.Icon.Tick}}" />
 					{{/if}}
 				</li>
 				<li class="option {{if isKeycloakProvider "selected"}}" {{action "onKeycloak"}} role="button" tabindex="0">
 					<div class="text-header">Keycloak</div>
-					<div class="text">Via authentication server</div>
+					<div class="text">{{localize 'auth_connect_keycloak'}}</div>
 					{{#if isKeycloakProvider}}
 						<i class="dicon {{constants.Icon.Tick}}" />
 					{{/if}}
 				</li>
 				<li class="option {{if isLDAPProvider "selected"}}" {{action "onLDAP"}} role="button" tabindex="0">
 					<div class="text-header">LDAP</div>
-					<div class="text">Connect to LDAP/Active Directory</div>
+					<div class="text">{{localize 'auth_connect_ldap'}}</div>
 					{{#if isLDAPProvider}}
 						<i class="dicon {{constants.Icon.Tick}}" />
 					{{/if}}
 				</li>
                 <li class="option {{if isCASProvider "selected"}}" {{action "onCAS"}} role="button" tabindex="0">
                     <div class="text-header">CAS</div>
-                    <div class="text">Via Central Authentication Server</div>
+                    <div class="text">{{localize 'auth_connect_cas'}}</div>
                     {{#if isCASProvider}}
                         <i class="dicon {{constants.Icon.Tick}}" />
                     {{/if}}
@@ -174,7 +174,8 @@
 			{{ui/ui-button color=constants.Color.Yellow light=true label="Test →" onClick=(action "onLDAPPreview")}}
 			{{ui/ui-button-gap}}
 		{{/if}}
-        {{#if isCASProvider}}
+
+		{{#if isCASProvider}}
             <div class="form-group">
                 <label for="cas-url">CAS Server URL</label>
                 {{focus-input id="cas-url" type="text" value=casConfig.url class=(if casErrorUrl "form-control is-invalid" "form-control")}}
@@ -183,9 +184,10 @@
             <div class="form-group">
                 <label for="cas-redirect-url">Documize CAS URL</label>
                 {{focus-input id="cas-redirect-url" type="text" value=casConfig.redirectUrl class=(if casErrorRedirectUrl "form-control is-invalid" "form-control")}}
-                <small class="form-text text-muted">e.g. http://Documize URL/auth/cas</small>
+                <small class="form-text text-muted">e.g. http://DocumizeURL/auth/cas</small>
             </div>
         {{/if}}
+
 		{{ui/ui-button color=constants.Color.Green light=true icon=constants.Icon.Locked label=(localize 'activate') onClick=(action "onSave")}}
 	</form>
 

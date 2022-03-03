@@ -1,10 +1,8 @@
 <div class="product-update">
 	<div class="update-status">
 		{{#if appMeta.updateAvailable }}
-			<a  class="title" href="https://www.documize.com/community/downloads">Product update is available :)</a>
-			<p class="instructions">
-				To upgrade, replace existing binary and restart Documize Community.
-			</p>
+			<a  class="title" href="https://www.documize.com/community">{{localize 'changelog_available'}}</a>
+			<p class="instructions">{{localize 'changelog_guidance'}}</p>
 			<Ui::UiSpacer @size="400" />
 		{{/if}}
 	</div>

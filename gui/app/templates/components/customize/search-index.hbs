@@ -1,7 +1,7 @@
 <div class="view-customize">
 	<form>
 		<div class="form-group">
-			<p>It can take up to 30 minutes to rebuild the search index.</p>
+			<p>{{localize 'search_reindex'}}</p>
 			{{ui/ui-button color=constants.Color.Yellow light=true icon=constants.Icon.Search label=buttonLabel onClick=(action "reindex")}}
 		</div>
 	</form>

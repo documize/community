@@ -21,8 +21,6 @@ export default Service.extend({
     },
 
     localize(key, ...args) {
-        console.log(this.session.locale);
-
         let str = "";
 
         switch(this.session.locale) {
@@ -33,13 +31,15 @@ export default Service.extend({
                 str = this.langs.enUS[key];
         }
 
-        if (str === "") {
-            console.log("i18n miss", key);
-            return;
+        if (_.isUndefined(str)) {
+            console.log(">>>>>>>>>>>> i18n missed key", key);
+            return `!${key}!`;
         }
 
-        for (let i = 0; i < args.length; i++) {
-            str = str.replace(`{${i+1}}`, args[i]);
+        if (args) {
+            for (let i = 0; i < args.length; i++) {
+                str = str.replace(`{${i+1}}`, args[i]);
+            }
         }
 
         return str;
