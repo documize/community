@@ -222,6 +222,8 @@ export default Component.extend(AuthProvider, ModalMixin, Notifier, {
 			})
 			this.set('groups', groups);
 
+			if (_.isNull(groups)) return;
+
 			this.modalOpen("#group-member-modal", {"show": true});
 		},
 
