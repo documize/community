@@ -5,12 +5,10 @@
 	<Layout::Grid::Sidebar>
 		<div class="sidebar-content">
 			<div class="section">
-				<div class="title">PROFILE</div>
+				<div class="title">{{localize 'profile'}}</div>
+				<div class="text">{{localize 'profile_explain'}}</div>
 				<div class="text">
-					Set your personal information or reset your password.
-				</div>
-				<div class="text">
-					Have a product idea, suggestion or some feedback? <a href="mailto:support@documize.com">Get in touch.</a>
+					{{localize 'product_feedback'}} <a href="mailto:support@documize.com">{{localize 'get_in_touch'}}</a>
 				</div>
 			</div>
 		</div>
@@ -18,7 +16,7 @@
 	<Layout::Grid::Content>
 		{{layout/logo-heading
 			title=session.user.fullname
-			desc="Manage your profile and password"
+			desc=(localize 'profile_explain')
 			icon=constants.Icon.Person}}
 
 		{{user/user-profile model=model save=(action "save")}}

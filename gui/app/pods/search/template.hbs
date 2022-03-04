@@ -5,29 +5,29 @@
 	<Layout::Grid::Sidebar>
 		<div class="sidebar-content">
 			<div class="section">
-				<div class="title">Match Filter</div>
+				<div class="title">{{localize 'filter'}}</div>
 				<div class="list">
 					<div class="item">
 						{{input id="search-1" type="checkbox" checked=matchFilter.matchDoc}}
-						<label for="search-1" class="name">Document name</label>
+						<label for="search-1" class="name">{{localize 'search_doc_name'}}</label>
 					</div>
 					<div class="item">
 						{{input id="search-2" type="checkbox" checked=matchFilter.matchContent}}
-						<label for="search-2" class="name">Document content</label>
+						<label for="search-2" class="name">{{localize 'search_doc_content'}}</label>
 					</div>
 					<div class="item">
 						{{input id="search-3" type="checkbox" checked=matchFilter.matchTag}}
-						<label for="search-3" class="name">Tag name</label>
+						<label for="search-3" class="name">{{localize 'search_tag_name'}}</label>
 					</div>
 					<div class="item">
 						{{input id="search-4" type="checkbox" checked=matchFilter.matchFile}}
-						<label for="search-4" class="name">Attachment name</label>
+						<label for="search-4" class="name">{{localize 'search_attachment_name'}}</label>
 					</div>
 				</div>
 			</div>
 			<Ui::UiSpacer @size="200" />
 			<div class="section">
-				<div class="title">query examples</div>
+				<div class="title">{{localize 'search_example_title'}}</div>
 				<div class="view-search">
 					{{#if (eq appMeta.storageProvider constants.StoreProvider.MySQL)}}
 						<div class="syntax">
@@ -82,8 +82,8 @@
 
 	<Layout::Grid::Content>
 		{{layout/logo-heading
-			title="Search"
-			desc="Find content"
+			title=(localize 'search')
+			desc=(localize 'search_explain')
 			icon=constants.Icon.Search}}
 
 		{{search/search-view
