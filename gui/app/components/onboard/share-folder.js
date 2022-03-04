@@ -20,7 +20,9 @@ export default Component.extend({
     slug: "",
     processing: false,
 
-    didRender() {
+    didRender(...args) {
+        this._super(...args);
+
         let self = this;
 
         $("#stage-1-firstname").focus();
@@ -97,8 +99,6 @@ export default Component.extend({
             if ($("#stage-2-password-confirm").val() !== $("#stage-2-password").val()) {
                 $("#stage-2-password").addClass("is-invalid");
                 $("#stage-2-password-confirm").addClass("is-invalid");
-                // $(".mismatch").show();
-                // $(".password-status").attr("src", "/assets/img/onboard/lock-red.png");
                 return;
             }
 
@@ -115,7 +115,6 @@ export default Component.extend({
                 self.set('processing', true);
 
                 $(".stage-3").fadeIn();
-                // $("#spinner-1").show();
 
                 var payload = '{ "password": "' + $("#stage-2-password").val() + '", "serial": "' + self.serial + '", "firstname": "' + $("#stage-1-firstname").val() + '", "lastname": "' + $("#stage-1-lastname").val() + '" }';
                 var password = $("#stage-2-password").val();
@@ -126,11 +125,6 @@ export default Component.extend({
                     self.get('session').authenticate('authenticator:documize', creds).then(() => {
                         window.location.href = '//' + window.location.host + '/s/' + self.folderId + "/" + self.slug;
                     });
-
-                    // var credentials = encodingUtil.Base64.encode(netUtil.getSubdomain() + ":" + user.email + ":" + password);
-                    // self.session.sso(credentials).then(function() {
-                    //     window.location.href = 's/' + self.folderId + "/" + self.slug;
-                    // });
                 }, function() {
                     window.location.href = "/";
                 });
