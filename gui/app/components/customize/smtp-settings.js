@@ -17,13 +17,19 @@ import Component from '@ember/component';
 
 export default Component.extend(Notifier, {
 	appMeta: service(),
+	i18n: service(),
+
 	SMTPHostEmptyError: empty('model.smtp.host'),
 	SMTPPortEmptyError: empty('model.smtp.port'),
 	SMTPSenderEmptyError: empty('model.smtp.sender'),
 	senderNameError: empty('model.smtp.senderName'),
-
 	buttonText: 'Save & Test',
 	testSMTP: null,
+
+	init() {
+		this._super(...arguments);
+		this.buttonText = this.i18n.localize('smtp_save_test');
+	},
 
 	actions: {
 		saveSMTP() {
@@ -50,11 +56,11 @@ export default Component.extend(Notifier, {
 				},
 			);
 
-			this.set('buttonText', 'Please wait...');
-			this.notifyInfo('Sending test email to you');
+			this.set('buttonText', this.i18n.localize('please_test'));
+			this.notifyInfo(this.i18n.localize('smtp_sent_test_email'));
 
 			this.get('saveSMTP')().then((result) => {
-				this.set('buttonText', 'Save & Test');
+				this.set('buttonText', this.i18n.localize('smtp_save_test'));
 				this.set('testSMTP', result);
 
 				this.set('appMeta.configured', true);

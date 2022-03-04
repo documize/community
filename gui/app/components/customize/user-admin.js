@@ -15,10 +15,12 @@ import ModalMixin from '../../mixins/modal';
 import Notifier from '../../mixins/notifier';
 import stringUtil from '../../utils/string';
 import Component from '@ember/component';
+import { inject as service } from '@ember/service';
 
 export default Component.extend(AuthProvider, ModalMixin, Notifier, {
 	bulkUsers: '',
 	newUser: null,
+	i18n: service(),
 
 	init() {
 		this._super(...arguments);
@@ -53,7 +55,7 @@ export default Component.extend(AuthProvider, ModalMixin, Notifier, {
 
 			this.get('onAddUser')(user).then(() => {
 				this.set('newUser', { firstname: '', lastname: '', email: '', active: true });
-				this.notifySuccess('Added user');
+				this.notifySuccess(this.i18n.localize('added'));
 			});
 
 			this.modalClose("#add-user-modal");
@@ -68,7 +70,7 @@ export default Component.extend(AuthProvider, ModalMixin, Notifier, {
 
 			this.get('onAddUsers')(this.get('bulkUsers')).then(() => {
 				this.set('bulkUsers', '');
-				this.notifySuccess('Added users');
+				this.notifySuccess(this.i18n.localize('added'));
 			});
 
 			this.modalClose("#add-user-modal");

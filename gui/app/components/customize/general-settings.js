@@ -68,7 +68,7 @@ export default Component.extend(Notifier, {
 					});
 
 					this.on("queuecomplete", function () {
-						self.notifySuccess('Logo uploaded');
+						self.notifySuccess(this.i18n.localize('saved'));
 					});
 
 					this.on("error", function (error, msg) {
@@ -191,7 +191,6 @@ export default Component.extend(Notifier, {
 				set(this, 'messageError', false);
 				set(this, 'conversionEndpointError', false);
 
-
 				if (domainChanged) {
 					let router = this.get('router');
 					router.transitionTo('auth.login');
@@ -206,7 +205,7 @@ export default Component.extend(Notifier, {
 
 		onDefaultLogo() {
 			this.get('onDefaultLogo')(this.get('appMeta.orgId'));
-			this.notifySuccess('Using default logo');
+			this.notifySuccess(this.i18n.localize('saved'));
 		}
 	}
 });

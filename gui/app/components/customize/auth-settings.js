@@ -23,6 +23,7 @@ import Component from '@ember/component';
 export default Component.extend(ModalMixin, Notifier, {
 	appMeta: service(),
 	globalSvc: service('global'),
+	i18n: service(),
 
 	isDocumizeProvider: computed('authProvider', function() {
 		return this.get('authProvider') === this.get('constants').AuthProvider.Documize;
@@ -90,7 +91,7 @@ export default Component.extend(ModalMixin, Notifier, {
 		let provider = this.get('authProvider');
 		let constants = this.get('constants');
 
-		this.set('ldapPreview', {isError: true, message: 'Unable to connect'});
+		this.set('ldapPreview', {isError: true, message: this.i18n.localize('auth_ldap_preview_error')});
 
 		switch (provider) {
 			case constants.AuthProvider.Documize: {
@@ -176,7 +177,7 @@ export default Component.extend(ModalMixin, Notifier, {
 			this.get('globalSvc').previewLDAP(config).then((preview) => {
 				this.set('ldapPreview', preview);
 				this.modalOpen("#ldap-preview-modal", {"show": true});
-				this.notifySuccess('Saved');
+				this.notifySuccess(this.i18n.localize('saved'));
 			});
 		},
 
@@ -314,7 +315,7 @@ export default Component.extend(ModalMixin, Notifier, {
 					});
 				}
 
-				this.notifySuccess('Saved');
+				this.notifySuccess(this.i18n.localize('saved'));
 			});
 		}
 	}

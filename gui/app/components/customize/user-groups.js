@@ -174,7 +174,7 @@ export default Component.extend(AuthProvider, ModalMixin, {
 		},
 
 		onSearch() {
-			debounce(this, function() { this.loadGroupInfo(); }, 450);
+			debounce(this, this.loadGroupInfo, 450);
 		},
 
 		onLeaveGroup(userId) {

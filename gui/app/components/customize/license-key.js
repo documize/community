@@ -22,10 +22,13 @@ export default Component.extend(Notifier, Modals, {
 	subscription: null,
 	planCloud: false,
 	planSelfhost: false,
-	comment: 'Nothing in particular -- just passing through. Please close my Documize account.',
+	comment: '',
 
 	didReceiveAttrs() {
 		this._super(...arguments);
+
+		this.set('comment', this.i18n.localize('close_account'));
+
 		this.get('global').getSubscription().then((subs) => {
 			this.set('subscription', subs);
 			if (subs.plan === 'Installed') {
@@ -41,7 +44,7 @@ export default Component.extend(Notifier, Modals, {
 	actions: {
 		saveLicense() {
 			this.get('global').setLicense(this.get('license')).then(() => {
-				this.notifySuccess('Saved');
+				this.notifySuccess(this.i18n.localize('saved'));
 				window.location.reload();
 			});
 		},
@@ -55,7 +58,7 @@ export default Component.extend(Notifier, Modals, {
 			let comment = this.get('comment');
 
 			this.get('global').deactivate(comment).then(() => {
-				this.notifySuccess('Saved');
+				this.notifySuccess(this.i18n.localize('saved'));
 				this.modalOpen("#deactivation-confirmation-modal", {"show": true});
 			});
 		}
