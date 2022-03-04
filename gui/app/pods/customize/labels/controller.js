@@ -15,6 +15,7 @@ import Controller from '@ember/controller';
 
 export default Controller.extend(Notifier, {
 	labelSvc: service('label'),
+	i18n: service(),
 
 	load() {
 		this.get('labelSvc').getAll().then((labels) => {
@@ -26,21 +27,21 @@ export default Controller.extend(Notifier, {
 		onAdd(label) {
 			this.get('labelSvc').add(label).then(() => {
 				this.load();
-				this.notifySuccess('Label added');
+				this.notifySuccess(this.i18n.localize('added'));
 			});
 		},
 
 		onDelete(id) {
 			this.get('labelSvc').delete(id).then(() => {
 				this.load();
-				this.notifySuccess('Label deleted');
+				this.notifySuccess(this.i18n.localize('deleted'));
 			});
 		},
 
 		onUpdate(label) {
 			this.get('labelSvc').update(label).then(() => {
 				this.load();
-				this.notifySuccess('Label saved');
+				this.notifySuccess(this.i18n.localize('saved'));
 			});
 		}
 	}

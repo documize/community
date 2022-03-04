@@ -18,6 +18,7 @@ export default Route.extend(AuthenticatedRouteMixin, {
 	appMeta: service(),
 	session: service(),
 	global: service(),
+	i18n: service(),
 
 	beforeModel() {
 		if (!this.get("session.isGlobalAdmin")) {
@@ -32,6 +33,6 @@ export default Route.extend(AuthenticatedRouteMixin, {
 	},
 
 	activate() {
-		this.get('browser').setTitle('SMTP Settings');
+		this.get('browser').setTitle(this.i18n.localize('admin_mail_server'));
 	}
 });

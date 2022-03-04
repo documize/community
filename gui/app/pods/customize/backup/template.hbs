@@ -1,6 +1,6 @@
 {{layout/logo-heading
-	title="Backup & Restore"
-	desc="Export all content to self-contained single zip file"
+	title=(localize 'admin_backup')
+	desc=(localize 'admin_backup_explain')
 	icon=constants.Icon.Database}}
 
 {{customize/backup-restore onBackup=(action "onBackup") onRestore=(action "onRestore")}}

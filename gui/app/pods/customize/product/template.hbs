@@ -1,6 +1,6 @@
 {{layout/logo-heading
-	title="Changelog"
-	desc=(concat "You are running Documize " appMeta.edition " " appMeta.version " (build " appMeta.revision ")")
+	title=(localize 'admin_changelog')
+	desc=(concat appMeta.edition " " appMeta.version " (" appMeta.revision ")")
 	icon=constants.Icon.Announce}}
 
 {{customize/change-log}}

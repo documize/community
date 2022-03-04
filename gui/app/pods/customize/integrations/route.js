@@ -18,6 +18,7 @@ export default Route.extend(AuthenticatedRouteMixin, {
 	orgService: service('organization'),
 	appMeta: service(),
 	session: service(),
+	i18n: service(),
 
 	beforeModel() {
 		if (!this.get("session.isAdmin")) {
@@ -42,6 +43,6 @@ export default Route.extend(AuthenticatedRouteMixin, {
 	},
 
 	activate() {
-		this.get('browser').setTitle('Integrations');
+		this.get('browser').setTitle(this.i18n.localize('admin_integrations'));
 	}
 });

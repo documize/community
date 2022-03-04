@@ -1,6 +1,7 @@
 {
     "none": "None",
     "add": "Add",
+    "added": "Added",
     "activate": "Activate",
     "approve": "Approve",
     "authenticate": "Authenticate",
@@ -22,6 +23,7 @@
     "join": "Join",
     "leave": "Leave",
     "login": "Login",
+    "authentication": "Authentication",
     "move": "Move",
     "next": "Next",
     "ok": "OK",
@@ -35,6 +37,7 @@
     "restore": "Restore",
     "request": "Request",
     "save": "Save",
+    "saved": "Saved",
     "search": "Search",
     "send": "Send",
     "share": "Share",
@@ -43,7 +46,6 @@
     "unassigned": "Unassigned",
     "update": "Update",
     "version": "Version",
-    "added": "Added",
     "viewed": "Viewed",
     "edited": "Edited",
     "draft": "Draft",
@@ -63,6 +65,7 @@
     "password": "Password",
     "password_confirm": "Confirm Password",
     "encryption": "Encryption",
+    "notice": "Notice",
 
     "filter": "Filter",
     "all": "All",
@@ -71,10 +74,11 @@
     "personal": "Personal",
 
     "label": "Label",
+    "labels": "Labels",
     "labels_none": "No labels",
-
     "space": "Space",
     "spaces": "Spaces",
+
     "space_new": "New Space",
     "space_name": "Space name",
     "space_description": "Space description",
@@ -259,6 +263,26 @@
     "auth_cas_back_url": "Documize CAS URL",
     "auth_cas_back_url_explain": "e.g. http://Documize-URL/auth/cas",
 
+    "administration": "Administration",
+    "admin_general": "General",
+    "admin_general_explain": "Options to help you customize Documize Community",
+    "admin_user_management": "User Management",
+    "admin_user_management_explain": "Manage basic information, passwords and permissions",
+    "admin_user_groups": "User Groups",
+    "admin_user_groups_explain": "Define groups for easier user and permission management",
+    "admin_integrations": "Integrations",
+    "admin_integrations_explain": "Enable and configure third party integrations",
+    "admin_mail_server": "Mail Server",
+    "admin_mail_server_explain": "Specify mail server details required for sending user invite and notification emails",
+    "admin_audit_log": "Audit Log",
+    "admin_backup": "Backup & Restore",
+    "admin_backup_explain": "Export all content to self-contained single zip file",
+    "admin_billing": "Billing",
+    "admin_changelog": "Changelog",
+    "admin_auth_explain": "Choose user authentication provider — Documize, Redhat Keycloak, LDAP/AD, Central Authentication Server",
+    "admin_spaces_explain": "Delete spaces, take ownership of shared and orphaned spaces",
+    "admin_labels_explain": "Group and navigate spaces with visual labels",
+    "admin_search_explain": "Rebuild the search index",
 
-    "---": "---"
+    "third_party": "Documize Community utilizes open source libraries and components from third parties"
 }
