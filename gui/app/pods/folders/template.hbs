@@ -6,13 +6,11 @@
 		{{#if (or session.isEditor session.isAdmin)}}
 			{{#ui/ui-toolbar dark=false light=false raised=false large=false bordered=false}}
 				{{#if session.isEditor}}
-					{{ui/ui-toolbar-button icon=constants.Icon.Plus color=constants.Color.Green
-						label=(localize 'space') onClick=(action "onShowModal")}}
+					{{ui/ui-toolbar-button icon=constants.Icon.Plus color=constants.Color.Green label=(localize 'space') onClick=(action "onShowModal")}}
 					{{ui/ui-toolbar-divider}}
 				{{/if}}
 				{{#if session.isAdmin}}
-					{{ui/ui-toolbar-icon icon=constants.Icon.Settings color=constants.Color.Green
-						linkTo="customize"}}
+					{{ui/ui-toolbar-icon icon=constants.Icon.Settings color=constants.Color.Green linkTo="customize"}}
 				{{/if}}
 			{{/ui/ui-toolbar}}
 		{{/if}}

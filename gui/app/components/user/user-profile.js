@@ -87,10 +87,5 @@ export default Component.extend(AuthProvider, {
 				set(this, 'password.confirmation', '');
 			});
 		}
-
-		// onThemeChange(theme) {
-		// 	this.get('appMeta').setTheme(theme);
-		// 	this.set('model.theme', theme);
-		// }
 	}
 });

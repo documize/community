@@ -11,14 +11,17 @@
 
 import Route from '@ember/routing/route';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
+import { inject as service } from '@ember/service';
 
 export default Route.extend(AuthenticatedRouteMixin, {
+	i18n: service(),
+
 	beforeModel() {
 		// this.transitionTo('folders');
 	},
 
 	activate: function () {
 		this._super(...arguments);
-		this.browser.setTitleWithoutSuffix('Aw, Snap!');
+		this.browser.setTitleWithoutSuffix(this.i18n.localize('not_found'));
 	}
 });

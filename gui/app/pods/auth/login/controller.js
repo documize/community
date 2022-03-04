@@ -65,15 +65,6 @@ export default Controller.extend(AuthProvider, {
 					this.set('invalidCredentials', true);
 				});
 			}
-			// if (this.get('isAuthProviderCAS')) {
-			//
-			// 	this.get('session').authenticate('authenticator:cas').then((response) => {
-			// 		this.transitionToRoute('folders');
-			// 		return response;
-			// 	}).catch(() => {
-			// 		this.set('invalidCredentials', true);
-			// 	});
-			// }
 		}
 	}
 });

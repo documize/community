@@ -2,8 +2,7 @@
 <Layout::MasterToolbar>
 	<div class="zone-1">
 		{{#ui/ui-toolbar dark=false light=false raised=false large=false bordered=false}}
-			{{ui/ui-toolbar-button themed=true uppercase=false
-				icon=constants.Icon.ArrowLeft label=document.name onClick=(action "onBack")}}
+			{{ui/ui-toolbar-button themed=true uppercase=false icon=constants.Icon.ArrowLeft label=document.name onClick=(action "onBack")}}
 		{{/ui/ui-toolbar}}
 	</div>
 	<div class="zone-2" />
@@ -14,7 +13,7 @@
 	<Layout::Grid::Sidebar>
 		<div class="sidebar-content">
 			<div class="section">
-				<div class="title">REVISIONS</div>
+				<div class="title">{{localize 'revisions'}}</div>
 				<div class="list">
 					{{#each revisions as |revision|}}
 						<div class="item {{if (eq selectedRevision revision) "selected"}}" {{action "onRevision" revision}}>
@@ -29,8 +28,8 @@
 
 	<Layout::Grid::Content>
 		{{layout/logo-heading
-			title="Content Revisions"
-			desc="Review previous content changes and roll back edits"
+			title=(localize 'content_revisions')
+			desc=(localize 'content_revisions_explain')
 			icon=constants.Icon.TimeBack}}
 
 		{{document/view-revision

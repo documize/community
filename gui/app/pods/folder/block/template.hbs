@@ -2,8 +2,7 @@
 <Layout::MasterToolbar>
 	<div class="zone-1">
 		{{#ui/ui-toolbar dark=false light=false raised=false large=false bordered=false}}
-			{{ui/ui-toolbar-button themed=true uppercase=false
-				icon=constants.Icon.ArrowLeft label=model.space.name onClick=(action "onBack")}}
+			{{ui/ui-toolbar-button themed=true uppercase=false icon=constants.Icon.ArrowLeft label=model.space.name onClick=(action "onBack")}}
 		{{/ui/ui-toolbar}}
 	</div>
 </Layout::MasterToolbar>
@@ -12,16 +11,16 @@
 	<Layout::Grid::Sidebar>
 		<div class="sidebar-content">
 			<div class="section">
-				<div class="title">about</div>
-				<div class="text">Manage reusable snippets of content for this space</div>
+				<div class="title">{{localize 'about'}}</div>
+				<div class="text">{{localize 'block_explain'}}</div>
 			</div>
 		</div>
 	</Layout::Grid::Sidebar>
 
 	<Layout::Grid::Content>
 		{{layout/logo-heading
-			title="Content Blocks"
-			desc="Content blocks provide re-usable content that can be inserted into any document"
+			title=(localize 'blocks')
+			desc=(localize 'block_explain')
 			icon=constants.Icon.Integrations}}
 
 		{{document/block-editor document=model.document folder=model.space block=model.block

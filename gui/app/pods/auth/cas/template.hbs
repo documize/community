@@ -1,12 +1,12 @@
 {{#if (is-equal model.mode "login")}}
     <div class="sso-box">
-        <p>Authenticating with CAS...</p>
+        <p>{{localize 'login_cas'}}</p>
         <img src="/assets/img/busy-gray.gif">
     </div>
 {{/if}}
 
 {{#if (is-equal model.mode "reject")}}
     <div class="sso-box">
-        <p>CAS authentication failure</p>
+        <p>{{localize 'login_cas_error'}}</p>
     </div>
 {{/if}}

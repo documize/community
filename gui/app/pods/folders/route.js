@@ -20,6 +20,7 @@ export default Route.extend(AuthenticatedRouteMixin, {
 	iconSvc: service('icon'),
 	localStorage: service(),
 	labelSvc: service('label'),
+	i18n: service(),
 
 	beforeModel() {
 		if (this.get('appMeta.setupMode')) {
@@ -72,6 +73,6 @@ export default Route.extend(AuthenticatedRouteMixin, {
 	},
 
 	activate() {
-		this.get('browser').setTitle('Spaces');
+		this.get('browser').setTitle(this.i18n.localize('spaces'));
 	}
 });
