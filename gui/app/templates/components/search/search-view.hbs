@@ -1,7 +1,7 @@
 <div class="view-search">
 	<form onsubmit={{action "onSearch"}} class="form-inline" role="form">
 		<div class="form-group">
-			{{focus-input type="text" value=keywords class="form-control mr-3 search-box" placeholder="keywords, tags"}}
+			{{focus-input type="text" value=keywords class="form-control mr-3 search-box" placeholder=(localize 'search_hint')}}
 		</div>
 		<div class="form-group">
 			{{ui/ui-button color=constants.Color.Green light=true label=(localize 'search') onClick=(action "onSearch")}}
@@ -11,6 +11,6 @@
 		{{search/search-results results=results keywords=keywords}}
 	{{else}}
 		<Ui::UiSpacer @size="300" />
-		<p class="color-red-700">Your search query is too short</p>
+		<p class="color-red-700">{{localize 'search_too_short'}}</p>
 	{{/if}}
 </div>

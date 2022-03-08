@@ -1,9 +1,8 @@
 <div class="view-search">
-
 	{{#if documents}}
 		<div class="text-right">
 			{{#ui/ui-toolbar dark=false light=false raised=false large=false bordered=false}}
-				{{#ui/ui-toolbar-icon icon=constants.Icon.Sort color=constants.Color.Gray tooltip="Sort"}}
+				{{#ui/ui-toolbar-icon icon=constants.Icon.Sort color=constants.Color.Gray tooltip=(localize 'sort')}}
 					{{#attach-popover class="ember-attacher-popper" hideOn="click" showOn="click" isShown=false placement="bottom-end" as |attacher|}}
 						<i class="dicon {{constants.Icon.Cross}} closer" {{action attacher.hide}} role="button" tabindex="0" title="Close" aria-label="Close" />
 						<div class="container">
@@ -12,13 +11,13 @@
 							<div class="text-center">
 								<ul class="ui-option-picker ui-option-picker-horiz">
 									<li class="option {{if sortBy.name "selected"}}" {{action "onSetSort" "name"}} role="button" tabindex="0" aria-label="Sort by name">
-										<div class="text">Name</div>
+										<div class="text">{{localize 'sort_by_name'}}</div>
 									</li>
 									<li class="option {{if sortBy.created "selected"}}" {{action "onSetSort" "created"}} role="button" tabindex="0" aria-label="Sort by created">
-										<div class="text">Created date</div>
+										<div class="text">{{localize 'sort_by_created'}}</div>
 									</li>
 									<li class="option {{if sortBy.updated "selected"}}" {{action "onSetSort" "updated"}} role="button" tabindex="0" aria-label="Sort by revised">
-										<div class="text">Last updated</div>
+										<div class="text">{{localize 'sort_by_revised'}}</div>
 									</li>
 								</ul>
 							</div>
@@ -28,10 +27,10 @@
 							<div class="text-center">
 								<ul class="ui-option-picker ui-option-picker-horiz">
 									<li class="option {{if sortBy.asc "selected"}}" {{action "onSetSort" "asc"}} role="button" tabindex="0" aria-label="Sort ascending">
-										<div class="text">Ascending</div>
+										<div class="text">{{localize 'sort_ascending'}}</div>
 									</li>
 									<li class="option {{if sortBy.desc "selected"}}" {{action "onSetSort" "desc"}} role="button" tabindex="0" aria-label="Sort descending">
-										<div class="text">Descending</div>
+										<div class="text">{{localize 'sort_descending'}}</div>
 									</li>
 								</ul>
 							</div>
@@ -66,12 +65,11 @@
 					<div class="space">{{result.space}}</div>
 					<div class="snippet">{{result.excerpt}}</div>
 					{{#if result.template}}
-						<div class="template">Template</div>
+						<div class="template">{{localize 'template'}}</div>
 					{{/if}}
 					{{folder/document-tags documentTags=result.tags}}
 				{{/link-to}}
 			</li>
 		{{/each}}
 	</ul>
-
 </div>
