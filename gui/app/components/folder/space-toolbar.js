@@ -27,6 +27,7 @@ export default Component.extend(ModalMixin, AuthMixin, Notifier, {
 	session: service(),
 	appMeta: service(),
 	pinned: service(),
+	i18n: service(),
 	spaceName: '',
 	copyTemplate: true,
 	copyPermission: true,
@@ -252,7 +253,7 @@ export default Component.extend(ModalMixin, AuthMixin, Notifier, {
 			let status = this.get('importStatus');
 			let documents = this.get('importedDocuments');
 
-			status.pushObject(`Converting ${filename}...`);
+			status.pushObject(this.i18n.localize('import_convert', filename));
 			documents.push(filename);
 
 			this.set('importStatus', status);
@@ -263,7 +264,7 @@ export default Component.extend(ModalMixin, AuthMixin, Notifier, {
 			let status = this.get('importStatus');
 			let documents = this.get('importedDocuments');
 
-			status.pushObject(`Successfully converted ${filename}`);
+			status.pushObject(this.i18n.localize('import_success', filename));
 			documents.pop(filename);
 
 			this.set('importStatus', status);
@@ -301,7 +302,7 @@ export default Component.extend(ModalMixin, AuthMixin, Notifier, {
 
 			this.get('documentSvc').export(spec).then((htmlExport) => {
 				this.get('browserSvc').downloadFile(htmlExport, this.get('space.slug') + '.html');
-				this.notifySuccess('Exported');
+				this.notifySuccess(this.i18n.localize('exported'));
 			});
 
 			this.modalClose("#space-export-modal");

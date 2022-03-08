@@ -16,10 +16,11 @@ import Component from '@ember/component';
 
 export default Component.extend({
 	localStorage: service(),
+	i18n: service(),
 	showDeleteDialog: false,
 	showMoveDialog: false,
 	selectedDocuments: A([]),
-	selectedCaption: 'document',
+	selectedCaption: '',
 	viewDensity: "1",
 
 	showAdd: computed('permissions.documentAdd', 'documents', function() {
@@ -34,6 +35,11 @@ export default Component.extend({
     showingAllDocs: computed('categoryFilter', 'numDocuments', 'documents', function() {
         return _.isEmpty(this.get('categoryFilter')) && this.get('documents').length == this.get("numDocuments");
     }),
+
+	init() {
+		this._super(...arguments);
+		this.selectedCaption = this.i18n.localize('document');
+	},
 
 	didReceiveAttrs() {
 		this._super(...arguments);
@@ -162,7 +168,7 @@ export default Component.extend({
 				list = _.without(list, documentId);
 			}
 
-			this.set('selectedCaption', list.length > 1 ? 'documents' : 'document');
+			this.set('selectedCaption', list.length > 1 ? this.i18n.localize('document') : this.i18n.localize('documents'));
 			this.set('selectedDocuments', A(list));
 		},
 

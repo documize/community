@@ -73,6 +73,6 @@
 	</div>
 </div>
 
-{{#ui/ui-dialog title=(localize 'label_delete') confirmCaption="Delete" buttonColor=constants.Color.Red show=showDeleteDialog onAction=(action "onDelete")}}
+{{#ui/ui-dialog title=(localize 'label_delete') confirmCaption=(localize 'delete') buttonColor=constants.Color.Red show=showDeleteDialog onAction=(action "onDelete")}}
 	<p>{{localize 'label_delete_confirm' deleteLabel.name}}</p>
 {{/ui/ui-dialog}}
