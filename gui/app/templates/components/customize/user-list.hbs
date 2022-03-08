@@ -165,7 +165,7 @@
 	</table>
 </div>
 
-{{#ui/ui-dialog title="Delete User" confirmCaption="Delete" buttonColor=constants.Color.Red show=showDeleteDialog onAction=(action "onDelete")}}
+{{#ui/ui-dialog title="Delete User" confirmCaption=(localize 'delete') buttonColor=constants.Color.Red show=showDeleteDialog onAction=(action "onDelete")}}
 	<p>{{localize 'user_delete_confirm' deleteUser.fullname}}</p>
 {{/ui/ui-dialog}}
 

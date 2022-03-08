@@ -22,6 +22,7 @@ export default Component.extend(ModalMixin, Notifer, {
 	categorySvc: service('category'),
 	appMeta: service(),
 	store: service(),
+	i18n: service(),
 	editId: '',
 	editName: '',
 	editDefault: false,
@@ -120,7 +121,7 @@ export default Component.extend(ModalMixin, Notifer, {
 
 			this.get('categorySvc').add(c).then(() => {
 				this.load();
-				this.notifySuccess('Category added');
+				this.notifySuccess(this.i18n.localize('added'));
 			});
 		},
 

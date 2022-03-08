@@ -34,6 +34,6 @@
 	{{/each}}
 </ul>
 
-{{#ui/ui-dialog title="Delete Attachment" confirmCaption="Delete" buttonColor=constants.Color.Red show=showDialog onAction=(action "onDelete")}}
+{{#ui/ui-dialog title="Delete Attachment" confirmCaption=(localize 'delete') buttonColor=constants.Color.Red show=showDialog onAction=(action "onDelete")}}
 	<p>Are you sure you want to delete this attachment?</p>
 {{/ui/ui-dialog}}

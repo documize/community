@@ -1,13 +1,13 @@
 {{layout/logo-heading
-	title="Categories"
-	desc="Assign categories to documents and decide who can view them"
+	title=(localize 'categories')
+	desc=(localize 'category_explain')
 	icon=constants.Icon.Category}}
 
 <div class="space-admin">
 	<div class="categories">
 		<form class="form" onsubmit={{action "onAdd"}} role="form">
 			<div class="form-group">
-				{{focus-input id="new-category-name" type="text" class="form-control mousetrap" placeholder="Category name" value=newCategory}}
+				{{focus-input id="new-category-name" type="text" class="form-control mousetrap" placeholder=(localize 'category') value=newCategory}}
 			</div>
 			{{ui/ui-button color=constants.Color.Green light=true
 				label=(localize 'add') icon=constants.Icon.Category
@@ -25,24 +25,23 @@
 				<div class="info">
 					<div class="name">{{cat.category}}</div>
 					<div class="desc">
-						Assigned to {{cat.documents}} {{if (eq cat.documents 1) "document" "documents" }}
-						and viewable by {{cat.users}} users/groups
+						{{localize 'category_assignment_summary' cat.documents cat.users}}
 					</div>
 					{{#unless cat.access}}
-						<p class="color-red-600 bold-500">You have no view permission for this category</p>
+						<p class="color-red-600 bold-500">{{localize 'category_no_access'}}</p>
 					{{/unless}}
 					{{#if cat.isDefault}}
-						<p class="color-yellow-600 bold-500">Default category for new content</p>
+						<p class="color-yellow-600 bold-500">{{localize 'category_default'}}</p>
 					{{/if}}
 				</div>
 				<div class="actions">
 					{{#ui/ui-toolbar dark=false light=true raised=true large=false bordered=true}}
 						{{ui/ui-toolbar-icon icon=constants.Icon.Locked color=constants.Color.Gray
-							tooltip="Set view permissions" onClick=(action "onShowAccessPicker" cat.id)}}
+							tooltip=(localize 'permissions') onClick=(action "onShowAccessPicker" cat.id)}}
 						{{ui/ui-toolbar-icon icon=constants.Icon.Edit color=constants.Color.Gray
-							tooltip="Edit category" onClick=(action "onShowEdit" cat.id)}}
+							tooltip=(localize 'edit') onClick=(action "onShowEdit" cat.id)}}
 						{{ui/ui-toolbar-icon icon=constants.Icon.Delete color=constants.Color.Red
-							tooltip="Delete category" onClick=(action "onShowDelete" cat.id)}}
+							tooltip=(localize 'delete') onClick=(action "onShowDelete" cat.id)}}
 					{{/ui/ui-toolbar}}
 				</div>
 			</div>
@@ -53,15 +52,15 @@
 <div id="category-edit-modal" class="modal" tabindex="-1" role="dialog">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
-			<div class="modal-header">Edit Category</div>
+			<div class="modal-header">{{localize 'edit'}}</div>
 			<div class="modal-body">
 				<div class="form-group">
-					{{focus-input id="edit-category-name" type="text" class="form-control mousetrap" placeholder="Category name" value=editName}}
+					{{focus-input id="edit-category-name" type="text" class="form-control mousetrap" placeholder=(localize 'name') value=editName}}
 				</div>
 				<div class="form-group">
-					<label>Default</label>
+					<label>{{localize 'default'}}</label>
 					{{x-toggle value=editDefault size="medium" theme="light" onToggle=(action (mut editDefault))}}
-					<small class="form-text text-muted">Automatically applies to newly created documents</small>
+					<small class="form-text text-muted">{{localize 'category_default_explain'}}</small>
 				</div>
 			</div>
 			<div class="modal-footer">
@@ -76,9 +75,9 @@
 <div id="category-delete-modal" class="modal" tabindex="-1" role="dialog">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
-			<div class="modal-header">Delete Category</div>
+			<div class="modal-header">{{localize 'delete'}}</div>
 			<div class="modal-body">
-				<p>Are you sure you want to delete this category?</p>
+				<p>{{localize 'categroy_delete_confirm'}}</p>
 			</div>
 			<div class="modal-footer">
 				{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'close') dismiss=true}}
@@ -89,8 +88,8 @@
 	</div>
 </div>
 
-{{#ui/ui-dialog title="Set Category Access" confirmCaption="Save" buttonColor=constants.Color.Green show=showCategoryAccess onAction=(action "onGrantAccess")}}
-	<p>Select who can view documents within category</p>
+{{#ui/ui-dialog title=(localize 'category_permissions') confirmCaption=(localize 'save') buttonColor=constants.Color.Green show=showCategoryAccess onAction=(action "onGrantAccess")}}
+	<p>{{localize 'category_permissions_explain'}}</p>
 	<div class="widget-list-picker">
 		<ul class="options">
 			{{#each categoryPermissions as |permission|}}
