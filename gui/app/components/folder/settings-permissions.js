@@ -27,6 +27,7 @@ export default Component.extend(Notifier, Modals, AuthProvider, {
 	router: service(),
 	appMeta: service(),
 	store: service(),
+	i18n: service(),
 	spacePermissions: null,
 	users: null,
 	searchText: '',
@@ -129,7 +130,7 @@ export default Component.extend(Notifier, Modals, AuthProvider, {
 	},
 
 	getDefaultInvitationMessage() {
-		return "Hey there, I am sharing the " + this.get('folder.name') + " space (in " + this.get("appMeta.title") + ") with you so we can both collaborate on documents.";
+		return this.i18n.localize('space_invite_message', this.get('folder.name'), this.get("appMeta.title"));
 	},
 
 	matchUsers(s) {
@@ -181,7 +182,7 @@ export default Component.extend(Notifier, Modals, AuthProvider, {
 		onSave() {
 			if (!this.get('isSpaceAdmin')) return;
 
-				let message = this.getDefaultInvitationMessage();
+			let message = this.getDefaultInvitationMessage();
 			let permissions = this.get('spacePermissions');
 			let folder = this.get('folder');
 			let payload = { Message: message, Permissions: permissions };
@@ -216,7 +217,7 @@ export default Component.extend(Notifier, Modals, AuthProvider, {
 			}
 
 			this.get('spaceSvc').savePermissions(folder.get('id'), payload).then(() => {
-				this.notifySuccess('Saved');
+				this.notifySuccess(this.i18n.localize('saved'));
 				this.get('onRefresh')();
 			});
 		},
@@ -263,7 +264,7 @@ export default Component.extend(Notifier, Modals, AuthProvider, {
 				return;
 			}
 
-				var result = {
+			var result = {
 				Message: message,
 				Recipients: []
 			};
