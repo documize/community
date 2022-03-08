@@ -5,19 +5,19 @@
 
 <form role="form">
 	<div class="form-group">
-		<label>Name</label>
+		<label>{{localize 'name'}}</label>
 		{{focus-input id="space-name" type="text" value=spaceName class=(if hasNameError "form-control is-invalid" "form-control") placeholder="Space name" autocomplete="off"}}
 	</div>
 
 	<div class="form-group">
-		<label>Description</label>
+		<label>{{localize 'description'}}</label>
 		<div id="space-desc" class="wysiwyg wysiwyg-editor">
 			{{{spaceDesc}}}
 		</div>
 	</div>
 
 	<div class="form-group">
-		<label>Visibility</label>
+		<label>{{localize 'visibility'}}</label>
 		{{ui/ui-select id="spacetypes-dropdown" content=spaceTypeOptions optionValuePath="id" optionLabelPath="label" selection=spaceType action=(action "onSetSpaceType")}}
 	</div>
 
@@ -37,7 +37,7 @@
 	<div class="form-group">
 		<label>Label</label>
 		<ul class="space-label-picker">
-			<li class="label none {{if (eq spaceLabel "") "selected"}}" {{action "onSetLabel" ""}} role="button" tabindex="0">None</li>
+			<li class="label none {{if (eq spaceLabel "") "selected"}}" {{action "onSetLabel" ""}} role="button" tabindex="0">{{localize 'none'}}</li>
 			{{#each labels as |label|}}
 				<li class="label {{if (eq spaceLabel label.id) "selected"}}" role="button" tabindex="0"
 					style={{label.bgColor}}
@@ -49,15 +49,15 @@
 	</div>
 
 	<div class="form-group">
-		<label>Enable Feedback</label>
+		<label>{{localize 'feedback_enable'}}</label>
 		{{x-toggle value=allowLikes size="medium" theme="light" onToggle=(action (mut allowLikes))}}
 	</div>
 
 	{{#if allowLikes}}
 		<div class="form-group">
 			<label>Feedback Prompt</label>
-				{{input type="text" id="space-likes-prompt" class="form-control" placeholder="Enter prompt asking for user feedback" value=likes}}
-				<small class="form-text text-muted">Specify the prompt, e.g. Did this help you? Was this helpful? Did you find what you needed?</small>
+				{{input type="text" id="space-likes-prompt" class="form-control" placeholder=(localize 'feedback_prompt_hint') value=likes}}
+				<small class="form-text text-muted">{{localize 'feedback_prompt_explain'}}</small>
 		</div>
 	{{/if}}
 </form>

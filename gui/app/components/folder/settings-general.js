@@ -24,6 +24,7 @@ export default Component.extend(AuthMixin, Notifier, {
 	spaceSvc: service('folder'),
 	iconSvc: service('icon'),
 	localStorage: service('localStorage'),
+	i18n: service(),
 	isSpaceAdmin: computed('permissions', function() {
 		return this.get('permissions.spaceOwner') || this.get('permissions.spaceManage');
 	}),
@@ -120,9 +121,9 @@ export default Component.extend(AuthMixin, Notifier, {
 		let folder = this.get('space');
 
 		let spaceTypeOptions = A([]);
-		spaceTypeOptions.pushObject({id: constants.SpaceType.Private, label: 'Private - viewable only by me'});
-		spaceTypeOptions.pushObject({id: constants.SpaceType.Protected, label: 'Protected - access is restricted to selected users'});
-		spaceTypeOptions.pushObject({id: constants.SpaceType.Public, label: 'Public - can be seen by everyone'});
+		spaceTypeOptions.pushObject({id: constants.SpaceType.Private, label: this.i18n.localize('personal_explain')});
+		spaceTypeOptions.pushObject({id: constants.SpaceType.Protected, label: this.i18n.localize('protected_explain')});
+		spaceTypeOptions.pushObject({id: constants.SpaceType.Public, label: this.i18n.localize('public_explain')});
 		this.set('spaceTypeOptions', spaceTypeOptions);
 		this.set('spaceType', spaceTypeOptions.findBy('id', folder.get('spaceType')));
 
@@ -131,7 +132,7 @@ export default Component.extend(AuthMixin, Notifier, {
 		if (this.get('allowLikes')) {
 			this.set('likes', folder.get('likes'));
 		} else {
-			this.set('likes', 'Did this help you?');
+			this.set('likes', this.i18n.localize('likes_prompt'));
 		}
 
 		this.set('spaceName', this.get('space.name'));
@@ -184,7 +185,7 @@ export default Component.extend(AuthMixin, Notifier, {
 			space.set('labelId', this.get('spaceLabel'));
 
 			this.get('spaceSvc').save(space).then(() => {
-				this.notifySuccess('Saved');
+				this.notifySuccess(this.i18n.localize('saved'));
 			});
 		}
 	}

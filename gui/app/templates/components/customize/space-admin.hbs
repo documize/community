@@ -25,7 +25,7 @@
 						<Ui::UiSpacer @size="200" />
 						{{#ui/ui-toolbar dark=false light=true raised=true large=false bordered=true}}
 							{{ui/ui-toolbar-icon icon=constants.Icon.AddUser color=constants.Color.Green tooltip=(localize 'space_admin_make_owner') onClick=(action "onOwner" space.id)}}
-							{{ui/ui-toolbar-icon icon=constants.Icon.Delete color=constants.Color.Red tooltip=(localize 'space_admin_delete') onClick=(action "onShow" space.id)}}
+							{{ui/ui-toolbar-icon icon=constants.Icon.Delete color=constants.Color.Red tooltip=(localize 'space_delete') onClick=(action "onShow" space.id)}}
 						{{/ui/ui-toolbar}}
 					</div>
 				</li>

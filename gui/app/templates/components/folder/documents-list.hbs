@@ -129,11 +129,11 @@
 </div>
 
 {{#ui/ui-dialog title=(localize 'delete_documents') confirmCaption=(localize 'delete') buttonColor=constants.Color.Red show=showDeleteDialog onAction=(action "onDeleteDocuments")}}
-	<p>Are you sure you want to delete {{selectedDocuments.length}} {{selectedCaption}}?</p>
+	<p>{{localize 'delete_confirm'}} ({{selectedDocuments.length}} {{selectedCaption}})</p>
 {{/ui/ui-dialog}}
 
 {{#ui/ui-dialog title=(localize 'move_documents') confirmCaption=(localize 'move') buttonColor=constants.Color.Green show=showMoveDialog onAction=(action "onMoveDocuments")}}
-	<p>Select space for {{selectedDocuments.length}} {{selectedCaption}}</p>
+	<p>{{localize 'space_change_prompt'}} ({{selectedDocuments.length}} {{selectedCaption}})</p>
 	{{ui/ui-list-picker items=moveOptions nameField="name" singleSelect=true}}
 {{/ui/ui-dialog}}
 
