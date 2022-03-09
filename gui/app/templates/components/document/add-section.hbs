@@ -1,13 +1,13 @@
 <div id="add-section-modal" class="modal" tabindex="-1" role="dialog">
 	<div class="modal-dialog modal-60" role="document">
 		<div class="modal-content">
-			<div class="modal-header">Insert Section</div>
+			<div class="modal-header">{{localize 'section_insert'}}</div>
 			<div class="modal-body">
 				<div id="new-section-wizard" class="new-section-wizard">
 					<div class="form-group">
 						{{focus-input type="text" id="new-section-name" value=newSectionName
 							class=(if newSectionNameMissing "mousetrap form-control form-control-lg	is-invalid" "mousetrap form-control form-control-lg")
-							placeholder="Enter section name" autocomplete="off"}}
+							placeholder=(localize 'name') autocomplete="off"}}
 					</div>
 
 					<ul class="options">

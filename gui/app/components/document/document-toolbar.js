@@ -25,6 +25,7 @@ export default Component.extend(ModalMixin, AuthMixin, Notifier, {
 	pinned: service(),
 	browserSvc: service('browser'),
 	documentSvc: service('document'),
+	i18n: service(),
 	showRevisions: computed('permissions', 'document.protection', function() {
 		if (!this.get('session.authenticated')) return false;
 		if (!this.get('session.viewUsers')) return false;
@@ -218,7 +219,7 @@ export default Component.extend(ModalMixin, AuthMixin, Notifier, {
 
 			this.get('documentSvc').export(spec).then((htmlExport) => {
 				this.get('browserSvc').downloadFile(htmlExport, this.get('document.slug') + '.html');
-				this.notifySuccess('Exported');
+				this.notifySuccess(this.i18n.localize('exported'));
 			});
 		}
 	}

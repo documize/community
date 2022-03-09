@@ -200,6 +200,23 @@
     "category_permissions": "Category Permissions",
     "category_permissions_explain": "Select who can view documents within category",
 
+    "protection_type_open": "Open",
+    "protection_type_protected": "Protected",
+    "protection_type_locked": "Locked",
+
+    "section_insert": "Insert Section",
+
+    "link_insert": "Insert Link",
+    "link_type_section": "Section",
+    "link_type_section_explain": "Link to content within this document",
+    "link_type_attachment": "Attachment",
+    "link_type_attachment_explain": "Link to an attachment within this document",
+    "link_type_search": "Search",
+    "link_type_search_explain": "Document name, content, attachment name",
+    "link_type_network": "Network",
+    "link_type_network_explain": "Specify network drive/share/folder location",
+    "link_type_network_example": "e.g. //share/folder",
+
     "space_permissions": "Space Permissions",
     "space_permissions_explain": "Assign permissions to users or groups and invite new users to this space",
     "space_permission_view": "View",

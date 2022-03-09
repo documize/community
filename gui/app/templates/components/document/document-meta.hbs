@@ -8,17 +8,17 @@
 
 	{{#if (eq document.protection constants.ProtectionType.None)}}
 		<div class="label-open">
-			OPEN
+			{{localize 'protection_type_open'}}
 		</div>
 	{{/if}}
 	{{#if (eq document.protection constants.ProtectionType.Review)}}
 		<div class="label-protected">
-			PROTECTED
+			{{localize 'protection_type_protected'}}
 		</div>
 	{{/if}}
 	{{#if (eq document.protection constants.ProtectionType.Lock)}}
 		<div class="label-locked">
-			LOCKED
+			{{localize 'protection_type_locked'}}
 		</div>
 	{{/if}}
 
@@ -35,31 +35,31 @@
 	{{/if}}
 
 	{{#if document.template}}
-		<div class="label-template non-printable" title="This is a template">
-			Template
+		<div class="label-template non-printable">
+			{{localize 'template'}}
 		</div>
 	{{/if}}
 
 	<Ui::UiSpacer @size="200" />
 
-	<div class="title">CATEGORY / TAG</div>
+	<div class="title">{{localize 'category'}} / {{localize 'tag'}}</div>
 	{{#each selectedCategories as |cat|}}
 		<div class="meta-label">
-			<i class="dicon {{constants.Icon.Category}}" title="Category" />
+			<i class="dicon {{constants.Icon.Category}}" title={{localize 'category'}} />
 			{{cat.category}}
 		</div>
 	{{/each}}
 	{{#each tagz as |t|}}
 		<div class="meta-label">
-			<i class="dicon {{constants.Icon.Tag}}" title="Tag" />
+			<i class="dicon {{constants.Icon.Tag}}" title={{localize 'tag'}} />
 			{{t}}
 		</div>
 	{{/each}}
 	{{#if unassigned}}
 		{{#if permissions.spaceManage}}
-			<div class="empty cursor-pointer" {{action "onEditCategory"}}>Unassigned</div>
+			<div class="empty cursor-pointer" {{action "onEditCategory"}}>{{localize 'unassigned'}}</div>
 		{{else}}
-			<div class="empty">Unassigned</div>
+			<div class="empty">{{localize 'unassigned'}}</div>
 		{{/if}}
 	{{/if}}
 </div>
