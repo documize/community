@@ -4,15 +4,15 @@
 			{{#ui/ui-toolbar-dropdown label="Actions" arrow=true}}
 				{{#attach-popover class="ember-attacher-popper" hideOn="click clickout" showOn="click" isShown=false}}
 					<ul class="menu">
-						<li class="item" {{action "onShowRequestContributionModal"}} role="button" tabindex="0">Request contribution</li>
-						<li class="item" {{action "onShowRequestFeedbackModal"}} role="button" tabindex="0">Request feedback</li>
-						<li class="item" {{action "onShowRequestReadModal"}} role="button" tabindex="0">Request read</li>
+						<li class="item" {{action "onShowRequestContributionModal"}} role="button" tabindex="0">{{localize 'doc_request_contribution'}}</li>
+						<li class="item" {{action "onShowRequestFeedbackModal"}} role="button" tabindex="0">{{localize 'doc_request_feedback'}}</li>
+						<li class="item" {{action "onShowRequestReadModal"}} role="button" tabindex="0">{{localize 'doc_request_read'}}</li>
 						{{#if (eq document.lifecycle constants.Lifecycle.Draft)}}
 							<li class="divider"/>
-							<li class="item" {{action "onShowPublishModal"}} role="button" tabindex="0">Request publication</li>
+							<li class="item" {{action "onShowPublishModal"}} role="button" tabindex="0">{{localize 'doc_request_publication'}}</li>
 						{{/if}}
 						<li class="divider"/>
-						<li class="item" {{action "onShareModal"}} role="button" tabindex="0">Share via secure external link</li>
+						<li class="item" {{action "onShareModal"}} role="button" tabindex="0">{{localize 'doc_secure_share'}}</li>
 					</ul>
 				{{/attach-popover}}
 			{{/ui/ui-toolbar-dropdown}}
@@ -23,26 +23,26 @@
 		{{#attach-popover class="ember-attacher-popper" hideOn="click clickout" showOn="click" isShown=false}}
 			<ul class="menu">
 				{{#if pinState.isPinned}}
-					<li class="item" {{action "onUnpin"}} role="button" tabindex="0">Remove bookmark</li>
+					<li class="item" {{action "onUnpin"}} role="button" tabindex="0">{{localize 'bookmark_remove'}}</li>
 					<li class="divider"/>
 				{{else if session.authenticated}}
-					<li class="item" {{action "onPin"}} role="button" tabindex="0">Bookmark</li>
+					<li class="item" {{action "onPin"}} role="button" tabindex="0">{{localize 'bookmark'}}</li>
 					<li class="divider"/>
 				{{/if}}
-				<li class="item" {{action "onShowPrintModal"}} role="button" tabindex="0">Print</li>
-				<li class="item" {{action "onExport"}} role="button" tabindex="0">Download</li>
+				<li class="item" {{action "onShowPrintModal"}} role="button" tabindex="0">{{localize 'print'}}</li>
+				<li class="item" {{action "onExport"}} role="button" tabindex="0">{{localize 'download'}}</li>
 				{{#if (or permissions.documentAdd permissions.documentCopy)}}
 					<li class="divider"/>
 					{{#if permissions.documentAdd}}
-						<li class="item" {{action "onShowTemplateModal"}} role="button" tabindex="0">Template</li>
+						<li class="item" {{action "onShowTemplateModal"}} role="button" tabindex="0">{{localize 'template'}}</li>
 					{{/if}}
 					{{#if permissions.documentCopy}}
-						<li class="item" {{action "onShowDuplicateModal"}} role="button" tabindex="0">Copy</li>
+						<li class="item" {{action "onShowDuplicateModal"}} role="button" tabindex="0">{{localize 'copy'}}</li>
 					{{/if}}
 				{{/if}}
 				{{#if permissions.documentDelete}}
 					<li class="divider"/>
-					<li class="item red" {{action "onShowDeleteModal"}} role="button" tabindex="0">Delete</li>
+					<li class="item red" {{action "onShowDeleteModal"}} role="button" tabindex="0">{{localize 'delete'}}</li>
 				{{/if}}
 			</ul>
 		{{/attach-popover}}
@@ -53,10 +53,10 @@
 			{{#attach-popover class="ember-attacher-popper" hideOn="click clickout" showOn="click" isShown=false}}
 				<ul class="menu">
 					{{#if showActivity}}
-						{{#link-to "document.activity" class="item"}}Activity{{/link-to}}
+						{{#link-to "document.activity" class="item"}}{{localize 'activity'}}{{/link-to}}
 					{{/if}}
 					{{#if showRevisions}}
-						{{#link-to "document.revisions" class="item"}}Revisions{{/link-to}}
+						{{#link-to "document.revisions" class="item"}}{{localize 'revisions'}}{{/link-to}}
 					{{/if}}
 				</ul>
 			{{/attach-popover}}
@@ -64,25 +64,25 @@
 	{{/if}}
 
 	{{#if permissions.documentEdit}}
-		{{ui/ui-toolbar-icon icon=constants.Icon.Settings color=constants.Color.Green tooltip="Rename, Categories, Tag, Status, Workflow" linkTo="document.settings"}}
+		{{ui/ui-toolbar-icon icon=constants.Icon.Settings color=constants.Color.Green tooltip=(localize 'settings') linkTo="document.settings"}}
 	{{/if}}
 {{/ui/ui-toolbar}}
 
 <div id="document-template-modal" class="modal" tabindex="-1" role="dialog">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
-			<div class="modal-header">Save as Template</div>
+			<div class="modal-header">{{localize 'template_save'}}</div>
 			<div class="modal-body">
 				<form onsubmit={{action "onSaveTemplate"}}>
 					<div class="form-group">
-						<label for="new-template-name">Name</label>
-						{{input id="new-template-name" value=saveTemplate.name type="email" class="form-control mousetrap" placeholder="Template name"}}
+						<label for="new-template-name">{{localize 'name'}}</label>
+						{{input id="new-template-name" value=saveTemplate.name type="text" class="form-control mousetrap" placeholder=""}}
 						<small class="form-text text-muted">Good template name conveys document type</small>
 					</div>
 					<div class="form-group">
-						<label for="new-template-desc">Description</label>
+						<label for="new-template-desc">{{localize 'description'}}</label>
 						{{textarea id="new-template-desc" value=saveTemplate.description class="form-control" rows="5"}}
-						<small class="form-text text-muted">Explain use case for this template</small>
+						<small class="form-text text-muted">{{localize 'template_desc_explain'}}</small>
 					</div>
 				</form>
 			</div>
@@ -98,9 +98,9 @@
 <div id="document-print-modal" class="modal" tabindex="-1" role="dialog">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
-			<div class="modal-header">Print</div>
+			<div class="modal-header">{{localize 'Print'}}</div>
 			<div class="modal-body">
-				<p>Print all content or select sections.</p>
+				<p>{{localize 'print_explain'}}</p>
 				{{#each pages as |item|}}
 					{{#ui/ui-checkbox selected=item.printSelected}}
 						{{item.page.numbering}}. {{item.page.title}}
@@ -119,9 +119,9 @@
 <div id="document-delete-modal" class="modal" tabindex="-1" role="dialog">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
-			<div class="modal-header">Delete Document</div>
+			<div class="modal-header">{{localize 'delete'}}</div>
 			<div class="modal-body">
-				<p>Are you sure you want to delete this document?</p>
+				<p>{{localize 'doc_delete_confirm'}}</p>
 			</div>
 			<div class="modal-footer">
 				{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'cancel') dismiss=true}}
@@ -135,13 +135,12 @@
 <div id="document-duplicate-modal" class="modal" tabindex="-1" role="dialog">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
-			<div class="modal-header">Duplicate</div>
+			<div class="modal-header">{{localize 'duplicate'}}</div>
 			<div class="modal-body">
 				<form onsubmit={{action "onDuplicate"}}>
 					<div class="form-group">
-						<label for="duplicate-name">Name</label>
-						{{input id="duplicate-name" value=duplicateName type="email" class="form-control mousetrap" placeholder="Name"}}
-						<small class="form-text text-muted">Content will be duplicated within this space</small>
+						<label for="duplicate-name">{{localize 'name'}}</label>
+						{{input id="duplicate-name" value=duplicateName type="text" class="form-control mousetrap" placeholder=""}}
 					</div>
 				</form>
 			</div>

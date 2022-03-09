@@ -11,54 +11,54 @@
 		<div class="section-heading no-print" id="page-toolbar-{{ page.id }}">
 			<div class="section-toolbar">
 				{{#if canEdit}}
-					<i class="add-section dicon {{constants.Icon.Plus}}" {{action "onShowSectionWizard" page}} title="Insert section" tabindex="0" role="button" />
+					<i class="add-section dicon {{constants.Icon.Plus}}" {{action "onShowSectionWizard" page}} title={{localize 'section_insert'}} tabindex="0" role="button" />
 					<div class="gap"/>
-					<i class="dicon {{constants.Icon.Edit}}" {{action "onEdit"}} title="Edit section" tabindex="0" role="button" />
+					<i class="dicon {{constants.Icon.Edit}}" {{action "onEdit"}} title={{localize 'edit'}} tabindex="0" role="button" />
 					<div class="gap"/>
 				{{/if}}
-				<i class="dicon {{constants.Icon.Settings}}" title="Actions" aria-haspopup="menu" aria-label="Dropdown menu for section">
+				<i class="dicon {{constants.Icon.Settings}}" title={{localize 'actions'}} aria-haspopup="menu" aria-label="Dropdown menu for section">
 					{{#attach-popover class="ember-attacher-popper" hideOn="clickout click" showOn="click" isShown=false}}
 						<div class="menu" >
-							<a class="item" href="#" id="page-copy-link-{{page.id}}" {{action "onCopyLink"}} tabindex="0" role="button">Copy link</a>
+							<a class="item" href="#" id="page-copy-link-{{page.id}}" {{action "onCopyLink"}} tabindex="0" role="button">{{localize 'copy_link'}}</a>
 							{{#if (or canEdit permissions.documentCopy permissions.documentMove permissions.documentTemplate)}}
 								<div class="divider"></div>
 							{{/if}}
 							{{#if canEdit}}
-								<a class="item" href="#" id={{concat "edit-page-button-" page.id}} {{action "onEdit"}} tabindex="0" role="button">Edit</a>
+								<a class="item" href="#" id={{concat "edit-page-button-" page.id}} {{action "onEdit"}} tabindex="0" role="button">{{localize 'edit'}}</a>
 							{{/if}}
 							{{#if permissions.documentCopy}}
-								<a class="item" href="#" id={{concat "copy-page-button-" page.id}} {{action "onShowCopyModal"}} tabindex="0" role="button">Copy</a>
+								<a class="item" href="#" id={{concat "copy-page-button-" page.id}} {{action "onShowCopyModal"}} tabindex="0" role="button">{{localize 'copy'}}</a>
 							{{/if}}
 							{{#if permissions.documentMove}}
-								<a class="item" href="#" id={{concat "move-page-button-" page.id}} {{action "onShowMoveModal"}} tabindex="0" role="button">Move</a>
+								<a class="item" href="#" id={{concat "move-page-button-" page.id}} {{action "onShowMoveModal"}} tabindex="0" role="button">{{localize 'move'}}</a>
 							{{/if}}
 							{{#if permissions.documentTemplate}}
-								<a class="item" href="#" id={{concat "publish-page-button-" page.id}} {{action "onShowPublishModal"}} tabindex="0" role="button">Publish</a>
+								<a class="item" href="#" id={{concat "publish-page-button-" page.id}} {{action "onShowPublishModal"}} tabindex="0" role="button">{{localize 'publish'}}</a>
 							{{/if}}
 							{{#if permissions.documentDelete}}
 								<div class="divider"></div>
-								<a class="item red" href="#" id={{concat "delete-page-button-" page.id}} data-toggle="modal" data-target={{concat "#delete-page-modal-" page.id}} data-backdrop="static">Delete</a>
+								<a class="item red" href="#" id={{concat "delete-page-button-" page.id}} data-toggle="modal" data-target={{concat "#delete-page-modal-" page.id}} data-backdrop="static">{{localize 'delete'}}</a>
 							{{/if}}
 							{{#if (and canEdit state.actionablePage)}}
 								<div class="divider"></div>
 								{{#unless state.indentDisabled}}
-									<a class="item" href="#" id={{concat "toc-indent-button-" page.id}} {{action "pageIndent"}}>Indent</a>
+									<a class="item" href="#" id={{concat "toc-indent-button-" page.id}} {{action "pageIndent"}}>{{localize 'indent'}}</a>
 								{{/unless}}
 								{{#unless state.outdentDisabled}}
-									<a class="item" href="#" id={{concat "toc-outdent-button-" page.id}} {{action "pageOutdent"}}>Outdent</a>
+									<a class="item" href="#" id={{concat "toc-outdent-button-" page.id}} {{action "pageOutdent"}}>{{localize 'outdent'}}</a>
 								{{/unless}}
 								{{#unless state.upDisabled}}
-									<a class="item" href="#" id={{concat "toc-up-button-" page.id}} {{action "pageUp"}}>Move up</a>
+									<a class="item" href="#" id={{concat "toc-up-button-" page.id}} {{action "pageUp"}}>{{localize 'move_up'}}</a>
 								{{/unless}}
 								{{#unless state.downDisabled}}
-									<a class="item" href="#" id={{concat "toc-down-button-" page.id}} {{action "pageDown"}}>Move down</a>
+									<a class="item" href="#" id={{concat "toc-down-button-" page.id}} {{action "pageDown"}}>{{localize 'move_down'}}</a>
 								{{/unless}}
 							{{/if}}
 						</div>
 					{{/attach-popover}}
 				</i>
 				<div class="gap"/>
-				<i class="dicon {{constants.Icon.Expand}} {{unless expanded "expand"}}" {{action "onExpand"}} title="Show/hide" />
+				<i class="dicon {{constants.Icon.Expand}} {{unless expanded "expand"}}" {{action "onExpand"}} title={{localize 'show_hide'}} />
 			</div>
 		</div>
 	</div>
@@ -68,16 +68,16 @@
 	<div id={{concat "copy-page-modal-" page.id}} class="modal" tabindex="-1" role="dialog">
 		<div class="modal-dialog modal-50" role="document">
 			<div class="modal-content">
-				<div class="modal-header">Copy Destination</div>
+				<div class="modal-header">{{localize 'copy'}}</div>
 				<div class="modal-body">
-					<p>This section and all nested sections will be copied to the selected document.</p>
+					<p>{{localize 'section_copy_explain'}}</p>
 					<Ui::UiSpacer @size="100" />
 					<div class="form-group">
-						<label>Space</label>
+						<label>{{localize 'space'}}</label>
 						{{ui/ui-select content=folders optionValuePath="id" optionLabelPath="name" selection=targetSpace action=(action "onSelectSpace")}}
 					</div>
 					<div class="form-group">
-						<label>Document</label>
+						<label>{{localize 'document'}}</label>
 						{{ui/ui-select content=targetDocs optionValuePath="id" optionLabelPath="name" selection=targetDoc action=(action "onSelectDoc")}}
 					</div>
 				</div>
@@ -95,9 +95,9 @@
 	<div id={{concat "move-page-modal-" page.id}} class="modal" tabindex="-1" role="dialog">
 		<div class="modal-dialog modal-50" role="document">
 			<div class="modal-content">
-				<div class="modal-header">Move Destination</div>
+				<div class="modal-header">{{localize 'move'}}</div>
 				<div class="modal-body">
-					<p>This section and all nested sections will be moved to the selected document.</p>
+					<p>{{localize 'section_move_explain'}}</p>
 					<Ui::UiSpacer @size="100" />
 					<div class="form-group">
 						<label>Space</label>
@@ -122,14 +122,14 @@
 	<div id= {{concat "delete-page-modal-" page.id}} class="modal" tabindex="-1" role="dialog">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
-				<div class="modal-header">Delete Section</div>
+				<div class="modal-header">{{localize 'delete'}}</div>
 				<div class="modal-body">
-					<p>Are you sure you want to delete this section?</p>
+					<p></p>
 					<div class="form-group">
 						<div class="form-check">
 							{{input type="checkbox" class="form-check-input" checked=deleteChildren  id=(concat "delete-page-check-" page.id)}}
 							<label class="form-check-label" for= {{concat "delete-page-check-" page.id}}>
-								Also delete child sections
+								{{localize 'section_delete_children'}}
 							</label>
 						</div>
 					</div>
@@ -148,17 +148,17 @@
 	<div id={{concat "publish-page-modal-" page.id}} class="modal" tabindex="-1" role="dialog">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
-				<div class="modal-header">Publish Reusable Content Block</div>
+				<div class="modal-header">{{localize 'section_publish'}}</div>
 				<div class="modal-body">
 					<div class="form-group">
-						<label for="block-title-{{page.id}}">Name</label>
-						{{input id=(concat "block-title-" page.id) type="text" class="form-control mousetrap" placeholder="Enter name" value=blockTitle}}
-						<small class="form-text text-muted">Provide a short title for the reusable content block</small>
+						<label for="block-title-{{page.id}}">{{localize 'name'}}</label>
+						{{input id=(concat "block-title-" page.id) type="text" class="form-control mousetrap" placeholder="" value=blockTitle}}
+						<small class="form-text text-muted">{{localize 'section_publish_name_explain'}}</small>
 					</div>
 					<div class="form-group">
-						<label for="block-desc-{{page.id}}">Description</label>
-						{{textarea id=(concat "block-desc-" page.id) rows="3" class="form-control mousetrap" placeholder="Enter description" value=blockExcerpt}}
-						<small class="form-text text-muted">Short description to help others understand the reusable content block</small>
+						<label for="block-desc-{{page.id}}">{{localize 'description'}}</label>
+						{{textarea id=(concat "block-desc-" page.id) rows="3" class="form-control mousetrap" placeholder="" value=blockExcerpt}}
+						<small class="form-text text-muted">{{localize 'section_publish_desc_explain'}}</small>
 					</div>
 				</div>
 				<div class="modal-footer">

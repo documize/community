@@ -18,17 +18,24 @@ import Component from '@ember/component';
 export default Component.extend(Modals, Notifier, {
 	appMeta: service(),
 	session: service(),
+	i18n: service(),
 	editMode: false,
 	downloadQuery: '',
 	uploadId: computed('page', function () {
 		let page = this.get('page');
 		return `page-uploader-${page.id}`;
 	}),
-	uploadLabel: 'Upload Attachments',
+	uploadLabel: '',
+
+	init(...args) {
+		this._super(...args);
+
+		this.uploadLabel = this.i18n.localize('upload_attachment');
+	},
 
 	didReceiveAttrs() {
 		this._super(...arguments);
-		
+
 		// For authenticated users we send server auth token.
 		let qry = '';
 		if (this.get('session.hasSecureToken')) {
@@ -36,12 +43,12 @@ export default Component.extend(Modals, Notifier, {
 		} else if (this.get('session.authenticated')) {
 			qry = '?token=' + this.get('session.authToken');
 		}
-		this.set('downloadQuery', qry);	
+		this.set('downloadQuery', qry);
 	},
 
 	didRender() {
 		this._super(...arguments);
-		
+
 		// For authenticated users we send server auth token.
 		let qry = '';
 		if (this.get('session.hasSecureToken')) {
@@ -49,7 +56,7 @@ export default Component.extend(Modals, Notifier, {
 		} else if (this.get('session.authenticated')) {
 			qry = '?token=' + this.get('session.authToken');
 		}
-		this.set('downloadQuery', qry);	
+		this.set('downloadQuery', qry);
 
 		// We don't setup uploader if not edit mode.
 		if (!this.get('editMode')) {
@@ -95,7 +102,7 @@ export default Component.extend(Modals, Notifier, {
 					});
 
 					this.on("queuecomplete", function () {
-						self.notifySuccess('Uploaded file');
+						self.notifySuccess(this.i18n.localize('uploaded'));
 						self.get('onAttachmentUpload')();
 					});
 
@@ -120,7 +127,7 @@ export default Component.extend(Modals, Notifier, {
 
 	actions: {
 		onDelete(attachment) {
-			this.notifySuccess('File deleted');
+			this.notifySuccess(this.i18n.localize('deleted'));
 			this.get('onAttachmentDelete')(attachment.id);
 		}
 	}
