@@ -1,4 +1,4 @@
-<div class="title center">table of contents</div>
+<div class="title center">{{localize 'toc'}}</div>
 {{#if canEdit}}
 	<div class="document-sidebar-toc">
 		<div class="controls {{if state.actionablePage "current-page"}}">
@@ -29,11 +29,11 @@
 					title={{item.page.title}}>
 					<span class="numbering">{{item.page.numbering}}</span>
 					{{#if (or item.userHasChangePending userHasNewPagePending)}}
-						<span class="color-red-600" title="Pending changes">[*]&nbsp;</span>
+						<span class="color-red-600" title={{localize 'approval_pending'}}>[*]&nbsp;</span>
 					{{/if}}
 					{{#if (or permissions.documentApprove roles.documentApprove)}}
 						{{#if item.changeAwaitingReview}}
-							<span class="color-green-700" title="Awaiting approval">[*]&nbsp;</span>
+							<span class="color-green-700" title={{localize 'approval_awaiting'}}>[*]&nbsp;</span>
 						{{/if}}
 					{{/if}}
 					{{item.page.title}}

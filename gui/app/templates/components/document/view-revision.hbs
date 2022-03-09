@@ -1,5 +1,5 @@
 {{#unless revisions}}
-	<p>No revisions made</p>
+	<p>{{localize 'revision_none'}}</p>
 {{/unless}}
 
 <div class="view-revision">
@@ -21,9 +21,9 @@
 <div id="document-rollback-modal" class="modal" tabindex="-1" role="dialog">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
-			<div class="modal-header">Restore Section</div>
+			<div class="modal-header">{{localize 'revision_restore'}}</div>
 			<div class="modal-body">
-				<p>Are you sure you want to restore this revision?</p>
+				<p>{{localize 'revision_restore_confirm'}}</p>
 			</div>
 			<div class="modal-footer">
 				{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'cancel') dismiss=true}}

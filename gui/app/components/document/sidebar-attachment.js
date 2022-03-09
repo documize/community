@@ -22,6 +22,7 @@ export default Component.extend(Modals, Notifier, {
 	browserSvc: service('browser'),
 	appMeta: service(),
 	session: service(),
+	i18n: service(),
 	hasAttachments: notEmpty('files'),
 	canEdit: computed('permissions.{documentApprove,documentEdit}', 'document.protection', function() {
 		// Check to see if specific scenarios prevent us from changing doc level attachments.
@@ -86,7 +87,7 @@ export default Component.extend(Modals, Notifier, {
 					});
 
 					this.on("queuecomplete", function () {
-						self.notifySuccess('Uploaded file');
+						self.notifySuccess(this.i18n.localize('uploaded'));
 						self.getAttachments();
 					});
 
@@ -115,7 +116,7 @@ export default Component.extend(Modals, Notifier, {
 	actions: {
 		onDelete(attachment) {
 			this.get('documentService').deleteAttachment(this.get('document.id'), attachment.id).then(() => {
-				this.notifySuccess('File deleted');
+				this.notifySuccess(this.i18n.localize('deleted'));
 				this.getAttachments();
 			});
 		}

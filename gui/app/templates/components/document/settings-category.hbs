@@ -1,6 +1,6 @@
 {{layout/logo-heading
-	title="Categories"
-	desc="Assign one or more categories to help organize content within this space"
+	title=(localize 'categories')
+	desc=(localize 'doc_category_explain')
 	icon=constants.Icon.Category}}
 
 {{#if categories}}
@@ -15,5 +15,5 @@
 		light=true
 		onClick=(action "onSave")}}
 {{else}}
-	<p class="color-green-700">This space has no categories yet</p>
+	<p class="color-green-700">{{localize 'category_none'}}</p>
 {{/if}}
