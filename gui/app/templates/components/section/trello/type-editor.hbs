@@ -1,6 +1,6 @@
 {{layout/logo-heading
-	title="Trello"
-	desc="Trello is the visual way to manage your projects and organize anything (https://trello.com)"
+	title=(localize 'section_trello')
+	desc=(localize 'section_trello_explain')
 	icon=constants.Icon.Integrations}}
 
 {{#section/base-editor document=document folder=folder page=page busy=busy
@@ -9,14 +9,14 @@
 	{{#if trelloConfigured}}
 		{{#if authenticated}}
 			{{#if noBoards}}
-				<p>You have no team boards to share - personal boards are never shown</p>
+				<p>{{localize 'section_trello_none'}}</p>
 			{{else}}
 				<div class="form-group">
-					<label>Select Board</label>
+					<label>{{localize 'section_trello_board'}}</label>
 					{{ui/ui-select id="boards-dropdown" content=boards action=(action "onBoardChange") optionValuePath="id" optionLabelPath="name" selection=config.board}}
 				</div>
 				<div class="form-group">
-					<label for="airtable-embed-cod">Select Lists</label>
+					<label for="airtable-embed-cod">{{localize 'section_trello_list'}}</label>
 					<div class="section-trello-board" style= {{boardStyle}}>
 						<div class="section-trello-board-title">{{config.board.name}}</div>
 						{{#each config.lists as |list|}}
@@ -45,7 +45,7 @@
 
 			{{/link-to}}
 		{{else}}
-			<p>Your Documize administrator needs to configure Trello before usage.</p>
+			<p>{{localize 'section_trello_admin'}}</p>
 		{{/if}}
 	{{/if}}
 

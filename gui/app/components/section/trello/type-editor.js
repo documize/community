@@ -47,6 +47,8 @@ export default Component.extend(SectionMixin, NotifierMixin, {
 	},
 
 	didReceiveAttrs() {
+		this._super();
+
 		let page = this.get('page');
 		let config = {};
 		let self = this;
