@@ -1,12 +1,11 @@
 {{layout/logo-heading
-	title="Airtable"
-	desc="Part spreadsheet, part database, and entirely flexible (https://airtable.com)"
+	title=(localize 'section_airtable')
+	desc=(localize 'section_airtable_explain')
 	icon=constants.Icon.Integrations}}
 
 {{#section/base-editor document=document folder=folder page=page isDirty=(action "isDirty") onCancel=(action "onCancel") onAction=(action "onAction")}}
 	<div class="form-group">
-		<label for="airtable-embed-code">Airtable embed code</label>
-		{{textarea value=data rows="3" id="airtable-embed-code" class="form-control mousetrap" placeholder="Enter code" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"}}
-		<small class="form-text text-muted">Paste the Airtable embed code snippet</small>
+		<label for="airtable-embed-code">{{localize 'section_airtable_code'}}</label>
+		{{textarea value=data rows="3" id="airtable-embed-code" class="form-control mousetrap" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"}}
 	</div>
 {{/section/base-editor}}

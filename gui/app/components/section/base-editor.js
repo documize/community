@@ -21,7 +21,9 @@ export default Component.extend(ModalMixin, {
 	hasNameError: empty('page.title'),
 	hasDescError: empty('page.excerpt'),
 
-	didRender() {
+	didRender(...args) {
+		this._super(...args);
+
 		let self = this;
 		Mousetrap.bind('esc', function () {
 			self.send('onCancel');

@@ -2,11 +2,11 @@
 	<div class="grid-cell-1 grid-cell-width-100">
 		<div class="section-editor">
 			<div class="form-group">
-				{{focus-input type="text" id="page-title" value=page.title class=(if hasNameError "form-control mousetrap form-control-lg is-invalid" "form-control form-control-lg mousetrap") placeholder="Enter name"}}
+				{{focus-input type="text" id="page-title" value=page.title class=(if hasNameError "form-control mousetrap form-control-lg is-invalid" "form-control form-control-lg mousetrap") placeholder=(localize 'name')}}
 			</div>
             {{#if hasExcerpt}}
                 <div class="form-group">
-                    {{textarea id="page-excerpt" value=page.excerpt rows="2" class=(if hasDescError "form-control mousetrap form-control-lg is-invalid" "form-control form-control-lg mousetrap") placeholder="Enter description"}}
+                    {{textarea id="page-excerpt" value=page.excerpt rows="2" class=(if hasDescError "form-control mousetrap form-control-lg is-invalid" "form-control form-control-lg mousetrap") placeholder=(localize 'description')}}
                 </div>
             {{/if}}
         </div>
@@ -30,13 +30,13 @@
 <div id={{concat "discard-modal"}} class="modal" tabindex="-1" role="dialog">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
-			<div class="modal-header">Discard Changes</div>
+			<div class="modal-header">{{localize 'discard_changes'}}</div>
 			<div class="modal-body">
-				<p>You have made changes - continue editing or discard changes?</p>
+				<p>{{localize 'discard_confirm'}}</p>
 			</div>
 			<div class="modal-footer">
-				{{ui/ui-button color=constants.Color.Gray light=true label="Continue editing" dismiss=true}}
-				{{ui/ui-button color=constants.Color.Red light=true label="Discard changes" onClick=(action "onDiscard")}}
+				{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'continue') dismiss=true}}
+				{{ui/ui-button color=constants.Color.Red light=true label=(localize 'discard') onClick=(action "onDiscard")}}
 			</div>
 		</div>
 	</div>

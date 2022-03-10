@@ -17,13 +17,14 @@ import Component from '@ember/component';
 export default Component.extend({
 	appMeta: service(),
 	sectionSvc: service('section'),
+	i18n: service(),
     isDirty: false,
     waiting: false,
     diagram: '',
 	diagramXML: '',
 	title: '',
 	readyToSave: false,
-	previewButtonCaption: 'Preview',
+	previewButtonCaption: '',
 	flowCallback: null,
 	editorId: computed('page', function () {
 		let page = this.get('page');
@@ -40,6 +41,8 @@ export default Component.extend({
 
     didInsertElement() {
 		this._super(...arguments);
+		this.previewButtonCaption = this.i18n.localize('preview');
+
 		schedule('afterRender', () => {
 			this.setupEditor();
 		});
@@ -125,7 +128,7 @@ export default Component.extend({
 					action: 'export',
 					format: 'xmlpng',
 					xml: this.get('diagramXML'),
-					spin: 'Updating'
+					spin: this.i18n.localize('updating')
 				}
 			), '*');
 	},

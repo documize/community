@@ -67,7 +67,8 @@ export default Component.extend({
         }
     },
 
-    didInsertElement() {
+    didInsertElement(...args) {
+        this._super(...args);
         var editor = CodeMirror.fromTextArea(document.getElementById(this.get('editorId')), {
             theme: "material",
             lineNumbers: true,
@@ -91,7 +92,8 @@ export default Component.extend({
 		this.set('codeEditor', editor);
     },
 
-    willDestroyElement() {
+    willDestroyElement(...args) {
+        this._super(...args);
 		let editor = this.get('codeEditor');
 
 		if (!_.isNull(editor)) {

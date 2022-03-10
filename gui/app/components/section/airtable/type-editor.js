@@ -15,6 +15,7 @@ export default Component.extend({
 	data: "",
 
 	didReceiveAttrs() {
+		this._super();
 		this.set("data", this.get("meta.rawBody"));
 	},
 

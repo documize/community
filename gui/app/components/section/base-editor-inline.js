@@ -34,7 +34,7 @@ export default Component.extend(Modals, Notifier, {
 	pageTitle: '',
 
 	didReceiveAttrs() {
-		this._super(...arguments);
+		this._super();
 		this.set('pageTitle', this.get('page.title'));
 	},
 
