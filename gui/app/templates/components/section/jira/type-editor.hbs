@@ -1,17 +1,17 @@
 {{layout/logo-heading
-	title="Jira Software"
-	desc="Jira provides issue tracking and agile software"
+	title=(localize 'section_jira')
+	desc=(localize 'section_jira_explain')
 	icon=constants.Icon.Integrations}}
 
 {{#section/base-editor document=document folder=folder page=page busy=waiting isDirty=(action "isDirty") onCancel=(action "onCancel") onAction=(action "onAction")}}
 	{{#if session.isAdmin}}
 		{{#link-to "customize.integrations"}}
-			{{ui/ui-button color=constants.Color.Green light=true label="Configure Jira Connector"}}
+			{{ui/ui-button color=constants.Color.Green light=true label=(localize 'configure')}}
 		{{/link-to}}
 		<Ui::UiSpacer @size="300" />
 	{{else}}
 		{{#unless authenticated}}
-			<p class="color-green-600">Your Documize administrator needs to provide Jira connection details before usage.</p>
+			<p class="color-green-600">{{localize 'section_jira_admin'}}</p>
 		{{/unless}}
 	{{/if}}
 	{{#if authenticated}}
@@ -27,6 +27,6 @@
 		{{{issuesGrid}}}
 	{{else}}
 		<Ui::UiSpacer @size="300" />
-		<p class="color-gray-700">Jira connector not authenticated</p>
+		<p class="color-gray-700">{{localize 'section_jira_no_auth'}}</p>
 	{{/if}}
 {{/section/base-editor}}

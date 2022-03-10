@@ -1,12 +1,11 @@
 {{layout/logo-heading
-	title="IFrame"
-	desc="Embed an IFrame"
+	title=(localize 'section_iframe')
+	desc=(localize 'section_iframe_explain')
 	icon=constants.Icon.Integrations}}
 
 {{#section/base-editor document=document folder=folder page=page isDirty=(action "isDirty") onCancel=(action "onCancel") onAction=(action "onAction")}}
 	<div class="form-group">
-		<label for="iframe-embed-code">IFrame embed code</label>
-		{{textarea value=data rows="10" id="iframe-embed-code" class="form-control mousetrap" placeholder="Enter code" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"}}
-		<small class="form-text text-muted">Paste the iframe code snippet</small>
+		<label for="iframe-embed-code">{{localize 'section_iframe_code'}}</label>
+		{{textarea value=data rows="10" id="iframe-embed-code" class="form-control mousetrap" placeholder=(localize 'code') autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"}}
 	</div>
 {{/section/base-editor}}

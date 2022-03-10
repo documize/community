@@ -1,32 +1,30 @@
 {{layout/logo-heading
-	title="Gemini"
-	desc="Gemini enterprise issue and ticketing software (https://www.countersoft.com)"
+	title=(localize 'section_gemini')
+	desc=(localize 'section_gemini_explain')
 	icon=constants.Icon.Integrations}}
 
 {{#section/base-editor document=document folder=folder page=page busy=waiting isDirty=(action "isDirty") onCancel=(action "onCancel") onAction=(action "onAction")}}
 	<div class="grid-container-5-5">
 		<div class="grid-cell-1">
 			<div class="form-group">
-				<label for="gemini-url">Gemini URL</label>
+				<label for="gemini-url">{{localize 'section_gemini_url'}}</label>
 				{{focus-input id="gemini-url" type="text" value=config.url class="form-control"}}
-				<small class="form-text text-muted">e.g. http://helpdesk.countersoft.com</small>
+				<small class="form-text text-muted">{{localize 'section_gemini_url_explain'}}</small>
 			</div>
 			<div class="form-group">
-				<label>Username</label>
+				<label>{{localize 'username'}}</label>
 				{{input id="gemini-username" type="text" value=config.username class="form-control"}}
-				<small class="form-text text-muted">Gemini Username</small>
 			</div>
 			<div class="form-group">
-				<label for="gemini-apikey">API Key</label>
+				<label for="gemini-apikey">{{localize 'section_gemini_key'}}</label>
 				{{input id="gemini-apikey" type="password" value=config.APIKey class="form-control"}}
-				<small class="form-text text-muted">Gemini user API key (from user profile)</small>
 			</div>
 			{{ui/ui-button color=constants.Color.Green light=true label=(localize 'authenticate') onClick=(action "auth")}}
 		</div>
 		<div class="grid-cell-2">
 			{{#if authenticated}}
 				<div class="form-group">
-					<label>Select Gemini workspace</label>
+					<label>{{localize 'section_gemini_workspace'}}</label>
 					<ul class="section-gemini-workspaces">
 						{{#each workspaces as |card|}}
 							<li class="section-gemini-workspace" id="gemini-workspace-{{card.Id}}" title="{{card.Title}}">

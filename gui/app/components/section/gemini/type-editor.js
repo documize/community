@@ -30,6 +30,8 @@ export default Component.extend(SectionMixin, {
 	},
 
 	didReceiveAttrs() {
+		this._super();
+
 		let config = {};
 
 		try {
