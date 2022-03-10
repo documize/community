@@ -17,11 +17,12 @@ import Component from '@ember/component';
 export default Component.extend({
 	appMeta: service(),
 	sectionSvc: service('section'),
+    i18n: service(),
     isDirty: false,
     waiting: false,
     diagramText: '',
     diagramPreview: null,
-    previewButtonCaption: 'Preview',
+    previewButtonCaption: '',
 	editorId: computed('page', function () {
 		let page = this.get('page');
 		return `plantuml-editor-${page.id}`;
@@ -34,9 +35,14 @@ export default Component.extend({
 		return _.isEmpty(this.get('diagramText'));
     }),
 
+    init(...args) {
+        this._super(...args);
+        this.previewButtonCaption = this.i18n.localize('preview');
+    },
+
     generatePreview() {
         this.set('waiting', true);
-        this.set('previewButtonCaption', 'Generating preview...');
+        this.set('previewButtonCaption', this.i18n.localize('preview_wait'));
 
         let self = this;
         let data = { data: this.get('diagramText') };
@@ -45,11 +51,11 @@ export default Component.extend({
             this.get('sectionSvc').fetch(this.get('page'), 'preview', data).then(function (response) {
                 self.set('diagramPreview', response.data);
                 self.set('waiting', false);
-                self.set('previewButtonCaption', 'Preview');
+                self.set('previewButtonCaption', this.i18n.localize('preview'));
             }, function (reason) { // eslint-disable-line no-unused-vars
                 self.set('diagramPreview', null);
                 self.set('waiting', false);
-                self.set('previewButtonCaption', 'Preview');
+                self.set('previewButtonCaption', this.i18n.localize('preview'));
             });
         });
     },

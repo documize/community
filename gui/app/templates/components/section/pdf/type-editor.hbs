@@ -1,37 +1,37 @@
-{{#section/base-editor-inline document=document folder=folder page=page tip="Select PDF to render" isDirty=(action "isDirty") onCancel=(action "onCancel") onAction=(action "onAction")}}
+{{#section/base-editor-inline document=document folder=folder page=page tip=(localize 'section_pdf') isDirty=(action "isDirty") onCancel=(action "onCancel") onAction=(action "onAction")}}
 
     <div class="form-group">
-        <label for="new-space-name">PDF</label>
+        <label for="new-space-name">{{localize 'pdf'}}</label>
         {{input type="text" class="form-control mousetrap" placeholder="click upload button below" value=pdfName readonly=true}}
-        <small class="form-text text-muted">First PDF uploaded will be used</small>
+        <small class="form-text text-muted">{{localize 'section_pdf_upload_explain'}}</small>
     </div>
 
     <div class="form-group">
-        <label for="new-space-name">Preview Height</label>
+        <label for="new-space-name">{{localize 'section_pdf_height'}}</label>
         {{input type="number" class="form-control mousetrap" placeholder="e.g. 700" value=pdfOption.height}}
-        <small class="form-text text-muted">How tall is the PDF preview?</small>
+        <small class="form-text text-muted">{{localize 'section_pdf_height_explain'}}</small>
     </div>
 
     <div class="form-group">
-        <label for="new-space-name">Start Page</label>
+        <label for="new-space-name">{{localize 'section_pdf_start'}}</label>
         {{input type="number" class="form-control mousetrap" placeholder="e.g. 1" value=pdfOption.startPage}}
-        <small class="form-text text-muted">The first page to display</small>
+        <small class="form-text text-muted">{{localize 'section_pdf_start_explain'}}</small>
     </div>
 
     <div class="form-group">
-        <label for="new-space-name">Sidebar</label>
+        <label for="new-space-name">{{localize 'section_pdf_sidebar'}}</label>
         <select onchange={{action "onSetSidebar" value="target.value"}} class="form-control" role="button" tabindex="0">
             <option value="none" selected={{is-equal pdfOption.sidebar "none"}}>
-                None
+                {{localize 'section_pdf_sidebar_none'}}
             </option>
             <option value="bookmarks" selected={{is-equal pdfOption.sidebar "bookmarks"}}>
-                Bookmarks
+                {{localize 'section_pdf_sidebar_bookmark'}}
             </option>
             <option value="thumbs" selected={{is-equal pdfOption.sidebar "thumbs"}}>
-                Thumbnails
+                {{localize 'section_pdf_sidebar_thumbnail'}}
             </option>
         </select>
-        <small class="form-text text-muted">Optionally, set sidebar content</small>
+        <small class="form-text text-muted">{{localize 'section_pdf_sidebar_explain'}}</small>
     </div>
 
 {{/section/base-editor-inline}}

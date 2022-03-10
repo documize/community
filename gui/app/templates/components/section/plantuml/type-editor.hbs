@@ -1,6 +1,6 @@
 {{layout/logo-heading
-	title="PlantUML"
-	desc="Create UML diagrams from a plain text language (http://plantuml.com)"
+	title=(localize 'section_plantuml')
+	desc=(localize 'section_plantuml_explain')
 	icon=constants.Icon.Integrations}}
 
 {{#section/base-editor document=document folder=folder page=page busy=waiting
@@ -14,15 +14,15 @@
 			{{#if emptyDiagram}}
 				<div>
 					<Ui::UiSpacer @size="100" />
-					<p>Insert sample diagrams:</p>
+					<p>{{localize 'insert'}}</p>
 					<p>
-						{{ui/ui-button color=constants.Color.Gray light=true label="Sequence" onClick=(action "onInsertSequence")}}
-						{{ui/ui-button color=constants.Color.Gray light=true label="Use Case" onClick=(action "onInsertUseCase")}}
-						{{ui/ui-button color=constants.Color.Gray light=true label="Class" onClick=(action "onInsertClass")}}
-						{{ui/ui-button color=constants.Color.Gray light=true label="Activity" onClick=(action "onInsertActivity")}}
-						{{ui/ui-button color=constants.Color.Gray light=true label="Activity (new syntax)" onClick=(action "onInsertActivityNew")}}
-						{{ui/ui-button color=constants.Color.Gray light=true label="Component" onClick=(action "onInsertComponent")}}
-						{{ui/ui-button color=constants.Color.Gray light=true label="State" onClick=(action "onInsertState")}}
+						{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'section_plantuml_type_sequence') onClick=(action "onInsertSequence")}}
+						{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'section_plantuml_type_usecase') onClick=(action "onInsertUseCase")}}
+						{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'section_plantuml_type_class') onClick=(action "onInsertClass")}}
+						{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'section_plantuml_type_activity') onClick=(action "onInsertActivity")}}
+						{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'section_plantuml_type_activity2') onClick=(action "onInsertActivityNew")}}
+						{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'section_plantuml_type_component') onClick=(action "onInsertComponent")}}
+						{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'section_plantuml_type_state') onClick=(action "onInsertState")}}
 					</p>
 				</div>
 			{{/if}}

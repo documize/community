@@ -1,6 +1,6 @@
 {{layout/logo-heading
-	title="Papertrail"
-	desc="Display your cloud-based logs (https://papertrailapp.com)"
+	title=(localize 'section_papertrail')
+	desc=(localize 'section_papertrail_explain')
 	icon=constants.Icon.Integrations}}
 
 {{#section/base-editor document=document folder=folder page=page busy=waiting
@@ -10,9 +10,8 @@
 		<div class="grid-cell-1">
 			<form {{action "auth" on="submit"}} >
 				<div class="form-group">
-					<label>Papertrail API Key</label>
+					<label>{{localize 'section_papertrail_key'}}</label>
 					{{focus-input id="papertrail-apitoken" type="password" value=config.APIToken class="form-control"}}
-					<small class="form-text text-muted">API Token (from your profile)</small>
 				</div>
 				{{ui/ui-button color=constants.Color.Green light=true label=(localize 'authenticate') onClick=(action "auth")}}
 			</form>
@@ -21,19 +20,19 @@
 			{{#if authenticated}}
 				<form {{action "onAction" on="submit"}} role="form">
 					<div class="form-group">
-						<label for="papertrail-query">Search query</label>
+						<label for="papertrail-query">{{localize 'section_papertrail_search'}}</label>
 						{{input id="papertrail-query" type="text" class="form-control mousetrap" value=config.query}}
-						<small class="form-text text-muted">Determine which log entries you want to display e.g. bob OR ("some phrase" AND sally)</small>
+						<small class="form-text text-muted">{{localize 'section_papertrail_search_explain'}}</small>
 					</div>
 					<div class="form-group">
-						<label for="papertrail-max">Maximum results</label>
+						<label for="papertrail-max">{{localize 'section_papetrail_max'}}</label>
 						{{input id="papertrail-max" type="number" class="form-control mousetrap" value=config.max}}
-						<small class="form-text text-muted">How many log entries do you want?</small>
+						<small class="form-text text-muted">{{localize 'section_papetrail__max_explain'}}</small>
 					</div>
 					<div class="form-group">
-						<label for="group-dropdown">Group</label>
+						<label for="group-dropdown">{{localize 'section_papetrail_group'}}</label>
 						{{ui/ui-select id="group-dropdown" prompt="<group>" content=options.groups action=(action "onGroupsChange") optionValuePath="id" optionLabelPath="name" selection=config.group}}
-						<small class="form-text text-muted">Optional Papertrail group</small>
+						<small class="form-text text-muted">{{localize 'section_papetrail_group_explain'}}</small>
 					</div>
 				</form>
 			{{/if}}
