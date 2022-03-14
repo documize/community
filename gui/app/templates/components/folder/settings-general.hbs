@@ -1,12 +1,12 @@
 {{layout/logo-heading
-	title="Space Meta"
-	desc="Set space visibility, icon and label"
+	title=(localize 'space')
+	desc=(localize 'settings')
 	icon=constants.Icon.Settings}}
 
 <form role="form">
 	<div class="form-group">
 		<label>{{localize 'name'}}</label>
-		{{focus-input id="space-name" type="text" value=spaceName class=(if hasNameError "form-control is-invalid" "form-control") placeholder="Space name" autocomplete="off"}}
+		{{focus-input id="space-name" type="text" value=spaceName class=(if hasNameError "form-control is-invalid" "form-control") placeholder="" autocomplete="off"}}
 	</div>
 
 	<div class="form-group">
@@ -35,7 +35,7 @@
 	</div>
 
 	<div class="form-group">
-		<label>Label</label>
+		<label>{{localize 'label'}}</label>
 		<ul class="space-label-picker">
 			<li class="label none {{if (eq spaceLabel "") "selected"}}" {{action "onSetLabel" ""}} role="button" tabindex="0">{{localize 'none'}}</li>
 			{{#each labels as |label|}}
@@ -55,9 +55,9 @@
 
 	{{#if allowLikes}}
 		<div class="form-group">
-			<label>Feedback Prompt</label>
-				{{input type="text" id="space-likes-prompt" class="form-control" placeholder=(localize 'feedback_prompt_hint') value=likes}}
-				<small class="form-text text-muted">{{localize 'feedback_prompt_explain'}}</small>
+			<label>{{localize 'feedback_prompt'}}</label>
+			{{input type="text" id="space-likes-prompt" class="form-control" placeholder=(localize 'feedback_prompt_hint') value=likes}}
+			<small class="form-text text-muted">{{localize 'feedback_prompt_explain'}}</small>
 		</div>
 	{{/if}}
 </form>
