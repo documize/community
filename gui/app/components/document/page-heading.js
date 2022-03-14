@@ -23,6 +23,7 @@ export default Component.extend(Notifier, ModalMixin, {
 	searchService: service('search'),
 	router: service(),
 	appMeta: service(),
+	i18n: service(),
 	deleteChildren: false,
 	blockTitle: "",
 	blockExcerpt: "",
@@ -84,7 +85,7 @@ export default Component.extend(Notifier, ModalMixin, {
 
 		let clip = new ClipboardJS('#page-copy-link-' + pageId, {
 			text: function() {
-				self.notifySuccess('Link copied to clipboard');
+				self.notifySuccess(this.i18n.localize('copied'));
 				return url;
 			}
 		});

@@ -18,6 +18,7 @@ export default Service.extend(Notifier, {
 	appMeta: service(),
 	store: service(),
 	eventBus: service(),
+	i18n: service(),
 
 	// Returns links within specified document
 	getDocumentLinks(documentId) {
@@ -43,7 +44,7 @@ export default Service.extend(Notifier, {
 		}).then((response) => {
 			return response;
 		});
-	},	
+	},
 
 	// Returns keyword-based candidates
 	searchCandidates(keywords) {
@@ -166,7 +167,7 @@ export default Service.extend(Notifier, {
 			document.execCommand('copy');
 			document.body.removeChild(el);
 
-			this.notifyInfo('Copied location to clipboard');
+			this.notifyInfo(this.i18n.localize('copied'));
 
 			return;
 		}

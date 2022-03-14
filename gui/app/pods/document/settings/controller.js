@@ -19,6 +19,7 @@ export default Controller.extend(Notifier, {
 	folderService: service('folder'),
 	documentService: service('document'),
 	localStorage: service('localStorage'),
+	i18n: service(),
 	queryParams: ['tab'],
 	tab: 'general',
 
@@ -33,7 +34,7 @@ export default Controller.extend(Notifier, {
 
 		onSaveDocument(doc) {
 			this.get('documentService').save(doc).then(() => {
-				this.notifySuccess('Saved');
+				this.notifySuccess(this.i18n.localize('saved'));
 			});
 
 			this.get('browser').setTitle(doc.get('name'));

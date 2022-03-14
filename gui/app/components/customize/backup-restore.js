@@ -74,13 +74,13 @@ export default Component.extend(Notifier, Modal, {
 		let spec = this.get('backupSpec');
 
 		this.get('onBackup')(spec).then((filename) => {
-			this.notifySuccess('Completed');
+			this.notifySuccess(this.i18n.localize('completed'));
 			this.set('backupLabel', this.i18n.localize('backup_start'));
 			this.set('backupSuccess', true);
 			this.set('backupFilename', filename);
 			this.set('backupRunning', false);
 		}, ()=> {
-			this.notifyError('Failed');
+			this.notifyError(this.i18n.localize('backup_failed'));
 			this.set('backupLabel', this.i18n.localize('backup_run'));
 			this.set('backupFailed', true);
 			this.set('backupRunning', false);
@@ -156,7 +156,7 @@ export default Component.extend(Notifier, Modal, {
 				this.set('restoreSuccess', true);
 				this.get('router').transitionTo('auth.logout');
 			}, ()=> {
-				this.notifyError('Failed');
+				this.notifyError(this.i18n.localize('backup_failed'));
 				this.set('restorbackupLabel', this.i18n.localize('restore'));
                 this.set('restoreFailed', true);
 			});

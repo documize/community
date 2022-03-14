@@ -21,6 +21,7 @@ import Component from '@ember/component';
 export default Component.extend(Notifier, {
 	appMeta: service(),
 	router: service(),
+	i18n: service(),
 	maxTags: 3,
 	domain: '',
 	titleEmpty: empty('model.general.title'),
@@ -186,7 +187,7 @@ export default Component.extend(Notifier, {
 			this.set('model.general.domain', this.get('domain').toLowerCase());
 
 			this.get('onUpdate')().then(() => {
-				this.notifySuccess('Saved');
+				this.notifySuccess(this.i18n.localize('saved'));
 				set(this, 'titleError', false);
 				set(this, 'messageError', false);
 				set(this, 'conversionEndpointError', false);

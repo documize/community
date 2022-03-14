@@ -22,6 +22,7 @@ export default Controller.extend(Notifier, {
 	localStore: service('local-storage'),
 	appMeta: service(),
 	router: service(),
+	i18n: service(),
 	sidebarTab: 'toc',
 	queryParams: ['currentPageId', 'source'],
 	contributionStatus: '',
@@ -38,7 +39,7 @@ export default Controller.extend(Notifier, {
 
 		onSaveDocument(doc) {
 			this.get('documentService').save(doc).then(() => {
-				this.notifySuccess('Saved');
+				this.notifySuccess(this.i18n.localize('saved'));
 			});
 			this.get('browser').setTitle(doc.get('name'));
 			this.get('browser').setMetaDescription(doc.get('excerpt'));
@@ -117,7 +118,7 @@ export default Controller.extend(Notifier, {
 			};
 
 			this.get('documentService').updatePage(documentId, page.get('id'), model).then((/*up*/) => {
-				this.notifySuccess('Saved');
+				this.notifySuccess(this.i18n.localize('saved'));
 
 				this.get('documentService').fetchPages(documentId, this.get('session.user.id')).then((pages) => {
 					this.set('pages', pages);
@@ -160,7 +161,7 @@ export default Controller.extend(Notifier, {
 				this.get('documentService').addPage(this.get('document.id'), data).then((newPage) => {
 					let data = this.get('store').normalize('page', newPage);
 					this.get('store').push(data);
-					this.notifySuccess('Inserted');
+					this.notifySuccess(this.i18n.localize('saved'));
 
 					this.get('documentService').fetchPages(this.get('document.id'), this.get('session.user.id')).then((pages) => {
 						this.set('pages', pages);
@@ -198,13 +199,13 @@ export default Controller.extend(Notifier, {
 
 		onSaveTemplate(name, desc) {
 			this.get('templateService').saveAsTemplate(this.get('document.id'), name, desc).then(() => {
-				this.notifySuccess('Template saved');
+				this.notifySuccess(this.i18n.localize('saved'));
 			});
 		},
 
 		onDuplicate(name) {
 			this.get('documentService').duplicate(this.get('folder.id'), this.get('document.id'), name).then(() => {
-				this.notifySuccess('Duplicated');
+				this.notifySuccess(this.i18n.localize('duplicated'));
 			});
 		},
 
@@ -232,7 +233,7 @@ export default Controller.extend(Notifier, {
 			let doc = this.get('document');
 			doc.set('tags', tags);
 			this.get('documentService').save(doc).then(()=> {
-				this.notifySuccess('Saved');
+				this.notifySuccess(this.i18n.localize('saved'));
 			});
 		},
 

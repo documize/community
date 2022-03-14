@@ -285,7 +285,7 @@ export default Component.extend(Notifier, Modals, AuthProvider, {
 			this.set('inviteEmail', '');
 
 			this.get('spaceSvc').share(this.get('folder.id'), result).then(() => {
-				this.notifySuccess('Invites sent');
+				this.notifySuccess(this.i18n.localize('sent'));
 				$('#space-invite-email').removeClass('is-invalid');
 				this.modalClose("#space-invite-user-modal");
 				this.load();
