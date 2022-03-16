@@ -18,6 +18,7 @@ import (
 	"os"
 
 	"github.com/documize/community/core/env"
+	"github.com/documize/community/core/i18n"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/section"
 	"github.com/documize/community/domain/store"
@@ -61,6 +62,12 @@ func main() {
 		os.Exit(0)
 	}
 	rt.Log.Info("Configuration: " + rt.Flags.ConfigSource)
+
+	// i18n
+	err := i18n.Initialize(rt.Assets)
+	if err != nil {
+		rt.Log.Error("i18n", err)
+	}
 
 	// Start database init.
 	boot.InitRuntime(&rt, &s)
