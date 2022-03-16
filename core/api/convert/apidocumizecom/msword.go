@@ -19,8 +19,8 @@ import (
 	"net/http"
 	"path/filepath"
 
+	"context"
 	api "github.com/documize/community/core/convapi"
-	"golang.org/x/net/context"
 )
 
 // Msword type provides a peg to hang the Convert method on.

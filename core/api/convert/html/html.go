@@ -16,9 +16,9 @@ import (
 	"fmt"
 	"strings"
 
+	"context"
 	api "github.com/documize/community/core/convapi"
 	"github.com/documize/community/core/stringutil"
-	"golang.org/x/net/context"
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
 )

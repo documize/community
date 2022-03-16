@@ -16,7 +16,7 @@ import (
 
 	api "github.com/documize/community/core/convapi"
 
-	"golang.org/x/net/context"
+	"context"
 )
 
 // Convert provides the standard interface for conversion of a ".documizeapi" json document.
