@@ -37,6 +37,7 @@ type User struct {
 	Reset       string            `json:"-"`
 	LastVersion string            `json:"lastVersion"`
 	Theme       string            `json:"theme"`
+	Locale      string            `json:"locale"`
 	Accounts    []account.Account `json:"accounts"`
 	Groups      []group.Record    `json:"groups"`
 }

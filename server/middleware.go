@@ -22,6 +22,7 @@ import (
 	"time"
 
 	"github.com/documize/community/core/env"
+	"github.com/documize/community/core/i18n"
 	"github.com/documize/community/core/request"
 	"github.com/documize/community/core/response"
 	"github.com/documize/community/domain"
@@ -191,6 +192,10 @@ func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http
 			rc.GlobalAdmin = u.GlobalAdmin
 			rc.ViewUsers = u.ViewUsers
 			rc.Fullname = u.Fullname()
+			rc.Locale = u.Locale
+			if len(rc.Locale) == 0 {
+				u.Locale = i18n.DefaultLocale
+			}
 
 			// We send back with every HTTP request/response cycle the latest
 			// user state. This helps client-side applications to detect changes in

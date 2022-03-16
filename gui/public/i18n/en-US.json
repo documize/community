@@ -689,5 +689,19 @@
     "404": "Oops! That page couldn't be found.",
     "404_explain": "Maybe the content you're looking for is no longer available?",
     "close_account": "Please close my Documize account.",
-    "third_party": "Documize Community utilizes open source libraries and components from third parties"
+    "third_party": "Documize Community utilizes open source libraries and components from third parties",
+
+    "server_ldap_error1": "Error: skipping user sync with LDAP as it is not the configured option",
+    "server_ldap_error2": "Error: unable read LDAP configuration data",
+    "server_ldap_error3": "Error: unable to fetch LDAP users: {1}",
+    "server_ldap_complete": "Sync complete with LDAP server",
+    "server_ldap_summary": "LDAP sync found {1} users, {2} new users added, {3} users with missing data ignored",
+
+    "server_keycloak_error1": "Error: skipping user sync with Keycloak as it is not the configured option",
+    "server_keycloak_error2": "Error: unable read Keycloak configuration data",
+    "server_keycloak_error3": "Error: unable to fetch Keycloak users: {1}",
+    "server_keycloak_summary": "Keycloak sync found {1} users, {2} new users added, {3} users with missing data ignored",
+
+    "server_error_user": "Error: unable to fetch users",
+    "server_error_org": "Error: unable to get organization record"
 }

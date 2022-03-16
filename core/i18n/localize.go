@@ -4,10 +4,15 @@ import (
 	"embed"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/documize/community/core/asset"
 
 	"github.com/pkg/errors"
+)
+
+const (
+	DefaultLocale = "en-US"
 )
 
 var localeMap map[string]map[string]string
@@ -57,17 +62,29 @@ func Initialize(e embed.FS) (err error) {
 
 // Localize will returns string value for given key using specified locale).
 // e.g. locale = "en-US", key = "admin_billing"
-func Localize(locale, key string) (s string) {
+//
+// Replacements are for replacing string placeholders ({1} {2} {3}) with
+// replacement text.
+// e.g. "This is {1} example" where replacements[0] will replace {1}
+func Localize(locale string, key string, replacements ...string) (s string) {
 	l, ok := localeMap[locale]
 	if !ok {
 		// fallback
-		l = localeMap["en-US"]
+		l = localeMap[DefaultLocale]
 	}
 
 	s, ok = l[key]
 	if !ok {
 		// missing translation key is echo'ed back
 		s = fmt.Sprintf("!! %s !!", key)
+	}
+
+	// placeholders are one-based: {1} {2} {3}
+	// replacements array is zero-based hence the +1 below
+	if len(replacements) > 0 {
+		for i := range replacements {
+			s = strings.Replace(s, fmt.Sprintf("{%d}", i+1), replacements[i], 1)
+		}
 	}
 
 	return
