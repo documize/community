@@ -19,6 +19,7 @@ import (
 	"net/http"
 
 	"github.com/documize/community/core/env"
+	"github.com/documize/community/core/i18n"
 	"github.com/documize/community/core/request"
 	"github.com/documize/community/core/response"
 	"github.com/documize/community/core/streamutil"
@@ -98,7 +99,7 @@ func (h *Handler) SetSMTP(w http.ResponseWriter, r *http.Request) {
 		Message string `json:"message"`
 	}
 
-	result.Message = "Email sent successfully!"
+	result.Message = i18n.Localize(ctx.Locale, "server_smtp_test")
 
 	u, err := h.Store.User.Get(ctx, ctx.UserID)
 	if err != nil {
@@ -113,8 +114,8 @@ func (h *Handler) SetSMTP(w http.ResponseWriter, r *http.Request) {
 	h.Runtime.Log.Infof("%v", cfg)
 	dialer, err := smtp.Connect(cfg)
 	em := smtp.EmailMessage{}
-	em.Subject = "Documize SMTP Test"
-	em.BodyHTML = "<p>This is a test email from Documize using current SMTP settings.</p>"
+	em.Subject = i18n.Localize(ctx.Locale, "server_smtp_test_subject")
+	em.BodyHTML = "<p>" + i18n.Localize(ctx.Locale, "server_smtp_test_body") + "</p>"
 	em.ToEmail = u.Email
 	em.ToName = u.Fullname()
 

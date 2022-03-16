@@ -21,6 +21,7 @@ import (
 	"text/template"
 
 	"github.com/documize/community/core/env"
+	"github.com/documize/community/core/i18n"
 	"github.com/documize/community/core/response"
 	"github.com/documize/community/core/stringutil"
 	"github.com/documize/community/domain"
@@ -67,7 +68,10 @@ func (h *Handler) Meta(w http.ResponseWriter, r *http.Request) {
 	data.ConversionEndpoint = org.ConversionEndpoint
 	data.Storage = h.Runtime.StoreProvider.Type()
 	data.Location = h.Runtime.Flags.Location // reserved
-	data.Locale = "en-US"
+	data.Locale = org.Locale
+	if len(data.Locale) == 0 {
+		data.Locale = i18n.DefaultLocale
+	}
 
 	// Is product setup complete? SMTP in this case.
 	data.Configured = true

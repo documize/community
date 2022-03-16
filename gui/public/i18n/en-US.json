@@ -702,6 +702,10 @@
     "server_keycloak_error3": "Error: unable to fetch Keycloak users: {1}",
     "server_keycloak_summary": "Keycloak sync found {1} users, {2} new users added, {3} users with missing data ignored",
 
+    "server_smtp_success": "Email sent successfully",
+    "server_smtp_test_subject": "Documize Community SMTP Test",
+    "server_smtp_test_body": "This is a test email from Documize Community using current SMTP settings.",
+
     "server_error_user": "Error: unable to fetch users",
     "server_error_org": "Error: unable to get organization record"
 }
