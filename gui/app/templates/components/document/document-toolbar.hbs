@@ -1,7 +1,7 @@
 {{#ui/ui-toolbar dark=false light=false raised=false large=false bordered=false}}
 	{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
 		{{#if permissions.documentEdit}}
-			{{#ui/ui-toolbar-dropdown label="Actions" arrow=true}}
+			{{#ui/ui-toolbar-dropdown label=(localize 'actions') arrow=true}}
 				{{#attach-popover class="ember-attacher-popper" hideOn="click clickout" showOn="click" isShown=false}}
 					<ul class="menu">
 						<li class="item" {{action "onShowRequestContributionModal"}} role="button" tabindex="0">{{localize 'doc_request_contribution'}}</li>
