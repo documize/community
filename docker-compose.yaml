@@ -1,6 +1,6 @@
 # This Docker Compose file will start up Documize with PostgreSQL.
 #
-# Use 'documize-enterprise-linux-amd64' for Enterprise Edition (default).
+# Use 'documize-community-plus-linux-amd64' for Community+ Edition (default).
 # Use 'documize-community-linux-amd64' for Community Edition.
 #
 # You can move between editions anytime without any data loss

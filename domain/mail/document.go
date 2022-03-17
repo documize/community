@@ -16,6 +16,7 @@ package mail
 import (
 	"fmt"
 
+	"github.com/documize/community/core/i18n"
 	"github.com/documize/community/domain/smtp"
 )
 
@@ -26,19 +27,15 @@ func (m *Mailer) DocumentApprover(recipient, inviterName, inviterEmail, url, doc
 
 	// check inviter name
 	if inviterName == "Hello You" || len(inviterName) == 0 {
-		inviterName = "Your colleague"
+		inviterName = i18n.Localize(m.Context.Locale, "mail_template_sender")
 	}
 
 	em := smtp.EmailMessage{}
-	em.Subject = fmt.Sprintf("%s has granted you document approval", inviterName)
+	em.Subject = i18n.Localize(m.Context.Locale, "mail_template_approval", inviterName)
 	em.ToEmail = recipient
 	em.ToName = recipient
 	em.ReplyTo = inviterEmail
 	em.ReplyName = inviterName
-
-	if IsBlockedEmailDomain(em.ToEmail) {
-		return
-	}
 
 	parameters := struct {
 		Subject     string
@@ -46,12 +43,16 @@ func (m *Mailer) DocumentApprover(recipient, inviterName, inviterEmail, url, doc
 		URL         string
 		Document    string
 		SenderEmail string
+		ActionText  string
+		ClickHere   string
 	}{
 		em.Subject,
 		inviterName,
 		url,
 		document,
 		m.Config.SenderEmail,
+		i18n.Localize(m.Context.Locale, "mail_template_approval_explain"),
+		i18n.Localize(m.Context.Locale, "mail_template_click_here"),
 	}
 
 	html, err := m.ParseTemplate("mail/document-approver.html", parameters)

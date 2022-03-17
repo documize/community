@@ -44,7 +44,7 @@ export default Route.extend({
 
 	activate() {
 		$('body').addClass('background-color-theme-100');
-		document.title = this.i18n.localize('setup_title');
+		document.title = "Documize Community Setup";
 	},
 
 	deactivate() {
