@@ -370,14 +370,14 @@ func (r *restoreHandler) dmzOrg() (err error) {
                 INSERT INTO dmz_org (c_refid, c_company, c_title, c_message,
                 c_domain, c_service, c_email, c_anonaccess, c_authprovider, c_authconfig,
                 c_maxtags, c_verified, c_serial, c_sub, c_active,
-                c_theme, c_logo, c_created, c_revised)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
+                c_theme, c_logo, c_locale, c_created, c_revised)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
 				org[i].RefID, org[i].Company, org[i].Title, org[i].Message,
 				strings.ToLower(org[i].Domain), org[i].ConversionEndpoint, strings.ToLower(org[i].Email),
 				org[i].AllowAnonymousAccess, org[i].AuthProvider, org[i].AuthConfig,
 				org[i].MaxTags, r.Runtime.StoreProvider.IsTrue(), org[i].Serial,
 				org[i].Subscription, org[i].Active,
-				org[i].Theme, org[i].Logo,
+				org[i].Theme, org[i].Logo, org[i].Locale,
 				org[i].Created, org[i].Revised)
 			if err != nil {
 				r.Context.Transaction.Rollback()
@@ -412,6 +412,7 @@ func (r *restoreHandler) dmzOrg() (err error) {
 			org[0].Title = r.Spec.Org.Title
 			org[0].Subscription = r.Spec.Org.Subscription
 			org[0].Theme = r.Spec.Org.Theme
+			org[0].Locale = r.Spec.Org.Locale
 		}
 
 		_, err = r.Context.Transaction.NamedExec(`UPDATE dmz_org SET
@@ -425,7 +426,8 @@ func (r *restoreHandler) dmzOrg() (err error) {
             c_message=:message,
             c_title=:title,
             c_serial=:serial,
-		    c_sub=:subscription
+		    c_sub=:subscription,
+			c_locale=:locale,
             WHERE c_refid=:refid`, &org[0])
 		if err != nil {
 			r.Context.Transaction.Rollback()
@@ -1735,11 +1737,11 @@ func (r *restoreHandler) dmzUser() (err error) {
 			_, err = r.Context.Transaction.Exec(r.Runtime.Db.Rebind(`
             INSERT INTO dmz_user
             (c_refid, c_firstname, c_lastname, c_email, c_initials, c_globaladmin,
-            c_password, c_salt, c_reset, c_active, c_lastversion, c_created, c_revised)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
+            c_password, c_salt, c_reset, c_active, c_lastversion, c_locale, c_created, c_revised)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
 				r.remapUser(u[i].RefID), u[i].Firstname, u[i].Lastname, strings.ToLower(u[i].Email), u[i].Initials,
 				u[i].GlobalAdmin, u[i].Password, u[i].Salt, u[i].Reset, u[i].Active,
-				u[i].LastVersion, u[i].Created, u[i].Revised)
+				u[i].LastVersion, u[i].Locale, u[i].Created, u[i].Revised)
 
 			if err != nil {
 				r.Context.Transaction.Rollback()

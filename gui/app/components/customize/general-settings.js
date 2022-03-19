@@ -30,12 +30,28 @@ export default Component.extend(Notifier, {
 	hasTitleInputError: and('titleEmpty', 'titleError'),
 	hasMessageInputError: and('messageEmpty', 'messageError'),
 	hasConversionEndpointInputError: and('conversionEndpointEmpty', 'conversionEndpointError'),
+	locale: {},
+	locales: null,
+
+	init() {
+		this._super(...arguments);
+
+		let l = this.get('appMeta.locales');
+		let t = [];
+
+		l.forEach((locale) => {
+			t.pushObject( {name: locale} );
+		});
+
+		this.set('locales', t);
+	},
 
 	didReceiveAttrs() {
 		this._super(...arguments);
 
 		this.set('maxTags', this.get('model.general.maxTags'));
 		this.set('domain', this.get('model.general.domain'));
+		this.set('locale', { name: this.get('model.general.locale') });
 	},
 
 	didInsertElement() {
@@ -149,6 +165,10 @@ export default Component.extend(Notifier, {
 	},
 
 	actions: {
+		onSelectLocale(locale) {
+			this.set('model.general.locale', locale.name);
+		},
+
 		change() {
             const selectEl = $('#maxTags')[0];
             const selection = selectEl.selectedOptions[0].value;

@@ -93,4 +93,5 @@ type User struct {
 	Salt        string `json:"salt"`
 	Reset       string `json:"reset"`
 	LastVersion string `json:"lastVersion"`
+	Locale      string `json:"locale"`
 }

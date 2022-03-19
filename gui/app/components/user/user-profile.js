@@ -46,13 +46,34 @@ export default Component.extend(AuthProvider, {
 			return '';
 		}
 	}),
+	locale: {},
+	locales: null,
 
 	init() {
 		this._super(...arguments);
 		this.password = { password: "", confirmation: "" };
+
+		let l = this.get('appMeta.locales');
+		let t = [];
+
+		l.forEach((locale) => {
+			t.pushObject( {name: locale} );
+		});
+
+		this.set('locales', t);
+	},
+
+	didReceiveAttrs() {
+		this._super(...arguments);
+
+		this.set('locale', { name: this.get('model.locale') });
 	},
 
 	actions: {
+		onSelectLocale(locale) {
+			this.set('model.locale', locale.name);
+		},
+
 		save() {
 			let password = this.get('password.password');
 			let confirmation = this.get('password.confirmation');

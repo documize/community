@@ -21,6 +21,7 @@ export default Model.extend({
 	allowAnonymousAccess: attr('boolean', { defaultValue: false }),
 	maxTags: attr('number', {defaultValue: 3}),
 	theme: attr('string'),
+	locale: attr('string', { defaultValue: "en-US" }),
 	created: attr(),
 	revised: attr()
 });

@@ -11,13 +11,18 @@
         <label for="email">{{localize 'email'}}</label>
         {{input id="email" type="email" value=model.email class=(if hasEmailError "form-control is-invalid" "form-control")}}
     </div>
+    <div class="form-group">
+        <label>{{localize 'locale'}}</label>
+        {{ui/ui-select content=locales selection=locale optionValuePath="name" optionLabelPath="name" action=(action "onSelectLocale")}}
+    </div>
+
     {{#if isAuthProviderDocumize}}
         <div class="form-group">
             <label for="password">{{localize 'password'}}</label>
             {{input id="password" type="password" value=password.password class=(if hasPasswordError "form-control is-invalid" "form-control")}}
         </div>
         <div class="form-group">
-            <label for="confirmPassword">{{localize 'confirm_password'}}</label>
+            <label for="confirmPassword">{{localize 'password_confirm'}}</label>
             {{input id="confirmPassword" type="password" value=password.confirmation class=(if hasConfirmPasswordError "form-control is-invalid" "form-control")}}
         </div>
     {{/if}}

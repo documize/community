@@ -69,6 +69,7 @@ func (h *Handler) Meta(w http.ResponseWriter, r *http.Request) {
 	data.Storage = h.Runtime.StoreProvider.Type()
 	data.Location = h.Runtime.Flags.Location // reserved
 	data.Locale = org.Locale
+	data.Locales = i18n.SupportedLocales()
 	if len(data.Locale) == 0 {
 		data.Locale = i18n.DefaultLocale
 	}

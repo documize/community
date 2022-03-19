@@ -25,6 +25,7 @@ var localeMap map[string]map[string]string
 // SupportedLocales returns array of locales.
 func SupportedLocales() (locales []string) {
 	locales = append(locales, "en-US")
+	locales = append(locales, "de-DE")
 
 	return
 }

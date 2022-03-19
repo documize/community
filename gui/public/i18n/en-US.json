@@ -124,6 +124,7 @@
     "no_access": "Access Denied",
     "drag_drop_reorder": "Drag-drop to reorder",
     "select": "Select",
+    "locale": "Locale",
 
     "public": "Public",
     "public_explain": "Public - can be seen by everyone",
@@ -186,6 +187,7 @@
     "created": "Created",
     "markdown": "Markdown accepted",
     "rename": "Rename",
+    "status": "Status",
 
     "toc": "table of contents",
     "new_canvas": "Blank anvas",

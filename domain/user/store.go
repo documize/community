@@ -38,8 +38,8 @@ func (s Store) Add(ctx domain.RequestContext, u user.User) (err error) {
 	u.Created = time.Now().UTC()
 	u.Revised = time.Now().UTC()
 
-	_, err = ctx.Transaction.Exec(s.Bind("INSERT INTO dmz_user (c_refid, c_firstname, c_lastname, c_email, c_initials, c_password, c_salt, c_reset, c_lastversion, c_created, c_revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"),
-		u.RefID, u.Firstname, u.Lastname, strings.TrimSpace(strings.ToLower(u.Email)), u.Initials, u.Password, u.Salt, "", u.LastVersion, u.Created, u.Revised)
+	_, err = ctx.Transaction.Exec(s.Bind("INSERT INTO dmz_user (c_refid, c_firstname, c_lastname, c_email, c_initials, c_password, c_salt, c_reset, c_lastversion, c_locale, c_created, c_revised) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"),
+		u.RefID, u.Firstname, u.Lastname, strings.TrimSpace(strings.ToLower(u.Email)), u.Initials, u.Password, u.Salt, "", u.LastVersion, u.Locale, u.Created, u.Revised)
 
 	if err != nil {
 		err = errors.Wrap(err, "execute user insert")
@@ -53,7 +53,7 @@ func (s Store) Get(ctx domain.RequestContext, id string) (u user.User, err error
 	err = s.Runtime.Db.Get(&u, s.Bind(`
         SELECT id, c_refid AS refid, c_firstname AS firstname, c_lastname AS lastname, c_email AS email,
         c_initials AS initials, c_globaladmin AS globaladmin, c_password AS password, c_salt AS salt, c_reset AS reset,
-        c_lastversion AS lastversion, c_created AS created, c_revised AS revised
+        c_lastversion AS lastversion, c_locale as locale, c_created AS created, c_revised AS revised
         FROM dmz_user
         WHERE c_refid=?`),
 		id)
@@ -72,7 +72,7 @@ func (s Store) GetByDomain(ctx domain.RequestContext, domain, email string) (u u
 	err = s.Runtime.Db.Get(&u, s.Bind(`SELECT u.id, u.c_refid AS refid,
         u.c_firstname AS firstname, u.c_lastname AS lastname, u.c_email AS email,
         u.c_initials AS initials, u.c_globaladmin AS globaladmin,
-        u.c_password AS password, u.c_salt AS salt, u.c_reset AS reset, u.c_lastversion AS lastversion,
+        u.c_password AS password, u.c_salt AS salt, u.c_reset AS reset, u.c_lastversion AS lastversion, u.c_locale as locale,
         u.c_created AS created, u.c_revised AS revised
         FROM dmz_user u, dmz_user_account a, dmz_org o
         WHERE LOWER(u.c_email)=? AND u.c_refid=a.c_userid AND a.c_orgid=o.c_refid AND LOWER(o.c_domain)=?`),
@@ -92,7 +92,7 @@ func (s Store) GetByEmail(ctx domain.RequestContext, email string) (u user.User,
 	err = s.Runtime.Db.Get(&u, s.Bind(`SELECT u.id, u.c_refid AS refid,
         u.c_firstname AS firstname, u.c_lastname AS lastname, u.c_email AS email,
         u.c_initials AS initials, u.c_globaladmin AS globaladmin,
-        u.c_password AS password, u.c_salt AS salt, u.c_reset AS reset, u.c_lastversion AS lastversion,
+        u.c_password AS password, u.c_salt AS salt, u.c_reset AS reset, u.c_lastversion AS lastversion, u.c_locale as locale,
         u.c_created AS created, u.c_revised AS revised
         FROM dmz_user u
         WHERE LOWER(u.c_email)=?`),
@@ -110,7 +110,7 @@ func (s Store) GetByToken(ctx domain.RequestContext, token string) (u user.User,
 	err = s.Runtime.Db.Get(&u, s.Bind(`SELECT u.id, u.c_refid AS refid,
         u.c_firstname AS firstname, u.c_lastname AS lastname, u.c_email AS email,
         u.c_initials AS initials, u.c_globaladmin AS globaladmin,
-        u.c_password AS password, u.c_salt AS salt, u.c_reset AS reset, u.c_lastversion AS lastversion,
+        u.c_password AS password, u.c_salt AS salt, u.c_reset AS reset, u.c_lastversion AS lastversion, u.c_locale as locale,
         u.c_created AS created, u.c_revised AS revised
         FROM dmz_user u
         WHERE u.c_reset=?`),
@@ -130,7 +130,7 @@ func (s Store) GetBySerial(ctx domain.RequestContext, serial string) (u user.Use
 	err = s.Runtime.Db.Get(&u, s.Bind(`SELECT u.id, u.c_refid AS refid,
         u.c_firstname AS firstname, u.c_lastname AS lastname, u.c_email AS email,
         u.c_initials AS initials, u.c_globaladmin AS globaladmin,
-        u.c_password AS password, u.c_salt AS salt, u.c_reset AS reset, u.c_lastversion AS lastversion,
+        u.c_password AS password, u.c_salt AS salt, u.c_reset AS reset, u.c_lastversion AS lastversion, u.c_locale as locale,
         u.c_created AS created, u.c_revised AS revised
         FROM dmz_user u
         WHERE u.c_salt=?`),
@@ -151,7 +151,7 @@ func (s Store) GetActiveUsersForOrganization(ctx domain.RequestContext) (u []use
 	err = s.Runtime.Db.Select(&u, s.Bind(`SELECT u.id, u.c_refid AS refid,
         u.c_firstname AS firstname, u.c_lastname AS lastname, u.c_email AS email,
         u.c_initials AS initials, u.c_globaladmin AS globaladmin,
-        u.c_password AS password, u.c_salt AS salt, u.c_reset AS reset, u.c_lastversion AS lastversion,
+        u.c_password AS password, u.c_salt AS salt, u.c_reset AS reset, u.c_lastversion AS lastversion, u.c_locale as locale,
         u.c_created AS created, u.c_revised AS revised,
         a.c_active AS active, a.c_editor AS editor, a.c_admin AS admin, a.c_users AS viewusers, a.c_analytics AS analytics
 		FROM dmz_user u, dmz_user_account a
@@ -176,7 +176,7 @@ func (s Store) GetSpaceUsers(ctx domain.RequestContext, spaceID string) (u []use
 	err = s.Runtime.Db.Select(&u, s.Bind(`SELECT u.id, u.c_refid AS refid,
         u.c_firstname AS firstname, u.c_lastname AS lastname, u.c_email AS email,
         u.c_initials AS initials, u.c_globaladmin AS globaladmin,
-        u.c_password AS password, u.c_salt AS salt, u.c_reset AS reset, u.c_lastversion AS lastversion,
+        u.c_password AS password, u.c_salt AS salt, u.c_reset AS reset, u.c_lastversion AS lastversion, u.c_locale as locale,
         u.c_created AS created, u.c_revised AS revised,
         a.c_active AS active, a.c_editor AS editor, a.c_admin AS admin, a.c_users AS viewusers, a.c_analytics AS analytics
         FROM dmz_user u, dmz_user_account a
@@ -210,7 +210,7 @@ func (s Store) GetUsersForSpaces(ctx domain.RequestContext, spaces []string) (u 
         SELECT u.id, u.c_refid AS refid,
         u.c_firstname AS firstname, u.c_lastname AS lastname, u.c_email AS email,
         u.c_initials AS initials, u.c_globaladmin AS globaladmin,
-        u.c_password AS password, u.c_salt AS salt, u.c_reset AS reset, u.c_lastversion AS lastversion,
+        u.c_password AS password, u.c_salt AS salt, u.c_reset AS reset, u.c_lastversion AS lastversion, u.c_locale as locale,
         u.c_created AS created, u.c_revised AS revised,
         a.c_active AS active, a.c_editor AS editor, a.c_admin AS admin, a.c_users AS viewusers, a.c_analytics AS analytics
         FROM dmz_user u, dmz_user_account a
@@ -244,7 +244,7 @@ func (s Store) UpdateUser(ctx domain.RequestContext, u user.User) (err error) {
 	u.Revised = time.Now().UTC()
 	u.Email = strings.ToLower(u.Email)
 
-	_, err = ctx.Transaction.NamedExec("UPDATE dmz_user SET c_firstname=:firstname, c_lastname=:lastname, c_email=:email, c_revised=:revised, c_initials=:initials, c_lastversion=:lastversion WHERE c_refid=:refid", &u)
+	_, err = ctx.Transaction.NamedExec("UPDATE dmz_user SET c_firstname=:firstname, c_lastname=:lastname, c_email=:email, c_revised=:revised, c_initials=:initials, c_lastversion=:lastversion, c_locale=:locale WHERE c_refid=:refid", &u)
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("execute user update %s", u.RefID))
 	}
@@ -313,7 +313,7 @@ func (s Store) GetUsersForOrganization(ctx domain.RequestContext, filter string,
 		err = s.Runtime.Db.Select(&u, s.Bind(`SELECT TOP(`+strconv.Itoa(limit)+`) u.id, u.c_refid AS refid,
         u.c_firstname AS firstname, u.c_lastname AS lastname, u.c_email AS email,
         u.c_initials AS initials, u.c_globaladmin AS globaladmin,
-        u.c_password AS password, u.c_salt AS salt, u.c_reset AS reset, u.c_lastversion AS lastversion,
+        u.c_password AS password, u.c_salt AS salt, u.c_reset AS reset, u.c_lastversion AS lastversion, u.c_locale as locale,
         u.c_created AS created, u.c_revised AS revised,
         a.c_active AS active, a.c_editor AS editor, a.c_admin AS admin, a.c_users AS viewusers, a.c_analytics AS analytics
         FROM dmz_user u, dmz_user_account a
@@ -323,7 +323,7 @@ func (s Store) GetUsersForOrganization(ctx domain.RequestContext, filter string,
 		err = s.Runtime.Db.Select(&u, s.Bind(`SELECT u.id, u.c_refid AS refid,
         u.c_firstname AS firstname, u.c_lastname AS lastname, u.c_email AS email,
         u.c_initials AS initials, u.c_globaladmin AS globaladmin,
-        u.c_password AS password, u.c_salt AS salt, u.c_reset AS reset, u.c_lastversion AS lastversion,
+        u.c_password AS password, u.c_salt AS salt, u.c_reset AS reset, u.c_lastversion AS lastversion, u.c_locale as locale,
         u.c_created AS created, u.c_revised AS revised,
         a.c_active AS active, a.c_editor AS editor, a.c_admin AS admin, a.c_users AS viewusers, a.c_analytics AS analytics
         FROM dmz_user u, dmz_user_account a
@@ -357,7 +357,7 @@ func (s Store) MatchUsers(ctx domain.RequestContext, text string, maxMatches int
 		err = s.Runtime.Db.Select(&u, s.Bind(`SELECT TOP(`+strconv.Itoa(maxMatches)+`) u.id, u.c_refid AS refid,
         u.c_firstname AS firstname, u.c_lastname AS lastname, u.c_email AS email,
         u.c_initials AS initials, u.c_globaladmin AS globaladmin,
-        u.c_password AS password, u.c_salt AS salt, u.c_reset AS reset, u.c_lastversion AS lastversion,
+        u.c_password AS password, u.c_salt AS salt, u.c_reset AS reset, u.c_lastversion AS lastversion, u.c_locale as locale,
         u.c_created AS created, u.c_revised AS revised,
         a.c_active AS active, a.c_editor AS editor, a.c_admin AS admin, a.c_users AS viewusers, a.c_analytics AS analytics
         FROM dmz_user u, dmz_user_account a
@@ -367,7 +367,7 @@ func (s Store) MatchUsers(ctx domain.RequestContext, text string, maxMatches int
 		err = s.Runtime.Db.Select(&u, s.Bind(`SELECT u.id, u.c_refid AS refid,
         u.c_firstname AS firstname, u.c_lastname AS lastname, u.c_email AS email,
         u.c_initials AS initials, u.c_globaladmin AS globaladmin,
-        u.c_password AS password, u.c_salt AS salt, u.c_reset AS reset, u.c_lastversion AS lastversion,
+        u.c_password AS password, u.c_salt AS salt, u.c_reset AS reset, u.c_lastversion AS lastversion, u.c_locale as locale,
         u.c_created AS created, u.c_revised AS revised,
         a.c_active AS active, a.c_editor AS editor, a.c_admin AS admin, a.c_users AS viewusers, a.c_analytics AS analytics
         FROM dmz_user u, dmz_user_account a

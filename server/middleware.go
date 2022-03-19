@@ -131,6 +131,10 @@ func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http
 		rc.AppURL = r.Host
 		rc.Subdomain = organization.GetSubdomainFromHost(r)
 		rc.SSL = request.IsSSL(r)
+		rc.OrgLocale = org.Locale
+		if len(rc.OrgLocale) == 0 {
+			rc.OrgLocale = i18n.DefaultLocale
+		}
 
 		// get user IP from request
 		i := strings.LastIndex(r.RemoteAddr, ":")
@@ -199,7 +203,7 @@ func (m *middleware) Authorize(w http.ResponseWriter, r *http.Request, next http
 			rc.Fullname = u.Fullname()
 			rc.Locale = u.Locale
 			if len(rc.Locale) == 0 {
-				u.Locale = i18n.DefaultLocale
+				rc.Locale = i18n.DefaultLocale
 			}
 
 			// We send back with every HTTP request/response cycle the latest

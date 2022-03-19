@@ -31,7 +31,7 @@ export default Route.extend({
 			dbname: document.head.querySelector("[property=dbname]").content,
 			dbhash: pwd,
 			title: "",
-			message: this.i18n.localize('setup_default_message'),
+			message: "Documize Community instance contains all our documentation",
 			allowAnonymousAccess: false,
 			firstname: "",
 			lastname: "",
