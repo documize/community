@@ -24,14 +24,15 @@ export default Service.extend({
         let str = "";
 
         switch(this.session.locale) {
-            case "fr-FR":
-                str = "";
+            case "en-US":
+                str = this.langs.enUS[key];
                 break;
             default:
                 str = this.langs.enUS[key];
         }
 
         if (_.isUndefined(str)) {
+            // eslint-disable-next-line no-console
             console.log(">>>>>>>>>>>> i18n missed key", key);
             return `!${key}!`;
         }
@@ -41,6 +42,8 @@ export default Service.extend({
                 str = str.replace(`{${i+1}}`, args[i]);
             }
         }
+
+        console.log(this.session.locale);
 
         return str;
     },
