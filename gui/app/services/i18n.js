@@ -43,8 +43,6 @@ export default Service.extend({
             }
         }
 
-        console.log(this.session.locale);
-
         return str;
     },
 });
