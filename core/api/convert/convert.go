@@ -19,7 +19,7 @@ import (
 	"github.com/documize/community/core/api/plugins"
 	api "github.com/documize/community/core/convapi"
 
-	"golang.org/x/net/context"
+	"context"
 )
 
 // Convert provides the entry-point into the document conversion process.

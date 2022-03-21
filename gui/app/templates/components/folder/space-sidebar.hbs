@@ -4,7 +4,7 @@
 		<div class="list">
 			<div class="item {{if (eq selectedFilter "space") "selected"}}" {{action "onDocumentFilter" "space" space.id}} role="button" tabindex="0">
 				<i class={{concat "dicon " constants.Icon.Filter}} />
-				<div class="name">All ({{documents.length}})</div>
+				<div class="name">{{localize 'all'}} ({{documents.length}})</div>
 			</div>
 			{{#if hasCategories}}
 				{{#if (gt rootDocCount 0)}}
@@ -17,26 +17,26 @@
 			{{#if permissions.documentTemplate}}
 				<div class="item {{if (eq selectedFilter "template") "selected"}}" {{action "onDocumentFilter" "template" space.id}} role="button" tabindex="0">
 					<i class={{concat "dicon " constants.Icon.Filter}} />
-					<div class="name">Templates ({{templates.length}})</div>
+					<div class="name">{{localize 'templates'}} ({{templates.length}})</div>
 				</div>
 			{{/if}}
 			{{#if permissions.documentLifecycle}}
 				<div class="item {{if (eq selectedFilter "draft") "selected"}}" {{action "onDocumentFilter" "draft" space.id}} role="button" tabindex="0">
 					<i class={{concat "dicon " constants.Icon.Filter}} />
-					<div class="name">Drafts ({{documentsDraft.length}})</div>
+					<div class="name">{{localize 'drafts'}} ({{documentsDraft.length}})</div>
 				</div>
 				<div class="item {{if (eq selectedFilter "live") "selected"}}" {{action "onDocumentFilter" "live" space.id}} role="button" tabindex="0">
 					<i class={{concat "dicon " constants.Icon.Filter}} />
-					<div class="name">Live ({{documentsLive.length}})</div>
+					<div class="name">{{localize 'live'}} ({{documentsLive.length}})</div>
 				</div>
 			{{/if}}
 			<div class="item {{if (eq selectedFilter "add") "selected"}}" {{action "onDocumentFilter" "add" space.id}} role="button" tabindex="0">
 				<i class={{concat "dicon " constants.Icon.Filter}} />
-				<div class="name">Added recently ({{recentAdd.length}})</div>
+				<div class="name">{{localize 'add_recent'}} ({{recentAdd.length}})</div>
 			</div>
 			<div class="item {{if (eq selectedFilter "update") "selected"}}" {{action "onDocumentFilter" "update" space.id}} role="button" tabindex="0">
 				<i class={{concat "dicon " constants.Icon.Filter}} />
-				<div class="name">Updated recently ({{recentUpdate.length}})</div>
+				<div class="name">{{localize 'update_recent'}} ({{recentUpdate.length}})</div>
 			</div>
 		</div>
 	</div>

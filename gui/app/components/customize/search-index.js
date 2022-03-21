@@ -15,14 +15,21 @@ import Component from '@ember/component';
 
 export default Component.extend(Notifier, {
 	appMeta: service(),
-	buttonLabel: 'Rebuild',
+	i18n: service(),
+	buttonLabel: '',
+
+	init() {
+		this._super(...arguments);
+		this.buttonLabel = this.i18n.localize('search_reindex_rebuild');
+	},
 
 	actions: {
 		reindex() {
-			this.set('buttonLabel', 'Running...');
-			this.notifyInfo("Starting search re-index process");
+			this.set('buttonLabel', this.i18n.localize('running'));
+			this.notifyInfo(this.i18n.localize('search_reindex_start'));
 			this.get('reindex')(() => {
-				this.notifySuccess("Search re-indexing complete");
+				this.notifySuccess(this.i18n.localize('search_reindex_finish'));
+				this.set('buttonLabel', this.i18n.localize('search_reindex_rebuild'));
 			});
 		}
 	}

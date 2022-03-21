@@ -19,6 +19,7 @@ export default Component.extend(AuthMixin, Notifier, {
 	router: service(),
 	spaceSvc: service('folder'),
 	sectionSvc: service('section'),
+	i18n: service(),
 
 	showDeleteDialog: false,
 	deleteBlockId: '',
@@ -54,7 +55,7 @@ export default Component.extend(AuthMixin, Notifier, {
 
 			this.get('sectionSvc').deleteBlock(id).then(() => {
 				this.set('deleteBlockId', '');
-				this.notifySuccess('Deleted');
+				this.notifySuccess(this.i18n.localize('deleted'));
 
 				this.get('sectionSvc').getSpaceBlocks(this.get('space.id')).then((blocks) => {
 					this.set('blocks', blocks);

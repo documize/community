@@ -6,13 +6,11 @@
 		{{#if (or session.isEditor session.isAdmin)}}
 			{{#ui/ui-toolbar dark=false light=false raised=false large=false bordered=false}}
 				{{#if session.isEditor}}
-					{{ui/ui-toolbar-button icon=constants.Icon.Plus color=constants.Color.Green
-						label=constants.Label.Space onClick=(action "onShowModal")}}
+					{{ui/ui-toolbar-button icon=constants.Icon.Plus color=constants.Color.Green label=(localize 'space') onClick=(action "onShowModal")}}
 					{{ui/ui-toolbar-divider}}
 				{{/if}}
 				{{#if session.isAdmin}}
-					{{ui/ui-toolbar-icon icon=constants.Icon.Settings color=constants.Color.Green
-						tooltip="Documize Community settings" linkTo="customize"}}
+					{{ui/ui-toolbar-icon icon=constants.Icon.Settings color=constants.Color.Green linkTo="customize"}}
 				{{/if}}
 			{{/ui/ui-toolbar}}
 		{{/if}}
@@ -23,24 +21,24 @@
 	<Layout::Grid::Sidebar>
 		<div class="sidebar-content">
 			<div class="section">
-				<div class="title">filter</div>
+				<div class="title">{{localize 'filter'}}</div>
 				<div class="list">
 					<div class="item {{if (eq selectedView "all") "selected"}}" {{action "onSelect" "all"}}>
 						<i class={{concat "dicon " constants.Icon.All}} />
-						<div class="name">All ({{model.spaces.length}})</div>
+						<div class="name">{{localize 'all'}} ({{model.spaces.length}})</div>
 					</div>
 					<div class="item {{if (eq selectedView "public") "selected"}}" {{action "onSelect" "public"}}>
 						<i class={{concat "dicon " constants.Icon.World}} />
-						<div class="name">Public ({{publicSpaces.length}})</div>
+						<div class="name">{{localize 'public'}} ({{publicSpaces.length}})</div>
 					</div>
 					{{#if session.authenticated}}
 						<div class="item {{if (eq selectedView "protected") "selected"}}" {{action "onSelect" "protected"}}>
 							<i class={{concat "dicon " constants.Icon.People}} />
-							<div class="name">Protected ({{protectedSpaces.length}})</div>
+							<div class="name">{{localize 'protected'}} ({{protectedSpaces.length}})</div>
 						</div>
 						<div class="item {{if (eq selectedView "personal") "selected"}}" {{action "onSelect" "personal"}}>
 							<i class={{concat "dicon " constants.Icon.Person}} />
-							<div class="name">Personal ({{personalSpaces.length}})</div>
+							<div class="name">{{localize 'personal'}} ({{personalSpaces.length}})</div>
 						</div>
 					{{/if}}
 				</div>
@@ -49,7 +47,7 @@
 			<Ui::UiSpacer @size="300" />
 
 			<div class="section">
-				<div class="title">label</div>
+				<div class="title">{{localize 'label'}}</div>
 				{{#if labels}}
 					<div class="list">
 						{{#each labels as |label|}}
@@ -62,7 +60,7 @@
 						{{/each}}
 					</div>
 				{{else}}
-					<div class="empty">No labels</div>
+					<div class="empty">{{localize 'labels_none'}}</div>
 				{{/if}}
 			</div>
 		</div>
@@ -76,22 +74,22 @@
 		<div class="modal" tabindex="-1" role="dialog" id="add-space-modal">
 			<div class="modal-dialog modal-lg" role="document">
 				<div class="modal-content">
-					<div class="modal-header">New Space</div>
+					<div class="modal-header">{{localize 'space_new'}}</div>
 					<div class="modal-body">
 						<form onsubmit={{action "onAddSpace"}}>
 							<div class="form-group">
-								<label for="new-space-name">Name</label>
-								{{input type="text" id="new-space-name" class="form-control mousetrap" placeholder="Space name" value=spaceName}}
+								<label for="new-space-name">{{localize 'name'}}</label>
+								{{input type="text" id="new-space-name" class="form-control mousetrap" placeholder=(localize 'space_name') value=spaceName}}
 								<small class="form-text text-muted">Characters and numbers only</small>
 							</div>
 
 							<div class="form-group">
-								<label>Description</label>
-								{{focus-input id="space-desc" type="text" value=spaceDesc class="form-control" placeholder="Space description" autocomplete="off"}}
+								<label>{{localize 'description'}}</label>
+								{{focus-input id="space-desc" type="text" value=spaceDesc class="form-control" placeholder=(localize 'space_description') autocomplete="off"}}
 							</div>
 
 							<div class="form-group">
-								<label>Icon</label>
+								<label>{{localize 'icon'}}</label>
 								<div class="ui-icon-picker">
 									<ul class="list">
 										{{#each iconList as |icon|}}
@@ -104,9 +102,9 @@
 							</div>
 
 							<div class="form-group">
-								<label>Label</label>
+								<label>{{localize 'label'}}</label>
 								<ul class="space-label-picker">
-									<li class="label none {{if (eq spaceLabel "") "selected"}}" {{action "onSetLabel" ""}}>None</li>
+									<li class="label none {{if (eq spaceLabel "") "selected"}}" {{action "onSetLabel" ""}}>{{localize 'none'}}</li>
 									{{#each labels as |label|}}
 										<li class="label {{if (eq spaceLabel label.id) "selected"}}"
 											style={{label.bgColor}}
@@ -118,22 +116,22 @@
 							</div>
 
 							<div class="form-group">
-								<label for="clone-space-dropdown">Clone Space</label>
-								{{ui/ui-select id="clone-space-dropdown" content=spaces prompt="select space" action=(action "onCloneSpaceSelect") optionValuePath="id" optionLabelPath="name" selection=clonedSpace}}
-								<small id="emailHelp" class="form-text text-muted">Copy templates, permissions, documents from existing space</small>
+								<label for="clone-space-dropdown">{{localize 'space_clone'}}</label>
+								{{ui/ui-select id="clone-space-dropdown" content=spaces prompt=(localize 'space_select') action=(action "onCloneSpaceSelect") optionValuePath="id" optionLabelPath="name" selection=clonedSpace}}
+								<small id="emailHelp" class="form-text text-muted">{{localize 'space_copy'}}</small>
 								<div class="margin-top-10" />
 								{{#if hasClone}}
-									{{#ui/ui-checkbox selected=copyTemplate}}Copy templates{{/ui/ui-checkbox}}
-									{{#ui/ui-checkbox selected=copyPermission}}Copy permissions{{/ui/ui-checkbox}}
-									{{#ui/ui-checkbox selected=copyDocument}}Copy documents{{/ui/ui-checkbox}}
+									{{#ui/ui-checkbox selected=copyTemplate}}{{localize 'space_copy_template'}}{{/ui/ui-checkbox}}
+									{{#ui/ui-checkbox selected=copyPermission}}{{localize 'space_copy_permission'}}{{/ui/ui-checkbox}}
+									{{#ui/ui-checkbox selected=copyDocument}}{{localize 'space_copy_document'}}{{/ui/ui-checkbox}}
 								{{/if}}
 							</div>
 						</form>
 					</div>
 					<div class="modal-footer">
-						{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+						{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'cancel') dismiss=true}}
 						{{ui/ui-button-gap}}
-						{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Add onClick=(action "onAddSpace")}}
+						{{ui/ui-button color=constants.Color.Green light=true label=(localize 'add') onClick=(action "onAddSpace")}}
 					</div>
 				</div>
 			</div>

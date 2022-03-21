@@ -99,6 +99,18 @@ export default SimpleAuthSession.extend({
 		return this.get('session.content.authenticated.token');
 	}),
 
+	locale: computed('session.content.authenticated.user', function () {
+		if (this.get('session.authenticator') === 'authenticator:anonymous' ||
+			this.get('session.content.authenticated.user.id') === '0' ) {
+			return this.appMeta.locale;
+		}
+
+		let locale = this.get('session.content.authenticated.user.locale');
+		if (_.isUndefined(locale) || locale === "") return this.appMeta.locale;
+
+		return locale;
+	}),
+
 	init() {
 		this._super(...arguments);
 	},

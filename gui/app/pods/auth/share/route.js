@@ -37,6 +37,6 @@ export default Route.extend(AuthenticatedRouteMixin, {
 	},
 
 	activate() {
-		this.get('browser').setTitleWithoutSuffix('Welcome to Documize');
+		this.get('browser').setTitleWithoutSuffix('Documize Community');
 	}
 });

@@ -68,10 +68,6 @@ let constants = EmberObject.extend({
 		None: 0,
 		Lock: 1,
 		Review: 2,
-
-		NoneLabel: 'Changes permitted without approval',
-		LockLabel: 'Locked, changes not permitted',
-		ReviewLabel: 'Changes require approval before publication'
 	},
 
 	// Document
@@ -80,10 +76,6 @@ let constants = EmberObject.extend({
 		Anybody: 1,
 		Majority: 2,
 		Unanimous: 3,
-
-		AnybodyLabel: 'Approval required from any approver',
-		MajorityLabel: 'Majority approval required from approvers',
-		UnanimousLabel: 'Unanimous approval required from all approvers'
 	},
 
 	// Section
@@ -115,10 +107,6 @@ let constants = EmberObject.extend({
 		Draft: 0,
 		Live: 1,
 		Archived: 2,
-
-		DraftLabel: 'Draft',
-		LiveLabel: 'Live',
-		ArchivedLabel: 'Archived',
 	},
 
 	// Document Version -- document.groupId links different versions of documents together
@@ -318,51 +306,6 @@ let constants = EmberObject.extend({
 		Yellow: 'yellow',
 		Gray: 'gray'
 	},
-
-	Label: { // eslint-disable-line ember/avoid-leaking-state-in-ember-objects
-		Add: 'Add',
-		Activate: "Activate",
-		Approve: 'Approve',
-		Authenticate: 'Authenticate',
-		Cancel: 'Cancel',
-		Close: 'Close',
-		Copy: 'Copy',
-		Delete: 'Delete',
-		Duplicate: 'Duplicate',
-		Edit: 'Edit',
-		Export: 'Export',
-		File: 'File',
-		Import: 'Import',
-		Insert: 'Insert',
-		Invite: 'Invite',
-		Join: 'Join',
-		Leave: 'Leave',
-		Login: 'Login',
-		Move: 'Move',
-		Next: 'Next',
-		OK: 'OK',
-		Preview: 'Preview',
-		Print: 'Print',
-		Publish: 'Publish',
-		Reject: 'Reject',
-		Remove: 'Remove',
-		Reply: 'Reply',
-		Reset: 'Reset',
-		Restore: 'Restore',
-		Request: 'Request',
-		Save: 'Save',
-		Search: 'Search',
-		Send: 'Send',
-		Share: 'Share',
-		SignIn: 'Sign In',
-		Sort: 'Sort',
-		Space: 'Space',
-		Spaces: 'Spaces',
-		Unassigned: 'Unassigned',
-		Update: 'Update',
-		Upload: 'Upload',
-		Version: 'Version'
-	}
 });
 
 export default { constants };

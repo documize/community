@@ -1,25 +1,30 @@
 <div class="view-profile">
     <div class="form-group">
-        <label for="firstname">Firstname</label>
+        <label for="firstname">{{localize 'firstname'}}</label>
         {{focus-input id="firstname" type="text" value=model.firstname class=(if hasFirstnameError "form-control is-invalid" "form-control")}}
     </div>
     <div class="form-group">
-        <label for="lastname">Lastname</label>
+        <label for="lastname">{{localize 'lastname'}}</label>
         {{input id="lastname" type="text" value=model.lastname class=(if hasLastnameError "form-control is-invalid" "form-control")}}
     </div>
     <div class="form-group">
-        <label for="email">Email</label>
+        <label for="email">{{localize 'email'}}</label>
         {{input id="email" type="email" value=model.email class=(if hasEmailError "form-control is-invalid" "form-control")}}
     </div>
+    <div class="form-group">
+        <label>{{localize 'locale'}}</label>
+        {{ui/ui-select content=locales selection=locale optionValuePath="name" optionLabelPath="name" action=(action "onSelectLocale")}}
+    </div>
+
     {{#if isAuthProviderDocumize}}
         <div class="form-group">
-            <label for="password">Password</label>
+            <label for="password">{{localize 'password'}}</label>
             {{input id="password" type="password" value=password.password class=(if hasPasswordError "form-control is-invalid" "form-control")}}
         </div>
         <div class="form-group">
-            <label for="confirmPassword">Confirm Password</label>
+            <label for="confirmPassword">{{localize 'password_confirm'}}</label>
             {{input id="confirmPassword" type="password" value=password.confirmation class=(if hasConfirmPasswordError "form-control is-invalid" "form-control")}}
         </div>
     {{/if}}
-	{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Save onClick=(action "save")}}
+	{{ui/ui-button color=constants.Color.Green light=true label=(localize 'save') onClick=(action "save")}}
 </div>

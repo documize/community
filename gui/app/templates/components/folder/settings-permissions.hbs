@@ -1,12 +1,12 @@
 {{layout/logo-heading
-	title="Space Permissions"
-	desc="Assign permissions to users or groups and invite new users to this space"
+	title=(localize 'space_permissions')
+	desc=(localize 'space_permissions_explain')
 	icon=constants.Icon.Locked}}
 
 <div class="view-customize">
 	<div class="explain-user-perms">
 		<div class="title" {{action "toggleSpacePerms"}} role="button" tabindex="0">
-			Space Permissions Explained
+			{{localize 'space'}}
 			{{#if showSpacePermExplain}}
                 <i class="dicon {{constants.Icon.ArrowSmallUp}}"></i>
 			{{else}}
@@ -14,18 +14,18 @@
 			{{/if}}
 		</div>
 		<div class="perms space-perms">
-			<div class="perm-name">View</div>
-			<div class="perm-desc">See content within this space</div>
-			<div class="perm-name">Manage</div>
-			<div class="perm-desc">Manage all aspects of space except deletion</div>
-			<div class="perm-name">Owner</div>
-			<div class="perm-desc">Manage and delete space</div>
+			<div class="perm-name">{{localize 'space_permission_view'}}</div>
+			<div class="perm-desc">{{localize 'space_permission_view_explain'}}</div>
+			<div class="perm-name">{{localize 'space_permission_manage'}}</div>
+			<div class="perm-desc">{{localize 'space_permission_manage_explain'}}</div>
+			<div class="perm-name">{{localize 'space_permission_owner'}}</div>
+			<div class="perm-desc">{{localize 'space_permission_owner_explain'}}</div>
 		</div>
 
 		<Ui::UiSpacer @size="200" />
 
 		<div class="title" {{action "toggleDocumentPerms"}} role="button" tabindex="0">
-			Document Permissions Explained
+			{{localize 'document'}}
 			{{#if showDocumentPermExplain}}
 				<i class="dicon {{constants.Icon.ArrowSmallUp}}"></i>
 			{{else}}
@@ -33,24 +33,24 @@
 			{{/if}}
 		</div>
 		<div class="perms document-perms">
-			<div class="perm-name">Create</div>
-			<div class="perm-desc">Can create new documents in space</div>
-			<div class="perm-name">Edit</div>
-			<div class="perm-desc">Can change document contents</div>
-			<div class="perm-name">Delete</div>
-			<div class="perm-desc">Can remove documents from space</div>
-			<div class="perm-name">Move</div>
-			<div class="perm-desc">Can move documents from this space to another space</div>
-			<div class="perm-name">Copy</div>
-			<div class="perm-desc">Can duplicate documents</div>
-			<div class="perm-name">Templates</div>
-			<div class="perm-desc">Can create and publish document templates</div>
-			<div class="perm-name">Approval</div>
-			<div class="perm-desc">Can (1) approve or reject document changes; (2) move documents from draft to live</div>
-			<div class="perm-name">Drafts</div>
-			<div class="perm-desc">Can view and work on documents marked as draft</div>
-			<div class="perm-name">Versions</div>
-			<div class="perm-desc">Can create document version and link them together</div>
+			<div class="perm-name">{{localize 'space_permission_doc_create'}}</div>
+			<div class="perm-desc">{{localize 'space_permission_doc_create_explain'}}</div>
+			<div class="perm-name">{{localize 'space_permission_doc_edit'}}</div>
+			<div class="perm-desc">{{localize 'space_permission_doc_edit_explain'}}</div>
+			<div class="perm-name">{{localize 'space_permission_doc_delete'}}</div>
+			<div class="perm-desc">{{localize 'space_permission_doc_delete_explain'}}</div>
+			<div class="perm-name">{{localize 'space_permission_doc_move'}}</div>
+			<div class="perm-desc">{{localize 'space_permission_doc_move_explain'}}</div>
+			<div class="perm-name">{{localize 'space_permission_doc_copy'}}</div>
+			<div class="perm-desc">{{localize 'space_permission_doc_copy_explain'}}</div>
+			<div class="perm-name">{{localize 'space_permission_doc_template'}}</div>
+			<div class="perm-desc">{{localize 'space_permission_doc_template_explain'}}</div>
+			<div class="perm-name">{{localize 'space_permission_doc_approval'}}</div>
+			<div class="perm-desc">{{localize 'space_permission_doc_approval_explain'}}</div>
+			<div class="perm-name">{{localize 'space_permission_doc_draft'}}</div>
+			<div class="perm-desc">{{localize 'space_permission_doc_draft_explain'}}</div>
+			<div class="perm-name">{{localize 'space_permission_doc_version'}}</div>
+			<div class="perm-desc">{{localize 'space_permission_doc_version_explain'}}</div>
 		</div>
 	</div>
 </div>
@@ -59,12 +59,12 @@
 
 <div class="text-center">
 	{{ui/ui-button color=constants.Color.Gray light=true icon=constants.Icon.Person
-		label="Add Existing User"
+		label=(localize 'add')
 		onClick=(action "onShowAddModal")}}
     {{#if isAuthProviderDocumize}}
         {{ui/ui-button-gap}}
         {{ui/ui-button color=constants.Color.Gray light=true icon=constants.Icon.Plus
-            label="Invite New User"
+            label=(localize 'invite')
             onClick=(action "onShowInviteModal")}}
     {{/if}}
 </div>
@@ -76,23 +76,23 @@
 		<thead>
 			<tr>
 				<th></th>
-				<th colspan="3" class="text-warning">Spaces</th>
-				<th colspan="9" class="text-info">Documents</th>
+				<th colspan="3" class="text-warning">{{localize 'spaces'}}</th>
+				<th colspan="9" class="text-info">{{localize 'documents'}}</th>
 			</tr>
 			<tr>
 				<th></th>
-				<th class="text-warning">View</th>
-				<th class="text-warning">Manage</th>
-				<th class="text-warning">Owner</th>
-				<th class="text-info">Create</th>
-				<th class="text-info">Edit</th>
-				<th class="text-info">Delete</th>
-				<th class="text-info">Move</th>
-				<th class="text-info">Copy</th>
-				<th class="text-info">Templates</th>
-				<th class="text-info">Approval</th>
-				<th class="text-info">Drafts</th>
-				<th class="text-info">Versions</th>
+				<th class="text-warning">{{localize 'space_permission_view'}}</th>
+				<th class="text-warning">{{localize 'space_permission_manage'}}</th>
+				<th class="text-warning">{{localize 'space_permission_owner'}}</th>
+				<th class="text-info">{{localize 'space_permission_doc_create'}}</th>
+				<th class="text-info">{{localize 'space_permission_doc_edit'}}</th>
+				<th class="text-info">{{localize 'space_permission_doc_delete'}}</th>
+				<th class="text-info">{{localize 'space_permission_doc_move'}}</th>
+				<th class="text-info">{{localize 'space_permission_doc_copy'}}</th>
+				<th class="text-info">{{localize 'space_permission_doc_template'}}</th>
+				<th class="text-info">{{localize 'space_permission_doc_approval'}}</th>
+				<th class="text-info">{{localize 'space_permission_doc_draft'}}</th>
+				<th class="text-info">{{localize 'space_permission_doc_version'}}</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -117,7 +117,7 @@
 								<i class="dicon {{constants.Icon.Person}}"/>
 								<span>&nbsp;{{permission.name}}
 									{{#if (eq permission.whoId session.user.id)}}
-										&nbsp;(you)
+										&nbsp;*
 									{{/if}}
 								</span>
 							{{/if}}
@@ -144,14 +144,14 @@
 <Ui::UiSpacer @size="200" />
 
 {{ui/ui-button color=constants.Color.Green light=true icon=constants.Icon.Locked
-	label=constants.Label.Save onClick=(action "onSave")}}
+	label=(localize 'save') onClick=(action "onSave")}}
 
 <div id="space-add-user-modal" class="modal" tabindex="-1" role="dialog">
 	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
-			<div class="modal-header">Add users to this space</div>
+			<div class="modal-header">{{localize 'space_permission_add_user'}}</div>
 			<div class="modal-body">
-				{{input id="user-search" type="text" class="form-control mousetrap" placeholder="Search for users by firstname, lastname, email" value=searchText key-up=(action "onSearch")}}
+				{{input id="user-search" type="text" class="form-control mousetrap" placeholder=(localize 'find_user_syntax') value=searchText key-up=(action "onSearch")}}
 				<Ui::UiSpacer @size="200" />
 				<div class="space-admin">
 					<div class="add-users">
@@ -161,7 +161,7 @@
 									{{ui/ui-toolbar-icon
 										icon=constants.Icon.AddUser
 										color=constants.Color.Green
-										tooltip="Remove member"
+										tooltip=(localize 'add')
 										onClick=(action "onAdd" user)}}
 									{{ui/ui-toolbar-label
 										color=constants.Color.Gray
@@ -174,7 +174,7 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-	 			{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Close dismiss=true}}
+	 			{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'close') dismiss=true}}
 			</div>
 		</div>
 	</div>
@@ -183,25 +183,24 @@
 <div id="space-invite-user-modal" class="modal" tabindex="-1" role="dialog">
 	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
-			<div class="modal-header">Invite users to this space</div>
+			<div class="modal-header">{{localize 'space_permission_invite_user'}}</div>
 			<div class="modal-body">
-				<p>Email invite leads to a smooth onboarding process</p>
 				<form onsubmit={{action "onSpaceInvite"}}>
 					<div class="form-group">
-						<label for="space-invite-email">Email</label>
-						{{input id="space-invite-email" type="email" class="form-control mousetrap" placeholder="Enter email" value=inviteEmail}}
-						<small class="form-text text-muted">Comma separate multiple email addresses</small>
+						<label for="space-invite-email">{{localize 'email'}}</label>
+						{{input id="space-invite-email" type="email" class="form-control mousetrap" placeholder="" value=inviteEmail}}
+						<small class="form-text text-muted">{{localize 'space_permission_invite_explain'}}</small>
 					</div>
 					<div class="form-group">
-						<label for="space-invite-msg">Message</label>
+						<label for="space-invite-msg">{{localize 'message'}}</label>
 						{{textarea id="space-invite-msg" value=inviteMessage class="form-control" rows="5"}}
 					</div>
 				</form>
 			</div>
 			<div class="modal-footer">
-				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Close dismiss=true}}
+				{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'close') dismiss=true}}
 				{{ui/ui-button-gap}}
-				{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Invite onClick=(action "onSpaceInvite")}}
+				{{ui/ui-button color=constants.Color.Green light=true label=(localize 'invite') onClick=(action "onSpaceInvite")}}
 			</div>
 		</div>
 	</div>

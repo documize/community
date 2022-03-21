@@ -2,40 +2,32 @@
 	<div class="backup-restore">
 		<div class="backup-zone">
 			{{#if session.isGlobalAdmin}}
-				<p>
-					Documize Community is a multi-tenanted application enabling both "tech.mycompany.com" and "sales.mycompany.com" to run using the same executable/database.
-					As a Documize Community <b>Global Administrator</b>, you will be performing a complete system-wide backup across all tenants.
-					The Documize Community <b>Tenant Administrator</b> can login to perform a tenant-level backup (e.g. marketing.mycompany.com).
-				</p>
+				<p>{{localize 'backup_explain1'}}</p>
 			{{else}}
-				<p>
-					Documize Community is a multi-tenanted application enabling both "tech.mycompany.com" and "sales.mycompany.com" to run using the same executable/database.
-					A Documize Community <b>Global Administrator</b>, you will be performing a complete system-wide backup across all tenants.
-					As a Documize Community <b>Tenant Administrator</b> you can perform a tenant-level backup (e.g. marketing.mycompany.com).
-				</p>
+				<p>{{localize 'backup_explain2'}}</p>
 			{{/if}}
-			<p>It can take <b>several minutes</b> to complete the backup process &mdash; please be patient while the backup operation is in progress.</p>
+			<p>{{localize 'backup_explain3'}}</p>
 
 			<div class="margin-top-30 margin-bottom-20">
 				{{#ui/ui-checkbox selected=backupSpec.retain}}
-					Retain backup file on server
+					{{localize 'backup_retain'}}
 				{{/ui/ui-checkbox}}
 			</div>
 
 			{{#if backupRunning}}
-				<h3 class="text-success">Backup running, please wait...</h3>
+				<h3 class="text-success">{{localize 'backup_running'}}</h3>
 			{{else}}
-				{{ui/ui-button color=constants.Color.Yellow light=true icon=constants.Icon.Database label=(concat "BACKUP TENANT (" appMeta.appHost ")") onClick=(action "onBackup")}}
+				{{ui/ui-button color=constants.Color.Yellow light=true icon=constants.Icon.Database label=(concat (localize 'backup_tenant') " " appMeta.appHost) onClick=(action "onBackup")}}
 				{{#if session.isGlobalAdmin}}
 					{{ui/ui-button-gap}}
-					{{ui/ui-button color=constants.Color.Yellow light=true icon=constants.Icon.Database label="BACKUP SYSTEM" onClick=(action "onSystemBackup")}}
+					{{ui/ui-button color=constants.Color.Yellow light=true icon=constants.Icon.Database label=(localize 'backup_system') onClick=(action "onSystemBackup")}}
 				{{/if}}
 			{{/if}}
 			{{#if backupFailed}}
-				<div class="backup-fail">Backup failed &mdash; please check server logs</div>
+				<div class="backup-fail">{{localize 'backup_failed'}}</div>
 			{{/if}}
 			{{#if backupSuccess}}
-				<div class="backup-success">Backup successful ({{backupFilename}})</div>
+				<div class="backup-success">{{localize 'backup_success'}} ({{backupFilename}})</div>
 			{{/if}}
 		</div>
 	</div>
@@ -43,23 +35,23 @@
 	<div class="backup-restore">
 		<div class="restore-zone">
 			{{#if session.isGlobalAdmin}}
-				<p>Restore from a <b>system backup</b> should only be performed on an <b>empty Documize Community database.</b></p>
+				<p>{{localize 'restore_explain1'}}</p>
 			{{/if}}
-			<p>Restore operation will <b>re-create</b> users, groups, permissions, spaces, categories and content.</p>
-			<p>It can take <b>several minutes</b> to complete the restore process &mdash; please be patient while the restore operation is in progress.</p>
+			<p>{{localize 'restore_explain2'}}</p>
+			<p>{{localize 'restore_explain3'}}</p>
 
 			<div class="margin-top-30 margin-bottom-20">
 				<div class="custom-file">
 					<input type="file" class="custom-file-input" id="restore-file" accept="application/zip" multiple="false" onchange={{action "upload"}}>
-					<label class="custom-file-label" for="restore-file">Choose backup file</label>
+					<label class="custom-file-label" for="restore-file">{{localize 'restore_select_file'}}</label>
 				</div>
 				<div class="margin-top-20"></div>
 			</div>
 
 			{{#if restoreFailed}}
-				<div class="restore-fail">Restore failed &mdash; please check server logs</div>
+				<div class="restore-fail">{{localize 'restore_failed'}}</div>
 			{{else if restoreSuccess}}
-				<div class="restore-success">Restore completed &mdash; restart your browser and log in</div>
+				<div class="restore-success">{{localize 'restore_success'}}</div>
 			{{else}}
 				{{#if restoreUploadReady}}
 					{{ui/ui-button color=constants.Color.Red light=false icon=constants.Icon.Database label=restoreButtonLabel onClick=(action "onShowRestoreModal")}}
@@ -72,20 +64,20 @@
 <div id="confirm-restore-modal" class="modal" tabindex="-1" role="dialog">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
-			<div class="modal-header">Confirm Restore</div>
+			<div class="modal-header">{{localize 'restore_confirm'}}</div>
 			<div class="modal-body">
 				<form onsubmit={{action "onRestore"}}>
 					<div class="form-group">
-						<label for="delete-space-name">Please type RESTORE to commence the process</label>
-						{{input type="text" id="confirm-restore" class="form-control mousetrap" placeholder="Please type RESTORE" value=confirmRestore}}
-						<small class="form-text text-muted">You should only restore to an empty Documize Community instance</small>
+						<label for="delete-space-name">{{localize 'restore_confirm'}}</label>
+						{{input type="text" id="confirm-restore" class="form-control mousetrap" placeholder="RESTORE" value=confirmRestore}}
+						<small class="form-text text-muted">{{localize 'restore_warn'}}</small>
 					</div>
 				</form>
 			</div>
 			<div class="modal-footer">
-				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+				{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'cancel') dismiss=true}}
 				{{ui/ui-button-gap}}
-				{{ui/ui-button color=constants.Color.Red light=true label=constants.Label.Restore onClick=(action "onRestore")}}
+				{{ui/ui-button color=constants.Color.Red light=true label=(localize 'restore') onClick=(action "onRestore")}}
 			</div>
 		</div>
 	</div>

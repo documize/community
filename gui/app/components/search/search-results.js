@@ -15,13 +15,13 @@ import Component from '@ember/component';
 
 export default Component.extend({
 	localStorage: service('localStorage'),
+	i18n: service(),
 	resultPhrase: '',
 	searchQuery: computed('keywords', function() {
 		return encodeURIComponent(this.get('keywords'));
 	}),
-	// eslint-disable-next-line ember/avoid-leaking-state-in-ember-objects
 	sortBy: {
-		name: true, 
+		name: true,
 		created: false,
 		updated: false,
 		asc: true,
@@ -33,15 +33,15 @@ export default Component.extend({
 
 		let docs = this.get('results');
 		let duped = [];
-		let phrase = 'Nothing found';
+		let phrase = this.i18n.localize('nothing_found');
 
 		if (docs.length > 0) {
 			duped = _.uniqBy(docs, function(item) {
 				return item.get('documentId');
 			});
 
-			let references = docs.length === 1 ? "reference" : "references";
-			let docLabel = duped.length === 1 ? "document" : "documents";
+			let references = docs.length === 1 ? this.i18n.localize('reference') : this.i18n.localize('references');
+			let docLabel = duped.length === 1 ? this.i18n.localize('document') : this.i18n.localize('documents');
 			let i = docs.length;
 			let j = duped.length;
 			phrase = `${i} ${references} in ${j} ${docLabel}`;
@@ -68,19 +68,19 @@ export default Component.extend({
 
 		if (_.isNull(docs)) return;
 
-		if (sortBy.name) { 
+		if (sortBy.name) {
 			docs = docs.sortBy('document');
 			ls.storeSessionItem('search.sortBy', 'name');
 		}
-		if (sortBy.created) { 
+		if (sortBy.created) {
 			docs = docs.sortBy('created');
 			ls.storeSessionItem('search.sortBy', 'created');
 		}
-		if (sortBy.updated) { 
+		if (sortBy.updated) {
 			docs = docs.sortBy('revised');
 			ls.storeSessionItem('search.sortBy', 'updated');
 		}
-		if (sortBy.desc) { 
+		if (sortBy.desc) {
 			docs = docs.reverseObjects();
 			ls.storeSessionItem('search.sortOrder', 'desc');
 		} else {

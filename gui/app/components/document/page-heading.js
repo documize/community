@@ -23,6 +23,7 @@ export default Component.extend(Notifier, ModalMixin, {
 	searchService: service('search'),
 	router: service(),
 	appMeta: service(),
+	i18n: service(),
 	deleteChildren: false,
 	blockTitle: "",
 	blockExcerpt: "",
@@ -79,13 +80,12 @@ export default Component.extend(Notifier, ModalMixin, {
 		this._super(...arguments);
 
 		let pageId = this.get('page.id');
-		let url = window.location.protocol + '//' + this.get('appMeta.appHost') +
-			this.get('router').generate('document.index', {queryParams: {currentPageId: pageId}});
+		let url = window.location.protocol + '//' + this.get('appMeta.appHost') + this.get('router').generate('document.index', {queryParams: {currentPageId: pageId}});
 		let self = this;
 
 		let clip = new ClipboardJS('#page-copy-link-' + pageId, {
 			text: function() {
-				self.notifySuccess('Link copied to clipboard');
+				self.notifySuccess(this.i18n.localize('copied'));
 				return url;
 			}
 		});

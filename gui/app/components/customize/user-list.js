@@ -20,6 +20,8 @@ import Component from '@ember/component';
 
 export default Component.extend(AuthProvider, ModalMixin, Notifier, {
 	groupSvc: service('group'),
+	i18n: service(),
+
 	editUser: null,
 	deleteUser: null,
 	filter: '',
@@ -183,7 +185,7 @@ export default Component.extend(AuthProvider, ModalMixin, Notifier, {
 			let cb = this.get('onDelete');
 			cb(this.get('deleteUser.id'));
 
-			this.notifySuccess("Deleted user");
+			this.notifySuccess(this.i18n.localize('deleted'));
 
 			return true;
 		},
@@ -203,7 +205,7 @@ export default Component.extend(AuthProvider, ModalMixin, Notifier, {
 			this.set('selectedUsers', []);
 			this.set('hasSelectedUsers', false);
 
-			this.notifySuccess("Deleted selected users");
+			this.notifySuccess(this.i18n.localize('deleted'));
 
 			this.modalClose('#admin-user-delete-modal');
 		},
@@ -221,6 +223,8 @@ export default Component.extend(AuthProvider, ModalMixin, Notifier, {
 				g.set('isMember', !_.isUndefined(hasGroup));
 			})
 			this.set('groups', groups);
+
+			if (_.isNull(groups)) return;
 
 			this.modalOpen("#group-member-modal", {"show": true});
 		},

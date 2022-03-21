@@ -52,7 +52,7 @@ func (s Store) GetOrganization(ctx domain.RequestContext, id string) (org org.Or
         c_anonaccess AS allowanonymousaccess, c_authprovider AS authprovider,
         coalesce(c_authconfig,`+s.EmptyJSON()+`) AS authconfig,
 	    coalesce(c_sub,`+s.EmptyJSON()+`) AS subscription,
-        c_maxtags AS maxtags, c_theme AS theme, c_created AS created, c_revised AS revised
+        c_maxtags AS maxtags, c_theme AS theme, c_locale as locale, c_created AS created, c_revised AS revised
         FROM dmz_org
         WHERE c_refid=?`),
 		id)
@@ -84,7 +84,7 @@ func (s Store) GetOrganizationByDomain(subdomain string) (o org.Organization, er
         c_anonaccess AS allowanonymousaccess, c_authprovider AS authprovider,
         coalesce(c_authconfig,`+s.EmptyJSON()+`) AS authconfig,
 	    coalesce(c_sub,`+s.EmptyJSON()+`) AS subscription,
-        c_maxtags AS maxtags, c_created AS created, c_revised AS revised, c_theme AS theme
+        c_maxtags AS maxtags, c_theme AS theme, c_locale as locale, c_created AS created, c_revised AS revised, c_theme AS theme
         FROM dmz_org
         WHERE c_domain=? AND c_active=`+s.IsTrue()),
 		subdomain)
@@ -99,7 +99,7 @@ func (s Store) GetOrganizationByDomain(subdomain string) (o org.Organization, er
         c_anonaccess AS allowanonymousaccess, c_authprovider AS authprovider,
         coalesce(c_authconfig,`+s.EmptyJSON()+`) AS authconfig,
 	    coalesce(c_sub,`+s.EmptyJSON()+`) AS subscription,
-        c_maxtags AS maxtags, c_created AS created, c_revised AS revised, c_theme AS theme
+        c_maxtags AS maxtags, c_theme AS theme, c_locale as locale, c_created AS created, c_revised AS revised, c_theme AS theme
         FROM dmz_org
         WHERE c_domain='' AND c_active=`+s.IsTrue()))
 
@@ -116,7 +116,7 @@ func (s Store) UpdateOrganization(ctx domain.RequestContext, org org.Organizatio
 
 	_, err = ctx.Transaction.NamedExec(`UPDATE dmz_org SET
         c_title=:title, c_message=:message, c_service=:conversionendpoint, c_email=:email, c_domain=:domain,
-        c_anonaccess=:allowanonymousaccess, c_maxtags=:maxtags, c_theme=:theme, c_revised=:revised
+        c_anonaccess=:allowanonymousaccess, c_maxtags=:maxtags, c_theme=:theme, c_locale=:locale, c_revised=:revised
         WHERE c_refid=:refid`,
 		&org)
 

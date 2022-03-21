@@ -28,6 +28,8 @@ export default Component.extend({
     },
 
     didReceiveAttrs() {
+        this._super();
+
 		let pdfOption = {};
 
 		try {
@@ -46,10 +48,10 @@ export default Component.extend({
         this.set('pdfOption', pdfOption);
         this.setPDF();
     },
-    
+
     didUpdateAttrs() {
         this._super(...arguments);
-        this.setPDF();        
+        this.setPDF();
     },
 
     setPDF() {
@@ -60,7 +62,7 @@ export default Component.extend({
         if (!_.isArray(files)) return;
 
         for (let i=0; i < files.length; i++) {
-            if (_.endsWith(files[i].get('extension'), 'pdf') && 
+            if (_.endsWith(files[i].get('extension'), 'pdf') &&
                 files[i].get('pageId') === this.get('page.id')) {
                 this.set('pdfName', files[i].get('filename'));
                 this.set('pdfOption.fileId', files[i].get('id'));

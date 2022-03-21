@@ -26,6 +26,7 @@ import (
 	"github.com/documize/community/core/event"
 	"github.com/documize/community/core/request"
 	"github.com/documize/community/core/response"
+
 	"github.com/documize/community/core/secrets"
 	"github.com/documize/community/core/streamutil"
 	"github.com/documize/community/core/stringutil"
@@ -135,6 +136,7 @@ func (h *Handler) Add(w http.ResponseWriter, r *http.Request) {
 	if addUser {
 		userID = uniqueid.Generate()
 		userModel.RefID = userID
+		userModel.Locale = ctx.OrgLocale
 
 		err = h.Store.User.Add(ctx, userModel)
 		if err != nil {
@@ -780,6 +782,7 @@ func (h *Handler) BulkImport(w http.ResponseWriter, r *http.Request) {
 		userModel.Firstname = strings.TrimSpace(v[0])
 		userModel.Lastname = strings.TrimSpace(v[1])
 		userModel.Email = strings.ToLower(strings.TrimSpace(v[2]))
+		userModel.Locale = ctx.OrgLocale
 
 		if len(userModel.Email) == 0 || len(userModel.Firstname) == 0 || len(userModel.Lastname) == 0 {
 			h.Runtime.Log.Info(method + " missing firstname, lastname, or email")

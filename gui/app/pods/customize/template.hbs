@@ -3,7 +3,7 @@
 	<div class="zone-1" />
 	<div class="zone-2">
 		<div class="label color-gray-700">
-			Documize {{appMeta.edition}} {{appMeta.version}} (build {{appMeta.revision}})
+			Documize {{appMeta.edition}} {{appMeta.version}} ({{appMeta.revision}})
 		</div>
 	</div>
 	<div class="zone-3" />
@@ -13,69 +13,69 @@
 	<Layout::Grid::Sidebar>
 		<div class="sidebar-content">
 			<div class="section">
-				<div class="title">administration</div>
+				<div class="title">{{localize 'administration'}}</div>
 				<div class="list">
 					{{#link-to "customize.general" activeClass="selected" class="item" tagName="div"}}
 						<i class={{concat "dicon " constants.Icon.Settings}} />
-						<div class="name">General</div>
+						<div class="name">{{localize 'admin_general'}}</div>
 					{{/link-to}}
 					{{#link-to "customize.labels" activeClass="selected" class="item" tagName="div"}}
 						<i class={{concat "dicon " constants.Icon.Checkbox}} />
-						<div class="name">Labels</div>
+						<div class="name">{{localize 'labels'}}</div>
 					{{/link-to}}
 					{{#link-to "customize.folders" activeClass="selected" class="item" tagName="div"}}
 						<i class={{concat "dicon " constants.Icon.Grid}} />
-						<div class="name">Spaces</div>
+						<div class="name">{{localize 'spaces'}}</div>
 					{{/link-to}}
 					{{#link-to "customize.users" activeClass="selected" class="item" tagName="div"}}
 						<i class={{concat "dicon " constants.Icon.Person}} />
-						<div class="name">User Management</div>
+						<div class="name">{{localize 'admin_user_management'}}</div>
 					{{/link-to}}
 					{{#link-to "customize.groups" activeClass="selected" class="item" tagName="div"}}
 						<i class={{concat "dicon " constants.Icon.People}} />
-						<div class="name">User Groups</div>
+						<div class="name">{{localize 'admin_user_groups'}}</div>
 					{{/link-to}}
 					{{#link-to "customize.integrations" activeClass="selected" class="item" tagName="div"}}
 						<i class={{concat "dicon " constants.Icon.Integrations}} />
-						<div class="name">Integrations</div>
+						<div class="name">{{localize 'admin_integrations'}}</div>
 					{{/link-to}}
 					{{#if session.isGlobalAdmin}}
 						{{#link-to "customize.smtp" activeClass="selected" class="item" tagName="div"}}
 							<i class={{concat "dicon " constants.Icon.Send}} />
-							<div class="name">Mail Server</div>
+							<div class="name">{{localize 'admin_mail_server'}}</div>
 						{{/link-to}}
 						{{#link-to "customize.auth" activeClass="selected" class="item" tagName="div"}}
 							<i class={{concat "dicon " constants.Icon.Locked}} />
-							<div class="name">Authentication</div>
+							<div class="name">{{localize 'authentication'}}</div>
 						{{/link-to}}
 						{{#unless (eq appMeta.storageProvider constants.StoreProvider.SQLServer)}}
 							{{#link-to "customize.search" activeClass="selected" class="item" tagName="div"}}
 								<i class={{concat "dicon " constants.Icon.Search}} />
-								<div class="name">Search</div>
+								<div class="name">{{localize 'search'}}</div>
 							{{/link-to}}
 						{{/unless}}
 						{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
 							{{#link-to "customize.audit" activeClass="selected" class="item" tagName="div"}}
 								<i class={{concat "dicon " constants.Icon.ButtonAction}} />
-								<div class="name">Audit Log</div>
+								<div class="name">{{localize 'admin_audit_log'}}</div>
 							{{/link-to}}
 						{{/if}}
 					{{/if}}
 					{{#if (eq appMeta.location "selfhost")}}
 						{{#link-to "customize.backup" activeClass="selected" class="item" tagName="div"}}
 							<i class={{concat "dicon " constants.Icon.Database}} />
-							<div class="name">Backup & Restore</div>
+							<div class="name">{{localize 'admin_backup'}}</div>
 						{{/link-to}}
 					{{/if}}
 					{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
 						{{#link-to "customize.billing" activeClass="selected" class="item" tagName="div"}}
 							<i class={{concat "dicon " constants.Icon.Handshake}} />
-							<div class="name">Billing</div>
+							<div class="name">{{localize 'admin_billing'}}</div>
 						{{/link-to}}
 					{{/if}}
 					{{#link-to "customize.product" activeClass="selected" class="item" tagName="div"}}
 						<i class={{concat "dicon " constants.Icon.Announce}} />
-						<div class="name">Changelog</div>
+						<div class="name">{{localize 'admin_changelog'}}</div>
 					{{/link-to}}
 				</div>
 			</div>

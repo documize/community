@@ -13,7 +13,7 @@
 		{{ui/ui-button
 			color=constants.Color.Yellow
 			light=true
-			label="IMPORT CSV"
+			label=(localize 'section_tabular_import_csv')
 			onClick=(action "onShowImportModal")}}
 	</div>
 
@@ -26,24 +26,24 @@
 	<div id={{modalId}} class="modal" tabindex="-1" role="dialog">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
-				<div class="modal-header">CSV To Table</div>
+				<div class="modal-header">{{localize 'section_tabular_csv'}}</div>
 				<div class="modal-body">
-					<p class="color-yellow-700">Note: existing table data will be replaced</p>
+					<p class="color-yellow-700">{{localize 'section_tabular_warn'}}</p>
 					<div class="form-group">
-						<label for="csv-data">Paste CSV Data</label>
+						<label for="csv-data">{{localize 'section_tabular_paste'}}</label>
 						{{textarea id="csv-data" value=importData class="form-control" rows="10"}}
-						<small class="form-text text-muted">Common delimiters are supported</small>
+						<small class="form-text text-muted">{{localize 'section_tabaular_format'}}</small>
 					</div>
 					<div class="form-group">
-						<label>First Row Header</label>
+						<label>{{localize 'section_tabular_first_row'}}</label>
 						{{x-toggle value=importOption.headers size="medium" theme="light" onToggle=(action (mut importOption.headers))}}
-						<small class="form-text text-muted">Enable if first row contains headers</small>
+						<small class="form-text text-muted">{{localize 'section_tabular_first_row_explain'}}</small>
 					</div>
 				</div>
 				<div class="modal-footer">
-					{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+					{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'cancel') dismiss=true}}
 					{{ui/ui-button-gap}}
-					{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Import onClick=(action "onImport")}}
+					{{ui/ui-button color=constants.Color.Green light=true label=(localize 'import') onClick=(action "onImport")}}
 				</div>
 			</div>
 		</div>

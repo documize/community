@@ -1,26 +1,26 @@
 <div class="view-customize">
-	{{ui/ui-button color=constants.Color.Green light=true icon=constants.Icon.People label=constants.Label.Add onClick=(action "onShowAddGroupModal")}}
+	{{ui/ui-button color=constants.Color.Green light=true icon=constants.Icon.People label=(localize 'add') onClick=(action "onShowAddGroupModal")}}
 	<div id="add-group-modal" class="modal" tabindex="-1" role="dialog">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
-				<div class="modal-header">Add Group</div>
+				<div class="modal-header">{{localize 'group_add'}}</div>
 				<div class="modal-body">
 					<form onsubmit= {{action "onAddGroup"}}>
 						<div class="form-group">
-							<label for="new-group-name">Name</label>
-							{{focus-input id="new-group-name" type="text" class="form-control mousetrap" placeholder="Enter group name" value=newGroup.name}}
-							<small class="form-text text-muted">e.g. Managers, Developers, Acme Team</small>
+							<label for="new-group-name">{{localize 'name'}}</label>
+							{{focus-input id="new-group-name" type="text" class="form-control mousetrap" placeholder="" value=newGroup.name}}
+							<small class="form-text text-muted">{{localize 'group_name_explain'}}</small>
 						</div>
 						<div class="form-group">
-							<label for="new-group-desc">Description (optional)</label>
+							<label for="new-group-desc">{{localize 'description'}}</label>
 							{{textarea id="new-group-desc" value=newGroup.purpose class="form-control" rows="3"}}
 						</div>
 					</form>
 				</div>
 				<div class="modal-footer">
-					{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Close dismiss=true}}
+					{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'close') dismiss=true}}
 					{{ui/ui-button-gap}}
-					{{ui/ui-button color=constants.Color.Red light=true label=constants.Label.Add onClick=(action "onAddGroup")}}
+					{{ui/ui-button color=constants.Color.Red light=true label=(localize 'add') onClick=(action "onAddGroup")}}
 				</div>
 			</div>
 		</div>
@@ -37,12 +37,12 @@
 				<div class="desc">{{group.purpose}}</div>
 				<Ui::UiSpacer @size="200" />
 				{{#ui/ui-toolbar dark=false light=true raised=true large=false bordered=true}}
-					{{ui/ui-toolbar-icon icon=constants.Icon.AddUser color=constants.Color.Gray tooltip="Add members" onClick=(action "onShowAddMemberModal" group.id)}}
+					{{ui/ui-toolbar-icon icon=constants.Icon.AddUser color=constants.Color.Gray tooltip=(localize 'group_member_add') onClick=(action "onShowAddMemberModal" group.id)}}
 					{{#if (gt group.members 0)}}
-						{{ui/ui-toolbar-icon icon=constants.Icon.RemoveUser color=constants.Color.Gray tooltip="Remove members" onClick=(action "onShowRemoveMemberModal" group.id)}}
+						{{ui/ui-toolbar-icon icon=constants.Icon.RemoveUser color=constants.Color.Gray tooltip=(localize 'group_member_remove') onClick=(action "onShowRemoveMemberModal" group.id)}}
 					{{/if}}
-					{{ui/ui-toolbar-icon icon=constants.Icon.Edit color=constants.Color.Gray tooltip="Edit group" onClick=(action "onShowEditModal" group.id)}}
-					{{ui/ui-toolbar-icon icon=constants.Icon.Delete color=constants.Color.Red tooltip="Delete group" onClick=(action "onShowDeleteModal" group.id)}}
+					{{ui/ui-toolbar-icon icon=constants.Icon.Edit color=constants.Color.Gray tooltip=(localize 'edit') onClick=(action "onShowEditModal" group.id)}}
+					{{ui/ui-toolbar-icon icon=constants.Icon.Delete color=constants.Color.Red tooltip=(localize 'delete') onClick=(action "onShowDeleteModal" group.id)}}
 				{{/ui/ui-toolbar}}
 			</div>
 		{{/each}}
@@ -51,21 +51,21 @@
 	<div id="delete-group-modal" class="modal" tabindex="-1" role="dialog">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
-				<div class="modal-header">Delete Group</div>
+				<div class="modal-header">{{localize 'group_delete'}}</div>
 				<div class="modal-body">
 					<form onsubmit= {{action "onDeleteGroup"}} role="form">
-						<p>Are you sure you want to delete this group?</p>
+						<p>{{localize 'group_delete_confirm'}}</p>
 						<div class="form-group">
-							<label for="delete-group-name">Please type group name to confirm</label>
-							{{input id="delete-group-name" type="text" class="form-control mousetrap" placeholder="Group name" value=deleteGroup.name}}
-							<small class="form-text text-muted">This will remove group membership information and associated permissions!</small>
+							<label for="delete-group-name">{{localize 'group_delete_name'}}</label>
+							{{input id="delete-group-name" type="text" class="form-control mousetrap" placeholder="" value=deleteGroup.name}}
+							<small class="form-text text-muted">{{localize 'group_delete_name_explain'}}</small>
 						</div>
 					</form>
 				</div>
 				<div class="modal-footer">
-					{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Close dismiss=true}}
+					{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'close') dismiss=true}}
 					{{ui/ui-button-gap}}
-					{{ui/ui-button color=constants.Color.Red light=true label=constants.Label.Delete onClick=(action "onDeleteGroup")}}
+					{{ui/ui-button color=constants.Color.Red light=true label=(localize 'delete') onClick=(action "onDeleteGroup")}}
 				</div>
 			</div>
 		</div>
@@ -74,24 +74,24 @@
 	<div id="edit-group-modal" class="modal" tabindex="-1" role="dialog">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
-				<div class="modal-header">Edit Group</div>
+				<div class="modal-header">{{localize 'group_edit'}}</div>
 				<div class="modal-body">
 					<form onsubmit= {{action "onEditGroup"}} role="form">
 						<div class="form-group">
-							<label for="edit-group-name">Name</label>
-							{{input id="edit-group-name" type="text" class="form-control mousetrap" placeholder="Enter group name" value=editGroup.name}}
-							<small class="form-text text-muted">e.g. Managers, Developers, Acme Team</small>
+							<label for="edit-group-name">{{localize 'name'}}</label>
+							{{input id="edit-group-name" type="text" class="form-control mousetrap" placeholder="" value=editGroup.name}}
+							<small class="form-text text-muted">{{localize 'group_name_explain'}}</small>
 						</div>
 						<div class="form-group">
-							<label for="edit-group-desc">Description (optional)</label>
+							<label for="edit-group-desc">{{localize 'description'}}</label>
 							{{textarea id="edit-group-desc" value=editGroup.purpose class="form-control" rows="3"}}
 						</div>
 					</form>
 				</div>
 				<div class="modal-footer">
-					{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Close dismiss=true}}
+					{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'close') dismiss=true}}
 					{{ui/ui-button-gap}}
-					{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Save onClick=(action "onEditGroup")}}
+					{{ui/ui-button color=constants.Color.Green light=true label=(localize 'save') onClick=(action "onEditGroup")}}
 				</div>
 			</div>
 		</div>
@@ -100,14 +100,14 @@
 	<div id="group-remove-member-modal" class="modal" tabindex="-1" role="dialog">
 		<div class="modal-dialog modal-lg" role="document">
 			<div class="modal-content">
-				<div class="modal-header">Remove Member &mdash; {{membersGroup.name}} ({{members.length}})</div>
+				<div class="modal-header">{{localize 'group_member_remove'}} &mdash; {{membersGroup.name}} ({{members.length}})</div>
 				<div class="modal-body">
 					<div class="view-customize">
 						<div class="group-users-members">
 							{{#each members as |member|}}
 								<div class="item">
 									{{#ui/ui-toolbar dark=false light=true raised=true large=false bordered=true}}
-										{{ui/ui-toolbar-icon icon=constants.Icon.RemoveUser color=constants.Color.Red tooltip="Remove member" onClick=(action "onLeaveGroup" member.userId)}}
+										{{ui/ui-toolbar-icon icon=constants.Icon.RemoveUser color=constants.Color.Red tooltip=(localize 'remove') onClick=(action "onLeaveGroup" member.userId)}}
 										{{ui/ui-toolbar-label color=constants.Color.Gray label=member.fullname onClick=(action "onLeaveGroup" member.userId)}}
 									{{/ui/ui-toolbar}}
 								</div>
@@ -116,7 +116,7 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Close dismiss=true}}
+					{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'close') dismiss=true}}
 				</div>
 			</div>
 		</div>
@@ -125,12 +125,12 @@
 	<div id="group-add-member-modal" class="modal" tabindex="-1" role="dialog">
 		<div class="modal-dialog modal-lg" role="document">
 			<div class="modal-content">
-				<div class="modal-header">Add Member &mdash; {{membersGroup.name}} ({{members.length}})</div>
+				<div class="modal-header">{{localize 'group_member_add'}} &mdash; {{membersGroup.name}} ({{members.length}})</div>
 				<div class="modal-body">
 					<div class="form-group">
-						<label for="group-members-search">Find users</label>
-						{{input id="group-members-search" type="text" class="form-control mousetrap" placeholder="Search members and users..." value=searchText key-up=(action "onSearch")}}
-						<small class="form-text text-muted">firstname, lastname, email</small>
+						<label for="group-members-search">{{localize 'find_user'}}</label>
+						{{input id="group-members-search" type="text" class="form-control mousetrap" placeholder="" value=searchText key-up=(action "onSearch")}}
+						<small class="form-text text-muted">{{localize 'find_user_syntax'}}</small>
 					</div>
 					<div class="view-customize">
 						<div class="text-center">
@@ -152,9 +152,9 @@
 								<div class="item">
 									{{#ui/ui-toolbar dark=false light=true raised=true large=false bordered=true}}
 										{{#if user.isMember}}
-											{{ui/ui-toolbar-icon icon=constants.Icon.RemoveUser color=constants.Color.Red tooltip="Remove member" onClick=(action "onLeaveGroup" user.id)}}
+											{{ui/ui-toolbar-icon icon=constants.Icon.RemoveUser color=constants.Color.Red tooltip=(localize 'remove') onClick=(action "onLeaveGroup" user.id)}}
 										{{else}}
-											{{ui/ui-toolbar-icon icon=constants.Icon.AddUser color=constants.Color.Green tooltip="Add member" onClick=(action "onJoinGroup" user.id)}}
+											{{ui/ui-toolbar-icon icon=constants.Icon.AddUser color=constants.Color.Green tooltip=(localize 'add') onClick=(action "onJoinGroup" user.id)}}
 											{{ui/ui-toolbar-label color=constants.Color.Gray label=(concat user.firstname " " user.lastname) onClick=(action "onJoinGroup" user.id)}}
 										{{/if}}
 									{{/ui/ui-toolbar}}
@@ -164,7 +164,7 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Close dismiss=true}}
+					{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'close') dismiss=true}}
 				</div>
 			</div>
 		</div>

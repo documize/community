@@ -31,37 +31,37 @@ export default Model.extend({
 
 		switch (this.get('activityType')) {
 			case constants.UserActivityType.Created:
-				label = 'Added';
+				label = this.i18n.localize('added');
 				break;
 			case constants.UserActivityType.Read:
-				label = 'Viewed';
+				label = this.i18n.localize('viewed');
 				break;
 			case constants.UserActivityType.Edited:
-				label = 'Edited';
+				label = this.i18n.localize('edited');
 				break;
 			case constants.UserActivityType.Deleted:
-				label = 'Deleted';
+				label = this.i18n.localize('deleted');
 				break;
 			case constants.UserActivityType.Archived:
-				label = 'Archived';
+				label = this.i18n.localize('archived');
 				break;
 			case constants.UserActivityType.Approved:
-				label = 'Approved';
+				label = this.i18n.localize('approved');
 				break;
 			case constants.UserActivityType.Reverted:
-				label = 'Reverted';
+				label = this.i18n.localize('reverted');
 				break;
 			case constants.UserActivityType.PublishedTemplate:
-				label = 'Published Template';
+				label = this.i18n.localize('template_published');
 				break;
 			case constants.UserActivityType.PublishedBlock:
-				label = 'Published Block';
+				label = this.i18n.localize('block_published');
 				break;
 			case constants.UserActivityType.Rejected:
-				label = 'Rejected';
+				label = this.i18n.localize('rejected');
 				break;
 			case constants.UserActivityType.Published:
-				label = 'Published';
+				label = this.i18n.localize('published');
 				break;
 			default:
 				break;

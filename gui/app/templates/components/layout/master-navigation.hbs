@@ -3,25 +3,25 @@
 		{{#unless hideNavigation}}
 			<div class="options">
 				{{#link-to "folders" class=(if (eq selectedItem "spaces") "option selected" "option")}}
-					<i class={{concat "dicon " constants.Icon.Grid}} title="Spaces" tabindex="0" role="button" />
+					<i class={{concat "dicon " constants.Icon.Grid}} title={{localize 'spaces'}} tabindex="0" role="button" />
 				{{/link-to}}
 				{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
 					{{#if session.viewDashboard}}
 						{{#link-to "action" class=(if (eq selectedItem "actions") "option selected" "option")}}
-							<i class={{concat "dicon " constants.Icon.ListBullet}} title="Actions" tabindex="0" role="button" />
+							<i class={{concat "dicon " constants.Icon.ListBullet}} title={{localize 'actions'}} tabindex="0" role="button" />
 						{{/link-to}}
 						{{#link-to "activity" class=(if (eq selectedItem "activity") "option selected" "option")}}
-							<i class={{concat "dicon " constants.Icon.Pulse}} title="Activity" tabindex="0" role="button" />
+							<i class={{concat "dicon " constants.Icon.Pulse}} title={{localize 'activity'}} tabindex="0" role="button" />
 						{{/link-to}}
 					{{/if}}
 					{{#if session.viewAnalytics}}
 						{{#link-to "analytics" class=(if (eq selectedItem "analytics") "option selected" "option")}}
-							<i class={{concat "dicon " constants.Icon.BarChart}} title="Reports" tabindex="0" role="button" />
+							<i class={{concat "dicon " constants.Icon.BarChart}} title={{localize 'reports'}} tabindex="0" role="button" />
 						{{/link-to}}
 					{{/if}}
 				{{/if}}
 				{{#link-to "search" class=(if (eq selectedItem "search") "option selected" "option")}}
-					<i class={{concat "dicon " constants.Icon.Search}} title="Search" role="search" tabindex="0" />
+					<i class={{concat "dicon " constants.Icon.Search}} title={{localize 'search'}} role="search" tabindex="0" />
 				{{/link-to}}
 			</div>
 
@@ -29,29 +29,29 @@
 				{{#if session.isAdmin}}
 					{{#unless appMeta.valid}}
 						<div class="option invalid-plan" {{action "onBilling"}}>
-							<i class={{concat "dicon " constants.Icon.Announce}} title="Missing activation key" tabindex="0" role="button" />
+							<i class={{concat "dicon " constants.Icon.Announce}} title={{localize 'product_activation_key_missing'}} tabindex="0" role="button" />
 						</div>
 					{{/unless}}
 					{{#unless appMeta.configured}}
 						<div class="option invalid-plan" {{action "onConfigured"}}>
-							<i class={{concat "dicon " constants.Icon.Announce}} title="Missing mail server settings" tabindex="0" role="button" />
+							<i class={{concat "dicon " constants.Icon.Announce}} title={{localize 'smtp_missing'}} tabindex="0" role="button" />
 						</div>
 					{{/unless}}
 				{{/if}}
 				{{#if session.authenticated}}
 					{{#if hasPins}}
 						<div class="option" id="user-pins-button">
-							<i class={{concat "dicon " constants.Icon.BookmarkSolid}} aria-haspopup="menu" tabindex="0" role="button" title="Bookmarked content"></i>
+							<i class={{concat "dicon " constants.Icon.BookmarkSolid}} aria-haspopup="menu" tabindex="0" role="button" title={{localize 'bookmarks'}}></i>
 							{{#attach-popover class="ember-attacher-popper" hideOn="clickout click" showOn="click" isShown=false}}
 								<div class="menu">
 									{{#if hasSpacePins}}
-										<li class="item header">Spaces</li>
+										<li class="item header">{{localize 'spaces'}}</li>
 										{{#each spacePins as |pin|}}
 											<a class="item" href="#" {{action "jumpToPin" pin}} data-id= {{pin.id}} id="pin-{{pin.id}}" tabindex="0" role="button">{{pin.pin}}</a>
 										{{/each}}
 									{{/if}}
 									{{#if hasDocumentPins}}
-										<li class="item header">Content</li>
+										<li class="item header">{{localize 'content'}}</li>
 										{{#each documentPins as |pin|}}
 											<a class="item" href="#" {{action "jumpToPin" pin}} data-id= {{pin.id}} id="pin-{{pin.id}}" tabindex="0" role="button">{{pin.pin}}</a>
 										{{/each}}
@@ -73,25 +73,25 @@
 							{{/if}}
 							{{#attach-popover class="ember-attacher-popper" hideOn="clickout click" showOn="click" isShown=false}}
 								<div class="menu">
-									{{#link-to "profile" class="item"}}Profile{{/link-to}}
+									{{#link-to "profile" class="item"}}{{localize 'profile'}}{{/link-to}}
 									{{#if session.isAdmin}}
 										<div class="divider"></div>
-										{{#link-to "customize.general" class="item"}}Settings{{/link-to}}
+										{{#link-to "customize.general" class="item"}}{{localize 'settings'}}{{/link-to}}
 										{{#unless appMeta.valid}}
-											{{#link-to "customize.billing" class="item bold red"}}Update Billing{{/link-to}}
+											{{#link-to "customize.billing" class="item bold red"}}{{localize 'account_update'}}{{/link-to}}
 										{{/unless}}
 									{{/if}}
 									{{#if session.isGlobalAdmin}}
 										{{#if appMeta.updateAvailable}}
-											{{#link-to "customize.product" class="item bold yellow"}}Update available{{/link-to}}
+											{{#link-to "customize.product" class="item bold yellow"}}{{localize 'product_update'}}{{/link-to}}
 										{{/if}}
 									{{/if}}
 									<div class="divider"></div>
-									<a class={{if hasWhatsNew "item bold red" "item"}} href="#" {{action "onNew"}}>What's New</a>
-									<a href="https://docs.documize.com" target="_blank" class="item">Help</a>
+									<a class={{if hasWhatsNew "item bold red" "item"}} href="#" {{action "onNew"}}>{{localize 'product_whats_new'}}</a>
+									<a href="https://docs.documize.com" target="_blank" class="item">{{localize 'help'}}</a>
 									{{#if enableLogout}}
 										<div class="divider"></div>
-										{{#link-to "auth.logout" class="item"}}Logout{{/link-to}}
+										{{#link-to "auth.logout" class="item"}}{{localize 'logout'}}{{/link-to}}
 									{{/if}}
 								</div>
 							{{/attach-popover}}
@@ -99,7 +99,7 @@
 					</div>
 				{{else}}
 					{{#link-to "auth.login" class="option"}}
-						{{constants.Label.Login}}
+						{{localize 'login'}}
 					{{/link-to}}
 				{{/if}}
 			</div>

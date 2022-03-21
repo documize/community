@@ -20,6 +20,7 @@ cp -r gui/dist-prod/prism edition/static/public/prism
 cp -r gui/dist-prod/sections edition/static/public/sections
 cp -r gui/dist-prod/tinymce edition/static/public/tinymce
 cp -r gui/dist-prod/pdfjs edition/static/public/pdfjs
+cp -r gui/dist-prod/i18n edition/static/public/i18n
 cp gui/dist-prod/*.* edition/static
 cp gui/dist-prod/favicon.ico edition/static/public
 cp gui/dist-prod/manifest.json edition/static/public
@@ -28,6 +29,10 @@ rm -rf edition/static/mail
 mkdir -p edition/static/mail
 cp domain/mail/*.html edition/static/mail
 cp core/database/templates/*.html edition/static
+
+rm -rf edition/static/i18n
+mkdir -p edition/static/i18n
+cp -r gui/dist-prod/i18n/*.json edition/static/i18n
 
 rm -rf edition/static/scripts
 mkdir -p edition/static/scripts

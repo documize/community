@@ -45,7 +45,7 @@
 		</div>
 	{{/if}}
 
-	{{document/section-attachment uploadLabel="Upload Attachments"
+	{{document/section-attachment uploadLabel=(localize 'upload_attachment')
 		editMode=editMode page=page document=document files=attachments
 		onAttachmentUpload=(action onAttachmentUpload)
 		onAttachmentDelete=(action onAttachmentDelete)}}

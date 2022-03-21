@@ -23,15 +23,12 @@ export default Router.map(function () {
 	});
 
 	this.route('action', {
-		path: 'action'
 	});
 
 	this.route('analytics', {
-		path: 'analytics'
 	});
 
 	this.route('activity', {
-		path: 'activity'
 	});
 
 	this.route(
@@ -41,7 +38,6 @@ export default Router.map(function () {
 		},
 		function () {
 			this.route('settings', {
-				path: 'settings'
 			});
 			this.route('block', {
 				path: 'block/:block_id'
@@ -59,13 +55,10 @@ export default Router.map(function () {
 				path: 'section/:page_id'
 			});
 			this.route('settings', {
-				path: 'settings'
 			});
 			this.route('revisions', {
-				path: 'revisions'
 			});
 			this.route('activity', {
-				path: 'activity'
 			});
 		}
 	);
@@ -77,52 +70,37 @@ export default Router.map(function () {
 		},
 		function () {
 			this.route('general', {
-				path: 'general'
 			});
 			this.route('labels', {
-				path: 'labels'
 			});
 			this.route('groups', {
-				path: 'groups'
 			});
 			this.route('users', {
-				path: 'users'
 			});
 			this.route('folders', {
-				path: 'folders'
 			});
 			this.route('smtp', {
-				path: 'smtp'
 			});
 			this.route('product', {
-				path: 'product'
 			});
 			this.route('notice', {
-				path: 'notice'
 			});
 			this.route('auth', {
-				path: 'auth'
 			});
 			this.route('audit', {
-				path: 'audit'
 			});
 			this.route('search', {
-				path: 'search'
 			});
 			this.route('integrations', {
-				path: 'integrations'
 			});
 			this.route('backup', {
-				path: 'backup'
 			});
 			this.route('billing', {
-				path: 'billing'
 			});
 		}
 	);
 
 	this.route('setup', {
-		path: 'setup'
 	});
 
 	this.route('secure', {
@@ -136,55 +114,39 @@ export default Router.map(function () {
 	this.route(
 		'auth',
 		{
-			path: 'auth'
 		},
 		function () {
 			this.route('sso', {
 				path: 'sso/:token'
 			});
 			this.route('keycloak', {
-				path: 'keycloak'
 			});
 			this.route('login', {
-				path: 'login'
 			});
 			this.route('forgot', {
-				path: 'forgot'
 			});
 			this.route('reset', {
 				path: 'reset/:token'
 			});
 			this.route('logout', {
-				path: 'logout'
 			});
 			this.route('share', {
 				path: 'share/:id/:slug/:serial'
 			});
 			this.route('cas', {
-				path: 'cas'
 			});
 		}
 	);
 
-	this.route('profile', {
-		path: 'profile'
-	});
+	this.route('profile', {});
 
-	this.route('search', {
-		path: 'search'
-	});
+	this.route('search', {});
 
-	this.route('accounts', {
-		path: 'accounts'
-	});
+	this.route('accounts', {});
 
-	this.route('theming', {
-		path: 'theming'
-	});
+	this.route('theming', {});
 
-	this.route('updates', {
-		path: 'updates'
-	});
+	this.route('updates', {});
 
 	this.route('auth/login', {
 		path: '/*wildcard'

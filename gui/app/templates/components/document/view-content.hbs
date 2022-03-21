@@ -33,21 +33,21 @@
 
 {{#if canEdit}}
 	<div class="start-section">
-		<i class="dicon {{constants.Icon.Plus}}" {{action "onShowSectionWizard"}} title="Insert section here" role="button" tabindex="0" />
+		<i class="dicon {{constants.Icon.Plus}}" {{action "onShowSectionWizard"}} title={{localize 'section_insert_here'}} role="button" tabindex="0" />
 	</div>
 {{/if}}
 
 {{#if showLikes}}
 	<div class="vote-box no-print">
 		{{#if voteThanks}}
-			<div class="thanks">Thanks for the feedback!</div>
+			<div class="thanks">{{localize 'feedback_thanks'}}</div>
 		{{else}}
 			<div class="prompt">{{folder.likes}}</div>
 			<Ui::UiSpacer @size="200" />
 			<div class="buttons">
-				{{ui/ui-button color=constants.Color.Yellow light=true label="Yes, thanks!" onClick=(action "onVote" 1)}}
+				{{ui/ui-button color=constants.Color.Yellow light=true label=(localize 'feedback_help_yes') onClick=(action "onVote" 1)}}
 				{{ui/ui-button-gap}}
-				{{ui/ui-button color=constants.Color.Yellow light=true label="Not really" onClick=(action "onVote" 2)}}
+				{{ui/ui-button color=constants.Color.Yellow light=true label=(localize 'feedback_help_no') onClick=(action "onVote" 2)}}
 			</div>
 		{{/if}}
 	</div>

@@ -5,74 +5,74 @@
 	<Layout::Grid::Sidebar>
 		<div class="sidebar-content">
 			<div class="section">
-				<div class="title">Match Filter</div>
+				<div class="title">{{localize 'filter'}}</div>
 				<div class="list">
 					<div class="item">
 						{{input id="search-1" type="checkbox" checked=matchFilter.matchDoc}}
-						<label for="search-1" class="name">Document name</label>
+						<label for="search-1" class="name">{{localize 'search_doc_name'}}</label>
 					</div>
 					<div class="item">
 						{{input id="search-2" type="checkbox" checked=matchFilter.matchContent}}
-						<label for="search-2" class="name">Document content</label>
+						<label for="search-2" class="name">{{localize 'search_doc_content'}}</label>
 					</div>
 					<div class="item">
 						{{input id="search-3" type="checkbox" checked=matchFilter.matchTag}}
-						<label for="search-3" class="name">Tag name</label>
+						<label for="search-3" class="name">{{localize 'search_tag_name'}}</label>
 					</div>
 					<div class="item">
 						{{input id="search-4" type="checkbox" checked=matchFilter.matchFile}}
-						<label for="search-4" class="name">Attachment name</label>
+						<label for="search-4" class="name">{{localize 'search_attachment_name'}}</label>
 					</div>
 				</div>
 			</div>
 			<Ui::UiSpacer @size="200" />
 			<div class="section">
-				<div class="title">query examples</div>
+				<div class="title">{{localize 'search_example_title'}}</div>
 				<div class="view-search">
 					{{#if (eq appMeta.storageProvider constants.StoreProvider.MySQL)}}
 						<div class="syntax">
 							<div class="example">apple banana</div>
-							<div class="explain">Show results that contain at least one of the two words</div>
+							<div class="explain">{{localize 'search_example1'}}</div>
 							<div class="example">+apple +banana</div>
-							<div class="explain">Show results that contain both words</div>
+							<div class="explain">{{localize 'search_example2'}}</div>
 							<div class="example">+apple macintosh</div>
-							<div class="explain">Show results that contain the word "apple", but rank rows higher if they also contain "macintosh"</div>
+							<div class="explain">{{localize 'search_example3'}}</div>
 							<div class="example">+apple -macintosh</div>
-							<div class="explain">Show results that contain the word "apple" but not "macintosh"</div>
+							<div class="explain">{{localize 'search_example4'}}</div>
 							<div class="example">+apple +(&gt;turnover &lt;strudel)</div>
-							<div class="explain">Show results that contain the words "apple" and "turnover", or "apple" and "strudel" (in any order), but rank "apple turnover" higher than "apple strudel"</div>
+							<div class="explain">{{localize 'search_example5'}}</div>
 							<div class="example">apple*</div>
-							<div class="explain">Show results that contain words such as "apple", "apples", "applesauce", or "applet"</div>
+							<div class="explain">{{localize 'search_example6'}}</div>
 							<div class="example">"some words"</div>
-							<div class="explain">Show results that contain the exact phrase "some words" (for example, rows that contain "some words of wisdom" but not "some noise words")</div>
+							<div class="explain">{{localize 'search_example7'}}</div>
 						</div>
 					{{/if}}
 					{{#if (eq appMeta.storageProvider constants.StoreProvider.PostgreSQL)}}
 						<div class="syntax">
 							<div class="example">apple | banana</div>
-							<div class="explain">Show results that contain either word</div>
+							<div class="explain">{{localize 'search_example8'}}</div>
 							<div class="example">apple & banana</div>
-							<div class="explain">Show results that contain both words</div>
+							<div class="explain">{{localize 'search_example2'}}</div>
 							<div class="example">apple !macintosh</div>
-							<div class="explain">Show results that contain the word "apple" but not "macintosh"</div>
+							<div class="explain">{{localize 'search_example4'}}</div>
 							<div class="example">google & (apple | microsoft) & !ibm</div>
-							<div class="explain">Show results that have "google", either "apple" or "microsoft" but not "ibm"</div>
+							<div class="explain">{{localize 'search_example9'}}</div>
 							<div class="example">apple:*</div>
-							<div class="explain">Show results that contain words that start with "apple", such as "applesauce" or "applet"</div>
+							<div class="explain">{{localize 'search_example10'}}</div>
 						</div>
 					{{/if}}
 					{{#if (eq appMeta.storageProvider constants.StoreProvider.SQLServer)}}
 						<div class="syntax">
 							<div class="example">apple OR banana</div>
-							<div class="explain">Show results that contain either word</div>
+							<div class="explain">{{localize 'search_example8'}}</div>
 							<div class="example">apple AND banana</div>
-							<div class="explain">Show results that contain both words</div>
+							<div class="explain">{{localize 'search_example2'}}</div>
 							<div class="example">apple AND NOT macintosh</div>
-							<div class="explain">Show results that contain the word "apple" but not "macintosh"</div>
+							<div class="explain">{{localize 'search_example4'}}</div>
 							<div class="example">"apple*"</div>
-							<div class="explain">Show results that contain words such as "apple", "apples", "applesauce", or "applet"</div>
+							<div class="explain">{{localize 'search_example6'}}</div>
 							<div class="example">"some words"</div>
-							<div class="explain">Show results that contain the exact phrase "some words" (for example, rows that contain "some words of wisdom" but not "some noise words")</div>
+							<div class="explain">{{localize 'search_example7'}}</div>
 						</div>
 					{{/if}}
 				</div>
@@ -82,8 +82,8 @@
 
 	<Layout::Grid::Content>
 		{{layout/logo-heading
-			title="Search"
-			desc="Find content"
+			title=(localize 'search')
+			desc=(localize 'search_explain')
 			icon=constants.Icon.Search}}
 
 		{{search/search-view

@@ -18,16 +18,18 @@ import Component from '@ember/component';
 export default Component.extend(Notifier, Modal, {
 	appMeta: service(),
 	router: service(),
+	i18n: service(),
+
 	browserSvc: service('browser'),
-	backupLabel: 'Backup',
-	backupSystemLabel: 'System Backup',
+	backupLabel: '',
+	backupSystemLabel: '',
     backupSpec: null,
     backupFilename: '',
     backupError: false,
 	backupSuccess: false,
 	backupRunning: false,
     restoreSpec: null,
-	restoreButtonLabel: 'Restore',
+	restoreButtonLabel: '',
 	restoreUploadReady: false,
 	confirmRestore: '',
 
@@ -53,6 +55,10 @@ export default Component.extend(Notifier, Modal, {
 	didInsertElement() {
 		this._super(...arguments);
 
+		this.set('backupLabel', this.i18n.localize('backup'));
+		this.set('backupSystemLabel', this.i18n.localize('backup_system'));
+		this.set('restoreButtonLabel', this.i18n.localize('restore'))
+
 		$('#restore-file').on('change', function(){
 			var fileName = document.getElementById("restore-file").files[0].name;
 			$(this).next('.custom-file-label').html(fileName);
@@ -68,14 +74,14 @@ export default Component.extend(Notifier, Modal, {
 		let spec = this.get('backupSpec');
 
 		this.get('onBackup')(spec).then((filename) => {
-			this.notifySuccess('Completed');
-			this.set('backupLabel', 'Start Backup');
+			this.notifySuccess(this.i18n.localize('completed'));
+			this.set('backupLabel', this.i18n.localize('backup_start'));
 			this.set('backupSuccess', true);
 			this.set('backupFilename', filename);
 			this.set('backupRunning', false);
 		}, ()=> {
-			this.notifyError('Failed');
-			this.set('backupLabel', 'Run Backup');
+			this.notifyError(this.i18n.localize('backup_failed'));
+			this.set('backupLabel', this.i18n.localize('backup_run'));
 			this.set('backupFailed', true);
 			this.set('backupRunning', false);
 		});
@@ -133,7 +139,7 @@ export default Component.extend(Notifier, Modal, {
 			}
 
 			// start restore process
-			this.set('restoreButtonLabel', 'Please wait, restore running...');
+			this.set('restoreButtonLabel', this.i18n.localize('restore_running'));
             this.set('restoreSuccess', false);
 			this.set('restoreFailed', false);
 
@@ -145,13 +151,13 @@ export default Component.extend(Notifier, Modal, {
 			}
 
 			this.get('onRestore')(spec, filedata).then(() => {
-				this.notifySuccess('Completed');
-				this.set('backupLabel', 'Restore');
+				this.notifySuccess(this.i18n.localize('completed'));
+				this.set('backupLabel', this.i18n.localize('restore'));
 				this.set('restoreSuccess', true);
 				this.get('router').transitionTo('auth.logout');
 			}, ()=> {
-				this.notifyError('Failed');
-				this.set('restorbackupLabel', 'Restore');
+				this.notifyError(this.i18n.localize('backup_failed'));
+				this.set('restorbackupLabel', this.i18n.localize('restore'));
                 this.set('restoreFailed', true);
 			});
 		},

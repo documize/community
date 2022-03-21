@@ -36,11 +36,13 @@ export default Component.extend({
 		this.set('pageBody', body);
     },
 
-	didInsertElement() {
+	didInsertElement(...args) {
+		this._super(...args);
 		this.attachEditor();
     },
 
-    willDestroyElement() {
+    willDestroyElement(...args) {
+		this._super(...args);
 		let editor = this.get('codeEditor');
 
 		if (this.get('editMode')) {

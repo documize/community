@@ -35,7 +35,8 @@ export default Service.extend({
 			message: org.get('message'),
 			title: org.get('title'),
 			maxTags: org.get('maxTags'),
-			conversionEndpoint: org.get('conversionEndpoint')
+			conversionEndpoint: org.get('conversionEndpoint'),
+			locale: org.get('locale')
 		});
 
 		return this.get('ajax').request(`organization/${id}`, {

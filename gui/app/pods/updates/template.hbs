@@ -3,7 +3,7 @@
 	<div class="zone-1" />
 	<div class="zone-2">
 		<div class="label color-gray-700">
-			Documize {{appMeta.edition}} Edition {{appMeta.version}} (build {{appMeta.revision}})
+			Documize {{appMeta.edition}} {{appMeta.version}} ({{appMeta.revision}})
 		</div>
 	</div>
 	<div class="zone-3" />
@@ -13,27 +13,24 @@
 	<Layout::Grid::Sidebar>
 		<div class="sidebar-content">
 			<div class="section">
-				<div class="title">ABOUT</div>
+				<div class="title">{{localize 'about'}}</div>
+				<div class="text"></div>
 				<div class="text">
-					Documize product updates are released frequently for both
-					cloud and self-hosted customers.
-				</div>
-				<div class="text">
-					Have an idea, suggestion or some feedback? <a href="mailto:support@documize.com">Get in touch.</a>
+					{{localize 'product_feedback'}} <a href="mailto:support@documize.com">{{localize 'get_in_touch'}}</a>
 				</div>
 			</div>
 		</div>
 	</Layout::Grid::Sidebar>
 	<Layout::Grid::Content>
 		{{layout/logo-heading
-			title="Product News"
-			desc="Latest product news and updates"
+			title=(localize 'product_news')
+			desc=(localize 'product_news_explain')
 			icon=constants.Icon.Announce}}
 
 		<div class="product-news">
 			{{{newsContent}}}
 			<div class="action">
-				Have an idea? Suggestion or feedback? <a href="mailto:support@documize.com">Get in touch!</a>
+				{{localize 'product_feedback'}} <a href="mailto:support@documize.com">{{localize 'get_in_touch'}}</a>
 			</div>
 		</div>
 	</Layout::Grid::Content>

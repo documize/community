@@ -1,15 +1,15 @@
 {{#ui/ui-toolbar dark=false light=false raised=false large=false bordered=false}}
 	{{#if (or hasDocuments pinState.isPinned session.authenticated)}}
-		{{#ui/ui-toolbar-dropdown label="Content" arrow=true}}
+		{{#ui/ui-toolbar-dropdown label=(localize 'content') arrow=true}}
 			{{#attach-popover class="ember-attacher-popper" hideOn="click clickout" showOn="click" isShown=false}}
 				<div class="menu" role="menu">
 					{{#if pinState.isPinned}}
-						<li class="item" {{action "onUnpin"}} role="button" tabindex="0">Remove bookmark</li>
+						<li class="item" {{action "onUnpin"}} role="button" tabindex="0">{{localize 'bookmark_remove'}}</li>
 					{{else if session.authenticated}}
-						<li class="item" {{action "onPin"}} role="button" tabindex="0">Bookmark</li>
+						<li class="item" {{action "onPin"}} role="button" tabindex="0">{{localize 'bookmark'}}</li>
 					{{/if}}
 					{{#if hasDocuments}}
-						<li class="item" {{action "onShowExport"}} role="button" tabindex="0">Download</li>
+						<li class="item" {{action "onShowExport"}} role="button" tabindex="0">{{localize 'download'}}</li>
 					{{/if}}
 				</div>
 			{{/attach-popover}}
@@ -17,41 +17,40 @@
 	{{/if}}
 
 	{{#if permissions.documentAdd}}
-		{{#ui/ui-toolbar-dropdown label="New" arrow=true}}
+		{{#ui/ui-toolbar-dropdown label=(localize 'new') arrow=true}}
 			{{#attach-popover class="ember-attacher-popper" hideOn="click clickout" showOn="click" isShown=false}}
 				<div class="menu" role="menu">
-					<li class="item" {{action "onShowEmptyDocModal"}} role="button" tabindex="0">Blank canvas</li>
+					<li class="item" {{action "onShowEmptyDocModal"}} role="button" tabindex="0">{{localize 'new_canvas'}}</li>
 					{{#if hasTemplates}}
-						<li class="item" {{action "onShowTemplateDocModal"}} role="button" tabindex="0">From template</li>
+						<li class="item" {{action "onShowTemplateDocModal"}} role="button" tabindex="0">{{localize 'new_template'}}</li>
 					{{/if}}
-					<li class="item" {{action "onShowImportDocModal"}} role="button" tabindex="0">Import files</li>
+					<li class="item" {{action "onShowImportDocModal"}} role="button" tabindex="0">{{localize 'new_import'}}</li>
 				</div>
 			{{/attach-popover}}
 		{{/ui/ui-toolbar-dropdown}}
 	{{/if}}
 
 	{{#if (or permissions.spaceOwner permissions.spaceManage)}}
-		{{ui/ui-toolbar-icon icon=constants.Icon.Settings color=constants.Color.Green
-			tooltip="Space settings" linkTo="folder.settings"}}
+		{{ui/ui-toolbar-icon icon=constants.Icon.Settings color=constants.Color.Green tooltip=(localize 'settings') linkTo="folder.settings"}}
 	{{/if}}
 {{/ui/ui-toolbar}}
 
 <div id="empty-doc-modal" class="modal" tabindex="-1" role="dialog">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
-			<div class="modal-header">Blank Canvas</div>
+			<div class="modal-header">{{localize 'new_canvas'}}</div>
 			<div class="modal-body">
 				<form onsubmit={{action "onAddEmptyDoc"}} role="form">
 					<div class="form-group">
-						<label for="empty-doc-name">Document Name</label>
-						{{input id="empty-doc-name" type="text" value=emptyDocName placeholder="Enter name" class=(if emptyDocNameError "form-control mousetrap is-invalid" "form-control mousetrap") autocomplete="off"}}
+						<label for="empty-doc-name">{{localize 'name'}}</label>
+						{{input id="empty-doc-name" type="text" value=emptyDocName placeholder="" class=(if emptyDocNameError "form-control mousetrap is-invalid" "form-control mousetrap") autocomplete="off"}}
 					</div>
 				</form>
 			</div>
 			<div class="modal-footer">
-				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+				{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'cancel') dismiss=true}}
 				{{ui/ui-button-gap}}
-				{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Add onClick=(action "onAddEmptyDoc")}}
+				{{ui/ui-button color=constants.Color.Green light=true label=(localize 'add') onClick=(action "onAddEmptyDoc")}}
 			</div>
 		</div>
 	</div>
@@ -59,12 +58,12 @@
 <div id="template-doc-modal" class="modal" tabindex="-1" role="dialog">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
-			<div class="modal-header">From Template</div>
+			<div class="modal-header">{{localize 'new_template'}}</div>
 			<div class="modal-body">
 				<form onsubmit={{action "onAddTemplateDoc"}} role="form">
 					<div class="form-group">
-						<label for="template-doc-name">Document Name</label>
-						{{input id="template-doc-name" type="text" value=templateDocName placeholder="Enter name" class=(if templateDocNameError "form-control mousetrap is-invalid" "form-control mousetrap") autocomplete="off"}}
+						<label for="template-doc-name">{{localize 'name'}}</label>
+						{{input id="template-doc-name" type="text" value=templateDocName placeholder="" class=(if templateDocNameError "form-control mousetrap is-invalid" "form-control mousetrap") autocomplete="off"}}
 					</div>
 					<div class="widget-list-picker">
 						<ul class="options">
@@ -83,9 +82,9 @@
 				</form>
 			</div>
 			<div class="modal-footer">
-				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+				{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'cancel') dismiss=true}}
 				{{ui/ui-button-gap}}
-				{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Add onClick=(action "onAddTemplateDoc")}}
+				{{ui/ui-button color=constants.Color.Green light=true label=(localize 'add') onClick=(action "onAddTemplateDoc")}}
 			</div>
 		</div>
 	</div>
@@ -93,14 +92,14 @@
 <div id="import-doc-modal" class="modal" tabindex="-1" role="dialog">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
-			<div class="modal-header">Import Files</div>
+			<div class="modal-header">{{localize 'new_import'}}</div>
 			<div class="modal-body">
 				<div class="import-zone">
 					<button id="import-document-button" type="button" class="dmz-button-yellow-light text-center">
 						<br>
-						Click to select files or drag-drop files
+						{{localize 'new_import_explain1'}}
 						<br><br>
-						.doc, .docx, .md, .markdown
+						{{localize 'new_import_explain2'}}
 						<br><br>
 					</button>
 					<div class="import-status">
@@ -111,7 +110,7 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+				{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'cancel') dismiss=true}}
 			</div>
 		</div>
 	</div>
@@ -120,21 +119,21 @@
 <div id="space-export-modal" class="modal" tabindex="-1" role="dialog">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
-			<div class="modal-header">Export as HTML</div>
+			<div class="modal-header">{{localize 'export_html'}}</div>
 			<div class="modal-body">
 				{{#if hasCategories}}
-					<p>Export all space content as HTML or select categories.</p>
+					<p>{{localize 'export_html_explain1'}}</p>
 					{{#each categories as |cat|}}
 						{{#ui/ui-checkbox selected=cat.exportSelected}}{{cat.category}}{{/ui/ui-checkbox}}
 					{{/each}}
 				{{else}}
-					<p>All space content will be exported as a single self-enclosed HTML file.</p>
+					<p>{{localize 'export_html_explain2'}}</p>
 				{{/if}}
 			</div>
 			<div class="modal-footer">
-				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel dismiss=true}}
+				{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'cancel') dismiss=true}}
 				{{ui/ui-button-gap}}
-				{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Export onClick=(action "onExport")}}
+				{{ui/ui-button color=constants.Color.Green light=true label=(localize 'export') onClick=(action "onExport")}}
 			</div>
 		</div>
 	</div>

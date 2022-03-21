@@ -11,8 +11,11 @@
 
 import $ from 'jquery';
 import Route from '@ember/routing/route';
+import { inject as service } from '@ember/service';
 
 export default Route.extend({
+	i18n: service(),
+
 	beforeModel() {
 		let pwd = document.head.querySelector("[property=dbhash]").content;
 		if (pwd.length === 0 || pwd === "{{.DBhash}}") {
@@ -28,7 +31,7 @@ export default Route.extend({
 			dbname: document.head.querySelector("[property=dbname]").content,
 			dbhash: pwd,
 			title: "",
-			message: "This Documize instance contains all our team documentation",
+			message: "Documize Community instance contains all our documentation",
 			allowAnonymousAccess: false,
 			firstname: "",
 			lastname: "",
@@ -41,7 +44,7 @@ export default Route.extend({
 
 	activate() {
 		$('body').addClass('background-color-theme-100');
-		document.title = "Welcome to the Documize installer";
+		document.title = "Documize Community Setup";
 	},
 
 	deactivate() {

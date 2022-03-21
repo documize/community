@@ -38,7 +38,7 @@ func CommandWithTimeout(command *exec.Cmd, timeout time.Duration) ([]byte, error
 	select {
 	case <-time.After(timeout):
 		if err := command.Process.Kill(); err != nil {
-			fmt.Errorf("failed to kill: ", err)
+			fmt.Printf("failed to kill: %s", err.Error())
 		}
 		<-done // prevent memory leak
 		//fmt.Println("DEBUG timeout")

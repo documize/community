@@ -32,6 +32,7 @@ type Organization struct {
 	Active               bool   `json:"active"`
 	Subscription         string `json:"subscription"`
 	Theme                string `json:"theme"`
+	Locale               string `json:"locale"`
 }
 
 // StripSecrets removes sensitive information.

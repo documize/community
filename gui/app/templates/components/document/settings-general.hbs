@@ -1,25 +1,25 @@
 {{layout/logo-heading
-	title="Content Settings"
-	desc="Set name, description and lifecycle stage"
+	title=(localize 'content')
+	desc=(localize 'settings')
 	icon=constants.Icon.Settings}}
 
 <form class="view-document">
 	<div class="form-group">
-		<label for="document-name">Name</label>
+		<label for="document-name">{{localize 'name'}}</label>
 		{{focus-input id="document-name" type="text" value=docName
-			class=(if hasNameError "form-control mousetrap is-invalid" "form-control mousetrap") placeholder="Title" autocomplete="off"}}
+			class=(if hasNameError "form-control mousetrap is-invalid" "form-control mousetrap") placeholder="" autocomplete="off"}}
 	</div>
 
 	<div class="form-group">
-		<label for="document-excerpt">Description</label>
-		{{textarea id="document-excerpt" rows="4" value=docExcerpt class="form-control mousetrap" placeholder="Excerpt" autocomplete="off"}}
-		<small class="form-text text-muted">Optional description explaining content</small>
+		<label for="document-excerpt">{{localize 'description'}}</label>
+		{{textarea id="document-excerpt" rows="4" value=docExcerpt class="form-control mousetrap" placeholder="" autocomplete="off"}}
+		<small class="form-text text-muted">{{localize 'excerpt'}}</small>
 	</div>
 
 	{{ui/ui-button
 		color=constants.Color.Green
 		icon=constants.Icon.Settings
-		label=constants.Label.Save
+		label=(localize 'save')
 		light=true
 		onClick=(action "onSave")}}
 </form>

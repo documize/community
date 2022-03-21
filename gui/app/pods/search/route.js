@@ -11,8 +11,10 @@
 
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 import Route from '@ember/routing/route';
+import { inject as service } from '@ember/service';
 
 export default Route.extend(AuthenticatedRouteMixin, {
+	i18n: service(),
 	matchFilter: null,
 
 	beforeModel(transition) {
@@ -35,6 +37,6 @@ export default Route.extend(AuthenticatedRouteMixin, {
 	},
 
     activate() {
-		this.get('browser').setTitle('Search');
+		this.get('browser').setTitle(this.i18n.localize('search'));
 	}
 });

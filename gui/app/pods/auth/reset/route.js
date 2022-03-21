@@ -11,14 +11,17 @@
 
 import $ from 'jquery';
 import Route from '@ember/routing/route';
+import { inject as service } from '@ember/service';
 
 export default Route.extend({
+	i18n: service(),
+
 	model: function (params) {
 		return params.token;
 	},
 
 	activate() {
-		this.get('browser').setTitleAsPhrase('Reset Password');
+		this.get('browser').setTitleAsPhrase(this.i18n.localize('reset_password'));
 		$('body').addClass('background-color-theme-100 d-flex justify-content-center align-items-center');
 	},
 

@@ -24,7 +24,11 @@ module.exports = {
     "ember/no-get": "off",
     "ember/no-jquery": "off",
     "ember/no-mixins": "off",
-    "ember/no-actions-hash": "off"
+    "ember/no-actions-hash": "off",
+    "ember/require-computed-macros": "off",
+    "ember/use-ember-data-rfc-395-imports": "off",
+    "ember/avoid-leaking-state-in-ember-objects": "off",
+    "ember/require-return-from-computed": "off"
   },
   overrides: [
     // node files

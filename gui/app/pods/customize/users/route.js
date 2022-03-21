@@ -17,6 +17,7 @@ import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-rout
 export default Route.extend(AuthenticatedRouteMixin, {
 	userService: service('user'),
 	appMeta: service(),
+	i18n: service(),
 
 	beforeModel () {
 		if (!this.session.isAdmin) {
@@ -33,6 +34,6 @@ export default Route.extend(AuthenticatedRouteMixin, {
 	},
 
 	activate() {
-		this.get('browser').setTitle('Users');
+		this.get('browser').setTitle(this.i18n.localize('admin_user_management'));
 	}
 });

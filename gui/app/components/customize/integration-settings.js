@@ -61,7 +61,7 @@ export default Component.extend(Notifier, {
 					this.get('orgSvc').saveGlobalSetting('SECTION-TRELLO', this.get('trelloCreds'));
 				}
 
-				this.notifySuccess('Saved');
+				this.notifySuccess(this.i18n.localize('saved'));
 			});
 		}
 	}

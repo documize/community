@@ -6,39 +6,39 @@
 	<p>Bring to the table win-win survival strategies to ensure proactive domination. At the end of the day, going forward, a new normal that has evolved from generation X is on the runway heading towards a streamlined cloud solution. User generated content in real-time will have multiple touchpoints for offshoring.</p>
 {{/layout/master-sidebar}}
 {{#layout/master-content}}
-	{{ui/ui-button themed=true label=constants.Label.Save onClick=(action "onButtonClick" 1)}}
+	{{ui/ui-button themed=true label=(localize 'save') onClick=(action "onButtonClick" 1)}}
 	{{ui/ui-button-gap}}
-	{{ui/ui-button themed=true light=true label=constants.Label.Update onClick=(action "onButtonClick" 2)}}
-	{{ui/ui-button-gap}}
-	<br>
-	<br>
-	{{ui/ui-button color=constants.Color.Green label=constants.Label.Save onClick=(action "onSuccess")}}
-	{{ui/ui-button-gap}}
-	{{ui/ui-button color=constants.Color.Yellow label=constants.Label.Update onClick=(action "onInfo")}}
-	{{ui/ui-button-gap}}
-	{{ui/ui-button color=constants.Color.Gray label=constants.Label.Cancel onClick=(action "onWarn")}}
-	{{ui/ui-button-gap}}
-	{{ui/ui-button color=constants.Color.Red label=constants.Label.Delete onClick=(action "onError")}}
+	{{ui/ui-button themed=true light=true label=(localize 'update') onClick=(action "onButtonClick" 2)}}
 	{{ui/ui-button-gap}}
 	<br>
 	<br>
-	{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Save onClick=(action "onSuccess")}}
+	{{ui/ui-button color=constants.Color.Green label=(localize 'save') onClick=(action "onSuccess")}}
 	{{ui/ui-button-gap}}
-	{{ui/ui-button color=constants.Color.Yellow light=true label=constants.Label.Update onClick=(action "onInfo")}}
+	{{ui/ui-button color=constants.Color.Yellow label=(localize 'update') onClick=(action "onInfo")}}
 	{{ui/ui-button-gap}}
-	{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Cancel onClick=(action "onWarn")}}
+	{{ui/ui-button color=constants.Color.Gray label=(localize 'cancel') onClick=(action "onWarn")}}
 	{{ui/ui-button-gap}}
-	{{ui/ui-button color=constants.Color.Red light=true label=constants.Label.Delete onClick=(action "onError")}}
+	{{ui/ui-button color=constants.Color.Red label=(localize 'delete') onClick=(action "onError")}}
 	{{ui/ui-button-gap}}
 	<br>
 	<br>
-	{{ui/ui-button color=constants.Color.Green light=true icon=constants.Icon.Plus label=constants.Label.Save onClick=(action "onSuccess")}}
+	{{ui/ui-button color=constants.Color.Green light=true label=(localize 'save') onClick=(action "onSuccess")}}
 	{{ui/ui-button-gap}}
-	{{ui/ui-button color=constants.Color.Yellow light=true icon=constants.Icon.Settings label=constants.Label.Update onClick=(action "onInfo")}}
+	{{ui/ui-button color=constants.Color.Yellow light=true label=(localize 'update') onClick=(action "onInfo")}}
 	{{ui/ui-button-gap}}
-	{{ui/ui-button color=constants.Color.Gray light=true icon=constants.Icon.Print label=constants.Label.Cancel onClick=(action "onWarn")}}
+	{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'cancel') onClick=(action "onWarn")}}
 	{{ui/ui-button-gap}}
-	{{ui/ui-button color=constants.Color.Red light=true icon=constants.Icon.Delete label=constants.Label.Delete onClick=(action "onError")}}
+	{{ui/ui-button color=constants.Color.Red light=true label=(localize 'delete') onClick=(action "onError")}}
+	{{ui/ui-button-gap}}
+	<br>
+	<br>
+	{{ui/ui-button color=constants.Color.Green light=true icon=constants.Icon.Plus label=(localize 'save') onClick=(action "onSuccess")}}
+	{{ui/ui-button-gap}}
+	{{ui/ui-button color=constants.Color.Yellow light=true icon=constants.Icon.Settings label=(localize 'update') onClick=(action "onInfo")}}
+	{{ui/ui-button-gap}}
+	{{ui/ui-button color=constants.Color.Gray light=true icon=constants.Icon.Print label=(localize 'cancel') onClick=(action "onWarn")}}
+	{{ui/ui-button-gap}}
+	{{ui/ui-button color=constants.Color.Red light=true icon=constants.Icon.Delete label=(localize 'delete') onClick=(action "onError")}}
 	{{ui/ui-button-gap}}
 	<br>
 	<br>

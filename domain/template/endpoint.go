@@ -22,6 +22,7 @@ import (
 
 	"github.com/documize/community/core/env"
 	"github.com/documize/community/core/event"
+	"github.com/documize/community/core/i18n"
 	"github.com/documize/community/core/request"
 	"github.com/documize/community/core/response"
 	"github.com/documize/community/core/secrets"
@@ -296,7 +297,7 @@ func (h *Handler) Use(w http.ResponseWriter, r *http.Request) {
 	var d = doc.Document{}
 	d.Name = docTitle
 	d.Location = fmt.Sprintf("template-%s", templateID)
-	d.Excerpt = "Add detailed description for document..."
+	d.Excerpt = i18n.Localize(ctx.Locale, "description")
 	d.Slug = stringutil.MakeSlug(d.Name)
 	d.Tags = ""
 	d.SpaceID = spaceID

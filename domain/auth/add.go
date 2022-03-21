@@ -48,6 +48,7 @@ func AddExternalUser(ctx domain.RequestContext, rt *env.Runtime, store *store.St
 	if addUser {
 		userID = uniqueid.Generate()
 		u.RefID = userID
+		u.Locale = ctx.OrgLocale
 
 		err = store.User.Add(ctx, u)
 		if err != nil {

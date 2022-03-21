@@ -14,6 +14,7 @@ package mail
 import (
 	"fmt"
 
+	"github.com/documize/community/core/i18n"
 	"github.com/documize/community/domain/smtp"
 )
 
@@ -24,19 +25,15 @@ func (m *Mailer) ShareSpaceExistingUser(recipient, inviterName, inviterEmail, ur
 
 	// check inviter name
 	if inviterName == "Hello You" || len(inviterName) == 0 {
-		inviterName = "Your colleague"
+		inviterName = i18n.Localize(m.Context.Locale, "mail_template_sender")
 	}
 
 	em := smtp.EmailMessage{}
-	em.Subject = fmt.Sprintf("%s has shared %s with you", inviterName, folder)
+	em.Subject = i18n.Localize(m.Context.Locale, "mail_template_shared", inviterName, folder)
 	em.ToEmail = recipient
 	em.ToName = recipient
 	em.ReplyTo = inviterEmail
 	em.ReplyName = inviterName
-
-	if IsBlockedEmailDomain(em.ToEmail) {
-		return
-	}
 
 	parameters := struct {
 		Subject     string
@@ -45,6 +42,7 @@ func (m *Mailer) ShareSpaceExistingUser(recipient, inviterName, inviterEmail, ur
 		Folder      string
 		Intro       string
 		SenderEmail string
+		ClickHere   string
 	}{
 		em.Subject,
 		inviterName,
@@ -52,6 +50,7 @@ func (m *Mailer) ShareSpaceExistingUser(recipient, inviterName, inviterEmail, ur
 		folder,
 		intro,
 		m.Config.SenderEmail,
+		i18n.Localize(m.Context.Locale, "mail_template_click_here"),
 	}
 
 	html, err := m.ParseTemplate("mail/share-space-existing-user.html", parameters)
@@ -77,19 +76,15 @@ func (m *Mailer) ShareSpaceNewUser(recipient, inviterName, inviterEmail, url, sp
 
 	// check inviter name
 	if inviterName == "Hello You" || len(inviterName) == 0 {
-		inviterName = "Your colleague"
+		inviterName = i18n.Localize(m.Context.Locale, "mail_template_sender")
 	}
 
 	em := smtp.EmailMessage{}
-	em.Subject = fmt.Sprintf("%s has shared %s with you on Documize Community", inviterName, space)
+	em.Subject = i18n.Localize(m.Context.Locale, "mail_template_invited", inviterName, space)
 	em.ToEmail = recipient
 	em.ToName = recipient
 	em.ReplyTo = inviterEmail
 	em.ReplyName = inviterName
-
-	if IsBlockedEmailDomain(em.ToEmail) {
-		return
-	}
 
 	parameters := struct {
 		Subject     string
@@ -98,6 +93,7 @@ func (m *Mailer) ShareSpaceNewUser(recipient, inviterName, inviterEmail, url, sp
 		Invitation  string
 		Folder      string
 		SenderEmail string
+		ClickHere   string
 	}{
 		em.Subject,
 		inviterName,
@@ -105,6 +101,7 @@ func (m *Mailer) ShareSpaceNewUser(recipient, inviterName, inviterEmail, url, sp
 		invitationMessage,
 		space,
 		m.Config.SenderEmail,
+		i18n.Localize(m.Context.Locale, "mail_template_click_here"),
 	}
 
 	html, err := m.ParseTemplate("mail/share-space-new-user.html", parameters)

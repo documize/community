@@ -11,8 +11,11 @@
 
 import Route from '@ember/routing/route';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
+import { inject as service } from '@ember/service';
 
 export default Route.extend(AuthenticatedRouteMixin, {
+	i18n: service(),
+
 	beforeModel () {
 		if (!this.session.isAdmin) {
 			this.transitionTo('auth.login');
@@ -20,6 +23,6 @@ export default Route.extend(AuthenticatedRouteMixin, {
 	},
 
 	activate() {
-		this.get('browser').setTitle('Groups');
+		this.get('browser').setTitle(this.i18n.localize('admin_user_groups'));
 	}
 });

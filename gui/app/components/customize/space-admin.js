@@ -20,6 +20,7 @@ export default Component.extend(Notifier, Modals, {
 	spaceSvc: service('folder'),
 	browserSvc: service('browser'),
 	documentSvc: service('document'),
+	i18n: service(),
 	spaces: null,
 
 	label: computed('model', function() {
@@ -75,7 +76,7 @@ export default Component.extend(Notifier, Modals, {
 				this.set('deleteSpace.id', '');
 				this.set('deleteSpace.name', '');
 				this.loadData();
-				this.notifySuccess('Deleted');
+				this.notifySuccess(this.i18n.localize('deleted'));
 			});
 		},
 
@@ -86,17 +87,17 @@ export default Component.extend(Notifier, Modals, {
 				filterType: 'space',
 			};
 
-			this.notifyInfo('Export running...');
+			this.notifyInfo(this.i18n.localize('space_admin_export_running'));
 
 			this.get('documentSvc').export(spec).then((htmlExport) => {
-				this.get('browserSvc').downloadFile(htmlExport, 'documize.html');
-				this.notifySuccess('Export completed');
+				this.get('browserSvc').downloadFile(htmlExport, 'documize-community.html');
+				this.notifySuccess(this.i18n.localize('completed'));
 			});
 		},
 
 		onOwner(spaceId) {
 			this.get('spaceSvc').grantOwnerPermission(spaceId).then(() => { /* jshint ignore:line */
-				this.notifySuccess('Added as owner');
+				this.notifySuccess(this.i18n.localize('completed'));
 			});
 		}
 	}

@@ -17,8 +17,7 @@ export default Controller.extend({
 
 	actions: {
 		onUpdate() {
-			return this.get('orgService').save(this.model.general).then(() => {
-			});
+			return this.get('orgService').save(this.model.general).then(() => {});
 		},
 
 		onDefaultLogo(orgId) {

@@ -18,6 +18,7 @@ import (
 	"os"
 
 	"github.com/documize/community/core/env"
+	"github.com/documize/community/core/i18n"
 	"github.com/documize/community/domain"
 	"github.com/documize/community/domain/section"
 	"github.com/documize/community/domain/store"
@@ -38,10 +39,10 @@ func main() {
 
 	// Specify the product edition.
 	rt.Product = domain.Product{}
-	rt.Product.Major = "4"
-	rt.Product.Minor = "2"
-	rt.Product.Patch = "3"
-	rt.Product.Revision = "220214141054"
+	rt.Product.Major = "5"
+	rt.Product.Minor = "0"
+	rt.Product.Patch = "0"
+	rt.Product.Revision = "220318131033"
 	rt.Product.Version = fmt.Sprintf("%s.%s.%s", rt.Product.Major, rt.Product.Minor, rt.Product.Patch)
 	rt.Product.Edition = domain.CommunityEdition
 	rt.Product.Title = "Community"
@@ -61,6 +62,12 @@ func main() {
 		os.Exit(0)
 	}
 	rt.Log.Info("Configuration: " + rt.Flags.ConfigSource)
+
+	// i18n
+	err := i18n.Initialize(rt.Assets)
+	if err != nil {
+		rt.Log.Error("i18n", err)
+	}
 
 	// Start database init.
 	boot.InitRuntime(&rt, &s)

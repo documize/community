@@ -44,6 +44,8 @@ type RequestContext struct {
 	GlobalAdmin          bool
 	ViewUsers            bool
 	Subscription         Subscription
+	Locale               string
+	OrgLocale            string
 }
 
 //GetAppURL returns full HTTP url for the app

@@ -21,6 +21,7 @@ import (
 	"strings"
 
 	"github.com/documize/community/core/env"
+	"github.com/documize/community/core/i18n"
 	"github.com/documize/community/core/response"
 	"github.com/documize/community/core/secrets"
 	"github.com/documize/community/core/streamutil"
@@ -57,7 +58,7 @@ func (h *Handler) Sync(w http.ResponseWriter, r *http.Request) {
 	// Org contains raw auth provider config
 	org, err := h.Store.Organization.GetOrganization(ctx, ctx.OrgID)
 	if err != nil {
-		result.Message = "Error: unable to get organization record"
+		result.Message = i18n.Localize(ctx.Locale, "server_err_org")
 		result.IsError = true
 		response.WriteJSON(w, result)
 		h.Runtime.Log.Error(result.Message, err)
@@ -66,7 +67,7 @@ func (h *Handler) Sync(w http.ResponseWriter, r *http.Request) {
 
 	// Exit if not using Keycloak
 	if org.AuthProvider != ath.AuthProviderKeycloak {
-		result.Message = "Error: skipping user sync with Keycloak as it is not the configured option"
+		result.Message = i18n.Localize(ctx.Locale, "server_keycloak_error1")
 		result.IsError = true
 		response.WriteJSON(w, result)
 		h.Runtime.Log.Info(result.Message)
@@ -77,7 +78,7 @@ func (h *Handler) Sync(w http.ResponseWriter, r *http.Request) {
 	c := ath.KeycloakConfig{}
 	err = json.Unmarshal([]byte(org.AuthConfig), &c)
 	if err != nil {
-		result.Message = "Error: unable read Keycloak configuration data"
+		result.Message = i18n.Localize(ctx.Locale, "server_keycloak_error2")
 		result.IsError = true
 		response.WriteJSON(w, result)
 		h.Runtime.Log.Error(result.Message, err)
@@ -87,7 +88,7 @@ func (h *Handler) Sync(w http.ResponseWriter, r *http.Request) {
 	// User list from Keycloak
 	kcUsers, err := Fetch(c)
 	if err != nil {
-		result.Message = "Error: unable to fetch Keycloak users: " + err.Error()
+		result.Message = i18n.Localize(ctx.Locale, "server_keycloak_error3", err.Error())
 		result.IsError = true
 		response.WriteJSON(w, result)
 		h.Runtime.Log.Error(result.Message, err)
@@ -97,7 +98,7 @@ func (h *Handler) Sync(w http.ResponseWriter, r *http.Request) {
 	// User list from Documize
 	dmzUsers, err := h.Store.User.GetUsersForOrganization(ctx, "", 99999)
 	if err != nil {
-		result.Message = "Error: unable to fetch Documize users"
+		result.Message = i18n.Localize(ctx.Locale, "server_error_user")
 		result.IsError = true
 		response.WriteJSON(w, result)
 		h.Runtime.Log.Error(result.Message, err)
@@ -135,8 +136,8 @@ func (h *Handler) Sync(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	result.Message = fmt.Sprintf("Keycloak sync found %d users, %d new users added, %d users with missing data ignored",
-		len(kcUsers), len(insert), missing)
+	result.Message = i18n.Localize(ctx.Locale, "server_keycloak_summary",
+		fmt.Sprintf("%d", len(kcUsers)), fmt.Sprintf("%d", len(insert)), fmt.Sprintf("%d", missing))
 
 	response.WriteJSON(w, result)
 	h.Runtime.Log.Info(result.Message)

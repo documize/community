@@ -1,19 +1,19 @@
 {{layout/logo-heading
-	title="Delete Space"
-	desc="Proceed with caution as there is no undo"
+	title=(localize 'space_delete')
+	desc=(localize 'no_undo')
 	icon=constants.Icon.Delete}}
 
 <form>
 	<div class="form-group">
-		<label>Please type space name to confirm</label>
-		{{focus-input id="delete-space-name" type="text" value=deleteSpaceName class="form-control mousetrap" placeholder="Space name" autocomplete="off"}}
-		<small class="form-text text-muted">This will delete all documents and templates within this space!</small>
+		<label>{{localize 'space_delete_prompt'}}</label>
+		{{focus-input id="delete-space-name" type="text" value=deleteSpaceName class="form-control mousetrap" placeholder=(localize 'name') autocomplete="off"}}
+		<small class="form-text text-muted">{{localize 'space_delete_warn'}}</small>
 	</div>
 </form>
 
 {{ui/ui-button
 	color=constants.Color.Red
 	icon=constants.Icon.Delete
-	label=constants.Label.Delete
+	label=(localize 'delete')
 	light=true
 	onClick=(action "onDelete")}}

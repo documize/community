@@ -1,4 +1,4 @@
-{{#section/base-editor-inline document=document folder=folder page=page tip="Concise name that describes code snippet" isDirty=(action "isDirty") onCancel=(action "onCancel") onAction=(action "onAction")}}
+{{#section/base-editor-inline document=document folder=folder page=page tip=(localize 'section_code_tip') isDirty=(action "isDirty") onCancel=(action "onCancel") onAction=(action "onAction")}}
 	<div class="section-code-editor">
 		<div class="syntax-selector">
 			{{ui/ui-select id=syntaxId

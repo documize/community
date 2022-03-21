@@ -53,13 +53,15 @@ export default Model.extend({
 
 	lifecycleLabel: computed('lifecycle', function () {
 		let constants = this.get('constants');
+		let i18n = this.get('i18n');
+
 		switch (this.get('lifecycle')) {
 			case constants.Lifecycle.Draft:
-				return constants.Lifecycle.DraftLabel;
+				return i18n.localize('draft');
 			case constants.Lifecycle.Live:
-				return constants.Lifecycle.LiveLabel;
+				return i18n.localize('live');
 			case constants.Lifecycle.Archived:
-				return constants.Lifecycle.ArchivedLabel;
+				return i18n.localize('archived');
 		}
 
 		return '';

@@ -8,12 +8,12 @@ let isDevelopment = EmberApp.env() === 'development';
 module.exports = function(defaults) {
 	let app = new EmberApp(defaults, {
 		fingerprint: {
-				enabled: true,
-				generateAssetMap: true,
-				fingerprintAssetMap: false,
-				prepend: '/',
-				extensions: ['js', 'css'],
-				exclude: ['tinymce/**', 'codemirror/**', 'prism/**', 'pdfjs/**']
+			enabled: true,
+			generateAssetMap: true,
+			fingerprintAssetMap: false,
+			prepend: '/',
+			extensions: ['js', 'css'],
+			exclude: ['tinymce/**', 'codemirror/**', 'prism/**', 'pdfjs/**', 'i18n/**']
 		},
 
 		minifyCSS: {
@@ -40,11 +40,9 @@ module.exports = function(defaults) {
 		'ember-cli-terser': {
 			enabled: !isDevelopment,
 			exclude: ['tinymce/**', 'codemirror/**', 'prism/**', 'pdfjs/**'],
-
-			hiddenSourceMap: true,
-
 			terser: {
 			},
+			hiddenSourceMap: true,
 
 			// minifyJS: {
 			// 	enabled: !isDevelopment,

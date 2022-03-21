@@ -2,25 +2,25 @@
 	{{#if isAuthProviderKeycloak}}
 		<Ui::UiSpacer @size="300" />
 		{{#if syncInProgress}}
-			{{ui/ui-button color=constants.Color.Gray light=true icon=constants.Icon.Locked label="Keycloak user sync running..."}}
+			{{ui/ui-button color=constants.Color.Gray light=true icon=constants.Icon.Locked label=(localize 'auth_keycloak_running')}}
 		{{else}}
-			{{ui/ui-button color=constants.Color.Yellow light=true icon=constants.Icon.Locked label="Sync with Keycloak" onClick=(action "onSyncKeycloak")}}
+			{{ui/ui-button color=constants.Color.Yellow light=true icon=constants.Icon.Locked label=(localize 'auth_keycloak_sync') onClick=(action "onSyncKeycloak")}}
 		{{/if}}
 	{{/if}}
 
 	{{#if (or isAuthProviderLDAP isDualAuth)}}
 		<Ui::UiSpacer @size="300" />
 		{{#if syncInProgress}}
-			{{ui/ui-button color=constants.Color.Gray light=true icon=constants.Icon.Locked label="LDAP user sync running..."}}
+			{{ui/ui-button color=constants.Color.Gray light=true icon=constants.Icon.Locked label=(localize 'auth_ldap_running')}}
 		{{else}}
-			{{ui/ui-button color=constants.Color.Yellow light=true icon=constants.Icon.Locked label="Sync with LDAP" onClick=(action "onSyncLDAP")}}
+			{{ui/ui-button color=constants.Color.Yellow light=true icon=constants.Icon.Locked label=(localize 'auth_ldap_sync') onClick=(action "onSyncLDAP")}}
 		{{/if}}
 	{{/if}}
 
 	<Ui::UiSpacer @size="300" />
 	<div class="explain-user-perms">
 		<div class="title" {{action "togglePerms"}}>
-			Permissions Explained
+			{{localize 'permissions'}}
 			{{#if showPermExplain}}
 				<i class="dicon {{constants.Icon.ArrowSmallUp}}" />
 			{{else}}
@@ -28,27 +28,27 @@
 			{{/if}}
 		</div>
 		<div class="perms">
-			<div class="perm-name">Spaces</div>
-			<div class="perm-desc">Can add spaces, both personal and shared with others</div>
-			<div class="perm-name">Visible</div>
-			<div class="perm-desc">Can see names of users and groups, can disable for external users like customers/partners</div>
-			<div class="perm-name">Admin</div>
-			<div class="perm-desc">Can manage all aspects of Documize, like this screen</div>
-			<div class="perm-name">Analytics</div>
-			<div class="perm-desc">Can view analytical reports<</div>
-			<div class="perm-name">Active</div>
-			<div class="perm-desc">Can login and use Documize</div>
+			<div class="perm-name">{{localize 'permission_spaces'}}</div>
+			<div class="perm-desc">{{localize 'permission_spaces_explain'}}</div>
+			<div class="perm-name">{{localize 'permission_visible'}}</div>
+			<div class="perm-desc">{{localize 'permission_visible_explain'}}</div>
+			<div class="perm-name">{{localize 'permission_admin'}}</div>
+			<div class="perm-desc">{{localize 'permission_admin_explain'}}</div>
+			<div class="perm-name">{{localize 'permission_analytics'}}</div>
+			<div class="perm-desc">{{localize 'permission_analytics_explain'}}<</div>
+			<div class="perm-name">{{localize 'permission_active'}}</div>
+			<div class="perm-desc">{{localize 'permission_active_explain'}}</div>
 		</div>
 	</div>
 	<Ui::UiSpacer @size="300" />
 
 	<div class="form-group">
-		{{focus-input type="text" class="form-control" placeholder="filter users" value=filter key-up=(action "onFilterChange")}}
-		<small class="form-text text-muted">search firstname, lastname, email</small>
+		{{focus-input type="text" class="form-control" placeholder=(localize 'find_user') value=filter key-up=(action "onFilterChange")}}
+		<small class="form-text text-muted">{{localize 'find_user_syntax'}}</small>
 	</div>
 
 	<div class="text-center">
-		{{#ui/ui-toolbar dark=false light=false raised=false large=true bordered=false tooltip="Maximum users to display"}}
+		{{#ui/ui-toolbar dark=false light=false raised=false large=true bordered=false tooltip=(localize 'user_max_display')}}
 			{{ui/ui-toolbar-label color=constants.Color.Gray label="5" selected=(eq userLimit 5) onClick=(action "onLimit" 5)}}
 			{{ui/ui-toolbar-label color=constants.Color.Gray label="10" selected=(eq userLimit 10) onClick=(action "onLimit" 10)}}
 			{{ui/ui-toolbar-label color=constants.Color.Gray label="25" selected=(eq userLimit 25) onClick=(action "onLimit" 25)}}
@@ -72,15 +72,15 @@
 							color=constants.Color.Red
 							light=false
 							icon=constants.Icon.Delete
-							label="Delete selected users"
+							label=(localize 'delete')
 							onClick=(action "onShowDeleteBulk")}}
 					{{/if}}
 				</th>
-				<th class="no-width">Spaces</th>
-				<th class="no-width">Visible</th>
-				<th class="no-width">Analytics</th>
-				<th class="no-width">Admin</th>
-				<th class="no-width">Active</th>
+				<th class="no-width">{{localize 'permission_spaces'}}</th>
+				<th class="no-width">{{localize 'permission_visible'}}</th>
+				<th class="no-width">{{localize 'permission_analytics'}}</th>
+				<th class="no-width">{{localize 'permission_admin'}}</th>
+				<th class="no-width">{{localize 'permission_active'}}</th>
 				<th class="no-width"></th>
 			</tr>
 		</thead>
@@ -107,7 +107,7 @@
 									{{group.name}}{{#if (not-eq group user.groups.lastObject)}}, {{/if}}
 								</span>
 							{{else}}
-								<span class="group">&lt;no groups&gt;</span>
+								<span class="group">&lt;{{localize 'group_none'}}&gt;</span>
 							{{/each}}
 						</div>
 					</td>
@@ -152,10 +152,10 @@
 					</td>
 					<td class="no-width text-center align-middle">
 						{{#ui/ui-toolbar dark=false light=true raised=true large=false bordered=true}}
-							{{ui/ui-toolbar-icon icon=constants.Icon.Edit color=constants.Color.Gray tooltip="Edit user" onClick=(action "onShowEdit" user.id)}}
-							{{ui/ui-toolbar-icon icon=constants.Icon.AddUser color=constants.Color.Gray tooltip="Assign user groups" onClick=(action "onShowGroupsModal" user.id)}}
+							{{ui/ui-toolbar-icon icon=constants.Icon.Edit color=constants.Color.Gray tooltip=(localize 'edit') onClick=(action "onShowEdit" user.id)}}
+							{{ui/ui-toolbar-icon icon=constants.Icon.AddUser color=constants.Color.Gray tooltip=(localize 'user_assign_group') onClick=(action "onShowGroupsModal" user.id)}}
 							{{#unless user.me}}
-								{{ui/ui-toolbar-icon icon=constants.Icon.Delete color=constants.Color.Red tooltip="Delete user" onClick=(action "onShowDelete" user.id)}}
+								{{ui/ui-toolbar-icon icon=constants.Icon.Delete color=constants.Color.Red tooltip=(localize 'delete') onClick=(action "onShowDelete" user.id)}}
 							{{/unless}}
 						{{/ui/ui-toolbar}}
 					</td>
@@ -165,8 +165,8 @@
 	</table>
 </div>
 
-{{#ui/ui-dialog title="Delete User" confirmCaption="Delete" buttonColor=constants.Color.Red show=showDeleteDialog onAction=(action "onDelete")}}
-	<p>Are you sure you want to delete {{deleteUser.fullname}}?</p>
+{{#ui/ui-dialog title="Delete User" confirmCaption=(localize 'delete') buttonColor=constants.Color.Red show=showDeleteDialog onAction=(action "onDelete")}}
+	<p>{{localize 'user_delete_confirm' deleteUser.fullname}}</p>
 {{/ui/ui-dialog}}
 
 <div id="edit-user-modal" class="modal" tabindex="-1" role="dialog">
@@ -176,35 +176,35 @@
 			<div class="modal-body">
 				<form role="form">
 					<div class="form-group">
-						<label for="edit-firstname">Firstname</label>
+						<label for="edit-firstname">{{localize 'firstname'}}</label>
 						{{input id="edit-firstname" class="form-control" type="text" value=editUser.firstname}}
 					</div>
 					<div class="form-group">
-						<label for="edit-lastname">Lastname</label>
+						<label for="edit-lastname">{{localize 'lastname'}}</label>
 						{{input id="edit-lastname" type="text" class="form-control" value=editUser.lastname}}
 					</div>
 					<div class="form-group">
-						<label for="edit-email">Email</label>
+						<label for="edit-email">{{localize 'email'}}</label>
 						{{input id="edit-email" type="text" class="form-control" value=editUser.email}}
 					</div>
 					{{#if (or isAuthProviderDocumize isDualAuth)}}
 						<div class="form-group">
-							<label for="edit-password">Password</label>
+							<label for="edit-password">{{localize 'password'}}</label>
 							{{input id="edit-password" type="password" class="form-control" value=password.password}}
-							<small class="form-text text-muted">Optional new password</small>
+							<small class="form-text text-muted">Optional</small>
 						</div>
 						<div class="form-group">
 							<label for="edit-confirmPassword">Confirm Password</label>
 							{{input id="edit-confirmPassword" type="password" class="form-control" value=password.confirmation}}
-							<small class="form-text text-muted">Confirm new password</small>
+							<small class="form-text text-muted"></small>
 						</div>
 					{{/if}}
 				</form>
 			</div>
 			<div class="modal-footer">
-				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Close dismiss=true}}
+				{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'close') dismiss=true}}
 				{{ui/ui-button-gap}}
-				{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Update onClick=(action "onUpdate")}}
+				{{ui/ui-button color=constants.Color.Green light=true label=(localize 'update') onClick=(action "onUpdate")}}
 			</div>
 		</div>
 	</div>
@@ -213,14 +213,14 @@
 <div id="admin-user-delete-modal" class="modal" tabindex="-1" role="dialog">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
-			<div class="modal-header">Delete Users</div>
+			<div class="modal-header">{{localize 'user_delete'}}</div>
 			<div class="modal-body">
-				<p>Are you sure you want to delete selected users?</p>
+				<p>{{localize 'user_selected_delete_confirm'}}</p>
 			</div>
 			<div class="modal-footer">
-				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Close dismiss=true}}
+				{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'close') dismiss=true}}
 				{{ui/ui-button-gap}}
-				{{ui/ui-button color=constants.Color.Red light=true label=constants.Label.Delete onClick=(action "onBulkDelete")}}
+				{{ui/ui-button color=constants.Color.Red light=true label=(localize 'delete') onClick=(action "onBulkDelete")}}
 			</div>
 		</div>
 	</div>
@@ -251,9 +251,9 @@
 								<div class="group-membership">
 									<div class="item">
 										{{#if group.isMember}}
-											{{ui/ui-button color=constants.Color.Red light=true label=constants.Label.Leave onClick=(action "onLeaveGroup" group.id)}}
+											{{ui/ui-button color=constants.Color.Red light=true label=(localize 'leave') onClick=(action "onLeaveGroup" group.id)}}
 										{{else}}
-											{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Join onClick=(action "onJoinGroup" group.id)}}
+											{{ui/ui-button color=constants.Color.Green light=true label=(localize 'join') onClick=(action "onJoinGroup" group.id)}}
 										{{/if}}
 									</div>
 								</div>
@@ -263,7 +263,7 @@
 				{{/each}}
 			</div>
 			<div class="modal-footer">
-				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Close dismiss=true}}
+				{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'close') dismiss=true}}
 			</div>
 		</div>
 	</div>

@@ -21,6 +21,8 @@ export default Controller.extend(NotifierMixin, {
 	localStorage: service('localStorage'),
 	browserSvc: service('browser'),
 	documentSvc: service('document'),
+	i18n: service(),
+
 	queryParams: ['category'],
 	category: '',
 	filteredDocs: null,
@@ -88,7 +90,7 @@ export default Controller.extend(NotifierMixin, {
 
 			this.get('documentSvc').export(spec).then((htmlExport) => {
 				this.get('browserSvc').downloadFile(htmlExport, this.get('model.folder.slug') + '.html');
-				this.notifySuccess('Exported');
+				this.notifySuccess(this.i18n.localize('exported'));
 			});
 		},
 
@@ -126,21 +128,21 @@ export default Controller.extend(NotifierMixin, {
 
 		onPin(documentId) {
             this.get('documentSvc').pin(documentId).then(() => {
-                this.notifySuccess('Pinned');
+                this.notifySuccess(this.i18n.localize('pinned'));
                 this.send('onRefresh');
             });
 		},
 
 		onUnpin(documentId) {
             this.get('documentSvc').unpin(documentId).then(() => {
-                this.notifySuccess('Unpinned');
+                this.notifySuccess(this.i18n.localize('unpinned'));
                 this.send('onRefresh');
             });
 		},
 
         onPinSequence(documentId, direction) {
             this.get('documentSvc').onPinSequence(documentId, direction).then(() => {
-                this.notifySuccess('Moved');
+                this.notifySuccess(this.i18n.localize('moved'));
                 this.send('onRefresh');
             });
         },

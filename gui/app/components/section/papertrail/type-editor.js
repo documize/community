@@ -28,6 +28,7 @@ export default Component.extend(SectionMixin, NotifierMixin, {
 	},
 
 	didReceiveAttrs() {
+		this._super();
 		let config = {};
 
 		try {

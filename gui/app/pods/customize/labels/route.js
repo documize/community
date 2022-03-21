@@ -17,6 +17,7 @@ export default Route.extend(AuthenticatedRouteMixin, {
 	labelSvc: service('label'),
 	appMeta: service(),
 	session: service(),
+	i18n: service(),
 
 	beforeModel() {
 		if (!this.get("session.isAdmin")) {
@@ -29,6 +30,6 @@ export default Route.extend(AuthenticatedRouteMixin, {
 	},
 
 	activate() {
-		this.get('browser').setTitle('Space Labels');
+		this.get('browser').setTitle(this.i18n.localize('labels'));
 	}
 });

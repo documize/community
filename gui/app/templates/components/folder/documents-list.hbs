@@ -2,16 +2,16 @@
 
 	<div class="text-right">
 		{{#ui/ui-toolbar dark=false light=false raised=false large=false bordered=false}}
-			{{ui/ui-toolbar-icon icon=constants.Icon.Blocks color=constants.Color.Gray tooltip="Complete"
+			{{ui/ui-toolbar-icon icon=constants.Icon.Blocks color=constants.Color.Gray tooltip=(localize 'space_density_complete')
 				selected=(eq viewDensity "1") onClick=(action "onSwitchView" "1")}}
 
-			{{ui/ui-toolbar-icon icon=constants.Icon.All color=constants.Color.Gray tooltip="Comfort"
+			{{ui/ui-toolbar-icon icon=constants.Icon.All color=constants.Color.Gray tooltip=(localize 'space_density_comfort')
 				selected=(eq viewDensity "2") onClick=(action "onSwitchView" "2")}}
 
-			{{ui/ui-toolbar-label label="—"  color=constants.Color.Gray tooltip="Compact"
+			{{ui/ui-toolbar-label label="—"  color=constants.Color.Gray tooltip=(localize 'space_density_compact')
 				selected=(eq viewDensity "3") onClick=(action "onSwitchView" "3")}}
 
-			{{#ui/ui-toolbar-icon icon=constants.Icon.Sort color=constants.Color.Gray tooltip="Sort"}}
+			{{#ui/ui-toolbar-icon icon=constants.Icon.Sort color=constants.Color.Gray tooltip=(localize 'sort')}}
 				{{#attach-popover class="ember-attacher-popper" hideOn="click" showOn="click" isShown=false placement="bottom-end" as |attacher|}}
 					<i class="dicon {{constants.Icon.Cross}} closer" {{action attacher.hide}}  role="button" tabindex="0" aria-label="Close" />
 					<div class="container">
@@ -20,13 +20,13 @@
 						<div class="text-center">
 							<ul class="ui-option-picker ui-option-picker-horiz">
 								<li class="option {{if sortBy.name "selected"}}" {{action "onSetSort" "name"}} role="button" tabindex="0" aria-label="Sort by name">
-									<div class="text">Name</div>
+									<div class="text">{{localize 'sort_by_name'}}</div>
 								</li>
 								<li class="option {{if sortBy.created "selected"}}" {{action "onSetSort" "created"}} role="button" tabindex="0" aria-label="Sort by created">
-									<div class="text">Created date</div>
+									<div class="text">{{localize 'sort_by_created'}}</div>
 								</li>
 								<li class="option {{if sortBy.updated "selected"}}" {{action "onSetSort" "updated"}} role="button" tabindex="0" aria-label="Sort by revised">
-									<div class="text">Last updated</div>
+									<div class="text">{{localize 'sort_by_revised'}}</div>
 								</li>
 							</ul>
 						</div>
@@ -36,10 +36,10 @@
 						<div class="text-center">
 							<ul class="ui-option-picker ui-option-picker-horiz">
 								<li class="option {{if sortBy.asc "selected"}}" {{action "onSetSort" "asc"}} role="button" tabindex="0" aria-label="Sort ascending">
-									<div class="text">Ascending</div>
+									<div class="text">{{localize 'sort_ascending'}}</div>
 								</li>
 								<li class="option {{if sortBy.desc "selected"}}" {{action "onSetSort" "desc"}} role="button" tabindex="0" aria-label="Sort descending">
-									<div class="text">Descending</div>
+									<div class="text">{{localize 'sort_descending'}}</div>
 								</li>
 							</ul>
 						</div>
@@ -49,7 +49,7 @@
 						{{ui/ui-button
 							light=true
 							color=constants.Color.Yellow
-							label=constants.Label.Sort
+							label=(localize 'sort')
 							onClick=(action "onSortBy" attacher)}}
 					</div>
 				{{/attach-popover}}
@@ -67,7 +67,7 @@
                         {{ document.name }}
                         {{#if document.isSequenced}}
                             <div class="pinned">
-                                <i class="dicon {{constants.Icon.TickDouble}}" title="Pinned" />
+                                <i class="dicon {{constants.Icon.TickDouble}}" title={{localize 'pinned'}} />
                             </div>
                         {{/if}}
                     </div>
@@ -93,12 +93,12 @@
 					<div class="sequence">
 						{{#if document.isSequenced}}
                             {{#if showingAllDocs}}
-                                <i class="dicon {{constants.Icon.ArrowSmallUp}}" {{action "onPinSequence" document.id "u"}} title="Move up" role="button" tabindex="0"/>
-                                <i class="dicon {{constants.Icon.ArrowSmallDown}}" {{action "onPinSequence" document.id "d"}} title="Move down" role="button" tabindex="0" />
+                                <i class="dicon {{constants.Icon.ArrowSmallUp}}" {{action "onPinSequence" document.id "u"}} title={{localize 'move_up'}} role="button" tabindex="0"/>
+                                <i class="dicon {{constants.Icon.ArrowSmallDown}}" {{action "onPinSequence" document.id "d"}} title={{localize 'move_down'}} role="button" tabindex="0" />
                             {{/if}}
-							<i class="dicon {{constants.Icon.Cross}}" {{action "onUnpin" document.id}} title="Unpin" role="button" tabindex="0" />
+							<i class="dicon {{constants.Icon.Cross}}" {{action "onUnpin" document.id}} title={{localize 'unpin'}} role="button" tabindex="0" />
 						{{else}}
-							<i class="dicon {{constants.Icon.ArrowSmallUp}}" {{action "onPin" document.id}} title="Pin" role="button" tabindex="0" />
+							<i class="dicon {{constants.Icon.ArrowSmallUp}}" {{action "onPin" document.id}} title={{localize 'pin'}} role="button" tabindex="0" />
 						{{/if}}
 					</div>
 					<div class="checkbox" {{action "selectDocument" document.id}} role="checkbox" tabindex="0">
@@ -111,9 +111,9 @@
 					{{#if document.selected}}
 						<div class="actions">
 							{{#ui/ui-toolbar dark=false light=true raised=true large=false bordered=true}}
-								{{ui/ui-toolbar-icon icon=constants.Icon.Export color=constants.Color.Gray tooltip="Export content" onClick=(action "onExport")}}
+								{{ui/ui-toolbar-icon icon=constants.Icon.Export color=constants.Color.Gray tooltip=(localize 'export') onClick=(action "onExport")}}
 								{{#if permissions.documentMove}}
-									{{ui/ui-toolbar-icon icon=constants.Icon.Export2 color=constants.Color.Gray tooltip="Move to another space" onClick=(action "onShowMoveDocuments")}}
+									{{ui/ui-toolbar-icon icon=constants.Icon.Export2 color=constants.Color.Gray tooltip=(localize 'space_change') onClick=(action "onShowMoveDocuments")}}
 								{{/if}}
 								{{#if permissions.documentDelete}}
 									{{ui/ui-toolbar-icon icon=constants.Icon.Delete color=constants.Color.Red tooltip="Delete" onClick=(action "onShowDeleteDocuments")}}
@@ -128,19 +128,19 @@
 	</ul>
 </div>
 
-{{#ui/ui-dialog title="Delete Documents" confirmCaption="Delete" buttonColor=constants.Color.Red show=showDeleteDialog onAction=(action "onDeleteDocuments")}}
-	<p>Are you sure you want to delete {{selectedDocuments.length}} {{selectedCaption}}?</p>
+{{#ui/ui-dialog title=(localize 'delete_documents') confirmCaption=(localize 'delete') buttonColor=constants.Color.Red show=showDeleteDialog onAction=(action "onDeleteDocuments")}}
+	<p>{{localize 'delete_confirm'}} ({{selectedDocuments.length}} {{selectedCaption}})</p>
 {{/ui/ui-dialog}}
 
-{{#ui/ui-dialog title="Move Documents" confirmCaption="Move" buttonColor=constants.Color.Green show=showMoveDialog onAction=(action "onMoveDocuments")}}
-	<p>Select space for {{selectedDocuments.length}} {{selectedCaption}}</p>
+{{#ui/ui-dialog title=(localize 'move_documents') confirmCaption=(localize 'move') buttonColor=constants.Color.Green show=showMoveDialog onAction=(action "onMoveDocuments")}}
+	<p>{{localize 'space_change_prompt'}} ({{selectedDocuments.length}} {{selectedCaption}})</p>
 	{{ui/ui-list-picker items=moveOptions nameField="name" singleSelect=true}}
 {{/ui/ui-dialog}}
 
 {{#if showAdd}}
-	{{ui/empty-state icon=constants.Icon.ArrowUp message="Add documents via + CONTENT"}}
+	{{ui/empty-state icon=constants.Icon.ArrowUp message=(localize 'space_empty_state')}}
 {{/if}}
 
 {{#if showLockout}}
-	{{ui/empty-state icon=constants.Icon.Preview message="Space permissions are preventing you from viewing and creating documents"}}
+	{{ui/empty-state icon=constants.Icon.Preview message=(localize 'space_lockout')}}
 {{/if}}

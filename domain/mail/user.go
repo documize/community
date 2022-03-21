@@ -14,6 +14,7 @@ package mail
 import (
 	"fmt"
 
+	"github.com/documize/community/core/i18n"
 	"github.com/documize/community/domain/smtp"
 )
 
@@ -24,19 +25,15 @@ func (m *Mailer) InviteNewUser(recipient, inviterName, inviterEmail, url, userna
 
 	// check inviter name
 	if inviterName == "Hello You" || len(inviterName) == 0 {
-		inviterName = "Your colleague"
+		inviterName = i18n.Localize(m.Context.Locale, "mail_template_sender")
 	}
 
 	em := smtp.EmailMessage{}
-	em.Subject = fmt.Sprintf("%s has invited you to Documize Community", inviterName)
+	em.Subject = i18n.Localize(m.Context.Locale, "mail_template_user_invite", inviterName)
 	em.ToEmail = recipient
 	em.ToName = recipient
 	em.ReplyTo = inviterEmail
 	em.ReplyName = inviterName
-
-	if IsBlockedEmailDomain(em.ToEmail) {
-		return
-	}
 
 	parameters := struct {
 		Subject     string
@@ -45,13 +42,15 @@ func (m *Mailer) InviteNewUser(recipient, inviterName, inviterEmail, url, userna
 		Username    string
 		Password    string
 		SenderEmail string
+		ClickHere   string
 	}{
 		em.Subject,
 		inviterName,
 		url,
 		recipient,
-		password,
+		i18n.Localize(m.Context.Locale, "mail_template_password") + " " + password,
 		m.Config.SenderEmail,
+		i18n.Localize(m.Context.Locale, "mail_template_click_here"),
 	}
 
 	html, err := m.ParseTemplate("mail/invite-new-user.html", parameters)
@@ -77,30 +76,28 @@ func (m *Mailer) InviteExistingUser(recipient, inviterName, inviterEmail, url st
 
 	// check inviter name
 	if inviterName == "Hello You" || len(inviterName) == 0 {
-		inviterName = "Your colleague"
+		inviterName = i18n.Localize(m.Context.Locale, "mail_template_sender")
 	}
 
 	em := smtp.EmailMessage{}
-	em.Subject = fmt.Sprintf("%s has invited you to their Documize Community account", inviterName)
+	em.Subject = i18n.Localize(m.Context.Locale, "mail_template_user_existing", inviterName)
 	em.ToEmail = recipient
 	em.ToName = recipient
 	em.ReplyTo = inviterEmail
 	em.ReplyName = inviterName
-
-	if IsBlockedEmailDomain(em.ToEmail) {
-		return
-	}
 
 	parameters := struct {
 		Subject     string
 		Inviter     string
 		URL         string
 		SenderEmail string
+		ClickHere   string
 	}{
 		em.Subject,
 		inviterName,
 		url,
 		m.Config.SenderEmail,
+		i18n.Localize(m.Context.Locale, "mail_template_click_here"),
 	}
 
 	html, err := m.ParseTemplate("mail/invite-existing-user.html", parameters)
@@ -125,22 +122,20 @@ func (m *Mailer) PasswordReset(recipient, url string) {
 	m.Initialize()
 
 	em := smtp.EmailMessage{}
-	em.Subject = "Documize Community password reset request"
+	em.Subject = i18n.Localize(m.Context.Locale, "mail_template_reset_password")
 	em.ToEmail = recipient
 	em.ToName = recipient
-
-	if IsBlockedEmailDomain(em.ToEmail) {
-		return
-	}
 
 	parameters := struct {
 		Subject     string
 		URL         string
 		SenderEmail string
+		ClickHere   string
 	}{
 		em.Subject,
 		url,
 		m.Config.SenderEmail,
+		i18n.Localize(m.Context.Locale, "mail_template_click_here"),
 	}
 
 	html, err := m.ParseTemplate("mail/password-reset.html", parameters)

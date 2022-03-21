@@ -1,29 +1,29 @@
 <div id={{concat "content-linker-modal-" page.id}} class="modal" tabindex="-1" role="dialog">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
-			<div class="modal-header">Insert Link</div>
+			<div class="modal-header">{{localize 'link-insert'}}</div>
 			<div class="modal-body">
 				<ul class="tabnav-control text-center">
 					{{#if hasSections}}
-						<li class="tab {{if tab1Selected "selected"}}" {{action "onTabSelect" 1}} role="button" tabindex="0">Section</li>
+						<li class="tab {{if tab1Selected "selected"}}" {{action "onTabSelect" 1}} role="button" tabindex="0">{{localize 'link_type_section'}}</li>
 					{{/if}}
 					{{#if hasAttachments}}
-						<li class="tab {{if tab2Selected "selected"}}" {{action "onTabSelect" 2}} role="button" tabindex="0">Attachment</li>
+						<li class="tab {{if tab2Selected "selected"}}" {{action "onTabSelect" 2}} role="button" tabindex="0">{{localize 'link_type_attachment'}}</li>
 					{{/if}}
-					<li class="tab {{if tab3Selected "selected"}}" {{action "onTabSelect" 3}} role="button" tabindex="0">Search</li>
-					<li class="tab {{if tab4Selected "selected"}}" {{action "onTabSelect" 4}} role="button" tabindex="0">Network</li>
+					<li class="tab {{if tab3Selected "selected"}}" {{action "onTabSelect" 3}} role="button" tabindex="0">{{localize 'link_type_search'}}</li>
+					<li class="tab {{if tab4Selected "selected"}}" {{action "onTabSelect" 4}} role="button" tabindex="0">{{localize 'link_type_network'}}</li>
 				</ul>
 
 				{{#if showSections}}
 					<div class="content-linker-modal-container">
-						<p>Link to content within this document</p>
+						<p>{{localize 'link_type_section_explain'}}</p>
 						{{ui/ui-list-picker items=candidates.pages nameField="title" singleSelect=true onSelect=(action "setSelection")}}
 					</div>
 				{{/if}}
 
 				{{#if showAttachments}}
 					<div class="content-linker-modal-container">
-						<p>Link to an attachment within this document</p>
+						<p>{{localize 'link_type_attachment_explain'}}</p>
 						<div class="widget-list-picker">
 							<ul class="options">
 								{{#each candidates.attachments as |item|}}
@@ -45,12 +45,12 @@
 				{{#if showSearch}}
 					<div class="content-linker-modal-container">
 						<div class="form-group">
-							<label>Search</label>
-							{{focus-input id="content-linker-search" type="input" class="form-control" value=keywords placeholder="keyword search" autocomplete="off" key-up=(action "onSearch")}}
-							<small class="form-text text-muted">Document name, content, attachment name</small>
+							<label>{{localize 'search'}}</label>
+							{{focus-input id="content-linker-search" type="input" class="form-control" value=keywords placeholder="" autocomplete="off" key-up=(action "onSearch")}}
+							<small class="form-text text-muted">{{localize 'link_type_search_explain'}}</small>
 						</div>
 						{{#unless hasMatches}}
-							<p class="nothing">Nothing found.</p>
+							<p class="nothing">{{localize 'nothing_found'}}</p>
 						{{/unless}}
 						<div class="widget-list-picker">
 							<ul class="options">
@@ -92,18 +92,18 @@
 
 				{{#if showNetwork}}
 					<div class="content-linker-modal-container">
-						<p>Specify network drive/share/folder location</p>
+						<p>{{localize 'link_type_network_explain'}}</p>
 						<div class="form-group">
-							{{focus-input id="content-linker-networklocation" type="input" class="form-control" value=networkLocation placeholder="e.g. //share/folder" autocomplete="off"}}
+							{{focus-input id="content-linker-networklocation" type="input" class="form-control" value=networkLocation placeholder=(localize 'link_type_network_example') autocomplete="off"}}
 							<small class="form-text text-muted"></small>
 						</div>
 					</div>
 				{{/if}}
 			</div>
 			<div class="modal-footer">
-				{{ui/ui-button color=constants.Color.Gray light=true label=constants.Label.Close dismiss=true}}
+				{{ui/ui-button color=constants.Color.Gray light=true label=(localize 'close') dismiss=true}}
 				{{ui/ui-button-gap}}
-				{{ui/ui-button color=constants.Color.Green light=true label=constants.Label.Insert onClick=(action "onInsertLink")}}
+				{{ui/ui-button color=constants.Color.Green light=true label=(localize 'insert') onClick=(action "onInsertLink")}}
 			</div>
 		</div>
 	</div>

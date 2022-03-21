@@ -16,7 +16,7 @@ import (
 
 	"github.com/documize/blackfriday"
 
-	"golang.org/x/net/context"
+	"context"
 )
 
 // Convert provides the standard interface for conversion of a Markdown document.

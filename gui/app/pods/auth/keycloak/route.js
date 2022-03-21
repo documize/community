@@ -18,6 +18,7 @@ export default Route.extend({
 	appMeta: service(),
 	kcAuth: service(),
 	localStorage: service(),
+
 	queryParams: {
 		mode: {
 			refreshModel: true

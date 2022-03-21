@@ -22,6 +22,8 @@ echo "Copying Ember pdfjs folder"
 robocopy /e /NFL /NDL /NJH gui\dist-prod\pdfjs edition\static\public\pdfjs
 echo "Copying Ember sections folder"
 robocopy /e /NFL /NDL /NJH gui\dist-prod\sections edition\static\public\sections
+echo "Copying i18n folder"
+robocopy /e /NFL /NDL /NJH gui\dist-prod\i18n edition\static\public\i18n
 
 copy gui\dist-prod\*.* edition\static
 copy gui\dist-prod\favicon.ico edition\static\public
@@ -31,6 +33,10 @@ rd /s /q edition\static\mail
 mkdir edition\static\mail
 copy domain\mail\*.html edition\static\mail
 copy core\database\templates\*.html edition\static
+
+rd /s /q edition\static\i18n
+mkdir edition\static\i18n
+robocopy /e /NFL /NDL /NJH gui\dist-prod\i18n\*.json edition\static\i18n
 
 rd /s /q edition\static\scripts
 mkdir edition\static\scripts

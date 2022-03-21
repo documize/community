@@ -2,8 +2,7 @@
 <Layout::MasterToolbar>
 	<div class="zone-1">
 		{{#ui/ui-toolbar dark=false light=false raised=false large=false bordered=false}}
-			{{ui/ui-toolbar-button themed=true uppercase=false
-				icon=constants.Icon.ArrowLeft label=model.folder.name onClick=(action "onBack")}}
+			{{ui/ui-toolbar-button themed=true uppercase=false icon=constants.Icon.ArrowLeft label=model.folder.name onClick=(action "onBack")}}
 		{{/ui/ui-toolbar}}
 	</div>
 </Layout::MasterToolbar>
@@ -12,34 +11,34 @@
 	<Layout::Grid::Sidebar>
 		<div class="sidebar-content">
 			<div class="section">
-				<div class="title">space management</div>
+				<div class="title">{{localize 'space'}}</div>
 				<div class="list">
 					<div class="item {{if (eq tab "general") "selected"}}" {{action "onTab" "general"}}>
 						<i class={{concat "dicon " constants.Icon.Settings}} />
-						<div class="name">Meta</div>
+						<div class="name">{{localize 'meta'}}</div>
 					</div>
 					<div class="item {{if (eq tab "categories") "selected"}}" {{action "onTab" "categories"}}>
 						<i class={{concat "dicon " constants.Icon.Category}} />
-						<div class="name">Categories</div>
+						<div class="name">{{localize 'categories'}}</div>
 					</div>
 					<div class="item {{if (eq tab "permissions") "selected"}}" {{action "onTab" "permissions"}}>
 						<i class={{concat "dicon " constants.Icon.Locked}} />
-						<div class="name">Permissions</div>
+						<div class="name">{{localize 'permissions'}}</div>
 					</div>
 					<div class="item {{if (eq tab "blocks") "selected"}}" {{action "onTab" "blocks"}}>
 						<i class={{concat "dicon " constants.Icon.Blocks}} />
-						<div class="name">Content Blocks</div>
+						<div class="name">{{localize 'blocks'}}</div>
 					</div>
 					{{#if (eq appMeta.edition constants.Product.EnterpriseEdition)}}
 						<div class="item {{if (eq tab "archived") "selected"}}" {{action "onTab" "archived"}}>
 							<i class={{concat "dicon " constants.Icon.Archive}} />
-							<div class="name">Archived Content</div>
+							<div class="name">{{localize 'archived'}}</div>
 						</div>
 					{{/if}}
 					{{#if model.permissions.spaceOwner}}
 						<div class="item {{if (eq tab "deletion") "selected"}}" {{action "onTab" "deletion"}}>
 							<i class={{concat "dicon " constants.Icon.Delete}} />
-							<div class="name">Deletion</div>
+							<div class="name">{{localize 'delete'}}</div>
 						</div>
 					{{/if}}
 				</div>

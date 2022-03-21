@@ -10,9 +10,12 @@
 // https://documize.com
 
 import Route from '@ember/routing/route';
+import { inject as service } from '@ember/service';
 
 export default Route.extend({
+	i18n: service(),
+
     activate() {
-		this.get('browser').setTitle('Product News');
+		this.get('browser').setTitle(this.i18n.localize('product_news'));
 	}
 });

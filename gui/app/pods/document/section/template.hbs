@@ -2,8 +2,7 @@
 <Layout::MasterToolbar>
 	<div class="zone-1">
 		{{#ui/ui-toolbar dark=false light=false raised=false large=false bordered=false}}
-			{{ui/ui-toolbar-button themed=true uppercase=false
-				icon=constants.Icon.ArrowLeft label=model.document.name onClick=(action "onCancel")}}
+			{{ui/ui-toolbar-button themed=true uppercase=false icon=constants.Icon.ArrowLeft label=model.document.name onClick=(action "onCancel")}}
 		{{/ui/ui-toolbar}}
 	</div>
 	<div class="zone-2" />
@@ -19,7 +18,7 @@
 		attachments=model.attachments
 		onCancel=(action "onCancel") onAction=(action "onAction")}}
 
-	{{document/section-attachment uploadLabel="Upload Attachments"
+	{{document/section-attachment uploadLabel=(localize 'upload_attachment')
 		editMode=true page=model.page document=model.document
 		files=model.attachments
 		onAttachmentUpload=(action "onAttachmentUpload")

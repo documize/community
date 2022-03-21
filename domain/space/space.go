@@ -42,6 +42,7 @@ func inviteNewUserToSharedSpace(ctx domain.RequestContext, rt *env.Runtime, s *s
 	u.Password = secrets.GeneratePassword(requestedPassword, u.Salt)
 	userID := uniqueid.Generate()
 	u.RefID = userID
+	u.Locale = ctx.OrgLocale
 
 	err = s.User.Add(ctx, u)
 	if err != nil {

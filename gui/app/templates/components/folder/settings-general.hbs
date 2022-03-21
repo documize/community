@@ -1,23 +1,23 @@
 {{layout/logo-heading
-	title="Space Meta"
-	desc="Set space visibility, icon and label"
+	title=(localize 'space')
+	desc=(localize 'settings')
 	icon=constants.Icon.Settings}}
 
 <form role="form">
 	<div class="form-group">
-		<label>Name</label>
-		{{focus-input id="space-name" type="text" value=spaceName class=(if hasNameError "form-control is-invalid" "form-control") placeholder="Space name" autocomplete="off"}}
+		<label>{{localize 'name'}}</label>
+		{{focus-input id="space-name" type="text" value=spaceName class=(if hasNameError "form-control is-invalid" "form-control") placeholder="" autocomplete="off"}}
 	</div>
 
 	<div class="form-group">
-		<label>Description</label>
+		<label>{{localize 'description'}}</label>
 		<div id="space-desc" class="wysiwyg wysiwyg-editor">
 			{{{spaceDesc}}}
 		</div>
 	</div>
 
 	<div class="form-group">
-		<label>Visibility</label>
+		<label>{{localize 'visibility'}}</label>
 		{{ui/ui-select id="spacetypes-dropdown" content=spaceTypeOptions optionValuePath="id" optionLabelPath="label" selection=spaceType action=(action "onSetSpaceType")}}
 	</div>
 
@@ -35,9 +35,9 @@
 	</div>
 
 	<div class="form-group">
-		<label>Label</label>
+		<label>{{localize 'label'}}</label>
 		<ul class="space-label-picker">
-			<li class="label none {{if (eq spaceLabel "") "selected"}}" {{action "onSetLabel" ""}} role="button" tabindex="0">None</li>
+			<li class="label none {{if (eq spaceLabel "") "selected"}}" {{action "onSetLabel" ""}} role="button" tabindex="0">{{localize 'none'}}</li>
 			{{#each labels as |label|}}
 				<li class="label {{if (eq spaceLabel label.id) "selected"}}" role="button" tabindex="0"
 					style={{label.bgColor}}
@@ -49,15 +49,15 @@
 	</div>
 
 	<div class="form-group">
-		<label>Enable Feedback</label>
+		<label>{{localize 'feedback_enable'}}</label>
 		{{x-toggle value=allowLikes size="medium" theme="light" onToggle=(action (mut allowLikes))}}
 	</div>
 
 	{{#if allowLikes}}
 		<div class="form-group">
-			<label>Feedback Prompt</label>
-				{{input type="text" id="space-likes-prompt" class="form-control" placeholder="Enter prompt asking for user feedback" value=likes}}
-				<small class="form-text text-muted">Specify the prompt, e.g. Did this help you? Was this helpful? Did you find what you needed?</small>
+			<label>{{localize 'feedback_prompt'}}</label>
+			{{input type="text" id="space-likes-prompt" class="form-control" placeholder=(localize 'feedback_prompt_hint') value=likes}}
+			<small class="form-text text-muted">{{localize 'feedback_prompt_explain'}}</small>
 		</div>
 	{{/if}}
 </form>
@@ -65,6 +65,6 @@
 {{ui/ui-button
 	color=constants.Color.Green
 	icon=constants.Icon.Settings
-	label=constants.Label.Save
+	label=(localize 'save')
 	light=true
 	onClick=(action "onSave")}}

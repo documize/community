@@ -244,7 +244,7 @@ func (b backerHandler) dmzOrg(files *[]backupItem) (err error) {
         c_anonaccess AS allowanonymousaccess, c_authprovider AS authprovider,
 	    coalesce(c_sub,`+b.Runtime.StoreProvider.JSONEmpty()+`) AS subscription,
         coalesce(c_authconfig,`+b.Runtime.StoreProvider.JSONEmpty()+`) AS authconfig, c_maxtags AS maxtags,
-        c_theme AS theme, c_logo AS logo, c_created AS created, c_revised AS revised
+        c_theme AS theme, c_logo AS logo, c_locale as locale, c_created AS created, c_revised AS revised
         FROM dmz_org`+w)
 	if err != nil {
 		return
@@ -308,7 +308,7 @@ func (b backerHandler) dmzUserAccount(files *[]backupItem) (err error) {
 	err = b.Runtime.Db.Select(&u, `SELECT u.id, u.c_refid AS refid,
         u.c_firstname AS firstname, u.c_lastname AS lastname, u.c_email AS email,
         u.c_initials AS initials, u.c_globaladmin AS globaladmin,
-        u.c_password AS password, u.c_salt AS salt, u.c_reset AS reset, u.c_lastversion AS lastversion,
+        u.c_password AS password, u.c_salt AS salt, u.c_reset AS reset, u.c_lastversion AS lastversion, u.c_locale as locale,
         u.c_created AS created, u.c_revised AS revised
         FROM dmz_user u`+w)
 	if err != nil {

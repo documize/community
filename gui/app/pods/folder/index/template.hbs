@@ -2,8 +2,7 @@
 <Layout::MasterToolbar>
 	<div class="zone-1">
 		{{#ui/ui-toolbar dark=false light=false raised=false large=false bordered=false}}
-			{{ui/ui-toolbar-button themed=true uppercase=true
-				icon=constants.Icon.ArrowLeft label=constants.Label.Spaces onClick=(action "onBack")}}
+			{{ui/ui-toolbar-button themed=true uppercase=true icon=constants.Icon.ArrowLeft label=(localize 'spaces') onClick=(action "onBack")}}
 		{{/ui/ui-toolbar}}
 	</div>
 	<div class="zone-2" />
@@ -42,7 +41,7 @@
 
 	<Layout::Grid::Content>
 		{{#if (eq model.folder.labelId "")}}
-			<div class="space-label">Unclassified</div>
+			<div class="space-label">{{localize 'label_unclassified'}}</div>
 		{{else}}
 			<div class="space-label" style={{{model.label.bgColor}}}>{{model.label.name}}</div>
 			{{#if (gt model.labelSpaces.length 1)}}

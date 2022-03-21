@@ -45,4 +45,6 @@ type SiteMeta struct {
 	Location             string         `json:"location"`   // reserved for internal use
 	Theme                string         `json:"theme"`      // default side-wide theme, user overrideble
 	Configured           bool           `json:"configured"` // is Documize instance configured
+	Locale               string         `json:"locale"`     // server default locale
+	Locales              []string       `json:"locales"`    // available locale
 }

@@ -10,6 +10,7 @@
 // https://documize.com
 
 import $ from 'jquery';
+import { A } from '@ember/array';
 import { empty, and } from '@ember/object/computed';
 import { isEmpty } from '@ember/utils';
 import { set } from '@ember/object';
@@ -21,6 +22,7 @@ import Component from '@ember/component';
 export default Component.extend(Notifier, {
 	appMeta: service(),
 	router: service(),
+	i18n: service(),
 	maxTags: 3,
 	domain: '',
 	titleEmpty: empty('model.general.title'),
@@ -29,12 +31,29 @@ export default Component.extend(Notifier, {
 	hasTitleInputError: and('titleEmpty', 'titleError'),
 	hasMessageInputError: and('messageEmpty', 'messageError'),
 	hasConversionEndpointInputError: and('conversionEndpointEmpty', 'conversionEndpointError'),
+	locale: { name: '' },
+	locales: A([]),
+
+	init(...args) {
+		this._super(...args);
+
+		let l = this.get('appMeta.locales');
+		let t = A([]);
+
+		l.forEach((locale) => {
+			t.pushObject({ name: locale });
+		});
+
+		this.set('locales', t);
+	},
 
 	didReceiveAttrs() {
 		this._super(...arguments);
 
 		this.set('maxTags', this.get('model.general.maxTags'));
 		this.set('domain', this.get('model.general.domain'));
+
+		this.set('locale', this.locales.findBy('name', this.get('model.general.locale')));
 	},
 
 	didInsertElement() {
@@ -68,7 +87,7 @@ export default Component.extend(Notifier, {
 					});
 
 					this.on("queuecomplete", function () {
-						self.notifySuccess('Logo uploaded');
+						self.notifySuccess(this.i18n.localize('saved'));
 					});
 
 					this.on("error", function (error, msg) {
@@ -148,6 +167,10 @@ export default Component.extend(Notifier, {
 	},
 
 	actions: {
+		onSelectLocale(locale) {
+			this.set('model.general.locale', locale.name);
+		},
+
 		change() {
             const selectEl = $('#maxTags')[0];
             const selection = selectEl.selectedOptions[0].value;
@@ -186,11 +209,10 @@ export default Component.extend(Notifier, {
 			this.set('model.general.domain', this.get('domain').toLowerCase());
 
 			this.get('onUpdate')().then(() => {
-				this.notifySuccess('Saved');
+				this.notifySuccess(this.i18n.localize('saved'));
 				set(this, 'titleError', false);
 				set(this, 'messageError', false);
 				set(this, 'conversionEndpointError', false);
-
 
 				if (domainChanged) {
 					let router = this.get('router');
@@ -206,7 +228,7 @@ export default Component.extend(Notifier, {
 
 		onDefaultLogo() {
 			this.get('onDefaultLogo')(this.get('appMeta.orgId'));
-			this.notifySuccess('Using default logo');
+			this.notifySuccess(this.i18n.localize('saved'));
 		}
 	}
 });

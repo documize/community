@@ -1,6 +1,6 @@
 module github.com/documize/community
 
-go 1.17
+go 1.18
 
 require (
 	github.com/BurntSushi/toml v0.3.1
@@ -15,8 +15,6 @@ require (
 	github.com/go-ldap/ldap/v3 v3.4.1
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b // indirect
-	github.com/golang/protobuf v1.4.0 // indirect
-	github.com/google/go-github v17.0.0+incompatible
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/gorilla/handlers v1.4.2
 	github.com/gorilla/mux v1.7.4
@@ -31,8 +29,6 @@ require (
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	golang.org/x/crypto v0.0.0-20200604202706-70a84ac30bf9
 	golang.org/x/net v0.0.0-20210614182718-04defd469f4e
-	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
-	google.golang.org/appengine v1.6.6 // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc
 	gopkg.in/cas.v2 v2.1.0
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
@@ -45,8 +41,7 @@ require (
 	github.com/fatih/structs v1.0.0 // indirect
 	github.com/go-asn1-ber/asn1-ber v1.5.3 // indirect
 	github.com/golang-sql/civil v0.0.0-20190719163853-cb61b32ac6fe // indirect
+	github.com/google/go-cmp v0.4.0 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
 	github.com/trivago/tgo v1.0.1 // indirect
-	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
-	google.golang.org/protobuf v1.21.0 // indirect
 )

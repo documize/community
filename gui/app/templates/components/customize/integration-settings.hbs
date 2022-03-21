@@ -1,33 +1,31 @@
 <div class="view-customize">
 	<form>
 		<h2>Jira</h2>
-		<p>Displays issues within documentation</p>
 		<div class="form-group">
-			<label for="jira-url">URL</label>
+			<label for="jira-url">{{localize 'integration_jira_url'}}</label>
 			{{focus-input id="jira-url" type="text" value=jiraCreds.url class="form-control"}}
-			<small class="form-text text-muted">Fully qualified domain name for your Jira instance e.g. http://jira.example.org</small>
+			<small class="form-text text-muted">{{localize 'integration_jira_url_explain'}}</small>
 		</div>
 		<div class="form-group">
-			<label for="jira-username">Username</label>
+			<label for="jira-username">{{localize 'integration_jira_username'}}</label>
 			{{input id="jira-username" type="text" value=jiraCreds.username class="form-control"}}
-			<small class="form-text text-muted">Your Jira login username/email</small>
+			<small class="form-text text-muted">{{localize 'integration_jira_username_explain'}}</small>
 		</div>
 		<div class="form-group">
-			<label for="jira-secret">Password</label>
+			<label for="jira-secret">{{localize 'integration_jira_password'}}</label>
 			{{input id="jira-secret" type="password" value=jiraCreds.secret class="form-control"}}
-			<small class="form-text text-muted">Provide API Token if using Atlassian Cloud or Password when self-hosting Jira</small>
+			<small class="form-text text-muted">{{localize 'integration_jira_password_explain'}}</small>
 		</div>
 
 		{{#if session.isGlobalAdmin}}
 			<h2>Trello</h2>
-			<p>Displays boards within documentation</p>
 			<div class="form-group">
-				<label for="trello-key">App Key</label>
+				<label for="trello-key">{{localize 'integration_trello_appkey'}}</label>
 					{{input id="trello-key" type="text" value=trelloCreds.appKey class="form-control"}}
-				<small class="form-text text-muted">See <a href="https://trello.com/app-key">https://trello.com/app-key</a></small>
+				<small class="form-text text-muted"><a href="https://trello.com/app-key">https://trello.com/app-key</a></small>
 			</div>
 		{{/if}}
 
-		{{ui/ui-button color=constants.Color.Green light=true icon=constants.Icon.Integrations label=constants.Label.Save onClick=(action "onSave")}}
+		{{ui/ui-button color=constants.Color.Green light=true icon=constants.Icon.Integrations label=(localize 'save') onClick=(action "onSave")}}
 	</form>
 </div>
