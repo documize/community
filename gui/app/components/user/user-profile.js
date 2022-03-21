@@ -10,6 +10,7 @@
 // https://documize.com
 
 import $ from 'jquery';
+import { A } from '@ember/array';
 import { empty } from '@ember/object/computed';
 import { computed, set } from '@ember/object';
 import { isPresent, isEqual, isEmpty } from '@ember/utils';
@@ -46,7 +47,7 @@ export default Component.extend(AuthProvider, {
 			return '';
 		}
 	}),
-	locale: {},
+	locale: { name: '' },
 	locales: null,
 
 	init() {
@@ -54,7 +55,7 @@ export default Component.extend(AuthProvider, {
 		this.password = { password: "", confirmation: "" };
 
 		let l = this.get('appMeta.locales');
-		let t = [];
+		let t = A([]);
 
 		l.forEach((locale) => {
 			t.pushObject( {name: locale} );
@@ -66,7 +67,7 @@ export default Component.extend(AuthProvider, {
 	didReceiveAttrs() {
 		this._super(...arguments);
 
-		this.set('locale', { name: this.get('model.locale') });
+		this.set('locale', this.locales.findBy('name', this.get('model.locale')));
 	},
 
 	actions: {

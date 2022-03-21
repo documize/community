@@ -10,6 +10,7 @@
 // https://documize.com
 
 import $ from 'jquery';
+import { A } from '@ember/array';
 import { empty, and } from '@ember/object/computed';
 import { isEmpty } from '@ember/utils';
 import { set } from '@ember/object';
@@ -30,17 +31,17 @@ export default Component.extend(Notifier, {
 	hasTitleInputError: and('titleEmpty', 'titleError'),
 	hasMessageInputError: and('messageEmpty', 'messageError'),
 	hasConversionEndpointInputError: and('conversionEndpointEmpty', 'conversionEndpointError'),
-	locale: {},
-	locales: null,
+	locale: { name: '' },
+	locales: A([]),
 
-	init() {
-		this._super(...arguments);
+	init(...args) {
+		this._super(...args);
 
 		let l = this.get('appMeta.locales');
-		let t = [];
+		let t = A([]);
 
 		l.forEach((locale) => {
-			t.pushObject( {name: locale} );
+			t.pushObject({ name: locale });
 		});
 
 		this.set('locales', t);
@@ -51,7 +52,8 @@ export default Component.extend(Notifier, {
 
 		this.set('maxTags', this.get('model.general.maxTags'));
 		this.set('domain', this.get('model.general.domain'));
-		this.set('locale', { name: this.get('model.general.locale') });
+
+		this.set('locale', this.locales.findBy('name', this.get('model.general.locale')));
 	},
 
 	didInsertElement() {
