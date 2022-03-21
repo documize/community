@@ -66,6 +66,8 @@ func FilterCategoryProtected(docs []doc.Document, cats []category.Category, memb
 
 // CopyDocument clones an existing document
 func CopyDocument(ctx domain.RequestContext, s store.Store, documentID string) (newDocumentID string, err error) {
+	unseq := doc.Unsequenced
+
 	doc, err := s.Document.Get(ctx, documentID)
 	if err != nil {
 		err = errors.Wrap(err, "unable to fetch existing document")
@@ -79,6 +81,7 @@ func CopyDocument(ctx domain.RequestContext, s store.Store, documentID string) (
 	doc.VersionID = ""
 	doc.GroupID = ""
 	doc.Template = false
+	doc.Sequence = unseq
 
 	// Duplicate pages and associated meta
 	pages, err := s.Page.GetPages(ctx, documentID)

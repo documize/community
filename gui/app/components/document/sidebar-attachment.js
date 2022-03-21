@@ -65,6 +65,7 @@ export default Component.extend(Modals, Notifier, {
 		// Handle upload clicks on button and anything inside that button.
 		// But only if user can edit this document.
 		if (!this.get('canEdit')) return;
+		let uploaded = this.i18n.localize('uploaded');
 
 		let sel = ['#upload-document-files ', '#upload-document-files  > i'];
 		for (var i=0; i < 2; i++) {
@@ -87,7 +88,7 @@ export default Component.extend(Modals, Notifier, {
 					});
 
 					this.on("queuecomplete", function () {
-						self.notifySuccess(this.i18n.localize('uploaded'));
+						self.notifySuccess(uploaded);
 						self.getAttachments();
 					});
 

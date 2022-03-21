@@ -24,6 +24,10 @@ export default Component.extend({
 	selected: false,
 	ariaRole: "button",
 	tabindex: 0,
+	attributeBindings: ['title'],
+	title: computed('tooltip', function() {
+		return this.tooltip;
+	}),
 
 	calcClass: computed('selected', function() {
 		let c = '';

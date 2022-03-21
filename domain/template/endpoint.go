@@ -93,6 +93,7 @@ func (h *Handler) SavedList(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) SaveAs(w http.ResponseWriter, r *http.Request) {
 	method := "template.saved"
 	ctx := domain.GetRequestContext(r)
+	unseq := doc.Unsequenced
 
 	if !h.Runtime.Product.IsValid(ctx) {
 		response.WriteBadLicense(w)
@@ -149,6 +150,7 @@ func (h *Handler) SaveAs(w http.ResponseWriter, r *http.Request) {
 	doc.ID = 0
 	doc.Template = true
 	doc.Lifecycle = workflow.LifecycleLive
+	doc.Sequence = unseq
 
 	// Duplicate pages and associated meta
 	pages, err := h.Store.Page.GetPages(ctx, model.DocumentID)
@@ -342,6 +344,7 @@ func (h *Handler) Use(w http.ResponseWriter, r *http.Request) {
 	d.SpaceID = spaceID
 	d.UserID = ctx.UserID
 	d.Name = docTitle
+	d.Sequence = doc.Unsequenced
 
 	if h.Runtime.Product.Edition == domain.CommunityEdition {
 		d.Lifecycle = workflow.LifecycleLive

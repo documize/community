@@ -176,6 +176,7 @@ func processDocument(ctx domain.RequestContext, r *env.Runtime, store *store.Sto
 	document.UserID = ctx.UserID
 	documentID := uniqueid.Generate()
 	document.RefID = documentID
+	document.Sequence = doc.Unsequenced
 
 	if r.Product.Edition == domain.CommunityEdition {
 		document.Lifecycle = workflow.LifecycleLive
