@@ -87,6 +87,7 @@
     "password": "Password",
     "password_new": "New Password",
     "username": "Username",
+    "user": "User",
     "password_confirm": "Confirm Password",
     "encryption": "Encryption",
     "notice": "Notice",
