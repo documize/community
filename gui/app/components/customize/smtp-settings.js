@@ -56,7 +56,7 @@ export default Component.extend(Notifier, {
 				},
 			);
 
-			this.set('buttonText', this.i18n.localize('please_test'));
+			this.set('buttonText', this.i18n.localize('please_wait'));
 			this.notifyInfo(this.i18n.localize('smtp_sent_test_email'));
 
 			this.get('saveSMTP')().then((result) => {

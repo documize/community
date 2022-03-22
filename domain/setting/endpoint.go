@@ -99,7 +99,7 @@ func (h *Handler) SetSMTP(w http.ResponseWriter, r *http.Request) {
 		Message string `json:"message"`
 	}
 
-	result.Message = i18n.Localize(ctx.Locale, "server_smtp_test")
+	result.Message = i18n.Localize(ctx.Locale, "server_smtp_success")
 
 	u, err := h.Store.User.Get(ctx, ctx.UserID)
 	if err != nil {
@@ -111,7 +111,7 @@ func (h *Handler) SetSMTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	cfg := GetSMTPConfig(h.Store)
-	h.Runtime.Log.Infof("%v", cfg)
+	// h.Runtime.Log.Infof("%v", cfg)
 	dialer, err := smtp.Connect(cfg)
 	em := smtp.EmailMessage{}
 	em.Subject = i18n.Localize(ctx.Locale, "server_smtp_test_subject")
