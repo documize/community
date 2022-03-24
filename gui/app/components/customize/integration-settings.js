@@ -45,6 +45,14 @@ export default Component.extend(Notifier, {
 
 			this.set('trelloCreds', trello);
 		}
+
+		let flowchart = this.get('flowchart');
+		if (_.isEmpty(flowchart) || !_.isObject(flowchart)) {
+			flowchart = {
+				url: '',
+			};
+		}
+		this.set('flowchart', flowchart);
 	},
 
 	actions: {
@@ -60,6 +68,8 @@ export default Component.extend(Notifier, {
 				if (this.get('session.isGlobalAdmin')) {
 					this.get('orgSvc').saveGlobalSetting('SECTION-TRELLO', this.get('trelloCreds'));
 				}
+
+				this.get('orgSvc').saveOrgSetting(orgId, 'flowchart', this.get('flowchart'));
 
 				this.notifySuccess(this.i18n.localize('saved'));
 			});

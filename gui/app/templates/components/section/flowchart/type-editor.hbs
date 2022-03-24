@@ -6,7 +6,7 @@
 {{#section/base-editor document=document folder=folder page=page busy=waiting isDirty=(action "isDirty") onCancel=(action "onCancel") onAction=(action "onAction")}}
 	<div class="section-flowchart-diagram">
 		<iframe id={{editorId}}
-			src="https://embed.diagrams.net/?embed=1&ui=Kennedy&spin=0&proto=json&splash=0"
+			src={{serviceUrl}}
 			style="frameborder:0; border: 0; width: 100%; height: 1000px;">
 		</iframe>
 	</div>

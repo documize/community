@@ -17,11 +17,18 @@
 			<small class="form-text text-muted">{{localize 'integration_jira_password_explain'}}</small>
 		</div>
 
+		<h2>Diagrams.net</h2>
+		<div class="form-group">
+			<label for="flowchart-url">{{localize 'integration_jira_url'}}</label>
+			{{focus-input id="flowchart-url" type="text" value=flowchart.url class="form-control"}}
+			<small class="form-text text-muted">https://embed.diagrams.net/?embed=1&ui=Kennedy&spin=0&proto=json&splash=0</small>
+		</div>
+
 		{{#if session.isGlobalAdmin}}
 			<h2>Trello</h2>
 			<div class="form-group">
 				<label for="trello-key">{{localize 'integration_trello_appkey'}}</label>
-					{{input id="trello-key" type="text" value=trelloCreds.appKey class="form-control"}}
+				{{input id="trello-key" type="text" value=trelloCreds.appKey class="form-control"}}
 				<small class="form-text text-muted"><a href="https://trello.com/app-key">https://trello.com/app-key</a></small>
 			</div>
 		{{/if}}

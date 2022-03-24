@@ -217,7 +217,11 @@ func (h *Handler) GetInstanceSetting(w http.ResponseWriter, r *http.Request) {
 	key := request.Query(r, "key")
 	setting, _ := h.Store.Setting.GetUser(orgID, "", key, "")
 	if len(setting) == 0 {
-		setting = "{}"
+		if key == "flowchart" {
+			setting = fmt.Sprintf(`{ "url": "%s" }`, "https://embed.diagrams.net/?embed=1&ui=Kennedy&spin=0&proto=json&splash=0")
+		} else {
+			setting = "{}"
+		}
 	}
 
 	response.WriteJSON(w, setting)

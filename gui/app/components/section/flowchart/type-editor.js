@@ -17,6 +17,7 @@ import Component from '@ember/component';
 export default Component.extend({
 	appMeta: service(),
 	sectionSvc: service('section'),
+	orgService: service('organization'),
 	i18n: service(),
     isDirty: false,
     waiting: false,
@@ -26,6 +27,7 @@ export default Component.extend({
 	readyToSave: false,
 	previewButtonCaption: '',
 	flowCallback: null,
+	serviceUrl: '',
 	editorId: computed('page', function () {
 		let page = this.get('page');
 		return `flowchart-editor-${page.id}`;
@@ -41,10 +43,16 @@ export default Component.extend({
 
     didInsertElement() {
 		this._super(...arguments);
-		this.previewButtonCaption = this.i18n.localize('preview');
 
-		schedule('afterRender', () => {
-			this.setupEditor();
+		let orgId = this.get("appMeta.orgId");
+		this.get('orgService').getOrgSetting(orgId, 'flowchart').then((s) => {
+			this.set('serviceUrl', s.url);
+
+			this.previewButtonCaption = this.i18n.localize('preview');
+
+			schedule('afterRender', () => {
+				this.setupEditor();
+			});
 		});
 	},
 
