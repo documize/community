@@ -13,7 +13,9 @@ COPY --from=frontbuilder /go/src/github.com/documize/community/gui/dist-prod/pri
 COPY --from=frontbuilder /go/src/github.com/documize/community/gui/dist-prod/sections /go/src/github.com/documize/community/edition/static/public/sections
 COPY --from=frontbuilder /go/src/github.com/documize/community/gui/dist-prod/tinymce /go/src/github.com/documize/community/edition/static/public/tinymce
 COPY --from=frontbuilder /go/src/github.com/documize/community/gui/dist-prod/pdfjs /go/src/github.com/documize/community/edition/static/public/pdfjs
+COPY --from=frontbuilder /go/src/github.com/documize/community/gui/dist-prod/i18n /go/src/github.com/documize/community/edition/static/public/i18n
 COPY --from=frontbuilder /go/src/github.com/documize/community/gui/dist-prod/*.* /go/src/github.com/documize/community/edition/static/
+COPY --from=frontbuilder /go/src/github.com/documize/community/gui/dist-prod/i18n/*.json /go/src/github.com/documize/community/edition/static/i18n
 COPY domain/mail/*.html /go/src/github.com/documize/community/edition/static/mail/
 COPY core/database/templates/*.html /go/src/github.com/documize/community/edition/static/
 COPY core/database/scripts/mysql/*.sql /go/src/github.com/documize/community/edition/static/scripts/mysql/
