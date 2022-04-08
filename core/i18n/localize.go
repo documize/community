@@ -17,14 +17,10 @@ const (
 
 var localeMap map[string]map[string]string
 
-// type translation struct {
-// 	Key   string `json:"key"`
-// 	Value string `json:"value"`
-// }
-
 // SupportedLocales returns array of locales.
 func SupportedLocales() (locales []string) {
 	locales = append(locales, "en-US")
+	locales = append(locales, "de-DE")
 
 	return
 }
@@ -46,8 +42,6 @@ func Initialize(e embed.FS) (err error) {
 		json.Unmarshal([]byte(content), &payload)
 		m := payload.(map[string]interface{})
 
-		// translations := []translation{}
-
 		translations := make(map[string]string)
 
 		for j := range m {
@@ -65,7 +59,7 @@ func Initialize(e embed.FS) (err error) {
 //
 // Replacements are for replacing string placeholders ({1} {2} {3}) with
 // replacement text.
-// e.g. "This is {1} example" where replacements[0] will replace {1}
+// e.g. "This is {1} example"  --> replacements[0] will replace {1}
 func Localize(locale string, key string, replacements ...string) (s string) {
 	l, ok := localeMap[locale]
 	if !ok {

@@ -9,7 +9,7 @@ import Service, { inject as service } from '@ember/service';
 import $ from 'jquery';
 
 export default Service.extend({
-    langs: { enUS: [] },
+    langs: { enUS: [], deDE: [] },
     locales: [],
     session: service(),
 
@@ -17,6 +17,9 @@ export default Service.extend({
         this._super(...arguments);
         $.getJSON("/i18n/en-US.json", (data) => {
             this.langs.enUS = data;
+        });
+        $.getJSON("/i18n/de-DE.json", (data) => {
+            this.langs.deDE = data;
         });
     },
 
@@ -26,6 +29,9 @@ export default Service.extend({
         switch(this.session.locale) {
             case "en-US":
                 str = this.langs.enUS[key];
+                break;
+            case "de-DE":
+                str = this.langs.deDE[key];
                 break;
             default:
                 str = this.langs.enUS[key];
