@@ -21,6 +21,7 @@ import Component from '@ember/component';
 
 export default Component.extend(AuthProvider, {
 	appMeta: service(),
+	router: service(),
 	hasFirstnameError: empty('model.firstname'),
 	hasLastnameError: empty('model.lastname'),
 	hasEmailError: computed('model.email', function() {
@@ -49,6 +50,7 @@ export default Component.extend(AuthProvider, {
 	}),
 	locale: { name: '' },
 	locales: null,
+	localChanged: false,
 
 	init() {
 		this._super(...arguments);
@@ -73,6 +75,8 @@ export default Component.extend(AuthProvider, {
 	actions: {
 		onSelectLocale(locale) {
 			this.set('model.locale', locale.name);
+
+			this.localChanged = true;
 		},
 
 		save() {
@@ -107,6 +111,10 @@ export default Component.extend(AuthProvider, {
 			this.get('save')(passwords).finally(() => {
 				set(this, 'password.password', '');
 				set(this, 'password.confirmation', '');
+
+				if (this.localChanged) {
+					this.get('router').transitionTo('auth.logout');
+				}
 			});
 		}
 	}

@@ -33,8 +33,6 @@ export default Service.extend({
             case "de-DE":
                 str = this.langs.deDE[key];
                 break;
-            default:
-                str = this.langs.enUS[key];
         }
 
         if (_.isUndefined(str)) {

@@ -12,9 +12,9 @@ All you need to provide is your database -- PostgreSQL, Microsoft SQL Server or 
 
 ## Latest Release
 
-[Community edition: v4.2.3](https://github.com/documize/community/releases)
+[Community edition: v5.0.0](https://github.com/documize/community/releases)
 
-[Community+ edition: v4.2.3](https://www.documize.com/community)
+[Community+ edition: v5.0.0](https://www.documize.com/community)
 
 The Community+ edition is the "Enterprise" offering with advanced capabilities and customer support:
 
@@ -76,6 +76,15 @@ Besides email/password login, you can also authenticate via:
 * Central Authentication Service (CAS)
 
 When using LDAP/Active Directory, you can enable dual-authentication with email/password.
+
+## Localization
+
+Languages supported out-of-the-box:
+
+- English
+- German
+
+PR's welcome for additional languages.
 
 ## Product/Technical Support
 

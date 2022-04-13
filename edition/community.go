@@ -42,7 +42,7 @@ func main() {
 	rt.Product.Major = "5"
 	rt.Product.Minor = "0"
 	rt.Product.Patch = "0"
-	rt.Product.Revision = "220318131033"
+	rt.Product.Revision = "220413135227"
 	rt.Product.Version = fmt.Sprintf("%s.%s.%s", rt.Product.Major, rt.Product.Minor, rt.Product.Patch)
 	rt.Product.Edition = domain.CommunityEdition
 	rt.Product.Title = "Community"
