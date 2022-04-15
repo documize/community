@@ -279,7 +279,7 @@
     "doc_approve_reject": "Änderungen freigeben/ablehnen",
     "doc_approve_method": "Freigabeverfahren",
     "doc_approve_status": "Status der Freigabe",
-    "doc_approver_status": "{1} Freigabe(n) und {2} Ablehnung(en) von {3} beteiligten Prüfern`",
+    "doc_approver_status": "{1} Freigabe(n) und {2} Ablehnung(en) von {3} beteiligten Prüfern",
     "doc_publish": "Können Sie dieses Dokument bitte von Entwurf auf Freigegeben umstellen? Wir sind bereit, es zu veröffentlichen!",
     "doc_category_explain": "Weisen Sie eine oder mehrere Kategorien zu, um die Inhalte in diesem Space besser zu organisieren",
     "doc_action_request_ask": "An",

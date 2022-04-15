@@ -279,7 +279,7 @@
     "doc_approve_reject": "Approve/Reject Changes",
     "doc_approve_method": "Approval Method",
     "doc_approve_status": "Approval Status",
-    "doc_approver_status": "{1} approvals and {2} rejections with {3} approvers involved in this review`",
+    "doc_approver_status": "{1} approvals and {2} rejections with {3} approvers involved in this review",
     "doc_publish": "Please can you move this document from Draft to Live? We are ready to publish it!",
     "doc_category_explain": "Assign one or more categories to help organize content within this space",
     "doc_action_request_ask": "Ask",
