@@ -209,7 +209,7 @@ func (h *Handler) GetInstanceSetting(w http.ResponseWriter, r *http.Request) {
 	ctx := domain.GetRequestContext(r)
 
 	orgID := request.Param(r, "orgID")
-	if orgID != ctx.OrgID || !ctx.Administrator {
+	if orgID != ctx.OrgID {
 		response.WriteForbiddenError(w)
 		return
 	}
