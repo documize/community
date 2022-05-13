@@ -57,7 +57,7 @@ func (h *Handler) EmberHandler(w http.ResponseWriter, r *http.Request) {
 	content, _, err := asset.FetchStatic(h.Runtime.Assets, filename)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		return "ERRO"
 	}
 
 	emberView := template.Must(template.New(filename).Parse(string(content)))
