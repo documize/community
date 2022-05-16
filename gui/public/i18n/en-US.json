@@ -359,6 +359,7 @@
     "archived_content_explain": "Mark archive content as live",
     "unarchive_content": "Un-archive content",
 
+    "document_permisssion": "Document Permissions",
     "space_permissions": "Space Permissions",
     "space_permissions_explain": "Assign permissions to users or groups and invite new users to this space",
     "space_permission_view": "View",
