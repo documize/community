@@ -10,7 +10,7 @@
 				{{#if (gt rootDocCount 0)}}
 					<div class="item {{if (eq selectedFilter "uncategorized") "selected"}}" {{action "onDocumentFilter" "uncategorized" space.id}} role="button" tabindex="0">
 						<i class={{concat "dicon " constants.Icon.Filter}} />
-						<div class="name">Uncategorized ({{rootDocCount}})</div>
+						<div class="name">{{localize 'un_categorized'}} ({{rootDocCount}})</div>
 					</div>
 				{{/if}}
 			{{/if}}

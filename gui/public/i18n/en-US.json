@@ -193,6 +193,7 @@
     "status": "Status",
     "expiry": "Expiry",
     "feedback": "Feedback",
+    "un_categorized": "Uncategorized",
 
     "toc": "table of contents",
     "new_canvas": "Blank canvas",

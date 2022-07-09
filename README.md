@@ -83,6 +83,7 @@ Languages supported out-of-the-box:
 
 - English
 - German
+- Chinese(中文)
 
 PR's welcome for additional languages.
 
