@@ -4,7 +4,7 @@ Documize Community is an open source modern, lightweight alternative to Confluen
 - Designed to unify both customer-facing and internal documentation
 - Organization through labels, spaces and categories
 
-It's built with Golang + EmberJS and compiled down to a single executable binary available for Linux, Windows and Mac.
+It's built with Golang + EmberJS and compiled down to a single executable binary that is available for Linux, Windows and Mac.
 
 All you need to provide is your database -- PostgreSQL, Microsoft SQL Server or any MySQL variant.
 
@@ -12,9 +12,9 @@ All you need to provide is your database -- PostgreSQL, Microsoft SQL Server or 
 
 ## Latest Release
 
-[Community edition: v5.0.1](https://github.com/documize/community/releases)
+[Community edition: v5.1.0](https://github.com/documize/community/releases)
 
-[Community+ edition: v5.0.1](https://www.documize.com/community)
+[Community+ edition: v5.1.0](https://www.documize.com/community)
 
 The Community+ edition is the "Enterprise" offering with advanced capabilities and customer support:
 
@@ -63,7 +63,7 @@ For all database types, Full-Text Search support (FTS) is mandatory.
 
 ## Technology Stack
 
-- Go (v1.18.0)
+- Go (v1.18.3)
 - Ember JS (v3.12.0)
 
 ## Authentication Options
@@ -83,7 +83,7 @@ Languages supported out-of-the-box:
 
 - English
 - German
-- Chinese(中文)
+- Chinese (中文)
 
 PR's welcome for additional languages.
 
