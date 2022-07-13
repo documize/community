@@ -213,6 +213,7 @@
     "space_change_prompt": "Select space",
     "space_new": "New Space",
     "space_name": "Space name",
+    "space_name_rules": "Characters and numbers only",
     "space_description": "Space description",
     "space_clone": "Clone Space",
     "space_select": "Select Space",

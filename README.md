@@ -84,6 +84,7 @@ Languages supported out-of-the-box:
 - English
 - German
 - Chinese (中文)
+- Portuguese - Brazil (Português - Brasil)
 
 PR's welcome for additional languages.
 
