@@ -213,6 +213,7 @@
     "space_change_prompt": "选择空间",
     "space_new": "新建空间",
     "space_name": "空间名称",
+    "space_name_rules": "Characters and numbers only",
     "space_description": "空间描述",
     "space_clone": "复制空间",
     "space_select": "选择空间",
