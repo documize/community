@@ -12,9 +12,9 @@ All you need to provide is your database -- PostgreSQL, Microsoft SQL Server or 
 
 ## Latest Release
 
-[Community edition: v5.1.0](https://github.com/documize/community/releases)
+[Community edition: v5.2.0](https://github.com/documize/community/releases)
 
-[Community+ edition: v5.1.0](https://www.documize.com/community)
+[Community+ edition: v5.2.0](https://www.documize.com/community)
 
 The Community+ edition is the "Enterprise" offering with advanced capabilities and customer support:
 
@@ -84,7 +84,7 @@ Languages supported out-of-the-box:
 - English
 - German
 - Chinese (中文)
-- Portuguese - Brazil (Português - Brasil)
+- Portuguese (Brazil) (Português - Brasil)
 
 PR's welcome for additional languages.
 
