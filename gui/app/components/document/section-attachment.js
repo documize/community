@@ -81,6 +81,8 @@ export default Component.extend(Modals, Notifier, {
 		let uploadId = this.get('uploadId');
 
 		// Handle upload clicks on button and anything inside that button.
+		let uploadSuccess = this.i18n.localize('uploaded');
+
 		let sel = ['#' + uploadId, '#' + uploadId + ' > div'];
 		for (var i=0; i < 2; i++) {
 			let dzone = new Dropzone(sel[i], {
@@ -101,8 +103,8 @@ export default Component.extend(Modals, Notifier, {
 					this.on("success", function (/*file, response*/ ) {
 					});
 
-					this.on("queuecomplete", function () {
-						self.notifySuccess(this.i18n.localize('uploaded'));
+					this.on("queuecomplete", () => {
+						self.notifySuccess(uploadSuccess);
 						self.get('onAttachmentUpload')();
 					});
 
