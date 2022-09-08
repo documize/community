@@ -85,7 +85,7 @@ export default Component.extend(Notifier, ModalMixin, {
 
 		let clip = new ClipboardJS('#page-copy-link-' + pageId, {
 			text: function() {
-				self.notifySuccess(this.i18n.localize('copied'));
+				self.notifySuccess(self.i18n.localize('copied'));
 				return url;
 			}
 		});
