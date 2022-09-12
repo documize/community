@@ -1,4 +1,4 @@
-Documize Community is an open source modern, lightweight alternative to Confluence and other similar solutions.
+Documize Community is an open source, self-hosted, modern, lightweight alternative to Confluence and other similar solutions.
 
 - Built for technical and non-technical users
 - Designed to unify both customer-facing and internal documentation
@@ -12,11 +12,11 @@ All you need to provide is your database -- PostgreSQL, Microsoft SQL Server or 
 
 ## Latest Release
 
-[Community edition: v5.2.1](https://github.com/documize/community/releases)
+[Community edition: v5.2.2](https://github.com/documize/community/releases)
 
-[Community+ edition: v5.2.1](https://www.documize.com/community)
+[Community+ edition: v5.2.2](https://www.documize.com/community)
 
-The Community+ edition is the "Enterprise" offering with advanced capabilities and customer support:
+The Community+ edition is the "enterprise" offering with advanced capabilities and customer support:
 
 - content approval workflows
 - content organization by label, space and category
@@ -30,7 +30,7 @@ The Community+ edition is the "Enterprise" offering with advanced capabilities a
 - actions assignments
 - product support
 
-The Community+ edition is now [totally free](https://www.documize.com/community) for unlimited users.
+The Community+ edition is [free](https://www.documize.com/community) for unlimited users -- you just pay for product support once a year.
 
 ## OS Support
 
@@ -63,7 +63,7 @@ For all database types, Full-Text Search support (FTS) is mandatory.
 
 ## Technology Stack
 
-- Go (v1.18.3)
+- Go (v1.19.1)
 - Ember JS (v3.12.0)
 
 ## Authentication Options
