@@ -30,7 +30,7 @@ The Community+ edition is the "enterprise" offering with advanced capabilities a
 - actions assignments
 - product support
 
-The Community+ edition is [free](https://www.documize.com/community) for the first users -- thereafter it's just $900 for up to 100 users.
+The Community+ edition is [free](https://www.documize.com/community) for the first five users -- thereafter pricing starts at just $900 annually for 100 users.
 
 ## OS Support
 
