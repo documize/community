@@ -12,9 +12,9 @@ All you need to provide is your database -- PostgreSQL, Microsoft SQL Server or 
 
 ## Latest Release
 
-[Community edition: v5.2.2](https://github.com/documize/community/releases)
+[Community edition: v5.3.0](https://github.com/documize/community/releases)
 
-[Community+ edition: v5.2.2](https://www.documize.com/community)
+[Community+ edition: v5.3.0](https://www.documize.com/community)
 
 The Community+ edition is the "enterprise" offering with advanced capabilities and customer support:
 
@@ -94,7 +94,7 @@ For both Community and Community+ editions, please contact our help desk for pro
 
 <support@documize.com>
 
-We aim to respond within two working days!
+We aim to respond within two working days.
 
 ## The Legal Bit
 

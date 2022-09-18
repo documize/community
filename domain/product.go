@@ -49,6 +49,9 @@ const (
 	// PlanSelfHost represents privately hosted Documize instance.
 	PlanSelfHost Plan = "Self-host"
 
+	// SeatsFree is Five free users.
+	SeatsFree Seats = 5
+
 	// Seats0 is 0 users.
 	Seats0 Seats = 0
 
@@ -88,32 +91,30 @@ type Product struct {
 
 // IsValid returns if subscription is valid using RequestContext.
 func (p *Product) IsValid(ctx RequestContext) bool {
-	return true
-
 	// Community edition is always valid.
-	// if p.Edition == CommunityEdition {
-	// 	return true
-	// }
+	if p.Edition == CommunityEdition {
+		return true
+	}
 
 	// Empty means we cannot be valid.
-	// if ctx.Subscription.IsEmpty() {
-	// 	return false
-	// }
+	if ctx.Subscription.IsEmpty() {
+		return false
+	}
 
 	// Enterprise edition is valid if system has loaded up user count by tenant.
-	// if uc, ok := p.UserCount[ctx.OrgID]; ok {
-	// 	// Enterprise edition is valid if subcription date is greater than now and we have enough users/seats.
-	// 	if time.Now().UTC().Before(ctx.Subscription.End) && uc <= int(ctx.Subscription.Seats) {
-	// 		return true
-	// 	}
-	// } else {
-	// 	// First 10 is free for Enterprise edition.
-	// 	if Seats1 == ctx.Subscription.Seats && time.Now().UTC().Before(ctx.Subscription.End) {
-	// 		return true
-	// 	}
-	// }
+	if uc, ok := p.UserCount[ctx.OrgID]; ok {
+		// Enterprise edition is valid if subcription date is greater than now and we have enough users/seats.
+		if time.Now().UTC().Before(ctx.Subscription.End) && uc <= int(ctx.Subscription.Seats) {
+			return true
+		}
+	} else {
+		// First 5 is free for Enterprise edition.
+		if SeatsFree == ctx.Subscription.Seats && time.Now().UTC().Before(ctx.Subscription.End) {
+			return true
+		}
+	}
 
-	// return false
+	return false
 }
 
 // SubscriptionData holds encrypted data and is unpacked into Subscription.
@@ -161,8 +162,10 @@ type SubscriptionUserAccount struct {
 // SubscriptionAsXML returns subscription data as XML document:
 //
 // <DocumizeLicense>
-//   <Key>some key</Key>
-//   <Signature>some signature</Signature>
+//
+//	<Key>some key</Key>
+//	<Signature>some signature</Signature>
+//
 // </DocumizeLicense>
 //
 // XML document is empty in case of error.

@@ -173,7 +173,10 @@ let constants = EmberObject.extend({
 		Seats5: 250,
 
 		// Seats6 is unlimited.
-		Seats6: 9999
+		Seats6: 9999,
+
+		// SeatsFree is x users free for Enterprise edition.
+		SeatsFree: 5
 	},
 
 	Icon: { // eslint-disable-line ember/avoid-leaking-state-in-ember-objects
