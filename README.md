@@ -14,7 +14,7 @@ All you need to provide is your database -- PostgreSQL, Microsoft SQL Server or 
 
 [Community edition: v5.3.0](https://github.com/documize/community/releases)
 
-[Community+ edition: v5.3.0](https://www.documize.com/community)
+[Community+ edition: v5.3.0](https://www.documize.com/community/get-started)
 
 The Community+ edition is the "enterprise" offering with advanced capabilities and customer support:
 
@@ -30,7 +30,7 @@ The Community+ edition is the "enterprise" offering with advanced capabilities a
 - actions assignments
 - product support
 
-The Community+ edition is [free](https://www.documize.com/community) for the first five users -- thereafter pricing starts at just $900 annually for 100 users.
+The Community+ edition is [free](https://www.documize.com/community/get-started) for the first five users -- thereafter pricing starts at just $900 annually for 100 users.
 
 ## OS Support
 
