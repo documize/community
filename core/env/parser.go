@@ -84,7 +84,12 @@ func configFile() (f Flags, ok bool) {
 	f.ForceHTTPPort2SSL = strconv.Itoa(ct.HTTP.ForceSSLPort)
 	f.SSLCertFile = ct.HTTP.Cert
 	f.SSLKeyFile = ct.HTTP.Key
+	f.TLSVersion = ct.HTTP.TLSVersion
 	f.Location = strings.ToLower(ct.Install.Location)
+
+	if len(f.TLSVersion) == 0 {
+		f.TLSVersion = "1.2"
+	}
 
 	ok = true
 	return
@@ -93,7 +98,7 @@ func configFile() (f Flags, ok bool) {
 // commandLineEnv loads command line and OS environment variables required by the program to function.
 func commandLineEnv() (f Flags, ok bool) {
 	ok = true
-	var dbConn, dbType, jwtKey, siteMode, port, certFile, keyFile, forcePort2SSL, location string
+	var dbConn, dbType, jwtKey, siteMode, port, certFile, keyFile, forcePort2SSL, TLSVersion, location string
 
 	// register(&configFile, "salt", false, "the salt string used to encode JWT tokens, if not set a random value will be generated")
 	register(&jwtKey, "salt", false, "the salt string used to encode JWT tokens, if not set a random value will be generated")
@@ -101,6 +106,7 @@ func commandLineEnv() (f Flags, ok bool) {
 	register(&keyFile, "key", false, "the key.pem file used for https")
 	register(&port, "port", false, "http/https port number")
 	register(&forcePort2SSL, "forcesslport", false, "redirect given http port number to TLS")
+	register(&TLSVersion, "tlsversion", false, "select minimum TLS: 1.0, 1.1, 1.2, 1.3")
 	register(&siteMode, "offline", false, "set to '1' for OFFLINE mode")
 	register(&dbType, "dbtype", true, "specify the database provider: mysql|percona|mariadb|postgresql|sqlserver")
 	register(&dbConn, "db", true, `'database specific connection string for example "user:password@tcp(localhost:3306)/dbname"`)
@@ -118,8 +124,13 @@ func commandLineEnv() (f Flags, ok bool) {
 	f.SiteMode = siteMode
 	f.SSLCertFile = certFile
 	f.SSLKeyFile = keyFile
+	f.TLSVersion = TLSVersion
 	f.Location = strings.ToLower(location)
 	f.ConfigSource = "flags/environment"
+
+	if len(f.TLSVersion) == 0 {
+		f.TLSVersion = "1.2"
+	}
 
 	return f, ok
 }

@@ -21,6 +21,7 @@ type Flags struct {
 	ForceHTTPPort2SSL string // (optional) HTTP that should be redirected to HTTPS
 	SSLCertFile       string // (optional) name of SSL certificate PEM file
 	SSLKeyFile        string // (optional) name of SSL key PEM file
+	TLSVersion        string // (optional) minimum TLS version for SSL connections
 	SiteMode          string // (optional) if 1 then serve offline web page
 	Location          string // reserved
 	ConfigSource      string // tells us if configuration info was obtained from command line or config file
@@ -43,6 +44,7 @@ type httpConfig struct {
 	ForceSSLPort int
 	Cert         string
 	Key          string
+	TLSVersion   string
 }
 
 type databaseConfig struct {

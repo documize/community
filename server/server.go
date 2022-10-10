@@ -127,11 +127,21 @@ func Start(rt *env.Runtime, s *store.Store, ready chan struct{}) {
 			rt.Log.Info("***")
 		}
 
-		rt.Log.Info("Web Server: starting SSL server on " + rt.Flags.HTTPPort + " with " + rt.Flags.SSLCertFile + " " + rt.Flags.SSLKeyFile)
-
-		cfg := &tls.Config{
-			MinVersion: tls.VersionTLS12,
+		cfg := &tls.Config{}
+		if rt.Flags.TLSVersion == "1.0" {
+			cfg.MinVersion = tls.VersionTLS10
 		}
+		if rt.Flags.TLSVersion == "1.1" {
+			cfg.MinVersion = tls.VersionTLS11
+		}
+		if rt.Flags.TLSVersion == "1.2" {
+			cfg.MinVersion = tls.VersionTLS12
+		}
+		if rt.Flags.TLSVersion == "1.3" {
+			cfg.MinVersion = tls.VersionTLS13
+		}
+
+		rt.Log.Info("Web Server: starting SSL server on " + rt.Flags.HTTPPort + " with " + rt.Flags.SSLCertFile + " " + rt.Flags.SSLKeyFile + " TLS: " + rt.Flags.TLSVersion)
 
 		server := &http.Server{Addr: ":" + rt.Flags.HTTPPort, Handler: n, TLSConfig: cfg}
 		server.SetKeepAlivesEnabled(true)
