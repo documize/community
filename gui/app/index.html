@@ -4,6 +4,7 @@
 		{{content-for 'head'}}
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta http-equiv=content-security-policy content="default-src *; img-src * 'self' data: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' *; style-src 'self' 'unsafe-inline' *;">
 		<title>Documize</title>
 		<meta property="dbname" content="{{.DBname}}" />
 		<meta property="dbhash" content="{{.DBhash}}" />

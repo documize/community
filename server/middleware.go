@@ -253,6 +253,7 @@ func (m *middleware) preAuthorizeStaticAssets(rt *env.Runtime, r *http.Request) 
 		strings.ToLower(r.URL.Path) == "/validate" ||
 		strings.ToLower(r.URL.Path) == "/favicon.ico" ||
 		strings.ToLower(r.URL.Path) == "/robots.txt" ||
+		strings.ToLower(r.URL.Path) == "/sitemap.xml" ||
 		strings.ToLower(r.URL.Path) == "/version" ||
 		strings.HasPrefix(strings.ToLower(r.URL.Path), "/api/public/") ||
 		((rt.Flags.SiteMode == env.SiteModeSetup) && (strings.ToLower(r.URL.Path) == "/api/setup")) {
