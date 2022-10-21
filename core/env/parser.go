@@ -88,7 +88,7 @@ func configFile() (f Flags, ok bool) {
 	f.Location = strings.ToLower(ct.Install.Location)
 
 	if len(f.TLSVersion) == 0 {
-		f.TLSVersion = "1.2"
+		f.TLSVersion = "1.3"
 	}
 
 	ok = true
