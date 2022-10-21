@@ -48,8 +48,8 @@ func WriteServerError(w http.ResponseWriter, method string, err error) {
 
 // WriteError notifies HTTP client of general application error.
 func WriteError(w http.ResponseWriter, method string) {
-    writeStatus(w, http.StatusBadRequest)
-    w.Write([]byte("{Error: 'Internal server error'}"))
+	writeStatus(w, http.StatusBadRequest)
+	w.Write([]byte("{Error: 'Internal server error'}"))
 }
 
 // WriteDuplicateError notifies HTTP client of duplicate data that has been rejected.
@@ -113,4 +113,18 @@ func WriteJSON(w http.ResponseWriter, v interface{}) {
 	writeStatus(w, http.StatusOK)
 	j, _ := json.Marshal(v)
 	w.Write(j)
+}
+
+// WriteText to HTTP response
+func WriteText(w http.ResponseWriter, data []byte) {
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
+// WriteXML to HTTP response
+func WriteXML(w http.ResponseWriter, data []byte) {
+	w.Header().Set("Content-Type", "application/xml; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
 }

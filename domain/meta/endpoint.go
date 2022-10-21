@@ -138,7 +138,7 @@ Disallow: /attachment/*
 Sitemap: %s`, sitemap)
 	}
 
-	response.WriteBytes(w, []byte(robots))
+	response.WriteText(w, []byte(robots))
 }
 
 // Sitemap returns URLs that can be indexed.
@@ -205,7 +205,7 @@ func (h *Handler) Sitemap(w http.ResponseWriter, r *http.Request) {
 	t := template.Must(template.New("tmp").Parse(sitemap))
 	t.Execute(buffer, &items)
 
-	response.WriteBytes(w, buffer.Bytes())
+	response.WriteXML(w, buffer.Bytes())
 }
 
 type sitemapItem struct {
