@@ -427,7 +427,7 @@ func (r *restoreHandler) dmzOrg() (err error) {
             c_title=:title,
             c_serial=:serial,
 		    c_sub=:subscription,
-			c_locale=:locale,
+			c_locale=:locale
             WHERE c_refid=:refid`, &org[0])
 		if err != nil {
 			r.Context.Transaction.Rollback()
