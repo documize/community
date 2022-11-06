@@ -1,4 +1,14 @@
-Documize Community is an open source, self-hosted, modern, lightweight alternative to Confluence and other similar solutions.
+Documize Community is a Wiki software
+
+It is
+
+- open source
+- self-hosted
+- modern
+- lightweight
+- an alternative to Confluence and other similar solutions
+
+It is
 
 - Built for technical and non-technical users
 - Designed to unify both customer-facing and internal documentation
