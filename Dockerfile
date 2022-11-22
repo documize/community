@@ -1,10 +1,10 @@
-FROM node:lts-alpine as frontbuilder
+FROM node:16-alpine as frontbuilder
 WORKDIR /go/src/github.com/documize/community/gui
 COPY ./gui /go/src/github.com/documize/community/gui
 RUN npm --network-timeout=100000 install
 RUN npm run build -- --environment=production --output-path dist-prod --suppress-sizes true
 
-FROM golang:1.17-alpine as builder
+FROM golang:1.19-alpine as builder
 WORKDIR /go/src/github.com/documize/community
 COPY . /go/src/github.com/documize/community
 COPY --from=frontbuilder /go/src/github.com/documize/community/gui/dist-prod/assets /go/src/github.com/documize/community/edition/static/public/assets
@@ -25,7 +25,7 @@ COPY domain/onboard/*.json /go/src/github.com/documize/community/edition/static/
 RUN env GODEBUG=tls13=1 go build -mod=vendor -o bin/documize-community ./edition/community.go
 
 # build release image
-FROM alpine:3.14
+FROM alpine:3.16
 RUN apk add --no-cache ca-certificates
 COPY --from=builder /go/src/github.com/documize/community/bin/documize-community /documize
 EXPOSE 5001
