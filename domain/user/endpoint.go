@@ -508,6 +508,21 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Trap for non-admin users boosting their own user roles
+	if u.Admin && !a.Admin && !ctx.Administrator {
+		response.WriteForbiddenError(w)
+		return
+	}
+	if u.Editor && !a.Editor && !ctx.Administrator {
+		response.WriteForbiddenError(w)
+		return
+	}
+	if u.Active && !a.Active && !ctx.Administrator {
+		response.WriteForbiddenError(w)
+		return
+	}
+
+	// Set user roles
 	a.Editor = u.Editor
 	a.Admin = u.Admin
 	a.Active = u.Active
