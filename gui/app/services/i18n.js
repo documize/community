@@ -9,7 +9,7 @@ import Service, { inject as service } from '@ember/service';
 import $ from 'jquery';
 
 export default Service.extend({
-    langs: { enUS: [], deDE: [] , zhCN: [], ptBR: [], frFR: [] },
+    langs: { enUS: [], deDE: [] , zhCN: [], ptBR: [], frFR: [], jaJP: [] },
     locales: [],
     session: service(),
 
