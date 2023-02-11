@@ -30,6 +30,9 @@ export default Service.extend({
         $.getJSON("/i18n/fr-FR.json", (data) => {
             this.langs.frFR = data;
         });
+        $.getJSON("/i18n/ja-JP.json", (data) => {
+            this.langs.jaJP = data;
+        });
     },
 
     localize(key, ...args) {
