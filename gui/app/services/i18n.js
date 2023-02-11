@@ -54,6 +54,9 @@ export default Service.extend({
             case "fr-FR":
                 str = this.langs.frFR[key];
                 break;
+            case "ja-JP":
+                str = this.langs.jaJP[key];
+                break;
         }
 
         if (_.isUndefined(str)) {
