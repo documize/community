@@ -86,6 +86,7 @@ Languages supported out-of-the-box:
 - French
 - Chinese (中文)
 - Portuguese (Brazil) (Português - Brasil)
+- Japanese (日本語)
 
 PR's welcome for additional languages.
 
