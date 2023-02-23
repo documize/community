@@ -185,7 +185,7 @@
     "bookmark": "ブックマーク",
     "bookmarks": "ブックマーク",
     "bookmark_remove": "ブックマークの削除",
-    "new": "新着情報",
+    "new": "新規作成",
     "copy_link": "リンクをコピー",
     "created": "作成",
     "markdown": "Markdownを受け入れる",
@@ -196,7 +196,7 @@
     "un_categorized": "未分類",
 
     "toc": "目次",
-    "new_canvas": "ブランク・キャンバス",
+    "new_canvas": "新しいキャンバス",
     "new_template": "テンプレートから",
     "new_import": "ファイルのインポート",
     "new_import_explain1": "クリックでファイルを選択、またはドラッグ＆ドロップでファイルを取り込む",
