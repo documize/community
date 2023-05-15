@@ -13,7 +13,6 @@ package activity
 
 import (
 	"database/sql"
-	"fmt"
 	"time"
 
 	"github.com/documize/community/domain"
@@ -77,8 +76,10 @@ func (s Store) GetDocumentActivity(ctx domain.RequestContext, id string) (a []ac
 
 // DeleteDocumentChangeActivity removes all entries for document changes (add, remove, update).
 func (s Store) DeleteDocumentChangeActivity(ctx domain.RequestContext, documentID string) (rows int64, err error) {
-	rows, err = s.DeleteWhere(ctx.Transaction,
-		fmt.Sprintf("DELETE FROM dmz_user_activity WHERE c_orgid='%s' AND c_docid='%s' AND (c_activitytype=1 OR c_activitytype=2 OR c_activitytype=3 OR c_activitytype=4 OR c_activitytype=7)", ctx.OrgID, documentID))
+	_, err = ctx.Transaction.Exec(s.Bind("DELETE FROM dmz_user_activity WHERE c_orgid=? AND c_docid=? AND (c_activitytype=1 OR c_activitytype=2 OR c_activitytype=3 OR c_activitytype=4 OR c_activitytype=7)"), ctx.OrgID, documentID)
+	if err == sql.ErrNoRows {
+		err = nil
+	}
 
 	return
 }

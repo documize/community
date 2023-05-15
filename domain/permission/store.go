@@ -266,55 +266,56 @@ func (s Store) GetDocumentPermissions(ctx domain.RequestContext, documentID stri
 
 // DeleteDocumentPermissions removes records from dmz_permissions table for given document.
 func (s Store) DeleteDocumentPermissions(ctx domain.RequestContext, documentID string) (rows int64, err error) {
-	sql := fmt.Sprintf("DELETE FROM dmz_permission WHERE c_orgid='%s' AND c_location='document' AND c_refid='%s'", ctx.OrgID, documentID)
+	_, err = ctx.Transaction.Exec(s.Bind("DELETE FROM dmz_permission WHERE c_orgid=? AND c_location='document' AND c_refid=?"),
+		ctx.OrgID, documentID)
 
-	return s.DeleteWhere(ctx.Transaction, sql)
+	return
 }
 
 // DeleteSpacePermissions removes records from dmz_permissions table for given space ID.
 func (s Store) DeleteSpacePermissions(ctx domain.RequestContext, spaceID string) (rows int64, err error) {
-	sql := fmt.Sprintf("DELETE FROM dmz_permission WHERE c_orgid='%s' AND c_location='space' AND c_refid='%s'", ctx.OrgID, spaceID)
+	_, err = ctx.Transaction.Exec(s.Bind("DELETE FROM dmz_permission WHERE c_orgid=? AND c_location='space' AND c_refid=?"),
+		ctx.OrgID, spaceID)
 
-	return s.DeleteWhere(ctx.Transaction, sql)
+	return
 }
 
 // DeleteUserSpacePermissions removes all roles for the specified user, for the specified space.
 func (s Store) DeleteUserSpacePermissions(ctx domain.RequestContext, spaceID, userID string) (rows int64, err error) {
-	sql := fmt.Sprintf("DELETE FROM dmz_permission WHERE c_orgid='%s' AND c_location='space' AND c_refid='%s' AND c_who='user' AND c_whoid='%s'",
+	_, err = ctx.Transaction.Exec(s.Bind("DELETE FROM dmz_permission WHERE c_orgid=? AND c_location='space' AND c_refid=? AND c_who='user' AND c_whoid=?"),
 		ctx.OrgID, spaceID, userID)
 
-	return s.DeleteWhere(ctx.Transaction, sql)
+	return
 }
 
 // DeleteUserPermissions removes all roles for the specified user, for the specified space.
 func (s Store) DeleteUserPermissions(ctx domain.RequestContext, userID string) (rows int64, err error) {
-	sql := fmt.Sprintf("DELETE FROM dmz_permission WHERE c_orgid='%s' AND c_who='user' AND c_whoid='%s'",
+	_, err = ctx.Transaction.Exec(s.Bind("DELETE FROM dmz_permission WHERE c_orgid=? AND c_who='user' AND c_whoid=?"),
 		ctx.OrgID, userID)
 
-	return s.DeleteWhere(ctx.Transaction, sql)
+	return
 }
 
 // DeleteCategoryPermissions removes records from dmz_permissions table for given category ID.
 func (s Store) DeleteCategoryPermissions(ctx domain.RequestContext, categoryID string) (rows int64, err error) {
-	sql := fmt.Sprintf("DELETE FROM dmz_permission WHERE c_orgid='%s' AND c_location='category' AND c_refid='%s'", ctx.OrgID, categoryID)
+	_, err = ctx.Transaction.Exec(s.Bind("DELETE FROM dmz_permission WHERE c_orgid=? AND c_location='category' AND c_refid=?"),
+		ctx.OrgID, categoryID)
 
-	return s.DeleteWhere(ctx.Transaction, sql)
+	return
 }
 
 // DeleteSpaceCategoryPermissions removes all category permission for for given space.
 func (s Store) DeleteSpaceCategoryPermissions(ctx domain.RequestContext, spaceID string) (rows int64, err error) {
-	sql := fmt.Sprintf(`
-		DELETE FROM dmz_permission WHERE c_orgid='%s' AND c_location='category'
-			AND c_refid IN (SELECT c_refid FROM dmz_category WHERE c_orgid='%s' AND c_spaceid='%s')`,
+	_, err = ctx.Transaction.Exec(s.Bind("DELETE FROM dmz_permission WHERE c_orgid=? AND c_location='category' AND c_refid IN (SELECT c_refid FROM dmz_category WHERE c_orgid=? AND c_spaceid=?)"),
 		ctx.OrgID, ctx.OrgID, spaceID)
 
-	return s.DeleteWhere(ctx.Transaction, sql)
+	return
 }
 
 // DeleteGroupPermissions removes all roles for the specified group
 func (s Store) DeleteGroupPermissions(ctx domain.RequestContext, groupID string) (rows int64, err error) {
-	sql := fmt.Sprintf("DELETE FROM dmz_permission WHERE c_orgid='%s' AND c_who='role' AND c_whoid='%s'",
+	_, err = ctx.Transaction.Exec(s.Bind("DELETE FROM dmz_permission WHERE c_orgid=? AND c_who='role' AND c_whoid=?"),
 		ctx.OrgID, groupID)
 
-	return s.DeleteWhere(ctx.Transaction, sql)
+	return
 }

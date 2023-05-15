@@ -176,46 +176,69 @@ func (s Store) AssociateDocument(ctx domain.RequestContext, m category.Member) (
 
 // DisassociateDocument removes document associatation from category.
 func (s Store) DisassociateDocument(ctx domain.RequestContext, categoryID, documentID string) (rows int64, err error) {
-	sql := fmt.Sprintf("DELETE FROM dmz_category_member WHERE c_orgid='%s' AND c_categoryid='%s' AND c_docid='%s'",
+	_, err = ctx.Transaction.Exec(s.Bind("DELETE FROM dmz_category_member WHERE c_orgid=? AND c_categoryid=? AND c_docid=?"),
 		ctx.OrgID, categoryID, documentID)
 
-	return s.DeleteWhere(ctx.Transaction, sql)
+	if err == sql.ErrNoRows {
+		err = nil
+	}
+
+	return
 }
 
 // RemoveCategoryMembership removes all category associations from the store.
 func (s Store) RemoveCategoryMembership(ctx domain.RequestContext, categoryID string) (rows int64, err error) {
-	sql := fmt.Sprintf("DELETE FROM dmz_category_member WHERE c_orgid='%s' AND c_categoryid='%s'",
+	_, err = ctx.Transaction.Exec(s.Bind("DELETE FROM dmz_category_member WHERE c_orgid=? AND c_categoryid=?"),
 		ctx.OrgID, categoryID)
 
-	return s.DeleteWhere(ctx.Transaction, sql)
+	if err == sql.ErrNoRows {
+		err = nil
+	}
+
+	return
 }
 
 // RemoveSpaceCategoryMemberships removes all category associations from the store for the space.
 func (s Store) RemoveSpaceCategoryMemberships(ctx domain.RequestContext, spaceID string) (rows int64, err error) {
-	sql := fmt.Sprintf("DELETE FROM dmz_category_member WHERE c_orgid='%s' AND c_spaceid='%s'",
+	_, err = ctx.Transaction.Exec(s.Bind("DELETE FROM dmz_category_member WHERE c_orgid=? AND c_spaceid=?"),
 		ctx.OrgID, spaceID)
 
-	return s.DeleteWhere(ctx.Transaction, sql)
+	if err == sql.ErrNoRows {
+		err = nil
+	}
+
+	return
 }
 
 // RemoveDocumentCategories removes all document category associations from the store.
 func (s Store) RemoveDocumentCategories(ctx domain.RequestContext, documentID string) (rows int64, err error) {
-	sql := fmt.Sprintf("DELETE FROM dmz_category_member WHERE c_orgid='%s' AND c_docid='%s'",
+	_, err = ctx.Transaction.Exec(s.Bind("DELETE FROM dmz_category_member WHERE c_orgid=? AND c_docid=?"),
 		ctx.OrgID, documentID)
 
-	return s.DeleteWhere(ctx.Transaction, sql)
+	if err == sql.ErrNoRows {
+		err = nil
+	}
+
+	return
 }
 
 // DeleteBySpace removes all category and category associations for given space.
 func (s Store) DeleteBySpace(ctx domain.RequestContext, spaceID string) (rows int64, err error) {
-	s1 := fmt.Sprintf("DELETE FROM dmz_category_member WHERE c_orgid='%s' AND c_spaceid='%s'", ctx.OrgID, spaceID)
-	_, err = s.DeleteWhere(ctx.Transaction, s1)
-	if err != nil {
-		return
+	_, err = ctx.Transaction.Exec(s.Bind("DELETE FROM dmz_category_member WHERE c_orgid=? AND c_spaceid=?"),
+		ctx.OrgID, spaceID)
+
+	if err == sql.ErrNoRows {
+		err = nil
 	}
 
-	s2 := fmt.Sprintf("DELETE FROM dmz_category WHERE c_orgid='%s' AND c_spaceid='%s'", ctx.OrgID, spaceID)
-	return s.DeleteWhere(ctx.Transaction, s2)
+	_, err = ctx.Transaction.Exec(s.Bind("DELETE FROM dmz_category WHERE c_orgid=? AND c_spaceid=?"),
+		ctx.OrgID, spaceID)
+
+	if err == sql.ErrNoRows {
+		err = nil
+	}
+
+	return
 }
 
 // GetSpaceCategorySummary returns number of documents and users for space categories.

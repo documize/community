@@ -254,31 +254,11 @@ func (s Store) MoveActivity(ctx domain.RequestContext, documentID, oldSpaceID, n
 // Delete removes the specified document.
 // Remove document pages, revisions, attachments, updates the search subsystem.
 func (s Store) Delete(ctx domain.RequestContext, documentID string) (rows int64, err error) {
-	rows, err = s.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_section WHERE c_docid='%s' AND c_orgid='%s'", documentID, ctx.OrgID))
-
-	if err != nil {
-		return
-	}
-
-	_, err = s.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_section_revision WHERE c_docid='%s' AND c_orgid='%s'", documentID, ctx.OrgID))
-	if err != nil {
-		return
-	}
-
-	_, err = s.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_doc_attachment WHERE c_docid='%s' AND c_orgid='%s'", documentID, ctx.OrgID))
-	if err != nil {
-		return
-	}
-
-	_, err = s.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_category_member WHERE c_docid='%s' AND c_orgid='%s'", documentID, ctx.OrgID))
-	if err != nil {
-		return
-	}
-
-	_, err = s.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_doc_vote WHERE c_docid='%s' AND c_orgid='%s'", documentID, ctx.OrgID))
-	if err != nil {
-		return
-	}
+	ctx.Transaction.Exec(s.Bind("DELETE FROM dmz_section WHERE c_orgid=? AND c_docid=?"), ctx.OrgID, documentID)
+	ctx.Transaction.Exec(s.Bind("DELETE FROM dmz_section_revision WHERE c_orgid=? AND c_docid=?"), ctx.OrgID, documentID)
+	ctx.Transaction.Exec(s.Bind("DELETE FROM dmz_doc_attachment WHERE c_orgid=? AND c_docid=?"), ctx.OrgID, documentID)
+	ctx.Transaction.Exec(s.Bind("DELETE FROM dmz_category_member WHERE c_orgid=? AND c_docid=?"), ctx.OrgID, documentID)
+	ctx.Transaction.Exec(s.Bind("DELETE FROM dmz_doc_vote WHERE c_orgid=? AND c_docid=?"), ctx.OrgID, documentID)
 
 	return s.DeleteConstrained(ctx.Transaction, "dmz_doc", ctx.OrgID, documentID)
 }
@@ -286,25 +266,10 @@ func (s Store) Delete(ctx domain.RequestContext, documentID string) (rows int64,
 // DeleteBySpace removes all documents for given space.
 // Remove document pages, revisions, attachments, updates the search subsystem.
 func (s Store) DeleteBySpace(ctx domain.RequestContext, spaceID string) (rows int64, err error) {
-	rows, err = s.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_section WHERE c_docid IN (SELECT c_refid FROM dmz_doc WHERE c_spaceid='%s' AND c_orgid='%s')", spaceID, ctx.OrgID))
-	if err != nil {
-		return
-	}
-
-	_, err = s.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_section_revision WHERE c_docid IN (SELECT c_refid FROM dmz_doc WHERE c_spaceid='%s' AND c_orgid='%s')", spaceID, ctx.OrgID))
-	if err != nil {
-		return
-	}
-
-	_, err = s.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_doc_attachment WHERE c_docid IN (SELECT c_refid FROM dmz_doc WHERE c_spaceid='%s' AND c_orgid='%s')", spaceID, ctx.OrgID))
-	if err != nil {
-		return
-	}
-
-	_, err = s.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_doc_vote WHERE c_docid IN (SELECT c_refid FROM dmz_doc WHERE c_spaceid='%s' AND c_orgid='%s')", spaceID, ctx.OrgID))
-	if err != nil {
-		return
-	}
+	ctx.Transaction.Exec(s.Bind("DELETE FROM dmz_section WHERE c_docid IN (SELECT c_refid FROM dmz_doc WHERE c_spaceid=? AND c_orgid=?)"), spaceID, ctx.OrgID)
+	ctx.Transaction.Exec(s.Bind("DELETE FROM dmz_section_revision WHERE c_docid IN (SELECT c_refid FROM dmz_doc WHERE c_spaceid=? AND c_orgid=?)"), spaceID, ctx.OrgID)
+	ctx.Transaction.Exec(s.Bind("DELETE FROM dmz_doc_attachment WHERE c_docid IN (SELECT c_refid FROM dmz_doc WHERE c_spaceid=? AND c_orgid=?)"), spaceID, ctx.OrgID)
+	ctx.Transaction.Exec(s.Bind("DELETE FROM dmz_doc_vote WHERE c_docid IN (SELECT c_refid FROM dmz_doc WHERE c_spaceid=? AND c_orgid=?)"), spaceID, ctx.OrgID)
 
 	return s.DeleteConstrained(ctx.Transaction, "dmz_doc", ctx.OrgID, spaceID)
 }

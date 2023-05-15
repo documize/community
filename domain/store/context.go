@@ -27,7 +27,7 @@ type Context struct {
 
 // Bind selects query parameter placeholder for given database provider.
 //
-// MySQL uses ?, ?, ? (default for all Documize queries).``
+// MySQL uses ?, ?, ? (default for all Documize queries).“
 // PostgreSQL uses $1, $2, $3.
 // MS SQL Server uses @p1, @p2, @p3.
 func (c *Context) Bind(sql string) string {
@@ -80,20 +80,6 @@ func (c *Context) DeleteConstrainedWithID(tx *sqlx.Tx, table string, orgID, id s
 	}
 	if err != nil {
 		err = errors.Wrap(err, fmt.Sprintf("unable to delete rows by id: %s", id))
-		return
-	}
-
-	return
-}
-
-// DeleteWhere free form query.
-func (c *Context) DeleteWhere(tx *sqlx.Tx, statement string) (rows int64, err error) {
-	_, err = tx.Exec(statement)
-	if err == sql.ErrNoRows {
-		err = nil
-	}
-	if err != nil {
-		err = errors.Wrap(err, fmt.Sprintf("unable to delete rows: %s", statement))
 		return
 	}
 

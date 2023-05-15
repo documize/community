@@ -13,7 +13,6 @@ package attachment
 
 import (
 	"database/sql"
-	"fmt"
 	"strings"
 	"time"
 
@@ -147,8 +146,10 @@ func (s Store) Delete(ctx domain.RequestContext, id string) (rows int64, err err
 
 // DeleteSection removes all attachments agasinst a section.
 func (s Store) DeleteSection(ctx domain.RequestContext, sectionID string) (rows int64, err error) {
-	rows, err = s.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_doc_attachment WHERE c_orgid='%s' AND c_sectionid='%s'",
-		ctx.OrgID, sectionID))
+	_, err = ctx.Transaction.Exec(s.Bind("DELETE FROM dmz_doc_attachment WHERE c_orgid=? AND c_sectionid=?"), ctx.OrgID, sectionID)
+	if err == sql.ErrNoRows {
+		err = nil
+	}
 
 	return
 }

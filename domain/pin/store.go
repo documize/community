@@ -120,10 +120,16 @@ func (s Store) DeletePin(ctx domain.RequestContext, id string) (rows int64, err 
 
 // DeletePinnedSpace removes any pins for specified space.
 func (s Store) DeletePinnedSpace(ctx domain.RequestContext, spaceID string) (rows int64, err error) {
-	return s.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_pin WHERE c_orgid='%s' AND c_spaceid='%s'", ctx.OrgID, spaceID))
+	_, err = ctx.Transaction.Exec(s.Bind("DELETE FROM dmz_pin WHERE c_orgid=? AND c_spaceid=?"),
+		ctx.OrgID, spaceID)
+
+	return
 }
 
 // DeletePinnedDocument removes any pins for specified document.
 func (s Store) DeletePinnedDocument(ctx domain.RequestContext, documentID string) (rows int64, err error) {
-	return s.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_pin WHERE c_orgid='%s' AND c_docid='%s'", ctx.OrgID, documentID))
+	_, err = ctx.Transaction.Exec(s.Bind("DELETE FROM dmz_pin WHERE c_orgid=? AND c_docid=?"),
+		ctx.OrgID, documentID)
+
+	return
 }

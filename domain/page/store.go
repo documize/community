@@ -201,13 +201,12 @@ func (s Store) Update(ctx domain.RequestContext, page page.Page, refID, userID s
 // It then propagates that change into the search table, adds a delete the page revisions history, and audits that the page has been removed.
 func (s Store) Delete(ctx domain.RequestContext, documentID, pageID string) (rows int64, err error) {
 	rows, err = s.DeleteConstrained(ctx.Transaction, "dmz_section", ctx.OrgID, pageID)
-	if err == nil {
-		_, _ = s.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_section_meta WHERE c_orgid='%s' AND c_sectionid='%s'", ctx.OrgID, pageID))
-	}
 
-	if err == nil {
-		_, _ = s.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_action WHERE c_orgid='%s' AND c_reftypeid='%s' AND c_reftype='P'", ctx.OrgID, pageID))
-	}
+	ctx.Transaction.Exec(s.Bind("DELETE FROM dmz_section_meta WHERE c_orgid=? AND c_sectionid=?"),
+		ctx.OrgID, pageID)
+
+	ctx.Transaction.Exec(s.Bind("DELETE FROM dmz_action WHERE c_orgid=? AND c_reftypeid=? AND c_reftype='P'"),
+		ctx.OrgID, pageID)
 
 	return
 }
@@ -408,8 +407,8 @@ func (s Store) GetDocumentRevisions(ctx domain.RequestContext, documentID string
 
 // DeletePageRevisions deletes all of the page revision records for a given pageID.
 func (s Store) DeletePageRevisions(ctx domain.RequestContext, pageID string) (rows int64, err error) {
-	rows, err = s.DeleteWhere(ctx.Transaction, fmt.Sprintf("DELETE FROM dmz_section_revision WHERE c_orgid='%s' AND c_sectionid='%s'",
-		ctx.OrgID, pageID))
+	_, err = ctx.Transaction.Exec(s.Bind("DELETE FROM dmz_section_revision WHERE c_orgid=? AND c_sectionid=?"),
+		ctx.OrgID, pageID)
 
 	return
 }

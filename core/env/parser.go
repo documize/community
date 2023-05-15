@@ -129,7 +129,7 @@ func commandLineEnv() (f Flags, ok bool) {
 	f.ConfigSource = "flags/environment"
 
 	if len(f.TLSVersion) == 0 {
-		f.TLSVersion = "1.2"
+		f.TLSVersion = "1.3"
 	}
 
 	return f, ok
