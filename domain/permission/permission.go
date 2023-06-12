@@ -69,7 +69,7 @@ func CanViewDocument(ctx domain.RequestContext, s store.Store, documentID string
 	return false
 }
 
-// CanChangeDocument returns if the clinet has permission to change a given document.
+// CanChangeDocument returns if the client has permission to change a given document.
 func CanChangeDocument(ctx domain.RequestContext, s store.Store, documentID string) bool {
 	document, err := s.Document.Get(ctx, documentID)
 
@@ -98,7 +98,7 @@ func CanChangeDocument(ctx domain.RequestContext, s store.Store, documentID stri
 	return false
 }
 
-// CanDeleteDocument returns if the clinet has permission to change a given document.
+// CanDeleteDocument returns if the client has permission to change a given document.
 func CanDeleteDocument(ctx domain.RequestContext, s store.Store, documentID string) bool {
 	document, err := s.Document.Get(ctx, documentID)
 
@@ -165,7 +165,6 @@ func CanManageSpace(ctx domain.RequestContext, s store.Store, spaceID string) bo
 
 	return false
 }
-
 
 // CanViewSpace returns if the user has permission to view the given spaceID.
 func CanViewSpace(ctx domain.RequestContext, s store.Store, spaceID string) bool {
