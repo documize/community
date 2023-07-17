@@ -343,11 +343,12 @@ func (p SQLServerProvider) VerfiyVersion(dbVersion string) (bool, string) {
 
 	if strings.HasPrefix(dbVersion, "13.") ||
 		strings.HasPrefix(dbVersion, "14.") ||
-		strings.HasPrefix(dbVersion, "15.") {
+		strings.HasPrefix(dbVersion, "15.") ||
+		strings.HasPrefix(dbVersion, "16.") {
 		return true, ""
 	}
 
-	return false, "Microsoft SQL Server 2016, 2017 or 2019 is required"
+	return false, "Microsoft SQL Server 2016, 2017, 2019 or 2022 is required"
 }
 
 // VerfiyCharacterCollation needs to ensure utf8.
