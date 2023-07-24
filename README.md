@@ -12,9 +12,9 @@ All you need to provide is your database -- PostgreSQL, Microsoft SQL Server or 
 
 ## Latest Release
 
-[Community edition: v5.7.0](https://github.com/documize/community/releases)
+[Community edition: v5.8.0](https://github.com/documize/community/releases)
 
-[Community+ edition: v5.7.0](https://www.documize.com/community/get-started)
+[Community+ edition: v5.8.0](https://www.documize.com/community/get-started)
 
 The Community+ edition is the "enterprise" offering with advanced capabilities and customer support:
 
@@ -56,14 +56,14 @@ For all database types, Full-Text Search support (FTS) is mandatory.
 - Firefox
 - Chrome
 - Safari
-- Microsoft Edge (v42+)
+- Microsoft Edge
 - Brave
 - Vivaldi
 - Opera
 
 ## Technology Stack
 
-- Go (v1.20.0)
+- Go (v1.20.6)
 - Ember JS (v3.12.0)
 
 ## Authentication Options
@@ -102,6 +102,6 @@ We aim to respond within two working days.
 
 <https://www.documize.com>
 
-This software (Documize Community Edition) is licensed under GNU AGPL v3 <http://www.gnu.org/licenses/agpl-3.0.en.html>.
+This software (Documize Community edition) is licensed under GNU AGPL v3 <http://www.gnu.org/licenses/agpl-3.0.en.html>.
 
-Documize uses other open source components and we acknowledge them in [NOTICES](NOTICES.md)
+Documize Community uses other open source components and we acknowledge them in [NOTICES](NOTICES.md)
