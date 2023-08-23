@@ -25,6 +25,7 @@ func SupportedLocales() (locales []string) {
 	locales = append(locales, "pt-BR")
 	locales = append(locales, "fr-FR")
 	locales = append(locales, "ja-JP")
+	locales = append(locales, "it-IT")
 
 	return
 }
