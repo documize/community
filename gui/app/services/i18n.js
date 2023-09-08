@@ -9,7 +9,7 @@ import Service, { inject as service } from '@ember/service';
 import $ from 'jquery';
 
 export default Service.extend({
-    langs: { enUS: [], deDE: [] , zhCN: [], ptBR: [], frFR: [], jaJP: [] },
+    langs: { enUS: [], deDE: [] , zhCN: [], ptBR: [], frFR: [], jaJP: [], itIT: [] },
     locales: [],
     session: service(),
 
@@ -32,6 +32,9 @@ export default Service.extend({
         });
         $.getJSON("/i18n/ja-JP.json", (data) => {
             this.langs.jaJP = data;
+        });
+        $.getJSON("/i18n/it-IT.json", (data) => {
+            this.langs.itIT = data;
         });
     },
 
@@ -56,6 +59,9 @@ export default Service.extend({
                 break;
             case "ja-JP":
                 str = this.langs.jaJP[key];
+                break;
+            case "it-IT":
+                str = this.langs.itIT[key];
                 break;
         }
 
