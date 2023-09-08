@@ -87,6 +87,7 @@ Languages supported out-of-the-box:
 - Chinese (中文)
 - Portuguese (Brazil) (Português - Brasil)
 - Japanese (日本語)
+- Italian
 
 PR's welcome for additional languages.
 
