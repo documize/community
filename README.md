@@ -12,9 +12,9 @@ All you need to provide is your database -- PostgreSQL, Microsoft SQL Server or 
 
 ## Latest Release
 
-[Community edition: v5.9.0](https://github.com/documize/community/releases)
+[Community edition: v5.10.0](https://github.com/documize/community/releases)
 
-[Community+ edition: v5.9.0](https://www.documize.com/community/get-started)
+[Community+ edition: v5.10.0](https://www.documize.com/community/get-started)
 
 The Community+ edition is the "enterprise" offering with advanced capabilities and customer support:
 
@@ -43,7 +43,7 @@ Support for AMD and ARM 64 bit architectures.
 
 ## Database Support
 
-For all database types, Full-Text Search support (FTS) is mandatory.
+For all database types, Full-Text Search (FTS) support is mandatory.
 
 - PostgreSQL (v9.6+)
 - Microsoft SQL Server (2016+ with FTS)
@@ -63,7 +63,7 @@ For all database types, Full-Text Search support (FTS) is mandatory.
 
 ## Technology Stack
 
-- Go (v1.21.0)
+- Go (v1.21.1)
 - Ember JS (v3.12.0)
 
 ## Authentication Options
