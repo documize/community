@@ -16,7 +16,6 @@ import (
 	"fmt"
 	"strings"
 
-	_ "github.com/denisenkom/go-mssqldb" // the SQL Server driver is required behind the scenes
 	"github.com/documize/community/core/env"
 	account "github.com/documize/community/domain/account"
 	activity "github.com/documize/community/domain/activity"
@@ -39,6 +38,7 @@ import (
 	space "github.com/documize/community/domain/space"
 	"github.com/documize/community/domain/store"
 	user "github.com/documize/community/domain/user"
+	_ "github.com/microsoft/go-mssqldb" // the SQL Server driver is required behind the scenes
 )
 
 // SQLServerProvider supports Microsoft SQl Server.
@@ -55,12 +55,17 @@ type SQLServerProvider struct {
 // Useful links:
 //
 // Driver for Golang:
-//		https://github.com/denisenkom/go-mssqldb
+//
+//	https://github.com/denisenkom/go-mssqldb
+//
 // Docker Linux testing:
-//		https://docs.microsoft.com/en-us/sql/linux/quickstart-install-connect-docker?view=sql-server-2017
-// 		docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=Passw0rd' -p 1433:1433 --name sql1 -d mcr.microsoft.com/mssql/server:2017-latest
+//
+//	https://docs.microsoft.com/en-us/sql/linux/quickstart-install-connect-docker?view=sql-server-2017
+//	docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=Passw0rd' -p 1433:1433 --name sql1 -d mcr.microsoft.com/mssql/server:2017-latest
+//
 // JSON types:
-// 		https://docs.microsoft.com/en-us/sql/relational-databases/json/json-data-sql-server?view=sql-server-2017
+//
+//	https://docs.microsoft.com/en-us/sql/relational-databases/json/json-data-sql-server?view=sql-server-2017
 //
 // Supports 2016, 2017 and 2019.
 func SetSQLServerProvider(r *env.Runtime, s *store.Store) {
@@ -271,7 +276,7 @@ func (p SQLServerProvider) MakeConnectionString() string {
 // character set and collation from database provider.
 func (p SQLServerProvider) QueryMeta() string {
 	return fmt.Sprintf(`
-		SELECT 
+		SELECT
 		CAST(SERVERPROPERTY('productversion') AS VARCHAR) AS version,
 		@@VERSION AS comment,
 		collation_name AS collation,
@@ -309,7 +314,7 @@ func (p SQLServerProvider) QueryGetDatabaseVersionLegacy() string {
 
 // QueryTableList returns a list tables in Documize database.
 func (p SQLServerProvider) QueryTableList() string {
-	return fmt.Sprintf(`SELECT TABLE_NAME 
+	return fmt.Sprintf(`SELECT TABLE_NAME
 	FROM %s.INFORMATION_SCHEMA.TABLES`, p.DatabaseName())
 }
 
