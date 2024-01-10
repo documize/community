@@ -64,6 +64,13 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var ok bool
+	ctx.Transaction, ok = h.Runtime.StartTx(sql.LevelReadUncommitted)
+	if !ok {
+		h.Runtime.Log.Info("unable to start transaction " + method)
+		return
+	}
+
 	document, err := h.Store.Document.Get(ctx, id)
 	if err == sql.ErrNoRows {
 		response.WriteNotFoundError(w, method, id)
@@ -82,7 +89,6 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 
 	// draft mode does not record document views
 	if document.Lifecycle == workflow.LifecycleLive {
-		ctx.Transaction, err = h.Runtime.Db.Beginx()
 		if err != nil {
 			response.WriteServerError(w, method, err)
 			h.Runtime.Log.Error(method, err)
@@ -95,8 +101,9 @@ func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
 			SourceType:   activity.SourceTypeDocument,
 			ActivityType: activity.TypeRead})
 
-		ctx.Transaction.Commit()
 	}
+
+	ctx.Transaction.Commit()
 
 	h.Store.Audit.Record(ctx, audit.EventTypeDocumentView)
 
@@ -360,6 +367,13 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var ok bool
+	ctx.Transaction, ok = h.Runtime.StartTx(sql.LevelReadUncommitted)
+	if !ok {
+		h.Runtime.Log.Info("unable to start transaction " + method)
+		return
+	}
+
 	doc, err := h.Store.Document.Get(ctx, documentID)
 	if err != nil {
 		response.WriteServerError(w, method, err)
@@ -393,13 +407,6 @@ func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	// permission check
 	if !permission.CanDeleteDocument(ctx, *h.Store, documentID) {
 		response.WriteForbiddenError(w)
-		return
-	}
-
-	ctx.Transaction, err = h.Runtime.Db.Beginx()
-	if err != nil {
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
 		return
 	}
 
@@ -560,6 +567,13 @@ func (h *Handler) FetchDocumentData(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var ok bool
+	ctx.Transaction, ok = h.Runtime.StartTx(sql.LevelReadUncommitted)
+	if !ok {
+		h.Runtime.Log.Info("unable to start transaction " + method)
+		return
+	}
+
 	document, err := h.Store.Document.Get(ctx, id)
 	if err == sql.ErrNoRows {
 		response.WriteNotFoundError(w, method, id)
@@ -708,13 +722,6 @@ func (h *Handler) FetchDocumentData(w http.ResponseWriter, r *http.Request) {
 	data.Versions = v
 	data.Attachments = a
 
-	ctx.Transaction, err = h.Runtime.Db.Beginx()
-	if err != nil {
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
-		return
-	}
-
 	if document.Lifecycle == workflow.LifecycleLive {
 		h.Store.Activity.RecordUserActivity(ctx, activity.UserActivity{
 			SpaceID:      document.SpaceID,
@@ -823,10 +830,10 @@ func (h *Handler) Duplicate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctx.Transaction, err = h.Runtime.Db.Beginx()
-	if err != nil {
-		response.WriteServerError(w, method, err)
-		h.Runtime.Log.Error(method, err)
+	var ok bool
+	ctx.Transaction, ok = h.Runtime.StartTx(sql.LevelReadUncommitted)
+	if !ok {
+		h.Runtime.Log.Info("unable to start transaction " + method)
 		return
 	}
 
