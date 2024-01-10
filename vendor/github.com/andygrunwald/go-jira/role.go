@@ -1,17 +1,18 @@
 package jira
 
 import (
+	"context"
 	"fmt"
 )
 
-// RoleService handles roles for the JIRA instance / API.
+// RoleService handles roles for the Jira instance / API.
 //
-// JIRA API docs: https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-group-Role
+// Jira API docs: https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-group-Role
 type RoleService struct {
 	client *Client
 }
 
-// Role represents a JIRA product role
+// Role represents a Jira product role
 type Role struct {
 	Self        string   `json:"self" structs:"self"`
 	Name        string   `json:"name" structs:"name"`
@@ -20,7 +21,7 @@ type Role struct {
 	Actors      []*Actor `json:"actors" structs:"actors"`
 }
 
-// Actor represents a JIRA actor
+// Actor represents a Jira actor
 type Actor struct {
 	ID          int        `json:"id" structs:"id"`
 	DisplayName string     `json:"displayName" structs:"displayName"`
@@ -35,12 +36,12 @@ type ActorUser struct {
 	AccountID string `json:"accountId" structs:"accountId"`
 }
 
-// GetList returns a list of all available project roles
+// GetListWithContext returns a list of all available project roles
 //
-// JIRA API docs: https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-api-3-role-get
-func (s *RoleService) GetList() (*[]Role, *Response, error) {
+// Jira API docs: https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-api-3-role-get
+func (s *RoleService) GetListWithContext(ctx context.Context) (*[]Role, *Response, error) {
 	apiEndpoint := "rest/api/3/role"
-	req, err := s.client.NewRequest("GET", apiEndpoint, nil)
+	req, err := s.client.NewRequestWithContext(ctx, "GET", apiEndpoint, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -53,12 +54,17 @@ func (s *RoleService) GetList() (*[]Role, *Response, error) {
 	return roles, resp, err
 }
 
-// Get retreives a single Role from Jira
+// GetList wraps GetListWithContext using the background context.
+func (s *RoleService) GetList() (*[]Role, *Response, error) {
+	return s.GetListWithContext(context.Background())
+}
+
+// GetWithContext retreives a single Role from Jira
 //
-// JIRA API docs: https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-api-3-role-id-get
-func (s *RoleService) Get(roleID int) (*Role, *Response, error) {
+// Jira API docs: https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-api-3-role-id-get
+func (s *RoleService) GetWithContext(ctx context.Context, roleID int) (*Role, *Response, error) {
 	apiEndpoint := fmt.Sprintf("rest/api/3/role/%d", roleID)
-	req, err := s.client.NewRequest("GET", apiEndpoint, nil)
+	req, err := s.client.NewRequestWithContext(ctx, "GET", apiEndpoint, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -69,8 +75,13 @@ func (s *RoleService) Get(roleID int) (*Role, *Response, error) {
 		return nil, resp, jerr
 	}
 	if role.Self == "" {
-		return nil, resp, fmt.Errorf("No role with ID %d found", roleID)
+		return nil, resp, fmt.Errorf("no role with ID %d found", roleID)
 	}
 
 	return role, resp, err
+}
+
+// Get wraps GetWithContext using the background context.
+func (s *RoleService) Get(roleID int) (*Role, *Response, error) {
+	return s.GetWithContext(context.Background(), roleID)
 }

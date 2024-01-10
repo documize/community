@@ -6,21 +6,5 @@
 	"theme_color": "#280A42",
 	"description": "Organized documents",
 	"start_url": "/?utm_source=homescreen",
-	"icons": [{
-		"src": "assets/img/icon.png",
-		"sizes": "64x64",
-		"type": "image/png"
-	}, {
-		"src": "assets/img/icon.png",
-		"sizes": "128x128",
-		"type": "image/png"
-	}, {
-		"src": "assets/img/icon.png",
-		"sizes": "256x256",
-		"type": "image/png"
-	}, {
-		"src": "assets/img/icon.png",
-		"sizes": "1024x1024",
-		"type": "image/png"
-	}]
+	"icons": []
 }

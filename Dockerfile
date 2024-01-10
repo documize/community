@@ -4,7 +4,7 @@ COPY ./gui /go/src/github.com/documize/community/gui
 RUN npm --network-timeout=100000 install
 RUN npm run build -- --environment=production --output-path dist-prod --suppress-sizes true
 
-FROM golang:1.19-alpine as builder
+FROM golang:1.21-alpine as builder
 WORKDIR /go/src/github.com/documize/community
 COPY . /go/src/github.com/documize/community
 COPY --from=frontbuilder /go/src/github.com/documize/community/gui/dist-prod/assets /go/src/github.com/documize/community/edition/static/public/assets

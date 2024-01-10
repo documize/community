@@ -1,26 +1,29 @@
 # go-jira
 
 [![GoDoc](https://godoc.org/github.com/andygrunwald/go-jira?status.svg)](https://godoc.org/github.com/andygrunwald/go-jira)
-[![Build Status](https://travis-ci.org/andygrunwald/go-jira.svg?branch=master)](https://travis-ci.org/andygrunwald/go-jira)
+[![Build Status](https://github.com/andygrunwald/go-jira/actions/workflows/testing.yml/badge.svg)](https://github.com/andygrunwald/go-jira/actions/workflows/testing.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/andygrunwald/go-jira)](https://goreportcard.com/report/github.com/andygrunwald/go-jira)
 
-[Go](https://golang.org/) client library for [Atlassian JIRA](https://www.atlassian.com/software/jira).
+[Go](https://golang.org/) client library for [Atlassian Jira](https://www.atlassian.com/software/jira).
 
-![Go client library for Atlassian JIRA](./img/logo_small.png "Go client library for Atlassian JIRA.")
+![Go client library for Atlassian Jira](./img/logo_small.png "Go client library for Atlassian Jira.")
 
 ## Features
 
 * Authentication (HTTP Basic, OAuth, Session Cookie)
 * Create and retrieve issues
 * Create and retrieve issue transitions (status updates)
-* Call every API endpoint of the JIRA, even if it is not directly implemented in this library
+* Call every API endpoint of the Jira, even if it is not directly implemented in this library
 
-This package is not JIRA API complete (yet), but you can call every API endpoint you want. See [Call a not implemented API endpoint](#call-a-not-implemented-api-endpoint) how to do this. For all possible API endpoints of JIRA have a look at [latest JIRA REST API documentation](https://docs.atlassian.com/jira/REST/latest/).
+This package is not Jira API complete (yet), but you can call every API endpoint you want. See [Call a not implemented API endpoint](#call-a-not-implemented-api-endpoint) how to do this. For all possible API endpoints of Jira have a look at [latest Jira REST API documentation](https://docs.atlassian.com/jira/REST/latest/).
 
 ## Requirements
 
-* Go >= 1.8
-* JIRA v6.3.4 & v7.1.2.
+* Go >= 1.14
+* Jira v6.3.4 & v7.1.2.
+
+Note that we also run our tests against 1.13, though only the last two versions
+of Go are officially supported.
 
 ## Installation
 
@@ -52,7 +55,7 @@ go test -v ./...
 
 Please have a look at the [GoDoc documentation](https://godoc.org/github.com/andygrunwald/go-jira) for a detailed API description.
 
-The [latest JIRA REST API documentation](https://docs.atlassian.com/jira/REST/latest/) was the base document for this package.
+The [latest Jira REST API documentation](https://docs.atlassian.com/jira/REST/latest/) was the base document for this package.
 
 ## Examples
 
@@ -68,7 +71,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/andygrunwald/go-jira"
+	jira "github.com/andygrunwald/go-jira"
 )
 
 func main() {
@@ -92,9 +95,11 @@ an `http.Client`.  That client can then be passed into the `NewClient` function 
 
 For convenience, capability for basic and cookie-based authentication is included in the main library.
 
-#### Basic auth example
+#### Token (Jira on Atlassian Cloud)
 
-A more thorough, [runnable example](examples/basicauth/main.go) is provided in the examples directory. **It's worth noting that using passwords in basic auth is now deprecated and will be removed.** Jira gives you the ability to [create tokens now.](https://confluence.atlassian.com/cloud/api-tokens-938839638.html)
+Token-based authentication uses the basic authentication scheme, with a user-generated API token in place of a user's password. You can generate a token for your user [here](https://id.atlassian.com/manage-profile/security/api-tokens). Additional information about Atlassian Cloud API tokens can be found [here](https://confluence.atlassian.com/cloud/api-tokens-938839638.html).
+
+A more thorough, [runnable example](examples/basicauth/main.go) is provided in the examples directory.
 
 ```go
 func main() {
@@ -111,14 +116,15 @@ func main() {
 }
 ```
 
-#### Authenticate with session cookie [DEPRECATED]
+#### Basic (self-hosted Jira)
 
-JIRA [deprecated this authentication method.](https://developer.atlassian.com/cloud/jira/platform/deprecation-notice-basic-auth-and-cookie-based-auth/)  It's not longer available for use.
+Password-based API authentication works for self-hosted Jira **only**, and has been [deprecated for users of Atlassian Cloud](https://developer.atlassian.com/cloud/jira/platform/deprecation-notice-basic-auth-and-cookie-based-auth/).
 
+The above token authentication example may be used, substituting a user's password for a generated token.
 
 #### Authenticate with OAuth
 
-If you want to connect via OAuth to your JIRA Cloud instance checkout the [example of using OAuth authentication with JIRA in Go](https://gist.github.com/Lupus/edafe9a7c5c6b13407293d795442fe67) by [@Lupus](https://github.com/Lupus).
+If you want to connect via OAuth to your Jira Cloud instance checkout the [example of using OAuth authentication with Jira in Go](https://gist.github.com/Lupus/edafe9a7c5c6b13407293d795442fe67) by [@Lupus](https://github.com/Lupus).
 
 For more details have a look at the [issue #56](https://github.com/andygrunwald/go-jira/issues/56).
 
@@ -173,11 +179,62 @@ func main() {
 }
 ```
 
+### Change an issue status
+
+This is how one can change an issue status. In this example, we change the issue from "To Do" to "In Progress."
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/andygrunwald/go-jira"
+)
+
+func main() {
+	base := "https://my.jira.com"
+	tp := jira.BasicAuthTransport{
+		Username: "username",
+		Password: "token",
+	}
+
+	jiraClient, err := jira.NewClient(tp.Client(), base)
+	if err != nil {
+		panic(err)
+	}
+
+	issue, _, _ := jiraClient.Issue.Get("FART-1", nil)
+	currentStatus := issue.Fields.Status.Name
+	fmt.Printf("Current status: %s\n", currentStatus)
+
+	var transitionID string
+	possibleTransitions, _, _ := jiraClient.Issue.GetTransitions("FART-1")
+	for _, v := range possibleTransitions {
+		if v.Name == "In Progress" {
+			transitionID = v.ID
+			break
+		}
+	}
+
+	jiraClient.Issue.DoTransition("FART-1", transitionID)
+	issue, _, _ = jiraClient.Issue.Get(testIssueID, nil)
+	fmt.Printf("Status after transition: %+v\n", issue.Fields.Status.Name)
+}
+```
+### Get all the issues for JQL with Pagination
+Jira API has limit on maxResults it can return. You may have a usecase where you need to get all issues for given JQL.
+This example shows reference implementation of GetAllIssues function which does pagination on Jira API to get all the issues for given JQL
+
+please look at [Pagination Example](https://github.com/andygrunwald/go-jira/blob/master/examples/pagination/main.go)
+
+
+
+
 ### Call a not implemented API endpoint
 
-Not all API endpoints of the JIRA API are implemented into *go-jira*.
+Not all API endpoints of the Jira API are implemented into *go-jira*.
 But you can call them anyway:
-Lets get all public projects of [Atlassian`s JIRA instance](https://jira.atlassian.com/).
+Lets get all public projects of [Atlassian`s Jira instance](https://jira.atlassian.com/).
 
 ```go
 package main
@@ -209,7 +266,7 @@ func main() {
 
 	// ...
 	// BAM: Bamboo
-	// BAMJ: Bamboo JIRA Plugin
+	// BAMJ: Bamboo Jira Plugin
 	// CLOV: Clover
 	// CONF: Confluence
 	// ...
@@ -218,7 +275,7 @@ func main() {
 
 ## Implementations
 
-* [andygrunwald/jitic](https://github.com/andygrunwald/jitic) - The JIRA Ticket Checker
+* [andygrunwald/jitic](https://github.com/andygrunwald/jitic) - The Jira Ticket Checker
 
 ## Code structure
 
@@ -226,7 +283,7 @@ The code structure of this package was inspired by [google/go-github](https://gi
 
 There is one main part (the client).
 Based on this main client the other endpoints, like Issues or Authentication are extracted in services. E.g. `IssueService` or `AuthenticationService`.
-These services own a responsibility of the single endpoints / usecases of JIRA.
+These services own a responsibility of the single endpoints / usecases of Jira.
 
 ## Contribution
 
@@ -258,7 +315,7 @@ You can read more about them at https://developer.atlassian.com/blog/2016/04/clo
 
 ## Releasing
 
-Install `standard-version`
+Install [standard-version](https://github.com/conventional-changelog/standard-version)
 ```bash
 npm i -g standard-version
 ```

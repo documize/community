@@ -12,11 +12,13 @@ import (
 	"strconv"
 	"time"
 	"unicode/utf8"
+
+	"github.com/felixge/httpsnoop"
 )
 
 // Logging
 
-// LogFormatterParams is the structure any formatter will be handed when time to log comes
+// LogFormatterParams is the structure any formatter will be handed when time to log comes.
 type LogFormatterParams struct {
 	Request    *http.Request
 	URL        url.URL
@@ -25,7 +27,7 @@ type LogFormatterParams struct {
 	Size       int
 }
 
-// LogFormatter gives the signature of the formatter function passed to CustomLoggingHandler
+// LogFormatter gives the signature of the formatter function passed to CustomLoggingHandler.
 type LogFormatter func(writer io.Writer, params LogFormatterParams)
 
 // loggingHandler is the http.Handler implementation for LoggingHandlerTo and its
@@ -39,12 +41,15 @@ type loggingHandler struct {
 
 func (h loggingHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	t := time.Now()
-	logger := makeLogger(w)
+	logger, w := makeLogger(w)
 	url := *req.URL
 
-	h.handler.ServeHTTP(logger, req)
+	h.handler.ServeHTTP(w, req)
 	if req.MultipartForm != nil {
-		req.MultipartForm.RemoveAll()
+		err := req.MultipartForm.RemoveAll()
+		if err != nil {
+			return
+		}
 	}
 
 	params := LogFormatterParams{
@@ -58,34 +63,23 @@ func (h loggingHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	h.formatter(h.writer, params)
 }
 
-func makeLogger(w http.ResponseWriter) loggingResponseWriter {
-	var logger loggingResponseWriter = &responseLogger{w: w, status: http.StatusOK}
-	if _, ok := w.(http.Hijacker); ok {
-		logger = &hijackLogger{responseLogger{w: w, status: http.StatusOK}}
-	}
-	h, ok1 := logger.(http.Hijacker)
-	c, ok2 := w.(http.CloseNotifier)
-	if ok1 && ok2 {
-		return hijackCloseNotifier{logger, h, c}
-	}
-	if ok2 {
-		return &closeNotifyWriter{logger, c}
-	}
-	return logger
-}
-
-type commonLoggingResponseWriter interface {
-	http.ResponseWriter
-	http.Flusher
-	Status() int
-	Size() int
+func makeLogger(w http.ResponseWriter) (*responseLogger, http.ResponseWriter) {
+	logger := &responseLogger{w: w, status: http.StatusOK}
+	return logger, httpsnoop.Wrap(w, httpsnoop.Hooks{
+		Write: func(httpsnoop.WriteFunc) httpsnoop.WriteFunc {
+			return logger.Write
+		},
+		WriteHeader: func(httpsnoop.WriteHeaderFunc) httpsnoop.WriteHeaderFunc {
+			return logger.WriteHeader
+		},
+	})
 }
 
 const lowerhex = "0123456789abcdef"
 
 func appendQuoted(buf []byte, s string) []byte {
 	var runeTmp [utf8.UTFMax]byte
-	for width := 0; len(s) > 0; s = s[width:] {
+	for width := 0; len(s) > 0; s = s[width:] { //nolint: wastedassign //TODO: why width starts from 0and reassigned as 1
 		r := rune(s[0])
 		width = 1
 		if r >= utf8.RuneSelf {
@@ -145,7 +139,6 @@ func appendQuoted(buf []byte, s string) []byte {
 		}
 	}
 	return buf
-
 }
 
 // buildCommonLogLine builds a log entry for req in Apache Common Log Format.
@@ -160,7 +153,6 @@ func buildCommonLogLine(req *http.Request, url url.URL, ts time.Time, status int
 	}
 
 	host, _, err := net.SplitHostPort(req.RemoteAddr)
-
 	if err != nil {
 		host = req.RemoteAddr
 	}
@@ -202,7 +194,7 @@ func buildCommonLogLine(req *http.Request, url url.URL, ts time.Time, status int
 func writeLog(writer io.Writer, params LogFormatterParams) {
 	buf := buildCommonLogLine(params.Request, params.URL, params.TimeStamp, params.StatusCode, params.Size)
 	buf = append(buf, '\n')
-	writer.Write(buf)
+	_, _ = writer.Write(buf)
 }
 
 // writeCombinedLog writes a log entry for req to w in Apache Combined Log Format.
@@ -215,7 +207,7 @@ func writeCombinedLog(writer io.Writer, params LogFormatterParams) {
 	buf = append(buf, `" "`...)
 	buf = appendQuoted(buf, params.Request.UserAgent())
 	buf = append(buf, '"', '\n')
-	writer.Write(buf)
+	_, _ = writer.Write(buf)
 }
 
 // CombinedLoggingHandler return a http.Handler that wraps h and logs requests to out in
@@ -223,7 +215,7 @@ func writeCombinedLog(writer io.Writer, params LogFormatterParams) {
 //
 // See http://httpd.apache.org/docs/2.2/logs.html#combined for a description of this format.
 //
-// LoggingHandler always sets the ident field of the log to -
+// LoggingHandler always sets the ident field of the log to -.
 func CombinedLoggingHandler(out io.Writer, h http.Handler) http.Handler {
 	return loggingHandler{out, h, writeCombinedLog}
 }
@@ -237,19 +229,18 @@ func CombinedLoggingHandler(out io.Writer, h http.Handler) http.Handler {
 //
 // Example:
 //
-//  r := mux.NewRouter()
-//  r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-//  	w.Write([]byte("This is a catch-all route"))
-//  })
-//  loggedRouter := handlers.LoggingHandler(os.Stdout, r)
-//  http.ListenAndServe(":1123", loggedRouter)
-//
+//	r := mux.NewRouter()
+//	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+//		w.Write([]byte("This is a catch-all route"))
+//	})
+//	loggedRouter := handlers.LoggingHandler(os.Stdout, r)
+//	http.ListenAndServe(":1123", loggedRouter)
 func LoggingHandler(out io.Writer, h http.Handler) http.Handler {
 	return loggingHandler{out, h, writeLog}
 }
 
 // CustomLoggingHandler provides a way to supply a custom log formatter
-// while taking advantage of the mechanisms in this package
+// while taking advantage of the mechanisms in this package.
 func CustomLoggingHandler(out io.Writer, h http.Handler, f LogFormatter) http.Handler {
 	return loggingHandler{out, h, f}
 }

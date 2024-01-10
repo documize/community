@@ -1,10 +1,13 @@
 package jira
 
-import "fmt"
+import (
+	"context"
+	"fmt"
+)
 
-// PermissionSchemeService handles permissionschemes for the JIRA instance / API.
+// PermissionSchemeService handles permissionschemes for the Jira instance / API.
 //
-// JIRA API docs: https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-group-Permissionscheme
+// Jira API docs: https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-group-Permissionscheme
 type PermissionSchemeService struct {
 	client *Client
 }
@@ -25,12 +28,12 @@ type Holder struct {
 	Expand    string `json:"expand" structs:"expand"`
 }
 
-// GetList returns a list of all permission schemes
+// GetListWithContext returns a list of all permission schemes
 //
-// JIRA API docs: https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-api-3-permissionscheme-get
-func (s *PermissionSchemeService) GetList() (*PermissionSchemes, *Response, error) {
+// Jira API docs: https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-api-3-permissionscheme-get
+func (s *PermissionSchemeService) GetListWithContext(ctx context.Context) (*PermissionSchemes, *Response, error) {
 	apiEndpoint := "/rest/api/3/permissionscheme"
-	req, err := s.client.NewRequest("GET", apiEndpoint, nil)
+	req, err := s.client.NewRequestWithContext(ctx, "GET", apiEndpoint, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -45,12 +48,17 @@ func (s *PermissionSchemeService) GetList() (*PermissionSchemes, *Response, erro
 	return pss, resp, nil
 }
 
-// Get returns a full representation of the permission scheme for the schemeID
+// GetList wraps GetListWithContext using the background context.
+func (s *PermissionSchemeService) GetList() (*PermissionSchemes, *Response, error) {
+	return s.GetListWithContext(context.Background())
+}
+
+// GetWithContext returns a full representation of the permission scheme for the schemeID
 //
-// JIRA API docs: https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-api-3-permissionscheme-schemeId-get
-func (s *PermissionSchemeService) Get(schemeID int) (*PermissionScheme, *Response, error) {
+// Jira API docs: https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-api-3-permissionscheme-schemeId-get
+func (s *PermissionSchemeService) GetWithContext(ctx context.Context, schemeID int) (*PermissionScheme, *Response, error) {
 	apiEndpoint := fmt.Sprintf("/rest/api/3/permissionscheme/%d", schemeID)
-	req, err := s.client.NewRequest("GET", apiEndpoint, nil)
+	req, err := s.client.NewRequestWithContext(ctx, "GET", apiEndpoint, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -62,8 +70,13 @@ func (s *PermissionSchemeService) Get(schemeID int) (*PermissionScheme, *Respons
 		return nil, resp, jerr
 	}
 	if ps.Self == "" {
-		return nil, resp, fmt.Errorf("No permissionscheme with ID %d found", schemeID)
+		return nil, resp, fmt.Errorf("no permissionscheme with ID %d found", schemeID)
 	}
 
 	return ps, resp, nil
+}
+
+// Get wraps GetWithContext using the background context.
+func (s *PermissionSchemeService) Get(schemeID int) (*PermissionScheme, *Response, error) {
+	return s.GetWithContext(context.Background(), schemeID)
 }

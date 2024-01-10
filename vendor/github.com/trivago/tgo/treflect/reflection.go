@@ -1,4 +1,4 @@
-// Copyright 2015-2016 trivago GmbH
+// Copyright 2015-2018 trivago N.V.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -84,8 +84,6 @@ func Int64(v interface{}) (int64, bool) {
 	case reflect.Float64:
 		return int64(v.(float64)), true
 	}
-
-	fmt.Printf("%t\n%#v\n%#v\n", v, v, reflect.TypeOf(v).Kind())
 
 	return 0, false
 }

@@ -2,6 +2,7 @@ package jira
 
 import (
 	"bytes"
+	"context"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
@@ -14,7 +15,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	jwt "github.com/golang-jwt/jwt/v4"
 	"github.com/google/go-querystring/query"
 	"github.com/pkg/errors"
 )
@@ -25,7 +26,7 @@ type httpClient interface {
 	Do(request *http.Request) (response *http.Response, err error)
 }
 
-// A Client manages communication with the JIRA API.
+// A Client manages communication with the Jira API.
 type Client struct {
 	// HTTP client used to communicate with the API.
 	client httpClient
@@ -36,7 +37,7 @@ type Client struct {
 	// Session storage if the user authenticates with a Session cookie
 	session *Session
 
-	// Services used for talking to different parts of the JIRA API.
+	// Services used for talking to different parts of the Jira API.
 	Authentication   *AuthenticationService
 	Issue            *IssueService
 	Project          *ProjectService
@@ -55,15 +56,19 @@ type Client struct {
 	PermissionScheme *PermissionSchemeService
 	Status           *StatusService
 	IssueLinkType    *IssueLinkTypeService
+	Organization     *OrganizationService
+	ServiceDesk      *ServiceDeskService
+	Customer         *CustomerService
+	Request          *RequestService
 }
 
-// NewClient returns a new JIRA API client.
+// NewClient returns a new Jira API client.
 // If a nil httpClient is provided, http.DefaultClient will be used.
 // To use API methods which require authentication you can follow the preferred solution and
 // provide an http.Client that will perform the authentication for you with OAuth and HTTP Basic (such as that provided by the golang.org/x/oauth2 library).
 // As an alternative you can use Session Cookie based authentication provided by this package as well.
 // See https://docs.atlassian.com/jira/REST/latest/#authentication
-// baseURL is the HTTP endpoint of your JIRA instance and should always be specified with a trailing slash.
+// baseURL is the HTTP endpoint of your Jira instance and should always be specified with a trailing slash.
 func NewClient(httpClient httpClient, baseURL string) (*Client, error) {
 	if httpClient == nil {
 		httpClient = http.DefaultClient
@@ -101,14 +106,18 @@ func NewClient(httpClient httpClient, baseURL string) (*Client, error) {
 	c.PermissionScheme = &PermissionSchemeService{client: c}
 	c.Status = &StatusService{client: c}
 	c.IssueLinkType = &IssueLinkTypeService{client: c}
+	c.Organization = &OrganizationService{client: c}
+	c.ServiceDesk = &ServiceDeskService{client: c}
+	c.Customer = &CustomerService{client: c}
+	c.Request = &RequestService{client: c}
 
 	return c, nil
 }
 
-// NewRawRequest creates an API request.
+// NewRawRequestWithContext creates an API request.
 // A relative URL can be provided in urlStr, in which case it is resolved relative to the baseURL of the Client.
 // Allows using an optional native io.Reader for sourcing the request body.
-func (c *Client) NewRawRequest(method, urlStr string, body io.Reader) (*http.Request, error) {
+func (c *Client) NewRawRequestWithContext(ctx context.Context, method, urlStr string, body io.Reader) (*http.Request, error) {
 	rel, err := url.Parse(urlStr)
 	if err != nil {
 		return nil, err
@@ -118,7 +127,7 @@ func (c *Client) NewRawRequest(method, urlStr string, body io.Reader) (*http.Req
 
 	u := c.baseURL.ResolveReference(rel)
 
-	req, err := http.NewRequest(method, u.String(), body)
+	req, err := newRequestWithContext(ctx, method, u.String(), body)
 	if err != nil {
 		return nil, err
 	}
@@ -143,10 +152,15 @@ func (c *Client) NewRawRequest(method, urlStr string, body io.Reader) (*http.Req
 	return req, nil
 }
 
-// NewRequest creates an API request.
+// NewRawRequest wraps NewRawRequestWithContext using the background context.
+func (c *Client) NewRawRequest(method, urlStr string, body io.Reader) (*http.Request, error) {
+	return c.NewRawRequestWithContext(context.Background(), method, urlStr, body)
+}
+
+// NewRequestWithContext creates an API request.
 // A relative URL can be provided in urlStr, in which case it is resolved relative to the baseURL of the Client.
 // If specified, the value pointed to by body is JSON encoded and included as the request body.
-func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Request, error) {
+func (c *Client) NewRequestWithContext(ctx context.Context, method, urlStr string, body interface{}) (*http.Request, error) {
 	rel, err := url.Parse(urlStr)
 	if err != nil {
 		return nil, err
@@ -165,7 +179,7 @@ func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Requ
 		}
 	}
 
-	req, err := http.NewRequest(method, u.String(), buf)
+	req, err := newRequestWithContext(ctx, method, u.String(), buf)
 	if err != nil {
 		return nil, err
 	}
@@ -188,6 +202,11 @@ func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Requ
 	}
 
 	return req, nil
+}
+
+// NewRequest wraps NewRequestWithContext using the background context.
+func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Request, error) {
+	return c.NewRequestWithContext(context.Background(), method, urlStr, body)
 }
 
 // addOptions adds the parameters in opt as URL query parameters to s.  opt
@@ -212,10 +231,10 @@ func addOptions(s string, opt interface{}) (string, error) {
 	return u.String(), nil
 }
 
-// NewMultiPartRequest creates an API request including a multi-part file.
+// NewMultiPartRequestWithContext creates an API request including a multi-part file.
 // A relative URL can be provided in urlStr, in which case it is resolved relative to the baseURL of the Client.
 // If specified, the value pointed to by buf is a multipart form.
-func (c *Client) NewMultiPartRequest(method, urlStr string, buf *bytes.Buffer) (*http.Request, error) {
+func (c *Client) NewMultiPartRequestWithContext(ctx context.Context, method, urlStr string, buf *bytes.Buffer) (*http.Request, error) {
 	rel, err := url.Parse(urlStr)
 	if err != nil {
 		return nil, err
@@ -225,7 +244,7 @@ func (c *Client) NewMultiPartRequest(method, urlStr string, buf *bytes.Buffer) (
 
 	u := c.baseURL.ResolveReference(rel)
 
-	req, err := http.NewRequest(method, u.String(), buf)
+	req, err := newRequestWithContext(ctx, method, u.String(), buf)
 	if err != nil {
 		return nil, err
 	}
@@ -249,6 +268,11 @@ func (c *Client) NewMultiPartRequest(method, urlStr string, buf *bytes.Buffer) (
 	}
 
 	return req, nil
+}
+
+// NewMultiPartRequest wraps NewMultiPartRequestWithContext using the background context.
+func (c *Client) NewMultiPartRequest(method, urlStr string, buf *bytes.Buffer) (*http.Request, error) {
+	return c.NewMultiPartRequestWithContext(context.Background(), method, urlStr, buf)
 }
 
 // Do sends an API request and returns the API response.
@@ -279,13 +303,13 @@ func (c *Client) Do(req *http.Request, v interface{}) (*Response, error) {
 // CheckResponse checks the API response for errors, and returns them if present.
 // A response is considered an error if it has a status code outside the 200 range.
 // The caller is responsible to analyze the response body.
-// The body can contain JSON (if the error is intended) or xml (sometimes JIRA just failes).
+// The body can contain JSON (if the error is intended) or xml (sometimes Jira just failes).
 func CheckResponse(r *http.Response) error {
 	if c := r.StatusCode; 200 <= c && c <= 299 {
 		return nil
 	}
 
-	err := fmt.Errorf("Request failed. Please analyze the request body for more details. Status code: %d", r.StatusCode)
+	err := fmt.Errorf("request failed. Please analyze the request body for more details. Status code: %d", r.StatusCode)
 	return err
 }
 
@@ -295,7 +319,7 @@ func (c *Client) GetBaseURL() url.URL {
 	return *c.baseURL
 }
 
-// Response represents JIRA API response. It wraps http.Response returned from
+// Response represents Jira API response. It wraps http.Response returned from
 // API and provides information about paging.
 type Response struct {
 	*http.Response
@@ -324,7 +348,6 @@ func (r *Response) populatePageValues(v interface{}) {
 		r.MaxResults = value.MaxResults
 		r.Total = value.Total
 	}
-	return
 }
 
 // BasicAuthTransport is an http.RoundTripper that authenticates all requests
@@ -363,13 +386,84 @@ func (t *BasicAuthTransport) transport() http.RoundTripper {
 	return http.DefaultTransport
 }
 
+// BearerAuthTransport is a http.RoundTripper that authenticates all requests
+// using Jira's bearer (oauth 2.0 (3lo)) based authentication.
+type BearerAuthTransport struct {
+	Token string
+
+	// Transport is the underlying HTTP transport to use when making requests.
+	// It will default to http.DefaultTransport if nil.
+	Transport http.RoundTripper
+}
+
+// RoundTrip implements the RoundTripper interface.  We just add the
+// bearer token and return the RoundTripper for this transport type.
+func (t *BearerAuthTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	req2 := cloneRequest(req) // per RoundTripper contract
+
+	req2.Header.Set("Authorization", fmt.Sprintf("Bearer %s", t.Token))
+	return t.transport().RoundTrip(req2)
+}
+
+// Client returns an *http.Client that makes requests that are authenticated
+// using HTTP Basic Authentication.  This is a nice little bit of sugar
+// so we can just get the client instead of creating the client in the calling code.
+// If it's necessary to send more information on client init, the calling code can
+// always skip this and set the transport itself.
+func (t *BearerAuthTransport) Client() *http.Client {
+	return &http.Client{Transport: t}
+}
+
+func (t *BearerAuthTransport) transport() http.RoundTripper {
+	if t.Transport != nil {
+		return t.Transport
+	}
+	return http.DefaultTransport
+}
+
+// PATAuthTransport is an http.RoundTripper that authenticates all requests
+// using the Personal Access Token specified.
+// See here for more info: https://confluence.atlassian.com/enterprise/using-personal-access-tokens-1026032365.html
+type PATAuthTransport struct {
+	// Token is the key that was provided by Jira when creating the Personal Access Token.
+	Token string
+
+	// Transport is the underlying HTTP transport to use when making requests.
+	// It will default to http.DefaultTransport if nil.
+	Transport http.RoundTripper
+}
+
+// RoundTrip implements the RoundTripper interface.  We just add the
+// basic auth and return the RoundTripper for this transport type.
+func (t *PATAuthTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	req2 := cloneRequest(req) // per RoundTripper contract
+	req2.Header.Set("Authorization", "Bearer "+t.Token)
+	return t.transport().RoundTrip(req2)
+}
+
+// Client returns an *http.Client that makes requests that are authenticated
+// using HTTP Basic Authentication.  This is a nice little bit of sugar
+// so we can just get the client instead of creating the client in the calling code.
+// If it's necessary to send more information on client init, the calling code can
+// always skip this and set the transport itself.
+func (t *PATAuthTransport) Client() *http.Client {
+	return &http.Client{Transport: t}
+}
+
+func (t *PATAuthTransport) transport() http.RoundTripper {
+	if t.Transport != nil {
+		return t.Transport
+	}
+	return http.DefaultTransport
+}
+
 // CookieAuthTransport is an http.RoundTripper that authenticates all requests
 // using Jira's cookie-based authentication.
 //
 // Note that it is generally preferable to use HTTP BASIC authentication with the REST API.
-// However, this resource may be used to mimic the behaviour of JIRA's log-in page (e.g. to display log-in errors to a user).
+// However, this resource may be used to mimic the behaviour of Jira's log-in page (e.g. to display log-in errors to a user).
 //
-// JIRA API docs: https://docs.atlassian.com/jira/REST/latest/#auth/1/session
+// Jira API docs: https://docs.atlassian.com/jira/REST/latest/#auth/1/session
 type CookieAuthTransport struct {
 	Username string
 	Password string
@@ -425,6 +519,7 @@ func (t *CookieAuthTransport) setSessionObject() error {
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 
 	t.SessionObject = resp.Cookies()
 	return nil
@@ -464,7 +559,7 @@ func (t *CookieAuthTransport) transport() http.RoundTripper {
 //
 // NOTE: this form of auth should be used by add-ons installed from the Atlassian marketplace.
 //
-// JIRA docs: https://developer.atlassian.com/cloud/jira/platform/understanding-jwt
+// Jira docs: https://developer.atlassian.com/cloud/jira/platform/understanding-jwt
 // Examples in other languages:
 //    https://bitbucket.org/atlassian/atlassian-jwt-ruby/src/d44a8e7a4649e4f23edaa784402655fda7c816ea/lib/atlassian/jwt.rb
 //    https://bitbucket.org/atlassian/atlassian-jwt-py/src/master/atlassian_jwt/url_utils.py

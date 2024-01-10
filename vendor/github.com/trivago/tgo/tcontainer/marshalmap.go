@@ -1,4 +1,4 @@
-// Copyright 2015-2016 trivago GmbH
+// Copyright 2015-2018 trivago N.V.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,11 +16,12 @@ package tcontainer
 
 import (
 	"fmt"
-	"github.com/trivago/tgo/treflect"
 	"reflect"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/trivago/tgo/treflect"
 )
 
 // MarshalMap is a wrapper type to attach converter methods to maps normally
@@ -90,6 +91,44 @@ func ConvertToMarshalMap(value interface{}, formatKey func(string) string) (Mars
 		return result, nil
 	}
 	return nil, fmt.Errorf("Root value cannot be converted to MarshalMap")
+}
+
+// Clone creates a copy of the given MarshalMap.
+func (mmap MarshalMap) Clone() MarshalMap {
+	clone := cloneMap(reflect.ValueOf(mmap))
+	return clone.Interface().(MarshalMap)
+}
+
+func cloneMap(mapValue reflect.Value) reflect.Value {
+	clone := reflect.MakeMap(mapValue.Type())
+	keys := mapValue.MapKeys()
+
+	for _, k := range keys {
+		v := mapValue.MapIndex(k)
+		switch k.Kind() {
+		default:
+			clone.SetMapIndex(k, v)
+
+		case reflect.Array, reflect.Slice:
+			if v.Type().Elem().Kind() == reflect.Map {
+				sliceCopy := reflect.MakeSlice(v.Type(), v.Len(), v.Len())
+				for i := 0; i < v.Len(); i++ {
+					element := v.Index(i)
+					sliceCopy.Index(i).Set(cloneMap(element))
+				}
+			} else {
+				sliceCopy := reflect.MakeSlice(v.Type(), 0, v.Len())
+				reflect.Copy(sliceCopy, v)
+				clone.SetMapIndex(k, sliceCopy)
+			}
+
+		case reflect.Map:
+			vClone := cloneMap(v)
+			clone.SetMapIndex(k, vClone)
+		}
+	}
+
+	return clone
 }
 
 // Bool returns a value at key that is expected to be a boolean
@@ -182,6 +221,25 @@ func (mmap MarshalMap) String(key string) (string, error) {
 	return strValue, nil
 }
 
+// Bytes returns a value at key that is expected to be a []byte
+func (mmap MarshalMap) Bytes(key string) ([]byte, error) {
+	val, exists := mmap.Value(key)
+	if !exists {
+		return []byte{}, fmt.Errorf(`"%s" is not set`, key)
+	}
+
+	bytesValue, isBytes := val.([]byte)
+	if !isBytes {
+		return []byte{}, fmt.Errorf(`"%s" is expected to be a []byte`, key)
+	}
+	return bytesValue, nil
+}
+
+// Slice is an alias for Array
+func (mmap MarshalMap) Slice(key string) ([]interface{}, error) {
+	return mmap.Array(key)
+}
+
 // Array returns a value at key that is expected to be a []interface{}
 func (mmap MarshalMap) Array(key string) ([]interface{}, error) {
 	val, exists := mmap.Value(key)
@@ -237,6 +295,11 @@ func castToStringArray(key string, value interface{}) ([]string, error) {
 	}
 }
 
+// StringSlice is an alias for StringArray
+func (mmap MarshalMap) StringSlice(key string) ([]string, error) {
+	return mmap.StringArray(key)
+}
+
 // StringArray returns a value at key that is expected to be a []string
 // This function supports conversion (by copy) from
 //  * []interface{}
@@ -275,7 +338,12 @@ func castToInt64Array(key string, value interface{}) ([]int64, error) {
 	}
 }
 
-// IntArray returns a value at key that is expected to be a []int64
+// Int64Slice is an alias for Int64Array
+func (mmap MarshalMap) Int64Slice(key string) ([]int64, error) {
+	return mmap.Int64Array(key)
+}
+
+// Int64Array returns a value at key that is expected to be a []int64
 // This function supports conversion (by copy) from
 //  * []interface{}
 func (mmap MarshalMap) Int64Array(key string) ([]int64, error) {
@@ -325,6 +393,11 @@ func (mmap MarshalMap) StringMap(key string) (map[string]string, error) {
 
 		return result, nil
 	}
+}
+
+// StringSliceMap is an alias for StringArrayMap
+func (mmap MarshalMap) StringSliceMap(key string) (map[string][]string, error) {
+	return mmap.StringArrayMap(key)
 }
 
 // StringArrayMap returns a value at key that is expected to be a
@@ -389,8 +462,29 @@ func (mmap MarshalMap) MarshalMap(key string) (MarshalMap, error) {
 // "key1/key2"   -> mmap["key1"]["key2"]     nested map
 // "key1[0]"     -> mmap["key1"][0]          nested array
 // "key1[0]key2" -> mmap["key1"][0]["key2"]  nested array, nested map
-func (mmap MarshalMap) Value(key string) (interface{}, bool) {
-	return mmap.resolvePath(key, mmap)
+func (mmap MarshalMap) Value(key string) (val interface{}, exists bool) {
+	exists = mmap.resolvePath(key, mmap, func(p, k reflect.Value, v interface{}) {
+		val = v
+	})
+	return val, exists
+}
+
+// Delete a value from a given path.
+// The path must point to a map key. Deleting from arrays is not supported.
+func (mmap MarshalMap) Delete(key string) {
+	mmap.resolvePath(key, mmap, func(p, k reflect.Value, v interface{}) {
+		if v != nil {
+			p.SetMapIndex(k, reflect.Value{})
+		}
+	})
+}
+
+// Set a value for a given path.
+// The path must point to a map key. Setting array elements is not supported.
+func (mmap MarshalMap) Set(key string, val interface{}) {
+	mmap.resolvePath(key, mmap, func(p, k reflect.Value, v interface{}) {
+		p.SetMapIndex(k, reflect.ValueOf(val))
+	})
 }
 
 func (mmap MarshalMap) resolvePathKey(key string) (int, int) {
@@ -415,50 +509,57 @@ func (mmap MarshalMap) resolvePathKey(key string) (int, int) {
 	return keyEnd, nextKeyStart
 }
 
-func (mmap MarshalMap) resolvePath(key string, value interface{}) (interface{}, bool) {
-	if len(key) == 0 {
-		return value, true // ### return, found requested value ###
+func (mmap MarshalMap) resolvePath(k string, v interface{}, action func(p, k reflect.Value, v interface{})) bool {
+	if len(k) == 0 {
+		action(reflect.Value{}, reflect.ValueOf(k), v) // ### return, found requested value ###
+		return true
 	}
 
-	valueMeta := reflect.ValueOf(value)
-	switch valueMeta.Kind() {
+	vValue := reflect.ValueOf(v)
+	switch vValue.Kind() {
 	case reflect.Array, reflect.Slice:
-		startIdx := strings.IndexRune(key, MarshalMapArrayBegin) // Must be first char, otherwise malformed
-		endIdx := strings.IndexRune(key, MarshalMapArrayEnd)     // Must be > startIdx, otherwise malformed
+		startIdx := strings.IndexRune(k, MarshalMapArrayBegin) // Must be first char, otherwise malformed
+		endIdx := strings.IndexRune(k, MarshalMapArrayEnd)     // Must be > startIdx, otherwise malformed
 
 		if startIdx == -1 || endIdx == -1 {
-			return nil, false
+			return false
 		}
 
 		if startIdx == 0 && endIdx > startIdx {
-			index, err := strconv.Atoi(key[startIdx+1 : endIdx])
+			index, err := strconv.Atoi(k[startIdx+1 : endIdx])
 
 			// [1]    -> index: "1", remain: ""    -- value
 			// [1]a/b -> index: "1", remain: "a/b" -- nested map
 			// [1][2] -> index: "1", remain: "[2]" -- nested array
 
-			if err == nil && index < valueMeta.Len() {
-				item := valueMeta.Index(index).Interface()
-				key := key[endIdx+1:]
-				return mmap.resolvePath(key, item) // ### return, nested array ###
+			if err == nil && index < vValue.Len() {
+				item := vValue.Index(index).Interface()
+				key := k[endIdx+1:]
+				return mmap.resolvePath(key, item, action) // ### return, nested array ###
 			}
 		}
 
 	case reflect.Map:
-		keyMeta := reflect.ValueOf(key)
-		if storedValue := valueMeta.MapIndex(keyMeta); storedValue.IsValid() {
-			return storedValue.Interface(), true
+		kValue := reflect.ValueOf(k)
+		if storedValue := vValue.MapIndex(kValue); storedValue.IsValid() {
+			action(vValue, kValue, storedValue.Interface())
+			return true
 		}
 
-		keyEnd, nextKeyStart := mmap.resolvePathKey(key)
-		pathKey := key[:keyEnd]
-		keyMeta = reflect.ValueOf(pathKey)
+		keyEnd, nextKeyStart := mmap.resolvePathKey(k)
+		if keyEnd == len(k) {
+			action(vValue, kValue, nil) // call action to support setting non-existing keys
+			return false                // ### return, key not found ###
+		}
 
-		if storedValue := valueMeta.MapIndex(keyMeta); storedValue.IsValid() {
-			remain := key[nextKeyStart:]
-			return mmap.resolvePath(remain, storedValue.Interface()) // ### return, nested map ###
+		nextKey := k[:keyEnd]
+		nkValue := reflect.ValueOf(nextKey)
+
+		if storedValue := vValue.MapIndex(nkValue); storedValue.IsValid() {
+			remain := k[nextKeyStart:]
+			return mmap.resolvePath(remain, storedValue.Interface(), action) // ### return, nested map ###
 		}
 	}
 
-	return nil, false
+	return false
 }

@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.13.0](https://github.com/andygrunwald/go-jira/compare/v1.11.1...v1.13.0) (2020-10-25)
+
+
+### Features
+
+* add AddRemoteLink method ([f200e15](https://github.com/andygrunwald/go-jira/commit/f200e158b997a303db081cbbc5a9d8ad5d89566d)), closes [/developer.atlassian.com/cloud/jira/platform/rest/v2/#api-rest-api-2](https://github.com/andygrunwald//developer.atlassian.com/cloud/jira/platform/rest/v2//issues/api-rest-api-2)
+* Add Names support on Issue struct ([#278](https://github.com/andygrunwald/go-jira/issues/278)) ([1fc10e0](https://github.com/andygrunwald/go-jira/commit/1fc10e0606784f745673ccc4d8d706c36f385a7a))
+* Extend Makefile for more source code quality targets ([5e52236](https://github.com/andygrunwald/go-jira/commit/5e5223631a29d10a13e598318a6abe47384e2982))
+* **context:** Add support for context package ([e1f4265](https://github.com/andygrunwald/go-jira/commit/e1f4265e2b467b938fe0c095caf6d36f3136d2ff))
+* **issues:** Add GetEditMeta on issue ([a783764](https://github.com/andygrunwald/go-jira/commit/a783764b52dc890773658ddd0483a9d0393e385d)), closes [/docs.atlassian.com/DAC/rest/jira/6.1.html#d2e1364](https://github.com/andygrunwald//docs.atlassian.com/DAC/rest/jira/6.1.html/issues/d2e1364)
+* **IssueService:** allow empty JQL ([#268](https://github.com/andygrunwald/go-jira/issues/268)) ([4b91cf2](https://github.com/andygrunwald/go-jira/commit/4b91cf2b135355de7ecee41727c3e65f4e7067bc))
+* **project:** Add cronjob to check for stale issues ([#287](https://github.com/andygrunwald/go-jira/issues/287)) ([2096b04](https://github.com/andygrunwald/go-jira/commit/2096b04e52b434c1fb1c841bab487a94674a271e))
+* **project:** Add GitHub Actions testing workflow ([#289](https://github.com/andygrunwald/go-jira/issues/289)) ([80c0282](https://github.com/andygrunwald/go-jira/commit/80c02828ca9e4eb0e4a1877275baae14d330a2d9)), closes [#290](https://github.com/andygrunwald/go-jira/issues/290)
+* **project:** Add workflow to greet new contributors ([#288](https://github.com/andygrunwald/go-jira/issues/288)) ([c357b61](https://github.com/andygrunwald/go-jira/commit/c357b61a40f62a919ebd94a555390958f99c8db7))
+
+
+### Bug Fixes
+
+* change millisecond time format ([8c77107](https://github.com/andygrunwald/go-jira/commit/8c77107df3757c4ec5eae6e9d7c018618e708bfa))
+* paging with load balancer going to endless loop ([19d3fc0](https://github.com/andygrunwald/go-jira/commit/19d3fc0aecde547ffe1ab547c5ffb6c7972d387c)), closes [#260](https://github.com/andygrunwald/go-jira/issues/260)
+* **issue:** IssueService.Search() with a not empty JQL triggers 400 bad request ([#292](https://github.com/andygrunwald/go-jira/issues/292)) ([8b64c7f](https://github.com/andygrunwald/go-jira/commit/8b64c7f005fbceb11fa43a7aff3de61eb3166fca)), closes [#291](https://github.com/andygrunwald/go-jira/issues/291)
+* **IssueService.GetWatchers:** UserService.GetByAccountID support accountId params ([436469b](https://github.com/andygrunwald/go-jira/commit/436469b62d4d62037f380b38c918a13f4a5f0ab2))
+* **product:** Make product naming consistent, rename JIRA to Jira ([#286](https://github.com/andygrunwald/go-jira/issues/286)) ([146229d](https://github.com/andygrunwald/go-jira/commit/146229d2ab58a3fb128ddc8dcbe03aff72e20857)), closes [#284](https://github.com/andygrunwald/go-jira/issues/284)
+* **tests:** Fix TestIssueService_PostAttachment unit test ([f6b1dca](https://github.com/andygrunwald/go-jira/commit/f6b1dcafcfdd8fe69f842b1053c4030da6c97c7f))
+* removing the use of username field in searching for users ([#297](https://github.com/andygrunwald/go-jira/issues/297)) ([f50cb07](https://github.com/andygrunwald/go-jira/commit/f50cb07b297d79138b13e5ab49ea33965d32f5c1))
+
 ## [1.12.0](https://github.com/andygrunwald/go-jira/compare/v1.11.1...v1.12.0) (2019-12-14)
 
 
@@ -76,6 +102,3 @@ All notable changes to this project will be documented in this file. See [standa
 * Add ResolutionService to retrieve resolutions ([fb1ce22](https://github.com/andygrunwald/go-jira/commit/fb1ce22))
 * Add status category constants ([6223ddd](https://github.com/andygrunwald/go-jira/commit/6223ddd))
 * Add StatusCategory GetList ([049a756](https://github.com/andygrunwald/go-jira/commit/049a756))
-
-
-

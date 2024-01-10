@@ -1,6 +1,7 @@
 package jira
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
@@ -12,6 +13,11 @@ import (
 type CreateMetaInfo struct {
 	Expand   string         `json:"expand,omitempty"`
 	Projects []*MetaProject `json:"projects,omitempty"`
+}
+
+// EditMetaInfo contains information about fields and their attributed to edit a ticket.
+type EditMetaInfo struct {
+	Fields tcontainer.MarshalMap `json:"fields,omitempty"`
 }
 
 // MetaProject is the meta information about a project returned from createmeta api
@@ -42,16 +48,21 @@ type MetaIssueType struct {
 	Fields      tcontainer.MarshalMap `json:"fields,omitempty"`
 }
 
-// GetCreateMeta makes the api call to get the meta information required to create a ticket
-func (s *IssueService) GetCreateMeta(projectkeys string) (*CreateMetaInfo, *Response, error) {
-	return s.GetCreateMetaWithOptions(&GetQueryOptions{ProjectKeys: projectkeys, Expand: "projects.issuetypes.fields"})
+// GetCreateMetaWithContext makes the api call to get the meta information required to create a ticket
+func (s *IssueService) GetCreateMetaWithContext(ctx context.Context, projectkeys string) (*CreateMetaInfo, *Response, error) {
+	return s.GetCreateMetaWithOptionsWithContext(ctx, &GetQueryOptions{ProjectKeys: projectkeys, Expand: "projects.issuetypes.fields"})
 }
 
-// GetCreateMetaWithOptions makes the api call to get the meta information without requiring to have a projectKey
-func (s *IssueService) GetCreateMetaWithOptions(options *GetQueryOptions) (*CreateMetaInfo, *Response, error) {
+// GetCreateMeta wraps GetCreateMetaWithContext using the background context.
+func (s *IssueService) GetCreateMeta(projectkeys string) (*CreateMetaInfo, *Response, error) {
+	return s.GetCreateMetaWithContext(context.Background(), projectkeys)
+}
+
+// GetCreateMetaWithOptionsWithContext makes the api call to get the meta information without requiring to have a projectKey
+func (s *IssueService) GetCreateMetaWithOptionsWithContext(ctx context.Context, options *GetQueryOptions) (*CreateMetaInfo, *Response, error) {
 	apiEndpoint := "rest/api/2/issue/createmeta"
 
-	req, err := s.client.NewRequest("GET", apiEndpoint, nil)
+	req, err := s.client.NewRequestWithContext(ctx, "GET", apiEndpoint, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -73,11 +84,40 @@ func (s *IssueService) GetCreateMetaWithOptions(options *GetQueryOptions) (*Crea
 	return meta, resp, nil
 }
 
+// GetCreateMetaWithOptions wraps GetCreateMetaWithOptionsWithContext using the background context.
+func (s *IssueService) GetCreateMetaWithOptions(options *GetQueryOptions) (*CreateMetaInfo, *Response, error) {
+	return s.GetCreateMetaWithOptionsWithContext(context.Background(), options)
+}
+
+// GetEditMetaWithContext makes the api call to get the edit meta information for an issue
+func (s *IssueService) GetEditMetaWithContext(ctx context.Context, issue *Issue) (*EditMetaInfo, *Response, error) {
+	apiEndpoint := fmt.Sprintf("/rest/api/2/issue/%s/editmeta", issue.Key)
+
+	req, err := s.client.NewRequestWithContext(ctx, "GET", apiEndpoint, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	meta := new(EditMetaInfo)
+	resp, err := s.client.Do(req, meta)
+
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return meta, resp, nil
+}
+
+// GetEditMeta wraps GetEditMetaWithContext using the background context.
+func (s *IssueService) GetEditMeta(issue *Issue) (*EditMetaInfo, *Response, error) {
+	return s.GetEditMetaWithContext(context.Background(), issue)
+}
+
 // GetProjectWithName returns a project with "name" from the meta information received. If not found, this returns nil.
 // The comparison of the name is case insensitive.
 func (m *CreateMetaInfo) GetProjectWithName(name string) *MetaProject {
 	for _, m := range m.Projects {
-		if strings.ToLower(m.Name) == strings.ToLower(name) {
+		if strings.EqualFold(m.Name, name) {
 			return m
 		}
 	}
@@ -88,7 +128,7 @@ func (m *CreateMetaInfo) GetProjectWithName(name string) *MetaProject {
 // The comparison of the name is case insensitive.
 func (m *CreateMetaInfo) GetProjectWithKey(key string) *MetaProject {
 	for _, m := range m.Projects {
-		if strings.ToLower(m.Key) == strings.ToLower(key) {
+		if strings.EqualFold(m.Key, key) {
 			return m
 		}
 	}
@@ -99,7 +139,7 @@ func (m *CreateMetaInfo) GetProjectWithKey(key string) *MetaProject {
 // The comparison of the name is case insensitive
 func (p *MetaProject) GetIssueTypeWithName(name string) *MetaIssueType {
 	for _, m := range p.IssueTypes {
-		if strings.ToLower(m.Name) == strings.ToLower(name) {
+		if strings.EqualFold(m.Name, name) {
 			return m
 		}
 	}
@@ -175,7 +215,7 @@ func (t *MetaIssueType) CheckCompleteAndAvailable(config map[string]string) (boo
 			for name := range mandatory {
 				requiredFields = append(requiredFields, name)
 			}
-			return false, fmt.Errorf("Required field not found in provided jira.fields. Required are: %#v", requiredFields)
+			return false, fmt.Errorf("required field not found in provided jira.fields. Required are: %#v", requiredFields)
 		}
 	}
 
@@ -186,7 +226,7 @@ func (t *MetaIssueType) CheckCompleteAndAvailable(config map[string]string) (boo
 			for name := range all {
 				availableFields = append(availableFields, name)
 			}
-			return false, fmt.Errorf("Fields in jira.fields are not available in jira. Available are: %#v", availableFields)
+			return false, fmt.Errorf("fields in jira.fields are not available in jira. Available are: %#v", availableFields)
 		}
 	}
 

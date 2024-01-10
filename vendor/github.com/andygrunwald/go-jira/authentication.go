@@ -1,6 +1,7 @@
 package jira
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -14,9 +15,9 @@ const (
 	authTypeSession = 2
 )
 
-// AuthenticationService handles authentication for the JIRA instance / API.
+// AuthenticationService handles authentication for the Jira instance / API.
 //
-// JIRA API docs: https://docs.atlassian.com/jira/REST/latest/#authentication
+// Jira API docs: https://docs.atlassian.com/jira/REST/latest/#authentication
 type AuthenticationService struct {
 	client *Client
 
@@ -30,7 +31,7 @@ type AuthenticationService struct {
 	password string
 }
 
-// Session represents a Session JSON response by the JIRA API.
+// Session represents a Session JSON response by the Jira API.
 type Session struct {
 	Self    string `json:"self,omitempty"`
 	Name    string `json:"name,omitempty"`
@@ -47,16 +48,16 @@ type Session struct {
 	Cookies []*http.Cookie
 }
 
-// AcquireSessionCookie creates a new session for a user in JIRA.
-// Once a session has been successfully created it can be used to access any of JIRA's remote APIs and also the web UI by passing the appropriate HTTP Cookie header.
+// AcquireSessionCookieWithContext creates a new session for a user in Jira.
+// Once a session has been successfully created it can be used to access any of Jira's remote APIs and also the web UI by passing the appropriate HTTP Cookie header.
 // The header will by automatically applied to every API request.
 // Note that it is generally preferrable to use HTTP BASIC authentication with the REST API.
-// However, this resource may be used to mimic the behaviour of JIRA's log-in page (e.g. to display log-in errors to a user).
+// However, this resource may be used to mimic the behaviour of Jira's log-in page (e.g. to display log-in errors to a user).
 //
-// JIRA API docs: https://docs.atlassian.com/jira/REST/latest/#auth/1/session
+// Jira API docs: https://docs.atlassian.com/jira/REST/latest/#auth/1/session
 //
 // Deprecated: Use CookieAuthTransport instead
-func (s *AuthenticationService) AcquireSessionCookie(username, password string) (bool, error) {
+func (s *AuthenticationService) AcquireSessionCookieWithContext(ctx context.Context, username, password string) (bool, error) {
 	apiEndpoint := "rest/auth/1/session"
 	body := struct {
 		Username string `json:"username"`
@@ -66,7 +67,7 @@ func (s *AuthenticationService) AcquireSessionCookie(username, password string) 
 		password,
 	}
 
-	req, err := s.client.NewRequest("POST", apiEndpoint, body)
+	req, err := s.client.NewRequestWithContext(ctx, "POST", apiEndpoint, body)
 	if err != nil {
 		return false, err
 	}
@@ -79,10 +80,10 @@ func (s *AuthenticationService) AcquireSessionCookie(username, password string) 
 	}
 
 	if err != nil {
-		return false, fmt.Errorf("Auth at JIRA instance failed (HTTP(S) request). %s", err)
+		return false, fmt.Errorf("auth at Jira instance failed (HTTP(S) request). %s", err)
 	}
 	if resp != nil && resp.StatusCode != 200 {
-		return false, fmt.Errorf("Auth at JIRA instance failed (HTTP(S) request). Status code: %d", resp.StatusCode)
+		return false, fmt.Errorf("auth at Jira instance failed (HTTP(S) request). Status code: %d", resp.StatusCode)
 	}
 
 	s.client.session = session
@@ -91,7 +92,14 @@ func (s *AuthenticationService) AcquireSessionCookie(username, password string) 
 	return true, nil
 }
 
-// SetBasicAuth sets username and password for the basic auth against the JIRA instance.
+// AcquireSessionCookie wraps AcquireSessionCookieWithContext using the background context.
+//
+// Deprecated: Use CookieAuthTransport instead
+func (s *AuthenticationService) AcquireSessionCookie(username, password string) (bool, error) {
+	return s.AcquireSessionCookieWithContext(context.Background(), username, password)
+}
+
+// SetBasicAuth sets username and password for the basic auth against the Jira instance.
 //
 // Deprecated: Use BasicAuthTransport instead
 func (s *AuthenticationService) SetBasicAuth(username, password string) {
@@ -100,7 +108,7 @@ func (s *AuthenticationService) SetBasicAuth(username, password string) {
 	s.authType = authTypeBasic
 }
 
-// Authenticated reports if the current Client has authentication details for JIRA
+// Authenticated reports if the current Client has authentication details for Jira
 func (s *AuthenticationService) Authenticated() bool {
 	if s != nil {
 		if s.authType == authTypeSession {
@@ -113,29 +121,30 @@ func (s *AuthenticationService) Authenticated() bool {
 	return false
 }
 
-// Logout logs out the current user that has been authenticated and the session in the client is destroyed.
+// LogoutWithContext logs out the current user that has been authenticated and the session in the client is destroyed.
 //
-// JIRA API docs: https://docs.atlassian.com/jira/REST/latest/#auth/1/session
+// Jira API docs: https://docs.atlassian.com/jira/REST/latest/#auth/1/session
 //
 // Deprecated: Use CookieAuthTransport to create base client.  Logging out is as simple as not using the
 // client anymore
-func (s *AuthenticationService) Logout() error {
+func (s *AuthenticationService) LogoutWithContext(ctx context.Context) error {
 	if s.authType != authTypeSession || s.client.session == nil {
 		return fmt.Errorf("no user is authenticated")
 	}
 
 	apiEndpoint := "rest/auth/1/session"
-	req, err := s.client.NewRequest("DELETE", apiEndpoint, nil)
+	req, err := s.client.NewRequestWithContext(ctx, "DELETE", apiEndpoint, nil)
 	if err != nil {
-		return fmt.Errorf("Creating the request to log the user out failed : %s", err)
+		return fmt.Errorf("creating the request to log the user out failed : %s", err)
 	}
 
 	resp, err := s.client.Do(req, nil)
 	if err != nil {
-		return fmt.Errorf("Error sending the logout request: %s", err)
+		return fmt.Errorf("error sending the logout request: %s", err)
 	}
+	defer resp.Body.Close()
 	if resp.StatusCode != 204 {
-		return fmt.Errorf("The logout was unsuccessful with status %d", resp.StatusCode)
+		return fmt.Errorf("the logout was unsuccessful with status %d", resp.StatusCode)
 	}
 
 	// If logout successful, delete session
@@ -145,43 +154,55 @@ func (s *AuthenticationService) Logout() error {
 
 }
 
-// GetCurrentUser gets the details of the current user.
+// Logout wraps LogoutWithContext using the background context.
 //
-// JIRA API docs: https://docs.atlassian.com/jira/REST/latest/#auth/1/session
-func (s *AuthenticationService) GetCurrentUser() (*Session, error) {
+// Deprecated: Use CookieAuthTransport to create base client.  Logging out is as simple as not using the
+// client anymore
+func (s *AuthenticationService) Logout() error {
+	return s.LogoutWithContext(context.Background())
+}
+
+// GetCurrentUserWithContext gets the details of the current user.
+//
+// Jira API docs: https://docs.atlassian.com/jira/REST/latest/#auth/1/session
+func (s *AuthenticationService) GetCurrentUserWithContext(ctx context.Context) (*Session, error) {
 	if s == nil {
-		return nil, fmt.Errorf("AUthenticaiton Service is not instantiated")
+		return nil, fmt.Errorf("authentication Service is not instantiated")
 	}
 	if s.authType != authTypeSession || s.client.session == nil {
-		return nil, fmt.Errorf("No user is authenticated yet")
+		return nil, fmt.Errorf("no user is authenticated yet")
 	}
 
 	apiEndpoint := "rest/auth/1/session"
-	req, err := s.client.NewRequest("GET", apiEndpoint, nil)
+	req, err := s.client.NewRequestWithContext(ctx, "GET", apiEndpoint, nil)
 	if err != nil {
-		return nil, fmt.Errorf("Could not create request for getting user info : %s", err)
+		return nil, fmt.Errorf("could not create request for getting user info : %s", err)
 	}
 
 	resp, err := s.client.Do(req, nil)
 	if err != nil {
-		return nil, fmt.Errorf("Error sending request to get user info : %s", err)
+		return nil, fmt.Errorf("error sending request to get user info : %s", err)
 	}
-	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("Getting user info failed with status : %d", resp.StatusCode)
-	}
-
 	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("getting user info failed with status : %d", resp.StatusCode)
+	}
 	ret := new(Session)
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("Couldn't read body from the response : %s", err)
+		return nil, fmt.Errorf("couldn't read body from the response : %s", err)
 	}
 
 	err = json.Unmarshal(data, &ret)
 
 	if err != nil {
-		return nil, fmt.Errorf("Could not unmarshall received user info : %s", err)
+		return nil, fmt.Errorf("could not unmarshall received user info : %s", err)
 	}
 
 	return ret, nil
+}
+
+// GetCurrentUser wraps GetCurrentUserWithContext using the background context.
+func (s *AuthenticationService) GetCurrentUser() (*Session, error) {
+	return s.GetCurrentUserWithContext(context.Background())
 }

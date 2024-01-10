@@ -1,11 +1,15 @@
 package jira
 
-import "github.com/google/go-querystring/query"
-import "fmt"
+import (
+	"context"
+	"fmt"
 
-// FilterService handles fields for the JIRA instance / API.
+	"github.com/google/go-querystring/query"
+)
+
+// FilterService handles fields for the Jira instance / API.
 //
-// JIRA API docs: https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-group-Filter
+// Jira API docs: https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-group-Filter
 type FilterService struct {
 	client *Client
 }
@@ -116,23 +120,21 @@ type FilterSearchOptions struct {
 	Expand string `url:"expand,omitempty"`
 }
 
-// GetList retrieves all filters from Jira
-func (fs *FilterService) GetList() ([]*Filter, *Response, error) {
+// GetListWithContext retrieves all filters from Jira
+func (fs *FilterService) GetListWithContext(ctx context.Context) ([]*Filter, *Response, error) {
 
 	options := &GetQueryOptions{}
 	apiEndpoint := "rest/api/2/filter"
-	req, err := fs.client.NewRequest("GET", apiEndpoint, nil)
+	req, err := fs.client.NewRequestWithContext(ctx, "GET", apiEndpoint, nil)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	if options != nil {
-		q, err := query.Values(options)
-		if err != nil {
-			return nil, nil, err
-		}
-		req.URL.RawQuery = q.Encode()
+	q, err := query.Values(options)
+	if err != nil {
+		return nil, nil, err
 	}
+	req.URL.RawQuery = q.Encode()
 
 	filters := []*Filter{}
 	resp, err := fs.client.Do(req, &filters)
@@ -143,10 +145,15 @@ func (fs *FilterService) GetList() ([]*Filter, *Response, error) {
 	return filters, resp, err
 }
 
-// GetFavouriteList retrieves the user's favourited filters from Jira
-func (fs *FilterService) GetFavouriteList() ([]*Filter, *Response, error) {
+// GetList wraps GetListWithContext using the background context.
+func (fs *FilterService) GetList() ([]*Filter, *Response, error) {
+	return fs.GetListWithContext(context.Background())
+}
+
+// GetFavouriteListWithContext retrieves the user's favourited filters from Jira
+func (fs *FilterService) GetFavouriteListWithContext(ctx context.Context) ([]*Filter, *Response, error) {
 	apiEndpoint := "rest/api/2/filter/favourite"
-	req, err := fs.client.NewRequest("GET", apiEndpoint, nil)
+	req, err := fs.client.NewRequestWithContext(ctx, "GET", apiEndpoint, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -159,10 +166,15 @@ func (fs *FilterService) GetFavouriteList() ([]*Filter, *Response, error) {
 	return filters, resp, err
 }
 
-// Get retrieves a single Filter from Jira
-func (fs *FilterService) Get(filterID int) (*Filter, *Response, error) {
+// GetFavouriteList wraps GetFavouriteListWithContext using the background context.
+func (fs *FilterService) GetFavouriteList() ([]*Filter, *Response, error) {
+	return fs.GetFavouriteListWithContext(context.Background())
+}
+
+// GetWithContext retrieves a single Filter from Jira
+func (fs *FilterService) GetWithContext(ctx context.Context, filterID int) (*Filter, *Response, error) {
 	apiEndpoint := fmt.Sprintf("rest/api/2/filter/%d", filterID)
-	req, err := fs.client.NewRequest("GET", apiEndpoint, nil)
+	req, err := fs.client.NewRequestWithContext(ctx, "GET", apiEndpoint, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -176,16 +188,21 @@ func (fs *FilterService) Get(filterID int) (*Filter, *Response, error) {
 	return filter, resp, err
 }
 
-// GetMyFilters retrieves the my Filters.
+// Get wraps GetWithContext using the background context.
+func (fs *FilterService) Get(filterID int) (*Filter, *Response, error) {
+	return fs.GetWithContext(context.Background(), filterID)
+}
+
+// GetMyFiltersWithContext retrieves the my Filters.
 //
 // https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-rest-api-3-filter-my-get
-func (fs *FilterService) GetMyFilters(opts *GetMyFiltersQueryOptions) ([]*Filter, *Response, error) {
+func (fs *FilterService) GetMyFiltersWithContext(ctx context.Context, opts *GetMyFiltersQueryOptions) ([]*Filter, *Response, error) {
 	apiEndpoint := "rest/api/3/filter/my"
 	url, err := addOptions(apiEndpoint, opts)
 	if err != nil {
 		return nil, nil, err
 	}
-	req, err := fs.client.NewRequest("GET", url, nil)
+	req, err := fs.client.NewRequestWithContext(ctx, "GET", url, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -199,16 +216,21 @@ func (fs *FilterService) GetMyFilters(opts *GetMyFiltersQueryOptions) ([]*Filter
 	return filters, resp, nil
 }
 
-// Search will search for filter according to the search options
+// GetMyFilters wraps GetMyFiltersWithContext using the background context.
+func (fs *FilterService) GetMyFilters(opts *GetMyFiltersQueryOptions) ([]*Filter, *Response, error) {
+	return fs.GetMyFiltersWithContext(context.Background(), opts)
+}
+
+// SearchWithContext will search for filter according to the search options
 //
-// JIRA API docs: https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-rest-api-3-filter-search-get
-func (fs *FilterService) Search(opt *FilterSearchOptions) (*FiltersList, *Response, error) {
+// Jira API docs: https://developer.atlassian.com/cloud/jira/platform/rest/v3/#api-rest-api-3-filter-search-get
+func (fs *FilterService) SearchWithContext(ctx context.Context, opt *FilterSearchOptions) (*FiltersList, *Response, error) {
 	apiEndpoint := "rest/api/3/filter/search"
 	url, err := addOptions(apiEndpoint, opt)
 	if err != nil {
 		return nil, nil, err
 	}
-	req, err := fs.client.NewRequest("GET", url, nil)
+	req, err := fs.client.NewRequestWithContext(ctx, "GET", url, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -221,4 +243,9 @@ func (fs *FilterService) Search(opt *FilterSearchOptions) (*FiltersList, *Respon
 	}
 
 	return filters, resp, err
+}
+
+// Search wraps SearchWithContext using the background context.
+func (fs *FilterService) Search(opt *FilterSearchOptions) (*FiltersList, *Response, error) {
+	return fs.SearchWithContext(context.Background(), opt)
 }

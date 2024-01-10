@@ -1,11 +1,12 @@
-# github.com/Azure/go-ntlmssp v0.0.0-20200615164410-66371956d46c
+# github.com/Azure/go-ntlmssp v0.0.0-20221128193559-754e69321358
 ## explicit
 github.com/Azure/go-ntlmssp
-# github.com/BurntSushi/toml v0.3.1
-## explicit
+# github.com/BurntSushi/toml v1.3.2
+## explicit; go 1.16
 github.com/BurntSushi/toml
-# github.com/andygrunwald/go-jira v1.12.0
-## explicit; go 1.12
+github.com/BurntSushi/toml/internal
+# github.com/andygrunwald/go-jira v1.16.0
+## explicit; go 1.15
 github.com/andygrunwald/go-jira
 # github.com/aymerick/douceur v0.2.0
 ## explicit
@@ -14,13 +15,6 @@ github.com/aymerick/douceur/parser
 # github.com/codegangsta/negroni v1.0.0
 ## explicit
 github.com/codegangsta/negroni
-# github.com/denisenkom/go-mssqldb v0.10.1-0.20210728001037-ee2fbc25fd8f
-## explicit; go 1.11
-github.com/denisenkom/go-mssqldb
-github.com/denisenkom/go-mssqldb/internal/cp
-github.com/denisenkom/go-mssqldb/internal/decimal
-github.com/denisenkom/go-mssqldb/internal/querytext
-github.com/denisenkom/go-mssqldb/msdsn
 # github.com/dgrijalva/jwt-go v3.2.0+incompatible
 ## explicit
 github.com/dgrijalva/jwt-go
@@ -36,45 +30,57 @@ github.com/documize/html-diff
 # github.com/documize/slug v1.1.1
 ## explicit
 github.com/documize/slug
-# github.com/fatih/structs v1.0.0
+# github.com/fatih/structs v1.1.0
 ## explicit
 github.com/fatih/structs
-# github.com/go-asn1-ber/asn1-ber v1.5.3
+# github.com/felixge/httpsnoop v1.0.3
+## explicit; go 1.13
+github.com/felixge/httpsnoop
+# github.com/go-asn1-ber/asn1-ber v1.5.5
 ## explicit; go 1.13
 github.com/go-asn1-ber/asn1-ber
-# github.com/go-ldap/ldap/v3 v3.4.1
-## explicit; go 1.13
+# github.com/go-ldap/ldap/v3 v3.4.6
+## explicit; go 1.14
 github.com/go-ldap/ldap/v3
-# github.com/go-sql-driver/mysql v1.6.0
-## explicit; go 1.10
+# github.com/go-sql-driver/mysql v1.7.1
+## explicit; go 1.13
 github.com/go-sql-driver/mysql
-# github.com/golang-sql/civil v0.0.0-20190719163853-cb61b32ac6fe
+# github.com/golang-jwt/jwt/v4 v4.5.0
+## explicit; go 1.16
+github.com/golang-jwt/jwt/v4
+# github.com/golang-sql/civil v0.0.0-20220223132316-b832511892a9
 ## explicit
 github.com/golang-sql/civil
-# github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
-## explicit
+# github.com/golang-sql/sqlexp v0.1.0
+## explicit; go 1.16
+github.com/golang-sql/sqlexp
+# github.com/golang/glog v1.2.0
+## explicit; go 1.19
 github.com/golang/glog
-# github.com/google/go-cmp v0.4.0
-## explicit; go 1.8
-# github.com/google/go-querystring v1.0.0
-## explicit
+github.com/golang/glog/internal/logsink
+github.com/golang/glog/internal/stackdump
+# github.com/google/go-querystring v1.1.0
+## explicit; go 1.10
 github.com/google/go-querystring/query
-# github.com/gorilla/css v1.0.0
+# github.com/google/uuid v1.3.1
 ## explicit
+github.com/google/uuid
+# github.com/gorilla/css v1.0.1
+## explicit; go 1.20
 github.com/gorilla/css/scanner
-# github.com/gorilla/handlers v1.4.2
-## explicit
+# github.com/gorilla/handlers v1.5.2
+## explicit; go 1.20
 github.com/gorilla/handlers
-# github.com/gorilla/mux v1.7.4
-## explicit; go 1.12
+# github.com/gorilla/mux v1.8.1
+## explicit; go 1.20
 github.com/gorilla/mux
-# github.com/jmoiron/sqlx v1.2.0
-## explicit
+# github.com/jmoiron/sqlx v1.3.5
+## explicit; go 1.10
 github.com/jmoiron/sqlx
 github.com/jmoiron/sqlx/reflectx
-# github.com/kr/pretty v0.2.0
+# github.com/kr/pretty v0.3.1
 ## explicit; go 1.12
-# github.com/lib/pq v1.10.2
+# github.com/lib/pq v1.10.9
 ## explicit; go 1.13
 github.com/lib/pq
 github.com/lib/pq/oid
@@ -82,10 +88,20 @@ github.com/lib/pq/scram
 # github.com/mb0/diff v0.0.0-20131118162322-d8d9a906c24d
 ## explicit
 github.com/mb0/diff
-# github.com/microcosm-cc/bluemonday v1.0.17
-## explicit; go 1.16
+# github.com/microcosm-cc/bluemonday v1.0.26
+## explicit; go 1.21
 github.com/microcosm-cc/bluemonday
 github.com/microcosm-cc/bluemonday/css
+# github.com/microsoft/go-mssqldb v1.5.0
+## explicit; go 1.13
+github.com/microsoft/go-mssqldb
+github.com/microsoft/go-mssqldb/integratedauth
+github.com/microsoft/go-mssqldb/integratedauth/ntlm
+github.com/microsoft/go-mssqldb/integratedauth/winsspi
+github.com/microsoft/go-mssqldb/internal/cp
+github.com/microsoft/go-mssqldb/internal/decimal
+github.com/microsoft/go-mssqldb/internal/querytext
+github.com/microsoft/go-mssqldb/msdsn
 # github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 ## explicit
 github.com/nu7hatch/gouuid
@@ -98,17 +114,17 @@ github.com/rainycape/unidecode
 # github.com/shurcooL/sanitized_anchor_name v1.0.0
 ## explicit
 github.com/shurcooL/sanitized_anchor_name
-# github.com/trivago/tgo v1.0.1
+# github.com/trivago/tgo v1.0.7
 ## explicit
 github.com/trivago/tgo/tcontainer
 github.com/trivago/tgo/treflect
-# golang.org/x/crypto v0.0.0-20200604202706-70a84ac30bf9
-## explicit; go 1.11
+# golang.org/x/crypto v0.18.0
+## explicit; go 1.18
 golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blowfish
 golang.org/x/crypto/md4
-# golang.org/x/net v0.0.0-20210614182718-04defd469f4e
-## explicit; go 1.17
+# golang.org/x/net v0.20.0
+## explicit; go 1.18
 golang.org/x/net/context
 golang.org/x/net/context/ctxhttp
 golang.org/x/net/html
@@ -116,11 +132,11 @@ golang.org/x/net/html/atom
 # gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc
 ## explicit
 gopkg.in/alexcesaro/quotedprintable.v3
-# gopkg.in/cas.v2 v2.1.0
-## explicit
+# gopkg.in/cas.v2 v2.2.2
+## explicit; go 1.12
 gopkg.in/cas.v2
-# gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127
-## explicit
-# gopkg.in/yaml.v2 v2.2.2
-## explicit
+# gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c
+## explicit; go 1.11
+# gopkg.in/yaml.v2 v2.4.0
+## explicit; go 1.15
 gopkg.in/yaml.v2
