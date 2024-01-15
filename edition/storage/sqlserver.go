@@ -346,7 +346,8 @@ func (p SQLServerProvider) JSONGetValue(column, attribute string) string {
 // See: http://sqlserverbuilds.blogspot.com
 func (p SQLServerProvider) VerfiyVersion(dbVersion string) (bool, string) {
 
-	if strings.HasPrefix(dbVersion, "13.") ||
+	if strings.HasPrefix(dbVersion, "12.") ||
+		strings.HasPrefix(dbVersion, "13.") ||
 		strings.HasPrefix(dbVersion, "14.") ||
 		strings.HasPrefix(dbVersion, "15.") ||
 		strings.HasPrefix(dbVersion, "16.") {

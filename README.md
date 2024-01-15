@@ -12,9 +12,9 @@ All you need to provide is your database -- PostgreSQL, Microsoft SQL Server or 
 
 ## Latest Release
 
-[Community edition: v5.11.0](https://github.com/documize/community/releases)
+[Community edition: v5.11.1](https://github.com/documize/community/releases)
 
-[Community+ edition: v5.11.0](https://www.documize.com/community/get-started)
+[Community+ edition: v5.11.1](https://www.documize.com/community/get-started)
 
 The Community+ edition is the "enterprise" offering with advanced capabilities and customer support:
 
@@ -47,6 +47,7 @@ For all database types, Full-Text Search (FTS) support is mandatory.
 
 - PostgreSQL (v9.6+)
 - Microsoft SQL Server (2016+ with FTS)
+- Microsoft SQL Azure (v12+)
 - MySQL (v5.7.10+ and v8.0.12+)
 - Percona (v5.7.16-10+)
 - MariaDB (10.3.0+)
