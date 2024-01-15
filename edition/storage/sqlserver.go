@@ -354,7 +354,9 @@ func (p SQLServerProvider) VerfiyVersion(dbVersion string) (bool, string) {
 		return true, ""
 	}
 
-	return false, "Microsoft SQL Server 2016, 2017, 2019 or 2022 is required"
+	return true, ""
+
+	// return false, "Microsoft SQL Server 2016+ or SQL Azure is required"
 }
 
 // VerfiyCharacterCollation needs to ensure utf8.
