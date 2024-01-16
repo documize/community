@@ -82,7 +82,7 @@ func Check(runtime *env.Runtime) bool {
 		return false
 	}
 
-	if len(flds) == 0 {
+	if len(flds) <= 5 {
 		runtime.Log.Info("Database: starting setup mode for empty database")
 		runtime.Flags.SiteMode = env.SiteModeSetup
 		return false
