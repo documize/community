@@ -7,6 +7,7 @@ echo "Building Ember assets..."
 cd gui
 call ember b -o dist-prod/ --environment=production
 ::Call allows the rest of the file to run
+cd ..
 
 rd /s /q edition\static\public
 mkdir edition\static\public
@@ -25,18 +26,26 @@ robocopy /e /NFL /NDL /NJH gui\dist-prod\sections edition\static\public\sections
 echo "Copying i18n folder"
 robocopy /e /NFL /NDL /NJH gui\dist-prod\i18n edition\static\public\i18n
 
+echo "Copying static files"
 copy gui\dist-prod\*.* edition\static
+
+echo "Copying favicon.ico"
 copy gui\dist-prod\favicon.ico edition\static\public
+
+echo "Copying manifest.json"
 copy gui\dist-prod\manifest.json edition\static\public
 
+echo "Copying mail templates"
 rd /s /q edition\static\mail
 mkdir edition\static\mail
 copy domain\mail\*.html edition\static\mail
+
+echo "Copying database templates"
 copy core\database\templates\*.html edition\static
 
 rd /s /q edition\static\i18n
 mkdir edition\static\i18n
-robocopy /e /NFL /NDL /NJH gui\dist-prod\i18n\*.json edition\static\i18n
+robocopy /e /NFL /NDL /NJH gui\dist-prod\i18n edition\static\i18n *.json
 
 rd /s /q edition\static\scripts
 mkdir edition\static\scripts
@@ -51,7 +60,7 @@ robocopy /e /NFL /NDL /NJH core\database\scripts\sqlserver edition\static\script
 
 rd /s /q edition\static\onboard
 mkdir edition\static\onboard
-robocopy /e /NFL /NDL /NJH domain\onboard\*.json  edition\static\onboard
+robocopy /e /NFL /NDL /NJH domain\onboard  edition\static\onboard *.json
 
 echo "Compiling Windows"
 set GOOS=windows
