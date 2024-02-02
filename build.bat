@@ -29,7 +29,7 @@ robocopy /e /NFL /NDL /NJH gui\dist-prod\i18n edition\static\public\i18n
 echo "Copying static files"
 copy gui\dist-prod\*.* edition\static
 
-echo "Copying favicin.ico"
+echo "Copying favicon.ico"
 copy gui\dist-prod\favicon.ico edition\static\public
 
 echo "Copying manifest.json"
