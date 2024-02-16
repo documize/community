@@ -1,7 +1,8 @@
 package ldap
 
 import (
-	"fmt"
+	"log"
+
 	ber "github.com/go-asn1-ber/asn1-ber"
 )
 
@@ -24,9 +25,7 @@ type ModifyDNRequest struct {
 // RDN of the given DN.
 //
 // A call like
-//
-//	mdnReq := NewModifyDNRequest("uid=someone,dc=example,dc=org", "uid=newname", true, "")
-//
+//   mdnReq := NewModifyDNRequest("uid=someone,dc=example,dc=org", "uid=newname", true, "")
 // will setup the request to just rename uid=someone,dc=example,dc=org to
 // uid=newname,dc=example,dc=org.
 func NewModifyDNRequest(dn string, rdn string, delOld bool, newSup string) *ModifyDNRequest {
@@ -95,8 +94,7 @@ func (l *Conn) ModifyDN(m *ModifyDNRequest) error {
 			return err
 		}
 	} else {
-		return fmt.Errorf("ldap: unexpected response: %d", packet.Children[1].Tag)
+		log.Printf("Unexpected Response: %d", packet.Children[1].Tag)
 	}
-
 	return nil
 }

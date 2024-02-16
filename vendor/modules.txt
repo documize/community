@@ -1,4 +1,4 @@
-# github.com/Azure/go-ntlmssp v0.0.0-20221128193559-754e69321358
+# github.com/Azure/go-ntlmssp v0.0.0-20200615164410-66371956d46c
 ## explicit
 github.com/Azure/go-ntlmssp
 # github.com/BurntSushi/toml v1.3.2
@@ -39,8 +39,8 @@ github.com/felixge/httpsnoop
 # github.com/go-asn1-ber/asn1-ber v1.5.5
 ## explicit; go 1.13
 github.com/go-asn1-ber/asn1-ber
-# github.com/go-ldap/ldap/v3 v3.4.6
-## explicit; go 1.14
+# github.com/go-ldap/ldap/v3 v3.4.1
+## explicit; go 1.13
 github.com/go-ldap/ldap/v3
 # github.com/go-sql-driver/mysql v1.7.1
 ## explicit; go 1.13
@@ -62,9 +62,6 @@ github.com/golang/glog/internal/stackdump
 # github.com/google/go-querystring v1.1.0
 ## explicit; go 1.10
 github.com/google/go-querystring/query
-# github.com/google/uuid v1.3.1
-## explicit
-github.com/google/uuid
 # github.com/gorilla/css v1.0.1
 ## explicit; go 1.20
 github.com/gorilla/css/scanner

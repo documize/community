@@ -5,55 +5,26 @@ import (
 	"strings"
 )
 
-type authheader []string
+type authheader string
 
 func (h authheader) IsBasic() bool {
-	for _, s := range h {
-		if strings.HasPrefix(string(s), "Basic ") {
-			return true
-		}
-	}
-	return false
-}
-
-func (h authheader) Basic() string {
-	for _, s := range h {
-		if strings.HasPrefix(string(s), "Basic ") {
-			return s
-		}
-	}
-	return ""
+	return strings.HasPrefix(string(h), "Basic ")
 }
 
 func (h authheader) IsNegotiate() bool {
-	for _, s := range h {
-		if strings.HasPrefix(string(s), "Negotiate") {
-			return true
-		}
-	}
-	return false
+	return strings.HasPrefix(string(h), "Negotiate")
 }
 
 func (h authheader) IsNTLM() bool {
-	for _, s := range h {
-		if strings.HasPrefix(string(s), "NTLM") {
-			return true
-		}
-	}
-	return false
+	return strings.HasPrefix(string(h), "NTLM")
 }
 
 func (h authheader) GetData() ([]byte, error) {
-	for _, s := range h {
-		if strings.HasPrefix(string(s), "NTLM") || strings.HasPrefix(string(s), "Negotiate") || strings.HasPrefix(string(s), "Basic ") {
-			p := strings.Split(string(s), " ")
-			if len(p) < 2 {
-				return nil, nil
-			}
-			return base64.StdEncoding.DecodeString(string(p[1]))
-		}
+	p := strings.Split(string(h), " ")
+	if len(p) < 2 {
+		return nil, nil
 	}
-	return nil, nil
+	return base64.StdEncoding.DecodeString(string(p[1]))
 }
 
 func (h authheader) GetBasicCreds() (username, password string, err error) {

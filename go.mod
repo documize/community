@@ -11,7 +11,7 @@ require (
 	github.com/documize/glick v0.0.0-20160503134043-a8ccbef88237
 	github.com/documize/html-diff v0.0.0-20160503140253-f61c192c7796
 	github.com/documize/slug v1.1.1
-	github.com/go-ldap/ldap/v3 v3.4.6
+	github.com/go-ldap/ldap/v3 v3.4.1
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/golang/glog v1.2.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
@@ -36,7 +36,7 @@ require (
 )
 
 require (
-	github.com/Azure/go-ntlmssp v0.0.0-20221128193559-754e69321358 // indirect
+	github.com/Azure/go-ntlmssp v0.0.0-20200615164410-66371956d46c // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/felixge/httpsnoop v1.0.3 // indirect
@@ -44,7 +44,6 @@ require (
 	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
 	github.com/golang-sql/civil v0.0.0-20220223132316-b832511892a9 // indirect
 	github.com/golang-sql/sqlexp v0.1.0 // indirect
-	github.com/google/uuid v1.3.1 // indirect
 	github.com/gorilla/css v1.0.1 // indirect
 	github.com/trivago/tgo v1.0.7 // indirect
 )

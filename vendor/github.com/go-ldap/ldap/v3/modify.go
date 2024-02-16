@@ -2,7 +2,7 @@ package ldap
 
 import (
 	"errors"
-	"fmt"
+	"log"
 
 	ber "github.com/go-asn1-ber/asn1-ber"
 )
@@ -127,9 +127,8 @@ func (l *Conn) Modify(modifyRequest *ModifyRequest) error {
 			return err
 		}
 	} else {
-		return fmt.Errorf("ldap: unexpected response: %d", packet.Children[1].Tag)
+		log.Printf("Unexpected Response: %d", packet.Children[1].Tag)
 	}
-
 	return nil
 }
 
@@ -137,8 +136,6 @@ func (l *Conn) Modify(modifyRequest *ModifyRequest) error {
 type ModifyResult struct {
 	// Controls are the returned controls
 	Controls []Control
-	// Referral is the returned referral
-	Referral string
 }
 
 // ModifyWithResult performs the ModifyRequest and returns the result
@@ -161,10 +158,9 @@ func (l *Conn) ModifyWithResult(modifyRequest *ModifyRequest) (*ModifyResult, er
 
 	switch packet.Children[1].Tag {
 	case ApplicationModifyResponse:
-		if err = GetLDAPError(packet); err != nil {
-			result.Referral = getReferral(err, packet)
-
-			return result, err
+		err := GetLDAPError(packet)
+		if err != nil {
+			return nil, err
 		}
 		if len(packet.Children) == 3 {
 			for _, child := range packet.Children[2].Children {

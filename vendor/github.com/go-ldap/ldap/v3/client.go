@@ -1,7 +1,6 @@
 package ldap
 
 import (
-	"context"
 	"crypto/tls"
 	"time"
 )
@@ -10,18 +9,14 @@ import (
 type Client interface {
 	Start()
 	StartTLS(*tls.Config) error
-	Close() error
-	GetLastError() error
+	Close()
 	IsClosing() bool
 	SetTimeout(time.Duration)
-	TLSConnectionState() (tls.ConnectionState, bool)
 
 	Bind(username, password string) error
 	UnauthenticatedBind(username string) error
 	SimpleBind(*SimpleBindRequest) (*SimpleBindResult, error)
 	ExternalBind() error
-	NTLMUnauthenticatedBind(domain, username string) error
-	Unbind() error
 
 	Add(*AddRequest) error
 	Del(*DelRequest) error
@@ -33,9 +28,5 @@ type Client interface {
 	PasswordModify(*PasswordModifyRequest) (*PasswordModifyResult, error)
 
 	Search(*SearchRequest) (*SearchResult, error)
-	SearchAsync(ctx context.Context, searchRequest *SearchRequest, bufferSize int) Response
 	SearchWithPaging(searchRequest *SearchRequest, pagingSize uint32) (*SearchResult, error)
-	DirSync(searchRequest *SearchRequest, flags, maxAttrCount int64, cookie []byte) (*SearchResult, error)
-	DirSyncAsync(ctx context.Context, searchRequest *SearchRequest, bufferSize int, flags, maxAttrCount int64, cookie []byte) Response
-	Syncrepl(ctx context.Context, searchRequest *SearchRequest, bufferSize int, mode ControlSyncRequestMode, cookie []byte, reloadHint bool) Response
 }

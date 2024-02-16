@@ -34,8 +34,7 @@ func (l *Conn) Compare(dn, attribute, value string) (bool, error) {
 	msgCtx, err := l.doRequest(&CompareRequest{
 		DN:        dn,
 		Attribute: attribute,
-		Value:     value,
-	})
+		Value:     value})
 	if err != nil {
 		return false, err
 	}
