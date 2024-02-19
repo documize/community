@@ -228,7 +228,7 @@ CREATE TABLE dmz_org (
     c_title varchar(500) COLLATE ucs_basic NOT NULL,
     c_message varchar(500) COLLATE ucs_basic NOT NULL,
     c_domain varchar(200) COLLATE ucs_basic NOT NULL DEFAULT '',
-    c_service varchar(200) COLLATE ucs_basic NOT NULL DEFAULT 'https://api.documize.com',
+    c_service varchar(200) COLLATE ucs_basic NOT NULL DEFAULT '',
     c_email varchar(500) COLLATE ucs_basic NOT NULL DEFAULT '',
     c_anonaccess bool NOT NULL DEFAULT '0',
     c_authprovider varchar(20) COLLATE ucs_basic NOT NULL DEFAULT 'documize',

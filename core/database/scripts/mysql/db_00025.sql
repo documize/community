@@ -36,7 +36,7 @@ ALTER TABLE dmz_org
     CHANGE `title` `c_title` VARCHAR(500) NOT NULL,
     CHANGE `message` `c_message` VARCHAR(500) NOT NULL,
     CHANGE `domain` `c_domain` VARCHAR(200) NOT NULL DEFAULT '',
-    CHANGE `service` `c_service` VARCHAR(200) NOT NULL DEFAULT 'https://api.documize.com',
+    CHANGE `service` `c_service` VARCHAR(200) NOT NULL DEFAULT '',
     CHANGE `email` `c_email` VARCHAR(500) NOT NULL DEFAULT '',
     CHANGE `allowanonymousaccess` `c_anonaccess` BOOL NOT NULL DEFAULT 0,
     CHANGE `authprovider` `c_authprovider` CHAR(20) NOT NULL DEFAULT 'documize',

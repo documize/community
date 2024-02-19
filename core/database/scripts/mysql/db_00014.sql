@@ -1,3 +1,3 @@
 /* community edition */
-ALTER TABLE organization ADD COLUMN `service` VARCHAR(100) NOT NULL DEFAULT 'https://api.documize.com' AFTER `domain`;
+ALTER TABLE organization ADD COLUMN `service` VARCHAR(100) NOT NULL DEFAULT '' AFTER `domain`;
 

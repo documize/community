@@ -212,7 +212,7 @@ CREATE TABLE dmz_org (
     c_title NVARCHAR(500) COLLATE Latin1_General_CS_AS NOT NULL,
     c_message NVARCHAR(500) COLLATE Latin1_General_CS_AS NOT NULL,
     c_domain NVARCHAR(200) COLLATE Latin1_General_CS_AS NOT NULL DEFAULT '',
-    c_service NVARCHAR(200) COLLATE Latin1_General_CS_AS NOT NULL DEFAULT 'https://api.documize.com',
+    c_service NVARCHAR(200) COLLATE Latin1_General_CS_AS NOT NULL DEFAULT '',
     c_email NVARCHAR(500) COLLATE Latin1_General_CS_AS NOT NULL DEFAULT '',
     c_anonaccess BIT NOT NULL DEFAULT '0',
     c_authprovider NVARCHAR(20) COLLATE Latin1_General_CS_AS NOT NULL DEFAULT 'documize',
