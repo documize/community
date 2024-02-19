@@ -11,52 +11,29 @@ environment:
   SQLUSER: sa
   SQLPASSWORD: Password12!
   DATABASE: test
-  GOVERSION: 113
+  GOVERSION: 117
+  COLUMNENCRYPTION:
+  APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
   RACE: -race -cpu 4
   TAGS:
   matrix:
-    - GOVERSION: 110
-      SQLINSTANCE: SQL2017
-    - GOVERSION: 111
-      SQLINSTANCE: SQL2017
-    - GOVERSION: 112
-      SQLINSTANCE: SQL2017
     - SQLINSTANCE: SQL2017
-    - SQLINSTANCE: SQL2016
-    - SQLINSTANCE: SQL2014
-    - SQLINSTANCE: SQL2012SP1
-    - SQLINSTANCE: SQL2008R2SP2
-
-    #  Go 1.14+ and SQL2019 are available on the Visual Studio 2019 image only
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-      GOVERSION: 114
+    - GOVERSION: 118
+      SQLINSTANCE: SQL2017
+    - GOVERSION: 120
+      RACE:
       SQLINSTANCE: SQL2019
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-      GOVERSION: 115
-      SQLINSTANCE: SQL2019
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-      GOVERSION: 115
-      SQLINSTANCE: SQL2017
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-      GOVERSION: 116
-      SQLINSTANCE: SQL2017
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-      GOVERSION: 117
-      SQLINSTANCE: SQL2017
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-      GOVERSION: 118
-      SQLINSTANCE: SQL2017
+      COLUMNENCRYPTION: 1
       # Cover 32bit and named pipes protocol
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-      GOVERSION: 118-x86
+    - GOVERSION: 119-x86
       SQLINSTANCE: SQL2017
       GOARCH: 386
       RACE:
       PROTOCOL: np
       TAGS: -tags np
       # Cover SSPI and lpc protocol
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-      GOVERSION: 118
+    - GOVERSION: 120
+      RACE:
       SQLINSTANCE: SQL2019
       PROTOCOL: lpc
       TAGS: -tags sm
@@ -67,9 +44,6 @@ install:
   - set PATH=%GOPATH%\bin;%GOROOT%\bin;%PATH%
   - go version
   - go env
-  - go get -u github.com/golang-sql/civil
-  - go get -u github.com/golang-sql/sqlexp
-  - go get -u golang.org/x/crypto/md4
 
 build_script:
   - go build

@@ -250,6 +250,10 @@ func (b *Bulk) createColMetadata() []byte {
 	buf.WriteByte(byte(tokenColMetadata))                              // token
 	binary.Write(buf, binary.LittleEndian, uint16(len(b.bulkColumns))) // column count
 
+	// TODO: Write a valid CEK table if any parameters have cekTableEntry values
+	if b.cn.sess.alwaysEncrypted {
+		binary.Write(buf, binary.LittleEndian, uint16(0))
+	}
 	for i, col := range b.bulkColumns {
 
 		if b.cn.sess.loginAck.TDSVersion >= verTDS72 {

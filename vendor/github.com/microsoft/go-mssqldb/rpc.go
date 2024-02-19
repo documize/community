@@ -13,13 +13,16 @@ type procId struct {
 const (
 	fByRevValue   = 1
 	fDefaultValue = 2
+	fEncrypted    = 8
 )
 
 type param struct {
-	Name   string
-	Flags  uint8
-	ti     typeInfo
-	buffer []byte
+	Name       string
+	Flags      uint8
+	ti         typeInfo
+	buffer     []byte
+	tiOriginal typeInfo
+	cipherInfo []byte
 }
 
 var (
@@ -77,6 +80,15 @@ func sendRpc(buf *tdsBuffer, headers []headerStruct, proc procId, flags uint16, 
 		err = param.ti.Writer(buf, param.ti, param.buffer)
 		if err != nil {
 			return
+		}
+		if (param.Flags & fEncrypted) == fEncrypted {
+			err = writeTypeInfo(buf, &param.tiOriginal)
+			if err != nil {
+				return
+			}
+			if _, err = buf.Write(param.cipherInfo); err != nil {
+				return
+			}
 		}
 	}
 	return buf.FinishPacket()

@@ -1,4 +1,4 @@
-# github.com/Azure/go-ntlmssp v0.0.0-20200615164410-66371956d46c
+# github.com/Azure/go-ntlmssp v0.0.0-20221128193559-754e69321358
 ## explicit
 github.com/Azure/go-ntlmssp
 # github.com/BurntSushi/toml v1.3.2
@@ -33,14 +33,14 @@ github.com/documize/slug
 # github.com/fatih/structs v1.1.0
 ## explicit
 github.com/fatih/structs
-# github.com/felixge/httpsnoop v1.0.3
+# github.com/felixge/httpsnoop v1.0.4
 ## explicit; go 1.13
 github.com/felixge/httpsnoop
 # github.com/go-asn1-ber/asn1-ber v1.5.5
 ## explicit; go 1.13
 github.com/go-asn1-ber/asn1-ber
-# github.com/go-ldap/ldap/v3 v3.4.1
-## explicit; go 1.13
+# github.com/go-ldap/ldap/v3 v3.4.6
+## explicit; go 1.14
 github.com/go-ldap/ldap/v3
 # github.com/go-sql-driver/mysql v1.7.1
 ## explicit; go 1.13
@@ -62,6 +62,9 @@ github.com/golang/glog/internal/stackdump
 # github.com/google/go-querystring v1.1.0
 ## explicit; go 1.10
 github.com/google/go-querystring/query
+# github.com/google/uuid v1.3.1
+## explicit
+github.com/google/uuid
 # github.com/gorilla/css v1.0.1
 ## explicit; go 1.20
 github.com/gorilla/css/scanner
@@ -89,14 +92,20 @@ github.com/mb0/diff
 ## explicit; go 1.21
 github.com/microcosm-cc/bluemonday
 github.com/microcosm-cc/bluemonday/css
-# github.com/microsoft/go-mssqldb v1.5.0
-## explicit; go 1.13
+# github.com/microsoft/go-mssqldb v1.6.0
+## explicit; go 1.17
 github.com/microsoft/go-mssqldb
+github.com/microsoft/go-mssqldb/aecmk
 github.com/microsoft/go-mssqldb/integratedauth
 github.com/microsoft/go-mssqldb/integratedauth/ntlm
 github.com/microsoft/go-mssqldb/integratedauth/winsspi
 github.com/microsoft/go-mssqldb/internal/cp
 github.com/microsoft/go-mssqldb/internal/decimal
+github.com/microsoft/go-mssqldb/internal/github.com/swisscom/mssql-always-encrypted/pkg/algorithms
+github.com/microsoft/go-mssqldb/internal/github.com/swisscom/mssql-always-encrypted/pkg/crypto
+github.com/microsoft/go-mssqldb/internal/github.com/swisscom/mssql-always-encrypted/pkg/encryption
+github.com/microsoft/go-mssqldb/internal/github.com/swisscom/mssql-always-encrypted/pkg/keys
+github.com/microsoft/go-mssqldb/internal/github.com/swisscom/mssql-always-encrypted/pkg/utils
 github.com/microsoft/go-mssqldb/internal/querytext
 github.com/microsoft/go-mssqldb/msdsn
 # github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
@@ -115,17 +124,26 @@ github.com/shurcooL/sanitized_anchor_name
 ## explicit
 github.com/trivago/tgo/tcontainer
 github.com/trivago/tgo/treflect
-# golang.org/x/crypto v0.18.0
+# golang.org/x/crypto v0.19.0
 ## explicit; go 1.18
 golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blowfish
 golang.org/x/crypto/md4
-# golang.org/x/net v0.20.0
+# golang.org/x/net v0.21.0
 ## explicit; go 1.18
 golang.org/x/net/context
 golang.org/x/net/context/ctxhttp
 golang.org/x/net/html
 golang.org/x/net/html/atom
+# golang.org/x/text v0.14.0
+## explicit; go 1.18
+golang.org/x/text/encoding
+golang.org/x/text/encoding/internal
+golang.org/x/text/encoding/internal/identifier
+golang.org/x/text/encoding/unicode
+golang.org/x/text/internal/utf8internal
+golang.org/x/text/runes
+golang.org/x/text/transform
 # gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc
 ## explicit
 gopkg.in/alexcesaro/quotedprintable.v3

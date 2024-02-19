@@ -38,7 +38,7 @@
 			<div class="form-group">
 				<label for="activation-key">Activation Key</label>
 				{{textarea id="activation-key" value=model.activationKey rows="5" class=(if hasKeyError "form-control is-invalid" "form-control")}}
-				<small class="form-text text-muted">You can get from <a href="https://www.documize.com/community" target="_blank">https://www.documize.com/community</a></small>
+				<small class="form-text text-muted">Get from here: <a href="https://www.documize.com/community" target="_blank">https://www.documize.com/community</a></small>
 			</div>
 		{{/if}}
 		{{ui/ui-button submit=true color=constants.Color.Green light=true label=buttonLabel onClick=(action "save")}}
