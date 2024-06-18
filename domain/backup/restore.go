@@ -124,10 +124,10 @@ func (r *restoreHandler) PerformRestore(b []byte, l int64) (err error) {
 	}
 
 	// User Activity.
-	// err = r.dmzUserActivity()
-	// if err != nil {
-	// 	return
-	// }
+	err = r.dmzUserActivity()
+	if err != nil {
+		return
+	}
 
 	// User Config.
 	err = r.dmzUserConfig()
@@ -144,10 +144,10 @@ func (r *restoreHandler) PerformRestore(b []byte, l int64) (err error) {
 	}
 
 	// Audit Log.
-	// err = r.dmzAudit()
-	// if err != nil {
-	// 	return
-	// }
+	err = r.dmzAudit()
+	if err != nil {
+		return
+	}
 
 	// Action.
 	err = r.dmzAction()
