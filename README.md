@@ -32,6 +32,14 @@ The Community+ edition is the "enterprise" offering with advanced capabilities a
 
 The Community+ edition is [free](https://www.documize.com/community/get-started) for the first five users -- thereafter pricing starts at just $900 annually for 100 users.
 
+## Self-Hosting
+
+### Elestio
+
+You can deploy Documize on Elestio using one-click deployment. Elestio handles version updates, maintenance, securtiy, backups, etc. Additionally, Elestio supports Documize by providing revenue share so go ahead and click below to deploy and start using.
+
+[![Deploy on Elestio](https://elest.io/images/logos/deploy-to-elestio-btn.png)](https://elest.io/open-source/documize)
+
 ## OS Support
 
 - Linux
