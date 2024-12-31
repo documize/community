@@ -9,7 +9,7 @@ import Service, { inject as service } from '@ember/service';
 import $ from 'jquery';
 
 export default Service.extend({
-    langs: { enUS: [], deDE: [] , zhCN: [], ptBR: [], frFR: [], jaJP: [], itIT: [] },
+    langs: { enUS: [], deDE: [] , zhCN: [], ptBR: [], frFR: [], jaJP: [], itIT: [], esAR: [] },
     locales: [],
     session: service(),
 
@@ -35,6 +35,9 @@ export default Service.extend({
         });
         $.getJSON("/i18n/it-IT.json", (data) => {
             this.langs.itIT = data;
+        });
+        $.getJSON("/i18n/es-AR.json", (data) => {
+            this.langs.esAR = data;
         });
     },
 
@@ -63,7 +66,10 @@ export default Service.extend({
             case "it-IT":
                 str = this.langs.itIT[key];
                 break;
-        }
+            case "es-AR":
+                str = this.langs.esAR[key];
+                break;
+            }
 
         if (_.isUndefined(str)) {
             // eslint-disable-next-line no-console

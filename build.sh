@@ -8,7 +8,7 @@ echo "Build process started $NOW"
 
 echo "Building Ember assets..."
 cd gui
-export NODE_OPTIONS=--openssl-legacy-provider
+# export NODE_OPTIONS=--openssl-legacy-provider
 ember build ---environment=production --output-path dist-prod --suppress-sizes true
 cd ..
 
