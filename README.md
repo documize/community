@@ -12,9 +12,9 @@ All you need to provide is your database -- PostgreSQL, Microsoft SQL Server or 
 
 ## Latest Release
 
-[Community edition: v5.13.0](https://github.com/documize/community/releases)
+[Community edition: v5.14.0](https://github.com/documize/community/releases)
 
-[Community+ edition: v5.13.0](https://www.documize.com/community/get-started)
+[Community+ edition: v5.14.0](https://www.documize.com/community/get-started)
 
 The Community+ edition is the "enterprise" offering with advanced capabilities and customer support:
 
@@ -64,7 +64,7 @@ For all database types, Full-Text Search (FTS) support is mandatory.
 
 ## Technology Stack
 
-- Go (v1.23.4)
+- Go (v1.25.1)
 - Ember JS (v3.12.0)
 
 ## Authentication Options
@@ -90,6 +90,7 @@ Languages supported out-of-the-box:
 - Japanese (日本語)
 - Italian
 - Spanish Argentinian
+- Polish
 
 PR's welcome for additional languages.
 
