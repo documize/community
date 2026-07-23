@@ -10,11 +10,14 @@ Documize Community — a self-hosted knowledge management app. Backend is Go, fr
 
 Backend (Go):
 ```
+mkdir -p edition/static && touch edition/static/.keep   # see prerequisite note below
 go build -mod=vendor -o bin/documize-community ./edition/community.go
 go vet ./...
 go test ./...                      # single package: go test ./domain/backup/...
 ```
 The module uses `vendor/` (`-mod=vendor` is required, vendoring is checked in). Go version pinned in `go.mod` (currently 1.19, though README/Dockerfile reference 1.21.x toolchains — check both before assuming).
+
+**Asset prerequisite:** `edition/community.go` has `//go:embed static/*`, and `edition/static/` is gitignored and empty in a fresh checkout — it's only populated by `build.sh`/Dockerfile (Ember build output, mail templates, DB scripts, onboarding JSON). Because of this, `go build ./edition/community.go`, `go vet ./...`, and `go test ./...` all fail with `pattern static/*: no matching files found` until at least one file exists under `edition/static/` (a placeholder file is enough to satisfy the embed for compilation; run the relevant parts of `build.sh` to get real assets). Testing an individual non-`edition` package, e.g. `go test ./domain/backup/...`, does not require this since it doesn't compile the `edition` package.
 
 Frontend (Ember, in `gui/`):
 ```
