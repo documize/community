@@ -32,6 +32,15 @@ The Community+ edition is the "enterprise" offering with advanced capabilities a
 
 The Community+ edition is [free](https://www.documize.com/community/get-started) for the first five users -- thereafter pricing starts at just $900 annually for 100 users.
 
+## Easypanel
+
+[Easypanel](https://easypanel.io) is a self-hosted Docker deployment platform, and Documize Community has a one-click deployment template there.
+
+[![Deploy on Easypanel][easypanel-btn]][easypanel-deploy]
+
+[easypanel-btn]: https://easypanel.io/img/deploy-on-easypanel-40.svg
+[easypanel-deploy]: https://easypanel.io/templates/documize
+
 ## OS Support
 
 - Linux
