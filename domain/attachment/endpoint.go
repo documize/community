@@ -121,11 +121,16 @@ func (h *Handler) Download(w http.ResponseWriter, r *http.Request) {
 
 	// External users can be sent secure document viewing links.
 	// Those documents may contain attachments that external viewers
-	// can download as required.
-	// Such secure document viewing links can have expiry dates.
-	if !canDownload && len(secureToken) > 0 {
-		canDownload = true
-	}
+	// can download as required. Such secure document viewing links can
+	// have expiry dates.
+	//
+	// NOTE: there is currently no issuance, storage, or validation logic
+	// anywhere in the codebase for this token (no signing key, no share
+	// record, no expiry check). Treating any non-empty value as valid
+	// grants canDownload unconditionally, which also bypasses the public
+	// space check above and the authenticated-user check below. Until a
+	// real validation path exists, this branch is disabled rather than
+	// left as a no-op check.
 
 	// If an user authentication token was provided we check to see
 	// if user can view document.
